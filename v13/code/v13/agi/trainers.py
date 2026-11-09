@@ -68,6 +68,53 @@ def requirements(runtime,state=None):
             'torch':_torch('lora'),'torch_sparse':_torch('sparse'),'c3_gguf':str(gguf) if gguf else None,'runner':str(server),'runner_ok':server.is_file(),
             'memory_server_ok':_memory_server_ok(runtime.home)}
 
+def training_readiness(runtime,kind='lora'):
+    """Read-only preflight for *real* C3 weight learning, not a shadow claim.
+
+    Distinguishes missing master/dependencies from a stale or unverifiable
+    master/GGUF pairing. Never creates training artifacts or mutates state.
+    """
+    if kind not in ('lora','sparse'):
+        raise ValueError('Training kind must be lora or sparse')
+    st=_box(runtime.store).load()[0]
+    req=requirements(runtime,st)
+    master=Path(req['master'])
+    reasons=[]
+    if not (master/'model.safetensors').is_file():reasons.append('MASTER_WEIGHTS_MISSING')
+    cfg_path=master/'config.json'
+    if not cfg_path.is_file():
+        reasons.append('MASTER_CONFIG_MISSING')
+    else:
+        try:
+            cfg=json.loads(cfg_path.read_text())
+            if not isinstance(cfg,dict) or not isinstance(cfg.get('hidden_size'),int) or not isinstance(cfg.get('num_hidden_layers'),int) or cfg['hidden_size']<=0 or cfg['num_hidden_layers']<=0:
+                reasons.append('MASTER_CONFIG_INVALID')
+        except (OSError,ValueError,UnicodeError):
+            reasons.append('MASTER_CONFIG_INVALID')
+    if not st.get('master_sha256') and (master/'model.safetensors').is_file():
+        reasons.append('MASTER_HASH_NOT_PINNED')
+    if st.get('master_sha256') and (master/'model.safetensors').is_file():
+        if file_hash(master/'model.safetensors')!=st['master_sha256']:
+            reasons.append('MASTER_HASH_CHANGED')
+    deployed=req['c3_gguf']
+    if not deployed or not Path(deployed).is_file():
+        reasons.append('DEPLOYED_C3_MISSING')
+    if req['arch_match'] is False:reasons.append('MASTER_GGUF_ARCH_MISMATCH')
+    if req['arch_match'] is None and req['master_ok'] and req['c3_gguf']:
+        reasons.append('MASTER_GGUF_ARCH_UNVERIFIED')
+    if not req['torch' if kind=='lora' else 'torch_sparse']:
+        reasons.append('TRAINER_DEPENDENCIES_MISSING')
+    if kind=='lora' and not req['runner_ok']:reasons.append('LIVE_EVALUATOR_MISSING')
+    try:
+        anchors,heldout=probes()
+        if not anchors or not heldout:reasons.append('RETENTION_PROBES_EMPTY')
+    except (OSError,ValueError,KeyError,TypeError):
+        reasons.append('RETENTION_PROBES_UNAVAILABLE')
+    if kind=='sparse' and not req['memory_server_ok']:
+        reasons.append('SPARSE_SERVING_UNAVAILABLE')
+    return {'role':ROLE,'kind':kind,'ready':not reasons,'reasons':reasons,
+            'requirements':req,'claims':'preflight only; not trained, gated, or deployed'}
+
 def _memory_server_ok(home):
     """Native build capability, using the same launcher/library binding as the runtime."""
     try:
@@ -103,9 +150,19 @@ def build(runtime,kind=None):
     from .weights import NullTrainer
     st=_box(runtime.store).load()[0];kind=kind or st['kind'];req=requirements(runtime,st)
     want=kind
-    if kind=='auto':want='lora' if req['master_ok'] and req['torch'] and req['runner_ok'] and req['c3_gguf'] else 'none'
-    info={'choice':kind,'active':want,'requirements':req}
+    if kind=='auto':
+        auto=training_readiness(runtime,'lora')
+        info_auto={'auto_readiness':auto}
+        want='lora' if auto['ready'] else 'none'
+    else:
+        info_auto={}
+    info={'choice':kind,'active':want,'requirements':req,**info_auto}
     if want=='none':return NullTrainer(),info
+    preflight=training_readiness(runtime,want)
+    info['readiness']=preflight
+    if not preflight['ready']:
+        info['active']='none';info['missing']=preflight['reasons']
+        return NullTrainer(),info
     missing=[k for k in (('master_ok','torch_sparse','c3_gguf') if want=='sparse' else ('master_ok','torch','c3_gguf','runner_ok')) if not req[k]]
     if missing:info['active']='none';info['missing']=missing;return NullTrainer(),info
     anchors,probe=probes();work=Path(runtime.home)/'training/ag6'/want;work.mkdir(parents=True,exist_ok=True)

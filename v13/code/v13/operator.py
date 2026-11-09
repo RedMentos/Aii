@@ -10,7 +10,7 @@ def obsched_names():
     from .observer_schedule import SCHEDULES
     return SCHEDULES
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
-:help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain / :logs [runner]
+:help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain [map|status|explain <name>] / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
 :self / :world / :worldmodel [status|recent|event <Event-ID> <route>|compare <Event-ID>] / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
@@ -245,7 +245,10 @@ class Operator:
             from . import resource_modes  # §97.2 GREEN/YELLOW/ORANGE/RED
             if args:return dumps(resource_modes.command(r,args))
             snap=r.resources();r.guard.update(snap);return dumps(snap|{'resource_mode':resource_modes.report(r)})
-        if cmd=='brain':return dumps(s.generation())
+        if cmd=='brain':
+            if not args:return dumps(s.generation())  # legacy output unchanged
+            from .brain_panel import operator_command as brain_command
+            return dumps(brain_command(r,args))
         if cmd=='models':return dumps(r.models.installed)
         if cmd=='self':return dumps(r.world.self_state())
         if cmd=='world':return dumps(r.world.world_state())

@@ -69,6 +69,46 @@ class Runtime:
         from .sleep import SleepRuntime
         self.sleep=SleepRuntime(self)  # WP-E: G13 wake scheduler + §94 sleep phases
         self.worker=threading.Thread(target=self._worker,name='V13-coordinator',daemon=True);self.worker.start()
+    def online_world_update(self,limit=2048):
+        """Explicit bounded online learning from committed T8 transitions.
+
+        The predictor is local and never modifies pretrained GGUF weights.
+        No model is initialized until the operator invokes this entrypoint.
+        """
+        from .online_world import OnlineWorld
+        if not hasattr(self,'_online_world'):
+            self._online_world=OnlineWorld(self)
+        return self._online_world.update(limit=limit)
+    def world_jepa_update(self,steps=10,limit=2048):
+        """Explicit, non-promoting JEPA update from committed T8 observations.
+
+        This is an experimental in-memory learner, separate from the automatic
+        lightweight predictor. No active GGUF, JEF route or Age authority changes.
+        Training is operator-invoked only; persistence is not yet guaranteed.
+        """
+        from .world_jepa import WorldJEPA
+        from .world_jepa_online_experiment import update_from_store
+        with self.lock:
+            model=getattr(self,'_world_jepa_online',None)
+            if model is None:
+                candidate=WorldJEPA(seed=7,ensemble=2)
+                result=update_from_store(candidate,self.store,steps=steps,limit=limit)
+                self._world_jepa_online=candidate
+            else:
+                result=update_from_store(model,self.store,steps=steps,limit=limit)
+            self._world_jepa_source_sha=result['source_sha256']
+            return dict(result,active_model_promoted=False,
+                        persisted=False,status='EXPERIMENTAL_JEPA_NO_RUNTIME_AUTHORITY')
+    def world_jepa_save(self):
+        """Explicit private checkpoint; no model deployment."""
+        from .world_jepa_runtime_checkpoint import save
+        with self.lock:return save(self)
+
+    def world_jepa_restore(self):
+        """Explicit safe source-bound private checkpoint restore."""
+        from .world_jepa_runtime_checkpoint import restore
+        with self.lock:return restore(self)
+
     def notice(self,text):self.notify(safe_text(text))
     def resources(self):return snapshot(self.home,self.pool.pids()+self.needle.pids()+self.memory.semantic_keys.encoder.pids())
     def revisions(self):return {role:self.models.revision(role) for role in ROLES}
@@ -135,7 +175,15 @@ class Runtime:
                     if not owner:raise ValueError('Angenommene Anfrage ohne Chat')
                     self._session_local.session_id=owner['session_id']
                     if time.monotonic()-queued>self.cfg['queue_ttl_seconds']:self._rejected(payload,'Warteschlangen-Zeitlimit; bitte erneut senden.')
-                    else:self._turn(payload)
+                    else:
+                        self._turn(payload)
+                        # Local plasticity runs after the turn's committed action
+                        # record, never on an uncommitted prediction. Failure is
+                        # isolated from user-visible output and logged for repair.
+                        try:self.online_world_update(limit=64)
+                        except Exception as exc:
+                            self.store.log('online_world_learning_error',payload['event_id'],
+                                           {'error':type(exc).__name__})
                 elif kind=='download':self.models.install(payload or 'all',self.notice,self.cancel_event)
                 elif kind=='shadow':
                     if payload=='memory_retrieval':self.notice(self.learner.shadow_retrieval())

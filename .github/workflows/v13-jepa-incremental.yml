@@ -1,0 +1,22 @@
+name: V13 incremental World JEPA
+on:
+  push:
+    branches: ['codex/v13-jepa-incremental-plasticity-*']
+  pull_request:
+    paths: ['v13/code/v13/world_jepa.py','v13/code/tests/test_world_jepa_incremental_20261108.py']
+  workflow_dispatch:
+jobs:
+  incremental-jepa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy pytest
+      - name: Compile and test World-JEPA continued plasticity
+        working-directory: v13/code
+        run: |
+          python -m py_compile v13/world_jepa.py v13/world_jepa_online_experiment.py
+          python -m pytest -q tests/test_world_jepa_incremental_20261108.py tests/test_world_jepa.py tests/test_world_jepa_atomic_fit.py tests/test_world_jepa_stale_fit_order.py tests/test_world_jepa_reader_snapshot.py tests/test_world_jepa_shadow_checkpoint_20261028.py tests/test_world_jepa_online_experiment_20261108.py

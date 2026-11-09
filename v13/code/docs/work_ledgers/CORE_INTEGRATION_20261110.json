@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-10",
+  "owner": "GPT integration coordinator",
+  "package": "V13_CORE_INTEGRATION_20261110",
+  "branch": "codex/v13-integrated-online-jepa-20261109",
+  "base_sha": "422947f6128b21b2c890c06c3e71f44e5da8b31b",
+  "pr": 1655,
+  "source_prs": [
+    1619,
+    1620,
+    1618,
+    1654
+  ],
+  "integrated_paths": [
+    "v13/code/v13/runtime.py",
+    "v13/code/v13/online_world.py",
+    "v13/code/v13/continuous_predictor.py",
+    "v13/code/v13/world_jepa.py",
+    "v13/code/v13/world_jepa_online_experiment.py",
+    "v13/code/v13/agi/trainers.py",
+    "v13/code/v13/agi/__init__.py",
+    "v13/code/v13/lora_trainer.py",
+    "v13/code/tests/test_runtime_jepa_integration_20261110.py",
+    "v13/code/v13/world_jepa_runtime_checkpoint.py"
+  ],
+  "status": "REVIEW_ONLY_UNMERGED",
+  "evidence": {
+    "combined_ci": "https://github.com/RedMentos/Aii/actions/runs/42717623545",
+    "combined_ci_status": "SUCCESS at b077fe0 before C3 integration",
+    "latest_ci": "SUCCESS https://github.com/RedMentos/Aii/actions/runs/42718194280 at 5166359102a41d62d42e8adad2197c4ed80f03bf",
+    "native_redmi": false,
+    "real_c3_lora_training": false,
+    "real_world_jepa_runtime_gradient_test": "PASS in combined CI at 2b384ec356e286ebe09428fb8ea127e9c1252c61, https://github.com/RedMentos/Aii/actions/runs/42717776576",
+    "ag6_ci": "PASS https://github.com/RedMentos/Aii/actions/runs/42717776587",
+    "c3_resume_ci": "PASS https://github.com/RedMentos/Aii/actions/runs/42717777003",
+    "operator_cli": ":growth jepa [STEPS] [LIMIT], :growth jepa save, :growth jepa restore; combined CI PASS",
+    "jepa_private_checkpoint": "PASS: source-bound private NPZ save/restore, real resumed gradient updates and tamper rejection"
+  },
+  "blockers": [
+    "Runtime frozen by SourceHandoff cohort; no production merge authorized",
+    "C3 LoRA real pretrained training/retention still unproven",
+    "Full suite historical RED; STEP2/B3 negative gates unchanged",
+    "World-JEPA replay PR #1652 CI red; not imported",
+    "World-JEPA checkpoint needs bounded cleanup and real device storage tests; no automatic restore/promotion"
+  ],
+  "next_exact_commands": [
+    "PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_runtime_jepa_integration_20261110.py v13/code/tests/test_online_world_20261108.py v13/code/tests/test_world_jepa_online_experiment_20261108.py v13/code/tests/test_ag6_training_readiness_20261108.py v13/code/tests/test_lora_resume_safety.py",
+    "python v13/code/scripts/public_repo_privacy_scan.py --base 5e964146579deb22c5ba89a2a03a52a9e4d8aab8 --head codex/v13-integrated-online-jepa-20261109",
+    "Add bounded JEPA checkpoint retention/rollback and fresh source-bound holdout evaluation; test native Redmi resource impact",
+    "Review/resolve PR #1652 replay negative cases and reconcile Body-JEPA candidate branches without overwriting active owners"
+  ]
+}

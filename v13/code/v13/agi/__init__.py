@@ -170,6 +170,19 @@ def operator_command(r,args):
             raise ValueError('Usage: :growth eval compare en-de [solver]')
         from .language_compare import compare_languages
         return dumps(compare_languages(r.store, solver=args[3] if len(args) == 4 else 'v13'))
+    if args and args[0]=='onlineworld':
+        if len(args)>2:raise ValueError('Usage: :growth onlineworld [LIMIT]')
+        limit=int(args[1]) if len(args)==2 else 2048
+        return dumps(r.online_world_update(limit=limit))
+    if args and args[0]=='jepa':
+        if len(args)==2 and args[1]=='save':return dumps(r.world_jepa_save())
+        if len(args)==2 and args[1]=='restore':return dumps(r.world_jepa_restore())
+        if len(args)>3:raise ValueError('Usage: :growth jepa [STEPS] [LIMIT]')
+        steps=int(args[1]) if len(args)>1 else 5
+        limit=int(args[2]) if len(args)>2 else 256
+        if not 1<=steps<=50 or not 16<=limit<=2048:
+            raise ValueError('JEPA operator budget outside mobile-safe bounds')
+        return dumps(r.world_jepa_update(steps=steps,limit=limit))
     g=hub(r)
     if not args or args==['status']:return dumps(g.report())
     c=args[0]
@@ -193,6 +206,10 @@ def operator_command(r,args):
     if c=='eval' and len(args)>1 and args[1]=='curve':
         return dumps(g.eval.curve(args[3] if len(args)>3 else 'overall',args[2] if len(args)>2 else None)[-24:])
     if c=='eval':return dumps(g.eval.report()|{'curve':g.eval.curve('overall')[-12:]})
+    if c=='trainready':
+        from .trainers import training_readiness
+        if len(args)>2:raise ValueError('Usage: :growth trainready [lora|sparse]')
+        return dumps(training_readiness(r,args[1] if len(args)==2 else 'lora'))
     if c=='trainer':
         from . import trainers
         if len(args)==1:return dumps(trainers.install(g,r))
