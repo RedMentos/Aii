@@ -69,6 +69,16 @@ class Runtime:
         from .sleep import SleepRuntime
         self.sleep=SleepRuntime(self)  # WP-E: G13 wake scheduler + §94 sleep phases
         self.worker=threading.Thread(target=self._worker,name='V13-coordinator',daemon=True);self.worker.start()
+    def online_world_update(self,limit=2048):
+        """Explicit bounded online learning from committed T8 transitions.
+
+        The predictor is local and never modifies pretrained GGUF weights.
+        No model is initialized until the operator invokes this entrypoint.
+        """
+        from .online_world import OnlineWorld
+        if not hasattr(self,'_online_world'):
+            self._online_world=OnlineWorld(self)
+        return self._online_world.update(limit=limit)
     def notice(self,text):self.notify(safe_text(text))
     def resources(self):return snapshot(self.home,self.pool.pids()+self.needle.pids()+self.memory.semantic_keys.encoder.pids())
     def revisions(self):return {role:self.models.revision(role) for role in ROLES}
@@ -135,7 +145,15 @@ class Runtime:
                     if not owner:raise ValueError('Angenommene Anfrage ohne Chat')
                     self._session_local.session_id=owner['session_id']
                     if time.monotonic()-queued>self.cfg['queue_ttl_seconds']:self._rejected(payload,'Warteschlangen-Zeitlimit; bitte erneut senden.')
-                    else:self._turn(payload)
+                    else:
+                        self._turn(payload)
+                        # Local plasticity runs after the turn's committed action
+                        # record, never on an uncommitted prediction. Failure is
+                        # isolated from user-visible output and logged for repair.
+                        try:self.online_world_update(limit=64)
+                        except Exception as exc:
+                            self.store.log('online_world_learning_error',payload['event_id'],
+                                           {'error':type(exc).__name__})
                 elif kind=='download':self.models.install(payload or 'all',self.notice,self.cancel_event)
                 elif kind=='shadow':
                     if payload=='memory_retrieval':self.notice(self.learner.shadow_retrieval())
