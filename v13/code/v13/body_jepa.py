@@ -185,13 +185,23 @@ def validated_weights(items):
         weights=[float(item.get('weight',1.)) for item in items]
     except (TypeError,ValueError,OverflowError):
         raise ValueError('invalid eligibility weights') from None
-    if not weights or not all(math.isfinite(v) and v>=0 for v in weights) or sum(weights)<=0:
+    if not weights or not all(math.isfinite(v) and v>=0 for v in weights):
         raise ValueError('eligibility weights must be finite, nonnegative and positive in total')
+    # Each weight may be finite while their aggregate overflows.  Such a batch
+    # otherwise yields inf denominators and silently zeroes the learning signal.
+    try:
+        total = math.fsum(weights)
+    except OverflowError:
+        raise ValueError('eligibility weight sum overflow') from None
+    if not math.isfinite(total) or total <= 0:
+        raise ValueError('eligibility weights must have a finite positive total')
     return weights
 
 def pad(torch,seqs,pad_id=0,device=None):
-    if not seqs or any(len(s)==0 for s in seqs):
-        raise ValueError('nonempty token sequences required')
+    if (not seqs or any(not isinstance(s,(list,tuple)) or not s for s in seqs)
+            or any(type(token) is not int or token < 0 for s in seqs for token in s)
+            or type(pad_id) is not int or pad_id < 0):
+        raise ValueError('nonempty nonnegative integer token sequences required')
     n=max(len(s) for s in seqs);ids=torch.full((len(seqs),n),pad_id,dtype=torch.long,device=device)
     for i,s in enumerate(seqs):ids[i,:len(s)]=torch.tensor(s,dtype=torch.long,device=device)
     return ids,torch.tensor([len(s) for s in seqs],dtype=torch.long,device=device)
