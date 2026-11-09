@@ -4,7 +4,7 @@ on:
     paths:
       - 'v13/code/v13/online_world.py'
       - 'v13/code/v13/continuous_predictor.py'
-      - 'v13/code/tests/test_online_world_atomic_cursor_20261109.py'
+      - 'v13/code/tests/test_online_world_atomic_cursor_20261109.py tests/test_online_world_20261108.py tests/test_continuous_predictor_20261108.py'
       - '.github/workflows/v13-online-world-atomic-cursor.yml'
   workflow_dispatch:
 jobs:
