@@ -387,6 +387,9 @@ class BodyJepaTrainer(LoraTrainer):
         if mode not in MODES:raise ValueError('unknown jepa_target')
         if cfg.get('locality_policy','legacy') not in ('legacy','bp2b'):raise ValueError('unknown locality_policy')
         wts=validated_weights(items)
+        clip=cfg.get('grad_clip_norm')
+        if clip is not None and (type(clip) not in (float,int) or not math.isfinite(clip) or clip<=0):
+            raise ValueError('grad_clip_norm must be finite and positive')
         torch,tok,model=self._load()
         from peft import LoraConfig,get_peft_model
         pad_id=tok.pad_token_id if tok.pad_token_id is not None else 0
