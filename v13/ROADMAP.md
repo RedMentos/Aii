@@ -1,3 +1,9 @@
+# 2026-11-09 — vorhandenen Kontext-Blueprint und Datensatzvorbereitung weiterführen
+
+Nutzerziel längerer lokaler Zusammenhang bei begrenztem aktiven Kontext und späteres ruhiges Lernen mit begrenzten Ressourcen ist mit Canon §8/§9/§14.6/§15/IH-H20 abgeglichen, nicht ersetzt. Katalog: **47 Ansichten / 35 Repos**, davon 18 für eine explizite Einzelzeilen-Vorschau und 29 zurückgestellt; keine Trainingsfreigabe. Isolierter, standardmäßig netzfreier Probe-/Staging-Kandidat mit Quellenrevision, Größenquota und Offline-Lesen: **49 Tests bestanden**; echte Cosmopedia-Zeile lokal gespeichert und wieder gelesen, Wikipedia-Einzelprobe gelesen. Bestehende Kontext-/Memory-Tests: **64 bestanden + 16 Untertests**. Keine aktive Datenpipeline, kein automatisches Hintergrundlernen, kein Langzeit-/Redmi-Nachweis. Schritte, Einschränkungen, Quellen und unabhängige Gegenbefunde: `code/docs/CONTEXT_MEMORY_AND_DATASET_BOOTSTRAP_20261109.md`. Bisherige Fail-Gates und `user_full_scope_complete=false` bleiben.
+
+---
+
 ## 2026-11-09 — späteres Hintergrundlernen und erlaubte Wahrnehmung
 
 Auf Nutzerwunsch ist das langfristige Ziel eines ruhigen Hintergrundmodus mit später lernender Rechenzeitverteilung, geeigneten Anfangsdaten, Lernen aus freigegebenen Gesprächen sowie separat erlaubtem Bildschirm-/Werkzeugzugriff konkretisiert. Der Weg nutzt Scheduler, Sleep/Replay, Quellenrechte und Age; er folgt den Kernvoraussetzungen und ersetzt keine laufende Umsetzung. Details und Nachweisschritte: `code/docs/BACKGROUND_LEARNING_AND_PERCEPTION_20261109.md`. Noch keine neue Screen-/Android- oder autonome Lernfähigkeit behauptet.

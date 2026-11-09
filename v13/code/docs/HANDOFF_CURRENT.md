@@ -1,3 +1,13 @@
+# 2026-11-09 — Canon-Kontextabgleich und begrenzte Datensatz-Vorschau
+
+Der Nutzer bestätigt, dass der Blueprint die Kontextarchitektur bereits detailliert enthält; seine Ergänzung priorisiert praktisch langen, lokal verdichteten Zusammenhang bei begrenztem aktivem Fenster und später langsam nutzbare Anfangsdaten. `CONTEXT_MEMORY_AND_DATASET_BOOTSTRAP_20261109.md` ordnet Canon und offene End-to-End-/Redmi-Nachweise zu. Neuer Katalog enthält 47 Ansichten/35 Repos, davon 18 explizite PROBE-Kandidaten und 29 HOLD, **keine Trainingszulassung**. `dataset_probe_candidate.py` lädt nur auf Einzelauswahl, prüft Revision und Größenlimit, kann mit Quota lokal stagen und offline lesen; **49 Tests PASS**, reale je eine Cosmopedia-/Wikipedia-Zeile getestet. Kontext-/Episoden-/Archiv-/Semantik-Tests: **64 PASS, 16 Untertests**. Unabhängige Reviews fanden/fixierten u. a. Fremdtemp-Kollision, Lock-Quota, Antwortmetadaten-Wiederaufnahme und große Verzeichnisse; alle noch nicht gelösten Lebenszyklus-/Lizenz-/Kontaminationsfragen siehe Detailnotiz. Keine Scheduler-/Runtime-/Gewichtsänderung, kein automatischer Download; alle Gates unverändert.
+
+Parallele Arbeit bleibt separat: GPT-PR #1643 ergänzt den Body-JEPA-Atomizitätsreview auf #1639/#1641; Claude-PR #1642 bleibt getrennt von GPTs quell-/berechtigungsgebundenem Online-World-Review #1631. Diese Zweige müssen vor einer späteren Integration ausdrücklich abgeglichen und ihre bestehenden negativen Gates erhalten werden.
+
+**Neuer Archivfehler, nächstes Paket:** Bei einer synthetischen Quelle mit 64 MiB + 1 bestätigt `archive_blob` `ARCHIVED` und entfernt die Klartextdatei; `Store.blob_bytes` kann das verbleibende `.z` wegen seiner 64-MiB-Grenze nicht lesen. Die komprimierten Daten blieben in der Probe vorhanden. Hashgebundenen Korrekturkandidaten und Grenztests vorbereiten; eingefrorene Runtime nicht direkt überschreiben.
+
+---
+
 # 2026-11-09 — Nutzerziel: späteres Hintergrundlernen und Wahrnehmung
 
 Nutzer möchte später ruhiges Hintergrundlernen, das seinen Rechenaufwand innerhalb vorgegebener Grenzen mit der Zeit passend wählen lernt; dazu geeignete Anfangsdaten, Lernen aus freigegebenen Gesprächen und optional ausdrücklich erlaubten Bildschirm-/Werkzeugzugriff. Ergänzt in `BACKGROUND_LEARNING_AND_PERCEPTION_20261109.md` und ROADMAP, unter Nutzung bestehender Sleep-/Scheduler-/Quellen-/Age-Pfade. Weitergehende Wahrnehmung und Autonomie folgen nach den Kernvoraussetzungen; keine neue Funktion oder Gate-Freigabe behauptet. Aktuelle Implementierung weiterführen.
