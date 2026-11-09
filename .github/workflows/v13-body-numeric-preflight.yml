@@ -4,6 +4,7 @@ on:
     paths:
       - 'v13/code/v13/body_jepa.py'
       - 'v13/code/tests/test_body_jepa_numeric_preflight_20261109.py'
+      - 'v13/code/tests/test_body_token_range_20261109.py'
       - '.github/workflows/v13-body-numeric-preflight.yml'
   workflow_dispatch:
 jobs:
@@ -18,4 +19,4 @@ jobs:
       - run: python -m pip install pytest && python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
       - name: Focused real torch preflight and adjacent regressions
         working-directory: v13/code
-        run: python -m pytest -q tests/test_body_jepa_numeric_preflight_20261109.py tests/test_body_jepa_gradient_integrity_20261109.py tests/test_body_jepa_ema_update_integrity_20261109.py
+        run: python -m pytest -q tests/test_body_jepa_numeric_preflight_20261109.py tests/test_body_token_range_20261109.py tests/test_body_jepa_gradient_integrity_20261109.py tests/test_body_jepa_ema_update_integrity_20261109.py
