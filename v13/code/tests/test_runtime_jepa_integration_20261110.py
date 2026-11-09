@@ -56,3 +56,16 @@ def test_runtime_jepa_real_weights_update_from_committed_feed():
     assert not np.array_equal(previous,model.enc['W1'])
     assert model._fit_steps==5
     assert second['active_model_promoted'] is False
+
+
+def test_growth_jepa_operator_is_explicit_and_bounded():
+    import json
+    from v13.agi import operator_command
+    runtime=_runtime()
+    with patch.object(runtime,'world_jepa_update',return_value={'mode':'CONTINUED_WEIGHTS'}) as update:
+        assert json.loads(operator_command(runtime,['jepa','2','128']))['mode']=='CONTINUED_WEIGHTS'
+        update.assert_called_once_with(steps=2,limit=128)
+        for args in (['jepa','51'],['jepa','2','15'],['jepa','2','4096'],['jepa','1','256','extra']):
+            with pytest.raises(ValueError):
+                operator_command(runtime,args)
+        assert update.call_count==1
