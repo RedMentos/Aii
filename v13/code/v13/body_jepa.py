@@ -199,8 +199,8 @@ def validated_weights(items):
 
 def pad(torch,seqs,pad_id=0,device=None):
     if (not seqs or any(not isinstance(s,(list,tuple)) or not s for s in seqs)
-            or any(type(token) is not int or token < 0 for s in seqs for token in s)
-            or type(pad_id) is not int or pad_id < 0):
+            or any(type(token) is not int or not 0 <= token <= (1 << 63) - 1 for s in seqs for token in s)
+            or type(pad_id) is not int or not 0 <= pad_id <= (1 << 63) - 1):
         raise ValueError('nonempty nonnegative integer token sequences required')
     n=max(len(s) for s in seqs);ids=torch.full((len(seqs),n),pad_id,dtype=torch.long,device=device)
     for i,s in enumerate(seqs):ids[i,:len(s)]=torch.tensor(s,dtype=torch.long,device=device)
