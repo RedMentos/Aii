@@ -57,3 +57,9 @@ def test_valid_atomic_cursor_and_replay_resume(tmp_path):
     assert restored.seen == 1
     assert restored.updates >= 1
     np.testing.assert_array_equal(restored.W, p.W)
+
+def test_cursor_cannot_be_published_ahead_of_learned_weights(tmp_path):
+    p = OnlinePredictor(7, 4, tmp_path)
+    with pytest.raises(ValueError, match="cursor"):
+        p.checkpoint(processed_ids=['unlearned-action'])
+    assert not p.path.exists()
