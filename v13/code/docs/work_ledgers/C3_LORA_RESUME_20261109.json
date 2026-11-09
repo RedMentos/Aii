@@ -1,0 +1,48 @@
+{
+  "schema": "v13-work-ledger-v1",
+  "date": "2026-11-09",
+  "owner": "GPT scheduled V13 continuation",
+  "package_id": "C3-LORA-RESUME-INTEGRITY-20261109",
+  "branch": "codex/v13-c3-lora-resume-integrity-20261109-hour23",
+  "base_sha": "d0f1841f432d6d49a860d4389528034a98cea9d4",
+  "depends_on": [
+    "PR #1618 core-training readiness"
+  ],
+  "files": [
+    "v13/code/v13/lora_trainer.py",
+    "v13/code/tests/test_lora_resume_safety.py",
+    ".github/workflows/v13-c3-lora-resume-integrity.yml"
+  ],
+  "status": "DRAFT_REVIEW_CI_RUNNING",
+  "changes": [
+    "torch.load weights_only=True CPU, metadata validation before restoring weights",
+    "checkpoint shuffle RNG persistence, exact deterministic legacy replay of per-step data/anchor permutations",
+    "focused tests and CI"
+  ],
+  "evidence": {
+    "ci_green_earlier_sha": "02068ab47d0b4ca005d91d773c1d90e32bf4be73",
+    "ci_green_run": 42708256595,
+    "latest_sha": "fd44c0c747c7d0535c47ae9e2275e30799a706dd",
+    "latest_ci_run": 42708341237,
+    "latest_ci_status": "IN_PROGRESS_AT_CHECKPOINT",
+    "native_model_training": "NOT_RUN",
+    "redmi": "NOT_RUN"
+  },
+  "negative_gates": "UNCHANGED",
+  "active_other_owners": [
+    "PR #1653 source lifecycle",
+    "PR #1652 JEPA replay",
+    "PR #1648 T8 online learner",
+    "PR #1646 B1/B2 numeric checks"
+  ],
+  "blockers": [
+    "Git clone DNS unavailable; GitHub connector and Actions used",
+    "No master weights/Redmi in this runtime"
+  ],
+  "next_exact_commands": [
+    "Check Actions run 42708341237 on exact SHA and fix failures",
+    "python -m pytest -q tests/test_lora_resume_safety.py (v13/code)",
+    "Review #1618 dependency and integrate only after permission/gate review",
+    "Test actual LoRA training/restart with pinned master and measured retention in authorized native environment"
+  ]
+}
