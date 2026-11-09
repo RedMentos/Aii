@@ -69,3 +69,45 @@ def test_growth_jepa_operator_is_explicit_and_bounded():
             with pytest.raises(ValueError):
                 operator_command(runtime,args)
         assert update.call_count==1
+
+
+def test_jepa_private_checkpoint_survives_restart_and_continues(tmp_path):
+    import numpy as np
+    rows=[{'action_id':f'checkpoint-{i:03d}',
+           's':[i/90.,(i%7)/7.,float(np.sin(i/11.)),float(np.cos(i/11.))],
+           'a':('simple','detail','gist','both')[i%4],
+           'y':[i/180.,float(i%3==0),i/200.]} for i in range(96)]
+    first=_runtime();first.home=str(tmp_path)
+    with patch('v13.world_model.transitions',return_value=rows):
+        first.world_jepa_update(steps=2,limit=128)
+        receipt=first.world_jepa_save()
+        assert receipt['persisted'] is True
+        before=first._world_jepa_online.enc['W1'].copy()
+        second=_runtime();second.home=str(tmp_path)
+        restored=second.world_jepa_restore()
+        assert restored['restored'] is True
+        assert np.array_equal(before,second._world_jepa_online.enc['W1'])
+        result=second.world_jepa_update(steps=2,limit=128)
+    assert result['mode']=='CONTINUED_WEIGHTS'
+    assert not np.array_equal(before,second._world_jepa_online.enc['W1'])
+    assert result['active_model_promoted'] is False
+
+
+def test_jepa_checkpoint_tamper_fails_closed(tmp_path):
+    import numpy as np
+    rows=[{'action_id':f'tamper-{i:03d}',
+           's':[i/90.,(i%7)/7.,float(np.sin(i/11.)),float(np.cos(i/11.))],
+           'a':('simple','detail','gist','both')[i%4],
+           'y':[i/180.,float(i%3==0),i/200.]} for i in range(96)]
+    first=_runtime();first.home=str(tmp_path)
+    with patch('v13.world_model.transitions',return_value=rows):
+        first.world_jepa_update(steps=2,limit=128)
+    first.world_jepa_save()
+    import json
+    meta=json.loads((tmp_path/'world_jepa_online'/'active.json').read_text())
+    target=tmp_path/'world_jepa_online'/meta['filename']
+    target.write_bytes(target.read_bytes()+b'tamper')
+    second=_runtime();second.home=str(tmp_path)
+    with pytest.raises(ValueError):
+        second.world_jepa_restore()
+    assert not hasattr(second,'_world_jepa_online')
