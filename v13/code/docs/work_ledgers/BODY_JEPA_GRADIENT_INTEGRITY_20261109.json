@@ -1,0 +1,42 @@
+{
+  "schema": "v13.work_ledger.v1",
+  "date": "2026-11-09",
+  "owner": "GPT isolated B1/B2 gradient integrity review",
+  "package": "BODY-JEPA-GRADIENT-INTEGRITY",
+  "branch": "codex/v13-body-jepa-gradient-integrity-20261109",
+  "base_sha": "32a11d4883f347a46a0951dd92210fd5da0080d5",
+  "dependency_prs": [
+    1628,
+    1634,
+    1635,
+    1636,
+    1637
+  ],
+  "review_pr": 1638,
+  "touched_files": [
+    "v13/code/v13/body_jepa.py",
+    "v13/code/tests/test_body_jepa_gradient_integrity_20261109.py",
+    ".github/workflows/v13-body-full-device.yml"
+  ],
+  "status": "review_only_exact_head_ci_pending",
+  "tests": "Real torch unit tests committed and registered in existing body-JEPA PR workflow; no exact-head CI result yet. Parent PR 1637 CI 42591421697 SUCCESS.",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "Body-JEPA unpromoted",
+    "No pinned B1/B2 native or Redmi weight learning evidence"
+  ],
+  "blockers": [
+    "Native pinned body master and mobile runtime unavailable here",
+    "No measured real pretrained B1/B2 retention/rollback"
+  ],
+  "next_exact_command": "cd v13/code && python -m pytest -q tests/test_body_jepa_gradient_integrity_20261109.py tests/test_body_jepa_ema_atomic_20261109.py tests/test_body_jepa_anchor_cache_20261109.py tests/test_body_jepa_full_device_20261109.py",
+  "next_actions": [
+    "Check CI exact head 6f3522b6c77bdb6dc090a399044bede005e9d21a; fix any red",
+    "Review gradient guard and optimizer state behavior",
+    "Integrate dependent review branches after independent review",
+    "Run actual bounded pinned B1/B2 adapter trial with retention, rollback and native measurements",
+    "Rotate to World-JEPA Runtime and C3 weight learning integration"
+  ],
+  "evidence": "BodyJepaTrainer.fit now checks finite trainable gradients before opt.step, optional grad_clip_norm preflight and real torch gradient unit tests. No full native execution."
+}
