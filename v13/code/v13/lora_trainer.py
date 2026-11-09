@@ -40,6 +40,29 @@ def answer_hit(text,keys):
     t=' '.join(str(text).lower().split())
     return any(' '.join(str(k).lower().split()) in t for k in keys)
 
+def _valid_lora_resume(st, dataset_hash, max_steps):
+    """Validate metadata before applying an existing optimizer/model checkpoint."""
+    if not isinstance(st,dict) or st.get('dataset_hash')!=dataset_hash:
+        return False
+    step=st.get('step')
+    hist=st.get('hist')
+    if type(step) is not int or not 0<=step<=max_steps:
+        return False
+    if not isinstance(hist,list) or len(hist)!=step:
+        return False
+    if not isinstance(st.get('lora'),dict) or not st['lora']:
+        return False
+    if not isinstance(st.get('opt'),dict):
+        return False
+    for i,row in enumerate(hist,1):
+        if not isinstance(row,dict) or row.get('step')!=i:
+            return False
+        if not all(isinstance(row.get(k),(int,float)) and not isinstance(row.get(k),bool)
+                   and __import__('math').isfinite(row[k]) for k in ('ce','anchor_kl')):
+            return False
+    return True
+
+
 class LoraTrainer:
     method='lora-torch-cpu';self_teaches=True  # resolves SDFT items (target None + teacher_prompt) on the base model before training
     def __init__(self,master_dir,work_dir,master_sha256=None,anchors=(),probes=(),cfg=None,evaluator=None,arch=None,clock=time.time):
@@ -167,9 +190,15 @@ class LoraTrainer:
         jepa_before=jepa_cos()
         ck=out/'ckpt.pt';step=0;hist=[];resumed=False
         if ck.is_file():
-            st=torch.load(ck,weights_only=False)
+            # Checkpoints are mutable local files: never execute pickle payloads on resume.
+            # A malformed or foreign checkpoint must not partially mutate model/optimizer.
+            st=torch.load(ck,map_location='cpu',weights_only=True)
             if st.get('dataset_hash')==dh:
-                model.load_state_dict(st['lora'],strict=False);opt.load_state_dict(st['opt']);step=st['step'];hist=st['hist'];resumed=True
+                if not _valid_lora_resume(st,dh,int(cfg['max_steps'])):
+                    raise Unavailable('Invalid LoRA training checkpoint')
+                model.load_state_dict(st['lora'],strict=False)
+                opt.load_state_dict(st['opt'])
+                step=st['step'];hist=st['hist'];resumed=True
         def save_ckpt():
             tmp=ck.with_suffix('.tmp');lora={k:v for k,v in model.state_dict().items() if 'lora_' in k}
             torch.save({'dataset_hash':dh,'lora':lora,'opt':opt.state_dict(),'step':step,'hist':hist},tmp);os.replace(tmp,ck)
