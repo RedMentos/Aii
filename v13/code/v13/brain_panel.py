@@ -6,36 +6,36 @@ capability or integrated model-weight learning. Keep IDs stable for Termux UI.
 from __future__ import annotations
 
 ORGANS = (
-    ("sinne", ("input", "wahrnehmung", "perception", "a"), "Sinne / Wahrnehmung",
-     "A0–A5", "Eingaben und Quellen in beobachtbare Eindruecke umwandeln.",
-     "A0–A5; vision/audio remain gated"),
-    ("detail", ("b1", "links", "detailhirn"), "Gehirnhaelfte Detail",
-     "B1_DETAIL", "Kurze, genaue Details und Quellenausschnitte untersuchen.",
-     "Dense body now; native weight learning not proven"),
-    ("ueberblick", ("b2", "rechts", "gist", "overview"), "Gehirnhaelfte Ueberblick",
-     "B2_GIST", "Grosse Zusammenhaenge und laengeren Kontext betrachten.",
-     "Dense body now; native weight learning not proven"),
+    ("sinne", ("input", "wahrnehmung", "perception", "a"), "Sinne und Wahrnehmung",
+     "A0–A5", "Eingaben und Quellen aufnehmen und für die anderen Bereiche vorbereiten.",
+     "A0–A5; Bild und Ton sind noch nicht als echte Sensorik freigegeben"),
+    ("detail", ("b1", "links", "detailhirn"), "Gehirnhälfte Detail",
+     "B1_DETAIL", "Kurze Texte genau untersuchen und wichtige Einzelheiten erkennen.",
+     "Modell vorhanden; echtes Lernen seiner großen Gewichte noch nicht nachgewiesen"),
+    ("ueberblick", ("b2", "rechts", "gist", "overview"), "Gehirnhälfte Überblick",
+     "B2_GIST", "Längere Zusammenhänge verstehen und das große Bild behalten.",
+     "Modell vorhanden; echtes Lernen seiner großen Gewichte noch nicht nachgewiesen"),
     ("leitstelle", ("jef", "c2", "steuerung", "executive"), "Leitstelle",
-     "JEF / C2_CONTROL", "Aufmerksamkeit, Reihenfolge und Aktionen koordinieren.",
-     "Control is not consciousness; learned decision utility is gated"),
+     "JEF / C2_CONTROL", "Entscheiden, welcher Bereich wann arbeitet und was als Nächstes passiert.",
+     "Koordination ist nicht gleich Bewusstsein; selbst erlernte Entscheidungen sind begrenzt"),
     ("sprache", ("c3", "language"), "Sprachzentrum",
-     "C3_LANGUAGE", "Die finale Sprachausgabe und Eingabetextverarbeitung.",
-     "LoRA training code exists; real pinned-weight learning needs proof"),
+     "C3_LANGUAGE", "Gedanken und Ergebnisse in Sprache umsetzen.",
+     "LoRA-Trainingscode vorhanden; echter Lernversuch mit den festgelegten Modellen fehlt"),
     ("gedaechtnis", ("memory", "f1", "f3", "context"), "Gedaechtnis",
-     "F1/F3 / Context OS", "Erfahrungen, Quellen und Abruf ueber Neustarts verbinden.",
-     "Archive and source-bound integration remain under review"),
+     "F1/F3 / Context OS", "Erinnerungen, Quellen und frühere Erfahrungen über Neustarts speichern und abrufen.",
+     "Archiv und quellgebundene Speicherung werden noch zusammengeführt"),
     ("weltmodell", ("jepa", "world", "prediction"), "Weltmodell",
-     "World-JEPA / T8", "Vorhersagen aus beobachteten Uebergaengen lernen.",
-     "Experimental local updates; no pretrained GGUF promotion"),
+     "World-JEPA / T8", "Aus beobachteten Veränderungen vorhersagen, was als Nächstes passiert.",
+     "Experimentelle lokale Gewichtsupdates; die großen GGUF-Modelle werden damit nicht verändert"),
     ("verbindung", ("b3", "callosum", "bridge"), "Verbindung",
-     "B3 Callosum", "Informationen zwischen den Gehirnhaelften vermitteln.",
-     "Latent receiver injection and promotion remain OFF"),
+     "B3 Callosum", "Informationen zwischen den zwei Gehirnhälften austauschen.",
+     "Direkte Eingriffe in interne Modellzustände bleiben gesperrt"),
     ("lernen", ("training", "plasticity", "learning"), "Lernwerkstatt",
-     "Body-JEPA / C3-LoRA / Replay", "Gewichte aktualisieren und Vergessen messen.",
-     "Different learners are not yet one proven native training system"),
+     "Body-JEPA / C3-LoRA / Replay", "Lernen üben, ältere Erfahrungen wiederholen und Vergessen messen.",
+     "Die Lernpfade sind noch kein vollständig nachgewiesenes gemeinsames Training"),
     ("pruefung", ("safety", "checker", "c6", "proof"), "Pruefung",
-     "C5/C6 / Gates", "Ausgaben, Berechtigungen, Fehler und Belege kontrollieren.",
-     "Checks are fallible; a model self-check is no guarantee"),
+     "C5/C6 / Gates", "Antworten, Berechtigungen und Testergebnisse gegenprüfen.",
+     "Auch Selbsttests können Fehler übersehen"),
 )
 
 def _entry(record):
@@ -48,7 +48,7 @@ def overview(r):
     return {"kind":"READ_ONLY_NAVIGATION", "title":"V13 Gehirnkarte",
             "learning_mode":getattr(r, "cfg", {}).get("learning_mode", "UNKNOWN"),
             "organs":[_entry(x) for x in ORGANS],
-            "note":"Gehirnnamen sind Wegweiser, keine biologischen oder AGI-Nachweise.",
+            "note":"Die Gehirnnamen sind zur Orientierung da, nicht als Beweis für Bewusstsein oder AGI.",
             "detail":"Nutze :brain explain <name>; :brain status fuer Prozessstatus."}
 
 def explain(name):
@@ -66,7 +66,7 @@ def status(r):
             "t8_learner_instantiated":hasattr(r, "_online_world"),
             "world_jepa_instantiated":hasattr(r, "_world_jepa_online"),
             "native_model_training_proven":False,
-            "meaning":"Instanziiert bedeutet geladen, NICHT nachgewiesen gelernt.",
+            "meaning":"Geladen heißt nicht, dass ein Modell nachweislich etwas gelernt hat.",
             "checks":":doctor und :gates summary; Lernmessung auf echten Gewichten separat."}
 
 def operator_command(r,args):
