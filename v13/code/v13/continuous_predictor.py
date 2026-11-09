@@ -103,7 +103,8 @@ class OnlinePredictor:
         if processed_ids is not None:
             if (not isinstance(processed_ids,list) or len(processed_ids)>2048
                     or any(type(i) is not str or not i for i in processed_ids)
-                    or len(set(processed_ids))!=len(processed_ids)):
+                    or len(set(processed_ids))!=len(processed_ids)
+                    or len(processed_ids)>self.seen):
                 raise ValueError('Invalid committed action cursor')
         self.path.parent.mkdir(parents=True,exist_ok=True)
         temp=self.path.with_name(self.path.name+'.tmp.npz')
@@ -144,12 +145,18 @@ class OnlinePredictor:
         if (n>self.cap or len(loaded['act'])!=n or len(loaded['y'])!=n
             or any(v.shape!=tuple(n if d is None else d for d in shapes[k]) for k,v in loaded.items())
             or any(not np.isfinite(v).all() for v in loaded.values())
+            or loaded['act'].dtype.kind not in 'iu'
+            or loaded['counters'].dtype.kind not in 'iu'
+            or any(loaded[k].dtype.kind != 'f' for k in ('W','U','bias','x','y'))
             or np.any(loaded['act']<0) or np.any(loaded['act']>=self.a)
-            or not np.all(loaded['counters']>=0)):
+            or not np.all(loaded['counters']>=0)
+            or loaded['counters'][0] < n
+            or loaded['counters'][1] < loaded['counters'][0]):
             raise ValueError('Invalid predictor checkpoint')
         if processed_ids is not None and (not isinstance(processed_ids,list)
                 or len(processed_ids)>2048 or any(type(i) is not str or not i for i in processed_ids)
-                or len(set(processed_ids))!=len(processed_ids)):
+                or len(set(processed_ids))!=len(processed_ids)
+                or len(processed_ids) > int(loaded['counters'][0])):
             raise ValueError('Invalid checkpoint action cursor')
         for k in ('W','U','bias','x','act','y'):setattr(self,k,loaded[k])
         self.checkpoint_ids=processed_ids
