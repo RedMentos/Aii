@@ -26,6 +26,7 @@ def update(model,committed_records,steps=50):
             'holdout_delta':None if previous is None else current-previous,
             'train_rows':len(split['train_action_ids']),
             'holdout_rows':len(split['holdout_action_ids']),
+            'source_sha256':split['manifest']['all_rows_sha256'],
             'source_verified':False,'active_model_promoted':False}
 
 
