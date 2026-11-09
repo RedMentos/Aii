@@ -58,3 +58,14 @@ def test_failed_checkpoint_rolls_back_in_memory_and_allows_retry(tmp_path,monkey
     assert learner.processed==[]
     assert learner.update()['learned']==1
     assert learner.model.seen==1
+
+
+def test_torn_sidecar_cannot_override_valid_atomic_checkpoint(tmp_path,monkeypatch):
+    rows=[row('durable-action')]
+    monkeypatch.setattr(world_model,'transitions',lambda store,limit=2048:rows)
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    assert OnlineWorld(runtime).update()['learned']==1
+    (tmp_path/'online_world'/'cursor.json').write_text('{truncated')
+    restored=OnlineWorld(runtime)
+    assert restored.processed==['durable-action']
+    assert restored.update()['learned']==0
