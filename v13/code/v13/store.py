@@ -422,12 +422,8 @@ class Store:
         if p.is_file():return p.read_bytes()
         z=p.with_name(h+".z")
         if z.is_file():
-            import zlib
-            d=zlib.decompressobj()
-            try:b=d.decompress(z.read_bytes(),64*1024*1024)
-            except zlib.error as exc:raise ValueError("Archiv-Blob beschädigt") from exc
-            if d.unconsumed_tail or not d.eof:raise ValueError("Archiv-Blob beschädigt oder zu groß")
-            return b
+            from .archive_blob import read_archived_blob
+            return read_archived_blob(z)
         raise FileNotFoundError(str(p))
     def read_source(self,ref):
         r=self.one("SELECT * FROM sources WHERE id=?",(ref.get("source_id"),))

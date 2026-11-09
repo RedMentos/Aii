@@ -1,0 +1,21 @@
+name: V13 archived source read regression
+on:
+  push:
+    branches:
+      - codex/v13-archive-read-bound-20261109-hourly11
+  pull_request:
+    paths:
+      - 'v13/code/v13/archive_blob.py'
+      - 'v13/code/v13/store.py'
+      - 'v13/code/tests/test_archive_blob_bound_20261109.py'
+      - '.github/workflows/v13-archive-read-regression.yml'
+jobs:
+  archive-read:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pytest
+      - run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_archive_blob_bound_20261109.py
