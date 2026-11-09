@@ -284,7 +284,34 @@ class BodyJepaTrainer(LoraTrainer):
     Same fit()/export contract as LoraTrainer, so AG6 can use it as a trainer; one step = one batched pass over all
     items (right padding, causal body). jepa_weight 0 gives the CE+anchor baseline on exactly the same loop."""
     method='lora-torch-cpu-bjepa'
+    # Bounded cache of frozen-reference CPU tensors only. Never retain an entire
+    # accelerator graph/model output across trainer instances or experiment arms.
     _anchor_cache={}
+    _anchor_cache_limit=2
+    _anchor_cache_bytes_limit=32*1024*1024
+    @classmethod
+    def _cache_anchors(cls,key,seqs,logps):
+        """Keep a bounded, detached CPU snapshot; never share mutable references."""
+        cache=cls._anchor_cache
+        cache.pop(key,None)  # refresh insertion order on replacement
+        snapshot=(tuple(tuple(s) for s in seqs),
+                  tuple(p.detach().cpu().clone() for p in logps))
+        size=sum(p.numel()*p.element_size() for p in snapshot[1])
+        # A large vocabulary x long-anchor matrix can exceed phone RAM even
+        # with only two entries. Keep the current batch usable but uncached.
+        if size>cls._anchor_cache_bytes_limit:
+            return [list(s) for s in snapshot[0]],[p.clone() for p in snapshot[1]]
+        cache[key]=snapshot
+        while (len(cache)>cls._anchor_cache_limit or
+               sum(p.numel()*p.element_size() for _,logs in cache.values() for p in logs)>cls._anchor_cache_bytes_limit):
+            cache.pop(next(iter(cache)))
+        return cls._cached_anchors(key)
+
+    @classmethod
+    def _cached_anchors(cls,key):
+        seqs,logps=cls._anchor_cache[key]
+        return [list(s) for s in seqs],[p.clone() for p in logps]
+
     def __init__(self,*a,cfg=None,**k):
         super().__init__(*a,cfg=dict(DEFAULTS,**(cfg or {})),**k)
     @staticmethod
@@ -336,8 +363,9 @@ class BodyJepaTrainer(LoraTrainer):
             for a in anchors:
                 pid,_=self._encode(tok,a);anchor_seqs.append(pid+self._greedy(torch,model,pid,24))
             with torch.no_grad():anchor_logp=[torch.log_softmax(model(torch.tensor([s],dtype=torch.long,device=model_device)).logits[0].float(),-1) for s in anchor_seqs]
-            BodyJepaTrainer._anchor_cache[ck]=(anchor_seqs,anchor_logp)
-        anchor_seqs,anchor_logp=BodyJepaTrainer._anchor_cache[ck]
+            anchor_seqs,anchor_logp=BodyJepaTrainer._cache_anchors(ck,anchor_seqs,anchor_logp)
+        else:
+            anchor_seqs,anchor_logp=BodyJepaTrainer._cached_anchors(ck)
         data=[self._encode(tok,i['prompt'],i['target']) for i in items]
         ctx,tgt=self._views(tok,items);ctx_b=pad(torch,ctx,pad_id,device=model_device);tgt_b=pad(torch,tgt,pad_id,device=model_device)
         with torch.no_grad():
