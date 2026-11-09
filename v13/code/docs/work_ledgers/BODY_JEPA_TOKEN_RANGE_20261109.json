@@ -1,0 +1,37 @@
+{
+  "schema": "v13.work_ledger.v1",
+  "date": "2026-11-09",
+  "owner": "GPT isolated B1/B2 token-boundary review",
+  "package": "BODY-JEPA-INT64-TOKEN-RANGE",
+  "branch": "codex/v13-body-token-range-20261109-hour12",
+  "base_sha": "42a105360d7e86f91b2823b5c4843ff825cfe095",
+  "review_pr": 1646,
+  "dependencies": [
+    1641,
+    1639
+  ],
+  "touched_files": [
+    "v13/code/v13/body_jepa.py",
+    "v13/code/tests/test_body_token_range_20261109.py",
+    ".github/workflows/v13-body-numeric-preflight.yml"
+  ],
+  "status": "review_only_remote_saved_ci_pending",
+  "evidence": {
+    "head_sha": "4ea1e999a2c4c687337ffe1bf16463a9ed4957fb",
+    "native": "NOT RUN",
+    "redmi": "NOT RUN"
+  },
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "Body-JEPA not promoted",
+    "No native pinned B1/B2 learning evidence"
+  ],
+  "next_exact_command": "cd v13/code && python -m pytest -q tests/test_body_jepa_numeric_preflight_20261109.py tests/test_body_token_range_20261109.py tests/test_body_jepa_gradient_integrity_20261109.py tests/test_body_jepa_ema_update_integrity_20261109.py",
+  "next_actions": [
+    "Verify exact-head CI and fix any failure",
+    "Review integer range against real Torch and tokenizer vocabulary",
+    "Reconcile with Body-JEPA adapter learning/retention chain",
+    "Run pinned-model retention and rollback when available"
+  ]
+}
