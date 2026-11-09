@@ -96,8 +96,19 @@ class Runtime:
                 self._world_jepa_online=candidate
             else:
                 result=update_from_store(model,self.store,steps=steps,limit=limit)
+            self._world_jepa_source_sha=result['source_sha256']
             return dict(result,active_model_promoted=False,
                         persisted=False,status='EXPERIMENTAL_JEPA_NO_RUNTIME_AUTHORITY')
+    def world_jepa_save(self):
+        """Explicit private checkpoint; no model deployment."""
+        from .world_jepa_runtime_checkpoint import save
+        with self.lock:return save(self)
+
+    def world_jepa_restore(self):
+        """Explicit safe source-bound private checkpoint restore."""
+        from .world_jepa_runtime_checkpoint import restore
+        with self.lock:return restore(self)
+
     def notice(self,text):self.notify(safe_text(text))
     def resources(self):return snapshot(self.home,self.pool.pids()+self.needle.pids()+self.memory.semantic_keys.encoder.pids())
     def revisions(self):return {role:self.models.revision(role) for role in ROLES}
