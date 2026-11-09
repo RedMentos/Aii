@@ -172,7 +172,15 @@ class OnlinePredictor:
                 or len(set(processed_ids))!=len(processed_ids)
                 or len(processed_ids) > int(loaded['counters'][0])):
             raise ValueError('Invalid checkpoint action cursor')
+        # Validate the persisted RNG using a disposable generator BEFORE any
+        # live tensors/counters are replaced. A malformed RNG state previously
+        # left the instance partially restored even though restore() raised.
+        try:
+            candidate_rng=np.random.default_rng()
+            candidate_rng.bit_generator.state=rng_state
+        except (TypeError,ValueError,KeyError,OverflowError) as exc:
+            raise ValueError('Invalid predictor RNG checkpoint') from exc
         for k in ('W','U','bias','x','act','y'):setattr(self,k,loaded[k])
         self.checkpoint_ids=processed_ids
         self.seen,self.updates=map(int,loaded['counters'])
-        self.rng.bit_generator.state=rng_state
+        self.rng=candidate_rng
