@@ -60,10 +60,16 @@ class OnlineWorld:
         retention_before=self.model.error(replay) if replay else None
         for row in new:
             x,a,y=self.encode(row)
-            self.model.observe(x,a,y)
-            self.processed.append(row['action_id'])
-            self.processed=self.processed[-world_model.MAX_ROWS:]
-            self.model.checkpoint(processed_ids=self.processed)
+            try:
+                self.model.observe(x,a,y)
+                self.processed.append(row['action_id'])
+                self.processed=self.processed[-world_model.MAX_ROWS:]
+                self.model.checkpoint(processed_ids=self.processed)
+            except Exception:
+                # A failed observe/save must not leave an in-memory learner
+                # ahead of its durable action cursor on the next operator call.
+                self.__init__(self.runtime,lr=self.model.lr,replay=self.model.cap)
+                raise
             temp=self.cursor.with_suffix('.tmp')
             temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed}))
             os.replace(temp,self.cursor)
