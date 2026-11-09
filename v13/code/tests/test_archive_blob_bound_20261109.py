@@ -63,3 +63,36 @@ def test_store_blob_bytes_rejects_corrupt_archive(tmp_path):
     store.home = tmp_path
     with pytest.raises(ValueError):
         store.blob_bytes("a" * 64)
+
+
+def test_read_source_roundtrip_from_archived_blob_with_verified_provenance(tmp_path):
+    import hashlib
+    from v13.store import Store
+
+    raw = "V13 archived ä source text".encode("utf-8")
+    sha = hashlib.sha256(raw).hexdigest()
+    blobs = tmp_path / "data" / "blobs"
+    blobs.mkdir(parents=True)
+    (blobs / (sha + ".z")).write_bytes(zlib.compress(raw))
+    store = Store.__new__(Store)
+    store.home = tmp_path
+    store.one = lambda query, args: {"hash": sha, "deleted": 0}
+    ref = {"source_id": "src_test", "sha256": sha, "char_start": 4, "char_end": 12}
+    assert store.read_source(ref) == "archived"
+
+
+def test_read_source_rejects_archive_with_wrong_content_hash(tmp_path):
+    import hashlib
+    from v13.store import Store
+
+    original = b"trusted original"
+    sha = hashlib.sha256(original).hexdigest()
+    blobs = tmp_path / "data" / "blobs"
+    blobs.mkdir(parents=True)
+    (blobs / (sha + ".z")).write_bytes(zlib.compress(b"tampered archive"))
+    store = Store.__new__(Store)
+    store.home = tmp_path
+    store.one = lambda query, args: {"hash": sha, "deleted": 0}
+    ref = {"source_id": "src_test", "sha256": sha, "char_start": 0, "char_end": 7}
+    with pytest.raises(ValueError, match="Source-Hash"):
+        store.read_source(ref)
