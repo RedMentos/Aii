@@ -63,6 +63,24 @@ def _valid_lora_resume(st, dataset_hash, max_steps):
     return True
 
 
+def _resume_shuffle_rng(torch, seed, step, state, data_size, anchor_size, anchor_weight):
+    """Restore the exact next shuffle, including checkpoints made before RNG persistence.
+
+    Old training draws one data permutation and, when anchoring is enabled, one
+    anchor permutation per optimizer step. Replaying those draws uses no model
+    inference and preserves the historical continuation sequence.
+    """
+    g=torch.Generator().manual_seed(int(seed))
+    if state is not None:
+        g.set_state(state)
+    else:
+        for _ in range(step):
+            torch.randperm(data_size,generator=g)
+            if anchor_size and anchor_weight>0:
+                torch.randperm(anchor_size,generator=g)
+    return g
+
+
 class LoraTrainer:
     method='lora-torch-cpu';self_teaches=True  # resolves SDFT items (target None + teacher_prompt) on the base model before training
     def __init__(self,master_dir,work_dir,master_sha256=None,anchors=(),probes=(),cfg=None,evaluator=None,arch=None,clock=time.time):
@@ -188,7 +206,7 @@ class LoraTrainer:
                     vals.append(float(torch.nn.functional.cosine_similarity(h,tg,dim=0)))
             return sum(vals)/len(vals)
         jepa_before=jepa_cos()
-        ck=out/'ckpt.pt';step=0;hist=[];resumed=False
+        ck=out/'ckpt.pt';step=0;hist=[];resumed=False;resume_rng=None
         if ck.is_file():
             # Checkpoints are mutable local files: never execute pickle payloads on resume.
             # A malformed or foreign checkpoint must not partially mutate model/optimizer.
@@ -200,11 +218,11 @@ class LoraTrainer:
                     raise Unavailable('Invalid LoRA training checkpoint')
                 model.load_state_dict(st['lora'],strict=False)
                 opt.load_state_dict(st['opt'])
-                step=st['step'];hist=st['hist'];resumed=True
+                step=st['step'];hist=st['hist'];resume_rng=st.get('shuffle_rng_state');resumed=True
         def save_ckpt():
             tmp=ck.with_suffix('.tmp');lora={k:v for k,v in model.state_dict().items() if 'lora_' in k}
-            torch.save({'dataset_hash':dh,'lora':lora,'opt':opt.state_dict(),'step':step,'hist':hist},tmp);os.replace(tmp,ck)
-        model.train();g=torch.Generator().manual_seed(int(cfg['seed'])+step)
+            torch.save({'dataset_hash':dh,'lora':lora,'opt':opt.state_dict(),'step':step,'hist':hist,'shuffle_rng_state':g.get_state()},tmp);os.replace(tmp,ck)
+        model.train();g=_resume_shuffle_rng(torch,cfg['seed'],step,resume_rng,len(data),len(anchor_seqs),float(cfg['anchor_weight']))
         while step<int(cfg['max_steps']):
             _check(cancel,deadline)
             order=torch.randperm(len(data),generator=g).tolist();ce_sum=0.;kl_sum=0.;jl_sum=0.
