@@ -1,3 +1,7 @@
+## 2026-11-09 — source-bound local-error preview (review only)
+
+The N10/route candidate rejects stale event deltas and a reproduced F4 placeholder-zero false error. It pairs an explicit `learn` route correction with a typed same-event outcome and previews the existing worker's corrected-target gradient weighted by the nonnegative local-error magnitude; **42 tests pass**, no optimizer update. Real native inputs, revocation-safe training, a correction-only/shuffled-error ablation and retention remain open. `code/docs/LOCAL_ERROR_ROUTE_SHADOW_20261109.md` complements research #1602 and does not promote any gate.
+
 ## 2026-11-09 — semantic feedback and world-action bridge (review only)
 
 A hash-bound read-only candidate binds user fact feedback and explicit quality ratings to the same source-checked T8 action used by the separate online-world candidate (#1631). In a disposable combined copy 41 tests pass, including the actual Runtime/SQLite same-action path with synthetic C3. `record` vs `learn` stays attached; neither user fact feedback nor an absent correction is automatically treated as factual truth. No semantic gradient, GGUF update, real-model gain, Redmi proof or gate promotion yet. See `code/docs/WORLD_SEMANTIC_FEEDBACK_BRIDGE_20261109.md`.
