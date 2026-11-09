@@ -15,11 +15,12 @@
     "v13/code/tests/test_body_token_range_20261109.py",
     ".github/workflows/v13-body-numeric-preflight.yml"
   ],
-  "status": "review_only_remote_saved_ci_pending",
+  "status": "review_only_exact_head_ci_green",
   "evidence": {
     "head_sha": "4ea1e999a2c4c687337ffe1bf16463a9ed4957fb",
     "native": "NOT RUN",
-    "redmi": "NOT RUN"
+    "redmi": "NOT RUN",
+    "ci": "https://github.com/RedMentos/Aii/actions/runs/42613638909 SUCCESS; https://github.com/RedMentos/Aii/actions/runs/42613638931 SUCCESS"
   },
   "negative_gates": [
     "STEP2 UTILITY_FAIL",
