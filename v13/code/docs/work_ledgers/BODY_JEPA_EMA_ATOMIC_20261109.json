@@ -19,8 +19,8 @@
     ".github/workflows/v13-body-anchor-cache.yml",
     ".github/workflows/v13-body-full-device.yml"
   ],
-  "status": "draft_exact_head_ci_pending",
-  "tests": "Focused GitHub Actions workflow triggered; no exact-head green result yet. Parent PR 1636 CI 42584321426 SUCCESS.",
+  "status": "draft_exact_head_focused_ci_green_review_pending",
+  "tests": "GitHub Actions 42591421697 body-device job SUCCESS on code commit 325eb68b35abc86e6e560f21abc83aa57a39c2c0; runs new EMA atomicity, anchor cache and existing body JEPA retention/device regressions. No native pinned B1/B2 model proof.",
   "negative_gates": [
     "STEP2 UTILITY_FAIL",
     "B3 NO_PROMOTION",
@@ -29,7 +29,7 @@
   ],
   "next_exact_command": "cd v13/code && python -m pytest -q tests/test_body_jepa_ema_atomic_20261109.py tests/test_body_jepa_anchor_cache_20261109.py tests/test_body_jepa_full_device_20261109.py tests/test_body_jepa_latent_device_20261109.py",
   "next_actions": [
-    "Check exact-head PR workflow for commit 325eb68b35abc86e6e560f21abc83aa57a39c2c0; fix any failure",
+    "Review exact-head focused CI 42591421697 (green), then independently review EMA failure injection and concurrency limits",
     "Independent review of EMA exception safety and adapter tensor invariants",
     "After CI/review integrate dependencies, then pursue pinned B1/B2 real adapter updates and retention",
     "Rotate to JEPA runtime integration and C3 training workstream"
@@ -38,5 +38,5 @@
     "Direct clone DNS failure in earlier run",
     "No native Redmi/pinned body training proof"
   ],
-  "evidence": "Exact-head candidate 325eb68b35abc86e6e560f21abc83aa57a39c2c0 includes existing body-JEPA PR workflow tests; previous parent #1636 CI 42584321426 GREEN; exact-head result pending."
+  "evidence": "Exact-head candidate 325eb68b35abc86e6e560f21abc83aa57a39c2c0 includes existing body-JEPA PR workflow tests; previous parent #1636 CI 42584321426 GREEN; exact-head result pending. Focused CI success: https://github.com/RedMentos/Aii/actions/runs/42591421697"
 }
