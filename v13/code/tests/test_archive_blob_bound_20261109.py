@@ -37,3 +37,29 @@ def test_archive_reader_accepts_exact_limit(tmp_path):
     path = tmp_path / "exact.z"
     path.write_bytes(zlib.compress(b"x" * 1024))
     assert read_archived_blob(path, limit=1024) == b"x" * 1024
+
+
+def test_store_blob_bytes_reads_archived_source_and_preserves_hash(tmp_path):
+    import hashlib
+    from v13.store import Store
+
+    raw = b"source-linked memory"
+    sha = hashlib.sha256(raw).hexdigest()
+    blobs = tmp_path / "data" / "blobs"
+    blobs.mkdir(parents=True)
+    (blobs / (sha + ".z")).write_bytes(zlib.compress(raw))
+    store = Store.__new__(Store)
+    store.home = tmp_path
+    assert store.blob_bytes(sha) == raw
+
+
+def test_store_blob_bytes_rejects_corrupt_archive(tmp_path):
+    from v13.store import Store
+
+    blobs = tmp_path / "data" / "blobs"
+    blobs.mkdir(parents=True)
+    (blobs / ("a" * 64 + ".z")).write_bytes(zlib.compress(b"content") + b"garbage")
+    store = Store.__new__(Store)
+    store.home = tmp_path
+    with pytest.raises(ValueError):
+        store.blob_bytes("a" * 64)
