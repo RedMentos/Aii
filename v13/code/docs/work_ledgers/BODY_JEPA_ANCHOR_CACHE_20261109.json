@@ -1,0 +1,38 @@
+{
+  "schema": "v13.work_ledger.v1",
+  "date": "2026-11-09",
+  "owner": "GPT isolated B1/B2 frozen-anchor cache review",
+  "package": "BODY-JEPA-ANCHOR-CACHE-CPU-BOUNDED",
+  "branch": "codex/v13-body-jepa-anchor-cache-bounds-20261109",
+  "base": "codex/v13-body-jepa-full-device-20261109",
+  "dependency_prs": [
+    1628,
+    1634,
+    1635
+  ],
+  "review_pr": 1636,
+  "touched_files": [
+    "v13/code/v13/body_jepa.py",
+    "v13/code/tests/test_body_jepa_anchor_cache_20261109.py",
+    ".github/workflows/v13-body-anchor-cache.yml"
+  ],
+  "status": "review_only_ci_unverified",
+  "tests": "GitHub workflow triggered; no exact-head success confirmed, no native model training",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "Body-JEPA unpromoted",
+    "No native Redmi evidence"
+  ],
+  "blockers": [
+    "direct clone DNS failure",
+    "no real B1/B2 native retention or performance proof"
+  ],
+  "next_exact_command": "cd v13/code && python -m pytest -q tests/test_body_jepa_anchor_cache_20261109.py tests/test_body_jepa_full_device_20261109.py tests/test_body_jepa_latent_device_20261109.py",
+  "next_actions": [
+    "Check exact-head CI for PR 1636 and fix any failure",
+    "Review CPU cache memory footprint for real vocab/anchor count and mobile cap",
+    "Integrate after independent review with body-JEPA device and retention branches",
+    "Move to actual bounded B1/B2 adapter gradient and retention trials"
+  ]
+}
