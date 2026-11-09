@@ -1,3 +1,9 @@
+# 2026-11-09 — semantic feedback to world action, composed review only
+
+`world_semantic_evidence_candidate.py` joins a current committed T8 action to explicit quality rating and source-checked user fact feedback while preserving `record`/`learn`; no correctness, training or decision authority is inferred. `world_semantic_online_composition_candidate.py` source-checks and composes #1629 with #1631 in a temporary copy. **41 nested tests pass**, including same-action real Runtime/SQLite with synthetic C3; 54 related regressions/7 subtests pass. This is still read-only: semantic observations do not train the numeric world predictor. `WORLD_SEMANTIC_FEEDBACK_BRIDGE_20261109.md` has limits and exact commands. Original gates unchanged.
+
+---
+
 # 2026-11-09 — AG4-Faktkorrektur, Neutralität und Quellen-Guard
 
 Auf #1616 (`cc9336195357bd0bb5aabc808229487299c09532`) baut ein quellgebundener Testkandidat, der echte F5-Korrekturen, aktuelle ausdrückliche Noten und Skillinstanz in einer SQLite-Transaktion abgleicht. Faktkorrektur schlägt widersprüchliche positive Note; eine neue neutrale Note entfernt frühere Bewertung; Fakt ohne ausdrückliche Note bleibt nur vorgemerkt. Beide Skill-Schnellpfade fallen bei offenen/ungültigen Belegen auf den normalen Weg zurück, auch nach fehlgeschlagenem Hook. 149 gezielte/angrenzende Tests und separat 105 Tests auf der materialisierten Kopie bestehen; der ungekürzte Kandidatenlauf mit alten ungebundenen Fixtures bleibt RED (116 Tests, 8 FAIL, 3 ERROR), außerdem bleibt der frühere Paritätstest-FAIL erhalten. Kein nativer/Redmi-/Gewichtsnachweis. Details und die gelesenen parallelen Zweige #1617–#1628: `AG4_FACT_PRECEDENCE_AND_SOURCE_GUARD_20261109.md`.

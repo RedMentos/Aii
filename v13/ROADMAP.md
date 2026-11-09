@@ -1,3 +1,7 @@
+## 2026-11-09 — semantic feedback and world-action bridge (review only)
+
+A hash-bound read-only candidate binds user fact feedback and explicit quality ratings to the same source-checked T8 action used by the separate online-world candidate (#1631). In a disposable combined copy 41 tests pass, including the actual Runtime/SQLite same-action path with synthetic C3. `record` vs `learn` stays attached; neither user fact feedback nor an absent correction is automatically treated as factual truth. No semantic gradient, GGUF update, real-model gain, Redmi proof or gate promotion yet. See `code/docs/WORLD_SEMANTIC_FEEDBACK_BRIDGE_20261109.md`.
+
 ## 2026-11-09 — AG4-Korrekturvorrang und Quellenprüfung
 
 Der [AG4-Feedbackkandidat](code/docs/AG4_FACT_PRECEDENCE_AND_SOURCE_GUARD_20261109.md) prüft in einer isolierten Kopie Turn- und Faktquellen vor einer atomaren Änderung der Fertigkeitszähler. Widersprüchliche, neutrale oder noch nicht verarbeitete Rückmeldungen werden getrennt behandelt; bei ungültigen Belegen fällt der Skill-Schnellpfad vorläufig zurück. Ein voller Kandidatentestlauf ist wegen elf alter ungebundener Fixtures noch RED; Migration, atomare Prüfung am Ausgabepunkt und Gerätenachweis bleiben offen.
