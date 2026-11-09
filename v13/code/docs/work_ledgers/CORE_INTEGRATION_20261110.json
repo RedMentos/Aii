@@ -27,14 +27,14 @@
   "evidence": {
     "combined_ci": "https://github.com/RedMentos/Aii/actions/runs/42717623545",
     "combined_ci_status": "SUCCESS at b077fe0 before C3 integration",
-    "latest_ci": "https://github.com/RedMentos/Aii/actions/runs/42718040014 in progress at d4f55150",
+    "latest_ci": "SUCCESS https://github.com/RedMentos/Aii/actions/runs/42718194280 at 5166359102a41d62d42e8adad2197c4ed80f03bf",
     "native_redmi": false,
     "real_c3_lora_training": false,
     "real_world_jepa_runtime_gradient_test": "PASS in combined CI at 2b384ec356e286ebe09428fb8ea127e9c1252c61, https://github.com/RedMentos/Aii/actions/runs/42717776576",
     "ag6_ci": "PASS https://github.com/RedMentos/Aii/actions/runs/42717776587",
     "c3_resume_ci": "PASS https://github.com/RedMentos/Aii/actions/runs/42717777003",
-    "operator_cli": ":growth jepa [STEPS] [LIMIT], opt-in bounded; latest test pending",
-    "jepa_private_checkpoint": "Source-hash-bound private NPZ save/restore with SHA verification and continued-gradient/tamper regression committed; latest combined CI pending"
+    "operator_cli": ":growth jepa [STEPS] [LIMIT], :growth jepa save, :growth jepa restore; combined CI PASS",
+    "jepa_private_checkpoint": "PASS: source-bound private NPZ save/restore, real resumed gradient updates and tamper rejection"
   },
   "blockers": [
     "Runtime frozen by SourceHandoff cohort; no production merge authorized",
@@ -46,7 +46,7 @@
   "next_exact_commands": [
     "PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_runtime_jepa_integration_20261110.py v13/code/tests/test_online_world_20261108.py v13/code/tests/test_world_jepa_online_experiment_20261108.py v13/code/tests/test_ag6_training_readiness_20261108.py v13/code/tests/test_lora_resume_safety.py",
     "python v13/code/scripts/public_repo_privacy_scan.py --base 5e964146579deb22c5ba89a2a03a52a9e4d8aab8 --head codex/v13-integrated-online-jepa-20261109",
-    "Run combined CI checkpoint/restart/tamper tests; inspect result; fix if red; verify checkpoint no model promotion",
+    "Add bounded JEPA checkpoint retention/rollback and fresh source-bound holdout evaluation; test native Redmi resource impact",
     "Review/resolve PR #1652 replay negative cases and reconcile Body-JEPA candidate branches without overwriting active owners"
   ]
 }
