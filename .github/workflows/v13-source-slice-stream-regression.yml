@@ -1,0 +1,16 @@
+name: V13 streamed SourceRef regression
+on:
+  push:
+    branches:
+      - codex/v13-source-slice-stream-20261109-hourly11
+  workflow_dispatch:
+jobs:
+  source-slice:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pytest
+      - run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_source_slice_stream_20261109.py v13/code/tests/test_archive_blob_bound_20261109.py
