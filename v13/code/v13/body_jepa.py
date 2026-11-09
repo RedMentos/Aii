@@ -147,12 +147,22 @@ def ema_target_latent(torch,model,tgt,ema,layer=-1,eval_target=False):
         for module,flag in zip(modules,flags):module.training=flag
 
 
-def pad(torch,seqs,pad_id=0):
+def validated_weights(items):
+    """Fail before loading the large body when eligibility is invalid."""
+    try:
+        weights=[float(item.get('weight',1.)) for item in items]
+    except (TypeError,ValueError,OverflowError):
+        raise ValueError('invalid eligibility weights') from None
+    if not weights or not all(math.isfinite(v) and v>=0 for v in weights) or sum(weights)<=0:
+        raise ValueError('eligibility weights must be finite, nonnegative and positive in total')
+    return weights
+
+def pad(torch,seqs,pad_id=0,device=None):
     if not seqs or any(len(s)==0 for s in seqs):
         raise ValueError('nonempty token sequences required')
-    n=max(len(s) for s in seqs);ids=torch.full((len(seqs),n),pad_id,dtype=torch.long)
-    for i,s in enumerate(seqs):ids[i,:len(s)]=torch.tensor(s)
-    return ids,torch.tensor([len(s) for s in seqs])
+    n=max(len(s) for s in seqs);ids=torch.full((len(seqs),n),pad_id,dtype=torch.long,device=device)
+    for i,s in enumerate(seqs):ids[i,:len(s)]=torch.tensor(s,dtype=torch.long,device=device)
+    return ids,torch.tensor([len(s) for s in seqs],dtype=torch.long,device=device)
 
 def jepa_loss(torch,model,predictor,ctx,tgt,mode,ema=None,base_targets=None,perm=None,weights=None,layer=-1):
     """1 - cos(predictor(student latent of context view), stop-grad target latent of target view), eligibility-weighted mean.
@@ -206,10 +216,10 @@ def minor_subspace_init(torch,model,r):
                 raise ValueError('subspace singular mass must be finite and positive')
             if in_d<=out_d:
                 low=evecs[:,:r].T.float().contiguous()  # r x in
-                mod.lora_A['default'].weight.copy_(low);mod.lora_A['default'].weight.requires_grad_(False);mod.lora_B['default'].weight.zero_()
+                mod.lora_A['default'].weight.copy_(low.to(device=mod.lora_A['default'].weight.device,dtype=mod.lora_A['default'].weight.dtype));mod.lora_A['default'].weight.requires_grad_(False);mod.lora_B['default'].weight.zero_()
             else:
                 low=evecs[:,:r].float().contiguous()  # out x r
-                mod.lora_B['default'].weight.copy_(low);mod.lora_B['default'].weight.requires_grad_(False);mod.lora_A['default'].weight.zero_()
+                mod.lora_B['default'].weight.copy_(low.to(device=mod.lora_B['default'].weight.device,dtype=mod.lora_B['default'].weight.dtype));mod.lora_B['default'].weight.requires_grad_(False);mod.lora_A['default'].weight.zero_()
             share.append(float(singular[:r].sum()/mass))
         n+=1;frozen+=int(low.numel())
     return {'modules':n,'frozen_side_params':frozen,'mean_low_singular_mass_share':round(sum(share)/max(1,len(share)),6)}
@@ -278,6 +288,16 @@ class BodyJepaTrainer(LoraTrainer):
     def __init__(self,*a,cfg=None,**k):
         super().__init__(*a,cfg=dict(DEFAULTS,**(cfg or {})),**k)
     @staticmethod
+    def _greedy(torch,model,ids,n):
+        """Body-local generation: parent LoraTrainer assumes CPU inputs."""
+        device=next(model.parameters()).device
+        tokens=torch.tensor([ids],dtype=torch.long,device=device)
+        mask=torch.ones_like(tokens)
+        with torch.no_grad():
+            out=model.generate(tokens,attention_mask=mask,max_new_tokens=n,do_sample=False,pad_token_id=0)
+        return out[0][len(ids):].detach().cpu().tolist()
+
+    @staticmethod
     def _locality_for(items,cfg):
         """Select locality KL anchors; legacy is frozen default, BP2b explicitly opt-in."""
         policy=cfg.get('locality_policy','legacy')
@@ -302,9 +322,11 @@ class BodyJepaTrainer(LoraTrainer):
         if type(target_eval) is not bool:raise ValueError('jepa_target_eval must be bool')
         if mode not in MODES:raise ValueError('unknown jepa_target')
         if cfg.get('locality_policy','legacy') not in ('legacy','bp2b'):raise ValueError('unknown locality_policy')
+        wts=validated_weights(items)
         torch,tok,model=self._load()
         from peft import LoraConfig,get_peft_model
         pad_id=tok.pad_token_id if tok.pad_token_id is not None else 0
+        model_device=next(model.parameters()).device
         dh=digest(dumps([[i.get('memory_id'),i['prompt'],i['target']] for i in items]+[self.anchors,{k:v for k,v in cfg.items() if k!='threads'}]))[:24]
         out=self.work/dh;out.mkdir(parents=True,exist_ok=True)
         anchors=list(self.anchors)+self._locality_for(items,cfg)
@@ -313,11 +335,11 @@ class BodyJepaTrainer(LoraTrainer):
             anchor_seqs=[]
             for a in anchors:
                 pid,_=self._encode(tok,a);anchor_seqs.append(pid+self._greedy(torch,model,pid,24))
-            with torch.no_grad():anchor_logp=[torch.log_softmax(model(torch.tensor([s])).logits[0].float(),-1) for s in anchor_seqs]
+            with torch.no_grad():anchor_logp=[torch.log_softmax(model(torch.tensor([s],dtype=torch.long,device=model_device)).logits[0].float(),-1) for s in anchor_seqs]
             BodyJepaTrainer._anchor_cache[ck]=(anchor_seqs,anchor_logp)
         anchor_seqs,anchor_logp=BodyJepaTrainer._anchor_cache[ck]
         data=[self._encode(tok,i['prompt'],i['target']) for i in items]
-        ctx,tgt=self._views(tok,items);ctx_b=pad(torch,ctx,pad_id);tgt_b=pad(torch,tgt,pad_id)
+        ctx,tgt=self._views(tok,items);ctx_b=pad(torch,ctx,pad_id,device=model_device);tgt_b=pad(torch,tgt,pad_id,device=model_device)
         with torch.no_grad():
             base_t=last_token_latent(torch,model,tgt_b,layer).detach()
             base_ctx=last_token_latent(torch,model,ctx_b,layer).detach()
@@ -325,16 +347,15 @@ class BodyJepaTrainer(LoraTrainer):
         model=get_peft_model(model,lc)
         sub=minor_subspace_init(torch,model,int(cfg['rank'])) if str(cfg.get('lora_subspace','none'))=='minor' else None
         params=[p for p in model.parameters() if p.requires_grad];n_train=sum(p.numel() for p in params)
-        dim=int(base_t.shape[-1]);pred=make_predictor(torch,dim)
+        dim=int(base_t.shape[-1]);pred=make_predictor(torch,dim).to(device=model_device)
         ema=EmaAdapter(params,float(cfg['jepa_ema_decay']))
         opt=torch.optim.AdamW(params+list(pred.parameters()),lr=float(cfg['lr']),weight_decay=float(cfg['weight_decay']))
         rng=np.random.default_rng(int(cfg['seed']));perm=derangement(len(items),rng) if len(items)>1 else None
         if mode=='shuffled' and perm is None:raise ValueError('shuffled control needs two items')
-        ids_b,lens=pad(torch,[d[0] for d in data],pad_id)
-        lab_b=torch.full(ids_b.shape,-100,dtype=torch.long)
-        for r,(ids,lab) in enumerate(data):lab_b[r,:len(lab)]=torch.tensor(lab)
-        att=(torch.arange(ids_b.shape[1])[None,:]<lens[:,None]).long()
-        wts=[float(i.get('weight',1.)) for i in items]
+        ids_b,lens=pad(torch,[d[0] for d in data],pad_id,device=model_device)
+        lab_b=torch.full(ids_b.shape,-100,dtype=torch.long,device=model_device)
+        for r,(ids,lab) in enumerate(data):lab_b[r,:len(lab)]=torch.tensor(lab,dtype=torch.long,device=model_device)
+        att=(torch.arange(ids_b.shape[1],device=model_device)[None,:]<lens[:,None]).long()
         hist=[];step=0;g=torch.Generator().manual_seed(int(cfg['seed']))
         # Explicit opt-in only: the existing frozen cohorts and default trainer are unchanged.
         # Source binding includes the full master SHA, configuration, anchors and dataset.
@@ -359,7 +380,7 @@ class BodyJepaTrainer(LoraTrainer):
             lg=o.logits[:,:-1].float();lb=lab_b[:,1:]
             tok_ce=torch.nn.functional.cross_entropy(lg.reshape(-1,lg.shape[-1]),lb.reshape(-1),ignore_index=-100,reduction='none').view(lb.shape)
             per=(tok_ce*(lb!=-100)).sum(1)/(lb!=-100).sum(1).clamp(min=1)
-            w=torch.tensor(wts);ce=(per*w).sum()/w.sum();loss=ce;jl_v=None
+            w=torch.tensor(wts,dtype=per.dtype,device=per.device);ce=(per*w).sum()/w.sum();loss=ce;jl_v=None
             if w_j>0:
                 jl,_=jepa_loss(torch,model,pred,ctx_b,tgt_b,mode,ema=ema,base_targets=base_t if mode=='base' else ema_t_step,perm=perm,weights=wts,layer=layer)
                 loss=loss+w_j*jl;jl_v=float(jl.detach())
@@ -367,7 +388,7 @@ class BodyJepaTrainer(LoraTrainer):
             if anchor_seqs and float(cfg['anchor_weight'])>0:
                 pick=torch.randperm(len(anchor_seqs),generator=g).tolist()[:int(cfg['anchors_per_step'])]
                 for j in pick:
-                    cl=torch.log_softmax(model(torch.tensor([anchor_seqs[j]])).logits[0].float(),-1);bl=anchor_logp[j]
+                    cl=torch.log_softmax(model(torch.tensor([anchor_seqs[j]],dtype=torch.long,device=model_device)).logits[0].float(),-1);bl=anchor_logp[j].to(device=cl.device,dtype=cl.dtype)
                     kl=(bl.exp()*(bl-cl)).sum(-1).mean();(float(cfg['anchor_weight'])*kl/len(pick)).backward();kl_sum+=float(kl.detach())
             opt.step();ema.update();step+=1
             hist.append({'step':step,'ce':round(float(ce.detach()),5),'anchor_kl':round(kl_sum/max(1,len(pick)),6),'jepa':None if jl_v is None else round(jl_v,5),'ema_delta':round(ema.delta(),6)})
@@ -384,8 +405,8 @@ class BodyJepaTrainer(LoraTrainer):
         # Read-only final retention on the original frozen-base anchor distributions.
         # This is a measured candidate metric, never an Age or deployment gate.
         final_anchor_kl = anchor_retention_kl(torch, model, anchor_seqs, anchor_logp)
-        rank={'base_target':effective_rank(base_t.numpy()),'ema_target':effective_rank(ema_t.numpy()),
-              'base_context':effective_rank(base_ctx.numpy()),'student_context':effective_rank(st_ctx.numpy())}
+        rank={'base_target':effective_rank(base_t.detach().cpu().numpy()),'ema_target':effective_rank(ema_t.detach().cpu().numpy()),
+              'base_context':effective_rank(base_ctx.detach().cpu().numpy()),'student_context':effective_rank(st_ctx.detach().cpu().numpy())}
         recall=[]
         for i in items:
             pid,_=self._encode(tok,i['prompt']);txt=tok.decode(self._greedy(torch,model,pid,48),skip_special_tokens=True)
