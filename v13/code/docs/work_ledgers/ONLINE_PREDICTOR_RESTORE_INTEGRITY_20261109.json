@@ -15,12 +15,13 @@
     "v13/code/tests/test_online_checkpoint_validation_20261109.py",
     ".github/workflows/v13-online-world-atomic-cursor.yml"
   ],
-  "status": "review_only_exact_head_ci_green",
+  "status": "review_only_latest_ci_pending",
   "evidence": {
-    "head_sha": "13be9680899543443974d9a4e9d22e093d923981",
+    "head_sha": "4fd40d8f22bda7ff32d6778ffe9bea6a6680a5a4",
     "tests": "GitHub Actions https://github.com/RedMentos/Aii/actions/runs/42613540099 SUCCESS (expanded online regression), https://github.com/RedMentos/Aii/actions/runs/42613540117 SUCCESS (continuous plasticity)",
     "native": "NOT RUN",
-    "redmi": "NOT RUN"
+    "redmi": "NOT RUN",
+    "previous_green": "https://github.com/RedMentos/Aii/actions/runs/42613540099 and https://github.com/RedMentos/Aii/actions/runs/42613540117 on previous head"
   },
   "negative_gates": [
     "STEP2 UTILITY_FAIL",
@@ -35,6 +36,7 @@
   ],
   "next_exact_command": "cd v13/code && python -m pytest -q tests/test_online_world_atomic_cursor_20261109.py tests/test_online_world_20261108.py tests/test_continuous_predictor_20261108.py tests/test_online_checkpoint_validation_20261109.py",
   "next_actions": [
+    "Verify latest checkpoint write-invariant CI after 4fd40d8",
     "Verify PR #1645 exact-head CI, fix failures",
     "Independent review of counter invariants and invalid checkpoint cases",
     "Reconcile with #1631 safety candidate before integration",
