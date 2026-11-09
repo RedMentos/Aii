@@ -1,0 +1,26 @@
+# AG4: widersprüchliche Rückmeldungen und Quellenbindung
+
+Review-Kind von #1616 (`cc9336195357bd0bb5aabc808229487299c09532`). In einer quellhashgebundenen Testkopie werden die AG4-, C5-, Gedächtnis- und Replay-Kandidaten zusammen materialisiert; die Originalquellen und registrierten Kohorten werden nicht ersetzt.
+
+## Reproduzierte Fehler
+
+Ein ausgewählter Skill erhielt nach einer positiven Note einen Erfolg. Eine spätere F5-Faktkorrektur nahm diesen zurück; dieselbe positive Note konnte danach den alten Erfolg erneut herstellen (`[1,1] → [1,0] → [1,1]`). Eine spätere neutrale Note `5` ließ außerdem einen vorherigen positiven oder negativen AG4-Eintrag unverändert bestehen. Beides wurde auf dem vorherigen Kandidaten mit echter Runtime und SQLite reproduziert.
+
+## Kandidat
+
+- Beim normalen und automatischen Skill-Routing wird vor der Antwort eine Bindung an Skillinstanz, Zählerepoche und Skilldefinition in der Turn-Metadatei gesichert. AG4 übernimmt eine ausdrückliche Note oder Faktkorrektur nur nach erneuter Prüfung von FINAL, Event/Session, Antwort, Kontextquellen, COMMIT-ActionSelection und Skillbindung. Die aktuelle Note und aktive F5/F1-Faktquellen werden in derselben SQLite-Transaktion geprüft, in der Skill-Ledger und Turnmarker geändert werden.
+- Eine gültige Faktkorrektur hat für denselben Turn Vorrang vor einer positiven Note. Eine verspätet zugestellte ältere Note mit anderer Richtung wird abgewiesen. Eine neutrale Note entfernt einen vorherigen ausdrücklichen AG4-Eintrag einmalig; eine weiterhin gültige Faktkorrektur wird dadurch nicht aufgehoben. Ein subjektives Urteil oder eine Faktkorrektur beweist keine kausale Schuld der Route; die Zuordnung bleibt ein zu prüfendes Ereignislabel.
+- Eine Faktkorrektur ohne ausdrückliche nichtneutrale Note wird nur vorgemerkt: Sie erhöht weder `uses` noch `successes`, auch wenn das Feedback `--learn` markiert ist. Der Schnellpfad fällt vorerst zurück. Entfernt der Nutzer die Korrektur und gibt danach eine neue ausdrückliche Note, kann der vorgemerkte Zustand aufgelöst werden.
+- Vor beiden vorhandenen Skill-Schnellpfaden prüft ein begrenzter Guard aktuelle Quellen, bestehende Outcome-Belege, noch nicht verarbeitete ausdrückliche Noten und vorhandene F5/F1-Korrekturen. Auch wenn der Feedback-Hook oder dessen Datenbankschreiben ausfällt, führt ein gespeichertes Korrektursignal zum normalen Routing. Ein gesperrter Skill wird nicht herausgefiltert, um dadurch einen anderen widersprüchlichen Skill fälschlich eindeutig zu machen. Nach 128 zu prüfenden Belegen für einen Skill fällt der Kandidat sicher auf den normalen Pfad zurück.
+
+Die Tests decken positive Note → Faktkorrektur → erneute Note, Fakt vor Note, neutral, widerrufene Quellen, geänderte Turnbindung, Restart, parallele Note/Faktkorrektur, gescheiterte/erneute Hooks, Rollback beider Zustände bei SQLite-Abbruch und den bestehenden C5-/Replay-Verbund ab. Eine absichtlich gesetzte Quelle `2 + 2 = 4` und synthetische C3-Ausgabe dienen nur als Softwarefixture.
+
+## Teststatus und offene Arbeit
+
+- Die gezielte/angrenzende Testsuite auf dem Review-Zweig besteht mit **149 Tests**. Eine weitere Suite auf der materialisierten Kandidatenkopie besteht mit **105 Tests**.
+- Der ungekürzte alte AG4-/Skill-/Input-Lauf auf der Kandidatenkopie bleibt **RED: 116 Tests, 8 FAIL und 3 ERROR**. Diese elf alten Tests benutzen direkte `e1`-Aufrufe ohne gespeichertes Ereignis oder synthetische FINAL-Nachrichten ohne die nun erforderliche Quellen-/Skillbindung. Sie sind nicht als PASS gezählt; vor einer Integration müssen ihre Fixtures für den echten gebundenen Pfad angepasst und der vollständige Lauf wiederholt werden. Der separate alte Paritätstest aus #1616, der eine FINAL-basierte Beförderung erwartete, bleibt ebenfalls dokumentiert.
+- Der Guard ist eine **Vorprüfung**, keine atomare erneute Quellenprüfung am endgültigen Ausgabepunkt. Nach Quellenentzug werden frühere AG4-Zähler nicht automatisch rekonstruiert; der Schnellpfad fällt stattdessen zurück. Alte verunreinigte Aggregate oder historische Promotions ohne Einzelbeleg sind nicht bereinigt. Verarbeitung ist nicht crashsicher nachholbar; AG9- und alte C5-Mittelwerte bleiben getrennte offene Arbeiten. Keine native/Redmi-Messung, keine Gewichtsänderung und kein Nachweis besserer Modellantworten.
+
+## Parallele Arbeiten seit #1616
+
+Die aktuellen Übergaben/PRs #1617–#1628 wurden gelesen. #1617 erweitert AG4/AG10 und verändert `agi/skills.py`; #1619 ergänzt einen kleinen gradientenbasierten Online-Weltprädiktor und verändert `runtime.py`; #1620–#1623/#1626–#1627 betreffen inkrementelles World-JEPA samt Replay/Checkpoint und #1618/#1624/#1625/#1628 C3-/Body-JEPA-Readiness bzw. Retention. Diese Zweige sind keine Vorfahren dieses Kandidaten. Die bestehenden Quellhashprüfungen müssen bei einer Integration bewusst neu geprüft werden, nicht umgangen. Für #1619 fällt auf: Der neue Worker ruft den Lernpfad nach jedem Turn unbedingt auf, obwohl seine Methode von ausschließlichem Operatoraufruf spricht; Default-off-Regel, Rechte und Checkpoint-/Cursor-Konsistenz müssen vor Übernahme geprüft werden. Kopf-CI war für #1617–#1620 laut GitHub erfolgreich; für #1621–#1628 lagen in der abgefragten PR-Run-Liste keine Läufe vor. Keine Ergebnisse aus PR-Beschreibungen als unabhängigen Modell- oder Gerätetest ausgeben.
