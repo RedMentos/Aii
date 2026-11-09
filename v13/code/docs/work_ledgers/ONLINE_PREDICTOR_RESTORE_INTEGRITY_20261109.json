@@ -15,10 +15,10 @@
     "v13/code/tests/test_online_checkpoint_validation_20261109.py",
     ".github/workflows/v13-online-world-atomic-cursor.yml"
   ],
-  "status": "source_saved_remote_ci_not_yet_reported",
+  "status": "review_only_exact_head_ci_green",
   "evidence": {
     "head_sha": "13be9680899543443974d9a4e9d22e093d923981",
-    "tests": "New corruption and restart regression; CI not yet reported at checkpoint",
+    "tests": "GitHub Actions https://github.com/RedMentos/Aii/actions/runs/42613540099 SUCCESS (expanded online regression), https://github.com/RedMentos/Aii/actions/runs/42613540117 SUCCESS (continuous plasticity)",
     "native": "NOT RUN",
     "redmi": "NOT RUN"
   },
