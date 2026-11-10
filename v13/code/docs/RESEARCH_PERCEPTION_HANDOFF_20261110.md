@@ -66,3 +66,38 @@ OPENBLAS_NUM_THREADS=1 PYTHONPATH=. python -m unittest -v tests.test_jepa_bounde
 Full repository tests, native C2/A3 inference, mobile memory, thermal and
 latency remain unverified. `pytest` was absent from this environment. STEP2,
 B3 and other canonical negative gates remain unchanged.
+
+## A1/A5: source-span offset and long-whitespace defects
+
+`cognition.segments` and `episodes.text_segments` derive segment references
+from local zero-based offsets even when their input `SourceRef` begins later in
+the original source. Confirmed with real Store: source `Alpha Beta Gamma`,
+span `Beta` at 6:10 yields legacy chunk text `Beta` but reference 0:4 reads
+`Alph`. Current event call sites found so far use full sources beginning at 0;
+impact on a current end-to-end turn has not been demonstrated. A separate
+`episodes.text_segments` failure occurs for an overlong leading whitespace
+unit, where `gist.group` returns zero groups and `pieces[-1]` raises IndexError.
+
+New `v13/code/v13/percept_subspan_candidate.py` reads an actual Store SourceRef,
+validates/tiles all segments exactly and maps local offsets back to absolute
+Python character indices; long whitespace receives a labeled fixed-mode
+source-exact fallback. `v13/code/tests/test_percept_subspan_candidate_20261110.py`
+contains seven real-Store synthetic tests including Unicode, nested subspans,
+source corruption/deletion, zero-offset compatibility and the original error.
+The candidate is isolated and **not wired into the current runtime**. Reconcile
+the callable contract with `cognition.percept`, `cognition.offer` and the
+`runtime.py` PerceptPacket path after the frozen source cohort is released;
+verify span tiling, provenance and default behavior before any integration.
+No claim of grapheme-aware boundaries, native models or Android performance.
+
+Combined local check, including existing A-plane and segmentation tests:
+
+```sh
+cd v13/code
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -B -m unittest -v tests.test_aplane_gate_bound_candidate_20261110 tests.test_aplane tests.test_jepa_bounded_replay_ablation_20261110 tests.test_percept_subspan_candidate_20261110 tests.test_text_segments
+```
+
+28/28 PASS on Linux x86_64 with synthetic fixtures. Full captured output is
+`v13/bench-results/research-percept-subspan-20261110/test-output.txt`.
+A narrow GitHub workflow is included; its remote run must be checked at its
+exact head before claiming CI success.

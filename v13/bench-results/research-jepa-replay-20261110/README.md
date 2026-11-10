@@ -90,7 +90,9 @@ is claimed.
   anchoring can reduce new learning in their tested settings. Task-ID and fixed
   task-order evaluation limit transfer. Their original repository
   https://github.com/yksi2023/cl-drift/tree/236cda6aff92030d43dd61c585259742a8aff181
-  had no license verified; no code is reused. Its documented CUDA/ImageNet
+  had no license verified; no code is reused. The arXiv paper grants arXiv
+  a non-exclusive distribution license; do not equate that with a code
+  license. Its documented CUDA/ImageNet
   requirements are not evidence of Redmi compatibility.
 
 **Next V13 seam:** use this as an independent control for the JEPA & Memory
