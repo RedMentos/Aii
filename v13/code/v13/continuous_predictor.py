@@ -11,6 +11,7 @@ from pathlib import Path
 import numpy as np
 
 REVISION='v13-online-predictor-v1'
+_KEEP_CURSOR = object()
 
 class OnlinePredictor:
     def __init__(self,features,actions,home,lr=0.02,replay=128,seed=0):
@@ -116,9 +117,11 @@ class OnlinePredictor:
         if count%checkpoint_every:self.checkpoint()
         return {'observed':count,'last':last,'checkpoint':str(self.path) if count else None}
 
-    def checkpoint(self,processed_ids=None):
+    def checkpoint(self,processed_ids=_KEEP_CURSOR):
         # Optional atomic T8 cursor co-located with the exact learned weights.
         # A separate cursor file can lag after a crash; this one cannot.
+        if processed_ids is _KEEP_CURSOR:
+            processed_ids = None if self.checkpoint_ids is None else list(self.checkpoint_ids)
         if processed_ids is not None:
             if (not isinstance(processed_ids,list) or len(processed_ids)>2048
                     or any(type(i) is not str or not i for i in processed_ids)
