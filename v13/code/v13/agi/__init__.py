@@ -150,8 +150,18 @@ def job(sleep_runtime,event):
     if a=='growth_consolidate':
         st=g.weights.stage('USER' if event['origin']=='USER' else 'SYSTEM',include_sdft=True)  # corrections marked `learn` (WP-S5 SDFT)
         if st.get('batch_id') and st['status']=='STAGED':
-            from .trainers import install
-            st['trainer']=install(g,r)['active']  # real trainer when master/torch/runner exist, else honest NO_TRAINER
+            # Body masters are far more costly than the C3 path. Choosing one
+            # locally is not permission for an unattended sleep job to begin
+            # multi-gigabyte HF training. Keep the staged batch intact and
+            # require a new explicit USER-origin run. Age0 can still learn
+            # through its bounded local predictors and episodic memory.
+            from . import trainers
+            selected=trainers._box(r.store).load()[0].get('kind')
+            if selected in ('body_b1','body_b2') and event['origin']!='USER':
+                st['trainer']=selected
+                st['trained']='USER_REQUIRED_BODY_TRAINING'
+                return st
+            st['trainer']=trainers.install(g,r)['active']
             st['trained']=g.weights.train_and_gate(st['batch_id'],r.cancel_event)['status']
         return st
     if a=='growth_practice':
@@ -208,7 +218,7 @@ def operator_command(r,args):
     if c=='eval':return dumps(g.eval.report()|{'curve':g.eval.curve('overall')[-12:]})
     if c=='trainready':
         from .trainers import training_readiness
-        if len(args)>2:raise ValueError('Usage: :growth trainready [lora|sparse]')
+        if len(args)>2:raise ValueError('Usage: :growth trainready [lora|sparse|body_b1|body_b2]')
         return dumps(training_readiness(r,args[1] if len(args)==2 else 'lora'))
     if c=='trainer':
         from . import trainers

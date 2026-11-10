@@ -1,0 +1,45 @@
+name: V13 body JEPA AG6 live-trainer connection
+on:
+  push:
+    branches:
+      - 'codex/v13-body-jepa-ag6-connection-*'
+  pull_request:
+    paths:
+      - 'v13/code/v13/agi/body_trainers.py'
+      - 'v13/code/v13/agi/trainers.py'
+      - 'v13/code/tests/test_body_ag6_trainer_connection.py'
+      - 'v13/code/tests/test_v13_integrated_local_operator_20261110.py'
+      - '.github/workflows/v13-body-ag6-connection.yml'
+permissions:
+  contents: read
+jobs:
+  body-ag6:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: v13/code
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install minimal dependencies
+        run: python -m pip install --disable-pip-version-check pytest numpy
+      - name: Compile AG6 role integration
+        run: |
+          python -m py_compile v13/agi/body_trainers.py v13/agi/trainers.py tests/test_body_ag6_trainer_connection.py tests/test_v13_integrated_local_operator_20261110.py
+      - name: Exercise real Growth state and role isolation
+        run: |
+          python -m pytest -q tests/test_body_ag6_trainer_connection.py tests/test_agi_trainers.py tests/test_ag6_training_readiness_20261108.py tests/test_growth.py tests/test_v13_integrated_local_operator_20261110.py
+  privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check public source boundaries
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 0a6c22cd4f47aef8056b6a458a5443adb5441c65 --head HEAD

@@ -1,4 +1,4 @@
-"""WP-AG6 live trainer choice (agi/trainers.py). No torch/model needed: requirements are faked."""
+"""WP-AG6 live trainer choice with post-readiness strict master/schema expectations."""
 import json
 from pathlib import Path
 import tempfile
@@ -21,7 +21,7 @@ class Trainers(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.home=Path(self.tmp.name);self.r=Runtime(self.home)
         self.r.sleep.cycle.set_policy('enabled','off');self.g=hub(self.r)
-        self.master=self.home/'master';self.master.mkdir();(self.master/'model.safetensors').write_bytes(b'w');(self.master/'config.json').write_text('{}')
+        self.master=self.home/'master';self.master.mkdir();(self.master/'model.safetensors').write_bytes(b'w');(self.master/'config.json').write_text(json.dumps({'hidden_size':16,'num_hidden_layers':2}))
         self.gguf=self.home/'c3.gguf';self.gguf.write_bytes(b'GGUF');(self.home/'bin').mkdir(exist_ok=True);(self.home/'bin/llama-server').write_bytes(b'')
         p=mock.patch.object(tr,'arch_match',return_value=True);p.start();self.addCleanup(p.stop)  # fake GGUF bytes
     def tearDown(self):self.r.close();self.tmp.cleanup()
@@ -49,7 +49,7 @@ class Trainers(unittest.TestCase):
             ev=tr.LiveNearMissEvaluator(Inner());rep=ev.evaluate([{'prompt':'What is the name of my cat?','target':'Your cat is called Mitzi.'}],[]);ev.close()
             self.assertEqual((rep['base_eval']['near_miss_leak'],rep['candidate_eval']['near_miss_leak']),(0.,.5))  # gate sees specificity
             self.assertTrue(calls['near']);self.assertEqual(calls['near'][0][1],['mitzi']);self.assertTrue(calls['closed'])
-            info=tr.choose(self.g,self.r,'sparse');self.assertEqual(info['active'],'sparse');self.assertFalse(info['served_live'])
+            info=tr.choose(self.g,self.r,'sparse');self.assertEqual(info['active'],'none');self.assertIn('SPARSE_SERVING_UNAVAILABLE',info['missing'])
             info=tr.choose(self.g,self.r,'none');self.assertIsInstance(self.g.weights.trainer,NullTrainer)
         with self.assertRaises(ValueError):tr.choose(self.g,self.r,'magic')
         with self.assertRaises(ValueError):tr.choose(self.g,self.r,'lora',str(self.home/'nope'))
@@ -62,7 +62,7 @@ class Trainers(unittest.TestCase):
             self.assertEqual(tr.choose(self.g,self.r,'auto',str(self.master))['active'],'lora')  # never auto-sparse (fast-trace bench)
             info=tr.choose(self.g,self.r,'sparse');self.assertTrue(info['served_live'])
             t=self.g.weights.trainer;self.assertEqual(t.role,'C3_LANGUAGE#sparse_memory');self.assertIn('Task context',t.cfg['system']);self.assertEqual(t.cfg['contexts'],[''])
-            b.write_bytes(b'changed');self.assertFalse(tr.choose(self.g,self.r,'sparse')['served_live'])
+            b.write_bytes(b'changed');info=tr.choose(self.g,self.r,'sparse');self.assertEqual(info['active'],'none');self.assertIn('SPARSE_SERVING_UNAVAILABLE',info['missing'])
     def test_live_evaluator_measures_frozen_drift_probes(self):
         from v13.drift import Drift
         class Inner:
@@ -75,12 +75,12 @@ class Trainers(unittest.TestCase):
         self.r.models=FakeModels(self.gguf)
         with mock.patch.object(tr,'_torch',return_value=True),mock.patch.object(tr,'arch_match',return_value=False):
             info=tr.choose(self.g,self.r,'lora',str(self.master))
-        self.assertEqual(info['active'],'none');self.assertIn('master_ok',info['missing']);self.assertFalse(info['requirements']['arch_match'])
+        self.assertEqual(info['active'],'none');self.assertIn('MASTER_GGUF_ARCH_MISMATCH',info['missing']);self.assertFalse(info['requirements']['arch_match'])
     def test_missing_piece_falls_back_honestly(self):
         self.r.models=FakeModels(self.gguf)
         with mock.patch.object(tr,'_torch',return_value=False):
             info=tr.choose(self.g,self.r,'lora',str(self.master))
-        self.assertEqual(info['active'],'none');self.assertEqual(info['missing'],['torch'])
+        self.assertEqual(info['active'],'none');self.assertIn('TRAINER_DEPENDENCIES_MISSING',info['missing'])
     def test_consolidate_job_trains_and_gates_with_installed_trainer(self):
         class FakeTrainer:
             method='fake';role='C3_LANGUAGE'
