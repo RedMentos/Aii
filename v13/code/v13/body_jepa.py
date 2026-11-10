@@ -225,6 +225,32 @@ def anchor_retention_kl(torch,model,anchor_seqs,anchor_logp):
     return result
 
 
+def select_heldout_prompts(probes,items,anchors,cap):
+    """Return prompt-disjoint heldout candidates and excluded exact overlaps.
+
+    No semantic independence or provenance completeness is asserted. Duplicates
+    and empty prompts are never counted as independent retention evidence.
+    """
+    if type(cap) is not int or not 0<=cap<=16:
+        raise ValueError('heldout_probe_cap must be an integer from 0 to 16')
+    def norm(value):
+        if not isinstance(value,str):raise ValueError('probe/anchor must contain text')
+        return ' '.join(value.casefold().split())
+    seen={norm(i['prompt']) for i in items}
+    seen.update(norm(a) for a in anchors)
+    picked=[];excluded=0
+    for probe in probes:
+        if not isinstance(probe,dict) or 'prompt' not in probe:
+            raise ValueError('heldout probe requires prompt text')
+        prompt=probe['prompt'];key=norm(prompt)
+        if not key or key in seen:
+            excluded+=1
+            continue
+        seen.add(key)
+        if len(picked)<cap:picked.append(prompt)
+    return picked,excluded
+
+
 def heldout_retention_kl(torch,model,sequences):
     """Forward KL(base || adapter) on prompt-disjoint probes, with no weight updates.
 
@@ -372,25 +398,14 @@ class BodyJepaTrainer(LoraTrainer):
         # Separate KL on truly unseen prompt strings from training/locality anchors.
         # This is an additional prompt-disjoint diagnostic, NOT semantic data independence.
         cap=cfg.get('heldout_probe_cap',8)
-        if type(cap) is not int or not 0<=cap<=16:
-            raise ValueError('heldout_probe_cap must be an integer from 0 to 16')
-        seen={' '.join(str(t).casefold().split()) for t in
-              [i['prompt'] for i in items]+anchors}
-        heldout=[];excluded=0;examined=0
-        for probe in self.probes:
-            if not isinstance(probe,dict) or not isinstance(probe.get('prompt'),str):
-                raise ValueError('heldout probe requires prompt text')
-            prompt=probe['prompt'];key=' '.join(prompt.casefold().split())
-            if not key or key in seen:
-                excluded+=1
-                continue
-            seen.add(key)
-            if len(heldout)>=cap:continue
+        prompts,excluded=select_heldout_prompts(self.probes,items,anchors,cap)
+        heldout=[]
+        for prompt in prompts:
             pid,_=self._encode(tok,prompt)
             with model.disable_adapter():
                 seq=pid+self._greedy(torch,model,pid,16)
             if not seq:raise ValueError('empty heldout sequence')
-            heldout.append(seq);examined+=1
+            heldout.append(seq)
         heldout_kls=heldout_retention_kl(torch,model,heldout) if heldout else []
         # Measure retention against the frozen master on the SAME anchor sequences
         # used for training. This is a diagnostic, not deployment authority.
