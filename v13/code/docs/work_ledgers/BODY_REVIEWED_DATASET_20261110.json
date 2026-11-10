@@ -9,21 +9,27 @@
   "paths": [
     "v13/code/v13/agi/body_dataset.py",
     "v13/code/tests/test_body_reviewed_dataset.py",
-    ".github/workflows/v13-body-reviewed-dataset.yml"
+    ".github/workflows/v13-body-reviewed-dataset.yml",
+    "v13/code/v13/agi/body_dataset_store.py",
+    "v13/code/tests/test_body_dataset_store.py"
   ],
-  "status": "DRAFT_CI_PENDING_LATEST",
+  "status": "DRAFT_STORE_PROVENANCE_CI_PENDING",
   "evidence": {
     "first_ci_success": [
       42795572027,
       42795542462
     ],
     "first_head": "b8fc4321cdf8dea8783c76632ab9e976fdfbedfb",
-    "latest_head": "eed3d6b8d1b4150c628540e41eaff771b8087ba1",
+    "latest_head": "36deb426a9df62072026a216f4acbe1cf7b6ebce",
     "latest_ci": [
-      42795641950,
-      42795629297
+      42795810463,
+      42795799619
     ],
-    "local_equivalent": "5/5 pytest pass, isolated standalone implementation; not exact remote tree"
+    "local_equivalent": "5/5 pytest pass, isolated standalone implementation; not exact remote tree",
+    "passed_heads": [
+      "b8fc4321cdf8dea8783c76632ab9e976fdfbedfb",
+      "eed3d6b8d1b4150c628540e41eaff771b8087ba1"
+    ]
   },
   "capabilities": [
     "role-specific B1/B2 approved JSONL compiler",
@@ -31,15 +37,17 @@
     "bounded input",
     "atomic output",
     "manifest with SHA256",
-    "CLI"
+    "CLI",
+    "read-only SQLite Store source-ID and deleted-state verification",
+    "SHA256 validation of original raw or zlib archived source blobs before dataset output"
   ],
   "limitations": [
     "reviewed/permission are input declarations; no cryptographic user-authentication",
-    "source hash declared, not verified against Store source bytes",
     "not wired to AG6 trainer ingestion or automatic live learning",
     "not GGUF/native/Redmi evidence",
     "CI on latest head pending",
-    "SourceHandoff runtime.py frozen"
+    "SourceHandoff runtime.py frozen",
+    "Store-verified entrypoint is separate from unverified offline compiler; use body_dataset_store for provenance-bound input"
   ],
   "negative_gates": [
     "STEP2 UTILITY_FAIL",
@@ -49,10 +57,10 @@
     "full_scope_complete=false"
   ],
   "next_commands": [
-    "Check GitHub Actions runs 42795641950 and 42795629297 for latest head, fix if RED",
-    "Bind Store-verified human decisions to the reviewed JSONL export with source byte checks",
-    "Connect approved datasets to role-specific BodyJepaTrainer train/eval after cross-owner review",
-    "Run focused AG6 Body-JEPA integration tests and privacy scan before promotion"
+    "Check latest Actions for commit 36deb426a9df62072026a216f4acbe1cf7b6ebce and fix red",
+    "Audit compressed blob bounds and exact Store source schema",
+    "Connect reviewed source export and B1/B2 trainer ingestion after AG6 owner review",
+    "Run relevant integrated tests and public_repo_privacy_scan.py before promotion"
   ],
   "other_owners": [
     "JEPA owner: PR #1669 body_jepa.py and agi/body_trainers.py",
