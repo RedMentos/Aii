@@ -27,6 +27,14 @@ class OnlineWorld:
             if record.get('revision')!=REVISION or not isinstance(ids,list) or len(ids)>world_model.MAX_ROWS or any(type(i) is not str for i in ids):
                 raise ValueError('Incompatible online world cursor')
             self.processed=ids
+        # The model snapshot is committed before the separate cursor. A crash
+        # between those writes must not silently train the same T8 row twice.
+        # Conversely, a cursor newer than the model can skip unlearned rows.
+        # Fail closed in either case until an operator restores a consistent
+        # model+cursor pair; never auto-rewind learned parameters here.
+        expected=min(self.model.seen,world_model.MAX_ROWS)
+        if len(self.processed)!=expected or len(set(self.processed))!=len(self.processed):
+            raise ValueError('Online world checkpoint/cursor mismatch: restore a consistent pair')
 
     @staticmethod
     def encode(row):
