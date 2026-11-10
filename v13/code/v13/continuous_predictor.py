@@ -56,6 +56,13 @@ class OnlinePredictor:
         # clipped, but a nonfinite result must never become a live parameter.
         if not np.isfinite(x@self.W+self.U[action]+self.bias).all():
             raise ValueError('Nonfinite predictor state')
+        # Preflight the mandatory first update before mutating replay/counters.
+        # A finite prediction can still produce an infinite squared norm.
+        initial_residual=x@self.W+self.U[action]+self.bias-y
+        initial_gradient=np.concatenate((np.outer(x,initial_residual).ravel(),
+                                         initial_residual,initial_residual))
+        if not np.isfinite(initial_gradient).all() or not np.isfinite(np.linalg.norm(initial_gradient)):
+            raise ValueError('Nonfinite online gradient')
         self.seen+=1
         if len(self.x)==self.cap:
             # Reservoir sampling: old observations remain represented as stream grows.
