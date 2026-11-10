@@ -42,5 +42,28 @@ class EvidenceTests(unittest.TestCase):
         self.assertIn("BODY_JEPA: negative gate overridden", check(m))
 
 
+    def test_malformed_structures_fail_closed(self):
+        cases = [
+            (None, "manifest must be object"),
+            ([], "manifest must be object"),
+            (dict(fixture(), chains={"core": None, "jepa": {}, "qa": {}, "perception": {}}), "core: chain must be object"),
+            (dict(fixture(), gates=None), "gates must be object"),
+        ]
+        for manifest, expected in cases:
+            with self.subTest(expected=expected):
+                self.assertIn(expected, check(manifest))
+
+    def test_invalid_runs_fail_closed(self):
+        for runs, expected in [
+            (None, "core: missing or invalid CI list"),
+            ({"head_sha": "a" * 40}, "core: missing or invalid CI list"),
+            ([None], "core: CI run must be object"),
+            (["not a run"], "core: CI run must be object"),
+        ]:
+            with self.subTest(runs=runs):
+                manifest = fixture()
+                manifest["chains"]["core"]["runs"] = runs
+                self.assertIn(expected, check(manifest))
+
 if __name__ == "__main__":
     unittest.main()
