@@ -111,5 +111,21 @@
     "production_promotion": false,
     "device_proof": false,
     "negative_gates_unchanged": true
+  },
+  "codex_body_world_reconciliation_20261110": {
+    "candidate": "v13/code/scripts/integrated_body_world_candidate_20261110.py",
+    "body_sources": "14 assets byte-verified against #1641/#1643/#1646 Git commits",
+    "tests": "2 outer passed, 139 materialized-copy passed, 3 CUDA skipped",
+    "evidence": "tiny synthetic GPT-2 Torch/PEFT fit, EMA step rollback and matched checkpoint resume, plus World Runtime/SQLite tests",
+    "limitations": [
+      "BodyJepaTrainer not wired into ordinary Runtime trainer selection",
+      "no real B1/B2 or Redmi device proof",
+      "per-anchor metrics are not a retention gate",
+      "optimizer snapshot resource cost unmeasured"
+    ],
+    "other_branches": "#1695 f3137ed4bd55e40330bf8495db0fa352360b948e specific CI red; child #1698 cd4879401686e72be50c2e7ec63d2de589aef764 specific CI green",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
   }
 }

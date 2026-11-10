@@ -1,3 +1,7 @@
+## 2026-11-10 — Body-JEPA-Schutz mit World auf gemeinsamer Testbasis
+
+Eine hashgebundene Kopie führt frühere Geräte-/Finitheits-/EMA-/Optimizer-Fixes mit #1663-Anker-Metriken und dem World-/Quellenpfad zusammen: **139 Tests PASS, 3 CUDA SKIP**, dazu zwei äußere Source-Pin-Tests. Tiny-Torch-/PEFT-Fit, Schritt-Rollback und Checkpoint-Wiederaufnahme tatsächlich ausgeführt; Asset-Herkunft gegen 14 Git-Blobs geprüft. `code/docs/INTEGRATED_BODY_WORLD_RECONCILIATION_20261110.md`. BodyJepaTrainer ist damit noch nicht über die reguläre Runtime-Trainerauswahl angebunden; echte B1/B2-/Redmi- und Nutzen-/Retention-Gates offen. #1695- und #1698-CI-Ergebnisse getrennt behandeln.
+
 ## 2026-11-10 — historische Predictor-Quellen in integrierter Testkopie
 
 Vor Predictor-Vorhersage und -Update prüft die neue Testkopie alle gebundenen Action-Quittungen auch außerhalb des aktuellen Fensters, einschließlich Restore nach Neustart. Die gemeinsame SQLite-Schreibsperre wurde gegen einen parallelen Widerruf während Vorhersage und echtem kleinem Update getestet. **53 Tests PASS** auf der neuen Kopie, alter Fehler als eigener bestandener Gegenbeispieltest erhalten; drei äußere Tests. Vollständige Details und Mock-Testgrenzen `code/docs/INTEGRATED_PREDICTOR_HISTORY_GUARD_20261110.md`. Synchrone Vollprüfung und Schreibsperre sind noch nicht auf großen Daten oder Android bewertet; kein automatisches Entlernen und keine Aktivierung. Nächste Naht: Body-JEPA-/C3-Resume-Fixes in dieselbe Kopie; Context-/Idle-Pfade fortsetzen.

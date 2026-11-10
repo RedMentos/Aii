@@ -1,3 +1,9 @@
+# 2026-11-10 — Body-JEPA und World auf gemeinsamer Testbasis
+
+Die unterbrochene Arbeit aus `/workspace/v13-body-anchor-guard-reconcile` wurde nicht überschrieben; ihre 14 Asset-Dateien sind gegen angegebene Git-Commits bytegeprüft und über `scripts/integrated_body_world_candidate_20261110.py` mit der World-/JEPA-Testkopie verbunden. **2 äußere Tests PASS; 139 Tests PASS / 3 CUDA SKIP** in derselben Kopie, einschließlich echtem Tiny-Torch-/PEFT-Update, EMA-Fehlerrückrolle und Checkpoint-Fit-Neustart. #1663-Ankertest wird ausdrücklich auf die neue Listenfunktion angepasst; alte skalare API bleibt. Details `INTEGRATED_BODY_WORLD_RECONCILIATION_20261110.md`.
+
+Wichtige Grenze: `agi/trainers.py` wählt aktuell `LoraTrainer`, nicht `BodyJepaTrainer`; die Body-Testläufe sind daher keine belegte reguläre Runtime-Anbindung oder B1/B2-/Redmi-/Native-/Nutzenaussage. Nächste Naht: autorisierter quellengebundener Organ-Trainingspfad und getrennte gepaarte Holdouts (#1695 rot, Workflow-Kind #1698 grün; nicht vermischen), dann C3-Resume und Memory-/Idle-Reconciliation.
+
 # 2026-11-10 — Predictor-Historie vor Update und Vorhersage prüfen
 
 Die weitere hashgebundene Komposition `scripts/integrated_predictor_history_guard_20261110.py` prüft sämtliche bereits gelernten Quellquittungen in SQL-Chunks vor `OnlineWorld.update` und `predict`, einschließlich eines alten Widerrufs außerhalb des aktuellen Fensters und nach Neustart. SQLite-Write-Fence gegen parallelen kooperierenden Widerruf für Vorhersage und tatsächliches NumPy-Update geprüft. **3 äußere Tests PASS; 1 altes Gegenbeispiel und 53 Tests auf der neuen Kopie PASS**; alte Mock-Daten nutzen nur in deren Tests eine ausgewiesene Schnittstelle. Details/Einschränkungen `INTEGRATED_PREDICTOR_HISTORY_GUARD_20261110.md`. Die synchrone Vollprüfung kostet mit wachsender Historie Zeit und hält eine Schreibsperre; keine Handy- oder Entlern-Aussage. Freeze und Gesamtsuite-RED unverändert.

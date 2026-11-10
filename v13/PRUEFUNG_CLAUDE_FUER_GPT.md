@@ -1,3 +1,7 @@
+# GPT-Abgleich Body-JEPA und World — 2026-11-10
+
+Unterbrochenen lokalen Body-Kandidaten read-only übernommen; 14 Asset-Bytes gegen die angegebenen Commits verifiziert. Gemeinsame quellgebundene Testkopie: 2 äußere Tests, **139 PASS / 3 CUDA SKIP**; echter Tiny-Torch-/PEFT-Fit, atomarer Fehlerfall und Restart. Neuer Anker-Test verwendet ausdrücklich die Listenfunktion, Alt-API bleibt skalar; kein regulärer Runtime-Trainerauswahlnachweis. #1695 HEAD `f3137ed4bd55e40330bf8495db0fa352360b948e` spezialisierter CI-Job rot, #1698 HEAD `cd4879401686e72be50c2e7ec63d2de589aef764` Workflow-Korrektur grün; fremde Heads nicht vollständig gegengeprüft oder integriert. Details `code/docs/INTEGRATED_BODY_WORLD_RECONCILIATION_20261110.md`; alte Fehler/Gates unverändert.
+
 # GPT-Integrationsprüfung Predictor-Historie und Erstabgleich #1718 — 2026-11-10
 
 Altes Predictor-Revocation-Gegenbeispiel auf der Vorgängerkopie bestätigt. Eine weitere Source-bound Testkopie prüft alle gebundenen T8-Action-Quittungen vor Update/Vorhersage und testet die SQLite-Sperre mit konkurrierender Verbindung: 3 äußere Tests und 53 Tests auf der neuen Kopie PASS; Mock-Schnittstellen und nicht gemessene mobilen Kosten sind in `code/docs/INTEGRATED_PREDICTOR_HISTORY_GUARD_20261110.md` offengelegt. Ein Zwischenlauf 1 FAIL/51 PASS betraf den bisherigen Exception-Wortlaut, nun kompatibel; alte Fehlerbelege bleiben.
