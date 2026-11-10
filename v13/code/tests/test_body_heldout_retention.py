@@ -72,3 +72,42 @@ def test_invalid_cap_fails_closed(cap):
 def test_invalid_probe_cannot_be_silently_skipped():
     with pytest.raises(ValueError,match='probe'):
         select_heldout_prompts([{'bad':'text'}],[],[],2)
+
+from v13.body_jepa import BodyJepaTrainer
+from v13.common import Unavailable
+
+class FakeDeployedEvaluator:
+    def __init__(self,receipt,throws=False):
+        self.receipt=receipt;self.throws=throws;self.closed=False;self.seen=None
+    def evaluate(self,items,probes,cancel=None,deadline=None):
+        self.seen=(items,probes)
+        if self.throws:raise RuntimeError('evaluation failed')
+        return self.receipt
+    def close(self):self.closed=True
+
+def test_body_deployed_ag6_gate_contract_and_drift():
+    proof={'base_eval':{'overall':.8},'candidate_eval':{'overall':.9},'learned_recall':.95,'kl_to_base':.02,'wp_s5_drift':{'passed':True}}
+    ev=FakeDeployedEvaluator(proof)
+    t=BodyJepaTrainer.__new__(BodyJepaTrainer);t.evaluator=lambda artifact:ev;t.probes=[{'prompt':'unseen'}]
+    record={'artifact':'/test/adapter.gguf','metrics':{'heldout_kl_mean':.01}}
+    result=t._deployed_eval(record,[{'prompt':'hello'}])
+    assert ev.closed and ev.seen[1]==t.probes
+    assert result['eval']['candidate_eval']['overall']==.9
+    assert result['eval']['wp_s5_drift']==proof['wp_s5_drift']
+    assert result['metrics']['kl_to_base']==.02
+    assert result['metrics']['kl_source']=='deployed_llama_cpp_topk'
+    assert result['metrics']['heldout_kl_mean']==.01
+
+def test_body_without_evaluator_never_invents_deployed_gate():
+    t=BodyJepaTrainer.__new__(BodyJepaTrainer);t.evaluator=None
+    record={'artifact':'candidate','metrics':{}}
+    assert t._deployed_eval(record,[]) is record
+    assert 'eval' not in record
+
+@pytest.mark.parametrize('throws',[False,True])
+def test_body_deployed_eval_error_closes_resource_without_gate(throws):
+    ev=FakeDeployedEvaluator({'base_eval':{}},throws)
+    t=BodyJepaTrainer.__new__(BodyJepaTrainer);t.evaluator=lambda artifact:ev;t.probes=[]
+    record={'artifact':'candidate','metrics':{}}
+    with pytest.raises((RuntimeError,Unavailable)):t._deployed_eval(record,[])
+    assert ev.closed and 'eval' not in record and 'kl_to_base' not in record['metrics']
