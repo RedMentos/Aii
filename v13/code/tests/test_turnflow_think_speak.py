@@ -87,6 +87,7 @@ def test_adaptive_requires_at_least_six_outcomes_and_never_overrides_pressure():
     for i in range(5):
         evt = "check-" + str(i)
         assert turnflow.plan(store, evt, {}, 1, "B2_GIST")["start_optional_observer"]
+        turnflow.observe(store, evt, "AGREES")
         turnflow.feedback(store, evt, "wasteful")
     assert turnflow.plan(store, "six", {}, 1, "B2_GIST")["start_optional_observer"]
     turnflow.observe(store, "six", "AGREES")
