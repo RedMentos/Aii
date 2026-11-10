@@ -5,8 +5,10 @@ import torch
 from v13.body_jepa import heldout_retention_kl, select_heldout_prompts
 
 
-class TwoModeBody:
+class TwoModeBody(torch.nn.Module):
+    """Minimal nn.Module/PEFT-like fixture exercising real module mode contracts."""
     def __init__(self, base, adapted):
+        super().__init__()
         self.base=torch.tensor(base,dtype=torch.float32)
         self.adapted=torch.tensor(adapted,dtype=torch.float32)
         self.disabled=False
@@ -21,7 +23,7 @@ class TwoModeBody:
         finally:
             self.disabled=before
 
-    def __call__(self, input_ids):
+    def forward(self, input_ids):
         self.calls+=1
         source=self.base if self.disabled else self.adapted
         return type('Output',(),{'logits':source.unsqueeze(0)})()
