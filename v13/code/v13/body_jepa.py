@@ -281,6 +281,39 @@ def heldout_retention_kl(torch,model,sequences):
             result.append(max(0.,float(kl)))
     return result
 
+
+def streamed_anchor_kl(torch,model,seq):
+    """Exact differentiable KL(base || adapter) with ONE live reference tensor.
+
+    Unlike full-logit caching across dozens of anchors, the frozen base is
+    evaluated on demand using the same PEFT model with its adapter disabled.
+    Only the adapter forward path receives a gradient. No off-device call.
+    """
+    if (not isinstance(seq,(list,tuple)) or not seq
+            or any(type(i) is not int or i<0 for i in seq)):
+        raise ValueError('invalid streamed anchor token IDs')
+    disable=getattr(model,'disable_adapter',None)
+    if not callable(disable):
+        raise ValueError('streamed anchors require a PEFT disable_adapter context')
+    ids=torch.tensor([seq],dtype=torch.long)
+    was_training=bool(model.training)
+    model.eval()
+    try:
+        with torch.no_grad(),disable():
+            base_logp=torch.log_softmax(model(input_ids=ids).logits[0].float(),dim=-1)
+    finally:
+        model.train(was_training)
+    adapted_logp=torch.log_softmax(model(input_ids=ids).logits[0].float(),dim=-1)
+    if (base_logp.shape!=adapted_logp.shape
+            or not bool(torch.isfinite(base_logp).all())
+            or not bool(torch.isfinite(adapted_logp).all())):
+        raise ValueError('invalid streamed anchor distribution')
+    result=(base_logp.exp()*(base_logp-adapted_logp)).sum(dim=-1).mean()
+    if not bool(torch.isfinite(result)):
+        raise ValueError('nonfinite streamed anchor KL')
+    return result
+
+
 # -- trainer ---------------------------------------------------------------------------------------------
 from .lora_trainer import LoraTrainer,DEFAULTS as _LORA_DEFAULTS,_check,_rss_mb,answer_hit
 from .common import digest,dumps,atomic_write,Unavailable
@@ -426,22 +459,12 @@ class BodyJepaTrainer(LoraTrainer):
             if anchor_seqs and float(cfg['anchor_weight'])>0:
                 pick=torch.randperm(len(anchor_seqs),generator=g).tolist()[:int(cfg['anchors_per_step'])]
                 for j in pick:
-                    ids=torch.tensor([anchor_seqs[j]])
                     if anchor_logp is None:
-                        # Model and LoRA live in one process. Disable only the
-                        # adapter, keep the frozen base and compute the exact
-                        # KL without retaining a full-vocabulary reference
-                        # for every anchor across optimizer steps.
-                        was_training=model.training
-                        model.eval()
-                        try:
-                            with model.disable_adapter(),torch.no_grad():
-                                bl=torch.log_softmax(model(input_ids=ids).logits[0].float(),-1)
-                        finally:
-                            if was_training:model.train()
-                    else:bl=anchor_logp[j]
-                    cl=torch.log_softmax(model(input_ids=ids).logits[0].float(),-1)
-                    kl=(bl.exp()*(bl-cl)).sum(-1).mean()
+                        kl=streamed_anchor_kl(torch,model,anchor_seqs[j])
+                    else:
+                        cl=torch.log_softmax(model(torch.tensor([anchor_seqs[j]])).logits[0].float(),-1)
+                        bl=anchor_logp[j]
+                        kl=(bl.exp()*(bl-cl)).sum(-1).mean()
                     (float(cfg['anchor_weight'])*kl/len(pick)).backward();kl_sum+=float(kl.detach())
             opt.step();ema.update();step+=1
             hist.append({'step':step,'ce':round(float(ce.detach()),5),'anchor_kl':round(kl_sum/max(1,len(pick)),6),'jepa':None if jl_v is None else round(jl_v,5),'ema_delta':round(ema.delta(),6)})
