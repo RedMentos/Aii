@@ -47,6 +47,18 @@ class PredictorCheckpointIntegrityTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Invalid predictor checkpoint'):
             OnlinePredictor(3, 2, self.home, replay=4)
 
+    def test_fractional_replay_action_rejected(self):
+        self.corrupt('act', np.array([0.75], dtype=np.float64))
+        with self.assertRaisesRegex(ValueError, 'Invalid predictor checkpoint'):
+            OnlinePredictor(3, 2, self.home, replay=4)
+
+    def test_integral_float_replay_action_rejected(self):
+        # Even 0.0 must not be accepted as a route ID: persisted actions
+        # have a strict integer schema, not a lossy coercion contract.
+        self.corrupt('act', np.array([0.0], dtype=np.float64))
+        with self.assertRaisesRegex(ValueError, 'Invalid predictor checkpoint'):
+            OnlinePredictor(3, 2, self.home, replay=4)
+
     def test_out_of_range_replay_rejected(self):
         with np.load(self.model.path, allow_pickle=False) as data:
             x = data['x'].copy()

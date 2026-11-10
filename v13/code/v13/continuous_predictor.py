@@ -144,6 +144,9 @@ class OnlinePredictor:
         if (n>self.cap or len(loaded['act'])!=n or len(loaded['y'])!=n
             or any(v.shape!=tuple(n if d is None else d for d in shapes[k]) for k,v in loaded.items())
             or any(not np.isfinite(v).all() for v in loaded.values())
+            # A float or boolean action array may be numerically in range but
+            # must never be silently truncated into a different replay route.
+            or not np.issubdtype(loaded['act'].dtype,np.integer)
             or np.any(loaded['act']<0) or np.any(loaded['act']>=self.a)
             or not np.issubdtype(loaded['counters'].dtype,np.integer)
             or not np.all(loaded['counters']>=0)
