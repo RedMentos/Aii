@@ -174,7 +174,7 @@ def test_actual_latewatch_finish_confirms_observer_before_feedback():
     with pytest.raises(ValueError,match="unobserved"):
         turnflow.feedback(store,event_id,"wasteful")
     runtime=SimpleNamespace(store=store)
-    watcher=latewatch.Watcher(runtime,{"event_id":event_id},{},mode="shadow",
+    watcher=latewatch.Watcher(runtime,{"event_id":event_id},{},"shadow",
                               role="B1_DETAIL",status="RUNNING")
     watcher.thread=object()  # a simulated observer thread completed
     watcher.done.set()
