@@ -1,0 +1,207 @@
+"""V13 JEF/C2 turn-flow scheduler for thinking WHILE C3 speaks.
+
+The real overlap primitive already exists in latewatch: one bounded B1/B2
+observer can run alongside a streaming C3 if both fit in RAM. This scheduler
+learns WHEN to attempt that extra pass. It cannot manufacture extra hardware,
+parallelise the same model process or bypass C5 tool permissions.
+
+A successful text turn is not evidence that an extra observer was useful.
+Only explicit local-operator useful/wasteful outcomes train this selector.
+MEASURE is default: suggestions are recorded but execution is unchanged.
+ACTIVE may *omit* speculative work after sufficient negative feedback; it
+cannot force extra resource use, silence C3, authorise tools or override the
+human-controlled latewatch cut/revision policy.
+"""
+from __future__ import annotations
+
+import math
+
+KEY = "JEF_TURN_FLOW_V1"
+REVISION = "turn-flow-v1"
+MODES = ("measure", "active", "off")
+MIN_FEEDBACK = 6
+MIN_USEFUL_RATIO = 0.35
+MAX_EVENTS = 128
+MAX_PATTERNS = 48
+
+
+def _blank():
+    return {"revision": REVISION, "mode": "measure", "events": {},
+            "patterns": {}, "last": []}
+
+
+def _read(store):
+    value, version = store.state(KEY, None)
+    if value is None:
+        return _blank(), version
+    if type(value) is not dict or value.get("revision") != REVISION:
+        raise ValueError("turn-flow revision mismatch")
+    if (type(value.get("events")) is not dict or
+            type(value.get("patterns")) is not dict or
+            value.get("mode") not in MODES):
+        raise ValueError("turn-flow state corrupt")
+    return value, version
+
+
+def _mutate(store, func):
+    for retry in (0, 1):
+        state, version = _read(store)
+        result = func(state)
+        try:
+            store.set_state(KEY, state, expected=version)
+            return result
+        except ValueError:
+            if retry:
+                raise
+
+
+def mode(store):
+    return _read(store)[0]["mode"]
+
+
+def set_mode(store, target, origin="MODEL"):
+    """Changing the actual scheduler requires the local operator."""
+    if target not in MODES:
+        raise ValueError(":turnflow measure|active|off")
+    if target == "active" and origin != "OPERATOR_TTY":
+        raise PermissionError("Only a local operator may enable adaptive timing")
+    return _mutate(store, lambda state: state.__setitem__("mode", target) or target)
+
+
+def _signals(meta, preoffers, late_role):
+    data = meta.get("resource_mode") or {}
+    if not isinstance(data, dict):
+        data = {}
+    focal = meta.get("focal") or {}
+    if not isinstance(focal, dict):
+        focal = {}
+    cycles = focal.get("cycles", 0)
+    if type(cycles) is not int or cycles < 0:
+        cycles = 0
+    # Coarse buckets generalise across different users' messages. No raw text
+    # or source material is retained in policy state.
+    key = (
+        "pre" + ("many" if preoffers >= 2 else str(preoffers)) + "/"
+        + ("focal" if cycles else "no_focal") + "/"
+        + late_role
+    )
+    return key, data.get("mode", "UNKNOWN"), cycles
+
+
+def decide(state, pattern, eligible, residency_ok):
+    """Pure choice: an adaptive veto on OPTIONAL parallel observer work."""
+    proposals = state.get("patterns", {})
+    data = proposals.get(pattern) or {"useful": 0, "wasteful": 0}
+    total = data.get("useful", 0) + data.get("wasteful", 0)
+    # Defer to the established latewatch path until explicit feedback exists.
+    suppress = (
+        state.get("mode") == "active" and total >= MIN_FEEDBACK and
+        (data["useful"] + 1) / (total + 2) < MIN_USEFUL_RATIO
+    )
+    usable = eligible and residency_ok
+    return {
+        "schedule": "SPEAK_AND_CHECK" if usable and not suppress else "SPEAK_ONLY",
+        "suggestion": "SPEAK_ONLY" if suppress else "SPEAK_AND_CHECK",
+        "proposed_concurrency": bool(usable and not suppress),
+        "start_optional_observer": bool(usable and not suppress),
+        "adaptive_veto": bool(suppress),
+        "feedback_n": total,
+        "estimated_usefulness": round((data["useful"] + 1) / (total + 2), 4),
+        "mode": state.get("mode"),
+    }
+
+
+def plan(store, event_id, meta, preoffers, role, eligible=True, residency_ok=True):
+    """Called immediately before a C3 token stream, never on every token."""
+    if not isinstance(event_id, str) or not event_id:
+        raise ValueError("source event id required")
+    if type(preoffers) is not int or preoffers < 0:
+        raise ValueError("invalid preanswer offer count")
+    if role not in ("B1_DETAIL", "B2_GIST"):
+        raise ValueError("unknown optional observer role")
+    pattern, resource_mode, cycles = _signals(meta, preoffers, role)
+    state, _ = _read(store)
+    # Scheduling may only DELETE optional extra work, never bypass the
+    # already-computed pre-answer deliberation or any C5 permission gate.
+    decision = decide(state, pattern, bool(eligible), bool(residency_ok))
+    if state["mode"] in ("measure", "off"):
+        decision["start_optional_observer"] = bool(eligible and residency_ok)
+        decision["adaptive_veto"] = False
+    decision.update({
+        "pattern": pattern,
+        "resource_mode": resource_mode,
+        "preanswer_offers": preoffers,
+        "focal_cycles": cycles,
+        "thinking_before_speech": bool(preoffers or cycles),
+        "concurrent_models_claim": bool(decision["start_optional_observer"] and residency_ok),
+        "external_action_authority": "UNCHANGED_C5_GATE",
+        "evidence": "SCHEDULE_ONLY_NOT_PROOF_OF_ANSWER_QUALITY",
+    })
+    if state["mode"] != "off":
+        def register(value):
+            if event_id not in value["events"]:
+                value["events"][event_id] = {"pattern": pattern, "feedback": None,
+                                             "scheduled": decision["schedule"]}
+            if len(value["events"]) > MAX_EVENTS:
+                for old in list(value["events"])[:len(value["events"]) - MAX_EVENTS]:
+                    del value["events"][old]
+            value["last"] = (value.get("last", []) + [
+                {"event": event_id, "schedule": decision["schedule"],
+                 "adaptive_veto": decision["adaptive_veto"]}
+            ])[-16:]
+        _mutate(store, register)
+    return decision
+
+
+def feedback(store, event_id, outcome):
+    """One *explicit* human usefulness label per observed turn.
+
+    "useful" means the optional concurrent observer helped; "wasteful" means
+    it did not. Neither is inferred from FINAL status or an automatic critic.
+    """
+    if outcome not in ("useful", "wasteful"):
+        raise ValueError(":turnflow feedback EVENT_ID useful|wasteful")
+    def update(state):
+        observation = state["events"].get(event_id)
+        if observation is None:
+            raise ValueError("unknown event; no turn-flow observation")
+        if observation["feedback"] is not None:
+            raise ValueError("this event was already rated")
+        if observation["scheduled"] != "SPEAK_AND_CHECK":
+            raise ValueError("cannot rate an observer that was not scheduled")
+        pattern = observation["pattern"]
+        counts = state["patterns"].setdefault(pattern, {"useful": 0, "wasteful": 0})
+        counts[outcome] += 1
+        observation["feedback"] = outcome
+        if len(state["patterns"]) > MAX_PATTERNS:
+            # Never delete the just updated pattern.
+            for name in list(state["patterns"]):
+                if len(state["patterns"]) <= MAX_PATTERNS:
+                    break
+                if name != pattern:
+                    del state["patterns"][name]
+        return {"event_id": event_id, "pattern": pattern,
+                "outcome": outcome, "n": sum(counts.values())}
+    return _mutate(store, update)
+
+
+def report(store):
+    state, _ = _read(store)
+    return {
+        "revision": REVISION, "mode": state["mode"],
+        "feedback_patterns": {key: dict(value) for key, value in state["patterns"].items()},
+        "recent": state["last"][-12:],
+        "claim_limit": "Only optional late B1/B2 overlap; no forced concurrency, active model thinking, tools, or age-gate changes"
+    }
+
+
+def operator_command(runtime, args):
+    """Called only through local Operator.run(origin='OPERATOR_TTY')."""
+    store = runtime.store
+    if not args or args == ["status"]:
+        return report(store)
+    if args in (["measure"], ["active"], ["off"]):
+        return {"mode": set_mode(store, args[0], origin="OPERATOR_TTY")}
+    if len(args) == 3 and args[0] == "feedback":
+        return feedback(store, args[1], args[2])
+    raise ValueError(":turnflow [status|measure|active|off|feedback EVENT_ID useful|wasteful]")
