@@ -35,7 +35,7 @@ def validate(doc):
             raise ValueError("unknown capability mode: " + str(cid))
         if not isinstance(item["implementation_files"], list) or any(
             not isinstance(p, str) or not p.strip() or p.startswith("/") or
-            "\\\\" in p or ".." in p.split("/") for p in item["implementation_files"]
+            chr(92) in p or ".." in p.split("/") for p in item["implementation_files"]
         ):
             raise ValueError("invalid implementation_files: " + cid)
         if not isinstance(item["known_limits"], str):
