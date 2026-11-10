@@ -1,0 +1,26 @@
+name: V13 predictor adversarial checkpoint QA
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/continuous_predictor.py'
+      - 'v13/code/tests/test_online_predictor_adversarial_checkpoint.py'
+      - '.github/workflows/v13-predictor-adversarial-checkpoint.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  adversarial-checkpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install bounded dependency
+        run: python -m pip install 'numpy>=1.26,<3'
+      - name: Run checkpoint adversarial regression
+        working-directory: v13/code
+        run: python -m unittest -v tests.test_online_predictor_adversarial_checkpoint
