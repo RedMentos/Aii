@@ -8,6 +8,7 @@ without creating a workspace. No automatic native training and no promotion.
 import json
 import os
 import re
+import math
 from pathlib import Path
 
 from ..common import file_hash
@@ -39,6 +40,8 @@ def readiness(runtime,kind,state):
         pass
     server=Path(os.environ.get("V13_LLAMA_SERVER",str(home/"bin"/"llama-server")))
     reasons=[]
+    if role=="B2_GIST" and getattr(runtime.models,"b2_control","two_body")!="two_body":
+        reasons.append("B2_DISTINCT_BODY_REQUIRED")
     weight=master/"model.safetensors"
     if not weight.is_file():
         reasons.append("MASTER_WEIGHTS_MISSING")
@@ -108,6 +111,24 @@ def build(runtime,kind,state):
     settings=report["requirements"]
     anchors,heldout=probes()
     user_cfg=((state.get("body_lora_cfg") or {}).get(kind) or {})
+    invalid=(not isinstance(user_cfg,dict) or any(
+        key not in DEFAULTS or key in ("threads","base_gguf") for key in user_cfg
+    ))
+    if not invalid:
+        targets_override=user_cfg.get("targets")
+        if targets_override is not None:
+            invalid=(not isinstance(targets_override,(list,tuple))
+                     or not 1<=len(targets_override)<=32
+                     or any(type(x) is not str or not re.fullmatch(r"[A-Za-z0-9_.]{1,80}",x)
+                            for x in targets_override))
+        for numeric,lo,hi in (("jepa_weight",0.,10.),("lr",0.,.01),("anchor_weight",0.,100.)):
+            v=user_cfg.get(numeric)
+            if v is not None and (type(v) not in (float,int) or not math.isfinite(v)
+                                  or v<lo or v>hi or numeric=="lr" and v==0):
+                invalid=True
+    if invalid:
+        info.update(active="none",served_live=False,missing=["BODY_CFG_INVALID"])
+        return NullTrainer(),info
     # B1 (LFM) and B2 (Qwen) have different target-module names. These
     # defaults are hypotheses until a pinned full-master training run passes.
     targets=("w1","w2","w3") if role=="B1_DETAIL" else ("q_proj","v_proj")
