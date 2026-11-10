@@ -25,6 +25,8 @@ def _blob(home, digest, max_bytes=64*1024*1024):
             raise ValueError("oversized source blob")
         content = raw.read_bytes()
     elif compressed.is_file():
+        if compressed.stat().st_size > max_bytes:
+            raise ValueError("oversized compressed source blob")
         d = zlib.decompressobj()
         content = d.decompress(compressed.read_bytes(), max_bytes+1)
         if len(content) > max_bytes or d.unconsumed_tail or not d.eof or d.unused_data:
@@ -46,8 +48,10 @@ def verify_store_sources(reviewed_jsonl, store_home):
     try:
         count = 0
         checked = set()
+        input_digest = hashlib.sha256()
         with Path(reviewed_jsonl).open("rb") as f:
             for line in f:
+                input_digest.update(line)
                 if len(line) > MAX_LINE:
                     raise ValueError("oversized reviewed row")
                 if not line.strip():
@@ -68,6 +72,7 @@ def verify_store_sources(reviewed_jsonl, store_home):
         if not count:
             raise ValueError("no reviewed rows")
         return {"rows": count, "verified_sources": len(checked),
+                "input_sha256": input_digest.hexdigest(),
                 "provenance": "READ_ONLY_STORE_SOURCE_BYTES_VERIFIED"}
     finally:
         con.close()
@@ -75,7 +80,11 @@ def verify_store_sources(reviewed_jsonl, store_home):
 
 def compile_from_store(reviewed_jsonl, store_home, destination, holdout_percent=20):
     verification = verify_store_sources(reviewed_jsonl, store_home)
+    # A changing input is rejected even if its rows remain individually valid.
+    # The resulting directory must not be consumed on any exception.
     result = compile_dataset(reviewed_jsonl, destination, holdout_percent)
+    if result["input_sha256"] != verification["input_sha256"]:
+        raise ValueError("reviewed input changed after Store verification")
     return {"source_verification": verification, "dataset": result}
 
 
