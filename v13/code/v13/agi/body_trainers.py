@@ -126,6 +126,8 @@ def build(runtime,kind,state):
             if v is not None and (type(v) not in (float,int) or not math.isfinite(v)
                                   or v<lo or v>hi or numeric=="lr" and v==0):
                 invalid=True
+    if not invalid and user_cfg.get("anchor_reference_mode","stream") not in ("cached","stream"):
+        invalid=True
     if invalid:
         info.update(active="none",served_live=False,missing=["BODY_CFG_INVALID"])
         return NullTrainer(),info
@@ -135,7 +137,7 @@ def build(runtime,kind,state):
     cfg=dict(DEFAULTS)
     cfg.update(targets=targets,threads=int(runtime.cfg.get("threads",4)),
                base_gguf=settings["gguf"],checkpoint_resume=True,
-               heldout_probe_cap=8)
+               heldout_probe_cap=8,anchor_reference_mode="stream")
     cfg.update(user_cfg)
     work=Path(runtime.home)/"training"/"ag6"/kind
     work.mkdir(parents=True,exist_ok=True)

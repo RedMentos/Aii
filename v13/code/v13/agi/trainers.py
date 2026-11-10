@@ -22,6 +22,35 @@ from .base import StateBox
 
 KEY='G6_TRAINER_CHOICE';REVISION='g6-trainer-v1'
 KINDS=('auto','lora','sparse','none','body_b1','body_b2')
+
+def parse_cfg_value(raw):
+    """Safe local :growth trainer cfg scalar/list parser, no eval or implicit code.
+
+    JSON covers numeric, bool, and list knobs. Simple symbolic values such as
+    'stream', 'cached' and 'ema' are allowed as bare words for Vibe-Coder CLI.
+    """
+    import math,re
+    if type(raw) is not str or len(raw)>256 or not raw:
+        raise ValueError('Ungültiger Trainer-Reglerwert')
+    def invalid_constant(value):
+        raise ValueError('Nichtendlicher Trainer-Reglerwert')
+    try:
+        value=json.loads(raw,parse_constant=invalid_constant)
+    except json.JSONDecodeError:
+        if not re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,47}',raw):
+            raise ValueError('Trainer-Wert muss JSON oder ein einfaches Wort sein') from None
+        return raw
+    def finite(obj):
+        if type(obj) is float and not math.isfinite(obj):
+            raise ValueError('Nichtendlicher Trainer-Reglerwert')
+        if isinstance(obj,dict):
+            for x in obj.values():finite(x)
+        if isinstance(obj,list):
+            for x in obj:finite(x)
+    finite(value)
+    return value
+
+
 ROLE='C3_LANGUAGE'
 
 # Live LoRA values measured on the deployed path (bench-results/ag6-live-20261010, LFM2.5-350M Q4, 8 facts, 32 probes,

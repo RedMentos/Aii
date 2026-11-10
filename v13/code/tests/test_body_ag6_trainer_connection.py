@@ -118,6 +118,7 @@ def test_real_body_jepa_trainer_wired_to_correct_role_on_ready_inputs(
     assert t.cfg["base_gguf"]==fake["requirements"]["gguf"]
     assert tuple(t.cfg["targets"])==targets
     assert callable(t.evaluator) and info["served_live"]
+    assert t.cfg["anchor_reference_mode"]=="stream"  # memory bounded, explicit Body AG6 only
     assert info["approval"]=="HUMAN_REQUIRED_BY_EXISTING_AG6_GATE"
     assert "trained" not in str(info).lower()
     assert (tmp_path/"training"/"ag6"/kind).is_dir()
@@ -207,6 +208,8 @@ def test_b2_shared_body_ablation_cannot_be_mistaken_for_distinct_b2(tmp_path):
     {"targets":["correct", "__dict__"]},
     {"targets":[]},
     {"anchor_weight":-1},
+    {"anchor_reference_mode":"unsafe"},
+
     "not-a-dict",
 ])
 def test_tampered_body_config_fails_before_workspace(monkeypatch,tmp_path,override):
@@ -225,3 +228,21 @@ def test_tampered_body_config_fails_before_workspace(monkeypatch,tmp_path,overri
     assert info["active"]=="none"
     assert "BODY_CFG_INVALID" in info["missing"]
     assert not (tmp_path/"training").exists()
+
+
+@pytest.mark.parametrize("raw,expected",[
+    ("stream","stream"),("cached","cached"),("ema","ema"),
+    ("true",True),("false",False),("8",8),("0.0003",0.0003),
+    ('["q_proj","v_proj"]',["q_proj","v_proj"]),
+])
+def test_training_knob_parser_safe_and_useful_for_termux(raw,expected):
+    assert trainers.parse_cfg_value(raw)==expected
+
+
+@pytest.mark.parametrize("invalid",[
+    "NaN","Infinity","1e999","__import__('os')",
+    "python -c print()", "x"*260, "1; rm -rf /", "",
+])
+def test_training_knob_parser_rejects_nonfinite_and_code(invalid):
+    with pytest.raises(ValueError):
+        trainers.parse_cfg_value(invalid)
