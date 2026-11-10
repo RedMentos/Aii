@@ -1,0 +1,77 @@
+{
+  "verified_on": "2026-11-10",
+  "source": "GitHub connector list_pr_changed_filenames; PR state not established by this endpoint",
+  "pull_requests": [
+    {
+      "number": 1668,
+      "files": [
+        "v13/coordination/AGENT_TEAM_PLAN_2026-11-10.md"
+      ]
+    },
+    {
+      "number": 1672,
+      "files": [
+        ".github/workflows/v13-body-jepa-lowram.yml",
+        "v13/code/tests/test_body_heldout_dropout.py",
+        "v13/code/v13/body_jepa.py"
+      ]
+    },
+    {
+      "number": 1673,
+      "files": [
+        "v13/code/docs/JEPA_ONLINE_CURSOR_HANDOFF_20261110.md",
+        "v13/code/tests/test_online_world_cursor_recovery.py",
+        "v13/code/v13/online_world.py"
+      ]
+    },
+    {
+      "number": 1674,
+      "files": [
+        ".github/workflows/v13-contract-audit.yml",
+        "v13/code/tests/test_contract_audit.py",
+        "v13/code/v13/contract_audit.py"
+      ]
+    },
+    {
+      "number": 1676,
+      "files": [
+        "v13/code/tests/test_streamed_anchor_dropout.py",
+        "v13/code/v13/body_jepa.py"
+      ]
+    },
+    {
+      "number": 1677,
+      "files": [
+        ".github/workflows/v13-online-world-batch.yml",
+        "v13/code/docs/JEPA_ONLINE_WORLD_BATCH_VALIDATION_20261110.md",
+        "v13/code/tests/test_online_world_batch_validation_20261110.py",
+        "v13/code/v13/online_world.py"
+      ]
+    },
+    {
+      "number": 1678,
+      "files": [
+        "v13/code/docs/work_ledgers/BOSS_CONTRACT_HARDENING_HANDOFF_20261110.md",
+        "v13/code/tests/test_contract_audit_hardening.py",
+        "v13/code/v13/contract_audit.py"
+      ]
+    },
+    {
+      "number": 1680,
+      "files": [
+        "v13/code/docs/QA_HELDOUT_MIXED_MODES_HANDOFF_20261110.md",
+        "v13/code/tests/test_heldout_mixed_modes.py",
+        "v13/code/v13/body_jepa.py"
+      ]
+    },
+    {
+      "number": 1681,
+      "files": [
+        ".github/workflows/v13-online-world-atomic-batch.yml",
+        "v13/code/docs/HANDOFF_JEPA_ATOMIC_BATCH_20261110.md",
+        "v13/code/tests/test_online_world_atomic_batch.py",
+        "v13/code/v13/online_world.py"
+      ]
+    }
+  ]
+}
