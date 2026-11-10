@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from .body_dataset import ROLES, MAX_LINE, MAX_ROWS, _validate
 
-def load_role_dataset(directory, role, *, max_rows=MAX_ROWS):
+def load_role_dataset(directory, role, *, max_rows=256):
     """Validate every partition before yielding one role's train/holdout rows.
 
     Review flags in the dataset are NOT authenticated operator approval.
