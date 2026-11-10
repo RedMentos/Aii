@@ -18,6 +18,8 @@ def validate(doc):
     components = doc.get("components")
     if not isinstance(components, list) or not components:
         raise ValueError("missing components")
+    if not isinstance(doc.get("canon_sha256"), str) or not doc["canon_sha256"].strip():
+        raise ValueError("missing canon hash")
     ids = set()
     for item in components:
         if not isinstance(item, dict) or not REQUIRED.issubset(item):
@@ -26,9 +28,15 @@ def validate(doc):
         if not isinstance(cid, str) or not cid or cid in ids:
             raise ValueError("duplicate or invalid component id")
         ids.add(cid)
-        if item["current_mode"] not in ALLOWED:
+        for key in ("name", "runtime_owner", "state_owner", "canon_source"):
+            if not isinstance(item[key], str) or not item[key].strip():
+                raise ValueError("invalid " + key + ": " + cid)
+        if not isinstance(item["current_mode"], str) or item["current_mode"] not in ALLOWED:
             raise ValueError("unknown capability mode: " + str(cid))
-        if not isinstance(item["implementation_files"], list):
+        if not isinstance(item["implementation_files"], list) or any(
+            not isinstance(p, str) or not p.strip() or p.startswith("/") or
+            chr(92) in p or ".." in p.split("/") for p in item["implementation_files"]
+        ):
             raise ValueError("invalid implementation_files: " + cid)
         if not isinstance(item["known_limits"], str):
             raise ValueError("invalid known_limits: " + cid)
@@ -41,6 +49,8 @@ def compare(base, candidate):
     before = validate(base)
     after = validate(candidate)
     problems = []
+    if base["schema_version"] != candidate["schema_version"]:
+        problems.append("SCHEMA_CHANGE_REQUIRES_REVIEW")
     for cid in sorted(before.keys() - after.keys()):
         problems.append("REMOVED_COMPONENT " + cid)
     for cid in sorted(before.keys() & after.keys()):
@@ -52,6 +62,11 @@ def compare(base, candidate):
                             old["current_mode"] + "->" + new["current_mode"])
         if old["implementation_files"] and not new["implementation_files"]:
             problems.append("LOST_IMPLEMENTATION_REFERENCES " + cid)
+        elif set(old["implementation_files"]) - set(new["implementation_files"]):
+            problems.append("IMPLEMENTATION_REFERENCES_CHANGED_REQUIRES_REVIEW " + cid)
+        for key in ("runtime_owner", "state_owner", "canon_source"):
+            if old[key] != new[key]:
+                problems.append(key.upper() + "_CHANGED_REQUIRES_REVIEW " + cid)
     if base.get("canon_sha256") != candidate.get("canon_sha256"):
         problems.append("CANON_HASH_CHANGED_REQUIRES_REVIEW")
     return problems
