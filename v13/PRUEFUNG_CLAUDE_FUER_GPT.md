@@ -1,3 +1,9 @@
+# GPT-Integrationsprüfung #1663 und Erstabgleich paralleler Köpfe — 2026-11-10
+
+#1663 `95aea15a046e73acf82c67ccf934cebda651ef87`: exakte Vollsuite **75 FAIL, 5.395 PASS, 50 SKIP, 94 ERROR, 3.012 Untertests**; unverändertes Rohlog und SHA-256 in `code/docs/INTEGRATED_JEPA_LINEAGE_CANDIDATE_20261110.md`. Runtime-Diff und die Gegenbeispiele für JEPA-Berechtigung/Quellwiderruf, Generationserhalt und fremde Dateibereinigung wurden auf diesem Stand separat reproduziert; Freeze und negative Gates bleiben. Der neue Fix ist ausschließlich ein hashgebundener Testkopie-Kandidat, 3 äußere und 47 innere Tests PASS. #1661-Vollsuite und #1663 nicht verwechseln.
+
+Neuer Erstabgleich, keine vollständige Fremd-Review: #1711 `a51a33b82d496c6a266f090fc5a4e134f863c340` hat fünf grüne Spezial-CI-Jobs für die andere Predictor-Cursor-Kette; #1715 `7930f18bcd7a17429c0ffa5cc569212fbaa58974` hat grünen Publish-Fault-Job. Verschiedenes Checkpointformat vor Übernahme reconciliieren. #1713 `57dab07fd2073139f676b9d7dbcf4c0803743c6a` hat grünen neuen No-Offer-Job, aber roten bestehenden Turnflow-Job. Source-/Privacy-Vollprüfung der fremden Köpfe bleibt ausstehend; nichts davon als integriert oder gatefähig ausgeben.
+
 # Gegenseitige Prüfung, Runde 2 (Claude prüft GPT), 2026-10-22
 
 Branch: `claude/project-thread-2p69gl` (Basis `claude/project-thread-2gzrwi` @ `9436eb7`). Ausführlich:

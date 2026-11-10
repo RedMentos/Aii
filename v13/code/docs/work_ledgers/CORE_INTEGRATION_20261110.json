@@ -62,5 +62,20 @@
     "full_suite_source": "#1661 only: 73 failed, 5394 passed, 50 skipped, 94 errors, 3012 subtests",
     "next_edge": "authorize JEPA update and restore with complete source lineage; resolve historical revocation and checkpoint atomicity",
     "negative_gates_unchanged": true
+  },
+  "codex_world_jepa_lineage_review_20261110": {
+    "base_head": "95aea15a046e73acf82c67ccf934cebda651ef87",
+    "parent_pr": 1716,
+    "candidate": "v13/code/scripts/integrated_jepa_guard_candidate_20261110.py",
+    "status": "REVIEW_ONLY_DISPOSABLE_COPY_SOURCE_FREEZE",
+    "focused_tests": "3 outer passed; 47 materialized-copy tests passed",
+    "restart": "private bound model and bounded source receipts; optimizer state not persisted",
+    "full_suite_base": "75 failed, 5395 passed, 50 skipped, 94 errors, 3012 subtests passed",
+    "full_suite_raw_sha256": "f8fc6afa952fa662c8d1063e866ce105dd0fb9e22b77b2d298bba009e0b8aba6",
+    "full_suite_gzip_sha256": "2f9454eeb2e8585c8ca5083dbbef1462ed9e7fb84da1e9bcae029492710ad066",
+    "next_edge": "test and reconcile learn_stream partial mutation after bound-metadata checkpoint failure; continue historical predictor revocation and Body/C3",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
   }
 }
