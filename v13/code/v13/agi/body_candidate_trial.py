@@ -30,7 +30,7 @@ def _verify_partition_bytes(directory):
             raise ValueError("dataset partition changed during trial")
 
 
-def _loss(evaluate, candidate, items):
+def _losses(evaluate, candidate, items):
     scores = []
     for item in items:
         score = evaluate(candidate, item["prompt"], item["target"])
@@ -39,24 +39,30 @@ def _loss(evaluate, candidate, items):
         scores.append(float(score))
     if not scores:
         raise ValueError("empty heldout")
-    return sum(scores) / len(scores)
+    return scores
 
 def run_body_candidate_trial(directory, role, *, manifest_sha256, authorize,
                              make_candidate, train_candidate, evaluate,
-                             max_items=256, max_retention_increase=0.0):
+                             max_items=256, max_retention_increase=0.0,
+                             max_single_example_regression=0.0):
     """Train an isolated candidate only, compare identical heldout examples.
 
     authorize is a trusted operator-side callback, not a dataset field.
     make_candidate MUST return an independent candidate; train_candidate MUST
     modify only that candidate. This API cannot verify object isolation.
     Returns metrics and the candidate for separate human-controlled review;
-    it never activates/deploys the candidate.
+    it never activates/deploys the candidate. Both mean heldout loss and
+    worst paired-example regression must satisfy independently bounded limits.
     """
     if (type(manifest_sha256) is not str or len(manifest_sha256) != 64
             or any(c not in "0123456789abcdef" for c in manifest_sha256)):
         raise ValueError("invalid pinned manifest digest")
     if type(max_retention_increase) not in (int, float) or not math.isfinite(max_retention_increase) or max_retention_increase < 0:
         raise ValueError("invalid retention tolerance")
+    if (type(max_single_example_regression) not in (int, float)
+            or not math.isfinite(max_single_example_regression)
+            or max_single_example_regression < 0):
+        raise ValueError("invalid per-example retention tolerance")
     if not all(callable(f) for f in (authorize, make_candidate, train_candidate, evaluate)):
         raise TypeError("trusted callbacks required")
     manifest = Path(directory) / "manifest.json"
@@ -71,10 +77,13 @@ def run_body_candidate_trial(directory, role, *, manifest_sha256, authorize,
         raise PermissionError("operator authorization denied")
     _verify_partition_bytes(directory)
     candidate = make_candidate(role)
-    before = _loss(evaluate, candidate, heldout)
+    before_scores = _losses(evaluate, candidate, heldout)
     _verify_partition_bytes(directory)
     train_candidate(candidate, train)
-    after = _loss(evaluate, candidate, heldout)
+    after_scores = _losses(evaluate, candidate, heldout)
+    before = sum(before_scores) / len(before_scores)
+    after = sum(after_scores) / len(after_scores)
+    worst_regression = max(a - b for a, b in zip(after_scores, before_scores))
     if _digest(manifest) != manifest_sha256:
         raise ValueError("manifest changed during trial")
     _verify_partition_bytes(directory)
@@ -82,5 +91,7 @@ def run_body_candidate_trial(directory, role, *, manifest_sha256, authorize,
             "train_rows": len(train), "heldout_rows": len(heldout),
             "heldout_before": before, "heldout_after": after,
             "heldout_delta": after - before,
-            "retention_pass": after <= before + max_retention_increase,
+            "max_single_example_regression": worst_regression,
+            "retention_pass": (after <= before + max_retention_increase
+                               and worst_regression <= max_single_example_regression),
             "deployment": "NOT_AUTHORIZED"}, candidate
