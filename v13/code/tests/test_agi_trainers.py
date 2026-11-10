@@ -1,4 +1,4 @@
-"""WP-AG6 live trainer choice (agi/trainers.py). No torch/model needed: requirements are faked."""
+"""WP-AG6 live trainer choice with post-readiness strict master/schema expectations."""
 import json
 from pathlib import Path
 import tempfile
@@ -21,7 +21,7 @@ class Trainers(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.home=Path(self.tmp.name);self.r=Runtime(self.home)
         self.r.sleep.cycle.set_policy('enabled','off');self.g=hub(self.r)
-        self.master=self.home/'master';self.master.mkdir();(self.master/'model.safetensors').write_bytes(b'w');(self.master/'config.json').write_text('{}')
+        self.master=self.home/'master';self.master.mkdir();(self.master/'model.safetensors').write_bytes(b'w');(self.master/'config.json').write_text(json.dumps({'hidden_size':16,'num_hidden_layers':2}))
         self.gguf=self.home/'c3.gguf';self.gguf.write_bytes(b'GGUF');(self.home/'bin').mkdir(exist_ok=True);(self.home/'bin/llama-server').write_bytes(b'')
         p=mock.patch.object(tr,'arch_match',return_value=True);p.start();self.addCleanup(p.stop)  # fake GGUF bytes
     def tearDown(self):self.r.close();self.tmp.cleanup()
@@ -75,12 +75,12 @@ class Trainers(unittest.TestCase):
         self.r.models=FakeModels(self.gguf)
         with mock.patch.object(tr,'_torch',return_value=True),mock.patch.object(tr,'arch_match',return_value=False):
             info=tr.choose(self.g,self.r,'lora',str(self.master))
-        self.assertEqual(info['active'],'none');self.assertIn('master_ok',info['missing']);self.assertFalse(info['requirements']['arch_match'])
+        self.assertEqual(info['active'],'none');self.assertIn('MASTER_GGUF_ARCH_MISMATCH',info['missing']);self.assertFalse(info['requirements']['arch_match'])
     def test_missing_piece_falls_back_honestly(self):
         self.r.models=FakeModels(self.gguf)
         with mock.patch.object(tr,'_torch',return_value=False):
             info=tr.choose(self.g,self.r,'lora',str(self.master))
-        self.assertEqual(info['active'],'none');self.assertEqual(info['missing'],['torch'])
+        self.assertEqual(info['active'],'none');self.assertIn('TRAINER_DEPENDENCIES_MISSING',info['missing'])
     def test_consolidate_job_trains_and_gates_with_installed_trainer(self):
         class FakeTrainer:
             method='fake';role='C3_LANGUAGE'
