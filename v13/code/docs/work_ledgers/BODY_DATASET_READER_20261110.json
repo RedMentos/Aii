@@ -9,11 +9,13 @@
   "files": [
     "v13/code/v13/agi/body_dataset_reader.py",
     "v13/code/tests/test_body_dataset_reader.py",
-    ".github/workflows/v13-body-dataset-consumer.yml"
+    ".github/workflows/v13-body-dataset-consumer.yml",
+    "v13/code/v13/agi/body_dataset_training_input.py",
+    "v13/code/tests/test_body_dataset_training_input.py"
   ],
   "status": "REVIEW_ONLY_CI_PENDING",
-  "scope": "Read-only hash-bound dataset consumption; no model training or operator authority",
-  "tests": "Python compileall and three targeted unittest suites configured in GitHub Actions; remote result not yet verified",
+  "scope": "Read-only hash-bound dataset consumption; no model training or operator authority; deterministic BodyJepaTrainer.fit item preparation (no training invocation)",
+  "tests": "Two focused test modules plus existing reviewed/store tests configured in Actions; latest CI not yet verified",
   "negative_gates": [
     "STEP2 UTILITY_FAIL",
     "B3 NO_PROMOTION",
@@ -22,7 +24,7 @@
     "no authenticated training approval"
   ],
   "next_command": "cd v13/code && python -m unittest discover -s tests -p 'test_body_dataset_reader.py' -v",
-  "next_work": "Verify exact-head CI, review source-id/hash and split invariants, integrate authenticated operator training permission with existing B1/B2 AG6 trainer without changing its safety gate; measure real adapter retention on pinned master",
+  "next_work": "Check exact-head Actions and fix regressions; then authenticated human-approval integration to AG6, actual pinned-master B1/B2 training and heldout retention",
   "blockers": [
     "Direct git network DNS unavailable in this environment",
     "No Redmi device or pinned master weights here"
