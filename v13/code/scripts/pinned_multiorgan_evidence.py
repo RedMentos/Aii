@@ -10,19 +10,29 @@ SHA = re.compile(r"[0-9a-f]{40}\Z")
 
 def check(data):
     errors = []
+    if not isinstance(data, dict):
+        return ["manifest must be object"]
     chains = data.get("chains", {})
     if not isinstance(chains, dict) or any(x not in chains for x in REQUIRED):
         return ["missing organ chain"]
     for organ in REQUIRED:
         chain = chains[organ]
+        if not isinstance(chain, dict):
+            errors.append(organ + ": chain must be object")
+            continue
         sha = chain.get("head_sha")
         if not isinstance(sha, str) or not SHA.fullmatch(sha):
             errors.append(organ + ": unpinned SHA")
         if chain.get("status") not in ("SHADOW", "REVIEW_ONLY", "OFF", "BLOCKED"):
             errors.append(organ + ": invalid status")
-        if not chain.get("runs"):
-            errors.append(organ + ": missing CI")
-        for run in chain.get("runs", []):
+        runs = chain.get("runs")
+        if not isinstance(runs, list) or not runs:
+            errors.append(organ + ": missing or invalid CI list")
+            continue
+        for run in runs:
+            if not isinstance(run, dict):
+                errors.append(organ + ": CI run must be object")
+                continue
             if run.get("head_sha") != sha:
                 errors.append(organ + ": stale CI")
             if run.get("conclusion") != "success":
@@ -33,8 +43,12 @@ def check(data):
                 errors.append(organ + ": invalid evidence level")
     if data.get("claim") != "REVIEW_ONLY":
         errors.append("promotion forbidden")
+    gates = data.get("gates")
+    if not isinstance(gates, dict):
+        errors.append("gates must be object")
+        gates = {}
     for gate in GATES:
-        if data.get("gates", {}).get(gate) not in ("FAIL", "OFF", "UNAVAILABLE", "UNVERIFIED"):
+        if gates.get(gate) not in ("FAIL", "OFF", "UNAVAILABLE", "UNVERIFIED"):
             errors.append(gate + ": negative gate overridden")
     return errors
 
