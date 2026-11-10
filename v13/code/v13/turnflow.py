@@ -14,13 +14,15 @@ human-controlled latewatch cut/revision policy.
 """
 from __future__ import annotations
 
-import math
+import hashlib
 
 KEY = "JEF_TURN_FLOW_V1"
 REVISION = "turn-flow-v1"
 MODES = ("measure", "active", "off")
 MIN_FEEDBACK = 6
 MIN_USEFUL_RATIO = 0.35
+MIN_LATE_ONLY = 12   # only optional simple-turn observers, not focal/critical paths
+EXPLORE_FRACTION = 4  # one in four eligible turns still probes the body
 MAX_EVENTS = 128
 MAX_PATTERNS = 48
 
@@ -88,25 +90,45 @@ def _signals(meta, preoffers, late_role):
     return key, data.get("mode", "UNKNOWN"), cycles
 
 
-def decide(state, pattern, eligible, residency_ok):
-    """Pure choice: an adaptive veto on OPTIONAL parallel observer work."""
+def decide(state, pattern, eligible, residency_ok, event_id=""):
+    """Pure choice: a bounded, partly self-trained OPTIONAL-work veto.
+
+    Human-labelled uselessness is independent of timed-out observer evidence.
+    A C3 turn with ZERO prior preanswer/focal checks may learn to stop asking
+    a consistently late body. The exploration quota guarantees revisits;
+    any focal or preanswer reasoning remains unaffected.
+    """
     proposals = state.get("patterns", {})
-    data = proposals.get(pattern) or {"useful": 0, "wasteful": 0}
-    total = data.get("useful", 0) + data.get("wasteful", 0)
-    # Defer to the established latewatch path until explicit feedback exists.
-    suppress = (
-        state.get("mode") == "active" and total >= MIN_FEEDBACK and
-        (data["useful"] + 1) / (total + 2) < MIN_USEFUL_RATIO
+    data = proposals.get(pattern) or {}
+    useful = data.get("useful", 0)
+    wasted = data.get("wasteful", 0)
+    total = useful + wasted
+    on_time = data.get("on_time", 0)
+    late = data.get("too_late", 0)
+    human_veto = total >= MIN_FEEDBACK and (useful + 1) / (total + 2) < MIN_USEFUL_RATIO
+    auto_veto = (pattern.startswith("pre0/no_focal/") and
+                 late >= MIN_LATE_ONLY and on_time == 0 and useful == 0)
+    probe = bool(event_id) and hashlib.sha256(event_id.encode("utf-8")).digest()[0] % EXPLORE_FRACTION == 0
+    suppress = state.get("mode") == "active" and (
+        human_veto or (auto_veto and not probe)
     )
     usable = eligible and residency_ok
+    reason = ("HUMAN_FEEDBACK" if human_veto else
+              "REPEATED_UNTIMELY_OBSERVER" if auto_veto and not probe else
+              "TIMELINESS_EXPLORATION" if auto_veto and probe else "NO_VETO")
     return {
         "schedule": "SPEAK_AND_CHECK" if usable and not suppress else "SPEAK_ONLY",
-        "suggestion": "SPEAK_ONLY" if suppress else "SPEAK_AND_CHECK",
+        "suggestion": "SPEAK_ONLY" if human_veto or auto_veto and not probe else "SPEAK_AND_CHECK",
         "proposed_concurrency": bool(usable and not suppress),
         "start_optional_observer": bool(usable and not suppress),
         "adaptive_veto": bool(suppress),
+        "adaptive_reason": reason,
+        "human_feedback_n": total,
+        "observer_on_time": on_time,
+        "observer_too_late": late,
+        "exploration_turn": bool(auto_veto and probe),
         "feedback_n": total,
-        "estimated_usefulness": round((data["useful"] + 1) / (total + 2), 4),
+        "estimated_usefulness": round((useful + 1) / (total + 2), 4),
         "mode": state.get("mode"),
     }
 
@@ -123,7 +145,7 @@ def plan(store, event_id, meta, preoffers, role, eligible=True, residency_ok=Tru
     state, _ = _read(store)
     # Scheduling may only DELETE optional extra work, never bypass the
     # already-computed pre-answer deliberation or any C5 permission gate.
-    decision = decide(state, pattern, bool(eligible), bool(residency_ok))
+    decision = decide(state, pattern, bool(eligible), bool(residency_ok), event_id)
     if state["mode"] in ("measure", "off"):
         decision["start_optional_observer"] = bool(eligible and residency_ok)
         decision["adaptive_veto"] = False
@@ -175,6 +197,14 @@ def observe(store, event_id, status):
         if event.get("observer_status") is not None:
             return event["observer_status"]
         event["observer_status"] = status
+        # Actual timeliness is an automatically observable cost, not a
+        # reward/accuracy claim. A late pass may still help next-turn memory.
+        counts = state["patterns"].setdefault(
+            event["pattern"], {"useful": 0, "wasteful": 0,
+                               "on_time": 0, "too_late": 0}
+        )
+        field = "on_time" if status in ("AGREES", "WOULD_INTERRUPT", "INTERRUPTED") else "too_late"
+        counts[field] = counts.get(field, 0) + 1
         return status
     return _mutate(store, update)
 
@@ -199,8 +229,10 @@ def feedback(store, event_id, outcome):
         if observation.get("observer_status") not in OBSERVED_STATUSES:
             raise ValueError("cannot rate an unobserved concurrent check")
         pattern = observation["pattern"]
-        counts = state["patterns"].setdefault(pattern, {"useful": 0, "wasteful": 0})
-        counts[outcome] += 1
+        counts = state["patterns"].setdefault(
+            pattern, {"useful": 0, "wasteful": 0, "on_time": 0, "too_late": 0}
+        )
+        counts[outcome] = counts.get(outcome, 0) + 1
         observation["feedback"] = outcome
         if len(state["patterns"]) > MAX_PATTERNS:
             # Never delete the just updated pattern.
