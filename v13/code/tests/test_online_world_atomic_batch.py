@@ -44,6 +44,32 @@ class AtomicOnlineWorldTests(unittest.TestCase):
         np.testing.assert_array_equal(learner.model.W, before)
         self.assertFalse(learner.model.path.exists())
 
+    def test_late_finite_out_of_range_target_is_rejected_before_gradients(self):
+        # OnlinePredictor._check rejects |target| > 1e6. Validation at the
+        # batch boundary must enforce the same bound before the first update.
+        learner = OnlineWorld(self.runtime)
+        before = learner.model.W.copy()
+        with patch.object(world_model, 'transitions', return_value=[
+            row('first-valid'), row('late-too-large', [1e6 + 1, 0.0, 1.0])
+        ]):
+            with self.assertRaisesRegex(ValueError, 'Invalid committed T8 transition'):
+                learner.update()
+        self.assertEqual(learner.model.seen, 0)
+        self.assertEqual(learner.processed, [])
+        np.testing.assert_array_equal(learner.model.W, before)
+        self.assertFalse(learner.model.path.exists())
+
+    def test_late_finite_out_of_range_state_is_rejected_before_gradients(self):
+        learner = OnlineWorld(self.runtime)
+        bad = row('late-state')
+        bad['s'][0] = -1e6 - 1
+        with patch.object(world_model, 'transitions', return_value=[row('first'), bad]):
+            with self.assertRaisesRegex(ValueError, 'Invalid committed T8 transition'):
+                learner.update()
+        self.assertEqual(learner.model.seen, 0)
+        self.assertEqual(learner.processed, [])
+        self.assertFalse(learner.model.path.exists())
+
     def test_atomic_checkpoint_restarts_without_relearning(self):
         learner = OnlineWorld(self.runtime)
         with patch.object(world_model, 'transitions', return_value=[row('one')]):

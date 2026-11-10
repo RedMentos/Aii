@@ -45,7 +45,12 @@ class OnlineWorld:
         state=np.asarray(row['s'],dtype=float)
         outcome=np.asarray(row['y'],dtype=float)
         action=world_model.ACTIONS.index(row['a'])
-        if state.shape!=(4,) or outcome.shape!=(3,) or not np.isfinite(state).all() or not np.isfinite(outcome).all():
+        if (state.shape!=(4,) or outcome.shape!=(3,)
+                or not np.isfinite(state).all() or not np.isfinite(outcome).all()
+                # Match OnlinePredictor._check's magnitude bound *before* any
+                # observe() in this batch; otherwise a late finite outlier
+                # can reject after earlier rows have already been committed.
+                or np.max(np.abs(state))>1e6 or np.max(np.abs(outcome))>1e6):
             raise ValueError('Invalid committed T8 transition')
         x=np.concatenate((state,np.zeros(3)))
         y=np.concatenate((state,outcome))
