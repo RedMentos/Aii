@@ -286,7 +286,7 @@ from .lora_trainer import LoraTrainer,DEFAULTS as _LORA_DEFAULTS,_check,_rss_mb,
 from .common import digest,dumps,atomic_write,Unavailable
 
 REVISION='v13-body-jepa-trainer-v1'
-DEFAULTS=dict(_LORA_DEFAULTS,jepa_weight=.5,jepa_target='ema',jepa_ema_decay=.9,jepa_layer=-1,max_steps=30,min_steps=30,lr=5e-4,heldout_probe_cap=8)
+DEFAULTS=dict(_LORA_DEFAULTS,jepa_weight=.5,jepa_target='ema',jepa_ema_decay=.9,jepa_layer=-1,max_steps=30,min_steps=30,lr=5e-4,heldout_probe_cap=8,anchor_reference_mode='cached')
 
 class BodyJepaTrainer(LoraTrainer):
     """LoRA body trainer with the §13 B-JEPA term (EMA adapter target + predictor) next to answer CE and KL anchors.
@@ -341,6 +341,9 @@ class BodyJepaTrainer(LoraTrainer):
         except ImportError:return {'artifact':None,'hash':None,'method':self.method,'metrics':{'reason':'NO_TORCH_PEFT'}}
         import numpy as np
         t0=time.monotonic();cfg=self.cfg;mode=str(cfg['jepa_target']);w_j=float(cfg['jepa_weight']);layer=int(cfg['jepa_layer'])
+        anchor_mode=cfg.get('anchor_reference_mode','cached')
+        if anchor_mode not in ('cached','stream'):
+            raise ValueError('anchor_reference_mode must be cached|stream')
         target_eval=cfg.get('jepa_target_eval',False)
         if type(target_eval) is not bool:raise ValueError('jepa_target_eval must be bool')
         if mode not in MODES:raise ValueError('unknown jepa_target')
@@ -352,13 +355,26 @@ class BodyJepaTrainer(LoraTrainer):
         out=self.work/dh;out.mkdir(parents=True,exist_ok=True)
         anchors=list(self.anchors)+self._locality_for(items,cfg)
         ck=(str(self.master),self.master_sha,tuple(anchors))
-        if ck not in BodyJepaTrainer._anchor_cache:  # base continuations + log-probs are identical for every arm of one body
+        if anchor_mode=='cached' and ck in BodyJepaTrainer._anchor_cache:
+            anchor_seqs,anchor_logp=BodyJepaTrainer._anchor_cache[ck]
+        else:
             anchor_seqs=[]
             for a in anchors:
                 pid,_=self._encode(tok,a);anchor_seqs.append(pid+self._greedy(torch,model,pid,24))
-            with torch.no_grad():anchor_logp=[torch.log_softmax(model(torch.tensor([s])).logits[0].float(),-1) for s in anchor_seqs]
-            BodyJepaTrainer._anchor_cache[ck]=(anchor_seqs,anchor_logp)
-        anchor_seqs,anchor_logp=BodyJepaTrainer._anchor_cache[ck]
+            anchor_logp=None
+            if anchor_mode=='cached':
+                with torch.no_grad():
+                    anchor_logp=[
+                        torch.log_softmax(model(torch.tensor([seq])).logits[0].float(),-1)
+                        for seq in anchor_seqs
+                    ]
+                BodyJepaTrainer._anchor_cache[ck]=(anchor_seqs,anchor_logp)
+        # STREAM avoids long-lived [tokens,vocab] matrices per anchor. The
+        # frozen base distribution is recomputed sequentially only when needed.
+        anchor_cached_bytes=(
+            sum(x.numel()*x.element_size() for x in anchor_logp)
+            if anchor_logp is not None else 0
+        )
         data=[self._encode(tok,i['prompt'],i['target']) for i in items]
         ctx,tgt=self._views(tok,items);ctx_b=pad(torch,ctx,pad_id);tgt_b=pad(torch,tgt,pad_id)
         with torch.no_grad():
@@ -410,8 +426,23 @@ class BodyJepaTrainer(LoraTrainer):
             if anchor_seqs and float(cfg['anchor_weight'])>0:
                 pick=torch.randperm(len(anchor_seqs),generator=g).tolist()[:int(cfg['anchors_per_step'])]
                 for j in pick:
-                    cl=torch.log_softmax(model(torch.tensor([anchor_seqs[j]])).logits[0].float(),-1);bl=anchor_logp[j]
-                    kl=(bl.exp()*(bl-cl)).sum(-1).mean();(float(cfg['anchor_weight'])*kl/len(pick)).backward();kl_sum+=float(kl.detach())
+                    ids=torch.tensor([anchor_seqs[j]])
+                    if anchor_logp is None:
+                        # Model and LoRA live in one process. Disable only the
+                        # adapter, keep the frozen base and compute the exact
+                        # KL without retaining a full-vocabulary reference
+                        # for every anchor across optimizer steps.
+                        was_training=model.training
+                        model.eval()
+                        try:
+                            with model.disable_adapter(),torch.no_grad():
+                                bl=torch.log_softmax(model(input_ids=ids).logits[0].float(),-1)
+                        finally:
+                            if was_training:model.train()
+                    else:bl=anchor_logp[j]
+                    cl=torch.log_softmax(model(input_ids=ids).logits[0].float(),-1)
+                    kl=(bl.exp()*(bl-cl)).sum(-1).mean()
+                    (float(cfg['anchor_weight'])*kl/len(pick)).backward();kl_sum+=float(kl.detach())
             opt.step();ema.update();step+=1
             hist.append({'step':step,'ce':round(float(ce.detach()),5),'anchor_kl':round(kl_sum/max(1,len(pick)),6),'jepa':None if jl_v is None else round(jl_v,5),'ema_delta':round(ema.delta(),6)})
             if checkpoint_dir is not None:
@@ -434,7 +465,9 @@ class BodyJepaTrainer(LoraTrainer):
         # Measure retention against the frozen master on the SAME anchor sequences
         # used for training. This is a diagnostic, not deployment authority.
         # Recompute sequentially to bound peak memory on the mobile body path.
-        retention_kl=anchor_retention_kl(torch,model,anchor_seqs,anchor_logp)
+        retention_kl=(anchor_retention_kl(torch,model,anchor_seqs,anchor_logp)
+                      if anchor_logp is not None else
+                      heldout_retention_kl(torch,model,anchor_seqs))
         with torch.no_grad():
             st_ctx=last_token_latent(torch,model,ctx_b,layer)
             pc=pred(st_ctx);cos_pred_base=float(torch.nn.functional.cosine_similarity(pc,base_t,dim=-1).mean())
@@ -454,6 +487,7 @@ class BodyJepaTrainer(LoraTrainer):
                  'anchor_weight':float(cfg['anchor_weight']),'jepa_weight':w_j,'jepa_target':mode,'jepa_ema_decay':float(cfg['jepa_ema_decay']),'jepa_target_eval':target_eval,
                  'lora_subspace':str(cfg.get('lora_subspace','none')),'subspace_info':sub,'jepa_layer':layer,'shuffle_perm':perm if mode=='shuffled' else None,'master_learned_recall':sum(recall)/len(recall),
                  'cos_pred_vs_base_target':round(cos_pred_base,5),'cos_pred_vs_ema_target':round(cos_pred_ema,5),
+                 'anchor_reference_mode':anchor_mode,'anchor_cached_logit_bytes':anchor_cached_bytes,
                  'retention_anchor_count':len(retention_kl),'retention_anchor_kl_mean':round(sum(retention_kl)/len(retention_kl),7) if retention_kl else None,
                  'retention_anchor_kl_max':round(max(retention_kl),7) if retention_kl else None,
                  'retention_anchor_scope':'TRAINING_ANCHORS_NOT_HELDOUT',
