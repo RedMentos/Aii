@@ -19,9 +19,18 @@ class MessageStore:
         self.items = rows
 
     def rows(self, sql, args=()):
+        if "m.event_id=?" in sql:
+            # Mock exactly the read-only joined query used on every activation.
+            event = args[0]
+            rows = [x for x in self.items if x["event_id"] == event
+                    and x["role"] == "assistant"]
+            return [{"text": x["text"], "status": x["status"],
+                     "deleted": x.get("deleted", 0)}
+                    for x in reversed(rows[:])][:1]
         assert "session_id=?" in sql
         assert "status='FINAL'" in sql
         assert "role='assistant'" in sql
+        assert "s.deleted=0" in sql
         session, limit = args
         results = [
             row for row in self.items
@@ -29,6 +38,7 @@ class MessageStore:
             and row["status"] == "FINAL"
             and row["role"] == "assistant"
             and row.get("event_id")
+            and row.get("deleted", 0) == 0
         ]
         return list(reversed(results))[:limit]
 
