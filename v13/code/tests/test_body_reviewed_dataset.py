@@ -67,3 +67,17 @@ def test_existing_output_not_overwritten(tmp_path):
     with pytest.raises(ValueError, match="empty"):
         compile_dataset(p, out)
     assert (out/"keep").read_text() == "old"
+
+
+def test_duplicate_source_bytes_across_different_ids_never_leak(tmp_path):
+    p = fixture(tmp_path)
+    rows = [json.loads(x) for x in p.read_text().splitlines()]
+    first = rows[0]
+    duplicate = dict(first, source_id="another_id")
+    rows.append(duplicate)
+    p.write_text("\n".join(json.dumps(x) for x in rows)+"\n")
+    compile_dataset(p, tmp_path/"out")
+    for part in ("train", "holdout"):
+        lines = (tmp_path/"out"/f"b1_detail_{part}.jsonl").read_text().splitlines()
+        ids = {json.loads(x)["source_id"] for x in lines}
+        assert ("another_id" in ids) == (first["source_id"] in ids)
