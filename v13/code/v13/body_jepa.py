@@ -262,7 +262,10 @@ def heldout_retention_kl(torch,model,sequences):
     disabled=getattr(model,'disable_adapter',None)
     if not callable(disabled):
         raise ValueError('PEFT disable_adapter context is required for heldout baseline')
-    was_training=bool(model.training)
+    # Preserve mixed module modes (e.g. frozen base in eval while adapter trains).
+    # Restoring only model.training would incorrectly switch all children on.
+    modules=list(model.modules())
+    flags=[module.training for module in modules]
     result=[]
     model.eval()
     try:
@@ -283,7 +286,9 @@ def heldout_retention_kl(torch,model,sequences):
                     raise ValueError('nonfinite heldout KL')
                 result.append(max(0.,float(kl)))
     finally:
-        model.train(was_training)
+        model.train(flags[0])
+        for module,flag in zip(modules,flags):
+            module.training=flag
     return result
 
 
