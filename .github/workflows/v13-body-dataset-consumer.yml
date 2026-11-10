@@ -7,6 +7,8 @@ on:
     paths:
       - 'v13/code/v13/agi/body_dataset_reader.py'
       - 'v13/code/tests/test_body_dataset_reader.py'
+      - 'v13/code/v13/agi/body_dataset_training_input.py'
+      - 'v13/code/tests/test_body_dataset_training_input.py'
       - '.github/workflows/v13-body-dataset-consumer.yml'
 jobs:
   dataset-reader:
@@ -21,5 +23,6 @@ jobs:
         run: |
           python -m compileall -q v13/agi/body_dataset.py v13/agi/body_dataset_reader.py
           python -m unittest discover -s tests -p 'test_body_dataset_reader.py' -v
+          python -m unittest discover -s tests -p 'test_body_dataset_training_input.py' -v
           python -m unittest discover -s tests -p 'test_body_reviewed_dataset.py' -v
           python -m unittest discover -s tests -p 'test_body_dataset_store.py' -v
