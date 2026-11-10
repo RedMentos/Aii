@@ -186,3 +186,51 @@ def test_actual_latewatch_finish_confirms_observer_before_feedback():
     vote=turnflow.feedback(store,event_id,"wasteful")
     assert vote["outcome"]=="wasteful"
     assert turnflow.report(store)["events_with_confirmed_overlap"]==1
+
+
+def test_self_learning_from_persistently_late_optional_checks_keeps_exploration():
+    """No ratings, no invented quality scores: learn only observed TIMELINESS."""
+    store = StateStore()
+    for i in range(12):
+        evt = f"late-{i}"
+        plan = turnflow.plan(store, evt, {}, 0, "B1_DETAIL")
+        assert plan["start_optional_observer"]
+        assert turnflow.observe(store, evt, "NO_OFFER") == "NO_OFFER"
+    state = turnflow.report(store)
+    counts = state["feedback_patterns"]["pre0/no_focal/B1_DETAIL"]
+    assert counts["too_late"] == 12 and counts["on_time"] == 0
+    assert counts["useful"] == 0 and counts["wasteful"] == 0
+    # Measure is non-authoritative, so no unapproved policy change is made.
+    assert turnflow.plan(store, "measure", {}, 0, "B1_DETAIL")["start_optional_observer"]
+    turnflow.set_mode(store, "active", "OPERATOR_TTY")
+    observed = [
+        turnflow.plan(store, f"adaptive-{i}", {}, 0, "B1_DETAIL")
+        for i in range(32)
+    ]
+    assert 0 < sum(d["start_optional_observer"] for d in observed) < 16
+    assert any(d["adaptive_reason"] == "REPEATED_UNTIMELY_OBSERVER" for d in observed)
+    assert any(d["adaptive_reason"] == "TIMELINESS_EXPLORATION" for d in observed)
+    assert all(not d["thinking_before_speech"] for d in observed)
+    # Even after many late simple checks, focal/preanswer work is not skipped.
+    assert turnflow.plan(store, "focal", {"focal": {"cycles": 2}},
+                         0, "B1_DETAIL")["start_optional_observer"]
+    assert turnflow.plan(store, "preoffer", {}, 1, "B1_DETAIL")["start_optional_observer"]
+
+
+def test_one_timely_exploration_reopens_the_optional_observer():
+    store = StateStore()
+    for i in range(12):
+        evt = f"lasted-{i}"
+        turnflow.plan(store, evt, {}, 0, "B1_DETAIL")
+        turnflow.observe(store, evt, "STILL_RUNNING")
+    turnflow.set_mode(store, "active", "OPERATOR_TTY")
+    candidate = next(
+        f"probe-{i}" for i in range(100)
+        if turnflow.plan(store, f"probe-{i}", {}, 0, "B1_DETAIL")["exploration_turn"]
+    )
+    sample = turnflow.plan(store, candidate, {}, 0, "B1_DETAIL")
+    assert sample["start_optional_observer"]
+    turnflow.observe(store, candidate, "WOULD_INTERRUPT")
+    after = turnflow.plan(store, "fresh-known-situation", {}, 0, "B1_DETAIL")
+    assert after["start_optional_observer"] and not after["adaptive_veto"]
+    assert after["observer_on_time"] == 1
