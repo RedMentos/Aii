@@ -15,6 +15,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install focused test dependency
+        run: python -m pip install 'pytest>=8,<9'
       - name: Focused offline dataset and candidate tests
         working-directory: v13/code
-        run: python -m unittest discover -s tests -p 'test_body_*dataset*.py' -v && python -m unittest discover -s tests -p 'test_body_candidate_trial.py' -v
+        run: python -m pytest -q tests/test_body_dataset_reader.py tests/test_body_dataset_store.py tests/test_body_dataset_training_input.py tests/test_body_reviewed_dataset.py tests/test_body_candidate_trial.py
