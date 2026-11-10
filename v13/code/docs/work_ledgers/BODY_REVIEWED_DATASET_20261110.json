@@ -1,0 +1,61 @@
+{
+  "schema": "v13-cross-agent-work-ledger-v1",
+  "date_utc": "2026-11-10",
+  "owner": "V13 Core & Harness",
+  "package_id": "body-reviewed-dataset",
+  "branch": "codex/v13-reviewed-body-datasets-20261110-hour12",
+  "base_sha": "22441aecd8d0760e2281c6a32670d988ea3718e4",
+  "pr": 1670,
+  "paths": [
+    "v13/code/v13/agi/body_dataset.py",
+    "v13/code/tests/test_body_reviewed_dataset.py",
+    ".github/workflows/v13-body-reviewed-dataset.yml"
+  ],
+  "status": "DRAFT_CI_PENDING_LATEST",
+  "evidence": {
+    "first_ci_success": [
+      42795572027,
+      42795542462
+    ],
+    "first_head": "b8fc4321cdf8dea8783c76632ab9e976fdfbedfb",
+    "latest_head": "eed3d6b8d1b4150c628540e41eaff771b8087ba1",
+    "latest_ci": [
+      42795641950,
+      42795629297
+    ],
+    "local_equivalent": "5/5 pytest pass, isolated standalone implementation; not exact remote tree"
+  },
+  "capabilities": [
+    "role-specific B1/B2 approved JSONL compiler",
+    "stable source-content disjoint holdout",
+    "bounded input",
+    "atomic output",
+    "manifest with SHA256",
+    "CLI"
+  ],
+  "limitations": [
+    "reviewed/permission are input declarations; no cryptographic user-authentication",
+    "source hash declared, not verified against Store source bytes",
+    "not wired to AG6 trainer ingestion or automatic live learning",
+    "not GGUF/native/Redmi evidence",
+    "CI on latest head pending",
+    "SourceHandoff runtime.py frozen"
+  ],
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA not promoted",
+    "jepa_weight=0",
+    "full_scope_complete=false"
+  ],
+  "next_commands": [
+    "Check GitHub Actions runs 42795641950 and 42795629297 for latest head, fix if RED",
+    "Bind Store-verified human decisions to the reviewed JSONL export with source byte checks",
+    "Connect approved datasets to role-specific BodyJepaTrainer train/eval after cross-owner review",
+    "Run focused AG6 Body-JEPA integration tests and privacy scan before promotion"
+  ],
+  "other_owners": [
+    "JEPA owner: PR #1669 body_jepa.py and agi/body_trainers.py",
+    "Boss integration: PR #1668 coordination"
+  ]
+}
