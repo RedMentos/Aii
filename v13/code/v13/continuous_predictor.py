@@ -63,30 +63,42 @@ class OnlinePredictor:
                                          initial_residual,initial_residual))
         if not np.isfinite(initial_gradient).all() or not np.isfinite(np.linalg.norm(initial_gradient)):
             raise ValueError('Nonfinite online gradient')
-        self.seen+=1
-        if len(self.x)==self.cap:
-            # Reservoir sampling: old observations remain represented as stream grows.
-            index=int(self.rng.integers(0,self.seen))
-            if index<self.cap:
-                self.x[index]=x;self.act[index]=action;self.y[index]=y
-        else:
-            self.x=np.vstack((self.x,x));self.act=np.append(self.act,action);self.y=np.vstack((self.y,y))
-        for i in range(rehearsals+1):
-            if i==0:xx,aa,yy=x,action,y
+        # Rehearsal can fail after an earlier gradient step. Stage the entire
+        # mutable state so no partially learned transition is published.
+        staged=(self.W.copy(),self.U.copy(),self.bias.copy(),self.x.copy(),
+                self.act.copy(),self.y.copy(),self.seen,self.updates,
+                json.loads(json.dumps(self.rng.bit_generator.state)))
+        try:
+            self.seen+=1
+            if len(self.x)==self.cap:
+                # Reservoir sampling: old observations remain represented as stream grows.
+                index=int(self.rng.integers(0,self.seen))
+                if index<self.cap:
+                    self.x[index]=x;self.act[index]=action;self.y[index]=y
             else:
-                j=int(self.rng.integers(0,len(self.x)))
-                xx,aa,yy=self.x[j],int(self.act[j]),self.y[j]
-            residual=xx@self.W+self.U[aa]+self.bias-yy
-            # Gradient clipping prevents unbounded single-step parameter changes.
-            gW=np.outer(xx,residual);gU=residual;gb=residual
-            # Norm via scaled hypot avoids overflow for large finite features.
-            norm=float(np.linalg.norm(np.concatenate((gW.ravel(),gU,gb))))
-            if not np.isfinite(norm):
-                raise ValueError('Nonfinite online gradient')
-            scale=min(1.,10./max(norm,1e-12))
-            self.W-=self.lr*scale*gW;self.U[aa]-=self.lr*scale*gU;self.bias-=self.lr*scale*gb
-            self.updates+=1
-        return {'seen':self.seen,'updates':self.updates,'loss':float(np.mean((self.predict(x,action)-y)**2))}
+                self.x=np.vstack((self.x,x));self.act=np.append(self.act,action);self.y=np.vstack((self.y,y))
+            for i in range(rehearsals+1):
+                if i==0:xx,aa,yy=x,action,y
+                else:
+                    j=int(self.rng.integers(0,len(self.x)))
+                    xx,aa,yy=self.x[j],int(self.act[j]),self.y[j]
+                residual=xx@self.W+self.U[aa]+self.bias-yy
+                # Gradient clipping prevents unbounded single-step parameter changes.
+                gW=np.outer(xx,residual);gU=residual;gb=residual
+                # Norm via scaled hypot avoids overflow for large finite features.
+                norm=float(np.linalg.norm(np.concatenate((gW.ravel(),gU,gb))))
+                if not np.isfinite(norm):
+                    raise ValueError('Nonfinite online gradient')
+                scale=min(1.,10./max(norm,1e-12))
+                self.W-=self.lr*scale*gW;self.U[aa]-=self.lr*scale*gU;self.bias-=self.lr*scale*gb
+                self.updates+=1
+            return {'seen':self.seen,'updates':self.updates,'loss':float(np.mean((self.predict(x,action)-y)**2))}
+    
+        except Exception:
+            (self.W,self.U,self.bias,self.x,self.act,self.y,
+             self.seen,self.updates,rng_state)=staged
+            self.rng.bit_generator.state=rng_state
+            raise
 
     def learn_stream(self,transitions,checkpoint_every=32):
         """Consume observed numeric transitions without delaying local plasticity.
