@@ -147,3 +147,45 @@ def test_auto_kind_remains_c3_only_and_is_never_auto_body(tmp_path,monkeypatch):
     t,info=trainers.build(r,"auto")
     assert isinstance(t,NullTrainer) and info["active"]=="none"
     assert info["choice"]=="auto"
+
+
+@pytest.mark.parametrize("kind,origin,expected",[
+    ("body_b1","SYSTEM","USER_REQUIRED_BODY_TRAINING"),
+    ("body_b2","SYSTEM","USER_REQUIRED_BODY_TRAINING"),
+    ("body_b1","USER","TRAINED"),
+    ("lora","SYSTEM","TRAINED"),
+])
+def test_sleep_does_not_unattended_train_heavy_body(monkeypatch,kind,origin,expected):
+    """Real AG6 scheduler entrypoint, using a fake trainer to detect calls."""
+    from v13 import agi
+    class Box:
+        def load(self):
+            return {"kind":kind},0
+    class Weights:
+        def __init__(self):
+            self.calls=0
+            self.stages=[]
+        def stage(self,by,include_sdft=False):
+            self.stages.append((by,include_sdft))
+            return {"status":"STAGED","batch_id":"batch-01"}
+        def train_and_gate(self,bid,cancel=None):
+            self.calls+=1
+            return {"status":"TRAINED"}
+    w=Weights()
+    growth=SimpleNamespace(weights=w)
+    monkeypatch.setattr(agi,"hub",lambda runtime:growth)
+    monkeypatch.setattr(trainers,"_box",lambda store:Box())
+    installed=[]
+    def fake_install(g,r):
+        installed.append(kind)
+        return {"active":kind}
+    monkeypatch.setattr(trainers,"install",fake_install)
+    runtime=SimpleNamespace(store=object(),cancel_event=None)
+    sleeping=SimpleNamespace(r=runtime)
+    out=agi.job(sleeping,{"action":"growth_consolidate","origin":origin})
+    assert out["trained"]==expected
+    if kind.startswith("body_") and origin!="USER":
+        assert not installed and w.calls==0
+    else:
+        assert installed==[kind] and w.calls==1
+    assert w.stages==[(origin,True)]
