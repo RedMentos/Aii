@@ -94,6 +94,10 @@ def _generalise(first, other):
     before = _common_prefix(a, b)
     ra, rb = a[len(before):], b[len(before):]
     after = _common_suffix(ra, rb)
+    # Identical word endings are not syntactic separators. Without this,
+    # "apple" + "orange" would be mislearnt as "appl{..}e".
+    if after and after[0].isalnum():
+        after = ""
     va = ra[:-len(after)] if after else ra
     vb = rb[:-len(after)] if after else rb
     if (not va or not vb or va == vb
