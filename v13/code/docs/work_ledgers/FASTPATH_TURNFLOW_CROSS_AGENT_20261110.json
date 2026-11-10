@@ -1,0 +1,130 @@
+{
+  "schema": "v13-cross-agent-work-ledger-v1",
+  "generated_utc": "2026-11-10",
+  "owner": "GPT/Codex integration owner (this run)",
+  "project": "V13 Inquisition-JEPA",
+  "canonical_blueprint": "v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+  "readme": "Independent review and user acceptance still required; all changes draft/unmerged, current SourceHandoff protections unchanged.",
+  "integration_branch": "codex/v13-adaptive-think-speak-schedule-20261110",
+  "verified_head_sha": "09caed01242b4582bbea0437c6fc058ff1fc6164",
+  "base_ref": "codex/v13-fast-procedure-20261110-hour11",
+  "packages": [
+    {
+      "id": "core-c3-atomic-resume",
+      "pr": 1664,
+      "branch": "codex/v13-body-c3-training-recovery-20261110-hour10",
+      "owner": "GPT/Codex",
+      "state": "DRAFT_VERIFIED_CI",
+      "files": [
+        "v13/code/v13/lora_trainer.py",
+        "v13/code/v13/body_jepa.py",
+        "v13/code/tests/test_lora_restore_atomic.py",
+        "v13/code/tests/test_body_heldout_retention.py"
+      ],
+      "evidence": [
+        "https://github.com/RedMentos/Aii/actions/runs/42784112869",
+        "https://github.com/RedMentos/Aii/actions/runs/42784112889"
+      ],
+      "claim_limit": "synthetic Torch training and read-only retention, not native GGUF training"
+    },
+    {
+      "id": "procedural-cerebellar-fast-output",
+      "pr": 1665,
+      "branch": "codex/v13-fast-procedure-20261110-hour11",
+      "owner": "GPT/Codex",
+      "state": "DRAFT_VERIFIED_CI",
+      "files": [
+        "v13/code/v13/procedural_batch.py",
+        "v13/code/v13/operator.py",
+        "v13/code/tests/test_procedural_batch.py"
+      ],
+      "evidence": [
+        "https://github.com/RedMentos/Aii/actions/runs/42787379174",
+        "https://github.com/RedMentos/Aii/actions/runs/42787367427"
+      ],
+      "claim_limit": "known pure text only, zero model generation, explicit local activation, bounded 64MiB"
+    },
+    {
+      "id": "jef-think-speak-turnflow",
+      "pr": 1666,
+      "branch": "codex/v13-adaptive-think-speak-schedule-20261110",
+      "owner": "GPT/Codex",
+      "state": "DRAFT_VERIFIED_CI",
+      "files": [
+        "v13/code/v13/turnflow.py",
+        "v13/code/v13/latewatch.py",
+        "v13/code/v13/operator.py",
+        "v13/code/tests/test_turnflow_think_speak.py"
+      ],
+      "evidence": [
+        "https://github.com/RedMentos/Aii/actions/runs/42789859140",
+        "https://github.com/RedMentos/Aii/actions/runs/42789858900",
+        "https://github.com/RedMentos/Aii/actions/runs/42789859299"
+      ],
+      "claim_limit": "actual concurrent late observer is resource-dependent and optional; no real phone measurements, no parallel external actions"
+    }
+  ],
+  "invariant_gates": [
+    "STEP2 UTILITY_FAIL unchanged",
+    "B3 L1 FAIL unchanged",
+    "Body-JEPA no promotion",
+    "C5 tools remain human/safety-gated",
+    "runtime.py SourceHandoff freeze"
+  ],
+  "blockers": [
+    {
+      "id": "phone",
+      "type": "native",
+      "status": "WAIT_FOR_REDMi",
+      "detail": "No real pinned model/thermal/tokens-per-second measurements in this environment"
+    },
+    {
+      "id": "full-weight-training",
+      "type": "implementation",
+      "status": "OPEN",
+      "detail": "C3/B1/B2 native GGUF adapter/LoRA train port and old/new holdout acceptance not verified"
+    },
+    {
+      "id": "merge",
+      "type": "integration",
+      "status": "REVIEW_REQUIRED",
+      "detail": "Draft stack #1664 -> #1665 -> #1666 not merged; check current parent heads/owners and privacy before promotion"
+    },
+    {
+      "id": "parallel-action",
+      "type": "architecture",
+      "status": "OPEN",
+      "detail": "Existing latewatch overlaps B1/B2 with C3 when resident; external actions still C5-gated and not concurrently launched from turnflow"
+    }
+  ],
+  "next_commands": [
+    "Read current HEAD of PR #1666 and all parent refs; inspect changed files and privacy CI",
+    "PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_turnflow_think_speak.py v13/code/tests/test_latewatch.py v13/code/tests/test_duplex.py v13/code/tests/test_effort.py",
+    "python v13/code/scripts/public_repo_privacy_scan.py --base 618043d5043e95c302f98af3939ab1bc8f4c03b3 --head HEAD",
+    "Use existing scripts/spec_decode_bench.py and benchmark_c3.py to compare new licensed GGUF on serial pinned runtime; do not promote without exact hash and Redmi evidence",
+    "Connect future learned procedural candidate proposals into existing AG4 after trace provenance and human activation; do not bypass ToolRegistry"
+  ],
+  "research_tracks": [
+    {
+      "name": "R1",
+      "subject": "New mobile models",
+      "source": "https://www.liquid.ai/models",
+      "finding": "Oct 27 2026 LFM3-1.7B listed; no Redmi comparison yet",
+      "action": "EXPERIMENT_NOT_ADOPT"
+    },
+    {
+      "name": "R2",
+      "subject": "Native throughput",
+      "source": "https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md",
+      "finding": "Ngram/speculative decode support exists upstream; pinned b10964 flag and phone RAM compatibility require tests",
+      "action": "EXPERIMENT_NOT_ADOPT"
+    },
+    {
+      "name": "R3",
+      "subject": "Avoid duplicate code",
+      "source": "repo:v13/code/scripts/spec_decode_bench.py",
+      "finding": "Existing speed/speculative decoding and candidate evaluation scripts should be reused, not reimplemented",
+      "action": "REUSE"
+    }
+  ]
+}
