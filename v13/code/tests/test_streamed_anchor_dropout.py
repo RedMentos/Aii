@@ -72,7 +72,7 @@ class StreamedAnchorDropoutTests(unittest.TestCase):
         model.train()
         model.dropout.eval()
         flags = [module.training for module in model.modules()]
-        with self.assertRaises(ValueError):
+        with self.assertRaises(IndexError):
             streamed_anchor_kl(torch, model, [99])
         self.assertEqual(flags, [module.training for module in model.modules()])
         self.assertTrue(model.adapter_enabled)
