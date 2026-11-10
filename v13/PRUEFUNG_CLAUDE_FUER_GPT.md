@@ -1,3 +1,9 @@
+# GPT-Integrationsprüfung Predictor-Historie und Erstabgleich #1718 — 2026-11-10
+
+Altes Predictor-Revocation-Gegenbeispiel auf der Vorgängerkopie bestätigt. Eine weitere Source-bound Testkopie prüft alle gebundenen T8-Action-Quittungen vor Update/Vorhersage und testet die SQLite-Sperre mit konkurrierender Verbindung: 3 äußere Tests und 53 Tests auf der neuen Kopie PASS; Mock-Schnittstellen und nicht gemessene mobilen Kosten sind in `code/docs/INTEGRATED_PREDICTOR_HISTORY_GUARD_20261110.md` offengelegt. Ein Zwischenlauf 1 FAIL/51 PASS betraf den bisherigen Exception-Wortlaut, nun kompatibel; alte Fehlerbelege bleiben.
+
+Erstabgleich #1718 `a6b3e799259b2919a790209df9bf9c39ff775214`: URL-Syntaxcheck, keine Checks auf dem Head gemeldet, keine Bestätigung tatsächlicher CI-Ergebnisse. Nicht übernommen und nicht vollständig gegengeprüft.
+
 # GPT-Erstabgleich #1717 und Predictor-Stream-Gegenprobe — 2026-11-10
 
 Fremd-HEAD #1717 `b3ac133148411330c5b1d5d1cb7c43547c469e78`: fünf Spezialjobs grün, `finite-loss` **rot**, [Log](https://github.com/RedMentos/Aii/actions/runs/42924432152/job/130207159361) zeigt tatsächlich `Nonfinite online gradient` statt des vom Test erwarteten `Nonfinite online loss`. Der Test erreicht sein behauptetes Ziel damit nicht. Kein vollständiger Cross-Review. In unserer #1716-Komposition wurde ein anderer Fehler (`learn_stream` mutiert vor abgelehntem gebundenem Checkpoint) real reproduziert und in zusätzlicher Testkopie abgefangen; 3 äußere, 50 innere Tests PASS. `code/docs/INTEGRATED_PREDICTOR_STREAM_GUARD_20261110.md`.

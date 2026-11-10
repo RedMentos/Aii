@@ -1,3 +1,5 @@
+> Fortsetzung: Die historische Source-Prüfung wurde anschließend in einer weiteren Testkopie für Predictor-Update und -Vorhersage ergänzt; die verbleibenden Performance- und Widerrufsgrenzen stehen in `INTEGRATED_PREDICTOR_HISTORY_GUARD_20261110.md`.
+
 # Quellengebundener Online-Predictor: Stream-Eintritt — 2026-11-10
 
 ## Reproduzierter Fehler

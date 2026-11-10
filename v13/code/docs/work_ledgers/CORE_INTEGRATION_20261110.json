@@ -93,5 +93,23 @@
     "production_promotion": false,
     "device_proof": false,
     "negative_gates_unchanged": true
+  },
+  "codex_predictor_history_guard_20261110": {
+    "parent_pr": 1716,
+    "candidate": "v13/code/scripts/integrated_predictor_history_guard_20261110.py",
+    "history_scope": "all bound action receipts, chunked exact-ID SQLite/T8 parser revalidation before update and predict",
+    "sqlite_fence": "cooperating concurrent revocation blocked during checked update/prediction; tested with second connection",
+    "tests": "3 outer passed, old-gap counterexample reproduced, 53 new-copy tests passed; fabricated-row legacy tests use disclosed test-only seam",
+    "known_cost": "synchronous O(history) source checks under SQLite write lock, mobile cost unmeasured",
+    "limitations": [
+      "no immediate background quarantine",
+      "no unlearning",
+      "no safety against uncoordinated filesystem modifications",
+      "no individual per-source consent proof"
+    ],
+    "external_pr_1718": "a6b3e799259b2919a790209df9bf9c39ff775214 no reported checks at triage; URL syntax is not CI result verification",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
   }
 }
