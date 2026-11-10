@@ -1,0 +1,19 @@
+name: V13 JEPA checkpoint retention
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/world_jepa_runtime_checkpoint.py'
+      - 'v13/code/tests/test_jepa_checkpoint_retention_20261110.py'
+      - '.github/workflows/v13-jepa-checkpoint-retention.yml'
+  workflow_dispatch:
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy pytest
+      - run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_jepa_checkpoint_retention_20261110.py v13/code/tests/test_runtime_jepa_integration_20261110.py
