@@ -137,6 +137,12 @@ class Watcher:
                     self.r.store.append_message(mid,clean);extra+=clean
             except Exception as exc:self.info['revision_error']=type(exc).__name__
             self.info.update(provisional_chars=self.cut['at_char'],revision_chars=len(extra))
+        try:
+            from . import turnflow
+            turnflow.observe(self.r.store,self.e['event_id'],self.status)
+        except Exception as exc:
+            self.r.store.log('turnflow_unavailable',self.e['event_id'],
+                             {'stage':'observer_outcome','error':type(exc).__name__})
         _record(self.r.store,{'event_id':self.e['event_id'],'status':self.status,'mode':self.mode,'role':self.role,'ts':time.time(),
                               **{k:self.info[k] for k in ('at_char','reason','offer_id','provisional_chars','revision_chars') if k in self.info}})
         return extra
