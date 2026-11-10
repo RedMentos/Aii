@@ -3,7 +3,11 @@ on:
   pull_request:
     paths:
       - 'v13/code/v13/agi/body_candidate_trial.py'
+      - 'v13/code/v13/agi/body_dataset*.py'
+      - 'v13/code/v13/agi/body_reviewed_dataset.py'
       - 'v13/code/tests/test_body_candidate_trial.py'
+      - 'v13/code/tests/test_body_dataset_*.py'
+      - 'v13/code/tests/test_body_reviewed_dataset.py'
       - '.github/workflows/v13-body-paired-retention.yml'
   workflow_dispatch:
 jobs:
