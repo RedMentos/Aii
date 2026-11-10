@@ -114,7 +114,15 @@ class OnlinePredictor:
                 rng_state=np.array(json.dumps(self.rng.bit_generator.state)),
                 processed_ids=np.array(json.dumps(processed_ids)))
             if self.path.exists():
-                shutil.copy2(self.path,self.path.with_suffix('.previous.npz'))
+                # Never truncate the only rollback checkpoint while copying.
+                # Publish a complete backup only after copy2 succeeds.
+                previous=self.path.with_suffix('.previous.npz')
+                previous_temp=self.path.with_suffix('.previous.tmp.npz')
+                try:
+                    shutil.copy2(self.path,previous_temp)
+                    os.replace(previous_temp,previous)
+                finally:
+                    if previous_temp.exists():previous_temp.unlink()
             os.replace(temp,self.path)
             self.checkpoint_ids=None if processed_ids is None else list(processed_ids)
         finally:
