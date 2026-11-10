@@ -16,7 +16,9 @@ def _runtime():
 def test_world_jepa_runtime_reuses_model_and_never_promotes():
     runtime=_runtime()
     with patch('v13.world_jepa_online_experiment.update_from_store') as update:
-        update.return_value={'mode':'INITIAL_WEIGHTS','source_verified':True,'source_sha256':'a'*64}
+        update.return_value={'mode':'INITIAL_WEIGHTS','source_verified':True,'source_sha256':'a'*64,
+                             'holdout_loss_before':None,'holdout_loss_after':0.25,
+                             'holdout_delta':None,'train_rows':64,'holdout_rows':16}
         first=runtime.world_jepa_update(steps=2,limit=128)
         second=runtime.world_jepa_update(steps=3,limit=256)
     assert first['active_model_promoted'] is False
