@@ -151,7 +151,16 @@ def start(r,e,version,offers,deadline,meta,runner,eligible=True):
         role=next((x for x in ('B1_DETAIL','B2_GIST') if x not in have),None)
         if role is None:return Watcher(r,e,meta,m,status='ALL_BODIES_OFFERED')
         why=residency(r,role)
+        # JEF adaptive timing chooses only whether to spend RAM/time on this
+        # OPTIONAL late observer. It never promotes a model, executes a tool,
+        # overrides user interruption or changes latewatch's active/shadow gate.
+        from . import turnflow
+        flow=turnflow.plan(r.store,e['event_id'],meta,len(offers),role,
+                           eligible=eligible,residency_ok=why is None)
+        meta['turnflow']=flow
         if why:return Watcher(r,e,meta,m,role,status=why)
+        if not flow['start_optional_observer']:
+            return Watcher(r,e,meta,m,role,status='ADAPTIVE_SPEAK_ONLY')
         now=time.monotonic();offer_deadline=min(deadline,now+r.cfg['observer_seconds'])
         return Watcher(r,e,meta,m,role).start(version,offer_deadline,deadline)
     except Exception as exc:
