@@ -1,6 +1,6 @@
 # V13 Multi-Agent Betriebsplan — 2026-11-10
 
-**Status:** Koordinationsplan und echte ChatGPT-Zeitplan-Aufgaben; kein Nachweis für einen unbegrenzt parallel laufenden Agenten-Schwarm.
+**Status 2026-11-10 (aktualisiert):** Die fünf technisch verfügbaren aktiven ChatGPT-Automationen wurden nach Nutzerwunsch ALLE auf stündliche Starts eingestellt, mit klaren fachlichen Zuständigkeiten und Unterrollen-Rotation. Eine davon liefert zusätzlich jeden Tag exakt im 22:00-Lauf den allgemeinen Forschungsüberblick. Kein Nachweis für fünf simultane dauerhaft laufende Prozesse oder separate unabhängige Chat-Threads.
 
 ## Auftrag / unveränderliche Invarianten
 
@@ -15,17 +15,19 @@ Alle Ausführenden müssen vor Änderungen den gültigen Canon/Blueprint v10.x s
 - Quellen für Forschung/Modelle: Primärquellen, Versuchsbedingungen, Lizenz und direktes Replikations-/Ablationsexperiment; keine unbelegten Verbesserungsversprechen.
 - Exit pro Lauf: verifizierter Zustand, Branch/Commit/PR, Tests/Proof, offener Blocker, nächste priorisierte Aufgaben und Übergabe. Kein Erfolg ohne Commit/Test behaupten.
 
-## Bestehende und aktiv angelegte ChatGPT-Zeitpläne
+## Fünf stündlich aktive ChatGPT-Zeitpläne — verbindliche Zuordnung
 
-| Job | Rhythmus (Europe/Berlin) | Abdeckung |
+| Aktive Automation | Startminute (Europe/Berlin) | Fach-Ownership und Rotation |
 |---|---|---|
-| V13 weiterentwickeln (bestehend) | stündlich | breite Implementierung des Gesamt-Blueprints |
-| V13 Boss & Canon-Audit | täglich 21 Uhr | Completion Ledger, Integration, Priorisierung, unabhängiger Vorgabencheck, Sonntags-Gesamtaudit |
-| V13 Fehlerjäger & QA | alle 8 Stunden ab 12 Uhr | Regressions-/Race-/Checkpoint-/Restart-Debugging; Repros und Fix-PRs |
-| V13 JEPA & Plastizität | alle 8 Stunden ab 13 Uhr | JEPA/EMA, Online-Predictor, echte kontinuierliche Lerndatenströme, Retention und Rollback |
-| V13 Forschungsüberblick (außerhalb der gezählten Entwicklungsrollen) | täglich 22 Uhr | Literaturüberblick JEPA/continual learning/mobile KI, Quellen und Experimentideen |
+| V13 Core & Harness (bestehend, umverteilt) | jede Stunde ca. :04 | B1_DETAIL/B2_GIST, Adapter- und Body-Learning, JEF/C2, C3, Runtime-Routing, UI, später freigegebenes Terminal/GUI-Harness; 4-Stunden-Turnus nach Stunde mod 4 |
+| V13 Forschung & Perception | jede volle Stunde :00 | A0–A5, A3 Projector/Teacher-Student, mobile sparse MoE/Quantisierung, Modell-/Lizenzforschung, empirische Ablations; **nur um 22:00** auch allgemeiner täglicher Forschungsüberblick (zählt nicht als eigenständiger Entwicklungsagent) |
+| V13 QA & Android | jede Stunde :15 | Debugging/Repros/Fix-PRs, CI/Regression, Android/Termux-Performance/Diagnose, Sicherheit/Adversarial-Tests |
+| V13 JEPA & Memory | jede Stunde :30 | echte inkrementelle JEPA-/EMA-Plastizität, T8/world graph, Provenance, Dream/Sleep/Replay/Retention und Runtime-Transition-Integration |
+| V13 Boss & Integration | jede Stunde :45 | Canon/Blueprint/Completion-Ledger, Integrations-/PR-Koordination, fehlende Organe, API-Verträge, end-to-end Tests und Release-Status; **um 21:45** tägliches tiefes Audit, sonntags Wochengesamtaudit |
 
-**Technische Beschränkung:** Das ChatGPT-Zeitplan-Limit ist aktuell fünf aktive Aufgaben. Die obigen fünf belegen die fünf aktiven Plätze. Die nachfolgenden Rollen sind ausdrücklich **noch nicht als autonome Zeitplan-Agenten aktiviert**. Der Wunsch nach mindestens sieben aktiv geplanten Entwicklungsagenten bleibt unerfüllt, bis mehr Slots oder eine andere echte Ausführungsumgebung verfügbar sind. Keine Chats, ausführenden Worker oder Automationen fingieren.
+**Kapazitätsgrenze:** Fünf aktive Zeitschaltpläne sind die aktuelle maximale Anzahl. Darum werden alle in den fünf Slots produktiv genutzt und mehrere Unterrollen zyklisch bearbeitet. Die fünf separaten Task-IDs sind real; sie beweisen nicht, dass fünf völlig getrennte Ausführungsthreads oder fünf parallele Rechner existieren. Die stündlichen Runs können von Plattformlimits, Authentifizierung und Ausführungsdauer begrenzt sein. Mindestens sieben *eigene* zusätzliche stündliche Automationen sind nicht möglich; Fach-Ownership für mehr als sieben Aufgaben ist über die fünf Bots trotzdem abgebildet.
+
+**Rotation:** Stunde mod 4 priorisiert Unterrollen, ist **kein harter Abbruch** von laufender, wichtigeren Arbeit. Die Arbeit soll bis zu tatsächlichen Tools-/Sitzungslimits fortgesetzt und als überprüfbarer GitHub-Checkpoint dokumentiert werden. Vor Änderung immer neueste andere Branches/PRs sichten; keine Doppelbearbeitung derselben Datei ohne Koordination.
 
 ## Zusätzliche klar getrennte Spezialrollen (wartende Agenten-Backlog)
 
@@ -40,7 +42,7 @@ Alle Ausführenden müssen vor Änderungen den gültigen Canon/Blueprint v10.x s
 9. **Integration & Release Steward** — Täglich oder 8-h-Fenster. Owner: Canon-kompatible API-Verträge, PR-Abhängigkeiten, Branch-Reconciliation, grüne End-to-End-CI, ehrliches BUILD_STATE, versionierte Bundles; nachgeordnete Integration nur mit verifizierten Tests.
 10. **Safety/Adversarial Auditor** — Täglich. Owner: Prompt Injection, provenance/poisoning, tool abuse, ungewollte authority escalation, catastrophic forgetting, privacy, fail-closed und Rollback-Nachweise; nicht bloß zusätzliche Verbote.
 
-Diese Rollen sind *separate* Arbeitspakete. Bei Ausführung durch bereits aktive Hauptentwicklungs- oder Boss-Aufgaben muss die Übernahme explizit im Handoff markiert werden; ein fachlich benannter Backlog-Eintrag bedeutet nicht, dass er automatisch läuft.
+Diese Rollen sind *fachliche Arbeitspakete*, **keine zusätzlichen aktiven Automationen**. Ihre Arbeit wird nun durch die fünf oben genannten stündlichen Owner übernommen: B1/B2/JEF/C3/Harness → Core; Memory/Dreaming/JEPA → JEPA & Memory; A0–A5/Teacher/MoE/Research → Forschung & Perception; Android/CI/QA/Security → QA & Android; Integration/Canon/Release-Koordination → Boss. Eine fachliche Zuweisung belegt noch keinen erfolgreichen Code-Lauf; verifizierte PRs/Tests bleiben nötig.
 
 ## Für den Boss / täglicher Kontrollalgorithmus
 
@@ -53,6 +55,6 @@ Diese Rollen sind *separate* Arbeitspakete. Bei Ausführung durch bereits aktive
 
 ## Offen
 
-- Plattformlimit 5 aktive ChatGPT-Zeitplan-Aufgaben; für 7+ getrennte *laufende* Agenten braucht es zusätzliche Slots oder eine tatsächlich funktionierende alternative Ausführungsplattform.
+- Plattformlimit 5 aktive ChatGPT-Zeitplan-Aufgaben. **Jetzt 5/5 stündlich belegt**. Für 7+ getrennte eigene Automationen/Chats braucht es weitere Slots oder eine tatsächlich funktionierende alternative Ausführungsplattform; keine angeblich aktiven Extra-Agenten erfinden.
 - Trennung der Chat-Verläufe: jede Aufgabe besitzt eine eigene Automation-ID, aber erst Run-Historie/Chat-Referenz bestätigt eigenständig resultierende Ausführungschats. Nicht vorab behaupten.
 - Merger-Strategie und Security-Proof für AGI-orientiertes Langfristziel bleibt durch laufende Implementation/Reviews zu erarbeiten.
