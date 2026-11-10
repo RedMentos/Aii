@@ -176,3 +176,57 @@ def test_value_generalisation_does_not_split_common_word_suffixes():
     v = _generalise(a, b)
     assert v["template"] == "Task {i}: {value}"
     assert v["sample_values"] == ("apple", "orange")
+
+
+def test_real_store_final_to_discovered_plan_to_restart_and_12k_output(tmp_path):
+    """Full local SQLite -> operator -> reviewed SHA -> checkpoint -> restart."""
+    from v13.store import Store
+    for name in ("data", "data/db", "data/blobs"):
+        (tmp_path / name).mkdir(parents=True, exist_ok=True)
+    st = Store(tmp_path)
+    try:
+        sid = st.new_session()
+        for name in ("alpha", "beta"):
+            event = st.event(sid, f"Please write numbered {name} rows")["event_id"]
+            mid = st.message(sid, event, "assistant", numbered(name, 5))
+            st.finish_message(mid, "FINAL", {
+                "output_owner": "C5_REPORT_BROKER",
+                "model_generated": True
+            })
+        runtime = SimpleNamespace(store=st, session=sid, home=tmp_path)
+        op = Operator(runtime)
+        proposed = json.loads(op.run(":fastbatch discover realhabit"))
+        assert proposed["kind"] == "PARAMETRIC_NUMBERED_REPEAT"
+        assert proposed["sample_values"] == ["beta", "alpha"]
+        assert proposed["source_count"] == 2
+        assert proposed["template"] == "Task {i}: {value}"
+        st.close()
+        st = None
+        # The learned candidate must survive a full Store shutdown. Nothing
+        # is automatically active after restart.
+        reopened = Store(tmp_path)
+        try:
+            op = Operator(SimpleNamespace(store=reopened, session=sid, home=tmp_path))
+            with pytest.raises(PermissionError):
+                op.run(':fastbatch run realhabit 12000 "new" --rows=800')
+            op.run(f':fastbatch activate realhabit {proposed["sha256"][:12]}')
+            first = json.loads(op.run(':fastbatch run realhabit 12000 "new" --rows=800'))
+            assert first["status"] == "PAUSED" and first["rows"] == 800
+        finally:
+            reopened.close()
+        reopened = Store(tmp_path)
+        try:
+            op = Operator(SimpleNamespace(store=reopened, session=sid, home=tmp_path))
+            finished = json.loads(op.run(':fastbatch run realhabit 12000 "new"'))
+            assert finished["rows"] == 12000 and finished["status"] == "DONE"
+            body = Path(finished["output_path"]).read_text()
+            assert body.startswith("Task 1: new\n")
+            assert body.endswith("Task 12000: new\n")
+            assert body.count("\n") == 12000
+            assert finished["sha256"] == hashlib.sha256(body.encode()).hexdigest()
+            assert finished["model_calls"] == 0
+        finally:
+            reopened.close()
+    finally:
+        if st is not None:
+            st.close()
