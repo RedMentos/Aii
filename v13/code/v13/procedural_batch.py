@@ -116,7 +116,8 @@ def _render(parts, index, value):
 class ProceduralBatch:
     """Local, reviewable, bounded and resumable compiled text batch executor."""
 
-    def __init__(self, home):
+    def __init__(self, home, store=None):
+        self.store = store  # current authoritative V13 Store; optional for manual plans
         self.root = Path(home) / "procedures" / "fastbatch"
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
         _check_path(self.root)
@@ -182,6 +183,33 @@ class ProceduralBatch:
         _parts(code.get("template"))
         return plan
 
+    def _verify_evidence(self, plan):
+        """Recheck FINAL source state before using a learned plan.
+
+        Deleted sources, replaced outputs and revoked final status must never
+        survive as executable learned habits. The check is per invocation,
+        never inside the per-row hot loop. Manually approved literal plans
+        have no Store evidence and retain the original low-latency path.
+        """
+        evidence = plan["code"].get("source_evidence")
+        if evidence is None:
+            return
+        if self.store is None:
+            raise PermissionError("source-discovered plans require the live V13 Store")
+        for event_id, sha256 in zip(evidence["source_event_ids"],
+                                    evidence["source_output_sha256"]):
+            rows = self.store.rows(
+                "SELECT m.text,m.status,s.deleted FROM messages m "
+                "JOIN events e ON e.id=m.event_id "
+                "JOIN sources s ON s.id=e.source_id "
+                "WHERE m.event_id=? AND m.role='assistant' "
+                "ORDER BY m.id DESC LIMIT 1", (event_id,))
+            if (len(rows) != 1 or rows[0]["status"] != "FINAL"
+                    or rows[0]["deleted"] != 0):
+                raise ValueError("learned procedure source is no longer FINAL/authoritative")
+            if hashlib.sha256(rows[0]["text"].encode("utf-8")).hexdigest() != sha256:
+                raise ValueError("learned procedure source changed since review")
+
     def activate(self, name, digest_prefix):
         plan = self.plan(name)
         if (not isinstance(digest_prefix, str) or len(digest_prefix) < 12
@@ -189,6 +217,7 @@ class ProceduralBatch:
             raise ValueError("activation requires matching plan SHA256 prefix (12+ chars)")
         if plan["stage"] == "RETIRED":
             raise ValueError("retired plan cannot reactivate")
+        self._verify_evidence(plan)
         plan["stage"] = "ACTIVE"
         _save(self._plan_path(name), plan)
         return {"name": name, "stage": "ACTIVE", "sha256": plan["sha256"]}
@@ -268,6 +297,7 @@ class ProceduralBatch:
         plan = self.plan(name)
         if plan["stage"] != "ACTIVE":
             raise PermissionError("compiled plan requires explicit local activation")
+        self._verify_evidence(plan)
         max_rows = MAX_ROWS if max_rows is None else max_rows
         if type(max_rows) is not int or not 1 <= max_rows <= MAX_ROWS:
             raise ValueError("max_rows must be a positive integer")
@@ -310,6 +340,7 @@ class ProceduralBatch:
 
     def preview(self, name, count, value="", max_chars=256):
         plan = self.plan(name)
+        self._verify_evidence(plan)
         state_file, output_file, state = self._load_or_start(plan, count, value)
         self._verify_prefix(output_file, state)
         if type(max_chars) is not int or not 0 <= max_chars <= 4096:
@@ -341,7 +372,7 @@ def operator_command(runtime, args):
     run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] |
     status [NAME] | retire NAME. Only local operator dispatch can reach here.
     """
-    runner = ProceduralBatch(runtime.home)
+    runner = ProceduralBatch(runtime.home, store=runtime.store)
     if not args or args[0] == "status":
         if len(args) > 2:
             raise ValueError(":fastbatch status [NAME]")
