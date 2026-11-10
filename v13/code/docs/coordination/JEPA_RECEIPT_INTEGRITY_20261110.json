@@ -1,0 +1,46 @@
+{
+  "schema": "v13.work_package.v1",
+  "date": "2026-11-10",
+  "owner": "GPT-6 scheduled worker",
+  "package_id": "JEPA-RECEIPT-INTEGRITY-20261110",
+  "branch": "codex/v13-jepa-receipt-integrity-20261110-hour06",
+  "base_sha": "40edc531a5207c6f5d5fecdbe550e5d9d696037d",
+  "head_before_ledger": "3718c4778d5e794342eed9fb94e32d71c5ad9912",
+  "pull_request": 1660,
+  "dependencies": [
+    "PR1659",
+    "PR1658",
+    "PR1655"
+  ],
+  "files": [
+    "v13/code/v13/runtime.py",
+    "v13/code/tests/test_world_jepa_runtime_transaction.py",
+    ".github/workflows/v13-jepa-receipt-integrity.yml"
+  ],
+  "status": "review_only_remote_bytes_verified_ci_not_observed",
+  "evidence": [
+    "GitHub connector readback of all three modified files and exact blob SHA confirmed",
+    "Eight malformed source digest/holdout receipt regression cases authored",
+    "No local full pytest: git clone DNS failure",
+    "GitHub Actions commit PR runs query returned none at first check; not a PASS"
+  ],
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "Body-JEPA UNAVAILABLE",
+    "jepa_weight=0",
+    "No native/Redmi evidence",
+    "No active GGUF promotion"
+  ],
+  "next_exact_commands": [
+    "Check Actions PR1660 head workflow for result and fix failures",
+    "Review PR1660 receipt validation and source identity",
+    "Integrate only after independent review and source-freeze approval",
+    "Continue B1/B2 pinned adapter training/retention and C3 LoRA resume"
+  ],
+  "blockers": [
+    "Container cannot resolve github.com; connector can fetch/write",
+    "Runtime source freeze remains; review-only branch"
+  ],
+  "full_blueprint_complete": false
+}
