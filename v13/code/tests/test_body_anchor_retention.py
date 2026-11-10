@@ -3,10 +3,11 @@ import unittest
 import torch
 from v13.body_jepa import anchor_retention_kl
 
-class FixedBody:
+class FixedBody(torch.nn.Module):
     def __init__(self, logits):
+        super().__init__()
         self.logits = logits
-    def __call__(self, input_ids):
+    def forward(self, input_ids):
         return type('Output', (), {'logits': self.logits})()
 
 class AnchorRetentionTests(unittest.TestCase):
