@@ -1,0 +1,24 @@
+name: V13 JEPA Runtime transactional update
+on:
+  push:
+    branches:
+      - codex/v13-jepa-runtime-transaction-20261110
+  pull_request:
+    paths:
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/tests/test_world_jepa_runtime_transaction.py'
+      - '.github/workflows/v13-jepa-runtime-transaction.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: v13/code
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pytest numpy
+      - run: python -m compileall -q v13/runtime.py v13/world_jepa_online_experiment.py tests/test_world_jepa_runtime_transaction.py
+      - run: python -m pytest -q tests/test_world_jepa_runtime_transaction.py
