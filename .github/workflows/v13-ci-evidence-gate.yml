@@ -1,0 +1,36 @@
+name: V13 CI Evidence Gate
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/ci_gate.py'
+      - 'v13/code/tests/test_ci_gate.py'
+      - '.github/workflows/v13-ci-evidence-gate.yml'
+  workflow_dispatch:
+jobs:
+  evidence-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run isolated stdlib CI evidence tests
+        run: python3 -m unittest discover -s v13/code/tests -p test_ci_gate.py -v
+      - name: Reject missing, failed and unpinned workflow evidence
+        run: |
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, "v13/code/scripts")
+          from ci_gate import evaluate
+          sha = "a" * 40
+          good = {"workflow_runs": [{"head_sha": sha, "name": "required", "status": "completed", "conclusion": "success"}]}
+          assert evaluate(good, sha, ["required"]) == {"required": "PASS"}
+          assert evaluate({"workflow_runs": []}, sha, ["required"]) == {"required": "MISSING"}
+          assert evaluate({"workflow_runs": [{"head_sha": sha, "name": "required", "status": "completed", "conclusion": "failure"}]}, sha, ["required"]) == {"required": "BLOCKED"}
+          try:
+              evaluate(good, "unpinned", ["required"])
+          except ValueError:
+              pass
+          else:
+              raise AssertionError("unpinned SHA accepted")
+          PY
