@@ -1,4 +1,4 @@
-"""Compile explicitly reviewed B1/B2 examples into source-disjoint train/holdout sets.
+"""Compile explicitly reviewed B1/B2 examples into source-content-disjoint train/holdout sets.
 
 Offline, no automatic training or model activation. Hashes are declarations
 from the reviewed input; provenance must be verified upstream against Store.
@@ -101,7 +101,7 @@ def compile_dataset(source, destination, holdout_percent=20):
             sid, h = row["source_id"], row["source_sha256"]
             if seen.setdefault(sid, h) != h:
                 raise ValueError("source ID changed content hash")
-            bucket = int(sha((sid+":"+h).encode())[:16], 16) % 100
+            bucket = int(h[:16], 16) % 100
             part = "holdout" if bucket < holdout_percent else "train"
             groups[row["role"]][part].append(row)
     if not count:
