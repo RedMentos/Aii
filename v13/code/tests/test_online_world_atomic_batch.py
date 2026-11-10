@@ -70,6 +70,21 @@ class AtomicOnlineWorldTests(unittest.TestCase):
         self.assertEqual(learner.processed, [])
         self.assertFalse(learner.model.path.exists())
 
+    def test_predict_rejects_finite_out_of_range_state_before_predictor(self):
+        learner = OnlineWorld(self.runtime)
+        state = [0.0, 0.0, 0.0, 1e6 + 1]
+        with patch.object(learner.model, 'predict', side_effect=AssertionError('called')):
+            with self.assertRaisesRegex(ValueError, 'Invalid state'):
+                learner.predict(state, 'simple')
+        self.assertEqual(learner.model.seen, 0)
+        self.assertFalse(learner.model.path.exists())
+
+    def test_predict_accepts_finite_boundary_state(self):
+        learner = OnlineWorld(self.runtime)
+        output = learner.predict([1e6, 0.0, 0.0, 0.0], 'simple')
+        self.assertEqual(len(output), 3)
+        self.assertTrue(np.isfinite(output).all())
+
     def test_atomic_checkpoint_restarts_without_relearning(self):
         learner = OnlineWorld(self.runtime)
         with patch.object(world_model, 'transitions', return_value=[row('one')]):
