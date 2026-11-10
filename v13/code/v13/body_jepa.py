@@ -207,21 +207,38 @@ def minor_subspace_init(torch,model,r):
     return {'modules':n,'frozen_side_params':frozen,'mean_low_singular_mass_share':round(sum(share)/max(1,len(share)),6)}
 
 def anchor_retention_kl(torch,model,anchor_seqs,anchor_logp):
-    """Read-only forward KL(master || adapted) on fixed, aligned anchor tokens."""
+    """Read-only deterministic forward KL(master || adapted) on aligned anchor tokens.
+
+    The cached master reference is generated with frozen-base eval dropout.
+    Compare the adapted model in eval as well; restore mixed module flags
+    exactly even on a failed forward or an invalid later anchor.
+    """
     if len(anchor_seqs)!=len(anchor_logp):
         raise ValueError('unaligned retention anchors')
+    modules=list(model.modules())
+    flags=[module.training for module in modules]
     result=[]
-    with torch.no_grad():
-        for seq,base_logp in zip(anchor_seqs,anchor_logp):
-            adapted_logp=torch.log_softmax(model(torch.tensor([seq])).logits[0].float(),dim=-1)
-            if (adapted_logp.shape!=base_logp.shape
-                    or not bool(torch.isfinite(base_logp).all())
-                    or not bool(torch.isfinite(adapted_logp).all())):
-                raise ValueError('invalid anchor distribution')
-            divergence=(base_logp.exp()*(base_logp-adapted_logp)).sum(-1).mean()
-            if not bool(torch.isfinite(divergence)):
-                raise ValueError('nonfinite post-training anchor KL')
-            result.append(float(divergence))
+    try:
+        model.eval()
+        with torch.no_grad():
+            for seq,base_logp in zip(anchor_seqs,anchor_logp):
+                if (not isinstance(seq,(list,tuple)) or not seq
+                        or any(type(tok) is not int or tok<0 for tok in seq)):
+                    raise ValueError('invalid anchor token IDs')
+                ids=torch.tensor([seq],dtype=torch.long)
+                adapted_logp=torch.log_softmax(model(input_ids=ids).logits[0].float(),dim=-1)
+                if (adapted_logp.shape!=base_logp.shape
+                        or not bool(torch.isfinite(base_logp).all())
+                        or not bool(torch.isfinite(adapted_logp).all())):
+                    raise ValueError('invalid anchor distribution')
+                divergence=(base_logp.exp()*(base_logp-adapted_logp)).sum(-1).mean()
+                if not bool(torch.isfinite(divergence)):
+                    raise ValueError('nonfinite post-training anchor KL')
+                result.append(float(divergence))
+    finally:
+        model.train(flags[0])
+        for module,flag in zip(modules,flags):
+            module.training=flag
     return result
 
 
