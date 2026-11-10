@@ -49,7 +49,7 @@ class Trainers(unittest.TestCase):
             ev=tr.LiveNearMissEvaluator(Inner());rep=ev.evaluate([{'prompt':'What is the name of my cat?','target':'Your cat is called Mitzi.'}],[]);ev.close()
             self.assertEqual((rep['base_eval']['near_miss_leak'],rep['candidate_eval']['near_miss_leak']),(0.,.5))  # gate sees specificity
             self.assertTrue(calls['near']);self.assertEqual(calls['near'][0][1],['mitzi']);self.assertTrue(calls['closed'])
-            info=tr.choose(self.g,self.r,'sparse');self.assertEqual(info['active'],'sparse');self.assertFalse(info['served_live'])
+            info=tr.choose(self.g,self.r,'sparse');self.assertEqual(info['active'],'none');self.assertIn('SPARSE_SERVING_UNAVAILABLE',info['missing'])
             info=tr.choose(self.g,self.r,'none');self.assertIsInstance(self.g.weights.trainer,NullTrainer)
         with self.assertRaises(ValueError):tr.choose(self.g,self.r,'magic')
         with self.assertRaises(ValueError):tr.choose(self.g,self.r,'lora',str(self.home/'nope'))
@@ -62,7 +62,7 @@ class Trainers(unittest.TestCase):
             self.assertEqual(tr.choose(self.g,self.r,'auto',str(self.master))['active'],'lora')  # never auto-sparse (fast-trace bench)
             info=tr.choose(self.g,self.r,'sparse');self.assertTrue(info['served_live'])
             t=self.g.weights.trainer;self.assertEqual(t.role,'C3_LANGUAGE#sparse_memory');self.assertIn('Task context',t.cfg['system']);self.assertEqual(t.cfg['contexts'],[''])
-            b.write_bytes(b'changed');self.assertFalse(tr.choose(self.g,self.r,'sparse')['served_live'])
+            b.write_bytes(b'changed');info=tr.choose(self.g,self.r,'sparse');self.assertEqual(info['active'],'none');self.assertIn('SPARSE_SERVING_UNAVAILABLE',info['missing'])
     def test_live_evaluator_measures_frozen_drift_probes(self):
         from v13.drift import Drift
         class Inner:
