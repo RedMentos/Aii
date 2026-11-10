@@ -99,6 +99,43 @@ class CandidateTrialTests(unittest.TestCase):
                     train_candidate=train,
                     evaluate=lambda model, *_: model["loss"])
 
+    def test_mean_improvement_cannot_hide_one_heldout_regression(self):
+        with tempfile.TemporaryDirectory() as temp:
+            dest, pin = self.dataset(Path(temp))
+            # A large improvement on most examples must not hide one forgotten
+            # heldout source. This candidate is never deployed.
+            def evaluate(model, prompt, target):
+                if prompt == model["forgotten"]:
+                    return 0.1 if not model["trained"] else 0.9
+                return 0.9 if not model["trained"] else 0.1
+            from v13.agi.body_dataset_training_input import prepare_body_training_items
+            _, heldout = prepare_body_training_items(dest, "B1_DETAIL")
+            forgotten = heldout[0]["prompt"]
+            result, _ = run_body_candidate_trial(
+                dest, "B1_DETAIL", manifest_sha256=pin,
+                authorize=lambda *_: True,
+                make_candidate=lambda *_: {"forgotten": forgotten, "trained": False},
+                train_candidate=lambda model, _: model.update(trained=True),
+                evaluate=evaluate)
+            self.assertLess(result["heldout_after"], result["heldout_before"])
+            self.assertGreater(result["max_single_example_regression"], 0)
+            self.assertFalse(result["retention_pass"])
+            self.assertEqual(result["deployment"], "NOT_AUTHORIZED")
+
+    def test_per_example_tolerance_is_bounded(self):
+        with tempfile.TemporaryDirectory() as temp:
+            dest, pin = self.dataset(Path(temp))
+            for tolerance in (-1, float("nan"), float("inf"), True):
+                with self.subTest(tolerance=tolerance):
+                    with self.assertRaises(ValueError):
+                        run_body_candidate_trial(
+                            dest, "B1_DETAIL", manifest_sha256=pin,
+                            authorize=lambda *_: self.fail("authorized"),
+                            make_candidate=lambda *_: {},
+                            train_candidate=lambda *_: None,
+                            evaluate=lambda *_: 0.0,
+                            max_single_example_regression=tolerance)
+
     def test_invalid_losses_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
             dest, pin = self.dataset(Path(temp))

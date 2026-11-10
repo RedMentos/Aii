@@ -1,0 +1,43 @@
+{
+  "schema": "v13-core-package-v1",
+  "date": "2026-11-10",
+  "owner": "V13 Core & Harness",
+  "package_id": "CORE-BODY-PAIRED-RETENTION-20261110",
+  "branch": "codex/v13-body-paired-retention-20261110-hour17",
+  "base_branch": "codex/v13-body-trial-source-recheck-review-20261110",
+  "base_sha": "1903475c40869f323a579c94ea06c79770c5250b",
+  "changed_files": [
+    "v13/code/v13/agi/body_candidate_trial.py",
+    "v13/code/tests/test_body_candidate_trial.py",
+    ".github/workflows/v13-body-paired-retention.yml"
+  ],
+  "dependency_prs": [
+    1691
+  ],
+  "status": "DRAFT_REVIEW_ONLY_CI_UNVERIFIED",
+  "checks": {
+    "remote_readback": "paired loss implementation read back at a8b3643",
+    "local_tests": "NOT_RUN_DNS_GITHUB_UNREACHABLE",
+    "github_actions": "NOT_OBSERVED_AT_CHECKPOINT",
+    "android": "NOT_RUN"
+  },
+  "negative_gates": [
+    "STEP2_UTILITY_FAIL",
+    "B3_NO_PROMOTION",
+    "Body_JEPA_UNAVAILABLE",
+    "jepa_weight_0",
+    "canonical_architecture_complete_FALSE"
+  ],
+  "blockers": [
+    "Exact-head CI not yet observed",
+    "No Redmi native evidence",
+    "Candidate isolation is caller contract, not proven by this API"
+  ],
+  "next_command": "python -m unittest discover -s tests -p 'test_body_candidate_trial.py' -v",
+  "next_actions": [
+    "Check PR #1695 CI on latest SHA",
+    "Fix regressions without altering frozen source or other agent branches",
+    "Connect independently isolated B1/B2 PEFT trainer candidate with bounded retention and rollback",
+    "Review operator authorization and source provenance; no deployment promotion"
+  ]
+}
