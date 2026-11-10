@@ -21,7 +21,7 @@ from ..common import file_hash
 from .base import StateBox
 
 KEY='G6_TRAINER_CHOICE';REVISION='g6-trainer-v1'
-KINDS=('auto','lora','sparse','none')
+KINDS=('auto','lora','sparse','none','body_b1','body_b2')
 ROLE='C3_LANGUAGE'
 
 # Live LoRA values measured on the deployed path (bench-results/ag6-live-20261010, LFM2.5-350M Q4, 8 facts, 32 probes,
@@ -74,8 +74,11 @@ def training_readiness(runtime,kind='lora'):
     Distinguishes missing master/dependencies from a stale or unverifiable
     master/GGUF pairing. Never creates training artifacts or mutates state.
     """
+    if kind in ('body_b1','body_b2'):
+        from .body_trainers import readiness
+        return readiness(runtime,kind,_box(runtime.store).load()[0])
     if kind not in ('lora','sparse'):
-        raise ValueError('Training kind must be lora or sparse')
+        raise ValueError('Training kind must be lora|sparse|body_b1|body_b2')
     st=_box(runtime.store).load()[0]
     req=requirements(runtime,st)
     master=Path(req['master'])
@@ -148,7 +151,11 @@ class LiveNearMissEvaluator:
 def build(runtime,kind=None):
     """Return (trainer, info). Never raises for a missing piece: falls back to NullTrainer with the reason."""
     from .weights import NullTrainer
-    st=_box(runtime.store).load()[0];kind=kind or st['kind'];req=requirements(runtime,st)
+    st=_box(runtime.store).load()[0];kind=kind or st['kind']
+    if kind in ('body_b1','body_b2'):
+        from .body_trainers import build as build_body
+        return build_body(runtime,kind,st)
+    req=requirements(runtime,st)
     want=kind
     if kind=='auto':
         auto=training_readiness(runtime,'lora')
@@ -188,10 +195,19 @@ def install(growth,runtime,kind=None):
 
 def set_lora_cfg(growth,runtime,overrides):
     """Measured per-device LoRA overrides (keys of lora_trainer.DEFAULTS only)."""
-    from ..lora_trainer import DEFAULTS
+    state=_box(runtime.store).load()[0]
+    body_kind=state.get('kind') in ('body_b1','body_b2')
+    if body_kind:
+        from ..body_jepa import DEFAULTS
+    else:
+        from ..lora_trainer import DEFAULTS
     bad=[k for k in overrides if k not in DEFAULTS or k in ('threads','base_gguf')]
     if bad:raise ValueError('Unbekannte LoRA-Regler: '+', '.join(bad))
-    def f(st):st['lora_cfg']=dict(overrides)
+    def f(st):
+        if st.get('kind') in ('body_b1','body_b2'):
+            st.setdefault('body_lora_cfg',{})[st['kind']]=dict(overrides)
+        else:
+            st['lora_cfg']=dict(overrides)
     _box(runtime.store).mutate(f);return install(growth,runtime)
 
 def choose(growth,runtime,kind,master=None):
@@ -202,6 +218,9 @@ def choose(growth,runtime,kind,master=None):
         if master:
             m=Path(master).expanduser().resolve()
             if not (m/'model.safetensors').is_file():raise ValueError('Master-Ordner braucht model.safetensors + config.json')
-            st['master']=str(m);st['master_sha256']=file_hash(m/'model.safetensors')
+            if kind in ('body_b1','body_b2'):
+                st.setdefault('body_masters',{})[kind]={'path':str(m),'sha256':file_hash(m/'model.safetensors')}
+            else:
+                st['master']=str(m);st['master_sha256']=file_hash(m/'model.safetensors')
     _box(runtime.store).mutate(f)
     return install(growth,runtime)
