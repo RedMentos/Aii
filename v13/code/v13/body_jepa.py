@@ -224,12 +224,43 @@ def anchor_retention_kl(torch,model,anchor_seqs,anchor_logp):
             result.append(float(divergence))
     return result
 
+
+def heldout_retention_kl(torch,model,sequences):
+    """Forward KL(base || adapter) on prompt-disjoint probes, with no weight updates.
+
+    Read the FROZEN base through PEFT's disable_adapter() and immediately compare
+    the adapted model on the same token prefix. Unlike cached full-vocab baselines,
+    this streams one probe at a time to bound peak mobile RAM. No inference result
+    is assigned deployment authority.
+    """
+    disabled=getattr(model,'disable_adapter',None)
+    if not callable(disabled):
+        raise ValueError('PEFT disable_adapter context is required for heldout baseline')
+    result=[]
+    with torch.no_grad():
+        for seq in sequences:
+            if (not isinstance(seq,(list,tuple)) or not seq or
+                    any(type(tok) is not int or tok<0 for tok in seq)):
+                raise ValueError('heldout probe must contain nonempty token IDs')
+            ids=torch.tensor([seq],dtype=torch.long)
+            with disabled():
+                baseline=torch.log_softmax(model(input_ids=ids).logits[0].float(),dim=-1)
+            adapted=torch.log_softmax(model(input_ids=ids).logits[0].float(),dim=-1)
+            if (baseline.shape!=adapted.shape or not bool(torch.isfinite(baseline).all())
+                    or not bool(torch.isfinite(adapted).all())):
+                raise ValueError('invalid heldout distribution')
+            kl=(baseline.exp()*(baseline-adapted)).sum(dim=-1).mean()
+            if not bool(torch.isfinite(kl)):
+                raise ValueError('nonfinite heldout KL')
+            result.append(max(0.,float(kl)))
+    return result
+
 # -- trainer ---------------------------------------------------------------------------------------------
 from .lora_trainer import LoraTrainer,DEFAULTS as _LORA_DEFAULTS,_check,_rss_mb,answer_hit
 from .common import digest,dumps,atomic_write
 
 REVISION='v13-body-jepa-trainer-v1'
-DEFAULTS=dict(_LORA_DEFAULTS,jepa_weight=.5,jepa_target='ema',jepa_ema_decay=.9,jepa_layer=-1,max_steps=30,min_steps=30,lr=5e-4)
+DEFAULTS=dict(_LORA_DEFAULTS,jepa_weight=.5,jepa_target='ema',jepa_ema_decay=.9,jepa_layer=-1,max_steps=30,min_steps=30,lr=5e-4,heldout_probe_cap=8)
 
 class BodyJepaTrainer(LoraTrainer):
     """LoRA body trainer with the §13 B-JEPA term (EMA adapter target + predictor) next to answer CE and KL anchors.
@@ -338,6 +369,29 @@ class BodyJepaTrainer(LoraTrainer):
                 save_bj_step(checkpoint_dir,checkpoint_source,step,model,pred,opt,ema,g,hist)
             if step>=int(cfg['min_steps']) and hist[-1]['ce']<=float(cfg['target_loss']):break
         model.eval()
+        # Separate KL on truly unseen prompt strings from training/locality anchors.
+        # This is an additional prompt-disjoint diagnostic, NOT semantic data independence.
+        cap=cfg.get('heldout_probe_cap',8)
+        if type(cap) is not int or not 0<=cap<=16:
+            raise ValueError('heldout_probe_cap must be an integer from 0 to 16')
+        seen={' '.join(str(t).casefold().split()) for t in
+              [i['prompt'] for i in items]+anchors}
+        heldout=[];excluded=0;examined=0
+        for probe in self.probes:
+            if not isinstance(probe,dict) or not isinstance(probe.get('prompt'),str):
+                raise ValueError('heldout probe requires prompt text')
+            prompt=probe['prompt'];key=' '.join(prompt.casefold().split())
+            if not key or key in seen:
+                excluded+=1
+                continue
+            seen.add(key)
+            if len(heldout)>=cap:continue
+            pid,_=self._encode(tok,prompt)
+            with model.disable_adapter():
+                seq=pid+self._greedy(torch,model,pid,16)
+            if not seq:raise ValueError('empty heldout sequence')
+            heldout.append(seq);examined+=1
+        heldout_kls=heldout_retention_kl(torch,model,heldout) if heldout else []
         # Measure retention against the frozen master on the SAME anchor sequences
         # used for training. This is a diagnostic, not deployment authority.
         # Recompute sequentially to bound peak memory on the mobile body path.
@@ -363,6 +417,12 @@ class BodyJepaTrainer(LoraTrainer):
                  'cos_pred_vs_base_target':round(cos_pred_base,5),'cos_pred_vs_ema_target':round(cos_pred_ema,5),
                  'retention_anchor_count':len(retention_kl),'retention_anchor_kl_mean':round(sum(retention_kl)/len(retention_kl),7) if retention_kl else None,
                  'retention_anchor_kl_max':round(max(retention_kl),7) if retention_kl else None,
+                 'retention_anchor_scope':'TRAINING_ANCHORS_NOT_HELDOUT',
+                 'heldout_probe_scope':'EXACT_PROMPT_DISJOINT_ONLY',
+                 'heldout_probe_cap':cap,'heldout_probe_count':len(heldout_kls),
+                 'heldout_excluded_overlap':excluded,
+                 'heldout_kl_mean':round(sum(heldout_kls)/len(heldout_kls),7) if heldout_kls else None,
+                 'heldout_kl_max':round(max(heldout_kls),7) if heldout_kls else None,
                  'effective_rank':{k:round(v,3) for k,v in rank.items()},'ema_updates':ema.updates,'ema_delta':round(ema.delta(),6),'checkpoint_resume_enabled':checkpoint_dir is not None,'checkpoint_restored_step':restored_step,
                  'seconds':round(time.monotonic()-t0,2),'peak_rss_mb':_rss_mb(),'trained_on':self.deployed_base or 'master',
                  'device':{'backend':'torch-cpu','threads':int(cfg['threads']),'torch':torch.__version__}}
