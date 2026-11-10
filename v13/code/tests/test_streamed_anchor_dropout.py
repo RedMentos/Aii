@@ -20,6 +20,7 @@ class StreamedAnchorDropoutTests(unittest.TestCase):
                 self.dropout = torch.nn.Dropout(p=0.85)
                 self.base = torch.nn.Linear(8, 12, bias=False)
                 self.adapter = torch.nn.Linear(8, 12, bias=False)
+                self.base.requires_grad_(False)
                 self.adapter_enabled = True
                 with torch.no_grad():
                     self.adapter.weight.zero_()
