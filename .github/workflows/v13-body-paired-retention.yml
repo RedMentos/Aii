@@ -1,0 +1,20 @@
+name: V13 body paired retention
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/agi/body_candidate_trial.py'
+      - 'v13/code/tests/test_body_candidate_trial.py'
+      - '.github/workflows/v13-body-paired-retention.yml'
+  workflow_dispatch:
+jobs:
+  body-paired-retention:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Focused offline dataset and candidate tests
+        working-directory: v13/code
+        run: python -m unittest discover -s tests -p 'test_body_*dataset*.py' -v && python -m unittest discover -s tests -p 'test_body_candidate_trial.py' -v
