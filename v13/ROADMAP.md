@@ -1,3 +1,7 @@
+## 2026-11-10 — World-JEPA-Replay: Original RED, isolierter Korrekturkandidat
+
+Der Original-PR #1652 bleibt RED: Fixture, fehlerhafte Zeilenauswahl und mutierendes Modell bei fehlgeschlagenem Postcheck. Quellgebundene Rowcount-Testkopie und separater detached SHADOW-Vorschaupfad: **27 Tests PASS**, echter kleiner synthetischer NumPy-Gewichtsupdate nur an einer Kopie; #1661-Runtime-Verbindung nur als Mock-Feed-Komposition, nicht aktiviert. Parent-Vollsuite: **5 FAIL / 5.397 PASS / 50 SKIP / 94 ERROR / 3.022 Untertests**. `code/docs/WORLD_JEPA_REPLAY_SHADOW_REVIEW_20261110.md` hält Rohbeleg, offene Lineage-/Optimizer-/Fixed-Target-Fragen und den neuen Integrationsauftrag fest; alle ursprünglichen Gates und SourceHandoff-Freeze bleiben.
+
 ## 2026-10-30 — latest review-chain evidence (branch-scoped, not production-integrated)
 
 - **#1206 independent STEP2 v3 native audit:** original Actions 40996792157, 27/27 native turns, 53/53 inner hashes, 10/10 stage exits, frozen A/B/C 0/10/9 out of 18, no pilot gain. Three C3-only correct explicit arithmetic equations are missed by the frozen lexical scorer; no rescore or gate.
