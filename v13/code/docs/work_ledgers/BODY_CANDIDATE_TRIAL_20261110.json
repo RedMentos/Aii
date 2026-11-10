@@ -1,0 +1,37 @@
+{
+  "schema": "v13-work-ledger-v1",
+  "date": "2026-11-10",
+  "owner": "Core & Harness",
+  "package": "BODY_OFFLINE_CANDIDATE_TRIAL",
+  "branch": "codex/v13-body-trial-evaluation-20261110-hour14",
+  "base_branch": "codex/v13-body-dataset-reader-20261110-hour13",
+  "base_sha": "c6007e7af66f3c37d20605b65ad19a6793993082",
+  "pr": 1683,
+  "dependencies": [
+    1670,
+    1675,
+    1679
+  ],
+  "files": [
+    "v13/code/v13/agi/body_candidate_trial.py",
+    "v13/code/tests/test_body_candidate_trial.py",
+    ".github/workflows/v13-body-candidate-trial.yml"
+  ],
+  "status": "DRAFT_REMOTE_SAVED_CI_PENDING",
+  "tests": "Parent PR #1679 exact-head Actions 42813380147 SUCCESS. Candidate trial new workflow has not reported a run at checkpoint. Four synthetic unittest methods committed; not yet verified green.",
+  "evidence": "GitHub fetch_file verified candidate trial remote blob dc35715078fba90cd540d4fc4f95053b67a37482",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "jepa_weight=0",
+    "no Redmi native evidence",
+    "no authenticated operator approval supplied by module",
+    "no real B1/B2 master weight training"
+  ],
+  "blockers": [
+    "No Redmi or pinned native B1/B2 weights available to this run",
+    "Independent candidate isolation and human-authentication must be implemented by real AG6 integration"
+  ],
+  "next_command": "cd v13/code && python -m unittest discover -s tests -p 'test_body_candidate_trial.py' -v && python -m unittest discover -s tests -p 'test_body_dataset_training_input.py' -v",
+  "next_work": "Check PR #1683 exact-head CI and repair; then connect to actual isolated BodyJepaTrainer adapter candidate with real heldout evaluation and rollback, preserve operator authority."
+}
