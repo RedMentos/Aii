@@ -1,0 +1,23 @@
+name: V13 B1 B2 Offline Candidate Trial
+on:
+  push:
+    branches:
+      - codex/v13-body-trial-evaluation-20261110-hour14
+  pull_request:
+    paths:
+      - 'v13/code/v13/agi/body_candidate_trial.py'
+      - 'v13/code/tests/test_body_candidate_trial.py'
+      - '.github/workflows/v13-body-candidate-trial.yml'
+jobs:
+  trial:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Focused integration regression
+        working-directory: v13/code
+        run: |
+          python -m unittest discover -s tests -p 'test_body_candidate_trial.py' -v
+          python -m unittest discover -s tests -p 'test_body_dataset_training_input.py' -v
