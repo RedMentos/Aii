@@ -33,6 +33,12 @@ class OnlineWorld:
                     or len(set(ids))!=len(ids)):
                 raise ValueError('Incompatible online world cursor')
             self.processed=ids
+        # The saved cursor must represent the same learned prefix as the
+        # persisted weights. Missing/extra IDs can silently skip or replay T8
+        # outcomes, even when both files are individually valid JSON/NPZ.
+        if (len(self.processed)!=min(self.model.seen,world_model.MAX_ROWS)
+                or len(set(self.processed))!=len(self.processed)):
+            raise ValueError('Online world checkpoint/cursor mismatch: restore consistent state')
 
     @staticmethod
     def encode(row):
@@ -57,14 +63,16 @@ class OnlineWorld:
             if action_id not in already:
                 new.append(row)
                 already.add(action_id)
+        # Validate *all* committed rows before any observe() or checkpoint.
+        # A malformed late row must not persist a partially learned batch.
+        validated=[(row['action_id'],*self.encode(row)) for row in new]
         # Track old-experience error separately from fresh-sample loss.
         replay=[(x.copy(),int(a),y.copy()) for x,a,y in zip(self.model.x,self.model.act,self.model.y)]
         retention_before=self.model.error(replay) if replay else None
-        for row in new:
-            x,a,y=self.encode(row)
+        for action_id,x,a,y in validated:
             try:
                 self.model.observe(x,a,y)
-                self.processed.append(row['action_id'])
+                self.processed.append(action_id)
                 self.processed=self.processed[-world_model.MAX_ROWS:]
                 self.model.checkpoint(processed_ids=self.processed)
             except Exception:
