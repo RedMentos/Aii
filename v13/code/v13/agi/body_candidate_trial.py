@@ -13,6 +13,23 @@ def _digest(path):
     data = Path(path).read_bytes()
     return hashlib.sha256(data).hexdigest()
 
+def _verify_partition_bytes(directory):
+    """Revalidate all published dataset bytes against the pinned manifest.
+
+    The reader validates the rows at ingestion; this check catches source
+    replacement during independently supplied operator/trainer callbacks.
+    """
+    root = Path(directory)
+    manifest_path = root / "manifest.json"
+    if root.is_symlink() or manifest_path.is_symlink():
+        raise ValueError("dataset path changed")
+    manifest = json.loads(manifest_path.read_bytes())
+    for name, info in manifest["files"].items():
+        path = root / name
+        if path.is_symlink() or not path.is_file() or _digest(path) != info["sha256"]:
+            raise ValueError("dataset partition changed during trial")
+
+
 def _loss(evaluate, candidate, items):
     scores = []
     for item in items:
@@ -52,12 +69,15 @@ def run_body_candidate_trial(directory, role, *, manifest_sha256, authorize,
         raise ValueError("manifest changed during read")
     if authorize(role, manifest_sha256) is not True:
         raise PermissionError("operator authorization denied")
+    _verify_partition_bytes(directory)
     candidate = make_candidate(role)
     before = _loss(evaluate, candidate, heldout)
+    _verify_partition_bytes(directory)
     train_candidate(candidate, train)
     after = _loss(evaluate, candidate, heldout)
     if _digest(manifest) != manifest_sha256:
         raise ValueError("manifest changed during trial")
+    _verify_partition_bytes(directory)
     return {"role": role, "manifest_sha256": manifest_sha256,
             "train_rows": len(train), "heldout_rows": len(heldout),
             "heldout_before": before, "heldout_after": after,
