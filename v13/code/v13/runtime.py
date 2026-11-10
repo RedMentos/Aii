@@ -95,8 +95,19 @@ class Runtime:
             # numerical update must not alter the last usable in-memory model.
             candidate=deepcopy(current) if current is not None else WorldJEPA(seed=7,ensemble=2)
             result=update_from_store(candidate,self.store,steps=steps,limit=limit)
+            # Validate the receipt before publishing either model or provenance.
+            # A malformed source digest or nonfinite holdout metric is not a
+            # successful update even when the training call returned normally.
+            from math import isfinite
+            digest=result['source_sha256']
+            if (type(digest) is not str or len(digest)!=64 or
+                    any(c not in '0123456789abcdef' for c in digest)):
+                raise ValueError('Invalid experimental JEPA source digest')
+            loss=result['holdout_loss_after']
+            if type(loss) not in (float,int) or not isfinite(loss) or loss<0:
+                raise ValueError('Invalid experimental JEPA holdout loss')
             self._world_jepa_online=candidate
-            self._world_jepa_source_sha=result['source_sha256']
+            self._world_jepa_source_sha=digest
             return dict(result,active_model_promoted=False,
                         persisted=False,status='EXPERIMENTAL_JEPA_NO_RUNTIME_AUTHORITY')
     def world_jepa_save(self):
