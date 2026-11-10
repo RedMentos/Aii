@@ -145,7 +145,12 @@ class OnlinePredictor:
             or any(v.shape!=tuple(n if d is None else d for d in shapes[k]) for k,v in loaded.items())
             or any(not np.isfinite(v).all() for v in loaded.values())
             or np.any(loaded['act']<0) or np.any(loaded['act']>=self.a)
-            or not np.all(loaded['counters']>=0)):
+            or not np.issubdtype(loaded['counters'].dtype,np.integer)
+            or not np.all(loaded['counters']>=0)
+            or int(loaded['counters'][0])<n
+            or int(loaded['counters'][1])<int(loaded['counters'][0])
+            or np.any(np.abs(loaded['x'])>1e6)
+            or np.any(np.abs(loaded['y'])>1e6)):
             raise ValueError('Invalid predictor checkpoint')
         if processed_ids is not None and (not isinstance(processed_ids,list)
                 or len(processed_ids)>2048 or any(type(i) is not str or not i for i in processed_ids)
