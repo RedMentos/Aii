@@ -1,4 +1,4 @@
-name: V13 learned deterministic habits from FINAL traces
+name: V13 local habits and brain error diagnosis
 on:
   push:
     branches:
@@ -7,6 +7,9 @@ on:
     paths:
       - 'v13/code/v13/procedural_habits.py'
       - 'v13/code/v13/procedural_batch.py'
+      - 'v13/code/v13/brain_diagnosis.py'
+      - 'v13/code/v13/brain_panel.py'
+      - 'v13/code/tests/test_brain_diagnosis.py'
       - 'v13/code/tests/test_procedural_habits.py'
       - 'v13/code/tests/test_procedural_batch.py'
       - '.github/workflows/v13-procedural-habits.yml'
@@ -28,7 +31,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check pytest
       - name: Compile bounded local habit discovery
         run: |
-          python -m py_compile v13/procedural_habits.py v13/procedural_batch.py v13/operator.py tests/test_procedural_habits.py
+          python -m py_compile v13/procedural_habits.py v13/procedural_batch.py v13/brain_diagnosis.py v13/brain_panel.py v13/operator.py tests/test_procedural_habits.py tests/test_brain_diagnosis.py
       - name: "Regression tests: real local operator + source-bound discovery"
         run: |
-          python -m pytest -q tests/test_procedural_habits.py tests/test_procedural_batch.py
+          python -m pytest -q tests/test_procedural_habits.py tests/test_procedural_batch.py tests/test_brain_diagnosis.py
