@@ -1,12 +1,12 @@
 {
   "schema": "v13-cross-agent-work-ledger-v1",
-  "observed_utc": "2026-11-10T10:12:30Z",
+  "observed_utc": "2026-11-10T10:23:20Z",
   "owner": "GPT/Codex V13 integration (this run)",
   "repository": "RedMentos/Aii",
   "branch": "codex/v13-habit-fastbatch-discovery-20261110",
   "parent_branch": "codex/v13-body-jepa-lowram-stream-20261110",
   "parent_sha_at_creation": "22441aecd8d0760e2281c6a32670d988ea3718e4",
-  "tested_head": "c7b0def46c2fa7ff23e946e07ec488a9f53699b3",
+  "tested_head": "3ffa6a049617f26e1149eb7c5a08a0d0d03e9a14",
   "pull_request": 1671,
   "status": "DRAFT_REVIEW_ONLY",
   "source_ownership": {
@@ -30,8 +30,8 @@
       "id": "fastbatch-learned-habits",
       "organ": "cerebellar-fastpath",
       "consumer": "Operator :fastbatch discover",
-      "behavior": "current-session only FINAL -> strict numbered exact replay -> SHA-bound CANDIDATE -> explicit activation -> no-LLM mini-checkpoint outputs",
-      "evidence": "real SQLite Store persisted FINAL, restart and 12000-row output; synthetic operator 15000-row output",
+      "behavior": "current-session only FINAL -> strict numbered exact replay -> SHA-bound CANDIDATE -> explicit activation -> no-LLM mini-checkpoint outputs; source existence and exact FINAL digest revalidated before activation and each run, deleted or altered source blocks continuation",
+      "evidence": "real SQLite Store persisted FINAL, restart and 12000-row output; synthetic operator 15000-row output; real SQLite revoked-source and tampered-FINAL refusal",
       "limits": [
         "not general skills",
         "requires trailing newline",
@@ -53,10 +53,10 @@
     }
   ],
   "ci": {
-    "url": "https://github.com/RedMentos/Aii/actions/runs/42797576768",
-    "head_sha": "c7b0def46c2fa7ff23e946e07ec488a9f53699b3",
+    "url": "https://github.com/RedMentos/Aii/actions/runs/42798652640",
+    "head_sha": "3ffa6a049617f26e1149eb7c5a08a0d0d03e9a14",
     "result": "SUCCESS",
-    "tests": "34 passed",
+    "tests": "36 passed",
     "privacy": "CLEAN",
     "command": "cd v13/code && python -m pytest -q tests/test_procedural_habits.py tests/test_procedural_batch.py tests/test_brain_diagnosis.py"
   },
@@ -99,9 +99,11 @@
     "Actual native Redmi latency/RAM and long run not measured",
     "SourceHandoff runtime freeze prevents silent :fastbatch use in normal chat; operator-only",
     "General procedural plan synthesis from diverse tool traces remains open; only pure numbered text",
-    "Brain diagnosis uses evidence hints; not root-cause proof"
+    "Brain diagnosis uses evidence hints; not root-cause proof",
+    "Source validation is per invocation, not mid-chunk; a revocation concurrent with one fast call can affect that call's already-committed output"
   ],
   "next_commands": [
+    "Cross-review QA PR #1672: preserve nested module .training flags and confirm mixed-mode test after fix",
     "Cross-review PR #1670: verify deterministic TOCTOU regression, no failed dataset output artifacts, and recheck live source deletion window",
     "Fetch latest PR #1671 head and #1669 parent SHA; check owner files and review comments",
     "cd v13/code && python -m pytest -q tests/test_procedural_habits.py tests/test_procedural_batch.py tests/test_brain_diagnosis.py",
@@ -117,6 +119,14 @@
       "status": "REPORTED_TO_OWNER",
       "comment_id": 6764772307,
       "issue": "Input replacement between Store verification and dataset compilation leaves unverified final train/holdout artifacts after error; stage and atomically publish after final digest check",
+      "native_reproduced": false
+    },
+    {
+      "pr": 1672,
+      "type": "MIXED_MODULE_TRAIN_EVAL_RESTORE",
+      "status": "REPORTED_TO_OWNER",
+      "comment_id": 6764808154,
+      "issue": "model.train(was_training) recursively overwrites intentional per-submodule eval/train settings; restore each module's mode",
       "native_reproduced": false
     }
   ]
