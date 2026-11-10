@@ -311,6 +311,11 @@ class ProceduralBatch:
         rows_before = state["rows"]
         bytes_before = state["bytes"]
         while state["rows"] < until and time.monotonic() - started < max_seconds:
+            # Revocation may arrive while a long learned habit is running.
+            # Revalidate at checkpoint/chunk boundaries, NEVER every row;
+            # manual literal plans stay on the original zero-DB hot path.
+            if plan["code"].get("source_evidence"):
+                self._verify_evidence(plan)
             end = min(until, state["rows"] + CHUNK_ROWS)
             # One in-memory chunk and one durable write per ~2K rows.
             chunk = "".join(_render(parts, i, value)
