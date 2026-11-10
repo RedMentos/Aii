@@ -44,8 +44,12 @@ so action dependence can also reverse. That is an important failure mode.
 state/action has opposite desired outcomes in A and B and the active regime is
 not observable. Perfect A and B prediction simultaneously is impossible for a
 single deterministic predictor without memory/context. Current vs replay also
-trade fresh samples for prior samples. Thus these numbers do not establish an
-intrinsic replay benefit or failure in V13. The fixed readout penalizes internal
+trade fresh samples for prior samples. Replay takes the first 8 or 16
+rows of each phase; these subsets are not always action-balanced even though
+full phases are, so action proportions can confound the comparison. The same
+heldout rows are evaluated at each phase; they never enter training, but tuning
+based on these results would require fresh seeds and a new final holdout. Thus
+these numbers do not establish an intrinsic replay benefit or failure in V13. The fixed readout penalizes internal
 representation drift, including potentially benign drift; EMA-target latent
 losses are also not directly comparable across moving encoders. A follow-up
 should add an observable context, a replay-size sweep, explicit independent
