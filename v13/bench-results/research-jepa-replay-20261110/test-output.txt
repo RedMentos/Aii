@@ -1,0 +1,9 @@
+test_real_world_jepa_updates_matched_and_frozen_control_unchanged (test_jepa_bounded_replay_ablation_20261110.ReplayAblationTests.test_real_world_jepa_updates_matched_and_frozen_control_unchanged) ... ok
+test_replay_mixing_preserves_equal_rows_and_bounded_history (test_jepa_bounded_replay_ablation_20261110.ReplayAblationTests.test_replay_mixing_preserves_equal_rows_and_bounded_history) ... ok
+test_seed_reproducibility_and_input_guards (test_jepa_bounded_replay_ablation_20261110.ReplayAblationTests.test_seed_reproducibility_and_input_guards) ... ok
+test_train_and_holdout_are_disjoint_even_with_forged_ids (test_jepa_bounded_replay_ablation_20261110.ReplayAblationTests.test_train_and_holdout_are_disjoint_even_with_forged_ids) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.091s
+
+OK
