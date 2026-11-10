@@ -93,7 +93,14 @@ class OnlinePredictor:
                 scale=min(1.,10./max(norm,1e-12))
                 self.W-=self.lr*scale*gW;self.U[aa]-=self.lr*scale*gU;self.bias-=self.lr*scale*gb
                 self.updates+=1
-            return {'seen':self.seen,'updates':self.updates,'loss':float(np.mean((self.predict(x,action)-y)**2))}
+            # A finite gradient does not guarantee a finite squared loss:
+            # e.g. a residual around 1e155 overflows when squared. Never
+            # commit an observation whose reported learning metric is invalid.
+            with np.errstate(over='ignore',invalid='ignore'):
+                loss=float(np.mean((self.predict(x,action)-y)**2))
+            if not np.isfinite(loss):
+                raise ValueError('Nonfinite online loss')
+            return {'seen':self.seen,'updates':self.updates,'loss':loss}
     
         except Exception:
             (self.W,self.U,self.bias,self.x,self.act,self.y,
