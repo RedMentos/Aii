@@ -240,3 +240,65 @@ def test_real_store_final_to_discovered_plan_to_restart_and_12k_output(tmp_path)
     finally:
         if st is not None:
             st.close()
+
+
+def test_deleted_source_cannot_be_proposed_or_activated_in_real_store(tmp_path):
+    from v13.store import Store
+    for folder in ("data", "data/db", "data/blobs"):
+        (tmp_path / folder).mkdir(parents=True, exist_ok=True)
+    st = Store(tmp_path)
+    try:
+        sid = st.new_session()
+        event = st.event(sid, "Number the rows")
+        mid = st.message(sid, event["event_id"], "assistant", numbered("safe", 6))
+        st.finish_message(mid, "FINAL", {})
+        op = Operator(SimpleNamespace(store=st, session=sid, home=tmp_path))
+        payload = json.loads(op.run(":fastbatch discover traced"))
+        source_id = event["source_ref"]["source_id"]
+        with st.tx() as connection:
+            connection.execute("UPDATE sources SET deleted=1 WHERE id=?", (source_id,))
+        with pytest.raises(ValueError, match="no longer FINAL"):
+            op.run(f":fastbatch activate traced {payload['sha256'][:12]}")
+        with pytest.raises(ValueError, match="no repeated numbered FINAL"):
+            op.run(":fastbatch discover deleted")
+        assert not ProceduralBatch(tmp_path)._plan_path("deleted").exists()
+    finally:
+        st.close()
+
+
+def test_active_habit_refuses_revoked_or_changed_final_source(tmp_path):
+    from v13.store import Store
+    for folder in ("data", "data/db", "data/blobs"):
+        (tmp_path / folder).mkdir(parents=True, exist_ok=True)
+    st = Store(tmp_path)
+    try:
+        sid = st.new_session()
+        e = st.event(sid, "Number the items")
+        mid = st.message(sid, e["event_id"], "assistant", numbered("old", 6))
+        st.finish_message(mid, "FINAL", {})
+        op = Operator(SimpleNamespace(store=st, session=sid, home=tmp_path))
+        proposal = json.loads(op.run(":fastbatch discover sensitive"))
+        op.run(f":fastbatch activate sensitive {proposal['sha256'][:12]}")
+        result = json.loads(op.run(":fastbatch run sensitive 50 --rows=10"))
+        assert result["status"] == "PAUSED" and result["rows"] == 10
+        with st.tx() as connection:
+            connection.execute("UPDATE messages SET text=? WHERE id=?",
+                               (numbered("changed", 6), mid))
+        with pytest.raises(ValueError, match="source changed since review"):
+            op.run(":fastbatch run sensitive 50")
+        with pytest.raises(ValueError, match="source changed since review"):
+            op.run(":fastbatch peek sensitive 50")
+        with st.tx() as connection:
+            connection.execute("UPDATE messages SET text=? WHERE id=?",
+                               (numbered("old", 6), mid))
+            connection.execute("UPDATE sources SET deleted=1 WHERE id=?",
+                               (e["source_ref"]["source_id"],))
+        with pytest.raises(ValueError, match="no longer FINAL"):
+            op.run(":fastbatch run sensitive 50")
+        # The generated source-derived output is not extended after revocation.
+        assert Path(result["output_path"]).read_text().count("\n") == 10
+        # Without a bound Store, direct API callers may not evade revocation.
+        with pytest.raises(PermissionError, match="require the live V13 Store"):
+            ProceduralBatch(tmp_path).run("sensitive", 50)
+    finally:
+        st.close()
