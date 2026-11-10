@@ -108,12 +108,14 @@ def _validate(meta, arrays, source_sha256):
     a = arrays.get('action_counts')
     mu = arrays.get('mu')
     ztr = arrays.get('ztrain')
+    # Validate all array types/shapes before using their lengths. A corrupt
+    # NPZ can otherwise raise TypeError instead of a controlled rejection.
     if (not isinstance(a, np.ndarray) or a.ndim != 1 or not 1 <= len(a) <= 64
             or a.dtype != np.dtype('int64') or np.any(a < 0)
-            or sum(int(x) for x in a) > len(ztr)
             or not isinstance(mu, np.ndarray) or mu.ndim != 1 or not 1 <= len(mu) <= 4096
             or not isinstance(ztr, np.ndarray) or ztr.ndim != 2
-            or not 2 <= len(ztr) <= 100000 or ztr.shape[1] != wj.Z):
+            or not 2 <= len(ztr) <= 100000 or ztr.shape[1] != wj.Z
+            or sum(int(x) for x in a) > len(ztr)):
         raise ValueError('Invalid WorldJEPA calibration dimensions')
     d, actions, n = len(mu), len(a), len(ztr)
     expected = {
