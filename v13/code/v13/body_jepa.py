@@ -206,6 +206,24 @@ def minor_subspace_init(torch,model,r):
         n+=1;frozen+=int(low.numel())
     return {'modules':n,'frozen_side_params':frozen,'mean_low_singular_mass_share':round(sum(share)/max(1,len(share)),6)}
 
+def anchor_retention_kl(torch,model,anchor_seqs,anchor_logp):
+    """Read-only forward KL(master || adapted) on fixed, aligned anchor tokens."""
+    if len(anchor_seqs)!=len(anchor_logp):
+        raise ValueError('unaligned retention anchors')
+    result=[]
+    with torch.no_grad():
+        for seq,base_logp in zip(anchor_seqs,anchor_logp):
+            adapted_logp=torch.log_softmax(model(torch.tensor([seq])).logits[0].float(),dim=-1)
+            if (adapted_logp.shape!=base_logp.shape
+                    or not bool(torch.isfinite(base_logp).all())
+                    or not bool(torch.isfinite(adapted_logp).all())):
+                raise ValueError('invalid anchor distribution')
+            divergence=(base_logp.exp()*(base_logp-adapted_logp)).sum(-1).mean()
+            if not bool(torch.isfinite(divergence)):
+                raise ValueError('nonfinite post-training anchor KL')
+            result.append(float(divergence))
+    return result
+
 # -- trainer ---------------------------------------------------------------------------------------------
 from .lora_trainer import LoraTrainer,DEFAULTS as _LORA_DEFAULTS,_check,_rss_mb,answer_hit
 from .common import digest,dumps,atomic_write
@@ -323,17 +341,7 @@ class BodyJepaTrainer(LoraTrainer):
         # Measure retention against the frozen master on the SAME anchor sequences
         # used for training. This is a diagnostic, not deployment authority.
         # Recompute sequentially to bound peak memory on the mobile body path.
-        retention_kl=[]
-        with torch.no_grad():
-            for seq,base_logp in zip(anchor_seqs,anchor_logp):
-                adapted_logp=torch.log_softmax(
-                    model(torch.tensor([seq])).logits[0].float(),dim=-1)
-                if adapted_logp.shape!=base_logp.shape or not bool(torch.isfinite(adapted_logp).all()):
-                    raise ValueError('invalid post-training anchor distribution')
-                divergence=(base_logp.exp()*(base_logp-adapted_logp)).sum(-1).mean()
-                if not bool(torch.isfinite(divergence)):
-                    raise ValueError('nonfinite post-training anchor KL')
-                retention_kl.append(float(divergence))
+        retention_kl=anchor_retention_kl(torch,model,anchor_seqs,anchor_logp)
         with torch.no_grad():
             st_ctx=last_token_latent(torch,model,ctx_b,layer)
             pc=pred(st_ctx);cos_pred_base=float(torch.nn.functional.cosine_similarity(pc,base_t,dim=-1).mean())
