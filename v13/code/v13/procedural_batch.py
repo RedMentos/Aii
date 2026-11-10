@@ -129,13 +129,41 @@ class ProceduralBatch:
     def _plan_path(self, name):
         return self.plans / (_name(name) + ".json")
 
-    def propose(self, name, template):
+    def propose(self, name, template, evidence=None):
         _parts(template)
+        if evidence is not None:
+            # Exact source hashes and ids, not private chat text, bind this
+            # inferred candidate to the completed source traces.
+            if type(evidence) is not dict or set(evidence) != {
+                "method", "kind", "source_event_ids", "source_output_sha256",
+                "observed_rows", "validation", "scope"
+            }:
+                raise ValueError("invalid source-trace evidence")
+            ids, digests, counts = (evidence["source_event_ids"],
+                                    evidence["source_output_sha256"],
+                                    evidence["observed_rows"])
+            if (evidence["method"] != "EXACT_FINAL_HISTORY_REPLAY_V1"
+                    or evidence["kind"] not in (
+                        "LITERAL_NUMBERED_REPEAT", "PARAMETRIC_NUMBERED_REPEAT")
+                    or evidence["validation"] != "BYTE_EXACT_BEFORE_PROPOSE"
+                    or evidence["scope"] != "CURRENT_SESSION_ONLY"
+                    or type(ids) is not list or not 1 <= len(ids) <= 3
+                    or len(set(ids)) != len(ids)
+                    or any(type(x) is not str or not re.fullmatch(
+                        r"[A-Za-z0-9_-]{1,96}", x) for x in ids)
+                    or type(digests) is not list or len(digests) != len(ids)
+                    or any(type(x) is not str or not re.fullmatch(
+                        r"[0-9a-f]{64}", x) for x in digests)
+                    or type(counts) is not list or len(counts) != len(ids)
+                    or any(type(n) is not int or not 4 <= n <= 64 for n in counts)):
+                raise ValueError("invalid or unbound source-trace evidence")
         path = self._plan_path(name)
         if path.exists() or path.is_symlink():
             raise ValueError("plan exists; use a new revision name")
         code = {"revision": REVISION, "name": name, "kind": "PURE_TEXT_REPEAT",
                 "template": template}
+        if evidence is not None:
+            code["source_evidence"] = evidence  # digest-bound to plan activation
         plan = {"code": code, "sha256": _sha(code), "stage": "CANDIDATE",
                 "authority": "LOCAL_OPERATOR_ONLY"}
         _save(path, plan)
@@ -309,7 +337,7 @@ class ProceduralBatch:
 
 
 def operator_command(runtime, args):
-    """:fastbatch propose NAME 'text {i}: {value}' | activate NAME SHA |
+    """:fastbatch propose NAME 'text {i}: {value}' | discover NAME [--history=N] | activate NAME SHA |
     run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] |
     status [NAME] | retire NAME. Only local operator dispatch can reach here.
     """
@@ -321,6 +349,14 @@ def operator_command(runtime, args):
     cmd = args[0]
     if cmd == "propose" and len(args) == 3:
         return runner.propose(args[1], args[2])
+    if cmd == "discover" and len(args) in (2, 3):
+        from .procedural_habits import discover
+        limit = 16
+        if len(args) == 3:
+            if not re.fullmatch(r"--history=[1-9][0-9]?", args[2]):
+                raise ValueError(":fastbatch discover NAME [--history=1..64]")
+            limit = int(args[2].split("=", 1)[1])
+        return discover(runtime, args[1], limit)
     if cmd == "activate" and len(args) == 3:
         return runner.activate(args[1], args[2])
     if cmd == "retire" and len(args) == 2:
@@ -340,4 +376,4 @@ def operator_command(runtime, args):
             return runner.preview(name, count, value)
         limit = int(opts[0].split("=", 1)[1]) if opts else None
         return runner.run(name, count, value, max_rows=limit)
-    raise ValueError(":fastbatch propose NAME TEMPLATE | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME")
+    raise ValueError(":fastbatch propose NAME TEMPLATE | discover NAME [--history=N] | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME")
