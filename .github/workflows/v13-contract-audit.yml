@@ -1,0 +1,28 @@
+name: V13 component contract drift audit
+on:
+  push:
+    branches:
+      - 'boss/v13-contract-audit-*'
+  pull_request:
+    paths:
+      - 'v13/code/v13/contract_audit.py'
+      - 'v13/code/tests/test_contract_audit.py'
+      - '.github/workflows/v13-contract-audit.yml'
+permissions:
+  contents: read
+jobs:
+  contract-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: v13/code
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run contract audit regression suite
+        run: python -m unittest discover -s tests -p test_contract_audit.py -v
+      - name: Validate unchanged canonical contract
+        run: python -m v13.contract_audit specs/component-contracts.json specs/component-contracts.json
