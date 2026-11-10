@@ -1,0 +1,45 @@
+{
+  "schema": "v13.work_package.v1",
+  "date": "2026-11-10",
+  "owner": "GPT-6 scheduled integration worker",
+  "package_id": "JEPA-RUNTIME-TXN-20261110",
+  "branch": "codex/v13-jepa-runtime-transaction-20261110",
+  "base_sha": "ed6078907168eb566e28c7e5b47a46207e636c28",
+  "head_before_ledger": "92778e5be6ad9f035af3469a31ecae77539f340b",
+  "pull_request": 1659,
+  "files": [
+    "v13/code/v13/runtime.py",
+    "v13/code/tests/test_world_jepa_runtime_transaction.py",
+    ".github/workflows/v13-jepa-runtime-transaction.yml"
+  ],
+  "dependencies": [
+    "PR1658",
+    "PR1657",
+    "PR1656",
+    "PR1655"
+  ],
+  "status": "review_only_ci_pending",
+  "evidence": [
+    "GitHub remote readback of Runtime modified lines successful",
+    "No local tests: git clone failed DNS resolution",
+    "CI not yet observed for latest head"
+  ],
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "Body-JEPA UNAVAILABLE",
+    "jepa_weight=0",
+    "No Redmi/native validation",
+    "No active-model promotion"
+  ],
+  "next_exact_commands": [
+    "Inspect Actions for PR1659 latest commit",
+    "Run python -m pytest -q tests/test_world_jepa_runtime_transaction.py from v13/code on exact checkout",
+    "Review deep-copy cost for Redmi and test failure after real partial_fit",
+    "Reconcile with active integration owner; do not merge without review"
+  ],
+  "blockers": [
+    "GitHub DNS inaccessible from local container; connector writes verified"
+  ],
+  "full_blueprint_complete": false
+}
