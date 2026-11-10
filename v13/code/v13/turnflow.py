@@ -110,15 +110,16 @@ def decide(state, pattern, eligible, residency_ok, event_id=""):
                  late >= MIN_LATE_ONLY and on_time == 0 and useful == 0)
     probe = bool(event_id) and hashlib.sha256(event_id.encode("utf-8")).digest()[0] % EXPLORE_FRACTION == 0
     suppress = state.get("mode") == "active" and (
-        human_veto or (auto_veto and not probe)
+        (human_veto or auto_veto) and not probe
     )
     usable = eligible and residency_ok
-    reason = ("HUMAN_FEEDBACK" if human_veto else
+    reason = ("HUMAN_FEEDBACK_EXPLORATION" if human_veto and probe else
+              "HUMAN_FEEDBACK" if human_veto else
               "REPEATED_UNTIMELY_OBSERVER" if auto_veto and not probe else
               "TIMELINESS_EXPLORATION" if auto_veto and probe else "NO_VETO")
     return {
         "schedule": "SPEAK_AND_CHECK" if usable and not suppress else "SPEAK_ONLY",
-        "suggestion": "SPEAK_ONLY" if human_veto or auto_veto and not probe else "SPEAK_AND_CHECK",
+        "suggestion": "SPEAK_ONLY" if (human_veto or auto_veto) and not probe else "SPEAK_AND_CHECK",
         "proposed_concurrency": bool(usable and not suppress),
         "start_optional_observer": bool(usable and not suppress),
         "adaptive_veto": bool(suppress),
@@ -126,7 +127,7 @@ def decide(state, pattern, eligible, residency_ok, event_id=""):
         "human_feedback_n": total,
         "observer_on_time": on_time,
         "observer_too_late": late,
-        "exploration_turn": bool(auto_veto and probe),
+        "exploration_turn": bool((human_veto or auto_veto) and probe),
         "feedback_n": total,
         "estimated_usefulness": round((useful + 1) / (total + 2), 4),
         "mode": state.get("mode"),
