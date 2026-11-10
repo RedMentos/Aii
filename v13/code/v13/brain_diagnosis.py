@@ -76,12 +76,27 @@ def _telemetry(row):
             or metrics.get("status") in ("ERROR", "CANCELLED", "DEADLINE")):
         return None
     area = next((a for needle, a in KINDS if needle in kind.lower()), "unknown")
-    return {**_info(area),
+    role = _word(metrics.get("role"), "")
+    affected = {
+        "B1_DETAIL": "detail", "B2_GIST": "ueberblick",
+        "C3_LANGUAGE": "sprache", "C2_CONTROL": "leitstelle",
+    }.get(role)
+    # The native role is a stronger location signal than generic
+    # offer_rejected/runner failure, but does not establish root cause.
+    if area == "unknown" and affected:
+        area = affected
+        strength = "EXPLICIT_RECORDED_ROLE_NOT_CAUSE"
+    else:
+        strength = "MODULE_NAME_ONLY" if area != "unknown" else "UNLOCATED"
+    result = {**_info(area),
             "event_id": _word(row.get("event_id")), "signal": kind,
             "error_class": _word(metrics.get("error")),
             "source": "SANITISED_TELEMETRY",
-            "confidence": "MODULE_NAME_ONLY" if area != "unknown" else "UNLOCATED",
+            "confidence": strength,
             "weight_damage_proven": False}
+    if affected:
+        result["affected_model_role"] = role
+    return result
 
 
 def _message(row):
