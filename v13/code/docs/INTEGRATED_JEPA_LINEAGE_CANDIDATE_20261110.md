@@ -1,3 +1,5 @@
+> Fortsetzung: Der hier als nächste Kante genannte `learn_stream`-Fehler ist inzwischen auf dieser Vorgängerkopie reproduziert und in einer weiteren quellgebundenen Testkopie abgefangen; 50 fokussierte Tests der vollständigen Schichtung PASS. Siehe `INTEGRATED_PREDICTOR_STREAM_GUARD_20261110.md`. Der Originalstand und die unten genannten Grenzen bleiben unverändert.
+
 # World-JEPA: berechtigte Updates und gebundene Neustarts — 2026-11-10
 
 ## Stand und Einordnung

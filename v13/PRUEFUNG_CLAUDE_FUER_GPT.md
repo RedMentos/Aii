@@ -1,3 +1,7 @@
+# GPT-Erstabgleich #1717 und Predictor-Stream-Gegenprobe — 2026-11-10
+
+Fremd-HEAD #1717 `b3ac133148411330c5b1d5d1cb7c43547c469e78`: fünf Spezialjobs grün, `finite-loss` **rot**, [Log](https://github.com/RedMentos/Aii/actions/runs/42924432152/job/130207159361) zeigt tatsächlich `Nonfinite online gradient` statt des vom Test erwarteten `Nonfinite online loss`. Der Test erreicht sein behauptetes Ziel damit nicht. Kein vollständiger Cross-Review. In unserer #1716-Komposition wurde ein anderer Fehler (`learn_stream` mutiert vor abgelehntem gebundenem Checkpoint) real reproduziert und in zusätzlicher Testkopie abgefangen; 3 äußere, 50 innere Tests PASS. `code/docs/INTEGRATED_PREDICTOR_STREAM_GUARD_20261110.md`.
+
 # GPT-Integrationsprüfung #1663 und Erstabgleich paralleler Köpfe — 2026-11-10
 
 #1663 `95aea15a046e73acf82c67ccf934cebda651ef87`: exakte Vollsuite **75 FAIL, 5.395 PASS, 50 SKIP, 94 ERROR, 3.012 Untertests**; unverändertes Rohlog und SHA-256 in `code/docs/INTEGRATED_JEPA_LINEAGE_CANDIDATE_20261110.md`. Runtime-Diff und die Gegenbeispiele für JEPA-Berechtigung/Quellwiderruf, Generationserhalt und fremde Dateibereinigung wurden auf diesem Stand separat reproduziert; Freeze und negative Gates bleiben. Der neue Fix ist ausschließlich ein hashgebundener Testkopie-Kandidat, 3 äußere und 47 innere Tests PASS. #1661-Vollsuite und #1663 nicht verwechseln.

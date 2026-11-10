@@ -77,5 +77,21 @@
     "production_promotion": false,
     "device_proof": false,
     "negative_gates_unchanged": true
+  },
+  "codex_predictor_stream_guard_20261110": {
+    "parent_pr": 1716,
+    "candidate": "v13/code/scripts/integrated_predictor_stream_guard_20261110.py",
+    "original_counterexample": "bound stream mutates weights and counters before checkpoint rejects missing metadata",
+    "candidate_scope": "reject bound streams before iterator consumption; use validated OnlineWorld.update",
+    "tests": "3 outer passed; original counterexample confirmed; 50 materialized-copy tests passed",
+    "external_pr_1717": "b3ac133148411330c5b1d5d1cb7c43547c469e78 finite-loss CI RED, earlier gradient failure does not match expected loss failure",
+    "limitations": [
+      "marker is not protection against arbitrary private-object manipulation",
+      "historical source revocation remains open",
+      "source freeze remains"
+    ],
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
   }
 }

@@ -1,3 +1,9 @@
+# 2026-11-10 — Predictor-Stream an Quellpfad gebunden
+
+In der #1716-Komposition wurde reproduziert, dass `learn_stream()` bei einem bereits quellgebundenen Predictor vor dem abgelehnten Checkpoint Gewichte/Zähler mutiert. `scripts/integrated_predictor_stream_guard_20261110.py` verhindert dies in einer weiteren hashgebundenen Testkopie schon vor Iteratorzugriff und erhält den normalen `OnlineWorld.update`-Pfad. **3 äußere Tests PASS**, darin 1 bestätigtes Gegenbeispiel auf der Vorgängerkopie und **50 Tests PASS** auf der neuen Kopie einschließlich JEPA/Restart. Kein Schutz gegen beliebige private Objektmutation, keine vollständige historische Widerrufsbehandlung; Details `INTEGRATED_PREDICTOR_STREAM_GUARD_20261110.md`. Fortsetzen: Predictor-Quellhistorie/Revocation und Body-/C3-/Memory-/Idle-Nähte.
+
+Neu gesichteter Parallel-HEAD #1717 `b3ac133148411330c5b1d5d1cb7c43547c469e78`: Spezial-CI `finite-loss` rot, weil dessen Fixture vor dem erwarteten Loss-Fehler bereits den Gradienten-Fehler auslöst. Das vorhandene gestufte Staging lehnt dieses Fixture unverändert ab. Anderen HEAD nicht als vollständig geprüft oder grün ausgeben.
+
 # 2026-11-10 — World-JEPA-Lineage und Neustart im gemeinsamen Testpfad
 
 Aufbauend auf #1716 materialisiert `scripts/integrated_jepa_guard_candidate_20261110.py` einen zusätzlichen quellgebundenen JEPA-Pfad mit Modus-/Pause-/Age-/Idle-Prüfung, tatsächlichen kleinen NumPy-Updates, vollständiger begrenzter Historie der im Modell verwendeten T8-Zeilen und privaten, nachvollziehbar gebundenen Save-/Restore-Generationen. **3 äußere Tests und 47 Tests in der isolierten Kopie PASS**, darunter Neustart, Änderungen und Widerruf alter Quellen, Manipulation und Fehler beim Veröffentlichen. Optimizer wird nicht gespeichert; vorherige Generation wird nur in den Speicher geladen. Freeze, Original-Runtime und Gates bleiben. Details und Grenzen `INTEGRATED_JEPA_LINEAGE_CANDIDATE_20261110.md`.
