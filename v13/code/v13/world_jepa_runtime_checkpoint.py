@@ -45,6 +45,36 @@ def _manifest(path):
     return obj
 
 
+def _write_manifest(home, name, manifest):
+    tmp=home/('.manifest-'+uuid.uuid4().hex+'.tmp')
+    try:
+        with open(tmp,'x',encoding='utf-8') as f:
+            os.chmod(tmp,0o600)
+            json.dump(manifest,f,sort_keys=True)
+            f.flush();os.fsync(f.fileno())
+        os.replace(tmp,home/name)
+        fd=os.open(home,os.O_RDONLY)
+        try:os.fsync(fd)
+        finally:os.close(fd)
+    finally:
+        if tmp.exists():tmp.unlink()
+
+
+def _restore(runtime, name):
+    home=_home(runtime)
+    meta=_manifest(home/name)
+    model=checkpoint.load(home/meta['filename'],meta['source_sha256'],meta['sha256'])
+    runtime._world_jepa_online=model
+    runtime._world_jepa_source_sha=meta['source_sha256']
+    return {'restored':True,'source_sha256':meta['source_sha256'],
+            'active_model_promoted':False,'scope':'PRIVATE_EXPERIMENTAL_JEPA_ONLY'}
+
+
+def rollback(runtime):
+    """Explicitly load the last verified checkpoint; never promote active weights."""
+    return _restore(runtime,'previous.json')
+
+
 def save(runtime):
     model=getattr(runtime,'_world_jepa_online',None)
     source=getattr(runtime,'_world_jepa_source_sha',None)
@@ -56,28 +86,31 @@ def save(runtime):
     receipt=checkpoint.save(model,path,source)
     manifest={'schema':SCHEMA,'filename':filename,
               'source_sha256':source,'sha256':receipt['sha256']}
-    tmp=home/('.manifest-'+uuid.uuid4().hex+'.tmp')
-    try:
-        with open(tmp,'x',encoding='utf-8') as f:
-            os.chmod(tmp,0o600)
-            json.dump(manifest,f,sort_keys=True)
-            f.flush();os.fsync(f.fileno())
-        os.replace(tmp,home/'active.json')
-        fd=os.open(home,os.O_RDONLY)
-        try:os.fsync(fd)
-        finally:os.close(fd)
-    finally:
-        if tmp.exists():tmp.unlink()
+    # Validate the former active snapshot before offering it as rollback.
+    # Never follow symlinks or trust filenames outside the private directory.
+    previous=None
+    active=home/'active.json'
+    if active.exists() or active.is_symlink():
+        old=_manifest(active)
+        checkpoint.load(home/old['filename'],old['source_sha256'],old['sha256'])
+        previous=old
+    if previous is not None:
+        _write_manifest(home,'previous.json',previous)
+    _write_manifest(home,'active.json',manifest)
+    # Only files referenced by the two manifests may survive. Ignore unknown
+    # names rather than deleting user-owned material; reject links before unlink.
+    retained={manifest['filename']}
+    if previous is not None:
+        retained.add(previous['filename'])
+    for entry in home.iterdir():
+        if FILE.fullmatch(entry.name) and entry.name not in retained:
+            if entry.is_symlink() or not entry.is_file():
+                raise ValueError('Unsafe stale JEPA checkpoint')
+            entry.unlink()
     return {'sha256':receipt['sha256'],'source_sha256':source,
             'scope':'PRIVATE_EXPERIMENTAL_JEPA_ONLY','persisted':True,
             'active_model_promoted':False}
 
 
 def restore(runtime):
-    home=_home(runtime)
-    meta=_manifest(home/'active.json')
-    model=checkpoint.load(home/meta['filename'],meta['source_sha256'],meta['sha256'])
-    runtime._world_jepa_online=model
-    runtime._world_jepa_source_sha=meta['source_sha256']
-    return {'restored':True,'source_sha256':meta['source_sha256'],
-            'active_model_promoted':False,'scope':'PRIVATE_EXPERIMENTAL_JEPA_ONLY'}
+    return _restore(runtime,'active.json')
