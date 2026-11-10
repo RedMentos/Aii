@@ -13,22 +13,21 @@
     "v13/code/v13/agi/body_dataset_store.py",
     "v13/code/tests/test_body_dataset_store.py"
   ],
-  "status": "DRAFT_STORE_PROVENANCE_CI_PENDING",
+  "status": "DRAFT_PROVENANCE_AND_PRIVACY_CI_PENDING",
   "evidence": {
     "first_ci_success": [
       42795572027,
       42795542462
     ],
     "first_head": "b8fc4321cdf8dea8783c76632ab9e976fdfbedfb",
-    "latest_head": "36deb426a9df62072026a216f4acbe1cf7b6ebce",
-    "latest_ci": [
-      42795810463,
-      42795799619
-    ],
+    "latest_head": "05bbf84bfc1f7263a7002869e94d7ab6c34884b6",
+    "latest_ci": "PENDING_NEW_WORKFLOW",
     "local_equivalent": "5/5 pytest pass, isolated standalone implementation; not exact remote tree",
     "passed_heads": [
       "b8fc4321cdf8dea8783c76632ab9e976fdfbedfb",
-      "eed3d6b8d1b4150c628540e41eaff771b8087ba1"
+      "eed3d6b8d1b4150c628540e41eaff771b8087ba1",
+      "36deb426a9df62072026a216f4acbe1cf7b6ebce",
+      "64499968746a07146b131913d4fb890293b47e94"
     ]
   },
   "capabilities": [
@@ -39,7 +38,9 @@
     "manifest with SHA256",
     "CLI",
     "read-only SQLite Store source-ID and deleted-state verification",
-    "SHA256 validation of original raw or zlib archived source blobs before dataset output"
+    "SHA256 validation of original raw or zlib archived source blobs before dataset output",
+    "source input digest compared between read-only Store verification and compilation",
+    "CI privacy scan against exact parent SHA"
   ],
   "limitations": [
     "reviewed/permission are input declarations; no cryptographic user-authentication",
@@ -57,10 +58,10 @@
     "full_scope_complete=false"
   ],
   "next_commands": [
-    "Check latest Actions for commit 36deb426a9df62072026a216f4acbe1cf7b6ebce and fix red",
-    "Audit compressed blob bounds and exact Store source schema",
-    "Connect reviewed source export and B1/B2 trainer ingestion after AG6 owner review",
-    "Run relevant integrated tests and public_repo_privacy_scan.py before promotion"
+    "Check CI on latest branch SHA and fix any privacy/test failure",
+    "Review TOCTOU boundaries: Store source snapshot and dataset publication",
+    "Connect Store-reviewed export and BodyJepaTrainer consumption with other AG6 owner",
+    "Evaluate independent role retention and native Redmi only after real model pins"
   ],
   "other_owners": [
     "JEPA owner: PR #1669 body_jepa.py and agi/body_trainers.py",
