@@ -85,3 +85,29 @@ def test_real_jepa_gradient_failure_does_not_publish_weights(monkeypatch):
     assert all(np.array_equal(fitted.enc[k], v) for k, v in old_weights.items())
     assert fitted.prediction_loss(x, a, x2) == old_loss
     assert runtime._world_jepa_source_sha == "a" * 64
+
+
+@pytest.mark.parametrize("receipt", [
+    {"source_sha256": None, "holdout_loss_after": 0.1},
+    {"source_sha256": "A" * 64, "holdout_loss_after": 0.1},
+    {"source_sha256": "g" * 64, "holdout_loss_after": 0.1},
+    {"source_sha256": "b" * 63, "holdout_loss_after": 0.1},
+    {"source_sha256": "b" * 64, "holdout_loss_after": float("nan")},
+    {"source_sha256": "b" * 64, "holdout_loss_after": float("inf")},
+    {"source_sha256": "b" * 64, "holdout_loss_after": -0.1},
+    {"source_sha256": "b" * 64, "holdout_loss_after": "0.1"},
+])
+def test_invalid_jepa_receipt_never_publishes_candidate(monkeypatch, receipt):
+    runtime = _runtime()
+    original = runtime._world_jepa_online
+
+    def malformed(candidate, store, *, steps, limit):
+        candidate.weights[0] = 123.0
+        return receipt
+
+    monkeypatch.setattr(world_jepa_online_experiment, "update_from_store", malformed)
+    with pytest.raises(ValueError):
+        runtime.world_jepa_update(steps=2, limit=16)
+    assert runtime._world_jepa_online is original
+    assert original.weights == [1.0]
+    assert runtime._world_jepa_source_sha == "a" * 64
