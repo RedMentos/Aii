@@ -1,0 +1,32 @@
+name: V13 Research Perception Checks
+on:
+  push:
+    branches:
+      - research-perception/jepa-replay-ablation-20261110-1457
+  pull_request:
+    paths:
+      - 'v13/code/v13/aplane_gate_bound_candidate.py'
+      - 'v13/code/v13/percept_subspan_candidate.py'
+      - 'v13/code/tests/test_aplane_gate_bound_candidate_20261110.py'
+      - 'v13/code/tests/test_percept_subspan_candidate_20261110.py'
+      - 'v13/code/tests/test_jepa_bounded_replay_ablation_20261110.py'
+      - 'v13/code/scripts/jepa_bounded_replay_ablation_20261110.py'
+      - '.github/workflows/v13-research-perception-20261110.yml'
+jobs:
+  synthetic-checks:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install NumPy
+        run: python -m pip install numpy==2.3.5
+      - name: Run focused synthetic and SQLite tests
+        working-directory: v13/code
+        run: |
+          PYTHONPATH=. python -B -m unittest -v tests.test_aplane_gate_bound_candidate_20261110 tests.test_aplane tests.test_jepa_bounded_replay_ablation_20261110 tests.test_percept_subspan_candidate_20261110 tests.test_text_segments
