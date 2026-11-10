@@ -44,6 +44,7 @@ def test_operator_explicit_activation_and_human_feedback_learn_when_to_overlap()
         evt = f"turn-{i}"
         r = turnflow.plan(store, evt, {}, 0, "B1_DETAIL")
         assert r["start_optional_observer"]
+        turnflow.observe(store, evt, "AGREES")
         turnflow.feedback(store, evt, "wasteful")
     with pytest.raises(PermissionError):
         turnflow.set_mode(store, "active", origin="MODEL")
@@ -70,6 +71,9 @@ def test_one_feedback_per_event_and_no_fabricated_training_data():
     with pytest.raises(ValueError, match="not scheduled"):
         turnflow.feedback(store, "first", "useful")
     turnflow.plan(store, "second", {}, 0, "B1_DETAIL")
+    with pytest.raises(ValueError, match="unobserved"):
+        turnflow.feedback(store, "second", "useful")
+    turnflow.observe(store, "second", "AFTER_OUTPUT")
     turnflow.feedback(store, "second", "useful")
     with pytest.raises(ValueError, match="already rated"):
         turnflow.feedback(store, "second", "wasteful")
@@ -85,6 +89,7 @@ def test_adaptive_requires_at_least_six_outcomes_and_never_overrides_pressure():
         assert turnflow.plan(store, evt, {}, 1, "B2_GIST")["start_optional_observer"]
         turnflow.feedback(store, evt, "wasteful")
     assert turnflow.plan(store, "six", {}, 1, "B2_GIST")["start_optional_observer"]
+    turnflow.observe(store, "six", "AGREES")
     turnflow.feedback(store, "six", "wasteful")
     assert not turnflow.plan(store, "seven", {}, 1, "B2_GIST")["start_optional_observer"]
     # Another pattern is independent, and memory safety cannot be undone.
@@ -127,6 +132,7 @@ def test_actual_latewatch_hook_respects_usefulness_without_starting_extra_thread
     for i in range(6):
         n = f"rated-{i}"
         one(n)
+        turnflow.observe(store, n, "AGREES")
         turnflow.feedback(store, n, "wasteful")
     turnflow.set_mode(store, "active", origin="OPERATOR_TTY")
     count = len(started)
@@ -159,3 +165,23 @@ def test_coarse_state_and_feedback_are_bounded():
     st = store.state(turnflow.KEY)[0]
     assert len(st["events"]) == turnflow.MAX_EVENTS
     assert len(st["last"]) <= 16
+
+
+def test_actual_latewatch_finish_confirms_observer_before_feedback():
+    store=StateStore()
+    event_id="completed-observer"
+    turnflow.plan(store,event_id,{},0,"B1_DETAIL")
+    with pytest.raises(ValueError,match="unobserved"):
+        turnflow.feedback(store,event_id,"wasteful")
+    runtime=SimpleNamespace(store=store)
+    watcher=latewatch.Watcher(runtime,{"event_id":event_id},{},mode="shadow",
+                              role="B1_DETAIL",status="RUNNING")
+    watcher.thread=object()  # a simulated observer thread completed
+    watcher.done.set()
+    result=watcher.finish(None,[],"answer",time.monotonic()+1,None)
+    assert result==""
+    assert watcher.status=="NO_OFFER"
+    assert store.state(turnflow.KEY)[0]["events"][event_id]["observer_status"]=="NO_OFFER"
+    vote=turnflow.feedback(store,event_id,"wasteful")
+    assert vote["outcome"]=="wasteful"
+    assert turnflow.report(store)["events_with_confirmed_overlap"]==1
