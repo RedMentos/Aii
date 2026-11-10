@@ -231,7 +231,7 @@ def feedback(store, event_id, outcome):
             raise ValueError("this event was already rated")
         if observation["scheduled"] != "SPEAK_AND_CHECK":
             raise ValueError("cannot rate an observer that was not scheduled")
-        if observation.get("observer_status") not in OBSERVED_STATUSES:
+        if observation.get("observer_status") not in (OBSERVED_STATUSES - {"NO_OFFER"}):
             raise ValueError("cannot rate an unobserved concurrent check")
         pattern = observation["pattern"]
         counts = state["patterns"].setdefault(
