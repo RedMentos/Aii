@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - 'jepa/atomic-online-world-validation-*'
+      - 'jepa/online-world-prevalidate-range-*'
   pull_request:
     paths:
       - 'v13/code/v13/online_world.py'
