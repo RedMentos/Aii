@@ -311,6 +311,30 @@ class BodyJepaTrainer(LoraTrainer):
         ctx=[self._encode(tok,i['prompt'])[0] for i in items]
         tgt=[tok(str(i['target']),add_special_tokens=False)['input_ids'] for i in items]
         return ctx,tgt
+    def _deployed_eval(self,result,items,cancel=None,deadline=None):
+        """Reuse the SAME deployed llama.cpp AG6 gate contract as C3 LoraTrainer.
+
+        The FP32/CPU holdout KL above is diagnostic only. Without a pinned
+        evaluator, never fabricate a deployed path result or a gate pass.
+        """
+        if self.evaluator is None:return result
+        _check(cancel,deadline)
+        ev=self.evaluator(result['artifact'])
+        try:
+            rep=ev.evaluate(items,self.probes,cancel=cancel,deadline=deadline)
+        finally:
+            ev.close()
+        if not isinstance(rep,dict) or any(k not in rep for k in
+              ('base_eval','candidate_eval','learned_recall','kl_to_base')):
+            raise Unavailable('Body-JEPA deployed evaluator did not provide AG6 gate evidence')
+        _check(cancel,deadline)
+        result['metrics'].update({'deployed':rep,'kl_to_base':rep['kl_to_base'],
+                                  'kl_source':'deployed_llama_cpp_topk'})
+        result['eval']={'base_eval':rep['base_eval'],
+                        'candidate_eval':rep['candidate_eval'],
+                        'learned_recall':rep['learned_recall']}
+        if 'wp_s5_drift' in rep:result['eval']['wp_s5_drift']=rep['wp_s5_drift']
+        return result
     def fit(self,items,base_generation,cancel=None,deadline=None):
         if not items:return {'artifact':None,'hash':None,'method':self.method,'metrics':{'reason':'EMPTY_BATCH'}}
         try:import torch,peft  # noqa: F401
@@ -442,6 +466,7 @@ class BodyJepaTrainer(LoraTrainer):
                  'seconds':round(time.monotonic()-t0,2),'peak_rss_mb':_rss_mb(),'trained_on':self.deployed_base or 'master',
                  'device':{'backend':'torch-cpu','threads':int(cfg['threads']),'torch':torch.__version__}}
         result={'artifact':str(adapter['gguf']),'hash':adapter['gguf_sha256'],'method':self.method,'metrics':metrics,'files':adapter}
+        self._deployed_eval(result,items,cancel,deadline)
         atomic_write(out/'manifest.json',json.dumps(result,indent=1,ensure_ascii=False))
         self.last=result;self.model=model;self.tok=tok;self.torch=torch
         return result
