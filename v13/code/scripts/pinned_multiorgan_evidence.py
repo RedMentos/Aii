@@ -37,7 +37,7 @@ def check(data):
                 errors.append(organ + ": stale CI")
             if run.get("conclusion") != "success":
                 errors.append(organ + ": CI not successful")
-            if not str(run.get("url", "")).startswith("https://github.com/RedMentos/Aii/actions/runs/"):
+            if not isinstance(run.get("url"), str) or not RUN_URL.fullmatch(run["url"]):
                 errors.append(organ + ": invalid evidence URL")
             if run.get("level") not in ("synthetic", "linux-native", "android-native"):
                 errors.append(organ + ": invalid evidence level")
