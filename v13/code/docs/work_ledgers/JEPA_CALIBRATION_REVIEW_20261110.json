@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-10",
+  "owner": "GPT/Codex review-only",
+  "package": "jepa-calibration-validation",
+  "base_branch": "codex/v13-jepa-atomic-save-recovery-20261110",
+  "base_sha": "5a7b6b0d397149805df196b0b571b0855a9a9aff",
+  "branch": "codex/v13-jepa-validation-hardening-20261110",
+  "source_files": [
+    "v13/code/v13/world_jepa_shadow_checkpoint.py"
+  ],
+  "test_files": [
+    "v13/code/tests/test_jepa_checkpoint_malformed_calibration_20261110.py"
+  ],
+  "workflow": ".github/workflows/v13-jepa-checkpoint-retention.yml",
+  "status": "UNVALIDATED_DRAFT",
+  "tests": {
+    "local": "BLOCKED: container git DNS resolution failed",
+    "actions": "No workflow runs returned at head 7477be7d"
+  },
+  "negative_gates": "Unchanged; no active-model promotion, no Redmi evidence",
+  "next_commands": [
+    "PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_jepa_checkpoint_malformed_calibration_20261110.py v13/code/tests/test_jepa_checkpoint_retention_20261110.py v13/code/tests/test_runtime_jepa_integration_20261110.py",
+    "python v13/code/scripts/public_repo_privacy_scan.py --base 5a7b6b0d397149805df196b0b571b0855a9a9aff --head HEAD"
+  ],
+  "next_priority": "Review PR #1658 then integrate safe JEPA runtime and B1/B2 weight learning without altering frozen sources"
+}
