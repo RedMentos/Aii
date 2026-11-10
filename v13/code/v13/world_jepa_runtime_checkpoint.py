@@ -106,7 +106,15 @@ def save(runtime):
         # Once active.json is published it owns the new file, even if cleanup
         # subsequently fails; never delete a published checkpoint.
         if not published and path.exists() and not path.is_symlink():
-            path.unlink()
+            # os.replace may have succeeded even if the following directory
+            # fsync raised. Never delete a file referenced by active.json.
+            active_points_here=False
+            try:
+                active_points_here=_manifest(active)['filename']==filename
+            except (OSError, ValueError, json.JSONDecodeError):
+                pass
+            if not active_points_here:
+                path.unlink()
     # Only files referenced by the two manifests may survive. Ignore unknown
     # names rather than deleting user-owned material; reject links before unlink.
     retained={manifest['filename']}
