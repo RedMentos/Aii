@@ -242,7 +242,7 @@ def feedback(store, event_id, outcome):
                 if name != pattern:
                     del state["patterns"][name]
         return {"event_id": event_id, "pattern": pattern,
-                "outcome": outcome, "n": sum(counts.values())}
+                "outcome": outcome, "n": counts["useful"] + counts["wasteful"]}
     return _mutate(store, update)
 
 
