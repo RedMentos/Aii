@@ -190,10 +190,6 @@ def observe(store, event_id, status):
     """
     if status not in OBSERVED_STATUSES:
         return None
-    # STILL_RUNNING is provisional: a later terminal outcome may be on time.
-    # Do not lock in a false late observation before the observer finishes.
-    if status == "STILL_RUNNING":
-        return None
     def update(state):
         event = state["events"].get(event_id)
         if not event or event.get("scheduled") != "SPEAK_AND_CHECK":
