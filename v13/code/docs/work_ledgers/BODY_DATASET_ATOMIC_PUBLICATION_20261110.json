@@ -1,0 +1,36 @@
+{
+  "schema": "v13-cross-agent-work-ledger-v1",
+  "date_utc": "2026-11-10",
+  "owner": "V13 Core & Harness",
+  "package_id": "body-dataset-atomic-publication",
+  "branch": "codex/v13-body-dataset-atomic-publication-20261110",
+  "base_branch": "codex/v13-reviewed-body-datasets-20261110-hour12",
+  "base_sha": "2dc69e1dc335646937f2635ef6caef896b028c11",
+  "pr": 1675,
+  "source_commit": "7fe9838883cd9ffb20fb3ba7e06870744462755b",
+  "paths": [
+    "v13/code/v13/agi/body_dataset_store.py",
+    "v13/code/tests/test_body_dataset_store.py"
+  ],
+  "changes": [
+    "private sibling staging directory for Store-verified dataset",
+    "second-input SHA check before atomic publication",
+    "failure cleanup and deterministic mutation regression"
+  ],
+  "ci_run": 42805105442,
+  "ci_status": "QUEUED_AT_LAST_CHECK",
+  "native_evidence": false,
+  "remaining_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 L1 FAIL",
+    "Body-JEPA not promoted",
+    "jepa_weight=0",
+    "full_scope_complete=false"
+  ],
+  "open_questions": [
+    "operator approval input flags are not authenticated",
+    "review concurrency and source snapshot beyond digest recheck",
+    "actual trainer consumption and Redmi retention not verified"
+  ],
+  "next_command": "Check Actions 42805105442 on exact PR #1675 head; fix failures, obtain independent review; integrate stacked PR #1670 only after review; then connect authenticated Store-approved dataset to B1/B2 trainer under human gate"
+}
