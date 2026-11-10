@@ -301,22 +301,28 @@ def streamed_anchor_kl(torch,model,seq):
     if not callable(disable):
         raise ValueError('streamed anchors require a PEFT disable_adapter context')
     ids=torch.tensor([seq],dtype=torch.long)
-    was_training=bool(model.training)
+    # The frozen and adapted distributions must use the same dropout mode.
+    # Keep the adapted forward differentiable while both paths run in eval;
+    # restore the exact per-module training flags even if a forward raises.
+    modules=list(model.modules())
+    flags=[module.training for module in modules]
     model.eval()
     try:
         with torch.no_grad(),disable():
             base_logp=torch.log_softmax(model(input_ids=ids).logits[0].float(),dim=-1)
+        adapted_logp=torch.log_softmax(model(input_ids=ids).logits[0].float(),dim=-1)
+        if (base_logp.shape!=adapted_logp.shape
+                or not bool(torch.isfinite(base_logp).all())
+                or not bool(torch.isfinite(adapted_logp).all())):
+            raise ValueError('invalid streamed anchor distribution')
+        result=(base_logp.exp()*(base_logp-adapted_logp)).sum(dim=-1).mean()
+        if not bool(torch.isfinite(result)):
+            raise ValueError('nonfinite streamed anchor KL')
+        return result
     finally:
-        model.train(was_training)
-    adapted_logp=torch.log_softmax(model(input_ids=ids).logits[0].float(),dim=-1)
-    if (base_logp.shape!=adapted_logp.shape
-            or not bool(torch.isfinite(base_logp).all())
-            or not bool(torch.isfinite(adapted_logp).all())):
-        raise ValueError('invalid streamed anchor distribution')
-    result=(base_logp.exp()*(base_logp-adapted_logp)).sum(dim=-1).mean()
-    if not bool(torch.isfinite(result)):
-        raise ValueError('nonfinite streamed anchor KL')
-    return result
+        model.train(flags[0])
+        for module,flag in zip(modules,flags):
+            module.training=flag
 
 
 # -- trainer ---------------------------------------------------------------------------------------------
