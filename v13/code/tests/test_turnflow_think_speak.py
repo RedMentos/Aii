@@ -234,3 +234,59 @@ def test_one_timely_exploration_reopens_the_optional_observer():
     after = turnflow.plan(store, "fresh-known-situation", {}, 0, "B1_DETAIL")
     assert after["start_optional_observer"] and not after["adaptive_veto"]
     assert after["observer_on_time"] == 1
+
+
+def test_real_threads_overlap_c3_output_and_b1_reasoning(monkeypatch):
+    """Actual B1 background thread overlaps a simulated C3 stream.
+
+    This is software-level concurrency with stubs, not a claim about real
+    pinned GGUF residency, phone RAM or independently good reasoning.
+    """
+    import threading
+    store = StateStore()
+    store.read_source = lambda ref: "A verified source with no numbers"
+    store.log = lambda *args, **kwargs: None
+    observer_started = threading.Event()
+    observer_release = threading.Event()
+    observer_completed = threading.Event()
+    calls = []
+
+    def offer(role, event, version, offer_deadline, peer, valid_until):
+        calls.append(("body-start", role))
+        observer_started.set()
+        assert observer_release.wait(2), "observer never received release"
+        calls.append(("body-complete", role))
+        observer_completed.set()
+        return {"role": role, "packet_id": "pkt_fake_observer",
+                "offer": {"summary": "Source agrees", "quotes": []}}
+
+    r = SimpleNamespace(
+        store=store,
+        cfg={"observer_seconds": 1.0, "observer_mode": "background"},
+        cognition=SimpleNamespace(offer=offer),
+    )
+    monkeypatch.setattr(latewatch, "residency", lambda *_args: None)
+    event = {"event_id": "synthetic-live-overlap",
+             "source_ref": {"source_id": "synthetic-source"}}
+    meta = {}
+    runner = SimpleNamespace(role="C3_LANGUAGE")
+    watcher = latewatch.start(
+        r, event, 1, [], time.monotonic() + 4, meta, runner
+    )
+    assert watcher.status == "RUNNING"
+    assert observer_started.wait(1)
+    # The C3 stream still produces text while the body has not finished.
+    simulated_output = "C3 output started while B1 was still independently thinking."
+    calls.append(("c3-output", simulated_output))
+    assert not observer_completed.is_set()
+    observer_release.set()
+    assert observer_completed.wait(1)
+    watcher.done.wait(1)
+    assert watcher.check(simulated_output) is False
+    watcher.finish(None, [], simulated_output, time.monotonic() + 1, None)
+    assert calls[0] == ("body-start", "B1_DETAIL")
+    assert calls[1][0] == "c3-output"
+    assert calls[2] == ("body-complete", "B1_DETAIL")
+    assert meta["turnflow"]["concurrent_models_claim"]
+    assert meta["late_watch"]["status"] == "AGREES"
+    assert turnflow.report(store)["events_with_confirmed_overlap"] == 1
