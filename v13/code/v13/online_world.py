@@ -59,14 +59,17 @@ class OnlineWorld:
             if action_id not in already:
                 new.append(row)
                 already.add(action_id)
+        # Validate the entire new committed batch before the first gradient
+        # update. A malformed later T8 row must not partially train this batch.
+        # Keep the validated tensors paired with their provenance action IDs.
+        validated=[(row['action_id'],*self.encode(row)) for row in new]
         # Track old-experience error separately from fresh-sample loss.
         replay=[(x.copy(),int(a),y.copy()) for x,a,y in zip(self.model.x,self.model.act,self.model.y)]
         retention_before=self.model.error(replay) if replay else None
-        for row in new:
-            x,a,y=self.encode(row)
+        for action_id,x,a,y in validated:
             self.model.observe(x,a,y)
             self.model.checkpoint()
-            self.processed.append(row['action_id'])
+            self.processed.append(action_id)
             self.processed=self.processed[-world_model.MAX_ROWS:]
             temp=self.cursor.with_suffix('.tmp')
             temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed}))
