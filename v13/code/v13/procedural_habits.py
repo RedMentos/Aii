@@ -129,9 +129,11 @@ def _source(runtime, cap):
     # The database contains authoritative, final/provisional status; the
     # model cannot write these rows directly. Never read cancelled/draft text.
     rows = runtime.store.rows(
-        "SELECT event_id,text FROM messages "
-        "WHERE session_id=? AND role='assistant' AND status='FINAL' "
-        "AND event_id IS NOT NULL ORDER BY id DESC LIMIT ?",
+        "SELECT m.event_id,m.text FROM messages m "
+        "JOIN events e ON e.id=m.event_id "
+        "JOIN sources s ON s.id=e.source_id "
+        "WHERE m.session_id=? AND m.role='assistant' AND m.status='FINAL' "
+        "AND s.deleted=0 ORDER BY m.id DESC LIMIT ?",
         (session, cap))
     return rows
 
