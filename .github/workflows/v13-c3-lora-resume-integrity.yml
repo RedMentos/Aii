@@ -7,6 +7,7 @@ on:
     paths:
       - 'v13/code/v13/lora_trainer.py'
       - 'v13/code/tests/test_lora_resume_safety.py'
+      - 'v13/code/tests/test_lora_restore_atomic.py'
       - '.github/workflows/v13-c3-lora-resume-integrity.yml'
 jobs:
   resume:
@@ -17,7 +18,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python -m pip install pytest
-      - run: python -m py_compile v13/code/v13/lora_trainer.py v13/code/tests/test_lora_resume_safety.py
+      - run: python -m pip install pytest torch
+      - run: python -m py_compile v13/code/v13/lora_trainer.py v13/code/tests/test_lora_resume_safety.py v13/code/tests/test_lora_restore_atomic.py
       - working-directory: v13/code
-        run: python -m pytest -q tests/test_lora_resume_safety.py
+        run: python -m pytest -q tests/test_lora_resume_safety.py tests/test_lora_restore_atomic.py

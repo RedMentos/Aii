@@ -77,6 +77,85 @@ def _valid_lora_tensors(torch, saved, current):
     return True
 
 
+
+def _valid_lora_optimizer(torch, saved, opt):
+    """Validate AdamW param mapping, hyperparameters and moment tensors BEFORE restoration.
+
+    Torch's load_state_dict checks parameter counts, but may accept malformed
+    moment tensor SHAPES which fail only at the next optimizer step. Never take
+    those payloads into an active training run.
+    """
+    import math
+    if (not isinstance(saved,dict) or set(saved)!={'state','param_groups'}
+            or not isinstance(saved['state'],dict) or not isinstance(saved['param_groups'],list)):
+        return False
+    current=opt.state_dict()
+    groups=saved['param_groups']
+    if len(groups)!=len(current['param_groups']):return False
+    mapping={}
+    for incoming,expected,live in zip(groups,current['param_groups'],opt.param_groups):
+        if (not isinstance(incoming,dict) or set(incoming)!=set(expected)
+                or any(incoming[k]!=expected[k] for k in expected if k!='params')):
+            return False
+        saved_ids=incoming.get('params')
+        if not isinstance(saved_ids,list) or len(saved_ids)!=len(live['params']):return False
+        for key,param in zip(saved_ids,live['params']):
+            if type(key) is not int or key in mapping:return False
+            mapping[key]=param
+    if not set(saved['state']).issubset(mapping):return False
+    for key,values in saved['state'].items():
+        if not isinstance(values,dict) or not {'step','exp_avg','exp_avg_sq'}.issubset(values):
+            return False
+        if not set(values).issubset({'step','exp_avg','exp_avg_sq','max_exp_avg_sq'}):
+            return False
+        param=mapping[key]
+        for name,value in values.items():
+            if name=='step':
+                if torch.is_tensor(value):
+                    if value.numel()!=1 or not bool(torch.isfinite(value).all()):return False
+                    step=float(value)
+                elif isinstance(value,(float,int)) and not isinstance(value,bool) and math.isfinite(value):
+                    step=float(value)
+                else:return False
+                if step<0:return False
+                continue
+            if (not torch.is_tensor(value) or value.shape!=param.shape or
+                    value.dtype!=param.dtype or not bool(torch.isfinite(value).all())):
+                return False
+    return True
+
+
+def _restore_lora_training_state(torch,model,opt,st,seed,data_size,anchor_size,anchor_weight):
+    """Atomic adapter + AdamW resume; leaves the frozen master untouched on failure.
+
+    The existing optimizer is fresh when called by fit(), so the rollback
+    snapshot is normally empty. Only adapter tensors are copied, not the
+    multi-billion-parameter frozen base. RNG is validated before any mutation.
+    """
+    import copy
+    if not _valid_lora_tensors(torch,st.get('lora'),model.state_dict()):
+        raise Unavailable('Incompatible or nonfinite LoRA checkpoint weights')
+    if not _valid_lora_optimizer(torch,st.get('opt'),opt):
+        raise Unavailable('Invalid LoRA optimizer checkpoint')
+    try:
+        rng=_resume_shuffle_rng(torch,seed,st['step'],st.get('shuffle_rng_state'),
+                                data_size,anchor_size,anchor_weight)
+    except (RuntimeError,ValueError,TypeError) as exc:
+        raise Unavailable('Invalid LoRA shuffle RNG checkpoint') from exc
+    old_lora={k:v.detach().clone() for k,v in model.state_dict().items() if 'lora_' in k}
+    old_optimizer=copy.deepcopy(opt.state_dict())
+    try:
+        opt.load_state_dict(st['opt'])
+        model.load_state_dict(st['lora'],strict=False)
+    except Exception as exc:
+        try:
+            model.load_state_dict(old_lora,strict=False)
+        finally:
+            opt.load_state_dict(old_optimizer)
+        raise Unavailable('LoRA checkpoint restore failed; old state restored') from exc
+    return rng
+
+
 def _resume_shuffle_rng(torch, seed, step, state, data_size, anchor_size, anchor_weight):
     """Restore the exact next shuffle, including checkpoints made before RNG persistence.
 
@@ -230,15 +309,13 @@ class LoraTrainer:
             if st.get('dataset_hash')==dh:
                 if not _valid_lora_resume(st,dh,int(cfg['max_steps'])):
                     raise Unavailable('Invalid LoRA training checkpoint')
-                if not _valid_lora_tensors(torch,st['lora'],model.state_dict()):
-                    raise Unavailable('Incompatible or nonfinite LoRA checkpoint weights')
-                model.load_state_dict(st['lora'],strict=False)
-                opt.load_state_dict(st['opt'])
-                step=st['step'];hist=st['hist'];resume_rng=st.get('shuffle_rng_state');resumed=True
+                resume_rng=_restore_lora_training_state(torch,model,opt,st,
+                    cfg['seed'],len(data),len(anchor_seqs),float(cfg['anchor_weight']))
+                step=st['step'];hist=st['hist'];resumed=True
         def save_ckpt():
             tmp=ck.with_suffix('.tmp');lora={k:v for k,v in model.state_dict().items() if 'lora_' in k}
             torch.save({'dataset_hash':dh,'lora':lora,'opt':opt.state_dict(),'step':step,'hist':hist,'shuffle_rng_state':g.get_state()},tmp);os.replace(tmp,ck)
-        model.train();g=_resume_shuffle_rng(torch,cfg['seed'],step,resume_rng,len(data),len(anchor_seqs),float(cfg['anchor_weight']))
+        model.train();g=resume_rng if resumed else _resume_shuffle_rng(torch,cfg['seed'],step,None,len(data),len(anchor_seqs),float(cfg['anchor_weight']))
         while step<int(cfg['max_steps']):
             _check(cancel,deadline)
             order=torch.randperm(len(data),generator=g).tolist();ce_sum=0.;kl_sum=0.;jl_sum=0.
