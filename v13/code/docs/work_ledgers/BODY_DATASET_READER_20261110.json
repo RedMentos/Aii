@@ -1,0 +1,30 @@
+{
+  "schema": "v13-work-ledger-v1",
+  "date": "2026-11-10",
+  "owner": "Core & Harness",
+  "package": "BODY_DATASET_READER",
+  "branch": "codex/v13-body-dataset-reader-20261110-hour13",
+  "base_branch": "codex/v13-body-dataset-atomic-publication-20261110",
+  "parent_pr": 1675,
+  "files": [
+    "v13/code/v13/agi/body_dataset_reader.py",
+    "v13/code/tests/test_body_dataset_reader.py",
+    ".github/workflows/v13-body-dataset-consumer.yml"
+  ],
+  "status": "REVIEW_ONLY_CI_PENDING",
+  "scope": "Read-only hash-bound dataset consumption; no model training or operator authority",
+  "tests": "Python compileall and three targeted unittest suites configured in GitHub Actions; remote result not yet verified",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "jepa_weight=0",
+    "no Redmi evidence",
+    "no authenticated training approval"
+  ],
+  "next_command": "cd v13/code && python -m unittest discover -s tests -p 'test_body_dataset_reader.py' -v",
+  "next_work": "Verify exact-head CI, review source-id/hash and split invariants, integrate authenticated operator training permission with existing B1/B2 AG6 trainer without changing its safety gate; measure real adapter retention on pinned master",
+  "blockers": [
+    "Direct git network DNS unavailable in this environment",
+    "No Redmi device or pinned master weights here"
+  ]
+}
