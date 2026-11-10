@@ -120,7 +120,7 @@ def build(runtime,kind,state):
             invalid=(not isinstance(targets_override,(list,tuple))
                      or not 1<=len(targets_override)<=32
                      or any(type(x) is not str or not re.fullmatch(r"[A-Za-z0-9_.]{1,80}",x)
-                            for x in targets_override))
+                            or "__" in x for x in targets_override))
         for numeric,lo,hi in (("jepa_weight",0.,10.),("lr",0.,.01),("anchor_weight",0.,100.)):
             v=user_cfg.get(numeric)
             if v is not None and (type(v) not in (float,int) or not math.isfinite(v)
