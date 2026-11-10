@@ -5,10 +5,18 @@ StudentEvaluation packets lack ``candidate_model_binding`` and are therefore
 not counted.  A future producer must bind the actual A3, route and C2
 snapshot around the inference itself; copying today's binding onto historical
 evaluations is not valid evidence.  A caller must also bind operator approval
-to the snapshot and prevent a generation change during decision/use.
+to the snapshot and prevent a generation change during decision/use. Multiple
+database reads and checkpoint file reads are not a transactional snapshot;
+source deletion or artifact changes may race this diagnostic. Feature payloads
+are not yet cryptographically tied to the actual source or A3 inference. A
+``pass`` is therefore evidence-only, never proof of an authentic inference or
+permission to route.
 """
+import hashlib
 import json
+import os
 import re
+import stat
 
 from .aplane import GATE_AGREE, GATE_N, RECENT, RETENTION, WINDOW
 from .common import file_hash
@@ -101,11 +109,24 @@ def _valid_evaluation(store, row, binding):
         if not isinstance(feature_path, str) or not isinstance(feature_sha, str):
             return False
         feature_file = (store.home / feature_path).resolve()
-        if (not feature_file.is_relative_to((store.home / 'data/blobs').resolve())
-                or not feature_file.is_file() or feature_file.stat().st_size > 1024 * 1024
-                or file_hash(feature_file) != feature_sha):
+        if not feature_file.is_relative_to((store.home / 'data/blobs').resolve()):
             return False
-        features = json.loads(feature_file.read_text())
+        # Parse exactly the bytes whose digest was checked.  A separate hash
+        # followed by read_text can consume different contents after a swap.
+        # Do not block on a FIFO or trust a path-only is_file precheck: open
+        # nonblocking, inspect that actual descriptor, and read from it.
+        flags = os.O_RDONLY | getattr(os, 'O_NONBLOCK', 0) | getattr(os, 'O_NOFOLLOW', 0)
+        fd = os.open(feature_file, flags)
+        try:
+            if not stat.S_ISREG(os.fstat(fd).st_mode):
+                return False
+            with os.fdopen(fd, 'rb', closefd=False) as stream:
+                raw = stream.read(1024 * 1024 + 1)
+        finally:
+            os.close(fd)
+        if len(raw) > 1024 * 1024 or hashlib.sha256(raw).hexdigest() != feature_sha:
+            return False
+        features = json.loads(raw)
         if (not isinstance(features, dict)
                 or features.get('generation') != binding['generation']
                 or features.get('component') != 'a3_student'
@@ -124,7 +145,7 @@ def student_gate_bound(store, live_c2_revision):
     An invalid newest evaluation never falls back to an older packet for that
     event.  This is not an automatic mode switch or an authorization.
     """
-    result = {'pass': False, 'n': 0, 'agreement': None, 'recent': None,
+    result = {'pass': False, 'n': 0, 'unique_source_hashes': 0, 'agreement': None, 'recent': None,
               'retention_pass': False, 'binding': None, 'reason': None,
               'excluded': 0, 'authority': 'EVIDENCE_ONLY'}
     try:
@@ -138,9 +159,12 @@ def student_gate_bound(store, live_c2_revision):
           ORDER BY p.rowid DESC LIMIT ?
         """, (binding['generation'], WINDOW))
         agrees = []
+        source_hashes = set()
         for row in reversed(rows):
             if _valid_evaluation(store, row, binding):
-                agrees.append(json.loads(row['payload'])['agreement'])
+                evidence = json.loads(row['payload'])
+                agrees.append(evidence['agreement'])
+                source_hashes.add(evidence['source_ref']['sha256'])
             else:
                 result['excluded'] += 1
         # A concurrently published generation invalidates the entire snapshot.
@@ -151,7 +175,8 @@ def student_gate_bound(store, live_c2_revision):
         rate = sum(agrees) / n if n else None
         recent_rate = sum(recent) / len(recent) if recent else None
         retained = recent_rate is not None and recent_rate >= GATE_AGREE - RETENTION
-        result.update(n=n, agreement=round(rate, 4) if rate is not None else None,
+        result.update(n=n, unique_source_hashes=len(source_hashes),
+                      agreement=round(rate, 4) if rate is not None else None,
                       recent=recent_rate, retention_pass=retained, binding=binding,
                       reason='insufficient_or_failed_evidence')
         result['pass'] = bool(n >= GATE_N and rate >= GATE_AGREE and retained)

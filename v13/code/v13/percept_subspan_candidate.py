@@ -6,6 +6,7 @@ only zero-based local spans; this wrapper verifies those spans and maps them
 back into the original immutable source.  No semantic interpretation or
 authority is added.
 """
+import copy
 import re
 import sys
 
@@ -23,6 +24,9 @@ def source_segments(store, source_ref, width=240, mode='event'):
     """
     if not isinstance(source_ref, dict):
         raise ValueError('source_ref must be a text SourceRef')
+    # The caller and Store receive no reference to the snapshot used for the
+    # output; a concurrent/misbehaving mutation cannot retarget returned refs.
+    source_ref = copy.deepcopy(source_ref)
     if (not isinstance(source_ref.get('source_id'), str) or not source_ref['source_id']
             or not isinstance(source_ref.get('sha256'), str)
             or re.fullmatch(r'[0-9a-f]{64}', source_ref['sha256']) is None
@@ -37,7 +41,7 @@ def source_segments(store, source_ref, width=240, mode='event'):
         raise ValueError('mode must be fixed or event')
 
     # Store checks deletion, complete blob digest, decoding, and upper bound.
-    text = store.read_source(source_ref)
+    text = store.read_source(copy.deepcopy(source_ref))
     if len(text) != end - start:
         raise ValueError('source span length mismatch')
     if not text:

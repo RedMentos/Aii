@@ -38,7 +38,7 @@ exercise an isolated evidence-only assessment: latest evaluation per event,
 current generation, artifact checksum and route/A3/C2 snapshot identity,
 source and feature checks, plus retention and generation-drift negative
 controls. Legacy records do not include `candidate_model_binding`, so they do
-not pass; do not backfill it based on a later state. Seven new and six existing
+not pass; do not backfill it based on a later state. Ten new and six existing
 A-plane tests pass using real local SQLite and synthetic checkpoints. The
 candidate does not change runtime, mode, authorization or shadow recording.
 
@@ -82,7 +82,7 @@ New `v13/code/v13/percept_subspan_candidate.py` reads an actual Store SourceRef,
 validates/tiles all segments exactly and maps local offsets back to absolute
 Python character indices; long whitespace receives a labeled fixed-mode
 source-exact fallback. `v13/code/tests/test_percept_subspan_candidate_20261110.py`
-contains seven real-Store synthetic tests including Unicode, nested subspans,
+contains eight real-Store synthetic tests including Unicode, nested subspans,
 source corruption/deletion, zero-offset compatibility and the original error.
 The candidate is isolated and **not wired into the current runtime**. Reconcile
 the callable contract with `cognition.percept`, `cognition.offer` and the
@@ -101,3 +101,44 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 
 `v13/bench-results/research-percept-subspan-20261110/test-output.txt`.
 A narrow GitHub workflow is included; its remote run must be checked at its
 exact head before claiming CI success.
+
+## Independent review and race fixes
+
+Independent read-only review reproduced two candidate-specific races and two
+evidence limitations. A3 feature verification used to hash a file and then
+read it separately, permitting different bytes to be parsed. It now reads at
+most 1 MiB + 1 once and hashes and parses exactly those bytes; a negative test
+would have triggered the old hash/read swap. The A1 wrapper now snapshots the
+input SourceRef and passes a separate copy to `read_source`, so mutation of
+either the caller's dictionary or the Store argument cannot retarget output
+spans; a test demonstrates both mutations during the read.
+
+The A3 assessment now reports `unique_source_hashes` as an informational
+measure. Fifty distinct events can still contain one repeated source; no new
+mandatory diversity threshold was invented. The candidate checks each item
+separately, not in a single consistent DB/filesystem snapshot: deletion or
+checkpoint mutation between reads or between gate and use can stale its result.
+Furthermore current feature payloads do not prove that the identified A3
+model actually produced that source's features: 50 distinct events can point
+at one feature blob. The future producer must bind trusted source/event,
+feature, model and teacher provenance around inference; an independently
+authenticated snapshot/lease must protect the actual routing decision and
+source deletion. Caller-supplied fields alone are insufficient. **This
+diagnostic `pass` remains non-authorizing and cannot be promoted yet.**
+
+Earlier exact head `815d181e35adf3a350beb19c8ea6e491347b4868` had focused
+GitHub Actions run 42832709062 GREEN (28 tests). The later local race-corrected
+check passed 32/32; see
+`v13/bench-results/research-percept-subspan-20261110/test-output-race-fixes.txt`.
+The newer head needs its own GitHub Actions verification.
+
+The independent review also showed that opening a FIFO as an A3 feature file
+could block. The candidate now uses a nonblocking, no-follow descriptor where
+those OS flags are available, validates the opened descriptor as a regular
+file with `fstat`, and reads at most 1 MiB + 1. A subprocess test with a real
+FIFO proves this fixture returns instead of hanging. This does not eliminate
+parent-directory/path races, later file replacement, the initial checkpoint
+hash/use race, or the lack of a transactional evidence snapshot. Initial test
+harness attempts failed because Store expected a Path and then because the
+parent held the Store's exclusive lock; the harness was corrected to pass a
+Path and close/reopen the parent Store, after which 32 tests passed.

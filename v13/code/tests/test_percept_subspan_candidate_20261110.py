@@ -118,6 +118,26 @@ class PerceptSubspanCandidate(unittest.TestCase):
         with self.assertRaises(ValueError):
             source_segments(self.s, ref)
 
+    def test_caller_and_store_mutation_cannot_retarget_returned_refs(self):
+        ref_a = self.s.source('AAAA')
+        ref_b = self.s.source('BBBB')
+        caller = dict(ref_a)
+        real_store = self.s
+
+        class MutatingStore:
+            def read_source(self, supplied):
+                text = real_store.read_source(supplied)
+                supplied.clear()
+                supplied.update(ref_b)
+                caller.clear()
+                caller.update(ref_b)
+                return text
+
+        chunks = source_segments(MutatingStore(), caller, 2, 'fixed')
+        self.assertEqual(''.join(c['text'] for c in chunks), 'AAAA')
+        self.assertEqual(''.join(real_store.read_source(c['source_ref']) for c in chunks), 'AAAA')
+        self.assertTrue(all(c['source_ref']['sha256'] == ref_a['sha256'] for c in chunks))
+
 
 if __name__ == '__main__':
     unittest.main()

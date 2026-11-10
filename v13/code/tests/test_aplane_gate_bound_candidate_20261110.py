@@ -1,7 +1,11 @@
 """Real SQLite and artifact-path tests; all model outputs are synthetic."""
 from pathlib import Path
 from tempfile import TemporaryDirectory
+import os
+import subprocess
+import sys
 import unittest
+from unittest.mock import patch
 
 from v13 import aplane
 from v13.aplane_gate_bound_candidate import current_binding, student_gate_bound
@@ -105,6 +109,69 @@ class BoundGateCandidate(unittest.TestCase):
         # A bad/newest packet must not allow the older successful one to count.
         self.evaluation(e, p, binding=False)
         self.assertEqual(self.gate()['n'], 0)
+
+    def test_separate_events_with_same_source_report_low_diversity(self):
+        self.ready()
+        for _ in range(50):
+            e, p = self.observation(1)
+            self.evaluation(e, p)
+        g = self.gate()
+        self.assertTrue(g['pass'])  # legacy numerical threshold, not authorization
+        self.assertEqual((g['n'], g['unique_source_hashes']), (50, 1))
+
+    def test_feature_hash_and_payload_are_the_same_bytes(self):
+        import json
+        from v13 import aplane_gate_bound_candidate as candidate
+        self.ready()
+        e, p = self.observation(1)
+        feature = self.home / p['student_feature_path']
+        payload = json.loads(feature.read_text())
+        payload['in_support'] = False
+        atomic_write(feature, dumps(payload))
+        p['student_feature_sha256'] = file_hash(feature)
+        with self.s.tx() as c:
+            c.execute('UPDATE packets SET payload=? WHERE id=?', (dumps(p), p['packet_id']))
+        self.evaluation(e, p)
+
+        original_hash = candidate.file_hash
+        def swap_after_hash(path):
+            h = original_hash(path)
+            if Path(path) == feature:
+                changed = dict(payload, in_support=True)
+                atomic_write(feature, dumps(changed))
+            return h
+        # The old implementation called file_hash(feature) then separately
+        # read its JSON, allowing this swap to admit the wrong bytes.
+        with patch.object(candidate, 'file_hash', side_effect=swap_after_hash):
+            g = self.gate()
+        self.assertEqual(g['n'], 0)
+        self.assertFalse(g['pass'])
+
+    @unittest.skipUnless(hasattr(os, 'mkfifo'), 'FIFO requires POSIX')
+    def test_fifo_feature_is_rejected_without_blocking(self):
+        self.ready()
+        e, p = self.observation(1)
+        self.evaluation(e, p)
+        feature = self.home / p['student_feature_path']
+        feature.unlink()
+        os.mkfifo(feature)
+        # Run out of process so a regression that blocks on FIFO cannot hang
+        # the entire test suite. Store is reopened, not inherited across fork.
+        script = ('import json,sys; from pathlib import Path; from v13.store import Store; '
+                  'from v13.aplane_gate_bound_candidate import student_gate_bound; '
+                  's=Store(Path(sys.argv[1])); '
+                  'print(json.dumps(student_gate_bound(s, "c2-fixture-v1"))); s.close()')
+        self.s.close()  # Store deliberately holds an exclusive process lock.
+        try:
+            proc = subprocess.run([sys.executable, '-c', script, str(self.home)],
+                                  capture_output=True, text=True, timeout=5)
+        finally:
+            self.s = Store(self.home)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        import json
+        result = json.loads(proc.stdout)
+        self.assertEqual(result['n'], 0)
+        self.assertFalse(result['pass'])
 
     def test_fresh_distinct_events_pass_old_generation_does_not(self):
         self.ready()
