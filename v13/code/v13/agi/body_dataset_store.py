@@ -39,11 +39,9 @@ def _blob(home, digest, max_bytes=64*1024*1024):
 def verify_store_sources(reviewed_jsonl, store_home):
     """Read-only verification, no mutation of the training or runtime Store."""
     home = Path(store_home)
-    db = home/"data"/"v13.sqlite"
+    db = home/"data"/"db"/"brain.sqlite3"
     if home.is_symlink() or db.is_symlink() or not db.is_file():
         raise ValueError("invalid Store database path")
-    # V13 stores may use an alternative database filename; callers must
-    # explicitly provide the expected Store layout, never silently fallback.
     con = sqlite3.connect(db.as_uri()+"?mode=ro", uri=True)
     try:
         count = 0
