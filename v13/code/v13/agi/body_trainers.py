@@ -111,9 +111,11 @@ def build(runtime,kind,state):
     # B1 (LFM) and B2 (Qwen) have different target-module names. These
     # defaults are hypotheses until a pinned full-master training run passes.
     targets=("w1","w2","w3") if role=="B1_DETAIL" else ("q_proj","v_proj")
-    cfg=dict(DEFAULTS,targets=targets,threads=int(runtime.cfg.get("threads",4)),
-             base_gguf=settings["gguf"],checkpoint_resume=True,
-             heldout_probe_cap=8,**user_cfg)
+    cfg=dict(DEFAULTS)
+    cfg.update(targets=targets,threads=int(runtime.cfg.get("threads",4)),
+               base_gguf=settings["gguf"],checkpoint_resume=True,
+               heldout_probe_cap=8)
+    cfg.update(user_cfg)
     work=Path(runtime.home)/"training"/"ag6"/kind
     work.mkdir(parents=True,exist_ok=True)
     def factory(adapter_path):
