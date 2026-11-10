@@ -106,3 +106,22 @@ def test_brain_navigation_still_has_legacy_map_and_explanations(brain):
     assert json.loads(op.run(":brain map"))["kind"] == "READ_ONLY_NAVIGATION"
     assert json.loads(op.run(":brain explain b1"))["technical"] == "B1_DETAIL"
     assert json.loads(op.run(":brain diagnose"))["findings"] == []
+
+
+def test_explicit_b1_b2_role_is_reported_for_generic_observer_failure(brain):
+    db, sid, runtime = brain
+    first = db.event(sid, "B1 detail work")["event_id"]
+    second = db.event(sid, "B2 gist work")["event_id"]
+    third = db.event(sid, "B1 learning work")["event_id"]
+    db.log("offer_rejected", first, {"role": "B1_DETAIL", "error": "ValueError"})
+    db.log("offer_rejected", second, {"role": "B2_GIST", "error": "ValueError"})
+    db.log("body_jepa_failed", third, {"role": "B1_DETAIL", "error": "ValueError"})
+    report = json.loads(Operator(runtime).run(":brain diagnose"))
+    by_id = {x["event_id"]: x for x in report["findings"]}
+    assert by_id[first]["organ_id"] == "detail"
+    assert by_id[second]["organ_id"] == "ueberblick"
+    assert by_id[first]["confidence"] == "EXPLICIT_RECORDED_ROLE_NOT_CAUSE"
+    assert by_id[second]["affected_model_role"] == "B2_GIST"
+    assert by_id[third]["organ_id"] == "lernen"
+    assert by_id[third]["affected_model_role"] == "B1_DETAIL"
+    assert all(x["weight_damage_proven"] is False for x in by_id.values())
