@@ -70,6 +70,35 @@ class CandidateTrialTests(unittest.TestCase):
             self.assertFalse(result["retention_pass"])
             self.assertEqual(result["deployment"], "NOT_AUTHORIZED")
 
+    def test_partition_mutation_during_authorization_fails_closed(self):
+        with tempfile.TemporaryDirectory() as temp:
+            dest, pin = self.dataset(Path(temp))
+            def authorize(*_):
+                partition = dest / "b1_detail_train.jsonl"
+                partition.write_bytes(partition.read_bytes() + b"tampered\\n")
+                return True
+            with self.assertRaisesRegex(ValueError, "partition changed"):
+                run_body_candidate_trial(
+                    dest, "B1_DETAIL", manifest_sha256=pin,
+                    authorize=authorize,
+                    make_candidate=lambda *_: self.fail("candidate constructed"),
+                    train_candidate=lambda *_: None,
+                    evaluate=lambda *_: 0.1)
+
+    def test_partition_mutation_during_training_fails_closed(self):
+        with tempfile.TemporaryDirectory() as temp:
+            dest, pin = self.dataset(Path(temp))
+            def train(model, items):
+                partition = dest / "b2_gist_holdout.jsonl"
+                partition.write_bytes(partition.read_bytes() + b"tampered\\n")
+            with self.assertRaisesRegex(ValueError, "partition changed"):
+                run_body_candidate_trial(
+                    dest, "B1_DETAIL", manifest_sha256=pin,
+                    authorize=lambda *_: True,
+                    make_candidate=lambda *_: {"loss": 0.1},
+                    train_candidate=train,
+                    evaluate=lambda model, *_: model["loss"])
+
     def test_invalid_losses_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
             dest, pin = self.dataset(Path(temp))

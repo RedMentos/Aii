@@ -1,0 +1,33 @@
+{
+  "schema": "v13-review-work-ledger-v1",
+  "date": "2026-11-10",
+  "owner": "Core & Harness / B1-B2 review",
+  "package": "BODY_TRIAL_PARTITION_RECHECK",
+  "branch": "codex/v13-body-trial-source-recheck-review-20261110",
+  "base_branch": "codex/v13-body-trial-evaluation-20261110-hour14",
+  "base_sha": "abfd31a2651b418e1ef3f9a10bf089983d299984",
+  "pr": 1691,
+  "status": "DRAFT_REVIEW_ONLY",
+  "changed_files": [
+    "v13/code/v13/agi/body_candidate_trial.py",
+    "v13/code/tests/test_body_candidate_trial.py"
+  ],
+  "evidence": {
+    "remote_head": "c35566ac0876f54de4596b35962b266d21251ae8",
+    "remote_readback": true,
+    "local_tests": "NOT_RUN; git DNS unavailable",
+    "ci": "PENDING_UNVERIFIED"
+  },
+  "negative_gates": [
+    "STEP2 not promoted",
+    "B3 not promoted",
+    "Body-JEPA not promoted",
+    "jepa_weight unchanged",
+    "Redmi native proof absent"
+  ],
+  "open_questions": [
+    "The partition recheck does not make filesystem mutation atomic; stronger immutable snapshot or file-descriptor binding needed for hostile concurrent writers.",
+    "Real candidate isolation, PEFT training and authentication are still caller responsibilities."
+  ],
+  "next_command": "Check exact-head GitHub Actions for PR #1691; run python -m pytest v13/code/tests/test_body_candidate_trial.py from exact SHA; independent review and coordinate merge with #1683 owner."
+}
