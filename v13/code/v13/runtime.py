@@ -86,16 +86,16 @@ class Runtime:
         lightweight predictor. No active GGUF, JEF route or Age authority changes.
         Training is operator-invoked only; persistence is not yet guaranteed.
         """
+        from copy import deepcopy
         from .world_jepa import WorldJEPA
         from .world_jepa_online_experiment import update_from_store
         with self.lock:
-            model=getattr(self,'_world_jepa_online',None)
-            if model is None:
-                candidate=WorldJEPA(seed=7,ensemble=2)
-                result=update_from_store(candidate,self.store,steps=steps,limit=limit)
-                self._world_jepa_online=candidate
-            else:
-                result=update_from_store(model,self.store,steps=steps,limit=limit)
+            current=getattr(self,'_world_jepa_online',None)
+            # Train a private copy. A failed holdout probe, provenance read or
+            # numerical update must not alter the last usable in-memory model.
+            candidate=deepcopy(current) if current is not None else WorldJEPA(seed=7,ensemble=2)
+            result=update_from_store(candidate,self.store,steps=steps,limit=limit)
+            self._world_jepa_online=candidate
             self._world_jepa_source_sha=result['source_sha256']
             return dict(result,active_model_promoted=False,
                         persisted=False,status='EXPERIMENTAL_JEPA_NO_RUNTIME_AUTHORITY')

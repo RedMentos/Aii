@@ -1,0 +1,52 @@
+{
+  "schema": "v13.work_package.v1",
+  "date": "2026-11-10",
+  "owner": "GPT-6 scheduled integration worker",
+  "package_id": "JEPA-RUNTIME-TXN-20261110",
+  "branch": "codex/v13-jepa-runtime-transaction-20261110",
+  "base_sha": "ed6078907168eb566e28c7e5b47a46207e636c28",
+  "head_before_ledger": "92778e5be6ad9f035af3469a31ecae77539f340b",
+  "pull_request": 1659,
+  "files": [
+    "v13/code/v13/runtime.py",
+    "v13/code/tests/test_world_jepa_runtime_transaction.py",
+    ".github/workflows/v13-jepa-runtime-transaction.yml",
+    "v13/code/tests/test_runtime_jepa_integration_20261110.py"
+  ],
+  "dependencies": [
+    "PR1658",
+    "PR1657",
+    "PR1656",
+    "PR1655"
+  ],
+  "status": "review_only_code_ci_green_workflow_expansion_pending",
+  "evidence": [
+    "GitHub remote readback of Runtime modified lines successful",
+    "No local tests: git clone failed DNS resolution",
+    "CI not yet observed for latest head",
+    "Focused transactional CI SUCCESS on commit c809cd1 (https://github.com/RedMentos/Aii/actions/runs/42753238680)",
+    "Combined integration CI RED on c809cd1: old tests assumed in-place identity and mutations; corrected in 2c3f65b",
+    "Real JEPA gradient failure regression added e304ac3; pending CI",
+    "Combined integration CI SUCCESS at code commit 2c3f65b: https://github.com/RedMentos/Aii/actions/runs/42753293449",
+    "Transactional CI SUCCESS at code commit 2c3f65b: https://github.com/RedMentos/Aii/actions/runs/42753293434",
+    "Workflow expanded to include existing integrated JEPA tests at 4c8b728; latest CI pending"
+  ],
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "Body-JEPA UNAVAILABLE",
+    "jepa_weight=0",
+    "No Redmi/native validation",
+    "No active-model promotion"
+  ],
+  "next_exact_commands": [
+    "Verify latest expanded CI on branch after this ledger commit",
+    "Review and reconcile PR1659 with PR1658 chain",
+    "Assess real Redmi memory and training overhead; no Android evidence",
+    "Proceed to independent B1/B2 adapter weight retention work"
+  ],
+  "blockers": [
+    "GitHub DNS inaccessible from local container; connector writes verified"
+  ],
+  "full_blueprint_complete": false
+}

@@ -23,7 +23,8 @@ def test_world_jepa_runtime_reuses_model_and_never_promotes():
     assert second['persisted'] is False
     assert second['status']=='EXPERIMENTAL_JEPA_NO_RUNTIME_AUTHORITY'
     assert update.call_count==2
-    assert update.call_args_list[0].args[0] is update.call_args_list[1].args[0]
+    assert update.call_args_list[0].args[0] is not update.call_args_list[1].args[0]
+    assert runtime._world_jepa_online is update.call_args_list[1].args[0]
     assert update.call_args_list[0].kwargs=={'steps':2,'limit':128}
     assert update.call_args_list[1].kwargs=={'steps':3,'limit':256}
 
@@ -53,8 +54,10 @@ def test_runtime_jepa_real_weights_update_from_committed_feed():
     assert first['source_verified'] is True
     assert second['mode']=='CONTINUED_WEIGHTS'
     assert second['holdout_loss_after']>=0
-    assert not np.array_equal(previous,model.enc['W1'])
-    assert model._fit_steps==5
+    assert np.array_equal(previous,model.enc['W1'])  # prior published snapshot stays intact
+    assert runtime._world_jepa_online is not model
+    assert not np.array_equal(previous,runtime._world_jepa_online.enc['W1'])
+    assert runtime._world_jepa_online._fit_steps==5
     assert second['active_model_promoted'] is False
 
 
