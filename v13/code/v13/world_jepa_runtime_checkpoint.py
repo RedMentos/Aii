@@ -81,22 +81,32 @@ def save(runtime):
     if model is None or type(source) is not str or not HEX.fullmatch(source):
         raise ValueError('No source-bound fitted JEPA model to checkpoint')
     home=_home(runtime)
-    filename='jepa-'+uuid.uuid4().hex+'.npz'
-    path=home/filename
-    receipt=checkpoint.save(model,path,source)
-    manifest={'schema':SCHEMA,'filename':filename,
-              'source_sha256':source,'sha256':receipt['sha256']}
-    # Validate the former active snapshot before offering it as rollback.
-    # Never follow symlinks or trust filenames outside the private directory.
+    # Preflight existing generations BEFORE writing a new checkpoint. A corrupt
+    # manifest must not create an orphan or modify either published generation.
     previous=None
     active=home/'active.json'
     if active.exists() or active.is_symlink():
         old=_manifest(active)
         checkpoint.load(home/old['filename'],old['source_sha256'],old['sha256'])
         previous=old
-    if previous is not None:
-        _write_manifest(home,'previous.json',previous)
-    _write_manifest(home,'active.json',manifest)
+
+    filename='jepa-'+uuid.uuid4().hex+'.npz'
+    path=home/filename
+    published=False
+    try:
+        receipt=checkpoint.save(model,path,source)
+        manifest={'schema':SCHEMA,'filename':filename,
+                  'source_sha256':source,'sha256':receipt['sha256']}
+        if previous is not None:
+            _write_manifest(home,'previous.json',previous)
+        _write_manifest(home,'active.json',manifest)
+        published=True
+    finally:
+        # A failed save or manifest publication must not leak a new checkpoint.
+        # Once active.json is published it owns the new file, even if cleanup
+        # subsequently fails; never delete a published checkpoint.
+        if not published and path.exists() and not path.is_symlink():
+            path.unlink()
     # Only files referenced by the two manifests may survive. Ignore unknown
     # names rather than deleting user-owned material; reject links before unlink.
     retained={manifest['filename']}
