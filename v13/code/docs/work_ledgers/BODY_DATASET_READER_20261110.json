@@ -1,0 +1,32 @@
+{
+  "schema": "v13-work-ledger-v1",
+  "date": "2026-11-10",
+  "owner": "Core & Harness",
+  "package": "BODY_DATASET_READER",
+  "branch": "codex/v13-body-dataset-reader-20261110-hour13",
+  "base_branch": "codex/v13-body-dataset-atomic-publication-20261110",
+  "parent_pr": 1675,
+  "files": [
+    "v13/code/v13/agi/body_dataset_reader.py",
+    "v13/code/tests/test_body_dataset_reader.py",
+    ".github/workflows/v13-body-dataset-consumer.yml",
+    "v13/code/v13/agi/body_dataset_training_input.py",
+    "v13/code/tests/test_body_dataset_training_input.py"
+  ],
+  "status": "REVIEW_ONLY_CI_FIX_PENDING",
+  "scope": "Read-only hash-bound dataset consumption; no model training or operator authority; deterministic BodyJepaTrainer.fit item preparation (no training invocation)",
+  "tests": "Actions 42813230659: 4/4 reader unittest PASS, workflow RED because existing pytest-based test imported pytest absent from runner. Fixed CI workflow at 153284933b59f7f7e62e0232f7f435cfd5fd64d3; latest result pending.",
+  "negative_gates": [
+    "STEP2 UTILITY_FAIL",
+    "B3 NO_PROMOTION",
+    "jepa_weight=0",
+    "no Redmi evidence",
+    "no authenticated training approval"
+  ],
+  "next_command": "cd v13/code && python -m unittest discover -s tests -p 'test_body_dataset_reader.py' -v && python -m unittest discover -s tests -p 'test_body_dataset_training_input.py' -v && python -m pytest -q tests/test_body_reviewed_dataset.py tests/test_body_dataset_store.py",
+  "next_work": "Check exact-head Actions and fix regressions; then authenticated human-approval integration to AG6, actual pinned-master B1/B2 training and heldout retention",
+  "blockers": [
+    "Direct git network DNS unavailable in this environment",
+    "No Redmi device or pinned master weights here"
+  ]
+}
