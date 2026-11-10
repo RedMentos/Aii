@@ -1,3 +1,7 @@
+## 2026-11-10 — integrierter World-Predictor mit Berechtigungs- und Quellenprüfung
+
+Auf dem aktuellen Integrations-HEAD #1663 (`95aea15…`) verbindet eine quellgebundene **Testkopie** die vorhandene Runtime-/Operator-Anbindung mit #1631-Quell-/Modus-/Checkpoint-Schutz und #1648s gestufter Gradientenberechnung. **50 Tests in der Kopie bestanden**, darunter echte SQLite-Turns, Opt-in/RECORD_ONLY/Pause, tatsächlicher kleiner NumPy-Update, Neustart und Widerruf im aktuellen Fenster; ein weiterer mitgezählter Test bestätigt absichtlich die noch offene Alt-Widerrufslücke außerhalb dieses Fensters. Kein Runtime-Merge. **Separater World-JEPA-Pfad weiterhin nachweislich unsicher** bei RECORD_ONLY/Pause und widerrufenen Trainingsquellen; private Checkpoint-Rollback/Bereinigung sowie Body-JEPA-/C3-Resume-Gegenbelege offen. Details/Belegskripte: `code/docs/INTEGRATED_ONLINE_WORLD_GUARD_20261110.md`. Nächste Naht: JEPA-Autorität, vollständige Quell-Lineage und crashfeste Restart-Generationen; SourceHandoff und alle negativen Gates bleiben.
+
 ## 2026-10-30 — latest review-chain evidence (branch-scoped, not production-integrated)
 
 - **#1206 independent STEP2 v3 native audit:** original Actions 40996792157, 27/27 native turns, 53/53 inner hashes, 10/10 stage exits, frozen A/B/C 0/10/9 out of 18, no pilot gain. Three C3-only correct explicit arithmetic equations are missed by the frozen lexical scorer; no rescore or gate.

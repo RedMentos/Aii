@@ -1,0 +1,296 @@
+"""Runtime and crash counterexamples for the online World predictor."""
+import json
+import time
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
+
+import numpy as np
+import pytest
+
+from v13.online_world import OnlineWorld
+from v13.operator import Operator
+from v13 import inputs,online_world_policy
+from v13.runtime import Runtime
+
+
+@pytest.fixture
+def synthetic_sources(monkeypatch):
+    # Tests using fabricated rows opt into this seam; real source tests do not.
+    monkeypatch.setattr(OnlineWorld,'_source_current',lambda self,row:True)
+
+
+def transition(i=0):
+    return {'action_id':f'action-{i}','s':[.1+i*.01,0.,0.,1.],
+            'a':'simple','y':[.2+i*.005,1.,.3]}
+
+
+def turn(runtime):
+    runtime.submit('Describe the test case')
+    deadline=time.monotonic()+10
+    while not runtime.idle() and time.monotonic()<deadline:time.sleep(.005)
+    assert runtime.idle()
+    assert runtime.last_answer()['status']=='FINAL'
+
+
+def test_runtime_does_not_autotrain_in_default_record_only(tmp_path):
+    r=Runtime(tmp_path)
+    try:
+        r.sleep.cycle.set_policy('enabled','off')
+        r._route=Mock(return_value=('simple',{'source':'TEST_ROUTE_SEAM'}))
+        r.pool.get=Mock(return_value=SimpleNamespace(role='C3_LANGUAGE',last_metrics={},
+                        generate=lambda *a,**k:iter(['synthetic answer'])))
+        r.learner.output_delta=Mock(return_value=None)
+        turn(r)
+        assert r.cfg['learning_mode']=='RECORD_ONLY'
+        assert not hasattr(r,'_online_world')
+        assert not (tmp_path/'online_world').exists()
+    finally:r.close()
+
+
+def test_crash_after_model_save_cannot_replay_same_transition(tmp_path,synthetic_sources):
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    rows=[transition()]
+    with patch('v13.online_world.world_model.transitions',return_value=rows):
+        w=OnlineWorld(runtime)
+        checkpoint=w.model.checkpoint
+        def crash_after_save(*args,**kwargs):
+            checkpoint(*args,**kwargs)
+            raise OSError('simulated crash after model save')
+        with patch.object(w.model,'checkpoint',side_effect=crash_after_save):
+            with pytest.raises(OSError):w.update()
+        assert w.model.seen==1 and w.update()['learned']==0
+        resumed=OnlineWorld(runtime)
+        resumed.update()
+        assert resumed.model.seen==1
+        assert not (tmp_path/'online_world'/'cursor.json').exists()
+
+
+def test_changed_content_for_a_processed_action_is_rejected(tmp_path,synthetic_sources):
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    row=transition()
+    with patch('v13.online_world.world_model.transitions',return_value=[row]):
+        w=OnlineWorld(runtime);w.update()
+    changed=dict(row,y=[.9,1.,.3])
+    with patch('v13.online_world.world_model.transitions',return_value=[changed]):
+        with pytest.raises(ValueError):w.update()
+        with pytest.raises(ValueError):OnlineWorld(runtime).update()
+    assert w.model.seen==1
+
+
+def test_checkpoint_failure_leaves_no_partial_in_memory_update(tmp_path,synthetic_sources):
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    with patch('v13.online_world.world_model.transitions',return_value=[transition()]):
+        w=OnlineWorld(runtime)
+        before=w.model.W.copy();rng_before=json.dumps(w.model.rng.bit_generator.state,sort_keys=True)
+        with patch.object(w.model,'checkpoint',side_effect=OSError('disk full')):
+            with pytest.raises(OSError):w.update()
+        np.testing.assert_array_equal(w.model.W,before)
+        assert w.model.seen==0 and w.model.updates==0 and not w.processed
+        assert json.dumps(w.model.rng.bit_generator.state,sort_keys=True)==rng_before
+
+
+def test_explicit_opt_in_mode_pause_and_restart_control_actual_updates(tmp_path,synthetic_sources):
+    r=Runtime(tmp_path)
+    try:
+        r.sleep.cycle.set_policy('enabled','off')
+        r._route=Mock(return_value=('simple',{'source':'TEST_ROUTE_SEAM'}))
+        r.pool.get=Mock(return_value=SimpleNamespace(role='C3_LANGUAGE',last_metrics={},
+                        generate=lambda *a,**k:iter(['synthetic answer'])))
+        r.learner.output_delta=Mock(return_value=None)
+        op=Operator(r)
+        status=json.loads(op.run(':growth onlineworld status'))
+        assert status['enabled'] is False and not hasattr(r,'_online_world')
+        with pytest.raises(PermissionError):online_world_policy.set_enabled(r.store,True)
+        op.run(':growth onlineworld on')
+        with patch('v13.online_world.world_model.transitions',return_value=[transition()]):
+            turn(r)
+            assert not hasattr(r,'_online_world')  # RECORD_ONLY still wins
+            op.run(':learning shadow')
+            turn(r)
+            assert r._online_world.model.seen==1
+            assert np.any(r._online_world.model.U!=0)  # actual local gradients
+            turn(r)
+            assert r._online_world.model.seen==1  # identical action is not learned twice
+        inputs.set_pause(r.store,'training',True)
+        with patch('v13.online_world.world_model.transitions',return_value=[transition(),transition(1)]):
+            turn(r);assert r._online_world.model.seen==1
+            inputs.set_pause(r.store,'training',False)
+            op.run(':growth onlineworld off');turn(r);assert r._online_world.model.seen==1
+        op.run(':growth onlineworld on')
+        r.close();r=Runtime(tmp_path)
+        r.sleep.cycle.set_policy('enabled','off')
+        assert online_world_policy.enabled(r.store) is True
+        assert r.cfg['learning_mode']=='SHADOW_UPDATE'
+        assert not hasattr(r,'_online_world')
+        r._route=Mock(return_value=('simple',{'source':'TEST_ROUTE_SEAM'}))
+        r.pool.get=Mock(return_value=SimpleNamespace(role='C3_LANGUAGE',last_metrics={},
+                        generate=lambda *a,**k:iter(['synthetic answer'])))
+        r.learner.output_delta=Mock(return_value=None)
+        with patch('v13.online_world.world_model.transitions',return_value=[transition(),transition(1)]):
+            turn(r);assert r._online_world.model.seen==2
+    finally:r.close()
+
+
+def test_record_only_and_resource_pressure_block_explicit_run(tmp_path):
+    r=Runtime(tmp_path)
+    try:
+        assert r.online_world_update(limit=1,authority='EXPLICIT_HUMAN')['status']=='SKIPPED_RECORD_ONLY'
+        assert not hasattr(r,'_online_world')
+        r.cfg['learning_mode']='SHADOW_UPDATE';r.guard.state='PRESSURE'
+        assert r.online_world_update(limit=1,authority='EXPLICIT_HUMAN')['status']=='SKIPPED_RESOURCES'
+        assert not hasattr(r,'_online_world')
+    finally:r.close()
+
+
+def test_untrusted_policy_fails_closed_and_can_be_disabled(tmp_path):
+    r=Runtime(tmp_path)
+    try:
+        r.store.set_state(online_world_policy.KEY,{'revision':'bad','enabled':'yes'})
+        with pytest.raises(ValueError):online_world_policy.enabled(r.store)
+        with pytest.raises(ValueError):online_world_policy.set_enabled(r.store,True,'EXPLICIT_HUMAN')
+        assert online_world_policy.set_enabled(r.store,False,'EXPLICIT_HUMAN') is False
+        assert online_world_policy.enabled(r.store) is False
+    finally:r.close()
+
+
+def test_interruption_between_samples_defers_remaining_work(tmp_path,synthetic_sources):
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    with patch('v13.online_world.world_model.transitions',return_value=[transition(),transition(1)]):
+        w=OnlineWorld(runtime);calls=[]
+        def keep_going():calls.append(1);return len(calls)==1
+        result=w.update(should_continue=keep_going)
+        assert (result['learned'],result['deferred'],w.model.seen)==(1,1,1)
+        assert w.update()['learned']==1
+        assert OnlineWorld(runtime).model.seen==2
+
+
+def test_existing_unpaired_checkpoint_is_preserved_and_rejected(tmp_path):
+    from v13.continuous_predictor import OnlinePredictor
+    home=tmp_path/'online_world';m=OnlinePredictor(7,4,home)
+    m.observe([0]*7,0,[1]*7);m.checkpoint()
+    before=m.path.read_bytes()
+    with pytest.raises(ValueError,match='legacy'):
+        OnlineWorld(SimpleNamespace(home=tmp_path,store=object()))
+    assert m.path.read_bytes()==before
+
+
+def test_bad_later_row_does_not_partially_train_batch(tmp_path,synthetic_sources):
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    invalid=transition(1);invalid['y']=[float('nan'),0.,0.]
+    with patch('v13.online_world.world_model.transitions',return_value=[transition(),invalid]):
+        w=OnlineWorld(runtime)
+        with pytest.raises(ValueError):w.update()
+        assert w.model.seen==0 and not w.model.path.exists()
+
+
+def test_overflowing_gradient_rolls_back_reservoir_rng_and_parameters(tmp_path):
+    from v13.continuous_predictor import OnlinePredictor
+    m=OnlinePredictor(2,2,tmp_path);m.W[0,0]=1e200
+    before=m.W.copy();rng=json.dumps(m.rng.bit_generator.state,sort_keys=True)
+    with np.errstate(over='ignore',invalid='ignore'):
+        with pytest.raises(ValueError):m.observe([1,0],0,[0,0])
+    np.testing.assert_array_equal(m.W,before)
+    assert m.seen==0 and m.updates==0 and len(m.x)==0
+    assert json.dumps(m.rng.bit_generator.state,sort_keys=True)==rng
+
+
+def test_real_revoked_source_is_not_learned_or_silently_reused(tmp_path):
+    from v13 import world_model
+    r=Runtime(tmp_path)
+    try:
+        r.sleep.cycle.set_policy('enabled','off')
+        r._route=Mock(return_value=('simple',{'source':'TEST_ROUTE_SEAM'}))
+        r.pool.get=Mock(return_value=SimpleNamespace(role='C3_LANGUAGE',last_metrics={},
+                        generate=lambda *a,**k:iter(['synthetic answer'])))
+        r.learner.output_delta=Mock(return_value=None)
+        turn(r);eid=r.last_answer()['event_id']
+        assert len(world_model.transitions(r.store))==1
+        source=r.store.one('SELECT source_id FROM events WHERE id=?',(eid,))['source_id']
+        with r.store.tx() as c:c.execute('UPDATE sources SET deleted=1 WHERE id=?',(source,))
+        r.cfg['learning_mode']='SHADOW_UPDATE'
+        result=r.online_world_update(limit=64,authority='EXPLICIT_HUMAN')
+        assert result['learned']==0 and result['source_rejected']==1
+        assert r._online_world.model.seen==0
+        with r.store.tx() as c:c.execute('UPDATE sources SET deleted=0 WHERE id=?',(source,))
+        assert r.online_world_update(limit=64,authority='EXPLICIT_HUMAN')['learned']==1
+        with r.store.tx() as c:c.execute('UPDATE sources SET deleted=1 WHERE id=?',(source,))
+        with pytest.raises(ValueError,match='source'):
+            r.online_world_update(limit=64,authority='EXPLICIT_HUMAN')
+        assert r._online_world.model.seen==1
+        with pytest.raises(RuntimeError,match='review'):
+            r._online_world.predict([0.,0.,0.,1.],'simple')
+    finally:r.close()
+
+
+def test_manual_learning_obeys_pause_and_stops_between_samples(tmp_path,synthetic_sources):
+    r=Runtime(tmp_path)
+    try:
+        r.sleep.cycle.set_policy('enabled','off')
+        r.cfg['learning_mode']='SHADOW_UPDATE'
+        inputs.set_pause(r.store,'training',True)
+        assert r.online_world_update(authority='EXPLICIT_HUMAN')['status']=='SKIPPED_PAUSED_TRAINING'
+        inputs.set_pause(r.store,'training',False)
+        r._online_world=OnlineWorld(r)
+        observe=r._online_world.model.observe
+        def pause_after_one(*args,**kwargs):
+            result=observe(*args,**kwargs)
+            inputs.set_pause(r.store,'training',True)
+            return result
+        with patch('v13.online_world.world_model.transitions',return_value=[transition(),transition(1)]):
+            with patch.object(r._online_world.model,'observe',side_effect=pause_after_one):
+                result=r.online_world_update(limit=64,authority='EXPLICIT_HUMAN')
+        assert (result['learned'],result['deferred'])==(1,1)
+    finally:r.close()
+
+
+def test_source_revoked_during_batch_is_rechecked_before_update(tmp_path):
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    with patch('v13.online_world.world_model.transitions',return_value=[transition(),transition(1)]):
+        with patch.object(OnlineWorld,'_source_current',side_effect=[True,True,True,False]):
+            w=OnlineWorld(runtime);result=w.update()
+    assert (result['learned'],result['source_rejected'],result['deferred'])==(1,1,0)
+    assert w.model.seen==1
+
+
+def test_invalidated_recent_action_cannot_disappear_silently(tmp_path):
+    from v13 import world_model
+    r=Runtime(tmp_path)
+    try:
+        r.sleep.cycle.set_policy('enabled','off')
+        r._route=Mock(return_value=('simple',{'source':'TEST_ROUTE_SEAM'}))
+        r.pool.get=Mock(return_value=SimpleNamespace(role='C3_LANGUAGE',last_metrics={},
+                        generate=lambda *a,**k:iter(['synthetic answer'])))
+        r.learner.output_delta=Mock(return_value=None)
+        turn(r);action=world_model.transitions(r.store)[0]['action_id']
+        r.cfg['learning_mode']='SHADOW_UPDATE'
+        assert r.online_world_update(limit=64,authority='EXPLICIT_HUMAN')['learned']==1
+        with r.store.tx() as c:c.execute('UPDATE actions SET outcome=NULL WHERE id=?',(action,))
+        assert world_model.transitions(r.store)==[]
+        with pytest.raises(ValueError,match='no longer yields'):
+            r.online_world_update(limit=64,authority='EXPLICIT_HUMAN')
+        with pytest.raises(RuntimeError,match='review'):
+            r._online_world.predict([0.,0.,0.,1.],'simple')
+    finally:r.close()
+
+
+def test_real_technical_error_is_a_completion_outcome_not_semantic_success(tmp_path):
+    from v13 import world_model
+    r=Runtime(tmp_path)
+    try:
+        r.sleep.cycle.set_policy('enabled','off')
+        r._route=Mock(return_value=('simple',{'source':'TEST_ROUTE_SEAM'}))
+        def fail(*args,**kwargs):
+            raise RuntimeError('synthetic runner failure')
+            yield  # keep generator interface
+        r.pool.get=Mock(return_value=SimpleNamespace(role='C3_LANGUAGE',last_metrics={},generate=fail))
+        r.learner.output_delta=Mock(return_value=None)
+        r.submit('Test a technical failure')
+        deadline=time.monotonic()+10
+        while not r.idle() and time.monotonic()<deadline:time.sleep(.005)
+        assert r.last_answer()['status']=='ERROR'
+        rows=world_model.transitions(r.store)
+        assert len(rows)==1 and rows[0]['y'][1]==0.
+        r.cfg['learning_mode']='SHADOW_UPDATE'
+        assert r.online_world_update(limit=64,authority='EXPLICIT_HUMAN')['learned']==1
+    finally:r.close()

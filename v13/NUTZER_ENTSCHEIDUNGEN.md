@@ -1,5 +1,9 @@
 # Nutzerentscheidungen (RedMentos)
 
+## 2026-11-09/10: langer Kontext, Idle-Lernen und integrierte Fortsetzung
+
+Der Nutzer möchte ein normales begrenztes aktives Kontextfenster mit lokal über lange Zeit wachsendem, effizient verdichtetem und wieder abrufbarem Zusammenhang; Erkenntnisse sollen später auch Weltbild und Modelle verbessern. Der Blueprint enthält diese Architektur bereits detailliert und darf nicht durch eine vereinfachte Ersatzarchitektur ersetzt werden. Geeignete Anfangsdaten sollen später langsam und ressourcenbegrenzt im Leerlauf nutzbar sein. Freigegebene Gespräche/Rückmeldungen und später ausdrücklich erlaubter Werkzeug-/Bildschirmzugriff gehören zur Zielrichtung, ebenso mehr Selbstständigkeit innerhalb der gesetzten Grenzen. Der Nutzer verlangt, dass die Arbeit fortgesetzt und neuere Anweisungen/Arbeit aus parallelen Chats beachtet werden. Das `code/docs/coordination/V13_FAST_INTEGRATION_AGENT_PLAYBOOK_20261110.md` priorisiert eine gemeinsame, tatsächlich verbundene Implementierung; SourceHandoff-Freeze und bisherige Gates bleiben verbindlich.
+
 Dauerhafte Ablage, weil `code/docs/USER_DECISIONS_AND_OPEN_QUESTIONS.md` von `v13/verification.py:122` neu erzeugt werden kann.
 Gilt vor abweichenden Stellen im Blueprint, bis der Nutzer etwas anderes sagt.
 

@@ -48,5 +48,19 @@
     "python v13/code/scripts/public_repo_privacy_scan.py --base 5e964146579deb22c5ba89a2a03a52a9e4d8aab8 --head codex/v13-integrated-online-jepa-20261109",
     "Add bounded JEPA checkpoint retention/rollback and fresh source-bound holdout evaluation; test native Redmi resource impact",
     "Review/resolve PR #1652 replay negative cases and reconcile Body-JEPA candidate branches without overwriting active owners"
-  ]
+  ],
+  "codex_online_world_integration_review_20261110": {
+    "organ": "T8 numeric online world predictor",
+    "blueprint_requirement": "source-bound, mode-gated incremental world learning",
+    "integration_head": "95aea15a046e73acf82c67ccf934cebda651ef87",
+    "actual_path": "Runtime worker/operator -> online_world_update -> source-checked OnlineWorld.update -> staged predictor/checkpoint in disposable copy",
+    "code_status": "PARTIAL_FREEZE_BLOCKED",
+    "candidate_script": "v13/code/scripts/integrated_online_world_candidate_20261110.py",
+    "focused_tests": "49 passed in materialized copy; includes one expected legacy-limitation counterexample",
+    "native_proof": false,
+    "device_proof": false,
+    "full_suite_source": "#1661 only: 73 failed, 5394 passed, 50 skipped, 94 errors, 3012 subtests",
+    "next_edge": "authorize JEPA update and restore with complete source lineage; resolve historical revocation and checkpoint atomicity",
+    "negative_gates_unchanged": true
+  }
 }
