@@ -25,6 +25,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :aplane [status|student shadow|fallback|distill [Fähigkeit]] (A3-Schüler T2, Lehrer-Destillation, Reliance-Kurve)
 :bodyview [status|state on|off|b4 off|shadow|on] (B1-Detailfenster, B5-Zustand als Quelle, B4 über Sessions)
 :skilllive [status] (Skills im Turn: automatischer Pfad, Parität, Gewohnheiten)
+:fastbatch propose NAME 'Vorlage {i}: {value}' | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME (geprüfte Wiederholung ohne LLM, mit Mini-Checkpoints)
 :latewatch [status|off|shadow|active] (spätes Body-Offer während der Ausgabe; Standard shadow)
 :feedback prediction observe --learn (beobachtete native Zustände dieser Quelle)
 :feedback alignment observe --learn (A3 Raw/Encoder-Paar, keine Faktenfreigabe)
@@ -95,6 +96,9 @@ class Operator:
             return self.r.submit(line)
         parts=shlex.split(line[1:]);cmd=parts[0].lower() if parts else 'help';args=parts[1:];r=self.r;s=r.store
         if cmd=='help':return HELP
+        if cmd=='fastbatch':
+            from .procedural_batch import operator_command
+            return dumps(operator_command(r,args))
         if cmd=='jefsource':
             from .jef_f1f5_operator import operator_command
             return operator_command(r,args)
