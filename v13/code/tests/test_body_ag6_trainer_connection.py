@@ -228,3 +228,21 @@ def test_tampered_body_config_fails_before_workspace(monkeypatch,tmp_path,overri
     assert info["active"]=="none"
     assert "BODY_CFG_INVALID" in info["missing"]
     assert not (tmp_path/"training").exists()
+
+
+@pytest.mark.parametrize("raw,expected",[
+    ("stream","stream"),("cached","cached"),("ema","ema"),
+    ("true",True),("false",False),("8",8),("0.0003",0.0003),
+    ('["q_proj","v_proj"]',["q_proj","v_proj"]),
+])
+def test_training_knob_parser_safe_and_useful_for_termux(raw,expected):
+    assert trainers.parse_cfg_value(raw)==expected
+
+
+@pytest.mark.parametrize("invalid",[
+    "NaN","Infinity","1e999","__import__('os')",
+    "python -c print()", "x"*260, "1; rm -rf /", "",
+])
+def test_training_knob_parser_rejects_nonfinite_and_code(invalid):
+    with pytest.raises(ValueError):
+        trainers.parse_cfg_value(invalid)
