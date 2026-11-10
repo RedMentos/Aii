@@ -225,7 +225,7 @@ def operator_command(r,args):
         if len(args)==1:return dumps(trainers.install(g,r))
         if args[1]=='cfg':  # :growth trainer cfg lr=3e-4 anchor_weight=8 (measured per-device LoRA overrides; 'cfg reset' clears)
             kv={} if args[2:]==['reset'] else dict(a.split('=',1) for a in args[2:])
-            return dumps(trainers.set_lora_cfg(g,r,{k:__import__("json").loads(v) if v[:1] in '[{"' else float(v) if any(c in v for c in '.e') else int(v) for k,v in kv.items()}))
+            return dumps(trainers.set_lora_cfg(g,r,{k:trainers.parse_cfg_value(v) for k,v in kv.items()}))
         return dumps(trainers.choose(g,r,args[1],args[2] if len(args)>2 else None))
     if c=='teacher':
         from . import teacher_backends as tb
