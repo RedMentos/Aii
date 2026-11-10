@@ -116,7 +116,8 @@ def _render(parts, index, value):
 class ProceduralBatch:
     """Local, reviewable, bounded and resumable compiled text batch executor."""
 
-    def __init__(self, home):
+    def __init__(self, home, store=None):
+        self.store = store  # current authoritative V13 Store; optional for manual plans
         self.root = Path(home) / "procedures" / "fastbatch"
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
         _check_path(self.root)
@@ -129,13 +130,41 @@ class ProceduralBatch:
     def _plan_path(self, name):
         return self.plans / (_name(name) + ".json")
 
-    def propose(self, name, template):
+    def propose(self, name, template, evidence=None):
         _parts(template)
+        if evidence is not None:
+            # Exact source hashes and ids, not private chat text, bind this
+            # inferred candidate to the completed source traces.
+            if type(evidence) is not dict or set(evidence) != {
+                "method", "kind", "source_event_ids", "source_output_sha256",
+                "observed_rows", "validation", "scope"
+            }:
+                raise ValueError("invalid source-trace evidence")
+            ids, digests, counts = (evidence["source_event_ids"],
+                                    evidence["source_output_sha256"],
+                                    evidence["observed_rows"])
+            if (evidence["method"] != "EXACT_FINAL_HISTORY_REPLAY_V1"
+                    or evidence["kind"] not in (
+                        "LITERAL_NUMBERED_REPEAT", "PARAMETRIC_NUMBERED_REPEAT")
+                    or evidence["validation"] != "BYTE_EXACT_BEFORE_PROPOSE"
+                    or evidence["scope"] != "CURRENT_SESSION_ONLY"
+                    or type(ids) is not list or not 1 <= len(ids) <= 3
+                    or len(set(ids)) != len(ids)
+                    or any(type(x) is not str or not re.fullmatch(
+                        r"[A-Za-z0-9_-]{1,96}", x) for x in ids)
+                    or type(digests) is not list or len(digests) != len(ids)
+                    or any(type(x) is not str or not re.fullmatch(
+                        r"[0-9a-f]{64}", x) for x in digests)
+                    or type(counts) is not list or len(counts) != len(ids)
+                    or any(type(n) is not int or not 4 <= n <= 64 for n in counts)):
+                raise ValueError("invalid or unbound source-trace evidence")
         path = self._plan_path(name)
         if path.exists() or path.is_symlink():
             raise ValueError("plan exists; use a new revision name")
         code = {"revision": REVISION, "name": name, "kind": "PURE_TEXT_REPEAT",
                 "template": template}
+        if evidence is not None:
+            code["source_evidence"] = evidence  # digest-bound to plan activation
         plan = {"code": code, "sha256": _sha(code), "stage": "CANDIDATE",
                 "authority": "LOCAL_OPERATOR_ONLY"}
         _save(path, plan)
@@ -154,6 +183,33 @@ class ProceduralBatch:
         _parts(code.get("template"))
         return plan
 
+    def _verify_evidence(self, plan):
+        """Recheck FINAL source state before using a learned plan.
+
+        Deleted sources, replaced outputs and revoked final status must never
+        survive as executable learned habits. The check is per invocation,
+        never inside the per-row hot loop. Manually approved literal plans
+        have no Store evidence and retain the original low-latency path.
+        """
+        evidence = plan["code"].get("source_evidence")
+        if evidence is None:
+            return
+        if self.store is None:
+            raise PermissionError("source-discovered plans require the live V13 Store")
+        for event_id, sha256 in zip(evidence["source_event_ids"],
+                                    evidence["source_output_sha256"]):
+            rows = self.store.rows(
+                "SELECT m.text,m.status,s.deleted FROM messages m "
+                "JOIN events e ON e.id=m.event_id "
+                "JOIN sources s ON s.id=e.source_id "
+                "WHERE m.event_id=? AND m.role='assistant' "
+                "ORDER BY m.id DESC LIMIT 1", (event_id,))
+            if (len(rows) != 1 or rows[0]["status"] != "FINAL"
+                    or rows[0]["deleted"] != 0):
+                raise ValueError("learned procedure source is no longer FINAL/authoritative")
+            if hashlib.sha256(rows[0]["text"].encode("utf-8")).hexdigest() != sha256:
+                raise ValueError("learned procedure source changed since review")
+
     def activate(self, name, digest_prefix):
         plan = self.plan(name)
         if (not isinstance(digest_prefix, str) or len(digest_prefix) < 12
@@ -161,6 +217,7 @@ class ProceduralBatch:
             raise ValueError("activation requires matching plan SHA256 prefix (12+ chars)")
         if plan["stage"] == "RETIRED":
             raise ValueError("retired plan cannot reactivate")
+        self._verify_evidence(plan)
         plan["stage"] = "ACTIVE"
         _save(self._plan_path(name), plan)
         return {"name": name, "stage": "ACTIVE", "sha256": plan["sha256"]}
@@ -240,6 +297,7 @@ class ProceduralBatch:
         plan = self.plan(name)
         if plan["stage"] != "ACTIVE":
             raise PermissionError("compiled plan requires explicit local activation")
+        self._verify_evidence(plan)
         max_rows = MAX_ROWS if max_rows is None else max_rows
         if type(max_rows) is not int or not 1 <= max_rows <= MAX_ROWS:
             raise ValueError("max_rows must be a positive integer")
@@ -253,6 +311,11 @@ class ProceduralBatch:
         rows_before = state["rows"]
         bytes_before = state["bytes"]
         while state["rows"] < until and time.monotonic() - started < max_seconds:
+            # Revocation may arrive while a long learned habit is running.
+            # Revalidate at checkpoint/chunk boundaries, NEVER every row;
+            # manual literal plans stay on the original zero-DB hot path.
+            if plan["code"].get("source_evidence"):
+                self._verify_evidence(plan)
             end = min(until, state["rows"] + CHUNK_ROWS)
             # One in-memory chunk and one durable write per ~2K rows.
             chunk = "".join(_render(parts, i, value)
@@ -282,6 +345,7 @@ class ProceduralBatch:
 
     def preview(self, name, count, value="", max_chars=256):
         plan = self.plan(name)
+        self._verify_evidence(plan)
         state_file, output_file, state = self._load_or_start(plan, count, value)
         self._verify_prefix(output_file, state)
         if type(max_chars) is not int or not 0 <= max_chars <= 4096:
@@ -309,11 +373,11 @@ class ProceduralBatch:
 
 
 def operator_command(runtime, args):
-    """:fastbatch propose NAME 'text {i}: {value}' | activate NAME SHA |
+    """:fastbatch propose NAME 'text {i}: {value}' | discover NAME [--history=N] | activate NAME SHA |
     run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] |
     status [NAME] | retire NAME. Only local operator dispatch can reach here.
     """
-    runner = ProceduralBatch(runtime.home)
+    runner = ProceduralBatch(runtime.home, store=runtime.store)
     if not args or args[0] == "status":
         if len(args) > 2:
             raise ValueError(":fastbatch status [NAME]")
@@ -321,6 +385,14 @@ def operator_command(runtime, args):
     cmd = args[0]
     if cmd == "propose" and len(args) == 3:
         return runner.propose(args[1], args[2])
+    if cmd == "discover" and len(args) in (2, 3):
+        from .procedural_habits import discover
+        limit = 16
+        if len(args) == 3:
+            if not re.fullmatch(r"--history=[1-9][0-9]?", args[2]):
+                raise ValueError(":fastbatch discover NAME [--history=1..64]")
+            limit = int(args[2].split("=", 1)[1])
+        return discover(runtime, args[1], limit)
     if cmd == "activate" and len(args) == 3:
         return runner.activate(args[1], args[2])
     if cmd == "retire" and len(args) == 2:
@@ -340,4 +412,4 @@ def operator_command(runtime, args):
             return runner.preview(name, count, value)
         limit = int(opts[0].split("=", 1)[1]) if opts else None
         return runner.run(name, count, value, max_rows=limit)
-    raise ValueError(":fastbatch propose NAME TEMPLATE | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME")
+    raise ValueError(":fastbatch propose NAME TEMPLATE | discover NAME [--history=N] | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME")

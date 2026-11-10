@@ -10,7 +10,7 @@ def obsched_names():
     from .observer_schedule import SCHEDULES
     return SCHEDULES
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
-:help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain [map|status|explain <name>] / :logs [runner]
+:help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain [map|status|diagnose [N]|explain <name>] / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
 :self / :world / :worldmodel [status|recent|event <Event-ID> <route>|compare <Event-ID>] / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
@@ -25,7 +25,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :aplane [status|student shadow|fallback|distill [Fähigkeit]] (A3-Schüler T2, Lehrer-Destillation, Reliance-Kurve)
 :bodyview [status|state on|off|b4 off|shadow|on] (B1-Detailfenster, B5-Zustand als Quelle, B4 über Sessions)
 :skilllive [status] (Skills im Turn: automatischer Pfad, Parität, Gewohnheiten)
-:fastbatch propose NAME 'Vorlage {i}: {value}' | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME (geprüfte Wiederholung ohne LLM, mit Mini-Checkpoints)
+:fastbatch discover NAME [--history=N] | propose NAME 'Vorlage {i}: {value}' | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME (fertige Antwortmuster erkennen, erst nach SHA-Freigabe superschnell ausgeben)
 :turnflow [status|measure|active|off|feedback EVENT-ID useful|wasteful] (JEF: Denk-/Sprechüberlappung messen und nach Nutzerfeedback zeitlich steuern)
 :latewatch [status|off|shadow|active] (spätes Body-Offer während der Ausgabe; Standard shadow)
 :feedback prediction observe --learn (beobachtete native Zustände dieser Quelle)
