@@ -54,3 +54,33 @@ def test_store_corrupt_blob_rejected(tmp_path):
     (home/"data"/"blobs"/digest).write_bytes(b"wrong")
     with pytest.raises(ValueError, match="hash mismatch"):
         verify_store_sources(inp, home)
+
+
+def test_verified_input_mutation_never_publishes_dataset(tmp_path, monkeypatch):
+    import v13.agi.body_dataset_store as module
+    inp, home = make_store(tmp_path)
+    original = module.verify_store_sources
+
+    def mutate_after_verification(source, store_home):
+        receipt = original(source, store_home)
+        lines = inp.read_text().splitlines()
+        row = json.loads(lines[0])
+        row["target"] = "changed after Store verification"
+        lines[0] = json.dumps(row)
+        inp.write_text("\n".join(lines) + "\n")
+        return receipt
+
+    monkeypatch.setattr(module, "verify_store_sources", mutate_after_verification)
+    with pytest.raises(ValueError, match="input changed"):
+        compile_from_store(inp, home, tmp_path/"output")
+    assert not (tmp_path/"output").exists()
+    assert not list(tmp_path.glob(".body-verified-*"))
+
+
+def test_verified_dataset_rejects_existing_destination(tmp_path):
+    inp, home = make_store(tmp_path)
+    destination = tmp_path/"output"
+    destination.mkdir()
+    with pytest.raises(ValueError, match="must not exist"):
+        compile_from_store(inp, home, destination)
+    assert not list(destination.iterdir())

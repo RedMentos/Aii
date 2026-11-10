@@ -10,6 +10,9 @@ import json
 from pathlib import Path
 import sqlite3
 import zlib
+import os
+import shutil
+import tempfile
 
 from .body_dataset import _validate, compile_dataset, MAX_LINE, MAX_ROWS
 
@@ -82,10 +85,31 @@ def compile_from_store(reviewed_jsonl, store_home, destination, holdout_percent=
     verification = verify_store_sources(reviewed_jsonl, store_home)
     # A changing input is rejected even if its rows remain individually valid.
     # The resulting directory must not be consumed on any exception.
-    result = compile_dataset(reviewed_jsonl, destination, holdout_percent)
-    if result["input_sha256"] != verification["input_sha256"]:
-        raise ValueError("reviewed input changed after Store verification")
-    return {"source_verification": verification, "dataset": result}
+    # Never publish a complete-looking manifest before checking the second
+    # input digest. The private sibling directory is not a consumer path.
+    destination = Path(destination)
+    if destination.is_symlink() or destination.exists():
+        raise ValueError("verified output destination must not exist")
+    if not destination.parent.is_dir() or destination.parent.is_symlink():
+        raise ValueError("invalid verified output parent")
+    staging = Path(tempfile.mkdtemp(prefix=".body-verified-", dir=destination.parent))
+    try:
+        os.chmod(staging, 0o700)
+        result = compile_dataset(reviewed_jsonl, staging, holdout_percent)
+        if result["input_sha256"] != verification["input_sha256"]:
+            raise ValueError("reviewed input changed after Store verification")
+        if destination.exists() or destination.is_symlink():
+            raise ValueError("verified output appeared before publication")
+        os.rename(staging, destination)
+        dirfd = os.open(destination.parent, os.O_RDONLY)
+        try:
+            os.fsync(dirfd)
+        finally:
+            os.close(dirfd)
+        return {"source_verification": verification, "dataset": result}
+    finally:
+        if staging.exists():
+            shutil.rmtree(staging)
 
 
 def main(argv=None):
