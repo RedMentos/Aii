@@ -1,0 +1,32 @@
+name: V13 compiled fast procedures and mini-checkpoints
+on:
+  push:
+    branches:
+      - 'codex/v13-fast-procedure-*'
+  pull_request:
+    paths:
+      - 'v13/code/v13/procedural_batch.py'
+      - 'v13/code/v13/operator.py'
+      - 'v13/code/tests/test_procedural_batch.py'
+      - '.github/workflows/v13-fast-procedures.yml'
+jobs:
+  fastbatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install minimal test dependency
+        run: python -m pip install --disable-pip-version-check pytest
+      - name: Compile and test operator fast lane
+        working-directory: v13/code
+        run: |
+          python -m py_compile v13/procedural_batch.py v13/operator.py tests/test_procedural_batch.py
+          python -m pytest -q tests/test_procedural_batch.py
+      - name: Public repository privacy scan
+        run: |
+          python v13/code/scripts/public_repo_privacy_scan.py --base 618043d5043e95c302f98af3939ab1bc8f4c03b3 --head HEAD
