@@ -320,6 +320,20 @@ class BodyJepaTrainer(LoraTrainer):
                 save_bj_step(checkpoint_dir,checkpoint_source,step,model,pred,opt,ema,g,hist)
             if step>=int(cfg['min_steps']) and hist[-1]['ce']<=float(cfg['target_loss']):break
         model.eval()
+        # Measure retention against the frozen master on the SAME anchor sequences
+        # used for training. This is a diagnostic, not deployment authority.
+        # Recompute sequentially to bound peak memory on the mobile body path.
+        retention_kl=[]
+        with torch.no_grad():
+            for seq,base_logp in zip(anchor_seqs,anchor_logp):
+                adapted_logp=torch.log_softmax(
+                    model(torch.tensor([seq])).logits[0].float(),dim=-1)
+                if adapted_logp.shape!=base_logp.shape or not bool(torch.isfinite(adapted_logp).all()):
+                    raise ValueError('invalid post-training anchor distribution')
+                divergence=(base_logp.exp()*(base_logp-adapted_logp)).sum(-1).mean()
+                if not bool(torch.isfinite(divergence)):
+                    raise ValueError('nonfinite post-training anchor KL')
+                retention_kl.append(float(divergence))
         with torch.no_grad():
             st_ctx=last_token_latent(torch,model,ctx_b,layer)
             pc=pred(st_ctx);cos_pred_base=float(torch.nn.functional.cosine_similarity(pc,base_t,dim=-1).mean())
@@ -339,6 +353,8 @@ class BodyJepaTrainer(LoraTrainer):
                  'anchor_weight':float(cfg['anchor_weight']),'jepa_weight':w_j,'jepa_target':mode,'jepa_ema_decay':float(cfg['jepa_ema_decay']),'jepa_target_eval':target_eval,
                  'lora_subspace':str(cfg.get('lora_subspace','none')),'subspace_info':sub,'jepa_layer':layer,'shuffle_perm':perm if mode=='shuffled' else None,'master_learned_recall':sum(recall)/len(recall),
                  'cos_pred_vs_base_target':round(cos_pred_base,5),'cos_pred_vs_ema_target':round(cos_pred_ema,5),
+                 'retention_anchor_count':len(retention_kl),'retention_anchor_kl_mean':round(sum(retention_kl)/len(retention_kl),7) if retention_kl else None,
+                 'retention_anchor_kl_max':round(max(retention_kl),7) if retention_kl else None,
                  'effective_rank':{k:round(v,3) for k,v in rank.items()},'ema_updates':ema.updates,'ema_delta':round(ema.delta(),6),'checkpoint_resume_enabled':checkpoint_dir is not None,'checkpoint_restored_step':restored_step,
                  'seconds':round(time.monotonic()-t0,2),'peak_rss_mb':_rss_mb(),'trained_on':self.deployed_base or 'master',
                  'device':{'backend':'torch-cpu','threads':int(cfg['threads']),'torch':torch.__version__}}
