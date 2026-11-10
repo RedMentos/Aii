@@ -22,7 +22,8 @@
     "GitHub connector readback of all three modified files and exact blob SHA confirmed",
     "Eight malformed source digest/holdout receipt regression cases authored",
     "No local full pytest: git clone DNS failure",
-    "GitHub Actions commit PR runs query returned none at first check; not a PASS"
+    "GitHub Actions commit PR runs query returned none at first check; not a PASS",
+    "Independent C3 LoRA PR1654 review comment posted; no model tests claimed"
   ],
   "negative_gates": [
     "STEP2 UTILITY_FAIL",
@@ -42,5 +43,12 @@
     "Container cannot resolve github.com; connector can fetch/write",
     "Runtime source freeze remains; review-only branch"
   ],
-  "full_blueprint_complete": false
+  "full_blueprint_complete": false,
+  "cross_review": {
+    "pr": 1654,
+    "review_id": 5836989749,
+    "finding": "C3 LoRA model.load_state_dict precedes optimizer.load_state_dict; invalid optimizer can leave partial resume mutation",
+    "status": "commented_not_fixed",
+    "next": "Add atomic optimizer/model resume regression and repair in separate C3 branch"
+  }
 }
