@@ -252,33 +252,38 @@ def select_heldout_prompts(probes,items,anchors,cap):
 
 
 def heldout_retention_kl(torch,model,sequences):
-    """Forward KL(base || adapter) on prompt-disjoint probes, with no weight updates.
+    """Deterministic forward KL(base || adapter) on prompt-disjoint probes.
 
-    Read the FROZEN base through PEFT's disable_adapter() and immediately compare
-    the adapted model on the same token prefix. Unlike cached full-vocab baselines,
-    this streams one probe at a time to bound peak mobile RAM. No inference result
-    is assigned deployment authority.
+    Both baseline and adapted distributions must use eval mode: leaving
+    training dropout enabled makes retention depend on RNG and can even
+    report zero KL for a nonzero adapter. Preserve the caller's mode on
+    success and failure, without modifying weights or optimizer state.
     """
     disabled=getattr(model,'disable_adapter',None)
     if not callable(disabled):
         raise ValueError('PEFT disable_adapter context is required for heldout baseline')
+    was_training=bool(model.training)
     result=[]
-    with torch.no_grad():
-        for seq in sequences:
-            if (not isinstance(seq,(list,tuple)) or not seq or
-                    any(type(tok) is not int or tok<0 for tok in seq)):
-                raise ValueError('heldout probe must contain nonempty token IDs')
-            ids=torch.tensor([seq],dtype=torch.long)
-            with disabled():
-                baseline=torch.log_softmax(model(input_ids=ids).logits[0].float(),dim=-1)
-            adapted=torch.log_softmax(model(input_ids=ids).logits[0].float(),dim=-1)
-            if (baseline.shape!=adapted.shape or not bool(torch.isfinite(baseline).all())
-                    or not bool(torch.isfinite(adapted).all())):
-                raise ValueError('invalid heldout distribution')
-            kl=(baseline.exp()*(baseline-adapted)).sum(dim=-1).mean()
-            if not bool(torch.isfinite(kl)):
-                raise ValueError('nonfinite heldout KL')
-            result.append(max(0.,float(kl)))
+    model.eval()
+    try:
+        with torch.no_grad():
+            for seq in sequences:
+                if (not isinstance(seq,(list,tuple)) or not seq or
+                        any(type(tok) is not int or tok<0 for tok in seq)):
+                    raise ValueError('heldout probe must contain nonempty token IDs')
+                ids=torch.tensor([seq],dtype=torch.long)
+                with disabled():
+                    baseline=torch.log_softmax(model(input_ids=ids).logits[0].float(),dim=-1)
+                adapted=torch.log_softmax(model(input_ids=ids).logits[0].float(),dim=-1)
+                if (baseline.shape!=adapted.shape or not bool(torch.isfinite(baseline).all())
+                        or not bool(torch.isfinite(adapted).all())):
+                    raise ValueError('invalid heldout distribution')
+                kl=(baseline.exp()*(baseline-adapted)).sum(dim=-1).mean()
+                if not bool(torch.isfinite(kl)):
+                    raise ValueError('nonfinite heldout KL')
+                result.append(max(0.,float(kl)))
+    finally:
+        model.train(was_training)
     return result
 
 
