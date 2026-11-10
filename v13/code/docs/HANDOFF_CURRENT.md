@@ -1,3 +1,11 @@
+# 2026-11-10 — Replay-Korrektur und neuer Integrationsauftrag
+
+`WORLD_JEPA_REPLAY_SHADOW_REVIEW_20261110.md`: Original #1652 bleibt CI-RED, ein quellgebundener Vorschaukandidat korrigiert die Replay-Zeilenauswahl und trainiert eine streng getrennte Kopie; **27 Tests PASS**, synthetischer Gewichtsupdate ohne Änderung des Runtime-Originals. Die #1661-Komposition nutzt den echten Runtime-Einstieg, aber einen Mock-Feed und noch keinen Replay-Operator. Original-#1652-Gesamtsuite **5 FAIL, 5.397 PASS, 50 SKIP, 94 ERROR, 3.022 Untertests**, Rohlog/SHA im Proof. #1661-Fullsuite separat **73 FAIL, 5.394 PASS, 50 SKIP, 94 ERROR, 3.012 Untertests**. Source-ID-Lineage, aktueller Widerruf, Optimizerzustand und Retention gegen festes Ziel fehlen; kein Runtime-Merge oder Gate-PASS.
+
+Neue Nutzeranweisung: das Fast Integration Playbook auf dem aktuellen Integrationszweig #1655 ff. beachten und die vorhandenen Pfade zusammenführen; weiterhin nur geprüfte Testkopien bis zum SourceHandoff. Nächster Schritt ist ein quellgebundener Anschluss an den echten autorisierten World-JEPA-Operator samt Provenienz/Wiederaufnahme, anschließend Integration statt neuer unabhängiger Demos.
+
+---
+
 # 2026-11-01 — Run117CF→CK source-safe Sleep, C3 no-native negative controls, Linux F7 (review-only)
 
 **Newest verified local integration chain for this handoff:** Run117CK PR [#1563](https://github.com/RedMentos/Aii/pull/1563), branch `assistant/v13-run117ck-sleep-f7-post-fairness-20261101-hourly11`, head `0fe11ac7b94e07566342c18e7956f8f83a7b5ba2`. Its review-only ancestors: CF [#1559](https://github.com/RedMentos/Aii/pull/1559) (eight blocked DRAFT sessions no longer starve ninth ready; real RED→51/51 GREEN), CG [#1560](https://github.com/RedMentos/Aii/pull/1560) (`:sleep digest` shows pending workload before first cycle; real RED→54/54 GREEN), CH [#1561](https://github.com/RedMentos/Aii/pull/1561) (synthetic-only Run83 C3 driver no-cache test repaired without native/model/runner change; real RED→6/6 GREEN), CJ [#1562](https://github.com/RedMentos/Aii/pull/1562) (real Runtime without weights remains `STRUCTURAL_RED/Unavailable`, zero native calls; 8/8 GREEN), CK [#1563](https://github.com/RedMentos/Aii/pull/1563) (byte-identical preregistered F7 benchmark rerun, 7/7 GREEN, Linux-only). All remain draft/review branches, **not production-integrated**.
