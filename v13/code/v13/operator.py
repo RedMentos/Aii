@@ -26,6 +26,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :bodyview [status|state on|off|b4 off|shadow|on] (B1-Detailfenster, B5-Zustand als Quelle, B4 über Sessions)
 :skilllive [status] (Skills im Turn: automatischer Pfad, Parität, Gewohnheiten)
 :fastbatch propose NAME 'Vorlage {i}: {value}' | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME (geprüfte Wiederholung ohne LLM, mit Mini-Checkpoints)
+:turnflow [status|measure|active|off|feedback EVENT-ID useful|wasteful] (JEF: Denk-/Sprechüberlappung messen und nach Nutzerfeedback zeitlich steuern)
 :latewatch [status|off|shadow|active] (spätes Body-Offer während der Ausgabe; Standard shadow)
 :feedback prediction observe --learn (beobachtete native Zustände dieser Quelle)
 :feedback alignment observe --learn (A3 Raw/Encoder-Paar, keine Faktenfreigabe)
@@ -98,6 +99,9 @@ class Operator:
         if cmd=='help':return HELP
         if cmd=='fastbatch':
             from .procedural_batch import operator_command
+            return dumps(operator_command(r,args))
+        if cmd=='turnflow':
+            from .turnflow import operator_command
             return dumps(operator_command(r,args))
         if cmd=='jefsource':
             from .jef_f1f5_operator import operator_command
