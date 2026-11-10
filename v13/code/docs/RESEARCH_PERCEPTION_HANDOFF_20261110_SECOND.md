@@ -1,0 +1,7 @@
+# Research & Perception: teacher/student continuation, 2026-11-10
+
+Parent review-only PR #1687 exact head `92835e0ebc32df7d30c62559f28e4c1eb492e510` had exact-head GitHub Actions run 42834008104 GREEN, and is not merged. This continuation owns branch `research-perception/a3-shadow-binding-20261110-1556`. Read `RESEARCH_PERCEPTION_HANDOFF_20261110.md` for original gate/offset/race findings and limitations.
+
+New `v13/a3_source_split_candidate.py` assigns entire source-hash groups to train/validation/test, checks exact span/content duplicates, and returns a hashed manifest. `worker_indices` maps only train+validation into the existing `student_worker.split` convention and reserves test entirely. A real NumPy `student_worker.train` test with synthetic teacher vectors verifies that reserved hashes never enter training/validation. Nothing invokes this candidate automatically, no live model or gate is modified. Source validation is not a transaction through later training, paraphrases across different source hashes may leak and repeated use of a final test invalidates it. Use separately authorized, actual source data only with renewed provenance checks.
+
+Primary research and upstream split/selection caveat: `docs/research/A3_TEACHER_STUDENT_PRIMARY_RESEARCH_20261110.md`. EmbeddingGemma 2's 768d output does not fit the current fixed 3072d A3 teacher interface; no model has been downloaded or run. Check current branches before integration; SourceHandoff frozen runtime files and STEP2/B3 negative gates remain unchanged.
