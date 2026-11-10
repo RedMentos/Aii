@@ -302,3 +302,46 @@ def test_active_habit_refuses_revoked_or_changed_final_source(tmp_path):
             ProceduralBatch(tmp_path).run("sensitive", 50)
     finally:
         st.close()
+
+
+def test_revocation_during_large_habit_stops_at_durable_chunk_boundary(tmp_path):
+    """No user text is emitted after a deleted source is observed mid-run."""
+    from v13.store import Store
+    from v13.procedural_batch import CHUNK_ROWS
+    for folder in ("data", "data/db", "data/blobs"):
+        (tmp_path / folder).mkdir(parents=True, exist_ok=True)
+    st = Store(tmp_path)
+    try:
+        sid = st.new_session()
+        event = st.event(sid, "Number the rows")
+        mid = st.message(sid, event["event_id"], "assistant", numbered("source", 5))
+        st.finish_message(mid, "FINAL", {})
+        op = Operator(SimpleNamespace(store=st, session=sid, home=tmp_path))
+        plan = json.loads(op.run(":fastbatch discover revoke_midstream"))
+        op.run(f":fastbatch activate revoke_midstream {plan['sha256'][:12]}")
+        worker = ProceduralBatch(tmp_path, store=st)
+        count, value = 10000, ""
+        plan_file = worker.plan("revoke_midstream")
+        checkpoint, output, _ = worker._job_files(plan_file, count, value)
+        original = worker._verify_evidence
+        calls = [0]
+
+        def check_and_revoke(candidate):
+            calls[0] += 1
+            if calls[0] == 3:
+                with st.tx() as connection:
+                    connection.execute(
+                        "UPDATE sources SET deleted=1 WHERE id=?",
+                        (event["source_ref"]["source_id"],))
+            return original(candidate)
+
+        worker._verify_evidence = check_and_revoke
+        with pytest.raises(ValueError, match="no longer FINAL"):
+            worker.run("revoke_midstream", count, value, max_seconds=60)
+        state = json.loads(checkpoint.read_text())
+        assert state["rows"] == CHUNK_ROWS
+        assert state["status"] == "PAUSED"
+        assert output.read_text().count("\n") == CHUNK_ROWS
+        assert state["sha256"] == hashlib.sha256(output.read_bytes()).hexdigest()
+    finally:
+        st.close()
