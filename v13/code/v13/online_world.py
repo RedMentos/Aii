@@ -97,6 +97,8 @@ class OnlineWorld:
     def predict(self,state,action):
         if action not in world_model.ACTIONS:raise ValueError('Unknown route')
         s=np.asarray(state,dtype=float)
-        if s.shape!=(4,) or not np.isfinite(s).all():raise ValueError('Invalid state')
+        if (s.shape!=(4,) or not np.isfinite(s).all()
+                or np.max(np.abs(s))>1e6):
+            raise ValueError('Invalid state')
         x=np.concatenate((s,np.zeros(3)))
         return self.model.predict(x,world_model.ACTIONS.index(action))[4:].tolist()
