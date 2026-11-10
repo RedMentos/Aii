@@ -55,5 +55,14 @@ def test_one_operator_uses_fast_cerebellum_turnflow_and_body_trainer(tmp_path):
         assert "MASTER_HASH_NOT_PINNED" in selection["missing"]
         assert selection["role"]=="B1_DETAIL"
         assert not (tmp_path/"training").exists()
+        # A symbolic knob is entered through the actual Termux operator,
+        # persisted separately from C3 and never starts body training.
+        setting=ask(op,":growth trainer cfg anchor_reference_mode=stream")
+        assert setting["active"]=="none"
+        from v13.agi import trainers
+        state=trainers._box(runtime.store).load()[0]
+        assert state["body_lora_cfg"]["body_b1"]["anchor_reference_mode"]=="stream"
+        assert "body_b1" in state["body_lora_cfg"]
+        assert not (tmp_path/"training").exists()
     finally:
         runtime.close()
