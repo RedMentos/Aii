@@ -10,12 +10,16 @@ on:
       - 'v13/code/tests/test_body_reviewed_dataset.py'
       - '.github/workflows/v13-body-paired-retention.yml'
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   body-paired-retention:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
