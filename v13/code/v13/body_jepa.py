@@ -283,7 +283,7 @@ def heldout_retention_kl(torch,model,sequences):
 
 # -- trainer ---------------------------------------------------------------------------------------------
 from .lora_trainer import LoraTrainer,DEFAULTS as _LORA_DEFAULTS,_check,_rss_mb,answer_hit
-from .common import digest,dumps,atomic_write
+from .common import digest,dumps,atomic_write,Unavailable
 
 REVISION='v13-body-jepa-trainer-v1'
 DEFAULTS=dict(_LORA_DEFAULTS,jepa_weight=.5,jepa_target='ema',jepa_ema_decay=.9,jepa_layer=-1,max_steps=30,min_steps=30,lr=5e-4,heldout_probe_cap=8)
