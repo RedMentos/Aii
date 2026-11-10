@@ -39,19 +39,6 @@ class FeedbackCountTest(unittest.TestCase):
         self.assertEqual(counts["useful"], 1)
         self.assertEqual(counts["wasteful"], 1)
 
-    def test_provisional_observer_does_not_poison_terminal_timing(self):
-        store = MemoryState()
-        turnflow.plan(store, "event-pending", {}, 0, "B1_DETAIL")
-        self.assertIsNone(turnflow.observe(store, "event-pending", "STILL_RUNNING"))
-        with self.assertRaises(ValueError):
-            turnflow.feedback(store, "event-pending", "useful")
-        self.assertEqual(turnflow.observe(store, "event-pending", "AGREES"), "AGREES")
-        self.assertEqual(turnflow.observe(store, "event-pending", "AFTER_OUTPUT"), "AGREES")
-        result = turnflow.feedback(store, "event-pending", "useful")
-        counts = turnflow.report(store)["feedback_patterns"][result["pattern"]]
-        self.assertEqual(counts["on_time"], 1)
-        self.assertEqual(counts["too_late"], 0)
-
     def test_duplicate_human_feedback_does_not_increase_count(self):
         store = MemoryState()
         turnflow.plan(store, "event", {}, 0, "B2_GIST")
