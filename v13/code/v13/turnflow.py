@@ -153,6 +153,33 @@ def plan(store, event_id, meta, preoffers, role, eligible=True, residency_ok=Tru
     return decision
 
 
+
+OBSERVED_STATUSES = frozenset({
+    "AGREES", "WOULD_INTERRUPT", "INTERRUPTED", "AFTER_OUTPUT",
+    "NO_OFFER", "STILL_RUNNING",
+})
+
+
+def observe(store, event_id, status):
+    """Confirm the existing latewatch actually ran; no success claim is inferred.
+
+    Output status (FINAL etc.) is intentionally irrelevant: a correct answer
+    does not imply the concurrent B1/B2 pass helped produce that answer.
+    """
+    if status not in OBSERVED_STATUSES:
+        return None
+    def update(state):
+        event = state["events"].get(event_id)
+        if not event or event.get("scheduled") != "SPEAK_AND_CHECK":
+            return None
+        if event.get("observer_status") is not None:
+            return event["observer_status"]
+        event["observer_status"] = status
+        return status
+    return _mutate(store, update)
+
+
+
 def feedback(store, event_id, outcome):
     """One *explicit* human usefulness label per observed turn.
 
@@ -169,6 +196,8 @@ def feedback(store, event_id, outcome):
             raise ValueError("this event was already rated")
         if observation["scheduled"] != "SPEAK_AND_CHECK":
             raise ValueError("cannot rate an observer that was not scheduled")
+        if observation.get("observer_status") not in OBSERVED_STATUSES:
+            raise ValueError("cannot rate an unobserved concurrent check")
         pattern = observation["pattern"]
         counts = state["patterns"].setdefault(pattern, {"useful": 0, "wasteful": 0})
         counts[outcome] += 1
@@ -191,6 +220,13 @@ def report(store):
         "revision": REVISION, "mode": state["mode"],
         "feedback_patterns": {key: dict(value) for key, value in state["patterns"].items()},
         "recent": state["last"][-12:],
+        "actual_observer_outcomes": {
+            key: sum(v.get("observer_status") == key for v in state["events"].values())
+            for key in sorted(OBSERVED_STATUSES)
+        },
+        "events_with_confirmed_overlap": sum(
+            v.get("observer_status") in OBSERVED_STATUSES for v in state["events"].values()
+        ),
         "claim_limit": "Only optional late B1/B2 overlap; no forced concurrency, active model thinking, tools, or age-gate changes"
     }
 
