@@ -117,3 +117,24 @@ def test_failed_manifest_publication_does_not_delete_last_good_checkpoint(tmp_pa
         restored=SimpleNamespace(home=str(tmp_path))
         lifecycle.restore(restored)
         assert restored._world_jepa_online=='first'
+
+
+def test_post_publish_fsync_error_keeps_referenced_checkpoint(tmp_path):
+    runtime=SimpleNamespace(home=str(tmp_path),_world_jepa_source_sha='a'*64,
+                            _world_jepa_online='first')
+    with patch.object(lifecycle.checkpoint,'save',side_effect=_fake_save), \
+         patch.object(lifecycle.checkpoint,'load',side_effect=_fake_load):
+        original=lifecycle._write_manifest
+        def published_then_error(directory,name,manifest):
+            original(directory,name,manifest)
+            if name=='active.json':
+                raise OSError('fsync interrupted')
+        with patch.object(lifecycle,'_write_manifest',side_effect=published_then_error):
+            with pytest.raises(OSError,match='fsync interrupted'):
+                lifecycle.save(runtime)
+        home=tmp_path/'world_jepa_online'
+        active=json.loads((home/'active.json').read_text())
+        assert (home/active['filename']).is_file()
+        restored=SimpleNamespace(home=str(tmp_path))
+        lifecycle.restore(restored)
+        assert restored._world_jepa_online=='first'
