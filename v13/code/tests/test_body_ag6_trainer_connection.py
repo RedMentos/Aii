@@ -189,3 +189,39 @@ def test_sleep_does_not_unattended_train_heavy_body(monkeypatch,kind,origin,expe
     else:
         assert installed==[kind] and w.calls==1
     assert w.stages==[(origin,True)]
+
+
+def test_b2_shared_body_ablation_cannot_be_mistaken_for_distinct_b2(tmp_path):
+    r=runtime(tmp_path)
+    r.models.b2_control="same_model_prompt_only"
+    result=trainers.training_readiness(r,"body_b2")
+    assert "B2_DISTINCT_BODY_REQUIRED" in result["reasons"]
+    assert not result["ready"]
+
+
+@pytest.mark.parametrize("override",[
+    {"base_gguf":"/unrelated/foreign.gguf"},
+    {"threads":99},
+    {"jepa_weight":float("nan")},
+    {"lr":-0.01},
+    {"targets":["correct", "__dict__"]},
+    {"targets":[]},
+    {"anchor_weight":-1},
+    "not-a-dict",
+])
+def test_tampered_body_config_fails_before_workspace(monkeypatch,tmp_path,override):
+    r=runtime(tmp_path)
+    ready={"role":"B1_DETAIL","kind":"body_b1","ready":True,"reasons":[],
+           "requirements":{"master":str(tmp_path/"master"),
+                           "master_sha256":"b"*64,
+                           "gguf":str(tmp_path/"base.gguf"),
+                           "runner":str(tmp_path/"llama-server")}}
+    monkeypatch.setattr(body_trainers,"readiness",lambda *_:ready)
+    r.store.set_state(trainers.KEY,
+                      {"revision":trainers.REVISION,"kind":"body_b1",
+                       "body_lora_cfg":{"body_b1":override}})
+    obj,info=trainers.build(r,"body_b1")
+    assert isinstance(obj,NullTrainer)
+    assert info["active"]=="none"
+    assert "BODY_CFG_INVALID" in info["missing"]
+    assert not (tmp_path/"training").exists()
