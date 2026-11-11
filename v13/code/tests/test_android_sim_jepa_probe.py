@@ -90,10 +90,9 @@ def test_synthetic_transition_export_never_contains_notes_text(tmp_path):
         assert all(len(row["x"]) == len(row["x2"]) == 4 for row in rows)
         assert all(0 <= row["a"] < 6 for row in rows)
         assert "SYNTHETIC-NOTE" not in json.dumps(rows)
-        # Too few disjoint action+observation cases remain after input
-        # identity de-duplication; do not manufacture a train/holdout proof.
-        with pytest.raises(ValueError):
-            trial(world, steps=3)
+        # The export is numeric only. It must not echo even synthetic
+        # user text back into general training/holdout metadata.
+        assert all("SYNTHETIC-NOTE" not in str(v) for row in rows for v in row.values())
     finally:
         world.close()
         broker.close()
@@ -135,3 +134,16 @@ def test_no_data_no_fit_no_checkpoint_and_budget_limits(tmp_path):
                 trial(world, **kwargs)
     finally:
         world.close()
+
+
+def test_duplicate_observation_action_pairs_cannot_fake_holdout(tmp_path):
+    broker, world = _environment(tmp_path, n=1)
+    try:
+        for _ in range(24):
+            _do(broker, world, "observe_ui", {})
+        assert len(world.transitions()) >= 12
+        with pytest.raises(ValueError, match="not enough disjoint"):
+            trial(world, steps=2)
+    finally:
+        world.close()
+        broker.close()
