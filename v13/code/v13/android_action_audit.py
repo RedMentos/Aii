@@ -6,7 +6,6 @@ An interrupted attempt remains UNKNOWN and must never be retried automatically.
 """
 from __future__ import annotations
 
-import json
 import sqlite3
 import threading
 import time
@@ -35,7 +34,7 @@ class DurableCompanionTransport:
         self._db.execute("PRAGMA journal_mode=WAL")
         self._db.execute("""CREATE TABLE IF NOT EXISTS android_action_audit (
             request_id TEXT PRIMARY KEY, capability TEXT NOT NULL,
-            state TEXT NOT NULL CHECK(state IN ('IN_FLIGHT','SUCCESS','FAILED','UNKNOWN')),
+            state TEXT NOT NULL CHECK(state IN ('IN_FLIGHT','REPORTED_SUCCESS','FAILED','UNKNOWN')),
             started_at REAL NOT NULL, finished_at REAL,
             receipt_present INTEGER NOT NULL DEFAULT 0
         )""")
@@ -61,7 +60,7 @@ class DurableCompanionTransport:
             if not isinstance(outcome, ActionOutcome):
                 self._finish(request.request_id, "UNKNOWN", False)
                 raise ValueError("invalid companion outcome")
-            state = ("SUCCESS" if outcome.status == OutcomeStatus.SUCCESS
+            state = ("REPORTED_SUCCESS" if outcome.status == OutcomeStatus.SUCCESS
                      else "FAILED" if outcome.status in (OutcomeStatus.DENIED, OutcomeStatus.FAILED, OutcomeStatus.CANCELLED)
                      else "UNKNOWN")
             self._finish(request.request_id, state, bool(outcome.companion_receipt))
