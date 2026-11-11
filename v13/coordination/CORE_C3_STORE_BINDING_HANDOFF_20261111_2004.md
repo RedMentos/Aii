@@ -9,3 +9,7 @@ The Runtime now records the actual native runner role on FINAL, model-generated,
 Evidence: source commits saved on remote; GitHub Actions workflow submitted, outcome UNKNOWN at checkpoint. Local clone blocked by DNS, no local pytest claim. Do not promote voice/audio or whole-system gates.
 
 Next exact test: `cd v13/code && python -m pytest -q tests/test_speech_intent.py tests/test_speech_runtime_bridge.py tests/test_speech_store_binding.py`. Inspect workflow at PR #1796 head. Then attach operator-controlled opt-in Runtime invocation only after user permission, and implement independently permissioned Android renderer and stop acknowledgement. Review metadata trust and possible tool-prefixed mixed answers. Coordinate Boss integration and Perception RAW EAR; do not edit their files.
+
+## Follow-on package CORE-C3-STORE-BINDING-04
+
+Runtime now exposes `speech_enqueue(event_id, queue, operator_opt_in=False)` for the actual persisted C3 Store handoff, default OFF. Added Runtime entrypoint test without starting a native model. This is a callable Python interface, not an Android renderer, automatic output hook or authenticated user identity. Mixed tool-prefixed native answers require review before auto-activation. No CI runs returned for latest commit by connector at checkpoint; test status UNKNOWN, not green. Latest exact branch head to recheck: d13445e173239f06a453bcd2192a2fa625140f55 (before this handoff update).
