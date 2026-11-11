@@ -216,8 +216,9 @@ def _iter_utf8_chunks(output_file, expected, chunk_bytes):
 class ProceduralBatch:
     """Local, reviewable, bounded and resumable compiled text batch executor."""
 
-    def __init__(self, home, store=None):
+    def __init__(self, home, store=None, session=None):
         self.store = store  # current authoritative V13 Store; optional for manual plans
+        self.session = session  # only the originating chat may run a learned plan
         self.root = Path(home) / "procedures" / "fastbatch"
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
         _check_path(self.root)
@@ -237,7 +238,7 @@ class ProceduralBatch:
             # inferred candidate to the completed source traces.
             if type(evidence) is not dict or set(evidence) != {
                 "method", "kind", "source_event_ids", "source_output_sha256",
-                "observed_rows", "validation", "scope"
+                "observed_rows", "validation", "scope", "source_session_id"
             }:
                 raise ValueError("invalid source-trace evidence")
             ids, digests, counts = (evidence["source_event_ids"],
@@ -248,6 +249,8 @@ class ProceduralBatch:
                         "LITERAL_NUMBERED_REPEAT", "PARAMETRIC_NUMBERED_REPEAT")
                     or evidence["validation"] != "BYTE_EXACT_BEFORE_PROPOSE"
                     or evidence["scope"] != "CURRENT_SESSION_ONLY"
+                    or type(evidence["source_session_id"]) is not str
+                    or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", evidence["source_session_id"])
                     or type(ids) is not list or not 1 <= len(ids) <= 3
                     or len(set(ids)) != len(ids)
                     or any(type(x) is not str or not re.fullmatch(
@@ -281,6 +284,21 @@ class ProceduralBatch:
                 or plan.get("stage") not in ("CANDIDATE", "ACTIVE", "RETIRED")):
             raise ValueError("tampered or unsupported compiled plan")
         _parts(code.get("template"))
+        scope = plan.get("share_scope", "SOURCE_SESSION")
+        if scope not in ("SOURCE_SESSION", "PROMOTED_PURE_TEXT"):
+            raise ValueError("tampered local sharing scope")
+        if scope == "PROMOTED_PURE_TEXT":
+            evidence = code.get("source_evidence")
+            if (type(evidence) is not dict
+                    or evidence.get("kind") != "PARAMETRIC_NUMBERED_REPEAT"
+                    or plan.get("stage") != "ACTIVE"
+                    or plan.get("share_sha256") != _sha([
+                        "SHARE_LOCAL_V1", plan["sha256"],
+                        evidence.get("source_session_id")
+                    ])):
+                raise ValueError("unverified local plan sharing receipt")
+        elif plan.get("share_sha256") is not None:
+            raise ValueError("stale or tampered sharing receipt")
         return plan
 
     def _verify_evidence(self, plan):
@@ -296,14 +314,24 @@ class ProceduralBatch:
             return
         if self.store is None:
             raise PermissionError("source-discovered plans require the live V13 Store")
+        if type(self.session) is not str or not self.session:
+            raise PermissionError("learned plan needs a current local chat session")
+        origin = evidence.get("source_session_id")
+        if self.session != origin:
+            # Revocation can stop an ongoing cross-chat stream at its next chunk.
+            current = self.plan(plan["code"]["name"])
+            if current.get("share_scope") != "PROMOTED_PURE_TEXT":
+                raise PermissionError("learned plan is restricted to its original chat session")
+            if current["sha256"] != plan["sha256"]:
+                raise ValueError("learned plan changed during shared execution")
         for event_id, sha256 in zip(evidence["source_event_ids"],
                                     evidence["source_output_sha256"]):
             rows = self.store.rows(
                 "SELECT m.text,m.status,s.deleted FROM messages m "
                 "JOIN events e ON e.id=m.event_id "
                 "JOIN sources s ON s.id=e.source_id "
-                "WHERE m.event_id=? AND m.role='assistant' "
-                "ORDER BY m.id DESC LIMIT 1", (event_id,))
+                "WHERE m.event_id=? AND m.session_id=? AND m.role='assistant' "
+                "ORDER BY m.id DESC LIMIT 1", (event_id, origin))
             if (len(rows) != 1 or rows[0]["status"] != "FINAL"
                     or rows[0]["deleted"] != 0):
                 raise ValueError("learned procedure source is no longer FINAL/authoritative")
@@ -322,8 +350,43 @@ class ProceduralBatch:
         _save(self._plan_path(name), plan)
         return {"name": name, "stage": "ACTIVE", "sha256": plan["sha256"]}
 
+    def share(self, name, full_digest, confirmation):
+        """Opt-in cross-chat access to a pure template, never external actions."""
+        plan = self.plan(name)
+        code = plan["code"]
+        evidence = code.get("source_evidence")
+        if plan["stage"] != "ACTIVE":
+            raise PermissionError("activate candidate in source chat first")
+        if (type(evidence) is not dict
+                or evidence.get("kind") != "PARAMETRIC_NUMBERED_REPEAT"
+                or "{value}" not in code["template"]):
+            raise PermissionError("only reviewed parametric text habits may be shared")
+        if (type(full_digest) is not str or full_digest != plan["sha256"]
+                or confirmation != "YES"):
+            raise PermissionError("sharing requires full SHA256 and local typed YES")
+        if self.session != evidence["source_session_id"]:
+            raise PermissionError("only originating chat may share a learned plan")
+        self._verify_evidence(plan)
+        plan["share_scope"] = "PROMOTED_PURE_TEXT"
+        plan["share_sha256"] = _sha([
+            "SHARE_LOCAL_V1", plan["sha256"], evidence["source_session_id"]
+        ])
+        _save(self._plan_path(name), plan)
+        return {"name": name, "share_scope": "PROMOTED_PURE_TEXT",
+                "source_validation": "REQUIRED_EVERY_USE",
+                "permissions": "PURE_TEXT_ONLY_NO_TOOLS", "model_calls": 0}
+
+    def unshare(self, name):
+        plan = self.plan(name)
+        plan.pop("share_sha256", None)
+        plan.pop("share_scope", None)
+        _save(self._plan_path(name), plan)
+        return {"name": name, "share_scope": "SOURCE_SESSION", "model_calls": 0}
+
     def retire(self, name):
         plan = self.plan(name)
+        plan.pop("share_sha256", None)
+        plan.pop("share_scope", None)
         plan["stage"] = "RETIRED"
         _save(self._plan_path(name), plan)
         return {"name": name, "stage": "RETIRED"}
@@ -546,7 +609,8 @@ class ProceduralBatch:
         if name is not None:
             p = self.plan(name)
             return {"name": name, "stage": p["stage"], "sha256": p["sha256"],
-                    "kind": p["code"]["kind"]}
+                    "kind": p["code"]["kind"],
+                    "share_scope": p.get("share_scope", "SOURCE_SESSION")}
         out = []
         for path in sorted(self.plans.glob("*.json"))[:256]:
             _check_path(path)
@@ -561,9 +625,11 @@ def operator_command(runtime, args):
     """:fastbatch propose NAME 'text {i}: {value}' | discover NAME [--history=N] | activate NAME SHA |
     input import NAME PATH SHA256 | input run PLAN NAME [--rows=N] |
     run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] |
-    peek NAME COUNT [VALUE] | status [NAME] | retire NAME. Only local operator dispatch can reach here.
+    peek NAME COUNT [VALUE] | share NAME FULL_SHA YES | unshare NAME |
+    status [NAME] | retire NAME. Only local operator dispatch can reach here.
     """
-    runner = ProceduralBatch(runtime.home, store=runtime.store)
+    runner = ProceduralBatch(runtime.home, store=runtime.store,
+                             session=getattr(runtime, "session", None))
     if not args or args[0] == "status":
         if len(args) > 2:
             raise ValueError(":fastbatch status [NAME]")
@@ -584,6 +650,10 @@ def operator_command(runtime, args):
         return discover(runtime, args[1], limit)
     if cmd == "activate" and len(args) == 3:
         return runner.activate(args[1], args[2])
+    if cmd == "share" and len(args) == 4:
+        return runner.share(args[1], args[2], args[3])
+    if cmd == "unshare" and len(args) == 2:
+        return runner.unshare(args[1])
     if cmd == "retire" and len(args) == 2:
         return runner.retire(args[1])
     if cmd == "read" and 3 <= len(args) <= 6:
@@ -614,4 +684,4 @@ def operator_command(runtime, args):
             return runner.preview(name, count, value)
         limit = int(opts[0].split("=", 1)[1]) if opts else None
         return runner.run(name, count, value, max_rows=limit)
-    raise ValueError(":fastbatch input import NAME PATH SHA256 | input run PLAN NAME [--rows=N] | propose NAME TEMPLATE | discover NAME [--history=N] | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME")
+    raise ValueError(":fastbatch input import NAME PATH SHA256 | input run PLAN NAME [--rows=N] | propose NAME TEMPLATE | discover NAME [--history=N] | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] | peek NAME COUNT [VALUE] | share NAME FULL_SHA YES | unshare NAME | status [NAME] | retire NAME")

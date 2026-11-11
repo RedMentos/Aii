@@ -21,8 +21,10 @@ class MessageStore:
     def rows(self, sql, args=()):
         if "m.event_id=?" in sql:
             # Mock exactly the read-only joined query used on every activation.
-            event = args[0]
+            event, session = args
+            assert "m.session_id=?" in sql
             rows = [x for x in self.items if x["event_id"] == event
+                    and x["session_id"] == session
                     and x["role"] == "assistant"]
             return [{"text": x["text"], "status": x["status"],
                      "deleted": x.get("deleted", 0)}
@@ -319,7 +321,7 @@ def test_revocation_during_large_habit_stops_at_durable_chunk_boundary(tmp_path)
         op = Operator(SimpleNamespace(store=st, session=sid, home=tmp_path))
         plan = json.loads(op.run(":fastbatch discover revoke_midstream"))
         op.run(f":fastbatch activate revoke_midstream {plan['sha256'][:12]}")
-        worker = ProceduralBatch(tmp_path, store=st)
+        worker = ProceduralBatch(tmp_path, store=st, session=sid)
         count, value = 10000, ""
         plan_file = worker.plan("revoke_midstream")
         checkpoint, output, _ = worker._job_files(plan_file, count, value)

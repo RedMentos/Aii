@@ -1,0 +1,111 @@
+{
+  "schema": "v13-work-package-v1",
+  "observed_utc": "2026-11-11T07:48:00Z",
+  "owner": "V13 Core/Harness separate review child of #1726",
+  "branch": "codex/v13-session-bound-procedure-20261111",
+  "base_branch": "codex/v13-fastbatch-stream-output-20261111",
+  "base_sha": "b2816f8fcc29b69393f025e8b207264e3dbc164f",
+  "pr": 1751,
+  "tested_head": "5bc922148653e09dc303f4bbcb9ca19923735aab",
+  "packages": [
+    {
+      "id": "FASTPATH-SESSION-SOURCE-001",
+      "consumer": ":fastbatch discover/activate/run/peek/read plus input transforms",
+      "description": "learned exact FINAL evidence bound to originating session id in digest and Store SQL; prevent another session replaying private source, with actual restart and SQLite tests",
+      "files": [
+        "v13/code/v13/procedural_batch.py",
+        "v13/code/v13/procedural_habits.py",
+        "v13/code/v13/procedural_inputs.py",
+        "v13/code/tests/test_procedural_session_scope.py",
+        "v13/code/tests/test_procedural_habits.py",
+        "v13/code/tests/test_procedural_stream_output.py"
+      ],
+      "status": "VERIFIED_REVIEW_ONLY"
+    },
+    {
+      "id": "BRAIN-LEARNING-RECEIPTS-002",
+      "consumer": ":brain learning",
+      "description": "show exact session-scoped memory/replay/feedback counts, read-only local predictor in-memory counters and global update-generation receipt counts; exclude revoked source and parent source; do not claim model-weight updates or Redmi proof from telemetry, status or counters",
+      "files": [
+        "v13/code/v13/brain_learning_receipts.py",
+        "v13/code/v13/brain_panel.py",
+        "v13/code/v13/operator.py",
+        "v13/code/tests/test_brain_learning_receipts.py"
+      ],
+      "status": "VERIFIED_REVIEW_ONLY"
+    },
+    {
+      "id": "FASTPATH-EXPLICIT-SHARE-003",
+      "consumer": ":fastbatch share NAME FULL_SHA YES | unshare NAME",
+      "description": "Locally operator-reviewed SHA-bound parametric pure-text habits may be reused in later sessions, never automatically; original authoritative FINAL source rechecked on each operation and streamed chunk; unshare revokes cross-chat access, retire revokes share; no external actions or native execution",
+      "files": [
+        "v13/code/v13/procedural_batch.py",
+        "v13/code/tests/test_procedural_shared_habits.py",
+        "v13/code/v13/operator.py"
+      ],
+      "status": "VERIFIED_REVIEW_ONLY",
+      "limits": [
+        "Full SHA and typed YES are operator-interface consent signals, not hardware-backed authentication",
+        "No unrestricted code, shell, browser or model authority",
+        "Only literal pure text parametric plans are shareable"
+      ]
+    },
+    {
+      "id": "BRAIN-ARTIFACT-READONLY-004",
+      "consumer": ":brain audit [MiB=1..128]",
+      "description": "Explicit idle-only local SHA inspection of bound active-generation component files; reject symlink/hardlink/outside-home path and noncommitted or mismatched updates; skip files exceeding phone memory/I-O budget; do not equate file hash match with model learning utility or retention",
+      "files": [
+        "v13/code/v13/brain_artifact_audit.py",
+        "v13/code/tests/test_brain_artifact_audit.py",
+        "v13/code/v13/brain_panel.py",
+        "v13/code/v13/operator.py"
+      ],
+      "status": "VERIFIED_REVIEW_ONLY",
+      "limits": [
+        "No native model weight deltas or retention demonstrated",
+        "Active generation manifest may contain no actual committed artifacts",
+        "Idle operator proof only; not automatic background scan"
+      ]
+    }
+  ],
+  "ci": {
+    "run_url": "https://github.com/RedMentos/Aii/actions/runs/42982026079",
+    "head": "5bc922148653e09dc303f4bbcb9ca19923735aab",
+    "result": "SUCCESS",
+    "tests": "116 passed",
+    "privacy": "CLEAN",
+    "command": "cd v13/code && python -m pytest -q tests/test_procedural_stream_output.py tests/test_procedural_fastpath_benchmark.py tests/test_procedural_habits.py tests/test_procedural_batch.py tests/test_brain_diagnosis.py tests/test_procedural_job_lock.py tests/test_procedural_input_values.py tests/test_speed_panel.py tests/test_procedural_session_scope.py tests/test_brain_learning_receipts.py tests/test_procedural_shared_habits.py tests/test_brain_artifact_audit.py"
+  },
+  "safety_gates": [
+    "STEP2 UTILITY_FAIL unchanged",
+    "B3 L1 FAIL unchanged",
+    "Body-JEPA not promoted",
+    "No native Redmi training/inference proof",
+    "No C5 authority model grant",
+    "Frozen runtime.py unmodified",
+    "GGUF model base frozen"
+  ],
+  "cross_agent_ownership": [
+    "PR #1716 Core integrated World/Context staged work: no overlapping source edited",
+    "PR #1749/#1750 Android control/QA owned separately",
+    "PR #1746 JEPA replay ablation owned separately",
+    "PR #1751 child of owned fastpath PR #1726; draft not integrated"
+  ],
+  "limits": [
+    "Telemetry/status/counters do not demonstrate actual weight learning",
+    "Current-session learned procedures intentionally cannot be reused between chats without a distinct consent-based promotion path",
+    "Global generation status counts only, update artifact hashes not verified here",
+    "Model master C3/B1/B2 training and Redmi native runtime not measured",
+    "PR #1751 draft/unmerged with #1726 and #1671 deps"
+  ],
+  "next_exact_commands": [
+    "Verify active component SHA audit files with pinned independent native GGUF/adapter evidence before any real model-learning claim",
+    "Human approval trust boundary: before native Android/PC companion, bind share approval to authenticated local UI instead of accepting caller-supplied origin/YES string",
+    "Fetch latest #1751 head/CI/reviews; check current #1716 staged integration source before further edits",
+    "cd v13/code && python -m pytest -q tests/test_procedural_session_scope.py tests/test_brain_learning_receipts.py",
+    "Add human-controlled cross-session plan promotion only if independently authorized; never silently reuse private chat data",
+    "Connect real pinned trainer/evaluator results to per-organ learning receipts with independent hashes and retention evidence (do not confuse Store update row with native model learning)",
+    "Run :speed fastbatch and :brain learning on Redmi later with user's device reports; no Redmi proof now",
+    "Continue other canonical core packages, do not stop at this checkpoint"
+  ]
+}

@@ -164,7 +164,7 @@ def discover(runtime, name, history=16):
             sample_values = variant["sample_values"]
             evidence.append(other)
             break
-    worker = ProceduralBatch(runtime.home)
+    worker = ProceduralBatch(runtime.home, store=runtime.store, session=runtime.session)
     metadata = {
         "method": "EXACT_FINAL_HISTORY_REPLAY_V1",
         "kind": kind,
@@ -173,6 +173,7 @@ def discover(runtime, name, history=16):
         "observed_rows": [item["rows"] for item in evidence],
         "validation": "BYTE_EXACT_BEFORE_PROPOSE",
         "scope": "CURRENT_SESSION_ONLY",
+        "source_session_id": runtime.session,
     }
     result = worker.propose(name, template, evidence=metadata)
     result.update(kind=kind, template=template, source_count=len(evidence),
