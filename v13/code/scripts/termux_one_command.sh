@@ -98,7 +98,7 @@ if [[ -e "$PRIVATE/bridge.pid" ]]; then
   OLD_PID="$(cat "$PRIVATE/bridge.pid" 2>/dev/null || true)"
   if [[ "$OLD_PID" =~ ^[0-9]+$ ]] && kill -0 "$OLD_PID" 2>/dev/null; then
     # Only stop our own previous read-only poller. Never kill an unknown PID.
-    CMDLINE="$(tr '\\0' ' ' < "/proc/$OLD_PID/cmdline" 2>/dev/null || true)"
+    CMDLINE="$(tr '\0' ' ' < "/proc/$OLD_PID/cmdline" 2>/dev/null || true)"
     if [[ "$CMDLINE" != *"v13.owner_read_bridge serve"* ]]; then
       fail "Aktive PID gehoert nicht eindeutig zur Bridge; bitte Prozess zuerst pruefen"
     fi
