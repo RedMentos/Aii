@@ -1,0 +1,28 @@
+{
+  "base_git_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+  "raw_privacy": "all three original logs temporarily indexed and CLEAN before compression",
+  "runs": [
+    {
+      "artifact": "first-29-pass.log.gz",
+      "sha256": "fabb51a14c1f15d1fc85cd9297e396bc1d41661b90cad8bb6c6bfd70a7dfb023",
+      "decoded_sha256": "c39f8514dd9035c55b6a7b7c2484253cbb734cbb8543aece0b79a202c94cf55b",
+      "result": "29 inner / 1 outer passed",
+      "builder_sha256": "8d18f9fcde0eac79442dceb16544e747b6baa4e7edc07436ef131b889d288282"
+    },
+    {
+      "artifact": "shared-592-pass.log.gz",
+      "sha256": "7c803ef4fffd18c9923bbf2b9a15bdde7670748f0547bca9c870205aca6ceb2b",
+      "decoded_sha256": "1b7813203844db5e429d31fd1ec1d53e06a9bbd2567ca0a9ebf17fe46d2f9904",
+      "result": "592 passed / 3 CUDA skipped / 70 subtests; 29 Dataset and 77 idle/legacy focused passed; 4 outer passed",
+      "builder_sha256": "8d18f9fcde0eac79442dceb16544e747b6baa4e7edc07436ef131b889d288282"
+    },
+    {
+      "artifact": "stage-and-worker-counterexample.log.gz",
+      "sha256": "aa68ed64dbf9106b56c7fe19c46dab247d6cf6100ff9172e5e4515546cae1710",
+      "decoded_sha256": "b6b39f742ebb024a87baa106470f9e8ea0d69b184a6e2e828827d220d06d444e",
+      "result": "14 outer passed including old actual-worker counterexample",
+      "builder_sha256": "8d18f9fcde0eac79442dceb16544e747b6baa4e7edc07436ef131b889d288282"
+    }
+  ],
+  "scope": "synthetic software, no network/training invoked by intake; not native or Redmi"
+}

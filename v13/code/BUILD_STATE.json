@@ -1,4 +1,35 @@
 {
+  "codex_dataset_idle_record_20261111": {
+    "status": "CONNECTED_REVIEW_STAGE_LOCAL_GREEN",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+    "builder": "v13/code/scripts/integrated_dataset_idle_candidate_20261111.py",
+    "builder_sha256": "8d18f9fcde0eac79442dceb16544e747b6baa4e7edc07436ef131b889d288282",
+    "helper_sha256": "a460cd843a9f1fd05d6039f2743df44d13289684e938aff1d3c94b0cf08c1228",
+    "scope": "explicit local staged-preview selection -> actual G13 coordinator -> atomic EXTERNAL_DATASET SourceRef + receipt + cursor; no fake USER/HUMAN records",
+    "training_authority": 0,
+    "automatic_network": false,
+    "default_enabled": false,
+    "tests": {
+      "dataset": "29 inner / 1 outer passed; repeated through sole default stager",
+      "shared": "592 passed / 3 CUDA skipped / 70 subtests; 4 outer passed including 77 idle/scheduler cases",
+      "stage_and_old_worker_counterexample": "14 outer passed",
+      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+    },
+    "worker_fix": "both idle consumers require actual Runtime.worker thread; original dispatched-scope takeover reproduced on pinned predecessor",
+    "quota_scope": "charged payload and receipts, not existing previews or total device/SQLite/WAL",
+    "limits": [
+      "record intake only; separate dataset training/heldout/license contract still required",
+      "orphan blobs may remain charged after DB rollback; no physical deletion or unlearning",
+      "complete memory compaction/native/Redmi/independent retention not demonstrated"
+    ],
+    "next_edge": "USER-only message compaction with explicit reader hydration, then separate source-bound corpus learning admission",
+    "production_promotion": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "negative_gates_unchanged": true
+  },
   "codex_idle_world_runtime_20261111": {
     "status": "CONNECTED_REVIEW_STAGE_LOCAL_GREEN",
     "branch": "codex/v13-integrated-continuation-20261110",
@@ -20,7 +51,25 @@
       "shared": "562 passed / 3 CUDA skipped / 70 subtests; 1 outer passed",
       "existing_stage_runtime": "13 outer passed",
       "first_shared": "562 passed / 3 skipped / 70 subtests; 1 teardown error; preserved",
-      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+      "remote_ci": {
+        "code_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+        "code_tree": "78f3a4fa4b2a0f87aa0c087c363b03f3fc768709",
+        "push": {
+          "run": 43070919414,
+          "staged_runtime": 130698231633,
+          "integrated_regression": 130698232214,
+          "conclusion": "success"
+        },
+        "pull_request": {
+          "run": 43070928053,
+          "merge_checkout": "9341be4",
+          "staged_runtime": 130698262613,
+          "integrated_regression": 130698261531,
+          "conclusion": "success"
+        },
+        "tests": "562 passed / 3 CUDA skipped / 70 subtests; minimal stack 15 outer passed",
+        "scope": "synthetic software; not native or Redmi"
+      }
     },
     "legacy_fix": "both old learn jobs check record/pause/cancel/resources/foreground before review or mutation; old actual RECORD_ONLY Ridge-fit counterexample preserved",
     "limits": [

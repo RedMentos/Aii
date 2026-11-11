@@ -1,0 +1,19 @@
+{
+  "code_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+  "code_tree": "78f3a4fa4b2a0f87aa0c087c363b03f3fc768709",
+  "push": {
+    "run": 43070919414,
+    "staged_runtime": 130698231633,
+    "integrated_regression": 130698232214,
+    "conclusion": "success"
+  },
+  "pull_request": {
+    "run": 43070928053,
+    "merge_checkout": "9341be4",
+    "staged_runtime": 130698262613,
+    "integrated_regression": 130698261531,
+    "conclusion": "success"
+  },
+  "tests": "562 passed / 3 CUDA skipped / 70 subtests; minimal stack 15 outer passed",
+  "scope": "synthetic software; not native or Redmi"
+}

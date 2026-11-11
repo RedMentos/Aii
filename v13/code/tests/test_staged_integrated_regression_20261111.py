@@ -31,6 +31,7 @@ def test_single_staged_tree_runs_selected_integrated_regressions(tmp_path):
              'c3_consent_disposable_cases_20261111.py',
              'idle_world_disposable_cases_20261111.py',
              'legacy_learning_disposable_cases_20261111.py',
+             'dataset_idle_import_disposable_cases_20261111.py',
              'test_authority.py', 'test_authority_live.py', 'test_sleep_scheduler.py',
              'test_scheduler_dispatch_clock_20261030.py', 'test_scheduler_finite_boundary_20261029.py',
              'test_world_jepa.py', 'test_world_jepa_atomic_fit.py',

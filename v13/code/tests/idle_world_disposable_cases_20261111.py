@@ -148,6 +148,25 @@ def test_actual_owner_cannot_expand_reserved_step_or_row_budget(live, monkeypatc
     assert idle.status(runtime)['reserved_today'] == 1
 
 
+def test_another_thread_cannot_claim_the_dispatched_world_scope(empty_live, monkeypatch):
+    runtime = empty_live
+    step = idle.step
+    def actual_job(runtime, event):
+        refused = []
+        def foreign_call():
+            try:step(runtime, event)
+            except PermissionError:refused.append(True)
+        caller = threading.Thread(target=foreign_call)
+        caller.start();caller.join(timeout=10)
+        assert not caller.is_alive() and refused == [True]
+        assert idle.status(runtime)['reserved_today'] == 0
+        return step(runtime, event)
+    monkeypatch.setattr(idle, 'step', actual_job)
+    idle.set_enabled(runtime, True, 'EXPLICIT_HUMAN')
+    assert request(runtime)['status'] == 'BLOCKED_INPUT'
+    assert idle.status(runtime)['reserved_today'] == 1
+
+
 @pytest.mark.parametrize('condition', ['record', 'pause', 'resources'])
 def test_dispatched_job_rechecks_mode_pause_and_resources_before_update(live, monkeypatch, condition):
     runtime = live

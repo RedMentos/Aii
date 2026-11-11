@@ -43,6 +43,34 @@
       "decoded_sha256": "47cf92528820d96d3a1206a5d8933f4eb5f0abc775c40487e5532469286a827b",
       "result": "562 passed / 3 skipped / 70 subtests; 1 outer passed",
       "builder_sha256": "38c6879b74bcd3158e6e95b48f08b98015662010f55423c54a5db09d879a49f9"
+    },
+    {
+      "artifact": "ci-43070919414-130698231633.json.gz",
+      "sha256": "61cf38cd5cd7ac951ad00136b02847b5ce6a63f205ccace48650c1939f12d22e",
+      "decoded_sha256": "d480de7340254f631105361761e86aaae9ab5704bc8829cffe7af4f0206d217d",
+      "code_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+      "privacy": "raw temporarily indexed and CLEAN before compression"
+    },
+    {
+      "artifact": "ci-43070919414-130698232214.json.gz",
+      "sha256": "27e964ccde4e7b683266759e6fe7954f3edd3da132db8b3f5cf531456117053d",
+      "decoded_sha256": "788e3c3bab1a4a42d01acb3671b2c1739e6a97e872182efc909f638be48c9155",
+      "code_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+      "privacy": "raw temporarily indexed and CLEAN before compression"
+    },
+    {
+      "artifact": "ci-43070928053-130698261531.json.gz",
+      "sha256": "8b31f3eb88d32d17c1e39a884056f8dee1a373a08da3ec5d48e0205b216e6730",
+      "decoded_sha256": "b570d3850ccea9a1b0fafc61b932d5cf0b54e3d887b3bdba4f3232a018c7616c",
+      "code_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+      "privacy": "raw temporarily indexed and CLEAN before compression"
+    },
+    {
+      "artifact": "ci-43070928053-130698262613.json.gz",
+      "sha256": "f024e202ff7d2007bb56a9a070e7e7c82cd27cd15d9e1aaa8089f7f8338fe8c9",
+      "decoded_sha256": "98bc56f23d83f5c22a2bcbb3123e7e2d87e5590e32c57a015b3ca1f4264648df",
+      "code_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+      "privacy": "raw temporarily indexed and CLEAN before compression"
     }
   ],
   "scope": "software synthetic Runtime/SQLite/NumPy, not native or Redmi"
