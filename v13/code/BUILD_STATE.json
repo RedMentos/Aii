@@ -1,4 +1,29 @@
 {
+  "codex_c3_consent_admission_20261111": {
+    "status": "CONNECTED_REVIEW_STAGE",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "bb1a94ca4d5b123640dff4574095f1d047f94846",
+    "builder": "v13/code/scripts/integrated_c3_consent_candidate_20261111.py",
+    "builder_sha256": "cc581a85f131417af184f38b86f732ce4bafc4e49a51bd55c89afad78f21ff4a",
+    "scope": "direct C3 and SDFT data require verified F1/F5, feedback learn and actual input SourceRef; existing rated-answer checks retained",
+    "tests": {
+      "focused": "13 inner passed; 1 outer passed",
+      "shared_stage": "486 passed / 3 CUDA skipped / 58 subtests passed; 1 outer passed",
+      "first_shared": "5 failed / 481 passed; old record-only positive fixtures and fake SDFT row replaced by genuine learn corrections",
+      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+    },
+    "controls": "record retrieval retained; source/permission/prompt corruption before fit and after real AdamW step cannot publish/approve",
+    "limits": [
+      "old custom keys without bound human key-source not trainable; retrieval retained",
+      "private partial checkpoint may remain; no unlearning claim",
+      "shared independent native/Redmi retention still unmeasured"
+    ],
+    "next_edge": "actual bounded default-off World-JEPA idle worker on existing G13 plus common mode/pause guard before legacy authority ridge fit",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
   "codex_body_role_runtime_20261111": {
     "status": "CONNECTED_IN_SHARED_REVIEW_STAGE_NATIVE_UNVALIDATED",
     "branch": "codex/v13-integrated-continuation-20261110",
@@ -11,7 +36,7 @@
       "body_cases": "15 passed; 1 outer passed",
       "shared_stage": "473 passed, 3 CUDA skipped, 58 subtests passed; 1 outer passed",
       "stage_smoke": "9 passed",
-      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+      "remote_ci": "SUCCESS exact bb1a94ca4d5b123640dff4574095f1d047f94846 push 43015808657 and PR merge 8d5b19a run 43015814118; both jobs successful"
     },
     "proof_scope": "synthetic masters/GGUF/export/evaluator; actual SQLite Runtime, G13 scheduler, Torch/PEFT parameter deltas; no native tokens or Redmi",
     "limits": [

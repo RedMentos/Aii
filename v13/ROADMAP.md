@@ -1,3 +1,9 @@
+## 2026-11-11 — C3-consent und echter SDFT-Datenpfad verbunden
+
+Allgemeine direkte C3-Kandidaten und Selbst-Distillation verwenden F1/F5/Feedback/Originaleingabe samt explizitem learn. Record bleibt abrufbar, Quellen und Teacher-Prompt werden bis vor Ergebnisveröffentlichung geprüft. **13 neue Fälle PASS; 486 gemeinsame PASS / 3 CUDA SKIP / 58 Untertests PASS**; vorhandene AG6-/Body-/World-/Kontextprüfungen beibehalten. `code/docs/INTEGRATED_C3_CONSENT_ADMISSION_20261111.md`. Body-Ausgangscommit bb1a94ca remote mit exaktem Push-/PR-Merge-CI grün, neuere C3-CI separat prüfen.
+
+Jetzt weiter an tatsächlichem budgetiertem World-JEPA-Idle-Job im vorhandenen Scheduler mit eigener quellgebundener Jobautorität, Save/Restart und Source-/Pause-/Budgetkontrollen; alten unbedingten learn_medium-Ridge-Fit vor Record-only stoppen. Danach Datensatz-Admit/Verbrauch und Speicherverdichtung, unabhängige Retention und langfristige Cross-Organ-Ziele. Kein Zwischencheckpoint beendet die Arbeit; Freeze, negative Gates und beide false-Gesamtflags bleiben.
+
 ## 2026-11-11 — rollenbezogene Body-Lernroute verbunden
 
 Aktueller gemeinsamer Stager verbindet Operatorwahl, getrennte B1-/B2-AG6-Zustände, echte Human-learn-/Quellenadmission, Tiny-Torch-/EMA-Schritte, Checkpoints, Scheduler-Verbrauch und vorhandene manuelle Freigabe/Registry/Runner-Auslieferung. C3-Profile bleiben getrennt. **15 Body-Fälle PASS; 473 gemeinsame PASS / 3 CUDA SKIP / 58 Untertests PASS**, finale Bool-Reglerprüfung ebenfalls bestanden; Remote-CI nach tatsächlichem Abschluss ergänzen. `code/docs/INTEGRATED_BODY_ROLE_RUNTIME_20261111.md`. Quellfreeze und alle negativen Gates bleiben; synthetische Softwareevidenz, kein natives Handy-/Utility-Ergebnis.

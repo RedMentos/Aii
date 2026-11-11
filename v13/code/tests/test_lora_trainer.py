@@ -26,7 +26,7 @@ class LoraGlue(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory();self.home=Path(self.tmp.name);self.r=Runtime(self.home)
         self.r.sleep.cycle.set_policy('enabled','off');self.s=self.r.store
         self.model=self.home/'c3.gguf';self.model.write_bytes(b'quantized-model')
-        e=self.s.event(self.r.session,'What is the name of my cat?');self.r.memory.feedback(e['event_id'],'fact','Mitzi')
+        e=self.s.event(self.r.session,'What is the name of my cat?');self.r.memory.feedback(e['event_id'],'fact','Mitzi',permission='learn')
         self.cfg=self.r.cfg|{'learning_mode':'SHADOW_UPDATE'}
     def tearDown(self):self.r.close();self.tmp.cleanup()
     def wc(self,**kw):
@@ -70,19 +70,13 @@ class LoraGlue(unittest.TestCase):
         self.cfg['drift_kl_max']=.05;self.assertEqual(w.approve(bid)['status'],'APPROVED')
     def test_sdft_corrections_staged_and_self_taught(self):
         """WP-S5 SDFT in AG6: corrections join the batch with an empty target; only a self-teaching trainer receives them."""
-        from unittest import mock
-        from v13.drift import Drift
-        ref=self.s.source('It is Canberra.','HUMAN_CORRECTION')
-        row={'item_id':'sdft:fb1','event_id':'evt_x','kind':'fact','student_prompt':'What is the capital of Australia?','teacher_prompt':'Q + It is Canberra.',
-             'target':None,'correction':'It is Canberra.','target_policy':'SELF_TEACHER_IN_CONTEXT','origin':'human_replay',
-             'source_ref':dict(ref,label='HUMAN_CORRECTION')}
         w=self.wc(cand={'overall':.8,'unseen':.75,'forgetting':{'rate':0.}})
-        with mock.patch.object(Drift,'sdft_dataset',return_value=[row]):
-            self.assertEqual(w.stage(require_replay_pass=False)['items'],1)  # off unless asked
-            w.box.mutate(lambda st:st['batches'].clear())
-            out=w.stage(require_replay_pass=False,include_sdft=True)
+        self.assertEqual(w.stage(require_replay_pass=False)['items'],1)  # off unless asked
+        w.box.mutate(lambda st:st['batches'].clear())
+        out=w.stage(require_replay_pass=False,include_sdft=True)
         self.assertEqual(out['items'],2);it=[i for i in w.batch(out['batch_id'])['items'] if i['kind']=='sdft'][0]
-        self.assertEqual((it['target'],it['answer_keys'],it['origin']),(None,['canberra'],'human_replay'))
+        self.assertEqual((it['target'],it['answer_keys'],it['origin']),(None,['mitzi'],'human_replay'))
+        self.assertIn('Mitzi',it['teacher_prompt'])
         w.train(out['batch_id']);self.assertEqual([i['kind'] for i in w.trainer.seen],['fact'])  # FakeLora cannot self-teach
         w.trainer.self_teaches=True;w.box.mutate(lambda st:[b.update(status='STAGED') for b in st['batches'].values()])
         w.train(out['batch_id']);self.assertEqual(sorted(i['kind'] for i in w.trainer.seen),['fact','sdft'])

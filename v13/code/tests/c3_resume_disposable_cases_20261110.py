@@ -215,7 +215,7 @@ def test_actual_consolidation_calls_tiny_c3_trainer_without_promoting(tmp_path):
     try:
         r.sleep.cycle.set_policy('enabled', 'off')
         event = r.store.event(r.session, 'What is the name of my cat?')
-        r.memory.feedback(event['event_id'], 'fact', 'Mitzi')
+        r.memory.feedback(event['event_id'], 'fact', 'Mitzi', permission='learn')
         cfg = {'rank': 2, 'targets': ('c_attn',), 'locality_swaps': 0, 'anchor_weight': 0.,
                'jepa_weight': 0., 'max_steps': 1, 'min_steps': 1, 'target_loss': -1.,
                'ckpt_every': 1, 'threads': 1, 'seed': 9, 'max_tokens': 80}

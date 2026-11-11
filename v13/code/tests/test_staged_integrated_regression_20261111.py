@@ -28,6 +28,7 @@ def test_single_staged_tree_runs_selected_integrated_regressions(tmp_path):
              'runtime_jepa_utility_disposable_cases_20261111.py',
              'world_jepa_training_resume_disposable_cases_20261111.py',
              'body_role_runtime_disposable_cases_20261111.py',
+             'c3_consent_disposable_cases_20261111.py',
              'test_world_jepa.py', 'test_world_jepa_atomic_fit.py',
              'test_world_jepa_shadow_checkpoint_20261028.py', 'test_world_jepa_incremental_20261108.py',
              'test_world_jepa_fit_input_guard.py', 'test_world_jepa_reader_snapshot.py',

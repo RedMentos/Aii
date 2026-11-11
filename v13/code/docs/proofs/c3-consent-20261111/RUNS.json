@@ -1,0 +1,29 @@
+{
+  "raw_privacy": "CLEAN before compression",
+  "runs": [
+    {
+      "artifact": "current-13-pass.log.gz",
+      "sha256": "9b08bc31bb813d6d2b9a69a36652e18459e7ea3b55a2cc84e37d6d5eef96fa1c",
+      "decoded_sha256": "f679357aaa9ce6cf3066cbaf9fd4a09ce3ad4ad88a3ed817b41e77aec316c317",
+      "builder_sha256": "cc581a85f131417af184f38b86f732ce4bafc4e49a51bd55c89afad78f21ff4a"
+    },
+    {
+      "artifact": "current-integrated-486-pass.log.gz",
+      "sha256": "716964e76d1fa94449eb9740f0d5867874ecd26614a8a9f05b377dee190dbf01",
+      "decoded_sha256": "7ae2df0c8498d08930d389bcce5f59488900d2aecf41b8b2624458d4d0ce60ad",
+      "builder_sha256": "cc581a85f131417af184f38b86f732ce4bafc4e49a51bd55c89afad78f21ff4a"
+    },
+    {
+      "artifact": "first-integrated-5-fail.log.gz",
+      "sha256": "3b53defd0922707fd66c68380833a8bec2c97b74dfb59994cc5720cd0d6e284d",
+      "decoded_sha256": "ec6c8978fa461cd57a79c9927a7b549bd2b1ff8dfeb558331f79fac50578cebe",
+      "builder_sha256": null
+    },
+    {
+      "artifact": "initial-12-pass.log.gz",
+      "sha256": "fe27a78f65b275d47963e4b0bab7df9084b80085353d0d68d1181193e81a3247",
+      "decoded_sha256": "2271d199bd64f921fb6e74aa988ab1b1f23ba9d127d0fab8d62b3fea0f306817",
+      "builder_sha256": null
+    }
+  ]
+}

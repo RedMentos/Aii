@@ -27,7 +27,7 @@ class AG6SecondTransactionSourceRecheck(unittest.TestCase):
         self.s = self.r.store
         for n in range(9):
             event = self.s.event(self.r.session, 'Who owns project ' + str(n) + '?')
-            self.r.memory.feedback(event['event_id'], 'fact', 'Human' + str(n))
+            self.r.memory.feedback(event['event_id'], 'fact', 'Human' + str(n), permission='learn')
         event = self.s.event(self.r.session, 'What is the approved budget?')
         self.dep = self.s.source('Supporting human context: budget is 120 EUR.',
                                  'HUMAN_FACT')
