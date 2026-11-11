@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from .android_control import ControlDenied
 from .android_operator_loop import AndroidOperatorLoop, SimulatedCompanion, ActionOutcome
+from .android_companion_registry import CapabilityRegistry, CompanionTransport
 from .behavior_governor import neutral_signals, review_behavior
 
 
@@ -40,7 +41,8 @@ def synthetic_operator_action(broker, world, capability, args):
     if verdict.guidance != "NO_OBJECTION_IN_ADVISORY_REVIEW":
         raise ControlDenied("synthetic behavior requires independent review")
     companion = PersistentWorldCompanion(world)
-    operator = AndroidOperatorLoop(broker, companion=companion)
+    typed_transport = CompanionTransport(CapabilityRegistry(), simulator=companion)
+    operator = AndroidOperatorLoop(broker, companion=typed_transport)
     proposal = operator.run_from_brain(capability, args)
     if proposal.status != "AWAITING_LOCAL_APPROVAL":
         raise ControlDenied("brain action unexpectedly approved")
