@@ -1,0 +1,104 @@
+{
+  "scope": "synthetic software; intermediate diagnostic source bundles not claimed complete",
+  "raw_privacy_scan": "CLEAN before lossless compression",
+  "runs": [
+    {
+      "artifact": "430-before-approval-expansion.log.gz",
+      "sha256": "7be989a768605352391b8102169a921c4073b9d6e575288869740b5e7855a4b0",
+      "decoded_sha256": "1730b7a8a7f030adff735f8cd4648ea871edf133984a44d3a3d7fe1a554507fe",
+      "builder_sha256": null,
+      "release_validation": false
+    },
+    {
+      "artifact": "473-role-guard-pass.log.gz",
+      "sha256": "4697f533c1b88d959394592f8c99461034a4e1ff03555ff3d85b81ea8200cc2d",
+      "decoded_sha256": "6537d9b9b502963b90a51704cd60303148d51af610a0b0573180dfb32d92e73c",
+      "builder_sha256": null,
+      "release_validation": false
+    },
+    {
+      "artifact": "builder-syntax-failure.log.gz",
+      "sha256": "6995bec132f6441ed94c8df0b7db874608a9fa78c51ad3001cda250df9c13051",
+      "decoded_sha256": "c87a63f5bcb5624c93836d53026b5285e5ede56740ad7edd4b26b3faf871f991",
+      "builder_sha256": null,
+      "release_validation": false
+    },
+    {
+      "artifact": "builder-syntax-integration-failure.log.gz",
+      "sha256": "540106832f0c5b6943b63a4de2343981e0aec29442fc44a1799b4b93ab33ce50",
+      "decoded_sha256": "8c04e22ac18987d00502a2c6c0ea7aaaa87c69392928820ff0b00b9283d3225a",
+      "builder_sha256": null,
+      "release_validation": false
+    },
+    {
+      "artifact": "current-integrated.log.gz",
+      "sha256": "6735ba88fd7be8fdea6f68b6770584e6dcb18603322501fb204bffaec9a6f19c",
+      "decoded_sha256": "7c6d73bfef09099c0c961837c2a1bc1b61cbade113dd10164230de9d231f8249",
+      "builder_sha256": "41e08c932535bb450c0f031a2fdea5511f588d1d2be8abdcccd9c65044d6eef0",
+      "release_validation": true
+    },
+    {
+      "artifact": "current-targeted.log.gz",
+      "sha256": "2bb6a562b77c8acbcfe34301816f0163a246b74d6a56a7b07cb32c779765f9c9",
+      "decoded_sha256": "34167c8c764d7f6dfb401e5375ae8d6c6085bdd9219fca6b97f7425b706e315e",
+      "builder_sha256": "41e08c932535bb450c0f031a2fdea5511f588d1d2be8abdcccd9c65044d6eef0",
+      "release_validation": true
+    },
+    {
+      "artifact": "fifteen-pass-before-role-guard.log.gz",
+      "sha256": "32640b93c236c7bb697e62ca55f86f8419596b792d256a57ed3f14bbe461871c",
+      "decoded_sha256": "b8b73b059a3695997768f60477e38c0c83ee4d7b5ab0af3907c919562b08b689",
+      "builder_sha256": null,
+      "release_validation": false
+    },
+    {
+      "artifact": "fifteen-role-guard-pass.log.gz",
+      "sha256": "2d67f0e32615ec468c169f5e200afc50bbb48897b5b5e90964e7641c2b57e2cc",
+      "decoded_sha256": "4cc24f39c98af3e74c986bfbb0885b944fe1232e1bc795bdf1a840c0503ea4d7",
+      "builder_sha256": null,
+      "release_validation": false
+    },
+    {
+      "artifact": "first-nine-pass.log.gz",
+      "sha256": "cff229d6e538d9ceac70dacf1519c22c033f52f0a96f687aff125d818bc248a5",
+      "decoded_sha256": "6d96a685a500ec126869406cef733a47a94c64c3f2c1ff3a5a81dacbdc60fab3",
+      "builder_sha256": null,
+      "release_validation": false
+    },
+    {
+      "artifact": "fixture-manager-failure.log.gz",
+      "sha256": "b23e4e3f30fee63eb0d143aba9bd97b8253a9d0a36925736b00345bbc7da3f50",
+      "decoded_sha256": "48710687ab038c3db9985fc1c5f7d245d66f83f9eb7a2403d747780c39ea961e",
+      "builder_sha256": null,
+      "release_validation": false
+    },
+    {
+      "artifact": "fourteen-pass.log.gz",
+      "sha256": "8582645daf92058bfdc1756cae859c7bb757eabc2f19d05c061097e421d4b76e",
+      "decoded_sha256": "43f1d21c1da0ef5f50cead75b67418207f46fb2e89f7acdb4abd7f7f5ae13fea",
+      "builder_sha256": null,
+      "release_validation": false
+    },
+    {
+      "artifact": "initial-fixture-failure.log.gz",
+      "sha256": "4da9f6c19d7650ce3c97a66efbceb1a70e66a5db5a498bad51a428bccc0b4fa6",
+      "decoded_sha256": "14ef649b34bf79e1dbb51d45160ef770a63bc237ed5d3ee93d21eee38393bea6",
+      "builder_sha256": null,
+      "release_validation": false
+    },
+    {
+      "artifact": "stage-smoke.log.gz",
+      "sha256": "7ed35b8be4faa6e1cbc4295405f994a3db60f4a20bd76739a6f3ec683f1fe3b9",
+      "decoded_sha256": "26ff0b6c1d6ce06bcddf17abe83310ab7be757d6c2a0fe91e30bd30bf77ce965",
+      "builder_sha256": null,
+      "release_validation": false
+    },
+    {
+      "artifact": "thirteen-pass.log.gz",
+      "sha256": "274a3842124604c960f5fb8517359446633b9f1905a4424359f60b5d57189094",
+      "decoded_sha256": "99f349b98f638bb5c2fc6c5aaaf59895cd56c00dc81e5768d77214818eda4ccd",
+      "builder_sha256": null,
+      "release_validation": false
+    }
+  ]
+}

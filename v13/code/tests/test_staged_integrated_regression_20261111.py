@@ -27,10 +27,16 @@ def test_single_staged_tree_runs_selected_integrated_regressions(tmp_path):
     extra = ('context_source_recall_disposable_cases_20261111.py',
              'runtime_jepa_utility_disposable_cases_20261111.py',
              'world_jepa_training_resume_disposable_cases_20261111.py',
+             'body_role_runtime_disposable_cases_20261111.py',
              'test_world_jepa.py', 'test_world_jepa_atomic_fit.py',
              'test_world_jepa_shadow_checkpoint_20261028.py', 'test_world_jepa_incremental_20261108.py',
              'test_world_jepa_fit_input_guard.py', 'test_world_jepa_reader_snapshot.py',
              'test_world_jepa_stale_fit_order.py', 'test_world_jepa_online_experiment_20261108.py')
+    extra += ('test_weight_approval_atomic.py', 'test_ag6_second_tx_source_recheck_20261029.py',
+              'test_ag6_approval_source_revocation_20261029.py', 'test_ag6_holdout_revalidate_run14r.py',
+              'test_ag6_gate_request_atomic_20261029.py', 'test_ag6_reject_request_atomic_20261029.py',
+              'test_ag6_staged_source_revocation_20261029.py', 'test_ag6_rated_answer_dependencies_20261029.py',
+              'test_sparse_trainer_runtime_binding.py')
     for name in (*names, *extra):
         shutil.copy(CODE / 'tests' / name, dest / 'tests' / name)
     shim = runpy.run_path(str(CODE / 'tests/test_integrated_predictor_history_guard_20261110.py'))['SYNTHETIC_ONLY_SHIM']

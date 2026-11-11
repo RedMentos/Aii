@@ -1,4 +1,31 @@
 {
+  "codex_body_role_runtime_20261111": {
+    "status": "CONNECTED_IN_SHARED_REVIEW_STAGE_NATIVE_UNVALIDATED",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "01890c92de9e0b3638899b2e2ecf4c8a84d1fac2",
+    "builder": "v13/code/scripts/integrated_body_role_candidate_20261111.py",
+    "builder_sha256": "41e08c932535bb450c0f031a2fdea5511f588d1d2be8abdcccd9c65044d6eef0",
+    "path": "explicit B1/B2 selection -> original F1/F5 learn label -> per-role AG6 -> actual Tiny Torch/EMA -> private checkpoint -> evaluation -> separate human approval -> existing role registry/runner arguments",
+    "tests": {
+      "body_cases": "15 passed; 1 outer passed",
+      "shared_stage": "473 passed, 3 CUDA skipped, 58 subtests passed; 1 outer passed",
+      "stage_smoke": "9 passed",
+      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+    },
+    "proof_scope": "synthetic masters/GGUF/export/evaluator; actual SQLite Runtime, G13 scheduler, Torch/PEFT parameter deltas; no native tokens or Redmi",
+    "limits": [
+      "direct fact/preference targets only in Body path",
+      "normal C3 candidates still need full learn/F1/F5 consent reconciliation",
+      "cooperative time/cancel; private files may remain after rejected fit",
+      "role-specific independent retention and adapter-aware bridge recalibration unproven",
+      "canonical native Body gate remains unavailable"
+    ],
+    "next_edge": "continue without ending at checkpoint: generic C3 consent admission; then old learn_medium ridge mode/pause and real budgeted idle consumer",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
   "codex_world_training_resume_20261111": {
     "status": "SHADOW_REVIEW_ONLY_SOURCE_FREEZE",
     "branch": "codex/v13-integrated-continuation-20261110",
