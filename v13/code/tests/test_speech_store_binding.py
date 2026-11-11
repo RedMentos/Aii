@@ -65,3 +65,18 @@ def test_off_and_missing_store_row(tmp_path):
     with pytest.raises(SpeechIntentError, match="OFF"):
         enqueue_committed_c3(store, EVENT, bridge)
     q.close()
+
+def test_runtime_entrypoint_is_off_by_default_and_uses_committed_store(tmp_path):
+    from v13.runtime import Runtime
+    store = Store()
+    store.put()
+    runtime = object.__new__(Runtime)
+    runtime.store = store
+    q = SpeechIntentQueue(tmp_path / "speech.sqlite")
+    with pytest.raises(SpeechIntentError, match="OFF"):
+        runtime.speech_enqueue(EVENT, q)
+    result = runtime.speech_enqueue(EVENT, q, operator_opt_in=True)
+    assert result.text == "hello"
+    with pytest.raises(SpeechIntentError, match="already queued"):
+        runtime.speech_enqueue(EVENT, q, operator_opt_in=True)
+    q.close()
