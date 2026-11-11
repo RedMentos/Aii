@@ -1,0 +1,31 @@
+name: V13 Boss operator to persistent WorldJEPA integration
+on:
+  push:
+    branches:
+      - boss/v13-operator-world-integration-20261111-1345
+  pull_request:
+    paths:
+      - 'v13/code/v13/android_operator_loop.py'
+      - 'v13/code/v13/android_operator_world.py'
+      - 'v13/code/v13/android_goal_learning_demo.py'
+      - 'v13/code/tests/test_android_operator_world.py'
+      - 'v13/code/tests/test_android_operator_loop.py'
+      - '.github/workflows/v13-boss-operator-world.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-operator-to-jepa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: v13/code
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check pytest numpy==1.26.4
+      - run: python -m py_compile v13/android_operator_loop.py v13/android_operator_world.py v13/android_goal_learning_demo.py
+      - run: python -m pytest -q tests/test_android_operator_loop.py tests/test_android_operator_world.py tests/test_android_goal_learning_demo.py tests/test_android_goal_replay_retention.py tests/test_android_c5_goal_replay.py tests/test_c5_goal_c3_speech_e2e.py tests/test_behavior_governor_android_integration.py
