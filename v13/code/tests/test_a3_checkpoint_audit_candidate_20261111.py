@@ -69,7 +69,7 @@ class Audit(unittest.TestCase):
         self.check()
         raw = self.path.read_bytes()
         # Mutate the stored NPY payload, leaving the central directory intact.
-        target = b"projector.npy"
+        target = "projector.npy"
         import zipfile
         with zipfile.ZipFile(self.path) as archive:
             info = archive.getinfo(target)
