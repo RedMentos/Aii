@@ -25,6 +25,8 @@ def persist_audio_percept(store, event, raw):
         raise ValueError("RAW EAR PCM hash does not match persisted A0 descriptor")
     if event.get("event_id") is None or event.get("brain_generation_id") is None:
         raise ValueError("persisted event identity required")
+    if raw.provisional is not False:
+        raise ValueError("provisional RAW EAR cannot enter authoritative persistent A5")
     if raw.asr_text is not None:
         raise ValueError("ASR must use a separately verified teacher source")
     if not raw.frames or raw.duration_ms <= 0:

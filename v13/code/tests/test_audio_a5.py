@@ -16,7 +16,7 @@ class FakeStore:
 
 class AudioA5Test(unittest.TestCase):
     def setUp(self):
-        self.raw = build_pcm_raw_ear("source:synthetic", bytes(32000), 16000)
+        self.raw = build_pcm_raw_ear("source:synthetic", bytes(32000), 16000, provisional=False)
         self.ref = {"source_id":"src_test","sha256":"0"*64,
                     "char_start":0,"char_end":len(audio_source_descriptor(self.raw)),
                     "modality":"text"}
@@ -33,6 +33,13 @@ class AudioA5Test(unittest.TestCase):
         self.assertEqual(p["native_receiver_authority"], 0)
         self.assertFalse(p["android_capture_verified"])
         self.assertEqual(s.saved[0], "PerceptPacket")
+
+    def test_provisional_audio_cannot_be_authoritative(self):
+        provisional = build_pcm_raw_ear("source:synthetic", bytes(32000), 16000, provisional=True)
+        store = FakeStore(audio_source_descriptor(provisional))
+        with self.assertRaisesRegex(ValueError, "provisional"):
+            persist_audio_percept(store, self.event, provisional)
+        self.assertIsNone(store.saved)
 
     def test_source_mismatch_no_persistence(self):
         s = FakeStore("v13.audio_pcm_sha256:" + "f"*64 + "\\n")
