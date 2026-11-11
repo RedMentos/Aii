@@ -670,7 +670,7 @@ class Runtime:
             try:
                 self.executive.update(e,self.session,status=status)
             except Exception as exc:self.store.log('executive_finish_deferred',eid,{'error':type(exc).__name__})
-            mark('finished');meta.update(self_candidate_hash=digest(output),duration_s=time.monotonic()-start,characters=len(output));self.store.finish_message(mid,status,meta)
+            # Speech source identity is recorded by Runtime, not asserted by an external caller.\n            meta['speech_source_role'] = runner.role if runner is not None and meta.get('model_generated') is True else None\n            mark('finished');meta.update(self_candidate_hash=digest(output),duration_s=time.monotonic()-start,characters=len(output));self.store.finish_message(mid,status,meta)
             txctl.settle_turn(self,eid,status)  # WP-K IH-H13: provisional items promote at FINAL, else tombstone
             bout=None
             try:  # WP-T7 C7 output broker: authority decision, C6 check of the visible output, late correction / action preview
