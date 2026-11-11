@@ -1,0 +1,66 @@
+{
+  "schema": "v13-work-package-v1",
+  "observed_utc": "2026-11-11T01:29:30Z",
+  "owner": "V13 Core & Harness (GPT/Codex scoped review package)",
+  "branch": "codex/v13-fastbatch-stream-output-20261111",
+  "pr": 1726,
+  "base_sha": "0fb80f8ac43b9fadceda3343db0e837fe978f518",
+  "verification_head": "5a3855d13a3d2793483cce2a62914e50005448a4",
+  "files_owned": [
+    "v13/code/v13/procedural_batch.py",
+    "v13/code/v13/operator.py",
+    "v13/code/tests/test_procedural_stream_output.py",
+    "v13/code/tests/test_procedural_fastpath_benchmark.py",
+    "v13/code/tests/test_procedural_job_lock.py",
+    "v13/code/scripts/benchmark_procedural_fastpath.py",
+    ".github/workflows/v13-procedural-stream-output.yml"
+  ],
+  "packages": [
+    {
+      "id": "STREAM-FAST-001",
+      "consumer": ":fastbatch read NAME COUNT [VALUE] --cursor=OFFSET --bytes=SIZE",
+      "changes": "bounded Unicode-safe committed-byte reads and generator one-hash streamed playback; blocked corruption, retirement, uncommitted tails",
+      "claim": "pure compiled preapproved text, not LLM generation or native output"
+    },
+    {
+      "id": "SPEED-BENCH-001",
+      "consumer": "python scripts/benchmark_procedural_fastpath.py --rows 100000",
+      "changes": "measured synthetic host rows/s and bytes/s plus checkpoint/stream sha, non-overwriting operator-chosen JSON report",
+      "claim": "Linux/Termux synthetic benchmark only; no verified phone trial or model token rate"
+    },
+    {
+      "id": "CONCURRENT-FAST-001",
+      "consumer": "ProceduralBatch.run/read/preview/iter_output",
+      "changes": "per-job nonblocking advisory lock and safe refusal of competing same-job reads/writers, independent jobs can progress",
+      "claim": "Linux filesystem concurrency structural tests; Android native lock performance unmeasured"
+    }
+  ],
+  "ci": {
+    "url": "https://github.com/RedMentos/Aii/actions/runs/42939259015",
+    "head": "5a3855d13a3d2793483cce2a62914e50005448a4",
+    "result": "SUCCESS",
+    "tests": "55 passed",
+    "privacy": "CLEAN"
+  },
+  "gates": [
+    "STEP2 UTILITY_FAIL unchanged",
+    "B3 L1 FAIL unchanged",
+    "Body-JEPA no promotion",
+    "Runtime.py SourceHandoff frozen",
+    "C5 permissions unmodified",
+    "Age0 learning authority unchanged"
+  ],
+  "blockers": [
+    "PR #1726 draft/unmerged, parent #1671 draft/unmerged",
+    "No Redmi token/s, energy or native model proof",
+    "User-facing chat streaming not integrated into frozen Runtime worker",
+    "Same-job read while writer owns lock fails busy (fast retry required)"
+  ],
+  "next_exact_commands": [
+    "cd v13/code && python -m pytest -q tests/test_procedural_stream_output.py tests/test_procedural_fastpath_benchmark.py tests/test_procedural_job_lock.py tests/test_procedural_habits.py tests/test_procedural_batch.py tests/test_brain_diagnosis.py",
+    "cd v13/code && python scripts/benchmark_procedural_fastpath.py --rows 100000",
+    "python v13/code/scripts/public_repo_privacy_scan.py --base 0fb80f8ac43b9fadceda3343db0e837fe978f518 --head HEAD",
+    "Provide :speed fastbatch and read-only per-organ runtime speed report in existing Operator with no frozen-runtime edits",
+    "Review independent JEF/JEPA branches before any integration"
+  ]
+}
