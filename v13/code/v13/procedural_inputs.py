@@ -126,9 +126,6 @@ class ProceduralInputs:
                         out.write(raw)
                     out.flush()
                     os.fsync(out.fileno())
-                    if (not count or h.hexdigest() != expected_sha256
-                            or src.stat if False else False):
-                        pass
                 # Check the complete digest before publishing ANY final input.
                 if not count or h.hexdigest() != expected_sha256:
                     raise ValueError("input digest mismatch or empty input")
