@@ -27,6 +27,7 @@ DATA = Path.home() / "v13"
 MAX_TAIL = 100_000
 BUNDLE_LIMIT = 200_000
 PORT = 0  # OS-selected local port; no remote interface
+AUTO_FILE = PRIVATE / "auto-source-update.enabled"
 ALLOWED = {"doctor": ("doctor",), "probe": ("probe",), "ask": ("ask",)}
 SECRET = re.compile(r"(?i)(github_pat_[a-z0-9_]+|gh[pousr]_[a-z0-9_]+|(?:token|password|authorization|api.?key)\s*[:=]\s*\S+)")
 TERM = re.compile(r"\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1b\\))")
@@ -105,12 +106,39 @@ def diagnostics_zip(destination=None):
     return destination
 
 
+def automatic_updates_enabled():
+    if AUTO_FILE.is_symlink():
+        return False
+    try:
+        return AUTO_FILE.is_file() and AUTO_FILE.read_text().strip() == "yes"
+    except OSError:
+        return False
+
+
+def set_automatic_updates(enabled):
+    PRIVATE.mkdir(mode=0o700, parents=True, exist_ok=True)
+    if PRIVATE.is_symlink() or PRIVATE.stat().st_mode & 0o077 or AUTO_FILE.is_symlink():
+        raise RuntimeError("Unsichere Update-Einstellungen")
+    if enabled:
+        if AUTO_FILE.exists():
+            AUTO_FILE.unlink()
+        with AUTO_FILE.open("x") as f:
+            f.write("yes\n")
+            f.flush()
+            os.fsync(f.fileno())
+        AUTO_FILE.chmod(0o600)
+    else:
+        AUTO_FILE.unlink(missing_ok=True)
+
+
 class RuntimeControls:
     def __init__(self):
         self.lock = threading.Lock()
         self.process = None
         self.mode = None
         self.last_action = "Keine Aktion"
+        self.update_busy = False
+        self.update_result = "Noch kein GitHub-Update geprüft"
         PRIVATE.mkdir(mode=0o700, parents=True, exist_ok=True)
         os.chmod(PRIVATE, 0o700)
 
@@ -162,6 +190,39 @@ class RuntimeControls:
             self.last_action = "Stop angefordert"
             return "Abbruchsignal an V13 gesendet."
 
+    def start_update(self, action):
+        if action not in ("check", "apply", "auto", "rollback"):
+            raise ValueError("Nicht freigegebene Update-Aktion")
+        with self.lock:
+            if self.update_busy:
+                raise RuntimeError("Ein Update-Check laeuft bereits")
+            self.update_busy = True
+            self.update_result = "GitHub wird geprüft…"
+        def worker():
+            try:
+                from v13 import source_updater
+                if action == "check":
+                    result = source_updater.status()
+                elif action == "apply":
+                    result = source_updater.apply()
+                elif action == "auto":
+                    result = source_updater.auto_apply()
+                else:
+                    result = source_updater.rollback()
+                msg = result["status"] + " · " + str(result.get("changed_files", 0)) + " geänderte Dateien"
+                if result["status"] in ("UPDATED", "ROLLED_BACK"):
+                    msg += " · bitte neuen V13-Chat starten"
+            except Exception as exc:
+                msg = "Nicht durchgeführt: " + type(exc).__name__ + " · " + str(exc)[:200]
+            with self.lock:
+                self.update_result = msg
+                self.update_busy = False
+        threading.Thread(target=worker, daemon=True, name="v13-source-update").start()
+
+    def update_status(self):
+        with self.lock:
+            return self.update_result, self.update_busy
+
     def output(self):
         return safe_text(bounded_tail(PRIVATE / "v13-ui-last.log", MAX_TAIL))
 
@@ -170,6 +231,8 @@ def dashboard_html(token, controls, message=""):
     running, mode, code, last = controls.state()
     state = "läuft" if running else "bereit" if code is None else f"beendet ({code})"
     current = summary()
+    update_msg, update_busy = controls.update_status()
+    auto_enabled = automatic_updates_enabled()
     roles = " · ".join(f"{html.escape(name)}: {'OK' if v.get('ok') else 'Fehler'}"
                        for name, v in current["roles"].items())
     action = "/t/" + token + "/action"
@@ -207,6 +270,14 @@ small{{color:#b0bdcf}}.message{{color:#b8e4c4}}
 {form("zip","Diagnose-ZIP", "secondary")}
 {form("stop","V13 stoppen", "danger")}</div>
 <small>ZIP wird nur lokal in Downloads gespeichert. Vor dem Teilen prüfen: Protokolle können private Chattexte enthalten.</small></section>
+<section><h2>GitHub-Updates</h2>
+<p><small>{html.escape(update_msg)}{' · läuft' if update_busy else ''}</small></p>
+<div class="actions">
+{form("check_update","Neue Version prüfen","secondary")}
+{form("apply_update","Jetzt aktualisieren")}
+{form("rollback_update","Vorherige Version","secondary")}
+{form("auto_disable" if auto_enabled else "auto_enable", "Auto-Updates AUS" if auto_enabled else "Auto-Updates EIN", "secondary")}</div>
+<small>Automatik: {'aktiviert (alle 15 Minuten, nur mit erfolgreichen CI-Tests)' if auto_enabled else 'deaktiviert'}. Updates nur bei beendeter V13-Laufzeit; Modelle, Chats und Gedächtnis bleiben getrennt. Geänderte GitHub-Quelltexte sind trotzdem ausführbarer Code: automatischen Modus nur für vertrauenswürdige Branches aktivieren.</small></section>
 <section><h2>Letzte Ausgabe</h2><a href="/t/{token}/">↻ Ausgabe aktualisieren</a><pre>{html.escape(output[-MAX_TAIL:] or "Noch keine Ausgabe. Starte einen Test über die Knöpfe.")}</pre></section>
 <section><small>Nur lokal auf 127.0.0.1. Kein freier Shell-Zugriff und keine automatischen Patches. Kein Rohlog-Upload nach GitHub.</small></section>
 </main></body></html>"""
@@ -214,6 +285,15 @@ small{{color:#b0bdcf}}.message{{color:#b8e4c4}}
 
 def serve(*, open_browser=True):
     controls = RuntimeControls()
+    def auto_loop():
+        while True:
+            if automatic_updates_enabled():
+                try:
+                    controls.start_update("auto")
+                except RuntimeError:
+                    pass
+            time.sleep(900)
+    threading.Thread(target=auto_loop, daemon=True, name="v13-auto-updates").start()
     token = secrets.token_hex(24)
     prefix = "/t/" + token
     class Handler(BaseHTTPRequestHandler):
@@ -263,6 +343,13 @@ def serve(*, open_browser=True):
                 elif action == "zip":
                     dest = diagnostics_zip()
                     message = "Diagnose-ZIP erstellt: " + dest.name + " (in Downloads)"
+                elif action in ("check_update", "apply_update", "rollback_update"):
+                    controls.start_update({"check_update":"check","apply_update":"apply",
+                                           "rollback_update":"rollback"}[action])
+                    message = "Update-Auftrag gestartet; Ergebnis wird im Abschnitt GitHub-Updates angezeigt."
+                elif action in ("auto_enable", "auto_disable"):
+                    set_automatic_updates(action == "auto_enable")
+                    message = "Automatische Updates " + ("aktiviert" if action == "auto_enable" else "deaktiviert")
                 else:
                     raise ValueError("Unbekannte Aktion")
             except (OSError, ValueError, RuntimeError, UnicodeError) as exc:
