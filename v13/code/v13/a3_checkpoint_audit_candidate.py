@@ -62,7 +62,8 @@ def audit(path):
         support.dtype.itemsize not in (4, 8) or not np.isfinite(support).all()):
         raise ValueError("invalid support matrix")
     floor = arrays["support_floor"]
-    if floor.shape != () or floor.dtype.kind != "f" or not np.isfinite(floor).all() or not 0 <= float(floor) <= 1:
+    if (floor.shape != () or floor.dtype.kind != "f" or floor.dtype.itemsize not in (4, 8) or
+        not np.isfinite(floor).all() or not 0 <= float(floor) <= 1):
         raise ValueError("invalid support floor")
     stem = arrays["stem"]
     if stem.shape != () or stem.dtype.kind != "U" or str(stem) != STEM:
