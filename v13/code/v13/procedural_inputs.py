@@ -21,7 +21,7 @@ import time
 from .procedural_batch import (
     MAX_OUTPUT_BYTES, MAX_ROWS, MAX_SECONDS_PER_CALL, MAX_VALUE_BYTES,
     CHUNK_ROWS, ProceduralBatch, _canonical, _check_path, _job_guard,
-    _name, _parts, _read, _render, _save, _sha,
+    _name, _parts, _read, _render, _save, _sha, _utf8_slice,
 )
 
 REVISION = "v13-procedural-input-lines-v1"
@@ -236,6 +236,34 @@ class ProceduralInputs:
             _save(state_file, state)
         return state
 
+    def read(self, plan_name, input_name, cursor=0, max_bytes=16384):
+        """Return next committed UTF-8 slice; never advance output or train."""
+        plan = self.batch.plan(plan_name)
+        if plan["stage"] != "ACTIVE":
+            raise PermissionError("activate the template with its SHA first")
+        self.batch._verify_evidence(plan)
+        meta = self._metadata(input_name)
+        state_file, output_file, jid = self._job_files(plan, input_name, meta)
+        with _job_guard(state_file):
+            if not state_file.is_file():
+                raise FileNotFoundError("run input procedure before reading output")
+            state = self._load_job(state_file, output_file, plan, input_name, meta, jid)
+            with self._open_imported(input_name) as source:
+                _verify_fd(source, meta, state["input_offset"],
+                           state["input_prefix_sha256"])
+            self.batch._verify_prefix(output_file, state)
+            text, next_cursor = _utf8_slice(output_file, state["bytes"],
+                                             cursor, max_bytes)
+            return {
+                "status": state["status"], "job_id": jid,
+                "name": plan_name, "input_name": input_name,
+                "cursor_bytes": cursor, "next_cursor_bytes": next_cursor,
+                "committed_bytes": state["bytes"],
+                "more_committed": next_cursor < state["bytes"],
+                "needs_run": next_cursor == state["bytes"] and state["status"] != "DONE",
+                "text": text, "sha256": state["sha256"], "model_calls": 0,
+            }
+
     def run(self, plan_name, input_name, max_rows=None,
             max_seconds=MAX_SECONDS_PER_CALL):
         if max_rows is None:
@@ -316,6 +344,15 @@ def operator_command(runtime, args):
         return bank.import_file(args[1], args[2], args[3])
     if len(args) == 2 and args[0] == "status":
         return bank.status(args[1])
+    if args and args[0] == "read" and 3 <= len(args) <= 5:
+        options = args[3:]
+        cursor_opts = [x for x in options if x.startswith("--cursor=")]
+        bytes_opts = [x for x in options if x.startswith("--bytes=")]
+        if len(options) != len(cursor_opts) + len(bytes_opts) or len(cursor_opts) > 1 or len(bytes_opts) > 1:
+            raise ValueError("input read PLAN NAME [--cursor=N] [--bytes=N]")
+        cursor = int(cursor_opts[0].split("=", 1)[1]) if cursor_opts else 0
+        amount = int(bytes_opts[0].split("=", 1)[1]) if bytes_opts else 16384
+        return bank.read(args[1], args[2], cursor, amount)
     if args and args[0] == "run" and len(args) in (3, 4):
         limit = None
         if len(args) == 4:
@@ -323,4 +360,4 @@ def operator_command(runtime, args):
                 raise ValueError("input run PLAN NAME [--rows=NUMBER]")
             limit = int(args[3].split("=", 1)[1])
         return bank.run(args[1], args[2], max_rows=limit)
-    raise ValueError("input import NAME FILE SHA256 | status NAME | run PLAN NAME [--rows=N]")
+    raise ValueError("input import NAME FILE SHA256 | status NAME | run PLAN NAME [--rows=N] | read PLAN NAME [--cursor=N] [--bytes=N]")
