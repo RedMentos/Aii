@@ -226,6 +226,43 @@ def apply(root=None, *, expected_tip=None):
         return result
 
 
+
+def apply_dashboard(root=None):
+    """Update only the independent dashboard checkout, not live model files.
+
+    Unlike V13 runtime updates, the dashboard is restarted by its supervisor
+    after the current HTTP response. Refuse modified sources or rewritten
+    Git history, retain old commit and perform syntax checks before restart.
+    """
+    actual = Path.home() / ".v13-agent-source"
+    requested = Path(root or actual).expanduser().resolve()
+    if root is None and requested != actual.resolve():
+        raise UpdateDenied("Dashboard path changed")
+    with _lock():
+        s = status(requested)
+        if s["status"] == "UP_TO_DATE":
+            return s
+        checkout, branch, before = _repo_root(requested)
+        if before != s["current"]:
+            raise UpdateDenied("Dashboard changed during source fetch")
+        backup = "refs/v13-dashboard-rollback/" + str(int(time.time())) + "-" + secrets.token_hex(3)
+        git(checkout, "update-ref", backup, before)
+        try:
+            git(checkout, "merge", "--ff-only", s["available"], timeout=180)
+            if not _is_clean(checkout):
+                raise UpdateDenied("Dashboard checkout is dirty after update")
+            _check_python(checkout, before, s["available"])
+            html_file = checkout / "v13/code/v13/mobile_dashboard.html"
+            if html_file.is_symlink() or not html_file.is_file():
+                raise UpdateDenied("Required mobile UI HTML template missing in sparse checkout")
+        except Exception:
+            git(checkout, "reset", "--hard", before, timeout=90)
+            raise
+        return {"status":"UPDATED", "source":"CONTROL_PANEL", "previous":before,
+                "current":s["available"], "changed_files":s["changed_files"],
+                "rollback_ref":backup, "restart_required":True}
+
+
 def auto_apply(root=None):
     s = status(root)
     if s["status"] == "UP_TO_DATE":
