@@ -29,7 +29,7 @@ class Fake:
 def test_persist_attempt_restart_and_reject_replay(tmp_path):
     path = tmp_path / "audit.sqlite"
     fake = Fake()
-    first = DurableCompanionTransport(path, fake)
+    first = DurableCompanionTransport(path, fake, verifier=type('Verifier', (), {'verify': lambda self, req, outcome: outcome.companion_receipt == 'unverified'})())
     result = first.execute(request())
     assert result.status == OutcomeStatus.SUCCESS
     assert first.attempts()[0]["state"] == "REPORTED_SUCCESS"
