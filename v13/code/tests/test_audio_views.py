@@ -35,6 +35,22 @@ class AudioViewsTest(unittest.TestCase):
         self.assertTrue(all(x["rms"]==0 for x in views["b1_detail"]))
         self.assertTrue(all(x["rms"]==0 for x in views["b2_gist"]))
 
+    def test_b1_preserves_timed_acoustic_features_without_semantic_claims(self):
+        # A1/A5 acoustic measurements must reach B1, not just energy.
+        # Synthetic zero probabilities are NOT proof of speech/non-speech.
+        views = acoustic_views(self.packet, max_detail=3)
+        self.assertEqual(len(views["b1_detail"]), 3)
+        for detail in views["b1_detail"]:
+            self.assertEqual(
+                set(detail),
+                {"start_ms", "end_ms", "rms", "pitch_hz",
+                 "voiced_probability", "non_speech_probability"})
+            self.assertIsNone(detail["pitch_hz"])
+            self.assertEqual(detail["voiced_probability"], 0.0)
+            self.assertEqual(detail["non_speech_probability"], 0.0)
+        self.assertEqual(views["authority"], "SHADOW")
+        self.assertFalse(views["jef_control"]["semantic_truth_authority"])
+
     def test_rejects_provisional_and_tampered_source(self):
         p=dict(self.packet)
         p["raw_ear"]=dict(p["raw_ear"],provenance="provisional")
