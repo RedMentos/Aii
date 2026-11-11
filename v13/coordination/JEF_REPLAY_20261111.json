@@ -1,0 +1,41 @@
+{
+  "schema": "v13-work-package-v1",
+  "date": "2026-11-11",
+  "owner": "V13 Core & Harness",
+  "branch": "codex/v13-jef-replay-stability-20261111-hour03",
+  "parent_pr": 1724,
+  "pr": 1730,
+  "base_sha": "87734b32be3ceb64cb81bff559b09db4ca86dfdd",
+  "checkpoint_sha": "6742f8b988ada604c4f0de6fe7095e4e77d721e5",
+  "files_owned": [
+    "v13/code/v13/turnflow.py",
+    "v13/code/tests/test_turnflow_replay_stability.py",
+    ".github/workflows/v13-jef-replay-stability.yml"
+  ],
+  "change": "Store immutable original schedule decision for committed event IDs; same-pattern retries replay without recomputing adaptive scheduling or mutating feedback; old events without snapshots fail closed",
+  "evidence": {
+    "parent_ci": [
+      42936586408,
+      42936586421,
+      42936586586
+    ],
+    "child_ci": "NOT_YET_REPORTED",
+    "local_git": "DNS_RESOLUTION_FAILED",
+    "local_tests": "NOT_RUN"
+  },
+  "negative_gates": [
+    "Age0 unchanged",
+    "C5 unchanged",
+    "B3 unchanged",
+    "STEP2 unchanged",
+    "No native Android evidence",
+    "No model-weight training"
+  ],
+  "next_command": "Check workflow runs for 6742f8b988ada604c4f0de6fe7095e4e77d721e5; if green, inspect same-event first-write CAS races and legacy persisted event behavior; coordinate integration owner #1716",
+  "blockers": [
+    "GitHub DNS unavailable from container",
+    "No Redmi access",
+    "Exact-head CI not yet reported"
+  ],
+  "status": "DRAFT_REVIEW_ONLY"
+}
