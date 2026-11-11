@@ -101,7 +101,7 @@ def observed_models(store, session):
     }
 
 
-def benchmark_fastpath(runtime, rows):
+def benchmark_fastpath(runtime, rows, mode="repeat"):
     if type(rows) is not int or not 1 <= rows <= MAX_BENCH_ROWS:
         raise ValueError(":speed fastbatch [1..50000]")
     # Do not benchmark the disk/CPU alongside a live model turn or while a
@@ -110,8 +110,13 @@ def benchmark_fastpath(runtime, rows):
     if not callable(require_idle):
         raise ValueError("verified idle Runtime required for speed test")
     require_idle()
-    from scripts.benchmark_procedural_fastpath import run_benchmark
-    result = run_benchmark(rows=rows)
+    from scripts.benchmark_procedural_fastpath import (
+        run_benchmark, run_values_benchmark,
+    )
+    if mode not in ("repeat", "values"):
+        raise ValueError("unknown synthetic fastbench mode")
+    result = (run_values_benchmark(rows=rows) if mode == "values"
+              else run_benchmark(rows=rows))
     result["command"] = "LOCAL_OPERATOR_ONLY"
     result["organ"] = "compiled_fast_output"
     return result
@@ -120,10 +125,11 @@ def benchmark_fastpath(runtime, rows):
 def operator_command(runtime, args):
     if not args or args == ["models"]:
         return observed_models(runtime.store, runtime.session)
-    if args[0] == "fastbatch" and len(args) in (1, 2):
+    if args[0] in ("fastbatch", "fastbatch-values") and len(args) in (1, 2):
         try:
             rows = int(args[1]) if len(args) == 2 else 10000
         except ValueError as exc:
             raise ValueError(":speed fastbatch [1..50000]") from exc
-        return benchmark_fastpath(runtime, rows)
-    raise ValueError(":speed [models|fastbatch [1..50000]]")
+        return benchmark_fastpath(runtime, rows,
+                                  mode="values" if args[0] == "fastbatch-values" else "repeat")
+    raise ValueError(":speed [models|fastbatch [1..50000]|fastbatch-values [1..50000]]")
