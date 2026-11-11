@@ -1,0 +1,33 @@
+name: V13 Perception Audio Contract
+on:
+  push:
+    branches:
+      - 'research-perception/**'
+  pull_request:
+    paths:
+      - 'v13/code/v13/audio_*.py'
+      - 'v13/code/v13/pcm_features.py'
+      - 'v13/code/tests/test_audio*.py'
+      - '.github/workflows/v13-perception-audio.yml'
+  workflow_dispatch:
+
+jobs:
+  audio-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: v13/code
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Synthetic acoustic and SQLite restart regression
+        run: |
+          python -m unittest \
+            tests.test_audio_salience \
+            tests.test_audio_a4_integration \
+            tests.test_audio_views \
+            tests.test_audio_sqlite_restart \
+            tests.test_audio_store_bridge -v
