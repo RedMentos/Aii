@@ -21,7 +21,7 @@ import time
 from .procedural_batch import (
     MAX_OUTPUT_BYTES, MAX_ROWS, MAX_SECONDS_PER_CALL, MAX_VALUE_BYTES,
     CHUNK_ROWS, ProceduralBatch, _canonical, _check_path, _job_guard,
-    _name, _parts, _read, _render, _save, _sha, _utf8_slice,
+    _name, _parts, _read, _render, _save, _sha, _utf8_slice, _iter_utf8_chunks,
 )
 
 REVISION = "v13-procedural-input-lines-v1"
@@ -263,6 +263,32 @@ class ProceduralInputs:
                 "needs_run": next_cursor == state["bytes"] and state["status"] != "DONE",
                 "text": text, "sha256": state["sha256"], "model_calls": 0,
             }
+
+    def iter_output(self, plan_name, input_name, chunk_bytes=16384):
+        """One source/prefix verification per streamed snapshot, no model.
+
+        Unlike repeated :input read calls, reading a long document does not
+        re-hash all earlier bytes on each output chunk. Any revocation of a
+        learned template's FINAL source is checked before each yield.
+        """
+        plan = self.batch.plan(plan_name)
+        if plan["stage"] != "ACTIVE":
+            raise PermissionError("activate the template with its SHA first")
+        self.batch._verify_evidence(plan)
+        meta = self._metadata(input_name)
+        state_file, output_file, jid = self._job_files(plan, input_name, meta)
+        with _job_guard(state_file):
+            if not state_file.is_file():
+                raise FileNotFoundError("run input procedure before streaming output")
+            state = self._load_job(state_file, output_file, plan, input_name, meta, jid)
+            with self._open_imported(input_name) as source:
+                _verify_fd(source, meta, state["input_offset"],
+                           state["input_prefix_sha256"])
+            self.batch._verify_prefix(output_file, state)
+            for text in _iter_utf8_chunks(output_file, state["bytes"], chunk_bytes):
+                if plan["code"].get("source_evidence"):
+                    self.batch._verify_evidence(plan)
+                yield text
 
     def run(self, plan_name, input_name, max_rows=None,
             max_seconds=MAX_SECONDS_PER_CALL):
