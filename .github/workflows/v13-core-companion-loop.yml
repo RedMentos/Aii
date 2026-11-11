@@ -1,0 +1,24 @@
+name: V13 Core Android Companion Loop
+on:
+  push:
+    branches:
+      - 'codex/v13-core-companion-loop-integration-*'
+  pull_request:
+    paths:
+      - 'v13/code/v13/android_control.py'
+      - 'v13/code/v13/android_operator_loop.py'
+      - 'v13/code/v13/android_companion_registry.py'
+      - 'v13/code/tests/test_android_companion_registry.py'
+      - 'v13/code/tests/test_android_operator_loop.py'
+      - '.github/workflows/v13-core-companion-loop.yml'
+jobs:
+  simulated-companion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pytest
+      - run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_android_control.py v13/code/tests/test_android_operator_loop.py v13/code/tests/test_android_companion_registry.py

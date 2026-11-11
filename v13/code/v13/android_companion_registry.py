@@ -9,7 +9,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Mapping
 import hashlib
-import json
 
 from .android_control import CAPABILITIES, ControlDenied, _canonical
 from .android_operator_loop import ActionOutcome, SimulatedCompanion
@@ -38,6 +37,10 @@ class CapabilityRegistry:
         for item in entries:
             if not isinstance(item, Capability) or item.name not in CAPABILITIES:
                 raise ValueError("unsupported capability declaration")
+            if item.enabled is not False:
+                raise ValueError("native capability activation unavailable")
+            if not isinstance(item.backend, str) or not item.backend or not isinstance(item.permission, str) or not item.permission:
+                raise ValueError("invalid capability metadata")
             if item.name in self._entries:
                 raise ValueError("duplicate capability")
             self._entries[item.name] = item
@@ -86,6 +89,10 @@ class CompanionTransport:
         if envelope["digest"] != digest:
             raise ControlDenied("envelope digest mismatch")
         return self.simulator.dispatch(envelope)
+
+    def dispatch(self, envelope: Mapping[str, object]) -> ActionOutcome:
+        """Operator-loop adapter; preserves the same fail-closed validation path."""
+        return self.dispatch_simulated(envelope)
 
     def dispatch_live(self, envelope: Mapping[str, object]) -> ActionOutcome:
         raise ControlDenied("native Android authenticated companion not installed")
