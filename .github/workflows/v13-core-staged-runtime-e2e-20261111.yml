@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - 'codex/v13-core-staged-e2e-ci-20261111-0700'
+  pull_request:
+    paths:
+      - '.github/workflows/v13-core-staged-runtime-e2e-20261111.yml'
+      - 'v13/code/tests/test_pinned_stage_runtime_e2e_20261111.py'
   workflow_dispatch:
 permissions:
   contents: read
