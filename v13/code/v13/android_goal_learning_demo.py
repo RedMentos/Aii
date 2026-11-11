@@ -14,7 +14,7 @@ from pathlib import Path
 from .android_control import AndroidControlBroker, ControlDenied
 from .android_control_sim import DEMO_PACKAGE, SimulatedAndroidWorld
 from .android_sim_jepa_probe import trial
-from .behavior_governor import neutral_signals, review_behavior
+from .android_operator_world import synthetic_operator_action
 
 MAX_STEPS_PER_NOTE = 6
 MAX_DEMO_NOTES = 48
@@ -41,24 +41,11 @@ def _next_action(snapshot, target):
 
 
 def _synthetic_action(broker, world, capability, args):
-    # This auto-confirmation is allowed ONLY inside a finite synthetic world.
-    # It is NOT a real user-consent check and must never be reused in native IPC.
-    # Reviewed behavioral intent is an advisory preview; the hard capability
-    # gate remains in AndroidControlBroker and eventually in the OS companion.
-    # This fixture is guaranteed simulation-only. No native action is enabled.
-    verdict = review_behavior(neutral_signals(), has_external_effect=False)
-    if verdict.guidance != "NO_OBJECTION_IN_ADVISORY_REVIEW":
-        raise ControlDenied("synthetic behavior requires independent review")
-    p = broker.propose(capability, args)
-    broker.approve(p.action_id, confirmed_by_local_ui=True)
-    envelope = broker.execute(p.action_id)  # default dry_run=True, native OFF
-    if envelope["status"] != "DRY_RUN_ONLY":
-        raise ControlDenied("unexpected non-synthetic action")
-    receipt = world.apply(envelope)
-    if (receipt.get("native_android_executed") is not False
-            or receipt.get("simulation_applied") is not True):
-        raise ValueError("invalid synthetic outcome")
-    return receipt
+    """Core operator proposal/approval -> synthetic companion -> world receipt.
+
+    Fixture approval is not Android permission or real user consent.
+    """
+    return synthetic_operator_action(broker, world, capability, args)
 
 
 def run_demo(home, *, first=0, count=18, seed=17, learn=True):
