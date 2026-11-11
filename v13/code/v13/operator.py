@@ -10,7 +10,7 @@ def obsched_names():
     from .observer_schedule import SCHEDULES
     return SCHEDULES
 HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führendes : als Chattext.
-:help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain [map|status|diagnose [N]|explain <name>] / :logs [runner]
+:help / :status / :doctor [full] / :ledger / :schemas / :resources [modes|calibrate|reset|bodies [import <json>|reset]] / :models / :brain [map|status|learning|diagnose [N]|explain <name>] / :logs [runner]
 :chats / :new / :open <Chat-ID> / :search <Text> / :export chat [json|md]
 :self / :world / :worldmodel [status|recent|event <Event-ID> <route>|compare <Event-ID>] / :native / :knobs / :components / :objectives / :plasticity [component]
 :cancel / :force-report / :executive / :task [set Text|clear] / :pause / :resume / :shutdown
