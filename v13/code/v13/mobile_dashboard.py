@@ -404,7 +404,7 @@ def _sliders(action):
     return "".join(parts)
 
 
-def dashboard_html(token, controls, message=""):
+def dashboard_html(token, controls, message="", csrf=""):
     running, mode, code, last = controls.state()
     state = "läuft" if running else "bereit" if code is None else f"beendet (Code {code})"
     current = summary()
@@ -444,7 +444,7 @@ def dashboard_html(token, controls, message=""):
         + '\';document.getElementById(\'v13-command\').focus()">' + c + '</button>'
         for c in commands
     )
-    return f"""<!doctype html><html lang="de"><head><meta charset="utf-8">
+    page = f"""<!doctype html><html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>V13 – Redmi Kontrollzentrum</title>
 <style>
@@ -527,6 +527,11 @@ small{{color:#b0bdcf}}.message{{color:#b8e4c4}}label{{display:block;margin-top:1
 }})();
 </script>
 </body></html>"""
+    # Every browser action carries a separate CSRF secret, independent of
+    # mobile privacy-browser Origin header behavior.
+    hidden = '<input type="hidden" name="csrf" value="' + html.escape(csrf, quote=True) + '">' 
+    return re.sub(r'(<form method="POST" action="[^"]+">)', lambda m: m.group(1) + hidden, page)
+
 
 def serve(*, open_browser=True):
     controls = RuntimeControls()
@@ -540,6 +545,7 @@ def serve(*, open_browser=True):
             time.sleep(900)
     threading.Thread(target=auto_loop, daemon=True, name="v13-auto-updates").start()
     token = secrets.token_hex(24)
+    csrf = secrets.token_hex(24)
     prefix = "/t/" + token
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, fmt, *args):
@@ -555,7 +561,17 @@ def serve(*, open_browser=True):
             else:
                 self.send_header("Content-Type", mime)
             self.end_headers()
+        def _local_host(self):
+            # Keep DNS-rebinding protection, but do not depend on Brave/Android
+            # providing one exact Origin value for local browser form submits.
+            port = str(self.server.server_port)
+            return self.headers.get("Host", "").lower() in {
+                "127.0.0.1:" + port, "localhost:" + port}
+
         def do_GET(self):
+            if not self._local_host():
+                self._headers(403)
+                return
             if self.path == prefix + "/state":
                 running, mode, exitcode, last = controls.state()
                 state = "läuft" if running else "bereit" if exitcode is None else "beendet (" + str(exitcode) + ")"
@@ -568,7 +584,7 @@ def serve(*, open_browser=True):
             if self.path != prefix + "/":
                 self._headers(404)
                 return
-            data = dashboard_html(token, controls).encode("utf-8")
+            data = dashboard_html(token, controls, csrf=csrf).encode("utf-8")
             self._headers()
             self.wfile.write(data)
         def do_POST(self):
@@ -579,14 +595,14 @@ def serve(*, open_browser=True):
             if not length.isdigit() or int(length) > 4000:
                 self._headers(413)
                 return
-            host = self.headers.get("Host", "")
-            origin = self.headers.get("Origin")
-            expected = "http://127.0.0.1:" + str(self.server.server_port)
-            if host != "127.0.0.1:" + str(self.server.server_port) or origin not in (None, expected):
+            if not self._local_host():
                 self._headers(403)
                 return
             try:
                 fields = parse_qs(self.rfile.read(int(length)).decode("utf-8"), keep_blank_values=True)
+                if fields.get("csrf") != [csrf]:
+                    self._headers(403)
+                    return
                 action = fields.get("action", [""])[0]
                 if action in ALLOWED:
                     question = fields.get("question", [""])[0] if action == "ask" else ""
@@ -647,7 +663,7 @@ def serve(*, open_browser=True):
                     raise ValueError("Unbekannte Aktion")
             except (OSError, ValueError, RuntimeError, UnicodeError) as exc:
                 message = "Fehler: " + type(exc).__name__ + ": " + str(exc)[:200]
-            data = dashboard_html(token, controls, message).encode("utf-8")
+            data = dashboard_html(token, controls, message, csrf=csrf).encode("utf-8")
             self._headers()
             self.wfile.write(data)
     server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
