@@ -11,7 +11,7 @@ import pytest
 
 from v13.android_control import AndroidControlBroker
 from v13.android_control_sim import SimulatedAndroidWorld, DEMO_PACKAGE
-from v13.android_sim_jepa_probe import trial, _groups
+from v13.android_sim_jepa_probe import trial, replay_ablation, _groups
 
 
 def _do(broker, world, cap, args):
@@ -144,6 +144,62 @@ def test_duplicate_observation_action_pairs_cannot_fake_holdout(tmp_path):
         assert len(world.transitions()) >= 12
         with pytest.raises(ValueError, match="not enough disjoint"):
             trial(world, steps=2)
+    finally:
+        world.close()
+        broker.close()
+
+
+
+def test_replay_ablation_compares_actual_weight_updates_without_false_promotion(tmp_path):
+    broker, world = _environment(tmp_path, n=20)
+    try:
+        metrics = replay_ablation(world, seed=5, steps=3)
+        assert metrics["kind"] == "SYNTHETIC_UI_REPLAY_ABLATION"
+        assert metrics["scope"] == "SYNTHETIC_UI_ONLY_NO_T8_SOURCE"
+        assert metrics["initial_train_rows"] >= 8
+        assert metrics["old_disjoint_holdout_rows"] >= 4
+        assert metrics["new_train_rows"] >= 8
+        assert metrics["source_ids_disjoint"] is True
+        assert metrics["both_models_changed_numeric_weights"] is True
+        assert metrics["guaranteed_replay_superiority"] is False
+        assert metrics["native_android_executed"] is False
+        assert metrics["active_model_promoted"] is False
+        assert metrics["b1_b2_c3_gguf_weights_modified"] is False
+        for name in ("old_holdout_loss_before", "without_replay_loss_after",
+                     "with_replay_loss_after", "forgetting_delta_without_replay",
+                     "forgetting_delta_with_replay"):
+            assert np.isfinite(metrics[name])
+        assert "SYNTHETIC-NOTE" not in json.dumps(metrics)
+        # V13 real T8 corpus remains absent; the simulator writes its own
+        # private database with only numeric synthetic observations.
+        assert not (tmp_path / "data" / "db").exists()
+        repeat = replay_ablation(world, seed=5, steps=3)
+        assert metrics == repeat
+    finally:
+        world.close()
+        broker.close()
+
+
+@pytest.mark.parametrize("kwargs", [
+    {"seed": -1}, {"seed": True}, {"steps": 0}, {"steps": 101},
+    {"limit": 1}, {"limit": 2049},
+])
+def test_replay_ablation_rejects_invalid_step_and_source_budgets(tmp_path, kwargs):
+    world = SimulatedAndroidWorld(tmp_path)
+    try:
+        with pytest.raises(ValueError):
+            replay_ablation(world, **kwargs)
+    finally:
+        world.close()
+
+
+def test_old_new_cohort_split_rejects_duplicate_fake_training_volume(tmp_path):
+    broker, world = _environment(tmp_path, n=1)
+    try:
+        for _ in range(28):
+            _do(broker, world, "observe_ui", {})
+        with pytest.raises(ValueError, match="not enough disjoint"):
+            replay_ablation(world, steps=2)
     finally:
         world.close()
         broker.close()
