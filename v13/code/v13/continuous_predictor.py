@@ -134,6 +134,14 @@ class OnlinePredictor:
                     or any(type(i) is not str or not i for i in processed_ids)
                     or len(set(processed_ids))!=len(processed_ids)):
                 raise ValueError('Invalid committed action cursor')
+        # Reject invalid in-memory state before touching the current or backup
+        # checkpoint. A corrupt proposal must not replace a restartable snapshot.
+        arrays=(self.W,self.U,self.bias,self.x,self.y)
+        if (any(not np.isfinite(value).all() for value in arrays)
+                or not (0 <= len(self.x) <= self.cap)
+                or len(self.act) != len(self.x) or len(self.y) != len(self.x)
+                or self.seen < len(self.x) or self.updates < self.seen):
+            raise ValueError('Invalid live predictor checkpoint state')
         self.path.parent.mkdir(parents=True,exist_ok=True)
         temp=self.path.with_name(self.path.name+'.tmp.npz')
         try:
