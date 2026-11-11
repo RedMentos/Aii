@@ -179,14 +179,14 @@ def dashboard_html(token, controls, message=""):
     output = controls.output()
     return f"""<!doctype html><html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="4">
+
 <title>V13 – Redmi Kontrollzentrum</title>
 <style>
 :root{{color-scheme:dark;font-family:system-ui,sans-serif}}
 body{{background:#10131a;color:#edf2fa;margin:0;padding:16px}}
 main{{max-width:780px;margin:auto}}
 h1{{font-size:1.7rem}} h2{{font-size:1.1rem}}
-section{{background:#1a202a;border:1px solid #303b4a;border-radius:16px;padding:16px;margin:12px 0}}
+a{{color:#a6c7f8;font-weight:bold}} section{{background:#1a202a;border:1px solid #303b4a;border-radius:16px;padding:16px;margin:12px 0}}
 button{{background:#3977c8;color:white;padding:14px 17px;border:0;border-radius:10px;font-weight:bold;font-size:1rem;min-height:48px;cursor:pointer}}
 button.secondary{{background:#394353}}button.danger{{background:#ac4848}}
 .actions{{display:flex;gap:8px;flex-wrap:wrap}} .actions form{{flex:1}} .actions button{{width:100%}}
@@ -207,7 +207,7 @@ small{{color:#b0bdcf}}.message{{color:#b8e4c4}}
 {form("zip","Diagnose-ZIP", "secondary")}
 {form("stop","V13 stoppen", "danger")}</div>
 <small>ZIP wird nur lokal in Downloads gespeichert. Vor dem Teilen prüfen: Protokolle können private Chattexte enthalten.</small></section>
-<section><h2>Letzte Ausgabe</h2><pre>{html.escape(output[-MAX_TAIL:] or "Noch keine Ausgabe. Starte einen Test über die Knöpfe.")}</pre></section>
+<section><h2>Letzte Ausgabe</h2><a href="/t/{token}/">↻ Ausgabe aktualisieren</a><pre>{html.escape(output[-MAX_TAIL:] or "Noch keine Ausgabe. Starte einen Test über die Knöpfe.")}</pre></section>
 <section><small>Nur lokal auf 127.0.0.1. Kein freier Shell-Zugriff und keine automatischen Patches. Kein Rohlog-Upload nach GitHub.</small></section>
 </main></body></html>"""
 
