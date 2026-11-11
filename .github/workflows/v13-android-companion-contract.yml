@@ -24,5 +24,5 @@ jobs:
           PYTHONPATH: v13/code
         run: |
           python -m py_compile v13/code/v13/android_companion_contract.py
-          python -m unittest -v v13.code.tests.test_android_companion_contract
+          python -m unittest discover -v -s v13/code/tests -p test_android_companion_contract.py
           python -m pytest -q v13/code/tests/test_android_control.py v13/code/tests/test_android_control_cli.py
