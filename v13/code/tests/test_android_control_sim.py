@@ -66,8 +66,8 @@ def test_broker_approval_and_stop_remain_independent_of_simulation(env):
     proposal = broker.propose("launch_app", {"package": DEMO_PACKAGE})
     with pytest.raises(ControlDenied):
         broker.execute(proposal.action_id)
-    with pytest.raises(ControlDenied):
-        broker.approve(proposal.action_id, confirmed_by_local_ui=True) if False else broker.execute(proposal.action_id)
+    with pytest.raises(ControlDenied, match="local confirmation"):
+        broker.approve(proposal.action_id, confirmed_by_local_ui=False)
     assert world.view()["screen"] == "HOME"
     broker.stop()
     with pytest.raises(ControlDenied):
