@@ -97,8 +97,18 @@ python -m v13.owner_read_bridge once --config "$CONFIG" || fail "Verbindungstest
 if [[ -e "$PRIVATE/bridge.pid" ]]; then
   OLD_PID="$(cat "$PRIVATE/bridge.pid" 2>/dev/null || true)"
   if [[ "$OLD_PID" =~ ^[0-9]+$ ]] && kill -0 "$OLD_PID" 2>/dev/null; then
-    printf 'V13-Diagnose-Agent laeuft bereits (PID %s).\n' "$OLD_PID"
-    exit 0
+    # Only stop our own previous read-only poller. Never kill an unknown PID.
+    CMDLINE="$(tr '\\0' ' ' < "/proc/$OLD_PID/cmdline" 2>/dev/null || true)"
+    if [[ "$CMDLINE" != *"v13.owner_read_bridge serve"* ]]; then
+      fail "Aktive PID gehoert nicht eindeutig zur Bridge; bitte Prozess zuerst pruefen"
+    fi
+    printf 'Aktualisiere laufenden V13-Diagnose-Agenten (PID %s).\n' "$OLD_PID"
+    kill "$OLD_PID" || fail "Konnte vorherigen Agenten nicht stoppen"
+    for ATTEMPT in 1 2 3 4 5; do
+      kill -0 "$OLD_PID" 2>/dev/null || break
+      sleep 1
+    done
+    kill -0 "$OLD_PID" 2>/dev/null && fail "Vorheriger Diagnose-Agent ist noch aktiv"
   fi
 fi
 nohup python -m v13.owner_read_bridge serve --config "$CONFIG" \
