@@ -41,7 +41,7 @@ SHA = re.compile(r"[0-9a-f]{40}\Z")
 ID = re.compile(r"[0-9a-f]{32}\Z")
 KEY = re.compile(r"[0-9a-f]{64}\Z")
 AGENT = re.compile(r"[a-z][a-z0-9_-]{2,39}\Z")
-COMMANDS = {"HEALTH", "LEARNING_STATUS", "PATCH_STAGE", "PATCH_APPLY"}
+COMMANDS = {"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PATCH_STAGE", "PATCH_APPLY"}
 MAX_COMMAND = 8192
 MAX_REPLY = 12000
 MAX_STATUS = 8192
@@ -92,7 +92,7 @@ def verify_command(obj, keys, permissions, authors, *, author, now=None):
     args = obj["args"]
     if not isinstance(args, dict):
         raise Denied("invalid args")
-    if cmd in ("HEALTH", "LEARNING_STATUS") and args:
+    if cmd in ("HEALTH", "LEARNING_STATUS", "DIAGNOSTICS") and args:
         raise Denied("read-only command has no parameters")
     if cmd in ("PATCH_STAGE", "PATCH_APPLY") and (
             set(args) != {"patch_commit", "patch_id"} or
@@ -647,6 +647,9 @@ def execute(client, cfg, cmd):
         return {"status": "OK", **health(cfg)}
     if name == "LEARNING_STATUS":
         return {"status": "OK", "learning": _trusted_status(cfg.get("status_file"))}
+    if name == "DIAGNOSTICS":
+        from .mobile_dashboard import summary
+        return {"status": "OK", "technical_diagnostics": summary()}
     dest, receipt = download_and_stage(client, cfg, cmd["args"])
     if name == "PATCH_STAGE":
         return {"status": "SIGNED_PATCH_STAGED_NOT_APPLIED", "manifest_sha256":
