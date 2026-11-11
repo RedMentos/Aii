@@ -141,8 +141,9 @@ class AndroidControlBroker:
             if (envelope.get("status") != "DRY_RUN_ONLY"
                     or not isinstance(action_id, str)
                     or not isinstance(digest, str)
-                    or not any(row[0] == action_id and row[1] == "dry_run" and row[2] == digest
-                               for row in self.events())):
+                    or self.db.execute(
+                        "SELECT 1 FROM control_audit WHERE action_id=? AND event='dry_run' AND digest=? LIMIT 1",
+                        (action_id, digest)).fetchone() is None):
                 raise ControlDenied("unissued simulation outcome")
             if (outcome.action_id != action_id
                     or outcome.capability != envelope.get("capability")
@@ -150,7 +151,9 @@ class AndroidControlBroker:
                     or outcome.source != "SIMULATED_COMPANION"):
                 self._audit(action_id, "outcome_rejected", digest)
                 raise ControlDenied("simulation outcome mismatch")
-            if any(row[0] == action_id and row[1] == "simulated_outcome" for row in self.events()):
+            if self.db.execute(
+                    "SELECT 1 FROM control_audit WHERE action_id=? AND event='simulated_outcome' LIMIT 1",
+                    (action_id,)).fetchone():
                 raise ControlDenied("duplicate simulation outcome")
             self._audit(action_id, "simulated_outcome", digest)
 
