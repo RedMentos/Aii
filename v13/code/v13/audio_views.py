@@ -22,6 +22,20 @@ def acoustic_views(percept: dict, *, max_detail: int = 64, gist_bins: int = 8) -
     frames = percept.get("segments")
     if not isinstance(ref, dict) or not isinstance(frames, list) or not 1 <= len(frames) <= 4096:
         raise ValueError("bounded source and frames required")
+    # A5 segments are a derived projection of RAW EAR frames. Reject divergence
+    # before any B/C consumer sees the view (no semantic or training authority).
+    raw_frames = raw.get("frames")
+    if not isinstance(raw_frames, list) or len(raw_frames) != len(frames):
+        raise ValueError("RAW EAR / A5 frame count mismatch")
+    for segment, original in zip(frames, raw_frames):
+        if not isinstance(segment, dict) or not isinstance(original, dict):
+            raise ValueError("invalid acoustic frame")
+        for field in ("start_ms", "end_ms", "rms", "pitch_hz",
+                      "voiced_probability", "non_speech_probability"):
+            if type(segment.get(field)) is not type(original.get(field)) or segment.get(field) != original.get(field):
+                raise ValueError("RAW EAR / A5 acoustic value mismatch")
+    if raw.get("android_capture_verified") is not False:
+        raise ValueError("RAW EAR native authority is unverified")
     duration = raw.get("duration_ms")
     if type(duration) is not int or not 1 <= duration <= 120000:
         raise ValueError("invalid duration")
