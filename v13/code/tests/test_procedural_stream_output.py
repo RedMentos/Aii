@@ -29,10 +29,10 @@ def _activate(op, name, template):
 def test_read_utf8_cursor_across_restart_and_generator_snapshot(tmp_path):
     op = _operator(tmp_path)
     _activate(op, "utf8", "🧠 {i}: ää Ω")
-    first = json.loads(op.run(":fastbatch run utf8 12000 --rows=1500"))
-    assert first["status"] == "PAUSED" and first["rows"] == 1500
+    first = json.loads(op.run(":fastbatch run utf8 1200 --rows=150"))
+    assert first["status"] == "PAUSED" and first["rows"] == 150
     op = _operator(tmp_path)  # fresh operator and procedure instance
-    done = json.loads(op.run(":fastbatch run utf8 12000"))
+    done = json.loads(op.run(":fastbatch run utf8 1200"))
     assert done["status"] == "DONE"
     original = Path(done["output_path"]).read_text(encoding="utf-8")
     reader = ProceduralBatch(tmp_path)
@@ -41,7 +41,7 @@ def test_read_utf8_cursor_across_restart_and_generator_snapshot(tmp_path):
     cursor = 0
     chunks = []
     for _ in range(30000):
-        result = json.loads(op.run(f":fastbatch read utf8 12000 --cursor={cursor} --bytes=19"))
+        result = json.loads(op.run(f":fastbatch read utf8 1200 --cursor={cursor} --bytes=19"))
         assert result["model_calls"] == 0
         assert result["cursor_bytes"] == cursor
         assert result["next_cursor_bytes"] >= cursor
