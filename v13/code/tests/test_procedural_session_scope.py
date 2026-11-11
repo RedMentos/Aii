@@ -108,7 +108,7 @@ def test_source_session_not_forged_through_digest_rehash_or_missing_store(tmp_pa
         entry["code"]["source_evidence"]["source_session_id"] = sid_a
         entry["sha256"] = _sha(entry["code"])
         file.write_text(json.dumps(entry), encoding="utf-8")
-        with pytest.raises(PermissionError, match="original chat session"):
+        with pytest.raises(PermissionError, match="current local chat session"):
             ProceduralBatch(tmp_path, store=st).run("plan", 40)
         with pytest.raises(PermissionError, match="live V13 Store"):
             ProceduralBatch(tmp_path, session=sid_a).run("plan", 40)
