@@ -133,6 +133,32 @@ class AndroidControlBroker:
             return {"action_id": p.action_id, "capability": p.capability,
                     "args": dict(p.args), "digest": p.digest, "status": "DRY_RUN_ONLY"}
 
+    def record_simulated_outcome(self, envelope, outcome):
+        """Persist verified simulation result, distinct from command issuance."""
+        with self.lock:
+            action_id = envelope.get("action_id")
+            digest = envelope.get("digest")
+            if (envelope.get("status") != "DRY_RUN_ONLY"
+                    or not isinstance(action_id, str)
+                    or not isinstance(digest, str)
+                    or not any(row[0] == action_id and row[1] == "dry_run" and row[2] == digest
+                               for row in self.events())):
+                raise ControlDenied("unissued simulation outcome")
+            if (outcome.action_id != action_id
+                    or outcome.capability != envelope.get("capability")
+                    or outcome.status != "SIMULATED"
+                    or outcome.source != "SIMULATED_COMPANION"):
+                self._audit(action_id, "outcome_rejected", digest)
+                raise ControlDenied("simulation outcome mismatch")
+            if any(row[0] == action_id and row[1] == "simulated_outcome" for row in self.events()):
+                raise ControlDenied("duplicate simulation outcome")
+            self._audit(action_id, "simulated_outcome", digest)
+
+    def record_simulated_failure(self, envelope):
+        """Dispatch failure is not evidence of an Android action."""
+        with self.lock:
+            self._audit(envelope["action_id"], "simulation_dispatch_failed", envelope["digest"])
+
     def events(self):
         with self.lock:
             return list(self.db.execute("SELECT action_id,event,digest,at FROM control_audit ORDER BY id"))
