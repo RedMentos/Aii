@@ -48,6 +48,8 @@ def test_operator_import_approved_plan_resume_5000_distinct_values(tmp_path):
     result = Path(done["output_path"]).read_text(encoding="utf-8")
     assert result == "".join(f"Task {i}: {value}\n" for i, value in enumerate(values, 1))
     assert hashlib.sha256(result.encode()).hexdigest() == done["sha256"]
+    bank = ProceduralInputs(tmp_path / "brain")
+    assert "".join(bank.iter_output("dynamic", "testlines", chunk_bytes=7)) == result
     second = json.loads(op.run(":fastbatch input run dynamic testlines"))
     assert second["rows_this_call"] == 0 and second["sha256"] == done["sha256"]
     assert Path(done["output_path"]).stat().st_size == done["bytes"]
@@ -145,3 +147,60 @@ def test_imported_data_requires_explicit_operator_origin(tmp_path):
     with pytest.raises(ValueError, match="lokale Operator"):
         op.run(f":fastbatch input import private {source} {digest}", origin="MODEL")
     assert not (tmp_path / "brain" / "procedures").exists()
+
+
+def test_imported_unicode_cursor_returns_only_verified_complete_utf8(tmp_path):
+    values = ["🧠 α", "ß beta", "ö Ω", "終わり", "é"]
+    src, digest = files(tmp_path, values)
+    op = op_for(tmp_path)
+    active_plan(op)
+    op.run(f":fastbatch input import unicode {src} {digest}")
+    with pytest.raises(FileNotFoundError, match="run input procedure"):
+        op.run(":fastbatch input read dynamic unicode")
+    paused = json.loads(op.run(":fastbatch input run dynamic unicode --rows=2"))
+    first = json.loads(op.run(":fastbatch input read dynamic unicode --bytes=7"))
+    assert first["model_calls"] == 0
+    assert first["status"] == "PAUSED"
+    assert first["committed_bytes"] == paused["bytes"]
+    assert first["next_cursor_bytes"] > 0
+    assert "".join(ProceduralInputs(tmp_path/"brain").iter_output(
+        "dynamic", "unicode", chunk_bytes=4)) == "".join(
+            f"Task {i}: {v}\n" for i, v in enumerate(values[:2], 1))
+    complete = json.loads(op.run(":fastbatch input run dynamic unicode"))
+    assert complete["status"] == "DONE"
+    cursor = 0
+    seen = []
+    while True:
+        chunk = json.loads(op.run(
+            f":fastbatch input read dynamic unicode --cursor={cursor} --bytes=7"))
+        assert len(chunk["text"].encode()) <= 7
+        seen.append(chunk["text"])
+        cursor = chunk["next_cursor_bytes"]
+        if not chunk["more_committed"]:
+            assert chunk["needs_run"] is False
+            break
+    expected = "".join(f"Task {i}: {v}\n" for i, v in enumerate(values, 1))
+    assert "".join(seen) == expected
+    assert cursor == complete["bytes"]
+    assert "".join(ProceduralInputs(tmp_path/"brain").iter_output(
+        "dynamic", "unicode", chunk_bytes=5)) == expected
+    for opt in ("--cursor=-1", "--cursor=1", "--bytes=2", "--bytes=65537"):
+        with pytest.raises(ValueError):
+            op.run(f":fastbatch input read dynamic unicode {opt}")
+
+
+def test_imported_cursor_read_refuses_tampered_original_without_erasing_output(tmp_path):
+    src, digest = files(tmp_path, ["apple", "orange", "banana"])
+    op = op_for(tmp_path)
+    active_plan(op)
+    op.run(f":fastbatch input import protect {src} {digest}")
+    done = json.loads(op.run(":fastbatch input run dynamic protect"))
+    original = Path(done["output_path"]).read_bytes()
+    saved = tmp_path / "brain" / "procedures" / "fastbatch" / "inputs" / "protect.txt"
+    saved.chmod(0o600)
+    saved.write_text("tampered\norange\nbanana\n")
+    with pytest.raises(ValueError, match="imported source bytes changed"):
+        op.run(":fastbatch input read dynamic protect")
+    with pytest.raises(ValueError, match="imported source bytes changed"):
+        list(ProceduralInputs(tmp_path/"brain").iter_output("dynamic", "protect"))
+    assert Path(done["output_path"]).read_bytes() == original
