@@ -13,6 +13,7 @@ from .android_capability_bridge import (
 )
 from .android_goal_learning_demo import run_demo
 from .android_goal_replay_retention import run_goal_replay
+from .speech_intent import SpeechCoordinator
 
 
 def run_integrated_goal(home, *, first=0, count=4, seed=17, steps=5):
@@ -53,9 +54,26 @@ def run_integrated_goal(home, *, first=0, count=4, seed=17, steps=5):
     if (replay["readback"]["replay_trained_model_reloaded"] is not True
             or result["goal"]["native_android_executed"] is not False):
         raise ValueError("learning checkpoint or isolation verification failed")
+    # C3 language-to-voice intent is wired to the SAME completed goal receipt.
+    # No renderer, microphone, or OS audio privilege exists in this path.
+    speech = SpeechCoordinator(max_pending=2, clock=lambda: 101.0)
+    utterance = speech.enqueue(
+        "The simulated notes task completed.",
+        "synthetic-goal-" + str(first),
+    )
+    speech_status = speech.dispatch_one()
+    if speech_status.status != "OFF":
+        raise ValueError("unapproved native speech output")
     return {
         "schema": "v13.c5_shadow_android_goal_replay/1",
         "c5_typed_status": shadow.status.value,
+        "c3_speech_intent": {
+            "id": utterance.id,
+            "source_turn": utterance.source_turn,
+            "queued": len(speech.receipts()) == 1,
+            "renderer_status": speech_status.status,
+            "native_audio_executed": False,
+        },
         "c5_native_execution": False,
         "t8_redacted_action_outcome": shadow.t8_record(),
         "synthetic_goal": result,
