@@ -1,0 +1,25 @@
+name: V13 pinned Actions evidence API reconciliation
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/pinned_multiorgan_evidence.py'
+      - 'v13/code/scripts/verify_actions_evidence.py'
+      - 'v13/code/tests/test_verify_actions_evidence.py'
+      - '.github/workflows/v13-actions-evidence-reconcile.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Offline fail-closed evidence regressions
+        run: |
+          cd v13/code
+          python -m unittest -v tests.test_pinned_multiorgan_evidence tests.test_pinned_multiorgan_evidence_urls tests.test_pinned_multiorgan_evidence_run_url_defined tests.test_verify_actions_evidence

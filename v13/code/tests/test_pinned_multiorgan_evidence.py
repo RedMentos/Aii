@@ -29,7 +29,7 @@ class EvidenceTests(unittest.TestCase):
     def test_perception_without_ci_refused(self):
         m = fixture()
         m["chains"]["perception"]["runs"] = []
-        self.assertIn("perception: missing CI", check(m))
+        self.assertIn("perception: missing or invalid CI list", check(m))
 
     def test_promotion_refused(self):
         m = fixture()
