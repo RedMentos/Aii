@@ -145,3 +145,82 @@ def trial(world, *, seed=17, steps=8, limit=2048, checkpoint=None):
             "optimizer_trajectory_reproduced": False,
         }
     return result
+
+
+
+def replay_ablation(world, *, seed=17, steps=5, limit=2048):
+    """Measure old-cohort forgetting with and without bounded synthetic replay.
+
+    Two models start from identical old-cohort weights; one sees only new
+    observations, the other also replays part of old training data. The old
+    evaluation cohort remains unseen by both. This comparison is NOT a
+    guaranteed improvement, a causal AGI demonstration, or a live T8 test.
+    """
+    if type(seed) is not int or not 0 <= seed <= 2**63-1:
+        raise ValueError("invalid synthetic JEPA seed")
+    if type(steps) is not int or not 1 <= steps <= 100:
+        raise ValueError("synthetic replay step budget must be 1..100")
+    if type(limit) is not int or not 24 <= limit <= 2048:
+        raise ValueError("synthetic replay source limit must be 24..2048")
+    import numpy as np
+    from .world_jepa import WorldJEPA
+    unique = list(_validate(world.transitions(limit=limit)).items())
+    split = (len(unique) * 2) // 3
+    old, recent = unique[:split], unique[split:]
+    old_test = [item for i,item in enumerate(old) if i % 5 == 0]
+    old_train = [item for i,item in enumerate(old) if i % 5 != 0]
+    if len(old_test) < 4 or len(old_train) < 8 or len(recent) < 8:
+        raise ValueError("not enough disjoint old/new synthetic replay data")
+    all_inputs = [key for key,_ in old_train+old_test+recent]
+    if len(all_inputs) != len(set(all_inputs)):
+        raise ValueError("synthetic replay/holdout identity overlap")
+    x, a, y = _arrays(old_train)
+    nx, na, ny = _arrays(recent)
+    hx, ha, hy = _arrays(old_test)
+    # Strictly deterministic initial seed and identical initial data.
+    without = WorldJEPA(seed=seed, ensemble=2).fit(
+        x, a, y, steps=4, log_every=1)
+    with_replay = WorldJEPA(seed=seed, ensemble=2).fit(
+        x, a, y, steps=4, log_every=1)
+    before = without.prediction_loss(hx, ha, hy)
+    if not np.isclose(before, with_replay.prediction_loss(hx,ha,hy),
+                      atol=1e-12, rtol=0):
+        raise ValueError("replay control groups did not share starting weights")
+    replay = old_train[::2]
+    rx, ra, ry = _arrays(replay)
+    prior_without = without.enc["W1"].copy()
+    prior_with = with_replay.enc["W1"].copy()
+    without.partial_fit(nx, na, ny, steps=steps, log_every=max(1,steps//3))
+    with_replay.partial_fit(
+        np.concatenate((nx,rx)), np.concatenate((na,ra)),
+        np.concatenate((ny,ry)), steps=steps, log_every=max(1,steps//3))
+    plain = without.prediction_loss(hx, ha, hy)
+    replayed = with_replay.prediction_loss(hx, ha, hy)
+    if (not np.all(np.isfinite([before,plain,replayed]))
+            or np.array_equal(prior_without, without.enc["W1"])
+            or np.array_equal(prior_with, with_replay.enc["W1"])):
+        raise ValueError("synthetic replay ablation failed numeric weight update")
+    source_sha = hashlib.sha256(_canonical([
+        [key,row["action_id"]] for key,row in unique
+    ])).hexdigest()
+    return {
+        "kind": "SYNTHETIC_UI_REPLAY_ABLATION",
+        "scope": "SYNTHETIC_UI_ONLY_NO_T8_SOURCE",
+        "source_sha256": source_sha,
+        "initial_train_rows": len(old_train),
+        "old_disjoint_holdout_rows": len(old_test),
+        "new_train_rows": len(recent),
+        "replayed_prior_rows": len(replay),
+        "old_holdout_loss_before": float(before),
+        "without_replay_loss_after": float(plain),
+        "with_replay_loss_after": float(replayed),
+        "forgetting_delta_without_replay": float(plain-before),
+        "forgetting_delta_with_replay": float(replayed-before),
+        "replay_better_on_this_cohort": bool(replayed < plain),
+        "guaranteed_replay_superiority": False,
+        "both_models_changed_numeric_weights": True,
+        "source_ids_disjoint": True,
+        "native_android_executed": False,
+        "b1_b2_c3_gguf_weights_modified": False,
+        "active_model_promoted": False,
+    }
