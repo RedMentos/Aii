@@ -12,10 +12,12 @@ from pathlib import Path
 import shutil
 import tempfile
 
-BUILDER = 'scripts/integrated_dataset_idle_candidate_20261111.py'
-BUILDER_SHA = '8d18f9fcde0eac79442dceb16544e747b6baa4e7edc07436ef131b889d288282'
+BUILDER = 'scripts/integrated_user_compaction_candidate_20261111.py'
+BUILDER_SHA = '516d9a18e033987a759716885617cee600c009725a5a5d54adf9783a060962a7'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
+CANON = 'docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md'
+CANON_SHA = '3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee'
 
 
 def _publish(staging, destination):
@@ -56,6 +58,18 @@ def stage(code_dir: Path, destination: Path) -> dict:
         if (target.is_absolute() or '..' in target.parts or not target.parts
                 or target.parts[0] not in {'v13', 'tests', 'specs'} or not isinstance(payload, bytes)):
             raise ValueError('unsafe integrated replacement path or payload')
+    # The Runtime completion registry verifies this exact public Canon. Keep
+    # its required asset in the runnable review copy, including its hash pin.
+    canon = None
+    if (code_dir / 'specs/component-contracts.json').is_file():
+        contract = json.loads((code_dir / 'specs/component-contracts.json').read_text())
+        if contract.get('canon_file') != CANON or contract.get('canon_sha256') != CANON_SHA:
+            raise ValueError('unexpected staged Canon contract')
+        if any(path.is_symlink() for path in (code_dir/'docs', code_dir/'docs/canon', code_dir/CANON)):
+            raise ValueError('staged Canon cannot be a symlink')
+        canon = (code_dir / CANON).read_bytes()
+        if hashlib.sha256(canon).hexdigest() != CANON_SHA:
+            raise ValueError('staged Canon hash mismatch')
     destination.parent.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix='.v13-integrated-', dir=destination.parent))
     try:
@@ -72,6 +86,10 @@ def stage(code_dir: Path, destination: Path) -> dict:
             target = staging / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(payload)
+        if canon is not None:
+            target = staging / CANON
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(canon)
         manifest = {
             'status': 'SHADOW_REVIEW_ONLY',
             'source': str(code_dir),

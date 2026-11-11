@@ -1,4 +1,51 @@
 {
+  "codex_user_message_compaction_20261111": {
+    "status": "CONNECTED_REVIEW_STAGE_LOCAL_GREEN",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "8d601e684917b692e004c00e464d806c19103016",
+    "builder": "v13/code/scripts/integrated_user_compaction_candidate_20261111.py",
+    "builder_sha256": "516d9a18e033987a759716885617cee600c009725a5a5d54adf9783a060962a7",
+    "wiring_sha256": "622ef73418fe0698b549df95564458ecd8a357e03365c2c27cb197690bb27069",
+    "raw_helper_sha256": "3208fabfd73daa7ecdf16bf2ff981fcc7ddadb5e71d7e9f6bcfea05846b1c8e6",
+    "scope": "actual default-off G13 job removes only old FINAL USER SQL text after exclusive verified archive; explicit source-backed readers, no text rematerialization",
+    "tests": {
+      "compaction": "11 inner passed",
+      "after_compaction_training": "3 actual tiny C3/Body/World plus private World restart passed",
+      "shared": "636 passed / 3 CUDA skipped / 70 subtests; outer passed",
+      "stage": "15 outer passed on final source",
+      "before": "2 failed / 8 passed on atomic join and expired reader; 1 failed / 2 passed on Body view length; first shared 3 failed / 632 passed, all preserved",
+      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+    },
+    "defaults": {
+      "enabled": false,
+      "min_age_days": 30,
+      "daily_attempts": 8,
+      "interval_s": 300,
+      "ref_bytes": 2097152,
+      "max_source_bytes": 65536,
+      "max_scanned_rows": 16,
+      "max_ref_entries": 8192
+    },
+    "fixes": [
+      "mutation owns rollback boundary; readers may join caller tx",
+      "bounded hydration; unavailable on cancellation/revocation",
+      "collapse metrics and native-history forward pages keep original user source",
+      "Body context and target views honor max_tokens; policy included in checkpoint digest/telemetry",
+      "required public Canon copied with exact hash; invalid asset never published"
+    ],
+    "limits": [
+      "only logical SQL text savings/reusable pages; physical DB/WAL/backup reduction unmeasured",
+      "assistant/teacher, active memories and newest context retained; no whole-system quota/infinite memory/unlearning claim",
+      "only synthetic tiny/numeric evidence; native/Redmi/independent utility still open",
+      "general C3 prompt/teacher budget and cross-batch cumulative adapter trajectory remain open"
+    ],
+    "next_edge": "bounded C3 prompt/label/teacher encoding plus resume-policy binding; external corpus requires own grant/origin/raw-encoding/retention contract",
+    "production_promotion": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "negative_gates_unchanged": true
+  },
   "codex_dataset_idle_record_20261111": {
     "status": "CONNECTED_REVIEW_STAGE_LOCAL_GREEN",
     "branch": "codex/v13-integrated-continuation-20261110",
@@ -15,7 +62,25 @@
       "dataset": "29 inner / 1 outer passed; repeated through sole default stager",
       "shared": "592 passed / 3 CUDA skipped / 70 subtests; 4 outer passed including 77 idle/scheduler cases",
       "stage_and_old_worker_counterexample": "14 outer passed",
-      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+      "remote_ci": {
+        "code_commit": "8d601e684917b692e004c00e464d806c19103016",
+        "code_tree": "2d6da5690af76004ab7b0f5b58dc7c7d9142ec10",
+        "push": {
+          "run": 43073688604,
+          "staged_runtime": 130707892629,
+          "integrated_regression": 130707893423,
+          "conclusion": "success"
+        },
+        "pull_request": {
+          "run": 43073701241,
+          "merge_checkout": "047d306",
+          "staged_runtime": 130707933309,
+          "integrated_regression": 130707933908,
+          "conclusion": "success"
+        },
+        "tests": "592 passed / 3 CUDA skipped / 70 subtests; minimal stack 17 outer passed",
+        "scope": "synthetic software; intake performs neither network nor training; not native or Redmi"
+      }
     },
     "worker_fix": "both idle consumers require actual Runtime.worker thread; original dispatched-scope takeover reproduced on pinned predecessor",
     "quota_scope": "charged payload and receipts, not existing previews or total device/SQLite/WAL",

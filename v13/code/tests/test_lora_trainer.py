@@ -101,7 +101,7 @@ class LoraGlue(unittest.TestCase):
         from v13.inputs import record_rating
         e=self.s.event(self.r.session,'Explain photosynthesis briefly.')
         with self.s.tx() as c:
-            c.execute("INSERT INTO messages(session_id,event_id,role,text,status,metadata,created) VALUES(?,?,?,?,?,?,?)",(self.r.session,e['event_id'],'user','Explain photosynthesis briefly.','FINAL','{}',1.))
+            # Store.event already writes the unique source-bound USER row.
             c.execute("INSERT INTO messages(session_id,event_id,role,text,status,metadata,created) VALUES(?,?,?,?,?,?,?)",(self.r.session,e['event_id'],'assistant','Plants turn light into sugar.','FINAL','{}',2.))
         record_rating(self.s,e['event_id'],9,'EXPLICIT_NOTE')
         w=self.wc(cand={'overall':.8,'unseen':.75,'forgetting':{'rate':0.}})
@@ -109,6 +109,13 @@ class LoraGlue(unittest.TestCase):
         out=w.stage(require_replay_pass=False,include_rated=True);self.assertEqual(out['items'],1)  # data mix: 1 human item leaves no room for a self-written target (self <= 10 %)
         self.assertEqual(w.batch(out['batch_id'])['data_mix']['dropped'],1)
         record_rating(self.s,e['event_id'],3,'EXPLICIT_NOTE');self.assertEqual(w.rated_candidates(),[])  # later low note replaces it
+    def test_duplicate_user_row_cannot_become_a_rated_training_prompt(self):
+        from v13.inputs import record_rating
+        e=self.s.event(self.r.session,'Synthetic rated question')
+        self.s.message(self.r.session,e['event_id'],'assistant','Synthetic answer','FINAL',{})
+        self.s.message(self.r.session,e['event_id'],'user','Duplicate unbound question','FINAL',{})
+        record_rating(self.s,e['event_id'],9,'EXPLICIT_NOTE')
+        self.assertEqual(self.wc(cand={'overall':.8,'unseen':.75,'forgetting':{'rate':0.}}).rated_candidates(),[])
     def test_helpers_without_torch(self):
         self.assertTrue(answer_hit('Your cat is  called MITZI.',['mitzi']));self.assertFalse(answer_hit('no idea',['mitzi']))
         t=LoraTrainer(self.home,self.home/'work');self.assertEqual(t.fit([],'g')['metrics']['reason'],'EMPTY_BATCH')

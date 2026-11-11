@@ -1,6 +1,7 @@
 """Isolated staging tests; actual V13 end-to-end suite is separate."""
 import importlib.util
 import hashlib
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -48,6 +49,15 @@ class StageTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'pin mismatch'):
             module.stage(self.code, out)
         self.assertFalse(out.exists())
+
+    def test_changed_required_canon_never_publishes_candidate(self):
+        self.builder("    return {}\n")
+        (self.code/'specs/component-contracts.json').write_text(json.dumps(
+            {'canon_file':module.CANON,'canon_sha256':module.CANON_SHA}))
+        canon=self.code/module.CANON;canon.parent.mkdir(parents=True);canon.write_bytes(b'wrong public Canon')
+        with self.assertRaisesRegex(ValueError, 'Canon hash mismatch'):
+            module.stage(self.code,self.root/'candidate')
+        self.assertFalse((self.root/'candidate').exists())
 
     def test_rejects_traversal_before_copy(self):
         self.builder("    return {'../outside.py': b'bad'}\n")
