@@ -10,11 +10,14 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import re
 
 from .android_control_sim import CAPABILITY_ORDER
 
 MIN_TRAIN = 8
 MIN_HELDOUT = 4
+SHA256_HEX = re.compile(r"[0-9a-f]{64}\Z")
+ACTION_ID = re.compile(r"[0-9a-f]{32}\Z")
 
 
 def _canonical(obj):
@@ -33,10 +36,10 @@ def _validate(rows):
             raise ValueError("invalid simulator transition receipt")
         aid = row["action_id"]
         if (row["scope"] != "SYNTHETIC_UI_ONLY"
-                or type(aid) is not str or len(aid) != 32
+                or type(aid) is not str or not ACTION_ID.fullmatch(aid)
                 or aid in ids
                 or type(row["a"]) is not int or not 0 <= row["a"] < len(CAPABILITY_ORDER)
-                or any(type(v) is not str or len(v) != 64 for v in (
+                or any(type(v) is not str or not SHA256_HEX.fullmatch(v) for v in (
                     row["before_sha256"], row["after_sha256"]
                 ))):
             raise ValueError("not a unique grounded synthetic transition")
@@ -99,7 +102,8 @@ def trial(world, *, seed=17, steps=8, limit=2048, checkpoint=None):
     rows = world.transitions(limit=limit)
     train, heldout = _groups(rows)
     source_sha = hashlib.sha256(_canonical([
-        [key, row["action_id"], row["before_sha256"], row["after_sha256"]]
+        [key, row["action_id"], row["before_sha256"],
+         row["after_sha256"], row["x2"]]
         for key, row in train + heldout
     ])).hexdigest()
     x, a, y = _arrays(train)
@@ -201,7 +205,8 @@ def replay_ablation(world, *, seed=17, steps=5, limit=2048):
             or np.array_equal(prior_with, with_replay.enc["W1"])):
         raise ValueError("synthetic replay ablation failed numeric weight update")
     source_sha = hashlib.sha256(_canonical([
-        [key,row["action_id"]] for key,row in unique
+        [key,row["action_id"],row["before_sha256"],
+         row["after_sha256"],row["x2"]] for key,row in unique
     ])).hexdigest()
     return {
         "kind": "SYNTHETIC_UI_REPLAY_ABLATION",
