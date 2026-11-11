@@ -44,6 +44,7 @@ jobs:
           tests/test_context_source_recall_stage_20261111.py
           tests/test_runtime_jepa_utility_integration_20261111.py
           tests/test_world_jepa_training_resume_stage_20261111.py
+          tests/test_idle_world_stage_20261111.py
   integrated-regression:
     runs-on: ubuntu-latest
     timeout-minutes: 15

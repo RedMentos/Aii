@@ -17,7 +17,7 @@ Zulassung ist auf 256 Items mit begrenzten Text-/Evidenzlesevorgängen beschrän
 - **13 neue Fälle PASS**, äußerer Stage-Test PASS: record bleibt lesbar, direct/SDFT mit learn, vollständige Spannen, F1/F5-/Input-/Permission-Manipulation vor Fit, gefälschter Teacher-Prompt, tatsächlicher Tiny-C3-/PEFT-Schritt, Widerruf nach echtem AdamW-Schritt und verweigerte Freigabe danach.
 - **486 gemeinsame Tests PASS / 3 CUDA SKIP / 58 Untertests PASS** in einer erzeugten Kopie einschließlich Body, World, Kontext/Archiv und vorhandener AG6-Freigabe-/Rollback-/Widerrufsprüfungen.
 - Erster erweiterter Lauf **5 FAIL / 481 PASS**: alte positive Testfixtures hatten nur record erlaubt; der alte SDFT-Glue-Mock umging die echte Datenquelle. Positive Fixtures fordern nun ausdrücklich learn, und der Glue-Test verwendet die tatsächlich angelegte Korrektur. Keine Admission- oder Freigabeprüfung wurde abgeschwächt. Der rote Lauf bleibt erhalten.
-- Modelle/Exporter sind ausdrücklich Tiny-/synthetische Testpfade; kein nativer GGUF- oder Redmi-Erfolg. Remote-CI erst nach tatsächlichem Abschluss ergänzen.
+- Modelle/Exporter sind ausdrücklich Tiny-/synthetische Testpfade; kein nativer GGUF- oder Redmi-Erfolg. Geschlossene Remote-CI auf Code-HEAD `4df40e5598db5b9d5e75ee2f1f04117388a2a18d`: exakter Push `43020356653` und PR-Merge `43020364859` (Checkout `c6b6cf3`), jeweils beide Jobs SUCCESS; 13 äußere Minimaltests und 486 gemeinsame PASS / 3 CUDA SKIP / 58 Untertests. Originale dekodierte Joblogs und Commit-/Treebindung liegen in `proofs/c3-consent-20261111/`.
 
 ```bash
 cd v13/code

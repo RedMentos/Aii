@@ -1,4 +1,41 @@
 {
+  "codex_idle_world_runtime_20261111": {
+    "status": "CONNECTED_REVIEW_STAGE_LOCAL_GREEN",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "4df40e5598db5b9d5e75ee2f1f04117388a2a18d",
+    "builder": "v13/code/scripts/integrated_idle_world_candidate_20261111.py",
+    "builder_sha256": "38c6879b74bcd3158e6e95b48f08b98015662010f55423c54a5db09d879a49f9",
+    "helper_sha256": "71dabc5e1d015029e910cd7f96e9317a89d03e39e5ee5f5574b059174b96c1e7",
+    "scope": "actual default-off G13 owner -> one bounded numeric World JEPA step -> private complete checkpoint -> restart; separate thread-bound single-use authority",
+    "defaults": {
+      "enabled": false,
+      "daily_attempts": 8,
+      "max_rows": 64,
+      "interval_s": 300,
+      "min_idle_s": 300
+    },
+    "tests": {
+      "focused": "76 passed / 12 subtests; 2 outer passed including old numeric counterexample",
+      "shared": "562 passed / 3 CUDA skipped / 70 subtests; 1 outer passed",
+      "existing_stage_runtime": "13 outer passed",
+      "first_shared": "562 passed / 3 skipped / 70 subtests; 1 teardown error; preserved",
+      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+    },
+    "legacy_fix": "both old learn jobs check record/pause/cancel/resources/foreground before review or mutation; old actual RECORD_ONLY Ridge-fit counterexample preserved",
+    "limits": [
+      "source/Runtime/SQLite lock spans one bounded fit; no hard foreground preemption or Redmi latency claim",
+      "historical lineage verification still up to 2048; lifelong compaction remains open",
+      "one-step bootstrap auxiliary floor remains unchanged; utility unproven",
+      "no external dataset training or network/screen/audio/Android permissions"
+    ],
+    "next_edge": "actual record-only staged-dataset import with quotas and independent provenance; then old-user-message compaction with explicit reader hydration",
+    "production_promotion": false,
+    "device_proof": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "negative_gates_unchanged": true
+  },
   "codex_c3_consent_admission_20261111": {
     "status": "CONNECTED_REVIEW_STAGE",
     "branch": "codex/v13-integrated-continuation-20261110",
@@ -11,7 +48,25 @@
       "focused": "13 inner passed; 1 outer passed",
       "shared_stage": "486 passed / 3 CUDA skipped / 58 subtests passed; 1 outer passed",
       "first_shared": "5 failed / 481 passed; old record-only positive fixtures and fake SDFT row replaced by genuine learn corrections",
-      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+      "remote_ci": {
+        "code_commit": "4df40e5598db5b9d5e75ee2f1f04117388a2a18d",
+        "code_tree": "7ae1b052bb487dea226b885978a126f74280c884",
+        "push": {
+          "run": 43020356653,
+          "staged_runtime": 130521725318,
+          "integrated_regression": 130521725757,
+          "conclusion": "success"
+        },
+        "pull_request": {
+          "run": 43020364859,
+          "merge_checkout": "c6b6cf3",
+          "staged_runtime": 130521752128,
+          "integrated_regression": 130521752785,
+          "conclusion": "success"
+        },
+        "tests": "486 passed / 3 CUDA skipped / 58 subtests; minimal stack 13 outer passed",
+        "scope": "synthetic software; no native or Redmi evidence"
+      }
     },
     "controls": "record retrieval retained; source/permission/prompt corruption before fit and after real AdamW step cannot publish/approve",
     "limits": [

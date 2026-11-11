@@ -1,3 +1,9 @@
+## 2026-11-11 — langsames World-JEPA-Hintergrundlernen tatsächlich verbunden
+
+Die gleiche Reviewkopie hat jetzt einen explizit aktivierten G13-/Sleep-Consumer mit eigener threadgebundener Einmalautorität, persistentem Abstand/Tagesbudget, einem numerischen Schritt, aktuellem Quellen-/Pause-/Foreground-Guard und vollständigem privatem Save/Restart. Alter unbedingter RECORD_ONLY-Ridge-Fit reproduziert und blockiert. **76 gezielte PASS / 12 Untertests; 562 gemeinsame PASS / 3 CUDA SKIP / 70 Untertests**, dazu 13 äußere vorhandene Staging-/Runtime-PASS. `code/docs/INTEGRATED_IDLE_WORLD_RUNTIME_20261111.md`. C3-Ausgangscommit 4df40e55 bereits mit eigenem exaktem Push-/PR-Merge-CI grün; Idle-CI separat abwarten.
+
+Nächste tatsächliche Implementierung läuft parallel weiter: begrenzter lokaler Dataset-Import mit expliziter RECORD-Admission/eigener Provenienz und Cursor, anschließend USER-only-Speicherverdichtung mit vollständiger Leser-Hydration. Kein automatischer Datasetdownload oder Trainingsgrant, keine Bildschirm-/Android-/Sprachfreigabe. Neue fremde Übergaben werden auf ihre genauen Quellen geprüft; deren Simulationen ersetzen keine Geräte- oder Nutzennachweise. Quellfreeze, negative Gates, beide false-Gesamtflags und der vollständige Selbstoptimierungs-/Kontextumfang bleiben bestehen.
+
 ## 2026-11-11 — C3-consent und echter SDFT-Datenpfad verbunden
 
 Allgemeine direkte C3-Kandidaten und Selbst-Distillation verwenden F1/F5/Feedback/Originaleingabe samt explizitem learn. Record bleibt abrufbar, Quellen und Teacher-Prompt werden bis vor Ergebnisveröffentlichung geprüft. **13 neue Fälle PASS; 486 gemeinsame PASS / 3 CUDA SKIP / 58 Untertests PASS**; vorhandene AG6-/Body-/World-/Kontextprüfungen beibehalten. `code/docs/INTEGRATED_C3_CONSENT_ADMISSION_20261111.md`. Body-Ausgangscommit bb1a94ca remote mit exaktem Push-/PR-Merge-CI grün, neuere C3-CI separat prüfen.

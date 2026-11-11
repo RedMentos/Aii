@@ -24,6 +24,34 @@
       "sha256": "fe27a78f65b275d47963e4b0bab7df9084b80085353d0d68d1181193e81a3247",
       "decoded_sha256": "2271d199bd64f921fb6e74aa988ab1b1f23ba9d127d0fab8d62b3fea0f306817",
       "builder_sha256": null
+    },
+    {
+      "artifact": "ci-43020356653-130521725318.json.gz",
+      "sha256": "6e833c7b286fa698bc2a1f2fb28ba85fde00e0c4d8e2371f92cacd9c4fdb1e23",
+      "decoded_sha256": "ad25fd7bb518a59c2e499d27d07dce523ce57b1a5a3730cf224655e32e9845e4",
+      "code_commit": "4df40e5598db5b9d5e75ee2f1f04117388a2a18d",
+      "privacy": "raw temporarily indexed and CLEAN before compression"
+    },
+    {
+      "artifact": "ci-43020356653-130521725757.json.gz",
+      "sha256": "22de4f23e4b2aa46aa7cceecf7a60e80e61c99e0380d9dd3c78d3ce0ba4ed3d4",
+      "decoded_sha256": "9cdc1a4767ff1f331bd1c0a43e1cdaa240cd58d3423923e9f1a5da4bf96909fd",
+      "code_commit": "4df40e5598db5b9d5e75ee2f1f04117388a2a18d",
+      "privacy": "raw temporarily indexed and CLEAN before compression"
+    },
+    {
+      "artifact": "ci-43020364859-130521752128.json.gz",
+      "sha256": "e7137384b4fa5078be68d01fc1c34b0aed7f06b513dabc9978c93c29ab44f620",
+      "decoded_sha256": "80f93aab5c0ee5f9e1499ffaf09359f0e4b2938533fe24b1c262932791d8994b",
+      "code_commit": "4df40e5598db5b9d5e75ee2f1f04117388a2a18d",
+      "privacy": "raw temporarily indexed and CLEAN before compression"
+    },
+    {
+      "artifact": "ci-43020364859-130521752785.json.gz",
+      "sha256": "d5ee8c5ee8996e5c82ed3eed17067445452261f736f36cf412a9fbe055d8094a",
+      "decoded_sha256": "a4daa0b4ede914c8d50dd869d0506eb47fd6015ed7eb6d273ddde2aed674f5d2",
+      "code_commit": "4df40e5598db5b9d5e75ee2f1f04117388a2a18d",
+      "privacy": "raw temporarily indexed and CLEAN before compression"
     }
   ]
 }
