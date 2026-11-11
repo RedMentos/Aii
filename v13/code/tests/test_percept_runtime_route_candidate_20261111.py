@@ -75,6 +75,19 @@ class PerceptRouteTests(unittest.TestCase):
                 self.store.read_source(x["source_ref"]) for x in result[key]),
                 "Alpha Beta.")
 
+    def test_invalid_view_width_fails_before_a5_persistence(self):
+        for width_detail, width_gist in (
+                (0, 6), (3, 0), (-1, 6), (3, -1),
+                (True, 6), (3, False), (1.5, 6), (3, "6")):
+            with self.subTest(detail=width_detail, gist=width_gist):
+                event = self.event("Alpha Beta.")
+                with self.assertRaisesRegex(ValueError, "B source-view width"):
+                    run_percept_route(self.runtime, event,
+                                     width_detail=width_detail,
+                                     width_gist=width_gist)
+                self.assertIsNone(self.store.one(
+                    "SELECT id FROM packets WHERE kind='PerceptPacket' LIMIT 1"))
+
     def test_bad_source_fails_without_packet(self):
         event = self.event("hello")
         event["source_ref"] = dict(event["source_ref"], sha256="0"*64)
