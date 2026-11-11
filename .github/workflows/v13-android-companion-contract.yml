@@ -1,0 +1,28 @@
+name: V13 Android companion contract
+on:
+  push:
+    branches:
+      - 'codex/v13-android-native-transport-contract-20261111-0904'
+  pull_request:
+    paths:
+      - 'v13/code/v13/android_companion_contract.py'
+      - 'v13/code/tests/test_android_companion_contract.py'
+      - '.github/workflows/v13-android-companion-contract.yml'
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and test contract plus existing broker
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m py_compile v13/code/v13/android_companion_contract.py
+          python -m unittest -v v13.code.tests.test_android_companion_contract
+          python -m pytest -q v13/code/tests/test_android_control.py v13/code/tests/test_android_control_cli.py
