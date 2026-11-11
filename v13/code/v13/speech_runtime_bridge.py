@@ -10,8 +10,8 @@ import re
 
 from .speech_intent import SpeechIntentQueue, SpeechIntentError
 
-_EVENT = re.compile(r"evt_[a-f0-9]{28,32}\\Z")
-_SHA = re.compile(r"[a-f0-9]{64}\\Z")
+_EVENT = re.compile(r"evt_[a-f0-9]{28,32}\Z")
+_SHA = re.compile(r"[a-f0-9]{64}\Z")
 
 
 @dataclass(frozen=True)
