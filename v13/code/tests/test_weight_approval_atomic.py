@@ -25,7 +25,7 @@ class ApprovalAtomicity(unittest.TestCase):
         self.r=Runtime(self.home);self.r.sleep.cycle.set_policy('enabled','off');self.s=self.r.store
         self.model=self.home/'model.gguf';self.model.write_bytes(b'authored model fixture')
         e=self.s.event(self.r.session,'What is the project name?')
-        self.r.memory.feedback(e['event_id'],'fact','Mira')
+        self.r.memory.feedback(e['event_id'],'fact','Mira',permission='learn')
         self.cfg=self.r.cfg|{'learning_mode':'SHADOW_UPDATE'}
         self.w=WeightConsolidation(self.s,self.cfg,trainer=FakeLora(self.home,self.model,cand={'overall':.8,'unseen':.75,'forgetting':{'rate':0.}}))
         self.bid=self.w.stage(require_replay_pass=False)['batch_id']

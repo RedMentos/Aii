@@ -1,0 +1,465 @@
+diff --git a/v13/code/tests/test_online_world_20261108.py b/v13/code/tests/test_online_world_20261108.py
+index dfd43b2..cfd320a 100644
+--- a/v13/code/tests/test_online_world_20261108.py
++++ b/v13/code/tests/test_online_world_20261108.py
+@@ -5,6 +5,12 @@ import pytest
+ from v13.online_world import OnlineWorld
+
+
++@pytest.fixture(autouse=True)
++def synthetic_sources(monkeypatch):
++    # These tests inject rows instead of creating matching Store records.
++    monkeypatch.setattr(OnlineWorld,'_source_current',lambda self,row:True)
++
++
+ def transition(i):
+     return {'action_id':f'action-{i}','s':[.1+i*.01,0.,0.,1.],
+             'a':'simple' if i%2==0 else 'detail','y':[.2+i*.005,1.,.3]}
+@@ -51,17 +57,21 @@ def test_real_action_identifiers_are_strings_not_ordered_integers(tmp_path):
+ def test_operator_command_uses_runtime_online_learning_without_growth_hub(tmp_path):
+     from v13.agi import operator_command
+     runtime=SimpleNamespace(home=tmp_path,store=object())
+-    runtime.online_world_update=lambda limit: {'learned':limit,'status':'LOCAL'}
++    runtime.online_world_update=lambda limit,authority: {'learned':limit,'status':'LOCAL','authority':authority}
+     import json
+-    assert json.loads(operator_command(runtime,['onlineworld','3']))['learned']==3
++    result=json.loads(operator_command(runtime,['onlineworld','3']))
++    assert result['learned']==3 and result['authority']=='EXPLICIT_HUMAN'
+     with pytest.raises(ValueError):operator_command(runtime,['onlineworld','3','extra'])
+
+
+ def test_actual_runtime_method_learns_committed_world_transition(tmp_path):
+     from v13.runtime import Runtime
+-    fake=SimpleNamespace(home=tmp_path,store=object())
++    runtime=Runtime(tmp_path)
++    runtime.cfg['learning_mode']='SHADOW_UPDATE'
+     rows=[transition(1)]
+-    with patch('v13.online_world.world_model.transitions',return_value=rows):
+-        result=Runtime.online_world_update(fake,limit=16)
+-    assert result['learned']==1
+-    assert fake._online_world.model.seen==1
++    try:
++        with patch('v13.online_world.world_model.transitions',return_value=rows):
++            result=runtime.online_world_update(limit=16,authority='EXPLICIT_HUMAN')
++        assert result['learned']==1
++        assert runtime._online_world.model.seen==1
++    finally:runtime.close()
+diff --git a/v13/code/v13/agi/__init__.py b/v13/code/v13/agi/__init__.py
+index 9f67584..3717ba9 100644
+--- a/v13/code/v13/agi/__init__.py
++++ b/v13/code/v13/agi/__init__.py
+@@ -171,9 +171,16 @@ def operator_command(r,args):
+         from .language_compare import compare_languages
+         return dumps(compare_languages(r.store, solver=args[3] if len(args) == 4 else 'v13'))
+     if args and args[0]=='onlineworld':
+-        if len(args)>2:raise ValueError('Usage: :growth onlineworld [LIMIT]')
+-        limit=int(args[1]) if len(args)==2 else 2048
+-        return dumps(r.online_world_update(limit=limit))
++        from .. import online_world_policy as policy
++        if len(args)==1 or args==['onlineworld','status']:return dumps(policy.status(r))
++        if args in (['onlineworld','on'],['onlineworld','off']):
++            policy.set_enabled(r.store,args[1]=='on',policy.HUMAN)
++            return dumps(policy.status(r))
++        if len(args)==2 and args[1].isdigit():
++            return dumps(r.online_world_update(limit=int(args[1]),authority=policy.HUMAN))
++        if len(args) in (2,3) and args[1]=='run':
++            return dumps(r.online_world_update(limit=int(args[2]) if len(args)==3 else 64,authority=policy.HUMAN))
++        raise ValueError('Usage: :growth onlineworld [status|on|off|run [LIMIT]|LIMIT]')
+     g=hub(r)
+     if not args or args==['status']:return dumps(g.report())
+     c=args[0]
+diff --git a/v13/code/v13/continuous_predictor.py b/v13/code/v13/continuous_predictor.py
+index d8bae6e..1d74b51 100644
+--- a/v13/code/v13/continuous_predictor.py
++++ b/v13/code/v13/continuous_predictor.py
+@@ -6,7 +6,9 @@ parameters; replay reduces overwriting; snapshots are atomic and recoverable.
+ """
+ import os
+ import json
++import copy
+ import shutil
++import tempfile
+ from pathlib import Path
+ import numpy as np
+
+@@ -22,7 +24,7 @@ class OnlinePredictor:
+         self.path=Path(home)/'online_predictor.npz';self.rng=np.random.default_rng(seed)
+         self.W=np.eye(features);self.U=np.zeros((actions,features));self.bias=np.zeros(features)
+         self.x=np.zeros((0,features));self.act=np.zeros(0,dtype=np.int64);self.y=np.zeros((0,features))
+-        self.seen=0;self.updates=0
++        self.seen=0;self.updates=0;self.metadata=None
+         if self.path.exists():self.restore()
+
+     def _check(self,x,action,y=None):
+@@ -49,7 +51,25 @@ class OnlinePredictor:
+         if not vals:raise ValueError('Empty evaluation')
+         return float(np.mean(vals))
+
++    def _snapshot(self):
++        return {'arrays':{k:getattr(self,k).copy() for k in ('W','U','bias','x','act','y')},
++                'seen':self.seen,'updates':self.updates,
++                'rng':copy.deepcopy(self.rng.bit_generator.state),'metadata':copy.deepcopy(self.metadata)}
++
++    def _restore_snapshot(self,snapshot):
++        for key,value in snapshot['arrays'].items():setattr(self,key,value.copy())
++        self.seen=snapshot['seen'];self.updates=snapshot['updates']
++        self.rng.bit_generator.state=copy.deepcopy(snapshot['rng'])
++        self.metadata=copy.deepcopy(snapshot['metadata'])
++
+     def observe(self,x,action,y,rehearsals=2):
++        snapshot=self._snapshot()
++        try:return self._observe(x,action,y,rehearsals)
++        except BaseException:
++            self._restore_snapshot(snapshot)
++            raise
++
++    def _observe(self,x,action,y,rehearsals=2):
+         x,y=self._check(x,action,y)
+         if type(rehearsals) is not int or not 0<=rehearsals<=8:raise ValueError('Invalid rehearsal count')
+         # Reject pathological targets before any state mutation; gradients are
+@@ -79,7 +99,9 @@ class OnlinePredictor:
+             scale=min(1.,10./max(norm,1e-12))
+             self.W-=self.lr*scale*gW;self.U[aa]-=self.lr*scale*gU;self.bias-=self.lr*scale*gb
+             self.updates+=1
+-        return {'seen':self.seen,'updates':self.updates,'loss':float(np.mean((self.predict(x,action)-y)**2))}
++        loss=float(np.mean((self.predict(x,action)-y)**2))
++        if not np.isfinite(loss):raise ValueError('Nonfinite online loss')
++        return {'seen':self.seen,'updates':self.updates,'loss':loss}
+
+     def learn_stream(self,transitions,checkpoint_every=32):
+         """Consume observed numeric transitions without delaying local plasticity.
+@@ -97,19 +119,35 @@ class OnlinePredictor:
+         if count%checkpoint_every:self.checkpoint()
+         return {'observed':count,'last':last,'checkpoint':str(self.path) if count else None}
+
+-    def checkpoint(self):
++    def checkpoint(self,metadata=None):
++        if self.metadata is not None and metadata is None:
++            raise ValueError('Bound checkpoint metadata is required')
++        encoded=json.dumps(metadata,sort_keys=True,separators=(',',':'),allow_nan=False)
++        if len(encoded.encode('utf-8'))>8*1024*1024:raise ValueError('Checkpoint metadata too large')
+         self.path.parent.mkdir(parents=True,exist_ok=True)
+-        temp=self.path.with_name(self.path.name+'.tmp.npz')
++        fd,name=tempfile.mkstemp(prefix='.online-predictor-',suffix='.npz',dir=self.path.parent)
++        temp=Path(name);backup_temp=None
+         try:
+-            np.savez_compressed(temp,revision=np.array(REVISION),dimensions=np.array([self.d,self.a,self.cap]),
+-                W=self.W,U=self.U,bias=self.bias,x=self.x,act=self.act,y=self.y,
+-                counters=np.array([self.seen,self.updates]),
+-                rng_state=np.array(json.dumps(self.rng.bit_generator.state)))
++            with os.fdopen(fd,'wb') as stream:
++                np.savez_compressed(stream,revision=np.array(REVISION),dimensions=np.array([self.d,self.a,self.cap]),
++                    W=self.W,U=self.U,bias=self.bias,x=self.x,act=self.act,y=self.y,
++                    counters=np.array([self.seen,self.updates]),
++                    rng_state=np.array(json.dumps(self.rng.bit_generator.state)),metadata=np.array(encoded))
++                stream.flush();os.fsync(stream.fileno())
+             if self.path.exists():
+-                shutil.copy2(self.path,self.path.with_suffix('.previous.npz'))
++                backup_fd,backup_name=tempfile.mkstemp(prefix='.online-previous-',suffix='.npz',dir=self.path.parent)
++                backup_temp=Path(backup_name)
++                with self.path.open('rb') as old,os.fdopen(backup_fd,'wb') as previous:
++                    shutil.copyfileobj(old,previous);previous.flush();os.fsync(previous.fileno())
++                os.replace(backup_temp,self.path.with_suffix('.previous.npz'))
+             os.replace(temp,self.path)
++            directory=os.open(self.path.parent,os.O_RDONLY|getattr(os,'O_DIRECTORY',0))
++            try:os.fsync(directory)
++            finally:os.close(directory)
++            self.metadata=copy.deepcopy(metadata)
+         finally:
+             if temp.exists():temp.unlink()
++            if backup_temp is not None and backup_temp.exists():backup_temp.unlink()
+         return str(self.path)
+
+     def rollback(self):
+@@ -130,13 +168,22 @@ class OnlinePredictor:
+                     'x':(None,self.d),'act':(None,),'y':(None,self.d),'counters':(2,)}
+             loaded={k:data[k].copy() for k in shapes}
+             rng_state=json.loads(str(data['rng_state']))
++            metadata_raw=str(data['metadata']) if 'metadata' in data.files else 'null'
++            if len(metadata_raw.encode('utf-8'))>8*1024*1024:raise ValueError('Checkpoint metadata too large')
++            metadata=json.loads(metadata_raw)
+         n=len(loaded['x'])
+         if (n>self.cap or len(loaded['act'])!=n or len(loaded['y'])!=n
+             or any(v.shape!=tuple(n if d is None else d for d in shapes[k]) for k,v in loaded.items())
+             or any(not np.isfinite(v).all() for v in loaded.values())
++            or any(loaded[k].dtype.kind!='f' for k in ('W','U','bias','x','y'))
++            or loaded['act'].dtype.kind not in 'iu' or loaded['counters'].dtype.kind not in 'iu'
+             or np.any(loaded['act']<0) or np.any(loaded['act']>=self.a)
+-            or not np.all(loaded['counters']>=0)):
++            or not np.all(loaded['counters']>=0)
++            or loaded['counters'][0]<n or loaded['counters'][1]<loaded['counters'][0]):
+             raise ValueError('Invalid predictor checkpoint')
++        checked_rng=np.random.default_rng()
++        checked_rng.bit_generator.state=rng_state
+         for k in ('W','U','bias','x','act','y'):setattr(self,k,loaded[k])
+         self.seen,self.updates=map(int,loaded['counters'])
+-        self.rng.bit_generator.state=rng_state
++        self.rng.bit_generator.state=checked_rng.bit_generator.state
++        self.metadata=metadata
+diff --git a/v13/code/v13/online_world.py b/v13/code/v13/online_world.py
+index 303453e..5bdf95d 100644
+--- a/v13/code/v13/online_world.py
++++ b/v13/code/v13/online_world.py
+@@ -5,28 +5,49 @@ numeric next-outcome prediction from the existing T8 provenance-checked feed.
+ No speculative outcomes are used as training labels.
+ """
+ from pathlib import Path
++import hashlib
+ import json
+-import os
++import threading
+ import numpy as np
+ from . import world_model
++from .common import digest
+ from .continuous_predictor import OnlinePredictor
+
+-REVISION='v13-online-world-v1'
++REVISION='v13-online-world-v2'
++MAX_RECEIPTS=65536
+
+ class OnlineWorld:
+     def __init__(self,runtime,lr=0.02,replay=128):
+         self.runtime=runtime
+         self.home=Path(runtime.home)/'online_world'
+         self.home.mkdir(parents=True,exist_ok=True)
++        self.lock=threading.RLock();self._unusable=False
+         self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,lr=lr,replay=replay)
+-        self.cursor=self.home/'cursor.json'
+-        self.processed=[]
+-        if self.cursor.exists():
+-            record=json.loads(self.cursor.read_text())
+-            ids=record.get('processed')
+-            if record.get('revision')!=REVISION or not isinstance(ids,list) or len(ids)>world_model.MAX_ROWS or any(type(i) is not str for i in ids):
+-                raise ValueError('Incompatible online world cursor')
+-            self.processed=ids
++        # Old model/cursor pairs were published separately. Their relationship
++        # cannot be reconstructed after a crash, so never silently import them.
++        if (self.home/'cursor.json').exists():raise ValueError('Legacy online cursor requires reviewed migration')
++        self.processed=self._receipts()
++
++    def _receipts(self):
++        metadata=self.model.metadata
++        if metadata is None:
++            if self.model.path.exists():raise ValueError('Unbound legacy online model requires reviewed migration')
++            return {}
++        if (type(metadata) is not dict or set(metadata)!={'revision','receipts'}
++                or metadata['revision']!=REVISION or type(metadata['receipts']) is not dict
++                or len(metadata['receipts'])>MAX_RECEIPTS):
++            raise ValueError('Incompatible online world checkpoint')
++        receipts=metadata['receipts']
++        if (len(receipts)!=self.model.seen or any(type(k) is not str or not 1<=len(k)<=160
++                or type(v) is not str or len(v)!=64 or any(c not in '0123456789abcdef' for c in v)
++                for k,v in receipts.items())):
++            raise ValueError('Invalid online world receipts')
++        return dict(receipts)
++
++    @staticmethod
++    def _digest(row):
++        raw=json.dumps(row,sort_keys=True,separators=(',',':'),allow_nan=False).encode('utf-8')
++        return hashlib.sha256(raw).hexdigest()
+
+     @staticmethod
+     def encode(row):
+@@ -39,32 +60,121 @@ class OnlineWorld:
+         y=np.concatenate((state,outcome))
+         return x,action,y
+
+-    def update(self,limit=2048):
++    def _source_current(self,row):
++        """Reject a transition whose event, committed selection or context is stale."""
++        try:
++            store=self.runtime.store
++            action=store.one("SELECT a.event_id,a.status,a.outcome,a.created,e.session_id,e.source_id,"
++                             "e.generation_id,e.packet,s.kind AS source_kind FROM actions a "
++                             "JOIN events e ON e.id=a.event_id JOIN sources s ON s.id=e.source_id WHERE a.id=?",
++                             (row['action_id'],))
++            if not action or action['source_kind']!='USER' or action['status'] not in {'FINAL','ERROR','DEADLINE','CANCELLED'}:
++                return False
++            envelope=world_model._t8_source_object(action['packet'])
++            ref=envelope.get('source_ref')
++            if (envelope.get('authority')!='AUTHORITATIVE' or envelope.get('event_id')!=action['event_id']
++                    or envelope.get('brain_generation_id')!=action['generation_id']
++                    or not isinstance(ref,dict) or ref.get('source_id')!=action['source_id']):
++                return False
++            store.read_source(ref)
++            messages=store.rows("SELECT session_id,status,text,metadata FROM messages "
++                                "WHERE event_id=? AND role='assistant' AND status IN "
++                                "('FINAL','ERROR','DEADLINE','CANCELLED') LIMIT 2",(action['event_id'],))
++            if len(messages)!=1:return False
++            message=messages[0];meta=world_model._t8_source_object(message['metadata'])
++            outcome=world_model._t8_source_object(action['outcome'])
++            if (message['session_id']!=action['session_id'] or message['status']!=action['status']
++                    or meta.get('self_candidate_hash')!=digest(message['text'])
++                    or outcome.get('self_candidate_hash')!=digest(message['text'])):
++                return False
++            contexts=meta.get('context_source_refs')
++            if not isinstance(contexts,list) or not contexts or ref not in contexts:return False
++            for context_ref in contexts:store.read_source(context_ref)
++            selection_id=meta.get('action_selection')
++            selection=store.one("SELECT event_id,generation_id,payload,created FROM packets "
++                                "WHERE id=? AND kind='ActionSelection'",(selection_id,))
++            if (not selection or selection['event_id']!=action['event_id']
++                    or selection['generation_id']!=action['generation_id']
++                    or selection['created']>action['created']):return False
++            packet=world_model._t8_source_object(selection['payload'])
++            return (packet.get('packet_id')==selection_id and packet.get('event_id')==action['event_id']
++                    and packet.get('brain_generation_id')==action['generation_id']
++                    and packet.get('producer_component')=='C5_ACTION_GATE' and packet.get('stage')=='COMMIT'
++                    and packet.get('route_hint')==row['a'] and isinstance(packet.get('provenance'),list)
++                    and ref in packet['provenance'])
++        except (ValueError,TypeError,KeyError,OSError,AttributeError,OverflowError):
++            return False
++
++    def update(self,limit=2048,should_continue=None):
++        if should_continue is not None and not callable(should_continue):raise ValueError('Invalid continuation check')
++        with self.lock:return self._update(limit,should_continue)
++
++    def _update(self,limit=2048,should_continue=None):
++        if self._unusable:raise RuntimeError('Online world needs restart after failed recovery')
+         if type(limit) is not int or not 1<=limit<=world_model.MAX_ROWS:raise ValueError('Invalid update limit')
+         rows=world_model.transitions(self.runtime.store,limit=limit)
+-        already=set(self.processed)
+-        new=[]
++        already=dict(self.processed)
++        new=[];rejected=0
++        # T8 drops malformed rows. A previously learned row in its current
++        # bounded input window must not disappear silently when it does so.
++        store=self.runtime.store
++        if already and hasattr(store,'rows'):
++            window=store.rows("SELECT a.id FROM actions a JOIN events e ON e.id=a.event_id "
++                              "WHERE a.expected LIKE ? ORDER BY a.created DESC LIMIT ?",('%\"forecast\"%',limit))
++            omitted=({item['id'] for item in window}&set(already))-{row['action_id'] for row in rows}
++            if omitted:
++                self._unusable=True
++                raise ValueError('Previously learned action no longer yields a transition')
+         for row in rows:
+             action_id=row['action_id']
+-            if type(action_id) is not str or not action_id:
++            if type(action_id) is not str or not 1<=len(action_id)<=160:
+                 raise ValueError('Invalid action identifier')
+-            if action_id not in already:
+-                new.append(row)
+-                already.add(action_id)
++            if not self._source_current(row):
++                if action_id in already:
++                    self._unusable=True
++                    raise ValueError('Previously learned action source is unavailable')
++                rejected+=1;continue
++            row_digest=self._digest(row)
++            x,a,y=self.encode(row)
++            if action_id in already:
++                if already[action_id]!=row_digest:
++                    self._unusable=True
++                    raise ValueError('Processed action content changed')
++                continue
++            new.append((action_id,row_digest,x,a,y,row));already[action_id]=row_digest
++        if len(already)>MAX_RECEIPTS:raise ValueError('Online world receipt capacity exhausted')
+         # Track old-experience error separately from fresh-sample loss.
+         replay=[(x.copy(),int(a),y.copy()) for x,a,y in zip(self.model.x,self.model.act,self.model.y)]
+         retention_before=self.model.error(replay) if replay else None
+-        for row in new:
+-            x,a,y=self.encode(row)
+-            self.model.observe(x,a,y)
+-            self.model.checkpoint()
+-            self.processed.append(row['action_id'])
+-            self.processed=self.processed[-world_model.MAX_ROWS:]
+-            temp=self.cursor.with_suffix('.tmp')
+-            temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed}))
+-            os.replace(temp,self.cursor)
++        learned=0;rejected_during=0
++        for action_id,row_digest,x,a,y,row in new:
++            if should_continue is not None and not should_continue():break
++            # Sources can be revoked while a batch is being prepared. Check
++            # again before each sample; this is not an atomic revocation fence.
++            if not self._source_current(row):
++                rejected+=1;rejected_during+=1;continue
++            previous=self.model._snapshot()
++            proposed=dict(self.processed);proposed[action_id]=row_digest
++            try:
++                self.model.observe(x,a,y)
++                self.model.checkpoint(metadata={'revision':REVISION,'receipts':proposed})
++            except BaseException:
++                # The replace may have completed even if the final fsync or a
++                # caller failed. Reload the published pair, or the pre-update
++                # in-memory state when no checkpoint exists.
++                try:
++                    if self.model.path.exists():
++                        self.model.restore();self.processed=self._receipts()
++                    else:
++                        self.model._restore_snapshot(previous)
++                except Exception:
++                    self._unusable=True
++                raise
++            self.processed=proposed
++            learned+=1
+         retention_after=self.model.error(replay) if replay else None
+-        return {'learned':len(new),'seen':self.model.seen,'tracked_ids':len(self.processed),
++        return {'learned':learned,'deferred':len(new)-learned-rejected_during,'source_rejected':rejected,
++                'seen':self.model.seen,'tracked_ids':len(self.processed),
+                 'old_replay_loss_before':retention_before,'old_replay_loss_after':retention_after,
+                 'old_replay_loss_delta':None if not replay else retention_after-retention_before,
+                 'status':'LOCAL_ONLINE_PLASTICITY_NOT_FULL_JEPA'}
+@@ -74,4 +184,6 @@ class OnlineWorld:
+         s=np.asarray(state,dtype=float)
+         if s.shape!=(4,) or not np.isfinite(s).all():raise ValueError('Invalid state')
+         x=np.concatenate((s,np.zeros(3)))
+-        return self.model.predict(x,world_model.ACTIONS.index(action))[4:].tolist()
++        with self.lock:
++            if self._unusable:raise RuntimeError('Online world needs review after stale source or failed recovery')
++            return self.model.predict(x,world_model.ACTIONS.index(action))[4:].tolist()
+diff --git a/v13/code/v13/operator.py b/v13/code/v13/operator.py
+index 32a03fa..d78152b 100644
+--- a/v13/code/v13/operator.py
++++ b/v13/code/v13/operator.py
+@@ -54,6 +54,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
+ :dream / :probe [jef-modes|step12|body-state|sustained]
+ :sleep [status|digest|run full|a|b|c|wake|in <Minuten> [Modus]|policy [Name Wert]] / :scheduler (Replay/Sleep A-B-C, WP-S7 Tagesdigest + Offline-Rechenzeit, Event-Scheduler)
+ :growth [status|eval [run [de] c3|b1|b2|v13 | curve <Solver> <Achse> | compare en-de [Solver]]|teacher [status|cloud on|off|ask <Frage>|run [local|claude]|dataset]|trainer [auto|lora|sparse|none [Master-Ordner] | cfg k=v.. | cfg reset]|goals|goal <Titel>|consolidate|approve <Batch>|reject <Batch>|tools|enable <Werkzeug>|calc <Ausdruck>] (WP-AG1..AG12)
++:growth onlineworld [status|on|off|run [LIMIT]] (lokales Weltmodell; Lernen nur im freigegebenen Lernmodus)
+ :neuromod [status|path <Name>|sleep|clear-veto <Name>] (WP-N10 Eligibility, Modulator-Bus, Plastizitäts-Gate)
+ :authority [status|review|promote <Kopf>|demote <Kopf>|<Kopf>] / :objectives (WP-T10 Beförderung gelernter Köpfe Schatten → Kandidat → aktiv, IH-H25 Lernziele)
+ :workspace [status|shadow|active] (WP-U8 Workspace lernt Haltedauer je Quellenart; aktiv nur durch Nutzer)
+diff --git a/v13/code/v13/runtime.py b/v13/code/v13/runtime.py
+index 8ac4230..a777d64 100644
+--- a/v13/code/v13/runtime.py
++++ b/v13/code/v13/runtime.py
+@@ -69,16 +69,18 @@ class Runtime:
+         from .sleep import SleepRuntime
+         self.sleep=SleepRuntime(self)  # WP-E: G13 wake scheduler + §94 sleep phases
+         self.worker=threading.Thread(target=self._worker,name='V13-coordinator',daemon=True);self.worker.start()
+-    def online_world_update(self,limit=2048):
+-        """Explicit bounded online learning from committed T8 transitions.
+-
+-        The predictor is local and never modifies pretrained GGUF weights.
+-        No model is initialized until the operator invokes this entrypoint.
+-        """
++    def online_world_update(self,limit=2048,authority='SYSTEM'):
++        """Bounded local SHADOW learning, gated by explicit user and Age settings."""
++        from . import online_world_policy as policy
++        reason=policy.blocked(self,authority)
++        if reason:return {'status':'SKIPPED_'+reason,'learned':0}
++        if authority==policy.HUMAN:self.require_idle()
+         from .online_world import OnlineWorld
+-        if not hasattr(self,'_online_world'):
+-            self._online_world=OnlineWorld(self)
+-        return self._online_world.update(limit=limit)
++        with self.lock:
++            if not hasattr(self,'_online_world'):self._online_world=OnlineWorld(self)
++            world=self._online_world
++        check=lambda:policy.blocked(self,authority) is None
++        return world.update(limit=limit,should_continue=check)
+     def notice(self,text):self.notify(safe_text(text))
+     def resources(self):return snapshot(self.home,self.pool.pids()+self.needle.pids()+self.memory.semantic_keys.encoder.pids())
+     def revisions(self):return {role:self.models.revision(role) for role in ROLES}
+@@ -152,8 +154,9 @@ class Runtime:
+                         # isolated from user-visible output and logged for repair.
+                         try:self.online_world_update(limit=64)
+                         except Exception as exc:
+-                            self.store.log('online_world_learning_error',payload['event_id'],
+-                                           {'error':type(exc).__name__})
++                            try:self.store.log('online_world_learning_error',payload['event_id'],
++                                               {'error':type(exc).__name__})
++                            except Exception:pass
+                 elif kind=='download':self.models.install(payload or 'all',self.notice,self.cancel_event)
+                 elif kind=='shadow':
+                     if payload=='memory_retrieval':self.notice(self.learner.shadow_retrieval())

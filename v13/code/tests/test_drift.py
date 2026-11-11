@@ -81,10 +81,9 @@ class Probes(Base):
 
 class SDFT(Base):
     def test_dataset_uses_self_teacher_not_correction_target(self):
-        src = self.s.source('It is Canberra.', 'TEST_CORRECTION')
-        with mock.patch.object(self.s, 'rows', return_value=[{'id': 'fb_1', 'event_id': 'evt_x', 'kind': 'fact', 'value': 'It is Canberra.', 'source_id': src['source_id'], 'hash': src['sha256']}]), \
-             mock.patch.object(self.s, 'one', return_value={'text': 'What is the capital of Australia?'}):
-            items = self.d.sdft_dataset()
+        event = self.s.event(self.r.session, 'What is the capital of Australia?')
+        self.r.memory.feedback(event['event_id'], 'fact', 'It is Canberra.', permission='learn')
+        items = self.d.sdft_dataset()
         self.assertEqual(len(items), 1); it = items[0]
         self.assertIsNone(it['target']); self.assertEqual(it['target_policy'], 'SELF_TEACHER_IN_CONTEXT')
         self.assertIn('It is Canberra.', it['teacher_prompt']); self.assertNotIn('Canberra', it['student_prompt'])

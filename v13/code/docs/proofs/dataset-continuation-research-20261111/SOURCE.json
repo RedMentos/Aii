@@ -1,0 +1,10 @@
+{
+  "url": "https://huggingface.co/datasets/HuggingFaceTB/cosmopedia-100k/resolve/8fdb6dada238c1d46dd8cf61da2fb4f9c36f654d/README.md",
+  "revision": "8fdb6dada238c1d46dd8cf61da2fb4f9c36f654d",
+  "accessed_utc": "2026-11-11T18:30:16.113981+00:00",
+  "claim_scope": "dataset-card metadata, not a training grant or full provenance review",
+  "status": "VERIFIED_PRIMARY_CARD_BYTES",
+  "bytes": 944,
+  "sha256": "9b53e14d740b3292bfb19a337433a9860cfce4fb3c179c6a73370fc2f886ff24",
+  "declared_apache2": true
+}

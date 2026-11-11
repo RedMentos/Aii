@@ -1,4 +1,285 @@
 {
+  "codex_user_message_compaction_20261111": {
+    "status": "CONNECTED_REVIEW_STAGE_LOCAL_GREEN",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "8d601e684917b692e004c00e464d806c19103016",
+    "builder": "v13/code/scripts/integrated_user_compaction_candidate_20261111.py",
+    "builder_sha256": "516d9a18e033987a759716885617cee600c009725a5a5d54adf9783a060962a7",
+    "wiring_sha256": "622ef73418fe0698b549df95564458ecd8a357e03365c2c27cb197690bb27069",
+    "raw_helper_sha256": "3208fabfd73daa7ecdf16bf2ff981fcc7ddadb5e71d7e9f6bcfea05846b1c8e6",
+    "scope": "actual default-off G13 job removes only old FINAL USER SQL text after exclusive verified archive; explicit source-backed readers, no text rematerialization",
+    "tests": {
+      "compaction": "11 inner passed",
+      "after_compaction_training": "3 actual tiny C3/Body/World plus private World restart passed",
+      "shared": "636 passed / 3 CUDA skipped / 70 subtests; outer passed",
+      "stage": "15 outer passed on final source",
+      "before": "2 failed / 8 passed on atomic join and expired reader; 1 failed / 2 passed on Body view length; first shared 3 failed / 632 passed, all preserved",
+      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+    },
+    "defaults": {
+      "enabled": false,
+      "min_age_days": 30,
+      "daily_attempts": 8,
+      "interval_s": 300,
+      "ref_bytes": 2097152,
+      "max_source_bytes": 65536,
+      "max_scanned_rows": 16,
+      "max_ref_entries": 8192
+    },
+    "fixes": [
+      "mutation owns rollback boundary; readers may join caller tx",
+      "bounded hydration; unavailable on cancellation/revocation",
+      "collapse metrics and native-history forward pages keep original user source",
+      "Body context and target views honor max_tokens; policy included in checkpoint digest/telemetry",
+      "required public Canon copied with exact hash; invalid asset never published"
+    ],
+    "limits": [
+      "only logical SQL text savings/reusable pages; physical DB/WAL/backup reduction unmeasured",
+      "assistant/teacher, active memories and newest context retained; no whole-system quota/infinite memory/unlearning claim",
+      "only synthetic tiny/numeric evidence; native/Redmi/independent utility still open",
+      "general C3 prompt/teacher budget and cross-batch cumulative adapter trajectory remain open"
+    ],
+    "next_edge": "bounded C3 prompt/label/teacher encoding plus resume-policy binding; external corpus requires own grant/origin/raw-encoding/retention contract",
+    "production_promotion": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "negative_gates_unchanged": true
+  },
+  "codex_dataset_idle_record_20261111": {
+    "status": "CONNECTED_REVIEW_STAGE_LOCAL_GREEN",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+    "builder": "v13/code/scripts/integrated_dataset_idle_candidate_20261111.py",
+    "builder_sha256": "8d18f9fcde0eac79442dceb16544e747b6baa4e7edc07436ef131b889d288282",
+    "helper_sha256": "a460cd843a9f1fd05d6039f2743df44d13289684e938aff1d3c94b0cf08c1228",
+    "scope": "explicit local staged-preview selection -> actual G13 coordinator -> atomic EXTERNAL_DATASET SourceRef + receipt + cursor; no fake USER/HUMAN records",
+    "training_authority": 0,
+    "automatic_network": false,
+    "default_enabled": false,
+    "tests": {
+      "dataset": "29 inner / 1 outer passed; repeated through sole default stager",
+      "shared": "592 passed / 3 CUDA skipped / 70 subtests; 4 outer passed including 77 idle/scheduler cases",
+      "stage_and_old_worker_counterexample": "14 outer passed",
+      "remote_ci": {
+        "code_commit": "8d601e684917b692e004c00e464d806c19103016",
+        "code_tree": "2d6da5690af76004ab7b0f5b58dc7c7d9142ec10",
+        "push": {
+          "run": 43073688604,
+          "staged_runtime": 130707892629,
+          "integrated_regression": 130707893423,
+          "conclusion": "success"
+        },
+        "pull_request": {
+          "run": 43073701241,
+          "merge_checkout": "047d306",
+          "staged_runtime": 130707933309,
+          "integrated_regression": 130707933908,
+          "conclusion": "success"
+        },
+        "tests": "592 passed / 3 CUDA skipped / 70 subtests; minimal stack 17 outer passed",
+        "scope": "synthetic software; intake performs neither network nor training; not native or Redmi"
+      }
+    },
+    "worker_fix": "both idle consumers require actual Runtime.worker thread; original dispatched-scope takeover reproduced on pinned predecessor",
+    "quota_scope": "charged payload and receipts, not existing previews or total device/SQLite/WAL",
+    "limits": [
+      "record intake only; separate dataset training/heldout/license contract still required",
+      "orphan blobs may remain charged after DB rollback; no physical deletion or unlearning",
+      "complete memory compaction/native/Redmi/independent retention not demonstrated"
+    ],
+    "next_edge": "USER-only message compaction with explicit reader hydration, then separate source-bound corpus learning admission",
+    "production_promotion": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "negative_gates_unchanged": true
+  },
+  "codex_idle_world_runtime_20261111": {
+    "status": "CONNECTED_REVIEW_STAGE_LOCAL_GREEN",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "4df40e5598db5b9d5e75ee2f1f04117388a2a18d",
+    "builder": "v13/code/scripts/integrated_idle_world_candidate_20261111.py",
+    "builder_sha256": "38c6879b74bcd3158e6e95b48f08b98015662010f55423c54a5db09d879a49f9",
+    "helper_sha256": "71dabc5e1d015029e910cd7f96e9317a89d03e39e5ee5f5574b059174b96c1e7",
+    "scope": "actual default-off G13 owner -> one bounded numeric World JEPA step -> private complete checkpoint -> restart; separate thread-bound single-use authority",
+    "defaults": {
+      "enabled": false,
+      "daily_attempts": 8,
+      "max_rows": 64,
+      "interval_s": 300,
+      "min_idle_s": 300
+    },
+    "tests": {
+      "focused": "76 passed / 12 subtests; 2 outer passed including old numeric counterexample",
+      "shared": "562 passed / 3 CUDA skipped / 70 subtests; 1 outer passed",
+      "existing_stage_runtime": "13 outer passed",
+      "first_shared": "562 passed / 3 skipped / 70 subtests; 1 teardown error; preserved",
+      "remote_ci": {
+        "code_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+        "code_tree": "78f3a4fa4b2a0f87aa0c087c363b03f3fc768709",
+        "push": {
+          "run": 43070919414,
+          "staged_runtime": 130698231633,
+          "integrated_regression": 130698232214,
+          "conclusion": "success"
+        },
+        "pull_request": {
+          "run": 43070928053,
+          "merge_checkout": "9341be4",
+          "staged_runtime": 130698262613,
+          "integrated_regression": 130698261531,
+          "conclusion": "success"
+        },
+        "tests": "562 passed / 3 CUDA skipped / 70 subtests; minimal stack 15 outer passed",
+        "scope": "synthetic software; not native or Redmi"
+      }
+    },
+    "legacy_fix": "both old learn jobs check record/pause/cancel/resources/foreground before review or mutation; old actual RECORD_ONLY Ridge-fit counterexample preserved",
+    "limits": [
+      "source/Runtime/SQLite lock spans one bounded fit; no hard foreground preemption or Redmi latency claim",
+      "historical lineage verification still up to 2048; lifelong compaction remains open",
+      "one-step bootstrap auxiliary floor remains unchanged; utility unproven",
+      "no external dataset training or network/screen/audio/Android permissions"
+    ],
+    "next_edge": "actual record-only staged-dataset import with quotas and independent provenance; then old-user-message compaction with explicit reader hydration",
+    "production_promotion": false,
+    "device_proof": false,
+    "canonical_architecture_complete": false,
+    "user_full_scope_complete": false,
+    "negative_gates_unchanged": true
+  },
+  "codex_c3_consent_admission_20261111": {
+    "status": "CONNECTED_REVIEW_STAGE",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "bb1a94ca4d5b123640dff4574095f1d047f94846",
+    "builder": "v13/code/scripts/integrated_c3_consent_candidate_20261111.py",
+    "builder_sha256": "cc581a85f131417af184f38b86f732ce4bafc4e49a51bd55c89afad78f21ff4a",
+    "scope": "direct C3 and SDFT data require verified F1/F5, feedback learn and actual input SourceRef; existing rated-answer checks retained",
+    "tests": {
+      "focused": "13 inner passed; 1 outer passed",
+      "shared_stage": "486 passed / 3 CUDA skipped / 58 subtests passed; 1 outer passed",
+      "first_shared": "5 failed / 481 passed; old record-only positive fixtures and fake SDFT row replaced by genuine learn corrections",
+      "remote_ci": {
+        "code_commit": "4df40e5598db5b9d5e75ee2f1f04117388a2a18d",
+        "code_tree": "7ae1b052bb487dea226b885978a126f74280c884",
+        "push": {
+          "run": 43020356653,
+          "staged_runtime": 130521725318,
+          "integrated_regression": 130521725757,
+          "conclusion": "success"
+        },
+        "pull_request": {
+          "run": 43020364859,
+          "merge_checkout": "c6b6cf3",
+          "staged_runtime": 130521752128,
+          "integrated_regression": 130521752785,
+          "conclusion": "success"
+        },
+        "tests": "486 passed / 3 CUDA skipped / 58 subtests; minimal stack 13 outer passed",
+        "scope": "synthetic software; no native or Redmi evidence"
+      }
+    },
+    "controls": "record retrieval retained; source/permission/prompt corruption before fit and after real AdamW step cannot publish/approve",
+    "limits": [
+      "old custom keys without bound human key-source not trainable; retrieval retained",
+      "private partial checkpoint may remain; no unlearning claim",
+      "shared independent native/Redmi retention still unmeasured"
+    ],
+    "next_edge": "actual bounded default-off World-JEPA idle worker on existing G13 plus common mode/pause guard before legacy authority ridge fit",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
+  "codex_body_role_runtime_20261111": {
+    "status": "CONNECTED_IN_SHARED_REVIEW_STAGE_NATIVE_UNVALIDATED",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "01890c92de9e0b3638899b2e2ecf4c8a84d1fac2",
+    "builder": "v13/code/scripts/integrated_body_role_candidate_20261111.py",
+    "builder_sha256": "41e08c932535bb450c0f031a2fdea5511f588d1d2be8abdcccd9c65044d6eef0",
+    "path": "explicit B1/B2 selection -> original F1/F5 learn label -> per-role AG6 -> actual Tiny Torch/EMA -> private checkpoint -> evaluation -> separate human approval -> existing role registry/runner arguments",
+    "tests": {
+      "body_cases": "15 passed; 1 outer passed",
+      "shared_stage": "473 passed, 3 CUDA skipped, 58 subtests passed; 1 outer passed",
+      "stage_smoke": "9 passed",
+      "remote_ci": "SUCCESS exact bb1a94ca4d5b123640dff4574095f1d047f94846 push 43015808657 and PR merge 8d5b19a run 43015814118; both jobs successful"
+    },
+    "proof_scope": "synthetic masters/GGUF/export/evaluator; actual SQLite Runtime, G13 scheduler, Torch/PEFT parameter deltas; no native tokens or Redmi",
+    "limits": [
+      "direct fact/preference targets only in Body path",
+      "normal C3 candidates still need full learn/F1/F5 consent reconciliation",
+      "cooperative time/cancel; private files may remain after rejected fit",
+      "role-specific independent retention and adapter-aware bridge recalibration unproven",
+      "canonical native Body gate remains unavailable"
+    ],
+    "next_edge": "continue without ending at checkpoint: generic C3 consent admission; then old learn_medium ridge mode/pause and real budgeted idle consumer",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
+  "codex_world_training_resume_20261111": {
+    "status": "SHADOW_REVIEW_ONLY_SOURCE_FREEZE",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "c015f91c918cdda53fb460cf172947a4601d57d3",
+    "builder": "v13/code/scripts/integrated_world_training_resume_candidate_20261111.py",
+    "builder_sha256": "82e2fd27712d17a489ce5fd2f75d749f3f0e08dcc9d7fcc8852bbe6f738e8e18",
+    "model_revision": "z12b-world-jepa-training-resume-v1",
+    "tests": {
+      "old_stager_new_resume_cases": "10 failed / 1 passed; outer failed",
+      "current_resume_cases": "11 passed",
+      "targeted": "13 outer passed including 15 context cases and 11 resume cases",
+      "same_stage": "415 passed / 3 CUDA skipped / 58 subtests passed; outer passed",
+      "remote_ci": "SUCCESS exact code 706b75bb85be3b851975eea8cfd151c80c56a395 push 42976534860 jobs 130376815323/130376814955; PR merge e50ef67 run 42976540503 jobs 130376832848/130376833191"
+    },
+    "evidence": "actual synthetic Runtime SQLite -> two-step update -> save -> second update; restart/restore -> same second update; full model/EMA/inverse/optimizer/RNG arrays and lineage exact",
+    "limits": [
+      "identical call sequence, not equality across different fit partitions",
+      "legacy revisions not silently resumed; files preserved",
+      "moving-target holdout not fixed utility or retention",
+      "normal Body trainer selection, replay/idle/cross-organ updates remain open",
+      "no native/Redmi proof; synchronous SQLite training and original publication limits"
+    ],
+    "next_edge": "fixed holdout/retention and regular Body consumer, then replay/sleep/idle",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
+  "codex_context_recall_stage_20261111": {
+    "status": "SHADOW_REVIEW_ONLY_SOURCE_FREEZE",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "ebf32205d91d0b1f2cdb097b193d72a0cd023f76",
+    "stage_script": "v13/code/scripts/stage_integrated_candidate.py",
+    "builder": "v13/code/scripts/integrated_context_recall_candidate_20261111.py",
+    "builder_sha256": "168d6003db2c871599e70922619cfc416882b137ce05704b5c7b4d35037f6c0f",
+    "runtime_edge": "same-chat archived user source -> bounded ContextOS layer -> actual C3 messages -> answer and World lineage; default off",
+    "tests": {
+      "current_shared_stage": "374 passed, 3 CUDA skipped, 35 subtests passed; 1 outer passed",
+      "current_targeted": "12 outer passed; 15 context cases passed plus actual Runtime smoke and JEPA readback",
+      "remote_ci": "SUCCESS push run 42973853469 exact code HEAD 7aa8f08ba4102dc1e98804b7592bf48c01aab4f6 jobs 130368268015/130368267678; also PR merge run 42973858006"
+    },
+    "original_full_suites": {
+      "1742": "109 failed, 5485 passed, 51 skipped, 94 errors, 3027 subtests passed",
+      "1737": "108 failed, 5483 passed, 51 skipped, 94 errors, 3027 subtests passed"
+    },
+    "limits": [
+      "bounded lexical source recall, not infinite memory",
+      "messages.text remains duplicated in SQLite",
+      "cooperative I/O deadline, final-use race and no immediate unlearning",
+      "World-JEPA optimizer not persisted",
+      "BodyJepaTrainer not selected by normal Runtime trainer",
+      "idle learning, controlled cross-organ weight updates and self-edit remain open",
+      "no native or Redmi proof"
+    ],
+    "next_edge": "source-bound World-JEPA optimizer persistence and interrupted-vs-uninterrupted restart; fixed holdout/retention; Body route; replay/idle",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
   "date": "2026-11-10",
   "owner": "GPT integration coordinator",
   "package": "V13_CORE_INTEGRATION_20261110",
@@ -48,5 +329,136 @@
     "python v13/code/scripts/public_repo_privacy_scan.py --base 5e964146579deb22c5ba89a2a03a52a9e4d8aab8 --head codex/v13-integrated-online-jepa-20261109",
     "Add bounded JEPA checkpoint retention/rollback and fresh source-bound holdout evaluation; test native Redmi resource impact",
     "Review/resolve PR #1652 replay negative cases and reconcile Body-JEPA candidate branches without overwriting active owners"
-  ]
+  ],
+  "codex_online_world_integration_review_20261110": {
+    "organ": "T8 numeric online world predictor",
+    "blueprint_requirement": "source-bound, mode-gated incremental world learning",
+    "integration_head": "95aea15a046e73acf82c67ccf934cebda651ef87",
+    "actual_path": "Runtime worker/operator -> online_world_update -> source-checked OnlineWorld.update -> staged predictor/checkpoint in disposable copy",
+    "code_status": "PARTIAL_FREEZE_BLOCKED",
+    "candidate_script": "v13/code/scripts/integrated_online_world_candidate_20261110.py",
+    "focused_tests": "49 passed in materialized copy; includes one expected legacy-limitation counterexample",
+    "native_proof": false,
+    "device_proof": false,
+    "full_suite_source": "#1661 only: 73 failed, 5394 passed, 50 skipped, 94 errors, 3012 subtests",
+    "next_edge": "authorize JEPA update and restore with complete source lineage; resolve historical revocation and checkpoint atomicity",
+    "negative_gates_unchanged": true
+  },
+  "codex_world_jepa_lineage_review_20261110": {
+    "base_head": "95aea15a046e73acf82c67ccf934cebda651ef87",
+    "parent_pr": 1716,
+    "candidate": "v13/code/scripts/integrated_jepa_guard_candidate_20261110.py",
+    "status": "REVIEW_ONLY_DISPOSABLE_COPY_SOURCE_FREEZE",
+    "focused_tests": "3 outer passed; 47 materialized-copy tests passed",
+    "restart": "private bound model and bounded source receipts; optimizer state not persisted",
+    "full_suite_base": "75 failed, 5395 passed, 50 skipped, 94 errors, 3012 subtests passed",
+    "full_suite_raw_sha256": "f8fc6afa952fa662c8d1063e866ce105dd0fb9e22b77b2d298bba009e0b8aba6",
+    "full_suite_gzip_sha256": "2f9454eeb2e8585c8ca5083dbbef1462ed9e7fb84da1e9bcae029492710ad066",
+    "next_edge": "test and reconcile learn_stream partial mutation after bound-metadata checkpoint failure; continue historical predictor revocation and Body/C3",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
+  "codex_predictor_stream_guard_20261110": {
+    "parent_pr": 1716,
+    "candidate": "v13/code/scripts/integrated_predictor_stream_guard_20261110.py",
+    "original_counterexample": "bound stream mutates weights and counters before checkpoint rejects missing metadata",
+    "candidate_scope": "reject bound streams before iterator consumption; use validated OnlineWorld.update",
+    "tests": "3 outer passed; original counterexample confirmed; 50 materialized-copy tests passed",
+    "external_pr_1717": "b3ac133148411330c5b1d5d1cb7c43547c469e78 finite-loss CI RED, earlier gradient failure does not match expected loss failure",
+    "limitations": [
+      "marker is not protection against arbitrary private-object manipulation",
+      "historical source revocation remains open",
+      "source freeze remains"
+    ],
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
+  "codex_predictor_history_guard_20261110": {
+    "parent_pr": 1716,
+    "candidate": "v13/code/scripts/integrated_predictor_history_guard_20261110.py",
+    "history_scope": "all bound action receipts, chunked exact-ID SQLite/T8 parser revalidation before update and predict",
+    "sqlite_fence": "cooperating concurrent revocation blocked during checked update/prediction; tested with second connection",
+    "tests": "3 outer passed, old-gap counterexample reproduced, 53 new-copy tests passed; fabricated-row legacy tests use disclosed test-only seam",
+    "known_cost": "synchronous O(history) source checks under SQLite write lock, mobile cost unmeasured",
+    "limitations": [
+      "no immediate background quarantine",
+      "no unlearning",
+      "no safety against uncoordinated filesystem modifications",
+      "no individual per-source consent proof"
+    ],
+    "external_pr_1718": "a6b3e799259b2919a790209df9bf9c39ff775214 no reported checks at triage; URL syntax is not CI result verification",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
+  "codex_body_world_reconciliation_20261110": {
+    "candidate": "v13/code/scripts/integrated_body_world_candidate_20261110.py",
+    "body_sources": "14 assets byte-verified against #1641/#1643/#1646 Git commits",
+    "tests": "2 outer passed, 139 materialized-copy passed, 3 CUDA skipped",
+    "evidence": "tiny synthetic GPT-2 Torch/PEFT fit, EMA step rollback and matched checkpoint resume, plus World Runtime/SQLite tests",
+    "limitations": [
+      "BodyJepaTrainer not wired into ordinary Runtime trainer selection",
+      "no real B1/B2 or Redmi device proof",
+      "per-anchor metrics are not a retention gate",
+      "optimizer snapshot resource cost unmeasured"
+    ],
+    "other_branches": "#1695 f3137ed4bd55e40330bf8495db0fa352360b948e specific CI red; child #1698 cd4879401686e72be50c2e7ec63d2de589aef764 specific CI green",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
+  "codex_c3_resume_reconciliation_20261111": {
+    "candidate": "v13/code/scripts/integrated_c3_resume_candidate_20261110.py",
+    "status": "REVIEW_ONLY_DISPOSABLE_COPY_SOURCE_FREEZE",
+    "preflight": "master weight hash, base generation, all passed items/weights/config, AdamW groups/slots, adapter shapes and both shuffle/CPU Torch RNG",
+    "tests": "2 outer passed, 162 materialized-copy passed, 3 CUDA skipped; first missing-Torch-RNG run 11 passed 1 failed",
+    "evidence": "actual small synthetic C3 Torch/PEFT interrupted-vs-uninterrupted fit and real SQLite AG6 stage/train without activation",
+    "limits": [
+      "legacy unbound checkpoints rejected",
+      "CPU Torch RNG shared processwide",
+      "tokenizer/config bytes and live source revocation not fully bound",
+      "no load size bound or crash-safe checkpoint publication",
+      "no per-step C3 finite-state guard",
+      "no native or Redmi proof"
+    ],
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
+  "codex_memory_world_lifecycle_20261111": {
+    "candidate": "v13/code/scripts/integrated_memory_world_candidate_20261111.py",
+    "source_pr_1653": "c0cb5e6690f32308b463da1dceabd834d9f08277; six source/helper/test files byte-verified",
+    "tests": "2 outer passed; 252 combined passed, 3 CUDA skipped, 16 subtests passed",
+    "evidence": "real synthetic SQLite Runtime turn, numeric learning, compressed source, bounded Unicode span, restart, revocation and quarantine",
+    "limits": [
+      "messages.text remains uncompressed in SQLite",
+      "streaming span is not normal context retrieval",
+      "active context/history remains bounded",
+      "64 MiB archive admission and synchronous whole-source verification",
+      "no immediate unlearning, full filesystem/backup transaction or device proof"
+    ],
+    "next_edge": "reconcile #1644 context/idle/dataset files into shared integration and build bounded actual source retrieval",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
+  "codex_feedback_bootstrap_integration_20261111": {
+    "candidate": "v13/code/scripts/integrated_feedback_bootstrap_candidate_20261111.py",
+    "source_pr_1644": "ae69ef28f6ced8879e30fe1a43a42a639679f852; 20 files byte-verified",
+    "catalog": "47 views / 35 repositories; 18 PROBE / 29 HOLD; no automatic download or training",
+    "feedback": "synthetic real Runtime/SQLite turn connects source-bound World receipt and explicit route correction/error preview; no model weight change from preview",
+    "tests": "2 outer passed; 358 combined passed, 3 CUDA skipped, 35 subtests passed",
+    "limits": [
+      "feedback preview uses caller-supplied synthetic embedding",
+      "normal ContextOS retrieval is not yet connected to streaming source reader",
+      "uncompressed SQLite messages remain",
+      "idle training and dataset admission not implemented",
+      "no native/Redmi proof"
+    ],
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  }
 }

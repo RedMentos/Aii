@@ -22,7 +22,7 @@ class ApprovalSourceRecheck(unittest.TestCase):
         model = self.home / "model.gguf"
         model.write_bytes(b"authored model fixture")
         event = self.s.event(self.r.session, "What is the project name?")
-        self.r.memory.feedback(event["event_id"], "fact", "Mira")
+        self.r.memory.feedback(event["event_id"], "fact", "Mira", permission='learn')
         cfg = self.r.cfg | {"learning_mode": "SHADOW_UPDATE"}
         self.w = WeightConsolidation(
             self.s, cfg,

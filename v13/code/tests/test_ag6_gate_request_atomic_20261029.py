@@ -31,7 +31,7 @@ class GateRequestAtomic(unittest.TestCase):
             bid = None
             try:
                 event = runtime.store.event(runtime.session, "Source-backed budget?")
-                runtime.memory.feedback(event["event_id"], "fact", "120 EUR")
+                runtime.memory.feedback(event["event_id"], "fact", "120 EUR", permission='learn')
                 wc = WeightConsolidation(
                     runtime.store,
                     runtime.cfg | {"learning_mode": "SHADOW_UPDATE"},

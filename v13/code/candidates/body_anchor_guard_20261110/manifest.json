@@ -1,0 +1,61 @@
+{
+  "entries": {
+    "atomic_builder_1643.py.txt": {
+      "commit": "f4bfce575cb0641a298f13962326f21c731d137a",
+      "sha256": "93021e63f4c36f0b229f561147307c4fe222e609b46c7449609fc39a170f422a"
+    },
+    "body_jepa_1641.py.txt": {
+      "commit": "42a105360d7e86f91b2823b5c4843ff825cfe095",
+      "sha256": "7bb55359c57a7b3baf79001fd0ed45b1faa7a6c78f47e23e26a7657d95b098a0"
+    },
+    "tests/test_body_jepa_anchor_cache_20261109.py.txt": {
+      "commit": "42a105360d7e86f91b2823b5c4843ff825cfe095",
+      "sha256": "eb3ec5ccb7ea494390e1b2add02ba7751102f7470737e48aac2b8c9f63e0656d"
+    },
+    "tests/test_body_jepa_atomic_step_candidate_20261109.py.txt": {
+      "commit": "f4bfce575cb0641a298f13962326f21c731d137a",
+      "sha256": "1a8c0736bb615ea6c2a0322bc8236e52f25941e0f80fabaa0bd98817fc0d1085"
+    },
+    "tests/test_body_jepa_ema_atomic_20261109.py.txt": {
+      "commit": "42a105360d7e86f91b2823b5c4843ff825cfe095",
+      "sha256": "1d2e17b343ea75a7c2b6775cfc29094b42eb23b3e060673916ef6247f2eadfb1"
+    },
+    "tests/test_body_jepa_ema_update_integrity_20261109.py.txt": {
+      "commit": "42a105360d7e86f91b2823b5c4843ff825cfe095",
+      "sha256": "0ac933e7443828c19961aaacce2affd8a131e0451de5779e5a004c920d99624f"
+    },
+    "tests/test_body_jepa_full_device_20261109.py.txt": {
+      "commit": "42a105360d7e86f91b2823b5c4843ff825cfe095",
+      "sha256": "5d2a2cbd64f2fa64497743fa03dac0ff0141a0308217e4e88187361c7a1dda3c"
+    },
+    "tests/test_body_jepa_gradient_integrity_20261109.py.txt": {
+      "commit": "42a105360d7e86f91b2823b5c4843ff825cfe095",
+      "sha256": "b3491a511186b6419db5d7acb050888c79928dbb33bdfdeac16bc83061f7f7b3"
+    },
+    "tests/test_body_jepa_latent_device_20261109.py.txt": {
+      "commit": "42a105360d7e86f91b2823b5c4843ff825cfe095",
+      "sha256": "6703f00d1bf744380ced19ab9d5ed6f571583ed6ad59f27af8ebf5a119d8c073"
+    },
+    "tests/test_body_jepa_numeric_preflight_20261109.py.txt": {
+      "commit": "42a105360d7e86f91b2823b5c4843ff825cfe095",
+      "sha256": "3838da8610ca8eb94191e47a081442a301695ded2b62bd8f6533389e6d1db385"
+    },
+    "tests/test_body_jepa_retention_20261108.py.txt": {
+      "commit": "42a105360d7e86f91b2823b5c4843ff825cfe095",
+      "sha256": "c347603590c79dc318d0d67560b6fa476a709e6db6fe010f273377d71e033801"
+    },
+    "tests/test_body_jepa_retention_device.py.txt": {
+      "commit": "42a105360d7e86f91b2823b5c4843ff825cfe095",
+      "sha256": "1f74e61670f41636094c53c8556b0dfb650688eaa2b7ed6a7bd9891f2bd2175d"
+    },
+    "tests/test_body_jepa_retention_integrity.py.txt": {
+      "commit": "42a105360d7e86f91b2823b5c4843ff825cfe095",
+      "sha256": "f9f3b6cfd76995ff0af07e8b2ef7f4d999dbe9d8705f0a0f10246718f92a7c63"
+    },
+    "tests/test_body_token_range_20261109.py.txt": {
+      "commit": "60efb035a6c9e0b3b2175e8cd8c131e52efa242b",
+      "sha256": "966fb70d748b154052fb2080c31aa919bd6302cd209a9c3033908f913c94aa86"
+    }
+  },
+  "schema": "v13-body-anchor-guard-assets-v1"
+}

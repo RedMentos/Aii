@@ -1,0 +1,64 @@
+{
+  "base_commit": "8d601e684917b692e004c00e464d806c19103016",
+  "raw_privacy": "all eight originals temporarily indexed and CLEAN before lossless compression",
+  "runs": [
+    {
+      "artifact": "edge-before-2-fail.log.gz",
+      "sha256": "36df8d6574d2e29c31268b198bfbe074f400d7b5afb538d8e9d51258ed966b21",
+      "decoded_sha256": "9394ac7895ef462ea73f91dba1bd383342a51bdc332de9b1e9edf3cad42c0730",
+      "builder_sha256": "69281ecd7d8475479b78dbdf2d008edfabc2214166ecaa435368299c5d512372",
+      "result": "2 failed / 8 passed; outer failed"
+    },
+    {
+      "artifact": "edge-fixed-11-pass.log.gz",
+      "sha256": "b0054ed2829908f4969fa0cf7a904e1e46af9434636306f84a2c7a91ea252d94",
+      "decoded_sha256": "9912742f9a28c45c0bb3d1b3d040e9601739a8db15be03b709bb1d1584f40a5b",
+      "builder_sha256": "4a17a9525d5da35d2696976d113a561e54d15db23435b1d80e4c5ac4cb00fad3",
+      "result": "11 inner / 1 outer passed"
+    },
+    {
+      "artifact": "initial-8-pass.log.gz",
+      "sha256": "5ac62088e663c96c083b0dac0d2b4a753c76b53addd172aba26206c2c0c58cb4",
+      "decoded_sha256": "c6c92538255724130dc1f0a4185a1e96f74f45e6609987fc06cf688b440253d4",
+      "builder_sha256": "69281ecd7d8475479b78dbdf2d008edfabc2214166ecaa435368299c5d512372",
+      "result": "8 inner / 1 outer passed"
+    },
+    {
+      "artifact": "shared-final-636-pass.log.gz",
+      "sha256": "fe67cd910430344b7f516d6251c15d3812d84356e8e1a48dd00193091b032f33",
+      "decoded_sha256": "75611c70403d47928b0bc2775b4556099db6d4f1892f77791fb8ab6cf6d8e180",
+      "builder_sha256": "516d9a18e033987a759716885617cee600c009725a5a5d54adf9783a060962a7",
+      "result": "636 passed / 3 CUDA skipped / 70 subtests; outer passed"
+    },
+    {
+      "artifact": "shared-first-3-fail.log.gz",
+      "sha256": "6e6f0920a67040616b3e657e0b216cf590643bbdff79ac7386b065d47f06e33e",
+      "decoded_sha256": "dc6da4f7bae4a2321af152255cc19e2bf7f2b7332bdfb5a73f4a752ececf328d",
+      "builder_sha256": "ad02de275cf266c156dc613807687ee811abc8db906cac2857b36faf191d1499",
+      "result": "3 failed / 632 passed / 3 CUDA skipped / 70 subtests; outer failed"
+    },
+    {
+      "artifact": "stage-final-15-pass.log.gz",
+      "sha256": "410f87f558bca9d83448cebf4cd2d83a6dfdb28b71b9cfd0ab6a4b8e62b57f35",
+      "decoded_sha256": "78ab68a9127bf4950e4249c117e2e020f6d5aa2936def2233c22d04aa45bf07e",
+      "builder_sha256": "516d9a18e033987a759716885617cee600c009725a5a5d54adf9783a060962a7",
+      "result": "15 outer passed including 11 compaction cases on final source"
+    },
+    {
+      "artifact": "training-before-body-limit-fail.log.gz",
+      "sha256": "361189bab447ef68b3260cbe86e1a2980a1ab338c38d6249a10bddc8a823938b",
+      "decoded_sha256": "10c0fa73571590dd47e3592d7814d58310acad043b26e67279251a99ae354169",
+      "builder_sha256": "4a17a9525d5da35d2696976d113a561e54d15db23435b1d80e4c5ac4cb00fad3",
+      "result": "1 failed / 2 passed; outer failed"
+    },
+    {
+      "artifact": "training-fixed-3-pass.log.gz",
+      "sha256": "de4f10a493facd38319dad059c56d3180eee17bbc07dce62dc630eefd180d3b0",
+      "decoded_sha256": "334ec752ff35da13bc5ee890eb75119f06a8d12a44e65a2c414fd20fcee96117",
+      "builder_sha256": "ad02de275cf266c156dc613807687ee811abc8db906cac2857b36faf191d1499",
+      "result": "3 inner / 1 outer passed"
+    }
+  ],
+  "scope": "synthetic Runtime/SQLite/Torch/NumPy; no native/Redmi/utility claim",
+  "post_test_format_only": "Removed one trailing blank line from disposable cases; executable AST unchanged"
+}

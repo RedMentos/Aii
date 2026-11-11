@@ -37,7 +37,7 @@ class StagedSourceRecheck(unittest.TestCase):
 
     def _memory(self, name):
         event = self.s.event(self.r.session, "What is the name of " + name + "?")
-        self.r.memory.feedback(event["event_id"], "fact", name)
+        self.r.memory.feedback(event["event_id"], "fact", name, permission='learn')
         return event
 
     def _stage(self):

@@ -1,0 +1,77 @@
+{
+  "raw_privacy": "all six original closed raw logs temporarily indexed; CLEAN before compression",
+  "base_git_commit": "4df40e5598db5b9d5e75ee2f1f04117388a2a18d",
+  "runs": [
+    {
+      "artifact": "first-stale-pin.log.gz",
+      "sha256": "20f2444eb2bc9830887c9b670b55ee855a45591e55017b3eed5b99b298ce9593",
+      "decoded_sha256": "e2361539f3009e3a7bb07917c4a8caa797705b1aaf21ac8bbd73d9423c5b858e",
+      "result": "1 failed / 1 passed; stale helper pin",
+      "builder_sha256": null
+    },
+    {
+      "artifact": "fourth-76-pass.log.gz",
+      "sha256": "52284574852ba126e49eb42d58af4de5c0063a27ec4cb333f8eb4d8ae34a8bf5",
+      "decoded_sha256": "ba9078010c8383ef8a65e1799b0c5b162cb6ae9fc56abec284171a20bd599a79",
+      "result": "76 passed / 12 subtests; 2 outer passed",
+      "builder_sha256": "38c6879b74bcd3158e6e95b48f08b98015662010f55423c54a5db09d879a49f9"
+    },
+    {
+      "artifact": "second-timeout.log.gz",
+      "sha256": "993fdf0977afac7f0c08f2649196f870614fa441778c9530c794b2e542d032e2",
+      "decoded_sha256": "6a542b8c1555e0ac4ae0c95a6d5bddc7ca85a7ede0d917de89f4a78381b8989e",
+      "result": "1 failed / 1 passed; 300s child timeout",
+      "builder_sha256": "a17d3c0e7c935470e30ab35a6d8312c31e97eef1364a14569b8a49f25b777386"
+    },
+    {
+      "artifact": "third-fixture-failures.log.gz",
+      "sha256": "3b6507204f4826d08fdd21ce3f57aae7f3f14cc926a8be8e0b097b9156f3219f",
+      "decoded_sha256": "6bef76d8448fefa80479a9bdbea5aea57ad01d955cd72b90691e8b705978d660",
+      "result": "5 failed / 71 passed / 12 subtests; 1 outer failed / 1 passed",
+      "builder_sha256": "38c6879b74bcd3158e6e95b48f08b98015662010f55423c54a5db09d879a49f9"
+    },
+    {
+      "artifact": "shared-first-teardown-error.log.gz",
+      "sha256": "59f8903b84a5bc91b4db1562a89e5ac9d1a22633d352d72d850c6dc5d085e454",
+      "decoded_sha256": "e7cb460b60d20cd78763129e98359248126a81597f3c8f5937d75116f04e5e26",
+      "result": "562 passed / 3 skipped / 70 subtests; one teardown error; 13 outer passed / 1 failed",
+      "builder_sha256": "38c6879b74bcd3158e6e95b48f08b98015662010f55423c54a5db09d879a49f9"
+    },
+    {
+      "artifact": "shared-562-pass.log.gz",
+      "sha256": "6a8cfe2e345fbac674b3a625885c1aa0f247c758504dce4231dc533d279007c3",
+      "decoded_sha256": "47cf92528820d96d3a1206a5d8933f4eb5f0abc775c40487e5532469286a827b",
+      "result": "562 passed / 3 skipped / 70 subtests; 1 outer passed",
+      "builder_sha256": "38c6879b74bcd3158e6e95b48f08b98015662010f55423c54a5db09d879a49f9"
+    },
+    {
+      "artifact": "ci-43070919414-130698231633.json.gz",
+      "sha256": "61cf38cd5cd7ac951ad00136b02847b5ce6a63f205ccace48650c1939f12d22e",
+      "decoded_sha256": "d480de7340254f631105361761e86aaae9ab5704bc8829cffe7af4f0206d217d",
+      "code_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+      "privacy": "raw temporarily indexed and CLEAN before compression"
+    },
+    {
+      "artifact": "ci-43070919414-130698232214.json.gz",
+      "sha256": "27e964ccde4e7b683266759e6fe7954f3edd3da132db8b3f5cf531456117053d",
+      "decoded_sha256": "788e3c3bab1a4a42d01acb3671b2c1739e6a97e872182efc909f638be48c9155",
+      "code_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+      "privacy": "raw temporarily indexed and CLEAN before compression"
+    },
+    {
+      "artifact": "ci-43070928053-130698261531.json.gz",
+      "sha256": "8b31f3eb88d32d17c1e39a884056f8dee1a373a08da3ec5d48e0205b216e6730",
+      "decoded_sha256": "b570d3850ccea9a1b0fafc61b932d5cf0b54e3d887b3bdba4f3232a018c7616c",
+      "code_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+      "privacy": "raw temporarily indexed and CLEAN before compression"
+    },
+    {
+      "artifact": "ci-43070928053-130698262613.json.gz",
+      "sha256": "f024e202ff7d2007bb56a9a070e7e7c82cd27cd15d9e1aaa8089f7f8338fe8c9",
+      "decoded_sha256": "98bc56f23d83f5c22a2bcbb3123e7e2d87e5590e32c57a015b3ca1f4264648df",
+      "code_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+      "privacy": "raw temporarily indexed and CLEAN before compression"
+    }
+  ],
+  "scope": "software synthetic Runtime/SQLite/NumPy, not native or Redmi"
+}

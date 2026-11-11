@@ -24,6 +24,10 @@ class Promotion(Base):
         self.assertIn('NO_COMPARISON',out['heads']['attention']['blockers'])
         self.assertIn('OBJECTIVE_UNAVAILABLE',out['heads']['gist']['blockers'])
     def test_candidate_needs_human_then_regression_falls_back_to_scaffold(self):
+        # This unit test supplies passing synthetic gate evidence; the live
+        # repository gate may remain OPEN and is not promoted by this fixture.
+        gate=mock.patch.object(AU,'_gate_status',return_value={'STEP5':'GREEN'})
+        gate.start();self.addCleanup(gate.stop)
         for _ in range(AU.MIN_N):AU.observe(self.r.store,'c5_action','DIRECT','DIRECT')
         with self.assertRaises(ValueError):AU.promote(self.r,'c5_action','EXPLICIT_HUMAN')  # not reviewed yet
         out=AU.review(self.r);a=out['heads']['c5_action']
@@ -40,7 +44,8 @@ class Promotion(Base):
         with mock.patch.object(AU,'_gate_status',return_value={'STEP1':'EVIDENCE_NOT_PASSING'}):
             a=AU.review(self.r)['heads']['jef_bridge']
         self.assertEqual(a['level'],0);self.assertIn('GATE_EVIDENCE_NOT_PASSING',a['blockers'])
-        a=AU.review(self.r)['heads']['jef_bridge'];self.assertEqual(a['level'],1)
+        with mock.patch.object(AU,'_gate_status',return_value={'STEP1':'GREEN'}):
+            a=AU.review(self.r)['heads']['jef_bridge'];self.assertEqual(a['level'],1)
         with mock.patch.object(AU,'_gate_status',return_value={'STEP1':'OPEN'}):
             a=AU.review(self.r)['heads']['jef_bridge']
         self.assertEqual(a['level'],0)  # evidence lapsed -> back to shadow
@@ -69,12 +74,17 @@ class Objectives(unittest.TestCase):
 class Timescales(Base):
     def test_medium_and_slow_jobs_run_through_scheduler(self):
         self.assertTrue(AU.medium_due(self.r.store,1e12))
+        self.assertEqual(AU.job(self.r,'learn_medium')['status'],'SKIPPED_RECORD_ONLY')
+        self.assertTrue(AU.medium_due(self.r.store,1e12))
+        from v13.operator import Operator
+        Operator(self.r).run(':learning shadow')
         eid=self.r.sleep.scheduler.post('TIMER',origin='USER',action='learn_medium')
         e=next(x for x in self.r.sleep.scheduler._load()[0]['events'] if x['id']==eid)
         out=self.r.sleep.job(e);self.assertEqual(out['status'],'DONE')
         from v13.common import now
         self.assertFalse(AU.medium_due(self.r.store,now()))
-        out=AU.job(self.r,'learn_slow');self.assertIn('IMPLEMENTED',out['objectives']);self.assertNotIn('consolidate_event',out)  # RECORD_ONLY
+        self.r.cfg['learning_mode']='RECORD_ONLY'
+        out=AU.job(self.r,'learn_slow');self.assertEqual(out['status'],'SKIPPED_RECORD_ONLY');self.assertNotIn('consolidate_event',out)
         with self.assertRaises(ValueError):AU.job(self.r,'learn_fast')
 
 if __name__=='__main__':unittest.main()

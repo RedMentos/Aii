@@ -1,0 +1,56 @@
+{
+  "base_git_commit": "7d66b22557baea7368611d38657224e84fe5ae60",
+  "raw_privacy": "all three original logs temporarily indexed and CLEAN before compression",
+  "runs": [
+    {
+      "artifact": "first-29-pass.log.gz",
+      "sha256": "fabb51a14c1f15d1fc85cd9297e396bc1d41661b90cad8bb6c6bfd70a7dfb023",
+      "decoded_sha256": "c39f8514dd9035c55b6a7b7c2484253cbb734cbb8543aece0b79a202c94cf55b",
+      "result": "29 inner / 1 outer passed",
+      "builder_sha256": "8d18f9fcde0eac79442dceb16544e747b6baa4e7edc07436ef131b889d288282"
+    },
+    {
+      "artifact": "shared-592-pass.log.gz",
+      "sha256": "7c803ef4fffd18c9923bbf2b9a15bdde7670748f0547bca9c870205aca6ceb2b",
+      "decoded_sha256": "1b7813203844db5e429d31fd1ec1d53e06a9bbd2567ca0a9ebf17fe46d2f9904",
+      "result": "592 passed / 3 CUDA skipped / 70 subtests; 29 Dataset and 77 idle/legacy focused passed; 4 outer passed",
+      "builder_sha256": "8d18f9fcde0eac79442dceb16544e747b6baa4e7edc07436ef131b889d288282"
+    },
+    {
+      "artifact": "stage-and-worker-counterexample.log.gz",
+      "sha256": "aa68ed64dbf9106b56c7fe19c46dab247d6cf6100ff9172e5e4515546cae1710",
+      "decoded_sha256": "b6b39f742ebb024a87baa106470f9e8ea0d69b184a6e2e828827d220d06d444e",
+      "result": "14 outer passed including old actual-worker counterexample",
+      "builder_sha256": "8d18f9fcde0eac79442dceb16544e747b6baa4e7edc07436ef131b889d288282"
+    },
+    {
+      "artifact": "ci-43073688604-130707892629.json.gz",
+      "sha256": "295da8418489f24f8b9d226f9e4b9b7f3e7704e234c314b9f7458a97375e5a1f",
+      "decoded_sha256": "32d9a1363fea817164916b59a60208931d50c4ba8e5f76e69fb3629c3779ffbc",
+      "code_commit": "8d601e684917b692e004c00e464d806c19103016",
+      "privacy": "original temporarily indexed and CLEAN before compression"
+    },
+    {
+      "artifact": "ci-43073688604-130707893423.json.gz",
+      "sha256": "33d80b4ddfe5a72edddf0156267c81468cec052cbc8aebe9932aaf6f078eb5d7",
+      "decoded_sha256": "434722229b31bb6be66ef7621abb2d23a358da42b1d68a0b172102bfb6b42ec4",
+      "code_commit": "8d601e684917b692e004c00e464d806c19103016",
+      "privacy": "original temporarily indexed and CLEAN before compression"
+    },
+    {
+      "artifact": "ci-43073701241-130707933309.json.gz",
+      "sha256": "5d54d29737f7097409132c9e874a5ac98762b5a90e9f26d6d04e8a91412edcae",
+      "decoded_sha256": "51b845d0d241a19c1d00a4c55cd8f8da1db872524b4006d3d00b8c3002ac23ec",
+      "code_commit": "8d601e684917b692e004c00e464d806c19103016",
+      "privacy": "original temporarily indexed and CLEAN before compression"
+    },
+    {
+      "artifact": "ci-43073701241-130707933908.json.gz",
+      "sha256": "f7cc5f1fa85f30adcb2562905d82d45395fd8448dbb99305c1110e8efd650d10",
+      "decoded_sha256": "4907de3210ab0e9e5994875c625a41046b3114a2bdddbe82a93d2d23f17da15c",
+      "code_commit": "8d601e684917b692e004c00e464d806c19103016",
+      "privacy": "original temporarily indexed and CLEAN before compression"
+    }
+  ],
+  "scope": "synthetic software, no network/training invoked by intake; not native or Redmi"
+}

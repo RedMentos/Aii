@@ -31,7 +31,7 @@ class AG6HoldoutUseTime(unittest.TestCase):
 
     def _fact(self,prompt):
         e=self.s.event(self.r.session,prompt)
-        self.r.memory.feedback(e["event_id"],"fact","Human-approved answer")
+        self.r.memory.feedback(e["event_id"],"fact","Human-approved answer",permission='learn')
         return e
 
     def _new_unseen(self,seed=17,lang="en"):
