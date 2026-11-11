@@ -32,6 +32,7 @@ git -C "$ROOT" sparse-checkout set --no-cone \
   v13/code/v13/remote_maintenance_bridge.py \
   v13/code/v13/owner_read_bridge.py \
   v13/code/v13/mobile_dashboard.py \
+  v13/code/v13/managed_console.py \
   v13/code/v13/source_updater.py \
   v13/code/scripts/v13-update \
   v13/code/v13/termux_patch_staging.py \
