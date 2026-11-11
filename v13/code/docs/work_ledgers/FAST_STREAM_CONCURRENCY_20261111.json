@@ -1,0 +1,124 @@
+{
+  "schema": "v13-work-package-v1",
+  "observed_utc": "2026-11-11T01:52:00Z",
+  "owner": "V13 Core & Harness (GPT/Codex scoped review package)",
+  "branch": "codex/v13-fastbatch-stream-output-20261111",
+  "pr": 1726,
+  "base_sha": "0fb80f8ac43b9fadceda3343db0e837fe978f518",
+  "verification_head": "bc556afcff921a451a893d8c62c8784969a9def5",
+  "files_owned": [
+    "v13/code/v13/procedural_batch.py",
+    "v13/code/v13/operator.py",
+    "v13/code/tests/test_procedural_stream_output.py",
+    "v13/code/tests/test_procedural_fastpath_benchmark.py",
+    "v13/code/tests/test_procedural_job_lock.py",
+    "v13/code/scripts/benchmark_procedural_fastpath.py",
+    ".github/workflows/v13-procedural-stream-output.yml",
+    "v13/code/v13/speed_panel.py",
+    "v13/code/tests/test_speed_panel.py",
+    "v13/code/v13/brain_panel.py",
+    "v13/code/v13/procedural_inputs.py",
+    "v13/code/tests/test_procedural_input_values.py"
+  ],
+  "packages": [
+    {
+      "id": "STREAM-FAST-001",
+      "consumer": ":fastbatch read NAME COUNT [VALUE] --cursor=OFFSET --bytes=SIZE",
+      "changes": "bounded Unicode-safe committed-byte reads and generator one-hash streamed playback; blocked corruption, retirement, uncommitted tails; learned stream validates originating FINAL source on each yielded chunk and stops after revocation",
+      "claim": "pure compiled preapproved text, not LLM generation or native output"
+    },
+    {
+      "id": "SPEED-BENCH-001",
+      "consumer": "python scripts/benchmark_procedural_fastpath.py --rows 100000",
+      "changes": "measured synthetic host rows/s and bytes/s plus checkpoint/stream sha, non-overwriting operator-chosen JSON report",
+      "claim": "Linux/Termux synthetic benchmark only; no verified phone trial or model token rate"
+    },
+    {
+      "id": "CONCURRENT-FAST-001",
+      "consumer": "ProceduralBatch.run/read/preview/iter_output",
+      "changes": "per-job nonblocking advisory lock and safe refusal of competing same-job reads/writers, independent jobs can progress",
+      "claim": "Linux filesystem concurrency structural tests; Android native lock performance unmeasured"
+    },
+    {
+      "id": "ORGAN-SPEED-001",
+      "consumer": ":brain speed / :speed models / :speed fastbatch [1..50000]",
+      "changes": "current-session sanitized B1/B2/C2/C3 telemetry with unknown native evidence + explicit idle synthetic fastpath benchmark",
+      "claim": "not a device native speed proof, does not mutate weights/policy or authorize a model swap"
+    },
+    {
+      "id": "INPUT-TRANSFORM-001",
+      "consumer": ":fastbatch input import NAME FILE SHA256 | input run PLAN NAME [--rows=N] | input read PLAN NAME [--cursor=N] [--bytes=N]",
+      "changes": "explicit user-supplied full SHA source import into private readonly UTF8 lines bank, per-row distinct value interpolation, restart exact input/output digest/offset checkpoint and bounded cached stream",
+      "claim": "no model calls/tool execution/unattested actions, not unrestricted code generation"
+    }
+  ],
+  "ci": {
+    "url": "https://github.com/RedMentos/Aii/actions/runs/42941877988",
+    "head": "bc556afcff921a451a893d8c62c8784969a9def5",
+    "result": "SUCCESS",
+    "tests": "89 passed",
+    "privacy": "CLEAN",
+    "benchmarks": [
+      {
+        "mode": "repeat",
+        "rows": 100000,
+        "rows_per_second": 753965.6,
+        "writer_bytes_per_second": 23289206.6,
+        "stream_bytes_per_second": 584129849.5
+      },
+      {
+        "mode": "distinct-values",
+        "rows": 100000,
+        "rows_per_second": 515737.7,
+        "writer_bytes_per_second": 12263160.4,
+        "stream_bytes_per_second": 403618081.8
+      }
+    ],
+    "evidence_level": "LINUX_HOST_SYNTHETIC_ONLY"
+  },
+  "gates": [
+    "STEP2 UTILITY_FAIL unchanged",
+    "B3 L1 FAIL unchanged",
+    "Body-JEPA no promotion",
+    "Runtime.py SourceHandoff frozen",
+    "C5 permissions unmodified",
+    "Age0 learning authority unchanged",
+    "No operator/import authorization delegated to a model"
+  ],
+  "blockers": [
+    "PR #1726 draft/unmerged, parent #1671 draft/unmerged",
+    "No Redmi token/s, energy or native model proof",
+    "User-facing chat streaming not integrated into frozen Runtime worker",
+    "Same-job read while writer owns lock fails busy (fast retry required)",
+    "Input-to-output transforms are operator initiated, not automatically selected by JEF normal conversational route"
+  ],
+  "next_exact_commands": [
+    "Review JEPA #1727 counterexample on live action dtype/shape/counters before checkpoint; owner comment 6784660196",
+    "Audit latest dynamic input source and checkpoint flags after source mutation; run 89-test exact checkout and privacy scan",
+    "Implement source-hash-bound, operator-imported per-row values for compiled pure text transform; no arbitrary tool execution and no native/weight claims",
+    "Verify high-throughput iter_output revokes learned source at next chunk without destroying committed checkpoint; add live SQLite fail-close test",
+    "cd v13/code && python -m pytest -q tests/test_procedural_stream_output.py tests/test_procedural_fastpath_benchmark.py tests/test_procedural_job_lock.py tests/test_procedural_habits.py tests/test_procedural_batch.py tests/test_brain_diagnosis.py",
+    "cd v13/code && python scripts/benchmark_procedural_fastpath.py --rows 100000",
+    "python v13/code/scripts/public_repo_privacy_scan.py --base 0fb80f8ac43b9fadceda3343db0e837fe978f518 --head HEAD",
+    "Provide :speed fastbatch and read-only per-organ runtime speed report in existing Operator with no frozen-runtime edits",
+    "Review independent JEF/JEPA branches before any integration"
+  ],
+  "review_findings": [
+    {
+      "pr": 1724,
+      "type": "JEF_EVENT_ID_REPLAN_INCONSISTENCY",
+      "comment_id": 6784402985,
+      "status": "REPORTED_TO_OWNER",
+      "issue": "retry same event with same pattern but changed eligibility can return schedule inconsistent with stored event schedule",
+      "native_reproduced": false
+    },
+    {
+      "pr": 1727,
+      "type": "LIVE_CHECKPOINT_INVALID_SCHEMA",
+      "comment_id": 6784660196,
+      "status": "REPORTED_TO_OWNER",
+      "issue": "Before backup, checkpoint live replay action dtype/range/counters and array shapes; invalid state may pass new finite-only guard",
+      "native_reproduced": false
+    }
+  ]
+}
