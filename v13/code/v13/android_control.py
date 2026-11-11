@@ -73,6 +73,7 @@ class AndroidControlBroker:
         self.lock = threading.RLock()
         self.db = sqlite3.connect(str(db_path), check_same_thread=False)
         self.db.execute("CREATE TABLE IF NOT EXISTS control_audit (id INTEGER PRIMARY KEY, action_id TEXT, event TEXT NOT NULL, digest TEXT, at REAL NOT NULL)")
+        self.db.execute("CREATE INDEX IF NOT EXISTS idx_control_audit_action_event ON control_audit(action_id,event)")
         self.db.commit()
         self.pending = {}
         self.approved = {}
@@ -132,6 +133,35 @@ class AndroidControlBroker:
             self._audit(action_id, "dry_run", p.digest)
             return {"action_id": p.action_id, "capability": p.capability,
                     "args": dict(p.args), "digest": p.digest, "status": "DRY_RUN_ONLY"}
+
+    def record_simulated_outcome(self, envelope, outcome):
+        """Persist verified simulation result, distinct from command issuance."""
+        with self.lock:
+            action_id = envelope.get("action_id")
+            digest = envelope.get("digest")
+            if (envelope.get("status") != "DRY_RUN_ONLY"
+                    or not isinstance(action_id, str)
+                    or not isinstance(digest, str)
+                    or self.db.execute(
+                        "SELECT 1 FROM control_audit WHERE action_id=? AND event='dry_run' AND digest=? LIMIT 1",
+                        (action_id, digest)).fetchone() is None):
+                raise ControlDenied("unissued simulation outcome")
+            if (outcome.action_id != action_id
+                    or outcome.capability != envelope.get("capability")
+                    or outcome.status != "SIMULATED"
+                    or outcome.source != "SIMULATED_COMPANION"):
+                self._audit(action_id, "outcome_rejected", digest)
+                raise ControlDenied("simulation outcome mismatch")
+            if self.db.execute(
+                    "SELECT 1 FROM control_audit WHERE action_id=? AND event='simulated_outcome' LIMIT 1",
+                    (action_id,)).fetchone():
+                raise ControlDenied("duplicate simulation outcome")
+            self._audit(action_id, "simulated_outcome", digest)
+
+    def record_simulated_failure(self, envelope):
+        """Dispatch failure is not evidence of an Android action."""
+        with self.lock:
+            self._audit(envelope["action_id"], "simulation_dispatch_failed", envelope["digest"])
 
     def events(self):
         with self.lock:

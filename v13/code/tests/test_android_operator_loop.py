@@ -33,3 +33,66 @@ def test_stop_blocks_pending_and_simulation_rejects_live_envelope(tmp_path):
     with pytest.raises(ControlDenied):
         SimulatedCompanion().dispatch({"status": "LIVE", "action_id": "a", "capability": "back"})
     broker.close()
+
+
+def test_outcome_audit_survives_restart(tmp_path):
+    db = tmp_path / "audit.db"
+    broker = AndroidControlBroker(db)
+    broker.start()
+    loop = AndroidOperatorLoop(broker)
+    request = loop.run_from_brain("back", {})
+    loop.approved_simulation(request.action_id, local_confirmation=True)
+    broker.close()
+    reopened = AndroidControlBroker(db)
+    events = [row[1] for row in reopened.events() if row[0] == request.action_id]
+    assert events == ["proposed", "approved", "dry_run", "simulated_outcome"]
+    reopened.close()
+
+
+def test_forged_companion_result_is_rejected(tmp_path):
+    from v13.android_operator_loop import ActionOutcome
+
+    class ForgedCompanion:
+        def dispatch(self, envelope):
+            return ActionOutcome(envelope["action_id"], "tap", "SIMULATED", 0, "SIMULATED_COMPANION")
+
+    broker = AndroidControlBroker(tmp_path / "audit.db")
+    broker.start()
+    loop = AndroidOperatorLoop(broker, companion=ForgedCompanion())
+    request = loop.run_from_brain("back", {})
+    with pytest.raises(ControlDenied, match="outcome mismatch"):
+        loop.approved_simulation(request.action_id, local_confirmation=True)
+    assert "outcome_rejected" in [row[1] for row in broker.events()]
+    broker.close()
+
+
+def test_companion_dispatch_failure_is_audited(tmp_path):
+    class BrokenCompanion:
+        def dispatch(self, envelope):
+            raise RuntimeError("companion unavailable")
+
+    broker = AndroidControlBroker(tmp_path / "audit.db")
+    broker.start()
+    loop = AndroidOperatorLoop(broker, companion=BrokenCompanion())
+    request = loop.run_from_brain("back", {})
+    with pytest.raises(RuntimeError):
+        loop.approved_simulation(request.action_id, local_confirmation=True)
+    assert "simulation_dispatch_failed" in [row[1] for row in broker.events()]
+    broker.close()
+
+
+def test_duplicate_and_unissued_outcomes_cannot_be_logged(tmp_path):
+    from v13.android_operator_loop import ActionOutcome
+    broker = AndroidControlBroker(tmp_path / "audit.db")
+    broker.start()
+    p = broker.propose("back", {})
+    broker.approve(p.action_id, confirmed_by_local_ui=True)
+    envelope = broker.execute(p.action_id)
+    outcome = ActionOutcome(p.action_id, "back", "SIMULATED", 0, "SIMULATED_COMPANION")
+    broker.record_simulated_outcome(envelope, outcome)
+    with pytest.raises(ControlDenied, match="duplicate"):
+        broker.record_simulated_outcome(envelope, outcome)
+    with pytest.raises(ControlDenied, match="unissued"):
+        broker.record_simulated_outcome(dict(envelope, action_id="f" * 32), outcome)
+    assert [row[1] for row in broker.events() if row[0] == p.action_id].count("simulated_outcome") == 1
+    broker.close()
