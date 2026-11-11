@@ -1,0 +1,35 @@
+name: V13 resumable no-model UTF8 output stream
+on:
+  push:
+    branches:
+      - 'codex/v13-fastbatch-stream-output-*'
+  pull_request:
+    paths:
+      - 'v13/code/v13/procedural_batch.py'
+      - 'v13/code/tests/test_procedural_stream_output.py'
+      - 'v13/code/v13/operator.py'
+      - '.github/workflows/v13-procedural-stream-output.yml'
+permissions:
+  contents: read
+jobs:
+  streaming:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: v13/code
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check pytest
+      - name: "Compile and test bounded UTF-8 output and prior learned habits"
+        run: |
+          python -m py_compile v13/procedural_batch.py v13/operator.py tests/test_procedural_stream_output.py
+          python -m pytest -q tests/test_procedural_stream_output.py tests/test_procedural_habits.py tests/test_procedural_batch.py tests/test_brain_diagnosis.py
+      - name: "Privacy scan new public source"
+        run: |
+          python scripts/public_repo_privacy_scan.py --base 0fb80f8ac43b9fadceda3343db0e837fe978f518 --head HEAD
