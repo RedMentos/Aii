@@ -203,3 +203,47 @@ def test_old_new_cohort_split_rejects_duplicate_fake_training_volume(tmp_path):
     finally:
         world.close()
         broker.close()
+
+
+
+def test_numeric_target_edits_change_synthetic_dataset_pin(tmp_path):
+    broker, world = _environment(tmp_path, n=18)
+    try:
+        original = trial(world, seed=6, steps=2)
+        with world.db:
+            world.db.execute(
+                "UPDATE sim_transitions SET after_features='[0.0,0.0,0.5,0.0]' "
+                "WHERE action_id=(SELECT action_id FROM sim_transitions ORDER BY rowid DESC LIMIT 1)"
+            )
+        changed = trial(world, seed=6, steps=2)
+        assert changed["source_sha256"] != original["source_sha256"]
+        first = replay_ablation(world, seed=6, steps=2)
+        with world.db:
+            world.db.execute(
+                "UPDATE sim_transitions SET after_features='[0.0,0.0,0.75,0.0]' "
+                "WHERE action_id=(SELECT action_id FROM sim_transitions ORDER BY rowid DESC LIMIT 1)"
+            )
+        second = replay_ablation(world, seed=6, steps=2)
+        assert first["source_sha256"] != second["source_sha256"]
+        assert not (tmp_path / "data" / "db").exists()
+    finally:
+        world.close()
+        broker.close()
+
+
+def test_nonhex_provenance_hash_rejected_before_training(tmp_path):
+    broker, world = _environment(tmp_path, n=12)
+    try:
+        with world.db:
+            world.db.execute(
+                "UPDATE actions SET after_sha256=? WHERE action_id="
+                "(SELECT action_id FROM actions LIMIT 1)",
+                ("q" * 64,)
+            )
+        with pytest.raises(ValueError, match="corrupt simulator transition"):
+            world.transitions()
+        with pytest.raises(ValueError, match="corrupt simulator transition"):
+            trial(world, seed=4, steps=2)
+    finally:
+        world.close()
+        broker.close()
