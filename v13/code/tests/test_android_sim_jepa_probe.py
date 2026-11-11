@@ -1,0 +1,137 @@
+"""Synthetic Android action receipts -> actual NumPy JEPA weight updates.
+
+This is intentionally NOT evidence of real Android control, live perception,
+pretrained B1/B2/C3 updates, or AGI. Simulation data is kept outside T8 Store.
+"""
+import json
+import sqlite3
+
+import numpy as np
+import pytest
+
+from v13.android_control import AndroidControlBroker
+from v13.android_control_sim import SimulatedAndroidWorld, DEMO_PACKAGE
+from v13.android_sim_jepa_probe import trial, _groups
+
+
+def _do(broker, world, cap, args):
+    p = broker.propose(cap, args)
+    broker.approve(p.action_id, confirmed_by_local_ui=True)
+    return world.apply(broker.execute(p.action_id))
+
+
+def _environment(tmp_path, n=18):
+    broker = AndroidControlBroker(tmp_path / "broker.sqlite")
+    broker.start()
+    world = SimulatedAndroidWorld(tmp_path)
+    _do(broker, world, "launch_app", {"package": DEMO_PACKAGE})
+    for i in range(n):
+        _do(broker, world, "tap", {"x": 200, "y": 150})
+        _do(broker, world, "type_text", {"text": f"SYNTHETIC-NOTE-{i}"})
+        _do(broker, world, "tap", {"x": 200, "y": 350})
+        _do(broker, world, "observe_ui", {})
+    return broker, world
+
+
+def test_simulated_to_jepa_actual_numeric_weights_and_checkpoint(tmp_path):
+    broker, world = _environment(tmp_path, n=18)
+    try:
+        assert len(world.transitions()) == 73
+        result = trial(world, seed=9, steps=3, checkpoint=tmp_path / "synthetic-jepa.npz")
+        assert result["kind"] == "SYNTHETIC_UI_JEPA_PROBE"
+        assert result["scope"] == "SYNTHETIC_UI_ONLY_NO_T8_SOURCE"
+        assert result["train_rows"] >= 8
+        assert result["holdout_rows"] >= 4
+        assert result["verified_input_disjointness"] is True
+        assert result["encoder_weights_changed"] is True
+        assert result["fit_steps"] == 6
+        assert np.isfinite(result["heldout_loss_before"])
+        assert np.isfinite(result["heldout_loss_after"])
+        assert result["active_model_promoted"] is False
+        assert result["native_android_executed"] is False
+        assert result["b1_b2_c3_gguf_weights_modified"] is False
+        assert result["registered_t8_training_corpus_modified"] is False
+        assert result["readback"]["inference_reload_exact_loss"] is True
+        assert result["readback"]["optimizer_trajectory_reproduced"] is False
+        assert "SYNTHETIC-NOTE" not in json.dumps(result)
+        # Actual checkpoint bytes may be loaded only under the exact pinned
+        # synthetic receipt SHA and archive digest, never from the live Store.
+        assert (tmp_path / "synthetic-jepa.npz").is_file()
+    finally:
+        world.close()
+        broker.close()
+
+
+def test_repeated_trials_are_deterministic_and_unseen_cohorts_disjoint(tmp_path):
+    broker, world = _environment(tmp_path, n=15)
+    try:
+        records = world.transitions()
+        train, test = _groups(records)
+        train_keys = {key for key, _ in train}
+        test_keys = {key for key, _ in test}
+        assert train_keys.isdisjoint(test_keys)
+        a = trial(world, seed=21, steps=4)
+        b = trial(world, seed=21, steps=4)
+        assert a["source_sha256"] == b["source_sha256"]
+        assert a["heldout_loss_before"] == pytest.approx(b["heldout_loss_before"])
+        assert a["heldout_loss_after"] == pytest.approx(b["heldout_loss_after"])
+        assert a["fit_steps"] == b["fit_steps"] == 7
+    finally:
+        world.close()
+        broker.close()
+
+
+def test_synthetic_transition_export_never_contains_notes_text(tmp_path):
+    broker, world = _environment(tmp_path, n=5)
+    try:
+        rows = world.transitions()
+        assert len(rows) == 21
+        assert all(row["scope"] == "SYNTHETIC_UI_ONLY" for row in rows)
+        assert all(len(row["x"]) == len(row["x2"]) == 4 for row in rows)
+        assert all(0 <= row["a"] < 6 for row in rows)
+        assert "SYNTHETIC-NOTE" not in json.dumps(rows)
+        # Too few disjoint action+observation cases remain after input
+        # identity de-duplication; do not manufacture a train/holdout proof.
+        with pytest.raises(ValueError):
+            trial(world, steps=3)
+    finally:
+        world.close()
+        broker.close()
+
+
+def test_corrupt_or_relabelled_synthetic_evidence_rejected(tmp_path):
+    broker, world = _environment(tmp_path, n=14)
+    try:
+        with world.db:
+            world.db.execute(
+                "UPDATE sim_transitions SET scope='REAL_ANDROID' "
+                "WHERE action_id=(SELECT action_id FROM sim_transitions LIMIT 1)"
+            )
+        with pytest.raises(ValueError, match="corrupt simulator transition"):
+            world.transitions()
+        with world.db:
+            world.db.execute("UPDATE sim_transitions SET scope='SYNTHETIC_UI_ONLY'")
+            world.db.execute(
+                "UPDATE sim_transitions SET before_features=? "
+                "WHERE action_id=(SELECT action_id FROM sim_transitions LIMIT 1)",
+                ('[0.0,0.0,NaN,0.0]',)
+            )
+        with pytest.raises(ValueError, match="invalid numeric"):
+            world.transitions()
+    finally:
+        world.close()
+        broker.close()
+
+
+def test_no_data_no_fit_no_checkpoint_and_budget_limits(tmp_path):
+    world = SimulatedAndroidWorld(tmp_path)
+    try:
+        with pytest.raises(ValueError, match="at least 12"):
+            trial(world, checkpoint=tmp_path / "no-fit.npz")
+        assert not (tmp_path / "no-fit.npz").exists()
+        for kwargs in ({"seed": -1}, {"seed": True}, {"steps": 0},
+                       {"steps": 101}, {"limit": 2}, {"limit": 2049}):
+            with pytest.raises(ValueError):
+                trial(world, **kwargs)
+    finally:
+        world.close()
