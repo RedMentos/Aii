@@ -79,6 +79,11 @@ class AndroidDispatcher:
             self.registry.settle(response)
             return DispatchResult(request, response)
         except Exception:
+            # A concurrent stop already wrote the terminal CANCELLED receipt.
+            # Never replace it with FAILED, nor throw while handling a late reply.
+            terminal = self.registry.outcome_for(request.request_id)
+            if terminal is not None:
+                return DispatchResult(request, terminal)
             # Do not report SUCCESS when the transport, authentication, or
             # response handling fails. A native action might already have
             # occurred; callers must not automatically retry ambiguous outcomes.
