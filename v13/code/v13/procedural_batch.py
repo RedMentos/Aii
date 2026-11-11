@@ -512,6 +512,12 @@ class ProceduralBatch:
                     value_text = pending[:exc.start].decode("utf-8")
                     pending = pending[exc.start:]
                 if value_text:
+                    # A long-lived consumer may pause between chunks while
+                    # the originating chat source is deleted. Never stream
+                    # another chunk from a learned habit after revocation.
+                    # Manual explicitly authored plans incur zero DB reads.
+                    if plan["code"].get("source_evidence"):
+                        self._verify_evidence(plan)
                     yield value_text
             if pending:
                 raise ValueError("trailing invalid UTF-8 in committed output")
