@@ -140,6 +140,8 @@ class OnlinePredictor:
         if (any(not np.isfinite(value).all() for value in arrays)
                 or not (0 <= len(self.x) <= self.cap)
                 or len(self.act) != len(self.x) or len(self.y) != len(self.x)
+                or not np.issubdtype(self.act.dtype, np.integer)
+                or np.any(self.act < 0) or np.any(self.act >= self.a)
                 or self.seen < len(self.x) or self.updates < self.seen):
             raise ValueError('Invalid live predictor checkpoint state')
         self.path.parent.mkdir(parents=True,exist_ok=True)
