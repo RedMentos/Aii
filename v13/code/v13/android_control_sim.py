@@ -22,6 +22,7 @@ REVISION = "v13-android-simulation-v1"
 DEMO_PACKAGE = "org.v13.demo.notes"
 MAX_ACTIONS = 10000
 MAX_NOTES = 64
+CAPABILITY_ORDER = ("launch_app", "observe_ui", "tap", "swipe", "type_text", "back")
 ACTION_ID = re.compile(r"[0-9a-f]{32}\Z")
 
 
@@ -62,6 +63,17 @@ def _validate(state):
     if (state["focus"] == "EDITOR") != (state["screen"] == "EDITOR"):
         raise ValueError("inconsistent simulated input focus")
     return state
+
+
+def _features(state):
+    """Four bounded observable controls, no notes/draft text survives export."""
+    _validate(state)
+    return [
+        float(state["app"] == DEMO_PACKAGE),
+        float(state["screen"] == "EDITOR"),
+        len(state["notes"]) / MAX_NOTES,
+        len(state["draft"]) / 256,
+    ]
 
 
 def _transition(before, cap, args):
@@ -134,6 +146,11 @@ class SimulatedAndroidWorld:
             "CREATE TABLE IF NOT EXISTS actions (action_id TEXT PRIMARY KEY, "
             "digest TEXT NOT NULL, before_sha256 TEXT NOT NULL, "
             "after_sha256 TEXT NOT NULL)"
+        )
+        self.db.execute(
+            "CREATE TABLE IF NOT EXISTS sim_transitions (action_id TEXT PRIMARY KEY, "
+            "scope TEXT NOT NULL, capability TEXT NOT NULL, "
+            "before_features TEXT NOT NULL, after_features TEXT NOT NULL)"
         )
         if self.db.execute("SELECT 1 FROM snapshot WHERE id=1").fetchone() is None:
             state = _blank()
@@ -213,6 +230,11 @@ class SimulatedAndroidWorld:
                 "UPDATE snapshot SET payload=?,sha256=? WHERE id=1",
                 (_json(after), after_sha)
             )
+            self.db.execute(
+                "INSERT INTO sim_transitions VALUES (?,?,?,?,?)",
+                (aid, "SYNTHETIC_UI_ONLY", envelope["capability"],
+                 _json(_features(current)), _json(_features(after)))
+            )
             return {
                 "kind": "SIMULATED_ACTION_RECEIPT",
                 "action_id": aid, "capability": envelope["capability"],
@@ -220,6 +242,43 @@ class SimulatedAndroidWorld:
                 "simulation_applied": True, "native_android_executed": False,
                 "model_calls": 0,
             }
+
+    def transitions(self, limit=2048):
+        """Read bounded, purely synthetic, text-free JEPA candidates.
+
+        Never written to V13's authoritative T8 corpus. Every action is
+        traceable to a unique committed simulator action receipt.
+        """
+        if type(limit) is not int or not 1 <= limit <= 2048:
+            raise ValueError("synthetic transition limit must be 1..2048")
+        with self.lock:
+            rows = self.db.execute(
+                "SELECT t.action_id,t.scope,t.capability,t.before_features,"
+                "t.after_features,a.before_sha256,a.after_sha256 "
+                "FROM sim_transitions t JOIN actions a ON a.action_id=t.action_id "
+                "ORDER BY t.rowid DESC LIMIT ?", (limit,)
+            ).fetchall()
+            result = []
+            for aid, scope, cap, x, x2, before, after in reversed(rows):
+                if (scope != "SYNTHETIC_UI_ONLY"
+                        or cap not in CAPABILITY_ORDER or not ACTION_ID.fullmatch(aid)
+                        or type(before) is not str or len(before) != 64
+                        or type(after) is not str or len(after) != 64):
+                    raise ValueError("corrupt simulator transition evidence")
+                left, right = json.loads(x), json.loads(x2)
+                if not (isinstance(left, list) and isinstance(right, list)
+                        and len(left) == len(right) == 4
+                        and all(type(v) is float and 0.0 <= v <= 1.0
+                                for v in left + right)):
+                    raise ValueError("invalid numeric simulator transition")
+                result.append({
+                    "action_id": aid,
+                    "scope": "SYNTHETIC_UI_ONLY",
+                    "x": left, "a": CAPABILITY_ORDER.index(cap),
+                    "x2": right, "before_sha256": before,
+                    "after_sha256": after,
+                })
+            return result
 
     def receipt_count(self):
         with self.lock:
