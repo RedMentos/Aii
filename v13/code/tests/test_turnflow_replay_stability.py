@@ -51,5 +51,44 @@ class ReplayTests(unittest.TestCase):
         self.assertEqual(turnflow.report(store)["feedback_patterns"], before)
 
 
+    def test_concurrent_first_writer_wins_without_duplicate_record(self):
+        store = Store()
+        class RacingStore(Store):
+            def __init__(self):
+                super().__init__()
+                self.injected = False
+            def set_state(self, key, value, expected=None):
+                if not self.injected and "race" in value["events"]:
+                    self.injected = True
+                    # Simulate a different first writer committing before CAS.
+                    winner = turnflow.plan(store, "race", {}, 0, "B1_DETAIL",
+                                           eligible=False)
+                    self.value = copy.deepcopy(store.value)
+                    self.version = store.version
+                return super().set_state(key, value, expected)
+        racing = RacingStore()
+        losing = turnflow.plan(racing, "race", {}, 0, "B1_DETAIL",
+                               eligible=True)
+        self.assertEqual(losing["schedule"], "SPEAK_ONLY")
+        self.assertEqual(racing.version, 1)
+        self.assertEqual(len(racing.value["last"]), 1)
+        self.assertEqual(racing.value["events"]["race"]["decision"], losing)
+
+    def test_concurrent_different_pattern_fails_closed(self):
+        store = Store()
+        class RacingStore(Store):
+            def set_state(self, key, value, expected=None):
+                if self.version == 0:
+                    winning = turnflow.plan(store, "race", {}, 1, "B2_GIST")
+                    self.value = copy.deepcopy(store.value)
+                    self.version = store.version
+                return super().set_state(key, value, expected)
+        racing = RacingStore()
+        with self.assertRaisesRegex(ValueError, "different pattern"):
+            turnflow.plan(racing, "race", {}, 0, "B1_DETAIL")
+        self.assertEqual(racing.version, 1)
+        self.assertEqual(racing.value["events"]["race"]["pattern"], "pre1/no_focal/B2_GIST")
+
+
 if __name__ == "__main__":
     unittest.main()
