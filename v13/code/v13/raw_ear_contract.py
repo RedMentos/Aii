@@ -21,8 +21,8 @@ class AcousticFrame:
     end_ms: int
     rms: float
     pitch_hz: Optional[float]
-    voiced_probability: float
-    non_speech_probability: float
+    voiced_probability: Optional[float]
+    non_speech_probability: Optional[float]
 
 @dataclass(frozen=True)
 class RawEarPacket:
@@ -74,9 +74,11 @@ def build_raw_ear(source_ref: str, pcm16le: bytes, sample_rate_hz: int,
         if f.start_ms < previous or f.end_ms <= f.start_ms or f.end_ms > duration_ms:
             raise ValueError("invalid or overlapping timestamps")
         previous = f.end_ms
-        for v in (f.rms, f.voiced_probability, f.non_speech_probability):
-            if not isinstance(v, (int, float)) or not isfinite(v) or not 0 <= v <= 1:
-                raise ValueError("invalid acoustic probability or RMS")
+        if type(f.rms) not in (int, float) or not isfinite(f.rms) or not 0 <= f.rms <= 1:
+            raise ValueError("invalid RMS")
+        for v in (f.voiced_probability, f.non_speech_probability):
+            if v is not None and (type(v) not in (int, float) or not isfinite(v) or not 0 <= v <= 1):
+                raise ValueError("invalid measured acoustic probability")
         if f.pitch_hz is not None and (
             not isinstance(f.pitch_hz, (int, float)) or not isfinite(f.pitch_hz)
             or not 20 <= f.pitch_hz <= 2000):
