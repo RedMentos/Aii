@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - boss/v13-c3-speech-android-goal-20261111-1145
+      - boss/v13-fix-integrated-c5-c3-replay-20261111-1245
   pull_request:
     paths:
       - 'v13/code/v13/android_c5_goal_replay.py'
