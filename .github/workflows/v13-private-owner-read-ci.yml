@@ -6,6 +6,10 @@ on:
   pull_request:
     paths:
       - 'v13/code/v13/owner_read_bridge.py'
+      - 'v13/code/v13/source_updater.py'
+      - 'v13/code/v13/mobile_dashboard.py'
+      - 'v13/code/tests/test_source_updater.py'
+      - 'v13/code/scripts/v13-update'
       - 'v13/code/tests/test_owner_read_bridge.py'
       - 'v13/code/scripts/termux_one_command.sh'
       - '.github/workflows/v13-private-owner-read-ci.yml'
@@ -28,5 +32,9 @@ jobs:
         run: |
           python -m py_compile v13/owner_read_bridge.py v13/remote_maintenance_bridge.py tests/test_owner_read_bridge.py
           python -m unittest discover -s tests -p 'test_owner_read_bridge.py' -v
+      - name: Validate updater and phone UI source syntax
+        run: |
+          python -m py_compile v13/source_updater.py v13/mobile_dashboard.py tests/test_source_updater.py
+          python -m unittest discover -s tests -p 'test_source_updater.py' -v
       - name: Validate one-command bootstrap syntax
-        run: bash -n scripts/termux_one_command.sh
+        run: bash -n scripts/termux_one_command.sh scripts/v13-update
