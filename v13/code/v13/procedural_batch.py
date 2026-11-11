@@ -539,6 +539,7 @@ class ProceduralBatch:
 
 def operator_command(runtime, args):
     """:fastbatch propose NAME 'text {i}: {value}' | discover NAME [--history=N] | activate NAME SHA |
+    input import NAME PATH SHA256 | input run PLAN NAME [--rows=N] |
     run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] |
     peek NAME COUNT [VALUE] | status [NAME] | retire NAME. Only local operator dispatch can reach here.
     """
@@ -548,6 +549,9 @@ def operator_command(runtime, args):
             raise ValueError(":fastbatch status [NAME]")
         return runner.status(args[1] if len(args) == 2 else None)
     cmd = args[0]
+    if cmd == "input":
+        from .procedural_inputs import operator_command as input_command
+        return input_command(runtime, args[1:])
     if cmd == "propose" and len(args) == 3:
         return runner.propose(args[1], args[2])
     if cmd == "discover" and len(args) in (2, 3):
@@ -590,4 +594,4 @@ def operator_command(runtime, args):
             return runner.preview(name, count, value)
         limit = int(opts[0].split("=", 1)[1]) if opts else None
         return runner.run(name, count, value, max_rows=limit)
-    raise ValueError(":fastbatch propose NAME TEMPLATE | discover NAME [--history=N] | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME")
+    raise ValueError(":fastbatch input import NAME PATH SHA256 | input run PLAN NAME [--rows=N] | propose NAME TEMPLATE | discover NAME [--history=N] | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME")
