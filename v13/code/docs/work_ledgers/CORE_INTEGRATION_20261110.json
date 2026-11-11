@@ -11,7 +11,7 @@
     "tests": {
       "current_shared_stage": "374 passed, 3 CUDA skipped, 35 subtests passed; 1 outer passed",
       "current_targeted": "12 outer passed; 15 context cases passed plus actual Runtime smoke and JEPA readback",
-      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+      "remote_ci": "SUCCESS push run 42973853469 exact code HEAD 7aa8f08ba4102dc1e98804b7592bf48c01aab4f6 jobs 130368268015/130368267678; also PR merge run 42973858006"
     },
     "original_full_suites": {
       "1742": "109 failed, 5485 passed, 51 skipped, 94 errors, 3027 subtests passed",
