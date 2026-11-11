@@ -364,7 +364,7 @@ class ProceduralInputs:
 
 
 def operator_command(runtime, args):
-    """input import NAME FILE SHA | status NAME | run PLAN INPUT [--rows=N]."""
+    """input import NAME FILE SHA | status NAME | run PLAN INPUT [--rows=N] | read PLAN INPUT [--cursor=N] [--bytes=N]."""
     bank = ProceduralInputs(runtime.home, store=runtime.store)
     if len(args) == 4 and args[0] == "import":
         return bank.import_file(args[1], args[2], args[3])
