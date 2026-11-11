@@ -1,0 +1,25 @@
+name: V13 staged multi-organ Runtime smoke
+on:
+  push:
+    branches:
+      - 'codex/v13-core-staged-e2e-ci-20261111-0700'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  staged-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install isolated synthetic-test dependencies
+        run: python -m pip install --disable-pip-version-check pytest numpy
+      - name: Execute pinned staging and real SQLite Runtime integration
+        working-directory: v13/code
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python -m unittest -v tests.test_stage_integrated_candidate tests.test_pinned_stage_runtime_e2e_20261111
