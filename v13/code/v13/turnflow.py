@@ -152,6 +152,12 @@ def plan(store, event_id, meta, preoffers, role, eligible=True, residency_ok=Tru
             raise ValueError("event already planned with a different pattern")
         if previous.get("scheduled") not in ("SPEAK_AND_CHECK", "SPEAK_ONLY"):
             raise ValueError("corrupt prior turn-flow schedule")
+        # A retry must not re-decide after policy feedback or a mode change.
+        # Older persisted events lack a decision snapshot; refuse to invent one.
+        snapshot = previous.get("decision")
+        if type(snapshot) is not dict or snapshot.get("pattern") != pattern:
+            raise ValueError("prior event lacks replayable decision")
+        return dict(snapshot)
     # Scheduling may only DELETE optional extra work, never bypass the
     # already-computed pre-answer deliberation or any C5 permission gate.
     decision = decide(state, pattern, bool(eligible), bool(residency_ok), event_id)
@@ -172,7 +178,8 @@ def plan(store, event_id, meta, preoffers, role, eligible=True, residency_ok=Tru
         def register(value):
             if event_id not in value["events"]:
                 value["events"][event_id] = {"pattern": pattern, "feedback": None,
-                                             "scheduled": decision["schedule"]}
+                                             "scheduled": decision["schedule"],
+                                             "decision": dict(decision)}
             if len(value["events"]) > MAX_EVENTS:
                 for old in list(value["events"])[:len(value["events"]) - MAX_EVENTS]:
                     del value["events"][old]
