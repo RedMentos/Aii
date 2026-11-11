@@ -625,7 +625,8 @@ def operator_command(runtime, args):
     """:fastbatch propose NAME 'text {i}: {value}' | discover NAME [--history=N] | activate NAME SHA |
     input import NAME PATH SHA256 | input run PLAN NAME [--rows=N] |
     run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] |
-    peek NAME COUNT [VALUE] | status [NAME] | retire NAME. Only local operator dispatch can reach here.
+    peek NAME COUNT [VALUE] | share NAME FULL_SHA YES | unshare NAME |
+    status [NAME] | retire NAME. Only local operator dispatch can reach here.
     """
     runner = ProceduralBatch(runtime.home, store=runtime.store,
                              session=getattr(runtime, "session", None))
@@ -683,4 +684,4 @@ def operator_command(runtime, args):
             return runner.preview(name, count, value)
         limit = int(opts[0].split("=", 1)[1]) if opts else None
         return runner.run(name, count, value, max_rows=limit)
-    raise ValueError(":fastbatch input import NAME PATH SHA256 | input run PLAN NAME [--rows=N] | propose NAME TEMPLATE | discover NAME [--history=N] | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME")
+    raise ValueError(":fastbatch input import NAME PATH SHA256 | input run PLAN NAME [--rows=N] | propose NAME TEMPLATE | discover NAME [--history=N] | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] | peek NAME COUNT [VALUE] | share NAME FULL_SHA YES | unshare NAME | status [NAME] | retire NAME")
