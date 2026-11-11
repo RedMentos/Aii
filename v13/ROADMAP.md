@@ -1,3 +1,7 @@
+## 2026-11-11 — C3-Restart mit Body und World in gemeinsamer Testkopie
+
+Ein beschädigter C3-Optimizer konnte auf #1663 bereits geladene Adaptergewichte ändern. Neuer gebundener Testkopie-Pfad prüft Master-SHA, Generation, vollständige Trainingsinputs, AdamW-Zuordnung/Zustand und Zufallszustände vor Übernahme und rollt Ladefehler zurück. Tatsächlicher Tiny-Torch-/PEFT-C3-Lauf nach Abbruch exakt fortgesetzt; SQLite-AG6-Stage/Train mit synthetischem Trainer ohne Aktivierung ausgeführt. **162 Tests PASS, 3 CUDA SKIP**, 2 äußere Tests; erster Vergleich ohne Torch-RNG war 11 PASS/1 FAIL. Details und offene Crash-/Quellen-/Gerätegrenzen `code/docs/INTEGRATED_C3_RESUME_CANDIDATE_20261111.md`. Als nächste gemeinsame Naht Archiv-/Source-Lifecycle und langer Kontext, anschließend Body-Operator/Idle und C3-Step-Integrität.
+
 ## 2026-11-10 — Body-JEPA-Schutz mit World auf gemeinsamer Testbasis
 
 Eine hashgebundene Kopie führt frühere Geräte-/Finitheits-/EMA-/Optimizer-Fixes mit #1663-Anker-Metriken und dem World-/Quellenpfad zusammen: **139 Tests PASS, 3 CUDA SKIP**, dazu zwei äußere Source-Pin-Tests. Tiny-Torch-/PEFT-Fit, Schritt-Rollback und Checkpoint-Wiederaufnahme tatsächlich ausgeführt; Asset-Herkunft gegen 14 Git-Blobs geprüft. `code/docs/INTEGRATED_BODY_WORLD_RECONCILIATION_20261110.md`. BodyJepaTrainer ist damit noch nicht über die reguläre Runtime-Trainerauswahl angebunden; echte B1/B2-/Redmi- und Nutzen-/Retention-Gates offen. #1695- und #1698-CI-Ergebnisse getrennt behandeln.

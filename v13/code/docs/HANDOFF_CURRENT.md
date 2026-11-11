@@ -1,3 +1,9 @@
+# 2026-11-11 — C3-LoRA-Restart in gemeinsamer Testkopie
+
+`scripts/integrated_c3_resume_candidate_20261110.py` ergänzt zur Body-/World-Testkopie einen quellgebundenen C3-Resume-Preflight, validierte AdamW-Parameter/Slots und atomare Rückrolle bei Ladefehlern. Neben dem Shuffle- wird der CPU-Torch-RNG gespeichert: Der erste Tiny-Restarttest war **11 PASS / 1 FAIL**, danach stimmt der unterbrochene Zwei-Schritte-Torch-/PEFT-Lauf einschließlich Gewichten und Loss mit dem ununterbrochenen überein. **2 äußere Tests, 162 PASS / 3 CUDA SKIP** in der gemeinsamen Kopie; echter SQLite-AG6-Stage-/Train-Pfad ruft den synthetischen C3-Trainer auf, ohne Aktivierung. `INTEGRATED_C3_RESUME_CANDIDATE_20261111.md`.
+
+Keine Vollbindung aller Tokenizer-/Config-Dateien oder lebender Source-Rechte, keine während jedes Schrittes geprüfte Numerik, keine Crash-/Dateiquota-Garantie, kein B1/B2-/C3-Native-/Redmi-Nutzen. Neue Quellbindung lehnt alte ungebundene Checkpoints ab; sie löscht diese nicht. Nächster Schritt: Archive-/Text-/Bild-Quellen-Lifecycle #1651/#1653 mit demselben gekoppelten System vereinigen und den langen Kontext/komprimierte Abrufe unter den dokumentierten Grenzen prüfen; danach Body-Operator, C3-Step-Integrität und Idle-Datenpfad weiterführen.
+
 # 2026-11-10 — Body-JEPA und World auf gemeinsamer Testbasis
 
 Die unterbrochene Arbeit aus `/workspace/v13-body-anchor-guard-reconcile` wurde nicht überschrieben; ihre 14 Asset-Dateien sind gegen angegebene Git-Commits bytegeprüft und über `scripts/integrated_body_world_candidate_20261110.py` mit der World-/JEPA-Testkopie verbunden. **2 äußere Tests PASS; 139 Tests PASS / 3 CUDA SKIP** in derselben Kopie, einschließlich echtem Tiny-Torch-/PEFT-Update, EMA-Fehlerrückrolle und Checkpoint-Fit-Neustart. #1663-Ankertest wird ausdrücklich auf die neue Listenfunktion angepasst; alte skalare API bleibt. Details `INTEGRATED_BODY_WORLD_RECONCILIATION_20261110.md`.

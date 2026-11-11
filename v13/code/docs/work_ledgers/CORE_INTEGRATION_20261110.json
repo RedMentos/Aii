@@ -127,5 +127,23 @@
     "production_promotion": false,
     "device_proof": false,
     "negative_gates_unchanged": true
+  },
+  "codex_c3_resume_reconciliation_20261111": {
+    "candidate": "v13/code/scripts/integrated_c3_resume_candidate_20261110.py",
+    "status": "REVIEW_ONLY_DISPOSABLE_COPY_SOURCE_FREEZE",
+    "preflight": "master weight hash, base generation, all passed items/weights/config, AdamW groups/slots, adapter shapes and both shuffle/CPU Torch RNG",
+    "tests": "2 outer passed, 162 materialized-copy passed, 3 CUDA skipped; first missing-Torch-RNG run 11 passed 1 failed",
+    "evidence": "actual small synthetic C3 Torch/PEFT interrupted-vs-uninterrupted fit and real SQLite AG6 stage/train without activation",
+    "limits": [
+      "legacy unbound checkpoints rejected",
+      "CPU Torch RNG shared processwide",
+      "tokenizer/config bytes and live source revocation not fully bound",
+      "no load size bound or crash-safe checkpoint publication",
+      "no per-step C3 finite-state guard",
+      "no native or Redmi proof"
+    ],
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
   }
 }

@@ -1,3 +1,7 @@
+# GPT-Abgleich C3-Restart in gemeinsamer Kopie — 2026-11-11
+
+Der #1663-Gegenbeleg für beschädigten/teilmutierenden C3-Optimizer bleibt. Hashgebundene Testkopie validiert nun vollständige übergebene Input-Bindung, AdamW-Layout/Slots sowie Shuffle- und CPU-Torch-RNG vor Adapter-/Optimizer-Übernahme; Fehlerfall-Rückrolle und unbenutzbare Recovery werden getestet. **2 äußere Tests, 162 PASS / 3 CUDA SKIP**, darunter echter synthetischer Tiny-C3-Fit/Restart und SQLite-AG6-Train-Aufruf ohne Aktivierung. Erster Lauf vor Torch-RNG-Fix 11 PASS/1 FAIL; keine echte Master-/Redmi-/Retention-Aussage. Grenzen `code/docs/INTEGRATED_C3_RESUME_CANDIDATE_20261111.md`.
+
 # GPT-Abgleich Body-JEPA und World — 2026-11-10
 
 Unterbrochenen lokalen Body-Kandidaten read-only übernommen; 14 Asset-Bytes gegen die angegebenen Commits verifiziert. Gemeinsame quellgebundene Testkopie: 2 äußere Tests, **139 PASS / 3 CUDA SKIP**; echter Tiny-Torch-/PEFT-Fit, atomarer Fehlerfall und Restart. Neuer Anker-Test verwendet ausdrücklich die Listenfunktion, Alt-API bleibt skalar; kein regulärer Runtime-Trainerauswahlnachweis. #1695 HEAD `f3137ed4bd55e40330bf8495db0fa352360b948e` spezialisierter CI-Job rot, #1698 HEAD `cd4879401686e72be50c2e7ec63d2de589aef764` Workflow-Korrektur grün; fremde Heads nicht vollständig gegengeprüft oder integriert. Details `code/docs/INTEGRATED_BODY_WORLD_RECONCILIATION_20261110.md`; alte Fehler/Gates unverändert.
