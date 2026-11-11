@@ -119,7 +119,7 @@ def set_remote_log_sharing(enabled):
         if REMOTE_LOG_FLAG.exists():
             REMOTE_LOG_FLAG.unlink()
         with REMOTE_LOG_FLAG.open("x") as f:
-            f.write("yes\\n")
+            f.write("yes\n")
             f.flush()
             os.fsync(f.fileno())
         REMOTE_LOG_FLAG.chmod(0o600)
@@ -137,16 +137,16 @@ def remote_console_excerpt():
     text = safe_text(bounded_tail(paths[0], 16384))
     # Never forward entered questions, model responses or arbitrary prose to GitHub.
     # Supportive diagnostic lines only; line classifier is intentionally strict.
-    ok = re.compile(r"(?i)^(?:\\[V13 Fehler\\]|\\[Fehler\\]|\\[V13 exited with code|\\[console capture error|(?:Traceback|File |  File |[A-Za-z_][A-Za-z0-9_]*(?:Error|Exception):))")
+    ok = re.compile(r"(?i)^(?:\[V13 Fehler\]|\[Fehler\]|\[V13 exited with code|\[console capture error|(?:Traceback|File |  File |[A-Za-z_][A-Za-z0-9_]*(?:Error|Exception):))")
     lines = []
     for line in text.splitlines():
         if ok.search(line):
             # Avoid file paths and quoted context; send only error type + exit code.
-            kinds = re.findall(r"\\b(?:RuntimeError|ValueError|TypeError|MemoryError|TimeoutError|OSError|AttributeError|FileNotFoundError|ImportError|PermissionError|KeyboardInterrupt|SystemExit|CalledProcessError)\\b", line)
+            kinds = re.findall(r"\b(?:RuntimeError|ValueError|TypeError|MemoryError|TimeoutError|OSError|AttributeError|FileNotFoundError|ImportError|PermissionError|KeyboardInterrupt|SystemExit|CalledProcessError)\b", line)
             if kinds:
                 lines.append(kinds[0])
             elif "[V13 exited with code " in line:
-                m = re.search(r"code (-?\\d+)", line)
+                m = re.search(r"code (-?\d+)", line)
                 if m: lines.append("EXIT_" + m.group(1))
             elif "Traceback" in line:
                 lines.append("TRACEBACK_PRESENT")
@@ -278,61 +278,130 @@ class RuntimeControls:
         return safe_text(self.terminal.output(MAX_TAIL).encode("utf-8"))
 
 
+def _button(action, name, title, label, cls=""):
+    return (f'<form method="POST" action="{html.escape(action, quote=True)}">'
+            f'<input type="hidden" name="action" value="{html.escape(name, quote=True)}">'
+            f'<button class="{cls}" type="submit">{html.escape(label)}</button></form>')
+
+
+def _quick(action, command, label, cls="secondary"):
+    return (f'<form method="POST" action="{html.escape(action, quote=True)}">'
+            f'<input type="hidden" name="action" value="quick">'
+            f'<input type="hidden" name="command" value="{html.escape(command, quote=True)}">'
+            f'<button class="{cls}" type="submit">{html.escape(label)}</button></form>')
+
+
+def _sliders(action):
+    from math import isfinite
+    p = DATA / "config/settings.json"
+    try:
+        source = json.loads(p.read_bytes()) if p.is_file() and not p.is_symlink() and p.stat().st_size < 50000 else {}
+    except (ValueError, OSError):
+        source = {}
+    parts = []
+    for key, (low, high, step, label) in KNOBS_UI.items():
+        value = source.get(key, low)
+        if type(value) not in (int, float) or not isfinite(value) or not low <= value <= high:
+            value = low
+        parts.append(
+            f'<form method="POST" action="{html.escape(action, quote=True)}">'
+            '<input type="hidden" name="action" value="knob">'
+            f'<input type="hidden" name="knob" value="{html.escape(key, quote=True)}">'
+            f'<label>{html.escape(label)} <output>{value}</output></label>'
+            f'<input type="range" min="{low}" max="{high}" step="{step}" name="value" value="{value}" '
+            'oninput="this.previousElementSibling.lastElementChild.value=this.value">'
+            '<button type="submit" class="secondary">Übernehmen</button></form>')
+    return "".join(parts)
+
+
 def dashboard_html(token, controls, message=""):
     running, mode, code, last = controls.state()
-    state = "läuft" if running else "bereit" if code is None else f"beendet ({code})"
+    state = "läuft" if running else "bereit" if code is None else f"beendet (Code {code})"
     current = summary()
     update_msg, update_busy = controls.update_status()
     auto_enabled = automatic_updates_enabled()
+    shared = remote_log_sharing_enabled()
     roles = " · ".join(f"{html.escape(name)}: {'OK' if v.get('ok') else 'Fehler'}"
                        for name, v in current["roles"].items())
     action = "/t/" + token + "/action"
-    def form(name, label, cls=""):
-        return f'<form method="POST" action="{action}"><input type="hidden" name="action" value="{name}"><button class="{cls}" type="submit">{label}</button></form>'
     msg = f'<p class="message">{html.escape(message)}</p>' if message else ""
     output = controls.output()
+    extra = ' · '.join(controls.terminal.saved_sessions())
+    top_buttons = "".join([
+        _button(action, "start_chat", "Start", "V13 Chat starten"),
+        _quick(action, ":doctor", "Gehirnstatus"),
+        _quick(action, ":probe", "Modelle testen"),
+        _button(action, "cancel", "Abbruch", "Antwort abbrechen", "danger"),
+        _button(action, "shutdown", "Beenden", "V13 beenden", "secondary"),
+    ])
+    test_commands = [
+        (":status", "Status"), (":brain map", "Gehirnkarte"), (":resources", "RAM / Ressourcen"),
+        (":models", "Modelle"), (":world", "Weltbild"), (":self", "Selbstbild"),
+        (":memory", "Gedächtnis"), (":requests", "Lernkandidaten"),
+        (":learning", "Lernmodus"), (":plasticity", "Plastizität"),
+        (":objectives", "Lernziele"), (":sleep status", "Schlaf / Replay"),
+        (":gates summary", "Gates"), (":probe jef-modes", "JEF testen"),
+        (":probe step12", "B1/B2 testen"), (":notaus status", "Notaus-Status"),
+        (":help", "Alle Befehle"),
+    ]
+    quick_buttons = "".join(_quick(action, c, l) for c,l in test_commands)
+    options = "".join(f'<option value="{html.escape(c, quote=True)}"></option>' for c in sorted(QUICK_COMMANDS))
     return f"""<!doctype html><html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>V13 – Redmi Kontrollzentrum</title>
 <style>
 :root{{color-scheme:dark;font-family:system-ui,sans-serif}}
 body{{background:#10131a;color:#edf2fa;margin:0;padding:16px}}
 main{{max-width:780px;margin:auto}}
 h1{{font-size:1.7rem}} h2{{font-size:1.1rem}}
-a{{color:#a6c7f8;font-weight:bold}} section{{background:#1a202a;border:1px solid #303b4a;border-radius:16px;padding:16px;margin:12px 0}}
+a{{color:#a6c7f8;font-weight:bold}}
+section{{background:#1a202a;border:1px solid #303b4a;border-radius:16px;padding:16px;margin:12px 0}}
 button{{background:#3977c8;color:white;padding:14px 17px;border:0;border-radius:10px;font-weight:bold;font-size:1rem;min-height:48px;cursor:pointer}}
 button.secondary{{background:#394353}}button.danger{{background:#ac4848}}
-.actions{{display:flex;gap:8px;flex-wrap:wrap}} .actions form{{flex:1}} .actions button{{width:100%}}
+.actions{{display:flex;gap:8px;flex-wrap:wrap}}.actions form{{flex:1}}.actions button{{width:100%}}
 input{{width:100%;box-sizing:border-box;background:#111924;color:white;padding:14px;border:1px solid #56687e;border-radius:10px;font-size:1rem}}
-pre{{white-space:pre-wrap;overflow-wrap:anywhere;background:#0c1017;padding:12px;border-radius:8px;max-height:390px;overflow:auto;font-size:.82rem}}
-small{{color:#b0bdcf}}.message{{color:#b8e4c4}}
+input[type=range]{{padding:0;margin:14px 0;accent-color:#8eb4ed}}
+pre{{white-space:pre-wrap;overflow-wrap:anywhere;background:#0c1017;padding:12px;border-radius:8px;max-height:400px;overflow:auto;font-size:.82rem}}
+small{{color:#b0bdcf}}.message{{color:#b8e4c4}}label{{display:block;margin-top:12px}}
 </style></head><body><main>
 <h1>V13 · Redmi Kontrollzentrum</h1>
-<section><b>V13: {html.escape(state)}</b><p>Letzte Aktion: {html.escape(last)}</p>
-<small>Modelltest: {html.escape(current["native_probe"])} · {roles or "Noch keine Rollenmessung"}</small>{msg}</section>
-<section><h2>KI ausprobieren</h2>
-<form method="POST" action="{action}"><input type="hidden" name="action" value="ask">
-<input name="question" aria-label="Frage an V13" maxlength="1600" placeholder="Schreib deine Frage an V13…" required>
-<p><button type="submit">Nachricht senden</button></p></form></section>
-<section><h2>Gehirn & Tests</h2><div class="actions">
-{form("doctor","Gehirnstatus")}
-{form("probe","Modelle testen")}
-{form("zip","Diagnose-ZIP", "secondary")}
-{form("stop","V13 stoppen", "danger")}</div>
-<small>ZIP wird nur lokal in Downloads gespeichert. Vor dem Teilen prüfen: Protokolle können private Chattexte enthalten.</small></section>
-<section><h2>GitHub-Updates</h2>
-<p><small>{html.escape(update_msg)}{' · läuft' if update_busy else ''}</small></p>
+<section><b>V13-Chat: {html.escape(state)}</b>
+<p><small>Letzte Aktion: {html.escape(last)} · Probe: {html.escape(current["native_probe"])} · {roles or "Noch keine Rollenmessung"}</small></p>{msg}
+<div class="actions">{top_buttons}</div></section>
+<section><h2>Mit V13 schreiben</h2>
+<form method="POST" action="{action}"><input type="hidden" name="action" value="send">
+<input name="command" aria-label="Nachricht an V13" maxlength="1600" placeholder="Deine Nachricht an V13 …" required>
+<p><button type="submit">Nachricht senden</button></p></form>
+<small>Die Nachrichten gehen ausschließlich an das lokal gestartete V13. Kein GitHub-Chat.</small></section>
+<section><h2>Gehirn, Test & Status</h2>
+<div class="actions">{quick_buttons}</div>
+<details><summary>Weitere V13-Kommandos auswählen</summary>
+<form method="POST" action="{action}"><input type="hidden" name="action" value="send">
+<input name="command" list="v13-options" placeholder=":Befehl und ggf. Parameter" required maxlength="1600">
+<datalist id="v13-options">{options}</datalist><p><button type="submit">Befehl an V13 senden</button></p></form>
+<small>Viele Funktionen benötigen Parameter oder gesonderte Bestätigung. Mit „Alle Befehle“ zeigt V13 seine vollständige Liste.</small>
+</details></section>
+<section><h2>Regler · lokale V13-Budgets</h2>
+{_sliders(action)}
+<small>Änderungen werden mit „Übernehmen“ über den vorhandenen V13-Operator ausgeführt und können einen laufenden Modellaufruf beeinflussen. Keine Modellgewichte werden automatisch verändert.</small></section>
+<section><h2>Diagnose / Logaufzeichnung</h2>
+<p>Alle Ausgaben und Eingaben der <b>über diese Oberfläche gestarteten V13-Sitzung</b> werden lokal gespeichert. Andere Termux-Sitzungen sind nicht rückwirkend lesbar.</p>
 <div class="actions">
-{form("check_update","Neue Version prüfen","secondary")}
-{form("apply_update","Jetzt aktualisieren")}
-{form("rollback_update","Vorherige Version","secondary")}
-{form("auto_disable" if auto_enabled else "auto_enable", "Auto-Updates AUS" if auto_enabled else "Auto-Updates EIN", "secondary")}</div>
-<small>Automatik: {'aktiviert (alle 15 Minuten, nur mit erfolgreichen CI-Tests)' if auto_enabled else 'deaktiviert'}. Updates nur bei beendeter V13-Laufzeit; Modelle, Chats und Gedächtnis bleiben getrennt. Geänderte GitHub-Quelltexte sind trotzdem ausführbarer Code: automatischen Modus nur für vertrauenswürdige Branches aktivieren.</small></section>
-<section><h2>Letzte Ausgabe</h2><a href="/t/{token}/">↻ Ausgabe aktualisieren</a><pre>{html.escape(output[-MAX_TAIL:] or "Noch keine Ausgabe. Starte einen Test über die Knöpfe.")}</pre></section>
-<section><small>Nur lokal auf 127.0.0.1. Kein freier Shell-Zugriff und keine automatischen Patches. Kein Rohlog-Upload nach GitHub.</small></section>
+{_button(action,"zip","Export","Diagnose-ZIP in Downloads")}
+{_button(action,"log_disable" if shared else "log_enable","Freigabe", "Fern-Fehlercodes AUS" if shared else "Fern-Fehlercodes EIN","secondary")}
+</div><small>Private GitHub-Diagnose: {'nur technische Fehlerklassen freigegeben' if shared else 'keine Konsolenlogs freigegeben'}. Niemals komplette Chats/Passwörter automatisch hochladen. ZIP vor dem Teilen prüfen.</small>
+<small>Gesicherte lokale Sitzungen: {html.escape(extra or "Noch keine")}</small></section>
+<section><h2>GitHub-Quellcode-Updates</h2><p><small>{html.escape(update_msg)}{' · läuft' if update_busy else ''}</small></p>
+<div class="actions">
+{_button(action,"check_update","Prüfen","Update prüfen","secondary")}
+{_button(action,"apply_update","Update","Jetzt aktualisieren")}
+{_button(action,"rollback_update","Rollback","Vorherige Version","secondary")}
+{_button(action,"auto_disable" if auto_enabled else "auto_enable","Auto","Auto-Updates AUS" if auto_enabled else "Auto-Updates EIN","secondary")}
+</div><small>Automatik: {'an' if auto_enabled else 'aus'}, alle 15 Minuten bei laufendem Kontrollzentrum. Nur geprüfte GitHub-Commits; kein Update einer laufenden V13-KI. Modelle/Chats bleiben getrennt.</small></section>
+<section><h2>Aufgezeichnete V13-Ausgabe</h2><a href="/t/{token}/">↻ Ausgabe aktualisieren</a>
+<pre>{html.escape(output[-MAX_TAIL:] or "Noch keine Ausgabe. V13 Chat starten.")}</pre></section>
+<section><small>Lokaler Browser: 127.0.0.1. Keine fremde Termux-Shell, keine automatische Remote-Codeausführung, keine Kamera-/Android-Bedienung.</small></section>
 </main></body></html>"""
-
 
 def serve(*, open_browser=True):
     controls = RuntimeControls()
@@ -353,7 +422,7 @@ def serve(*, open_browser=True):
         def _headers(self, code=200, *, location=None):
             self.send_response(code)
             self.send_header("Cache-Control", "no-store")
-            self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'")
+            self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'")
             self.send_header("Referrer-Policy", "no-referrer")
             self.send_header("X-Content-Type-Options", "nosniff")
             if location:
@@ -388,7 +457,43 @@ def serve(*, open_browser=True):
                 if action in ALLOWED:
                     question = fields.get("question", [""])[0] if action == "ask" else ""
                     controls.launch(action, question)
-                    message = "V13-Auftrag gestartet. Ausgabe erscheint unten."
+                    message = "V13 gestartet, Ausgabe wird lokal aufgezeichnet."
+                elif action == "start_chat":
+                    result = controls.terminal.start()
+                    message = "V13 Chat " + result["status"]
+                elif action == "send":
+                    controls.send(fields.get("command", [""])[0])
+                    message = "Eingabe an lokalen V13-Chat gesendet."
+                elif action == "quick":
+                    command = fields.get("command", [""])[0]
+                    if command not in QUICK_COMMANDS:
+                        raise ValueError("Nur bekannte Klickbefehle")
+                    controls.send(command)
+                    message = "V13-Befehl gesendet."
+                elif action == "knob":
+                    name = fields.get("knob", [""])[0]
+                    if name not in KNOBS_UI:
+                        raise ValueError("Unbekannter V13-Regler")
+                    low, high, step, label = KNOBS_UI[name]
+                    value = float(fields.get("value", [""])[0])
+                    if not low <= value <= high or value != value:
+                        raise ValueError("Wert außerhalb des Bereichs")
+                    if isinstance(step, int):
+                        if not value.is_integer() or (int(value) - low) % step:
+                            raise ValueError("Nur ganze Reglerschritte")
+                        formatted = str(int(value))
+                    else:
+                        formatted = str(round(value, 4))
+                    controls.send(":budget " + name + " " + formatted)
+                    message = "Regler " + label + " an V13 übergeben."
+                elif action == "cancel":
+                    message = controls.stop()
+                elif action == "shutdown":
+                    controls.shutdown()
+                    message = "V13 wird beendet; Protokoll bleibt erhalten."
+                elif action in ("log_enable", "log_disable"):
+                    set_remote_log_sharing(action == "log_enable")
+                    message = "Private technische Fern-Fehlercodes " + ("aktiviert" if action == "log_enable" else "deaktiviert")
                 elif action == "stop":
                     message = controls.stop()
                 elif action == "zip":
