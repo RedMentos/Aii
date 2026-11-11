@@ -361,8 +361,10 @@ class RuntimeControls:
                     msg += " · Kontrollzentrum startet neu"
                 elif result["status"] in ("UPDATED", "ROLLED_BACK"):
                     msg += " · V13 neu starten; Installation der Laufzeit getrennt prüfen"
+            except subprocess.TimeoutExpired:
+                msg = "Update abgebrochen: GitHub hat innerhalb des Zeitlimits nicht geantwortet. Verbindung prüfen, dann erneut versuchen."
             except Exception as exc:
-                msg = "Nicht durchgeführt: " + type(exc).__name__ + " · " + str(exc)[:200]
+                msg = "Update nicht durchgeführt: " + type(exc).__name__ + " · " + str(exc)[:200]
             with self.lock:
                 self.update_result = msg
                 self.update_busy = False
