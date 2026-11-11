@@ -357,6 +357,108 @@ class ProceduralBatch:
         return {"rows": state["rows"], "preview": raw.decode("utf-8", errors="ignore")[:max_chars],
                 "truncated": state["bytes"] > len(raw)}
 
+    def read(self, name, count, value="", cursor=0, max_bytes=16384):
+        """Read a verified UTF-8 slice of *committed* output, not draft bytes.
+
+        This is the bounded operator/GUI pull interface. It never runs a
+        model, generates additional rows, or advances a persisted cursor.
+        For high-throughput consumers, iter_output() below hashes once per
+        stream instead of rescanning the whole output on every slice.
+        """
+        if type(cursor) is not int or cursor < 0:
+            raise ValueError("cursor must be a nonnegative byte offset")
+        if type(max_bytes) is not int or not 4 <= max_bytes <= 65536:
+            raise ValueError("read bytes must be 4..65536")
+        plan = self.plan(name)
+        if plan["stage"] != "ACTIVE":
+            raise PermissionError("compiled plan requires explicit local activation")
+        self._verify_evidence(plan)
+        state_file, output_file, jid = self._job_files(plan, count, value)
+        _check_path(state_file)
+        if not state_file.is_file():
+            raise FileNotFoundError("run procedure before reading its output")
+        _, output_file, state = self._load_or_start(plan, count, value)
+        self._verify_prefix(output_file, state)
+        if cursor > state["bytes"]:
+            raise ValueError("cursor beyond committed output")
+        if not output_file.exists():
+            raw = b""
+        else:
+            with output_file.open("rb") as f:
+                f.seek(cursor)
+                first = f.read(1)
+                if first and first[0] & 0xC0 == 0x80:
+                    raise ValueError("cursor splits a UTF-8 code point")
+                f.seek(cursor)
+                raw = f.read(min(max_bytes, state["bytes"] - cursor))
+        if raw:
+            try:
+                output = raw.decode("utf-8")
+            except UnicodeDecodeError as err:
+                if err.reason != "unexpected end of data" or err.end != len(raw):
+                    raise ValueError("corrupt committed UTF-8 output") from err
+                raw = raw[:err.start]
+                if not raw:
+                    raise ValueError("read window cannot hold one UTF-8 code point")
+                output = raw.decode("utf-8")
+        else:
+            output = ""
+        next_cursor = cursor + len(raw)
+        return {
+            "status": state["status"], "job_id": jid, "name": name,
+            "cursor_bytes": cursor, "next_cursor_bytes": next_cursor,
+            "committed_bytes": state["bytes"],
+            "more_committed": next_cursor < state["bytes"],
+            "needs_run": next_cursor == state["bytes"] and state["status"] != "DONE",
+            "text": output, "model_calls": 0,
+            "sha256": state["sha256"],
+        }
+
+    def iter_output(self, name, count, value="", chunk_bytes=16384):
+        """Yield all committed output with one initial prefix verification.
+
+        The generator cannot execute models or tools. Underlying file bytes
+        are checked against the saved SHA-256 before first yield. Clients
+        should not use this as authorization to continue if source is revoked
+        mid-stream; it is a snapshot of the committed prefix at entry.
+        """
+        if type(chunk_bytes) is not int or not 4 <= chunk_bytes <= 65536:
+            raise ValueError("chunk bytes must be 4..65536")
+        plan = self.plan(name)
+        if plan["stage"] != "ACTIVE":
+            raise PermissionError("compiled plan requires explicit local activation")
+        self._verify_evidence(plan)
+        state_file, output_file, _ = self._job_files(plan, count, value)
+        _check_path(state_file)
+        if not state_file.is_file():
+            raise FileNotFoundError("run procedure before reading its output")
+        _, output_file, state = self._load_or_start(plan, count, value)
+        self._verify_prefix(output_file, state)
+        expected = state["bytes"]
+        if not expected:
+            return
+        with output_file.open("rb") as f:
+            pending = b""
+            read_total = 0
+            while read_total < expected:
+                block = f.read(min(chunk_bytes, expected - read_total))
+                if not block:
+                    raise ValueError("committed output truncated during streaming")
+                read_total += len(block)
+                pending += block
+                try:
+                    value_text = pending.decode("utf-8")
+                    pending = b""
+                except UnicodeDecodeError as exc:
+                    if exc.reason != "unexpected end of data" or exc.end != len(pending):
+                        raise ValueError("invalid committed UTF-8 during streaming") from exc
+                    value_text = pending[:exc.start].decode("utf-8")
+                    pending = pending[exc.start:]
+                if value_text:
+                    yield value_text
+            if pending:
+                raise ValueError("trailing invalid UTF-8 in committed output")
+
     def status(self, name=None):
         if name is not None:
             p = self.plan(name)
@@ -374,8 +476,8 @@ class ProceduralBatch:
 
 def operator_command(runtime, args):
     """:fastbatch propose NAME 'text {i}: {value}' | discover NAME [--history=N] | activate NAME SHA |
-    run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] |
-    status [NAME] | retire NAME. Only local operator dispatch can reach here.
+    run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] |
+    peek NAME COUNT [VALUE] | status [NAME] | retire NAME. Only local operator dispatch can reach here.
     """
     runner = ProceduralBatch(runtime.home, store=runtime.store)
     if not args or args[0] == "status":
@@ -397,6 +499,19 @@ def operator_command(runtime, args):
         return runner.activate(args[1], args[2])
     if cmd == "retire" and len(args) == 2:
         return runner.retire(args[1])
+    if cmd == "read" and 3 <= len(args) <= 6:
+        name, count = args[1], int(args[2])
+        opts = args[3:]
+        positions = [x for x in opts if not x.startswith("--")]
+        cursor_opts = [x for x in opts if x.startswith("--cursor=")]
+        bytes_opts = [x for x in opts if x.startswith("--bytes=")]
+        if (len(positions) > 1 or len(cursor_opts) > 1 or len(bytes_opts) > 1
+                or len(opts) != len(positions) + len(cursor_opts) + len(bytes_opts)):
+            raise ValueError("read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE]")
+        value = positions[0] if positions else ""
+        cursor = int(cursor_opts[0].split("=", 1)[1]) if cursor_opts else 0
+        amount = int(bytes_opts[0].split("=", 1)[1]) if bytes_opts else 16384
+        return runner.read(name, count, value, cursor, amount)
     if cmd in ("run", "peek") and 3 <= len(args) <= 5:
         name = args[1]
         count = int(args[2])
@@ -412,4 +527,4 @@ def operator_command(runtime, args):
             return runner.preview(name, count, value)
         limit = int(opts[0].split("=", 1)[1]) if opts else None
         return runner.run(name, count, value, max_rows=limit)
-    raise ValueError(":fastbatch propose NAME TEMPLATE | discover NAME [--history=N] | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME")
+    raise ValueError(":fastbatch propose NAME TEMPLATE | discover NAME [--history=N] | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME")
