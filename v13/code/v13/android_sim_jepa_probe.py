@@ -152,7 +152,7 @@ def trial(world, *, seed=17, steps=8, limit=2048, checkpoint=None):
 
 
 
-def replay_ablation(world, *, seed=17, steps=5, limit=2048):
+def replay_ablation(world, *, seed=17, steps=5, limit=2048, checkpoint=None):
     """Measure old-cohort forgetting with and without bounded synthetic replay.
 
     Two models start from identical old-cohort weights; one sees only new
@@ -208,7 +208,24 @@ def replay_ablation(world, *, seed=17, steps=5, limit=2048):
         [key,row["action_id"],row["before_sha256"],
          row["after_sha256"],row["x2"]] for key,row in unique
     ])).hexdigest()
-    return {
+    readback = None
+    if checkpoint is not None:
+        # Persist the actual replay-trained branch, not a separately trained
+        # demo model. Inference readback is NOT optimizer-resume proof.
+        from .world_jepa_shadow_checkpoint import save, load
+        saved = save(with_replay, checkpoint, source_sha)
+        restored = load(checkpoint, source_sha, saved["sha256"])
+        restored_loss = restored.prediction_loss(hx, ha, hy)
+        if not np.isclose(restored_loss, replayed, atol=1e-12, rtol=1e-9):
+            raise ValueError("replay-trained weights failed inference readback")
+        readback = {
+            "checkpoint_sha256": saved["sha256"],
+            "replay_trained_model_reloaded": True,
+            "old_holdout_loss_after_restart": float(restored_loss),
+            "optimizer_trajectory_reproduced": False,
+            "active_model_promoted": False,
+        }
+    result = {
         "kind": "SYNTHETIC_UI_REPLAY_ABLATION",
         "scope": "SYNTHETIC_UI_ONLY_NO_T8_SOURCE",
         "source_sha256": source_sha,
@@ -229,3 +246,6 @@ def replay_ablation(world, *, seed=17, steps=5, limit=2048):
         "b1_b2_c3_gguf_weights_modified": False,
         "active_model_promoted": False,
     }
+    if readback is not None:
+        result["readback"] = readback
+    return result
