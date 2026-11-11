@@ -183,9 +183,9 @@ def test_actual_latewatch_finish_confirms_observer_before_feedback():
     assert result==""
     assert watcher.status=="NO_OFFER"
     assert store.state(turnflow.KEY)[0]["events"][event_id]["observer_status"]=="NO_OFFER"
-    vote=turnflow.feedback(store,event_id,"wasteful")
-    assert vote["outcome"]=="wasteful"
-    assert turnflow.report(store)["events_with_confirmed_overlap"]==1
+    with pytest.raises(ValueError, match="unobserved"):
+        turnflow.feedback(store,event_id,"wasteful")
+    assert turnflow.report(store)["events_with_confirmed_overlap"]==0
 
 
 def test_self_learning_from_persistently_late_optional_checks_keeps_exploration():
@@ -195,7 +195,7 @@ def test_self_learning_from_persistently_late_optional_checks_keeps_exploration(
         evt = f"late-{i}"
         plan = turnflow.plan(store, evt, {}, 0, "B1_DETAIL")
         assert plan["start_optional_observer"]
-        assert turnflow.observe(store, evt, "NO_OFFER") == "NO_OFFER"
+        assert turnflow.observe(store, evt, "STILL_RUNNING") == "STILL_RUNNING"
     state = turnflow.report(store)
     counts = state["feedback_patterns"]["pre0/no_focal/B1_DETAIL"]
     assert counts["too_late"] == 12 and counts["on_time"] == 0
@@ -215,6 +215,22 @@ def test_self_learning_from_persistently_late_optional_checks_keeps_exploration(
     assert turnflow.plan(store, "focal", {"focal": {"cycles": 2}},
                          0, "B1_DETAIL")["start_optional_observer"]
     assert turnflow.plan(store, "preoffer", {}, 1, "B1_DETAIL")["start_optional_observer"]
+
+
+def test_repeated_no_offer_does_not_train_timeliness_or_veto_observer():
+    store = StateStore()
+    for i in range(12):
+        evt = f"no-offer-{i}"
+        assert turnflow.plan(store, evt, {}, 0, "B1_DETAIL")["start_optional_observer"]
+        assert turnflow.observe(store, evt, "NO_OFFER") == "NO_OFFER"
+    report = turnflow.report(store)
+    assert report["feedback_patterns"] == {}
+    assert report["events_with_confirmed_overlap"] == 0
+    assert report["actual_observer_outcomes"]["NO_OFFER"] == 12
+    turnflow.set_mode(store, "active", "OPERATOR_TTY")
+    decisions = [turnflow.plan(store, f"no-offer-active-{i}", {}, 0, "B1_DETAIL") for i in range(12)]
+    assert all(d["start_optional_observer"] for d in decisions)
+    assert all(not d["adaptive_veto"] for d in decisions)
 
 
 def test_one_timely_exploration_reopens_the_optional_observer():

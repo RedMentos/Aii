@@ -200,12 +200,16 @@ def observe(store, event_id, status):
         event["observer_status"] = status
         # Actual timeliness is an automatically observable cost, not a
         # reward/accuracy claim. A late pass may still help next-turn memory.
-        counts = state["patterns"].setdefault(
-            event["pattern"], {"useful": 0, "wasteful": 0,
-                               "on_time": 0, "too_late": 0}
-        )
-        field = "on_time" if status in ("AGREES", "WOULD_INTERRUPT", "INTERRUPTED") else "too_late"
-        counts[field] = counts.get(field, 0) + 1
+        # NO_OFFER confirms the watcher returned no observer proposal; it is
+        # not evidence that a B1/B2 pass finished late or overlapped C3.
+        # Keep the event status for diagnostics without training timing policy.
+        if status != "NO_OFFER":
+            counts = state["patterns"].setdefault(
+                event["pattern"], {"useful": 0, "wasteful": 0,
+                                   "on_time": 0, "too_late": 0}
+            )
+            field = "on_time" if status in ("AGREES", "WOULD_INTERRUPT", "INTERRUPTED") else "too_late"
+            counts[field] = counts.get(field, 0) + 1
         return status
     return _mutate(store, update)
 
@@ -227,7 +231,7 @@ def feedback(store, event_id, outcome):
             raise ValueError("this event was already rated")
         if observation["scheduled"] != "SPEAK_AND_CHECK":
             raise ValueError("cannot rate an observer that was not scheduled")
-        if observation.get("observer_status") not in OBSERVED_STATUSES:
+        if observation.get("observer_status") not in (OBSERVED_STATUSES - {"NO_OFFER"}):
             raise ValueError("cannot rate an unobserved concurrent check")
         pattern = observation["pattern"]
         counts = state["patterns"].setdefault(
@@ -258,7 +262,7 @@ def report(store):
             for key in sorted(OBSERVED_STATUSES)
         },
         "events_with_confirmed_overlap": sum(
-            v.get("observer_status") in OBSERVED_STATUSES for v in state["events"].values()
+            v.get("observer_status") in (OBSERVED_STATUSES - {"NO_OFFER"}) for v in state["events"].values()
         ),
         "claim_limit": "Only optional late B1/B2 overlap; no forced concurrency, active model thinking, tools, or age-gate changes"
     }
