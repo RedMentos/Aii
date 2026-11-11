@@ -216,8 +216,9 @@ def _iter_utf8_chunks(output_file, expected, chunk_bytes):
 class ProceduralBatch:
     """Local, reviewable, bounded and resumable compiled text batch executor."""
 
-    def __init__(self, home, store=None):
+    def __init__(self, home, store=None, session=None):
         self.store = store  # current authoritative V13 Store; optional for manual plans
+        self.session = session  # only the originating chat may run a learned plan
         self.root = Path(home) / "procedures" / "fastbatch"
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
         _check_path(self.root)
@@ -237,7 +238,7 @@ class ProceduralBatch:
             # inferred candidate to the completed source traces.
             if type(evidence) is not dict or set(evidence) != {
                 "method", "kind", "source_event_ids", "source_output_sha256",
-                "observed_rows", "validation", "scope"
+                "observed_rows", "validation", "scope", "source_session_id"
             }:
                 raise ValueError("invalid source-trace evidence")
             ids, digests, counts = (evidence["source_event_ids"],
@@ -248,6 +249,8 @@ class ProceduralBatch:
                         "LITERAL_NUMBERED_REPEAT", "PARAMETRIC_NUMBERED_REPEAT")
                     or evidence["validation"] != "BYTE_EXACT_BEFORE_PROPOSE"
                     or evidence["scope"] != "CURRENT_SESSION_ONLY"
+                    or type(evidence["source_session_id"]) is not str
+                    or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", evidence["source_session_id"])
                     or type(ids) is not list or not 1 <= len(ids) <= 3
                     or len(set(ids)) != len(ids)
                     or any(type(x) is not str or not re.fullmatch(
@@ -296,14 +299,17 @@ class ProceduralBatch:
             return
         if self.store is None:
             raise PermissionError("source-discovered plans require the live V13 Store")
+        if (type(self.session) is not str
+                or self.session != evidence.get("source_session_id")):
+            raise PermissionError("learned plan is restricted to its original chat session")
         for event_id, sha256 in zip(evidence["source_event_ids"],
                                     evidence["source_output_sha256"]):
             rows = self.store.rows(
                 "SELECT m.text,m.status,s.deleted FROM messages m "
                 "JOIN events e ON e.id=m.event_id "
                 "JOIN sources s ON s.id=e.source_id "
-                "WHERE m.event_id=? AND m.role='assistant' "
-                "ORDER BY m.id DESC LIMIT 1", (event_id,))
+                "WHERE m.event_id=? AND m.session_id=? AND m.role='assistant' "
+                "ORDER BY m.id DESC LIMIT 1", (event_id, self.session))
             if (len(rows) != 1 or rows[0]["status"] != "FINAL"
                     or rows[0]["deleted"] != 0):
                 raise ValueError("learned procedure source is no longer FINAL/authoritative")
@@ -563,7 +569,8 @@ def operator_command(runtime, args):
     run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] |
     peek NAME COUNT [VALUE] | status [NAME] | retire NAME. Only local operator dispatch can reach here.
     """
-    runner = ProceduralBatch(runtime.home, store=runtime.store)
+    runner = ProceduralBatch(runtime.home, store=runtime.store,
+                             session=getattr(runtime, "session", None))
     if not args or args[0] == "status":
         if len(args) > 2:
             raise ValueError(":fastbatch status [NAME]")
