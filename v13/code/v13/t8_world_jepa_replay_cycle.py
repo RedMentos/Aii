@@ -46,8 +46,11 @@ def run(store, checkpoint, *, seed=17, steps=5, limit=2048):
     rows = world_model.transitions(store, limit=limit)
     split = build(rows)  # provenance adapter: disjoint IDs/content/action support
     holdout_ids = set(split["holdout_action_ids"])
-    train_rows = sorted((r for r in rows if r["action_id"] not in holdout_ids),
-                        key=lambda r: r["action_id"])
+    # world_model.transitions() returns the accepted committed T8 rows in
+    # chronological order (oldest first). Preserve that order: sorting opaque
+    # action IDs lexicographically would turn "old" and "recent" into arbitrary
+    # cohorts and make a replay/forgetting comparison temporally meaningless.
+    train_rows = [r for r in rows if r["action_id"] not in holdout_ids]
     if len(train_rows) != len(split["train_action_ids"]):
         raise ValueError("T8 training split changed")
     boundary = (2 * len(train_rows)) // 3
@@ -89,6 +92,11 @@ def run(store, checkpoint, *, seed=17, steps=5, limit=2048):
         "source_verified": True,
         "train_rows": len(train_rows),
         "old_train_rows": len(old),
+        "old_train_ids_sha256": hashlib.sha256(
+            json.dumps([r["action_id"] for r in old], separators=(",", ":")).encode()).hexdigest(),
+        "recent_train_ids_sha256": hashlib.sha256(
+            json.dumps([r["action_id"] for r in recent], separators=(",", ":")).encode()).hexdigest(),
+        "phase_order": "T8_COMMITTED_CHRONOLOGICAL_OLDEST_TO_NEWEST",
         "new_train_rows": len(recent),
         "replayed_rows": len(replay_rows),
         "holdout_rows": len(split["holdout_action_ids"]),
