@@ -27,3 +27,18 @@ def test_missing_accepted_outcome_is_not_treated_as_learning_evidence(tmp_path):
         db.execute("DELETE FROM control_audit WHERE event='simulated_outcome'")
     with pytest.raises(ValueError, match="audit differs"):
         run_demo(tmp_path, first=1, count=1, learn=False)
+
+
+def test_terminal_dispatch_failure_cannot_count_as_world_learning_receipt(tmp_path):
+    """A terminal dispatch failure is not proof of an applied Notes action."""
+    run_demo(tmp_path, first=0, count=1, learn=False)
+    path = tmp_path / "android_demo_broker.sqlite"
+    with sqlite3.connect(path) as db:
+        row = db.execute(
+            "SELECT id FROM control_audit WHERE event='simulated_outcome' ORDER BY id LIMIT 1"
+        ).fetchone()
+        assert row is not None
+        db.execute("UPDATE control_audit SET event='simulation_dispatch_failed' WHERE id=?", row)
+    with pytest.raises(ValueError, match="audit differs"):
+        run_demo(tmp_path, first=1, count=1, learn=True)
+    assert not (tmp_path / "android_goal_shadow_jepa.npz").exists()
