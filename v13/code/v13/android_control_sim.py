@@ -190,25 +190,27 @@ class SimulatedAndroidWorld:
         canonical = _canonical(envelope["capability"], envelope["args"])
         if hashlib.sha256(canonical.encode("utf-8")).hexdigest() != digest:
             raise ControlDenied("dry-run action digest mismatch")
-        with self.lock:
+        with self.lock, self.db:
+            # BEGIN IMMEDIATE protects the read+compute+publish cycle across
+            # *separate processes*, not merely threads of this object.
+            self.db.execute("BEGIN IMMEDIATE")
             current = self._load()
             before = _sha(current)
             after = _transition(current, envelope["capability"], envelope["args"])
             after_sha = _sha(after)
-            with self.db:
-                count = self.db.execute("SELECT COUNT(*) FROM actions").fetchone()[0]
-                if count >= MAX_ACTIONS:
-                    raise ControlDenied("simulation action ledger full")
-                if self.db.execute("SELECT 1 FROM actions WHERE action_id=?", (aid,)).fetchone():
-                    raise ControlDenied("replayed simulated action id")
-                self.db.execute(
-                    "INSERT INTO actions VALUES (?,?,?,?)",
-                    (aid, digest, before, after_sha)
-                )
-                self.db.execute(
-                    "UPDATE snapshot SET payload=?,sha256=? WHERE id=1",
-                    (_json(after), after_sha)
-                )
+            count = self.db.execute("SELECT COUNT(*) FROM actions").fetchone()[0]
+            if count >= MAX_ACTIONS:
+                raise ControlDenied("simulation action ledger full")
+            if self.db.execute("SELECT 1 FROM actions WHERE action_id=?", (aid,)).fetchone():
+                raise ControlDenied("replayed simulated action id")
+            self.db.execute(
+                "INSERT INTO actions VALUES (?,?,?,?)",
+                (aid, digest, before, after_sha)
+            )
+            self.db.execute(
+                "UPDATE snapshot SET payload=?,sha256=? WHERE id=1",
+                (_json(after), after_sha)
+            )
             return {
                 "kind": "SIMULATED_ACTION_RECEIPT",
                 "action_id": aid, "capability": envelope["capability"],
