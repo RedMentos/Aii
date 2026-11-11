@@ -58,3 +58,18 @@ Diese Rollen sind *fachliche Arbeitspakete*, **keine zusätzlichen aktiven Autom
 - Plattformlimit 5 aktive ChatGPT-Zeitplan-Aufgaben. **Jetzt 5/5 stündlich belegt**. Für 7+ getrennte eigene Automationen/Chats braucht es weitere Slots oder eine tatsächlich funktionierende alternative Ausführungsplattform; keine angeblich aktiven Extra-Agenten erfinden.
 - Trennung der Chat-Verläufe: jede Aufgabe besitzt eine eigene Automation-ID, aber erst Run-Historie/Chat-Referenz bestätigt eigenständig resultierende Ausführungschats. Nicht vorab behaupten.
 - Merger-Strategie und Security-Proof für AGI-orientiertes Langfristziel bleibt durch laufende Implementation/Reviews zu erarbeiten.
+
+## Produktorientierte Priorität – Nutzerkorrektur 2026-11-11
+
+Die Nutzerabsicht ist ausdrücklich **V13 von Age-0 zu einem tatsächlich verwendbaren, kohärenten und messbar lernfähigen Gesamtsystem voranzubringen**. Kein Agent darf die verfügbare Arbeit hauptsächlich mit immer neuen Kleinst-PRs für Checks, CI-Manifestprüfungen oder kosmetischer Härtung verbringen, solange große Blueprint-Funktionen fehlen. Solche Arbeiten bleiben nötig bei realen Defekten/Release-Blockern, dürfen aber das Ziel nicht verdrängen.
+
+**Arbeitspriorität:** (1) lauffähige Vertical Slices und echte organübergreifende Integrationspfade, (2) reproduzierbare Funktions-/Lernnachweise und grundlegende Regressionen, (3) gezielte Stabilisierung/Härtung nach Risiko. Ziel-Slice: Input → A-Perception → B1/B2 → C2/JEF → C3/Language → vertrauenswürdiger T8-Store → bounded online JEPA/Adapter-Lernen → persistenter Restart → Output; organweise Fähigkeitsstatus getrennt und honest.
+
+**Spezifische Lieferpflichten:**
+- Core & Harness: reale B1/B2-/C2-/C3-Runtime-Verdrahtung, aus Benutzersicht nutzbare Bedienpfade, kontrollierte erlaubnispflichtige Harness-Schnittstellen. Nicht unendlich neue Adapter-Utilities ohne Integration.
+- JEPA & Memory: realen Trusted-T8→Predictor/EMA/WorldJEPA→Replay/Retention-Datenpfad bauen, mit vor/nach Holdout-Metriken und Restart. Toy-Predictor nie als volles JEPA deklarieren.
+- QA & Android: aktuelle integrierte Kandidaten auf echte Regressions, Restart, RAM und Berechtigungen prüfen und blockierende Defekte beheben, statt für jeden Mini-Fund ein weiteres isoliertes Testprojekt anzulegen. Redmi ohne Hardwarezugriff UNVERIFIED.
+- Forschung & Perception: A0–A5-PerceptPacket über echte B/C-Runtime-Schnittstelle bis zur Ausgabe liefern; Forschung um 22:00 wie bestellt, sonst umsetzen und testen.
+- Boss & Integration: eine gepflegte organweise Fertigstellungs-Matrix (CODE / WIRED / TESTED / ANDROID / ACTIVE) und einen gemeinsamen gepinnten Integrations-Branch koordinieren, statt nur PR-Zählung und Evidence-Audit. Prüfe täglich anhand tatsächlicher Fähigkeiten, was V13 *neu kann*, und lege den nächsten größten Blocker zur Umsetzung fest.
+
+**Anti-Stagnations-Regel:** Wenn zwei aufeinanderfolgende Läufe derselben Rolle nur kleine Test-/Docs-/Gate-PRs ohne neue Funktionalität produziert haben, muss der nächste Lauf explizit einen echten organübergreifenden Implementierungs-/Integrationsschritt bearbeiten oder einen konkreten harten Blocker dafür nachweisen. Keine willkürliche Abschaltung von Tests oder Sicherheitsgrenzen; schwere Blocker haben Vorrang. Fach-PRs nur nach überprüften gemeinsamen Tests integrieren, fremde Branches nicht überschreiben. **Ziel ist funktionale Fertigstellung nach vollständigem Canon, nicht unendliche Vorbereitung.**
