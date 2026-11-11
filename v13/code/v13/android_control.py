@@ -73,6 +73,7 @@ class AndroidControlBroker:
         self.lock = threading.RLock()
         self.db = sqlite3.connect(str(db_path), check_same_thread=False)
         self.db.execute("CREATE TABLE IF NOT EXISTS control_audit (id INTEGER PRIMARY KEY, action_id TEXT, event TEXT NOT NULL, digest TEXT, at REAL NOT NULL)")
+        self.db.execute("CREATE INDEX IF NOT EXISTS idx_control_audit_action_event ON control_audit(action_id,event)")
         self.db.commit()
         self.pending = {}
         self.approved = {}
