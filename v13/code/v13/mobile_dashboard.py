@@ -421,142 +421,158 @@ def _sliders(action):
     return "".join(parts)
 
 
+
+def _command_group(command):
+    first = command.split()[0].lower()
+    if first in (":models", ":probe", ":brain", ":bodyview", ":jef", ":jefsource", ":callosum", ":body"):
+        return "Modelle & Gehirn"
+    if first in (":world", ":worldmodel", ":self", ":memory", ":episodes", ":archive", ":context",
+                 ":source", ":focal", ":register", ":ctxos", ":fabric", ":workspace"):
+        return "Gedächtnis, Welt & Selbst"
+    if first in (":learning", ":plasticity", ":objectives", ":neuromod", ":homeostasis", ":sleep",
+                 ":replay", ":student", ":teacher", ":attention", ":growth", ":age"):
+        return "Lernen, JEPA & Replay"
+    if first in (":notaus", ":verbot", ":regeln", ":permissions", ":gates", ":stillstand",
+                 ":ledger", ":backup"):
+        return "Kontrolle & Schutz"
+    return "System, Diagnose & Weiteres"
+
+
+def _command_catalog_html():
+    from collections import defaultdict
+    groups = defaultdict(list)
+    # Preserve all previously exposed specific commands AND the actual help
+    # catalogue. A click only fills the composer; it cannot execute a command
+    # accidentally, particularly one that requires parameters.
+    commands = sorted(set(QUICK_COMMANDS) | set(operator_catalog()))
+    for command in commands:
+        groups[_command_group(command)].append(command)
+    sections = []
+    ordering = ("Modelle & Gehirn", "Gedächtnis, Welt & Selbst",
+                "Lernen, JEPA & Replay", "Kontrolle & Schutz", "System, Diagnose & Weiteres")
+    for i, label in enumerate(ordering):
+        commands = groups.get(label, [])
+        if not commands:
+            continue
+        buttons = "".join(
+            '<button type="button" data-fill="' + html.escape(cmd, quote=True)
+            + '" title="In den Chat übernehmen">' + html.escape(cmd) + '</button>'
+            for cmd in commands
+        )
+        sections.append(
+            '<details class="command-group"' + (" open" if i == 0 else "") + '><summary>'
+            + html.escape(label) + ' (' + str(len(commands)) + ')</summary>'
+            '<div class="command-list">' + buttons + '</div></details>'
+        )
+    return "".join(sections)
+
+
+def _slider_grid(action):
+    import math
+    source = {}
+    p = DATA / "config/settings.json"
+    try:
+        if p.is_file() and not p.is_symlink() and p.stat().st_size < 50000:
+            source = json.loads(p.read_bytes())
+    except (ValueError, OSError):
+        source = {}
+    if not isinstance(source, dict):
+        source = {}
+    cards = []
+    for key, (low, high, step, label) in KNOBS_UI.items():
+        value = source.get(key, low)
+        if type(value) not in (int, float) or not math.isfinite(value) or not low <= value <= high:
+            value = low
+        cards.append(
+            f'<form class="slider-form" method="POST" action="{html.escape(action,quote=True)}">'
+            '<input type="hidden" name="action" value="knob">'
+            f'<input type="hidden" name="knob" value="{html.escape(key,quote=True)}">'
+            '<div><label class="field-title">'
+            f'<span>{html.escape(label)}</span><output>{html.escape(str(value))}</output></label>'
+            f'<input type="range" name="value" min="{low}" max="{high}" step="{step}" value="{value}">'
+            '</div><button type="submit">Anwenden</button></form>'
+        )
+    return "".join(cards)
+
+
 def dashboard_html(token, controls, message="", csrf=""):
-    running, mode, code, last = controls.state()
-    state = "läuft" if running else "bereit" if code is None else f"beendet (Code {code})"
+    """One coherent phone workspace: chat/commands/settings/maintenance tabs."""
+    running, _, code, last = controls.state()
+    state = "V13 läuft" if running else "Bereit" if code is None else f"Beendet ({code})"
     current = summary()
     update_msg, update_busy = controls.update_status()
     auto_enabled = automatic_updates_enabled()
-    shared = remote_log_sharing_enabled()
-    full_shared = remote_full_console_enabled()
-    def role_status(v):
-        if v.get("ok"):
-            return "OK"
-        error = {"TIME_BUDGET": "Zeitlimit", "CANCELLED": "Abgebrochen"}.get(v.get("error_kind"), "Fehler")
-        duration = v.get("duration_s")
-        return error + (f" ({duration:.1f} s)" if type(duration) in (float, int) else "")
-    roles = " · ".join(
-        f"{html.escape(name)}: {html.escape(role_status(v))}"
-        for name, v in current["roles"].items()
-    )
+    errors_shared = remote_log_sharing_enabled()
+    console_shared = remote_full_console_enabled()
     action = "/t/" + token + "/action"
-    msg = f'<p class="message">{html.escape(message)}</p>' if message else ""
-    output = controls.output()
-    extra = ' · '.join(controls.terminal.saved_sessions())
-    top_buttons = "".join([
-        _button(action, "start_chat", "Start", "V13 Chat starten"),
-        _quick(action, ":doctor", "Gehirnstatus"),
-        _quick(action, ":probe", "Modelle testen"),
-        _button(action, "cancel", "Abbruch", "Antwort abbrechen", "danger"),
-        _button(action, "shutdown", "Beenden", "V13 beenden", "secondary"),
-    ])
-    test_commands = [
-        (":status", "Status"), (":brain map", "Gehirnkarte"), (":resources", "RAM / Ressourcen"),
-        (":models", "Modelle"), (":world", "Weltbild"), (":self", "Selbstbild"),
-        (":memory", "Gedächtnis"), (":requests", "Lernkandidaten"),
-        (":learning", "Lernmodus"), (":plasticity", "Plastizität"),
-        (":objectives", "Lernziele"), (":sleep status", "Schlaf / Replay"),
-        (":gates summary", "Gates"), (":probe jef-modes", "JEF testen"),
-        (":probe step12", "B1/B2 testen"), (":notaus status", "Notaus-Status"),
-        (":help", "Alle Befehle"),
-    ]
-    quick_buttons = "".join(_quick(action, c, l) for c,l in test_commands)
-    commands = operator_catalog()
-    options = "".join(f'<option value="{html.escape(c, quote=True)}"></option>' for c in sorted(QUICK_COMMANDS))
-    all_buttons = "".join(
-        '<button class="secondary" type="button" '
-        + 'onclick="document.getElementById(\'v13-command\').value=\'' + c
-        + '\';document.getElementById(\'v13-command\').focus()">' + c + '</button>'
-        for c in commands
-    )
-    page = f"""<!doctype html><html lang="de"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>V13 – Redmi Kontrollzentrum</title>
-<style>
-:root{{color-scheme:dark;font-family:system-ui,sans-serif}}
-body{{background:#10131a;color:#edf2fa;margin:0;padding:16px}}
-main{{max-width:780px;margin:auto}}
-h1{{font-size:1.7rem}} h2{{font-size:1.1rem}}
-a{{color:#a6c7f8;font-weight:bold}}
-section{{background:#1a202a;border:1px solid #303b4a;border-radius:16px;padding:16px;margin:12px 0}}
-button{{background:#3977c8;color:white;padding:14px 17px;border:0;border-radius:10px;font-weight:bold;font-size:1rem;min-height:48px;cursor:pointer}}
-button.secondary{{background:#394353}}button.danger{{background:#ac4848}}
-.actions{{display:flex;gap:8px;flex-wrap:wrap}}.actions form{{flex:1}}.actions button{{width:100%}}
-input{{width:100%;box-sizing:border-box;background:#111924;color:white;padding:14px;border:1px solid #56687e;border-radius:10px;font-size:1rem}}
-input[type=range]{{padding:0;margin:14px 0;accent-color:#8eb4ed}}
-pre{{white-space:pre-wrap;overflow-wrap:anywhere;background:#0c1017;padding:12px;border-radius:8px;max-height:400px;overflow:auto;font-size:.82rem}}
-small{{color:#b0bdcf}}.message{{color:#b8e4c4}}label{{display:block;margin-top:12px}}
-</style></head><body><main>
-<h1>V13 · Redmi Kontrollzentrum</h1>
-<section><b>V13-Chat: <span id="v13-live-state">{html.escape(state)}</span></b>
-<p><small>Letzte Aktion: {html.escape(last)} · Probe: {html.escape(current["native_probe"])} · {roles or "Noch keine Rollenmessung"}</small></p>{msg}
-<div class="actions">{top_buttons}</div></section>
-<section><h2>Mit V13 schreiben</h2>
-<form method="POST" action="{action}"><input type="hidden" name="action" value="send">
-<input name="command" aria-label="Nachricht an V13" maxlength="1600" placeholder="Deine Nachricht an V13 …" required>
-<p><button type="submit">Nachricht senden</button></p></form>
-<small>Die Nachrichten gehen ausschließlich an das lokal gestartete V13. Kein GitHub-Chat.</small></section>
-<section><h2>Gehirn, Test & Status</h2>
-<div class="actions">{quick_buttons}</div>
-<details><summary>Weitere V13-Kommandos auswählen</summary>
-<form method="POST" action="{action}"><input type="hidden" name="action" value="send">
-<input id="v13-command" name="command" list="v13-options" placeholder=":Befehl und ggf. Parameter" required maxlength="1600">
-<datalist id="v13-options">{options}</datalist><p><button type="submit">Befehl an V13 senden</button></p></form>
-<small>Alle Befehlsnamen können per Klick ins Eingabefeld übernommen werden. Manche benötigen weitere Parameter oder gesonderte Bestätigung.</small><div class="actions">{all_buttons}</div>
-</details></section>
-<section><h2>Regler · lokale V13-Budgets</h2>
-{_sliders(action)}
-<small>Änderungen werden mit „Übernehmen“ über den vorhandenen V13-Operator ausgeführt und können einen laufenden Modellaufruf beeinflussen. Keine Modellgewichte werden automatisch verändert.</small></section>
-<section><h2>Diagnose / Logaufzeichnung</h2>
-<p>Alle Ausgaben und Eingaben der <b>über diese Oberfläche gestarteten V13-Sitzung</b> werden lokal gespeichert. Andere Termux-Sitzungen sind nicht rückwirkend lesbar.</p>
-<div class="actions">
-{_button(action,"zip","Export","Diagnose-ZIP in Downloads")}
-{_button(action,"log_disable" if shared else "log_enable","Freigabe", "Fern-Fehlercodes AUS" if shared else "Fern-Fehlercodes EIN","secondary")}
-{_button(action,"full_log_disable" if full_shared else "full_log_enable","Freigabe", "V13-Konsolenauszug AUS" if full_shared else "V13-Konsolenauszug TEILEN","secondary")}
-</div><small>Private GitHub-Diagnose: {'technische Fehlercodes freigegeben' if shared else 'Fehlercodes aus'}; {'letzte V13-Ausgaben (max. 6000 Zeichen) auf Anfrage lesbar' if full_shared else 'Konsolentext nicht freigegeben'}. Achtung: V13-Ausgaben können private Chat-Inhalte enthalten, auch nach automatischer Token-Redaktion. Diese bleiben als private GitHub-Kommentare gespeichert. Keine anderen Termux-Sitzungen. ZIP vor dem Teilen prüfen.</small>
-<small>Gesicherte lokale Sitzungen: {html.escape(extra or "Noch keine")}</small></section>
-<section><h2>GitHub-Quellcode-Updates</h2><p><small>{html.escape(update_msg)}{' · läuft' if update_busy else ''}</small></p>
-<div class="actions">
-{_button(action,"check_update","Prüfen","Update prüfen","secondary")}
-{_button(action,"apply_update","Update","Jetzt aktualisieren")}
-{_button(action,"rollback_update","Rollback","Vorherige Version","secondary")}
-{_button(action,"auto_disable" if auto_enabled else "auto_enable","Auto","Auto-Updates AUS" if auto_enabled else "Auto-Updates EIN","secondary")}
-</div><small>Automatik: {'an' if auto_enabled else 'aus'}, alle 15 Minuten bei laufendem Kontrollzentrum. Nur geprüfte GitHub-Commits; kein Update einer laufenden V13-KI. Modelle/Chats bleiben getrennt.</small></section>
-<section><h2>Aufgezeichnete V13-Ausgabe</h2><a href="/t/{token}/">↻ Ausgabe aktualisieren</a>
-<pre id="v13-live-output">{html.escape(output[-MAX_TAIL:] or "Noch keine Ausgabe. V13 Chat starten.")}</pre></section>
-<section><small>Lokaler Browser: 127.0.0.1. Keine fremde Termux-Shell, keine automatische Remote-Codeausführung, keine Kamera-/Android-Bedienung.</small></section>
-</main>
-<script>
-(function(){{
-  const output = document.getElementById('v13-live-output');
-  const state = document.getElementById('v13-live-state');
-  let previous = output.textContent;
-  let inFlight = false;
-  async function refresh(){{
-    if (document.hidden || inFlight) return;
-    inFlight = true;
-    try{{
-      const response = await fetch('/t/{token}/state', {{cache:'no-store', credentials:'same-origin'}});
-      if(!response.ok) return;
-      const data = await response.json();
-      if(typeof data.output === 'string' && data.output !== previous){{
-        const atBottom = output.scrollHeight - output.scrollTop - output.clientHeight < 80;
-        output.textContent = data.output;
-        previous = data.output;
-        if(atBottom) output.scrollTop = output.scrollHeight;
-      }}
-      if(typeof data.state === 'string') state.textContent = data.state;
-    }} catch (_) {{}} finally {{inFlight = false;}}
-  }}
-  setInterval(refresh, 1500);
-}})();
-</script>
-</body></html>"""
-    # Every browser action carries a separate CSRF secret, independent of
-    # mobile privacy-browser Origin header behavior.
-    hidden = '<input type="hidden" name="csrf" value="' + html.escape(csrf, quote=True) + '">' 
-    return re.sub(r'(<form method="POST" action="[^"]+">)', lambda m: m.group(1) + hidden, page)
-
+    prefix = "/t/" + token
+    def button(name, label, cls=""):
+        return _button(action, name, name, label, cls)
+    def quick(command,label):
+        return _quick(action,command,label)
+    roles = []
+    for name in ("C3_LANGUAGE", "C2_CONTROL", "B1_DETAIL", "B2_GIST"):
+        role = current["roles"].get(name)
+        if not isinstance(role, dict):
+            continue
+        ok = role.get("ok")
+        shown = {"C3_LANGUAGE":"C3 Sprache","C2_CONTROL":"C2 JEF",
+                 "B1_DETAIL":"B1 Detail","B2_GIST":"B2 Gist"}[name]
+        kind = "good" if ok else "bad"
+        extra = " · OK" if ok else " · " + ("Zeitlimit" if role.get("error_kind") == "TIME_BUDGET" else "Fehler")
+        roles.append('<span class="pill ' + kind + '">' + html.escape(shown + extra) + '</span>')
+    template = Path(__file__).with_name("mobile_dashboard.html")
+    if not template.is_file():
+        raise RuntimeError("UI-Datei fehlt: Installation der Steuerzentrale aktualisieren")
+    page = template.read_text(encoding="utf-8")
+    replacement = {
+        "@@STATE@@":html.escape(state),
+        "@@TOKEN@@":html.escape(token),
+        "@@PREFIX@@":html.escape(prefix),
+        "@@ACTION@@":html.escape(action,quote=True),
+        "@@OUTPUT@@":html.escape(controls.output()[-MAX_TAIL:] or "Noch keine Ausgabe. V13 starten."),
+        "@@START_BUTTON@@":button("start_chat","Chat starten","primary"),
+        "@@STOP_BUTTON@@":button("cancel","Abbrechen","danger"),
+        "@@STATUS_BUTTON@@":quick(":status","Status"),
+        "@@HELP_BUTTON@@":quick(":help","Hilfe"),
+        "@@TRANSCRIPT_URL@@":html.escape(prefix+"/transcript.txt",quote=True),
+        "@@PROBE_STATUS@@":html.escape(current["native_probe"]),
+        "@@ROLE_PILLS@@":"".join(roles) or '<span class="pill">Noch keine Messung</span>',
+        "@@MODEL_BUTTONS@@":"".join([quick(c,l) for c,l in [
+            (":doctor","Gehirnstatus"),(":probe","Modelle testen"),
+            (":probe jef-modes","JEF testen"),(":probe step12","B1/B2 testen")]]),
+        "@@COMMAND_CATEGORIES@@":_command_catalog_html(),
+        "@@SLIDERS@@":_slider_grid(action),
+        "@@UPDATE_STATUS@@":html.escape(update_msg),
+        "@@UPDATE_HIDDEN@@":"" if update_busy else "hidden",
+        "@@UPDATE_BUTTONS@@":"".join([
+            button("check_update","Änderungen prüfen"),
+            button("apply_update","V13-Code aktualisieren","primary"),
+            button("rollback_update","Rückgängig"),
+            button("auto_disable" if auto_enabled else "auto_enable",
+                   "Auto-Updates AUS" if auto_enabled else "Auto-Updates EIN")
+        ]),
+        "@@DASHBOARD_UPDATE@@":button("dashboard_update","Steuerzentrale aktualisieren","primary"),
+        "@@DIAG_BUTTONS@@":"".join([
+            button("zip","Diagnose-ZIP"),
+            button("log_disable" if errors_shared else "log_enable",
+                   "Fern-Fehlercodes AUS" if errors_shared else "Fern-Fehlercodes EIN"),
+            button("full_log_disable" if console_shared else "full_log_enable",
+                   "Konsolentext AUS" if console_shared else "Konsolentext TEILEN"),
+            button("shutdown","V13 beenden","danger")
+        ]),
+        "@@SESSION_COUNT@@":str(len(controls.terminal.saved_sessions()))
+    }
+    for key,val in replacement.items():
+        page=page.replace(key,val)
+    if "@@" in page:
+        raise RuntimeError("Nicht ersetztes UI-Feld im Template")
+    # A second per-process form secret is required, in addition to the private
+    # local URL. No Origin dependency: Brave/Android may send Origin:null.
+    hidden = ('<input type="hidden" name="csrf" value="'
+              + html.escape(csrf,quote=True) + '">')
+    return re.sub(r'(<form[^>]*\bmethod="POST"[^>]*>)',
+                  lambda m:m.group(1)+hidden,page)
 
 def serve(*, open_browser=True):
     controls = RuntimeControls()
