@@ -1,0 +1,19 @@
+name: V13 RAW EAR PCM features synthetic
+on:
+  push:
+    branches:
+      - 'research-perception/pcm-raw-ear-20261111-1100'
+  pull_request:
+    paths:
+      - 'v13/code/v13/pcm_features.py'
+      - 'v13/code/tests/test_pcm_features.py'
+      - 'v13/code/v13/raw_ear_contract.py'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: cd v13/code && python -m unittest tests.test_raw_ear_contract tests.test_pcm_features
