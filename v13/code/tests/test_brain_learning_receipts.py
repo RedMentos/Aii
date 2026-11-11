@@ -140,3 +140,29 @@ def test_read_only_output_does_not_mutate_training_or_human_approval(brain):
         assert r.store.rows(f"SELECT * FROM {table}") == before[table]
     with pytest.raises(ValueError, match="lokale Operator"):
         Operator(r).run(":brain learning", origin="MODEL")
+
+
+
+def test_event_source_revocation_excludes_derived_memory_and_feedback(brain):
+    """A memory source still present must not resurrect its revoked event."""
+    r = brain
+    event = r.store.event(r.session, "Original sensitive instruction")
+    evidence_source = r.store.source("Derived summary", kind="USER")["source_id"]
+    with r.store.tx() as db:
+        db.execute("INSERT INTO memories VALUES (?,?,?,?,?,?,?,?,?,?)", (
+            "m-derived", event["event_id"], evidence_source, r.session,
+            "EPISODE", "SESSION", "hidden", "summary", 1, 0
+        ))
+        db.execute("INSERT INTO feedback VALUES (?,?,?,?,?,?,?)", (
+            "f-derived", event["event_id"], evidence_source,
+            "CORRECTION", "hidden", "ALLOW", 0
+        ))
+    initial = json.loads(Operator(r).run(":brain learning"))["experience"]
+    assert initial["active_source_bound_memory_records"] == 1
+    assert initial["recorded_feedback_items"] == 1
+    with r.store.tx() as db:
+        db.execute("UPDATE sources SET deleted=1 WHERE id=?", (
+            event["source_ref"]["source_id"],))
+    revoked = json.loads(Operator(r).run(":brain learning"))["experience"]
+    assert revoked["active_source_bound_memory_records"] == 0
+    assert revoked["recorded_feedback_items"] == 0
