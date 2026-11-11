@@ -65,6 +65,16 @@ class OwnerReadTests(unittest.TestCase):
         self.assertEqual(o.poll_once(client, self.cfg, now=self.now)["processed"], 1)
         self.assertEqual(len(client.comments_sent), 1)
 
+    def test_android_missing_getloadavg_does_not_break_health(self):
+        from unittest import mock
+        client = FakeGitHub([self.issue()])
+        with mock.patch.object(b.os, "getloadavg", side_effect=AttributeError("Android API unavailable")):
+            result = o.poll_once(client, self.cfg, now=self.now)
+        self.assertEqual(result["processed"], 1)
+        status = client.comments_sent[0][1]["device_status"]
+        self.assertEqual(status["status"], "OK")
+        self.assertEqual(status["load_average_state"], "UNAVAILABLE")
+
     def test_owner_learning_status_only(self):
         client = FakeGitHub([self.issue("LEARNING_STATUS")])
         self.assertEqual(o.poll_once(client, self.cfg, now=self.now)["processed"], 1)
