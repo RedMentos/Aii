@@ -4,10 +4,17 @@ Fake V13 process only; no model download, GitHub, or phone permission.
 """
 import os
 from pathlib import Path
+import re
+import select
 import stat
+import subprocess
+import sys
 import tempfile
 import time
 import unittest
+from urllib.error import HTTPError
+from urllib.parse import urlencode, urljoin
+from urllib.request import Request, urlopen
 from unittest import mock
 
 from v13 import managed_console as mc
@@ -109,6 +116,73 @@ class LocalConsoleTests(unittest.TestCase):
             self.assertIn("setInterval(refresh, 1500)", html)
             self.assertIn("/t/abcd/state", html)
             self.assertIn("id=\"v13-live-output\"", html)
+
+
+
+class BrowserButtonHTTPTests(unittest.TestCase):
+    """Real HTTP submissions: privacy-browser Origin variants and CSRF."""
+
+    def test_clicks_succeed_in_brave_and_cross_site_forms_fail(self):
+        with tempfile.TemporaryDirectory() as home:
+            env = os.environ.copy()
+            env["HOME"] = home
+            with subprocess.Popen(
+                [sys.executable, "-m", "v13.mobile_dashboard", "ui"],
+                cwd=str(Path(__file__).resolve().parents[1]), env=env,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            ) as process:
+                try:
+                    readable, _, _ = select.select([process.stdout], [], [], 10)
+                    self.assertTrue(readable, "Dashboard did not announce local URL")
+                    line = process.stdout.readline().strip()
+                    self.assertTrue(line.startswith("V13 LOKALE OBERFLAECHE: "), line)
+                    url = line.partition(": ")[2]
+                    # New UI content and independent hidden form credential.
+                    page = urlopen(url, timeout=5).read().decode("utf-8")
+                    self.assertIn("V13 · Redmi Kontrollzentrum", page)
+                    self.assertIn("name=\"csrf\"", page)
+                    tokens = re.findall(r'name="csrf" value="([0-9a-f]{48})"', page)
+                    self.assertGreaterEqual(len(tokens), 15)
+                    self.assertEqual(len(set(tokens)), 1)
+                    destination = urljoin(url, "action")
+                    def click(payload, origin=None, host=None):
+                        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+                        if origin is not None:
+                            headers["Origin"] = origin
+                        if host is not None:
+                            headers["Host"] = host
+                        request = Request(destination,
+                                          data=urlencode(payload).encode("utf-8"),
+                                          headers=headers, method="POST")
+                        return urlopen(request, timeout=5)
+
+                    # Brave/privacy browsers may serialize Origin as "null".
+                    with click({"csrf": tokens[0], "action": "cancel"}, origin="null") as response:
+                        self.assertEqual(response.status, 200)
+                        self.assertIn("NOT_RUNNING", response.read().decode("utf-8"))
+                    with click({"csrf": tokens[0], "action": "cancel"},
+                               origin=url.rstrip("/").split("/t/")[0]) as response:
+                        self.assertEqual(response.status, 200)
+                    # No secret: cross-site form cannot run buttons.
+                    for payload in (
+                        {"action": "cancel"},
+                        {"csrf": "0" * 48, "action": "cancel"},
+                    ):
+                        with self.assertRaises(HTTPError) as cm:
+                            click(payload, origin="https://malicious.example")
+                        self.assertEqual(cm.exception.code, 403)
+                    # DNS rebinding: still reject non-loopback Host.
+                    with self.assertRaises(HTTPError) as cm:
+                        click({"csrf": tokens[0], "action": "cancel"},
+                              host="attacker.example:9999")
+                    self.assertEqual(cm.exception.code, 403)
+                finally:
+                    process.terminate()
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        process.wait(timeout=5)
 
 
 if __name__ == "__main__":
