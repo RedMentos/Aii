@@ -41,13 +41,13 @@ def ui_snapshot_text(snapshot):
             value = node.get(name, "")
             if type(value) is not str or len(value) > MAX_FIELD:
                 raise ValueError("invalid UI field")
-            if any(ord(c) < 32 and c not in "\\t\\n" for c in value):
+            if any(ord(c) < 32 and c not in (chr(9), chr(10)) for c in value):
                 raise ValueError("control character in UI field")
             if value:
                 fields.append(name + "=" + json.dumps(value, ensure_ascii=False))
         if fields:
             lines.append(str(i) + " " + " ".join(fields))
-    text = "\\n".join(lines)
+    text = chr(10).join(lines)
     if not text or len(text.encode("utf-8")) > MAX_TEXT:
         raise ValueError("empty or oversized UI observation")
     return text
