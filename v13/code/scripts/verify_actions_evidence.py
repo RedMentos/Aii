@@ -8,7 +8,10 @@ import re
 import sys
 from urllib.request import Request, urlopen
 
-from pinned_multiorgan_evidence import check, REQUIRED
+try:
+    from .pinned_multiorgan_evidence import check, REQUIRED
+except ImportError:  # direct script invocation
+    from pinned_multiorgan_evidence import check, REQUIRED
 
 RUN = re.compile(r"https://github\.com/RedMentos/Aii/actions/runs/([1-9][0-9]*)\Z")
 
