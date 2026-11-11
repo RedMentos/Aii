@@ -36,7 +36,7 @@ def test_read_utf8_cursor_across_restart_and_generator_snapshot(tmp_path):
     assert done["status"] == "DONE"
     original = Path(done["output_path"]).read_text(encoding="utf-8")
     reader = ProceduralBatch(tmp_path)
-    assert "".join(reader.iter_output("utf8", 12000, chunk_bytes=7)) == original
+    assert "".join(reader.iter_output("utf8", 1200, chunk_bytes=7)) == original
     assert hashlib.sha256(original.encode()).hexdigest() == done["sha256"]
     cursor = 0
     chunks = []
