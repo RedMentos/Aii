@@ -1,0 +1,23 @@
+{
+  "package_id": "CORE-ANDROID-DISPATCH-20261111-2300",
+  "owner": "V13 Core & Harness",
+  "base_branch": "boss/v13-android-contract-ci-repair-20261111-2245",
+  "base_sha": "29dc33c4daadb8e34c94675dc32a5251974f1d39",
+  "review_pr": 1803,
+  "depends_on": [1802, 1801, 1799],
+  "touched_files": [
+    "v13/code/v13/android_companion_dispatch.py",
+    "v13/code/tests/test_android_companion_dispatch.py",
+    ".github/workflows/v13-android-companion-dispatch.yml"
+  ],
+  "status": "DRAFT_CI_PENDING_NOT_ANDROID_VERIFIED",
+  "evidence": {
+    "remote_source_readback": true,
+    "tests": "GitHub Actions commit 4c88d6b239f52d6f73bd5825b4bc5de7484cfdb0 in progress when recorded",
+    "local_tests": "UNAVAILABLE: github.com DNS resolution failed in execution container",
+    "android_native": "UNVERIFIED"
+  },
+  "next_command": "cd v13/code && python -m pytest -q tests/test_android_capability_contract.py tests/test_android_companion_dispatch.py",
+  "next_work": "Inspect PR 1803 exact-head CI and fix failures; implement OS-authenticated native Android companion and permissioned approval with durable receipts, then C5/JEF-to-T8 binding. Resolve upstream runtime.py syntax and staged CI failures before integration.",
+  "open_gates": ["NO_NATIVE_COMPANION", "NO_OS_AUTHENTICATION", "NO_REDMI_PROOF", "NO_END_TO_END_DEVICE_CONTROL", "NO_AGI_CLAIM"]
+}
