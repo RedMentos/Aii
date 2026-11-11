@@ -169,7 +169,7 @@ def test_learned_stream_rechecks_revoked_final_source_between_chunks(tmp_path):
         op.run(f":fastbatch activate streamhabit {proposal['sha256'][:12]}")
         checkpoint = json.loads(op.run(":fastbatch run streamhabit 100 --rows=50"))
         assert checkpoint["status"] == "PAUSED"
-        worker = ProceduralBatch(tmp_path, store=store)
+        worker = ProceduralBatch(tmp_path, store=store, session=session)
         output = worker.iter_output("streamhabit", 100, chunk_bytes=16)
         assert next(output).startswith("row 1")
         with store.tx() as tx:
