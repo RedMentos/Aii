@@ -26,8 +26,9 @@ class DurableCompanionTransport:
     process owner. Never store action target or typed text in the audit DB.
     """
 
-    def __init__(self, path: str | Path, transport: CompanionTransport):
+    def __init__(self, path: str | Path, transport: CompanionTransport, verifier=None):
         self._transport = transport
+        self._verifier = verifier
         self._lock = threading.RLock()
         self._db = sqlite3.connect(str(path), isolation_level=None, check_same_thread=False)
         self._db.execute("PRAGMA synchronous=FULL")
@@ -60,6 +61,20 @@ class DurableCompanionTransport:
             if not isinstance(outcome, ActionOutcome):
                 self._finish(request.request_id, "UNKNOWN", False)
                 raise ValueError("invalid companion outcome")
+            # The transport's claimed SUCCESS is not evidence of execution.
+            # Verify before recording any success-like terminal journal state.
+            if outcome.status == OutcomeStatus.SUCCESS:
+                try:
+                    valid = (self._verifier is not None
+                             and outcome.request_id == request.request_id
+                             and outcome.capability == request.capability
+                             and bool(outcome.companion_receipt)
+                             and bool(self._verifier.verify(request, outcome)))
+                except Exception:
+                    valid = False
+                if not valid:
+                    self._finish(request.request_id, "FAILED", False)
+                    return outcome  # Dispatcher independently rejects the forged receipt.
             state = ("REPORTED_SUCCESS" if outcome.status == OutcomeStatus.SUCCESS
                      else "FAILED" if outcome.status in (OutcomeStatus.DENIED, OutcomeStatus.FAILED, OutcomeStatus.CANCELLED)
                      else "UNKNOWN")
@@ -97,5 +112,5 @@ def build_audited_dispatcher(registry, path: str | Path, transport: CompanionTra
 
     if verifier is None:
         raise ValueError("authenticated native receipt verifier required")
-    journal = DurableCompanionTransport(path, transport)
+    journal = DurableCompanionTransport(path, transport, verifier=verifier)
     return AndroidDispatcher(registry, transport=journal, verifier=verifier), journal
