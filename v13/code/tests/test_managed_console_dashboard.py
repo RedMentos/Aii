@@ -151,7 +151,10 @@ class LocalConsoleTests(unittest.TestCase):
                           "Alle Befehle", "V13-Code aktualisieren", "Diagnose-ZIP"):
                 self.assertIn(label, html)
             self.assertIn("setInterval(refresh,1500)", html)
-            self.assertIn("/t/abcd/state", html)
+            self.assertIn("const tokenBase = '/t/abcd'", html)
+            self.assertIn("Gesamten Chat kopieren", html)
+            self.assertIn("Alle Befehle", html)
+            self.assertIn("data-fill=", html)
             self.assertIn("id=\"v13-live-output\"", html)
 
 
