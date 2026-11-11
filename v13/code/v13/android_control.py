@@ -165,7 +165,7 @@ class AndroidControlBroker:
             "SELECT 1 FROM control_audit WHERE action_id=? AND event IN "
             "('simulated_outcome','simulation_dispatch_failed') LIMIT 1", (action_id,)
         ).fetchone():
-            raise ControlDenied("simulation receipt already finalized")
+            raise ControlDenied("duplicate or finalized simulation receipt")
         return action_id, digest
 
     def record_simulated_outcome(self, envelope, outcome):
