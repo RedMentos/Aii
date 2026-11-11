@@ -75,7 +75,7 @@ The `send` command creates a private GitHub Issue carrying the HMAC-authenticate
 
 ### Publish a signed online source patch
 
-Create a real reviewed code change in the **developer repository** and push it to a commit `TARGET_SHA` (which contains the desired file). The previous currently installed source commit is `BASE_SHA`. The developer alone keeps its Ed25519 raw 32-byte signing key in a chmod-600 private file. Add its corresponding *public* 32-byte key (base64) and allowed prefix to the Android trust file, using the existing `termux_patch_staging` format.
+Create a real reviewed code change in the **developer repository** and push it to a commit `TARGET_SHA` (which contains the desired file). The previous currently installed source commit is `BASE_SHA`. The developer alone keeps its Ed25519 raw 32-byte signing key in a chmod-600 private file. Generate it locally with `python -m v13.remote_maintenance_bridge keygen --out /PRIVATE/PATH/agent-core-ed25519.raw` (prints **only** the public key, refuses overwrites). Add its corresponding *public* 32-byte key (base64) and allowed prefix to the Android trust file, using the existing `termux_patch_staging` format.
 
 ```sh
 python -m v13.remote_maintenance_bridge publish \
