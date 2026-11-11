@@ -144,6 +144,14 @@ def plan(store, event_id, meta, preoffers, role, eligible=True, residency_ok=Tru
         raise ValueError("unknown optional observer role")
     pattern, resource_mode, cycles = _signals(meta, preoffers, role)
     state, _ = _read(store)
+    previous = state["events"].get(event_id)
+    if previous is not None:
+        # A committed source event must never be rebound to a different body
+        # or used to fabricate fresh observer evidence on a retry.
+        if previous.get("pattern") != pattern:
+            raise ValueError("event already planned with a different pattern")
+        if previous.get("scheduled") not in ("SPEAK_AND_CHECK", "SPEAK_ONLY"):
+            raise ValueError("corrupt prior turn-flow schedule")
     # Scheduling may only DELETE optional extra work, never bypass the
     # already-computed pre-answer deliberation or any C5 permission gate.
     decision = decide(state, pattern, bool(eligible), bool(residency_ok), event_id)
