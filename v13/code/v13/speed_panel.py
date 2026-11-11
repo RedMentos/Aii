@@ -56,13 +56,15 @@ def observed_models(store, session):
     for row in rows:
         metrics = _record(row.get("metrics"))
         role = metrics.get("role")
-        if role not in samples:
+        if type(role) is not str or role not in samples:
             continue
         rate = _num(metrics.get("predicted_per_second"), positive=True)
         tokens = _num(metrics.get("predicted_n"))
         stream_s = _num(metrics.get("stream_s"), positive=True)
         if rate is None and tokens is not None and stream_s:
-            rate = tokens / stream_s
+            rate = _num(tokens / stream_s, positive=True)
+        if rate is not None and rate > 1000000:
+            rate = None
         ttft = _num(metrics.get("ttft_s"))
         if ttft is None:
             ttft = _num(metrics.get("prefill_to_first_token_s"))
@@ -71,7 +73,6 @@ def observed_models(store, session):
         samples[role].append({
             "rate": round(rate, 2) if rate is not None else None,
             "time_to_first_token_s": round(ttft, 4) if ttft is not None else None,
-            "kind": str(row.get("kind", ""))[:60],
         })
     organs = []
     for role in ROLES:
