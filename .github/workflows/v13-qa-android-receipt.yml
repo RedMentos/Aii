@@ -1,0 +1,15 @@
+name: V13 QA Android audit receipt regression
+on:
+  push:
+    branches: [qa/android-audit-receipt-state-20261112-0012]
+  workflow_dispatch:
+jobs:
+  qa-receipt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pytest
+      - run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_qa_android_receipt_state.py
