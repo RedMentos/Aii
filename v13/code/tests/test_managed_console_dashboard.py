@@ -82,6 +82,17 @@ class LocalConsoleTests(unittest.TestCase):
             self.assertIn("EXIT_1", result["lines"])
             ui.set_remote_log_sharing(False)
             self.assertEqual(ui.remote_console_excerpt()["state"], "USER_NOT_OPTED_IN")
+        with mock.patch.object(ui, "PRIVATE", private), mock.patch.object(ui, "REMOTE_FULL_FLAG", private / "share-v13-console.enabled"):
+            self.assertEqual(ui.remote_full_console()["state"], "USER_NOT_OPTED_IN")
+            ui.set_remote_full_console(True)
+            result = ui.remote_full_console()
+            self.assertEqual(result["state"], "USER_OPTED_IN")
+            self.assertIn("[LOCAL_USER_INPUT_REDACTED]", result["text"])
+            self.assertNotIn("[du> my private family details]", result["text"])
+            self.assertNotIn("ghp_test123456", result["text"])
+            self.assertLessEqual(len(result["text"]), 6000)
+            ui.set_remote_full_console(False)
+            self.assertEqual(ui.remote_full_console()["state"], "USER_NOT_OPTED_IN")
 
     def test_dashboard_has_clickable_operator_actions_and_sliders(self):
         with mock.patch.object(ui, "PRIVATE", self.path / "private"), mock.patch.object(ui, "DATA", self.home):
