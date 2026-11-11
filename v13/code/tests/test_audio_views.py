@@ -69,5 +69,25 @@ class AudioViewsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             acoustic_views(p)
 
+    def test_rejects_corrupt_numeric_features_even_when_raw_and_a5_agree(self):
+        # Corruption in both copies bypasses simple RAW EAR / A5 equality checks.
+        for field, invalid in (("pitch_hz", float("nan")),
+                               ("pitch_hz", True),
+                               ("voiced_probability", float("inf")),
+                               ("non_speech_probability", -0.1),
+                               ("non_speech_probability", None)):
+            with self.subTest(field=field, invalid=invalid):
+                p=dict(self.packet)
+                segments=[dict(x) for x in p["segments"]]
+                segments[0][field]=invalid
+                raw=dict(p["raw_ear"])
+                frames=[dict(x) for x in raw["frames"]]
+                frames[0][field]=invalid
+                raw["frames"]=frames
+                p["segments"]=segments
+                p["raw_ear"]=raw
+                with self.assertRaises(ValueError):
+                    acoustic_views(p)
+
 if __name__=="__main__":
     unittest.main()
