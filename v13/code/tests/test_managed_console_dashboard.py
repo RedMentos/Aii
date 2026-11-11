@@ -58,6 +58,21 @@ class LocalConsoleTests(unittest.TestCase):
         self.assertEqual(stat.S_IMODE(self.console.path.stat().st_mode), 0o600)
         self.assertTrue(self.console.saved_sessions())
 
+    def test_complete_transcript_includes_archived_session(self):
+        earlier = self.log_root / "v13-session-20260101-000001-aaa.log"
+        earlier.write_text("ältere Unterhaltung: 123\n")
+        self.console.start()
+        self.console.send("neuer Gesprächsteil")
+        self.console.send(":shutdown")
+        for _ in range(100):
+            if self.console.state()["exit_code"] is not None:
+                break
+            time.sleep(.02)
+        copied = self.console.transcript(all_sessions=True)
+        self.assertIn("ältere Unterhaltung: 123", copied)
+        self.assertIn("neuer Gesprächsteil", copied)
+        self.assertGreater(len(copied), len(self.console.output(30)))
+
     def test_reject_multiline_and_uninstalled(self):
         with self.assertRaises(mc.ConsoleBusy):
             self.console.send("hello")
@@ -131,11 +146,11 @@ class LocalConsoleTests(unittest.TestCase):
             controls.output.return_value = ""
             controls.terminal.saved_sessions.return_value = []
             html = ui.dashboard_html("abcd", controls)
-            for label in ("V13 Chat starten", "Gehirnstatus", "Modelle testen",
+            for label in ("Chat starten", "Gehirnstatus", "Modelle testen",
                           "Nachricht senden", "Antwort-Tokens", "CPU-Threads",
-                          "Alle Befehle", "Jetzt aktualisieren", "Diagnose-ZIP"):
+                          "Alle Befehle", "V13-Code aktualisieren", "Diagnose-ZIP"):
                 self.assertIn(label, html)
-            self.assertIn("setInterval(refresh, 1500)", html)
+            self.assertIn("setInterval(refresh,1500)", html)
             self.assertIn("/t/abcd/state", html)
             self.assertIn("id=\"v13-live-output\"", html)
 
@@ -161,7 +176,7 @@ class BrowserButtonHTTPTests(unittest.TestCase):
                     url = line.partition(": ")[2]
                     # New UI content and independent hidden form credential.
                     page = urlopen(url, timeout=5).read().decode("utf-8")
-                    self.assertIn("V13 · Redmi Kontrollzentrum", page)
+                    self.assertIn("V13 · Redmi", page)
                     self.assertIn("name=\"csrf\"", page)
                     tokens = re.findall(r'name="csrf" value="([0-9a-f]{48})"', page)
                     self.assertGreaterEqual(len(tokens), 15)
@@ -185,6 +200,25 @@ class BrowserButtonHTTPTests(unittest.TestCase):
                     with click({"csrf": tokens[0], "action": "cancel"},
                                origin=url.rstrip("/").split("/t/")[0]) as response:
                         self.assertEqual(response.status, 200)
+                    with urlopen(urljoin(url, "transcript"), timeout=5) as response:
+                        self.assertEqual(response.status, 200)
+                        self.assertIn("text/plain", response.headers.get("Content-Type"))
+                    with urlopen(urljoin(url, "transcript.txt"), timeout=5) as response:
+                        self.assertIn("attachment", response.headers.get("Content-Disposition"))
+                    with click({"csrf": tokens[0], "action": "check_update"},
+                               origin="null") as response:
+                        self.assertEqual(response.status, 200)
+                    # Live status endpoint must include visible update feedback.
+                    status = __import__("json").loads(urlopen(urljoin(url, "state")).read())
+                    self.assertIn("update_result", status)
+                    self.assertIn("update_busy", status)
+                    # JSON actions must not reload the whole dashboard.
+                    req = Request(destination,
+                                  data=urlencode({"csrf": tokens[0], "action":"cancel"}).encode(),
+                                  headers={"Content-Type":"application/x-www-form-urlencoded",
+                                           "Accept":"application/json"}, method="POST")
+                    result = __import__("json").loads(urlopen(req, timeout=5).read())
+                    self.assertTrue(result["ok"])
                     # No secret: cross-site form cannot run buttons.
                     for payload in (
                         {"action": "cancel"},
