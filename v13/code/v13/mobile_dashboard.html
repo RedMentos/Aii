@@ -168,6 +168,7 @@ summary{cursor:pointer;font-weight:650}
   const notice = document.getElementById('notice');
   let prior = out.textContent;
   let busy = false;
+  let generation = null;
   let noticeTimer = null;
 
   function showNotice(msg){
@@ -223,6 +224,12 @@ summary{cursor:pointer;font-weight:650}
       const response=await fetch(tokenBase+'/state',{cache:'no-store'});
       if(!response.ok)return;
       const data=await response.json();
+      if(typeof data.generation==='string'){
+        if(generation!==null && generation!==data.generation){
+          window.location.reload(); return; // updated control-panel code, same local URL
+        }
+        generation=data.generation;
+      }
       if(typeof data.output==='string'&&data.output!==prior){
         const nearBottom=out.scrollHeight-out.scrollTop-out.clientHeight<100;
         out.textContent=data.output||'Noch keine Ausgabe. V13 starten.';
