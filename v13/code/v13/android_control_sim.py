@@ -187,6 +187,8 @@ class SimulatedAndroidWorld:
         if (type(aid) is not str or not ACTION_ID.fullmatch(aid)
                 or type(digest) is not str or not re.fullmatch(r"[0-9a-f]{64}", digest)):
             raise ControlDenied("invalid dry-run identity")
+        if type(envelope["capability"]) is not str or type(envelope["args"]) is not dict:
+            raise ControlDenied("invalid simulated action schema")
         canonical = _canonical(envelope["capability"], envelope["args"])
         if hashlib.sha256(canonical.encode("utf-8")).hexdigest() != digest:
             raise ControlDenied("dry-run action digest mismatch")
