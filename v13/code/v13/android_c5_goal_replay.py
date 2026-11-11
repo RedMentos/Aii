@@ -20,6 +20,11 @@ def run_integrated_goal(home, *, first=0, count=4, seed=17, steps=5):
     """Exercise C5 typed shadow planning and persistent replay in one run."""
     if type(first) is not int or type(count) is not int or not 1 <= count <= 24:
         raise ValueError("invalid integration budget")
+    # The replay ablation needs enough distinct x+action cohorts for disjoint
+    # old-test / old-train / recent splits. Small demos must use run_demo,
+    # never fabricate heldout support or silently weaken the split.
+    if count < 18:
+        raise ValueError("replay requires at least 18 distinct synthetic note tasks")
     home = Path(home)
     registry = CapabilityRegistry()
     bridge = AndroidActionBridge(registry, clock=lambda: 100.0)

@@ -56,7 +56,11 @@ class SpeechCoordinator:
 
     def configure(self, renderer: SpeechRenderer | None, *, operator_enabled: bool = False):
         with self._lock:
-            self.stop()
+            # First-time renderer attachment must not silently discard already
+            # queued speech. Reconfiguration of an active renderer cancels its
+            # previous work; pending text remains valid only on first attach.
+            if self._renderer is not None or self._active is not None:
+                self.stop()
             self._renderer = renderer
             self._enabled = operator_enabled is True and renderer is not None
 

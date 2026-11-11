@@ -6,7 +6,7 @@ from v13.android_c5_goal_replay import run_integrated_goal
 
 
 def test_completed_simulated_goal_emits_off_gated_c3_speech(tmp_path):
-    report = run_integrated_goal(tmp_path, count=4, steps=3)
+    report = run_integrated_goal(tmp_path, count=18, steps=3)
     speech = report["c3_speech_intent"]
     assert speech["queued"] is True
     assert speech["source_turn"] == "synthetic-goal-0"
