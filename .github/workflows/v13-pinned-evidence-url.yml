@@ -1,0 +1,24 @@
+name: V13 pinned evidence URL regression
+on:
+  pull_request:
+    paths:
+      - 'v13/code/scripts/pinned_multiorgan_evidence.py'
+      - 'v13/code/tests/test_pinned_multiorgan_evidence*.py'
+      - '.github/workflows/v13-pinned-evidence-url.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evidence-url:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run evidence preflight regression
+        working-directory: v13/code
+        run: python -m unittest -v tests.test_pinned_multiorgan_evidence tests.test_pinned_multiorgan_evidence_urls tests.test_pinned_multiorgan_evidence_run_url_defined
