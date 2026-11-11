@@ -21,6 +21,12 @@ import resource
 import tempfile
 import time
 
+# Allow the documented `python scripts/benchmark_procedural_fastpath.py`
+# from a clean Termux checkout without assuming an external PYTHONPATH.
+if __package__ in (None, ""):
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from v13.procedural_batch import (
     MAX_OUTPUT_BYTES, MAX_ROWS, ProceduralBatch,
 )
