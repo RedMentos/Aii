@@ -25,7 +25,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :aplane [status|student shadow|fallback|distill [Fähigkeit]] (A3-Schüler T2, Lehrer-Destillation, Reliance-Kurve)
 :bodyview [status|state on|off|b4 off|shadow|on] (B1-Detailfenster, B5-Zustand als Quelle, B4 über Sessions)
 :skilllive [status] (Skills im Turn: automatischer Pfad, Parität, Gewohnheiten)
-:fastbatch discover NAME [--history=N] | propose NAME 'Vorlage {i}: {value}' | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME (fertige Antwortmuster erkennen, erst nach SHA-Freigabe superschnell ausgeben)
+:fastbatch discover NAME [--history=N] | input import NAME FILE SHA256 | input run PLAN NAME [--rows=N] | propose NAME 'Vorlage {i}: {value}' | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME (fertige Antwortmuster erkennen, erst nach SHA-Freigabe superschnell ausgeben)
 :speed [models|fastbatch [ROWS]] (C3/B1/B2-Laufzeitmeldungen oder expliziter lokaler No-LLM-Tempostest; keine Modellfreigabe)
 :turnflow [status|measure|active|off|feedback EVENT-ID useful|wasteful] (JEF: Denk-/Sprechüberlappung messen und nach Nutzerfeedback zeitlich steuern)
 :latewatch [status|off|shadow|active] (spätes Body-Offer während der Ausgabe; Standard shadow)
