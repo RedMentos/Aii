@@ -334,3 +334,15 @@ def test_repository_privacy_rejection_cannot_be_bypassed():
         gh.check_private()
     gh.request = lambda *a, **k: {"private": True, "full_name": "Owner/remote"}
     assert gh.check_private() is True
+
+
+def test_keygen_private_key_not_printed(tmp_path, capsys):
+    keypath = tmp_path / "developer.key"
+    m.cli(["keygen", "--out", str(keypath)])
+    result = json.loads(capsys.readouterr().out)
+    assert result["private_key_written"] == str(keypath)
+    assert len(keypath.read_bytes()) == 32
+    assert keypath.stat().st_mode & 0o077 == 0
+    assert "private_key_b64" not in result
+    with pytest.raises(FileExistsError):
+        m.cli(["keygen", "--out", str(keypath)])
