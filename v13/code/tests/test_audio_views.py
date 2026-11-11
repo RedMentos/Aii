@@ -46,6 +46,20 @@ class AudioViewsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             acoustic_views(p)
 
+    def test_rejects_divergent_a5_vs_raw_ear(self):
+        # A5 must not silently overwrite acoustic evidence from RAW EAR.
+        p=dict(self.packet,segments=[dict(x) for x in self.packet["segments"]])
+        p["segments"][0]["rms"]=0.75
+        with self.assertRaisesRegex(ValueError,"acoustic value mismatch"):
+            acoustic_views(p)
+        p=dict(self.packet,raw_ear=dict(self.packet["raw_ear"]))
+        p["raw_ear"]["frames"]=p["raw_ear"]["frames"][:-1]
+        with self.assertRaisesRegex(ValueError,"frame count mismatch"):
+            acoustic_views(p)
+        p=dict(self.packet,raw_ear=dict(self.packet["raw_ear"],android_capture_verified=True))
+        with self.assertRaises(ValueError):
+            acoustic_views(p)
+
     def test_rejects_forged_native_authority_and_invalid_rms(self):
         p=dict(self.packet,android_capture_verified=True)
         with self.assertRaises(ValueError):
