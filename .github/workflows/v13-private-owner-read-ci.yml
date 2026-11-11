@@ -8,6 +8,8 @@ on:
       - 'v13/code/v13/owner_read_bridge.py'
       - 'v13/code/v13/source_updater.py'
       - 'v13/code/v13/mobile_dashboard.py'
+      - 'v13/code/v13/managed_console.py'
+      - 'v13/code/tests/test_managed_console_dashboard.py'
       - 'v13/code/tests/test_source_updater.py'
       - 'v13/code/scripts/v13-update'
       - 'v13/code/tests/test_owner_read_bridge.py'
@@ -36,5 +38,7 @@ jobs:
         run: |
           python -m py_compile v13/source_updater.py v13/mobile_dashboard.py tests/test_source_updater.py
           python -m unittest discover -s tests -p 'test_source_updater.py' -v
+          python -m py_compile v13/managed_console.py tests/test_managed_console_dashboard.py
+          python -m unittest discover -s tests -p 'test_managed_console_dashboard.py' -v
       - name: Validate one-command bootstrap syntax
         run: bash -n scripts/termux_one_command.sh scripts/v13-update
