@@ -32,6 +32,8 @@ git -C "$ROOT" sparse-checkout set --no-cone \
   v13/code/v13/remote_maintenance_bridge.py \
   v13/code/v13/owner_read_bridge.py \
   v13/code/v13/mobile_dashboard.py \
+  v13/code/v13/source_updater.py \
+  v13/code/scripts/v13-update \
   v13/code/v13/termux_patch_staging.py \
   v13/code/docs/PRIVATE_REMOTE_BRIDGE_20261111.md \
   v13/code/docs/ONE_COMMAND_TERMUX_20261111.md || fail "Sparse Checkout fehlgeschlagen"
@@ -159,23 +161,29 @@ if [[ ! -d "$HOME/storage/downloads" ]] && command -v termux-setup-storage >/dev
   printf 'Bitte Android-Zugriff auf Downloads bestaetigen, damit Diagnose-ZIPs gespeichert werden koennen.\n'
   termux-setup-storage || true
 fi
-UI_ACTIVE=0
+# Restart only our launcher-owned UI so the latest buttons load.
 if [[ -e "$PRIVATE/ui.pid" ]]; then
   UI_OLD="$(cat "$PRIVATE/ui.pid" 2>/dev/null || true)"
   if [[ "$UI_OLD" =~ ^[0-9]+$ ]] && kill -0 "$UI_OLD" 2>/dev/null; then
     UI_CMD="$(tr '\0' ' ' < "/proc/$UI_OLD/cmdline" 2>/dev/null || true)"
     if [[ "$UI_CMD" == *"v13.mobile_dashboard ui"* ]]; then
-      UI_ACTIVE=1
+      kill "$UI_OLD" || fail "UI-Prozess konnte nicht neu gestartet werden"
+      for ATTEMPT in 1 2 3 4 5; do
+        kill -0 "$UI_OLD" 2>/dev/null || break
+        sleep 1
+      done
+      kill -0 "$UI_OLD" 2>/dev/null && fail "Alte UI ist noch aktiv"
+    else
+      fail "UI-PID gehoert nicht zur V13-Oberflaeche; keine fremden Prozesse stoppen"
     fi
   fi
 fi
-if [[ "$UI_ACTIVE" == 0 ]]; then
-  nohup python -m v13.mobile_dashboard ui > "$PRIVATE/ui.log" 2>&1 < /dev/null &
-  UI_PID="$!"
-  printf '%s\n' "$UI_PID" > "$PRIVATE/ui.pid"
-  sleep 2
-  kill -0 "$UI_PID" 2>/dev/null || fail "Lokale UI startet nicht; siehe ~/.v13-private/ui.log"
-fi
+: > "$PRIVATE/ui.log"
+nohup python -m v13.mobile_dashboard ui > "$PRIVATE/ui.log" 2>&1 < /dev/null &
+UI_PID="$!"
+printf '%s\n' "$UI_PID" > "$PRIVATE/ui.pid"
+sleep 2
+kill -0 "$UI_PID" 2>/dev/null || fail "Lokale UI startet nicht; siehe ~/.v13-private/ui.log"
 UI_URL="$(grep -m 1 -Eo 'http://127\.0\.0\.1:[0-9]+/t/[a-f0-9]{48}/' "$PRIVATE/ui.log" 2>/dev/null || true)"
 if [[ -n "$UI_URL" ]]; then
   printf '\nV13 TOUCH-OBERFLAECHE: %s\n' "$UI_URL"
@@ -185,3 +193,9 @@ else
 fi
 printf 'V13-Buttons: Nachricht senden, Gehirnstatus, Modelle testen, Diagnose-ZIP, Stopp.\n'
 printf 'GitHub-Diagnoseabruf: nur erlaubte technische Fakten, keine Rohprotokolle.\n'
+
+if [[ -n "$PREFIX" && -d "$PREFIX/bin" ]]; then
+  cp "$ROOT/v13/code/scripts/v13-update" "$PREFIX/bin/v13-update"
+  chmod 700 "$PREFIX/bin/v13-update"
+fi
+printf 'Code-Aktualisierung: v13-update (oder ein Button im Browser).\n'
