@@ -24,6 +24,7 @@ MAX_ACTIONS = 10000
 MAX_NOTES = 64
 CAPABILITY_ORDER = ("launch_app", "observe_ui", "tap", "swipe", "type_text", "back")
 ACTION_ID = re.compile(r"[0-9a-f]{32}\Z")
+SHA256_HEX = re.compile(r"[0-9a-f]{64}\Z")
 
 
 def _json(value):
@@ -262,8 +263,8 @@ class SimulatedAndroidWorld:
             for aid, scope, cap, x, x2, before, after in reversed(rows):
                 if (scope != "SYNTHETIC_UI_ONLY"
                         or cap not in CAPABILITY_ORDER or not ACTION_ID.fullmatch(aid)
-                        or type(before) is not str or len(before) != 64
-                        or type(after) is not str or len(after) != 64):
+                        or type(before) is not str or not SHA256_HEX.fullmatch(before)
+                        or type(after) is not str or not SHA256_HEX.fullmatch(after)):
                     raise ValueError("corrupt simulator transition evidence")
                 left, right = json.loads(x), json.loads(x2)
                 if not (isinstance(left, list) and isinstance(right, list)
