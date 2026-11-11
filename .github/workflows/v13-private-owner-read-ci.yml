@@ -8,6 +8,7 @@ on:
       - 'v13/code/v13/owner_read_bridge.py'
       - 'v13/code/v13/source_updater.py'
       - 'v13/code/v13/mobile_dashboard.py'
+      - 'v13/code/v13/mobile_dashboard.html'
       - 'v13/code/v13/managed_console.py'
       - 'v13/code/tests/test_managed_console_dashboard.py'
       - 'v13/code/tests/test_source_updater.py'
@@ -40,5 +41,20 @@ jobs:
           python -m unittest discover -s tests -p 'test_source_updater.py' -v
           python -m py_compile v13/managed_console.py tests/test_managed_console_dashboard.py
           python -m unittest discover -s tests -p 'test_managed_console_dashboard.py' -v
+      - name: Validate mobile HTML tab layout and JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html=Path("v13/mobile_dashboard.html").read_text()
+          assert all(f'data-tab="{t}"' in html for t in ("chat","brain","settings","maintenance"))
+          assert 'id="copy-chat"' in html and 'id="chat-compose"' in html
+          assert 'id="v13-live-output"' in html and 'id="update-result"' in html
+          assert html.index('id="v13-live-output"') < html.index('id="chat-compose"')
+          assert 'Gesamten Chat kopieren' in html
+          assert 'data-fill' not in html  # generated from allowed V13 command catalog
+          script=html.split("<script>",1)[1].split("</script>",1)[0]
+          Path("/tmp/v13-dashboard.js").write_text(script.replace("@@PREFIX@@","/t/test"))
+          PY
+          node --check /tmp/v13-dashboard.js
       - name: Validate one-command bootstrap syntax
         run: bash -n scripts/termux_one_command.sh scripts/v13-update
