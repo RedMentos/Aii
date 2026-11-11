@@ -45,4 +45,4 @@ def test_full_goal_uses_operator_and_preserves_restart_and_learning(tmp_path):
     assert result["native_android_executed"] is False
     assert result["tasks_completed_this_run"] == 4
     assert result["learning"]["readback"]["inference_reload_exact_loss"] is True
-    assert result["action_receipts_persisted"] > 0
+    assert result["action_receipt_count"] > 0
