@@ -251,6 +251,18 @@ class Runtime:
                     with self.lock:self.current=None;self.jobs.task_done();self.status='Pausiert' if self.paused else 'Bereit'
     def _rejected(self,e,reason):
         row=self.store.one('SELECT session_id FROM events WHERE id=?',(e['event_id'],));self.store.message(row['session_id'],e['event_id'],'assistant','[Systemdiagnose] '+safe_text(reason),'ERROR',{'model_generated':False})
+    def speech_enqueue(self, event_id, queue, *, operator_opt_in=False):
+        """Operator-invoked completed C3 speech handoff, OFF by default.
+
+        This does not start playback or grant Android microphone/TTS authority.
+        Caller must provide a local persistent SpeechIntentQueue.
+        """
+        from .speech_runtime_bridge import SpeechRuntimeBridge
+        from .speech_store_binding import enqueue_committed_c3
+        return enqueue_committed_c3(
+            self.store, event_id,
+            SpeechRuntimeBridge(queue, enabled=operator_opt_in is True),
+        )
     def last_answer(self):return self.store.one("SELECT * FROM messages WHERE session_id=? AND role='assistant' AND status IN ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED') ORDER BY id DESC LIMIT 1",(self.session,))
     def force_report(self):
         # Read-only exact snapshot is visible immediately; deliberation stops.
@@ -670,7 +682,7 @@ class Runtime:
             try:
                 self.executive.update(e,self.session,status=status)
             except Exception as exc:self.store.log('executive_finish_deferred',eid,{'error':type(exc).__name__})
-            mark('finished');meta.update(self_candidate_hash=digest(output),duration_s=time.monotonic()-start,characters=len(output));self.store.finish_message(mid,status,meta)
+            # Speech source identity is recorded by Runtime, not asserted by an external caller.\n            meta['speech_source_role'] = (runner.role if runner is not None and meta.get('model_generated') is True and meta.get('tool_answer_first') != 'FINAL' and status == 'FINAL' else None)\n            mark('finished');meta.update(self_candidate_hash=digest(output),duration_s=time.monotonic()-start,characters=len(output));self.store.finish_message(mid,status,meta)
             txctl.settle_turn(self,eid,status)  # WP-K IH-H13: provisional items promote at FINAL, else tombstone
             bout=None
             try:  # WP-T7 C7 output broker: authority decision, C6 check of the visible output, late correction / action preview
