@@ -96,3 +96,43 @@ def test_duplicate_and_unissued_outcomes_cannot_be_logged(tmp_path):
         broker.record_simulated_outcome(dict(envelope, action_id="f" * 32), outcome)
     assert [row[1] for row in broker.events() if row[0] == p.action_id].count("simulated_outcome") == 1
     broker.close()
+
+
+@pytest.mark.parametrize("alter", [
+    lambda e: dict(e, capability="tap"),
+    lambda e: dict(e, args={"x": 1, "y": 2}),
+    lambda e: dict(e, digest="0" * 64),
+    lambda e: dict(e, status="LIVE"),
+])
+def test_simulation_audit_rejects_mutated_issued_envelope(tmp_path, alter):
+    from v13.android_operator_loop import ActionOutcome
+    broker = AndroidControlBroker(tmp_path / "audit.db")
+    broker.start()
+    p = broker.propose("back", {})
+    broker.approve(p.action_id, confirmed_by_local_ui=True)
+    envelope = broker.execute(p.action_id)
+    outcome = ActionOutcome(p.action_id, "back", "SIMULATED", 0, "SIMULATED_COMPANION")
+    with pytest.raises(ControlDenied):
+        broker.record_simulated_outcome(alter(envelope), outcome)
+    with pytest.raises(ControlDenied):
+        broker.record_simulated_failure(alter(envelope))
+    assert not any(row[1] == "simulated_outcome" for row in broker.events())
+    broker.record_simulated_outcome(envelope, outcome)
+    broker.close()
+
+
+def test_stop_switch_rejects_late_simulation_receipts(tmp_path):
+    from v13.android_operator_loop import ActionOutcome
+    broker = AndroidControlBroker(tmp_path / "audit.db")
+    broker.start()
+    p = broker.propose("back", {})
+    broker.approve(p.action_id, confirmed_by_local_ui=True)
+    envelope = broker.execute(p.action_id)
+    broker.stop()
+    outcome = ActionOutcome(p.action_id, "back", "SIMULATED", 0, "SIMULATED_COMPANION")
+    with pytest.raises(ControlDenied, match="stopped"):
+        broker.record_simulated_outcome(envelope, outcome)
+    with pytest.raises(ControlDenied, match="stopped"):
+        broker.record_simulated_failure(envelope)
+    assert not any(row[1] == "simulated_outcome" for row in broker.events())
+    broker.close()

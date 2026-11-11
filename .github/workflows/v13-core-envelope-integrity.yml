@@ -1,0 +1,22 @@
+name: V13 core Android envelope integrity
+on:
+  push:
+    branches:
+      - codex/v13-core-envelope-integrity-20261111-1604
+  pull_request:
+    paths:
+      - 'v13/code/v13/android_control.py'
+      - 'v13/code/v13/android_operator_loop.py'
+      - 'v13/code/tests/test_android_control.py'
+      - 'v13/code/tests/test_android_operator_loop.py'
+      - '.github/workflows/v13-core-envelope-integrity.yml'
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pytest
+      - run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_android_control.py v13/code/tests/test_android_operator_loop.py
