@@ -10,7 +10,7 @@ from urllib.request import Request, urlopen
 
 from pinned_multiorgan_evidence import check, REQUIRED
 
-RUN = re.compile(r"https://github\.com/RedMentos/Aii/actions/runs/([1-9][0-9]*)\\Z")
+RUN = re.compile(r"https://github\.com/RedMentos/Aii/actions/runs/([1-9][0-9]*)\Z")
 
 
 def verify(data, fetch_run):
