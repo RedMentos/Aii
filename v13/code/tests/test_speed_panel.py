@@ -89,11 +89,17 @@ def test_local_fastpath_benchmark_is_explicit_idle_no_model(runtime):
     assert perf["organ"] == "compiled_fast_output"
     assert perf["command"] == "LOCAL_OPERATOR_ONLY"
     assert r.store.rows("SELECT * FROM updates") == before
+    dynamic = json.loads(Operator(r).run(":speed fastbatch-values 2048"))
+    assert called == ["idle", "idle"]
+    assert dynamic["fixture"]["kind"] == "SYNTHETIC_IMPORTED_VALUES"
+    assert dynamic["fixture"]["rows"] == 2048
+    assert dynamic["fixture"]["model_calls"] == 0
+    assert dynamic["stream"]["verified_same_sha256"] is True
 
 
 @pytest.mark.parametrize("arg", [
     ":speed fastbatch 0", ":speed fastbatch 50001", ":speed fastbatch bad",
-    ":speed fastbatch 10 11", ":speed unknown", ":speed models extra"
+    ":speed fastbatch 10 11", ":speed fastbatch-values 0", ":speed fastbatch-values nope", ":speed unknown", ":speed models extra"
 ])
 def test_wrong_or_expensive_speed_commands_refused(runtime, arg):
     r, called = runtime
