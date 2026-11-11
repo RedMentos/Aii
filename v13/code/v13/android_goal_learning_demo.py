@@ -15,6 +15,7 @@ from .android_control import AndroidControlBroker, ControlDenied
 from .android_control_sim import DEMO_PACKAGE, SimulatedAndroidWorld
 from .android_sim_jepa_probe import trial
 from .android_operator_world import synthetic_operator_action
+from .behavior_governor import neutral_signals, review_behavior
 
 MAX_STEPS_PER_NOTE = 6
 MAX_DEMO_NOTES = 48
@@ -45,6 +46,9 @@ def _synthetic_action(broker, world, capability, args):
 
     Fixture approval is not Android permission or real user consent.
     """
+    verdict = review_behavior(neutral_signals(), has_external_effect=False)
+    if verdict.guidance != "NO_OBJECTION_IN_ADVISORY_REVIEW":
+        raise ControlDenied("synthetic behavior requires independent review")
     return synthetic_operator_action(broker, world, capability, args)
 
 
