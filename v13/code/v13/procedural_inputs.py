@@ -71,8 +71,8 @@ def _verify_fd(source, metadata, offset=0, prefix_sha=None):
 class ProceduralInputs:
     """Private input bank with source-bound, checkpointable fast transforms."""
 
-    def __init__(self, home, store=None):
-        self.batch = ProceduralBatch(home, store=store)
+    def __init__(self, home, store=None, session=None):
+        self.batch = ProceduralBatch(home, store=store, session=session)
         self.root = self.batch.root / "inputs"
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
         _check_path(self.root)
@@ -365,7 +365,8 @@ class ProceduralInputs:
 
 def operator_command(runtime, args):
     """input import NAME FILE SHA | status NAME | run PLAN INPUT [--rows=N] | read PLAN INPUT [--cursor=N] [--bytes=N]."""
-    bank = ProceduralInputs(runtime.home, store=runtime.store)
+    bank = ProceduralInputs(runtime.home, store=runtime.store,
+                            session=getattr(runtime, 'session', None))
     if len(args) == 4 and args[0] == "import":
         return bank.import_file(args[1], args[2], args[3])
     if len(args) == 2 and args[0] == "status":
