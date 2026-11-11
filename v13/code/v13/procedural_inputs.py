@@ -173,7 +173,12 @@ class ProceduralInputs:
 
     def status(self, name):
         meta = self._metadata(name)
-        return {k: meta[k] for k in ("name", "sha256", "bytes", "rows", "model_calls")}
+        source_path = self._input_path(name)
+        _check_path(source_path)
+        with source_path.open("rb") as source:
+            _verify_fd(source, meta)
+        return {**{k: meta[k] for k in ("name", "sha256", "bytes", "rows", "model_calls")},
+                "source_bytes_verified": True}
 
     def _job_files(self, plan, name, meta):
         job_id = _sha(["INPUT_LINES", plan["sha256"], name, meta["sha256"]])[:24]
@@ -257,6 +262,10 @@ class ProceduralInputs:
                         raw_bytes.append(raw)
                         rendered.append(_render(parts, state["rows"] + i + 1, value))
                     data = "".join(rendered).encode("utf-8")
+                    input_consumed = b"".join(raw_bytes)
+                    if (state["rows"] + len(raw_bytes) == meta["rows"]
+                            and state["input_offset"] + len(input_consumed) != meta["bytes"]):
+                        raise ValueError("input row total inconsistent with pinned source")
                     if state["bytes"] + len(data) > MAX_OUTPUT_BYTES:
                         raise ValueError("output exceeds 64MiB; split input")
                     _check_path(output_file)
@@ -264,7 +273,6 @@ class ProceduralInputs:
                         output.write(data)
                         output.flush()
                         os.fsync(output.fileno())
-                    input_consumed = b"".join(raw_bytes)
                     prefix.update(input_consumed)
                     output_sha.update(data)
                     state["rows"] += len(raw_bytes)
