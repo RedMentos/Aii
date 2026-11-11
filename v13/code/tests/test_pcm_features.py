@@ -30,7 +30,7 @@ class PCMFeaturesTest(unittest.TestCase):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 extract_pcm_frames(bytes(32000), 16000, bad)
         with self.assertRaises(ValueError):
-            extract_pcm_frames(b"\\x00", 16000)
+            extract_pcm_frames(bytes(1), 16000)
         with self.assertRaises(ValueError):
             extract_pcm_frames(bytes(32000), 44100)
         with self.assertRaises(ValueError):
