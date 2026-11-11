@@ -30,7 +30,7 @@ class LocalConsoleTests(unittest.TestCase):
                        "  if [ \"$input\" = ':shutdown' ]; then exit 0; fi\n"
                        "done\n")
         exe.chmod(0o700)
-        self.log_root = self.path / "private" / "sessions"
+        self.log_root = self.path / "private" / "console-logs"
         self.console = mc.ManagedConsole(data_home=self.home, log_root=self.log_root)
 
     def test_captured_chat_output_survives_exit(self):
