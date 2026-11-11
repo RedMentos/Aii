@@ -1,0 +1,137 @@
+"""Read-only private GitHub owner-command tests (no network, no Android needed)."""
+from datetime import datetime, timezone
+import json
+from pathlib import Path
+import tempfile
+import unittest
+
+from v13 import owner_read_bridge as o
+from v13 import remote_maintenance_bridge as b
+
+
+class FakeGitHub:
+    def __init__(self, issues, private=True):
+        self.queue = issues
+        self.private = private
+        self.comments_sent = []
+        self.closed = []
+        self.checks = 0
+    def check_private(self):
+        self.checks += 1
+        if not self.private:
+            raise b.Denied("relay MUST be private")
+    def issues(self):
+        return [i for i in self.queue if i["number"] not in self.closed]
+    def comment(self, number, receipt):
+        self.comments_sent.append((number, receipt))
+    def close(self, number):
+        self.closed.append(number)
+
+
+class OwnerReadTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        root = Path(self.temp.name)
+        source = root / "source"
+        source.mkdir()
+        self.cfg = {
+            "relay_repo": "RedMentos/Aiiii",
+            "installed_root": str(source),
+            "state_dir": str(root / "state"),
+            "keys": {"agent-owner": "ab" * 32},
+            "authors": {"agent-owner": ["RedMentos"]},
+            "permissions": {"agent-owner": ["HEALTH", "LEARNING_STATUS"]},
+            "remote_apply_enabled": False
+        }
+        self.now = 1900
+
+    def issue(self, command="HEALTH", author="RedMentos", ident="d" * 32,
+              number=1, expiry=None, created_at=None):
+        body = {"schema": o.READ_SCHEMA, "id": ident, "command": command,
+                "expires_at": self.now + 500 if expiry is None else expiry}
+        return {"number": number, "title": "V13READ:" + ident,
+                "body": json.dumps(body), "user": {"login": author},
+                "created_at": created_at or datetime.fromtimestamp(
+                    self.now, timezone.utc).isoformat()}
+
+    def test_owner_health_e2e_and_idempotent_restart(self):
+        issue = self.issue()
+        client = FakeGitHub([issue])
+        self.assertEqual(o.poll_once(client, self.cfg, now=self.now)["processed"], 1)
+        self.assertEqual(client.comments_sent[0][1]["device_status"]["status"], "OK")
+        self.assertEqual(client.closed, [1])
+        client.closed.clear()  # failed close/reopened issue
+        self.assertEqual(o.poll_once(client, self.cfg, now=self.now)["processed"], 1)
+        self.assertEqual(len(client.comments_sent), 1)
+
+    def test_owner_learning_status_only(self):
+        client = FakeGitHub([self.issue("LEARNING_STATUS")])
+        self.assertEqual(o.poll_once(client, self.cfg, now=self.now)["processed"], 1)
+        self.assertEqual(client.comments_sent[0][1]["device_status"]["learning"]["state"], "UNINSTRUMENTED")
+
+    def test_wrong_author_expired_stale_or_invalid_denied(self):
+        inputs = [
+            self.issue(author="Impostor"),
+            self.issue(expiry=self.now - 1),
+            self.issue(expiry=self.now + 2000),
+            self.issue(created_at="2020-01-01T00:00:00Z"),
+            self.issue(command="PATCH_APPLY"),
+            self.issue(command="SHELL"),
+            self.issue(command="PATCH_STAGE"),
+        ]
+        for issue in inputs:
+            with self.subTest(issue=issue):
+                with self.assertRaises(b.Denied):
+                    o.validate_owner_read(issue, self.cfg, now=self.now)
+
+    def test_title_mismatch_and_injected_arguments(self):
+        issue = self.issue()
+        issue["title"] = "V13READ:" + "0" * 32
+        with self.assertRaises(b.Denied):
+            o.validate_owner_read(issue, self.cfg, now=self.now)
+        issue = self.issue()
+        obj = json.loads(issue["body"])
+        obj["args"] = {"shell": "rm -rf /"}
+        issue["body"] = json.dumps(obj)
+        with self.assertRaises(b.Denied):
+            o.validate_owner_read(issue, self.cfg, now=self.now)
+
+    def test_private_repo_required(self):
+        client = FakeGitHub([self.issue()], private=False)
+        with self.assertRaises(b.Denied):
+            o.poll_once(client, self.cfg, now=self.now)
+        self.assertEqual(client.comments_sent, [])
+
+    def test_stopped_ignores_commands(self):
+        state = Path(self.cfg["state_dir"])
+        state.mkdir(mode=0o700)
+        (state / "STOP").touch()
+        client = FakeGitHub([self.issue()])
+        self.assertEqual(o.poll_once(client, self.cfg, now=self.now)["status"], "STOPPED_LOCALLY")
+        self.assertFalse(client.comments_sent)
+
+    def test_duplicate_nonce_in_second_issue_does_not_reexecute(self):
+        one = self.issue(number=1)
+        two = self.issue(number=2)
+        client = FakeGitHub([one, two])
+        self.assertEqual(o.poll_once(client, self.cfg, now=self.now)["processed"], 1)
+        self.assertEqual(len(client.comments_sent), 1)
+
+    def test_unsigned_legacy_command_still_rejected(self):
+        issue = self.issue()
+        issue["title"] = "V13CMD:" + "d" * 32
+        client = FakeGitHub([issue])
+        self.assertEqual(o.poll_once(client, self.cfg, now=self.now)["processed"], 0)
+        self.assertFalse(client.comments_sent)
+
+    def test_read_generator_no_patch(self):
+        command = o.create_read_request("HEALTH", now=self.now)
+        self.assertEqual(command["command"], "HEALTH")
+        self.assertEqual(len(command["id"]), 32)
+        with self.assertRaises(b.Denied):
+            o.create_read_request("PATCH_APPLY", now=self.now)
+
+
+if __name__ == "__main__":
+    unittest.main()
