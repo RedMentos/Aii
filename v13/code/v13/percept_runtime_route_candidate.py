@@ -26,6 +26,13 @@ def run_percept_route(runtime, event, *, width_detail=240, width_gist=960):
     # represented as full-source input; read_source checks provenance.
     if type(source.get("char_start")) is not int or source["char_start"] != 0:
         raise ValueError("nonzero A5 span requires runtime offset fix")
+    # Preflight both consumer widths before Cognition.percept persists A5.
+    # The source segmenter rejects these values, but doing so afterwards
+    # would leave a persisted packet for a rejected route invocation.
+    import sys
+    for width in (width_detail, width_gist):
+        if type(width) is not int or not 0 < width <= sys.maxsize:
+            raise ValueError("B source-view width must be a positive integer")
     # Check source before and after the runtime A5 packet write.
     original = runtime.store.read_source(source)
     percept = runtime.cognition.percept(event)
