@@ -122,7 +122,9 @@ def report(runtime):
     # counts, even when their records remain in the durable Store.
     memory_count = _count(store,
         "SELECT COUNT(*) AS n FROM memories m JOIN sources s ON s.id=m.source_id "
-        "WHERE m.session_id=? AND m.active=1 AND s.deleted=0", session)
+        "JOIN events e ON e.id=m.event_id JOIN sources es ON es.id=e.source_id "
+        "WHERE m.session_id=? AND e.session_id=m.session_id "
+        "AND m.active=1 AND s.deleted=0 AND es.deleted=0", session)
     replay_count = _count(store,
         "SELECT COUNT(*) AS n FROM replay r JOIN events e ON e.id=r.event_id "
         "JOIN sources s ON s.id=e.source_id "
@@ -130,7 +132,8 @@ def report(runtime):
     feedback_count = _count(store,
         "SELECT COUNT(*) AS n FROM feedback f JOIN events e ON e.id=f.event_id "
         "JOIN sources s ON s.id=f.source_id "
-        "WHERE e.session_id=? AND s.deleted=0", session)
+        "JOIN sources es ON es.id=e.source_id "
+        "WHERE e.session_id=? AND s.deleted=0 AND es.deleted=0", session)
     return {
         "revision": REVISION, "kind": "READ_ONLY_LEARNING_RECEIPTS",
         "scope": "CURRENT_SESSION_EXPERIENCE_GLOBAL_GENERATION",
