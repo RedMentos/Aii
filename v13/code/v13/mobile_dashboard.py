@@ -5,6 +5,7 @@ accessibility permission, raw log upload, or unsupervised model-weight edits.
 """
 from __future__ import annotations
 import argparse
+import ast
 from datetime import datetime
 import html
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -291,6 +292,27 @@ def _quick(action, command, label, cls="secondary"):
             f'<button class="{cls}" type="submit">{html.escape(label)}</button></form>')
 
 
+def operator_catalog():
+    """Read actual V13 operator HELP without executing installed source code."""
+    fallback = {c.split()[0] for c in QUICK_COMMANDS}
+    paths = (Path.home() / "V13-Phone/v13/code/v13/operator.py",
+             Path.home() / "v13-app-20260929/V13-Phone/v13/operator.py")
+    for p in paths:
+        try:
+            if p.is_symlink() or not p.is_file() or p.stat().st_size > 350000:
+                continue
+            tree = ast.parse(p.read_text(encoding="utf-8"))
+            for node in tree.body:
+                if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "HELP" for t in node.targets):
+                    help_text = ast.literal_eval(node.value)
+                    if isinstance(help_text, str):
+                        commands = set(re.findall(r"(?<![A-Za-z0-9]):[a-z][a-z0-9_-]{1,30}", help_text))
+                        return sorted(fallback | commands)[:250]
+        except (OSError, ValueError, SyntaxError, UnicodeError):
+            continue
+    return sorted(fallback)
+
+
 def _sliders(action):
     from math import isfinite
     p = DATA / "config/settings.json"
@@ -345,7 +367,14 @@ def dashboard_html(token, controls, message=""):
         (":help", "Alle Befehle"),
     ]
     quick_buttons = "".join(_quick(action, c, l) for c,l in test_commands)
+    commands = operator_catalog()
     options = "".join(f'<option value="{html.escape(c, quote=True)}"></option>' for c in sorted(QUICK_COMMANDS))
+    all_buttons = "".join(
+        '<button class="secondary" type="button" '
+        + 'onclick="document.getElementById(\'v13-command\').value=\'' + c
+        + '\';document.getElementById(\'v13-command\').focus()">' + c + '</button>'
+        for c in commands
+    )
     return f"""<!doctype html><html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>V13 – Redmi Kontrollzentrum</title>
@@ -377,9 +406,9 @@ small{{color:#b0bdcf}}.message{{color:#b8e4c4}}label{{display:block;margin-top:1
 <div class="actions">{quick_buttons}</div>
 <details><summary>Weitere V13-Kommandos auswählen</summary>
 <form method="POST" action="{action}"><input type="hidden" name="action" value="send">
-<input name="command" list="v13-options" placeholder=":Befehl und ggf. Parameter" required maxlength="1600">
+<input id="v13-command" name="command" list="v13-options" placeholder=":Befehl und ggf. Parameter" required maxlength="1600">
 <datalist id="v13-options">{options}</datalist><p><button type="submit">Befehl an V13 senden</button></p></form>
-<small>Viele Funktionen benötigen Parameter oder gesonderte Bestätigung. Mit „Alle Befehle“ zeigt V13 seine vollständige Liste.</small>
+<small>Alle Befehlsnamen können per Klick ins Eingabefeld übernommen werden. Manche benötigen weitere Parameter oder gesonderte Bestätigung.</small><div class="actions">{all_buttons}</div>
 </details></section>
 <section><h2>Regler · lokale V13-Budgets</h2>
 {_sliders(action)}
