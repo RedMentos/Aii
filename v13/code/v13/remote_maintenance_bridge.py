@@ -339,9 +339,12 @@ def health(cfg):
     except OSError:
         pass
     try:
+        # Android/Termux Python builds may omit os.getloadavg entirely.
+        # System load is optional telemetry, not a reason to reject HEALTH.
         res["load_average"] = [round(float(x), 2) for x in os.getloadavg()]
-    except OSError:
-        pass
+    except (OSError, AttributeError, ValueError):
+        res["load_average_state"] = "UNAVAILABLE"
+
     return res
 
 
