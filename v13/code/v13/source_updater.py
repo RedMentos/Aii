@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import re
+import secrets
 import subprocess
 import time
 from contextlib import contextmanager
@@ -172,11 +173,34 @@ def _check_python(root, before, after):
             raise UpdateDenied("Syntax check failed for source update")
 
 
-def apply(root=None):
+def ci_passed(commit):
+    """The auto path requires successful existing CI on the exact source commit."""
+    if not SHA.fullmatch(commit):
+        return False
+    p = subprocess.run(["gh", "api", "--method", "GET", "repos/RedMentos/Aii/actions/runs",
+                        "-f", "head_sha=" + commit, "-f", "per_page=100"],
+                       capture_output=True, text=True, timeout=25, check=False)
+    if p.returncode != 0:
+        return False
+    try:
+        runs = json.loads(p.stdout).get("workflow_runs", [])
+        names = {}
+        for run in runs:
+            if run.get("head_sha") == commit:
+                names[run.get("name")] = run.get("conclusion")
+        required = ("v13-private-remote-bridge-tests", "V13 private owner-read Termux bootstrap")
+        return all(names.get(name) == "success" for name in required)
+    except (ValueError, TypeError, AttributeError):
+        return False
+
+
+def apply(root=None, *, expected_tip=None):
     with _lock():
         s = status(root)
         if s["status"] == "UP_TO_DATE":
             return s
+        if expected_tip is not None and s["available"] != expected_tip:
+            raise UpdateDenied("Remote changed after approval; refusing unreviewed new commit")
         if _runtime_active():
             raise UpdateDenied("V13 process detected (or process visibility unavailable). Stop running V13 before updating.")
         root, branch, before = _repo_root(root or Path.home() / "V13-Phone")
@@ -184,7 +208,7 @@ def apply(root=None):
             raise UpdateDenied("Checkout changed during update")
         after = s["available"]
         # Retain the old commit in Git locally, so old sparse blobs stay reachable.
-        backup = "refs/v13-local-rollback/" + str(int(time.time()))
+        backup = "refs/v13-local-rollback/" + str(int(time.time())) + "-" + secrets.token_hex(3)
         git(root, "update-ref", backup, before)
         try:
             git(root, "merge", "--ff-only", after, timeout=180)
@@ -200,6 +224,15 @@ def apply(root=None):
                   "updated_at":int(time.time()), "rollback_ref":backup}
         _remember(result)
         return result
+
+
+def auto_apply(root=None):
+    s = status(root)
+    if s["status"] == "UP_TO_DATE":
+        return s
+    if not ci_passed(s["available"]):
+        raise UpdateDenied("Automatic update held: required GitHub CI did not pass for the exact commit")
+    return apply(root, expected_tip=s["available"])
 
 
 def rollback(root=None):
@@ -226,11 +259,12 @@ def rollback(root=None):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description="V13 incremental Git source updater (no data/model modifications)")
-    p.add_argument("action", choices=("check", "apply", "rollback"))
+    p.add_argument("action", choices=("check", "apply", "auto", "rollback"))
     p.add_argument("--root", default=str(Path.home() / "V13-Phone"))
     a = p.parse_args(argv)
     try:
-        result = status(a.root) if a.action == "check" else apply(a.root) if a.action == "apply" else rollback(a.root)
+        result = (status(a.root) if a.action == "check" else apply(a.root) if a.action == "apply"
+                  else auto_apply(a.root) if a.action == "auto" else rollback(a.root))
         print(json.dumps(result, sort_keys=True, ensure_ascii=False))
         return 0
     except (OSError, subprocess.TimeoutExpired, UpdateDenied, ValueError) as exc:
