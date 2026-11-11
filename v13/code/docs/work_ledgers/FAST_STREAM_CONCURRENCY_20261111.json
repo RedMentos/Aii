@@ -1,11 +1,11 @@
 {
   "schema": "v13-work-package-v1",
-  "observed_utc": "2026-11-11T01:29:30Z",
+  "observed_utc": "2026-11-11T01:36:10Z",
   "owner": "V13 Core & Harness (GPT/Codex scoped review package)",
   "branch": "codex/v13-fastbatch-stream-output-20261111",
   "pr": 1726,
   "base_sha": "0fb80f8ac43b9fadceda3343db0e837fe978f518",
-  "verification_head": "5a3855d13a3d2793483cce2a62914e50005448a4",
+  "verification_head": "c62944cc9823e9945255a4b4c11717563030f79c",
   "files_owned": [
     "v13/code/v13/procedural_batch.py",
     "v13/code/v13/operator.py",
@@ -13,7 +13,10 @@
     "v13/code/tests/test_procedural_fastpath_benchmark.py",
     "v13/code/tests/test_procedural_job_lock.py",
     "v13/code/scripts/benchmark_procedural_fastpath.py",
-    ".github/workflows/v13-procedural-stream-output.yml"
+    ".github/workflows/v13-procedural-stream-output.yml",
+    "v13/code/v13/speed_panel.py",
+    "v13/code/tests/test_speed_panel.py",
+    "v13/code/v13/brain_panel.py"
   ],
   "packages": [
     {
@@ -33,14 +36,32 @@
       "consumer": "ProceduralBatch.run/read/preview/iter_output",
       "changes": "per-job nonblocking advisory lock and safe refusal of competing same-job reads/writers, independent jobs can progress",
       "claim": "Linux filesystem concurrency structural tests; Android native lock performance unmeasured"
+    },
+    {
+      "id": "ORGAN-SPEED-001",
+      "consumer": ":brain speed / :speed models / :speed fastbatch [1..50000]",
+      "changes": "current-session sanitized B1/B2/C2/C3 telemetry with unknown native evidence + explicit idle synthetic fastpath benchmark",
+      "claim": "not a device native speed proof, does not mutate weights/policy or authorize a model swap"
     }
   ],
   "ci": {
-    "url": "https://github.com/RedMentos/Aii/actions/runs/42939259015",
-    "head": "5a3855d13a3d2793483cce2a62914e50005448a4",
+    "url": "https://github.com/RedMentos/Aii/actions/runs/42940075734",
+    "head": "c62944cc9823e9945255a4b4c11717563030f79c",
     "result": "SUCCESS",
-    "tests": "55 passed",
-    "privacy": "CLEAN"
+    "tests": "70 passed",
+    "privacy": "CLEAN",
+    "bench": {
+      "rows": 100000,
+      "bytes": 3088895,
+      "rows_per_second": 552815.1,
+      "writer_bytes_per_second": 17075878.8,
+      "stream_bytes_per_second": 426043611.3,
+      "write_seconds": 0.180892,
+      "stream_seconds": 0.00725,
+      "system": "Linux",
+      "evidence_level": "LOCAL_HOST_SYNTHETIC_PYTHON",
+      "model_calls": 0
+    }
   },
   "gates": [
     "STEP2 UTILITY_FAIL unchanged",
@@ -57,10 +78,21 @@
     "Same-job read while writer owns lock fails busy (fast retry required)"
   ],
   "next_exact_commands": [
+    "Verify high-throughput iter_output revokes learned source at next chunk without destroying committed checkpoint; add live SQLite fail-close test",
     "cd v13/code && python -m pytest -q tests/test_procedural_stream_output.py tests/test_procedural_fastpath_benchmark.py tests/test_procedural_job_lock.py tests/test_procedural_habits.py tests/test_procedural_batch.py tests/test_brain_diagnosis.py",
     "cd v13/code && python scripts/benchmark_procedural_fastpath.py --rows 100000",
     "python v13/code/scripts/public_repo_privacy_scan.py --base 0fb80f8ac43b9fadceda3343db0e837fe978f518 --head HEAD",
     "Provide :speed fastbatch and read-only per-organ runtime speed report in existing Operator with no frozen-runtime edits",
     "Review independent JEF/JEPA branches before any integration"
+  ],
+  "review_findings": [
+    {
+      "pr": 1724,
+      "type": "JEF_EVENT_ID_REPLAN_INCONSISTENCY",
+      "comment_id": 6784402985,
+      "status": "REPORTED_TO_OWNER",
+      "issue": "retry same event with same pattern but changed eligibility can return schedule inconsistent with stored event schedule",
+      "native_reproduced": false
+    }
   ]
 }
