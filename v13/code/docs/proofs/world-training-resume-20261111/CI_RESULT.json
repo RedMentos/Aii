@@ -1,0 +1,28 @@
+{
+  "code_commit": "706b75bb85be3b851975eea8cfd151c80c56a395",
+  "code_tree": "06f2c7c2841cd154defe032ea6390efccfccf635",
+  "push": {
+    "run_id": 42976534860,
+    "checkout": "706b75bb85be3b851975eea8cfd151c80c56a395",
+    "staged_runtime_job": 130376815323,
+    "integrated_regression_job": 130376814955,
+    "conclusion": "success"
+  },
+  "pull_request": {
+    "run_id": 42976540503,
+    "merge_checkout_short": "e50ef67",
+    "staged_runtime_job": 130376832848,
+    "integrated_regression_job": 130376833191,
+    "conclusion": "success"
+  },
+  "totals": {
+    "targeted_outer_passed": 13,
+    "context_inner_passed": 15,
+    "resume_inner_passed": 11,
+    "integrated_inner_passed": 415,
+    "integrated_cuda_skipped": 3,
+    "integrated_subtests_passed": 58
+  },
+  "original_failed_raw_sha256": "e1220bead55762a8e2278b01de3b00d251fb82084e850dc5fbde6d92a73368ee",
+  "evidence_level": "synthetic software only; no native/Redmi/utility claim"
+}

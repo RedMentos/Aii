@@ -12,7 +12,7 @@
       "current_resume_cases": "11 passed",
       "targeted": "13 outer passed including 15 context cases and 11 resume cases",
       "same_stage": "415 passed / 3 CUDA skipped / 58 subtests passed; outer passed",
-      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+      "remote_ci": "SUCCESS exact code 706b75bb85be3b851975eea8cfd151c80c56a395 push 42976534860 jobs 130376815323/130376814955; PR merge e50ef67 run 42976540503 jobs 130376832848/130376833191"
     },
     "evidence": "actual synthetic Runtime SQLite -> two-step update -> save -> second update; restart/restore -> same second update; full model/EMA/inverse/optimizer/RNG arrays and lineage exact",
     "limits": [
