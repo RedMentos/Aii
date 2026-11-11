@@ -26,6 +26,41 @@ class ReplayAblationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'overlap'):
             bench.verify_disjoint([train], [forged])
 
+    def test_nonfinite_and_malformed_cohorts_fail_closed(self):
+        base = bench.generate(13, 1, 32, 'A')
+        held = bench.generate(13, 101, 64, 'A')
+        for field in ('x', 'a', 'y'):
+            bad = copy.deepcopy(held)
+            bad[field][0, 0] = np.nan
+            with self.subTest(field=field, value='nan'):
+                with self.assertRaisesRegex(ValueError, 'nonfinite'):
+                    bench.verify_disjoint([base], [bad])
+            bad[field][0, 0] = np.inf
+            with self.subTest(field=field, value='inf'):
+                with self.assertRaisesRegex(ValueError, 'nonfinite'):
+                    bench.verify_disjoint([base], [bad])
+            bad = copy.deepcopy(held)
+            bad[field] = bad[field][:-1]
+            with self.subTest(field=field, value='length'):
+                with self.assertRaisesRegex(ValueError, 'shape'):
+                    bench.verify_disjoint([base], [bad])
+
+    def test_duplicate_rows_and_signed_zero_alias_rejected(self):
+        base = bench.generate(13, 1, 32, 'A')
+        held = bench.generate(13, 101, 64, 'A')
+        bad = copy.deepcopy(held)
+        bad['x'][1] = bad['x'][0]
+        bad['a'][1] = bad['a'][0]
+        with self.assertRaisesRegex(ValueError, 'duplicate cohort observation'):
+            bench.verify_disjoint([base], [bad])
+        base = copy.deepcopy(base)
+        held = copy.deepcopy(held)
+        base['x'][0] = np.array([0.0, -0.0, 0.0, 0.0])
+        held['x'][0] = np.array([-0.0, 0.0, -0.0, 0.0])
+        held['a'][0] = base['a'][0]
+        with self.assertRaisesRegex(ValueError, 'overlap'):
+            bench.verify_disjoint([base], [held])
+
     def test_replay_mixing_preserves_equal_rows_and_bounded_history(self):
         a = bench.generate(21, 1, 32, 'A')
         b = bench.generate(21, 2, 32, 'B')
