@@ -28,11 +28,7 @@ def test_builder_rejects_changed_feedback_source(monkeypatch):
         module.build_sources(CODE)
 
 
-def test_feedback_catalog_memory_and_learning_in_one_disposable_copy(tmp_path):
-    module = builder()
-    shutil.copytree(CODE / 'v13', tmp_path / 'v13', ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
-    shutil.copytree(CODE / 'specs', tmp_path / 'specs')
-    (tmp_path / 'tests').mkdir()
+def regression_selection():
     names = ('test_continuous_predictor_20261108.py', 'integrated_online_world_disposable_cases.py',
              'integrated_jepa_disposable_cases.py', 'predictor_stream_guard_disposable_cases.py',
              'predictor_history_guard_disposable_cases.py', 'body_anchor_guard_disposable_cases_20261110.py',
@@ -45,16 +41,6 @@ def test_feedback_catalog_memory_and_learning_in_one_disposable_copy(tmp_path):
              'test_rating_fanout_isolation_20261108.py', 'test_c5_feedback_shadow_store_candidate.py',
              'test_c5_feedback_ledger_candidate.py', 'test_c5_feedback_ledger_integrity.py',
              'feedback_bootstrap_disposable_cases_20261111.py', 'test_inputs.py')
-    for name in names:
-        shutil.copy(CODE / 'tests' / name, tmp_path / 'tests' / name)
-    sources = module.build_sources(CODE)
-    for name, data in sources.items():
-        path = tmp_path / name
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(data)
-    shim = runpy.run_path(str(CODE / 'tests/test_integrated_predictor_history_guard_20261110.py'))['SYNTHETIC_ONLY_SHIM']
-    (tmp_path / 'tests/conftest.py').write_text(shim)
-    body_tests = sorted(name for name in sources if name.startswith('tests/test_body_'))
     world_tests = ['tests/test_online_world_20261108.py', 'tests/test_online_world_safety_20261109.py',
                    'tests/test_continuous_predictor_20261108.py', 'tests/test_checkpoint_guards_1648.py',
                    'tests/test_observe_atomic_1648.py', 'tests/integrated_online_world_disposable_cases.py',
@@ -69,6 +55,25 @@ def test_feedback_catalog_memory_and_learning_in_one_disposable_copy(tmp_path):
                       'tests/test_rating_fanout_isolation_20261108.py', 'tests/test_c5_feedback_shadow_store_candidate.py',
                       'tests/test_c5_feedback_ledger_candidate.py', 'tests/test_c5_feedback_ledger_integrity.py',
                       'tests/feedback_bootstrap_disposable_cases_20261111.py', 'tests/test_inputs.py']
+    return names, world_tests, memory_tests, feedback_tests
+
+
+def test_feedback_catalog_memory_and_learning_in_one_disposable_copy(tmp_path):
+    module = builder()
+    shutil.copytree(CODE / 'v13', tmp_path / 'v13', ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
+    shutil.copytree(CODE / 'specs', tmp_path / 'specs')
+    (tmp_path / 'tests').mkdir()
+    names, world_tests, memory_tests, feedback_tests = regression_selection()
+    for name in names:
+        shutil.copy(CODE / 'tests' / name, tmp_path / 'tests' / name)
+    sources = module.build_sources(CODE)
+    for name, data in sources.items():
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
+    shim = runpy.run_path(str(CODE / 'tests/test_integrated_predictor_history_guard_20261110.py'))['SYNTHETIC_ONLY_SHIM']
+    (tmp_path / 'tests/conftest.py').write_text(shim)
+    body_tests = sorted(name for name in sources if name.startswith('tests/test_body_'))
     command = [sys.executable, '-m', 'pytest', '-q', *world_tests, *body_tests, *memory_tests, *feedback_tests,
                'tests/test_body_jepa_checkpoint_fit.py', 'tests/body_anchor_guard_disposable_cases_20261110.py',
                'tests/test_lora_resume_safety.py', 'tests/test_lora_trainer.py',

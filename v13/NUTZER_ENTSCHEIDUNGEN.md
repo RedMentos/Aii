@@ -1,5 +1,9 @@
 # Nutzerentscheidungen (RedMentos)
 
+## 2026-11-11: Selbstoptimierung und tatsächliche organübergreifende Gewichtsänderung
+
+Der neuere parallele Nachtrag aus #1741 wird als zusätzliche verbindliche Zielanforderung übernommen: [USER_ADDENDUM_2026-11-11_SELF_OPTIMIZATION.md](USER_ADDENDUM_2026-11-11_SELF_OPTIMIZATION.md) und [Cross-Organ-Vertrag](code/docs/CROSS_ORGAN_WEIGHT_EDIT_CONTRACT_20261111.md). Selbstoptimierung, durch das Zielorgan kontrollierte tatsächliche Parameter-Deltas aus anderen Organen und später autorisiertes strukturelles Self-Edit dürfen weder entfallen noch als reine Prompt-/Konfigurationsoptimierung umdefiniert werden. Zuerst die vorhandene World-/Body-/Restart-/Retention-Kette fertigstellen; Rechte, Nutzergrenzen und Rückrolle bleiben verbindlich. Übernommene Anforderung, kein behaupteter bereits realisierter Laufzeitpfad und kein erfundener wörtlicher Chatauszug.
+
 ## 2026-11-09/10: langer Kontext, Idle-Lernen und integrierte Fortsetzung
 
 Der Nutzer möchte ein normales begrenztes aktives Kontextfenster mit lokal über lange Zeit wachsendem, effizient verdichtetem und wieder abrufbarem Zusammenhang; Erkenntnisse sollen später auch Weltbild und Modelle verbessern. Der Blueprint enthält diese Architektur bereits detailliert und darf nicht durch eine vereinfachte Ersatzarchitektur ersetzt werden. Geeignete Anfangsdaten sollen später langsam und ressourcenbegrenzt im Leerlauf nutzbar sein. Freigegebene Gespräche/Rückmeldungen und später ausdrücklich erlaubter Werkzeug-/Bildschirmzugriff gehören zur Zielrichtung, ebenso mehr Selbstständigkeit innerhalb der gesetzten Grenzen. Der Nutzer verlangt, dass die Arbeit fortgesetzt und neuere Anweisungen/Arbeit aus parallelen Chats beachtet werden. Das `code/docs/coordination/V13_FAST_INTEGRATION_AGENT_PLAYBOOK_20261110.md` priorisiert eine gemeinsame, tatsächlich verbundene Implementierung; SourceHandoff-Freeze und bisherige Gates bleiben verbindlich.

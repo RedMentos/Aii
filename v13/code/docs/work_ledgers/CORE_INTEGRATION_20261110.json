@@ -1,4 +1,36 @@
 {
+  "codex_context_recall_stage_20261111": {
+    "status": "SHADOW_REVIEW_ONLY_SOURCE_FREEZE",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "ebf32205d91d0b1f2cdb097b193d72a0cd023f76",
+    "stage_script": "v13/code/scripts/stage_integrated_candidate.py",
+    "builder": "v13/code/scripts/integrated_context_recall_candidate_20261111.py",
+    "builder_sha256": "168d6003db2c871599e70922619cfc416882b137ce05704b5c7b4d35037f6c0f",
+    "runtime_edge": "same-chat archived user source -> bounded ContextOS layer -> actual C3 messages -> answer and World lineage; default off",
+    "tests": {
+      "current_shared_stage": "374 passed, 3 CUDA skipped, 35 subtests passed; 1 outer passed",
+      "current_targeted": "12 outer passed; 15 context cases passed plus actual Runtime smoke and JEPA readback",
+      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+    },
+    "original_full_suites": {
+      "1742": "109 failed, 5485 passed, 51 skipped, 94 errors, 3027 subtests passed",
+      "1737": "108 failed, 5483 passed, 51 skipped, 94 errors, 3027 subtests passed"
+    },
+    "limits": [
+      "bounded lexical source recall, not infinite memory",
+      "messages.text remains duplicated in SQLite",
+      "cooperative I/O deadline, final-use race and no immediate unlearning",
+      "World-JEPA optimizer not persisted",
+      "BodyJepaTrainer not selected by normal Runtime trainer",
+      "idle learning, controlled cross-organ weight updates and self-edit remain open",
+      "no native or Redmi proof"
+    ],
+    "next_edge": "source-bound World-JEPA optimizer persistence and interrupted-vs-uninterrupted restart; fixed holdout/retention; Body route; replay/idle",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
   "date": "2026-11-10",
   "owner": "GPT integration coordinator",
   "package": "V13_CORE_INTEGRATION_20261110",
