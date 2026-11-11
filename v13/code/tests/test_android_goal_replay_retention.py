@@ -19,7 +19,7 @@ def test_goal_then_restart_then_disjoint_replay_ablation(tmp_path):
     assert result["goal"]["learning"]["status"] == "OFF"
     assert result["goal"]["restart_state_digest_equal"]
     assert result["replay"]["source_ids_disjoint"]
-    assert result["replay"]["both_models_changed_numeric_weights"]
+    assert result["replay"]["readback"]["replay_trained_model_reloaded"] is True\n    assert result["replay"]["readback"]["optimizer_trajectory_reproduced"] is False\n    assert result["replay"]["readback"]["old_holdout_loss_after_restart"] == pytest.approx(\n        result["replay"]["with_replay_loss_after"], rel=1e-9, abs=1e-12)\n    assert (tmp_path / "android_control_sim" / "android_replay_trained_shadow_jepa.npz").exists()\n    assert result["replay"]["both_models_changed_numeric_weights"]
     assert result["replay"]["old_disjoint_holdout_rows"] >= 4
     assert result["replay"]["replayed_prior_rows"] >= 4
     assert all(math.isfinite(result["replay"][key]) for key in (
@@ -36,6 +36,16 @@ def test_goal_then_restart_then_disjoint_replay_ablation(tmp_path):
     finally:
         world.close()
 
+
+
+def test_replay_checkpoint_binds_committed_source_and_rejects_wrong_digest(tmp_path):
+    result = run_goal_replay(tmp_path, count=18, seed=12, steps=3)
+    from v13.world_jepa_shadow_checkpoint import load
+    checkpoint = tmp_path / "android_control_sim" / "android_replay_trained_shadow_jepa.npz"
+    readback = result["replay"]["readback"]
+    with pytest.raises((ValueError, PermissionError)):
+        load(checkpoint, "0" * 64, readback["checkpoint_sha256"])
+    assert readback["active_model_promoted"] is False
 
 def test_repeat_from_same_persisted_receipts_has_identical_ablation(tmp_path):
     run_goal_replay(tmp_path, count=18, seed=21, steps=2)
