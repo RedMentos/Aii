@@ -19,7 +19,12 @@ def test_goal_then_restart_then_disjoint_replay_ablation(tmp_path):
     assert result["goal"]["learning"]["status"] == "OFF"
     assert result["goal"]["restart_state_digest_equal"]
     assert result["replay"]["source_ids_disjoint"]
-    assert result["replay"]["readback"]["replay_trained_model_reloaded"] is True\n    assert result["replay"]["readback"]["optimizer_trajectory_reproduced"] is False\n    assert result["replay"]["readback"]["old_holdout_loss_after_restart"] == pytest.approx(\n        result["replay"]["with_replay_loss_after"], rel=1e-9, abs=1e-12)\n    assert (tmp_path / "android_control_sim" / "android_replay_trained_shadow_jepa.npz").exists()\n    assert result["replay"]["both_models_changed_numeric_weights"]
+    assert result["replay"]["readback"]["replay_trained_model_reloaded"] is True
+    assert result["replay"]["readback"]["optimizer_trajectory_reproduced"] is False
+    assert result["replay"]["readback"]["old_holdout_loss_after_restart"] == pytest.approx(
+        result["replay"]["with_replay_loss_after"], rel=1e-9, abs=1e-12)
+    assert (tmp_path / "android_control_sim" / "android_replay_trained_shadow_jepa.npz").exists()
+    assert result["replay"]["both_models_changed_numeric_weights"]
     assert result["replay"]["old_disjoint_holdout_rows"] >= 4
     assert result["replay"]["replayed_prior_rows"] >= 4
     assert all(math.isfinite(result["replay"][key]) for key in (
