@@ -180,6 +180,39 @@ def _utf8_slice(output_file, committed_bytes, cursor, max_bytes):
     return output, cursor + len(raw)
 
 
+def _iter_utf8_chunks(output_file, expected, chunk_bytes):
+    """Emit committed UTF-8 snapshots with bounded memory.
+
+    The caller verifies the full committed SHA-256 while holding the per-job
+    lock. This shared kernel never opens arbitrary files or generates text.
+    """
+    if type(chunk_bytes) is not int or not 4 <= chunk_bytes <= 65536:
+        raise ValueError("chunk bytes must be 4..65536")
+    if not expected:
+        return
+    with output_file.open("rb") as f:
+        pending = b""
+        read_total = 0
+        while read_total < expected:
+            block = f.read(min(chunk_bytes, expected - read_total))
+            if not block:
+                raise ValueError("committed output truncated during streaming")
+            read_total += len(block)
+            pending += block
+            try:
+                value_text = pending.decode("utf-8")
+                pending = b""
+            except UnicodeDecodeError as exc:
+                if exc.reason != "unexpected end of data" or exc.end != len(pending):
+                    raise ValueError("invalid committed UTF-8 during streaming") from exc
+                value_text = pending[:exc.start].decode("utf-8")
+                pending = pending[exc.start:]
+            if value_text:
+                yield value_text
+        if pending:
+            raise ValueError("trailing invalid UTF-8 in committed output")
+
+
 class ProceduralBatch:
     """Local, reviewable, bounded and resumable compiled text batch executor."""
 
@@ -501,36 +534,13 @@ class ProceduralBatch:
             raise FileNotFoundError("run procedure before reading its output")
         _, output_file, state = self._load_or_start(plan, count, value)
         self._verify_prefix(output_file, state)
-        expected = state["bytes"]
-        if not expected:
-            return
-        with output_file.open("rb") as f:
-            pending = b""
-            read_total = 0
-            while read_total < expected:
-                block = f.read(min(chunk_bytes, expected - read_total))
-                if not block:
-                    raise ValueError("committed output truncated during streaming")
-                read_total += len(block)
-                pending += block
-                try:
-                    value_text = pending.decode("utf-8")
-                    pending = b""
-                except UnicodeDecodeError as exc:
-                    if exc.reason != "unexpected end of data" or exc.end != len(pending):
-                        raise ValueError("invalid committed UTF-8 during streaming") from exc
-                    value_text = pending[:exc.start].decode("utf-8")
-                    pending = pending[exc.start:]
-                if value_text:
-                    # A long-lived consumer may pause between chunks while
-                    # the originating chat source is deleted. Never stream
-                    # another chunk from a learned habit after revocation.
-                    # Manual explicitly authored plans incur zero DB reads.
-                    if plan["code"].get("source_evidence"):
-                        self._verify_evidence(plan)
-                    yield value_text
-            if pending:
-                raise ValueError("trailing invalid UTF-8 in committed output")
+        for value_text in _iter_utf8_chunks(output_file, state["bytes"], chunk_bytes):
+            # A long-lived consumer may pause between chunks while
+            # the originating chat source is deleted. Never stream
+            # another chunk after a revocation.
+            if plan["code"].get("source_evidence"):
+                self._verify_evidence(plan)
+            yield value_text
 
     def status(self, name=None):
         if name is not None:
