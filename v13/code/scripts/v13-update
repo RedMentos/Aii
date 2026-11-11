@@ -1,0 +1,6 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Optional one-word CLI fallback for the clickable V13 GitHub updater.
+set -e
+if (( $# == 0 )); then set -- apply; fi
+export PYTHONPATH="$HOME/.v13-agent-source/v13/code"
+exec python -m v13.source_updater "$@"
