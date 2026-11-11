@@ -219,7 +219,7 @@ class GitHub:
 
     def issues(self):
         result = self.request("GET", "/repos/" + self.repository +
-                              "/issues?state=open&sort=created&direction=asc&per_page=100")
+                              "/issues?state=open&sort=created&direction=desc&per_page=30")
         if not isinstance(result, list):
             raise Denied("malformed issue list")
         return result
@@ -289,6 +289,9 @@ def _trusted_status(path):
     p = Path(path)
     if not p.is_file() or p.is_symlink() or p.stat().st_size > MAX_STATUS:
         return {"state": "UNAVAILABLE"}
+    # A status file can survive the V13 process that produced it.
+    if not 0 <= time.time() - p.stat().st_mtime <= 180:
+        return {"state": "STALE_NO_LIVE_PROOF"}
     try:
         data = strict_json(p.read_bytes())
     except (OSError, Denied):
