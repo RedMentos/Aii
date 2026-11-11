@@ -66,3 +66,49 @@ def test_dry_run_never_calls_native(tmp_path):
     assert fake.calls == 0
     assert journal.attempts() == ()
     journal.close()
+
+
+def test_dispatcher_integration_requires_capability_and_verifier(tmp_path):
+    from v13.android_action_audit import build_audited_dispatcher
+    from v13.android_capability_contract import CapabilityRegistry
+
+    class Verifier:
+        def verify(self, req, outcome):
+            return outcome.companion_receipt == "unverified"
+
+    fake = Fake()
+    registry = CapabilityRegistry({Capability.LAUNCH_APP: True})
+    with pytest.raises(ValueError):
+        build_audited_dispatcher(registry, tmp_path / "bad.sqlite", fake, None)
+    dispatcher, journal = build_audited_dispatcher(
+        registry, tmp_path / "audit.sqlite", fake, Verifier()
+    )
+    assert dispatcher.dispatch(Capability.LAUNCH_APP, "com.example", dry_run=True).outcome.status == OutcomeStatus.DRY_RUN
+    assert fake.calls == 0
+    assert journal.attempts() == ()
+    assert dispatcher.dispatch(Capability.LAUNCH_APP, "com.example", dry_run=False).outcome.status == OutcomeStatus.SUCCESS
+    assert fake.calls == 1
+    assert journal.attempts()[0]["state"] == "REPORTED_SUCCESS"
+    registry.stop()
+    with pytest.raises(PermissionError):
+        dispatcher.dispatch(Capability.LAUNCH_APP, "com.example", dry_run=False)
+    journal.close()
+
+
+def test_off_capability_cannot_reach_audited_transport(tmp_path):
+    from v13.android_action_audit import build_audited_dispatcher
+    from v13.android_capability_contract import CapabilityRegistry
+
+    class Verifier:
+        def verify(self, req, outcome):
+            return True
+
+    fake = Fake()
+    dispatcher, journal = build_audited_dispatcher(
+        CapabilityRegistry(), tmp_path / "audit.sqlite", fake, Verifier()
+    )
+    with pytest.raises(PermissionError):
+        dispatcher.dispatch(Capability.LAUNCH_APP, "com.example", dry_run=False)
+    assert fake.calls == 0
+    assert journal.attempts() == ()
+    journal.close()
