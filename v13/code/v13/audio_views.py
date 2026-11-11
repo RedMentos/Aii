@@ -61,7 +61,10 @@ def acoustic_views(percept: dict, *, max_detail: int = 64, gist_bins: int = 8) -
         previous = b
     # B1 retains exact sampled frame measurements, without inventing missing frames.
     step = max(1, (len(frames) + max_detail - 1) // max_detail)
-    detail = [{"start_ms": f["start_ms"], "end_ms": f["end_ms"], "rms": f["rms"]}
+    detail = [{"start_ms": f["start_ms"], "end_ms": f["end_ms"],
+               "rms": f["rms"], "pitch_hz": f["pitch_hz"],
+               "voiced_probability": f["voiced_probability"],
+               "non_speech_probability": f["non_speech_probability"]}
               for f in frames[::step]][:max_detail]
     # B2 is a time-weighted RMS energy envelope, not semantic compression.
     buckets = []
