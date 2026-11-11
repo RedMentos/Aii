@@ -27,7 +27,7 @@ class PinnedStageRuntimeE2E(unittest.TestCase):
             dest = Path(td) / "staged"
             manifest = stager.stage(CODE, dest)
             self.assertEqual(manifest["status"], "SHADOW_REVIEW_ONLY")
-            (dest / "tests").mkdir()
+            (dest / "tests").mkdir(exist_ok=True)
             # Copy existing real Runtime/T8/World tests rather than introducing
             # a second mock implementation of the learning/data path.
             for name in (
