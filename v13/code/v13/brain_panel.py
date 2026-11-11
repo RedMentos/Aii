@@ -70,6 +70,9 @@ def status(r):
             "checks":":doctor und :gates summary; Lernmessung auf echten Gewichten separat."}
 
 def operator_command(r,args):
+    if args==["learning"]:
+        from .brain_learning_receipts import report
+        return report(r)
     if args==["speed"]:
         from .speed_panel import observed_models
         return observed_models(r.store, r.session)
@@ -79,4 +82,4 @@ def operator_command(r,args):
     if args==["map"]:return overview(r)
     if args==["status"]:return status(r)
     if len(args)==2 and args[0]=="explain":return explain(args[1])
-    raise ValueError(":brain [map|status|speed|diagnose [N]|explain <name>]  (ohne Argumente: bisherige Generation) ")
+    raise ValueError(":brain [map|status|learning|speed|diagnose [N]|explain <name>]  (ohne Argumente: bisherige Generation) ")
