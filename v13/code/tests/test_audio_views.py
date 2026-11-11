@@ -46,8 +46,8 @@ class AudioViewsTest(unittest.TestCase):
                 {"start_ms", "end_ms", "rms", "pitch_hz",
                  "voiced_probability", "non_speech_probability"})
             self.assertIsNone(detail["pitch_hz"])
-            self.assertEqual(detail["voiced_probability"], 0.0)
-            self.assertEqual(detail["non_speech_probability"], 0.0)
+            self.assertIsNone(detail["voiced_probability"])
+            self.assertIsNone(detail["non_speech_probability"])
         self.assertEqual(views["authority"], "SHADOW")
         self.assertFalse(views["jef_control"]["semantic_truth_authority"])
 
@@ -91,7 +91,7 @@ class AudioViewsTest(unittest.TestCase):
                                ("pitch_hz", True),
                                ("voiced_probability", float("inf")),
                                ("non_speech_probability", -0.1),
-                               ("non_speech_probability", None)):
+                               ("non_speech_probability", True)):
             with self.subTest(field=field, invalid=invalid):
                 p=dict(self.packet)
                 segments=[dict(x) for x in p["segments"]]
