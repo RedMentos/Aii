@@ -22,6 +22,7 @@ def verify(data, fetch_run):
     if errors:
         return errors
     cache = {}
+    run_owners = {}
     for organ in REQUIRED:
         chain = data["chains"][organ]
         for entry in chain["runs"]:
@@ -30,6 +31,10 @@ def verify(data, fetch_run):
                 errors.append(organ + ": invalid run URL")
                 continue
             run_id = int(match.group(1))
+            owner = run_owners.setdefault(run_id, organ)
+            if owner != organ:
+                errors.append(organ + ": CI run already attributed to " + owner)
+                continue
             if run_id not in cache:
                 try:
                     cache[run_id] = fetch_run(run_id)
