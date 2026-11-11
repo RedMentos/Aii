@@ -32,11 +32,11 @@ def run_goal_replay(home, *, first=0, count=18, seed=17, steps=5):
         raise ValueError("refusing non-synthetic Android goal result")
     world = SimulatedAndroidWorld(home)
     try:
-        replay = replay_ablation(world, seed=seed, steps=steps)
+        replay = replay_ablation(\n            world, seed=seed, steps=steps,\n            checkpoint=world.root / "android_replay_trained_shadow_jepa.npz")
         if (replay["scope"] != "SYNTHETIC_UI_ONLY_NO_T8_SOURCE"
                 or replay["source_ids_disjoint"] is not True
                 or replay["both_models_changed_numeric_weights"] is not True
-                or replay["native_android_executed"] is not False):
+                or replay["native_android_executed"] is not False\n                or replay.get("readback", {}).get("replay_trained_model_reloaded") is not True):
             raise ValueError("invalid replay provenance or fit")
         receipts = world.receipt_count()
         if receipts != goal["action_receipt_count"]:
