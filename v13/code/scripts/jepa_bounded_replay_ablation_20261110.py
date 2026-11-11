@@ -46,20 +46,43 @@ def generate(seed: int, split: int, n: int, domain: str):
 
 
 def verify_disjoint(train, heldout):
-    """Check IDs and actual x/action rows, not just caller-provided partition labels."""
+    """Fail closed on malformed cohorts and shared observations, not just split IDs.
+
+    Input/state-action equality is disallowed across train and evaluation even
+    when caller-controlled IDs or targets differ. No data is normalized or
+    silently dropped; NaN, Inf and shape mismatches invalidate the cohort.
+    """
     def keys(groups):
         ids, rows = [], []
         for part in groups:
-            if len(part['ids']) != len(part['x']):
-                raise ValueError('row identity mismatch')
-            ids.extend(part['ids'])
-            for x, a in zip(part['x'], part['a']):
-                rows.append(hashlib.sha256(np.concatenate((x, a)).astype('<f8').tobytes()).hexdigest())
-        return ids, rows
+            x = np.asarray(part['x'])
+            a = np.asarray(part['a'])
+            y = np.asarray(part['y'])
+            identities = part['ids']
+            n = len(identities)
+            if (n == 0 or x.shape != (n, 4) or a.shape != (n, 2)
+                    or y.shape != (n, 4)):
+                raise ValueError('invalid cohort shape')
+            if not all(np.issubdtype(v.dtype, np.number) for v in (x, a, y)):
+                raise ValueError('non-numeric cohort')
+            if not all(np.all(np.isfinite(v)) for v in (x, a, y)):
+                raise ValueError('nonfinite cohort')
+            if (any(type(identity) is not str or not identity for identity in identities)
+                    or len(set(identities)) != n):
+                raise ValueError('invalid or duplicate cohort identity')
+            ids.extend(identities)
+            for state, action in zip(x, a):
+                row = np.concatenate((state, action)).astype('<f8')
+                # Canonicalize signed zeros, which represent identical inputs.
+                row[row == 0] = 0.0
+                rows.append(hashlib.sha256(row.tobytes()).hexdigest())
+        if len(set(ids)) != len(ids) or len(set(rows)) != len(rows):
+            raise ValueError('duplicate cohort observation')
+        return set(ids), set(rows)
+
     train_ids, train_rows = keys(train)
     held_ids, held_rows = keys(heldout)
-    if (len(set(train_ids)) != len(train_ids) or len(set(held_ids)) != len(held_ids)
-            or set(train_ids) & set(held_ids) or set(train_rows) & set(held_rows)):
+    if train_ids & held_ids or train_rows & held_rows:
         raise ValueError('train/holdout overlap')
 
 
