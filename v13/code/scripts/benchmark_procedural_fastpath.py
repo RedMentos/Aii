@@ -134,15 +134,106 @@ def run_benchmark(rows=100000, batch_rows=32768, chunk_bytes=65536,
         }
 
 
+def run_values_benchmark(rows=100000, batch_rows=32768,
+                         chunk_bytes=65536):
+    """Benchmark distinct imported values, not a repeated constant string."""
+    if type(rows) is not int or not 1 <= rows <= MAX_ROWS:
+        raise ValueError("rows must be 1..1000000")
+    if type(batch_rows) is not int or not 1 <= batch_rows <= MAX_ROWS:
+        raise ValueError("batch rows must be 1..1000000")
+    if type(chunk_bytes) is not int or not 4 <= chunk_bytes <= 65536:
+        raise ValueError("chunk bytes must be 4..65536")
+    from v13.procedural_inputs import ProceduralInputs
+    with tempfile.TemporaryDirectory(prefix="v13-valuebench-") as folder:
+        home = Path(folder)
+        data = home / "values.txt"
+        source_sha = hashlib.sha256()
+        with data.open("wb") as out:
+            for i in range(1, rows + 1):
+                line = ("entry_" + str(i) + "\n").encode("utf-8")
+                source_sha.update(line)
+                out.write(line)
+        bank = ProceduralInputs(home)
+        bank.import_file("values", data, source_sha.hexdigest())
+        plan = bank.batch.propose("valuebench", "task {i}: {value}")
+        bank.batch.activate("valuebench", plan["sha256"])
+        started = time.monotonic()
+        calls = 0
+        while True:
+            result = bank.run("valuebench", "values", max_rows=batch_rows)
+            calls += 1
+            if result["status"] == "DONE":
+                break
+            if not result["rows_this_call"] or calls > rows + 2:
+                raise RuntimeError("value benchmark stalled")
+        write_elapsed = max(time.monotonic() - started, 1e-9)
+        started = time.monotonic()
+        output_sha = hashlib.sha256()
+        total_bytes = 0
+        line_count = 0
+        chunks = 0
+        for chunk in bank.iter_output("valuebench", "values",
+                                      chunk_bytes=chunk_bytes):
+            encoded = chunk.encode("utf-8")
+            output_sha.update(encoded)
+            total_bytes += len(encoded)
+            line_count += chunk.count("\n")
+            chunks += 1
+        stream_elapsed = max(time.monotonic() - started, 1e-9)
+        if (line_count != rows or total_bytes != result["bytes"]
+                or output_sha.hexdigest() != result["sha256"]
+                or result["model_calls"] != 0):
+            raise ValueError("imported-value benchmark output integrity mismatch")
+        return {
+            "revision": REVISION,
+            "evidence_level": "LOCAL_HOST_SYNTHETIC_PYTHON",
+            "environment": {
+                "system": platform.system(),
+                "machine": platform.machine(),
+                "python": platform.python_version(),
+                "cpu_count": os.cpu_count(),
+                "peak_process_rss_bytes": _peak_rss_bytes(),
+                "is_redmi_measurement": False,
+            },
+            "fixture": {
+                "kind": "SYNTHETIC_IMPORTED_VALUES",
+                "input_sha256": source_sha.hexdigest(),
+                "rows": rows, "bytes": total_bytes,
+                "sha256": result["sha256"], "model_calls": 0,
+            },
+            "writer": {
+                "elapsed_seconds": round(write_elapsed, 6),
+                "calls": calls, "batch_rows": batch_rows,
+                "rows_per_second": round(rows / write_elapsed, 1),
+                "bytes_per_second": round(total_bytes / write_elapsed, 1),
+            },
+            "stream": {
+                "elapsed_seconds": round(stream_elapsed, 6),
+                "chunks": chunks, "requested_chunk_bytes": chunk_bytes,
+                "bytes_per_second": round(total_bytes / stream_elapsed, 1),
+                "verified_same_sha256": True,
+            },
+            "claim_limit": (
+                "This is a source-pinned synthetic line-transform benchmark, "
+                "NOT general reasoning, native GGUF model tokens/sec, "
+                "or independently verified Redmi performance."
+            ),
+        }
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--rows", type=int, default=100000)
+    parser.add_argument("--mode", choices=("repeat", "values"), default="repeat")
     parser.add_argument("--batch-rows", type=int, default=32768)
     parser.add_argument("--chunk-bytes", type=int, default=65536)
     parser.add_argument("--report", type=Path, default=None)
     args = parser.parse_args(argv)
-    report = run_benchmark(rows=args.rows, batch_rows=args.batch_rows,
-                           chunk_bytes=args.chunk_bytes)
+    report = (run_values_benchmark(rows=args.rows, batch_rows=args.batch_rows,
+                                   chunk_bytes=args.chunk_bytes)
+              if args.mode == "values" else
+              run_benchmark(rows=args.rows, batch_rows=args.batch_rows,
+                            chunk_bytes=args.chunk_bytes))
     data = (json.dumps(report, sort_keys=True, ensure_ascii=False,
                        indent=2) + "\n").encode("utf-8")
     if args.report is not None:
