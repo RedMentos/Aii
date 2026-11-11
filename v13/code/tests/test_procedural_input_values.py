@@ -184,7 +184,7 @@ def test_imported_unicode_cursor_returns_only_verified_complete_utf8(tmp_path):
     assert cursor == complete["bytes"]
     assert "".join(ProceduralInputs(tmp_path/"brain").iter_output(
         "dynamic", "unicode", chunk_bytes=5)) == expected
-    for opt in ("--cursor=-1", "--cursor=1", "--bytes=2", "--bytes=65537"):
+    for opt in ("--cursor=-1", "--cursor=9", "--bytes=2", "--bytes=65537"):
         with pytest.raises(ValueError):
             op.run(f":fastbatch input read dynamic unicode {opt}")
 
