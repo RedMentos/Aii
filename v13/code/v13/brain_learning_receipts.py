@@ -32,6 +32,8 @@ def _counter(value):
 
 
 def _read_manifest(value):
+    if type(value) is not str or len(value) > 16384:
+        return {}
     try:
         result = json.loads(value)
         return result if type(result) is dict else {}
@@ -56,7 +58,7 @@ def _weight_status(store):
         states[status] += 1
         manifest = _read_manifest(row.get("manifest"))
         role = manifest.get("role")
-        if role not in roles:
+        if type(role) is not str or role not in roles:
             # This field is informative only when a canonical role was
             # explicitly recorded, never inferred from a freeform objective.
             continue
