@@ -27,8 +27,19 @@ class ReconcileTests(unittest.TestCase):
         def fetch(i):
             calls.append(i)
             return run()
-        self.assertEqual(verify(manifest(), fetch), [])
+        self.assertTrue(any("already attributed" in e for e in verify(manifest(), fetch)))
         self.assertEqual(calls, [123])
+
+    def test_distinct_run_per_organ_succeeds(self):
+        data = manifest()
+        for offset, organ in enumerate(("core", "jepa", "qa", "perception")):
+            data["chains"][organ]["runs"][0]["url"] = URL.replace("/123", "/" + str(123 + offset))
+        def fetch(run_id):
+            item = run()
+            item["id"] = run_id
+            item["html_url"] = URL.replace("/123", "/" + str(run_id))
+            return item
+        self.assertEqual(verify(data, fetch), [])
 
     def test_forged_and_stale_runs_fail_closed(self):
         for field, value in (("id", 124), ("head_sha", "b" * 40),
