@@ -80,6 +80,29 @@ def summary():
     """No human text, raw logs, filenames, paths, prompts or token values."""
     p = DATA / "exports/native-probe.json"
     out = {"schema": "v13.phone.diagnostic/1", "native_probe": "NO_PROBE", "roles": {}}
+    # These fields intentionally reveal no user prompts, file paths, raw
+    # tracebacks, shell history, or arbitrary Termux process information.
+    ui_pid = PRIVATE / "ui.pid"
+    out["dashboard_process"] = "UNKNOWN"
+    if ui_pid.is_file() and not ui_pid.is_symlink() and ui_pid.stat().st_size <= 20:
+        try:
+            pid = int(ui_pid.read_text().strip())
+            if 1 <= pid < 10**8:
+                raw = (Path("/proc") / str(pid) / "cmdline").read_bytes()[:512]
+                out["dashboard_process"] = ("RUNNING" if b"v13.mobile_dashboard" in raw else "NOT_VERIFIED")
+        except (OSError, ValueError, PermissionError):
+            out["dashboard_process"] = "NOT_VERIFIED"
+    logdir = PRIVATE / "console-logs"
+    if logdir.is_dir() and not logdir.is_symlink():
+        recent = sorted(logdir.glob("v13-session-*.log"), reverse=True)[:8]
+        out["managed_session_count"] = len([x for x in recent if x.is_file() and not x.is_symlink()])
+        if recent and recent[0].is_file() and not recent[0].is_symlink():
+            tail = safe_text(bounded_tail(recent[0], 512))
+            matches = re.findall(r"\[V13 exited with code (-?\d+)\]", tail)
+            if matches:
+                out["last_session_exit_code"] = int(matches[-1])
+            else:
+                out["last_session_exit_code"] = "UNVERIFIED"
     if p.is_symlink() or not p.is_file() or p.stat().st_size > 262144:
         return out
     try:
