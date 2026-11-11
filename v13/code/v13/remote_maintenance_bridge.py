@@ -730,6 +730,8 @@ def cli(argv=None):
     send.add_argument("--patch-id")
     send.add_argument("--key-env", default="V13_AGENT_KEY")
     send.add_argument("--token-env", default="V13_RELAY_TOKEN")
+    keygen = sub.add_parser("keygen", help="generate a private signing key; print public key only")
+    keygen.add_argument("--out", required=True)
     pub = sub.add_parser("publish", help="private Ed25519-signed source patch bundle")
     pub.add_argument("--repo", required=True)
     pub.add_argument("--source-repo", default="RedMentos/Aii")
@@ -744,6 +746,26 @@ def cli(argv=None):
     read.add_argument("--issue", type=int, required=True)
     read.add_argument("--token-env", default="V13_RELAY_TOKEN")
     args = parser.parse_args(argv)
+    if args.mode == "keygen":
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+        private = Ed25519PrivateKey.generate()
+        raw = private.private_bytes(serialization.Encoding.Raw,
+                                    serialization.PrivateFormat.Raw,
+                                    serialization.NoEncryption())
+        path = Path(args.out)
+        if path.is_symlink():
+            raise Denied("refuse to write private signing key through symlink")
+        fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "wb") as fp:
+            fp.write(raw)
+            fp.flush()
+            os.fsync(fp.fileno())
+        public = private.public_key().public_bytes(serialization.Encoding.Raw,
+                                                  serialization.PublicFormat.Raw)
+        print(json.dumps({"private_key_written": str(path),
+                          "public_key_b64": base64.b64encode(public).decode()}))
+        return
     if args.mode in ("send", "read", "publish"):
         client = GitHub(os.environ.get(args.token_env), args.repo)
         client.check_private()
