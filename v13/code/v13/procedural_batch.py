@@ -146,6 +146,40 @@ def _render(parts, index, value):
                    for a, b in parts) + "\n"
 
 
+def _utf8_slice(output_file, committed_bytes, cursor, max_bytes):
+    """Read only UTF-8-complete code points from a verified committed prefix.
+
+    Callers must hold the unique job lock and verify SHA-256 before calling.
+    """
+    if type(cursor) is not int or not 0 <= cursor <= committed_bytes:
+        raise ValueError("cursor beyond committed output")
+    if type(max_bytes) is not int or not 4 <= max_bytes <= 65536:
+        raise ValueError("read bytes must be 4..65536")
+    if not output_file.exists():
+        raw = b""
+    else:
+        with output_file.open("rb") as f:
+            f.seek(cursor)
+            first = f.read(1)
+            if first and first[0] & 0xC0 == 0x80:
+                raise ValueError("cursor splits a UTF-8 code point")
+            f.seek(cursor)
+            raw = f.read(min(max_bytes, committed_bytes - cursor))
+    if raw:
+        try:
+            output = raw.decode("utf-8")
+        except UnicodeDecodeError as err:
+            if err.reason != "unexpected end of data" or err.end != len(raw):
+                raise ValueError("corrupt committed UTF-8 output") from err
+            raw = raw[:err.start]
+            if not raw:
+                raise ValueError("read window cannot hold one UTF-8 code point")
+            output = raw.decode("utf-8")
+    else:
+        output = ""
+    return output, cursor + len(raw)
+
+
 class ProceduralBatch:
     """Local, reviewable, bounded and resumable compiled text batch executor."""
 
@@ -430,31 +464,7 @@ class ProceduralBatch:
             raise FileNotFoundError("run procedure before reading its output")
         _, output_file, state = self._load_or_start(plan, count, value)
         self._verify_prefix(output_file, state)
-        if cursor > state["bytes"]:
-            raise ValueError("cursor beyond committed output")
-        if not output_file.exists():
-            raw = b""
-        else:
-            with output_file.open("rb") as f:
-                f.seek(cursor)
-                first = f.read(1)
-                if first and first[0] & 0xC0 == 0x80:
-                    raise ValueError("cursor splits a UTF-8 code point")
-                f.seek(cursor)
-                raw = f.read(min(max_bytes, state["bytes"] - cursor))
-        if raw:
-            try:
-                output = raw.decode("utf-8")
-            except UnicodeDecodeError as err:
-                if err.reason != "unexpected end of data" or err.end != len(raw):
-                    raise ValueError("corrupt committed UTF-8 output") from err
-                raw = raw[:err.start]
-                if not raw:
-                    raise ValueError("read window cannot hold one UTF-8 code point")
-                output = raw.decode("utf-8")
-        else:
-            output = ""
-        next_cursor = cursor + len(raw)
+        output, next_cursor = _utf8_slice(output_file, state["bytes"], cursor, max_bytes)
         return {
             "status": state["status"], "job_id": jid, "name": name,
             "cursor_bytes": cursor, "next_cursor_bytes": next_cursor,
