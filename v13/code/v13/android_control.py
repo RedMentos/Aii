@@ -136,6 +136,8 @@ class AndroidControlBroker:
 
     def _validate_issued_envelope(self, envelope):
         """Rebind all envelope fields to the approved action digest before audit."""
+        if self.stopped:
+            raise ControlDenied("operator stopped before receipt")
         if not isinstance(envelope, dict) or envelope.get("status") != "DRY_RUN_ONLY":
             raise ControlDenied("unissued simulation envelope")
         action_id, digest = envelope.get("action_id"), envelope.get("digest")
