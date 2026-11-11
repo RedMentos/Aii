@@ -47,7 +47,13 @@ class AndroidOperatorLoop:
     def approved_simulation(self, action_id: str, *, local_confirmation: bool = False) -> ActionOutcome:
         self.broker.approve(action_id, confirmed_by_local_ui=local_confirmation)
         envelope = self.broker.execute(action_id, dry_run=True)
-        return self.companion.dispatch(envelope)
+        try:
+            outcome = self.companion.dispatch(envelope)
+        except Exception:
+            self.broker.record_simulated_failure(envelope)
+            raise
+        self.broker.record_simulated_outcome(envelope, outcome)
+        return outcome
 
     def run_from_brain(self, capability: str, args: dict) -> ActionOutcome:
         """Brain requests are never self-approved; return a pending state."""

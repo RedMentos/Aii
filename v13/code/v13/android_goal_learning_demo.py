@@ -97,6 +97,23 @@ def run_demo(home, *, first=0, count=18, seed=17, learn=True):
         world.close()
         broker.close()
 
+    # Independently reopen the broker audit. Issuance alone does not prove
+    # completion: only an accepted simulated companion outcome does.
+    audit = AndroidControlBroker(home / "android_demo_broker.sqlite")
+    try:
+        events = audit.events()
+        issued = [(action_id, digest) for action_id, event, digest, _ in events
+                  if event == "dry_run"]
+        accepted = [(action_id, digest) for action_id, event, digest, _ in events
+                    if event == "simulated_outcome"]
+        if (len(issued) != action_count or len(accepted) != action_count
+                or len(set(accepted)) != action_count
+                or set(issued) != set(accepted)):
+            raise ValueError("persisted operator audit differs from applied simulator receipts")
+        audited_outcome_count = len(accepted)
+    finally:
+        audit.close()
+
     # Fresh-process-equivalent readback from the durable simulation database.
     restored = SimulatedAndroidWorld(home)
     try:
@@ -122,6 +139,8 @@ def run_demo(home, *, first=0, count=18, seed=17, learn=True):
             "tasks_completed_this_run": len(completed),
             "total_persisted_notes": len(state["notes"]),
             "action_receipt_count": action_count,
+            "audited_simulated_outcome_count": audited_outcome_count,
+            "outcome_audit_restarted_and_matched": True,
             "restart_state_digest_equal": True,
             "learning": learning,
             "native_android_executed": False,
