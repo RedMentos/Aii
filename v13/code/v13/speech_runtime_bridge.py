@@ -47,8 +47,15 @@ class SpeechRuntimeBridge:
             receipt.text.encode("utf-8")
         ).hexdigest() != receipt.output_sha256:
             raise SpeechIntentError("output digest mismatch")
-        # Source is stable and provenance-shaped; queue does not execute speech.
-        return self.queue.submit(receipt.text, source_id="c3:" + receipt.event_id)
+        # A replayed completed turn must not enqueue a second spoken message.
+        # Serialize the existence check and insertion under the queue lock.
+        source_id = "c3:" + receipt.event_id
+        with self.queue.lock:
+            if self.queue.db.execute(
+                "SELECT 1 FROM speech_intents WHERE source_id=? LIMIT 1", (source_id,)
+            ).fetchone():
+                raise SpeechIntentError("C3 response already queued")
+            return self.queue.submit(receipt.text, source_id=source_id)
 
     def stop(self):
         self.enabled = False
