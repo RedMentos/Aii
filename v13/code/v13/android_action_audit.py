@@ -85,3 +85,17 @@ class DurableCompanionTransport:
     def close(self) -> None:
         with self._lock:
             self._db.close()
+
+
+def build_audited_dispatcher(registry, path: str | Path, transport: CompanionTransport, verifier):
+    """Opt-in wiring: dispatcher still requires independent receipt verification.
+
+    Returns (dispatcher, journal); owner must close journal during shutdown.
+    No native transport is created here, and no Android capability is enabled.
+    """
+    from .android_companion_dispatch import AndroidDispatcher
+
+    if verifier is None:
+        raise ValueError("authenticated native receipt verifier required")
+    journal = DurableCompanionTransport(path, transport)
+    return AndroidDispatcher(registry, transport=journal, verifier=verifier), journal
