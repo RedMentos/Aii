@@ -26,6 +26,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :bodyview [status|state on|off|b4 off|shadow|on] (B1-Detailfenster, B5-Zustand als Quelle, B4 über Sessions)
 :skilllive [status] (Skills im Turn: automatischer Pfad, Parität, Gewohnheiten)
 :fastbatch discover NAME [--history=N] | propose NAME 'Vorlage {i}: {value}' | activate NAME SHA | run NAME COUNT [VALUE] [--rows=N] | read NAME COUNT [VALUE] [--cursor=OFFSET] [--bytes=SIZE] | peek NAME COUNT [VALUE] | status [NAME] | retire NAME (fertige Antwortmuster erkennen, erst nach SHA-Freigabe superschnell ausgeben)
+:speed [models|fastbatch [ROWS]] (C3/B1/B2-Laufzeitmeldungen oder expliziter lokaler No-LLM-Tempostest; keine Modellfreigabe)
 :turnflow [status|measure|active|off|feedback EVENT-ID useful|wasteful] (JEF: Denk-/Sprechüberlappung messen und nach Nutzerfeedback zeitlich steuern)
 :latewatch [status|off|shadow|active] (spätes Body-Offer während der Ausgabe; Standard shadow)
 :feedback prediction observe --learn (beobachtete native Zustände dieser Quelle)
@@ -253,6 +254,9 @@ class Operator:
             from . import resource_modes  # §97.2 GREEN/YELLOW/ORANGE/RED
             if args:return dumps(resource_modes.command(r,args))
             snap=r.resources();r.guard.update(snap);return dumps(snap|{'resource_mode':resource_modes.report(r)})
+        if cmd=='speed':
+            from .speed_panel import operator_command as speed_command
+            return dumps(speed_command(r,args))
         if cmd=='brain':
             if not args:return dumps(s.generation())  # legacy output unchanged
             from .brain_panel import operator_command as brain_command
