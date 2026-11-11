@@ -547,6 +547,8 @@ def dashboard_html(token, controls, message="", csrf=""):
     page = template.read_text(encoding="utf-8")
     replacement = {
         "@@STATE@@":html.escape(state),
+        "@@FLASH_CLASS@@":"visible" if message else "",
+        "@@FLASH@@":html.escape(message),
         "@@TOKEN@@":html.escape(token),
         "@@PREFIX@@":html.escape(prefix),
         "@@ACTION@@":html.escape(action,quote=True),
