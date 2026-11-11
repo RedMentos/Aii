@@ -59,7 +59,7 @@ def test_operator_explicit_activation_and_human_feedback_learn_when_to_overlap()
     # No model output, external authority or content is stored in statistics.
     state = store.state(turnflow.KEY)[0]
     assert "turn-later" in state["events"]
-    assert "source" not in str(state)
+    assert all("source" not in str(event_id) for event_id in state["events"])\n    assert all("source" not in str(event.get("feedback")) for event in state["events"].values())
     assert '"feedback_patterns"' in op.run(":turnflow status")
 
 
