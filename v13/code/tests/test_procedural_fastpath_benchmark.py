@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.benchmark_procedural_fastpath import run_benchmark
+from scripts.benchmark_procedural_fastpath import run_benchmark, run_values_benchmark
 
 
 def test_host_synthetic_benchmark_correct_rows_and_snapshot_sha():
@@ -55,3 +55,23 @@ def test_cli_optional_report_is_persisted_without_leaking_path(tmp_path):
     )
     assert second.returncode != 0
     assert json.loads(out.read_text())["fixture"]["rows"] == 512
+
+
+
+def test_distinct_value_benchmark_is_not_a_constant_repeat():
+    proof = run_values_benchmark(rows=3000, batch_rows=256, chunk_bytes=11)
+    assert proof["fixture"]["kind"] == "SYNTHETIC_IMPORTED_VALUES"
+    assert proof["fixture"]["rows"] == 3000
+    assert proof["fixture"]["model_calls"] == 0
+    assert len(proof["fixture"]["input_sha256"]) == 64
+    assert proof["stream"]["verified_same_sha256"] is True
+    assert proof["writer"]["rows_per_second"] > 0
+    assert proof["environment"]["is_redmi_measurement"] is False
+    assert "NOT general reasoning" in proof["claim_limit"]
+
+
+def test_distinct_value_benchmark_rejects_invalid_limits():
+    for kwargs in ({"rows": 0}, {"rows": True}, {"rows": 1000001},
+                   {"batch_rows": -1}, {"chunk_bytes": 0}):
+        with pytest.raises(ValueError):
+            run_values_benchmark(**kwargs)
