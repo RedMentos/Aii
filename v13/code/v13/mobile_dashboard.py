@@ -440,7 +440,7 @@ pre{{white-space:pre-wrap;overflow-wrap:anywhere;background:#0c1017;padding:12px
 small{{color:#b0bdcf}}.message{{color:#b8e4c4}}label{{display:block;margin-top:12px}}
 </style></head><body><main>
 <h1>V13 · Redmi Kontrollzentrum</h1>
-<section><b>V13-Chat: {html.escape(state)}</b>
+<section><b>V13-Chat: <span id="v13-live-state">{html.escape(state)}</span></b>
 <p><small>Letzte Aktion: {html.escape(last)} · Probe: {html.escape(current["native_probe"])} · {roles or "Noch keine Rollenmessung"}</small></p>{msg}
 <div class="actions">{top_buttons}</div></section>
 <section><h2>Mit V13 schreiben</h2>
@@ -475,9 +475,35 @@ small{{color:#b0bdcf}}.message{{color:#b8e4c4}}label{{display:block;margin-top:1
 {_button(action,"auto_disable" if auto_enabled else "auto_enable","Auto","Auto-Updates AUS" if auto_enabled else "Auto-Updates EIN","secondary")}
 </div><small>Automatik: {'an' if auto_enabled else 'aus'}, alle 15 Minuten bei laufendem Kontrollzentrum. Nur geprüfte GitHub-Commits; kein Update einer laufenden V13-KI. Modelle/Chats bleiben getrennt.</small></section>
 <section><h2>Aufgezeichnete V13-Ausgabe</h2><a href="/t/{token}/">↻ Ausgabe aktualisieren</a>
-<pre>{html.escape(output[-MAX_TAIL:] or "Noch keine Ausgabe. V13 Chat starten.")}</pre></section>
+<pre id="v13-live-output">{html.escape(output[-MAX_TAIL:] or "Noch keine Ausgabe. V13 Chat starten.")}</pre></section>
 <section><small>Lokaler Browser: 127.0.0.1. Keine fremde Termux-Shell, keine automatische Remote-Codeausführung, keine Kamera-/Android-Bedienung.</small></section>
-</main></body></html>"""
+</main>
+<script>
+(function(){{
+  const output = document.getElementById('v13-live-output');
+  const state = document.getElementById('v13-live-state');
+  let previous = output.textContent;
+  let inFlight = false;
+  async function refresh(){{
+    if (document.hidden || inFlight) return;
+    inFlight = true;
+    try{{
+      const response = await fetch('/t/{token}/state', {{cache:'no-store', credentials:'same-origin'}});
+      if(!response.ok) return;
+      const data = await response.json();
+      if(typeof data.output === 'string' && data.output !== previous){{
+        const atBottom = output.scrollHeight - output.scrollTop - output.clientHeight < 80;
+        output.textContent = data.output;
+        previous = data.output;
+        if(atBottom) output.scrollTop = output.scrollHeight;
+      }}
+      if(typeof data.state === 'string') state.textContent = data.state;
+    }} catch (_) {{}} finally {{inFlight = false;}}
+  }}
+  setInterval(refresh, 1500);
+}})();
+</script>
+</body></html>"""
 
 def serve(*, open_browser=True):
     controls = RuntimeControls()
@@ -495,7 +521,7 @@ def serve(*, open_browser=True):
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, fmt, *args):
             pass  # never log private URL or prompts
-        def _headers(self, code=200, *, location=None):
+        def _headers(self, code=200, *, location=None, mime="text/html; charset=utf-8"):
             self.send_response(code)
             self.send_header("Cache-Control", "no-store")
             self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'")
@@ -504,9 +530,18 @@ def serve(*, open_browser=True):
             if location:
                 self.send_header("Location", location)
             else:
-                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Type", mime)
             self.end_headers()
         def do_GET(self):
+            if self.path == prefix + "/state":
+                running, mode, exitcode, last = controls.state()
+                state = "läuft" if running else "bereit" if exitcode is None else "beendet (" + str(exitcode) + ")"
+                payload = {"state": state, "output": controls.output()[-50000:],
+                           "last_action": last, "running": running}
+                data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+                self._headers(mime="application/json; charset=utf-8")
+                self.wfile.write(data)
+                return
             if self.path != prefix + "/":
                 self._headers(404)
                 return
