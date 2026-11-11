@@ -5,6 +5,7 @@ intent labels, permission receipts, or model-produced semantic claims.
 """
 from __future__ import annotations
 from math import isfinite
+from .audio_salience import acoustic_salience
 
 def acoustic_views(percept: dict, *, max_detail: int = 64, gist_bins: int = 8) -> dict:
     if type(max_detail) is not int or not 1 <= max_detail <= 256:
@@ -80,6 +81,7 @@ def acoustic_views(percept: dict, *, max_detail: int = 64, gist_bins: int = 8) -
                         "covered_ms":int(coverage)})
     return {"source_ref":ref,"modality":"audio_acoustic","authority":"SHADOW",
             "b1_detail":detail,"b2_gist":buckets,
+            "a4_salience":acoustic_salience(frames),
             "jef_control":{"duration_ms":duration,"frame_count":len(frames),
                            "provisional":False,"asr_available":False,
                            "semantic_truth_authority":False,
