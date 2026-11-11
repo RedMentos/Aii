@@ -21,6 +21,7 @@ import threading
 import time
 from urllib.parse import parse_qs, urlparse
 import zipfile
+from .managed_console import ManagedConsole
 
 PRIVATE = Path.home() / ".v13-private"
 DATA = Path.home() / "v13"
@@ -28,6 +29,28 @@ MAX_TAIL = 100_000
 BUNDLE_LIMIT = 200_000
 PORT = 0  # OS-selected local port; no remote interface
 AUTO_FILE = PRIVATE / "auto-source-update.enabled"
+REMOTE_LOG_FLAG = PRIVATE / "share-v13-log-summary.enabled"
+KNOBS_UI = {
+ "threads": (1, 8, 1, "CPU-Threads"),
+ "answer_tokens": (16, 512, 16, "Antwort-Tokens"),
+ "deadline_seconds": (5, 300, 5, "Antwort-Zeitlimit (Sek.)"),
+ "temperature": (0, 1, 0.05, "Temperatur"),
+ "body_residency_mb": (0, 2400, 100, "Modell-RAM-Budget (MB)"),
+}
+QUICK_COMMANDS = {
+ ":help", ":status", ":doctor", ":doctor full", ":resources", ":models", ":brain map", ":brain status",
+ ":world", ":worldmodel status", ":self", ":self model", ":memory", ":episodes status", ":learning record",
+ ":learning shadow", ":learning commit", ":requests", ":learning", ":knobs", ":plasticity", ":objectives",
+ ":components", ":jef status", ":sleep status", ":sleep digest", ":replay status", ":backup", ":notaus",
+ ":gates all", ":gates summary", ":route auto", ":route simple", ":route detail", ":route gist", ":route both",
+ ":observers off", ":observers background", ":probe", ":probe jef-modes", ":probe step12", ":probe body-state",
+ ":scheduler", ":age", ":growth status", ":teacher compare", ":workspace status", ":bodyview status",
+ ":neuromod status", ":homeostasis status", ":attention status", ":callosum status", ":ctxos status",
+ ":fabric report", ":live", ":jefsource", ":register summary", ":permissions", ":ledger", ":logs",
+ ":task", ":ratings", ":context", ":archive status", ":source", ":export dataset", ":focal",
+ ":notaus status", ":stillstand status", ":organ list", ":organ status", ":verbot liste", ":regeln",
+}
+
 ALLOWED = {"doctor": ("doctor",), "probe": ("probe",), "ask": ("ask",)}
 SECRET = re.compile(r"(?i)(github_pat_[a-z0-9_]+|gh[pousr]_[a-z0-9_]+|(?:token|password|authorization|api.?key)\s*[:=]\s*\S+)")
 TERM = re.compile(r"\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1b\\))")
@@ -79,6 +102,57 @@ def summary():
         return out
 
 
+def remote_log_sharing_enabled():
+    if REMOTE_LOG_FLAG.is_symlink():
+        return False
+    try:
+        return REMOTE_LOG_FLAG.is_file() and REMOTE_LOG_FLAG.read_text().strip() == "yes"
+    except OSError:
+        return False
+
+
+def set_remote_log_sharing(enabled):
+    PRIVATE.mkdir(mode=0o700, parents=True, exist_ok=True)
+    if PRIVATE.is_symlink() or PRIVATE.stat().st_mode & 0o077 or REMOTE_LOG_FLAG.is_symlink():
+        raise RuntimeError("Unsichere Log-Freigabe")
+    if enabled:
+        if REMOTE_LOG_FLAG.exists():
+            REMOTE_LOG_FLAG.unlink()
+        with REMOTE_LOG_FLAG.open("x") as f:
+            f.write("yes\\n")
+            f.flush()
+            os.fsync(f.fileno())
+        REMOTE_LOG_FLAG.chmod(0o600)
+    else:
+        REMOTE_LOG_FLAG.unlink(missing_ok=True)
+
+
+def remote_console_excerpt():
+    """Opt-in: recent technical console output, not user prompts or arbitrary Termux text."""
+    if not remote_log_sharing_enabled():
+        return {"state": "USER_NOT_OPTED_IN"}
+    paths = sorted((PRIVATE / "console-logs").glob("v13-session-*.log"), reverse=True)
+    if not paths:
+        return {"state": "NO_MANAGED_SESSION"}
+    text = safe_text(bounded_tail(paths[0], 16384))
+    # Never forward entered questions, model responses or arbitrary prose to GitHub.
+    # Supportive diagnostic lines only; line classifier is intentionally strict.
+    ok = re.compile(r"(?i)^(?:\\[V13 Fehler\\]|\\[Fehler\\]|\\[V13 exited with code|\\[console capture error|(?:Traceback|File |  File |[A-Za-z_][A-Za-z0-9_]*(?:Error|Exception):))")
+    lines = []
+    for line in text.splitlines():
+        if ok.search(line):
+            # Avoid file paths and quoted context; send only error type + exit code.
+            kinds = re.findall(r"\\b(?:RuntimeError|ValueError|TypeError|MemoryError|TimeoutError|OSError|AttributeError|FileNotFoundError|ImportError|PermissionError|KeyboardInterrupt|SystemExit|CalledProcessError)\\b", line)
+            if kinds:
+                lines.append(kinds[0])
+            elif "[V13 exited with code " in line:
+                m = re.search(r"code (-?\\d+)", line)
+                if m: lines.append("EXIT_" + m.group(1))
+            elif "Traceback" in line:
+                lines.append("TRACEBACK_PRESENT")
+    return {"state": "OPTED_IN_REDACTED", "lines": lines[-40:], "truncated": len(lines) > 40}
+
+
 def diagnostics_zip(destination=None):
     """Local user-initiated ZIP. May contain chat text: never upload automatically."""
     outdir = Path.home() / "storage/downloads"
@@ -88,7 +162,10 @@ def diagnostics_zip(destination=None):
         destination = outdir / ("V13-Diagnose-" + datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + secrets.token_hex(3) + ".zip")
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
+    recent = sorted((PRIVATE / "console-logs").glob("v13-session-*.log"), reverse=True)
     allowlisted = (
+        ("managed-v13-last.log", recent[0] if recent else PRIVATE / "absent.log"),
+        ("managed-v13-previous.log", recent[1] if len(recent) > 1 else PRIVATE / "absent.log"),
         ("dashboard-last-run.log", PRIVATE / "v13-ui-last.log"),
         ("dashboard-previous-run.log", PRIVATE / "v13-ui-previous.log"),
         ("bridge.log", PRIVATE / "bridge.log"),
@@ -134,61 +211,35 @@ def set_automatic_updates(enabled):
 class RuntimeControls:
     def __init__(self):
         self.lock = threading.Lock()
-        self.process = None
-        self.mode = None
+        self.terminal = ManagedConsole()
         self.last_action = "Keine Aktion"
         self.update_busy = False
         self.update_result = "Noch kein GitHub-Update geprüft"
-        PRIVATE.mkdir(mode=0o700, parents=True, exist_ok=True)
-        os.chmod(PRIVATE, 0o700)
 
     def state(self):
-        with self.lock:
-            proc = self.process
-            running = proc is not None and proc.poll() is None
-            code = None if proc is None else proc.poll()
-            return running, self.mode, code, self.last_action
+        state = self.terminal.state()
+        return state["running"], "V13-Chat", state["exit_code"], self.last_action
 
     def launch(self, mode, question=""):
         if mode not in ALLOWED:
-            raise ValueError("unknown fixed action")
+            raise ValueError("unknown V13 action")
+        self.terminal.start()
         if mode == "ask":
-            if not isinstance(question, str) or not 1 <= len(question.strip()) <= 1600:
-                raise ValueError("Please enter a question (up to 1600 characters)")
-            question = question.strip()
-        launcher = DATA / "bin/v13"
-        if launcher.is_symlink() or not launcher.is_file():
-            raise RuntimeError("V13 isn't installed at ~/v13/bin/v13")
-        cmd = [str(launcher), *ALLOWED[mode]]
-        if mode == "ask":
-            cmd.append(question)
+            return self.send(question)
+        return self.send(":" + mode)
+
+    def send(self, line):
+        result = self.terminal.send(line)
         with self.lock:
-            if self.process is not None and self.process.poll() is None:
-                raise RuntimeError("V13 is still processing. Wait or press Stop.")
-            log = PRIVATE / "v13-ui-last.log"
-            previous = PRIVATE / "v13-ui-previous.log"
-            if previous.is_symlink() or log.is_symlink():
-                raise RuntimeError("Unsafe local log symlink")
-            if log.exists():
-                os.replace(log, previous)
-            with log.open("xb") as f:
-                os.chmod(log, 0o600)
-                # Important: no shell, no direct arbitrary terminal / file / remote commands.
-                self.process = subprocess.Popen(
-                    cmd, stdin=subprocess.DEVNULL, stdout=f, stderr=subprocess.STDOUT,
-                    start_new_session=True, cwd=str(Path.home()))
-            self.mode = mode
-            self.last_action = mode
-            return self.process.pid
+            self.last_action = line.split(" ", 1)[0] if line.startswith(":") else "Nachricht"
+        return result
 
     def stop(self):
-        with self.lock:
-            if self.process is None or self.process.poll() is not None:
-                return "Kein von der Oberfläche gestarteter Prozess aktiv."
-            proc = self.process
-            os.killpg(proc.pid, signal.SIGINT)
-            self.last_action = "Stop angefordert"
-            return "Abbruchsignal an V13 gesendet."
+        result = self.terminal.cancel()
+        return result["status"]
+
+    def shutdown(self):
+        return self.send(":shutdown")
 
     def start_update(self, action):
         if action not in ("check", "apply", "auto", "rollback"):
@@ -224,7 +275,7 @@ class RuntimeControls:
             return self.update_result, self.update_busy
 
     def output(self):
-        return safe_text(bounded_tail(PRIVATE / "v13-ui-last.log", MAX_TAIL))
+        return safe_text(self.terminal.output(MAX_TAIL).encode("utf-8"))
 
 
 def dashboard_html(token, controls, message=""):
