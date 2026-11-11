@@ -16,6 +16,9 @@ import hashlib
 import json
 import os
 import re
+import fcntl
+import stat
+from contextlib import contextmanager
 import string
 import tempfile
 import time
@@ -44,6 +47,36 @@ def _sha(obj):
 def _check_path(path: Path):
     if path.is_symlink():
         raise ValueError("symbolic links are not allowed in procedural storage")
+
+
+@contextmanager
+def _job_guard(state_file: Path):
+    """One same-job writer or reader at a time; different jobs stay parallel.
+
+    A second concurrent operation fails promptly rather than blocking a
+    terminal or corrupting the checkpoint after a replay/write crash.
+    POSIX advisory locks are supported by Linux and Android Termux.
+    """
+    lock = state_file.with_suffix(".lock")
+    _check_path(lock)
+    flags = os.O_RDWR | os.O_CREAT
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    fd = os.open(lock, flags, 0o600)
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            raise ValueError("unsafe fastbatch job lock")
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RuntimeError("fastbatch job busy; retry after checkpoint") from exc
+        try:
+            yield
+        finally:
+            fcntl.flock(fd, fcntl.LOCK_UN)
+    finally:
+        os.close(fd)
 
 
 def _save(path: Path, payload):
@@ -295,6 +328,12 @@ class ProceduralBatch:
 
     def run(self, name, count, value="", max_rows=None, max_seconds=MAX_SECONDS_PER_CALL):
         plan = self.plan(name)
+        state_file, _, _ = self._job_files(plan, count, value)
+        with _job_guard(state_file):
+            return self._run_locked(name, count, value, max_rows, max_seconds)
+
+    def _run_locked(self, name, count, value="", max_rows=None, max_seconds=MAX_SECONDS_PER_CALL):
+        plan = self.plan(name)
         if plan["stage"] != "ACTIVE":
             raise PermissionError("compiled plan requires explicit local activation")
         self._verify_evidence(plan)
@@ -345,6 +384,12 @@ class ProceduralBatch:
 
     def preview(self, name, count, value="", max_chars=256):
         plan = self.plan(name)
+        state_file, _, _ = self._job_files(plan, count, value)
+        with _job_guard(state_file):
+            return self._preview_locked(name, count, value, max_chars)
+
+    def _preview_locked(self, name, count, value="", max_chars=256):
+        plan = self.plan(name)
         self._verify_evidence(plan)
         state_file, output_file, state = self._load_or_start(plan, count, value)
         self._verify_prefix(output_file, state)
@@ -358,6 +403,12 @@ class ProceduralBatch:
                 "truncated": state["bytes"] > len(raw)}
 
     def read(self, name, count, value="", cursor=0, max_bytes=16384):
+        plan = self.plan(name)
+        state_file, _, _ = self._job_files(plan, count, value)
+        with _job_guard(state_file):
+            return self._read_locked(name, count, value, cursor, max_bytes)
+
+    def _read_locked(self, name, count, value="", cursor=0, max_bytes=16384):
         """Read a verified UTF-8 slice of *committed* output, not draft bytes.
 
         This is the bounded operator/GUI pull interface. It never runs a
@@ -415,6 +466,12 @@ class ProceduralBatch:
         }
 
     def iter_output(self, name, count, value="", chunk_bytes=16384):
+        plan = self.plan(name)
+        state_file, _, _ = self._job_files(plan, count, value)
+        with _job_guard(state_file):
+            yield from self._iter_output_locked(name, count, value, chunk_bytes)
+
+    def _iter_output_locked(self, name, count, value="", chunk_bytes=16384):
         """Yield all committed output with one initial prefix verification.
 
         The generator cannot execute models or tools. Underlying file bytes
