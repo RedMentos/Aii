@@ -1,12 +1,12 @@
 {
   "schema": "v13-work-package-v1",
-  "observed_utc": "2026-11-11T07:45:00Z",
+  "observed_utc": "2026-11-11T07:48:00Z",
   "owner": "V13 Core/Harness separate review child of #1726",
   "branch": "codex/v13-session-bound-procedure-20261111",
   "base_branch": "codex/v13-fastbatch-stream-output-20261111",
   "base_sha": "b2816f8fcc29b69393f025e8b207264e3dbc164f",
   "pr": 1751,
-  "tested_head": "e96dd1ea016b8ef2bea03521a384901d5a9bcf69",
+  "tested_head": "5bc922148653e09dc303f4bbcb9ca19923735aab",
   "packages": [
     {
       "id": "FASTPATH-SESSION-SOURCE-001",
@@ -49,15 +49,32 @@
         "No unrestricted code, shell, browser or model authority",
         "Only literal pure text parametric plans are shareable"
       ]
+    },
+    {
+      "id": "BRAIN-ARTIFACT-READONLY-004",
+      "consumer": ":brain audit [MiB=1..128]",
+      "description": "Explicit idle-only local SHA inspection of bound active-generation component files; reject symlink/hardlink/outside-home path and noncommitted or mismatched updates; skip files exceeding phone memory/I-O budget; do not equate file hash match with model learning utility or retention",
+      "files": [
+        "v13/code/v13/brain_artifact_audit.py",
+        "v13/code/tests/test_brain_artifact_audit.py",
+        "v13/code/v13/brain_panel.py",
+        "v13/code/v13/operator.py"
+      ],
+      "status": "VERIFIED_REVIEW_ONLY",
+      "limits": [
+        "No native model weight deltas or retention demonstrated",
+        "Active generation manifest may contain no actual committed artifacts",
+        "Idle operator proof only; not automatic background scan"
+      ]
     }
   ],
   "ci": {
-    "run_url": "https://github.com/RedMentos/Aii/actions/runs/42981685106",
-    "head": "e96dd1ea016b8ef2bea03521a384901d5a9bcf69",
+    "run_url": "https://github.com/RedMentos/Aii/actions/runs/42982026079",
+    "head": "5bc922148653e09dc303f4bbcb9ca19923735aab",
     "result": "SUCCESS",
-    "tests": "104 passed",
+    "tests": "116 passed",
     "privacy": "CLEAN",
-    "command": "cd v13/code && python -m pytest -q tests/test_procedural_stream_output.py tests/test_procedural_fastpath_benchmark.py tests/test_procedural_habits.py tests/test_procedural_batch.py tests/test_brain_diagnosis.py tests/test_procedural_job_lock.py tests/test_procedural_input_values.py tests/test_speed_panel.py tests/test_procedural_session_scope.py tests/test_brain_learning_receipts.py tests/test_procedural_shared_habits.py"
+    "command": "cd v13/code && python -m pytest -q tests/test_procedural_stream_output.py tests/test_procedural_fastpath_benchmark.py tests/test_procedural_habits.py tests/test_procedural_batch.py tests/test_brain_diagnosis.py tests/test_procedural_job_lock.py tests/test_procedural_input_values.py tests/test_speed_panel.py tests/test_procedural_session_scope.py tests/test_brain_learning_receipts.py tests/test_procedural_shared_habits.py tests/test_brain_artifact_audit.py"
   },
   "safety_gates": [
     "STEP2 UTILITY_FAIL unchanged",
@@ -82,6 +99,7 @@
     "PR #1751 draft/unmerged with #1726 and #1671 deps"
   ],
   "next_exact_commands": [
+    "Verify active component SHA audit files with pinned independent native GGUF/adapter evidence before any real model-learning claim",
     "Human approval trust boundary: before native Android/PC companion, bind share approval to authenticated local UI instead of accepting caller-supplied origin/YES string",
     "Fetch latest #1751 head/CI/reviews; check current #1716 staged integration source before further edits",
     "cd v13/code && python -m pytest -q tests/test_procedural_session_scope.py tests/test_brain_learning_receipts.py",
