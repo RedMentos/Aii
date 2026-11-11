@@ -149,3 +149,37 @@ def test_stream_decent_throughput_without_ooming_small_window(tmp_path):
     assert count == 80000
     assert max_seen <= 16388  # UTF-8 boundary max overhead, never full file
     assert hasher.hexdigest() == done["sha256"]
+
+
+def test_learned_stream_rechecks_revoked_final_source_between_chunks(tmp_path):
+    """A paused live stream must not keep exposing a revoked learned habit."""
+    from v13.store import Store
+    for folder in ("data", "data/db", "data/blobs"):
+        (tmp_path / folder).mkdir(parents=True, exist_ok=True)
+    store = Store(tmp_path)
+    try:
+        session = store.new_session()
+        event = store.event(session, "Number the outputs")
+        mid = store.message(session, event["event_id"], "assistant",
+                            "".join(f"row {i}: prior\n" for i in range(1, 7)))
+        store.finish_message(mid, "FINAL", {})
+        runtime = SimpleNamespace(store=store, session=session, home=tmp_path)
+        op = Operator(runtime)
+        proposal = json.loads(op.run(":fastbatch discover streamhabit"))
+        op.run(f":fastbatch activate streamhabit {proposal['sha256'][:12]}")
+        checkpoint = json.loads(op.run(":fastbatch run streamhabit 100 --rows=50"))
+        assert checkpoint["status"] == "PAUSED"
+        worker = ProceduralBatch(tmp_path, store=store)
+        output = worker.iter_output("streamhabit", 100, chunk_bytes=16)
+        assert next(output).startswith("row 1")
+        with store.tx() as tx:
+            tx.execute("UPDATE sources SET deleted=1 WHERE id=?",
+                       (event["source_ref"]["source_id"],))
+        with pytest.raises(ValueError, match="no longer FINAL"):
+            next(output)
+        # A failed reader cannot truncate the already durable output.
+        assert Path(checkpoint["output_path"]).read_text().count("\n") == 50
+        with pytest.raises(ValueError, match="no longer FINAL"):
+            op.run(":fastbatch read streamhabit 100")
+    finally:
+        store.close()
