@@ -40,8 +40,12 @@ jobs:
           python -m pytest -q tests/test_procedural_stream_output.py tests/test_procedural_fastpath_benchmark.py tests/test_procedural_habits.py tests/test_procedural_batch.py tests/test_brain_diagnosis.py tests/test_procedural_job_lock.py tests/test_procedural_input_values.py tests/test_speed_panel.py
           python scripts/benchmark_procedural_fastpath.py --rows 100000 --batch-rows 8192 > /tmp/v13-procedure-bench.json
           python -c 'import json; p=json.load(open("/tmp/v13-procedure-bench.json")); assert p["fixture"]["rows"]==100000 and p["stream"]["verified_same_sha256"] and p["fixture"]["model_calls"]==0'
+          python scripts/benchmark_procedural_fastpath.py --mode values --rows 100000 --batch-rows 8192 > /tmp/v13-values-bench.json
+          python -c 'import json; p=json.load(open("/tmp/v13-values-bench.json")); assert p["fixture"]["kind"]=="SYNTHETIC_IMPORTED_VALUES" and p["fixture"]["rows"]==100000 and p["stream"]["verified_same_sha256"] and p["fixture"]["model_calls"]==0'
       - name: "Read back Linux-only synthetic throughput receipt"
-        run: cat /tmp/v13-procedure-bench.json
+        run: |
+          cat /tmp/v13-procedure-bench.json
+          cat /tmp/v13-values-bench.json
       - name: "Privacy scan new public source"
         run: |
           python scripts/public_repo_privacy_scan.py --base 0fb80f8ac43b9fadceda3343db0e837fe978f518 --head HEAD
