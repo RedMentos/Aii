@@ -648,9 +648,10 @@ def execute(client, cfg, cmd):
     if name == "LEARNING_STATUS":
         return {"status": "OK", "learning": _trusted_status(cfg.get("status_file"))}
     if name == "DIAGNOSTICS":
-        from .mobile_dashboard import summary, remote_console_excerpt
+        from .mobile_dashboard import summary, remote_console_excerpt, remote_full_console
         return {"status": "OK", "technical_diagnostics": summary(),
-                "console_errors": remote_console_excerpt()}
+                "console_errors": remote_console_excerpt(),
+                "console_excerpt": remote_full_console()}
     dest, receipt = download_and_stage(client, cfg, cmd["args"])
     if name == "PATCH_STAGE":
         return {"status": "SIGNED_PATCH_STAGED_NOT_APPLIED", "manifest_sha256":
