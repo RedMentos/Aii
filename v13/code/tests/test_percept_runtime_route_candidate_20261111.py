@@ -53,17 +53,27 @@ class PerceptRouteTests(unittest.TestCase):
                            (result["percept_packet_id"],))["kind"],
             "PerceptPacket")
 
-    def test_empty_and_nonzero_span(self):
+    def test_nonzero_span_fails_closed_before_packet(self):
         event = self.event("PREFIX Alpha Beta. SUFFIX")
         text = self.store.read_source(event["source_ref"])
-        event["source_ref"] = dict(event["source_ref"],
-                                   char_start=text.index("Alpha"),
-                                   char_end=text.index(" SUFFIX"))
+        event["source_ref"] = dict(
+            event["source_ref"],
+            char_start=text.index("Alpha"),
+            char_end=text.index(" SUFFIX"))
+        with self.assertRaisesRegex(ValueError, "nonzero A5 span"):
+            run_percept_route(self.runtime, event, width_detail=3, width_gist=6)
+        self.assertIsNone(self.store.one(
+            "SELECT id FROM packets WHERE kind='PerceptPacket' LIMIT 1"))
+
+    def test_zero_start_shortened_span_remains_source_exact(self):
+        event = self.event("Alpha Beta. SUFFIX")
+        event["source_ref"] = dict(event["source_ref"], char_end=11)
         result = run_percept_route(self.runtime, event, width_detail=3,
                                    width_gist=6)
-        self.assertEqual(
-            "".join(x["text"] for x in result["b1_detail_source_view"]),
-            "Alpha Beta.")
+        for key in ("b1_detail_source_view", "b2_gist_source_view"):
+            self.assertEqual("".join(
+                self.store.read_source(x["source_ref"]) for x in result[key]),
+                "Alpha Beta.")
 
     def test_bad_source_fails_without_packet(self):
         event = self.event("hello")
