@@ -136,3 +136,39 @@ def test_stop_switch_rejects_late_simulation_receipts(tmp_path):
         broker.record_simulated_failure(envelope)
     assert not any(row[1] == "simulated_outcome" for row in broker.events())
     broker.close()
+
+
+def test_stop_restart_revokes_issued_receipt(tmp_path):
+    from v13.android_operator_loop import ActionOutcome
+    db = tmp_path / "audit.db"
+    broker = AndroidControlBroker(db)
+    broker.start()
+    proposal = broker.propose("back", {})
+    broker.approve(proposal.action_id, confirmed_by_local_ui=True)
+    envelope = broker.execute(proposal.action_id)
+    broker.close()
+    reopened = AndroidControlBroker(db)
+    reopened.start()
+    outcome = ActionOutcome(proposal.action_id, "back", "SIMULATED", 0, "SIMULATED_COMPANION")
+    with pytest.raises(ControlDenied, match="revoked"):
+        reopened.record_simulated_outcome(envelope, outcome)
+    with pytest.raises(ControlDenied, match="revoked"):
+        reopened.record_simulated_failure(envelope)
+    reopened.close()
+
+
+def test_dispatch_failure_is_terminal_and_cannot_become_success(tmp_path):
+    from v13.android_operator_loop import ActionOutcome
+    broker = AndroidControlBroker(tmp_path / "audit.db")
+    broker.start()
+    proposal = broker.propose("back", {})
+    broker.approve(proposal.action_id, confirmed_by_local_ui=True)
+    envelope = broker.execute(proposal.action_id)
+    broker.record_simulated_failure(envelope)
+    outcome = ActionOutcome(proposal.action_id, "back", "SIMULATED", 0, "SIMULATED_COMPANION")
+    with pytest.raises(ControlDenied, match="finalized"):
+        broker.record_simulated_outcome(envelope, outcome)
+    with pytest.raises(ControlDenied, match="finalized"):
+        broker.record_simulated_failure(envelope)
+    assert [e[1] for e in broker.events() if e[0] == proposal.action_id].count("simulation_dispatch_failed") == 1
+    broker.close()
