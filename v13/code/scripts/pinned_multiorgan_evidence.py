@@ -6,6 +6,7 @@ import sys
 REQUIRED = ("core", "jepa", "qa", "perception")
 GATES = ("STEP2_UTILITY", "B3_PROMOTION", "BODY_JEPA", "REDMI_PROOF")
 SHA = re.compile(r"[0-9a-f]{40}\Z")
+RUN_URL = re.compile(r"https://github\.com/RedMentos/Aii/actions/runs/[1-9][0-9]*\Z")
 
 
 def check(data):
