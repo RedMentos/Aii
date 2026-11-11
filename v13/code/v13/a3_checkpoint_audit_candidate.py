@@ -39,17 +39,20 @@ def audit(path):
             raise ValueError("checkpoint changed while reading")
     finally:
         os.close(fd)
-    with zipfile.ZipFile(io.BytesIO(blob)) as z:
-        names = z.namelist()
-        if len(names) != len(set(names)) or set(names) != {x + ".npy" for x in REQUIRED}:
-            raise ValueError("unexpected or duplicate checkpoint members")
-        if any(m.file_size > MAX_MEMBER or m.file_size < 1 or m.flag_bits & 1
-               for m in z.infolist()):
-            raise ValueError("oversized or encrypted checkpoint member")
-        if sum(m.file_size for m in z.infolist()) > MAX_TOTAL:
-            raise ValueError("oversized expanded checkpoint")
-    with np.load(io.BytesIO(blob), allow_pickle=False) as data:
-        arrays = {name: data[name] for name in REQUIRED}
+    try:
+        with zipfile.ZipFile(io.BytesIO(blob)) as z:
+            names = z.namelist()
+            if len(names) != len(set(names)) or set(names) != {x + ".npy" for x in REQUIRED}:
+                raise ValueError("unexpected or duplicate checkpoint members")
+            if any(m.file_size > MAX_MEMBER or m.file_size < 1 or m.flag_bits & 1
+                   for m in z.infolist()):
+                raise ValueError("oversized or encrypted checkpoint member")
+            if sum(m.file_size for m in z.infolist()) > MAX_TOTAL:
+                raise ValueError("oversized expanded checkpoint")
+        with np.load(io.BytesIO(blob), allow_pickle=False) as data:
+            arrays = {name: data[name] for name in REQUIRED}
+    except (zipfile.BadZipFile, EOFError) as exc:
+        raise ValueError("corrupt A3 checkpoint archive") from exc
     for name, shape in SHAPES.items():
         a = arrays[name]
         if a.shape != shape or a.dtype.kind != "f" or a.dtype.itemsize not in (4, 8):
