@@ -106,6 +106,9 @@ class LocalConsoleTests(unittest.TestCase):
                           "Nachricht senden", "Antwort-Tokens", "CPU-Threads",
                           "Alle Befehle", "Jetzt aktualisieren", "Diagnose-ZIP"):
                 self.assertIn(label, html)
+            self.assertIn("setInterval(refresh, 1500)", html)
+            self.assertIn("/t/abcd/state", html)
+            self.assertIn("id=\"v13-live-output\"", html)
 
 
 if __name__ == "__main__":
