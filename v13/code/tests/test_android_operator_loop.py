@@ -119,3 +119,20 @@ def test_simulation_audit_rejects_mutated_issued_envelope(tmp_path, alter):
     assert not any(row[1] == "simulated_outcome" for row in broker.events())
     broker.record_simulated_outcome(envelope, outcome)
     broker.close()
+
+
+def test_stop_switch_rejects_late_simulation_receipts(tmp_path):
+    from v13.android_operator_loop import ActionOutcome
+    broker = AndroidControlBroker(tmp_path / "audit.db")
+    broker.start()
+    p = broker.propose("back", {})
+    broker.approve(p.action_id, confirmed_by_local_ui=True)
+    envelope = broker.execute(p.action_id)
+    broker.stop()
+    outcome = ActionOutcome(p.action_id, "back", "SIMULATED", 0, "SIMULATED_COMPANION")
+    with pytest.raises(ControlDenied, match="stopped"):
+        broker.record_simulated_outcome(envelope, outcome)
+    with pytest.raises(ControlDenied, match="stopped"):
+        broker.record_simulated_failure(envelope)
+    assert not any(row[1] == "simulated_outcome" for row in broker.events())
+    broker.close()
