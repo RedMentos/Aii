@@ -1,0 +1,60 @@
+"""Opt-in, non-authoritative A0/A1/A3/A5 -> B1/B2 source-view bridge.
+
+This deliberately does not patch frozen Runtime or promote the A3 student.
+The event is a real Store event; the PerceptPacket is produced and persisted
+by the existing Cognition.percept implementation, never fabricated here.
+"""
+from .percept_subspan_candidate import source_segments
+
+
+def run_percept_route(runtime, event, *, width_detail=240, width_gist=960):
+    """Return persisted A5 packet and independently revalidated B source views.
+
+    Explicit caller only; no routing, training, answer, or tool authority.
+    Raises on source mutation, missing provenance, or packet mismatch.
+    """
+    if not isinstance(event, dict):
+        raise ValueError("event required")
+    source = event.get("source_ref")
+    if not isinstance(source, dict) or source.get("modality") != "text":
+        raise ValueError("text source required")
+    for field in ("event_id", "brain_generation_id"):
+        if not isinstance(event.get(field), str) or not event[field]:
+            raise ValueError("missing event identity")
+    # Existing A5 segmenter uses local offsets. Until the frozen runtime\n    # is fixed, reject sliced inputs before persisting an invalid A5 packet.\n    if source.get("char_start") != 0:\n        raise ValueError("nonzero A5 span requires runtime offset fix")\n    # Check source before and after the runtime A5 packet write.
+    original = runtime.store.read_source(source)
+    percept = runtime.cognition.percept(event)
+    if (percept.get("event_id") != event["event_id"] or
+            percept.get("brain_generation_id") != event["brain_generation_id"] or
+            percept.get("source_ref") != source or
+            percept.get("modality") != "text"):
+        raise ValueError("A5 packet identity mismatch")
+    row = runtime.store.one(
+        "SELECT payload FROM packets WHERE id=? AND kind='PerceptPacket'",
+        (percept["packet_id"],))
+    if not row:
+        raise ValueError("A5 packet not persisted")
+    import json
+    if json.loads(row["payload"]) != percept:
+        raise ValueError("A5 packet differs from persisted payload")
+    if runtime.store.read_source(source) != original:
+        raise ValueError("A0 source changed")
+    detail = source_segments(runtime.store, source, width_detail, "fixed")
+    gist = source_segments(runtime.store, source, width_gist, "event")
+    for view in (detail, gist):
+        if "".join(runtime.store.read_source(x["source_ref"]) for x in view) != original:
+            raise ValueError("B source view not exact")
+    return {
+        "schema": "v13.perception.source_route_candidate/1",
+        "percept_packet_id": percept["packet_id"],
+        "percept_packet": percept,
+        "b1_detail_source_view": detail,
+        "b2_gist_source_view": gist,
+        "a3_mode": percept.get("student_mode", "UNAVAILABLE"),
+        "a3_available": bool(percept.get("student_feature_sha256")),
+        "a3_receiver_authority": 0,
+        "teacher_truth_authority": False,
+        "body_inference_executed": False,
+        "runtime_activated": False,
+        "native_android_verified": False,
+    }
