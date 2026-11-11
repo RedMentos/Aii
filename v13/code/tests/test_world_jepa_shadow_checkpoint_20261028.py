@@ -34,9 +34,10 @@ class WorldJepaShadowCheckpointTests(unittest.TestCase):
     def test_exact_inference_roundtrip_and_no_authority(self):
         model, X, A = fitted()
         record = cp.save(model, self.path, SOURCE)
-        self.assertEqual(record['scope'], 'PRIVATE_INFERENCE_ONLY_SHADOW')
+        resume = hasattr(model, '_training_state')
+        self.assertEqual(record['scope'], 'PRIVATE_SHADOW_TRAINING_RESUME' if resume else 'PRIVATE_INFERENCE_ONLY_SHADOW')
         self.assertEqual(record['age_authority'], 0)
-        self.assertFalse(record['optimizer_state_persisted'])
+        self.assertIs(record['optimizer_state_persisted'], resume)
         self.assertEqual(record['sha256'], hashlib.sha256(self.path.read_bytes()).hexdigest())
         restored = cp.load(self.path, SOURCE, record['sha256'])
         for target in (True, False):

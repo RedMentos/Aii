@@ -25,7 +25,12 @@ def test_single_staged_tree_runs_selected_integrated_regressions(tmp_path):
     manifest = stager.stage(CODE, dest)
     (dest / 'tests').mkdir(exist_ok=True)
     extra = ('context_source_recall_disposable_cases_20261111.py',
-             'runtime_jepa_utility_disposable_cases_20261111.py')
+             'runtime_jepa_utility_disposable_cases_20261111.py',
+             'world_jepa_training_resume_disposable_cases_20261111.py',
+             'test_world_jepa.py', 'test_world_jepa_atomic_fit.py',
+             'test_world_jepa_shadow_checkpoint_20261028.py', 'test_world_jepa_incremental_20261108.py',
+             'test_world_jepa_fit_input_guard.py', 'test_world_jepa_reader_snapshot.py',
+             'test_world_jepa_stale_fit_order.py', 'test_world_jepa_online_experiment_20261108.py')
     for name in (*names, *extra):
         shutil.copy(CODE / 'tests' / name, dest / 'tests' / name)
     shim = runpy.run_path(str(CODE / 'tests/test_integrated_predictor_history_guard_20261110.py'))['SYNTHETIC_ONLY_SHIM']
@@ -37,7 +42,7 @@ def test_single_staged_tree_runs_selected_integrated_regressions(tmp_path):
                *(('tests/' + name) for name in extra)]
     result = subprocess.run(command, cwd=dest,
                             env=dict(os.environ, PYTHONPATH=str(dest), PYTHONDONTWRITEBYTECODE='1'),
-                            capture_output=True, text=True, timeout=240)
+                            capture_output=True, text=True, timeout=360)
     assert result.returncode == 0, result.stdout + result.stderr
     for line in result.stdout.splitlines():
         if 'JEPA_HOLDOUT' in line:

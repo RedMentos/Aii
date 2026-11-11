@@ -23,21 +23,22 @@ class WorldJEPAAtomicFit(unittest.TestCase):
         return copy.deepcopy(m.__dict__)
 
     def assert_unchanged(self, m, old):
-        self.assertEqual(set(m.__dict__), set(old))
-        for key, value in old.items():
-            current = m.__dict__[key]
+        def same(current, value, key):
+            self.assertIs(type(current), type(value), key)
             if isinstance(value, np.ndarray):
+                self.assertEqual(current.dtype, value.dtype, key)
                 np.testing.assert_array_equal(current, value, err_msg=key)
-            elif isinstance(value, list) and key == "preds":
-                self.assertEqual(len(current), len(value))
-                for a, b in zip(current, value):
-                    for k in b:
-                        np.testing.assert_array_equal(a[k], b[k], err_msg=k)
-            elif isinstance(value, dict) and key in ("enc", "tgt"):
+            elif isinstance(value, list):
+                self.assertEqual(len(current), len(value), key)
+                for i, (a, b) in enumerate(zip(current, value)):
+                    same(a, b, key + '/' + str(i))
+            elif isinstance(value, dict):
+                self.assertEqual(set(current), set(value), key)
                 for k in value:
-                    np.testing.assert_array_equal(current[k], value[k], err_msg=k)
+                    same(current[k], value[k], key + '/' + k)
             else:
                 self.assertEqual(current, value, key)
+        same(m.__dict__, old, 'model')
 
     def test_failed_main_training_preserves_complete_previous_fit(self):
         m = self.fitted()

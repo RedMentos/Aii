@@ -12,8 +12,8 @@ from pathlib import Path
 import shutil
 import tempfile
 
-BUILDER = 'scripts/integrated_context_recall_candidate_20261111.py'
-BUILDER_SHA = '168d6003db2c871599e70922619cfc416882b137ce05704b5c7b4d35037f6c0f'
+BUILDER = 'scripts/integrated_world_training_resume_candidate_20261111.py'
+BUILDER_SHA = '82e2fd27712d17a489ce5fd2f75d749f3f0e08dcc9d7fcc8852bbe6f738e8e18'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 

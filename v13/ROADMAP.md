@@ -1,3 +1,9 @@
+## 2026-11-11 — World-JEPA mit Optimizer-, Inversmodell- und RNG-Fortsetzung
+
+Auf der bestehenden gemeinsamen Stage führt der neueste Builder reale Warm-start-Zustände über weitere Aufrufe und Restart fort, statt Adam-Momente/inverses Lernziel/RNG neu zu erzeugen. Actual Runtime → kleine Updates → vollständiges privates quellgebundenes NPZ → Neustart → gleicher nächster Update ergibt exakt gleiche Gewichte/EMA/Optimizer/RNG. **415 PASS / 3 CUDA SKIP / 58 Untertests** einschließlich vorhandener World-Kerntests; 13 gezielte äußere Tests einschließlich 11 Resume-Fällen. Neue Remote-CI wird nach Abschluss ergänzt. `code/docs/INTEGRATED_WORLD_TRAINING_RESUME_20261111.md`.
+
+Offen bleiben feste unabhängige Holdout-/Retention-Ziele und Regular-Body-Consumer, danach Replay/Sleep/Idle, effizienter Gesamtspeicher und echte targetkontrollierte Cross-Organ-Adapter-Deltas. Alte Checkpoints bleiben erhalten, bekommen keine erfundenen Resume-Momente. Keine Produktivpromotion, keine neue Lern-/Werkzeugautorität, keine native/Redmi-Aussage; vollständiger Blueprint und Selbstoptimierungs-Nachtrag bleiben offen verbindlich.
+
 ## 2026-11-11 — ausführbarer gemeinsamer Kandidat mit begrenztem Kontextabruf
 
 Der reparierte echte Stager verbindet den bisherigen Lern-/Archiv-/Feedback-Kandidaten mit dem normalen C3-Verbrauch älterer, verifizierter Chatquellen. Standardmäßig aus, explizites ContextOS ACTIVE + recall on, maximal 128 Präfixe durchsuchen / zwei begrenzte Ausschnitte / verbleibendes bestehendes Kontextbudget. Quellen bleiben in Antwort- und späterer World-Lineage; keine neuen Tool-/Trainingsrechte. Kaltarchiv-Wiederverwendung verhindert die bestätigte Klartextblob-Neuerzeugung; SQLite-Textduplikate und effiziente Gesamtspeicherung bleiben offen. `code/docs/INTEGRATED_CONTEXT_SOURCE_RECALL_20261111.md`.

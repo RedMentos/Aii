@@ -71,7 +71,7 @@ def test_explicit_runtime_learning_and_lineage_bound_restart(tmp_path, monkeypat
         before = model.enc['W1'].copy()
         first_receipts = dict(r._world_jepa_lineage)
         saved = json.loads(op.run(':growth jepa save'))
-        assert saved['persisted'] and saved['optimizer_state_persisted'] is False
+        assert saved['persisted'] and saved['optimizer_state_persisted'] is hasattr(model, '_training_state')
         with pytest.raises(ValueError, match='no previous'):
             op.run(':growth jepa previous')
         second = json.loads(op.run(':growth jepa 1 160'))
@@ -133,7 +133,7 @@ def test_explicit_runtime_learning_and_lineage_bound_restart(tmp_path, monkeypat
         op = Operator(r)
         op.run(':learning shadow')
         restored = json.loads(op.run(':growth jepa restore'))
-        assert restored['restored'] and restored['optimizer_state_persisted'] is False
+        assert restored['restored'] and restored['optimizer_state_persisted'] is hasattr(r._world_jepa_online, '_training_state')
         assert np.array_equal(r._world_jepa_online.enc['W1'], second_weights)
         assert r._world_jepa_lineage == second_receipts
         assert json.loads(op.run(':growth jepa previous'))['selection'] == 'previous'

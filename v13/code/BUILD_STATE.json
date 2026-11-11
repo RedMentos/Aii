@@ -1,4 +1,32 @@
 {
+  "codex_world_training_resume_20261111": {
+    "status": "SHADOW_REVIEW_ONLY_SOURCE_FREEZE",
+    "branch": "codex/v13-integrated-continuation-20261110",
+    "pr": 1716,
+    "parent_commit": "c015f91c918cdda53fb460cf172947a4601d57d3",
+    "builder": "v13/code/scripts/integrated_world_training_resume_candidate_20261111.py",
+    "builder_sha256": "82e2fd27712d17a489ce5fd2f75d749f3f0e08dcc9d7fcc8852bbe6f738e8e18",
+    "model_revision": "z12b-world-jepa-training-resume-v1",
+    "tests": {
+      "old_stager_new_resume_cases": "10 failed / 1 passed; outer failed",
+      "current_resume_cases": "11 passed",
+      "targeted": "13 outer passed including 15 context cases and 11 resume cases",
+      "same_stage": "415 passed / 3 CUDA skipped / 58 subtests passed; outer passed",
+      "remote_ci": "NOT_RUN_BEFORE_PUSH"
+    },
+    "evidence": "actual synthetic Runtime SQLite -> two-step update -> save -> second update; restart/restore -> same second update; full model/EMA/inverse/optimizer/RNG arrays and lineage exact",
+    "limits": [
+      "identical call sequence, not equality across different fit partitions",
+      "legacy revisions not silently resumed; files preserved",
+      "moving-target holdout not fixed utility or retention",
+      "normal Body trainer selection, replay/idle/cross-organ updates remain open",
+      "no native/Redmi proof; synchronous SQLite training and original publication limits"
+    ],
+    "next_edge": "fixed holdout/retention and regular Body consumer, then replay/sleep/idle",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
+  },
   "codex_context_recall_stage_20261111": {
     "status": "SHADOW_REVIEW_ONLY_SOURCE_FREEZE",
     "branch": "codex/v13-integrated-continuation-20261110",
