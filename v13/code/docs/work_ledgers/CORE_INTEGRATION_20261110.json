@@ -145,5 +145,22 @@
     "production_promotion": false,
     "device_proof": false,
     "negative_gates_unchanged": true
+  },
+  "codex_memory_world_lifecycle_20261111": {
+    "candidate": "v13/code/scripts/integrated_memory_world_candidate_20261111.py",
+    "source_pr_1653": "c0cb5e6690f32308b463da1dceabd834d9f08277; six source/helper/test files byte-verified",
+    "tests": "2 outer passed; 252 combined passed, 3 CUDA skipped, 16 subtests passed",
+    "evidence": "real synthetic SQLite Runtime turn, numeric learning, compressed source, bounded Unicode span, restart, revocation and quarantine",
+    "limits": [
+      "messages.text remains uncompressed in SQLite",
+      "streaming span is not normal context retrieval",
+      "active context/history remains bounded",
+      "64 MiB archive admission and synchronous whole-source verification",
+      "no immediate unlearning, full filesystem/backup transaction or device proof"
+    ],
+    "next_edge": "reconcile #1644 context/idle/dataset files into shared integration and build bounded actual source retrieval",
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
   }
 }

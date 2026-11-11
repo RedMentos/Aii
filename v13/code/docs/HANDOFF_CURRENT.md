@@ -1,3 +1,9 @@
+# 2026-11-11 — Quellen-/Archiv-Lifecycle auf gemeinsamer Basis
+
+`scripts/integrated_memory_world_candidate_20261111.py` verbindet die bytegeprüfte #1653-Quellen-/Archiv-Kopie mit C3, Body-JEPA und World. **2 äußere Tests PASS; 252 PASS / 3 CUDA SKIP / 16 Untertests PASS** in derselben Testkopie. Neuer echter SQLite-Turn: lernen → Quelle komprimieren → Unicode-Span prüfen → Neustart → Quelle widerrufen/bereinigen → World-Nutzung und Quellenlesen verweigert. Details `INTEGRATED_MEMORY_WORLD_LIFECYCLE_20261111.md`.
+
+Das ist noch kein quasi unbegrenzter, effizienter Kontext: reguläres `native_history` bleibt auf `history_turns` und das aktive Modellbudget begrenzt, `messages.text` liegt zusätzlich in SQLite, und der bounded Streaming-Leser ist noch kein normaler ContextOS-/Chat-Abruf. Nächste Naht: die Nutzer-/Blueprint-Entscheidungen und den #1644-Datensatzkatalog in diese gemeinsame Kette holen; dann explizit begrenzten Source-Retrieval-/Context-Pfad, Cold-Scan-Abbruch/Quoten und tatsächliche Idle-Steuerung prüfen. Keine automatische Netz-/Trainings- oder Bildschirmaktivierung behaupten.
+
 # 2026-11-11 — C3-LoRA-Restart in gemeinsamer Testkopie
 
 `scripts/integrated_c3_resume_candidate_20261110.py` ergänzt zur Body-/World-Testkopie einen quellgebundenen C3-Resume-Preflight, validierte AdamW-Parameter/Slots und atomare Rückrolle bei Ladefehlern. Neben dem Shuffle- wird der CPU-Torch-RNG gespeichert: Der erste Tiny-Restarttest war **11 PASS / 1 FAIL**, danach stimmt der unterbrochene Zwei-Schritte-Torch-/PEFT-Lauf einschließlich Gewichten und Loss mit dem ununterbrochenen überein. **2 äußere Tests, 162 PASS / 3 CUDA SKIP** in der gemeinsamen Kopie; echter SQLite-AG6-Stage-/Train-Pfad ruft den synthetischen C3-Trainer auf, ohne Aktivierung. `INTEGRATED_C3_RESUME_CANDIDATE_20261111.md`.

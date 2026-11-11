@@ -1,3 +1,7 @@
+# GPT-Abgleich Archiv-/Source-Lifecycle mit Lernen — 2026-11-11
+
+Sechs #1653-Dateien gegen HEAD `c0cb5e6690f32308b463da1dceabd834d9f08277` bytegeprüft und in eine gemeinsame #1663-basierte Testkopie komponiert. **2 äußere Tests, 252 PASS / 3 CUDA SKIP / 16 Untertests PASS**; echter synthetischer Turn, Quellenarchiv, verifizierter Span, Neustart und Widerruf im World-Pfad. Alter unkomprimierter `messages.text`-Store und nicht integrierter normaler Streaming-Retrieval-Pfad lassen die Langzeit-/Speichereffizienz offen. `code/docs/INTEGRATED_MEMORY_WORLD_LIFECYCLE_20261111.md`. #1719 HEAD `2a12ba0bbea73985232630486e10d6bf58c0eb97` bei Sichtung ohne CI; kein Redmi-RAM-Beweis durch Dateigröße. Gates unverändert.
+
 # GPT-Abgleich C3-Restart in gemeinsamer Kopie — 2026-11-11
 
 Der #1663-Gegenbeleg für beschädigten/teilmutierenden C3-Optimizer bleibt. Hashgebundene Testkopie validiert nun vollständige übergebene Input-Bindung, AdamW-Layout/Slots sowie Shuffle- und CPU-Torch-RNG vor Adapter-/Optimizer-Übernahme; Fehlerfall-Rückrolle und unbenutzbare Recovery werden getestet. **2 äußere Tests, 162 PASS / 3 CUDA SKIP**, darunter echter synthetischer Tiny-C3-Fit/Restart und SQLite-AG6-Train-Aufruf ohne Aktivierung. Erster Lauf vor Torch-RNG-Fix 11 PASS/1 FAIL; keine echte Master-/Redmi-/Retention-Aussage. Grenzen `code/docs/INTEGRATED_C3_RESUME_CANDIDATE_20261111.md`.
