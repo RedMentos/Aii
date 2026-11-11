@@ -10,6 +10,8 @@ class PCMFeaturesTest(unittest.TestCase):
         self.assertEqual(len(pkt.frames), 50)
         self.assertTrue(all(f.rms == 0 for f in pkt.frames))
         self.assertTrue(all(f.pitch_hz is None for f in pkt.frames))
+        self.assertTrue(all(f.voiced_probability is None for f in pkt.frames))
+        self.assertTrue(all(f.non_speech_probability is None for f in pkt.frames))
         self.assertIsNone(pkt.asr_text)
         self.assertFalse(pkt.to_record()["android_capture_verified"])
 
