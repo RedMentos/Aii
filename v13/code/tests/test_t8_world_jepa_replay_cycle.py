@@ -24,6 +24,25 @@ def test_real_sqlite_t8_replay_and_restart(tmp_path):
     assert report["source_verified"] is True
     assert report["holdout_rows"] >= 8
     assert report["id_content_disjoint"] is True
+    # Replay phases must follow the T8 reader's committed chronological order,
+    # never the opaque action ID's lexical order.
+    from v13 import world_model
+    from v13.world_jepa_action_outcome_adapter import build
+    verify = ReadOnlyStore(db)
+    try:
+        chronological = world_model.transitions(verify, limit=2048)
+    finally:
+        verify.close()
+    split = build(chronological)
+    allowed = set(split["train_action_ids"])
+    train = [r["action_id"] for r in chronological if r["action_id"] in allowed]
+    cut = 2 * len(train) // 3
+    import hashlib
+    expected_old = hashlib.sha256(json.dumps(train[:cut], separators=(",", ":")).encode()).hexdigest()
+    expected_new = hashlib.sha256(json.dumps(train[cut:], separators=(",", ":")).encode()).hexdigest()
+    assert report["phase_order"] == "T8_COMMITTED_CHRONOLOGICAL_OLDEST_TO_NEWEST"
+    assert report["old_train_ids_sha256"] == expected_old
+    assert report["recent_train_ids_sha256"] == expected_new
     assert report["encoder_weights_changed"] is True
     assert report["holdout_loss_after_restart"] == pytest.approx(
         report["holdout_loss_with_replay"], abs=1e-12, rel=1e-9)
