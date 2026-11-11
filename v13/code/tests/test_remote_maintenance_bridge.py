@@ -346,3 +346,24 @@ def test_keygen_private_key_not_printed(tmp_path, capsys):
     assert "private_key_b64" not in result
     with pytest.raises(FileExistsError):
         m.cli(["keygen", "--out", str(keypath)])
+
+
+def test_private_relay_token_not_forwarded_to_public_source(monkeypatch):
+    gh = m.GitHub("private-secret-token", "Owner/private")
+    requests = []
+    class Response:
+        headers = {"Content-Length": "2"}
+        def __enter__(self): return self
+        def __exit__(self, *a): pass
+        def read(self, n): return b"{}"
+    class Opener:
+        def open(self, req, timeout=None):
+            requests.append(req)
+            return Response()
+    monkeypatch.setattr(m.urllib.request, "build_opener", lambda *a: Opener())
+    gh.request("GET", "/repos/RedMentos/Aii/commits/" + "a" * 40)
+    gh.request("GET", "/repos/Owner/private")
+    assert "Authorization" not in requests[0].headers
+    assert requests[1].get_header("Authorization") == "Bearer private-secret-token"
+    with pytest.raises(m.Denied):
+        gh.request("POST", "/repos/Other/repo/issues", {"title": "no"})
