@@ -48,6 +48,16 @@ def acoustic_views(percept: dict, *, max_detail: int = 64, gist_bins: int = 8) -
             raise ValueError("invalid timeline")
         if type(r) not in (int,float) or not isfinite(r) or not 0 <= r <= 1:
             raise ValueError("invalid RMS")
+        # Numeric features must remain valid after serialization or mutation.
+        # Unknown pitch is None; unknown probabilities remain explicit, never inferred.
+        pitch = f.get("pitch_hz")
+        if pitch is not None and (type(pitch) not in (int, float) or
+                                  not isfinite(pitch) or not 20 <= pitch <= 2000):
+            raise ValueError("invalid pitch")
+        for field in ("voiced_probability", "non_speech_probability"):
+            value = f.get(field)
+            if type(value) not in (int, float) or not isfinite(value) or not 0 <= value <= 1:
+                raise ValueError("invalid acoustic probability")
         previous = b
     # B1 retains exact sampled frame measurements, without inventing missing frames.
     step = max(1, (len(frames) + max_detail - 1) // max_detail)
