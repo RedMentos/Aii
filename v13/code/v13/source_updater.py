@@ -119,7 +119,7 @@ def _fetch(root, branch):
     # Only the *already checked out branch* and *already configured source*.
     ref = "refs/remotes/origin/" + branch
     git(root, "fetch", "--no-tags", "--filter=blob:none", "origin",
-        "refs/heads/" + branch + ":" + ref, timeout=180)
+        "refs/heads/" + branch + ":" + ref, timeout=90)
     new = git(root, "rev-parse", ref)
     if not SHA.fullmatch(new):
         raise UpdateDenied("Remote source revision could not be verified")
