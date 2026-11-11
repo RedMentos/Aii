@@ -92,7 +92,11 @@ class SourceUpdateTests(unittest.TestCase):
                 u.status(self.phone)
 
     def test_branch_rewrite_not_accepted(self):
+        # The phone first runs commit B; remote is force-rewritten from A to C.
+        # A -> C alone is a valid fast-forward from A and must not be rejected.
         self.publish()
+        self.assertEqual(u.apply(self.phone)["status"], "UPDATED")
+        current = git(self.phone, "rev-parse", "HEAD")
         git(self.base, "reset", "--hard", self.initial)
         (self.base / "v13/code/v13/__init__.py").write_text("ANSWER = 999\n")
         git(self.base, "add", ".")
@@ -100,6 +104,7 @@ class SourceUpdateTests(unittest.TestCase):
         git(self.base, "push", "--force", "origin", "v13-test")
         with self.assertRaises(u.UpdateDenied):
             u.apply(self.phone)
+        self.assertEqual(git(self.phone, "rev-parse", "HEAD"), current)
 
 
 if __name__ == "__main__":
