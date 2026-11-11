@@ -73,3 +73,34 @@ def test_disabled_capability_never_reaches_transport():
             Capability.TAP, "12,24", dry_run=False
         )
     assert transport.calls == 0
+
+
+def test_stop_during_native_call_cancels_once_and_rejects_late_success():
+    registry = CapabilityRegistry({Capability.LAUNCH_APP: True})
+
+    class StopThenSuccess:
+        def execute(self, request):
+            registry.stop()
+            return ActionOutcome(request.request_id, request.capability,
+                                 OutcomeStatus.SUCCESS, "late-receipt", 1.0)
+
+    result = AndroidDispatcher(
+        registry, transport=StopThenSuccess(), verifier=FakeVerifier(True)
+    ).dispatch(Capability.LAUNCH_APP, "com.example.app", dry_run=False)
+    assert result.outcome.status == OutcomeStatus.CANCELLED
+    assert registry.history() == (result.outcome,)
+    assert registry.outcome_for(result.request.request_id) == result.outcome
+
+
+def test_stop_cancels_multiple_pending_requests_with_audit():
+    registry = CapabilityRegistry({Capability.TAP: True})
+    a = registry.request(Capability.TAP, "1,2", dry_run=False)
+    b = registry.request(Capability.TAP, "3,4", dry_run=False)
+    registry.stop()
+    assert {o.request_id for o in registry.history()} == {a.request_id, b.request_id}
+    assert all(o.status == OutcomeStatus.CANCELLED for o in registry.history())
+    import pytest
+    with pytest.raises(ValueError):
+        registry.settle(ActionOutcome(a.request_id, a.capability,
+                                      OutcomeStatus.SUCCESS, "late", 1.0))
+    assert len(registry.history()) == 2

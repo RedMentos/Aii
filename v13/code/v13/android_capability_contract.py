@@ -51,6 +51,13 @@ class CapabilityRegistry:
 
     def stop(self) -> None:
         self._stopped = True
+        # A stop is a terminal, auditable outcome for every in-flight action.
+        # A late native SUCCESS must not resurrect an invalidated request.
+        for request in self._pending.values():
+            self._outcomes.append(ActionOutcome(
+                request.request_id, request.capability, OutcomeStatus.CANCELLED,
+                None, time.time(),
+            ))
         self._pending.clear()
 
     def request(self, capability: Capability, target: str, *, dry_run: bool = True) -> ActionRequest:
@@ -77,6 +84,10 @@ class CapabilityRegistry:
                 raise ValueError("successful action requires companion receipt")
         self._pending.pop(outcome.request_id)
         self._outcomes.append(outcome)
+
+    def outcome_for(self, request_id: str) -> ActionOutcome | None:
+        return next((outcome for outcome in reversed(self._outcomes)
+                     if outcome.request_id == request_id), None)
 
     def history(self) -> tuple[ActionOutcome, ...]:
         return tuple(self._outcomes)
