@@ -21,7 +21,7 @@ def run_percept_route(runtime, event, *, width_detail=240, width_gist=960):
     for field in ("event_id", "brain_generation_id"):
         if not isinstance(event.get(field), str) or not event[field]:
             raise ValueError("missing event identity")
-    # Check source before and after the runtime A5 packet write.
+    # Existing A5 segmenter uses local offsets. Until the frozen runtime\n    # is fixed, reject sliced inputs before persisting an invalid A5 packet.\n    if source.get("char_start") != 0:\n        raise ValueError("nonzero A5 span requires runtime offset fix")\n    # Check source before and after the runtime A5 packet write.
     original = runtime.store.read_source(source)
     percept = runtime.cognition.percept(event)
     if (percept.get("event_id") != event["event_id"] or
