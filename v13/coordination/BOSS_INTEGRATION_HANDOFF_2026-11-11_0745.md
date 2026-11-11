@@ -32,3 +32,25 @@ JEPA: source-authorized replay/EMA restore integrated with Boss candidate; real 
 QA: run full staged smoke and fix only consequential red failures; no hardware claims.
 Perception: connect A5 PerceptPacket to the same candidate input path; verify source lineage.
 Boss: coordinate one pinned executable chain, reconcile conflicts and update completion ledger; no unsafe merge.
+
+## Boss 08:45 follow-up — VERIFIED green integrated Runtime; Android-control gap
+
+**Exact-head proof:** #1747 HEAD `953d35c2aeacbd8e52bd98a74fecdb8375530a31`, GitHub Actions run [42974552773](https://github.com/RedMentos/Aii/actions/runs/42974552773), job 130370474637 SUCCESS. Logs show **4/4 outer unittest PASS** (3 stage/pin tests + 1 subprocess staged Runtime E2E); subprocess test requires **2 internal pytest cases PASS** and checks real SQLite Runtime/T8/World learning, restart, archive and source revocation in the pinned isolated test copy. This replaces the previous 'combined pending' assessment for this exact scope only. Synthetic C3 driver, no real GGUF inference, no Android device, no full A/B/C/JEPA/control integration. No merge or Gate promotion.
+
+**Newest concurrent branches checked:** Core #1749 `0b5cd871` (Android default-deny dry-run broker, CI runs 42976902853/42976902872 SUCCESS); QA child #1750 `9dda9e3a` (broker restart/concurrency/stop CI runs 42977894130/42977894131 SUCCESS); Core #1751 `a6997c3e` (session-bound learning receipts, 6 green workflows). JEPA #1746 `7c2191da` replay ablation CI PASS. Perception #1748 `98f87fcb` synthetic A5 source-view restart test has no exact-head Actions result. These are separate branch proofs, NOT a combined release. Canon `v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md`, root and v13/AGENTS.md, ROADMAP, BUILD_STATE and HANDOFF_CURRENT were inspected on this branch; current user's Android-control correction overrides old PC-harness wording.
+
+**Binding user target:** local Redmi Android runtime AND **operating the Android phone itself**, not PC control. Track separately:
+
+| Capability | Code | Wired | Synthetic test | Native Redmi proof | Status |
+| --- | --- | --- | --- | --- | --- |
+| Staged T8/World turn + restart/revocation | yes | isolated test copy | #1747 green | no | SHADOW |
+| JEPA online holdout + replay retention | yes in #1737/#1746 | separate Runtime test copy | both green | no | SHADOW |
+| A5→B1/B2 source-view | yes in #1736/#1748 | separate opt-in | exact #1748 CI unverified | no | SHADOW |
+| Android per-action consent/audit broker | yes #1749/#1750 | isolated Termux dry-run only | both green | no | SHADOW |
+| **Android OS UI observation / tap / swipe / typing / launch** | no native companion | no | no | no | **OFF** |
+| C2/JEF → Android action → observation → trusted T8 trace | no complete path | no | no | no | **BLOCKED** |
+| Native GGUF inference and local Redmi RAM/latency | partial older code | no combined evidence | no new evidence | no | **UNVERIFIED** |
+
+**Next highest-impact vertical slice:** Core owns a separately permissioned Android companion + authenticated IPC + JEF action contract, starting with a user-authorized app launch and observable UI state; no spoofable Python `confirmed_by_local_ui` accepted as live authority. QA owns explicit Android permissions, lifecycle, safe stop and instrumentation. Perception owns Android observation → A5 PerceptPacket provenance. JEPA owns approved action-outcome → trusted T8 transitions. Boss owns joining these independent commits into a single testable candidate with #1747 Runtime. All must preserve Android-13 permissions and no hidden access. No PC prerequisite, no actual device-control claim before companion proof.
+
+**Vacant dedicated specialists:** separate B1/B2 adaptation, dedicated C3 language, sleep/dream scheduler, world-self model and Android native companion are NOT independently scheduled agents; existing five roles must cover them. Five-slot limit remains. No unverified promotion.
