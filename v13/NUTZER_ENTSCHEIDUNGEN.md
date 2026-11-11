@@ -4,6 +4,8 @@
 
 Der Nutzer möchte ein normales begrenztes aktives Kontextfenster mit lokal über lange Zeit wachsendem, effizient verdichtetem und wieder abrufbarem Zusammenhang; Erkenntnisse sollen später auch Weltbild und Modelle verbessern. Der Blueprint enthält diese Architektur bereits detailliert und darf nicht durch eine vereinfachte Ersatzarchitektur ersetzt werden. Geeignete Anfangsdaten sollen später langsam und ressourcenbegrenzt im Leerlauf nutzbar sein. Freigegebene Gespräche/Rückmeldungen und später ausdrücklich erlaubter Werkzeug-/Bildschirmzugriff gehören zur Zielrichtung, ebenso mehr Selbstständigkeit innerhalb der gesetzten Grenzen. Der Nutzer verlangt, dass die Arbeit fortgesetzt und neuere Anweisungen/Arbeit aus parallelen Chats beachtet werden. Das `code/docs/coordination/V13_FAST_INTEGRATION_AGENT_PLAYBOOK_20261110.md` priorisiert eine gemeinsame, tatsächlich verbundene Implementierung; SourceHandoff-Freeze und bisherige Gates bleiben verbindlich.
 
+Der vom Nutzer angesprochene Beitrag über direkte Gewichtsänderung und seine Idee, aus eigenen Fehlversuchen zu lernen, werden zusätzlich in `research/WEIGHT_SPACE_UND_FEHLERLERNEN_20261108.md` und `code/docs/LOCAL_ERROR_ROUTE_SHADOW_20261109.md` berücksichtigt. Die Unterscheidung und die geplanten Kontrollen sind fachliche Einordnung, kein zugeschriebener exakter Gesprächswortlaut und kein bereits aktiviertes Training.
+
 Dauerhafte Ablage, weil `code/docs/USER_DECISIONS_AND_OPEN_QUESTIONS.md` von `v13/verification.py:122` neu erzeugt werden kann.
 Gilt vor abweichenden Stellen im Blueprint, bis der Nutzer etwas anderes sagt.
 

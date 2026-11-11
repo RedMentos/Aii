@@ -1,3 +1,7 @@
+# GPT-Abgleich Feedback/Datensätze mit gemeinsamer Kopie — 2026-11-11
+
+20 Quellen-/Testdateien gegen #1644 HEAD `ae69ef28f6ced8879e30fe1a43a42a639679f852` bytegeprüft, die frühere `inputs.py`-/`actionlearn.py`-Änderung aus #1632 in der Testkopie mit dem späteren Store-/Memory-Lifecycle verbunden und semantische Source-Pins entsprechend angepasst. **2 äußere Tests, 358 PASS / 3 CUDA SKIP / 35 Untertests PASS**; gleicher synthetischer T8-Turn für World-Beleg und ausdrücklich autorisierten Korrektur-/Fehlerpreview, kein Gewichtsupdate durch Preview. Katalogauflistung offline; PROBE kein Training. Grenzen/Gates `code/docs/INTEGRATED_FEEDBACK_BOOTSTRAP_20261111.md`.
+
 # GPT-Abgleich Archiv-/Source-Lifecycle mit Lernen — 2026-11-11
 
 Sechs #1653-Dateien gegen HEAD `c0cb5e6690f32308b463da1dceabd834d9f08277` bytegeprüft und in eine gemeinsame #1663-basierte Testkopie komponiert. **2 äußere Tests, 252 PASS / 3 CUDA SKIP / 16 Untertests PASS**; echter synthetischer Turn, Quellenarchiv, verifizierter Span, Neustart und Widerruf im World-Pfad. Alter unkomprimierter `messages.text`-Store und nicht integrierter normaler Streaming-Retrieval-Pfad lassen die Langzeit-/Speichereffizienz offen. `code/docs/INTEGRATED_MEMORY_WORLD_LIFECYCLE_20261111.md`. #1719 HEAD `2a12ba0bbea73985232630486e10d6bf58c0eb97` bei Sichtung ohne CI; kein Redmi-RAM-Beweis durch Dateigröße. Gates unverändert.

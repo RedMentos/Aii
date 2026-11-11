@@ -162,5 +162,22 @@
     "production_promotion": false,
     "device_proof": false,
     "negative_gates_unchanged": true
+  },
+  "codex_feedback_bootstrap_integration_20261111": {
+    "candidate": "v13/code/scripts/integrated_feedback_bootstrap_candidate_20261111.py",
+    "source_pr_1644": "ae69ef28f6ced8879e30fe1a43a42a639679f852; 20 files byte-verified",
+    "catalog": "47 views / 35 repositories; 18 PROBE / 29 HOLD; no automatic download or training",
+    "feedback": "synthetic real Runtime/SQLite turn connects source-bound World receipt and explicit route correction/error preview; no model weight change from preview",
+    "tests": "2 outer passed; 358 combined passed, 3 CUDA skipped, 35 subtests passed",
+    "limits": [
+      "feedback preview uses caller-supplied synthetic embedding",
+      "normal ContextOS retrieval is not yet connected to streaming source reader",
+      "uncompressed SQLite messages remain",
+      "idle training and dataset admission not implemented",
+      "no native/Redmi proof"
+    ],
+    "production_promotion": false,
+    "device_proof": false,
+    "negative_gates_unchanged": true
   }
 }

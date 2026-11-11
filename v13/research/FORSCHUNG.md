@@ -1,5 +1,7 @@
 # V13 Forschungsabgleich (Stand 2026-10-09)
 
+Ergänzung 2026-11-08: [Gewichtsdiagnose und Lernen aus Fehlversuchen](WEIGHT_SPACE_UND_FEHLERLERNEN_20261108.md); Forschungs- und Arbeitsvorschlag, kein Wirksamkeitsnachweis.
+
 Ziel: aktuelle Forschung 2025–2026 gegen Blueprint v10.16.1 und `ROADMAP.md` legen.
 Was ist veraltet, was fehlt, welche kleinen Modelle passen besser auf den Redmi Note 10 Pro
 (6 GB, Snapdragon 732G, V13-RSS-Hardlimit ≈ 3.8 GB laut Blueprint §73).

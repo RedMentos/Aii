@@ -1,3 +1,9 @@
+# 2026-11-11 — Feedback, Fehlerpreview und Datensatzkatalog auf gemeinsamer Basis
+
+#1644-Notizen und Katalog (47 Ansichten/35 Repositories; 18 PROBE, 29 HOLD), Paper-/Fehlerlernnotiz und #1640-Feedbackbausteine sind in die gemeinsame Kette übernommen und gegen ihren Git-HEAD bytegeprüft. `scripts/integrated_feedback_bootstrap_candidate_20261111.py` verbindet in der hashgebundenen Testkopie die geprüfte Rating-Fanout-/C5-SHADOW-Version mit dem späteren Source-Lifecycle. Ein tatsächlicher synthetischer Turn bindet explizite Korrektur und World-Quittung an dieselbe T8-Aktion; Fehlergradient nur Vorschau, keine Gewichtsänderung. **2 äußere Tests PASS; 358 PASS / 3 CUDA SKIP / 35 Untertests PASS**. `INTEGRATED_FEEDBACK_BOOTSTRAP_20261111.md`.
+
+Nächste Kante: tatsächlichen, unterbrechbaren ContextOS-/Source-Retrieval-Pfad für komprimierte ältere Quellen entwickeln, ohne ein verschachteltes SQLite-`BEGIN` oder unbeschränkte Ausgabe; `messages.text`-Duplikate und Speicherquoten separat bewerten. Anschließend Idle-Importer/-Scheduler und Body-Operator anhand der Nutzerentscheidungen fertig integrieren. Kein automatischer Download, keine Bildschirmfreigabe und keine nachgewiesene Learning-Utility.
+
 # 2026-11-11 — Quellen-/Archiv-Lifecycle auf gemeinsamer Basis
 
 `scripts/integrated_memory_world_candidate_20261111.py` verbindet die bytegeprüfte #1653-Quellen-/Archiv-Kopie mit C3, Body-JEPA und World. **2 äußere Tests PASS; 252 PASS / 3 CUDA SKIP / 16 Untertests PASS** in derselben Testkopie. Neuer echter SQLite-Turn: lernen → Quelle komprimieren → Unicode-Span prüfen → Neustart → Quelle widerrufen/bereinigen → World-Nutzung und Quellenlesen verweigert. Details `INTEGRATED_MEMORY_WORLD_LIFECYCLE_20261111.md`.
