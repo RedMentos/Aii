@@ -192,8 +192,14 @@ class GitHub:
         url = "https://api.github.com" + path
         raw = None if payload is None else canonical(payload)
         headers = {"Accept": "application/vnd.github+json",
-                   "Authorization": "Bearer " + self.token,
                    "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "V13-Private-Bridge/1"}
+        # Private relay token is NEVER forwarded when reading the PUBLIC source
+        # repo, even if the caller's fine-grained token cannot access it.
+        own = "/repos/" + self.repository
+        if path == own or path.startswith(own + "/"):
+            headers["Authorization"] = "Bearer " + self.token
+        elif method != "GET" or not path.startswith("/repos/"):
+            raise Denied("cross-repository write/credential forwarding forbidden")
         if raw is not None:
             headers["Content-Type"] = "application/json"
         req = urllib.request.Request(url, data=raw, headers=headers, method=method)
