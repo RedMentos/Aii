@@ -75,7 +75,8 @@ class CapabilityRegistry:
                 raise PermissionError("success forbidden for OFF/dry-run/stopped request")
             if not outcome.companion_receipt:
                 raise ValueError("successful action requires companion receipt")
-        self._pending.pop(outcome.request_id)\n        self._outcomes.append(outcome)
+        self._pending.pop(outcome.request_id)
+        self._outcomes.append(outcome)
 
     def history(self) -> tuple[ActionOutcome, ...]:
         return tuple(self._outcomes)
