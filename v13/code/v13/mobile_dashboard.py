@@ -301,6 +301,9 @@ class RuntimeControls:
         self.last_action = "Keine Aktion"
         self.update_busy = False
         self.update_result = "Noch kein GitHub-Update geprüft"
+        self.update_started = 0.0
+        self.restart_requested = False
+        self.restart_callback = None
 
     def state(self):
         state = self.terminal.state()
@@ -328,13 +331,18 @@ class RuntimeControls:
         return self.send(":shutdown")
 
     def start_update(self, action):
-        if action not in ("check", "apply", "auto", "rollback"):
+        if action not in ("check", "apply", "auto", "rollback", "dashboard"):
             raise ValueError("Nicht freigegebene Update-Aktion")
+        # Do not silently update code while the V13 process is running. The
+        # result must be shown at click time, not hidden in a background log.
+        if action in ("apply", "rollback", "dashboard") and self.terminal.state()["running"]:
+            raise RuntimeError("V13 läuft noch. Erst im Chat auf 'V13 beenden' drücken; danach das Update starten.")
         with self.lock:
             if self.update_busy:
                 raise RuntimeError("Ein Update-Check laeuft bereits")
             self.update_busy = True
-            self.update_result = "GitHub wird geprüft…"
+            self.update_started = time.monotonic()
+            self.update_result = "GitHub verbinden und geänderte Dateien prüfen …"
         def worker():
             try:
                 from v13 import source_updater
@@ -344,21 +352,33 @@ class RuntimeControls:
                     result = source_updater.apply()
                 elif action == "auto":
                     result = source_updater.auto_apply()
+                elif action == "dashboard":
+                    result = source_updater.apply_dashboard()
                 else:
                     result = source_updater.rollback()
                 msg = result["status"] + " · " + str(result.get("changed_files", 0)) + " geänderte Dateien"
-                if result["status"] in ("UPDATED", "ROLLED_BACK"):
-                    msg += " · bitte neuen V13-Chat starten"
+                if action == "dashboard" and result["status"] == "UPDATED":
+                    msg += " · Kontrollzentrum startet neu"
+                elif result["status"] in ("UPDATED", "ROLLED_BACK"):
+                    msg += " · V13 neu starten; Installation der Laufzeit getrennt prüfen"
             except Exception as exc:
                 msg = "Nicht durchgeführt: " + type(exc).__name__ + " · " + str(exc)[:200]
             with self.lock:
                 self.update_result = msg
                 self.update_busy = False
+                needs_restart = (action == "dashboard" and msg.startswith("UPDATED"))
+                if needs_restart:
+                    self.restart_requested = True
+            if needs_restart and self.restart_callback:
+                self.restart_callback()
         threading.Thread(target=worker, daemon=True, name="v13-source-update").start()
 
     def update_status(self):
         with self.lock:
-            return self.update_result, self.update_busy
+            if self.update_busy:
+                elapsed = round(time.monotonic() - self.update_started)
+                return self.update_result + " · " + str(elapsed) + " s", True
+            return self.update_result, False
 
     def output(self):
         return safe_text(self.terminal.output(MAX_TAIL).encode("utf-8"))
@@ -585,8 +605,13 @@ def serve(*, open_browser=True):
                     pass
             time.sleep(900)
     threading.Thread(target=auto_loop, daemon=True, name="v13-auto-updates").start()
-    token = secrets.token_hex(24)
-    csrf = secrets.token_hex(24)
+    token = os.environ.get("V13_UI_RESTART_TOKEN") or secrets.token_hex(24)
+    csrf = os.environ.get("V13_UI_RESTART_CSRF") or secrets.token_hex(24)
+    port = int(os.environ.get("V13_UI_RESTART_PORT") or "0")
+    for key in ("V13_UI_RESTART_TOKEN","V13_UI_RESTART_CSRF","V13_UI_RESTART_PORT"):
+        os.environ.pop(key,None)
+    if not re.fullmatch(r"[a-f0-9]{48}",token) or not re.fullmatch(r"[a-f0-9]{48}",csrf):
+        raise RuntimeError("Ungültiger lokaler UI-Neustart-Schlüssel")
     prefix = "/t/" + token
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, fmt, *args):
@@ -613,11 +638,28 @@ def serve(*, open_browser=True):
             if not self._local_host():
                 self._headers(403)
                 return
+            if self.path in (prefix + "/transcript", prefix + "/transcript.txt"):
+                data = controls.terminal.transcript(all_sessions=True).encode("utf-8")
+                if len(data) > 64*1024*1024:
+                    self._headers(413)
+                    return
+                self.send_response(200)
+                self.send_header("Content-Type", "text/plain; charset=utf-8")
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Referrer-Policy", "no-referrer")
+                self.send_header("X-Content-Type-Options", "nosniff")
+                if self.path.endswith(".txt"):
+                    self.send_header("Content-Disposition", 'attachment; filename="V13-Chatverlauf.txt"')
+                self.end_headers()
+                self.wfile.write(data)
+                return
             if self.path == prefix + "/state":
                 running, mode, exitcode, last = controls.state()
                 state = "läuft" if running else "bereit" if exitcode is None else "beendet (" + str(exitcode) + ")"
+                update_result, update_busy = controls.update_status()
                 payload = {"state": state, "output": controls.output()[-50000:],
-                           "last_action": last, "running": running}
+                           "last_action": last, "running": running,
+                           "update_result": update_result, "update_busy": update_busy}
                 data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
                 self._headers(mime="application/json; charset=utf-8")
                 self.wfile.write(data)
@@ -693,9 +735,9 @@ def serve(*, open_browser=True):
                 elif action == "zip":
                     dest = diagnostics_zip()
                     message = "Diagnose-ZIP erstellt: " + dest.name + " (in Downloads)"
-                elif action in ("check_update", "apply_update", "rollback_update"):
+                elif action in ("check_update", "apply_update", "rollback_update", "dashboard_update"):
                     controls.start_update({"check_update":"check","apply_update":"apply",
-                                           "rollback_update":"rollback"}[action])
+                                           "rollback_update":"rollback", "dashboard_update":"dashboard"}[action])
                     message = "Update-Auftrag gestartet; Ergebnis wird im Abschnitt GitHub-Updates angezeigt."
                 elif action in ("auto_enable", "auto_disable"):
                     set_automatic_updates(action == "auto_enable")
@@ -704,11 +746,24 @@ def serve(*, open_browser=True):
                     raise ValueError("Unbekannte Aktion")
             except (OSError, ValueError, RuntimeError, UnicodeError) as exc:
                 message = "Fehler: " + type(exc).__name__ + ": " + str(exc)[:200]
-            data = dashboard_html(token, controls, message, csrf=csrf).encode("utf-8")
-            self._headers()
+            if "application/json" in self.headers.get("Accept", ""):
+                accepted = not message.startswith("Fehler:")
+                data = json.dumps({"ok": accepted, "message": message}, ensure_ascii=False).encode("utf-8")
+                self._headers(200 if accepted else 400, mime="application/json; charset=utf-8")
+            else:
+                data = dashboard_html(token, controls, message, csrf=csrf).encode("utf-8")
+                self._headers()
             self.wfile.write(data)
-    server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
     server.daemon_threads = True
+    def request_restart():
+        # Finish the acknowledgement to the browser, then cleanly release the
+        # socket before exec'ing Python with the fresh dashboard module.
+        def shutdown_server():
+            time.sleep(2)
+            server.shutdown()
+        threading.Thread(target=shutdown_server, name="v13-ui-refresh", daemon=True).start()
+    controls.restart_callback = request_restart
     url = f"http://127.0.0.1:{server.server_port}{prefix}/"
     print("V13 LOKALE OBERFLAECHE: " + url, flush=True)
     if open_browser:
@@ -721,6 +776,11 @@ def serve(*, open_browser=True):
         server.serve_forever(poll_interval=.5)
     finally:
         server.server_close()
+    if controls.restart_requested:
+        os.environ["V13_UI_RESTART_PORT"] = str(server.server_port)
+        os.environ["V13_UI_RESTART_TOKEN"] = token
+        os.environ["V13_UI_RESTART_CSRF"] = csrf
+        os.execv(sys.executable,[sys.executable,"-m","v13.mobile_dashboard","ui"])
 
 
 def main(argv=None):
