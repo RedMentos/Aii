@@ -31,6 +31,7 @@ BUNDLE_LIMIT = 200_000
 PORT = 0  # OS-selected local port; no remote interface
 AUTO_FILE = PRIVATE / "auto-source-update.enabled"
 REMOTE_LOG_FLAG = PRIVATE / "share-v13-log-summary.enabled"
+REMOTE_FULL_FLAG = PRIVATE / "share-v13-console.enabled"
 KNOBS_UI = {
  "threads": (1, 8, 1, "CPU-Threads"),
  "answer_tokens": (16, 512, 16, "Antwort-Tokens"),
@@ -152,6 +153,50 @@ def remote_console_excerpt():
             elif "Traceback" in line:
                 lines.append("TRACEBACK_PRESENT")
     return {"state": "OPTED_IN_REDACTED", "lines": lines[-40:], "truncated": len(lines) > 40}
+
+
+def remote_full_console_enabled():
+    if REMOTE_FULL_FLAG.is_symlink():
+        return False
+    try:
+        return REMOTE_FULL_FLAG.is_file() and REMOTE_FULL_FLAG.read_text().strip() == "yes"
+    except OSError:
+        return False
+
+
+def set_remote_full_console(enabled):
+    PRIVATE.mkdir(mode=0o700, parents=True, exist_ok=True)
+    if PRIVATE.is_symlink() or PRIVATE.stat().st_mode & 0o077 or REMOTE_FULL_FLAG.is_symlink():
+        raise RuntimeError("Unsichere Freigabe")
+    if enabled:
+        if REMOTE_FULL_FLAG.exists():
+            REMOTE_FULL_FLAG.unlink()
+        with REMOTE_FULL_FLAG.open("x") as f:
+            f.write("yes\n")
+            f.flush()
+            os.fsync(f.fileno())
+        REMOTE_FULL_FLAG.chmod(0o600)
+    else:
+        REMOTE_FULL_FLAG.unlink(missing_ok=True)
+
+
+def remote_full_console():
+    """User-opted-in bounded V13 excerpt, never arbitrary Termux shell sessions."""
+    if not remote_full_console_enabled():
+        return {"state": "USER_NOT_OPTED_IN"}
+    paths = sorted((PRIVATE / "console-logs").glob("v13-session-*.log"), reverse=True)
+    if not paths:
+        return {"state": "NO_MANAGED_SESSION"}
+    lines = safe_text(bounded_tail(paths[0], 9000)).splitlines()
+    filtered = []
+    for line in lines:
+        if line.lstrip().startswith(("[du>", "du>")):
+            filtered.append("[LOCAL_USER_INPUT_REDACTED]")
+        else:
+            filtered.append(line)
+    content = "\n".join(filtered)[-6000:]
+    return {"state": "USER_OPTED_IN", "captured_v13_only": True,
+            "redacted_user_input": True, "max_chars": 6000, "text": content}
 
 
 def diagnostics_zip(destination=None):
@@ -343,6 +388,7 @@ def dashboard_html(token, controls, message=""):
     update_msg, update_busy = controls.update_status()
     auto_enabled = automatic_updates_enabled()
     shared = remote_log_sharing_enabled()
+    full_shared = remote_full_console_enabled()
     roles = " · ".join(f"{html.escape(name)}: {'OK' if v.get('ok') else 'Fehler'}"
                        for name, v in current["roles"].items())
     action = "/t/" + token + "/action"
@@ -418,7 +464,8 @@ small{{color:#b0bdcf}}.message{{color:#b8e4c4}}label{{display:block;margin-top:1
 <div class="actions">
 {_button(action,"zip","Export","Diagnose-ZIP in Downloads")}
 {_button(action,"log_disable" if shared else "log_enable","Freigabe", "Fern-Fehlercodes AUS" if shared else "Fern-Fehlercodes EIN","secondary")}
-</div><small>Private GitHub-Diagnose: {'nur technische Fehlerklassen freigegeben' if shared else 'keine Konsolenlogs freigegeben'}. Niemals komplette Chats/Passwörter automatisch hochladen. ZIP vor dem Teilen prüfen.</small>
+{_button(action,"full_log_disable" if full_shared else "full_log_enable","Freigabe", "V13-Konsolenauszug AUS" if full_shared else "V13-Konsolenauszug TEILEN","secondary")}
+</div><small>Private GitHub-Diagnose: {'technische Fehlercodes freigegeben' if shared else 'Fehlercodes aus'}; {'letzte V13-Ausgaben (max. 6000 Zeichen) auf Anfrage lesbar' if full_shared else 'Konsolentext nicht freigegeben'}. Achtung: V13-Ausgaben können private Chat-Inhalte enthalten, auch nach automatischer Token-Redaktion. Diese bleiben als private GitHub-Kommentare gespeichert. Keine anderen Termux-Sitzungen. ZIP vor dem Teilen prüfen.</small>
 <small>Gesicherte lokale Sitzungen: {html.escape(extra or "Noch keine")}</small></section>
 <section><h2>GitHub-Quellcode-Updates</h2><p><small>{html.escape(update_msg)}{' · läuft' if update_busy else ''}</small></p>
 <div class="actions">
@@ -523,6 +570,9 @@ def serve(*, open_browser=True):
                 elif action in ("log_enable", "log_disable"):
                     set_remote_log_sharing(action == "log_enable")
                     message = "Private technische Fern-Fehlercodes " + ("aktiviert" if action == "log_enable" else "deaktiviert")
+                elif action in ("full_log_enable", "full_log_disable"):
+                    set_remote_full_console(action == "full_log_enable")
+                    message = "Private V13-Konsolenauszüge " + ("freigegeben" if action == "full_log_enable" else "gesperrt")
                 elif action == "stop":
                     message = controls.stop()
                 elif action == "zip":
