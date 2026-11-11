@@ -319,3 +319,18 @@ def test_publisher_uses_pinned_base_target_and_ed25519_signature(env, tmp_path, 
     assert obj["base_commit"] == "a" * 40
     assert obj["target_commit"] == "b" * 40
     assert obj["files"][0]["after_sha256"] == m.sha(b"x = 2\n")
+
+
+def test_stale_status_file_not_advertised_as_live(env):
+    env["status"].write_text('{"learning_mode":"ACTIVE","world_steps":999}')
+    os.utime(env["status"], (m.time.time() - 500, m.time.time() - 500))
+    assert m._trusted_status(str(env["status"])) == {"state": "STALE_NO_LIVE_PROOF"}
+
+
+def test_repository_privacy_rejection_cannot_be_bypassed():
+    gh = m.GitHub("opaque-dev-token", "Owner/remote")
+    gh.request = lambda *a, **k: {"private": False, "full_name": "Owner/remote"}
+    with pytest.raises(m.Denied, match="PRIVATE"):
+        gh.check_private()
+    gh.request = lambda *a, **k: {"private": True, "full_name": "Owner/remote"}
+    assert gh.check_private() is True
