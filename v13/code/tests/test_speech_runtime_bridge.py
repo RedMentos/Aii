@@ -47,3 +47,18 @@ def test_untrusted_or_incomplete_receipts_never_enqueue(tmp_path):
             bridge.submit(item)
     assert q.db.execute("SELECT count(*) FROM speech_intents").fetchone()[0] == 0
     q.close()
+
+def test_replayed_c3_response_is_not_spoken_twice_after_restart(tmp_path):
+    path = tmp_path / "speech.sqlite"
+    q = SpeechIntentQueue(path)
+    bridge = SpeechRuntimeBridge(q, enabled=True)
+    bridge.submit(receipt())
+    with pytest.raises(SpeechIntentError, match="already queued"):
+        bridge.submit(receipt())
+    q.close()
+    q = SpeechIntentQueue(path)
+    bridge = SpeechRuntimeBridge(q, enabled=True)
+    with pytest.raises(SpeechIntentError, match="already queued"):
+        bridge.submit(receipt())
+    assert q.db.execute("SELECT count(*) FROM speech_intents").fetchone()[0] == 1
+    q.close()
