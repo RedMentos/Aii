@@ -86,6 +86,23 @@ class SourceUpdateTests(unittest.TestCase):
         self.assertEqual(git(self.phone, "rev-parse", "HEAD"), self.initial)
         self.assertEqual((self.phone / "v13/code/v13/__init__.py").read_text(), "ANSWER = 1\n")
 
+    def test_dashboard_source_updates_independent_of_v13_runtime(self):
+        # The control-panel source has its own checkout and can be changed
+        # without touching the model data or V13's running Python modules.
+        (self.base / "v13/code/v13/mobile_dashboard.html").write_text("<html>mobile</html>")
+        self.publish()
+        with mock.patch.object(u, "_runtime_active", return_value=True):
+            result = u.apply_dashboard(self.phone)
+        self.assertEqual(result["status"], "UPDATED")
+        self.assertTrue(result["restart_required"])
+        self.assertTrue((self.phone / "v13/code/v13/mobile_dashboard.html").is_file())
+
+    def test_dashboard_source_reverts_when_template_missing(self):
+        self.publish()
+        with self.assertRaises(u.UpdateDenied):
+            u.apply_dashboard(self.phone)
+        self.assertEqual(git(self.phone, "rev-parse", "HEAD"), self.initial)
+
     def test_bad_origin_not_accepted(self):
         with mock.patch.object(u, "EXPECTED_ORIGINS", ("https://github.com/no/other",)):
             with self.assertRaises(u.UpdateDenied):
