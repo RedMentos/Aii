@@ -61,12 +61,25 @@ def run(store, checkpoint, *, seed=17, steps=5, limit=2048):
     old_arrays = _arrays(old)
     recent_arrays = _arrays(recent)
     holdout = split["holdout"]
+    # The global ID-hashed holdout mixes historical and recent observations.
+    # Measure temporal retention on the OLD held-out cohort separately; a
+    # global score alone can hide forgetting by improving on newer examples.
+    holdout_rows = [r for r in rows if r["action_id"] in holdout_ids]
+    old_end = rows.index(old[-1])
+    old_holdout_rows = [r for r in holdout_rows if rows.index(r) <= old_end]
+    recent_holdout_rows = [r for r in holdout_rows if rows.index(r) > old_end]
+    if len(old_holdout_rows) < 2 or len(recent_holdout_rows) < 2:
+        raise ValueError("insufficient chronological T8 holdout cohorts")
+    old_holdout = _arrays(old_holdout_rows)
+    recent_holdout = _arrays(recent_holdout_rows)
     replay_rows = old[::2]
     replay_arrays = _arrays(replay_rows)
     if set(r["action_id"] for r in replay_rows) & holdout_ids:
         raise ValueError("T8 holdout leaked into replay")
     plain = WorldJEPA(seed=seed, ensemble=2).fit(*old_arrays, steps=4, log_every=1)
     replay = WorldJEPA(seed=seed, ensemble=2).fit(*old_arrays, steps=4, log_every=1)
+    old_before = plain.prediction_loss(*old_holdout)
+    recent_before = plain.prediction_loss(*recent_holdout)
     before = plain.prediction_loss(*holdout)
     if not np.isclose(before, replay.prediction_loss(*holdout), rtol=0, atol=1e-12):
         raise ValueError("T8 replay branches started differently")
@@ -74,9 +87,15 @@ def run(store, checkpoint, *, seed=17, steps=5, limit=2048):
     plain.partial_fit(*recent_arrays, steps=steps, log_every=max(1, steps // 3))
     replay.partial_fit(*_concat(recent_arrays, replay_arrays),
                        steps=steps, log_every=max(1, steps // 3))
+    old_without = plain.prediction_loss(*old_holdout)
+    recent_without = plain.prediction_loss(*recent_holdout)
     without = plain.prediction_loss(*holdout)
+    old_with_replay = replay.prediction_loss(*old_holdout)
+    recent_with_replay = replay.prediction_loss(*recent_holdout)
     with_replay = replay.prediction_loss(*holdout)
-    if (not np.isfinite([before, without, with_replay]).all()
+    if (not np.isfinite([old_before, old_without, old_with_replay,
+                         recent_before, recent_without, recent_with_replay]).all()
+            or not np.isfinite([before, without, with_replay]).all()
             or np.array_equal(previous, replay.enc["W1"])):
         raise ValueError("T8 replay failed numeric gradient update")
     source = split["manifest"]["all_rows_sha256"]
@@ -100,6 +119,18 @@ def run(store, checkpoint, *, seed=17, steps=5, limit=2048):
         "new_train_rows": len(recent),
         "replayed_rows": len(replay_rows),
         "holdout_rows": len(split["holdout_action_ids"]),
+        "old_holdout_rows": len(old_holdout_rows),
+        "recent_holdout_rows": len(recent_holdout_rows),
+        "old_holdout_loss_before": float(old_before),
+        "old_holdout_loss_without_replay": float(old_without),
+        "old_holdout_loss_with_replay": float(old_with_replay),
+        "old_forgetting_without_replay": float(old_without - old_before),
+        "old_forgetting_with_replay": float(old_with_replay - old_before),
+        "recent_holdout_loss_before": float(recent_before),
+        "recent_holdout_loss_without_replay": float(recent_without),
+        "recent_holdout_loss_with_replay": float(recent_with_replay),
+        "old_retention_replay_advantage": float(old_without - old_with_replay),
+        "global_holdout_is_mixed_chronology": True,
         "id_content_disjoint": True,
         "holdout_loss_before": float(before),
         "holdout_loss_without_replay": float(without),

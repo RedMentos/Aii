@@ -24,6 +24,17 @@ def test_real_sqlite_t8_replay_and_restart(tmp_path):
     assert report["source_verified"] is True
     assert report["holdout_rows"] >= 8
     assert report["id_content_disjoint"] is True
+    assert report["old_holdout_rows"] >= 2
+    assert report["recent_holdout_rows"] >= 2
+    assert report["old_holdout_rows"] + report["recent_holdout_rows"] == report["holdout_rows"]
+    assert report["global_holdout_is_mixed_chronology"] is True
+    assert report["old_forgetting_without_replay"] == pytest.approx(
+        report["old_holdout_loss_without_replay"] - report["old_holdout_loss_before"])
+    assert report["old_forgetting_with_replay"] == pytest.approx(
+        report["old_holdout_loss_with_replay"] - report["old_holdout_loss_before"])
+    assert report["old_retention_replay_advantage"] == pytest.approx(
+        report["old_holdout_loss_without_replay"] - report["old_holdout_loss_with_replay"])
+    assert math.isfinite(report["old_retention_replay_advantage"])
     # Replay phases must follow the T8 reader's committed chronological order,
     # never the opaque action ID's lexical order.
     from v13 import world_model
