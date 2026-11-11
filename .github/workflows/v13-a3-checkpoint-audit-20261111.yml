@@ -1,0 +1,22 @@
+name: V13 A3 Checkpoint Audit Candidate
+on:
+  push:
+    branches:
+      - research-perception/a3-checkpoint-audit-20261111-0300
+  pull_request:
+    paths:
+      - 'v13/code/v13/a3_checkpoint_audit_candidate.py'
+      - 'v13/code/tests/test_a3_checkpoint_audit_candidate_20261111.py'
+      - '.github/workflows/v13-a3-checkpoint-audit-20261111.yml'
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5
+      - name: Run synthetic checkpoint checks
+        working-directory: v13/code
+        run: PYTHONPATH=. python -B -m unittest -v tests.test_a3_checkpoint_audit_candidate_20261111
