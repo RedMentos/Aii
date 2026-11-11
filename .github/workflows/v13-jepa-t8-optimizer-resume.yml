@@ -1,0 +1,20 @@
+name: V13 JEPA committed T8 optimizer replay resume
+on:
+  push:
+    branches:
+      - jepa/t8-optimizer-restart-integration-20261111-1627
+  pull_request:
+    paths:
+      - 'v13/code/tests/test_t8_world_jepa_optimizer_resume_integration_20261111.py'
+      - '.github/workflows/v13-jepa-t8-optimizer-resume.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy pytest
+      - run: python -m pytest -q tests/test_t8_world_jepa_optimizer_resume_integration_20261111.py
+        working-directory: v13/code
