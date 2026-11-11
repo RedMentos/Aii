@@ -56,7 +56,7 @@ def acoustic_views(percept: dict, *, max_detail: int = 64, gist_bins: int = 8) -
             raise ValueError("invalid pitch")
         for field in ("voiced_probability", "non_speech_probability"):
             value = f.get(field)
-            if type(value) not in (int, float) or not isfinite(value) or not 0 <= value <= 1:
+            if value is not None and (type(value) not in (int, float) or not isfinite(value) or not 0 <= value <= 1):
                 raise ValueError("invalid acoustic probability")
         previous = b
     # B1 retains exact sampled frame measurements, without inventing missing frames.

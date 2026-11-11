@@ -6,7 +6,7 @@ import sys
 from .raw_ear_contract import AcousticFrame, build_raw_ear
 
 def extract_pcm_frames(pcm16le: bytes, sample_rate_hz: int, frame_ms: int = 20):
-    """Return bounded timed RMS frames; probability fields zero mean unknown."""
+    """Return bounded RMS frames; unmeasured probabilities are None, never zero."""
     if type(frame_ms) is not int or not 10 <= frame_ms <= 100:
         raise ValueError("frame_ms must be integer 10..100")
     if type(sample_rate_hz) is not int or sample_rate_hz not in (8000, 16000, 24000, 48000):
@@ -32,7 +32,7 @@ def extract_pcm_frames(pcm16le: bytes, sample_rate_hz: int, frame_ms: int = 20):
             continue
         chunk = values[start:end]
         rms = sqrt(sum((int(v) / 32768.0) ** 2 for v in chunk) / len(chunk))
-        out.append(AcousticFrame(start_ms, end_ms, rms, None, 0.0, 0.0))
+        out.append(AcousticFrame(start_ms, end_ms, rms, None, None, None))
     return tuple(out)
 
 def build_pcm_raw_ear(source_ref: str, pcm16le: bytes, sample_rate_hz: int, *,
