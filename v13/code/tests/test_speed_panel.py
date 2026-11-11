@@ -57,10 +57,17 @@ def test_no_cross_session_or_nonfinite_or_redacted_data_leak(runtime):
         "role": "C3_LANGUAGE", "predicted_per_second": 200.5,
     })
     e = r.store.event(r.session, "Session A")["event_id"]
-    r.store.log("native_C3", e, {
-        "role": "C3_LANGUAGE", "predicted_per_second": float("nan"),
-        "ttft_s": float("inf"),
-    })
+    # Deliberately insert legacy/corrupt telemetry that normal Store.log()
+    # would reject (dumps has allow_nan=False). This is a negative control.
+    with r.store.tx() as db:
+        db.execute(
+            "INSERT INTO telemetry(kind,event_id,metrics,created) VALUES (?,?,?,0)",
+            ("native_C3", e, json.dumps({
+                "role": "C3_LANGUAGE",
+                "predicted_per_second": float("nan"),
+                "ttft_s": float("inf"),
+            })),
+        )
     r.store.log("unknown", e, {"role": ["B1_DETAIL"], "predicted_per_second": 10.0})
     report = observed_models(r.store, r.session)
     assert all(a["latest_decoded_tokens_per_s"] is None for a in report["organs"])
