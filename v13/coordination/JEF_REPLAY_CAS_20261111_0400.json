@@ -1,0 +1,37 @@
+{
+  "schema": "v13-work-package-v1",
+  "date": "2026-11-11",
+  "owner": "V13 Core & Harness",
+  "branch": "codex/v13-jef-replay-ci-race-20261111-hour04",
+  "parent_pr": 1730,
+  "pr": 1732,
+  "base_sha": "22f7e6b00fe137aab8ecc3f3fe26618c828fc5d4",
+  "source_checkpoint": "c6c8b0209c8cce77c8e0bbcfa8bf5cf64d823313",
+  "files_owned": [
+    "v13/code/v13/turnflow.py",
+    "v13/code/tests/test_turnflow_replay_stability.py",
+    "v13/code/tests/test_turnflow_think_speak.py"
+  ],
+  "evidence": {
+    "parent_ci_run": 42943157502,
+    "parent_ci_result": "FAIL 1/14, privacy assertion matches resource_mode key",
+    "child_ci": "NOT_YET_REPORTED",
+    "local_tests": "NOT_RUN",
+    "native_android": "NOT_RUN"
+  },
+  "changes": [
+    "Fix preexisting privacy assertion to inspect values rather than stringifying all keys",
+    "On first-write CAS conflict reread authoritative winner, replay original decision or reject mismatched pattern",
+    "Adversarial simulated concurrent first-write tests"
+  ],
+  "negative_gates": [
+    "Age0 unchanged",
+    "C5 unchanged",
+    "B3 unchanged",
+    "STEP2 unchanged",
+    "No model weight training",
+    "No Android native proof"
+  ],
+  "next_command": "Check GitHub Actions for c6c8b0209c8cce77c8e0bbcfa8bf5cf64d823313, fix any red; then independent integration review against #1716 and latest canonical branch; do not merge blindly",
+  "status": "DRAFT_REVIEW_ONLY"
+}

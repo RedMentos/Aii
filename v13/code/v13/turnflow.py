@@ -143,53 +143,54 @@ def plan(store, event_id, meta, preoffers, role, eligible=True, residency_ok=Tru
     if role not in ("B1_DETAIL", "B2_GIST"):
         raise ValueError("unknown optional observer role")
     pattern, resource_mode, cycles = _signals(meta, preoffers, role)
-    state, _ = _read(store)
-    previous = state["events"].get(event_id)
-    if previous is not None:
-        # A committed source event must never be rebound to a different body
-        # or used to fabricate fresh observer evidence on a retry.
-        if previous.get("pattern") != pattern:
-            raise ValueError("event already planned with a different pattern")
-        if previous.get("scheduled") not in ("SPEAK_AND_CHECK", "SPEAK_ONLY"):
-            raise ValueError("corrupt prior turn-flow schedule")
-        # A retry must not re-decide after policy feedback or a mode change.
-        # Older persisted events lack a decision snapshot; refuse to invent one.
-        snapshot = previous.get("decision")
-        if type(snapshot) is not dict or snapshot.get("pattern") != pattern:
-            raise ValueError("prior event lacks replayable decision")
-        return dict(snapshot)
-    # Scheduling may only DELETE optional extra work, never bypass the
-    # already-computed pre-answer deliberation or any C5 permission gate.
-    decision = decide(state, pattern, bool(eligible), bool(residency_ok), event_id)
-    if state["mode"] in ("measure", "off"):
-        decision["start_optional_observer"] = bool(eligible and residency_ok)
-        decision["adaptive_veto"] = False
-    decision.update({
-        "pattern": pattern,
-        "resource_mode": resource_mode,
-        "preanswer_offers": preoffers,
-        "focal_cycles": cycles,
-        "thinking_before_speech": bool(preoffers or cycles),
-        "concurrent_models_claim": bool(decision["start_optional_observer"] and residency_ok),
-        "external_action_authority": "UNCHANGED_C5_GATE",
-        "evidence": "SCHEDULE_ONLY_NOT_PROOF_OF_ANSWER_QUALITY",
-    })
-    if state["mode"] != "off":
-        def register(value):
-            if event_id not in value["events"]:
-                value["events"][event_id] = {"pattern": pattern, "feedback": None,
-                                             "scheduled": decision["schedule"],
-                                             "decision": dict(decision)}
-            if len(value["events"]) > MAX_EVENTS:
-                for old in list(value["events"])[:len(value["events"]) - MAX_EVENTS]:
-                    del value["events"][old]
-            value["last"] = (value.get("last", []) + [
-                {"event": event_id, "schedule": decision["schedule"],
-                 "adaptive_veto": decision["adaptive_veto"]}
-            ])[-16:]
-        _mutate(store, register)
-    return decision
-
+    # Re-evaluate from the winning CAS state. A concurrent first writer may
+    # have committed this event with different eligibility or policy mode.
+    for attempt in range(3):
+        state, version = _read(store)
+        previous = state["events"].get(event_id)
+        if previous is not None:
+            if previous.get("pattern") != pattern:
+                raise ValueError("event already planned with a different pattern")
+            if previous.get("scheduled") not in ("SPEAK_AND_CHECK", "SPEAK_ONLY"):
+                raise ValueError("corrupt prior turn-flow schedule")
+            snapshot = previous.get("decision")
+            if type(snapshot) is not dict or snapshot.get("pattern") != pattern:
+                raise ValueError("prior event lacks replayable decision")
+            return dict(snapshot)
+        # Scheduling only controls optional extra work; never permissions.
+        decision = decide(state, pattern, bool(eligible), bool(residency_ok), event_id)
+        if state["mode"] in ("measure", "off"):
+            decision["start_optional_observer"] = bool(eligible and residency_ok)
+            decision["adaptive_veto"] = False
+        decision.update({
+            "pattern": pattern,
+            "resource_mode": resource_mode,
+            "preanswer_offers": preoffers,
+            "focal_cycles": cycles,
+            "thinking_before_speech": bool(preoffers or cycles),
+            "concurrent_models_claim": bool(decision["start_optional_observer"] and residency_ok),
+            "external_action_authority": "UNCHANGED_C5_GATE",
+            "evidence": "SCHEDULE_ONLY_NOT_PROOF_OF_ANSWER_QUALITY",
+        })
+        if state["mode"] == "off":
+            return decision
+        state["events"][event_id] = {"pattern": pattern, "feedback": None,
+                                     "scheduled": decision["schedule"],
+                                     "decision": dict(decision)}
+        if len(state["events"]) > MAX_EVENTS:
+            for old in list(state["events"])[:len(state["events"]) - MAX_EVENTS]:
+                del state["events"][old]
+        state["last"] = (state.get("last", []) + [
+            {"event": event_id, "schedule": decision["schedule"],
+             "adaptive_veto": decision["adaptive_veto"]}
+        ])[-16:]
+        try:
+            store.set_state(KEY, state, expected=version)
+            return decision
+        except ValueError:
+            if attempt == 2:
+                raise
+    raise RuntimeError("unreachable CAS retry state")
 
 
 OBSERVED_STATUSES = frozenset({
