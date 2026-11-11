@@ -20,7 +20,7 @@ import time
 from v13 import remote_maintenance_bridge as bridge
 
 READ_SCHEMA = "v13.private-relay.owner-read/1"
-READ_CMDS = frozenset({"HEALTH", "LEARNING_STATUS"})
+READ_CMDS = frozenset({"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS"})
 OWNER_AGENT = "agent-owner"
 MAX_READ_BODY = 1024
 
