@@ -46,5 +46,26 @@ class Audit(unittest.TestCase):
         alias.symlink_to(self.path)
         with self.assertRaises(OSError): audit(alias)
 
+    def test_float16_floor_is_not_a_supported_checkpoint_dtype(self):
+        with self.assertRaises(ValueError):
+            self.check(support_floor=np.array(0.5, dtype=np.float16))
+    def test_nonfinite_support_rejected(self):
+        support = fixture()["support"]
+        support[0, 0] = np.inf
+        with self.assertRaises(ValueError):
+            self.check(support=support)
+    def test_expanded_member_limit_rejected_before_numpy_load(self):
+        data = fixture()
+        data["support"] = np.zeros((2049, RAW_DIM), dtype=np.float64)
+        np.savez_compressed(self.path, **data)
+        with self.assertRaises(ValueError):
+            audit(self.path)
+    def test_truncated_archive_rejected(self):
+        self.check()
+        raw = self.path.read_bytes()
+        self.path.write_bytes(raw[:len(raw) // 2])
+        with self.assertRaises((ValueError, OSError, EOFError, __import__("zipfile").BadZipFile)):
+            audit(self.path)
+
 if __name__ == "__main__":
     unittest.main()
