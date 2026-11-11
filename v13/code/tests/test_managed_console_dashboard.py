@@ -101,6 +101,28 @@ class LocalConsoleTests(unittest.TestCase):
             ui.set_remote_full_console(False)
             self.assertEqual(ui.remote_full_console()["state"], "USER_NOT_OPTED_IN")
 
+    def test_private_probe_timeout_summaries_are_bounded(self):
+        import json
+        with mock.patch.object(ui, "DATA", self.home):
+            (self.home / "exports").mkdir(parents=True)
+            (self.home / "exports/native-probe.json").write_text(json.dumps({
+                "status": "SMOKE_PARTIAL",
+                "effective_config": {"deadline_seconds": 90, "token": "hidden"},
+                "roles": {
+                    "B1_DETAIL": {"ok": False, "error": "Zeitbudget erreicht", "duration_s": 54.0791},
+                    "B2_GIST": {"ok": False, "error": "secret ghp_test123_very_private",
+                                "duration_s": 65.835},
+                    "C3_LANGUAGE": {"ok": True, "actual_output": "private chat"}
+                }
+            }))
+            report = ui.summary()
+            self.assertEqual(report["probe_deadline_seconds"], 90)
+            self.assertEqual(report["roles"]["B1_DETAIL"]["error_kind"], "TIME_BUDGET")
+            self.assertEqual(report["roles"]["B1_DETAIL"]["duration_s"], 54.1)
+            self.assertEqual(report["roles"]["B2_GIST"]["error_kind"], "REDACTED_ERROR")
+            self.assertNotIn("ghp_", str(report))
+            self.assertNotIn("private chat", str(report))
+
     def test_dashboard_has_clickable_operator_actions_and_sliders(self):
         with mock.patch.object(ui, "PRIVATE", self.path / "private"), mock.patch.object(ui, "DATA", self.home):
             controls = mock.Mock()
