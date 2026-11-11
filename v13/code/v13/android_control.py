@@ -149,11 +149,23 @@ class AndroidControlBroker:
             raise ControlDenied("invalid simulation envelope") from exc
         if not hmac.compare_digest(hashlib.sha256(payload.encode()).hexdigest(), digest):
             raise ControlDenied("simulation envelope digest mismatch")
-        if self.db.execute(
-            "SELECT 1 FROM control_audit WHERE action_id=? AND event='dry_run' AND digest=? LIMIT 1",
+        issued = self.db.execute(
+            "SELECT id FROM control_audit WHERE action_id=? AND event='dry_run' AND digest=? ORDER BY id DESC LIMIT 1",
             (action_id, digest)
-        ).fetchone() is None:
+        ).fetchone()
+        if issued is None:
             raise ControlDenied("unissued simulation envelope")
+        # A prior stop revokes outstanding receipts, including across process restarts.
+        if self.db.execute(
+            "SELECT 1 FROM control_audit WHERE event='operator_stop' AND id>? LIMIT 1",
+            (issued[0],)
+        ).fetchone():
+            raise ControlDenied("simulation receipt revoked by stop")
+        if self.db.execute(
+            "SELECT 1 FROM control_audit WHERE action_id=? AND event IN "
+            "('simulated_outcome','simulation_dispatch_failed') LIMIT 1", (action_id,)
+        ).fetchone():
+            raise ControlDenied("duplicate or finalized simulation receipt")
         return action_id, digest
 
     def record_simulated_outcome(self, envelope, outcome):
