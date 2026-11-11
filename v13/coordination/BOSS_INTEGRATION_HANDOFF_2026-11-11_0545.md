@@ -39,3 +39,10 @@ Three synthetic unit tests passed in a local isolated copy before publication (s
 5. **Perception**: deliver A0–A5 PerceptPacket consumed by regular Runtime, not merely A3 checkpoint auditing.
 
 No merge, gate promotion, AGI claim, or Redmi claim. Canon remains fully binding; security, provenance, retention and rollback remain release conditions.
+
+## Concurrent PRs discovered during final recheck
+
+- [#1736](https://github.com/RedMentos/Aii/pull/1736): Research already proposes an opt-in A5 PerceptPacket→B1/B2 source-view route; candidate-only and no native inference. Boss must REVIEW/INTEGRATE it, not assign Research a duplicate from scratch.
+- [#1737](https://github.com/RedMentos/Aii/pull/1737): JEPA already proposes actual Runtime→T8→WorldJEPA update→holdout→restart readback; tests pending. Boss must pin and execute this chain rather than reimplement its tests.
+
+Both arrived after the base integration commit; neither is included in #1738. The next Boss E2E slice should integrate #1736/#1737 only after exact-head tests and cross-owner contract checks.
