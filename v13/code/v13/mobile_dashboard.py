@@ -111,6 +111,13 @@ def summary():
             return out
         state = report.get("status")
         out["native_probe"] = state if state in ("SMOKE_PASS", "SMOKE_PARTIAL", "SMOKE_FAIL") else "UNKNOWN"
+        # Send only explicitly allowlisted technical values over the private
+        # channel, without raw exception strings, paths, or model output.
+        cfg = report.get("effective_config")
+        if isinstance(cfg, dict):
+            budget = cfg.get("deadline_seconds")
+            if type(budget) in (int, float) and 1 <= budget <= 3600:
+                out["probe_deadline_seconds"] = round(budget, 1)
         role_map = report.get("roles", {})
         if isinstance(role_map, dict):
             for name in ("C3_LANGUAGE", "B1_DETAIL", "B2_GIST", "C2_CONTROL"):
@@ -118,8 +125,18 @@ def summary():
                 if not isinstance(value, dict):
                     continue
                 item = {"ok": value.get("ok") is True}
-                if "error" in value:
-                    item["error_present"] = True  # freeform raw exception text deliberately omitted
+                error = value.get("error")
+                if isinstance(error, str):
+                    item["error_present"] = True
+                    if error.strip() == "Zeitbudget erreicht":
+                        item["error_kind"] = "TIME_BUDGET"
+                    elif "Abgebrochen" in error and len(error) < 180:
+                        item["error_kind"] = "CANCELLED"
+                    else:
+                        item["error_kind"] = "REDACTED_ERROR"
+                duration = value.get("duration_s")
+                if type(duration) in (float, int) and 0 <= duration <= 36000:
+                    item["duration_s"] = round(duration, 1)
                 out["roles"][name] = item
         return out
     except (ValueError, UnicodeError, OSError):
@@ -412,8 +429,16 @@ def dashboard_html(token, controls, message="", csrf=""):
     auto_enabled = automatic_updates_enabled()
     shared = remote_log_sharing_enabled()
     full_shared = remote_full_console_enabled()
-    roles = " · ".join(f"{html.escape(name)}: {'OK' if v.get('ok') else 'Fehler'}"
-                       for name, v in current["roles"].items())
+    def role_status(v):
+        if v.get("ok"):
+            return "OK"
+        error = {"TIME_BUDGET": "Zeitlimit", "CANCELLED": "Abgebrochen"}.get(v.get("error_kind"), "Fehler")
+        duration = v.get("duration_s")
+        return error + (f" ({duration:.1f} s)" if type(duration) in (float, int) else "")
+    roles = " · ".join(
+        f"{html.escape(name)}: {html.escape(role_status(v))}"
+        for name, v in current["roles"].items()
+    )
     action = "/t/" + token + "/action"
     msg = f'<p class="message">{html.escape(message)}</p>' if message else ""
     output = controls.output()
