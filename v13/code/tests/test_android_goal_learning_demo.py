@@ -60,7 +60,7 @@ def test_non_synthetic_input_and_native_dispatch_are_rejected(tmp_path):
         broker.start()
         p = broker.propose("back", {})
         broker.approve(p.action_id, confirmed_by_local_ui=True)
-        with pytest.raises(ControlDenied, match="native Android companion"):
+        with pytest.raises(ControlDenied, match="Android companion not connected"):
             broker.execute(p.action_id, dry_run=False)
     finally:
         broker.close()
