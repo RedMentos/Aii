@@ -31,6 +31,7 @@ git -C "$ROOT" sparse-checkout set --no-cone \
   v13/code/v13/__init__.py \
   v13/code/v13/remote_maintenance_bridge.py \
   v13/code/v13/owner_read_bridge.py \
+  v13/code/v13/mobile_dashboard.py \
   v13/code/v13/termux_patch_staging.py \
   v13/code/docs/PRIVATE_REMOTE_BRIDGE_20261111.md \
   v13/code/docs/ONE_COMMAND_TERMUX_20261111.md || fail "Sparse Checkout fehlgeschlagen"
@@ -69,7 +70,7 @@ config = {
   "status_file": str(home / "live-status.json"),
   "keys": {"agent-owner": secrets.token_hex(32)},
   "authors": {"agent-owner": ["RedMentos"]},
-  "permissions": {"agent-owner": ["HEALTH", "LEARNING_STATUS"]},
+  "permissions": {"agent-owner": ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS"]},
   "remote_apply_enabled": False,
   "apply_paths": [],
   "poll_seconds": 45
@@ -81,13 +82,39 @@ PY
 fi
 
 export PYTHONPATH="$ROOT/v13/code"
+# Preserve existing phone-generated per-agent keys. Only extend the preexisting
+# RedMentos read-only scope by an allowlisted structured technical diagnostic.
+python - <<'PY'
+import json, os
+from pathlib import Path
+p=Path.home()/".v13-private/remote.json"
+if p.is_symlink(): raise SystemExit("ABBRUCH: private Konfiguration ist ein Symlink")
+cfg=json.loads(p.read_text())
+if cfg.get("relay_repo")!="RedMentos/Aiiii" or cfg.get("remote_apply_enabled") is not False:
+    raise SystemExit("ABBRUCH: Keine Read-only-Konfiguration")
+authors=cfg.get("authors",{}).get("agent-owner",[])
+perms=cfg.get("permissions",{}).get("agent-owner",[])
+if authors!=["RedMentos"] or not isinstance(perms,list) or set(perms)-{"HEALTH","LEARNING_STATUS","DIAGNOSTICS"}:
+    raise SystemExit("ABBRUCH: unbekannte Agent-Rechte; keine automatische Rechteaenderung")
+desired=["HEALTH","LEARNING_STATUS","DIAGNOSTICS"]
+if perms!=desired:
+    cfg["permissions"]["agent-owner"]=desired
+    tmp=p.with_suffix(".new")
+    with tmp.open("x") as f:
+        json.dump(cfg,f,indent=2)
+        f.flush()
+        os.fsync(f.fileno())
+    tmp.chmod(0o600)
+    os.replace(tmp,p)
+    print("Private Diagnoseberechtigung hinzugefuegt; Schluessel unveraendert.")
+PY
 python - <<'PY'
 import os
 from v13.remote_maintenance_bridge import private_config
 cfg = private_config(os.path.expanduser("~/.v13-private/remote.json"))
 if cfg["relay_repo"] != "RedMentos/Aiiii" or cfg.get("remote_apply_enabled"):
     raise SystemExit("ABBRUCH: Konfiguration ist nicht read-only")
-if cfg["permissions"].get("agent-owner") != ["HEALTH", "LEARNING_STATUS"]:
+if cfg["permissions"].get("agent-owner") != ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS"]:
     raise SystemExit("ABBRUCH: unerwartete Agent-Rechte")
 print("Lokale read-only-Konfiguration validiert.")
 PY
@@ -124,3 +151,37 @@ printf 'Diagnosen: HEALTH / LEARNING_STATUS (nur Lesen)\n'
 printf 'PATCH_APPLY: AUS; kein allgemeiner Fernzugriff; kein offener Handy-Port.\n'
 printf 'Android kann Hintergrundprozesse beenden; Redmi-Laufzeit noch zu pruefen.\n'
 printf 'Im Chat: "Teste jetzt die V13 Live-Diagnose".\n'
+
+
+printf '\nStarte lokale klickbare V13-Oberflaeche...\n'
+# One-time optional Android Files access. Denied permission never exposes files.
+if [[ ! -d "$HOME/storage/downloads" ]] && command -v termux-setup-storage >/dev/null; then
+  printf 'Bitte Android-Zugriff auf Downloads bestaetigen, damit Diagnose-ZIPs gespeichert werden koennen.\n'
+  termux-setup-storage || true
+fi
+UI_ACTIVE=0
+if [[ -e "$PRIVATE/ui.pid" ]]; then
+  UI_OLD="$(cat "$PRIVATE/ui.pid" 2>/dev/null || true)"
+  if [[ "$UI_OLD" =~ ^[0-9]+$ ]] && kill -0 "$UI_OLD" 2>/dev/null; then
+    UI_CMD="$(tr '\0' ' ' < "/proc/$UI_OLD/cmdline" 2>/dev/null || true)"
+    if [[ "$UI_CMD" == *"v13.mobile_dashboard ui"* ]]; then
+      UI_ACTIVE=1
+    fi
+  fi
+fi
+if [[ "$UI_ACTIVE" == 0 ]]; then
+  nohup python -m v13.mobile_dashboard ui > "$PRIVATE/ui.log" 2>&1 < /dev/null &
+  UI_PID="$!"
+  printf '%s\n' "$UI_PID" > "$PRIVATE/ui.pid"
+  sleep 2
+  kill -0 "$UI_PID" 2>/dev/null || fail "Lokale UI startet nicht; siehe ~/.v13-private/ui.log"
+fi
+UI_URL="$(grep -m 1 -Eo 'http://127\.0\.0\.1:[0-9]+/t/[a-f0-9]{48}/' "$PRIVATE/ui.log" 2>/dev/null || true)"
+if [[ -n "$UI_URL" ]]; then
+  printf '\nV13 TOUCH-OBERFLAECHE: %s\n' "$UI_URL"
+  termux-open-url "$UI_URL" || printf 'Android Browser bitte mit dieser URL oeffnen.\n'
+else
+  printf 'UI-Start pruefen: tail -n 30 "$HOME/.v13-private/ui.log"\n'
+fi
+printf 'V13-Buttons: Nachricht senden, Gehirnstatus, Modelle testen, Diagnose-ZIP, Stopp.\n'
+printf 'GitHub-Diagnoseabruf: nur erlaubte technische Fakten, keine Rohprotokolle.\n'
