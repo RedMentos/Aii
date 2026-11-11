@@ -18,7 +18,7 @@ HOME = Path.home()
 PRIVATE = HOME / ".v13-private"
 LOGS = PRIVATE / "console-logs"
 MAX_SESSION_BYTES = 4 * 1024 * 1024
-MAX_SESSIONS = 8
+MAX_SESSIONS = 32
 MAX_COMMAND_BYTES = 16_000
 
 
@@ -174,6 +174,32 @@ class ManagedConsole:
         with path.open("rb") as stream:
             stream.seek(max(0, path.stat().st_size - limit))
             return stream.read(limit).decode("utf-8", errors="replace")
+
+    def transcript(self, *, all_sessions=True):
+        """Local-only complete saved log, including prior preserved V13 sessions.
+
+        Unlike the live-view tail, this endpoint reads the complete bounded
+        recorded file(s). Never exposed via the private GitHub relay.
+        """
+        with self.lock:
+            self._cleanup_old()
+            newest = self.path
+        if all_sessions:
+            paths = sorted((p for p in self.logs.glob("v13-session-*.log")
+                            if p.is_file() and not p.is_symlink()),
+                           key=lambda p: p.name)
+        else:
+            paths = [newest] if newest is not None else []
+        chunks = []
+        for p in paths[-MAX_SESSIONS:]:
+            if p is None or p.is_symlink() or not p.is_file():
+                continue
+            if p.stat().st_size > MAX_SESSION_BYTES + 512:
+                continue
+            with p.open("rb") as reader:
+                chunk = reader.read(MAX_SESSION_BYTES + 512)
+            chunks.append(("\n\n=== " + p.name + " ===\n").encode() + chunk)
+        return b"".join(chunks).decode("utf-8", errors="replace")
 
     def saved_sessions(self):
         return [p.name for p in sorted(self.logs.glob("v13-session-*.log"), reverse=True)
