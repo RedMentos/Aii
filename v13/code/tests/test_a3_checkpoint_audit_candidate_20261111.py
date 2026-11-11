@@ -60,6 +60,29 @@ class Audit(unittest.TestCase):
         np.savez_compressed(self.path, **data)
         with self.assertRaises(ValueError):
             audit(self.path)
+    def test_invalid_zip_reports_valueerror(self):
+        self.path.write_bytes(b"not-a-zip-archive")
+        with self.assertRaisesRegex(ValueError, "corrupt A3 checkpoint archive"):
+            audit(self.path)
+
+    def test_corrupted_member_crc_reports_valueerror(self):
+        self.check()
+        raw = self.path.read_bytes()
+        # Mutate the stored NPY payload, leaving the central directory intact.
+        target = b"projector.npy"
+        import zipfile
+        with zipfile.ZipFile(self.path) as archive:
+            info = archive.getinfo(target)
+            offset = info.header_offset
+        name_len = int.from_bytes(raw[offset + 26:offset + 28], "little")
+        extra_len = int.from_bytes(raw[offset + 28:offset + 30], "little")
+        payload = offset + 30 + name_len + extra_len
+        tampered = bytearray(raw)
+        tampered[payload + 150] ^= 0x01
+        self.path.write_bytes(tampered)
+        with self.assertRaisesRegex(ValueError, "corrupt A3 checkpoint archive"):
+            audit(self.path)
+
     def test_truncated_archive_rejected(self):
         self.check()
         raw = self.path.read_bytes()
