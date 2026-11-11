@@ -116,7 +116,10 @@ class ProceduralInputs:
                 size, count = 0, 0
                 with os.fdopen(tmp_fd, "wb") as out, os.fdopen(fd, "rb") as src:
                     fd = -1
-                    for raw in src:
+                    while True:
+                        raw = src.readline(MAX_VALUE_BYTES + 2)
+                        if not raw:
+                            break
                         _line(raw)
                         size += len(raw)
                         count += 1
@@ -171,11 +174,22 @@ class ProceduralInputs:
             raise ValueError("invalid or tampered input metadata")
         return p
 
-    def status(self, name):
-        meta = self._metadata(name)
+    def _open_imported(self, name):
         source_path = self._input_path(name)
         _check_path(source_path)
-        with source_path.open("rb") as source:
+        flags = os.O_RDONLY
+        if hasattr(os, "O_NOFOLLOW"):
+            flags |= os.O_NOFOLLOW
+        fd = os.open(source_path, flags)
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            os.close(fd)
+            raise ValueError("unsafe imported source file")
+        return os.fdopen(fd, "rb")
+
+    def status(self, name):
+        meta = self._metadata(name)
+        with self._open_imported(name) as source:
             _verify_fd(source, meta)
         return {**{k: meta[k] for k in ("name", "sha256", "bytes", "rows", "model_calls")},
                 "source_bytes_verified": True}
@@ -245,9 +259,7 @@ class ProceduralInputs:
             rows_before = state["rows"]
             bytes_before = state["bytes"]
             target = min(meta["rows"], rows_before + max_rows)
-            input_file = self._input_path(input_name)
-            _check_path(input_file)
-            with input_file.open("rb") as source:
+            with self._open_imported(input_name) as source:
                 prefix = _verify_fd(source, meta, state["input_offset"],
                                     state["input_prefix_sha256"])
                 while state["rows"] < target and time.monotonic() - start < max_seconds:
