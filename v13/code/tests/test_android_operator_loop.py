@@ -79,3 +79,20 @@ def test_companion_dispatch_failure_is_audited(tmp_path):
         loop.approved_simulation(request.action_id, local_confirmation=True)
     assert "simulation_dispatch_failed" in [row[1] for row in broker.events()]
     broker.close()
+
+
+def test_duplicate_and_unissued_outcomes_cannot_be_logged(tmp_path):
+    from v13.android_operator_loop import ActionOutcome
+    broker = AndroidControlBroker(tmp_path / "audit.db")
+    broker.start()
+    p = broker.propose("back", {})
+    broker.approve(p.action_id, confirmed_by_local_ui=True)
+    envelope = broker.execute(p.action_id)
+    outcome = ActionOutcome(p.action_id, "back", "SIMULATED", 0, "SIMULATED_COMPANION")
+    broker.record_simulated_outcome(envelope, outcome)
+    with pytest.raises(ControlDenied, match="duplicate"):
+        broker.record_simulated_outcome(envelope, outcome)
+    with pytest.raises(ControlDenied, match="unissued"):
+        broker.record_simulated_outcome(dict(envelope, action_id="f" * 32), outcome)
+    assert [row[1] for row in broker.events() if row[0] == p.action_id].count("simulated_outcome") == 1
+    broker.close()
