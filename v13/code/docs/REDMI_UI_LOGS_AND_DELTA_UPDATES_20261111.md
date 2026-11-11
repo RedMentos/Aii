@@ -27,3 +27,21 @@ Das GUI und der CLI-Befehl v13-update verwenden Git fetch plus fast-forward nur 
 ## Grenzen
 
 Kein beliebiger Remote-Shell-Zugriff, keine Android-Prozessliste anderer Apps, kein automatisches Teilen alter Konsolenlogs, keine Live-Gewichtsänderung, kein Root, kein System-Startup-Service. Die neue UI muss auf dem echten Redmi getestet werden; Linux CI allein genügt nicht.
+
+## Mobile UI 2: vier statt einer langen Scrollseite (2026-11-12)
+
+Die Oberfläche ist jetzt mobile-first in **vier logisch getrennte Tabs** umgebaut: **Chat**, **Gehirn**, **Regler**, **Wartung**. **Keine Befehle entfernt.** Der Gehirn-Tab gruppiert alle bisherigen spezifischen Operator-Kommandos plus die im installierten V13-HELP entdeckten Befehle. Anklicken übernimmt den Befehl in den Chat-Eingabebereich; Ausführen bleibt eine bewusste Aktion. Die kurze direkte Probe- und Modellbedienung bleibt erhalten.
+
+Im **Chat-Tab** stehen Start/Abbruch/Status, der live aktualisierte V13-Terminalverlauf, **„Gesamten Chat kopieren“** und **„Verlauf als TXT“** unmittelbar über dem Eingabefeld. Beim Kopieren werden alle aktuell noch gespeicherten verwalteten V13-Sitzungen (max. 32 lokale Protokolle mit Größenbegrenzung) zusammengeführt; die Ausgabe bleibt auf dem Smartphone, kein GitHub-Upload. Ein Browser, der Clipboard-Zugriff blockiert, kann das TXT direkt herunterladen. Andere Termux-Sitzungen und vor Aktivierung nicht protokollierte Texte sind nicht enthalten.
+
+Alle Formulare verwenden **AJAX**, sodass ein Klick nicht mehr an eine andere Stelle springt. Der laufende Status sowie die Konsolenausgabe werden alle 1,5 Sekunden über die lokale URL aktualisiert. Das Backend gibt für fehlende Voraussetzungen eine verständliche Fehlermeldung; es erscheint kein endloses „wird geprüft“ ohne Rückmeldung.
+
+Im **Wartungs-Tab** sind **V13-Code aktualisieren** und **Steuerzentrale aktualisieren** explizit getrennt. Der Code-Updater führt ein verifiziertes Git-fast-forward im vorhandenen `~/V13-Phone` aus. Die dort installierte `~/v13/bin/v13`-Launcherdatei referenziert diesen Code per `PYTHONPATH`; nach Update muss V13 neu gestartet werden, damit die neue Version aktiv ist. Der Browser-Updater aktualisiert `~/.v13-agent-source`, validiert geänderte Python-Dateien und die notwendige HTML-Datei und startet den lokalen HTTP-Server auf **demselben Port mit demselben lokalen Seiten-Token** neu. Vor beiden Updates muss eine über die Oberfläche gestartete V13-Sitzung beendet sein. Für Git-Fetch gilt 90 Sekunden Timeout; die Seite zeigt Dauer und Resultat an. Fehler werden sichtbar statt still im Hintergrund zu verschwinden.
+
+**Einmalige Migration aus der alten Oberfläche:** Den untenstehenden bereits existierenden Termux-Installer noch einmal ausführen, damit das neue HTML-Template mit installiert und das lokale Browserfenster neu geöffnet wird. Ab dann ist die Schaltfläche „Steuerzentrale aktualisieren“ direkt in der GUI verfügbar.
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/RedMentos/Aii/gpt6/v13-private-remote-bridge-20261111/v13/code/scripts/termux_one_command.sh -o "$HOME/v13-start.sh" && bash "$HOME/v13-start.sh"
+```
+
+**Nachweisgrenze:** Python-/HTTP-/JS-Tests in GitHub Actions validieren die neue Oberfläche synthetisch. Ein erneuter realer Redmi-Test des neuen vierteiligen Layouts und seines selbständigen Neustarts bleibt erforderlich, bevor behauptet wird, dass es auf diesem Gerät bereits funktioniert.
