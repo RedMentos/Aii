@@ -21,3 +21,6 @@ def test_typed_shadow_goal_persists_replay_weights_and_never_executes_native(tmp
 def test_invalid_budget_rejected_before_simulator(tmp_path):
     with pytest.raises(ValueError):
         run_integrated_goal(tmp_path, count=0)
+    with pytest.raises(ValueError, match="at least 18"):
+        run_integrated_goal(tmp_path, count=5)
+    assert not (tmp_path / "android_control_sim").exists()
