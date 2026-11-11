@@ -385,6 +385,8 @@ class ProceduralBatch:
 
     def retire(self, name):
         plan = self.plan(name)
+        plan.pop("share_sha256", None)
+        plan.pop("share_scope", None)
         plan["stage"] = "RETIRED"
         _save(self._plan_path(name), plan)
         return {"name": name, "stage": "RETIRED"}
