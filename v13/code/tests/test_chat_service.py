@@ -176,7 +176,7 @@ class AIBackgroundTests(unittest.TestCase):
         console = FakeConsole()
         service = ai.ChatService(console)
         original = ai._read_desired
-        with mock.patch.object(ai, "_read_desired", side_effect=[True, False]):
+        with mock.patch.object(ai, "_read_desired", side_effect=[True, True, False]):
             service.tick()
         self.assertEqual(console.starts, 0)
         self.assertEqual(service.status, "START_DEFERRED_FOR_UPDATE")
