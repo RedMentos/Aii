@@ -104,6 +104,10 @@ class AIBackgroundTests(unittest.TestCase):
         service.tick()
         console.running=False  # simulate model crash
         service.tick()
+        self.assertEqual(service.status,"RETRY_WAIT")
+        # Crash backoff must expire, not relaunch in a tight battery-draining loop.
+        with mock.patch.object(ai.time,"monotonic",return_value=service.last_start+40):
+            service.tick()
         self.assertTrue(console.running)
         self.assertEqual(console.starts,2)
         service.command("send",{"line":":shutdown"})
