@@ -23,6 +23,17 @@ The private GitHub connector can create an owner-authorized short-lived issue:
 
 The existing hourly **V13 Boss & Integration** automation has been updated to request/check this private status, compare current GitHub tests and diagnose problems. It must not claim live phone proof without a receipt and should continue code fixes in its GitHub workflow. This is **not** permission for unreviewed AI shell commands, app UI operation or external data uploads.
 
+## Extended private diagnostics – paginated V13/Bridge/Steuerzentrale logs
+
+The user specifically requested direct remote troubleshooting rather than manual Termux copy/paste. The verified owner-read protocol now accepts an additional **LOG_PAGE** read-only request on the PRIVATE `RedMentos/Aiiii` repository:
+
+- Title: `V13READ:<fresh 32-hex request id>`.
+- Body: `{"schema":"v13.private-relay.owner-read/1","id":"<same>","command":"LOG_PAGE","expires_at":<Unix +600sec>,"args":{"session":0,"page":0}}`.
+- `session` 0–31 refers only to the most recent recorded **UI-started V13** sessions, newest first; 32 is the maintained private `bridge.log`; 33 is the maintained private `ui.log`. `page` 0–2047 counts bounded 2400-byte chunks from the **end** (most recent logs first). Response reports `session_count`, `total_pages`, `kind`, `page`, status and redacted `text`. No caller-provided file paths, shell, arbitrary OS process/log capture or permissions outside explicit owner-read scope.
+- This requires the user to click the separate **Konsolentext TEILEN** toggle on the local V13 UI. **OFF by default**, and turning it OFF makes subsequent LOG_PAGE calls return `USER_NOT_OPTED_IN`. V13 user input lines and recognizable tokens/emails are masked, but generated model output may still contain sensitive context; the private GitHub service stores the resulting issue comments. If the user declines sharing, a local ZIP remains an option.
+- ChatGPT's connected GitHub interface and the hourly Boss task can retrieve pages, diagnose phone-side errors, and write fixes to the source branch. This is *not* unrestricted automatic remote control. The Android app must be alive to poll the private inbox.
+- Other Termux sessions that were not launched/captured by V13 and already-lost scrollback cannot be obtained. Never promise all future raw shell activity is observable.
+
 ## One-time migration on the Redmi
 
 The old bridge does not yet know `PIPELINE_STATUS` and cannot update itself without at least one local setup refresh:
