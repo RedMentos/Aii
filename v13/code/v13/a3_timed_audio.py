@@ -7,6 +7,7 @@ import hashlib
 import json
 import math
 from .a3_runtime_adapter import A3InferenceRuntime, FeatureObservation
+from .a4_acoustic_salience import acoustic_salience
 
 def observe_timed_audio(runtime, projector, source_ref):
     if not callable(getattr(getattr(runtime, "store", None), "read_source", None)):
@@ -56,7 +57,10 @@ def observe_timed_audio(runtime, projector, source_ref):
         except (ValueError, KeyError, OSError, PermissionError):
             return False
     result = A3InferenceRuntime(projector, verify).observe(obs)
+    # A4 is a transparent heuristic; use measured RMS and the stored A3 ZCR feature.
+    a4 = acoustic_salience(rms, data["features"][1], duration_ms=end-start)
     result["a5"].update({
+        "a4_salience": a4,
         "status": "SHADOW_TIMED_AUDIO", "store_source_sha256": source_ref["sha256"],
         "start_ms": start, "end_ms": end, "sample_rate_hz": rate,
         "acoustic": dict(acoustic), "transcript": None
