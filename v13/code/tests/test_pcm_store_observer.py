@@ -59,6 +59,19 @@ class PCMStoreA3Tests(unittest.TestCase):
                 observe_stored_pcm(self.runtime, self.projector, self.pcm, 16000, **opts)
         self.assertEqual(before, self.store.one("SELECT COUNT(*) AS n FROM sources")["n"])
 
+    def test_wrong_projector_dimension_not_stored(self):
+        before = self.store.one("SELECT COUNT(*) AS n FROM sources")["n"]
+        incompatible = A3Projector(3, 2)
+        with self.assertRaises(ValueError):
+            observe_stored_pcm(self.runtime, incompatible, self.pcm, 16000, consent=True)
+        self.assertEqual(before, self.store.one("SELECT COUNT(*) AS n FROM sources")["n"])
+
+    def test_missing_projector_not_stored(self):
+        before = self.store.one("SELECT COUNT(*) AS n FROM sources")["n"]
+        with self.assertRaises(TypeError):
+            observe_stored_pcm(self.runtime, object(), self.pcm, 16000, consent=True)
+        self.assertEqual(before, self.store.one("SELECT COUNT(*) AS n FROM sources")["n"])
+
     def test_malformed_pcm_not_stored(self):
         before = self.store.one("SELECT COUNT(*) AS n FROM sources")["n"]
         with self.assertRaises(ValueError):
