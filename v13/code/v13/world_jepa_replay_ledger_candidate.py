@@ -5,7 +5,6 @@ Caller must first durably save the optimizer checkpoint, then commit its
 receipt here; on restart the receipt must match the checkpoint bytes.
 """
 import hashlib
-import os
 from pathlib import Path
 import sqlite3
 
@@ -46,7 +45,7 @@ class ReplayLedger:
             raise ValueError("REPLAY_CHECKPOINT_MISMATCH")
         return {"cursor": row[1], "checkpoint_sha": row[2], "revision": row[3]}
 
-    def commit(self, stream, source_sha, old_cursor, new_cursor, checkpoint_path):
+    def commit(self, stream, source_sha, old_cursor, new_cursor, checkpoint_path, *, previous_checkpoint_path=None):
         if (not isinstance(stream, str) or not 1 <= len(stream) <= 96
                 or not isinstance(source_sha, str) or len(source_sha) != 64
                 or any(c not in "0123456789abcdef" for c in source_sha)
@@ -57,6 +56,8 @@ class ReplayLedger:
         if not checkpoint_path.is_file():
             raise ValueError("CHECKPOINT_REQUIRED_BEFORE_CURSOR")
         digest = self.digest(checkpoint_path)
+        # A checkpoint is immutable once receipted. Never advance from a
+        # overwritten/missing predecessor: a crash could otherwise skip T8 rows.
         self.db.execute("BEGIN IMMEDIATE")
         try:
             row = self.db.execute(
@@ -65,6 +66,8 @@ class ReplayLedger:
             if row is None:
                 if old_cursor != 0:
                     raise ValueError("CURSOR_INITIALIZATION_MISMATCH")
+                if previous_checkpoint_path is not None:
+                    raise ValueError("UNEXPECTED_PREVIOUS_CHECKPOINT")
                 revision = 1
                 self.db.execute(
                     "INSERT INTO replay_cursor VALUES (?,?,?,?,?)",
@@ -72,6 +75,12 @@ class ReplayLedger:
             else:
                 if row[0] != source_sha or row[1] != old_cursor:
                     raise ValueError("CURSOR_CAS_OR_SOURCE_MISMATCH")
+                if previous_checkpoint_path is None or not Path(previous_checkpoint_path).is_file():
+                    raise ValueError("PREVIOUS_CHECKPOINT_REQUIRED")
+                if self.digest(previous_checkpoint_path) != row[2]:
+                    raise ValueError("PREVIOUS_CHECKPOINT_MISMATCH")
+                if Path(previous_checkpoint_path).resolve() == checkpoint_path.resolve():
+                    raise ValueError("CHECKPOINT_GENERATION_REQUIRED")
                 revision = row[3] + 1
                 self.db.execute(
                     "UPDATE replay_cursor SET cursor=?,checkpoint_sha=?,revision=? WHERE stream=?",
