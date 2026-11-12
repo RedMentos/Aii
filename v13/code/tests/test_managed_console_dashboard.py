@@ -176,6 +176,9 @@ class LocalConsoleTests(unittest.TestCase):
             controls.update_status.return_value = ("UP_TO_DATE", False)
             controls.output.return_value = ""
             controls.terminal.saved_sessions.return_value = []
+            controls.terminal.state.return_value = {
+                "running": False, "autostart": True, "daemon": "RUNNING"
+            }
             html = ui.dashboard_html("abcd", controls)
             for label in ("Chat starten", "Gehirnstatus", "Modelle testen",
                           "Nachricht senden", "Antwort-Tokens", "CPU-Threads",
