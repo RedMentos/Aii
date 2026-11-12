@@ -75,6 +75,7 @@ class ChatService:
         self.paused = False
         self.pending_lifecycle = False
         self.reload_requested = False
+        self.stop_deadline = 0.0
         self.status = "STARTING"
 
     def tick(self):
@@ -114,6 +115,29 @@ class ChatService:
                 lifecycle.service_resume(self.console)
             state = self.console.state()
             now = time.monotonic()
+            if state["running"] and not _read_desired():
+                # The explicit OFF decision must actually stop the model.
+                # Previously tick() overwrote STOPPING with RUNNING forever
+                # when :shutdown was stuck in native inference.
+                self.status = "STOPPING"
+                if not self.stop_deadline:
+                    self.stop_deadline = now + 12
+                    try:
+                        self.console.shutdown()
+                    except (OSError, ValueError, RuntimeError):
+                        pass
+                elif now >= self.stop_deadline:
+                    # Only the captured, isolated child may be terminated.
+                    terminate = getattr(self.console, "terminate_owned", None)
+                    if callable(terminate):
+                        try:
+                            terminate(term_wait=2.0, kill_wait=1.0)
+                        except (OSError, ValueError, RuntimeError):
+                            pass
+                    self.stop_deadline = time.monotonic() + 5
+                return
+            if not state["running"]:
+                self.stop_deadline = 0.0
             if state["running"]:
                 self.status = "RUNNING"
                 if self.last_start and now - self.last_start > 30:
@@ -155,6 +179,7 @@ class ChatService:
                 return s
             if name == "start":
                 _desired(True)
+                self.stop_deadline = 0.0
                 self.next_retry = 0
                 self.paused = False
                 self.console.start()
@@ -182,6 +207,7 @@ class ChatService:
                 return self.console.cancel()
             if name == "shutdown":
                 _desired(False)
+                self.stop_deadline = time.monotonic() + 12
                 if self.console.state()["running"]:
                     try:
                         self.console.shutdown()

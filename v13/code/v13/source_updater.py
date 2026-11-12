@@ -421,10 +421,21 @@ def rollback(root=None):
 
 
 def main(argv=None):
-    p = argparse.ArgumentParser(description="V13 incremental Git source updater (no data/model modifications)")
+    # Older Termux installations copied a shell wrapper into $PREFIX/bin that
+    # still invokes this module. Route its default invocation to the real,
+    # dual-checkout CI-gated pipeline instead of the stale ~/V13-Phone tree.
+    # Explicit --root remains an opt-in legacy source-only maintenance API;
+    # it must never be confused with an installed runtime update.
+    import sys
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    if "--root" not in arguments and not any(
+            item.startswith("--root=") for item in arguments):
+        from .pipeline_agent import main as installed_main
+        return installed_main(arguments)
+    p = argparse.ArgumentParser(description="V13 LEGACY source-only updater, not installed launcher")
     p.add_argument("action", choices=("check", "apply", "auto", "rollback"))
     p.add_argument("--root", default=str(Path.home() / "V13-Phone"))
-    a = p.parse_args(argv)
+    a = p.parse_args(arguments)
     try:
         result = (status(a.root) if a.action == "check" else apply(a.root) if a.action == "apply"
                   else auto_apply(a.root) if a.action == "auto" else rollback(a.root))
