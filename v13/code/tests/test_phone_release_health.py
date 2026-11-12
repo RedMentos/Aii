@@ -59,6 +59,15 @@ class PhoneHealthTests(unittest.TestCase):
         self.marker.write_text(json.dumps(marker))
         self.assertEqual(self.check()["status"], "INVALID")
 
+    def test_required_file_parent_symlink_escape_is_not_ready(self):
+        # Direct item.is_symlink() is false for a regular file under a
+        # symlinked parent. The old health check incorrectly returned READY.
+        outside = self.root / "outside-modules"
+        (self.code / "v13").rename(outside)
+        (self.code / "v13").symlink_to(outside, target_is_directory=True)
+        self.assertEqual(self.check()["status"], "INVALID")
+        self.assertNotEqual(self.check()["snapshot"], "PRESENT")
+
     def test_symlink_and_world_readable_marker_fail_closed(self):
         self.marker.chmod(0o644)
         self.assertEqual(self.check()["marker"], "UNSAFE")
