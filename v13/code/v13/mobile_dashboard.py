@@ -24,6 +24,7 @@ import time
 from urllib.parse import parse_qs, urlparse
 import zipfile
 from .managed_console import ManagedConsole
+from . import pipeline_agent
 
 PRIVATE = Path.home() / ".v13-private"
 DATA = Path.home() / "v13"
@@ -384,7 +385,7 @@ class RuntimeControls:
         return self.send(":shutdown")
 
     def start_update(self, action):
-        if action not in ("check", "apply", "auto", "rollback", "dashboard"):
+        if action not in ("check", "apply", "auto", "rollback", "dashboard", "pipeline"):
             raise ValueError("Nicht freigegebene Update-Aktion")
         # Do not silently update code while the V13 process is running. The
         # result must be shown at click time, not hidden in a background log.
@@ -399,7 +400,11 @@ class RuntimeControls:
         def worker():
             try:
                 from v13 import source_updater
-                if action == "check":
+                if action == "pipeline":
+                    if not pipeline_agent.enabled():
+                        raise RuntimeError("Automatische Updates sind AUS. Erst einschalten.")
+                    result = pipeline_agent.run_cycle(force=True)
+                elif action == "check":
                     result = source_updater.status()
                 elif action == "apply":
                     result = source_updater.apply()
@@ -409,7 +414,9 @@ class RuntimeControls:
                     result = source_updater.apply_dashboard()
                 else:
                     result = source_updater.rollback()
-                msg = result["status"] + " · " + str(result.get("changed_files", 0)) + " geänderte Dateien"
+                msg = (result["last_result"] + " · Runtime: " + result["runtime"] +
+                       " · UI: " + result["dashboard"]) if action == "pipeline" else (
+                       result["status"] + " · " + str(result.get("changed_files", 0)) + " geänderte Dateien")
                 if action == "dashboard" and result["status"] == "UPDATED":
                     msg += " · Kontrollzentrum startet neu"
                 elif result["status"] in ("UPDATED", "ROLLED_BACK"):
@@ -576,6 +583,7 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
     state = "V13 läuft" if running else "Bereit" if code is None else f"Beendet ({code})"
     current = summary()
     update_msg, update_busy = controls.update_status()
+    pipeline_status = pipeline_agent.snapshot()
     auto_enabled = automatic_updates_enabled()
     errors_shared = remote_log_sharing_enabled()
     console_shared = remote_full_console_enabled()
@@ -623,6 +631,12 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
         "@@COMMAND_CATEGORIES@@":_command_catalog_html(),
         "@@SLIDERS@@":_slider_grid(action),
         "@@UPDATE_STATUS@@":html.escape(update_msg),
+        "@@PIPELINE_STATUS@@":html.escape(
+            "Auto " + ("AN" if pipeline_status["auto_enabled"] else "AUS") +
+            " · " + pipeline_status["last_result"] +
+            " · V13: " + pipeline_status["runtime"] +
+            " · Steuerzentrale: " + pipeline_status["dashboard"]),
+        "@@PIPELINE_BUTTON@@":button("pipeline_check","Auto-Pipeline jetzt prüfen"),
         "@@UPDATE_HIDDEN@@":"" if update_busy else "hidden",
         "@@UPDATE_BUTTONS@@":"".join([
             button("check_update","Änderungen prüfen"),
@@ -657,13 +671,22 @@ def serve(*, open_browser=True):
     instance_fd = _ui_singleton_lock()
     controls = RuntimeControls()
     def auto_loop():
+        # The private relay runs the primary updater even without a browser.
+        # This is a fallback if the relay has stopped, plus a safe UI reload.
         while True:
-            if automatic_updates_enabled():
-                try:
-                    controls.start_update("auto")
-                except RuntimeError:
-                    pass
-            time.sleep(900)
+            try:
+                if pipeline_agent.refresh_requested("ui"):
+                    if not controls.terminal.state()["running"]:
+                        pipeline_agent.acknowledge_refresh("ui")
+                        controls.restart_requested = True
+                        if controls.restart_callback:
+                            controls.restart_callback()
+                        return
+                if pipeline_agent.enabled():
+                    pipeline_agent.run_cycle()
+            except (OSError, ValueError, RuntimeError):
+                pass
+            time.sleep(30)
     threading.Thread(target=auto_loop, daemon=True, name="v13-auto-updates").start()
     token = os.environ.get("V13_UI_RESTART_TOKEN") or _browser_token()
     csrf = os.environ.get("V13_UI_RESTART_CSRF") or secrets.token_hex(24)
@@ -738,7 +761,11 @@ def serve(*, open_browser=True):
                 running, mode, exitcode, last = controls.state()
                 state = "läuft" if running else "bereit" if exitcode is None else "beendet (" + str(exitcode) + ")"
                 update_result, update_busy = controls.update_status()
+                pstatus = pipeline_agent.snapshot()
                 payload = {"state": state, "output": controls.output()[-50000:],
+                           "pipeline_status": ("Auto " + ("AN" if pstatus["auto_enabled"] else "AUS") +
+                             " · " + pstatus["last_result"] + " · V13: " +
+                             pstatus["runtime"] + " · UI: " + pstatus["dashboard"]),
                            "last_action": last, "running": running,
                            "update_result": update_result, "update_busy": update_busy,
                            "generation": generation}
@@ -821,9 +848,10 @@ def serve(*, open_browser=True):
                 elif action == "zip":
                     dest = diagnostics_zip()
                     message = "Diagnose-ZIP erstellt: " + dest.name + " (in Downloads)"
-                elif action in ("check_update", "apply_update", "rollback_update", "dashboard_update"):
+                elif action in ("check_update", "apply_update", "rollback_update", "dashboard_update", "pipeline_check"):
                     controls.start_update({"check_update":"check","apply_update":"apply",
-                                           "rollback_update":"rollback", "dashboard_update":"dashboard"}[action])
+                                           "rollback_update":"rollback", "dashboard_update":"dashboard",
+                                           "pipeline_check":"pipeline"}[action])
                     message = "Update-Auftrag gestartet; Ergebnis wird im Abschnitt GitHub-Updates angezeigt."
                 elif action in ("auto_enable", "auto_disable"):
                     set_automatic_updates(action == "auto_enable")
