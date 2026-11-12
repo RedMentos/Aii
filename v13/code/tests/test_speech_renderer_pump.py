@@ -79,3 +79,17 @@ def test_renderer_exception_uncertain_no_retry(tmp_path):
     assert q.status(intent.intent_id) == "INTERRUPTED"
     assert pump.run_one().status == "EMPTY"
     q.close()
+
+def test_stop_during_receipt_verification_cannot_commit(tmp_path):
+    q = SpeechIntentQueue(tmp_path / "q.sqlite")
+    intent = q.submit("hello", source_id="c3:evt")
+    renderer = Renderer()
+    class StoppingVerifier:
+        def verify(self, intent_id, digest, receipt):
+            pump.stop()
+            return True
+    pump = SpeechRendererPump(q, renderer=renderer, verifier=StoppingVerifier(), enabled=True)
+    assert pump.run_one().status == "INTERRUPTED"
+    assert q.status(intent.intent_id) == "INTERRUPTED"
+    assert renderer.cancelled == [intent.intent_id]
+    q.close()
