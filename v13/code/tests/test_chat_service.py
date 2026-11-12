@@ -158,6 +158,30 @@ class AIBackgroundTests(unittest.TestCase):
         service.tick()
         self.assertEqual(console.starts, 1)
 
+    def test_supervisor_rechecks_update_before_model_launch(self):
+        ai._desired(True)
+        console = FakeConsole()
+        service = ai.ChatService(console)
+        # First snapshot is safe; update begins before the launch recheck.
+        with mock.patch("v13.pipeline_agent.snapshot", side_effect=[
+                {"last_result": "UP_TO_DATE"}, {"last_result": "CHECKING"}]):
+            service.tick()
+        self.assertEqual(console.starts, 0)
+        self.assertEqual(service.status, "START_DEFERRED_FOR_UPDATE")
+        service.tick()
+        self.assertEqual(console.starts, 1)
+
+    def test_supervisor_rechecks_explicit_off_before_model_launch(self):
+        ai._desired(True)
+        console = FakeConsole()
+        service = ai.ChatService(console)
+        original = ai._read_desired
+        with mock.patch.object(ai, "_read_desired", side_effect=[True, False]):
+            service.tick()
+        self.assertEqual(console.starts, 0)
+        self.assertEqual(service.status, "START_DEFERRED_FOR_UPDATE")
+        self.assertTrue(original())
+
     def test_stop_request_defers_explicit_start(self):
         service = ai.ChatService(FakeConsole())
         with mock.patch.object(ai.lifecycle, "STOP_REQUEST", mock.Mock(exists=lambda: True)):
