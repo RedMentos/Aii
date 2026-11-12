@@ -7,6 +7,7 @@ on:
     paths:
       - 'v13/code/v13/speech_intent.py'
       - 'v13/code/tests/test_speech_intent.py'
+      - 'v13/code/tests/test_speech_atomic_capacity.py'
       - 'v13/code/v13/speech_operator.py'
       - 'v13/code/tests/test_speech_operator.py'
       - '.github/workflows/v13-c3-speech-intent.yml'
@@ -19,4 +20,4 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install pytest
-      - run: cd v13/code && python -m pytest -q tests/test_speech_intent.py tests/test_speech_operator.py
+      - run: cd v13/code && python -m pytest -q tests/test_speech_intent.py tests/test_speech_atomic_capacity.py tests/test_speech_operator.py
