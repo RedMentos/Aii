@@ -6,6 +6,9 @@ these tests against the exact proposed source revision.
 import contextlib
 import io
 import json
+import os
+import signal
+import time
 from pathlib import Path
 import tempfile
 import unittest
@@ -13,6 +16,9 @@ from unittest import mock
 
 from v13 import pipeline_agent as p
 from v13 import source_updater as u
+from v13 import chat_service as ai
+from v13 import managed_console as mc
+from v13 import lifecycle as life
 
 
 class UpdateTruthCLITests(unittest.TestCase):
@@ -119,6 +125,119 @@ class UpdateTruthCLITests(unittest.TestCase):
         data = script.read_text(encoding="utf-8")
         self.assertIn("python -m v13.pipeline_agent", data)
         self.assertNotIn("python -m v13.source_updater", data)
+
+
+class StopEscalationTests(unittest.TestCase):
+    def test_shutdown_watchdog_keeps_off_and_stops_hung_model(self):
+        with tempfile.TemporaryDirectory() as root:
+            private = Path(root)
+            private.chmod(0o700)
+            desired = private / "v13-ai-enabled.json"
+
+            class StuckConsole:
+                def __init__(self):
+                    self.running = True
+                    self.graceful = 0
+                    self.terminated = 0
+
+                def state(self):
+                    return {"running": self.running}
+
+                def shutdown(self):
+                    self.graceful += 1
+                    return {"status": "SENT"}
+
+                def terminate_owned(self, **kwargs):
+                    self.terminated += 1
+                    self.running = False
+                    return {"status": "STOPPED"}
+
+            console = StuckConsole()
+            with mock.patch.object(ai, "PRIVATE", private), \
+                 mock.patch.object(ai, "DESIRED", desired), \
+                 mock.patch.object(ai.lifecycle, "service_stop", return_value=False), \
+                 mock.patch.object(ai.lifecycle, "service_resume", return_value=False), \
+                 mock.patch("v13.pipeline_agent.snapshot",
+                            return_value={"last_result": "UP_TO_DATE"}), \
+                 mock.patch("v13.pipeline_agent.refresh_requested", return_value=False):
+                ai._desired(False)
+                service = ai.ChatService(console)
+                service.stop_deadline = time.monotonic() - 1
+                service.tick()
+                self.assertEqual(console.terminated, 1)
+                self.assertEqual(service.status, "STOPPING")
+                service.tick()
+                self.assertEqual(service.status, "STOPPED_BY_USER")
+                self.assertFalse(ai._read_desired())
+
+    def test_lifecycle_escalates_only_through_owned_console_method(self):
+        with tempfile.TemporaryDirectory() as root:
+            private = Path(root)
+            private.chmod(0o700)
+
+            class HungConsole:
+                def __init__(self):
+                    self.running = True
+                    self.escalated = 0
+
+                def state(self):
+                    return {"running": self.running}
+
+                def shutdown(self):
+                    return {"status": "SENT"}
+
+                def cancel(self):
+                    return {"status": "CANCEL_REQUESTED"}
+
+                def terminate_owned(self, **kwargs):
+                    self.escalated += 1
+                    self.running = False
+                    return {"status": "STOPPED"}
+
+            console = HungConsole()
+            paths = [("PRIVATE", private),
+                     ("STOP_REQUEST", private / "stop"),
+                     ("STOP_ACK", private / "ack"),
+                     ("RESUME", private / "resume")]
+            with contextlib.ExitStack() as stack:
+                for name, value in paths:
+                    stack.enter_context(mock.patch.object(life, name, value))
+                life._write(life.STOP_REQUEST, {
+                    "schema": "v13.lifecycle.stop/1",
+                    "nonce": "a" * 32,
+                    "expires": int(time.time()) + 60,
+                })
+                self.assertTrue(life.service_stop(
+                    console, shutdown_wait=.01, interrupt_wait=.01))
+                self.assertEqual(console.escalated, 1)
+                self.assertFalse(console.running)
+                self.assertEqual(life._read(life.STOP_ACK)["status"], "STOPPED")
+
+    def test_actual_managed_child_can_be_terminated_without_other_processes(self):
+        with tempfile.TemporaryDirectory() as root:
+            base = Path(root)
+            home = base / "v13"
+            (home / "bin").mkdir(parents=True)
+            launcher = home / "bin" / "v13"
+            launcher.write_text(
+                "#!/bin/sh\\ntrap '' INT TERM\\necho FIXTURE_READY\\n"
+                "while :; do sleep 1; done\\n")
+            launcher.chmod(0o700)
+            console = mc.ManagedConsole(
+                data_home=home, log_root=base / "logs" / "sessions")
+            console.start()
+            try:
+                deadline = time.monotonic() + 3
+                while "FIXTURE_READY" not in console.output() and time.monotonic() < deadline:
+                    time.sleep(.02)
+                self.assertIn("FIXTURE_READY", console.output())
+                result = console.terminate_owned(term_wait=.1, kill_wait=1)
+                self.assertEqual(result["status"], "STOPPED")
+                self.assertFalse(console.state()["running"])
+            finally:
+                if console.state()["running"]:
+                    os.killpg(console.process.pid, signal.SIGKILL)
+                    console.process.wait(timeout=2)
 
 
 if __name__ == "__main__":
