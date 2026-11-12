@@ -34,6 +34,10 @@ def android_local_console(registry, audit_path: str | Path, *, transport, verifi
         registry, audit_path, transport=transport, verifier=verifier
     ) as (command, journal):
         def handle(line: str, *, approve_local=None) -> ConsoleReply:
+            # Observe a stop marker written by another local session before
+            # any further action, not only when this console was opened.
+            if latch.engaged() and not getattr(registry, "_stopped", False):
+                registry.stop()
             if line == ":android stop":
                 registry.stop()
                 try:
