@@ -1,0 +1,48 @@
+name: V13 reviewed agent release queue
+
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'automation/v13_release_queue.py'
+      - 'automation/tests/test_v13_release_queue.py'
+      - 'automation/README.md'
+      - '.github/workflows/v13-reviewed-release-queue.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: v13-reviewed-release-queue
+  cancel-in-progress: false
+
+jobs:
+  integrate-reviewed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run fail-closed release queue regression tests
+        run: python -m unittest discover -s automation/tests -p 'test_v13_release_queue.py' -v
+      - name: Prepare narrow review label
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create v13-release-ready --repo "$GITHUB_REPOSITORY" \
+            --color 0E8A16 \
+            --description "Boss-reviewed exact-SHA candidate for bounded V13 release queue" --force
+      - name: Integrate at most one reviewed candidate
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python automation/v13_release_queue.py --execute
