@@ -68,7 +68,7 @@ class SpeechRendererPump:
             return PlaybackResult("FAILED_UNCERTAIN", intent.intent_id)
         finally:
             if self.queue.status(intent.intent_id) == "RENDERING":
-                self.queue.interrupt()
+                self.queue.interrupt_one(intent.intent_id)
             if self.queue.status(intent.intent_id) != "RENDERED":
                 try:
                     self.renderer.cancel(intent.intent_id)
