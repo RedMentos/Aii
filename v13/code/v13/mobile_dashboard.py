@@ -726,7 +726,14 @@ def serve(*, open_browser=True):
             try:
                 lifecycle.service_stop(controls.terminal)
                 if pipeline_agent.refresh_requested("ui"):
-                    if not controls.terminal.state()["running"]:
+                    pipeline_state = pipeline_agent.snapshot()
+                    _, pending_click = controls.update_status()
+                    # Never exec while a background Git transaction or local
+                    # update button worker is still active; otherwise the
+                    # in-flight updater dies before it can schedule resume.
+                    if (pipeline_state["last_result"] != "CHECKING"
+                            and not pending_click
+                            and not controls.terminal.state()["running"]):
                         pipeline_agent.acknowledge_refresh("ui")
                         controls.restart_requested = True
                         if controls.restart_callback:
