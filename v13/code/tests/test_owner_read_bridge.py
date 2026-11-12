@@ -80,6 +80,24 @@ class OwnerReadTests(unittest.TestCase):
         self.assertEqual(o.poll_once(client, self.cfg, now=self.now)["processed"], 1)
         self.assertEqual(client.comments_sent[0][1]["device_status"]["learning"]["state"], "UNINSTRUMENTED")
 
+    def test_owner_pipeline_status_read_is_authenticated_and_no_mutation(self):
+        from unittest import mock
+        self.cfg["permissions"]["agent-owner"].append("PIPELINE_STATUS")
+        client = FakeGitHub([self.issue("PIPELINE_STATUS")])
+        with mock.patch("v13.pipeline_agent.snapshot", return_value={
+            "schema": "v13.pipeline-status/1", "auto_enabled": True,
+            "last_result": "UP_TO_DATE", "runtime": "UP_TO_DATE",
+            "dashboard": "UP_TO_DATE", "last_error": "NONE"}):
+            result = o.poll_once(client, self.cfg, now=self.now)
+        self.assertEqual(result["processed"], 1)
+        status = client.comments_sent[0][1]["device_status"]
+        self.assertEqual(status["pipeline"]["last_result"], "UP_TO_DATE")
+        self.assertNotIn("cmd", str(status))
+        self.assertEqual(client.closed, [1])
+        self.cfg["permissions"]["agent-owner"].remove("PIPELINE_STATUS")
+        with self.assertRaises(b.Denied):
+            o.validate_owner_read(self.issue("PIPELINE_STATUS"), self.cfg, now=self.now)
+
     def test_wrong_author_expired_stale_or_invalid_denied(self):
         inputs = [
             self.issue(author="Impostor"),
