@@ -218,3 +218,29 @@ def test_explicit_cold_start_recovery_never_replays_uncertain_audio(tmp_path):
         assert events[-1] == "RECOVERED_UNCERTAIN"
     finally:
         restarted.close()
+
+
+def test_cross_connection_stop_rejects_stale_renderer_ack(tmp_path):
+    import pytest
+    from v13.speech_intent import SpeechIntentError
+    path = tmp_path / "speech.sqlite"
+    renderer_queue = SpeechIntentQueue(path)
+    operator_queue = SpeechIntentQueue(path)
+    try:
+        intent = renderer_queue.submit("cancel this", source_id="C3:stop")
+        assert renderer_queue.claim() is not None
+        assert operator_queue.interrupt() == 1
+        with pytest.raises(SpeechIntentError, match="unverified"):
+            renderer_queue.acknowledge(
+                intent.intent_id, digest=intent.digest, rendered=True
+            )
+        assert operator_queue.status(intent.intent_id) == "INTERRUPTED"
+        events = [r[0] for r in operator_queue.db.execute(
+            "SELECT event FROM speech_events WHERE intent_id=? ORDER BY id",
+            (intent.intent_id,)
+        )]
+        assert events[-1] == "INTERRUPTED"
+        assert "RENDERED" not in events
+    finally:
+        operator_queue.close()
+        renderer_queue.close()
