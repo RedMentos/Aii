@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - 'v13/code/v13/speech_renderer_pump.py'
+      - 'v13/code/v13/speech_operator.py'
       - 'v13/code/tests/test_speech_renderer_pump.py'
 jobs:
   synthetic-speech:
