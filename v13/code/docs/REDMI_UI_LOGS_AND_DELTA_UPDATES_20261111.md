@@ -56,3 +56,18 @@ Anschließend folgt erst nach erfolgreichem Commit-Test und Git-fast-forward das
 Der Einmal-Installer enthält zusätzlich einen Kompatibilitätsstopp für ältere Steuerzentralen: Er erkennt ausschließlich eigenständige, eindeutig dieser Termux-Installation zugeordnete V13-Chatprozesse, beendet sie begrenzt mit SIGINT/SIGTERM und legt den Neustartmarker vor der Installation an. Unbekannte Prozesse blockieren das Update und werden **nicht** signalisiert. Ist V13 vor dem Update nicht gestartet, wird keine Chat-Sitzung ungefragt erzeugt. Das manuelle `STOP`-Signal für den Diagnose-Agenten bleibt wirksam.
 
 Die genauen Stop-/Resume-Protokolle und Sperrbedingungen werden in GitHub Actions mit simulierten lokalen Prozessen und tatsächlichem Installer-Lauf getestet. Die reale Android-Bestätigung auf dem Redmi steht nach dem Update noch aus.
+
+
+## Echter V13-KI-Hintergrunddienst (2026-11-12)
+
+**Nicht verwechseln:** Der GitHub-Updater ist kein im Hintergrund laufender KI-Agent.
+
+- Modul v13.chat_service ist ein unabhängiger Termux-Python-Dienst mit dem tatsächlichen V13-Chat (~/v13/bin/v13 chat --plain). Er besitzt das Modellprozess-stdin, protokolliert Ausgaben lokal und läuft unabhängig von Browser oder UI-Neustart.
+- Das Browser-Dashboard verbindet sich nur über einen privaten Unix-Socket unter ~/.v13-private/v13-ai.sock (0700 Verzeichnis, 0600 Socket) mit dieser laufenden KI. Browser schließen beendet die V13-Sitzung nicht.
+- Modellabstürze werden mit begrenztem Backoff automatisch neu gestartet. Explizites :shutdown oder V13 beenden setzt den KI-Autostart auf AUS, Chat starten wieder auf EIN.
+- GitHub-CI-geprüfte Updates benutzen weiterhin einen geordneten lokalen Stopp-/Resume-Ablauf; das aktualisierte KI-Dienstmodul lädt nach einem Update ebenfalls neu und setzt die persistente V13-Sitzung fort.
+- Der Ein-Zeilen-Installer startet die KI nach dem Update automatisch und legt einen optionalen Termux:Boot-Hook an. Android führt ihn nur mit installierter Termux:Boot-App aus. Android 13 kann Hintergrundprozesse trotz allem beenden; garantierte 24/7-Verfügbarkeit benötigt einen zulässigen Android-Foreground-Service.
+- Die private DIAGNOSTICS-Antwort enthält nun technical_diagnostics.ai_runtime mit service / model_process / autostart / state. Dieser echte KI-Zustand ist ausdrücklich vom GitHub-Updater und Browserprozess getrennt. Keine Roh-Chats werden übertragen.
+- Der bestehende V13-Runtime-Worker bearbeitet beim Leerlauf bereits konfigurierte Sleep-/Replay- und Beobachter-Jobs. Age-0 RECORD_ONLY hat weiterhin keine autonome externe Tool- oder Shell-Autorität. Dauerlauf ist keine Behauptung vollständiger AGI.
+
+Verifikationsgrenze: Linux-CI-Tests mit echtem Stubsitzungs-Prozess sind nicht gleich Redmi-Dauerlauf. Erst private DIAGNOSTICS mit ai_runtime.model_process=RUNNING und ai_runtime.autostart=true belegen eine laufende KI auf dem Telefon.
