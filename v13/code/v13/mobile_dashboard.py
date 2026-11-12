@@ -760,7 +760,7 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
                    "Konsolentext AUS" if console_shared else "Konsolentext TEILEN"),
             button("shutdown","V13 beenden","danger")
         ]),
-        "@@DIAGNOSTIC_STATUS@@":html.escape(controls.diagnostic_status()),
+        "@@DIAGNOSTIC_STATUS@@":html.escape(str(controls.diagnostic_status())),
         "@@SESSION_COUNT@@":str(len(controls.terminal.saved_sessions()))
     }
     for key,val in replacement.items():
