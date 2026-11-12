@@ -224,6 +224,36 @@ while True:
                 process.terminate()
             process.wait(timeout=5)
 
+    def test_new_command_stops_verified_chat_and_records_auto_resume(self):
+        launcher = self.home / "v13/bin/v13"
+        launcher.parent.mkdir(parents=True)
+        launcher.write_text(
+            "#!" + sys.executable + "\n"
+            "import signal, sys, time\n"
+            "signal.signal(signal.SIGINT, lambda *args: sys.exit(0))\n"
+            "signal.signal(signal.SIGTERM, lambda *args: sys.exit(0))\n"
+            "while True: time.sleep(.05)\n"
+        )
+        launcher.chmod(0o700)
+        proc = subprocess.Popen([str(launcher), "chat", "--plain"],
+                                env=self.env, start_new_session=True)
+        try:
+            time.sleep(.15)
+            self.assertIsNone(proc.poll())
+            result = self.run_bootstrap()
+            proc.wait(timeout=3)
+            self.assertIsNotNone(proc.returncode)
+            self.assertIn("automatischer Neustart", result.stdout+result.stderr)
+            marker = self.home/".v13-private/v13-lifecycle-resume.json"
+            payload = json.loads(marker.read_text())
+            self.assertEqual(payload["reason"],"INSTALL")
+            self.assertEqual(payload["schema"],"v13.lifecycle.resume/1")
+            self.assertTrue(any("fetch" in args for args in self.operations()))
+        finally:
+            if proc.poll() is None:
+                proc.terminate()
+                proc.wait(timeout=3)
+
     def test_unexpected_origin_is_refused_before_fetch(self):
         git(self.phone, "remote", "set-url", "origin", "https://example.invalid/other.git")
         result = self.run_bootstrap()
