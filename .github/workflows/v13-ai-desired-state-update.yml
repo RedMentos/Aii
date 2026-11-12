@@ -1,0 +1,26 @@
+name: v13-ai-desired-state-update
+on:
+  push:
+    branches:
+      - 'gpt6/core-ai-off-update-20261112-2007'
+  pull_request:
+    paths:
+      - 'v13/code/v13/chat_service.py'
+      - 'v13/code/v13/lifecycle.py'
+      - 'v13/code/tests/test_ai_off_update.py'
+      - '.github/workflows/v13-ai-desired-state-update.yml'
+jobs:
+  lifecycle-off-on:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exact lifecycle and service regressions
+        run: |
+          cd v13/code
+          python -m unittest -v tests.test_ai_off_update tests.test_chat_service tests.test_pipeline_agent
+      - name: Compile changed Python
+        run: python -m py_compile v13/code/v13/lifecycle.py v13/code/v13/chat_service.py v13/code/tests/test_ai_off_update.py
