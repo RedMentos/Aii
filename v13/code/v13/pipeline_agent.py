@@ -24,6 +24,7 @@ STATE = PRIVATE / "pipeline-status.json"
 LOCK = PRIVATE / "pipeline-status.lock"
 UI_REFRESH = PRIVATE / "pipeline-ui-refresh"
 BRIDGE_REFRESH = PRIVATE / "pipeline-bridge-refresh"
+AI_REFRESH = PRIVATE / "pipeline-ai-refresh"
 INTERVAL = 900
 MAX_STATE_BYTES = 8192
 
@@ -142,6 +143,7 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits):
         if name == "dashboard":
             _atomic(UI_REFRESH, {"commit": commit})
             _atomic(BRIDGE_REFRESH, {"commit": commit})
+            _atomic(AI_REFRESH, {"commit": commit})
 
 
 def run_cycle(*, force=False, now=None, manual=False, target="all"):
@@ -243,7 +245,9 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
 
 
 def refresh_requested(which):
-    name = UI_REFRESH if which == "ui" else BRIDGE_REFRESH
+    name = {"ui": UI_REFRESH, "bridge": BRIDGE_REFRESH, "ai": AI_REFRESH}.get(which)
+    if name is None:
+        raise ValueError("invalid refresh target")
     return name.is_file() and not name.is_symlink()
 
 
