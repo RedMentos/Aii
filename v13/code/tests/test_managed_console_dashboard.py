@@ -147,6 +147,24 @@ class LocalConsoleTests(unittest.TestCase):
             ui.set_remote_full_console(False)
             self.assertEqual(ui.remote_console_page(0,0)["state"],"USER_NOT_OPTED_IN")
 
+    def test_private_diagnostics_checks_actual_background_ai_not_browser(self):
+        with mock.patch.object(ui, "DATA", self.home), \
+             mock.patch("v13.chat_service.call", return_value={
+                 "running":True, "autostart":True, "daemon":"RUNNING",
+                 "private_prompt":"My secret V13 chat"}):
+            report=ui.summary()
+        self.assertEqual(report["ai_runtime"]["service"],"RUNNING")
+        self.assertEqual(report["ai_runtime"]["model_process"],"RUNNING")
+        self.assertEqual(report["ai_runtime"]["state"],"RUNNING")
+        self.assertTrue(report["ai_runtime"]["autostart"])
+        self.assertNotIn("secret V13",str(report))
+        with mock.patch.object(ui,"DATA",self.home), \
+             mock.patch("v13.chat_service.call",
+                        side_effect=ConnectionRefusedError("private secrets")):
+            report=ui.summary()
+        self.assertEqual(report["ai_runtime"]["service"],"OFFLINE")
+        self.assertNotIn("private secrets",str(report))
+
     def test_private_probe_timeout_summaries_are_bounded(self):
         import json
         with mock.patch.object(ui, "DATA", self.home):
