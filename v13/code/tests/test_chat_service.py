@@ -144,6 +144,37 @@ class AIBackgroundTests(unittest.TestCase):
         self.assertTrue(service.reload_requested)
         self.assertEqual(service.console.starts,0)
 
+    def test_start_is_deferred_during_update_and_then_starts_once(self):
+        console = FakeConsole()
+        service = ai.ChatService(console)
+        with mock.patch("v13.pipeline_agent.snapshot",
+                        return_value={"last_result": "CHECKING"}):
+            self.assertEqual(service.command("start", {}),
+                             {"status": "START_DEFERRED_FOR_UPDATE"})
+            self.assertTrue(ai._read_desired())
+            self.assertEqual(console.starts, 0)
+            service.tick()
+            self.assertEqual(console.starts, 0)
+        service.tick()
+        self.assertEqual(console.starts, 1)
+
+    def test_stop_request_defers_explicit_start(self):
+        service = ai.ChatService(FakeConsole())
+        with mock.patch.object(ai.lifecycle.STOP_REQUEST, "exists", return_value=True):
+            self.assertEqual(service.command("start", {})["status"],
+                             "START_DEFERRED_FOR_UPDATE")
+        self.assertEqual(service.console.starts, 0)
+
+    def test_explicit_off_never_consumes_update_resume(self):
+        console = FakeConsole()
+        service = ai.ChatService(console)
+        ai._desired(False)
+        with mock.patch.object(ai.lifecycle, "service_resume",
+                               side_effect=AssertionError("OFF resumed")):
+            service.tick()
+        self.assertEqual(console.starts, 0)
+        self.assertEqual(service.status, "STOPPED_BY_USER")
+
     def test_private_unix_socket_rpc_is_local_and_browserless(self):
         ai._desired(True)
         server=ai.Server(str(ai.SOCKET), ai.Handler)
