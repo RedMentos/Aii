@@ -634,6 +634,23 @@ def serve(*, open_browser=True):
             else:
                 self.send_header("Content-Type", mime)
             self.end_headers()
+        def _reject(self, code, message):
+            # Browser actions must always get a parseable response; otherwise
+            # a denied CSRF request was surfaced as an opaque JSON syntax error.
+            if "application/json" in self.headers.get("Accept", ""):
+                data = json.dumps({"ok": False, "message": message},
+                                  ensure_ascii=False).encode("utf-8")
+                self.send_response(code)
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Content-Length", str(len(data)))
+                self.send_header("X-Content-Type-Options", "nosniff")
+                self.end_headers()
+                self.wfile.write(data)
+            else:
+                self._headers(code, mime="text/plain; charset=utf-8")
+                self.wfile.write(message.encode("utf-8"))
+
         def _local_host(self):
             # Keep DNS-rebinding protection, but do not depend on Brave/Android
             # providing one exact Origin value for local browser form submits.
@@ -680,19 +697,23 @@ def serve(*, open_browser=True):
             self.wfile.write(data)
         def do_POST(self):
             if self.path != prefix + "/action":
-                self._headers(404)
+                self._reject(404, "Unbekannter Button-Endpunkt.")
                 return
             length = self.headers.get("Content-Length", "")
-            if not length.isdigit() or int(length) > 4000:
-                self._headers(413)
+            if not length.isdigit() or not 0 < int(length) <= 4000:
+                self._reject(413, "Button-Anfrage ist leer oder zu groß.")
                 return
             if not self._local_host():
-                self._headers(403)
+                self._reject(403, "Ungültiger lokaler Browser-Host.")
+                return
+            content_type = self.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
+            if content_type != "application/x-www-form-urlencoded":
+                self._reject(415, "Browser hat Formulardaten falsch gesendet. Steuerzentrale aktualisieren.")
                 return
             try:
                 fields = parse_qs(self.rfile.read(int(length)).decode("utf-8"), keep_blank_values=True)
                 if fields.get("csrf") != [csrf]:
-                    self._headers(403)
+                    self._reject(403, "Sitzungsschlüssel ungültig. Aktuelle Seite neu laden.")
                     return
                 action = fields.get("action", [""])[0]
                 if action in ALLOWED:
