@@ -425,6 +425,9 @@ class RuntimeControls:
         self.update_busy = False
         self.update_result = "Noch kein GitHub-Update geprüft"
         self.update_started = 0.0
+        self.diag_busy = False
+        self.diag_result = "Noch kein Bericht versendet"
+        self.diag_started = 0.0
         self.restart_requested = False
         self.restart_callback = None
 
@@ -468,12 +471,12 @@ class RuntimeControls:
             try:
                 from v13 import source_updater
                 if action in ("pipeline", "apply", "auto", "dashboard"):
-                    if action in ("pipeline", "auto") and not pipeline_agent.enabled():
+                    if action == "auto" and not pipeline_agent.enabled():
                         raise RuntimeError("Automatische Updates sind AUS. Erst einschalten.")
                     target = ("runtime" if action in ("apply", "auto") else
                               "dashboard" if action == "dashboard" else "all")
                     result = pipeline_agent.run_cycle(
-                        force=True, manual=action in ("apply", "dashboard"),
+                        force=True, manual=action in ("apply", "dashboard", "pipeline"),
                         target=target)
                     msg = (result["last_result"] + " · V13: " + result["runtime"]
                            + " · UI: " + result["dashboard"]
@@ -501,6 +504,36 @@ class RuntimeControls:
                 # The local watcher restarts the dashboard only after all
                 # workers have finished, then resumes the managed chat.
         threading.Thread(target=worker, daemon=True, name="v13-source-update").start()
+
+    def send_diagnostics(self, *, full=False):
+        # This method is called ONLY by a click on a local authenticated form.
+        # Opt-in is PER REPORT, not a persistent background sharing switch.
+        with self.lock:
+            if self.diag_busy:
+                raise RuntimeError("Ein Diagnosebericht wird bereits übertragen")
+            self.diag_busy = True
+            self.diag_started = time.monotonic()
+            self.diag_result = ("Vollständiger Bericht mit Chat wird gesendet …"
+                                if full else "Technische Diagnose wird gesendet …")
+        def worker():
+            try:
+                from .diagnostic_push import publish
+                rec = publish(full=full)
+                msg = ("An privaten GitHub-Kanal gesendet · " + rec["url"]
+                       + (" · gekürzt (Größenlimit)" if rec["truncated"] else ""))
+            except Exception as exc:
+                # Explicit local user-visible failure, never pretend success.
+                msg = "Fehler beim Senden: " + type(exc).__name__ + ": " + str(exc)[:120]
+            with self.lock:
+                self.diag_result = msg
+                self.diag_busy = False
+        threading.Thread(target=worker, daemon=True, name="v13-explicit-diagnostic-send").start()
+
+    def diagnostic_status(self):
+        with self.lock:
+            if self.diag_busy:
+                return self.diag_result + " · " + str(round(time.monotonic()-self.diag_started)) + " s"
+            return self.diag_result
 
     def update_status(self):
         with self.lock:
@@ -707,17 +740,19 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
             " · " + pipeline_status["last_result"] +
             " · V13: " + pipeline_status["runtime"] +
             " · Steuerzentrale: " + pipeline_status["dashboard"]),
-        "@@PIPELINE_BUTTON@@":button("pipeline_check","Auto-Pipeline jetzt prüfen"),
+        "@@PIPELINE_BUTTON@@":button("pipeline_check","Alles aktualisieren (KI + Oberfläche)","primary"),
         "@@UPDATE_HIDDEN@@":"" if update_busy else "hidden",
         "@@UPDATE_BUTTONS@@":"".join([
             button("check_update","Änderungen prüfen"),
-            button("apply_update","V13-Code aktualisieren","primary"),
+            button("apply_update","Nur V13-Code aktualisieren"),
             button("rollback_update","Rückgängig"),
             button("auto_disable" if auto_enabled else "auto_enable",
                    "Auto-Updates AUS" if auto_enabled else "Auto-Updates EIN")
         ]),
         "@@DASHBOARD_UPDATE@@":button("dashboard_update","Steuerzentrale aktualisieren","primary"),
         "@@DIAG_BUTTONS@@":"".join([
+            button("diag_send_technical","Fehlerbericht jetzt senden","primary"),
+            button("diag_send_full","Fehler + Chat jetzt senden"),
             button("zip","Diagnose-ZIP"),
             button("log_disable" if errors_shared else "log_enable",
                    "Fern-Fehlercodes AUS" if errors_shared else "Fern-Fehlercodes EIN"),
@@ -725,6 +760,7 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
                    "Konsolentext AUS" if console_shared else "Konsolentext TEILEN"),
             button("shutdown","V13 beenden","danger")
         ]),
+        "@@DIAGNOSTIC_STATUS@@":html.escape(controls.diagnostic_status()),
         "@@SESSION_COUNT@@":str(len(controls.terminal.saved_sessions()))
     }
     for key,val in replacement.items():
@@ -843,6 +879,7 @@ def serve(*, open_browser=True):
                              pstatus["runtime"] + " · UI: " + pstatus["dashboard"]),
                            "last_action": last, "running": running,
                            "update_result": update_result, "update_busy": update_busy,
+                           "diagnostic_status": controls.diagnostic_status(),
                            "generation": generation}
                 data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
                 self._headers(mime="application/json; charset=utf-8")
@@ -920,6 +957,11 @@ def serve(*, open_browser=True):
                     message = "Private V13-Konsolenauszüge " + ("freigegeben" if action == "full_log_enable" else "gesperrt")
                 elif action == "stop":
                     message = controls.stop()
+                elif action in ("diag_send_technical", "diag_send_full"):
+                    controls.send_diagnostics(full=action == "diag_send_full")
+                    message = ("Privater Bericht wird übertragen. Status im Diagnose-Abschnitt."
+                               + (" Chatinhalt freigegeben." if action == "diag_send_full" else
+                                  " Ohne vollständigen Chatinhalt."))
                 elif action == "zip":
                     dest = diagnostics_zip()
                     message = "Diagnose-ZIP erstellt: " + dest.name + " (in Downloads)"
