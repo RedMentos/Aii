@@ -62,7 +62,7 @@ class PCMStoreA3Tests(unittest.TestCase):
     def test_malformed_pcm_not_stored(self):
         before = self.store.one("SELECT COUNT(*) AS n FROM sources")["n"]
         with self.assertRaises(ValueError):
-            observe_stored_pcm(self.runtime, self.projector, b"\\x00", 16000, consent=True)
+            observe_stored_pcm(self.runtime, self.projector, bytes([0]), 16000, consent=True)
         self.assertEqual(before, self.store.one("SELECT COUNT(*) AS n FROM sources")["n"])
 
 if __name__ == "__main__":
