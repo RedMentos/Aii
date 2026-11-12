@@ -41,7 +41,7 @@ SHA = re.compile(r"[0-9a-f]{40}\Z")
 ID = re.compile(r"[0-9a-f]{32}\Z")
 KEY = re.compile(r"[0-9a-f]{64}\Z")
 AGENT = re.compile(r"[a-z][a-z0-9_-]{2,39}\Z")
-COMMANDS = {"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "PATCH_STAGE", "PATCH_APPLY"}
+COMMANDS = {"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "PATCH_STAGE", "PATCH_APPLY"}
 MAX_COMMAND = 8192
 MAX_REPLY = 12000
 MAX_STATUS = 8192
@@ -94,6 +94,11 @@ def verify_command(obj, keys, permissions, authors, *, author, now=None):
         raise Denied("invalid args")
     if cmd in ("HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS") and args:
         raise Denied("read-only command has no parameters")
+    if cmd == "LOG_PAGE" and (
+            set(args) != {"session", "page"} or
+            type(args.get("session")) is not int or not 0 <= args["session"] < 32 or
+            type(args.get("page")) is not int or not 0 <= args["page"] < 1024):
+        raise Denied("LOG_PAGE requires bounded integer session/page")
     if cmd in ("PATCH_STAGE", "PATCH_APPLY") and (
             set(args) != {"patch_commit", "patch_id"} or
             not isinstance(args["patch_commit"], str) or
@@ -657,6 +662,10 @@ def execute(client, cfg, cmd):
     if name == "PIPELINE_STATUS":
         from .pipeline_agent import snapshot
         return {"status": "OK", "pipeline": snapshot()}
+    if name == "LOG_PAGE":
+        from .mobile_dashboard import remote_console_page
+        return {"status": "OK", "console_page": remote_console_page(
+            cmd["args"]["session"], cmd["args"]["page"])}
     dest, receipt = download_and_stage(client, cfg, cmd["args"])
     if name == "PATCH_STAGE":
         return {"status": "SIGNED_PATCH_STAGED_NOT_APPLIED", "manifest_sha256":
