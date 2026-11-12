@@ -50,6 +50,10 @@ for p in proc.iterdir():
         args = [x.decode("utf-8","replace") for x in (p/"cmdline").read_bytes().split(b"\0") if x]
         env = (p/"environ").read_bytes().split(b"\0")
         if b"HOME="+os.fsencode(home) not in env:
+            # An unfamiliar V13 process owned by the same Termux UID is
+            # still a conflict, but must NEVER be signalled automatically.
+            if any(a == "v13" or a.endswith("/bin/v13") for a in args):
+                unknown_v13.append(int(p.name))
             continue
     except OSError:
         continue
