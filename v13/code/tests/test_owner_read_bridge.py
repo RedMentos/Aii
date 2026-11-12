@@ -98,6 +98,36 @@ class OwnerReadTests(unittest.TestCase):
         with self.assertRaises(b.Denied):
             o.validate_owner_read(self.issue("PIPELINE_STATUS"), self.cfg, now=self.now)
 
+    def test_log_page_requires_permission_explicit_indices_and_local_opt_in(self):
+        from unittest import mock
+        self.cfg["permissions"]["agent-owner"].append("LOG_PAGE")
+        issue=self.issue("LOG_PAGE")
+        body=json.loads(issue["body"])
+        body["args"]={"session":0,"page":3}
+        issue["body"]=json.dumps(body)
+        client=FakeGitHub([issue])
+        with mock.patch("v13.mobile_dashboard.remote_console_page",
+                        return_value={"state":"USER_NOT_OPTED_IN"}) as reader:
+            self.assertEqual(o.poll_once(client,self.cfg,now=self.now)["processed"],1)
+        reader.assert_called_once_with(0,3)
+        self.assertEqual(client.comments_sent[0][1]["device_status"]["console_page"]["state"],"USER_NOT_OPTED_IN")
+        for bad in (
+            {"session":-1,"page":0},
+            {"session":0,"page":2048},
+            {"session":True,"page":0},
+            {"session":0,"page":0,"path":"/etc/passwd"},
+            {"session":"../../","page":0},
+        ):
+            invalid=self.issue("LOG_PAGE")
+            data=json.loads(invalid["body"])
+            data["args"]=bad
+            invalid["body"]=json.dumps(data)
+            with self.subTest(bad=bad),self.assertRaises(b.Denied):
+                o.validate_owner_read(invalid,self.cfg,now=self.now)
+        self.cfg["permissions"]["agent-owner"].remove("LOG_PAGE")
+        with self.assertRaises(b.Denied):
+            o.validate_owner_read(issue,self.cfg,now=self.now)
+
     def test_wrong_author_expired_stale_or_invalid_denied(self):
         inputs = [
             self.issue(author="Impostor"),
