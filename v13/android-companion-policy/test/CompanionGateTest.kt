@@ -32,6 +32,6 @@ fun main() {
     check(calls == 1)
     gate.stopFromLocalUi()
     check(gate.dispatch(signed("nonce-123456789012347")).reason == "STOPPED")
-    check(seen.size == 6)
+    check(seen.size == 7)
     println("PASS companion gate: stop/auth/consent/replay/dispatch/audit")
 }
