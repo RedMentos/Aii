@@ -44,6 +44,13 @@ jobs:
           tests/test_context_source_recall_stage_20261111.py
           tests/test_runtime_jepa_utility_integration_20261111.py
           tests/test_world_jepa_training_resume_stage_20261111.py
+          tests/test_termux_probe_recovery_candidate_20261112.py
+          tests/test_termux_chat_recovery_candidate_20261112.py
+          tests/test_termux_idle_recovery_candidate_20261112.py
+          tests/test_termux_runtime_recovery_stage.py
+          tests/test_activate_termux_recovery.py
+      - name: Check recovery shell syntax
+        run: bash -n v13/code/scripts/termux_runtime_recovery.sh
   integrated-regression:
     runs-on: ubuntu-latest
     timeout-minutes: 15

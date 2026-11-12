@@ -1,3 +1,60 @@
+# 2026-11-12 — no-input scheduler and actual runtime recovery
+
+Source parent: `0d6bd47b116f89c44c94c4d5ac6308afd604bac7`. User supplied
+phone measurements and reiterated that ongoing work without input is required.
+No raw phone transcript, device process identifier or private chat was committed.
+
+Confirmed gaps and repairs in the isolated, composed runtime copy:
+
+- Original scheduler stops after 12 background dispatches until a new accepted
+  user turn. New explicit `:idle on` renews at most 12 existing jobs per rolling
+  hour (or a smaller configured budget), without fabricated input. Default
+  remains unchanged. Retries count; quota persists; clock rollback, corrupt
+  state, pauses, resources, quiet hours, input priority and Age remain binding.
+  `:idle status` is read-only and reports the worker, quota, cycles, block reason
+  and actual small world-model fit/sample state. This is not large-body training.
+- The B1 smoke probe used a separate 35s structured-offer deadline after its
+  90s smoke call, then erased successful smoke evidence if the offer failed.
+  Phase results, budgets, durations and metrics now survive failure. Overall
+  failure still fails. Increasing observer_seconds is a diagnostic, not a claim
+  that B1 now passes on the phone.
+- Plain chat reprinted persisted assistant messages at every process start.
+  It now identifies saved history without presenting it as fresh output, while
+  new messages and ongoing streams still render. Bare `:learning` is a read-only
+  mode query before the idle mutation guard; explicit mode changes retain it.
+- The bridge installer did not switch the actual model-runtime launcher.
+  `scripts/termux_runtime_recovery.sh` stages the entire pinned composed build
+  and uses explicit `--activate`. The helper verifies all staged source hashes
+  and syntax, requires the model runtime stopped, backs up the launcher/settings
+  and SQLite privately, then atomically switches the launcher. Rollback changes
+  only the launcher and preserves later messages/settings. No model download or
+  learning permission is granted. Android platform path aliases are supported.
+
+Frozen original Runtime, Store, operator, scheduler, UI and verification files
+remain byte-identical. New behavior is staged by the updated existing stager;
+all earlier World/Body/context/resume changes and imported scripts/native helpers are retained. The user must execute
+activation and start the chat, then send `:idle on`, before this runs on the phone.
+Existing false completion flags and all negative evidence remain unchanged.
+
+Validation:
+
+- Real coordinator/SQLite, accelerated clocks: six hourly sleep cycles and more
+  than 12 completed existing jobs, zero accepted user turns/messages/native PIDs;
+  enablement, sleep state and honest TOO_FEW_TRANSITIONS persisted on restart.
+- Combined recovery and six existing real-stage suites: 34 passed, 9 intentional
+  child-only skips, 5 subtests passed; nested idle suite separately 9 passed.
+- Activation helper: 16 passed under umask 022, including SQLite snapshot,
+  restart lease, Android ancestor alias, PREPARED crash recovery and rollback
+  preserving new data. Node/Android/native inference was not used by these tests.
+- Runtime recovery shell syntax passes. The staged context CI now includes all
+  recovery suites. One external anyio/pytest deprecation warning remains local.
+
+Phone instructions and reversible commands:
+`code/docs/TERMUX_RUNTIME_RECOVERY_20261112.md`.
+Android background process survival and B1 success are still unmeasured by this
+repair. Large GGUF body training remains unavailable. Drive storage was already
+full at the prior backup attempt; GitHub and local ZIP are the available saves.
+
 # 2026-11-12 — Termux bootstrap / browser-button recovery review
 
 CI follow-up: the first published owner-read run `43165385938` exposed a
