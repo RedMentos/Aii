@@ -220,8 +220,8 @@ class StopEscalationTests(unittest.TestCase):
             (home / "bin").mkdir(parents=True)
             launcher = home / "bin" / "v13"
             launcher.write_text(
-                "#!/bin/sh\\ntrap '' INT TERM\\necho FIXTURE_READY\\n"
-                "while :; do sleep 1; done\\n")
+                "#!/bin/sh\ntrap '' INT TERM\necho FIXTURE_READY\n"
+                "while :; do sleep 1; done\n")
             launcher.chmod(0o700)
             console = mc.ManagedConsole(
                 data_home=home, log_root=base / "logs" / "sessions")
