@@ -122,6 +122,51 @@ def poll_once(client, cfg, *, now=None):
             return {"status": "POLL_OK", "processed": processed}
 
 
+def monitor_and_alert(client, *, now=None):
+    """Send one private GitHub incident when real V13 chat health changes.
+
+    A GitHub update being successful is NOT proof the AI can answer.
+    Only approved enums are written. No user texts, traceback, paths or
+    SHA/blob names ever leave the phone through this channel.
+    """
+    from . import phone_monitor
+    from .common import atomic_write
+    clock=int(time.time() if now is None else now)
+    report=phone_monitor.check()
+    phone_monitor.persist_status(report)
+    incident=phone_monitor.safe_incident(report)
+    private=phone_monitor.PRIVATE
+    flag=private/"phone-monitor-last-alert.json"
+    if flag.is_symlink():
+        raise bridge.Denied("unsafe phone monitor alert state")
+    previous={}
+    try:
+        if flag.is_file() and flag.stat().st_size <= 1024:
+            previous=json.loads(flag.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        previous={}
+    previous_code=previous.get("fingerprint")
+    code=(incident["component"]+":"+incident["code"] if incident else "HEALTHY")
+    # Publish transitions, and remind about an unresolved incident no more
+    # than once per 24 hours. Healthy with no prior alert publishes nothing.
+    if previous_code==code and (not incident or clock-int(previous.get("reported_at",0)) < 86400):
+        return {"status":"UNCHANGED","code":code}
+    if not incident and not previous_code:
+        return {"status":"HEALTHY","code":"HEALTHY"}
+    body=incident or {"schema":"v13.phone-incident/1","severity":"RECOVERED",
+                       "component":"CHAT","code":"HEALTHY",
+                       "ai":report["ai"]}
+    body={**body,"reported_at":clock}
+    title=("V13ALERT:"+body["component"]+":"+body["code"] if incident else
+           "V13RECOVERED:CHAT:HEALTHY")
+    # GitHub client is restricted to the exact configured PRIVATE repository.
+    client.request("POST","/repos/"+client.repository+"/issues",
+                   {"title":title,"body":bridge.canonical(body).decode("ascii")},limit=4096)
+    atomic_write(flag,json.dumps({"fingerprint":code,"reported_at":clock}))
+    flag.chmod(0o600)
+    return {"status":"PUBLISHED","code":code}
+
+
 def github_token():
     """Use gh device-login credentials; never print or persist the token here."""
     env = os.environ.get("V13_RELAY_TOKEN", "")
@@ -197,7 +242,8 @@ def main(argv=None):
     while True:
         try:
             print(json.dumps(poll_once(client, cfg)), flush=True)
-        except (OSError, ValueError) as exc:
+            print(json.dumps(monitor_and_alert(client)), flush=True)
+        except (OSError, ValueError, RuntimeError) as exc:
             print(json.dumps({"status": "POLL_ERROR", "error_code": type(exc).__name__}), flush=True)
         # An updated relay must reload its own Python modules before it can
         # serve newly added commands. Never do so inside an issue transaction.
