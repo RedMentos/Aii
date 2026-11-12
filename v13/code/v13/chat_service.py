@@ -256,11 +256,19 @@ def ensure_service(*, timeout=10):
     _owner_private_directory(PRIVATE)
     if path.is_symlink():
         raise RuntimeError("Unsafe AI service log")
+    # Launch from the installed source root, not HOME: otherwise the
+    # detached daemon cannot import v13 when only the UI process' cwd made
+    # that Python package importable. This was the browser-start timeout.
+    source_root = Path(__file__).resolve().parents[1]
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(source_root) + (os.pathsep + env["PYTHONPATH"]
+                                           if env.get("PYTHONPATH") else "")
     with path.open("ab") as out:
         os.chmod(path, 0o600)
         subprocess.Popen([sys.executable, "-m", "v13.chat_service", "serve"],
                          stdin=subprocess.DEVNULL, stdout=out, stderr=out,
-                         start_new_session=True, close_fds=True, cwd=str(Path.home()))
+                         start_new_session=True, close_fds=True,
+                         cwd=str(source_root), env=env)
     end = time.monotonic() + timeout
     while time.monotonic() < end:
         try:
