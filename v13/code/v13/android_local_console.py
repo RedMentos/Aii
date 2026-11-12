@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .android_operator_audited_session import audited_operator_session
+from .android_stop_latch import StopLatch
 
 
 @dataclass(frozen=True)
@@ -26,13 +27,20 @@ def android_local_console(registry, audit_path: str | Path, *, transport, verifi
     No automatic approval: callers must supply a trusted local confirmation
     callback for each execute command. Stop is irreversible for this session.
     """
+    latch = StopLatch(audit_path)
+    if latch.engaged():
+        registry.stop()
     with audited_operator_session(
         registry, audit_path, transport=transport, verifier=verifier
     ) as (command, journal):
         def handle(line: str, *, approve_local=None) -> ConsoleReply:
             if line == ":android stop":
                 registry.stop()
-                return ConsoleReply("STOPPED", "all further actions denied")
+                try:
+                    latch.engage()
+                except OSError:
+                    return ConsoleReply("STOPPED_UNPERSISTED", "stopped in process; durable latch write failed")
+                return ConsoleReply("STOPPED", "durable stop engaged; further actions denied")
             if line == ":android status":
                 history = registry.history()
                 counts: dict[str, int] = {}
