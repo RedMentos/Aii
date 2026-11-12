@@ -23,7 +23,7 @@ class CompanionGate(
     private val locallyApproved: (ActionRequest) -> Boolean,
     private val nowMs: () -> Long = { System.currentTimeMillis() },
     private val audit: (ActionReceipt) -> Unit,
-    private val reserveNonce: (String) -> Boolean = { true }
+    private val reserveNonce: (String) -> Boolean = { false }
 ) {
     private val key = secret.copyOf()
     private val consumed = HashSet<String>()
@@ -32,7 +32,7 @@ class CompanionGate(
 
     /** Must only be invoked by the trusted local Android UI, never by a model request. */
     @Synchronized fun enableFromLocalUi() { stopped = false }
-    @Synchronized fun stopFromLocalUi() { stopped = true }
+    fun stopFromLocalUi() { stopped = true }
 
     private fun canonical(r: ActionRequest): String = listOf(
         "V13-ANDROID-V1", r.id, r.capability, r.target,
