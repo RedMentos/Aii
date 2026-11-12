@@ -56,15 +56,25 @@ class SpeechIntentQueue:
 
     def claim(self):
         with self.lock:
-            if self.db.execute("SELECT 1 FROM speech_intents WHERE status='RENDERING'").fetchone():
-                return None
-            row = self.db.execute("SELECT intent_id,text,source_id,created_at,status,digest FROM speech_intents WHERE status='QUEUED' ORDER BY created_at,intent_id LIMIT 1").fetchone()
-            if row is None:
-                return None
-            self.db.execute("UPDATE speech_intents SET status='RENDERING' WHERE intent_id=?", (row[0],))
-            self._event(row[0], "RENDERING")
-            self.db.commit()
-            return SpeechIntent(*row[:4], "RENDERING", row[5])
+            # Serialize claim across independent Termux processes, not just
+            # threads sharing this queue instance. The write lock is acquired
+            # before checking for another active renderer.
+            self.db.execute("BEGIN IMMEDIATE")
+            try:
+                if self.db.execute("SELECT 1 FROM speech_intents WHERE status='RENDERING'").fetchone():
+                    self.db.commit()
+                    return None
+                row = self.db.execute("SELECT intent_id,text,source_id,created_at,status,digest FROM speech_intents WHERE status='QUEUED' ORDER BY created_at,intent_id LIMIT 1").fetchone()
+                if row is None:
+                    self.db.commit()
+                    return None
+                self.db.execute("UPDATE speech_intents SET status='RENDERING' WHERE intent_id=? AND status='QUEUED'", (row[0],))
+                self._event(row[0], "RENDERING")
+                self.db.commit()
+                return SpeechIntent(*row[:4], "RENDERING", row[5])
+            except BaseException:
+                self.db.rollback()
+                raise
 
     def acknowledge(self, intent_id, *, digest, rendered=False):
         """Caller must be a trusted renderer; Python cannot authenticate Android identity."""

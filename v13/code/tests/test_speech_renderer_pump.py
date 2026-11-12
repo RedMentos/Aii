@@ -143,3 +143,37 @@ def test_uncertain_playback_does_not_discard_next_queued_turn(tmp_path):
     assert pump.run_one().status == "RENDERED"
     assert q.status(second.intent_id) == "RENDERED"
     q.close()
+
+
+def test_two_connections_claim_once_under_contention(tmp_path):
+    """Two SQLite connections must not dispatch the same queued utterance."""
+    import threading
+    path = tmp_path / "speech.sqlite"
+    first = SpeechIntentQueue(path)
+    second = SpeechIntentQueue(path)
+    try:
+        queued = first.submit("Hello", source_id="C3:final")
+        barrier = threading.Barrier(3)
+        results = []
+        errors = []
+
+        def claim(queue):
+            try:
+                barrier.wait(timeout=5)
+                results.append(queue.claim())
+            except Exception as exc:
+                errors.append(exc)
+
+        threads = [threading.Thread(target=claim, args=(q,)) for q in (first, second)]
+        for thread in threads:
+            thread.start()
+        barrier.wait(timeout=5)
+        for thread in threads:
+            thread.join(timeout=10)
+            assert not thread.is_alive()
+        assert not errors
+        assert sum(item is not None for item in results) == 1
+        assert next(item for item in results if item is not None).intent_id == queued.intent_id
+    finally:
+        first.close()
+        second.close()
