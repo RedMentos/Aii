@@ -1,0 +1,31 @@
+name: V13 Android runtime deployment integrity
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/runtime_deploy.py'
+      - 'v13/code/tests/test_runtime_deploy.py'
+      - '.github/workflows/v13-runtime-deploy-integrity.yml'
+  push:
+    branches:
+      - 'gpt6/core-runtime-integrity-20261112'
+    paths:
+      - 'v13/code/v13/runtime_deploy.py'
+      - 'v13/code/tests/test_runtime_deploy.py'
+      - '.github/workflows/v13-runtime-deploy-integrity.yml'
+permissions:
+  contents: read
+jobs:
+  offline-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check Python syntax
+        run: python -m compileall -q v13/code/v13/runtime_deploy.py v13/code/tests/test_runtime_deploy.py
+      - name: Offline immutable runtime and repair regression
+        env:
+          PYTHONPATH: v13/code
+        run: python -m unittest discover -s v13/code/tests -p test_runtime_deploy.py -v
