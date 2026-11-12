@@ -20,6 +20,7 @@ OWNER = "RedMentos"
 RELEASE = "gpt6/v13-private-remote-bridge-20261111"
 HEX40 = re.compile(r"[a-f0-9]{40}\Z")
 MARKER = "V13-RELEASE-APPROVED SHA="
+READY_LABEL = "v13-release-ready"
 REQUIRED = {
     "V13 staged context and integrated regression":
         ".github/workflows/v13-integrated-context-stage-20261111.yml",
@@ -133,8 +134,18 @@ def _approved(api, number, head):
 
 
 def _green(api, sha, phone):
-    runs = _list(api, f"/repos/{REPO}/actions/runs?" +
-                 urlencode({"head_sha": sha}))
+    runs = []
+    for page in range(1, 5):
+        data = api.call("GET", f"/repos/{REPO}/actions/runs?" +
+                        urlencode({"head_sha": sha, "per_page": 100, "page": page}))
+        part = data.get("workflow_runs") if isinstance(data, dict) else None
+        if not isinstance(part, list):
+            raise QueueError("invalid GitHub workflow listing")
+        runs.extend(part)
+        if len(part) < 100:
+            break
+    else:
+        raise QueueError("too many CI runs for a candidate SHA")
     found = {}
     required = dict(REQUIRED)
     if phone:
@@ -198,11 +209,19 @@ def candidate(api, pr):
 
 
 def run(api, *, execute=False):
-    prs = _list(api, f"/repos/{REPO}/pulls?" + urlencode({
-        "state": "open", "base": RELEASE, "direction": "asc", "sort": "created"}))
+    # Query only explicitly approved candidate labels. Thousands of unrelated
+    # historical/stacked V13 PRs must never stall the integration loop.
+    issues = _list(api, f"/repos/{REPO}/issues?" + urlencode({
+        "state": "open", "labels": READY_LABEL,
+        "direction": "asc", "sort": "created"}))
     results = []
-    for pr in prs:
-        number = pr.get("number")
+    for issue in issues:
+        if not isinstance(issue, dict) or "pull_request" not in issue:
+            continue
+        number = issue.get("number")
+        if type(number) is not int:
+            continue
+        pr = api.call("GET", f"/repos/{REPO}/pulls/{number}")
         # No raw PR descriptions are logged. User content is not instructions.
         ok, reason = candidate(api, pr)
         results.append({"pr": number, "status": reason})
