@@ -59,6 +59,8 @@ class SpeechRendererPump:
                 return PlaybackResult("INTERRUPTED", intent.intent_id)
             if self.verifier.verify(intent.intent_id, intent.digest, receipt) is not True:
                 return PlaybackResult("UNVERIFIED", intent.intent_id)
+            if self.stopped or not self.enabled:
+                return PlaybackResult("INTERRUPTED", intent.intent_id)
             self.queue.acknowledge(intent.intent_id, digest=intent.digest, rendered=True)
             return PlaybackResult("RENDERED", intent.intent_id)
         except Exception:
