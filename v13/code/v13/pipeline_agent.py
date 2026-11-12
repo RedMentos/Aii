@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import time
 import tempfile
+import subprocess
 
 from . import source_updater as updates
 
@@ -106,7 +107,8 @@ def _try_repo(root):
         if not root.is_dir():
             return None, "NOT_INSTALLED"
         return updates.status(root), None
-    except (OSError, ValueError, TimeoutError):
+    except (OSError, ValueError, TimeoutError, updates.UpdateDenied,
+            subprocess.TimeoutExpired):
         return None, "ERROR"
 
 
@@ -186,7 +188,8 @@ def run_cycle(*, force=False, now=None):
                 state["last_result"] = "PARTIAL"
             else:
                 state["last_result"] = "UP_TO_DATE"
-        except (OSError, ValueError, TimeoutError) as exc:
+        except (OSError, ValueError, TimeoutError, updates.UpdateDenied,
+                subprocess.TimeoutExpired) as exc:
             state["last_result"] = "ERROR"
             # Error class only; no secrets/paths/arguments in persisted state.
             state["last_error"] = "CI" if "CI" in type(exc).__name__ else "UPDATE"
