@@ -45,3 +45,14 @@ curl -fsSL https://raw.githubusercontent.com/RedMentos/Aii/gpt6/v13-private-remo
 ```
 
 **Nachweisgrenze:** Python-/HTTP-/JS-Tests in GitHub Actions validieren die neue Oberfläche synthetisch. Ein erneuter realer Redmi-Test des neuen vierteiligen Layouts und seines selbständigen Neustarts bleibt erforderlich, bevor behauptet wird, dass es auf diesem Gerät bereits funktioniert.
+
+
+## Automatisches Beenden und Neustarten bei Updates (2026-11-12)
+
+Die Bedienoberfläche und die GitHub-Pipeline starten ein verifiziertes Update nun ohne manuellen Chat-Stopp. Eine lokale, dateibasierte Lifecycle-Steuerung im privaten Termux-Verzeichnis fordert von der laufenden UI einen geordneten `:shutdown` an. Die UI wartet begrenzt auf das tatsächliche Ende und sendet bei Hängern einen gezielten `SIGINT` ausschließlich an die von ihr gestartete V13-Sitzung. Andere Android-Apps/Termux-Prozesse werden nie per Fernbefehl beendet. Wenn die Sitzung nicht sicher stoppt, wird **kein** Code aktualisiert.
+
+Anschließend folgt erst nach erfolgreichem Commit-Test und Git-fast-forward das Codeupdate. Ein privater One-Shot-Neustartmarker sorgt dafür, dass der Browser-Chat ohne erneutes Drücken auf *Chat starten* aus dem dauerhaften V13-Datenbestand zurückkehrt. Bei Updatefehlern wird derselbe Chat mit dem vorigen Code wieder gestartet. Die lokale UI und der private Relay-Agent starten sich nach eigenen Codeupdates erst **nach** dem Abschluss der Git-Transaktion neu. Bereits laufende Modellberechnungen können bei einem kontrollierten Stopp unterbrochen werden; nicht gespeicherte Zwischenergebnisse sind nicht garantiert. Nur abgeschlossene und gesicherte Chats/Lernstände bleiben zuverlässig erhalten.
+
+Der Einmal-Installer enthält zusätzlich einen Kompatibilitätsstopp für ältere Steuerzentralen: Er erkennt ausschließlich eigenständige, eindeutig dieser Termux-Installation zugeordnete V13-Chatprozesse, beendet sie begrenzt mit SIGINT/SIGTERM und legt den Neustartmarker vor der Installation an. Unbekannte Prozesse blockieren das Update und werden **nicht** signalisiert. Ist V13 vor dem Update nicht gestartet, wird keine Chat-Sitzung ungefragt erzeugt. Das manuelle `STOP`-Signal für den Diagnose-Agenten bleibt wirksam.
+
+Die genauen Stop-/Resume-Protokolle und Sperrbedingungen werden in GitHub Actions mit simulierten lokalen Prozessen und tatsächlichem Installer-Lauf getestet. Die reale Android-Bestätigung auf dem Redmi steht nach dem Update noch aus.
