@@ -220,6 +220,13 @@ def _copy(source, target):
         dest = target / rel
         if not src.is_dir() or src.is_symlink():
             raise RuntimeDeployError("Missing source subtree: " + rel)
+        # Never dereference a symlink into an immutable release snapshot.
+        # copytree(symlinks=False) otherwise copies arbitrary host/private bytes.
+        for directory, dirs, files in os.walk(src, followlinks=False):
+            for name in dirs + files:
+                entry = Path(directory) / name
+                if entry.is_symlink():
+                    raise RuntimeDeployError("Symlink inside runtime source tree")
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(src, dest, symlinks=False,
                         ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyo", ".git"))
@@ -371,7 +378,7 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description="Activate complete CI-verified V13 runtime without touching models or memory")
-    p.add_argument("--source", default=str(Path.home() / "V13-Phone"))
+    p.add_argument("--source", default=str(Path.home() / ".v13-runtime-source"))
     p.add_argument("--home", default=str(Path.home() / "v13"))
     a = p.parse_args(argv)
     try:
