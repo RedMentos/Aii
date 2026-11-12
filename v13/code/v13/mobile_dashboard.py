@@ -482,8 +482,24 @@ class RuntimeControls:
                            + " · UI: " + result["dashboard"]
                            + (" · Chat startet automatisch neu" if result["last_result"]=="UPDATED" else ""))
                 elif action == "check":
-                    result = source_updater.status()
-                    msg = result["status"] + " · " + str(result.get("changed_files",0)) + " Dateien"
+                    # The button previously checked ~/V13-Phone while the
+                    # updater actually changes two different Git checkouts.
+                    # This permanently displayed e.g. "13 available" even
+                    # after a successful one-click update.
+                    inventory = pipeline_agent.pending_updates(fetch=True)
+                    status = inventory["status"]
+                    if inventory["verified_current"]:
+                        msg = "0 Änderungen ausstehend · KI und Oberfläche aktuell · Runtime aktiviert"
+                    else:
+                        msg = (str(inventory["pending_files"]) + " geänderte Dateien"
+                               + " · KI: " + inventory["runtime"]
+                               + " · Oberfläche: " + inventory["dashboard"])
+                        if inventory["runtime_activation_pending"]:
+                            msg += " · KI-Launcher noch nicht aktiviert"
+                        if status in ("ERROR", "NOT_INSTALLED"):
+                            msg += " · Updatepfad unvollständig; Details im Pipeline-Status"
+                        if not inventory["auto_enabled"]:
+                            msg += " · Auto-Updates AUS"
                 else:
                     was_running = lifecycle.request_stop(
                         timeout=35,runtime_active=source_updater._runtime_active)
