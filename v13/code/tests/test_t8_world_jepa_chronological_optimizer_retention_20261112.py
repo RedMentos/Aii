@@ -57,9 +57,15 @@ def test_chronological_t8_retention_replay_and_restart(tmp_path):
     equal_numeric(base._training_state, replay._training_state)
     equal_numeric(base._training_state, no_replay._training_state)
 
-    # Same number of updates, different retention intervention.
-    # Old replay is drawn only from training rows; no holdout leaks.
-    replay_batch = arrays(recent + old[::2])
+    # Matched update count AND training-example count. The intervention is
+    # old-vs-recent composition, not a larger replay batch.
+    # No holdout row is ever used for fitting.
+    old_replay = old[::2]
+    assert old_replay and len(old_replay) < len(recent)
+    replay_rows = recent[:len(recent) - len(old_replay)] + old_replay
+    assert len(replay_rows) == len(recent)
+    assert not held.intersection(r["action_id"] for r in replay_rows)
+    replay_batch = arrays(replay_rows)
     recent_only_batch = recent_train
     replay.partial_fit(*replay_batch, steps=6, log_every=1)
     no_replay.partial_fit(*recent_only_batch, steps=6, log_every=1)
@@ -86,6 +92,9 @@ def test_chronological_t8_retention_replay_and_restart(tmp_path):
     print("T8_CHRONOLOGICAL_RETENTION_OPTIMIZER", json.dumps({
         "source_sha256": source,
         "train_old": len(old), "train_recent": len(recent),
+        "replay_train_examples": len(replay_rows),
+        "no_replay_train_examples": len(recent),
+        "matched_example_count": len(replay_rows) == len(recent),
         "holdout_old": len(old_holdout), "holdout_recent": len(recent_holdout),
         "old_loss_before": pre["old"],
         "old_loss_after_replay": after_replay["old"],
