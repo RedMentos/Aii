@@ -22,9 +22,9 @@ import threading
 from v13 import remote_maintenance_bridge as bridge
 
 READ_SCHEMA = "v13.private-relay.owner-read/1"
-READ_CMDS = frozenset({"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE"})
+READ_CMDS = frozenset({"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "CHAT_SEND", "CHAT_RESULT", "UPDATE_REQUEST"})
 OWNER_AGENT = "agent-owner"
-MAX_READ_BODY = 1024
+MAX_READ_BODY = 2048
 
 
 def validate_owner_read(issue, cfg, *, now=None):
@@ -46,7 +46,7 @@ def validate_owner_read(issue, cfg, *, now=None):
         raise bridge.Denied("invalid read schema")
     ident, operation, expiry = obj["id"], obj["command"], obj["expires_at"]
     allowed_fields = {"schema", "id", "command", "expires_at"}
-    if operation == "LOG_PAGE":
+    if operation in ("LOG_PAGE","CHAT_SEND","CHAT_RESULT"):
         allowed_fields.add("args")
     if set(obj) != allowed_fields:
         raise bridge.Denied("unexpected read fields")
@@ -56,6 +56,18 @@ def validate_owner_read(issue, cfg, *, now=None):
             type(args.get("session")) is not int or not 0 <= args["session"] < 34 or
             type(args.get("page")) is not int or not 0 <= args["page"] < 2048):
             raise bridge.Denied("invalid bounded log page")
+    elif operation == "CHAT_SEND":
+        if (not isinstance(args, dict) or set(args) != {"text"} or
+                not isinstance(args.get("text"), str) or
+                not args["text"].strip() or len(args["text"].encode("utf-8")) > 1400 or
+                any(ch in args["text"] for ch in ("\x00", "\n", "\r")) or
+                args["text"].strip().startswith(":")):
+            raise bridge.Denied("invalid remote chat message")
+    elif operation == "CHAT_RESULT":
+        if (not isinstance(args, dict) or set(args) != {"request_id"} or
+                not isinstance(args.get("request_id"), str) or
+                not bridge.ID.fullmatch(args["request_id"])):
+            raise bridge.Denied("invalid remote chat lookup")
     elif args:
         raise bridge.Denied("unexpected read args")
     if obj["schema"] != READ_SCHEMA or not isinstance(ident, str) or not bridge.ID.fullmatch(ident):
@@ -185,7 +197,7 @@ def github_token():
     return token
 
 
-def create_read_request(command, *, now=None, session=0, page=0):
+def create_read_request(command, *, now=None, session=0, page=0, text=None, request_id=None):
     """Build a non-secret READ request for a trusted GitHub connector."""
     if command not in READ_CMDS:
         raise bridge.Denied("read-only commands only")
@@ -195,6 +207,14 @@ def create_read_request(command, *, now=None, session=0, page=0):
         if type(session) is not int or not 0 <= session < 34 or type(page) is not int or not 0 <= page < 2048:
             raise bridge.Denied("bounded log page values only")
         out["args"] = {"session":session, "page":page}
+    if command == "CHAT_SEND":
+        if not isinstance(text,str) or not text.strip() or len(text.encode("utf-8")) > 1400 or text.startswith(":") or any(c in text for c in ("\n","\r","\x00")):
+            raise bridge.Denied("one bounded non-operator text required")
+        out["args"]={"text":text}
+    if command == "CHAT_RESULT":
+        if not isinstance(request_id,str) or not bridge.ID.fullmatch(request_id):
+            raise bridge.Denied("valid previous chat request ID required")
+        out["args"]={"request_id":request_id}
     return out
 
 
