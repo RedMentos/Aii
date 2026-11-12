@@ -305,7 +305,7 @@ config = {
   "status_file": str(home / "live-status.json"),
   "keys": {"agent-owner": secrets.token_hex(32)},
   "authors": {"agent-owner": ["RedMentos"]},
-  "permissions": {"agent-owner": ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "CHAT_SEND", "CHAT_RESULT", "UPDATE_REQUEST"]},
+  "permissions": {"agent-owner": ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "CHAT_SEND", "CHAT_RESULT", "CHAT_OPERATOR", "UPDATE_REQUEST", "LOG_SHARING_ON", "LOG_SHARING_OFF"]},
   "remote_apply_enabled": False,
   "apply_paths": [],
   "poll_seconds": 45
@@ -332,7 +332,7 @@ if cfg.get("relay_repo")!="RedMentos/Aiiii" or cfg.get("remote_apply_enabled") i
     raise SystemExit("ABBRUCH: Remote-Code-Patching muss deaktiviert bleiben")
 authors=cfg.get("authors",{}).get("agent-owner",[])
 perms=cfg.get("permissions",{}).get("agent-owner",[])
-if authors!=["RedMentos"] or not isinstance(perms,list) or set(perms)-{"HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS","LOG_PAGE","CHAT_SEND","CHAT_RESULT","UPDATE_REQUEST"}:
+if authors!=["RedMentos"] or not isinstance(perms,list) or set(perms)-{"HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS","LOG_PAGE","CHAT_SEND","CHAT_RESULT","CHAT_OPERATOR","UPDATE_REQUEST","LOG_SHARING_ON","LOG_SHARING_OFF"}:
     raise SystemExit("ABBRUCH: unbekannte Agent-Rechte; keine automatische Rechteaenderung")
 desired=["HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS","LOG_PAGE"]
 if perms!=desired:
@@ -352,7 +352,7 @@ from v13.remote_maintenance_bridge import private_config
 cfg = private_config(os.path.expanduser("~/.v13-private/remote.json"))
 if cfg["relay_repo"] != "RedMentos/Aiiii" or cfg.get("remote_apply_enabled"):
     raise SystemExit("ABBRUCH: unerwartete lokale Remote-Code-Patchberechtigung")
-if cfg["permissions"].get("agent-owner") != ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "CHAT_SEND", "CHAT_RESULT", "UPDATE_REQUEST"]:
+if cfg["permissions"].get("agent-owner") != ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "CHAT_SEND", "CHAT_RESULT", "CHAT_OPERATOR", "UPDATE_REQUEST", "LOG_SHARING_ON", "LOG_SHARING_OFF"]:
     raise SystemExit("ABBRUCH: unerwartete Agent-Rechte")
 print("Private Owner-Chat-, Diagnose- und Updateberechtigung validiert.")
 PY
