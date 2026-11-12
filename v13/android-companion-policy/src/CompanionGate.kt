@@ -22,7 +22,8 @@ class CompanionGate(
     private val capabilities: Map<String, NativeCapability>,
     private val locallyApproved: (ActionRequest) -> Boolean,
     private val nowMs: () -> Long = { System.currentTimeMillis() },
-    private val audit: (ActionReceipt) -> Unit
+    private val audit: (ActionReceipt) -> Unit,
+    private val reserveNonce: (String) -> Boolean = { true }
 ) {
     private val key = secret.copyOf()
     private val consumed = HashSet<String>()
@@ -62,9 +63,12 @@ class CompanionGate(
             r.expiresAtMs <= r.issuedAtMs || r.expiresAtMs - r.issuedAtMs > 60_000L)
             return record("DENIED", "EXPIRED")
         if (!validMac(r)) return record("DENIED", "AUTH")
-        if (!consumed.add(r.nonce)) return record("DENIED", "REPLAY")
+        if (r.nonce in consumed || !reserveNonce(r.nonce)) return record("DENIED", "REPLAY")
+        consumed.add(r.nonce)
         if (!locallyApproved(r)) return record("DENIED", "CONSENT")
         if (stopped) return record("DENIED", "STOPPED")
+        // A durable pre-action audit must succeed before any native effect.
+        record("PENDING", "PRE_DISPATCH")
         return try {
             if (capabilities.getValue(r.capability).execute(r.target)) record("REPORTED", "NATIVE_RESULT_UNVERIFIED")
             else record("FAILED", "NATIVE_FAILURE")
