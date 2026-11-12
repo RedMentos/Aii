@@ -17,6 +17,7 @@ import subprocess
 
 from . import source_updater as updates
 from . import lifecycle
+from . import runtime_deploy
 
 PRIVATE = Path.home() / ".v13-private"
 ENABLED = PRIVATE / "auto-source-update.enabled"
@@ -120,10 +121,11 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits):
     if unavailable:
         state[name] = unavailable
         return
-    if probe["status"] == "UP_TO_DATE":
+    commit = probe["available"]
+    must_deploy = name == "runtime" and runtime_deploy.needs_deploy(root)
+    if probe["status"] == "UP_TO_DATE" and not must_deploy:
         state[name] = "UP_TO_DATE"
         return
-    commit = probe["available"]
     key = (commit, name)
     if key not in tested_commits:
         tested_commits[key] = updates.ci_passed(commit, scope=name)
@@ -133,17 +135,27 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits):
     if runtime_busy:
         state[name] = "BLOCKED_RUNNING"
         return
-    if name == "runtime":
-        updated = updates.apply(root, expected_tip=commit)
+    if probe["status"] != "UP_TO_DATE":
+        if name == "runtime":
+            updated = updates.apply(root, expected_tip=commit)
+        else:
+            updated = updates.apply_dashboard(root, expected_tip=commit)
     else:
-        updated = updates.apply_dashboard(root, expected_tip=commit)
-    state[name] = "UPDATED" if updated["status"] == "UPDATED" else "UP_TO_DATE"
+        updated = {"status":"UP_TO_DATE"}
+    activated = False
+    if name == "runtime":
+        # A Git checkout update is NOT a runtime update. Stage a complete
+        # code snapshot, check source/Canon, and atomically switch bin/v13.
+        activated = runtime_deploy.deploy(root, ci_verified=True)["status"] == "DEPLOYED"
+    state[name] = "UPDATED" if updated["status"] == "UPDATED" or activated else "UP_TO_DATE"
     if state[name] == "UPDATED":
         state["updated_commit"] = commit
         state["last_success_utc"] = int(time.time())
         if name == "dashboard":
             _atomic(UI_REFRESH, {"commit": commit})
             _atomic(BRIDGE_REFRESH, {"commit": commit})
+            _atomic(AI_REFRESH, {"commit": commit})
+        else:
             _atomic(AI_REFRESH, {"commit": commit})
 
 
@@ -182,7 +194,7 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                  "dashboard": "NOT_YET_CHECKED", "last_error": "NONE",
                  "updated_commit": previous.get("updated_commit", "")}
         _atomic(STATE, state)
-        roots = {"runtime": Path.home() / "V13-Phone",
+        roots = {"runtime": Path.home() / ".v13-runtime-source",
                  "dashboard": Path.home() / ".v13-agent-source"}
         selected = ("runtime", "dashboard") if target == "all" else (target,)
         tested_commits = {}
@@ -194,8 +206,11 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
             if busy:
                 for name in selected:
                     report, unavailable = _try_repo(roots[name])
-                    if unavailable or report["status"] != "UPDATE_AVAILABLE":
+                    if unavailable:
                         continue
+                    if report["status"] != "UPDATE_AVAILABLE":
+                        if name != "runtime" or not runtime_deploy.needs_deploy(roots[name]):
+                            continue
                     sha = report["available"]
                     key = (sha, name)
                     if key not in tested_commits:
