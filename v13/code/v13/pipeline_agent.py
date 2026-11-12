@@ -121,10 +121,16 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits):
     if unavailable:
         state[name] = unavailable
         return
-    commit = probe["available"]
+    if probe["status"] == "UP_TO_DATE" and name != "runtime":
+        state[name] = "UP_TO_DATE"
+        return
     must_deploy = name == "runtime" and runtime_deploy.needs_deploy(root)
     if probe["status"] == "UP_TO_DATE" and not must_deploy:
         state[name] = "UP_TO_DATE"
+        return
+    commit = probe.get("available") or probe.get("current")
+    if not commit or not updates.SHA.fullmatch(commit):
+        state[name] = "ERROR"
         return
     key = (commit, name)
     if key not in tested_commits:
