@@ -68,6 +68,23 @@ class RuntimeDeploymentTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(self.launcher.read_bytes()).hexdigest(), marker["launcher_sha256"])
         self.assertEqual(Path(marker["backup_launcher"]).read_bytes(), self.old)
 
+    def test_deleted_or_modified_active_module_triggers_repair(self):
+        first = self._run()
+        active = Path(first["code"])
+        self.assertFalse(d.needs_deploy(self.checkout, home=self.home, private=self.private))
+        module = active / "v13/runtime.py"
+        module.write_bytes(b"tampered installed runtime")
+        self.assertTrue(d.needs_deploy(self.checkout, home=self.home, private=self.private))
+        repaired = self._run()
+        self.assertEqual(repaired["status"], "DEPLOYED")
+        self.assertNotEqual(repaired["code"], first["code"])
+        self.assertEqual((Path(repaired["code"]) / "v13/runtime.py").read_bytes(),
+                         (self.code / "v13/runtime.py").read_bytes())
+        (Path(repaired["code"]) / "v13/store.py").unlink()
+        self.assertTrue(d.needs_deploy(self.checkout, home=self.home, private=self.private))
+        self.assertEqual((self.home/"data/db/brain.sqlite3").read_bytes(),
+                         b"EXISTING_DB_DO_NOT_CHANGE")
+
     def test_staging_failure_retains_old_launcher_and_memory(self):
         with mock.patch.object(d, "_selftest", side_effect=d.RuntimeDeployError("broken staged runtime")):
             with self.assertRaises(d.RuntimeDeployError):
