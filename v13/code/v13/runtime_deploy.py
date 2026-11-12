@@ -170,10 +170,14 @@ with TemporaryDirectory(prefix="v13-install-probe-") as t:
     home = Path(t)
     initialize(home)
     s = Store(home)
+    session = s.new_session()
     for message in ("Hi", "Test", "..."):
         ref = s.source(message)
         assert ref["sha256"] == digest(message)
         assert s.read_source(ref) == message
+        event = s.event(session, message)
+        assert event["source_ref"]["sha256"] == digest(message)
+        assert s.read_source(event["source_ref"]) == message
     s.close()
 """
     for args in ([sys.executable, "-m", "v13", "--help"],
