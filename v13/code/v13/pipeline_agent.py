@@ -124,9 +124,10 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits):
         state[name] = "BLOCKED_RUNNING"
         return
     commit = probe["available"]
-    if commit not in tested_commits:
-        tested_commits[commit] = updates.ci_passed(commit)
-    if not tested_commits[commit]:
+    key = (commit, name)
+    if key not in tested_commits:
+        tested_commits[key] = updates.ci_passed(commit, scope=name)
+    if not tested_commits[key]:
         state[name] = "CI_WAIT"
         return
     if name == "runtime":
