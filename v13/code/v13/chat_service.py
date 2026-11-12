@@ -99,7 +99,7 @@ class ChatService:
             if snapshot["last_result"] == "CHECKING" or lifecycle.STOP_REQUEST.is_file():
                 return
             if self.paused:
-                if lifecycle.service_resume(self.console):
+                if _read_desired() and lifecycle.service_resume(self.console):
                     self.paused = False
                     self.pending_lifecycle = False
                     self.status = "RUNNING"
@@ -112,7 +112,8 @@ class ChatService:
                     self.paused = False
                     self.pending_lifecycle = False
             else:
-                lifecycle.service_resume(self.console)
+                if _read_desired():
+                    lifecycle.service_resume(self.console)
             state = self.console.state()
             now = time.monotonic()
             if state["running"] and not _read_desired():
@@ -158,6 +159,14 @@ class ChatService:
             if now < self.next_retry:
                 self.status = "RETRY_WAIT"
                 return
+            # Recheck immediately before launch: an update may have entered
+            # CHECKING while this supervisor was handling backoff/state.
+            # This narrows the start/update race; it is not a cross-process
+            # transaction lock, so native release QA must still test it.
+            if (pipeline_agent.snapshot()["last_result"] == "CHECKING"
+                    or lifecycle.STOP_REQUEST.exists() or not _read_desired()):
+                self.status = "START_DEFERRED_FOR_UPDATE"
+                return
             try:
                 response = self.console.start()
             except (OSError, RuntimeError, ValueError):
@@ -178,7 +187,14 @@ class ChatService:
                 s["service"] = "RUNNING"
                 return s
             if name == "start":
+                # Record explicit local ON, but do not launch stale source
+                # during CI validation, lifecycle stop or source replacement.
+                from . import pipeline_agent
                 _desired(True)
+                if (pipeline_agent.snapshot()["last_result"] == "CHECKING"
+                        or lifecycle.STOP_REQUEST.exists() or self.paused):
+                    self.status = "START_DEFERRED_FOR_UPDATE"
+                    return {"status":"START_DEFERRED_FOR_UPDATE"}
                 self.stop_deadline = 0.0
                 self.next_retry = 0
                 self.paused = False
