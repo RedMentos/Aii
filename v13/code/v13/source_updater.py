@@ -175,6 +175,11 @@ def _check_python(root, before, after):
 
 CI_WORKFLOW = "V13 private owner-read Termux bootstrap"
 CI_WORKFLOW_PATH = ".github/workflows/v13-private-owner-read-ci.yml"
+CI_WORKFLOW_PATHS = {
+    CI_WORKFLOW: CI_WORKFLOW_PATH,
+    "v13-private-remote-bridge-tests": ".github/workflows/v13-private-remote-bridge-tests.yml",
+    "V13 staged context and integrated regression": ".github/workflows/v13-integrated-context-stage-20261111.yml",
+}
 REQUIRED_CI = {
     "dashboard": (CI_WORKFLOW, "v13-private-remote-bridge-tests"),
     "runtime": (CI_WORKFLOW, "v13-private-remote-bridge-tests",
@@ -216,11 +221,15 @@ def ci_passed(commit, *, scope="runtime"):
             continue
         if (run.get("head_sha") != commit or run.get("status") != "completed"
             or run.get("conclusion") != "success"
+            # PR checkouts normally test a synthetic merge, not the source
+            # commit the phone installs. Release push/dispatch runs test it.
+            or run.get("event") not in ("push", "workflow_dispatch")
             or not isinstance(run.get("head_repository"), dict)
             or run["head_repository"].get("full_name") != "RedMentos/Aii"):
             continue
         name = run.get("name")
-        if name == CI_WORKFLOW and run.get("path", "").split("@",1)[0] != CI_WORKFLOW_PATH:
+        if (name not in CI_WORKFLOW_PATHS or
+                run.get("path", "").split("@",1)[0] != CI_WORKFLOW_PATHS[name]):
             continue
         successful.add(name)
     return set(REQUIRED_CI[scope]).issubset(successful)

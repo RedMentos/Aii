@@ -398,7 +398,8 @@ class GitHubCIProofTests(unittest.TestCase):
     @staticmethod
     def workflow(commit, name=u.CI_WORKFLOW, **changes):
         result = {"head_sha": commit, "name": name,
-                  "path": u.CI_WORKFLOW_PATH+"@refs/heads/gpt6/v13-private-remote-bridge-20261111" if name==u.CI_WORKFLOW else ".github/workflows/test.yml",
+                  "path": u.CI_WORKFLOW_PATHS[name]+"@refs/heads/gpt6/v13-private-remote-bridge-20261111",
+                  "event": "push",
                   "status": "completed", "conclusion": "success",
                   "head_repository": {"full_name": "RedMentos/Aii"}}
         result.update(changes)
@@ -440,6 +441,24 @@ class GitHubCIProofTests(unittest.TestCase):
         with self.fake_api([]):
             self.assertFalse(u.ci_passed("a"*40))
             self.assertFalse(u.ci_passed("a"*40, scope="dashboard"))
+
+    def test_pr_merge_checks_never_substitute_for_the_installed_source(self):
+        commit = "c"*40
+        for event, allowed in (("pull_request", False), ("pull_request_target", False),
+                               (None, False), ("push", True), ("workflow_dispatch", True)):
+            with self.subTest(event=event), self.fake_api([
+                    self.workflow(commit, name, event=event)
+                    for name in u.REQUIRED_CI["runtime"]]):
+                self.assertEqual(u.ci_passed(commit), allowed)
+
+    def test_every_required_workflow_path_is_bound_not_just_its_name(self):
+        commit = "c"*40
+        for replaced in u.REQUIRED_CI["runtime"]:
+            rows = [self.workflow(commit, name,
+                        **({"path": ".github/workflows/other.yml"} if name == replaced else {}))
+                    for name in u.REQUIRED_CI["runtime"]]
+            with self.subTest(workflow=replaced), self.fake_api(rows):
+                self.assertFalse(u.ci_passed(commit))
 
 
 if __name__ == "__main__":

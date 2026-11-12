@@ -31,7 +31,9 @@ the concurrent active-source update-check work through `e17d4e2`.
   existing local permissions are unchanged.
 - All required workflows run for each phone release commit independently
   of an open pull request; a documentation checkpoint cannot strand an
-  exact-SHA CI gate merely because no runtime file changed.
+  exact-SHA CI gate merely because no runtime file changed. The updater
+  accepts only the known workflow paths on push/dispatch runs: a PR's
+  synthetic merge test cannot substitute for the source the phone installs.
 
 ## Verification and limits
 
