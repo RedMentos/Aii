@@ -9,6 +9,8 @@ on:
       - 'v13/code/v13/source_updater.py'
       - 'v13/code/v13/pipeline_agent.py'
       - 'v13/code/v13/lifecycle.py'
+      - 'v13/code/v13/chat_service.py'
+      - 'v13/code/tests/test_chat_service.py'
       - 'v13/code/tests/test_lifecycle.py'
       - 'v13/code/tests/test_pipeline_agent.py'
       - 'v13/code/v13/mobile_dashboard.py'
@@ -44,10 +46,11 @@ jobs:
           python -m unittest discover -s tests -p 'test_owner_read_bridge.py' -v
       - name: Validate updater and phone UI source syntax
         run: |
-          python -m py_compile v13/source_updater.py v13/lifecycle.py v13/pipeline_agent.py v13/mobile_dashboard.py tests/test_source_updater.py tests/test_pipeline_agent.py tests/test_lifecycle.py
+          python -m py_compile v13/source_updater.py v13/lifecycle.py v13/pipeline_agent.py v13/chat_service.py v13/mobile_dashboard.py tests/test_source_updater.py tests/test_pipeline_agent.py tests/test_lifecycle.py tests/test_chat_service.py
           python -m unittest discover -s tests -p 'test_source_updater.py' -v
           python -m unittest discover -s tests -p 'test_pipeline_agent.py' -v
           python -m unittest discover -s tests -p 'test_lifecycle.py' -v
+          python -m unittest discover -s tests -p 'test_chat_service.py' -v
           python -m py_compile v13/managed_console.py tests/test_managed_console_dashboard.py
           python -m unittest discover -s tests -p 'test_managed_console_dashboard.py' -v
           python -m unittest discover -s tests -p 'test_mobile_dashboard.py' -v
