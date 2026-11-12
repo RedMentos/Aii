@@ -266,6 +266,7 @@ git -C "$ROOT" sparse-checkout set --no-cone \
   v13/code/v13/pipeline_agent.py \
   v13/code/v13/lifecycle.py \
   v13/code/v13/chat_service.py \
+  v13/code/v13/runtime_deploy.py \
   v13/code/scripts/v13-update \
   v13/code/v13/termux_patch_staging.py \
   v13/code/docs/PRIVATE_REMOTE_BRIDGE_20261111.md \
@@ -320,6 +321,36 @@ export PYTHONPATH="$ROOT/v13/code"
 # Do not let an older v13 package in the caller's working directory shadow
 # the freshly downloaded dashboard and bridge modules.
 cd "$ROOT/v13/code" || fail "Quellverzeichnis nicht erreichbar"
+# A successful dashboard Git fetch did not update ~/v13/bin/v13: it still
+# pointed to ~/.v13-runtime-builds/<old>/code and even lacked docs/canon.
+# Keep a separate sparse, CI-gated full RUNTIME source and stage a complete
+# immutable copy. Do not touch ~/v13/models, SQLite, or the user's settings.
+RUNTIME_ROOT="$HOME/.v13-runtime-source"
+printf '\nAktualisiere den tatsaechlich gestarteten V13-Runtime-Code...\n'
+if [[ -d "$RUNTIME_ROOT/.git" ]]; then
+  [[ "$(git -C "$RUNTIME_ROOT" remote get-url origin)" == "$SOURCE" ]] || fail "Unbekannte Runtime-Quelle"
+  [[ "$(git -C "$RUNTIME_ROOT" branch --show-current)" == "$BRANCH" ]] || fail "Runtime-Branch weicht ab"
+  [[ -z "$(git -C "$RUNTIME_ROOT" status --porcelain --untracked-files=no)" ]] || fail "Runtime-Checkout lokal veraendert"
+  git -C "$RUNTIME_ROOT" fetch --no-tags --filter=blob:none origin "$BRANCH" || fail "Runtime-Quellen-Download fehlgeschlagen"
+  git -C "$RUNTIME_ROOT" merge --ff-only FETCH_HEAD || fail "Runtime-Fast-forward blockiert"
+elif [[ ! -e "$RUNTIME_ROOT" && ! -L "$RUNTIME_ROOT" ]]; then
+  git clone --depth 1 --filter=blob:none --sparse --single-branch \
+    --branch "$BRANCH" "$SOURCE" "$RUNTIME_ROOT" || fail "Runtime-Checkout konnte nicht erstellt werden"
+else
+  fail "Runtime-Quellenpfad ist weder ein Git-Checkout noch frei"
+fi
+git -C "$RUNTIME_ROOT" sparse-checkout set --no-cone \
+  'v13/code/v13/' \
+  'v13/code/scripts/' \
+  'v13/code/specs/' \
+  'v13/code/docs/canon/' \
+  'v13/code/setup.sh' \
+  'v13/code/STARTEN.sh' || fail "Vollstaendiger Runtime-Sparse-Checkout fehlgeschlagen"
+[[ -s "$RUNTIME_ROOT/v13/code/v13/store.py" ]] || fail "V13 Runtime-Quellcode fehlt"
+[[ -s "$RUNTIME_ROOT/v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md" ]] || fail "Canon-Datei fehlt, Runtime nicht aktiviert"
+python -m v13.runtime_deploy --source "$RUNTIME_ROOT" || fail "V13 Runtime-Aktivierung fehlgeschlagen; alter Launcher bleibt erhalten"
+printf 'V13 Runtime: Launcher zeigt auf neuen, verifizierten Code-Snapshot.\n'
+
 # Preserve existing phone-generated per-agent keys. Only extend the preexisting
 # RedMentos read-only scope by an allowlisted structured technical diagnostic.
 python - <<'PY'
