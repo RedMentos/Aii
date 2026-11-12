@@ -241,6 +241,47 @@ def remote_full_console():
             "redacted_user_input": True, "max_chars": 6000, "text": content}
 
 
+def remote_console_page(session, page):
+    """Opt-in read of recorded V13 session logs, never arbitrary Termux paths.
+
+    Page 0 is the latest part of the chosen session. A fixed 2400-byte chunk
+    fits the private relay's 12 kB JSON receipt even with JSON Unicode escapes.
+    Inputs and known secrets are masked. The owner can revoke access in UI.
+    """
+    if type(session) is not int or not 0 <= session < 32:
+        return {"state":"INVALID_SESSION"}
+    if type(page) is not int or not 0 <= page < 2048:
+        return {"state":"INVALID_PAGE"}
+    if not remote_full_console_enabled():
+        return {"state":"USER_NOT_OPTED_IN"}
+    logdir = PRIVATE / "console-logs"
+    if logdir.is_symlink() or not logdir.is_dir():
+        return {"state":"NO_MANAGED_SESSION"}
+    paths = sorted((p for p in logdir.glob("v13-session-*.log")
+                    if p.is_file() and not p.is_symlink()), reverse=True)[:32]
+    if session >= len(paths):
+        return {"state":"SESSION_NOT_AVAILABLE", "session_count":len(paths)}
+    chosen = paths[session]
+    if chosen.stat().st_size > 4*1024*1024+512 or chosen.stat().st_uid != os.getuid():
+        return {"state":"SESSION_UNAVAILABLE"}
+    raw = bounded_tail(chosen, 4*1024*1024+512)
+    text = safe_text(raw).splitlines(keepends=True)
+    filtered = "".join("[LOCAL_USER_INPUT_REDACTED]\n" if line.lstrip().startswith(("[du>", "du>")) else line
+                       for line in text)
+    payload = filtered.encode("utf-8")
+    size = 2400
+    total = (len(payload) + size - 1) // size
+    if page >= total:
+        return {"state":"PAGE_NOT_AVAILABLE","session":session,
+                "page":page,"total_pages":total,"session_count":len(paths)}
+    end = len(payload) - page*size
+    start = max(0,end-size)
+    data = payload[start:end].decode("utf-8", errors="replace")
+    return {"state":"USER_OPTED_IN", "session":session,"page":page,
+            "total_pages":total, "session_count":len(paths),
+            "captured_v13_only":True, "redacted_user_input":True, "text":data}
+
+
 def diagnostics_zip(destination=None):
     """Local user-initiated ZIP. May contain chat text: never upload automatically."""
     outdir = Path.home() / "storage/downloads"
