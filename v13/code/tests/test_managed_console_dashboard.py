@@ -116,6 +116,31 @@ class LocalConsoleTests(unittest.TestCase):
             ui.set_remote_full_console(False)
             self.assertEqual(ui.remote_full_console()["state"], "USER_NOT_OPTED_IN")
 
+    def test_all_recorded_console_pages_require_opt_in_and_redact_secrets(self):
+        private=self.path / "private"
+        entry=self.log_root / "v13-session-20261112-010001-abcd.log"
+        entry.write_text("[du> personal info ghp_secret123]\n" +
+                         ("V13 technical trace: tick working\n" * 160) +
+                         "ERROR: token github_pat_abc123\n")
+        flag=private / "share-v13-console.enabled"
+        with mock.patch.object(ui,"PRIVATE",private), mock.patch.object(ui,"REMOTE_FULL_FLAG",flag):
+            self.assertEqual(ui.remote_console_page(0,0)["state"],"USER_NOT_OPTED_IN")
+            ui.set_remote_full_console(True)
+            first=ui.remote_console_page(0,0)
+            self.assertEqual(first["state"],"USER_OPTED_IN")
+            self.assertGreater(first["total_pages"],1)
+            self.assertLessEqual(len(first["text"].encode("utf-8")),2500)
+            pages=[ui.remote_console_page(0,i)["text"] for i in range(first["total_pages"])]
+            joined="".join(reversed(pages))
+            self.assertIn("V13 technical trace",joined)
+            self.assertNotIn("[du> personal info ghp_secret123]",joined)
+            self.assertNotIn("github_pat_abc123",joined)
+            self.assertIn("[LOCAL_USER_INPUT_REDACTED]",joined)
+            self.assertEqual(ui.remote_console_page(0,first["total_pages"])["state"],"PAGE_NOT_AVAILABLE")
+            self.assertEqual(ui.remote_console_page(100,0)["state"],"INVALID_SESSION")
+            ui.set_remote_full_console(False)
+            self.assertEqual(ui.remote_console_page(0,0)["state"],"USER_NOT_OPTED_IN")
+
     def test_private_probe_timeout_summaries_are_bounded(self):
         import json
         with mock.patch.object(ui, "DATA", self.home):
