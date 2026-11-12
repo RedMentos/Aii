@@ -163,25 +163,52 @@ if [[ ! -d "$HOME/storage/downloads" ]] && command -v termux-setup-storage >/dev
   printf 'Bitte Android-Zugriff auf Downloads bestaetigen, damit Diagnose-ZIPs gespeichert werden koennen.\n'
   termux-setup-storage || true
 fi
-# Restart only our launcher-owned UI so the latest buttons load.
-if [[ -e "$PRIVATE/ui.pid" ]]; then
-  UI_OLD="$(cat "$PRIVATE/ui.pid" 2>/dev/null || true)"
-  if [[ "$UI_OLD" =~ ^[0-9]+$ ]] && kill -0 "$UI_OLD" 2>/dev/null; then
-    UI_CMD="$(tr '\0' ' ' < "/proc/$UI_OLD/cmdline" 2>/dev/null || true)"
-    if [[ "$UI_CMD" == *"v13.mobile_dashboard ui"* ]]; then
-      kill "$UI_OLD" || fail "UI-Prozess konnte nicht neu gestartet werden"
-      for ATTEMPT in 1 2 3 4 5; do
-        kill -0 "$UI_OLD" 2>/dev/null || break
-        sleep 1
-      done
-      kill -0 "$UI_OLD" 2>/dev/null && fail "Alte UI ist noch aktiv"
-    else
-      fail "UI-PID gehoert nicht zur V13-Oberflaeche; keine fremden Prozesse stoppen"
-    fi
-  fi
-fi
+# Older installers could leave *multiple* localhost dashboard processes.
+# Reconcile all owner-owned exact dashboard Python processes, not just ui.pid.
+# Never touch V13 model processes or unrelated Termux commands.
+python - <<'PY'
+import os, signal, time
+from pathlib import Path
+
+mine = os.getuid()
+current = os.getpid()
+targets = []
+for p in Path("/proc").iterdir():
+    if not p.name.isdecimal() or int(p.name) == current:
+        continue
+    try:
+        if p.stat().st_uid != mine:
+            continue
+        args = [a.decode("utf-8", "replace")
+                for a in (p / "cmdline").read_bytes().split(b"\0") if a]
+    except (OSError, PermissionError):
+        continue
+    if (len(args) >= 4 and args[-3:] == ["-m", "v13.mobile_dashboard", "ui"]
+            and Path(args[0]).name.startswith("python")):
+        targets.append(int(p.name))
+for pid in targets:
+    try:
+        os.kill(pid, signal.SIGTERM)
+    except ProcessLookupError:
+        pass
+if targets:
+    deadline = time.monotonic() + 8
+    for pid in targets:
+        while time.monotonic() < deadline:
+            try:
+                os.kill(pid, 0)
+                stat = (Path("/proc") / str(pid) / "stat").read_text()
+                if stat.rsplit(")", 1)[1].strip().startswith("Z"):
+                    break  # zombie means stopped; harmless until reaped
+            except (ProcessLookupError, OSError):
+                break
+            time.sleep(.15)
+        else:
+            raise SystemExit("V13 UI: previous dashboard remains alive (PID " + str(pid) + ")")
+    print("V13 UI: " + str(len(targets)) + " earlier local server(s) stopped.")
+PY
 : > "$PRIVATE/ui.log"
-nohup python -m v13.mobile_dashboard ui > "$PRIVATE/ui.log" 2>&1 < /dev/null &
+V13_UI_NO_AUTO_OPEN=1 nohup python -m v13.mobile_dashboard ui > "$PRIVATE/ui.log" 2>&1 < /dev/null &
 UI_PID="$!"
 printf '%s\n' "$UI_PID" > "$PRIVATE/ui.pid"
 sleep 2
