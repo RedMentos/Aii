@@ -425,5 +425,45 @@ class BrowserButtonHTTPTests(unittest.TestCase):
                         process.wait(timeout=5)
 
 
+class UpdateAvailabilityTests(unittest.TestCase):
+    def test_check_button_uses_real_pipeline_not_obsolete_checkout(self):
+        controls = ui.RuntimeControls()
+        with mock.patch.object(ui.pipeline_agent, "pending_updates",
+                               return_value={
+                                   "status":"UP_TO_DATE","pending_files":0,
+                                   "runtime":"UP_TO_DATE","dashboard":"UP_TO_DATE",
+                                   "runtime_activation_pending":False,
+                                   "auto_enabled":False,"verified_current":True}) as check, \
+             mock.patch("v13.source_updater.status",
+                        side_effect=AssertionError("must not check ~/V13-Phone")):
+            controls.start_update("check")
+            for _ in range(200):
+                if not controls.update_status()[1]:
+                    break
+                time.sleep(.01)
+            result, busy = controls.update_status()
+        self.assertFalse(busy)
+        self.assertIn("0 Änderungen ausstehend", result)
+        check.assert_called_once_with(fetch=True)
+
+    def test_unactivated_v13_shows_pending_even_when_git_has_zero_changed_files(self):
+        controls = ui.RuntimeControls()
+        with mock.patch.object(ui.pipeline_agent, "pending_updates",
+                               return_value={
+                                   "status":"UPDATE_AVAILABLE","pending_files":0,
+                                   "runtime":"ACTIVATION_PENDING","dashboard":"UP_TO_DATE",
+                                   "runtime_activation_pending":True,
+                                   "auto_enabled":False,"verified_current":False}):
+            controls.start_update("check")
+            for _ in range(200):
+                if not controls.update_status()[1]:
+                    break
+                time.sleep(.01)
+            result, busy = controls.update_status()
+        self.assertFalse(busy)
+        self.assertIn("KI-Launcher noch nicht aktiviert", result)
+        self.assertNotIn("0 Änderungen ausstehend", result)
+
+
 if __name__ == "__main__":
     unittest.main()
