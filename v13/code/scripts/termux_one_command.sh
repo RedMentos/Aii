@@ -31,7 +31,8 @@ from pathlib import Path
 home = Path.home()
 private = home / ".v13-private"
 if (private / "bridge-state/STOP").exists():
-    raise SystemExit("V13: privater Agent wurde bewusst gestoppt; kein automatischer Neustart.")
+    raise SystemExit("V13: privater Agent wurde bewusst gestoppt. "
+                     "Zum Fortsetzen erst owner_read_bridge resume ausführen; kein automatischer Neustart.")
 proc = Path("/proc")
 if not proc.is_dir():
     raise SystemExit("V13: Prozesssicht fehlt, sicherer Neustart nicht möglich.")
@@ -39,6 +40,7 @@ own = os.getuid()
 expected_launcher = str(home / "v13/bin/v13")
 seen = 0
 targets = []
+unknown_v13 = []
 for p in proc.iterdir():
     if not p.name.isdecimal() or int(p.name) == os.getpid():
         continue
@@ -58,6 +60,11 @@ for p in proc.iterdir():
     module = ("-m" in args and "v13" in args and "chat" in args)
     if controlled or module:
         targets.append(int(p.name))
+    elif any(a == "v13" or a.endswith("/bin/v13") for a in args):
+        unknown_v13.append(int(p.name))
+if unknown_v13:
+    raise SystemExit("V13: Ein nicht verwalteter V13-Prozess ist aktiv. "
+                     "Zum Schutz der Daten zuerst V13 beenden; kein fremder Prozess wird gestoppt.")
 if seen == 0:
     raise SystemExit("V13: Prozesssicht unsicher, Einrichtung gestoppt.")
 if not targets:
