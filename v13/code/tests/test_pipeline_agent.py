@@ -16,9 +16,14 @@ class PipelineTests(unittest.TestCase):
         base.mkdir(mode=0o700)
         self.base = base
         home = base.parent
-        (home / "V13-Phone").mkdir()
+        (home / ".v13-runtime-source").mkdir()
         (home / ".v13-agent-source").mkdir()
         home_patch = mock.patch.object(p.Path, "home", return_value=home)
+        runtime_needs = mock.patch.object(p.runtime_deploy, "needs_deploy", return_value=False)
+        runtime_act = mock.patch.object(p.runtime_deploy, "deploy", return_value={"status":"DEPLOYED"})
+        for helper in (runtime_needs,runtime_act):
+            helper.start()
+            self.addCleanup(helper.stop)
         home_patch.start()
         self.addCleanup(home_patch.stop)
         for key, value in (
@@ -83,6 +88,27 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(dash.call_args.kwargs["expected_tip"], commit)
         self.assertTrue(p.acknowledge_refresh("ui"))
         self.assertFalse(p.refresh_requested("ui"))
+
+    def test_source_up_to_date_but_old_v13_launcher_triggers_real_activation(self):
+        self.turn_on()
+        revision="e"*40
+        with mock.patch.object(p.runtime_deploy,"needs_deploy", return_value=True), \
+             mock.patch.object(u,"_runtime_active",return_value=False), \
+             mock.patch.object(u,"status",return_value={
+                 "status":"UP_TO_DATE","available":revision,"current":revision,
+                 "changed_files":0}), \
+             mock.patch.object(u,"ci_passed",return_value=True) as ci, \
+             mock.patch.object(u,"apply") as apply, \
+             mock.patch.object(u,"apply_dashboard") as dash, \
+             mock.patch.object(p.runtime_deploy,"deploy",return_value={"status":"DEPLOYED"}) as deploy:
+            result=p.run_cycle(force=True,now=2000000000)
+        self.assertEqual(result["runtime"],"UPDATED")
+        self.assertEqual(result["dashboard"],"UP_TO_DATE")
+        self.assertTrue(p.refresh_requested("ai"))
+        deploy.assert_called_once()
+        apply.assert_not_called()
+        dash.assert_not_called()
+        ci.assert_called_once_with(revision,scope="runtime")
 
     def test_each_refresh_acknowledges_only_its_own_target(self):
         # Regression: AI previously acknowledged BRIDGE, re-execed forever.
@@ -187,7 +213,7 @@ class PipelineTests(unittest.TestCase):
     def test_missing_runtime_does_not_block_ui(self):
         self.turn_on()
         def fake_status(root):
-            if root.name == "V13-Phone":
+            if root.name == ".v13-runtime-source":
                 raise u.UpdateDenied("missing Git checkout")
             return {"status":"UP_TO_DATE"}
         with mock.patch.object(u, "_runtime_active", return_value=False), \
