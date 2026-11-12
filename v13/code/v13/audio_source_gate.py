@@ -38,12 +38,14 @@ def checked_audio_source_view(percept_packet, read_source):
             raise PermissionError('unexpected authority')
         if segment.get('finality') not in ('FINAL', 'PROVISIONAL'):
             raise ValueError('invalid finality')
-        if 'start_ms' in segment or 'end_ms' in segment:
+        if True:
             start, end = segment.get('start_ms'), segment.get('end_ms')
             if (type(start) is not int or type(end) is not int or start < 0
                     or start < last_end or end <= start or end-start > 1000):
                 raise ValueError('invalid or overlapping audio window')
             last_end = end
+        if not isinstance(segment.get('consent_receipt_ref'), str) or not segment['consent_receipt_ref'].strip():
+            raise PermissionError('missing consent receipt reference')
         acoustic = segment.get('acoustic')
         if acoustic is not None:
             if not isinstance(acoustic, dict):
