@@ -259,6 +259,46 @@ def apply(root=None, *, expected_tip=None):
 
 
 
+REQUIRED_PHONE_MODULES = (
+    "v13/code/v13/remote_chat.py",
+    "v13/code/v13/phone_monitor.py",
+    "v13/code/v13/chat_service.py",
+    "v13/code/v13/pipeline_agent.py",
+    "v13/code/v13/lifecycle.py",
+    "v13/code/v13/mobile_dashboard.html",
+)
+
+
+def ensure_sparse_phone_modules(root=None):
+    """One-time safe migration of older phone sparse checkout.
+
+    Git fast-forward updates historically left newly introduced modules
+    invisible because the one-command installer pinned exact old file paths.
+    This fixes that without another pasted installer command. No arbitrary
+    Git targets, shell commands or changes to private user/model data.
+    """
+    target = Path(root or (Path.home() / ".v13-agent-source")).expanduser().resolve()
+    with _lock():
+        checkout, branch, head = _repo_root(target)
+        if all((checkout / path).is_file() and not (checkout / path).is_symlink()
+               for path in REQUIRED_PHONE_MODULES):
+            return {"status": "ALREADY_PRESENT", "commit": head}
+        # Only add files whose path is actually committed at this exact
+        # verified local HEAD; never retrieve arbitrary external content.
+        for path in REQUIRED_PHONE_MODULES:
+            ref = git(checkout, "ls-tree", "HEAD", "--", path)
+            if not ref.startswith("100644 blob ") and not ref.startswith("100755 blob "):
+                raise UpdateDenied("Expected trusted phone module missing from commit")
+        git(checkout, "sparse-checkout", "add", *REQUIRED_PHONE_MODULES, timeout=90)
+        for path in REQUIRED_PHONE_MODULES:
+            file = checkout / path
+            if file.is_symlink() or not file.is_file():
+                raise UpdateDenied("Required phone module missing after sparse migration")
+        if not _is_clean(checkout):
+            raise UpdateDenied("Sparse module migration changed tracked content")
+        return {"status": "MIGRATED", "commit": head}
+
+
 def apply_dashboard(root=None, *, expected_tip=None):
     """Update only the independent dashboard checkout, not live model files.
 
