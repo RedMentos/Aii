@@ -102,7 +102,7 @@ def verify_command(obj, keys, permissions, authors, *, author, now=None):
     if cmd == "CHAT_SEND" and (
             set(args) != {"text"} or not isinstance(args.get("text"), str) or
             not args["text"].strip() or len(args["text"].encode("utf-8")) > 1400 or
-            any(ch in args["text"] for ch in ("\\0", "\\n", "\\r")) or
+            any(ch in args["text"] for ch in ("\x00", "\n", "\r")) or
             args["text"].strip().startswith(":")):
         raise Denied("CHAT_SEND requires one normal bounded user message")
     if cmd == "CHAT_RESULT" and (
