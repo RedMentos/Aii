@@ -41,6 +41,7 @@ expected_launcher = str(home / "v13/bin/v13")
 seen = 0
 targets = []
 unknown_v13 = []
+ai_daemons = []
 for p in proc.iterdir():
     if not p.name.isdecimal() or int(p.name) == os.getpid():
         continue
@@ -64,6 +65,9 @@ for p in proc.iterdir():
     module = ("-m" in args and "v13" in args and "chat" in args)
     if controlled or module:
         targets.append(int(p.name))
+    elif (len(args)>=4 and args[-3:]==["-m","v13.chat_service","serve"]
+          and Path(args[0]).name.startswith("python")):
+        ai_daemons.append(int(p.name))
     elif any(a == "v13" or a.endswith("/bin/v13") for a in args):
         unknown_v13.append(int(p.name))
 if unknown_v13:
@@ -71,6 +75,36 @@ if unknown_v13:
                      "Zum Schutz der Daten zuerst V13 beenden; kein fremder Prozess wird gestoppt.")
 if seen == 0:
     raise SystemExit("V13: Prozesssicht unsicher, Einrichtung gestoppt.")
+if ai_daemons:
+    # Stop the *V13 AI service* before stopping its model child: otherwise
+    # its auto-restart supervisor could revive the model during Git fetch.
+    # First request a graceful :shutdown via its private Unix socket.
+    import socket
+    path=private/"v13-ai.sock"
+    if path.is_socket() and not path.is_symlink():
+        try:
+            with socket.socket(socket.AF_UNIX,socket.SOCK_STREAM) as conn:
+                conn.settimeout(3)
+                conn.connect(str(path))
+                conn.sendall((json.dumps({"protocol":"v13-local-ai/1",
+                                          "method":"shutdown"})+"\\n").encode())
+                conn.recv(2048)
+        except (OSError, ValueError):
+            pass
+    for pid in ai_daemons:
+        try:os.kill(pid,signal.SIGTERM)
+        except ProcessLookupError:pass
+    deadline=time.monotonic()+8
+    for pid in ai_daemons:
+        while time.monotonic()<deadline:
+            try:
+                state=(proc/str(pid)/"stat").read_text().rsplit(")",1)[1].strip()
+                if state.startswith("Z"):break
+            except (FileNotFoundError,ProcessLookupError):break
+            time.sleep(.1)
+        else:
+            raise SystemExit("V13: KI-Dienst konnte nicht sicher neu gestartet werden.")
+    print("V13: vorheriger KI-Hintergrunddienst beendet.")
 if not targets:
     print("V13: keine aktive Chat-Sitzung; kein Stop nötig.")
 else:
