@@ -162,6 +162,64 @@ class LocalConsoleTests(unittest.TestCase):
 class BrowserButtonHTTPTests(unittest.TestCase):
     """Real HTTP submissions: privacy-browser Origin variants and CSRF."""
 
+    def test_full_local_browser_flow_start_send_and_copy(self):
+        """Actual HTTP UI -> local recorded chat -> transcript, no fake API success."""
+        with tempfile.TemporaryDirectory() as home:
+            root = Path(home)
+            launcher = root / "v13" / "bin" / "v13"
+            launcher.parent.mkdir(parents=True)
+            launcher.write_text(
+                "#!/bin/sh\n"
+                "echo 'V13 fake chat started'\n"
+                "while IFS= read -r text; do\n"
+                "  echo \"V13 received: $text\"\n"
+                "  if [ \"$text\" = ':shutdown' ]; then exit 0; fi\n"
+                "done\n")
+            launcher.chmod(0o700)
+            env = os.environ.copy()
+            env["HOME"] = home
+            env["V13_UI_PORT"] = "0"
+            env["V13_UI_NO_AUTO_OPEN"] = "1"
+            proc = subprocess.Popen(
+                [sys.executable, "-m", "v13.mobile_dashboard", "ui"],
+                cwd=str(Path(__file__).resolve().parents[1]), env=env,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            )
+            try:
+                ready, _, _ = select.select([proc.stdout], [], [], 10)
+                self.assertTrue(ready)
+                url = proc.stdout.readline().partition(": ")[2].strip()
+                page = urlopen(url, timeout=5).read().decode()
+                token = re.search(r'name="csrf" value="([0-9a-f]{48})"', page).group(1)
+                self.assertRegex(page, r"let generation = '[0-9a-f]{24}';")
+                action = urljoin(url, "action")
+                def ajax(action_name, **fields):
+                    args = {"csrf": token, "action": action_name, **fields}
+                    request = Request(
+                        action,
+                        data=urlencode(args).encode("utf8"), method="POST",
+                        headers={"Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
+                                 "Accept":"application/json"}
+                    )
+                    with urlopen(request, timeout=10) as response:
+                        self.assertEqual(response.headers.get_content_type(), "application/json")
+                        return __import__("json").loads(response.read())
+                self.assertTrue(ajax("start_chat")["ok"])
+                self.assertTrue(ajax("send",command=":bodyview")["ok"])
+                self.assertTrue(ajax("send",command=":shutdown")["ok"])
+                found = ""
+                for _ in range(100):
+                    found = urlopen(urljoin(url,"transcript"),timeout=4).read().decode("utf-8")
+                    if "V13 received: :shutdown" in found:
+                        break
+                    time.sleep(.03)
+                self.assertIn("V13 received: :bodyview", found)
+                self.assertIn("V13 received: :shutdown", found)
+                self.assertIn("[du> :bodyview]", found)
+            finally:
+                proc.terminate()
+                proc.wait(timeout=5)
+
     def test_single_dashboard_per_home_and_reusable_browser_token(self):
         """Two concurrent servers are disallowed, and a later restart keeps URL auth."""
         with tempfile.TemporaryDirectory() as home:
