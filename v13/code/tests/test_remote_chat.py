@@ -86,9 +86,26 @@ class RemoteChatTests(unittest.TestCase):
         client=FakeGitHub([receive])
         self.assertEqual(owner.poll_once(client,self.cfg,now=self.now)["processed"],1)
         result=client.comments_sent[0][1]["device_status"]
-        self.assertEqual(result["status"],"ANSWERED")
+        self.assertEqual(result["status"],"ANSWER_VISIBLE")
         self.assertIn("Hallo, ich bin V13",result["output"])
         self.assertNotIn("[du> Hallo V13]",result["output"])
+
+    def test_early_terminal_prompt_does_not_hide_async_model_reply(self):
+        # The native plain V13 UI redraws "du>" immediately after queueing
+        # a question; an actual model answer arrives only later.
+        def fake_rpc(method,**kw):
+            if method=="state":return {"running":True,"last_session":self.session}
+            return {"status":"SENT"}
+        with mock.patch("v13.chat_service.call",side_effect=fake_rpc):
+            remote_chat.send(self.id,"Is the model alive?")
+        with self.path.open("a",encoding="utf8") as log:
+            log.write("[du> Is the model alive?]\ndu>\n")
+        self.assertEqual(remote_chat.result(self.id)["status"],"GENERATING")
+        with self.path.open("a",encoding="utf8") as log:
+            log.write("\nassistant> Yes, I can answer your question.\n")
+        res=remote_chat.result(self.id)
+        self.assertEqual(res["status"],"ANSWER_VISIBLE")
+        self.assertIn("Yes, I can answer",res["output"])
 
     def test_real_phone_missing_path_error_is_visible_not_success(self):
         def rpc(method,**kw):
@@ -131,7 +148,7 @@ class RemoteChatTests(unittest.TestCase):
         with self.path.open("a",encoding="utf8") as out:
             out.write("[du> Test]\nassistant> github_pat_abcdefghijklmnopqrstuvwxyz\n\ndu>\n")
         data=remote_chat.result(self.id)
-        self.assertEqual(data["status"],"ANSWERED")
+        self.assertEqual(data["status"],"ANSWER_VISIBLE")
         self.assertNotIn("abcdefghijklmnopqrstuvwxyz",str(data))
         self.assertIn("[TOKEN_REDACTED]",data["output"])
 
