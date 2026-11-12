@@ -267,6 +267,7 @@ git -C "$ROOT" sparse-checkout set --no-cone \
   v13/code/v13/lifecycle.py \
   v13/code/v13/chat_service.py \
   v13/code/v13/runtime_deploy.py \
+  v13/code/v13/diagnostic_push.py \
   v13/code/scripts/v13-update \
   v13/code/v13/termux_patch_staging.py \
   v13/code/docs/PRIVATE_REMOTE_BRIDGE_20261111.md \
