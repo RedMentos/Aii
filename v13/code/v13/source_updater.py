@@ -175,10 +175,15 @@ def _check_python(root, before, after):
 
 CI_WORKFLOW = "V13 private owner-read Termux bootstrap"
 CI_WORKFLOW_PATH = ".github/workflows/v13-private-owner-read-ci.yml"
+REQUIRED_CI = {
+    "dashboard": (CI_WORKFLOW, "v13-private-remote-bridge-tests"),
+    "runtime": (CI_WORKFLOW, "v13-private-remote-bridge-tests",
+                "V13 staged context and integrated regression"),
+}
 
 
 def _ci_runs(commit):
-    """Read the exact-commit GitHub workflow result; fail closed on API errors."""
+    """Read the exact-commit GitHub workflow results, never invent CI success."""
     if not isinstance(commit, str) or not SHA.fullmatch(commit):
         return []
     p = subprocess.run(
@@ -197,22 +202,28 @@ def _ci_runs(commit):
     return runs
 
 
-def ci_passed(commit):
-    """Require successful exact-commit update/browser/relay/installer CI."""
+def ci_passed(commit, *, scope="runtime"):
+    """Separate gates: UI/bridge tests for dashboard; integrated tests for runtime."""
+    if scope not in REQUIRED_CI:
+        return False
     try:
         runs = _ci_runs(commit)
     except (OSError, ValueError, subprocess.TimeoutExpired):
         return False
-    return any(
-        r.get("head_sha") == commit
-        and r.get("name") == CI_WORKFLOW
-        and r.get("path", "").split("@", 1)[0] == CI_WORKFLOW_PATH
-        and r.get("status") == "completed"
-        and r.get("conclusion") == "success"
-        and isinstance(r.get("head_repository"), dict)
-        and r["head_repository"].get("full_name") == "RedMentos/Aii"
-        for r in runs if isinstance(r, dict)
-    )
+    successful = set()
+    for run in runs:
+        if not isinstance(run, dict):
+            continue
+        if (run.get("head_sha") != commit or run.get("status") != "completed"
+            or run.get("conclusion") != "success"
+            or not isinstance(run.get("head_repository"), dict)
+            or run["head_repository"].get("full_name") != "RedMentos/Aii"):
+            continue
+        name = run.get("name")
+        if name == CI_WORKFLOW and run.get("path", "").split("@",1)[0] != CI_WORKFLOW_PATH:
+            continue
+        successful.add(name)
+    return set(REQUIRED_CI[scope]).issubset(successful)
 
 
 def apply(root=None, *, expected_tip=None):
