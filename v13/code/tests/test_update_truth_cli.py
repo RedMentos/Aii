@@ -126,6 +126,17 @@ class UpdateTruthCLITests(unittest.TestCase):
         self.assertIn("python -m v13.pipeline_agent", data)
         self.assertNotIn("python -m v13.source_updater", data)
 
+    def test_old_copied_wrapper_is_redirected_by_python_entrypoint(self):
+        output = {"last_result": "PARTIAL", "runtime": "UP_TO_DATE",
+                  "dashboard": "ERROR"}
+        with mock.patch.object(p, "run_cycle", return_value=output) as cycle:
+            stream = io.StringIO()
+            with contextlib.redirect_stdout(stream):
+                code = u.main(["apply"])
+        self.assertEqual(code, 2)
+        self.assertEqual(json.loads(stream.getvalue())["dashboard"], "ERROR")
+        cycle.assert_called_once_with(force=True, manual=True, target="all")
+
 
 class StopEscalationTests(unittest.TestCase):
     def test_shutdown_watchdog_keeps_off_and_stops_hung_model(self):
