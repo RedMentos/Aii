@@ -84,19 +84,64 @@ class PipelineTests(unittest.TestCase):
         self.assertFalse(p.refresh_requested("ui"))
         self.assertEqual(p.STATE.stat().st_mode & 0o777, 0o600)
 
-    def test_running_model_blocks_all_changes(self):
+    def test_running_managed_model_is_stopped_then_restarted(self):
+        self.turn_on()
+        commit="b"*40
+        with mock.patch.object(u, "_runtime_active", side_effect=[True, False, False]) as running, \
+             mock.patch.object(u, "status", return_value={
+                 "status":"UPDATE_AVAILABLE", "available":commit}), \
+             mock.patch.object(u, "ci_passed", return_value=True), \
+             mock.patch.object(p.lifecycle, "request_stop", return_value=True) as stop, \
+             mock.patch.object(p.lifecycle, "request_resume") as resume, \
+             mock.patch.object(u, "apply", return_value={"status":"UPDATED"}) as apply, \
+             mock.patch.object(u, "apply_dashboard", return_value={"status":"UPDATED"}) as dash:
+            status=p.run_cycle(force=True,now=2000000000)
+        self.assertEqual(status["last_result"],"UPDATED")
+        stop.assert_called_once()
+        resume.assert_called_once_with(reason="UPDATED")
+        apply.assert_called_once()
+        dash.assert_called_once()
+
+    def test_ci_failure_does_not_interrupt_running_model(self):
         self.turn_on()
         with mock.patch.object(u, "_runtime_active", return_value=True), \
              mock.patch.object(u, "status", return_value={
                  "status":"UPDATE_AVAILABLE", "available":"b"*40}), \
-             mock.patch.object(u, "ci_passed") as ci, \
+             mock.patch.object(u, "ci_passed", return_value=False), \
+             mock.patch.object(p.lifecycle, "request_stop") as stop, \
              mock.patch.object(u, "apply") as apply:
-            status = p.run_cycle(force=True,now=2000000000)
-        self.assertEqual(status["last_result"], "BLOCKED_RUNNING")
-        self.assertEqual(status["runtime"], "BLOCKED_RUNNING")
-        self.assertEqual(status["dashboard"], "BLOCKED_RUNNING")
-        ci.assert_not_called()
+            status=p.run_cycle(force=True,now=2000000000)
+        self.assertEqual(status["last_result"],"CI_WAIT")
+        stop.assert_not_called()
         apply.assert_not_called()
+
+    def test_unmanaged_process_refuses_stop_and_update(self):
+        self.turn_on()
+        with mock.patch.object(u, "_runtime_active", return_value=True), \
+             mock.patch.object(u, "status", return_value={
+                 "status":"UPDATE_AVAILABLE", "available":"b"*40}), \
+             mock.patch.object(u, "ci_passed", return_value=True), \
+             mock.patch.object(p.lifecycle, "request_stop",
+                               side_effect=p.lifecycle.LifecycleError("unmanaged")), \
+             mock.patch.object(u, "apply") as apply:
+            status=p.run_cycle(force=True,now=2000000000)
+        self.assertEqual(status["last_result"],"BLOCKED_RUNNING")
+        self.assertEqual(status["last_error"],"RUNNING")
+        apply.assert_not_called()
+
+    def test_failure_after_stop_still_resumes_previous_chat(self):
+        self.turn_on()
+        commit="c"*40
+        with mock.patch.object(u, "_runtime_active", side_effect=[True,False]), \
+             mock.patch.object(u, "status", return_value={
+                 "status":"UPDATE_AVAILABLE", "available":commit}), \
+             mock.patch.object(u, "ci_passed", return_value=True), \
+             mock.patch.object(p.lifecycle, "request_stop", return_value=True), \
+             mock.patch.object(p.lifecycle, "request_resume") as resume, \
+             mock.patch.object(u, "apply", side_effect=u.UpdateDenied("no fast-forward")):
+            status=p.run_cycle(force=True,now=2000000000,target="runtime")
+        self.assertEqual(status["last_result"],"ERROR")
+        resume.assert_called_once_with(reason="RESTORE")
 
     def test_15_minute_interval_and_forced_manual_check(self):
         self.turn_on()
