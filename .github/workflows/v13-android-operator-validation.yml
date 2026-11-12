@@ -1,0 +1,23 @@
+name: V13 Android operator validation
+on:
+  push:
+    branches:
+      - core/v13-android-operator-validation-20261112-0207
+  pull_request:
+    paths:
+      - 'v13/code/v13/android_operator_bridge.py'
+      - 'v13/code/tests/test_android_operator_validation.py'
+jobs:
+  operator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax and targeted regression
+        working-directory: v13/code
+        run: |
+          python -m compileall -q v13/android_operator_bridge.py v13/android_companion_dispatch.py v13/android_capability_contract.py
+          python -m pip install pytest
+          python -m pytest -q tests/test_android_operator_bridge.py tests/test_android_operator_validation.py
