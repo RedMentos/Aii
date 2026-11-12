@@ -74,7 +74,11 @@ def inspect(*, home=None, private=None, builds=None) -> dict:
         result["snapshot"] = "PRESENT"
         for rel in deployment.REQUIRED:
             item = resolved / rel
-            if not item.is_file() or item.is_symlink() or item.stat().st_size == 0:
+            # A parent directory may be a symlink even when the file itself is not.
+            # Require every resolved source to stay within the pinned snapshot.
+            if (not item.is_file() or item.is_symlink()
+                    or not item.resolve(strict=True).is_relative_to(resolved)
+                    or item.stat().st_size == 0):
                 result["snapshot"] = "INCOMPLETE"
                 break
     except (OSError, ValueError, RuntimeError):
