@@ -19,8 +19,7 @@ def test_update_resume_does_not_start_explicitly_disabled_ai(monkeypatch, paused
     monkeypatch.setattr(lifecycle, "service_resume", resume)
     monkeypatch.setattr(pipeline_agent, "snapshot", lambda: {"last_result": "UPDATED"})
     monkeypatch.setattr(pipeline_agent, "refresh_requested", lambda *a: False)
-    monkeypatch.setattr(lifecycle.STOP_REQUEST, "is_file", lambda: False)
-    monkeypatch.setattr(lifecycle.STOP_REQUEST, "exists", lambda: False)
+    monkeypatch.setattr(lifecycle, "STOP_REQUEST", Mock(is_file=Mock(return_value=False), exists=Mock(return_value=False)))
 
     ai.tick()
     assert ai.status == "STOPPED_BY_USER"
@@ -40,7 +39,7 @@ def test_update_resume_restarts_only_when_owner_enabled_ai(monkeypatch, paused):
     monkeypatch.setattr(lifecycle, "service_resume", resume)
     monkeypatch.setattr(pipeline_agent, "snapshot", lambda: {"last_result": "UPDATED"})
     monkeypatch.setattr(pipeline_agent, "refresh_requested", lambda *a: False)
-    monkeypatch.setattr(lifecycle.STOP_REQUEST, "is_file", lambda: False)
+    monkeypatch.setattr(lifecycle, "STOP_REQUEST", Mock(is_file=Mock(return_value=False), exists=Mock(return_value=False)))
 
     ai.tick()
     resume.assert_called_once_with(console)
