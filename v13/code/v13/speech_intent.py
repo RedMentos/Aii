@@ -31,8 +31,33 @@ class SpeechIntentQueue:
         self.db = sqlite3.connect(str(path), check_same_thread=False)
         self.db.execute("CREATE TABLE IF NOT EXISTS speech_intents (intent_id TEXT PRIMARY KEY, text TEXT NOT NULL, source_id TEXT NOT NULL, created_at REAL NOT NULL, status TEXT NOT NULL, digest TEXT NOT NULL)")
         self.db.execute("CREATE TABLE IF NOT EXISTS speech_events (id INTEGER PRIMARY KEY, intent_id TEXT, event TEXT NOT NULL, at REAL NOT NULL)")
-        self.db.execute("UPDATE speech_intents SET status='INTERRUPTED' WHERE status='RENDERING'")
         self.db.commit()
+
+    def recover_uncertain(self):
+        """Explicit cold-start recovery, only when no renderer process is active.
+
+        Never invoke from a second live queue connection: it could invalidate
+        an in-flight receipt and allow another process to start playback.
+        The operator must first stop/confirm all renderer processes are gone.
+        Uncertain speech is interrupted, never replayed automatically.
+        """
+        with self.lock:
+            self.db.execute("BEGIN IMMEDIATE")
+            try:
+                ids = [row[0] for row in self.db.execute(
+                    "SELECT intent_id FROM speech_intents WHERE status='RENDERING'"
+                )]
+                for intent_id in ids:
+                    self.db.execute(
+                        "UPDATE speech_intents SET status='INTERRUPTED' WHERE intent_id=? AND status='RENDERING'",
+                        (intent_id,),
+                    )
+                    self._event(intent_id, "RECOVERED_UNCERTAIN")
+                self.db.commit()
+                return len(ids)
+            except BaseException:
+                self.db.rollback()
+                raise
 
     def _event(self, intent_id, event):
         self.db.execute("INSERT INTO speech_events(intent_id,event,at) VALUES (?,?,?)", (intent_id, event, self.clock()))
@@ -77,40 +102,67 @@ class SpeechIntentQueue:
                 raise
 
     def acknowledge(self, intent_id, *, digest, rendered=False):
-        """Caller must be a trusted renderer; Python cannot authenticate Android identity."""
+        """Commit a trusted receipt atomically against concurrent stop/recovery.
+
+        The Android companion still has to authenticate and verify the receipt;
+        this SQLite transaction only protects the state transition.
+        """
+        if rendered is not True:
+            raise SpeechIntentError("unverified renderer acknowledgement")
         with self.lock:
-            row = self.db.execute("SELECT digest,status FROM speech_intents WHERE intent_id=?", (intent_id,)).fetchone()
-            if row != (digest, "RENDERING") or rendered is not True:
-                raise SpeechIntentError("unverified renderer acknowledgement")
-            self.db.execute("UPDATE speech_intents SET status='RENDERED' WHERE intent_id=?", (intent_id,))
-            self._event(intent_id, "RENDERED")
-            self.db.commit()
+            self.db.execute("BEGIN IMMEDIATE")
+            try:
+                updated = self.db.execute(
+                    "UPDATE speech_intents SET status='RENDERED' "
+                    "WHERE intent_id=? AND digest=? AND status='RENDERING'",
+                    (intent_id, digest),
+                ).rowcount
+                if updated != 1:
+                    raise SpeechIntentError("unverified renderer acknowledgement")
+                self._event(intent_id, "RENDERED")
+                self.db.commit()
+            except BaseException:
+                self.db.rollback()
+                raise
 
     def interrupt(self):
-        """Cancel queued and active intents; actual audio stop belongs to renderer."""
+        """Atomically stop queued/active intents; companion must stop actual audio."""
         with self.lock:
-            ids = [r[0] for r in self.db.execute("SELECT intent_id FROM speech_intents WHERE status IN ('QUEUED','RENDERING')")]
-            for intent_id in ids:
-                self.db.execute("UPDATE speech_intents SET status='INTERRUPTED' WHERE intent_id=?", (intent_id,))
-                self._event(intent_id, "INTERRUPTED")
-            self.db.commit()
-            return len(ids)
+            self.db.execute("BEGIN IMMEDIATE")
+            try:
+                ids = [r[0] for r in self.db.execute(
+                    "SELECT intent_id FROM speech_intents "
+                    "WHERE status IN ('QUEUED','RENDERING')"
+                )]
+                for intent_id in ids:
+                    self.db.execute(
+                        "UPDATE speech_intents SET status='INTERRUPTED' "
+                        "WHERE intent_id=? AND status IN ('QUEUED','RENDERING')",
+                        (intent_id,),
+                    )
+                    self._event(intent_id, "INTERRUPTED")
+                self.db.commit()
+                return len(ids)
+            except BaseException:
+                self.db.rollback()
+                raise
 
     def interrupt_one(self, intent_id):
-        """Cancel only one uncertain playback without dropping other queued C3 turns."""
         with self.lock:
-            row = self.db.execute(
-                "SELECT status FROM speech_intents WHERE intent_id=?", (intent_id,)
-            ).fetchone()
-            if row is None or row[0] not in ("QUEUED", "RENDERING"):
-                return False
-            self.db.execute(
-                "UPDATE speech_intents SET status='INTERRUPTED' WHERE intent_id=?",
-                (intent_id,)
-            )
-            self._event(intent_id, "INTERRUPTED")
-            self.db.commit()
-            return True
+            self.db.execute("BEGIN IMMEDIATE")
+            try:
+                updated = self.db.execute(
+                    "UPDATE speech_intents SET status='INTERRUPTED' "
+                    "WHERE intent_id=? AND status IN ('QUEUED','RENDERING')",
+                    (intent_id,),
+                ).rowcount
+                if updated:
+                    self._event(intent_id, "INTERRUPTED")
+                self.db.commit()
+                return updated == 1
+            except BaseException:
+                self.db.rollback()
+                raise
 
     def status(self, intent_id):
         row = self.db.execute("SELECT status FROM speech_intents WHERE intent_id=?", (intent_id,)).fetchone()
