@@ -22,7 +22,7 @@ import threading
 from v13 import remote_maintenance_bridge as bridge
 
 READ_SCHEMA = "v13.private-relay.owner-read/1"
-READ_CMDS = frozenset({"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "CHAT_SEND", "CHAT_RESULT", "UPDATE_REQUEST"})
+READ_CMDS = frozenset({"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "CHAT_SEND", "CHAT_RESULT", "CHAT_OPERATOR", "UPDATE_REQUEST", "LOG_SHARING_ON", "LOG_SHARING_OFF"})
 OWNER_AGENT = "agent-owner"
 MAX_READ_BODY = 2048
 
@@ -46,7 +46,7 @@ def validate_owner_read(issue, cfg, *, now=None):
         raise bridge.Denied("invalid read schema")
     ident, operation, expiry = obj["id"], obj["command"], obj["expires_at"]
     allowed_fields = {"schema", "id", "command", "expires_at"}
-    if operation in ("LOG_PAGE","CHAT_SEND","CHAT_RESULT"):
+    if operation in ("LOG_PAGE","CHAT_SEND","CHAT_RESULT","CHAT_OPERATOR"):
         allowed_fields.add("args")
     if set(obj) != allowed_fields:
         raise bridge.Denied("unexpected read fields")
@@ -63,6 +63,12 @@ def validate_owner_read(issue, cfg, *, now=None):
                 any(ch in args["text"] for ch in ("\x00", "\n", "\r")) or
                 args["text"].strip().startswith(":")):
             raise bridge.Denied("invalid remote chat message")
+    elif operation == "CHAT_OPERATOR":
+        from .remote_chat import SAFE_OPERATOR_COMMANDS
+        if (not isinstance(args, dict) or set(args) != {"command"} or
+                type(args.get("command")) is not str or
+                args["command"] not in SAFE_OPERATOR_COMMANDS):
+            raise bridge.Denied("invalid diagnostic operator")
     elif operation == "CHAT_RESULT":
         if (not isinstance(args, dict) or set(args) != {"request_id"} or
                 not isinstance(args.get("request_id"), str) or
@@ -197,7 +203,7 @@ def github_token():
     return token
 
 
-def create_read_request(command, *, now=None, session=0, page=0, text=None, request_id=None):
+def create_read_request(command, *, now=None, session=0, page=0, text=None, request_id=None, operator_command=None):
     """Build a non-secret READ request for a trusted GitHub connector."""
     if command not in READ_CMDS:
         raise bridge.Denied("read-only commands only")
@@ -211,6 +217,11 @@ def create_read_request(command, *, now=None, session=0, page=0, text=None, requ
         if not isinstance(text,str) or not text.strip() or len(text.encode("utf-8")) > 1400 or text.startswith(":") or any(c in text for c in ("\n","\r","\x00")):
             raise bridge.Denied("one bounded non-operator text required")
         out["args"]={"text":text}
+    if command == "CHAT_OPERATOR":
+        from .remote_chat import SAFE_OPERATOR_COMMANDS
+        if operator_command not in SAFE_OPERATOR_COMMANDS:
+            raise bridge.Denied("approved diagnostic command required")
+        out["args"]={"command":operator_command}
     if command == "CHAT_RESULT":
         if not isinstance(request_id,str) or not bridge.ID.fullmatch(request_id):
             raise bridge.Denied("valid previous chat request ID required")
