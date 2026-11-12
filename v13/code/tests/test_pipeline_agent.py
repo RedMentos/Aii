@@ -61,7 +61,9 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(result["updated_commit"], commit)
         self.assertTrue(p.refresh_requested("ui"))
         self.assertTrue(p.refresh_requested("bridge"))
-        self.assertEqual(ci.call_count, 1, "one exact commit must be checked once")
+        self.assertEqual(ci.call_count, 2, "UI and runtime use different CI gates")
+        self.assertEqual({c.kwargs["scope"] for c in ci.call_args_list},
+                         {"runtime","dashboard"})
         self.assertEqual(apply.call_args.kwargs["expected_tip"], commit)
         self.assertEqual(dash.call_args.kwargs["expected_tip"], commit)
         self.assertTrue(p.acknowledge_refresh("ui"))
@@ -130,33 +132,51 @@ class PipelineTests(unittest.TestCase):
 
 class GitHubCIProofTests(unittest.TestCase):
     @staticmethod
-    def workflow(commit, **changes):
-        result={"head_sha":commit, "name":u.CI_WORKFLOW, "path":u.CI_WORKFLOW_PATH+"@refs/heads/gpt6/v13-private-remote-bridge-20261111",
-                "status":"completed", "conclusion":"success",
-                "head_repository":{"full_name":"RedMentos/Aii"}}
+    def workflow(commit, name=u.CI_WORKFLOW, **changes):
+        result = {"head_sha": commit, "name": name,
+                  "path": u.CI_WORKFLOW_PATH+"@refs/heads/gpt6/v13-private-remote-bridge-20261111" if name==u.CI_WORKFLOW else ".github/workflows/test.yml",
+                  "status": "completed", "conclusion": "success",
+                  "head_repository": {"full_name": "RedMentos/Aii"}}
         result.update(changes)
         return result
 
-    def test_workflow_must_be_exact_commit_name_path_and_success(self):
-        commit="b"*40
-        variants=[
-            self.workflow(commit),
-            self.workflow("c"*40),
-            self.workflow(commit,conclusion="failure"),
-            self.workflow(commit,path=".github/workflows/fake.yml"),
-            self.workflow(commit,name="Other workflow"),
-            self.workflow(commit,head_repository={"full_name":"attacker/fork"}),
-            self.workflow(commit,status="in_progress")
+    def fake_api(self, rows):
+        return mock.patch.object(u.subprocess, "run", return_value=mock.Mock(
+            returncode=0, stdout=json.dumps({"workflow_runs":rows})))
+
+    def test_scoped_ci_all_required_workflows(self):
+        commit = "b" * 40
+        full = [self.workflow(commit, name) for name in u.REQUIRED_CI["runtime"]]
+        with self.fake_api(full):
+            self.assertTrue(u.ci_passed(commit,scope="dashboard"))
+            self.assertTrue(u.ci_passed(commit,scope="runtime"))
+        with self.fake_api(full[:-1]):
+            self.assertTrue(u.ci_passed(commit,scope="dashboard"))
+            self.assertFalse(u.ci_passed(commit,scope="runtime"))
+        with self.fake_api(full[:1]):
+            self.assertFalse(u.ci_passed(commit,scope="dashboard"))
+            self.assertFalse(u.ci_passed(commit,scope="runtime"))
+
+    def test_workflow_must_have_correct_commit_path_name_repo_and_success(self):
+        commit = "b"*40
+        full = [self.workflow(commit, name) for name in u.REQUIRED_CI["runtime"]]
+        variants = [
+            self.workflow(commit, u.CI_WORKFLOW),
+            self.workflow("c"*40, u.CI_WORKFLOW),
+            self.workflow(commit,u.CI_WORKFLOW,conclusion="failure"),
+            self.workflow(commit,u.CI_WORKFLOW,path=".github/workflows/fake.yml"),
+            self.workflow(commit,u.CI_WORKFLOW,head_repository={"full_name":"attacker/fork"}),
+            self.workflow(commit,u.CI_WORKFLOW,status="in_progress"),
         ]
         for i,row in enumerate(variants):
-            proc=mock.Mock(returncode=0,stdout=json.dumps({"workflow_runs":[row]}))
-            with self.subTest(i=i), mock.patch.object(u.subprocess,"run",return_value=proc):
-                self.assertEqual(u.ci_passed(commit),i==0)
+            with self.subTest(i=i), self.fake_api([row, *full[1:]]):
+                self.assertEqual(u.ci_passed(commit,scope="dashboard"), i==0)
 
-    def test_no_CI_run_never_allows_auto(self):
-        with mock.patch.object(u.subprocess,"run",return_value=mock.Mock(returncode=0,stdout='{"workflow_runs": []}')):
+    def test_no_ci_run_never_allows_auto(self):
+        with self.fake_api([]):
             self.assertFalse(u.ci_passed("a"*40))
+            self.assertFalse(u.ci_passed("a"*40, scope="dashboard"))
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     unittest.main()
