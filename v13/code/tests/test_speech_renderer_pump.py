@@ -93,3 +93,37 @@ def test_stop_during_receipt_verification_cannot_commit(tmp_path):
     assert q.status(intent.intent_id) == "INTERRUPTED"
     assert renderer.cancelled == [intent.intent_id]
     q.close()
+
+def test_committed_c3_operator_to_verified_render_end_to_end(tmp_path):
+    import json
+    import sqlite3
+    from v13.speech_operator import LocalSpeechHandoff
+    event = "evt_" + "a" * 28
+    class Store:
+        def __init__(self):
+            self.db = sqlite3.connect(":memory:")
+            self.db.row_factory = sqlite3.Row
+            self.db.execute("CREATE TABLE messages (id INTEGER PRIMARY KEY, event_id TEXT, role TEXT, text TEXT, status TEXT, metadata TEXT)")
+            self.db.execute(
+                "INSERT INTO messages(event_id,role,text,status,metadata) VALUES (?,?,?,?,?)",
+                (event, "assistant", "spoken text", "FINAL",
+                 json.dumps({"model_generated": True, "speech_source_role": "C3_LANGUAGE"})))
+            self.db.commit()
+        def one(self, query, args):
+            return self.db.execute(query, args).fetchone()
+    handoff = LocalSpeechHandoff(Store(), tmp_path / "speech.sqlite")
+    renderer = Renderer()
+    try:
+        from v13.speech_intent import SpeechIntentError
+        import pytest
+        with pytest.raises(SpeechIntentError, match="opt-in"):
+            handoff.enqueue(event)
+        queued = handoff.enqueue(event, local_user_opt_in=True)
+        with pytest.raises(SpeechIntentError, match="opt-in"):
+            handoff.render_one(renderer=renderer, verifier=Verifier())
+        assert handoff.render_one(renderer=renderer, verifier=Verifier(),
+                                  local_user_opt_in=True).status == "RENDERED"
+        assert handoff.queue.status(queued.intent_id) == "RENDERED"
+        assert renderer.calls[0][1] == "spoken text"
+    finally:
+        handoff.close()
