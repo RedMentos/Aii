@@ -338,7 +338,11 @@ def main(argv=None):
                 if (_read_desired() and
                         pipeline_agent.snapshot()["last_result"] != "CHECKING"):
                     ensure_service(timeout=8)
-            except (OSError, ValueError, RuntimeError) as exc:
+            except Exception as exc:
+                # A new sparse-checkout module or unexpected Python error
+                # must never silently kill the only phone update worker.
+                # Report only exception class; no private traceback leaves
+                # the device. The next cycle retries after 30 seconds.
                 print(json.dumps({"status":"PIPELINE_ERROR",
                                   "error_code":type(exc).__name__}), flush=True)
             time.sleep(30)
@@ -347,7 +351,9 @@ def main(argv=None):
         try:
             print(json.dumps(poll_once(client, cfg)), flush=True)
             print(json.dumps(monitor_and_alert(client)), flush=True)
-        except (OSError, ValueError, RuntimeError) as exc:
+        except Exception as exc:
+            # Preserve the private relay loop even if a new optional phone
+            # monitor module is absent on an older Android sparse checkout.
             print(json.dumps({"status": "POLL_ERROR", "error_code": type(exc).__name__}), flush=True)
         # An updated relay must reload its own Python modules before it can
         # serve newly added commands. Never do so inside an issue transaction.
