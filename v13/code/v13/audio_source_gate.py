@@ -38,6 +38,8 @@ def checked_audio_source_view(percept_packet, read_source):
             raise PermissionError('unexpected authority')
         if segment.get('finality') not in ('FINAL', 'PROVISIONAL'):
             raise ValueError('invalid finality')
+        if 'start_ms' not in segment or 'end_ms' not in segment:
+            raise ValueError('missing bounded audio window')
         if True:
             start, end = segment.get('start_ms'), segment.get('end_ms')
             if (type(start) is not int or type(end) is not int or start < 0
