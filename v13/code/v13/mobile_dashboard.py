@@ -612,6 +612,7 @@ def serve(*, open_browser=True):
     threading.Thread(target=auto_loop, daemon=True, name="v13-auto-updates").start()
     token = os.environ.get("V13_UI_RESTART_TOKEN") or secrets.token_hex(24)
     csrf = os.environ.get("V13_UI_RESTART_CSRF") or secrets.token_hex(24)
+    was_restarted = bool(os.environ.get("V13_UI_RESTART_PORT"))
     port = int(os.environ.get("V13_UI_RESTART_PORT") or "0")
     for key in ("V13_UI_RESTART_TOKEN","V13_UI_RESTART_CSRF","V13_UI_RESTART_PORT"):
         os.environ.pop(key,None)
@@ -773,7 +774,7 @@ def serve(*, open_browser=True):
     controls.restart_callback = request_restart
     url = f"http://127.0.0.1:{server.server_port}{prefix}/"
     print("V13 LOKALE OBERFLAECHE: " + url, flush=True)
-    if open_browser:
+    if open_browser and not was_restarted:
         try:
             subprocess.Popen(["termux-open-url", url], stdout=subprocess.DEVNULL,
                              stderr=subprocess.DEVNULL, start_new_session=True)
