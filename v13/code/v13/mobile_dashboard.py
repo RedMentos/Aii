@@ -559,6 +559,7 @@ def dashboard_html(token, controls, message="", csrf=""):
         "@@STOP_BUTTON@@":button("cancel","Abbrechen","danger"),
         "@@STATUS_BUTTON@@":quick(":status","Status"),
         "@@HELP_BUTTON@@":quick(":help","Hilfe"),
+        "@@SHUTDOWN_BUTTON@@":button("shutdown","V13 beenden","danger"),
         "@@TRANSCRIPT_URL@@":html.escape(prefix+"/transcript.txt",quote=True),
         "@@PROBE_STATUS@@":html.escape(current["native_probe"]),
         "@@ROLE_PILLS@@":"".join(roles) or '<span class="pill">Noch keine Messung</span>',
