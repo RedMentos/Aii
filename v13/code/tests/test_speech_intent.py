@@ -12,6 +12,9 @@ def test_restart_does_not_claim_audio_was_played(tmp_path):
         q.acknowledge(a.intent_id, digest="0"*64, rendered=True)
     q.close()
     q = SpeechIntentQueue(db)
+    assert q.status(a.intent_id) == "RENDERING"
+    # Operator has verified that the old renderer is no longer running.
+    assert q.recover_uncertain() == 1
     assert q.status(a.intent_id) == "INTERRUPTED"
     with pytest.raises(SpeechIntentError):
         q.acknowledge(a.intent_id, digest=a.digest, rendered=True)
