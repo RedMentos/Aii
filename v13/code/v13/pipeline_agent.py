@@ -25,6 +25,7 @@ LOCK = PRIVATE / "pipeline-status.lock"
 UI_REFRESH = PRIVATE / "pipeline-ui-refresh"
 BRIDGE_REFRESH = PRIVATE / "pipeline-bridge-refresh"
 AI_REFRESH = PRIVATE / "pipeline-ai-refresh"
+UPDATE_REQUEST = PRIVATE / "pipeline-manual-request.json"
 INTERVAL = 900
 MAX_STATE_BYTES = 8192
 
@@ -242,6 +243,39 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
         return snapshot()
     finally:
         os.close(fd)
+
+
+def schedule_update(request_id):
+    """Owner-triggered source update, queued for the existing pipeline worker.
+
+    No raw shell code or arbitrary paths are accepted. The worker enforces
+    the exact-commit CI gate and honors the V13 graceful stop/restart.
+    """
+    if not isinstance(request_id, str) or not updates.ID.fullmatch(request_id):
+        # updater only defines SHA; local IDs use the same strict 32 hex format
+        import re
+        if not isinstance(request_id, str) or re.fullmatch(r"[a-f0-9]{32}",request_id) is None:
+            raise ValueError("invalid update request ID")
+    _private()
+    if UPDATE_REQUEST.is_symlink():
+        raise RuntimeError("unsafe update queue")
+    if UPDATE_REQUEST.is_file():
+        existing = json.loads(UPDATE_REQUEST.read_text(encoding="utf-8"))
+        if int(existing.get("expires",0)) > time.time():
+            return {"status":"ALREADY_QUEUED"}
+    _atomic(UPDATE_REQUEST, {"request_id":request_id, "expires":int(time.time()) + 900})
+    return {"status":"QUEUED","request_id":request_id,
+            "next":"PIPELINE_STATUS confirms the actual result"}
+
+
+def claim_scheduled_update():
+    """Consume once, atomically, before any source checkout modification."""
+    _private()
+    if UPDATE_REQUEST.is_symlink() or not UPDATE_REQUEST.is_file():
+        return False
+    data=json.loads(UPDATE_REQUEST.read_text(encoding="utf-8"))
+    UPDATE_REQUEST.unlink()
+    return type(data.get("expires")) is int and data["expires"]>=time.time()
 
 
 def refresh_requested(which):
