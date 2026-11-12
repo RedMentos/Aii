@@ -28,3 +28,45 @@ def test_back_default_and_stop():
     assert dispatch_operator_command(':android dry back', d).status == 'DRY_RUN'
     registry.stop()
     assert dispatch_operator_command(':android dry back', d).status == 'DENIED'
+
+def test_execute_with_approved_transport_and_verified_receipt():
+    from v13.android_capability_contract import ActionOutcome, OutcomeStatus
+    import time
+
+    class Native:
+        def execute(self, req):
+            return ActionOutcome(req.request_id, req.capability, OutcomeStatus.SUCCESS,
+                                 'native-test-receipt', time.time())
+
+    class Verifier:
+        def verify(self, req, outcome):
+            return outcome.companion_receipt == 'native-test-receipt'
+
+    d = AndroidDispatcher(CapabilityRegistry({Capability.LAUNCH_APP: True}),
+                          transport=Native(), verifier=Verifier())
+    result = dispatch_operator_command(':android execute launch com.example.app', d,
+                                       approve_local=lambda c, t: c == Capability.LAUNCH_APP and t == 'com.example.app')
+    assert result.status == 'SUCCESS'
+    assert result.request_id
+    assert result.capability == 'launch_app'
+    assert 'com.example.app' not in result.detail
+
+
+def test_forged_native_receipt_fails_closed():
+    from v13.android_capability_contract import ActionOutcome, OutcomeStatus
+    import time
+
+    class Forged:
+        def execute(self, req):
+            return ActionOutcome(req.request_id, req.capability, OutcomeStatus.SUCCESS,
+                                 'forged', time.time())
+
+    class Verifier:
+        def verify(self, req, outcome):
+            return False
+
+    d = AndroidDispatcher(CapabilityRegistry({Capability.LAUNCH_APP: True}),
+                          transport=Forged(), verifier=Verifier())
+    result = dispatch_operator_command(':android execute launch com.example.app', d,
+                                       approve_local=lambda c, t: True)
+    assert result.status == 'FAILED'
