@@ -334,7 +334,7 @@ authors=cfg.get("authors",{}).get("agent-owner",[])
 perms=cfg.get("permissions",{}).get("agent-owner",[])
 if authors!=["RedMentos"] or not isinstance(perms,list) or set(perms)-{"HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS","LOG_PAGE","CHAT_SEND","CHAT_RESULT","CHAT_OPERATOR","UPDATE_REQUEST","LOG_SHARING_ON","LOG_SHARING_OFF"}:
     raise SystemExit("ABBRUCH: unbekannte Agent-Rechte; keine automatische Rechteaenderung")
-desired=["HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS","LOG_PAGE"]
+desired=["HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS","LOG_PAGE","CHAT_SEND","CHAT_RESULT","CHAT_OPERATOR","UPDATE_REQUEST","LOG_SHARING_ON","LOG_SHARING_OFF"]
 if perms!=desired:
     cfg["permissions"]["agent-owner"]=desired
     tmp=p.with_suffix(".new")
