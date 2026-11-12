@@ -45,7 +45,7 @@ class TestA3RealSQLite(unittest.TestCase):
         self.store = Store(self.home)
         self.runtime.store = self.store
         second = self.observe()
-        self.assertEqual(first["a5"]["embedding"], second["a5"]["embedding"])
+        self.assertEqual(first["a5"]["a3_embedding"], second["a5"]["a3_embedding"])
         self.assertEqual(second["a5"]["store_source_sha256"], self.ref["sha256"])
 
     def test_revoke_after_restart(self):
