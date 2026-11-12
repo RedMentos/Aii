@@ -8,6 +8,7 @@ on:
     paths:
       - 'automation/v13_release_queue.py'
       - 'automation/tests/test_v13_release_queue.py'
+      - 'automation/README.md'
       - '.github/workflows/v13-reviewed-release-queue.yml'
 
 permissions:
