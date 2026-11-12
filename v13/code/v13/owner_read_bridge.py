@@ -16,11 +16,13 @@ from pathlib import Path
 import secrets
 import subprocess
 import time
+import sys
+import threading
 
 from v13 import remote_maintenance_bridge as bridge
 
 READ_SCHEMA = "v13.private-relay.owner-read/1"
-READ_CMDS = frozenset({"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS"})
+READ_CMDS = frozenset({"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS"})
 OWNER_AGENT = "agent-owner"
 MAX_READ_BODY = 1024
 
@@ -162,11 +164,29 @@ def main(argv=None):
     seconds = cfg.get("poll_seconds", bridge.DEFAULT_INTERVAL)
     if type(seconds) is not int or not 15 <= seconds <= 3600:
         raise bridge.Denied("bad polling interval")
+    # Independent from the browser: automatic CI-gated checks keep running
+    # while no browser tab is open, as long as Termux keeps this process alive.
+    from . import pipeline_agent
+    def update_worker():
+        while True:
+            try:
+                pipeline_agent.run_cycle()
+            except (OSError, ValueError, RuntimeError) as exc:
+                print(json.dumps({"status":"PIPELINE_ERROR",
+                                  "error_code":type(exc).__name__}), flush=True)
+            time.sleep(30)
+    threading.Thread(target=update_worker, name="v13-phone-updater", daemon=True).start()
     while True:
         try:
             print(json.dumps(poll_once(client, cfg)), flush=True)
         except (OSError, ValueError) as exc:
             print(json.dumps({"status": "POLL_ERROR", "error_code": type(exc).__name__}), flush=True)
+        # An updated relay must reload its own Python modules before it can
+        # serve newly added commands. Never do so inside an issue transaction.
+        if pipeline_agent.refresh_requested("bridge"):
+            pipeline_agent.acknowledge_refresh("bridge")
+            os.execv(sys.executable, [sys.executable, "-m", "v13.owner_read_bridge",
+                                      "serve", "--config", args.config])
         time.sleep(seconds)
 
 
