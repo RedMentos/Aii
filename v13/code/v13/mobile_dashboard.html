@@ -143,14 +143,14 @@ summary{cursor:pointer;font-weight:650}
    <h3>Automatische Pipeline · privat verbunden</h3>
    <p class="update-line" id="pipeline-result">@@PIPELINE_STATUS@@</p>
    <div class="actions">@@PIPELINE_BUTTON@@</div>
-   <p class="muted">Der Termux-Agent prüft alle 15 Minuten im Hintergrund. Nur bei bestandenem GitHub-CI und beendetem V13 wird aktualisiert. Der Status kann von ChatGPT privat abgefragt werden; ein geschlossener Browser stoppt den Hintergrund-Agenten nicht.</p>
+   <p class="muted">Ein Klick auf „Alles aktualisieren“ prüft die freigegebenen KI- und Oberflächenänderungen, aktiviert den geprüften Runtime-Build und startet V13 kontrolliert neu. Automatisch erfolgt die Prüfung etwa alle 15 Minuten, solange Termux und der private Agent laufen. Das ersetzt keine GitHub-Integration offener Entwicklungsbranches.</p>
    <h3>Manuelle Aktionen</h3>
    <p class="update-line" id="update-result">@@UPDATE_STATUS@@</p>
    <div class="progress" id="update-progress" @@UPDATE_HIDDEN@@><span></span></div>
    <p class="muted">Bei Updates wird ein laufender V13-Chat kontrolliert beendet und danach automatisch neu gestartet. Falls das sichere Beenden nicht gelingt, bleibt der Code unverändert. Der Status aktualisiert sich live.</p>
    <h3>V13-Quellcode</h3>
    <div class="actions">@@UPDATE_BUTTONS@@</div>
-   <p class="update-desc">Lädt nur geänderte Dateien des ausgecheckten Branches. Die installierte Laufzeit muss anschließend separat aktiviert bzw. gestartet werden; Git-Code ≠ automatisch installierte KI.</p>
+   <p class="update-desc">Erweiterte Einzelaktionen. Der Hauptknopf oben übernimmt normalerweise beides: GitHub-Code und den tatsächlich installierten V13-Runtime-Build.</p>
    <h3>Steuerzentrale</h3>
    <div class="actions">@@DASHBOARD_UPDATE@@</div>
    <p class="update-desc">Aktualisiert den Code dieser Browseroberfläche und startet sie nach erfolgreicher Prüfung neu. URL bleibt dabei erhalten.</p>
@@ -159,7 +159,8 @@ summary{cursor:pointer;font-weight:650}
    <h2>Diagnose & Protokolle</h2>
    <p class="muted">Die Bedienoberfläche zeichnet ihre eigenen V13-Sitzungen lokal auf. Andere Termux-Sitzungen werden nicht ausgelesen.</p>
    <div class="actions">@@DIAG_BUTTONS@@</div>
-   <p class="muted">Vor dem Teilen von Konsolentexten prüfen: Modellantworten können private Inhalte enthalten. Die Fernfreigabe ist standardmäßig aus.</p>
+   <p id="diagnostic-result" class="update-line" aria-live="polite">@@DIAGNOSTIC_STATUS@@</p>
+   <p class="muted">„Fehlerbericht jetzt senden“ übermittelt technische Diagnose, Pipeline-Status und Fehlerzeilen an dein privates GitHub-Repository. „Fehler + Chat jetzt senden“ übermittelt zusätzlich die letzten protokollierten Chat-Sitzungen. Zugangsdaten und lokale Sitzungsschlüssel werden ausgefiltert. Pro Bericht gelten Größenlimits. Es wird nur nach einem Klick hochgeladen, nicht dauerhaft. Die bisherigen Fernfreigabe-Schalter bleiben zusätzlich verfügbar.</p>
    <p class="mini">Gesicherte Sitzungen: @@SESSION_COUNT@@</p>
   </div>
  </section>
@@ -174,6 +175,7 @@ summary{cursor:pointer;font-weight:650}
   const progress = document.getElementById('update-progress');
   const updateStatus = document.getElementById('update-result');
   const pipelineStatus = document.getElementById('pipeline-result');
+  const diagnosticStatus = document.getElementById('diagnostic-result');
   const notice = document.getElementById('notice');
   let prior = out.textContent;
   let busy = false;
@@ -242,7 +244,7 @@ summary{cursor:pointer;font-weight:650}
       if(!response.ok||!data.ok)throw new Error(data.message||'HTTP '+response.status);
       showNotice(data.message||'Aktion ausgeführt');
       if(action==='send')form.querySelector('textarea').value='';
-      if(String(action).includes('update')){tab('maintenance');}
+      if(String(action).includes('update')||action==='pipeline_check'||String(action).startsWith('diag_send_')){tab('maintenance');}
       await refresh();
     }catch(err){showNotice('Fehler: '+String(err.message||err));}
     finally{if(button)button.disabled=false;}
@@ -273,6 +275,7 @@ summary{cursor:pointer;font-weight:650}
       }
       if(typeof data.update_result==='string')updateStatus.textContent=data.update_result;
       if(typeof data.pipeline_status==='string')pipelineStatus.textContent=data.pipeline_status;
+      if(typeof data.diagnostic_status==='string')diagnosticStatus.textContent=data.diagnostic_status;
       if(typeof data.update_busy==='boolean')progress.hidden=!data.update_busy;
     }catch(_){}
     finally{busy=false;}
