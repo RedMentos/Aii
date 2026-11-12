@@ -99,7 +99,7 @@ class ChatService:
             if snapshot["last_result"] == "CHECKING" or lifecycle.STOP_REQUEST.is_file():
                 return
             if self.paused:
-                if lifecycle.service_resume(self.console):
+                if lifecycle.service_resume(self.console, allowed=_read_desired()):
                     self.paused = False
                     self.pending_lifecycle = False
                     self.status = "RUNNING"
@@ -112,7 +112,7 @@ class ChatService:
                     self.paused = False
                     self.pending_lifecycle = False
             else:
-                lifecycle.service_resume(self.console)
+                lifecycle.service_resume(self.console, allowed=_read_desired())
             state = self.console.state()
             now = time.monotonic()
             if state["running"] and not _read_desired():
