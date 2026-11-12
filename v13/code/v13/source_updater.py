@@ -173,25 +173,46 @@ def _check_python(root, before, after):
             raise UpdateDenied("Syntax check failed for source update")
 
 
-def ci_passed(commit):
-    """The auto path requires successful existing CI on the exact source commit."""
-    if not SHA.fullmatch(commit):
-        return False
-    p = subprocess.run(["gh", "api", "--method", "GET", "repos/RedMentos/Aii/actions/runs",
-                        "-f", "head_sha=" + commit, "-f", "per_page=100"],
-                       capture_output=True, text=True, timeout=25, check=False)
-    if p.returncode != 0:
-        return False
+CI_WORKFLOW = "V13 private owner-read Termux bootstrap"
+CI_WORKFLOW_PATH = ".github/workflows/v13-private-owner-read-ci.yml"
+
+
+def _ci_runs(commit):
+    """Read the exact-commit GitHub workflow result; fail closed on API errors."""
+    if not isinstance(commit, str) or not SHA.fullmatch(commit):
+        return []
+    p = subprocess.run(
+        ["gh", "api", "--method", "GET", "repos/RedMentos/Aii/actions/runs",
+         "-f", "head_sha=" + commit, "-f", "per_page=100"],
+        capture_output=True, text=True, timeout=30, check=False)
+    if p.returncode:
+        raise UpdateDenied("GitHub CI lookup failed; update held")
     try:
-        runs = json.loads(p.stdout).get("workflow_runs", [])
-        names = {}
-        for run in runs:
-            if run.get("head_sha") == commit:
-                names[run.get("name")] = run.get("conclusion")
-        required = ("v13-private-remote-bridge-tests", "V13 private owner-read Termux bootstrap")
-        return all(names.get(name) == "success" for name in required)
-    except (ValueError, TypeError, AttributeError):
+        value = json.loads(p.stdout)
+    except (ValueError, UnicodeError) as exc:
+        raise UpdateDenied("Invalid GitHub CI reply") from exc
+    runs = value.get("workflow_runs") if isinstance(value, dict) else None
+    if not isinstance(runs, list):
+        raise UpdateDenied("Missing GitHub workflow_runs")
+    return runs
+
+
+def ci_passed(commit):
+    """Require successful exact-commit update/browser/relay/installer CI."""
+    try:
+        runs = _ci_runs(commit)
+    except (OSError, ValueError, subprocess.TimeoutExpired):
         return False
+    return any(
+        r.get("head_sha") == commit
+        and r.get("name") == CI_WORKFLOW
+        and r.get("path", "").split("@", 1)[0] == CI_WORKFLOW_PATH
+        and r.get("status") == "completed"
+        and r.get("conclusion") == "success"
+        and isinstance(r.get("head_repository"), dict)
+        and r["head_repository"].get("full_name") == "RedMentos/Aii"
+        for r in runs if isinstance(r, dict)
+    )
 
 
 def apply(root=None, *, expected_tip=None):
@@ -227,7 +248,7 @@ def apply(root=None, *, expected_tip=None):
 
 
 
-def apply_dashboard(root=None):
+def apply_dashboard(root=None, *, expected_tip=None):
     """Update only the independent dashboard checkout, not live model files.
 
     Unlike V13 runtime updates, the dashboard is restarted by its supervisor
@@ -242,6 +263,8 @@ def apply_dashboard(root=None):
         s = status(requested)
         if s["status"] == "UP_TO_DATE":
             return s
+        if expected_tip is not None and s["available"] != expected_tip:
+            raise UpdateDenied("Dashboard remote revision changed after CI approval")
         checkout, branch, before = _repo_root(requested)
         if before != s["current"]:
             raise UpdateDenied("Dashboard changed during source fetch")
