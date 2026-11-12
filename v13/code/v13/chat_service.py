@@ -159,6 +159,14 @@ class ChatService:
             if now < self.next_retry:
                 self.status = "RETRY_WAIT"
                 return
+            # Recheck immediately before launch: an update may have entered
+            # CHECKING while this supervisor was handling backoff/state.
+            # This narrows the start/update race; it is not a cross-process
+            # transaction lock, so native release QA must still test it.
+            if (pipeline_agent.snapshot()["last_result"] == "CHECKING"
+                    or lifecycle.STOP_REQUEST.exists() or not _read_desired()):
+                self.status = "START_DEFERRED_FOR_UPDATE"
+                return
             try:
                 response = self.console.start()
             except (OSError, RuntimeError, ValueError):
