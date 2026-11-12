@@ -81,7 +81,12 @@ def _protected_dir(path):
     if path.is_symlink():
         raise RuntimeDeployError("Symlinked private runtime directory")
     path.mkdir(parents=True, exist_ok=True, mode=0o700)
-    if path.is_symlink() or path.stat().st_uid != os.getuid() or path.stat().st_mode & 0o077:
+    if path.is_symlink() or path.stat().st_uid != os.getuid():
+        raise RuntimeDeployError("Runtime private directory not owner-owned")
+    # A previous, otherwise valid runtime-builds directory may be 0755.
+    # Tightening permissions is safe; never modify files under user data.
+    path.chmod(0o700)
+    if path.stat().st_mode & 0o077:
         raise RuntimeDeployError("Runtime private directory not owner-only")
     return path
 
