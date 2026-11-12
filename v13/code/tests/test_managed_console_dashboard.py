@@ -222,6 +222,38 @@ class BrowserButtonHTTPTests(unittest.TestCase):
                                            "Accept":"application/json"}, method="POST")
                     result = __import__("json").loads(urlopen(req, timeout=5).read())
                     self.assertTrue(result["ok"])
+                    # A valid AJAX send while no V13 is running must produce
+                    # an actionable JSON error (NOT an empty body/JSON parse error).
+                    req = Request(destination,
+                                  data=urlencode({"csrf": tokens[0], "action":"send",
+                                                 "command":":bodyview"}).encode(),
+                                  headers={"Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
+                                           "Accept":"application/json"}, method="POST")
+                    with self.assertRaises(HTTPError) as cm:
+                        urlopen(req, timeout=5)
+                    self.assertEqual(cm.exception.code, 400)
+                    denied = __import__("json").loads(cm.exception.read())
+                    self.assertFalse(denied["ok"])
+                    self.assertIn("Zuerst V13 Chat starten", denied["message"])
+                    # The old AJAX bug sent multipart/form-data, which must
+                    # be rejected with an explanatory JSON response (415).
+                    req = Request(destination, data=b"--boundary\r\n",
+                                  headers={"Content-Type":"multipart/form-data; boundary=boundary",
+                                           "Accept":"application/json"}, method="POST")
+                    with self.assertRaises(HTTPError) as cm:
+                        urlopen(req, timeout=5)
+                    self.assertEqual(cm.exception.code, 415)
+                    denied = __import__("json").loads(cm.exception.read())
+                    self.assertIn("Formulardaten falsch", denied["message"])
+                    # CSRF failures must also have a parseable JSON error.
+                    req = Request(destination,
+                                  data=urlencode({"csrf":"wrong", "action":"cancel"}).encode(),
+                                  headers={"Content-Type":"application/x-www-form-urlencoded",
+                                           "Accept":"application/json"}, method="POST")
+                    with self.assertRaises(HTTPError) as cm:
+                        urlopen(req, timeout=5)
+                    self.assertEqual(cm.exception.code, 403)
+                    self.assertIn("Sitzungsschlüssel", __import__("json").loads(cm.exception.read())["message"])
                     # No secret: cross-site form cannot run buttons.
                     for payload in (
                         {"action": "cancel"},
