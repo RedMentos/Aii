@@ -58,3 +58,35 @@ def test_console_never_infers_permission_from_text(tmp_path):
                    approve_local=lambda *_: True).status == "DENIED"
         assert cmd(":android dry launch com..example").status == "INVALID"
         assert native.calls == 0
+
+
+def test_durable_stop_blocks_new_enabled_registry_after_restart(tmp_path):
+    path = tmp_path / "audit.sqlite"
+    native = Native()
+    with android_local_console(
+        CapabilityRegistry({Capability.LAUNCH_APP: True}), path,
+        transport=native, verifier=Verifier()
+    ) as cmd:
+        assert cmd(":android stop").status == "STOPPED"
+    assert (tmp_path / "audit.sqlite.stopped").read_bytes().startswith(b"V13_ANDROID_STOP_V1")
+    with android_local_console(
+        CapabilityRegistry({Capability.LAUNCH_APP: True}), path,
+        transport=native, verifier=Verifier()
+    ) as cmd:
+        assert "stopped=true" in cmd(":android status").detail
+        assert cmd(":android dry launch com.example").status == "DENIED"
+        assert cmd(":android execute launch com.example",
+                   approve_local=lambda *_: True).status == "DENIED"
+    assert native.calls == 0
+
+
+def test_foreign_stop_marker_fails_closed(tmp_path):
+    path = tmp_path / "audit.sqlite"
+    (tmp_path / "audit.sqlite.stopped").write_text("invalid marker")
+    with android_local_console(
+        CapabilityRegistry({Capability.LAUNCH_APP: True}), path,
+        transport=Native(), verifier=Verifier()
+    ) as cmd:
+        assert "stopped=true" in cmd(":android status").detail
+        assert cmd(":android execute launch com.example",
+                   approve_local=lambda *_: True).status == "DENIED"
