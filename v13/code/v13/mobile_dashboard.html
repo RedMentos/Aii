@@ -213,7 +213,9 @@ summary{cursor:pointer;font-weight:650}
       // Sending FormData directly makes browsers post multipart; CSRF cannot
       // be parsed, yielding an empty 403 and a JSON parse error.
       const body=new URLSearchParams(fields);
-      const response=await fetch(form.action,{
+      // HTMLFormElement.action is DOM-clobbered by <input name="action">.
+      // Attribute lookup reliably retrieves the local endpoint instead.
+      const response=await fetch(form.getAttribute('action'),{
         method:'POST',body,
         headers:{'Accept':'application/json',
                  'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
