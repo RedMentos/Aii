@@ -251,11 +251,9 @@ def schedule_update(request_id):
     No raw shell code or arbitrary paths are accepted. The worker enforces
     the exact-commit CI gate and honors the V13 graceful stop/restart.
     """
-    if not isinstance(request_id, str) or not updates.ID.fullmatch(request_id):
-        # updater only defines SHA; local IDs use the same strict 32 hex format
-        import re
-        if not isinstance(request_id, str) or re.fullmatch(r"[a-f0-9]{32}",request_id) is None:
-            raise ValueError("invalid update request ID")
+    import re
+    if not isinstance(request_id, str) or re.fullmatch(r"[a-f0-9]{32}", request_id) is None:
+        raise ValueError("invalid update request ID")
     _private()
     if UPDATE_REQUEST.is_symlink():
         raise RuntimeError("unsafe update queue")
