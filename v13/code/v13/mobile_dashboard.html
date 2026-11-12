@@ -95,6 +95,7 @@ summary{cursor:pointer;font-weight:650}
  <section id="panel-chat" class="panel active" aria-label="Chat">
   <div class="card">
    <div class="chat-header"><h2>Mit V13 sprechen</h2><span class="mini" id="chat-running">@@STATE@@</span></div>
+   <p class="muted" id="ai-service-state">@@AI_STATE@@</p>
    <div class="actions compact" style="margin-bottom:12px">
      @@START_BUTTON@@
      @@STOP_BUTTON@@
@@ -168,6 +169,7 @@ summary{cursor:pointer;font-weight:650}
   const tokenBase = '@@PREFIX@@';
   const state = document.getElementById('v13-live-state');
   const running = document.getElementById('chat-running');
+  const aiService = document.getElementById('ai-service-state');
   const out = document.getElementById('v13-live-output');
   const progress = document.getElementById('update-progress');
   const updateStatus = document.getElementById('update-result');
@@ -265,6 +267,10 @@ summary{cursor:pointer;font-weight:650}
         if(nearBottom)out.scrollTop=out.scrollHeight;
       }
       if(typeof data.state==='string'){state.textContent=data.state;running.textContent=data.state;}
+      if(typeof data.ai_daemon==='string'){
+        aiService.textContent='V13-Hintergrund-KI: '+data.ai_daemon+
+          (data.ai_autostart?' · Autostart EIN':' · Autostart AUS');
+      }
       if(typeof data.update_result==='string')updateStatus.textContent=data.update_result;
       if(typeof data.pipeline_status==='string')pipelineStatus.textContent=data.pipeline_status;
       if(typeof data.update_busy==='boolean')progress.hidden=!data.update_busy;
