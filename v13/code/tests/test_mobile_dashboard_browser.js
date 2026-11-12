@@ -23,7 +23,9 @@ const output = elem();
 const notice = elem();
 const chat = elem();
 const form = elem();
-form.action = 'http://127.0.0.1:10000/t/test/action';
+// Chromium/Brave DOM clobbering: <input name="action"> hides form.action.
+form.action = {name:'action', toString(){return '[object HTMLInputElement]';}};
+form.getAttribute = name => name === 'action' ? '/t/test/action' : null;
 form.addEventListener = (name, callback) => { listeners[name] = callback; };
 const map = new Map([
   ['v13-live-output', output], ['v13-live-state', elem()],
@@ -73,7 +75,9 @@ assert.equal(typeof listeners.submit, 'function', 'form submit callback register
   const button = { disabled: false };
   await listeners.submit({ preventDefault() {}, submitter: button });
   assert.equal(fetchCalls.length, 1, 'exactly one action HTTP request');
-  const { options } = fetchCalls[0];
+  const { url, options } = fetchCalls[0];
+  assert.equal(url, '/t/test/action', 'MUST submit to HTML action attribute despite hidden input named action');
+  assert.notEqual(url, String(form.action), 'DOM-clobbered form.action must never be used');
   assert.equal(options.method, 'POST');
   assert.ok(options.body instanceof URLSearchParams, 'MUST use urlencoded, not multipart FormData');
   assert.match(options.headers['Content-Type'], /^application\/x-www-form-urlencoded/);
