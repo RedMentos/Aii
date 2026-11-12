@@ -16,7 +16,7 @@ def test_invalid_launch_tap_and_back_never_dispatch():
         ":android dry tap 99999,2",
         ":android dry tap 1,2 extra",
         ":android dry back another_action",
-        ":android dry launch com.example.app\\x7f",
+        ":android dry launch com.example.app" + chr(127),
     )
     for command in invalid:
         assert dispatch_operator_command(command, dispatcher).status == "INVALID"
