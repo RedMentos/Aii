@@ -55,6 +55,38 @@ class OwnerReadTests(unittest.TestCase):
                 "created_at": created_at or datetime.fromtimestamp(
                     self.now, timezone.utc).isoformat()}
 
+    def test_owner_capabilities_migrate_once_and_respect_future_revocation(self):
+        root=Path(self.temp.name)/"private"
+        root.mkdir(mode=0o700)
+        conf=root/"remote.json"
+        conf.write_text(json.dumps(self.cfg))
+        conf.chmod(0o600)
+        self.assertTrue(o.activate_owner_capabilities(conf))
+        saved=json.loads(conf.read_text())
+        self.assertEqual(saved["permissions"]["agent-owner"],list(o.OWNER_GRANTS))
+        self.assertTrue((root/"owner-capabilities-v2.done").is_file())
+        # Owner can later explicitly revoke remote chat. Never re-enable it
+        # just because the relay restarted after another GitHub update.
+        saved["permissions"]["agent-owner"].remove("CHAT_SEND")
+        conf.write_text(json.dumps(saved))
+        conf.chmod(0o600)
+        self.assertFalse(o.activate_owner_capabilities(conf))
+        again=json.loads(conf.read_text())
+        self.assertNotIn("CHAT_SEND",again["permissions"]["agent-owner"])
+
+    def test_owner_migration_refuses_untrusted_permissions_and_public_repo(self):
+        root=Path(self.temp.name)/"unsafe"
+        root.mkdir(mode=0o700)
+        conf=root/"remote.json"
+        for edit in ({"relay_repo":"RedMentos/Aii"},
+                     {"authors":{"agent-owner":["Attacker"]}},
+                     {"permissions":{"agent-owner":["SHELL"]}}):
+            payload={**self.cfg,**edit}
+            conf.write_text(json.dumps(payload))
+            conf.chmod(0o600)
+            with self.assertRaises(b.Denied):
+                o.activate_owner_capabilities(conf)
+
     def test_owner_health_e2e_and_idempotent_restart(self):
         issue = self.issue()
         client = FakeGitHub([issue])
