@@ -617,6 +617,7 @@ def serve(*, open_browser=True):
     if not re.fullmatch(r"[a-f0-9]{48}",token) or not re.fullmatch(r"[a-f0-9]{48}",csrf):
         raise RuntimeError("Ungültiger lokaler UI-Neustart-Schlüssel")
     prefix = "/t/" + token
+    generation = secrets.token_hex(12)
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, fmt, *args):
             pass  # never log private URL or prompts
@@ -663,7 +664,8 @@ def serve(*, open_browser=True):
                 update_result, update_busy = controls.update_status()
                 payload = {"state": state, "output": controls.output()[-50000:],
                            "last_action": last, "running": running,
-                           "update_result": update_result, "update_busy": update_busy}
+                           "update_result": update_result, "update_busy": update_busy,
+                           "generation": generation}
                 data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
                 self._headers(mime="application/json; charset=utf-8")
                 self.wfile.write(data)
