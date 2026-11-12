@@ -5,6 +5,7 @@ accessibility permission, raw log upload, or unsupervised model-weight edits.
 """
 from __future__ import annotations
 import argparse
+import fcntl
 import ast
 from datetime import datetime
 import html
@@ -28,7 +29,7 @@ PRIVATE = Path.home() / ".v13-private"
 DATA = Path.home() / "v13"
 MAX_TAIL = 100_000
 BUNDLE_LIMIT = 200_000
-PORT = 0  # OS-selected local port; no remote interface
+PORT = 18713  # canonical V13 localhost port; test override V13_UI_PORT=0
 AUTO_FILE = PRIVATE / "auto-source-update.enabled"
 REMOTE_LOG_FLAG = PRIVATE / "share-v13-log-summary.enabled"
 REMOTE_FULL_FLAG = PRIVATE / "share-v13-console.enabled"
@@ -267,6 +268,58 @@ def diagnostics_zip(destination=None):
             if raw:
                 z.writestr("logs/" + name, safe_text(raw))
     return destination
+
+
+def _ui_singleton_lock():
+    """Allow exactly one V13 local control server per Termux home.
+
+    The file descriptor retains an exclusive OS lock for the process lifetime,
+    including an ordinary dashboard run. Closing on exec lets the refreshed
+    server reacquire after its in-place update.
+    """
+    PRIVATE.mkdir(mode=0o700, parents=True, exist_ok=True)
+    if PRIVATE.is_symlink() or PRIVATE.stat().st_mode & 0o077:
+        raise RuntimeError("V13 privacy directory must be private")
+    path = PRIVATE / "ui-singleton.lock"
+    if path.is_symlink():
+        raise RuntimeError("Unsafe dashboard lock")
+    flags = os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(path, flags, 0o600)
+    try:
+        if os.fstat(fd).st_uid != os.getuid():
+            raise RuntimeError("Dashboard lock has wrong owner")
+        os.fchmod(fd, 0o600)
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RuntimeError("V13 dashboard is already running. Use its existing browser tab.") from exc
+        return fd
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def _browser_token():
+    """Persist the random local page path so old tabs can simply reload."""
+    PRIVATE.mkdir(mode=0o700, parents=True, exist_ok=True)
+    path = PRIVATE / "ui-browser-token"
+    if path.is_symlink():
+        raise RuntimeError("Unsafe browser token link")
+    if path.exists():
+        st = path.stat()
+        if not path.is_file() or st.st_uid != os.getuid() or st.st_mode & 0o077:
+            raise RuntimeError("Browser token is not private")
+        value = path.read_text(encoding="ascii").strip()
+        if not re.fullmatch(r"[a-f0-9]{48}", value):
+            raise RuntimeError("Browser token is invalid")
+        return value
+    value = secrets.token_hex(24)
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    with os.fdopen(fd, "w") as out:
+        out.write(value + "\n")
+        out.flush()
+        os.fsync(out.fileno())
+    return value
 
 
 def automatic_updates_enabled():
@@ -600,6 +653,7 @@ def dashboard_html(token, controls, message="", csrf=""):
                   lambda m:m.group(1)+hidden,page)
 
 def serve(*, open_browser=True):
+    instance_fd = _ui_singleton_lock()
     controls = RuntimeControls()
     def auto_loop():
         while True:
@@ -610,10 +664,12 @@ def serve(*, open_browser=True):
                     pass
             time.sleep(900)
     threading.Thread(target=auto_loop, daemon=True, name="v13-auto-updates").start()
-    token = os.environ.get("V13_UI_RESTART_TOKEN") or secrets.token_hex(24)
+    token = os.environ.get("V13_UI_RESTART_TOKEN") or _browser_token()
     csrf = os.environ.get("V13_UI_RESTART_CSRF") or secrets.token_hex(24)
     was_restarted = bool(os.environ.get("V13_UI_RESTART_PORT"))
-    port = int(os.environ.get("V13_UI_RESTART_PORT") or "0")
+    port = int(os.environ.get("V13_UI_RESTART_PORT") or os.environ.get("V13_UI_PORT") or str(PORT))
+    if port != 0 and not 1024 <= port <= 65535:
+        raise RuntimeError("Unsafe local control port")
     for key in ("V13_UI_RESTART_TOKEN","V13_UI_RESTART_CSRF","V13_UI_RESTART_PORT"):
         os.environ.pop(key,None)
     if not re.fullmatch(r"[a-f0-9]{48}",token) or not re.fullmatch(r"[a-f0-9]{48}",csrf):
@@ -795,7 +851,7 @@ def serve(*, open_browser=True):
     controls.restart_callback = request_restart
     url = f"http://127.0.0.1:{server.server_port}{prefix}/"
     print("V13 LOKALE OBERFLAECHE: " + url, flush=True)
-    if open_browser and not was_restarted:
+    if open_browser and not was_restarted and os.environ.get("V13_UI_NO_AUTO_OPEN") != "1":
         try:
             subprocess.Popen(["termux-open-url", url], stdout=subprocess.DEVNULL,
                              stderr=subprocess.DEVNULL, start_new_session=True)
