@@ -570,7 +570,7 @@ def _slider_grid(action):
     return "".join(cards)
 
 
-def dashboard_html(token, controls, message="", csrf=""):
+def dashboard_html(token, controls, message="", csrf="", generation=""):
     """One coherent phone workspace: chat/commands/settings/maintenance tabs."""
     running, _, code, last = controls.state()
     state = "V13 läuft" if running else "Bereit" if code is None else f"Beendet ({code})"
@@ -602,6 +602,7 @@ def dashboard_html(token, controls, message="", csrf=""):
     page = template.read_text(encoding="utf-8")
     replacement = {
         "@@STATE@@":html.escape(state),
+        "@@GENERATION@@":html.escape(generation, quote=True),
         "@@FLASH_CLASS@@":"visible" if message else "",
         "@@FLASH@@":html.escape(message),
         "@@TOKEN@@":html.escape(token),
@@ -748,7 +749,7 @@ def serve(*, open_browser=True):
             if self.path != prefix + "/":
                 self._headers(404)
                 return
-            data = dashboard_html(token, controls, csrf=csrf).encode("utf-8")
+            data = dashboard_html(token, controls, csrf=csrf, generation=generation).encode("utf-8")
             self._headers()
             self.wfile.write(data)
         def do_POST(self):
@@ -836,7 +837,7 @@ def serve(*, open_browser=True):
                 data = json.dumps({"ok": accepted, "message": message}, ensure_ascii=False).encode("utf-8")
                 self._headers(200 if accepted else 400, mime="application/json; charset=utf-8")
             else:
-                data = dashboard_html(token, controls, message, csrf=csrf).encode("utf-8")
+                data = dashboard_html(token, controls, message, csrf=csrf, generation=generation).encode("utf-8")
                 self._headers()
             self.wfile.write(data)
     server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
