@@ -54,7 +54,7 @@ def validate_owner_read(issue, cfg, *, now=None):
     if operation == "LOG_PAGE":
         if (not isinstance(args, dict) or set(args) != {"session","page"} or
             type(args.get("session")) is not int or not 0 <= args["session"] < 32 or
-            type(args.get("page")) is not int or not 0 <= args["page"] < 1024):
+            type(args.get("page")) is not int or not 0 <= args["page"] < 2048):
             raise bridge.Denied("invalid bounded log page")
     elif args:
         raise bridge.Denied("unexpected read args")
@@ -147,7 +147,7 @@ def create_read_request(command, *, now=None, session=0, page=0):
     out = {"schema": READ_SCHEMA, "id": secrets.token_hex(16),
            "command": command, "expires_at": int(time.time() if now is None else now) + 600}
     if command == "LOG_PAGE":
-        if type(session) is not int or not 0 <= session < 32 or type(page) is not int or not 0 <= page < 1024:
+        if type(session) is not int or not 0 <= session < 32 or type(page) is not int or not 0 <= page < 2048:
             raise bridge.Denied("bounded log page values only")
         out["args"] = {"session":session, "page":page}
     return out
