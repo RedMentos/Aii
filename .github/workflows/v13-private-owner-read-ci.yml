@@ -6,6 +6,9 @@ on:
   pull_request:
     paths:
       - 'v13/code/v13/owner_read_bridge.py'
+      - 'v13/code/v13/remote_chat.py'
+      - 'v13/code/v13/phone_monitor.py'
+      - 'v13/code/tests/test_remote_chat.py'
       - 'v13/code/v13/source_updater.py'
       - 'v13/code/v13/pipeline_agent.py'
       - 'v13/code/v13/lifecycle.py'
@@ -42,8 +45,9 @@ jobs:
           python-version: '3.11'
       - name: Compile read-only bridge and run synthetic security tests
         run: |
-          python -m py_compile v13/owner_read_bridge.py v13/remote_maintenance_bridge.py tests/test_owner_read_bridge.py
+          python -m py_compile v13/owner_read_bridge.py v13/remote_maintenance_bridge.py v13/remote_chat.py v13/phone_monitor.py tests/test_owner_read_bridge.py tests/test_remote_chat.py
           python -m unittest discover -s tests -p 'test_owner_read_bridge.py' -v
+          python -m unittest discover -s tests -p 'test_remote_chat.py' -v
       - name: Validate updater and phone UI source syntax
         run: |
           python -m py_compile v13/source_updater.py v13/lifecycle.py v13/pipeline_agent.py v13/chat_service.py v13/mobile_dashboard.py tests/test_source_updater.py tests/test_pipeline_agent.py tests/test_lifecycle.py tests/test_chat_service.py
