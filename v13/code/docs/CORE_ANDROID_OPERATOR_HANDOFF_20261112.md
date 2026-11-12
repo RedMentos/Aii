@@ -13,3 +13,5 @@ then `PYTHONPATH=v13/code python -m v13.android_operator_cli dry launch com.exam
 Inspect #1809 dependency chain and CI, repair any failures. Next high-value integration: wire this command to the trusted local Termux UI without allowing generated C3 text to spoof operator consent; build native Android companion with independent OS-granted capability and per-action receipt authentication, then C5/JEF→T8 committed outcome. Coordinate QA/Boss before changing shared dispatcher or frozen Runtime. Android API-FIRST, screen UI fallback optional. Separate voice contract and actual trainable B1/B2/C3 consumers remain required.
 
 No direct git clone in this runner: GitHub DNS resolution failed; connector used for remote commits. No independent native test claimed.
+
+Follow-up commit `332ad581f0ae061d64aeb629d53f36fac53d4f6b`: two additional exact-code tests submitted for simulated authenticated receipt success and forged receipt rejection. These two have NOT been executed locally; CI pending. Four original tests passed only against interface stubs. Exact-head CI remains the next verification step.
