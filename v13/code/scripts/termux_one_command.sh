@@ -229,6 +229,7 @@ git -C "$ROOT" sparse-checkout set --no-cone \
   v13/code/v13/source_updater.py \
   v13/code/v13/pipeline_agent.py \
   v13/code/v13/lifecycle.py \
+  v13/code/v13/chat_service.py \
   v13/code/scripts/v13-update \
   v13/code/v13/termux_patch_staging.py \
   v13/code/docs/PRIVATE_REMOTE_BRIDGE_20261111.md \
@@ -371,6 +372,61 @@ printf 'Android kann Hintergrundprozesse beenden; Redmi-Laufzeit noch zu pruefen
 printf 'Im Chat: "Teste jetzt die V13 Live-Diagnose".\n'
 
 
+
+# The actual V13 model/chat must be independent of browser tabs and GitHub
+# polling. Installer invocation explicitly starts it in the background.
+printf '\nStarte die eigenstaendige V13-KI im Hintergrund...\n'
+python - <<'PY'
+from v13.chat_service import _desired
+_desired(True)
+print("V13 AI Autostart: EIN")
+PY
+
+# On reruns, replace an older daemon AFTER the installer has stopped V13's
+# recognized chat session. Do not terminate unknown Python processes.
+python - <<'PY'
+import os, signal, time
+from pathlib import Path
+myuid=os.getuid()
+targets=[]
+for p in Path("/proc").iterdir():
+    if not p.name.isdecimal() or int(p.name)==os.getpid():
+        continue
+    try:
+        if p.stat().st_uid != myuid:
+            continue
+        args=[x.decode("utf-8","replace") for x in (p/"cmdline").read_bytes().split(b"\0") if x]
+    except OSError:
+        continue
+    if (len(args)>=4 and args[-3:]==["-m","v13.chat_service","serve"]
+            and Path(args[0]).name.startswith("python")):
+        targets.append(int(p.name))
+for pid in targets:
+    try:os.kill(pid,signal.SIGTERM)
+    except ProcessLookupError:pass
+deadline=time.monotonic()+8
+for pid in targets:
+    while time.monotonic()<deadline:
+        try:
+            os.kill(pid,0)
+            if (Path("/proc")/str(pid)/"stat").read_text().rsplit(")",1)[1].strip().startswith("Z"):
+                break
+        except (ProcessLookupError, OSError):
+            break
+        time.sleep(.1)
+    else:
+        raise SystemExit("V13: alter KI-Dienst konnte nicht sicher beendet werden")
+PY
+touch "$PRIVATE/ai-service.log"
+chmod 600 "$PRIVATE/ai-service.log"
+nohup python -m v13.chat_service serve >> "$PRIVATE/ai-service.log" 2>&1 < /dev/null &
+AI_PID="$!"
+printf '%s\n' "$AI_PID" > "$PRIVATE/ai-service.pid"
+sleep 2
+kill -0 "$AI_PID" 2>/dev/null || fail "V13 KI Hintergrunddienst nicht gestartet; siehe ~/.v13-private/ai-service.log"
+python -m v13.chat_service status || fail "V13 KI nicht ueber lokalen Dienst erreichbar"
+printf 'V13 KI: eigenstaendiger Hintergrunddienst. Browser kann geschlossen werden.\n'
+
 printf '\nStarte lokale klickbare V13-Oberflaeche...\n'
 # One-time optional Android Files access. Denied permission never exposes files.
 if [[ ! -d "$HOME/storage/downloads" ]] && command -v termux-setup-storage >/dev/null; then
@@ -404,6 +460,30 @@ printf 'Code-Aktualisierung: v13-update (oder ein Button im Browser).\n'
 # Termux:Boot Android add-on is installed and permitted by Android.
 # No wake-lock or browser launch by default; no secret is stored in the hook.
 BOOT="$HOME/.termux/boot"
+# Optional boot re-entry for the actual V13 AI, independent of the
+# updater/bridge hook. Runs ONLY when the official Termux:Boot addon exists.
+AI_BOOT="$HOME/.termux/boot/v13-ai"
+if [[ ! -e "$AI_BOOT" && ! -L "$AI_BOOT" ]]; then
+  cat > "$AI_BOOT" <<'EOF'
+#!/data/data/com.termux/files/usr/bin/bash
+set -eu
+PRIVATE="$HOME/.v13-private"
+[[ -f "$PRIVATE/v13-ai-enabled.json" ]] || exit 0
+export PYTHONPATH="$HOME/.v13-agent-source/v13/code"
+cd "$HOME/.v13-agent-source/v13/code" || exit 0
+python - <<'PY'
+from v13.chat_service import _read_desired
+raise SystemExit(0 if _read_desired() else 1)
+PY
+[[ "$?" == 0 ]] || exit 0
+nohup python -m v13.chat_service serve >> "$PRIVATE/ai-service.log" 2>&1 < /dev/null &
+printf '%s\n' "$!" > "$PRIVATE/ai-service.pid"
+EOF
+  chmod 700 "$AI_BOOT"
+  printf 'Optionaler Termux:Boot Hook fuer die echte V13-KI eingerichtet.\n'
+fi
+
+
 BOOT_HOOK="$BOOT/v13-private-relay"
 mkdir -p "$BOOT"
 chmod 700 "$BOOT"
