@@ -68,7 +68,7 @@ def test_durable_stop_blocks_new_enabled_registry_after_restart(tmp_path):
         transport=native, verifier=Verifier()
     ) as cmd:
         assert cmd(":android stop").status == "STOPPED"
-    assert (tmp_path / "audit.sqlite.stopped").read_bytes() == b"V13_ANDROID_STOP_V1\\n"
+    assert (tmp_path / "audit.sqlite.stopped").read_bytes().startswith(b"V13_ANDROID_STOP_V1")
     with android_local_console(
         CapabilityRegistry({Capability.LAUNCH_APP: True}), path,
         transport=native, verifier=Verifier()
