@@ -326,3 +326,38 @@ if [[ -n "$PREFIX" && -d "$PREFIX/bin" ]]; then
   chmod 700 "$PREFIX/bin/v13-update"
 fi
 printf 'Code-Aktualisierung: v13-update (oder ein Button im Browser).\n'
+
+# Optional Termux:Boot integration. Has no effect unless the separate official
+# Termux:Boot Android add-on is installed and permitted by Android.
+# No wake-lock or browser launch by default; no secret is stored in the hook.
+BOOT="$HOME/.termux/boot"
+BOOT_HOOK="$BOOT/v13-private-relay"
+mkdir -p "$BOOT"
+chmod 700 "$BOOT"
+if [[ ! -e "$BOOT_HOOK" && ! -L "$BOOT_HOOK" ]]; then
+  cat > "$BOOT_HOOK" <<'EOF'
+#!/data/data/com.termux/files/usr/bin/bash
+set -eu
+PRIVATE="$HOME/.v13-private"
+[[ -f "$PRIVATE/remote.json" && ! -e "$PRIVATE/bridge-state/STOP" ]] || exit 0
+[[ -f "$PRIVATE/auto-source-update.enabled" ]] || exit 0
+[[ "$(cat "$PRIVATE/auto-source-update.enabled" 2>/dev/null)" == "yes" ]] || exit 0
+if [[ -r "$PRIVATE/bridge.pid" ]]; then
+  OLD="$(cat "$PRIVATE/bridge.pid" 2>/dev/null || true)"
+  if [[ "$OLD" =~ ^[0-9]+$ ]] && kill -0 "$OLD" 2>/dev/null; then
+    CMD="$(tr '\0' ' ' < "/proc/$OLD/cmdline" 2>/dev/null || true)"
+    [[ "$CMD" == *"v13.owner_read_bridge serve"* ]] && exit 0
+  fi
+fi
+export PYTHONPATH="$HOME/.v13-agent-source/v13/code"
+cd "$HOME/.v13-agent-source/v13/code" || exit 0
+nohup python -m v13.owner_read_bridge serve --config "$PRIVATE/remote.json" \
+  >> "$PRIVATE/bridge.log" 2>&1 < /dev/null &
+printf '%s\n' "$!" > "$PRIVATE/bridge.pid"
+EOF
+  chmod 700 "$BOOT_HOOK"
+  printf 'Optionaler Boot-Hook eingerichtet (nur mit separater Termux:Boot-App aktiv).\n'
+else
+  printf 'Bestehende Boot-Konfiguration bleibt erhalten.\n'
+fi
+
