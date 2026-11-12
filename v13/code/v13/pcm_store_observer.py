@@ -3,6 +3,7 @@
 This is not a microphone capture API, Android permission check or canonical A5
 promotion. The caller must independently establish the right to use the PCM.
 """
+import json
 from .pcm_bridge import pcm_to_timed_source
 from .a3_timed_audio import observe_timed_audio
 
@@ -18,6 +19,11 @@ def observe_stored_pcm(runtime, projector, pcm, sample_rate_hz, *,
                               frame_ms=frame_ms, final=final)
     if final is not True:
         raise PermissionError("provisional audio cannot enter A3 final evidence")
+    # Validate projector compatibility before durable source creation.
+    # Predict is read-only and checks the exact two-feature input dimension.
+    if not callable(getattr(projector, "predict", None)):
+        raise TypeError("A3 projector predict required")
+    projector.predict(json.loads(raw)["features"])
     ref = store.source(raw, kind="AUTHORIZED_SYNTHETIC_AUDIO")
     result = observe_timed_audio(runtime, projector, ref)
     return {"source_ref": ref, "observation": result}
