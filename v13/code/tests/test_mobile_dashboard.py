@@ -1,13 +1,13 @@
 """No-network tests of the V13 local click UI and bounded diagnostics."""
-import io
 import json
 from pathlib import Path
 import tempfile
+import time
 import unittest
-from unittest import mock
 import zipfile
 
 from v13 import mobile_dashboard as d
+from v13.managed_console import ManagedConsole
 
 
 class MobileDashboardTests(unittest.TestCase):
@@ -37,7 +37,8 @@ class MobileDashboardTests(unittest.TestCase):
         }))
         result = d.summary()
         self.assertEqual(result["native_probe"], "SMOKE_PARTIAL")
-        self.assertEqual(result["roles"]["B1_DETAIL"], {"ok": False, "error_present": True})
+        self.assertEqual(result["roles"]["B1_DETAIL"], {
+            "ok": False, "error_present": True, "error_kind": "REDACTED_ERROR"})
         self.assertEqual(result["roles"]["C3_LANGUAGE"], {"ok": True})
         self.assertNotIn("SECRET", json.dumps(result))
         self.assertNotIn("private conversation", json.dumps(result))
@@ -59,7 +60,7 @@ class MobileDashboardTests(unittest.TestCase):
         c = d.RuntimeControls()
         page = d.dashboard_html("f" * 48, c)
         for s in ("Nachricht senden", "Gehirnstatus", "Modelle testen",
-                  "Diagnose-ZIP", "V13 stoppen", "Ausgabe aktualisieren"):
+                  "Diagnose-ZIP", "V13 beenden", "Gesamten Chat kopieren"):
             self.assertIn(s, page)
         self.assertNotIn("http://0.0.0.0", page)
 
@@ -68,16 +69,40 @@ class MobileDashboardTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             c.launch("shell")
         launcher = self.data / "bin/v13"
-        launcher.write_text("#!/bin/sh\necho TEST\n")
+        launcher.write_text("#!/bin/sh\n"
+                            "while IFS= read -r input; do\n"
+                            "  echo \"received: $input\"\n"
+                            "  [ \"$input\" != ':shutdown' ] || exit 0\n"
+                            "done\n")
         launcher.chmod(0o700)
-        with mock.patch.object(d.subprocess, "Popen") as p:
-            proc = p.return_value
-            proc.poll.return_value = None
+        c.terminal = ManagedConsole(data_home=self.data,
+                                    log_root=self.private / "console-logs")
+        try:
             c.launch("doctor")
-            self.assertEqual(p.call_args.args[0], [str(launcher), "doctor"])
-            self.assertNotIn("shell", p.call_args.kwargs)
-        with self.assertRaises(RuntimeError):
+            proc = c.terminal.process
             c.launch("probe")
+            c.launch("ask", "local fixture question")
+            self.assertIs(c.terminal.process, proc, "actions must reuse the recorded chat")
+            self.assertEqual(proc.args, [str(launcher), "chat", "--plain"])
+            c.shutdown()
+            for _ in range(100):
+                if c.terminal.state()["exit_code"] is not None:
+                    break
+                time.sleep(.02)
+            self.assertEqual(c.terminal.state()["exit_code"], 0)
+            output = c.terminal.output()
+            for line in (":doctor", ":probe", "local fixture question", ":shutdown"):
+                self.assertIn("received: " + line, output)
+        finally:
+            proc = c.terminal.process
+            if proc is not None:
+                if proc.poll() is None:
+                    proc.terminate()
+                proc.wait(timeout=5)
+                if c.terminal.reader is not None:
+                    c.terminal.reader.join(timeout=5)
+                proc.stdin.close()
+                proc.stdout.close()
 
     def test_symlink_or_missing_probe_not_followed(self):
         sensitive = self.private / "private.json"

@@ -17,11 +17,131 @@ printf 'Hinweis: GitHub CLI OAuth kann Zugriff auf weitere Repositories haben.\n
 pkg install -y git python gh curl || fail "Termux-Paketinstallation fehlgeschlagen"
 command -v gh >/dev/null || fail "gh fehlt trotz Installation"
 
+# Never replace a dashboard while it owns a live model/chat process. Those
+# children have their own process session and would outlive a killed UI.
+# A saved local stop is an explicit user decision, not a successful startup.
+python - <<'PY'
+import os
+from pathlib import Path
+import shlex
+
+home = Path.home()
+if (home / ".v13-private/bridge-state/STOP").exists():
+    config = shlex.quote(str(home / ".v13-private/remote.json"))
+    source = shlex.quote(str(home / ".v13-agent-source/v13/code"))
+    raise SystemExit("V13: Diagnosekanal ist lokal gestoppt. Zum bewussten Fortsetzen zuerst: "
+                     + "PYTHONPATH=" + source + " python -m v13.owner_read_bridge resume --config " + config)
+proc = Path("/proc")
+if not proc.is_dir():
+    raise SystemExit("V13: Laufende Prozesse koennen nicht geprueft werden; Einrichtung gestoppt.")
+seen = 0
+for entry in proc.iterdir():
+    if not entry.name.isdecimal():
+        continue
+    try:
+        if entry.stat().st_uid != os.getuid():
+            continue
+        args = [arg.decode("utf-8", "replace")
+                for arg in (entry / "cmdline").read_bytes().split(b"\0") if arg]
+    except OSError:
+        continue
+    if args:
+        seen += 1
+    if any(arg == "v13" or arg.endswith("/bin/v13") for arg in args):
+        raise SystemExit("V13: Zuerst die laufende V13-KI mit 'V13 beenden' stoppen, "
+                         "dann diesen Einrichtungsbefehl erneut ausfuehren. Keine Prozesse beendet.")
+if not seen:
+    raise SystemExit("V13: Prozesssicht nicht verfuegbar; Einrichtung gestoppt.")
+PY
+
+# Stop idle old dashboards before changing their on-disk HTML/Python sources.
+# Freeze each verified owner-owned UI briefly, so it cannot launch a child
+# between the child check and termination. A live session is preserved.
+python - <<'PY_DASHBOARD'
+import os, signal, time
+from pathlib import Path
+
+mine = os.getuid()
+targets = []
+frozen = []
+
+def process_state(pid):
+    try:
+        return (Path("/proc") / str(pid) / "stat").read_text().rsplit(")", 1)[1].split()[0]
+    except FileNotFoundError:
+        return None
+
+try:
+    for p in Path("/proc").iterdir():
+        if not p.name.isdecimal() or int(p.name) == os.getpid():
+            continue
+        try:
+            if p.stat().st_uid != mine:
+                continue
+            args = [a.decode("utf-8", "replace")
+                    for a in (p / "cmdline").read_bytes().split(b"\0") if a]
+            # Other test homes or checkouts can run under the same Linux UID.
+            # Only reconcile this installer's own Termux home.
+            expected_home = b"HOME=" + os.fsencode(Path.home())
+            if expected_home not in (p / "environ").read_bytes().split(b"\0"):
+                continue
+        except OSError:
+            continue
+        if (len(args) >= 4 and args[-3:] == ["-m", "v13.mobile_dashboard", "ui"]
+                and Path(args[0]).name.startswith("python")):
+            targets.append(int(p.name))
+    for pid in targets:
+        try:
+            os.kill(pid, signal.SIGSTOP)
+            frozen.append(pid)
+        except ProcessLookupError:
+            continue
+        deadline = time.monotonic() + 2
+        while process_state(pid) not in (None, "Z", "T", "t"):
+            if time.monotonic() >= deadline:
+                raise SystemExit("V13 UI: vorherige Oberflaeche kann nicht sicher angehalten werden.")
+            time.sleep(.01)
+    for p in Path("/proc").iterdir():
+        if not p.name.isdecimal():
+            continue
+        try:
+            if p.stat().st_uid != mine:
+                continue
+            fields = (p / "stat").read_text().rsplit(")", 1)[1].split()
+        except FileNotFoundError:
+            continue
+        if int(fields[1]) in frozen and fields[0] != "Z":
+            raise SystemExit("V13 UI: aktive V13-Sitzung oder Update erkannt. Zuerst V13 beenden "
+                             "bzw. Update abwarten, dann erneut versuchen. Oberflaeche bleibt erhalten.")
+    for pid in frozen:
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+finally:
+    for pid in frozen:
+        try:
+            os.kill(pid, signal.SIGCONT)
+        except ProcessLookupError:
+            pass
+
+for pid in frozen:
+    deadline = time.monotonic() + 8
+    while process_state(pid) not in (None, "Z"):
+        if time.monotonic() >= deadline:
+            raise SystemExit("V13 UI: vorherige Oberflaeche ist noch aktiv; kein Quellupdate.")
+        time.sleep(.1)
+if frozen:
+    print("V13 UI: " + str(len(frozen)) + " vorherige inaktive Oberflaeche(n) beendet.")
+PY_DASHBOARD
+
 if [[ -e "$ROOT" ]]; then
   [[ -d "$ROOT/.git" ]] || fail "$ROOT existiert bereits, ist aber keine V13-Git-Kopie"
+  [[ "$(git -C "$ROOT" remote get-url origin)" == "$SOURCE" ]] || fail "Unerwartetes Quell-Repository; kein Update"
+  [[ "$(git -C "$ROOT" symbolic-ref --quiet --short HEAD)" == "$BRANCH" ]] || fail "Anderer oder abgetrennter Quell-Branch; kein Update"
   [[ -z "$(git -C "$ROOT" status --porcelain --untracked-files=no)" ]] || fail "Lokale Codeaenderungen vorhanden; kein Ueberschreiben"
-  git -C "$ROOT" fetch --depth 1 origin "$BRANCH" || fail "GitHub-Update fehlgeschlagen"
-  git -C "$ROOT" checkout -B "$BRANCH" FETCH_HEAD || fail "Checkout fehlgeschlagen"
+  git -C "$ROOT" fetch --no-tags --filter=blob:none origin "$BRANCH" || fail "GitHub-Update fehlgeschlagen"
+  git -C "$ROOT" merge --ff-only FETCH_HEAD || fail "Quellhistorie nicht fast-forward; lokale Commits bleiben erhalten"
 else
   git clone --depth 1 --filter=blob:none --sparse --single-branch \
     --branch "$BRANCH" "$SOURCE" "$ROOT" || fail "GitHub-Download fehlgeschlagen"
@@ -86,6 +206,9 @@ PY
 fi
 
 export PYTHONPATH="$ROOT/v13/code"
+# Do not let an older v13 package in the caller's working directory shadow
+# the freshly downloaded dashboard and bridge modules.
+cd "$ROOT/v13/code" || fail "Quellverzeichnis nicht erreichbar"
 # Preserve existing phone-generated per-agent keys. Only extend the preexisting
 # RedMentos read-only scope by an allowlisted structured technical diagnostic.
 python - <<'PY'
@@ -139,7 +262,11 @@ if [[ -e "$PRIVATE/bridge.pid" ]]; then
       kill -0 "$OLD_PID" 2>/dev/null || break
       sleep 1
     done
-    kill -0 "$OLD_PID" 2>/dev/null && fail "Vorheriger Diagnose-Agent ist noch aktiv"
+    if kill -0 "$OLD_PID" 2>/dev/null; then
+      OLD_STAT="$(cat "/proc/$OLD_PID/stat" 2>/dev/null || true)"
+      OLD_STATE="${OLD_STAT##*) }"
+      [[ "$OLD_STATE" == Z\ * ]] || fail "Vorheriger Diagnose-Agent ist noch aktiv"
+    fi
   fi
 fi
 nohup python -m v13.owner_read_bridge serve --config "$CONFIG" \
@@ -163,50 +290,6 @@ if [[ ! -d "$HOME/storage/downloads" ]] && command -v termux-setup-storage >/dev
   printf 'Bitte Android-Zugriff auf Downloads bestaetigen, damit Diagnose-ZIPs gespeichert werden koennen.\n'
   termux-setup-storage || true
 fi
-# Older installers could leave *multiple* localhost dashboard processes.
-# Reconcile all owner-owned exact dashboard Python processes, not just ui.pid.
-# Never touch V13 model processes or unrelated Termux commands.
-python - <<'PY'
-import os, signal, time
-from pathlib import Path
-
-mine = os.getuid()
-current = os.getpid()
-targets = []
-for p in Path("/proc").iterdir():
-    if not p.name.isdecimal() or int(p.name) == current:
-        continue
-    try:
-        if p.stat().st_uid != mine:
-            continue
-        args = [a.decode("utf-8", "replace")
-                for a in (p / "cmdline").read_bytes().split(b"\0") if a]
-    except (OSError, PermissionError):
-        continue
-    if (len(args) >= 4 and args[-3:] == ["-m", "v13.mobile_dashboard", "ui"]
-            and Path(args[0]).name.startswith("python")):
-        targets.append(int(p.name))
-for pid in targets:
-    try:
-        os.kill(pid, signal.SIGTERM)
-    except ProcessLookupError:
-        pass
-if targets:
-    deadline = time.monotonic() + 8
-    for pid in targets:
-        while time.monotonic() < deadline:
-            try:
-                os.kill(pid, 0)
-                stat = (Path("/proc") / str(pid) / "stat").read_text()
-                if stat.rsplit(")", 1)[1].strip().startswith("Z"):
-                    break  # zombie means stopped; harmless until reaped
-            except (ProcessLookupError, OSError):
-                break
-            time.sleep(.15)
-        else:
-            raise SystemExit("V13 UI: previous dashboard remains alive (PID " + str(pid) + ")")
-    print("V13 UI: " + str(len(targets)) + " earlier local server(s) stopped.")
-PY
 : > "$PRIVATE/ui.log"
 V13_UI_NO_AUTO_OPEN=1 nohup python -m v13.mobile_dashboard ui > "$PRIVATE/ui.log" 2>&1 < /dev/null &
 UI_PID="$!"

@@ -4,6 +4,11 @@ Status: Installer und privat abfragbarer READ-ONLY-Agent implementiert. Der nati
 
 ## EINMAL in Termux einfuegen
 
+Bei einer bereits laufenden KI zuerst **V13 beenden**. Der Installer beendet
+keine aktive V13-Sitzung. Eine inaktive alte Browseroberflaeche wird vor dem
+Quellupdate beendet und danach neu geoeffnet; benutze anschliessend diese neue
+Browserseite. So werden alte Server und neue HTML-Dateien nicht vermischt.
+
     pkg install -y curl && curl -fsSL https://raw.githubusercontent.com/RedMentos/Aii/gpt6/v13-private-remote-bridge-20261111/v13/code/scripts/termux_one_command.sh -o "$HOME/v13-start.sh" && bash "$HOME/v13-start.sh"
 
 Script-Quelle zum Pruefen: https://github.com/RedMentos/Aii/blob/gpt6/v13-private-remote-bridge-20261111/v13/code/scripts/termux_one_command.sh
@@ -38,6 +43,21 @@ Log ansehen: tail -n 20 "$HOME/.v13-private/bridge.log"
 Lokales Stop:
     PYTHONPATH="$HOME/.v13-agent-source/v13/code" python -m v13.owner_read_bridge stop --config "$HOME/.v13-private/remote.json"
 
-Erneuter Start: denselben Ein-Zeilen-Befehl nochmals ausfuehren. Android kann Termux-Hintergrundprozesse unterbrechen; eine systemweite Boot-/Foreground-Service-Lebensdauer ist nicht implementiert.
+Erneuter Start: denselben Ein-Zeilen-Befehl nochmals ausfuehren. Ein ausdruecklicher
+lokaler Stop bleibt erhalten und wird nicht als erfolgreicher Start gemeldet.
+Nur wenn du diesen Stop bewusst aufheben moechtest, zuerst lokal ausfuehren:
+
+    (cd "$HOME" && PYTHONPATH="$HOME/.v13-agent-source/v13/code" python -m v13.owner_read_bridge resume --config "$HOME/.v13-private/remote.json")
+
+Danach den Ein-Zeilen-Befehl erneut ausfuehren. Bestehende Quellkopien werden nur
+auf demselben Branch aus dem erwarteten Repository vorwaerts aktualisiert;
+lokale Aenderungen und abweichende Commits werden nicht zurueckgesetzt.
+Android kann Termux-Hintergrundprozesse unterbrechen; eine systemweite
+Boot-/Foreground-Service-Lebensdauer ist nicht implementiert.
+
+`v13-update` aktualisiert die separate V13-Quellkopie in `~/V13-Phone`.
+Die Browseroberflaeche in `~/.v13-agent-source` wird ueber **Steuerzentrale
+aktualisieren** oder den Ein-Zeilen-Befehl aktualisiert. Ein gruener GitHub-Test
+beweist noch keine Verbindung zum Handy oder erfolgreiche B1/B2-Modelltests.
 
 Noch NICHT fertig: Live-Patches ohne getrennt eingerichteten Entwickler-Schluessel, automatischer Neustart der laufenden V13-Gewichte/Prozesse, Modell-Rollback, nativer Redmi-Langzeitnachweis. Keine Passwoerter, Tokens oder privaten Diagnose-Logs in oeffentliche Issues oder Chats kopieren.

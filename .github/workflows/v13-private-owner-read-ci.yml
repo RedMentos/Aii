@@ -13,6 +13,8 @@ on:
       - 'v13/code/v13/managed_console.py'
       - 'v13/code/tests/test_managed_console_dashboard.py'
       - 'v13/code/tests/test_source_updater.py'
+      - 'v13/code/tests/test_mobile_dashboard.py'
+      - 'v13/code/tests/test_termux_bootstrap.py'
       - 'v13/code/scripts/v13-update'
       - 'v13/code/tests/test_owner_read_bridge.py'
       - 'v13/code/scripts/termux_one_command.sh'
@@ -42,6 +44,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_source_updater.py' -v
           python -m py_compile v13/managed_console.py tests/test_managed_console_dashboard.py
           python -m unittest discover -s tests -p 'test_managed_console_dashboard.py' -v
+          python -m unittest discover -s tests -p 'test_mobile_dashboard.py' -v
       - name: Validate mobile HTML tab layout and JavaScript syntax
         run: |
           python - <<'PY'
@@ -59,4 +62,6 @@ jobs:
           node --check /tmp/v13-dashboard.js
           node tests/test_mobile_dashboard_browser.js
       - name: Validate one-command bootstrap syntax
-        run: bash -n scripts/termux_one_command.sh scripts/v13-update
+        run: |
+          bash -n scripts/termux_one_command.sh scripts/v13-update
+          python -m unittest discover -s tests -p 'test_termux_bootstrap.py' -v
