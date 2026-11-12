@@ -84,6 +84,22 @@ class PipelineTests(unittest.TestCase):
         self.assertTrue(p.acknowledge_refresh("ui"))
         self.assertFalse(p.refresh_requested("ui"))
 
+    def test_each_refresh_acknowledges_only_its_own_target(self):
+        # Regression: AI previously acknowledged BRIDGE, re-execed forever.
+        for marker in (p.UI_REFRESH, p.BRIDGE_REFRESH, p.AI_REFRESH):
+            marker.write_text("test")
+        self.assertTrue(p.acknowledge_refresh("ai"))
+        self.assertFalse(p.refresh_requested("ai"))
+        self.assertTrue(p.refresh_requested("bridge"))
+        self.assertTrue(p.refresh_requested("ui"))
+        self.assertTrue(p.acknowledge_refresh("bridge"))
+        self.assertTrue(p.refresh_requested("ui"))
+        self.assertFalse(p.refresh_requested("bridge"))
+        self.assertTrue(p.acknowledge_refresh("ui"))
+        self.assertFalse(p.refresh_requested("ui"))
+        with self.assertRaises(ValueError):
+            p.acknowledge_refresh("unknown")
+
     def test_ci_not_green_blocks_both_and_writes_status(self):
         self.turn_on()
         with mock.patch.object(u, "_runtime_active", return_value=False), \
