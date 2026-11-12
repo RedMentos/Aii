@@ -460,6 +460,8 @@ printf 'Code-Aktualisierung: v13-update (oder ein Button im Browser).\n'
 # Termux:Boot Android add-on is installed and permitted by Android.
 # No wake-lock or browser launch by default; no secret is stored in the hook.
 BOOT="$HOME/.termux/boot"
+mkdir -p "$BOOT"
+chmod 700 "$BOOT"
 # Optional boot re-entry for the actual V13 AI, independent of the
 # updater/bridge hook. Runs ONLY when the official Termux:Boot addon exists.
 AI_BOOT="$HOME/.termux/boot/v13-ai"
@@ -485,8 +487,6 @@ fi
 
 
 BOOT_HOOK="$BOOT/v13-private-relay"
-mkdir -p "$BOOT"
-chmod 700 "$BOOT"
 if [[ ! -e "$BOOT_HOOK" && ! -L "$BOOT_HOOK" ]]; then
   cat > "$BOOT_HOOK" <<'EOF'
 #!/data/data/com.termux/files/usr/bin/bash
