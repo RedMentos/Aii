@@ -10,7 +10,7 @@ fun main() {
     var approval = true
     val gate = CompanionGate(key, mapOf("APP_LAUNCH" to object : NativeCapability {
         override fun execute(target: String): Boolean { calls++; return true }
-    }), { approval }, { 1000L }, { seen.add(it) })
+    }), { approval }, { 1000L }, { seen.add(it) }, { true })
     fun signed(nonce: String): ActionRequest {
         val r = ActionRequest("action-1", "APP_LAUNCH", "org.example.app", 900, 1100, nonce, "")
         val message = listOf("V13-ANDROID-V1",r.id,r.capability,r.target,"900","1100",r.nonce).joinToString("\n")
