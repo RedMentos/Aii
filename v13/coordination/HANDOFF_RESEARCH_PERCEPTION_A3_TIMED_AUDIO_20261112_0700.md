@@ -1,0 +1,3 @@
+# Perception handoff 2026-11-12 07:00 Europe/Berlin
+
+Parent #1824. Adds source-bound synthetic timed RAW EAR -> A3 feature-only SHADOW observation, with acoustic rms/pitch/speech-probability, explicit timing and no ASR transcript. Four synthetic tests added. Requires exact-head CI and canonical A5/Runtime review; native microphone, speaker diarization, duplex voice, permissions and Redmi resource measurements remain OFF/UNVERIFIED. No changes to frozen Runtime, B/C, JEPA or Android control. Next: execute tests, connect approved native audio capture to Store with permission/lifecycle provenance, and promote through canonical A5 only after integration review.
