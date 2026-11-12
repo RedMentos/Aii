@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
-# V13 one-command Termux read-only private AI diagnostics.
+# V13 one-command Termux private owner-authorized chat, telemetry, and CI-gated updates.
 # No password/token is entered into a ChatGPT conversation.
 set -Eeuo pipefail
 umask 077
@@ -11,7 +11,7 @@ CONFIG="$PRIVATE/remote.json"
 RELAY="RedMentos/Aiiii"
 fail() { printf '\nV13 SETUP ERROR: %s\n' "$*" >&2; exit 1; }
 command -v pkg >/dev/null 2>&1 || fail "Dieses Skript muss in Termux laufen."
-printf '\nV13: automatische Einrichtung des privaten Diagnosekanals\n'
+printf '\nV13: private ChatGPT/GitHub-V13-Steuerung und automatische Updates\n'
 printf 'Einmal GitHub im Browser bestaetigen; kein Passwort im Chat.\n'
 printf 'Hinweis: GitHub CLI OAuth kann Zugriff auf weitere Repositories haben.\n\n'
 pkg install -y git python gh curl || fail "Termux-Paketinstallation fehlgeschlagen"
@@ -257,6 +257,8 @@ git -C "$ROOT" sparse-checkout set --no-cone \
   v13/code/v13/__init__.py \
   v13/code/v13/remote_maintenance_bridge.py \
   v13/code/v13/owner_read_bridge.py \
+  v13/code/v13/remote_chat.py \
+  v13/code/v13/phone_monitor.py \
   v13/code/v13/mobile_dashboard.py \
   v13/code/v13/mobile_dashboard.html \
   v13/code/v13/managed_console.py \
@@ -303,7 +305,7 @@ config = {
   "status_file": str(home / "live-status.json"),
   "keys": {"agent-owner": secrets.token_hex(32)},
   "authors": {"agent-owner": ["RedMentos"]},
-  "permissions": {"agent-owner": ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE"]},
+  "permissions": {"agent-owner": ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "CHAT_SEND", "CHAT_RESULT", "UPDATE_REQUEST"]},
   "remote_apply_enabled": False,
   "apply_paths": [],
   "poll_seconds": 45
@@ -327,10 +329,10 @@ p=Path.home()/".v13-private/remote.json"
 if p.is_symlink(): raise SystemExit("ABBRUCH: private Konfiguration ist ein Symlink")
 cfg=json.loads(p.read_text())
 if cfg.get("relay_repo")!="RedMentos/Aiiii" or cfg.get("remote_apply_enabled") is not False:
-    raise SystemExit("ABBRUCH: Keine Read-only-Konfiguration")
+    raise SystemExit("ABBRUCH: Remote-Code-Patching muss deaktiviert bleiben")
 authors=cfg.get("authors",{}).get("agent-owner",[])
 perms=cfg.get("permissions",{}).get("agent-owner",[])
-if authors!=["RedMentos"] or not isinstance(perms,list) or set(perms)-{"HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS","LOG_PAGE"}:
+if authors!=["RedMentos"] or not isinstance(perms,list) or set(perms)-{"HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS","LOG_PAGE","CHAT_SEND","CHAT_RESULT","UPDATE_REQUEST"}:
     raise SystemExit("ABBRUCH: unbekannte Agent-Rechte; keine automatische Rechteaenderung")
 desired=["HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS","LOG_PAGE"]
 if perms!=desired:
@@ -349,10 +351,10 @@ import os
 from v13.remote_maintenance_bridge import private_config
 cfg = private_config(os.path.expanduser("~/.v13-private/remote.json"))
 if cfg["relay_repo"] != "RedMentos/Aiiii" or cfg.get("remote_apply_enabled"):
-    raise SystemExit("ABBRUCH: Konfiguration ist nicht read-only")
-if cfg["permissions"].get("agent-owner") != ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE"]:
+    raise SystemExit("ABBRUCH: unerwartete lokale Remote-Code-Patchberechtigung")
+if cfg["permissions"].get("agent-owner") != ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "CHAT_SEND", "CHAT_RESULT", "UPDATE_REQUEST"]:
     raise SystemExit("ABBRUCH: unerwartete Agent-Rechte")
-print("Lokale read-only-Konfiguration validiert.")
+print("Private Owner-Chat-, Diagnose- und Updateberechtigung validiert.")
 PY
 
 # The user explicitly requested continuous automatic updates. Enable once,
