@@ -27,7 +27,7 @@ SOCKET = PRIVATE / "v13-ai.sock"
 LOCK = PRIVATE / "v13-ai.lock"
 DESIRED = PRIVATE / "v13-ai-enabled.json"
 MAX_RPC = 18000
-MAX_REPLY = 20 * 1024 * 1024
+MAX_REPLY = 144 * 1024 * 1024  # 32 retained bounded transcripts, local only
 MAX_TAIL = 160000
 PROTOCOL = "v13-local-ai/1"
 
@@ -73,6 +73,7 @@ class ChatService:
         self.failures = 0
         self.paused = False
         self.pending_lifecycle = False
+        self.reload_requested = False
         self.status = "STARTING"
 
     def tick(self):
@@ -84,6 +85,14 @@ class ChatService:
                 self.status = "PAUSED_FOR_UPDATE"
                 self.pending_lifecycle = True
             snapshot = pipeline_agent.snapshot()
+            # An updated service module must be reloaded before the new V13
+            # model chat is re-opened. This independent daemon can restart
+            # without restarting its browser client.
+            if (pipeline_agent.refresh_requested("ai")
+                    and snapshot["last_result"] != "CHECKING"):
+                self.status = "RELOADING_AFTER_UPDATE"
+                self.reload_requested = True
+                return
             # Never restart a model in the middle of changing its source.
             if snapshot["last_result"] == "CHECKING" or lifecycle.STOP_REQUEST.is_file():
                 return
@@ -142,6 +151,8 @@ class ChatService:
                 command = data.get("line")
                 if not isinstance(command, str):
                     raise ValueError("Invalid chat text")
+                if command.strip() == ":shutdown":
+                    return self.command("shutdown", {})
                 return self.console.send(command)
             if name == "output":
                 limit = data.get("limit", MAX_TAIL)
@@ -298,6 +309,9 @@ def serve():
                 while True:
                     try:
                         server.ai.tick()
+                        if server.ai.reload_requested:
+                            server.shutdown()
+                            return
                     except (OSError, ValueError, RuntimeError):
                         pass
                     time.sleep(.5)
@@ -306,6 +320,12 @@ def serve():
         finally:
             server.server_close()
             SOCKET.unlink(missing_ok=True)
+        if server.ai.reload_requested:
+            from . import pipeline_agent
+            pipeline_agent.acknowledge_refresh("ai")
+            # AI was already shut down for the transaction, so the fresh
+            # service can safely reattach and start it using the resume marker.
+            os.execv(sys.executable, [sys.executable, "-m", "v13.chat_service", "serve"])
     finally:
         os.close(fd)
 
