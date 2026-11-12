@@ -96,9 +96,18 @@ def request_stop(*, timeout=35, runtime_active=None):
                 if item.get("status") != "STOPPED":
                     raise LifecycleError("Managed V13 refused a safe stop")
                 if runtime_active():
+                    # A different/unmanaged V13 process is still present.
+                    # The managed chat already exited: put it back instead of
+                    # leaving the user with a stopped session and no update.
+                    if item.get("was_running") is True:
+                        request_resume(reason="RESTORE")
                     raise LifecycleError("Other V13 processes still active after managed stop")
                 return item.get("was_running") is True
             time.sleep(.2)
+        last_ack = _read(STOP_ACK)
+        if last_ack and last_ack.get("nonce") == nonce and (
+                last_ack.get("was_running") is True and last_ack.get("status") == "STOPPED"):
+            request_resume(reason="RESTORE")
         raise LifecycleError("V13 did not confirm graceful shutdown; no update applied")
     finally:
         current = _read(STOP_REQUEST)
