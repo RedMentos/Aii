@@ -158,8 +158,9 @@ def result(ident):
             got_input = True
             continue
         if line.strip() == "du>":
-            if got_input:
-                end = True
+            # The Termux prompt appears immediately after the input was
+            # QUEUED, *before* V13 asynchronously generates its answer.
+            # It does not signal completion. Never truncate the answer here.
             continue
         if got_input:
             output.append(line)
@@ -170,6 +171,9 @@ def result(ident):
     if end and visible:
         return {"status": "ANSWERED", "request_id": ident,
                 "output": visible, "complete":True}
+    if visible and ("assistant>" in visible or "model>" in visible):
+        return {"status": "ANSWER_VISIBLE", "request_id": ident,
+                "output": visible, "complete":False}
     if len(data) > MAX_READ_BYTES:
         return {"status": "TRUNCATED", "request_id": ident,
                 "output": visible, "complete":False}
