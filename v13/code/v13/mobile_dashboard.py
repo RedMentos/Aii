@@ -248,7 +248,7 @@ def remote_console_page(session, page):
     fits the private relay's 12 kB JSON receipt even with JSON Unicode escapes.
     Inputs and known secrets are masked. The owner can revoke access in UI.
     """
-    if type(session) is not int or not 0 <= session < 32:
+    if type(session) is not int or not 0 <= session < 34:
         return {"state":"INVALID_SESSION"}
     if type(page) is not int or not 0 <= page < 2048:
         return {"state":"INVALID_PAGE"}
@@ -259,10 +259,20 @@ def remote_console_page(session, page):
         return {"state":"NO_MANAGED_SESSION"}
     paths = sorted((p for p in logdir.glob("v13-session-*.log")
                     if p.is_file() and not p.is_symlink()), reverse=True)[:32]
-    if session >= len(paths):
-        return {"state":"SESSION_NOT_AVAILABLE", "session_count":len(paths)}
-    chosen = paths[session]
-    if chosen.stat().st_size > 4*1024*1024+512 or chosen.stat().st_uid != os.getuid():
+    if session < 32:
+        if session >= len(paths):
+            return {"state":"SESSION_NOT_AVAILABLE", "session_count":len(paths)}
+        chosen = paths[session]
+        kind = "V13_CHAT"
+        if chosen.stat().st_size > 4*1024*1024+512:
+            return {"state":"SESSION_UNAVAILABLE"}
+    else:
+        # Explicitly allowlisted maintenance logs, not arbitrary Termux files.
+        chosen = PRIVATE / ("bridge.log" if session == 32 else "ui.log")
+        kind = "BRIDGE" if session == 32 else "DASHBOARD"
+        if chosen.is_symlink() or not chosen.is_file():
+            return {"state":"SESSION_NOT_AVAILABLE","session_count":len(paths)}
+    if chosen.is_symlink() or chosen.stat().st_uid != os.getuid():
         return {"state":"SESSION_UNAVAILABLE"}
     raw = bounded_tail(chosen, 4*1024*1024+512)
     text = safe_text(raw).splitlines(keepends=True)
@@ -273,12 +283,12 @@ def remote_console_page(session, page):
     total = (len(payload) + size - 1) // size
     if page >= total:
         return {"state":"PAGE_NOT_AVAILABLE","session":session,
-                "page":page,"total_pages":total,"session_count":len(paths)}
+                "page":page,"total_pages":total,"session_count":len(paths),"kind":kind}
     end = len(payload) - page*size
     start = max(0,end-size)
     data = payload[start:end].decode("utf-8", errors="replace")
     return {"state":"USER_OPTED_IN", "session":session,"page":page,
-            "total_pages":total, "session_count":len(paths),
+            "total_pages":total, "session_count":len(paths), "kind":kind,
             "captured_v13_only":True, "redacted_user_input":True, "text":data}
 
 
