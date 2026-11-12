@@ -20,7 +20,7 @@ class RawEarPcmTests(unittest.TestCase):
         self.assertEqual(frames[1].end_ms, 40)
 
     def test_reject_partial_or_misaligned(self):
-        for pcm in (b'\\0', bytes(638)):
+        for pcm in (bytes(1), bytes(638)):
             with self.assertRaises(ValueError): pcm16le_frames(pcm, 16000)
         with self.assertRaises(ValueError): pcm16le_frames(bytes(640), 11025)
 
