@@ -97,6 +97,17 @@ class OwnerReadTests(unittest.TestCase):
         self.assertEqual(o.poll_once(client, self.cfg, now=self.now)["processed"], 1)
         self.assertEqual(len(client.comments_sent), 1)
 
+    def test_health_reports_effective_remote_chat_grants_without_exposing_keys(self):
+        self.cfg["permissions"]["agent-owner"].extend(["CHAT_SEND", "CHAT_RESULT"])
+        client=FakeGitHub([self.issue()])
+        self.assertEqual(o.poll_once(client,self.cfg,now=self.now)["processed"],1)
+        status=client.comments_sent[0][1]["device_status"]
+        self.assertEqual(status["relay_protocol"],"v13-owner-chat-v2")
+        self.assertTrue(status["owner_capabilities"]["chat_send"])
+        self.assertTrue(status["owner_capabilities"]["chat_result"])
+        self.assertFalse(status["owner_capabilities"]["chat_operator"])
+        self.assertNotIn(self.cfg["keys"]["agent-owner"],json.dumps(status))
+
     def test_android_missing_getloadavg_does_not_break_health(self):
         from unittest import mock
         client = FakeGitHub([self.issue()])
