@@ -135,6 +135,41 @@ class RemoteChatTests(unittest.TestCase):
         self.assertNotIn("abcdefghijklmnopqrstuvwxyz",str(data))
         self.assertIn("[TOKEN_REDACTED]",data["output"])
 
+    def test_exact_remote_diagnostic_command_executes_and_arbitrary_operator_denied(self):
+        self.cfg["permissions"]["agent-owner"].append("CHAT_OPERATOR")
+        def rpc(method,**kw):
+            if method=="state":return {"running":True,"last_session":self.session}
+            if method=="send":
+                self.assertEqual(kw["line"],":doctor")
+                with self.path.open("a",encoding="utf8") as out:
+                    out.write("[du> :doctor]\n[V13] doctor OK\n\ndu>\n")
+                return {"status":"SENT"}
+            raise AssertionError(method)
+        issue=self.make_issue("CHAT_OPERATOR",{"command":":doctor"})
+        client=FakeGitHub([issue])
+        with mock.patch("v13.chat_service.call",side_effect=rpc):
+            self.assertEqual(owner.poll_once(client,self.cfg,now=self.now)["processed"],1)
+        self.assertEqual(client.comments_sent[0][1]["device_status"]["status"],"SENT")
+        self.assertIn("doctor OK",remote_chat.result(self.id)["output"])
+        invalid=self.make_issue("CHAT_OPERATOR",{"command":":shutdown"},ident="b"*32)
+        with self.assertRaises(bridge.Denied):
+            owner.validate_owner_read(invalid,self.cfg,now=self.now)
+
+    def test_owner_can_revoke_and_enable_explicit_private_log_diagnostics(self):
+        from v13 import mobile_dashboard as ui
+        self.cfg["permissions"]["agent-owner"].extend(["LOG_SHARING_ON","LOG_SHARING_OFF"])
+        for command,enabled in (("LOG_SHARING_ON",True),("LOG_SHARING_OFF",False)):
+            issue=self.make_issue(command,None,number=7 if enabled else 8,
+                                  ident=("b" if enabled else "c")*32)
+            client=FakeGitHub([issue])
+            with mock.patch.object(ui,"set_remote_full_console") as full, \
+                 mock.patch.object(ui,"set_remote_log_sharing") as errors:
+                self.assertEqual(owner.poll_once(client,self.cfg,now=self.now)["processed"],1)
+            full.assert_called_once_with(enabled)
+            errors.assert_called_once_with(enabled)
+            self.assertEqual(client.comments_sent[0][1]["device_status"]["status"],
+                             "ENABLED" if enabled else "DISABLED")
+
     def test_no_running_ai_refuses_not_faked_accepted(self):
         with mock.patch("v13.chat_service.call",return_value={"running":False}):
             data=remote_chat.send(self.id,"Hi")
