@@ -23,7 +23,7 @@ import threading
 import time
 from urllib.parse import parse_qs, urlparse
 import zipfile
-from .managed_console import ManagedConsole
+from .chat_service import RemoteConsole
 from . import pipeline_agent, lifecycle
 
 PRIVATE = Path.home() / ".v13-private"
@@ -402,7 +402,7 @@ def set_automatic_updates(enabled):
 class RuntimeControls:
     def __init__(self):
         self.lock = threading.Lock()
-        self.terminal = ManagedConsole()
+        self.terminal = RemoteConsole()
         self.last_action = "Keine Aktion"
         self.update_busy = False
         self.update_result = "Noch kein GitHub-Update geprüft"
@@ -433,7 +433,7 @@ class RuntimeControls:
         return result["status"]
 
     def shutdown(self):
-        return self.send(":shutdown")
+        return self.terminal.shutdown()
 
     def start_update(self, action):
         if action not in ("check", "apply", "auto", "rollback", "dashboard", "pipeline"):
@@ -659,6 +659,10 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
     page = template.read_text(encoding="utf-8")
     replacement = {
         "@@STATE@@":html.escape(state),
+        "@@AI_STATE@@":html.escape(
+            "KI-Hintergrunddienst: " +
+            ("AKTIV" if controls.terminal.state().get("autostart") else "AUS") +
+            " · " + controls.terminal.state().get("daemon","UNAVAILABLE")),
         "@@GENERATION@@":html.escape(generation, quote=True),
         "@@FLASH_CLASS@@":"visible" if message else "",
         "@@FLASH@@":html.escape(message),
@@ -720,29 +724,22 @@ def serve(*, open_browser=True):
     instance_fd = _ui_singleton_lock()
     controls = RuntimeControls()
     def auto_loop():
-        # Single local lifecycle watcher. Do not run the GitHub updater in
-        # this same thread: it could wait for its own shutdown acknowledgement.
+        # The AI lives in its own independent daemon. Browser/page reloads
+        # cannot kill it. This watcher is ONLY for refreshing this UI module.
         while True:
             try:
-                lifecycle.service_stop(controls.terminal)
                 if pipeline_agent.refresh_requested("ui"):
-                    pipeline_state = pipeline_agent.snapshot()
-                    _, pending_click = controls.update_status()
-                    # Never exec while a background Git transaction or local
-                    # update button worker is still active; otherwise the
-                    # in-flight updater dies before it can schedule resume.
-                    if (pipeline_state["last_result"] != "CHECKING"
-                            and not pending_click
-                            and not controls.terminal.state()["running"]):
+                    state = pipeline_agent.snapshot()
+                    _, pending = controls.update_status()
+                    if state["last_result"] != "CHECKING" and not pending:
                         pipeline_agent.acknowledge_refresh("ui")
                         controls.restart_requested = True
                         if controls.restart_callback:
                             controls.restart_callback()
                         return
-                lifecycle.service_resume(controls.terminal)
             except (OSError, ValueError, RuntimeError):
                 pass
-            time.sleep(.5)
+            time.sleep(1)
     threading.Thread(target=auto_loop, daemon=True, name="v13-auto-updates").start()
     token = os.environ.get("V13_UI_RESTART_TOKEN") or _browser_token()
     csrf = os.environ.get("V13_UI_RESTART_CSRF") or secrets.token_hex(24)
@@ -818,7 +815,11 @@ def serve(*, open_browser=True):
                 state = "läuft" if running else "bereit" if exitcode is None else "beendet (" + str(exitcode) + ")"
                 update_result, update_busy = controls.update_status()
                 pstatus = pipeline_agent.snapshot()
+                ai_state = controls.terminal.state()
                 payload = {"state": state, "output": controls.output()[-50000:],
+                           "ai_service": ai_state.get("service","UNAVAILABLE"),
+                           "ai_daemon": ai_state.get("daemon","UNAVAILABLE"),
+                           "ai_autostart": ai_state.get("autostart",False),
                            "pipeline_status": ("Auto " + ("AN" if pstatus["auto_enabled"] else "AUS") +
                              " · " + pstatus["last_result"] + " · V13: " +
                              pstatus["runtime"] + " · UI: " + pstatus["dashboard"]),
