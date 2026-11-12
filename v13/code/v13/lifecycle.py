@@ -170,9 +170,15 @@ def request_resume(*, reason="UPDATED"):
                     "expires":int(time.time())+900})
 
 
-def service_resume(console):
+def service_resume(console, *, allowed=True):
     """Called by UI AFTER an update transaction and possible UI re-exec."""
     item = _read(RESUME)
+    if not allowed:
+        # An explicit local OFF decision overrides an older update-resume marker.
+        # Consume the stale marker so a future daemon restart cannot revive it.
+        if item is not None:
+            _discard(RESUME)
+        return False
     if not item or item.get("schema") != "v13.lifecycle.resume/1":
         return False
     if type(item.get("expires")) is not int or item["expires"] < time.time():
