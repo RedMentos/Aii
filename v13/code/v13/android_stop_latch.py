@@ -17,9 +17,12 @@ class StopLatch:
         # Any existing marker, including malformed/symlinked, means stopped.
         # Failure to inspect is also treated as stopped.
         try:
-            return self.path.exists() or self.path.is_symlink()
+            os.lstat(self.path)
+        except FileNotFoundError:
+            return False
         except OSError:
             return True
+        return True
 
     def engage(self) -> None:
         """Persist a stop marker; no reset method is exposed."""
