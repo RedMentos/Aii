@@ -195,7 +195,7 @@ config = {
   "status_file": str(home / "live-status.json"),
   "keys": {"agent-owner": secrets.token_hex(32)},
   "authors": {"agent-owner": ["RedMentos"]},
-  "permissions": {"agent-owner": ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS"]},
+  "permissions": {"agent-owner": ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE"]},
   "remote_apply_enabled": False,
   "apply_paths": [],
   "poll_seconds": 45
@@ -222,9 +222,9 @@ if cfg.get("relay_repo")!="RedMentos/Aiiii" or cfg.get("remote_apply_enabled") i
     raise SystemExit("ABBRUCH: Keine Read-only-Konfiguration")
 authors=cfg.get("authors",{}).get("agent-owner",[])
 perms=cfg.get("permissions",{}).get("agent-owner",[])
-if authors!=["RedMentos"] or not isinstance(perms,list) or set(perms)-{"HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS"}:
+if authors!=["RedMentos"] or not isinstance(perms,list) or set(perms)-{"HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS","LOG_PAGE"}:
     raise SystemExit("ABBRUCH: unbekannte Agent-Rechte; keine automatische Rechteaenderung")
-desired=["HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS"]
+desired=["HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS","LOG_PAGE"]
 if perms!=desired:
     cfg["permissions"]["agent-owner"]=desired
     tmp=p.with_suffix(".new")
@@ -242,7 +242,7 @@ from v13.remote_maintenance_bridge import private_config
 cfg = private_config(os.path.expanduser("~/.v13-private/remote.json"))
 if cfg["relay_repo"] != "RedMentos/Aiiii" or cfg.get("remote_apply_enabled"):
     raise SystemExit("ABBRUCH: Konfiguration ist nicht read-only")
-if cfg["permissions"].get("agent-owner") != ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS"]:
+if cfg["permissions"].get("agent-owner") != ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE"]:
     raise SystemExit("ABBRUCH: unerwartete Agent-Rechte")
 print("Lokale read-only-Konfiguration validiert.")
 PY
