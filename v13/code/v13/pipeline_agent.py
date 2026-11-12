@@ -100,6 +100,15 @@ def snapshot():
     for field, choices in allowed.items():
         if result[field] not in choices:
             result[field] = "ERROR" if field != "last_error" else "STATE"
+    # A partial single-target check may have left a failed sibling in state.
+    # Never tell the owner that *both* installed components are current then.
+    if result["last_result"] in ("UPDATED", "UP_TO_DATE"):
+        if any(result[name] not in ("UPDATED", "UP_TO_DATE")
+               for name in ("runtime", "dashboard")):
+            result["last_result"] = "PARTIAL"
+    if result["last_error"] == "NONE" and (
+            result["runtime"] == "ERROR" or result["dashboard"] == "ERROR"):
+        result["last_error"] = "UPDATE"
     commit = result["updated_commit"]
     if not isinstance(commit, str) or not updates.SHA.fullmatch(commit):
         result["updated_commit"] = ""
@@ -174,6 +183,8 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits):
     probe, unavailable = _try_repo(root)
     if unavailable:
         state[name] = unavailable
+        if unavailable == "ERROR":
+            state["last_error"] = "GIT"
         return
     if probe["status"] == "UP_TO_DATE" and name != "runtime":
         updates.ensure_sparse_phone_modules(root)
@@ -342,6 +353,15 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                 state["last_result"] = "BLOCKED_RUNNING"
             else:
                 state["last_result"] = "UP_TO_DATE"
+            # A targeted runtime update is not a successful phone-wide update
+            # while the *other* installed component is broken or unchecked.
+            if state["last_result"] in ("UP_TO_DATE", "UPDATED"):
+                if any(state[name] not in ("UP_TO_DATE", "UPDATED")
+                       for name in ("runtime", "dashboard")):
+                    state["last_result"] = "PARTIAL"
+            if state["last_error"] == "NONE" and (
+                    state["runtime"] == "ERROR" or state["dashboard"] == "ERROR"):
+                state["last_error"] = "UPDATE"
         except (OSError, ValueError, TimeoutError, updates.UpdateDenied,
                 lifecycle.LifecycleError, runtime_deploy.RuntimeDeployError,
                 subprocess.TimeoutExpired) as exc:
@@ -419,3 +439,51 @@ def acknowledge_refresh(which):
         return True
     except FileNotFoundError:
         return False
+
+
+def main(argv=None):
+    """Correct standalone Termux update entry point for BOTH installed roots.
+
+    The former v13-update shell command invoked source_updater's obsolete
+    ~/V13-Phone default. That can report a persistent file count without
+    touching either .v13-runtime-source or .v13-agent-source, and it never
+    deployed the pinned ~/v13/bin/v13 launcher. Use the same CI-gated,
+    stop/deploy/resume transaction as the phone UI instead.
+    """
+    import argparse
+    parser = argparse.ArgumentParser(description="V13 installed runtime + dashboard update")
+    parser.add_argument("action", nargs="?", default="apply",
+                        choices=("check", "apply", "auto", "status", "rollback"))
+    parser.add_argument("--target", choices=("all", "runtime", "dashboard"), default="all")
+    args = parser.parse_args(argv)
+    try:
+        if args.action == "status":
+            report = snapshot()
+            ok = report["last_result"] in ("UPDATED", "UP_TO_DATE")
+        elif args.action == "check":
+            report = pending_updates(fetch=True)
+            ok = report["status"] in ("UP_TO_DATE", "UPDATE_AVAILABLE")
+        elif args.action == "rollback":
+            # The legacy rollback restored a Git tree only, not the installed
+            # launcher. Never falsely report a runtime rollback as complete.
+            report = {"status": "REFUSED",
+                      "reason": "A launcher-safe runtime rollback is not yet implemented"}
+            ok = False
+        elif args.action == "auto" and not enabled():
+            report = {"status": "AUTO_OFF", "auto_enabled": False}
+            ok = False
+        else:
+            report = run_cycle(force=True, manual=args.action == "apply",
+                               target=args.target)
+            ok = report["last_result"] in ("UPDATED", "UP_TO_DATE")
+        print(json.dumps(report, ensure_ascii=False, sort_keys=True))
+        return 0 if ok else 2
+    except (OSError, RuntimeError, ValueError, TimeoutError,
+            subprocess.TimeoutExpired) as exc:
+        print(json.dumps({"status": "REFUSED", "error_code": type(exc).__name__},
+                         sort_keys=True))
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
