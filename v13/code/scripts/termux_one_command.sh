@@ -155,6 +155,7 @@ git -C "$ROOT" sparse-checkout set --no-cone \
   v13/code/v13/mobile_dashboard.html \
   v13/code/v13/managed_console.py \
   v13/code/v13/source_updater.py \
+  v13/code/v13/pipeline_agent.py \
   v13/code/scripts/v13-update \
   v13/code/v13/termux_patch_staging.py \
   v13/code/docs/PRIVATE_REMOTE_BRIDGE_20261111.md \
@@ -194,7 +195,7 @@ config = {
   "status_file": str(home / "live-status.json"),
   "keys": {"agent-owner": secrets.token_hex(32)},
   "authors": {"agent-owner": ["RedMentos"]},
-  "permissions": {"agent-owner": ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS"]},
+  "permissions": {"agent-owner": ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS"]},
   "remote_apply_enabled": False,
   "apply_paths": [],
   "poll_seconds": 45
@@ -221,9 +222,9 @@ if cfg.get("relay_repo")!="RedMentos/Aiiii" or cfg.get("remote_apply_enabled") i
     raise SystemExit("ABBRUCH: Keine Read-only-Konfiguration")
 authors=cfg.get("authors",{}).get("agent-owner",[])
 perms=cfg.get("permissions",{}).get("agent-owner",[])
-if authors!=["RedMentos"] or not isinstance(perms,list) or set(perms)-{"HEALTH","LEARNING_STATUS","DIAGNOSTICS"}:
+if authors!=["RedMentos"] or not isinstance(perms,list) or set(perms)-{"HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS"}:
     raise SystemExit("ABBRUCH: unbekannte Agent-Rechte; keine automatische Rechteaenderung")
-desired=["HEALTH","LEARNING_STATUS","DIAGNOSTICS"]
+desired=["HEALTH","LEARNING_STATUS","DIAGNOSTICS","PIPELINE_STATUS"]
 if perms!=desired:
     cfg["permissions"]["agent-owner"]=desired
     tmp=p.with_suffix(".new")
@@ -241,10 +242,23 @@ from v13.remote_maintenance_bridge import private_config
 cfg = private_config(os.path.expanduser("~/.v13-private/remote.json"))
 if cfg["relay_repo"] != "RedMentos/Aiiii" or cfg.get("remote_apply_enabled"):
     raise SystemExit("ABBRUCH: Konfiguration ist nicht read-only")
-if cfg["permissions"].get("agent-owner") != ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS"]:
+if cfg["permissions"].get("agent-owner") != ["HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS"]:
     raise SystemExit("ABBRUCH: unerwartete Agent-Rechte")
 print("Lokale read-only-Konfiguration validiert.")
 PY
+
+# The user explicitly requested continuous automatic updates. Enable once,
+# but respect any later explicit OFF choice in the click dashboard.
+if [[ ! -e "$PRIVATE/auto-update-setup-completed" ]]; then
+  [[ ! -L "$PRIVATE/auto-source-update.enabled" ]] || fail "Unsicherer Auto-Update-Schalter"
+  printf 'yes\n' > "$PRIVATE/auto-source-update.enabled"
+  chmod 600 "$PRIVATE/auto-source-update.enabled"
+  printf 'configured\n' > "$PRIVATE/auto-update-setup-completed"
+  chmod 600 "$PRIVATE/auto-update-setup-completed"
+  printf 'Auto-Updates EIN: alle 15 Minuten, nur GitHub-CI-gruene Commits, niemals bei laufender V13-KI.\n'
+else
+  printf 'Vorhandene Auto-Update-Einstellung bleibt erhalten.\n'
+fi
 
 printf '\nTeste jetzt privaten GitHub-Zugang...\n'
 python -m v13.owner_read_bridge once --config "$CONFIG" || fail "Verbindungstest fehlgeschlagen"
@@ -278,7 +292,7 @@ kill -0 "$PID" 2>/dev/null || fail "Agent nicht gestartet; siehe ~/.v13-private/
 printf '\n=== V13 PRIVATE BRIDGE: STARTED ===\n'
 printf 'Privates Relay: https://github.com/RedMentos/Aiiii\n'
 printf 'Agent-PID: %s\n' "$PID"
-printf 'Diagnosen: HEALTH / LEARNING_STATUS (nur Lesen)\n'
+printf 'Diagnosen: HEALTH / LEARNING_STATUS / DIAGNOSTICS / PIPELINE_STATUS (nur Lesen)\n'
 printf 'PATCH_APPLY: AUS; kein allgemeiner Fernzugriff; kein offener Handy-Port.\n'
 printf 'Android kann Hintergrundprozesse beenden; Redmi-Laufzeit noch zu pruefen.\n'
 printf 'Im Chat: "Teste jetzt die V13 Live-Diagnose".\n'
@@ -304,7 +318,8 @@ else
   printf 'UI-Start pruefen: tail -n 30 "$HOME/.v13-private/ui.log"\n'
 fi
 printf 'V13-Buttons: Nachricht senden, Gehirnstatus, Modelle testen, Diagnose-ZIP, Stopp.\n'
-printf 'GitHub-Diagnoseabruf: nur erlaubte technische Fakten, keine Rohprotokolle.\n'
+printf 'Privater GitHub-Pipeline-Status: PIPELINE_STATUS (read-only).\n'
+printf 'Automatik prueft Code im Relay-Dienst, auch wenn der Browser geschlossen ist.\n'
 
 if [[ -n "$PREFIX" && -d "$PREFIX/bin" ]]; then
   cp "$ROOT/v13/code/scripts/v13-update" "$PREFIX/bin/v13-update"
