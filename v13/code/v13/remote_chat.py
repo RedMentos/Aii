@@ -23,6 +23,11 @@ ID = re.compile(r"[a-f0-9]{32}\Z")
 SESSION = re.compile(r"v13-session-[0-9]{8}-[0-9]{6}-[a-f0-9]{6}\.log\Z")
 MAX_TEXT_BYTES = 1400
 MAX_READ_BYTES = 9000
+SAFE_OPERATOR_COMMANDS = frozenset({
+    ":status", ":help", ":doctor", ":models", ":gates summary", ":objectives",
+    ":sleep status", ":learning status", ":notaus status",
+    ":probe jef-modes", ":probe step12"
+})
 JOB_TTL_SECONDS = 21600
 TOKEN_PATTERN = re.compile(r"(?:gh[pousr]_[a-zA-Z0-9_]{10,}|github_pat_[a-zA-Z0-9_]{10,})")
 
@@ -85,16 +90,19 @@ def _safe_output(s):
     return "".join(ch for ch in s if ch in "\n\t" or ord(ch) >= 32)
 
 
-def send(ident, text):
-    """Queue one normal message to the existing V13 model, never an operator."""
+def send(ident, text, *, operator=False):
+    """Queue normal text, or an exact allowlisted diagnostic operator query."""
     _dir()
     if (not isinstance(text, str) or not text.strip() or
             len(text.encode("utf-8")) > MAX_TEXT_BYTES or
             any(ch in text for ch in ("\x00", "\n", "\r"))):
         raise ChatDenied("invalid bounded chat message")
-    # Operator commands can trigger tools and memory changes; that is a
-    # distinct authority, NOT implied by normal CHAT_SEND.
-    if text.strip().startswith(":"):
+    # Operator commands can modify state or invoke future tools. Remote
+    # operator access is therefore a separate exact diagnostic allowlist.
+    if operator:
+        if text.strip() not in SAFE_OPERATOR_COMMANDS:
+            raise ChatDenied("operator command not in diagnostic allowlist")
+    elif text.strip().startswith(":"):
         raise ChatDenied("operator commands require a separate approved scope")
     p = _path(ident)
     if p.exists() or p.is_symlink():
