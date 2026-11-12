@@ -139,6 +139,11 @@ summary{cursor:pointer;font-weight:650}
  <section id="panel-maintenance" class="panel" aria-label="Wartung">
   <div class="card">
    <h2>GitHub-Updates</h2>
+   <h3>Automatische Pipeline · privat verbunden</h3>
+   <p class="update-line" id="pipeline-result">@@PIPELINE_STATUS@@</p>
+   <div class="actions">@@PIPELINE_BUTTON@@</div>
+   <p class="muted">Der Termux-Agent prüft alle 15 Minuten im Hintergrund. Nur bei bestandenem GitHub-CI und beendetem V13 wird aktualisiert. Der Status kann von ChatGPT privat abgefragt werden; ein geschlossener Browser stoppt den Hintergrund-Agenten nicht.</p>
+   <h3>Manuelle Aktionen</h3>
    <p class="update-line" id="update-result">@@UPDATE_STATUS@@</p>
    <div class="progress" id="update-progress" @@UPDATE_HIDDEN@@><span></span></div>
    <p class="muted">Zuerst die V13-KI beenden. Der Update-Status aktualisiert sich hier live und zeigt auch Fehler an.</p>
@@ -166,6 +171,7 @@ summary{cursor:pointer;font-weight:650}
   const out = document.getElementById('v13-live-output');
   const progress = document.getElementById('update-progress');
   const updateStatus = document.getElementById('update-result');
+  const pipelineStatus = document.getElementById('pipeline-result');
   const notice = document.getElementById('notice');
   let prior = out.textContent;
   let busy = false;
@@ -260,6 +266,7 @@ summary{cursor:pointer;font-weight:650}
       }
       if(typeof data.state==='string'){state.textContent=data.state;running.textContent=data.state;}
       if(typeof data.update_result==='string')updateStatus.textContent=data.update_result;
+      if(typeof data.pipeline_status==='string')pipelineStatus.textContent=data.pipeline_status;
       if(typeof data.update_busy==='boolean')progress.hidden=!data.update_busy;
     }catch(_){}
     finally{busy=false;}
