@@ -87,6 +87,18 @@ class OwnerReadTests(unittest.TestCase):
             with self.assertRaises(b.Denied):
                 o.activate_owner_capabilities(conf)
 
+    def test_bridge_module_stamp_detects_live_source_change(self):
+        from unittest import mock
+        module=Path(self.temp.name)/"owner_read_bridge.py"
+        module.write_text("v1")
+        with mock.patch.object(o,"__file__",str(module)):
+            first=o._module_stamp()
+            module.write_text("v2")
+            second=o._module_stamp()
+        self.assertNotEqual(first,second)
+        self.assertEqual(len(first),64)
+        self.assertEqual(len(second),64)
+
     def test_owner_health_e2e_and_idempotent_restart(self):
         issue = self.issue()
         client = FakeGitHub([issue])
