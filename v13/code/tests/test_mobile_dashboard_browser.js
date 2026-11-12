@@ -30,7 +30,7 @@ form.addEventListener = (name, callback) => { listeners[name] = callback; };
 const map = new Map([
   ['v13-live-output', output], ['v13-live-state', elem()],
   ['chat-running', elem()], ['ai-service-state', elem()], ['update-progress', elem()],
-  ['update-result', elem()], ['pipeline-result', elem()], ['notice', notice],
+  ['update-result', elem()], ['pipeline-result', elem()], ['diagnostic-result', elem()], ['notice', notice],
   ['chat-compose', form], ['chat-input', chat],
   ['copy-chat', elem()]
 ]);
