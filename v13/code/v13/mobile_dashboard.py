@@ -24,7 +24,7 @@ import time
 from urllib.parse import parse_qs, urlparse
 import zipfile
 from .managed_console import ManagedConsole
-from . import pipeline_agent
+from . import pipeline_agent, lifecycle
 
 PRIVATE = Path.home() / ".v13-private"
 DATA = Path.home() / "v13"
@@ -438,10 +438,8 @@ class RuntimeControls:
     def start_update(self, action):
         if action not in ("check", "apply", "auto", "rollback", "dashboard", "pipeline"):
             raise ValueError("Nicht freigegebene Update-Aktion")
-        # Do not silently update code while the V13 process is running. The
-        # result must be shown at click time, not hidden in a background log.
-        if action in ("apply", "rollback", "dashboard") and self.terminal.state()["running"]:
-            raise RuntimeError("V13 läuft noch. Erst im Chat auf 'V13 beenden' drücken; danach das Update starten.")
+        # A manual update now safely stops and resumes the managed chat.
+        # Unmanaged/unknown processes still block the update without being killed.
         with self.lock:
             if self.update_busy:
                 raise RuntimeError("Ein Update-Check laeuft bereits")
@@ -451,27 +449,29 @@ class RuntimeControls:
         def worker():
             try:
                 from v13 import source_updater
-                if action == "pipeline":
-                    if not pipeline_agent.enabled():
+                if action in ("pipeline", "apply", "auto", "dashboard"):
+                    if action in ("pipeline", "auto") and not pipeline_agent.enabled():
                         raise RuntimeError("Automatische Updates sind AUS. Erst einschalten.")
-                    result = pipeline_agent.run_cycle(force=True)
+                    target = ("runtime" if action in ("apply", "auto") else
+                              "dashboard" if action == "dashboard" else "all")
+                    result = pipeline_agent.run_cycle(
+                        force=True, manual=action in ("apply", "dashboard"),
+                        target=target)
+                    msg = (result["last_result"] + " · V13: " + result["runtime"]
+                           + " · UI: " + result["dashboard"]
+                           + (" · Chat startet automatisch neu" if result["last_result"]=="UPDATED" else ""))
                 elif action == "check":
                     result = source_updater.status()
-                elif action == "apply":
-                    result = source_updater.apply()
-                elif action == "auto":
-                    result = source_updater.auto_apply()
-                elif action == "dashboard":
-                    result = source_updater.apply_dashboard()
+                    msg = result["status"] + " · " + str(result.get("changed_files",0)) + " Dateien"
                 else:
-                    result = source_updater.rollback()
-                msg = (result["last_result"] + " · Runtime: " + result["runtime"] +
-                       " · UI: " + result["dashboard"]) if action == "pipeline" else (
-                       result["status"] + " · " + str(result.get("changed_files", 0)) + " geänderte Dateien")
-                if action == "dashboard" and result["status"] == "UPDATED":
-                    msg += " · Kontrollzentrum startet neu"
-                elif result["status"] in ("UPDATED", "ROLLED_BACK"):
-                    msg += " · V13 neu starten; Installation der Laufzeit getrennt prüfen"
+                    was_running = lifecycle.request_stop(
+                        timeout=35,runtime_active=source_updater._runtime_active)
+                    try:
+                        result = source_updater.rollback()
+                    finally:
+                        if was_running:
+                            lifecycle.request_resume(reason="RESTORE")
+                    msg = result["status"] + " · Chat startet automatisch neu"
             except subprocess.TimeoutExpired:
                 msg = "Update abgebrochen: GitHub hat innerhalb des Zeitlimits nicht geantwortet. Verbindung prüfen, dann erneut versuchen."
             except Exception as exc:
@@ -479,11 +479,9 @@ class RuntimeControls:
             with self.lock:
                 self.update_result = msg
                 self.update_busy = False
-                needs_restart = (action == "dashboard" and msg.startswith("UPDATED"))
-                if needs_restart:
-                    self.restart_requested = True
-            if needs_restart and self.restart_callback:
-                self.restart_callback()
+                # Pipeline writes a UI refresh marker after the update.
+                # The local watcher restarts the dashboard only after all
+                # workers have finished, then resumes the managed chat.
         threading.Thread(target=worker, daemon=True, name="v13-source-update").start()
 
     def update_status(self):
@@ -722,10 +720,11 @@ def serve(*, open_browser=True):
     instance_fd = _ui_singleton_lock()
     controls = RuntimeControls()
     def auto_loop():
-        # The private relay runs the primary updater even without a browser.
-        # This is a fallback if the relay has stopped, plus a safe UI reload.
+        # Single local lifecycle watcher. Do not run the GitHub updater in
+        # this same thread: it could wait for its own shutdown acknowledgement.
         while True:
             try:
+                lifecycle.service_stop(controls.terminal)
                 if pipeline_agent.refresh_requested("ui"):
                     if not controls.terminal.state()["running"]:
                         pipeline_agent.acknowledge_refresh("ui")
@@ -733,11 +732,10 @@ def serve(*, open_browser=True):
                         if controls.restart_callback:
                             controls.restart_callback()
                         return
-                if pipeline_agent.enabled():
-                    pipeline_agent.run_cycle()
+                lifecycle.service_resume(controls.terminal)
             except (OSError, ValueError, RuntimeError):
                 pass
-            time.sleep(30)
+            time.sleep(.5)
     threading.Thread(target=auto_loop, daemon=True, name="v13-auto-updates").start()
     token = os.environ.get("V13_UI_RESTART_TOKEN") or _browser_token()
     csrf = os.environ.get("V13_UI_RESTART_CSRF") or secrets.token_hex(24)
