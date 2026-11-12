@@ -121,9 +121,21 @@ def needs_deploy(source, *, home=None, private=None):
     except RuntimeDeployError:
         return True
     codepath = target.get("code")
-    if (target.get("commit") != commit or not isinstance(codepath, str)
-            or not (Path(codepath) / CANON).is_file()):
+    if target.get("commit") != commit or not isinstance(codepath, str):
         return True
+    # The launcher hash alone does not prove that the activated Python tree
+    # still exists. A missing or altered installed module must trigger repair,
+    # even when the Git checkout and marker have not changed.
+    installed = Path(codepath)
+    if installed.is_symlink() or not installed.is_dir():
+        return True
+    for rel in REQUIRED:
+        candidate = installed / rel
+        original = code / rel
+        if candidate.is_symlink() or not candidate.is_file():
+            return True
+        if hashlib.sha256(candidate.read_bytes()).digest() != hashlib.sha256(original.read_bytes()).digest():
+            return True
     return target.get("launcher_sha256") != hashlib.sha256(launcher.read_bytes()).hexdigest()
 
 
