@@ -68,16 +68,24 @@ class SpeechIntentQueue:
         if not isinstance(source_id, str) or not 1 <= len(source_id) <= 128 or not all(c.isascii() and (c.isalnum() or c in "-_:.") for c in source_id):
             raise SpeechIntentError("invalid source")
         with self.lock:
-            count = self.db.execute("SELECT count(*) FROM speech_intents WHERE status IN ('QUEUED','RENDERING')").fetchone()[0]
-            if count >= self.max_pending:
-                raise SpeechIntentError("queue full")
-            intent_id = uuid.uuid4().hex
-            at = self.clock()
-            digest = hashlib.sha256(json.dumps([text, source_id], ensure_ascii=True, separators=(",", ":")).encode()).hexdigest()
-            self.db.execute("INSERT INTO speech_intents VALUES (?,?,?,?,?,?)", (intent_id, text, source_id, at, "QUEUED", digest))
-            self._event(intent_id, "QUEUED")
-            self.db.commit()
-            return SpeechIntent(intent_id, text, source_id, at, "QUEUED", digest)
+            # Capacity must be checked under the same cross-process write lock
+            # as insertion. Otherwise two Termux producers can both observe
+            # one free slot and exceed the bounded mobile queue.
+            self.db.execute("BEGIN IMMEDIATE")
+            try:
+                count = self.db.execute("SELECT count(*) FROM speech_intents WHERE status IN ('QUEUED','RENDERING')").fetchone()[0]
+                if count >= self.max_pending:
+                    raise SpeechIntentError("queue full")
+                intent_id = uuid.uuid4().hex
+                at = self.clock()
+                digest = hashlib.sha256(json.dumps([text, source_id], ensure_ascii=True, separators=(",", ":")).encode()).hexdigest()
+                self.db.execute("INSERT INTO speech_intents VALUES (?,?,?,?,?,?)", (intent_id, text, source_id, at, "QUEUED", digest))
+                self._event(intent_id, "QUEUED")
+                self.db.commit()
+                return SpeechIntent(intent_id, text, source_id, at, "QUEUED", digest)
+            except BaseException:
+                self.db.rollback()
+                raise
 
     def claim(self):
         with self.lock:
