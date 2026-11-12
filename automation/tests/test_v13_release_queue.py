@@ -38,7 +38,7 @@ class FakeGitHub:
         if method == "PUT":
             self.merge_calls.append((method, path, data))
             return {"merged": True, "sha": "c" * 40}
-        if "/issues?" in path:
+        if path == f"/repos/{q.REPO}/issues":
             return copy.deepcopy(self.issues)
         if "/pulls/" in path and path.endswith("/files"):
             return copy.deepcopy(self.files)
@@ -49,7 +49,7 @@ class FakeGitHub:
         if "/compare/" in path:
             return {"status": "ahead", "behind_by": 0,
                     "base_commit": {"sha": BASE}}
-        if "/actions/runs?" in path:
+        if path == f"/repos/{q.REPO}/actions/runs":
             return {"workflow_runs": copy.deepcopy(self.runs)}
         raise AssertionError((method, path))
 
