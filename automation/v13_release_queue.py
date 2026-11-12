@@ -110,6 +110,14 @@ def _safe_files(files):
                 PurePosixPath(name).suffix not in SAFE_SUFFIX or
                 status not in ("modified", "added")):
             return False
+        # A scheduled bot may import brand-new, inert organ modules, but it
+        # must NEVER rewrite installed runtime/permission/update Python code.
+        # Existing runtime modules, installer scripts, model specs and active
+        # integration policy always require direct Boss merge and device gates.
+        if (name.startswith("v13/code/v13/") and status != "added") or (
+                name.startswith("v13/code/scripts/")) or (
+                name.startswith("v13/code/specs/")):
+            return False
         count = item.get("changes")
         if type(count) is not int or count < 0:
             return False
