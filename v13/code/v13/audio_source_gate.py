@@ -1,5 +1,7 @@
 """Read-only A5 audio source gate; does not grant device or learning authority."""
+from copy import deepcopy
 import hmac
+import math
 import re
 
 _SHA = re.compile(r'[0-9a-f]{64}\Z')
@@ -20,23 +22,45 @@ def checked_audio_source_view(percept_packet, read_source):
     sid, sha = ref.get('source_id'), ref.get('sha256')
     if not isinstance(sid, str) or not sid or not isinstance(sha, str) or not _SHA.fullmatch(sha):
         raise ValueError('invalid source reference')
-    if ref.get('modality') != 'audio' or ref not in percept_packet.get('provenance', []):
+    if (ref.get('modality') != 'audio' or type(ref.get('char_start')) is not int
+            or type(ref.get('char_end')) is not int or ref['char_start'] != 0
+            or ref['char_end'] != 0 or ref not in percept_packet.get('provenance', [])):
         raise ValueError('provenance mismatch')
+    if not all(isinstance(percept_packet.get(k), str) and percept_packet[k]
+               for k in ('event_id', 'brain_generation_id')):
+        raise ValueError('missing event or generation identity')
     segments = percept_packet.get('segments')
-    if not isinstance(segments, list) or not segments:
+    if not isinstance(segments, list) or not 1 <= len(segments) <= 64:
         raise ValueError('no segments')
+    last_end = -1
     for segment in segments:
         if not isinstance(segment, dict) or segment.get('action_authority') is not False or segment.get('learning_authority') is not False:
             raise PermissionError('unexpected authority')
         if segment.get('finality') not in ('FINAL', 'PROVISIONAL'):
             raise ValueError('invalid finality')
+        if 'start_ms' in segment or 'end_ms' in segment:
+            start, end = segment.get('start_ms'), segment.get('end_ms')
+            if (type(start) is not int or type(end) is not int or start < 0
+                    or start < last_end or end <= start or end-start > 1000):
+                raise ValueError('invalid or overlapping audio window')
+            last_end = end
+        acoustic = segment.get('acoustic')
+        if acoustic is not None:
+            if not isinstance(acoustic, dict):
+                raise ValueError('invalid acoustic features')
+            for name in ('rms', 'zcr'):
+                value = acoustic.get(name)
+                if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1:
+                    raise ValueError('invalid normalized acoustic feature')
+        if segment.get('asr_transcript') is not None:
+            raise ValueError('unverified transcript in raw-ear packet')
     source = read_source(sid)
     if not isinstance(source, dict) or source.get('revoked') is not False or source.get('modality') != 'audio':
         raise PermissionError('source absent, revoked or wrong modality')
     stored_sha = source.get('sha256')
     if not isinstance(stored_sha, str) or not hmac.compare_digest(sha, stored_sha):
         raise PermissionError('source hash mismatch')
-    return {'source_ref': dict(ref), 'segments': [dict(s) for s in segments],
+    return {'source_ref': deepcopy(ref), 'segments': deepcopy(segments),
             'modality': 'audio', 'authority': 'SHADOW_ONLY',
             'event_id': percept_packet.get('event_id'),
             'brain_generation_id': percept_packet.get('brain_generation_id')}
