@@ -41,7 +41,7 @@ SHA = re.compile(r"[0-9a-f]{40}\Z")
 ID = re.compile(r"[0-9a-f]{32}\Z")
 KEY = re.compile(r"[0-9a-f]{64}\Z")
 AGENT = re.compile(r"[a-z][a-z0-9_-]{2,39}\Z")
-COMMANDS = {"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "PATCH_STAGE", "PATCH_APPLY", "CHAT_SEND", "CHAT_RESULT", "UPDATE_REQUEST"}
+COMMANDS = {"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "PATCH_STAGE", "PATCH_APPLY", "CHAT_SEND", "CHAT_RESULT", "CHAT_OPERATOR", "UPDATE_REQUEST", "LOG_SHARING_ON", "LOG_SHARING_OFF"}
 MAX_COMMAND = 8192
 MAX_REPLY = 12000
 MAX_STATUS = 8192
@@ -105,6 +105,13 @@ def verify_command(obj, keys, permissions, authors, *, author, now=None):
             any(ch in args["text"] for ch in ("\x00", "\n", "\r")) or
             args["text"].strip().startswith(":")):
         raise Denied("CHAT_SEND requires one normal bounded user message")
+    if cmd == "CHAT_OPERATOR":
+        from .remote_chat import SAFE_OPERATOR_COMMANDS
+        if (set(args) != {"command"} or type(args.get("command")) is not str
+                or args["command"] not in SAFE_OPERATOR_COMMANDS):
+            raise Denied("only exact read-oriented V13 diagnostic operators allowed")
+    if cmd in ("LOG_SHARING_ON", "LOG_SHARING_OFF") and args:
+        raise Denied("log sharing toggle accepts no extra arguments")
     if cmd == "CHAT_RESULT" and (
             set(args) != {"request_id"} or not isinstance(args.get("request_id"), str) or
             not ID.fullmatch(args["request_id"])):
@@ -677,6 +684,17 @@ def execute(client, cfg, cmd):
     if name == "CHAT_SEND":
         from .remote_chat import send
         return send(cmd["id"], cmd["args"]["text"])
+    if name == "CHAT_OPERATOR":
+        from .remote_chat import send
+        return send(cmd["id"], cmd["args"]["command"], operator=True)
+    if name in ("LOG_SHARING_ON", "LOG_SHARING_OFF"):
+        from .mobile_dashboard import set_remote_full_console, set_remote_log_sharing
+        allow = name == "LOG_SHARING_ON"
+        set_remote_log_sharing(allow)
+        set_remote_full_console(allow)
+        return {"status": "ENABLED" if allow else "DISABLED",
+                "scope": "RECORDED_V13_LOGS_ONLY",
+                "private_repo": True, "revocable_in_ui": True}
     if name == "CHAT_RESULT":
         from .remote_chat import result
         return result(cmd["args"]["request_id"])
