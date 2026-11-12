@@ -6,6 +6,7 @@ requested remote chat visibility; both text and reply live in a PRIVATE repo.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -75,6 +76,24 @@ def _write(ident, record):
         os.fsync(writer.fileno())
 
 
+def _update(ident, record):
+    """Persist the send outcome without ever removing its single-use marker."""
+    name = _path(ident)
+    if name.is_symlink() or not name.is_file():
+        raise ChatDenied("unsafe chat job update")
+    fd, temporary = tempfile.mkstemp(prefix=".chat-job-", dir=JOBS)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as writer:
+            os.fchmod(writer.fileno(), 0o600)
+            json.dump(record, writer, sort_keys=True)
+            writer.flush()
+            os.fsync(writer.fileno())
+        os.replace(temporary, name)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
 def _logfile(session):
     if not isinstance(session, str) or not SESSION.fullmatch(session):
         raise ChatDenied("unrecognized V13 session")
@@ -110,16 +129,35 @@ def send(ident, text, *, operator=False):
     state = chat_service.call("state")
     if state.get("running") is not True:
         return {"status": "NOT_RUNNING", "request_id": ident}
-    session = state.get("last_session")
-    path = _logfile(session)
-    offset = path.stat().st_size
     # Persist a single-use marker BEFORE submitting. A replay or crash is
     # never permitted to send the same message twice.
-    _write(ident, {"id": ident, "session": session, "offset": offset,
-                   "created": int(time.time()), "state": "RESERVED"})
-    response = chat_service.call("send", line=text)
+    record = {"id": ident, "created": int(time.time()), "state": "RESERVED",
+              "operator":operator,
+              "input_digest":hashlib.sha256(text.strip().encode("utf-8")).hexdigest()}
+    _write(ident, record)
+    try:
+        response = chat_service.call("send", line=text)
+    except (OSError, RuntimeError, ValueError, TimeoutError):
+        # The daemon may have accepted it before the connection failed. A
+        # later unrelated chat must not be attributed to this reservation.
+        record["state"] = "SEND_UNCONFIRMED"
+        _update(ident, record)
+        return {"status": "SEND_UNCONFIRMED", "request_id": ident}
     if response.get("status") != "SENT":
+        record["state"] = "REJECTED"
+        _update(ident, record)
         return {"status": "REJECTED", "request_id": ident}
+    session, offset = response.get("session"), response.get("offset")
+    if (response.get("input_logged") is not True or
+            not isinstance(session, str) or not SESSION.fullmatch(session) or
+            type(offset) is not int or offset < 0):
+        # An older daemon can still send, but its status-only reply has no
+        # reliable output binding. Never fall back to the earlier snapshot.
+        record["state"] = "CORRELATION_UNAVAILABLE"
+        _update(ident, record)
+        return {"status": "CORRELATION_UNAVAILABLE", "request_id": ident}
+    record.update(state="SENT", session=session, offset=offset)
+    _update(ident, record)
     return {"status": "SENT", "request_id": ident,
             "response": "Use CHAT_RESULT to retrieve actual model output."}
 
@@ -132,6 +170,12 @@ def result(ident):
     age = int(time.time()) - int(item.get("created", 0))
     if age < 0 or age > JOB_TTL_SECONDS:
         return {"status": "EXPIRED"}
+    state = item.get("state")
+    if state != "SENT":
+        # RESERVED also covers a process crash before the receipt was saved.
+        status = (state if state in {"REJECTED", "SEND_UNCONFIRMED",
+                                     "CORRELATION_UNAVAILABLE"} else "SEND_UNCONFIRMED")
+        return {"status":status, "request_id":ident, "complete":False}
     p = _logfile(item.get("session"))
     offset = item.get("offset")
     if type(offset) is not int or offset < 0:
@@ -155,6 +199,10 @@ def result(ident):
             if got_input:
                 end = True
                 break
+            if (not line.endswith("]") or
+                    hashlib.sha256(line[5:-1].encode("utf-8")).hexdigest() != item.get("input_digest")):
+                return {"status":"CORRELATION_UNAVAILABLE", "request_id":ident,
+                        "complete":False}
             got_input = True
             continue
         if line.strip() == "du>":
@@ -164,18 +212,29 @@ def result(ident):
             continue
         if got_input:
             output.append(line)
+    from .phone_monitor import classify_output, SYSTEM_REPORT
+    chat, error = classify_output(output)
     visible = _safe_output("\n".join(output).strip())[-4000:]
-    if any(line.lstrip().startswith(("[Fehler]", "[V13 Fehler]")) for line in output):
+    correlation = {"correlation":"ATOMIC_INPUT_WINDOW", "complete":False}
+    if chat == "CHAT_ERROR":
+        # Runtime diagnostics quote exact user sources and prior corrections.
+        # A failed native turn exports only its technical enum here.
+        if SYSTEM_REPORT in "\n".join(output):
+            visible = ""
         return {"status": "MODEL_ERROR", "request_id": ident,
-                "output": visible, "complete":end}
-    if end and visible:
-        return {"status": "ANSWERED", "request_id": ident,
-                "output": visible, "complete":True}
-    if visible and ("assistant>" in visible or "model>" in visible):
-        return {"status": "ANSWER_VISIBLE", "request_id": ident,
-                "output": visible, "complete":False}
+                "output": visible, "error_code":error, **correlation}
+    if end:
+        # The plain UI queues another input before the earlier turn finishes.
+        # A subsequent echo is neither completion nor a trustworthy boundary
+        # for assigning asynchronously arriving assistant output.
+        return {"status":"AMBIGUOUS_TURN", "request_id":ident, **correlation}
     if len(data) > MAX_READ_BYTES:
         return {"status": "TRUNCATED", "request_id": ident,
-                "output": visible, "complete":False}
+                "output": visible, **correlation}
+    if chat == "CHAT_RESPONDED" and not item.get("operator"):
+        # This proves only text is visible in the input's atomic log window;
+        # the frozen plain UI supplies no final status or runtime turn ID.
+        return {"status": "ANSWER_VISIBLE", "request_id": ident,
+                "output": visible, **correlation}
     return {"status": "GENERATING", "request_id": ident,
-            "output": visible, "complete":False}
+            "output": visible, **correlation}

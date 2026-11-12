@@ -39,12 +39,12 @@ class RuntimeDeployError(RuntimeError):
     pass
 
 
-def _git(root, *args):
+def _git(root, *args, timeout=50):
     env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
     try:
         out = subprocess.run(["git", "-C", str(root), *args],
                              capture_output=True, text=True, env=env,
-                             timeout=50, check=False)
+                             timeout=timeout, check=False)
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise RuntimeDeployError("Git status unavailable") from exc
     if out.returncode != 0:
@@ -52,8 +52,11 @@ def _git(root, *args):
     return out.stdout.strip()
 
 
-def _source(source):
-    root = Path(source).expanduser().resolve()
+def _checkout(source):
+    requested = Path(source).expanduser()
+    if requested.is_symlink():
+        raise RuntimeDeployError("Runtime source path is a symbolic link")
+    root = requested.resolve()
     if not root.is_dir() or not (root / ".git").is_dir():
         raise RuntimeDeployError("Full V13 runtime Git checkout missing")
     if Path(_git(root, "rev-parse", "--show-toplevel")) != root:
@@ -68,12 +71,70 @@ def _source(source):
     commit = _git(root, "rev-parse", "HEAD")
     if not HEX40.fullmatch(commit):
         raise RuntimeDeployError("Invalid pinned commit")
+    return root, commit
+
+
+def _source(source):
+    root, commit = _checkout(source)
     code = root / "v13/code"
     for rel in REQUIRED:
         path = code / rel
         if path.is_symlink() or not path.is_file():
             raise RuntimeDeployError("Required runtime file missing: " + rel)
     return root, code, commit
+
+
+def prepare_source(source=None):
+    """Migrate pre-runtime-updater installs using the fixed phone release.
+
+    This only prepares trusted Git source. CI and graceful-stop checks still
+    run before deploy() switches the launcher. Existing directories, local
+    changes and a different branch/origin are never replaced.
+    """
+    root = Path(source or Path.home() / ".v13-runtime-source").expanduser()
+    if root.is_symlink():
+        raise RuntimeDeployError("Runtime source path is a symbolic link")
+    stage = None
+    created = not root.exists()
+    if created:
+        root.parent.mkdir(parents=True, exist_ok=True)
+        stage = Path(tempfile.mkdtemp(prefix=".v13-source-", dir=str(root.parent)))
+        checkout = stage
+    else:
+        checkout = root
+    try:
+        if created:
+            try:
+                proc = subprocess.run(
+                    ["git", "clone", "--depth", "1", "--filter=blob:none",
+                     "--no-checkout", "--single-branch", "--branch", SOURCE_BRANCH,
+                     REPO_ORIGIN[1], str(checkout)],
+                    capture_output=True, text=True, timeout=180, check=False,
+                    env={**os.environ, "GIT_TERMINAL_PROMPT": "0"})
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                raise RuntimeDeployError("Runtime source download unavailable") from exc
+            if proc.returncode:
+                raise RuntimeDeployError("Runtime source download failed")
+            # Materialize an empty index before checking cleanliness.
+            _git(checkout, "sparse-checkout", "init", "--no-cone")
+            _git(checkout, "checkout", timeout=180)
+        _checkout(checkout)
+        # Selecting directories also includes later committed dependencies;
+        # exact-file lists stranded older phone installs on incomplete code.
+        _git(checkout, "sparse-checkout", "set", "--no-cone",
+             "v13/code/v13/", "v13/code/scripts/", "v13/code/specs/",
+             "v13/code/docs/canon/", "v13/code/setup.sh", "v13/code/STARTEN.sh",
+             timeout=180)
+        _, _, commit = _source(checkout)
+        if created:
+            # rename() refuses a competing populated checkout; only our own
+            # temporary download is removed on failure.
+            os.rename(checkout, root)
+            stage = None
+        return {"status": "CREATED" if created else "READY", "commit": commit}
+    finally:
+        if stage is not None:
+            shutil.rmtree(stage)
 
 
 def _protected_dir(path):

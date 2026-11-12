@@ -10,6 +10,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import unittest
 from urllib.error import HTTPError
@@ -72,6 +73,98 @@ class LocalConsoleTests(unittest.TestCase):
         self.assertIn("ältere Unterhaltung: 123", copied)
         self.assertIn("neuer Gesprächsteil", copied)
         self.assertGreater(len(copied), len(self.console.output(30)))
+
+    def test_competing_sends_receive_their_own_atomic_log_offsets(self):
+        self.console.start()
+        gate=threading.Barrier(3)
+        receipts={}
+        failures=[]
+        def submit(text):
+            try:
+                gate.wait(timeout=3)
+                receipts[text]=self.console.send(text)
+            except Exception as exc:
+                failures.append(exc)
+        workers=[threading.Thread(target=submit,args=(text,)) for text in ("first","second")]
+        try:
+            for worker in workers:worker.start()
+            gate.wait(timeout=3)
+            for worker in workers:worker.join(timeout=3)
+            self.assertFalse(failures)
+            self.assertEqual(len(receipts),2)
+            self.assertNotEqual(receipts["first"]["offset"],receipts["second"]["offset"])
+            for text,receipt in receipts.items():
+                self.assertTrue(receipt["input_logged"])
+                self.assertEqual(receipt["session"],self.console.path.name)
+                raw=(self.log_root/receipt["session"]).read_bytes()
+                self.assertTrue(raw[receipt["offset"]:].startswith(
+                    ("\n[du> "+text+"]\n").encode()))
+        finally:
+            self.console.send(":shutdown")
+            self.console.process.wait(timeout=3)
+            self.console.reader.join(timeout=3)
+
+    def test_send_receipt_keeps_original_session_when_restart_competes(self):
+        # Hold stdin.write inside the console transaction while another
+        # thread tries to start a new process. No models or real inference.
+        original=self.log_root/"v13-session-20261112-120000-aabbcc.log"
+        original.write_bytes(b"ready\n")
+        self.console.path=original
+        self.console.log_bytes=original.stat().st_size
+        entered=threading.Event()
+        release=threading.Event()
+        attempted=threading.Event()
+        restarted=threading.Event()
+        old=mock.Mock()
+        old.poll.return_value=None
+        def write(data):
+            entered.set()
+            if not release.wait(timeout=3):
+                raise TimeoutError("test send was not released")
+            old.poll.return_value=0
+            return len(data)
+        old.stdin.write.side_effect=write
+        self.console.process=old
+        new=mock.Mock()
+        new.pid=123
+        new.poll.return_value=None
+        receipts=[]
+        def submit():receipts.append(self.console.send("bound to original"))
+        def restart():
+            attempted.set()
+            self.console.start()
+            restarted.set()
+        with mock.patch.object(mc.subprocess,"Popen",return_value=new), \
+                mock.patch.object(self.console,"_drain"):
+            sender=threading.Thread(target=submit)
+            starter=threading.Thread(target=restart)
+            sender.start()
+            self.assertTrue(entered.wait(timeout=3))
+            starter.start()
+            self.assertTrue(attempted.wait(timeout=3))
+            self.assertFalse(restarted.is_set())
+            release.set()
+            sender.join(timeout=3)
+            starter.join(timeout=3)
+        self.assertTrue(restarted.is_set())
+        self.assertEqual(receipts[0]["session"],original.name)
+        self.assertTrue(receipts[0]["input_logged"])
+        self.assertNotEqual(self.console.path.name,original.name)
+        self.assertTrue(original.read_bytes()[receipts[0]["offset"]:].startswith(
+            b"\n[du> bound to original]\n"))
+
+    def test_capped_capture_does_not_claim_an_usable_input_receipt(self):
+        path=self.log_root/"v13-session-20261112-120000-aabbcc.log"
+        path.write_bytes(b"existing")
+        self.console.path=path
+        self.console.log_bytes=mc.MAX_SESSION_BYTES
+        process=mock.Mock()
+        process.poll.return_value=None
+        self.console.process=process
+        receipt=self.console.send("sent without a recorded echo")
+        self.assertEqual(receipt["status"],"SENT")
+        self.assertFalse(receipt["input_logged"])
+        process.stdin.write.assert_called_once()
 
     def test_reject_multiline_and_uninstalled(self):
         with self.assertRaises(mc.ConsoleBusy):

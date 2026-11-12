@@ -1,14 +1,9 @@
 name: V13 staged context and integrated regression
 on:
   push:
-    branches: ['codex/v13-integrated-continuation-20261110']
-    paths:
-      - '.github/workflows/v13-integrated-context-stage-20261111.yml'
-      - 'v13/code/v13/**'
-      - 'v13/code/scripts/**'
-      - 'v13/code/candidates/**'
-      - 'v13/code/specs/**'
-      - 'v13/code/tests/**'
+    # Phone updates require a result for the exact release SHA, including
+    # documentation-only checkpoints and after the draft PR is closed.
+    branches: ['codex/v13-integrated-continuation-20261110', 'gpt6/v13-private-remote-bridge-20261111']
   pull_request:
     paths:
       - '.github/workflows/v13-integrated-context-stage-20261111.yml'

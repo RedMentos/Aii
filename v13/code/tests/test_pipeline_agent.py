@@ -21,7 +21,9 @@ class PipelineTests(unittest.TestCase):
         home_patch = mock.patch.object(p.Path, "home", return_value=home)
         runtime_needs = mock.patch.object(p.runtime_deploy, "needs_deploy", return_value=False)
         runtime_act = mock.patch.object(p.runtime_deploy, "deploy", return_value={"status":"DEPLOYED"})
-        for helper in (runtime_needs,runtime_act):
+        runtime_source = mock.patch.object(p.runtime_deploy, "prepare_source", return_value={"status":"READY"})
+        dashboard_source = mock.patch.object(u, "ensure_sparse_phone_modules", return_value={"status":"ALREADY_PRESENT"})
+        for helper in (runtime_needs,runtime_act,runtime_source,dashboard_source):
             helper.start()
             self.addCleanup(helper.stop)
         home_patch.start()
@@ -230,6 +232,109 @@ class PipelineTests(unittest.TestCase):
         self.assertNotIn("github_pat_",str(report))
         self.assertNotIn("/data/",str(report))
         self.assertEqual(report["last_result"],"ERROR")
+
+    def test_dashboard_only_check_preserves_last_runtime_result(self):
+        p.STATE.write_text(json.dumps({"runtime":"UPDATED", "dashboard":"CI_WAIT"}))
+        with mock.patch.object(u, "_runtime_active", return_value=False), \
+             mock.patch.object(u, "status", return_value={"status":"UP_TO_DATE"}):
+            report = p.run_cycle(force=True, manual=True, target="dashboard")
+        self.assertEqual(report["runtime"], "UPDATED")
+        self.assertEqual(report["dashboard"], "UP_TO_DATE")
+        self.assertFalse(report["auto_enabled"], "manual update must preserve explicit auto OFF")
+
+    def test_current_dashboard_checkout_still_repairs_sparse_dependencies(self):
+        with mock.patch.object(u, "_runtime_active", return_value=False), \
+             mock.patch.object(u, "status", return_value={"status":"UP_TO_DATE"}), \
+             mock.patch.object(u, "ensure_sparse_phone_modules") as migrate:
+            report = p.run_cycle(force=True, manual=True, target="dashboard")
+        migrate.assert_called_once_with(p.Path.home() / ".v13-agent-source")
+        self.assertEqual(report["dashboard"], "UP_TO_DATE")
+
+    def test_runtime_bootstrap_failure_does_not_block_dashboard_repair(self):
+        with mock.patch.object(p.runtime_deploy, "prepare_source",
+                               side_effect=p.runtime_deploy.RuntimeDeployError("offline")), \
+             mock.patch.object(u, "_runtime_active", return_value=False), \
+             mock.patch.object(u, "status", return_value={
+                 "status":"UPDATE_AVAILABLE", "available":"b"*40}), \
+             mock.patch.object(u, "ci_passed", return_value=True), \
+             mock.patch.object(u, "apply_dashboard", return_value={"status":"UPDATED"}) as update:
+            report = p.run_cycle(force=True, manual=True)
+        update.assert_called_once()
+        self.assertEqual(report["runtime"], "ERROR")
+        self.assertEqual(report["dashboard"], "UPDATED")
+        self.assertEqual(report["last_result"], "PARTIAL")
+        self.assertTrue(p.refresh_requested("bridge"))
+
+    def test_deploy_failure_is_terminal_and_restores_stopped_chat(self):
+        with mock.patch.object(u, "_runtime_active", side_effect=[True, False]), \
+             mock.patch.object(u, "status", return_value={
+                 "status":"UPDATE_AVAILABLE", "available":"b"*40}), \
+             mock.patch.object(u, "ci_passed", return_value=True), \
+             mock.patch.object(p.lifecycle, "request_stop", return_value=True), \
+             mock.patch.object(p.lifecycle, "request_resume") as resume, \
+             mock.patch.object(u, "apply", return_value={"status":"UPDATED"}), \
+             mock.patch.object(p.runtime_deploy, "deploy",
+                               side_effect=p.runtime_deploy.RuntimeDeployError("selftest failed")):
+            report = p.run_cycle(force=True, manual=True, target="runtime")
+        self.assertEqual(report["runtime"], "ERROR")
+        self.assertEqual(report["last_result"], "ERROR")
+        resume.assert_called_once_with(reason="RESTORE")
+
+    def test_incomplete_running_runtime_does_not_strand_checking(self):
+        with mock.patch.object(u, "_runtime_active", return_value=True), \
+             mock.patch.object(u, "status", return_value={
+                 "status":"UP_TO_DATE", "available":"c"*40}), \
+             mock.patch.object(p.runtime_deploy, "needs_deploy",
+                               side_effect=p.runtime_deploy.RuntimeDeployError("missing Canon")), \
+             mock.patch.object(p.lifecycle, "request_stop") as stop:
+            report = p.run_cycle(force=True, manual=True)
+        self.assertEqual(report["runtime"], "ERROR")
+        self.assertEqual(report["dashboard"], "UP_TO_DATE")
+        self.assertEqual(report["last_result"], "PARTIAL")
+        stop.assert_not_called()
+
+    def test_unexpected_error_is_recorded_before_propagation(self):
+        with mock.patch.object(u, "_runtime_active", side_effect=ImportError("private import path")):
+            with self.assertRaises(ImportError):
+                p.run_cycle(force=True, manual=True)
+        report = p.snapshot()
+        self.assertEqual(report["last_result"], "ERROR")
+        self.assertEqual(report["last_error"], "UPDATE")
+        self.assertNotIn("private import path", str(report))
+
+    def test_one_ci_lookup_failure_does_not_block_independent_dashboard(self):
+        def ci(commit, *, scope):
+            if scope == "runtime":
+                raise u.UpdateDenied("temporary GitHub error")
+            return True
+        with mock.patch.object(u, "_runtime_active", side_effect=[True, False]), \
+             mock.patch.object(u, "status", return_value={
+                 "status":"UPDATE_AVAILABLE", "available":"b"*40}), \
+             mock.patch.object(u, "ci_passed", side_effect=ci), \
+             mock.patch.object(p.lifecycle, "request_stop", return_value=True), \
+             mock.patch.object(p.lifecycle, "request_resume") as resume, \
+             mock.patch.object(u, "apply") as runtime, \
+             mock.patch.object(u, "apply_dashboard", return_value={"status":"UPDATED"}) as dashboard:
+            report = p.run_cycle(force=True, manual=True)
+        runtime.assert_not_called()
+        dashboard.assert_called_once()
+        resume.assert_called_once_with(reason="UPDATED")
+        self.assertEqual(report["runtime"], "ERROR")
+        self.assertEqual(report["dashboard"], "UPDATED")
+        self.assertEqual(report["last_result"], "PARTIAL")
+
+    def test_dashboard_success_does_not_claim_complete_runtime_ci_wait(self):
+        with mock.patch.object(u, "_runtime_active", return_value=False), \
+             mock.patch.object(u, "status", return_value={
+                 "status":"UPDATE_AVAILABLE", "available":"b"*40}), \
+             mock.patch.object(u, "ci_passed", side_effect=lambda sha, scope: scope == "dashboard"), \
+             mock.patch.object(u, "apply") as runtime, \
+             mock.patch.object(u, "apply_dashboard", return_value={"status":"UPDATED"}):
+            report = p.run_cycle(force=True, manual=True)
+        runtime.assert_not_called()
+        self.assertEqual(report["runtime"], "CI_WAIT")
+        self.assertEqual(report["dashboard"], "UPDATED")
+        self.assertEqual(report["last_result"], "PARTIAL")
 
 
 class GitHubCIProofTests(unittest.TestCase):

@@ -163,7 +163,21 @@ def monitor_and_alert(client, *, now=None):
             previous=json.loads(flag.read_text(encoding="utf-8"))
     except (ValueError, OSError):
         previous={}
+    if not isinstance(previous,dict):
+        previous={}
     previous_code=previous.get("fingerprint")
+    observed=report.get("response_observation")
+    responded=(report.get("ai")=="MODEL_RUNNING" and
+               report.get("chat")=="CHAT_RESPONDED" and
+               isinstance(observed,str) and len(observed)==64)
+    if not incident and not responded:
+        # An accepting process, queued request, empty log, or missing session
+        # says nothing about whether inference has recovered. Preserve the
+        # last incident until a real nonempty answer has been observed.
+        return {"status":"AWAITING_ANSWER","code":report["chat"]}
+    if (not incident and previous_code and previous_code!="HEALTHY" and
+            observed==previous.get("response_observation")):
+        return {"status":"AWAITING_ANSWER","code":"AWAITING_NEW_ANSWER"}
     code=(incident["component"]+":"+incident["code"] if incident else "HEALTHY")
     # Publish transitions, and remind about an unresolved incident no more
     # than once per 24 hours. Healthy with no prior alert publishes nothing.
@@ -180,7 +194,8 @@ def monitor_and_alert(client, *, now=None):
     # GitHub client is restricted to the exact configured PRIVATE repository.
     client.request("POST","/repos/"+client.repository+"/issues",
                    {"title":title,"body":bridge.canonical(body).decode("ascii")},limit=4096)
-    atomic_write(flag,json.dumps({"fingerprint":code,"reported_at":clock}))
+    atomic_write(flag,json.dumps({"fingerprint":code,"reported_at":clock,
+                                 "response_observation":observed}))
     flag.chmod(0o600)
     return {"status":"PUBLISHED","code":code}
 

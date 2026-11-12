@@ -59,14 +59,20 @@ class RemoteChatTests(unittest.TestCase):
                 "body":json.dumps(body),"user":{"login":"RedMentos"},
                 "created_at":datetime.fromtimestamp(self.now,timezone.utc).isoformat()}
 
+    def receipt(self, offset=None, session=None):
+        return {"status":"SENT", "session":session or self.session,
+                "offset":self.path.stat().st_size if offset is None else offset,
+                "input_logged":True}
+
     def test_remote_send_issue_then_get_exact_response_from_running_ai(self):
         def rpc(method, **kw):
             if method=="state":return {"running":True,"last_session":self.session}
             if method=="send":
+                receipt=self.receipt()
                 self.assertEqual(kw["line"],"Hallo V13")
                 with self.path.open("a",encoding="utf8") as out:
                     out.write("[du> Hallo V13]\nassistant> Hallo, ich bin V13.\n\ndu>\n")
-                return {"status":"SENT"}
+                return receipt
             raise AssertionError("Unexpected RPC "+method)
         send=self.make_issue("CHAT_SEND",{"text":"Hallo V13"})
         client=FakeGitHub([send])
@@ -87,6 +93,8 @@ class RemoteChatTests(unittest.TestCase):
         self.assertEqual(owner.poll_once(client,self.cfg,now=self.now)["processed"],1)
         result=client.comments_sent[0][1]["device_status"]
         self.assertEqual(result["status"],"ANSWER_VISIBLE")
+        self.assertFalse(result["complete"])
+        self.assertEqual(result["correlation"],"ATOMIC_INPUT_WINDOW")
         self.assertIn("Hallo, ich bin V13",result["output"])
         self.assertNotIn("[du> Hallo V13]",result["output"])
 
@@ -95,7 +103,7 @@ class RemoteChatTests(unittest.TestCase):
         # a question; an actual model answer arrives only later.
         def fake_rpc(method,**kw):
             if method=="state":return {"running":True,"last_session":self.session}
-            return {"status":"SENT"}
+            return self.receipt()
         with mock.patch("v13.chat_service.call",side_effect=fake_rpc):
             remote_chat.send(self.id,"Is the model alive?")
         with self.path.open("a",encoding="utf8") as log:
@@ -111,9 +119,10 @@ class RemoteChatTests(unittest.TestCase):
         def rpc(method,**kw):
             if method=="state":return {"running":True,"last_session":self.session}
             if method=="send":
+                receipt=self.receipt()
                 with self.path.open("a",encoding="utf8") as out:
                     out.write("[du> Hi]\n[Fehler] [Errno 2] No such file or directory: 'abcdef123'\n\ndu>\n")
-                return {"status":"SENT"}
+                return receipt
         with mock.patch("v13.chat_service.call",side_effect=rpc):
             self.assertEqual(remote_chat.send(self.id,"Hi")["status"],"SENT")
         result=remote_chat.result(self.id)
@@ -143,7 +152,7 @@ class RemoteChatTests(unittest.TestCase):
     def test_result_redacts_token_and_is_bounded(self):
         with mock.patch("v13.chat_service.call",side_effect=lambda method,**kw:(
             {"running":True,"last_session":self.session} if method=="state"
-            else {"status":"SENT"})):
+            else self.receipt())):
             remote_chat.send(self.id,"Test")
         with self.path.open("a",encoding="utf8") as out:
             out.write("[du> Test]\nassistant> github_pat_abcdefghijklmnopqrstuvwxyz\n\ndu>\n")
@@ -157,10 +166,11 @@ class RemoteChatTests(unittest.TestCase):
         def rpc(method,**kw):
             if method=="state":return {"running":True,"last_session":self.session}
             if method=="send":
+                receipt=self.receipt()
                 self.assertEqual(kw["line"],":doctor")
                 with self.path.open("a",encoding="utf8") as out:
                     out.write("[du> :doctor]\n[V13] doctor OK\n\ndu>\n")
-                return {"status":"SENT"}
+                return receipt
             raise AssertionError(method)
         issue=self.make_issue("CHAT_OPERATOR",{"command":":doctor"})
         client=FakeGitHub([issue])
@@ -192,6 +202,98 @@ class RemoteChatTests(unittest.TestCase):
             data=remote_chat.send(self.id,"Hi")
         self.assertEqual(data["status"],"NOT_RUNNING")
         self.assertEqual(list(remote_chat.JOBS.iterdir()),[])
+
+    def test_native_system_report_never_returns_answer_or_quoted_user_source(self):
+        def rpc(method,**kw):
+            if method=="state":return {"running":True,"last_session":self.session}
+            receipt=self.receipt()
+            with self.path.open("a",encoding="utf8") as out:
+                out.write("[du> Hi]\nassistant> [SOURCE_SYSTEM_REPORT; Systemdiagnose; keine Modellantwort]\n"
+                          "Zeitbudget erreicht: /private/model-path\n"
+                          "Angenommene Eingabe (exakte Quelle): private question\n")
+            return receipt
+        with mock.patch("v13.chat_service.call",side_effect=rpc):
+            remote_chat.send(self.id,"Hi")
+        data=remote_chat.result(self.id)
+        self.assertEqual(data["status"],"MODEL_ERROR")
+        self.assertEqual(data["error_code"],"MODEL_TIMEOUT")
+        self.assertFalse(data["complete"])
+        self.assertNotIn("private question",str(data))
+        self.assertNotIn("/private/model-path",str(data))
+
+    def test_rejected_send_cannot_claim_a_later_local_answer(self):
+        def rpc(method,**kw):
+            if method=="state":return {"running":True,"last_session":self.session}
+            return {"status":"REJECTED"}
+        with mock.patch("v13.chat_service.call",side_effect=rpc):
+            self.assertEqual(remote_chat.send(self.id,"remote question")["status"],"REJECTED")
+        with self.path.open("a",encoding="utf8") as out:
+            out.write("[du> local question]\nassistant> local answer\n")
+        data=remote_chat.result(self.id)
+        self.assertEqual(data["status"],"REJECTED")
+        self.assertNotIn("local answer",str(data))
+
+    def test_interrupted_send_stays_uncertain_and_cannot_be_replayed(self):
+        def rpc(method,**kw):
+            if method=="state":return {"running":True,"last_session":self.session}
+            with self.path.open("a",encoding="utf8") as out:
+                out.write("[du> maybe accepted]\nassistant> maybe generated\n")
+            raise TimeoutError("secret path /private/chat.sock")
+        with mock.patch("v13.chat_service.call",side_effect=rpc):
+            data=remote_chat.send(self.id,"maybe accepted")
+        self.assertEqual(data["status"],"SEND_UNCONFIRMED")
+        self.assertEqual(remote_chat.result(self.id)["status"],"SEND_UNCONFIRMED")
+        with self.assertRaises(remote_chat.ChatDenied):
+            remote_chat.send(self.id,"maybe accepted")
+        self.assertNotIn("private",str(data))
+
+    def test_old_service_without_atomic_receipt_never_uses_loose_snapshot(self):
+        def rpc(method,**kw):
+            if method=="state":return {"running":True,"last_session":self.session}
+            with self.path.open("a",encoding="utf8") as out:
+                out.write("[du> another client]\nassistant> another answer\n")
+            return {"status":"SENT"}
+        with mock.patch("v13.chat_service.call",side_effect=rpc):
+            self.assertEqual(remote_chat.send(self.id,"remote question")["status"],
+                             "CORRELATION_UNAVAILABLE")
+        self.assertEqual(remote_chat.result(self.id)["status"],"CORRELATION_UNAVAILABLE")
+
+    def test_atomic_receipt_wins_over_competing_send_and_session_restart(self):
+        new_session="v13-session-20261112-121201-b1b2c3.log"
+        new_path=remote_chat.LOGS/new_session
+        def rpc(method,**kw):
+            if method=="state":
+                # A restart/concurrent client occurs after this snapshot.
+                return {"running":True,"last_session":self.session}
+            with self.path.open("a",encoding="utf8") as out:
+                out.write("[du> competing old question]\nassistant> wrong old answer\n")
+            new_path.write_text("[du> competing new question]\nassistant> wrong new answer\n")
+            offset=new_path.stat().st_size
+            with new_path.open("a",encoding="utf8") as out:
+                out.write("[du> target question]\nassistant> target answer\n")
+            return self.receipt(offset,new_session)
+        with mock.patch("v13.chat_service.call",side_effect=rpc):
+            self.assertEqual(remote_chat.send(self.id,"target question")["status"],"SENT")
+        data=remote_chat.result(self.id)
+        self.assertEqual(data["status"],"ANSWER_VISIBLE")
+        self.assertIn("target answer",data["output"])
+        self.assertNotIn("wrong",data["output"])
+        self.assertNotIn("competing",data["output"])
+
+    def test_next_input_never_proves_previous_answer_complete(self):
+        def rpc(method,**kw):
+            if method=="state":return {"running":True,"last_session":self.session}
+            receipt=self.receipt()
+            with self.path.open("a",encoding="utf8") as out:
+                out.write("[du> first question]\nassistant> partial first answer\n"
+                          "[du> second question]\nassistant> uncertain output\n")
+            return receipt
+        with mock.patch("v13.chat_service.call",side_effect=rpc):
+            remote_chat.send(self.id,"first question")
+        data=remote_chat.result(self.id)
+        self.assertEqual(data["status"],"AMBIGUOUS_TURN")
+        self.assertFalse(data["complete"])
+        self.assertNotIn("uncertain output",str(data))
 
 
 if __name__=="__main__":

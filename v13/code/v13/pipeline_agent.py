@@ -122,6 +122,7 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits):
         state[name] = unavailable
         return
     if probe["status"] == "UP_TO_DATE" and name != "runtime":
+        updates.ensure_sparse_phone_modules(root)
         state[name] = "UP_TO_DATE"
         return
     must_deploy = name == "runtime" and runtime_deploy.needs_deploy(root)
@@ -195,32 +196,62 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
         previous = _state_raw()
         if not force and clock - int(previous.get("last_check_utc", 0)) < INTERVAL:
             return snapshot()
+        prior_status = snapshot()
         state = {"last_check_utc": clock, "last_success_utc": int(previous.get("last_success_utc", 0)),
-                 "last_result": "CHECKING", "runtime": "NOT_YET_CHECKED",
-                 "dashboard": "NOT_YET_CHECKED", "last_error": "NONE",
+                 "last_result": "CHECKING", "runtime": prior_status["runtime"],
+                 "dashboard": prior_status["dashboard"], "last_error": "NONE",
                  "updated_commit": previous.get("updated_commit", "")}
         _atomic(STATE, state)
         roots = {"runtime": Path.home() / ".v13-runtime-source",
                  "dashboard": Path.home() / ".v13-agent-source"}
         selected = ("runtime", "dashboard") if target == "all" else (target,)
+        for name in selected:
+            state[name] = "NOT_YET_CHECKED"
         tested_commits = {}
         try:
+            failed = set()
+            if "runtime" in selected:
+                try:
+                    # Old phone installs only had the dashboard Git clone.
+                    # Prepare the fixed runtime source as part of Update all;
+                    # activation below still requires CI and a stopped model.
+                    runtime_deploy.prepare_source(roots["runtime"])
+                except (OSError, ValueError, TimeoutError,
+                        runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired):
+                    state["runtime"] = "ERROR"
+                    state["last_error"] = "UPDATE"
+                    failed.add("runtime")
             busy = updates._runtime_active()
             # Fetch/check CI BEFORE asking to interrupt a running chat; if CI
             # isn't green, keep V13 running and show CI_WAIT, not fake progress.
             should_stop = False
             if busy:
                 for name in selected:
+                    if name in failed:
+                        continue
                     report, unavailable = _try_repo(roots[name])
                     if unavailable:
                         continue
-                    if report["status"] != "UPDATE_AVAILABLE":
-                        if name != "runtime" or not runtime_deploy.needs_deploy(roots[name]):
-                            continue
+                    try:
+                        if report["status"] != "UPDATE_AVAILABLE":
+                            if name != "runtime" or not runtime_deploy.needs_deploy(roots[name]):
+                                continue
+                    except runtime_deploy.RuntimeDeployError:
+                        state[name] = "ERROR"
+                        state["last_error"] = "UPDATE"
+                        failed.add(name)
+                        continue
                     sha = report["available"]
                     key = (sha, name)
-                    if key not in tested_commits:
-                        tested_commits[key] = updates.ci_passed(sha, scope=name)
+                    try:
+                        if key not in tested_commits:
+                            tested_commits[key] = updates.ci_passed(sha, scope=name)
+                    except (OSError, ValueError, TimeoutError, updates.UpdateDenied,
+                            subprocess.TimeoutExpired):
+                        state[name] = "ERROR"
+                        state["last_error"] = "CI"
+                        failed.add(name)
+                        continue
                     if tested_commits[key]:
                         should_stop = True
                 if should_stop:
@@ -231,31 +262,50 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                         state["last_error"] = "RUNNING"
                     busy = updates._runtime_active()
             for name in selected:
-                _do_update(name, roots[name], state,
-                           runtime_busy=busy, tested_commits=tested_commits)
+                if name in failed:
+                    continue
+                try:
+                    _do_update(name, roots[name], state,
+                               runtime_busy=busy, tested_commits=tested_commits)
+                except (OSError, ValueError, TimeoutError, updates.UpdateDenied,
+                        runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired):
+                    # A broken runtime install must not strand CHECKING or
+                    # prevent the independent control panel repairing itself.
+                    state[name] = "ERROR"
+                    state["last_error"] = "UPDATE"
                 _atomic(STATE, state)
             values = {state[name] for name in selected}
-            if "UPDATED" in values:
-                state["last_result"] = "UPDATED"
+            if values == {"ERROR"}:
+                state["last_result"] = "ERROR"
+            elif "ERROR" in values or "NOT_INSTALLED" in values:
+                state["last_result"] = "PARTIAL"
+            elif "UPDATED" in values:
+                state["last_result"] = ("UPDATED" if values <= {"UPDATED", "UP_TO_DATE"}
+                                        else "PARTIAL")
             elif "CI_WAIT" in values:
                 state["last_result"] = "CI_WAIT"
             elif "BLOCKED_RUNNING" in values:
                 state["last_result"] = "BLOCKED_RUNNING"
-            elif "ERROR" in values or "NOT_INSTALLED" in values:
-                state["last_result"] = "PARTIAL"
             else:
                 state["last_result"] = "UP_TO_DATE"
         except (OSError, ValueError, TimeoutError, updates.UpdateDenied,
-                lifecycle.LifecycleError, subprocess.TimeoutExpired) as exc:
+                lifecycle.LifecycleError, runtime_deploy.RuntimeDeployError,
+                subprocess.TimeoutExpired) as exc:
             state["last_result"] = "ERROR"
             state["last_error"] = ("RUNNING" if isinstance(exc,lifecycle.LifecycleError)
                                    else "UPDATE")
+        except Exception:
+            # Preserve a terminal, sanitized state even for an unexpected
+            # Python/import error; the supervising worker can log its class.
+            state["last_result"] = "ERROR"
+            state["last_error"] = "UPDATE"
+            raise
         finally:
             # Restart the UI-managed V13 chat whether an update succeeded or
             # failed. This cannot restart arbitrary Termux programs.
             if was_running:
                 try:
-                    lifecycle.request_resume(reason="UPDATED" if state["last_result"]=="UPDATED"
+                    lifecycle.request_resume(reason="UPDATED" if any(state[n] == "UPDATED" for n in selected)
                                              else "RESTORE")
                 except (OSError, ValueError, lifecycle.LifecycleError):
                     state["last_error"] = "STATE"

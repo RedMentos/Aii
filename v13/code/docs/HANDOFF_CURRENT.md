@@ -1,3 +1,13 @@
+# 2026-11-12 — live phone update, health and diagnostic repair
+
+See `PHONE_LIVE_REPAIR_20261112.md` for the release repair and verification
+boundaries: complete sparse phone dependencies, migration of old runtime
+sources, independent terminal update states, accurate native-failure alerts,
+atomic remote input receipts and valid bounded diagnostic JSON. Existing
+auto-update OFF, SourceHandoff originals, native negative evidence and all
+learning/promotion gates remain unchanged. This repair is delivered through
+the same CI-gated phone release branch; a Git commit alone is not device proof.
+
 # 2026-11-12 — no-input scheduler and actual runtime recovery
 
 Source parent: `0d6bd47b116f89c44c94c4d5ac6308afd604bac7`. User supplied

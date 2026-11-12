@@ -254,22 +254,8 @@ else
 fi
 
 git -C "$ROOT" sparse-checkout set --no-cone \
-  v13/code/v13/__init__.py \
-  v13/code/v13/remote_maintenance_bridge.py \
-  v13/code/v13/owner_read_bridge.py \
-  v13/code/v13/remote_chat.py \
-  v13/code/v13/phone_monitor.py \
-  v13/code/v13/mobile_dashboard.py \
-  v13/code/v13/mobile_dashboard.html \
-  v13/code/v13/managed_console.py \
-  v13/code/v13/source_updater.py \
-  v13/code/v13/pipeline_agent.py \
-  v13/code/v13/lifecycle.py \
-  v13/code/v13/chat_service.py \
-  v13/code/v13/runtime_deploy.py \
-  v13/code/v13/diagnostic_push.py \
+  'v13/code/v13/' \
   v13/code/scripts/v13-update \
-  v13/code/v13/termux_patch_staging.py \
   v13/code/docs/PRIVATE_REMOTE_BRIDGE_20261111.md \
   v13/code/docs/ONE_COMMAND_TERMUX_20261111.md || fail "Sparse Checkout fehlgeschlagen"
 [[ -s "$ROOT/v13/code/v13/owner_read_bridge.py" ]] || fail "Diagnoseprogramm fehlt"
@@ -397,7 +383,7 @@ if [[ ! -e "$PRIVATE/auto-update-setup-completed" ]]; then
   chmod 600 "$PRIVATE/auto-source-update.enabled"
   printf 'configured\n' > "$PRIVATE/auto-update-setup-completed"
   chmod 600 "$PRIVATE/auto-update-setup-completed"
-  printf 'Auto-Updates EIN: alle 15 Minuten, nur GitHub-CI-gruene Commits, niemals bei laufender V13-KI.\n'
+  printf 'Auto-Updates EIN: alle 15 Minuten, nur GitHub-CI-gruene Commits, mit kontrolliertem KI-Neustart.\n'
 else
   printf 'Vorhandene Auto-Update-Einstellung bleibt erhalten.\n'
 fi

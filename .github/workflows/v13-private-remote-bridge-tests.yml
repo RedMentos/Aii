@@ -7,10 +7,8 @@ on:
       - '.github/workflows/v13-private-remote-bridge-tests.yml'
   push:
     branches-ignore: [main]
-    paths:
-      - 'v13/code/v13/remote_maintenance_bridge.py'
-      - 'v13/code/tests/test_remote_maintenance_bridge.py'
-      - '.github/workflows/v13-private-remote-bridge-tests.yml'
+    # The phone gate needs this security check on every candidate SHA, even
+    # when its source change is outside the bridge file itself.
 jobs:
   offline-bridge-security:
     runs-on: ubuntu-latest

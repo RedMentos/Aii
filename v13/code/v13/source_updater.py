@@ -260,43 +260,83 @@ def apply(root=None, *, expected_tip=None):
 
 
 REQUIRED_PHONE_MODULES = (
+    "v13/code/v13/__init__.py",
+    "v13/code/v13/common.py",
+    "v13/code/v13/source_updater.py",
+    "v13/code/v13/owner_read_bridge.py",
+    "v13/code/v13/remote_maintenance_bridge.py",
     "v13/code/v13/remote_chat.py",
     "v13/code/v13/phone_monitor.py",
     "v13/code/v13/chat_service.py",
+    "v13/code/v13/managed_console.py",
+    "v13/code/v13/mobile_dashboard.py",
     "v13/code/v13/pipeline_agent.py",
     "v13/code/v13/lifecycle.py",
+    "v13/code/v13/runtime_deploy.py",
+    "v13/code/v13/diagnostic_push.py",
+    "v13/code/v13/termux_patch_staging.py",
     "v13/code/v13/mobile_dashboard.html",
 )
+PHONE_PACKAGE = "v13/code/v13/"
 
 
 def ensure_sparse_phone_modules(root=None):
-    """One-time safe migration of older phone sparse checkout.
+    """Safely migrate an older phone checkout to the fixed package subtree.
 
     Git fast-forward updates historically left newly introduced modules
     invisible because the one-command installer pinned exact old file paths.
-    This fixes that without another pasted installer command. No arbitrary
-    Git targets, shell commands or changes to private user/model data.
+    Keeping the directory selected also materializes future dependencies on
+    fast-forward. Only regular files committed under this fixed code subtree
+    are restored; private user/model data is never part of the migration.
     """
     target = Path(root or (Path.home() / ".v13-agent-source")).expanduser().resolve()
     with _lock():
-        checkout, branch, head = _repo_root(target)
-        if all((checkout / path).is_file() and not (checkout / path).is_symlink()
-               for path in REQUIRED_PHONE_MODULES):
-            return {"status": "ALREADY_PRESENT", "commit": head}
-        # Only add files whose path is actually committed at this exact
-        # verified local HEAD; never retrieve arbitrary external content.
-        for path in REQUIRED_PHONE_MODULES:
-            ref = git(checkout, "ls-tree", "HEAD", "--", path)
-            if not ref.startswith("100644 blob ") and not ref.startswith("100755 blob "):
-                raise UpdateDenied("Expected trusted phone module missing from commit")
-        git(checkout, "sparse-checkout", "add", *REQUIRED_PHONE_MODULES, timeout=90)
-        for path in REQUIRED_PHONE_MODULES:
+        checkout, _, head = _repo_root(target)
+        return _ensure_sparse_phone_modules(checkout, head)
+
+
+def _ensure_sparse_phone_modules(checkout, head):
+    """Materialize the verified package while the caller holds _lock()."""
+    files = []
+    for entry in git(checkout, "ls-tree", "-r", "-z", head, "--", PHONE_PACKAGE).split("\0"):
+        if not entry:
+            continue
+        metadata, separator, path = entry.partition("\t")
+        if (not separator or not path.startswith(PHONE_PACKAGE) or
+                metadata.split()[:2] not in (["100644", "blob"], ["100755", "blob"])):
+            raise UpdateDenied("Unsafe committed phone package member")
+        files.append(path)
+    if not set(REQUIRED_PHONE_MODULES).issubset(files):
+        raise UpdateDenied("Expected trusted phone module missing from commit")
+    # Refuse existing symlinks before Git can write through a directory
+    # supplied by an untracked file in the old sparse checkout.
+    def present():
+        complete = True
+        for path in files:
             file = checkout / path
-            if file.is_symlink() or not file.is_file():
-                raise UpdateDenied("Required phone module missing after sparse migration")
-        if not _is_clean(checkout):
-            raise UpdateDenied("Sparse module migration changed tracked content")
-        return {"status": "MIGRATED", "commit": head}
+            for member in (file, *file.parents):
+                if member == checkout:
+                    break
+                if member.is_symlink():
+                    raise UpdateDenied("Unsafe phone package symlink")
+            complete = complete and file.is_file()
+        return complete
+
+    complete = present()
+    sparse = git(checkout, "config", "--bool", "core.sparseCheckout", ok=(0, 1)) == "true"
+    cone = sparse and git(checkout, "config", "--bool", "core.sparseCheckoutCone", ok=(0, 1)) == "true"
+    pattern = PHONE_PACKAGE.rstrip("/") if cone else "/" + PHONE_PACKAGE
+    selected = not sparse or pattern in git(checkout, "sparse-checkout", "list").splitlines()
+    if complete and selected:
+        return {"status": "ALREADY_PRESENT", "commit": head}
+    if not sparse:
+        raise UpdateDenied("Required phone package files missing from full checkout")
+    git(checkout, "sparse-checkout", "add", pattern, timeout=90)
+    if not present():
+        raise UpdateDenied("Required phone module missing after sparse migration")
+    if not _is_clean(checkout):
+        raise UpdateDenied("Sparse module migration changed tracked content")
+    return {"status": "MIGRATED", "commit": head}
 
 
 def apply_dashboard(root=None, *, expected_tip=None):
@@ -313,6 +353,8 @@ def apply_dashboard(root=None, *, expected_tip=None):
     with _lock():
         s = status(requested)
         if s["status"] == "UP_TO_DATE":
+            checkout, _, head = _repo_root(requested)
+            _ensure_sparse_phone_modules(checkout, head)
             return s
         if expected_tip is not None and s["available"] != expected_tip:
             raise UpdateDenied("Dashboard remote revision changed after CI approval")
@@ -325,6 +367,7 @@ def apply_dashboard(root=None, *, expected_tip=None):
             git(checkout, "merge", "--ff-only", s["available"], timeout=180)
             if not _is_clean(checkout):
                 raise UpdateDenied("Dashboard checkout is dirty after update")
+            _ensure_sparse_phone_modules(checkout, s["available"])
             _check_python(checkout, before, s["available"])
             html_file = checkout / "v13/code/v13/mobile_dashboard.html"
             if html_file.is_symlink() or not html_file.is_file():

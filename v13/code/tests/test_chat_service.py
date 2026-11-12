@@ -228,7 +228,14 @@ class RealDaemonTests(unittest.TestCase):
                 else:
                     self.fail("independent V13 daemon did not boot")
                 self.assertTrue(request("state")["result"]["running"])
-                self.assertTrue(request("send",line="Wie geht es dir?")["ok"])
+                sent=request("send",line="Wie geht es dir?")
+                self.assertTrue(sent["ok"])
+                receipt=sent["result"]
+                self.assertTrue(receipt["input_logged"])
+                self.assertEqual(receipt["session"],request("state")["result"]["last_session"])
+                recorded=(private/"console-logs"/receipt["session"]).read_bytes()
+                self.assertTrue(recorded[receipt["offset"]:].startswith(
+                    "\n[du> Wie geht es dir?]\n".encode("utf8")))
                 seen=""
                 for _ in range(120):
                     seen=request("output",limit=4000)["result"]

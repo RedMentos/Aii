@@ -137,10 +137,20 @@ class ManagedConsole:
             data = command.strip().encode("utf-8") + b"\n"
             # All UI-submitted local V13 commands are logged locally;
             # the remote bridge never receives these raw user inputs.
-            self._append(b"\n[du> " + data.rstrip(b"\n") + b"]\n")
+            path = self.path
+            offset = (path.stat().st_size if path is not None and
+                      path.is_file() and not path.is_symlink() else None)
+            echo = b"\n[du> " + data.rstrip(b"\n") + b"]\n"
+            self._append(echo)
+            logged = (offset is not None and path.stat().st_size == offset + len(echo)
+                      and self.log_bytes < MAX_SESSION_BYTES)
             proc.stdin.write(data)
             proc.stdin.flush()
-            return {"status": "SENT"}
+            # Bind the accepted input to the exact session/log position while
+            # holding the same lock as recorder, restart and competing sends.
+            # A separate state RPC or filesystem stat cannot provide this.
+            return {"status": "SENT", "session":path.name if path else None,
+                    "offset":offset, "input_logged":logged}
 
     def cancel(self):
         with self.lock:
