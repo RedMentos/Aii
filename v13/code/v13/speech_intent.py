@@ -86,6 +86,22 @@ class SpeechIntentQueue:
             self.db.commit()
             return len(ids)
 
+    def interrupt_one(self, intent_id):
+        """Cancel only one uncertain playback without dropping other queued C3 turns."""
+        with self.lock:
+            row = self.db.execute(
+                "SELECT status FROM speech_intents WHERE intent_id=?", (intent_id,)
+            ).fetchone()
+            if row is None or row[0] not in ("QUEUED", "RENDERING"):
+                return False
+            self.db.execute(
+                "UPDATE speech_intents SET status='INTERRUPTED' WHERE intent_id=?",
+                (intent_id,)
+            )
+            self._event(intent_id, "INTERRUPTED")
+            self.db.commit()
+            return True
+
     def status(self, intent_id):
         row = self.db.execute("SELECT status FROM speech_intents WHERE intent_id=?", (intent_id,)).fetchone()
         return row[0] if row else None
