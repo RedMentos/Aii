@@ -284,7 +284,9 @@ def refresh_requested(which):
 
 
 def acknowledge_refresh(which):
-    name = UI_REFRESH if which == "ui" else BRIDGE_REFRESH
+    name = {"ui": UI_REFRESH, "bridge": BRIDGE_REFRESH, "ai": AI_REFRESH}.get(which)
+    if name is None:
+        raise ValueError("invalid refresh target")
     if name.is_symlink():
         return False
     try:
