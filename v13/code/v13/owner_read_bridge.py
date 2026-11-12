@@ -22,7 +22,7 @@ import threading
 from v13 import remote_maintenance_bridge as bridge
 
 READ_SCHEMA = "v13.private-relay.owner-read/1"
-READ_CMDS = frozenset({"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS"})
+READ_CMDS = frozenset({"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE"})
 OWNER_AGENT = "agent-owner"
 MAX_READ_BODY = 1024
 
@@ -42,9 +42,22 @@ def validate_owner_read(issue, cfg, *, now=None):
     if not isinstance(raw, str) or len(raw.encode("utf-8")) > MAX_READ_BODY:
         raise bridge.Denied("oversized or missing payload")
     obj = bridge.strict_json(raw)
-    if not isinstance(obj, dict) or set(obj) != {"schema", "id", "command", "expires_at"}:
+    if not isinstance(obj, dict) or not {"schema","id","command","expires_at"}.issubset(obj):
         raise bridge.Denied("invalid read schema")
     ident, operation, expiry = obj["id"], obj["command"], obj["expires_at"]
+    allowed_fields = {"schema", "id", "command", "expires_at"}
+    if operation == "LOG_PAGE":
+        allowed_fields.add("args")
+    if set(obj) != allowed_fields:
+        raise bridge.Denied("unexpected read fields")
+    args = obj.get("args", {})
+    if operation == "LOG_PAGE":
+        if (not isinstance(args, dict) or set(args) != {"session","page"} or
+            type(args.get("session")) is not int or not 0 <= args["session"] < 32 or
+            type(args.get("page")) is not int or not 0 <= args["page"] < 1024):
+            raise bridge.Denied("invalid bounded log page")
+    elif args:
+        raise bridge.Denied("unexpected read args")
     if obj["schema"] != READ_SCHEMA or not isinstance(ident, str) or not bridge.ID.fullmatch(ident):
         raise bridge.Denied("invalid schema/id")
     if title != "V13READ:" + ident or operation not in READ_CMDS:
@@ -65,17 +78,17 @@ def validate_owner_read(issue, cfg, *, now=None):
         raise bridge.Denied("stale/future issue")
     if operation not in cfg.get("permissions", {}).get(OWNER_AGENT, []):
         raise bridge.Denied("disabled owner-read command")
-    return ident, operation
+    return ident, operation, args
 
 
 def process_owner_issue(client, cfg, db, issue, *, now=None):
     try:
-        request_id, operation = validate_owner_read(issue, cfg, now=now)
+        request_id, operation, args = validate_owner_read(issue, cfg, now=now)
         if OWNER_AGENT not in cfg["keys"]:
             return False
         # The resulting local HMAC is never posted or exported.
         signed = bridge.make_command(
-            OWNER_AGENT, operation, {}, cfg["keys"][OWNER_AGENT],
+            OWNER_AGENT, operation, args, cfg["keys"][OWNER_AGENT],
             now=now, request_id=request_id
         )
         local = dict(issue)
@@ -127,12 +140,17 @@ def github_token():
     return token
 
 
-def create_read_request(command, *, now=None):
+def create_read_request(command, *, now=None, session=0, page=0):
     """Build a non-secret READ request for a trusted GitHub connector."""
     if command not in READ_CMDS:
         raise bridge.Denied("read-only commands only")
-    return {"schema": READ_SCHEMA, "id": secrets.token_hex(16),
-            "command": command, "expires_at": int(time.time() if now is None else now) + 600}
+    out = {"schema": READ_SCHEMA, "id": secrets.token_hex(16),
+           "command": command, "expires_at": int(time.time() if now is None else now) + 600}
+    if command == "LOG_PAGE":
+        if type(session) is not int or not 0 <= session < 32 or type(page) is not int or not 0 <= page < 1024:
+            raise bridge.Denied("bounded log page values only")
+        out["args"] = {"session":session, "page":page}
+    return out
 
 
 def main(argv=None):
