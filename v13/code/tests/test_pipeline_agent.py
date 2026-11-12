@@ -15,6 +15,12 @@ class PipelineTests(unittest.TestCase):
         base = Path(temp.name) / "private"
         base.mkdir(mode=0o700)
         self.base = base
+        home = base.parent
+        (home / "V13-Phone").mkdir()
+        (home / ".v13-agent-source").mkdir()
+        home_patch = mock.patch.object(p.Path, "home", return_value=home)
+        home_patch.start()
+        self.addCleanup(home_patch.stop)
         for key, value in (
             ("PRIVATE", base),
             ("ENABLED", base / "auto-source-update.enabled"),
