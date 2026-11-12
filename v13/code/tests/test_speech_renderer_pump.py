@@ -129,7 +129,9 @@ def test_committed_c3_operator_to_verified_render_end_to_end(tmp_path):
         handoff.close()
 
 def test_uncertain_playback_does_not_discard_next_queued_turn(tmp_path):
-    q = SpeechIntentQueue(tmp_path / "q.sqlite")
+    from itertools import count
+    clock = count(1)
+    q = SpeechIntentQueue(tmp_path / "q.sqlite", clock=lambda: float(next(clock)))
     first = q.submit("first", source_id="c3:first")
     second = q.submit("second", source_id="c3:second")
     renderer = Renderer()
