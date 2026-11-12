@@ -17,7 +17,7 @@ def test_execute_needs_local_approval_and_native_transport():
 
 def test_invalid_and_sensitive_text_not_echoed():
     d = AndroidDispatcher(CapabilityRegistry())
-    for line in ('launch com.example.app', ':android execute launch', ':android dry type secret\\nother', ':android dry unknown target'):
+    for line in ('launch com.example.app', ':android execute launch', ':android dry type secret' + chr(10) + 'other', ':android dry unknown target'):
         result = dispatch_operator_command(line, d)
         assert result.status in ('INVALID', 'DENIED')
         assert 'secret' not in result.detail
