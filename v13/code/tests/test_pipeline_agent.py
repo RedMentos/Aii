@@ -46,6 +46,63 @@ class PipelineTests(unittest.TestCase):
         p.ENABLED.write_text("yes\n")
         p.ENABLED.chmod(0o600)
 
+    def test_pending_13_from_old_checkout_does_not_reappear_after_real_update(self):
+        # Regression: dashboard 'Änderungen prüfen' formerly read ~/V13-Phone
+        # instead of the two actual CI-gated update roots.
+        expected = {".v13-runtime-source", ".v13-agent-source"}
+        seen = []
+        def source_state(root, *, fetch=True):
+            seen.append(root.name)
+            self.assertIn(root.name, expected, "old ~/V13-Phone path must not be read")
+            return {"status": "UP_TO_DATE", "available": "a"*40,
+                    "current": "a"*40, "changed_files": 0}
+        with mock.patch.object(u, "status", side_effect=source_state):
+            r = p.pending_updates(fetch=True)
+        self.assertTrue(r["verified_current"])
+        self.assertEqual(r["pending_files"], 0)
+        self.assertEqual(set(seen), expected)
+        self.assertEqual(r["status"], "UP_TO_DATE")
+
+    def test_pending_updates_counts_real_files_and_rechecks_after_apply(self):
+        roots = {".v13-runtime-source", ".v13-agent-source"}
+        state = {"outdated": True}
+        def source_state(root, *, fetch=True):
+            self.assertIn(root.name, roots)
+            if state["outdated"] and root.name == ".v13-runtime-source":
+                return {"status": "UPDATE_AVAILABLE", "current": "0"*40,
+                        "available": "a"*40, "changed_files": 13}
+            return {"status": "UP_TO_DATE", "current": "a"*40,
+                    "available": "a"*40, "changed_files": 0}
+        with mock.patch.object(u, "status", side_effect=source_state):
+            first = p.pending_updates(fetch=True)
+            self.assertEqual(first["pending_files"], 13)
+            self.assertFalse(first["verified_current"])
+            state["outdated"] = False
+            after = p.pending_updates(fetch=True)
+        self.assertEqual(after["pending_files"], 0)
+        self.assertTrue(after["verified_current"])
+
+    def test_zero_git_changes_but_old_launcher_is_not_falsely_current(self):
+        with mock.patch.object(u, "status", return_value={
+                "status": "UP_TO_DATE", "available": "a"*40,
+                "current": "a"*40, "changed_files": 0}), \
+             mock.patch.object(p.runtime_deploy, "needs_deploy", return_value=True):
+            pending = p.pending_updates(fetch=True)
+        self.assertEqual(pending["pending_files"], 0)
+        self.assertTrue(pending["runtime_activation_pending"])
+        self.assertEqual(pending["runtime"], "ACTIVATION_PENDING")
+        self.assertFalse(pending["verified_current"])
+
+    def test_missing_runtime_root_never_reports_fake_zero_verified(self):
+        home = p.Path.home()
+        (home/".v13-runtime-source").rmdir()
+        with mock.patch.object(u, "status", return_value={
+                "status": "UP_TO_DATE", "changed_files": 0,
+                "current": "a"*40, "available": "a"*40}):
+            check = p.pending_updates(fetch=True)
+        self.assertEqual(check["runtime"], "NOT_INSTALLED")
+        self.assertFalse(check["verified_current"])
+
     def test_private_owner_update_request_is_queued_once_not_arbitrary_shell(self):
         from v13 import pipeline_agent as pa
         request="f"*32
