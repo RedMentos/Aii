@@ -4,6 +4,7 @@ The transport MUST separately authenticate author, verify private-repository
 visibility and enforce Android-side consent. This module has no shell/network API.
 """
 import hashlib
+import fcntl
 import json
 import os
 import re
@@ -80,11 +81,23 @@ class DiagnosticBridge:
         if type(expires) is not int or expires < current or expires > current + 300:
             return {"status": "EXPIRED"}
         digest = hashlib.sha256(json.dumps(envelope, sort_keys=True).encode()).hexdigest()
-        if request_id in self.seen:
-            return {"status": "DUPLICATE" if self.seen[request_id] == digest else "REPLAY_CONFLICT", "id": request_id}
-        self.seen[request_id] = digest
-        self.seen = dict(list(self.seen.items())[-self.max_seen:])
-        self._save()
+        # Cross-process exclusion: re-read the durable journal under one lock.
+        # Never evict unexpired/unknown legacy IDs: reject at capacity instead.
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        lock_path = self.path.with_name(self.path.name + ".lock")
+        with open(lock_path, "a+b") as lock:
+            os.fchmod(lock.fileno(), 0o600)
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            try:
+                self.seen = self._load()
+                if request_id in self.seen:
+                    return {"status": "DUPLICATE" if self.seen[request_id] == digest else "REPLAY_CONFLICT", "id": request_id}
+                if len(self.seen) >= self.max_seen:
+                    return {"status": "CAPACITY", "id": request_id}
+                self.seen[request_id] = digest
+                self._save()
+            finally:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
         try:
             raw = self.metrics[command]()
             if not hasattr(raw, "items"):
