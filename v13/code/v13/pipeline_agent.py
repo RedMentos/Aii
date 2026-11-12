@@ -116,6 +116,60 @@ def _try_repo(root):
         return None, "ERROR"
 
 
+def pending_updates(*, fetch=True):
+    """Inspect the SAME two checkouts used by the one-click updater.
+
+    This intentionally does NOT check the obsolete ~/V13-Phone directory.
+    Git source updated != installed runtime updated: independently verify the
+    active launcher snapshot, too. No code is installed by this read-only call.
+    """
+    roots = {"runtime": Path.home() / ".v13-runtime-source",
+             "dashboard": Path.home() / ".v13-agent-source"}
+    result = {"schema": "v13.pipeline-pending/1",
+              "status": "UP_TO_DATE", "pending_files": 0,
+              "runtime": "UNKNOWN", "dashboard": "UNKNOWN",
+              "runtime_activation_pending": False,
+              "auto_enabled": enabled(), "branches": {}}
+    for name, root in roots.items():
+        if not root.is_dir():
+            result[name] = "NOT_INSTALLED"
+            result["status"] = "NOT_INSTALLED"
+            continue
+        try:
+            info = updates.status(root, fetch=fetch)
+            source_state = info["status"]
+            if source_state not in ("UP_TO_DATE", "UPDATE_AVAILABLE"):
+                raise ValueError("Unexpected update state")
+            pending = info.get("changed_files", 0)
+            if type(pending) is not int or pending < 0:
+                raise ValueError("Invalid changed file count")
+            result["pending_files"] += pending
+            result["branches"][name] = {
+                "current": info.get("current", "")[:12],
+                "available": info.get("available", "")[:12],
+                "pending_files": pending
+            }
+            if name == "runtime" and source_state == "UP_TO_DATE":
+                if runtime_deploy.needs_deploy(root):
+                    result["runtime_activation_pending"] = True
+                    source_state = "ACTIVATION_PENDING"
+            result[name] = source_state
+            if source_state != "UP_TO_DATE" and result["status"] == "UP_TO_DATE":
+                result["status"] = "UPDATE_AVAILABLE"
+        except (OSError, ValueError, TimeoutError, updates.UpdateDenied,
+                runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired):
+            result[name] = "ERROR"
+            result["status"] = "ERROR"
+    # An unreachable or uninstalled side is never reported as 0 verified.
+    result["verified_current"] = (
+        result["status"] == "UP_TO_DATE" and
+        result["runtime"] == result["dashboard"] == "UP_TO_DATE" and
+        result["pending_files"] == 0 and
+        not result["runtime_activation_pending"]
+    )
+    return result
+
+
 def _do_update(name, root, state, *, runtime_busy, tested_commits):
     probe, unavailable = _try_repo(root)
     if unavailable:
