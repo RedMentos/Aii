@@ -60,6 +60,22 @@ def android_local_console(registry, audit_path: str | Path, *, transport, verifi
                 return ConsoleReply("STATUS", detail.strip())
             if not isinstance(line, str) or not line.startswith(":android "):
                 return ConsoleReply("INVALID", "explicit Android operator command required")
-            result = command(line, approve_local=approve_local)
+            # A different session may engage the durable stop while the local
+            # approval UI is open. Recheck immediately after that callback,
+            # before handing the request to the dispatcher.
+            if callable(approve_local):
+                def approval_with_stop_check(*args, **kwargs):
+                    if latch.engaged():
+                        registry.stop()
+                        return False
+                    approved = approve_local(*args, **kwargs)
+                    if latch.engaged():
+                        registry.stop()
+                        return False
+                    return approved
+                approval = approval_with_stop_check
+            else:
+                approval = approve_local
+            result = command(line, approve_local=approval)
             return ConsoleReply(result.status, result.detail, result.request_id)
         yield handle
