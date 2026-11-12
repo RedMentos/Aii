@@ -28,6 +28,7 @@ class PipelineTests(unittest.TestCase):
             ("LOCK", base / "pipeline-status.lock"),
             ("UI_REFRESH", base / "pipeline-ui-refresh"),
             ("BRIDGE_REFRESH", base / "pipeline-bridge-refresh"),
+            ("AI_REFRESH", base / "pipeline-ai-refresh"),
         ):
             patch = mock.patch.object(p, key, value)
             patch.start()
@@ -61,6 +62,7 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(result["updated_commit"], commit)
         self.assertTrue(p.refresh_requested("ui"))
         self.assertTrue(p.refresh_requested("bridge"))
+        self.assertTrue(p.refresh_requested("ai"))
         self.assertEqual(ci.call_count, 2, "UI and runtime use different CI gates")
         self.assertEqual({c.kwargs["scope"] for c in ci.call_args_list},
                          {"runtime","dashboard"})
