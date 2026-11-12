@@ -53,6 +53,22 @@ class LocalSpeechHandoff:
         finally:
             self.bridge.enabled = False
 
+    def render_one(self, *, renderer, verifier, local_user_opt_in=False):
+        """Explicitly hand one queued C3 utterance to an injected renderer.
+
+        Local opt-in is NOT Android identity or OS permission proof. The
+        companion must enforce its own independent grants and receipt checks.
+        """
+        from .speech_intent import SpeechIntentError
+        from .speech_renderer_pump import SpeechRendererPump
+        if self.closed:
+            raise SpeechIntentError("speech handoff closed")
+        if local_user_opt_in is not True:
+            raise SpeechIntentError("local user opt-in required")
+        return SpeechRendererPump(
+            self.queue, renderer=renderer, verifier=verifier, enabled=True
+        ).run_one()
+
     def stop(self):
         if self.closed:
             return 0
