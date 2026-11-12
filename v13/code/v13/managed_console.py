@@ -163,6 +163,42 @@ class ManagedConsole:
     def shutdown(self):
         return self.send(":shutdown")
 
+    def terminate_owned(self, *, term_wait=2.0, kill_wait=1.0):
+        """Boundedly stop ONLY our captured, isolated V13 process group.
+
+        Reserved for an explicit shutdown or validated update after the
+        graceful :shutdown and SIGINT paths failed. Ordinary :cancel must not
+        kill a healthy chat waiting for the next turn. Never signal foreign
+        processes or a process that has already exited.
+        """
+        with self.lock:
+            proc = self.process
+            if proc is None or proc.poll() is not None:
+                return {"status": "ALREADY_STOPPED"}
+            # start() used start_new_session=True; refuse an unexpected group.
+            if os.getpgid(proc.pid) != proc.pid:
+                raise RuntimeError("Managed V13 process group mismatch")
+            try:
+                os.killpg(proc.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                return {"status": "ALREADY_STOPPED"}
+        try:
+            proc.wait(timeout=term_wait)
+        except subprocess.TimeoutExpired:
+            with self.lock:
+                if self.process is proc and proc.poll() is None:
+                    if os.getpgid(proc.pid) != proc.pid:
+                        raise RuntimeError("Managed V13 process group changed")
+                    try:
+                        os.killpg(proc.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+            try:
+                proc.wait(timeout=kill_wait)
+            except subprocess.TimeoutExpired:
+                pass
+        return {"status": "STOPPED" if proc.poll() is not None else "STILL_RUNNING"}
+
     def state(self):
         with self.lock:
             proc = self.process
