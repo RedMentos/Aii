@@ -1,0 +1,50 @@
+{
+  "browser": {
+    "engine": "Chromium",
+    "fixture": "disposable echo process",
+    "page_errors": 0,
+    "viewport": "390x844"
+  },
+  "existing_staged_recovery": {
+    "passed": 50,
+    "skipped": 9,
+    "subtests": 5
+  },
+  "focused": {
+    "passed": 197,
+    "subtests": 26
+  },
+  "native_model_quality": "NOT_MEASURED_BY_THIS_REPAIR",
+  "new_patch_redmi_installation": "AWAITING_EXACT_COMMIT_CI_AND_PRIVATE_RECEIPT",
+  "public_privacy_scan": "CLEAN",
+  "real_cli_and_store_roundtrips": "PASS",
+  "review_base": "1d9a431d38c56eab541c5346e36b5df405aafb1d",
+  "schema": "v13.phone-repair-software-evidence/1",
+  "sha256": {
+    ".github/workflows/v13-integrated-context-stage-20261111.yml": "58cde3d20d0853787841e5e143865f14f3a5be02da7f09c37686aefa1f631097",
+    ".github/workflows/v13-private-remote-bridge-tests.yml": "b786b2cb022f5e00d2a03723b7a3ac568d15d6a58c69968e97142b94ef80dd30",
+    "v13/code/docs/HANDOFF_CURRENT.md": "a8afd09854746ef05aee4bc23a2ea1900de6981ba4bc9b9e2d48ef4cb22b4b12",
+    "v13/code/docs/PHONE_LIVE_REPAIR_20261112.md": "d04b1de620c5d5e528de0abbf9977d1bd7ef6c69a3e9c6ddd177bfe4c658ae8c",
+    "v13/code/docs/proofs/phone-live-repair-20261112/focused-tests.log": "ea538c7884fbcf39d81fc5ccbee3919d7e32c409540323b17e457cc601c93694",
+    "v13/code/docs/proofs/phone-live-repair-20261112/staged-tests.log": "bb15a44099902da94d0912b7d16141df274d4297b0fc96d481705d1e03839dd8",
+    "v13/code/scripts/termux_one_command.sh": "5f92dab2020bdd5c1029e813ff92ed89c10ee3058f79bc83f7545f754b9ef63c",
+    "v13/code/tests/test_chat_service.py": "0acd2c94d72af644d7b8a7552600367fc2066f6ed41e35ff3e3267a98e674dc6",
+    "v13/code/tests/test_diagnostic_push.py": "724b8173427d9253f0122aa1e9d85d4624ff9a534df9a5d5ac977e869d43efa4",
+    "v13/code/tests/test_managed_console_dashboard.py": "62cbfee52aabf7195075f48696e3f341ce06bb54e94cc1802d643c2f288d13e7",
+    "v13/code/tests/test_phone_monitor.py": "c45164fc0485b143aff718b89975036b8af19299376fd89137a549afd125d6b8",
+    "v13/code/tests/test_pipeline_agent.py": "77eae9ae24e7d58b89d6a7f91a61115a88455bfd945c08ed3eadfbaa9ae21b67",
+    "v13/code/tests/test_remote_chat.py": "60c9d85a32b81b3cf3ffe735ed622806f29c40ea27ead92e9b7666be053cd66e",
+    "v13/code/tests/test_runtime_deploy.py": "1d9ff8cab571d3948e4e2399acd22c5bd3973609856a6961f6ccadd55d19b64f",
+    "v13/code/tests/test_source_updater.py": "4bd63f8c26a5e2d0e4a05a656280a73a094b1ba190bd0d34c42b7c3c60275e01",
+    "v13/code/v13/diagnostic_push.py": "f355143f1bfccb582eb969d8d864df687013d13412ec6efc7d8c6963196bd020",
+    "v13/code/v13/managed_console.py": "f3d41b225698e3eefb05e5c9d379acd52d7eba68d83856fe3383b3f413e09761",
+    "v13/code/v13/mobile_dashboard.py": "ee9a983673d7d740dae0125ea8d3d302e15e66ea3b2ec99b103c43e7eba11ebe",
+    "v13/code/v13/owner_read_bridge.py": "6f683513afd2c535897e723edc9bca16c5072818d12d09d4923bf055c879a44f",
+    "v13/code/v13/phone_monitor.py": "d09675837cfee14e024f9733d6ce83ceab6e7fae6af5901d93a6639420e3dbbf",
+    "v13/code/v13/pipeline_agent.py": "154cf2e7921c6281e18fa9f839e735e6106012edcb62e4a7c509d848f93c84cf",
+    "v13/code/v13/remote_chat.py": "3a049f61844584fc058b0ad33d47fcfb21a27148d6e94add651f29d0179ca0be",
+    "v13/code/v13/runtime_deploy.py": "ac6aca439c0ac16641135c781eaed3c1a6e0bfd38a46220c19d977290bff419b",
+    "v13/code/v13/source_updater.py": "ab7d60d430a9cc67328df94903ca12cb6c98b03a9c9183ad09c8f400b0af5c30"
+  },
+  "tested_source_commit": "57d0869c3cb4093839e08947f1f6634ef288d84b"
+}
