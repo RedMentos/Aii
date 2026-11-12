@@ -8,6 +8,7 @@ on:
       - 'v13/code/v13/android_stop_latch.py'
       - 'v13/code/v13/android_local_console.py'
       - 'v13/code/tests/test_android_local_console.py'
+      - 'v13/code/tests/test_qa_android_stop_during_approval.py'
 jobs:
   durable-stop:
     runs-on: ubuntu-latest
@@ -20,4 +21,4 @@ jobs:
       - run: python -m pip install pytest
       - run: |
           python -m compileall -q v13/code/v13/android_stop_latch.py v13/code/v13/android_local_console.py
-          PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_android_local_console.py v13/code/tests/test_android_operator_audited_session.py v13/code/tests/test_android_operator_validation.py
+          PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_android_local_console.py v13/code/tests/test_android_operator_audited_session.py v13/code/tests/test_android_operator_validation.py v13/code/tests/test_qa_android_stop_during_approval.py
