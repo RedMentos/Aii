@@ -3,7 +3,7 @@ import unittest
 from v13.audio_source_gate import checked_audio_source_view
 
 REF={'source_id':'synthetic','sha256':'a'*64,'modality':'audio','char_start':0,'char_end':0}
-SEG={'start_ms':0,'end_ms':20,'finality':'FINAL','action_authority':False,'learning_authority':False,'acoustic':{'rms':0.2,'zcr':0.1},'asr_transcript':None}
+SEG={'start_ms':0,'end_ms':20,'consent_receipt_ref':'synthetic-consent','finality':'FINAL','action_authority':False,'learning_authority':False,'acoustic':{'rms':0.2,'zcr':0.1},'asr_transcript':None}
 P={'modality':'audio','source_ref':REF,'provenance':[REF],'segments':[SEG],'event_id':'event','brain_generation_id':'gen'}
 S={'sha256':'a'*64,'revoked':False,'modality':'audio'}
 def run(p): return checked_audio_source_view(p,lambda _:S)
