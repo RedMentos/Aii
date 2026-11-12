@@ -146,6 +146,16 @@ def service_stop(console, *, shutdown_wait=12, interrupt_wait=6):
             deadline = time.monotonic() + interrupt_wait
             while time.monotonic() < deadline and console.state()["running"]:
                 time.sleep(.1)
+        if console.state()["running"]:
+            # Only the ManagedConsole has this method and can prove that its
+            # child was started in a private process group. A foreign or
+            # unmanageable V13 process remains BLOCKED_RUNNING, never killed.
+            terminate = getattr(console, "terminate_owned", None)
+            if callable(terminate):
+                try:
+                    terminate(term_wait=2.0, kill_wait=1.0)
+                except (OSError, RuntimeError, ValueError, ProcessLookupError):
+                    pass
         stopped = not console.state()["running"]
     _write(STOP_ACK, {"nonce":nonce, "status":"STOPPED" if stopped else "BUSY",
                       "was_running":was_running, "created":int(time.time())})
