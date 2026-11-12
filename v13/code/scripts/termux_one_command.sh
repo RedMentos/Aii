@@ -20,38 +20,99 @@ command -v gh >/dev/null || fail "gh fehlt trotz Installation"
 # Never replace a dashboard while it owns a live model/chat process. Those
 # children have their own process session and would outlive a killed UI.
 # A saved local stop is an explicit user decision, not a successful startup.
+# An explicit new V13 start/install command authorizes a controlled restart.
+# Old UI versions do not yet implement the lifecycle files, so stop only
+# recognized current-user V13 chat processes via their isolated process group.
+# Do not signal other Termux/Python processes or kill a running task with SIGKILL.
 python - <<'PY'
-import os
+import json, os, signal, time
 from pathlib import Path
-import shlex
 
 home = Path.home()
-if (home / ".v13-private/bridge-state/STOP").exists():
-    config = shlex.quote(str(home / ".v13-private/remote.json"))
-    source = shlex.quote(str(home / ".v13-agent-source/v13/code"))
-    raise SystemExit("V13: Diagnosekanal ist lokal gestoppt. Zum bewussten Fortsetzen zuerst: "
-                     + "PYTHONPATH=" + source + " python -m v13.owner_read_bridge resume --config " + config)
+private = home / ".v13-private"
+if (private / "bridge-state/STOP").exists():
+    raise SystemExit("V13: privater Agent wurde bewusst gestoppt; kein automatischer Neustart.")
 proc = Path("/proc")
 if not proc.is_dir():
-    raise SystemExit("V13: Laufende Prozesse koennen nicht geprueft werden; Einrichtung gestoppt.")
+    raise SystemExit("V13: Prozesssicht fehlt, sicherer Neustart nicht möglich.")
+own = os.getuid()
+expected_launcher = str(home / "v13/bin/v13")
 seen = 0
-for entry in proc.iterdir():
-    if not entry.name.isdecimal():
+targets = []
+for p in proc.iterdir():
+    if not p.name.isdecimal() or int(p.name) == os.getpid():
         continue
     try:
-        if entry.stat().st_uid != os.getuid():
+        if p.stat().st_uid != own:
             continue
-        args = [arg.decode("utf-8", "replace")
-                for arg in (entry / "cmdline").read_bytes().split(b"\0") if arg]
+        args = [x.decode("utf-8","replace") for x in (p/"cmdline").read_bytes().split(b"\0") if x]
+        env = (p/"environ").read_bytes().split(b"\0")
+        if b"HOME="+os.fsencode(home) not in env:
+            continue
     except OSError:
         continue
-    if args:
-        seen += 1
-    if any(arg == "v13" or arg.endswith("/bin/v13") for arg in args):
-        raise SystemExit("V13: Zuerst die laufende V13-KI mit 'V13 beenden' stoppen, "
-                         "dann diesen Einrichtungsbefehl erneut ausfuehren. Keine Prozesse beendet.")
-if not seen:
-    raise SystemExit("V13: Prozesssicht nicht verfuegbar; Einrichtung gestoppt.")
+    if not args:
+        continue
+    seen += 1
+    controlled = (expected_launcher in args and "chat" in args)
+    module = ("-m" in args and "v13" in args and "chat" in args)
+    if controlled or module:
+        targets.append(int(p.name))
+if seen == 0:
+    raise SystemExit("V13: Prozesssicht unsicher, Einrichtung gestoppt.")
+if not targets:
+    print("V13: keine aktive Chat-Sitzung; kein Stop nötig.")
+else:
+    print(f"V13: beende {len(targets)} erkannte lokale Chat-Sitzung(en) automatisch ...")
+    def alive(pid):
+        try:
+            fields=(proc/str(pid)/"stat").read_text().rsplit(")",1)[1].split()
+            return fields[0] != "Z"
+        except (FileNotFoundError, ProcessLookupError):
+            return False
+    own_group=os.getpgrp()
+    for pid in targets:
+        try:
+            group=os.getpgid(pid)
+            if group==pid and group!=own_group:
+                os.killpg(group,signal.SIGINT)
+            else:
+                os.kill(pid,signal.SIGINT)
+        except ProcessLookupError:
+            continue
+    deadline=time.monotonic()+12
+    while time.monotonic()<deadline and any(alive(pid) for pid in targets):
+        time.sleep(.15)
+    # Only the same explicitly identified session, never the parent's shell.
+    for pid in targets:
+        if not alive(pid):
+            continue
+        try:
+            group=os.getpgid(pid)
+            if group==pid and group!=own_group:
+                os.killpg(group,signal.SIGTERM)
+            else:
+                os.kill(pid,signal.SIGTERM)
+        except ProcessLookupError:
+            continue
+    deadline=time.monotonic()+7
+    while time.monotonic()<deadline and any(alive(pid) for pid in targets):
+        time.sleep(.15)
+    if any(alive(pid) for pid in targets):
+        raise SystemExit("V13: Chat kann nicht sicher beendet werden. Kein Update angewendet.")
+    private.mkdir(mode=0o700,parents=True,exist_ok=True)
+    if private.is_symlink() or private.stat().st_mode & 0o077:
+        raise SystemExit("V13: privater Speicher nicht geschützt.")
+    flag=private/"v13-lifecycle-resume.json"
+    if flag.is_symlink():
+        raise SystemExit("V13: unsicherer Neustartmarker.")
+    with flag.open("w") as out:
+        json.dump({"schema":"v13.lifecycle.resume/1", "reason":"INSTALL",
+                   "expires":int(time.time())+900},out)
+        out.flush()
+        os.fsync(out.fileno())
+    flag.chmod(0o600)
+    print("V13: Chat beendet; automatischer Neustart nach Installation vorgemerkt.")
 PY
 
 # Stop idle old dashboards before changing their on-disk HTML/Python sources.
@@ -156,6 +217,7 @@ git -C "$ROOT" sparse-checkout set --no-cone \
   v13/code/v13/managed_console.py \
   v13/code/v13/source_updater.py \
   v13/code/v13/pipeline_agent.py \
+  v13/code/v13/lifecycle.py \
   v13/code/scripts/v13-update \
   v13/code/v13/termux_patch_staging.py \
   v13/code/docs/PRIVATE_REMOTE_BRIDGE_20261111.md \
