@@ -257,6 +257,13 @@ def main(argv=None):
                     pipeline_agent.run_cycle(force=True, manual=True)
                 else:
                     pipeline_agent.run_cycle()
+                # V13 itself must be kept alive independently of the browser
+                # and updater; do not restart if the owner explicitly turned
+                # off the AI or while a verified update is in progress.
+                from .chat_service import _read_desired, ensure_service
+                if (_read_desired() and
+                        pipeline_agent.snapshot()["last_result"] != "CHECKING"):
+                    ensure_service(timeout=8)
             except (OSError, ValueError, RuntimeError) as exc:
                 print(json.dumps({"status":"PIPELINE_ERROR",
                                   "error_code":type(exc).__name__}), flush=True)
