@@ -41,7 +41,7 @@ SHA = re.compile(r"[0-9a-f]{40}\Z")
 ID = re.compile(r"[0-9a-f]{32}\Z")
 KEY = re.compile(r"[0-9a-f]{64}\Z")
 AGENT = re.compile(r"[a-z][a-z0-9_-]{2,39}\Z")
-COMMANDS = {"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "PATCH_STAGE", "PATCH_APPLY"}
+COMMANDS = {"HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS", "LOG_PAGE", "PATCH_STAGE", "PATCH_APPLY", "CHAT_SEND", "CHAT_RESULT", "UPDATE_REQUEST"}
 MAX_COMMAND = 8192
 MAX_REPLY = 12000
 MAX_STATUS = 8192
@@ -99,6 +99,18 @@ def verify_command(obj, keys, permissions, authors, *, author, now=None):
             type(args.get("session")) is not int or not 0 <= args["session"] < 34 or
             type(args.get("page")) is not int or not 0 <= args["page"] < 2048):
         raise Denied("LOG_PAGE requires bounded integer session/page")
+    if cmd == "CHAT_SEND" and (
+            set(args) != {"text"} or not isinstance(args.get("text"), str) or
+            not args["text"].strip() or len(args["text"].encode("utf-8")) > 1400 or
+            any(ch in args["text"] for ch in ("\\0", "\\n", "\\r")) or
+            args["text"].strip().startswith(":")):
+        raise Denied("CHAT_SEND requires one normal bounded user message")
+    if cmd == "CHAT_RESULT" and (
+            set(args) != {"request_id"} or not isinstance(args.get("request_id"), str) or
+            not ID.fullmatch(args["request_id"])):
+        raise Denied("CHAT_RESULT requires exact previous chat request ID")
+    if cmd == "UPDATE_REQUEST" and args:
+        raise Denied("UPDATE_REQUEST takes no parameters")
     if cmd in ("PATCH_STAGE", "PATCH_APPLY") and (
             set(args) != {"patch_commit", "patch_id"} or
             not isinstance(args["patch_commit"], str) or
@@ -662,6 +674,15 @@ def execute(client, cfg, cmd):
     if name == "PIPELINE_STATUS":
         from .pipeline_agent import snapshot
         return {"status": "OK", "pipeline": snapshot()}
+    if name == "CHAT_SEND":
+        from .remote_chat import send
+        return send(cmd["id"], cmd["args"]["text"])
+    if name == "CHAT_RESULT":
+        from .remote_chat import result
+        return result(cmd["args"]["request_id"])
+    if name == "UPDATE_REQUEST":
+        from .pipeline_agent import schedule_update
+        return schedule_update(cmd["id"])
     if name == "LOG_PAGE":
         from .mobile_dashboard import remote_console_page
         return {"status": "OK", "console_page": remote_console_page(
