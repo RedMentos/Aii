@@ -96,7 +96,7 @@ def verify_command(obj, keys, permissions, authors, *, author, now=None):
         raise Denied("read-only command has no parameters")
     if cmd == "LOG_PAGE" and (
             set(args) != {"session", "page"} or
-            type(args.get("session")) is not int or not 0 <= args["session"] < 32 or
+            type(args.get("session")) is not int or not 0 <= args["session"] < 34 or
             type(args.get("page")) is not int or not 0 <= args["page"] < 2048):
         raise Denied("LOG_PAGE requires bounded integer session/page")
     if cmd in ("PATCH_STAGE", "PATCH_APPLY") and (
