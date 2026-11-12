@@ -242,6 +242,20 @@ def activate_owner_capabilities(config_path):
     return True
 
 
+def _module_stamp():
+    """Track on-disk bridge code independently of optional updater marker.
+
+    A source update can succeed while an older Python relay still serves old
+    capabilities in RAM. Do not report the Git commit as proof of live bridge
+    behavior. Read only the known package module, never arbitrary paths.
+    """
+    import hashlib
+    try:
+        return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    except OSError:
+        return None
+
+
 def github_token():
     """Use gh device-login credentials; never print or persist the token here."""
     env = os.environ.get("V13_RELAY_TOKEN", "")
@@ -347,6 +361,7 @@ def main(argv=None):
                                   "error_code":type(exc).__name__}), flush=True)
             time.sleep(30)
     threading.Thread(target=update_worker, name="v13-phone-updater", daemon=True).start()
+    loaded_module_stamp = _module_stamp()
     while True:
         try:
             print(json.dumps(poll_once(client, cfg)), flush=True)
@@ -357,8 +372,11 @@ def main(argv=None):
             print(json.dumps({"status": "POLL_ERROR", "error_code": type(exc).__name__}), flush=True)
         # An updated relay must reload its own Python modules before it can
         # serve newly added commands. Never do so inside an issue transaction.
-        if (pipeline_agent.refresh_requested("bridge") and
-                pipeline_agent.snapshot()["last_result"] != "CHECKING"):
+        next_stamp = _module_stamp()
+        if (pipeline_agent.snapshot()["last_result"] != "CHECKING" and
+                ((next_stamp is not None and loaded_module_stamp is not None
+                  and next_stamp != loaded_module_stamp)
+                 or pipeline_agent.refresh_requested("bridge"))):
             pipeline_agent.acknowledge_refresh("bridge")
             os.execv(sys.executable, [sys.executable, "-m", "v13.owner_read_bridge",
                                       "serve", "--config", args.config])
