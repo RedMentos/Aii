@@ -1,0 +1,24 @@
+name: V13 Core Phone Runtime Health
+on:
+  push:
+    branches:
+      - gpt6/v13-core-phone-health-20261112-1504
+  pull_request:
+    paths:
+      - 'v13/code/v13/phone_release_health.py'
+      - 'v13/code/tests/test_phone_release_health.py'
+      - '.github/workflows/v13-core-phone-health.yml'
+jobs:
+  offline-health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax check
+        run: python -m py_compile v13/code/v13/phone_release_health.py v13/code/tests/test_phone_release_health.py
+      - name: Installed runtime health tests
+        env:
+          PYTHONPATH: v13/code
+        run: python -m unittest discover -s v13/code/tests -p test_phone_release_health.py -v
