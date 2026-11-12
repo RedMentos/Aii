@@ -1,5 +1,13 @@
 # 2026-11-12 — Termux bootstrap / browser-button recovery review
 
+CI follow-up: the first published owner-read run `43165385938` exposed a
+test-fixture permission assumption under the runner's umask 022. The fixture
+now explicitly creates its private directory with mode 0700; mobile-dashboard
+and bootstrap tests pass locally under umask 022. Original bridge-security CI
+`43165385950` passed. The Drive ZIP backup attempt was rejected with HTTP 403
+`storageQuotaExceeded`; no Drive backup is claimed. The public-source ZIP is
+retained locally and the code is saved on the GitHub work branch.
+
 Reviewed source: PR #1794 head `26f6247f63632d7e16bb41ac17e9d9de83458dad`.
 Both supplied Actions runs (`43164147674`, `43164147641`) were successful;
 these are offline software checks, not proof of phone connectivity.

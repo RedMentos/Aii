@@ -19,7 +19,7 @@ class MobileDashboardTests(unittest.TestCase):
         self.private = base / "priv"
         (self.data / "exports").mkdir(parents=True)
         (self.data / "bin").mkdir()
-        self.private.mkdir()
+        self.private.mkdir(mode=0o700)
         self.old_data, self.old_private = d.DATA, d.PRIVATE
         d.DATA, d.PRIVATE = self.data, self.private
         self.addCleanup(self.restore)
