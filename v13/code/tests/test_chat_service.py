@@ -160,7 +160,7 @@ class AIBackgroundTests(unittest.TestCase):
 
     def test_stop_request_defers_explicit_start(self):
         service = ai.ChatService(FakeConsole())
-        with mock.patch.object(ai.lifecycle.STOP_REQUEST, "exists", return_value=True):
+        with mock.patch.object(ai.lifecycle, "STOP_REQUEST", mock.Mock(exists=lambda: True)):
             self.assertEqual(service.command("start", {})["status"],
                              "START_DEFERRED_FOR_UPDATE")
         self.assertEqual(service.console.starts, 0)
