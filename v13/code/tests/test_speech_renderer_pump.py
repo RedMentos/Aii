@@ -127,3 +127,17 @@ def test_committed_c3_operator_to_verified_render_end_to_end(tmp_path):
         assert renderer.calls[0][1] == "spoken text"
     finally:
         handoff.close()
+
+def test_uncertain_playback_does_not_discard_next_queued_turn(tmp_path):
+    q = SpeechIntentQueue(tmp_path / "q.sqlite")
+    first = q.submit("first", source_id="c3:first")
+    second = q.submit("second", source_id="c3:second")
+    renderer = Renderer()
+    pump = SpeechRendererPump(q, renderer=renderer, verifier=Verifier(False), enabled=True)
+    assert pump.run_one().status == "UNVERIFIED"
+    assert q.status(first.intent_id) == "INTERRUPTED"
+    assert q.status(second.intent_id) == "QUEUED"
+    pump.verifier = Verifier(True)
+    assert pump.run_one().status == "RENDERED"
+    assert q.status(second.intent_id) == "RENDERED"
+    q.close()
