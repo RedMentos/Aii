@@ -87,7 +87,7 @@ if ai_daemons:
                 conn.settimeout(3)
                 conn.connect(str(path))
                 conn.sendall((json.dumps({"protocol":"v13-local-ai/1",
-                                          "method":"shutdown"})+"\\n").encode())
+                                          "method":"shutdown"})+"\n").encode())
                 conn.recv(2048)
         except (OSError, ValueError):
             pass
