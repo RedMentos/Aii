@@ -38,3 +38,21 @@ def test_no_unapproved_or_stopped_action(tmp_path):
     with pytest.raises(ControlDenied):
         execute_approved_dry_run(broker, proposal.action_id)
     broker.close()
+
+
+def test_sink_failure_does_not_replay_approved_action(tmp_path):
+    broker = AndroidControlBroker(tmp_path / "control.db")
+    broker.start()
+    p = broker.propose("observe_ui", {})
+    broker.approve(p.action_id, confirmed_by_local_ui=True)
+
+    def failed_receiver(outcome):
+        assert outcome.status == "DRY_RUN_ONLY"
+        raise RuntimeError("sink unavailable")
+
+    with pytest.raises(RuntimeError, match="sink unavailable"):
+        execute_approved_dry_run(broker, p.action_id, on_outcome=failed_receiver)
+    with pytest.raises(ControlDenied):
+        execute_approved_dry_run(broker, p.action_id)
+    assert sum(1 for _, event, *_ in broker.events() if event == "dry_run") == 1
+    broker.close()
