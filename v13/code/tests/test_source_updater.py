@@ -53,6 +53,26 @@ class SourceUpdateTests(unittest.TestCase):
         git(self.base, "push", "origin", "v13-test")
         return git(self.base, "rev-parse", "HEAD")
 
+    def test_old_sparse_checkout_restores_new_phone_bridge_modules(self):
+        for required in u.REQUIRED_PHONE_MODULES:
+            file=self.base/required
+            file.parent.mkdir(parents=True,exist_ok=True)
+            file.write_text("module_code = 1\n" if required.endswith(".py") else "<html>V13</html>")
+        self.publish()
+        git(self.phone,"pull","--ff-only","origin","v13-test")
+        git(self.phone,"sparse-checkout","init","--no-cone")
+        git(self.phone,"sparse-checkout","set","--no-cone",
+            "v13/code/v13/__init__.py")
+        self.assertFalse((self.phone/u.REQUIRED_PHONE_MODULES[0]).exists())
+        status=u.ensure_sparse_phone_modules(self.phone)
+        self.assertEqual(status["status"],"MIGRATED")
+        self.assertTrue(all((self.phone/p).is_file() for p in u.REQUIRED_PHONE_MODULES))
+        self.assertEqual(u.ensure_sparse_phone_modules(self.phone)["status"],"ALREADY_PRESENT")
+
+    def test_uncommitted_phone_module_never_materialized(self):
+        with self.assertRaises(u.UpdateDenied):
+            u.ensure_sparse_phone_modules(self.phone)
+
     def test_git_delta_fast_forward_and_rollback(self):
         next_commit = self.publish()
         report = u.status(self.phone)
