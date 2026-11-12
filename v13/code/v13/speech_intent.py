@@ -102,14 +102,28 @@ class SpeechIntentQueue:
                 raise
 
     def acknowledge(self, intent_id, *, digest, rendered=False):
-        """Caller must be a trusted renderer; Python cannot authenticate Android identity."""
+        """Commit a trusted receipt atomically against concurrent stop/recovery.
+
+        The Android companion still has to authenticate and verify the receipt;
+        this SQLite transaction only protects the state transition.
+        """
+        if rendered is not True:
+            raise SpeechIntentError("unverified renderer acknowledgement")
         with self.lock:
-            row = self.db.execute("SELECT digest,status FROM speech_intents WHERE intent_id=?", (intent_id,)).fetchone()
-            if row != (digest, "RENDERING") or rendered is not True:
-                raise SpeechIntentError("unverified renderer acknowledgement")
-            self.db.execute("UPDATE speech_intents SET status='RENDERED' WHERE intent_id=?", (intent_id,))
-            self._event(intent_id, "RENDERED")
-            self.db.commit()
+            self.db.execute("BEGIN IMMEDIATE")
+            try:
+                updated = self.db.execute(
+                    "UPDATE speech_intents SET status='RENDERED' "
+                    "WHERE intent_id=? AND digest=? AND status='RENDERING'",
+                    (intent_id, digest),
+                ).rowcount
+                if updated != 1:
+                    raise SpeechIntentError("unverified renderer acknowledgement")
+                self._event(intent_id, "RENDERED")
+                self.db.commit()
+            except BaseException:
+                self.db.rollback()
+                raise
 
     def interrupt(self):
         """Cancel queued and active intents; actual audio stop belongs to renderer."""
