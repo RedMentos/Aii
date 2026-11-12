@@ -52,7 +52,7 @@ def dispatch_operator_command(
     # The command grammar is a boundary, not a free-form Android intent API.
     # Only package identifiers may be launched; tap coordinates must be finite
     # integer screen coordinates. Never let malformed commands reach a companion.
-    if verb == "launch" and not re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*(?:\\.[A-Za-z_][A-Za-z_0-9]*)+", target):
+    if verb == "launch" and not re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*(?:\.[A-Za-z_][A-Za-z_0-9]*)+", target):
         return OperatorResult("INVALID", detail="invalid package identifier")
     if verb == "tap":
         match = re.fullmatch(r"([0-9]{1,5}),([0-9]{1,5})", target)
