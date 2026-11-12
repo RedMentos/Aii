@@ -16,6 +16,7 @@ import tempfile
 import subprocess
 
 from . import source_updater as updates
+from . import lifecycle
 
 PRIVATE = Path.home() / ".v13-private"
 ENABLED = PRIVATE / "auto-source-update.enabled"
@@ -143,10 +144,18 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits):
             _atomic(BRIDGE_REFRESH, {"commit": commit})
 
 
-def run_cycle(*, force=False, now=None):
-    """Try both source checkouts, without clobbering active model processes."""
+def run_cycle(*, force=False, now=None, manual=False, target="all"):
+    """CI-gated fetch -> managed graceful stop -> update -> auto-restart.
+
+    When an exact trusted commit passes tests, an active UI-managed V13 chat
+    is stopped (with bounded acknowledgement), source is updated, then the UI
+    restarts its chat from the durable local state. A foreign/unmanaged V13
+    process is NOT killed; its update is deferred.
+    """
+    if target not in ("all", "runtime", "dashboard"):
+        raise ValueError("unknown V13 update target")
     _private()
-    if not enabled():
+    if not manual and not enabled():
         return snapshot()
     clock = int(time.time() if now is None else now)
     previous = _state_raw()
@@ -155,13 +164,13 @@ def run_cycle(*, force=False, now=None):
     if LOCK.is_symlink():
         raise RuntimeError("unsafe pipeline lock")
     fd = os.open(LOCK, os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    was_running = False
     try:
         os.fchmod(fd, 0o600)
         try:
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             return {**snapshot(), "last_result": "BUSY"}
-        # Double-check after acquiring the lock; bridge and UI may coexist.
         previous = _state_raw()
         if not force and clock - int(previous.get("last_check_utc", 0)) < INTERVAL:
             return snapshot()
@@ -170,15 +179,38 @@ def run_cycle(*, force=False, now=None):
                  "dashboard": "NOT_YET_CHECKED", "last_error": "NONE",
                  "updated_commit": previous.get("updated_commit", "")}
         _atomic(STATE, state)
+        roots = {"runtime": Path.home() / "V13-Phone",
+                 "dashboard": Path.home() / ".v13-agent-source"}
+        selected = ("runtime", "dashboard") if target == "all" else (target,)
+        tested_commits = {}
         try:
             busy = updates._runtime_active()
-            tested_commits = {}
-            _do_update("runtime", Path.home() / "V13-Phone", state,
-                       runtime_busy=busy, tested_commits=tested_commits)
-            _atomic(STATE, state)
-            _do_update("dashboard", Path.home() / ".v13-agent-source", state,
-                       runtime_busy=busy, tested_commits=tested_commits)
-            values = {state["runtime"], state["dashboard"]}
+            # Fetch/check CI BEFORE asking to interrupt a running chat; if CI
+            # isn't green, keep V13 running and show CI_WAIT, not fake progress.
+            should_stop = False
+            if busy:
+                for name in selected:
+                    report, unavailable = _try_repo(roots[name])
+                    if unavailable or report["status"] != "UPDATE_AVAILABLE":
+                        continue
+                    sha = report["available"]
+                    key = (sha, name)
+                    if key not in tested_commits:
+                        tested_commits[key] = updates.ci_passed(sha, scope=name)
+                    if tested_commits[key]:
+                        should_stop = True
+                if should_stop:
+                    try:
+                        was_running = lifecycle.request_stop(timeout=35,
+                                                              runtime_active=updates._runtime_active)
+                    except lifecycle.LifecycleError:
+                        state["last_error"] = "RUNNING"
+                    busy = updates._runtime_active()
+            for name in selected:
+                _do_update(name, roots[name], state,
+                           runtime_busy=busy, tested_commits=tested_commits)
+                _atomic(STATE, state)
+            values = {state[name] for name in selected}
             if "UPDATED" in values:
                 state["last_result"] = "UPDATED"
             elif "CI_WAIT" in values:
@@ -190,11 +222,20 @@ def run_cycle(*, force=False, now=None):
             else:
                 state["last_result"] = "UP_TO_DATE"
         except (OSError, ValueError, TimeoutError, updates.UpdateDenied,
-                subprocess.TimeoutExpired) as exc:
+                lifecycle.LifecycleError, subprocess.TimeoutExpired) as exc:
             state["last_result"] = "ERROR"
-            # Error class only; no secrets/paths/arguments in persisted state.
-            state["last_error"] = "CI" if "CI" in type(exc).__name__ else "UPDATE"
+            state["last_error"] = ("RUNNING" if isinstance(exc,lifecycle.LifecycleError)
+                                   else "UPDATE")
         finally:
+            # Restart the UI-managed V13 chat whether an update succeeded or
+            # failed. This cannot restart arbitrary Termux programs.
+            if was_running:
+                try:
+                    lifecycle.request_resume(reason="UPDATED" if state["last_result"]=="UPDATED"
+                                             else "RESTORE")
+                except (OSError, ValueError, lifecycle.LifecycleError):
+                    state["last_error"] = "STATE"
+                    state["last_result"] = "ERROR"
             _atomic(STATE, state)
         return snapshot()
     finally:
