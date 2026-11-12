@@ -185,6 +185,63 @@ def monitor_and_alert(client, *, now=None):
     return {"status":"PUBLISHED","code":code}
 
 
+OWNER_GRANTS = (
+    "HEALTH", "LEARNING_STATUS", "DIAGNOSTICS", "PIPELINE_STATUS",
+    "LOG_PAGE", "CHAT_SEND", "CHAT_RESULT", "CHAT_OPERATOR",
+    "UPDATE_REQUEST", "LOG_SHARING_ON", "LOG_SHARING_OFF"
+)
+
+
+def activate_owner_capabilities(config_path):
+    """Safely migrate exactly the known older RedMentos owner scope once.
+
+    The user explicitly requested these phone-to-ChatGPT capabilities.
+    A one-time local marker means a later explicit permission revocation is
+    respected on restarts; never auto-regrant a second time.
+    """
+    from pathlib import Path
+    import stat
+    import tempfile
+    path=Path(config_path)
+    private=path.parent
+    marker=private/"owner-capabilities-v2.done"
+    if path.is_symlink() or not path.is_file() or marker.is_symlink():
+        raise bridge.Denied("owner capability config path is unsafe")
+    if marker.exists():
+        return False
+    st=path.stat()
+    if not stat.S_ISREG(st.st_mode) or st.st_uid!=os.getuid() or st.st_mode & 0o077:
+        raise bridge.Denied("owner capability config not private")
+    obj=bridge.strict_json(path.read_bytes())
+    if (not isinstance(obj,dict) or
+            obj.get("relay_repo")!="RedMentos/Aiiii" or
+            obj.get("remote_apply_enabled") is not False or
+            obj.get("authors",{}).get(OWNER_AGENT)!=["RedMentos"]):
+        raise bridge.Denied("owner capability policy is untrusted")
+    p=obj.get("permissions",{}).get(OWNER_AGENT)
+    if (not isinstance(p,list) or not p or not set(p).issubset(OWNER_GRANTS)):
+        raise bridge.Denied("owner permissions include unknown authority")
+    if p != list(OWNER_GRANTS):
+        obj["permissions"][OWNER_AGENT]=list(OWNER_GRANTS)
+        fd,tmp=tempfile.mkstemp(prefix=".v13-owner-scope-",dir=str(private))
+        try:
+            os.fchmod(fd,0o600)
+            with os.fdopen(fd,"wb") as stream:
+                stream.write(bridge.canonical(obj))
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(tmp,path)
+        finally:
+            if os.path.exists(tmp):
+                os.unlink(tmp)
+    fd=os.open(marker,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,"O_NOFOLLOW",0),0o600)
+    with os.fdopen(fd,"w") as stream:
+        stream.write("complete\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    return True
+
+
 def github_token():
     """Use gh device-login credentials; never print or persist the token here."""
     env = os.environ.get("V13_RELAY_TOKEN", "")
@@ -246,6 +303,12 @@ def main(argv=None):
     if args.action in ("stop", "resume"):
         bridge.cli([args.action, "--config", args.config])
         return
+    # Restore newly committed files from older sparse checkouts before
+    # importing remote chat/monitor modules. Then extend the approved owner
+    # scope once; this avoids another manual Termux command after a CI update.
+    from .source_updater import ensure_sparse_phone_modules
+    ensure_sparse_phone_modules()
+    activate_owner_capabilities(args.config)
     cfg = bridge.private_config(args.config)
     if cfg.get("remote_apply_enabled"):
         raise bridge.Denied("one-command owner bridge must remain read-only")
