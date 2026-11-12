@@ -29,6 +29,7 @@ class PipelineTests(unittest.TestCase):
             ("UI_REFRESH", base / "pipeline-ui-refresh"),
             ("BRIDGE_REFRESH", base / "pipeline-bridge-refresh"),
             ("AI_REFRESH", base / "pipeline-ai-refresh"),
+            ("UPDATE_REQUEST", base / "pipeline-manual-request.json"),
         ):
             patch = mock.patch.object(p, key, value)
             patch.start()
@@ -37,6 +38,18 @@ class PipelineTests(unittest.TestCase):
     def turn_on(self):
         p.ENABLED.write_text("yes\n")
         p.ENABLED.chmod(0o600)
+
+    def test_private_owner_update_request_is_queued_once_not_arbitrary_shell(self):
+        from v13 import pipeline_agent as pa
+        request="f"*32
+        self.assertEqual(pa.schedule_update(request)["status"],"QUEUED")
+        self.assertTrue(pa.UPDATE_REQUEST.is_file())
+        self.assertEqual(pa.schedule_update("e"*32)["status"],"ALREADY_QUEUED")
+        self.assertTrue(pa.claim_scheduled_update())
+        self.assertFalse(pa.claim_scheduled_update())
+        with self.assertRaises(ValueError):
+            pa.schedule_update("../arbitrary;rm -rf")
+        self.assertFalse(pa.UPDATE_REQUEST.exists())
 
     def test_off_by_default_and_no_git_calls(self):
         with mock.patch.object(u, "status") as status:
