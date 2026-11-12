@@ -9,6 +9,7 @@ on:
       - 'v13/code/v13/source_updater.py'
       - 'v13/code/v13/mobile_dashboard.py'
       - 'v13/code/v13/mobile_dashboard.html'
+      - 'v13/code/tests/test_mobile_dashboard_browser.js'
       - 'v13/code/v13/managed_console.py'
       - 'v13/code/tests/test_managed_console_dashboard.py'
       - 'v13/code/tests/test_source_updater.py'
@@ -56,5 +57,6 @@ jobs:
           Path("/tmp/v13-dashboard.js").write_text(script.replace("@@PREFIX@@","/t/test"))
           PY
           node --check /tmp/v13-dashboard.js
+          node tests/test_mobile_dashboard_browser.js
       - name: Validate one-command bootstrap syntax
         run: bash -n scripts/termux_one_command.sh scripts/v13-update
