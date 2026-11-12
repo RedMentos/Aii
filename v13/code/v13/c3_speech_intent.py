@@ -13,7 +13,7 @@ import re
 
 MAX_CHARS = 2048
 MAX_SEGMENTS = 16
-_SENTENCE = re.compile(r"(?<=[.!?])\\s+")
+_SENTENCE = re.compile(r"(?<=[.!?])\s+")
 
 
 class SpeechIntentError(ValueError):
