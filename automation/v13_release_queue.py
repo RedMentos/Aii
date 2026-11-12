@@ -126,7 +126,7 @@ def _approved(api, number, head):
     exact = MARKER + head
     return any(
         isinstance(c, dict)
-        and c.get("user", {}).get("login") == OWNER
+        and (c.get("user") or {}).get("login") == OWNER
         and isinstance(c.get("body"), str)
         and exact in c["body"].splitlines()
         for c in replies
@@ -156,7 +156,7 @@ def _green(api, sha, phone):
         if (run.get("event") not in ("pull_request", "push", "workflow_dispatch")
                 or run.get("status") != "completed"
                 or run.get("conclusion") != "success"
-                or run.get("head_repository", {}).get("full_name") != REPO):
+                or (run.get("head_repository") or {}).get("full_name") != REPO):
             continue
         name, path = run.get("name"), run.get("path")
         if name in required and isinstance(path, str):
@@ -174,7 +174,7 @@ def candidate(api, pr):
     sha = head.get("sha")
     if (type(number) is not int or not isinstance(sha, str)
             or not HEX40.fullmatch(sha)
-            or head.get("repo", {}).get("full_name") != REPO
+            or (head.get("repo") or {}).get("full_name") != REPO
             or base.get("ref") != RELEASE):
         return False, "scope"
     if not _approved(api, number, sha):
@@ -190,7 +190,7 @@ def candidate(api, pr):
                        base["sha"] + "..." + sha)
     if (compare.get("status") != "ahead" or
             compare.get("behind_by") != 0 or
-            compare.get("base_commit", {}).get("sha") != base["sha"]):
+            (compare.get("base_commit") or {}).get("sha") != base["sha"]):
         return False, "non_fast_forward"
     files = _list(api, f"/repos/{REPO}/pulls/{number}/files")
     if not _safe_files(files):
