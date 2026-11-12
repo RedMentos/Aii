@@ -14,13 +14,24 @@ def checked_projector_audio_view(store, projector, candidate, source_ref):
     view = checked_audio_integrity_view(store, candidate, source_ref)
     raw = store.read_source(source_ref)
     data = json.loads(raw)
-    expected = projector.predict(data['features'])
     actual = candidate['a3']['embedding']
-    if len(expected) != len(actual) or any(
-        not math.isfinite(v) or abs(v - a) > 1e-10
-        for v, a in zip(expected, actual)
-    ):
+
+    def checked_prediction():
+        prediction = projector.predict(data['features'])
+        if not isinstance(prediction, (list, tuple)) or len(prediction) != len(actual):
+            raise ValueError('A3 projector returned incompatible embedding')
+        if any(type(v) not in (int, float) or not math.isfinite(v) for v in prediction):
+            raise ValueError('A3 projector returned nonfinite embedding')
+        return prediction
+
+    first = checked_prediction()
+    if any(abs(v - a) > 1e-10 for v, a in zip(first, actual)):
         raise ValueError('A3 embedding does not match supplied projector')
+    # Detect a mutable/replaced projector during verification. This does not
+    # authenticate its checkpoint or guarantee a concurrently stable model.
+    second = checked_prediction()
+    if any(abs(v - w) > 1e-10 for v, w in zip(first, second)):
+        raise PermissionError('A3 projector changed during verification')
     if store.read_source(source_ref) != raw:
         raise PermissionError('source changed during projector verification')
     view['a3_recomputed'] = True
