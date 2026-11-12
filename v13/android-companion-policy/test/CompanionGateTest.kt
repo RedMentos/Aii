@@ -32,6 +32,19 @@ fun main() {
     check(calls == 1)
     gate.stopFromLocalUi()
     check(gate.dispatch(signed("nonce-123456789012347")).reason == "STOPPED")
+    val defaultDeny = CompanionGate(key, mapOf("APP_LAUNCH" to object : NativeCapability {
+        override fun execute(target: String): Boolean { error("must not execute") }
+    }), { true }, { 1000L }, { })
+    defaultDeny.enableFromLocalUi()
+    check(defaultDeny.dispatch(signed("nonce-123456789012348")).reason == "REPLAY")
+    val noAudit = CompanionGate(key, mapOf("APP_LAUNCH" to object : NativeCapability {
+        override fun execute(target: String): Boolean { error("must not execute") }
+    }), { true }, { 1000L }, { error("audit unavailable") }, { true })
+    noAudit.enableFromLocalUi()
+    try {
+        noAudit.dispatch(signed("nonce-123456789012349"))
+        error("audit failure should propagate")
+    } catch (e: IllegalStateException) { check(e.message == "audit unavailable") }
     check(seen.size == 7)
     println("PASS companion gate: stop/auth/consent/replay/dispatch/audit")
 }
