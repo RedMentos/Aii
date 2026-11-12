@@ -26,4 +26,8 @@ class GateHardeningTests(unittest.TestCase):
   with self.assertRaises(ValueError):run({**P,'event_id':None})
  def test_many_segments(self):
   with self.assertRaises(ValueError):run({**P,'segments':[SEG]*65})
+ def test_missing_window(self):
+  with self.assertRaises(ValueError):run({**P,'segments':[{k:v for k,v in SEG.items() if k!='start_ms'}]})
+ def test_missing_consent_reference(self):
+  with self.assertRaises(PermissionError):run({**P,'segments':[{k:v for k,v in SEG.items() if k!='consent_receipt_ref'}]})
 if __name__=='__main__':unittest.main()
