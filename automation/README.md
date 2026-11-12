@@ -18,7 +18,7 @@ The runner creates its candidate label on its first scheduled/manual execution. 
 
 ## Not eligible for unattended merge
 
-The automation refuses workflow files, Canon/model metadata and critical phone updater/permission/runtime files, binary weights, deleted/renamed files, untrusted forks, large change sets and stale/diverged PR ancestry. These require direct Boss review, integration with regression tests and exact-release-push CI instead; they are not forbidden from development.
+The automation refuses workflow files, Canon/model metadata, **modifications to any existing runtime Python module**, installer scripts/model specs, binary weights, deleted/renamed files, untrusted forks, large change sets and stale/diverged PR ancestry. Its automatic code scope is additive low-authority modules plus bounded tests/docs; existing runtime behavior changes must be integrated directly by Boss with focused regression proof. These require direct Boss review, integration with regression tests and exact-release-push CI instead; they are not forbidden from development.
 
 Never promote an AGI/JEPA weight-learning experiment, model replacement, new OS capability, network permission or remote shell simply because an automated merge succeeded. Keep the existing local device permission controls, rollback and failure gates. The queue does not poll the private relay, export user data, read Termux files or command Android.
 
