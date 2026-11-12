@@ -177,3 +177,44 @@ def test_two_connections_claim_once_under_contention(tmp_path):
     finally:
         first.close()
         second.close()
+
+
+def test_second_connection_does_not_interrupt_active_render(tmp_path):
+    path = tmp_path / "speech.sqlite"
+    first = SpeechIntentQueue(path)
+    queued = first.submit("still playing", source_id="C3:live")
+    claimed = first.claim()
+    assert claimed.intent_id == queued.intent_id
+    second = SpeechIntentQueue(path)
+    try:
+        assert second.status(queued.intent_id) == "RENDERING"
+        assert second.claim() is None
+        first.acknowledge(queued.intent_id, digest=queued.digest, rendered=True)
+        assert second.status(queued.intent_id) == "RENDERED"
+    finally:
+        second.close()
+        first.close()
+
+
+def test_explicit_cold_start_recovery_never_replays_uncertain_audio(tmp_path):
+    path = tmp_path / "speech.sqlite"
+    first = SpeechIntentQueue(path)
+    queued = first.submit("maybe played", source_id="C3:crashed")
+    assert first.claim() is not None
+    first.close()
+    restarted = SpeechIntentQueue(path)
+    try:
+        assert restarted.status(queued.intent_id) == "RENDERING"
+        # Only the local operator after ensuring all renderers have stopped
+        # may recover uncertain in-flight speech.
+        assert restarted.recover_uncertain() == 1
+        assert restarted.status(queued.intent_id) == "INTERRUPTED"
+        assert restarted.recover_uncertain() == 0
+        assert restarted.claim() is None
+        events = [r[0] for r in restarted.db.execute(
+            "SELECT event FROM speech_events WHERE intent_id=? ORDER BY id",
+            (queued.intent_id,)
+        )]
+        assert events[-1] == "RECOVERED_UNCERTAIN"
+    finally:
+        restarted.close()
