@@ -33,6 +33,8 @@ class FakeGitHub:
         self.merge_calls = []
 
     def call(self, method, path, data=None):
+        # GitHub list endpoints carry pagination query parameters.
+        path = path.split("?", 1)[0]
         if method == "PUT":
             self.merge_calls.append((method, path, data))
             return {"merged": True, "sha": "c" * 40}
