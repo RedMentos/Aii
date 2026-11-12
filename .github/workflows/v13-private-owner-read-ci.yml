@@ -69,6 +69,12 @@ jobs:
           python -m py_compile v13/runtime_deploy.py v13/diagnostic_push.py tests/test_runtime_deploy.py tests/test_diagnostic_push.py
           python -m unittest discover -s tests -p 'test_runtime_deploy.py' -v
           python -m unittest discover -s tests -p 'test_diagnostic_push.py' -v
+          python - <<'PY'
+          from pathlib import Path
+          from v13.runtime_deploy import _selftest
+          _selftest(Path.cwd())
+          print("PASS: actual checked-out V13 starts and roundtrips Hi/Test/... through real Store")
+          PY
       - name: Validate mobile HTML tab layout and JavaScript syntax
         run: |
           python - <<'PY'
