@@ -253,7 +253,10 @@ def main(argv=None):
     def update_worker():
         while True:
             try:
-                pipeline_agent.run_cycle()
+                if pipeline_agent.claim_scheduled_update():
+                    pipeline_agent.run_cycle(force=True, manual=True)
+                else:
+                    pipeline_agent.run_cycle()
             except (OSError, ValueError, RuntimeError) as exc:
                 print(json.dumps({"status":"PIPELINE_ERROR",
                                   "error_code":type(exc).__name__}), flush=True)
