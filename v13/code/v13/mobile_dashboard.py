@@ -82,6 +82,8 @@ def summary():
     """No human text, raw logs, filenames, paths, prompts or token values."""
     p = DATA / "exports/native-probe.json"
     out = {"schema": "v13.phone.diagnostic/1", "native_probe": "NO_PROBE", "roles": {}}
+    from .phone_runtime_diagnostics import last_turn
+    out["last_turn"] = last_turn()
     # Real AI status, not the updater or merely the browser process.
     # Only booleans and approved enums are allowed into private GitHub.
     from .chat_service import call as ai_call
@@ -430,10 +432,25 @@ class RuntimeControls:
         self.diag_started = 0.0
         self.restart_requested = False
         self.restart_callback = None
+        self._last_output = ""
+
+    def ai_state(self):
+        try:
+            state = self.terminal.state()
+            if not isinstance(state, dict):
+                raise ValueError("invalid AI state")
+            return {**state, "available": True}
+        except (OSError, ValueError, RuntimeError, TimeoutError):
+            # The Unix socket briefly disappears during a controlled
+            # service reload. Keep update/diagnostic polling available.
+            return {"running": False, "exit_code": None, "available": False,
+                    "service": "UNAVAILABLE", "daemon": "UNAVAILABLE",
+                    "autostart": None}
 
     def state(self):
-        state = self.terminal.state()
-        return state["running"], "V13-Chat", state["exit_code"], self.last_action
+        state = self.ai_state()
+        mode = "V13-Chat" if state["available"] else "KI-Dienst wird neu verbunden"
+        return state.get("running") is True, mode, state.get("exit_code"), self.last_action
 
     def launch(self, mode, question=""):
         if mode not in ALLOWED:
@@ -559,7 +576,11 @@ class RuntimeControls:
             return self.update_result, False
 
     def output(self):
-        return safe_text(self.terminal.output(MAX_TAIL).encode("utf-8"))
+        try:
+            self._last_output = safe_text(self.terminal.output(MAX_TAIL).encode("utf-8"))
+        except (OSError, ValueError, RuntimeError, TimeoutError):
+            pass  # Retain the last visible transcript during service reload.
+        return self._last_output
 
 
 def _button(action, name, title, label, cls=""):
@@ -695,8 +716,9 @@ def _slider_grid(action):
 
 def dashboard_html(token, controls, message="", csrf="", generation=""):
     """One coherent phone workspace: chat/commands/settings/maintenance tabs."""
-    running, _, code, last = controls.state()
-    state = "V13 läuft" if running else "Bereit" if code is None else f"Beendet ({code})"
+    running, mode, code, last = controls.state()
+    state = (mode if mode != "V13-Chat" else
+             "V13 läuft" if running else "Bereit" if code is None else f"Beendet ({code})")
     current = summary()
     update_msg, update_busy = controls.update_status()
     pipeline_status = pipeline_agent.snapshot()
@@ -881,11 +903,13 @@ def serve(*, open_browser=True):
                 self.wfile.write(data)
                 return
             if self.path == prefix + "/state":
-                running, mode, exitcode, last = controls.state()
-                state = "läuft" if running else "bereit" if exitcode is None else "beendet (" + str(exitcode) + ")"
+                ai_state = controls.ai_state()
+                running = ai_state.get("running") is True
+                exitcode = ai_state.get("exit_code")
+                state = ("KI-Dienst wird neu verbunden" if not ai_state["available"] else
+                         "läuft" if running else "bereit" if exitcode is None else "beendet (" + str(exitcode) + ")")
                 update_result, update_busy = controls.update_status()
                 pstatus = pipeline_agent.snapshot()
-                ai_state = controls.terminal.state()
                 payload = {"state": state, "output": controls.output()[-50000:],
                            "ai_service": ai_state.get("service","UNAVAILABLE"),
                            "ai_daemon": ai_state.get("daemon","UNAVAILABLE"),
@@ -893,7 +917,7 @@ def serve(*, open_browser=True):
                            "pipeline_status": ("Auto " + ("AN" if pstatus["auto_enabled"] else "AUS") +
                              " · " + pstatus["last_result"] + " · V13: " +
                              pstatus["runtime"] + " · UI: " + pstatus["dashboard"]),
-                           "last_action": last, "running": running,
+                           "last_action": controls.last_action, "running": running,
                            "update_result": update_result, "update_busy": update_busy,
                            "diagnostic_status": controls.diagnostic_status(),
                            "generation": generation}

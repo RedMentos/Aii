@@ -3,11 +3,15 @@
 No Android phone, model downloads or GitHub access. Tests only source/data
 separation, rollback boundaries and fail-closed conditions.
 """
+from contextlib import redirect_stdout
 from pathlib import Path
 import hashlib
+import io
 import json
 import subprocess
 import tempfile
+import threading
+import types
 import unittest
 from unittest import mock
 
@@ -27,6 +31,9 @@ class RuntimeDeploymentTests(unittest.TestCase):
             path.write_bytes(("fake fixture " + rel).encode())
         for rel in d.COPY_SUBTREES:
             (self.code / rel).mkdir(parents=True, exist_ok=True)
+        actual_code = Path(d.__file__).resolve().parents[1]
+        for rel in (d.UI_SOURCE, "v13/operator.py", d.UI_BUILDER):
+            (self.code / rel).write_bytes((actual_code / rel).read_bytes())
         self.home = self.root / "data-home"
         (self.home / "bin").mkdir(parents=True)
         (self.home / "models").mkdir(parents=True)
@@ -66,8 +73,109 @@ class RuntimeDeploymentTests(unittest.TestCase):
         self.assertEqual(self._run()["status"], "UP_TO_DATE")
         marker = json.loads((self.private/d.MARKER_NAME).read_text())
         self.assertEqual(marker["commit"], self.commit)
+        self.assertEqual(marker["build_profile"], d.BUILD_PROFILE)
+        self.assertEqual(marker["source_ui_sha256"], d.UI_SOURCE_SHA256)
+        self.assertEqual(marker["derived_ui_sha256"], d.UI_DERIVED_SHA256)
+        self.assertEqual(marker["ui_builder_sha256"], d.UI_BUILDER_SHA256)
         self.assertEqual(hashlib.sha256(self.launcher.read_bytes()).hexdigest(), marker["launcher_sha256"])
         self.assertEqual(Path(marker["backup_launcher"]).read_bytes(), self.old)
+
+    @staticmethod
+    def render_persisted_history(raw):
+        """Run the real plain renderer with persisted history and no model."""
+        ui = types.ModuleType("v13.deployment_ui_counterexample")
+        ui.__package__ = "v13"
+        exec(compile(raw, "<deployed-ui>", "exec"), ui.__dict__)
+        rendered = threading.Event()
+        main = threading.current_thread()
+
+        def history(session, count):
+            if threading.current_thread() is not main:
+                rendered.set()
+            return [{"id": 1, "role": "assistant", "text": "persisted previous answer"}]
+
+        runtime = types.SimpleNamespace(store=types.SimpleNamespace(history=history),
+                                        session="fixture", stop=threading.Event())
+
+        def read_once(_):
+            if not rendered.wait(2):
+                raise AssertionError("real plain renderer did not poll")
+            runtime.stop.set()
+            return ":shutdown"
+
+        output = io.StringIO()
+        with mock.patch.object(ui, "Operator") as operator, \
+             mock.patch.object(ui, "read_block", side_effect=read_once), \
+             mock.patch.object(ui, "typing", return_value=False), redirect_stdout(output):
+            operator.return_value.run.return_value = ""
+            ui.plain(runtime)
+        return output.getvalue()
+
+    def test_real_copied_ui_uses_only_recovery_and_frozen_sources_stay_unchanged(self):
+        original_ui = (self.code / d.UI_SOURCE).read_bytes()
+        original_operator = (self.code / "v13/operator.py").read_bytes()
+        self.assertIn("assistant> persisted previous answer", self.render_persisted_history(original_ui))
+        result = self._run()
+        deployed = Path(result["code"])
+        derived_ui = (deployed / d.UI_SOURCE).read_bytes()
+        self.assertEqual(hashlib.sha256(derived_ui).hexdigest(), d.UI_DERIVED_SHA256)
+        self.assertNotIn("persisted previous answer", self.render_persisted_history(derived_ui))
+        self.assertEqual((self.code / d.UI_SOURCE).read_bytes(), original_ui)
+        self.assertEqual((self.code / "v13/operator.py").read_bytes(), original_operator)
+        self.assertEqual((deployed / "v13/operator.py").read_bytes(), original_operator)
+        self.assertEqual((deployed / "v13/runtime.py").read_bytes(),
+                         (self.code / "v13/runtime.py").read_bytes())
+
+    def test_current_commit_raw_profile_is_migrated(self):
+        first = self._run()
+        old_code = Path(first["code"])
+        (old_code / d.UI_SOURCE).write_bytes((self.code / d.UI_SOURCE).read_bytes())
+        marker_path = self.private / d.MARKER_NAME
+        marker = json.loads(marker_path.read_text())
+        for field in ("build_profile", "source_ui_sha256", "derived_ui_sha256", "ui_builder_sha256"):
+            marker.pop(field)
+        marker_path.write_text(json.dumps(marker))
+        self.assertTrue(d.needs_deploy(self.checkout, home=self.home, private=self.private))
+        second = self._run()
+        self.assertEqual(second["status"], "DEPLOYED")
+        self.assertNotEqual(second["code"], first["code"])
+        self.assertFalse(d.needs_deploy(self.checkout, home=self.home, private=self.private))
+        self.assertEqual((old_code / d.UI_SOURCE).read_bytes(), (self.code / d.UI_SOURCE).read_bytes())
+
+    def test_derived_ui_tampering_requires_redeployment(self):
+        result = self._run()
+        (Path(result["code"]) / d.UI_SOURCE).write_text("# changed deployed renderer\n")
+        self.assertTrue(d.needs_deploy(self.checkout, home=self.home, private=self.private))
+
+    def test_changed_builder_fails_closed_before_selftest_or_launcher_switch(self):
+        builder = self.code / d.UI_BUILDER
+        builder.write_bytes(builder.read_bytes() + b"\n# changed builder\n")
+        with self.assertRaisesRegex(d.RuntimeDeployError, "builder changed"):
+            self._run()
+        d._selftest.assert_not_called()
+        self.assertEqual(self.launcher.read_bytes(), self.old)
+        self.assertFalse((self.private / d.MARKER_NAME).exists())
+
+    def test_changed_frozen_ui_input_fails_closed(self):
+        ui = self.code / d.UI_SOURCE
+        ui.write_bytes(ui.read_bytes() + b"\n# changed frozen input\n")
+        with self.assertRaisesRegex(d.RuntimeDeployError, "source validation failed"):
+            self._run()
+        self.assertEqual(self.launcher.read_bytes(), self.old)
+
+    def test_marker_write_failure_restores_original_launcher(self):
+        write = d._atomic_file
+
+        def fail_marker(dest, data, mode=0o600):
+            if dest == self.private / d.MARKER_NAME:
+                raise OSError("injected marker write failure")
+            return write(dest, data, mode)
+
+        with mock.patch.object(d, "_atomic_file", side_effect=fail_marker):
+            with self.assertRaises(OSError):
+                self._run()
+        self.assertEqual(self.launcher.read_bytes(), self.old)
+        self.assertFalse((self.private / d.MARKER_NAME).exists())
 
     def test_staging_failure_retains_old_launcher_and_memory(self):
         with mock.patch.object(d, "_selftest", side_effect=d.RuntimeDeployError("broken staged runtime")):

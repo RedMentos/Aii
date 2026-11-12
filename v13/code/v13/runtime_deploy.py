@@ -33,6 +33,12 @@ REQUIRED = ("v13/__main__.py", "v13/store.py", "v13/runtime.py",
 COPY_SUBTREES = ("v13", "scripts", "specs", "docs/canon")
 HEX40 = re.compile(r"[a-f0-9]{40}\Z")
 MARKER_NAME = "runtime-active.json"
+BUILD_PROFILE = "raw-runtime-plain-ui-history-recovery-v1"
+UI_SOURCE = "v13/ui.py"
+UI_SOURCE_SHA256 = "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8"
+UI_DERIVED_SHA256 = "0c2e5fb15a78b37017f2b2c296afd0275705e70276a47dc9b47429d38aeac5a1"
+UI_BUILDER = "scripts/termux_chat_recovery_candidate_20261112.py"
+UI_BUILDER_SHA256 = "e0885ebc04ae16826f2a8d5cc3210ddc2f76d1ef40d22824190deaafaa13ffa8"
 
 
 class RuntimeDeployError(RuntimeError):
@@ -183,7 +189,16 @@ def needs_deploy(source, *, home=None, private=None):
         return True
     codepath = target.get("code")
     if (target.get("commit") != commit or not isinstance(codepath, str)
-            or not (Path(codepath) / CANON).is_file()):
+            or not (Path(codepath) / CANON).is_file()
+            or target.get("build_profile") != BUILD_PROFILE
+            or target.get("source_ui_sha256") != UI_SOURCE_SHA256
+            or target.get("derived_ui_sha256") != UI_DERIVED_SHA256
+            or target.get("ui_builder_sha256") != UI_BUILDER_SHA256):
+        return True
+    ui = Path(codepath) / UI_SOURCE
+    if (ui.is_symlink() or not ui.is_file()
+            or hashlib.sha256(ui.read_bytes()).hexdigest() != UI_DERIVED_SHA256
+            or hashlib.sha256((code / UI_SOURCE).read_bytes()).hexdigest() != UI_SOURCE_SHA256):
         return True
     return target.get("launcher_sha256") != hashlib.sha256(launcher.read_bytes()).hexdigest()
 
@@ -214,6 +229,34 @@ def _copy(source, target):
             raise RuntimeDeployError("Staged runtime dependency missing: " + rel)
         if hashlib.sha256(path.read_bytes()).digest() != hashlib.sha256((source / rel).read_bytes()).digest():
             raise RuntimeDeployError("Staged source mismatch: " + rel)
+
+
+def _apply_plain_ui_recovery(source, target):
+    """Derive only the reviewed plain renderer; frozen Git source stays raw."""
+    builder = source / UI_BUILDER
+    if builder.is_symlink() or not builder.is_file():
+        raise RuntimeDeployError("Pinned plain UI recovery builder missing or unsafe")
+    raw = builder.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != UI_BUILDER_SHA256:
+        raise RuntimeDeployError("Pinned plain UI recovery builder changed")
+    # Execute exactly the bytes just hash-checked, never a cached module or
+    # a second filesystem read. The existing builder validates its frozen
+    # UI/operator inputs and returns replacements without modifying them.
+    namespace = {"__name__": "v13_phone_plain_ui_recovery"}
+    try:
+        exec(compile(raw, str(builder), "exec"), namespace)
+        ui = namespace["build_sources"](source)[UI_SOURCE]
+    except (OSError, ValueError, KeyError, TypeError, SyntaxError) as exc:
+        raise RuntimeDeployError("Pinned plain UI recovery source validation failed") from exc
+    original = source / UI_SOURCE
+    copied = target / UI_SOURCE
+    if (hashlib.sha256(original.read_bytes()).hexdigest() != UI_SOURCE_SHA256
+            or copied.is_symlink() or not copied.is_file()
+            or hashlib.sha256(copied.read_bytes()).hexdigest() != UI_SOURCE_SHA256
+            or not isinstance(ui, bytes)
+            or hashlib.sha256(ui).hexdigest() != UI_DERIVED_SHA256):
+        raise RuntimeDeployError("Plain UI recovery source/derived hash mismatch")
+    copied.write_bytes(ui)
 
 
 def _selftest(code):
@@ -301,12 +344,17 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False):
     target.mkdir(mode=0o700)
     try:
         _copy(code, target)
+        _apply_plain_ui_recovery(code, target)
         _selftest(target)
         _check_stopped(home)
         next_launcher = _launcher_bytes(target, home)
         _atomic_file(launcher, next_launcher, 0o700)
         record = {"schema": "v13.runtime-deploy/1", "commit": commit,
                   "code": str(target), "backup_launcher": str(backup),
+                  "build_profile": BUILD_PROFILE,
+                  "source_ui_sha256": UI_SOURCE_SHA256,
+                  "derived_ui_sha256": UI_DERIVED_SHA256,
+                  "ui_builder_sha256": UI_BUILDER_SHA256,
                   "launcher_sha256": hashlib.sha256(next_launcher).hexdigest(),
                   "installed_at": int(time.time()),
                   "models_untouched": True, "sqlite_untouched": True}

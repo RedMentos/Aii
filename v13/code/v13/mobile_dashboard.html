@@ -271,7 +271,8 @@ summary{cursor:pointer;font-weight:650}
       if(typeof data.state==='string'){state.textContent=data.state;running.textContent=data.state;}
       if(typeof data.ai_daemon==='string'){
         aiService.textContent='V13-Hintergrund-KI: '+data.ai_daemon+
-          (data.ai_autostart?' · Autostart EIN':' · Autostart AUS');
+          (data.ai_autostart===true?' · Autostart EIN':
+           data.ai_autostart===false?' · Autostart AUS':' · Autostart unbekannt');
       }
       if(typeof data.update_result==='string')updateStatus.textContent=data.update_result;
       if(typeof data.pipeline_status==='string')pipelineStatus.textContent=data.pipeline_status;

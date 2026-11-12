@@ -3,6 +3,7 @@
 Fake V13 process only; no model download, GitHub, or phone permission.
 """
 import os
+import json
 from pathlib import Path
 import re
 import select
@@ -20,6 +21,62 @@ from unittest import mock
 
 from v13 import managed_console as mc
 from v13 import mobile_dashboard as ui
+
+
+class ServiceReconnectTests(unittest.TestCase):
+    def test_socket_reload_preserves_visible_output_and_recovers(self):
+        terminal = mock.Mock()
+        terminal.state.side_effect = [FileNotFoundError("private socket path"),
+                                      {"running": True, "exit_code": None}]
+        terminal.output.side_effect = ["assistant> retained", ConnectionRefusedError(),
+                                       "assistant> resumed"]
+        with mock.patch.object(ui, "RemoteConsole", return_value=terminal):
+            controls = ui.RuntimeControls()
+        self.assertEqual(controls.output(), "assistant> retained")
+        self.assertEqual(controls.state()[:3],
+                         (False, "KI-Dienst wird neu verbunden", None))
+        self.assertEqual(controls.output(), "assistant> retained")
+        self.assertEqual(controls.state()[:3], (True, "V13-Chat", None))
+        self.assertEqual(controls.output(), "assistant> resumed")
+
+    def test_actual_http_poll_survives_missing_service_socket_and_reconnects(self):
+        with tempfile.TemporaryDirectory() as home:
+            env = dict(os.environ, HOME=home, V13_UI_PORT="0", V13_UI_NO_AUTO_OPEN="1")
+            script = '''from pathlib import Path
+from v13 import mobile_dashboard as ui
+class ReconnectingConsole:
+    def state(self):
+        if not (Path.home()/"fixture-service-ready").exists():
+            raise FileNotFoundError("synthetic missing socket")
+        return {"running":True,"exit_code":None,"service":"RUNNING","daemon":"RUNNING","autostart":True}
+    def output(self,limit):
+        if not self.state(): return ""
+        return "assistant> reconnected fixture"
+ui.RemoteConsole=ReconnectingConsole
+ui.serve(open_browser=False)
+'''
+            proc = subprocess.Popen([sys.executable, "-c", script],
+                cwd=str(Path(__file__).resolve().parents[1]), env=env,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            try:
+                self.assertTrue(select.select([proc.stdout], [], [], 10)[0])
+                url = proc.stdout.readline().partition(": ")[2].strip()
+                with urlopen(urljoin(url, "state"), timeout=5) as response:
+                    self.assertEqual(response.status, 200)
+                    offline = json.loads(response.read())
+                self.assertEqual(offline["ai_service"], "UNAVAILABLE")
+                self.assertIsNone(offline["ai_autostart"])
+                self.assertIn("neu verbunden", offline["state"])
+                self.assertIn("update_result", offline)
+                self.assertIn("diagnostic_status", offline)
+                (Path(home) / "fixture-service-ready").touch()
+                online = json.loads(urlopen(urljoin(url, "state"), timeout=5).read())
+                self.assertTrue(online["running"])
+                self.assertEqual(online["ai_service"], "RUNNING")
+                self.assertIn("reconnected fixture", online["output"])
+            finally:
+                proc.terminate()
+                proc.wait(timeout=5)
 
 
 class LocalConsoleTests(unittest.TestCase):

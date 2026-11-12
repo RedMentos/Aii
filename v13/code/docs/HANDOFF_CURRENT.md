@@ -7,6 +7,10 @@ atomic remote input receipts and valid bounded diagnostic JSON. Existing
 auto-update OFF, SourceHandoff originals, native negative evidence and all
 learning/promotion gates remain unchanged. This repair is delivered through
 the same CI-gated phone release branch; a Git commit alone is not device proof.
+The actual phone accepted `a124c20` and still produced a native MODEL_TIMEOUT.
+Follow-up diagnosis adds a bounded read-only last-turn phase/timing projection,
+the existing derived plain-renderer history fix, and UI polling that survives
+the AI socket disappearing during a managed restart. No latency cure is claimed.
 
 # 2026-11-12 — no-input scheduler and actual runtime recovery
 

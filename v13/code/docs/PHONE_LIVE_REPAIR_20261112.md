@@ -61,3 +61,21 @@ agents owned sparse migration, diagnostic bounds, and live-health/remote
 correlation. A read-only reviewer reproduced two additional pipeline defects
 (one CI failure blocking both targets and partial success reported UPDATED),
 which are covered by new regression cases.
+
+## Follow-up from the real phone smoke
+
+The first release activated on the actual phone and its new atomic private
+chat receipt accepted input. A native turn still reached MODEL_TIMEOUT; the
+old isolated `native-probe.json` cannot establish that turn's failure phase.
+This is a real negative result, not a passing chat-quality test.
+
+The follow-up adds a fixed-path read-only last-turn technical projection.
+It exposes only approved stage/status/error enums and finite timing/budget
+numbers; no SQLite rows, message text, identifiers, paths or source reports
+leave the phone. Missing, locked or invalid metadata remains unavailable.
+
+The immutable deploy copy also receives only the existing hash-pinned plain
+UI history-rendering recovery. Frozen source bytes and operator behavior stay
+unchanged. Old saved answers are history and cannot be printed anew after a
+restart. The complete learning candidate is not activated by this repair.
+The deployment marker binds the derived UI and build profile to its source.
