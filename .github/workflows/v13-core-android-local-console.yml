@@ -1,0 +1,23 @@
+name: V13 Android local operator console
+on:
+  push:
+    branches:
+      - core/v13-android-local-console-20261112-0304
+  pull_request:
+    paths:
+      - 'v13/code/v13/android_local_console.py'
+      - 'v13/code/tests/test_android_local_console.py'
+jobs:
+  synthetic-console:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pytest
+      - name: Compile and run Android operator and audit integration
+        run: |
+          python -m compileall -q v13/code/v13/android_local_console.py
+          PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_android_local_console.py v13/code/tests/test_android_operator_audited_session.py v13/code/tests/test_android_operator_validation.py
