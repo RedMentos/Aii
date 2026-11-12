@@ -162,6 +162,45 @@ class LocalConsoleTests(unittest.TestCase):
 class BrowserButtonHTTPTests(unittest.TestCase):
     """Real HTTP submissions: privacy-browser Origin variants and CSRF."""
 
+    def test_single_dashboard_per_home_and_reusable_browser_token(self):
+        """Two concurrent servers are disallowed, and a later restart keeps URL auth."""
+        with tempfile.TemporaryDirectory() as home:
+            env = os.environ.copy()
+            env["HOME"] = home
+            env["V13_UI_PORT"] = "0"  # distinct OS ports in this isolated CI test
+            command = [sys.executable, "-m", "v13.mobile_dashboard", "ui"]
+            cwd = str(Path(__file__).resolve().parents[1])
+            first = subprocess.Popen(command, cwd=cwd, env=env,
+                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                     text=True)
+            try:
+                ready, _, _ = select.select([first.stdout], [], [], 10)
+                self.assertTrue(ready)
+                first_url = first.stdout.readline().partition(": ")[2].strip()
+                self.assertIn("/t/", first_url)
+                second = subprocess.run(command, cwd=cwd, env=env,
+                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                        timeout=8, text=True)
+                self.assertNotEqual(second.returncode, 0)
+                self.assertIn("already running", second.stderr)
+                self.assertEqual(urlopen(first_url, timeout=3).status, 200)
+            finally:
+                first.terminate()
+                first.wait(timeout=5)
+            third = subprocess.Popen(command, cwd=cwd, env=env,
+                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                     text=True)
+            try:
+                ready, _, _ = select.select([third.stdout], [], [], 10)
+                self.assertTrue(ready)
+                third_url = third.stdout.readline().partition(": ")[2].strip()
+                from urllib.parse import urlsplit
+                self.assertEqual(urlsplit(first_url).path, urlsplit(third_url).path)
+                self.assertEqual(urlopen(third_url, timeout=3).status, 200)
+            finally:
+                third.terminate()
+                third.wait(timeout=5)
+
     def test_clicks_succeed_in_brave_and_cross_site_forms_fail(self):
         with tempfile.TemporaryDirectory() as home:
             env = os.environ.copy()
