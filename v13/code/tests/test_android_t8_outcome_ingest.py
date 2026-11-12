@@ -66,3 +66,38 @@ def test_fail_closed_invalid_receipts(tmp_path):
         with pytest.raises(ValueError):
             ingest_verified_outcome(reg, journal, "id-1", db)
     assert not db.exists()
+
+
+def test_actual_audited_dispatcher_to_t8_inbox(tmp_path):
+    """Real V13 dispatcher/journal modules with synthetic companion only."""
+    import time
+    from v13.android_capability_contract import (
+        ActionOutcome, Capability as RealCapability,
+        CapabilityRegistry, OutcomeStatus,
+    )
+    from v13.android_operator_audited_session import audited_operator_session
+
+    class Transport:
+        def execute(self, request):
+            return ActionOutcome(request.request_id, request.capability,
+                                 OutcomeStatus.SUCCESS, "synthetic-signed-receipt",
+                                 time.time())
+
+    class Verifier:
+        def verify(self, request, outcome):
+            return outcome.companion_receipt == "synthetic-signed-receipt"
+
+    registry = CapabilityRegistry({RealCapability.LAUNCH_APP: True})
+    inbox = tmp_path / "t8-inbox.sqlite"
+    with audited_operator_session(
+        registry, tmp_path / "android-audit.sqlite",
+        transport=Transport(), verifier=Verifier()
+    ) as (command, journal):
+        result = command(":android execute launch com.example",
+                         approve_local=lambda capability, target: True)
+        assert result.status == "SUCCESS"
+        episode = ingest_verified_outcome(registry, journal, result.request_id, inbox)
+        assert episode["capability"] == "launch_app"
+        assert episode["training_authority"] == "SHADOW_ONLY"
+    with sqlite3.connect(inbox) as db:
+        assert db.execute("SELECT count(*) FROM android_t8_episode_inbox").fetchone()[0] == 1
