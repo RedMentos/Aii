@@ -8,6 +8,7 @@ this bridge implicitly.
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
+import re
 from .android_capability_contract import Capability, OutcomeStatus
 from .android_companion_dispatch import AndroidDispatcher, DispatchResult
 
@@ -46,8 +47,19 @@ def dispatch_operator_command(
     target = parts[3] if len(parts) == 4 else ""
     if verb == "back" and not target:
         target = "system_back"
-    if not target or len(target) > 256 or any(ord(ch) < 32 for ch in target):
+    if not target or len(target) > 256 or any(ord(ch) < 32 or ord(ch) == 127 for ch in target):
         return OperatorResult("INVALID", detail="invalid target")
+    # The command grammar is a boundary, not a free-form Android intent API.
+    # Only package identifiers may be launched; tap coordinates must be finite
+    # integer screen coordinates. Never let malformed commands reach a companion.
+    if verb == "launch" and not re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*(?:\\.[A-Za-z_][A-Za-z_0-9]*)+", target):
+        return OperatorResult("INVALID", detail="invalid package identifier")
+    if verb == "tap":
+        match = re.fullmatch(r"([0-9]{1,5}),([0-9]{1,5})", target)
+        if match is None or any(int(v) > 32767 for v in match.groups()):
+            return OperatorResult("INVALID", detail="invalid tap coordinates")
+    if verb == "back" and target != "system_back":
+        return OperatorResult("INVALID", detail="invalid back target")
     capability = _COMMANDS[verb]
     if mode == "execute":
         if approve_local is None:
