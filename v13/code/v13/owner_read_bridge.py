@@ -201,7 +201,8 @@ def main(argv=None):
             print(json.dumps({"status": "POLL_ERROR", "error_code": type(exc).__name__}), flush=True)
         # An updated relay must reload its own Python modules before it can
         # serve newly added commands. Never do so inside an issue transaction.
-        if pipeline_agent.refresh_requested("bridge"):
+        if (pipeline_agent.refresh_requested("bridge") and
+                pipeline_agent.snapshot()["last_result"] != "CHECKING"):
             pipeline_agent.acknowledge_refresh("bridge")
             os.execv(sys.executable, [sys.executable, "-m", "v13.owner_read_bridge",
                                       "serve", "--config", args.config])
