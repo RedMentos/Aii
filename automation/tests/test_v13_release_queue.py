@@ -108,6 +108,21 @@ class QueueTests(unittest.TestCase):
                                  "review_only_paths")
                 self.assertFalse(api.merge_calls)
 
+    def test_existing_runtime_python_or_install_script_requires_direct_boss_merge(self):
+        for name in (
+            "v13/code/v13/runtime.py",
+            "v13/code/v13/android_outcomes.py",
+            "v13/code/scripts/termux_start.sh",
+            "v13/code/specs/new_model.json",
+        ):
+            with self.subTest(path=name):
+                api = FakeGitHub()
+                api.files[0]["filename"] = name
+                api.files[0]["status"] = "modified"
+                self.assertEqual(q.run(api, execute=True)[0]["status"],
+                                 "review_only_paths")
+                self.assertFalse(api.merge_calls)
+
     def test_missing_or_failed_exact_sha_ci_blocks(self):
         api = FakeGitHub()
         api.runs = api.runs[:-1]
