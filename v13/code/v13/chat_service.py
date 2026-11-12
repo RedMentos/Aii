@@ -71,6 +71,7 @@ class ChatService:
         self.lock = threading.RLock()
         self.next_retry = 0.0
         self.failures = 0
+        self.last_start = 0.0
         self.paused = False
         self.pending_lifecycle = False
         self.reload_requested = False
@@ -112,14 +113,24 @@ class ChatService:
             else:
                 lifecycle.service_resume(self.console)
             state = self.console.state()
+            now = time.monotonic()
             if state["running"]:
                 self.status = "RUNNING"
-                self.failures = 0
+                if self.last_start and now - self.last_start > 30:
+                    self.failures = 0
                 return
             if not _read_desired():
                 self.status = "STOPPED_BY_USER"
                 return
-            now = time.monotonic()
+            # A model that exits immediately must not spin endlessly at
+            # 2 startups per second, draining battery or damaging log storage.
+            if self.last_start and self.next_retry <= self.last_start:
+                if now - self.last_start < 30:
+                    self.failures += 1
+                    self.next_retry = now + min(300, 2 ** min(self.failures + 1, 8))
+                else:
+                    self.failures = 0
+                    self.next_retry = now
             if now < self.next_retry:
                 self.status = "RETRY_WAIT"
                 return
@@ -130,6 +141,8 @@ class ChatService:
                 self.next_retry = now + min(120, max(3, 2 ** min(self.failures, 6)))
                 self.status = "LAUNCH_FAILED"
             else:
+                self.last_start = now
+                self.next_retry = now
                 self.status = "RUNNING" if response["status"] in ("STARTED", "ALREADY_RUNNING") else "LAUNCH_FAILED"
 
     def command(self, name, data):
@@ -145,6 +158,8 @@ class ChatService:
                 self.next_retry = 0
                 self.paused = False
                 self.console.start()
+                self.last_start = time.monotonic()
+                self.next_retry = self.last_start
                 self.status = "RUNNING"
                 return {"status":"STARTED"}
             if name == "send":
