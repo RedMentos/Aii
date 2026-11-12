@@ -131,7 +131,7 @@ class AIBackgroundTests(unittest.TestCase):
         self.assertFalse(console.running)
         self.assertEqual(service.status,"PAUSED_FOR_UPDATE")
         with mock.patch.object(ai.lifecycle,"service_resume",side_effect=lambda c, *, allowed=True:(
-                setattr(c,"running",True) or allowed)):
+                setattr(c,"running",bool(allowed)) or allowed)):
             service.tick()
         self.assertTrue(console.running)
         self.assertEqual(service.status,"RUNNING")
