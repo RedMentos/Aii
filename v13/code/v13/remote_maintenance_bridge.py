@@ -668,7 +668,19 @@ def safe_receipt(cmd, result):
 def execute(client, cfg, cmd):
     name = cmd["command"]
     if name == "HEALTH":
-        return {"status": "OK", **health(cfg)}
+        # Report the *effective* permissions loaded by the live phone relay,
+        # not just the Git commit or dashboard/updater heartbeat. Only
+        # capability booleans, never keys or local filesystem paths.
+        owner = cfg.get("permissions", {}).get("agent-owner", [])
+        return {"status": "OK", **health(cfg),
+                "relay_protocol": "v13-owner-chat-v2",
+                "owner_capabilities": {
+                    "chat_send": "CHAT_SEND" in owner,
+                    "chat_result": "CHAT_RESULT" in owner,
+                    "chat_operator": "CHAT_OPERATOR" in owner,
+                    "update_request": "UPDATE_REQUEST" in owner,
+                    "log_sharing_toggle": "LOG_SHARING_ON" in owner
+                }}
     if name == "LEARNING_STATUS":
         return {"status": "OK", "learning": _trusted_status(cfg.get("status_file"))}
     if name == "DIAGNOSTICS":
