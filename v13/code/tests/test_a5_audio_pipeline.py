@@ -81,6 +81,27 @@ class AudioPipelineTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             checked_projector_audio_view(self.store, other, result['candidate'], result['source_ref'])
 
+    def test_nonfinite_projector_prediction_rejected(self):
+        result = self.run_pipeline()
+        class BadProjector:
+            def predict(self, features):
+                return [float('nan'), 0.0]
+        with self.assertRaises(ValueError):
+            checked_projector_audio_view(self.store, BadProjector(), result['candidate'], result['source_ref'])
+
+    def test_mutating_projector_prediction_rejected(self):
+        result = self.run_pipeline()
+        original = self.projector
+        class MutableProjector:
+            def __init__(self):
+                self.calls = 0
+            def predict(self, features):
+                self.calls += 1
+                base = original.predict(features)
+                return base if self.calls == 1 else [base[0] + 0.01, base[1]]
+        with self.assertRaises(PermissionError):
+            checked_projector_audio_view(self.store, MutableProjector(), result['candidate'], result['source_ref'])
+
 
 if __name__ == '__main__':
     unittest.main()
