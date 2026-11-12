@@ -4,7 +4,7 @@ from v13.audio_source_gate import checked_audio_source_view
 
 REF = {'source_id':'synthetic','sha256':'a'*64,'modality':'audio','char_start':0,'char_end':0}
 PACKET = {'modality':'audio','source_ref':REF,'provenance':[REF],
-          'segments':[{'finality':'FINAL','action_authority':False,'learning_authority':False}],
+          'segments':[{'start_ms':0,'end_ms':20,'consent_receipt_ref':'synthetic-consent','finality':'FINAL','action_authority':False,'learning_authority':False}],
           'event_id':'synthetic','brain_generation_id':'synthetic'}
 STORE = {'sha256':'a'*64,'revoked':False,'modality':'audio'}
 
