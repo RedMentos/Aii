@@ -1,0 +1,35 @@
+name: V13 JEPA T8 chronological retention and optimizer restart
+on:
+  push:
+    branches:
+      - jepa/t8-retention-optimizer-combined-20261112
+  pull_request:
+    paths:
+      - 'v13/code/tests/test_t8_world_jepa_chronological_optimizer_retention_20261112.py'
+      - '.github/workflows/v13-jepa-t8-chronological-optimizer-retention.yml'
+jobs:
+  chronological-retention:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy pytest
+      - name: Build pinned integrated candidate
+        run: python v13/code/scripts/stage_integrated_candidate.py --output "$RUNNER_TEMP/v13-jepa-stage"
+      - name: Install test-only fixtures in isolated candidate
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/v13-jepa-stage/scripts" "$RUNNER_TEMP/v13-jepa-stage/tests"
+          cp -a v13/code/scripts/. "$RUNNER_TEMP/v13-jepa-stage/scripts/"
+          cp v13/code/tests/test_world_jepa_readonly_store.py "$RUNNER_TEMP/v13-jepa-stage/tests/"
+          cp v13/code/tests/test_t8_world_jepa_optimizer_resume_integration_20261111.py "$RUNNER_TEMP/v13-jepa-stage/tests/"
+          cp v13/code/tests/test_t8_world_jepa_chronological_optimizer_retention_20261112.py "$RUNNER_TEMP/v13-jepa-stage/tests/"
+          touch "$RUNNER_TEMP/v13-jepa-stage/tests/__init__.py"
+      - name: Run committed T8 restart and retention ablation
+        shell: bash
+        run: |
+          cd "$RUNNER_TEMP/v13-jepa-stage"
+          python -m pytest -q -s tests/test_t8_world_jepa_optimizer_resume_integration_20261111.py tests/test_t8_world_jepa_chronological_optimizer_retention_20261112.py
