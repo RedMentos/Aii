@@ -121,15 +121,15 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits):
     if probe["status"] == "UP_TO_DATE":
         state[name] = "UP_TO_DATE"
         return
-    if runtime_busy:
-        state[name] = "BLOCKED_RUNNING"
-        return
     commit = probe["available"]
     key = (commit, name)
     if key not in tested_commits:
         tested_commits[key] = updates.ci_passed(commit, scope=name)
     if not tested_commits[key]:
         state[name] = "CI_WAIT"
+        return
+    if runtime_busy:
+        state[name] = "BLOCKED_RUNNING"
         return
     if name == "runtime":
         updated = updates.apply(root, expected_tip=commit)
