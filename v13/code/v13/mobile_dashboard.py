@@ -82,6 +82,24 @@ def summary():
     """No human text, raw logs, filenames, paths, prompts or token values."""
     p = DATA / "exports/native-probe.json"
     out = {"schema": "v13.phone.diagnostic/1", "native_probe": "NO_PROBE", "roles": {}}
+    # Real AI status, not the updater or merely the browser process.
+    # Only booleans and approved enums are allowed into private GitHub.
+    from .chat_service import call as ai_call
+    try:
+        ai_state = ai_call("state")
+        daemon = ai_state.get("daemon")
+        out["ai_runtime"] = {
+            "service": "RUNNING",
+            "model_process": "RUNNING" if ai_state.get("running") is True else "STOPPED",
+            "autostart": ai_state.get("autostart") is True,
+            "state": daemon if daemon in {
+                "STARTING", "RUNNING", "PAUSED_FOR_UPDATE", "RETRY_WAIT",
+                "LAUNCH_FAILED", "STOPPED_BY_USER", "STOPPING",
+                "RELOADING_AFTER_UPDATE"} else "UNKNOWN"
+        }
+    except (OSError, ValueError, RuntimeError, TimeoutError):
+        out["ai_runtime"] = {"service":"OFFLINE", "model_process":"UNKNOWN",
+                             "autostart":False,"state":"UNKNOWN"}
     # These fields intentionally reveal no user prompts, file paths, raw
     # tracebacks, shell history, or arbitrary Termux process information.
     ui_pid = PRIVATE / "ui.pid"
