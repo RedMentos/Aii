@@ -165,6 +165,7 @@ summary{cursor:pointer;font-weight:650}
   <div class="card">
    <h2>Fern-Beobachtung & Entwicklung (freiwillig)</h2>
    <p class="muted">Die Freigaben bleiben nach App-/KI-Neustarts bestehen und lassen sich hier einzeln widerrufen. Ohne Freigabe werden weder laufende Technikberichte noch Ferntests ausgeführt. Fernzugriff erfolgt ausschließlich über das bereits konfigurierte private GitHub-Relay.</p>
+   <p class="update-line" id="remote-observer-connection">Lade Rückkanal-Verbindungsstatus …</p>
    @@REMOTE_OBSERVATION_PANEL@@
    <h2>Diagnose & Protokolle</h2>
    <p class="muted">Die Bedienoberfläche zeichnet ihre eigenen V13-Sitzungen lokal auf. Andere Termux-Sitzungen werden nicht ausgelesen.</p>
@@ -256,6 +257,12 @@ summary{cursor:pointer;font-weight:650}
       showNotice(data.message||'Aktion ausgeführt');
       if(action==='send')form.querySelector('textarea').value='';
       if(String(action).includes('update')||action==='pipeline_check'||String(action).startsWith('diag_send_')||String(action).startsWith('remote_')){tab('maintenance');}
+      // Keep rendered WebView toggles synchronized with durable worker state.
+      if(action==='auto_enable'||action==='auto_disable'||String(action).startsWith('remote_')){
+        tab('maintenance');
+        window.location.reload();
+        return;
+      }
       await refresh();
     }catch(err){showNotice('Fehler: '+String(err.message||err));}
     finally{if(button)button.disabled=false;}
@@ -313,6 +320,14 @@ summary{cursor:pointer;font-weight:650}
       if(typeof data.pipeline_status==='string')pipelineStatus.textContent=data.pipeline_status;
       if(data.native_residency)updateNativeRoles(data.native_residency);
       if(typeof data.diagnostic_status==='string')diagnosticStatus.textContent=data.diagnostic_status;
+      if(data.remote_observation){
+        const o=data.remote_observation;
+        const target=document.getElementById('remote-observer-connection');
+        if(target)target.textContent='Rückkanal: '+(o.relay_recently_polled?'GitHub-Verbindung bestätigt':'nicht verbunden / offline')+
+          ' · Technikberichte '+(o.observe?'EIN':'AUS')+
+          ' · Ferntests '+(o.remote_tests?'EIN':'AUS')+
+          ' · letzter Versand '+(o.last_upload_utc||'noch nie');
+      }
       if(typeof data.update_busy==='boolean')progress.hidden=!data.update_busy;
     }catch(_){}
     finally{busy=false;}
