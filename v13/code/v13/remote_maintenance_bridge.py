@@ -667,20 +667,24 @@ def safe_receipt(cmd, result):
 
 def execute(client, cfg, cmd):
     name = cmd["command"]
+    # Signed GitHub requests are still subordinate to revocable on-device consent.
+    if name in ("CHAT_SEND","CHAT_RESULT","CHAT_OPERATOR"):
+        from .remote_observation import permits
+        if not permits(name):
+            raise Denied("remote model-test scope disabled by owner")
     if name == "HEALTH":
-        # Report the *effective* permissions loaded by the live phone relay,
-        # not just the Git commit or dashboard/updater heartbeat. Only
-        # capability booleans, never keys or local filesystem paths.
+        from .remote_observation import status as observer_status
         owner = cfg.get("permissions", {}).get("agent-owner", [])
-        return {"status": "OK", **health(cfg),
-                "relay_protocol": "v13-owner-chat-v2",
-                "owner_capabilities": {
-                    "chat_send": "CHAT_SEND" in owner,
-                    "chat_result": "CHAT_RESULT" in owner,
-                    "chat_operator": "CHAT_OPERATOR" in owner,
-                    "update_request": "UPDATE_REQUEST" in owner,
-                    "log_sharing_toggle": "LOG_SHARING_ON" in owner
-                }}
+        consent = observer_status()
+        return {"status":"OK", **health(cfg),
+                "relay_protocol":"v13-owner-chat-v2",
+                "owner_capabilities":{
+                    "chat_send":"CHAT_SEND" in owner and consent["remote_tests"],
+                    "chat_result":"CHAT_RESULT" in owner and consent["remote_tests"],
+                    "chat_operator":"CHAT_OPERATOR" in owner and consent["remote_tests"],
+                    "update_request":"UPDATE_REQUEST" in owner,
+                    "log_sharing_toggle":"LOG_SHARING_ON" in owner},
+                "remote_observation":consent}
     if name == "LEARNING_STATUS":
         return {"status": "OK", "learning": _trusted_status(cfg.get("status_file"))}
     if name == "DIAGNOSTICS":
