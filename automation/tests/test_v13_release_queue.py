@@ -1,6 +1,8 @@
 """Offline proofs for unattended inert-code merging and exact release CI repair."""
 import copy
 import unittest
+from unittest import mock
+from urllib.error import HTTPError
 from urllib.parse import parse_qs, urlsplit
 from automation import v13_release_queue as q
 
@@ -242,6 +244,37 @@ class QueueTests(unittest.TestCase):
         out = q.run(api, execute=True)
         self.assertEqual(out[-1]["release_ci"]["status"], "FAILED_RELEASE_CI")
         self.assertEqual(api.dispatches, [])
+
+    def test_pr_events_scan_only_recent_eight_unlabelled_candidates(self):
+        api = FakeGitHub()
+        api.issues = []
+        api.prs = [{"number": i} for i in range(20)]
+        api.comments = []
+        result = q.run(api)
+        self.assertEqual(len(result), 8)
+        self.assertEqual(api.merge_calls, [])
+
+    def test_github_rate_limit_retry_has_bounded_sleep_and_no_body_leak(self):
+        class Response:
+            def __enter__(self): return self
+            def __exit__(self, *args): return False
+            def read(self): return b'{"ok":true}'
+        rate = HTTPError("https://api.github.com", 429, "rate", {"Retry-After":"0"}, None)
+        with mock.patch.object(q, "urlopen", side_effect=[rate, Response()]) as getter, \
+             mock.patch.object(q.time, "sleep") as sleeper:
+            result = q.GitHub("private-test-token").call(
+                "GET", f"/repos/{q.REPO}/pulls/1")
+        self.assertEqual(result, {"ok": True})
+        self.assertEqual(getter.call_count, 2)
+        self.assertEqual(sleeper.call_args.args[0], 1.)
+
+    def test_permanent_403_does_not_retry_or_print_payload(self):
+        denied = HTTPError("https://api.github.com", 403, "private", {}, None)
+        with mock.patch.object(q, "urlopen", side_effect=denied) as getter:
+            with self.assertRaisesRegex(q.QueueError, "GitHub_HTTP_403"):
+                q.GitHub("private-test-token").call(
+                    "GET", f"/repos/{q.REPO}/pulls/1")
+        self.assertEqual(getter.call_count, 1)
 
     def test_release_tip_changed_cannot_dispatch_stale_merge(self):
         api = FakeGitHub()
