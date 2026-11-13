@@ -7,6 +7,8 @@ on:
     paths:
       - 'v13/code/v13/owner_read_bridge.py'
       - 'v13/code/v13/remote_chat.py'
+      - 'v13/code/v13/remote_observation.py'
+      - 'v13/code/tests/test_remote_observation.py'
       - 'v13/code/v13/phone_monitor.py'
       - 'v13/code/v13/phone_runtime_diagnostics.py'
       - 'v13/code/v13/phone_native_residency.py'
@@ -67,6 +69,8 @@ jobs:
           python -m py_compile v13/owner_read_bridge.py v13/remote_maintenance_bridge.py v13/remote_chat.py v13/phone_monitor.py tests/test_owner_read_bridge.py tests/test_remote_chat.py tests/test_phone_monitor.py
           python -m unittest discover -s tests -p 'test_owner_read_bridge.py' -v
           python -m unittest discover -s tests -p 'test_remote_chat.py' -v
+          python -m py_compile v13/remote_observation.py tests/test_remote_observation.py
+          python -m unittest discover -s tests -p 'test_remote_observation.py' -v
           python -m unittest discover -s tests -p 'test_phone_monitor.py' -v
       - name: Validate updater and phone UI source syntax
         run: |
