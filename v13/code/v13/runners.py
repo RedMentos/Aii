@@ -675,7 +675,11 @@ class RunnerPool:
             if self.fabric is None:
                 for k in [k for k in self.resident if k!=key]:self._release(k)
             else:
-                for r in self.fabric.admit(role,[k[0] for k in self.resident]):self._release((r,'generate'))
+                # Expert residency must receive *live native PIDs*, not cold
+                # assigned Python runner objects. Otherwise a never-loaded
+                # speaker can be mistaken for a process and spuriously evicted.
+                for r in self.fabric.admit(role,self.resident_roles()):
+                    self._release((r,'generate'))
             path=self.models.path_for(role);cur=self.resident.get(key)
             if cur is not None and Path(str(cur.model)).resolve()!=Path(str(path)).resolve():  # WP-T13: another file serves this role now
                 if self.fabric is not None and getattr(self.fabric,'ports',None) is not None:
