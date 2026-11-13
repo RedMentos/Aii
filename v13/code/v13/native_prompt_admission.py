@@ -81,10 +81,17 @@ def _remove_body_metadata(messages):
         original = json.loads(messages[1].get("content", ""))
     except (TypeError, ValueError):
         return None
-    if not isinstance(original, dict) or not isinstance(original.get("source_segments"), list):
+    if not isinstance(original, dict):
+        return None
+    # B2 can receive GIST slots rather than A1 segments. Each holds exact
+    # source text and a separate persisted source pointer.
+    source_key = ("source_segments" if isinstance(original.get("source_segments"), list)
+                  else "gist_slots" if isinstance(original.get("gist_slots"), list)
+                  else None)
+    if source_key is None:
         return None
     item = json.loads(json.dumps(original))
-    segments = item["source_segments"]
+    segments = item[source_key]
     # First strip *opaque source-address metadata* from the model view only.
     # The real sources, refs and hashes remain immutable in Query/Offer packets.
     if all(isinstance(x, dict) and isinstance(x.get("text"), str) for x in segments):
@@ -153,6 +160,33 @@ def _remove_body_metadata(messages):
                 if len(json.dumps(compressed)) < len(json.dumps(shared)):
                     item["enlightened_space"] = compressed
                     reason = "BODY_GLOBAL_SPACE_POINTER_METADATA"
+    if reason is None and isinstance(item.get("enlightened_space"), dict):
+        # After pointer metadata compaction, the A/Stream A/Stream B exact
+        # source pointers may *still* echo source_segments or gist_slots.
+        # Remove only a verified duplicate of the already retained exact
+        # source, never original B1/B2/B3/JEF/World/Self or memory content.
+        shared = item["enlightened_space"]
+        rows = shared.get("messages")
+        if isinstance(rows,list):
+            exact = "".join(x["text"] for x in segments)
+            preserved = []
+            for row in rows:
+                if not isinstance(row,dict):
+                    preserved.append(row)
+                    continue
+                excerpts=row.get("exact_sources")
+                duplicate = (
+                    row.get("from") in ("A_PERCEPTION","STREAM_A","STREAM_B")
+                    and row.get("authority") == "SOURCE_POINTER"
+                    and isinstance(excerpts,list) and len(excerpts)>0
+                    and all(isinstance(x,dict) and isinstance(x.get("exact_source_text"),str)
+                            and x["exact_source_text"] and
+                            x["exact_source_text"] in exact for x in excerpts))
+                if not duplicate:
+                    preserved.append(row)
+            if len(preserved) < len(rows):
+                shared["messages"] = preserved
+                reason = "BODY_DUPLICATE_STREAM_SOURCE"
     if reason is None and isinstance(item.get("self_corollary"), dict):
         corollary = item["self_corollary"]
         history = corollary.get("recent_own_action_outcomes")
@@ -167,9 +201,11 @@ def _remove_body_metadata(messages):
         return None
     # Strict source-integrity check: model gets the exact same source text and
     # the same peer-message content; never compress arbitrary source words.
-    if ([s.get("text") for s in item["source_segments"]] !=
-            [s.get("text") for s in original["source_segments"]] or
-            item.get("peer_message") != original.get("peer_message")):
+    if ([seg.get("text") for seg in item[source_key]] !=
+            [seg.get("text") for seg in original[source_key]] or
+            item.get("peer_message") != original.get("peer_message") or
+            item.get("jef_query") != original.get("jef_query") or
+            item.get("quote_choices") != original.get("quote_choices")):
         return None
     result = [dict(x) for x in messages]
     result[1]["content"] = json.dumps(item, ensure_ascii=False, sort_keys=True,
