@@ -1,3 +1,4 @@
+# Exact-head additive CI recheck after release ancestry moved; shadow-only receipt, no active weight promotion.
 """Cursor/optimizer receipt crash, CAS, source and restart regressions."""
 import hashlib
 import pytest
