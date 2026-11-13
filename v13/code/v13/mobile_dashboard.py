@@ -863,7 +863,7 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
             button("apply_update","Nur V13-Code aktualisieren"),
             button("rollback_update","Rückgängig"),
             button("auto_disable" if auto_enabled else "auto_enable",
-                   "Auto-Updates AUS" if auto_enabled else "Auto-Updates EIN")
+                   "Automatische Updates ausschalten" if auto_enabled else "Automatische Updates einschalten")
         ]),
         "@@DASHBOARD_UPDATE@@":button("dashboard_update","Steuerzentrale aktualisieren","primary"),
         "@@DIAG_BUTTONS@@":"".join([
