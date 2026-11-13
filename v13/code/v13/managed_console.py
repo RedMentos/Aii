@@ -213,6 +213,17 @@ class ManagedConsole:
             }
 
     def output(self, limit=160_000):
+        # poll() can report a process exit before _drain has appended its
+        # final status to the private transcript. Join the owned recorder
+        # *outside* its lock, and only for an already-exited process. Never
+        # delay live streaming or join ourselves in the recorder thread.
+        with self.lock:
+            proc = self.process
+            reader = self.reader
+        if (proc is not None and proc.poll() is not None and
+                reader is not None and reader is not threading.current_thread()
+                and reader.is_alive()):
+            reader.join(timeout=.5)
         with self.lock:
             path = self.path
         if path is None or path.is_symlink() or not path.is_file():
