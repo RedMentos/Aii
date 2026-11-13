@@ -18,6 +18,8 @@ import json
 import math
 import re
 
+from .common import safe_text
+
 SCHEMA = "v13.enlightened-space/1"
 STATE_PREFIX = "ENLIGHTENED_SPACE:"
 CAPACITY = 64
@@ -75,9 +77,7 @@ def _fingerprint(*values):
 def _safe_text(value):
     if not isinstance(value, str):
         return ""
-    return "".join(x for x in value[:MAX_MESSAGE]
-                   if x in "\t\n" or 32 <= ord(x) <= 126 or
-                   160 <= ord(x) <= 0x10ffff and not 0xd800 <= ord(x) <= 0xdfff)
+    return safe_text(value[:MAX_MESSAGE])
 
 
 def _source_binding(store, refs):
@@ -204,8 +204,11 @@ class EnlightenedSpace:
                 continue
             # The current user's own input is already passed to each body
             # verbatim. Keep shared space for cross-organ signals, not echoes.
-            if record["event_id"] == event_id and record["producer"] == "A_PERCEPTION":
-                continue
+            if record["event_id"] == event_id and record["producer"] in {
+                    "A_PERCEPTION", "STREAM_A", "STREAM_B"}:
+                continue  # fresh input already given exactly; no duplicate prefill
+            if receiver == "C3_LANGUAGE" and record["producer"] == "B3_CALLOSUM":
+                continue  # B3 messages are for native B1/B2, not unselected C3 facts
             if record["producer"] in {"B1_DETAIL", "B2_GIST"} and receiver == "C3_LANGUAGE":
                 if record["event_id"] == event_id and record.get("packet_id") not in approved:
                     continue
