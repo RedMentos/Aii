@@ -744,6 +744,32 @@ def _slider_grid(action):
     return "".join(cards)
 
 
+def live_residency_html(technical):
+    """Show observed native process residency, never an installed-model guess."""
+    native = (technical.get("ai_runtime") or {}).get("native_residency") or {}
+    if native.get("availability") != "AVAILABLE":
+        return ('<span class="pill">Live-Modellprozesse: nicht messbar</span>')
+    if native.get("readability") != "OBSERVED":
+        return ('<span class="pill">Live-Modellprozesse: noch nicht nachweisbar</span>')
+    labels = {"B1_DETAIL": "B1 Detail", "B2_GIST": "B2 Gist",
+              "C3_LANGUAGE": "C3 Sprache"}
+    roles = native.get("roles") or {}
+    parts = []
+    for role, name in labels.items():
+        data = roles.get(role) or {}
+        count = data.get("processes", 0)
+        if type(count) is not int or count < 0 or count > 100:
+            count = 0
+        pss = data.get("pss_mib")
+        memory = (" · " + str(round(pss, 1)) + " MiB PSS"
+                  if type(pss) in (int, float) and 0 <= pss < 100000
+                  else "")
+        parts.append('<span class="pill">' +
+                     html.escape(name + ": " + str(count) + " laufend" + memory) +
+                     '</span>')
+    return "".join(parts)
+
+
 def dashboard_html(token, controls, message="", csrf="", generation=""):
     """One coherent phone workspace: chat/commands/settings/maintenance tabs."""
     running, mode, code, last = controls.state()
@@ -797,6 +823,7 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
         "@@TRANSCRIPT_URL@@":html.escape(prefix+"/transcript.txt",quote=True),
         "@@PROBE_STATUS@@":html.escape(current["native_probe"]),
         "@@ROLE_PILLS@@":"".join(roles) or '<span class="pill">Noch keine Messung</span>',
+        "@@LIVE_ROLE_PILLS@@":live_residency_html(current),
         "@@MODEL_BUTTONS@@":"".join([quick(c,l) for c,l in [
             (":doctor","Gehirnstatus"),(":probe","Modelle testen"),
             (":probe jef-modes","JEF testen"),(":probe step12","B1/B2 testen")]]),
