@@ -112,6 +112,12 @@ class CrossOrganDelivery(unittest.TestCase):
         stored = self.r.store.rows(
             "SELECT payload FROM packets WHERE kind='OfferPacket' AND event_id=?", (event_id,))
         self.assertEqual(len(stored), 2)
+        delivered = self.r.store.rows(
+            "SELECT metrics FROM telemetry WHERE kind='body_offer_delivered' AND event_id=?", (event_id,))
+        self.assertEqual(len(delivered), 2, "both body contributions were actually persisted")
+        self.assertEqual({json.loads(x["metrics"])["role"] for x in delivered},
+                         {"B1_DETAIL", "B2_GIST"})
+        self.assertTrue(all(json.loads(x["metrics"])["status"] == "FINAL" for x in delivered))
 
     def test_failing_b1_never_fabricates_an_offer_and_b2_still_reaches_c3(self):
         event_id, meta, context = self.execute(fail_b1=True)
@@ -123,6 +129,10 @@ class CrossOrganDelivery(unittest.TestCase):
             "SELECT payload FROM packets WHERE kind='OfferPacket' AND event_id=?", (event_id,))
         self.assertEqual(len(stored), 1)
         self.assertEqual(json.loads(stored[0]["payload"])["role"], "B2_GIST")
+        delivered = self.r.store.rows(
+            "SELECT metrics FROM telemetry WHERE kind='body_offer_delivered' AND event_id=?", (event_id,))
+        self.assertEqual(len(delivered), 1, "native failure is never counted as delivered offer")
+        self.assertEqual(json.loads(delivered[0]["metrics"])["role"], "B2_GIST")
 
 
 if __name__ == "__main__":
