@@ -620,6 +620,33 @@ def operator_catalog():
     return sorted(fallback)
 
 
+def _lab_age_form(action):
+    """Experimental compute headroom; the earned age and rights never change."""
+    from .lab_age import view, MODES
+    v = view(DATA, official_stage=0)
+    level = v["stage"]
+    mode = v["mode"]
+    options = "".join(
+        '<option value="' + str(n) + '"' + (' selected' if n == level else '') +
+        '>Labor ' + str(n) + '</option>'
+        for n in range(11))
+    labels = {"off": "AUS", "shadow": "Nur beobachten", "active": "Aktiv testen"}
+    modes = "".join(
+        '<option value="' + k + '"' + (' selected' if k == mode else '') +
+        '>' + labels[k] + '</option>' for k in MODES)
+    return ('<p><strong>Offiziell Age 0</strong> · Labor-Age <strong>' + str(level) +
+            '</strong> · ' + labels[mode] +
+            '</p><form method="POST" action="' + html.escape(action, quote=True) + '">' +
+            '<input type="hidden" name="action" value="lab_age_set">' +
+            '<label for="lab-age-stage">Experimenteller Stand</label>' +
+            '<select id="lab-age-stage" name="lab_stage">' + options + '</select>' +
+            '<label for="lab-age-mode">Testmodus</label>' +
+            '<select id="lab-age-mode" name="lab_mode">' + modes + '</select>' +
+            '<button type="submit" class="primary">Labor-Age anwenden</button></form>' +
+            '<p class="muted">Stufe 6–10 ist hypothetisch: maximal vorhandene Denkbudgets, ' +
+            'keine neuen Organe oder Lernnachweise. Geräte-RAM und Zeitlimit bleiben bindend.</p>')
+
+
 def _sliders(action):
     from math import isfinite
     p = DATA / "config/settings.json"
@@ -775,6 +802,7 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
             (":probe jef-modes","JEF testen"),(":probe step12","B1/B2 testen")]]),
         "@@COMMAND_CATEGORIES@@":_command_catalog_html(),
         "@@SLIDERS@@":_slider_grid(action),
+        "@@LAB_AGE_FORM@@":_lab_age_form(action),
         "@@UPDATE_STATUS@@":html.escape(update_msg),
         "@@PIPELINE_STATUS@@":html.escape(
             "Auto " + ("AN" if pipeline_status["auto_enabled"] else "AUS") +
@@ -971,6 +999,15 @@ def serve(*, open_browser=True):
                         raise ValueError("Nur bekannte Klickbefehle")
                     controls.send(command)
                     message = "V13-Befehl gesendet."
+                elif action == "lab_age_set":
+                    from .lab_age import save, MODES
+                    raw_stage = fields.get("lab_stage", [""])[0]
+                    raw_mode = fields.get("lab_mode", [""])[0]
+                    if not raw_stage.isdecimal() or len(raw_stage) > 2 or raw_mode not in MODES:
+                        raise ValueError("Ungültiger experimenteller Age-Wert")
+                    state = save(DATA, mode=raw_mode, stage=int(raw_stage))
+                    message = ("Labor-Age " + str(state["stage"]) + " · " +
+                               state["mode"] + " – offizielles Age unverändert 0")
                 elif action == "knob":
                     name = fields.get("knob", [""])[0]
                     if name not in KNOBS_UI:
