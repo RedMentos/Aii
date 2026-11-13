@@ -50,7 +50,7 @@ QUICK_COMMANDS = {
  ":observers off", ":observers background", ":probe", ":probe jef-modes", ":probe step12", ":probe body-state",
  ":scheduler", ":age", ":growth status", ":teacher compare", ":workspace status", ":bodyview status",
  ":neuromod status", ":homeostasis status", ":attention status", ":callosum status", ":ctxos status",
- ":fabric report", ":live", ":jefsource", ":register summary", ":permissions", ":ledger", ":logs",
+ ":fabric report", ":live", ":inner status", ":inner on", ":inner off", ":jefsource", ":register summary", ":permissions", ":ledger", ":logs",
  ":task", ":ratings", ":context", ":archive status", ":source", ":export dataset", ":focal",
  ":notaus status", ":stillstand status", ":organ list", ":organ status", ":verbot liste", ":regeln",
 }
@@ -769,7 +769,9 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
         "@@ROLE_PILLS@@":"".join(roles) or '<span class="pill">Noch keine Messung</span>',
         "@@MODEL_BUTTONS@@":"".join([quick(c,l) for c,l in [
             (":doctor","Gehirnstatus"),(":probe","Modelle testen"),
-            (":probe jef-modes","JEF testen"),(":probe step12","B1/B2 testen")]]),
+            (":probe jef-modes","JEF testen"),(":probe step12","B1/B2 testen"),
+            (":inner on","Internes Gespräch EIN"),(":inner off","Internes Gespräch AUS"),
+            (":inner status","Inneres Gehirn ansehen")]]),
         "@@COMMAND_CATEGORIES@@":_command_catalog_html(),
         "@@SLIDERS@@":_slider_grid(action),
         "@@UPDATE_STATUS@@":html.escape(update_msg),
