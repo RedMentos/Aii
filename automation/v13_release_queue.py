@@ -47,9 +47,9 @@ ADDITIVE_CHECK = ("V13 safe additive candidate tests",
 RELEASE_GATES = tuple(REQUIRED.values()) + (OWNER_READ[1],)
 # Narrow fully unattended lane authorized by the owner: new inert modules,
 # matching new regression tests and no installed runtime/permission/weight edit.
-INERT_MODULE = re.compile(r"v13/code/v13/[a-z][a-z0-9_]*\\.py\\Z")
-INERT_TEST = re.compile(r"v13/code/tests/test_[a-z0-9_]+\\.py\\Z")
-INERT_HANDOFF = re.compile(r"v13/code/docs/handoffs/[A-Za-z0-9_.-]+\\.md\\Z")
+INERT_MODULE = re.compile(r"v13/code/v13/[a-z][a-z0-9_]*\.py\Z")
+INERT_TEST = re.compile(r"v13/code/tests/test_[a-z0-9_]+\.py\Z")
+INERT_HANDOFF = re.compile(r"v13/code/docs/handoffs/[A-Za-z0-9_.-]+\.md\Z")
 # High-authority files MUST go through direct reviewed/CI-gated integration,
 # not a scheduled bot merge. This includes any source permission/updater path.
 FORBIDDEN_PREFIX = (".github/", "v13/code/docs/canon/", "v13/code/models/",
