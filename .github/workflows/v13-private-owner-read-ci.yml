@@ -40,6 +40,7 @@ on:
       - 'v13/code/v13/mobile_dashboard.py'
       - 'v13/code/v13/mobile_dashboard.html'
       - 'v13/code/tests/test_mobile_dashboard_browser.js'
+      - 'v13/code/tests/test_webview_auto_update_button.py'
       - 'v13/code/v13/managed_console.py'
       - 'v13/code/tests/test_managed_console_dashboard.py'
       - 'v13/code/tests/test_source_updater.py'
@@ -90,6 +91,7 @@ jobs:
           python -m py_compile v13/managed_console.py tests/test_managed_console_dashboard.py
           python -m unittest discover -s tests -p 'test_managed_console_dashboard.py' -v
           python -m unittest discover -s tests -p 'test_mobile_dashboard.py' -v
+          python -m unittest discover -s tests -p 'test_webview_auto_update_button.py' -v
           python -m py_compile v13/lab_age.py v13/effort.py tests/test_lab_age.py
           python -m unittest discover -s tests -p 'test_lab_age.py' -v
           python -m py_compile v13/lab_native_cycle.py v13/sleep.py tests/test_lab_native_cycle.py
