@@ -6,6 +6,9 @@ on:
   pull_request:
     branches:
       - gpt6/v13-private-remote-bridge-20261111
+    # A specialist may publish a Draft before this workflow exists; when
+    # it becomes ready the new modules/tests must still receive exact-head CI.
+    types: [opened, synchronize, reopened, ready_for_review, edited]
     paths:
       - 'v13/code/v13/**'
       - 'v13/code/tests/**'
