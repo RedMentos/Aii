@@ -126,6 +126,11 @@ summary{cursor:pointer;font-weight:650}
    <p class="muted" style="margin-top:14px"><strong>Jetzt wirklich geladen</strong> · native Modellprozesse, nicht nur installierte Dateien:</p>
    <div class="status-pills" id="live-native-roles" aria-live="polite">@@LIVE_ROLE_PILLS@@</div>
    <div class="actions" style="margin-top:15px">@@MODEL_BUTTONS@@</div>
+   <div style="margin-top:16px">
+    <strong>Letzter tatsächlicher Gehirndurchlauf</strong>
+    <p class="muted" id="brain-evidence" aria-live="polite">@@BRAIN_EVIDENCE@@</p>
+    <p class="muted">Eine laufende Modell-Datei ist noch kein erfolgreich erzeugter B1/B2-Beitrag. „NATIVE_FAILED_NO_OFFER“ und 0 generierte C3-Tokens sind echte Funktionsfehler, kein grüner Modelltest.</p>
+   </div>
   </div>
   <div class="card"><h2>Alle Befehle – nach Funktionen</h2>
    <p class="muted">Keine Funktionen entfernt. Ein Klick übernimmt den Befehl in den Chat; du kannst ihn ergänzen und abschicken.</p>
@@ -323,6 +328,20 @@ summary{cursor:pointer;font-weight:650}
       if(typeof data.pipeline_status==='string')pipelineStatus.textContent=data.pipeline_status;
       if(data.native_residency)updateNativeRoles(data.native_residency);
       if(typeof data.diagnostic_status==='string')diagnosticStatus.textContent=data.diagnostic_status;
+      if(data.brain_evidence){
+        const e=data.brain_evidence, el=document.getElementById('brain-evidence');
+        if(el){
+          if(e.availability==='LOCAL_SQLITE_METADATA'){
+            const b1=e.roles?.B1_DETAIL?.delivery||'UNKNOWN';
+            const b2=e.roles?.B2_GIST?.delivery||'UNKNOWN';
+            const tokens=Number.isInteger(e.c3_prompt_tokens)&&Number.isInteger(e.c3_generated_tokens)?
+              ' · C3: '+e.c3_generated_tokens+' erzeugt / '+e.c3_prompt_tokens+' Prompt-Tokens':'';
+            el.textContent='Letzte Antwort: '+e.turn_status+' · B1: '+b1+' · B2: '+b2+tokens;
+          }else{
+            el.textContent=e.availability==='NO_TURNS'?'Noch kein echter Chatdurchlauf':'Laufzeitnachweis nicht lesbar';
+          }
+        }
+      }
       if(data.remote_observation){
         const o=data.remote_observation;
         const target=document.getElementById('remote-observer-connection');

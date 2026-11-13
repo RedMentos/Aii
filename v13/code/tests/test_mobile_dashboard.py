@@ -44,6 +44,29 @@ class MobileDashboardTests(unittest.TestCase):
         self.assertNotIn("private conversation", json.dumps(result))
         self.assertNotIn("github_pat_", json.dumps(result))
 
+    def test_brain_evidence_is_read_only_and_no_private_text(self):
+        from v13.runtime import Runtime
+        runtime = Runtime(self.data)
+        try:
+            e = runtime.store.event(runtime.session, "SECRET Alice personal text")
+            mid = runtime.store.message(runtime.session, e["event_id"], "assistant")
+            runtime.store.finish_message(mid, "DEADLINE", {
+                "runner":{"role":"C3_LANGUAGE","status":"DEADLINE",
+                          "prompt_tokens":617,"generated_tokens":0,
+                          "last_phase":"prefill"}})
+            result = d.brain_evidence_snapshot()
+            self.assertEqual(result["availability"], "LOCAL_SQLITE_METADATA")
+            self.assertEqual(result["turn_status"], "DEADLINE")
+            self.assertEqual(result["c3_prompt_tokens"], 617)
+            self.assertEqual(result["c3_generated_tokens"], 0)
+            self.assertEqual(result["roles"]["B1_DETAIL"]["delivery"], "NOT_ATTEMPTED")
+            line = d.brain_evidence_line(result)
+            self.assertIn("C3: 0 erzeugt / 617 Prompt-Tokens", line)
+            self.assertNotIn("SECRET", json.dumps(result))
+            self.assertNotIn("Alice", line)
+        finally:
+            runtime.close()
+
     def test_live_processes_are_distinct_from_smoke_and_never_leak_path(self):
         status = {"ai_runtime": {"native_residency": {
             "schema": "v13.phone-native-residency/1", "availability": "AVAILABLE",
@@ -83,6 +106,8 @@ class MobileDashboardTests(unittest.TestCase):
                   "Diagnose-ZIP", "V13 beenden", "Gesamten Chat kopieren"):
             self.assertIn(s, page)
         self.assertIn('id="live-native-roles"', page)
+        self.assertIn('id="brain-evidence"', page)
+        self.assertIn("Laufzeitnachweis", page)
         self.assertIn("updateNativeRoles(data.native_residency)", page)
         self.assertNotIn("http://0.0.0.0", page)
 
