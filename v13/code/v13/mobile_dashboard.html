@@ -163,6 +163,9 @@ summary{cursor:pointer;font-weight:650}
    <p class="update-desc">Aktualisiert den Code dieser Browseroberfläche und startet sie nach erfolgreicher Prüfung neu. URL bleibt dabei erhalten.</p>
   </div>
   <div class="card">
+   <h2>Fern-Beobachtung & Entwicklung (freiwillig)</h2>
+   <p class="muted">Die Freigaben bleiben nach App-/KI-Neustarts bestehen und lassen sich hier einzeln widerrufen. Ohne Freigabe werden weder laufende Technikberichte noch Ferntests ausgeführt. Fernzugriff erfolgt ausschließlich über das bereits konfigurierte private GitHub-Relay.</p>
+   @@REMOTE_OBSERVATION_PANEL@@
    <h2>Diagnose & Protokolle</h2>
    <p class="muted">Die Bedienoberfläche zeichnet ihre eigenen V13-Sitzungen lokal auf. Andere Termux-Sitzungen werden nicht ausgelesen.</p>
    <div class="actions">@@DIAG_BUTTONS@@</div>
@@ -252,7 +255,7 @@ summary{cursor:pointer;font-weight:650}
       if(!response.ok||!data.ok)throw new Error(data.message||'HTTP '+response.status);
       showNotice(data.message||'Aktion ausgeführt');
       if(action==='send')form.querySelector('textarea').value='';
-      if(String(action).includes('update')||action==='pipeline_check'||String(action).startsWith('diag_send_')){tab('maintenance');}
+      if(String(action).includes('update')||action==='pipeline_check'||String(action).startsWith('diag_send_')||String(action).startsWith('remote_')){tab('maintenance');}
       await refresh();
     }catch(err){showNotice('Fehler: '+String(err.message||err));}
     finally{if(button)button.disabled=false;}
