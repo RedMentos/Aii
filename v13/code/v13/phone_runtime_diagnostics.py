@@ -46,6 +46,8 @@ ADMISSION_OMISSIONS = frozenset({
     "OLD_NATIVE_HISTORY", "BODY_SOURCE_ADDRESS_METADATA",
     "BODY_DUPLICATE_EXECUTIVE_SOURCE_REFS", "BODY_NON_SOURCE_STATE_DETAIL",
     "BODY_DUPLICATE_EXACT_DETAIL_WINDOWS",
+    "BODY_GLOBAL_SPACE_POINTER_METADATA",
+    "BODY_OLDER_SELF_OUTCOMES_NOT_IN_NATIVE_VIEW",
 })
 # No text, session/event identifiers or source references are selected. The
 # substr cap applies before metadata crosses the SQLite/Python boundary.
