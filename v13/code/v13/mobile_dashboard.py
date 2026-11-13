@@ -753,7 +753,7 @@ def live_residency_html(technical):
     if native.get("readability") != "OBSERVED":
         return ('<span class="pill">Live-Modellprozesse: noch nicht nachweisbar</span>')
     labels = {"B1_DETAIL": "B1 Detail", "B2_GIST": "B2 Gist",
-              "C3_LANGUAGE": "C3 Sprache"}
+              "C2_CONTROL": "C2 JEF", "C3_LANGUAGE": "C3 Sprache"}
     roles = native.get("roles") or {}
     parts = []
     for role, name in labels.items():
@@ -969,7 +969,13 @@ def serve(*, open_browser=True):
                          "läuft" if running else "bereit" if exitcode is None else "beendet (" + str(exitcode) + ")")
                 update_result, update_busy = controls.update_status()
                 pstatus = pipeline_agent.snapshot()
+                # Local-only live process census. No command line, PID, path or
+                # text ever leaves this machine; the browser uses only counts
+                # and aggregated MiB values. A missing supervisor remains UNKNOWN.
+                from .phone_native_residency import snapshot as native_snapshot
+                native = native_snapshot(ai_state.get("pid") if running else None)
                 payload = {"state": state, "output": controls.output()[-50000:],
+                           "native_residency": native,
                            "ai_service": ai_state.get("service","UNAVAILABLE"),
                            "ai_daemon": ai_state.get("daemon","UNAVAILABLE"),
                            "ai_autostart": ai_state.get("autostart",False),
