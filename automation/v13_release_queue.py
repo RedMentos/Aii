@@ -301,6 +301,56 @@ def _post_merge_ci(api, sha):
     return dispatched
 
 
+
+def _repair_release_ci(api):
+    """Heal a prior GitHub-token merge lacking its exact-head CI dispatch.
+
+    Never retry a red test automatically: a failed result needs code repair.
+    On absent runs, only the trusted workflows are dispatched on the
+    verified release tip. The phone separately requires all three greens.
+    """
+    sha = _release_tip(api)
+    response = api.call("GET", f"/repos/{REPO}/actions/runs?" +
+                        urlencode({"head_sha": sha, "per_page": 100}))
+    runs = response.get("workflow_runs") if isinstance(response, dict) else None
+    if not isinstance(runs, list):
+        raise QueueError("release CI listing unavailable")
+    names = dict(REQUIRED)
+    names[OWNER_READ[0]] = OWNER_READ[1]
+    pending, passed, failed = set(), set(), set()
+    for r in runs:
+        if not isinstance(r, dict) or r.get("head_sha") != sha:
+            continue
+        name, path = r.get("name"), r.get("path")
+        if name not in names or not isinstance(path, str):
+            continue
+        if path.split("@", 1)[0] != names[name]:
+            continue
+        if r.get("event") not in ("push", "workflow_dispatch"):
+            continue
+        if r.get("status") in ("queued", "in_progress", "waiting", "requested", "pending"):
+            pending.add(name)
+        elif r.get("status") == "completed" and r.get("conclusion") == "success":
+            passed.add(name)
+        elif r.get("status") == "completed":
+            failed.add(name)
+    if failed - passed:
+        return {"status": "FAILED_RELEASE_CI", "gates": sorted(failed - passed)}
+    missing = set(names) - passed - pending
+    dispatched = []
+    for name in sorted(missing):
+        # The commit may move while the CI list is read. Fail closed.
+        if _release_tip(api) != sha:
+            raise QueueError("release moved during CI recovery")
+        workflow = names[name].rsplit("/", 1)[-1]
+        api.call("POST", f"/repos/{REPO}/actions/workflows/{workflow}/dispatches",
+                 {"ref": RELEASE})
+        dispatched.append(name)
+    return {"status": "DISPATCHED_MISSING_RELEASE_CI" if dispatched else
+            ("RELEASE_CI_IN_PROGRESS" if pending else "RELEASE_CI_GREEN"),
+            "dispatched": dispatched}
+
+
 def run(api, *, execute=False):
     # Do not rely on a human-operated label nobody sets. Examine the current
     # phone-release PR list, but the actual unattended subset is *only*
@@ -348,6 +398,12 @@ def run(api, *, execute=False):
             # At most one merge per cycle. Remaining PRs must see the new
             # branch HEAD; bot never enables auto-update on the phone.
             break
+    # A GITHUB_TOKEN merge may have happened in a prior run that crashed
+    # before dispatch. Restore missing gates on each scheduled cycle.
+    if execute and not any(x.get("status") == "merged" for x in results):
+        repair = _repair_release_ci(api)
+        if repair["status"] != "RELEASE_CI_GREEN":
+            results.append({"release_ci": repair})
     return results
 
 
