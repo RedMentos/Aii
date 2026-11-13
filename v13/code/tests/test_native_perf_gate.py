@@ -1,3 +1,4 @@
+# Exact-head additive CI recheck: observational latency analyzer only; no live model tuning or user data.
 import pytest
 from v13.native_perf_gate import summarize
 
