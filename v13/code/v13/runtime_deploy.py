@@ -371,7 +371,7 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description="Activate complete CI-verified V13 runtime without touching models or memory")
-    p.add_argument("--source", default=str(Path.home() / "V13-Phone"))
+    p.add_argument("--source", default=str(Path.home() / ".v13-runtime-source"))
     p.add_argument("--home", default=str(Path.home() / "v13"))
     a = p.parse_args(argv)
     try:
