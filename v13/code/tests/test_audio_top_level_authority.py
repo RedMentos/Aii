@@ -43,5 +43,29 @@ class AudioTopLevelAuthorityTests(unittest.TestCase):
             audio_shadow_observation(forged, self.read_source)
 
 
+    def test_malformed_authority_types_fail_closed(self):
+        for field in ("action_authority", "learning_authority",
+                      "semantic_truth_authority"):
+            for value in (1, 0, "false", "true", None, [], {}):
+                with self.subTest(field=field, value=repr(value)):
+                    forged = self.packet()
+                    forged[field] = value
+                    with self.assertRaises(PermissionError):
+                        audio_shadow_observation(forged, self.read_source)
+
+    def test_explicit_false_and_shadow_label_are_accepted(self):
+        packet = self.packet()
+        packet.update(action_authority=False, learning_authority=False,
+                      semantic_truth_authority=False, authority="SHADOW_ONLY")
+        result = audio_shadow_observation(packet, self.read_source)
+        self.assertEqual(result["authority"], "SHADOW_ONLY")
+
+    def test_null_authority_label_rejected_when_present(self):
+        packet = self.packet()
+        packet["authority"] = None
+        with self.assertRaises(PermissionError):
+            audio_shadow_observation(packet, self.read_source)
+
+
 if __name__ == "__main__":
     unittest.main()
