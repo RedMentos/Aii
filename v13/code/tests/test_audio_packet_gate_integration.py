@@ -74,6 +74,20 @@ class PacketGateIntegrationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             checked_audio_source_view(p, lambda sid: SOURCE)
 
+    def test_nonfinite_optional_prosody_rejected(self):
+        for bad in (float("nan"), float("inf"), float("-inf")):
+            with self.subTest(value=repr(bad)):
+                p = self.packet()
+                p["segments"][0]["acoustic"]["prosody_pitch_hz"] = bad
+                with self.assertRaises(ValueError):
+                    checked_audio_source_view(p, lambda sid: SOURCE)
+
+    def test_finite_optional_prosody_preserved(self):
+        p = self.packet()
+        p["segments"][0]["acoustic"]["prosody_pitch_hz"] = 220.0
+        result = checked_audio_source_view(p, lambda sid: SOURCE)
+        self.assertEqual(result["segments"][0]["acoustic"]["prosody_pitch_hz"], 220.0)
+
     def test_result_does_not_alias_packet(self):
         p = self.packet()
         original = copy.deepcopy(p)
