@@ -56,6 +56,24 @@ class PacketGateIntegrationTests(unittest.TestCase):
         self.assertEqual(result["segments"][0]["finality"], "PROVISIONAL")
         self.assertEqual(result["authority"], "SHADOW_ONLY")
 
+    def test_missing_acoustic_block_rejected(self):
+        p = self.packet()
+        del p["segments"][0]["acoustic"]
+        with self.assertRaises(ValueError):
+            checked_audio_source_view(p, lambda sid: SOURCE)
+
+    def test_null_acoustic_block_rejected(self):
+        p = self.packet()
+        p["segments"][0]["acoustic"] = None
+        with self.assertRaises(ValueError):
+            checked_audio_source_view(p, lambda sid: SOURCE)
+
+    def test_missing_feature_rejected(self):
+        p = self.packet()
+        del p["segments"][0]["acoustic"]["zcr"]
+        with self.assertRaises(ValueError):
+            checked_audio_source_view(p, lambda sid: SOURCE)
+
     def test_result_does_not_alias_packet(self):
         p = self.packet()
         original = copy.deepcopy(p)
