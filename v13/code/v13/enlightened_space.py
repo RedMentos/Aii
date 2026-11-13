@@ -49,7 +49,7 @@ STOP = frozenset({"the","and","with","for","from","that","this","are","was",
 
 
 def _terms(text):
-    c = Counter(w.casefold() for w in WORD.findall(text[:MAX_MESSAGE])
+    c = Counter(w.casefold() for w in WORDS.findall(text[:MAX_MESSAGE])
                 if w.casefold() not in STOP)
     return dict(sorted(c.items(), key=lambda kv: (-kv[1], kv[0]))[:MAX_TOKENS])
 
