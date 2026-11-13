@@ -42,6 +42,14 @@ PHONE_PATHS = (
 )
 OWNER_READ = ("V13 private owner-read Termux bootstrap",
               ".github/workflows/v13-private-owner-read-ci.yml")
+ADDITIVE_CHECK = ("V13 safe additive candidate tests",
+                  ".github/workflows/v13-safe-additive-candidate.yml")
+RELEASE_GATES = tuple(REQUIRED.values()) + (OWNER_READ[1],)
+# Narrow fully unattended lane authorized by the owner: new inert modules,
+# matching new regression tests and no installed runtime/permission/weight edit.
+INERT_MODULE = re.compile(r"v13/code/v13/[a-z][a-z0-9_]*\\.py\\Z")
+INERT_TEST = re.compile(r"v13/code/tests/test_[a-z0-9_]+\\.py\\Z")
+INERT_HANDOFF = re.compile(r"v13/code/docs/handoffs/[A-Za-z0-9_.-]+\\.md\\Z")
 # High-authority files MUST go through direct reviewed/CI-gated integration,
 # not a scheduled bot merge. This includes any source permission/updater path.
 FORBIDDEN_PREFIX = (".github/", "v13/code/docs/canon/", "v13/code/models/",
@@ -74,7 +82,9 @@ class GitHub:
                                "User-Agent": "V13-reviewed-release-queue",
                                "Content-Type": "application/json"})
         with urlopen(req, timeout=25) as response:
-            return json.load(response)
+            payload = response.read()
+            # GitHub returns HTTP 204/no body for workflow_dispatch.
+            return json.loads(payload) if payload else {}
 
 
 def _list(api, resource):
@@ -127,6 +137,40 @@ def _safe_files(files):
     return True
 
 
+def _safe_additive(pr, files):
+    """Only owner-created, not-yet-imported and strictly additive research code.
+
+    This lane is intentionally independent of any prompt-in-PR-body: no model
+    can grant itself tool, age, network or weight-update permissions here.
+    Draft PRs are eligible only for this narrow checked/inert path.
+    """
+    if ((pr.get("user") or {}).get("login") != OWNER
+            or not isinstance(files, list) or not 2 <= len(files) <= 20):
+        return False
+    modules = tests = changes = 0
+    for row in files:
+        if not isinstance(row, dict) or row.get("status") != "added":
+            return False
+        name = row.get("filename")
+        c = row.get("changes")
+        if type(c) is not int or c < 1:
+            return False
+        changes += c
+        if changes > 650:
+            return False
+        if not isinstance(name, str):
+            return False
+        if INERT_MODULE.fullmatch(name):
+            modules += 1
+        elif INERT_TEST.fullmatch(name):
+            tests += 1
+        elif INERT_HANDOFF.fullmatch(name):
+            pass
+        else:
+            return False
+    return 1 <= modules <= 8 and 1 <= tests <= 12
+
+
 def _approved(api, number, head):
     # Owner-authored consent bound to the exact current PR commit.
     # A changed PR head invalidates approval; no fuzzy textual matching.
@@ -141,7 +185,7 @@ def _approved(api, number, head):
     )
 
 
-def _green(api, sha, phone):
+def _green(api, sha, phone, additive=False):
     runs = []
     for page in range(1, 5):
         data = api.call("GET", f"/repos/{REPO}/actions/runs?" +
@@ -158,6 +202,8 @@ def _green(api, sha, phone):
     required = dict(REQUIRED)
     if phone:
         required[OWNER_READ[0]] = OWNER_READ[1]
+    if additive:
+        required[ADDITIVE_CHECK[0]] = ADDITIVE_CHECK[1]
     for run in runs:
         if not isinstance(run, dict) or run.get("head_sha") != sha:
             continue
@@ -174,8 +220,8 @@ def _green(api, sha, phone):
 
 
 def candidate(api, pr):
-    if not isinstance(pr, dict) or pr.get("draft") is not False:
-        return False, "draft"
+    if not isinstance(pr, dict):
+        return False, "invalid"
     number = pr.get("number")
     head = pr.get("head") or {}
     base = pr.get("base") or {}
@@ -185,65 +231,122 @@ def candidate(api, pr):
             or (head.get("repo") or {}).get("full_name") != REPO
             or base.get("ref") != RELEASE):
         return False, "scope"
-    if not _approved(api, number, sha):
-        return False, "unapproved_sha"
-    current = api.call("GET", f"/repos/{REPO}/pulls/{number}")
-    if (current.get("head", {}).get("sha") != sha
-            or current.get("base", {}).get("ref") != RELEASE
-            or current.get("draft") is not False
-            or current.get("mergeable") is not True
-            or current.get("mergeable_state") != "clean"):
-        return False, "stale_or_conflict"
-    compare = api.call("GET", f"/repos/{REPO}/compare/" +
-                       base["sha"] + "..." + sha)
-    if (compare.get("status") != "ahead" or
-            compare.get("behind_by") != 0 or
-            (compare.get("base_commit") or {}).get("sha") != base["sha"]):
-        return False, "non_fast_forward"
     files = _list(api, f"/repos/{REPO}/pulls/{number}/files")
     if not _safe_files(files):
         return False, "review_only_paths"
+    auto = _safe_additive(pr, files)
+    manual = (not pr.get("draft") and _approved(api, number, sha))
+    if not (manual or auto):
+        return False, "unapproved_or_incomplete"
+    current = api.call("GET", f"/repos/{REPO}/pulls/{number}")
+    if (current.get("head", {}).get("sha") != sha
+            or current.get("base", {}).get("ref") != RELEASE
+            or current.get("draft") != pr.get("draft")
+            or current.get("mergeable") is not True
+            or current.get("mergeable_state") not in
+               (("clean", "draft") if auto else ("clean",))):
+        return False, "stale_or_conflict"
+    if not auto and pr.get("draft") is not False:
+        return False, "draft"
+    compare = api.call("GET", f"/repos/{REPO}/compare/" +
+                       base["sha"] + "..." + sha)
+    # A strictly additive change may be on an older release ancestor: the
+    # current GitHub mergeability check, not fast-forward ancestry, governs
+    # compatibility. Existing-runtime edits remain strict fast-forward only.
+    if (compare.get("status") == "ahead"
+            and compare.get("behind_by") == 0
+            and (compare.get("base_commit") or {}).get("sha") == base["sha"]):
+        pass
+    elif not (auto and compare.get("status") == "diverged"
+              and type(compare.get("ahead_by")) is int
+              and compare["ahead_by"] > 0
+              and type(compare.get("behind_by")) is int
+              and 0 < compare["behind_by"] <= 1500):
+        return False, "non_fast_forward"
     phone = any(x["filename"] in PHONE_PATHS for x in files)
-    if not _green(api, sha, phone):
+    if not _green(api, sha, phone, additive=auto):
         return False, "missing_exact_sha_ci"
-    # Final re-read protects against synchronizing new code between review
-    # and merge; GitHub PUT /merge also receives exact expected head SHA.
     latest = api.call("GET", f"/repos/{REPO}/pulls/{number}")
-    if (latest.get("head", {}).get("sha") != sha or
-            latest.get("base", {}).get("sha") != base["sha"] or
-            latest.get("mergeable") is not True):
+    if (latest.get("head", {}).get("sha") != sha
+            or latest.get("base", {}).get("sha") != base["sha"]
+            or latest.get("mergeable") is not True):
         return False, "head_or_release_moved"
-    return True, "approved"
+    return True, "safe_additive" if auto else "owner_approved"
+
+
+def _release_tip(api):
+    ref = api.call("GET", f"/repos/{REPO}/git/ref/heads/{RELEASE}")
+    sha = (ref.get("object") or {}).get("sha") if isinstance(ref, dict) else None
+    if not isinstance(sha, str) or not HEX40.fullmatch(sha):
+        raise QueueError("release head cannot be verified")
+    return sha
+
+
+def _post_merge_ci(api, sha):
+    """GITHUB_TOKEN merge does not fire push workflows: explicitly dispatch.
+
+    Workflows are also registered on default branch; dispatch at the fixed
+    release ref. The phone checks three successes *for the exact release SHA*.
+    If Boss races the queue, fail closed and let a later cycle repair the tip.
+    """
+    if _release_tip(api) != sha:
+        raise QueueError("release changed before trusted CI dispatch")
+    dispatched = []
+    for workflow in RELEASE_GATES:
+        # Each trusted workflow exists on main AND the release branch.
+        name = workflow.rsplit("/", 1)[-1]
+        api.call("POST", f"/repos/{REPO}/actions/workflows/{name}/dispatches",
+                 {"ref": RELEASE})
+        dispatched.append(name)
+    return dispatched
 
 
 def run(api, *, execute=False):
-    # Query only explicitly approved candidate labels. Thousands of unrelated
-    # historical/stacked V13 PRs must never stall the integration loop.
+    # Do not rely on a human-operated label nobody sets. Examine the current
+    # phone-release PR list, but the actual unattended subset is *only*
+    # new modules+new tests with a specific green read-only CI check.
     issues = _list(api, f"/repos/{REPO}/issues?" + urlencode({
         "state": "open", "labels": READY_LABEL,
         "direction": "asc", "sort": "created"}))
-    results = []
+    prs = _list(api, f"/repos/{REPO}/pulls?" + urlencode({
+        "state": "open", "base": RELEASE, "direction": "asc", "sort": "created"}))
+    ordered, seen = [], set()
     for issue in issues:
         if not isinstance(issue, dict) or "pull_request" not in issue:
             continue
         number = issue.get("number")
-        if type(number) is not int:
+        if type(number) is int and number not in seen:
+            ordered.append(number); seen.add(number)
+    for pr in prs:
+        if not isinstance(pr, dict):
             continue
+        number = pr.get("number")
+        if type(number) is int and number not in seen:
+            ordered.append(number); seen.add(number)
+    results = []
+    for number in ordered:
         pr = api.call("GET", f"/repos/{REPO}/pulls/{number}")
-        # No raw PR descriptions are logged. User content is not instructions.
+        if not isinstance(pr, dict):
+            continue
         ok, reason = candidate(api, pr)
+        # No sensitive PR descriptions or private device details in Actions.
         results.append({"pr": number, "status": reason})
         if ok:
             if execute:
                 response = api.call("PUT", f"/repos/{REPO}/pulls/{number}/merge",
-                                    {"sha": pr["head"]["sha"], "merge_method": "merge",
-                                     "commit_title": f"Integrate reviewed V13 PR #{number}"})
+                                    {"sha": pr["head"]["sha"],
+                                     "merge_method": "merge",
+                                     "commit_title": f"Integrate checked V13 PR #{number}"})
                 if response.get("merged") is not True:
-                    raise QueueError("GitHub refused reviewed merge")
+                    raise QueueError("GitHub refused checked merge")
+                release_sha = response.get("sha")
+                if not isinstance(release_sha, str) or not HEX40.fullmatch(release_sha):
+                    raise QueueError("merge response missing release commit")
                 results[-1]["status"] = "merged"
-                results[-1]["release_commit"] = response.get("sha")
-            # One per run; after any merge the other PRs need fresh ancestry
-            # and CI checks. Never auto-update phone from this workflow.
+                results[-1]["release_commit"] = release_sha
+                results[-1]["ci_dispatched"] = _post_merge_ci(api, release_sha)
+            # At most one merge per cycle. Remaining PRs must see the new
+            # branch HEAD; bot never enables auto-update on the phone.
             break
     return results
 
