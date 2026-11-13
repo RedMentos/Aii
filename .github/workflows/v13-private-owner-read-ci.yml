@@ -18,6 +18,9 @@ on:
       - 'v13/code/v13/pipeline_agent.py'
       - 'v13/code/v13/lifecycle.py'
       - 'v13/code/v13/chat_service.py'
+      - 'v13/code/v13/runners.py'
+      - 'v13/code/v13/config.py'
+      - 'v13/code/tests/test_native_batch_knob.py'
       - 'v13/code/v13/lab_age.py'
       - 'v13/code/v13/effort.py'
       - 'v13/code/tests/test_lab_age.py'
@@ -68,6 +71,8 @@ jobs:
           python -m unittest discover -s tests -p 'test_phone_runtime_diagnostics.py' -v
           python -m py_compile v13/phone_native_residency.py tests/test_phone_native_residency.py
           python -m unittest discover -s tests -p 'test_phone_native_residency.py' -v
+          python -m py_compile v13/runners.py v13/config.py tests/test_native_batch_knob.py
+          python -m unittest discover -s tests -p 'test_native_batch_knob.py' -v
           python -m py_compile v13/source_updater.py v13/lifecycle.py v13/pipeline_agent.py v13/chat_service.py v13/mobile_dashboard.py tests/test_source_updater.py tests/test_pipeline_agent.py tests/test_lifecycle.py tests/test_chat_service.py
           python -m unittest discover -s tests -p 'test_source_updater.py' -v
           python -m unittest discover -s tests -p 'test_pipeline_agent.py' -v
