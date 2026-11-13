@@ -88,6 +88,19 @@ class PacketGateIntegrationTests(unittest.TestCase):
         result = checked_audio_source_view(p, lambda sid: SOURCE)
         self.assertEqual(result["segments"][0]["acoustic"]["prosody_pitch_hz"], 220.0)
 
+    def test_conflicting_second_provenance_rejected(self):
+        p = self.packet()
+        conflicting = dict(p["source_ref"], sha256="b" * 64)
+        p["provenance"].append(conflicting)
+        with self.assertRaises(ValueError):
+            checked_audio_source_view(p, lambda sid: SOURCE)
+
+    def test_non_list_provenance_rejected(self):
+        p = self.packet()
+        p["provenance"] = {"unexpected": "object"}
+        with self.assertRaises(ValueError):
+            checked_audio_source_view(p, lambda sid: SOURCE)
+
     def test_result_does_not_alias_packet(self):
         p = self.packet()
         original = copy.deepcopy(p)
