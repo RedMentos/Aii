@@ -99,6 +99,9 @@ def summary():
                 "LAUNCH_FAILED", "STOPPED_BY_USER", "STOPPING",
                 "RELOADING_AFTER_UPDATE"} else "UNKNOWN"
         }
+        from .phone_native_residency import snapshot as native_residency
+        out["ai_runtime"]["native_residency"] = native_residency(
+            ai_state.get("pid") if ai_state.get("running") is True else None)
     except (OSError, ValueError, RuntimeError, TimeoutError):
         out["ai_runtime"] = {"service":"OFFLINE", "model_process":"UNKNOWN",
                              "autostart":False,"state":"UNKNOWN"}
