@@ -170,6 +170,11 @@ def request_resume(*, reason="UPDATED"):
                     "expires":int(time.time())+900})
 
 
+def cancel_resume():
+    """Discard a stale update-resume token after explicit local AI OFF."""
+    _discard(RESUME)
+
+
 def service_resume(console):
     """Called by UI AFTER an update transaction and possible UI re-exec."""
     item = _read(RESUME)
