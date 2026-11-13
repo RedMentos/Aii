@@ -54,6 +54,11 @@ def checked_audio_source_view(percept_packet, read_source):
             value = acoustic.get(name)
             if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1:
                 raise ValueError('invalid normalized acoustic feature')
+        # Optional acoustic/prosody features must not carry non-finite values.
+        # Keep their domain-specific ranges to the owning feature contract.
+        for name, value in acoustic.items():
+            if isinstance(value, bool) or (isinstance(value, (int, float)) and not math.isfinite(value)):
+                raise ValueError('invalid optional acoustic feature')
         if segment.get('asr_transcript') is not None:
             raise ValueError('unverified transcript in raw-ear packet')
     source = read_source(sid)
