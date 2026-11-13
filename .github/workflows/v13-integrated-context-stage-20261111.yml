@@ -49,6 +49,7 @@ jobs:
           tests/test_native_prompt_admission.py
           tests/test_phone_runtime_diagnostics.py
           tests/test_native_sampling_policy.py
+          tests/test_bodies.py
       - name: Check recovery shell syntax
         run: bash -n v13/code/scripts/termux_runtime_recovery.sh
   integrated-regression:
