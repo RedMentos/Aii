@@ -1,6 +1,9 @@
 """A5 source-bound prompt admission candidate; no model or permission authority."""
 from dataclasses import dataclass
 from typing import Sequence
+import re
+
+_SAFE_LABEL = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}\\Z")
 
 @dataclass(frozen=True)
 class Evidence:
@@ -28,12 +31,22 @@ def admit(user_text: str, evidence: Sequence[Evidence], token_cap: int = 240) ->
 
     A later native tokenizer MUST validate this candidate before inference.
     """
-    if token_cap <= 0:
+    if type(token_cap) is not int or token_cap <= 0:
         raise ValueError("token_cap must be positive")
     if not isinstance(user_text, str) or not user_text.strip():
         raise ValueError("nonempty user text required")
-    if any(not e.source_id or not e.organ for e in evidence):
-        raise ValueError("source and organ required")
+    evidence = tuple(evidence)
+    for e in evidence:
+        if not isinstance(e, Evidence):
+            raise ValueError("invalid evidence")
+        if not isinstance(e.source_id, str) or not _SAFE_LABEL.fullmatch(e.source_id):
+            raise ValueError("invalid source ID")
+        if not isinstance(e.organ, str) or not _SAFE_LABEL.fullmatch(e.organ):
+            raise ValueError("invalid organ label")
+        if not isinstance(e.text, str) or type(e.priority) is not int:
+            raise ValueError("invalid evidence text/priority")
+        if type(e.consented) is not bool or type(e.final) is not bool:
+            raise ValueError("invalid evidence consent/finality")
     ids = [e.source_id for e in evidence]
     if len(set(ids)) != len(ids):
         raise ValueError("duplicate evidence IDs")
