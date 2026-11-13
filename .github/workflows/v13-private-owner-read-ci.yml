@@ -4,6 +4,7 @@ on:
     branches:
       - gpt6/v13-private-remote-bridge-20261111
   pull_request:
+    branches: ['gpt6/v13-private-remote-bridge-20261111']
     paths:
       - 'v13/code/v13/owner_read_bridge.py'
       - 'v13/code/v13/remote_chat.py'
