@@ -220,6 +220,13 @@ def _copy(source, target):
         dest = target / rel
         if not src.is_dir() or src.is_symlink():
             raise RuntimeDeployError("Missing source subtree: " + rel)
+        # Never dereference a symlink into an immutable release snapshot.
+        # copytree(symlinks=False) otherwise copies arbitrary host/private bytes.
+        for directory, dirs, files in os.walk(src, followlinks=False):
+            for name in dirs + files:
+                entry = Path(directory) / name
+                if entry.is_symlink():
+                    raise RuntimeDeployError("Symlink inside runtime source tree")
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(src, dest, symlinks=False,
                         ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyo", ".git"))

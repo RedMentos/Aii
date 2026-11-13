@@ -1,0 +1,28 @@
+name: V13 runtime deployment integrity
+on:
+  pull_request:
+    paths:
+      - 'v13/code/v13/runtime_deploy.py'
+      - 'v13/code/tests/test_runtime_deploy_integrity.py'
+      - '.github/workflows/v13-runtime-deploy-integrity.yml'
+  push:
+    branches:
+      - 'gpt6/core-runtime-deploy-integrity-20261112'
+    paths:
+      - 'v13/code/v13/runtime_deploy.py'
+      - 'v13/code/tests/test_runtime_deploy_integrity.py'
+      - '.github/workflows/v13-runtime-deploy-integrity.yml'
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and run offline regressions
+        working-directory: v13/code
+        run: |
+          python -m py_compile v13/runtime_deploy.py tests/test_runtime_deploy_integrity.py
+          python -m unittest discover -s tests -p test_runtime_deploy_integrity.py -v
