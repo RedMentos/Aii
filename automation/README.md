@@ -21,3 +21,5 @@ The phone update agent continues to check exact-commit, successful CI on the rel
 Treat status as five different facts: `CODE_WRITTEN`, `PR_CI_GREEN`, `RELEASE_MERGED`, `PHONE_UPDATED`, `NATIVE_UTILITY_VERIFIED`. The first does not imply any later state. Each agent should inspect relevant authorized private technical diagnostics when available, publish tests and a release-compatible PR, and help resolve its own blocked CI. Boss checks runtime code and integrates compatible changes. Never publish private chat, device logs, GGUF weights, or credentials in public issues or CI output.
 
 This automation alone does not implement internal B1/B2 conversation, on-device JEPA training, learned sparse experts or age promotion. Those use separate scheduler/runtime implementations and require real Redmi tests.
+
+The workflow registrations on default `main` are restricted to the phone-release PR base and dispatch events. They must not run phone tests against this automation-only branch, which does not contain the full V13 runtime sources.
