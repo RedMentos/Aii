@@ -478,6 +478,18 @@ class FocalLoop:
         for x in active:
             self.s.add_packet('FocalItem',packet('FocalItem','C4_FOCAL',e['event_id'],e['brain_generation_id'],x['source_refs'],**{k:v for k,v in x.items() if k not in ('text',)}))
         ws.save(e,active,rest,slots*BOOT['workspace_factor'])
+        # Liminal/Stream-A symbolic bootstrap: accepted, source-bound content
+        # accumulates at three timescales. It is NOT a learned neural latent;
+        # only current, actually focal items can change this context state.
+        try:
+            from .liminal_space import LiminalSpace
+            liminal_receipt=LiminalSpace(self.s,session or self.r.session).observe(e,active)
+            self.s.log('liminal_context_admission',e['event_id'],{
+                'count':liminal_receipt['admitted'],
+                'status':'SHADOW_UPDATE',
+            })
+        except Exception as exc:
+            self.s.log('liminal_context_unavailable',e['event_id'],{'error':type(exc).__name__})
         ids=[x['item_id'] for x in active if x['source_kind'] in BODY and x['origin_event_id']==e['event_id']]
         by={p['packet_id']:p for p in offers}
         selected=[by[i] for i in ids if i in by and offer_is_fresh(by[i],e['event_id'],e['brain_generation_id'],version)]
