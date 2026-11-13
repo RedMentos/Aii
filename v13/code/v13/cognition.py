@@ -376,7 +376,25 @@ class Cognition:
         p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'])
         if selected:p['b2_quote_select']=selected
         p['provenance'] += query_packet['context_source_refs']
-        self.s.add_packet('OfferPacket',p);self.retain_body_offer(p);return p
+        self.s.add_packet('OfferPacket',p);self.retain_body_offer(p)
+        # An apparently FINAL native JSON decode is not the same thing as a
+        # source-validated, consumer-visible cognitive contribution. Record
+        # that separate boundary only after the OfferPacket and body state
+        # have been durably stored. Missing delivery receipts after a native
+        # FINAL attempt indicate schema/source/deadline/commit failure rather
+        # than a successful B1/B2 contribution to JEF.
+        self.s.log('body_offer_delivered',e['event_id'],{
+            # Existing telemetry allowlist: IDs, enums, counts and timings only.
+            # Native source strings/hypotheses remain in the private packet store.
+            'role':role,
+            'query_packet_id':query_packet['packet_id'],
+            'packet_id':p['packet_id'],
+            'count':len(refs),
+            'status':'FINAL',
+            'duration_s':time.monotonic()-started,
+            'model_revision':p['model_revision'],
+        })
+        return p
     def analyst_context(self,offers,e,version):
         """Render selected hypotheses and only their source-verified quotations.
 
