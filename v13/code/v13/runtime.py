@@ -556,6 +556,27 @@ class Runtime:
                         if dig:volatile.append(('COMPRESSED','\n'+prompt(self.cfg,'digest'),dig));meta['digest_lines']=len(dig)
                 except Exception as exc:self.store.log('digest_unavailable',eid,{'error':type(exc).__name__})
                 volatile.append(('LATENT_STATE','\n'+prompt(self.cfg,'task_context'),self.executive.report_context(self.session)))
+                # Former Liminal / Stream-A function, now bounded B4 context:
+                # recursively retained semantic cues with exact source escape
+                # hatch. These are hypotheses, not facts or learned JEPA latents.
+                liminal_refs=[]
+                try:
+                    from .liminal_space import LiminalSpace
+                    lv=LiminalSpace(self.store,self.session).view(e,text,limit=4,exact_limit=2)
+                    meta['liminal_space']={
+                        'revision':lv['schema'],
+                        'representation':lv['representation'],
+                        'native_jepa_trained':False,
+                        'recalled':len(lv['contexts']),
+                        'counts':lv['counts']}
+                    if lv['contexts']:
+                        volatile.append(('LIMINAL_SEMANTIC_CONTEXT',
+                            '\nPrior liminal semantic context: LOSSY cues, NOT facts; verify exact source before using.',
+                            {'representation':lv['representation'],
+                             'cues':lv['contexts']}))
+                        liminal_refs=lv['source_refs']
+                except (ValueError,OSError,RuntimeError,KeyError,TypeError) as exc:
+                    self.store.log('liminal_context_unavailable',eid,{'stage':'context_plan','error':type(exc).__name__})
                 ul=agi_live.user_layer(meta)
                 if ul:volatile.append(('USER_MODEL','\n'+prompt(self.cfg,'user_model'),ul))  # WP-N13 AG11 beliefs, labelled
                 if clarify_turn:volatile.append(('CLARIFY','\n'+prompt(self.cfg,'clarify'),{'reason':'METACOG_CALIBRATED_ABSTAIN'}))
@@ -574,7 +595,7 @@ class Runtime:
                 except Exception as exc:self.store.log('context_os_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
                 try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context
                 except Exception as exc:self.store.log('context_save_failed',eid,{'error':type(exc).__name__})
-                context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]
+                context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[]),*liminal_refs]
                 if executive_view.get('active_task'):context_refs.append(executive_view['active_task']['source_ref'])
                 context_refs.extend(x['source_ref'] for x in executive_view['open_questions'])
                 for item in selected:context_refs.extend(item['provenance']+item['evidence_refs'])
