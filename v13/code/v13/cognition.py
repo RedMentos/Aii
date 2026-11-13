@@ -4,7 +4,7 @@ import re
 import time
 from .contracts import packet,offer_is_fresh
 from .inputs import looks_like_terminal_log
-from .common import dumps,uid,atomic_write,file_hash
+from .common import dumps,uid,atomic_write,file_hash,Limits
 from .memory import relevance,entities
 from .runners import check
 from .enlightened_space import EnlightenedSpace
@@ -286,10 +286,32 @@ class Cognition:
         # Inference must finish within its own budget. A completed foreground
         # result may remain eligible until the already bounded consumer turn ends.
         # Background/probe callers retain their original observer-window expiry.
+        preanswer_observer = valid_until is not None
         valid_until=deadline if valid_until is None else valid_until
         for value in (deadline,valid_until):
             if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or value<=0:raise ValueError('Offer deadline ungültig')
         deadline=min(deadline,valid_until);check(self.r.cancel_event,deadline)
+        # Strictly one organ-level scheduling gate, not a change to the
+        # historically hash-pinned Runtime coordinator. In the normal
+        # pre-answer path Runtime supplies valid_until=global_turn_deadline;
+        # the existing post-commit body path does not. After repeated
+        # observed C3 zero-token timeouts on a short local deadline, return
+        # promptly so C3 can start native load/prefill while both B bodies
+        # remain eligible for source-bound post-commit observation.
+        if preanswer_observer and self.r.cfg.get('observer_mode') == 'background':
+            try:
+                from .native_turn_budget import plan,recent_proof
+                budget=plan(valid_until-self.r.cfg['deadline_seconds'],
+                            valid_until,time.monotonic(),
+                            recent=recent_proof(self.s),
+                            background_enabled=True)
+            except (OSError,ValueError,RuntimeError,KeyError,TypeError):
+                budget=None
+            if budget and budget['recovery']:
+                self.s.log('native_body_deferred_for_c3',e['event_id'],
+                           {'role':role,'status':'POSTCOMMIT_ELIGIBLE',
+                            'recent_failures':budget['recent_real_prefill_failures']})
+                raise Limits('Redmi C3 braucht native Antwortzeit; B-Observer nach erfolgreicher Antwort')
         control=self.r.cfg.get('b2_control','two_body')
         # §85.1 controls: the B2 role keeps its own state slot but may borrow B1's policy.
         policy='B1_DETAIL' if role=='B1_DETAIL' or control=='same_model_same_policy' else 'B2_GIST'
