@@ -391,10 +391,17 @@ def main(argv=None):
             print(json.dumps(monitor_and_alert(client)), flush=True)
             # Owner opt-in only: one bounded private GitHub status issue,
             # updated in place at most every 15 minutes; never raw inputs.
-            from .remote_observation import publish_once
-            observation = publish_once(client, cfg)
-            if observation["status"] == "PUBLISHED":
-                print(json.dumps({"status":"OBSERVATION_PUBLISHED"}), flush=True)
+            from .remote_observation import publish_once, note_failure
+            try:
+                observation = publish_once(client, cfg)
+                if observation["status"] == "PUBLISHED":
+                    print(json.dumps({"status":"OBSERVATION_PUBLISHED"}), flush=True)
+            except Exception as exc:
+                # A failed telemetry upload must neither stop command polling
+                # nor make the prior successful upload appear current.
+                note_failure()
+                print(json.dumps({"status":"OBSERVATION_FAILED",
+                                  "error_code":type(exc).__name__}), flush=True)
         except Exception as exc:
             # Preserve the private relay loop even if a new optional phone
             # monitor module is absent on an older Android sparse checkout.
