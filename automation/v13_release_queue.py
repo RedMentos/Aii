@@ -12,6 +12,8 @@ import os
 from pathlib import PurePosixPath
 import re
 import sys
+import time
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -81,10 +83,32 @@ class GitHub:
                                "X-GitHub-Api-Version": "2022-11-28",
                                "User-Agent": "V13-reviewed-release-queue",
                                "Content-Type": "application/json"})
-        with urlopen(req, timeout=25) as response:
-            payload = response.read()
-            # GitHub returns HTTP 204/no body for workflow_dispatch.
-            return json.loads(payload) if payload else {}
+        for attempt in range(3):
+            try:
+                with urlopen(req, timeout=25) as response:
+                    payload = response.read()
+                    # GitHub returns HTTP 204/no body for workflow_dispatch.
+                    return json.loads(payload) if payload else {}
+            except HTTPError as exc:
+                # GitHub can throttle rapid hourly-agent PR events. Retry
+                # transient status codes without ever following API-returned
+                # instructions, printing token-bearing response bodies, or
+                # treating a 403 permission failure as authorization.
+                retry_after = exc.headers.get("Retry-After") if exc.headers else None
+                left = exc.headers.get("X-RateLimit-Remaining") if exc.headers else None
+                transient = exc.code in (429, 502, 503, 504) or (
+                    exc.code == 403 and (retry_after is not None or left == "0"))
+                if not transient or attempt >= 2:
+                    raise QueueError("GitHub_HTTP_" + str(exc.code)) from None
+                try:
+                    seconds = float(retry_after) if retry_after is not None else 2 ** (attempt + 2)
+                except (ValueError, TypeError):
+                    seconds = 2 ** (attempt + 2)
+                time.sleep(min(30., max(1., seconds)))
+            except (URLError, TimeoutError):
+                if attempt >= 2:
+                    raise QueueError("GitHub_network_unavailable") from None
+                time.sleep(2 ** (attempt + 1))
 
 
 def _list(api, resource):
@@ -359,7 +383,7 @@ def run(api, *, execute=False):
         "state": "open", "labels": READY_LABEL,
         "direction": "asc", "sort": "created"}))
     prs = _list(api, f"/repos/{REPO}/pulls?" + urlencode({
-        "state": "open", "base": RELEASE, "direction": "asc", "sort": "created"}))
+        "state": "open", "base": RELEASE, "direction": "desc", "sort": "updated"}))
     ordered, seen = [], set()
     for issue in issues:
         if not isinstance(issue, dict) or "pull_request" not in issue:
@@ -367,12 +391,19 @@ def run(api, *, execute=False):
         number = issue.get("number")
         if type(number) is int and number not in seen:
             ordered.append(number); seen.add(number)
+    # An event for one new PR must not re-fetch 50 unrelated historical
+    # drafts and hit GitHub's secondary rate limit. Old candidates are
+    # revisited when their agent updates/rebases them or Boss labels them.
+    recent = 0
     for pr in prs:
         if not isinstance(pr, dict):
             continue
         number = pr.get("number")
         if type(number) is int and number not in seen:
             ordered.append(number); seen.add(number)
+            recent += 1
+            if recent >= 8:
+                break
     results = []
     for number in ordered:
         pr = api.call("GET", f"/repos/{REPO}/pulls/{number}")
