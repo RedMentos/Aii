@@ -26,7 +26,9 @@ const chat = elem();
 const form = elem();
 // Chromium/Brave DOM clobbering: <input name="action"> hides form.action.
 form.action = {name:'action', toString(){return '[object HTMLInputElement]';}};
-form.getAttribute = name => name === 'action' ? '/t/test/action' : null;
+form.native = false;
+form.getAttribute = name => name === 'action' ? '/t/test/action' :
+  name === 'data-native-submit' && form.native ? '1' : null;
 form.addEventListener = (name, callback) => { listeners[name] = callback; };
 const map = new Map([
   ['v13-live-output', output], ['v13-live-state', elem()],
@@ -89,6 +91,17 @@ assert.equal(typeof listeners.submit, 'function', 'form submit callback register
   assert.equal(button.disabled, false, 'button becomes usable again');
   assert.match(notice.textContent, /Zuerst V13 Chat starten/, 'human-readable server error');
   assert.doesNotMatch(notice.textContent, /Unexpected end of JSON input/);
+  // Native auto-update HTML form must NOT be intercepted by AJAX at all.
+  form.native = true;
+  let prevented = false;
+  const nativeButton = { disabled: false };
+  await listeners.submit({
+    preventDefault() { prevented = true; }, submitter: nativeButton
+  });
+  assert.equal(prevented, false, 'native form POST must proceed without JS');
+  assert.equal(nativeButton.disabled, false, 'native toggle button stays usable');
+  assert.equal(fetchCalls.length, 1, 'no stray AJAX request for native toggle');
+  form.native = false;
   assert.equal(typeof refreshCallback, 'function');
   // The real /state polling path must update four live native organs, not
   // just one static snapshot generated when the page was first rendered.
