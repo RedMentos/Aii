@@ -227,7 +227,7 @@ summary{cursor:pointer;font-weight:650}
   document.querySelectorAll('form').forEach(form=>form.addEventListener('submit',async event=>{
     // The auto-update control always uses a native browser POST -> 303 -> GET.
     // It works even when Android WebView AJAX or JavaScript is broken.
-    if(form.hasAttribute('data-native-submit'))return;
+    if(form.getAttribute('data-native-submit')==='1')return;
     event.preventDefault();
     const button=event.submitter;
     if(button)button.disabled=true;
