@@ -7,6 +7,7 @@ from .inputs import looks_like_terminal_log
 from .common import dumps,uid,atomic_write,file_hash
 from .memory import relevance,entities
 from .runners import check
+from .enlightened_space import EnlightenedSpace
 ROUTES=['simple','detail','gist','both']
 def scaffold_route(text):
     t=text.lower()
@@ -230,7 +231,21 @@ class Cognition:
                 p.update(student_feature_path=str(path.relative_to(self.r.home)),student_feature_sha256=file_hash(path),student_component='a3_student',student_latent_dim=len(prediction['latent']),student_in_support=prediction['in_support'],student_mode='T1_SHADOW',native_receiver_authority=0)
         except Exception as exc:
             p['student_unavailable']=type(exc).__name__;self.s.log('student_unavailable',e['event_id'],{'error':type(exc).__name__})
-        return self.s.add_packet('PerceptPacket',p)
+        stored=self.s.add_packet('PerceptPacket',p)
+        # The two legacy context streams are NOT the B1/B2 hemispheres.
+        # A delivers source, A-semantic holds a lossy cue, B-exact its ref.
+        try:
+            space=EnlightenedSpace(self.s,self.r.session)
+            for producer,channel,summary in (
+                    ('A_PERCEPTION','EXACT','Perception source available'),
+                    ('STREAM_A','SEMANTIC',text[:240]),
+                    ('STREAM_B','EXACT','Exact source pointer available')):
+                space.publish(e,producer,channel,summary=summary,
+                              source_refs=[e['source_ref']],authority='SOURCE_POINTER')
+        except (ValueError,RuntimeError,KeyError,OSError,TypeError) as exc:
+            self.s.log('enlightened_space_unavailable',e['event_id'],
+                       {'stage':'perception','error':type(exc).__name__})
+        return stored
     def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):
         if role not in {'B1_DETAIL','B2_GIST'}:raise ValueError('Unbekannte Body-Rolle')
         # Inference must finish within its own budget. A completed foreground
@@ -331,7 +346,7 @@ class Cognition:
         # Native B1/B2 receive *actual* shared organ messages before generation.
         enlightened_refs=[]
         try:
-            shared=self.r.space().consume(e,role,text,max_messages=2,max_chars=280)
+            shared=EnlightenedSpace(self.s,self.r.session).consume(e,role,text,max_messages=2,max_chars=280)
             if shared['messages']:
                 query['enlightened_space']={
                     'representation':shared['representation'],
@@ -395,7 +410,7 @@ class Cognition:
         self.s.add_packet('OfferPacket',p);self.retain_body_offer(p)
         # Model summaries are never granted the exact source's factual status.
         try:
-            self.r.space().publish(
+            EnlightenedSpace(self.s,self.r.session).publish(
                 e,role,'SEMANTIC',
                 summary=obj['summary'] if refs else 'Unquoted body hypothesis, no source authority',
                 authority='MODEL_HYPOTHESIS' if refs else 'CONTROL_ONLY',
@@ -491,7 +506,7 @@ class Cognition:
         try:
             # B3's bidirectional body bridge is one subchannel, not the entire
             # system-wide Enlightened Space, and retains no latent authority.
-            self.r.space().publish(
+            EnlightenedSpace(self.s,self.r.session).publish(
                 {'event_id':offer['event_id'],'brain_generation_id':offer['brain_generation_id']},
                 'B3_CALLOSUM','EXACT' if refs else 'CONTROL',
                 summary='B3 '+offer['role']+' to '+receiver+' channel '+channel,
