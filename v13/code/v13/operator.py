@@ -53,6 +53,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :teacher on|off|compare / :teacher use B1_DETAIL|B2_GIST|C3_LANGUAGE
 :dream / :probe [jef-modes|step12|body-state|sustained]
 :sleep [status|digest|run full|a|b|c|wake|in <Minuten> [Modus]|policy [Name Wert]] / :scheduler (Replay/Sleep A-B-C, WP-S7 Tagesdigest + Offline-Rechenzeit, Event-Scheduler)
+:inner [status|on|off] (experimentelles lokales B1/B2/C3-Selbstgespraech im Leerlauf; unterbrechbar, keine Nutzerfakten oder Werkzeugrechte)
 :growth [status|eval [run [de] c3|b1|b2|v13 | curve <Solver> <Achse> | compare en-de [Solver]]|teacher [status|cloud on|off|ask <Frage>|run [local|claude]|dataset]|trainer [auto|lora|sparse|none [Master-Ordner] | cfg k=v.. | cfg reset]|goals|goal <Titel>|consolidate|approve <Batch>|reject <Batch>|tools|enable <Werkzeug>|calc <Ausdruck>] (WP-AG1..AG12)
 :neuromod [status|path <Name>|sleep|clear-veto <Name>] (WP-N10 Eligibility, Modulator-Bus, Plastizitäts-Gate)
 :authority [status|review|promote <Kopf>|demote <Kopf>|<Kopf>] / :objectives (WP-T10 Beförderung gelernter Köpfe Schatten → Kandidat → aktiv, IH-H25 Lernziele)
@@ -121,6 +122,9 @@ class Operator:
         if cmd in {'sleep','scheduler'}:
             from .sleep import operator_command
             return operator_command(r,cmd,args)
+        if cmd=='inner':
+            from .inner_dialogue import operator_command
+            return dumps(operator_command(r,args))
         if cmd=='ersetze':  # WP-Z6c human-scoped replacement of older route corrections
             from .route_supersede import operator_command
             return operator_command(r,args)
