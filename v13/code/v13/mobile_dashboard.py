@@ -399,28 +399,13 @@ def _browser_token():
 
 
 def automatic_updates_enabled():
-    if AUTO_FILE.is_symlink():
-        return False
-    try:
-        return AUTO_FILE.is_file() and AUTO_FILE.read_text().strip() == "yes"
-    except OSError:
-        return False
+    """The updater worker, not the WebView, owns this persisted decision."""
+    return pipeline_agent.enabled()
 
 
 def set_automatic_updates(enabled):
-    PRIVATE.mkdir(mode=0o700, parents=True, exist_ok=True)
-    if PRIVATE.is_symlink() or PRIVATE.stat().st_mode & 0o077 or AUTO_FILE.is_symlink():
-        raise RuntimeError("Unsichere Update-Einstellungen")
-    if enabled:
-        if AUTO_FILE.exists():
-            AUTO_FILE.unlink()
-        with AUTO_FILE.open("x") as f:
-            f.write("yes\n")
-            f.flush()
-            os.fsync(f.fileno())
-        AUTO_FILE.chmod(0o600)
-    else:
-        AUTO_FILE.unlink(missing_ok=True)
+    """Only acknowledge activation after the actual worker marker is durable."""
+    return pipeline_agent.set_enabled(enabled)
 
 
 class RuntimeControls:
@@ -587,8 +572,11 @@ class RuntimeControls:
         return self._last_output
 
 
-def _button(action, name, title, label, cls=""):
-    return (f'<form method="POST" action="{html.escape(action, quote=True)}">'
+def _button(action, name, title, label, cls="", native=False):
+    # Owner-consent controls must work without Android WebView JavaScript.
+    # A server-side 303 response completes the normal form POST safely.
+    native_flag = ' data-native-submit="1"' if native else ""
+    return (f'<form method="POST"{native_flag} action="{html.escape(action, quote=True)}">'
             f'<input type="hidden" name="action" value="{html.escape(name, quote=True)}">'
             f'<button class="{cls}" type="submit">{html.escape(label)}</button></form>')
 
@@ -619,6 +607,35 @@ def operator_catalog():
         except (OSError, ValueError, SyntaxError, UnicodeError):
             continue
     return sorted(fallback)
+
+
+def _remote_observation_panel(action):
+    """Persistent owner-consent panel; no shell or implicit uploads."""
+    from . import remote_observation as observation
+    state=observation.status()
+    def switch(key, title, on_action, off_action, description):
+        on=state[key]
+        name=off_action if on else on_action
+        label=title + (" · EIN – ausschalten" if on else " · AUS – einschalten")
+        return ('<div class="card" style="margin-top:10px"><p><strong>' +
+                html.escape(title) + '</strong> · ' +
+                ('EIN' if on else 'AUS') + '</p><p class="muted">' +
+                html.escape(description) + '</p>' +
+                _button(action,name,name,label) + '</div>')
+    polled=("Verbunden (letzter GitHub-Abruf bestätigt)" if state["relay_recently_polled"]
+            else "Nicht nachgewiesen – Relay/Termux prüfen")
+    updated=(str(state["last_upload_utc"]) if state["last_upload_utc"] else "noch nie")
+    return ('<p class="update-line">V13-Rückkanal: ' + html.escape(polled) +
+            ' · letzter Telemetrieversand (UTC-Zeitstempel): ' + updated + '</p>' +
+            switch('observe','Automatische Technikdaten',
+                   'remote_observe_on','remote_observe_off',
+                   'Sendet alle 15 Minuten begrenzte Status-, Fehler- und B1/B2-Laufzeitdaten an ein einziges privates GitHub-Issue. Keine Chatinhalte, wenn Konsolenauszüge AUS sind.') +
+            switch('remote_tests','Ferntests durch Entwicklungsagenten',
+                   'remote_tests_on','remote_tests_off',
+                   'Erlaubt dem bereits authentifizierten privaten Relay, begrenzte Testnachrichten und freigegebene Diagnosebefehle an den laufenden V13-Chat zu senden und Antworten abzuholen. Kein Shellzugriff oder beliebige Befehle.') +
+            switch('include_console','Konsolenauszüge automatisch teilen',
+                   'remote_console_on','remote_console_off',
+                   'Nur bei aktivierter Technikdatenübertragung: V13-Ausgabe kann private Modellantworten enthalten. Nutzereingaben werden maskiert; nicht als vollständige Anonymisierung verstehen.'))
 
 
 def _lab_age_form(action):
@@ -785,7 +802,8 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
     action = "/t/" + token + "/action"
     prefix = "/t/" + token
     def button(name, label, cls=""):
-        return _button(action, name, name, label, cls)
+        return _button(action, name, name, label, cls,
+                       native=name in ("auto_enable", "auto_disable"))
     def quick(command,label):
         return _quick(action,command,label)
     roles = []
@@ -831,6 +849,7 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
         "@@COMMAND_CATEGORIES@@":_command_catalog_html(),
         "@@SLIDERS@@":_slider_grid(action),
         "@@LAB_AGE_FORM@@":_lab_age_form(action),
+        "@@REMOTE_OBSERVATION_PANEL@@":_remote_observation_panel(action),
         "@@UPDATE_STATUS@@":html.escape(update_msg),
         "@@PIPELINE_STATUS@@":html.escape(
             "Auto " + ("AN" if pipeline_status["auto_enabled"] else "AUS") +
@@ -844,7 +863,7 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
             button("apply_update","Nur V13-Code aktualisieren"),
             button("rollback_update","Rückgängig"),
             button("auto_disable" if auto_enabled else "auto_enable",
-                   "Auto-Updates AUS" if auto_enabled else "Auto-Updates EIN")
+                   "Automatische Updates ausschalten" if auto_enabled else "Automatische Updates einschalten")
         ]),
         "@@DASHBOARD_UPDATE@@":button("dashboard_update","Steuerzentrale aktualisieren","primary"),
         "@@DIAG_BUTTONS@@":"".join([
@@ -985,6 +1004,7 @@ def serve(*, open_browser=True):
                            "last_action": controls.last_action, "running": running,
                            "update_result": update_result, "update_busy": update_busy,
                            "diagnostic_status": controls.diagnostic_status(),
+                            "remote_observation": __import__("v13.remote_observation",fromlist=["status"]).status(),
                            "generation": generation}
                 data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
                 self._headers(mime="application/json; charset=utf-8")
@@ -1085,8 +1105,22 @@ def serve(*, open_browser=True):
                                            "pipeline_check":"pipeline"}[action])
                     message = "Update-Auftrag gestartet; Ergebnis wird im Abschnitt GitHub-Updates angezeigt."
                 elif action in ("auto_enable", "auto_disable"):
-                    set_automatic_updates(action == "auto_enable")
-                    message = "Automatische Updates " + ("aktiviert" if action == "auto_enable" else "deaktiviert")
+                    on = set_automatic_updates(action == "auto_enable")
+                    message = ("Automatische Updates " +
+                               ("aktiviert" if on else "deaktiviert") +
+                               " · im Pipeline-Dienst dauerhaft gespeichert")
+                elif action in ("remote_observe_on", "remote_observe_off",
+                                "remote_tests_on", "remote_tests_off",
+                                "remote_console_on", "remote_console_off"):
+                    from . import remote_observation as observation
+                    key = ("observe" if action.startswith("remote_observe_") else
+                           "remote_tests" if action.startswith("remote_tests_") else
+                           "include_console")
+                    on = action.endswith("_on")
+                    if key == "include_console":
+                        set_remote_full_console(on)
+                    observation.set_consent(key,on)
+                    message = "V13 Rückkanal: " + key + (" EIN" if on else " AUS")
                 else:
                     raise ValueError("Unbekannte Aktion")
             except (OSError, ValueError, RuntimeError, UnicodeError) as exc:
@@ -1096,6 +1130,15 @@ def serve(*, open_browser=True):
                 data = json.dumps({"ok": accepted, "message": message}, ensure_ascii=False).encode("utf-8")
                 self._headers(200 if accepted else 400, mime="application/json; charset=utf-8")
             else:
+                if action in ("auto_enable", "auto_disable") and not message.startswith("Fehler:"):
+                    # POST/Redirect/GET prevents accidental re-toggles on refresh
+                    # and works even when Android WebView JS fetch is broken.
+                    self.send_response(303)
+                    self.send_header("Cache-Control", "no-store")
+                    self.send_header("Location", prefix + "/")
+                    self.send_header("Referrer-Policy", "no-referrer")
+                    self.end_headers()
+                    return
                 data = dashboard_html(token, controls, message, csrf=csrf, generation=generation).encode("utf-8")
                 self._headers()
             self.wfile.write(data)

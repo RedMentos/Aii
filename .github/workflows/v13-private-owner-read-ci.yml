@@ -7,6 +7,8 @@ on:
     paths:
       - 'v13/code/v13/owner_read_bridge.py'
       - 'v13/code/v13/remote_chat.py'
+      - 'v13/code/v13/remote_observation.py'
+      - 'v13/code/tests/test_remote_observation.py'
       - 'v13/code/v13/phone_monitor.py'
       - 'v13/code/v13/phone_runtime_diagnostics.py'
       - 'v13/code/v13/phone_native_residency.py'
@@ -38,6 +40,7 @@ on:
       - 'v13/code/v13/mobile_dashboard.py'
       - 'v13/code/v13/mobile_dashboard.html'
       - 'v13/code/tests/test_mobile_dashboard_browser.js'
+      - 'v13/code/tests/test_webview_auto_update_button.py'
       - 'v13/code/v13/managed_console.py'
       - 'v13/code/tests/test_managed_console_dashboard.py'
       - 'v13/code/tests/test_source_updater.py'
@@ -67,6 +70,8 @@ jobs:
           python -m py_compile v13/owner_read_bridge.py v13/remote_maintenance_bridge.py v13/remote_chat.py v13/phone_monitor.py tests/test_owner_read_bridge.py tests/test_remote_chat.py tests/test_phone_monitor.py
           python -m unittest discover -s tests -p 'test_owner_read_bridge.py' -v
           python -m unittest discover -s tests -p 'test_remote_chat.py' -v
+          python -m py_compile v13/remote_observation.py tests/test_remote_observation.py
+          python -m unittest discover -s tests -p 'test_remote_observation.py' -v
           python -m unittest discover -s tests -p 'test_phone_monitor.py' -v
       - name: Validate updater and phone UI source syntax
         run: |
@@ -86,6 +91,7 @@ jobs:
           python -m py_compile v13/managed_console.py tests/test_managed_console_dashboard.py
           python -m unittest discover -s tests -p 'test_managed_console_dashboard.py' -v
           python -m unittest discover -s tests -p 'test_mobile_dashboard.py' -v
+          python -m unittest discover -s tests -p 'test_webview_auto_update_button.py' -v
           python -m py_compile v13/lab_age.py v13/effort.py tests/test_lab_age.py
           python -m unittest discover -s tests -p 'test_lab_age.py' -v
           python -m py_compile v13/lab_native_cycle.py v13/sleep.py tests/test_lab_native_cycle.py

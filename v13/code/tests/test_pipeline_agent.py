@@ -43,8 +43,25 @@ class PipelineTests(unittest.TestCase):
             self.addCleanup(patch.stop)
 
     def turn_on(self):
-        p.ENABLED.write_text("yes\n")
-        p.ENABLED.chmod(0o600)
+        p.set_enabled(True)
+
+    def test_auto_consent_is_idempotent_owner_only_and_shared_with_webview(self):
+        from v13 import mobile_dashboard as dashboard
+        self.assertFalse(p.enabled())
+        for _ in range(3):
+            self.assertTrue(p.set_enabled(True))
+            self.assertTrue(p.enabled())
+            self.assertTrue(dashboard.automatic_updates_enabled())
+            self.assertEqual(p.ENABLED.read_text(), "yes\n")
+            self.assertEqual(p.ENABLED.stat().st_mode & 0o077,0)
+        self.assertFalse(p.set_enabled(False))
+        self.assertFalse(p.ENABLED.exists())
+        self.assertFalse(dashboard.automatic_updates_enabled())
+        with self.assertRaises(ValueError):
+            p.set_enabled("yes")
+        p.ENABLED.symlink_to(self.base/"unsafe")
+        with self.assertRaises(RuntimeError):
+            p.set_enabled(True)
 
     def test_pending_13_from_old_checkout_does_not_reappear_after_real_update(self):
         # Regression: dashboard 'Änderungen prüfen' formerly read ~/V13-Phone

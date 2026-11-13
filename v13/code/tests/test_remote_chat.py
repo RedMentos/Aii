@@ -49,6 +49,15 @@ class RemoteChatTests(unittest.TestCase):
                   "authors":{"agent-owner":["RedMentos"]},
                   "remote_apply_enabled":False}
         self.now=1900
+        # The test owner explicitly permits bounded private test messages.
+        from v13 import remote_observation as observation
+        for field, path in (("ROOT",root),
+                            ("SETTINGS",root/"remote-observation-consent.json"),
+                            ("STATE",root/"remote-observation-state.json")):
+            patch=mock.patch.object(observation,field,path)
+            patch.start()
+            self.addCleanup(patch.stop)
+        observation.set_consent("remote_tests",True)
 
     def make_issue(self,command,args,number=4,ident=None):
         ident=ident or self.id

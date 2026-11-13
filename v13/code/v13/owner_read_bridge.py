@@ -96,6 +96,9 @@ def validate_owner_read(issue, cfg, *, now=None):
         raise bridge.Denied("stale/future issue")
     if operation not in cfg.get("permissions", {}).get(OWNER_AGENT, []):
         raise bridge.Denied("disabled owner-read command")
+    from .remote_observation import permits
+    if not permits(operation):
+        raise bridge.Denied("owner has not enabled remote tests in WebView")
     return ident, operation, args
 
 
@@ -137,6 +140,11 @@ def poll_once(client, cfg, *, now=None):
                     worked = bridge.process_issue(client, cfg, db, issue, now=now)
                 if worked:
                     processed += 1
+            from .remote_observation import heartbeat
+            try:
+                heartbeat(now=now)
+            except (OSError, ValueError, RuntimeError):
+                pass  # observation status is advisory; never block real relay commands
             return {"status": "POLL_OK", "processed": processed}
 
 
@@ -381,6 +389,19 @@ def main(argv=None):
         try:
             print(json.dumps(poll_once(client, cfg)), flush=True)
             print(json.dumps(monitor_and_alert(client)), flush=True)
+            # Owner opt-in only: one bounded private GitHub status issue,
+            # updated in place at most every 15 minutes; never raw inputs.
+            from .remote_observation import publish_once, note_failure
+            try:
+                observation = publish_once(client, cfg)
+                if observation["status"] == "PUBLISHED":
+                    print(json.dumps({"status":"OBSERVATION_PUBLISHED"}), flush=True)
+            except Exception as exc:
+                # A failed telemetry upload must neither stop command polling
+                # nor make the prior successful upload appear current.
+                note_failure()
+                print(json.dumps({"status":"OBSERVATION_FAILED",
+                                  "error_code":type(exc).__name__}), flush=True)
         except Exception as exc:
             # Preserve the private relay loop even if a new optional phone
             # monitor module is absent on an older Android sparse checkout.

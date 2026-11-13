@@ -45,6 +45,18 @@ class OwnerReadTests(unittest.TestCase):
             "remote_apply_enabled": False
         }
         self.now = 1900
+        # These tests model an owner who explicitly enabled bounded remote tests.
+        from unittest import mock
+        from v13 import remote_observation as observation
+        private = root / "observation"
+        private.mkdir(mode=0o700)
+        for field, path in (("ROOT",private),
+                            ("SETTINGS",private/"consent.json"),
+                            ("STATE",private/"state.json")):
+            patch = mock.patch.object(observation,field,path)
+            patch.start()
+            self.addCleanup(patch.stop)
+        observation.set_consent("remote_tests",True)
 
     def issue(self, command="HEALTH", author="RedMentos", ident="d" * 32,
               number=1, expiry=None, created_at=None):
