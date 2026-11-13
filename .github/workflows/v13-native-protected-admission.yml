@@ -1,0 +1,26 @@
+name: V13 protected native prompt admission regression
+on:
+  push:
+    branches:
+      - gpt6/core-native-protected-admission-20261113
+  pull_request:
+    paths:
+      - 'v13/code/v13/runners.py'
+      - 'v13/code/tests/test_native_protected_admission_20261113.py'
+      - '.github/workflows/v13-native-protected-admission.yml'
+permissions:
+  contents: read
+jobs:
+  focused-native-admission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test protected peer context and existing admission contract
+        working-directory: v13/code
+        run: |
+          python -m compileall -q v13/runners.py tests/test_native_protected_admission_20261113.py
+          python -m unittest -v tests.test_native_protected_admission_20261113 tests.test_native_prompt_admission
