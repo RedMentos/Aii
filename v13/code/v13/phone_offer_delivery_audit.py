@@ -23,6 +23,14 @@ STATUSES = {"FINAL", "ERROR", "DEADLINE", "CANCELLED", "INTERRUPTED"}
 PHASES = {"load", "template", "prefill", "stream"}
 KINDS = ("body_offer_attempt", "body_offer_delivered")
 SCHEMA = "v13.phone-offer-delivery-audit/1"
+ADMISSION_STATUSES = frozenset(("ADMITTED","PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET"))
+ADMISSION_OMISSIONS = frozenset((
+    "C3_LAYER_TASK_CONTEXT","C3_LAYER_DIGEST","C3_LAYER_USER_MODEL",
+    "OLD_NATIVE_HISTORY","BODY_SOURCE_ADDRESS_METADATA",
+    "BODY_DUPLICATE_EXECUTIVE_SOURCE_REFS","BODY_NON_SOURCE_STATE_DETAIL",
+    "BODY_DUPLICATE_EXACT_DETAIL_WINDOWS","BODY_DUPLICATE_STREAM_SOURCE",
+))
+
 
 
 def _obj(text):
@@ -51,6 +59,26 @@ def _safe_phases(metrics):
     return {k: time_s for k, value in phases.items()
             if k in {"load_s", "template_s", "prefill_to_first_token_s", "stream_s"}
             if (time_s := _duration(value)) is not None}
+
+
+def _prompt_admission(metrics):
+    """Sanitize actual native admission without exporting source/role text."""
+    raw = metrics.get("prompt_admission")
+    if not isinstance(raw, dict):
+        return None
+    reason = raw.get("status")
+    removals = raw.get("removed_layers")
+    if not isinstance(removals, list):
+        removals = []
+    return {
+        "revision_verified": raw.get("revision") == "v13.native-prompt-admission/1",
+        "status": reason if reason in ADMISSION_STATUSES else "UNKNOWN",
+        "original_prompt_tokens": _count(raw.get("original_prompt_tokens")),
+        "prompt_tokens": _count(raw.get("prompt_tokens")),
+        "target_tokens": _count(raw.get("target_tokens")),
+        "omitted": [x for x in removals[:16] if isinstance(x,str) and x in ADMISSION_OMISSIONS],
+        "source_text_rewritten": raw.get("source_text_rewritten") is True,
+    }
 
 
 def _role_from_packet(payload, kind):
@@ -107,6 +135,7 @@ def _audit_one(conn, index, event_id, status, metadata):
                 "prompt_tokens": _count(runner.get("prompt_tokens")),
                 "generated_tokens": _count(runner.get("generated_tokens")),
                 "duration_s": _duration(runner.get("duration_s")),
+                "prompt_admission": _prompt_admission(runner),
             })
 
     roles = {}
@@ -149,6 +178,7 @@ def _audit_one(conn, index, event_id, status, metadata):
         "c3_phase_seconds": c3phases,
         "c3_prompt_tokens": _count(report.get("prompt_tokens")),
         "c3_generated_tokens": _count(report.get("generated_tokens")),
+        "c3_prompt_admission": _prompt_admission(report),
         "roles": roles,
     }
 
