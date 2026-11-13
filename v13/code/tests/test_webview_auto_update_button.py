@@ -77,12 +77,12 @@ ui.serve(open_browser=False)
                         return response.read().decode("utf-8")
 
                 initial=page()
-                self.assertIn("Auto-Updates EIN",initial)
+                self.assertIn("Automatische Updates einschalten",initial)
                 csrf=native_button(initial,"auto_enable")
                 enabled=toggle("auto_enable",csrf)
                 self.assertEqual(marker.read_text(),"yes\n")
                 self.assertEqual(marker.stat().st_mode & 0o077,0)
-                self.assertIn("Auto-Updates AUS",enabled)
+                self.assertIn("Automatische Updates ausschalten",enabled)
                 self.assertIn("Auto AN",enabled)
                 self.assertIn("Auto AN",json.loads(
                     urlopen(urljoin(url,"state"),timeout=8).read())["pipeline_status"])
@@ -90,14 +90,14 @@ ui.serve(open_browser=False)
                 csrf=native_button(enabled,"auto_disable")
                 disabled=toggle("auto_disable",csrf)
                 self.assertFalse(marker.exists())
-                self.assertIn("Auto-Updates EIN",disabled)
+                self.assertIn("Automatische Updates einschalten",disabled)
                 self.assertIn("Auto AUS",disabled)
 
                 # Repeated toggles remain usable; no single-use browser state.
                 csrf=native_button(disabled,"auto_enable")
                 enabled_again=toggle("auto_enable",csrf)
                 self.assertTrue(marker.is_file())
-                self.assertIn("Auto-Updates AUS",enabled_again)
+                self.assertIn("Automatische Updates ausschalten",enabled_again)
 
                 bad=Request(post_url,urlencode({"action":"auto_disable","csrf":"0"*48}).encode(),
                             headers={"Content-Type":"application/x-www-form-urlencoded"})
