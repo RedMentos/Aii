@@ -603,6 +603,22 @@ class Runtime:
                         if dig:volatile.append(('COMPRESSED','\n'+prompt(self.cfg,'digest'),dig));meta['digest_lines']=len(dig)
                 except Exception as exc:self.store.log('digest_unavailable',eid,{'error':type(exc).__name__})
                 volatile.append(('LATENT_STATE','\n'+prompt(self.cfg,'task_context'),self.executive.report_context(self.session)))
+                enlightened_refs=[]
+                try:
+                    shared=self.space().consume(e,'C3_LANGUAGE',text,
+                                                selected_offers=[p['packet_id'] for p in selected],
+                                                max_messages=3,max_chars=360)
+                    if shared['messages']:
+                        volatile.append(('ENLIGHTENED_SPACE',
+                            '\nShared V13 inter-organ context. Model hypotheses are NOT verified facts; only exact source excerpts are source-verified.',
+                            {'representation':shared['representation'],'messages':shared['messages']}))
+                        enlightened_refs=shared['source_refs']
+                    meta['enlightened_space']={'received':shared['entry_count'],
+                                              'representation':shared['representation'],
+                                              'revision':shared['revision']}
+                except (ValueError,TypeError,OSError,KeyError,RuntimeError) as exc:
+                    self.store.log('enlightened_space_unavailable',eid,
+                                   {'stage':'report_context','error':type(exc).__name__})
                 ul=agi_live.user_layer(meta)
                 if ul:volatile.append(('USER_MODEL','\n'+prompt(self.cfg,'user_model'),ul))  # WP-N13 AG11 beliefs, labelled
                 if clarify_turn:volatile.append(('CLARIFY','\n'+prompt(self.cfg,'clarify'),{'reason':'METACOG_CALIBRATED_ABSTAIN'}))
@@ -621,7 +637,7 @@ class Runtime:
                 except Exception as exc:self.store.log('context_os_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
                 try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context
                 except Exception as exc:self.store.log('context_save_failed',eid,{'error':type(exc).__name__})
-                context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]
+                context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[]),*enlightened_refs]
                 if executive_view.get('active_task'):context_refs.append(executive_view['active_task']['source_ref'])
                 context_refs.extend(x['source_ref'] for x in executive_view['open_questions'])
                 for item in selected:context_refs.extend(item['provenance']+item['evidence_refs'])
@@ -728,9 +744,24 @@ class Runtime:
                 from . import callosum
                 fr=locals().get('focal_run');callosum.controller(self).outcome(eid,[x['item_id'] for x in fr['coalition']] if fr else [],status)
             except Exception as exc:self.store.log('callosum_unavailable',eid,{'stage':'outcome','error':type(exc).__name__})
+            self.space_publish(e,'C3_LANGUAGE','CONTROL',
+                               summary='Single outward report status '+status,
+                               authority='CONTROL_ONLY')
+            self.space_publish(e,'OUTCOME','FEEDBACK',
+                               summary='Committed turn outcome '+status,
+                               authority='MEASURED_DIGITAL_OUTCOME')
             if aid:
                 self.store.finish_action(aid,status,{'characters':len(output),'self_candidate_hash':meta['self_candidate_hash'],'action_duration_s':time.monotonic()-action_started,'role':'SOURCE_COPY' if direct else (runner.role if runner else None),'model_generated':meta['model_generated']})
-                self.world.observe(aid)
+                world_receipt=self.world.observe(aid)
+                if world_receipt is not None:
+                    self.space_publish(e,'WORLD','FEEDBACK',
+                                       summary='Own digital action outcome observed '+status,
+                                       authority='MEASURED_DIGITAL_OUTCOME')
+                    digital=world_receipt.get('digital_latent_error') if isinstance(world_receipt,dict) else None
+                    if type(digital) in (int,float) and 0<=digital<=1000000:
+                        self.space_publish(e,'JEPA','FEEDBACK',
+                                           summary='Measured own-digital prediction error '+str(round(digital,5)),
+                                           authority='MEASURED_DIGITAL_OUTCOME')
                 try:selfctl.controller(self).observe(eid,[{'channel':'action_status','value':status},{'channel':'duration_s','value':time.monotonic()-action_started}],close=[aid])  # WP-N9 self vs world
                 except Exception as exc:self.store.log('self_unavailable',eid,{'stage':'attribution','error':type(exc).__name__})
                 try:  # WP-F: circuit-breaker evidence, cerebellar update, procedural lifecycle
