@@ -275,6 +275,7 @@ REQUIRED_PHONE_MODULES = (
     "v13/code/v13/owner_read_bridge.py",
     "v13/code/v13/remote_maintenance_bridge.py",
     "v13/code/v13/remote_chat.py",
+    "v13/code/v13/remote_observation.py",
     "v13/code/v13/phone_monitor.py",
     "v13/code/v13/chat_service.py",
     "v13/code/v13/managed_console.py",
