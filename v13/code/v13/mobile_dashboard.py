@@ -572,8 +572,11 @@ class RuntimeControls:
         return self._last_output
 
 
-def _button(action, name, title, label, cls=""):
-    return (f'<form method="POST" action="{html.escape(action, quote=True)}">'
+def _button(action, name, title, label, cls="", native=False):
+    # Owner-consent controls must work without Android WebView JavaScript.
+    # A server-side 303 response completes the normal form POST safely.
+    native_flag = ' data-native-submit="1"' if native else ""
+    return (f'<form method="POST"{native_flag} action="{html.escape(action, quote=True)}">'
             f'<input type="hidden" name="action" value="{html.escape(name, quote=True)}">'
             f'<button class="{cls}" type="submit">{html.escape(label)}</button></form>')
 
@@ -799,7 +802,8 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
     action = "/t/" + token + "/action"
     prefix = "/t/" + token
     def button(name, label, cls=""):
-        return _button(action, name, name, label, cls)
+        return _button(action, name, name, label, cls,
+                       native=name in ("auto_enable", "auto_disable"))
     def quick(command,label):
         return _quick(action,command,label)
     roles = []
@@ -1126,6 +1130,15 @@ def serve(*, open_browser=True):
                 data = json.dumps({"ok": accepted, "message": message}, ensure_ascii=False).encode("utf-8")
                 self._headers(200 if accepted else 400, mime="application/json; charset=utf-8")
             else:
+                if action in ("auto_enable", "auto_disable") and not message.startswith("Fehler:"):
+                    # POST/Redirect/GET prevents accidental re-toggles on refresh
+                    # and works even when Android WebView JS fetch is broken.
+                    self.send_response(303)
+                    self.send_header("Cache-Control", "no-store")
+                    self.send_header("Location", prefix + "/")
+                    self.send_header("Referrer-Policy", "no-referrer")
+                    self.end_headers()
+                    return
                 data = dashboard_html(token, controls, message, csrf=csrf, generation=generation).encode("utf-8")
                 self._headers()
             self.wfile.write(data)
