@@ -384,13 +384,14 @@ class Cognition:
         # FINAL attempt indicate schema/source/deadline/commit failure rather
         # than a successful B1/B2 contribution to JEF.
         self.s.log('body_offer_delivered',e['event_id'],{
+            # Existing telemetry allowlist: IDs, enums, counts and timings only.
+            # Native source strings/hypotheses remain in the private packet store.
             'role':role,
             'query_packet_id':query_packet['packet_id'],
-            'offer_packet_id':p['packet_id'],
-            'source_bound_evidence_count':len(refs),
-            'native_status':runner.last_metrics.get('status'),
-            'compute_deadline_monotonic_ns':int(deadline*1e9),
-            'consumer_valid_until_monotonic_ns':int(valid_until*1e9),
+            'packet_id':p['packet_id'],
+            'count':len(refs),
+            'status':'FINAL',
+            'duration_s':time.monotonic()-started,
             'model_revision':p['model_revision'],
         })
         return p
