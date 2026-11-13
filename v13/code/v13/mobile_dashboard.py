@@ -36,6 +36,7 @@ REMOTE_LOG_FLAG = PRIVATE / "share-v13-log-summary.enabled"
 REMOTE_FULL_FLAG = PRIVATE / "share-v13-console.enabled"
 KNOBS_UI = {
  "threads": (1, 8, 1, "CPU-Threads"),
+ "native_batch_tokens": (64, 512, 64, "Prompt-Batch (64–512 Tokens, beim Anwenden Neustart der Modellserver)"),
  "answer_tokens": (16, 512, 16, "Antwort-Tokens"),
  "deadline_seconds": (5, 300, 5, "Antwort-Zeitlimit (Sek.)"),
  "temperature": (0, 1, 0.05, "Temperatur"),
