@@ -117,6 +117,52 @@ def _remove_body_metadata(messages):
         if windows and all(isinstance(x,str) and x in exact for x in windows):
             item.pop("detail_windows")
             reason = "BODY_DUPLICATE_EXACT_DETAIL_WINDOWS"
+    if reason is None and isinstance(item.get("enlightened_space"), dict):
+        shared = item["enlightened_space"]
+        rows = shared.get("messages")
+        if isinstance(rows, list) and all(isinstance(row, dict) for row in rows):
+            # The real shared-space consumer already checked every source
+            # and packet. B1/B2 need its ORGAN CONTENT and exact excerpts,
+            # not repeated 64-byte digests and database addresses. This is
+            # still one inter-organ context, never separate chatbot prompts.
+            compact = []
+            for row in rows:
+                keep = {k:row[k] for k in (
+                    "from", "channel", "authority", "semantic_cue_not_fact")
+                    if k in row}
+                sources = row.get("exact_sources", [])
+                if not isinstance(sources, list) or not all(
+                    isinstance(x,dict) and isinstance(x.get("exact_source_text"),str)
+                    for x in sources):
+                    compact = []
+                    break
+                keep["exact_sources"] = [
+                    {"exact_source_text":x["exact_source_text"],
+                     "verification":x.get("verification","RECHECKED_EXACT_BYTES")}
+                    for x in sources]
+                if row.get("time_scale") in ("MEDIUM", "SLOW"):
+                    keep["time_scale"] = row["time_scale"]
+                if type(row.get("coactivations")) is int and row["coactivations"] > 1:
+                    keep["coactivations"] = row["coactivations"]
+                compact.append(keep)
+            if compact:
+                compressed = {
+                    "representation":shared.get("representation"),
+                    "messages":compact,
+                    "authority":"SOURCE_REFS_REVALIDATED_BEFORE_VIEW_NO_NEW_FACTS"}
+                if len(json.dumps(compressed)) < len(json.dumps(shared)):
+                    item["enlightened_space"] = compressed
+                    reason = "BODY_GLOBAL_SPACE_POINTER_METADATA"
+    if reason is None and isinstance(item.get("self_corollary"), dict):
+        corollary = item["self_corollary"]
+        history = corollary.get("recent_own_action_outcomes")
+        if isinstance(history,list) and len(history) > 1:
+            # Keep the most recent committed self-action outcome, but do not
+            # erase the original persisted self-model or invent new outcomes.
+            item["self_corollary"] = dict(corollary,
+                recent_own_action_outcomes=history[:1],
+                more_own_action_outcomes_in_store=len(history)-1)
+            reason = "BODY_OLDER_SELF_OUTCOMES_NOT_IN_NATIVE_VIEW"
     if reason is None:
         return None
     # Strict source-integrity check: model gets the exact same source text and
