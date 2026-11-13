@@ -87,6 +87,57 @@ class NativePrefillAdmissionTests(unittest.TestCase):
                          "PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET")
         self.assertEqual(r._prompt_admission["removed_layers"],[])
 
+    def test_body_global_space_preserves_actual_cross_organ_content_and_exact_text(self):
+        r=fake_runner("B1_DETAIL")
+        exact="The current budget is 120 euros, do not invent 999."
+        ref={"source_id":"src_private_1","sha256":"a"*64,
+             "char_start":0,"char_end":len(exact),"modality":"text"}
+        peer={"quotes":["120 euros"],"source_refs":[ref],"sender":"B2_GIST"}
+        shared={
+            "representation":"SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA",
+            "revision":3,"trained_latent":False,"source_refs":[ref],
+            "entry_count":1,"schema":"v13.enlightened-space/1",
+            "messages":[{"from":"B2_GIST","channel":"SEMANTIC",
+                "authority":"MODEL_HYPOTHESIS","time_scale":"MEDIUM",
+                "coactivations":3,"semantic_cue_not_fact":"Other body guesses 999",
+                "exact_sources":[{"exact_source_text":exact,"source_ref":ref,
+                    "verification":"RECHECKED_EXACT_BYTES"}]}]}
+        query={"source_segments":[{"text":exact}],
+               "peer_message":peer,"enlightened_space":shared,
+               "self_corollary":{"authority":"SELF_STATE_NOT_FACT",
+                   "recent_own_action_outcomes":[{"channel":"x","reason":"a","attribution":"SELF"},
+                                                 {"channel":"y","reason":"b","attribution":"SELF"}]}}
+        msgs=[{"role":"system","content":"Internal analyst JSON only."},
+              {"role":"user","content":json.dumps(query)}]
+        reductions=[]
+        for _ in range(10):
+            changed=admission.reduce_once(msgs,"B1_DETAIL",r.cfg)
+            if not changed:break
+            msgs,kind=changed;reductions.append(kind)
+        self.assertIn("BODY_GLOBAL_SPACE_POINTER_METADATA",reductions)
+        self.assertIn("BODY_OLDER_SELF_OUTCOMES_NOT_IN_NATIVE_VIEW",reductions)
+        delivered=json.loads(msgs[1]["content"])
+        self.assertEqual(delivered["peer_message"],peer)
+        self.assertEqual(delivered["source_segments"],[{"text":exact}])
+        body=delivered["enlightened_space"]["messages"][0]
+        self.assertEqual(body["semantic_cue_not_fact"],"Other body guesses 999")
+        self.assertEqual(body["authority"],"MODEL_HYPOTHESIS")
+        self.assertEqual(body["from"],"B2_GIST")
+        self.assertEqual(body["exact_sources"][0]["exact_source_text"],exact)
+        self.assertNotIn("source_ref",body["exact_sources"][0])
+        self.assertEqual(delivered["self_corollary"]["recent_own_action_outcomes"][0]["reason"],"a")
+        self.assertEqual(query["enlightened_space"]["messages"][0]["exact_sources"][0]["source_ref"],ref)
+        self.assertEqual(len(query["self_corollary"]["recent_own_action_outcomes"]),2)
+
+    def test_malformed_global_space_is_kept_instead_of_guessing_source(self):
+        cfg=dict(DEFAULTS)
+        query={"source_segments":[{"text":"Exact source"}],"peer_message":None,
+               "enlightened_space":{"messages":[{"from":"B2_GIST","exact_sources":"UNVERIFIED"}]}}
+        messages=[{"role":"system","content":"Protected."},
+                  {"role":"user","content":json.dumps(query)}]
+        self.assertIsNone(admission.reduce_once(messages,"B1_DETAIL",cfg))
+        self.assertIn("UNVERIFIED",messages[1]["content"])
+
     def test_long_deadline_keeps_all_context_when_native_window_accepts_it(self):
         r=fake_runner()
         system=stable(r.cfg)+"\n"+prompt(r.cfg,"task_context")+json.dumps({"detail":"x"*350})
