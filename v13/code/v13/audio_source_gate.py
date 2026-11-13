@@ -24,7 +24,8 @@ def checked_audio_source_view(percept_packet, read_source):
         raise ValueError('invalid source reference')
     if (ref.get('modality') != 'audio' or type(ref.get('char_start')) is not int
             or type(ref.get('char_end')) is not int or ref['char_start'] != 0
-            or ref['char_end'] != 0 or ref not in percept_packet.get('provenance', [])):
+            or ref['char_end'] != 0 or type(percept_packet.get('provenance')) is not list
+            or len(percept_packet['provenance']) != 1 or percept_packet['provenance'][0] != ref):
         raise ValueError('provenance mismatch')
     if not all(isinstance(percept_packet.get(k), str) and percept_packet[k]
                for k in ('event_id', 'brain_generation_id')):
