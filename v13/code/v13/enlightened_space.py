@@ -143,8 +143,25 @@ class EnlightenedSpace:
         refs = _source_binding(self.store, source_refs)
         if authority in {"SOURCE_POINTER", "USER_MEMORY_CUE", "MODEL_HYPOTHESIS"} and not refs:
             raise ValueError("evidence-bearing message requires an exact source")
-        if packet_id is not None and not isinstance(packet_id, str):
-            raise ValueError("packet_id must be a pointer")
+        if packet_id is not None:
+            if not isinstance(packet_id, str):
+                raise ValueError("packet_id must be a pointer")
+            row = self.store.one("SELECT kind,event_id,payload FROM packets WHERE id=?",
+                                 (packet_id,))
+            if not row or row["event_id"] != event_id:
+                raise ValueError("unbound organ packet")
+            payload = json.loads(row["payload"])
+            if payload.get("brain_generation_id") != generation:
+                raise ValueError("organ packet generation mismatch")
+            if producer in {"B1_DETAIL", "B2_GIST"}:
+                if row["kind"] != "OfferPacket" or payload.get("role") != producer:
+                    raise ValueError("unbound body offer")
+                if any(ref not in payload.get("evidence_refs", []) for ref in refs):
+                    raise ValueError("body hypothesis outside verified source spans")
+            if producer == "B3_CALLOSUM" and (
+                    row["kind"] != "MessagePacket" or
+                    any(ref not in payload.get("source_refs", []) for ref in refs)):
+                raise ValueError("unbound B3 direct message")
         entry = {
             "message_id": _fingerprint(event_id, generation, producer, channel, packet_id, summary, refs),
             "event_id": event_id, "generation": generation,
@@ -210,8 +227,8 @@ class EnlightenedSpace:
             if receiver == "C3_LANGUAGE" and record["producer"] == "B3_CALLOSUM":
                 continue  # B3 messages are for native B1/B2, not unselected C3 facts
             if record["producer"] in {"B1_DETAIL", "B2_GIST"} and receiver == "C3_LANGUAGE":
-                if record["event_id"] == event_id and record.get("packet_id") not in approved:
-                    continue
+                if record["event_id"] != event_id or record.get("packet_id") not in approved:
+                    continue  # only fresh, focally approved body contributions reach outer report
             refs = []
             try:
                 for ref in record["source_refs"][:MAX_SOURCE_REFS]:
