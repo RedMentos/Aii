@@ -63,7 +63,7 @@ def set_enabled(value):
         try:
             os.fchmod(fd, 0o600)
             with os.fdopen(fd, "w", encoding="ascii") as f:
-                f.write("yes\\n")
+                f.write("yes\n")
                 f.flush()
                 os.fsync(f.fileno())
             os.replace(tmp, ENABLED)
