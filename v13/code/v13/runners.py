@@ -49,6 +49,9 @@ class LlamaRunner:
     def _lifecycle_stamp(self):
         # Warm generation checks metadata only. Approval/model/native hashes are
         # revalidated on load, never reread for every prompt on a healthy child.
+        # Native launcher parameters must be included: otherwise switching the
+        # Redmi UI CPU-thread/context/batch knobs silently leaves the previous
+        # long-lived llama-server process unchanged, invalidating A/B results.
         paths=[self.model,self.binary]
         if self.purpose=='generate':
             paths += [self.home/'config/lora-active.json',self.home/'config/memory-server.json',self.home/'bin/llama-server-mem']
@@ -65,7 +68,13 @@ class LlamaRunner:
                 return (str(path),*( (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns,s.st_mode) for s in (own,target)))
             except OSError:return (str(path),None)
         paths += self._approved_asset_paths+list(self._launch_assets.values())
-        return (('native_memory_audit',self.cfg.get('native_memory_audit',False) is True),)+tuple(stamp(p) for p in paths)
+        return (('native_memory_audit',self.cfg.get('native_memory_audit',False) is True),
+                ('threads',self.cfg.get('threads')),
+                ('context_tokens',self.cfg.get('context_tokens')),
+                ('native_batch_tokens',self.cfg.get('native_batch_tokens',128)),
+                ('native_cache_ram_mb',self.cfg.get('native_cache_ram_mb',128)),
+                ('native_ctx_checkpoints',self.cfg.get('native_ctx_checkpoints',6)),
+               )+tuple(stamp(p) for p in paths)
     @property
     def memory_delivery_binding(self):
         # The binding describes the child that completed its health handshake,
@@ -168,7 +177,7 @@ class LlamaRunner:
         lp=self.home/"logs"/(self.role+".log");rotate_log(lp);self.log_handle=open(lp,"ab");env=os.environ.copy();env.pop('V13_MEMORY_FILE',None);env["LLAMA_API_KEY"]=self.key
         # Noncausal embedding prefill must fit the whole admitted sequence in
         # one physical batch. Chunking changes the feature being measured.
-        batch=512 if (self.purpose=='tap' and self.role=='C3_LANGUAGE') or self.purpose=='embed' else 128
+        batch=512 if (self.purpose=='tap' and self.role=='C3_LANGUAGE') or self.purpose=='embed' else int(self.cfg.get('native_batch_tokens',128))
         cmd=[self.binary,"-m",str(self.model),"--host","127.0.0.1","--port",str(self.port),"-c",str(512 if self.purpose=='embed' else self.cfg["context_tokens"]),"-np","1","-t",str(self.cfg["threads"]),"-tb",str(self.cfg["threads"]),"-b",str(batch),"-ub",str(batch),"-ngl","0","--no-warmup","--no-webui","--log-disable"]
         cmd += native_cache_args(self.cfg)
         if self.purpose=='tap':cmd += ['--embedding','--pooling','none']
