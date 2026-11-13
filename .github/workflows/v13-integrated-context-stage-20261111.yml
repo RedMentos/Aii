@@ -46,6 +46,7 @@ jobs:
           tests/test_activate_termux_recovery.py
           tests/test_unified_brain_delivery.py
           tests/test_enlightened_space.py
+          tests/test_native_prompt_admission.py
       - name: Check recovery shell syntax
         run: bash -n v13/code/scripts/termux_runtime_recovery.sh
   integrated-regression:
