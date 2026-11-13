@@ -9,6 +9,7 @@ still has to accept the exact release commit. No private phone data is read.
 import argparse
 import json
 import os
+import subprocess
 from pathlib import PurePosixPath
 import re
 import sys
@@ -109,6 +110,41 @@ class GitHub:
                 if attempt >= 2:
                     raise QueueError("GitHub_network_unavailable") from None
                 time.sleep(2 ** (attempt + 1))
+
+    def mark_ready(self, number, head_sha):
+        """Only after strict additive + exact-SHA CI admission.
+
+        GitHub refuses merges of Draft PRs (HTTP 405). The supported GitHub
+        CLI uses GraphQL's markPullRequestReadyForReview mutation. We never
+        send user-authored branch/PR text or shell fragments into a command.
+        Before and after, verify exact SHA and destination; if the UI state
+        is not confirmed as ready, abort the merge.
+        """
+        if type(number) is not int or number < 1 or (
+                not isinstance(head_sha, str) or not HEX40.fullmatch(head_sha)):
+            raise QueueError("invalid_ready_target")
+        path = f"/repos/{REPO}/pulls/{number}"
+        pr = self.call("GET", path)
+        if (pr.get("head", {}).get("sha") != head_sha
+                or pr.get("base", {}).get("ref") != RELEASE
+                or (pr.get("head", {}).get("repo") or {}).get("full_name") != REPO
+                or pr.get("draft") is not True):
+            raise QueueError("ready_target_changed")
+        try:
+            response = subprocess.run(
+                ["gh", "pr", "ready", str(number), "--repo", REPO],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                timeout=25, check=False)
+        except (OSError, subprocess.TimeoutExpired):
+            raise QueueError("ready_command_unavailable") from None
+        if response.returncode != 0:
+            raise QueueError("ready_not_authorized")
+        new = self.call("GET", path)
+        if (new.get("head", {}).get("sha") != head_sha
+                or new.get("base", {}).get("ref") != RELEASE
+                or new.get("draft") is not False):
+            raise QueueError("ready_not_confirmed")
+        return new
 
 
 def _list(api, resource):
@@ -414,10 +450,48 @@ def run(api, *, execute=False):
         results.append({"pr": number, "status": reason})
         if ok:
             if execute:
-                response = api.call("PUT", f"/repos/{REPO}/pulls/{number}/merge",
-                                    {"sha": pr["head"]["sha"],
-                                     "merge_method": "merge",
-                                     "commit_title": f"Integrate checked V13 PR #{number}"})
+                if pr.get("draft") is True:
+                    # Only the explicitly admitted *new inert modules+tests*
+                    # lane can promote its own Draft PR to ready. GitHub
+                    # cannot merge drafts, even when the checks are green.
+                    if reason != "safe_additive":
+                        results[-1]["status"] = "draft_needs_review"
+                        continue
+                    try:
+                        api.mark_ready(number, pr["head"]["sha"])
+                    except QueueError as exc:
+                        results[-1]["status"] = ("ready_blocked_" + str(exc)
+                                                   if str(exc) in {
+                                                       "ready_command_unavailable",
+                                                       "ready_not_authorized",
+                                                       "ready_not_confirmed",
+                                                       "ready_target_changed"}
+                                                   else "ready_failed")
+                        continue
+                # Read again after changing draft state: never merge a new SHA
+                # or a moved release base, even if the earlier checks passed.
+                verified = api.call("GET", f"/repos/{REPO}/pulls/{number}")
+                if (verified.get("draft") is not False
+                        or verified.get("head", {}).get("sha") != pr["head"]["sha"]
+                        or verified.get("base", {}).get("sha") != pr["base"]["sha"]
+                        or verified.get("base", {}).get("ref") != RELEASE
+                        or verified.get("mergeable") is not True
+                        or verified.get("mergeable_state") != "clean"):
+                    results[-1]["status"] = "not_ready_for_merge"
+                    continue
+                try:
+                    response = api.call("PUT", f"/repos/{REPO}/pulls/{number}/merge",
+                                        {"sha": pr["head"]["sha"],
+                                         "merge_method": "merge",
+                                         "commit_title": f"Integrate checked V13 PR #{number}"})
+                except QueueError as exc:
+                    if str(exc) in {"GitHub_HTTP_405", "GitHub_HTTP_409",
+                                    "GitHub_HTTP_422"}:
+                        # Refused merge is *not* a release. Do not let one
+                        # blocked PR strand unrelated CI-verified candidates.
+                        results[-1]["status"] = "merge_refused_" + str(exc).rsplit("_", 1)[-1]
+                        continue
+                    raise
                 if response.get("merged") is not True:
                     raise QueueError("GitHub refused checked merge")
                 release_sha = response.get("sha")
