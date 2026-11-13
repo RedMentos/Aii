@@ -269,13 +269,45 @@ class LlamaRunner:
         if len(vectors)!=len(texts) or any(not v or not all(math.isfinite(x) for x in v) for v in vectors):raise Unavailable('Embedding-Antwort ungültig')
         return vectors
     def _prompt(self,messages,cancel,deadline,reserve):
+        # Native time and context length are different budgets. A 617-token
+        # C3 prefill demonstrably exhausted the Redmi's 30s turn while the
+        # 2048-token context check here said it was fine. Preserve the exact
+        # current source and fixed rules; remove only typed optional layers
+        # with explicit receipts before spending all compute on prefill.
+        from . import native_prompt_admission as admission
         work=[dict(x) for x in messages];truncated=False
-        while True:
-            check(cancel,deadline);p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
+        target=admission.soft_limit(self.role,self.cfg,deadline-time.monotonic())
+        removed=[];initial_tokens=None
+        for _ in range(16):
+            check(cancel,deadline)
+            p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
             tokens=self._json("POST","/tokenize",{"content":p,"add_special":True},deadline)["tokens"]
-            if len(tokens)+reserve+16<=self.cfg["context_tokens"]:return p,len(tokens),truncated
-            if len(work)>2:work.pop(1);truncated=True
-            else:raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
+            count=len(tokens)
+            if initial_tokens is None:initial_tokens=count
+            fits_context=count+reserve+16<=self.cfg["context_tokens"]
+            fits_clock=target is None or count<=target
+            if fits_context and fits_clock:
+                self._prompt_admission={'revision':admission.REVISION,'status':'ADMITTED',
+                    'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
+                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
+                return p,count,truncated
+            candidate=admission.reduce_once(work,self.role,self.cfg)
+            if candidate:
+                work,kind=candidate;removed.append(kind);truncated=True
+                continue
+            if len(work)>2:
+                work.pop(1);removed.append('OLD_NATIVE_HISTORY');truncated=True
+                continue
+            if fits_context:
+                # No unsafe clipping of current user text or source-bound
+                # approved hypotheses. The caller can see the unmet budget.
+                self._prompt_admission={'revision':admission.REVISION,
+                    'status':'PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET',
+                    'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
+                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
+                return p,count,truncated
+            raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
+        raise Limits("Native Kontextzulassung: maximale sichere Reduktionsschritte erreicht")
     def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):
         if self.purpose!='generate':raise Unavailable('Tap-Runner erzeugt keine Antworten; Generation-Runner anfordern')
         audit_requested=self.cfg.get('native_memory_audit',False) is True
@@ -284,6 +316,7 @@ class LlamaRunner:
             audit_locked=self._audit_lock.acquire(blocking=False)
             if not audit_locked:raise Unavailable('Concurrent native audit request')
         self._audit_window=None;self._audit_unavailable=None;self._audit_completed=False
+        self._prompt_admission=None
         # Measure cold load, prefill and streaming, including failed/cancelled calls.
         started=time.monotonic();done=threading.Event();samples=[];peaks={'rss_bytes':None,'pss_bytes':None};count=0;self.last_metrics={};self.phase='load';self.phase_started=started;self.stage_times={};status='FINAL'
         def sample():
@@ -312,6 +345,7 @@ class LlamaRunner:
             values=[v for v in [self.last_metrics.get('sampled_peak_rss_bytes'),peaks['rss_bytes']] if v is not None]
             self.last_metrics['sampled_peak_rss_bytes']=max(values) if values else None
             self.last_metrics.setdefault('generated_tokens',0);self.last_metrics.setdefault('ttft_s',None)
+            if self._prompt_admission is not None:self.last_metrics['prompt_admission']=self._prompt_admission
             # A synchronous check may beat the watchdog. Do not stop its watcher
             # and leave the old native request running after declaring idle.
             if audit_locked:
