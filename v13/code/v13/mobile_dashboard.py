@@ -50,7 +50,7 @@ QUICK_COMMANDS = {
  ":observers off", ":observers background", ":probe", ":probe jef-modes", ":probe step12", ":probe body-state",
  ":scheduler", ":age", ":growth status", ":teacher compare", ":workspace status", ":bodyview status",
  ":neuromod status", ":homeostasis status", ":attention status", ":callosum status", ":ctxos status",
- ":fabric report", ":live", ":jefsource", ":register summary", ":permissions", ":ledger", ":logs",
+ ":fabric report", ":live", ":inner status", ":inner on", ":inner off", ":jefsource", ":register summary", ":permissions", ":ledger", ":logs",
  ":task", ":ratings", ":context", ":archive status", ":source", ":export dataset", ":focal",
  ":notaus status", ":stillstand status", ":organ list", ":organ status", ":verbot liste", ":regeln",
 }
@@ -159,6 +159,25 @@ def summary():
                 duration = value.get("duration_s")
                 if type(duration) in (float, int) and 0 <= duration <= 36000:
                     item["duration_s"] = round(duration, 1)
+                # The B1/B2 smoke runs a text generation followed by a
+                # separate structured offer. Distinguish their limits without
+                # uploading either model output or source content.
+                phase = value.get("failure_stage")
+                if phase in ("runner_load", "native_generation", "structured_offer", "unload"):
+                    item["failure_stage"] = phase
+                if type(value.get("native_generation_ok")) is bool:
+                    item["native_generation_ok"] = value["native_generation_ok"]
+                gen_s = value.get("native_generation_duration_s")
+                if type(gen_s) in (int, float) and 0 <= gen_s <= 36000:
+                    item["native_generation_duration_s"] = round(gen_s, 2)
+                failure = value.get("failure_runner_metrics")
+                if isinstance(failure, dict):
+                    stage = failure.get("stage_durations_s")
+                    if isinstance(stage, dict):
+                        item["failure_runner_stages_s"] = {
+                            k: round(v, 2) for k, v in stage.items()
+                            if k in ("load_s", "template_s", "prefill_to_first_token_s", "stream_s")
+                            and type(v) in (int, float) and 0 <= v <= 36000}
                 out["roles"][name] = item
         return out
     except (ValueError, UnicodeError, OSError):
@@ -769,7 +788,9 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
         "@@ROLE_PILLS@@":"".join(roles) or '<span class="pill">Noch keine Messung</span>',
         "@@MODEL_BUTTONS@@":"".join([quick(c,l) for c,l in [
             (":doctor","Gehirnstatus"),(":probe","Modelle testen"),
-            (":probe jef-modes","JEF testen"),(":probe step12","B1/B2 testen")]]),
+            (":probe jef-modes","JEF testen"),(":probe step12","B1/B2 testen"),
+            (":inner on","Internes Gespräch EIN"),(":inner off","Internes Gespräch AUS"),
+            (":inner status","Inneres Gehirn ansehen")]]),
         "@@COMMAND_CATEGORIES@@":_command_catalog_html(),
         "@@SLIDERS@@":_slider_grid(action),
         "@@UPDATE_STATUS@@":html.escape(update_msg),
