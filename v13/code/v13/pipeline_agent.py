@@ -46,6 +46,37 @@ def enabled():
         return False
 
 
+def set_enabled(value):
+    """One authority for auto-update consent: atomic, durable and idempotent.
+
+    Both the WebView button and the independent relay update worker consume
+    this exact marker. A UI acknowledgement is made only after the persisted
+    state is re-read. Never clear a symlink or change directory permissions.
+    """
+    if type(value) is not bool:
+        raise ValueError("auto-update enabled must be a boolean")
+    _private()
+    if ENABLED.is_symlink():
+        raise RuntimeError("unsafe auto-update consent symlink")
+    if value:
+        fd, tmp = tempfile.mkstemp(prefix=".v13-auto-optin-", dir=str(PRIVATE))
+        try:
+            os.fchmod(fd, 0o600)
+            with os.fdopen(fd, "w", encoding="ascii") as f:
+                f.write("yes\\n")
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp, ENABLED)
+        finally:
+            if os.path.exists(tmp):
+                os.unlink(tmp)
+    else:
+        ENABLED.unlink(missing_ok=True)
+    if enabled() != value:
+        raise RuntimeError("auto-update consent not persisted")
+    return value
+
+
 def _atomic(path, value):
     _private()
     if path.is_symlink():
