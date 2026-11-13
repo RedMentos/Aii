@@ -29,6 +29,22 @@ def kill_process(proc):
         proc.terminate()
         try:proc.wait(timeout=1.5)
         except subprocess.TimeoutExpired:proc.kill();proc.wait(timeout=2)
+def native_sampling_policy(role,cfg,schema=None):
+    """One native sampler authority path for all organs.
+
+    Anti-echo is a set of repetition/prefix controls, not permission to
+    override the owner's explicit temperature. Previously C3_DECODER silently
+    reset configured 0.1 to 0.6; on tiny C3 this makes even simple answers
+    needlessly stochastic and the WebView temperature knob misleading.
+    """
+    options={'temperature':cfg['temperature'],'top_k':50,'repeat_penalty':1.05}
+    if role=='C3_LANGUAGE' and not schema and cfg.get('c3_sampling','anti_echo')=='anti_echo':
+        from .guards import C3_DECODER
+        options.update({key:value for key,value in C3_DECODER.items()
+                        if key!='temperature'})
+    return options
+
+
 def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
     # checkpoints per slot) assume a desktop. Qwen3.5 checkpoints are ~19 MiB
@@ -379,10 +395,9 @@ class LlamaRunner:
         started=time.monotonic();self.load(cancel,deadline);self.stage_times['load_s']=time.monotonic()-started
         self.phase='template';self.phase_started=time.monotonic();cap=max_tokens or self.cfg["answer_tokens"];prompt,n,truncated=self._prompt(messages,cancel,deadline,cap)
         self.stage_times['template_s']=time.monotonic()-self.phase_started;self.phase='prefill';self.phase_started=time.monotonic()
-        payload={"prompt":prompt,"n_predict":cap,"stream":True,"temperature":self.cfg["temperature"],"top_k":50,"repeat_penalty":1.05,"seed":seed,"cache_prompt":True,"id_slot":0,"return_tokens":True}
-        if self.role=='C3_LANGUAGE' and not schema and self.cfg.get('c3_sampling','anti_echo')=='anti_echo':
-            from .guards import C3_DECODER
-            payload.update(C3_DECODER)  # WP-V3: v4 §65 start values against query echo
+        payload={"prompt":prompt,"n_predict":cap,"stream":True,
+                 **native_sampling_policy(self.role,self.cfg,schema),
+                 "seed":seed,"cache_prompt":True,"id_slot":0,"return_tokens":True}
         if schema:payload["json_schema"]=schema
         lp_pairs=[] if schema and self.cfg.get('offer_logprobs',True) else None
         if lp_pairs is not None:payload['n_probs']=1  # WP-KAL2: token confidence for focal.offer_uncertainty
