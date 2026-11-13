@@ -48,13 +48,12 @@ def checked_audio_source_view(percept_packet, read_source):
         if not isinstance(segment.get('consent_receipt_ref'), str) or not segment['consent_receipt_ref'].strip():
             raise PermissionError('missing consent receipt reference')
         acoustic = segment.get('acoustic')
-        if acoustic is not None:
-            if not isinstance(acoustic, dict):
-                raise ValueError('invalid acoustic features')
-            for name in ('rms', 'zcr'):
-                value = acoustic.get(name)
-                if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1:
-                    raise ValueError('invalid normalized acoustic feature')
+        if not isinstance(acoustic, dict):
+            raise ValueError('missing or invalid acoustic features')
+        for name in ('rms', 'zcr'):
+            value = acoustic.get(name)
+            if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1:
+                raise ValueError('invalid normalized acoustic feature')
         if segment.get('asr_transcript') is not None:
             raise ValueError('unverified transcript in raw-ear packet')
     source = read_source(sid)
