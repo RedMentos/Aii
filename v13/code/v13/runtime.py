@@ -443,7 +443,24 @@ class Runtime:
                     else:route=meta['skill']['prior_route']
             mark('preanswer_observers')
             # WP-D reasoning effort (G5B): one bounded plan decides wake/re-entry/focal budgets.
-            observer_end=start+self.cfg['deadline_seconds']*.45;effort_mode=effort.get_mode(self.store)
+            # A completed native answer needs a *real* load+prefill+decode
+            # envelope. Repeated C3 zero-token deadlines on a small phone
+            # automatically reserve the foreground budget before trying
+            # expensive B1/B2 passes. Both bodies remain eligible for the
+            # existing bounded postcommit path after a FINAL answer.
+            from . import native_turn_budget as turnbudget
+            admission=turnbudget.plan(
+                start,deadline,time.monotonic(),
+                recent=turnbudget.recent_proof(self.store),
+                background_enabled=self.cfg.get('observer_mode')=='background',
+                direct=direct)
+            observer_end=max(time.monotonic(),admission['preanswer_end_monotonic'])
+            meta['native_turn_budget']={
+                k:admission[k] for k in (
+                    'schema','recovery','reason','preanswer_seconds_available',
+                    'c3_reserved_seconds','recent_real_prefill_failures',
+                    'postcommit_body_eligible','age_changed')}
+            effort_mode=effort.get_mode(self.store)
             age_lim=effort.age_limits(agectl.controller(self),rmode)
             effort_sig=effort.signals(text,route,meta.get('route'),memories,**self.executive.effort_context(self.session,e))
             effort_sig=agi_live.before_effort(self,e,meta,effort_sig)  # WP-N13 AG9 -> effort, AG11 -> C1
