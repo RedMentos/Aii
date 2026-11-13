@@ -96,6 +96,7 @@ class ObservationTests(unittest.TestCase):
 
     def test_fail_closed_on_corrupt_or_symlinked_consent(self):
         obs.SETTINGS.write_text(json.dumps({"schema":obs.SCHEMA,"observe":True}))
+        obs.SETTINGS.chmod(0o600)  # valid filesystem ownership, invalid schema
         with self.assertRaises(ValueError):
             obs.consent()
         self.assertFalse(obs.permits("CHAT_SEND"))
