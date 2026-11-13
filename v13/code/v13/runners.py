@@ -311,9 +311,11 @@ class LlamaRunner:
             if candidate:
                 work,kind=candidate;removed.append(kind);truncated=True
                 continue
-            if len(work)>2:
-                work.pop(1);removed.append('OLD_NATIVE_HISTORY');truncated=True
-                continue
+            # Only the typed admission reducer may remove historical messages.
+            # A generic pop(1) can silently discard a B1/B2 peer handoff or
+            # source-bound organ message when the caller supplied >2 messages.
+            # Such evidence must remain intact even when the soft time target
+            # cannot be met; the unmet target is reported below.
             if fits_context:
                 # No unsafe clipping of current user text or source-bound
                 # approved hypotheses. The caller can see the unmet budget.
