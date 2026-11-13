@@ -27,7 +27,8 @@ MAX_READ_BYTES = 9000
 SAFE_OPERATOR_COMMANDS = frozenset({
     ":status", ":help", ":doctor", ":models", ":gates summary", ":objectives",
     ":sleep status", ":learning status", ":notaus status",
-    ":probe jef-modes", ":probe step12"
+    ":probe jef-modes", ":probe step12",
+    ":scheduler lab summary", ":scheduler lab now"
 })
 JOB_TTL_SECONDS = 21600
 TOKEN_PATTERN = re.compile(r"(?:gh[pousr]_[a-zA-Z0-9_]{10,}|github_pat_[a-zA-Z0-9_]{10,})")
