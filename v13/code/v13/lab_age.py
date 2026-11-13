@@ -16,8 +16,10 @@ SCHEMA = "v13.lab-age/1"
 NAME = "lab-age.json"
 MODES = ("off", "shadow", "active")
 MAX_STAGE = 10
-# Explicit 2026-11-13 operator request: highest experimental headroom initially.
-DEFAULT = {"schema": SCHEMA, "mode": "active", "stage": 10}
+# Preview the highest requested level, but make *compute activation* an explicit
+# local action. This preserves the measured Age-0 baseline across software
+# updates; no surprise CPU/thermal change simply because GitHub updated code.
+DEFAULT = {"schema": SCHEMA, "mode": "shadow", "stage": 10}
 
 
 def _path(home):
