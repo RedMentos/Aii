@@ -116,6 +116,24 @@ class LocalConsoleTests(unittest.TestCase):
         self.assertEqual(stat.S_IMODE(self.console.path.stat().st_mode), 0o600)
         self.assertTrue(self.console.saved_sessions())
 
+    def test_exited_process_output_awaits_owned_recorder_final_line(self):
+        # Deterministically delay the private recorder AFTER the model exits.
+        # A successful poll() must not race the last local log line.
+        original = self.console._drain
+        def delayed(proc, path):
+            proc.wait(timeout=3)
+            time.sleep(.1)
+            return original(proc, path)
+        with mock.patch.object(self.console, "_drain", side_effect=delayed):
+            self.console.start()
+            self.console.send(":shutdown")
+            for _ in range(200):
+                if self.console.state()["exit_code"] is not None:
+                    break
+                time.sleep(.005)
+            self.assertEqual(self.console.state()["exit_code"], 0)
+            self.assertIn("V13 exited with code 0", self.console.output())
+
     def test_complete_transcript_includes_archived_session(self):
         earlier = self.log_root / "v13-session-20260101-000001-aaa.log"
         earlier.write_text("ältere Unterhaltung: 123\n")
