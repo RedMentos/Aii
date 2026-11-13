@@ -40,8 +40,18 @@ class FakeGitHub:
         self.compare = {"status": "ahead", "ahead_by": 1,
                         "behind_by": 0, "base_commit": {"sha": BASE}}
         self.merge_calls = []
+        self.ready_calls = []
         self.dispatches = []
         self.release_sha = MERGED
+
+    def mark_ready(self, number, sha):
+        assert number == self.pr["number"]
+        assert sha == self.pr["head"]["sha"]
+        assert self.pr["draft"]
+        self.ready_calls.append((number, sha))
+        self.pr["draft"] = False
+        self.pr["mergeable_state"] = "clean"
+        return copy.deepcopy(self.pr)
 
     def call(self, method, path, data=None):
         parsed = urlsplit(path)
@@ -122,7 +132,47 @@ class QueueTests(unittest.TestCase):
         out = q.run(api, execute=True)
         self.assertEqual(out[0]["status"], "merged")
         self.assertEqual(len(api.merge_calls), 1)
+        self.assertEqual(api.ready_calls, [(1, SHA)])
         self.assertEqual(len(api.dispatches), 3)
+
+    def test_green_additive_draft_merge_405_is_nonfatal(self):
+        api = FakeGitHub()
+        additive(api)
+        old_call = api.call
+
+        def refuse(method, path, data=None):
+            if method == "PUT" and path.endswith("/merge"):
+                raise q.QueueError("GitHub_HTTP_405")
+            return old_call(method, path, data)
+
+        api.call = refuse
+        result = q.run(api, execute=True)
+        self.assertEqual(result[0]["status"], "merge_refused_405")
+        self.assertEqual(api.ready_calls, [(1, SHA)])
+        self.assertEqual(api.dispatches, [])
+
+    def test_green_additive_draft_not_authorized_to_ready_is_nonfatal(self):
+        api = FakeGitHub()
+        additive(api)
+        def deny(number, sha):
+            raise q.QueueError("ready_not_authorized")
+        api.mark_ready = deny
+        result = q.run(api, execute=True)
+        self.assertEqual(result[0]["status"], "ready_blocked_ready_not_authorized")
+        self.assertEqual(api.merge_calls, [])
+        self.assertEqual(api.dispatches, [])
+
+    def test_green_draft_moving_head_during_ready_must_not_merge(self):
+        api = FakeGitHub()
+        additive(api)
+        original = api.mark_ready
+        def changed(number, sha):
+            original(number, sha)
+            api.pr["head"]["sha"] = "d" * 40
+        api.mark_ready = changed
+        result = q.run(api, execute=True)
+        self.assertEqual(result[0]["status"], "not_ready_for_merge")
+        self.assertEqual(api.merge_calls, [])
 
     def test_draft_without_new_test_cannot_auto_merge(self):
         api = FakeGitHub()
@@ -139,6 +189,7 @@ class QueueTests(unittest.TestCase):
         self.assertEqual(q.run(api, execute=True)[0]["status"],
                          "missing_exact_sha_ci")
         self.assertFalse(api.merge_calls)
+        self.assertFalse(api.ready_calls)
 
     def test_non_owner_draft_cannot_auto_merge(self):
         api = FakeGitHub()
