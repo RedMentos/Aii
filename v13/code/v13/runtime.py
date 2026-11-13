@@ -34,7 +34,6 @@ from . import skilllive
 from . import jefoutcome
 from . import fastpolicy as fastpol
 from . import context_os as ctxos
-from .enlightened_space import EnlightenedSpace
 from . import selfmodel as selfctl
 from . import latewatch
 from . import jefbridge as jefctl
@@ -121,16 +120,6 @@ class Runtime:
         from .world_jepa_runtime_checkpoint import restore
         with self.lock:return restore(self)
 
-    def space(self):
-        """Session-scoped global inter-organ message space, not a new chatbot."""
-        return EnlightenedSpace(self.store,self.session)
-    def space_publish(self,event,producer,channel,**kw):
-        try:
-            return self.space().publish(event,producer,channel,**kw)
-        except Exception as exc:
-            self.store.log('enlightened_space_unavailable',event['event_id'],
-                           {'stage':'publish','error':type(exc).__name__})
-            return {'status':'UNAVAILABLE'}
     def notice(self,text):self.notify(safe_text(text))
     def resources(self):return snapshot(self.home,self.pool.pids()+self.needle.pids()+self.memory.semantic_keys.encoder.pids())
     def revisions(self):return {role:self.models.revision(role) for role in ROLES}
@@ -406,19 +395,6 @@ class Runtime:
                     if a4['requests']:att.admit(eid,a4['requests'],pressure=rpol['focal_pressure'],providers={'A_SOURCE':lambda r:{'source_ref':r['source_ref']}})
                 except Exception as exc:self.store.log('attention_unavailable',eid,{'error':type(exc).__name__})
             exec_state=self.executive.begin(e,self.session,self.cfg,resource,rmode);version=exec_state['state_version']
-            # System-wide Enlightened Space: A sensory input and two context
-            # streams are separate from the B1/B2 native hemispheres.
-            self.space_publish(e,'A_PERCEPTION','EXACT',summary='Incoming user source',
-                               authority='SOURCE_POINTER',source_refs=[e['source_ref']])
-            self.space_publish(e,'STREAM_A','SEMANTIC',summary=text[:240],
-                               authority='SOURCE_POINTER',source_refs=[e['source_ref']])
-            self.space_publish(e,'STREAM_B','EXACT',summary='Exact source pointer available',
-                               authority='SOURCE_POINTER',source_refs=[e['source_ref']])
-            self.space_publish(e,'C1_JEF','CONTROL',summary='Executive focus version '+str(version),
-                               authority='CONTROL_ONLY')
-            self.space_publish(e,'SELF','CONTROL',
-                               summary='Self-state: '+str(body.get('feeling','UNKNOWN'))[:100],
-                               authority='CONTROL_ONLY')
             mark('memory_recall');retrieval_deadline=min(deadline,time.monotonic()+self.cfg['retrieval_seconds'])
             semantic=(lambda m:self.learner.retrieve(e,m,retrieval_deadline)) if self.store.components().get('memory_retrieval') else None
             if fixed_policy:memories=[]
@@ -427,12 +403,6 @@ class Runtime:
                 if mem_head:meta['memory_head']={'action':mem_head.get('action'),'learned':bool(mem_head.get('learned')),'packet_id':mem_head.get('packet_id')}
                 memories=self.memory.recall(cue,self.session,semantic,cancel=self.cancel_event,deadline=deadline,top_k=rmodes.scaled(self.cfg['memory_top_k'] if top_k is None else top_k,rmode,'context_scale'))  # §97.2 YELLOW+: less context
             meta['memory_ids']=[m['id'] for m in memories]
-            for memory_cue in memories[:3]:
-                if isinstance(memory_cue.get('source_ref'),dict):
-                    self.space_publish(e,'MEMORY','SEMANTIC',
-                                       summary=str(memory_cue.get('value',''))[:240],
-                                       authority='USER_MEMORY_CUE',
-                                       source_refs=[memory_cue['source_ref']])
             if not fixed_policy:
                 try:memories=episodes.recall_turn(self,text,memories,meta);meta['memory_ids']=[m['id'] for m in memories]  # WP-N8 §9.4 associative spread (SHADOW default)
                 except Exception as exc:self.store.log('episodes_unavailable',eid,{'stage':'spread','error':type(exc).__name__})
@@ -494,15 +464,6 @@ class Runtime:
                     if fired:wake_route,wake_source='none','REFLEX_IMMINENT_TIMEOUT';meta['reflex']=meta.get('reflex',[])+[fired]
             except Exception as exc:self.store.log('fast_forward_unavailable',eid,{'stage':'predict','error':type(exc).__name__})
             meta['reasoning_effort']=effort.record(self.store,e,effort_plan,effort_sig,wake_route,wake_source)['packet_id']
-            self.space_publish(e,'C2_CONTROL','CONTROL',
-                               summary='routing '+route+' | wake '+wake_route,
-                               authority='CONTROL_ONLY')
-            if isinstance(meta.get('fast_forward'),dict):
-                prediction=meta['fast_forward'].get('duration_s')
-                if type(prediction) in (int,float) and 0<=prediction<=3600:
-                    self.space_publish(e,'WORLD','PREDICTION',
-                                       summary='Forecast text-response duration '+str(round(prediction,2))+' s',
-                                       authority='CONTROL_ONLY')
             reenter=halt=None
             if wake_route in {'detail','gist','both'} and rpol['max_observer_bodies'] and not direct and self.cfg['observer_mode']!='off':
                 roles=rmodes.cap_roles(effort.roles(wake_route),rmode);peers={};observer_seconds=max(1.,self.cfg['observer_seconds']*effort_plan['observer_scale'])  # §97.2 ORANGE: one body
@@ -530,14 +491,6 @@ class Runtime:
                 pre_offer_ids=[p['packet_id'] for p in offers]
                 focal_run=FocalLoop(self).run(e,version,offers,goal=text,memories=memories,plan=effort_plan,sig=effort_sig,age=age_lim,deadline=observer_end,query=reenter,halt=halt,rules=[r for r in self.store.rules() if isinstance(r,str)],session=self.session,attention=attctl.controller(self),pressure=rpol['focal_pressure'],world_error=self._world_error())
                 offers=focal_run['offers'];selected=focal_run['selected']
-                self.space_publish(e,'C4_FOCAL','FOCAL',
-                                   summary='Coalition: '+','.join(sorted({x['role'] for x in selected})),
-                                   authority='CONTROL_ONLY')
-                if focal_run['inquisition']:
-                    self.space_publish(e,'INQUISITION','CONTROL',
-                                       summary='P1/P2 scaffold steps '+str(len(focal_run['inquisition']))+
-                                               '; verdicts '+','.join(sorted({x['verdict'] for x in focal_run['inquisition']})),
-                                       authority='CONTROL_ONLY')
                 meta['focal']={'decision':focal_run['decision'],'cycles':len(focal_run['trajectory']),'coalition':[x['item_id'] for x in focal_run['coalition']],'inquisition':[x['verdict'] for x in focal_run['inquisition']]}
             mark('output_prepare')
             # WP-N4 C5 action gate: candidate competition under permissions; BOOT reproduces the route table.
@@ -603,22 +556,6 @@ class Runtime:
                         if dig:volatile.append(('COMPRESSED','\n'+prompt(self.cfg,'digest'),dig));meta['digest_lines']=len(dig)
                 except Exception as exc:self.store.log('digest_unavailable',eid,{'error':type(exc).__name__})
                 volatile.append(('LATENT_STATE','\n'+prompt(self.cfg,'task_context'),self.executive.report_context(self.session)))
-                enlightened_refs=[]
-                try:
-                    shared=self.space().consume(e,'C3_LANGUAGE',text,
-                                                selected_offers=[p['packet_id'] for p in selected],
-                                                max_messages=3,max_chars=360)
-                    if shared['messages']:
-                        volatile.append(('ENLIGHTENED_SPACE',
-                            '\nShared V13 inter-organ context. Model hypotheses are NOT verified facts; only exact source excerpts are source-verified.',
-                            {'representation':shared['representation'],'messages':shared['messages']}))
-                        enlightened_refs=shared['source_refs']
-                    meta['enlightened_space']={'received':shared['entry_count'],
-                                              'representation':shared['representation'],
-                                              'revision':shared['revision']}
-                except (ValueError,TypeError,OSError,KeyError,RuntimeError) as exc:
-                    self.store.log('enlightened_space_unavailable',eid,
-                                   {'stage':'report_context','error':type(exc).__name__})
                 ul=agi_live.user_layer(meta)
                 if ul:volatile.append(('USER_MODEL','\n'+prompt(self.cfg,'user_model'),ul))  # WP-N13 AG11 beliefs, labelled
                 if clarify_turn:volatile.append(('CLARIFY','\n'+prompt(self.cfg,'clarify'),{'reason':'METACOG_CALIBRATED_ABSTAIN'}))
@@ -637,7 +574,7 @@ class Runtime:
                 except Exception as exc:self.store.log('context_os_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
                 try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context
                 except Exception as exc:self.store.log('context_save_failed',eid,{'error':type(exc).__name__})
-                context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[]),*enlightened_refs]
+                context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]
                 if executive_view.get('active_task'):context_refs.append(executive_view['active_task']['source_ref'])
                 context_refs.extend(x['source_ref'] for x in executive_view['open_questions'])
                 for item in selected:context_refs.extend(item['provenance']+item['evidence_refs'])
@@ -744,24 +681,9 @@ class Runtime:
                 from . import callosum
                 fr=locals().get('focal_run');callosum.controller(self).outcome(eid,[x['item_id'] for x in fr['coalition']] if fr else [],status)
             except Exception as exc:self.store.log('callosum_unavailable',eid,{'stage':'outcome','error':type(exc).__name__})
-            self.space_publish(e,'C3_LANGUAGE','CONTROL',
-                               summary='Single outward report status '+status,
-                               authority='CONTROL_ONLY')
-            self.space_publish(e,'OUTCOME','FEEDBACK',
-                               summary='Committed turn outcome '+status,
-                               authority='MEASURED_DIGITAL_OUTCOME')
             if aid:
                 self.store.finish_action(aid,status,{'characters':len(output),'self_candidate_hash':meta['self_candidate_hash'],'action_duration_s':time.monotonic()-action_started,'role':'SOURCE_COPY' if direct else (runner.role if runner else None),'model_generated':meta['model_generated']})
-                world_receipt=self.world.observe(aid)
-                if world_receipt is not None:
-                    self.space_publish(e,'WORLD','FEEDBACK',
-                                       summary='Own digital action outcome observed '+status,
-                                       authority='MEASURED_DIGITAL_OUTCOME')
-                    digital=world_receipt.get('digital_latent_error') if isinstance(world_receipt,dict) else None
-                    if type(digital) in (int,float) and 0<=digital<=1000000:
-                        self.space_publish(e,'JEPA','FEEDBACK',
-                                           summary='Measured own-digital prediction error '+str(round(digital,5)),
-                                           authority='MEASURED_DIGITAL_OUTCOME')
+                self.world.observe(aid)
                 try:selfctl.controller(self).observe(eid,[{'channel':'action_status','value':status},{'channel':'duration_s','value':time.monotonic()-action_started}],close=[aid])  # WP-N9 self vs world
                 except Exception as exc:self.store.log('self_unavailable',eid,{'stage':'attribution','error':type(exc).__name__})
                 try:  # WP-F: circuit-breaker evidence, cerebellar update, procedural lifecycle
