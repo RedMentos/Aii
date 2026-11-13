@@ -87,6 +87,13 @@ class Runtime:
 class LabCycleTests(unittest.TestCase):
     def setUp(self):
         self.r = Runtime()
+        lab.configure(self.r, enabled=True)
+    def test_native_default_is_off_outside_termux(self):
+        from unittest import mock
+        with mock.patch.object(lab, "_native_termux_runtime", return_value=False):
+            self.assertFalse(lab.initial()["enabled"])
+        with mock.patch.object(lab, "_native_termux_runtime", return_value=True):
+            self.assertTrue(lab.initial()["enabled"])
     def test_active_default_is_only_synthetic_local(self):
         x = lab.status(self.r)
         self.assertTrue(x["enabled"])
