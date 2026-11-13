@@ -79,6 +79,11 @@ class AIBackgroundTests(unittest.TestCase):
         self.stop.start();self.addCleanup(self.stop.stop)
         self.resume=mock.patch.object(ai.lifecycle,"service_resume",return_value=False)
         self.resume.start();self.addCleanup(self.resume.stop)
+        # Never access a real owner's lifecycle markers in synthetic tests.
+        for name, file in (("PRIVATE", private), ("RESUME", private/"resume.json"),
+                           ("STOP_REQUEST", private/"stop-request.json")):
+            marker=mock.patch.object(ai.lifecycle, name, file)
+            marker.start(); self.addCleanup(marker.stop)
 
     def test_actual_ai_autostarts_without_browser_and_answers(self):
         ai._desired(True)
@@ -143,6 +148,84 @@ class AIBackgroundTests(unittest.TestCase):
             service.tick()
         self.assertTrue(service.reload_requested)
         self.assertEqual(service.console.starts,0)
+
+    def test_off_discards_prior_update_resume_marker(self):
+        ai._desired(True)
+        ai.lifecycle.request_resume(reason="UPDATED")
+        self.assertTrue(ai.lifecycle.RESUME.exists())
+        ai._desired(False)
+        console = FakeConsole()
+        service = ai.ChatService(console)
+        service.tick()
+        self.assertEqual(console.starts, 0)
+        self.assertEqual(service.status, "STOPPED_BY_USER")
+        self.assertFalse(ai.lifecycle.RESUME.exists())
+
+    def test_off_while_paused_never_resumes_earlier_on(self):
+        ai._desired(True)
+        ai.lifecycle.request_resume(reason="UPDATED")
+        ai._desired(False)
+        console = FakeConsole()
+        service = ai.ChatService(console)
+        service.paused = True
+        service.pending_lifecycle = True
+        service.tick()
+        self.assertFalse(service.paused)
+        self.assertEqual(console.starts, 0)
+        self.assertFalse(ai.lifecycle.RESUME.exists())
+
+    def test_shutdown_discards_resume_token(self):
+        ai._desired(True)
+        ai.lifecycle.request_resume(reason="RESTORE")
+        service = ai.ChatService(FakeConsole())
+        self.assertEqual(service.command("shutdown", {})["status"], "SHUTDOWN_REQUESTED")
+        self.assertFalse(ai._read_desired())
+        self.assertFalse(ai.lifecycle.RESUME.exists())
+
+    def test_explicit_start_defers_during_update_then_launches_once(self):
+        console = FakeConsole()
+        service = ai.ChatService(console)
+        with mock.patch("v13.pipeline_agent.snapshot",
+                        return_value={"last_result": "CHECKING"}):
+            self.assertEqual(service.command("start", {}),
+                             {"status": "START_DEFERRED_FOR_UPDATE"})
+            self.assertTrue(ai._read_desired())
+            self.assertEqual(console.starts, 0)
+            service.tick()
+            self.assertEqual(console.starts, 0)
+        service.tick()
+        self.assertEqual(console.starts, 1)
+        service.tick()
+        self.assertEqual(console.starts, 1)
+
+    def test_supervisor_rechecks_pipeline_before_launch(self):
+        ai._desired(True)
+        console = FakeConsole()
+        service = ai.ChatService(console)
+        with mock.patch("v13.pipeline_agent.snapshot", side_effect=[
+                {"last_result": "UP_TO_DATE"}, {"last_result": "CHECKING"}]):
+            service.tick()
+        self.assertEqual(console.starts, 0)
+        self.assertEqual(service.status, "START_DEFERRED_FOR_UPDATE")
+        service.tick()
+        self.assertEqual(console.starts, 1)
+
+    def test_supervisor_rechecks_off_before_launch(self):
+        ai._desired(True)
+        console = FakeConsole()
+        service = ai.ChatService(console)
+        with mock.patch.object(ai, "_read_desired", side_effect=[True, True, False]):
+            service.tick()
+        self.assertEqual(console.starts, 0)
+        self.assertEqual(service.status, "START_DEFERRED_FOR_UPDATE")
+
+    def test_start_defers_during_lifecycle_stop_request(self):
+        console = FakeConsole()
+        service = ai.ChatService(console)
+        with mock.patch.object(ai.lifecycle, "STOP_REQUEST", mock.Mock(exists=lambda: True)):
+            self.assertEqual(service.command("start", {})["status"],
+                             "START_DEFERRED_FOR_UPDATE")
+        self.assertEqual(console.starts, 0)
 
     def test_private_unix_socket_rpc_is_local_and_browserless(self):
         ai._desired(True)
