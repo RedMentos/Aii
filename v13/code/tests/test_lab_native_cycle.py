@@ -165,6 +165,16 @@ class LabCycleTests(unittest.TestCase):
             lab.operator_command(self.r, ["every", "0"])
         with self.assertRaises(ValueError):
             lab.operator_command(self.r, ["exec", "shell"])
+    def test_private_relay_summary_never_contains_inner_thought_text(self):
+        lab.run(self.r)
+        detailed = lab.operator_command(self.r, ["status"])
+        self.assertTrue(detailed["last_thoughts"])
+        summary = lab.operator_command(self.r, ["summary"])
+        self.assertNotIn("last_thoughts", summary)
+        queued = lab.operator_command(self.r, ["now"])
+        self.assertNotIn("last_thoughts", queued["status"])
+        self.assertEqual(summary["learning_authority"], "NONE")
+
     def test_corrupt_state_fail_closed(self):
         self.r.store.obj = {"schema": lab.SCHEMA, "enabled": "yes"}
         with self.assertRaises(ValueError):
