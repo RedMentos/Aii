@@ -7,6 +7,8 @@ records only small private technical status plus provisional inner speech.
 """
 from __future__ import annotations
 
+import os
+from pathlib import Path
 import time
 from .common import safe_text, Cancelled
 
@@ -33,10 +35,22 @@ ROLE_SYSTEM = {
 }
 
 
+def _native_termux_runtime():
+    """Only auto-start on the owner's actual Android/Termux installation.
+
+    Linux CI, synthetic integration tests and cloned development projects
+    must not spawn an unexpected native background task. Local operator
+    can explicitly turn it on anywhere via :scheduler lab on.
+    """
+    return (os.environ.get("PREFIX") == "/data/data/com.termux/files/usr"
+            and os.environ.get("HOME") == "/data/data/com.termux/files/home"
+            and Path("/system/build.prop").is_file())
+
+
 def initial():
-    # User explicitly asked for active, reversible tests while V13 is on.
-    # This affects only synthetic local probes; trained weights remain frozen.
-    return dict(schema=SCHEMA, enabled=True, interval_s=DEFAULT_INTERVAL_S,
+    # User requested native background experiment on the real Redmi.
+    # Tests/host clones stay isolated unless explicitly enabled.
+    return dict(schema=SCHEMA, enabled=_native_termux_runtime(), interval_s=DEFAULT_INTERVAL_S,
                 next_role=ROLES[0], last_started=0., recent_started=[],
                 history=[], completed=0, last_result={"status": "NEVER"})
 
