@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import sqlite3
 from pathlib import Path
 import tempfile
 import threading
@@ -79,7 +80,13 @@ def set_consent(key, value):
         raise ValueError("unknown consent toggle")
     with _LOCK:
         _root()
-        settings = consent()
+        try:
+            settings = consent()
+        except ValueError:
+            # An explicit owner toggle may recover a syntactically corrupt,
+            # still owner-only settings file. Recovery starts from ALL OFF,
+            # never from a guessed previous remote permission.
+            settings = {field:False for field in OPTIONS}
         settings[key] = value
         # The console switch is independently effective only when observe is ON.
         _save(SETTINGS,{"schema":SCHEMA, **settings})
@@ -101,7 +108,10 @@ def permits(command):
 
 def status(*, now=None):
     clock = int(time.time() if now is None else now)
-    c = consent()
+    try:
+        c = consent()
+    except (ValueError, RuntimeError):
+        c = {field:False for field in OPTIONS}
     try:
         state = _read(STATE)
     except (OSError, ValueError, RuntimeError):
@@ -153,7 +163,7 @@ def report():
             "roles":details["roles"],
             "turns":details["turns"][:3],
         }
-    except (OSError, ValueError, RuntimeError):
+    except (OSError, ValueError, RuntimeError, sqlite3.Error):
         pass
     # Explicit, separate opt-in to sharing a bounded saved console excerpt.
     c = consent()
@@ -161,6 +171,18 @@ def report():
         from .mobile_dashboard import remote_full_console
         data["console_excerpt"] = remote_full_console()
     return data
+
+
+def note_failure(*, now=None):
+    """Retain an honest local outcome without exporting exception text."""
+    with _LOCK:
+        try:
+            state = _read(STATE)
+            state.update(last_result="FAILED",
+                         last_failure=int(time.time() if now is None else now))
+            _save(STATE,state)
+        except (OSError, ValueError, RuntimeError):
+            pass
 
 
 def publish_once(client, cfg, *, now=None):
