@@ -1,5 +1,6 @@
 name: v13-private-remote-bridge-tests
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - 'v13/code/v13/remote_maintenance_bridge.py'
