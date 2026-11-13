@@ -118,6 +118,25 @@ class CrossOrganDelivery(unittest.TestCase):
         self.assertEqual({json.loads(x["metrics"])["role"] for x in delivered},
                          {"B1_DETAIL", "B2_GIST"})
         self.assertTrue(all(json.loads(x["metrics"])["status"] == "FINAL" for x in delivered))
+        # The real coordinator must share messages BEFORE native B1/B2/C3
+        # decoding. Mere post-hoc logs or a single output voice do not pass.
+        for role in ("B1_DETAIL", "B2_GIST"):
+            body_calls = [msgs for source, msgs in self.calls if source == role]
+            self.assertTrue(body_calls, "both native bodies were called")
+            self.assertIn("enlightened_space", json.dumps(body_calls[0]),
+                          "native body must consume global organ state")
+        self.assertIn("enlightened_space", context,
+                      "one C3 report must consume the global organ context")
+        report = self.r.cognition.space.report(self.r.store.generation_id)
+        # Assert only real native producers; C3 completion and OUTCOME
+        # are not yet connected through this frozen coordinator port.
+        for producer in ("A_PERCEPTION", "STREAM_A", "STREAM_B",
+                         "C1_JEF", "SELF", "WORLD", "C4_FOCAL",
+                         "B1_DETAIL", "B2_GIST", "B3_CALLOSUM"):
+            self.assertGreater(report["organ_messages"][producer], 0,
+                               "missing global organ: " + producer)
+        self.assertFalse(report["trained_latent"],
+                         "never claim native JEPA was trained in synthetic CI")
 
     def test_failing_b1_never_fabricates_an_offer_and_b2_still_reaches_c3(self):
         event_id, meta, context = self.execute(fail_b1=True)
@@ -133,6 +152,11 @@ class CrossOrganDelivery(unittest.TestCase):
             "SELECT metrics FROM telemetry WHERE kind='body_offer_delivered' AND event_id=?", (event_id,))
         self.assertEqual(len(delivered), 1, "native failure is never counted as delivered offer")
         self.assertEqual(json.loads(delivered[0]["metrics"])["role"], "B2_GIST")
+        shared = self.r.cognition.space.report(self.r.store.generation_id)["organ_messages"]
+        self.assertEqual(shared["B1_DETAIL"], 0,
+                         "failed native B1 must not speak into shared space")
+        self.assertGreater(shared["B2_GIST"], 0,
+                           "B2 must remain connected even when B1 fails")
 
 
 if __name__ == "__main__":

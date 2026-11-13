@@ -7,6 +7,7 @@ from .inputs import looks_like_terminal_log
 from .common import dumps,uid,atomic_write,file_hash
 from .memory import relevance,entities
 from .runners import check
+from .enlightened_space import EnlightenedSpace
 ROUTES=['simple','detail','gist','both']
 def scaffold_route(text):
     t=text.lower()
@@ -123,6 +124,41 @@ def asks_rule_decision(text):
     except Exception:return False
 class Cognition:
     def __init__(self,runtime):self.r=runtime;self.s=runtime.store
+    @property
+    def space(self):
+        """Stable inter-organ port, scoped to the currently active session.
+
+        The phone's pinned Runtime coordinator already creates Cognition;
+        this preserves real runtime compatibility rather than adding an
+        untested method to a frozen or staged-only coordinator.
+        """
+        return EnlightenedSpace(self.s,self.r.session)
+    def _share_existing_organs(self,e,version,body_state=None,broadcast=None):
+        """Publish only measured/committed upstream organ states, not invented ones."""
+        try:
+            if broadcast and broadcast.get('state_version') == version:
+                self.space.publish(e,'C1_JEF','CONTROL',
+                                   summary='JEF broadcast revision '+str(version),
+                                   authority='CONTROL_ONLY',
+                                   packet_id=broadcast['packet_id'])
+            if isinstance(body_state,dict):
+                # Body-state is the real local self/world organ observation
+                # already supplied to the native body, not external reality.
+                own=body_state.get('self')
+                if isinstance(own,dict):
+                    self.space.publish(e,'SELF','CONTROL',
+                                       summary='Self capability state available',
+                                       authority='CONTROL_ONLY')
+                own=body_state.get('world')
+                if isinstance(own,dict):
+                    n=own.get('observed_actions')
+                    if type(n) is int and 0<=n<=100000:
+                        self.space.publish(e,'WORLD','PREDICTION',
+                                           summary='Observed own digital actions: '+str(n),
+                                           authority='CONTROL_ONLY')
+        except (ValueError,RuntimeError,KeyError,OSError,TypeError) as exc:
+            self.s.log('enlightened_space_unavailable',e['event_id'],
+                       {'stage':'upstream_organs','error':type(exc).__name__})
     def tap(self,role,e,source_ref,deadline):
         """Source-bound native body observation; no receiver or learning authority."""
         if source_ref['source_id']!=e['source_ref']['source_id']:raise ValueError('Tap source must belong to this event')
@@ -230,7 +266,21 @@ class Cognition:
                 p.update(student_feature_path=str(path.relative_to(self.r.home)),student_feature_sha256=file_hash(path),student_component='a3_student',student_latent_dim=len(prediction['latent']),student_in_support=prediction['in_support'],student_mode='T1_SHADOW',native_receiver_authority=0)
         except Exception as exc:
             p['student_unavailable']=type(exc).__name__;self.s.log('student_unavailable',e['event_id'],{'error':type(exc).__name__})
-        return self.s.add_packet('PerceptPacket',p)
+        stored=self.s.add_packet('PerceptPacket',p)
+        # The two legacy context streams are NOT the B1/B2 hemispheres.
+        # A delivers source, A-semantic holds a lossy cue, B-exact its ref.
+        try:
+            space=EnlightenedSpace(self.s,self.r.session)
+            for producer,channel,summary in (
+                    ('A_PERCEPTION','EXACT','Perception source available'),
+                    ('STREAM_A','SEMANTIC',text[:240]),
+                    ('STREAM_B','EXACT','Exact source pointer available')):
+                space.publish(e,producer,channel,summary=summary,
+                              source_refs=[e['source_ref']],authority='SOURCE_POINTER')
+        except (ValueError,RuntimeError,KeyError,OSError,TypeError) as exc:
+            self.s.log('enlightened_space_unavailable',e['event_id'],
+                       {'stage':'perception','error':type(exc).__name__})
+        return stored
     def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):
         if role not in {'B1_DETAIL','B2_GIST'}:raise ValueError('Unbekannte Body-Rolle')
         # Inference must finish within its own budget. A completed foreground
@@ -313,6 +363,8 @@ class Cognition:
         if role=='B1_DETAIL' and policy=='B1_DETAIL' and context:
             query['recent_source']=[x['native_context'] for x in context]
             instructions+=' recent_source is the exact source of the previous turn of this topic. Use its exact details (values, entities) when the current text refers to them without restating them. Quote the exact sentences carrying the details your summary needs; only verified quotes reach the answer component. Prefer an explicit current-source revision.'
+        self._share_existing_organs(e,version,
+                                   body_state=query.get('body_state'),broadcast=broadcast)
         if broadcast:
             query['executive_broadcast']={k:broadcast[k] for k in ['state_version','goal','constraints','source_refs']}
             pf=broadcast.get('permission_flags') or {}  # WP-T2: bodies see the Age envelope C1 granted (stage + rights above Age 0), never a way to widen it
@@ -328,10 +380,24 @@ class Cognition:
             extra,jbc_fields=jef_controller(self.r).bridge_view(role,e,version)
             if extra:query['jef_broadcast']=extra
         except Exception:jbc_fields=[]
+        # Native B1/B2 receive *actual* shared organ messages before generation.
+        enlightened_refs=[]
+        try:
+            shared=self.space.consume(e,role,text,max_messages=2,max_chars=280)
+            if shared['messages']:
+                query['enlightened_space']={
+                    'representation':shared['representation'],
+                    'authority':'MIXED_SOURCE_AND_CONTROL_NOT_FACT',
+                    'messages':shared['messages']}
+                enlightened_refs=shared['source_refs']
+        except (ValueError,RuntimeError,KeyError,OSError,TypeError) as exc:
+            self.s.log('enlightened_space_unavailable',e['event_id'],
+                       {'stage':'body_query','error':type(exc).__name__})
         query_packet=packet('QueryPacket','C1_EXEC',e['event_id'],e['brain_generation_id'],[e['source_ref']],target_role=role,goal=text,source_refs=[e['source_ref']],broadcast_packet_id=broadcast['packet_id'] if broadcast else None,peer_message_packet_id=peer_id,source_view_width_chars=width,based_on_state_version=version,probe_only=version==0)
         query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW')
         query_packet.update(compute_deadline_monotonic_ns=int(deadline*1e9),offer_valid_until_monotonic_ns=int(valid_until*1e9))
-        query_packet['provenance'] += query_packet['context_source_refs']+bv_refs
+        query_packet['enlightened_source_refs']=enlightened_refs
+        query_packet['provenance'] += query_packet['context_source_refs']+bv_refs+enlightened_refs
         if bv:query_packet['bodyview']=bv
         query_packet['jbc_fields']=jbc_fields
         if focus:query_packet['jef_query']=focus
@@ -351,6 +417,7 @@ class Cognition:
         check(self.r.cancel_event,deadline)
         if set(obj)!=set(OFFER_SCHEMA['required']) or not isinstance(obj['needs_reentry'],bool) or not isinstance(obj['quotes'],list) or not all(isinstance(obj[k],str) for k in ['summary','uncertainty']):raise ValueError('Offer-Schema ungültig')
         refs=[];rejected=0;sources=[(text,e['source_ref'])]+[(x['native_context']['exact_source_excerpt'],x['source_ref']) for x in context]
+        sources += [(self.s.read_source(ref),ref) for ref in enlightened_refs]
         wide=self.r.cfg.get('offer_quote_context_chars',0);selected=None
         if select!='off':selected={'mode':select,'choices':len(choices),'raw_quotes':list(obj['quotes'][:3]),'picked':None,'anchored':0}
         if choices:  # ids -> exact sentence text; an id outside the list is dropped
@@ -373,10 +440,21 @@ class Cognition:
             source,base=match;start=base['char_start']+source.index(quote);ref=base|{'char_start':start,'char_end':start+len(quote)};self.s.read_source(ref);refs.append(ref)
         p=packet('OfferPacket',role,e['event_id'],e['brain_generation_id'],[e['source_ref']],role=role,based_on_state_version=version,deadline_monotonic_ns=int(valid_until*1e9),compute_deadline_monotonic_ns=int(deadline*1e9),evidence_refs=refs,offer=obj,confidence=0.,confidence_status='UNCALIBRATED',rejected_quotes=rejected,model_revision=self.r.models.revision(role),native_metrics=runner.last_metrics,query_packet_id=query_packet['packet_id'],broadcast_packet_id=query_packet['broadcast_packet_id'],peer_message_packet_id=peer_id,source_view_width_chars=width)
         if wide:p['quote_context_chars']=wide  # analyst_context accepts the widened spans only for this offer
-        p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'])
+        p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'],
+                 enlightened_source_refs=enlightened_refs)
         if selected:p['b2_quote_select']=selected
-        p['provenance'] += query_packet['context_source_refs']
+        p['provenance'] += query_packet['context_source_refs']+enlightened_refs
         self.s.add_packet('OfferPacket',p);self.retain_body_offer(p)
+        # Model summaries are never granted the exact source's factual status.
+        try:
+            self.space.publish(
+                e,role,'SEMANTIC',
+                summary=obj['summary'] if refs else 'Unquoted body hypothesis, no source authority',
+                authority='MODEL_HYPOTHESIS' if refs else 'CONTROL_ONLY',
+                source_refs=refs[:3],packet_id=p['packet_id'])
+        except (ValueError,OSError,RuntimeError,KeyError,TypeError) as exc:
+            self.s.log('enlightened_space_unavailable',e['event_id'],
+                       {'stage':'body_offer','error':type(exc).__name__})
         # An apparently FINAL native JSON decode is not the same thing as a
         # source-validated, consumer-visible cognitive contribution. Record
         # that separate boundary only after the OfferPacket and body state
@@ -417,9 +495,10 @@ class Cognition:
             if (query['event_id']!=e['event_id'] or query['brain_generation_id']!=e['brain_generation_id']
                     or query['target_role']!=offer['role'] or query.get('based_on_state_version')!=version
                     or query['source_refs']!=[e['source_ref']]
-                    or query.get('context_source_refs',[])!=offer.get('context_source_refs',[])):
+                    or query.get('context_source_refs',[])!=offer.get('context_source_refs',[])
+                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])):
                 raise ValueError('Consumer query scope changed')
-            allowed=[e['source_ref']]+query.get('context_source_refs',[])
+            allowed=[e['source_ref']]+query.get('context_source_refs',[])+query.get('enlightened_source_refs',[])
             verified=[]
             for ref in offer['evidence_refs']:
                 bound=any(all(ref.get(k)==base.get(k) for k in ('source_id','sha256','modality'))
@@ -435,6 +514,43 @@ class Cognition:
             rendered.append({'role':offer['role'],'offer_packet_id':offer['packet_id'],
                 'hypothesis':{k:offer['offer'][k] for k in ('summary','uncertainty','needs_reentry')},
                 'hypothesis_authority':'MODEL_HYPOTHESIS_NOT_FACT','verified_quotes':verified})
+        # The focal coalition has already decided which body messages may
+        # contribute to the one outward C3 stream. Only now publish the C4
+        # signal and let C3 read approved shared organs, never before consent.
+        if rendered:
+            try:
+                cycle=self.s.one("SELECT payload FROM packets WHERE kind='FocalCycle' AND event_id=? ORDER BY rowid DESC LIMIT 1",(e['event_id'],))
+                if cycle:
+                    f=json.loads(cycle['payload'])
+                    self.space.publish(e,'C4_FOCAL','FOCAL',
+                        summary='Focal C4 decision '+str(f.get('decision','UNKNOWN')),
+                        authority='CONTROL_ONLY',packet_id=f['packet_id'])
+                steps=self.s.rows("SELECT payload FROM packets WHERE kind='InquisitionStep' AND event_id=? ORDER BY rowid DESC LIMIT 2",(e['event_id'],))
+                if steps:
+                    self.space.publish(e,'INQUISITION','CONTROL',
+                        summary='P1/P2 deliberation steps '+str(len(steps)),
+                        authority='CONTROL_ONLY')
+                shared=self.space.consume(e,'C3_LANGUAGE',self.s.read_source(e['source_ref']),
+                    selected_offers=[x['offer_packet_id'] for x in rendered],
+                    max_messages=5,max_chars=440)
+                # The current answer's existing source lineage binds only
+                # selected OfferPacket evidence. Do not move other exact
+                # source texts into C3 without extending that lineage.
+                allowed={ref['source_id'] for ref in (e['source_ref'],)+tuple(
+                    ref for p in offers for ref in p.get('evidence_refs',[]))}
+                messages=[]
+                for entry in shared['messages']:
+                    clean=dict(entry)
+                    clean['exact_sources']=[x for x in entry['exact_sources']
+                          if x['source_ref']['source_id'] in allowed]
+                    messages.append(clean)
+                rendered[0]['enlightened_space']={
+                    'representation':shared['representation'],
+                    'messages':messages,
+                    'external_egress_authority':False}
+            except (ValueError,TypeError,OSError,KeyError,RuntimeError) as exc:
+                self.s.log('enlightened_space_unavailable',e['event_id'],
+                           {'stage':'c3_selected_context','error':type(exc).__name__})
         return rendered
     def communicate(self,offer,receiver,fast=None):
         if {offer['role'],receiver}!={'B1_DETAIL','B2_GIST'}:raise ValueError('Ungültige B3-Richtung')
@@ -461,6 +577,19 @@ class Cognition:
             except Exception as exc:extra={};self.s.log('callosum_unavailable',offer['event_id'],{'stage':'fields','error':type(exc).__name__})
         p=packet('MessagePacket','B3_CALLOSUM',offer['event_id'],offer['brain_generation_id'],refs,channel=channel,sender=offer['role'],receiver=receiver,source_refs=refs,content=content,latent_authority=0,receiver_effect_proven=False,parent_offer_packet_id=offer['packet_id'],**extra)
         self.s.add_packet('MessagePacket',p)
+        try:
+            # B3's bidirectional body bridge is one subchannel, not the entire
+            # system-wide Enlightened Space, and retains no latent authority.
+            self.space.publish(
+                {'event_id':offer['event_id'],'brain_generation_id':offer['brain_generation_id']},
+                'B3_CALLOSUM','EXACT' if refs else 'CONTROL',
+                summary='B3 '+offer['role']+' to '+receiver+' channel '+channel,
+                source_refs=refs[:3],
+                authority='SOURCE_POINTER' if refs else 'CONTROL_ONLY',
+                packet_id=p['packet_id'])
+        except (ValueError,OSError,RuntimeError,TypeError) as exc:
+            self.s.log('enlightened_space_unavailable',offer['event_id'],
+                       {'stage':'b3_message','error':type(exc).__name__})
         if cal is not None and extra:
             try:cal.note(offer['event_id'],p['packet_id'],offer['role'],receiver,channel,proposal,applied,extra['signed_gain'])
             except Exception as exc:self.s.log('callosum_unavailable',offer['event_id'],{'stage':'note','error':type(exc).__name__})
