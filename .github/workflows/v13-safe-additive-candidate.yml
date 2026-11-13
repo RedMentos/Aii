@@ -50,8 +50,18 @@ jobs:
           head = os.environ["V13_HEAD_SHA"]
           if not all(re.fullmatch("[a-f0-9]{40}", sha) for sha in (base, head)):
               sys.exit("invalid immutable git revisions")
+          # PRs commonly originate from an earlier verified release. Diff
+          # only the commits *introduced on the PR branch*. Comparing the
+          # current release tip to that old head falsely reports unrelated
+          # newer release files as deletions/modifications and strands every
+          # specialist behind the moving phone release.
+          ancestor = subprocess.check_output(
+              ["git", "merge-base", base, head],
+              timeout=20).decode("ascii", "strict").strip()
+          if not re.fullmatch("[a-f0-9]{40}", ancestor):
+              sys.exit("cannot verify PR merge-base")
           rows = subprocess.check_output(
-              ["git", "diff", "--name-status", "--no-renames", base, head],
+              ["git", "diff", "--name-status", "--no-renames", ancestor, head],
               timeout=20).decode("utf-8", "strict").splitlines()
           if not 2 <= len(rows) <= 30:
               sys.exit("additive candidate needs 2..30 files")
