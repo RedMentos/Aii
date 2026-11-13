@@ -1,10 +1,12 @@
-"""Offline review-queue tests. No network, GitHub token, Redmi or model usage."""
+"""Offline proofs for unattended inert-code merging and exact release CI repair."""
 import copy
 import unittest
+from urllib.parse import parse_qs, urlsplit
 from automation import v13_release_queue as q
 
 SHA = "a" * 40
 BASE = "b" * 40
+MERGED = "c" * 40
 
 
 def pr(number=1):
@@ -14,11 +16,10 @@ def pr(number=1):
             "base": {"sha": BASE, "ref": q.RELEASE}}
 
 
-def success(name, path):
-    return {"name": name, "path": path + "@refs/heads/test",
-            "head_sha": SHA, "event": "pull_request",
-            "status": "completed", "conclusion": "success",
-            "head_repository": {"full_name": q.REPO}}
+def success(name, path, sha=SHA):
+    return {"name": name, "path": path + "@refs/heads/release",
+            "head_sha": sha, "event": "push", "status": "completed",
+            "conclusion": "success", "head_repository": {"full_name": q.REPO}}
 
 
 class FakeGitHub:
@@ -29,134 +30,226 @@ class FakeGitHub:
         self.files = [{"filename": "v13/code/v13/a5_bridge.py",
                        "status": "added", "changes": 42}]
         self.runs = [success(k, v) for k, v in q.REQUIRED.items()]
+        self.release_runs = [
+            success(k, v, MERGED) for k, v in
+            [*q.REQUIRED.items(), q.OWNER_READ]]
         self.issues = [{"number": 1, "pull_request": {"url": "exists"}}]
+        self.prs = []
+        self.compare = {"status": "ahead", "ahead_by": 1,
+                        "behind_by": 0, "base_commit": {"sha": BASE}}
         self.merge_calls = []
+        self.dispatches = []
+        self.release_sha = MERGED
 
     def call(self, method, path, data=None):
-        # GitHub list endpoints carry pagination query parameters.
-        path = path.split("?", 1)[0]
-        if method == "PUT":
-            self.merge_calls.append((method, path, data))
-            return {"merged": True, "sha": "c" * 40}
-        if path == f"/repos/{q.REPO}/issues":
+        parsed = urlsplit(path)
+        route = parsed.path
+        if method == "POST" and "/actions/workflows/" in route and route.endswith("/dispatches"):
+            self.dispatches.append((route, data))
+            return {}
+        if method == "PUT" and route.endswith("/merge"):
+            self.merge_calls.append((route, data))
+            return {"merged": True, "sha": MERGED}
+        if route.startswith(f"/repos/{q.REPO}/git/ref/heads/"):
+            return {"object": {"sha": self.release_sha}}
+        if route == f"/repos/{q.REPO}/issues":
             return copy.deepcopy(self.issues)
-        if "/pulls/" in path and path.endswith("/files"):
+        if route == f"/repos/{q.REPO}/pulls":
+            return copy.deepcopy(self.prs)
+        if route.endswith("/files") and "/pulls/" in route:
             return copy.deepcopy(self.files)
-        if "/issues/" in path and path.endswith("/comments"):
+        if route.endswith("/comments") and "/issues/" in route:
             return copy.deepcopy(self.comments)
-        if "/pulls/" in path:
+        if "/pulls/" in route:
             return copy.deepcopy(self.pr)
-        if "/compare/" in path:
-            return {"status": "ahead", "behind_by": 0,
-                    "base_commit": {"sha": BASE}}
-        if path == f"/repos/{q.REPO}/actions/runs":
-            return {"workflow_runs": copy.deepcopy(self.runs)}
-        raise AssertionError((method, path))
+        if "/compare/" in route:
+            return copy.deepcopy(self.compare)
+        if route == f"/repos/{q.REPO}/actions/runs":
+            sha = parse_qs(parsed.query).get("head_sha", [""])[0]
+            return {"workflow_runs": copy.deepcopy(
+                self.release_runs if sha == MERGED else self.runs)}
+        raise AssertionError((method, path, data))
+
+
+def additive(api, draft=True):
+    api.pr["user"] = {"login": q.OWNER}
+    api.pr["draft"] = draft
+    api.pr["mergeable_state"] = "draft" if draft else "clean"
+    api.files = [
+        {"filename": "v13/code/v13/world_candidate.py",
+         "status": "added", "changes": 72},
+        {"filename": "v13/code/tests/test_world_candidate.py",
+         "status": "added", "changes": 88}]
+    api.runs.append(success(*q.ADDITIVE_CHECK))
+    api.issues = []
+    api.prs = [{"number": 1}]
+    api.comments = []
+    api.compare = {"status": "diverged", "ahead_by": 2,
+                   "behind_by": 7, "base_commit": {"sha": BASE}}
 
 
 class QueueTests(unittest.TestCase):
-    def test_owner_approved_exact_sha_with_ci_merges_one(self):
+    def test_explicit_owner_reviewed_head_merges_and_dispatches_3_gates(self):
         api = FakeGitHub()
         result = q.run(api, execute=True)
         self.assertEqual(result[0]["status"], "merged")
-        self.assertEqual(result[0]["release_commit"], "c" * 40)
+        self.assertEqual(result[0]["release_commit"], MERGED)
         self.assertEqual(len(api.merge_calls), 1)
-        self.assertEqual(api.merge_calls[0][2]["sha"], SHA)
+        self.assertEqual(api.merge_calls[0][1]["sha"], SHA)
+        self.assertEqual(len(api.dispatches), len(q.RELEASE_GATES))
+        self.assertTrue(all(d["ref"] == q.RELEASE for _, d in api.dispatches))
 
-    def test_dry_run_does_not_write_release(self):
+    def test_dry_run_never_changes_repo_or_dispatches(self):
         api = FakeGitHub()
-        self.assertEqual(q.run(api), [{"pr": 1, "status": "approved"}])
+        self.assertEqual(q.run(api)[0]["status"], "owner_approved")
         self.assertEqual(api.merge_calls, [])
+        self.assertEqual(api.dispatches, [])
 
-    def test_unlabelled_prs_are_not_even_examined(self):
+    def test_unlabelled_unapproved_pr_is_inspected_not_merged(self):
         api = FakeGitHub()
         api.issues = []
-        self.assertEqual(q.run(api, execute=True), [])
+        api.prs = [{"number": 1}]
+        api.comments = []
+        self.assertEqual(q.run(api, execute=True)[0]["status"],
+                         "unapproved_or_incomplete")
         self.assertFalse(api.merge_calls)
 
-    def test_modified_sha_invalidates_old_owner_approval(self):
+    def test_new_module_and_new_test_draft_auto_import_even_if_behind(self):
         api = FakeGitHub()
-        api.comments[0]["body"] = q.MARKER + ("1" * 40)
-        self.assertEqual(q.run(api, execute=True)[0]["status"], "unapproved_sha")
-        self.assertEqual(api.merge_calls, [])
+        additive(api)
+        out = q.run(api, execute=True)
+        self.assertEqual(out[0]["status"], "merged")
+        self.assertEqual(len(api.merge_calls), 1)
+        self.assertEqual(len(api.dispatches), 3)
 
-    def test_not_an_owner_comment_is_not_approval(self):
+    def test_draft_without_new_test_cannot_auto_merge(self):
         api = FakeGitHub()
-        api.comments[0]["user"]["login"] = "attacker"
-        self.assertEqual(q.run(api, execute=True)[0]["status"], "unapproved_sha")
+        additive(api)
+        api.files.pop()
+        self.assertEqual(q.run(api, execute=True)[0]["status"],
+                         "unapproved_or_incomplete")
+        self.assertFalse(api.merge_calls)
 
-    def test_stacked_or_diverged_source_is_not_auto_merged(self):
+    def test_new_module_without_additive_ci_is_blocked(self):
         api = FakeGitHub()
-        api.pr["base"]["ref"] = "jepa/other-branch"
-        self.assertEqual(q.run(api, execute=True)[0]["status"], "scope")
-        self.assertEqual(api.merge_calls, [])
+        additive(api)
+        api.runs.pop()
+        self.assertEqual(q.run(api, execute=True)[0]["status"],
+                         "missing_exact_sha_ci")
+        self.assertFalse(api.merge_calls)
 
-    def test_runtime_permission_updater_requires_manual_review(self):
+    def test_non_owner_draft_cannot_auto_merge(self):
+        api = FakeGitHub()
+        additive(api)
+        api.pr["user"]["login"] = "outsider"
+        self.assertEqual(q.run(api, execute=True)[0]["status"],
+                         "unapproved_or_incomplete")
+        self.assertFalse(api.merge_calls)
+
+    def test_runtime_paths_never_use_auto_lane(self):
         for path in (
-            "v13/code/v13/runtime_deploy.py",
-            "v13/code/v13/remote_maintenance_bridge.py",
-            ".github/workflows/evil.yml",
-            "v13/code/docs/canon/frozen.md",
-            "v13/code/specs/models.json",
-            "v13/code/models/weights.gguf",
-            "v13/code/v13/../../outside.py",
-        ):
+                "v13/code/v13/runtime.py",
+                "v13/code/v13/android_outcomes.py",
+                "v13/code/v13/owner_read_bridge.py",
+                "v13/code/v13/exec.py",
+                "v13/code/v13/__init__.py",
+                "v13/code/scripts/termux_start.sh",
+                "v13/code/specs/models.json",
+                "v13/code/docs/canon/locked.md",
+                ".github/workflows/evil.yml",
+                "v13/code/v13/../../outside.py"):
             with self.subTest(path=path):
                 api = FakeGitHub()
+                additive(api)
                 api.files[0]["filename"] = path
-                self.assertEqual(q.run(api, execute=True)[0]["status"],
-                                 "review_only_paths")
-                self.assertFalse(api.merge_calls)
-
-    def test_existing_runtime_python_or_install_script_requires_direct_boss_merge(self):
-        for name in (
-            "v13/code/v13/runtime.py",
-            "v13/code/v13/android_outcomes.py",
-            "v13/code/scripts/termux_start.sh",
-            "v13/code/specs/new_model.json",
-        ):
-            with self.subTest(path=name):
-                api = FakeGitHub()
-                api.files[0]["filename"] = name
                 api.files[0]["status"] = "modified"
-                self.assertEqual(q.run(api, execute=True)[0]["status"],
-                                 "review_only_paths")
+                self.assertNotEqual(q.run(api, execute=True)[0]["status"], "merged")
                 self.assertFalse(api.merge_calls)
 
-    def test_missing_or_failed_exact_sha_ci_blocks(self):
+    def test_modified_runtime_only_owner_label_does_not_bypass_path_gate(self):
         api = FakeGitHub()
-        api.runs = api.runs[:-1]
+        api.files[0]["filename"] = "v13/code/v13/runtime.py"
+        api.files[0]["status"] = "modified"
         self.assertEqual(q.run(api, execute=True)[0]["status"],
-                         "missing_exact_sha_ci")
-        api = FakeGitHub()
-        api.runs[0]["head_sha"] = "c" * 40
-        self.assertEqual(q.run(api, execute=True)[0]["status"],
-                         "missing_exact_sha_ci")
-        api = FakeGitHub()
-        api.runs[0]["event"] = "schedule"
-        self.assertEqual(q.run(api, execute=True)[0]["status"],
-                         "missing_exact_sha_ci")
+                         "review_only_paths")
+        self.assertFalse(api.merge_calls)
 
-    def test_base_movement_or_conflicts_block(self):
+    def test_stale_approval_sha_is_not_accepted(self):
         api = FakeGitHub()
+        api.comments[0]["body"] = q.MARKER + ("1" * 40)
+        self.assertEqual(q.run(api, execute=True)[0]["status"],
+                         "unapproved_or_incomplete")
+        self.assertFalse(api.merge_calls)
+
+    def test_approval_line_needs_exact_boundary(self):
+        api = FakeGitHub()
+        api.comments[0]["body"] = "PREPEND" + q.MARKER + SHA
+        self.assertEqual(q.run(api, execute=True)[0]["status"],
+                         "unapproved_or_incomplete")
+
+    def test_manual_source_divergence_is_blocked(self):
+        api = FakeGitHub()
+        api.compare["status"] = "diverged"
+        api.compare["behind_by"] = 3
+        self.assertEqual(q.run(api, execute=True)[0]["status"],
+                         "non_fast_forward")
+
+    def test_dirty_conflict_is_blocked_even_for_additive(self):
+        api = FakeGitHub()
+        additive(api)
         api.pr["mergeable_state"] = "dirty"
         self.assertEqual(q.run(api, execute=True)[0]["status"],
                          "stale_or_conflict")
 
-    def test_only_one_candidate_integrated_per_cycle(self):
+    def test_missing_base_sha_or_changed_head_blocks(self):
+        api = FakeGitHub()
+        api.pr["base"]["ref"] = "jepa/other-branch"
+        self.assertEqual(q.run(api, execute=True)[0]["status"], "scope")
+        api = FakeGitHub()
+        api.pr["head"]["sha"] = "z" * 40
+        self.assertEqual(q.run(api, execute=True)[0]["status"], "scope")
+
+    def test_only_one_merge_per_cycle(self):
         api = FakeGitHub()
         api.issues = [{"number": 1, "pull_request": {}},
                       {"number": 2, "pull_request": {}}]
-        result = q.run(api, execute=True)
-        self.assertEqual(result, [{"pr": 1, "status": "merged",
-                                   "release_commit": "c" * 40}])
+        out = q.run(api, execute=True)
         self.assertEqual(len(api.merge_calls), 1)
+        self.assertEqual(out[0]["status"], "merged")
 
-    def test_approval_marker_has_exact_line_boundary(self):
+    def test_no_missing_release_gate_never_re_dispatches(self):
         api = FakeGitHub()
-        api.comments[0]["body"] = "UNTRUSTED:" + q.MARKER + SHA
-        self.assertEqual(q.run(api, execute=True)[0]["status"],
-                         "unapproved_sha")
+        api.issues = []
+        api.prs = []
+        self.assertEqual(q.run(api, execute=True), [])
+        self.assertEqual(api.dispatches, [])
+
+    def test_recovery_dispatches_only_missing_exact_release_gates(self):
+        api = FakeGitHub()
+        api.issues = []
+        api.prs = []
+        api.release_runs = api.release_runs[:1]
+        out = q.run(api, execute=True)
+        self.assertEqual(out[-1]["release_ci"]["status"],
+                         "DISPATCHED_MISSING_RELEASE_CI")
+        self.assertEqual(len(api.dispatches), 2)
+
+    def test_failed_release_gate_never_retries_blindly(self):
+        api = FakeGitHub()
+        api.issues = []
+        api.prs = []
+        api.release_runs[0]["conclusion"] = "failure"
+        out = q.run(api, execute=True)
+        self.assertEqual(out[-1]["release_ci"]["status"], "FAILED_RELEASE_CI")
+        self.assertEqual(api.dispatches, [])
+
+    def test_release_tip_changed_cannot_dispatch_stale_merge(self):
+        api = FakeGitHub()
+        api.release_sha = "e" * 40
+        with self.assertRaises(q.QueueError):
+            q.run(api, execute=True)
+        self.assertEqual(len(api.merge_calls), 1)
+        self.assertEqual(api.dispatches, [])
 
 
 if __name__ == "__main__":
