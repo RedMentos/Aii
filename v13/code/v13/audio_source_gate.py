@@ -16,6 +16,13 @@ def checked_audio_source_view(percept_packet, read_source):
         raise TypeError('read_source callback required')
     if not isinstance(percept_packet, dict) or percept_packet.get('modality') != 'audio':
         raise ValueError('not an audio PerceptPacket')
+    # Packet-level claims are untrusted too: segment checks alone are not enough.
+    # A5 acoustic observations never confer action, learning or semantic authority.
+    for key in ('action_authority', 'learning_authority', 'semantic_truth_authority'):
+        if percept_packet.get(key) is True:
+            raise PermissionError('forged packet-level authority')
+    if percept_packet.get('authority') not in (None, 'SHADOW_ONLY'):
+        raise PermissionError('unexpected packet-level authority')
     ref = percept_packet.get('source_ref')
     if not isinstance(ref, dict):
         raise ValueError('missing source reference')
