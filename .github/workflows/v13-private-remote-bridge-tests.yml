@@ -1,0 +1,31 @@
+name: v13-private-remote-bridge-tests
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: ['gpt6/v13-private-remote-bridge-20261111']
+    paths:
+      - 'v13/code/v13/remote_maintenance_bridge.py'
+      - 'v13/code/tests/test_remote_maintenance_bridge.py'
+      - '.github/workflows/v13-private-remote-bridge-tests.yml'
+  push:
+    # This default-branch registration only enables workflow_dispatch.
+    # The real phone release keeps its own branch-push gate.
+    branches: ['gpt6/v13-private-remote-bridge-20261111']
+    # The phone gate needs this security check on every candidate SHA, even
+    # when its source change is outside the bridge file itself.
+jobs:
+  offline-bridge-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest cryptography
+      - name: Test private bridge without real tokens or network
+        run: |
+          cd v13/code
+          python -m pytest -q tests/test_remote_maintenance_bridge.py tests/test_termux_patch_staging.py
+      - name: Syntax compile
+        run: python -m py_compile v13/code/v13/remote_maintenance_bridge.py
