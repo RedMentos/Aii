@@ -19,9 +19,9 @@ def checked_audio_source_view(percept_packet, read_source):
     # Packet-level claims are untrusted too: segment checks alone are not enough.
     # A5 acoustic observations never confer action, learning or semantic authority.
     for key in ('action_authority', 'learning_authority', 'semantic_truth_authority'):
-        if percept_packet.get(key) is True:
+        if key in percept_packet and percept_packet[key] is not False:
             raise PermissionError('forged packet-level authority')
-    if percept_packet.get('authority') not in (None, 'SHADOW_ONLY'):
+    if 'authority' in percept_packet and percept_packet['authority'] != 'SHADOW_ONLY':
         raise PermissionError('unexpected packet-level authority')
     ref = percept_packet.get('source_ref')
     if not isinstance(ref, dict):
