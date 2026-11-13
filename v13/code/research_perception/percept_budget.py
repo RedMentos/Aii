@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Sequence
 import re
 
-_SAFE_LABEL = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}\\Z")
+_SAFE_LABEL = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}\Z")
 
 @dataclass(frozen=True)
 class Evidence:
