@@ -7,7 +7,9 @@ on:
       - 'v13/code/tests/test_remote_maintenance_bridge.py'
       - '.github/workflows/v13-private-remote-bridge-tests.yml'
   push:
-    branches-ignore: [main]
+    # This default-branch registration only enables workflow_dispatch.
+    # The real phone release keeps its own branch-push gate.
+    branches: ['gpt6/v13-private-remote-bridge-20261111']
     # The phone gate needs this security check on every candidate SHA, even
     # when its source change is outside the bridge file itself.
 jobs:
