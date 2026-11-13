@@ -260,7 +260,7 @@ class QueueTests(unittest.TestCase):
             def __exit__(self, *args): return False
             def read(self): return b'{"ok":true}'
         rate = HTTPError("https://api.github.com", 429, "rate", {"Retry-After":"0"}, None)
-        with mock.patch.object(q, "urlopen", side_effect=[rate, Response()]) as getter, \\
+        with mock.patch.object(q, "urlopen", side_effect=[rate, Response()]) as getter, \
              mock.patch.object(q.time, "sleep") as sleeper:
             result = q.GitHub("private-test-token").call(
                 "GET", f"/repos/{q.REPO}/pulls/1")
