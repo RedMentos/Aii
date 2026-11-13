@@ -18,6 +18,9 @@ on:
       - 'v13/code/v13/pipeline_agent.py'
       - 'v13/code/v13/lifecycle.py'
       - 'v13/code/v13/chat_service.py'
+      - 'v13/code/v13/lab_age.py'
+      - 'v13/code/v13/effort.py'
+      - 'v13/code/tests/test_lab_age.py'
       - 'v13/code/tests/test_chat_service.py'
       - 'v13/code/tests/test_lifecycle.py'
       - 'v13/code/tests/test_pipeline_agent.py'
@@ -75,6 +78,9 @@ jobs:
           python -m py_compile v13/managed_console.py tests/test_managed_console_dashboard.py
           python -m unittest discover -s tests -p 'test_managed_console_dashboard.py' -v
           python -m unittest discover -s tests -p 'test_mobile_dashboard.py' -v
+          python -m py_compile v13/lab_age.py v13/effort.py tests/test_lab_age.py
+          python -m unittest discover -s tests -p 'test_lab_age.py' -v
+          python -m unittest discover -s tests -p 'test_effort.py' -v
       - name: Validate actual runtime deployment and explicit diagnostic upload
         run: |
           python -m py_compile v13/runtime_deploy.py v13/diagnostic_push.py tests/test_runtime_deploy.py tests/test_diagnostic_push.py
