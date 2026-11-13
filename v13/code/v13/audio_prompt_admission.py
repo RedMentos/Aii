@@ -27,6 +27,8 @@ def admit_audio_shadow(observation, *, max_utf8_bytes=256):
     windows = observation.get("windows")
     if not isinstance(windows, list) or not 1 <= len(windows) <= 64:
         raise ValueError("invalid acoustic window count")
+    previous_end = None
+    any_provisional = False
     for w in windows:
         if not isinstance(w, dict) or any(type(w.get(k)) is not int for k in ("start_ms", "end_ms")):
             raise ValueError("invalid window")
@@ -34,10 +36,16 @@ def admit_audio_shadow(observation, *, max_utf8_bytes=256):
             raise ValueError("invalid time range")
         if w.get("finality") not in ("FINAL", "PROVISIONAL"):
             raise ValueError("invalid window finality")
+        if previous_end is not None and w["start_ms"] < previous_end:
+            raise ValueError("overlapping or unordered audio windows")
+        previous_end = w["end_ms"]
+        any_provisional |= w["finality"] == "PROVISIONAL"
         for k in ("rms", "zcr"):
             v = w.get(k)
             if type(v) not in (int, float) or not math.isfinite(v) or not 0 <= v <= 1:
                 raise ValueError("invalid acoustic feature")
+    if any_provisional and observation["finality"] == "FINAL":
+        raise ValueError("provisional audio cannot claim finality")
     base = {"kind": "A5_AUDIO_SHADOW", "source_sha256": sha,
             "finality": observation["finality"], "meaning": "uninterpreted_acoustics"}
     full = dict(base, windows=[
