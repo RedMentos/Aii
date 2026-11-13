@@ -1,29 +1,23 @@
-# V13 reviewed release queue
+# V13 continuously reviewed phone release queue
 
-The default-branch GitHub Actions workflow `.github/workflows/v13-reviewed-release-queue.yml` runs twice per hour and can be triggered manually. It is independent of the five hourly ChatGPT coding agents. **It does not pick features or interpret private diagnostics.**
+The default-branch workflow `.github/workflows/v13-reviewed-release-queue.yml` runs twice per hour. Five hourly specialist agents create code; this queue now evaluates their PRs rather than staying silent when no manual label was set.
 
-## Who does what
+## Two independent release lanes
 
-The four specialist agents implement and test on independent PR branches. **Boss & Integration** reviews actual code differences, reproductions, dependencies, safety boundaries and relevant green CI before nominating compatible, runnable changes. The phone's fixed source channel is `gpt6/v13-private-remote-bridge-20261111`; Android only gets code after release-branch exact-commit CI plus the existing local CI-gated update/deploy path.
+**Strictly additive research modules:** owner-authored PRs from `RedMentos/Aii` targeting the fixed phone branch may be automatically selected even if marked Draft or based on an older release commit, *only* when all affected files are newly added inert modules under `v13/code/v13/`, matching new `test_*.py` files, or documentation in `v13/code/docs/handoffs/`. At most 8 modules, 12 test files, 20 files total and 650 changed lines. No modified runtime modules, installer, permission system, CI, model specs, model weights, tools, network capability, deletion, rename or content from a fork is admitted. Actual GitHub mergeability and exact PR head remain mandatory.
 
-For a **low-authority candidate only**, Boss must:
-1. Bring the PR onto current phone-release ancestry: PR base exactly `gpt6/v13-private-remote-bridge-20261111`, head on `RedMentos/Aii`, not draft and mergeable. Fix stacked dependencies and conflicts first.
-2. Require successful, exact-head GitHub Actions for `V13 staged context and integrated regression` plus `v13-private-remote-bridge-tests`. For phone-related paths also require `V13 private owner-read Termux bootstrap`. Failed, missing or stale checks block.
-3. Review path scope and side effects, a focused reproduction, real test results and a rollback path. On the PR post a **standalone line** as the repository owner exactly:
-   `V13-RELEASE-APPROVED SHA=<the complete 40-character current PR head SHA>`
-   Include a concise factual test rationale below it. Then add the `v13-release-ready` label. A subsequent commit requires a new SHA approval, even if the label remains.
-4. The queue checks SHA/owner/ancestry/changed paths/CI/mergeability again and merges **at most one** safe PR per run. The resulting release commit must pass its own **push** CI before the phone updater can activate it.
+The read-only GitHub workflow `V13 safe additive candidate tests` compiles all new modules and actually **runs the newly supplied tests** on the exact candidate head. The separate existing `V13 staged context and integrated regression` and `v13-private-remote-bridge-tests` must also be green at that head. No arbitrary PR content is used as integration instructions. A candidate without its test run stays in the queue.
 
-The runner creates its candidate label on its first scheduled/manual execution. It never merges without both a labeled PR and a SHA-bound owner comment.
+**Existing executable runtime, permission or update code:** requires deliberate Boss review, focused tests, manual release integration and exact phone CI. The user wants automatic integration, not hidden removal of critical safety guarantees. A labelled PR with an owner-authored standalone `V13-RELEASE-APPROVED SHA=<exact 40-hex head>` and green CI can still enter the older reviewed queue, but the scheduler never grants rights to itself.
 
-## Not eligible for unattended merge
+## GitHub merge → exact release CI → Redmi
 
-The automation refuses workflow files, Canon/model metadata, **modifications to any existing runtime Python module**, installer scripts/model specs, binary weights, deleted/renamed files, untrusted forks, large change sets and stale/diverged PR ancestry. Its automatic code scope is additive low-authority modules plus bounded tests/docs; existing runtime behavior changes must be integrated directly by Boss with focused regression proof. These require direct Boss review, integration with regression tests and exact-release-push CI instead; they are not forbidden from development.
+GitHub's own `GITHUB_TOKEN` merge may not fire normal push workflows. The queue therefore launches `workflow_dispatch` for the three trusted release checks against the fixed release branch after every merge. All three workflow files are registered on default branch, and the release branch contains the executable versions. The queue verifies the merge SHA is the current release head before dispatching. Subsequent hourly checks repair **missing** CI runs; an actual failed test is never falsely green or retried blindly. At most **one** PR is merged per queue run so remaining candidates see the updated release head.
 
-Never promote an AGI/JEPA weight-learning experiment, model replacement, new OS capability, network permission or remote shell simply because an automated merge succeeded. Keep the existing local device permission controls, rollback and failure gates. The queue does not poll the private relay, export user data, read Termux files or command Android.
+The phone update agent continues to check exact-commit, successful CI on the release SHA and then deploys the immutable runtime source through `runtime_deploy.py` and refreshes the dashboard. Device opt-in, maintenance locks, process lifecycle, user stop state and rollback are independent: this GitHub workflow cannot toggle them. `UP_TO_DATE` means installed release matches the release branch, *not* that all open development PRs are integrated.
 
-## Evidence-driven continuous development
+## Evidence and ownership
 
-Each hourly agent may inspect **authorized** `RedMentos/Aiiii` owner-relay diagnostics and user-submitted private `V13PHONE` reports; only fetch bounded chat log pages after the user's separate on-device log-sharing opt-in. Summarize private evidence into technical causes and counters without copying raw contents, identifiers or credentials into public GitHub. Distinguish `CI_GREEN`, `RELEASE_MERGED`, `PHONE_UPDATED`, `RUNTIME_RESTARTED` and `NATIVE_UTILITY_VERIFIED`: they are not interchangeable.
+Treat status as five different facts: `CODE_WRITTEN`, `PR_CI_GREEN`, `RELEASE_MERGED`, `PHONE_UPDATED`, `NATIVE_UTILITY_VERIFIED`. The first does not imply any later state. Each agent should inspect relevant authorized private technical diagnostics when available, publish tests and a release-compatible PR, and help resolve its own blocked CI. Boss checks runtime code and integrates compatible changes. Never publish private chat, device logs, GGUF weights, or credentials in public issues or CI output.
 
-The goal is a measured loop — real issue -> baseline -> patch -> regression -> review -> release -> Redmi verification -> next improvement — rather than increasing a count of open PRs.
+This automation alone does not implement internal B1/B2 conversation, on-device JEPA training, learned sparse experts or age promotion. Those use separate scheduler/runtime implementations and require real Redmi tests.
