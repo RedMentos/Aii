@@ -60,6 +60,6 @@ def test_failed_first_body_still_attempts_second_and_answers(schedule, first, se
             assert roles[:2] == [first, second], roles
             assert calls[0][1] < calls[1][1], "first body must not consume second deadline"
             assert answer["status"] == "FINAL"
-            assert "Visible response." in answer["content"]
+            assert "Visible response." in answer["text"]
         finally:
             runtime.close()
