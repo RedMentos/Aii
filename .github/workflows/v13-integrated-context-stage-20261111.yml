@@ -5,6 +5,7 @@ on:
     # documentation-only checkpoints and after the draft PR is closed.
     branches: ['codex/v13-integrated-continuation-20261110', 'gpt6/v13-private-remote-bridge-20261111']
   pull_request:
+    branches: ['gpt6/v13-private-remote-bridge-20261111']
     paths:
       - '.github/workflows/v13-integrated-context-stage-20261111.yml'
       - 'v13/code/v13/**'
