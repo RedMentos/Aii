@@ -79,6 +79,48 @@ class PhoneOfferAudit(unittest.TestCase):
         self.assertNotIn("PRIVATE",json.dumps(result))
         self.assertNotIn(event,json.dumps(result))
 
+    def test_prompt_admission_reports_only_bounded_allowlisted_facts(self):
+        event = "redmi_native_failure"
+        self.message(event, status="DEADLINE")
+        admission = {
+            "revision":"v13.native-prompt-admission/1",
+            "status":"ADMITTED",
+            "original_prompt_tokens":617,
+            "prompt_tokens":235,
+            "target_tokens":260,
+            "removed_layers":["C3_LAYER_TASK_CONTEXT","PRIVATE SOURCE X",
+                              "OLD_NATIVE_HISTORY"],
+            "source_text_rewritten":False,
+        }
+        metadata=json.dumps({
+            "runner":{"role":"C3_LANGUAGE","status":"DEADLINE",
+                      "prompt_tokens":235,"generated_tokens":0,
+                      "prompt_admission":admission},
+            "private_user_prompt":"PRIVATE SOURCE X",
+        })
+        self.db.execute("UPDATE messages SET metadata=? WHERE event_id=?",
+                        (metadata,event))
+        self.packet(event,"B1_DETAIL","pkt_q","QueryPacket")
+        self.log(event,"body_offer_attempt","B1_DETAIL",status="DEADLINE",
+                 runner={"prompt_tokens":1020,"generated_tokens":0,
+                         "prompt_admission":dict(admission,
+                           removed_layers=["BODY_SOURCE_ADDRESS_METADATA",
+                                           "PRIVATE FILE PATH"] )})
+        result=audit(self.db,1)
+        row=result["turns"][0]
+        c3=row["c3_prompt_admission"]
+        self.assertTrue(c3["revision_verified"])
+        self.assertEqual((c3["original_prompt_tokens"],c3["prompt_tokens"],
+                          c3["target_tokens"]),(617,235,260))
+        self.assertEqual(c3["omitted"],
+                         ["C3_LAYER_TASK_CONTEXT","OLD_NATIVE_HISTORY"])
+        self.assertFalse(c3["source_text_rewritten"])
+        self.assertEqual(
+            row["roles"]["B1_DETAIL"]["last_native"]["prompt_admission"]["omitted"],
+            ["BODY_SOURCE_ADDRESS_METADATA"])
+        self.assertNotIn("PRIVATE",json.dumps(result))
+        self.assertNotIn(event,json.dumps(result))
+
     def test_native_final_without_valid_packet_is_not_a_delivered_offer(self):
         self.message("e2")
         self.log("e2","body_offer_attempt","B1_DETAIL",status="FINAL",
