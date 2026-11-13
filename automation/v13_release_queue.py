@@ -455,6 +455,10 @@ if __name__ == "__main__":
     try:
         main()
     except (QueueError, OSError, ValueError) as error:
-        print(json.dumps({"status": "BLOCKED",
-                          "error_code": type(error).__name__}))
+        # Only a fixed, bounded diagnostic code is safe in public Actions.
+        # Never log GitHub response bodies, request URLs, secrets or PR text.
+        reason = str(error)
+        if not re.fullmatch(r"GitHub_HTTP_[0-9]{3}|GitHub_network_unavailable", reason):
+            reason = type(error).__name__
+        print(json.dumps({"status": "BLOCKED", "error_code": reason}))
         sys.exit(2)
