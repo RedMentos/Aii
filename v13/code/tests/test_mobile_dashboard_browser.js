@@ -17,6 +17,7 @@ const elem = () => ({
   disabled: false,
   classList: { add() {}, remove() {}, toggle() {} },
   addEventListener(name, callback) { this.events ||= {}; this.events[name] = callback; },
+  replaceChildren(...items) { this.children = items; },
   querySelector() { return elem(); },
 });
 const output = elem();
@@ -32,7 +33,7 @@ const map = new Map([
   ['chat-running', elem()], ['ai-service-state', elem()], ['update-progress', elem()],
   ['update-result', elem()], ['pipeline-result', elem()], ['diagnostic-result', elem()], ['notice', notice],
   ['chat-compose', form], ['chat-input', chat],
-  ['copy-chat', elem()]
+  ['copy-chat', elem()], ['live-native-roles', elem()]
 ]);
 const document = {
   hidden: true,
@@ -40,7 +41,8 @@ const document = {
     if (!map.has(id)) throw new Error('Unknown DOM element: ' + id);
     return map.get(id);
   },
-  querySelectorAll(selector) { return selector === 'form' ? [form] : []; }
+  querySelectorAll(selector) { return selector === 'form' ? [form] : []; },
+  createElement() { return elem(); }
 };
 class FakeFormData {
   constructor() {
@@ -50,6 +52,7 @@ class FakeFormData {
   [Symbol.iterator]() { return this.rows[Symbol.iterator](); }
 }
 const fetchCalls = [];
+let refreshCallback = null;
 const context = {
   document,
   window: { location: { reload() {} } },
@@ -57,7 +60,7 @@ const context = {
   navigator: { clipboard: null },
   FormData: FakeFormData,
   URLSearchParams,
-  setInterval() {},
+  setInterval(fn) { refreshCallback = fn; },
   setTimeout() { return 1; },
   clearTimeout() {},
   async fetch(url, options) {
@@ -86,5 +89,26 @@ assert.equal(typeof listeners.submit, 'function', 'form submit callback register
   assert.equal(button.disabled, false, 'button becomes usable again');
   assert.match(notice.textContent, /Zuerst V13 Chat starten/, 'human-readable server error');
   assert.doesNotMatch(notice.textContent, /Unexpected end of JSON input/);
-  console.log('PASS: real dashboard JS POST uses urlencoded fields + readable errors');
+  assert.equal(typeof refreshCallback, 'function');
+  // The real /state polling path must update four live native organs, not
+  // just one static snapshot generated when the page was first rendered.
+  document.hidden = false;
+  context.fetch = async url => {
+    assert.equal(url, '/t/test/state');
+    return { ok: true, async json() { return {
+      native_residency: { availability: 'AVAILABLE', readability: 'OBSERVED',
+        roles: { B1_DETAIL: {processes: 1, pss_mib: 750.2},
+          B2_GIST: {processes: 1, pss_mib: 702.1},
+          C2_CONTROL: {processes: 1, pss_mib: 96.0},
+          C3_LANGUAGE: {processes: 1, pss_mib: 224.1} } }
+    }; } };
+  };
+  await refreshCallback();
+  const nativeRoles = map.get('live-native-roles').children || [];
+  assert.equal(nativeRoles.length, 4);
+  assert.deepEqual(nativeRoles.map(x => x.textContent.split(':')[0]),
+    ['B1 Detail','B2 Gist','C2 JEF','C3 Sprache']);
+  assert.match(nativeRoles[0].textContent, /750.2 MiB PSS/);
+  assert.match(nativeRoles[2].textContent, /C2 JEF: 1 laufend/);
+  console.log('PASS: real dashboard JS POST + four native model live polling');
 })().catch(err => { console.error(err); process.exitCode = 1; });
