@@ -76,6 +76,60 @@ class NativePrefillAdmissionTests(unittest.TestCase):
         self.assertEqual(r._prompt_admission["status"],"ADMITTED")
         self.assertEqual(model_view["source_segments"][0]["source_ref"]["sha256"],"z"*64)
 
+    def test_b2_gist_source_exact_and_shared_stream_dedup_keeps_b3(self):
+        exact = "Earlier source sets a firm budget of 120 euros. " * 7
+        shared = {
+            "representation":"SYMBOLIC_MESSAGE_SPACE_NOT_NATIVE_JEPA",
+            "messages":[
+                {"from":"STREAM_A","authority":"SOURCE_POINTER",
+                 "semantic_cue_not_fact":exact[:110],
+                 "exact_sources":[{"exact_source_text":exact[:150],
+                                   "verification":"RECHECKED_EXACT_BYTES"}]},
+                {"from":"B3_CALLOSUM","authority":"CONTROL_ONLY",
+                 "semantic_cue_not_fact":"Peer requests a contradiction check.",
+                 "exact_sources":[]},
+            ]}
+        original = {"gist_slots":[{"slot":0,"text":exact,"scale":"fine",
+                                   "source_ref":{"source_id":"test-source-23",
+                                                 "sha256":"x"*64}}],
+                    "peer_message":{"content":"Do not remove this message."},
+                    "quote_choices":[{"id":1,"text":exact[:45]}],
+                    "jef_query":{"question":"Which budget applies?"},
+                    "enlightened_space":shared}
+        messages=[{"role":"system","content":"You are B2. Report exact rules."},
+                  {"role":"user","content":json.dumps(original)}]
+        reduced,reason=admission.reduce_once(messages,"B2_GIST",dict(DEFAULTS))
+        self.assertEqual(reason,"BODY_SOURCE_ADDRESS_METADATA")
+        self.assertEqual(json.loads(reduced[1]["content"])["gist_slots"][0]["text"],exact)
+        next_messages,reason=admission.reduce_once(reduced,"B2_GIST",dict(DEFAULTS))
+        self.assertEqual(reason,"BODY_DUPLICATE_STREAM_SOURCE")
+        out=json.loads(next_messages[1]["content"])
+        self.assertEqual(out["gist_slots"][0]["text"],exact)
+        self.assertEqual(out["quote_choices"],original["quote_choices"])
+        self.assertEqual(out["jef_query"],original["jef_query"])
+        self.assertEqual(out["peer_message"],original["peer_message"])
+        self.assertEqual([m["from"] for m in out["enlightened_space"]["messages"]],
+                         ["B3_CALLOSUM"])
+        self.assertEqual(len(original["enlightened_space"]["messages"]),2)
+        self.assertEqual(len(json.loads(messages[1]["content"])["enlightened_space"]["messages"]),2)
+
+    def test_shared_space_does_not_drop_novel_or_unverified_source(self):
+        exact="Source only says product A costs 120 euros."
+        original={
+            "source_segments":[{"text":exact}],
+            "peer_message":{"content":"Please cross-check"},
+            "enlightened_space":{"messages":[
+                {"from":"STREAM_A","authority":"SOURCE_POINTER",
+                 "exact_sources":[{"exact_source_text":"Other unrelated verified source"}]},
+                {"from":"B1_DETAIL","authority":"MODEL_HYPOTHESIS",
+                 "exact_sources":[{"exact_source_text":exact[:20]}]},
+            ]}
+        }
+        messages=[{"role":"system","content":"B2"},
+                  {"role":"user","content":json.dumps(original)}]
+        result=admission.reduce_once(messages,"B2_GIST",dict(DEFAULTS))
+        self.assertIsNone(result,"Unknown other-source and B1 hypotheses must be preserved")
+
     def test_uncompressible_protected_input_is_not_silently_truncated(self):
         r=fake_runner()
         exact="CODE-AND-USER-TEXT-"*180
