@@ -328,10 +328,24 @@ class Cognition:
             extra,jbc_fields=jef_controller(self.r).bridge_view(role,e,version)
             if extra:query['jef_broadcast']=extra
         except Exception:jbc_fields=[]
+        # Native B1/B2 receive *actual* shared organ messages before generation.
+        enlightened_refs=[]
+        try:
+            shared=self.r.space().consume(e,role,text,max_messages=2,max_chars=280)
+            if shared['messages']:
+                query['enlightened_space']={
+                    'representation':shared['representation'],
+                    'authority':'MIXED_SOURCE_AND_CONTROL_NOT_FACT',
+                    'messages':shared['messages']}
+                enlightened_refs=shared['source_refs']
+        except (ValueError,RuntimeError,KeyError,OSError,TypeError) as exc:
+            self.s.log('enlightened_space_unavailable',e['event_id'],
+                       {'stage':'body_query','error':type(exc).__name__})
         query_packet=packet('QueryPacket','C1_EXEC',e['event_id'],e['brain_generation_id'],[e['source_ref']],target_role=role,goal=text,source_refs=[e['source_ref']],broadcast_packet_id=broadcast['packet_id'] if broadcast else None,peer_message_packet_id=peer_id,source_view_width_chars=width,based_on_state_version=version,probe_only=version==0)
         query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW')
         query_packet.update(compute_deadline_monotonic_ns=int(deadline*1e9),offer_valid_until_monotonic_ns=int(valid_until*1e9))
-        query_packet['provenance'] += query_packet['context_source_refs']+bv_refs
+        query_packet['enlightened_source_refs']=enlightened_refs
+        query_packet['provenance'] += query_packet['context_source_refs']+bv_refs+enlightened_refs
         if bv:query_packet['bodyview']=bv
         query_packet['jbc_fields']=jbc_fields
         if focus:query_packet['jef_query']=focus
@@ -351,6 +365,7 @@ class Cognition:
         check(self.r.cancel_event,deadline)
         if set(obj)!=set(OFFER_SCHEMA['required']) or not isinstance(obj['needs_reentry'],bool) or not isinstance(obj['quotes'],list) or not all(isinstance(obj[k],str) for k in ['summary','uncertainty']):raise ValueError('Offer-Schema ungültig')
         refs=[];rejected=0;sources=[(text,e['source_ref'])]+[(x['native_context']['exact_source_excerpt'],x['source_ref']) for x in context]
+        sources += [(self.s.read_source(ref),ref) for ref in enlightened_refs]
         wide=self.r.cfg.get('offer_quote_context_chars',0);selected=None
         if select!='off':selected={'mode':select,'choices':len(choices),'raw_quotes':list(obj['quotes'][:3]),'picked':None,'anchored':0}
         if choices:  # ids -> exact sentence text; an id outside the list is dropped
@@ -373,10 +388,21 @@ class Cognition:
             source,base=match;start=base['char_start']+source.index(quote);ref=base|{'char_start':start,'char_end':start+len(quote)};self.s.read_source(ref);refs.append(ref)
         p=packet('OfferPacket',role,e['event_id'],e['brain_generation_id'],[e['source_ref']],role=role,based_on_state_version=version,deadline_monotonic_ns=int(valid_until*1e9),compute_deadline_monotonic_ns=int(deadline*1e9),evidence_refs=refs,offer=obj,confidence=0.,confidence_status='UNCALIBRATED',rejected_quotes=rejected,model_revision=self.r.models.revision(role),native_metrics=runner.last_metrics,query_packet_id=query_packet['packet_id'],broadcast_packet_id=query_packet['broadcast_packet_id'],peer_message_packet_id=peer_id,source_view_width_chars=width)
         if wide:p['quote_context_chars']=wide  # analyst_context accepts the widened spans only for this offer
-        p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'])
+        p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'],
+                 enlightened_source_refs=enlightened_refs)
         if selected:p['b2_quote_select']=selected
-        p['provenance'] += query_packet['context_source_refs']
+        p['provenance'] += query_packet['context_source_refs']+enlightened_refs
         self.s.add_packet('OfferPacket',p);self.retain_body_offer(p)
+        # Model summaries are never granted the exact source's factual status.
+        try:
+            self.r.space().publish(
+                e,role,'SEMANTIC',
+                summary=obj['summary'] if refs else 'Unquoted body hypothesis, no source authority',
+                authority='MODEL_HYPOTHESIS' if refs else 'CONTROL_ONLY',
+                source_refs=refs[:3],packet_id=p['packet_id'])
+        except (ValueError,OSError,RuntimeError,KeyError,TypeError) as exc:
+            self.s.log('enlightened_space_unavailable',e['event_id'],
+                       {'stage':'body_offer','error':type(exc).__name__})
         # An apparently FINAL native JSON decode is not the same thing as a
         # source-validated, consumer-visible cognitive contribution. Record
         # that separate boundary only after the OfferPacket and body state
