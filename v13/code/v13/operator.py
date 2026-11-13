@@ -57,7 +57,6 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :neuromod [status|path <Name>|sleep|clear-veto <Name>] (WP-N10 Eligibility, Modulator-Bus, Plastizitäts-Gate)
 :authority [status|review|promote <Kopf>|demote <Kopf>|<Kopf>] / :objectives (WP-T10 Beförderung gelernter Köpfe Schatten → Kandidat → aktiv, IH-H25 Lernziele)
 :workspace [status|shadow|active] (WP-U8 Workspace lernt Haltedauer je Quellenart; aktiv nur durch Nutzer)
-:enlightened [status|view <Thema>] (gemeinsamer Gehirnraum für ALLE Organe: A/Streams, B1/B2/B3, Memory, World, Self, JEF/C2/C3/C4/C5, Inquisition und Feedback; keine trainierten JEPA-Latents behauptet)
 :anchor [status|shadow|active] (WP-U5 Anker-Stärke beim Gewichts-Training nach Neuheit/Stabilität; aktiv nur durch Nutzer)
 :archive [status|run|restore <Quelle>] (WP-U4 kalte Quellen verlustfrei komprimiert)
 :homeostasis [status|run|shadow|active] (WP-U2 Homöostase: Drift-/Sättigungs-Gate + langsame Pfad-Gains; aktiv nur durch Nutzer)
@@ -131,19 +130,6 @@ class Operator:
         if cmd=='workspace' and (not args or args[0] in ('status','shadow','active')):
             from .workspace_learn import operator_command
             return operator_command(r,args)
-        if cmd=='enlightened':
-            from .enlightened_space import EnlightenedSpace
-            space=EnlightenedSpace(s,r.session)
-            if not args or args==['status']:
-                return dumps(space.report(s.generation_id))
-            if args[0]=='view' and 1<len(args)<=32:
-                question=' '.join(args[1:])
-                if len(question.encode('utf-8'))>500:
-                    raise ValueError('Shared-Space Abfrage zu lang')
-                return dumps(space.consume({'event_id':'operator_shared_view',
-                                           'brain_generation_id':s.generation_id},
-                                          'C4_FOCAL',question,max_messages=5,max_chars=700))
-            raise ValueError(':enlightened [status|view <Thema>]')
         if cmd=='anchor':
             from .anchor import operator_command
             return operator_command(r,args)
