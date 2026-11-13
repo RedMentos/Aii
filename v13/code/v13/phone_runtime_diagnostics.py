@@ -40,6 +40,13 @@ RUNNER_BOUNDS = {
     "requested_tokens": (0, 10_000_000), "input_message_count": (0, 65536),
 }
 RUNNER_STAGES = ("load_s", "template_s", "prefill_to_first_token_s", "stream_s")
+ADMISSION_STATES = frozenset({"ADMITTED", "PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET"})
+ADMISSION_OMISSIONS = frozenset({
+    "C3_LAYER_TASK_CONTEXT", "C3_LAYER_DIGEST", "C3_LAYER_USER_MODEL",
+    "OLD_NATIVE_HISTORY", "BODY_SOURCE_ADDRESS_METADATA",
+    "BODY_DUPLICATE_EXECUTIVE_SOURCE_REFS", "BODY_NON_SOURCE_STATE_DETAIL",
+    "BODY_DUPLICATE_EXACT_DETAIL_WINDOWS",
+})
 # No text, session/event identifiers or source references are selected. The
 # substr cap applies before metadata crosses the SQLite/Python boundary.
 LAST_ASSISTANT_SQL = """SELECT substr(CAST(status AS BLOB),1,33),
@@ -96,6 +103,23 @@ def _project(status, metadata):
             runner["status"] = source["status"]
         runner["stage_durations_s"] = _numbers(source.get("stage_durations_s"),
                                                {name: (0, 86400) for name in RUNNER_STAGES})
+        admission=source.get("prompt_admission")
+        if isinstance(admission, dict) and admission.get("revision") == "v13.native-prompt-admission/1":
+            native={"revision":"v13.native-prompt-admission/1"}
+            if admission.get("status") in ADMISSION_STATES:
+                native["status"]=admission["status"]
+            native.update(_numbers(admission,{
+                "target_tokens":(0,131072),
+                "original_prompt_tokens":(0,10_000_000),
+                "prompt_tokens":(0,10_000_000),
+            }))
+            raw_omissions=admission.get("removed_layers")
+            if isinstance(raw_omissions,list):
+                native["removed_layers"]=[x for x in raw_omissions[:12]
+                    if type(x) is str and x in ADMISSION_OMISSIONS]
+            if type(admission.get("source_text_rewritten")) is bool:
+                native["source_text_rewritten"]=admission["source_text_rewritten"]
+            runner["prompt_admission"]=native
         out["runner"] = runner
     return out
 

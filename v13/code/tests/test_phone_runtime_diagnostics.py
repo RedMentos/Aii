@@ -79,6 +79,41 @@ class LastTurnTests(unittest.TestCase):
         self.assertNotIn("/private", json.dumps(result))
         self.assertEqual(self.snapshot(), before)
 
+    def test_real_prompt_admission_receipts_are_metadata_only_and_allowlisted(self):
+        connection=self.database()
+        self.insert(connection,status="DEADLINE",metadata={
+            "runner":{"status":"DEADLINE","prompt_tokens":270,"generated_tokens":0,
+                "prompt_admission":{
+                    "revision":"v13.native-prompt-admission/1",
+                    "status":"PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET",
+                    "original_prompt_tokens":617,"prompt_tokens":270,
+                    "target_tokens":260,
+                    "removed_layers":["C3_LAYER_TASK_CONTEXT","PRIVATE_SOURCE_PATH",
+                                      "OLD_NATIVE_HISTORY"]+["OLD_NATIVE_HISTORY"]*100,
+                    "source_text_rewritten":False,
+                    "private_text":"PRIVATE_CHAT_BODY","source_ref":"PRIVATE_REF"}}})
+        connection.close()
+        before=self.snapshot()
+        item=diagnostic.last_turn()
+        admission=item["runner"]["prompt_admission"]
+        self.assertEqual(admission["original_prompt_tokens"],617)
+        self.assertEqual(admission["target_tokens"],260)
+        self.assertEqual(admission["removed_layers"][0],"C3_LAYER_TASK_CONTEXT")
+        self.assertLessEqual(len(admission["removed_layers"]),12)
+        self.assertFalse(admission["source_text_rewritten"])
+        self.assertNotIn("PRIVATE",json.dumps(item))
+        self.assertEqual(self.snapshot(),before)
+
+    def test_unknown_prompt_admission_revision_does_not_cross_private_boundary(self):
+        connection=self.database()
+        self.insert(connection,status="FINAL",metadata={"runner":{
+            "prompt_admission":{"revision":"v13.native-prompt-admission/PRIVATE",
+                "source_text":"PRIVATE_TEXT","removed_layers":["PRIVATE"]}}})
+        connection.close()
+        result=diagnostic.last_turn()
+        self.assertNotIn("prompt_admission",result["runner"])
+        self.assertNotIn("PRIVATE",json.dumps(result))
+
     def test_live_wal_includes_uncheckpointed_latest_turn_without_changing_db_or_wal(self):
         connection = self.database(wal=True)
         try:
