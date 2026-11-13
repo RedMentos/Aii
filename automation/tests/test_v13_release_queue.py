@@ -1,5 +1,6 @@
 """Offline proofs for unattended inert-code merging and exact release CI repair."""
 import copy
+from pathlib import Path
 import unittest
 from unittest import mock
 from urllib.error import HTTPError
@@ -334,6 +335,19 @@ class QueueTests(unittest.TestCase):
             q.run(api, execute=True)
         self.assertEqual(len(api.merge_calls), 1)
         self.assertEqual(api.dispatches, [])
+
+    def test_ci_completion_retriggers_only_trusted_owner_queue(self):
+        workflow = (Path(__file__).resolve().parents[2] /
+                    ".github/workflows/v13-reviewed-release-queue.yml").read_text()
+        self.assertIn("workflow_run:", workflow)
+        self.assertIn("types: [completed]", workflow)
+        self.assertIn("github.event.workflow_run.conclusion == 'success'", workflow)
+        self.assertIn("github.event.workflow_run.head_repository.full_name == 'RedMentos/Aii'", workflow)
+        self.assertIn("github.event.workflow_run.head_branch != 'main'", workflow)
+        self.assertIn("ref: main" if "ref: main" in workflow else
+                      "persist-credentials: false", workflow)
+        self.assertIn("python automation/v13_release_queue.py --execute", workflow)
+        self.assertIn("github.event_name == 'workflow_run'", workflow)
 
 
 if __name__ == "__main__":
