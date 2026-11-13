@@ -44,6 +44,25 @@ class MobileDashboardTests(unittest.TestCase):
         self.assertNotIn("private conversation", json.dumps(result))
         self.assertNotIn("github_pat_", json.dumps(result))
 
+    def test_live_processes_are_distinct_from_smoke_and_never_leak_path(self):
+        status = {"ai_runtime": {"native_residency": {
+            "schema": "v13.phone-native-residency/1", "availability": "AVAILABLE",
+            "readability": "OBSERVED", "roles": {
+                "B1_DETAIL": {"processes": 1, "pss_mib": 755.2},
+                "B2_GIST": {"processes": 1, "pss_mib": 690.1},
+                "C3_LANGUAGE": {"processes": 1, "pss_mib": 224.1}}}}}
+        rendered = d.live_residency_html(status)
+        for role in ("B1 Detail", "B2 Gist", "C3 Sprache"):
+            self.assertIn(role + ": 1 laufend", rendered)
+        self.assertIn("755.2 MiB PSS", rendered)
+        self.assertNotIn("/data/data/", rendered)
+        self.assertIn("nicht messbar", d.live_residency_html({
+            "ai_runtime": {"native_residency": {
+                "availability": "UNAVAILABLE", "reason": "NO_VERIFIED_MODEL_SUPERVISOR"}}}))
+        self.assertIn("noch nicht nachweisbar", d.live_residency_html({
+            "ai_runtime": {"native_residency": {
+                "availability": "AVAILABLE", "readability": "UNKNOWN_NO_GROUP_CHILDREN"}}}))
+
     def test_zip_local_only_with_bound_and_redaction(self):
         (self.private / "v13-ui-last.log").write_text(
             "GitHub token=github_pat_Abcdef\nEmail user@example.com\nHello.\n")
