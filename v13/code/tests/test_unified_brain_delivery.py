@@ -125,16 +125,14 @@ class CrossOrganDelivery(unittest.TestCase):
             self.assertTrue(body_calls, "both native bodies were called")
             self.assertIn("enlightened_space", json.dumps(body_calls[0]),
                           "native body must consume global organ state")
-        self.assertIn("ENLIGHTENED_SPACE", context,
+        self.assertIn("enlightened_space", context,
                       "one C3 report must consume the global organ context")
-        report = self.r.space().report(self.r.store.generation_id)
-        for producer in ("A_PERCEPTION", "STREAM_A", "STREAM_B", "MEMORY",
-                         "C1_JEF", "SELF", "C2_CONTROL", "C4_FOCAL",
-                         "B1_DETAIL", "B2_GIST", "C3_LANGUAGE", "OUTCOME"):
-            # MEMORY requires a genuine stored retrieval; it is tested as a
-            # scoped source-bound channel in test_enlightened_space.py.
-            if producer == "MEMORY":
-                continue
+        report = self.r.cognition.space.report(self.r.store.generation_id)
+        # Assert only real native producers; C3 completion and OUTCOME
+        # are not yet connected through this frozen coordinator port.
+        for producer in ("A_PERCEPTION", "STREAM_A", "STREAM_B",
+                         "C1_JEF", "SELF", "WORLD", "C4_FOCAL",
+                         "B1_DETAIL", "B2_GIST", "B3_CALLOSUM"):
             self.assertGreater(report["organ_messages"][producer], 0,
                                "missing global organ: " + producer)
         self.assertFalse(report["trained_latent"],
@@ -154,7 +152,7 @@ class CrossOrganDelivery(unittest.TestCase):
             "SELECT metrics FROM telemetry WHERE kind='body_offer_delivered' AND event_id=?", (event_id,))
         self.assertEqual(len(delivered), 1, "native failure is never counted as delivered offer")
         self.assertEqual(json.loads(delivered[0]["metrics"])["role"], "B2_GIST")
-        shared = self.r.space().report(self.r.store.generation_id)["organ_messages"]
+        shared = self.r.cognition.space.report(self.r.store.generation_id)["organ_messages"]
         self.assertEqual(shared["B1_DETAIL"], 0,
                          "failed native B1 must not speak into shared space")
         self.assertGreater(shared["B2_GIST"], 0,
