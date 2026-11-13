@@ -4,6 +4,15 @@ on:
   schedule:
     - cron: '7,37 * * * *'
   workflow_dispatch:
+  # CI completion is the natural signal that an agent candidate became
+  # merge-eligible; otherwise a PR published just after the 30m cron can
+  # remain unmerged although its exact-SHA tests are green.
+  workflow_run:
+    workflows:
+      - V13 safe additive candidate tests
+      - V13 staged context and integrated regression
+      - v13-private-remote-bridge-tests
+    types: [completed]
   push:
     paths:
       - 'automation/v13_release_queue.py'
@@ -23,6 +32,14 @@ concurrency:
 
 jobs:
   integrate-reviewed:
+    # This privileged workflow executes only main's trusted queue script.
+    # Never run from fork/foreign CI; no release push cycles trigger merges.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_repository.full_name == 'RedMentos/Aii' &&
+       github.event.workflow_run.head_branch != 'main' &&
+       github.event.workflow_run.head_branch != 'gpt6/v13-private-remote-bridge-20261111')
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -43,7 +60,7 @@ jobs:
             --color 0E8A16 \
             --description "Boss-reviewed exact-SHA candidate for bounded V13 release queue" --force
       - name: Integrate at most one reviewed candidate
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python automation/v13_release_queue.py --execute
