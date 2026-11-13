@@ -2,6 +2,7 @@ name: v13-private-remote-bridge-tests
 on:
   workflow_dispatch:
   pull_request:
+    branches: ['gpt6/v13-private-remote-bridge-20261111']
     paths:
       - 'v13/code/v13/remote_maintenance_bridge.py'
       - 'v13/code/tests/test_remote_maintenance_bridge.py'
