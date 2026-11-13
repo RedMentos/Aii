@@ -18,7 +18,7 @@ class GlobalSpaceTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.r = Runtime(Path(self.tmp.name))
         self.s = self.r.store
-        self.space = self.r.space()
+        self.space = self.r.cognition.space
         self.e = self.s.event(self.r.session, "The reserve is 120 euros. Keep the budget.")
         self.ref = self.e["source_ref"]
 
