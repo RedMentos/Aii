@@ -68,6 +68,8 @@ class Runtime:
         bodies.attach(self)  # WP-N11: AG0 slot routing + AG13 body residency in the RunnerPool
         from .sleep import SleepRuntime
         self.sleep=SleepRuntime(self)  # WP-E: G13 wake scheduler + §94 sleep phases
+        from .inner_dialogue import InnerDialogue
+        self.inner=InnerDialogue(self)  # local, opt-in; never a synthetic user turn
         self.worker=threading.Thread(target=self._worker,name='V13-coordinator',daemon=True);self.worker.start()
     def online_world_update(self,limit=2048):
         """Explicit bounded online learning from committed T8 transitions.
@@ -136,7 +138,7 @@ class Runtime:
             if self.current=='probe':raise Limits('Probe läuft in einem Testkontext; danach wieder Chat-Eingaben senden')
             if self.jobs.full() or self.queued_bytes+b>self.cfg['queue_bytes']:raise Limits('Warteschlange voll; Eingabe wurde nicht angenommen')
             e=self.store.accept_turn(self.session,text,self.cfg['queue_count'],self.cfg['queue_bytes'],self.cfg['input_bytes']);self.jobs.put_nowait(('turn',e,b,time.monotonic()));self.queued_bytes+=b
-            if self.current in {'observers','shadow','dream','replay','tap','sleep'}:self.cancel_event.set()
+            if self.current in {'observers','shadow','dream','replay','tap','sleep','inner'}:self.cancel_event.set()
             live=duplex.on_input(self,e['event_id'],text)  # WP-N14 live path: decide on overlap, no I/O under the lock
         try:duplex.record(self,live)
         except Exception as exc:self.store.log('duplex_unavailable',e['event_id'],{'stage':'record','error':type(exc).__name__})
@@ -178,6 +180,8 @@ class Runtime:
             if not kind:
                 try:self.sleep.tick()  # idle/timer/replay wakes; enqueues background 'sleep' only when idle
                 except Exception as exc:self.store.log('job_error',None,{'kind':'sleep','error':type(exc).__name__})
+                try:self.inner.tick()  # bounded local B1/B2/C3 dialogue, never user-turn authority
+                except Exception as exc:self.store.log('job_error',None,{'kind':'inner_tick','error':type(exc).__name__})
                 self.wake.wait(.2);self.wake.clear();continue
             try:
                 self.status=kind
@@ -195,6 +199,7 @@ class Runtime:
                         except Exception as exc:
                             self.store.log('online_world_learning_error',payload['event_id'],
                                            {'error':type(exc).__name__})
+                elif kind=='inner':self.inner.run()
                 elif kind=='download':self.models.install(payload or 'all',self.notice,self.cancel_event)
                 elif kind=='shadow':
                     if payload=='memory_retrieval':self.notice(self.learner.shadow_retrieval())
