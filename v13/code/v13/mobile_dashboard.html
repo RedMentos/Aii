@@ -124,7 +124,7 @@ summary{cursor:pointer;font-weight:650}
    <div class="muted">Letzter Modelltest: <strong>@@PROBE_STATUS@@</strong></div>
    <div class="status-pills">@@ROLE_PILLS@@</div>
    <p class="muted" style="margin-top:14px"><strong>Jetzt wirklich geladen</strong> · native Modellprozesse, nicht nur installierte Dateien:</p>
-   <div class="status-pills">@@LIVE_ROLE_PILLS@@</div>
+   <div class="status-pills" id="live-native-roles" aria-live="polite">@@LIVE_ROLE_PILLS@@</div>
    <div class="actions" style="margin-top:15px">@@MODEL_BUTTONS@@</div>
   </div>
   <div class="card"><h2>Alle Befehle – nach Funktionen</h2>
@@ -178,6 +178,7 @@ summary{cursor:pointer;font-weight:650}
   const state = document.getElementById('v13-live-state');
   const running = document.getElementById('chat-running');
   const aiService = document.getElementById('ai-service-state');
+  const liveNativeRoles = document.getElementById('live-native-roles');
   const out = document.getElementById('v13-live-output');
   const progress = document.getElementById('update-progress');
   const updateStatus = document.getElementById('update-result');
@@ -256,6 +257,30 @@ summary{cursor:pointer;font-weight:650}
     }catch(err){showNotice('Fehler: '+String(err.message||err));}
     finally{if(button)button.disabled=false;}
   }));
+  function updateNativeRoles(data){
+    if(!data || typeof data !== 'object' || data.availability!=='AVAILABLE'){
+      liveNativeRoles.textContent='Live-Modellprozesse: nicht messbar';
+      return;
+    }
+    if(data.readability!=='OBSERVED'){
+      liveNativeRoles.textContent='Live-Modellprozesse: noch nicht nachweisbar';
+      return;
+    }
+    const roles=data.roles||{};
+    const labels=[['B1_DETAIL','B1 Detail'],['B2_GIST','B2 Gist'],
+                  ['C2_CONTROL','C2 JEF'],['C3_LANGUAGE','C3 Sprache']];
+    const nodes=labels.map(([role,label])=>{
+      const observed=roles[role]||{};
+      const count=Number.isInteger(observed.processes)&&observed.processes>=0&&observed.processes<=100?observed.processes:0;
+      const memory=Number.isFinite(observed.pss_mib)&&observed.pss_mib>=0&&observed.pss_mib<100000?
+        ' · '+observed.pss_mib.toFixed(1)+' MiB PSS':'';
+      const span=document.createElement('span');
+      span.className='pill';
+      span.textContent=label+': '+count+' laufend'+memory;
+      return span;
+    });
+    liveNativeRoles.replaceChildren(...nodes);
+  }
   async function refresh(){
     if(document.hidden||busy)return;
     busy=true;
@@ -283,6 +308,7 @@ summary{cursor:pointer;font-weight:650}
       }
       if(typeof data.update_result==='string')updateStatus.textContent=data.update_result;
       if(typeof data.pipeline_status==='string')pipelineStatus.textContent=data.pipeline_status;
+      if(data.native_residency)updateNativeRoles(data.native_residency);
       if(typeof data.diagnostic_status==='string')diagnosticStatus.textContent=data.diagnostic_status;
       if(typeof data.update_busy==='boolean')progress.hidden=!data.update_busy;
     }catch(_){}

@@ -50,9 +50,10 @@ class MobileDashboardTests(unittest.TestCase):
             "readability": "OBSERVED", "roles": {
                 "B1_DETAIL": {"processes": 1, "pss_mib": 755.2},
                 "B2_GIST": {"processes": 1, "pss_mib": 690.1},
+                "C2_CONTROL": {"processes": 1, "pss_mib": 96.0},
                 "C3_LANGUAGE": {"processes": 1, "pss_mib": 224.1}}}}}
         rendered = d.live_residency_html(status)
-        for role in ("B1 Detail", "B2 Gist", "C3 Sprache"):
+        for role in ("B1 Detail", "B2 Gist", "C2 JEF", "C3 Sprache"):
             self.assertIn(role + ": 1 laufend", rendered)
         self.assertIn("755.2 MiB PSS", rendered)
         self.assertNotIn("/data/data/", rendered)
@@ -81,6 +82,8 @@ class MobileDashboardTests(unittest.TestCase):
         for s in ("Nachricht senden", "Gehirnstatus", "Modelle testen",
                   "Diagnose-ZIP", "V13 beenden", "Gesamten Chat kopieren"):
             self.assertIn(s, page)
+        self.assertIn('id="live-native-roles"', page)
+        self.assertIn("updateNativeRoles(data.native_residency)", page)
         self.assertNotIn("http://0.0.0.0", page)
 
     def test_launch_only_fixed_commands_reject_invalid_inputs(self):

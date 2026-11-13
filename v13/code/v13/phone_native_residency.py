@@ -1,4 +1,4 @@
-"""Privacy-safe point-in-time census of V13-owned native llama-server processes.
+"""Privacy-safe point-in-time census of V13-owned native model processes.
 
 The trusted AI supervisor creates its own process group; only native children
 within that exact group are included. No PIDs, paths, arguments, prompts,
@@ -12,7 +12,7 @@ import os
 from pathlib import Path
 
 SCHEMA = "v13.phone-native-residency/1"
-ROLES = {"body": "B1_DETAIL", "gist": "B2_GIST", "language": "C3_LANGUAGE"}
+ROLES = {"body": "B1_DETAIL", "gist": "B2_GIST", "language": "C3_LANGUAGE", "needle": "C2_CONTROL"}
 MAX_PROC_ENTRIES = 4096
 MAX_ARG_BYTES = 8192
 MAX_MANIFEST_BYTES = 128 * 1024
@@ -86,13 +86,26 @@ def snapshot(supervisor_pid, home=None, *, proc_root=Path("/proc"), group_of=os.
             except (OSError, ProcessLookupError, PermissionError):
                 continue
             args = [arg.decode("utf-8", "replace") for arg in raw.split(b"\x00") if arg]
-            if not args or Path(args[0]).name not in ("llama-server", "llama-server-mem"):
+            if not args:
+                continue
+            binary = Path(args[0]).name
+            if binary not in ("llama-server", "llama-server-mem", "needle-worker", "needle"):
                 continue
             model = None
-            if "-m" in args:
+            if binary in ("llama-server", "llama-server-mem") and "-m" in args:
                 index = args.index("-m") + 1
                 model = args[index] if index < len(args) else None
+            elif binary == "needle-worker" and len(args) >= 2:
+                model = args[1]
+            elif binary == "needle" and "--model" in args:
+                index = args.index("--model") + 1
+                model = args[index] if index < len(args) else None
             mapped = known.get(str(Path(model).resolve())) if model else None
+            # An unrelated executable cannot impersonate another role just
+            # by providing the corresponding path on its command line.
+            if mapped is not None:
+                role = "C2_CONTROL" if binary in ("needle-worker", "needle") else None
+                mapped = [x for x in mapped if (x == "C2_CONTROL") == bool(role)]
             if not mapped:
                 result["unmapped_native_processes"] += 1
                 continue
