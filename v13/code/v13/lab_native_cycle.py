@@ -198,6 +198,10 @@ def run(runtime):
 
 
 def operator_command(runtime, args):
+    if args == ["summary"]:
+        result = status(runtime)
+        result.pop("last_thoughts", None)  # safe for private technical relay
+        return result
     if not args or args == ["status"]:
         return status(runtime)
     if args == ["on"] or args == ["off"]:
@@ -211,5 +215,5 @@ def operator_command(runtime, args):
                      action="lab_check", dedup="v13-native-lab-check")
         runtime.sleep.tick(force=True)
         return {"queued": bool(event_id), "event_id": event_id,
-                "status": status(runtime)}
-    raise ValueError(":scheduler lab [status|on|off|reset|now|every 30..1800]")
+                "status": operator_command(runtime, ["summary"])}
+    raise ValueError(":scheduler lab [status|summary|on|off|reset|now|every 30..1800]")
