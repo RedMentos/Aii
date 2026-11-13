@@ -443,9 +443,10 @@ class Cognition:
             if (query['event_id']!=e['event_id'] or query['brain_generation_id']!=e['brain_generation_id']
                     or query['target_role']!=offer['role'] or query.get('based_on_state_version')!=version
                     or query['source_refs']!=[e['source_ref']]
-                    or query.get('context_source_refs',[])!=offer.get('context_source_refs',[])):
+                    or query.get('context_source_refs',[])!=offer.get('context_source_refs',[])
+                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])):
                 raise ValueError('Consumer query scope changed')
-            allowed=[e['source_ref']]+query.get('context_source_refs',[])
+            allowed=[e['source_ref']]+query.get('context_source_refs',[])+query.get('enlightened_source_refs',[])
             verified=[]
             for ref in offer['evidence_refs']:
                 bound=any(all(ref.get(k)==base.get(k) for k in ('source_id','sha256','modality'))
@@ -487,6 +488,19 @@ class Cognition:
             except Exception as exc:extra={};self.s.log('callosum_unavailable',offer['event_id'],{'stage':'fields','error':type(exc).__name__})
         p=packet('MessagePacket','B3_CALLOSUM',offer['event_id'],offer['brain_generation_id'],refs,channel=channel,sender=offer['role'],receiver=receiver,source_refs=refs,content=content,latent_authority=0,receiver_effect_proven=False,parent_offer_packet_id=offer['packet_id'],**extra)
         self.s.add_packet('MessagePacket',p)
+        try:
+            # B3's bidirectional body bridge is one subchannel, not the entire
+            # system-wide Enlightened Space, and retains no latent authority.
+            self.r.space().publish(
+                {'event_id':offer['event_id'],'brain_generation_id':offer['brain_generation_id']},
+                'B3_CALLOSUM','EXACT' if refs else 'CONTROL',
+                summary='B3 '+offer['role']+' to '+receiver+' channel '+channel,
+                source_refs=refs[:3],
+                authority='SOURCE_POINTER' if refs else 'CONTROL_ONLY',
+                packet_id=p['packet_id'])
+        except (ValueError,OSError,RuntimeError,TypeError) as exc:
+            self.s.log('enlightened_space_unavailable',offer['event_id'],
+                       {'stage':'b3_message','error':type(exc).__name__})
         if cal is not None and extra:
             try:cal.note(offer['event_id'],p['packet_id'],offer['role'],receiver,channel,proposal,applied,extra['signed_gain'])
             except Exception as exc:self.s.log('callosum_unavailable',offer['event_id'],{'stage':'note','error':type(exc).__name__})
