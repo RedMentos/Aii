@@ -296,5 +296,27 @@ class RemoteChatTests(unittest.TestCase):
         self.assertNotIn("uncertain output",str(data))
 
 
+    def test_private_agent_only_gets_bounded_lab_status_or_one_test(self):
+        self.assertIn(":scheduler lab summary", remote_chat.SAFE_OPERATOR_COMMANDS)
+        self.assertIn(":scheduler lab now", remote_chat.SAFE_OPERATOR_COMMANDS)
+        for forbidden in (":scheduler lab on", ":scheduler lab off",
+                          ":scheduler lab every 30", ":scheduler lab reset",
+                          ":learning commit", ":download all", ":shutdown",
+                          ":scheduler lab now && rm -rf ~"):
+            self.assertNotIn(forbidden, remote_chat.SAFE_OPERATOR_COMMANDS)
+        self.assertEqual(
+            owner.create_read_request("CHAT_OPERATOR",
+                                      operator_command=":scheduler lab summary")["args"]["command"],
+            ":scheduler lab summary"
+        )
+        self.assertEqual(
+            owner.create_read_request("CHAT_OPERATOR",
+                                      operator_command=":scheduler lab now")["args"]["command"],
+            ":scheduler lab now"
+        )
+        with self.assertRaises(bridge.Denied):
+            owner.create_read_request("CHAT_OPERATOR", operator_command=":scheduler lab on")
+
+
 if __name__=="__main__":
     unittest.main()
