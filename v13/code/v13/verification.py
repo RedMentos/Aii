@@ -221,14 +221,34 @@ def probe(r):
     try:
         e=r.store.event(r.session,prompt(r.cfg,'probe_event'));r.cognition.percept(e)
         for role in ['C3_LANGUAGE','B1_DETAIL','B2_GIST']:
-            start=time.monotonic()
+            start=time.monotonic();runner=None;phase='runner_load'
             try:
-                runner=r.pool.get(role);deadline=time.monotonic()+r.cfg['deadline_seconds'];answer=''.join(runner.generate([{'role':'system','content':prompt(r.cfg,'smoke_system')},{'role':'user','content':prompt(r.cfg,'smoke_user')}],r.cancel_event,deadline,48))
-                result['roles'][role]={'ok':bool(answer.strip()),'actual_output':answer,'metrics':runner.last_metrics}
+                runner=r.pool.get(role)
+                phase='native_generation'
+                generation_start=time.monotonic()
+                deadline=generation_start+r.cfg['deadline_seconds']
+                answer=''.join(runner.generate([{'role':'system','content':prompt(r.cfg,'smoke_system')},{'role':'user','content':prompt(r.cfg,'smoke_user')}],r.cancel_event,deadline,48))
+                generation_duration=time.monotonic()-generation_start
+                result['roles'][role]={'ok':bool(answer.strip()),'actual_output':answer,
+                    'metrics':dict(runner.last_metrics),'native_generation_ok':bool(answer.strip()),
+                    'native_generation_duration_s':generation_duration}
                 if role!='C3_LANGUAGE':
-                    p=r.cognition.offer(role,e,0,time.monotonic()+r.cfg['observer_seconds']);result['roles'][role]['structured_offer']={'verified_quote_count':len(p['evidence_refs']),'rejected_quote_count':p['rejected_quotes'],'actual':p['offer']}
-                result['roles'][role]['unload']=r.pool.unload()
-            except Exception as exc:result['roles'][role]={'ok':False,'error':str(exc),'duration_s':time.monotonic()-start};r.pool.unload()
+                    # The structured-offer probe is a *second* native
+                    # generation with its own observer_seconds limit. A
+                    # TIME_BUDGET here must never be reported as failure of
+                    # the first, independently successful generation.
+                    phase='structured_offer'
+                    offer_start=time.monotonic()
+                    p=r.cognition.offer(role,e,0,offer_start+r.cfg['observer_seconds'])
+                    result['roles'][role]['structured_offer']={'verified_quote_count':len(p['evidence_refs']),'rejected_quote_count':p['rejected_quotes'],'actual':p['offer'],
+                        'duration_s':time.monotonic()-offer_start}
+                phase='unload';result['roles'][role]['unload']=r.pool.unload()
+            except Exception as exc:
+                entry=result['roles'].get(role,{})
+                entry.update(ok=False,error=str(exc),duration_s=time.monotonic()-start,failure_stage=phase)
+                if runner is not None:entry['failure_runner_metrics']=dict(runner.last_metrics)
+                result['roles'][role]=entry
+                r.pool.unload()
         try:
             vector=r.needle.embed('Projekt Test: Budget 120 Euro.',r.cancel_event,time.monotonic()+15);control=r.needle.control('Berechne die Hälfte von 120.',r.cancel_event,time.monotonic()+15)
             result['roles']['C2_CONTROL']={'ok':len(vector)>0,'embedding_dim':len(vector),'embedding_squared_norm':sum(v*v for v in vector),'embedding_hash':digest(dumps(vector)),'actual_control':control,'metrics':r.needle.last_metrics,'confidence_calibrated':False}
