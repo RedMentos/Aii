@@ -788,6 +788,59 @@ def live_residency_html(technical):
     return "".join(parts)
 
 
+def brain_evidence_line(result):
+    """One line with truthful structured-device stages, no model text."""
+    availability=result.get("availability")
+    if availability == "NO_TURNS":
+        return "Noch kein echter Chatdurchlauf. Modelltest ist kein End-to-End-Nachweis."
+    if availability != "LOCAL_SQLITE_METADATA":
+        return "Laufzeitnachweis aktuell nicht lesbar; keine Funktionsbehauptung."
+    parts=["Letzte Antwort: "+result.get("turn_status","UNKNOWN")]
+    for role,label in (("B1_DETAIL","B1"),("B2_GIST","B2")):
+        info=result.get("roles",{}).get(role,{})
+        parts.append(label+": "+str(info.get("delivery","UNKNOWN")))
+    n=result.get("c3_generated_tokens")
+    p=result.get("c3_prompt_tokens")
+    if type(n) is int and type(p) is int:
+        parts.append("C3: "+str(n)+" erzeugt / "+str(p)+" Prompt-Tokens")
+    return " · ".join(parts)
+
+
+def brain_evidence_snapshot():
+    """Local, read-only evidence, never a fake startup/installed-model claim.
+
+    The WebView displays the actual last assistant status and B1/B2 handoff
+    receipts. No source text, chat text or source identifiers are exposed.
+    """
+    import sqlite3
+    from .phone_offer_delivery_audit import connect_readonly, audit
+    try:
+        con = connect_readonly(DATA)
+        try:
+            result = audit(con, 1)
+        finally:
+            con.close()
+        if not result["turns"]:
+            return {"availability":"NO_TURNS"}
+        t = result["turns"][0]
+        roles = {name:{
+            "delivery":data["delivery"],
+            "attempts":data["native_attempts"],
+            "valid_offers":data["source_bound_offer_packets"],
+            "selected":data["selected_for_report"],
+        } for name,data in t["roles"].items()}
+        return {
+            "availability":"LOCAL_SQLITE_METADATA",
+            "turn_status":t["turn_status"],
+            "roles":roles,
+            "c3_prompt_tokens":t["c3_prompt_tokens"],
+            "c3_generated_tokens":t["c3_generated_tokens"],
+            "c3_prefill_seconds":t["c3_phase_seconds"].get("prefill_to_first_token_s"),
+        }
+    except (OSError, ValueError, RuntimeError, sqlite3.Error):
+        return {"availability":"UNAVAILABLE"}
+
+
 def dashboard_html(token, controls, message="", csrf="", generation=""):
     """One coherent phone workspace: chat/commands/settings/maintenance tabs."""
     running, mode, code, last = controls.state()
@@ -843,6 +896,7 @@ def dashboard_html(token, controls, message="", csrf="", generation=""):
         "@@PROBE_STATUS@@":html.escape(current["native_probe"]),
         "@@ROLE_PILLS@@":"".join(roles) or '<span class="pill">Noch keine Messung</span>',
         "@@LIVE_ROLE_PILLS@@":live_residency_html(current),
+        "@@BRAIN_EVIDENCE@@":html.escape(brain_evidence_line(brain_evidence_snapshot())),
         "@@MODEL_BUTTONS@@":"".join([quick(c,l) for c,l in [
             (":doctor","Gehirnstatus"),(":probe","Modelle testen"),
             (":probe jef-modes","JEF testen"),(":probe step12","B1/B2 testen")]]),
@@ -995,6 +1049,7 @@ def serve(*, open_browser=True):
                 native = native_snapshot(ai_state.get("pid") if running else None)
                 payload = {"state": state, "output": controls.output()[-50000:],
                            "native_residency": native,
+                           "brain_evidence": brain_evidence_snapshot(),
                            "ai_service": ai_state.get("service","UNAVAILABLE"),
                            "ai_daemon": ai_state.get("daemon","UNAVAILABLE"),
                            "ai_autostart": ai_state.get("autostart",False),
