@@ -81,10 +81,17 @@ def _remove_body_metadata(messages):
         original = json.loads(messages[1].get("content", ""))
     except (TypeError, ValueError):
         return None
-    if not isinstance(original, dict) or not isinstance(original.get("source_segments"), list):
+    if not isinstance(original, dict):
+        return None
+    # B2 can receive GIST slots instead of A1 source segments. Both are exact
+    # source text with separately persisted refs, never silently paraphrased.
+    source_key = ("source_segments" if isinstance(original.get("source_segments"), list)
+                  else "gist_slots" if isinstance(original.get("gist_slots"), list)
+                  else None)
+    if source_key is None:
         return None
     item = json.loads(json.dumps(original))
-    segments = item["source_segments"]
+    segments = item[source_key]
     # First strip *opaque source-address metadata* from the model view only.
     # The real sources, refs and hashes remain immutable in Query/Offer packets.
     if all(isinstance(x, dict) and isinstance(x.get("text"), str) for x in segments):
@@ -99,6 +106,33 @@ def _remove_body_metadata(messages):
             reason = None
     else:
         return None
+    if reason is None and isinstance(item.get("enlightened_space"), dict):
+        shared = item["enlightened_space"]
+        messages = shared.get("messages")
+        if isinstance(messages, list):
+            exact_source = "".join(x["text"] for x in segments)
+            kept = []
+            for msg in messages:
+                if not isinstance(msg, dict):
+                    kept.append(msg)
+                    continue
+                from_role = msg.get("from")
+                excerpts = msg.get("exact_sources")
+                redundant_stream = (
+                    from_role in {"A_PERCEPTION", "STREAM_A", "STREAM_B"}
+                    and msg.get("authority") == "SOURCE_POINTER"
+                    and isinstance(excerpts, list) and bool(excerpts)
+                    and all(isinstance(e, dict) and isinstance(e.get("exact_source_text"),str)
+                            and bool(e["exact_source_text"])
+                            and e["exact_source_text"] in exact_source
+                            for e in excerpts))
+                # These are duplicates of the EXACT current source, not a
+                # novel thought from B1/B2, World, Self, JEF, Memory or B3.
+                if not redundant_stream:
+                    kept.append(msg)
+            if len(kept) < len(messages):
+                shared["messages"] = kept
+                reason = "BODY_DUPLICATE_STREAM_SOURCE"
     if reason is None and isinstance(item.get("body_state"), dict):
         body = item["body_state"]
         world = body.get("world")
@@ -121,9 +155,11 @@ def _remove_body_metadata(messages):
         return None
     # Strict source-integrity check: model gets the exact same source text and
     # the same peer-message content; never compress arbitrary source words.
-    if ([s.get("text") for s in item["source_segments"]] !=
-            [s.get("text") for s in original["source_segments"]] or
-            item.get("peer_message") != original.get("peer_message")):
+    if ([segment.get("text") for segment in item[source_key]] !=
+            [segment.get("text") for segment in original[source_key]] or
+            item.get("peer_message") != original.get("peer_message") or
+            item.get("jef_query") != original.get("jef_query") or
+            item.get("quote_choices") != original.get("quote_choices")):
         return None
     result = [dict(x) for x in messages]
     result[1]["content"] = json.dumps(item, ensure_ascii=False, sort_keys=True,
