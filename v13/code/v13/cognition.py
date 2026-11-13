@@ -124,6 +124,41 @@ def asks_rule_decision(text):
     except Exception:return False
 class Cognition:
     def __init__(self,runtime):self.r=runtime;self.s=runtime.store
+    @property
+    def space(self):
+        """Stable inter-organ port, scoped to the currently active session.
+
+        The phone's pinned Runtime coordinator already creates Cognition;
+        this preserves real runtime compatibility rather than adding an
+        untested method to a frozen or staged-only coordinator.
+        """
+        return EnlightenedSpace(self.s,self.r.session)
+    def _share_existing_organs(self,e,version,body_state=None,broadcast=None):
+        """Publish only measured/committed upstream organ states, not invented ones."""
+        try:
+            if broadcast and broadcast.get('state_version') == version:
+                self.space.publish(e,'C1_JEF','CONTROL',
+                                   summary='JEF broadcast revision '+str(version),
+                                   authority='CONTROL_ONLY',
+                                   packet_id=broadcast['packet_id'])
+            if isinstance(body_state,dict):
+                # Body-state is the real local self/world organ observation
+                # already supplied to the native body, not external reality.
+                own=body_state.get('self')
+                if isinstance(own,dict):
+                    self.space.publish(e,'SELF','CONTROL',
+                                       summary='Self capability state available',
+                                       authority='CONTROL_ONLY')
+                own=body_state.get('world')
+                if isinstance(own,dict):
+                    n=own.get('observed_actions')
+                    if type(n) is int and 0<=n<=100000:
+                        self.space.publish(e,'WORLD','PREDICTION',
+                                           summary='Observed own digital actions: '+str(n),
+                                           authority='CONTROL_ONLY')
+        except (ValueError,RuntimeError,KeyError,OSError,TypeError) as exc:
+            self.s.log('enlightened_space_unavailable',e['event_id'],
+                       {'stage':'upstream_organs','error':type(exc).__name__})
     def tap(self,role,e,source_ref,deadline):
         """Source-bound native body observation; no receiver or learning authority."""
         if source_ref['source_id']!=e['source_ref']['source_id']:raise ValueError('Tap source must belong to this event')
@@ -328,6 +363,8 @@ class Cognition:
         if role=='B1_DETAIL' and policy=='B1_DETAIL' and context:
             query['recent_source']=[x['native_context'] for x in context]
             instructions+=' recent_source is the exact source of the previous turn of this topic. Use its exact details (values, entities) when the current text refers to them without restating them. Quote the exact sentences carrying the details your summary needs; only verified quotes reach the answer component. Prefer an explicit current-source revision.'
+        self._share_existing_organs(e,version,
+                                   body_state=query.get('body_state'),broadcast=broadcast)
         if broadcast:
             query['executive_broadcast']={k:broadcast[k] for k in ['state_version','goal','constraints','source_refs']}
             pf=broadcast.get('permission_flags') or {}  # WP-T2: bodies see the Age envelope C1 granted (stage + rights above Age 0), never a way to widen it
@@ -346,7 +383,7 @@ class Cognition:
         # Native B1/B2 receive *actual* shared organ messages before generation.
         enlightened_refs=[]
         try:
-            shared=EnlightenedSpace(self.s,self.r.session).consume(e,role,text,max_messages=2,max_chars=280)
+            shared=self.space.consume(e,role,text,max_messages=2,max_chars=280)
             if shared['messages']:
                 query['enlightened_space']={
                     'representation':shared['representation'],
@@ -410,7 +447,7 @@ class Cognition:
         self.s.add_packet('OfferPacket',p);self.retain_body_offer(p)
         # Model summaries are never granted the exact source's factual status.
         try:
-            EnlightenedSpace(self.s,self.r.session).publish(
+            self.space.publish(
                 e,role,'SEMANTIC',
                 summary=obj['summary'] if refs else 'Unquoted body hypothesis, no source authority',
                 authority='MODEL_HYPOTHESIS' if refs else 'CONTROL_ONLY',
@@ -477,6 +514,43 @@ class Cognition:
             rendered.append({'role':offer['role'],'offer_packet_id':offer['packet_id'],
                 'hypothesis':{k:offer['offer'][k] for k in ('summary','uncertainty','needs_reentry')},
                 'hypothesis_authority':'MODEL_HYPOTHESIS_NOT_FACT','verified_quotes':verified})
+        # The focal coalition has already decided which body messages may
+        # contribute to the one outward C3 stream. Only now publish the C4
+        # signal and let C3 read approved shared organs, never before consent.
+        if rendered:
+            try:
+                cycle=self.s.one("SELECT payload FROM packets WHERE kind='FocalCycle' AND event_id=? ORDER BY rowid DESC LIMIT 1",(e['event_id'],))
+                if cycle:
+                    f=json.loads(cycle['payload'])
+                    self.space.publish(e,'C4_FOCAL','FOCAL',
+                        summary='Focal C4 decision '+str(f.get('decision','UNKNOWN')),
+                        authority='CONTROL_ONLY',packet_id=f['packet_id'])
+                steps=self.s.rows("SELECT payload FROM packets WHERE kind='InquisitionStep' AND event_id=? ORDER BY rowid DESC LIMIT 2",(e['event_id'],))
+                if steps:
+                    self.space.publish(e,'INQUISITION','CONTROL',
+                        summary='P1/P2 deliberation steps '+str(len(steps)),
+                        authority='CONTROL_ONLY')
+                shared=self.space.consume(e,'C3_LANGUAGE',self.s.read_source(e['source_ref']),
+                    selected_offers=[x['offer_packet_id'] for x in rendered],
+                    max_messages=5,max_chars=440)
+                # The current answer's existing source lineage binds only
+                # selected OfferPacket evidence. Do not move other exact
+                # source texts into C3 without extending that lineage.
+                allowed={ref['source_id'] for ref in (e['source_ref'],)+tuple(
+                    ref for p in offers for ref in p.get('evidence_refs',[]))}
+                messages=[]
+                for entry in shared['messages']:
+                    clean=dict(entry)
+                    clean['exact_sources']=[x for x in entry['exact_sources']
+                          if x['source_ref']['source_id'] in allowed]
+                    messages.append(clean)
+                rendered[0]['enlightened_space']={
+                    'representation':shared['representation'],
+                    'messages':messages,
+                    'external_egress_authority':False}
+            except (ValueError,TypeError,OSError,KeyError,RuntimeError) as exc:
+                self.s.log('enlightened_space_unavailable',e['event_id'],
+                           {'stage':'c3_selected_context','error':type(exc).__name__})
         return rendered
     def communicate(self,offer,receiver,fast=None):
         if {offer['role'],receiver}!={'B1_DETAIL','B2_GIST'}:raise ValueError('Ungültige B3-Richtung')
@@ -506,7 +580,7 @@ class Cognition:
         try:
             # B3's bidirectional body bridge is one subchannel, not the entire
             # system-wide Enlightened Space, and retains no latent authority.
-            EnlightenedSpace(self.s,self.r.session).publish(
+            self.space.publish(
                 {'event_id':offer['event_id'],'brain_generation_id':offer['brain_generation_id']},
                 'B3_CALLOSUM','EXACT' if refs else 'CONTROL',
                 summary='B3 '+offer['role']+' to '+receiver+' channel '+channel,
