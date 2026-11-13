@@ -243,8 +243,14 @@ class EnlightenedSpace:
                 continue
             scope = 1. if record["event_id"] == event_id else .15
             # World/Self/JEPA statuses are control hints, never source facts.
-            control = .10 if record["channel"] in {"CONTROL", "PREDICTION", "FEEDBACK"} else 0.
-            value = sim + scope + control
+            # Exact pointers and user-authorized memory cues outrank
+            # repetitive, unevidenced control pings in bounded attention.
+            # They are source transport, NOT semantic-truth promotion.
+            evidence = (.48 if record["authority"] in {"SOURCE_POINTER", "USER_MEMORY_CUE"}
+                        else .25 if record["authority"] == "MODEL_HYPOTHESIS"
+                        else 0.)
+            control = .04 if record["channel"] in {"CONTROL", "PREDICTION", "FEEDBACK"} else 0.
+            value = sim + scope + evidence + control
             rows.append((value, record, refs))
         rows.sort(key=lambda row: row[0], reverse=True)
         entries, all_refs = [], []
