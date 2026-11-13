@@ -22,8 +22,16 @@ def read_block(prompt,ready=None,read=input):
     except (EOFError,OSError,ValueError):pass
     return '\n'.join(lines)
 
+def _history_offsets(messages):
+    """Do not replay previously saved assistant messages as fresh model output on startup.
+
+    New messages (and new tokens) are rendered normally. Chat history remains in
+    the persistent store and the explicit history/export interface.
+    """
+    return {m['id']:len(m['text']) for m in messages if m['role']!='user'}
+
 def plain(r):
-    op=Operator(r);done=threading.Event();seen={};held=[]
+    op=Operator(r);done=threading.Event();seen=_history_offsets(r.store.history(r.session,8));held=[]
     def notify(t):
         # WP-V5: notices wait while the operator is typing instead of overwriting the line.
         if typing():held.append(t);return
