@@ -588,7 +588,9 @@ class SleepCycle:
 class SleepRuntime:
     """Coordinator glue: idle/timer/resource wakes → background sleep jobs. Never blocks a user turn."""
     def __init__(self,runtime,clock=time.time,monotonic=time.monotonic):
-        from .scheduler import EventScheduler
+        from .scheduler import EventScheduler, ACTIONS
+        # Trusted, fixed G13 extension; not arbitrary user/model commands.
+        ACTIONS.add('lab_check')
         from .plasticity import Plasticity
         self.r=runtime;self.clock=clock;self.monotonic=monotonic;self.age=None
         try:
@@ -596,6 +598,7 @@ class SleepRuntime:
             self.age=controller(runtime)
         except Exception:self.age=None  # conservative: no self-initiative, no autonomous dream
         self.scheduler=EventScheduler(runtime.store,runtime.cfg,clock,self.age)
+        self.lab_active=False
         self.cycle=SleepCycle(runtime.store,runtime.cfg,runtime.memory,getattr(runtime,'consolidation',None),self.age,runtime.home,clock,monotonic,Plasticity(runtime.store))
         self.cycle.runtime=runtime  # WP-T11 homeostasis reads the learned heads through their runtime controllers
         self.scheduler.recover();self.last_tick=-1e18;self.last_resource=None
@@ -631,6 +634,13 @@ class SleepRuntime:
                     from .authority import medium_due
                     if medium_due(self.r.store,self.clock()):self.scheduler.post('IDLE',action='learn_medium',dedup='learn-medium')
                 except Exception as exc:self.r.store.log('job_error',None,{'kind':'learn_medium_post','error':type(exc).__name__})
+        # Test and warm the actual native organs via G13 when the phone is
+        # idle, below thermal/RAM limits and allowed by the user's schedule.
+        try:
+            from .lab_native_cycle import maybe_schedule
+            maybe_schedule(self,state)
+        except Exception as exc:
+            self.r.store.log('job_error',None,{'kind':'native_lab_schedule','error':type(exc).__name__})
         e=self.scheduler.next(idle=True,resource_state=state,quiet=in_quiet_hours(policy,self.clock()))
         if not e:return None
         if e['action'] in (None,'notice'):
@@ -642,6 +652,16 @@ class SleepRuntime:
         if not queued:self.scheduler.complete(e['id'],'RETRY',{'reason':'BUSY'})
         self.r.wake.set();return e
     def job(self,e):
+        if e['action']=='lab_check':
+            from .lab_native_cycle import run
+            try:out=run(self.r)
+            except BaseException as exc:
+                self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__})
+                raise
+            # User preemption is a normal one-shot completion. The next idle
+            # window may schedule a new sample; do not replay cancelled speech.
+            self.scheduler.complete(e['id'],'DONE',{'status':out.get('status')})
+            return out
         if str(e['action']).startswith('growth_'):return self._growth(e)
         if str(e['action']).startswith('learn_'):return self._learn(e)
         mode={'sleep_full':'full','wake_replay':'wake','sleep_a':'a','sleep_b':'b','sleep_c':'c'}[e['action']]
@@ -690,7 +710,12 @@ class SleepRuntime:
 def operator_command(r,cmd,args):
     """:sleep [status|digest|run full|a|b|c|wake|in <Minuten> [Modus]|policy [Name Wert]] / :scheduler"""
     sl=r.sleep
-    if cmd=='scheduler':return dumps(sl.scheduler.report())
+    if cmd=='scheduler':
+        if args and args[0]=='lab':
+            from .lab_native_cycle import operator_command as lab_command
+            return dumps(lab_command(r,args[1:]))
+        if args:raise ValueError(':scheduler [lab status|on|off|now|every N|reset]')
+        return dumps(sl.scheduler.report())
     if not args or args==['status']:return dumps(sl.cycle.status())
     if args[0]=='run' and len(args)<=2:
         mode=args[1] if len(args)==2 else 'full';sl.request(mode);return 'Sleep '+mode+' eingeplant; startet sobald nichts anderes läuft.'
