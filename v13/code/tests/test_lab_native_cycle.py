@@ -87,6 +87,13 @@ class Runtime:
 class LabCycleTests(unittest.TestCase):
     def setUp(self):
         self.r = Runtime()
+        lab.configure(self.r, enabled=True)
+    def test_native_default_is_off_outside_termux(self):
+        from unittest import mock
+        with mock.patch.object(lab, "_native_termux_runtime", return_value=False):
+            self.assertFalse(lab.initial()["enabled"])
+        with mock.patch.object(lab, "_native_termux_runtime", return_value=True):
+            self.assertTrue(lab.initial()["enabled"])
     def test_active_default_is_only_synthetic_local(self):
         x = lab.status(self.r)
         self.assertTrue(x["enabled"])
@@ -165,6 +172,16 @@ class LabCycleTests(unittest.TestCase):
             lab.operator_command(self.r, ["every", "0"])
         with self.assertRaises(ValueError):
             lab.operator_command(self.r, ["exec", "shell"])
+    def test_private_relay_summary_never_contains_inner_thought_text(self):
+        lab.run(self.r)
+        detailed = lab.operator_command(self.r, ["status"])
+        self.assertTrue(detailed["last_thoughts"])
+        summary = lab.operator_command(self.r, ["summary"])
+        self.assertNotIn("last_thoughts", summary)
+        queued = lab.operator_command(self.r, ["now"])
+        self.assertNotIn("last_thoughts", queued["status"])
+        self.assertEqual(summary["learning_authority"], "NONE")
+
     def test_corrupt_state_fail_closed(self):
         self.r.store.obj = {"schema": lab.SCHEMA, "enabled": "yes"}
         with self.assertRaises(ValueError):
