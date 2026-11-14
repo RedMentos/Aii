@@ -58,9 +58,42 @@ class TightBudget(Base):
         self.assertEqual(self.r.pool.resident_roles(),['B2_GIST'])  # B1 (bigger) had to leave for B2
         self.assertEqual(self.r.pool.release_history[-1]['role'],'B1_DETAIL')
 
-    def test_memory_pressure_never_holds_two_bodies(self):
-        self.assertEqual(resource_pins.pin(self.r,'CRITICAL'),'CRITICAL');self.r.pool.get('C3_LANGUAGE');self.r.pool.get('B2_GIST')
-        self.assertEqual(self.r.pool.resident_roles(),['B2_GIST'])
+    def test_memory_pressure_preserves_pinned_c3_and_refuses_unviable_body(self):
+        self.assertEqual(resource_pins.pin(self.r,'CRITICAL'),'CRITICAL')
+        c3=self.r.pool.get('C3_LANGUAGE')
+        with self.assertRaisesRegex(Unavailable,"BODY_CAPACITY_REFUSED_PRESERVE_C3"):
+            self.r.pool.get('B2_GIST')
+        self.assertEqual(self.r.pool.resident_roles(),['C3_LANGUAGE'])
+        self.assertIs(self.r.pool.get('C3_LANGUAGE'),c3)
+        self.assertEqual(self.r.pool.release_history,[])
+
+class PinnedSpeakerCapacity(Base):
+    budget=500  # C3 estimates ~206; B1 ~536 and B2 ~426 cannot fit together with it
+    def test_c3_pin_is_physical_even_if_body_is_requested_after_a_failure(self):
+        c3=self.r.pool.get('C3_LANGUAGE')
+        before=self.r.bodies.residency.report()
+        for body in ('B1_DETAIL','B2_GIST'):
+            with self.subTest(role=body),self.assertRaisesRegex(
+                Unavailable,"BODY_CAPACITY_REFUSED_PRESERVE_C3"):
+                self.r.pool.get(body)
+            self.assertIs(self.r.pool.get('C3_LANGUAGE'),c3)
+            self.assertEqual(self.r.pool.resident_roles(),['C3_LANGUAGE'])
+        after=self.r.bodies.residency.report()
+        self.assertEqual(before['resident'],after['resident'],
+                         "Failed observer preflight must not mutate saved expert residency")
+        self.assertEqual(self.r.pool.release_history,[],
+                         "Denied body must never evict the actual running C3 voice")
+
+    def test_cold_assigned_runner_is_not_reported_as_a_loaded_process(self):
+        # FakeRunner is instantly alive. A real cold instance would have
+        # pids()=[] until load; reproduce that distinction explicitly.
+        c3=self.r.pool.get('C3_LANGUAGE')
+        with patch.object(c3,'pids',return_value=[]):
+            self.assertEqual(self.r.pool.resident_roles(),[])
+            with self.assertRaisesRegex(Unavailable,"BODY_CAPACITY_REFUSED_PRESERVE_C3"):
+                self.r.pool.get('B1_DETAIL')
+            self.assertIs(self.r.pool.resident[('C3_LANGUAGE','generate')],c3)
+        self.assertEqual(self.r.pool.resident_roles(),['C3_LANGUAGE'])
 
 class OldPool(Base):
     budget=0

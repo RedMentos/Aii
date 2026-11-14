@@ -19,7 +19,8 @@ Claim limit: neither body is a sparse MoE network; the "experts" are whole disti
 """
 from pathlib import Path
 from .agi.slots import ModelSlots
-from .agi.residency import ExpertResidency
+from .agi.residency import ExpertResidency, PRESSURE_SHARE
+from .common import Unavailable
 
 from .resource_modes import mode_of
 PRESSURE_MODE={'NORMAL':'GREEN','RECOVERY':'GREEN','PRESSURE':'ORANGE','CRITICAL':'RED'}  # legacy view; live code reads mode_of(guard) (§97.2)
@@ -110,18 +111,38 @@ class BodyFabric:
         resident: roles whose processes are alive right now (the pool's truth wins over stored state)."""
         if not self.enabled:return [r for r in resident if r!=role]
         mode=mode_of(getattr(self.r,'guard',None))
+        # C3 is the *protected output speaker*. A pressure fallback used to
+        # evict C3 when B1/B2 could not fit, contradicting PINNED and forcing
+        # C3 to reload halfway through a 30s phone turn (15s spent in load).
+        # Preflight BEFORE touching persistent expert state or live processes.
+        # Never mask a physically impossible C3+body combination as admitted.
+        st,_=self.residency.box.load()
+        experts=st['experts']
+        if role not in experts:
+            raise Unavailable('MODEL_ROLE_NOT_REGISTERED: '+role)
+        if role in BODY_ROLES:
+            cap=float(st['budget_mb'])*PRESSURE_SHARE[mode]
+            pinned=sum(float(x['size_mb']) for x in experts.values() if x.get('pinned'))
+            body=float(experts[role]['size_mb'])
+            if pinned+body>cap:
+                raise Unavailable('BODY_CAPACITY_REFUSED_PRESERVE_C3: '+role)
         def f(st):
             st['resident']=[x for x in st['resident'] if x in resident or x in PINNED]
             for x in resident:
                 if x not in st['resident'] and x in st['experts']:st['resident'].append(x)
         self.residency.box.mutate(f)
         evict=list(self.residency.set_mode(mode))
-        if role not in self.residency.box.load()[0]['experts']:return [r for r in resident if r!=role]
         d=self.residency.request(role);evict+=d['evict']
-        if d['status']=='REFUSED':evict=[r for r in resident if r!=role]  # dense fallback: one process at a time
-        if mode=='RED':evict=[r for r in resident if r!=role]           # critical: never hold two bodies
-        elif mode=='ORANGE':evict+=[r for r in resident if r in BODY_ROLES and r!=role]  # §97.2: single-body observer
-        return sorted(set(r for r in evict if r in resident and r!=role))
+        if d['status']=='REFUSED':
+            if role in BODY_ROLES:
+                raise Unavailable('BODY_CAPACITY_REFUSED_PRESERVE_C3: '+role)
+            # Even an explicit dense fallback cannot evict a pinned C3.
+            evict=[r for r in resident if r!=role and r not in PINNED]
+        if mode=='RED':
+            evict=[r for r in resident if r!=role and r not in PINNED]
+        elif mode=='ORANGE':
+            evict+=[r for r in resident if r in BODY_ROLES and r!=role]
+        return sorted(set(r for r in evict if r in resident and r!=role and r not in PINNED))
     def released(self,role):
         def f(st):
             if role in st['resident'] and role not in PINNED:st['resident'].remove(role)
