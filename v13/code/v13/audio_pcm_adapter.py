@@ -10,6 +10,9 @@ from .audio_percept_contract import audio_percept_packet
 
 def pcm16_to_a5(*, pcm, sample_rate, start_ms, event_id, generation_id,
                 source_id, source_sha256, consent_receipt, finality="PROVISIONAL"):
+    # Reject unauthorized input before any PCM traversal or feature computation.
+    if not isinstance(consent_receipt, str) or not consent_receipt.strip():
+        raise PermissionError("explicit local audio consent receipt required")
     if not isinstance(pcm, (bytes, bytearray, memoryview)):
         raise TypeError("PCM must be bytes-like")
     if type(sample_rate) is not int or not 8000 <= sample_rate <= 192000:
