@@ -21,7 +21,12 @@ class OnlineWorld:
         self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,lr=lr,replay=replay)
         self.cursor=self.home/'cursor.json'
         self.processed=[]
-        if self.cursor.exists():
+        if self.model.checkpoint_processed is not None:
+            ids=self.model.checkpoint_processed
+            if len(ids)>world_model.MAX_ROWS or len(set(ids))!=len(ids):
+                raise ValueError('Invalid predictor-bound T8 cursor')
+            self.processed=list(ids)
+        elif self.cursor.exists():
             record=json.loads(self.cursor.read_text())
             ids=record.get('processed')
             if record.get('revision')!=REVISION or not isinstance(ids,list) or len(ids)>world_model.MAX_ROWS or any(type(i) is not str for i in ids):
@@ -57,12 +62,20 @@ class OnlineWorld:
         for row in new:
             x,a,y=self.encode(row)
             self.model.observe(x,a,y)
-            self.model.checkpoint()
-            self.processed.append(row['action_id'])
-            self.processed=self.processed[-world_model.MAX_ROWS:]
-            temp=self.cursor.with_suffix('.tmp')
-            temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed}))
-            os.replace(temp,self.cursor)
+            next_ids=(self.processed+[row['action_id']])[-world_model.MAX_ROWS:]
+            # Publish weights, replay, RNG and T8 cursor in ONE atomic NPZ.
+            # A crash before os.replace replays the whole transition; a crash
+            # afterwards restores both the learned weights and its identifier.
+            try:
+                self.model.checkpoint(processed_ids=next_ids)
+            except Exception:
+                # observe() already mutated RAM. Rehydrate from the last
+                # committed snapshot so retry cannot double-train the row.
+                # If no checkpoint exists, return to the fresh initial model.
+                self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,
+                    lr=self.model.lr,replay=self.model.cap)
+                raise
+            self.processed=next_ids
         retention_after=self.model.error(replay) if replay else None
         return {'learned':len(new),'seen':self.model.seen,'tracked_ids':len(self.processed),
                 'old_replay_loss_before':retention_before,'old_replay_loss_after':retention_after,
