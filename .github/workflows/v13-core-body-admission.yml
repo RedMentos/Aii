@@ -1,0 +1,23 @@
+name: V13 core body admission
+on:
+  push:
+    branches:
+      - gpt6/core-source-admission-20261114
+  pull_request:
+    paths:
+      - 'v13/code/v13/body_admission.py'
+      - 'v13/code/v13/cognition.py'
+      - 'v13/code/tests/test_body_admission.py'
+      - '.github/workflows/v13-core-body-admission.yml'
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax
+        run: python -m compileall -q v13/code/v13/body_admission.py v13/code/v13/cognition.py
+      - name: Source admission tests
+        run: cd v13/code && python -m unittest discover -s tests -p test_body_admission.py -v

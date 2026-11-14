@@ -412,10 +412,15 @@ class Cognition:
         except (ValueError,RuntimeError,KeyError,OSError,TypeError) as exc:
             self.s.log('enlightened_space_unavailable',e['event_id'],
                        {'stage':'body_query','error':type(exc).__name__})
+        # Source and peer remain intact; only lower-authority optional
+        # context is admitted to the native B1/B2 prompt on the phone.
+        from .body_admission import admit as admit_body_context
+        query,admission=admit_body_context(query,max_optional_chars=320)
         query_packet=packet('QueryPacket','C1_EXEC',e['event_id'],e['brain_generation_id'],[e['source_ref']],target_role=role,goal=text,source_refs=[e['source_ref']],broadcast_packet_id=broadcast['packet_id'] if broadcast else None,peer_message_packet_id=peer_id,source_view_width_chars=width,based_on_state_version=version,probe_only=version==0)
         query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW')
         query_packet.update(compute_deadline_monotonic_ns=int(deadline*1e9),offer_valid_until_monotonic_ns=int(valid_until*1e9))
         query_packet['enlightened_source_refs']=enlightened_refs
+        query_packet['native_context_admission']=admission
         query_packet['provenance'] += query_packet['context_source_refs']+bv_refs+enlightened_refs
         if bv:query_packet['bodyview']=bv
         query_packet['jbc_fields']=jbc_fields
