@@ -63,3 +63,52 @@ def test_failed_first_body_still_attempts_second_and_answers(schedule, first, se
             assert "Visible response." in answer["text"]
         finally:
             runtime.close()
+
+
+@pytest.mark.parametrize("schedule,first,second", [
+    ("A_THEN_B_SEQUENTIAL", "B1_DETAIL", "B2_GIST"),
+    ("B_THEN_A_SEQUENTIAL", "B2_GIST", "B1_DETAIL"),
+])
+def test_successful_first_body_passes_peer_message_to_second(schedule, first, second):
+    """Fair time slicing must not silently sever B1/B2 communication."""
+    with tempfile.TemporaryDirectory() as directory:
+        runtime = Runtime(Path(directory))
+        try:
+            runtime.sleep.cycle.set_policy("enabled", "off")
+            Operator(runtime).run(":route both")
+            Operator(runtime).run(":observers " + schedule)
+            effort.set_mode(runtime.store, "max")
+            runtime.learner.output_delta = Mock(return_value=None)
+            received = []
+            peer_message = {"origin": first, "message": "synthetic peer signal"}
+
+            def offer(role, event, version, deadline, peer=None, **kwargs):
+                received.append((role, peer))
+                return {
+                    "role": role, "packet_id": "pkt_" + role,
+                    "offer": {"summary": "synthetic offer", "needs_reentry": False, "quotes": []},
+                    "evidence_refs": [],
+                }
+
+            def communicate(packet, target, **kwargs):
+                if packet["role"] == first and target == second:
+                    return peer_message
+                return None
+
+            runtime.cognition.offer = offer
+            runtime.cognition.communicate = Mock(side_effect=communicate)
+            runtime.pool.get = Mock(return_value=SimpleNamespace(
+                role="C3_LANGUAGE", last_metrics={"test_seam": True},
+                generate=lambda *args, **kwargs: iter(["Synthetic answer."]),
+            ))
+            runtime.submit("Compare two alternatives carefully")
+            until = time.monotonic() + 15
+            while not runtime.idle() and time.monotonic() < until:
+                time.sleep(.01)
+            assert runtime.idle()
+            assert [role for role, _ in received][:2] == [first, second]
+            assert received[0][1] is None
+            assert received[1][1] == peer_message
+            assert runtime.last_answer()["status"] == "FINAL"
+        finally:
+            runtime.close()
