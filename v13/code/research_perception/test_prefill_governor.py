@@ -22,9 +22,16 @@ class GovernorTests(unittest.TestCase):
     def test_bad_deadline_rejected(self):
         with self.assertRaises(ValueError): admit_prefill(self.samples,**(self.args|{'deadline_ms':True}))
     def test_decode_reserve_prevents_false_admission(self):
-        args=self.args|{'prompt_tokens':100,'deadline_ms':4500}
+        args=self.args|{'prompt_tokens':100,'deadline_ms':7500}
         self.assertEqual(admit_prefill(self.samples,**args).status,'ADMITTED')
-        self.assertEqual(admit_prefill(self.samples,**args,decode_reserve_ms=1000).status,'PREFILL_DEADLINE_RISK')
+        self.assertEqual(admit_prefill(self.samples,**args,decode_reserve_ms=1500).status,'PREFILL_DEADLINE_RISK')
+    def test_no_admission_on_zero_remaining_decode_budget(self):
+        args=self.args|{'prompt_tokens':100,'deadline_ms':6284}
+        self.assertEqual(admit_prefill(self.samples,**args,decode_reserve_ms=1).status,'PREFILL_DEADLINE_RISK')
+    def test_no_admission_for_nonfinite_factor(self):
+        for factor in (float('nan'),float('inf'),0.9,True):
+            with self.subTest(factor=factor),self.assertRaises(ValueError):
+                admit_prefill(self.samples,**self.args,safety_factor=factor)
     def test_invalid_reserve_rejected(self):
         for value in (True,-1,1.5):
             with self.subTest(value=value),self.assertRaises(ValueError):
