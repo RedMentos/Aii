@@ -45,6 +45,29 @@ def zero_token_prefill_failure(row):
             and native.get("last_phase") in {"load", "template", "prefill"})
 
 
+def successful_native_c3(row):
+    """Only measured, generated C3 output closes a native prefill-failure epoch.
+
+    A FINAL fallback, empty model answer or non-C3 completion is not evidence
+    that native C3 prefill recovered.
+    """
+    if not isinstance(row, dict) or row.get("status") != "FINAL":
+        return False
+    data = row.get("metadata")
+    if isinstance(data, str):
+        try:
+            data = json.loads(data)
+        except (ValueError, TypeError):
+            return False
+    if not isinstance(data, dict):
+        return False
+    native = data.get("runner")
+    return (isinstance(native, dict)
+            and native.get("role") == "C3_LANGUAGE"
+            and type(native.get("generated_tokens")) is int
+            and native["generated_tokens"] > 0)
+
+
 def recent_proof(store):
     """Only bounded device-local metadata. Never selects raw user/model text."""
     try:
@@ -67,13 +90,24 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
     total = deadline-start
     ordinary_end = start+DEFAULT_PREANSWER_FRACTION*total
     bounded = list(recent)[:MAX_RECENT]
-    failures = sum(zero_token_prefill_failure(row) for row in bounded)
+    # A completed successful C3 turn closes the old failure epoch.  A stale
+    # pair of timeouts must not keep suppressing synchronous B1/B2 forever
+    # merely because fewer than two subsequent FINAL turns fit in the window.
+    # Only failures newer than the most recent successful C3 output count.
+    failures = 0
+    for row in bounded:
+        if not isinstance(row, dict):
+            break
+        if successful_native_c3(row):
+            break
+        if zero_token_prefill_failure(row):
+            failures += 1
     recent_good = 0
     for row in bounded:
         if not isinstance(row, dict):
             break
         status=row.get("status")
-        if status == "FINAL":
+        if successful_native_c3(row):
             recent_good += 1
         else:
             break
