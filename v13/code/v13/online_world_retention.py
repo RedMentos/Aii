@@ -36,7 +36,7 @@ def evaluate_retention(old_rows, new_rows, old_holdout_rows, new_holdout_rows,
                 model.observe(x, action, y, rehearsals=rehearsals)
             old_after_second = model.error(old_test)
             new_after_second = model.error(new_test)
-            model.checkpoint(processed_ids=[row["action_id"] for row in old_rows + new_rows][-world_model.MAX_ROWS:])
+            model.checkpoint(processed_ids=[row["action_id"] for row in groups[0] + groups[1]][-world_model.MAX_ROWS:])
             restarted = OnlinePredictor(7, len(world_model.ACTIONS), home, lr=lr, replay=replay)
             if abs(restarted.error(old_test) - old_after_second) > 1e-12 or abs(restarted.error(new_test) - new_after_second) > 1e-12:
                 raise AssertionError("Retention changed after checkpoint restart")
