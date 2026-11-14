@@ -47,6 +47,8 @@ jobs:
           tests/test_unified_brain_delivery.py
           tests/test_enlightened_space.py
           tests/test_native_prompt_admission.py
+          tests/test_bodies.py
+          tests/test_native_protected_admission_20261113.py
           tests/test_native_turn_budget.py
           tests/test_phone_offer_delivery_audit.py
           tests/test_phone_runtime_diagnostics.py

@@ -311,9 +311,9 @@ class LlamaRunner:
             if candidate:
                 work,kind=candidate;removed.append(kind);truncated=True
                 continue
-            if len(work)>2:
-                work.pop(1);removed.append('OLD_NATIVE_HISTORY');truncated=True
-                continue
+            # Only the role-aware admission reducer may remove historical
+            # turns. Blind pop(1) could discard a B1/B2 reentry peer handoff,
+            # violating source binding and artificially shortening cognition.
             if fits_context:
                 # No unsafe clipping of current user text or source-bound
                 # approved hypotheses. The caller can see the unmet budget.
@@ -675,7 +675,10 @@ class RunnerPool:
             if self.fabric is None:
                 for k in [k for k in self.resident if k!=key]:self._release(k)
             else:
-                for r in self.fabric.admit(role,[k[0] for k in self.resident]):self._release((r,'generate'))
+                # Never report assigned Python runner objects as native live
+                # processes. C3 is the pinned speaker, not evictable by B1/B2.
+                for r in self.fabric.admit(role,self.resident_roles()):
+                    self._release((r,'generate'))
             path=self.models.path_for(role);cur=self.resident.get(key)
             if cur is not None and Path(str(cur.model)).resolve()!=Path(str(path)).resolve():  # WP-T13: another file serves this role now
                 if self.fabric is not None and getattr(self.fabric,'ports',None) is not None:
