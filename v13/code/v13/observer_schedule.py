@@ -49,7 +49,19 @@ def plan(schedule,roles,event_id,rate=.5,parallel_ok=False):
     elif schedule=='ON_DEMAND_REENTRY':out.update(pre=[],post=[],reason='ON_DEMAND_ONLY')
     return out
 
-def run(p,ask,end,on_error,clock=time.monotonic,cancelled=()):
+def role_deadline(end, now, remaining_roles, minimum_slice=1.0):
+    """Divide the remaining observer window fairly without extending the global deadline.
+
+    Each serial role receives at most its share. A timed-out/failed first body
+    must not consume the entire *planned* pre-answer window of the second.
+    This is a scheduling bound, not proof that a native backend honors deadlines.
+    """
+    if remaining_roles < 1:
+        raise ValueError('remaining_roles must be positive')
+    return min(end, now + max(0.0, end - now) / remaining_roles)
+
+
+def run(p,ask,end,on_error,clock=time.monotonic,cancelled=(),budgeted=False):
     """Run the pre-answer passes of plan ``p``. ``ask(role, use_peer)`` returns an offer.
 
     Sequential passes see the peer message of the earlier body (as before); parallel passes start
@@ -57,9 +69,13 @@ def run(p,ask,end,on_error,clock=time.monotonic,cancelled=()):
     """
     offers=[];roles=list(p['pre'])
     if not p['parallel']:
-        for role in roles:
+        for index,role in enumerate(roles):
             if clock()+1>=end:break
-            try:offers.append(ask(role,True))
+            try:
+                if budgeted:
+                    offers.append(ask(role,True,role_deadline(end,clock(),len(roles)-index)))
+                else:
+                    offers.append(ask(role,True))
             except cancelled:raise
             except Exception as exc:on_error(role,exc)
         return offers
