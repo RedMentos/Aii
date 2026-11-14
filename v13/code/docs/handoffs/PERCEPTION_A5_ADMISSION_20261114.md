@@ -1,11 +1,11 @@
-# Perception A5 bounded prompt admission — 2026-11-14
+# A5 admission adversarial regression handoff — 2026-11-14
 
-Owner: Forschung & Perception. P0 context: public issue #1904 documents 617–634-token native C3 prefill and zero generated tokens within 30s. This addition is a **non-integrated candidate**, not a fix for native latency.
+Owner: Forschung & Perception. P0: issue #1904 documents native C3 prefill timeout and absent B1/B2 offers. The release branch ALREADY contains `v13/percept_admission.py` and its nine original tests. This PR does not duplicate or replace those existing contracts.
 
-New inert module: `v13/percept_admission.py`; tests: `tests/test_percept_admission.py`. Its purpose is to preserve consent, provenance, timestamp and source lineage when future A5 audio/UI/visual evidence competes for a tiny C3 context envelope. It refuses partial summaries and exposes omissions to JEF. Token count is deliberately a conservative byte heuristic, not an exact LFM tokenizer count. The caller must independently validate actual native token count and apply global prompt admission, including user and B1/B2/Memory messages.
+Added `tests/test_percept_admission_adversarial.py` with six extra synthetic regression cases: denied consent, provisional evidence, multibyte budget, priority order, exact budget boundary and oversized input rejection.
 
-Run from `v13/code`: `PYTHONPATH=. python -m unittest discover -s tests -p test_percept_admission.py`.
+Run from `v13/code`: `PYTHONPATH=. python -m unittest discover -s tests -p 'test_percept_admission*.py'`.
 
-Evidence: synthetic only. Android microphone/screen permission and native feed **OFF/UNVERIFIED**. A3 learned teacher-to-student projector **UNAVAILABLE**. RAW EAR and speech decoder **OPEN**. No training, model weights, device commands or telemetry were activated.
+**Evidence status:** Source inspection complete; CI execution pending. This does NOT fix native C3 prefill, integrate A5 into C4, validate Android, prove A3 learning, or enable microphone/screen. A3 trained projector UNAVAILABLE, RAW EAR and voice effector OPEN, Redmi native result UNVERIFIED for this change. No private data or phone commands.
 
-Boss low-risk scope: additive inert contract and tests. Integration (high-risk, separate reviewed PR) must connect A5 packet production to C4/JEF and native C3 prompt admission without silently dropping current user text, and prove phone-side prefill and response delivery. No raw private conversations in public artifacts.
+Boss: low-risk additive tests only; release queue can evaluate exact PR head. Next higher-risk task: explicit runtime A5→C4/C3 admission, exact tokenizer counts and real Redmi first-token measurement with independent review.
