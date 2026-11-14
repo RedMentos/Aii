@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - gpt6/core-observer-runtime-regression-20261113
+      - gpt6/core-fairshare-error-diagnostics-20261114
   pull_request:
     paths:
       - 'v13/code/tests/test_observer_runtime_fairshare_integration.py'
