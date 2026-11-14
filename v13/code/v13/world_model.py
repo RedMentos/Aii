@@ -108,7 +108,9 @@ def transitions(store,limit=MAX_ROWS):
             lat=(fc.get('learned_latent_prediction') or {})
             lat=lat.get('latent') if type(lat) is dict else None
             if not isinstance(lat,list) or not lat or not _finite_vector(lat,len(lat)):lat=None
-            out.append({'action_id':r['id'],'s':state_vec(fc['input_chars'],resource,hour),'a':route,
+            out.append({'action_id':r['id'],'event_id':r['event_id'],
+                        'generation_id':r['generation_id'],
+                        's':state_vec(fc['input_chars'],resource,hour),'a':route,
                         'y':[math.log1p(act['action_duration_s']),1. if r['status']=='FINAL' else 0.,math.log1p(chars)/8],
                         'latent':lat})
         except (ValueError,TypeError,KeyError,OverflowError,ZeroDivisionError):
