@@ -87,6 +87,23 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertTrue(d["recovery"])
         self.assertEqual(d["recent_real_prefill_failures"],2)
 
+    def test_fallback_final_does_not_reset_native_failure_epoch(self):
+        fallback={"status":"FINAL","metadata":json.dumps({
+            "runner":{"role":"C3_LANGUAGE","generated_tokens":0,
+                      "last_phase":"prefill"}})}
+        rows=[turn(),fallback,turn()]
+        d=budget.plan(100,130,103,recent=rows)
+        self.assertTrue(d["recovery"])
+        self.assertEqual(d["recent_real_prefill_failures"],2)
+        self.assertEqual(d["recent_success_streak"],0)
+
+    def test_other_role_final_does_not_prove_c3_recovery(self):
+        rows=[turn("FINAL",generated=8,phase="stream",role="B2_GIST"),
+              turn(),turn()]
+        d=budget.plan(100,130,103,recent=rows)
+        self.assertTrue(d["recovery"])
+        self.assertFalse(budget.successful_native_c3(rows[0]))
+
     def test_untrusted_missing_data_is_not_a_phone_failure(self):
         bad=[
             turn("ERROR",generated=0),
