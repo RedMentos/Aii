@@ -22,7 +22,7 @@ class AdmissionTests(unittest.TestCase):
     def test_reject_bool_budget(self):
         with self.assertRaises(ValueError): admit_a5("x", [], budget_chars=True)
     def test_reject_multiline_id(self):
-        with self.assertRaises(ValueError): admit_a5("x", [A5Item("a\\nb","x",True,True)])
+        with self.assertRaises(ValueError): admit_a5("x", [A5Item("a" + chr(10) + "b","x",True,True)])
     def test_zero_budget_empty(self):
         out = admit_a5("source", [], budget_chars=0)
         self.assertEqual(out.included_ids, ())
