@@ -14,9 +14,22 @@ class GovernorTests(unittest.TestCase):
     def test_mismatched_batch_refused(self):
         self.assertEqual(admit_prefill(self.samples,**(self.args|{'batch':64})).status,'INSUFFICIENT_PROFILE')
     def test_extrapolation_refused(self):
-        self.assertEqual(admit_prefill(self.samples,**(self.args|{'prompt_tokens':1201})).status,'EXTRAPOLATION_UNSUPPORTED')
+        for tokens in (99,601,1201):
+            with self.subTest(tokens=tokens):
+                self.assertEqual(admit_prefill(self.samples,**(self.args|{'prompt_tokens':tokens})).status,'EXTRAPOLATION_UNSUPPORTED')
     def test_bad_measurement_rejected(self):
         with self.assertRaises(ValueError): admit_prefill((Sample(10,float('nan'),'c3',2,128,'fixture'),),**self.args)
     def test_bad_deadline_rejected(self):
         with self.assertRaises(ValueError): admit_prefill(self.samples,**(self.args|{'deadline_ms':True}))
+    def test_decode_reserve_prevents_false_admission(self):
+        args=self.args|{'prompt_tokens':100,'deadline_ms':4500}
+        self.assertEqual(admit_prefill(self.samples,**args).status,'ADMITTED')
+        self.assertEqual(admit_prefill(self.samples,**args,decode_reserve_ms=1000).status,'PREFILL_DEADLINE_RISK')
+    def test_invalid_reserve_rejected(self):
+        for value in (True,-1,1.5):
+            with self.subTest(value=value),self.assertRaises(ValueError):
+                admit_prefill(self.samples,**self.args,decode_reserve_ms=value)
+    def test_no_latency_claim_without_two_distinct_lengths(self):
+        samples=(self.samples[0],self.samples[0])
+        self.assertEqual(admit_prefill(samples,**self.args).status,'INSUFFICIENT_PROFILE')
 if __name__=='__main__': unittest.main()
