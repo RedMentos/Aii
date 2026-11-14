@@ -20,15 +20,15 @@ class AcousticFrame:
     provisional: bool = True
 
     def __post_init__(self):
-        if not (isinstance(self.start_ms, int) and isinstance(self.end_ms, int)
+        if not (type(self.start_ms) is int and type(self.end_ms) is int
                 and 0 <= self.start_ms < self.end_ms):
             raise ValueError("invalid monotonic audio frame interval")
         for name, value in (("rms", self.rms), ("speech_probability", self.speech_probability)):
-            if not isfinite(value) or not 0.0 <= value <= 1.0:
+            if type(value) not in (float, int) or not isfinite(value) or not 0.0 <= value <= 1.0:
                 raise ValueError("invalid " + name)
-        if self.pitch_hz is not None and (not isfinite(self.pitch_hz) or self.pitch_hz <= 0):
+        if self.pitch_hz is not None and (type(self.pitch_hz) not in (float, int) or not isfinite(self.pitch_hz) or self.pitch_hz <= 0):
             raise ValueError("invalid pitch")
-        if len(self.non_speech) > 8 or any(not isinstance(x, str) or len(x) > 32 for x in self.non_speech):
+        if len(self.non_speech) > 8 or any(not isinstance(x, str) or not x or len(x) > 32 for x in self.non_speech):
             raise ValueError("invalid non-speech label")
 
 
@@ -54,7 +54,7 @@ class TimedEarPacket:
             raise ValueError("bounded frame count required")
         if any(a.end_ms > b.start_ms for a, b in zip(self.frames, self.frames[1:])):
             raise ValueError("overlapping or unordered frames")
-        if self.transcript is not None and (not self.teacher_revision or len(self.transcript) > 4096):
+        if self.transcript is not None and (not isinstance(self.transcript, str) or not isinstance(self.teacher_revision, str) or not self.teacher_revision or len(self.teacher_revision) > 128 or len(self.transcript) > 4096):
             raise ValueError("ASR requires bounded teacher provenance")
         if not self.provenance or len(self.provenance) > 128:
             raise ValueError("invalid provenance")
