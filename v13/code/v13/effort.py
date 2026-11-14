@@ -94,9 +94,13 @@ def plan_for(effort,sig,p=BOOT):
 def age_limits(control,resource_state='NORMAL'):
     """Read Age rights/budgets from v13.age (WP-C); this module invents none."""
     mode=rmodes.as_mode(resource_state);b=control.budgets('system',mode)
-    return {'stage':control.ceiling('system'),'autonomous_effort_max':b['autonomous_effort_max'],'focal_depth':int(b['focal_depth']),
+    real={'stage':control.ceiling('system'),'autonomous_effort_max':b['autonomous_effort_max'],'focal_depth':int(b['focal_depth']),
             'deliberation':control.may('deliberation_modes',resource_mode=mode),'tools':control.may('simple_tool_choice',resource_mode=mode),
-            'long_loops':control.may('long_loops',resource_mode=mode),'resource_mode':mode}  # WP-T2: each right at its capability's ceiling
+            'long_loops':control.may('long_loops',resource_mode=mode),'resource_mode':mode}
+    # The experimental stage is independent of this earned age/permission
+    # controller. It may adjust only bounded native thinking headroom.
+    from .lab_age import simulated_effort
+    return simulated_effort(control,real,resource_mode=mode)
 AGE0={'stage':0,'autonomous_effort_max':'low','focal_depth':1,'deliberation':False,'tools':False,'long_loops':False,'resource_mode':'UNKNOWN'}
 
 def constrain(plan,*,direct=False,observers=True,resource_state='NORMAL',resource_mode=None,observer_window_s=None,cfg=None,age=None,p=BOOT):
@@ -116,7 +120,8 @@ def constrain(plan,*,direct=False,observers=True,resource_state='NORMAL',resourc
         elif fits<2 and plan['wake']=='both':ceiling='one';why.append('DEADLINE_ONE_BODY')
     if plan['max_reentry']>cfg.get('max_reentry',1):plan['max_reentry']=cfg.get('max_reentry',1);why.append('CFG_MAX_REENTRY')
     if plan['focal_slots']>cfg.get('focal_slots',8):plan['focal_slots']=cfg['focal_slots'];why.append('CFG_FOCAL_SLOTS')
-    depth=min(age['focal_depth'],p['max_cycles_age0']) if age['stage']==0 else age['focal_depth']
+    depth=(min(age['focal_depth'],p['max_cycles_age0'])
+           if age['stage']==0 and not age.get('lab_compute_active') else age['focal_depth'])
     if plan['focal_cycles']>depth:plan['focal_cycles']=depth;why.append('AGE_FOCAL_DEPTH')
     if plan['tool_steps'] and not age['tools']:plan['tool_steps']=0;why.append('AGE_NO_TOOLS')
     if plan['verify'] and not age['deliberation']:plan['verify']=False;why.append('AGE_NO_DELIBERATION_MODES')
@@ -124,7 +129,13 @@ def constrain(plan,*,direct=False,observers=True,resource_state='NORMAL',resourc
     if capped!=plan['wake']:plan['wake']=capped
     if plan['wake']!='both':plan['max_reentry']=0
     if ceiling=='none':plan.update(verify=False,observer_scale=0.)
-    plan['wake_ceiling']=ceiling;plan['constraints']=why;plan['age_stage']=age['stage'];return plan
+    if age.get('lab_compute_active'):
+        why.append('LAB_COMPUTE_ONLY_NO_NEW_RIGHTS')
+    plan['wake_ceiling']=ceiling;plan['constraints']=why
+    plan['age_stage']=age['stage']  # earned age; never the synthetic stage
+    plan['lab_stage']=age.get('lab_stage',0)
+    plan['lab_mode']=age.get('lab_mode','off')
+    return plan
 
 def decide(mode,sig,**limits):
     if mode not in MODES:raise ValueError('effort mode: '+'|'.join(MODES))
@@ -166,7 +177,8 @@ def record(store,e,plan,sig,wake,wake_source):
     p=packet('EffortDecision','C4_FOCAL',e['event_id'],e['brain_generation_id'],[e['source_ref']],mode=plan['mode'],effort=float(plan['effort']),
              wake=wake,wake_source=wake_source,plan=body,signals=sig,constraints=list(plan['constraints']),parameter_status='BOOT_HEURISTIC_NOT_LEARNED')
     store.add_packet('EffortDecision',p)
-    store.log('reasoning_effort',e['event_id'],{'mode':plan['mode'],'effort':plan['effort'],'band':plan['band'],'wake':wake,'wake_source':wake_source,'constraints':plan['constraints']})
+    store.log('reasoning_effort',e['event_id'],{'mode':plan['mode'],'effort':plan['effort'],'band':plan['band'],'wake':wake,'wake_source':wake_source,'constraints':plan['constraints'],
+                                                'official_age_stage':plan['age_stage'],'lab_age_stage':plan.get('lab_stage',0)})
     return p
 
 def summary(store,limit=200):

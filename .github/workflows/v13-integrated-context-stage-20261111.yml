@@ -1,14 +1,9 @@
 name: V13 staged context and integrated regression
 on:
   push:
-    branches: ['codex/v13-integrated-continuation-20261110']
-    paths:
-      - '.github/workflows/v13-integrated-context-stage-20261111.yml'
-      - 'v13/code/v13/**'
-      - 'v13/code/scripts/**'
-      - 'v13/code/candidates/**'
-      - 'v13/code/specs/**'
-      - 'v13/code/tests/**'
+    # Phone updates require a result for the exact release SHA, including
+    # documentation-only checkpoints and after the draft PR is closed.
+    branches: ['codex/v13-integrated-continuation-20261110', 'gpt6/v13-private-remote-bridge-20261111']
   pull_request:
     paths:
       - '.github/workflows/v13-integrated-context-stage-20261111.yml'
@@ -44,6 +39,20 @@ jobs:
           tests/test_context_source_recall_stage_20261111.py
           tests/test_runtime_jepa_utility_integration_20261111.py
           tests/test_world_jepa_training_resume_stage_20261111.py
+          tests/test_termux_probe_recovery_candidate_20261112.py
+          tests/test_termux_chat_recovery_candidate_20261112.py
+          tests/test_termux_idle_recovery_candidate_20261112.py
+          tests/test_termux_runtime_recovery_stage.py
+          tests/test_activate_termux_recovery.py
+          tests/test_unified_brain_delivery.py
+          tests/test_enlightened_space.py
+          tests/test_native_prompt_admission.py
+          tests/test_native_turn_budget.py
+          tests/test_phone_offer_delivery_audit.py
+          tests/test_phone_runtime_diagnostics.py
+          tests/test_native_sampling_policy.py
+      - name: Check recovery shell syntax
+        run: bash -n v13/code/scripts/termux_runtime_recovery.sh
   integrated-regression:
     runs-on: ubuntu-latest
     timeout-minutes: 15

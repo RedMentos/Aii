@@ -1,0 +1,6 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Run the SAME CI-gated transaction as the Redmi mobile control panel.
+# Never update the obsolete ~/V13-Phone checkout without activating bin/v13.
+set -euo pipefail
+export PYTHONPATH="$HOME/.v13-agent-source/v13/code${PYTHONPATH:+:$PYTHONPATH}"
+exec python -m v13.pipeline_agent "$@"

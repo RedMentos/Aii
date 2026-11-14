@@ -29,6 +29,22 @@ def kill_process(proc):
         proc.terminate()
         try:proc.wait(timeout=1.5)
         except subprocess.TimeoutExpired:proc.kill();proc.wait(timeout=2)
+def native_sampling_policy(role,cfg,schema=None):
+    """One native sampler authority path for all organs.
+
+    Anti-echo is a set of repetition/prefix controls, not permission to
+    override the owner's explicit temperature. Previously C3_DECODER silently
+    reset configured 0.1 to 0.6; on tiny C3 this makes even simple answers
+    needlessly stochastic and the WebView temperature knob misleading.
+    """
+    options={'temperature':cfg['temperature'],'top_k':50,'repeat_penalty':1.05}
+    if role=='C3_LANGUAGE' and not schema and cfg.get('c3_sampling','anti_echo')=='anti_echo':
+        from .guards import C3_DECODER
+        options.update({key:value for key,value in C3_DECODER.items()
+                        if key!='temperature'})
+    return options
+
+
 def native_cache_args(cfg):
     # b10964 defaults (--cache-ram 8192 MiB host prompt cache, 32 context
     # checkpoints per slot) assume a desktop. Qwen3.5 checkpoints are ~19 MiB
@@ -49,6 +65,9 @@ class LlamaRunner:
     def _lifecycle_stamp(self):
         # Warm generation checks metadata only. Approval/model/native hashes are
         # revalidated on load, never reread for every prompt on a healthy child.
+        # Native launcher parameters must be included: otherwise switching the
+        # Redmi UI CPU-thread/context/batch knobs silently leaves the previous
+        # long-lived llama-server process unchanged, invalidating A/B results.
         paths=[self.model,self.binary]
         if self.purpose=='generate':
             paths += [self.home/'config/lora-active.json',self.home/'config/memory-server.json',self.home/'bin/llama-server-mem']
@@ -65,7 +84,13 @@ class LlamaRunner:
                 return (str(path),*( (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns,s.st_mode) for s in (own,target)))
             except OSError:return (str(path),None)
         paths += self._approved_asset_paths+list(self._launch_assets.values())
-        return (('native_memory_audit',self.cfg.get('native_memory_audit',False) is True),)+tuple(stamp(p) for p in paths)
+        return (('native_memory_audit',self.cfg.get('native_memory_audit',False) is True),
+                ('threads',self.cfg.get('threads')),
+                ('context_tokens',self.cfg.get('context_tokens')),
+                ('native_batch_tokens',self.cfg.get('native_batch_tokens',128)),
+                ('native_cache_ram_mb',self.cfg.get('native_cache_ram_mb',128)),
+                ('native_ctx_checkpoints',self.cfg.get('native_ctx_checkpoints',6)),
+               )+tuple(stamp(p) for p in paths)
     @property
     def memory_delivery_binding(self):
         # The binding describes the child that completed its health handshake,
@@ -168,7 +193,7 @@ class LlamaRunner:
         lp=self.home/"logs"/(self.role+".log");rotate_log(lp);self.log_handle=open(lp,"ab");env=os.environ.copy();env.pop('V13_MEMORY_FILE',None);env["LLAMA_API_KEY"]=self.key
         # Noncausal embedding prefill must fit the whole admitted sequence in
         # one physical batch. Chunking changes the feature being measured.
-        batch=512 if (self.purpose=='tap' and self.role=='C3_LANGUAGE') or self.purpose=='embed' else 128
+        batch=512 if (self.purpose=='tap' and self.role=='C3_LANGUAGE') or self.purpose=='embed' else int(self.cfg.get('native_batch_tokens',128))
         cmd=[self.binary,"-m",str(self.model),"--host","127.0.0.1","--port",str(self.port),"-c",str(512 if self.purpose=='embed' else self.cfg["context_tokens"]),"-np","1","-t",str(self.cfg["threads"]),"-tb",str(self.cfg["threads"]),"-b",str(batch),"-ub",str(batch),"-ngl","0","--no-warmup","--no-webui","--log-disable"]
         cmd += native_cache_args(self.cfg)
         if self.purpose=='tap':cmd += ['--embedding','--pooling','none']
@@ -260,13 +285,45 @@ class LlamaRunner:
         if len(vectors)!=len(texts) or any(not v or not all(math.isfinite(x) for x in v) for v in vectors):raise Unavailable('Embedding-Antwort ungültig')
         return vectors
     def _prompt(self,messages,cancel,deadline,reserve):
+        # Native time and context length are different budgets. A 617-token
+        # C3 prefill demonstrably exhausted the Redmi's 30s turn while the
+        # 2048-token context check here said it was fine. Preserve the exact
+        # current source and fixed rules; remove only typed optional layers
+        # with explicit receipts before spending all compute on prefill.
+        from . import native_prompt_admission as admission
         work=[dict(x) for x in messages];truncated=False
-        while True:
-            check(cancel,deadline);p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
+        target=admission.soft_limit(self.role,self.cfg,deadline-time.monotonic())
+        removed=[];initial_tokens=None
+        for _ in range(16):
+            check(cancel,deadline)
+            p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
             tokens=self._json("POST","/tokenize",{"content":p,"add_special":True},deadline)["tokens"]
-            if len(tokens)+reserve+16<=self.cfg["context_tokens"]:return p,len(tokens),truncated
-            if len(work)>2:work.pop(1);truncated=True
-            else:raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
+            count=len(tokens)
+            if initial_tokens is None:initial_tokens=count
+            fits_context=count+reserve+16<=self.cfg["context_tokens"]
+            fits_clock=target is None or count<=target
+            if fits_context and fits_clock:
+                self._prompt_admission={'revision':admission.REVISION,'status':'ADMITTED',
+                    'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
+                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
+                return p,count,truncated
+            candidate=admission.reduce_once(work,self.role,self.cfg)
+            if candidate:
+                work,kind=candidate;removed.append(kind);truncated=True
+                continue
+            if len(work)>2:
+                work.pop(1);removed.append('OLD_NATIVE_HISTORY');truncated=True
+                continue
+            if fits_context:
+                # No unsafe clipping of current user text or source-bound
+                # approved hypotheses. The caller can see the unmet budget.
+                self._prompt_admission={'revision':admission.REVISION,
+                    'status':'PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET',
+                    'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
+                    'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
+                return p,count,truncated
+            raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
+        raise Limits("Native Kontextzulassung: maximale sichere Reduktionsschritte erreicht")
     def generate(self,messages,cancel,deadline,max_tokens=None,schema=None,seed=13,first_token_bias=None,confidence_field='summary'):
         if self.purpose!='generate':raise Unavailable('Tap-Runner erzeugt keine Antworten; Generation-Runner anfordern')
         audit_requested=self.cfg.get('native_memory_audit',False) is True
@@ -275,6 +332,7 @@ class LlamaRunner:
             audit_locked=self._audit_lock.acquire(blocking=False)
             if not audit_locked:raise Unavailable('Concurrent native audit request')
         self._audit_window=None;self._audit_unavailable=None;self._audit_completed=False
+        self._prompt_admission=None
         # Measure cold load, prefill and streaming, including failed/cancelled calls.
         started=time.monotonic();done=threading.Event();samples=[];peaks={'rss_bytes':None,'pss_bytes':None};count=0;self.last_metrics={};self.phase='load';self.phase_started=started;self.stage_times={};status='FINAL'
         def sample():
@@ -303,6 +361,7 @@ class LlamaRunner:
             values=[v for v in [self.last_metrics.get('sampled_peak_rss_bytes'),peaks['rss_bytes']] if v is not None]
             self.last_metrics['sampled_peak_rss_bytes']=max(values) if values else None
             self.last_metrics.setdefault('generated_tokens',0);self.last_metrics.setdefault('ttft_s',None)
+            if self._prompt_admission is not None:self.last_metrics['prompt_admission']=self._prompt_admission
             # A synchronous check may beat the watchdog. Do not stop its watcher
             # and leave the old native request running after declaring idle.
             if audit_locked:
@@ -336,10 +395,9 @@ class LlamaRunner:
         started=time.monotonic();self.load(cancel,deadline);self.stage_times['load_s']=time.monotonic()-started
         self.phase='template';self.phase_started=time.monotonic();cap=max_tokens or self.cfg["answer_tokens"];prompt,n,truncated=self._prompt(messages,cancel,deadline,cap)
         self.stage_times['template_s']=time.monotonic()-self.phase_started;self.phase='prefill';self.phase_started=time.monotonic()
-        payload={"prompt":prompt,"n_predict":cap,"stream":True,"temperature":self.cfg["temperature"],"top_k":50,"repeat_penalty":1.05,"seed":seed,"cache_prompt":True,"id_slot":0,"return_tokens":True}
-        if self.role=='C3_LANGUAGE' and not schema and self.cfg.get('c3_sampling','anti_echo')=='anti_echo':
-            from .guards import C3_DECODER
-            payload.update(C3_DECODER)  # WP-V3: v4 §65 start values against query echo
+        payload={"prompt":prompt,"n_predict":cap,"stream":True,
+                 **native_sampling_policy(self.role,self.cfg,schema),
+                 "seed":seed,"cache_prompt":True,"id_slot":0,"return_tokens":True}
         if schema:payload["json_schema"]=schema
         lp_pairs=[] if schema and self.cfg.get('offer_logprobs',True) else None
         if lp_pairs is not None:payload['n_probs']=1  # WP-KAL2: token confidence for focal.offer_uncertainty

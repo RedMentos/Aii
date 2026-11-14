@@ -12,8 +12,8 @@ from pathlib import Path
 import shutil
 import tempfile
 
-BUILDER = 'scripts/integrated_world_training_resume_candidate_20261111.py'
-BUILDER_SHA = '82e2fd27712d17a489ce5fd2f75d749f3f0e08dcc9d7fcc8852bbe6f738e8e18'
+BUILDER = 'scripts/termux_runtime_recovery_candidate_20261112.py'
+BUILDER_SHA = 'd081c499e9834b95b44161de463c9f824b4d524b9bc411b781cfa9aa8ab16ed4'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
@@ -59,12 +59,17 @@ def stage(code_dir: Path, destination: Path) -> dict:
     destination.parent.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix='.v13-integrated-', dir=destination.parent))
     try:
-        if (code_dir / 'v13').is_symlink() or (code_dir / 'specs').is_symlink():
+        if any((code_dir / name).is_symlink() for name in ('v13', 'specs', 'scripts')):
             raise ValueError('staging source directory cannot be a symlink')
         shutil.copytree(code_dir / 'v13', staging / 'v13', symlinks=True,
                         ignore=shutil.ignore_patterns(*IGNORED))
         if (code_dir / 'specs').is_dir():
             shutil.copytree(code_dir / 'specs', staging / 'specs', symlinks=True,
+                            ignore=shutil.ignore_patterns(*IGNORED))
+        # Runtime commands import scripts.ask_verified_budget and native
+        # helper modules. A runnable staged copy must retain those paths.
+        if (code_dir / 'scripts').is_dir():
+            shutil.copytree(code_dir / 'scripts', staging / 'scripts', symlinks=True,
                             ignore=shutil.ignore_patterns(*IGNORED))
         if any(path.is_symlink() for path in staging.rglob('*')):
             raise ValueError('staging source contains a symlink')

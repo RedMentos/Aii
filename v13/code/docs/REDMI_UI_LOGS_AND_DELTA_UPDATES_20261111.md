@@ -1,0 +1,73 @@
+# V13 Redmi: Browser-Steuerung, Logs und Delta-Updates
+
+Stand 2026-11-11. Der neue Browser-Code ist bisher in GitHub Actions unter Linux getestet, NICHT auf dem Redmi abgenommen. Der frühere HEALTH-Handshake war dagegen ein realer Termux-Nachweis.
+
+## Einmaliger Aktualisierungsbefehl
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/RedMentos/Aii/gpt6/v13-private-remote-bridge-20261111/v13/code/scripts/termux_one_command.sh -o "$HOME/v13-start.sh" && bash "$HOME/v13-start.sh"
+```
+
+Der Installer aktualisiert den privaten Bridge-/Dashboard-Code im separaten Verzeichnis ~/.v13-agent-source, überprüft das Relay RedMentos/Aiiii (PRIVATE) und öffnet die lokale Browseroberfläche. Die eigentliche V13-Installation ~/V13-Phone und die Modelle/Chats unter ~/v13 bleiben bestehen.
+
+## Touch-Oberfläche
+
+Aktionen: V13 Chat starten, Nachricht senden, abbrechen/beenden, Gehirnstatus, Modelle, Ressourcen, JEPA/World, Memory, Lernkandidaten, JEF, weitere Organproben, Diagnose-ZIP, Update prüfen/holen/zurücksetzen. Regler: CPU-Threads, Antwort-Tokens, Deadline, Temperatur, Modell-RAM-Budget. Der Befehls-Katalog wird aus der tatsächlich installierten Operator-Hilfe gelesen (statisches AST-Lesen, nicht ausgeführt); Kommandos mit Parametern benötigen diese Angaben.
+
+Der Browser bedient V13 über eine lokal gestartete, aufgezeichnete chat --plain-Sitzung. Ausgabe einschließlich User-Eingabe und Fehlermeldungen wird in ~/.v13-private/console-logs/ privat (0600) gehalten: maximal acht Dateien, jeweils ca. 4 MiB. Andere Termux-Sitzungen und verlorener alter Scrollback bleiben unerreichbar. Ein Klick auf Diagnose-ZIP erstellt ein lokales Artefakt in Android Downloads; diese ZIP kann Chattexte enthalten und wird NICHT automatisch verschickt.
+
+## Private KI-Diagnose
+
+Der autorisierte owner-read Issue-Befehl DIAGNOSTICS liest eine begrenzte, quellengebundene technische Zusammenfassung. Mit dem Button Fern-Fehlercodes EIN kann der Besitzer zusätzlich ausschließlich erkannte Fehlerklassen/Exit-Codes freigeben. Mit dem gesonderten Button V13-Konsolenauszug TEILEN kann er auch die letzten maximal 6000 Zeichen der verwalteten V13-Konsole zur privaten GitHub-Issue-Antwort freigeben. Benutzer-Eingabezeilen und erkennbare Tokens werden maskiert, aber andere Ausgaben können weiterhin private Informationen enthalten. GitHub speichert diese privaten Antworten; der Modus ist standardmäßig AUS und kann lokal widerrufen werden. Andere Termux-Shells werden dadurch nicht ausgelesen.
+
+## Delta-Updater
+
+Das GUI und der CLI-Befehl v13-update verwenden Git fetch plus fast-forward nur auf dem bereits ausgecheckten vertrauenswürdigen Branch und nur bei sauberem Checkout. Abgleich des vorherigen Commits, Syntaxprüfung, Git-Rollback-Referenz. Kein Setup-Neustart, Modell-Neudownload, Chats/Modelle-Überschreiben. Automatische Updates sind per GUI optional und standardmäßig AUS; sie prüfen alle 15 Minuten, sofern die Oberfläche läuft, und benötigen grüne genau-commitbezogene GitHub-Workflows. Updates an laufendem V13 werden verweigert. Vorhandene Python-Modelle müssen anschließend kontrolliert neugestartet werden.
+
+## Grenzen
+
+Kein beliebiger Remote-Shell-Zugriff, keine Android-Prozessliste anderer Apps, kein automatisches Teilen alter Konsolenlogs, keine Live-Gewichtsänderung, kein Root, kein System-Startup-Service. Die neue UI muss auf dem echten Redmi getestet werden; Linux CI allein genügt nicht.
+
+## Mobile UI 2: vier statt einer langen Scrollseite (2026-11-12)
+
+Die Oberfläche ist jetzt mobile-first in **vier logisch getrennte Tabs** umgebaut: **Chat**, **Gehirn**, **Regler**, **Wartung**. **Keine Befehle entfernt.** Der Gehirn-Tab gruppiert alle bisherigen spezifischen Operator-Kommandos plus die im installierten V13-HELP entdeckten Befehle. Anklicken übernimmt den Befehl in den Chat-Eingabebereich; Ausführen bleibt eine bewusste Aktion. Die kurze direkte Probe- und Modellbedienung bleibt erhalten.
+
+Im **Chat-Tab** stehen Start/Abbruch/Status, der live aktualisierte V13-Terminalverlauf, **„Gesamten Chat kopieren“** und **„Verlauf als TXT“** unmittelbar über dem Eingabefeld. Beim Kopieren werden alle aktuell noch gespeicherten verwalteten V13-Sitzungen (max. 32 lokale Protokolle mit Größenbegrenzung) zusammengeführt; die Ausgabe bleibt auf dem Smartphone, kein GitHub-Upload. Ein Browser, der Clipboard-Zugriff blockiert, kann das TXT direkt herunterladen. Andere Termux-Sitzungen und vor Aktivierung nicht protokollierte Texte sind nicht enthalten.
+
+Alle Formulare verwenden **AJAX**, sodass ein Klick nicht mehr an eine andere Stelle springt. Der laufende Status sowie die Konsolenausgabe werden alle 1,5 Sekunden über die lokale URL aktualisiert. Das Backend gibt für fehlende Voraussetzungen eine verständliche Fehlermeldung; es erscheint kein endloses „wird geprüft“ ohne Rückmeldung.
+
+Im **Wartungs-Tab** sind **V13-Code aktualisieren** und **Steuerzentrale aktualisieren** explizit getrennt. Der Code-Updater führt ein verifiziertes Git-fast-forward im vorhandenen `~/V13-Phone` aus. Die dort installierte `~/v13/bin/v13`-Launcherdatei referenziert diesen Code per `PYTHONPATH`; nach Update muss V13 neu gestartet werden, damit die neue Version aktiv ist. Der Browser-Updater aktualisiert `~/.v13-agent-source`, validiert geänderte Python-Dateien und die notwendige HTML-Datei und startet den lokalen HTTP-Server auf **demselben Port mit demselben lokalen Seiten-Token** neu. Vor beiden Updates muss eine über die Oberfläche gestartete V13-Sitzung beendet sein. Für Git-Fetch gilt 90 Sekunden Timeout; die Seite zeigt Dauer und Resultat an. Fehler werden sichtbar statt still im Hintergrund zu verschwinden.
+
+**Einmalige Migration aus der alten Oberfläche:** Den untenstehenden bereits existierenden Termux-Installer noch einmal ausführen, damit das neue HTML-Template mit installiert und das lokale Browserfenster neu geöffnet wird. Ab dann ist die Schaltfläche „Steuerzentrale aktualisieren“ direkt in der GUI verfügbar.
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/RedMentos/Aii/gpt6/v13-private-remote-bridge-20261111/v13/code/scripts/termux_one_command.sh -o "$HOME/v13-start.sh" && bash "$HOME/v13-start.sh"
+```
+
+**Nachweisgrenze:** Python-/HTTP-/JS-Tests in GitHub Actions validieren die neue Oberfläche synthetisch. Ein erneuter realer Redmi-Test des neuen vierteiligen Layouts und seines selbständigen Neustarts bleibt erforderlich, bevor behauptet wird, dass es auf diesem Gerät bereits funktioniert.
+
+
+## Automatisches Beenden und Neustarten bei Updates (2026-11-12)
+
+Die Bedienoberfläche und die GitHub-Pipeline starten ein verifiziertes Update nun ohne manuellen Chat-Stopp. Eine lokale, dateibasierte Lifecycle-Steuerung im privaten Termux-Verzeichnis fordert von der laufenden UI einen geordneten `:shutdown` an. Die UI wartet begrenzt auf das tatsächliche Ende und sendet bei Hängern einen gezielten `SIGINT` ausschließlich an die von ihr gestartete V13-Sitzung. Andere Android-Apps/Termux-Prozesse werden nie per Fernbefehl beendet. Wenn die Sitzung nicht sicher stoppt, wird **kein** Code aktualisiert.
+
+Anschließend folgt erst nach erfolgreichem Commit-Test und Git-fast-forward das Codeupdate. Ein privater One-Shot-Neustartmarker sorgt dafür, dass der Browser-Chat ohne erneutes Drücken auf *Chat starten* aus dem dauerhaften V13-Datenbestand zurückkehrt. Bei Updatefehlern wird derselbe Chat mit dem vorigen Code wieder gestartet. Die lokale UI und der private Relay-Agent starten sich nach eigenen Codeupdates erst **nach** dem Abschluss der Git-Transaktion neu. Bereits laufende Modellberechnungen können bei einem kontrollierten Stopp unterbrochen werden; nicht gespeicherte Zwischenergebnisse sind nicht garantiert. Nur abgeschlossene und gesicherte Chats/Lernstände bleiben zuverlässig erhalten.
+
+Der Einmal-Installer enthält zusätzlich einen Kompatibilitätsstopp für ältere Steuerzentralen: Er erkennt ausschließlich eigenständige, eindeutig dieser Termux-Installation zugeordnete V13-Chatprozesse, beendet sie begrenzt mit SIGINT/SIGTERM und legt den Neustartmarker vor der Installation an. Unbekannte Prozesse blockieren das Update und werden **nicht** signalisiert. Ist V13 vor dem Update nicht gestartet, wird keine Chat-Sitzung ungefragt erzeugt. Das manuelle `STOP`-Signal für den Diagnose-Agenten bleibt wirksam.
+
+Die genauen Stop-/Resume-Protokolle und Sperrbedingungen werden in GitHub Actions mit simulierten lokalen Prozessen und tatsächlichem Installer-Lauf getestet. Die reale Android-Bestätigung auf dem Redmi steht nach dem Update noch aus.
+
+
+## Echter V13-KI-Hintergrunddienst (2026-11-12)
+
+**Nicht verwechseln:** Der GitHub-Updater ist kein im Hintergrund laufender KI-Agent.
+
+- Modul v13.chat_service ist ein unabhängiger Termux-Python-Dienst mit dem tatsächlichen V13-Chat (~/v13/bin/v13 chat --plain). Er besitzt das Modellprozess-stdin, protokolliert Ausgaben lokal und läuft unabhängig von Browser oder UI-Neustart.
+- Das Browser-Dashboard verbindet sich nur über einen privaten Unix-Socket unter ~/.v13-private/v13-ai.sock (0700 Verzeichnis, 0600 Socket) mit dieser laufenden KI. Browser schließen beendet die V13-Sitzung nicht.
+- Modellabstürze werden mit begrenztem Backoff automatisch neu gestartet. Explizites :shutdown oder V13 beenden setzt den KI-Autostart auf AUS, Chat starten wieder auf EIN.
+- GitHub-CI-geprüfte Updates benutzen weiterhin einen geordneten lokalen Stopp-/Resume-Ablauf; das aktualisierte KI-Dienstmodul lädt nach einem Update ebenfalls neu und setzt die persistente V13-Sitzung fort.
+- Der Ein-Zeilen-Installer startet die KI nach dem Update automatisch und legt einen optionalen Termux:Boot-Hook an. Android führt ihn nur mit installierter Termux:Boot-App aus. Android 13 kann Hintergrundprozesse trotz allem beenden; garantierte 24/7-Verfügbarkeit benötigt einen zulässigen Android-Foreground-Service.
+- Die private DIAGNOSTICS-Antwort enthält nun technical_diagnostics.ai_runtime mit service / model_process / autostart / state. Dieser echte KI-Zustand ist ausdrücklich vom GitHub-Updater und Browserprozess getrennt. Keine Roh-Chats werden übertragen.
+- Der bestehende V13-Runtime-Worker bearbeitet beim Leerlauf bereits konfigurierte Sleep-/Replay- und Beobachter-Jobs. Age-0 RECORD_ONLY hat weiterhin keine autonome externe Tool- oder Shell-Autorität. Dauerlauf ist keine Behauptung vollständiger AGI.
+
+Verifikationsgrenze: Linux-CI-Tests mit echtem Stubsitzungs-Prozess sind nicht gleich Redmi-Dauerlauf. Erst private DIAGNOSTICS mit ai_runtime.model_process=RUNNING und ai_runtime.autostart=true belegen eine laufende KI auf dem Telefon.

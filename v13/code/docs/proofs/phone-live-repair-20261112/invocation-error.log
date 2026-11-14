@@ -1,0 +1,157 @@
+
+==================================== ERRORS ====================================
+______ ERROR collecting v13/code/tests/test_remote_maintenance_bridge.py _______
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_remote_maintenance_bridge.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_remote_maintenance_bridge.py:10: in <module>
+    from v13 import remote_maintenance_bridge as m
+E   ImportError: cannot import name 'remote_maintenance_bridge' from 'v13' (unknown location)
+_________ ERROR collecting v13/code/tests/test_termux_patch_staging.py _________
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_termux_patch_staging.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_termux_patch_staging.py:11: in <module>
+    from v13.termux_patch_staging import PatchDenied, SCHEMA, verify_and_stage
+E   ModuleNotFoundError: No module named 'v13.termux_patch_staging'
+__________ ERROR collecting v13/code/tests/test_owner_read_bridge.py ___________
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_owner_read_bridge.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_owner_read_bridge.py:8: in <module>
+    from v13 import owner_read_bridge as o
+E   ImportError: cannot import name 'owner_read_bridge' from 'v13' (unknown location)
+_____________ ERROR collecting v13/code/tests/test_remote_chat.py ______________
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_remote_chat.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_remote_chat.py:9: in <module>
+    from v13 import owner_read_bridge as owner
+E   ImportError: cannot import name 'owner_read_bridge' from 'v13' (unknown location)
+____________ ERROR collecting v13/code/tests/test_phone_monitor.py _____________
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_phone_monitor.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_phone_monitor.py:8: in <module>
+    from v13 import phone_monitor as monitor
+E   ImportError: cannot import name 'phone_monitor' from 'v13' (unknown location)
+____________ ERROR collecting v13/code/tests/test_pipeline_agent.py ____________
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_pipeline_agent.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_pipeline_agent.py:7: in <module>
+    from v13 import pipeline_agent as p
+E   ImportError: cannot import name 'pipeline_agent' from 'v13' (unknown location)
+______________ ERROR collecting v13/code/tests/test_lifecycle.py _______________
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_lifecycle.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_lifecycle.py:15: in <module>
+    from v13 import lifecycle as life
+E   ImportError: cannot import name 'lifecycle' from 'v13' (unknown location)
+_____________ ERROR collecting v13/code/tests/test_chat_service.py _____________
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_chat_service.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_chat_service.py:14: in <module>
+    from v13 import chat_service as ai
+E   ImportError: cannot import name 'chat_service' from 'v13' (unknown location)
+____________ ERROR collecting v13/code/tests/test_runtime_deploy.py ____________
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_runtime_deploy.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_runtime_deploy.py:14: in <module>
+    from v13 import runtime_deploy as d
+E   ImportError: cannot import name 'runtime_deploy' from 'v13' (unknown location)
+____________ ERROR collecting v13/code/tests/test_source_updater.py ____________
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_source_updater.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_source_updater.py:11: in <module>
+    from v13 import source_updater as u
+E   ImportError: cannot import name 'source_updater' from 'v13' (unknown location)
+___________ ERROR collecting v13/code/tests/test_diagnostic_push.py ____________
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_diagnostic_push.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_diagnostic_push.py:9: in <module>
+    from v13 import diagnostic_push as d
+E   ImportError: cannot import name 'diagnostic_push' from 'v13' (unknown location)
+______ ERROR collecting v13/code/tests/test_managed_console_dashboard.py _______
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_managed_console_dashboard.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_managed_console_dashboard.py:21: in <module>
+    from v13 import managed_console as mc
+E   ImportError: cannot import name 'managed_console' from 'v13' (unknown location)
+___________ ERROR collecting v13/code/tests/test_mobile_dashboard.py ___________
+ImportError while importing test module '/workspace/Aii/v13/code/tests/test_mobile_dashboard.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+v13/code/tests/test_mobile_dashboard.py:9: in <module>
+    from v13 import mobile_dashboard as d
+E   ImportError: cannot import name 'mobile_dashboard' from 'v13' (unknown location)
+=============================== warnings summary ===============================
+../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR v13/code/tests/test_remote_maintenance_bridge.py
+ERROR v13/code/tests/test_termux_patch_staging.py
+ERROR v13/code/tests/test_owner_read_bridge.py
+ERROR v13/code/tests/test_remote_chat.py
+ERROR v13/code/tests/test_phone_monitor.py
+ERROR v13/code/tests/test_pipeline_agent.py
+ERROR v13/code/tests/test_lifecycle.py
+ERROR v13/code/tests/test_chat_service.py
+ERROR v13/code/tests/test_runtime_deploy.py
+ERROR v13/code/tests/test_source_updater.py
+ERROR v13/code/tests/test_diagnostic_push.py
+ERROR v13/code/tests/test_managed_console_dashboard.py
+ERROR v13/code/tests/test_mobile_dashboard.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 13 errors during collection !!!!!!!!!!!!!!!!!!!
+1 warning, 13 errors in 1.87s

@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>V13 · Redmi</title>
+<style>
+:root{font-family:system-ui,-apple-system,Roboto,"Segoe UI",sans-serif;color-scheme:dark;background:#0d1119;color:#ebeff6}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:#0d1119}
+button,input,textarea{font:inherit}
+button{border:0;border-radius:12px;min-height:44px;background:#273448;color:#ecf3ff;padding:10px 14px;font-weight:650;cursor:pointer}
+button.primary{background:#377ddb;color:white}
+button.danger{background:#793940;color:white}
+button:disabled{opacity:.55;cursor:wait}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #80b6ff;outline-offset:2px}
+a{color:#b3d4ff}
+.top{position:sticky;top:0;z-index:20;background:#101720;border-bottom:1px solid #2c3746}
+.top-inner{max-width:1000px;margin:auto;padding:12px 14px 8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.brand{font-size:1.18rem;font-weight:790;letter-spacing:.01em}
+.state{font-size:.79rem;background:#233b37;color:#b8f4db;border-radius:30px;padding:6px 10px;white-space:nowrap}
+.tabs{max-width:1000px;margin:auto;padding:2px 8px 8px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.tabs button{font-size:.82rem;padding:9px 3px;border-radius:10px;background:transparent;color:#a5b0c0;min-height:42px}
+.tabs button.active{background:#28486a;color:#fff}
+.main{max-width:1000px;margin:auto;padding:14px 12px 50px}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:#19222e;border:1px solid #293748;border-radius:16px;padding:14px;margin-bottom:12px}
+.card h2{font-size:1.03rem;margin:0 0 12px}
+.card h3{font-size:.9rem;margin:16px 0 8px}
+.muted{color:#acbacd;font-size:.82rem;line-height:1.5}
+.mini{font-size:.75rem;color:#a5b5c8}
+.status-line{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.status-pills{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0 0}
+.pill{font-size:.74rem;border-radius:20px;background:#2b3747;padding:5px 9px}
+.pill.good{background:#214b40;color:#b5efd0}.pill.bad{background:#603336;color:#ffe0dd}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.actions form{min-width:0}
+.actions form button{width:100%;height:100%}
+.actions.compact{grid-template-columns:repeat(3,minmax(0,1fr))}
+.actions.compact button{font-size:.81rem;padding:10px 5px}
+.chat-output{height:min(48vh,500px);min-height:235px;overflow:auto;padding:12px;border:1px solid #2a394b;background:#0d141e;border-radius:12px;margin:0 0 10px;font-size:.83rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;user-select:text}
+.chat-header,.chat-toolbar{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
+.chat-header h2{margin:0}
+.chat-toolbar button,.chat-toolbar a{font-size:.82rem;text-align:center}
+.chat-toolbar a{background:#293849;padding:12px 14px;border-radius:10px;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.composer{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin:10px 0}
+.composer textarea{min-width:0;min-height:70px;resize:vertical;background:#101a25;border:1px solid #45607c;color:#fff;padding:12px;border-radius:12px;font-size:1rem;line-height:1.3}
+.composer button{align-self:stretch}
+.tiny-help{font-size:.79rem;color:#a9b9cc;margin:8px 0}
+details{margin:10px 0 0;background:#111a25;border:1px solid #2b3c51;border-radius:11px;padding:10px 11px}
+summary{cursor:pointer;font-weight:650}
+.command-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:12px 0 6px}
+.command-list button{font-size:.81rem;min-height:40px;padding:8px;word-break:break-word}
+.command-group{padding:0;background:none;border:0}
+.field-title{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.88rem;margin-bottom:6px}
+.slider-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:end;padding:11px 0;border-top:1px solid #2a3745}
+.slider-form input{width:100%;accent-color:#8fbdfd}
+.slider-form button{font-size:.8rem}
+.stack{display:flex;flex-direction:column;gap:8px}
+.feedback{position:fixed;bottom:16px;left:12px;right:12px;max-width:720px;margin:auto;z-index:50;background:#2b4c65;border:1px solid #6eabdc;color:#fff;padding:13px 16px;border-radius:13px;box-shadow:0 8px 36px #0009;display:none;line-height:1.4}
+.feedback.visible{display:block}
+.progress{height:7px;border-radius:12px;background:#26384b;overflow:hidden;margin:10px 0}
+.progress>span{display:block;height:100%;width:35%;background:#83b4f5;border-radius:12px;animation:scan 1.7s ease-in-out infinite alternate}
+.progress[hidden]{display:none}
+@keyframes scan{from{transform:translateX(-80%)}to{transform:translateX(270%)}}
+.update-line{font-weight:650;font-size:.9rem;line-height:1.5;margin:8px 0}
+.update-desc{font-size:.8rem;color:#a9b6c7}
+@media(min-width:700px){
+ .main{padding:20px 18px 60px}.card{padding:20px}
+ .chat-output{height:53vh;max-height:700px}
+ .command-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .actions.compact{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:375px){
+ .tabs button{font-size:.73rem}.actions.compact{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .composer{grid-template-columns:1fr}.composer button{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.progress>span{animation:none}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="top-inner"><span class="brand">V13 <span class="mini">· Redmi</span></span><span class="state" id="v13-live-state">@@STATE@@</span></div>
+ <nav class="tabs" aria-label="V13 Bereiche">
+  <button type="button" class="active" data-tab="chat">Chat</button>
+  <button type="button" data-tab="brain">Gehirn</button>
+  <button type="button" data-tab="settings">Regler</button>
+  <button type="button" data-tab="maintenance">Wartung</button>
+ </nav>
+</header>
+<div class="feedback @@FLASH_CLASS@@" id="notice" role="status" aria-live="polite">@@FLASH@@</div>
+<main class="main">
+ <section id="panel-chat" class="panel active" aria-label="Chat">
+  <div class="card">
+   <div class="chat-header"><h2>Mit V13 sprechen</h2><span class="mini" id="chat-running">@@STATE@@</span></div>
+   <p class="muted" id="ai-service-state">@@AI_STATE@@</p>
+   <div class="actions compact" style="margin-bottom:12px">
+     @@START_BUTTON@@
+     @@STOP_BUTTON@@
+     @@STATUS_BUTTON@@
+     @@HELP_BUTTON@@
+     @@SHUTDOWN_BUTTON@@
+   </div>
+   <pre id="v13-live-output" class="chat-output" aria-label="Gesprächsverlauf">@@OUTPUT@@</pre>
+   <div class="chat-toolbar">
+    <button type="button" id="copy-chat" class="primary">Gesamten Chat kopieren</button>
+    <a href="@@TRANSCRIPT_URL@@" download="V13-Chatverlauf.txt">Verlauf als TXT</a>
+   </div>
+   <form method="POST" action="@@ACTION@@" id="chat-compose">
+    <input type="hidden" name="action" value="send">
+    <div class="composer">
+     <textarea id="chat-input" name="command" maxlength="1600" placeholder="Nachricht an V13 schreiben …" aria-label="Nachricht an V13" required></textarea>
+     <button type="submit" class="primary">Nachricht senden</button>
+    </div>
+   </form>
+   <div class="tiny-help">Befehle aus „Gehirn“ werden hier eingefügt. Verlauf und Eingabefeld bleiben zusammen.</div>
+  </div>
+ </section>
+ <section id="panel-brain" class="panel" aria-label="Gehirn und Befehle">
+  <div class="card">
+   <h2>Gehirn & Modellstatus</h2>
+   <div class="muted">Letzter Modelltest: <strong>@@PROBE_STATUS@@</strong></div>
+   <div class="status-pills">@@ROLE_PILLS@@</div>
+   <p class="muted" style="margin-top:14px"><strong>Jetzt wirklich geladen</strong> · native Modellprozesse, nicht nur installierte Dateien:</p>
+   <div class="status-pills" id="live-native-roles" aria-live="polite">@@LIVE_ROLE_PILLS@@</div>
+   <div class="actions" style="margin-top:15px">@@MODEL_BUTTONS@@</div>
+   <div style="margin-top:16px">
+    <strong>Letzter tatsächlicher Gehirndurchlauf</strong>
+    <p class="muted" id="brain-evidence" aria-live="polite">@@BRAIN_EVIDENCE@@</p>
+    <p class="muted">Eine laufende Modell-Datei ist noch kein erfolgreich erzeugter B1/B2-Beitrag. „NATIVE_FAILED_NO_OFFER“ und 0 generierte C3-Tokens sind echte Funktionsfehler, kein grüner Modelltest.</p>
+   </div>
+  </div>
+  <div class="card"><h2>Alle Befehle – nach Funktionen</h2>
+   <p class="muted">Keine Funktionen entfernt. Ein Klick übernimmt den Befehl in den Chat; du kannst ihn ergänzen und abschicken.</p>
+   @@COMMAND_CATEGORIES@@
+  </div>
+ </section>
+ <section id="panel-settings" class="panel" aria-label="Einstellungen">
+  <div class="card">
+   <h2>Labor-Age · getrennt vom offiziellen Alter</h2>
+   <p class="muted">Das offiziell nachgewiesene Age bleibt 0. Du kannst die experimentelle Stufe unabhängig auf 0 bis 10 setzen. Aktiv erhöht nur begrenzte interne Denkbudgets, nie Werkzeug-, Sicherheits- oder Lernrechte.</p>
+   @@LAB_AGE_FORM@@
+  </div>
+  <div class="card">
+   <h2>V13 · Laufzeit & Budgets</h2>
+   <p class="muted">Jede Einstellung zeigt ihren Wert direkt neben dem Regler. „Anwenden“ sendet ihn an die laufende V13-KI.</p>
+   @@SLIDERS@@
+  </div>
+ </section>
+ <section id="panel-maintenance" class="panel" aria-label="Wartung">
+  <div class="card">
+   <h2>GitHub-Updates</h2>
+   <h3>Automatische Pipeline · privat verbunden</h3>
+   <p class="update-line" id="pipeline-result">@@PIPELINE_STATUS@@</p>
+   <div class="actions">@@PIPELINE_BUTTON@@</div>
+   <p class="muted">Ein Klick auf „Alles aktualisieren“ prüft die freigegebenen KI- und Oberflächenänderungen, aktiviert den geprüften Runtime-Build und startet V13 kontrolliert neu. Automatisch erfolgt die Prüfung etwa alle 15 Minuten, solange Termux und der private Agent laufen. Das ersetzt keine GitHub-Integration offener Entwicklungsbranches.</p>
+   <h3>Manuelle Aktionen</h3>
+   <p class="update-line" id="update-result">@@UPDATE_STATUS@@</p>
+   <div class="progress" id="update-progress" @@UPDATE_HIDDEN@@><span></span></div>
+   <p class="muted">Bei Updates wird ein laufender V13-Chat kontrolliert beendet und danach automatisch neu gestartet. Falls das sichere Beenden nicht gelingt, bleibt der Code unverändert. Der Status aktualisiert sich live.</p>
+   <h3>V13-Quellcode</h3>
+   <div class="actions">@@UPDATE_BUTTONS@@</div>
+   <p class="update-desc">Erweiterte Einzelaktionen. Der Hauptknopf oben übernimmt normalerweise beides: GitHub-Code und den tatsächlich installierten V13-Runtime-Build.</p>
+   <h3>Steuerzentrale</h3>
+   <div class="actions">@@DASHBOARD_UPDATE@@</div>
+   <p class="update-desc">Aktualisiert den Code dieser Browseroberfläche und startet sie nach erfolgreicher Prüfung neu. URL bleibt dabei erhalten.</p>
+  </div>
+  <div class="card">
+   <h2>Fern-Beobachtung & Entwicklung (freiwillig)</h2>
+   <p class="muted">Die Freigaben bleiben nach App-/KI-Neustarts bestehen und lassen sich hier einzeln widerrufen. Ohne Freigabe werden weder laufende Technikberichte noch Ferntests ausgeführt. Fernzugriff erfolgt ausschließlich über das bereits konfigurierte private GitHub-Relay.</p>
+   <p class="update-line" id="remote-observer-connection">Lade Rückkanal-Verbindungsstatus …</p>
+   @@REMOTE_OBSERVATION_PANEL@@
+   <h2>Diagnose & Protokolle</h2>
+   <p class="muted">Die Bedienoberfläche zeichnet ihre eigenen V13-Sitzungen lokal auf. Andere Termux-Sitzungen werden nicht ausgelesen.</p>
+   <div class="actions">@@DIAG_BUTTONS@@</div>
+   <p id="diagnostic-result" class="update-line" aria-live="polite">@@DIAGNOSTIC_STATUS@@</p>
+   <p class="muted">„Fehlerbericht jetzt senden“ übermittelt technische Diagnose, Pipeline-Status und Fehlerzeilen an dein privates GitHub-Repository. „Fehler + Chat jetzt senden“ übermittelt zusätzlich die letzten protokollierten Chat-Sitzungen. Zugangsdaten und lokale Sitzungsschlüssel werden ausgefiltert. Pro Bericht gelten Größenlimits. Es wird nur nach einem Klick hochgeladen, nicht dauerhaft. Die bisherigen Fernfreigabe-Schalter bleiben zusätzlich verfügbar.</p>
+   <p class="mini">Gesicherte Sitzungen: @@SESSION_COUNT@@</p>
+  </div>
+ </section>
+</main>
+<script>
+(function(){
+  const tokenBase = '@@PREFIX@@';
+  const state = document.getElementById('v13-live-state');
+  const running = document.getElementById('chat-running');
+  const aiService = document.getElementById('ai-service-state');
+  const liveNativeRoles = document.getElementById('live-native-roles');
+  const out = document.getElementById('v13-live-output');
+  const progress = document.getElementById('update-progress');
+  const updateStatus = document.getElementById('update-result');
+  const pipelineStatus = document.getElementById('pipeline-result');
+  const diagnosticStatus = document.getElementById('diagnostic-result');
+  const notice = document.getElementById('notice');
+  let prior = out.textContent;
+  let busy = false;
+  let generation = '@@GENERATION@@';
+  let noticeTimer = null;
+
+  function showNotice(msg){
+    notice.textContent = msg;
+    notice.classList.add('visible');
+    clearTimeout(noticeTimer);
+    noticeTimer = setTimeout(()=>notice.classList.remove('visible'), 6500);
+  }
+  function tab(name){
+    document.querySelectorAll('[data-tab]').forEach(b=>{
+      b.classList.toggle('active',b.dataset.tab===name);
+      b.setAttribute('aria-selected',String(b.dataset.tab===name));
+    });
+    document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+name));
+    try{sessionStorage.setItem('v13_tab',name);}catch(_){}
+  }
+  document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>tab(b.dataset.tab)));
+  const saved = (function(){try{return sessionStorage.getItem('v13_tab');}catch(_){return null;}})();
+  if(['chat','brain','settings','maintenance'].includes(saved))tab(saved);
+  document.querySelectorAll('button[data-fill]').forEach(btn=>btn.addEventListener('click',()=>{
+    tab('chat');
+    const input=document.getElementById('chat-input');
+    input.value=btn.dataset.fill;
+    input.focus();
+    input.scrollIntoView({behavior:'smooth',block:'center'});
+  }));
+  document.getElementById('chat-input').addEventListener('keydown',evt=>{
+    if(evt.key==='Enter'&&!evt.shiftKey&&!evt.isComposing){evt.preventDefault();document.getElementById('chat-compose').requestSubmit();}
+  });
+  document.querySelectorAll('input[type=range]').forEach(range=>{
+    range.addEventListener('input',()=>{const val=range.closest('form').querySelector('output');if(val)val.textContent=range.value;});
+  });
+  document.querySelectorAll('form').forEach(form=>form.addEventListener('submit',async event=>{
+    // The auto-update control always uses a native browser POST -> 303 -> GET.
+    // It works even when Android WebView AJAX or JavaScript is broken.
+    if(form.getAttribute('data-native-submit')==='1')return;
+    event.preventDefault();
+    const button=event.submitter;
+    if(button)button.disabled=true;
+    const fields=new FormData(form);
+    const action=fields.get('action');
+    try{
+      // Python's local HTTP handler accepts urlencoded forms, NOT multipart.
+      // Sending FormData directly makes browsers post multipart; CSRF cannot
+      // be parsed, yielding an empty 403 and a JSON parse error.
+      const body=new URLSearchParams(fields);
+      // HTMLFormElement.action is DOM-clobbered by <input name="action">.
+      // Attribute lookup reliably retrieves the local endpoint instead.
+      const response=await fetch(form.getAttribute('action'),{
+        method:'POST',body,
+        headers:{'Accept':'application/json',
+                 'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
+        cache:'no-store'
+      });
+      const raw=await response.text();
+      let data=null;
+      if(raw){try{data=JSON.parse(raw);}catch(_){}}
+      if(!data||typeof data!=='object')
+        throw new Error('Serverantwort leer oder ungültig (HTTP '+response.status+').');
+      if(response.status===403 && data.message && data.message.includes('Sitzungsschlüssel ungültig')){
+        showNotice('Diese V13-Seite wurde neu gestartet. Seite wird aktualisiert.');
+        window.location.reload();
+        return;
+      }
+      if(!response.ok||!data.ok)throw new Error(data.message||'HTTP '+response.status);
+      showNotice(data.message||'Aktion ausgeführt');
+      if(action==='send')form.querySelector('textarea').value='';
+      if(String(action).includes('update')||action==='pipeline_check'||String(action).startsWith('diag_send_')||String(action).startsWith('remote_')){tab('maintenance');}
+      // Keep rendered WebView toggles synchronized with durable worker state.
+      if(action==='auto_enable'||action==='auto_disable'||String(action).startsWith('remote_')){
+        tab('maintenance');
+        window.location.reload();
+        return;
+      }
+      await refresh();
+    }catch(err){showNotice('Fehler: '+String(err.message||err));}
+    finally{if(button)button.disabled=false;}
+  }));
+  function updateNativeRoles(data){
+    if(!data || typeof data !== 'object' || data.availability!=='AVAILABLE'){
+      liveNativeRoles.textContent='Live-Modellprozesse: nicht messbar';
+      return;
+    }
+    if(data.readability!=='OBSERVED'){
+      liveNativeRoles.textContent='Live-Modellprozesse: noch nicht nachweisbar';
+      return;
+    }
+    const roles=data.roles||{};
+    const labels=[['B1_DETAIL','B1 Detail'],['B2_GIST','B2 Gist'],
+                  ['C2_CONTROL','C2 JEF'],['C3_LANGUAGE','C3 Sprache']];
+    const nodes=labels.map(([role,label])=>{
+      const observed=roles[role]||{};
+      const count=Number.isInteger(observed.processes)&&observed.processes>=0&&observed.processes<=100?observed.processes:0;
+      const memory=Number.isFinite(observed.pss_mib)&&observed.pss_mib>=0&&observed.pss_mib<100000?
+        ' · '+observed.pss_mib.toFixed(1)+' MiB PSS':'';
+      const span=document.createElement('span');
+      span.className='pill';
+      span.textContent=label+': '+count+' laufend'+memory;
+      return span;
+    });
+    liveNativeRoles.replaceChildren(...nodes);
+  }
+  async function refresh(){
+    if(document.hidden||busy)return;
+    busy=true;
+    try{
+      const response=await fetch(tokenBase+'/state',{cache:'no-store'});
+      if(!response.ok)return;
+      const data=await response.json();
+      if(typeof data.generation==='string'){
+        if(generation!==null && generation!==data.generation){
+          window.location.reload(); return; // updated control-panel code, same local URL
+        }
+        generation=data.generation;
+      }
+      if(typeof data.output==='string'&&data.output!==prior){
+        const nearBottom=out.scrollHeight-out.scrollTop-out.clientHeight<100;
+        out.textContent=data.output||'Noch keine Ausgabe. V13 starten.';
+        prior=data.output;
+        if(nearBottom)out.scrollTop=out.scrollHeight;
+      }
+      if(typeof data.state==='string'){state.textContent=data.state;running.textContent=data.state;}
+      if(typeof data.ai_daemon==='string'){
+        aiService.textContent='V13-Hintergrund-KI: '+data.ai_daemon+
+          (data.ai_autostart===true?' · Autostart EIN':
+           data.ai_autostart===false?' · Autostart AUS':' · Autostart unbekannt');
+      }
+      if(typeof data.update_result==='string')updateStatus.textContent=data.update_result;
+      if(typeof data.pipeline_status==='string')pipelineStatus.textContent=data.pipeline_status;
+      if(data.native_residency)updateNativeRoles(data.native_residency);
+      if(typeof data.diagnostic_status==='string')diagnosticStatus.textContent=data.diagnostic_status;
+      if(data.brain_evidence){
+        const e=data.brain_evidence, el=document.getElementById('brain-evidence');
+        if(el){
+          if(e.availability==='LOCAL_SQLITE_METADATA'){
+            const b1=e.roles?.B1_DETAIL?.delivery||'UNKNOWN';
+            const b2=e.roles?.B2_GIST?.delivery||'UNKNOWN';
+            const tokens=Number.isInteger(e.c3_prompt_tokens)&&Number.isInteger(e.c3_generated_tokens)?
+              ' · C3: '+e.c3_generated_tokens+' erzeugt / '+e.c3_prompt_tokens+' Prompt-Tokens':'';
+            el.textContent='Letzte Antwort: '+e.turn_status+' · B1: '+b1+' · B2: '+b2+tokens;
+          }else{
+            el.textContent=e.availability==='NO_TURNS'?'Noch kein echter Chatdurchlauf':'Laufzeitnachweis nicht lesbar';
+          }
+        }
+      }
+      if(data.remote_observation){
+        const o=data.remote_observation;
+        const target=document.getElementById('remote-observer-connection');
+        if(target)target.textContent='Rückkanal: '+(o.relay_recently_polled?'GitHub-Verbindung bestätigt':'nicht verbunden / offline')+
+          ' · Technikberichte '+(o.observe?'EIN':'AUS')+
+          ' · Ferntests '+(o.remote_tests?'EIN':'AUS')+
+          ' · letzter Versand '+(o.last_upload_utc||'noch nie');
+      }
+      if(typeof data.update_busy==='boolean')progress.hidden=!data.update_busy;
+    }catch(_){}
+    finally{busy=false;}
+  }
+  document.getElementById('copy-chat').addEventListener('click',async()=>{
+    const button=document.getElementById('copy-chat');
+    button.disabled=true;button.textContent='Verlauf wird geladen …';
+    try{
+      const response=await fetch(tokenBase+'/transcript',{cache:'no-store'});
+      if(!response.ok)throw new Error('Verlauf nicht erreichbar');
+      const history=await response.text();
+      if(!history.trim())throw new Error('Noch kein gespeicherter V13-Verlauf');
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        await navigator.clipboard.writeText(history);
+      }else{
+        const temporary=document.createElement('textarea');temporary.value=history;
+        temporary.style.position='fixed';temporary.style.opacity='0';
+        document.body.appendChild(temporary);temporary.focus();temporary.select();
+        if(!document.execCommand('copy'))throw new Error('Clipboard gesperrt');
+        temporary.remove();
+      }
+      showNotice('Gesamter gespeicherter V13-Chatverlauf kopiert.');
+    }catch(err){showNotice('Kopieren fehlgeschlagen: '+String(err.message||err)+'. „Verlauf als TXT“ verwenden.');}
+    finally{button.disabled=false;button.textContent='Gesamten Chat kopieren';}
+  });
+  setInterval(refresh,1500);refresh();
+})();
+</script>
+</body>
+</html>
