@@ -66,7 +66,15 @@ class OnlineWorld:
             # Publish weights, replay, RNG and T8 cursor in ONE atomic NPZ.
             # A crash before os.replace replays the whole transition; a crash
             # afterwards restores both the learned weights and its identifier.
-            self.model.checkpoint(processed_ids=next_ids)
+            try:
+                self.model.checkpoint(processed_ids=next_ids)
+            except Exception:
+                # observe() already mutated RAM. Rehydrate from the last
+                # committed snapshot so retry cannot double-train the row.
+                # If no checkpoint exists, return to the fresh initial model.
+                self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,
+                    lr=self.model.lr,replay=self.model.cap)
+                raise
             self.processed=next_ids
         retention_after=self.model.error(replay) if replay else None
         return {'learned':len(new),'seen':self.model.seen,'tracked_ids':len(self.processed),
