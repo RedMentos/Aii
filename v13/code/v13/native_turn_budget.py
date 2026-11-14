@@ -67,7 +67,18 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
     total = deadline-start
     ordinary_end = start+DEFAULT_PREANSWER_FRACTION*total
     bounded = list(recent)[:MAX_RECENT]
-    failures = sum(zero_token_prefill_failure(row) for row in bounded)
+    # A completed successful C3 turn closes the old failure epoch.  A stale
+    # pair of timeouts must not keep suppressing synchronous B1/B2 forever
+    # merely because fewer than two subsequent FINAL turns fit in the window.
+    # Only failures newer than the most recent successful C3 output count.
+    failures = 0
+    for row in bounded:
+        if not isinstance(row, dict):
+            break
+        if row.get("status") == "FINAL":
+            break
+        if zero_token_prefill_failure(row):
+            failures += 1
     recent_good = 0
     for row in bounded:
         if not isinstance(row, dict):
