@@ -80,3 +80,19 @@ def background(schedule,event_id,rate,roles,planned_post=None):
     if schedule=='SAMPLED_OBSERVER' and not sampled(event_id,rate):return []
     if schedule=='JEF_FIRST_THEN_BOTH' and planned_post is not None:return [r for r in ORDER if r in planned_post]
     return list(roles)
+
+def fair_deadline(plan,role,end,clock=time.monotonic,min_slice=1.0):
+    """Reserve a bounded chance for the second sequential body.
+
+    This does not skip either organ, change the logical peer order or grant
+    authority to an unvalidated offer. A timed-out first body may still leave
+    the second body enough of the original observer window to attempt work.
+    """
+    roles=plan.get('pre',())
+    if plan.get('parallel') or len(roles)<2 or role!=roles[0]:
+        return end
+    now=clock()
+    remaining=max(0.0,end-now)
+    if remaining<=2*min_slice:
+        return end
+    return min(end,now+remaining/2)
