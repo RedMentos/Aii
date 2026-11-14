@@ -8,7 +8,7 @@ import json
 OPTIONAL = (
     "self_corollary", "jef_broadcast", "body_state", "executive_broadcast",
     "prior_hypothesis", "earlier_context", "recent_source",
-    "detail_windows", "local_gist", "quote_choices",
+    "detail_windows", "local_gist",
 )
 
 def admit(query, *, max_optional_chars=320):
