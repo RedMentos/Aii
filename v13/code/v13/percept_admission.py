@@ -50,6 +50,8 @@ def admit(percepts: Iterable[Percept], token_budget: int, *, max_items: int = 12
         seen.add(p.source_id)
         if p.modality not in ("audio", "visual", "ui", "text") or not isinstance(p.start_ms, int) or not isinstance(p.end_ms, int) or p.start_ms < 0 or p.end_ms < p.start_ms or len(p.summary) > 4096:
             raise ValueError("invalid percept")
+        if type(p.consent) is not bool or type(p.final) is not bool:
+            raise ValueError("consent and final must be explicit booleans")
         if not p.consent or not p.final:
             omitted.append(p.source_id)
             continue
