@@ -36,11 +36,13 @@ def test_failed_first_body_still_attempts_second_and_answers(schedule, first, se
                 calls.append((role, deadline, time.monotonic()))
                 if role == first:
                     raise TimeoutError("simulated first body budget exhausted")
-                return packet("OfferPacket", role, event["event_id"], event["brain_generation_id"],
+                p = packet("OfferPacket", role, event["event_id"], event["brain_generation_id"],
                     [event["source_ref"]], role=role, based_on_state_version=version,
                     deadline_monotonic_ns=int((deadline + 5) * 1e9),
                     evidence_refs=[event["source_ref"]], confidence=0.0,
                     offer={"summary": "source-bound test offer", "needs_reentry": False, "quotes": []})
+                runtime.store.add_packet("OfferPacket", p)
+                return p
             runtime.cognition.offer = offer
             runtime.cognition.communicate = Mock(return_value=None)
             def generate(messages, cancel, deadline, *args, **kwargs):
@@ -60,7 +62,7 @@ def test_failed_first_body_still_attempts_second_and_answers(schedule, first, se
             roles = [role for role, _, _ in calls]
             assert roles[:2] == [first, second], roles
             assert calls[0][1] < calls[1][1], "first body must not consume second deadline"
-            assert answer["status"] == "FINAL", metadata
+            assert answer["status"] == "FINAL", (metadata.get("detail"), metadata.get("failure_stage"))
             assert "Visible response." in answer["text"]
         finally:
             runtime.close()
@@ -85,11 +87,13 @@ def test_successful_first_body_passes_peer_message_to_second(schedule, first, se
 
             def offer(role, event, version, deadline, peer=None, **kwargs):
                 received.append((role, peer))
-                return packet("OfferPacket", role, event["event_id"], event["brain_generation_id"],
+                p = packet("OfferPacket", role, event["event_id"], event["brain_generation_id"],
                     [event["source_ref"]], role=role, based_on_state_version=version,
                     deadline_monotonic_ns=int((deadline + 5) * 1e9),
                     evidence_refs=[event["source_ref"]], confidence=0.0,
                     offer={"summary": "synthetic offer", "needs_reentry": False, "quotes": []})
+                runtime.store.add_packet("OfferPacket", p)
+                return p
 
             def communicate(packet, target, **kwargs):
                 if packet["role"] == first and target == second:
@@ -110,6 +114,6 @@ def test_successful_first_body_passes_peer_message_to_second(schedule, first, se
             assert [role for role, _ in received][:2] == [first, second]
             assert received[0][1] is None
             assert received[1][1] == peer_message
-            assert runtime.last_answer()["status"] == "FINAL", json.loads(runtime.last_answer()["metadata"])
+            assert runtime.last_answer()["status"] == "FINAL", json.loads(runtime.last_answer()["metadata"]).get("detail")
         finally:
             runtime.close()
