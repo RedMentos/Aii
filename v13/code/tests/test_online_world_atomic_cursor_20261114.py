@@ -48,5 +48,25 @@ class AtomicT8CursorTests(unittest.TestCase):
                     self.assertEqual(restarted.update()['learned'],1)
                     self.assertEqual(OnlineWorld(runtime).model.seen,2)
 
+    def test_retry_same_process_after_failed_checkpoint_is_exactly_once(self):
+        with tempfile.TemporaryDirectory() as td:
+            runtime=SimpleNamespace(home=td,store=object())
+            rows=[self.row('trusted-a')]
+            with patch('v13.online_world.world_model.transitions',return_value=rows):
+                learner=OnlineWorld(runtime)
+                learner.update()
+                baseline=learner.model.seen
+                with patch.object(learner.model,'checkpoint',side_effect=OSError('disk full')):
+                    with patch('v13.online_world.world_model.transitions',
+                               return_value=rows+[self.row('trusted-b')]):
+                        with self.assertRaises(OSError):learner.update()
+                self.assertEqual(learner.model.seen,baseline)
+                self.assertEqual(learner.processed,['trusted-a'])
+                with patch('v13.online_world.world_model.transitions',
+                           return_value=rows+[self.row('trusted-b')]):
+                    self.assertEqual(learner.update()['learned'],1)
+                self.assertEqual(learner.model.seen,baseline+1)
+                np.testing.assert_array_equal(learner.model.W,OnlineWorld(runtime).model.W)
+
 if __name__=='__main__':
     unittest.main()
