@@ -197,11 +197,23 @@ class ChatService:
                 self.stop_deadline = 0.0
                 self.next_retry = 0
                 self.paused = False
-                self.console.start()
+                try:
+                    response = self.console.start()
+                except (OSError, RuntimeError, ValueError):
+                    self.status = "LAUNCH_FAILED"
+                    self.failures += 1
+                    self.next_retry = time.monotonic() + min(120, max(3, 2 ** min(self.failures, 6)))
+                    return {"status":"LAUNCH_FAILED"}
+                if not isinstance(response, dict) or response.get("status") not in ("STARTED", "ALREADY_RUNNING"):
+                    self.status = "LAUNCH_FAILED"
+                    self.failures += 1
+                    self.next_retry = time.monotonic() + min(120, max(3, 2 ** min(self.failures, 6)))
+                    return {"status":"LAUNCH_FAILED"}
                 self.last_start = time.monotonic()
                 self.next_retry = self.last_start
+                self.failures = 0
                 self.status = "RUNNING"
-                return {"status":"STARTED"}
+                return {"status":response["status"]}
             if name == "send":
                 command = data.get("line")
                 if not isinstance(command, str):
