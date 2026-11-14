@@ -1,9 +1,10 @@
-"""Bounded synthetic/authorized PCM feature adapter for existing A5 contract.
+"""Bounded PCM16 RAW EAR feature adapter; no microphone permission or live capture.
 
-No microphone access or consent creation. Source hash and consent receipt must
-be supplied by independently authorized capture layer.
+Caller supplies independently authorized source hash and consent receipt.
+Only aggregate acoustic features enter A5; raw PCM is not persisted here.
 """
 import math
+import struct
 from .audio_percept_contract import audio_percept_packet
 
 
@@ -19,13 +20,22 @@ def pcm16_to_a5(*, pcm, sample_rate, start_ms, event_id, generation_id,
     duration_ms = (n * 1000) // sample_rate
     if duration_ms < 1:
         raise ValueError("minimum duration 1 ms")
-    values = [int.from_bytes(pcm[i:i+2], "little", signed=True) / 32768.0
-              for i in range(0, len(pcm), 2)]
-    rms = math.sqrt(sum(x*x for x in values) / n)
-    zcr = sum((a < 0) != (b < 0) for a, b in zip(values, values[1:])) / max(1, n-1)
+    # Streaming accumulation: no per-sample Python float array, bounded memory.
+    power = 0.0
+    crossings = 0
+    previous_negative = None
+    for (sample,) in struct.iter_unpack("<h", pcm):
+        x = sample / 32768.0
+        power += x * x
+        negative = sample < 0
+        if previous_negative is not None and previous_negative != negative:
+            crossings += 1
+        previous_negative = negative
+    rms = math.sqrt(power / n)
+    zcr = crossings / max(1, n - 1)
     return audio_percept_packet(
         event_id=event_id, generation_id=generation_id,
         source_id=source_id, source_sha256=source_sha256,
-        start_ms=start_ms, end_ms=start_ms+duration_ms,
+        start_ms=start_ms, end_ms=start_ms + duration_ms,
         rms=rms, zcr=zcr, finality=finality,
         consent_receipt=consent_receipt)
