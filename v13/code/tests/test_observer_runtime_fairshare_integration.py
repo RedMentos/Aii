@@ -59,7 +59,7 @@ def test_failed_first_body_still_attempts_second_and_answers(schedule, first, se
             roles = [role for role, _, _ in calls]
             assert roles[:2] == [first, second], roles
             assert calls[0][1] < calls[1][1], "first body must not consume second deadline"
-            assert answer["status"] == "FINAL"
+            assert answer["status"] == "FINAL", metadata
             assert "Visible response." in answer["text"]
         finally:
             runtime.close()
@@ -109,6 +109,6 @@ def test_successful_first_body_passes_peer_message_to_second(schedule, first, se
             assert [role for role, _ in received][:2] == [first, second]
             assert received[0][1] is None
             assert received[1][1] == peer_message
-            assert runtime.last_answer()["status"] == "FINAL"
+            assert runtime.last_answer()["status"] == "FINAL", json.loads(runtime.last_answer()["metadata"])
         finally:
             runtime.close()
