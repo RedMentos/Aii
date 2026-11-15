@@ -1,0 +1,24 @@
+name: V13 core arithmetic reflex
+on:
+  push:
+    branches:
+      - gpt6/core-arithmetic-20261116
+  pull_request:
+    paths:
+      - 'v13/code/v13/arithmetic_reflex.py'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/tests/test_arithmetic_reflex.py'
+      - '.github/workflows/v13-core-arithmetic.yml'
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: v13/code
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m compileall -q v13
+      - run: python -m unittest discover -s tests -p test_arithmetic_reflex.py -v
