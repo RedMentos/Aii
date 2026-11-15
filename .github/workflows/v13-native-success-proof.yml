@@ -1,0 +1,25 @@
+name: V13 native C3 success proof
+on:
+  push:
+    branches:
+      - gpt6/core-native-success-proof-20261115
+  pull_request:
+    paths:
+      - 'v13/code/v13/native_turn_budget.py'
+      - 'v13/code/tests/test_native_turn_budget.py'
+      - '.github/workflows/v13-native-success-proof.yml'
+  workflow_dispatch:
+jobs:
+  native-turn-budget:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pytest
+      - name: Native recovery and Cognition integration regressions
+        working-directory: v13/code
+        run: python -m pytest -q tests/test_native_turn_budget.py
