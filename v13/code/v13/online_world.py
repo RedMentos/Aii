@@ -68,7 +68,10 @@ class OnlineWorld:
             try:
                 self.model.checkpoint(processed_ids=candidate)
             except Exception:
-                self.model.restore() if self.model.path.exists() else None
+                # Recreate from the durable snapshot, or from the initial
+                # parameters if the very first checkpoint never committed.
+                self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,
+                                           lr=self.model.lr,replay=self.model.cap)
                 raise
             self.processed=candidate
         retention_after=self.model.error(replay) if replay else None
