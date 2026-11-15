@@ -596,8 +596,17 @@ class Runtime:
                                 return selected
                             runner.bias_provider=causal_bias
                     else:
-                        decision=self.learner.output_delta(e,messages,min(deadline,time.monotonic()+self.cfg['output_adapter_seconds']),context_refs)
-                        if decision and decision['in_support']:output_kwargs['first_token_bias']=decision['first_token_bias']
+                        from .native_budget import admit_output_adapter
+                        remaining=deadline-time.monotonic()
+                        adapter_budget=self.cfg['output_adapter_seconds']
+                        if admit_output_adapter(remaining,adapter_budget):
+                            decision=self.learner.output_delta(e,messages,min(deadline,time.monotonic()+adapter_budget),context_refs)
+                            if decision and decision['in_support']:output_kwargs['first_token_bias']=decision['first_token_bias']
+                            meta['output_adapter_admission']='ADMITTED'
+                        else:
+                            # The optional readout must not consume the remaining
+                            # native C3 first-token window; normal C3 still runs.
+                            meta['output_adapter_admission']='SKIPPED_NATIVE_RESERVE'
                         runner=self.pool.get('C3_LANGUAGE')
                 mark('native_answer')
                 leading_output=''
