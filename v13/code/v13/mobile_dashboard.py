@@ -450,7 +450,18 @@ class RuntimeControls:
         return self.send(":" + mode)
 
     def send(self, line):
+        # A socket RPC can succeed even when the model rejected the input.
+        # Never tell the user that a turn was sent without a positive receipt.
         result = self.terminal.send(line)
+        status = result.get("status") if isinstance(result, dict) else None
+        if status not in ("SENT", "SHUTDOWN_REQUESTED"):
+            if status == "NOT_RUNNING":
+                raise ValueError("Zuerst V13 Chat starten")
+            if status == "STOPPED_BY_USER":
+                raise ValueError("KI wurde ausgeschaltet; zuerst V13 Chat starten")
+            if status in ("PAUSED_FOR_UPDATE", "START_DEFERRED_FOR_UPDATE"):
+                raise ValueError("KI wird aktualisiert; bitte danach erneut senden")
+            raise RuntimeError("V13 hat die Eingabe nicht bestätigt")
         with self.lock:
             self.last_action = line.split(" ", 1)[0] if line.startswith(":") else "Nachricht"
         return result
