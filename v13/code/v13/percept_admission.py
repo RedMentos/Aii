@@ -45,10 +45,10 @@ def admit(percepts: Iterable[Percept], token_budget: int, *, max_items: int = 12
     for p in records:
         if not isinstance(p, Percept):
             raise TypeError("expected Percept")
-        if not p.source_id or len(p.source_id) > 128 or p.source_id in seen:
+        if not isinstance(p.source_id, str) or not p.source_id or len(p.source_id) > 128 or p.source_id in seen:
             raise ValueError("invalid or duplicate source_id")
         seen.add(p.source_id)
-        if p.modality not in ("audio", "visual", "ui", "text") or not isinstance(p.start_ms, int) or not isinstance(p.end_ms, int) or p.start_ms < 0 or p.end_ms < p.start_ms or len(p.summary) > 4096:
+        if (not isinstance(p.modality, str) or p.modality not in ("audio", "visual", "ui", "text")\n                or type(p.start_ms) is not int or type(p.end_ms) is not int\n                or p.start_ms < 0 or p.end_ms < p.start_ms\n                or not isinstance(p.summary, str) or len(p.summary) > 4096\n                or type(p.priority) is not int):
             raise ValueError("invalid percept")
         if not p.consent or not p.final:
             omitted.append(p.source_id)
