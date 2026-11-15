@@ -36,6 +36,27 @@ class AtomicT8CursorTests(unittest.TestCase):
             self.assertEqual(q.seen, 1)
             self.assertEqual(q.processed_ids, ['trusted-a'])
 
+    def test_world_failed_checkpoint_retries_same_instance_once(self):
+        class Runtime:
+            def __init__(self, home):
+                self.home = home
+                self.store = object()
+        from v13 import world_model
+        row = {'action_id': 'trusted-a', 's': [0., 0., 0., 0.],
+               'y': [1., 0., 0.], 'a': world_model.ACTIONS[0]}
+        with tempfile.TemporaryDirectory() as td:
+            rt = Runtime(Path(td))
+            with patch('v13.online_world.world_model.transitions', return_value=[row]):
+                world = OnlineWorld(rt)
+                with patch('v13.continuous_predictor.os.replace', side_effect=OSError('crash')):
+                    with self.assertRaises(OSError):
+                        world.update()
+                self.assertEqual(world.processed, [])
+                self.assertEqual(world.model.seen, 0)
+                self.assertEqual(world.update()['learned'], 1)
+                self.assertEqual(world.model.seen, 1)
+                self.assertEqual(world.update()['learned'], 0)
+
     def test_world_restarts_without_duplicate_learning(self):
         class Runtime:
             def __init__(self, home):
