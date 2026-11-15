@@ -17,8 +17,8 @@ def build(**changes):
 class RawEarContractTests(unittest.TestCase):
     def test_provisional_acoustics_not_asr(self):
         result = build()
-        self.assertEqual(result["payload"]["modality"], "audio")
-        seg = result["payload"]["segments"][0]
+        self.assertEqual(result["modality"], "audio")
+        seg = result["segments"][0]
         self.assertEqual(seg["finality"], "PROVISIONAL")
         self.assertIsNone(seg["asr_transcript"])
         self.assertFalse(seg["learning_authority"])
@@ -26,7 +26,7 @@ class RawEarContractTests(unittest.TestCase):
         self.assertIn("prosody", seg["unmeasured"])
 
     def test_final_interval(self):
-        self.assertEqual(build(finality="FINAL")["payload"]["segments"][0]["finality"], "FINAL")
+        self.assertEqual(build(finality="FINAL")["segments"][0]["finality"], "FINAL")
 
     def test_missing_consent_denied(self):
         for receipt in (None, "", "  "):
