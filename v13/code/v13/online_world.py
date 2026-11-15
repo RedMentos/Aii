@@ -61,12 +61,16 @@ class OnlineWorld:
         for row in new:
             x,a,y=self.encode(row)
             self.model.observe(x,a,y)
-            self.processed.append(row['action_id'])
-            self.processed=self.processed[-world_model.MAX_ROWS:]
-            # Predictor weights, replay/RNG and T8 cursor share ONE atomic NPZ
-            # replacement. Crash before replacement replays from old weights;
-            # crash after replacement sees both new weights and the new cursor.
-            self.model.checkpoint(processed_ids=self.processed)
+            candidate=(self.processed+[row['action_id']])[-world_model.MAX_ROWS:]
+            # Commit cursor and weights together; never advance the cursor in
+            # memory if the atomic replacement fails. Restore the last durable
+            # predictor state so a retry does not double-apply this gradient.
+            try:
+                self.model.checkpoint(processed_ids=candidate)
+            except Exception:
+                self.model.restore() if self.model.path.exists() else None
+                raise
+            self.processed=candidate
         retention_after=self.model.error(replay) if replay else None
         return {'learned':len(new),'seen':self.model.seen,'tracked_ids':len(self.processed),
                 'old_replay_loss_before':retention_before,'old_replay_loss_after':retention_after,
