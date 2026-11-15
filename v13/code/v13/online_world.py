@@ -80,6 +80,28 @@ class OnlineWorld:
                 'old_replay_loss_delta':None if not replay else retention_after-retention_before,
                 'status':'LOCAL_ONLINE_PLASTICITY_NOT_FULL_JEPA'}
 
+    def evaluate_disjoint_holdout(self, rows):
+        """Read-only utility on trusted T8 rows excluded from the training cursor.
+
+        The caller owns the held-out cohort and must not feed these action IDs
+        to update(). This checks disjointness at evaluation time; it does not
+        claim a permanently sealed cohort or full JEPA utility.
+        """
+        if not isinstance(rows, (list, tuple)) or not rows:
+            raise ValueError('Nonempty trusted holdout required')
+        trained=set(self.processed)
+        held=set()
+        examples=[]
+        for row in rows:
+            action_id=row.get('action_id') if isinstance(row,dict) else None
+            if (type(action_id) is not str or not action_id
+                or action_id in trained or action_id in held):
+                raise ValueError('Holdout IDs must be unique and disjoint from training')
+            held.add(action_id)
+            examples.append(self.encode(row))
+        return {'samples':len(examples),'mse':self.model.error(examples),
+                'trained_ids':len(trained),'status':'DISJOINT_HOLDOUT_READ_ONLY'}
+
     def predict(self,state,action):
         if action not in world_model.ACTIONS:raise ValueError('Unknown route')
         s=np.asarray(state,dtype=float)
