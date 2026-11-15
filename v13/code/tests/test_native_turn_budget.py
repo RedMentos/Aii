@@ -66,6 +66,35 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertFalse(d["recovery"])
         self.assertEqual(d["recent_success_streak"],2)
 
+    def test_final_without_native_tokens_does_not_clear_recovery(self):
+        failed = [turn(), turn()]
+        cases = [
+            turn("FINAL", generated=0, phase="prefill"),
+            turn("FINAL", generated=12, role="B1_DETAIL"),
+            {"status": "FINAL", "metadata": "{}"},
+            {"status": "FINAL", "metadata": "not json"},
+            {"status": "FINAL", "metadata": json.dumps({
+                "runner": {"role": "C3_LANGUAGE", "generated_tokens": True}})},
+        ]
+        for row in cases:
+            with self.subTest(row=row):
+                result = budget.plan(100, 130, 102, recent=[row, *failed])
+                self.assertTrue(result["recovery"])
+                self.assertEqual(result["recent_success_streak"], 0)
+
+    def test_only_consecutive_positive_c3_native_final_resets_recovery(self):
+        cases = [
+            [turn("FINAL", generated=3), turn("FINAL", generated=5)],
+            [turn("FINAL", generated=3), turn("FINAL", generated=0),
+             turn("FINAL", generated=5)],
+        ]
+        self.assertEqual(budget.plan(100, 130, 102,
+            recent=[*cases[0], turn(), turn()])["recent_success_streak"], 2)
+        self.assertFalse(budget.plan(100, 130, 102,
+            recent=[*cases[0], turn(), turn()])["recovery"])
+        self.assertEqual(budget.plan(100, 130, 102,
+            recent=[*cases[1], turn(), turn()])["recent_success_streak"], 1)
+
     def test_untrusted_missing_data_is_not_a_phone_failure(self):
         bad=[
             turn("ERROR",generated=0),
