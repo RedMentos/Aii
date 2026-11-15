@@ -36,8 +36,9 @@ class CrossOrganBudget(unittest.TestCase):
                            summary="hello world memory",source_refs=[self.ref],
                            authority="SOURCE_POINTER")
         out = self.space.consume(self.event,"C3_LANGUAGE","hello world",
-                                 max_messages=1,max_chars=24)
+                                 max_messages=1,max_chars=80)
         self.assertEqual(out["entry_count"],1)
+        self.assertLessEqual(sum(len(m["semantic_cue_not_fact"]) + sum(len(s["exact_source_text"]) for s in m["exact_sources"]) for m in out["messages"]),80)
         self.assertFalse(out["trained_latent"])
         self.assertLessEqual(sum(len(m["semantic_cue_not_fact"]) +
             sum(len(s["exact_source_text"]) for s in m["exact_sources"])
