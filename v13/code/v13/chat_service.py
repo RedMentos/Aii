@@ -208,6 +208,12 @@ class ChatService:
                     raise ValueError("Invalid chat text")
                 if command.strip() == ":shutdown":
                     return self.command("shutdown", {})
+                from . import pipeline_agent
+                if not _read_desired():
+                    return {"status": "STOPPED_BY_USER"}
+                if (self.paused or lifecycle.STOP_REQUEST.exists()
+                        or pipeline_agent.snapshot()["last_result"] == "CHECKING"):
+                    return {"status": "PAUSED_FOR_UPDATE"}
                 return self.console.send(command)
             if name == "output":
                 limit = data.get("limit", MAX_TAIL)

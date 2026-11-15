@@ -102,6 +102,36 @@ class AIBackgroundTests(unittest.TestCase):
         self.assertTrue(console.running)
         self.assertEqual(console.starts,1)
 
+    def test_send_refuses_explicit_off_even_if_child_still_running(self):
+        ai._desired(True)
+        console = FakeConsole()
+        service = ai.ChatService(console)
+        service.tick()
+        ai._desired(False)
+        self.assertEqual(service.command("send", {"line": "must not queue"}),
+                         {"status": "STOPPED_BY_USER"})
+        self.assertEqual(console.messages, [])
+        self.assertEqual(service.command("send", {"line": ":shutdown"}),
+                         {"status": "SHUTDOWN_REQUESTED"})
+
+    def test_send_refuses_update_and_stop_markers(self):
+        ai._desired(True)
+        console = FakeConsole()
+        service = ai.ChatService(console)
+        service.tick()
+        with mock.patch("v13.pipeline_agent.snapshot",
+                        return_value={"last_result": "CHECKING"}):
+            self.assertEqual(service.command("send", {"line": "during deploy"}),
+                             {"status": "PAUSED_FOR_UPDATE"})
+        service.paused = True
+        self.assertEqual(service.command("send", {"line": "paused"}),
+                         {"status": "PAUSED_FOR_UPDATE"})
+        service.paused = False
+        ai.lifecycle.STOP_REQUEST.write_text("{}")
+        self.assertEqual(service.command("send", {"line": "stop pending"}),
+                         {"status": "PAUSED_FOR_UPDATE"})
+        self.assertEqual(console.messages, [])
+
     def test_unexpected_model_exit_is_recovered_and_manual_shutdown_is_respected(self):
         ai._desired(True)
         console=FakeConsole()
