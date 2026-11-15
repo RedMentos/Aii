@@ -30,5 +30,5 @@ def test_invalid_budget(budget,reserve):
 def test_invalid_context_and_type():
     with pytest.raises(ValueError):
         compose("hi", {"bad-label":"x"}, budget=100)
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         compose("hi", {"x":4}, budget=100)
