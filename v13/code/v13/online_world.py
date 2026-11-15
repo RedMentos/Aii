@@ -21,12 +21,16 @@ class OnlineWorld:
         self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,lr=lr,replay=replay)
         self.cursor=self.home/'cursor.json'
         self.processed=[]
-        if self.cursor.exists():
+        if self.model.processed_ids is not None:
+            self.processed=list(self.model.processed_ids)
+        elif self.cursor.exists():
             record=json.loads(self.cursor.read_text())
             ids=record.get('processed')
             if record.get('revision')!=REVISION or not isinstance(ids,list) or len(ids)>world_model.MAX_ROWS or any(type(i) is not str for i in ids):
                 raise ValueError('Incompatible online world cursor')
             self.processed=ids
+        elif self.model.seen:
+            raise ValueError('Predictor has learned transitions but lacks a committed T8 cursor')
 
     @staticmethod
     def encode(row):
@@ -57,17 +61,46 @@ class OnlineWorld:
         for row in new:
             x,a,y=self.encode(row)
             self.model.observe(x,a,y)
-            self.model.checkpoint()
-            self.processed.append(row['action_id'])
-            self.processed=self.processed[-world_model.MAX_ROWS:]
-            temp=self.cursor.with_suffix('.tmp')
-            temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed}))
-            os.replace(temp,self.cursor)
+            candidate=(self.processed+[row['action_id']])[-world_model.MAX_ROWS:]
+            # Commit cursor and weights together; never advance the cursor in
+            # memory if the atomic replacement fails. Restore the last durable
+            # predictor state so a retry does not double-apply this gradient.
+            try:
+                self.model.checkpoint(processed_ids=candidate)
+            except Exception:
+                # Recreate from the durable snapshot, or from the initial
+                # parameters if the very first checkpoint never committed.
+                self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,
+                                           lr=self.model.lr,replay=self.model.cap)
+                raise
+            self.processed=candidate
         retention_after=self.model.error(replay) if replay else None
         return {'learned':len(new),'seen':self.model.seen,'tracked_ids':len(self.processed),
                 'old_replay_loss_before':retention_before,'old_replay_loss_after':retention_after,
                 'old_replay_loss_delta':None if not replay else retention_after-retention_before,
                 'status':'LOCAL_ONLINE_PLASTICITY_NOT_FULL_JEPA'}
+
+    def evaluate_disjoint_holdout(self, rows):
+        """Read-only utility on trusted T8 rows excluded from the training cursor.
+
+        The caller owns the held-out cohort and must not feed these action IDs
+        to update(). This checks disjointness at evaluation time; it does not
+        claim a permanently sealed cohort or full JEPA utility.
+        """
+        if not isinstance(rows, (list, tuple)) or not rows:
+            raise ValueError('Nonempty trusted holdout required')
+        trained=set(self.processed)
+        held=set()
+        examples=[]
+        for row in rows:
+            action_id=row.get('action_id') if isinstance(row,dict) else None
+            if (type(action_id) is not str or not action_id
+                or action_id in trained or action_id in held):
+                raise ValueError('Holdout IDs must be unique and disjoint from training')
+            held.add(action_id)
+            examples.append(self.encode(row))
+        return {'samples':len(examples),'mse':self.model.error(examples),
+                'trained_ids':len(trained),'status':'DISJOINT_HOLDOUT_READ_ONLY'}
 
     def predict(self,state,action):
         if action not in world_model.ACTIONS:raise ValueError('Unknown route')
