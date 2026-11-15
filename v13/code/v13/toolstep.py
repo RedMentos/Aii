@@ -30,7 +30,7 @@ PROPOSER='boot-arith-note-v3';KEY='TOOL_SHADOW_AGREEMENT'
 LIST_PROPOSER='boot-listarith-v1';LIST_READ_SECONDS=45  # R4 part 6: C3 value read for list_arith
 ELIG_PROPOSER='boot-eligibility-v1';ELIG_READ_SECONDS=60  # Thread Q: C3 value read for eligibility (only with cfg eligibility_reader='c3'; default 'fixed' reads without a model)
 LIST_NOTE='Use this exact number in the answer. If the text states a different number for it, say clearly that it is wrong.'  # wording of r4_typed_recipe RESULT_TEMPLATE
-WORD_OPS=[(r'\bmultiplied by\b|\btimes\b|×','*'),(r'\bdivided by\b|÷','/'),(r'\bplus\b','+'),(r'\bminus\b','-'),(r'\bto the power of\b|\^','**')]
+WORD_OPS=[(r'\bmultiplied by\b|\btimes\b|\bmal\b|×','*'),(r'\bdivided by\b|\bgeteilt durch\b|÷','/'),(r'\bplus\b','+'),(r'\bminus\b','-'),(r'\bto the power of\b|\^','**')]
 NUM=r'\d+(?:[.,]\d+)?'
 PERCENT=re.compile(r'('+NUM+r')\s*%\s*of\s*('+NUM+r')',re.I)
 EXPR=re.compile(r'(?<![\w.])(\(?\s*'+NUM+r'(?:\s*(?:\*\*|[+\-*/%])\s*\(?\s*'+NUM+r'\s*\)?)+)')
