@@ -103,7 +103,7 @@ class OnlinePredictor:
                 or any(type(i) is not str or not i or len(i)>512 for i in processed_ids)
                 or len(set(processed_ids))!=len(processed_ids)):
                 raise ValueError('Invalid committed transition identifiers')
-            self.processed_ids=list(processed_ids)
+        committed_ids = list(processed_ids) if processed_ids is not None else self.processed_ids
         self.path.parent.mkdir(parents=True,exist_ok=True)
         temp=self.path.with_name(self.path.name+'.tmp.npz')
         try:
@@ -111,10 +111,11 @@ class OnlinePredictor:
                 W=self.W,U=self.U,bias=self.bias,x=self.x,act=self.act,y=self.y,
                 counters=np.array([self.seen,self.updates]),
                 rng_state=np.array(json.dumps(self.rng.bit_generator.state)),
-                processed_ids=np.array(json.dumps(self.processed_ids)))
+                processed_ids=np.array(json.dumps(committed_ids)))
             if self.path.exists():
                 shutil.copy2(self.path,self.path.with_suffix('.previous.npz'))
             os.replace(temp,self.path)
+            self.processed_ids=committed_ids
         finally:
             if temp.exists():temp.unlink()
         return str(self.path)
