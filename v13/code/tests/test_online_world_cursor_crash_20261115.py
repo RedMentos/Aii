@@ -14,7 +14,7 @@ class CursorCrashBoundaryTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             runtime = SimpleNamespace(home=root, store=object())
             world = OnlineWorld(runtime)
-            x, action, y = world.encode({'s': [0., 0., 0., 0.], 'y': [1., 0., 0.], 'a': 'noop'})
+            x, action, y = world.encode({'s': [0., 0., 0., 0.], 'y': [1., 0., 0.], 'a': 'simple'})
             world.model.observe(x, action, y)
             world.model.checkpoint()
             # Simulates power loss after the numeric update is durable but
