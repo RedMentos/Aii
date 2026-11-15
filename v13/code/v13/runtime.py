@@ -608,6 +608,16 @@ class Runtime:
                             # native C3 first-token window; normal C3 still runs.
                             meta['output_adapter_admission']='SKIPPED_NATIVE_RESERVE'
                         runner=self.pool.get('C3_LANGUAGE')
+                # Derived counters only: no prompt, source bytes or private text
+                # are copied into telemetry. They distinguish time consumed
+                # before native C3 from the native decode phase on the phone.
+                meta['native_admission']={
+                    'role':runner.role,
+                    'remaining_seconds':round(max(0.,deadline-time.monotonic()),3),
+                    'message_count':len(messages),
+                    'prompt_chars':sum(len(m.get('content','')) for m in messages),
+                    'optional_adapter':meta.get('output_adapter_admission','NOT_APPLICABLE'),
+                }
                 mark('native_answer')
                 leading_output=''
                 lead=toolctl.ToolStep(self).lead(tool_result) if tool_result and tool_result.get('result') is not None else None
