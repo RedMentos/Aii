@@ -26,7 +26,7 @@ class OnlineWorld:
         elif self.cursor.exists():
             record=json.loads(self.cursor.read_text())
             ids=record.get('processed')
-            if record.get('revision')!=REVISION or not isinstance(ids,list) or len(ids)>world_model.MAX_ROWS or any(type(i) is not str for i in ids):
+            if record.get('revision')!=REVISION or not isinstance(ids,list) or len(ids)>100000 or any(type(i) is not str for i in ids):
                 raise ValueError('Incompatible online world cursor')
             self.processed=ids
         elif self.model.seen:
@@ -58,10 +58,15 @@ class OnlineWorld:
         # Track old-experience error separately from fresh-sample loss.
         replay=[(x.copy(),int(a),y.copy()) for x,a,y in zip(self.model.x,self.model.act,self.model.y)]
         retention_before=self.model.error(replay) if replay else None
+        # The training ledger is independent of the bounded T8 retrieval window.
+        # Refuse exhaustion rather than silently evicting historical IDs and
+        # replaying an old transition as if it were new.
+        if len(self.processed) + len(new) > 100000:
+            raise ValueError('Online world historical T8 ledger capacity exhausted')
         for row in new:
             x,a,y=self.encode(row)
             self.model.observe(x,a,y)
-            candidate=(self.processed+[row['action_id']])[-world_model.MAX_ROWS:]
+            candidate=self.processed+[row['action_id']]
             # Commit cursor and weights together; never advance the cursor in
             # memory if the atomic replacement fails. Restore the last durable
             # predictor state so a retry does not double-apply this gradient.
