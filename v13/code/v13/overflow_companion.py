@@ -6,7 +6,7 @@ import hashlib
 import re
 
 LAYER = "ADDITIONAL_CONTEXT"
-EXACT = re.compile(r"https?://[^\\s]+|\\x60[^\\x60\\n]+\\x60|\\b\\d[\\w.:/-]*\\b")
+EXACT = re.compile(r"https?://[^\s]+|\x60[^\x60\n]+\x60|\b\d[\w.:/-]*\b")
 
 def propose(stable, plan, rows, query, summarize=None, source_ok=None,
             max_input=4096, max_output=1024):
