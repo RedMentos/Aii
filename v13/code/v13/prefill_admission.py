@@ -56,19 +56,21 @@ def admit(messages: Sequence[dict], *, prompt_cap: int = 320,
     if required > cap:
         return Admission(False, tuple(), "REQUIRED_SOURCE_EXCEEDS_PREFILL_BUDGET",
                          required, len(messages) - 2, 0)
-    kept = [messages[-1]]
+    # Keep complete user/assistant exchange pairs only.  A dangling assistant
+    # answer without its originating user prompt is not admissible context.
+    history = list(messages[1:-1])
+    kept = []
     total = required
-    dropped = 0
-    # Keep the most recent contiguous history; never reorder or splice
-    # assistant/tool statements without their preceding context.
-    for m in reversed(messages[1:-1]):
-        n = cost(m)
-        if total + n > cap:
-            dropped += 1
+    for i in range(len(history) - 1, -1, -1):
+        candidate = history[i:]
+        if candidate[0]["role"] != "user":
+            continue
+        amount = sum(cost(m) for m in candidate)
+        if total + amount <= cap:
+            kept = candidate
+            total += amount
             break
-        kept.append(m)
-        total += n
-    dropped += len(messages[1:-1]) - (len(kept) - 1) - dropped
-    selected = (messages[0], *reversed(kept))
+    dropped = len(history) - len(kept)
+    selected = (messages[0], *kept, messages[-1])
     return Admission(True, tuple(dict(m) for m in selected), "ADMITTED",
                      total, dropped, 0)
