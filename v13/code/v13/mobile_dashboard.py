@@ -454,7 +454,7 @@ class RuntimeControls:
         # Never tell the user that a turn was sent without a positive receipt.
         result = self.terminal.send(line)
         status = result.get("status") if isinstance(result, dict) else None
-        if status not in ("SENT", "SHUTDOWN_REQUESTED"):
+        if status != "SENT" and not (line.strip() == ":shutdown" and status == "SHUTDOWN_REQUESTED"):
             if status == "NOT_RUNNING":
                 raise ValueError("Zuerst V13 Chat starten")
             if status == "STOPPED_BY_USER":
