@@ -124,7 +124,15 @@ class RuntimeObserverTests(unittest.TestCase):
                     r._turn(event)
                 answer = r.last_answer()
                 self.assertEqual(answer['status'], 'FINAL', answer)
-                self.assertEqual([role for role, _ in calls], ['B1_DETAIL', 'B2_GIST', 'C3_LANGUAGE'])
+                # B2 still reaches C4/C3 before the answer. The missing B1
+                # may then retry post-commit without changing that answer.
+                self.assertEqual([role for role, _ in calls],
+                                 ['B1_DETAIL', 'B2_GIST', 'C3_LANGUAGE', 'B1_DETAIL'])
+                post = r.store.rows(
+                    "SELECT metrics FROM telemetry WHERE event_id=? AND kind='background_observer_end'",
+                    (event['event_id'],))
+                self.assertEqual(len(post), 1)
+                self.assertEqual(json.loads(post[0]['metrics'])['role'], 'B1_DETAIL')
                 self.assertAlmostEqual(calls[0][1]-start, 6.75, places=2)
                 self.assertAlmostEqual(calls[1][1]-start, 13.5, places=2)
                 stored = r.store.rows("SELECT id,payload FROM packets WHERE event_id=? AND kind='OfferPacket'", (event['event_id'],))
