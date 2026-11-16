@@ -15,3 +15,5 @@ Next exact commands after checkout: `cd v13/code && PYTHONPATH=. python -m unitt
 Other unblocked work: native observer budget/prefill profiling, B1/B2 offer delivery, C4 synthesis, C3 correctness, real Android 20-turn gate; A/audio/vision, JEPA, weight updates, memory, self, sleep, permissioned Android control remain incomplete or unverified. Memorilla #1983 is separate additive draft.
 
 Follow-up commit `e0da625804ca63c861261ef64d633de006f191d8`: adds Runtime/SQLite asynchronous submit-to-final regression (not yet executed; requires exact branch checkout/CI). Readback confirmed source and test blobs on GitHub. This does not change Android evidence or release state.
+
+Review correction: nonterminating division now abstains rather than claiming a rounded answer is exact (commits 9e0a828 and 08cb928). The deep native path handles such requests. No release or phone proof.
