@@ -1,9 +1,12 @@
 """Adversarial metadata-only end-to-end offer attribution (no native/device claim)."""
 import json
 import sqlite3
+import tempfile
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
-from v13.phone_offer_delivery_audit import SCHEMA, audit
+from v13.phone_offer_delivery_audit import SCHEMA, audit, connect_readonly
 
 
 class OfferEvidence(unittest.TestCase):
@@ -135,6 +138,51 @@ class OfferEvidence(unittest.TestCase):
         self.assertEqual(t["roles"]["B1_DETAIL"]["last_native"]["native_status"],
                          "UNKNOWN")
         self.assertNotIn("SECRET", json.dumps(t))
+
+
+    def test_metadata_and_packet_payloads_are_bounded_before_json_parse(self):
+        self.assistant(metadata={"selected_offer_ids": ["p"],
+                                 "padding": "SECRET" * 70000,
+                                 "runner": {"role": "C3_LANGUAGE",
+                                            "generated_tokens": 1}})
+        self.packet("B1_DETAIL", "p")
+        self.receipt("B1_DETAIL", "p")
+        result = audit(self.db)
+        self.assertEqual(result["turn_count"], 1)
+        self.assertNotIn("SECRET", json.dumps(result))
+        self.assertEqual(result["turns"][0]["roles"]["B1_DETAIL"]["delivery"],
+                         "DELIVERED_NOT_SELECTED")
+
+    def test_row_cap_never_reports_partial_evidence_as_success(self):
+        self.assistant(selected=("p",))
+        self.packet("B1_DETAIL", "p")
+        self.receipt("B1_DETAIL", "p")
+        self.receipt("B1_DETAIL", "p")
+        self.receipt("B1_DETAIL", "p")
+        with patch("v13.phone_offer_delivery_audit.MAX_ROWS_PER_TURN", 2):
+            out = audit(self.db)
+        self.assertTrue(out["turns"][0]["audit_incomplete"])
+        self.assertEqual(out["turns"][0]["roles"]["B1_DETAIL"]["delivery"],
+                         "INCOMPLETE_AUDIT_ROW_CAP")
+        self.assertEqual(out["roles"]["B1_DETAIL"]["in_final_c3_report_turns"], 0)
+
+    def test_missing_wal_sidecars_and_symlink_are_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            dbdir = home / "data" / "db"
+            dbdir.mkdir(parents=True)
+            file = dbdir / "brain.sqlite3"
+            with sqlite3.connect(file) as db:
+                db.execute("CREATE TABLE sample(x INTEGER)")
+            raw = bytearray(file.read_bytes())
+            raw[18:20] = b"\\x02\\x02"
+            file.write_bytes(raw)
+            with self.assertRaisesRegex(ValueError, "WAL coordination"):
+                connect_readonly(home)
+            wal = dbdir / "brain.sqlite3-wal"
+            wal.symlink_to(file)
+            with self.assertRaisesRegex(ValueError, "sidecar"):
+                connect_readonly(home)
 
 
 if __name__ == "__main__":
