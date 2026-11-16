@@ -52,7 +52,19 @@ class RuntimeDeploymentTests(unittest.TestCase):
             return_value=(self.checkout, self.code, self.commit))
         self.stop_patch = mock.patch.object(d, "_check_stopped")
         self.selftest_patch = mock.patch.object(d, "_selftest")
-        for patch in (self.source_patch, self.stop_patch, self.selftest_patch):
+        # Legacy launcher/rollback cases use a small synthetic source tree.
+        # Full composed-stage behavior is exercised in a separate real-tree test.
+        def fake_stage(source, target):
+            target.mkdir(mode=0o700)
+            d._copy(source, target)
+            d._apply_plain_ui_recovery(source, target)
+            hashes = {p.relative_to(target).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                      for p in target.rglob("*") if p.is_file()}
+            manifest = {"status": "SHADOW_REVIEW_ONLY", "files_sha256": hashes}
+            (target / d.STAGE_MANIFEST).write_text(json.dumps(manifest))
+            return d._verify_stage(target)
+        self.stage_patch = mock.patch.object(d, "_stage_integrated_runtime", side_effect=fake_stage)
+        for patch in (self.source_patch, self.stop_patch, self.selftest_patch, self.stage_patch):
             patch.start()
             self.addCleanup(patch.stop)
 

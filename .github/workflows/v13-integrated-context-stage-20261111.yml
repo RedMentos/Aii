@@ -48,6 +48,13 @@ jobs:
           tests/test_unified_brain_delivery.py
           tests/test_enlightened_space.py
           tests/test_native_prompt_admission.py
+          tests/test_prompt_source_integrity_20261116.py
+          tests/test_context_offer_budget_20261116.py
+          tests/test_context_stage_composition_20261116.py
+          tests/test_postcommit_observer_20261116.py
+          tests/test_postcommit_stage_composition_20261116.py
+          tests/test_record_only_online_guard_20261116.py
+          tests/test_runtime_deploy_integrated_20261116.py
           tests/test_native_turn_budget.py
           tests/test_phone_offer_delivery_audit.py
           tests/test_phone_runtime_diagnostics.py

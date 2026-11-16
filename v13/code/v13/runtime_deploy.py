@@ -33,7 +33,10 @@ REQUIRED = ("v13/__main__.py", "v13/store.py", "v13/runtime.py",
 COPY_SUBTREES = ("v13", "scripts", "specs", "docs/canon")
 HEX40 = re.compile(r"[a-f0-9]{40}\Z")
 MARKER_NAME = "runtime-active.json"
-BUILD_PROFILE = "raw-runtime-plain-ui-history-recovery-v1"
+BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
+STAGER = "scripts/stage_integrated_candidate.py"
+STAGER_SHA256 = "9ff0308339a0156f4cf376a1d80444738f584ce5a0ce3bb7b34aa6fea4fdef18"
+STAGE_MANIFEST = "INTEGRATION_STAGE.json"
 UI_SOURCE = "v13/ui.py"
 UI_SOURCE_SHA256 = "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8"
 UI_DERIVED_SHA256 = "0c2e5fb15a78b37017f2b2c296afd0275705e70276a47dc9b47429d38aeac5a1"
@@ -129,6 +132,7 @@ def prepare_source(source=None):
         # exact-file lists stranded older phone installs on incomplete code.
         _git(checkout, "sparse-checkout", "set", "--no-cone",
              "v13/code/v13/", "v13/code/scripts/", "v13/code/specs/",
+             "v13/code/candidates/", "v13/code/tests/",
              "v13/code/docs/canon/", "v13/code/setup.sh", "v13/code/STARTEN.sh",
              timeout=180)
         _, _, commit = _source(checkout)
@@ -193,7 +197,13 @@ def needs_deploy(source, *, home=None, private=None):
             or target.get("build_profile") != BUILD_PROFILE
             or target.get("source_ui_sha256") != UI_SOURCE_SHA256
             or target.get("derived_ui_sha256") != UI_DERIVED_SHA256
-            or target.get("ui_builder_sha256") != UI_BUILDER_SHA256):
+            or target.get("ui_builder_sha256") != UI_BUILDER_SHA256
+            or not isinstance(target.get("stage_manifest_sha256"), str)):
+        return True
+    try:
+        if _verify_stage(Path(codepath)) != target["stage_manifest_sha256"]:
+            return True
+    except (OSError, ValueError, TypeError, RuntimeDeployError):
         return True
     ui = Path(codepath) / UI_SOURCE
     if (ui.is_symlink() or not ui.is_file()
@@ -266,11 +276,83 @@ def _apply_plain_ui_recovery(source, target):
     copied.write_bytes(ui)
 
 
+
+def _verify_stage(root):
+    """Verify the complete installed snapshot against its owner-only receipt."""
+    root = Path(root)
+    if root.is_symlink() or not root.is_dir():
+        raise RuntimeDeployError("Integrated runtime snapshot is missing or unsafe")
+    manifest_path = root / STAGE_MANIFEST
+    if manifest_path.is_symlink() or not manifest_path.is_file():
+        raise RuntimeDeployError("Integrated runtime manifest is missing")
+    raw = manifest_path.read_bytes()
+    if len(raw) > 8 * 1024 * 1024:
+        raise RuntimeDeployError("Integrated runtime manifest is too large")
+    data = json.loads(raw)
+    hashes = data.get("files_sha256") if isinstance(data, dict) else None
+    if not isinstance(data, dict) or data.get("status") != "SHADOW_REVIEW_ONLY" or not isinstance(hashes, dict) or not hashes:
+        raise RuntimeDeployError("Integrated runtime manifest is invalid")
+    actual = set()
+    for path in root.rglob("*"):
+        if path.is_symlink():
+            raise RuntimeDeployError("Integrated runtime contains a symbolic link")
+        if path.is_file() and path != manifest_path:
+            actual.add(path.relative_to(root).as_posix())
+    if actual != set(hashes):
+        raise RuntimeDeployError("Integrated runtime file set changed")
+    for relative, expected in hashes.items():
+        name = Path(relative)
+        if (not isinstance(relative, str) or name.is_absolute() or ".." in name.parts
+                or name.as_posix() != relative or not isinstance(expected, str)
+                or not re.fullmatch(r"[a-f0-9]{64}", expected)):
+            raise RuntimeDeployError("Integrated runtime manifest entry is invalid")
+        path = root / name
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+            raise RuntimeDeployError("Integrated runtime source hash mismatch: " + relative)
+    if CANON not in hashes or "v13/runtime.py" not in hashes:
+        raise RuntimeDeployError("Integrated runtime dependencies are missing")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _stage_integrated_runtime(source, target):
+    """Materialize the exact reviewed stage; never modify source or user data."""
+    source, target = Path(source), Path(target)
+    builder = source / STAGER
+    if builder.is_symlink() or not builder.is_file():
+        raise RuntimeDeployError("Integrated stage builder missing or unsafe")
+    raw = builder.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != STAGER_SHA256:
+        raise RuntimeDeployError("Integrated stage builder changed")
+    namespace = {"__name__": "v13_checked_runtime_stager", "__file__": str(builder)}
+    try:
+        exec(compile(raw, str(builder), "exec"), namespace)
+        manifest = namespace["stage"](source, target)
+        # The existing stager deliberately omits documentation. The installed
+        # runtime must include the same Canon, bound into the snapshot manifest.
+        canon_source = source / "docs/canon"
+        if canon_source.is_symlink() or not canon_source.is_dir():
+            raise RuntimeDeployError("Integrated runtime Canon missing or unsafe")
+        canon_target = target / "docs/canon"
+        canon_target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(canon_source, canon_target, symlinks=True,
+                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyo"))
+        for entry in canon_target.rglob("*"):
+            if entry.is_symlink():
+                raise RuntimeDeployError("Integrated runtime Canon contains a symlink")
+            if entry.is_file():
+                manifest["files_sha256"][entry.relative_to(target).as_posix()] = hashlib.sha256(entry.read_bytes()).hexdigest()
+        (target / STAGE_MANIFEST).write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+        return _verify_stage(target)
+    except RuntimeDeployError:
+        raise
+    except Exception as exc:
+        raise RuntimeDeployError("Integrated runtime staging failed: " + type(exc).__name__) from exc
+
 def _selftest(code):
     env = {**os.environ,
            "PYTHONPATH": str(code),
            "NO_MODEL_DOWNLOADS": "1", "DO_NOT_TRACK": "1",
-           "NEEDLE_TELEMETRY": "0"}
+           "NEEDLE_TELEMETRY": "0", "PYTHONDONTWRITEBYTECODE": "1"}
     script = """
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -306,7 +388,7 @@ def _launcher_bytes(code, home):
     python = str(Path(sys.executable).resolve())
     return ("#!/data/data/com.termux/files/usr/bin/bash\n"
             "set -e\n"
-            "export NEEDLE_TELEMETRY=0 DO_NOT_TRACK=1\n"
+            "export NEEDLE_TELEMETRY=0 DO_NOT_TRACK=1 PYTHONDONTWRITEBYTECODE=1\n"
             "export PYTHONPATH=" + shlex.quote(str(code)) + "\n"
             "exec " + shlex.quote(python) + " -m v13 --home "
             + shlex.quote(str(home)) + ' "$@"\n').encode("utf-8")
@@ -348,11 +430,11 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False):
         raise RuntimeDeployError("Runtime staging collision")
     stage.mkdir(mode=0o700)
     target = stage / "code"
-    target.mkdir(mode=0o700)
     try:
-        _copy(code, target)
-        _apply_plain_ui_recovery(code, target)
+        manifest_sha256 = _stage_integrated_runtime(code, target)
         _selftest(target)
+        if _verify_stage(target) != manifest_sha256:
+            raise RuntimeDeployError("Integrated runtime changed during selftest")
         _check_stopped(home)
         next_launcher = _launcher_bytes(target, home)
         _atomic_file(launcher, next_launcher, 0o700)
@@ -362,6 +444,7 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False):
                   "source_ui_sha256": UI_SOURCE_SHA256,
                   "derived_ui_sha256": UI_DERIVED_SHA256,
                   "ui_builder_sha256": UI_BUILDER_SHA256,
+                  "stage_manifest_sha256": manifest_sha256,
                   "launcher_sha256": hashlib.sha256(next_launcher).hexdigest(),
                   "installed_at": int(time.time()),
                   "models_untouched": True, "sqlite_untouched": True}
