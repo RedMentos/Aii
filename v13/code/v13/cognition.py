@@ -266,6 +266,19 @@ class Cognition:
                 p.update(student_feature_path=str(path.relative_to(self.r.home)),student_feature_sha256=file_hash(path),student_component='a3_student',student_latent_dim=len(prediction['latent']),student_in_support=prediction['in_support'],student_mode='T1_SHADOW',native_receiver_authority=0)
         except Exception as exc:
             p['student_unavailable']=type(exc).__name__;self.s.log('student_unavailable',e['event_id'],{'error':type(exc).__name__})
+        # A5 diagnostics are source-bound and content-free. They describe the
+        # actual input to the B/C pipeline, not a native tokenizer count.
+        # The original segments and SourceRefs remain unchanged.
+        p['input_observation']={
+            'schema':'v13.a5.input-observation/1',
+            'source_chars':len(text),
+            'source_utf8_bytes':len(text.encode('utf-8')),
+            'segment_count':len(p['segments']),
+            'segment_mode':percept_mode(self.r.cfg),
+            'native_prompt_tokens':None,
+            'native_prefill_ms':None,
+            'measurement_class':'SOURCE_TEXT_ONLY',
+        }
         stored=self.s.add_packet('PerceptPacket',p)
         # The two legacy context streams are NOT the B1/B2 hemispheres.
         # A delivers source, A-semantic holds a lossy cue, B-exact its ref.
