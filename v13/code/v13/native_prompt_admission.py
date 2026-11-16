@@ -21,10 +21,6 @@ from .context_os import VOLATILE_HEAD
 REVISION = "v13.native-prompt-admission/1"
 # Ordered from redundant system state to progressively useful historical cues.
 REMOVABLE_C3 = ("task_context", "digest", "user_model")
-HEADINGS = ("memories", "hypotheses", "digest", "task_context", "user_model",
-            "clarify", "duplex_handoff")
-
-
 def soft_limit(role, cfg, remaining):
     """BOOT token cap: reserve output/decode time before full native prefill."""
     if role not in ("C3_LANGUAGE", "B1_DETAIL", "B2_GIST"):

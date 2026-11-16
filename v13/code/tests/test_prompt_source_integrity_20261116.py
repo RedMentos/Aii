@@ -145,6 +145,28 @@ class PromptSourceIntegrity(unittest.TestCase):
         self.assertIn('CURRENT', result)
         self.assertEqual(runner._prompt_admission['removed_layers'], [])
 
+    def test_latest_user_message_looking_like_reference_is_not_edited(self):
+        runner = fake_runner()
+        current = (VOLATILE_HEAD + layer(runner.cfg, 'task_context',
+                    {'exact_user_source': 'q' * 2000}))
+        messages = [{'role': 'system', 'content': pinned(runner.cfg)},
+                    {'role': 'user', 'content': current}]
+        result, _, _ = self.run_prompt(runner, messages)
+        self.assertIn(current, result)
+        self.assertEqual(runner._prompt_admission['removed_layers'], [])
+
+    def test_unknown_message_fields_do_not_make_an_old_pair_disposable(self):
+        runner = fake_runner()
+        messages = [{'role': 'system', 'content': pinned(runner.cfg)},
+                    {'role': 'user', 'content': 'old input ' + 'x' * 1800,
+                     'extra': 'unknown semantics'},
+                    {'role': 'assistant', 'content': 'old answer'},
+                    {'role': 'user', 'content': 'CURRENT'}]
+        result, _, _ = self.run_prompt(runner, messages)
+        self.assertIn('old input', result)
+        self.assertIn('old answer', result)
+        self.assertEqual(runner._prompt_admission['removed_layers'], [])
+
     def test_unremovable_context_over_hard_window_is_rejected(self):
         runner = fake_runner(context_tokens=512)
         body = VOLATILE_HEAD + layer(runner.cfg, 'hypotheses', [{'quote': 'KEEP' * 1000}])
