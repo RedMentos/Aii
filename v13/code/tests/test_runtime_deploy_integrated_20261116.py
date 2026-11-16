@@ -63,6 +63,10 @@ class IntegratedRuntimeDeploy(unittest.TestCase):
         script = """
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import Mock
+import json
+import time
+from v13.operator import Operator
 from v13.runtime import Runtime
 with TemporaryDirectory() as tmp:
     r = Runtime(Path(tmp))
@@ -74,6 +78,59 @@ with TemporaryDirectory() as tmp:
         assert not (Path(tmp) / 'online_world' / 'online_predictor.npz').exists()
         result = r.world_jepa_update(steps=1, limit=16, authority='EXPLICIT_HUMAN')
         assert result['status'] == 'SKIPPED_RECORD_ONLY', result
+
+        def wait_for_turn():
+            end = time.monotonic() + 15
+            while not r.idle() and time.monotonic() < end:
+                time.sleep(.01)
+            assert r.idle(), 'Synthetic turn did not settle'
+            answer = r.last_answer()
+            assert answer['status'] == 'FINAL', answer
+            return answer
+
+        # Exercise the installed staged arithmetic path without a native runner.
+        r.pool.get = Mock(side_effect=AssertionError('unexpected native runner'))
+        r.submit('2+2')
+        assert wait_for_turn()['text'] == '4'
+
+        # Exercise installed B1/B2 -> C4 -> C3 using synthetic model outputs.
+        question = ('Compare details with planning. The rent is 120 euros. '
+                    'The plan preserves a long-term reserve.')
+        r.cfg.update(deadline_seconds=90, observer_seconds=5, max_reentry=0,
+                     observer_mode='background', b2_quote_select='off',
+                     offer_quote_context_chars=0, b2_state_slots=0)
+        Operator(r).run(':effort max')
+        Operator(r).run(':ctxos active')
+        r._route = Mock(return_value=('both', {'source': 'SYNTHETIC_DEPLOY_TEST'}))
+        r.learner.output_delta = Mock(return_value=None)
+        sent = []
+        class Runner:
+            def __init__(self, role):
+                self.role = role
+                self.last_metrics = {'role': role, 'status': 'FINAL',
+                                     'generated_tokens': 5, 'synthetic': True}
+            def generate(self, messages, cancel, deadline, *args, **kwargs):
+                if self.role == 'B1_DETAIL':
+                    yield json.dumps({'summary': 'The rent is 120 euros.',
+                        'quotes': ['The rent is 120 euros.'], 'uncertainty': 'low',
+                        'needs_reentry': False})
+                elif self.role == 'B2_GIST':
+                    yield json.dumps({'summary': 'A long-term reserve is needed.',
+                        'quotes': ['The plan preserves a long-term reserve.'],
+                        'uncertainty': 'low', 'needs_reentry': False})
+                else:
+                    sent.append(messages)
+                    yield 'One combined response.'
+        runners = {role: Runner(role) for role in ('B1_DETAIL', 'B2_GIST', 'C3_LANGUAGE')}
+        r.pool.get = Mock(side_effect=lambda role: runners[role])
+        r.submit(question)
+        answer = wait_for_turn()
+        assert answer['text'] == 'One combined response.'
+        selected = json.loads(answer['metadata'])['selected_offer_ids']
+        assert len(selected) == 2, selected
+        rendered = json.dumps(sent, ensure_ascii=False)
+        assert all(packet_id in rendered for packet_id in selected), selected
+        assert not (Path(tmp) / 'online_world' / 'online_predictor.npz').exists()
     finally:
         r.close()
 """
