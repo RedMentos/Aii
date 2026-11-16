@@ -54,6 +54,9 @@ def admit_sources(sources: Sequence[SourceEnvelope], max_prompt_tokens: int,
     allowed = max_prompt_tokens - reserved_tokens
     rejected = tuple(s for s in sources if not s.consented)
     eligible = tuple(s for s in sources if s.consented)
+    # Missing consent for a required source must fail closed, not become ADMITTED.
+    if any(s.required for s in rejected):
+        return Admission((), (), tuple(sources), 0, "REQUIRED_CONSENT_MISSING")
     mandatory = tuple(s for s in eligible if s.required)
     if allowed < 0 or sum(s.token_count for s in mandatory) > allowed:
         return Admission((), (), rejected + eligible, 0, "REQUIRED_OVER_BUDGET")
