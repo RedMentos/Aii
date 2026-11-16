@@ -24,11 +24,19 @@ class DashboardReceiptTests(unittest.TestCase):
         return controls
 
     def test_only_positive_model_receipt_is_acknowledged(self):
-        for receipt in ({"status": "SENT"}, {"status": "SHUTDOWN_REQUESTED"}):
+        for receipt in ({"status": "SENT"},):
             with self.subTest(receipt=receipt):
                 controls = self.controls(receipt)
                 self.assertEqual(controls.send("hi"), receipt)
                 self.assertEqual(controls.last_action, "Nachricht")
+
+    def test_shutdown_receipt_only_for_shutdown_command(self):
+        controls = self.controls({"status": "SHUTDOWN_REQUESTED"})
+        with self.assertRaises(RuntimeError):
+            controls.send("hi")
+        self.assertEqual(controls.last_action, "Keine Aktion")
+        self.assertEqual(controls.send(":shutdown"), {"status": "SHUTDOWN_REQUESTED"})
+        self.assertEqual(controls.last_action, ":shutdown")
 
     def test_negative_and_malformed_receipts_never_claim_send(self):
         for receipt in ({"status": "NOT_RUNNING"}, {"status": "STOPPED_BY_USER"},
