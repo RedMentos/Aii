@@ -29,6 +29,15 @@ class TestA5BudgetIntegrity(unittest.TestCase):
         with self.assertRaises(ValueError):
             SourceEnvelope("A_PERCEPTION", "source-1", 2, required=1)
 
+    def test_unconsented_required_source_cannot_be_admitted(self):
+        sources = [SourceEnvelope("AUDIO", "private", 2, required=True, consented=False),
+                   SourceEnvelope("USER", "current", 3, required=True)]
+        a = admit_sources(sources, 100)
+        self.assertEqual(a.status, "REQUIRED_CONSENT_MISSING")
+        self.assertEqual(a.accepted, ())
+        self.assertEqual(a.used_tokens, 0)
+        self.assertEqual(len(a.rejected), 2)
+
     def test_required_over_budget_does_not_fake_admission(self):
         s = [SourceEnvelope("A_PERCEPTION", "user-source", 11, required=True)]
         a = admit_sources(s, 10)
