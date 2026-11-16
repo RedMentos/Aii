@@ -258,7 +258,11 @@ class Cognition:
             ids.append(pid);seen_events.add(old['event_id'])
         self.s.set_state(key,p|{'retained_offer_ids':ids})
     def percept(self,e):
-        text=self.s.read_source(e['source_ref']);p=packet('PerceptPacket','A5_PERCEPT',e['event_id'],e['brain_generation_id'],[e['source_ref']],source_ref=e['source_ref'],segments=segments(text,e['source_ref'],240,percept_mode(self.r.cfg)),modality='text')
+        text=self.s.read_source(e['source_ref'])
+        a1_segments=segments(text,e['source_ref'],240,percept_mode(self.r.cfg))
+        from .percept_integrity import validate_a1_tiling
+        a1_proof=validate_a1_tiling(text,a1_segments)
+        p=packet('PerceptPacket','A5_PERCEPT',e['event_id'],e['brain_generation_id'],[e['source_ref']],source_ref=e['source_ref'],segments=a1_segments,modality='text',a1_integrity=a1_proof)
         try:
             prediction=self.r.learner.student_percept(text)
             if prediction:
