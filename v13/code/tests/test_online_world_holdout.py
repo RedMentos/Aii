@@ -70,6 +70,17 @@ class HoldoutTests(unittest.TestCase):
             report["no_replay"]["early_holdout_retention_delta_mse"])
         self.assertGreater(report["python_peak_bytes"], 0)
 
+    def test_frozen_baseline_copies_observed_state(self):
+        # Synthetic targets encode unchanged state plus deterministic
+        # action-specific outcomes. A frozen action/outcome baseline can
+        # predict these perfectly without learning a state transition.
+        # Penalizing it for not copying state would create false utility.
+        report = H.evaluate_rows(self.rows())
+        self.assertAlmostEqual(
+            report["frozen_action_mean_baseline_mse"], 0.0, places=12)
+        self.assertFalse(report["predictor_beats_frozen_baseline"])
+        self.assertFalse(report["utility_proven"])
+
     def test_insufficient_evidence_not_promoted(self):
         report = H.evaluate_rows(self.rows(5))
         self.assertEqual(report["status"], "INSUFFICIENT_DISJOINT_T8")
