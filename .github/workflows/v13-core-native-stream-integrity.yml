@@ -1,0 +1,22 @@
+name: V13 Core native stream integrity
+on:
+  push:
+    branches:
+      - gpt6/core-native-stream-integrity-20261116
+  pull_request:
+    paths:
+      - 'v13/code/v13/runners.py'
+      - 'v13/code/tests/test_native_stream_integrity.py'
+      - '.github/workflows/v13-core-native-stream-integrity.yml'
+jobs:
+  stream:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run synthetic native stream regression
+        run: |
+          cd v13/code
+          python -m unittest discover -s tests -p test_native_stream_integrity.py -v

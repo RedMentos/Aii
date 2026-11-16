@@ -48,6 +48,7 @@ jobs:
           tests/test_unified_brain_delivery.py
           tests/test_enlightened_space.py
           tests/test_native_prompt_admission.py
+          tests/test_native_stream_integrity.py
           tests/test_prompt_source_integrity_20261116.py
           tests/test_context_offer_budget_20261116.py
           tests/test_context_stage_composition_20261116.py

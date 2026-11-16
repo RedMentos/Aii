@@ -429,7 +429,7 @@ class LlamaRunner:
                     kill_process(self.proc)
                     with contextlib.suppress(Exception):conn.close()
                     return
-        watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None
+        watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None;native_stop=False
         try:
             conn.request("POST","/completion",wire_json(payload).encode(),{"Content-Type":"application/json","Authorization":"Bearer "+self.key});response=conn.getresponse()
             if response.status!=200:raise RuntimeError(f"Inferenz HTTP {response.status}: {response.read(200).decode(errors='replace')}")
@@ -449,10 +449,14 @@ class LlamaRunner:
                 if tokens%16==0:
                     rss=process_memory(self.proc.pid).get('rss_bytes')
                     if rss is not None:peak=rss if peak is None else max(peak,rss)
-                if data.get("stop"):
+                if data.get("stop") is True:
+                    native_stop=True
                     if self._audit_enabled:self._audit_completed=True
                     break
             check(cancel,deadline)
+            # A closed socket is not proof of a completed native generation.
+            if not native_stop:
+                raise Unavailable('Native stream ended without completion marker')
         except (OSError,http.client.HTTPException):
             check(cancel,deadline);self.unload();raise Unavailable("Native Inferenz unterbrochen")
         finally:
