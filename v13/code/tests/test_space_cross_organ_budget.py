@@ -40,10 +40,19 @@ class CrossOrganBudget(unittest.TestCase):
         self.assertEqual(out["entry_count"],1)
         self.assertLessEqual(sum(len(m["semantic_cue_not_fact"]) + sum(len(s["exact_source_text"]) for s in m["exact_sources"]) for m in out["messages"]),80)
         self.assertFalse(out["trained_latent"])
-        self.assertLessEqual(sum(len(m["semantic_cue_not_fact"]) +
-            sum(len(s["exact_source_text"]) for s in m["exact_sources"])
-            for m in out["messages"]),24)
         self.assertEqual(out["messages"][0]["from"],"WORLD")
+
+    def test_tight_budget_is_not_silently_exceeded(self):
+        self.space.publish(self.event,"WORLD","SEMANTIC",
+                           summary="hello world memory",source_refs=[self.ref],
+                           authority="SOURCE_POINTER")
+        out = self.space.consume(self.event,"C3_LANGUAGE","hello world",
+                                 max_messages=1,max_chars=24)
+        used = sum(len(m["semantic_cue_not_fact"]) +
+                   sum(len(s["exact_source_text"]) for s in m["exact_sources"])
+                   for m in out["messages"])
+        self.assertLessEqual(used,24)
+        self.assertFalse(out["trained_latent"])
 
     def test_erasure_revokes_shared_memory(self):
         self.space.publish(self.event,"MEMORY","SEMANTIC",
