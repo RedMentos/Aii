@@ -446,7 +446,7 @@ class LlamaRunner:
                 if tokens%16==0:
                     rss=process_memory(self.proc.pid).get('rss_bytes')
                     if rss is not None:peak=rss if peak is None else max(peak,rss)
-                if data.get("stop"):
+                if data.get("stop") is True:
                     native_stop=True
                     if self._audit_enabled:self._audit_completed=True
                     break
