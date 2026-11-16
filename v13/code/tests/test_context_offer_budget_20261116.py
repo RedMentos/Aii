@@ -103,8 +103,9 @@ class ContextOfferBudget(unittest.TestCase):
 
     def test_real_integrated_stage_and_stable_prefix(self):
         raw = staged_context()
-        self.assertIn(hashlib.sha256(raw).hexdigest(), patch.INPUT_SHA256)
-        result, _, offers, tool = self.plan(patch.apply_source(raw), layout='stable_prefix')
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         'e4962d932294490b8f4b63a79115212a7000285290444484ec3bf7e50b243cad')
+        result, _, offers, tool = self.plan(raw, layout='stable_prefix')
         rendered = ''.join(m['content'] for m in result['messages'])
         self.assertIn(dumps(offers), rendered)
         self.assertIn(dumps(tool), rendered)
@@ -212,7 +213,9 @@ class ContextOfferBudget(unittest.TestCase):
     def test_unknown_modified_and_repeated_sources_fail_closed(self):
         raw = SOURCE.read_bytes()
         self.assertEqual(set(patch.INPUT_SHA256),
-                         {hashlib.sha256(raw).hexdigest(), hashlib.sha256(staged_context()).hexdigest()})
+                         {hashlib.sha256(raw).hexdigest(), 'a35966dbe77a603470d73285eac9c8087163d8cf675a1b8516e3b9f38b267232'})
+        self.assertEqual(hashlib.sha256(staged_context()).hexdigest(),
+                         'e4962d932294490b8f4b63a79115212a7000285290444484ec3bf7e50b243cad')
         for data in (raw + b'\n# edited\n', patch.apply_source(raw), b''):
             with self.subTest(size=len(data)), self.assertRaisesRegex(ValueError, 'hash mismatch'):
                 patch.apply_source(data)

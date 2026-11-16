@@ -48,6 +48,31 @@ def build_sources(code_dir):
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
                      '44216ae22cc92e638ca36b71a9e62f95b130cf21ce0c2b550a6ecdc3ccca9a94')
     result = observers.apply_sources(code_dir, result)
+    # Apply only the reviewed ContextOS input and the exact checked builder.
+    # The dependent recall module pins ContextOS, so rebind that one pin.
+    path = code_dir / 'scripts/context_offer_budget_candidate_20261116.py'
+    if path.is_symlink() or not path.is_file():
+        raise ValueError('Context budget builder missing or unsafe')
+    candidate = path.read_bytes()
+    if hashlib.sha256(candidate).hexdigest() != 'e904eba285af6c5079a91e886e7b6d9b9a6c2ecbcd352adcd351ddef3b150fa7':
+        raise ValueError('Context budget builder source changed')
+    namespace = {'__name__': 'v13_checked_context_budget', '__file__': str(path)}
+    exec(compile(candidate, str(path), 'exec'), namespace)
+    context = result['v13/context_os.py']
+    if hashlib.sha256(context).hexdigest() != 'a35966dbe77a603470d73285eac9c8087163d8cf675a1b8516e3b9f38b267232':
+        raise ValueError('Integrated ContextOS source changed')
+    context = namespace['apply_source'](context)
+    if hashlib.sha256(context).hexdigest() != 'e4962d932294490b8f4b63a79115212a7000285290444484ec3bf7e50b243cad':
+        raise ValueError('Integrated ContextOS output changed')
+    recall = result['v13/context_source_recall_candidate.py']
+    if hashlib.sha256(recall).hexdigest() != '6c9e6efd9a9a7fc00099366d96d8ea3f341ed741e44ec549af318b99f2355a56':
+        raise ValueError('Integrated source recall changed')
+    old_pin = b'a35966dbe77a603470d73285eac9c8087163d8cf675a1b8516e3b9f38b267232'
+    if recall.count(old_pin) != 1:
+        raise ValueError('Integrated source recall ContextOS pin changed')
+    result['v13/context_os.py'] = context
+    result['v13/context_source_recall_candidate.py'] = recall.replace(
+        old_pin, b'e4962d932294490b8f4b63a79115212a7000285290444484ec3bf7e50b243cad', 1)
     for name, raw in result.items():
         if name.endswith('.py'):
             compile(raw, name, 'exec')
