@@ -29,8 +29,9 @@ RUNTIME_OLD = b'''    def online_world_update(self,limit=2048):
 RUNTIME_NEW = b'''    def online_world_update(self,limit=2048,authority='SYSTEM'):
         """Gate both automatic and operator-invoked local predictor updates."""
         if authority not in ('SYSTEM','EXPLICIT_HUMAN'):raise ValueError('Invalid authority')
-        if self.cfg.get('learning_mode') not in ('SHADOW_UPDATE','APPROVED_COMMIT'):
-            return {'status':'SKIPPED_RECORD_ONLY','learned':0}
+        mode=self.cfg.get('learning_mode')
+        if mode not in ('SHADOW_UPDATE','APPROVED_COMMIT'):
+            return {'status':'SKIPPED_'+('RECORD_ONLY' if mode=='RECORD_ONLY' else 'INVALID_LEARNING_MODE'),'learned':0}
         from .online_world import OnlineWorld,blocked,skipped
         with self.lock:
             with self.store.mutex:
@@ -68,7 +69,9 @@ def set_enabled(runtime,value):
 
 def blocked(runtime,authority='SYSTEM'):
     if authority not in ('SYSTEM',HUMAN):raise ValueError('Invalid authority')
-    if runtime.cfg.get('learning_mode') not in ('SHADOW_UPDATE','APPROVED_COMMIT'):return 'RECORD_ONLY'
+    mode=runtime.cfg.get('learning_mode')
+    if mode=='RECORD_ONLY':return 'RECORD_ONLY'
+    if mode not in ('SHADOW_UPDATE','APPROVED_COMMIT'):return 'INVALID_LEARNING_MODE'
     if authority=='SYSTEM' and not enabled(runtime.store):return 'OFF'
     from .inputs import paused
     if paused(runtime.store,'training'):return 'PAUSED_TRAINING'
@@ -98,6 +101,16 @@ UPDATE_START = b'    def update(self,limit=2048):\n'
 UPDATE_END = b'    def predict(self,state,action):\n'
 UPDATE = b'''    def update(self,limit=2048,authority='SYSTEM'):
         """Gate each step and detect a torn predictor/cursor before any update."""
+        import threading
+        with self.runtime.lock:
+            if not hasattr(self.runtime,'_online_world_update_lock'):
+                self.runtime._online_world_update_lock=threading.Lock()
+            guard=self.runtime._online_world_update_lock
+        if not guard.acquire(blocking=False):return skipped('UPDATE_BUSY')
+        try:return self._guarded_update(limit,authority)
+        finally:guard.release()
+
+    def _guarded_update(self,limit,authority):
         from copy import deepcopy
         if type(limit) is not int or not 1<=limit<=world_model.MAX_ROWS:raise ValueError('Invalid update limit')
         # Runtime lock serializes distinct OnlineWorld instances, source pause
@@ -106,10 +119,12 @@ UPDATE = b'''    def update(self,limit=2048,authority='SYSTEM'):
             with self.runtime.store.mutex:
                 reason=blocked(self.runtime,authority)
                 if reason:return skipped(reason)
+                if authority==HUMAN:self.runtime.require_idle()
                 current=getattr(self.runtime,'_online_world',None)
                 if current is not None and current is not self:return skipped('STALE_INSTANCE')
                 self.runtime._online_world=self
-                if self.model.seen!=len(self.processed):return skipped('TORN_OR_BOUNDED_CURSOR')
+                if (getattr(self,'_guard_torn',False) or self.model.seen!=len(self.processed)
+                        or len(set(self.processed))!=len(self.processed)):return skipped('TORN_OR_BOUNDED_CURSOR')
         rows=world_model.transitions(self.runtime.store,limit=limit)
         replay=[(x.copy(),int(a),y.copy()) for x,a,y in zip(self.model.x,self.model.act,self.model.y)]
         retention_before=self.model.error(replay) if replay else None
@@ -119,7 +134,8 @@ UPDATE = b'''    def update(self,limit=2048,authority='SYSTEM'):
                 with self.runtime.store.mutex:
                     reason=blocked(self.runtime,authority)
                     if reason:return skipped(reason,learned)
-                    if self.model.seen!=len(self.processed):return skipped('TORN_OR_BOUNDED_CURSOR',learned)
+                    if (getattr(self,'_guard_torn',False) or self.model.seen!=len(self.processed)
+                            or len(set(self.processed))!=len(self.processed)):return skipped('TORN_OR_BOUNDED_CURSOR',learned)
                     action_id=row['action_id']
                     if type(action_id) is not str or not action_id:raise ValueError('Invalid action identifier')
                     if action_id in self.processed:continue
@@ -138,6 +154,10 @@ UPDATE = b'''    def update(self,limit=2048,authority='SYSTEM'):
                             for name in names:setattr(model,name,old[name])
                             model.seen=old['seen'];model.updates=old['updates'];model.rng.bit_generator.state=old['rng']
                             return skipped(reason,learned)
+                        # Any failure while publishing the pair is ambiguous;
+                        # require recovery/restart even if the first file may
+                        # already have reached disk before an exception.
+                        self._guard_torn=True
                         model.checkpoint()
                     except BaseException:
                         for name in names:setattr(model,name,old[name])
@@ -150,7 +170,7 @@ UPDATE = b'''    def update(self,limit=2048,authority='SYSTEM'):
                     temp=self.cursor.with_suffix('.tmp')
                     temp.write_text(json.dumps({'revision':REVISION,'processed':processed}))
                     os.replace(temp,self.cursor)
-                    self.processed=processed;learned+=1
+                    self.processed=processed;self._guard_torn=False;learned+=1
         retention_after=self.model.error(replay) if replay else None
         return {'learned':learned,'seen':self.model.seen,'tracked_ids':len(self.processed),
                 'old_replay_loss_before':retention_before,'old_replay_loss_after':retention_after,
@@ -195,7 +215,12 @@ def build_sources(code_dir):
     result = {}
     for relative, expected in SOURCE_SHA256.items():
         path = code_dir / relative
-        if not path.is_file() or path.is_symlink() or any(p.is_symlink() for p in path.parents if p != code_dir.parent):
+        parts=Path(relative).parts
+        # Reject links within the supplied source tree. Android commonly uses
+        # an alias in an ancestor such as /data/data; that is not an input path
+        # controlled by this builder and must not break an otherwise valid root.
+        internal=(code_dir.joinpath(*parts[:i]) for i in range(1,len(parts)+1))
+        if code_dir.is_symlink() or not path.is_file() or any(p.is_symlink() for p in internal):
             raise ValueError('online-world guard source path missing or unsafe: ' + relative)
         raw = path.read_bytes()
         if sha256(raw).hexdigest() != expected:
