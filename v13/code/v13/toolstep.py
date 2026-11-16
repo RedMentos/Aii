@@ -207,14 +207,33 @@ class ToolStep:
     def lead(self,result):
         """cfg tool_answer_first: the executed eligibility decision opens the visible answer as a fixed sentence (the body
         only explains it), so a 350M body that ignores the TOOL_RESULT layer can no longer replace the decision."""
-        if not self.r.cfg.get('tool_answer_first') or not result or result.get('tool')!='eligibility' or not isinstance(result.get('result'),dict):return None
+        if not self.r.cfg.get('tool_answer_first') or not result:return None
+        if result.get('tool')=='calc':return self.lead_final(result)
+        if result.get('tool')!='eligibility' or not isinstance(result.get('result'),dict):return None
         from .agi import eligibility
         return eligibility.answer_sentence(result['args'],result['result'])
     def lead_final(self,result):
-        """UNKNOWN/NONE: the fixed text is the whole answer (no body continuation that could still pick an option)."""
-        if not self.lead(result) or result['result'].get('action') not in ('UNKNOWN','NONE'):return None
-        from .agi import eligibility
-        return eligibility.final_text(result['args'],result['result'])
+        """Exact authorized local results may finish without a contradictory C3 continuation.
+
+        The normal C5 policy/transaction still decides whether a tool ran.
+        In particular SHADOW arithmetic and Age-0 refused proposals cannot
+        reach this method as executed results. This does not bypass B1/B2.
+        """
+        if not result or not self.r.cfg.get('tool_answer_first'):return None
+        if result.get('status') not in ('EXECUTED','DEDUPLICATED'):return None
+        if result.get('error') is not None:return None
+        if result.get('tool')=='calc':
+            import math
+            value=result.get('result')
+            if type(value) not in (int,float) or not math.isfinite(value):return None
+            expression=(result.get('args') or {}).get('expression')
+            if not isinstance(expression,str) or not expression or len(expression)>200:return None
+            return f"The result of {expression} is {value}."
+        if result.get('tool')=='eligibility' and self.lead(result) and isinstance(result.get('result'),dict):
+            if result['result'].get('action') in ('UNKNOWN','NONE'):
+                from .agi import eligibility
+                return eligibility.final_text(result['args'],result['result'])
+        return None
     def layer(self,result):
         """Volatile context layer for the answering body: grounded tool output with its transaction id."""
         args=result['args']
