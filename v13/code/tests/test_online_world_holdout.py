@@ -35,6 +35,15 @@ class HoldoutTests(unittest.TestCase):
         report = H.evaluate_rows(self.rows())
         self.assertEqual(report["status"], "SYNTHETIC_OR_T8_OFFLINE_ONLY")
         self.assertGreater(report["train"], report["holdout"])
+        self.assertGreaterEqual(report["frozen_action_mean_baseline_mse"], 0)
+        self.assertEqual(
+            report["predictor_beats_frozen_baseline"],
+            report["replay"]["after_mse"] <
+            report["frozen_action_mean_baseline_mse"])
+        self.assertEqual(
+            report["utility_proven"],
+            report["predictor_beats_frozen_baseline"] and
+            report["replay"]["after_mse"] < report["replay"]["before_mse"])
         for variant in ("replay", "no_replay"):
             self.assertGreater(report[variant]["numeric_updates"], 0)
             self.assertAlmostEqual(
