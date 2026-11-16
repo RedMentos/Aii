@@ -5,7 +5,7 @@ route. No eval, no floating point, no learned authority and no tool permission.
 """
 import re
 
-_EXPR = re.compile(r"^\\s*(?:(?:what is|what's|calculate|compute|was ist|wieviel ist)\\s+)?([+-]?\\d{1,9})\\s*([+*×-])\\s*([+-]?\\d{1,9})\\s*\\??\\s*$", re.I)
+_EXPR = re.compile(r"^\s*(?:(?:what is|what's|calculate|compute|was ist|wieviel ist)\s+)?([+-]?\d{1,9})\s*([+*×-])\s*([+-]?\d{1,9})\s*\??\s*$", re.I)
 
 def answer(text):
     if not isinstance(text, str) or len(text) > 80:
