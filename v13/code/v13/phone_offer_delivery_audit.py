@@ -257,9 +257,35 @@ def audit(conn, limit=10):
                 t["roles"][role]["delivery"] == "NATIVE_FAILED_NO_OFFER"
                 for t in turns),
         }
+    # This is a *diagnostic* gate, not a functional model-acceptance gate.
+    # Counting both bodies without linking selected packet IDs to delivery
+    # receipts, and then observing real C3 token output, would hide P0 failures.
+    both = sum(
+        t["c3_native_output_observed"] and not t["audit_incomplete"]
+        and all(t["roles"][r]["delivery"] == "IN_FINAL_C3_REPORT"
+                for r in ROLES)
+        for t in turns)
+    zero_token_c3_deadlines = sum(
+        t["turn_status"] == "DEADLINE"
+        and t["c3_reporter"] and t["c3_generated_tokens"] == 0
+        for t in turns)
+    incomplete_turns = sum(t["audit_incomplete"] for t in turns)
+    proof_status = ("NO_ASSISTANT_TURNS" if not turns
+                    else "BOUNDED_METADATA_INCOMPLETE" if incomplete_turns
+                    else "BOTH_BODY_C4_C3_METADATA_ONLY" if both
+                    else "B1_B2_TO_C3_CHAIN_NOT_OBSERVED")
     return {
         "schema": SCHEMA,
         "source": "LOCAL_SQLITE_METADATA_ONLY",
+        "end_to_end_gate": {
+            "status": proof_status,
+            "both_body_selected_delivered_and_c3_generated_turns": both,
+            "c3_deadline_zero_token_turns": zero_token_c3_deadlines,
+            "incomplete_metadata_turns": incomplete_turns,
+            "native_prompt_offer_inclusion_verified": False,
+            "learned_latent_exchange_verified": False,
+            "device_functional_acceptance": "NOT_VERIFIED",
+        },
         "device_proof": "NOT_INDEPENDENTLY_VERIFIED",
         "evidence_boundary": "METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY",
         "warning": "IN_FINAL_C3_REPORT is a legacy label; actual C3 prompt inclusion, semantic use and learned latent exchange are not demonstrated.",
