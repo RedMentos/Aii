@@ -26,6 +26,8 @@ STATUSES = {"FINAL", "ERROR", "DEADLINE", "CANCELLED", "INTERRUPTED"}
 PHASES = {"load", "template", "prefill", "stream"}
 KINDS = ("body_offer_attempt", "body_offer_delivered")
 SCHEMA = "v13.phone-offer-delivery-audit/1"
+MAX_JSON_BYTES = 262144
+MAX_ROWS_PER_TURN = 2000
 ADMISSION_STATUSES = frozenset(("ADMITTED","PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET"))
 ADMISSION_OMISSIONS = frozenset((
     "C3_LAYER_TASK_CONTEXT","C3_LAYER_DIGEST","C3_LAYER_USER_MODEL",
@@ -40,7 +42,7 @@ ADMISSION_OMISSIONS = frozenset((
 def _obj(text):
     # Packet/telemetry metadata is untrusted diagnostic data. A corrupt
     # record must not stop a no-text phone audit or exhaust JSON parsing.
-    if type(text) not in (str, bytes) or len(text) > 262144:
+    if type(text) not in (str, bytes) or len(text) > MAX_JSON_BYTES:
         return {}
     try:
         result = json.loads(text)
@@ -110,9 +112,14 @@ def _audit_one(conn, index, event_id, status, metadata):
                         and native_c3_tokens is not None and native_c3_tokens > 0)
     events = {r: {"query_count": 0, "attempts": [], "offers": {},
                   "delivered_ids": set()} for r in ROLES}
-    for kind, payload, packet_id in conn.execute(
-            "SELECT kind,payload,id FROM packets WHERE event_id=? "
-            "AND kind IN ('QueryPacket','OfferPacket')", (event_id,)):
+    # Bound SQL materialization before a corrupt/private payload enters
+    # Python, and keep an explicit truncation signal for fail-closed verdicts.
+    packet_rows = conn.execute(
+        "SELECT kind,substr(CAST(payload AS BLOB),1,?),id FROM packets WHERE event_id=? "
+        "AND kind IN ('QueryPacket','OfferPacket') ORDER BY rowid LIMIT ?",
+        (MAX_JSON_BYTES+1, event_id, MAX_ROWS_PER_TURN+1)).fetchall()
+    packet_rows_truncated = len(packet_rows) > MAX_ROWS_PER_TURN
+    for kind, payload, packet_id in packet_rows[:MAX_ROWS_PER_TURN]:
         role = _role_from_packet(payload, kind)
         if role is None:
             continue
@@ -124,9 +131,13 @@ def _audit_one(conn, index, event_id, status, metadata):
             events[role]["offers"][packet_id] = (
                 len(evidence) if isinstance(evidence, list) else None)
 
-    for kind, raw in conn.execute(
-            "SELECT kind,metrics FROM telemetry WHERE event_id=? "
-            "AND kind IN (?,?) ORDER BY id ASC", (event_id, *KINDS)):
+    telemetry_rows = conn.execute(
+        "SELECT kind,substr(CAST(metrics AS BLOB),1,?) FROM telemetry WHERE event_id=? "
+        "AND kind IN (?,?) ORDER BY id ASC LIMIT ?",
+        (MAX_JSON_BYTES+1, event_id, *KINDS, MAX_ROWS_PER_TURN+1)).fetchall()
+    telemetry_rows_truncated = len(telemetry_rows) > MAX_ROWS_PER_TURN
+    incomplete = packet_rows_truncated or telemetry_rows_truncated
+    for kind, raw in telemetry_rows[:MAX_ROWS_PER_TURN]:
         data = _obj(raw)
         role = data.get("role")
         if role not in ROLES:
@@ -162,7 +173,9 @@ def _audit_one(conn, index, event_id, status, metadata):
         quoted = {pid for pid, count in packets.items()
                   if type(count) is int and count > 0}
         attempts = record["attempts"]
-        if selected and not selected_delivered:
+        if incomplete:
+            result = "INCOMPLETE_AUDIT_ROW_CAP"
+        elif selected and not selected_delivered:
             result = "SELECTED_WITHOUT_DELIVERY_RECEIPT"
         elif selected_delivered and native_c3_output:
             # Legacy status name: only C4 selection + delivered receipt +
@@ -206,6 +219,7 @@ def _audit_one(conn, index, event_id, status, metadata):
         "c3_prompt_tokens": _count(report.get("prompt_tokens")),
         "c3_generated_tokens": native_c3_tokens,
         "c3_native_output_observed": native_c3_output,
+        "audit_incomplete": incomplete,
         "c3_prompt_inclusion_proven": False,
         "c3_semantic_use_proven": False,
         "native_latent_exchange_proven": False,
@@ -219,9 +233,9 @@ def audit(conn, limit=10):
         raise ValueError("turn count must be 1..20")
     # Avoid ever selecting user/assistant text: metadata, roles and counts only.
     messages = conn.execute(
-        "SELECT event_id,status,metadata FROM messages "
+        "SELECT event_id,status,substr(CAST(metadata AS BLOB),1,?) FROM messages "
         "WHERE role='assistant' AND event_id IS NOT NULL "
-        "ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
+        "ORDER BY id DESC LIMIT ?", (MAX_JSON_BYTES+1, limit)).fetchall()
     seen = set()
     turns = []
     for eid, status, metadata in messages:
@@ -266,8 +280,32 @@ def connect_readonly(home):
             raise ValueError("symlinked runtime database path")
     if not db.is_file() or db.stat().st_uid != os.getuid():
         raise ValueError("local runtime database unavailable")
+    for suffix in ("-wal", "-shm", "-journal"):
+        sidecar = db.with_name(db.name + suffix)
+        if sidecar.is_symlink() or (
+                sidecar.exists() and (not sidecar.is_file()
+                                      or sidecar.stat().st_uid != os.getuid())):
+            raise ValueError("unsafe runtime database sidecar")
+    # SQLite read-only connections may create a missing -shm file in WAL
+    # mode. Refuse that case rather than claiming a read-only audit that
+    # mutates the owner's live phone storage.
+    with db.open("rb") as source:
+        header = source.read(20)
+    if len(header) != 20 or not header.startswith(b"SQLite format 3\\x00"):
+        raise ValueError("invalid SQLite database header")
+    if header[18:20] == b"\\x02\\x02" and not all(
+            db.with_name(db.name + suffix).is_file()
+            for suffix in ("-wal", "-shm")):
+        raise ValueError("WAL coordination files unavailable")
     uri = "file:" + quote(str(db.absolute()), safe="/") + "?mode=ro"
-    return sqlite3.connect(uri, uri=True, timeout=3)
+    conn = sqlite3.connect(uri, uri=True, timeout=.3, isolation_level=None)
+    try:
+        conn.execute("PRAGMA query_only=ON")
+        conn.execute("PRAGMA trusted_schema=OFF")
+    except sqlite3.Error:
+        conn.close()
+        raise
+    return conn
 
 
 def main(argv=None):
