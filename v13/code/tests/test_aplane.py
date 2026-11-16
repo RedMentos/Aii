@@ -32,6 +32,24 @@ class StudentT2(Base):
         self.assertEqual(aplane.set_student_mode(self.r.store,'fallback'),'fallback')
         self.evals([False]*8);g=aplane.student_gate(self.r.store)  # newest window drops > 5 points: retention fails
         self.assertFalse(g['retention_pass']);self.assertFalse(g['pass'])
+    def test_prior_generation_evidence_cannot_promote_current_student(self):
+        self.evals([True]*60)
+        self.assertTrue(aplane.student_gate(self.r.store)['pass'])
+        # Simulate a new generation retaining old evaluation rows: the active
+        # generation must not inherit its predecessor's A3 promotion evidence.
+        with self.r.store.tx() as c:
+            c.execute("UPDATE packets SET generation_id=? WHERE kind='StudentEvaluation'",('previous-generation',))
+        g=aplane.student_gate(self.r.store)
+        self.assertEqual(g['n'],0)
+        self.assertFalse(g['pass'])
+        with self.assertRaises(ValueError):aplane.set_student_mode(self.r.store,'fallback')
+
+    def test_fallback_rejects_invalid_student_route(self):
+        r=self.r;e=r.store.event(r.session,'Explain the budget')
+        self.evals([True]*60);aplane.set_student_mode(r.store,'fallback')
+        r.learner.student_route=Mock(return_value={'route':'not_a_canonical_route','percept':{}})
+        self.assertIsNone(aplane.student_fallback(r,e,{'source':'BOOT_SCAFFOLD'}))
+
     def test_small_dip_keeps_gate_and_old_failures_leave_the_window(self):
         # thread L 2026-10-12, preregistered candidate PASS: window 100, retention only against a clear drop
         self.evals([False]*60+[True]*100);g=aplane.student_gate(self.r.store)
