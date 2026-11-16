@@ -421,6 +421,8 @@ class Runtime:
                 jefctl.controller(self).broadcast_cache(e,jbp,exec_state,[s['item_id'] for s in Workspace(self.store,self.session).view()['slots']],selfctl.controller(self).corollary_view(),meta.get('interoception',{}).get('feeling'))
             except Exception as exc:self.store.log('jef_bridge_unavailable',eid,{'stage':'broadcast','error':type(exc).__name__})
             mark('routing');exact=re.fullmatch(r'(?:Kopiere exakt|Copy exactly):\s*([\s\S]+)',text,re.I)
+            from .arithmetic_reflex import answer as exact_arithmetic
+            arithmetic_answer = None if fixed_policy or exact else exact_arithmetic(text)
             if fixed_policy:
                 direct=True;route='simple';meta['route']={'source':'EXPLICIT_EXACT_POLICY'}
                 refs=[e['source_ref'],fixed_policy['query_ref'],fixed_policy['answer_ref']]
@@ -428,6 +430,10 @@ class Runtime:
                 meta.update(output_policy={k:fixed_policy[k] for k in ['kind','rule_id','rule_version','query_ref','answer_ref']},output_authority='APPROVED_FIXED_RULE',exact_policy_matched=True,skipped_native_stages=['A3_NATIVE_ALIGNMENT','SEMANTIC_RECALL','C2_CONTROL','B_OBSERVERS','C3_DECODE','NATIVE_WORLD_PREDICTION'])
                 meta['context_source_refs']=refs
             elif exact:direct=True;route='simple';meta['route']={'source':'EXPLICIT_EXACT_COPY'}
+            elif arithmetic_answer is not None:
+                direct=True;route='simple';meta['route']={'source':'VERIFIED_INTEGER_ARITHMETIC'}
+                meta['output_authority']='DETERMINISTIC_INTEGER_ARITHMETIC'
+                meta['arithmetic_reflex']=True
             else:  # WP-T6: a trusted route-only skill routes before C_fast (no Needle call); else the full path
                 auto=skilllive.automatic(self,e,text,meta) if self.cfg['route_override']=='auto' else None
                 route,meta['route']=auto or self._route(text,e,deadline)
@@ -526,10 +532,10 @@ class Runtime:
             exec_state=self.executive.update(e,self.session,offers=selected,action_id=aid,user_beliefs=meta.get('user_beliefs') or [])
             meta['executive_state_version']=exec_state['state_version']
             if direct:
-                output=safe_text(fixed_policy['answer'] if fixed_policy else exact.group(1))
+                output=safe_text(fixed_policy['answer'] if fixed_policy else exact.group(1) if exact else arithmetic_answer)
                 if not visible_text(output):
                     output='';raise Unavailable('Exakte Quelle enthält keinen sichtbaren Text')
-                txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=True
+                txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=not bool(meta.get('arithmetic_reflex'))
             else:
                 role=c5['role']
                 if any(x['reason']=='RESOURCE_PRESSURE' and x['action_id']==ActionGate.PRIOR[route] for x in c5['suppressed']):meta['resource_fallback']=ActionGate.PRIOR[route]+' -> '+role

@@ -1,0 +1,22 @@
+name: V13 core arithmetic reflex
+on:
+  push:
+    branches: [core/verified-arithmetic-reflex-20261116]
+  pull_request:
+    paths:
+      - 'v13/code/v13/arithmetic_reflex.py'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/tests/test_arithmetic_reflex.py'
+      - '.github/workflows/v13-core-arithmetic-reflex.yml'
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile changed Python
+        run: python -m py_compile v13/code/v13/arithmetic_reflex.py v13/code/v13/runtime.py
+      - name: Exact arithmetic tests
+        run: PYTHONPATH=v13/code python -m unittest discover -s v13/code/tests -p test_arithmetic_reflex.py -v
