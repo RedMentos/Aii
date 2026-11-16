@@ -4,6 +4,7 @@ Pure standard-library candidate; does not activate native inference or mutate
 source packets. Tokens are caller-measured, not estimated from characters.
 """
 from dataclasses import dataclass
+from numbers import Integral
 from typing import Sequence
 
 
@@ -16,7 +17,13 @@ class SourceEnvelope:
     consented: bool = True
 
     def __post_init__(self):
-        if not self.organ or not self.source_id or self.token_count < 0:
+        if (not isinstance(self.organ, str) or not self.organ.strip()
+                or not isinstance(self.source_id, str) or not self.source_id.strip()
+                or isinstance(self.token_count, bool)
+                or not isinstance(self.token_count, Integral)
+                or self.token_count < 0
+                or not isinstance(self.required, bool)
+                or not isinstance(self.consented, bool)):
             raise ValueError("invalid source envelope")
 
 
@@ -37,7 +44,10 @@ def admit_sources(sources: Sequence[SourceEnvelope], max_prompt_tokens: int,
     packets. If required sources cannot fit, reject the entire route; never
     claim a successful model call with missing mandatory evidence.
     """
-    if max_prompt_tokens < 0 or reserved_tokens < 0:
+    if (isinstance(max_prompt_tokens, bool) or isinstance(reserved_tokens, bool)
+            or not isinstance(max_prompt_tokens, Integral)
+            or not isinstance(reserved_tokens, Integral)
+            or max_prompt_tokens < 0 or reserved_tokens < 0):
         raise ValueError("negative token budget")
     if len({s.source_id for s in sources}) != len(sources):
         raise ValueError("duplicate source identity")
