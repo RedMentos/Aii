@@ -2,6 +2,7 @@
 """Conservative V13 Redmi acceptance gate. Metadata only; no transcript collection."""
 import argparse
 import json
+import math
 import statistics
 import sys
 
@@ -23,6 +24,8 @@ def evaluate(rows, expected_sha):
     problems = []
     if len(rows) < 20:
         problems.append("INSUFFICIENT_LIVE_TURNS")
+    if not isinstance(expected_sha, str) or len(expected_sha) < 7:
+        problems.append("INVALID_EXPECTED_RELEASE_SHA")
     ids = set()
     categories = set()
     totals, ttfts = [], []
@@ -32,6 +35,8 @@ def evaluate(rows, expected_sha):
         if missing:
             problems.append("TURN_%d_MISSING_FIELDS:%s" % (n, ",".join(sorted(missing))))
             continue
+        if not isinstance(row["turn_id"], str) or not row["turn_id"]:
+            problems.append("INVALID_TURN_ID")
         if row["turn_id"] in ids:
             problems.append("DUPLICATE_TURN_ID")
         ids.add(row["turn_id"])
@@ -46,10 +51,10 @@ def evaluate(rows, expected_sha):
             problems.append("TURN_%d_NOT_CORRECT_FINAL" % n)
         for field in ("total_ms", "ttft_ms", "native_prefill_ms", "pss_kib"):
             value = row[field]
-            if isinstance(value, bool) or not isinstance(value, (float, int)) or value < 0:
+            if isinstance(value, bool) or not isinstance(value, (float, int)) or not math.isfinite(value) or value < 0:
                 problems.append("TURN_%d_INVALID_%s" % (n, field))
         if isinstance(row["total_ms"], (int, float)) and isinstance(row["ttft_ms"], (int, float)):
-            if 0 <= row["ttft_ms"] <= row["total_ms"]:
+            if all(type(row[k]) in (int, float) and math.isfinite(row[k]) for k in ("ttft_ms", "total_ms")) and 0 <= row["ttft_ms"] <= row["total_ms"]:
                 totals.append(row["total_ms"])
                 ttfts.append(row["ttft_ms"])
             else:
@@ -62,10 +67,12 @@ def evaluate(rows, expected_sha):
                 offers[organ] = [a + b for a, b in zip(offers[organ], values)]
         if type(row["c4_consumed"]) is not int or row["c4_consumed"] < 0:
             problems.append("INVALID_C4_CONSUMPTION")
-        elif row["c4_consumed"] > row["b1_consumed"] + row["b2_consumed"]:
+        elif type(row["b1_consumed"]) is int and type(row["b2_consumed"]) is int and row["c4_consumed"] > row["b1_consumed"] + row["b2_consumed"]:
             problems.append("C4_UNBACKED_CONSUMPTION")
         if type(row["c3_tokens"]) is not int or row["c3_tokens"] <= 0:
             problems.append("NO_C3_OUTPUT")
+    if not any(type(r.get("c4_consumed")) is int and r["c4_consumed"] > 0 for r in rows):
+        problems.append("C4_NEVER_CONSUMED")
     if not CATEGORIES.issubset(categories):
         problems.append("MISSING_CATEGORIES:" + ",".join(sorted(CATEGORIES - categories)))
     if not all(offers[o][2] > 0 for o in offers):
@@ -77,7 +84,8 @@ def evaluate(rows, expected_sha):
             "total_ms_p95": percentile(totals, .95) if totals else None,
             "ttft_ms_p50": percentile(ttfts, .5) if ttfts else None,
             "ttft_ms_p95": percentile(ttfts, .95) if ttfts else None,
-            "evidence": "CLAIMED_DEVICE_METADATA_REQUIRES_INDEPENDENT_RECEIPT_REVIEW"}
+            "evidence": "SYNTHETIC_SCHEMA_ONLY_NOT_DEVICE_VERIFIED",
+            "release_ready": False}
 
 def main():
     p = argparse.ArgumentParser()
