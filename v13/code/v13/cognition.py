@@ -131,6 +131,25 @@ class Cognition:
         except Exception as exc:
             p['student_unavailable']=type(exc).__name__;self.s.log('student_unavailable',e['event_id'],{'error':type(exc).__name__})
         return self.s.add_packet('PerceptPacket',p)
+    def audio_percept(self,e,frames,*,consent,capture_id,sample_rate_hz,provisional=True,teacher=None):
+        """A5 runtime consumer for authorized timed audio observations.
+        The caller must have persisted the original source in Store; no raw audio
+        or transcript is promoted to a trusted fact or an action authorization.
+        """
+        from .audio_percept import timed_audio_percept
+        source_ref=e['source_ref']
+        self.s.read_source(source_ref)  # fail closed on missing/revoked source
+        data=timed_audio_percept(source_ref,frames,consent=consent,
+            capture_id=capture_id,sample_rate_hz=sample_rate_hz,
+            provisional=provisional,teacher=teacher)
+        p=packet('PerceptPacket','A5_PERCEPT',e['event_id'],
+                 e['brain_generation_id'],[source_ref],**data)
+        stored=self.s.add_packet('PerceptPacket',p)
+        self.s.log('audio_percept_observed',e['event_id'],
+                   {'frames':len(frames),'provisional':provisional,
+                    'teacher_present':teacher is not None,
+                    'android_verified':False})
+        return stored
     def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):
         if role not in {'B1_DETAIL','B2_GIST'}:raise ValueError('Unbekannte Body-Rolle')
         # Inference must finish within its own budget. A completed foreground
