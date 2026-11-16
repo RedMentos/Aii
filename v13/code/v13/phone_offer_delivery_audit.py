@@ -291,9 +291,9 @@ def connect_readonly(home):
     # mutates the owner's live phone storage.
     with db.open("rb") as source:
         header = source.read(20)
-    if len(header) != 20 or not header.startswith(b"SQLite format 3\\x00"):
+    if len(header) != 20 or not header.startswith(b"SQLite format 3\x00"):
         raise ValueError("invalid SQLite database header")
-    if header[18:20] == b"\\x02\\x02" and not all(
+    if header[18:20] == b"\x02\x02" and not all(
             db.with_name(db.name + suffix).is_file()
             for suffix in ("-wal", "-shm")):
         raise ValueError("WAL coordination files unavailable")
