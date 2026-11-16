@@ -294,7 +294,10 @@ class LlamaRunner:
         work=[dict(x) for x in messages];truncated=False
         target=admission.soft_limit(self.role,self.cfg,deadline-time.monotonic())
         removed=[];initial_tokens=None
-        for _ in range(16):
+        # A normal history can contain 32 complete pairs. Every iteration is
+        # still bounded by the actual turn deadline and the overall step cap.
+        reduction_steps=min(80,max(16,len(work)//2+8))
+        for _ in range(reduction_steps):
             check(cancel,deadline)
             p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
             tokens=self._json("POST","/tokenize",{"content":p,"add_special":True},deadline)["tokens"]
@@ -310,9 +313,6 @@ class LlamaRunner:
             candidate=admission.reduce_once(work,self.role,self.cfg)
             if candidate:
                 work,kind=candidate;removed.append(kind);truncated=True
-                continue
-            if len(work)>2:
-                work.pop(1);removed.append('OLD_NATIVE_HISTORY');truncated=True
                 continue
             if fits_context:
                 # No unsafe clipping of current user text or source-bound
