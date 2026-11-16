@@ -37,6 +37,10 @@ class HoldoutTests(unittest.TestCase):
         self.assertGreater(report["train"], report["holdout"])
         for variant in ("replay", "no_replay"):
             self.assertGreater(report[variant]["numeric_updates"], 0)
+            self.assertAlmostEqual(
+                report[variant]["early_train_delta_mse"],
+                report[variant]["early_train_mse_after"] -
+                report[variant]["early_train_mse_before"])
             self.assertAlmostEqual(report[variant]["after_mse"],
                                    report[variant]["restart_mse"])
         self.assertGreater(report["python_peak_bytes"], 0)
