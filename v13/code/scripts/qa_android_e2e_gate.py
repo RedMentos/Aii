@@ -40,10 +40,15 @@ def evaluate(rows, expected_sha):
             continue
         if not isinstance(row["turn_id"], str) or not row["turn_id"]:
             problems.append("INVALID_TURN_ID")
-        if row["turn_id"] in ids:
-            problems.append("DUPLICATE_TURN_ID")
-        ids.add(row["turn_id"])
-        categories.add(row.get("category"))
+        if isinstance(row["turn_id"], str):
+            if row["turn_id"] in ids:
+                problems.append("DUPLICATE_TURN_ID")
+            ids.add(row["turn_id"])
+        category = row.get("category")
+        if not isinstance(category, str):
+            problems.append("INVALID_CATEGORY")
+        else:
+            categories.add(category)
         if not isinstance(row["release_sha"], str) or row["release_sha"] != expected_sha:
             problems.append("RELEASE_SHA_MISMATCH")
         # A string or boolean is not an authenticated owner/device receipt.
@@ -76,7 +81,7 @@ def evaluate(rows, expected_sha):
             problems.append("TURN_%d_MISSING_DEEP_ORGAN_COOPERATION" % n)
         if type(row["c3_tokens"]) is not int or row["c3_tokens"] <= 0:
             problems.append("NO_C3_OUTPUT")
-    if not any(type(r.get("c4_consumed")) is int and r["c4_consumed"] > 0 for r in rows):
+    if not any(isinstance(r, dict) and type(r.get("c4_consumed")) is int and r["c4_consumed"] > 0 for r in rows):
         problems.append("C4_NEVER_CONSUMED")
     if not CATEGORIES.issubset(categories):
         problems.append("MISSING_CATEGORIES:" + ",".join(sorted(CATEGORIES - categories)))
