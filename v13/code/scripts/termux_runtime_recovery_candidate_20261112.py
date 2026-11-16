@@ -43,8 +43,11 @@ def build_sources(code_dir):
                       '72bf8a829a7de064e7703271228bcdf02632108418c41c571126fbd8c05d5567')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
-                              '86cdf764496431bf4170ecc172ed33373ad29ff59f74d363caca28dfdd190c3f')
+                              'ce0a5395bbb999212dd62fd79d71a1b0b0ad73556bd1b20f5b0fc452391d2d80')
     result = arithmetic_outcome.apply_sources(code_dir, result)
+    observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
+                     '44216ae22cc92e638ca36b71a9e62f95b130cf21ce0c2b550a6ecdc3ccca9a94')
+    result = observers.apply_sources(code_dir, result)
     for name, raw in result.items():
         if name.endswith('.py'):
             compile(raw, name, 'exec')

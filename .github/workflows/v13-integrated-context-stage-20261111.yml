@@ -22,6 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
@@ -52,6 +53,7 @@ jobs:
           tests/test_phone_runtime_diagnostics.py
           tests/test_native_sampling_policy.py
           tests/test_arithmetic_stage_20261116.py
+          tests/test_observer_fair_budget_stage_20261116.py
       - name: Check recovery shell syntax
         run: bash -n v13/code/scripts/termux_runtime_recovery.sh
   integrated-regression:
@@ -60,6 +62,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:

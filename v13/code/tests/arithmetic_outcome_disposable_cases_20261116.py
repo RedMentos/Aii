@@ -1,5 +1,7 @@
 """Real staged arithmetic World and failed-turn receipts; no model/phone proof."""
 import json
+from pathlib import Path
+import shutil
 import time
 from unittest.mock import patch
 
@@ -122,3 +124,20 @@ def test_record_only_world_receipt_does_not_allow_training(runtime):
     r.world.transition(action['id'])
     with pytest.raises(ValueError, match='RECORD_ONLY'):
         r.learner.shadow_world()
+
+
+def test_reviewed_semantic_dependency_binding_still_rejects_tampered_world(tmp_path):
+    from v13 import local_error_route_shadow_candidate as local_error
+    from v13 import world_semantic_evidence_candidate as semantic
+    semantic.verify_sources()
+    local_error._check_sources()
+    original = Path(semantic.__file__).parent
+    bound = tmp_path / 'bound'
+    bound.mkdir()
+    for name in semantic.SOURCE_HASHES:
+        shutil.copyfile(original / name, bound / name)
+    semantic.verify_sources(bound)
+    world = bound / 'world.py'
+    world.write_bytes(world.read_bytes() + b'\n# synthetic dependency corruption\n')
+    with pytest.raises(ValueError, match='candidate source changed: world.py'):
+        semantic.verify_sources(bound)
