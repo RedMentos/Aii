@@ -195,7 +195,12 @@ class ToolStep:
         if shadow['tool']=='eligibility':  # Thread Q: agreement = the answer commits to the recipe's decision
             from .agi import eligibility
             agree=eligibility.answer_action(output)==v['action']
-        else:agree=any(re.search(r'(?<![\d.])'+re.escape(c)+r'(?![\d])',str(output)) for c in cands)
+        elif shadow['tool']=='calc':
+            from .arithmetic_verifier import arithmetic_agreement
+            agree=arithmetic_agreement(shadow['args']['expression'],v,output)
+            # An ambiguous answer is not positive evidence for an Age-1 gate.
+            agree=agree is True
+        else:agree=any(re.search(r'(?<![\\d.])'+re.escape(c)+r'(?![\\d])',str(output)) for c in cands)
         for attempt in (0,1):  # telemetry whitelists fields, so the agreement count lives in a state (ids/numbers only)
             st,v=self.r.store.state(KEY);st=st or {'compared':0,'agree':0,'tools':{}}
             st['compared']+=1;st['agree']+=int(agree);t=st['tools'].setdefault(shadow['tool'],[0,0]);t[0]+=1;t[1]+=int(agree)
