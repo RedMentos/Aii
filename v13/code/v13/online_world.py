@@ -27,6 +27,15 @@ class OnlineWorld:
             if record.get('revision')!=REVISION or not isinstance(ids,list) or len(ids)>world_model.MAX_ROWS or any(type(i) is not str for i in ids):
                 raise ValueError('Incompatible online world cursor')
             self.processed=ids
+            # A crash between predictor checkpoint and cursor publication must
+            # never silently apply the same trusted outcome twice.
+            cursor_seen=record.get('predictor_seen')
+            if cursor_seen is not None and (type(cursor_seen) is not int or cursor_seen!=self.model.seen):
+                raise ValueError('Online world checkpoint/cursor mismatch: recovery required')
+            if cursor_seen is None and self.model.seen!=len(ids):
+                raise ValueError('Legacy online world cursor cannot prove checkpoint alignment')
+        elif self.model.seen:
+            raise ValueError('Predictor exists without online world cursor: recovery required')
 
     @staticmethod
     def encode(row):
@@ -61,7 +70,7 @@ class OnlineWorld:
             self.processed.append(row['action_id'])
             self.processed=self.processed[-world_model.MAX_ROWS:]
             temp=self.cursor.with_suffix('.tmp')
-            temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed}))
+            temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed,'predictor_seen':self.model.seen}))
             os.replace(temp,self.cursor)
         retention_after=self.model.error(replay) if replay else None
         return {'learned':len(new),'seen':self.model.seen,'tracked_ids':len(self.processed),
