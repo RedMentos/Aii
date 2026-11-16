@@ -24,13 +24,16 @@ def evaluate(rows, expected_sha):
     problems = []
     if len(rows) < 20:
         problems.append("INSUFFICIENT_LIVE_TURNS")
-    if not isinstance(expected_sha, str) or len(expected_sha) < 7:
+    if not isinstance(expected_sha, str) or len(expected_sha) != 40 or any(c not in "0123456789abcdef" for c in expected_sha):
         problems.append("INVALID_EXPECTED_RELEASE_SHA")
     ids = set()
     categories = set()
     totals, ttfts = [], []
     offers = {"b1": [0, 0, 0], "b2": [0, 0, 0]}
     for n, row in enumerate(rows, 1):
+        if not isinstance(row, dict):
+            problems.append("TURN_%d_NOT_OBJECT" % n)
+            continue
         missing = set(REQUIRED) - row.keys()
         if missing:
             problems.append("TURN_%d_MISSING_FIELDS:%s" % (n, ",".join(sorted(missing))))
@@ -41,7 +44,7 @@ def evaluate(rows, expected_sha):
             problems.append("DUPLICATE_TURN_ID")
         ids.add(row["turn_id"])
         categories.add(row.get("category"))
-        if row["release_sha"] != expected_sha:
+        if not isinstance(row["release_sha"], str) or row["release_sha"] != expected_sha:
             problems.append("RELEASE_SHA_MISMATCH")
         # A string or boolean is not an authenticated owner/device receipt.
         receipt = row["device_receipt"]
@@ -67,8 +70,10 @@ def evaluate(rows, expected_sha):
                 offers[organ] = [a + b for a, b in zip(offers[organ], values)]
         if type(row["c4_consumed"]) is not int or row["c4_consumed"] < 0:
             problems.append("INVALID_C4_CONSUMPTION")
-        elif type(row["b1_consumed"]) is int and type(row["b2_consumed"]) is int and row["c4_consumed"] > row["b1_consumed"] + row["b2_consumed"]:
+        elif type(row["b1_consumed"]) is int and type(row["b2_consumed"]) is int and (row["c4_consumed"] > row["b1_consumed"] + row["b2_consumed"] or row["c4_consumed"] < 0):
             problems.append("C4_UNBACKED_CONSUMPTION")
+        if row.get("category") in ("deep", "source") and (type(row["b1_consumed"]) is not int or type(row["b2_consumed"]) is not int or row["b1_consumed"] <= 0 or row["b2_consumed"] <= 0 or type(row["c4_consumed"]) is not int or row["c4_consumed"] <= 0):
+            problems.append("TURN_%d_MISSING_DEEP_ORGAN_COOPERATION" % n)
         if type(row["c3_tokens"]) is not int or row["c3_tokens"] <= 0:
             problems.append("NO_C3_OUTPUT")
     if not any(type(r.get("c4_consumed")) is int and r["c4_consumed"] > 0 for r in rows):
