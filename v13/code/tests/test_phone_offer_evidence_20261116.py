@@ -57,6 +57,8 @@ class OfferEvidence(unittest.TestCase):
         self.assertEqual(role["delivery"], "SELECTED_WITHOUT_DELIVERY_RECEIPT")
         self.assertEqual(role["delivery_receipts"], 1)
         self.assertEqual(role["selected_delivery_receipts"], 0)
+        self.assertEqual(audit(self.db)["end_to_end_gate"]["status"],
+                         "B1_B2_TO_C3_CHAIN_NOT_OBSERVED")
 
     def test_selected_packet_with_no_receipt_wont_pass_from_final_c3(self):
         self.assistant(selected=("b2",))
@@ -98,6 +100,11 @@ class OfferEvidence(unittest.TestCase):
         self.assertFalse(r["turns"][0]["c3_prompt_inclusion_proven"])
         self.assertFalse(r["turns"][0]["c3_semantic_use_proven"])
         self.assertFalse(r["turns"][0]["native_latent_exchange_proven"])
+        self.assertEqual(
+            r["end_to_end_gate"]["both_body_selected_delivered_and_c3_generated_turns"], 1)
+        self.assertEqual(r["end_to_end_gate"]["status"],
+                         "BOTH_BODY_C4_C3_METADATA_ONLY")
+        self.assertFalse(r["end_to_end_gate"]["native_prompt_offer_inclusion_verified"])
         self.assertNotIn("SECRET", json.dumps(r))
 
     def test_untrusted_metadata_does_not_crash_or_leak(self):
@@ -165,6 +172,20 @@ class OfferEvidence(unittest.TestCase):
         self.assertEqual(out["turns"][0]["roles"]["B1_DETAIL"]["delivery"],
                          "INCOMPLETE_AUDIT_ROW_CAP")
         self.assertEqual(out["roles"]["B1_DETAIL"]["in_final_c3_report_turns"], 0)
+        self.assertEqual(out["end_to_end_gate"]["status"],
+                         "BOUNDED_METADATA_INCOMPLETE")
+
+    def test_deadline_without_first_native_token_is_not_success(self):
+        self.assistant(selected=(), status="DEADLINE", tokens=0)
+        gate = audit(self.db)["end_to_end_gate"]
+        self.assertEqual(gate["c3_deadline_zero_token_turns"], 1)
+        self.assertEqual(gate["status"], "B1_B2_TO_C3_CHAIN_NOT_OBSERVED")
+        self.assertEqual(gate["device_functional_acceptance"], "NOT_VERIFIED")
+
+    def test_empty_database_is_not_a_successful_native_run(self):
+        gate = audit(self.db)["end_to_end_gate"]
+        self.assertEqual(gate["status"], "NO_ASSISTANT_TURNS")
+        self.assertEqual(gate["both_body_selected_delivered_and_c3_generated_turns"], 0)
 
     def test_missing_wal_sidecars_and_symlink_are_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
