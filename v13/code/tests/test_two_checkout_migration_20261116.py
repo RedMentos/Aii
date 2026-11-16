@@ -53,7 +53,15 @@ u._runtime_active = lambda: False
 d._check_stopped = lambda home: None
 if sys.argv[2] == 'old':
     p.set_enabled(True)
-result = p.run_cycle(force=True, manual=False, target='all')
+    result = p.run_cycle(force=True, manual=False, target='all')
+else:
+    from v13 import owner_read_bridge as relay
+    if sys.argv[2] == 'new_disabled':
+        p.set_enabled(False)
+    elif sys.argv[2] == 'new':
+        # Simulates the user's explicit decision to turn auto-update back on.
+        p.set_enabled(True)
+    result = relay._run_pending_migration_after_reload(p)
 print(json.dumps({'result': result, 'profile': d.BUILD_PROFILE,
                   'module_path': str(Path(d.__file__).resolve())}))
 """
@@ -112,8 +120,13 @@ def test_old_to_new_worker_installs_integrated_runtime_from_two_git_checkouts():
         assert old_receipt['build_profile'] == old['profile']
         assert (home / '.v13-private/pipeline-bridge-refresh').is_file()
 
-        # Simulate the existing relay's exec/reload using a new interpreter.
-        # A forced second cycle avoids sleeping through the real 15-minute timer.
+        # The new relay must not migrate when the owner's consent is off.
+        disabled = worker('new_disabled')
+        assert disabled['result'] is None
+        assert json.loads(marker.read_text(encoding='utf-8')) == old_receipt
+
+        # Simulate relay exec/reload with a new interpreter and consent enabled.
+        # This executes the actual one-shot startup helper, without a timer wait.
         new = worker('new')
         assert new['profile'] == 'integrated-runtime-source-pinned-v2'
         assert new['module_path'].startswith(str(agent) + os.sep)
@@ -132,3 +145,7 @@ def test_old_to_new_worker_installs_integrated_runtime_from_two_git_checkouts():
         assert str(staged).encode() in launcher.read_bytes()
         assert model.read_bytes() == b'GGUF_SENTINEL_UNCHANGED'
         assert database.read_bytes() == b'SQLITE_SENTINEL_UNCHANGED'
+        # The migration is not repeated at every subsequent relay startup.
+        again = worker('new_again')
+        assert again['result'] is None
+        assert json.loads(marker.read_text(encoding='utf-8')) == receipt
