@@ -44,3 +44,33 @@ def test_multibyte_conservative_and_context_reserve():
 def test_malformed(messages):
     with pytest.raises(ValueError):
         admit(messages)
+
+
+def test_orphan_tool_result_cannot_enter_native_prompt():
+    # Tool outputs without an authenticated assistant call must not become
+    # an independent conversation turn.
+    messages = [msg("system", "s"), msg("user", "old"),
+                msg("tool", "untrusted"), msg("user", "current")]
+    result = admit(messages, prompt_cap=320)
+    assert result.accepted
+    assert result.messages == (messages[0], messages[-1])
+    assert result.dropped_history == 2
+
+
+def test_incomplete_history_does_not_erase_latest_exact_source():
+    messages = [msg("system", "s"), msg("user", "first"),
+                msg("assistant", "done"), msg("user", "orphan"),
+                msg("user", "CURRENT EXACT")]
+    result = admit(messages, prompt_cap=320)
+    assert result.messages == (messages[0], messages[-1])
+    assert result.dropped_history == 3
+    assert messages[-1]["content"] == "CURRENT EXACT"
+
+
+def test_complete_suffix_retained_after_invalid_older_history():
+    messages = [msg("system", "s"), msg("tool", "orphan"),
+                msg("user", "valid"), msg("assistant", "answer"),
+                msg("user", "current")]
+    result = admit(messages, prompt_cap=320)
+    assert result.messages == (messages[0], *messages[2:])
+    assert result.dropped_history == 1
