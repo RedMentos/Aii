@@ -572,6 +572,24 @@ class Runtime:
                     cplan=ctxos.controller(self).plan(eid,runner.role,stable,volatile,history_records,text,verdicts=[x['verdict'] for x in focal_run['inquisition']] if focal_run else [],warm_ids=warm_ids,provenance=[e['source_ref']],budget_scale=body['modulation'].get('context_budget_scale',1.))
                     messages=cplan['messages'];meta['context_plan']={'packet_id':cplan['packet_id'],'applied':cplan['applied']}
                 except Exception as exc:self.store.log('context_os_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
+                # P0 #1904: inspect the *actual* post-ContextOS native prompt.
+                # Advisory only: byte-based bounds are not tokenizer measurements.
+                # Never drop source, modify the prompt, or claim Redmi speedup.
+                try:
+                    from .prefill_admission import admit as prefill_admit
+                    admission=prefill_admit(messages)
+                    meta['prefill_admission']={
+                        'accepted':admission.accepted,
+                        'reason':admission.reason,
+                        'estimated_tokens':admission.estimated_tokens,
+                        'dropped_history_if_applied':admission.dropped_history,
+                        'applied':False,
+                        'source_preserved':True,
+                    }
+                except (ValueError,TypeError) as exc:
+                    meta['prefill_admission']={'accepted':False,
+                        'reason':'INVALID_PROMPT_CONTRACT','applied':False}
+                    self.store.log('prefill_admission_invalid',eid,{'error':type(exc).__name__})
                 try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context
                 except Exception as exc:self.store.log('context_save_failed',eid,{'error':type(exc).__name__})
                 context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]
