@@ -42,10 +42,31 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                 "train": len(train), "holdout": len(holdout)}
     training = [OnlineWorld.encode(row) for row in train]
     testing = [OnlineWorld.encode(row) for row in holdout]
+    # Frozen action-conditioned mean baseline: fit only on train transitions.
+    # Unlike the untrained predictor, this is a meaningful independent
+    # comparator and never sees holdout targets or replay samples.
+    action_targets = {}
+    for _, action, target in training:
+        action_targets.setdefault(action, []).append(target)
+    global_targets = [target for _, _, target in training]
+    def mean_target(targets):
+        return [sum(t[j] for t in targets) / len(targets)
+                for j in range(len(targets[0]))]
+    global_mean = mean_target(global_targets)
+    action_means = {action: mean_target(targets)
+                    for action, targets in action_targets.items()}
+    def baseline_mse(samples):
+        errors = []
+        for _, action, target in samples:
+            prediction = action_means.get(action, global_mean)
+            errors.extend((a-b)**2 for a, b in zip(prediction, target))
+        return sum(errors) / len(errors)
+    frozen_baseline = baseline_mse(testing)
     # Independent early retention cohort: never observed or replayed.
     early_testing = testing[:max(1, len(testing)//2)]
     result = {"status": "SYNTHETIC_OR_T8_OFFLINE_ONLY",
               "train": len(train), "holdout": len(holdout),
+              "frozen_action_mean_baseline_mse": frozen_baseline,
               "holdout_ids_sha256": hashlib.sha256(
                   "\n".join(sorted(r["action_id"] for r in holdout)).encode()
               ).hexdigest()}
@@ -106,7 +127,10 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
         result["replay"]["early_holdout_retention_delta_mse"] -
         result["no_replay"]["early_holdout_retention_delta_mse"])
     result["utility_proven"] = (
-        result["replay"]["after_mse"] < result["replay"]["before_mse"])
+        result["replay"]["after_mse"] < result["replay"]["before_mse"]
+        and result["replay"]["after_mse"] < frozen_baseline)
+    result["predictor_beats_frozen_baseline"] = (
+        result["replay"]["after_mse"] < frozen_baseline)
     return result
 
 
