@@ -175,7 +175,7 @@ class OfferEvidence(unittest.TestCase):
             with sqlite3.connect(file) as db:
                 db.execute("CREATE TABLE sample(x INTEGER)")
             raw = bytearray(file.read_bytes())
-            raw[18:20] = b"\\x02\\x02"
+            raw[18:20] = b"\x02\x02"
             file.write_bytes(raw)
             with self.assertRaisesRegex(ValueError, "WAL coordination"):
                 connect_readonly(home)
