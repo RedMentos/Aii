@@ -58,7 +58,11 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                 before = model.error(testing)
                 old = training[:max(1, len(training)//4)]
                 old_before = model.error(old)
-                for x, action, y in training:
+                early_count = max(1, len(training)//4)
+                for x, action, y in training[:early_count]:
+                    model.observe(x, action, y, rehearsals=rehearsals)
+                early_after_initial_learning = model.error(old)
+                for x, action, y in training[early_count:]:
                     model.observe(x, action, y, rehearsals=rehearsals)
                 after = model.error(testing)
                 old_after = model.error(old)
@@ -75,6 +79,8 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                     "early_train_mse_before": old_before,
                     "early_train_mse_after": old_after,
                     "early_train_delta_mse": old_after-old_before,
+                    "early_after_initial_learning_mse": early_after_initial_learning,
+                    "early_forgetting_mse": old_after-early_after_initial_learning,
                     "restart_mse": restart_error,
                     "numeric_updates": model.updates}
         result["elapsed_s"] = time.monotonic()-start
@@ -83,6 +89,11 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
         tracemalloc.stop()
     result["replay_minus_no_replay_holdout_mse"] = (
         result["replay"]["after_mse"]-result["no_replay"]["after_mse"])
+    # Diagnostic only: a positive value means later updates degraded the
+    # previously learned early cohort. This is not a held-out retention proof.
+    result["replay_minus_no_replay_early_forgetting_mse"] = (
+        result["replay"]["early_forgetting_mse"] -
+        result["no_replay"]["early_forgetting_mse"])
     result["utility_proven"] = (
         result["replay"]["after_mse"] < result["replay"]["before_mse"])
     return result
