@@ -1,3 +1,29 @@
+# 2026-11-16 — connected response pipeline cross-review
+
+Reviewed release `858d83c` and arithmetic #1989 `e465406`; checkpoint PR #1990.
+Independent read-only reviews found and reproduced the missing Broker packet
+authority, C5/action source-copy mismatch, frozen-Runtime stage violation,
+system diagnostic precedence, missing deterministic World receipt and
+sequential B1 starvation of B2. The composed review copy fixes these paths;
+strict positive integer C3 token evidence keeps arithmetic out of native
+recovery. Original source files and native/model cohorts remain frozen.
+
+The first full integrated attempt recorded **19 failed / 396 passed / 3
+skipped**, all failures binding the changed staged World dependency. The
+reviewed exact World -> semantic evidence -> local-error source pins are now
+composed together; a copied-dependency corruption test still rejects tampering.
+The earlier 160-turn fixture also recorded a timing failure during dependency
+setup; its isolated repeat passed. Neither failed attempt is erased.
+
+Actual Runtime/SQLite arithmetic/broker/fixed-policy/outcome tests: **42 passed,
+37 subtests**. Observer wrapper: **2 passed**, including six disposable tests
+and actual B1-timeout -> valid B2 OfferPacket -> C4 coalition -> C3 prompt.
+Final larger-suite and remote status are recorded in
+`code/docs/RESPONSE_PIPELINE_INTEGRATION_20261116.md`. Review is software-only,
+not live access to another assistant, model-utility proof or Redmi evidence.
+Privacy scan and remote readback are required for the final checkpoint;
+Age0/STEP2/B3 and both false whole-system flags remain unchanged.
+
 # 2026-11-12 — no-input scheduler and actual runtime recovery
 
 Source parent: `0d6bd47b116f89c44c94c4d5ac6308afd604bac7`. User supplied
