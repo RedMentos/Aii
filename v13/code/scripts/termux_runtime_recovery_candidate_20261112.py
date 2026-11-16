@@ -39,6 +39,12 @@ def build_sources(code_dir):
                 for name in chat.SOURCE_PINS}
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
+    arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
+                      '72bf8a829a7de064e7703271228bcdf02632108418c41c571126fbd8c05d5567')
+    result = arithmetic.apply_sources(code_dir, result)
+    arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
+                              '86cdf764496431bf4170ecc172ed33373ad29ff59f74d363caca28dfdd190c3f')
+    result = arithmetic_outcome.apply_sources(code_dir, result)
     for name, raw in result.items():
         if name.endswith('.py'):
             compile(raw, name, 'exec')
