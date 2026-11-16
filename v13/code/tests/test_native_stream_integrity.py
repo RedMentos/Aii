@@ -63,7 +63,7 @@ class NativeStreamIntegrityTests(unittest.TestCase):
 
     def test_truthy_nonboolean_stop_is_not_accepted(self):
         with self.assertRaisesRegex(Unavailable, "without completion marker"):
-            self._run([b'data: {"stop":"false","content":"partial","tokens":[1]}\\n'])
+            self._run([b'data: {"stop":"false","content":"partial","tokens":[1]}\n'])
 
     def test_empty_eof_is_not_final(self):
         with self.assertRaisesRegex(Unavailable, "without completion marker"):
