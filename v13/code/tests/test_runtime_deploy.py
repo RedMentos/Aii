@@ -138,6 +138,36 @@ class RuntimeDeploymentTests(unittest.TestCase):
         self.assertEqual((deployed / "v13/runtime.py").read_bytes(),
                          (self.code / "v13/runtime.py").read_bytes())
 
+    def test_launcher_uses_verified_package_from_competing_working_directory(self):
+        snapshot = self.root / "verified snapshot"
+        verified = snapshot / "v13"
+        verified.mkdir(parents=True)
+        (verified / "__init__.py").write_text("")
+        (verified / "__main__.py").write_text(
+            "import json, os, sys\n"
+            "print(json.dumps({'package': 'verified', 'cwd': os.getcwd(), "
+            "'args': sys.argv[1:]}))\n")
+        foreign = self.root / "foreign working directory"
+        (foreign / "v13").mkdir(parents=True)
+        (foreign / "v13" / "__init__.py").write_text("")
+        (foreign / "v13" / "__main__.py").write_text("print('FOREIGN PACKAGE')\n")
+        (foreign / "sitecustomize.py").write_text(
+            "from pathlib import Path\nPath('sitecustomize-ran').write_text('bad')\n")
+        for version in ((3, 11), (3, 10)):
+            with self.subTest(version=version):
+                with mock.patch.object(d.sys, "version_info", version):
+                    launcher = d._launcher_bytes(snapshot, self.home)
+                self.launcher.write_bytes(launcher)
+                # Invoke bash explicitly because the real shebang is the Termux path.
+                result = subprocess.run(["bash", str(self.launcher), "restore", "relative backup.zip"],
+                                        cwd=foreign, text=True, capture_output=True, check=True)
+                payload = json.loads(result.stdout)
+                self.assertEqual(payload["package"], "verified")
+                self.assertEqual(payload["cwd"], str(foreign))
+                self.assertEqual(payload["args"], ["--home", str(self.home),
+                                                     "restore", "relative backup.zip"])
+                self.assertFalse((foreign / "sitecustomize-ran").exists())
+
     def test_current_commit_raw_profile_is_migrated(self):
         first = self._run()
         old_code = Path(first["code"])
@@ -293,6 +323,87 @@ class RuntimeSourcePreparationTests(unittest.TestCase):
         with self.assertRaises(d.RuntimeDeployError):
             d.prepare_source(self.target)
         self.assertTrue(path.is_file())
+
+    def test_untracked_and_git_ignored_deployable_files_block_without_deleting(self):
+        with self.local_clones():
+            d.prepare_source(self.target)
+        code = self.target / "v13/code"
+        # Git ignores this file, but the Canon copy operation would include it.
+        with (self.target / ".git/info/exclude").open("a") as out:
+            out.write("\nprivate-user-note.txt\n")
+        paths = ("v13/untracked.py", "scripts/untracked.py", "specs/untracked.json",
+                 "docs/canon/private-user-note.txt")
+        for rel in paths:
+            with self.subTest(path=rel):
+                extra = code / rel
+                extra.parent.mkdir(parents=True, exist_ok=True)
+                extra.write_text("LOCAL_USER_DATA")
+                with self.assertRaisesRegex(d.RuntimeDeployError, "Untracked or ignored"):
+                    d._source(self.target)
+                self.assertEqual(extra.read_text(), "LOCAL_USER_DATA")
+                extra.unlink()  # Only the disposable synthetic fixture.
+
+    def test_excluded_caches_and_models_remain_usable_and_untouched(self):
+        with self.local_clones():
+            d.prepare_source(self.target)
+        code = self.target / "v13/code"
+        paths = ("v13/__pycache__/cache.txt", "v13/trace.log",
+                 "scripts/model.gguf", "specs/fixture.sqlite",
+                 "docs/canon/__pycache__/cache.txt", "docs/canon/cache.pyo")
+        for rel in paths:
+            entry = code / rel
+            entry.parent.mkdir(parents=True, exist_ok=True)
+            entry.write_text("PRESERVE")
+        d._source(self.target)
+        for rel in paths:
+            self.assertEqual((code / rel).read_text(), "PRESERVE")
+
+    def test_untracked_source_cannot_switch_existing_launcher(self):
+        with self.local_clones():
+            d.prepare_source(self.target)
+        extra = self.target / "v13/code/v13/untracked.py"
+        extra.write_text("LOCAL_USER_DATA")
+        home = self.base / "phone"
+        (home / "bin").mkdir(parents=True)
+        launcher = home / "bin/v13"
+        launcher.write_text("OLD_LAUNCHER")
+        with mock.patch.object(d, "_stage_integrated_runtime") as stage:
+            with self.assertRaisesRegex(d.RuntimeDeployError, "Untracked or ignored"):
+                d.deploy(self.target, home=home, private=self.base / "private",
+                         builds=self.base / "builds", ci_verified=True)
+        stage.assert_not_called()
+        self.assertEqual(launcher.read_text(), "OLD_LAUNCHER")
+        self.assertEqual(extra.read_text(), "LOCAL_USER_DATA")
+
+    def test_file_inserted_after_source_check_cannot_enter_stage(self):
+        # A tiny trusted test stager simulates a file appearing after _source().
+        builder = self.seed / "v13/code" / d.STAGER
+        builder.parent.mkdir(parents=True, exist_ok=True)
+        builder.write_text("""
+import hashlib
+from pathlib import Path
+import shutil
+def stage(source, target):
+    source, target = Path(source), Path(target)
+    target.mkdir(parents=True)
+    for name in ('v13', 'scripts', 'specs'):
+        shutil.copytree(source / name, target / name)
+    hashes = {p.relative_to(target).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+              for p in target.rglob('*') if p.is_file()}
+    return {'status': 'SHADOW_REVIEW_ONLY', 'replaced_files': [], 'files_sha256': hashes}
+""")
+        self.git(self.seed, "add", "v13/code/" + d.STAGER)
+        self.git(self.seed, "commit", "-m", "Add synthetic staging fixture")
+        with self.local_clones():
+            d.prepare_source(self.target)
+        _, code, _ = d._source(self.target)
+        extra = code / "v13/arrived_during_copy.py"
+        extra.write_text("LOCAL_USER_DATA")
+        target = self.base / "built" / "code"
+        with mock.patch.object(d, "STAGER_SHA256", hashlib.sha256(builder.read_bytes()).hexdigest()):
+            with self.assertRaisesRegex(d.RuntimeDeployError, "untracked source"):
+                d._stage_integrated_runtime(code, target)
+        self.assertEqual(extra.read_text(), "LOCAL_USER_DATA")
 
     def test_failed_download_removes_only_owned_staging_directory(self):
         sentinel = self.base / "existing-user-data"

@@ -8,6 +8,7 @@ models, user data, SQLite and control permissions remain untouched.
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import hashlib
 import json
 import os
@@ -31,6 +32,11 @@ REQUIRED = ("v13/__main__.py", "v13/store.py", "v13/runtime.py",
             "v13/common.py", "v13/models.py", "v13/ui.py",
             "scripts/needle_worker.cpp", "specs/models.json", CANON)
 COPY_SUBTREES = ("v13", "scripts", "specs", "docs/canon")
+# Match exactly the exclusions of the pinned stage builder and Canon copier.
+# Data omitted by both builders stays in place and does not block an update.
+STAGE_COPY_IGNORES = ("__pycache__", "*.pyc", "*.db", "*.sqlite", "*.sqlite3",
+                      "*.gguf", "*.safetensors", "*.pt", "*.pth", "*.log")
+CANON_COPY_IGNORES = ("__pycache__", "*.pyc", "*.pyo")
 HEX40 = re.compile(r"[a-f0-9]{40}\Z")
 MARKER_NAME = "runtime-active.json"
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
@@ -83,6 +89,45 @@ def _checkout(source):
     return root, commit
 
 
+def _tracked_stage_paths(root, commit):
+    """Names owned by the exact Git tree, independent of .gitignore and index."""
+    paths = _git(root, "ls-tree", "-r", "-z", "--name-only", commit, "--",
+                 *("v13/code/" + part for part in COPY_SUBTREES)).split("\0")
+    prefix = "v13/code/"
+    return {path[len(prefix):] for path in paths if path.startswith(prefix)}
+
+
+def _check_copy_inputs(root, code, commit):
+    """Do not copy local files into a snapshot labelled as a verified commit."""
+    tracked = _tracked_stage_paths(root, commit)
+
+    def onerror(exc):
+        raise RuntimeDeployError("Cannot inspect runtime source") from exc
+
+    for subtree in COPY_SUBTREES:
+        start = code / subtree
+        if start.is_symlink() or not start.is_dir():
+            raise RuntimeDeployError("Runtime source subtree missing or unsafe: " + subtree)
+        ignored = CANON_COPY_IGNORES if subtree == "docs/canon" else STAGE_COPY_IGNORES
+        def excluded(name):
+            return any(fnmatch.fnmatchcase(name, pattern) for pattern in ignored)
+        for directory, dirs, files in os.walk(start, topdown=True, onerror=onerror,
+                                              followlinks=False):
+            dirs[:] = [name for name in dirs if not excluded(name)]
+            for name in dirs:
+                if (Path(directory) / name).is_symlink():
+                    raise RuntimeDeployError("Symlink inside runtime source tree")
+            for name in files:
+                if excluded(name):
+                    continue
+                path = Path(directory) / name
+                if path.is_symlink() or not path.is_file():
+                    raise RuntimeDeployError("Unsafe runtime source entry")
+                if path.relative_to(code).as_posix() not in tracked:
+                    raise RuntimeDeployError(
+                        "Untracked or ignored file in runtime source; update deferred")
+
+
 def _source(source):
     root, commit = _checkout(source)
     code = root / "v13/code"
@@ -90,6 +135,7 @@ def _source(source):
         path = code / rel
         if path.is_symlink() or not path.is_file():
             raise RuntimeDeployError("Required runtime file missing: " + rel)
+    _check_copy_inputs(root, code, commit)
     return root, code, commit
 
 
@@ -342,6 +388,20 @@ def _stage_integrated_runtime(source, target):
             if entry.is_file():
                 manifest["files_sha256"][entry.relative_to(target).as_posix()] = hashlib.sha256(entry.read_bytes()).hexdigest()
         (target / STAGE_MANIFEST).write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+        # Even a file added during copy must not enter the activated snapshot.
+        # Generated paths are declared by the hash-pinned stage builder.
+        repo = source.parent.parent
+        staged_commit = _git(repo, "rev-parse", "HEAD")
+        if not HEX40.fullmatch(staged_commit):
+            raise RuntimeDeployError("Invalid runtime source commit")
+        generated = manifest.get("replaced_files")
+        hashes = manifest.get("files_sha256")
+        if (not isinstance(generated, list)
+                or any(not isinstance(name, str) for name in generated)
+                or not isinstance(hashes, dict)):
+            raise RuntimeDeployError("Integrated runtime provenance is invalid")
+        if set(hashes) - _tracked_stage_paths(repo, staged_commit) - set(generated):
+            raise RuntimeDeployError("Integrated runtime contains untracked source")
         return _verify_stage(target)
     except RuntimeDeployError:
         raise
@@ -386,12 +446,22 @@ with TemporaryDirectory(prefix="v13-install-probe-") as t:
 
 def _launcher_bytes(code, home):
     python = str(Path(sys.executable).resolve())
+    # -P prevents a package in the caller's cwd from shadowing the verified
+    # snapshot. Before Python 3.11, initialise site only after replacing that
+    # cwd entry, preserving the caller's directory and normal site packages.
+    if sys.version_info >= (3, 11):
+        command = shlex.quote(python) + " -P -m v13 --home "
+    else:
+        bootstrap = ("import sys; sys.path[0] = sys.argv.pop(1); "
+                     "import site; site.main(); import runpy; "
+                     "runpy.run_module('v13', run_name='__main__', alter_sys=True)")
+        command = (shlex.quote(python) + " -S -B -c " + shlex.quote(bootstrap)
+                   + " " + shlex.quote(str(code)) + " --home ")
     return ("#!/data/data/com.termux/files/usr/bin/bash\n"
             "set -e\n"
             "export NEEDLE_TELEMETRY=0 DO_NOT_TRACK=1 PYTHONDONTWRITEBYTECODE=1\n"
             "export PYTHONPATH=" + shlex.quote(str(code)) + "\n"
-            "exec " + shlex.quote(python) + " -m v13 --home "
-            + shlex.quote(str(home)) + ' "$@"\n').encode("utf-8")
+            "exec " + command + shlex.quote(str(home)) + ' "$@"\n').encode("utf-8")
 
 
 def _atomic_file(dest, data, mode=0o600):
@@ -432,6 +502,9 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False):
     target = stage / "code"
     try:
         manifest_sha256 = _stage_integrated_runtime(code, target)
+        # A moving checkout must not be recorded under the earlier CI result.
+        if _source(root)[2] != commit:
+            raise RuntimeDeployError("Runtime source changed during staging")
         _selftest(target)
         if _verify_stage(target) != manifest_sha256:
             raise RuntimeDeployError("Integrated runtime changed during selftest")
