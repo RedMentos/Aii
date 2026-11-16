@@ -9,6 +9,7 @@ on:
       - 'v13/code/v13/runtime.py'
       - 'v13/code/tests/test_arithmetic_reflex.py'
       - 'v13/code/tests/test_arithmetic_runtime.py'
+      - 'v13/code/tests/test_arithmetic_broker.py'
       - '.github/workflows/v13-core-arithmetic.yml'
 jobs:
   focused:
@@ -24,3 +25,4 @@ jobs:
       - run: python -m compileall -q v13
       - run: python -m unittest discover -s tests -p test_arithmetic_reflex.py -v
       - run: python -m unittest discover -s tests -p test_arithmetic_runtime.py -v
+      - run: python -m unittest discover -s tests -p test_arithmetic_broker.py -v

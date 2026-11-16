@@ -21,7 +21,7 @@ import re
 from .common import dumps
 from .contracts import packet
 
-RANK={'APPROVED_FIXED_RULE':0,'EXPLICIT_EXACT_COPY':1,'MODEL_ANSWER':2,'SOURCE_SYSTEM_REPORT':3}
+RANK={'APPROVED_FIXED_RULE':0,'EXPLICIT_EXACT_COPY':1,'LOCAL_EXACT_ARITHMETIC':2,'MODEL_ANSWER':3,'SOURCE_SYSTEM_REPORT':4}
 LATE=('CORRECTION','ACTION_PREVIEW','RULE_NOTICE')
 DONE_CLAIM=re.compile(r"(?i)\b(i(?:'ve| have)? (?:saved|written|created|stored|noted)|(?:has|have) been (?:saved|written|created|stored)|note (?:is|was) saved|done[.!])")
 
@@ -40,6 +40,7 @@ def decide(candidates,committed=None):
 
 def egress_type(authority,clarify=False,status='FINAL'):
     if authority in ('APPROVED_FIXED_RULE','EXPLICIT_EXACT_COPY'):return 'EXACT_RENDER'
+    if authority=='LOCAL_EXACT_ARITHMETIC':return 'TEXT_REPORT'
     if authority=='SOURCE_SYSTEM_REPORT' or status!='FINAL':return 'SYSTEM_REPORT' if authority=='SOURCE_SYSTEM_REPORT' else 'TEXT_REPORT'
     return 'CLARIFY' if clarify else 'TEXT_REPORT'
 
@@ -102,7 +103,8 @@ class Broker:
         """After finish_message: decision packet, C6 check of the visible output, late CORRECTION / ACTION_PREVIEW."""
         cands=[]
         if meta.get('output_authority')=='APPROVED_FIXED_RULE' or meta.get('exact_policy_matched'):cands.append('APPROVED_FIXED_RULE')
-        if exact_requested or (direct and not cands):cands.append('EXPLICIT_EXACT_COPY')
+        if meta.get('output_authority')=='LOCAL_EXACT_ARITHMETIC':cands.append('LOCAL_EXACT_ARITHMETIC')
+        elif exact_requested or (direct and not cands):cands.append('EXPLICIT_EXACT_COPY')
         if meta.get('model_generated') and output:cands.append('MODEL_ANSWER')
         if meta.get('output_authority')=='SOURCE_SYSTEM_REPORT':cands.append('SOURCE_SYSTEM_REPORT')
         d=decide(cands)
