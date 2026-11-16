@@ -33,7 +33,8 @@ def state(store):return store.state(KEY)[0] or {'student_mode':'shadow','distill
 # -- 1. A3 student T1 -> T2 -------------------------------------------------------------------------------------
 def student_gate(store):
     import json
-    rows=store.rows("SELECT payload FROM packets WHERE kind='StudentEvaluation' ORDER BY rowid DESC LIMIT ?",(WINDOW,))
+    # Agreements from an older brain/model generation cannot promote a new A3 student.
+    rows=store.rows("SELECT payload FROM packets WHERE kind='StudentEvaluation' AND generation_id=? ORDER BY rowid DESC LIMIT ?",(store.generation_id,WINDOW))
     agree=[bool(json.loads(r['payload'])['agreement']) for r in rows][::-1]
     n=len(agree);rate=sum(agree)/n if n else None
     recent=agree[-RECENT:];early=agree[:-RECENT]
@@ -58,6 +59,8 @@ def student_fallback(r,e,info):
         _mutate(r.store,lambda st:st.__setitem__('student_mode','shadow'));r.store.log('aplane_student_demoted',e['event_id'],{});return None
     sr=r.learner.student_route(e)
     if not sr or sr.get('route') is None:return None
+    from .cognition import ROUTES
+    if sr['route'] not in ROUTES:return None  # invalid student class has no routing authority
     r.store.log('aplane_student_fallback',e['event_id'],{'route':sr['route']})
     return sr['route'],info|{'source':'A3_STUDENT_FALLBACK','student':sr}
 
