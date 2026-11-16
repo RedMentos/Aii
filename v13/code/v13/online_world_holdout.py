@@ -56,10 +56,17 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
     action_means = {action: mean_target(targets)
                     for action, targets in action_targets.items()}
     def baseline_mse(samples):
+        # OnlineWorld targets are [unchanged state(4), outcome(3)].
+        # A fair no-learning comparator copies the observed state exactly
+        # and estimates only the unknown outcome from training action means.
+        # Otherwise the baseline is penalized for ignoring information
+        # already present in every predictor input.
         errors = []
-        for _, action, target in samples:
-            prediction = action_means.get(action, global_mean)
-            errors.extend((a-b)**2 for a, b in zip(prediction, target))
+        for state, action, target in samples:
+            mean = action_means.get(action, global_mean)
+            prediction = list(state[:4]) + list(mean[4:])
+            errors.extend((float(a)-float(b))**2
+                          for a, b in zip(prediction, target))
         return sum(errors) / len(errors)
     frozen_baseline = baseline_mse(testing)
     # Independent early retention cohort: never observed or replayed.
