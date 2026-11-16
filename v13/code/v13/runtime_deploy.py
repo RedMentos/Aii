@@ -35,7 +35,7 @@ HEX40 = re.compile(r"[a-f0-9]{40}\Z")
 MARKER_NAME = "runtime-active.json"
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
 STAGER = "scripts/stage_integrated_candidate.py"
-STAGER_SHA256 = "9ff0308339a0156f4cf376a1d80444738f584ce5a0ce3bb7b34aa6fea4fdef18"
+STAGER_SHA256 = "efcfc0db3ecc8ed25e5ea4a080681c54b0aa7a6529941c5d3eb85bea3aadfbcf"
 STAGE_MANIFEST = "INTEGRATION_STAGE.json"
 UI_SOURCE = "v13/ui.py"
 UI_SOURCE_SHA256 = "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8"
@@ -309,7 +309,7 @@ def _verify_stage(root):
         path = root / name
         if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
             raise RuntimeDeployError("Integrated runtime source hash mismatch: " + relative)
-    if CANON not in hashes or "v13/runtime.py" not in hashes:
+    if any(name not in hashes for name in REQUIRED):
         raise RuntimeDeployError("Integrated runtime dependencies are missing")
     return hashlib.sha256(raw).hexdigest()
 

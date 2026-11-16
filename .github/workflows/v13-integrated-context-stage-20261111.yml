@@ -53,6 +53,7 @@ jobs:
           tests/test_context_stage_composition_20261116.py
           tests/test_postcommit_observer_20261116.py
           tests/test_postcommit_stage_composition_20261116.py
+          tests/test_latewatch.py
           tests/test_record_only_online_guard_20261116.py
           tests/test_runtime_deploy_integrated_20261116.py
           tests/test_native_turn_budget.py

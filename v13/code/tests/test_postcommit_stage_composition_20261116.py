@@ -32,6 +32,7 @@ class PostcommitStage(unittest.TestCase):
                 'test_new_yellow_resource_limit_applies_after_first_attempt',
                 'test_on_demand_stays_without_postcommit_calls',
                 'test_timeout_reflex_defers_only_the_authorized_body',
+                'test_latewatch_respects_user_one_body_effort',
             ]
             command = [sys.executable, '-m', 'pytest', '-q',
                        *['tests/' + name + '::RuntimePostcommit::' + item for item in cases]]

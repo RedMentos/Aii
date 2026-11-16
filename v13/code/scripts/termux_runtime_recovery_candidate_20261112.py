@@ -85,7 +85,45 @@ def build_sources(code_dir, *, include_postcommit=True):
         runtime = result['v13/runtime.py']
         if hashlib.sha256(runtime).hexdigest() != 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2':
             raise ValueError('Integrated observer Runtime source changed')
-        result['v13/runtime.py'] = namespace['apply_source'](runtime)
+        runtime = namespace['apply_source'](runtime)
+        # LateWatch runs during C3 streaming and must obey the same resolved
+        # per-turn body selection as the foreground and post-answer schedules.
+        old_call = b"latewatch.start(self,e,version,offers,deadline,meta,runner,eligible=not direct and state=='NORMAL')"
+        new_call = b"latewatch.start(self,e,version,offers,deadline,meta,runner,eligible=not direct and state=='NORMAL',allowed_roles=effort.roles(wake_route))"
+        if runtime.count(old_call) != 1:
+            raise ValueError('LateWatch Runtime anchor changed')
+        result['v13/runtime.py'] = runtime.replace(old_call, new_call, 1)
+        late_path = code_dir / 'v13/latewatch.py'
+        if late_path.is_symlink() or not late_path.is_file():
+            raise ValueError('LateWatch source missing or unsafe')
+        late = late_path.read_bytes()
+        if hashlib.sha256(late).hexdigest() != 'fc2e86be3f2f3e629a9e54c3f1c31266f495060e60a42e636f7a924f5ffadfc0':
+            raise ValueError('LateWatch source changed')
+        old_sig = b"def start(r,e,version,offers,deadline,meta,runner,eligible=True):\n"
+        new_sig = b"def start(r,e,version,offers,deadline,meta,runner,eligible=True,allowed_roles=None):\n"
+        old_roles = b'''        have={p.get('role') for p in offers if isinstance(p,dict)}
+        role=next((x for x in ('B1_DETAIL','B2_GIST') if x not in have),None)
+        if role is None:return Watcher(r,e,meta,m,status='ALL_BODIES_OFFERED')
+'''
+        new_roles = b'''        valid=('B1_DETAIL','B2_GIST')
+        if allowed_roles is None:
+            allowed=set(valid)
+        elif type(allowed_roles) in (list,tuple,set,frozenset) and all(x in valid for x in allowed_roles):
+            allowed=set(allowed_roles)
+        else:
+            return Watcher(r,e,meta,m,status='INVALID_ROLE_LIMIT')
+        have={p.get('role') for p in offers if isinstance(p,dict)}
+        role=next((x for x in valid if x in allowed and x not in have),None)
+        if role is None:
+            status='ALL_BODIES_OFFERED' if allowed and allowed.issubset(have) else 'NO_ELIGIBLE_BODY'
+            return Watcher(r,e,meta,m,status=status)
+'''
+        if late.count(old_sig) != 1 or late.count(old_roles) != 1:
+            raise ValueError('LateWatch role anchor changed')
+        late = late.replace(old_sig, new_sig, 1).replace(old_roles, new_roles, 1)
+        if hashlib.sha256(late).hexdigest() != '841aeaa9d7d0b0950b6c3ad799d2b8f8dd44fcee93159bd2a48c66f341460b12':
+            raise ValueError('LateWatch output changed')
+        result['v13/latewatch.py'] = late
     for name, raw in result.items():
         if name.endswith('.py'):
             compile(raw, name, 'exec')

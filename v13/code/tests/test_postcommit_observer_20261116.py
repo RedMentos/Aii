@@ -8,7 +8,7 @@ import tempfile
 import time
 import types
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch as mock_patch
 
 from scripts import postcommit_observer_candidate_20261116 as patch
 from v13.common import Cancelled, Limits
@@ -244,6 +244,22 @@ class RuntimePostcommit(unittest.TestCase):
             return_value={'reflex': 'imminent_timeout'})
         self.turn()
         self.assertEqual(self.calls, [('C3_LANGUAGE', 'DRAFT'), ('B1_DETAIL', 'FINAL')])
+
+
+    @unittest.skipUnless(os.environ.get('V13_TEST_POSTCOMMIT_STAGE') == '1',
+                         'requires composed LateWatch stage')
+    def test_latewatch_respects_user_one_body_effort(self):
+        for mode, allowed in [('detail', 'B1_DETAIL'), ('gist', 'B2_GIST')]:
+            with self.subTest(mode=mode):
+                Operator(self.runtime).run(':effort ' + mode)
+                self.runtime._route = Mock(return_value=(mode, {'source': 'TEST_EFFORT'}))
+                self.calls.clear()
+                self.behavior = lambda role, status: 'ok'
+                with mock_patch('v13.latewatch.residency', return_value=None):
+                    self.turn()
+                body_calls = [role for role, _ in self.calls if role.startswith('B')]
+                self.assertTrue(body_calls)
+                self.assertTrue(all(role == allowed for role in body_calls), body_calls)
 
 
 if __name__ == '__main__':
