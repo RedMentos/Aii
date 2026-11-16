@@ -4,8 +4,10 @@ import importlib.util
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
+import time
 import types
 import unittest
+from unittest.mock import Mock, patch as mock_patch
 
 from scripts import context_offer_budget_candidate_20261116 as patch
 from v13.common import dumps
@@ -126,6 +128,86 @@ class ContextOfferBudget(unittest.TestCase):
         rendered = ''.join(m['content'] for m in result['messages'])
         self.assertIn(dumps(offers), rendered)
         self.assertIn(dumps(tool), rendered)
+
+    def test_actual_runtime_selected_offers_reach_c3_in_active_mode(self):
+        """Real Runtime/C4/SQLite; all three language runners are synthetic."""
+        from v13 import context_os
+        from v13.operator import Operator
+        from v13.prompts import text as prompt
+
+        question = ('Compare details with planning. The rent is 120 euros. '
+                    'The plan preserves a long-term reserve.')
+
+        def exercise(fixed):
+            calls = []
+            with TemporaryDirectory() as home:
+                r = Runtime(Path(home))
+                try:
+                    r.sleep.cycle.set_policy('enabled', 'off')
+                    r.cfg.update(context_tokens=512, answer_tokens=128, deadline_seconds=90,
+                                 observer_mode='background', observer_schedule='A_THEN_B_SEQUENTIAL',
+                                 b2_quote_select='off', offer_quote_context_chars=0, b2_state_slots=0)
+                    op = Operator(r)
+                    op.run(':effort max')
+                    op.run(':ctxos active')
+                    r._route = Mock(return_value=('both', {'source': 'TEST_BOTH'}))
+                    r.learner.output_delta = Mock(return_value=None)
+
+                    class Runner:
+                        def __init__(self, role):
+                            self.role = role
+                            self.last_metrics = {'status': 'FINAL', 'role': role, 'synthetic': True}
+
+                        def generate(self, messages, cancel, deadline, *args, **kwargs):
+                            calls.append((self.role, messages))
+                            if self.role == 'B1_DETAIL':
+                                result = {'summary': 'The rent is 120 euros.',
+                                          'quotes': ['The rent is 120 euros.'],
+                                          'uncertainty': 'low', 'needs_reentry': False}
+                            elif self.role == 'B2_GIST':
+                                result = {'summary': 'A long-term reserve is needed.',
+                                          'quotes': ['The plan preserves a long-term reserve.'],
+                                          'uncertainty': 'low', 'needs_reentry': False}
+                            else:
+                                yield 'One combined response.'
+                                return
+                            yield json.dumps(result)
+
+                    runners = {role: Runner(role) for role in ('B1_DETAIL', 'B2_GIST', 'C3_LANGUAGE')}
+                    r.pool.get = Mock(side_effect=lambda role: runners[role])
+                    plan = (load_context(patch.apply_source(SOURCE.read_bytes())).ContextOS.plan
+                            if fixed else context_os.ContextOS.plan)
+                    with mock_patch.object(context_os.ContextOS, 'plan', plan):
+                        event_id = op.run(question)
+                        deadline = time.monotonic() + 12
+                        while not r.idle() and time.monotonic() < deadline:
+                            time.sleep(.01)
+                        self.assertTrue(r.idle())
+                    answer = r.last_answer()
+                    self.assertEqual((answer['status'], answer['text']), ('FINAL', 'One combined response.'))
+                    selected_ids = json.loads(answer['metadata'])['selected_offer_ids']
+                    self.assertEqual(len(selected_ids), 2)
+                    messages = next(messages for role, messages in calls if role == 'C3_LANGUAGE')
+                    heading = '\n' + prompt(r.cfg, 'hypotheses')
+                    for message in messages:
+                        start = message['content'].find(heading)
+                        if start >= 0:
+                            payload, _ = json.JSONDecoder().raw_decode(message['content'], start + len(heading))
+                            break
+                    else:
+                        self.fail('C3 did not receive its hypotheses layer')
+                    packet = r.store.one("SELECT payload FROM packets WHERE kind='ContextPlan' AND event_id=?", (event_id,))
+                    return selected_ids, payload, json.loads(packet['payload'])
+                finally:
+                    r.close()
+
+        selected, baseline, before = exercise(False)
+        self.assertEqual(len(baseline), 1)
+        self.assertIn('compact_hypotheses', before['decisions'])
+        selected, after, plan = exercise(True)
+        self.assertEqual({x['offer_packet_id'] for x in after}, set(selected))
+        self.assertEqual({x['role'] for x in after}, {'B1_DETAIL', 'B2_GIST'})
+        self.assertNotIn('compact_hypotheses', plan['decisions'])
 
     def test_unknown_modified_and_repeated_sources_fail_closed(self):
         raw = SOURCE.read_bytes()
