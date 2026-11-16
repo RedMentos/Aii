@@ -27,7 +27,7 @@ _OLD_COMPACT = b'''        # volatile layers: keep order, drop trailing list ite
 _NEW_COMPACT = b'''        # C4-selected offers and exact tool results are part of the current
         # decision, not disposable history. Reserve them before compacting
         # optional list layers regardless of their position in volatile.
-        protected={'HYPOTHESES','TOOL_RESULT'}
+        protected={'HYPOTHESES','TOOL_RESULT','SOURCE_LINKS'}
         mandatory=sum(len(head)+len(dumps(payload)) for layer,head,payload in volatile if layer in protected)
         share=min(clamp(k['global_compact_state'])*budget,max(0,budget-len(stable)-len(query)-mandatory))
         vol=[];optional_used=0
@@ -52,6 +52,7 @@ _NEW_PLAN = b'''        applied=st['mode']=='ACTIVE'
         planned_over_budget=planned_chars>budget
         returned_over_budget=(planned_chars if applied else legacy_chars)>budget
         if planned_over_budget:decisions.append('estimated_budget_exceeded')
+        if returned_over_budget:decisions.append('estimated_returned_budget_exceeded')
         cache={'layout_requested':st['layout'],'layout':layout,'fallback_reason':reason,'prompt_cache':'cache_prompt',
 '''
 

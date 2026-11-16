@@ -9,6 +9,7 @@ import tempfile
 import threading
 import time
 import unittest
+from unittest.mock import patch as mock_patch
 
 from v13.common import Limits
 from v13.config import DEFAULTS
@@ -196,6 +197,57 @@ class PromptSourceIntegrity(unittest.TestCase):
         self.assertIn('CURRENT', result)
         self.assertGreater(runner._prompt_admission['removed_layers'].count('OLD_NATIVE_HISTORY'), 16)
         self.assertEqual(runner._prompt_admission['status'], 'ADMITTED')
+
+
+    def test_unknown_reference_fields_do_not_authorize_removal(self):
+        from v13 import native_prompt_admission as admission
+        runner = fake_runner()
+        body = VOLATILE_HEAD + layer(runner.cfg, 'task_context',
+                                    {'source_from_user': 'MUST_KEEP'})
+        messages = [{'role': 'system', 'content': pinned(runner.cfg)},
+                    {'role': 'user', 'content': body,
+                     'extra': 'unknown semantics'},
+                    {'role': 'user', 'content': 'CURRENT'}]
+        before = json.dumps(messages, ensure_ascii=False)
+        self.assertIsNone(admission.reduce_once(messages, 'C3_LANGUAGE', runner.cfg))
+        self.assertEqual(json.dumps(messages, ensure_ascii=False), before)
+
+    def test_admission_rechecks_remaining_time_after_tokenization(self):
+        runner = fake_runner()
+        clock = [0.0]
+        def request(method, path, data, deadline):
+            clock[0] += 7.6
+            if path == '/apply-template':
+                return {'prompt': 'x' * 704}
+            if path == '/tokenize':
+                return {'tokens': [0] * 176}
+            raise AssertionError(path)
+        runner._json = request
+        messages = [{'role': 'system', 'content': pinned(runner.cfg)},
+                    {'role': 'user', 'content': 'CURRENT'}]
+        with mock_patch('v13.runners.time.monotonic', side_effect=lambda: clock[0]):
+            _, count, _ = runner._prompt(messages, threading.Event(), 30.0, 48)
+        self.assertEqual(count, 176)
+        self.assertEqual(runner._prompt_admission['target_tokens'], 96)
+        self.assertEqual(runner._prompt_admission['status'],
+                         'PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET')
+
+    def test_deadline_during_tokenization_is_not_reported_as_admitted(self):
+        runner = fake_runner()
+        clock = [0.0]
+        def request(method, path, data, deadline):
+            clock[0] += 16.0
+            if path == '/apply-template':
+                return {'prompt': 'small'}
+            if path == '/tokenize':
+                return {'tokens': [0]}
+            raise AssertionError(path)
+        runner._json = request
+        messages = [{'role': 'system', 'content': pinned(runner.cfg)},
+                    {'role': 'user', 'content': 'CURRENT'}]
+        with mock_patch('v13.runners.time.monotonic', side_effect=lambda: clock[0]):
+            with self.assertRaises(Limits):
+                runner._prompt(messages, threading.Event(), 30.0, 48)
 
 
 if __name__ == '__main__':

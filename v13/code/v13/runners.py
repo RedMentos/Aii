@@ -292,7 +292,6 @@ class LlamaRunner:
         # with explicit receipts before spending all compute on prefill.
         from . import native_prompt_admission as admission
         work=[dict(x) for x in messages];truncated=False
-        target=admission.soft_limit(self.role,self.cfg,deadline-time.monotonic())
         removed=[];initial_tokens=None
         # A normal history can contain 32 complete pairs. Every iteration is
         # still bounded by the actual turn deadline and the overall step cap.
@@ -302,6 +301,10 @@ class LlamaRunner:
             p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
             tokens=self._json("POST","/tokenize",{"content":p,"add_special":True},deadline)["tokens"]
             count=len(tokens)
+            # Tokenization itself consumes the turn budget. Never report a
+            # stale admission based on the time available before the requests.
+            check(cancel,deadline)
+            target=admission.soft_limit(self.role,self.cfg,deadline-time.monotonic())
             if initial_tokens is None:initial_tokens=count
             fits_context=count+reserve+16<=self.cfg["context_tokens"]
             fits_clock=target is None or count<=target

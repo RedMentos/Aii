@@ -256,6 +256,11 @@ def _remove_body_metadata(messages):
 
 def reduce_once(messages, role, cfg):
     """Return (new messages, exact omission reason) or None, no silent clipping."""
+    # Unknown message fields can carry semantics outside this admission
+    # contract. Preserve all content instead of guessing which part is optional.
+    if any(type(message) is not dict or set(message) != {"role", "content"}
+           for message in messages):
+        return None
     if role == "C3_LANGUAGE":
         candidate = _remove_c3_layer(messages, cfg)
         if candidate:

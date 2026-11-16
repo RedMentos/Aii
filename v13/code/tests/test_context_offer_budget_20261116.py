@@ -219,5 +219,46 @@ class ContextOfferBudget(unittest.TestCase):
         self.assertEqual(patch.build_sources(CODE)['v13/context_os.py'], patch.apply_source(raw))
 
 
+    def test_restored_source_links_are_not_silently_compacted(self):
+        raw = SOURCE.read_bytes()
+        question = 'Compare earlier sources'
+        event = self.runtime.store.event(self.runtime.session, question)
+        refs = [self.runtime.store.source('first source'),
+                self.runtime.store.source('second source')]
+        sources = [{'source_ref': ref, 'excerpt': 'VALUE_%d_' % i + 'x' * 480}
+                   for i, ref in enumerate(refs)]
+        volatile = [('SOURCE_LINKS', '\nSOURCES:', sources)]
+        cfg = dict(self.runtime.cfg, context_tokens=750, answer_tokens=128)
+        def do_plan(source):
+            ctx = load_context(source).ContextOS(self.runtime.store, cfg)
+            ctx.set_mode('ACTIVE', 'EXPLICIT_HUMAN')
+            return ctx.plan(event['event_id'], 'C3_LANGUAGE', 'SYS', volatile,
+                            [], question, provenance=refs)
+        before = do_plan(raw)
+        self.assertIn('compact_source_links', before['plan']['decisions'])
+        after = do_plan(patch.apply_source(raw))
+        rendered = ''.join(m['content'] for m in after['messages'])
+        self.assertIn(dumps(sources), rendered)
+        self.assertNotIn('compact_source_links', after['plan']['decisions'])
+        self.assertTrue(all(ref in after['plan']['provenance'] for ref in refs))
+        self.assertFalse(after['plan']['budget']['returned_over_budget'])
+
+    def test_shadow_marks_the_budget_of_messages_actually_returned(self):
+        cfg = dict(self.runtime.cfg, context_tokens=512, answer_tokens=48)
+        ctx = load_context(patch.apply_source(SOURCE.read_bytes())).ContextOS(
+            self.runtime.store, cfg)
+        ctx.set_mode('SHADOW')
+        event = self.runtime.store.event(self.runtime.session, 'CURRENT')
+        history = []
+        for i in range(4):
+            history.extend([{'event_id': 'old-%d' % i, 'role': 'user', 'text': 'Q' * 800},
+                            {'event_id': 'old-%d' % i, 'role': 'assistant', 'text': 'A' * 800}])
+        result = ctx.plan(event['event_id'], 'C3_LANGUAGE', 'SYS', [], history, 'CURRENT')
+        self.assertFalse(result['applied'])
+        self.assertTrue(result['plan']['budget']['returned_over_budget'])
+        self.assertIn('estimated_returned_budget_exceeded', result['plan']['decisions'])
+        self.assertTrue(result['plan']['budget']['estimate_only'])
+
+
 if __name__ == '__main__':
     unittest.main()
