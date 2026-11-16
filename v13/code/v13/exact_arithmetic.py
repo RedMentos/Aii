@@ -5,6 +5,7 @@ normal A/B/C focal pipeline. This does not grant any tool or model authority.
 """
 import re
 from decimal import Decimal, InvalidOperation, localcontext
+from fractions import Fraction
 
 _NUMBER = r"(?:\\d{1,9}(?:\\.\\d{1,6})?)"
 _EXPR = re.compile(rf"^\\s*({_NUMBER})\\s*([+\\-*/×÷])\\s*({_NUMBER})\\s*$")
@@ -34,10 +35,16 @@ def exact_arithmetic(text):
             else:
                 if right == 0:
                     return None
+                fraction = Fraction(left) / Fraction(right)
+                denominator = fraction.denominator
+                for prime in (2, 5):
+                    while denominator % prime == 0:
+                        denominator //= prime
+                if denominator != 1:
+                    return None  # repeating decimal: not an exact finite answer
                 value = left / right
             if not value.is_finite():
                 return None
-            value = value.quantize(Decimal('0.000000001')) if value.as_tuple().exponent < -9 else value
             result = format(value.normalize(), 'f')
             return '0' if Decimal(result) == 0 else result
     except (InvalidOperation, ArithmeticError, ValueError):
