@@ -42,6 +42,8 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                 "train": len(train), "holdout": len(holdout)}
     training = [OnlineWorld.encode(row) for row in train]
     testing = [OnlineWorld.encode(row) for row in holdout]
+    # Independent early retention cohort: never observed or replayed.
+    early_testing = testing[:max(1, len(testing)//2)]
     result = {"status": "SYNTHETIC_OR_T8_OFFLINE_ONLY",
               "train": len(train), "holdout": len(holdout),
               "holdout_ids_sha256": hashlib.sha256(
@@ -62,10 +64,12 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                 for x, action, y in training[:early_count]:
                     model.observe(x, action, y, rehearsals=rehearsals)
                 early_after_initial_learning = model.error(old)
+                early_holdout_after_initial = model.error(early_testing)
                 for x, action, y in training[early_count:]:
                     model.observe(x, action, y, rehearsals=rehearsals)
                 after = model.error(testing)
                 old_after = model.error(old)
+                early_holdout_after_later = model.error(early_testing)
                 model.checkpoint()
                 restored = OnlinePredictor(7, len(world_model.ACTIONS),
                                            directory, lr=lr, replay=replay)
@@ -81,6 +85,10 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                     "early_train_delta_mse": old_after-old_before,
                     "early_after_initial_learning_mse": early_after_initial_learning,
                     "early_forgetting_mse": old_after-early_after_initial_learning,
+                    "early_holdout_mse_after_initial": early_holdout_after_initial,
+                    "early_holdout_mse_after_later": early_holdout_after_later,
+                    "early_holdout_retention_delta_mse": (
+                        early_holdout_after_later-early_holdout_after_initial),
                     "restart_mse": restart_error,
                     "numeric_updates": model.updates}
         result["elapsed_s"] = time.monotonic()-start
@@ -94,6 +102,9 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
     result["replay_minus_no_replay_early_forgetting_mse"] = (
         result["replay"]["early_forgetting_mse"] -
         result["no_replay"]["early_forgetting_mse"])
+    result["replay_minus_no_replay_early_holdout_retention_delta_mse"] = (
+        result["replay"]["early_holdout_retention_delta_mse"] -
+        result["no_replay"]["early_holdout_retention_delta_mse"])
     result["utility_proven"] = (
         result["replay"]["after_mse"] < result["replay"]["before_mse"])
     return result
