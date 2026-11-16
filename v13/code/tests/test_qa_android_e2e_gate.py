@@ -59,6 +59,15 @@ class AndroidGateTests(unittest.TestCase):
         rows[0] = None
         self.assertIn("TURN_1_NOT_OBJECT", evaluate(rows, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")["problems"])
 
+    def test_malformed_receipt_rows_fail_closed_without_crash(self):
+        for malformed in (None, [], {"turn_id": "partial"}, dict(row(0), turn_id=[]),
+                          dict(row(0), category=[])):
+            rows = [row(i) for i in range(20)]
+            rows[0] = malformed
+            result = evaluate(rows, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+            self.assertEqual(result["gate"], "BLOCKED")
+            self.assertFalse(result["release_ready"])
+
     def test_short_release_sha_blocks(self):
         self.assertIn("INVALID_EXPECTED_RELEASE_SHA", evaluate([row(i) for i in range(20)], "abcdef0")["problems"])
 
