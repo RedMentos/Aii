@@ -69,11 +69,22 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                           for a, b in zip(prediction, target))
         return sum(errors) / len(errors)
     frozen_baseline = baseline_mse(testing)
+    # Only the last three coordinates are unknown action outcomes.
+    # The first four are the unchanged state already supplied as input.
+    def outcome_mse(model, samples):
+        errors = []
+        for state, action, target in samples:
+            prediction = model.predict(state, action)
+            errors.extend((float(prediction[j])-float(target[j]))**2
+                          for j in range(4, 7))
+        return sum(errors) / len(errors)
+    frozen_outcome_baseline = frozen_baseline * 7 / 3
     # Independent early retention cohort: never observed or replayed.
     early_testing = testing[:max(1, len(testing)//2)]
     result = {"status": "SYNTHETIC_OR_T8_OFFLINE_ONLY",
               "train": len(train), "holdout": len(holdout),
               "frozen_action_mean_baseline_mse": frozen_baseline,
+              "frozen_outcome_baseline_mse": frozen_outcome_baseline,
               "holdout_ids_sha256": hashlib.sha256(
                   "\n".join(sorted(r["action_id"] for r in holdout)).encode()
               ).hexdigest()}
@@ -86,6 +97,7 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                 model = OnlinePredictor(7, len(world_model.ACTIONS),
                                         directory, lr=lr, replay=replay)
                 before = model.error(testing)
+                outcome_before = outcome_mse(model, testing)
                 old = training[:max(1, len(training)//4)]
                 old_before = model.error(old)
                 early_count = max(1, len(training)//4)
@@ -96,16 +108,23 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                 for x, action, y in training[early_count:]:
                     model.observe(x, action, y, rehearsals=rehearsals)
                 after = model.error(testing)
+                outcome_after = outcome_mse(model, testing)
                 old_after = model.error(old)
                 early_holdout_after_later = model.error(early_testing)
                 model.checkpoint()
                 restored = OnlinePredictor(7, len(world_model.ACTIONS),
                                            directory, lr=lr, replay=replay)
                 restart_error = restored.error(testing)
+                outcome_restart = outcome_mse(restored, testing)
                 if not math.isclose(after, restart_error,
                                     rel_tol=1e-10, abs_tol=1e-10):
                     raise AssertionError("Predictor restart changed holdout")
+                if not math.isclose(outcome_after, outcome_restart, rel_tol=1e-10, abs_tol=1e-10):
+                    raise AssertionError("Restart changed outcome holdout")
                 result[name] = {
+                    "outcome_before_mse": outcome_before,
+                    "outcome_after_mse": outcome_after,
+                    "outcome_restart_mse": outcome_restart,
                     "before_mse": before, "after_mse": after,
                     "delta_mse": after-before,
                     "early_train_mse_before": old_before,
@@ -134,10 +153,10 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
         result["replay"]["early_holdout_retention_delta_mse"] -
         result["no_replay"]["early_holdout_retention_delta_mse"])
     result["utility_proven"] = (
-        result["replay"]["after_mse"] < result["replay"]["before_mse"]
-        and result["replay"]["after_mse"] < frozen_baseline)
+        result["replay"]["outcome_after_mse"] < result["replay"]["outcome_before_mse"]
+        and result["replay"]["outcome_after_mse"] < frozen_outcome_baseline)
     result["predictor_beats_frozen_baseline"] = (
-        result["replay"]["after_mse"] < frozen_baseline)
+        result["replay"]["outcome_after_mse"] < frozen_outcome_baseline)
     return result
 
 
