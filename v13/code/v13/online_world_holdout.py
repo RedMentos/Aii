@@ -57,6 +57,7 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                                         directory, lr=lr, replay=replay)
                 before = model.error(testing)
                 old = training[:max(1, len(training)//4)]
+                old_before = model.error(old)
                 for x, action, y in training:
                     model.observe(x, action, y, rehearsals=rehearsals)
                 after = model.error(testing)
@@ -71,7 +72,9 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                 result[name] = {
                     "before_mse": before, "after_mse": after,
                     "delta_mse": after-before,
+                    "early_train_mse_before": old_before,
                     "early_train_mse_after": old_after,
+                    "early_train_delta_mse": old_after-old_before,
                     "restart_mse": restart_error,
                     "numeric_updates": model.updates}
         result["elapsed_s"] = time.monotonic()-start
