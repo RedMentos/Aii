@@ -41,8 +41,16 @@ class HoldoutTests(unittest.TestCase):
                 report[variant]["early_train_delta_mse"],
                 report[variant]["early_train_mse_after"] -
                 report[variant]["early_train_mse_before"])
+            self.assertAlmostEqual(
+                report[variant]["early_forgetting_mse"],
+                report[variant]["early_train_mse_after"] -
+                report[variant]["early_after_initial_learning_mse"])
             self.assertAlmostEqual(report[variant]["after_mse"],
                                    report[variant]["restart_mse"])
+        self.assertAlmostEqual(
+            report["replay_minus_no_replay_early_forgetting_mse"],
+            report["replay"]["early_forgetting_mse"] -
+            report["no_replay"]["early_forgetting_mse"])
         self.assertGreater(report["python_peak_bytes"], 0)
 
     def test_insufficient_evidence_not_promoted(self):
