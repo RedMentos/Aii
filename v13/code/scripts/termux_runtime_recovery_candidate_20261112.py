@@ -25,7 +25,7 @@ def load(code_dir, relative, expected):
     return module
 
 
-def build_sources(code_dir):
+def build_sources(code_dir, *, include_postcommit=True):
     code_dir = Path(code_dir)
     modules = [load(code_dir, name, pin) for name, pin in BUILDERS.items()]
     base, probe, chat, idle = modules
@@ -73,6 +73,19 @@ def build_sources(code_dir):
     result['v13/context_os.py'] = context
     result['v13/context_source_recall_candidate.py'] = recall.replace(
         old_pin, b'e4962d932294490b8f4b63a79115212a7000285290444484ec3bf7e50b243cad', 1)
+    if include_postcommit:
+        path = code_dir / 'scripts/postcommit_observer_candidate_20261116.py'
+        if path.is_symlink() or not path.is_file():
+            raise ValueError('Postcommit observer builder missing or unsafe')
+        raw_candidate = path.read_bytes()
+        if hashlib.sha256(raw_candidate).hexdigest() != '0fec24d5b5bf7c1d270a3143811a4e62da65893beae84c3b8ce72baf3765e670':
+            raise ValueError('Postcommit observer builder source changed')
+        namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
+        exec(compile(raw_candidate, str(path), 'exec'), namespace)
+        runtime = result['v13/runtime.py']
+        if hashlib.sha256(runtime).hexdigest() != 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2':
+            raise ValueError('Integrated observer Runtime source changed')
+        result['v13/runtime.py'] = namespace['apply_source'](runtime)
     for name, raw in result.items():
         if name.endswith('.py'):
             compile(raw, name, 'exec')

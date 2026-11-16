@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
 import time
@@ -20,6 +21,9 @@ QUESTION = ("Compare details with planning. The rent is 120 euros. "
 
 
 def runtime_class(patched=True):
+    if patched and os.environ.get('V13_TEST_POSTCOMMIT_STAGE') == '1':
+        from v13.runtime import Runtime
+        return Runtime
     raw = (CODE / 'v13/runtime.py').read_bytes()
     source = patch.apply_source(raw) if patched else raw
     module = types.ModuleType('v13.postcommit_disposable_runtime')
@@ -34,9 +38,9 @@ class PinValidation(unittest.TestCase):
         from scripts import termux_runtime_recovery_candidate_20261112 as termux
         raw = (CODE / 'v13/runtime.py').read_bytes()
         sources = (raw, world.build_sources(CODE)['v13/runtime.py'],
-                   termux.build_sources(CODE)['v13/runtime.py'])
-        self.assertEqual({hashlib.sha256(x).hexdigest() for x in sources},
-                         patch.SOURCE_SHA256)
+                   termux.build_sources(CODE, include_postcommit=False)['v13/runtime.py'])
+        self.assertTrue({hashlib.sha256(x).hexdigest() for x in sources}
+                        <= patch.SOURCE_SHA256)
         for source in sources:
             with self.subTest(source=hashlib.sha256(source).hexdigest()):
                 result = patch.apply_source(source)
@@ -230,6 +234,16 @@ class RuntimePostcommit(unittest.TestCase):
         self.runtime.cfg['observer_schedule'] = 'ON_DEMAND_REENTRY'
         self.turn()
         self.assertEqual(self.calls, [('C3_LANGUAGE', 'DRAFT')])
+
+
+    def test_timeout_reflex_defers_only_the_authorized_body(self):
+        from v13 import reflex as reflexctl
+        Operator(self.runtime).run(':effort detail')
+        self.runtime._route = Mock(return_value=('detail', {'source': 'TEST_DETAIL'}))
+        reflexctl.controller(self.runtime).timeout_check = Mock(
+            return_value={'reflex': 'imminent_timeout'})
+        self.turn()
+        self.assertEqual(self.calls, [('C3_LANGUAGE', 'DRAFT'), ('B1_DETAIL', 'FINAL')])
 
 
 if __name__ == '__main__':

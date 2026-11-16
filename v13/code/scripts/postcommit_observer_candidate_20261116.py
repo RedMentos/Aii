@@ -14,9 +14,20 @@ SOURCE_SHA256 = {
     'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
     'a217e50b6a821675e2b799d1d4de8c957708aa04aabc95a2e34da9b24c0c215b',
     '0196f880576a1f1f95840ef12eb0b35928f3f442715f3d86f17dc38c4c22305d',
+    'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
 }
 
 REPLACEMENTS = (
+    (
+        "            wake_route=effort_plan['wake'];wake_source='EFFORT_POLICY'\n",
+        "            wake_route=effort_plan['wake'];wake_source='EFFORT_POLICY';deferred_wake_route=None\n",
+    ),
+    (
+        "                    if fired:wake_route,wake_source='none','REFLEX_IMMINENT_TIMEOUT';meta['reflex']=meta.get('reflex',[])+[fired]\n",
+        "                    if fired:\n"
+        "                        deferred_wake_route=wake_route\n"
+        "                        wake_route,wake_source='none','REFLEX_IMMINENT_TIMEOUT';meta['reflex']=meta.get('reflex',[])+[fired]\n",
+    ),
     (
         "            reenter=halt=None\n",
         "            reenter=halt=None;foreground_body_attempts=set()\n",
@@ -34,7 +45,8 @@ REPLACEMENTS = (
         "            background_roles={'none':[],'detail':['B1_DETAIL'],'gist':['B2_GIST'],'both':['B1_DETAIL','B2_GIST']}[wake_decision['action']] if wake_decision and wake_decision['learned'] else ['B1_DETAIL','B2_GIST']\n",
         "            # Only the *resolved* wake is allowed: it already reflects\n"
         "            # explicit one-body effort and learned/effort/resource caps.\n"
-        "            background_roles=effort.roles(wake_route)\n",
+        "            background_wake=deferred_wake_route if wake_source=='REFLEX_IMMINENT_TIMEOUT' and deferred_wake_route is not None else wake_route\n"
+        "            background_roles=effort.roles(background_wake)\n",
     ),
     (
         "            background_roles=rmodes.cap_roles(background_roles,self.guard.mode,'background_observers')  # §97.2 YELLOW: one post-commit body\n",
@@ -75,9 +87,16 @@ def apply_source(raw):
     """Return reviewed replacement Runtime bytes for an exact known source."""
     if type(raw) is not bytes:
         raise TypeError('postcommit observer input must be bytes')
-    if sha256(raw).hexdigest() not in SOURCE_SHA256:
+    source_hash = sha256(raw).hexdigest()
+    if source_hash not in SOURCE_SHA256:
         raise ValueError('postcommit observer runtime hash mismatch')
     for before, after in REPLACEMENTS:
+        # The reviewed #1990 stage already adds per-role deadline support.
+        # Preserve that signature while adding foreground-attempt tracking.
+        if (source_hash == 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2'
+                and before == "                def ask(role,focus=None,use_peer=True):\n"):
+            before = before.replace('use_peer=True)', 'use_peer=True,role_end=None)')
+            after = after.replace('use_peer=True)', 'use_peer=True,role_end=None)')
         old, new = before.encode('utf-8'), after.encode('utf-8')
         if raw.count(old) != 1:
             raise ValueError('postcommit observer anchor mismatch')
