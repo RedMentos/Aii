@@ -6,11 +6,11 @@ FEATURES = ('rms', 'pitch_hz', 'voicing', 'speech_probability')
 def build_audio_percept(source_ref, frames, *, consent, source_kind='authorized_audio', final=False, teacher_text=None):
     if consent is not True:
         raise PermissionError('explicit audio observation consent required')
-    if not isinstance(source_ref, dict) or not source_ref.get('source_id') or not source_ref.get('sha256'):
+    if not isinstance(source_ref, dict) or not isinstance(source_ref.get('source_id'), str) or not source_ref['source_id'] or not isinstance(source_ref.get('sha256'), str) or len(source_ref['sha256']) != 64 or any(c not in '0123456789abcdef' for c in source_ref['sha256']):
         raise ValueError('source-bound reference required')
     if source_kind not in ('authorized_audio', 'synthetic_fixture'):
         raise ValueError('unsupported source kind')
-    if not isinstance(frames, list) or not frames:
+    if not isinstance(frames, list) or not 1 <= len(frames) <= 4096:
         raise ValueError('nonempty acoustic frames required')
     out = []
     last_end = -1
@@ -26,7 +26,10 @@ def build_audio_percept(source_ref, frames, *, consent, source_kind='authorized_
             raise ValueError('nonfinite acoustic feature')
         if values['rms'] < 0 or values['pitch_hz'] < 0 or any(not 0 <= values[k] <= 1 for k in ('voicing', 'speech_probability')):
             raise ValueError('out-of-range acoustic feature')
-        out.append({'start_ms': start, 'end_ms': end, 'acoustics': values, 'non_speech': frame.get('non_speech', 'unknown')})
+        non_speech = frame.get('non_speech', 'unknown')
+        if not isinstance(non_speech, str) or len(non_speech) > 64:
+            raise ValueError('invalid non-speech label')
+        out.append({'start_ms': start, 'end_ms': end, 'acoustics': values, 'non_speech': non_speech})
     if teacher_text is not None and (not isinstance(teacher_text, str) or len(teacher_text) > 4096):
         raise ValueError('invalid optional teacher transcript')
     return {'modality': 'audio', 'source_ref': dict(source_ref), 'source_kind': source_kind,
