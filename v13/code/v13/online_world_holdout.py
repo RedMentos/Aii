@@ -82,10 +82,17 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
     # Training-only nearest-state comparator: a non-gradient learner can
     # exploit state-dependent outcomes too. Never treat beating only an
     # action mean as proof of learned transition utility.
+    # Index the immutable training cohort once. The former implementation
+    # rebuilt an action-filtered list for every holdout row, adding repeated
+    # allocations and scans on the memory-constrained Android target.
+    by_action = {}
+    for sample in training:
+        by_action.setdefault(sample[1], []).append(sample)
+
     def nearest_state_outcome_mse(samples):
         errors = []
         for state, action, target in samples:
-            pool = [r for r in training if r[1] == action] or training
+            pool = by_action.get(action) or training
             nearest = min(pool, key=lambda r: sum(
                 (float(r[0][j]) - float(state[j])) ** 2 for j in range(4)))
             errors.extend((float(nearest[2][j]) - float(target[j])) ** 2
