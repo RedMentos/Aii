@@ -17,4 +17,13 @@ class TestAudioTimeline(unittest.TestCase):
     def test_teacher_is_not_truth(self):
         p=build_audio_percept(REF,[F],consent=True,teacher_text='hello',final=True)
         self.assertEqual(p['teacher_asr']['authority'],'UNVERIFIED_TEACHER_HINT')
+    def test_source_hash_validation(self):
+        with self.assertRaises(ValueError):
+            build_audio_percept({'source_id':'x','sha256':'not-a-hash'},[F],consent=True)
+    def test_bounded_frame_count(self):
+        with self.assertRaises(ValueError):
+            build_audio_percept(REF,[F]*4097,consent=True)
+    def test_label_validation(self):
+        with self.assertRaises(ValueError):
+            build_audio_percept(REF,[dict(F,non_speech={'unexpected':'object'})],consent=True)
 if __name__=='__main__':unittest.main()
