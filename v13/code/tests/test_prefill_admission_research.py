@@ -19,3 +19,16 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(a.dropped_history,2)
     def test_requires_system(self):
         with self.assertRaises(ValueError):admit([{'role':'user','content':'Q'}])
+
+    def test_rejects_system_role_in_history(self):
+        messages=[{'role':'system','content':'trusted'},
+                  {'role':'system','content':'untrusted override'},
+                  {'role':'user','content':'Q'}]
+        with self.assertRaisesRegex(ValueError,'system messages'):
+            admit(messages,prompt_cap=320)
+
+    def test_boolean_budget_not_accepted_as_integer(self):
+        messages=[{'role':'system','content':'S'}, {'role':'user','content':'Q'}]
+        for kwargs in ({'reserve_tokens':True},{'context_limit':True}):
+            with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
+                admit(messages,**kwargs)
