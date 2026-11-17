@@ -20,13 +20,18 @@ class OnlineWorld:
         self.home.mkdir(parents=True,exist_ok=True)
         self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,lr=lr,replay=replay)
         self.cursor=self.home/'cursor.json'
-        self.processed=[]
-        if self.cursor.exists():
+        # Snapshot IDs are authoritative: the legacy cursor can be stale or
+        # damaged by a crash after the atomic NPZ replacement.
+        if self.model.committed_action_ids is not None:
+            self.processed=list(self.model.committed_action_ids)
+        elif self.cursor.exists():
             record=json.loads(self.cursor.read_text())
             ids=record.get('processed')
             if record.get('revision')!=REVISION or not isinstance(ids,list) or len(ids)>world_model.MAX_ROWS or any(type(i) is not str for i in ids):
                 raise ValueError('Incompatible online world cursor')
             self.processed=ids
+        else:
+            self.processed=[]
 
     @staticmethod
     def encode(row):
@@ -57,9 +62,10 @@ class OnlineWorld:
         for row in new:
             x,a,y=self.encode(row)
             self.model.observe(x,a,y)
-            self.model.checkpoint()
             self.processed.append(row['action_id'])
             self.processed=self.processed[-world_model.MAX_ROWS:]
+            self.model.committed_action_ids=list(self.processed)
+            self.model.checkpoint()
             temp=self.cursor.with_suffix('.tmp')
             temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed}))
             os.replace(temp,self.cursor)

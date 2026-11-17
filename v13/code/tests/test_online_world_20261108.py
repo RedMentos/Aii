@@ -98,3 +98,30 @@ def test_snapshot_ids_override_stale_legacy_cursor(tmp_path):
         restored=OnlineWorld(runtime)
         assert restored.processed==['action-0','action-1']
         assert restored.update()['learned']==0
+
+
+def test_atomic_snapshot_survives_corrupted_legacy_cursor(tmp_path):
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    rows=[transition(0)]
+    with patch('v13.online_world.world_model.transitions',return_value=rows):
+        first=OnlineWorld(runtime)
+        assert first.update()['learned']==1
+        first.cursor.write_text('not valid json')
+        restored=OnlineWorld(runtime)
+        assert restored.processed==['action-0']
+        assert restored.update()['learned']==0
+
+
+def test_legacy_cursor_migrates_into_next_atomic_snapshot(tmp_path):
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    rows=[transition(0)]
+    with patch('v13.online_world.world_model.transitions',return_value=rows):
+        first=OnlineWorld(runtime)
+        assert first.update()['learned']==1
+        # Simulate a pre-migration predictor snapshot (no action ID metadata).
+        first.model.committed_action_ids=None
+        first.model.checkpoint()
+        legacy=OnlineWorld(runtime)
+        assert legacy.processed==['action-0']
+        assert legacy.update()['learned']==0
+        assert legacy.model.seen==1
