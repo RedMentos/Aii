@@ -54,7 +54,7 @@ class RuntimeDeploymentTests(unittest.TestCase):
         self.selftest_patch = mock.patch.object(d, "_selftest")
         # Legacy launcher/rollback cases use a small synthetic source tree.
         # Full composed-stage behavior is exercised in a separate real-tree test.
-        def fake_stage(source, target):
+        def fake_stage(source, target, *, expected_commit=None):
             target.mkdir(mode=0o700)
             d._copy(source, target)
             d._apply_plain_ui_recovery(source, target)
@@ -401,9 +401,109 @@ def stage(source, target):
         extra.write_text("LOCAL_USER_DATA")
         target = self.base / "built" / "code"
         with mock.patch.object(d, "STAGER_SHA256", hashlib.sha256(builder.read_bytes()).hexdigest()):
-            with self.assertRaisesRegex(d.RuntimeDeployError, "untracked source"):
-                d._stage_integrated_runtime(code, target)
+            d._stage_integrated_runtime(code, target)
+        self.assertFalse((target / "v13/arrived_during_copy.py").exists())
         self.assertEqual(extra.read_text(), "LOCAL_USER_DATA")
+
+    def test_tracked_worktree_race_cannot_change_source_or_generated_stage(self):
+        # The pinned synthetic builder changes the checkout while constructing
+        # both a normal file and a generated file from its supplied inputs.
+        builder = self.seed / "v13/code" / d.STAGER
+        builder.parent.mkdir(parents=True, exist_ok=True)
+        builder.write_text("""
+import hashlib, os, shutil
+from pathlib import Path
+def stage(source, target):
+    source, target = Path(source), Path(target)
+    worktree = Path(os.environ['V13_TEST_MUTABLE_CHECKOUT']) / 'v13/code/v13/common.py'
+    old = worktree.read_bytes()
+    try:
+        worktree.write_bytes(b'CHANGED DURING COPY')
+        target.mkdir(parents=True)
+        for name in ('v13', 'scripts', 'specs'):
+            shutil.copytree(source / name, target / name)
+        (target / 'v13/generated.py').write_bytes((source / 'v13/common.py').read_bytes())
+    finally:
+        worktree.write_bytes(old)
+    hashes = {p.relative_to(target).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+              for p in target.rglob('*') if p.is_file()}
+    return {'status': 'SHADOW_REVIEW_ONLY', 'replaced_files': ['v13/generated.py'], 'files_sha256': hashes}
+""")
+        self.git(self.seed, "add", "v13/code/" + d.STAGER)
+        self.git(self.seed, "commit", "-m", "Add deterministic racing stager")
+        with self.local_clones():
+            d.prepare_source(self.target)
+        _, code, commit = d._source(self.target)
+        before = (code / "v13/common.py").read_bytes()
+        target = self.base / "built" / "code"
+        with mock.patch.object(d, "STAGER_SHA256", hashlib.sha256(builder.read_bytes()).hexdigest()), \
+             mock.patch.dict("os.environ", {"V13_TEST_MUTABLE_CHECKOUT": str(self.target)}):
+            d._stage_integrated_runtime(code, target, expected_commit=commit)
+        self.assertEqual((target / "v13/common.py").read_bytes(), before)
+        self.assertEqual((target / "v13/generated.py").read_bytes(), before)
+        self.assertEqual((code / "v13/common.py").read_bytes(), before)
+        self.assertEqual(self.git(self.target, "status", "--porcelain"), "")
+        self.assertEqual(json.loads((target / d.STAGE_MANIFEST).read_text())["source_commit"], commit)
+
+    def test_self_consistent_manifest_cannot_hide_changed_tracked_blob(self):
+        # A malicious/broken builder emits a changed tracked file and a
+        # matching manifest but does not declare it as a generated output.
+        builder = self.seed / "v13/code" / d.STAGER
+        builder.parent.mkdir(parents=True, exist_ok=True)
+        builder.write_text("""
+import hashlib, shutil
+from pathlib import Path
+def stage(source, target):
+    source, target = Path(source), Path(target)
+    target.mkdir(parents=True)
+    for name in ('v13', 'scripts', 'specs'):
+        shutil.copytree(source / name, target / name)
+    (target / 'v13/common.py').write_bytes(b'CHANGED DURING COPY')
+    hashes = {p.relative_to(target).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+              for p in target.rglob('*') if p.is_file()}
+    return {'status': 'SHADOW_REVIEW_ONLY', 'replaced_files': [], 'files_sha256': hashes}
+""")
+        self.git(self.seed, "add", "v13/code/" + d.STAGER)
+        self.git(self.seed, "commit", "-m", "Add broken stager")
+        with self.local_clones():
+            d.prepare_source(self.target)
+        _, code, commit = d._source(self.target)
+        with mock.patch.object(d, "STAGER_SHA256", hashlib.sha256(builder.read_bytes()).hexdigest()):
+            with self.assertRaisesRegex(d.RuntimeDeployError, "differs from Git commit"):
+                d._stage_integrated_runtime(code, self.base / "built" / "code", expected_commit=commit)
+
+    def test_explicit_commit_is_used_if_checkout_head_advances(self):
+        builder = self.seed / "v13/code" / d.STAGER
+        builder.parent.mkdir(parents=True, exist_ok=True)
+        builder.write_text("""
+import hashlib, shutil
+from pathlib import Path
+def stage(source, target):
+    source, target = Path(source), Path(target)
+    target.mkdir(parents=True)
+    for name in ('v13', 'scripts', 'specs'):
+        shutil.copytree(source / name, target / name)
+    hashes = {p.relative_to(target).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+              for p in target.rglob('*') if p.is_file()}
+    return {'status': 'SHADOW_REVIEW_ONLY', 'replaced_files': [], 'files_sha256': hashes}
+""")
+        self.git(self.seed, "add", "v13/code/" + d.STAGER)
+        self.git(self.seed, "commit", "-m", "Add pinned stager")
+        with self.local_clones():
+            d.prepare_source(self.target)
+        _, code, original_commit = d._source(self.target)
+        original = (code / "v13/common.py").read_bytes()
+        self.git(self.target, "config", "user.name", "Synthetic fixture")
+        self.git(self.target, "config", "user.email", "fixture@example.invalid")
+        (code / "v13/common.py").write_text("newer source\n")
+        self.git(self.target, "add", "v13/code/v13/common.py")
+        self.git(self.target, "commit", "-m", "Move checkout head")
+        target = self.base / "built" / "code"
+        with mock.patch.object(d, "STAGER_SHA256", hashlib.sha256(builder.read_bytes()).hexdigest()):
+            d._stage_integrated_runtime(code, target, expected_commit=original_commit)
+        self.assertEqual((target / "v13/common.py").read_bytes(), original)
+        self.assertEqual((code / "v13/common.py").read_text(), "newer source\n")
+        self.assertEqual(json.loads((target / d.STAGE_MANIFEST).read_text())["source_commit"], original_commit)
 
     def test_failed_download_removes_only_owned_staging_directory(self):
         sentinel = self.base / "existing-user-data"
