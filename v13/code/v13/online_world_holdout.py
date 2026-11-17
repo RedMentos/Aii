@@ -65,7 +65,22 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
         return {"status": "INSUFFICIENT_INDEPENDENT_T8_GROUPS",
                 "train": len(train), "holdout": len(holdout),
                 "train_groups": train_groups, "holdout_groups": holdout_groups}
-    training = [OnlineWorld.encode(row) for row in train]
+    # Keep training evidence group-balanced too: repeated receipts from the
+    # same observed state/action must not multiply optimizer updates. Conflicting
+    # outcomes remain visible in the group's mean, rather than arbitrarily
+    # selecting the first receipt. This is offline evaluation only.
+    import struct
+    grouped_training = {}
+    for row in train:
+        state, action, target = OnlineWorld.encode(row)
+        key = struct.pack("!i4d", action, *(float(v) for v in state[:4]))
+        if key not in grouped_training:
+            grouped_training[key] = [state, action, [0.0] * len(target), 0]
+        item = grouped_training[key]
+        item[2] = [a + float(b) for a, b in zip(item[2], target)]
+        item[3] += 1
+    training = [(state, action, [v / count for v in totals])
+                for state, action, totals, count in grouped_training.values()]
     testing = [OnlineWorld.encode(row) for row in holdout]
     # Frozen action-conditioned mean baseline: fit only on train transitions.
     # Unlike the untrained predictor, this is a meaningful independent
