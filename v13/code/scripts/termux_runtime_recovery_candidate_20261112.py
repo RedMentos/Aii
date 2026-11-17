@@ -124,6 +124,9 @@ def build_sources(code_dir, *, include_postcommit=True):
         if hashlib.sha256(late).hexdigest() != '841aeaa9d7d0b0950b6c3ad799d2b8f8dd44fcee93159bd2a48c66f341460b12':
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
+    control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
+                         'cbabb2db06ba005e21ad425e75d6cf43d2f9f71fed6624bf489eb0d3d7a830fb')
+    result = control_guard.apply_sources(code_dir, result)
     for name, raw in result.items():
         if name.endswith('.py'):
             compile(raw, name, 'exec')
