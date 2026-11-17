@@ -61,11 +61,16 @@ def admit(messages: Sequence[dict], *, prompt_cap: int = 320,
     # Keep complete user/assistant exchange pairs only.  A dangling assistant
     # answer without its originating user prompt is not admissible context.
     history = list(messages[1:-1])
+    # A source-safe suffix starts at a user turn, not an orphan assistant/tool.
+    # Reject dangling tool records whose initiating assistant is absent.
     kept = []
     total = required
     for i in range(len(history) - 1, -1, -1):
         candidate = history[i:]
         if candidate[0]["role"] != "user":
+            continue
+        if any(m["role"] == "tool" and (j == 0 or candidate[j-1]["role"] not in {"assistant", "tool"})
+               for j, m in enumerate(candidate)):
             continue
         amount = sum(cost(m) for m in candidate)
         if total + amount <= cap:
