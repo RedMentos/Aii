@@ -1,17 +1,21 @@
+"""Regression against the actual prefill admission contract (no phone proof)."""
 import unittest
 from v13.prefill_admission import admit
 
 class AdmissionTests(unittest.TestCase):
-    def test_unverified(self):
-        self.assertEqual(admit([{'role':'user','content':'hello'}]).status,'UNVERIFIED')
-    def test_slow(self):
-        self.assertEqual(admit([{'role':'user','content':'x'*630}],measured_tokens_per_second=20,seconds_left=30).status,'REVIEW')
-    def test_fast(self):
-        self.assertEqual(admit([{'role':'user','content':'hi'}],measured_tokens_per_second=100,seconds_left=30).status,'ADVISORY_PASS')
-    def test_preserve(self):
-        m=[{'role':'system','content':'source:abc'},{'role':'user','content':'exact'}]
-        old=repr(m);admit(m,measured_tokens_per_second=1,seconds_left=2);self.assertEqual(repr(m),old)
-    def test_bad_rate(self):
-        with self.assertRaises(ValueError):admit([{'role':'user','content':'x'}],measured_tokens_per_second=0,seconds_left=10)
-    def test_budget(self):
-        self.assertEqual(admit([{'role':'user','content':'abc'}],measured_tokens_per_second=100,seconds_left=10,max_prompt_tokens=2).status,'REVIEW')
+    def test_exact_user(self):
+        m=[{'role':'system','content':'S'},{'role':'user','content':'Q'}]
+        a=admit(m,prompt_cap=128)
+        self.assertTrue(a.accepted)
+        self.assertEqual(a.messages[-1],m[-1])
+    def test_impossible_source(self):
+        m=[{'role':'system','content':'S'*500},{'role':'user','content':'Q'}]
+        self.assertFalse(admit(m,prompt_cap=128).accepted)
+    def test_drops_old_history(self):
+        m=[{'role':'system','content':'S'},{'role':'user','content':'x'*200},
+           {'role':'assistant','content':'y'*200},{'role':'user','content':'final'}]
+        a=admit(m,prompt_cap=128)
+        self.assertTrue(a.accepted)
+        self.assertEqual(a.dropped_history,2)
+    def test_requires_system(self):
+        with self.assertRaises(ValueError):admit([{'role':'user','content':'Q'}])
