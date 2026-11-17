@@ -128,12 +128,12 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
     early_testing = testing[:max(1, len(testing)//2)]
     result = {"status": "SYNTHETIC_OR_T8_OFFLINE_ONLY",
               "train": len(train), "holdout": len(holdout),
+              "train_groups": train_groups, "holdout_groups": holdout_groups,
               "frozen_action_mean_baseline_mse": frozen_baseline,
               "frozen_outcome_baseline_mse": frozen_outcome_baseline,
               "nearest_state_outcome_baseline_mse": nearest_state_baseline,
               "holdout_ids_sha256": hashlib.sha256(
-                  "
-".join(sorted(r["action_id"] for r in holdout)).encode()
+                  "\n".join(sorted(r["action_id"] for r in holdout)).encode()
               ).hexdigest()}
     tracemalloc.start()
     start = time.monotonic()
