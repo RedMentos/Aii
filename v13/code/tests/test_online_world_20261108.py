@@ -71,8 +71,14 @@ def test_restart_after_checkpoint_before_legacy_cursor_write_is_exactly_once(tmp
     runtime=SimpleNamespace(home=tmp_path,store=object())
     rows=[transition(0)]
     # Failure after atomic NPZ replacement must not train the same action again.
+    import os
+    original_replace=os.replace
+    def fail_only_cursor(src,dst):
+        if str(dst).endswith('cursor.json'):
+            raise OSError('cursor crash')
+        return original_replace(src,dst)
     with patch('v13.online_world.world_model.transitions',return_value=rows):
-        with patch('v13.online_world.os.replace',side_effect=OSError('cursor crash')):
+        with patch('v13.online_world.os.replace',side_effect=fail_only_cursor):
             with pytest.raises(OSError,match='cursor crash'):
                 OnlineWorld(runtime).update()
         restored=OnlineWorld(runtime)
