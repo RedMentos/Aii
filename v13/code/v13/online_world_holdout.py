@@ -53,7 +53,7 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
     if len(train) < 8 or len(holdout) < 3:
         return {"status": "INSUFFICIENT_DISJOINT_T8",
                 "train": len(train), "holdout": len(holdout)}
-    training = [OnlineWorld.encode(row) for row in train]
+    # Count independent state/action groups, not repeated event IDs.\n    # Repeated transitions cannot manufacture a statistically useful holdout.\n    def independent_groups(cohort):\n        import struct\n        return len({struct.pack("!i4d", action, *(float(v) for v in x[:4]))\n                    for x, action, _ in (OnlineWorld.encode(row) for row in cohort)})\n    train_groups = independent_groups(train)\n    holdout_groups = independent_groups(holdout)\n    if train_groups < 8 or holdout_groups < 3:\n        return {"status": "INSUFFICIENT_INDEPENDENT_T8_GROUPS",\n                "train": len(train), "holdout": len(holdout),\n              "train_groups": train_groups, "holdout_groups": holdout_groups,\n                "train_groups": train_groups, "holdout_groups": holdout_groups}\n    training = [OnlineWorld.encode(row) for row in train]
     testing = [OnlineWorld.encode(row) for row in holdout]
     # Frozen action-conditioned mean baseline: fit only on train transitions.
     # Unlike the untrained predictor, this is a meaningful independent
