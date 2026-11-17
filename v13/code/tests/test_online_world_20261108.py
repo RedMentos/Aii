@@ -125,3 +125,40 @@ def test_legacy_cursor_migrates_into_next_atomic_snapshot(tmp_path):
         assert legacy.processed==['action-0']
         assert legacy.update()['learned']==0
         assert legacy.model.seen==1
+
+
+def test_checkpoint_failure_restores_live_weights_and_allows_exactly_once_retry(tmp_path):
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    rows=[transition(0),transition(1)]
+    with patch('v13.online_world.world_model.transitions',return_value=rows):
+        world=OnlineWorld(runtime)
+        with patch.object(world.model,'checkpoint',wraps=world.model.checkpoint) as save:
+            original=save.side_effect
+            def fail_second():
+                if save.call_count==2:
+                    raise OSError('disk full before checkpoint')
+                return world.model.__class__.checkpoint(world.model)
+            save.side_effect=fail_second
+            with pytest.raises(OSError,match='disk full'):
+                world.update()
+        # The second observation was not durably committed.
+        assert world.model.seen==1
+        assert world.processed==['action-0']
+        np.testing.assert_allclose(world.model.W,OnlineWorld(runtime).model.W)
+        assert world.update()['learned']==1
+        assert world.model.seen==2
+        assert OnlineWorld(runtime).update()['learned']==0
+
+
+def test_first_checkpoint_failure_resets_undurable_live_predictor(tmp_path):
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    rows=[transition(0)]
+    with patch('v13.online_world.world_model.transitions',return_value=rows):
+        world=OnlineWorld(runtime)
+        with patch.object(world.model,'checkpoint',side_effect=OSError('disk full')):
+            with pytest.raises(OSError,match='disk full'):
+                world.update()
+        assert world.model.seen==0
+        assert world.processed==[]
+        assert world.update()['learned']==1
+        assert OnlineWorld(runtime).update()['learned']==0

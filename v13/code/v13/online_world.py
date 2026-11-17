@@ -61,11 +61,24 @@ class OnlineWorld:
         retention_before=self.model.error(replay) if replay else None
         for row in new:
             x,a,y=self.encode(row)
+            # The in-memory learner must not run ahead of the durable checkpoint.
+            # On failed persistence restore the last committed model, including RNG,
+            # replay reservoir, counters and the authoritative action IDs.
+            prior_ids=list(self.processed)
             self.model.observe(x,a,y)
-            self.processed.append(row['action_id'])
-            self.processed=self.processed[-world_model.MAX_ROWS:]
-            self.model.committed_action_ids=list(self.processed)
-            self.model.checkpoint()
+            candidate_ids=(prior_ids+[row['action_id']])[-world_model.MAX_ROWS:]
+            self.model.committed_action_ids=list(candidate_ids)
+            try:
+                self.model.checkpoint()
+            except Exception:
+                if self.model.path.exists():
+                    self.model.restore()
+                else:
+                    self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,
+                                               lr=self.model.lr,replay=self.model.cap)
+                self.processed=prior_ids
+                raise
+            self.processed=candidate_ids
             temp=self.cursor.with_suffix('.tmp')
             temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed}))
             os.replace(temp,self.cursor)
