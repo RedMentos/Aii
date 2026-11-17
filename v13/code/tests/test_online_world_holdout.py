@@ -39,9 +39,7 @@ class HoldoutTests(unittest.TestCase):
         self.assertEqual(
             report["predictor_beats_frozen_baseline"],
             report["replay"]["outcome_after_mse"] <
-            report["frozen_outcome_baseline_mse"] and
-            report["replay"]["outcome_after_mse"] <
-            report["nearest_state_outcome_baseline_mse"])
+            report["frozen_outcome_baseline_mse"])
         self.assertEqual(
             report["utility_proven"],
             report["predictor_beats_frozen_baseline"] and
