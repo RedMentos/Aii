@@ -80,6 +80,41 @@ class HoldoutTests(unittest.TestCase):
         self.assertLess(report["train_groups"], report["train"])
         self.assertLess(report["holdout_groups"], report["holdout"])
 
+    def test_group_balanced_metric_ignores_repeated_receipts(self):
+        rows = self.rows(240)
+        train, holdout = H.partition(rows)
+        testing = [H.OnlineWorld.encode(row) for row in holdout]
+        predictor = lambda state, action: [0.0] * 7
+        initial = H.evaluate_rows(rows)
+        repeated = [dict(row, action_id="extra-%04d" % i)
+                    for i, row in enumerate(holdout[:1] * 40)]
+        augmented = H.evaluate_rows(rows + repeated)
+        # A duplicate group may affect row-weighted scores but not the
+        # independently weighted frozen action-mean comparator (train fixed).
+        self.assertAlmostEqual(
+            initial["group_balanced_frozen_outcome_baseline_mse"],
+            augmented["group_balanced_frozen_outcome_baseline_mse"])
+        self.assertFalse(augmented["retention_cohort_temporal"])
+        for variant in ("replay", "no_replay"):
+            self.assertAlmostEqual(
+                augmented[variant]["group_balanced_outcome_after_mse"],
+                augmented[variant]["group_balanced_outcome_restart_mse"])
+
+    def test_repeated_training_receipts_do_not_multiply_updates(self):
+        rows = self.rows(240)
+        train, _ = H.partition(rows)
+        baseline = H.evaluate_rows(rows)
+        repeats = [dict(row, action_id="train-repeat-%03d" % i)
+                   for i, row in enumerate(train[:20])]
+        augmented = H.evaluate_rows(rows + repeats)
+        self.assertEqual(baseline["train_groups"], augmented["train_groups"])
+        for variant in ("replay", "no_replay"):
+            self.assertEqual(baseline[variant]["numeric_updates"],
+                             augmented[variant]["numeric_updates"])
+            self.assertAlmostEqual(
+                baseline[variant]["group_balanced_outcome_after_mse"],
+                augmented[variant]["group_balanced_outcome_after_mse"])
+
     def test_duplicate_fails_closed(self):
         rows = self.rows()
         with self.assertRaises(ValueError):
@@ -92,13 +127,15 @@ class HoldoutTests(unittest.TestCase):
         self.assertGreaterEqual(report["frozen_action_mean_baseline_mse"], 0)
         self.assertEqual(
             report["predictor_beats_frozen_baseline"],
-            report["replay"]["outcome_after_mse"] <
-            report["frozen_outcome_baseline_mse"])
+            report["replay"]["group_balanced_outcome_after_mse"] <
+            report["group_balanced_frozen_outcome_baseline_mse"])
         self.assertEqual(
             report["utility_proven"],
             report["predictor_beats_frozen_baseline"] and
-            report["replay"]["outcome_after_mse"] < report["replay"]["outcome_before_mse"] and
-            report["replay"]["outcome_after_mse"] < report["nearest_state_outcome_baseline_mse"])
+            report["replay"]["group_balanced_outcome_after_mse"] <
+            report["replay"]["group_balanced_outcome_before_mse"] and
+            report["replay"]["group_balanced_outcome_after_mse"] <
+            report["group_balanced_nearest_outcome_baseline_mse"])
         for variant in ("replay", "no_replay"):
             self.assertGreater(report[variant]["numeric_updates"], 0)
             self.assertAlmostEqual(report[variant]["outcome_after_mse"],
@@ -152,11 +189,11 @@ class HoldoutTests(unittest.TestCase):
         self.assertGreaterEqual(report["nearest_state_outcome_baseline_mse"], 0)
         self.assertEqual(
             report["utility_proven"],
-            report["replay"]["outcome_after_mse"] <
-            report["replay"]["outcome_before_mse"] and
-            report["replay"]["outcome_after_mse"] <
-            min(report["frozen_outcome_baseline_mse"],
-                report["nearest_state_outcome_baseline_mse"]))
+            report["replay"]["group_balanced_outcome_after_mse"] <
+            report["replay"]["group_balanced_outcome_before_mse"] and
+            report["replay"]["group_balanced_outcome_after_mse"] <
+            min(report["group_balanced_frozen_outcome_baseline_mse"],
+                report["group_balanced_nearest_outcome_baseline_mse"]))
 
     def test_insufficient_evidence_not_promoted(self):
         report = H.evaluate_rows(self.rows(5))

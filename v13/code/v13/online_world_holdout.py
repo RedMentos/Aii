@@ -65,7 +65,22 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
         return {"status": "INSUFFICIENT_INDEPENDENT_T8_GROUPS",
                 "train": len(train), "holdout": len(holdout),
                 "train_groups": train_groups, "holdout_groups": holdout_groups}
-    training = [OnlineWorld.encode(row) for row in train]
+    # Keep training evidence group-balanced too: repeated receipts from the
+    # same observed state/action must not multiply optimizer updates. Conflicting
+    # outcomes remain visible in the group's mean, rather than arbitrarily
+    # selecting the first receipt. This is offline evaluation only.
+    import struct
+    grouped_training = {}
+    for row in train:
+        state, action, target = OnlineWorld.encode(row)
+        key = struct.pack("!i4d", action, *(float(v) for v in state[:4]))
+        if key not in grouped_training:
+            grouped_training[key] = [state, action, [0.0] * len(target), 0]
+        item = grouped_training[key]
+        item[2] = [a + float(b) for a, b in zip(item[2], target)]
+        item[3] += 1
+    training = [(state, action, [v / count for v in totals])
+                for _, (state, action, totals, count) in sorted(grouped_training.items())]
     testing = [OnlineWorld.encode(row) for row in holdout]
     # Frozen action-conditioned mean baseline: fit only on train transitions.
     # Unlike the untrained predictor, this is a meaningful independent
@@ -94,6 +109,25 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                           for a, b in zip(prediction, target))
         return sum(errors) / len(errors)
     frozen_baseline = baseline_mse(testing)
+    # Evaluation unit is a distinct state/action group, not an event row.
+    # A duplicated T8 receipt must not alter the reported generalization
+    # score. Within-group repetitions are averaged before the group mean.
+    import struct
+    def group_mse(samples, predict, *, outcome_only=True):
+        groups = {}
+        for state, action, target in samples:
+            key = struct.pack("!i4d", action, *(float(v) for v in state[:4]))
+            predicted = predict(state, action)
+            indices = range(4, 7) if outcome_only else range(7)
+            error = sum((float(predicted[j])-float(target[j]))**2
+                        for j in indices) / len(indices)
+            total, count = groups.get(key, (0.0, 0))
+            groups[key] = (total + error, count + 1)
+        return sum(total/count for total, count in groups.values()) / len(groups)
+    def action_mean_predict(state, action):
+        mean = action_means.get(action, global_mean)
+        return list(state[:4]) + list(mean[4:])
+    balanced_frozen_outcome = group_mse(testing, action_mean_predict)
     # Only the last three coordinates are unknown action outcomes.
     # The first four are the unchanged state already supplied as input.
     def outcome_mse(model, samples):
@@ -124,6 +158,11 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                           for j in range(4, 7))
         return sum(errors) / len(errors)
     nearest_state_baseline = nearest_state_outcome_mse(testing)
+    def nearest_predict(state, action):
+        pool = by_action.get(action) or training
+        return min(pool, key=lambda r: sum(
+            (float(r[0][j]) - float(state[j])) ** 2 for j in range(4)))[2]
+    balanced_nearest_outcome = group_mse(testing, nearest_predict)
     # Independent early retention cohort: never observed or replayed.
     early_testing = testing[:max(1, len(testing)//2)]
     result = {"status": "SYNTHETIC_OR_T8_OFFLINE_ONLY",
@@ -132,6 +171,9 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
               "frozen_action_mean_baseline_mse": frozen_baseline,
               "frozen_outcome_baseline_mse": frozen_outcome_baseline,
               "nearest_state_outcome_baseline_mse": nearest_state_baseline,
+              "group_balanced_frozen_outcome_baseline_mse": balanced_frozen_outcome,
+              "group_balanced_nearest_outcome_baseline_mse": balanced_nearest_outcome,
+              "retention_cohort_temporal": False,
               "holdout_ids_sha256": hashlib.sha256(
                   "\n".join(sorted(r["action_id"] for r in holdout)).encode()
               ).hexdigest()}
@@ -145,6 +187,7 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                                         directory, lr=lr, replay=replay)
                 before = model.error(testing)
                 outcome_before = outcome_mse(model, testing)
+                balanced_before = group_mse(testing, model.predict)
                 old = training[:max(1, len(training)//4)]
                 old_before = model.error(old)
                 early_count = max(1, len(training)//4)
@@ -156,6 +199,7 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                     model.observe(x, action, y, rehearsals=rehearsals)
                 after = model.error(testing)
                 outcome_after = outcome_mse(model, testing)
+                balanced_after = group_mse(testing, model.predict)
                 old_after = model.error(old)
                 early_holdout_after_later = model.error(early_testing)
                 model.checkpoint()
@@ -163,12 +207,19 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                                            directory, lr=lr, replay=replay)
                 restart_error = restored.error(testing)
                 outcome_restart = outcome_mse(restored, testing)
+                balanced_restart = group_mse(testing, restored.predict)
+                if not math.isclose(balanced_after, balanced_restart,
+                                    rel_tol=1e-10, abs_tol=1e-10):
+                    raise AssertionError("Restart changed balanced outcome holdout")
                 if not math.isclose(after, restart_error,
                                     rel_tol=1e-10, abs_tol=1e-10):
                     raise AssertionError("Predictor restart changed holdout")
                 if not math.isclose(outcome_after, outcome_restart, rel_tol=1e-10, abs_tol=1e-10):
                     raise AssertionError("Restart changed outcome holdout")
                 result[name] = {
+                    "group_balanced_outcome_before_mse": balanced_before,
+                    "group_balanced_outcome_after_mse": balanced_after,
+                    "group_balanced_outcome_restart_mse": balanced_restart,
                     "outcome_before_mse": outcome_before,
                     "outcome_after_mse": outcome_after,
                     "outcome_restart_mse": outcome_restart,
@@ -199,12 +250,18 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
     result["replay_minus_no_replay_early_holdout_retention_delta_mse"] = (
         result["replay"]["early_holdout_retention_delta_mse"] -
         result["no_replay"]["early_holdout_retention_delta_mse"])
+    # Claim gate uses independent groups. Row-weighted metrics remain
+    # diagnostic for historical comparisons, never acceptance evidence.
     result["utility_proven"] = (
-        result["replay"]["outcome_after_mse"] < result["replay"]["outcome_before_mse"]
-        and result["replay"]["outcome_after_mse"] < frozen_outcome_baseline
-        and result["replay"]["outcome_after_mse"] < nearest_state_baseline)
+        result["replay"]["group_balanced_outcome_after_mse"] <
+        result["replay"]["group_balanced_outcome_before_mse"]
+        and result["replay"]["group_balanced_outcome_after_mse"] <
+        balanced_frozen_outcome
+        and result["replay"]["group_balanced_outcome_after_mse"] <
+        balanced_nearest_outcome)
     result["predictor_beats_frozen_baseline"] = (
-        result["replay"]["outcome_after_mse"] < frozen_outcome_baseline)
+        result["replay"]["group_balanced_outcome_after_mse"] <
+        balanced_frozen_outcome)
     return result
 
 
