@@ -26,6 +26,60 @@ class HoldoutTests(unittest.TestCase):
         self.assertEqual({x["action_id"] for x in b},
                          {x["action_id"] for x in d})
 
+    def test_state_action_groups_never_cross_holdout(self):
+        rows = self.rows(240)
+        train, holdout = H.partition(rows)
+        group = lambda r: (r["a"], tuple(r["s"]))
+        self.assertFalse({group(r) for r in train} &
+                         {group(r) for r in holdout})
+        reversed_train, reversed_holdout = H.partition(list(reversed(rows)))
+        self.assertEqual([r["action_id"] for r in train],
+                         [r["action_id"] for r in reversed_train])
+        self.assertEqual([r["action_id"] for r in holdout],
+                         [r["action_id"] for r in reversed_holdout])
+
+    def test_identical_state_group_never_leaks(self):
+        rows = self.rows(120)
+        rows[0]["s"] = list(rows[1]["s"])
+        rows[0]["a"] = rows[1]["a"]
+        train, holdout = H.partition(rows)
+        self.assertEqual(
+            rows[0]["action_id"] in {r["action_id"] for r in train},
+            rows[1]["action_id"] in {r["action_id"] for r in train})
+
+    def test_repeated_event_ids_do_not_fake_independent_holdout(self):
+        # Choose seven training groups and three holdout groups, then repeat
+        # each many times with distinct receipt IDs. Row counts pass the old
+        # threshold, but the independent training cohort is insufficient.
+        source = self.rows(240)
+        train, holdout = H.partition(source)
+        def pick_groups(rows, n):
+            chosen, seen = [], set()
+            for row in rows:
+                group = (row["a"], tuple(row["s"]))
+                if group not in seen:
+                    seen.add(group)
+                    chosen.append(row)
+                if len(chosen) == n:
+                    break
+            return chosen
+        seeds = pick_groups(train, 7) + pick_groups(holdout, 3)
+        rows = []
+        for i, seed in enumerate(seeds):
+            for j in range(20):
+                rows.append(dict(seed, action_id="repeat-%02d-%02d" % (i, j)))
+        report = H.evaluate_rows(rows)
+        self.assertEqual(report["status"], "INSUFFICIENT_INDEPENDENT_T8_GROUPS")
+        self.assertEqual(report["train_groups"], 7)
+        self.assertEqual(report["holdout_groups"], 3)
+        self.assertNotIn("utility_proven", report)
+
+    def test_report_counts_independent_groups(self):
+        report = H.evaluate_rows(self.rows(240))
+        self.assertEqual(report["status"], "SYNTHETIC_OR_T8_OFFLINE_ONLY")
+        self.assertLess(report["train_groups"], report["train"])
+        self.assertLess(report["holdout_groups"], report["holdout"])
+
     def test_duplicate_fails_closed(self):
         rows = self.rows()
         with self.assertRaises(ValueError):

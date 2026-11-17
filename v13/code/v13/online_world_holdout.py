@@ -17,15 +17,28 @@ from .online_world import OnlineWorld
 
 
 def partition(rows):
-    """Stable action-ID disjoint split, independent of stream ordering."""
+    """Stable state/action-group disjoint split, independent of stream ordering."""
     train, holdout, ids = [], [], set()
+    # Action-ID disjointness alone leaks repeated states into both cohorts.
+    # Group the identical observed state/action pair before splitting; this
+    # remains an offline evaluation and never changes live T8 admission.
     for row in rows:
         aid = row.get("action_id")
         if type(aid) is not str or not aid or aid in ids:
             raise ValueError("Missing or duplicate T8 action ID")
         ids.add(aid)
-        (holdout if hashlib.sha256(aid.encode()).digest()[0] % 5 == 0
+        # Validate through the production numeric encoder before hashing:
+        # no untrusted NaN, shape mismatch or unknown action is admitted.
+        x, action, _ = OnlineWorld.encode(row)
+        import struct
+        group = struct.pack("!i4d", action, *(float(v) for v in x[:4]))
+        (holdout if hashlib.sha256(group).digest()[0] % 5 == 0
          else train).append(row)
+    # Deterministic update order for reproducible ablation under reordered
+    # T8 feeds. This is NOT a temporal cohort; no trusted timestamp is
+    # available in this interface.
+    train.sort(key=lambda row: row["action_id"])
+    holdout.sort(key=lambda row: row["action_id"])
     return train, holdout
 
 
@@ -40,6 +53,18 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
     if len(train) < 8 or len(holdout) < 3:
         return {"status": "INSUFFICIENT_DISJOINT_T8",
                 "train": len(train), "holdout": len(holdout)}
+    # Count independent state/action groups, not repeated event IDs.
+    # Repeated transitions cannot manufacture a statistically useful holdout.
+    def independent_groups(cohort):
+        import struct
+        return len({struct.pack("!i4d", action, *(float(v) for v in x[:4]))
+                    for x, action, _ in (OnlineWorld.encode(row) for row in cohort)})
+    train_groups = independent_groups(train)
+    holdout_groups = independent_groups(holdout)
+    if train_groups < 8 or holdout_groups < 3:
+        return {"status": "INSUFFICIENT_INDEPENDENT_T8_GROUPS",
+                "train": len(train), "holdout": len(holdout),
+                "train_groups": train_groups, "holdout_groups": holdout_groups}
     training = [OnlineWorld.encode(row) for row in train]
     testing = [OnlineWorld.encode(row) for row in holdout]
     # Frozen action-conditioned mean baseline: fit only on train transitions.
@@ -103,6 +128,7 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
     early_testing = testing[:max(1, len(testing)//2)]
     result = {"status": "SYNTHETIC_OR_T8_OFFLINE_ONLY",
               "train": len(train), "holdout": len(holdout),
+              "train_groups": train_groups, "holdout_groups": holdout_groups,
               "frozen_action_mean_baseline_mse": frozen_baseline,
               "frozen_outcome_baseline_mse": frozen_outcome_baseline,
               "nearest_state_outcome_baseline_mse": nearest_state_baseline,
