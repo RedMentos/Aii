@@ -5,7 +5,7 @@ fuzzy intent detection, implicit tool execution or floating point.
 """
 import re
 
-_PATTERN = re.compile(r"\s*(?:what is|what's|calculate|compute|was ist|wieviel ist)?\s*([+-]?\d{1,9})\s*([+*×-])\s*([+-]?\d{1,9})\s*\??\s*", re.IGNORECASE)
+_PATTERN = re.compile(r"[ \t]*(?:what is|what's|calculate|compute|was ist|wieviel ist)?[ \t]*([+-]?\d{1,9})[ \t]*([+*×-])[ \t]*([+-]?\d{1,9})[ \t]*\??[ \t]*", re.IGNORECASE)
 
 def evidence(source):
     if not isinstance(source, str) or len(source) > 96:
