@@ -32,7 +32,11 @@ def evaluate(payload):
         if not isinstance(ident, str) or not ident or ident in ids:
             failures.append(f'turn {i}: missing or duplicate correlation')
         ids.add(ident)
-        classes.add(turn.get('class'))
+        task_class = turn.get('class')
+        if not isinstance(task_class, str) or task_class not in REQUIRED:
+            failures.append(f'turn {i}: unknown task class')
+        else:
+            classes.add(task_class)
         if turn.get('status') != 'FINAL' or turn.get('visible_answer') is not True:
             failures.append(f'turn {i}: not a visible FINAL')
         if turn.get('correct') is not True:
@@ -43,7 +47,13 @@ def evaluate(payload):
                 failures.append(f'turn {i}: {key} absent/invalid')
             else:
                 arr.append(value)
-        if turn.get('class') == 'body_cooperation':
+        total = turn.get('total_ms')
+        first = turn.get('first_token_ms')
+        if (isinstance(total, (int, float)) and not isinstance(total, bool)
+                and isinstance(first, (int, float)) and not isinstance(first, bool)
+                and math.isfinite(total) and math.isfinite(first) and first > total):
+            failures.append(f'turn {i}: first token later than completed turn')
+        if task_class == 'body_cooperation':
             offers = turn.get('offers')
             for role in ('B1', 'B2'):
                 offer = offers.get(role) if isinstance(offers, dict) else None
