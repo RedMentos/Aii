@@ -17,15 +17,28 @@ from .online_world import OnlineWorld
 
 
 def partition(rows):
-    """Stable action-ID disjoint split, independent of stream ordering."""
+    """Stable state/action-group disjoint split, independent of stream ordering."""
     train, holdout, ids = [], [], set()
+    # Action-ID disjointness alone leaks repeated states into both cohorts.
+    # Group the identical observed state/action pair before splitting; this
+    # remains an offline evaluation and never changes live T8 admission.
     for row in rows:
         aid = row.get("action_id")
         if type(aid) is not str or not aid or aid in ids:
             raise ValueError("Missing or duplicate T8 action ID")
         ids.add(aid)
-        (holdout if hashlib.sha256(aid.encode()).digest()[0] % 5 == 0
+        # Validate through the production numeric encoder before hashing:
+        # no untrusted NaN, shape mismatch or unknown action is admitted.
+        x, action, _ = OnlineWorld.encode(row)
+        import struct
+        group = struct.pack("!i4d", action, *(float(v) for v in x[:4]))
+        (holdout if hashlib.sha256(group).digest()[0] % 5 == 0
          else train).append(row)
+    # Deterministic update order for reproducible ablation under reordered
+    # T8 feeds. This is NOT a temporal cohort; no trusted timestamp is
+    # available in this interface.
+    train.sort(key=lambda row: row["action_id"])
+    holdout.sort(key=lambda row: row["action_id"])
     return train, holdout
 
 
