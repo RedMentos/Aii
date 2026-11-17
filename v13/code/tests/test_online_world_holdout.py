@@ -47,6 +47,24 @@ class HoldoutTests(unittest.TestCase):
             rows[0]["action_id"] in {r["action_id"] for r in train},
             rows[1]["action_id"] in {r["action_id"] for r in train})
 
+    def test_repeated_event_ids_do_not_fake_independent_holdout(self):
+        # Many distinct T8 receipts can describe only a few distinct states.
+        # Repetitions must not satisfy the independent holdout evidence gate.
+        rows = self.rows(240)
+        for i, row in enumerate(rows):
+            row["s"] = [0.0, 0.0, 0.1, 0.2]
+            row["a"] = world_model.ACTIONS[i % 2]
+        report = H.evaluate_rows(rows)
+        self.assertEqual(report["status"], "INSUFFICIENT_INDEPENDENT_T8_GROUPS")
+        self.assertEqual(report["train_groups"] + report["holdout_groups"], 2)
+        self.assertNotIn("utility_proven", report)
+
+    def test_report_counts_independent_groups(self):
+        report = H.evaluate_rows(self.rows(240))
+        self.assertEqual(report["status"], "SYNTHETIC_OR_T8_OFFLINE_ONLY")
+        self.assertLess(report["train_groups"], report["train"])
+        self.assertLess(report["holdout_groups"], report["holdout"])
+
     def test_duplicate_fails_closed(self):
         rows = self.rows()
         with self.assertRaises(ValueError):
