@@ -104,7 +104,8 @@ class OnlinePredictor:
             np.savez_compressed(temp,revision=np.array(REVISION),dimensions=np.array([self.d,self.a,self.cap]),
                 W=self.W,U=self.U,bias=self.bias,x=self.x,act=self.act,y=self.y,
                 counters=np.array([self.seen,self.updates]),
-                rng_state=np.array(json.dumps(self.rng.bit_generator.state)),\n                committed_action_ids=np.array(json.dumps(self.committed_action_ids)))
+                rng_state=np.array(json.dumps(self.rng.bit_generator.state)),
+                committed_action_ids=np.array(json.dumps(self.committed_action_ids)))
             if self.path.exists():
                 shutil.copy2(self.path,self.path.with_suffix('.previous.npz'))
             os.replace(temp,self.path)
@@ -129,7 +130,8 @@ class OnlinePredictor:
             shapes={'W':(self.d,self.d),'U':(self.a,self.d),'bias':(self.d,),
                     'x':(None,self.d),'act':(None,),'y':(None,self.d),'counters':(2,)}
             loaded={k:data[k].copy() for k in shapes}
-            rng_state=json.loads(str(data['rng_state']))\n            committed_ids=json.loads(str(data['committed_action_ids'])) if 'committed_action_ids' in data else None
+            rng_state=json.loads(str(data['rng_state']))
+            committed_ids=json.loads(str(data['committed_action_ids'])) if 'committed_action_ids' in data else None
         n=len(loaded['x'])
         if (n>self.cap or len(loaded['act'])!=n or len(loaded['y'])!=n
             or any(v.shape!=tuple(n if d is None else d for d in shapes[k]) for k,v in loaded.items())
@@ -139,4 +141,7 @@ class OnlinePredictor:
             raise ValueError('Invalid predictor checkpoint')
         for k in ('W','U','bias','x','act','y'):setattr(self,k,loaded[k])
         self.seen,self.updates=map(int,loaded['counters'])
-        if committed_ids is not None and (not isinstance(committed_ids,list) or len(committed_ids)>100000 or any(type(i) is not str or not i for i in committed_ids)):\n            raise ValueError('Invalid committed action IDs')\n        self.committed_action_ids=committed_ids\n        self.rng.bit_generator.state=rng_state
+        if committed_ids is not None and (not isinstance(committed_ids,list) or len(committed_ids)>100000 or any(type(i) is not str or not i for i in committed_ids)):
+            raise ValueError('Invalid committed action IDs')
+        self.committed_action_ids=committed_ids
+        self.rng.bit_generator.state=rng_state
