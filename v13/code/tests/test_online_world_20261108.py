@@ -65,3 +65,30 @@ def test_actual_runtime_method_learns_committed_world_transition(tmp_path):
         result=Runtime.online_world_update(fake,limit=16)
     assert result['learned']==1
     assert fake._online_world.model.seen==1
+
+
+def test_restart_after_checkpoint_before_legacy_cursor_write_is_exactly_once(tmp_path):
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    rows=[transition(0)]
+    # Failure after atomic NPZ replacement must not train the same action again.
+    with patch('v13.online_world.world_model.transitions',return_value=rows):
+        with patch('v13.online_world.os.replace',side_effect=OSError('cursor crash')):
+            with pytest.raises(OSError,match='cursor crash'):
+                OnlineWorld(runtime).update()
+        restored=OnlineWorld(runtime)
+        assert restored.model.seen==1
+        assert restored.processed==['action-0']
+        assert restored.update()['learned']==0
+        assert restored.model.seen==1
+
+
+def test_snapshot_ids_override_stale_legacy_cursor(tmp_path):
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    rows=[transition(0),transition(1)]
+    with patch('v13.online_world.world_model.transitions',return_value=rows):
+        w=OnlineWorld(runtime)
+        assert w.update()['learned']==2
+        w.cursor.write_text('{"revision":"v13-online-world-v1","processed":["action-0"]}')
+        restored=OnlineWorld(runtime)
+        assert restored.processed==['action-0','action-1']
+        assert restored.update()['learned']==0
