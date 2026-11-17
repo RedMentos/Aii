@@ -29,3 +29,20 @@ def acoustic_window(samples, sample_rate, source_ref, start_ms, *, consent=False
                        "speaker_identity": "UNKNOWN", "transcript": None},
         "learning_authority": "NONE" if provisional else "SOURCE_BOUND_REVIEW_REQUIRED",
     }
+
+def canonical_packet(samples, sample_rate, source_ref, start_ms, *,
+                     consent_receipt, event_id, generation_id, provisional=True):
+    """Runtime-facing bridge to existing A5 contract; no ASR or OS permission grant."""
+    from .audio_percept_contract import audio_percept_packet
+    features = acoustic_window(samples, sample_rate, source_ref, start_ms,
+                               consent=bool(consent_receipt), provisional=provisional)
+    begin, end = round(features["start_ms"]), round(features["end_ms"])
+    if end <= begin:
+        raise ValueError("audio window too short for millisecond A5 schema")
+    return audio_percept_packet(
+        event_id=event_id, generation_id=generation_id,
+        source_id=source_ref["source_id"], source_sha256=source_ref["sha256"],
+        start_ms=begin, end_ms=end, rms=features["features"]["rms"],
+        zcr=features["features"]["zero_crossing_rate"],
+        finality="PROVISIONAL" if provisional else "FINAL",
+        consent_receipt=consent_receipt)
