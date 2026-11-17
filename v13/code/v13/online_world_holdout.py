@@ -80,7 +80,7 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
         item[2] = [a + float(b) for a, b in zip(item[2], target)]
         item[3] += 1
     training = [(state, action, [v / count for v in totals])
-                for state, action, totals, count in grouped_training.values()]
+                for _, (state, action, totals, count) in sorted(grouped_training.items())]
     testing = [OnlineWorld.encode(row) for row in holdout]
     # Frozen action-conditioned mean baseline: fit only on train transitions.
     # Unlike the untrained predictor, this is a meaningful independent
