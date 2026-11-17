@@ -32,6 +32,10 @@ REQUIRED = ("v13/__main__.py", "v13/store.py", "v13/runtime.py",
             "v13/common.py", "v13/models.py", "v13/ui.py",
             "scripts/needle_worker.cpp", "specs/models.json", CANON)
 COPY_SUBTREES = ("v13", "scripts", "specs", "docs/canon")
+# Candidate builders consume files outside the deployed tree. Export those
+# inputs from the same commit as well, instead of importing mutable checkout
+# files while constructing the generated replacements.
+BUILD_INPUT_SUBTREES = (*COPY_SUBTREES, "candidates", "tests")
 # Match exactly the exclusions of the pinned stage builder and Canon copier.
 # Data omitted by both builders stays in place and does not block an update.
 STAGE_COPY_IGNORES = ("__pycache__", "*.pyc", "*.db", "*.sqlite", "*.sqlite3",
@@ -55,7 +59,7 @@ class RuntimeDeployError(RuntimeError):
 
 
 def _git(root, *args, timeout=50):
-    env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
+    env = {**os.environ, "GIT_TERMINAL_PROMPT": "0", "GIT_NO_REPLACE_OBJECTS": "1"}
     try:
         out = subprocess.run(["git", "-C", str(root), *args],
                              capture_output=True, text=True, env=env,
@@ -95,6 +99,89 @@ def _tracked_stage_paths(root, commit):
                  *("v13/code/" + part for part in COPY_SUBTREES)).split("\0")
     prefix = "v13/code/"
     return {path[len(prefix):] for path in paths if path.startswith(prefix)}
+
+
+def _commit_blob_entries(root, commit):
+    """Return ordinary tracked source blobs, bound to the requested commit."""
+    if not HEX40.fullmatch(commit):
+        raise RuntimeDeployError("Invalid runtime source commit")
+    entries = {}
+    rows = _git(root, "ls-tree", "-r", "-z", commit, "--",
+                *("v13/code/" + part for part in BUILD_INPUT_SUBTREES), timeout=180)
+    for row in rows.split("\0"):
+        if not row:
+            continue
+        metadata, separator, path = row.partition("\t")
+        fields = metadata.split()
+        prefix = "v13/code/"
+        if (not separator or len(fields) != 3 or fields[0] not in ("100644", "100755")
+                or fields[1] != "blob" or not HEX40.fullmatch(fields[2])
+                or not path.startswith(prefix)):
+            raise RuntimeDeployError("Unsafe Git source entry")
+        relative = path[len(prefix):]
+        name = Path(relative)
+        if (not relative or name.is_absolute() or ".." in name.parts
+                or name.as_posix() != relative or relative in entries):
+            raise RuntimeDeployError("Unsafe Git source path")
+        entries[relative] = (fields[2], fields[0])
+    if not entries:
+        raise RuntimeDeployError("No tracked runtime sources in commit")
+    return entries
+
+
+def _export_commit_sources(root, commit, destination):
+    """Materialize and hash-verify Git blobs without reading the checkout."""
+    entries = _commit_blob_entries(root, commit)
+    destination = Path(destination)
+    # Temporary files keep the batch result off the Python heap on the phone.
+    with tempfile.TemporaryFile() as requests, tempfile.TemporaryFile() as replies:
+        for oid, _mode in entries.values():
+            requests.write((oid + "\n").encode("ascii"))
+        requests.seek(0)
+        try:
+            proc = subprocess.run(
+                ["git", "-C", str(root), "cat-file", "--batch"], stdin=requests,
+                stdout=replies, stderr=subprocess.PIPE, timeout=180, check=False,
+                env={**os.environ, "GIT_TERMINAL_PROMPT": "0", "GIT_NO_REPLACE_OBJECTS": "1"})
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise RuntimeDeployError("Git source export unavailable") from exc
+        if proc.returncode:
+            raise RuntimeDeployError("Git source export failed")
+        replies.seek(0)
+        for relative, (oid, mode) in entries.items():
+            header = replies.readline(256).split()
+            if (len(header) != 3 or header[0] != oid.encode("ascii")
+                    or header[1] != b"blob" or not header[2].isdigit()):
+                raise RuntimeDeployError("Invalid Git source blob header")
+            size = int(header[2])
+            digest = hashlib.sha1(b"blob " + str(size).encode("ascii") + b"\0")
+            path = destination / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("xb") as out:
+                remaining = size
+                while remaining:
+                    part = replies.read(min(remaining, 1024 * 1024))
+                    if not part:
+                        raise RuntimeDeployError("Truncated Git source blob")
+                    out.write(part)
+                    digest.update(part)
+                    remaining -= len(part)
+            if replies.read(1) != b"\n" or digest.hexdigest() != oid:
+                raise RuntimeDeployError("Git source blob does not match commit")
+            path.chmod(0o700 if mode == "100755" else 0o600)
+        if replies.read(1):
+            raise RuntimeDeployError("Unexpected Git source export data")
+    return entries
+
+
+def _git_blob_hash(path):
+    """Compute the Git SHA-1 blob identity of an ordinary staged file."""
+    size = path.stat().st_size
+    digest = hashlib.sha1(b"blob " + str(size).encode("ascii") + b"\0")
+    with path.open("rb") as stream:
+        for part in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(part)
+    return digest.hexdigest()
 
 
 def _check_copy_inputs(root, code, commit):
@@ -360,49 +447,66 @@ def _verify_stage(root):
     return hashlib.sha256(raw).hexdigest()
 
 
-def _stage_integrated_runtime(source, target):
+def _stage_integrated_runtime(source, target, *, expected_commit=None):
     """Materialize the exact reviewed stage; never modify source or user data."""
     source, target = Path(source), Path(target)
-    builder = source / STAGER
-    if builder.is_symlink() or not builder.is_file():
-        raise RuntimeDeployError("Integrated stage builder missing or unsafe")
-    raw = builder.read_bytes()
-    if hashlib.sha256(raw).hexdigest() != STAGER_SHA256:
-        raise RuntimeDeployError("Integrated stage builder changed")
-    namespace = {"__name__": "v13_checked_runtime_stager", "__file__": str(builder)}
+    source_resolved = source.resolve(strict=True)
+    target_resolved = target.resolve()
+    if source_resolved == target_resolved or source_resolved in target_resolved.parents:
+        raise RuntimeDeployError("Integrated staging overlaps source tree")
+    repo = source.parent.parent
+    staged_commit = expected_commit or _git(repo, "rev-parse", "HEAD")
+    target.parent.mkdir(parents=True, exist_ok=True)
     try:
-        exec(compile(raw, str(builder), "exec"), namespace)
-        manifest = namespace["stage"](source, target)
-        # The existing stager deliberately omits documentation. The installed
-        # runtime must include the same Canon, bound into the snapshot manifest.
-        canon_source = source / "docs/canon"
-        if canon_source.is_symlink() or not canon_source.is_dir():
-            raise RuntimeDeployError("Integrated runtime Canon missing or unsafe")
-        canon_target = target / "docs/canon"
-        canon_target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(canon_source, canon_target, symlinks=True,
-                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyo"))
-        for entry in canon_target.rglob("*"):
-            if entry.is_symlink():
-                raise RuntimeDeployError("Integrated runtime Canon contains a symlink")
-            if entry.is_file():
-                manifest["files_sha256"][entry.relative_to(target).as_posix()] = hashlib.sha256(entry.read_bytes()).hexdigest()
-        (target / STAGE_MANIFEST).write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
-        # Even a file added during copy must not enter the activated snapshot.
-        # Generated paths are declared by the hash-pinned stage builder.
-        repo = source.parent.parent
-        staged_commit = _git(repo, "rev-parse", "HEAD")
-        if not HEX40.fullmatch(staged_commit):
-            raise RuntimeDeployError("Invalid runtime source commit")
-        generated = manifest.get("replaced_files")
-        hashes = manifest.get("files_sha256")
-        if (not isinstance(generated, list)
-                or any(not isinstance(name, str) for name in generated)
-                or not isinstance(hashes, dict)):
-            raise RuntimeDeployError("Integrated runtime provenance is invalid")
-        if set(hashes) - _tracked_stage_paths(repo, staged_commit) - set(generated):
-            raise RuntimeDeployError("Integrated runtime contains untracked source")
-        return _verify_stage(target)
+        # The input is a private materialization of exact Git objects, never a
+        # working tree whose tracked contents can change and be restored during
+        # copy. This also binds generated files to the same builder inputs.
+        with tempfile.TemporaryDirectory(prefix=".v13-verified-source-", dir=target.parent) as tmp:
+            frozen = Path(tmp) / "code"
+            frozen.mkdir(mode=0o700)
+            blobs = _export_commit_sources(repo, staged_commit, frozen)
+            builder = frozen / STAGER
+            if builder.is_symlink() or not builder.is_file():
+                raise RuntimeDeployError("Integrated stage builder missing or unsafe")
+            raw = builder.read_bytes()
+            if hashlib.sha256(raw).hexdigest() != STAGER_SHA256:
+                raise RuntimeDeployError("Integrated stage builder changed")
+            namespace = {"__name__": "v13_checked_runtime_stager", "__file__": str(builder)}
+            exec(compile(raw, str(builder), "exec"), namespace)
+            manifest = namespace["stage"](frozen, target)
+            # Canon is not part of the stage builder's normal copy.
+            canon_source = frozen / "docs/canon"
+            if canon_source.is_symlink() or not canon_source.is_dir():
+                raise RuntimeDeployError("Integrated runtime Canon missing or unsafe")
+            canon_target = target / "docs/canon"
+            canon_target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(canon_source, canon_target, symlinks=True,
+                            ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyo"))
+            for entry in canon_target.rglob("*"):
+                if entry.is_symlink():
+                    raise RuntimeDeployError("Integrated runtime Canon contains a symlink")
+                if entry.is_file():
+                    manifest["files_sha256"][entry.relative_to(target).as_posix()] = hashlib.sha256(entry.read_bytes()).hexdigest()
+            generated = manifest.get("replaced_files")
+            hashes = manifest.get("files_sha256")
+            if (not isinstance(generated, list)
+                    or any(not isinstance(name, str) for name in generated)
+                    or len(generated) != len(set(generated))
+                    or not isinstance(hashes, dict) or set(generated) - set(hashes)):
+                raise RuntimeDeployError("Integrated runtime provenance is invalid")
+            if set(hashes) - set(blobs) - set(generated):
+                raise RuntimeDeployError("Integrated runtime contains untracked source")
+            manifest["source"] = str(source)
+            manifest["source_commit"] = staged_commit
+            (target / STAGE_MANIFEST).write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+            manifest_sha = _verify_stage(target)
+            # The generated set comes only from the already hash-pinned stager,
+            # run against the verified export. Everything else must equal its
+            # Git blob, rather than merely matching a self-generated manifest.
+            for relative in set(hashes) - set(generated):
+                if _git_blob_hash(target / relative) != blobs[relative][0]:
+                    raise RuntimeDeployError("Integrated runtime differs from Git commit: " + relative)
+            return manifest_sha
     except RuntimeDeployError:
         raise
     except Exception as exc:
@@ -501,7 +605,7 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False):
     stage.mkdir(mode=0o700)
     target = stage / "code"
     try:
-        manifest_sha256 = _stage_integrated_runtime(code, target)
+        manifest_sha256 = _stage_integrated_runtime(code, target, expected_commit=commit)
         # A moving checkout must not be recorded under the earlier CI result.
         if _source(root)[2] != commit:
             raise RuntimeDeployError("Runtime source changed during staging")
