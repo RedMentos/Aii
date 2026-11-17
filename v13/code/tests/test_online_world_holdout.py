@@ -100,6 +100,21 @@ class HoldoutTests(unittest.TestCase):
                 augmented[variant]["group_balanced_outcome_after_mse"],
                 augmented[variant]["group_balanced_outcome_restart_mse"])
 
+    def test_repeated_training_receipts_do_not_multiply_updates(self):
+        rows = self.rows(240)
+        train, _ = H.partition(rows)
+        baseline = H.evaluate_rows(rows)
+        repeats = [dict(row, action_id="train-repeat-%03d" % i)
+                   for i, row in enumerate(train[:20])]
+        augmented = H.evaluate_rows(rows + repeats)
+        self.assertEqual(baseline["train_groups"], augmented["train_groups"])
+        for variant in ("replay", "no_replay"):
+            self.assertEqual(baseline[variant]["numeric_updates"],
+                             augmented[variant]["numeric_updates"])
+            self.assertAlmostEqual(
+                baseline[variant]["group_balanced_outcome_after_mse"],
+                augmented[variant]["group_balanced_outcome_after_mse"])
+
     def test_duplicate_fails_closed(self):
         rows = self.rows()
         with self.assertRaises(ValueError):
@@ -174,11 +189,11 @@ class HoldoutTests(unittest.TestCase):
         self.assertGreaterEqual(report["nearest_state_outcome_baseline_mse"], 0)
         self.assertEqual(
             report["utility_proven"],
-            report["replay"]["outcome_after_mse"] <
-            report["replay"]["outcome_before_mse"] and
-            report["replay"]["outcome_after_mse"] <
-            min(report["frozen_outcome_baseline_mse"],
-                report["nearest_state_outcome_baseline_mse"]))
+            report["replay"]["group_balanced_outcome_after_mse"] <
+            report["replay"]["group_balanced_outcome_before_mse"] and
+            report["replay"]["group_balanced_outcome_after_mse"] <
+            min(report["group_balanced_frozen_outcome_baseline_mse"],
+                report["group_balanced_nearest_outcome_baseline_mse"]))
 
     def test_insufficient_evidence_not_promoted(self):
         report = H.evaluate_rows(self.rows(5))
