@@ -48,15 +48,30 @@ class HoldoutTests(unittest.TestCase):
             rows[1]["action_id"] in {r["action_id"] for r in train})
 
     def test_repeated_event_ids_do_not_fake_independent_holdout(self):
-        # Many distinct T8 receipts can describe only a few distinct states.
-        # Repetitions must not satisfy the independent holdout evidence gate.
-        rows = self.rows(240)
-        for i, row in enumerate(rows):
-            row["s"] = [0.0, 0.0, 0.1, 0.2]
-            row["a"] = world_model.ACTIONS[i % 2]
+        # Choose seven training groups and three holdout groups, then repeat
+        # each many times with distinct receipt IDs. Row counts pass the old
+        # threshold, but the independent training cohort is insufficient.
+        source = self.rows(240)
+        train, holdout = H.partition(source)
+        def pick_groups(rows, n):
+            chosen, seen = [], set()
+            for row in rows:
+                group = (row["a"], tuple(row["s"]))
+                if group not in seen:
+                    seen.add(group)
+                    chosen.append(row)
+                if len(chosen) == n:
+                    break
+            return chosen
+        seeds = pick_groups(train, 7) + pick_groups(holdout, 3)
+        rows = []
+        for i, seed in enumerate(seeds):
+            for j in range(20):
+                rows.append(dict(seed, action_id="repeat-%02d-%02d" % (i, j)))
         report = H.evaluate_rows(rows)
         self.assertEqual(report["status"], "INSUFFICIENT_INDEPENDENT_T8_GROUPS")
-        self.assertEqual(report["train_groups"] + report["holdout_groups"], 2)
+        self.assertEqual(report["train_groups"], 7)
+        self.assertEqual(report["holdout_groups"], 3)
         self.assertNotIn("utility_proven", report)
 
     def test_report_counts_independent_groups(self):
