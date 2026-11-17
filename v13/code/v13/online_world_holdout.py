@@ -79,12 +79,26 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
                           for j in range(4, 7))
         return sum(errors) / len(errors)
     frozen_outcome_baseline = frozen_baseline * 7 / 3
+    # Training-only nearest-state comparator: a non-gradient learner can
+    # exploit state-dependent outcomes too. Never treat beating only an
+    # action mean as proof of learned transition utility.
+    def nearest_state_outcome_mse(samples):
+        errors = []
+        for state, action, target in samples:
+            pool = [r for r in training if r[1] == action] or training
+            nearest = min(pool, key=lambda r: sum(
+                (float(r[0][j]) - float(state[j])) ** 2 for j in range(4)))
+            errors.extend((float(nearest[2][j]) - float(target[j])) ** 2
+                          for j in range(4, 7))
+        return sum(errors) / len(errors)
+    nearest_state_baseline = nearest_state_outcome_mse(testing)
     # Independent early retention cohort: never observed or replayed.
     early_testing = testing[:max(1, len(testing)//2)]
     result = {"status": "SYNTHETIC_OR_T8_OFFLINE_ONLY",
               "train": len(train), "holdout": len(holdout),
               "frozen_action_mean_baseline_mse": frozen_baseline,
               "frozen_outcome_baseline_mse": frozen_outcome_baseline,
+              "nearest_state_outcome_baseline_mse": nearest_state_baseline,
               "holdout_ids_sha256": hashlib.sha256(
                   "\n".join(sorted(r["action_id"] for r in holdout)).encode()
               ).hexdigest()}
@@ -154,7 +168,8 @@ def evaluate_rows(rows, *, lr=0.02, replay=128):
         result["no_replay"]["early_holdout_retention_delta_mse"])
     result["utility_proven"] = (
         result["replay"]["outcome_after_mse"] < result["replay"]["outcome_before_mse"]
-        and result["replay"]["outcome_after_mse"] < frozen_outcome_baseline)
+        and result["replay"]["outcome_after_mse"] < frozen_outcome_baseline
+        and result["replay"]["outcome_after_mse"] < nearest_state_baseline)
     result["predictor_beats_frozen_baseline"] = (
         result["replay"]["outcome_after_mse"] < frozen_outcome_baseline)
     return result
