@@ -39,7 +39,9 @@ class HoldoutTests(unittest.TestCase):
         self.assertEqual(
             report["predictor_beats_frozen_baseline"],
             report["replay"]["outcome_after_mse"] <
-            report["frozen_outcome_baseline_mse"])
+            report["frozen_outcome_baseline_mse"] and
+            report["replay"]["outcome_after_mse"] <
+            report["nearest_state_outcome_baseline_mse"])
         self.assertEqual(
             report["utility_proven"],
             report["predictor_beats_frozen_baseline"] and
@@ -83,6 +85,25 @@ class HoldoutTests(unittest.TestCase):
         self.assertAlmostEqual(report["frozen_outcome_baseline_mse"], 0.0, places=12)
         self.assertFalse(report["predictor_beats_frozen_baseline"])
         self.assertFalse(report["utility_proven"])
+
+    def test_state_dependent_outcomes_have_nontrivial_baselines(self):
+        # Deterministic state-dependent target: an action-only mean is
+        # insufficient. No holdout target enters either baseline's fit.
+        rows = self.rows(160)
+        for row in rows:
+            state = row["s"][0]
+            row["y"] = [0.1 + 0.5 * state, 0.8 - 0.2 * state,
+                        0.3 + state * state]
+        report = H.evaluate_rows(rows)
+        self.assertGreater(report["frozen_outcome_baseline_mse"], 0)
+        self.assertGreaterEqual(report["nearest_state_outcome_baseline_mse"], 0)
+        self.assertEqual(
+            report["utility_proven"],
+            report["replay"]["outcome_after_mse"] <
+            report["replay"]["outcome_before_mse"] and
+            report["replay"]["outcome_after_mse"] <
+            min(report["frozen_outcome_baseline_mse"],
+                report["nearest_state_outcome_baseline_mse"]))
 
     def test_insufficient_evidence_not_promoted(self):
         report = H.evaluate_rows(self.rows(5))
