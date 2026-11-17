@@ -26,6 +26,27 @@ class HoldoutTests(unittest.TestCase):
         self.assertEqual({x["action_id"] for x in b},
                          {x["action_id"] for x in d})
 
+    def test_state_action_groups_never_cross_holdout(self):
+        rows = self.rows(240)
+        train, holdout = H.partition(rows)
+        group = lambda r: (r["a"], tuple(r["s"]))
+        self.assertFalse({group(r) for r in train} &
+                         {group(r) for r in holdout})
+        reversed_train, reversed_holdout = H.partition(list(reversed(rows)))
+        self.assertEqual([r["action_id"] for r in train],
+                         [r["action_id"] for r in reversed_train])
+        self.assertEqual([r["action_id"] for r in holdout],
+                         [r["action_id"] for r in reversed_holdout])
+
+    def test_identical_state_group_never_leaks(self):
+        rows = self.rows(120)
+        rows[0]["s"] = list(rows[1]["s"])
+        rows[0]["a"] = rows[1]["a"]
+        train, holdout = H.partition(rows)
+        self.assertEqual(
+            rows[0]["action_id"] in {r["action_id"] for r in train},
+            rows[1]["action_id"] in {r["action_id"] for r in train})
+
     def test_duplicate_fails_closed(self):
         rows = self.rows()
         with self.assertRaises(ValueError):
