@@ -37,9 +37,9 @@ def admit(messages: Sequence[dict], *, prompt_cap: int = 320,
     """
     if not isinstance(prompt_cap, int) or isinstance(prompt_cap, bool) or prompt_cap < 32:
         raise ValueError("invalid prompt cap")
-    if not isinstance(reserve_tokens, int) or reserve_tokens < 1:
+    if not isinstance(reserve_tokens, int) or isinstance(reserve_tokens, bool) or reserve_tokens < 1:
         raise ValueError("invalid decode reserve")
-    if not isinstance(context_limit, int) or context_limit <= reserve_tokens:
+    if not isinstance(context_limit, int) or isinstance(context_limit, bool) or context_limit <= reserve_tokens:
         raise ValueError("invalid context limit")
     if not messages or any(not isinstance(m, dict) or m.get("role") not in
                            {"system", "user", "assistant", "tool"} or
@@ -49,6 +49,8 @@ def admit(messages: Sequence[dict], *, prompt_cap: int = 320,
         raise ValueError("final native message must be exact user source")
     if messages[0]["role"] != "system":
         raise ValueError("first native message must be system")
+    if any(m["role"] == "system" for m in messages[1:]):
+        raise ValueError("system messages after the required prefix are forbidden")
     cap = min(prompt_cap, context_limit - reserve_tokens)
     # Conservative overhead for chat-template role delimiters.
     cost = lambda m: upper_tokens(m["content"]) + 16
