@@ -28,6 +28,19 @@ class ReceiptGateTests(unittest.TestCase):
     def test_duplicate_and_nan(self):
         d = fixture(); d['turns'][1]['correlation_id'] = 'turn-0'; d['turns'][2]['total_ms'] = float('nan')
         self.assertEqual(evaluate(d)['status'], 'BLOCKED')
+    def test_impossible_first_token_after_final(self):
+        d = fixture(); d['turns'][3]['first_token_ms'] = 3000
+        result = evaluate(d)
+        self.assertEqual(result['status'], 'BLOCKED')
+        self.assertTrue(any('first token later' in failure for failure in result['failures']))
+    def test_unknown_task_class_rejected(self):
+        d = fixture(); d['turns'][4]['class'] = 'device_control_unverified'
+        result = evaluate(d)
+        self.assertEqual(result['status'], 'BLOCKED')
+        self.assertTrue(any('unknown task class' in failure for failure in result['failures']))
+    def test_boundary_equal_latency_allowed(self):
+        d = fixture(); d['turns'][0]['first_token_ms'] = d['turns'][0]['total_ms']
+        self.assertEqual(evaluate(d)['status'], 'METADATA_PASS_UNATTESTED')
     def test_insufficient_turns(self):
         d = fixture(); d['turns'] = d['turns'][:19]
         self.assertEqual(evaluate(d)['status'], 'BLOCKED')
