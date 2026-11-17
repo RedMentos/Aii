@@ -32,3 +32,28 @@ class AdmissionTests(unittest.TestCase):
         for kwargs in ({'reserve_tokens':True},{'context_limit':True}):
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
                 admit(messages,**kwargs)
+
+    def test_orphan_tool_record_is_not_admitted(self):
+        messages = [
+            {'role': 'system', 'content': 'S'},
+            {'role': 'user', 'content': 'older'},
+            {'role': 'tool', 'content': 'orphan result'},
+            {'role': 'user', 'content': 'new'},
+        ]
+        a = admit(messages, prompt_cap=320)
+        self.assertTrue(a.accepted)
+        self.assertEqual([m['content'] for m in a.messages], ['S', 'new'])
+        self.assertEqual(a.dropped_history, 2)
+
+    def test_tool_record_with_assistant_origin_is_preserved(self):
+        messages = [
+            {'role': 'system', 'content': 'S'},
+            {'role': 'user', 'content': 'older'},
+            {'role': 'assistant', 'content': 'calling tool'},
+            {'role': 'tool', 'content': 'result'},
+            {'role': 'user', 'content': 'new'},
+        ]
+        a = admit(messages, prompt_cap=320)
+        self.assertTrue(a.accepted)
+        self.assertEqual(a.dropped_history, 0)
+        self.assertEqual(a.messages[-2]['content'], 'result')
