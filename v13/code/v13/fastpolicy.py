@@ -79,7 +79,11 @@ def c2_packet(r,e,text,route,info=None):
     at=answer_type(text)
     if at=='free' and native.get('answer_type') in ANSWER_TYPES:fields['answer_type']={'value':native['answer_type'],'source':'NATIVE_C2'}
     else:fields['answer_type']={'value':at,'source':'BOOT'}
-    # Independent source-exact check is diagnostic only: no Age0 TOOL_CALL or output override.\n    from .arithmetic_evidence import expectation\n    arithmetic=expectation(text)\n    if arithmetic:fields['arithmetic_evidence']={'value':arithmetic,'source':'BOOT_SOURCE_EXACT'}\n    pk=packet('C2ExecutivePacket','C2_CONTROL',e['event_id'],e['brain_generation_id'],[e['source_ref']],route=route,route_source=info.get('source','BOOT_SCAFFOLD'),
+    # Independent source-exact check is diagnostic only: no Age0 TOOL_CALL or output override.
+    from .arithmetic_evidence import expectation
+    arithmetic=expectation(text)
+    if arithmetic:fields['arithmetic_evidence']={'value':arithmetic,'source':'BOOT_SOURCE_EXACT'}
+    pk=packet('C2ExecutivePacket','C2_CONTROL',e['event_id'],e['brain_generation_id'],[e['source_ref']],route=route,route_source=info.get('source','BOOT_SCAFFOLD'),
               fields=fields,native_fields=sorted(native),truth_authority=0,parser='boot-c2-struct-v1')
     r.store.add_packet('C2ExecutivePacket',pk)
     return {'packet_id':pk['packet_id'],'route':route,**{k:v['value'] for k,v in fields.items()},'sources':{k:v['source'] for k,v in fields.items()}}
