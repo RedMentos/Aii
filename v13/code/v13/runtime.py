@@ -561,6 +561,13 @@ class Runtime:
                 if clarify_turn:volatile.append(('CLARIFY','\n'+prompt(self.cfg,'clarify'),{'reason':'METACOG_CALIBRATED_ABSTAIN'}))
                 if tool_pending and tool_pending['status']=='PROPOSED':volatile.append(('TOOL_PENDING','\nProposed action (waiting for the user, not executed):',toolctl.ToolStep(self).pending_layer(tool_pending)))
                 if tool_result and tool_result.get('result') is not None:volatile.append(('TOOL_RESULT','\nTool result (computed locally, exact; use this number):',toolctl.ToolStep(self).layer(tool_result)))
+                # Read-only arithmetic evidence is not an external tool call:
+                # it neither changes Age rights nor bypasses C4/C5/C6.
+                from .arithmetic_evidence import evidence as arithmetic_evidence
+                arithmetic=arithmetic_evidence(text)
+                if arithmetic:
+                    volatile.append(('EXACT_ARITHMETIC','\nSource-exact arithmetic check (not a tool action):',arithmetic))
+                    meta['arithmetic_evidence']=arithmetic
                 try:  # WP-N14: the previous answer was cut off by this message; carry question, partial answer and its source
                     ho=duplex.handoff(self,eid)
                     if ho:volatile.append(('DUPLEX_HANDOFF','\n'+prompt(self.cfg,'duplex_handoff'),ho['body']));meta['duplex_handoff_refs']=ho['source_refs']
