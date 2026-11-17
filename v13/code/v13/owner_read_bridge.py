@@ -323,6 +323,32 @@ def create_read_request(command, *, now=None, session=0, page=0, text=None, requ
     return out
 
 
+
+def _run_pending_migration_after_reload(pipeline):
+    """One consent-bound retry when the old worker just updated both checkouts.
+
+    The old process could only install the RAW runtime; its new dashboard code
+    is loaded after relay exec. Normal CI and graceful-stop checks still apply.
+    """
+    if not pipeline.enabled():
+        return None
+    state = pipeline.snapshot()
+    if (state.get("last_result") != "UPDATED"
+            or state.get("runtime") != "UPDATED"
+            or state.get("dashboard") != "UPDATED"
+            or state.get("last_error") != "NONE"):
+        return None
+    from . import runtime_deploy
+    try:
+        pending = runtime_deploy.needs_deploy(Path.home() / ".v13-runtime-source")
+    except (OSError, ValueError, TypeError, runtime_deploy.RuntimeDeployError):
+        return None
+    if not pending:
+        return None
+    # manual=False rechecks consent. The normal cycle also rechecks CI and stop.
+    return pipeline.run_cycle(force=True, manual=False, target="all")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="V13 PRIVATE owner-read Termux bridge")
     parser.add_argument("action", choices=("once", "serve", "stop", "resume", "make-read"))
@@ -362,6 +388,12 @@ def main(argv=None):
     # while no browser tab is open, as long as Termux keeps this process alive.
     from . import pipeline_agent
     def update_worker():
+        try:
+            # Run at most once per relay start; ordinary retries keep their timer.
+            _run_pending_migration_after_reload(pipeline_agent)
+        except Exception as exc:
+            print(json.dumps({"status":"PIPELINE_ERROR",
+                              "error_code":type(exc).__name__}), flush=True)
         while True:
             try:
                 if pipeline_agent.claim_scheduled_update():
