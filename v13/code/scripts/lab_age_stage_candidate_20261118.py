@@ -14,7 +14,7 @@ INPUT_BLOBS = {
     "v13/effort.py": "e40e74aa279e96fbf25f6a72aac29510d779be58",
     "v13/executive.py": "057dda1e705053047489516fc9ab10581018f5a4",
     "v13/lab_age_runtime.py": "ab72d5efcb6405323da975bd7fab707ddc3e8b7c",
-    "v13/lab_age.py": "dde614d774c57878bbb753b4ffc1b0ca30a70c88",
+    "v13/lab_age.py": "e94d081538bc47268b5b536ddcecf29b98877ee2",
 }
 AGE_CONTROLLER = b"""def controller(runtime):
     \"\"\"Runtime-scoped instance without touching runtime.py; reads the live config dict.\"\"\"
