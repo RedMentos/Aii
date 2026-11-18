@@ -77,9 +77,29 @@ class AtomicT8CursorTests(unittest.TestCase):
             world.update()
         with patch.object(world_model,'transitions',return_value=[transition('a'),transition('b')]):
             world.update()
-        world.model.rollback()
+        result=world.rollback()
+        self.assertEqual(result['status'],'ROLLED_BACK_PERSISTED')
+        self.assertEqual(world.processed,['a'])
         self.assertEqual(world.model.processed_ids,['a'])
         self.assertEqual(world.model.seen,1)
+        restarted=OnlineWorld(self.runtime)
+        self.assertEqual(restarted.processed,['a'])
+        self.assertEqual(restarted.model.seen,1)
+        with patch.object(world_model,'transitions',return_value=[transition('a'),transition('b')]):
+            self.assertEqual(restarted.update()['learned'],1)
+            self.assertEqual(OnlineWorld(self.runtime).model.seen,2)
+
+    def test_failed_rollback_replace_preserves_active_checkpoint(self):
+        with patch.object(world_model,'transitions',return_value=[transition('a'),transition('b')]):
+            world=OnlineWorld(self.runtime)
+            world.update()
+        active=world.model.W.copy()
+        with patch('v13.continuous_predictor.os.replace',side_effect=OSError('disk full')):
+            with self.assertRaisesRegex(OSError,'disk full'):
+                world.rollback()
+        np.testing.assert_array_equal(world.model.W,active)
+        np.testing.assert_array_equal(OnlineWorld(self.runtime).model.W,active)
+        self.assertEqual(OnlineWorld(self.runtime).processed,['a','b'])
 
     def test_reject_invalid_checkpoint_identifiers(self):
         world=OnlineWorld(self.runtime)
