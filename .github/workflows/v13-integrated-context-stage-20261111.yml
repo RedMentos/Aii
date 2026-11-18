@@ -72,7 +72,6 @@ jobs:
           tests/test_record_only_online_guard_20261116.py
           tests/test_record_only_controller_guard_20261116.py
           tests/test_runtime_deploy_integrated_20261116.py
-          tests/test_two_checkout_migration_20261116.py
           tests/test_audio_pcm_a5_bridge.py
           tests/test_exact_arithmetic.py
           tests/test_latent_bridge.py
@@ -88,6 +87,11 @@ jobs:
           tests/test_native_sampling_policy.py
           tests/test_arithmetic_stage_20261116.py
           tests/test_observer_fair_budget_stage_20261116.py
+      - name: Verify real-Git old-phone migration in fresh Python process
+        working-directory: v13/code
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m pytest -q -s tests/test_two_checkout_migration_20261116.py
       - name: Check recovery shell syntax
         run: bash -n v13/code/scripts/termux_runtime_recovery.sh
   integrated-regression:
