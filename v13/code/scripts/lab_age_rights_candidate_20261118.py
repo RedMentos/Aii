@@ -9,7 +9,7 @@ per-call approvals, or automatically train model weights.
 import hashlib
 from pathlib import Path
 
-LAB_SHA256 = "TO_BE_PINNED"
+LAB_SHA256 = "4a8887903b20293e9d7943eb54fd39e6aeb0aee87f74c8ed52fcf487f10f6509"
 
 
 def _replace(source, old, new, reason):
