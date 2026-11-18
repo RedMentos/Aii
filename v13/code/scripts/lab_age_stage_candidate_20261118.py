@@ -46,14 +46,14 @@ LAB_OPERATOR = b"""        if cmd=='labage':
             return dumps(a.view()['laboratory'])
 """
 
-AGE_HEADER = b"""    def header():
+AGE_HEADER = """    def header():
         from .age import controller
         a=controller(r)
         lab=a.view()['laboratory']
         return (' V13 · Age '+str(a.system_stage())+' offiziell'
                 +' · LAB '+str(lab['stage'])+' '+lab['mode'].upper()
                 +' · '+r.cfg['learning_mode']+' · '+r.status
-                +' · Wartend: '+str(r.jobs.qsize())+' ')"""
+                +' · Wartend: '+str(r.jobs.qsize())+' ')""".encode('utf-8')
 
 
 def _replace(raw, old, new, name):
@@ -111,7 +111,7 @@ def apply_sources(code_dir, sources):
     if type(ui) is not bytes:
         raise ValueError("Lab Age requires composed console source")
     ui=_replace(ui,
-        b"    def header():return ' V13 · Age 0 · '+r.cfg['learning_mode']+' · '+r.status+' · Wartend: '+str(r.jobs.qsize())+' '",
+        "    def header():return ' V13 · Age 0 · '+r.cfg['learning_mode']+' · '+r.status+' · Wartend: '+str(r.jobs.qsize())+' '".encode('utf-8'),
         AGE_HEADER,"live console Age header")
     out["v13/ui.py"]=ui
     for name in ("v13/age.py","v13/effort.py","v13/executive.py","v13/operator.py","v13/ui.py"):
