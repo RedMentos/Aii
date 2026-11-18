@@ -138,15 +138,17 @@ ui.serve(open_browser=False)
                         with self.assertRaises(HTTPError) as denied:
                             set_lab(invalid_stage,invalid_mode)
                         self.assertEqual(denied.exception.code,400)
-                self.assertEqual(lab_age.read(home),{
+                self.assertEqual(lab_age.read(home/"v13"),{
                     "schema":"v13.lab-age/1","stage":9,"mode":"shadow"})
                 with self.assertRaises(HTTPError) as denied:
                     set_lab(8,"active",csrf="0"*48)
                 self.assertEqual(denied.exception.code,403)
-                self.assertEqual(lab_age.read(home)["mode"],"shadow")
+                self.assertEqual(lab_age.read(home/"v13")["mode"],"shadow")
             finally:
                 proc.terminate()
                 proc.wait(timeout=8)
+                proc.stdout.close()
+                proc.stderr.close()
 
 
 if __name__=="__main__":
