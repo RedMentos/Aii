@@ -90,9 +90,10 @@ def summary():
         "official_stage": lab["official_stage"],
         "stage": lab["stage"], "mode": lab["mode"],
         "config_persisted": lab["config_persisted"],
-        "compute_requested": lab["compute_requested"],
-        "resource_guard_may_block": True,
-        "device_compute_actually_observed": False}
+        "feature_test_requested": lab["feature_test_requested"],
+        "effective_implemented_stage": lab["effective_implemented_stage"],
+        "learning_commit_authority": lab["learning_commit_authority"],
+        "physical_feature_execution_verified": False}
     from .phone_runtime_diagnostics import last_turn
     out["last_turn"] = last_turn()
     # Real AI status, not the updater or merely the browser process.
@@ -662,7 +663,7 @@ def _lab_age_form(action):
     modes = "".join(
         '<option value="' + k + '"' + (' selected' if k == mode else '') +
         '>' + labels[k] + '</option>' for k in MODES)
-    state = 'AKTIV ANGEFORDERT' if v["compute_requested"] else 'SHADOW / AUS'
+    state = 'TESTRECHTE AKTIV ANGEFORDERT' if v["feature_test_requested"] else 'SHADOW / AUS'
     return ('<p id="lab-age-live" aria-live="polite"><strong>Offiziell Age ' +
             str(v["official_stage"]) + '</strong> · Labor-Age <strong>' + str(level) +
             '</strong> · ' + labels[mode] + ' · ' + state + ' · ' +
