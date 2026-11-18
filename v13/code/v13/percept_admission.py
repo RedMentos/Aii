@@ -25,7 +25,8 @@ class Admission:
     used_tokens_upper_bound: int
     status: str
 
-def admit(percepts: Iterable[Percept], token_budget: int, *, max_items: int = 12) -> Admission:
+def admit(percepts: Iterable[Percept], token_budget: int, *, max_items: int = 12,
+          now_ms: int | None = None, max_age_ms: int = 15000) -> Admission:
     """Fail closed on malformed/unauthorized data; deterministic stable ordering.
 
     Conservative UTF-8 byte upper bound avoids pretending to know the native
@@ -36,6 +37,10 @@ def admit(percepts: Iterable[Percept], token_budget: int, *, max_items: int = 12
         raise ValueError("token_budget must be a nonnegative integer")
     if not isinstance(max_items, int) or isinstance(max_items, bool) or max_items < 0:
         raise ValueError("max_items must be a nonnegative integer")
+    if now_ms is not None and (not isinstance(now_ms, int) or now_ms < 0):
+        raise ValueError("invalid now_ms")
+    if not isinstance(max_age_ms, int) or max_age_ms < 0:
+        raise ValueError("invalid max_age_ms")
     records = tuple(percepts)
     if len(records) > 4096:
         raise ValueError("too many percepts")
@@ -50,7 +55,8 @@ def admit(percepts: Iterable[Percept], token_budget: int, *, max_items: int = 12
         seen.add(p.source_id)
         if p.modality not in ("audio", "visual", "ui", "text") or not isinstance(p.start_ms, int) or not isinstance(p.end_ms, int) or p.start_ms < 0 or p.end_ms < p.start_ms or len(p.summary) > 4096:
             raise ValueError("invalid percept")
-        if not p.consent or not p.final:
+        if (not p.consent or not p.final or
+                (now_ms is not None and (p.end_ms > now_ms or now_ms - p.end_ms > max_age_ms))):
             omitted.append(p.source_id)
             continue
         valid.append(p)
