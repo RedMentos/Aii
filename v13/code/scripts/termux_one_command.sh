@@ -7,6 +7,8 @@ BRANCH="gpt6/v13-private-remote-bridge-20261111"
 SOURCE="https://github.com/RedMentos/Aii.git"
 ROOT="$HOME/.v13-agent-source"
 PRIVATE="$HOME/.v13-private"
+PRIVATE_ALREADY_EXISTS=0
+[[ ! -e "$PRIVATE" && ! -L "$PRIVATE" ]] || PRIVATE_ALREADY_EXISTS=1
 CONFIG="$PRIVATE/remote.json"
 RELAY="RedMentos/Aiiii"
 fail() { printf '\nV13 SETUP ERROR: %s\n' "$*" >&2; exit 1; }
@@ -326,13 +328,11 @@ elif [[ ! -e "$RUNTIME_ROOT" && ! -L "$RUNTIME_ROOT" ]]; then
 else
   fail "Runtime-Quellenpfad ist weder ein Git-Checkout noch frei"
 fi
-git -C "$RUNTIME_ROOT" sparse-checkout set --no-cone \
-  'v13/code/v13/' \
-  'v13/code/scripts/' \
-  'v13/code/specs/' \
-  'v13/code/docs/canon/' \
-  'v13/code/setup.sh' \
-  'v13/code/STARTEN.sh' || fail "Vollstaendiger Runtime-Sparse-Checkout fehlgeschlagen"
+python - "$RUNTIME_ROOT" <<'PY' || fail "Vollstaendiger Runtime-Sparse-Checkout fehlgeschlagen"
+import sys
+from v13.runtime_deploy import prepare_source
+prepare_source(sys.argv[1])
+PY
 [[ -s "$RUNTIME_ROOT/v13/code/v13/store.py" ]] || fail "V13 Runtime-Quellcode fehlt"
 [[ -s "$RUNTIME_ROOT/v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md" ]] || fail "Canon-Datei fehlt, Runtime nicht aktiviert"
 python -m v13.runtime_deploy --source "$RUNTIME_ROOT" || fail "V13 Runtime-Aktivierung fehlgeschlagen; alter Launcher bleibt erhalten"
@@ -379,11 +379,14 @@ PY
 # but respect any later explicit OFF choice in the click dashboard.
 if [[ ! -e "$PRIVATE/auto-update-setup-completed" ]]; then
   [[ ! -L "$PRIVATE/auto-source-update.enabled" ]] || fail "Unsicherer Auto-Update-Schalter"
-  printf 'yes\n' > "$PRIVATE/auto-source-update.enabled"
-  chmod 600 "$PRIVATE/auto-source-update.enabled"
+  if [[ "$PRIVATE_ALREADY_EXISTS" == 0 && ! -e "$PRIVATE/auto-source-update.enabled" ]]; then
+    python -c 'from v13.pipeline_agent import set_enabled; set_enabled(True)' || fail "Auto-Update-Einstellung nicht gespeichert"
+    printf 'Auto-Updates EIN: alle 15 Minuten, nur GitHub-CI-gruene Commits, mit kontrolliertem KI-Neustart.\n'
+  else
+    printf 'Vorhandene Auto-Update-Einstellung bleibt erhalten.\n'
+  fi
   printf 'configured\n' > "$PRIVATE/auto-update-setup-completed"
   chmod 600 "$PRIVATE/auto-update-setup-completed"
-  printf 'Auto-Updates EIN: alle 15 Minuten, nur GitHub-CI-gruene Commits, mit kontrolliertem KI-Neustart.\n'
 else
   printf 'Vorhandene Auto-Update-Einstellung bleibt erhalten.\n'
 fi

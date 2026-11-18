@@ -292,13 +292,19 @@ class LlamaRunner:
         # with explicit receipts before spending all compute on prefill.
         from . import native_prompt_admission as admission
         work=[dict(x) for x in messages];truncated=False
-        target=admission.soft_limit(self.role,self.cfg,deadline-time.monotonic())
         removed=[];initial_tokens=None
-        for _ in range(16):
+        # A normal history can contain 32 complete pairs. Every iteration is
+        # still bounded by the actual turn deadline and the overall step cap.
+        reduction_steps=min(80,max(16,len(work)//2+8))
+        for _ in range(reduction_steps):
             check(cancel,deadline)
             p=self._json("POST","/apply-template",{"messages":work,"add_generation_prompt":True,"chat_template_kwargs":{"enable_thinking":False}},deadline)["prompt"]  # Qwen3.5 B2: no hidden thinking; LFM ignores it
             tokens=self._json("POST","/tokenize",{"content":p,"add_special":True},deadline)["tokens"]
             count=len(tokens)
+            # Tokenization itself consumes the turn budget. Never report a
+            # stale admission based on the time available before the requests.
+            check(cancel,deadline)
+            target=admission.soft_limit(self.role,self.cfg,deadline-time.monotonic())
             if initial_tokens is None:initial_tokens=count
             fits_context=count+reserve+16<=self.cfg["context_tokens"]
             fits_clock=target is None or count<=target
@@ -310,9 +316,6 @@ class LlamaRunner:
             candidate=admission.reduce_once(work,self.role,self.cfg)
             if candidate:
                 work,kind=candidate;removed.append(kind);truncated=True
-                continue
-            if len(work)>2:
-                work.pop(1);removed.append('OLD_NATIVE_HISTORY');truncated=True
                 continue
             if fits_context:
                 # No unsafe clipping of current user text or source-bound
@@ -426,7 +429,7 @@ class LlamaRunner:
                     kill_process(self.proc)
                     with contextlib.suppress(Exception):conn.close()
                     return
-        watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None
+        watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None;native_stop=False
         try:
             conn.request("POST","/completion",wire_json(payload).encode(),{"Content-Type":"application/json","Authorization":"Bearer "+self.key});response=conn.getresponse()
             if response.status!=200:raise RuntimeError(f"Inferenz HTTP {response.status}: {response.read(200).decode(errors='replace')}")
@@ -446,10 +449,14 @@ class LlamaRunner:
                 if tokens%16==0:
                     rss=process_memory(self.proc.pid).get('rss_bytes')
                     if rss is not None:peak=rss if peak is None else max(peak,rss)
-                if data.get("stop"):
+                if data.get("stop") is True:
+                    native_stop=True
                     if self._audit_enabled:self._audit_completed=True
                     break
             check(cancel,deadline)
+            # A closed socket is not proof of a completed native generation.
+            if not native_stop:
+                raise Unavailable('Native stream ended without completion marker')
         except (OSError,http.client.HTTPException):
             check(cancel,deadline);self.unload();raise Unavailable("Native Inferenz unterbrochen")
         finally:

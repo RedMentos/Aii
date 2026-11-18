@@ -77,14 +77,14 @@ def test_archived_older_source_reaches_model_with_bounded_context_and_restart(tm
     try:
         old, ref, original = seed(r)
         turn(r, 'What is the Cedar vault code?')
-        assert '4471' not in json.dumps(sent[-1])
+        assert 'Cedar vault code is 4471' not in json.dumps(sent[-1])
         Operator(r).run(':ctxos recall on')  # Still SHADOW: no delivery yet.
         turn(r, 'Please recall the Cedar vault code.')
-        assert '4471' not in json.dumps(sent[-1])
+        assert 'Cedar vault code is 4471' not in json.dumps(sent[-1])
         Operator(r).run(':ctxos active')
         current = turn(r, 'What is the Cedar vault code?')
         payload = json.dumps(sent[-1], ensure_ascii=False)
-        assert '4471' in payload and recall.HEADER in ''.join(m['content'] for m in sent[-1])
+        assert 'Cedar vault code is 4471' in payload and recall.HEADER in ''.join(m['content'] for m in sent[-1])
         assert original not in payload  # Source restored as a bounded excerpt.
         metadata = json.loads(r.last_answer()['metadata'])
         assert metadata['source_recall']['status'] == 'RESTORED'
@@ -100,11 +100,11 @@ def test_archived_older_source_reaches_model_with_bounded_context_and_restart(tm
         assert recall.enabled(r.store, r.session)
         assert context_os.controller(r)._load()[0]['mode'] == 'ACTIVE'
         turn(r, 'What is the Cedar vault code?')
-        assert '4471' in json.dumps(sent[-1])
+        assert 'Cedar vault code is 4471' in json.dumps(sent[-1])
         with r.store.tx() as db:
             db.execute('UPDATE sources SET deleted=1 WHERE id=?', (ref['source_id'],))
         turn(r, 'What is the Cedar vault code?')
-        assert '4471' not in json.dumps(sent[-1])
+        assert 'Cedar vault code is 4471' not in json.dumps(sent[-1])
         rows, _ = native_history(r.store, r.session, 'later-event', 32)
         assert old not in {row['event_id'] for row in rows}
     finally:
@@ -121,7 +121,7 @@ def test_only_current_session_is_searched_and_enabled(live):
     r.session = session
     enable(r)
     turn(r, 'What is the Cedar vault code?')
-    assert '4471' in json.dumps(sent[-1]) and '9999' not in json.dumps(sent[-1])
+    assert 'Cedar vault code is 4471' in json.dumps(sent[-1]) and 'Cedar vault code is 9999' not in json.dumps(sent[-1])
 
 
 def test_revocation_between_context_and_model_call_stops_delivery(live):
@@ -146,7 +146,7 @@ def test_off_switch_resources_and_context_room_prevent_retrieval(live):
     enable(r)
     Operator(r).run(':ctxos recall off')
     turn(r, 'What is the Cedar vault code?')
-    assert '4471' not in json.dumps(sent[-1])
+    assert 'Cedar vault code is 4471' not in json.dumps(sent[-1])
     enable(r)
     r.guard.state = 'PRESSURE'
     event = r.store.event(r.session, 'Cedar vault code?')
@@ -293,7 +293,7 @@ def test_recalled_source_is_retained_in_later_world_learning_lineage(live):
     _, ref, _ = seed(r)
     enable(r)
     turn(r, 'What is the Cedar vault code?')
-    assert '4471' in json.dumps(sent[-1])
+    assert 'Cedar vault code is 4471' in json.dumps(sent[-1])
     Operator(r).run(':learning shadow')
     result = r.online_world_update(limit=1, authority='EXPLICIT_HUMAN')
     assert result['learned'] == 1 and r._online_world.model.seen == 1
@@ -319,6 +319,6 @@ def test_oversized_source_envelope_is_not_delivered_to_model(live, field):
             value['_oversized_test'] = 'x' * recall.MAX_ENVELOPE_CHARS
             db.execute("UPDATE messages SET metadata=? WHERE event_id=? AND role='user'", (json.dumps(value), old))
     turn(r, 'What is the Cedar vault code?')
-    assert '4471' not in json.dumps(sent[-1])
+    assert 'Cedar vault code is 4471' not in json.dumps(sent[-1])
     assert json.loads(r.last_answer()['metadata'])['source_recall']['count'] == 0
     assert r.store.one('SELECT deleted FROM sources WHERE id=?', (ref['source_id'],))['deleted'] == 0

@@ -8,6 +8,7 @@ no V13 runtime is active. All updates are opt-in and crash-safe.
 from __future__ import annotations
 
 import fcntl
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
@@ -46,6 +47,30 @@ def enabled():
         return False
 
 
+class AutoUpdateDisabled(Exception):
+    pass
+
+
+@contextmanager
+def _consent_lock():
+    _private()
+    path = PRIVATE / "auto-source-update.lock"
+    fd = os.open(path, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        yield
+    finally:
+        os.close(fd)
+
+
+@contextmanager
+def _auto_activation():
+    with _consent_lock():
+        if not enabled():
+            raise AutoUpdateDisabled()
+        yield
+
+
 def set_enabled(value):
     """One authority for auto-update consent: atomic, durable and idempotent.
 
@@ -55,7 +80,12 @@ def set_enabled(value):
     """
     if type(value) is not bool:
         raise ValueError("auto-update enabled must be a boolean")
-    _private()
+    with _consent_lock():
+        _write_enabled(value)
+    return value
+
+
+def _write_enabled(value):
     if ENABLED.is_symlink():
         raise RuntimeError("unsafe auto-update consent symlink")
     if value:
@@ -74,7 +104,6 @@ def set_enabled(value):
         ENABLED.unlink(missing_ok=True)
     if enabled() != value:
         raise RuntimeError("auto-update consent not persisted")
-    return value
 
 
 def _atomic(path, value):
@@ -122,9 +151,9 @@ def snapshot():
     allowed = {
         "last_result": {"NOT_YET_RUN", "AUTO_OFF", "UP_TO_DATE", "UPDATED", "CI_WAIT",
                         "BUSY", "BLOCKED_RUNNING", "PARTIAL", "ERROR", "CHECKING"},
-        "runtime": {"NOT_YET_CHECKED", "UP_TO_DATE", "UPDATED", "CI_WAIT",
+        "runtime": {"NOT_YET_CHECKED", "UP_TO_DATE", "UPDATED", "CI_WAIT", "AUTO_OFF",
                     "BLOCKED_RUNNING", "NOT_INSTALLED", "ERROR"},
-        "dashboard": {"NOT_YET_CHECKED", "UP_TO_DATE", "UPDATED", "CI_WAIT",
+        "dashboard": {"NOT_YET_CHECKED", "UP_TO_DATE", "UPDATED", "CI_WAIT", "AUTO_OFF",
                       "BLOCKED_RUNNING", "NOT_INSTALLED", "ERROR"},
         "last_error": {"NONE", "GITHUB", "CI", "GIT", "RUNNING", "UPDATE", "STATE"}
     }
@@ -210,7 +239,7 @@ def pending_updates(*, fetch=True):
     return result
 
 
-def _do_update(name, root, state, *, runtime_busy, tested_commits):
+def _do_update(name, root, state, *, runtime_busy, tested_commits, manual):
     probe, unavailable = _try_repo(root)
     if unavailable:
         state[name] = unavailable
@@ -238,6 +267,8 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits):
     if runtime_busy:
         state[name] = "BLOCKED_RUNNING"
         return
+    if not manual and not enabled():
+        raise AutoUpdateDisabled()
     if probe["status"] != "UP_TO_DATE":
         if name == "runtime":
             updated = updates.apply(root, expected_tip=commit)
@@ -249,7 +280,10 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits):
     if name == "runtime":
         # A Git checkout update is NOT a runtime update. Stage a complete
         # code snapshot, check source/Canon, and atomically switch bin/v13.
-        activated = runtime_deploy.deploy(root, ci_verified=True)["status"] == "DEPLOYED"
+        receipt = runtime_deploy.deploy(
+            root, ci_verified=True, expected_commit=commit,
+            activation_guard=None if manual else _auto_activation)
+        activated = receipt["status"] == "DEPLOYED"
     state[name] = "UPDATED" if updated["status"] == "UPDATED" or activated else "UP_TO_DATE"
     if state[name] == "UPDATED":
         state["updated_commit"] = commit
@@ -350,7 +384,7 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                         continue
                     if tested_commits[key]:
                         should_stop = True
-                if should_stop:
+                if should_stop and (manual or enabled()):
                     try:
                         was_running = lifecycle.request_stop(timeout=35,
                                                               runtime_active=updates._runtime_active)
@@ -362,7 +396,9 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                     continue
                 try:
                     _do_update(name, roots[name], state,
-                               runtime_busy=busy, tested_commits=tested_commits)
+                               runtime_busy=busy, tested_commits=tested_commits, manual=manual)
+                except AutoUpdateDisabled:
+                    state[name] = "AUTO_OFF"
                 except (OSError, ValueError, TimeoutError, updates.UpdateDenied,
                         runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired):
                     # A broken runtime install must not strand CHECKING or
@@ -378,6 +414,8 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
             elif "UPDATED" in values:
                 state["last_result"] = ("UPDATED" if values <= {"UPDATED", "UP_TO_DATE"}
                                         else "PARTIAL")
+            elif "AUTO_OFF" in values:
+                state["last_result"] = "AUTO_OFF"
             elif "CI_WAIT" in values:
                 state["last_result"] = "CI_WAIT"
             elif "BLOCKED_RUNNING" in values:

@@ -16,14 +16,11 @@ from __future__ import annotations
 import json
 import math
 from .prompts import text as prompt
+from .context_os import VOLATILE_HEAD
 
 REVISION = "v13.native-prompt-admission/1"
 # Ordered from redundant system state to progressively useful historical cues.
 REMOVABLE_C3 = ("task_context", "digest", "user_model")
-HEADINGS = ("memories", "hypotheses", "digest", "task_context", "user_model",
-            "clarify", "duplex_handoff")
-
-
 def soft_limit(role, cfg, remaining):
     """BOOT token cap: reserve output/decode time before full native prefill."""
     if role not in ("C3_LANGUAGE", "B1_DETAIL", "B2_GIST"):
@@ -48,29 +45,73 @@ def _remove_c3_layer(messages, cfg):
               prompt(cfg, "answer_rules"))
     if not system.startswith(stable):
         return None  # Unknown template: never cut a potentially pinned rule.
-    heads = {name: "\n" + prompt(cfg, name) for name in HEADINGS}
+    # With Context OS ACTIVE the volatile blocks can be a separate user
+    # message immediately before the current question. This is reference
+    # material, not an old chat turn; it can contain selected B1/B2 offers
+    # and exact tool output.
+    layers = [(0, len(stable))]
+    if (len(messages) >= 3 and messages[-1].get("role") == "user"
+            and messages[-2].get("role") == "user"
+            and isinstance(messages[-2].get("content"), str)
+            and messages[-2]["content"].startswith(VOLATILE_HEAD + "\n")):
+        layers.append((len(messages)-2, len(VOLATILE_HEAD)))
+
+    decoder = json.JSONDecoder()
     for name in REMOVABLE_C3:
-        head = heads[name]
-        start = system.find(head, len(stable))
-        if start < 0:
-            continue
-        end = len(system)
-        for other in heads.values():
-            if other == head:
+        head = "\n" + prompt(cfg, name)
+        for index, offset in layers:
+            content = messages[index]["content"]
+            start = content.find(head, offset)
+            if start < 0:
                 continue
-            pos = system.find(other, start+len(head))
-            if pos >= 0:
-                end = min(end, pos)
-        # Only remove complete, typed JSON layers. Unknown template sections
-        # or partially serialized JSON must remain untouched.
-        try:
-            json.loads(system[start+len(head):end].strip())
-        except (ValueError, TypeError):
-            continue
-        result = [dict(x) for x in messages]
-        result[0]["content"] = system[:start] + system[end:]
-        return result, "C3_LAYER_" + name.upper()
+            # Parse exactly one JSON value. Searching for another known
+            # heading as the end would also delete unknown sections and
+            # exact tool output following this layer.
+            value_start = start + len(head)
+            while value_start < len(content) and content[value_start] in " \t\r":
+                value_start += 1
+            try:
+                _, end = decoder.raw_decode(content, value_start)
+            except (ValueError, TypeError):
+                continue
+            tail = end
+            while tail < len(content) and content[tail] in " \t\r":
+                tail += 1
+            if tail < len(content) and content[tail] != "\n":
+                continue  # Ambiguous, incomplete framing: preserve it.
+            result = [dict(x) for x in messages]
+            result[index]["content"] = content[:start] + content[end:]
+            return result, "C3_LAYER_" + name.upper()
     return None
+
+
+def _remove_old_turn(messages):
+    """Drop one complete, recognizable old turn; keep the current input.
+
+    The append-only layout may include a reference block before each old
+    question and answer. Remove all three together or leave all three intact.
+    Unknown message order/fields are not assumed to be disposable history.
+    """
+    if (len(messages) < 4 or messages[0].get("role") != "system"
+            or messages[-1].get("role") != "user"):
+        return None
+    first, second = messages[1:3]
+    def simple(message, role):
+        return (type(message) is dict and set(message) == {"role", "content"}
+                and message["role"] == role and isinstance(message["content"], str))
+    if not simple(first, "user"):
+        return None
+    if first["content"].startswith(VOLATILE_HEAD):
+        if (len(messages) < 5 or not first["content"].startswith(VOLATILE_HEAD + "\n")
+                or not simple(second, "user") or not simple(messages[3], "assistant")):
+            return None
+        end = 4
+    elif simple(second, "assistant"):
+        end = 3
+    else:
+        return None
+    return ([dict(messages[0]), *[dict(x) for x in messages[end:]]],
+            "OLD_NATIVE_HISTORY")
 
 
 def _remove_body_metadata(messages):
@@ -215,15 +256,16 @@ def _remove_body_metadata(messages):
 
 def reduce_once(messages, role, cfg):
     """Return (new messages, exact omission reason) or None, no silent clipping."""
+    # Unknown message fields can carry semantics outside this admission
+    # contract. Preserve all content instead of guessing which part is optional.
+    if any(type(message) is not dict or set(message) != {"role", "content"}
+           for message in messages):
+        return None
     if role == "C3_LANGUAGE":
         candidate = _remove_c3_layer(messages, cfg)
         if candidate:
             return candidate
-        # Oldest dialogue is a lower priority than the current exact input
-        # and the current C4-selected body evidence.
-        if len(messages) > 2:
-            return ([dict(messages[0]), *[dict(x) for x in messages[2:]]],
-                    "OLD_NATIVE_HISTORY")
+        return _remove_old_turn(messages)
     elif role in ("B1_DETAIL", "B2_GIST"):
         return _remove_body_metadata(messages)
     return None
