@@ -14,6 +14,7 @@ INPUT_BLOBS = {
     "v13/effort.py": "e40e74aa279e96fbf25f6a72aac29510d779be58",
     "v13/executive.py": "057dda1e705053047489516fc9ab10581018f5a4",
     "v13/lab_age_runtime.py": "304a85a9ee8af1d800938db4cf20063d5e4251e4",
+    "v13/lab_age.py": "ac6ee1648138a4b3ecc7e00c3687e27dd8db",
 }
 AGE_CONTROLLER = b"""def controller(runtime):
     \"\"\"Runtime-scoped instance without touching runtime.py; reads the live config dict.\"\"\"
@@ -106,7 +107,50 @@ def apply_sources(code_dir, sources):
     operator=_replace(operator,b":age [freeze on|off|lower <n>|structural lock|unlock]",
         b":age [freeze on|off|lower <n>|structural lock|unlock] / :labage [status|0..10 [active|shadow|off]]",
         "help text")
+    # A selected laboratory stage now authorizes an *explicit* shadow
+    # learning job, without ever promoting learned weights or changing the
+    # owner's persisted RECORD_ONLY baseline. A thread-local overlay exists
+    # only during that job; ordinary turns and post-turn agents stay RECORD_ONLY.
+    operator=_replace(operator,
+        b"            r.enqueue('shadow',args[0] if args else 'route');return 'Isoliertes Training gestartet; keine automatische Aktivierung.'\\n".replace(b"\\\\n",b"\\n"),
+        b"            from .lab_age import effective_stage\\n"
+        b"            trial=effective_stage(r.home)\\n"
+        b"            job=('lab_shadow' if r.cfg['learning_mode']=='RECORD_ONLY' and trial is not None and trial>=2 else 'shadow')\\n"
+        b"            r.enqueue(job,args[0] if args else 'route')\\n"
+        b"            return ('Labor-Training SHADOW angefordert; keine Gewichtsaktivierung.' if job=='lab_shadow' else 'Isoliertes Training gestartet; keine automatische Aktivierung.')\\n",
+        "explicit learning job gate")
     out["v13/operator.py"]=operator
+    runtime=out.get("v13/runtime.py")
+    if type(runtime) is not bytes:
+        raise ValueError("Lab Age requires composed runtime source")
+    runtime=_replace(runtime,
+        b"from .config import initialize\\n",
+        b"from .config import initialize\\nfrom .lab_age import LabConfig\\n",
+        "thread-scoped lab learning config")
+    runtime=_replace(runtime,
+        b"self.home=home;self.cfg=initialize(home);self.store=Store(home,",
+        b"self.home=home;self.cfg=LabConfig(initialize(home),home);self.store=Store(home,",
+        "runtime owner learning mode remains stored unchanged")
+    start_marker=b"                elif kind=='shadow':\\n"
+    end_marker=b"                elif kind=='causal_import':"
+    if runtime.count(start_marker)!=1 or runtime.count(end_marker)!=1:
+        raise ValueError("Lab Age native shadow worker arm missing")
+    start=runtime.index(start_marker)
+    end=runtime.index(end_marker,start)
+    rows=runtime[start:end].splitlines(keepends=True)
+    if not rows or len(rows)<4 or any(
+            line.strip() and not line.startswith(b"                    ")
+            for line in rows[1:]):
+        raise ValueError("Lab Age shadow worker indentation changed")
+    body=b"".join((b"    "+line if line.strip() else line) for line in rows[1:])
+    runtime=(
+        runtime[:start]+
+        b"                elif kind in ('shadow','lab_shadow'):\\n"
+        b"                    from contextlib import nullcontext\\n"
+        b"                    trial=(self.cfg.shadow_training() if kind=='lab_shadow' else nullcontext())\\n"
+        b"                    with trial:\\n"
+        +body+runtime[end:])
+    out["v13/runtime.py"]=runtime
     ui=out.get("v13/ui.py")
     if type(ui) is not bytes:
         raise ValueError("Lab Age requires composed console source")
