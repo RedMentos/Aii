@@ -56,11 +56,24 @@ def canonical_packets(samples, sample_rate, source_ref, start_ms, *,
     """
     if not isinstance(consent_receipt, str) or not consent_receipt.strip():
         raise PermissionError("nonempty local consent receipt required")
+    if type(sample_rate) is not int or not 8000 <= sample_rate <= 48000:
+        raise ValueError("sample_rate 8000..48000 required")
     if not isinstance(samples, (list, tuple)) or not 0 < len(samples) <= 2 * sample_rate:
         raise ValueError("bounded RAW EAR samples required")
+    # A5 timestamps have millisecond precision. A tiny final fragment would
+    # round to zero duration; shift enough PCM into the tail to keep both
+    # packets representable, without dropping samples or exceeding 1 second.
+    split = min(len(samples), sample_rate)
+    if len(samples) > sample_rate:
+        min_tail = (sample_rate + 999) // 1000
+        if len(samples) - split < min_tail:
+            split = len(samples) - min_tail
+    offsets = [(0, split)]
+    if split < len(samples):
+        offsets.append((split, len(samples)))
     packets = []
-    for offset in range(0, len(samples), sample_rate):
-        segment = samples[offset:offset + sample_rate]
+    for offset, stop in offsets:
+        segment = samples[offset:stop]
         packet = canonical_packet(
             segment, sample_rate, source_ref,
             start_ms + 1000 * offset / sample_rate,
