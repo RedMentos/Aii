@@ -66,10 +66,22 @@ class OnlineWorld:
         retention_before=self.model.error(replay) if replay else None
         for row in new:
             x,a,y=self.encode(row)
-            self.model.observe(x,a,y)
             candidate=(self.processed+[row['action_id']])[-world_model.MAX_ROWS:]
-            # Commit weights, replay/RNG and T8 IDs together in one os.replace.
-            self.model.checkpoint(processed_ids=candidate)
+            try:
+                self.model.observe(x,a,y)
+                # Commit weights, replay/RNG and T8 IDs together in one os.replace.
+                self.model.checkpoint(processed_ids=candidate)
+            except Exception:
+                # A failed commit must not leave speculative live gradients or
+                # reservoir/RNG mutations available for a same-process retry.
+                if self.model.path.exists():
+                    self.model.restore()
+                    self.processed=list(self.model.processed_ids or [])
+                else:
+                    self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,
+                                               lr=self.model.lr,replay=self.model.cap)
+                    self.processed=[]
+                raise
             self.processed=candidate
         retention_after=self.model.error(replay) if replay else None
         return {'learned':len(new),'seen':self.model.seen,'tracked_ids':len(self.processed),
