@@ -81,7 +81,7 @@ class TwentyTurnCohort(unittest.TestCase):
                          "LOCAL_METADATA_COHORT_COMPLETE_DEVICE_REVIEW_REQUIRED")
         self.assertEqual(out["assistant_turns_scanned"], 20)
         self.assertEqual(out["native_c3_final_positive_token_turns"], 20)
-        self.assertEqual(out["both_body_selected_source_quote_receipt_turns"], 20)
+        self.assertEqual(out["both_body_selected_quoted_metadata_receipt_turns"], 20)
         self.assertEqual(out["both_body_native_template_http200_reported_turns"], 20)
         self.assertEqual(out["native_within_declared_deadline_turns"], 20)
         self.assertEqual(out["native_ttft_sampled_turns"], 20)
@@ -159,9 +159,22 @@ class TwentyTurnCohort(unittest.TestCase):
         self.seed(offers=False)
         out = check(self.db)
         self.assertEqual(out["native_c3_final_positive_token_turns"], 20)
-        self.assertEqual(out["both_body_selected_source_quote_receipt_turns"], 0)
+        self.assertEqual(out["both_body_selected_quoted_metadata_receipt_turns"], 0)
         self.assertEqual(out["both_body_native_template_http200_reported_turns"], 0)
-        self.assertEqual(out["body_roles"]["B1_DETAIL"]["selected_delivered"], 0)
+        self.assertEqual(out["body_roles"]["B1_DETAIL"]["selected_delivered_quoted_metadata"], 0)
+        self.assertEqual(out["local_status"], "NO_BOTH_BODY_SELECTED_QUOTED_RECEIPTS")
+
+    def test_c3_tokens_without_native_template_witness_cannot_reach_ready_status(self):
+        def missing(_, m):
+            m["runner"].pop("native_offer_prompt_receipt")
+            return m
+        self.seed(metadata=missing)
+        out = check(self.db)
+        self.assertEqual(out["both_body_selected_quoted_metadata_receipt_turns"], 20)
+        self.assertEqual(out["both_body_native_template_http200_reported_turns"], 0)
+        self.assertEqual(out["local_status"],
+                         "NO_BOTH_BODY_NATIVE_TEMPLATE_SUBMISSION_WITNESS")
+        self.assertFalse(out["release_approved"])
 
     def test_duplicate_event_ids_and_malformed_metadata_fail_closed(self):
         self.seed()
