@@ -44,16 +44,26 @@ remote = Path(sys.argv[1])
 fetch_trace = []
 def local_fetch(root, branch):
     ref = 'refs/remotes/origin/' + branch
-    before = u.git(root, 'rev-parse', ref)
-    bare_tip = u.git(remote, 'rev-parse', 'refs/heads/' + branch)
-    u.git(root, 'fetch', '--no-tags', str(remote),
-          'refs/heads/' + branch + ':' + ref, timeout=90)
-    fetched = u.git(root, 'rev-parse', 'FETCH_HEAD')
-    after = u.git(root, 'rev-parse', ref)
-    fetch_trace.append({'checkout': Path(root).name, 'old_tracking': before,
-                        'bare_tip': bare_tip,
-                        'fetch_head': fetched, 'new_tracking': after})
-    return after
+    audit = {'checkout': Path(root).name, 'stage': 'entry'}
+    fetch_trace.append(audit)
+    try:
+        before = u.git(root, 'rev-parse', ref)
+        audit.update(stage='read_before', old_tracking=before)
+        bare_tip = u.git(remote, 'rev-parse', 'refs/heads/' + branch)
+        audit.update(stage='bare_ref', bare_tip=bare_tip)
+        u.git(root, 'fetch', '--no-tags', str(remote),
+              'refs/heads/' + branch + ':' + ref, timeout=90)
+        audit['stage'] = 'fetched'
+        fetched = u.git(root, 'rev-parse', 'FETCH_HEAD')
+        after = u.git(root, 'rev-parse', ref)
+        audit.update(stage='complete', fetch_head=fetched, new_tracking=after)
+        return after
+    except Exception as exc:
+        audit['failure_class'] = type(exc).__name__
+        # Error messages from this closed synthetic test contain only the
+        # static Git subcommand and numeric status, never private inputs.
+        audit['failure_summary'] = str(exc)[:128]
+        raise
 
 # Only the remote transport, exact-SHA CI response and live stop are simulated.
 u._fetch = local_fetch
