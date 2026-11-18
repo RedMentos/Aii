@@ -141,14 +141,21 @@ def check(conn):
             record = turn["roles"][role]
             body_role_turns[role]["attempt"] += int(record["native_attempts"] > 0)
             body_role_turns[role]["selected_delivered_quoted_metadata"] += int(
-                record["selected_quoted_receipts"] > 0 and c3_done)
+                record["native_attempts"] > 0
+                and record["selected_quoted_receipts"] > 0 and c3_done)
             body_role_turns[role]["rendered_http200_reported"] += int(
-                record.get("native_template_http200_submitted") is True and c3_done)
-        native_http200 += int(
-            c3_done and len(turn["native_template_http200_submitted_roles"]) == 2)
-        quoted_c4 += int(
-            c3_done and all(turn["roles"][role]["selected_quoted_receipts"] > 0
+                record["native_attempts"] > 0
+                and record.get("native_template_http200_submitted") is True and c3_done)
+        # A packet/receipt without a logged B-model attempt does NOT establish
+        # the actual B1/B2 contribution, even when C3 accepted a prompt.
+        both_attempted_quoted = bool(
+            c3_done and all(turn["roles"][role]["native_attempts"] > 0
+                            and turn["roles"][role]["selected_quoted_receipts"] > 0
                             for role in ROLES))
+        quoted_c4 += int(both_attempted_quoted)
+        native_http200 += int(
+            both_attempted_quoted
+            and len(turn["native_template_http200_submitted_roles"]) == 2)
 
     if not count:
         local_status = "NO_ASSISTANT_EVENTS_IN_LATEST_SESSION"
