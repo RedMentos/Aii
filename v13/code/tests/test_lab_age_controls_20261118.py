@@ -25,42 +25,101 @@ from v13.store import Store
 
 
 class LabOperatorEndToEnd(unittest.TestCase):
-    def test_command_changes_real_next_turn_effort_not_official_age(self):
+    def test_x10_grants_actual_test_rights_but_not_earned_age_or_compute(self):
+        from v13.lab_age_runtime import LaboratoryAgeControl
+        from v13.age import AgeControl
+        from v13.agi.tools import ToolRegistry
         with tempfile.TemporaryDirectory() as dirname:
             home = Path(dirname)
             cfg = initialize(home)
             store = Store(home)
             try:
-                fake = SimpleNamespace(home=home, cfg=cfg, store=store)
-                operator = Operator(fake)
-                # A bare level is an explicit request to test this level,
-                # not silently "shadow", even following a prior shadow choice.
-                shadow = json.loads(operator.run(":labage 8 shadow"))
-                self.assertEqual(shadow["stage"], 8)
-                self.assertEqual(shadow["mode"], "shadow")
-                self.assertEqual(effort.age_limits(fake.age)["focal_depth"], 1)
-                changed = json.loads(operator.run(":labage 8"))
-                self.assertTrue(changed["config_persisted"])
-                self.assertEqual(changed["stage"], 8)
-                self.assertEqual(changed["mode"], "active")
-                limits = effort.age_limits(fake.age, "GREEN")
-                self.assertTrue(limits["lab_compute_active"])
-                self.assertEqual(limits["lab_stage"], 8)
-                self.assertEqual(limits["focal_depth"], 3)
-                self.assertEqual(limits["lab_compute_gate"], "APPLIED")
-                self.assertEqual(limits["stage"], 0)
-                self.assertFalse(fake.age.may("simple_tool_choice"))
-                self.assertEqual(cfg["learning_mode"], "RECORD_ONLY")
-                snapshot = json.loads(operator.run(":age"))
-                self.assertEqual(snapshot["official"]["system_stage"], 0)
-                self.assertEqual(snapshot["laboratory"]["stage"], 8)
-                self.assertEqual(snapshot["laboratory"]["mode"], "active")
-                with self.assertRaises(ValueError):
-                    operator.run(":labage 11")
-                self.assertEqual(lab_age.read(home)["stage"], 8)
+                earned = AgeControl(store, cfg)
+                lab = LaboratoryAgeControl(store, cfg)
+                self.assertEqual(lab.system_stage(), 0)
+                self.assertFalse(earned.may("simple_tool_choice"))
+                self.assertTrue(lab.may("simple_tool_choice"))
+                self.assertTrue(lab.may("tool_learning"))
+                self.assertTrue(lab.may("active_info_search"))
+                self.assertFalse(lab.may("body_swap"))  # structural lock
+                self.assertFalse(lab.may("edit_hard_rules"))
+                self.assertFalse(lab.may("simple_tool_choice", hard_rule_block=True))
+                self.assertFalse(lab.may("simple_tool_choice", user_permissions=set()))
+                self.assertFalse(lab.may("tool_learning", resource_mode="RED"))
+                self.assertEqual(lab.budgets("system")["focal_depth"],
+                                 earned.budgets("system")["focal_depth"])
+                self.assertTrue(lab.view()["laboratory"]["feature_gates_live"])
+                self.assertEqual(lab.view()["system_stage"], 0)
+                registry = ToolRegistry(store, age=lab)
+                registry.enable("calc")
+                executed = registry.call("calc", {"expression": "2+3"}, origin="SYSTEM")
+                self.assertEqual(executed["status"], "EXECUTED")
+                self.assertEqual(executed["result"], 5)
+                lab_age.save(home, stage=10, mode="shadow")
+                self.assertFalse(lab.may("simple_tool_choice"))
+                self.assertEqual(lab_age.effective_stage(home), None)
+                lab_age.save(home, stage=10, mode="active")
+                self.assertTrue(lab.may("simple_tool_choice"))
+                lab_age.save(home, stage=0, mode="active")
+                self.assertFalse(lab.may("simple_tool_choice"))
+                self.assertEqual(lab.simulated_stage(), None)
             finally:
                 store.close()
 
+    def test_explicit_worker_shadow_training_never_mutates_persisted_learning(self):
+        from v13.lab_age import LabConfig
+        import threading
+        with tempfile.TemporaryDirectory() as dirname:
+            home = Path(dirname)
+            cfg = initialize(home)
+            live = LabConfig(cfg, home)
+            self.assertEqual(live["learning_mode"], "RECORD_ONLY")
+            seen = []
+            with live.shadow_training():
+                self.assertEqual(live["learning_mode"], "SHADOW_UPDATE")
+                self.assertEqual(live.get("learning_mode"), "SHADOW_UPDATE")
+                worker = threading.Thread(target=lambda: seen.append(live["learning_mode"]))
+                worker.start()
+                worker.join(2)
+                self.assertEqual(seen, ["RECORD_ONLY"])
+            self.assertEqual(live["learning_mode"], "RECORD_ONLY")
+            self.assertEqual(live.get("learning_mode"), "RECORD_ONLY")
+            self.assertEqual(json.loads((home/"config/settings.json").read_text())["learning_mode"],
+                             "RECORD_ONLY")
+            lab_age.save(home, stage=10, mode="off")
+            with self.assertRaises(ValueError):
+                with live.shadow_training():
+                    pass
+            lab_age.save(home, stage=1, mode="active")
+            with self.assertRaises(ValueError):
+                with live.shadow_training():
+                    pass
+
+    def test_source_pinned_integrated_stage_really_contains_age_and_learning_hooks(self):
+        import importlib.util
+        from v13.lab_age_runtime import LaboratoryAgeControl
+        code = Path(__file__).resolve().parents[1]
+        spec = importlib.util.spec_from_file_location(
+            "v13_lab_stage_test", code/"scripts/stage_integrated_candidate.py")
+        stage_mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(stage_mod)
+        with tempfile.TemporaryDirectory(prefix="v13-age-stage-") as tmp:
+            staged = Path(tmp)/"staged"
+            manifest = stage_mod.stage(code, staged)
+            self.assertIn("v13/runtime.py", manifest["replaced_files"])
+            self.assertIn("v13/operator.py", manifest["replaced_files"])
+            text_runtime = (staged/"v13/runtime.py").read_text()
+            text_operator = (staged/"v13/operator.py").read_text()
+            text_age = (staged/"v13/age.py").read_text()
+            self.assertIn("LabConfig(initialize(home),home)", text_runtime)
+            self.assertIn("kind in ('shadow','lab_shadow')", text_runtime)
+            self.assertIn("self.cfg.shadow_training()", text_runtime)
+            self.assertIn("r.enqueue(job,args[0]", text_operator)
+            self.assertIn("LaboratoryAgeControl", text_age)
+            self.assertNotIn("lab_shadow", (code/"v13/runtime.py").read_text())
+            self.assertNotIn("LabConfig(initialize", (code/"v13/runtime.py").read_text())
+            for file in ("v13/age.py","v13/runtime.py","v13/operator.py","v13/ui.py"):
+                compile((staged/file).read_bytes(), str(staged/file), "exec")
 
 class BrowserLabAgeEndToEnd(unittest.TestCase):
     def test_real_webview_stage_apply_readback_status_and_invalid_requests(self):
