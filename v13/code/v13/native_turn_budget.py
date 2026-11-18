@@ -41,7 +41,8 @@ def zero_token_prefill_failure(row):
     native = data.get("runner")
     return (isinstance(native, dict)
             and native.get("role") == "C3_LANGUAGE"
-            and native.get("generated_tokens") == 0
+            and type(native.get("generated_tokens")) is int
+            and native["generated_tokens"] == 0
             and native.get("last_phase") in {"load", "template", "prefill"})
 
 
