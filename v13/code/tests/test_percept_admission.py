@@ -21,6 +21,32 @@ class AdmissionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             admit([p()], 1000, max_age_ms=-1)
 
+    def test_reject_coerced_consent_and_finality(self):
+        for field in ("consent", "final"):
+            for value in (1, "yes", None):
+                fields = dict(source_id="s", modality="audio", start_ms=10, end_ms=20,
+                              summary="noise", consent=True, final=True)
+                fields[field] = value
+                with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                    admit([Percept(**fields)], 1000)
+
+    def test_reject_malformed_fields_before_sort_or_encoding(self):
+        changes = (
+            {"source_id": 7}, {"modality": None}, {"start_ms": True},
+            {"end_ms": False}, {"summary": None}, {"priority": "high"},
+        )
+        for change in changes:
+            fields = dict(source_id="s", modality="audio", start_ms=10, end_ms=20,
+                          summary="noise", consent=True, final=True)
+            fields.update(change)
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                admit([Percept(**fields)], 1000)
+
+    def test_reject_boolean_clock_and_age(self):
+        for kwargs in ({"now_ms": True}, {"max_age_ms": False}):
+            with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
+                admit([p()], 1000, **kwargs)
+
     def test_budget_and_provenance(self):
         a = admit([p("first", summary="x"*80), p("second", priority=2)], 50)
         self.assertEqual([x.source_id for x in a.selected], ["second"])
