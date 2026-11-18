@@ -96,3 +96,8 @@ class OnlineWorld:
         if s.shape!=(4,) or not np.isfinite(s).all():raise ValueError('Invalid state')
         x=np.concatenate((s,np.zeros(3)))
         return self.model.predict(x,world_model.ACTIONS.index(action))[4:].tolist()
+
+    def benchmark(self,limit=512):
+        """Read-only, disjoint T8 learning utility audit; never trains live weights."""
+        from .t8_learning_audit import benchmark
+        return benchmark(self,limit=limit)
