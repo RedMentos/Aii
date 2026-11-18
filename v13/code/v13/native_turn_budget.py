@@ -54,7 +54,26 @@ def recent_proof(store):
             "WHERE role='assistant' AND status IN ('FINAL','DEADLINE','ERROR','CANCELLED') "
             "ORDER BY id DESC LIMIT ?",
             (MAX_RECENT,))
-        return [{"status":r["status"], "metadata":r["metadata"]} for r in rows]
+        # Message metadata can also contain prompts or private diagnostic fields.
+        # The budget governor needs only native phase/token proof; never return
+        # arbitrary metadata to its caller or future telemetry consumers.
+        proof = []
+        for r in rows:
+            raw = r["metadata"]
+            if isinstance(raw, str):
+                try:
+                    raw = json.loads(raw)
+                except (ValueError, TypeError):
+                    raw = None
+            native = raw.get("runner") if isinstance(raw, dict) else None
+            if not isinstance(native, dict):
+                native = {}
+            proof.append({"status": r["status"], "metadata": {
+                "runner": {key: native[key] for key in
+                           ("role", "generated_tokens", "last_phase")
+                           if key in native}
+            }})
+        return proof
     except (OSError, ValueError, RuntimeError):
         return []
 
