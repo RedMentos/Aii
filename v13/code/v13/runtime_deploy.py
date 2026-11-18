@@ -557,10 +557,13 @@ def _launcher_bytes(code, home):
     if sys.version_info >= (3, 11):
         command = shlex.quote(python) + " -P -m v13 --home "
     else:
-        bootstrap = ("import sys; sys.path[0] = sys.argv.pop(1); "
+        # Keep the launcher path in the OS command line for the update/stop
+        # checks, then remove it from the arguments presented to V13.
+        bootstrap = ("import sys; sys.argv.pop(1); sys.path[0] = sys.argv.pop(1); "
                      "import site; site.main(); import runpy; "
                      "runpy.run_module('v13', run_name='__main__', alter_sys=True)")
         command = (shlex.quote(python) + " -S -B -c " + shlex.quote(bootstrap)
+                   + " " + shlex.quote(str(home / "bin/v13"))
                    + " " + shlex.quote(str(code)) + " --home ")
     return ("#!/data/data/com.termux/files/usr/bin/bash\n"
             "set -e\n"

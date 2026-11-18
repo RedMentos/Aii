@@ -144,9 +144,11 @@ class RuntimeDeploymentTests(unittest.TestCase):
         verified.mkdir(parents=True)
         (verified / "__init__.py").write_text("")
         (verified / "__main__.py").write_text(
-            "import json, os, sys\n"
+            "import json, os, sys\nfrom pathlib import Path\n"
+            "proc = Path('/proc/self/cmdline')\n"
+            "os_args = [os.fsdecode(arg) for arg in proc.read_bytes().split(bytes(1))] if proc.is_file() else None\n"
             "print(json.dumps({'package': 'verified', 'cwd': os.getcwd(), "
-            "'args': sys.argv[1:]}))\n")
+            "'args': sys.argv[1:], 'os_args': os_args}))\n")
         foreign = self.root / "foreign working directory"
         (foreign / "v13").mkdir(parents=True)
         (foreign / "v13" / "__init__.py").write_text("")
@@ -166,6 +168,8 @@ class RuntimeDeploymentTests(unittest.TestCase):
                 self.assertEqual(payload["cwd"], str(foreign))
                 self.assertEqual(payload["args"], ["--home", str(self.home),
                                                      "restore", "relative backup.zip"])
+                if version == (3, 10) and payload["os_args"] is not None:
+                    self.assertIn(str(self.launcher), payload["os_args"])
                 self.assertFalse((foreign / "sitecustomize-ran").exists())
 
     def test_current_commit_raw_profile_is_migrated(self):

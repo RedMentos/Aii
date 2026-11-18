@@ -5,6 +5,36 @@ Coordinator integration PR: https://github.com/RedMentos/Aii/pull/1991
 Base release as last checked: `5d9a86176edb45565af482644ee80dbd622d5614`.
 Implementation baseline described below: `843fa42d18c4cb4bbaa3b498db0ed07e216fc192`.
 
+## Integration checkpoint, 2026-11-18
+
+The latest reviewed phone release in the shared tree is `cbe1af5`.
+The combined head `68af42468078e288f9d7ff882e3460ada798f98d` passed the
+focused suite (141 tests, 36 subtests), the staged suite (214 tests, 47 subtests),
+and the integrated organ/memory suite (415 tests, 58 subtests). The privacy
+scan was CLEAN. See [staged and integrated CI](https://github.com/RedMentos/Aii/actions/runs/44236947639).
+
+- The migration work from `022a303` is now integrated and exercised from two
+  sparse phone checkouts. Git and the stage build are real. Network transport,
+  CI reply, relay reload and the device process stop are simulated.
+- PRs #2014 and #2039 contributed verified commit-blob export and launcher
+  package isolation. The installer also takes the exact CI-approved SHA from
+  the updater and rechecks auto consent at runtime activation. The Python
+  fallback retains its launcher path in the process arguments for stop checks.
+- The controller candidate `b42502e` provided guards for FastForward, JEFBridge,
+  C5/ActionLearn, Attention, Deliberation, Callosum and workspace updates. The
+  shared branch fixes JEF observation selection and binds the resulting
+  ActionLearn to the staged semantic consumers. Tests exercise dynamic mode
+  changes and continued feedback recording in RECORD_ONLY.
+
+Remaining release evidence includes real Android launcher/update performance,
+20 native turns with usable B1/B2 offers, and the existing latent-utility
+gates. An old manual update with auto-update OFF can require a fresh manual
+request after reload. The dashboard source merge has its own consent timing
+window. Controller state separation for SHADOW_UPDATE and ACTIVE is open
+when a controller has been enabled explicitly. Keep
+`canonical_architecture_complete` and `user_full_scope_complete` false.
+The entries below describe the original checkpoint and its review.
+
 ## Coordination
 
 One coordinator owns the shared integration branch. Contributors work on separate
