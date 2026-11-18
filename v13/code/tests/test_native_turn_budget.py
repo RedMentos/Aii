@@ -109,10 +109,30 @@ class NativeTurnBudgetTests(unittest.TestCase):
         rows=[{"status":"DEADLINE","metadata":"{}","text":"PRIVATE NEVER EXPORT"}]
         store=DummyStore(rows)
         result=budget.recent_proof(store)
-        self.assertEqual(result,[{"status":"DEADLINE","metadata":"{}"}])
+        self.assertEqual(result,[{"status":"DEADLINE","metadata":{"runner":{}}}])
         self.assertNotIn("text",store.query.lower())
         self.assertNotIn("PRIVATE",json.dumps(result))
         self.assertEqual(store.args,(budget.MAX_RECENT,))
+
+    def test_recovery_proof_strips_private_metadata_and_preserves_native_counters(self):
+        secret="PRIVATE PROMPT MUST NOT LEAVE PROOF"
+        rows=[{"status":"DEADLINE","metadata":json.dumps({
+            "runner":{"role":"C3_LANGUAGE","generated_tokens":0,
+                      "last_phase":"prefill","raw_prompt":secret,
+                      "model_path":"/private/device/path"},
+            "raw_user_prompt":secret,"diagnostics":{"secret":secret}})}]
+        result=budget.recent_proof(DummyStore(rows))
+        self.assertNotIn(secret,json.dumps(result))
+        self.assertNotIn("model_path",json.dumps(result))
+        self.assertTrue(budget.zero_token_prefill_failure(result[0]))
+        self.assertEqual(result[0]["metadata"]["runner"],{
+            "role":"C3_LANGUAGE","generated_tokens":0,"last_phase":"prefill"})
+
+    def test_recovery_proof_fails_closed_on_malformed_metadata(self):
+        rows=[{"status":"DEADLINE","metadata":"not json"}]
+        result=budget.recent_proof(DummyStore(rows))
+        self.assertFalse(budget.zero_token_prefill_failure(result[0]))
+        self.assertEqual(result[0]["metadata"],{"runner":{}})
 
     def test_real_cognition_preanswer_is_deferred_but_postcommit_remains(self):
         class LocalStore(DummyStore):
