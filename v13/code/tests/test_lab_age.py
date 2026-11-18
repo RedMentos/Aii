@@ -24,26 +24,29 @@ class LabAgeTests(unittest.TestCase):
         v = lab_age.view(self.home, official_stage=self.age.system_stage())
         self.assertEqual(v["stage"], 10)
         self.assertEqual(v["mode"], "active")
-        self.assertTrue(v["compute_requested"])
+        self.assertTrue(v["feature_test_requested"])
+        self.assertFalse(v["compute_requested"])
         self.assertFalse(v["config_persisted"])
         self.assertTrue(v["test_only"])
         self.assertEqual(self.age.view()["system_stage"], 0)
         current = effort.age_limits(self.age)
         self.assertEqual(current["stage"], 0)
-        # A healthy GREEN device uses the user's requested test budget.
-        self.assertEqual(current["focal_depth"], 3)
-        self.assertEqual(current["autonomous_effort_max"], "max")
-        self.assertTrue(current["lab_compute_active"])
-        self.assertEqual(current["lab_compute_gate"], "APPLIED")
+        # The laboratory selector never scales CPU/effort budgets.
+        self.assertEqual(current["focal_depth"], 1)
+        self.assertEqual(current["autonomous_effort_max"], "low")
+        self.assertTrue(current["lab_feature_test_requested"])
+        self.assertFalse(current["lab_compute_active"])
+        self.assertEqual(current["lab_compute_gate"], "NOT_A_COMPUTE_SETTING")
 
-    def test_active_level_ten_increases_compute_not_tool_rights(self):
+    def test_active_level_ten_does_not_change_compute_or_earned_permissions(self):
         lab_age.save(self.home, mode="active", stage=10)
         limits = effort.age_limits(self.age)
         self.assertEqual(limits["stage"], 0)
         self.assertEqual(limits["lab_stage"], 10)
-        self.assertTrue(limits["lab_compute_active"])
-        self.assertEqual(limits["autonomous_effort_max"], "max")
-        self.assertEqual(limits["focal_depth"], 3)
+        self.assertTrue(limits["lab_feature_test_requested"])
+        self.assertFalse(limits["lab_compute_active"])
+        self.assertEqual(limits["autonomous_effort_max"], "low")
+        self.assertEqual(limits["focal_depth"], 1)
         self.assertFalse(limits["tools"])
         self.assertFalse(limits["deliberation"])
         self.assertFalse(self.age.may("simple_tool_choice"))
@@ -54,7 +57,7 @@ class LabAgeTests(unittest.TestCase):
         plan = effort.decide("max", hard, age=limits, cfg={"max_reentry":2,"focal_slots":4})
         self.assertEqual(plan["age_stage"], 0)
         self.assertEqual(plan["lab_stage"], 10)
-        self.assertEqual(plan["focal_cycles"], 3)
+        self.assertLessEqual(plan["focal_cycles"], 1)
         self.assertFalse(plan["verify"])
         self.assertEqual(plan["tool_steps"], 0)
 
@@ -68,11 +71,12 @@ class LabAgeTests(unittest.TestCase):
         lab_age.save(self.home, mode="active", stage=0)
         self.assertFalse(effort.age_limits(self.age)["lab_compute_active"])
 
-    def test_resource_guard_still_blocks_extra_compute(self):
+    def test_resource_guard_does_not_change_lab_feature_selection(self):
         lab_age.save(self.home, mode="active", stage=10)
         observed = effort.age_limits(self.age, "CRITICAL")
         self.assertFalse(observed["lab_compute_active"])
-        self.assertEqual(observed["lab_compute_gate"], "BLOCKED_RESOURCE")
+        self.assertEqual(observed["lab_compute_gate"], "NOT_A_COMPUTE_SETTING")
+        self.assertTrue(observed["lab_feature_test_requested"])
         self.assertEqual(observed["focal_depth"], 1)
         self.assertEqual(observed["autonomous_effort_max"], "low")
 
@@ -107,7 +111,8 @@ class LabAgeTests(unittest.TestCase):
                 self.assertEqual(green["lab_stage"], level)
                 self.assertEqual(red["lab_stage"], level)
                 self.assertEqual(red["stage"], 0)
-                self.assertEqual(green["lab_compute_active"], level > 0)
+                self.assertFalse(green["lab_compute_active"])
+                self.assertEqual(green["lab_feature_test_requested"], level > 0)
                 self.assertFalse(red["lab_compute_active"])
                 self.assertFalse(self.age.may("simple_tool_choice"))
                 self.assertFalse(self.age.may("body_swap"))
