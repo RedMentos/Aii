@@ -97,7 +97,8 @@ def inspect(messages, rendered_prompt, hypothesis_heading):
                     or type(ref.get("sha256")) is not str
                     or re.fullmatch(r"[0-9a-f]{64}", ref["sha256"]) is None
                     or not 1 <= len(ref["source_id"]) <= 256
-                    or quote.get("verification") != "EXACT_SOURCE_SUBSTRING_ONLY"
+                    or quote.get("verification") not in ("EXACT_SOURCE_SUBSTRING_ONLY",
+                                                         "EXACT_SOURCE_SENTENCES_POINTED_BY_QUOTE")
                     or type(ref.get("char_start")) is not int
                     or type(ref.get("char_end")) is not int
                     or ref["char_start"] < 0 or ref["char_end"] <= ref["char_start"]
