@@ -43,28 +43,33 @@ from v13 import runtime_deploy as d
 remote = Path(sys.argv[1])
 fetch_trace = []
 def local_fetch(root, branch):
+    # The fake network transport must populate the actual local Git objects
+    # and move the tracking ref to the *advertised* local bare tip. The remote
+    # and commit object are real, only GitHub networking and CI are mocked.
     ref = 'refs/remotes/origin/' + branch
     audit = {'checkout': Path(root).name, 'stage': 'entry'}
     fetch_trace.append(audit)
     try:
         before = u.git(root, 'rev-parse', ref)
-        audit.update(stage='read_before', old_tracking=before)
         bare_tip = u.git(remote, 'rev-parse', 'refs/heads/' + branch)
-        audit.update(stage='bare_ref', bare_tip=bare_tip)
+        audit.update(stage='read_bare', old_tracking=before, bare_tip=bare_tip)
         u.git(root, 'fetch', '--no-tags', str(remote),
-              'refs/heads/' + branch + ':' + ref, timeout=90)
-        audit['stage'] = 'fetched'
-        fetched = u.git(root, 'rev-parse', 'FETCH_HEAD')
+              'refs/heads/' + branch, timeout=90)
+        # Never claim a tip was fetched until the exact commit object exists
+        # and the expected tracking reference atomically advances.
+        u.git(root, 'cat-file', '-e', bare_tip + '^{commit}')
+        if bare_tip != before:
+            u.git(root, 'merge-base', '--is-ancestor', before, bare_tip)
+            u.git(root, 'update-ref', ref, bare_tip, before)
         after = u.git(root, 'rev-parse', ref)
-        audit.update(stage='complete', fetch_head=fetched, new_tracking=after)
+        if after != bare_tip:
+            raise u.UpdateDenied('Local remote ref did not advance to fetched commit')
+        audit.update(stage='complete', new_tracking=after)
         return after
     except Exception as exc:
         audit['failure_class'] = type(exc).__name__
-        # Error messages from this closed synthetic test contain only the
-        # static Git subcommand and numeric status, never private inputs.
         audit['failure_summary'] = str(exc)[:128]
         raise
-
 # Only the remote transport, exact-SHA CI response and live stop are simulated.
 u._fetch = local_fetch
 u.ci_passed = lambda commit, scope='runtime': True
