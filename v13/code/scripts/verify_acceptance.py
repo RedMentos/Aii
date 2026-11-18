@@ -21,6 +21,10 @@ FULL_ONLY={'step12','body-state','second-attempt','cancel-restart'}
 
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
+def regular_artifact(path):
+    """Do not follow artifact symlinks outside the evidence directory."""
+    return path.is_file() and not path.is_symlink()
+
 def harness_hashes(app):
     app=Path(app);files=[]
     for directory in ('scripts','tests','specs'):
@@ -29,7 +33,10 @@ def harness_hashes(app):
     return {str(p.relative_to(app)):sha(p) for p in sorted(files)}
 
 def verify(report_path,app,quick=False,compare_c3=False):
-    report_path=Path(report_path);app=Path(app);report=json.loads(report_path.read_text());errors=[]
+    report_path=Path(report_path);app=Path(app)
+    if not regular_artifact(report_path):
+        raise ValueError('Collector report missing or symlinked')
+    report=json.loads(report_path.read_text());errors=[]
     expected=set(STATUSES)-({'c3-comparison'} if not compare_c3 else set())-(FULL_ONLY if quick else set())
     rows=report.get('stages',[]);names=[r.get('name') for r in rows]
     if report.get('status')!='IMPLEMENTED_PATHS_PASS':errors.append('Collector did not complete successfully')
@@ -44,17 +51,17 @@ def verify(report_path,app,quick=False,compare_c3=False):
         if name not in STATUSES:continue
         # Sibling artifacts remain verifiable after moving a checkpoint.
         artifact=report_path.parent/(name+'.json')
-        if not artifact.is_file():errors.append('Missing stage artifact: '+name);continue
+        if not regular_artifact(artifact):errors.append('Missing or linked stage artifact: '+name);continue
         digest=sha(artifact);artifacts.append({'stage':name,'file':artifact.name,'sha256':digest})
         if digest!=row.get('artifact_sha256'):errors.append('Stage artifact hash mismatch: '+name)
         if row.get('status')!='PASS' or row.get('exit_code')!=0 or row.get('observed_status')!=STATUSES[name]:errors.append('Stage did not pass: '+name)
         data=json.loads(artifact.read_text())
         if name=='memory-retrieval':
             native=data.get('native_feature_artifact',{});native_path=report_path.parent/(name+'.features.json.gz')
-            if not native_path.is_file() or native.get('sha256')!=sha(native_path):errors.append('Missing or changed actual native memory features')
+            if not regular_artifact(native_path) or native.get('sha256')!=sha(native_path):errors.append('Missing or changed actual native memory features')
         if name=='output-adapter':
             native=data.get('feature_artifact',{});native_path=report_path.parent/(name+'.features.json.gz')
-            if not native_path.is_file() or native.get('sha256')!=sha(native_path):errors.append('Missing or changed actual native output features')
+            if not regular_artifact(native_path) or native.get('sha256')!=sha(native_path):errors.append('Missing or changed actual native output features')
         actual=data.get('proof_status') if name=='learning' else data.get('all_passed') if name=='cancel-restart' else data.get('status')
         if actual!=STATUSES[name]:errors.append('Stage artifact status mismatch: '+name)
         if 'source_hashes' in data and data['source_hashes']!=current:errors.append('Stage source hashes differ: '+name)
