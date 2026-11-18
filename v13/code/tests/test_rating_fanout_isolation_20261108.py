@@ -9,6 +9,7 @@ import unittest
 
 from v13 import actionlearn, callosum, deliberation, inputs, jefbridge
 from v13.agi import live
+from v13.operator import Operator
 from v13.runtime import Runtime
 
 
@@ -26,7 +27,10 @@ class RatingFanoutIsolation(unittest.TestCase):
         self.runtime.pool.get = Mock(return_value=SimpleNamespace(
             role='C3_LANGUAGE', last_metrics={}, generate=generate))
         self.runtime.learner.output_delta = Mock(return_value=None)
-        self.runtime.submit('A question')
+        self.submit_and_wait('A question')
+
+    def submit_and_wait(self, question):
+        self.runtime.submit(question)
         until = time.monotonic() + 10
         while not self.runtime.idle() and time.monotonic() < until:
             time.sleep(.005)
@@ -66,6 +70,8 @@ class RatingFanoutIsolation(unittest.TestCase):
                     (error_kind[failed], self.event_id)))
 
     def test_real_c5_receives_feedback_when_jef_hook_fails_and_survives_restart(self):
+        self.assertIn('SHADOW_UPDATE', Operator(self.runtime).run(':learning shadow'))
+        self.submit_and_wait('A separate question with learning enabled')
         learner = actionlearn.C5Learning(self.runtime.store)
         before = learner.report()['actions']
         key = next(k for k in before if k.endswith('|C3_LANGUAGE'))
