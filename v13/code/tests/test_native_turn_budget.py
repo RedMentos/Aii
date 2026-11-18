@@ -89,6 +89,7 @@ class NativeTurnBudgetTests(unittest.TestCase):
         bad=[
             turn("ERROR",generated=0),
             turn("DEADLINE",generated=1),
+            turn("DEADLINE",generated=False),
             turn("DEADLINE",phase="stream"),
             turn("DEADLINE",role="B1_DETAIL"),
             {"status":"DEADLINE","metadata":"PRIVATE MALFORMED JSON"},
