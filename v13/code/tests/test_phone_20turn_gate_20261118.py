@@ -1,9 +1,16 @@
 """Local SQLite 20-turn acceptance-preflight regressions, synthetic only."""
+import contextlib
+import hashlib
+import importlib.util
+import io
 import json
+import os
+from pathlib import Path
 import sqlite3
+import subprocess
+import sys
 import tempfile
 import unittest
-from pathlib import Path
 
 from v13.phone_20turn_gate import check, main, SCHEMA
 
@@ -175,6 +182,77 @@ class TwentyTurnCohort(unittest.TestCase):
         self.assertEqual(out["local_status"], "MALFORMED_OR_AMBIGUOUS_TURN_METADATA")
         self.assertGreater(out["invalid_or_oversized_metadata_turns"], 0)
         self.assertNotIn("SECRET", json.dumps(out))
+
+    def test_readonly_existing_sqlite_cli_preserves_db_and_exposes_no_text(self):
+        self.seed()
+        self.db.commit()
+        with tempfile.TemporaryDirectory(prefix="v13-20turn-readonly-") as tmp:
+            home = Path(tmp) / "v13"
+            (home / "data/db").mkdir(parents=True)
+            dbpath = home / "data/db/brain.sqlite3"
+            target = sqlite3.connect(dbpath)
+            try:
+                self.db.backup(target)
+            finally:
+                target.close()
+            before = hashlib.sha256(dbpath.read_bytes()).hexdigest()
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["--home", str(home)])
+            self.assertEqual(code, 0)
+            report = json.loads(stdout.getvalue())
+            self.assertEqual(report["assistant_turns_scanned"], 20)
+            self.assertEqual(report["local_status"],
+                             "LOCAL_METADATA_COHORT_COMPLETE_DEVICE_REVIEW_REQUIRED")
+            self.assertEqual(before, hashlib.sha256(dbpath.read_bytes()).hexdigest())
+            for suffix in ("-wal", "-shm", "-journal"):
+                self.assertFalse(dbpath.with_name(dbpath.name + suffix).exists())
+            self.assertNotIn("SECRET", stdout.getvalue())
+            self.assertNotIn(str(home), stdout.getvalue())
+
+    def test_invalid_local_database_does_not_leak_owner_path(self):
+        with tempfile.TemporaryDirectory(prefix="v13-private-path-SECRET-") as tmp:
+            home = Path(tmp) / "v13"
+            (home / "data/db").mkdir(parents=True)
+            (home / "data/db/brain.sqlite3").write_bytes(b"NOT_A_SQLITE_DB")
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                code = main(["--home", str(home)])
+            self.assertEqual(code, 2)
+            result = json.loads(output.getvalue())
+            self.assertEqual(result["local_status"], "LOCAL_READ_UNAVAILABLE_ValueError")
+            self.assertFalse(result["release_approved"])
+            self.assertNotIn("SECRET", output.getvalue())
+            self.assertNotIn(str(home), output.getvalue())
+
+    def test_composed_stage_carries_readonly_gate_and_cli(self):
+        code = Path(__file__).resolve().parents[1]
+        stage_path = code / "scripts/stage_integrated_candidate.py"
+        spec = importlib.util.spec_from_file_location("v13_phone_20turn_stage", stage_path)
+        stager = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(stager)
+        with tempfile.TemporaryDirectory(prefix="v13-20turn-stage-") as tmp:
+            installed = Path(tmp) / "code"
+            stager.stage(code, installed)
+            for rel in ("v13/phone_20turn_gate.py",
+                        "v13/phone_offer_delivery_audit.py",
+                        "v13/native_offer_prompt_receipt.py"):
+                self.assertEqual(
+                    hashlib.sha256((code / rel).read_bytes()).hexdigest(),
+                    hashlib.sha256((installed / rel).read_bytes()).hexdigest())
+            no_db = Path(tmp) / "empty-v13"
+            proc = subprocess.run(
+                [sys.executable, "-P", "-m", "v13.phone_20turn_gate",
+                 "--home", str(no_db)],
+                cwd=installed,
+                env=dict(os.environ, PYTHONPATH=str(installed),
+                         PYTHONDONTWRITEBYTECODE="1"),
+                text=True, capture_output=True, timeout=60)
+            self.assertEqual(proc.returncode, 2, proc.stdout + proc.stderr)
+            report = json.loads(proc.stdout)
+            self.assertEqual(report["local_status"], "LOCAL_READ_UNAVAILABLE_ValueError")
+            self.assertNotIn(str(no_db), proc.stdout)
+            self.assertNotIn("SECRET", proc.stdout)
 
     def test_empty_cohort_is_unavailable(self):
         out = check(self.db)
