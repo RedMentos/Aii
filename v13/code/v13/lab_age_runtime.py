@@ -12,7 +12,7 @@ The frozen source/old phone updater are intentionally left unchanged.
 """
 from __future__ import annotations
 
-from .age import AgeControl, RIGHTS, RIGHT_CAPABILITY
+from .age import AgeControl
 from .lab_age import read
 
 
@@ -42,9 +42,17 @@ class LaboratoryAgeControl(AgeControl):
                 return real
         return max(real, virtual)
 
+    def budgets(self, capability="system", resource_mode="GREEN"):
+        # Laboratory Age is a feature/test-right selector, NOT a CPU budget.
+        # Do not let virtual permission ceilings rewrite earned-Age compute.
+        real = AgeControl(self.s, self.cfg, self.build_ceiling)
+        return real.budgets(capability, resource_mode)
+
     def view(self):
         from .lab_age import view as lab_view
-        official = super().view()
+        # All official metrics/capability stages must come from the unmodified
+        # earned controller. The laboratory gate view is shown separately.
+        official = AgeControl(self.s, self.cfg, self.build_ceiling).view()
         lab = lab_view(self.s.home, official_stage=official["system_stage"])
         rights = self.rights()
         official["laboratory"] = dict(
@@ -52,6 +60,9 @@ class LaboratoryAgeControl(AgeControl):
             effective_implemented_stage=self.simulated_stage(),
             effective_gate_rights=rights["granted"],
             effective_rights_count=len(rights["granted"]),
+            feature_gates_live=self.simulated_stage() is not None,
+            not_released_stage_6_plus=lab["stage"] > 5,
+            compute_budget_changed=False,
             official_age_unchanged=True,
             real_learning_mode=self.cfg.get("learning_mode", "UNKNOWN"),
             # This adapter removes *Age* learning prohibitions, not independent
@@ -70,4 +81,5 @@ class LaboratoryAgeControl(AgeControl):
         output["official_stage"] = self.system_stage()
         output["test_only"] = self.simulated_stage() is not None
         output["learning_commit_allowed"] = self.cfg.get("learning_mode") == "APPROVED_COMMIT"
+        output["experiment_feature_rights_only"] = True
         return output
