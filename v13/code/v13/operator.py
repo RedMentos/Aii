@@ -240,7 +240,19 @@ class Operator:
             return dumps(inputs.last_context(s,r.session) or {'status':'Noch kein Modellkontext in diesem Chat'})
         if cmd=='pause':r.pause();return 'Pausiert'
         if cmd=='resume':r.resume();return 'Fortgesetzt'
-        if cmd=='status':return dumps({'session':r.session,'job':r.current,'queued':s.queue_stats()['count'],'paused':r.paused,'generation':s.generation_id,'learning':r.cfg['learning_mode'],'age':agectl.controller(r).system_stage()})
+        if cmd=='status':
+            from .lab_age import view
+            official=agectl.controller(r).system_stage()
+            laboratory=view(r.home,official_stage=official)
+            return dumps({'session':r.session,'job':r.current,
+                          'queued':s.queue_stats()['count'],'paused':r.paused,
+                          'generation':s.generation_id,'learning':r.cfg['learning_mode'],
+                          'age':official,
+                          'lab_age_stage':laboratory['stage'],
+                          'lab_age_mode':laboratory['mode'],
+                          'lab_age_compute_requested':laboratory['compute_requested'],
+                          'lab_age_config_persisted':laboratory['config_persisted'],
+                          'lab_age_resource_guard_may_block':True})
         if cmd=='resources':
             from . import resource_modes  # §97.2 GREEN/YELLOW/ORANGE/RED
             if args:return dumps(resource_modes.command(r,args))
