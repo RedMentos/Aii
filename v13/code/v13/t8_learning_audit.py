@@ -59,7 +59,9 @@ def benchmark(world, limit=512, min_holdout=4):
                 old_anchor = train[:max(1, len(train)//4)]
                 anchor_before = model.error(old_anchor)
                 for x, action, y in train:
-                    fit_action = ((action + 1) % len(world_model.ACTIONS)\n                                  if label == 'action_shift_control' else action)\n                    model.observe(x, fit_action, y, rehearsals=rehearsals)
+                    fit_action = ((action + 1) % len(world_model.ACTIONS)
+                                  if label == 'action_shift_control' else action)
+                    model.observe(x, fit_action, y, rehearsals=rehearsals)
                 after = model.error(holdout)
                 anchor_after = model.error(old_anchor)
                 model.checkpoint()
