@@ -252,6 +252,45 @@ class RuntimeDeploymentTests(unittest.TestCase):
                      builds=self.builds, ci_verified=True, expected_commit="e" * 40)
         self.assertEqual(self.launcher.read_bytes(), self.old)
 
+    def test_confirmed_auto_off_prevents_activation_after_staging(self):
+        from v13 import pipeline_agent as pipeline
+
+        ready = threading.Event()
+        resume = threading.Event()
+        failures = []
+
+        def pause_before_activation(_path):
+            ready.set()
+            if not resume.wait(5):
+                raise RuntimeError("test did not resume activation")
+
+        def auto_update():
+            try:
+                d.deploy(self.checkout, home=self.home, private=self.private,
+                         builds=self.builds, ci_verified=True,
+                         activation_guard=pipeline._auto_activation)
+            except Exception as exc:
+                failures.append(exc)
+
+        with mock.patch.object(pipeline, "PRIVATE", self.private), \
+             mock.patch.object(pipeline, "ENABLED", self.private / "auto-source-update.enabled"):
+            self.assertTrue(pipeline.set_enabled(True))
+            with mock.patch.object(d, "_selftest", side_effect=pause_before_activation):
+                worker = threading.Thread(target=auto_update)
+                worker.start()
+                try:
+                    self.assertTrue(ready.wait(5))
+                    self.assertFalse(pipeline.set_enabled(False))
+                finally:
+                    resume.set()
+                    worker.join(10)
+            self.assertFalse(worker.is_alive())
+            self.assertEqual([type(exc) for exc in failures], [pipeline.AutoUpdateDisabled])
+            self.assertEqual(self.launcher.read_bytes(), self.old)
+            self.assertFalse((self.private / d.MARKER_NAME).exists())
+            self.assertEqual(self._run()["status"], "DEPLOYED")
+            self.assertFalse(pipeline.enabled())
+
 
 class RuntimeSourcePreparationTests(unittest.TestCase):
     """Real Git fixtures exercise old/missing checkouts, without network."""

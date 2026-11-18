@@ -179,6 +179,25 @@ def apply_sources(code_dir, sources):
     after = b'    if updates_allowed(store):\n' + b''.join(b'    '+line for line in before.splitlines(keepends=True))
     checked[name] = _replace(raw, before, after, 'workspace adaptive values')
 
+    # Rebind the exact composed semantic modules to the guarded ActionLearn
+    # output. Their verification still rejects other input changes.
+    semantic_name = 'v13/world_semantic_evidence_candidate.py'
+    local_name = 'v13/local_error_route_shadow_candidate.py'
+    semantic_pin = '50eed442dbc4bab79ae177862b4b08097ba554b6e2a562aa40f8383811e2678c'
+    local_pin = '1a07635a478ce6d2ccb5458dffa1d15f9cd78c58e427c4473dfe87bffa8fd6cc'
+    action_pin = '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a'
+    for name, expected in ((semantic_name, semantic_pin), (local_name, local_pin)):
+        if hashlib.sha256(result[name]).hexdigest() != expected:
+            raise ValueError('semantic dependency changed: ' + name)
+    if hashlib.sha256(checked['v13/actionlearn.py']).hexdigest() != action_pin:
+        raise ValueError('guarded ActionLearn output changed')
+    old_action_pin, = PINS['v13/actionlearn.py']
+    semantic = _replace(result[semantic_name], old_action_pin.encode('ascii'),
+                        action_pin.encode('ascii'), 'semantic ActionLearn dependency')
+    result[semantic_name] = semantic
+    result[local_name] = _replace(result[local_name], semantic_pin.encode('ascii'),
+        hashlib.sha256(semantic).hexdigest().encode('ascii'), 'local error semantic dependency')
+
     # Keep the existing learning/procedural suite meaningful in the staged
     # tree: those positive learning tests opt in to SHADOW_UPDATE explicitly.
     # The source test itself stays frozen and an additional test proves that

@@ -8,6 +8,7 @@ models, user data, SQLite and control permissions remain untouched.
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
 import fnmatch
 import hashlib
 import json
@@ -45,7 +46,7 @@ HEX40 = re.compile(r"[a-f0-9]{40}\Z")
 MARKER_NAME = "runtime-active.json"
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
 STAGER = "scripts/stage_integrated_candidate.py"
-STAGER_SHA256 = "e96d3946786ac022f51cd24f9ff24ccfcebb765d7901b5edcf7643f66e5db4e4"
+STAGER_SHA256 = "12fdb3497ae38fdbb435a6530ec625b4e50fd4f22a81ec5569ece4a589518045"
 STAGE_MANIFEST = "INTEGRATION_STAGE.json"
 UI_SOURCE = "v13/ui.py"
 UI_SOURCE_SHA256 = "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8"
@@ -583,7 +584,7 @@ def _atomic_file(dest, data, mode=0o600):
 
 
 def deploy(source, *, home=None, private=None, builds=None, ci_verified=False,
-           expected_commit=None):
+           expected_commit=None, activation_guard=None):
     root, code, commit = _source(source)
     if expected_commit is not None and expected_commit != commit:
         raise RuntimeDeployError("Runtime source changed after CI verification")
@@ -607,36 +608,37 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False,
         raise RuntimeDeployError("Runtime staging collision")
     stage.mkdir(mode=0o700)
     target = stage / "code"
-    try:
-        manifest_sha256 = _stage_integrated_runtime(code, target, expected_commit=commit)
-        # A moving checkout must not be recorded under the earlier CI result.
-        if _source(root)[2] != commit:
-            raise RuntimeDeployError("Runtime source changed during staging")
-        _selftest(target)
-        if _verify_stage(target) != manifest_sha256:
-            raise RuntimeDeployError("Integrated runtime changed during selftest")
-        _check_stopped(home)
-        next_launcher = _launcher_bytes(target, home)
-        _atomic_file(launcher, next_launcher, 0o700)
-        record = {"schema": "v13.runtime-deploy/1", "commit": commit,
-                  "code": str(target), "backup_launcher": str(backup),
-                  "build_profile": BUILD_PROFILE,
-                  "source_ui_sha256": UI_SOURCE_SHA256,
-                  "derived_ui_sha256": UI_DERIVED_SHA256,
-                  "ui_builder_sha256": UI_BUILDER_SHA256,
-                  "stage_manifest_sha256": manifest_sha256,
-                  "launcher_sha256": hashlib.sha256(next_launcher).hexdigest(),
-                  "installed_at": int(time.time()),
-                  "models_untouched": True, "sqlite_untouched": True}
-        _atomic_file(private / MARKER_NAME,
-                     json.dumps(record, sort_keys=True).encode("utf-8"))
-        return {"status": "DEPLOYED", "commit": commit, "code": str(target),
-                "launcher_verified": True}
-    except BaseException:
-        # Old launcher was not changed until the final atomic switch.
-        if launcher.read_bytes() != before:
-            _atomic_file(launcher, before, 0o700)
-        raise
+    manifest_sha256 = _stage_integrated_runtime(code, target, expected_commit=commit)
+    # A moving checkout must not be recorded under the earlier CI result.
+    if _source(root)[2] != commit:
+        raise RuntimeDeployError("Runtime source changed during staging")
+    _selftest(target)
+    if _verify_stage(target) != manifest_sha256:
+        raise RuntimeDeployError("Integrated runtime changed during selftest")
+    with (activation_guard() if activation_guard is not None else nullcontext()):
+        try:
+            _check_stopped(home)
+            next_launcher = _launcher_bytes(target, home)
+            _atomic_file(launcher, next_launcher, 0o700)
+            record = {"schema": "v13.runtime-deploy/1", "commit": commit,
+                      "code": str(target), "backup_launcher": str(backup),
+                      "build_profile": BUILD_PROFILE,
+                      "source_ui_sha256": UI_SOURCE_SHA256,
+                      "derived_ui_sha256": UI_DERIVED_SHA256,
+                      "ui_builder_sha256": UI_BUILDER_SHA256,
+                      "stage_manifest_sha256": manifest_sha256,
+                      "launcher_sha256": hashlib.sha256(next_launcher).hexdigest(),
+                      "installed_at": int(time.time()),
+                      "models_untouched": True, "sqlite_untouched": True}
+            _atomic_file(private / MARKER_NAME,
+                         json.dumps(record, sort_keys=True).encode("utf-8"))
+            return {"status": "DEPLOYED", "commit": commit, "code": str(target),
+                    "launcher_verified": True}
+        except BaseException:
+            # Restore the previous launcher if its receipt cannot be published.
+            if launcher.read_bytes() != before:
+                _atomic_file(launcher, before, 0o700)
+            raise
 
 
 def main(argv=None):

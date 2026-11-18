@@ -7,6 +7,8 @@ BRANCH="gpt6/v13-private-remote-bridge-20261111"
 SOURCE="https://github.com/RedMentos/Aii.git"
 ROOT="$HOME/.v13-agent-source"
 PRIVATE="$HOME/.v13-private"
+PRIVATE_ALREADY_EXISTS=0
+[[ ! -e "$PRIVATE" && ! -L "$PRIVATE" ]] || PRIVATE_ALREADY_EXISTS=1
 CONFIG="$PRIVATE/remote.json"
 RELAY="RedMentos/Aiiii"
 fail() { printf '\nV13 SETUP ERROR: %s\n' "$*" >&2; exit 1; }
@@ -377,11 +379,14 @@ PY
 # but respect any later explicit OFF choice in the click dashboard.
 if [[ ! -e "$PRIVATE/auto-update-setup-completed" ]]; then
   [[ ! -L "$PRIVATE/auto-source-update.enabled" ]] || fail "Unsicherer Auto-Update-Schalter"
-  printf 'yes\n' > "$PRIVATE/auto-source-update.enabled"
-  chmod 600 "$PRIVATE/auto-source-update.enabled"
+  if [[ "$PRIVATE_ALREADY_EXISTS" == 0 && ! -e "$PRIVATE/auto-source-update.enabled" ]]; then
+    python -c 'from v13.pipeline_agent import set_enabled; set_enabled(True)' || fail "Auto-Update-Einstellung nicht gespeichert"
+    printf 'Auto-Updates EIN: alle 15 Minuten, nur GitHub-CI-gruene Commits, mit kontrolliertem KI-Neustart.\n'
+  else
+    printf 'Vorhandene Auto-Update-Einstellung bleibt erhalten.\n'
+  fi
   printf 'configured\n' > "$PRIVATE/auto-update-setup-completed"
   chmod 600 "$PRIVATE/auto-update-setup-completed"
-  printf 'Auto-Updates EIN: alle 15 Minuten, nur GitHub-CI-gruene Commits, mit kontrolliertem KI-Neustart.\n'
 else
   printf 'Vorhandene Auto-Update-Einstellung bleibt erhalten.\n'
 fi
