@@ -19,7 +19,10 @@ MAX_STAGE = 10
 # Preview the highest requested level, but make *compute activation* an explicit
 # local action. This preserves the measured Age-0 baseline across software
 # updates; no surprise CPU/thermal change simply because GitHub updated code.
-DEFAULT = {"schema": SCHEMA, "mode": "shadow", "stage": 10}
+# The owner's explicit existing instruction is to try the highest laboratory
+# compute level while keeping real Age 0. Missing files therefore do NOT mean
+# an unchosen Age 0 or an inactive test. Unsafe/corrupt files still fail off.
+DEFAULT = {"schema": SCHEMA, "mode": "active", "stage": 10}
 
 
 def _path(home):
@@ -54,9 +57,25 @@ def read(home):
 
 def save(home, *, mode=None, stage=None):
     """Local UI/CLI control. Cannot change official Age or any permission."""
+    # The WebView control panel can start before the AI runtime has created
+    # config/settings.json. A valid owner click must not be rejected merely
+    # because the laboratory config directory does not exist yet.
+    root = Path(home)
+    if root.is_symlink():
+        raise ValueError("Unsafe V13 home")
+    if not root.exists():
+        root.mkdir(mode=0o700, parents=True)
+    if (not root.is_dir() or root.stat().st_uid != os.getuid()
+            or root.stat().st_mode & 0o077):
+        raise ValueError("Unsafe V13 home")
     config = _path(home)
     parent = config.parent
-    if parent.is_symlink() or not parent.is_dir() or config.is_symlink():
+    if parent.is_symlink():
+        raise ValueError("Unsafe V13 configuration directory")
+    if not parent.exists():
+        parent.mkdir(mode=0o700)
+    if (not parent.is_dir() or parent.stat().st_uid != os.getuid()
+            or parent.stat().st_mode & 0o077 or config.is_symlink()):
         raise ValueError("Unsafe V13 configuration directory")
     current = read(home)
     if mode is not None:
@@ -87,8 +106,16 @@ def simulated_effort(control, baseline, *, resource_mode):
     out["lab_mode"] = settings["mode"]
     out["lab_stage"] = settings["stage"]
     out["official_stage"] = baseline["stage"]
-    out["lab_compute_active"] = settings["mode"] == "active" and settings["stage"] > 0
-    if not out["lab_compute_active"] or resource_mode not in ("GREEN", "YELLOW"):
+    requested = settings["mode"] == "active" and settings["stage"] > 0
+    # A requested lab level is not necessarily an *applied* level. The
+    # resource governor can block the extra compute; do not report ACTIVE
+    # if the phone is actually under thermal/RAM pressure.
+    out["lab_requested_active"] = requested
+    out["lab_compute_active"] = requested and resource_mode in ("GREEN", "YELLOW")
+    out["lab_compute_gate"] = (
+        "APPLIED" if out["lab_compute_active"]
+        else "BLOCKED_RESOURCE" if requested else "NOT_REQUESTED")
+    if not out["lab_compute_active"]:
         return out
     stage = settings["stage"]
     # A hypothetical Age 6..10 cannot manufacture a missing Age 6..10
@@ -98,17 +125,25 @@ def simulated_effort(control, baseline, *, resource_mode):
     out["autonomous_effort_max"] = (
         "max" if stage >= 8 else "high" if stage >= 5
         else "adaptive" if stage >= 2 else "low")
-    out["focal_depth"] = min(3, 1 + (stage // 4))
-    out["deliberation"] = False
-    out["tools"] = False
-    out["long_loops"] = False
+    out["focal_depth"] = max(int(baseline["focal_depth"]),
+                              min(3, 1 + (stage // 4)))
+    # Inherit the *actual* AgeControl permissions unchanged. Artificial lab
+    # levels must never manufacture higher rights, nor REVOKE genuinely
+    # earned ones if a later build raises its verified ceiling.
     return out
 
 
 def view(home, *, official_stage=0):
     settings = read(home)
+    path = _path(home)
+    stored = path.is_file() and not path.is_symlink()
     return dict(settings, official_stage=official_stage,
+                config_persisted=stored,
+                compute_requested=settings["mode"] == "active" and settings["stage"] > 0,
+                effective_on_healthy_resources=(
+                    settings["mode"] == "active" and settings["stage"] > 0),
+                resource_guard_may_block=True,
                 test_only=True, verified_maturity_unchanged=True,
                 tool_authority="UNCHANGED", weight_authority="UNCHANGED",
                 max_compute_focal_depth=3,
-                note="Nur experimentelles internes Rechenbudget; keine Age-Beförderung")
+                note="Labor-Stufe ist keine Age-Beförderung; sie steuert reale begrenzte Denkbudgets")
