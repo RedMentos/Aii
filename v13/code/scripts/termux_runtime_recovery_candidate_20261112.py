@@ -127,11 +127,12 @@ def build_sources(code_dir, *, include_postcommit=True):
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
                              '5cc198fab8d692d004aa113dd4c1f80a5c86aa4b99204a241e37d94ed9d6cb26')
         result = control_guard.apply_sources(code_dir, result)
-    # Feature Age is applied only to the already source-checked composed
-    # runtime. RAW age.py/operator.py/ui.py remain pristine for old phone updater.
-    laboratory = load(code_dir, 'scripts/lab_age_stage_candidate_20261118.py',
-                      'c09e31ae86901302b8414ddae794e5df5ccbe59292cc700f22ba709701d5acdf')
-    result = laboratory.apply_sources(code_dir, result)
+        # Feature Age belongs to the final deployed stage. The partial
+        # pre-postcommit builder must retain its earlier exact Runtime hash.
+        # RAW Age/operator/UI remain pristine for the old phone updater.
+        laboratory = load(code_dir, 'scripts/lab_age_stage_candidate_20261118.py',
+                          'c09e31ae86901302b8414ddae794e5df5ccbe59292cc700f22ba709701d5acdf')
+        result = laboratory.apply_sources(code_dir, result)
     for name, raw in result.items():
         if name.endswith('.py'):
             compile(raw, name, 'exec')
