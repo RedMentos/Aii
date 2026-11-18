@@ -68,6 +68,12 @@ class TwentyTurnCohort(unittest.TestCase):
                             "offer": {"summary": "PRIVATE_HYPOTHESIS"}})))
                     self.db.execute(
                         "INSERT INTO telemetry(event_id,kind,metrics) VALUES(?,?,?)",
+                        (eid, "body_offer_attempt", json.dumps({
+                            "role": role, "status": "FINAL",
+                            "runner": {"role": role, "status": "FINAL",
+                                       "generated_tokens": 5, "prompt_tokens": 60}})))
+                    self.db.execute(
+                        "INSERT INTO telemetry(event_id,kind,metrics) VALUES(?,?,?)",
                         (eid, "body_offer_delivered",
                          json.dumps({"role": role, "packet_id": packet_id})))
 
@@ -83,6 +89,8 @@ class TwentyTurnCohort(unittest.TestCase):
         self.assertEqual(out["native_c3_final_positive_token_turns"], 20)
         self.assertEqual(out["both_body_selected_quoted_metadata_receipt_turns"], 20)
         self.assertEqual(out["both_body_native_template_http200_reported_turns"], 20)
+        self.assertEqual(out["body_roles"]["B1_DETAIL"]["attempt"], 20)
+        self.assertEqual(out["body_roles"]["B2_GIST"]["attempt"], 20)
         self.assertEqual(out["native_within_declared_deadline_turns"], 20)
         self.assertEqual(out["native_ttft_sampled_turns"], 20)
         self.assertEqual(out["maximum_turn_seconds"], 5.)
@@ -163,6 +171,16 @@ class TwentyTurnCohort(unittest.TestCase):
         self.assertEqual(out["both_body_native_template_http200_reported_turns"], 0)
         self.assertEqual(out["body_roles"]["B1_DETAIL"]["selected_delivered_quoted_metadata"], 0)
         self.assertEqual(out["local_status"], "NO_BOTH_BODY_SELECTED_QUOTED_RECEIPTS")
+
+    def test_offers_with_no_native_b1_b2_attempt_telemetry_cannot_credit_body(self):
+        self.seed()
+        self.db.execute("DELETE FROM telemetry WHERE kind='body_offer_attempt'")
+        out = check(self.db)
+        self.assertEqual(out["native_c3_final_positive_token_turns"], 20)
+        self.assertEqual(out["both_body_selected_quoted_metadata_receipt_turns"], 0)
+        self.assertEqual(out["both_body_native_template_http200_reported_turns"], 0)
+        self.assertEqual(out["local_status"], "NO_BOTH_BODY_SELECTED_QUOTED_RECEIPTS")
+        self.assertFalse(out["release_approved"])
 
     def test_c3_tokens_without_native_template_witness_cannot_reach_ready_status(self):
         def missing(_, m):
