@@ -12,7 +12,7 @@ ROUTES=['simple','detail','gist','both']
 def scaffold_route(text):
     t=text.lower()
     if re.search(r'vergleich|compare|abwäg|trade.?off',t):return 'both'
-    if re.search(r'code|python|berechn|calculate|budget|mathe|debug|fehler|\d\s*[+*/=]',t):return 'detail'
+    if re.search(r'code|python|berechn|calculate|budget|mathe|debug|fehler|(?:\d+(?:[.,]\d+)?\s*[-+*/=]\s*-?\d+)|(?:\d+\s*[+*/=])',t):return 'detail'
     if re.search(r'zusammenfass|summary|summarize|überblick|plan',t):return 'gist'
     return 'simple'
 def segments(text,ref,width,mode='fixed'):
