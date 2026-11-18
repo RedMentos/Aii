@@ -342,7 +342,9 @@ def audit(conn, limit=10):
             "device_functional_acceptance": "NOT_VERIFIED",
         },
         "device_proof": "NOT_INDEPENDENTLY_VERIFIED",
-        "evidence_boundary": "LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS",
+        "evidence_boundary": (
+            "LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS"
+            if both_native else "METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY"),
         "warning": "Template receipts are runtime-reported evidence that the exact typed hypothesis layer survived native rendering and was submitted to an HTTP 200 completion endpoint; no independent native-device attestation, attention, semantic use or learned latent exchange is established.",
         "turn_count": len(turns),
         "roles": summary,
