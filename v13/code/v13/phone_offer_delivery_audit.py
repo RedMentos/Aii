@@ -5,6 +5,9 @@ anything or treat synthetic tests as native Redmi evidence. It inspects only
 existing SQLite metadata, sanitized telemetry and packet role/IDs. The current
 runtime emits `body_offer_delivered` after a fully stored source-bound offer.
 Older stored offers without that receipt are labelled LEGACY_PACKET_NO_RECEIPT.
+A C4 selection + C3 runner completion is metadata evidence, NOT proof the
+selected content survived native prompt admission, influenced C3 tokens or
+crossed through learned latent-space communication.
 """
 from __future__ import annotations
 
@@ -23,6 +26,8 @@ STATUSES = {"FINAL", "ERROR", "DEADLINE", "CANCELLED", "INTERRUPTED"}
 PHASES = {"load", "template", "prefill", "stream"}
 KINDS = ("body_offer_attempt", "body_offer_delivered")
 SCHEMA = "v13.phone-offer-delivery-audit/1"
+MAX_JSON_BYTES = 262144
+MAX_ROWS_PER_TURN = 2000
 ADMISSION_STATUSES = frozenset(("ADMITTED","PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET"))
 ADMISSION_OMISSIONS = frozenset((
     "C3_LAYER_TASK_CONTEXT","C3_LAYER_DIGEST","C3_LAYER_USER_MODEL",
@@ -35,6 +40,10 @@ ADMISSION_OMISSIONS = frozenset((
 
 
 def _obj(text):
+    # Packet/telemetry metadata is untrusted diagnostic data. A corrupt
+    # record must not stop a no-text phone audit or exhaust JSON parsing.
+    if type(text) not in (str, bytes) or len(text) > MAX_JSON_BYTES:
+        return {}
     try:
         result = json.loads(text)
         return result if isinstance(result, dict) else {}
@@ -72,11 +81,11 @@ def _prompt_admission(metrics):
         reasons=[]
     return {
         "revision_verified":raw.get("revision") == "v13.native-prompt-admission/1",
-        "status":(raw.get("status") if raw.get("status") in ADMISSION_STATUSES else "UNKNOWN"),
+        "status":(raw.get("status") if type(raw.get("status")) is str and raw.get("status") in ADMISSION_STATUSES else "UNKNOWN"),
         "original_prompt_tokens":_count(raw.get("original_prompt_tokens")),
         "prompt_tokens":_count(raw.get("prompt_tokens")),
         "target_tokens":_count(raw.get("target_tokens")),
-        "omitted":[x for x in reasons[:16] if isinstance(x,str) and x in ADMISSION_OMISSIONS],
+        "omitted":[x for x in reasons[:16] if type(x) is str and x in ADMISSION_OMISSIONS],
         "source_text_rewritten":raw.get("source_text_rewritten") is True,
     }
 
@@ -89,17 +98,28 @@ def _role_from_packet(payload, kind):
 
 def _audit_one(conn, index, event_id, status, metadata):
     meta = _obj(metadata)
-    raw_selected = meta.get("selected_offer_ids") or []
-    selected_ids = set(x for x in raw_selected
-                       if isinstance(raw_selected, list) and isinstance(x, str))
+    raw_selected = meta.get("selected_offer_ids")
+    # Selecting before validating the type used to throw on malformed
+    # integer/dict metadata; never trust recorded role/packet IDs.
+    selected_ids = {x for x in raw_selected[:128]
+                    if type(x) is str and 0 < len(x) <= 256} \
+                   if isinstance(raw_selected, list) else set()
     report = meta.get("runner") or {}
     report = report if isinstance(report, dict) else {}
     reporter = report.get("role") if report.get("role") == "C3_LANGUAGE" else None
+    native_c3_tokens = _count(report.get("generated_tokens"))
+    native_c3_output = (reporter is not None and status == "FINAL"
+                        and native_c3_tokens is not None and native_c3_tokens > 0)
     events = {r: {"query_count": 0, "attempts": [], "offers": {},
                   "delivered_ids": set()} for r in ROLES}
-    for kind, payload, packet_id in conn.execute(
-            "SELECT kind,payload,id FROM packets WHERE event_id=? "
-            "AND kind IN ('QueryPacket','OfferPacket')", (event_id,)):
+    # Bound SQL materialization before a corrupt/private payload enters
+    # Python, and keep an explicit truncation signal for fail-closed verdicts.
+    packet_rows = conn.execute(
+        "SELECT kind,substr(CAST(payload AS BLOB),1,?),id FROM packets WHERE event_id=? "
+        "AND kind IN ('QueryPacket','OfferPacket') ORDER BY rowid LIMIT ?",
+        (MAX_JSON_BYTES+1, event_id, MAX_ROWS_PER_TURN+1)).fetchall()
+    packet_rows_truncated = len(packet_rows) > MAX_ROWS_PER_TURN
+    for kind, payload, packet_id in packet_rows[:MAX_ROWS_PER_TURN]:
         role = _role_from_packet(payload, kind)
         if role is None:
             continue
@@ -111,22 +131,26 @@ def _audit_one(conn, index, event_id, status, metadata):
             events[role]["offers"][packet_id] = (
                 len(evidence) if isinstance(evidence, list) else None)
 
-    for kind, raw in conn.execute(
-            "SELECT kind,metrics FROM telemetry WHERE event_id=? "
-            "AND kind IN (?,?) ORDER BY id ASC", (event_id, *KINDS)):
+    telemetry_rows = conn.execute(
+        "SELECT kind,substr(CAST(metrics AS BLOB),1,?) FROM telemetry WHERE event_id=? "
+        "AND kind IN (?,?) ORDER BY id ASC LIMIT ?",
+        (MAX_JSON_BYTES+1, event_id, *KINDS, MAX_ROWS_PER_TURN+1)).fetchall()
+    telemetry_rows_truncated = len(telemetry_rows) > MAX_ROWS_PER_TURN
+    incomplete = packet_rows_truncated or telemetry_rows_truncated
+    for kind, raw in telemetry_rows[:MAX_ROWS_PER_TURN]:
         data = _obj(raw)
         role = data.get("role")
         if role not in ROLES:
             continue
         if kind == "body_offer_delivered":
             ident = data.get("packet_id")
-            if isinstance(ident, str):
+            if type(ident) is str and 0 < len(ident) <= 256:
                 events[role]["delivered_ids"].add(ident)
         else:
             runner = data.get("runner")
             runner = runner if isinstance(runner, dict) else {}
             native_status = data.get("status", runner.get("status"))
-            native_status = native_status if native_status in STATUSES else "UNKNOWN"
+            native_status = native_status if type(native_status) is str and native_status in STATUSES else "UNKNOWN"
             phase = runner.get("last_phase")
             events[role]["attempts"].append({
                 "native_status": native_status,
@@ -143,9 +167,22 @@ def _audit_one(conn, index, event_id, status, metadata):
         packets = record["offers"]
         receipts = record["delivered_ids"]
         selected = set(packets) & selected_ids
+        # A receipt for *another* packet of this role is not evidence that
+        # the C4-selected packet reached the source-checked consumer.
+        selected_delivered = selected & receipts
+        quoted = {pid for pid, count in packets.items()
+                  if type(count) is int and count > 0}
         attempts = record["attempts"]
-        if selected and reporter == "C3_LANGUAGE" and status == "FINAL":
+        if incomplete:
+            result = "INCOMPLETE_AUDIT_ROW_CAP"
+        elif selected and not selected_delivered:
+            result = "SELECTED_WITHOUT_DELIVERY_RECEIPT"
+        elif selected_delivered and native_c3_output:
+            # Legacy status name: only C4 selection + delivered receipt +
+            # C3 token output are proven; native prompt inclusion is NOT.
             result = "IN_FINAL_C3_REPORT"
+        elif selected_delivered and reporter == "C3_LANGUAGE" and status == "FINAL":
+            result = "SELECTED_C3_FINAL_ZERO_TOKEN_EVIDENCE"
         elif selected:
             result = "SELECTED_BUT_REPORT_UNFINISHED"
         elif packets and not receipts:
@@ -165,9 +202,12 @@ def _audit_one(conn, index, event_id, status, metadata):
             "delivery": result,
             "query_count": record["query_count"],
             "native_attempts": len(attempts),
-            "source_bound_offer_packets": len(packets),
+            "source_bound_offer_packets": len(packets),  # legacy: all stored packets, including unquoted
+            "quoted_offer_packets": len(quoted),
             "delivery_receipts": len(receipts & set(packets)),
             "selected_for_report": len(selected),
+            "selected_delivery_receipts": len(selected_delivered),
+            "selected_quoted_receipts": len(selected_delivered & quoted),
             "last_native": attempts[-1] if attempts else None,
         }
     c3phases = _safe_phases(report)
@@ -177,7 +217,12 @@ def _audit_one(conn, index, event_id, status, metadata):
         "c3_reporter": reporter is not None,
         "c3_phase_seconds": c3phases,
         "c3_prompt_tokens": _count(report.get("prompt_tokens")),
-        "c3_generated_tokens": _count(report.get("generated_tokens")),
+        "c3_generated_tokens": native_c3_tokens,
+        "c3_native_output_observed": native_c3_output,
+        "audit_incomplete": incomplete,
+        "c3_prompt_inclusion_proven": False,
+        "c3_semantic_use_proven": False,
+        "native_latent_exchange_proven": False,
         "c3_prompt_admission": _prompt_admission(report),
         "roles": roles,
     }
@@ -188,9 +233,9 @@ def audit(conn, limit=10):
         raise ValueError("turn count must be 1..20")
     # Avoid ever selecting user/assistant text: metadata, roles and counts only.
     messages = conn.execute(
-        "SELECT event_id,status,metadata FROM messages "
+        "SELECT event_id,status,substr(CAST(metadata AS BLOB),1,?) FROM messages "
         "WHERE role='assistant' AND event_id IS NOT NULL "
-        "ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
+        "ORDER BY id DESC LIMIT ?", (MAX_JSON_BYTES+1, limit)).fetchall()
     seen = set()
     turns = []
     for eid, status, metadata in messages:
@@ -212,10 +257,40 @@ def audit(conn, limit=10):
                 t["roles"][role]["delivery"] == "NATIVE_FAILED_NO_OFFER"
                 for t in turns),
         }
+    # This is a *diagnostic* gate, not a functional model-acceptance gate.
+    # Counting both bodies without linking selected packet IDs to delivery
+    # receipts, and then observing real C3 token output, would hide P0 failures.
+    both = sum(
+        t["c3_native_output_observed"] and not t["audit_incomplete"]
+        and all(t["roles"][r]["delivery"] == "IN_FINAL_C3_REPORT"
+                and t["roles"][r]["selected_quoted_receipts"] > 0
+                for r in ROLES)
+        for t in turns)
+    zero_token_c3_deadlines = sum(
+        t["turn_status"] == "DEADLINE"
+        and t["c3_reporter"] and t["c3_generated_tokens"] == 0
+        for t in turns)
+    incomplete_turns = sum(t["audit_incomplete"] for t in turns)
+    proof_status = ("NO_ASSISTANT_TURNS" if not turns
+                    else "BOUNDED_METADATA_INCOMPLETE" if incomplete_turns
+                    else "BOTH_BODY_C4_C3_METADATA_ONLY" if both
+                    else "B1_B2_TO_C3_CHAIN_NOT_OBSERVED")
     return {
         "schema": SCHEMA,
         "source": "LOCAL_SQLITE_METADATA_ONLY",
+        "end_to_end_gate": {
+            "status": proof_status,
+            "both_body_selected_delivered_and_c3_generated_turns": both,
+            "c3_deadline_zero_token_turns": zero_token_c3_deadlines,
+            "incomplete_metadata_turns": incomplete_turns,
+            "native_prompt_offer_inclusion_verified": False,
+            "source_span_revalidated_by_audit": False,
+            "learned_latent_exchange_verified": False,
+            "device_functional_acceptance": "NOT_VERIFIED",
+        },
         "device_proof": "NOT_INDEPENDENTLY_VERIFIED",
+        "evidence_boundary": "METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY",
+        "warning": "IN_FINAL_C3_REPORT is a legacy label. Even two positive quote-bearing packet receipts and C3 tokens do not prove source revalidation in this audit, actual C3 prompt inclusion, semantic use, or learned latent exchange.",
         "turn_count": len(turns),
         "roles": summary,
         "turns": turns,
@@ -233,8 +308,32 @@ def connect_readonly(home):
             raise ValueError("symlinked runtime database path")
     if not db.is_file() or db.stat().st_uid != os.getuid():
         raise ValueError("local runtime database unavailable")
+    for suffix in ("-wal", "-shm", "-journal"):
+        sidecar = db.with_name(db.name + suffix)
+        if sidecar.is_symlink() or (
+                sidecar.exists() and (not sidecar.is_file()
+                                      or sidecar.stat().st_uid != os.getuid())):
+            raise ValueError("unsafe runtime database sidecar")
+    # SQLite read-only connections may create a missing -shm file in WAL
+    # mode. Refuse that case rather than claiming a read-only audit that
+    # mutates the owner's live phone storage.
+    with db.open("rb") as source:
+        header = source.read(20)
+    if len(header) != 20 or not header.startswith(b"SQLite format 3\x00"):
+        raise ValueError("invalid SQLite database header")
+    if header[18:20] == b"\x02\x02" and not all(
+            db.with_name(db.name + suffix).is_file()
+            for suffix in ("-wal", "-shm")):
+        raise ValueError("WAL coordination files unavailable")
     uri = "file:" + quote(str(db.absolute()), safe="/") + "?mode=ro"
-    return sqlite3.connect(uri, uri=True, timeout=3)
+    conn = sqlite3.connect(uri, uri=True, timeout=.3, isolation_level=None)
+    try:
+        conn.execute("PRAGMA query_only=ON")
+        conn.execute("PRAGMA trusted_schema=OFF")
+    except sqlite3.Error:
+        conn.close()
+        raise
+    return conn
 
 
 def main(argv=None):
