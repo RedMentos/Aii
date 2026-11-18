@@ -2,11 +2,16 @@ name: V13 Lab Age control state and WebView truth
 on:
   push:
     branches:
-      - gpt6/fix-lab-age-control-truth-20261118
+      - gpt6/fix-lab-age-compatible-release-20261118
       - gpt6/v13-private-remote-bridge-20261111
   pull_request:
     paths:
       - 'v13/code/v13/lab_age.py'
+      - 'v13/code/v13/runtime_deploy.py'
+      - 'v13/code/scripts/stage_integrated_candidate.py'
+      - 'v13/code/scripts/termux_runtime_recovery_candidate_20261112.py'
+      - 'v13/code/scripts/lab_age_stage_candidate_20261118.py'
+      - 'v13/code/v13/lab_age_runtime.py'
       - 'v13/code/v13/operator.py'
       - 'v13/code/v13/ui.py'
       - 'v13/code/v13/mobile_dashboard.py'
