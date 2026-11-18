@@ -4,7 +4,7 @@ from pathlib import Path
 
 PINS = {
     'v13/scheduler.py': 'e44512b92b66cb63902645f73128d4063f3afc51367052e7e81491035bda17fb',
-    'v13/operator.py': '67f2118efce0495ea144b11e8853cbf949d56e53e141fe7f801b31c56406f9a3',
+    'v13/operator.py': '0447c03b8d3796d886715a566178dde919fab88ba085cb88ab172609fc4a38f8',
     'v13/idle_cycle_candidate.py': '7e6cd00b1fee3d098f0dcbeedb79b9128e78e2cdd1bd841a52c1fe59144d00a4',
 }
 SCHEDULER_OLD = b'''            from .inputs import background_blocked
