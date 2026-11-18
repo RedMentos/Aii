@@ -82,6 +82,25 @@ class PurePromptReceipt(unittest.TestCase):
         self.assertEqual(inspect(fake, render(fake), HEADER)["status"],
                          "NO_TYPED_HYPOTHESES")
 
+    def test_unverified_or_inconsistent_source_quotes_do_not_count_as_rendered(self):
+        original = offer("B1_DETAIL", "b1")
+        for mutation in ("hash", "empty_source", "wrong_span", "unverified"):
+            with self.subTest(mutation=mutation):
+                candidate = json.loads(json.dumps(original))
+                quote = candidate["verified_quotes"][0]
+                ref = quote["source_ref"]
+                if mutation == "hash":
+                    ref["sha256"] = "not-a-hash"
+                elif mutation == "empty_source":
+                    ref["source_id"] = ""
+                elif mutation == "wrong_span":
+                    ref["char_end"] += 1
+                else:
+                    quote["verification"] = "MODEL_GUESSED"
+                m = messages([candidate])
+                self.assertEqual(inspect(m, render(m), HEADER)["status"],
+                                 "INVALID_SELECTED_QUOTES")
+
     def test_duplicated_role_id_malformed_or_untrusted_shape_fail(self):
         m = messages([offer("B1_DETAIL", "b1"), offer("B1_DETAIL", "b2")])
         self.assertEqual(inspect(m, render(m), HEADER)["status"], "INVALID_SELECTED_OFFERS")
