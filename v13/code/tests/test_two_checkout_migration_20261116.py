@@ -45,11 +45,14 @@ fetch_trace = []
 def local_fetch(root, branch):
     ref = 'refs/remotes/origin/' + branch
     before = u.git(root, 'rev-parse', ref)
+    advertised = u.git(root, 'ls-remote', str(remote), 'refs/heads/' + branch)
     u.git(root, 'fetch', '--no-tags', str(remote),
           'refs/heads/' + branch + ':' + ref, timeout=90)
+    fetched = u.git(root, 'rev-parse', 'FETCH_HEAD')
     after = u.git(root, 'rev-parse', ref)
     fetch_trace.append({'checkout': Path(root).name, 'old_tracking': before,
-                        'new_tracking': after})
+                        'remote_advertised': advertised.split()[0] if advertised else '',
+                        'fetch_head': fetched, 'new_tracking': after})
     return after
 
 # Only the remote transport, exact-SHA CI response and live stop are simulated.
