@@ -675,8 +675,8 @@ def _lab_age_form(action):
             '<label for="lab-age-mode">Testmodus</label>' +
             '<select id="lab-age-mode" name="lab_mode">' + modes + '</select>' +
             '<button type="submit" class="primary">Labor-Age anwenden</button></form>' +
-            '<p class="muted">Stufe 6–10 ist hypothetisch: maximal vorhandene Denkbudgets, ' +
-            'keine neuen Organe oder Lernnachweise. Geräte-RAM und Zeitlimit bleiben bindend.</p>')
+            '<p class="muted">Stufe 6–10 kann nur vorhandene Age-5-Funktionen testen, ' +
+            'keine noch nicht implementierten Organe. Werkzeuge benötigen Freigaben, Lern-Commits einen getrennten Modus.</p>')
 
 
 def _sliders(action):
