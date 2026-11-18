@@ -41,11 +41,16 @@ from v13 import source_updater as u
 from v13 import runtime_deploy as d
 
 remote = Path(sys.argv[1])
+fetch_trace = []
 def local_fetch(root, branch):
     ref = 'refs/remotes/origin/' + branch
+    before = u.git(root, 'rev-parse', ref)
     u.git(root, 'fetch', '--no-tags', str(remote),
           'refs/heads/' + branch + ':' + ref, timeout=90)
-    return u.git(root, 'rev-parse', ref)
+    after = u.git(root, 'rev-parse', ref)
+    fetch_trace.append({'checkout': Path(root).name, 'old_tracking': before,
+                        'new_tracking': after})
+    return after
 
 # Only the remote transport, exact-SHA CI response and live stop are simulated.
 u._fetch = local_fetch
@@ -64,7 +69,8 @@ else:
         p.set_enabled(True)
     result = relay._run_pending_migration_after_reload(p)
 print(json.dumps({'result': result, 'profile': d.BUILD_PROFILE,
-                  'module_path': str(Path(d.__file__).resolve())}))
+                  'module_path': str(Path(d.__file__).resolve()),
+                  'fetch_trace': fetch_trace}))
 """
 
 
@@ -128,10 +134,21 @@ def exercise_worker_migration(base):
             local = git('rev-parse', 'HEAD', cwd=checkout)
             tracking = git('rev-parse',
                 'refs/remotes/origin/' + RELEASE_BRANCH, cwd=checkout)
-            assert local == target, {'old': old, 'checkout': checkout.name,
-                                     'local': local, 'tracking': tracking,
-                                     'bare': git('--git-dir', remote, 'rev-parse',
-                                                 'refs/heads/' + RELEASE_BRANCH)}
+            if local != target:
+                # Failure detail contains only synthetic Git SHA refs and
+                # enum/status fields from a disposable local bare repo.
+                diagnosis = {'checkout': checkout.name, 'local': local,
+                             'tracking': tracking,
+                             'expected': target,
+                             'bare': git('--git-dir', remote, 'rev-parse',
+                                         'refs/heads/' + RELEASE_BRANCH),
+                             'fetch_trace': old.get('fetch_trace', []),
+                             'worker': {k: old['result'].get(k) for k in
+                                        ('last_result','runtime','dashboard',
+                                         'last_error','updated_commit')}}
+                raise AssertionError('Two-checkout ref discrepancy: ' +
+                                     json.dumps(diagnosis, sort_keys=True))
+
         assert (agent / 'v13/code/v13/mobile_dashboard.html').is_file()
         assert (agent / 'v13/code/v13/mobile_dashboard.py').is_file()
         for name in ('mobile_dashboard.py', 'mobile_dashboard.html'):
