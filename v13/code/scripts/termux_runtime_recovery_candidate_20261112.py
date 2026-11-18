@@ -130,7 +130,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     # Feature Age is applied only to the already source-checked composed
     # runtime. RAW age.py/operator.py/ui.py remain pristine for old phone updater.
     laboratory = load(code_dir, 'scripts/lab_age_stage_candidate_20261118.py',
-                      'd328184d1f0de2dfcc65f8129438c020258aad5c26c5507e9c9c7f949f3c4ab2')
+                      '4fe5fd3ff0bcb6d7748c47d6f6bada92791f4fe81a3cba458645a5fc15d139e3')
     result = laboratory.apply_sources(code_dir, result)
     for name, raw in result.items():
         if name.endswith('.py'):
