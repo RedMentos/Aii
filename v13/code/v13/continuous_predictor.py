@@ -121,14 +121,33 @@ class OnlinePredictor:
         return str(self.path)
 
     def rollback(self):
-        """Restore last committed snapshot; never overwrite current checkpoint on failure."""
+        """Durably restore the prior committed weights AND trusted T8 cursor.
+
+        Validate the candidate before replacing the active snapshot. A failed
+        disk replacement leaves the original active checkpoint loadable.
+        """
         previous=self.path.with_suffix('.previous.npz')
         if not previous.exists():raise FileNotFoundError('No prior predictor checkpoint')
         current=self.path
         self.path=previous
-        try:self.restore()
-        finally:self.path=current
-        return {'status':'ROLLED_BACK_IN_MEMORY','source':str(previous)}
+        try:
+            self.restore()
+        except Exception:
+            self.path=current
+            if current.exists():self.restore()
+            raise
+        finally:
+            self.path=current
+        temp=current.with_name(current.name+'.rollback.tmp.npz')
+        try:
+            shutil.copy2(previous,temp)
+            os.replace(temp,current)
+        except Exception:
+            if current.exists():self.restore()
+            raise
+        finally:
+            if temp.exists():temp.unlink()
+        return {'status':'ROLLED_BACK_PERSISTED','source':str(previous)}
 
     def restore(self):
         with np.load(self.path,allow_pickle=False) as data:
