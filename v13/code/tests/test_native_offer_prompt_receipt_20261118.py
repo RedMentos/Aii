@@ -141,6 +141,8 @@ class NativeHTTPBound(unittest.TestCase):
         r.key = "synthetic-key"
         r._audit_enabled = False
         r.load = lambda cancel, deadline: None
+        # A fabricated __new__ fixture has no real process/log to release.
+        r.unload = lambda: {"process_reaped": True, "was_loaded": False}
         def post(method, endpoint, payload, deadline, **kwargs):
             if endpoint == "/apply-template":
                 return {"prompt": render(payload["messages"])}
