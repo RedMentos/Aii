@@ -15,12 +15,12 @@ SCHEMA = "v13.lab-age/1"
 NAME = "lab-age.json"
 MODES = ("off", "shadow", "active")
 MAX_STAGE = 10
-# Preview the highest requested level, but make *compute activation* an explicit
-# local action. This preserves the measured Age-0 baseline across software
-# updates; no surprise CPU/thermal change simply because GitHub updated code.
-# The owner's explicit existing instruction is to try the highest laboratory
-# compute level while keeping real Age 0. Missing files therefore do NOT mean
-# an unchosen Age 0 or an inactive test. Unsafe/corrupt files still fail off.
+# Laboratory age is a TEST of implemented feature/right gates, NOT a
+# resource/compute budget or a verified progression of developmental Age.
+# Owner requested active stage 10. Missing settings therefore default to
+# X10 active; explicit off/shadow is preserved, corrupt settings fail closed.
+# The runtime still has independently configured user tool enables,
+# prohibitions, resource safety, per-effect confirmation, and stop controls.
 DEFAULT = {"schema": SCHEMA, "mode": "active", "stage": 10}
 
 
@@ -130,3 +130,100 @@ def view(home, *, official_stage=0):
                 tool_authority="AGE_GATES_TEST_ONLY",
                 learning_commit_authority="REQUIRES_SEPARATE_SHADOW_MODE",
                 note="Labor-Age testet Werkzeug- und Lernrechte, nicht Rechenzeit; offizielles Age bleibt separat")
+
+def effective_stage(home):
+    """Implemented rights ceiling in a selected *active* lab, else None.
+
+    Stages 6..10 have no implemented additional Age rules, so X10 exercises
+    all *implemented* stage 0..5 rights only. It does NOT invent organs.
+    """
+    state = read(home)
+    if state["mode"] != "active" or state["stage"] <= 0:
+        return None
+    return min(state["stage"], 5)
+
+
+def right_enabled(control, right, earned):
+    """Pass an established Age right through the owner's lab test selection.
+
+    Called *after* AgeControl's hard prohibitions, explicit user-permissions,
+    structural lock and resource gating. It changes no persistent Age state,
+    capability maturity, physical compute budget or model weights.
+    """
+    if earned:
+        return True
+    stage = effective_stage(control.s.home)
+    if stage is None:
+        return False
+    from .age import RIGHTS
+    return stage >= RIGHTS[right]
+
+
+class LabConfig(dict):
+    """Runtime config with thread-scoped explicit shadow-training rights.
+
+    Ordinary turns and background tasks see the original learning mode.
+    Only an explicitly queued lab_shadow task gets SHADOW_UPDATE, only while
+    the saved laboratory mode still authorizes testing; never COMMIT.
+    This also makes an owner OFF request revoke the overlay on its next read.
+    """
+    def __init__(self, original, home):
+        super().__init__(original)
+        self.lab_home = Path(home)
+        import threading
+        self._trial = threading.local()
+
+    def __getitem__(self, key):
+        if (key == "learning_mode" and getattr(self._trial, "active", False)
+                and effective_stage(self.lab_home) is not None
+                and effective_stage(self.lab_home) >= 2
+                and dict.__getitem__(self, "learning_mode") == "RECORD_ONLY"):
+            return "SHADOW_UPDATE"
+        return dict.__getitem__(self, key)
+
+    def get(self, key, default=None):
+        return self[key] if key in self else default
+
+    def shadow_training(self):
+        from contextlib import contextmanager
+
+        @contextmanager
+        def scope():
+            if (effective_stage(self.lab_home) is None
+                    or effective_stage(self.lab_home) < 2):
+                raise ValueError("LAB_LEARNING_RIGHT_NOT_ACTIVE")
+            if getattr(self._trial, "active", False):
+                raise ValueError("LAB_LEARNING_ALREADY_ACTIVE")
+            # A separate explicit normal learning mode takes precedence;
+            # the experimental scope does not switch to APPROVED_COMMIT.
+            if dict.__getitem__(self, "learning_mode") != "RECORD_ONLY":
+                raise ValueError("LAB_SHADOW_REQUIRES_RECORD_ONLY_BASELINE")
+            self._trial.active = True
+            try:
+                yield
+            finally:
+                self._trial.active = False
+
+        return scope()
+
+
+def rights_status(control, resource_mode="GREEN"):
+    """Truthful effective-vs-earned grant list for owner/test diagnostics."""
+    from .age import RIGHTS, RIGHT_CAPABILITY
+    base = sorted(r for r in RIGHTS
+                  if control.ceiling(RIGHT_CAPABILITY.get(r, "system"))
+                  >= RIGHTS[r])
+    actual = sorted(r for r in RIGHTS if control.may(r, resource_mode=resource_mode))
+    trial = [r for r in actual if r not in base]
+    lab = view(control.s.home, official_stage=control.system_stage())
+    return {"official_stage": control.system_stage(),
+            "requested_lab_stage": lab["stage"],
+            "lab_mode": lab["mode"],
+            "implemented_test_stage": effective_stage(control.s.home),
+            "granted_effective": actual,
+            "newly_testable": trial,
+            "earned_stage_unchanged": True,
+            "explicit_per_tool_enable_still_required": True,
+            "human_approval_still_required_for_effects": True,
+            "shadow_training_only_when_explicitly_queued": True,
+            "native_model_feature_coverage_verified": False}
