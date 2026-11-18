@@ -73,7 +73,21 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
         if not isinstance(row, dict):
             break
         status=row.get("status")
-        if status == "FINAL":
+        # FINAL alone is not evidence of successful native C3 delivery:
+        # a reflex/direct response can be FINAL without C3 generating a token.
+        # Only a measured, positive native C3 generation resets recovery.
+        native = row.get("metadata")
+        if isinstance(native, str):
+            try:
+                native = json.loads(native)
+            except (ValueError, TypeError):
+                native = None
+        native = native.get("runner") if isinstance(native, dict) else None
+        delivered = (status == "FINAL" and isinstance(native, dict)
+                     and native.get("role") == "C3_LANGUAGE"
+                     and type(native.get("generated_tokens")) is int
+                     and native["generated_tokens"] > 0)
+        if delivered:
             recent_good += 1
         else:
             break
