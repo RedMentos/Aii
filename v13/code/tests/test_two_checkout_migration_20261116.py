@@ -135,15 +135,15 @@ def exercise_worker_migration(base):
         assert old['module_path'].startswith(str(agent) + os.sep)
         assert old['profile'] == 'raw-runtime-plain-ui-history-recovery-v1'
         if old['result']['last_result'] != 'UPDATED':
-        diagnostics = {'last_result': old['result'].get('last_result'),
-                       'runtime': old['result'].get('runtime'),
-                       'dashboard': old['result'].get('dashboard'),
-                       'last_error': old['result'].get('last_error'),
-                       'fetch_trace': old.get('fetch_trace', [])}
-        # The only paths are disposable temporary checkout labels; no phone
-        # transcripts, URLs or user account data are emitted here.
-        print('MIGRATION_FETCH_DIAG ' + json.dumps(diagnostics, sort_keys=True))
-        raise AssertionError('Old worker rejected actual Git migration; see diagnostic above')
+            diagnostics = {'last_result': old['result'].get('last_result'),
+                           'runtime': old['result'].get('runtime'),
+                           'dashboard': old['result'].get('dashboard'),
+                           'last_error': old['result'].get('last_error'),
+                           'fetch_trace': old.get('fetch_trace', [])}
+            # The only paths are disposable temporary checkout labels; no phone
+            # transcripts, URLs or user account data are emitted here.
+            print('MIGRATION_FETCH_DIAG ' + json.dumps(diagnostics, sort_keys=True))
+            raise AssertionError('Old worker rejected actual Git migration; see diagnostic above')
         # A one-click update may find the dashboard already checked out at
         # the exact target while the model launcher still needs staging.
         # UP_TO_DATE is correct for that individual checkout; require the
