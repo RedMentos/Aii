@@ -127,6 +127,11 @@ def build_sources(code_dir, *, include_postcommit=True):
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
                              '5cc198fab8d692d004aa113dd4c1f80a5c86aa4b99204a241e37d94ed9d6cb26')
         result = control_guard.apply_sources(code_dir, result)
+    # Feature Age is applied only to the already source-checked composed
+    # runtime. RAW age.py/operator.py/ui.py remain pristine for old phone updater.
+    laboratory = load(code_dir, 'scripts/lab_age_stage_candidate_20261118.py',
+                      '528a70875c371ee8688ad9b9a3dea67210348eeb2808269dbb68deaa880573cf')
+    result = laboratory.apply_sources(code_dir, result)
     for name, raw in result.items():
         if name.endswith('.py'):
             compile(raw, name, 'exec')
