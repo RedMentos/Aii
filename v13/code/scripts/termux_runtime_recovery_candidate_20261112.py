@@ -8,10 +8,10 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': '82e2fd27712d17a489ce5fd2f75d749f3f0e08dcc9d7fcc8852bbe6f738e8e18',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': '0fabe5abeed48c6a4e8b91df683dc9b4fb9ae7cdbb4ca981e95ef2fe852dac29',
     'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
-    'scripts/termux_chat_recovery_candidate_20261112.py': 'e0885ebc04ae16826f2a8d5cc3210ddc2f76d1ef40d22824190deaafaa13ffa8',
-    'scripts/termux_idle_recovery_candidate_20261112.py': '97887387b927f9e30a06b9883253e9b866b5c579da97cfbb4f24788d1102817f',
+    'scripts/termux_chat_recovery_candidate_20261112.py': 'e4b1a55fa6e319a9d50dc0586d31e7c2a28d7deae6ecf908695815bf4d0f43ae',
+    'scripts/termux_idle_recovery_candidate_20261112.py': '06d099fb3ab2347c9b7624c4859b63adb7447ec20f7a8602ff8141ec6238fc30',
 }
 
 
