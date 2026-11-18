@@ -13,6 +13,7 @@ import tempfile
 import unittest
 
 from v13.phone_20turn_gate import check, main, SCHEMA
+from v13.native_offer_prompt_receipt import inspect
 
 
 class TwentyTurnCohort(unittest.TestCase):
@@ -284,6 +285,30 @@ class TwentyTurnCohort(unittest.TestCase):
             self.assertEqual(report["local_status"], "LOCAL_READ_UNAVAILABLE_ValueError")
             self.assertNotIn(str(no_db), proc.stdout)
             self.assertNotIn("SECRET", proc.stdout)
+
+    def test_widened_exact_quote_from_existing_analyst_consumer_is_supported(self):
+        # cognition.Cognition.analyst_context also uses this exact typed
+        # verification when the excerpt is a widened source sentence.
+        # Stacked core #2054 must not silently regress this live producer.
+        span = "A longer source sentence around the exact quote."
+        body = [{
+            "role": "B1_DETAIL", "offer_packet_id": "b1",
+            "hypothesis": {"summary": "source hypothesis",
+                           "uncertainty": "low", "needs_reentry": False},
+            "verified_quotes": [{
+                "text": span,
+                "source_ref": {"source_id": "src_ref", "sha256": "a" * 64,
+                               "char_start": 0, "char_end": len(span),
+                               "modality": "text"},
+                "verification": "EXACT_SOURCE_SENTENCES_POINTED_BY_QUOTE"}]}]
+        head = "Internal hypotheses: "
+        system = "trusted-rules\\n" + head + json.dumps(body, sort_keys=True)
+        messages = [{"role": "system", "content": system},
+                    {"role": "user", "content": "Please answer."}]
+        output = inspect(messages, system + "Please answer.", head)
+        self.assertEqual(output["status"], "RENDERED_WITH_QUOTES")
+        self.assertEqual(output["offers"][0]["rendered_quote_count"], 1)
+        self.assertNotIn(span, json.dumps(output))
 
     def test_empty_cohort_is_unavailable(self):
         out = check(self.db)
