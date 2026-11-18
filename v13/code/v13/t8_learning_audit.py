@@ -31,9 +31,10 @@ def benchmark(world, limit=512, min_holdout=4):
         unique[key] = (row.get('event_id'), world.encode(row))
     # Group all actions of the same event together to prevent sibling leakage.
     # Legacy synthetic rows without event_id are individually split and flagged.
-    grouped = all(type(event) is str and event for event, _ in unique.values())
+    grouped = all((type(event) is str and bool(event)) or (type(event) is int and event >= 0)
+                  for event, _ in unique.values())
     def bucket(action_id, event_id):
-        source = event_id if grouped else action_id
+        source = str(event_id) if grouped else action_id
         return int.from_bytes(hashlib.sha256(source.encode()).digest()[:8], 'big') % 5
     holdout = [encoded for key, (event, encoded) in unique.items() if bucket(key, event) == 0]
     train = [encoded for key, (event, encoded) in unique.items() if bucket(key, event) != 0]
