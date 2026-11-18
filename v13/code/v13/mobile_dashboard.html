@@ -140,7 +140,7 @@ summary{cursor:pointer;font-weight:650}
  <section id="panel-settings" class="panel" aria-label="Einstellungen">
   <div class="card">
    <h2>Labor-Age · getrennt vom offiziellen Alter</h2>
-   <p class="muted">Das offiziell nachgewiesene Age bleibt 0. Du kannst die experimentelle Stufe unabhängig auf 0 bis 10 setzen. Aktiv erhöht nur begrenzte interne Denkbudgets, nie Werkzeug-, Sicherheits- oder Lernrechte.</p>
+   <p class="muted">Das offiziell erreichte Alter bleibt unverändert. Labor-Age testet die vorhandenen Werkzeug- und Lernfunktionen der gewählten Stufe – keine zusätzliche Rechenzeit. Stufen 6–10 verwenden höchstens bisher implementierte Stufe-5-Funktionen. Externe Aktionen brauchen weiter die nötigen Freigaben; Gewichtsänderungen benötigen einen getrennten Testmodus.</p>
    @@LAB_AGE_FORM@@
   </div>
   <div class="card">
@@ -214,7 +214,7 @@ summary{cursor:pointer;font-weight:650}
     if(labAgeStatus)labAgeStatus.textContent =
       'Offiziell Age '+String(actual.official_stage===0?0:'?')+
       ' · Labor-Age '+actual.stage+' · '+actual.mode.toUpperCase()+
-      ' · '+(requested?'AKTIV ANGEFORDERT':'SHADOW / AUS')+
+      ' · '+(requested?'TESTRECHTE AKTIV ANGEFORDERT':'SHADOW / AUS')+
       ' · '+(actual.config_persisted?'Gespeichert':'Voreinstellung')+
       ' · Ressourcen können Zusatz-Rechenzeit begrenzen';
     const stageControl=document.getElementById('lab-age-stage');
