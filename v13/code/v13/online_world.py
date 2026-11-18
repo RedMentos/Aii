@@ -65,10 +65,12 @@ class OnlineWorld:
             # On failed persistence restore the last committed model, including RNG,
             # replay reservoir, counters and the authoritative action IDs.
             prior_ids=list(self.processed)
-            self.model.observe(x,a,y)
-            candidate_ids=(prior_ids+[row['action_id']])[-world_model.MAX_ROWS:]
-            self.model.committed_action_ids=list(candidate_ids)
             try:
+                # observe() can mutate replay/RNG/counters before raising; its
+                # failure must obey the same durable boundary as checkpoint().
+                self.model.observe(x,a,y)
+                candidate_ids=(prior_ids+[row['action_id']])[-world_model.MAX_ROWS:]
+                self.model.committed_action_ids=list(candidate_ids)
                 self.model.checkpoint()
             except Exception:
                 if self.model.path.exists():
