@@ -24,7 +24,7 @@ class LaboratoryAgeControl(AgeControl):
 
     def simulated_stage(self):
         setting = self._laboratory()
-        if setting["mode"] != "active":
+        if setting["mode"] != "active" or setting["stage"] == 0:
             return None
         return min(setting["stage"], 5)
 
