@@ -112,7 +112,7 @@ def apply_sources(code_dir, sources):
     # owner's persisted RECORD_ONLY baseline. A thread-local overlay exists
     # only during that job; ordinary turns and post-turn agents stay RECORD_ONLY.
     operator=_replace(operator,
-        b"            r.enqueue('shadow',args[0] if args else 'route');return 'Isoliertes Training gestartet; keine automatische Aktivierung.'\n".replace(b"\\\n",b"\n"),
+        b"            r.enqueue('shadow',args[0] if args else 'route');return 'Isoliertes Training gestartet; keine automatische Aktivierung.'\n",
         b"            from .lab_age import effective_stage\n"
         b"            trial=effective_stage(r.home)\n"
         b"            job=('lab_shadow' if r.cfg['learning_mode']=='RECORD_ONLY' and trial is not None and trial>=2 else 'shadow')\n"
