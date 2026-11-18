@@ -125,10 +125,11 @@ def simulated_effort(control, baseline, *, resource_mode):
     out["autonomous_effort_max"] = (
         "max" if stage >= 8 else "high" if stage >= 5
         else "adaptive" if stage >= 2 else "low")
-    out["focal_depth"] = min(3, 1 + (stage // 4))
-    out["deliberation"] = False
-    out["tools"] = False
-    out["long_loops"] = False
+    out["focal_depth"] = max(int(baseline["focal_depth"]),
+                              min(3, 1 + (stage // 4)))
+    # Inherit the *actual* AgeControl permissions unchanged. Artificial lab
+    # levels must never manufacture higher rights, nor REVOKE genuinely
+    # earned ones if a later build raises its verified ceiling.
     return out
 
 
