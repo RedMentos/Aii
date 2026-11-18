@@ -28,12 +28,15 @@ def benchmark(world, limit=512, min_holdout=4):
             raise ValueError('Invalid T8 action ID')
         if key in unique:
             raise ValueError('Duplicate T8 action ID')
-        unique[key] = world.encode(row)
-    # A hash partition, not a time-order or adjacent-row split.
-    holdout = [v for k, v in unique.items()
-               if int.from_bytes(hashlib.sha256(k.encode()).digest()[:8], 'big') % 5 == 0]
-    train = [v for k, v in unique.items()
-             if int.from_bytes(hashlib.sha256(k.encode()).digest()[:8], 'big') % 5 != 0]
+        unique[key] = (row.get('event_id'), world.encode(row))
+    # Group all actions of the same event together to prevent sibling leakage.
+    # Legacy synthetic rows without event_id are individually split and flagged.
+    grouped = all(type(event) is str and event for event, _ in unique.values())
+    def bucket(action_id, event_id):
+        source = event_id if grouped else action_id
+        return int.from_bytes(hashlib.sha256(source.encode()).digest()[:8], 'big') % 5
+    holdout = [encoded for key, (event, encoded) in unique.items() if bucket(key, event) == 0]
+    train = [encoded for key, (event, encoded) in unique.items() if bucket(key, event) != 0]
     if len(holdout) < min_holdout or len(train) < 8:
         return {'status': 'INSUFFICIENT_DISJOINT_T8', 'train': len(train),
                 'holdout': len(holdout), 'production_unchanged': True}
@@ -47,6 +50,7 @@ def benchmark(world, limit=512, min_holdout=4):
                                         lr=world.model.lr, replay=world.model.cap)
                 before = model.error(holdout)
                 old_anchor = train[:max(1, len(train)//4)]
+                anchor_before = model.error(old_anchor)
                 for x, action, y in train:
                     model.observe(x, action, y, rehearsals=rehearsals)
                 after = model.error(holdout)
@@ -59,7 +63,10 @@ def benchmark(world, limit=512, min_holdout=4):
                     'holdout_mse_before': before,
                     'holdout_mse_after': after,
                     'holdout_mse_delta': after-before,
+                    'early_train_anchor_mse_before': anchor_before,
                     'early_train_anchor_mse_after': anchor_after,
+                    'early_train_anchor_mse_delta': anchor_after-anchor_before,
+                    'holdout_improved': after < before,
                     'restart_holdout_mse': restart_error,
                     'restart_exact': abs(after-restart_error) <= 1e-12,
                     'updates': model.updates,
@@ -69,6 +76,6 @@ def benchmark(world, limit=512, min_holdout=4):
         tracemalloc.stop()
     return {'status': 'SYNTHETIC_OR_LOCAL_T8_AUDIT_NOT_ANDROID_PROOF',
             'train': len(train), 'holdout': len(holdout),
-            'split': 'SHA256_ACTION_ID_MOD5', 'production_unchanged': True,
+            'split': 'SHA256_EVENT_ID_MOD5' if grouped else 'SHA256_ACTION_ID_MOD5_LEGACY_UNGROUPED', 'production_unchanged': True,
             'elapsed_seconds': time.perf_counter()-started,
             'python_peak_alloc_bytes': peak, 'results': results}
