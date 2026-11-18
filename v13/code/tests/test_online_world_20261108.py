@@ -162,3 +162,33 @@ def test_first_checkpoint_failure_resets_undurable_live_predictor(tmp_path):
         assert world.processed==[]
         assert world.update()['learned']==1
         assert OnlineWorld(runtime).update()['learned']==0
+
+
+@pytest.mark.parametrize('durable_first',[False,True])
+def test_observe_mid_gradient_failure_restores_full_durable_state(tmp_path,durable_first):
+    """An exception after mutation must not leave a phantom T8 update."""
+    runtime=SimpleNamespace(home=tmp_path,store=object())
+    rows=[transition(0),transition(1)] if durable_first else [transition(0)]
+    with patch('v13.online_world.world_model.transitions',return_value=rows):
+        world=OnlineWorld(runtime)
+        if durable_first:
+            with patch('v13.online_world.world_model.transitions',return_value=rows[:1]):
+                assert world.update()['learned']==1
+        before=OnlineWorld(runtime)
+        old_observe=world.model.observe
+        def mutate_then_fail(*args,**kwargs):
+            old_observe(*args,**kwargs)
+            raise RuntimeError('gradient interrupted')
+        with patch.object(world.model,'observe',side_effect=mutate_then_fail):
+            with pytest.raises(RuntimeError,match='gradient interrupted'):
+                world.update()
+        assert world.model.seen==before.model.seen
+        assert world.model.updates==before.model.updates
+        assert world.processed==before.processed
+        np.testing.assert_array_equal(world.model.W,before.model.W)
+        np.testing.assert_array_equal(world.model.U,before.model.U)
+        np.testing.assert_array_equal(world.model.bias,before.model.bias)
+        np.testing.assert_array_equal(world.model.x,before.model.x)
+        assert world.model.rng.bit_generator.state==before.model.rng.bit_generator.state
+        assert world.update()['learned']==1
+        assert OnlineWorld(runtime).update()['learned']==0
