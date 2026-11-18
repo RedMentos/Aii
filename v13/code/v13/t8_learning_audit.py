@@ -29,7 +29,7 @@ def benchmark(world, limit=512, min_holdout=4):
         if key in unique:
             raise ValueError('Duplicate T8 action ID')
         unique[key] = (row.get('event_id'), world.encode(row))
-    # Group all actions of the same event together to prevent sibling leakage.
+    # Mixed legacy and event-bound rows cannot safely be split as individual actions.\n    has_event = [((type(event) is str and bool(event)) or (type(event) is int and event >= 0))\n                 for event, _ in unique.values()]\n    if any(has_event) and not all(has_event):\n        raise ValueError('Mixed event-bound and legacy T8 rows: holdout would leak siblings')\n    # Group all actions of the same event together to prevent sibling leakage.
     # Legacy synthetic rows without event_id are individually split and flagged.
     grouped = all((type(event) is str and bool(event)) or (type(event) is int and event >= 0)
                   for event, _ in unique.values())
@@ -45,7 +45,7 @@ def benchmark(world, limit=512, min_holdout=4):
     tracemalloc.start()
     started = time.perf_counter()
     try:
-        for label, rehearsals in (('replay_on', 2), ('replay_off', 0)):
+        for label, rehearsals in (('replay_on', 2), ('replay_off', 0),\n                                  ('action_shift_control', 2)):
             with tempfile.TemporaryDirectory(prefix='v13-t8-audit-') as home:
                 model = OnlinePredictor(7, len(world_model.ACTIONS), home,
                                         lr=world.model.lr, replay=world.model.cap)
@@ -75,7 +75,7 @@ def benchmark(world, limit=512, min_holdout=4):
         _, peak = tracemalloc.get_traced_memory()
     finally:
         tracemalloc.stop()
-    return {'status': 'SYNTHETIC_OR_LOCAL_T8_AUDIT_NOT_ANDROID_PROOF',
+    results['replay_on']['action_specific_gain_vs_shift_control'] = (\n        results['action_shift_control']['holdout_mse_after'] -\n        results['replay_on']['holdout_mse_after'])\n    return {'status': 'SYNTHETIC_OR_LOCAL_T8_AUDIT_NOT_ANDROID_PROOF',
             'train': len(train), 'holdout': len(holdout),
             'split': 'SHA256_EVENT_ID_MOD5' if grouped else 'SHA256_ACTION_ID_MOD5_LEGACY_UNGROUPED', 'production_unchanged': True,
             'elapsed_seconds': time.perf_counter()-started,
