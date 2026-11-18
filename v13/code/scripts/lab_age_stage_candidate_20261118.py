@@ -68,7 +68,7 @@ def _source(code_dir, relative):
         raise ValueError("Lab Age source missing or symlinked: " + relative)
     raw=target.read_bytes()
     expected=INPUT_BLOBS[relative]
-    blob=hashlib.sha1(b"blob "+str(len(raw)).encode("ascii")+b"\\0"+raw).hexdigest()
+    blob=hashlib.sha1(b"blob "+str(len(raw)).encode("ascii")+b"\0"+raw).hexdigest()
     if blob!=expected:
         raise ValueError("Lab Age source no longer matches reviewed Git blob: " + relative)
     return raw
