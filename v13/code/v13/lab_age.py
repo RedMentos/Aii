@@ -57,9 +57,25 @@ def read(home):
 
 def save(home, *, mode=None, stage=None):
     """Local UI/CLI control. Cannot change official Age or any permission."""
+    # The WebView control panel can start before the AI runtime has created
+    # config/settings.json. A valid owner click must not be rejected merely
+    # because the laboratory config directory does not exist yet.
+    root = Path(home)
+    if root.is_symlink():
+        raise ValueError("Unsafe V13 home")
+    if not root.exists():
+        root.mkdir(mode=0o700, parents=True)
+    if (not root.is_dir() or root.stat().st_uid != os.getuid()
+            or root.stat().st_mode & 0o077):
+        raise ValueError("Unsafe V13 home")
     config = _path(home)
     parent = config.parent
-    if parent.is_symlink() or not parent.is_dir() or config.is_symlink():
+    if parent.is_symlink():
+        raise ValueError("Unsafe V13 configuration directory")
+    if not parent.exists():
+        parent.mkdir(mode=0o700)
+    if (not parent.is_dir() or parent.stat().st_uid != os.getuid()
+            or parent.stat().st_mode & 0o077 or config.is_symlink()):
         raise ValueError("Unsafe V13 configuration directory")
     current = read(home)
     if mode is not None:
