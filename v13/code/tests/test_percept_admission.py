@@ -10,6 +10,17 @@ class AdmissionTests(unittest.TestCase):
         a = admit([p("ok"), p("no", consent=False), p("draft", final=False)], 1000)
         self.assertEqual([x.source_id for x in a.selected], ["ok"])
         self.assertEqual(set(a.omitted), {"no", "draft"})
+    def test_clock_rejects_stale_and_future_events(self):
+        self.assertEqual(admit([p("stale")], 1000, now_ms=20000).omitted, ("stale",))
+        self.assertEqual(admit([p("future")], 1000, now_ms=19).omitted, ("future",))
+        self.assertEqual([x.source_id for x in admit([p("fresh")], 1000, now_ms=25).selected], ["fresh"])
+
+    def test_invalid_clock_rejected(self):
+        with self.assertRaises(ValueError):
+            admit([p()], 1000, now_ms=-1)
+        with self.assertRaises(ValueError):
+            admit([p()], 1000, max_age_ms=-1)
+
     def test_budget_and_provenance(self):
         a = admit([p("first", summary="x"*80), p("second", priority=2)], 50)
         self.assertEqual([x.source_id for x in a.selected], ["second"])
