@@ -24,6 +24,22 @@ class SplitRawEar(unittest.TestCase):
         self.assertEqual(len(packets),2)
         self.assertEqual(packets[1]["segments"][0]["end_ms"],1105)
 
+    def test_single_sample_tail_preserved(self):
+        packets=self.make(16001)
+        self.assertEqual(len(packets),2)
+        a,b=(p["segments"][0] for p in packets)
+        self.assertEqual(a["end_ms"],b["start_ms"])
+        self.assertEqual(b["end_ms"],1100)
+        self.assertLessEqual(a["end_ms"]-a["start_ms"],1000)
+        self.assertLessEqual(b["end_ms"]-b["start_ms"],1000)
+
+    def test_invalid_rate_rejected_cleanly(self):
+        for rate in (0, 16000.0, True, -1):
+            with self.subTest(rate=rate):
+                with self.assertRaises(ValueError):
+                    canonical_packets([0.1]*160,rate,REF,0,
+                        consent_receipt="ok",event_id="x",generation_id="y")
+
     def test_no_consent(self):
         with self.assertRaises(PermissionError):
             canonical_packets([0.1]*160,16000,REF,0,
