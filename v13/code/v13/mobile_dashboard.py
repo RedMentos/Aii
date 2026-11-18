@@ -83,6 +83,17 @@ def summary():
     """No human text, raw logs, filenames, paths, prompts or token values."""
     p = DATA / "exports/native-probe.json"
     out = {"schema": "v13.phone.diagnostic/1", "native_probe": "NO_PROBE", "roles": {}}
+    # Separate the user's saved lab level from the Age-0 official config.
+    from .lab_age import view as lab_age_view
+    lab = lab_age_view(DATA, official_stage=0)
+    out["lab_age"] = {
+        "official_stage": lab["official_stage"],
+        "stage": lab["stage"], "mode": lab["mode"],
+        "config_persisted": lab["config_persisted"],
+        "feature_test_requested": lab["feature_test_requested"],
+        "effective_implemented_stage": lab["effective_implemented_stage"],
+        "learning_commit_authority": lab["learning_commit_authority"],
+        "physical_feature_execution_verified": False}
     from .phone_runtime_diagnostics import last_turn
     out["last_turn"] = last_turn()
     # Real AI status, not the updater or merely the browser process.
@@ -652,8 +663,11 @@ def _lab_age_form(action):
     modes = "".join(
         '<option value="' + k + '"' + (' selected' if k == mode else '') +
         '>' + labels[k] + '</option>' for k in MODES)
-    return ('<p><strong>Offiziell Age 0</strong> · Labor-Age <strong>' + str(level) +
-            '</strong> · ' + labels[mode] +
+    state = 'TESTRECHTE AKTIV ANGEFORDERT' if v["feature_test_requested"] else 'SHADOW / AUS'
+    return ('<p id="lab-age-live" aria-live="polite"><strong>Offiziell Age ' +
+            str(v["official_stage"]) + '</strong> · Labor-Age <strong>' + str(level) +
+            '</strong> · ' + labels[mode] + ' · ' + state + ' · ' +
+            ('Gespeichert' if v["config_persisted"] else 'Voreinstellung') +
             '</p><form method="POST" action="' + html.escape(action, quote=True) + '">' +
             '<input type="hidden" name="action" value="lab_age_set">' +
             '<label for="lab-age-stage">Experimenteller Stand</label>' +
@@ -661,8 +675,8 @@ def _lab_age_form(action):
             '<label for="lab-age-mode">Testmodus</label>' +
             '<select id="lab-age-mode" name="lab_mode">' + modes + '</select>' +
             '<button type="submit" class="primary">Labor-Age anwenden</button></form>' +
-            '<p class="muted">Stufe 6–10 ist hypothetisch: maximal vorhandene Denkbudgets, ' +
-            'keine neuen Organe oder Lernnachweise. Geräte-RAM und Zeitlimit bleiben bindend.</p>')
+            '<p class="muted">Stufe 6–10 kann nur vorhandene Age-5-Funktionen testen, ' +
+            'keine noch nicht implementierten Organe. Werkzeuge benötigen Freigaben, Lern-Commits einen getrennten Modus.</p>')
 
 
 def _sliders(action):
@@ -1050,6 +1064,7 @@ def serve(*, open_browser=True):
                 payload = {"state": state, "output": controls.output()[-50000:],
                            "native_residency": native,
                            "brain_evidence": brain_evidence_snapshot(),
+                           "lab_age": __import__("v13.lab_age",fromlist=["view"]).view(DATA,official_stage=0),
                            "ai_service": ai_state.get("service","UNAVAILABLE"),
                            "ai_daemon": ai_state.get("daemon","UNAVAILABLE"),
                            "ai_autostart": ai_state.get("autostart",False),
@@ -1109,14 +1124,18 @@ def serve(*, open_browser=True):
                     controls.send(command)
                     message = "V13-Befehl gesendet."
                 elif action == "lab_age_set":
-                    from .lab_age import save, MODES
+                    from .lab_age import save, read, MODES
                     raw_stage = fields.get("lab_stage", [""])[0]
                     raw_mode = fields.get("lab_mode", [""])[0]
                     if not raw_stage.isdecimal() or len(raw_stage) > 2 or raw_mode not in MODES:
                         raise ValueError("Ungültiger experimenteller Age-Wert")
                     state = save(DATA, mode=raw_mode, stage=int(raw_stage))
+                    if read(DATA) != state:
+                        raise RuntimeError("Labor-Age wurde nicht dauerhaft gespeichert")
                     message = ("Labor-Age " + str(state["stage"]) + " · " +
-                               state["mode"] + " – offizielles Age unverändert 0")
+                               state["mode"] + " dauerhaft gespeichert; " +
+                               "wirkt ab dem nächsten Turn, soweit Ressourcen es erlauben; " +
+                               "offizielles Age unverändert 0")
                 elif action == "knob":
                     name = fields.get("knob", [""])[0]
                     if name not in KNOBS_UI:
@@ -1182,7 +1201,11 @@ def serve(*, open_browser=True):
                 message = "Fehler: " + type(exc).__name__ + ": " + str(exc)[:200]
             if "application/json" in self.headers.get("Accept", ""):
                 accepted = not message.startswith("Fehler:")
-                data = json.dumps({"ok": accepted, "message": message}, ensure_ascii=False).encode("utf-8")
+                payload = {"ok": accepted, "message": message}
+                if action == "lab_age_set" and accepted:
+                    from .lab_age import view
+                    payload["lab_age"] = view(DATA,official_stage=0)
+                data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
                 self._headers(200 if accepted else 400, mime="application/json; charset=utf-8")
             else:
                 if action in ("auto_enable", "auto_disable") and not message.startswith("Fehler:"):

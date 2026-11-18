@@ -46,7 +46,7 @@ HEX40 = re.compile(r"[a-f0-9]{40}\Z")
 MARKER_NAME = "runtime-active.json"
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
 STAGER = "scripts/stage_integrated_candidate.py"
-STAGER_SHA256 = "12fdb3497ae38fdbb435a6530ec625b4e50fd4f22a81ec5569ece4a589518045"
+STAGER_SHA256 = "2addd8503055dd31ab2ee660ca0fd3cc08b55631c68837db65f9f6c1f8c90c86"
 STAGE_MANIFEST = "INTEGRATION_STAGE.json"
 UI_SOURCE = "v13/ui.py"
 UI_SOURCE_SHA256 = "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8"
@@ -335,13 +335,30 @@ def needs_deploy(source, *, home=None, private=None):
             or not isinstance(target.get("stage_manifest_sha256"), str)):
         return True
     try:
-        if _verify_stage(Path(codepath)) != target["stage_manifest_sha256"]:
+        installed = Path(codepath)
+        if _verify_stage(installed) != target["stage_manifest_sha256"]:
             return True
-    except (OSError, ValueError, TypeError, RuntimeDeployError):
+        # The integrated stage deliberately applies further reviewed UI
+        # transformations AFTER the standalone plain-chat recovery. The
+        # deployed renderer therefore has a different hash from the
+        # intermediate UI_DERIVED_SHA256. Its exact final bytes are bound by
+        # the verified immutable stage manifest, not by the intermediate hash.
+        manifest = json.loads((installed / STAGE_MANIFEST).read_text(encoding="utf-8"))
+        final_ui = manifest["files_sha256"].get(UI_SOURCE)
+        generated = manifest.get("replaced_files", [])
+        if (type(generated) is not list or type(final_ui) is not str
+                or not re.fullmatch(r"[a-f0-9]{64}", final_ui)):
+            return True
+        # Legacy plain-chat staging legitimately copies the independently
+        # pinned intermediate UI without a generated-file entry. The composed
+        # Runtime adds a generated UI and is checked against its manifest.
+        if UI_SOURCE not in generated and final_ui != UI_DERIVED_SHA256:
+            return True
+    except (OSError, ValueError, KeyError, TypeError, RuntimeDeployError):
         return True
-    ui = Path(codepath) / UI_SOURCE
+    ui = installed / UI_SOURCE
     if (ui.is_symlink() or not ui.is_file()
-            or hashlib.sha256(ui.read_bytes()).hexdigest() != UI_DERIVED_SHA256
+            or hashlib.sha256(ui.read_bytes()).hexdigest() != final_ui
             or hashlib.sha256((code / UI_SOURCE).read_bytes()).hexdigest() != UI_SOURCE_SHA256):
         return True
     return target.get("launcher_sha256") != hashlib.sha256(launcher.read_bytes()).hexdigest()
