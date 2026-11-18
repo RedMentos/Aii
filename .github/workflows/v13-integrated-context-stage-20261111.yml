@@ -37,7 +37,7 @@ jobs:
             git fetch --no-tags --unshallow origin "$V13_TEST_HEAD"
           fi
           git merge-base --is-ancestor 5d9a86176edb45565af482644ee80dbd622d5614 HEAD
-          git merge-base --is-ancestor 8217f57abfdd11652499a07fdea57f2744df134d HEAD
+          git merge-base --is-ancestor cbe1af572025c2984b5b0e47fe3f7f1b6080570d HEAD
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -70,6 +70,7 @@ jobs:
           tests/test_postcommit_stage_composition_20261116.py
           tests/test_latewatch.py
           tests/test_record_only_online_guard_20261116.py
+          tests/test_record_only_controller_guard_20261116.py
           tests/test_runtime_deploy_integrated_20261116.py
           tests/test_two_checkout_migration_20261116.py
           tests/test_audio_pcm_a5_bridge.py
@@ -80,6 +81,7 @@ jobs:
           tests/test_native_prefill_profile.py
           tests/test_prefill_route_gate.py
           tests/test_prefill_timing_evidence.py
+          tests/test_mobile_prefill_admission.py
           tests/test_native_turn_budget.py
           tests/test_phone_offer_delivery_audit.py
           tests/test_phone_runtime_diagnostics.py

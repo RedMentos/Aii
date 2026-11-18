@@ -326,13 +326,11 @@ elif [[ ! -e "$RUNTIME_ROOT" && ! -L "$RUNTIME_ROOT" ]]; then
 else
   fail "Runtime-Quellenpfad ist weder ein Git-Checkout noch frei"
 fi
-git -C "$RUNTIME_ROOT" sparse-checkout set --no-cone \
-  'v13/code/v13/' \
-  'v13/code/scripts/' \
-  'v13/code/specs/' \
-  'v13/code/docs/canon/' \
-  'v13/code/setup.sh' \
-  'v13/code/STARTEN.sh' || fail "Vollstaendiger Runtime-Sparse-Checkout fehlgeschlagen"
+python - "$RUNTIME_ROOT" <<'PY' || fail "Vollstaendiger Runtime-Sparse-Checkout fehlgeschlagen"
+import sys
+from v13.runtime_deploy import prepare_source
+prepare_source(sys.argv[1])
+PY
 [[ -s "$RUNTIME_ROOT/v13/code/v13/store.py" ]] || fail "V13 Runtime-Quellcode fehlt"
 [[ -s "$RUNTIME_ROOT/v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md" ]] || fail "Canon-Datei fehlt, Runtime nicht aktiviert"
 python -m v13.runtime_deploy --source "$RUNTIME_ROOT" || fail "V13 Runtime-Aktivierung fehlgeschlagen; alter Launcher bleibt erhalten"

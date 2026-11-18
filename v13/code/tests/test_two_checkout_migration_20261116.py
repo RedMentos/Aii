@@ -12,7 +12,7 @@ import sys
 import tempfile
 
 PREVIOUS_RELEASE = '5d9a86176edb45565af482644ee80dbd622d5614'
-CURRENT_RELEASE = '8217f57abfdd11652499a07fdea57f2744df134d'
+CURRENT_RELEASE = 'cbe1af572025c2984b5b0e47fe3f7f1b6080570d'
 RELEASE_BRANCH = 'gpt6/v13-private-remote-bridge-20261111'
 TRUSTED_ORIGIN = 'https://github.com/RedMentos/Aii.git'
 CODE = Path(__file__).resolve().parents[1]
@@ -83,9 +83,12 @@ def exercise_worker_migration(base):
         agent = home / '.v13-agent-source'
         runtime = home / '.v13-runtime-source'
         for checkout in (agent, runtime):
-            git('clone', '--shared', '--branch', RELEASE_BRANCH, '--single-branch',
+            git('clone', '--shared', '--sparse', '--branch', RELEASE_BRANCH, '--single-branch',
                 str(remote), str(checkout))
             git('remote', 'set-url', 'origin', TRUSTED_ORIGIN, cwd=checkout)
+        git('sparse-checkout', 'set', '--no-cone', 'v13/code/v13/', cwd=agent)
+        git('sparse-checkout', 'set', '--no-cone', 'v13/code/v13/', 'v13/code/scripts/',
+            'v13/code/specs/', 'v13/code/docs/canon/', cwd=runtime)
 
         data = home / 'v13'
         (data / 'bin').mkdir(parents=True)

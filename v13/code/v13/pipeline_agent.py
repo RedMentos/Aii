@@ -249,7 +249,8 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits):
     if name == "runtime":
         # A Git checkout update is NOT a runtime update. Stage a complete
         # code snapshot, check source/Canon, and atomically switch bin/v13.
-        activated = runtime_deploy.deploy(root, ci_verified=True)["status"] == "DEPLOYED"
+        activated = runtime_deploy.deploy(root, ci_verified=True,
+                                         expected_commit=commit)["status"] == "DEPLOYED"
     state[name] = "UPDATED" if updated["status"] == "UPDATED" or activated else "UP_TO_DATE"
     if state[name] == "UPDATED":
         state["updated_commit"] = commit

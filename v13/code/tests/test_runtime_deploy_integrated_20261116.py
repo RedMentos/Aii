@@ -32,8 +32,9 @@ class IntegratedRuntimeDeploy(unittest.TestCase):
         self.db.write_bytes(b'SQLITE_SYNTHETIC_PRESERVE')
         self.private = root / 'private'
         self.builds = root / 'builds'
-        self.commit = 'a' * 40
-        self.checkout = root / 'checkout'
+        self.checkout = CODE.parent.parent
+        self.commit = subprocess.run(['git', '-C', str(self.checkout), 'rev-parse', 'HEAD'],
+                                     capture_output=True, text=True, check=True).stdout.strip()
         self.source_mock = mock.patch.object(deploy, '_source',
             return_value=(self.checkout, CODE, self.commit))
         self.stop_mock = mock.patch.object(deploy, '_check_stopped')

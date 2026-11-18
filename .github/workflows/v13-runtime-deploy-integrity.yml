@@ -4,6 +4,7 @@ on:
     paths:
       - 'v13/code/v13/runtime_deploy.py'
       - 'v13/code/tests/test_runtime_deploy_integrity.py'
+      - 'v13/code/tests/test_runtime_deploy.py'
       - '.github/workflows/v13-runtime-deploy-integrity.yml'
   push:
     branches:
@@ -11,6 +12,7 @@ on:
     paths:
       - 'v13/code/v13/runtime_deploy.py'
       - 'v13/code/tests/test_runtime_deploy_integrity.py'
+      - 'v13/code/tests/test_runtime_deploy.py'
       - '.github/workflows/v13-runtime-deploy-integrity.yml'
 jobs:
   offline:
@@ -24,5 +26,6 @@ jobs:
       - name: Compile and run offline regressions
         working-directory: v13/code
         run: |
-          python -m py_compile v13/runtime_deploy.py tests/test_runtime_deploy_integrity.py
+          python -m py_compile v13/runtime_deploy.py tests/test_runtime_deploy_integrity.py tests/test_runtime_deploy.py
           python -m unittest discover -s tests -p test_runtime_deploy_integrity.py -v
+          python -m unittest discover -s tests -p test_runtime_deploy.py -v
