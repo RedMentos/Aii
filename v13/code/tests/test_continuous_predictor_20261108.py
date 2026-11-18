@@ -65,8 +65,12 @@ def test_checkpoint_rollback_restores_previous_learned_weights(tmp_path):
     for x,a,y in samples(16):m.observe(x,a,y)
     m.checkpoint()
     assert not np.array_equal(m.W,old)
-    assert m.rollback()['status']=='ROLLED_BACK_IN_MEMORY'
+    assert m.rollback()['status']=='ROLLED_BACK_PERSISTED'
     np.testing.assert_array_equal(m.W,old)
+    # A rollback must survive process restart, not only restore live arrays.
+    restored=OnlinePredictor(2,2,tmp_path)
+    np.testing.assert_array_equal(restored.W,old)
+    assert restored.seen==16
 
 
 def test_rollback_without_prior_snapshot_is_rejected(tmp_path):
