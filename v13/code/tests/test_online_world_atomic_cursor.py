@@ -45,6 +45,24 @@ class AtomicT8CursorTests(unittest.TestCase):
             self.assertEqual(restarted.update()['learned'],1)
             self.assertEqual(OnlineWorld(self.runtime).model.seen,2)
 
+    def test_failed_checkpoint_restores_live_weights_before_same_process_retry(self):
+        rows=[transition('a')]
+        with patch.object(world_model,'transitions',return_value=rows):
+            world=OnlineWorld(self.runtime)
+            world.update()
+            original_w=world.model.W.copy()
+            original_seen=world.model.seen
+            rows.append(transition('b'))
+            checkpoint=world.model.checkpoint
+            with patch.object(world.model,'checkpoint',side_effect=OSError('disk failure')):
+                with self.assertRaisesRegex(OSError,'disk failure'):
+                    world.update()
+            np.testing.assert_array_equal(world.model.W,original_w)
+            self.assertEqual(world.model.seen,original_seen)
+            self.assertEqual(world.processed,['a'])
+            self.assertEqual(world.update()['learned'],1)
+            self.assertEqual(OnlineWorld(self.runtime).model.seen,2)
+
     def test_legacy_cursor_mismatch_refuses_unsafe_replay(self):
         with patch.object(world_model,'transitions',return_value=[transition('a')]):
             world=OnlineWorld(self.runtime)
