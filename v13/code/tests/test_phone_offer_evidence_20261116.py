@@ -100,12 +100,29 @@ class OfferEvidence(unittest.TestCase):
         self.assertFalse(r["turns"][0]["c3_prompt_inclusion_proven"])
         self.assertFalse(r["turns"][0]["c3_semantic_use_proven"])
         self.assertFalse(r["turns"][0]["native_latent_exchange_proven"])
+        # B2 has an unquoted hypothesis: matching delivery receipts and C3
+        # tokens are insufficient for a positive two-hemisphere evidence gate.
         self.assertEqual(
-            r["end_to_end_gate"]["both_body_selected_delivered_and_c3_generated_turns"], 1)
+            r["end_to_end_gate"]["both_body_selected_delivered_and_c3_generated_turns"], 0)
         self.assertEqual(r["end_to_end_gate"]["status"],
-                         "BOTH_BODY_C4_C3_METADATA_ONLY")
+                         "B1_B2_TO_C3_CHAIN_NOT_OBSERVED")
         self.assertFalse(r["end_to_end_gate"]["native_prompt_offer_inclusion_verified"])
         self.assertNotIn("SECRET", json.dumps(r))
+
+    def test_two_quote_bearing_receipts_with_c3_output_still_only_metadata(self):
+        self.assistant(selected=("b1", "b2"))
+        self.packet("B1_DETAIL", "b1", evidence=True)
+        self.packet("B2_GIST", "b2", evidence=True)
+        self.receipt("B1_DETAIL", "b1")
+        self.receipt("B2_GIST", "b2")
+        out = audit(self.db)
+        gate = out["end_to_end_gate"]
+        self.assertEqual(gate["status"], "BOTH_BODY_C4_C3_METADATA_ONLY")
+        self.assertEqual(gate["both_body_selected_delivered_and_c3_generated_turns"], 1)
+        self.assertFalse(gate["source_span_revalidated_by_audit"])
+        self.assertFalse(gate["native_prompt_offer_inclusion_verified"])
+        self.assertFalse(gate["learned_latent_exchange_verified"])
+        self.assertNotIn("SECRET", json.dumps(out))
 
     def test_untrusted_metadata_does_not_crash_or_leak(self):
         cases = [
