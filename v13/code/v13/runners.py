@@ -312,6 +312,11 @@ class LlamaRunner:
                 self._prompt_admission={'revision':admission.REVISION,'status':'ADMITTED',
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
                     'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
+                if self.role == 'C3_LANGUAGE':
+                    from .native_offer_prompt_receipt import inspect
+                    from .prompts import text as v13_prompt_text
+                    self._prompt_admission['offer_template_witness'] = inspect(
+                        work, p, v13_prompt_text(self.cfg, 'hypotheses'))
                 return p,count,truncated
             candidate=admission.reduce_once(work,self.role,self.cfg)
             if candidate:
@@ -324,6 +329,11 @@ class LlamaRunner:
                     'status':'PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET',
                     'original_prompt_tokens':initial_tokens,'prompt_tokens':count,
                     'target_tokens':target,'removed_layers':removed,'source_text_rewritten':False}
+                if self.role == 'C3_LANGUAGE':
+                    from .native_offer_prompt_receipt import inspect
+                    from .prompts import text as v13_prompt_text
+                    self._prompt_admission['offer_template_witness'] = inspect(
+                        work, p, v13_prompt_text(self.cfg, 'hypotheses'))
                 return p,count,truncated
             raise Limits("Frage + Regeln überschreiten das native Kontextfenster. Kürzer fragen oder :budget context_tokens erhöhen.")
         raise Limits("Native Kontextzulassung: maximale sichere Reduktionsschritte erreicht")
@@ -336,6 +346,7 @@ class LlamaRunner:
             if not audit_locked:raise Unavailable('Concurrent native audit request')
         self._audit_window=None;self._audit_unavailable=None;self._audit_completed=False
         self._prompt_admission=None
+        self._native_completion_http_200=False
         # Measure cold load, prefill and streaming, including failed/cancelled calls.
         started=time.monotonic();done=threading.Event();samples=[];peaks={'rss_bytes':None,'pss_bytes':None};count=0;self.last_metrics={};self.phase='load';self.phase_started=started;self.stage_times={};status='FINAL'
         def sample():
@@ -365,6 +376,16 @@ class LlamaRunner:
             self.last_metrics['sampled_peak_rss_bytes']=max(values) if values else None
             self.last_metrics.setdefault('generated_tokens',0);self.last_metrics.setdefault('ttft_s',None)
             if self._prompt_admission is not None:self.last_metrics['prompt_admission']=self._prompt_admission
+            if self.role == 'C3_LANGUAGE' and type(self._prompt_admission) is dict:
+                witnessed=self._prompt_admission.get('offer_template_witness')
+                if type(witnessed) is dict:
+                    self.last_metrics['native_offer_prompt_receipt']={
+                        **witnessed,
+                        'native_completion_http_200':self._native_completion_http_200,
+                        'native_template_submitted':bool(
+                            self._native_completion_http_200
+                            and witnessed.get('status')=='RENDERED_WITH_QUOTES'),
+                        'native_attention_or_semantic_use_proven':False}
             # A synchronous check may beat the watchdog. Do not stop its watcher
             # and leave the old native request running after declaring idle.
             if audit_locked:
@@ -433,6 +454,7 @@ class LlamaRunner:
         try:
             conn.request("POST","/completion",wire_json(payload).encode(),{"Content-Type":"application/json","Authorization":"Bearer "+self.key});response=conn.getresponse()
             if response.status!=200:raise RuntimeError(f"Inferenz HTTP {response.status}: {response.read(200).decode(errors='replace')}")
+            self._native_completion_http_200=True
             while True:
                 check(cancel,deadline);line=response.readline()
                 if not line:break

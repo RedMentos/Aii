@@ -96,6 +96,47 @@ def _role_from_packet(payload, kind):
     return role if role in ROLES else None
 
 
+def _runtime_native_template_receipts(report, selected, events):
+    """Cross-check the runtime's reported HTTP-200 template witness against local packet IDs.
+
+    The audit does NOT independently attest the server, hashes, source text or
+    model attention. Mismatched, stale, malformed and absent claims fail closed.
+    """
+    witness = report.get("native_offer_prompt_receipt")
+    if type(witness) is not dict:
+        return set()
+    if (witness.get("revision") != "v13.native-offer-prompt-receipt/1"
+            or witness.get("status") != "RENDERED_WITH_QUOTES"
+            or witness.get("native_template_submitted") is not True
+            or witness.get("native_completion_http_200") is not True
+            or witness.get("native_template_rendered") is not True
+            or witness.get("source_span_revalidated_here") is not False
+            or witness.get("native_semantic_use_proven") is not False):
+        return set()
+    rows = witness.get("offers")
+    if type(rows) is not list or not 1 <= len(rows) <= len(ROLES):
+        return set()
+    seen, matched = set(), set()
+    for row in rows:
+        if type(row) is not dict:
+            return set()
+        role, ident, n = (row.get("role"), row.get("packet_id"),
+                          row.get("rendered_quote_count"))
+        if (type(role) is not str or role not in ROLES or role in seen
+                or type(ident) is not str or not 0 < len(ident) <= 256
+                or type(n) is not int or not 1 <= n <= 8):
+            return set()
+        seen.add(role)
+        # This reported native template must refer to this turn's selected,
+        # durably delivered, quoted packet of the exact expected role.
+        if (ident not in selected or ident not in events[role]["delivered_ids"]
+                or not (type(events[role]["offers"].get(ident)) is int
+                        and events[role]["offers"][ident] > 0)):
+            return set()
+        matched.add(role)
+    return matched
+
+
 def _audit_one(conn, index, event_id, status, metadata):
     meta = _obj(metadata)
     raw_selected = meta.get("selected_offer_ids")
@@ -210,6 +251,10 @@ def _audit_one(conn, index, event_id, status, metadata):
             "selected_quoted_receipts": len(selected_delivered & quoted),
             "last_native": attempts[-1] if attempts else None,
         }
+    native_template_roles = (_runtime_native_template_receipts(report, selected_ids, events)
+                             if native_c3_output and not incomplete else set())
+    for role in ROLES:
+        roles[role]["native_template_http200_submitted"] = role in native_template_roles
     c3phases = _safe_phases(report)
     return {
         "index_newest_first": index,
@@ -219,6 +264,7 @@ def _audit_one(conn, index, event_id, status, metadata):
         "c3_prompt_tokens": _count(report.get("prompt_tokens")),
         "c3_generated_tokens": native_c3_tokens,
         "c3_native_output_observed": native_c3_output,
+        "native_template_http200_submitted_roles": sorted(native_template_roles),
         "audit_incomplete": incomplete,
         "c3_prompt_inclusion_proven": False,
         "c3_semantic_use_proven": False,
@@ -266,6 +312,10 @@ def audit(conn, limit=10):
                 and t["roles"][r]["selected_quoted_receipts"] > 0
                 for r in ROLES)
         for t in turns)
+    both_native = sum(
+        t["c3_native_output_observed"] and not t["audit_incomplete"]
+        and all(t["roles"][r]["native_template_http200_submitted"] for r in ROLES)
+        for t in turns)
     zero_token_c3_deadlines = sum(
         t["turn_status"] == "DEADLINE"
         and t["c3_reporter"] and t["c3_generated_tokens"] == 0
@@ -273,6 +323,7 @@ def audit(conn, limit=10):
     incomplete_turns = sum(t["audit_incomplete"] for t in turns)
     proof_status = ("NO_ASSISTANT_TURNS" if not turns
                     else "BOUNDED_METADATA_INCOMPLETE" if incomplete_turns
+                    else "BOTH_BODY_NATIVE_TEMPLATE_HTTP200_REPORTED" if both_native
                     else "BOTH_BODY_C4_C3_METADATA_ONLY" if both
                     else "B1_B2_TO_C3_CHAIN_NOT_OBSERVED")
     return {
@@ -281,16 +332,20 @@ def audit(conn, limit=10):
         "end_to_end_gate": {
             "status": proof_status,
             "both_body_selected_delivered_and_c3_generated_turns": both,
+            "both_body_native_template_http200_reported_turns": both_native,
             "c3_deadline_zero_token_turns": zero_token_c3_deadlines,
             "incomplete_metadata_turns": incomplete_turns,
             "native_prompt_offer_inclusion_verified": False,
+            "native_template_submission_reported_by_runtime": both_native > 0,
             "source_span_revalidated_by_audit": False,
             "learned_latent_exchange_verified": False,
             "device_functional_acceptance": "NOT_VERIFIED",
         },
         "device_proof": "NOT_INDEPENDENTLY_VERIFIED",
-        "evidence_boundary": "METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY",
-        "warning": "IN_FINAL_C3_REPORT is a legacy label. Even two positive quote-bearing packet receipts and C3 tokens do not prove source revalidation in this audit, actual C3 prompt inclusion, semantic use, or learned latent exchange.",
+        "evidence_boundary": (
+            "LOCAL_SQLITE_METADATA_PLUS_REPORTED_HTTP_200_NATIVE_TEMPLATE_RECEIPTS"
+            if both_native else "METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY"),
+        "warning": "Template receipts are runtime-reported evidence that the exact typed hypothesis layer survived native rendering and was submitted to an HTTP 200 completion endpoint; no independent native-device attestation, attention, semantic use or learned latent exchange is established.",
         "turn_count": len(turns),
         "roles": summary,
         "turns": turns,
