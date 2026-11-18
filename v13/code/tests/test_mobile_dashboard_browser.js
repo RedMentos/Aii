@@ -35,7 +35,8 @@ const map = new Map([
   ['chat-running', elem()], ['ai-service-state', elem()], ['update-progress', elem()],
   ['update-result', elem()], ['pipeline-result', elem()], ['diagnostic-result', elem()], ['notice', notice],
   ['chat-compose', form], ['chat-input', chat],
-  ['copy-chat', elem()], ['live-native-roles', elem()]
+  ['copy-chat', elem()], ['live-native-roles', elem()],
+  ['lab-age-live', elem()], ['lab-age-stage', elem()], ['lab-age-mode', elem()]
 ]);
 const document = {
   hidden: true,
@@ -113,7 +114,9 @@ assert.equal(typeof listeners.submit, 'function', 'form submit callback register
         roles: { B1_DETAIL: {processes: 1, pss_mib: 750.2},
           B2_GIST: {processes: 1, pss_mib: 702.1},
           C2_CONTROL: {processes: 1, pss_mib: 96.0},
-          C3_LANGUAGE: {processes: 1, pss_mib: 224.1} } }
+          C3_LANGUAGE: {processes: 1, pss_mib: 224.1} } },
+       lab_age: { official_stage: 0, stage: 9, mode: 'active',
+          config_persisted: true, compute_requested: true }
     }; } };
   };
   await refreshCallback();
@@ -123,5 +126,9 @@ assert.equal(typeof listeners.submit, 'function', 'form submit callback register
     ['B1 Detail','B2 Gist','C2 JEF','C3 Sprache']);
   assert.match(nativeRoles[0].textContent, /750.2 MiB PSS/);
   assert.match(nativeRoles[2].textContent, /C2 JEF: 1 laufend/);
-  console.log('PASS: real dashboard JS POST + four native model live polling');
+  assert.match(map.get('lab-age-live').textContent, /Labor-Age 9/);
+  assert.match(map.get('lab-age-live').textContent, /AKTIV ANGEFORDERT/);
+  assert.equal(map.get('lab-age-stage').value, '9');
+  assert.equal(map.get('lab-age-mode').value, 'active');
+  console.log('PASS: dashboard JS POST + native roles + laboratory Age live polling');
 })().catch(err => { console.error(err); process.exitCode = 1; });
