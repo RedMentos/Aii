@@ -20,16 +20,21 @@ class LabAgeTests(unittest.TestCase):
         self.addCleanup(self.store.close)
         self.age = AgeControl(self.store, self.cfg)
 
-    def test_initially_level_ten_shadow_and_official_age_zero(self):
+    def test_initially_owner_requested_level_ten_active_and_official_age_zero(self):
         v = lab_age.view(self.home, official_stage=self.age.system_stage())
         self.assertEqual(v["stage"], 10)
-        self.assertEqual(v["mode"], "shadow")
+        self.assertEqual(v["mode"], "active")
+        self.assertTrue(v["compute_requested"])
+        self.assertFalse(v["config_persisted"])
         self.assertTrue(v["test_only"])
         self.assertEqual(self.age.view()["system_stage"], 0)
         current = effort.age_limits(self.age)
         self.assertEqual(current["stage"], 0)
-        self.assertEqual(current["focal_depth"], 1)
-        self.assertEqual(current["autonomous_effort_max"], "low")
+        # A healthy GREEN device uses the user's requested test budget.
+        self.assertEqual(current["focal_depth"], 3)
+        self.assertEqual(current["autonomous_effort_max"], "max")
+        self.assertTrue(current["lab_compute_active"])
+        self.assertEqual(current["lab_compute_gate"], "APPLIED")
 
     def test_active_level_ten_increases_compute_not_tool_rights(self):
         lab_age.save(self.home, mode="active", stage=10)
@@ -66,7 +71,8 @@ class LabAgeTests(unittest.TestCase):
     def test_resource_guard_still_blocks_extra_compute(self):
         lab_age.save(self.home, mode="active", stage=10)
         observed = effort.age_limits(self.age, "CRITICAL")
-        self.assertFalse(observed["lab_compute_active"] is False and observed["focal_depth"] != 1)
+        self.assertFalse(observed["lab_compute_active"])
+        self.assertEqual(observed["lab_compute_gate"], "BLOCKED_RESOURCE")
         self.assertEqual(observed["focal_depth"], 1)
         self.assertEqual(observed["autonomous_effort_max"], "low")
 
@@ -91,10 +97,27 @@ class LabAgeTests(unittest.TestCase):
             lab_age.save(self.home, mode="unlock_permissions")
         self.assertFalse((self.home / "config/lab-age.json").exists())
 
+    def test_neither_requested_lab_stage_nor_thermal_block_changes_earned_age(self):
+        for level in (0, 3, 7, 10):
+            with self.subTest(level=level):
+                lab_age.save(self.home, mode="active", stage=level)
+                green = effort.age_limits(self.age, "GREEN")
+                red = effort.age_limits(self.age, "CRITICAL")
+                self.assertEqual(green["stage"], 0)
+                self.assertEqual(green["lab_stage"], level)
+                self.assertEqual(red["lab_stage"], level)
+                self.assertEqual(red["stage"], 0)
+                self.assertEqual(green["lab_compute_active"], level > 0)
+                self.assertFalse(red["lab_compute_active"])
+                self.assertFalse(self.age.may("simple_tool_choice"))
+                self.assertFalse(self.age.may("body_swap"))
+                self.assertEqual(self.cfg["learning_mode"], "RECORD_ONLY")
+
     def test_config_persists_reversible_with_private_permissions(self):
         result = lab_age.save(self.home, mode="active", stage=7)
         self.assertEqual(result["mode"], "active")
         self.assertEqual(lab_age.read(self.home)["stage"], 7)
+        self.assertTrue(lab_age.view(self.home)["config_persisted"])
         self.assertEqual((self.home / "config/lab-age.json").stat().st_mode & 0o077, 0)
         lab_age.save(self.home, mode="off")
         self.assertFalse(effort.age_limits(self.age)["lab_compute_active"])
