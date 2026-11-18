@@ -81,7 +81,7 @@ def check(conn):
     zero_c3_tokens = 0
     native_http200 = 0
     quoted_c4 = 0
-    body_role_turns = {r: {"attempt": 0, "selected_delivered": 0,
+    body_role_turns = {r: {"attempt": 0, "selected_delivered_quoted_metadata": 0,
                            "rendered_http200_reported": 0} for r in ROLES}
     max_seconds = None
     max_native_rss_mib = None
@@ -121,7 +121,7 @@ def check(conn):
         deadline = _finite(
             budget_cfg.get("deadline_seconds") if type(budget_cfg) is dict else None,
             positive=True)
-        if native and c3_done and duration is not None and deadline is not None:
+        if c3_done and duration is not None and deadline is not None:
             timing_present += 1
             within_deadline += int(duration <= deadline)
         if c3_done and _finite(report.get("ttft_s")) is not None:
@@ -140,7 +140,7 @@ def check(conn):
         for role in ROLES:
             record = turn["roles"][role]
             body_role_turns[role]["attempt"] += int(record["native_attempts"] > 0)
-            body_role_turns[role]["selected_delivered"] += int(
+            body_role_turns[role]["selected_delivered_quoted_metadata"] += int(
                 record["selected_quoted_receipts"] > 0 and c3_done)
             body_role_turns[role]["rendered_http200_reported"] += int(
                 record.get("native_template_http200_submitted") is True and c3_done)
@@ -166,6 +166,10 @@ def check(conn):
         local_status = "NATIVE_DEADLINE_EXCEEDED"
     elif native_first_token_present != WINDOW:
         local_status = "MISSING_NATIVE_FIRST_TOKEN_TIMINGS"
+    elif not quoted_c4:
+        local_status = "NO_BOTH_BODY_SELECTED_QUOTED_RECEIPTS"
+    elif not native_http200:
+        local_status = "NO_BOTH_BODY_NATIVE_TEMPLATE_SUBMISSION_WITNESS"
     else:
         local_status = "LOCAL_METADATA_COHORT_COMPLETE_DEVICE_REVIEW_REQUIRED"
 
@@ -186,7 +190,7 @@ def check(conn):
         "native_within_declared_deadline_turns": within_deadline,
         "maximum_turn_seconds": max_seconds,
         "maximum_runner_reported_rss_mib": max_native_rss_mib,
-        "both_body_selected_source_quote_receipt_turns": quoted_c4,
+        "both_body_selected_quoted_metadata_receipt_turns": quoted_c4,
         "both_body_native_template_http200_reported_turns": native_http200,
         "body_roles": body_role_turns,
         "device_physical_execution_independently_verified": False,
