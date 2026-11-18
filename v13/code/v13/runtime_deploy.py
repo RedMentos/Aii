@@ -345,9 +345,14 @@ def needs_deploy(source, *, home=None, private=None):
         # the verified immutable stage manifest, not by the intermediate hash.
         manifest = json.loads((installed / STAGE_MANIFEST).read_text(encoding="utf-8"))
         final_ui = manifest["files_sha256"].get(UI_SOURCE)
-        if (UI_SOURCE not in manifest.get("replaced_files", [])
-                or type(final_ui) is not str
+        generated = manifest.get("replaced_files", [])
+        if (type(generated) is not list or type(final_ui) is not str
                 or not re.fullmatch(r"[a-f0-9]{64}", final_ui)):
+            return True
+        # Legacy plain-chat staging legitimately copies the independently
+        # pinned intermediate UI without a generated-file entry. The composed
+        # Runtime adds a generated UI and is checked against its manifest.
+        if UI_SOURCE not in generated and final_ui != UI_DERIVED_SHA256:
             return True
     except (OSError, ValueError, KeyError, TypeError, RuntimeDeployError):
         return True
