@@ -123,7 +123,15 @@ def exercise_worker_migration(base):
         assert old['result']['runtime'] == 'UPDATED', old
         assert old['result']['dashboard'] in ('UPDATED', 'UP_TO_DATE'), old
         for checkout in (agent, runtime):
-            assert git('rev-parse', 'HEAD', cwd=checkout) == target
+            # A source branch that is falsely called UP_TO_DATE is worse than
+            # a still-pending update: capture both Git refs to pin the cause.
+            local = git('rev-parse', 'HEAD', cwd=checkout)
+            tracking = git('rev-parse',
+                'refs/remotes/origin/' + RELEASE_BRANCH, cwd=checkout)
+            assert local == target, {'old': old, 'checkout': checkout.name,
+                                     'local': local, 'tracking': tracking,
+                                     'bare': git('--git-dir', remote, 'rev-parse',
+                                                 'refs/heads/' + RELEASE_BRANCH)}
         assert (agent / 'v13/code/v13/mobile_dashboard.html').is_file()
         assert (agent / 'v13/code/v13/mobile_dashboard.py').is_file()
         for name in ('mobile_dashboard.py', 'mobile_dashboard.html'):
