@@ -48,7 +48,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :feedback output <gewünschter Referenztext> [--learn] (erster nativer Token)
 :budget [Name Wert] / :learning record|shadow|commit / :learn [route|wake|halt|b1_predictor|b2_predictor|a3_student|world_predictor|control_calibration|memory_retrieval|output_adapter]
 :requests / :approve <ID> / :reject <ID> / :rollback <Update-ID>
-:rules [add <Regel>|remove <Index> [weitere Indizes]] / :permissions / :age [freeze on|off|lower <n>|structural lock|unlock] / :stage cap 0..5
+:rules [add <Regel>|remove <Index> [weitere Indizes]] / :permissions / :age [freeze on|off|lower <n>|structural lock|unlock] / :labage [status|0..10 [active|shadow|off]|active|shadow|off] / :stage cap 0..5
 :rules fixed "exakte Frage" "exakte Antwort" (Diff, dann :approve ID; kein semantischer Abgleich)
 :teacher on|off|compare / :teacher use B1_DETAIL|B2_GIST|C3_LANGUAGE
 :dream / :probe [jef-modes|step12|body-state|sustained]
@@ -326,11 +326,33 @@ class Operator:
         if cmd=='permissions':return dumps({'operator_command_origin':'TTY only','network':'explicit model setup/download only','model_tool_execution':False,'filesystem_tools_for_models':False,'registered_tools':'typed schema, user-enabled; write/network/external effects only after per-call human approval as WP-K transactions (:tx)','weight_commit':'validated artifact + individual operator approval','latent_injection':False,'natural_language_rules':'prompt guidance, no deterministic semantic guarantee','hard_prohibitions':'typed :verbot rows + :notaus, exact match, checked before and again right before every tool effect; beat per-call approval','fixed_output_rules':'operator-approved exact full-query matching only; invalid active typed rules fail closed','semantic_neural_rule_checker':False})
         if cmd=='age':
             a=agectl.controller(r)
-            if not args:return dumps(a.view())
+            if not args:
+                from .lab_age import view
+                return dumps({'official':a.view(),
+                              'laboratory':view(r.home,official_stage=a.system_stage())})
             if args[0]=='freeze' and len(args)==2 and args[1] in {'on','off'}:a.freeze(args[1]=='on');return dumps(a.view())
             if args[0]=='lower' and len(args)==2:return dumps(a.lower('system',int(args[1])))
             if args[0]=='structural' and len(args)==2 and args[1] in {'lock','unlock'}:a.lock_structural(args[1]=='lock');return dumps(a.view())
             raise ValueError(':age [freeze on|off|lower <n>|structural lock|unlock]')
+        if cmd=='labage':
+            from .lab_age import save,read,view
+            official=agectl.controller(r).system_stage()
+            if not args or args==['status']:
+                return dumps(view(r.home,official_stage=official))
+            if len(args)==1 and args[0] in ('active','shadow','off'):
+                saved=save(r.home,mode=args[0])
+            elif len(args) in (1,2) and args[0].isascii() and args[0].isdecimal() and (
+                    len(args)==1 or args[1] in ('active','shadow','off')):
+                level=int(args[0])
+                # A bare numeric selection means *test this level*, not a
+                # silently inert shadow-mode level selection.
+                saved=save(r.home,stage=level,mode=args[1] if len(args)==2
+                           else 'active')
+            else:
+                raise ValueError(':labage [status|0..10 [active|shadow|off]|active|shadow|off]')
+            if read(r.home)!=saved:
+                raise ValueError('Labor-Age konnte nicht dauerhaft bestätigt werden')
+            return dumps(view(r.home,official_stage=official))
         if cmd=='focal':
             from . import focal
             return dumps(focal.summary(s,r.session))
