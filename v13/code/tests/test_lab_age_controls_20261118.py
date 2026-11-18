@@ -120,6 +120,56 @@ class LabOperatorEndToEnd(unittest.TestCase):
             self.assertNotIn("LabConfig(initialize", (code/"v13/runtime.py").read_text())
             for file in ("v13/age.py","v13/runtime.py","v13/operator.py","v13/ui.py"):
                 compile((staged/file).read_bytes(), str(staged/file), "exec")
+            # Execute the *real generated worker arm* with a tiny synthetic
+            # Learner, rather than merely looking for string markers.
+            import ast
+            import queue
+            import time
+            from v13.lab_age import LabConfig
+            syntax = ast.parse(text_runtime)
+            cls = next(n for n in syntax.body if isinstance(n,ast.ClassDef)
+                       and n.name == "Runtime")
+            method = next(n for n in cls.body if isinstance(n,ast.FunctionDef)
+                          and n.name == "_worker")
+            unit = ast.fix_missing_locations(ast.Module(body=[method],type_ignores=[]))
+            namespace = {"time":time,"queue":queue}
+            exec(compile(unit, str(staged/"v13/runtime.py"),"exec"),namespace)
+            home = Path(tmp)/"owner"
+            persisted = initialize(home)
+            config = LabConfig(persisted,home)
+            record = []
+            stop = threading.Event()
+            class MiniStore:
+                def pending_turns(self,*_):return []
+                def log(self,kind,_,meta):
+                    record.append((kind,meta.get("error")))
+                    stop.set()
+            class MiniLearner:
+                def shadow(self):
+                    record.append(("LEARNER_EXECUTED",config["learning_mode"]))
+                    stop.set()
+                    return "SHADOW_CANDIDATE_ONLY"
+            jobs = queue.Queue()
+            jobs.put(("lab_shadow","route",0,time.monotonic()))
+            fake = SimpleNamespace(stop=stop,paused=False,lock=threading.RLock(),
+                jobs=jobs,queued_bytes=0,current=None,cancel_event=threading.Event(),
+                store=MiniStore(),cfg=config,learner=MiniLearner(),
+                _session_local=threading.local(),status="READY",
+                notice=lambda note:record.append(("notice",note)))
+            namespace["_worker"](fake)
+            self.assertIn(("LEARNER_EXECUTED","SHADOW_UPDATE"),record)
+            self.assertEqual(config["learning_mode"],"RECORD_ONLY")
+            self.assertEqual(jobs.unfinished_tasks,0)
+            # Revoking X10 before execution prevents any training attempt.
+            record.clear()
+            stop.clear()
+            lab_age.save(home,mode="off")
+            jobs.put(("lab_shadow","route",0,time.monotonic()))
+            namespace["_worker"](fake)
+            self.assertFalse(any(kind=="LEARNER_EXECUTED" for kind,_ in record))
+            self.assertTrue(any(kind=="job_error" for kind,_ in record))
+            self.assertEqual(config["learning_mode"],"RECORD_ONLY")
+            self.assertEqual(jobs.unfinished_tasks,0)
 
 class BrowserLabAgeEndToEnd(unittest.TestCase):
     def test_real_webview_stage_apply_readback_status_and_invalid_requests(self):
