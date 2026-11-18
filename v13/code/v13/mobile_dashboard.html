@@ -192,6 +192,7 @@ summary{cursor:pointer;font-weight:650}
   const progress = document.getElementById('update-progress');
   const updateStatus = document.getElementById('update-result');
   const pipelineStatus = document.getElementById('pipeline-result');
+  const labAgeStatus = document.getElementById('lab-age-live');
   const diagnosticStatus = document.getElementById('diagnostic-result');
   const notice = document.getElementById('notice');
   let prior = out.textContent;
@@ -204,6 +205,23 @@ summary{cursor:pointer;font-weight:650}
     notice.classList.add('visible');
     clearTimeout(noticeTimer);
     noticeTimer = setTimeout(()=>notice.classList.remove('visible'), 6500);
+  }
+  function showLabAge(actual){
+    if(!actual || typeof actual !== 'object' ||
+       !Number.isInteger(actual.stage) || actual.stage<0 || actual.stage>10 ||
+       !['off','shadow','active'].includes(actual.mode))return;
+    const requested = actual.mode==='active' && actual.stage>0;
+    if(labAgeStatus)labAgeStatus.textContent =
+      'Offiziell Age '+String(actual.official_stage===0?0:'?')+
+      ' · Labor-Age '+actual.stage+' · '+actual.mode.toUpperCase()+
+      ' · '+(requested?'AKTIV ANGEFORDERT':'SHADOW / AUS')+
+      ' · '+(actual.config_persisted?'Gespeichert':'Voreinstellung')+
+      ' · Ressourcen können Zusatz-Rechenzeit begrenzen';
+    const stageControl=document.getElementById('lab-age-stage');
+    const modeControl=document.getElementById('lab-age-mode');
+    // Do not undo an unfinished edit while the user is actively choosing it.
+    if(stageControl && stageControl!==document.activeElement)stageControl.value=String(actual.stage);
+    if(modeControl && modeControl!==document.activeElement)modeControl.value=actual.mode;
   }
   function tab(name){
     document.querySelectorAll('[data-tab]').forEach(b=>{
@@ -263,6 +281,7 @@ summary{cursor:pointer;font-weight:650}
       }
       if(!response.ok||!data.ok)throw new Error(data.message||'HTTP '+response.status);
       showNotice(data.message||'Aktion ausgeführt');
+      if(action==='lab_age_set' && data.lab_age)showLabAge(data.lab_age);
       if(action==='send')form.querySelector('textarea').value='';
       if(String(action).includes('update')||action==='pipeline_check'||String(action).startsWith('diag_send_')||String(action).startsWith('remote_')){tab('maintenance');}
       // Keep rendered WebView toggles synchronized with durable worker state.
@@ -326,6 +345,7 @@ summary{cursor:pointer;font-weight:650}
       }
       if(typeof data.update_result==='string')updateStatus.textContent=data.update_result;
       if(typeof data.pipeline_status==='string')pipelineStatus.textContent=data.pipeline_status;
+      if(data.lab_age)showLabAge(data.lab_age);
       if(data.native_residency)updateNativeRoles(data.native_residency);
       if(typeof data.diagnostic_status==='string')diagnosticStatus.textContent=data.diagnostic_status;
       if(data.brain_evidence){
