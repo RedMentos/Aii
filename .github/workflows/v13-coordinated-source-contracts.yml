@@ -26,10 +26,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-          fetch-depth: 64
+          fetch-depth: 0
       - name: Scan proposed changes for private material
         env:
-          V13_REVIEW_BASE: ${{ github.event.pull_request.base.sha || '5d9a86176edb45565af482644ee80dbd622d5614' }}
+          V13_REVIEW_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
         run: python scripts/public_repo_privacy_scan.py --base "$V13_REVIEW_BASE" --head HEAD --no-worktree
       - uses: actions/setup-python@v5
         with:
