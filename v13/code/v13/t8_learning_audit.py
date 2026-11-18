@@ -29,6 +29,11 @@ def benchmark(world, limit=512, min_holdout=4):
         if key in unique:
             raise ValueError('Duplicate T8 action ID')
         unique[key] = (row.get('event_id'), world.encode(row))
+    # Mixed legacy and event-bound rows cannot safely be split as individual actions.
+    has_event = [((type(event) is str and bool(event)) or (type(event) is int and event >= 0))
+                 for event, _ in unique.values()]
+    if any(has_event) and not all(has_event):
+        raise ValueError('Mixed event-bound and legacy T8 rows: holdout would leak siblings')
     # Group all actions of the same event together to prevent sibling leakage.
     # Legacy synthetic rows without event_id are individually split and flagged.
     grouped = all((type(event) is str and bool(event)) or (type(event) is int and event >= 0)
@@ -45,7 +50,8 @@ def benchmark(world, limit=512, min_holdout=4):
     tracemalloc.start()
     started = time.perf_counter()
     try:
-        for label, rehearsals in (('replay_on', 2), ('replay_off', 0)):
+        for label, rehearsals in (('replay_on', 2), ('replay_off', 0),
+                                  ('action_shift_control', 2)):
             with tempfile.TemporaryDirectory(prefix='v13-t8-audit-') as home:
                 model = OnlinePredictor(7, len(world_model.ACTIONS), home,
                                         lr=world.model.lr, replay=world.model.cap)
@@ -53,7 +59,9 @@ def benchmark(world, limit=512, min_holdout=4):
                 old_anchor = train[:max(1, len(train)//4)]
                 anchor_before = model.error(old_anchor)
                 for x, action, y in train:
-                    model.observe(x, action, y, rehearsals=rehearsals)
+                    fit_action = ((action + 1) % len(world_model.ACTIONS)
+                                  if label == 'action_shift_control' else action)
+                    model.observe(x, fit_action, y, rehearsals=rehearsals)
                 after = model.error(holdout)
                 anchor_after = model.error(old_anchor)
                 model.checkpoint()
@@ -75,6 +83,9 @@ def benchmark(world, limit=512, min_holdout=4):
         _, peak = tracemalloc.get_traced_memory()
     finally:
         tracemalloc.stop()
+    results['replay_on']['action_specific_gain_vs_shift_control'] = (
+        results['action_shift_control']['holdout_mse_after'] -
+        results['replay_on']['holdout_mse_after'])
     return {'status': 'SYNTHETIC_OR_LOCAL_T8_AUDIT_NOT_ANDROID_PROOF',
             'train': len(train), 'holdout': len(holdout),
             'split': 'SHA256_EVENT_ID_MOD5' if grouped else 'SHA256_ACTION_ID_MOD5_LEGACY_UNGROUPED', 'production_unchanged': True,

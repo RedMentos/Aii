@@ -38,7 +38,7 @@ def test_group_split_and_pre_post_retention(tmp_path):
             measurement['early_train_anchor_mse_after'] - measurement['early_train_anchor_mse_before'],
         )
         assert measurement['restart_exact']
-    assert result['production_unchanged']
+    assert 'action_shift_control' in result['results']\n    assert np.isfinite(result['results']['replay_on']['action_specific_gain_vs_shift_control'])\n    shifted = result['results']['action_shift_control']\n    assert shifted['restart_exact']\n    assert shifted['updates'] == result['results']['replay_on']['updates']\n    assert result['production_unchanged']
     assert not world.model.path.exists()
 
 
@@ -50,3 +50,15 @@ def test_legacy_ungrouped_rows_are_explicitly_labeled(tmp_path):
     with patch('v13.t8_learning_audit.world_model.transitions', return_value=rows):
         result = OnlineWorld(runtime).benchmark(limit=120)
     assert result['split'] == 'SHA256_ACTION_ID_MOD5_LEGACY_UNGROUPED'
+
+
+def test_mixed_event_provenance_fails_closed_before_training(tmp_path):
+    import pytest
+    rows = [_row(i) for i in range(120)]
+    del rows[0]['event_id']
+    runtime = SimpleNamespace(home=tmp_path, store=object())
+    with patch('v13.t8_learning_audit.world_model.transitions', return_value=rows):
+        world = OnlineWorld(runtime)
+        with pytest.raises(ValueError, match='Mixed event-bound'):
+            world.benchmark(limit=120)
+    assert not world.model.path.exists()
