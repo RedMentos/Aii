@@ -2,8 +2,15 @@
 
 Uses a disposable loopback HTTP server. No owner content or GGUF is involved.
 """
+import hashlib
+import importlib.util
 import json
+import os
+from pathlib import Path
 import sqlite3
+import subprocess
+import sys
+import tempfile
 import threading
 import time
 import unittest
@@ -182,6 +189,39 @@ class NativeHTTPBound(unittest.TestCase):
         receipt = runner.last_metrics["native_offer_prompt_receipt"]
         self.assertFalse(receipt["native_completion_http_200"])
         self.assertFalse(receipt["native_template_submitted"])
+
+
+class InstalledStageWitness(unittest.TestCase):
+    def test_actual_composed_stage_contains_instrumented_runner_and_helper(self):
+        code = Path(__file__).resolve().parents[1]
+        stager_path = code / "scripts" / "stage_integrated_candidate.py"
+        spec = importlib.util.spec_from_file_location("v13_prompt_witness_stage", stager_path)
+        stager = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(stager)
+        with tempfile.TemporaryDirectory(prefix="v13-native-witness-stage-") as tmp:
+            target = Path(tmp) / "code"
+            stager.stage(code, target)
+            for relative in ("v13/runners.py", "v13/native_offer_prompt_receipt.py",
+                             "v13/phone_offer_delivery_audit.py"):
+                source = code / relative
+                copied = target / relative
+                self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(),
+                                 hashlib.sha256(copied.read_bytes()).hexdigest())
+            statement = """from pathlib import Path
+from v13 import runners, native_offer_prompt_receipt as witness
+base=Path.cwd().resolve()
+assert Path(runners.__file__).resolve().is_relative_to(base)
+assert Path(witness.__file__).resolve().is_relative_to(base)
+assert 'native_offer_prompt_receipt' in Path(runners.__file__).read_text()
+assert witness.inspect([{'role':'system','content':'safe'}, {'role':'user','content':'hi'}],
+                       'safe hi','Internal hypotheses: ')['status']=='NO_TYPED_HYPOTHESES'
+"""
+            process = subprocess.run([sys.executable, "-P", "-c", statement],
+                                     cwd=target,
+                                     env=dict(os.environ, PYTHONPATH=str(target),
+                                              PYTHONDONTWRITEBYTECODE="1"),
+                                     capture_output=True, text=True, timeout=60)
+            self.assertEqual(process.returncode, 0, process.stdout + process.stderr)
 
 
 class SQLiteNativeAudit(unittest.TestCase):
