@@ -61,7 +61,7 @@ def verify(report_path,app,quick=False,compare_c3=False):
             if not regular_artifact(native_path) or native.get('sha256')!=sha(native_path):errors.append('Missing or changed actual native memory features')
         if name=='output-adapter':
             native=data.get('feature_artifact',{});native_path=report_path.parent/(name+'.features.json.gz')
-            if not native_path.is_file() or native.get('sha256')!=sha(native_path):errors.append('Missing or changed actual native output features')
+            if not regular_artifact(native_path) or native.get('sha256')!=sha(native_path):errors.append('Missing or changed actual native output features')
         actual=data.get('proof_status') if name=='learning' else data.get('all_passed') if name=='cancel-restart' else data.get('status')
         if actual!=STATUSES[name]:errors.append('Stage artifact status mismatch: '+name)
         if 'source_hashes' in data and data['source_hashes']!=current:errors.append('Stage source hashes differ: '+name)
