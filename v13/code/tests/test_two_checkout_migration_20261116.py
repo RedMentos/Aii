@@ -116,9 +116,20 @@ def exercise_worker_migration(base):
         assert old['module_path'].startswith(str(agent) + os.sep)
         assert old['profile'] == 'raw-runtime-plain-ui-history-recovery-v1'
         assert old['result']['last_result'] == 'UPDATED', old
-        assert old['result']['runtime'] == old['result']['dashboard'] == 'UPDATED'
+        # A one-click update may find the dashboard already checked out at
+        # the exact target while the model launcher still needs staging.
+        # UP_TO_DATE is correct for that individual checkout; require the
+        # actual immutable Git commit, not a cosmetic UPDATED status.
+        assert old['result']['runtime'] == 'UPDATED', old
+        assert old['result']['dashboard'] in ('UPDATED', 'UP_TO_DATE'), old
         for checkout in (agent, runtime):
             assert git('rev-parse', 'HEAD', cwd=checkout) == target
+        assert (agent / 'v13/code/v13/mobile_dashboard.html').is_file()
+        assert (agent / 'v13/code/v13/mobile_dashboard.py').is_file()
+        for name in ('mobile_dashboard.py', 'mobile_dashboard.html'):
+            path = 'v13/code/v13/' + name
+            assert git('rev-parse', 'HEAD:' + path, cwd=agent) == git(
+                'rev-parse', target + ':' + path, cwd=repo), path
         marker = home / '.v13-private/runtime-active.json'
         old_receipt = json.loads(marker.read_text(encoding='utf-8'))
         assert old_receipt['build_profile'] == old['profile']
