@@ -122,12 +122,13 @@ def apply_sources(code_dir, sources):
 
     ui = out["v13/ui.py"]
     ui = _replace(ui,
-        b"    def header():return ' V13 Â· Age 0 Â· '+r.cfg['learning_mode']+' Â· '+r.status+' Â· Wartend: '+str(r.jobs.qsize())+' '",
-        b"    def header():\n"
-        b"        from .lab_age import view as lab_view\n"
-        b"        from .age import controller as age_controller\n"
-        b"        lab=lab_view(r.home,official_stage=age_controller(r).system_stage())\n"
-        b"        return (' V13 Â· offiziell Age '+str(lab['official_stage'])+' Â· Test X'+str(lab['stage'])+' '+lab['mode'].upper()+' Â· '+r.cfg['learning_mode']+' Â· '+r.status+' Â· Wartend: '+str(r.jobs.qsize())+' ')",
+        ("    def header():return ' V13 · Age 0 · '+r.cfg['learning_mode']+' · '+r.status+' · Wartend: '+str(r.jobs.qsize())+' '").encode(),
+        ("""    def header():
+        from .lab_age import view as lab_view
+        from .age import controller as age_controller
+        lab=lab_view(r.home,official_stage=age_controller(r).system_stage())
+        return (' V13 · offiziell Age '+str(lab['official_stage'])+' · Test X'+str(lab['stage'])+' '+lab['mode'].upper()+' · '+r.cfg['learning_mode']+' · '+r.status+' · Wartend: '+str(r.jobs.qsize())+' ')
+""").encode(),
         "fullscreen real Age/test stage header")
     for name, value in (("v13/age.py", age),("v13/runtime.py", runtime),
                         ("v13/operator.py", operator),("v13/ui.py", ui)):
