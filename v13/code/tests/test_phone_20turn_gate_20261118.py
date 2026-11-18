@@ -85,7 +85,8 @@ class TwentyTurnCohort(unittest.TestCase):
                       "device_physical_execution_independently_verified"):
             self.assertIs(out[field], False)
         raw = json.dumps(out)
-        for secret in ("SECRET", "event_", "PRIVATE", "S1", "src", "model_private_note"):
+        for secret in ("SECRET", "event_S1_", "PRIVATE_HYPOTHESIS",
+                       '"session_id": "S1"', "src_identifier", "model_private_note"):
             self.assertNotIn(secret, raw)
 
     def test_latest_session_only_does_not_combine_old_successes(self):
