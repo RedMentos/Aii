@@ -263,6 +263,7 @@ def audit(conn, limit=10):
     both = sum(
         t["c3_native_output_observed"] and not t["audit_incomplete"]
         and all(t["roles"][r]["delivery"] == "IN_FINAL_C3_REPORT"
+                and t["roles"][r]["selected_quoted_receipts"] > 0
                 for r in ROLES)
         for t in turns)
     zero_token_c3_deadlines = sum(
@@ -283,12 +284,13 @@ def audit(conn, limit=10):
             "c3_deadline_zero_token_turns": zero_token_c3_deadlines,
             "incomplete_metadata_turns": incomplete_turns,
             "native_prompt_offer_inclusion_verified": False,
+            "source_span_revalidated_by_audit": False,
             "learned_latent_exchange_verified": False,
             "device_functional_acceptance": "NOT_VERIFIED",
         },
         "device_proof": "NOT_INDEPENDENTLY_VERIFIED",
         "evidence_boundary": "METADATA_RECEIPTS_AND_NATIVE_TOKEN_COUNTS_ONLY",
-        "warning": "IN_FINAL_C3_REPORT is a legacy label; actual C3 prompt inclusion, semantic use and learned latent exchange are not demonstrated.",
+        "warning": "IN_FINAL_C3_REPORT is a legacy label. Even two positive quote-bearing packet receipts and C3 tokens do not prove source revalidation in this audit, actual C3 prompt inclusion, semantic use, or learned latent exchange.",
         "turn_count": len(turns),
         "roles": summary,
         "turns": turns,
