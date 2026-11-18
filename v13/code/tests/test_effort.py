@@ -107,7 +107,14 @@ class EffortPolicy(unittest.TestCase):
             home=Path(tmp);cfg=initialize(home);store=Store(home)
             try:
                 limits=effort.age_limits(AgeControl(store,cfg),'NORMAL')
-                self.assertEqual((limits['stage'],limits['autonomous_effort_max'],limits['deliberation'],limits['tools']),(0,'low',False,False))
+                # The actual owner's requested default is active laboratory
+                # Age 10 compute; it never promotes official Age or permissions.
+                self.assertEqual((limits['stage'],limits['autonomous_effort_max'],
+                                  limits['deliberation'],limits['tools']),
+                                 (0,'max',False,False))
+                self.assertEqual(limits['lab_stage'],10)
+                self.assertTrue(limits['lab_compute_active'])
+                self.assertEqual(limits['lab_compute_gate'],'APPLIED')
                 self.assertEqual(effort.age_limits(AgeControl(store,cfg),'PRESSURE')['resource_mode'],'ORANGE')
                 self.assertEqual(effort.age_limits(AgeControl(store,cfg),'CRITICAL')['resource_mode'],'RED')
             finally:store.close()
