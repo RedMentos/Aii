@@ -1,9 +1,8 @@
-"""Independent user-operated laboratory age, never the earned V13 Age.
+"""Independent user-selected laboratory AGE feature/test permission level.
 
-User 2026-11-13: explore higher hypothetical age while the verified age stays
-at zero. Lab age changes only *local, reversible inference effort headroom*,
-not build ceiling, earned developmental evidence, permissions, hard rules,
-tool authority, autonomous actions, learning_mode or model weights.
+Official Age/evidence remain unchanged. ACTIVE tests implemented feature
+gates (tools, learning, dreams, planning) in the composed runtime. Physical
+CPU/time budgets stay separate; RECORD_ONLY still blocks live model updates.
 """
 from __future__ import annotations
 
@@ -56,7 +55,7 @@ def read(home):
 
 
 def save(home, *, mode=None, stage=None):
-    """Local UI/CLI control. Cannot change official Age or any permission."""
+    """Local UI/CLI control. Changes experimental feature gates, never official Age."""
     # The WebView control panel can start before the AI runtime has created
     # config/settings.json. A valid owner click must not be rejected merely
     # because the laboratory config directory does not exist yet.
@@ -94,12 +93,10 @@ def save(home, *, mode=None, stage=None):
 
 
 def simulated_effort(control, baseline, *, resource_mode):
-    """Return shadow/active experimental compute plan, with real Age untouched.
+    """Annotate the lab capability test; NEVER change CPU or reasoning budgets.
 
-    This adjusts the existing *thinking budget* only. The control passed in
-    is still the real AgeControl, and may() decisions never consult this plan.
-    The actual resource guard, max_reentry, observer deadlines, user stops and
-    hard permission checks continue to bind downstream.
+    Age stages select feature/right gates. The real resource governor continues
+    to constrain physical execution independently of experimental feature tests.
     """
     settings = read(control.s.home)
     out = dict(baseline)
@@ -107,29 +104,11 @@ def simulated_effort(control, baseline, *, resource_mode):
     out["lab_stage"] = settings["stage"]
     out["official_stage"] = baseline["stage"]
     requested = settings["mode"] == "active" and settings["stage"] > 0
-    # A requested lab level is not necessarily an *applied* level. The
-    # resource governor can block the extra compute; do not report ACTIVE
-    # if the phone is actually under thermal/RAM pressure.
-    out["lab_requested_active"] = requested
-    out["lab_compute_active"] = requested and resource_mode in ("GREEN", "YELLOW")
-    out["lab_compute_gate"] = (
-        "APPLIED" if out["lab_compute_active"]
-        else "BLOCKED_RESOURCE" if requested else "NOT_REQUESTED")
-    if not out["lab_compute_active"]:
-        return out
-    stage = settings["stage"]
-    # A hypothetical Age 6..10 cannot manufacture a missing Age 6..10
-    # permission or trained organ. It only explores bounded compute headroom.
-    # The user-requested level 10 uses the maximum existing effort band,
-    # not additional unimplemented rights.
-    out["autonomous_effort_max"] = (
-        "max" if stage >= 8 else "high" if stage >= 5
-        else "adaptive" if stage >= 2 else "low")
-    out["focal_depth"] = max(int(baseline["focal_depth"]),
-                              min(3, 1 + (stage // 4)))
-    # Inherit the *actual* AgeControl permissions unchanged. Artificial lab
-    # levels must never manufacture higher rights, nor REVOKE genuinely
-    # earned ones if a later build raises its verified ceiling.
+    out["lab_feature_test_requested"] = requested
+    out["lab_feature_test_active"] = requested
+    out["lab_effective_implemented_stage"] = min(settings["stage"], 5) if requested else None
+    out["lab_compute_active"] = False
+    out["lab_compute_gate"] = "NOT_A_COMPUTE_SETTING"
     return out
 
 
@@ -137,13 +116,17 @@ def view(home, *, official_stage=0):
     settings = read(home)
     path = _path(home)
     stored = path.is_file() and not path.is_symlink()
+    active = settings["mode"] == "active" and settings["stage"] > 0
     return dict(settings, official_stage=official_stage,
                 config_persisted=stored,
-                compute_requested=settings["mode"] == "active" and settings["stage"] > 0,
-                effective_on_healthy_resources=(
-                    settings["mode"] == "active" and settings["stage"] > 0),
+                compute_requested=False,
+                feature_test_requested=active,
+                feature_gates_active=active,
+                effective_implemented_stage=min(settings["stage"], 5) if active else None,
+                implemented_stage_ceiling=5,
+                runtime_released_stage_6_plus=False,
                 resource_guard_may_block=True,
                 test_only=True, verified_maturity_unchanged=True,
-                tool_authority="UNCHANGED", weight_authority="UNCHANGED",
-                max_compute_focal_depth=3,
-                note="Labor-Stufe ist keine Age-Beförderung; sie steuert reale begrenzte Denkbudgets")
+                tool_authority="AGE_GATES_TEST_ONLY",
+                learning_commit_authority="REQUIRES_SEPARATE_SHADOW_MODE",
+                note="Labor-Age testet Werkzeug- und Lernrechte, nicht Rechenzeit; offizielles Age bleibt separat")
