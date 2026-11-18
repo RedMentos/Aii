@@ -133,7 +133,14 @@ def check(conn):
         # Reuse the already tested exact-packet B1/B2 audit. This only proves
         # stored source-quoted receipts and runtime-reported native template
         # submission; it does not re-read user source text.
-        turn = _audit_one(conn, offset + 1, event_id, status, raw)
+        try:
+            turn = _audit_one(conn, offset + 1, event_id, status, raw)
+        except (TypeError, ValueError, RecursionError):
+            # A corrupted telemetry JSON tree may exceed Python's nesting
+            # limit even when its byte size is bounded. Never let a malformed
+            # private row produce a traceback or a positive cohort.
+            malformed += 1
+            continue
         if turn["audit_incomplete"]:
             malformed += 1
             continue
