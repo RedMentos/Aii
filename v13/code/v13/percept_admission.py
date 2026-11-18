@@ -37,9 +37,9 @@ def admit(percepts: Iterable[Percept], token_budget: int, *, max_items: int = 12
         raise ValueError("token_budget must be a nonnegative integer")
     if not isinstance(max_items, int) or isinstance(max_items, bool) or max_items < 0:
         raise ValueError("max_items must be a nonnegative integer")
-    if now_ms is not None and (not isinstance(now_ms, int) or now_ms < 0):
+    if now_ms is not None and (type(now_ms) is not int or now_ms < 0):
         raise ValueError("invalid now_ms")
-    if not isinstance(max_age_ms, int) or max_age_ms < 0:
+    if type(max_age_ms) is not int or max_age_ms < 0:
         raise ValueError("invalid max_age_ms")
     records = tuple(percepts)
     if len(records) > 4096:
@@ -50,10 +50,10 @@ def admit(percepts: Iterable[Percept], token_budget: int, *, max_items: int = 12
     for p in records:
         if not isinstance(p, Percept):
             raise TypeError("expected Percept")
-        if not p.source_id or len(p.source_id) > 128 or p.source_id in seen:
+        if type(p.source_id) is not str or not p.source_id or len(p.source_id) > 128 or p.source_id in seen:
             raise ValueError("invalid or duplicate source_id")
         seen.add(p.source_id)
-        if p.modality not in ("audio", "visual", "ui", "text") or not isinstance(p.start_ms, int) or not isinstance(p.end_ms, int) or p.start_ms < 0 or p.end_ms < p.start_ms or len(p.summary) > 4096:
+        if (type(p.modality) is not str or p.modality not in ("audio", "visual", "ui", "text") or\n                type(p.start_ms) is not int or type(p.end_ms) is not int or\n                p.start_ms < 0 or p.end_ms < p.start_ms or\n                type(p.summary) is not str or len(p.summary) > 4096 or\n                type(p.priority) is not int or\n                type(p.consent) is not bool or type(p.final) is not bool):
             raise ValueError("invalid percept")
         if (not p.consent or not p.final or
                 (now_ms is not None and (p.end_ms > now_ms or now_ms - p.end_ms > max_age_ms))):
