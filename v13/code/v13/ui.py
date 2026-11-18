@@ -77,7 +77,15 @@ def chat(r,force_plain=False):
         if r.stop.is_set():app.exit()
         return False
     inputbox=TextArea(height=3,prompt='du › ',multiline=False,wrap_lines=True,accept_handler=accept)
-    def header():return ' V13 · Age 0 · '+r.cfg['learning_mode']+' · '+r.status+' · Wartend: '+str(r.jobs.qsize())+' '
+    def header():
+        from .lab_age import view
+        from .age import controller
+        lab = view(r.home, official_stage=controller(r).system_stage())
+        # Do not label an active laboratory setting as an earned Age.
+        return (' V13 · Age '+str(lab['official_stage'])+' (offiziell)'
+                +' · Lab '+str(lab['stage'])+' '+lab['mode'].upper()
+                +' · '+r.cfg['learning_mode']+' · '+r.status
+                +' · Wartend: '+str(r.jobs.qsize())+' ')
     layout=Layout(HSplit([Window(FormattedTextControl(header),height=1,style='class:header'),transcript,Window(height=1,char='─'),inputbox,Window(FormattedTextControl(' :help  Strg+C Abbruch  Strg+D Ende  Tab Verlauf/Eingabe  Esc Eingabe '),height=1,style='class:footer')]),focused_element=inputbox)
     kb=KeyBindings()
     from prompt_toolkit.keys import Keys
