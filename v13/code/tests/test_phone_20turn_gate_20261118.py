@@ -302,7 +302,7 @@ class TwentyTurnCohort(unittest.TestCase):
                                "modality": "text"},
                 "verification": "EXACT_SOURCE_SENTENCES_POINTED_BY_QUOTE"}]}]
         head = "Internal hypotheses: "
-        system = "trusted-rules\\n" + head + json.dumps(body, sort_keys=True)
+        system = "trusted-rules" + chr(10) + head + json.dumps(body, sort_keys=True)
         messages = [{"role": "system", "content": system},
                     {"role": "user", "content": "Please answer."}]
         output = inspect(messages, system + "Please answer.", head)
