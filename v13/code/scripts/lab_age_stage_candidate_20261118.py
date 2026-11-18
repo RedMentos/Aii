@@ -13,8 +13,8 @@ INPUT_BLOBS = {
     "v13/age.py": "964048c47ddb5a8f11ea6706d72a1f37ab41f5d4",
     "v13/effort.py": "e40e74aa279e96fbf25f6a72aac29510d779be58",
     "v13/executive.py": "057dda1e705053047489516fc9ab10581018f5a4",
-    "v13/lab_age_runtime.py": "304a85a9ee8af1d800938db4cf20063d5e4251e4",
-    "v13/lab_age.py": "ac6ee1648138a4b3ecc7e00c3687e27dd8db",
+    "v13/lab_age_runtime.py": "ab72d5efcb6405323da975bd7fab707ddc3e8b7c",
+    "v13/lab_age.py": "dde614d774c57878bbb753b4ffc1b0ca30a70c88",
 }
 AGE_CONTROLLER = b"""def controller(runtime):
     \"\"\"Runtime-scoped instance without touching runtime.py; reads the live config dict.\"\"\"
@@ -158,6 +158,6 @@ def apply_sources(code_dir, sources):
         "    def header():return ' V13 · Age 0 · '+r.cfg['learning_mode']+' · '+r.status+' · Wartend: '+str(r.jobs.qsize())+' '".encode('utf-8'),
         AGE_HEADER,"live console Age header")
     out["v13/ui.py"]=ui
-    for name in ("v13/age.py","v13/effort.py","v13/executive.py","v13/operator.py","v13/ui.py"):
+    for name in ("v13/age.py","v13/effort.py","v13/executive.py","v13/operator.py","v13/runtime.py","v13/ui.py"):
         ast.parse(out[name],filename=name)
     return out
