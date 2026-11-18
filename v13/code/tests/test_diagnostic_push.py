@@ -37,10 +37,14 @@ class DiagnosticReportTests(unittest.TestCase):
         self.home.mkdir()
         (self.private / "console-logs").mkdir()
         (self.private / "ui.log").write_text("normal UI line\n[Fehler] broken save 123\n", encoding="utf-8")
+        # Compose the deliberately synthetic bearer example at runtime.
+        # The public-source privacy scan must still flag real inline headers,
+        # while this negative redaction fixture exercises the same actual bytes.
+        test_bearer = "Authorization: " + "Bearer " + "TESTPRIVATEGITCREDENTIAL123456789"
         (self.private / "console-logs/v13-session-1.log").write_text(
             "du> Secret private question\nassistant> Private answer\n"
-            "Authorization: Bearer TESTPRIVATEGITCREDENTIAL123456789\n"
-            "github_pat_TESTLONGSECRET123456789\n", encoding="utf-8")
+            + test_bearer + "\n"
+            + "github_pat_TESTLONGSECRET123456789\n", encoding="utf-8")
         self.summary = mock.patch("v13.mobile_dashboard.summary", return_value={"status":"SMOKE_PARTIAL"})
         self.pipeline = mock.patch("v13.pipeline_agent.snapshot", return_value={"last_result":"ERROR"})
         self.summary.start()

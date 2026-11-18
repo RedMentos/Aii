@@ -11,6 +11,8 @@ on:
       - 'v13/code/tests/test_prompt_source_integrity_20261116.py'
       - 'v13/code/tests/test_context_offer_budget_20261116.py'
       - 'v13/code/tests/test_record_only_online_guard_20261116.py'
+      - 'v13/code/tests/test_diagnostic_push.py'
+      - 'v13/code/tests/test_public_repo_privacy_scan.py'
   workflow_dispatch:
 permissions:
   contents: read
@@ -60,3 +62,5 @@ jobs:
           tests/test_runtime_deploy_integrated_20261116.py
           tests/test_arithmetic_stage_20261116.py
           tests/test_observer_fair_budget_stage_20261116.py
+          tests/test_diagnostic_push.py
+          tests/test_public_repo_privacy_scan.py
