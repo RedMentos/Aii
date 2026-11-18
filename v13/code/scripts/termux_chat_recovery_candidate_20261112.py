@@ -9,8 +9,8 @@ from pathlib import Path
 
 
 SOURCE_PINS = {
-    "v13/ui.py": "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8",
-    "v13/operator.py": "67f2118efce0495ea144b11e8853cbf949d56e53e141fe7f801b31c56406f9a3",
+    "v13/ui.py": "32ebc7bbed0c6377973da561d4062422024ef6d89d9f2abbc66dd12f13670e29",
+    "v13/operator.py": "0447c03b8d3796d886715a566178dde919fab88ba085cb88ab172609fc4a38f8",
 }
 
 
@@ -42,10 +42,10 @@ def apply_sources(sources):
     )
     operator = _replace(
         sources["v13/operator.py"],
-        b"        if cmd=='status':return dumps(",
+        b"        if cmd=='status':",
         b"        if cmd=='learning' and not args:\n"
         b"            return dumps({'learning_mode':r.cfg['learning_mode'],'read_only':True})\n"
-        b"        if cmd=='status':return dumps(",
+        b"        if cmd=='status':",
         "read-only learning status",
     )
     operator = _replace(
