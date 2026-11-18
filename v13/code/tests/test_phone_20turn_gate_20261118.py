@@ -215,6 +215,19 @@ class TwentyTurnCohort(unittest.TestCase):
         self.assertGreater(out["invalid_or_oversized_metadata_turns"], 0)
         self.assertNotIn("SECRET", json.dumps(out))
 
+    def test_deeply_nested_private_telemetry_fails_closed_without_traceback(self):
+        self.seed()
+        self.db.execute(
+            "INSERT INTO telemetry(event_id,kind,metrics) VALUES(?,?,?)",
+            ("event_S1_19", "body_offer_attempt",
+             "[" * 1200 + "0" + "]" * 1200))
+        out = check(self.db)
+        self.assertEqual(out["local_status"],
+                         "MALFORMED_OR_AMBIGUOUS_TURN_METADATA")
+        self.assertGreater(out["invalid_or_oversized_metadata_turns"], 0)
+        self.assertFalse(out["release_approved"])
+        self.assertNotIn("SECRET", json.dumps(out))
+
     def test_readonly_existing_sqlite_cli_preserves_db_and_exposes_no_text(self):
         self.seed()
         self.db.commit()
