@@ -104,9 +104,10 @@ def apply_sources(code_dir, sources):
     operator=_replace(operator,b"        if cmd=='age':\n",LAB_OPERATOR+b"        if cmd=='age':\n","labage operator")
     operator=_replace(operator,b"'age':agectl.controller(r).system_stage()})",
         b"'age':agectl.controller(r).system_stage(), 'laboratory':agectl.controller(r).view()['laboratory']})","status field")
-    operator=_replace(operator,b":age [freeze on|off|lower <n>|structural lock|unlock]",
-        b":age [freeze on|off|lower <n>|structural lock|unlock] / :labage [status|0..10 [active|shadow|off]]",
-        "help text")
+    operator=_replace(operator,
+        b":age [freeze on|off|lower <n>|structural lock|unlock] / :stage cap 0..5",
+        b":age [freeze on|off|lower <n>|structural lock|unlock] / :labage [status|0..10 [active|shadow|off]] / :stage cap 0..5",
+        "unique help line only")
     # A selected laboratory stage now authorizes an *explicit* shadow
     # learning job, without ever promoting learned weights or changing the
     # owner's persisted RECORD_ONLY baseline. A thread-local overlay exists
