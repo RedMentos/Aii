@@ -17,17 +17,18 @@ class A5AdmissionError(ValueError):
 
 def admit_a5(packet: Mapping, *, max_bytes: int = 256, consent: bool = False) -> dict:
     """Return a small source-bound routing envelope, not untrusted packet text."""
-    if not consent:
+    if type(consent) is not bool or not consent:
         raise PermissionError("A5_CONSENT_REQUIRED")
     if not isinstance(packet, Mapping):
         raise A5AdmissionError("PACKET_NOT_MAPPING")
-    if max_bytes < 160 or max_bytes > 4096:
+    if type(max_bytes) is not int or not 160 <= max_bytes <= 4096:
         raise A5AdmissionError("INVALID_BUDGET")
     source = packet.get("source")
     if not isinstance(source, Mapping) or source.get("authorized") is not True:
         raise A5AdmissionError("SOURCE_NOT_AUTHORIZED")
     source_id = source.get("id")
-    if not isinstance(source_id, str) or not source_id or len(source_id) > 128:
+    if (not isinstance(source_id, str) or not source_id.strip() or len(source_id) > 128
+            or any(ord(ch) < 32 or ord(ch) == 127 for ch in source_id)):
         raise A5AdmissionError("INVALID_SOURCE")
     schema = packet.get("schema")
     if not isinstance(schema, str) or not schema.startswith("v13.a5.") or len(schema) > 96:
