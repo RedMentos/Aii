@@ -89,6 +89,14 @@ class OnlineWorld:
                 'old_replay_loss_delta':None if not replay else retention_after-retention_before,
                 'status':'LOCAL_ONLINE_PLASTICITY_NOT_FULL_JEPA'}
 
+    def rollback(self):
+        """Rewind the numeric learner and its T8 deduplication cursor together."""
+        result=self.model.rollback()
+        if self.model.processed_ids is None:
+            raise ValueError('Rolled-back checkpoint has no trusted T8 cursor')
+        self.processed=list(self.model.processed_ids)
+        return {**result,'tracked_ids':len(self.processed)}
+
     def predict(self,state,action):
         if action not in world_model.ACTIONS:raise ValueError('Unknown route')
         s=np.asarray(state,dtype=float)
