@@ -57,10 +57,12 @@ def evaluate(data):
             scenarios.add(row["scenario"])
         if not isinstance(row["turn_id"], str) or not row["turn_id"] or row["turn_id"] in seen:
             errors.append(f"turn {i}: duplicate/invalid turn id")
-        seen.add(row["turn_id"])
+        if isinstance(row["turn_id"], str):
+            seen.add(row["turn_id"])
         if not isinstance(row["receipt_id"], str) or not row["receipt_id"] or row["receipt_id"] in receipts:
             errors.append(f"turn {i}: duplicate/invalid receipt")
-        receipts.add(row["receipt_id"])
+        if isinstance(row["receipt_id"], str):
+            receipts.add(row["receipt_id"])
         sha = row["installed_sha"]
         if not isinstance(sha, str) or len(sha) != 40 or any(c not in "0123456789abcdef" for c in sha):
             errors.append(f"turn {i}: invalid installed SHA")
