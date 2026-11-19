@@ -1,5 +1,6 @@
 """A5 RAW EAR acoustic metadata -> bounded C3 admission. No microphone, ASR or training."""
 import math
+import hashlib
 from .percept_admission import Percept, admit
 
 def acoustic_percept(packet):
@@ -33,7 +34,7 @@ def acoustic_percept(packet):
             raise ValueError("invalid acoustic flag")
     summary = "acoustic rms={:.4f} peak={:.4f} zcr={:.4f} silence={} clipped={}".format(
         *values, f["silence_candidate"], f["clipped"])
-    return Percept(source_id=source + ":" + digest[:12], modality="audio",
+    return Percept(source_id=hashlib.sha256((source + ":" + digest + ":" + str(start) + ":" + str(end) + ":" + consent).encode("utf-8")).hexdigest(), modality="audio",
                    start_ms=start, end_ms=end, summary=summary,
                    consent=True, final=packet["status"] == "FINAL")
 
