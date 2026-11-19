@@ -177,7 +177,7 @@ Ein PR bleibt nicht fünf Stunden stecken: Nach reproduziertem Fehler Recherche 
 | Online learning | https://github.com/online-ml/river | BSD-3-Clause, Lizenzdatei geprüft | Online Drift/Scoring/Classifier/Eligibility-nahe Kopf-Baselines | Nur kleine Module übernehmen; Termux-Wheels prüfen |
 | Continual Learning | https://github.com/ContinualAI/avalanche | MIT, Lizenzdatei geprüft | Externe Eval: Replay, forgetting, retention | Off-device Forschungs-/Testvergleich |
 | JEPA Referenz | https://github.com/facebookresearch/vjepa2 | MIT Root, Lizenzen einzelner Abhängigkeiten/Gewichte separat | EMA/Masking/Latent Objective Architektur | Konzept/kleine zulässige Teile, kein Full Mobile Port |
-| Self-distillation | https://github.com/Continual-Intelligence/Self-Distillation | **KEINE LICENSE-Datei im veröffentlichten geprüften Repo nachgewiesen** | SDFT/On-policy-FKL Forschung | Konzept aus Paper beschreiben; keinen fremden Code übernehmen ohne Rechteklärung |
+| Self-distillation | https://github.com/idanshen/Self-Distillation | **KEINE LICENSE-Datei im veröffentlichten geprüften Repo nachgewiesen** | SDFT/On-policy-FKL Forschung | Konzept aus Paper beschreiben; keinen fremden Code übernehmen ohne Rechteklärung |
 | Speculative Self-Distillation | https://github.com/ShayanTalaei/SpeculativeSelfDistillation | Apache-2.0, LICENSE geprüft; Dritt-Daten/Weights extra | Distillations-Signale/Inflection-Probe, FKL/KL | Nur stark verkleinerte/adaptierte Variante auf Mobile; Referenzcode GPU-only |
 | Edge Agent | https://github.com/Cactus-Compute/cactus | Apache-2.0, Root-LICENSE geprüft; jeweilige Model Card extra | Vergleich C2/C3/Perception/native ARM runtime | Lizenzkompatibilität/ABI/echte Messung prüfen, kein blindes Vermischen |
 
