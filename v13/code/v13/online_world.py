@@ -91,7 +91,7 @@ class OnlineWorld:
 
     def rollback(self):
         """Rewind the numeric learner and its T8 deduplication cursor together."""
-        result=self.model.rollback()
+        result=self.model.rollback(require_cursor=True)
         if self.model.processed_ids is None:
             raise ValueError('Rolled-back checkpoint has no trusted T8 cursor')
         self.processed=list(self.model.processed_ids)
