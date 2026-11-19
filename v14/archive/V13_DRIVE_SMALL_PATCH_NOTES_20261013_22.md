@@ -294,3 +294,159 @@ Ein fester Wortleser kommt auf offener deutscher Alltagssprache nicht gegen 0 Fe
 3. Die Grundregel bleibt: Außenwirkung gibt es nur als sichtbaren Vorschlag.
 
 
+
+---
+
+## QUELLE: THREAD_HARNESS_HX1_HX3_HX4_20261022.md
+
+# Thread „Harness-Pakete HX1 HX3 HX4“ (2026-10-22)
+
+Basis: Branch claude/project-thread-2p69gl (PR #30). Arbeits-Branch: claude/project-thread-4iqpro (RedMentos/Aii). Code liegt in Git; diese Notiz ist die Drive-Sicherung des Stands.
+
+## Was gebaut wurde (alles SHADOW, Autorität 0, kein Modell)
+- WP-HX1 `v13/code/v13/agi/harness.py` + Art `harness` in `agi/self_improve.py` (AG8): feste Liste von 20 änderbaren Zielen (Prompt-Teile answer_rules/digest/task_context/hypotheses/clarify/replay/duplex_handoff/welcome je en/de, tool_hint.list_note, tool_hint.eligibility_note, parser.listarith_extra, recipe.list_result). Nie änderbar: system, conduct, Operator-/Nutzer-Regeln, Verbote, Age, Kanal. Zweites Netz gegen regelschwächende Texte (Wort-Heuristik). Gleicher Regressionsschild, Nutzerfreigabe; HarnessLibrary.apply() nur für freigegebene Vorschläge, rollback() auf Vorversion, harness_hash fürs Generation-Manifest. Kein Live-Pfad liest die Überschreibungen.
+- WP-HX3 `agi/experience.py`: Eintrag nur mit Freigabe + bestandenem Schild + Beleg-Datei (sha256). verify() -> STALE bei geänderter Datei, retire() nach Rücknahme, lookup() liefert Daten (DATA_NOT_INSTRUCTION), ablation() mit/ohne.
+- WP-HX4 `agi/blind_select.py`: Richter sieht nur Buchstaben + geschwärzten Text, Herkunft per Hash versiegelt, nach Wahl aufgedeckt; zwei Runden gegen Positions-Vorliebe (INCONSISTENT), Fehler = NO_PICK.
+- Tests: `v13/code/tests/test_harness_hx.py` (10). Laufzeit-Dateien runtime/runners/store/memory_server unverändert.
+- research/HARNESS2_AUSWERTUNG.md aus Branch 1x4aho (PR #23) mit in diesen Branch gemergt.
+
+## Nächster Schritt
+WP-HX2: Referenz + Varianten auf derselben Aufgabe mit echten Modellen, erste Probe STEP2 B2-Regel-Zitat; nutzt HX1 (Vorschlag), HX3 (Bibliothek), HX4 (Auswahl). Vorregistrieren vor dem Lauf.
+
+
+---
+
+## QUELLE: THREAD_REGEL_LESER_V4_20261022.md
+
+# Thread „Regel-Leser Version 3“, Teil 2: v4 + Runde 4 (2026-10-22)
+
+Branch `claude/project-thread-c62rfz`, PR #31. Befund `v13/code/docs/proofs/continuation-20261022/user-rules-v4/BEFUND.md`.
+
+Urteil `USER_RULES_V4_UNSAFE`.
+- v4 aus den Runde-3-Fehlern (englische Umgangssprache): bekannte Sätze inkl. Runde 3 → 0 Fehler.
+- Runde 4 (versiegelt; Phi-4-mini, Granite 3.3 2B, EuroLLM 9B; 630 roh, 93 geprüft, 67 deutsch): v4 13 Fehler in 6 Sätzen, alle deutsch; v3 und v2 gleich. Englisch 0/26.
+- Gefährlichste Form: „Du darfst nur Nachrichten senden, wenn …“ / „erst … wenn ich erlaube“ wird als Lockerung gelesen (Regel entsteht nicht).
+- Weitere: „Bleib ab von meinen Notizen!“, „Kein Versand!“, „Kein Kram ohne mein grünes Licht“, „Bitte keine Dateien herunterladen“ (zu eng).
+- Nebenbefund 202 übersetzte Sätze: v4 37 Fehler / v3 41 / v2 43.
+- Nächster Schritt v5: Bedingung vor Lockerung, deutsche Halte-Formen, Nomen zu Handlungen, Handlung mit eigenem Ziel; Runde 5 aus deutschen Quellsätzen.
+Commits: b13d355 Vorregistrierung, 39c4994 Runde 4 versiegelt, ec69532 v4 eingefroren, 9d1f822 Ergebnis.
+
+
+---
+
+## QUELLE: THREAD_REGEL_LESER_V3_20261022.md
+
+# Thread „Regel-Leser Version 3“ (2026-10-22)
+
+Branch `claude/project-thread-c62rfz` (aufgebaut auf PR #28 / Branch 2gzrwi), Repo RedMentos/Aii.
+Befund: `v13/code/docs/proofs/continuation-20261022/user-rules-v3/BEFUND.md`.
+
+Urteil: `USER_RULES_V3_UNSAFE`.
+- Runde 3 (versiegelt vor dem Code; Gemma 3 4B, Llama 3.2 3B, SmolLM3 3B; 354 Rohsätze, 149 von Hand geprüft):
+  v3 58 Sicherheitsfehler in 19 Sätzen (11 übersehene Verbote), v2 92 in 29.
+- Bekannte Sätze (Dev, Holdout, Runde 1, Runde 2): v3 0 Fehler (v2 Runde 2: 20).
+- Übervorsicht 31 % der erlaubten Proben.
+- Neue Fehlerformen: lässige Bitte als Frage („could you like, not …?“), Verbot ohne Verneinung („put the calculator away“, „stay offline“), „warte bis zur Freigabe“, höfliche Vorliebe mit „you can“, Etiketten-Fälle.
+- Neu in v3: Lexikon als Daten mit Beleg (`v13/userrules_lexicon.json`, `extend()` lehnt versiegelte Sätze ab), vorher+zeigen = erst fragen, „rät ab/warnt vor“ = Rückfrage, Ich-Satz an die KI, Verbformen, Vorschlag bei offenen Rückfragen.
+- Grundregel unverändert: Außenwirkung nur als sichtbarer Vorschlag.
+- Nächster Schritt: v4 mit Grundsätzen statt Wortlisten + versiegelte Runde 4 (neue Erzeuger, deutscher Auftrag).
+
+Commits: 032ce6b Vorregistrierung, df2c55f Runde 3 roh versiegelt, 43fa3d0 v3 eingefroren, danach Audit und Messung.
+
+
+---
+
+## QUELLE: THREAD_GPT_STAND_PRUEFUNG_RUNDE2_20261022.md
+
+# Thread „GPT-Stand erneut prüfen“ (2026-10-22)
+
+Branch claude/project-thread-2p69gl (Basis 2gzrwi @ 9436eb7), Draft-PR an 2gzrwi.
+- GPT 22.10. geprüft + gemergt: c1d6615 (PR #29 Lernpfad-Auditor), 16a0b17 (PR #27 Age-0/Freeze-Notiz), Drive V13_JEPA_AGE0_REVIEW_20261022.md. Alle Aussagen bestätigt (14/14 jepa_weight 0; plen=0 Fehler; nur C3 hat Gewichts-Updates, B1/B2 keine).
+- Runde 1 (PR #8) war nie in der Kette, nachgeholt.
+- Neu WP-SAFE2 :stillstand (Notaus + Warteschlange + Age-Freeze; bestätigt erst nach Ende des laufenden Vorgangs; bleibt über Neustart; hebt nur eigene Teile auf). Grund: unter :notaus liefen Lernen/Traum/Replay/Training weiter.
+- Suite 1727 OK, 5 Skips; Privatsphäre-Scan CLEAN.
+- Neue Pakete: WP-AGE0a (späte Selbstkorrektur), WP-AGE0b (Organ-Checkpoint), WP-LP1 (Lernpfad Komponenten-Gradienten).
+- Antwort an GPT: v13/code/docs/coordination/CLAUDE_ANTWORT_AGE0_LERNPFAD_20261022.md
+
+
+---
+
+## QUELLE: Thread Zitierhilfe an, Regeln per JEF (2026-10-21)
+
+﻿Sicherung Thread "Zitierhilfe an, Regeln ohne Halluzination" (2026-10-21)
+Branch: claude/project-thread-2gzrwi (RedMentos/Aii). Enthält PR #7, #19, #21 und WP-SAFE1 (:verbot/:notaus aus Thread "Sicherheit: Verbote modellunabhängig").
+
+
+Nutzerentscheidungen:
+- Zitierhilfe AN (Menschen zitieren auch direkt).
+- Rückfragen zu Regeln ja, aber kein halluzinierendes Modell entscheidet Regeln: JEF / fester Baustein.
+- PR #2, #3, #4 geschlossen (Inhalt schon im Stand).
+- Handytest nur wenn er wirklich hilft.
+- 20 englische Beispielregeln nicht nötig.
+- Ziel: KI tut nichts, wovon der Nutzer nichts weiß, sagt vorher was sie tun würde, legt Verbote nie falsch aus.
+
+
+Ergebnis:
+- v13/userrules.py: fester Leser (kein Modell) für Verbote und "frag mich vorher" aus den eigenen Sätzen. Durchsetzung in der Werkzeug-Policy, feste Hinweise, Befehle :regeln / :regel.
+- Messung: eigener Holdout 0 Fehler. Frische Umformulierungen durch 3 lokale Modelle (Runde 2): v1 71, v2 20 Sicherheitsfehler (8 von 57 Sätzen) -> USER_RULES_UNSAFE.
+- Schreibende Werkzeuge laufen ohnehin nie automatisch (nur Vorschlag), automatisch laufen nur Rechen-Werkzeuge.
+- Fazit: fester Wortleser allein reicht nicht für offene Sprache; Garantie trägt "Außenwirkung nur als Vorschlag" + feste :verbot-Zeilen.
+- Befund: v13/code/docs/proofs/continuation-20261021/user-rules/BEFUND.md
+
+
+Offen: v3 mit den 8 Fehlerformen + frische Runde 3; Merken/Lernen im Gedächtnis durchsetzen; feinere Wirkungsklassen.
+
+---
+
+## QUELLE: V13-Sicherheit-Verbote-Notaus-20261021.md
+
+# Thread "Sicherheit: Verbote modellunabhängig" (2026-10-21)
+
+Git: Branch claude/project-thread-rdesm7, PR #26 (Basis claude/project-thread-0zelvf). Auch im Projektordner-Code eingespielt.
+
+Neu: code/v13/prohibitions.py, tests/test_prohibitions.py (16 Tests), docs/VERBOTE_UND_NOTAUS.md.
+Geändert: transaction.py (authorize: Verbote als 1. Schritt + Vorabansage; execute: letztes Tor), agi/tools.py, toolstep.py (kein Schatten-Rechnen bei Verbot), operator.py (:verbot, :notaus).
+
+Befehle: :verbot | :verbot werkzeug <Name> | :verbot art NETWORK | :verbot unumkehrbar | :verbot alles | :verbot weg V1 | :verbot ansage an|aus | :notaus | :notaus aus
+
+Befund:
+- Feste Regelprüfung existierte schon (IH-H29 in transaction.authorize, vor der Ausführung, reiner Code). Es fehlten: Nutzer-Verbote, Notaus, Vorabansage für alles. Jetzt da.
+- Verbot schlägt Einzelfreigabe; zweite Prüfung direkt vor der Funktion; nur Nutzer ändert; beschädigt = alles gesperrt.
+- Neuromod-Veto wirkt nur aufs Lernen (Standard RECORD_ONLY -> keine Wirkung; live nur C6-Regelverstoß als Veto-Quelle).
+- Selbst-Unsicherheit hebt live den Rechenaufwand; "nachfragen statt raten" nur Beobachtungsmodus.
+- Volle Suite 1597 Tests, nur alter Fehler test_neuro_ledger (auch auf Basis rot).
+Offen WP-SAFE2: Verbots-Treffer als Veto-Signal; Nachfrage-Modus messen (mit WP-DS3).
+
+---
+
+## QUELLE: Thread DeepSeek-Kritik 2026-10-21 (WP-DS1, PR 25).md
+
+Thread "DeepSeek-Kritik gegen Stand prüfen", 2026-10-21. Git: branch claude/project-thread-qt2cqv, PR #25 (RedMentos/Aii). Volltext: v13/research/DEEPSEEK_KRITIK_AUSWERTUNG.md.
+
+Bewertung: Neuromodulation existiert (neuromod.py, homeostasis.py, curiosity.py; steuert v.a. Lernen, Verhalten kaum). Active Inference teilweise (Vorhersage vor Handlung da, kein Vergleichstest). Verkörperung echte Lücke (STEP8 gesperrt). Metakognition existiert (agi/metacog.py AG9, selfmodel.py, C3-Unsicherheit AUROC .84). Lernender Balken existiert (callosum.py, b3bridge.py); MoE-Router nur isolierter Kandidat (Z10).
+
+WP-DS1 erledigt: Lab-Sandkasten code/v13/sandbox.py, Vorregistrierung vor Lauf (Commit 3f3cb09), Seeds 100..119, alle 4 Hypothesen PASS.
+Fehler@600: Zufall .34, Überraschung .61 (94% am Rausch-Fernseher), Neuheit .17, Lernfortschritt AG5 .16 (bester), Informationsgewinn .21, +Hungerziel .23 (Hunger .05 bester, neues Objekt nur 7/20).
+Offen: WP-DS2 kombinierte Policy (Lernfortschritt + Ziel + Neuheits-Kanal), WP-DS3 Unsicherheit -> Werkzeug-Nachprüfung / "unsicher" sagen.
+
+---
+
+## QUELLE: V13-Z5c-Koalition-Aktualitaets-Term-20261021.md
+
+# WP-Z5c Aktualitäts-Term für Notizen in der Koalition (2026-10-21)
+
+Thread „Koalition Aktualitäts-Term“, Branch claude/project-thread-8zhj41 (auf Z5b, PR #16), Draft-PR folgt im Repo RedMentos/Aii.
+Beleg: v13/code/bench-results/z5c-recency-20261021/ (PREREGISTRATION.md, README.md, z5c.json, run.log).
+
+Schalter focal_note_recency (0/1, Standard 0): Notizen mit gleichem Schlüssel bis auf Kalenderwörter/Zahlen = Versionen; neueste gespeicherte +0,10 (recency), ältere -0,30 (superseded).
+
+Lauf: Z5b-Aufgaben, 3 Saaten (11,12,13) x 2 Läufe x 60 = 360 Turns, Platzgrenze bindet immer, kontrafaktische Koalition ohne Term aus denselben Kandidaten (Treue 360/360).
+
+Mechanismus: update neueste Notiz in Koalition 1,00 statt 0,90, veraltete 0 statt 0,95; combine benötigte 0,75 statt 0,63.
+Antworten: mit Term 93/360, ohne 90, Voll-Kontext 97, Retrieval 98, ohne Kontext 64. Mit vs ohne 24:21 p=0,77; vs Voll-Kontext 30:35 p=0,62. Rauschband 2.
+Verdikt: Term hilft FAIL, schlägt Voll-Kontext FAIL, Gate G-FOCAL-CAPACITY-003 bleibt PARTIAL, Schalter bleibt aus.
+Befund: bei update schlechter als Voll-Kontext (3:21); bei schmaler Koalition antwortet das Organ oft nur "2" (33/82 Turns).
+Nächster Schritt: Ersetzungs-Kette sichtbar im Kontext statt veraltete Notizen wegzulassen; Ursache der "2"-Antworten prüfen.
+Cloud-Hinweis: Container wird im Leerlauf zurückgesetzt; lange Läufe als überwachte Hintergrund-Aufgabe mit Zwischenspeicher.
+
+
