@@ -3,7 +3,7 @@ import unittest
 from redmi_receipt_gate import evaluate
 
 def turn(i):
-    return dict(turn_id=str(i), receipt_id="private-receipt-"+str(i),
+    return dict(scenario=("greeting", "arithmetic", "ambiguity", "memory_recall", "cross_organ")[i%5], turn_id=str(i), receipt_id="private-receipt-"+str(i),
                 installed_sha="a"*40, evidence="OWNER_CONSENTED_REDMI",
                 status="FINAL", correct=True, source_bound=True,
                 total_ms=200, first_token_ms=100,
@@ -39,6 +39,15 @@ class GateTests(unittest.TestCase):
     def test_latency_and_accounting(self):
         x=rows();x[0]["first_token_ms"]=201;x[1]["b1_consumed"]=2
         self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+    def test_missing_diversity(self):
+        x=rows()
+        for r in x:r["scenario"]="greeting"
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+    def test_nested_private_metadata(self):
+        x=rows();x[0]["telemetry"]={"payload":[{"transcript":"private"}]}
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+    def test_invalid_root(self):
+        self.assertEqual(evaluate([])["status"],"INVALID")
     def test_missing_input(self):
         self.assertEqual(evaluate({"turns":None})["status"],"INVALID")
 
