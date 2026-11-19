@@ -251,6 +251,18 @@ class Runtime:
                     with self.lock:self.current=None;self.jobs.task_done();self.status='Pausiert' if self.paused else 'Bereit'
     def _rejected(self,e,reason):
         row=self.store.one('SELECT session_id FROM events WHERE id=?',(e['event_id'],));self.store.message(row['session_id'],e['event_id'],'assistant','[Systemdiagnose] '+safe_text(reason),'ERROR',{'model_generated':False})
+    def speech_intent(self, message_id):
+        """Read-only C3 text handoff; no playback, mic or Android authority."""
+        from .speech_intent import final_text_intent
+        if type(message_id) is not int or message_id <= 0:
+            raise ValueError("invalid message identity")
+        row = self.store.one(
+            "SELECT id,text,status FROM messages WHERE id=? AND session_id=? AND role='assistant'",
+            (message_id, self.session))
+        if not row:
+            return None
+        return final_text_intent(row["id"], row["text"], row["status"], enabled=True)
+
     def last_answer(self):return self.store.one("SELECT * FROM messages WHERE session_id=? AND role='assistant' AND status IN ('FINAL','CANCELLED','DEADLINE','ERROR','INTERRUPTED') ORDER BY id DESC LIMIT 1",(self.session,))
     def force_report(self):
         # Read-only exact snapshot is visible immediately; deliberation stops.
