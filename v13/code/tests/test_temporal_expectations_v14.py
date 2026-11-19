@@ -33,7 +33,7 @@ def test_committed_t8_is_observed_and_restart_idempotent(monkeypatch):
     row = {"action_id": "action:1", "a": "simple", "y": [0.2, 1.0, 0.1]}
     monkeypatch.setattr(temporal.world_model, "transitions",
                         lambda *_args, **_kwargs: [row])
-    first = temporal.observe(runtime, now_s=100)
+    temporal.expect(runtime, expectation_id="action:1", condition_source="source:1",\n                    predicted_outcome="success", now_s=10, deadline_s=200, probability=0.8)\n    first = temporal.observe(runtime, now_s=100)
     assert first["observed"] == 1
     assert temporal.observe(SimpleNamespace(store=store), now_s=101)["observed"] == 0
     assert store.get_state(temporal.KEY)["resolved"]["action:1"]["evidence"]["kind"] == "T8_COMMITTED"
@@ -49,3 +49,16 @@ def test_refuse_bad_sources_and_unbounded_expectations():
         temporal.expect(runtime, expectation_id="x", condition_source="s",
                         predicted_outcome="ok", now_s=1, deadline_s=100000,
                         probability=0.5)
+
+
+def test_unrelated_t8_cannot_resolve_an_expectation(monkeypatch):
+    store = Store()
+    runtime = SimpleNamespace(store=store)
+    temporal.expect(runtime, expectation_id="action:target", condition_source="source:target",
+                    predicted_outcome="success", now_s=10, deadline_s=20, probability=0.9)
+    monkeypatch.setattr(temporal.world_model, "transitions", lambda *_a, **_kw: [
+        {"action_id": "action:other", "a": "simple", "y": [0.1, 1.0, 0.1]}])
+    result = temporal.observe(runtime, now_s=21)
+    assert result["observed"] == 0
+    assert result["censored"] == 1
+    assert store.get_state(temporal.KEY)["resolved"] == {}
