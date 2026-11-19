@@ -504,3 +504,503 @@
 | [#1581](https://github.com/RedMentos/Aii/pull/1581) | Run117DD: independently verify 48 original native C3 schema calls and strict negative result | OPEN | 2026-11-01 |
 | [#1580](https://github.com/RedMentos/Aii/pull/1580) | Run117DC: guarded manual Termux C3 source-only smoke with no device-proof claim | OPEN | 2026-11-01 |
 | [#1579](https://github.com/RedMentos/Aii/pull/1579) | Run117DB: integrate exact CW/CY live source callback into DA C3 schema review chain | OPEN | 2026-11-01 |
+| [#1578](https://github.com/RedMentos/Aii/pull/1578) | Run117DA: preregister disjoint 12×4 native C3 schema ablation after no-gain pilot | OPEN | 2026-11-01 |
+| [#1577](https://github.com/RedMentos/Aii/pull/1577) | Run117CY: one real SQLite F1/F5/JEF source-only native C3 callback structural smoke | OPEN | 2026-11-01 |
+| [#1576](https://github.com/RedMentos/Aii/pull/1576) | Run117CX: repair canonical pinned llama-server symlink and retry zero-call native C3 pilot | OPEN | 2026-11-01 |
+| [#1575](https://github.com/RedMentos/Aii/pull/1575) | Run117CW: real-Store source-only C3 callback rechecks revocation after generation | OPEN | 2026-11-01 |
+| [#1574](https://github.com/RedMentos/Aii/pull/1574) | Run117CV: preregister and execute source-only LFM350M vs Qwen0.8B native C3 capacity pilot | OPEN | 2026-11-01 |
+| [#1573](https://github.com/RedMentos/Aii/pull/1573) | Run117CU: preregister real-Store C3 source-only Qwen0.8B vs LFM350M capacity test | OPEN | 2026-11-01 |
+| [#1572](https://github.com/RedMentos/Aii/pull/1572) | Run117CT: unfiltered reviewed-chain full suite with eleven immutable original artifacts | OPEN | 2026-11-01 |
+| [#1571](https://github.com/RedMentos/Aii/pull/1571) | Run117CS: bind exact Run12J C2 safety hardening into complete reviewed source chain | OPEN | 2026-11-01 |
+| [#1570](https://github.com/RedMentos/Aii/pull/1570) | Run117CR: independently audit full reviewed source-chain drift without relaxing frozen guards | OPEN | 2026-11-01 |
+| [#1569](https://github.com/RedMentos/Aii/pull/1569) | Run117CQ: restore immutable original native ZIP prerequisites for offline replay | OPEN | 2026-11-01 |
+| [#1568](https://github.com/RedMentos/Aii/pull/1568) | Run117CP: repair CO synthetic Torch test to use authenticated USER event spans | OPEN | 2026-11-01 |
+| [#1567](https://github.com/RedMentos/Aii/pull/1567) | Run117CN: preregister disjoint nine-case C3 source-independence fixture, software-only | OPEN | 2026-11-01 |
+| [#1566](https://github.com/RedMentos/Aii/pull/1566) | Run117CL: consolidate verified CF–CK handoff and full-suite RED sibling | OPEN | 2026-11-01 |
+| [#1565](https://github.com/RedMentos/Aii/pull/1565) | Run117CI: preserve unfiltered 5,331-test full-suite RED after C3 harness repair | OPEN | 2026-11-01 |
+| [#1564](https://github.com/RedMentos/Aii/pull/1564) | Run117CM: default-OFF source-only C3 prompt without typed JEF oracle | OPEN | 2026-11-01 |
+| [#1563](https://github.com/RedMentos/Aii/pull/1563) | Run117CK: verify post-fairness Sleep F7 cost with unchanged Linux benchmark | OPEN | 2026-11-01 |
+| [#1562](https://github.com/RedMentos/Aii/pull/1562) | Run117CJ: prove real C3 native entrypoint stays RED without weights | OPEN | 2026-11-01 |
+| [#1561](https://github.com/RedMentos/Aii/pull/1561) | Run117CH: repair no-cache synthetic C3 driver regression without changing native pins | OPEN | 2026-11-01 |
+| [#1560](https://github.com/RedMentos/Aii/pull/1560) | Run117CG: show Sleep backlog before the first digest cycle | OPEN | 2026-11-01 |
+| [#1559](https://github.com/RedMentos/Aii/pull/1559) | Run117CF: prevent unfinished Sleep sessions from starving ready sessions | OPEN | 2026-11-01 |
+| [#1558](https://github.com/RedMentos/Aii/pull/1558) | Run117CD: show source-neutral Sleep backlog progress in :sleep digest | OPEN | 2026-11-01 |
+| [#1557](https://github.com/RedMentos/Aii/pull/1557) | Run117CB: prevent Sleep starvation beyond eight active sessions | OPEN | 2026-11-01 |
+| [#1556](https://github.com/RedMentos/Aii/pull/1556) | Run117CA: prove Sleep backlog catch-up reaches source-valid live ContextOS/C3 | OPEN | 2026-11-01 |
+| [#1555](https://github.com/RedMentos/Aii/pull/1555) | Run117BZ: source-valid oldest-first Sleep digest catch-up across >64 turns | OPEN | 2026-11-01 |
+| [#1554](https://github.com/RedMentos/Aii/pull/1554) | Run117BY: preserve partial native C3 error-path receipts (future-only) | OPEN | 2026-11-01 |
+| [#1553](https://github.com/RedMentos/Aii/pull/1553) | Run117BW: launch preregistered seed1103 paired native C3 pilot | OPEN | 2026-10-31 |
+| [#1552](https://github.com/RedMentos/Aii/pull/1552) | Run117BU: paired seed1103 typed-JEF vs raw-source native C3 harness | OPEN | 2026-10-31 |
+| [#1551](https://github.com/RedMentos/Aii/pull/1551) | Run117BV: isolate native C3 Store callback and prevent symlinked weight exports | OPEN | 2026-10-31 |
+| [#1550](https://github.com/RedMentos/Aii/pull/1550) | Run117BT: independently audit oversized Run117BR original native artifact | OPEN | 2026-10-31 |
+| [#1549](https://github.com/RedMentos/Aii/pull/1549) | Run117BS: preregister disjoint seed1103 typed-vs-raw C3 budget cohort | OPEN | 2026-10-31 |
+| [#1548](https://github.com/RedMentos/Aii/pull/1548) | Run117BR: launch pinned native C3 JEF budget formatter seed401 smoke | OPEN | 2026-10-31 |
+| [#1547](https://github.com/RedMentos/Aii/pull/1547) | Run117BQ: independent strict C3 native-smoke receipt audit, 7 adversarial tests | OPEN | 2026-10-31 |
+| [#1546](https://github.com/RedMentos/Aii/pull/1546) | Run117BO: source-verified JEF choice+remaining C3 formatter shadow, 42 Store tests | OPEN | 2026-10-31 |
+| [#1545](https://github.com/RedMentos/Aii/pull/1545) | Run117BN: independently rescore 18 native C3 calls, no minimal-source signal | OPEN | 2026-10-31 |
+| [#1544](https://github.com/RedMentos/Aii/pull/1544) | Run117BM: pinned native 350M C3 minimal exact-source three-arm pilot | OPEN | 2026-10-31 |
+| [#1543](https://github.com/RedMentos/Aii/pull/1543) | Run117BL: independent negative native Body-JEPA audit and future no-export guard | OPEN | 2026-10-31 |
+| [#1542](https://github.com/RedMentos/Aii/pull/1542) | Run117BK: prereg C3 minimal exact-source vs verbose packet repair pilot | OPEN | 2026-10-31 |
+| [#1541](https://github.com/RedMentos/Aii/pull/1541) | Run117BJ: pinned native 350M grouped-vs-ungrouped six-arm launch | OPEN | 2026-10-31 |
+| [#1540](https://github.com/RedMentos/Aii/pull/1540) | Run117BI: prereg grouped vs ungrouped 350M Body-JEPA LoRA NLL pilot | OPEN | 2026-10-31 |
+| [#1539](https://github.com/RedMentos/Aii/pull/1539) | Run117BH: pinned Linux-native C3 causal-prior paired launch (seed1081) | OPEN | 2026-10-31 |
+| [#1538](https://github.com/RedMentos/Aii/pull/1538) | Run117BG: preregister paired C3 causal-prior source-only pilot (seed1081) | OPEN | 2026-10-31 |
+| [#1537](https://github.com/RedMentos/Aii/pull/1537) | Run117BF: authenticate Body-JEPA grouped views against persisted USER SourceRefs | OPEN | 2026-10-31 |
+| [#1536](https://github.com/RedMentos/Aii/pull/1536) | Run117BE: opt-in grouped-source Body-JEPA tiny trainer research fork | OPEN | 2026-10-31 |
+| [#1535](https://github.com/RedMentos/Aii/pull/1535) | Run117BD: default-OFF source-group masking and heldout-leak preflight for Body-JEPA | OPEN | 2026-10-31 |
+| [#1534](https://github.com/RedMentos/Aii/pull/1534) | Run117BC: default-OFF extracted phone ZIP native C3 schema self-test | OPEN | 2026-10-31 |
+| [#1533](https://github.com/RedMentos/Aii/pull/1533) | Run117BB: 24-call same-seed C3 token/schema factorial with native-only seed override | OPEN | 2026-10-31 |
+| [#1532](https://github.com/RedMentos/Aii/pull/1532) | Run117BA: paired native C3 token vs strict JSON schema on validation sources | OPEN | 2026-10-31 |
+| [#1531](https://github.com/RedMentos/Aii/pull/1531) | Run117AZ: integrate verified AY phone smoke; pinned native JEF/C3→C5/C6 diagnostic | OPEN | 2026-10-31 |
+| [#1530](https://github.com/RedMentos/Aii/pull/1530) | Run117AX: optional JEF/C2 route binds existing C5/C6 DRAFT CLI (32 tests) | OPEN | 2026-10-31 |
+| [#1529](https://github.com/RedMentos/Aii/pull/1529) | Run117AW: source-bound JEF/C2 advisory to C3 formatter-only route (26 software tests) | OPEN | 2026-10-31 |
+| [#1528](https://github.com/RedMentos/Aii/pull/1528) | Run117AV: independently verify 18 native C3 source-presentation calls (all arms 0/6) | OPEN | 2026-10-31 |
+| [#1527](https://github.com/RedMentos/Aii/pull/1527) | Run117AU: prereg seed1081 three-arm C3 exact-source presentation native ablation | OPEN | 2026-10-31 |
+| [#1526](https://github.com/RedMentos/Aii/pull/1526) | Run117AT: independently audit original 12-call C3 source-only ZIP (0/6 vs 0/6) | OPEN | 2026-10-31 |
+| [#1525](https://github.com/RedMentos/Aii/pull/1525) | Run117AS: isolated frozen seed1077 native C3 source-only launch (0/6 each arm) | OPEN | 2026-10-31 |
+| [#1524](https://github.com/RedMentos/Aii/pull/1524) | Run117AR: fresh seed1077 pinned native C3 source-only vs no-prior paired test | OPEN | 2026-10-31 |
+| [#1523](https://github.com/RedMentos/Aii/pull/1523) | Run117AQ: source-bound B1/B2 model IDs into C3 evidence prompt, no typed answer | OPEN | 2026-10-31 |
+| [#1522](https://github.com/RedMentos/Aii/pull/1522) | Run117AP: independently re-score original 30-call native Body source-ID ZIP (2/6 pairs) | OPEN | 2026-10-31 |
+| [#1521](https://github.com/RedMentos/Aii/pull/1521) | Run117AO: compose sibling Run117AI authoritative USER SourceRef with Body prewarm | OPEN | 2026-10-31 |
+| [#1520](https://github.com/RedMentos/Aii/pull/1520) | Run117AN: independently verify original AL/AM software GREEN and AJ full-suite RED ZIPs | OPEN | 2026-10-31 |
+| [#1519](https://github.com/RedMentos/Aii/pull/1519) | Run117AM: prereg disjoint seed1073 native Body source-ID prewarm diagnostic | OPEN | 2026-10-31 |
+| [#1518](https://github.com/RedMentos/Aii/pull/1518) | Run117AL: prewarm BodyPort before source-ID epoch; preserve original native RED | OPEN | 2026-10-31 |
+| [#1517](https://github.com/RedMentos/Aii/pull/1517) | Run117AK: independently audit original 30-call Body source-ID native RED without score promotion | OPEN | 2026-10-31 |
+| [#1516](https://github.com/RedMentos/Aii/pull/1516) | Run117AH native child: execute frozen seed1069 B1/B2 source-ID diagnostic without touching owner branch | OPEN | 2026-10-31 |
+| [#1515](https://github.com/RedMentos/Aii/pull/1515) | Run117AJ: unfiltered review-chain software regression with immutable original-native prerequisite | OPEN | 2026-10-31 |
+| [#1514](https://github.com/RedMentos/Aii/pull/1514) | Run117AI: fail closed on forged latest USER event / older SourceRef in Body source-ID selection | OPEN | 2026-10-31 |
+| [#1513](https://github.com/RedMentos/Aii/pull/1513) | Run117AH: persisted Body source-ID selection and disjoint native quote diagnostic | OPEN | 2026-10-31 |
+| [#1512](https://github.com/RedMentos/Aii/pull/1512) | Run117AF: preregister fresh seed1067 native C3 JEF-only vs Body/JEF/ContextOS paired pilot | OPEN | 2026-10-31 |
+| [#1511](https://github.com/RedMentos/Aii/pull/1511) | Run117AE: replay immutable native C3 outputs through persisted Body/JEF/ContextOS postgen | OPEN | 2026-10-31 |
+| [#1510](https://github.com/RedMentos/Aii/pull/1510) | Run117AD: guard persisted B1/B2 + JEF-span + ContextOS C3 postgen SHADOW | OPEN | 2026-10-31 |
+| [#1509](https://github.com/RedMentos/Aii/pull/1509) | Run117AC: real persisted B1/B2 hypotheses + source-bound JEF + ContextOS C3 bridge | OPEN | 2026-10-31 |
+| [#1508](https://github.com/RedMentos/Aii/pull/1508) | Run117AB: source-rechecking JEF→C3 postgen SHADOW; replay 6/6 recorded native outputs | OPEN | 2026-10-31 |
+| [#1507](https://github.com/RedMentos/Aii/pull/1507) | Run117AA: independent original native seed1065 audit confirms real Store JEF→C3 6/6 vs raw 1/6 | OPEN | 2026-10-31 |
+| [#1506](https://github.com/RedMentos/Aii/pull/1506) | Run117Z: prereg disjoint seed1065 real Store JEF → native C3 two-arm pilot | OPEN | 2026-10-31 |
+| [#1505](https://github.com/RedMentos/Aii/pull/1505) | Run117Y: default-OFF real-Store JEF budget span candidate for C3 formatter | OPEN | 2026-10-31 |
+| [#1504](https://github.com/RedMentos/Aii/pull/1504) | Run117X: independently verify original seed1063 C3 native artifact (0/0/6; no promotion) | OPEN | 2026-10-31 |
+| [#1503](https://github.com/RedMentos/Aii/pull/1503) | Run117W: disjoint seed1063 pinned native C3 arithmetic-vs-typed diagnostic | OPEN | 2026-10-31 |
+| [#1502](https://github.com/RedMentos/Aii/pull/1502) | Run117V: independent 2227-file native ZIP audit PASS; original seed1061 RED preserved | OPEN | 2026-10-31 |
+| [#1501](https://github.com/RedMentos/Aii/pull/1501) | Run117U: pinned native seed1061 three-arm pilot — original PARTIAL_BODY_QUOTE_RED | OPEN | 2026-10-31 |
+| [#1500](https://github.com/RedMentos/Aii/pull/1500) | Run117S-R: bind prior USER causal record and untrusted hypothesis (RED→GREEN) | OPEN | 2026-10-31 |
+| [#1499](https://github.com/RedMentos/Aii/pull/1499) | Run117S: exact-source salient B2 retained context and disjoint seed1061 preflight | OPEN | 2026-10-31 |
+| [#1498](https://github.com/RedMentos/Aii/pull/1498) | Run117R: original native C3 output replay through source-bound postgen guard | OPEN | 2026-10-31 |
+| [#1497](https://github.com/RedMentos/Aii/pull/1497) | Run117Q: independent original-native answer-in-prompt attribution audit | OPEN | 2026-10-31 |
+| [#1496](https://github.com/RedMentos/Aii/pull/1496) | Run117P: source-bound typed JEF → C3 postgen integrity SHADOW (review-only) | OPEN | 2026-10-31 |
+| [#1495](https://github.com/RedMentos/Aii/pull/1495) | Run116 independent original-native ZIP and score auditor (nonpromoting) | OPEN | 2026-10-31 |
+| [#1494](https://github.com/RedMentos/Aii/pull/1494) | Run116: disjoint pinned B1/B2 → typed JEF → C3 native three-arm pilot | OPEN | 2026-10-31 |
+| [#1493](https://github.com/RedMentos/Aii/pull/1493) | Run115K-R: bind typed JEF payload and persisted ContextPlan; real Store adversarial tests | OPEN | 2026-10-31 |
+| [#1492](https://github.com/RedMentos/Aii/pull/1492) | Run115J: source-bound typed JEF to C3 user-role formatter and disjoint native test | OPEN | 2026-10-31 |
+| [#1491](https://github.com/RedMentos/Aii/pull/1491) | Run115I: preregister disjoint seed983 native C3 source-role ablation | OPEN | 2026-10-31 |
+| [#1490](https://github.com/RedMentos/Aii/pull/1490) | Run115H: keep exact USER source data out of C3 system role (SHADOW) | OPEN | 2026-10-31 |
+| [#1489](https://github.com/RedMentos/Aii/pull/1489) | Run115F: exact USER two-source → C3 Context OS SHADOW plan | OPEN | 2026-10-31 |
+| [#1488](https://github.com/RedMentos/Aii/pull/1488) | Run115E: default-OFF exact USER two-source pointer SHADOW (not model quote) | OPEN | 2026-10-31 |
+| [#1487](https://github.com/RedMentos/Aii/pull/1487) | Run115D: retain frozen public source fixtures in extracted phone ZIP | OPEN | 2026-10-31 |
+| [#1486](https://github.com/RedMentos/Aii/pull/1486) | Run115C: execute frozen six-case native B1/B2→JEF→C3 replication | OPEN | 2026-10-31 |
+| [#1485](https://github.com/RedMentos/Aii/pull/1485) | Run115B: six-case disjoint replication of JEF typed-source native C3 signal | OPEN | 2026-10-31 |
+| [#1484](https://github.com/RedMentos/Aii/pull/1484) | Run114B: native B1/B2 with fixed JEF typed-source C3 paired pilot | OPEN | 2026-10-31 |
+| [#1483](https://github.com/RedMentos/Aii/pull/1483) | Run113B: source-bound B1 current + B2 earlier → C3 SHADOW native pilot | OPEN | 2026-10-31 |
+| [#1482](https://github.com/RedMentos/Aii/pull/1482) | Run112: real native B2 prior-rule offer → native C3 correct source answer | OPEN | 2026-10-31 |
+| [#1481](https://github.com/RedMentos/Aii/pull/1481) | Run111: disjoint B2-source Context OS → native C3 ablation, NO_GAIN preserved | OPEN | 2026-10-31 |
+| [#1480](https://github.com/RedMentos/Aii/pull/1480) | Run110: actual pinned C3 source-to-answer from extracted current phone source | OPEN | 2026-10-31 |
+| [#1479](https://github.com/RedMentos/Aii/pull/1479) | Run109: verify real pinned b10964 ELF activation from extracted phone ZIP | OPEN | 2026-10-31 |
+| [#1478](https://github.com/RedMentos/Aii/pull/1478) | Run108: stage and prevalidate native runner, rollback failed activation | OPEN | 2026-10-31 |
+| [#1477](https://github.com/RedMentos/Aii/pull/1477) | Run105 unfiltered current-chain original-ZIP full-suite RED: preserve and classify 4893 tests | OPEN | 2026-10-31 |
+| [#1476](https://github.com/RedMentos/Aii/pull/1476) | Verify pinned b10964 tar extraction from current extracted phone/C3/C5 ZIP | OPEN | 2026-10-31 |
+| [#1475](https://github.com/RedMentos/Aii/pull/1475) | Add optional 21-case bounded phone JEF/C3/C5/C6 and STEP2_EXIT smoke | OPEN | 2026-10-31 |
+| [#1474](https://github.com/RedMentos/Aii/pull/1474) | Preserve canonical STEP2 native-RED gate in extracted phone/C3 source ZIP | OPEN | 2026-10-31 |
+| [#1473](https://github.com/RedMentos/Aii/pull/1473) | Integrate Age0 phone installer and C3 Context OS into verified extracted source ZIP | OPEN | 2026-10-31 |
+| [#1472](https://github.com/RedMentos/Aii/pull/1472) | Separate STEP2 harness from canonical utility exit and harden Boolean gate verdicts | OPEN | 2026-10-31 |
+| [#1471](https://github.com/RedMentos/Aii/pull/1471) | Focal capacity-pressure: isolate marginal-diversity competition candidate | OPEN | 2026-10-31 |
+| [#1470](https://github.com/RedMentos/Aii/pull/1470) | Verify actual pinned b10964 source and binary tar extraction with identical retry | OPEN | 2026-10-31 |
+| [#1469](https://github.com/RedMentos/Aii/pull/1469) | Phone bootstrap: transactional pinned tar extraction with failure-safe retry | OPEN | 2026-10-31 |
+| [#1468](https://github.com/RedMentos/Aii/pull/1468) | Run102: actual C3 Context OS planned view retains verified B2 earlier rules | OPEN | 2026-10-31 |
+| [#1467](https://github.com/RedMentos/Aii/pull/1467) | Run101: actual Context OS proves wide B2 prior rule delivery vs narrow | OPEN | 2026-10-31 |
+| [#1466](https://github.com/RedMentos/Aii/pull/1466) | Run100: B2 prior quote span mismatch forensic and nonpromoting exact-subspan candidate | OPEN | 2026-10-31 |
+| [#1465](https://github.com/RedMentos/Aii/pull/1465) | Run98: reproducible phone source ZIP with bounded installer smoke verified after extraction | OPEN | 2026-10-31 |
+| [#1464](https://github.com/RedMentos/Aii/pull/1464) | Run87 independent audit: 48 native calls closed, B2 prior evidence 0/6 | OPEN | 2026-10-31 |
+| [#1463](https://github.com/RedMentos/Aii/pull/1463) | Run97: bounded model-free installer smoke replaces 4907-test first-install suite | OPEN | 2026-10-31 |
+| [#1462](https://github.com/RedMentos/Aii/pull/1462) | Run96 diagnostic: first-install selftest invokes unfiltered 4907-test developer suite | OPEN | 2026-10-31 |
+| [#1461](https://github.com/RedMentos/Aii/pull/1461) | Run95 staged: package current review-chain Age0 as verified Termux source ZIP | OPEN | 2026-10-31 |
+| [#1460](https://github.com/RedMentos/Aii/pull/1460) | Run87 execution child: exact seed877 B1/B2 native budget cohort, serialized | OPEN | 2026-10-31 |
+| [#1459](https://github.com/RedMentos/Aii/pull/1459) | Run94: preserve frozen Run34/37 source refusal in historical preflight tests | OPEN | 2026-10-31 |
+| [#1458](https://github.com/RedMentos/Aii/pull/1458) | Run93: exact Run92 fake-C3 test integration atop original ZIP full-suite chain | OPEN | 2026-10-31 |
+| [#1457](https://github.com/RedMentos/Aii/pull/1457) | Run92: restore fake-C3 test path without weakening real missing-model gate | OPEN | 2026-10-31 |
+| [#1456](https://github.com/RedMentos/Aii/pull/1456) | Run91 staged: restore two exact original native ZIP prerequisites for unfiltered full-suite | OPEN | 2026-10-31 |
+| [#1455](https://github.com/RedMentos/Aii/pull/1455) | Run90: exact strict C2 route source-lineage reconstruction; 38/38 focused GREEN | OPEN | 2026-10-31 |
+| [#1454](https://github.com/RedMentos/Aii/pull/1454) | Run89: pinpoint frozen source incompatibility to one runtime control-parser hunk | OPEN | 2026-10-31 |
+| [#1453](https://github.com/RedMentos/Aii/pull/1453) | Run88: original full-suite RED source-compat forensic and strict refusal audit | OPEN | 2026-10-31 |
+| [#1452](https://github.com/RedMentos/Aii/pull/1452) | Fail closed on SHADOW C5 action outcomes or competing assistant output | OPEN | 2026-10-31 |
+| [#1451](https://github.com/RedMentos/Aii/pull/1451) | Quarantine stale same-process C5 SHADOW DRAFT after poststage RED | OPEN | 2026-10-31 |
+| [#1450](https://github.com/RedMentos/Aii/pull/1450) | Persist bounded C3 callback and revalidate C5/C6 SHADOW after Runtime restart | OPEN | 2026-10-31 |
+| [#1449](https://github.com/RedMentos/Aii/pull/1449) | Isolate C5/F3 SHADOW_DRAFT action state and strict non-dispatch verifier | OPEN | 2026-10-31 |
+| [#1448](https://github.com/RedMentos/Aii/pull/1448) | Default-OFF one-call JEF/B1B2/C3 → C5/C6 SHADOW draft bridge | OPEN | 2026-10-31 |
+| [#1447](https://github.com/RedMentos/Aii/pull/1447) | Run87 seed877 B1B2 budget ablation: staged 48-call native + 34+4 software GREEN | OPEN | 2026-10-31 |
+| [#1446](https://github.com/RedMentos/Aii/pull/1446) | Run77 native B1/B2 RED forensic: all 36 summaries capped at 48 chars | OPEN | 2026-10-31 |
+| [#1445](https://github.com/RedMentos/Aii/pull/1445) | Independent Run83 original ZIP audit v2: 25/25 and frozen source/prompt binding | OPEN | 2026-10-31 |
+| [#1444](https://github.com/RedMentos/Aii/pull/1444) | Run84 default-OFF JEF/B1/B2→C3 post-generation source integrity (software SHADOW) | OPEN | 2026-10-31 |
+| [#1443](https://github.com/RedMentos/Aii/pull/1443) | Run83 disjoint seed839 C3 typed-vs-synthetic-body interference (native pending) | OPEN | 2026-10-31 |
+| [#1442](https://github.com/RedMentos/Aii/pull/1442) | Run82 authenticated JEF/C2 + B1/B2 dual-source C3 SHADOW composer (52/52) | OPEN | 2026-10-31 |
+| [#1441](https://github.com/RedMentos/Aii/pull/1441) | Run81 exact-blob B1/B2 quote provenance + C3 postrender source integration (36/36) | OPEN | 2026-10-31 |
+| [#1440](https://github.com/RedMentos/Aii/pull/1440) | Run80 B1/B2→C3 post-render QueryPacket and retained-state integrity (16/16 SHADOW) | OPEN | 2026-10-31 |
+| [#1439](https://github.com/RedMentos/Aii/pull/1439) | Run77 independent B2 SourceRef/quote pointer provenance diagnostic (SHADOW) | OPEN | 2026-10-31 |
+| [#1438](https://github.com/RedMentos/Aii/pull/1438) | Run77 original native verifier RED forensics + compact evidence audit (17/17) | OPEN | 2026-10-31 |
+| [#1437](https://github.com/RedMentos/Aii/pull/1437) | Run77 disjoint B1/B2 two-turn semantic context ablation seed797 (native pending) | OPEN | 2026-10-31 |
+| [#1436](https://github.com/RedMentos/Aii/pull/1436) | Run76 B1/B2 latest-USER pre/post SHADOW offer freshness (26/26) | OPEN | 2026-10-31 |
+| [#1435](https://github.com/RedMentos/Aii/pull/1435) | Run75 authenticated JEF mixed-range → real native C3 JSON formatter (6/6) | OPEN | 2026-10-31 |
+| [#1434](https://github.com/RedMentos/Aii/pull/1434) | Run74 authenticated F1/F5 human mixed-range JEF source decisions (38/38) | OPEN | 2026-10-31 |
+| [#1433](https://github.com/RedMentos/Aii/pull/1433) | Run73 JEF fixed mixed Minimum/Maximum SourceRef reader (39/39 SHADOW) | OPEN | 2026-10-31 |
+| [#1432](https://github.com/RedMentos/Aii/pull/1432) | Run72 detect SQLite mutations across read-only JEF/C3 schema callback (24/24) | OPEN | 2026-10-31 |
+| [#1431](https://github.com/RedMentos/Aii/pull/1431) | Run71 exact-blob Run69 + Run11 + Run70 C3/JEF/C5/C6 compatibility integration | OPEN | 2026-10-31 |
+| [#1430](https://github.com/RedMentos/Aii/pull/1430) | Run70 prereg disjoint C3 source-only decision vs typed JSON-schema control | OPEN | 2026-10-31 |
+| [#1429](https://github.com/RedMentos/Aii/pull/1429) | Default-OFF JEF/C3 JSON-schema → source-bound C5/F3 DRAFT → C6 shadow adapter | OPEN | 2026-10-31 |
+| [#1428](https://github.com/RedMentos/Aii/pull/1428) | Run68 native JSON-schema C3 formatter: 6/6 vs 2/6 strict copy, diagnostic PASS | OPEN | 2026-10-31 |
+| [#1427](https://github.com/RedMentos/Aii/pull/1427) | Run67 disjoint JEF→C3 recency: native structural PASS, strict fidelity 0/6 RED | OPEN | 2026-10-31 |
+| [#1426](https://github.com/RedMentos/Aii/pull/1426) | Independent exact-parent JEF full-suite RED differential and fail-closed raw auditor | OPEN | 2026-10-31 |
+| [#1425](https://github.com/RedMentos/Aii/pull/1425) | Exact-parent JEF policy full-suite baseline control (compare 4616-test RED) | OPEN | 2026-10-31 |
+| [#1424](https://github.com/RedMentos/Aii/pull/1424) | Run66 pinned JEF operator native structural PASS, C3 strict 1/3 RED | OPEN | 2026-10-31 |
+| [#1423](https://github.com/RedMentos/Aii/pull/1423) | JEF operator policy full unfiltered regression: 4616 tests, RED retained | OPEN | 2026-10-31 |
+| [#1422](https://github.com/RedMentos/Aii/pull/1422) | JEF operator diagnostic: preserve Sleep policy and never run queued work | OPEN | 2026-10-31 |
+| [#1421](https://github.com/RedMentos/Aii/pull/1421) | W7D Linux real-file 701–703: engineering PASS, prereg utility FAIL (preserved) | OPEN | 2026-10-31 |
+| [#1420](https://github.com/RedMentos/Aii/pull/1420) | W7D prereg D3: enforce paired per-seed W4 rho bound (review-only) | OPEN | 2026-10-31 |
+| [#1419](https://github.com/RedMentos/Aii/pull/1419) | World-JEPA delta-displacement inverse candidate with matched parameters (SHADOW) | OPEN | 2026-10-31 |
+| [#1418](https://github.com/RedMentos/Aii/pull/1418) | Independently replay exact original W7S Linux real-file ZIP (utility FAIL preserved) | OPEN | 2026-10-31 |
+| [#1417](https://github.com/RedMentos/Aii/pull/1417) | W7S bounded original Actions ZIP attestation and full W1–W7 replay | OPEN | 2026-10-31 |
+| [#1416](https://github.com/RedMentos/Aii/pull/1416) | World-JEPA W7S independent W1–W7 full raw-confidence gate replay | OPEN | 2026-10-31 |
+| [#1415](https://github.com/RedMentos/Aii/pull/1415) | Independent stdlib W7S World-JEPA support/W7 report replay (SHADOW) | OPEN | 2026-10-31 |
+| [#1414](https://github.com/RedMentos/Aii/pull/1414) | World-JEPA disjoint W7 support-floor cohort 601–603 (preregistered SHADOW) | OPEN | 2026-10-31 |
+| [#1413](https://github.com/RedMentos/Aii/pull/1413) | JEF operator regular-file-only input: FIFO and symlink fail closed (SHADOW) | OPEN | 2026-10-31 |
+| [#1412](https://github.com/RedMentos/Aii/pull/1412) | Harden JEF operator CLI bounded input and independent native cleanup (SHADOW) | OPEN | 2026-10-31 |
+| [#1411](https://github.com/RedMentos/Aii/pull/1411) | Default-OFF local JEF/C3→C5/F3 DRAFT→C6 operator CLI (48/48, restart-safe) | OPEN | 2026-10-31 |
+| [#1410](https://github.com/RedMentos/Aii/pull/1410) | Run65 pinned native JEF→C3→C5/F3 DRAFT→C6 structural PASS (3/3, C3 strict 1/3) | OPEN | 2026-10-31 |
+| [#1409](https://github.com/RedMentos/Aii/pull/1409) | JEF source-only C3 fallback → atomic C5/F3 DRAFT → C6 preflight (42/42 SHADOW) | OPEN | 2026-10-31 |
+| [#1408](https://github.com/RedMentos/Aii/pull/1408) | JEF/C3 post-generation current-source recheck and source-only fallback (SHADOW, 40/40) | OPEN | 2026-10-31 |
+| [#1407](https://github.com/RedMentos/Aii/pull/1407) | Run63 six real C3 JEF typed-vs-raw calls: structural PASS, receiver pilot RED | OPEN | 2026-10-31 |
+| [#1406](https://github.com/RedMentos/Aii/pull/1406) | JEF F1/F5 → C3 typed source envelope: 36/36 real Store SHADOW cases | OPEN | 2026-10-31 |
+| [#1405](https://github.com/RedMentos/Aii/pull/1405) | JEF live-current F1/F5 source boundary: 36 typed positives, 36 stale-user refusals | OPEN | 2026-10-31 |
+| [#1404](https://github.com/RedMentos/Aii/pull/1404) | Run62 pinned native five-call C6 v2: structural PASS, grounding RED retained | OPEN | 2026-10-31 |
+| [#1403](https://github.com/RedMentos/Aii/pull/1403) | Run61: source-bound B1/B2 + F1/F5 + C6 v2 atomic DRAFT SHADOW (63/63) | OPEN | 2026-10-31 |
+| [#1402](https://github.com/RedMentos/Aii/pull/1402) | C6 SHADOW v2: source-bound budget phrasing and newer-USER stale-DRAFT refusal (35/35) | OPEN | 2026-10-31 |
+| [#1401](https://github.com/RedMentos/Aii/pull/1401) | Run60 independent seed607 native RED replay: original 9 C3 calls and byte-verified backup | OPEN | 2026-10-31 |
+| [#1400](https://github.com/RedMentos/Aii/pull/1400) | C3 native: preregistered disjoint source-prompt three-arm diagnostic (seed607) | OPEN | 2026-10-31 |
+| [#1399](https://github.com/RedMentos/Aii/pull/1399) | C6 SHADOW: revalidate B1/B2 OfferPackets across generation callback | OPEN | 2026-10-31 |
+| [#1398](https://github.com/RedMentos/Aii/pull/1398) | Run59: five native B1/B2/C3 calls into temporal C5/C6 DRAFT SHADOW | OPEN | 2026-10-31 |
+| [#1397](https://github.com/RedMentos/Aii/pull/1397) | Run58: B1/B2→C3→F1/F5→C5/C6 source-bound DRAFT SHADOW integration | OPEN | 2026-10-31 |
+| [#1396](https://github.com/RedMentos/Aii/pull/1396) | Run57: five pinned B1/B2→C3 native source-envelope structural calls | OPEN | 2026-10-31 |
+| [#1395](https://github.com/RedMentos/Aii/pull/1395) | Run56: real B1/B2 OfferPacket → source-exact C3 prompt envelope (SHADOW) | OPEN | 2026-10-31 |
+| [#1394](https://github.com/RedMentos/Aii/pull/1394) | Run55: correct original Run54 native RED persisted OfferPacket and distinct Qwen B2 pins | OPEN | 2026-10-31 |
+| [#1393](https://github.com/RedMentos/Aii/pull/1393) | C6 SHADOW: reject negated and cross-project budget assertions before TTY approval | OPEN | 2026-10-31 |
+| [#1392](https://github.com/RedMentos/Aii/pull/1392) | Run54: pinned Linux-native B1/B2 Harbor↔Willow topic partition smoke | OPEN | 2026-10-31 |
+| [#1391](https://github.com/RedMentos/Aii/pull/1391) | C6 read-only temporal DRAFT preflight: source, egress and numeric grounding | OPEN | 2026-10-31 |
+| [#1390](https://github.com/RedMentos/Aii/pull/1390) | Unfiltered current-chain software full suite (CPU Torch/Transformers/PEFT) | OPEN | 2026-10-31 |
+| [#1389](https://github.com/RedMentos/Aii/pull/1389) | F1/F5 temporal order checked inside atomic C5/F3/action/DRAFT transaction | OPEN | 2026-10-31 |
+| [#1388](https://github.com/RedMentos/Aii/pull/1388) | F1/F5 temporal source order gate before Runtime C3 draft (synthetic) | OPEN | 2026-10-31 |
+| [#1387](https://github.com/RedMentos/Aii/pull/1387) | Run53: serialized pinned Linux-native Runtime C3→F1/F5→atomic DRAFT smoke | OPEN | 2026-10-31 |
+| [#1386](https://github.com/RedMentos/Aii/pull/1386) | F1/F5 → real Runtime C3 runner API → atomic C5/C6 DRAFT SHADOW | OPEN | 2026-10-31 |
+| [#1385](https://github.com/RedMentos/Aii/pull/1385) | B1/B2 topic-partitioned retained state for synthetic Cognition.offer (review only) | OPEN | 2026-10-31 |
+| [#1384](https://github.com/RedMentos/Aii/pull/1384) | B1/B2 causal guard wired to real Cognition.offer synthetic consumer (95/95) | OPEN | 2026-10-31 |
+| [#1383](https://github.com/RedMentos/Aii/pull/1383) | B1/B2 causal replay + project-scope source guard audit (88/88, original REDs kept) | OPEN | 2026-10-31 |
+| [#1382](https://github.com/RedMentos/Aii/pull/1382) | F1/F5 → C5/C6 atomic local DRAFT SHADOW candidate (80/80 software GREEN) | OPEN | 2026-10-31 |
+| [#1381](https://github.com/RedMentos/Aii/pull/1381) | Cross-organ review: exact F1/F5 + B1/B2 Run52 audit blobs, 69/69 software GREEN | OPEN | 2026-10-31 |
+| [#1380](https://github.com/RedMentos/Aii/pull/1380) | Run52 independent B1 lexical scorer false-positive audit (no rescore, 59/59) | OPEN | 2026-10-31 |
+| [#1379](https://github.com/RedMentos/Aii/pull/1379) | F1/F5 event-bound no-delivery finalizer audit (59/59 software GREEN) | OPEN | 2026-10-31 |
+| [#1378](https://github.com/RedMentos/Aii/pull/1378) | Run51: F1/F5 source-backed second-attempt utility with real Store and native C3 | OPEN | 2026-10-31 |
+| [#1377](https://github.com/RedMentos/Aii/pull/1377) | Run50: native C3 → real C5/C6 DRAFT source witness (seed443, SHADOW) | OPEN | 2026-10-31 |
+| [#1376](https://github.com/RedMentos/Aii/pull/1376) | Run49: C5/C6 source-bound DRAFT preflight in real SQLite (SHADOW, no commit) | OPEN | 2026-10-31 |
+| [#1375](https://github.com/RedMentos/Aii/pull/1375) | Run48: default-off final JEF/C3 source-event agreement SHADOW gate | OPEN | 2026-10-31 |
+| [#1374](https://github.com/RedMentos/Aii/pull/1374) | Run47: native C3 copies source-bound JEF typed result 6/6 (raw source 0/6) | OPEN | 2026-10-31 |
+| [#1373](https://github.com/RedMentos/Aii/pull/1373) | Run46B: deterministic source-verified JEF eligibility SHADOW on real SQLite | OPEN | 2026-10-31 |
+| [#1372](https://github.com/RedMentos/Aii/pull/1372) | Run45A: independently verify original Run44 native RED and quote provenance | OPEN | 2026-10-31 |
+| [#1371](https://github.com/RedMentos/Aii/pull/1371) | Run44 verified native RED: frozen seed307 B2→C3 source-handoff pilot | OPEN | 2026-10-31 |
+| [#1370](https://github.com/RedMentos/Aii/pull/1370) | Run43: actual current JEF/B2→C3 source handoff via real SQLite (software witness) | OPEN | 2026-10-31 |
+| [#1369](https://github.com/RedMentos/Aii/pull/1369) | Run42: unfiltered current-chain cross-organ software regression (raw-preserving) | OPEN | 2026-10-31 |
+| [#1368](https://github.com/RedMentos/Aii/pull/1368) | Run41: calibrated C2/JEF monotone route-upgrade SHADOW under effort ceilings | OPEN | 2026-10-31 |
+| [#1367](https://github.com/RedMentos/Aii/pull/1367) | Run40: independently audit original Run39 RED native evidence (no promotion) | OPEN | 2026-10-31 |
+| [#1366](https://github.com/RedMentos/Aii/pull/1366) | Run39: preregister action-balanced six-slot World-JEPA disjoint three-arm SHADOW | OPEN | 2026-10-31 |
+| [#1365](https://github.com/RedMentos/Aii/pull/1365) | Run38: preregister and run disjoint World-JEPA full-six-slot training ablation (SHADOW) | OPEN | 2026-10-31 |
+| [#1364](https://github.com/RedMentos/Aii/pull/1364) | Run37 independent audit: verify original Run36 native confidence incidence (no promotion) | OPEN | 2026-10-31 |
+| [#1363](https://github.com/RedMentos/Aii/pull/1363) | Run36: disjoint AG12 native token-confidence incidence, same-output vote instrumentation (SHADOW) | OPEN | 2026-10-31 |
+| [#1362](https://github.com/RedMentos/Aii/pull/1362) | Run35: exact-row matched-parameter World-JEPA slot-locality negative control (SHADOW) | OPEN | 2026-10-31 |
+| [#1361](https://github.com/RedMentos/Aii/pull/1361) | Run34: independently audit original Run32 World-JEPA raw and reproduce W6/W7 failures | OPEN | 2026-10-31 |
+| [#1360](https://github.com/RedMentos/Aii/pull/1360) | Run33: wire finite token confidence through isolated AG12 BodySolver vote (SHADOW) | OPEN | 2026-10-31 |
+| [#1359](https://github.com/RedMentos/Aii/pull/1359) | Run32: preregister disjoint World-JEPA W7 attribution and original Z12b same-seed comparison | OPEN | 2026-10-30 |
+| [#1358](https://github.com/RedMentos/Aii/pull/1358) | Run31: isolate AG12 nonfinite token-confidence certainty bug without changing frozen solver | OPEN | 2026-10-30 |
+| [#1357](https://github.com/RedMentos/Aii/pull/1357) | Run30: independently verify native AG12 vote versus B1/B2 paired correctness | OPEN | 2026-10-30 |
+| [#1356](https://github.com/RedMentos/Aii/pull/1356) | Run29: execute preregistered Run28 real-file slot-shared World-JEPA SHADOW cohort | OPEN | 2026-10-30 |
+| [#1355](https://github.com/RedMentos/Aii/pull/1355) | Run28 WIP: isolated slot-shared World-JEPA composition candidate (SHADOW) | OPEN | 2026-10-30 |
+| [#1354](https://github.com/RedMentos/Aii/pull/1354) | Run27 native launched: pinned three-organ BodySolver vote (528 role-calls) | OPEN | 2026-10-30 |
+| [#1353](https://github.com/RedMentos/Aii/pull/1353) | Run26 verified: closed native C3/B1/B2 oracle coverage diagnostic | OPEN | 2026-10-30 |
+| [#1352](https://github.com/RedMentos/Aii/pull/1352) | Run25 verified: distinct B1/B2 Linux-native AG12 DE/EN 352 calls | OPEN | 2026-10-30 |
+| [#1351](https://github.com/RedMentos/Aii/pull/1351) | Run24 WIP: pinned real C3 Linux AG12 German/English native cohort (evidence pending) | OPEN | 2026-10-30 |
+| [#1350](https://github.com/RedMentos/Aii/pull/1350) | Run23 AG12: explicit user-scheduled German BodySolver evaluation and AG9 isolation | OPEN | 2026-10-30 |
+| [#1349](https://github.com/RedMentos/Aii/pull/1349) | Run22 AG12: read-only English/German persisted score comparison with strict gates | OPEN | 2026-10-30 |
+| [#1348](https://github.com/RedMentos/Aii/pull/1348) | Run21 AG12: isolate long solver identities across English/German forgetting curves | OPEN | 2026-10-30 |
+| [#1347](https://github.com/RedMentos/Aii/pull/1347) | Run20 §97.2: malformed live sensors cannot promote GREEN or clear RED | OPEN | 2026-10-30 |
+| [#1346](https://github.com/RedMentos/Aii/pull/1346) | Run19 §97.2: reject nonfinite resource calibration and false Redmi provenance | OPEN | 2026-10-30 |
+| [#1345](https://github.com/RedMentos/Aii/pull/1345) | Run18 F9 Sleep: reject invalid explicit replay batch before work | OPEN | 2026-10-30 |
+| [#1344](https://github.com/RedMentos/Aii/pull/1344) | Run17 F9 Sleep: enforce replay TTL before wake/Sleep A selection | OPEN | 2026-10-30 |
+| [#1343](https://github.com/RedMentos/Aii/pull/1343) | Run16 ContextOS G6B: fail closed on untyped capability and digest state | OPEN | 2026-10-30 |
+| [#1342](https://github.com/RedMentos/Aii/pull/1342) | Run15: recover unfiltered full-suite runner after wrong Run14W test path pin | OPEN | 2026-10-30 |
+| [#1341](https://github.com/RedMentos/Aii/pull/1341) | Run14Z T8 World: bind fitted cache to strict source admission; real SQLite restart proof | OPEN | 2026-10-30 |
+| [#1340](https://github.com/RedMentos/Aii/pull/1340) | Run14Y T8 World model: reject ambiguous JSON source keys without losing optional-latent rows | OPEN | 2026-10-30 |
+| [#1339](https://github.com/RedMentos/Aii/pull/1339) | Run14X F9 Sleep: strict enabled parsing and atomic CAS policy updates | OPEN | 2026-10-30 |
+| [#1338](https://github.com/RedMentos/Aii/pull/1338) | Run14V C2/JEF: enforce effort-band ceiling on learned body wake | OPEN | 2026-10-30 |
+| [#1337](https://github.com/RedMentos/Aii/pull/1337) | Run14U World F4: reject duplicate JSON keys in source-bound receipts and recovery | OPEN | 2026-10-30 |
+| [#1336](https://github.com/RedMentos/Aii/pull/1336) | Run14S ContextOS: durable at-most-once outcome credit and bounded replay guard | OPEN | 2026-10-30 |
+| [#1335](https://github.com/RedMentos/Aii/pull/1335) | Run14S: AG6 gate rechecks live sources and AG12 holdouts before approval requests | OPEN | 2026-10-30 |
+| [#1334](https://github.com/RedMentos/Aii/pull/1334) | Run14R: revalidate AG12 holdouts at AG6 stage, fit and approval | OPEN | 2026-10-30 |
+| [#1333](https://github.com/RedMentos/Aii/pull/1333) | Run14Q: exclude registered AG12 holdouts from Sleep TTT candidate staging | OPEN | 2026-10-30 |
+| [#1332](https://github.com/RedMentos/Aii/pull/1332) | Run14P: protect AG12 EN/DE historical holdouts across training guards | OPEN | 2026-10-30 |
+| [#1331](https://github.com/RedMentos/Aii/pull/1331) | Run14O: C2 deadline one-body wake respects selected gist/detail hemisphere | OPEN | 2026-10-30 |
+| [#1330](https://github.com/RedMentos/Aii/pull/1330) | Run14M: preserve bounded AG12 historical holdouts across suite rotation | OPEN | 2026-10-30 |
+| [#1329](https://github.com/RedMentos/Aii/pull/1329) | Run14L: preregistered disjoint 16-call native C3 structured-vs-copy experiment | OPEN | 2026-10-30 |
+| [#1328](https://github.com/RedMentos/Aii/pull/1328) | Run14K: source-bound six-slot C3 JSON SHADOW path with JEF fallback | OPEN | 2026-10-30 |
+| [#1327](https://github.com/RedMentos/Aii/pull/1327) | Run14J: atomic bounded idempotent AG12→AG9 calibration feedback | OPEN | 2026-10-30 |
+| [#1326](https://github.com/RedMentos/Aii/pull/1326) | Run14I: bind AG9 calibration to exact in-memory AG12 run, isolate German | OPEN | 2026-10-30 |
+| [#1325](https://github.com/RedMentos/Aii/pull/1325) | Run14H: prevent AG12 suite-seed rotation from mixing curves and holdouts | OPEN | 2026-10-30 |
+| [#1324](https://github.com/RedMentos/Aii/pull/1324) | Run14G: isolate German AG12 export without changing English artifact | OPEN | 2026-10-30 |
+| [#1323](https://github.com/RedMentos/Aii/pull/1323) | Run14F: isolate AG12 German evaluation state without changing English default | OPEN | 2026-10-30 |
+| [#1322](https://github.com/RedMentos/Aii/pull/1322) | Run14E: supply exact original Run13T ZIP to unfiltered cross-organ full suite | OPEN | 2026-10-30 |
+| [#1321](https://github.com/RedMentos/Aii/pull/1321) | Run14D: real SQLite Age0 AG9/AG12 operator and restart lifecycle proof | OPEN | 2026-10-30 |
+| [#1320](https://github.com/RedMentos/Aii/pull/1320) | Run14C: integrate verified AG9 + AG12 guards and run unfiltered cross-organ suite | OPEN | 2026-10-30 |
+| [#1319](https://github.com/RedMentos/Aii/pull/1319) | Run14B: reject nonfinite AG12 solver confidence before procedural scoring | OPEN | 2026-10-30 |
+| [#1318](https://github.com/RedMentos/Aii/pull/1318) | Run14A: fail-closed AG9 read-side component validation (review-only) | OPEN | 2026-10-30 |
+| [#1317](https://github.com/RedMentos/Aii/pull/1317) | Run13Z: source-disjoint AG9 heldout calibration shadow (no Age authority) | OPEN | 2026-10-30 |
+| [#1316](https://github.com/RedMentos/Aii/pull/1316) | Run13Y: AG9 finite-confidence and exact outcome-label containment | OPEN | 2026-10-30 |
+| [#1315](https://github.com/RedMentos/Aii/pull/1315) | Run13X: exact-original 16-call native C3 output receipt replay (offline only) | OPEN | 2026-10-30 |
+| [#1314](https://github.com/RedMentos/Aii/pull/1314) | Run13W: bind C3 SHADOW candidate bytes to receipt, preserve JEF fallback | OPEN | 2026-10-30 |
+| [#1313](https://github.com/RedMentos/Aii/pull/1313) | Run13V: source-rechecked JEF answer fallback when C3 is unfaithful (SHADOW only) | OPEN | 2026-10-30 |
+| [#1312](https://github.com/RedMentos/Aii/pull/1312) | Run13U: independent original 16-call C3 raw replay confirms FIDELITY_HURT | OPEN | 2026-10-30 |
+| [#1311](https://github.com/RedMentos/Aii/pull/1311) | Run13T: disjoint seed283 16-call native C3 strict-copy FIDELITY_HURT (no promotion) | OPEN | 2026-10-30 |
+| [#1310](https://github.com/RedMentos/Aii/pull/1310) | Run13S: independent original Run13R raw replay confirms high-dose JEPA HURT (no promotion) | OPEN | 2026-10-30 |
+| [#1309](https://github.com/RedMentos/Aii/pull/1309) | Run13R: disjoint 350M JEPA dose/heldout 8-arm native launched (pending) | OPEN | 2026-10-30 |
+| [#1308](https://github.com/RedMentos/Aii/pull/1308) | Run13Q: isolated F1/F5 SQLite fail-closed candidate, 19/19 software GREEN | OPEN | 2026-10-30 |
+| [#1307](https://github.com/RedMentos/Aii/pull/1307) | Run13P: verified native CE/JEPA gradient attribution (2.09% CE norm; no utility gate) | OPEN | 2026-10-30 |
+| [#1306](https://github.com/RedMentos/Aii/pull/1306) | Run13O independent raw review: 4027 tests, unchanged 120 historical RED identities | OPEN | 2026-10-30 |
+| [#1305](https://github.com/RedMentos/Aii/pull/1305) | Run13N: unfiltered current-chain cross-organ full-suite diagnostic, no RED waiver | OPEN | 2026-10-30 |
+| [#1304](https://github.com/RedMentos/Aii/pull/1304) | Run13M: fail-closed JEF source-fact C3 SHADOW validator (20/20, no egress) | OPEN | 2026-10-30 |
+| [#1303](https://github.com/RedMentos/Aii/pull/1303) | Run13L independent original native raw review: 4/6 task success but 0/6 exact copy | OPEN | 2026-10-30 |
+| [#1302](https://github.com/RedMentos/Aii/pull/1302) | Run13L: preregistered seed251 native C3 system-abstention vs literal-copy contrast | OPEN | 2026-10-30 |
+| [#1301](https://github.com/RedMentos/Aii/pull/1301) | Run13K: preregistered disjoint seed239 C3 verified-fact copy instruction native ablation | OPEN | 2026-10-30 |
+| [#1300](https://github.com/RedMentos/Aii/pull/1300) | Run13J independent original native raw review: C3 fidelity RED, 12/12 native valid | OPEN | 2026-10-30 |
+| [#1299](https://github.com/RedMentos/Aii/pull/1299) | Run13J: preregistered seed227 paired native C3 JEF-vs-raw fidelity pilot | OPEN | 2026-10-30 |
+| [#1298](https://github.com/RedMentos/Aii/pull/1298) | Run13I: source-bound JEF facts to bounded C3 shadow prompt | OPEN | 2026-10-30 |
+| [#1297](https://github.com/RedMentos/Aii/pull/1297) | G15: exact-original G13/G14 full-suite verdict with no RED waiver | OPEN | 2026-10-30 |
+| [#1296](https://github.com/RedMentos/Aii/pull/1296) | Run13H: fail-closed SQLite read errors in opt-in JEF source-link diagnostics | OPEN | 2026-10-30 |
+| [#1295](https://github.com/RedMentos/Aii/pull/1295) | G14: unfiltered full-suite regression of explicit JEF source-link operator | OPEN | 2026-10-30 |
+| [#1294](https://github.com/RedMentos/Aii/pull/1294) | Run13G: one-command :jeflink last with unique source-link veto | OPEN | 2026-10-30 |
+| [#1293](https://github.com/RedMentos/Aii/pull/1293) | Run13F: explicit Age0 :jeflink TTY command for ContextPlan source answer | OPEN | 2026-10-30 |
+| [#1292](https://github.com/RedMentos/Aii/pull/1292) | Run13E: Context OS SOURCE_LINKS to exact JEF Store answer (SHADOW) | OPEN | 2026-10-30 |
+| [#1291](https://github.com/RedMentos/Aii/pull/1291) | Run13D: C2 numeric v1/v2 synthetic learned-route generalization ablation | OPEN | 2026-10-30 |
+| [#1290](https://github.com/RedMentos/Aii/pull/1290) | Run13C: opt-in read-only existing-home JEF exact SourceRef CLI | OPEN | 2026-10-30 |
+| [#1289](https://github.com/RedMentos/Aii/pull/1289) | Run13B: Store-bound JEF exact full-answer SHADOW candidate (software-only) | OPEN | 2026-10-30 |
+| [#1288](https://github.com/RedMentos/Aii/pull/1288) | Run13A: original-ZIP read-only route and value-presence diagnostic (no rescoring) | OPEN | 2026-10-30 |
+| [#1287](https://github.com/RedMentos/Aii/pull/1287) | C2 route head: isolated numeric-literal invariant word-feature candidate | OPEN | 2026-10-30 |
+| [#1286](https://github.com/RedMentos/Aii/pull/1286) | G13: independent unfiltered cross-organ software regression (preserve RED) | OPEN | 2026-10-30 |
+| [#1285](https://github.com/RedMentos/Aii/pull/1285) | G13: prevent burnout-budget bypass after wall-clock rollback | OPEN | 2026-10-30 |
+| [#1284](https://github.com/RedMentos/Aii/pull/1284) | G13: fail closed on invalid dispatch clock before durable queue mutation | OPEN | 2026-10-30 |
+| [#1283](https://github.com/RedMentos/Aii/pull/1283) | Context OS: preserve arithmetic relationships and scientific notation in Age0 SHADOW | OPEN | 2026-10-30 |
+| [#1282](https://github.com/RedMentos/Aii/pull/1282) | Run13A: read-only exact-ZIP route/answer counterfactual diagnosis | OPEN | 2026-10-30 |
+| [#1281](https://github.com/RedMentos/Aii/pull/1281) | Run13A: unfiltered full-suite cross-review, preserve historical RED without waivers | OPEN | 2026-10-30 |
+| [#1280](https://github.com/RedMentos/Aii/pull/1280) | Run13A: launch pinned 32-turn serialized Linux-native full-task pilot | OPEN | 2026-10-30 |
+| [#1279](https://github.com/RedMentos/Aii/pull/1279) | Run13A: independent 32-row verifier replay and tamper counterexamples (synthetic) | OPEN | 2026-10-30 |
+| [#1278](https://github.com/RedMentos/Aii/pull/1278) | Run13A: 32-turn seed211 full-task runner and independent replay verifier (source-only preflight) | OPEN | 2026-10-30 |
+| [#1277](https://github.com/RedMentos/Aii/pull/1277) | Run13A: preregister eight disjoint seed211 full-task sources and JEF no-model baseline | OPEN | 2026-10-30 |
+| [#1276](https://github.com/RedMentos/Aii/pull/1276) | Run12N: bind four original source tasks to existing JEF exact budget SHADOW baseline | OPEN | 2026-10-30 |
+| [#1275](https://github.com/RedMentos/Aii/pull/1275) | Run12N: exact-original-ZIP posthoc full-task diagnostic exposes faster-choice failures | OPEN | 2026-10-30 |
+| [#1274](https://github.com/RedMentos/Aii/pull/1274) | Run12N: real fresh-turn lifecycle integration with fake native runner (45/45) | OPEN | 2026-10-30 |
+| [#1273](https://github.com/RedMentos/Aii/pull/1273) | Run12N: preserve original 16-row API RED and launch pinned native technical retry | OPEN | 2026-10-30 |
+| [#1272](https://github.com/RedMentos/Aii/pull/1272) | Run12N: repair real Runtime lifecycle and scalar postclose release witness | OPEN | 2026-10-30 |
+| [#1271](https://github.com/RedMentos/Aii/pull/1271) | Run12N: launch serialized pinned observer-OFF 16-turn native C2/Body utility | OPEN | 2026-10-30 |
+| [#1270](https://github.com/RedMentos/Aii/pull/1270) | Run12N: prospective observer-OFF native C2/Body utility, disjoint seed197 (preflight pending) | OPEN | 2026-10-30 |
+| [#1269](https://github.com/RedMentos/Aii/pull/1269) | Run12M: 16-turn native C2/C3/B1/B2 utility — 14/16 witness PARTIAL RED | OPEN | 2026-10-30 |
+| [#1268](https://github.com/RedMentos/Aii/pull/1268) | Run12L: pinned native C2 route proxy — 15/15 structural, −3 role agreement RED | OPEN | 2026-10-30 |
+| [#1267](https://github.com/RedMentos/Aii/pull/1267) | Run12K: preregistered pinned Needle3 native C2 strict-admission compatibility (partial) | OPEN | 2026-10-30 |
+| [#1266](https://github.com/RedMentos/Aii/pull/1266) | Run12J: bind Runtime C2 advisory to validated unique native tool call | OPEN | 2026-10-30 |
+| [#1265](https://github.com/RedMentos/Aii/pull/1265) | Run12I: atomic Sleep replay+ReplayItem provenance with SQLite rollback proof | OPEN | 2026-10-30 |
+| [#1264](https://github.com/RedMentos/Aii/pull/1264) | Run12H: independent Age0d nonassertion false-alarm review, synthetic GREEN | OPEN | 2026-10-30 |
+| [#1263](https://github.com/RedMentos/Aii/pull/1263) | Run12F: answer-aware Age0d exact arithmetic SHADOW, no delivery | OPEN | 2026-10-30 |
+| [#1262](https://github.com/RedMentos/Aii/pull/1262) | Run12E: Context OS escaped ASCII quote exactness SHADOW candidate | OPEN | 2026-10-30 |
+| [#1261](https://github.com/RedMentos/Aii/pull/1261) | Run12D: independent original 350M ZIP/12-arm NLL audit, software GREEN | OPEN | 2026-10-30 |
+| [#1260](https://github.com/RedMentos/Aii/pull/1260) | Run12C: preregistered disjoint 350M contrastive NLL runner, source-only GREEN | OPEN | 2026-10-30 |
+| [#1259](https://github.com/RedMentos/Aii/pull/1259) | Run11Z2: restore exact original native ZIP prerequisite for unfiltered fullsuite | OPEN | 2026-10-30 |
+| [#1258](https://github.com/RedMentos/Aii/pull/1258) | Run12B: isolated no-export contrastive Body-JEPA trainer port, disjoint 350M prereg | OPEN | 2026-10-30 |
+| [#1257](https://github.com/RedMentos/Aii/pull/1257) | Run12A: preregistered contrastive Body-JEPA stop-gradient SHADOW candidate | OPEN | 2026-10-30 |
+| [#1256](https://github.com/RedMentos/Aii/pull/1256) | Run11Z: unfiltered cross-organ regression review of source-bound JEF budget candidate | OPEN | 2026-10-30 |
+| [#1255](https://github.com/RedMentos/Aii/pull/1255) | Run11Y: Store-verified JEF budget arithmetic SHADOW with disjoint seed197 tests | OPEN | 2026-10-30 |
+| [#1254](https://github.com/RedMentos/Aii/pull/1254) | Run11X: verify original seed181 native ZIP and preserve negative six-arm result | OPEN | 2026-10-30 |
+| [#1253](https://github.com/RedMentos/Aii/pull/1253) | Run11V native trigger: serialized seed181 Linux-native 24-turn pilot (pending) | OPEN | 2026-10-30 |
+| [#1252](https://github.com/RedMentos/Aii/pull/1252) | Run11W: read-only C2 route regret from original SHA-pinned native raw | OPEN | 2026-10-30 |
+| [#1251](https://github.com/RedMentos/Aii/pull/1251) | Run11V: preregister disjoint seed181 six-arm C2/C3/Body native utility pilot | OPEN | 2026-10-30 |
+| [#1250](https://github.com/RedMentos/Aii/pull/1250) | Run11U: source-key/value identity SHADOW with disjoint recency fallback controls | OPEN | 2026-10-30 |
+| [#1249](https://github.com/RedMentos/Aii/pull/1249) | Run11T: verify original Run11R native RED ZIP with corrected synthetic replay fixtures | OPEN | 2026-10-30 |
+| [#1248](https://github.com/RedMentos/Aii/pull/1248) | Run11S: disjoint focal recency/replacement source-only shadow against capacity controls | OPEN | 2026-10-30 |
+| [#1247](https://github.com/RedMentos/Aii/pull/1247) | Run11R: disjoint observer-isolated C2/C3/Body paired pilot with post-close receipts | OPEN | 2026-10-30 |
+| [#1246](https://github.com/RedMentos/Aii/pull/1246) | Run11Q: source-bound C2/C3/Body arithmetic shadow scorer detects 4/6 original contradictions | OPEN | 2026-10-30 |
+| [#1245](https://github.com/RedMentos/Aii/pull/1245) | Run11P: preregister 8-step disjoint 350M Body-JEPA CE/EMA/shuffled utility diagnostic | OPEN | 2026-10-30 |
+| [#1244](https://github.com/RedMentos/Aii/pull/1244) | Run11O: preregister pinned 350M Body-JEPA target stochasticity mechanism assay | OPEN | 2026-10-30 |
+| [#1243](https://github.com/RedMentos/Aii/pull/1243) | Run11N: integrate Sleep A source integrity with 350M Body-JEPA; audit original native no-gain result | OPEN | 2026-10-30 |
+| [#1242](https://github.com/RedMentos/Aii/pull/1242) | Body-JEPA 350M: preregister paired EMA target eval-vs-train heldout follow-up | OPEN | 2026-10-30 |
+| [#1241](https://github.com/RedMentos/Aii/pull/1241) | Sleep A: distinguish unavailable live event source from explicit deletion and continue replay | OPEN | 2026-10-30 |
+| [#1240](https://github.com/RedMentos/Aii/pull/1240) | Body-JEPA: import exact opt-in dropout-stable EMA target with cross-organ review | OPEN | 2026-10-30 |
+| [#1239](https://github.com/RedMentos/Aii/pull/1239) | Context OS: preserve typographic quoted literals through extractive compression | OPEN | 2026-10-30 |
+| [#1238](https://github.com/RedMentos/Aii/pull/1238) | JEF report: bind self-outcome human agreement to exact original decision | OPEN | 2026-10-30 |
+| [#1237](https://github.com/RedMentos/Aii/pull/1237) | Current review-chain unfiltered 3,698-test regression: 2 historical RED, original native ZIP restored | OPEN | 2026-10-30 |
+| [#1236](https://github.com/RedMentos/Aii/pull/1236) | Context OS warm: fail closed when F5-verified source disappears before delivery | OPEN | 2026-10-30 |
+| [#1235](https://github.com/RedMentos/Aii/pull/1235) | JEF report: live byte-exact self-outcome sources for human agreement metrics | OPEN | 2026-10-30 |
+| [#1234](https://github.com/RedMentos/Aii/pull/1234) | C3 deterministic operator: reject multi-question ambiguity; seeded software RED/GREEN | OPEN | 2026-10-30 |
+| [#1233](https://github.com/RedMentos/Aii/pull/1233) | C3 German operator: opt-in deterministic source-bound SHADOW utility without model | OPEN | 2026-10-30 |
+| [#1232](https://github.com/RedMentos/Aii/pull/1232) | Independent paired109 original native raw audit and tamper-resistant counts | OPEN | 2026-10-30 |
+| [#1231](https://github.com/RedMentos/Aii/pull/1231) | C3 German typed-read: preregistered disjoint A/B native comparison with no-model baseline | OPEN | 2026-10-30 |
+| [#1230](https://github.com/RedMentos/Aii/pull/1230) | C3 operator: bounded no-symlink input and lossless native failure reason | OPEN | 2026-10-30 |
+| [#1229](https://github.com/RedMentos/Aii/pull/1229) | C3 German operator: preregistered real pinned Linux-native one-source probe | OPEN | 2026-10-30 |
+| [#1228](https://github.com/RedMentos/Aii/pull/1228) | C3 operator: reject unverified native receipts and preserve negative gates | OPEN | 2026-10-30 |
+| [#1227](https://github.com/RedMentos/Aii/pull/1227) | Current-chain unfiltered 3,635-test review: preserve 3 RED and resolve missing native ZIP | OPEN | 2026-10-30 |
+| [#1226](https://github.com/RedMentos/Aii/pull/1226) | JEF: byte-exact human receipts for training and agreement; conservative self veto | OPEN | 2026-10-30 |
+| [#1225](https://github.com/RedMentos/Aii/pull/1225) | Independent original seed83 native ZIP posthoc audit of closed-world guard | OPEN | 2026-10-30 |
+| [#1224](https://github.com/RedMentos/Aii/pull/1224) | German typed-read: conservative closed-world completeness SHADOW (seed101) | OPEN | 2026-10-30 |
+| [#1223](https://github.com/RedMentos/Aii/pull/1223) | STEP2 German source-exact budget remainders SHADOW and original native negative replay | OPEN | 2026-10-30 |
+| [#1222](https://github.com/RedMentos/Aii/pull/1222) | Seed83 preregistered fresh native German C3→SHADOW arithmetic cohort | OPEN | 2026-10-30 |
+| [#1221](https://github.com/RedMentos/Aii/pull/1221) | German C3 typed read → deterministic arithmetic SHADOW with independent native raw review | OPEN | 2026-10-30 |
+| [#1220](https://github.com/RedMentos/Aii/pull/1220) | Isolated native C3 German typed-value read seed79, pinned and non-promoting | OPEN | 2026-10-30 |
+| [#1219](https://github.com/RedMentos/Aii/pull/1219) | German list_arith v2 SHADOW candidate: preregistered seed73 paired synthetic 36/36 | OPEN | 2026-10-30 |
+| [#1218](https://github.com/RedMentos/Aii/pull/1218) | German list_arith: frozen seed71 disjoint paraphrase/negation generalization RED | OPEN | 2026-10-30 |
+| [#1217](https://github.com/RedMentos/Aii/pull/1217) | Independent seed61 native RED raw audit and frozen-score JSON-wire replay | OPEN | 2026-10-30 |
+| [#1216](https://github.com/RedMentos/Aii/pull/1216) | German list_arith SHADOW: frozen seed67 24/24 holdout, no live tool authority | OPEN | 2026-10-30 |
+| [#1215](https://github.com/RedMentos/Aii/pull/1215) | Preregister seed61 and implement isolated B1/B2 final-role post-close PID proof | OPEN | 2026-10-30 |
+| [#1214](https://github.com/RedMentos/Aii/pull/1214) | Independent native RED triage: seed53 observer contamination and seed59 release receipt | OPEN | 2026-10-30 |
+| [#1213](https://github.com/RedMentos/Aii/pull/1213) | C2: disjoint seed59 actual native route-selection utility cohort | OPEN | 2026-10-30 |
+| [#1212](https://github.com/RedMentos/Aii/pull/1212) | C2/Body: preregister disjoint seed53 six-arm native utility controls | OPEN | 2026-10-30 |
+| [#1211](https://github.com/RedMentos/Aii/pull/1211) | Review chain: independently verify original 31/31 focused tests and launch unfiltered full suite | OPEN | 2026-10-30 |
+| [#1210](https://github.com/RedMentos/Aii/pull/1210) | V13 review-chain integration: exact STEP2/C2/expression/native smoke source | OPEN | 2026-10-30 |
+| [#1209](https://github.com/RedMentos/Aii/pull/1209) | C2→C3/Body: preregistered seed47 native auto-route integration smoke | OPEN | 2026-10-30 |
+| [#1208](https://github.com/RedMentos/Aii/pull/1208) | STEP2: source-bound equation scorer sensitivity, 10 adversarial tests | OPEN | 2026-10-30 |
+| [#1207](https://github.com/RedMentos/Aii/pull/1207) | C2/Needle: launch preregistered 3-call native auto-route provenance | OPEN | 2026-10-30 |
+| [#1206](https://github.com/RedMentos/Aii/pull/1206) | STEP2 v3: independent 27-turn native raw audit and lexical-scorer limitation | OPEN | 2026-10-30 |
+| [#1205](https://github.com/RedMentos/Aii/pull/1205) | C2/Needle: preregister isolated native auto-route provenance probe (7 software tests) | OPEN | 2026-10-30 |
+| [#1204](https://github.com/RedMentos/Aii/pull/1204) | STEP2 v3: preregistered nine-task Latin-square paired native pilot, preflight GREEN | OPEN | 2026-10-30 |
+| [#1203](https://github.com/RedMentos/Aii/pull/1203) | JEF F1/F5: opt-in source-bound stored FINAL discrepancy audit (25 focused tests) | OPEN | 2026-10-30 |
+| [#1202](https://github.com/RedMentos/Aii/pull/1202) | STEP2 v2: independently verify original Linux-native paired raw and preserve no-promotion gates | OPEN | 2026-10-30 |
+| [#1201](https://github.com/RedMentos/Aii/pull/1201) | JEF source-exact explain: full unfiltered software regression (raw pending) | OPEN | 2026-10-30 |
+| [#1200](https://github.com/RedMentos/Aii/pull/1200) | STEP2 v2: fresh disjoint paired native budget pilot with contradiction-vetoing scorer | OPEN | 2026-10-30 |
+| [#1199](https://github.com/RedMentos/Aii/pull/1199) | JEF F1/F5: opt-in local source-exact signed explanation with recheck | OPEN | 2026-10-30 |
+| [#1198](https://github.com/RedMentos/Aii/pull/1198) | STEP2: independently audit original paired native RED, preserve raw and validator mismatch | OPEN | 2026-10-30 |
+| [#1197](https://github.com/RedMentos/Aii/pull/1197) | F1/F5: expose source-exact signed option remainders in read-only JEF SHADOW | OPEN | 2026-10-30 |
+| [#1196](https://github.com/RedMentos/Aii/pull/1196) | STEP2: audit real current-chain native answer against requested budget remainders | OPEN | 2026-10-30 |
+| [#1195](https://github.com/RedMentos/Aii/pull/1195) | V13 current-chain full unfiltered JEF software regression (historical source-pin RED) | OPEN | 2026-10-30 |
+| [#1194](https://github.com/RedMentos/Aii/pull/1194) | JEF WP-U1: exclude revoked or mismatched self-outcome training sources | OPEN | 2026-10-30 |
+| [#1193](https://github.com/RedMentos/Aii/pull/1193) | JEF WP-U1: count only live exact human source receipts in outcome agreement | OPEN | 2026-10-30 |
+| [#1192](https://github.com/RedMentos/Aii/pull/1192) | V13: current-chain connected Age0 Linux native JEF/C2/C3/B1/B2 vertical recheck | OPEN | 2026-10-30 |
+| [#1191](https://github.com/RedMentos/Aii/pull/1191) | C2: recheck pinned current-chain Needle3 real Linux native control call | OPEN | 2026-10-30 |
+| [#1190](https://github.com/RedMentos/Aii/pull/1190) | B1/B2: recheck distinct pinned current-chain real Linux native serial inference | OPEN | 2026-10-30 |
+| [#1189](https://github.com/RedMentos/Aii/pull/1189) | C3: recheck pinned current-chain 350M Linux native inference | OPEN | 2026-10-30 |
+| [#1188](https://github.com/RedMentos/Aii/pull/1188) | V13: unfiltered 3395-test JEF cross-organ software replay, frozen RED retained | OPEN | 2026-10-30 |
+| [#1187](https://github.com/RedMentos/Aii/pull/1187) | C2 archived hybrid: require validated native route before selection | OPEN | 2026-10-30 |
+| [#1186](https://github.com/RedMentos/Aii/pull/1186) | JEF WP-U1: retain human RECORD veto beyond 512 recent feedback rows | OPEN | 2026-10-30 |
+| [#1185](https://github.com/RedMentos/Aii/pull/1185) | JEF WP-U1: human RECORD must suppress self-outcome shadow learning | OPEN | 2026-10-30 |
+| [#1184](https://github.com/RedMentos/Aii/pull/1184) | C2: source-bound archived Needle3/scaffold hybrid 4-fold audit | OPEN | 2026-10-30 |
+| [#1183](https://github.com/RedMentos/Aii/pull/1183) | IH-H25: callable Body-JEPA research ObjectiveAdapter, zero live authority | OPEN | 2026-10-30 |
+| [#1182](https://github.com/RedMentos/Aii/pull/1182) | Body-JEPA: preregistered three-seed CE/EMA/shuffled heldout NLL pilot | OPEN | 2026-10-30 |
+| [#1181](https://github.com/RedMentos/Aii/pull/1181) | Body-JEPA: pinned 350M real-master adapter/EMA gradient compatibility pilot | OPEN | 2026-10-30 |
+| [#1180](https://github.com/RedMentos/Aii/pull/1180) | Run34/Run37: replay exact frozen utility in isolated worktree, preserve current RED | OPEN | 2026-10-29 |
+| [#1179](https://github.com/RedMentos/Aii/pull/1179) | V13: unfiltered software replay after JEF lifecycle and SkillLive fixes | OPEN | 2026-10-29 |
+| [#1178](https://github.com/RedMentos/Aii/pull/1178) | JEF WP-U1: make FINAL self-outcome labels idempotent across retry and restart | OPEN | 2026-10-29 |
+| [#1177](https://github.com/RedMentos/Aii/pull/1177) | SkillLive/JEF: preserve positive skill outcome when route feedback agrees | OPEN | 2026-10-29 |
+| [#1176](https://github.com/RedMentos/Aii/pull/1176) | JEF WP-U1: require exact typed source IDs for lifecycle update attribution | OPEN | 2026-10-29 |
+| [#1175](https://github.com/RedMentos/Aii/pull/1175) | JEF WP-U1: isolate experience lifecycle reads and counts by current chat | OPEN | 2026-10-29 |
+| [#1174](https://github.com/RedMentos/Aii/pull/1174) | V13: unfiltered full software replay with JEF and Body-JEPA integrity fixes | OPEN | 2026-10-29 |
+| [#1173](https://github.com/RedMentos/Aii/pull/1173) | Body-JEPA: reject fractional or string RNG values in shuffled-target control | OPEN | 2026-10-29 |
+| [#1172](https://github.com/RedMentos/Aii/pull/1172) | V13: unfiltered full software replay on latest JEF FINAL/restart chain | OPEN | 2026-10-29 |
+| [#1171](https://github.com/RedMentos/Aii/pull/1171) | JEF N3: verify delivered FINAL feedback and receipt persistence across restart | OPEN | 2026-10-29 |
+| [#1170](https://github.com/RedMentos/Aii/pull/1170) | JEF N3: require delivered FINAL before explicit outcome learning | OPEN | 2026-10-29 |
+| [#1169](https://github.com/RedMentos/Aii/pull/1169) | V13: unfiltered full software replay after JEF session and feedback fixes | OPEN | 2026-10-29 |
+| [#1168](https://github.com/RedMentos/Aii/pull/1168) | JEF N3: exactly-once identical human feedback across retries | OPEN | 2026-10-29 |
+| [#1167](https://github.com/RedMentos/Aii/pull/1167) | JEF N3: scope operator last and outcome to current chat | OPEN | 2026-10-29 |
+| [#1166](https://github.com/RedMentos/Aii/pull/1166) | Age0: integrate verified F1/F5 source with registered JEF shadow decision in one home | OPEN | 2026-10-29 |
+| [#1165](https://github.com/RedMentos/Aii/pull/1165) | Age0: one-home verified source, Context OS, World-Model and Sleep integration smoke | OPEN | 2026-10-29 |
+| [#1164](https://github.com/RedMentos/Aii/pull/1164) | Context OS: isolate last plan and outcome feedback to the current chat | OPEN | 2026-10-29 |
+| [#1163](https://github.com/RedMentos/Aii/pull/1163) | V13: independent unfiltered full software replay after six functional packages | OPEN | 2026-10-29 |
+| [#1162](https://github.com/RedMentos/Aii/pull/1162) | G13 scheduler: validate due, TTL and clock before capacity eviction or persistence | OPEN | 2026-10-29 |
+| [#1161](https://github.com/RedMentos/Aii/pull/1161) | Sleep/Dream: reject nonfinite and negative user timer delays before scheduling | OPEN | 2026-10-29 |
+| [#1160](https://github.com/RedMentos/Aii/pull/1160) | World-Model: discover recent current-session observed event IDs for read-only comparison | OPEN | 2026-10-29 |
+| [#1159](https://github.com/RedMentos/Aii/pull/1159) | World-Model: read-only comparison of all four routes for an observed event | OPEN | 2026-10-29 |
+| [#1158](https://github.com/RedMentos/Aii/pull/1158) | F1/F5: independent tamper and revocation controls for equivalent Euro sources | OPEN | 2026-10-29 |
+| [#1157](https://github.com/RedMentos/Aii/pull/1157) | F1/F5: preserve exact Euro sources while reconciling equivalent currency spellings | OPEN | 2026-10-29 |
+| [#1156](https://github.com/RedMentos/Aii/pull/1156) | World-Model: integrate exact independently tested finite real numeric guard | OPEN | 2026-10-29 |
+| [#1155](https://github.com/RedMentos/Aii/pull/1155) | V13: full unfiltered cross-organ PEFT replay after BJ1 and C3 source changes | OPEN | 2026-10-29 |
+| [#1154](https://github.com/RedMentos/Aii/pull/1154) | C3 F1/F5: veto contradictory and hedged generated budget answers | OPEN | 2026-10-29 |
+| [#1153](https://github.com/RedMentos/Aii/pull/1153) | Body-JEPA: bound shuffled-target derangement RNG and reject invalid permutations | OPEN | 2026-10-29 |
+| [#1152](https://github.com/RedMentos/Aii/pull/1152) | V13: preregister isolated PEFT dependency for full unfiltered software suite | OPEN | 2026-10-29 |
+| [#1151](https://github.com/RedMentos/Aii/pull/1151) | V13: unfiltered full-suite replay with isolated pinned Transformers | OPEN | 2026-10-29 |
+| [#1150](https://github.com/RedMentos/Aii/pull/1150) | C3: explicitly finalize retained native output generators on bounded abort | OPEN | 2026-10-29 |
+| [#1149](https://github.com/RedMentos/Aii/pull/1149) | V13: independent unfiltered full software review with isolated pinned CPU torch | OPEN | 2026-10-29 |
+| [#1148](https://github.com/RedMentos/Aii/pull/1148) | World-JEPA: restore synthetic event/C5 provenance without changing cohort values | OPEN | 2026-10-29 |
+| [#1147](https://github.com/RedMentos/Aii/pull/1147) | World-Model: train only from committed C5 selection, invalidate stale v2 fits | OPEN | 2026-10-29 |
+| [#1146](https://github.com/RedMentos/Aii/pull/1146) | C3: bound opt-in native stream accumulation before sourced FINAL | OPEN | 2026-10-29 |
+| [#1145](https://github.com/RedMentos/Aii/pull/1145) | C3: veto contradictory or foreign-currency sourced budget answers | OPEN | 2026-10-29 |
+| [#1144](https://github.com/RedMentos/Aii/pull/1144) | World-Model: bind ActionSelection to event generation and dispatch time | OPEN | 2026-10-29 |
+| [#1143](https://github.com/RedMentos/Aii/pull/1143) | V13 F1/F5: executable standalone --exact source answer without C3 | OPEN | 2026-10-29 |
+| [#1142](https://github.com/RedMentos/Aii/pull/1142) | V13 F1/F5: explicit source-exact budget answers without C3 generation | OPEN | 2026-10-29 |
+| [#1141](https://github.com/RedMentos/Aii/pull/1141) | V13 World-Model: TTY-only observed-state report and session-scoped counterfactuals | OPEN | 2026-10-29 |
+| [#1140](https://github.com/RedMentos/Aii/pull/1140) | World-Model: correct train-only inverse majority baseline on heldout actions | OPEN | 2026-10-29 |
+| [#1139](https://github.com/RedMentos/Aii/pull/1139) | World-Model: preserve ablation cohort and mark rejected forecasts unscorable | OPEN | 2026-10-29 |
+| [#1138](https://github.com/RedMentos/Aii/pull/1138) | C3: preregistered unseen bilingual native heldout scores 3/6, German failures retained | OPEN | 2026-10-29 |
+| [#1137](https://github.com/RedMentos/Aii/pull/1137) | Run34/Run37: reproduce frozen historical source preflight in isolated worktree | OPEN | 2026-10-29 |
+| [#1136](https://github.com/RedMentos/Aii/pull/1136) | C3: six pinned Linux-native bilingual source/absence/revision observations | OPEN | 2026-10-29 |
+| [#1135](https://github.com/RedMentos/Aii/pull/1135) | World-Model: reject nonphysical counterfactual predictions without losing coverage | OPEN | 2026-10-29 |
+| [#1134](https://github.com/RedMentos/Aii/pull/1134) | Context OS: warm memories only after FINAL delivered answers | OPEN | 2026-10-29 |
+| [#1133](https://github.com/RedMentos/Aii/pull/1133) | Context OS: preserve English single-quoted exact spans during compression | OPEN | 2026-10-29 |
+| [#1132](https://github.com/RedMentos/Aii/pull/1132) | AG6: recheck revoked sources inside final adapter activation transaction | OPEN | 2026-10-29 |
+| [#1131](https://github.com/RedMentos/Aii/pull/1131) | World-JEPA: closed-store fixed-readout heldout action ablation CLI | OPEN | 2026-10-29 |
+| [#1130](https://github.com/RedMentos/Aii/pull/1130) | World-JEPA: ignore floating-point ULP noise in collapsed latent rank | OPEN | 2026-10-29 |
+| [#1129](https://github.com/RedMentos/Aii/pull/1129) | World-JEPA: zero-variance latent must not report positive effective rank | OPEN | 2026-10-29 |
+| [#1128](https://github.com/RedMentos/Aii/pull/1128) | AG6: revalidate explicit rating and FINAL answer before fit and approval | OPEN | 2026-10-29 |
+| [#1127](https://github.com/RedMentos/Aii/pull/1127) | AG6: recheck rated-answer source dependencies at fit and manual approval | OPEN | 2026-10-29 |
+| [#1126](https://github.com/RedMentos/Aii/pull/1126) | AG6: refuse manual adapter approval after source revocation | OPEN | 2026-10-29 |
+| [#1125](https://github.com/RedMentos/Aii/pull/1125) | AG6: veto revoked staged sources before trainer.fit (review-only) | OPEN | 2026-10-29 |
+| [#1124](https://github.com/RedMentos/Aii/pull/1124) | AG6: reject revoked rated-answer dependencies and ambiguous FINAL targets | OPEN | 2026-10-29 |
+| [#1123](https://github.com/RedMentos/Aii/pull/1123) | Independent Run11 Linux-native cancel-worker artifact audit (review-only) | OPEN | 2026-10-29 |
+| [#1122](https://github.com/RedMentos/Aii/pull/1122) | Native acceptance: verify canceled worker PID rather than empty multi-role pool | OPEN | 2026-10-29 |
+| [#1121](https://github.com/RedMentos/Aii/pull/1121) | Sleep S7: preserve pending-user barrier across 64-user page boundary | OPEN | 2026-10-29 |
+| [#1120](https://github.com/RedMentos/Aii/pull/1120) | AG6: exclude revoked or tampered explicit-rated sources from weight candidates | OPEN | 2026-10-29 |
+| [#1119](https://github.com/RedMentos/Aii/pull/1119) | AG6: reject batch and pending approval request atomically | OPEN | 2026-10-29 |
+| [#1118](https://github.com/RedMentos/Aii/pull/1118) | Sleep S7: bounded user-event paging beyond 64 interleaved completions | OPEN | 2026-10-29 |
+| [#1117](https://github.com/RedMentos/Aii/pull/1117) | AG6: make gate-state and human approval request one SQLite transaction | OPEN | 2026-10-29 |
+| [#1116](https://github.com/RedMentos/Aii/pull/1116) | AG6: reject malformed measured gate evidence before approval requests | OPEN | 2026-10-29 |
+| [#1115](https://github.com/RedMentos/Aii/pull/1115) | Expose read-only :ctxos source audit in V13 operator help | OPEN | 2026-10-29 |
+| [#1114](https://github.com/RedMentos/Aii/pull/1114) | Integrate STEP2 finite scorer, U5 anchor validation and AG6 invalid-anchor training veto | OPEN | 2026-10-29 |
+| [#1113](https://github.com/RedMentos/Aii/pull/1113) | Sleep S7: recover interleaved FINAL turns without crossing unresolved source watermark | OPEN | 2026-10-29 |
+| [#1112](https://github.com/RedMentos/Aii/pull/1112) | Sleep S7: prevent starvation across >8 pending and stalled sessions | OPEN | 2026-10-29 |
+| [#1111](https://github.com/RedMentos/Aii/pull/1111) | Context OS × Sleep S7: integrate exact-source restoration with paged digest backlog | OPEN | 2026-10-29 |
+| [#1110](https://github.com/RedMentos/Aii/pull/1110) | Sleep S7: bounded oldest-first source-valid digest backlog catch-up | OPEN | 2026-10-29 |
+| [#1109](https://github.com/RedMentos/Aii/pull/1109) | Context OS: exact current-session SourceRef restoration operator | OPEN | 2026-10-29 |
+| [#1108](https://github.com/RedMentos/Aii/pull/1108) | P2X training16: pinned first-action-token top40 logprob scale diagnostic | OPEN | 2026-10-29 |
+| [#1107](https://github.com/RedMentos/Aii/pull/1107) | P2X training16: pinned JSON-target LoRA scale0 vs scale1 diagnostic | OPEN | 2026-10-29 |
+| [#1106](https://github.com/RedMentos/Aii/pull/1106) | P2X training16: isolated JSON schema ON/OFF native diagnostic (no gate) | OPEN | 2026-10-29 |
+| [#1105](https://github.com/RedMentos/Aii/pull/1105) | P2X train16: pinned old-vs-JSON LoRA in-sample schema-decoding comparison | OPEN | 2026-10-29 |
+| [#1104](https://github.com/RedMentos/Aii/pull/1104) | Unified review: World-JEPA, Age0 evidence, WP-T6 and P2X CAL36 coexistence | OPEN | 2026-10-29 |
+| [#1103](https://github.com/RedMentos/Aii/pull/1103) | P2X experimental C3: isolate JSON-target LoRA train/inference format mismatch | OPEN | 2026-10-29 |
+| [#1102](https://github.com/RedMentos/Aii/pull/1102) | Cross-chain review: integrate corrected P2X LoRA CLI and negative CAL36 diagnostic with WP-T6 | OPEN | 2026-10-29 |
+| [#1101](https://github.com/RedMentos/Aii/pull/1101) | Cross-organ review: integrate World-JEPA confidence and Age0 evidence admission on WP-T6 | OPEN | 2026-10-29 |
+| [#1100](https://github.com/RedMentos/Aii/pull/1100) | WP-T6: conflicting trusted skills must not bypass C_fast | OPEN | 2026-10-29 |
+| [#1099](https://github.com/RedMentos/Aii/pull/1099) | P2X CAL36: disjoint positive/negative source transport diagnostic (default off) | OPEN | 2026-10-29 |
+| [#1098](https://github.com/RedMentos/Aii/pull/1098) | AG6: invalid U5 anchor admission must veto trainer.fit, not fall through | OPEN | 2026-10-29 |
+| [#1097](https://github.com/RedMentos/Aii/pull/1097) | WP-T6: ambiguous trusted multi-step skills must not bypass C2 | OPEN | 2026-10-29 |
+| [#1096](https://github.com/RedMentos/Aii/pull/1096) | Independent native360 raw audit: corrected execution, constant NONE, zero measured gain | OPEN | 2026-10-29 |
+| [#1095](https://github.com/RedMentos/Aii/pull/1095) | U5 anchor: reject nonfinite policy signals and unsafe ACTIVE coefficients | OPEN | 2026-10-29 |
+| [#1094](https://github.com/RedMentos/Aii/pull/1094) | STEP2 paired utility: fail closed on malformed scores and duplicate cohorts | OPEN | 2026-10-29 |
+| [#1093](https://github.com/RedMentos/Aii/pull/1093) | P2X native candidate360: fix pinned llama-server --lora-scaled FNAME:SCALE argv | OPEN | 2026-10-29 |
+| [#1092](https://github.com/RedMentos/Aii/pull/1092) | Age0: typed finite evidence admission before direct AgeControl persistence (RED-first candidate) | OPEN | 2026-10-29 |
+| [#1091](https://github.com/RedMentos/Aii/pull/1091) | Integrate verified World-JEPA Run49 single-member confidence guard into current V13 chain | OPEN | 2026-10-29 |
+| [#1090](https://github.com/RedMentos/Aii/pull/1090) | P2X candidate360: isolated pinned LoRA heldout runner (source-only, no activation) | OPEN | 2026-10-29 |
+| [#1089](https://github.com/RedMentos/Aii/pull/1089) | P2X 16×4 independent offline LoRA artifact audit (no native claim) | OPEN | 2026-10-29 |
+| [#1088](https://github.com/RedMentos/Aii/pull/1088) | P2X: bounded 16-example × 4-step native C3 receiver LoRA pilot, default-off | OPEN | 2026-10-29 |
+| [#1087](https://github.com/RedMentos/Aii/pull/1087) | Age0 cross-organ: Context OS source, Self/World attribution and Sleep policy survive restart | OPEN | 2026-10-29 |
+| [#1086](https://github.com/RedMentos/Aii/pull/1086) | Sleep/Dream: reject nonfinite replay-mix weights and boolean quiet hours | OPEN | 2026-10-29 |
+| [#1085](https://github.com/RedMentos/Aii/pull/1085) | Self/World: keep boolean observations distinct from numeric corollary predictions | OPEN | 2026-10-29 |
+| [#1084](https://github.com/RedMentos/Aii/pull/1084) | Context OS: preserve unclosed Markdown code source instead of silently compressing it | OPEN | 2026-10-29 |
+| [#1083](https://github.com/RedMentos/Aii/pull/1083) | JEF: explicit local :jefsource F1/F5 SHADOW diagnostic (no live answer) | OPEN | 2026-10-29 |
+| [#1082](https://github.com/RedMentos/Aii/pull/1082) | JEF: F1/F5 human source SHADOW — 36/36 complete, 144/144 negative software | OPEN | 2026-10-29 |
+| [#1081](https://github.com/RedMentos/Aii/pull/1081) | JEF: Store-backed typed source SHADOW — 36/36 complete, 144/144 negative software | OPEN | 2026-10-29 |
+| [#1080](https://github.com/RedMentos/Aii/pull/1080) | P2X: independently verified 360 native C3 calibration calls — source-use utility FAIL | OPEN | 2026-10-29 |
+| [#1079](https://github.com/RedMentos/Aii/pull/1079) | P2X: 360-call native C3 instruction calibration — negative utility, source-only verified | OPEN | 2026-10-29 |
