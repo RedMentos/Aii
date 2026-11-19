@@ -83,3 +83,26 @@ def test_t8_success_scoring_is_restart_stable_and_censored_unscored(monkeypatch)
     assert state["resolved"]["a1"]["success_brier"] == 0.04
     assert state["pending"]["a2"]["status"] == "CENSORED"
     assert temporal.observe(SimpleNamespace(store=store), now_s=12)["scored"] == 0
+
+
+def test_declared_binary_hypothesis_and_readback(monkeypatch):
+    store = Store()
+    runtime = SimpleNamespace(store=store)
+    for key, hypothesis in (("success_id", "success"), ("failure_id", "failure"),
+                            ("other_id", "rain")):
+        temporal.expect(runtime, expectation_id=key, condition_source="source:" + key,
+                        predicted_outcome=hypothesis, now_s=1, deadline_s=20,
+                        probability=0.8)
+    monkeypatch.setattr(temporal.world_model, "transitions", lambda *_a, **_kw: [
+        {"action_id": key, "a": "simple", "y": [0.2, 1.0, 0.1]}
+        for key in ("success_id", "failure_id", "other_id")])
+    assert temporal.observe(runtime, now_s=10)["scored"] == 2
+    rows = store.get_state(temporal.KEY)["resolved"]
+    assert rows["success_id"]["success_brier"] == 0.04
+    assert rows["failure_id"]["success_brier"] == 0.64
+    assert rows["failure_id"]["hypothesis_label"] == 0.0
+    assert rows["other_id"]["success_brier"] is None
+    assert temporal.score_snapshot(SimpleNamespace(store=store)) == {
+        "status": "IN_SAMPLE_ONLY", "scored": 2, "mean_brier": 0.34,
+        "heldout_utility": "UNVERIFIED", "weights_updated": False}
+    assert temporal.observe(runtime, now_s=11)["scored"] == 0
