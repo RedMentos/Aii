@@ -14,6 +14,9 @@ class V14AudioAdmissionIntegration(unittest.TestCase):
         windows = timed_audio_packets(self.samples, self.source)
         percepts = to_v13_a5_audio(windows, self.source, consent_active=True)
         self.assertEqual(len(percepts), 3)
+        from v13.percept_admission import admit
+        admitted = admit(percepts, 1024)
+        self.assertEqual(len(admitted.selected), 3)
         self.assertEqual(percepts[0].modality, "audio")
         self.assertTrue(percepts[0].final)
     def test_current_consent_revocation(self):
