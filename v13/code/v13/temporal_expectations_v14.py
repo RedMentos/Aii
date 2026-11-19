@@ -42,13 +42,16 @@ def observe(runtime, *, now_s, horizon_s=120.0, limit=2048):
         action_id = row["action_id"]
         if not isinstance(action_id, str) or not action_id:
             continue
-        if action_id in resolved:
+        if action_id in resolved or action_id not in pending:
             continue
         # A T8 row is already a committed, observed action/outcome pair.
         # It proves an outcome, not a counterfactual or a missed deadline.
         outcome = row["y"]
+        hypothesis = pending[action_id]
         resolved[action_id] = {
             "status": "OBSERVED",
+            "predicted_outcome": hypothesis["predicted_outcome"],
+            "probability": hypothesis["probability"],
             "action": row["a"],
             "outcome": outcome,
             "evidence": {"kind": "T8_COMMITTED", "action_id": action_id},
@@ -90,7 +93,7 @@ def expect(runtime, *, expectation_id, condition_source, predicted_outcome,
         raise ValueError("duplicate expectation id")
     if len(state["pending"]) >= world_model.MAX_ROWS:
         raise ValueError("pending expectation capacity reached")
-    state["pending"][expectation_id] = {
+    # Expectation IDs are committed T8 action IDs; unbound hypotheses cannot\n    # be resolved by unrelated observations.\n    state["pending"][expectation_id] = {
         "condition_source": condition_source, "predicted_outcome": predicted_outcome,
         "created": now_s, "deadline": deadline_s,
         "probability": probability, "status": "PENDING",
