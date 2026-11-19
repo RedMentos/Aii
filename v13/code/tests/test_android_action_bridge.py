@@ -52,5 +52,28 @@ class Tests(unittest.TestCase):
         self.assertEqual(p.status, "SIMULATED_FAILED")
 
 
+    def test_real_broker_approval_and_stop(self):
+        from v13.android_control import AndroidControlBroker, ControlDenied
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as d:
+            broker = AndroidControlBroker(Path(d) / "control.sqlite3")
+            try:
+                broker.start()
+                proposal = broker.propose("back", {})
+                with self.assertRaises(ControlDenied):
+                    dispatch_approved(broker, proposal.action_id, source_ref="turn:1")
+                # Failed dispatch does not grant authority. A new explicit
+                # local approval is required; no model-generated approval.
+                proposal = broker.propose("back", {})
+                broker.approve(proposal.action_id, confirmed_by_local_ui=True)
+                result = dispatch_approved(broker, proposal.action_id, source_ref="turn:1", companion=Fake())
+                self.assertEqual(result.status, "SIMULATED_OBSERVED")
+                with self.assertRaises(ControlDenied):
+                    dispatch_approved(broker, proposal.action_id, source_ref="turn:1")
+                self.assertIn("dry_run", [row[1] for row in broker.events()])
+            finally:
+                broker.close()
+
 if __name__ == "__main__":
     unittest.main()
