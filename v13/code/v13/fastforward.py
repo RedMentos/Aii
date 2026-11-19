@@ -110,7 +110,7 @@ class FastForward:
         """Should the compiled policy set the wake decision for this turn? Never on salient/novel turns."""
         st,_=self._load();p=st['procs'].get(key);sig=sig or {}
         calm=all(sig.get(k,0.)<v for k,v in CALM.items())
-        if not p or p['stage'] not in ('READY',) or not p.get('compiled') or not p.get('gate',{}).get('latency_ok'):return {'apply':False,'stage':p['stage'] if p else None,'key':key}
+        if not p or p['stage'] not in ('READY',) or not p.get('compiled') or not (p.get('gate') or {}).get('latency_ok'):return {'apply':False,'stage':p['stage'] if p else None,'key':key}
         return {'apply':st['mode']=='ACTIVE' and calm,'wake':p['compiled']['wake'],'stage':p['stage'],'key':key,'calm':calm,
                 'reason':None if calm else 'salience_reopens_focal'}
     def record_turn(self,key,wake,status,duration_s,surprise=0.,predicted_fast_s=None,applied=False):
