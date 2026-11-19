@@ -42,5 +42,8 @@ def verify_intent(intent, message_id, text):
     """Verify immutable text identity before a future authorized decoder reads it."""
     if type(intent) is not dict or type(message_id) is not int or type(text) is not str:
         return False
-    expected = final_text_intent(message_id, text, "FINAL", enabled=True)
+    try:
+        expected = final_text_intent(message_id, text, "FINAL", enabled=True)
+    except ValueError:
+        return False
     return expected is not None and intent == expected
