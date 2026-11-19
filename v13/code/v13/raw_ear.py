@@ -31,7 +31,7 @@ def raw_ear_packet(frame: AudioFrame):
         raise ValueError('timestamps must be integers')
     if type(frame.pcm16le) is not bytes:
         raise ValueError('PCM16LE must be bytes')
-    if frame.sample_rate not in (8000,16000,24000,32000,44100,48000):
+    if type(frame.sample_rate) is not int or frame.sample_rate not in (8000,16000,24000,32000,44100,48000):
         raise ValueError('unsupported sample rate')
     if not frame.pcm16le or len(frame.pcm16le)%2:
         raise ValueError('invalid PCM16LE')
