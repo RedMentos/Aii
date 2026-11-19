@@ -1,3 +1,13 @@
+# V14 new development SoT (2026-11-19)
+
+**CURRENT DESIGN TARGET**: read `v14/V14_MASTER_BLUEPRINT_RESEARCH_FULL_20261119.md` first (Part 1 architecture, Part 2 research/licenses/plan, then *integral* historical V13 Canon and all major Drive roadmaps/49 small patch notes). The 2,078 historical V13 PR titles are indexed at `v14/archive/V13_GITHUB_PR_PATCH_IDEAS_INDEX.md`. The complete existing V13 code and release history remain accessible and are not implicitly retired. Use `v14/V14_01_ARCHITEKTUR.md` and `v14/V14_02_FORSCHUNG_LIZENZEN_UMSETZUNGSPLAN.md` for smaller reviewable diffs.
+
+**User directs a clean full-system V14 build**, not endless micro-fixes on one legacy PR. Implement every existing Canon function (A/B/C, F1–F7, Enlightened Space, real Body/JEF/World/JEPA learning, replay/dream, Age tool/learning rights, raw/audio/vision ports, native mobile runtime, later MoE and reviewed self-edit) into a unified real Runtime as possible, then improve. Do not rename missing components as “done”; statuses must truthfully distinguish scaffold/shadow/native/Android measured/utility verified. Age is not a time/token budget. Build independent organ tracks concurrently and integrate in batches. After stalling, research existing repo source **and public upstream code**, verify license/NOTICE/model weights, and reuse proven solutions where legal. Existing V13 release must not be replaced or polluted with unverified V14 code. Per-tool consent, security, privacy and rollback remain mandatory for active changes; research/lab builds can proceed despite incomplete device acceptance.
+
+**Paper update**: include SDFT, JOLT, SeOPD, OISD and especially the 2026-11-13 STONE label-free stepping-stone self-distillation candidate in the *additional* mini-distillation×JEPA experiment. Distillation is a training signal, not a generic replacement for backprop or the entire system. Teacher/Delta/Utility heads have separate gates. No asserted live LLM weights/latents from design files alone.
+
+---
+
 # V13 continuation rules
 
 These project instructions preserve the user's decisions, including the 2026-10-12 request to recover research, open questions, end goals and agent work rules and continue without requiring a full chat export. Read the current remote HEAD before work; this file does not replace the Canon or the existing plan.
