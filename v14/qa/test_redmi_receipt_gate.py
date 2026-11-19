@@ -1,0 +1,46 @@
+"""Synthetic negative/positive tests; no Android hardware claims."""
+import unittest
+from redmi_receipt_gate import evaluate
+
+def turn(i):
+    return dict(turn_id=str(i), receipt_id="private-receipt-"+str(i),
+                installed_sha="a"*40, evidence="OWNER_CONSENTED_REDMI",
+                status="FINAL", correct=True, source_bound=True,
+                total_ms=200, first_token_ms=100,
+                b1_attempted=1,b1_delivered=1,b1_consumed=1,
+                b2_attempted=1,b2_delivered=1,b2_consumed=1)
+
+def rows():
+    return [turn(i) for i in range(20)]
+
+class GateTests(unittest.TestCase):
+    def test_consistent_is_not_phone_verified(self):
+        result=evaluate({"turns":rows()})
+        self.assertEqual(result["status"],"METADATA_CONSISTENT")
+        self.assertFalse(result["device_independently_verified"])
+    def test_fewer_than_twenty(self):
+        self.assertEqual(evaluate({"turns":rows()[:19]})["status"],"BLOCKED")
+    def test_wrong_answer(self):
+        x=rows();x[0]["correct"]=False
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+    def test_missing_b2_consumer(self):
+        x=rows()
+        for r in x:r["b2_consumed"]=0
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+    def test_synthetic_is_not_redmi(self):
+        x=rows();x[0]["evidence"]="SYNTHETIC"
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+    def test_private_text_rejected(self):
+        x=rows();x[0]["prompt"]="secret"
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+    def test_duplicate_receipt_rejected(self):
+        x=rows();x[1]["receipt_id"]=x[0]["receipt_id"]
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+    def test_latency_and_accounting(self):
+        x=rows();x[0]["first_token_ms"]=201;x[1]["b1_consumed"]=2
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+    def test_missing_input(self):
+        self.assertEqual(evaluate({"turns":None})["status"],"INVALID")
+
+if __name__=="__main__":
+    unittest.main()
