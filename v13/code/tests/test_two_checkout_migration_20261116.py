@@ -46,11 +46,15 @@ def local_fetch(root, branch):
     ref = 'refs/remotes/origin/' + branch
     before = u.git(root, 'rev-parse', ref)
     remote_head = u.git(remote, 'rev-parse', 'refs/heads/' + branch)
-    u.git(root, 'fetch', '--no-tags', str(remote),
-          'refs/heads/' + branch + ':' + ref, timeout=90)
+    import subprocess
+    fetched=subprocess.run(['git','-C',str(root),'fetch','--no-tags',str(remote),
+                            'refs/heads/' + branch + ':' + ref],
+                           capture_output=True,text=True,timeout=90,check=False)
     after = u.git(root, 'rev-parse', ref)
     fetches.append({'root':Path(root).name,'before':before[:12],
-                    'remote':remote_head[:12],'after':after[:12]})
+                    'remote':remote_head[:12],'after':after[:12],
+                    'fetch_rc':fetched.returncode,
+                    'fetch_stderr':fetched.stderr[:500]})
     return after
 
 # Only the remote transport, exact-SHA CI response and live stop are simulated.
