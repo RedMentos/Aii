@@ -64,3 +64,22 @@ def test_unrelated_t8_cannot_resolve_an_expectation(monkeypatch):
     assert result["observed"] == 0
     assert result["censored"] == 1
     assert store.get_state(temporal.KEY)["resolved"] == {}
+
+
+def test_t8_success_scoring_is_restart_stable_and_censored_unscored(monkeypatch):
+    store = Store()
+    runtime = SimpleNamespace(store=store)
+    temporal.expect(runtime, expectation_id="a1", condition_source="source:1",
+                    predicted_outcome="success", now_s=1, deadline_s=10,
+                    probability=0.8)
+    temporal.expect(runtime, expectation_id="a2", condition_source="source:2",
+                    predicted_outcome="success", now_s=1, deadline_s=10,
+                    probability=0.9)
+    monkeypatch.setattr(temporal.world_model, "transitions", lambda *_a, **_kw: [
+        {"action_id": "a1", "a": "detail", "y": [0.2, 1.0, 0.1]}])
+    result = temporal.observe(runtime, now_s=11)
+    assert result["scored"] == 1
+    state = store.get_state(temporal.KEY)
+    assert state["resolved"]["a1"]["success_brier"] == 0.04
+    assert state["pending"]["a2"]["status"] == "CENSORED"
+    assert temporal.observe(SimpleNamespace(store=store), now_s=12)["scored"] == 0
