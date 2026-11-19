@@ -638,3 +638,169 @@ Lauf 5 nach Sitzungsabbruch komplett neu gefahren.
 Nächster Schritt: neue Vorregistrierung mit Kapazitätsdruck (Ablenker-Erinnerungen, mehrere Turns, Embedding-Retrieval).
 
 
+
+---
+
+## QUELLE: THREAD_Z2_STEP2_B1_DETAIL_20261021.md
+
+# THREAD Z2 STEP2 mit B1-Detailinfo (2026-10-21)
+
+Git: RedMentos/Aii Branch claude/project-thread-hsm0ga @ 6a8937d (Prereg bdaafc2). Volle Berichte: Projektordner v13/bench-results/step2-z2-timescale-20261021/.
+
+# Befund WP-Z2: STEP2 mit Information, die nur B1 hat (2026-10-21)
+
+Vorregistrierung PREREG.md (Commit bdaafc2, vor Inferenz gepusht). Linux-Cloud x86_64, 4 CPUs, kein Redmi.
+Modelle/Runner byte-gleich mit 13.10./20.10.: B1 LFM2.5-1.2B bb741ebb, B2 Qwen3.5-0.8B 57d19977, C3 LFM2.5-350M 3d10b6ab, llama.cpp b10964 79e31218.
+5 Arme x 70 Zeilen, alle RECORDED, 0 Strukturfehler; dazu Werkzeug-Replay je Arm (350 Zeilen).
+
+## Ergebnis: Z2_DIVERGENCE_NOT_SUPPORTED (Gate FAIL)
+1 C both_exact > bester Einzelkörper: .325 vs b1_only .333 -> nein
+2 B1 und B2 gewinnen je eine Episode: ja
+3 komplementäre Fehlerprofile (>= .25): Optionsfelder b1 .57 / b2 .37, Regelfelder beide .10 -> nein
+4a > gleiches Modell gleiche Policy: .325 > .308 -> ja
+4b > gleiches Modell nur anderer Prompt (D prompt_only_dual): .325 < .425 -> nein
+5 Struktur: ja
+§99 "zwei Körper lohnen": nein (ein Körper + zwei Zustände .367 >= zwei Körper .325).
+
+## Sekundär
+- Neuer Schalter b1_recent_source_chars (0 = aus): B1 behält exakte Quelle der letzten Runde. Damit liefert B1 Optionswerte als verifiziertes Zitat 27/70 (vorher 0).
+- Erstmals exakte SPLIT-Entscheidungen, aber nur im Ein-Körper-Arm D (both_none 3/6); Zwei-Körper-Arm 0/6.
+- 0 falsch festgelegte Entscheidungen in 350 Werkzeug-Zeilen; ohne Werkzeug 0 exakt.
+- Ohne Zitat-Kontext (Arm E) 0 verifizierte Zitate.
+
+## Pannen
+- Arm C Nachbearbeitung brach ab (altes Feld 'prior'), Zeilen weiterverwendet.
+- Arm D Versuch 1: Hash-Wächter kannte shared_body nicht, alle Vorbereitungen ERROR; korrigiert, neu gelaufen, Versuch 1 aufbewahrt.
+
+## Empfehlung
+Schalter bleibt aus. Nächstes (neu vorregistrieren): Rauschband mit 3-5 Seeds für C/D; gezielte JEF-Rückfrage "zitiere Regel/Optionen"; Qwen- vs. LFM-B2 als gebundene Modellfrage.
+
+
+---
+
+## QUELLE: THREAD_Z3C_ERWEITERBARER_PARSER_20261021.md
+
+# Thread Z3c Erweiterbarer Regel-Parser (2026-10-21)
+
+Branch claude/project-thread-x1etmj (Basis a9je9s / PR #12), Draft-PR #13. Beleg im Repo:
+v13/code/docs/proofs/continuation-20261021/z3c-extensible-parser/ (PREREG.md, BEFUND.md, parser_v2.py, lexicon.json, z3c_run.py, Tests, run/).
+
+Reihenfolge: 62c5c7f Vorregistrierung + versiegelter Autor-Holdout -> dac892a Parser eingefroren -> cc34bda B1-Runde 1 + Audit -> 92d87ce Nachtrag A1 -> 40e0618 Runde 2 + Audit -> afde1f9 Ergebnis.
+
+Urteil: PARSER_V2_CARRIES_AUTHOR_ONLY; sekundaer C3_TRAINING_NOT_NOW.
+- kanonisch 39/39, Z3b-Paraphrasen 39/39 (vorher 0.154), Autor-Holdout 0.912 exakt, 1/57 falsch (Koeder "Nobody has decided whether the budget should be 102 euros.").
+- Modell-Holdout (B1 formuliert um): nur 22/39 bedeutungsgleich -> unterbesetzt; 0.318 exakt, 0 falsch. Luecken: Lokal-Wortschatz (nearby, area, anywhere, "requirement is true"), "tops out".
+- C3-Satzprobe: 57/60 true, nie null bei Koedern -> kein Trainingssignal.
+Naechstes: neues Paket mit Lexikon-Erweiterung + neuem fremden Holdout (Nutzer-Saetze oder staerkeres Cloud-Modell). v2 nur SHADOW.
+
+
+---
+
+## QUELLE: THREAD_Z3B_PARSER_VS_C3_20261021.md
+
+# Thread „Z3b Parser statt C3-Leser“ — 2026-10-21
+
+Branch `claude/project-thread-a9je9s` (Basis xiuwmf/Z3), Commits 23eb0df (Prereg vor Lauf), 50e239f (Ergebnis). Beleg im Repo und Projektordner: `v13/code/docs/proofs/continuation-20261021/z3b-parser-paraphrase/`.
+
+Frage: Kann C3 (350M) Regeln besser lesen als ein fester Parser? 39 kanonische + 39 umformulierte Aufgaben (gleiche Werte), 3 Seeds, 468 C3-Aufrufe, Schwellen vorab ≥80 % exakt, ≤5 % falsch.
+
+Urteil: PARSER_SUFFICIENT_NO_C3_GAIN; sekundär BOOL_PARSER_FIX_CONFIRMED.
+- Parser liest local_only, C3 nur Zahlen: kanonisch 117/117 exakt, 0 falsch.
+- C3 gibt local_only immer true zurück (234/234), auch bei verneinten Umformulierungen.
+- Auf Umformulierungen kein C3-Arm ≥ 0.80; einziger Gewinn (0.41 statt 0.15) mit 7.7 % falscher Wahl.
+- Folge: Ja/Nein-Regeln nie vom C3 lesen lassen, auch nicht als Rückfall. Neue Wortformen brauchen erweiterbaren Parser oder Lese-Training.
+
+
+---
+
+## QUELLE: THREAD_STEP2_ENGPASS_20261021_ENDE.md
+
+# Thread „STEP2-Nutzen Engpass“ – Stand 2026-10-21 (Ende)
+
+- Branch `claude/project-thread-dq33gk` @ 4898f7a, PR #7 aktualisiert. Suite 1609 OK.
+- Zitat-als-Zeiger-Schalter: CONTEXT_SUPPORTED (Transport 7→23/30). Fehler behoben: mit Schalter an brach jeder echte Chat-Turn in analyst_context ab.
+- Ganzer Live-Turn mit meiner Eignungs-Variante: NOT_SUPPORTED (Rezept 23/24 richtig, C3 ignoriert Ergebnis).
+- Thread Qs Fassung (Antwortsatz + Broker-Korrektur, TOOL_LIVE_SUPPORTED 22→32/60, sichtbar 53/60) zusammengeführt und gilt.
+- STEP2 bleibt UTILITY_FAIL (B1 ohne eigene Info).
+- Offen: Nutzerentscheidung Schalter einschalten; Handy-Paket mit Schaltern+Werkzeug; STEP2-Fixtures mit B1-eigener Info (WP-Z2).
+- Handy-Testliste: v13/HANDY_TESTLISTE.md.
+
+
+---
+
+## QUELLE: THREAD_Q_ELIGIBILITY_LIVE_TURN_20261021.md
+
+# Thread „Nächste Pakete Q“ – 2026-10-21
+
+Paket: Eignungs-Werkzeug `eligibility` im echten Antwort-Turn (C5/IH-H29, SHADOW zuerst).
+Git: Branch `claude/project-thread-hzzqh4`, Draft-PR #11 (Basis `claude/project-thread-0zelvf`), Commits a94f91c (Code + Vorregistrierung, vor dem Lauf gepusht), f2d99b3 (Ergebnis).
+
+Ergebnis (60 frische Aufgaben, C3 LFM2.5-350M, Linux-Cloud, Alters-Recht nur für die Messung ersetzt):
+- Antworttext richtig 22 → 32 (p .006), falsch festgelegt 33 → 23, Rezept 0/60 falsch → TOOL_LIVE_SUPPORTED
+- mit Broker-Korrektur sichtbar richtig 53/60 → TOOL_SHOWN_SUPPORTED
+- Schwächen: fehlende Regel sagt C3 nie selbst (nur Korrektur), geänderte Regeln liest C3 oft alt (override 5/15) → sichere Ablehnung.
+
+Achtung: Thread „STEP2-Nutzen Engpass“ (dq33gk) hat parallel eine eigene Fassung gebaut; beim Zusammenführen toolstep.py / agi/eligibility.py / tests/test_eligibility_live.py abgleichen.
+Runtime-Änderungen nur als Kettenglied in scripts/integrated_candidates.py, sonst brechen ~60 hash-gebundene Tests.
+Befund: v13/code/docs/proofs/continuation-20261021/eligibility-whole-turn-q/BEFUND.md (Git + Projektordner).
+Nächster Engpass: Lesen geänderter Regeln. Einschalten bleibt Nutzerentscheidung.
+
+
+---
+
+## QUELLE: THREAD_Z3_C3_KONSUMENT_20261021.md
+
+# Thread „Z3 C3-Konsument isolieren“ — 2026-10-21
+
+Branch claude/project-thread-xiuwmf (Basis rxq188), Commits: Prereg (vor Lauf), fe814d3 Ergebnis. Draft-PR gegen rxq188.
+Beleg im Git: v13/code/docs/proofs/continuation-20261021/z3-c3-consumer/ (PREREG.md, BEFUND.md, registration.json, run/report.json, run/rows.json.gz).
+
+Aufbau: 39 private Fixtures × 3 Seeds × 7 Arme, gleiche Exakt-Quellen; Modelle byte-gleich zum Pilot 20.10.; Linux-Cloud.
+Urteil (vorregistriert): NO_CONSUMER_PATH.
+- C3 direkt 0/117 exakt, immer UNKNOWN (auch mit fertigem Werkzeug-Satz), 0 falsch.
+- B1 0.13 / B2 0.27 exakt, 72 % / 63 % falsche Festlegung (Positions-Bias A).
+- C3 liest + Eignungs-Werkzeug strict: 0.54 exakt, 0 falsch. C3 liest Zahlen 117/117 richtig, local_only immer true.
+- v2 ohne strict: 3/18 Kontrollen falsch festgelegt -> strict vor Einschalten des Live-Pfads.
+- Nur Werkzeug: 1.00.
+Nächstes: Z3b (Bool-Regeln deterministisch, Paraphrasen-Kohorte), neue Registrierung.
+
+
+---
+
+## QUELLE: THREAD_Z1_GATE_EHRLICH_20261021.md
+
+Thread "Z1 STEP2-Gate ehrlich" 2026-10-21. Git: RedMentos/Aii Branch claude/project-thread-61we5j (fae26f4, 930fe5d), Draft-PR #9 -> claude/project-thread-rxq188. Projektordner: v13/code synchronisiert, ROADMAP WP-Z1 = ERLEDIGT.
+
+WP-Z1 Gate-Ehrlichkeit (kein Modelllauf)
+- Problem: gate-graph STEP2 = GREEN, weil nur all70_rowchecks_pass (Harness) geprüft wurde; Ergebnis ist UTILITY_FAIL (canonical_gate_pass false).
+- STEP2 geteilt: STEP2_HARNESS (GREEN), STEP2_EXIT (§96: Komplementarität FAIL, B1/B2 je eine Episode FAIL, RSS-Budget UNMEASURED, Observer-Latenz Cloud 3,8 s PASS) -> EVIDENCE_NOT_PASSING.
+- blueprint-Block: Blueprint-Kriterien für STEP2_EXIT, STEP5, alle zehn §100-Gates an gemessene Werte gebunden. Neuer Status CRITERIA_UNMEASURED; gemessenes FAIL nie mehr hinter PARTIAL.
+- measure_suite: §29-Tabelle berechnet (specs/properties29.json): 3 erreicht, 15 teilweise, 6 fehlen (Hand-Einschätzung 8/14/2).
+- Gates Projektstand vorher 8 GREEN/1 ENP/10 PARTIAL, jetzt 7 GREEN/5 ENP/1 CRITERIA_UNMEASURED/7 PARTIAL.
+- Tests: Gate/Authority 18/18; volle Suite 1584, 1 bekannter FAIL test_neuro_ledger.
+- Offen: STEP2-RSS-Budget vorregistrieren (mit Z2).
+Befund: v13/code/docs/proofs/continuation-20261021/z1-gate-ehrlich/BEFUND.md
+
+
+---
+
+## QUELLE: THREAD_STEP2_ENGPASS_TEIL2_20261021.md
+
+# Thread „STEP2-Nutzen Engpass“, Teil 2 — 2026-10-21
+
+Nutzerziel (21.10.): AGI = wissenschaftlich, psychologisch, moralisch fundiertes System, das Menschen nicht schadet; Gehirn als grobes Basismodell; holt später selbst Module nur mit bewusster, unmanipulierter Erlaubnis und lernt daraus. Weiterarbeiten, Handy-Tests parallel nach Liste.
+
+Git: RedMentos/Aii Branch `claude/project-thread-dq33gk` (PR #7, Basis `claude/project-thread-0zelvf`), Prereg `298b6d7`, Ergebnis-Commit danach.
+
+## Eignungs-Werkzeug im Live-Antwortpfad
+- `ToolStep._propose_eligibility`: Frage nach Option A/B unter Projektregeln → C3 liest nur typisierte Werte aus Quelle + verifizierten Body-Zitaten → deterministisches Rezept entscheidet → C5-Kandidat.
+- Nur nach Freigabe `:growth enable eligibility`; Age 0 = SHADOW (berechnet, verglichen, nicht gezeigt).
+- Vorregistriert gemessen auf 70 STEP2-Belegen: LIVE_PROMPT_SUPPORTED, 55/70 exakt, „Regel behalten“ 25/30, 0 falsch. Alle Fehlschläge sind ehrliche UNKNOWN-Verweigerungen.
+
+## Handy-Testliste
+`v13/HANDY_TESTLISTE.md` im Projekt: 1. `bash WERKZEUG_TESTEN.sh` (ZIP export/V13-Werkzeug-Handy-20261020.zip), 2. RAM-Messung `scripts/ram_budget_bench.py`, 3. `bash TESTEN.sh --quick`, 4. STEP2 am Handy erst mit neuem Paket.
+
+## Offen
+Ganzen Live-Turn mit Werkzeug + Antworttext messen; dann Schalter + Werkzeug gemeinsam einschalten (Nutzerentscheidung); neues Handy-Paket; STEP2-Fixtures mit B1-eigener Information.
+
+
