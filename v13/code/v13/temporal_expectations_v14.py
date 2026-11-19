@@ -52,12 +52,14 @@ def observe(runtime, *, now_s, horizon_s=120.0, limit=2048):
         # Numeric diagnostic on committed T8 FINAL, never on missing observations.
         success = outcome[1] if isinstance(outcome, (list, tuple)) and len(outcome) == 3 else None
         brier = None
-        if _finite(success) and success in (0, 1):
-            brier = round((hypothesis["probability"] - success) ** 2, 8)
+        if _finite(success) and success in (0, 1) and hypothesis["predicted_outcome"] in ("success", "failure"):
+            label = success if hypothesis["predicted_outcome"] == "success" else 1 - success
+            brier = round((hypothesis["probability"] - label) ** 2, 8)
             scored += 1
         resolved[action_id] = {
             "success_brier": brier,
             "success_label": success if brier is not None else None,
+            "hypothesis_label": label if brier is not None else None,
             "status": "OBSERVED",
             "predicted_outcome": hypothesis["predicted_outcome"],
             "probability": hypothesis["probability"],
@@ -111,3 +113,20 @@ def expect(runtime, *, expectation_id, condition_source, predicted_outcome,
     }
     store.set_state(KEY, state)
     return {"status": "PENDING", "id": expectation_id}
+
+
+def score_snapshot(runtime):
+    """Read-only, restart-stable Brier summary for committed binary T8 labels.
+
+    Descriptive in-sample calibration only; not a disjoint holdout, optimizer,
+    causal learning, JEPA utility, or evidence of Android performance.
+    """
+    state = runtime.store.get_state(KEY) or {"revision": REVISION, "resolved": {}}
+    if state.get("revision") != REVISION:
+        raise ValueError("incompatible expectation state")
+    scores = [row.get("success_brier") for row in state["resolved"].values()
+              if type(row) is dict and _finite(row.get("success_brier"))
+              and 0 <= row["success_brier"] <= 1]
+    return {"status": "IN_SAMPLE_ONLY", "scored": len(scores),
+            "mean_brier": round(sum(scores) / len(scores), 8) if scores else None,
+            "heldout_utility": "UNVERIFIED", "weights_updated": False}
