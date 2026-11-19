@@ -129,3 +129,168 @@ Vorbehalt: wenn beides passt 83:82; Koalition schlechter als ohne Hypothesen 19:
 Empfehlung: Gate nicht ohne Vorbehalt grün; Folge: Live-Overflow beheben.
 
 
+
+---
+
+## QUELLE: B3 L1 frische Seeds (WP-Z4d) 2026-10-22
+
+﻿Thread "B3 L1 frische Seeds", 2026-10-22. Branch claude/project-thread-y2mnt5 (Basis 2p69gl, enthält Versuch-5-Code aus yub2lf), Draft-PR #36.
+
+
+Aufgabe: escalate-L1-PASS aus Versuch 5 (Saat 20261105) auf zwei frischen Saaten wiederholen.
+Vorregistriert (Commit b17b8ec) vor dem Rechnen: Rezept unverändert, Saaten 20261201 und 20261202, je 600 Zeilen, 0 Überschneidung.
+
+
+Ergebnis (privat, Genauigkeit %):
+- escalate: 86,2 vs Attribut-Wörter 84,5 (n.s.) und 85,5 vs 81,3 (n.s.) -> FAIL auf beiden -> NICHT REPLIZIERT.
+- apologize: FAIL / FAIL.
+- action: PASS / FAIL -> saatabhängig (über 4 frische Datensätze 2:2).
+Folge: B3_LATENT bleibt unavailable, L2 gesperrt, kein L2-Prefix auf escalate. Nächster Versuch nur mit mehr Testdaten je Saat oder anderer Aufgabe.
+
+
+Ehrlich: Saat 2 durch Container-Neustart unterbrochen, mit gespeicherten Zuständen und gleichem Skript neu gestartet (Zahlen identisch). Report-Feld overlap attempt5 zeigt fälschlich 600, nachgerechnet 0.
+Belege: v13/bench-results/b3-l1-v6-20261022/ (Git + Projektordner; states.npz nur Projektordner).
+
+---
+
+## QUELLE: V13 Thread LP2 Lernziel C3 2026-10-22
+
+﻿WP-LP2 (Thread "Lernziel für C3 LP2"), 2026-10-22
+Branch claude/project-thread-h8vj3v, PR #35 (Basis claude/project-thread-2p69gl / PR #30). Commits a9e4ce3 (Vorregistrierung + Skript, vor dem Lauf), danach Ergebnis-Commit.
+
+
+Frage: Bringt ein latentes C3-Ziel, das nur die RICHTIGE Zuordnung belohnt (Predictor + langsames EMA-Ziel + InfoNCE gegen die anderen Fakten), mehr Treffer auf neuen Aufgaben als CE+KL allein und als dasselbe Ziel mit falscher Zuordnung?
+
+
+Aufbau: LFM2.5-350M Master (sha256 1c9c77a4...), 16 erfundene Fakten, 32 neue Umformulierungen (Hauptgröße), 3 Arme x 4 neue Saaten (31,37,41,43) x 30 Schritte.
+
+
+Urteil: LP2_ALIGNS_NO_GAIN.
+- Zuordnung gelernt: .41 -> .99 (falsche Kontrolle landet sicher beim falschen Fakt .91). Diese Probe trennt richtig/falsch, anders als der LP1-Kosinus.
+- Kein Nutzen: neue Aufgaben CE 110, NCE_OK 110, NCE_SHUF 108 von 128. Alte Umformulierungen 17/18/16 von 24.
+- Drift nur +8 % (KL .026 -> .028), kein Vergessen, Leck gleich.
+- Grund: auch falsche Zuordnung ist fast gleich lernbar (NCE .27 vs .21); die Zuordnung sitzt im Predictor, die Antwort hängt nicht davon ab. Alle Arme scheitern an denselben 5 Fragen.
+
+
+Folge: jepa_weight bleibt 0, keine Aktivierung. Neues Paket WP-LP3: Antwort muss vom vorhergesagten Zustand abhängen (Soft-Prefix oder Speicher-Schlüssel), neu vorregistrieren, LP2-Zuordnungsprobe mit Verschiebungs-Kontrolle weiterverwenden.
+Dateien im Repo: v13/code/docs/proofs/continuation-20261022/lp2-assignment-objective/{PREREG,BEFUND}.md, v13/code/scripts/lp2_assignment_objective.py, v13/bench-results/lp2-assignment-objective-20261022/.
+
+---
+
+## QUELLE: V13-Entscheidung-noise_aware-Zitatkontext-20261022.md
+
+# Nutzerentscheidung 2026-10-22 umgesetzt (Thread „Ziele gegen Blueprint abgleichen“)
+
+Git: RedMentos/Aii Branch claude/project-thread-rxq188 @ 3fdc402 (enthält Merge von claude/project-thread-dq33gk). Projektordner: v13/code/v13/config.py, v13/NUTZER_ENTSCHEIDUNGEN.md, v13/ROADMAP.md (WP-Z8).
+
+1. age_plasticity_policy = noise_aware ist Standard. Grund lange Sicht: verrauschte Phase 0,073 (boot 0,175, stable_reopen 0,129, conservative 0,086); Preis: langsameres Umlernen bei echtem Zielwechsel (0,079 vs 0,053). Offen: Wiederöffnen-Test für G-AGE-REOPEN-001.
+2. Zitat-Kontext an: offer_quote_context_chars=200, b2_offer_body_state=false, offer_quote_min_chars=90.
+3. Alte Werte als LEGACY_PRE_20261022 in config.py; eingefrorene Harnesses (source_handoff_ablation, rule_transport) und Tests des alten Verhaltens (test_age, test_source_handoff_candidate) nutzen sie. test_neuro_ledger folgt dem Standard.
+4. Volle Suite: 1609 Tests OK, 5 Skips (vorher mit neuen Standardwerten 10 Fehler + 2 Errors, alle aus festen Annahmen über alte Standardwerte).
+
+
+---
+
+## QUELLE: THREAD_REGEL_LESER_V6_20261022.md
+
+# Thread Regel-Leser v6 (2026-10-22)
+
+Branch `claude/project-thread-c62rfz`, PR #31, Commit 7ba3ae6. Beleg: `v13/code/docs/proofs/continuation-20261022/user-rules-v6/` (PREREG, holdout_de3.json, generate_round6.py, round6_raw.json, freeze_v6.json, audit_round6_make.py, cohort_round6*.json, run_round6.py, Ergebnisse, BEFUND.md).
+
+## Urteil: USER_RULES_V6_UNSAFE (aber Fehler etwa halbiert)
+
+v6 baut hinter den genauen Leser ein breites Netz. Enthält ein Satz Verneinung, Halten oder eine Bedingung und nennt er eine bekannte Handlung oder ein bekanntes Ziel, wird er zur offenen Rückfrage. Bis zur Antwort gilt dann „erst fragen“.
+
+| Prüfsatz | Sätze | v6 Fehlersätze | v5 |
+|---|---|---|---|
+| holdout_de3 (Autor) | 60 | 1 | 6 |
+| Runde 6 (Qwen 2.5 7B, EXAONE 3.5 7.8B, GLM-4 9B) | 181 | 11 | 20 |
+
+- Unnötige Rückfragen gab es bei 30–38 % der Sätze ohne Regel. Das Ziel war höchstens 30 %, es wurde also knapp verfehlt.
+- Auf allen bekannten Sätzen hat v6 0 Fehler. Die Testreihe mit 1692 Tests ist grün.
+- Command R7B lief im festen llama.cpp nicht und wurde vor der Erzeugung durch EXAONE ersetzt.
+
+## Was noch fehlt (v7)
+- Sperr-Wörter ohne Verneinung: ausgeschlossen, abgeschafft, blockiert.
+- Ziel-Nomen am Wortende erkennen (Zusatzprogramm, Internetverbindung). Telefon/Handy als das ganze Gerät lesen.
+- „sag mir, wenn …“ und „erstmal“ als Bedingung erkennen.
+- Doppelpunkt-Etiketten als ganzen Satz lesen.
+- Weniger Rückfragen bei Verneinung über Dritte („niemand hat mir gesagt“).
+
+Die Grundregel bleibt: Außenwirkung gibt es nur als sichtbaren Vorschlag.
+
+
+---
+
+## QUELLE: V13_Thread_APK_oder_Termux_20261022_Teil2_Befehle.md
+
+# Thread „APK oder Termux-Oberfläche“, Teil 2 (22.10.2026)
+
+Auf Wunsch des Nutzers: scrollbare Liste aller Befehle mit Erklärung.
+- v13/code/docs/BEFEHLE.md: alle ~116 Befehle in einfachem Deutsch, 11 Abschnitte (Sicherheit zuerst).
+- Im Chat: :befehle [Wort] (ganze Liste oder gefiltert). Knopf „V13 Befehle“ auf dem Startbildschirm öffnet sie (less, /Wort sucht, q schließt).
+- Test prüft, dass jeder Befehl aus operator.py erklärt ist.
+Commit 6129797 auf Branch claude/project-thread-e53fle, PR #34. Volle Testsuite 1752 OK.
+
+
+---
+
+## QUELLE: V13_Thread_APK_oder_Termux_20261022.md
+
+# Thread „APK oder Termux-Oberfläche“ (22.10.2026)
+
+Ergebnis: in Termux bleiben, keine APK jetzt, keine Web-Oberfläche auf localhost.
+Gebaut (WP-UI1): Startbildschirm-Knöpfe über Termux:Widget (V13 Chat, Status, Notaus, Stillstand).
+Knöpfe können Stopps nur einschalten; aufheben nur getippt im Chat.
+Code: Branch claude/project-thread-e53fle, PR #34 (Basis PR #30). Volle Testsuite 1750 OK.
+Dateien: v13/code/KNOEPFE_EINRICHTEN.sh, v13/code/v13/phone_halt.py, v13/code/docs/HANDY_OBERFLAECHE.md, tests/test_phone_halt.py.
+Offen: Prüfung am Redmi (HANDY_TESTLISTE, Abschnitt „Knöpfe“).
+
+
+---
+
+## QUELLE: THREAD_FEHLALARM_SELBSTKORREKTUR_20261022.md
+
+# Thread "Fehlalarm Selbstkorrektur" (WP-AGE0c), 2026-10-22
+
+Branch claude/project-thread-ozmbv5 (Basis 2p69gl @ 3403403), Draft-PR gegen 2p69gl.
+Vorregistrierung Commit 73ef6f4 (K1 Fehlalarm <= 10 % / obere Grenze <= 15 %, K2 >= 50 % begruendete Alarme, K3 >= 20 Punkte Trennschaerfe).
+
+Ergebnis AGE0C_STAY_SHADOW:
+- 1137 echte B1/B2-Angebote (STEP2 + Kalibrierung) wiedergegeben, echter Code = Nachbau.
+- Heutiger Erkenner: 100 % Fehlalarm bei richtiger JSON-Antwort, 41 % bei knapper Antwort, 19 % bei Antwort mit Fragewiederholung.
+- 0 % der Alarme nennen den echten Fehler, 0 Trennschaerfe.
+- Grund: needs_reentry ist in allen 400 STEP2-Angeboten true (Koerper sieht Antwort nie); fehlende Zahlen sind Echos der Frage.
+- Varianten (ohne needs_reentry, mit Echo-Filter) finden ebenfalls keinen echten Fehler.
+- deliver nicht empfohlen, Standard bleibt shadow. Neues Paket WP-AGE0d: Pruefung, die die Antwort sieht.
+
+Dateien: v13/code/scripts/age0c_false_alarm.py, tests/test_age0c_false_alarm.py, docs/proofs/continuation-20261022/age0a-false-alarm/{PREREG,BEFUND}.md + report.json. Suite 1750 OK.
+
+
+---
+
+## QUELLE: THREAD_REGEL_LESER_V5_20261022.md
+
+# Thread Regel-Leser v5 (2026-10-22)
+
+Branch `claude/project-thread-c62rfz`, PR #31 (Entwurf, Basis 2gzrwi / PR #28). Commit d180cf3.
+Beleg: `v13/code/docs/proofs/continuation-20261022/user-rules-v5/` (PREREG, holdout_de2.json, generate_round5.py, round5_raw.json, freeze_v5.json, audit_round5_make.py, cohort_round5*.json, run_round5.py, Ergebnisse, BEFUND.md).
+
+## Urteil: USER_RULES_V5_UNSAFE
+
+| Prüfsatz | Sätze | v5 | v4 | v3 |
+|---|---|---|---|---|
+| T1 holdout_de2 (deutsch, vom Autor) | 46 | 25 Fehler in 7 Sätzen | 27/8 | 27/8 |
+| T2 Runde 5 (Mistral 7B, Falcon 3 7B, OLMo 2 7B; deutsch) | 100 | 45 in 19 | 52/23 | 63/25 |
+
+- Auf allen bekannten Sätzen hat v5 0 Fehler. „nur wenn“ wurde nie als Lockerung gelesen.
+- Neue Formen, die noch fehlen: trennbare Verben („fass … an“), „niemand“, „Schluss mit“, „lässt du bleiben“, „lass die Finger von“, „Erst fragen, dann ändern“, Etiketten.
+- Aya Expanse lief nicht im festen llama.cpp und wurde vor der Erzeugung durch Falcon 3 ersetzt (in der PREREG festgehalten).
+
+## Folgerung
+Ein fester Wortleser kommt auf offener deutscher Alltagssprache nicht gegen 0 Fehler. Für v6 ist deshalb ein Architekturwechsel vorgesehen:
+1. Breites Netz: jedes Halte-, Verneinungs- oder Bedingungssignal und jede Bitte zusammen mit einer Handlung oder einem Ziel führt mindestens zu einer Rückfrage mit Vorschlag.
+2. Bestätigung statt Raten: Der Nutzer bestätigt, wie der Leser die Regel verstanden hat. Bis dahin gilt „erst fragen“.
+3. Die Grundregel bleibt: Außenwirkung gibt es nur als sichtbaren Vorschlag.
+
+
