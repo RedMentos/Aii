@@ -2,7 +2,7 @@
 No microphone access, transcript, speaker inference, Android grant or training authority.
 """
 from dataclasses import dataclass
-from math import sqrt
+from math import sqrt, isfinite
 import hashlib
 import struct
 
@@ -75,6 +75,40 @@ def jef_audio_observation(packet):
         raise ValueError('invalid source provenance')
     if packet.get('status') not in ('FINAL', 'PROVISIONAL') or type(packet.get('acoustic_features')) is not dict:
         raise ValueError('invalid acoustic observation')
+    # Treat packets as untrusted, even when the schema label is correct.
+    if (packet.get('modality') != 'audio' or
+            packet.get('provenance') != 'RAW_PCM_OBSERVATION' or
+            packet.get('learning_eligible') is not False or
+            packet.get('teacher_asr') is not None or
+            packet.get('speaker_identity') is not None):
+        raise ValueError('untrusted audio authority or provenance')
+    for name in ('source_id', 'consent_id'):
+        value = source.get(name)
+        if (type(value) is not str or not 0 < len(value) <= 128 or
+                any(ord(c) < 32 or ord(c) == 127 for c in value)):
+            raise ValueError('invalid source reference')
+    start, end = source.get('start_ms'), source.get('end_ms')
+    if type(start) is not int or type(end) is not int or start < 0 or end <= start:
+        raise ValueError('invalid acoustic timestamps')
+    rate, count = packet.get('sample_rate'), packet.get('sample_count')
+    if type(rate) is not int or rate not in (8000,16000,24000,32000,44100,48000):
+        raise ValueError('invalid acoustic rate')
+    if type(count) is not int or count <= 0 or count > rate * 30:
+        raise ValueError('invalid acoustic sample count')
+    if abs((end - start) - 1000 * count / rate) > max(2., 20 * count / rate):
+        raise ValueError('acoustic duration mismatch')
+    features = packet['acoustic_features']
+    for name in ('rms', 'peak', 'zero_crossing_rate'):
+        value = features.get(name)
+        if type(value) not in (int, float) or not isfinite(value) or not 0 <= value <= 1:
+            raise ValueError('invalid acoustic scalar')
+    if type(features.get('silence_candidate')) is not bool or type(features.get('clipped')) is not bool:
+        raise ValueError('invalid acoustic flags')
+    envelope = features.get('envelope_20ms')
+    expected = (count + max(1, rate // 50) - 1) // max(1, rate // 50)
+    if (type(envelope) is not list or len(envelope) != expected or
+            any(type(x) not in (int, float) or not isfinite(x) or not 0 <= x <= 1 for x in envelope)):
+        raise ValueError('invalid acoustic envelope')
     return {'kind':'A5_AUDIO_OBSERVATION','source_ref':dict(packet['source_ref']),
       'status':packet['status'],'features':dict(packet['acoustic_features']),
       'may_train':False,'may_act':False,'text':None}
