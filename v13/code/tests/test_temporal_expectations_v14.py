@@ -33,7 +33,9 @@ def test_committed_t8_is_observed_and_restart_idempotent(monkeypatch):
     row = {"action_id": "action:1", "a": "simple", "y": [0.2, 1.0, 0.1]}
     monkeypatch.setattr(temporal.world_model, "transitions",
                         lambda *_args, **_kwargs: [row])
-    temporal.expect(runtime, expectation_id="action:1", condition_source="source:1",\n                    predicted_outcome="success", now_s=10, deadline_s=200, probability=0.8)\n    first = temporal.observe(runtime, now_s=100)
+    temporal.expect(runtime, expectation_id="action:1", condition_source="source:1",
+                    predicted_outcome="success", now_s=10, deadline_s=200, probability=0.8)
+    first = temporal.observe(runtime, now_s=100)
     assert first["observed"] == 1
     assert temporal.observe(SimpleNamespace(store=store), now_s=101)["observed"] == 0
     assert store.get_state(temporal.KEY)["resolved"]["action:1"]["evidence"]["kind"] == "T8_COMMITTED"
