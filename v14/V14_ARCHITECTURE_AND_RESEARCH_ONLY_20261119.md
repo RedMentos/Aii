@@ -1,6 +1,6 @@
 # V14 / INQUISITION-JEPA — Neuer vollständiger Systemplan
 
-**Fassung:** 14.0-DRAFT, 19. November 2026
+**Fassung:** 14.1-LIVE, 20. November 2026 (vollständige Erstrevision 14.0 vom 19.11. historisch gesichert)
 **Auftrag:** V13 vollständig und ohne stillen Funktionsverlust neu organisieren, durch spätere Entscheidungen, Research und legale Wiederverwendung verbessern und danach als echtes System implementieren.
 **Geltungsbereich:** Gesamtes Projekt von A0 über B1/B2/B3, C/JEF, Memory, World, Self, JEPA, Sleep, Tools bis zur späteren kontrollierten Selbstoptimierung.
 **Status:** Architektur- und Entwicklungsentwurf, ausdrücklich KEIN Nachweis, dass diese Funktionen bereits auf Android laufen.
@@ -11,78 +11,77 @@ Dieser Plan steht allein. Historische Originaltexte sind unter Teil III als Quel
 
 ## 1. Verbindliches Ziel, Konflikte und Entwicklungsstil
 
-V14 soll ein lokal nutzbares, über viele Zeitskalen lernendes, heterogenes System mit mehreren spezialisierten neuronalen Organen werden. Es ist weder ein Prompt um ein einzelnes LLM noch bloß eine feste Regelmaschine. Lokale Wahrnehmung, Verarbeitung, vorsichtige Aktionen, Vorhersage, Fehlervergleich, Gedächtnis und Gewichtsänderung bilden einen wiederkehrenden Kreislauf. Das System lernt durch unterschiedliche Mechanismen: Fast Episodic, World/Self, Router, Prädiktoren, echte JEPA-Updates, spätere Body-Plastizität, Distillation, Replay und eigene Optimierung. Kein einzelnes Lernverfahren ist das ganze System.
+V14 ist die vollständig erhaltene und weiterentwickelte **V13/Inquisition-JEPA-Gesamtarchitektur**. Der gesamte ursprüngliche Funktionskatalog, seine individuellen IH-H-, F-, H-, G-, A/B/C-, B1–B6-, STEP-, WP- und Trainings-/Sicherheitsverträge sowie alle zusätzlichen dokumentierten Nutzerentscheidungen bleiben Anforderungen. Weder die neue Gliederung noch der Austausch einer Implementierung dürfen sie lautlos entfernen. **Das Systemziel ist ein Gehirn-ähnlich verteiltes, kontinuierlich lernendes, handlungsfähiges Gesamtnetz**, kein einzelnes LLM mit angehängten Dummy-„Agenten“.
 
-Neue explizite Nutzerentscheidungen haben Vorrang gegenüber alten widersprechenden Zahlen oder einem veralteten Test-Setup. Der Funktionsumfang des V13-Canon ist ein Mindestumfang; seine etwaigen alten Modellnamen, Aufteilungen, Zahlen oder Testziele sind austauschbare Mittel. Zwei langfristig **verschiedene** sparse MoE-Körper, ein sehr kleiner Steuer-/Sprachteil, modellübergreifende eigene Repräsentationen, selbständiges Lernen und später kontrollierte Selbstprogrammierung gehören ausdrücklich zu den Zielen.
+**Nutzerkorrektur 20.11.2026 – verteilte Integration:** Mit der Formulierung, das „Bewusstsein lebt überall“, ist die angestrebte systemweit verteilte Verarbeitung und Integration gemeint: viele voneinander abhängige, wiederkehrende neuronale Zustände und Teilaktivitäten, aus denen ein kohärentes Handeln entsteht. Die Architektur darf **weder JEF noch C3 noch B4** zum einzigen Ort von Denken, Selbstbild oder einer angeblichen Bewusstseinsinstanz machen. Sie behauptet nicht, damit menschliches subjektives Bewusstsein wissenschaftlich nachgewiesen zu haben.
 
-**Build-first und reuse-first:** Erst vorhandene Codebausteine inventarisieren, einen echten vertikalen Vollsystem-Pfad zusammenschalten und parallel unerledigte Organe ausbauen. Ein isolierter Endlosloop mit Test-Fixture-Fixes ist kein Fortschritt an V14 als Gesamtsystem. Bestehende OSS-Implementierungen unter nutzbaren Lizenzen haben Vorrang vor eigenem Duplikatcode; fehlende Integrationsadapter können selbst entwickelt werden. Tests dienen der funktionierenden Entwicklung. Sicherheits-, Rechts-, Lizenz- und Einwilligungsgrenzen bleiben immer aktiv und dürfen nicht durch neue Versionsnamen ausgehebelt werden.
+**Topologie ist ein Graph, keine Taktstraße.** Ereignisse können mehrere Organe gleichzeitig aktivieren; Rückkopplung, Konkurrenz, Umleitung, direkte Kollaboration, ereignisbasierte Reentry-Schleifen, dynamische Zuteilung von Aufmerksamkeit und Lernen sind normale Vorgänge. Der kürzeste verlässliche Pfad darf benutzt werden. Eine ARM-Runtime darf GPU/RAM-bedingt Ausführung serialisieren, ohne die *logische* Anatomie linear auf A→B→C festzunageln. Es gibt keinen generellen Zwang, erst isolierte Organe ihre Text-„Meldungen“ abgeben zu lassen.
 
-**Ehrliche Statuswerte:** REQUIREMENT, CODE_PRESENT, CONNECTED, SHADOW, EXPERIMENTAL, UNAVAILABLE, LINUX_NATIVE, ANDROID_NATIVE, WEIGHTS_UPDATED, HELDOUT_UTILITY_PASS, REGRESSION_FAIL, APPROVED. „Fertig“ verlangt echten Consumer, Datenpfad, Persistenz wo nötig, Tests, Telemetrie, Rückfall und messbare Funktion; keine Fake-Latent-, Fake-Optimizer- oder UI-Schalter-Scheinfertigstellung.
+**Latenter Austausch ist die präferierte Endform** der neuronalen Kommunikation. Mit „Enlightened Space“ ist eine echte lernbare, temporale und modellübergreifende **latente Kopplung** gemeint: aktivierungsbasierte Repräsentationen, Projektions-/Kompatibilitätslernen, direkte Receiver-Einwirkung und verteilte Integration. Ein getypter Text-/JSON-/SQLite-Bus kann den Betrieb und die Nachvollziehbarkeit unterstützen, ist aber *nicht selbst* der gewünschte Latent Space. Hypothesen, Assoziationen und Ungewissheiten müssen möglichst ohne erzwungene Sprachübersetzung verfügbar sein. Vorhandene Text-Fallbacks bleiben ehrliche Zwischenlösungen.
+
+**Allgemeines Ziel: lernfähige Organe, keine dauerhaft stillgelegten neuronalen Kerne.** Alle dazu vorgesehenen Modelle und Unterteile sollen auf eigenen Zeitskalen weiterlernen und sich verändern können. EMA-/Slow-Targets, reversible Stabilisierungsphasen, Momentaufnahmen für Regression und vorläufige technische Hilfsmodelle sind mögliche *Methoden*, keine endgültig unbeweglichen Teacher-Organe. Teacher/Student sind kontextabhängige Funktionen, die auch wechseln oder entfallen dürfen. Die spätere Selbstoptimierung schließt Algorithmen, Verbindungen, Parameter und kontrollierte Umgestaltung des eigenen Codes ein.
+
+**Build-first, reuse-first, audit-first:** Vor neuen Duplikatimplementierungen vorhandenen V13-Code, offene PRs, gepflegte OSS-/Paper-Quellen und Lizenzstatus untersuchen. Einen echten verbundenen End-to-End-Betrieb herstellen und gleichzeitig die großen fehlenden Organe in parallelen Sparten fertigstellen. Nicht wochenlang nur Mikro-Fixtures oder künstliche Erfolgszahlen pflegen. Keine Architektur wegen eines kurzfristigen Mobil- oder Testproblems verkleinern. User-Rechte, Einwilligung, Privatsphäre, Gefahrengrenzen und reproduzierbare Rollbacks bleiben bindend.
+
+**Lebende Source of Truth:** Der vorliegende **V14-Master wird selbst aktiv fortgeschrieben**. `v14/V14_LIVE_WORKPLAN.md` hält operative Prioritäten und `v14/V14_RESEARCH_LEDGER.md` aktuelle Forschung fest. Vor jeder materiellen Canon-Änderung eine **separate unveränderliche Sicherung** und einen überprüfbaren Commit herstellen. Der komplette unveränderte V13-Text im Teil III wird nicht durch eine neue Zusammenfassung ersetzt. Neue belastbare Forschung darf das Design auch tiefgreifend verändern, jedoch nur unter dokumentiertem Funktions-Migrationsvergleich; nicht still etwas streichen.
+
+Statuswörter sind explizit: REQUIREMENT, CODE_PRESENT, CONNECTED, SHADOW, EXPERIMENTAL, UNAVAILABLE, LINUX_NATIVE, ANDROID_NATIVE, WEIGHTS_UPDATED, HELDOUT_UTILITY_PASS, REGRESSION_FAIL, APPROVED. Kein Plan-, Mock-, Test- oder Demo-Erfolg wird als echte Trainierbarkeit, Handy-Funktion oder Gesamtfertigstellung ausgegeben.
 
 ## 2. Das vollständig integrierte Organmodell
 
+Die folgende Karte zeigt **gleichzeitig gekoppelte Fähigkeitsbereiche** und beispielhafte Verbindungen. Pfeile sind bidirektionale, zeitlich variierende Signal- und Lernmöglichkeiten, **keine** verpflichtende Ausführungsreihenfolge:
+
 ~~~text
-INPUTS / RAW OBSERVATIONS / USER / DIGITAL ACTION EVENTS
-   |
- A0 source -> A1 events -> A2 frozen optional teacher
-   |                 -> A3 student projector
-   |                 -> A4 salience / re-look / prediction
-   v
- A5 PerceptPacket + provenance
-   |                 |                      |
- B1_DETAIL      B2_GIST             MEMORY / WORLD / SELF
- short-fine      long-coarse          fast + slow + prediction
-   |                 |                      |
-   +------ B3 callosum / Enlightened Space --+
-                   |
-           B4 WORKSPACE + C4 FOCAL
-                   |
-             C1 JEF / C2 CONTROL
-                   |
-             INQUISITION / checks
-                   |
-           C5 ACTION / C6 EGRESS
-             |                  |
-           TOOLS             C3 LANGUAGE
-             |                  |
-             +------- C7 OUTPUT ------->
-                        |
-               observed real outcome
-                        |
-          error + eligibility + modulation
-                        |
-       memory / JEPA / distillation / replay
-                        |
-        retention + self-optimisation trials
-                        |
-          back into all involved organs
+             ┌──────────── PERCEPTION / A0...A5 ────────────┐
+             ⇅                 ⇅           ⇅                ⇅
+       B1 DETAIL ⇄⇄ LATENT COUPLING / B3 ⇄⇄ B2 GIST     ACTIVE ATTENTION
+             ⇅            ⇅     ⇅          ⇅                ⇅
+          B4 / DISTRIBUTED WORKSPACE / COALITIONS / FOCAL REENTRY
+             ⇅            ⇅     ⇅          ⇅                ⇅
+       WORLD MODEL ⇄ SELF MODEL ⇄ MEMORY ⇄ GOALS / INQUISITION
+             ⇅                 ⇅             ⇅
+         C1/JEF ⇄ C2 CONTROL ⇄ C3 LANGUAGE ⇄ C4/C5/C6/C7
+             ⇅                                      ⇅
+       LEARNING / PLASTICITY / JEPA / REPLAY ⇄ TOOLS / OUTCOMES
+             ⇅                                      ⇅
+                 HUMAN / LOCAL RUNTIME / OBSERVED WORLD
 ~~~
 
-Das ist keine starre lineare Pipeline. A, B, C, Memory, World und Self können über einen typisierten gemeinsamen Raum mehrfach miteinander kommunizieren und eigene Unsicherheiten/Teilziele melden. Es gibt keine einzelne allwissende Master-Instanz. Der gleiche Ort kann logisch parallel, auf einem kleinen Handy physisch sequenziell arbeiten. Jede Kommunikation hat eine SourceRef, Rolle, Zeit, Modellrevision, Quelle, Unsicherheit, Lebensdauer, zulässigen Empfänger und beobachtbaren Effekt.
+Die Topologie darf umgeordnet, unterbrochen, verteilt, mehrfach durchlaufen, parallel oder durch einen Fastpath abgekürzt werden. Sensor-, Lern-, World-/Self-, Gedächtnis-, Sprach-, Steuerungs- und Handlungssignale können auf verschiedenen Zeitskalen gegenseitig Zustände beeinflussen. Ein Organ muss nicht erst seine private Textantwort „melden“, bevor der Rest weiterdenken kann.
+
+**Zwei komplementäre Schnittstellen:** (a) das neuronale verteilte **Latent Space / Enlightened Space** für schnelle, reichhaltige wechselwirkende Zustände; (b) eine explizite **Evidenz-/Berechtigungs-/Ereignis-/Transaktionsschicht**, damit tatsächliche externe Aktionen, Provenance, Grenzen und Tests auditierbar bleiben. Die zweite ersetzt die erste nicht. Die latente Repräsentation eines Modells ist nicht automatisch kompatibel mit der eines anderen: dafür sind trainierbare Alignment-/Router-/Receiver-Pfade und messbare Ablationen nötig.
+
+Die gesamte äußere Schleife darf Wahrnehmung → Vorhersage → Handlung → Outcome → Lernen enthalten, kann aber auch beim fehlenden Ereignis, internem Konflikt, eigenem Informationsbedarf oder einer Erinnerung starten. Diese Darstellung ist ein Forschungsziel, kein Nachweis eines bereits existierenden Android-Systems.
 
 ### 2.1 A-Plane — Wahrnehmung, Ereignisse und Aufmerksamkeit
 
-A0 nimmt Text, Dateien, lokale Tool-Resultate, die eigene Runtime und später Audio, Video, Bilder und Sensoren mit Einwilligung und Dateiquellen auf. A1 segmentiert nach echten Ereignissen, Satz-, Thema- und Zeitgrenzen mit verlustloser Rekonstruktion und überprüften Offsets. A2 ist ein optionaler eingefrorener Lehrer, nie grundsätzlich erforderlich oder wahrheitsautoritär. A3 ist ein kleiner trainierbarer Projektor/Student, dessen echter Nutzen und EMA-/Teacher-Bezug getestet wird. A4 verteilt Aufmerksamkeit anhand Salience, neuem Ziel, Unsicherheit, erwartetem Outcome und Ressourcen, nicht nur anhand Worttreffer. A5 veröffentlicht die zeitlich und inhaltlich gebundenen PerceptPackets. Wahrnehmung, Deutung, Vermutung und späteres tatsächliches Outcome sind getrennt.
+A0 nimmt mit Berechtigungsprüfung Text, digitale Ereignisse, Dateiquellen und später Audio, Bilder, Video und Sensoren auf. A1 bildet Ereignisse, zeitliche Grenzen, Thema/Objekte und verlustlos rückverfolgbare Segmente; A5 ist der quellgebundene wahrnehmungsseitige Datenvertrag. A4 ist **aktive Aufmerksamkeit**: Erwartung, Neugier, Fehlerpotenzial, Re-look, Interrupt, Kontext und Ressourcenkosten beeinflussen, *wo* Wahrnehmung weitergeht und welche Hypothese getestet wird.
 
-Multimodale Eingaben verwenden den gleichen Ereignisvertrag, aber verschiedene Adapter. Audio/Visions-Modelle werden zuerst als Lab-Funktionen integriert und im realen Store nachgewiesen; keine stillen Netzaufrufe.
+A2/A3 sind **entwicklungsabhängige** Semantik-/Übersetzungs-/Projektorpfade. Vorübergehend stabilisierte externe Lehrsignale dürfen fehlende Fähigkeit am Anfang überbrücken, sind aber kein dauerhaft unveränderlicher zentraler Lehrer. A3 wird trainierbar gedacht und kann Lehrerrollen internalisieren, selbsttätig nachkalibrieren, aus Erfahrungen und anderen Organen lernen; erfolgreiche Kompetenzübertragung soll technische Gerüste reduzieren oder entfallen lassen. Quelle und Interpretation bleiben getrennt. Reelle visuelle/auditive Funktion und spätere emotional angemessene Sprachausgabe benötigen native Validierung statt Platzhaltern.
 
 ### 2.2 B1 und B2 — zwei echte verschiedene Körper
 
-B1_DETAIL: kurze, detaillierte, fokale Verarbeitung, exakte Evidenz, konkrete Zwischenzustände und lokale Korrekturen. B2_GIST: längere Integrationsfenster, Generalisierung, globale Muster und gröbere zeitliche Modelle. Beide müssen eigenständige relevante Beiträge leisten. Ein identisches dichtes Modell mit zwei Rollennamen ist nur ein transparentes Age-0-Provisorium, kein erfülltes Split-Brain-Endziel.
+B1_DETAIL arbeitet schwerpunktmäßig kurz/fokal, mit feinen Ereignisauflösungen, genauen Belegen und lokalen Korrekturen; B2_GIST integriert längere Horizonte, Muster und Generalisierung mit gröberer zeitlicher Hierarchie. **Beide sind eigene, möglichst verschieden optimierte lernfähige Gehirnhälften**, keine zwei Personas desselben unveränderten Dense-Modells. Langfristig sind zwei **unterschiedliche sparse MoEs** mit eigenen Experten/Router-/Shared-Pfaden, Temporalität und Plastizität vorgesehen.
 
-Langfristig werden **zwei verschiedene sparse MoEs** mit eigenen Experten, Routing-/Shared-Pfaden, unabhängiger Lernkapazität, numerischen Gewichten und Gegenkopplung verwendet. B1 darf mehr aktive Detail-Experten, B2 eher komprimierende Gist-Experten nutzen. Auf 6-GB-Geräten sind Lazy Load, serialisierte Expert-Aktivierung und kleine Head-/Delta-Scopes möglich; das bedeutet keine Ausrede, die konzeptuell eigenständigen Hälften zu streichen. Gezählt werden aktive Parameter, KV/rekurrenter Zustand, PSS/RSS, TTFT, thermischer Verbrauch und tatsächliche Komplementarität.
+Ihre Verarbeitung darf sich mehrfach gegenseitig beeinflussen: B1 kann Hypothesen aus B2 an konkreter Evidenz testen, B2 kann aus B1-Zuständen abstrahieren; beide können eigenständig mit A, C, Memory, World, Self und B3 verbunden sein. Fokale und globale Aufmerksamkeit dürfen sich während einer einzelnen Anfrage ändern. Die alten V13-B1–B6-, Residency-/Hafen-/Parity-, Bridge-, Train-/Swap-/Handover-Verträge sind vollständig weiter in Teil III verbindlich; hier wird nichts davon gestrichen.
+
+Ein kleiner ARM-Prototyp darf Expert- oder Body-Ausführung aufgrund von RAM thermisch seriell laden. Das ersetzt nicht die im Ziel geforderte **logische Parallelität und wirkliche gegenseitige Kopplung**. Nachweise: Aktivierungen/KV oder rekurrente States, aktive Parameter, RSS/PSS, echte Beiträge beider Modelle, Detail/Gist-Ablationsdifferenz, Herkunft und Revisions-Pinning, Lernen und Retention.
 
 ### 2.3 B3, B4 und Enlightened Space — gemeinsames Denken ohne Text-Attrappe
 
-B3 Callosum umfasst SOURCE_EXACT, CONTROL, SYMBOLIC, NO_MESSAGE und später echten trainierten LATENT-Transport. Realer Latent-Transport benötigt aus tatsächlichen Modellaktivierungen exportierte Sender-Repräsentationen, kleinen trainierten Projektor, Receiver-kompatible Einbindung und messbare Wirkung am Receiver; keine zufälligen Vektoren, nicht nur ineinander verschachtelter JSON-Text. B3 hat OOD-Gates, Replay, Ablationen, Modell-/Generation-Pinning und automatische Rückfallkanäle. Geringe Latent-Injection-Autorität im Labor ist nicht dasselbe wie die dauerhafte Absage an diese Funktion.
+**B3/Enlightened ist ein möglichst direkter neuronaler Latent-Austausch zwischen allen dafür geeigneten Organen**, nicht bloß ein zentraler Chatraum. Ziel ist eine gemeinsame anschlussfähige latente Repräsentation bzw. dynamisch miteinander abgestimmte Latent-Räume, in denen Aktivierungen über erlernte Projektionen, rekurrente Verbindungen, selektive Schreibtore und Receiver-Kopplungen wirksam werden. „Gemeinsam“ meint neurale Kompatibilität/Interaktion, nicht dass alle Modelle nur einen einzelnen zentralen Memory-Slot oder Textbroker nutzen müssen. Die Räumlichkeit ist konzeptionell, kein erzwungenes einzelnes Tensorformat.
 
-B4 Workspace stellt fokal ausgewählte globale Information bereit, nicht ein drittes Chatmodell. Enlightened Space ist der systemweite, typisierte Bus zwischen A, B, JEF/C, Memory, World, Self, Inquisition, Action, Outcome und Learning. Er bietet Multi-Timescale- und konkurrierende Hypothesen-Kanäle. Sender und Empfänger haben Rechte; ein global verfügbares Faktum ist noch kein wahrer externer Fakt.
+B3 bildet interhemisphärische und organübergreifende Verbindungen; B4 ist verteilter Zustand, begrenzter focal access, Arbeitsgedächtnis/Koalitionsbildung und Re-entry-Gateway. JEF und C sind Teilnehmer, keine exklusiven Empfänger oder Freigabestellen für normales internes Denken. Wichtige Verbindungen können bei Quelle, Überraschung, Ziel, Nutzen oder Verfügbarkeit direkt/indirekt arbeiten. Selbst-/Weltbild und Memory sind nicht nur Passivdatenbanken, sondern können latent und durch Ereignisse weitere Kognition anstoßen.
+
+Technisch getrennte Schichten: (1) **model-native Aktivationsextraktion** mit verifizierter Herkunft; (2) trainierbarer **Alignment-/Projection-/Cross-Architecture-Kanal**; (3) zeitlich/räumlich passendes **Receiver-Read/Inject/Gain**; (4) Rekurrenz und unterschiedliche Zeitskalen; (5) flexible Routing-/Attention-/Feedback-Kontrolle; (6) extern überprüfbare Provenance-, Consent-, OOD-, Budget- und Rollback-Contracts. Gerade diese Zweischichtigkeit verhindert, dass ein JSON-Paket als fertiger Latent Space durchgeht. Zwischenstufen SOURCE_EXACT/SYMBOLIC/CONTROL/NO_MESSAGE dürfen bleiben, sind ausdrücklich Fallbacks, kein Endzustand.
+
+Für **einen bewiesenen** echten Latent-Pfad braucht es Sender-Aktivierung und stabile Zuordnung, trainierbaren Projektor (oder belastbar abgeleitete gemeinsame Repräsentation), konsumierenden Receiver, sinnvolle Taskwirkung, Ablation gegen SOURCE_EXACT und NO_MESSAGE, OOD-/Retentions-/Kostenmessung und Rückfall. Alte B3-L1-/STEP2-Negativbefunde bleiben offene Gates. Ein erlaubter systemweiter latenter Zustand ist niemals automatisch die Wahrheit oder externe Handlungsautorität.
 
 ### 2.4 C-Plane, JEF und Inquisition
 
-C1/JEF koordiniert Budget, Fragen, Ziele und fokale Konkurrenz. C2 ist der kleine strukturierende neuronale Steuerteil, kann echte Vorhersagen und Routing-Lernen nutzen, besitzt aber **keine** exklusive Autorität über Sicherheit oder Quellenvertrauen. C3 ist ein kleines nativ ausführbares Sprachmodell, das die Ergebnisse verständlich und schnell ausgibt; Englisch als robuste frühe Baseline, Deutsch als separater späterer Transfer-/Lerntest. C4 Focal/Attention bestimmt selektive Re-entry-, Re-look- und Koalitionszyklen. Inquisition P1/P2 prüft Gegenargumente, Fehlerwahrscheinlichkeiten, Quellen und Definitionen; „Konsens“ ohne Kritik ist kein selbständiges Prüfen.
+**C ist ein spezialisiertes, lernfähiges Steuer-/Sprach-/Aktionsnetz – nicht die einzige bewusste Instanz.** C1/JEF kann Ziele, Aufmerksamkeit und knappe Ressourcen koordinieren; C2 ist ein kleiner strukturierender neuronaler Controller; C3 erzeugt schnelle, verständliche natürliche Sprache. C4 koppelt fokale Koalitionen, Re-look, Interrupts und Reentry; C5/C6/C7 betreffen Vorschläge, überprüfte Ausführung und Berichte. Nicht jeder Gedanke muss durch JEF „genehmigt“ werden. Die Handlungs-/Sicherheitsgrenzen müssen aber für externe Effekte strikt geprüft werden.
 
-C5 wählt Antwort, Toolvorschlag, Speicher-/Lernhandlung oder Nichtaktion; C6 prüft Daten, Handlung, Consent, Provenance, Grenzen und Ausgabe; C7 liefert einen sichtbaren, abbrechbaren und wiederaufnehmbaren Bericht. Leichte Antworten bleiben schnell, komplexe können B-Organe / World / Inquisition nutzen. Die Rechenzeit und der native Prefill dürfen **nicht** durch den Age-Stand künstlich limitiert werden.
+Inquisition P1/P2 und erweiterte Prüferstrukturen erzeugen echte Gegenhypothesen, Unsicherheitsbewertung, Definitionsvergleich, False-Positive-Schutz und Belegkonflikte; sie sind nicht nur höflich formulierte Kritik oder eine sequenzielle Antwortschleife. Bestehende P1/P2-Logik aus historischen Versionen wird im Canon erhalten, kompatibel gemappt und nicht ohne explizites Migrationsdokument entfernt. C und andere Organe können ihre eigenen Fehler vorhersagen, Fähigkeiten einschätzen und langsam lernen. Kleine Reaktionen nutzen einen Fastpath; komplexere Fragen erhalten opportunistisch zusätzliche verteilte Verarbeitung. Age ist **Rechte-/Lern-/Entwicklungsstufe**, nicht künstliches Token- oder Rechenzeitbudget.
 
 ### 2.5 Memory, World, Self und Motivation
 
@@ -112,6 +111,12 @@ ExpectationRecord:
 
 Bei Cue kann Aufmerksamkeit steigen und eine **offene Vorhersage** gespeichert werden. Bei pünktlicher Erfüllung wird kalibriert; bei belegtem Ausbleiben entsteht zum erwarteten Zeitpunkt ein negativer Vorhersagefehler; bei Verspätung ändert sich die Zeitverteilung; bei Beobachtungsdefizit bleibt UNCERTAIN/CENSORED und wird nichts als fehlender Reward „bewiesen“. Phasisches Reward-Prediction-Error-Verhalten in klassischer Biologie ist **kein** wörtlich unbegrenztes Neuronenfeuern. V14 vergleicht TD(λ), temporale Hazard-Modelle und JEPA-Zustandsvorhersage. Sicherheit: endliche Traces und aktive Stop-/Widerrufsbedingungen; kein Recht aus bloßem Überraschungssignal.
 
+**V14-Aktives-Lernen-System (Erweiterung, keine Reduktion auf den vorigen Reward-Record):** Lernen kann auch durch fehlendes Wissen, neue Ziele, eigene Fragen, neue Aufmerksamkeit, Selbstbeobachtung, konkurrierende Wahrnehmungsinterpretationen, Hypothesen-Konflikte, eine erwartete aber nicht eintretende Beobachtung oder die Unfähigkeit, relevante Latents sinnvoll zu koppeln gestartet werden. Das System soll nach Möglichkeit **selbst den nächsten informativen Beobachtungs-/Probe-Schritt wählen** und die Auswirkungen auf seinen Zustand, seine Weltannahmen und seine späteren Handlungen berücksichtigen.
+
+Mehrere zusammenarbeitende, aber getrennt messbare Lernkreise: (i) sehr schnelle latente/rekurrente Aktivitäts- und Kontexterfahrung; (ii) episodisches Feedback/Second Attempt; (iii) lokale Eligibility-Traces × fehlermoduliertes Lernen auf ausgewählten kleineren Gewichtsgruppen; (iv) aktive Welt-/Zeit-/Hazard-/Omission-Vorhersage; (v) selbsterklärende Hypothesen- und Counterfactual-Prüfung; (vi) B1/B2-JEPA mit trainierbarer EMA-/Predictor-Kopplung; (vii) Cross-Organ-Alignment, Lang-/Kurzzeit-Synapsen, routenspezifische Plastizität und Konsolidierung; (viii) eigene Sprach-/Skill-/Tool-/Self-Modell-Verbesserung; (ix) langsames Meta-Lernen aus tatsächlich beobachteten Folgen früherer Updates; (x) später kontrollierte Algorithmus-/Code-/Gewichts-Selbständerung. Aktive Wissensgewinnung ist von externen Aktionen und Nutzer-Consent zu unterscheiden.
+
+Lernen **während des Betriebs** darf auf einer explizit erlaubten, sicheren, reversiblen Skala erfolgen; Idle-/Dream-Phasen können intensivere Änderungen probieren. Keine blanket Annahme „während Inferenz gar keine Gewichtsänderung“ für das Endziel. Umgekehrt gilt: ein kurzfristiges verändertes Hidden State ist *kein* Beweis für dauerhaft geänderte Modellgewichte. Immer numerische Parameteränderung, Attribution, Replay-/Retention-/Forgetfulness- und Rollbackmessung dokumentieren. Keine unbeobachtete Auslassung automatisch zum negativen Lernsignal umetikettieren.
+
 ### 2.7 Alle Lernformen getrennt, aber kooperierend
 
 1. Exaktes Episodic und Replay als schnelle Verhaltensanpassung ohne Weight-Update.
@@ -130,12 +135,14 @@ Bei Cue kann Aufmerksamkeit steigen und eine **offene Vorhersage** gespeichert w
 
 JEPA ist ein Prediction-Loss mit Stop-Gradient/EMA als Zielstabilisierung. Echte trainierte Parameter brauchen eine brauchbare Optimierung, etwa Backpropagation für kleine LoRA-/Head-/Projektor-Slices; eine lokale Hebb-/Eligibility-Interpretation darf den Gradient ohne Nachweis nicht ersetzen.
 
+**Learning-Policy:** Kein einzelnes Verfahren ist exklusiver Besitzer des Systems. JEPA, Hebb/Eligibility, Transformer-Gradienten/Adapter, neuromodulierte Konsolidierung, Distillation und Self-/World-Lernen sollen *kooperativ und differenziert* arbeiten. Alltagsaktivität, Explorationsereignisse, normale Gespräche, Sleep und Prüf-/Reset-Phasen haben unterschiedliche Rechte, Zeitkonstanten und Updateziele. EMA bedeutet laufende langsame Anpassung, nicht einen permanent unlernbaren neuronalen Body. Teacherrollen dürfen sich ändern oder verschwinden, sobald die Fähigkeiten internalisiert sind.
+
 ### 2.8 NEU: selektive Mini-Distillation zur JEPA- und Gewicht-Update-Steuerung
 
 **Status: Forschungs-Hypothese, nicht im Paper bereits bewiesenes JEPA-Modul.** On-policy Self-Distillation soll dort unterstützen, wo der Student das aktuelle Problem selbst erlebt, und ein konditionierter Lehrer eine relevante Abweichung kennt. Speculative Self-Distillation kann Teacher-Abfragen selektiv an großen lokalen Divergenzen ansetzen. Eine dritte kleine Vorhersageeinheit soll zusätzlich die **Folgen eines beabsichtigten Updates** einschätzen.
 
 - Live Student: aktuelle Sprach-/Welt-/Body-Vorhersage ohne privilegierten Ausgang.
-- Teacher: eingefrorene oder langsame Kopie, derselbe Body mit menschlich/World-verifiziertem Kontext, oder ein separat rechtlich freigegebenes Modell.
+- Teacher: zeitweilig stabilisierte oder langsam mitlernende Kopie, derselbe Body mit menschlich/World-verifiziertem Kontext oder ein separat rechtlich freigegebenes Modell; die Teacher-/Student-Rollen können dynamisch wechseln oder wegfallen.
 - JEPA Predictor: latente zukünftige Repräsentation; das Grundlernziel bleibt.
 - Mini Distillation Head: Soft-Targets/Teacher-Student-Divergenz, nur bei relevanten und rechtlich sauberen Fällen.
 - Meta Update Predictor: schätzt erwartete neue Utility, Alt-Fähigkeitsverlust, Unsicherheit, Kosten und geeignete trainierbare Parametergruppen.
@@ -152,6 +159,8 @@ L = a * L_JEPA(student_predictor, stop_gradient(EMA_target))
 Koeffizienten werden nicht automatisch als optimal behauptet. Der Meta-Head **schlägt** vor, wo und wie ein echter Gradient trainierbare Parameter ändern könnte, autorisiert nicht den Trainingsmodus. Ein Kandidat wird isoliert trainiert und auf neuem/nichtleakendem Holdout, Langzeit-Retention, negative controls, Lernbudget und Reversibilität verglichen.
 
 Zwingende Ablation: (a) JEPA allein; (b) Distillation allein; (c) JEPA+Distillation; (d) JEPA+Distillation+Meta-Head; jeweils gleiche Daten, Commit-Revisionsbindung und Budget. Falls d keine Vorteile bringt, kann die Methode verworfen werden, **ohne** JEPA oder andere Lernpfade zu löschen. Bei späterer echter Cross-Organ-Lernsteuerung werden Parameter-/Rechte-Grenzen, Eligibility, Quellen und unabhängige Safety-Pfade zusätzlich erzwungen.
+
+**Keine Teacher-Dogmatik:** Distillation ist eine mögliche lokale Lernhilfe, nicht das Zentrum von V14. Neu entstehende Fähigkeiten sollen auch ohne externe Lehrinstanz über Beobachtung, Selbst-/Weltmodell, verteilte Plastizität, JEPA und tatsächliche Outcomes wachsen können. In Forschungsabläufen kann eine Snapshot-Referenz kurzfristig stabil sein, während die zugrunde liegenden aktiven Organe und langsamen Zielrepräsentationen fortlaufend lernfähig bleiben. Ob und wann das hilft, entscheiden Ablationen, nicht der Architekturtext.
 
 ### 2.9 Sleep, Dream, Wiederholung und Konsolidierung
 
@@ -247,6 +256,8 @@ Der Nutzerlink https://youtu.be/XgVm8Nxz68Q bleibt als konkrete Recherche-Refere
 
 **Monat-/Wochentakt ist kein Fertigkriterium.** Fortschritt wird durch reale vollständige Pfade und Nutzwert bewertet: „Hi“ in vertretbarer Echtzeit, B1/B2 unabhängige Angebote, C3 Native Tokens, echtes Erinnern beim zweiten Versuch, JEPA Gradient/Checkpoint, B3 Receiver-Effekt, Tool-Vorschlag/Freigabe/Ergebnis, Reboot/Update und experimentelles Meta-Lernen.
 
+**Verbindliche aktuelle Betriebsweise:** Nicht nur neue Entwürfe schreiben: den **vorliegenden V14-Master selbst** weiterentwickeln und nach jeder substanziellen Änderung `V14_LIVE_WORKPLAN.md` und `V14_RESEARCH_LEDGER.md` nachziehen. Die komplette V13-Pflichtliste bleibt indiziert und wird im Code gegen tatsächlich verbundene Consumers geprüft. Jeder stündliche oder manuell gestartete Forschungsagent führt zusätzlich den laufenden Research-Zyklus aus, statt allein bestehende Patches zu testen. Änderungen aus neuem Paper dürfen grundlegende Designmethoden ersetzen, sofern dieselben Funktionsziele/möglichen älteren Nutzerentscheidungen weitergeführt, Lizenz/Safety respektiert und Verifikation/Backup durchgeführt werden.
+
 ## 19. Messverträge und klares Reporting
 
 Ein Agentenbericht muss sagen: (1) welcher echte End-to-End-Consumer neu läuft; (2) Code- und Model-/Lizenzrevision; (3) welchen V14-/Canon-Abschnitt das abdeckt; (4) echte Linux-/Redmi-/Trainings-/Holdout-Beweise; (5) welche Funktion noch fehlt; (6) den nächstgrößeren Integrationsschritt. PR-Zahlen, Commits und CI-Screenshots ohne Funktionspfad sind Sekundärdaten. Ehrliche negative Kontrollen sind wertvoll; sie dürfen aber die Implementierung aller anderen Organe nicht anhalten.
@@ -260,5 +271,29 @@ Die vollständigen alten Canon-/Roadmap- und Drive-Sichtungstexte werden unten *
 ---
 
 ---
+
+## 21. Verbindliche laufende Forschungsarbeit — keine einmalige Literaturbeilage
+
+**V14-Forschung ist eine Daueraufgabe und Teil der normalen Arbeitsaufträge aller Agenten.** Bei jedem geplanten Research-Lauf – und zusätzlich bei einem in der Entwicklung aufgetauchten ungelösten Problem – gezielt aktuelle Primärliteratur, relevante verwandte frühere Forschung, Referenzimplementierungen, GitHub-/HF-Versionen, offene Lizenzfragen und Gegenbeispiele recherchieren. Auch ohne eine neue Nutzerfrage neue Relevanz entdecken und dokumentieren. Das geschieht über tatsächlich eingerichtete Agenten-Läufe, nicht durch die bloße Existenz dieses Textes.
+
+**Research-Loop:** `scan new / related -> dedupe & resolve title/aliases -> read primary methodology + limitations -> classify evidence -> map to V13 obligations and V14 organs -> propose concrete architectural/application change -> design falsifiable baseline, negative controls, resource/license checks -> prototype when authorized -> measure -> update research ledger and live plan -> adapt active V14 only with evidence & backup`.
+
+Das Research Ledger `v14/V14_RESEARCH_LEDGER.md` speichert für jeden Eintrag: Originaltitel/Identifier/Aliasse; Datum des tatsächlichen Nachschlagens und Paper-Erscheinungsdatum; belastbare URL/Originalquelle; Befund, Grenzen, Gegenargument und offene Reproduzierbarkeit; relevante V14-/V13-Funktionen; konkreter Vorschlag samt Alternativen; Testdaten/Ablation/erwartete Beobachtung; vorhandener Code/Modell-Lizenz/ARM-Status; aktueller Status; Wiedervorlage; PR/Commit/Device-Evidenz. Fehlende Daten bleiben explizit **UNVERIFIED**, nicht erdacht. Vermeide „habe ich schon gelesen“, wenn nur ein Titel entdeckt wurde.
+
+**Spätere Fragen sollen wiederauffindbar sein:** Nennt der Nutzer etwa ein Paper mit unklarem/anders geschriebenem Namen, erst Ledger und Originaltitelvarianten prüfen; dann sagen, welche konkrete Methode bekannt ist, welche V14-Ideen dazu notiert wurden, was wirklich experimentell bewiesen ist und woran wir bereits arbeiten. Keine Behauptung einer vorherigen Lektüre ohne datierten Eintrag.
+
+**Aktive Adaption:** Erkennt ein Agent nach echter Prüfung eine Methode, die exakt das gesuchte Verfahren oder eine fehlende Voraussetzung liefert, darf er selbstständig einen tiefgreifenden Architektur- oder Codevorschlag samt Source-, Lizenz-, Budget- und Regressionsanalyse vorbringen und in einem isolierten Branch umsetzen. Nicht bei jedem neuen Preprint das Zielsystem umwerfen: fairer Vergleich, Missbrauchs-/Sicherheitsgrenzen, echte Messung und explizite Migration vor Übernahme. Auch bewährte ältere Bausteine dürfen ersetzt werden, ihre *Funktion* und alten Nutzerentscheidungen aber nicht still verloren gehen.
+
+## 22. Operativer Live-Plan und unabhängige Sicherung
+
+**Aktive Dokumente:** der vorliegende **V14-Master** ist der fortlaufend bearbeitete Hauptkanon; `v14/V14_ARCHITECTURE_AND_RESEARCH_ONLY_20261119.md` ist seine konsistente Lesefassung; `v14/V14_LIVE_WORKPLAN.md` hält Workstreams und offene Vollsystem-Lücken; `v14/V14_RESEARCH_LEDGER.md` hält laufende Forschung; `v14/V14_CANON_COVERAGE_INDEX.md` indiziert historisch benannte Canon-Verträge.
+
+**Vor jeder materiellen Änderung:** aktiven Git-HEAD prüfen, unveränderlichen vorherigen Masterstand unter `v14/backups/` sichern, Quellen/Änderungsgrund und betroffene Canon-Funktionen erfassen; danach nur Teil I/II gezielt ändern, gesamte Teile-III-Quellhistorie **bytegleich** behalten, Lesefassung synchronisieren, Coverage-Index gegen vorherigen Stand vergleichen, tests/review durchführen, git commit/remote readback kontrollieren. Keine ältere Sicherung nachträglich „aktualisieren“. Weil auch Git seine Historie bewahrt, haben Snapshot+Commit eine zweite voneinander unterscheidbare Wiederherstellungsmöglichkeit.
+
+Bei mehreren parallelen Agenten ist ein Integrator für Master-Schreibzugriffe verantwortlich. Research- und Feature-Agenten erfassen eigene Evidenz und Änderungsvorschläge zunächst konfliktfrei; der Integrator übernimmt überprüfte Ergebnisse in einem geordneten Batch. Kein blindes Auto-Merge von konkurrierenden Manuskripten und kein Force-Push.
+
+## 23. Vollständigkeits- und Forschungszustand, 20.11.2026
+
+**Nicht gleichsetzen:** `ARCHITECTURE_SPECIFIED` ≠ `CODE_PRESENT` ≠ `CONSUMER_CONNECTED` ≠ `TESTED_LINUX` ≠ `REDMI_NATIVE` ≠ `NUMERIC_LEARNING` ≠ `HELDOUT_UTILITY` ≠ `COMPLETE`. Der erhaltene V13-Canon ist ein **verbindlicher Funktionskatalog**, kein Nachweis seiner Implementierung. Research-Ledger-Einträge sind Ideen mit Evidenzstufen, nicht automatisch implementierte Updates. Echte Ergebnisbelege sind im Live-Plan rückverlinkt.
 
 *Die vollständigen historischen Anhänge und alle älteren Quellpflichten stehen in [V14 MASTER](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md). Diese lesbare Kurzdatei ist keine Kürzung des verbindlichen Canon.*
