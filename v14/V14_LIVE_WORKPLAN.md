@@ -78,3 +78,8 @@ Mehrere Agents dürfen die Architektur kreativ herausfordern; sie dürfen weder 
 ## 6. Unvollständigkeitskennzeichnung
 
 **Gesamtstatus 2026-11-20:** V14-Design/Kanon vorhanden; vollständiger auf Redmi gelebter Organverbund, echter systemweiter Latent-Transfer und permanente lernende Zwei-Body-MoE-Endarchitektur **NICHT NACHGEWIESEN**. Die historischen STEP2/B3-FAILs bleiben offen, bis auf genau diese Ziele bezogene Re-Tests erfolgreich sind. Kein `COMPLETE`, kein Reife-/Age-Aufstieg aus Dokumentation.
+
+## Aktuelle Team- und Nutzer-Übergabe (20.11.2026)
+
+Die bestehenden fünf stündlichen Jobs arbeiten als **ein Engineering-Team** mit [Arbeitsvertrag](V14_TEAM_OPERATING_SYSTEM.md), [gemeinsamem Ticket-Board](V14_WORK_BOARD.json) und [nutzbarer Übergabe für das nächste Gespräch](V14_USER_NEXT_ACTION.md). Vorrangig ist **tatsächliches Coding, lokales Testen, Fixen, direktes Pushen in die eigene GitHub-Lane, Review, Integration und sichere automatische Übernahme nur mit verifiziertem Geräte-Updater**; der Nutzer soll für normale Pushes nicht jedes Mal einen Befehl eingeben müssen. Alternative kleine/größere Modelle sind ausdrücklich als isolierte Messversuche erlaubt; produktiver Wechsel nur nach transparenter Messung und Zustimmung. Der Terminal-Name kann `v13` bleiben. Keine falsche Behauptung von Android-Installation aus einem GitHub-Commit.
+
