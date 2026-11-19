@@ -38,6 +38,7 @@ def observe(runtime, *, now_s, horizon_s=120.0, limit=2048):
     resolved = dict(state["resolved"])
     rows = world_model.transitions(store, limit=limit)
     observed = 0
+    scored = 0
     for row in rows:
         action_id = row["action_id"]
         if not isinstance(action_id, str) or not action_id:
@@ -48,7 +49,15 @@ def observe(runtime, *, now_s, horizon_s=120.0, limit=2048):
         # It proves an outcome, not a counterfactual or a missed deadline.
         outcome = row["y"]
         hypothesis = pending[action_id]
+        # Numeric diagnostic on committed T8 FINAL, never on missing observations.
+        success = outcome[1] if isinstance(outcome, (list, tuple)) and len(outcome) == 3 else None
+        brier = None
+        if _finite(success) and success in (0, 1):
+            brier = round((hypothesis["probability"] - success) ** 2, 8)
+            scored += 1
         resolved[action_id] = {
+            "success_brier": brier,
+            "success_label": success if brier is not None else None,
             "status": "OBSERVED",
             "predicted_outcome": hypothesis["predicted_outcome"],
             "probability": hypothesis["probability"],
@@ -71,7 +80,7 @@ def observe(runtime, *, now_s, horizon_s=120.0, limit=2048):
         raise ValueError("pending expectation capacity reached")
     store.set_state(KEY, {"revision": REVISION, "pending": pending, "resolved": resolved})
     return {"status": "OBSERVATION_ONLY", "observed": observed,
-            "censored": censored, "pending": len(pending), "resolved": len(resolved),
+            "censored": censored, "scored": scored, "pending": len(pending), "resolved": len(resolved),
             "omission_learning": "OFF_NO_COVERAGE_PROOF"}
 
 
