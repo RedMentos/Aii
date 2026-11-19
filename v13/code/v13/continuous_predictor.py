@@ -120,8 +120,8 @@ class OnlinePredictor:
             if temp.exists():temp.unlink()
         return str(self.path)
 
-    def rollback(self):
-        """Durably restore the prior committed weights AND trusted T8 cursor.
+    def rollback(self, require_cursor=False):
+        """Durably restore prior weights; T8 callers require a cursor.
 
         Validate the candidate before replacing the active snapshot. A failed
         disk replacement leaves the original active checkpoint loadable.
@@ -138,6 +138,11 @@ class OnlinePredictor:
             raise
         finally:
             self.path=current
+        if require_cursor and self.processed_ids is None:
+            # T8 snapshots cannot atomically rewind without the trusted cursor.
+            # Refuse BEFORE replacing the active checkpoint on disk.
+            if current.exists():self.restore()
+            raise ValueError('Rolled-back checkpoint has no trusted T8 cursor')
         temp=current.with_name(current.name+'.rollback.tmp.npz')
         try:
             shutil.copy2(previous,temp)
