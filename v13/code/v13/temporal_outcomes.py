@@ -75,6 +75,8 @@ class TemporalOutcomes:
                 raise ExpectationError("expectation already resolved")
             if at < earliest:
                 raise ExpectationError("outcome window not started")
+            if not observed and observation_complete and at < deadline:
+                raise ExpectationError("observation window not complete")
             if observed:
                 new_status = "OBSERVED" if at <= deadline else "DELAYED"
                 error = 1.0 - p
