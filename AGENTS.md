@@ -1,3 +1,9 @@
+# V14 superseding design handoff — 2026-11-19
+
+For all new project development **read [v14/README.md](v14/README.md) and [V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md](v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md) FIRST**. The user's newest decision is a full **V14 rewrite and whole-architecture implementation**, not another isolated bug-patch campaign. The V14 master contains two operational plans (architecture and research/reuse/execution) followed by the **entire pre-existing public V13 Canon**, GitHub roadmap and three Drive roadmap parts as verbatim appendices to prevent silent loss. Preserve all named functional obligations, plus updated age rights, real JEPA/latent learning, open outcome/omission learning, on-policy/speculative self-distillation as an *experiment*, two different sparse MoE bodies, self/world/memory, tool agency and eventually comprehensible/safely approved self-programming. Research existing maintained open source and licenses before writing a fresh duplicate. Deliver connected live-function progress, then validate/refine, while retaining genuine privacy/safety/hardware approval gates and negative device evidence. V14 document is a design, **not** a release or proof of implementation; keep existing V13 runtime safe and reversible until replacement passes actual acceptance.
+
+---
+
 # V13 continuation rules
 
 These project instructions preserve the user's decisions, including the 2026-10-12 request to recover research, open questions, end goals and agent work rules and continue without requiring a full chat export. Read the current remote HEAD before work; this file does not replace the Canon or the existing plan.
