@@ -27,6 +27,19 @@ class GateTests(unittest.TestCase):
         x=rows()
         for r in x:r["b2_consumed"]=0
         self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+    def test_offers_only_on_greetings_do_not_prove_cross_organ(self):
+        x=rows()
+        for r in x:
+            if r["scenario"]=="cross_organ":
+                r["b1_consumed"]=0
+                r["b2_consumed"]=0
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+    def test_one_organ_missing_in_cross_organ_turns(self):
+        x=rows()
+        for r in x:
+            if r["scenario"]=="cross_organ":
+                r["b2_consumed"]=0
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
     def test_synthetic_is_not_redmi(self):
         x=rows();x[0]["evidence"]="SYNTHETIC"
         self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
