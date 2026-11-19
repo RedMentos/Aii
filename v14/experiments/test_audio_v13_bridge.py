@@ -32,6 +32,12 @@ class V14AudioAdmissionIntegration(unittest.TestCase):
         p[0]["pcm_sha256"] = "0"*64
         with self.assertRaises(PermissionError):
             to_v13_a5_audio(p, self.source, consent_active=True)
+    def test_nonfinite_audio_feature_rejected(self):
+        windows = timed_audio_packets(self.samples, self.source)
+        windows[0]["rms"] = float("nan")
+        with self.assertRaises(ValueError):
+            to_v13_a5_audio(windows, self.source, consent_active=True)
+
     def test_v13_prompt_budget_is_bounded(self):
         from v13.a5_audio_admission_bridge import audio_to_admission
         windows = timed_audio_packets(self.samples, self.source)
