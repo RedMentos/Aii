@@ -1,3 +1,5 @@
+> **Hinweis zur kanonischen Priorität:** Die **eine** V14-Hauptfassung steht in [V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md), die ebenfalls mit Drive-/GitHub-Quellen aufgebaut wurde. Diese zusätzliche V14-Datei ist ein **technisches Komplement mit alternativer Formulierung und vollständig erhaltenem V13-Kanon**, keine zweite unabhängige Single Source of Truth. Bei einem Unterschied gilt die Masterfassung bzw. die jüngste ausdrückliche Nutzerentscheidung. Die Forschungsideen hier sind Vorschläge, nicht freigegebener Laufzeitcode.
+
 # V14 / INQUISITION-JEPA — VOLLSTÄNDIGER NEUER KANONISCHER ENTWURF
 **Version:** V14.0 — 19. November 2026
 **Status:** ARCHITECTURE_SPEC / BUILD_FIRST; nicht gleichbedeutend mit lauffähiger Komplettimplementation
