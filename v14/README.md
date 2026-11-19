@@ -4,6 +4,10 @@
 
 **Vollständige Archivfassung:** [V14 Master Blueprint + Research + vollständige V13-Quellenanhänge](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md)
 
+**Ergänzende technische Ausarbeitung:** [V14 technische Organe, JEPA/SSD- und Sicherheitsspezifikation](V14_CANONICAL_BLUEPRINT_20261119.md).
+
+**Zusätzliche historische Quellen, die im Master nicht komplett eingebettet waren:** [V14 Drive-Sichtung, älteres KI-Handoff und Age-0/JEPA-Review](V14_EXECUTION_RESEARCH_SOURCEBOOK_20261119.md). Diese Unterlagen sind eine **Ergänzung**, kein zweiter normativer Master.
+
 Status: **V14 design baseline 2026-11-19**, nicht als bereits laufende/neue App missverstehen. Der laufende V13-Code bleibt unverändert, bis eine real geprüfte V14-Integration ihn kontrolliert ersetzt.
 
 Die Masterdatei hat drei Bereiche:
