@@ -19,6 +19,71 @@ printf 'Hinweis: GitHub CLI OAuth kann Zugriff auf weitere Repositories haben.\n
 pkg install -y git python gh curl || fail "Termux-Paketinstallation fehlgeschlagen"
 command -v gh >/dev/null || fail "gh fehlt trotz Installation"
 
+# Check release health BEFORE interrupting a running chatbot/AI service.
+# The main installer previously stopped the old service and UI first, then
+# failed on exact-SHA CI_WAIT or CI_FAILURE, leaving the owner with no browser.
+# This preflight uses GitHub's exact trusted workflow gate, then deploy()
+# checks it AGAIN after fetching the checkout to close any head-change race.
+if ! gh auth status -h github.com >/dev/null 2>&1; then
+  printf '\nGitHub-Anmeldung: Browser oeffnen und den angezeigten Code bestaetigen.\n'
+  gh auth login -h github.com -p https -w --scopes repo || fail "GitHub-Anmeldung abgebrochen"
+fi
+
+RELEASE_SHA="$(git ls-remote --heads "$SOURCE" "refs/heads/$BRANCH" | awk 'NR==1 {print $1}')" || fail "Release-Commit kann nicht auf GitHub geprueft werden"
+[[ "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]] || fail "Ungueltige Release-SHA; alte Sitzung bleibt erhalten"
+CI_PREFLIGHT=0
+V13_RELEASE_SHA="$RELEASE_SHA" python - <<'PY_CI_PREFLIGHT' || CI_PREFLIGHT=$?
+import json, os, subprocess, sys
+sha=os.environ["V13_RELEASE_SHA"]
+required={
+  "V13 private owner-read Termux bootstrap": ".github/workflows/v13-private-owner-read-ci.yml",
+  "v13-private-remote-bridge-tests": ".github/workflows/v13-private-remote-bridge-tests.yml",
+  "V13 staged context and integrated regression": ".github/workflows/v13-integrated-context-stage-20261111.yml",
+}
+p=subprocess.run(["gh","api","--method","GET","repos/RedMentos/Aii/actions/runs",
+                  "-f","head_sha="+sha,"-f","per_page=100"],
+                 capture_output=True,text=True,timeout=40,check=False)
+if p.returncode:
+    print("V13 RELEASE CI: GitHub-Abfrage fehlgeschlagen; alter Stand bleibt unberuehrt.")
+    sys.exit(11)
+try:
+    runs=json.loads(p.stdout)["workflow_runs"]
+except (ValueError, KeyError, TypeError):
+    print("V13 RELEASE CI: Antwort nicht verifizierbar; kein Update.")
+    sys.exit(11)
+if not isinstance(runs,list):
+    sys.exit(11)
+status={}
+for run in runs:
+    if (not isinstance(run,dict) or run.get("head_sha")!=sha
+        or run.get("event") not in ("push","workflow_dispatch")
+        or not isinstance(run.get("head_repository"),dict)
+        or run["head_repository"].get("full_name")!="RedMentos/Aii"):
+        continue
+    name=run.get("name")
+    if name not in required or run.get("path","").split("@",1)[0]!=required[name]:
+        continue
+    state=(run.get("status"),run.get("conclusion"))
+    if state==("completed","success"):
+        status[name]="PASS"
+    elif status.get(name)!="PASS":
+        status[name]="FAIL" if state[0]=="completed" else "WAIT"
+missing=[name+":"+status.get(name,"MISSING") for name in required if status.get(name)!="PASS"]
+if missing:
+    print("V13 RELEASE CI_WAIT: "+", ".join(missing))
+    print("Commit: "+sha[:12]+"; Quelle und bisherige Modelldaten bleiben erhalten.")
+    sys.exit(10)
+print("V13 RELEASE CI: alle drei unabhaengigen exakten Commit-Pruefungen PASS.")
+PY_CI_PREFLIGHT
+if [[ "$CI_PREFLIGHT" -ne 0 ]]; then
+  if [[ -x "$HOME/v13/bin/v13" ]]; then
+    printf '%s\n' "V13: Neuer Code vorlaeufig NICHT aktiviert. Vorhandener Launcher und laufende Dienste bleiben unangetastet."
+    printf '%s\n' "Der vorhandene Auto-Updater darf erst nach bestandener CI die Runtime umschalten."
+    exit 0
+  fi
+  fail "Noch kein vorhandener Launcher; Release-CI nicht gruen. Erst nach Pruefung installieren."
+fi
+
 # Never replace a dashboard while it owns a live model/chat process. Those
 # children have their own process session and would outlive a killed UI.
 # A saved local stop is an explicit user decision, not a successful startup.
@@ -262,10 +327,6 @@ git -C "$ROOT" sparse-checkout set --no-cone \
   v13/code/docs/ONE_COMMAND_TERMUX_20261111.md || fail "Sparse Checkout fehlgeschlagen"
 [[ -s "$ROOT/v13/code/v13/owner_read_bridge.py" ]] || fail "Diagnoseprogramm fehlt"
 
-if ! gh auth status -h github.com >/dev/null 2>&1; then
-  printf '\nGitHub-Anmeldung: Browser oeffnen und den angezeigten Code bestaetigen.\n'
-  gh auth login -h github.com -p https -w --scopes repo || fail "GitHub-Anmeldung abgebrochen"
-fi
 LOGIN="$(gh api user --jq '.login' 2>/dev/null)" || fail "GitHub-Konto nicht erreichbar"
 [[ "$LOGIN" == "RedMentos" ]] || fail "Eingeloggt als '$LOGIN', erwartet RedMentos"
 IS_PRIVATE="$(gh api "repos/$RELAY" --jq '.private' 2>/dev/null)" || fail "Privates Repository nicht erreichbar"
