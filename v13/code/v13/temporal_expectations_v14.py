@@ -93,7 +93,9 @@ def expect(runtime, *, expectation_id, condition_source, predicted_outcome,
         raise ValueError("duplicate expectation id")
     if len(state["pending"]) >= world_model.MAX_ROWS:
         raise ValueError("pending expectation capacity reached")
-    # Expectation IDs are committed T8 action IDs; unbound hypotheses cannot\n    # be resolved by unrelated observations.\n    state["pending"][expectation_id] = {
+    # Expectation IDs are committed T8 action IDs; unbound hypotheses cannot
+    # be resolved by unrelated observations.
+    state["pending"][expectation_id] = {
         "condition_source": condition_source, "predicted_outcome": predicted_outcome,
         "created": now_s, "deadline": deadline_s,
         "probability": probability, "status": "PENDING",
