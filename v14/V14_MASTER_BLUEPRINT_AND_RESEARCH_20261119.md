@@ -16365,3 +16365,953 @@ Vor Beginn Status-Zeile „in Arbeit (<Thread>)“ setzen; Tests + Doku + Überg
 - **Status 2026-10-10: erledigt (Pakete E).** `v13/episodic_route.py` + Haken in `runtime._route` (nach der prozeduralen Konsolidierung, vor dem Scaffold): aktive menschliche Routen-Korrektur mit Relevanz ≥ 0,6 (entitätsbewusst, gelöschte Quellen zählen nicht) → Vorschlag mit Erinnerungs-/Event-/Quellen-Bezug; `shadow` (Standard) schreibt ihn nach `meta.route.episodic_route`, `active` (`:episodes route active`) nimmt ihn als Route, `off` aus. Tests `tests/test_episodic_route.py` (3), volle Suite 940 grün.
 - Eine einzelne menschliche Routen-Korrektur bei einer sehr ähnlichen früheren Anfrage (gleiche Entitäten, hohe Relevanz) wird beim nächsten Mal sofort als Routen-Vorschlag genutzt, ohne auf die prozedurale Konsolidierung (≥ 3 Bestätigungen) zu warten; mit Episoden-/Quellen-Bezug. Standard SHADOW (Vorschlag in `meta.route`), wirkt mit `:episodes route active` (Mensch).
 
+
+
+---
+
+## QUELLANHANG D — Neuere Nutzerentscheidungen (vollständig, zuvor öffentliches Repository)
+
+Quelle: v13/NUTZER_ENTSCHEIDUNGEN.md
+Blob: afd51fe32aa11d5daa3ce2a1d132eef22c9ff316
+
+# Nutzerentscheidungen (RedMentos)
+
+## 2026-11-11: Selbstoptimierung und tatsächliche organübergreifende Gewichtsänderung
+
+Der neuere parallele Nachtrag aus #1741 wird als zusätzliche verbindliche Zielanforderung übernommen: [USER_ADDENDUM_2026-11-11_SELF_OPTIMIZATION.md](USER_ADDENDUM_2026-11-11_SELF_OPTIMIZATION.md) und [Cross-Organ-Vertrag](code/docs/CROSS_ORGAN_WEIGHT_EDIT_CONTRACT_20261111.md). Selbstoptimierung, durch das Zielorgan kontrollierte tatsächliche Parameter-Deltas aus anderen Organen und später autorisiertes strukturelles Self-Edit dürfen weder entfallen noch als reine Prompt-/Konfigurationsoptimierung umdefiniert werden. Zuerst die vorhandene World-/Body-/Restart-/Retention-Kette fertigstellen; Rechte, Nutzergrenzen und Rückrolle bleiben verbindlich. Übernommene Anforderung, kein behaupteter bereits realisierter Laufzeitpfad und kein erfundener wörtlicher Chatauszug.
+
+## 2026-11-09/10: langer Kontext, Idle-Lernen und integrierte Fortsetzung
+
+Der Nutzer möchte ein normales begrenztes aktives Kontextfenster mit lokal über lange Zeit wachsendem, effizient verdichtetem und wieder abrufbarem Zusammenhang; Erkenntnisse sollen später auch Weltbild und Modelle verbessern. Der Blueprint enthält diese Architektur bereits detailliert und darf nicht durch eine vereinfachte Ersatzarchitektur ersetzt werden. Geeignete Anfangsdaten sollen später langsam und ressourcenbegrenzt im Leerlauf nutzbar sein. Freigegebene Gespräche/Rückmeldungen und später ausdrücklich erlaubter Werkzeug-/Bildschirmzugriff gehören zur Zielrichtung, ebenso mehr Selbstständigkeit innerhalb der gesetzten Grenzen. Der Nutzer verlangt, dass die Arbeit fortgesetzt und neuere Anweisungen/Arbeit aus parallelen Chats beachtet werden. Das `code/docs/coordination/V13_FAST_INTEGRATION_AGENT_PLAYBOOK_20261110.md` priorisiert eine gemeinsame, tatsächlich verbundene Implementierung; SourceHandoff-Freeze und bisherige Gates bleiben verbindlich.
+
+Der vom Nutzer angesprochene Beitrag über direkte Gewichtsänderung und seine Idee, aus eigenen Fehlversuchen zu lernen, werden zusätzlich in `research/WEIGHT_SPACE_UND_FEHLERLERNEN_20261108.md` und `code/docs/LOCAL_ERROR_ROUTE_SHADOW_20261109.md` berücksichtigt. Die Unterscheidung und die geplanten Kontrollen sind fachliche Einordnung, kein zugeschriebener exakter Gesprächswortlaut und kein bereits aktiviertes Training.
+
+Dauerhafte Ablage, weil `code/docs/USER_DECISIONS_AND_OPEN_QUESTIONS.md` von `v13/verification.py:122` neu erzeugt werden kann.
+Gilt vor abweichenden Stellen im Blueprint, bis der Nutzer etwas anderes sagt.
+
+## 2026-10-09 (Thread „Übergabe komplett sichten“, Antwort auf SICHTUNG §5)
+Wortlaut: „es sin viele modelle in einem des is eig alles definiert worden.. Sogar mehr als 2.. Au english zuerst das mans mit deutsch lernen au sehen kann später.. Worldmodel und so war au definiert. Es soll konstant lernen als end ziel.. Es soll basically eine runtergebrochene simulation eines hirns werden..“
+
+1. **Viele Modelle, wie im Blueprint definiert** (B1, B2, C1–C5, World-Model usw., mehr als zwei). B1 und B2 sollen echt verschiedene Bodies sein, nicht dasselbe LFM2.5-1.2B. Der Ist-Stand B1 = B2 ist nur ein Harness-Zwischenschritt.
+2. **Englisch zuerst.** Deutsch wird später gelernt, damit man das Lernen daran sehen kann. Folge: C3-Benchmark und System-Prompts (heute „Antworte auf Deutsch“ in `runtime.py:317,458`, `__main__.py:61`, `verification.py:138`, `proofs.py:200`) auf Englisch umstellen; Deutsch wird ein Lern-/Transfertest.
+3. **World-Model gehört dazu** (Blueprint §7.2, §92.2, G-SELF-WORLD-005), braucht ein eigenes Arbeitspaket.
+4. **Konstantes Lernen ist das Endziel.** Age-0-Shadow mit Freigabe bleibt der Startzustand, die Age-Hülle soll schrittweise dorthin führen, nicht dauerhaft blockieren.
+5. **Ziel: eine heruntergebrochene Simulation eines Gehirns**, kein Chatbot.
+
+## 2026-10-11: dauerhafte GitHub-Freigabe für dieses Projekt
+
+Im Projektthread wurde konkret um Freigabe gebeten, den geprüften Stand auf den neuen Arbeitsbranch `codex/authority-live-comparisons` in `RedMentos/Aii` zu pushen. Auf die Erläuterung der Zustimmung antwortete der Nutzer um 04:35:02 Europe/Berlin: „Man so das du immer kannst“.
+
+Dies ist die dauerhafte Freigabe, im Rahmen der beauftragten V13-Entwicklung Änderungen und nachvollziehbare Zwischenstände auf Arbeitsbranches in `RedMentos/Aii` zu veröffentlichen. Routine-Pushes dieser Projektarbeit brauchen keine erneute Nachfrage. Die Freigabe bleibt bestehen, bis der Nutzer sie ändert. Der Remote-Stand muss nach jeder Veröffentlichung geprüft werden; lokale Commits allein gelten nicht als erfolgreiche GitHub-Sicherung.
+
+## 2026-10-11, 23:20–23:21 Berlin — Fortsetzung und agentenübergreifende Übergabe (aus Drive übernommen 2026-10-12)
+
+- Der bestehende ausgearbeitete Drive-Plan bleibt verbindlich und muss weiter abgearbeitet werden. Zukunftsideen ergänzen ihn in getrennten Notizen und ersetzen keine offenen Arbeitspakete.
+- Selbstständig bis zu einem belastbaren Stand für längere menschliche Alltagstests weiterarbeiten; in Tests entdeckte Fehler anschließend weiter bearbeiten. Kontinuierlicher Lernfortschritt/RSI- bzw. AGI-Zielrichtung bleibt das langfristige Ziel, kein bereits bewiesener Ist-Stand.
+- Regelmäßig Code, Rohbelege, aktuelle Ergebnisse und Fortsetzungsnotizen sichern. Wechsel zwischen Codex, Claude und anderen Agents soll über GitHub und Drive jederzeit möglich sein. Erhaltene Fehler und ursprüngliche Gates gehören in die Übergabe.
+- Fortschrittsinfos dürfen konkrete spätere Verbesserungen und Voraussetzungen nennen: lokale Handy-Tools, schrittweise Fähigkeiten/Freiheiten/Wissen und mögliche neuere Modelle. Modellwechsel brauchen gesonderte gebundene Vergleiche und ersetzen keine laufende vorregistrierte Messung.
+
+## 2026-10-21 (Thread „Zitierhilfe an, Regeln ohne Halluzination“)
+1. **Zitierhilfe an.** Körper dürfen auf exakte Quellsätze zeigen statt sie abzuschreiben („Menschen können ja auch einfach direkt zitieren“). Umgesetzt als Standard: `b2_quote_select=pointer`, `offer_quote_context_chars=200` und die gemessenen Begleitwerte.
+2. **Gezielte Nachfragen zu Regeln: ja.** Aber Regeln lesen und prüfen soll nicht ein halluzinierendes Sprachmodell, sondern „Jeff“ (die JEF-Ebene laut Blueprint) bzw. eine feste, nicht-generative Komponente. Sprachmodelle dürfen Regeln höchstens wörtlich zitieren.
+3. **Hauptziel Regelsatz:** Die KI tut nichts, wovon der Nutzer nichts weiß, sagt vorher, was sie tun würde, und legt Verbote („bitte tu das nicht“) nie falsch aus.
+4. Alte Entwürfe, deren Inhalt im gemeinsamen Stand steckt, werden geschlossen (PR #2, #3, #4).
+5. Handy-Tests nur, wenn sie wirklich helfen; sonst ohne Test weiterarbeiten. Keine vorgegebenen 20 englischen Beispielsätze nötig, Testsätze selbst erzeugen (auch von anderen Modellen umformuliert).
+
+## Offen (Stand 2026-10-21, aus dem Zielabgleich `ZIELABGLEICH.md` §7) — noch keine Entscheidung
+- ~~Age-Plastizität~~: entschieden 2026-10-22 (`noise_aware`, siehe unten).
+- ~~Zitat-Kontext-Schalter einschalten~~ → entschieden 2026-10-21: an (siehe oben).
+- Redmi-Läufe (WP-Z7): ohne sie können STEP5, STEP7 und drei §100-Gates nicht grün werden.
+
+## Offen (Stand 2026-10-21, aus dem Zielabgleich `ZIELABGLEICH.md` §7) — noch keine Entscheidung
+- Age-Plastizität `age_plasticity_policy = boot | stable_reopen | noise_aware` (Messung WP-AB, offen seit 10.10.; blockiert G-AGE-REOPEN-001, Paket WP-Z8).
+- ~~Zitat-Kontext-Schalter einschalten~~ → entschieden 2026-10-21: an (siehe oben).
+- Redmi-Läufe (WP-Z7): ohne sie können STEP5, STEP7 und drei §100-Gates nicht grün werden.
+- B2-Zeiger `b2_quote_select=pointer` einschalten (WP-Z2d, 21.10.: B2-Regelzitat .17 → .97, zwei Körper +.30 über B1; braucht zugleich den Zitat-Kontext-Schalter und eine Reparatur von `analyst_context`).
+
+## 2026-10-22 — Age-Plastizität und Zitat-Kontext entschieden
+Wortlaut 09:00 Berlin: „Ig noise aware ka? Welches besser in log term yk.. Und Man ja obv an“ (Antwort auf die zwei offenen Punkte oben).
+1. **`age_plasticity_policy = noise_aware`** ist jetzt Standard (`config.py` DEFAULTS). Begründung für lange Sicht: im verrauschten Teil der WP-AB-Messung bester Wert (0,073 gegen boot 0,175, stable_reopen 0,129), Preis ist langsameres Umlernen bei echtem Zielwechsel (0,079 gegen 0,053). Blockiert G-AGE-REOPEN-001 nicht mehr; der Wiederöffnen-Test (WP-Z8) steht noch aus.
+2. **Zitat-Kontext an:** `offer_quote_context_chars=200`, `b2_offer_body_state=false`, `offer_quote_min_chars=90` sind Standard.
+Alte Werte bleiben als `LEGACY_PRE_20261022` für eingefrorene, vorregistrierte Harnesses und Tests des alten Verhaltens. Volle Suite 1609 Tests OK, 5 Skips.
+
+## 2026-10-22 16:33 Berlin — Eignungs-Werkzeug im Handy-Paket an (Thread „STEP2-Nutzen Engpass“)
+Entscheidungskarte „Sollen die zwei neuen Schalter ins nächste Handy-Paket, eingeschaltet?“, gewählt: **„Ja, beide an im Handy-Paket“**.
+1. Zitat-Kontext: war schon an (siehe oben), bleibt.
+2. Eignungs-Werkzeug (`:growth enable eligibility`) ist im nächsten Redmi-Paket (WP-Z7) vorab freigegeben. Age 0 = SHADOW mit Vergleich, Rezept mit strict-Prüfung (WP-Z3), Ja/Nein-Regeln nur deterministisch (WP-Z3b), nie von C3. Ob es danach dauerhaft an bleibt, entscheidet der Nutzer nach dem Handy-Test.
+
+## Zusammenführung 2026-10-22 (Thread „Offene Ziel-Pakete Z6 bis Z12“)
+Zwei Fassungen eines festen Regel-Lesers trafen sich: Thread „Zitierhilfe an“ (21.10., `fixed_read`, liest ganz ohne Modell)
+und Thread „STEP2-Nutzen Engpass“ (22.10., `read_fixed`, Regeln fest, Optionswerte notfalls vom Modell; gemessen FIRST_SUPPORTED,
+vom Nutzer fürs Handy-Paket freigegeben). Beide bleiben wählbar: `eligibility_reader = fixed` (Standard, Fassung 22.10.),
+`fixed_strict` (Fassung 21.10.), `model`/`c3` (Modell liest). Keine neue Nutzerentscheidung nötig.
+
+
+
+---
+
+## QUELLANHANG E — Selbstoptimierung & Cross-Organ Weight Editing 2026-11-11 (vollständig, zuvor öffentliches Repository)
+
+Quelle: v13/USER_ADDENDUM_2026-11-11_SELF_OPTIMIZATION.md
+Blob: 9d727c832336fa3196cea38f7ab85cbcbbeaa599
+
+# V13 — Nutzer-Nachtrag: Selbstoptimierung und organübergreifende Gewichtsänderung (2026-11-11)
+
+## Verbindliches langfristiges Ziel
+
+Der Nutzer ergänzt das V13/Inquisition-JEPA-Endziel ausdrücklich um **Selbstoptimierung und die Fähigkeit, dass bestimmte Gehirnorgane später Gewichte anderer Organe direkt bearbeiten beziehungsweise deren Lernen gezielt steuern können**. Dieses Ziel ist zusätzlich zu kontinuierlichem Lernen, Split-Brain, JEPA/EMA, Gedächtnis, Dreaming und dem späteren autorisierten PC-Harness zu entwickeln. Es darf weder stillschweigend gestrichen noch als bloße Prompt-/Konfigurationsoptimierung umdefiniert werden.
+
+**Wichtige Unterscheidungen:**
+1. **Selbstoptimierung:** V13 erkennt eigene Fehler/Engpässe, schlägt bessere Algorithmen, Hyperparameter, Speicher-/Routingstrategien und (später) Änderungen an Modulen vor, testet und bewertet diese.
+2. **Organübergreifende Plastizität:** Z. B. WorldJEPA, B1, B2 und JEF können über explizite trainierbare Schnittstellen *Lernsignale an andere Organe* liefern. Ein Zielorgan kann dadurch tatsächliche Parameter-Deltas erhalten. Ein gemessener Gewichts-Delta, nicht nur ein geänderter Prompt, muss nachweisbar sein.
+3. **Strukturelle Selbstmodifikation:** Perspektivisch darf ein ausreichend ausgereifter und autorisierter V13-Zustand auch Lernregeln, Modellarchitekturen, Adapter oder eigene Code-Komponenten verbessern; Sandbox, Evaluation, Rollback und Capability-Rechte bleiben verbindlich.
+
+**Entwicklung statt Dauerblockade:** Age-0/SHADOW ist ein sicherer Einstieg, kein dauerhaftes Verbot für Lernen. Höhere Fähigkeiten benötigen gestufte empirische Nachweise und passende Rechte. Keine Umgehung von Nutzer-Einwilligung, festgelegten Grenzen, Source-Provenance, Hard-Gates oder sicheren Rücksetzungen.
+
+## Abgrenzung zum bereits vorhandenen Code (Stand 2026-11-11)
+
+- `v13/code/v13/agi/self_improve.py` (AG8) kann heute Vorschläge für Knobs, Lernregeln und Harness-Änderungen in einer Sandbox bewerten und zur Freigabe vorlegen. Strukturelle Änderungen werden nur dokumentiert.
+- Es bestehen getrennte kleine Lernpfade (Routing-Heads, lokale Predictor/JEPA-Experimente, LoRA-/Body-JEPA-Kandidaten, F7-Budgetsteuerung), aber **kein nachgewiesener normaler Runtime-Pfad, in dem Organ A mit legitimierten Lernsignalen trainierbare Gewichte von Organ B verändert und dessen Retention inklusive Restart nachweist**.
+- GGUF-Quantisierung erlaubt nicht automatisch sichere In-place-Gewichtsänderung. Für echte Parameteränderungen sind definierte trainierbare Float-Master-Parameter/Adapter oder ein kontrollierter Export-Requantisierungsprozess mit Vergleichen erforderlich.
+
+## Verbindliche Reihenfolge
+
+1. **Jetzt:** Die laufende T8 -> WorldJEPA/EMA -> persistente Lernupdate -> Restart -> datendisjunkter Holdout-Kette fertigstellen, Body-JEPA/B1/B2 sauber anbinden; Replay/Sleep und Retention nachweisen.
+2. **Danach:** Organübergreifendes `LearningIntent/GradientProposal -> TargetOrganOptimizer -> WeightDelta/Checkpoint` implementieren (zuerst kleine Float-Adapter); Rollen, erlaubte Parameter, Evidenz/Quellen, Lernbudget, Zustimmung, Rücksetzung und Tests definieren.
+3. **Weiter:** Gemessene autonome Verbesserung von Lernraten/Strategien/Hypothesen durch AG8/F7 + JEF/World-Signale in isolierten Vergleichsläufen, mit begrenzter Freigabe und Rückfall.
+4. **Später:** Breiteres kontrolliertes Selbst-Editing von Architektur/Code/Modellparametern, erst mit eigenen höheren Age-Rechten, Sandbox, unveränderbarer externer Prüfinstanz, Regression Shield, Nutzerkontrolle und Recovery.
+5. **Immer:** Verbesserung muss an Qualität, Transfer, Retention, Robustheit und Ressourcen auf echter Zielhardware gemessen werden. Keine AGI/RSI-Behauptung aus synthetischem Einzelfit.
+
+Dieser Nachtrag ist eine **Anforderung**, kein Implementierungs- oder Freigabenachweis. Canon v10.16.1 und ältere Pläne behalten ihre übrigen Anforderungen.
+
+
+
+---
+
+## QUELLANHANG F — Nutzerfortsetzungsentscheidungen 2026-10-11 (vollständig, zuvor öffentliches Repository)
+
+Quelle: v13/code/docs/USER_CONTINUATION_DECISIONS_20261011.md
+Blob: da0247a4bb4b8727bfa99365bcbb4cd6ec38b2d6
+
+# Nutzerentscheidungen (RedMentos)
+
+Dauerhafte Ablage, weil `code/docs/USER_DECISIONS_AND_OPEN_QUESTIONS.md` von `v13/verification.py:122` neu erzeugt werden kann.
+Gilt vor abweichenden Stellen im Blueprint, bis der Nutzer etwas anderes sagt.
+
+## 2026-10-09 (Thread „Übergabe komplett sichten“, Antwort auf SICHTUNG §5)
+Wortlaut: „es sin viele modelle in einem des is eig alles definiert worden.. Sogar mehr als 2.. Au english zuerst das mans mit deutsch lernen au sehen kann später.. Worldmodel und so war au definiert. Es soll konstant lernen als end ziel.. Es soll basically eine runtergebrochene simulation eines hirns werden..“
+
+1. **Viele Modelle, wie im Blueprint definiert** (B1, B2, C1–C5, World-Model usw., mehr als zwei). B1 und B2 sollen echt verschiedene Bodies sein, nicht dasselbe LFM2.5-1.2B. Der Ist-Stand B1 = B2 ist nur ein Harness-Zwischenschritt.
+2. **Englisch zuerst.** Deutsch wird später gelernt, damit man das Lernen daran sehen kann. Folge: C3-Benchmark und System-Prompts (heute „Antworte auf Deutsch“ in `runtime.py:317,458`, `__main__.py:61`, `verification.py:138`, `proofs.py:200`) auf Englisch umstellen; Deutsch wird ein Lern-/Transfertest.
+3. **World-Model gehört dazu** (Blueprint §7.2, §92.2, G-SELF-WORLD-005), braucht ein eigenes Arbeitspaket.
+4. **Konstantes Lernen ist das Endziel.** Age-0-Shadow mit Freigabe bleibt der Startzustand, die Age-Hülle soll schrittweise dorthin führen, nicht dauerhaft blockieren.
+5. **Ziel: eine heruntergebrochene Simulation eines Gehirns**, kein Chatbot.
+
+
+## 2026-10-11, 23:20–23:21 Berlin — Fortsetzung und agentenübergreifende Übergabe
+
+- Der bestehende ausgearbeitete Drive-Plan bleibt verbindlich und muss weiter abgearbeitet werden. Zukunftsideen ergänzen ihn in getrennten Notizen und ersetzen keine offenen Arbeitspakete.
+- Selbstständig bis zu einem belastbaren Stand für längere menschliche Alltagstests weiterarbeiten; in Tests entdeckte Fehler anschließend weiter bearbeiten. Kontinuierlicher Lernfortschritt/RSI- bzw. AGI-Zielrichtung bleibt das langfristige Ziel, kein bereits bewiesener Ist-Stand.
+- Regelmäßig Code, Rohbelege, aktuelle Ergebnisse und Fortsetzungsnotizen sichern. Wechsel zwischen Codex, Claude und anderen Agents soll über GitHub und Drive jederzeit möglich sein. Erhaltene Fehler und ursprüngliche Gates gehören in die Übergabe.
+- Fortschrittsinfos dürfen konkrete spätere Verbesserungen und Voraussetzungen nennen: lokale Handy-Tools, schrittweise Fähigkeiten/Freiheiten/Wissen und mögliche neuere Modelle. Modellwechsel brauchen gesonderte gebundene Vergleiche und ersetzen keine laufende vorregistrierte Messung.
+
+
+
+---
+
+## QUELLANHANG G — Full-system Build-First Reuse Map 2026-11-19 (vollständig, zuvor öffentliches Repository)
+
+Quelle: v13/code/docs/coordination/V13_BUILD_FIRST_REUSE_MAP_20261119.md
+Blob: 5e71ef7180f4b616b33576d4faa672cd92a185e0
+
+# V13 full-system build-first integration map — user correction 2026-11-19
+
+Goal: make the **complete** V13/Inquisition-JEPA architecture usable as designed, then iterate on correctness/performance. This map is for implementation, not a new Canon or a list of reasons not to build. An isolated experiment does not satisfy the corresponding live/runtime function.
+
+## What already exists; connect these, don't duplicate them
+
+| Required V13 function | Existing code in this repo | Next executable integration |
+| --- | --- | --- |
+| A perception and typed A5 | `v13/aplane.py`, `v13/episodes.py`, `v13/a5_admission.py`, `v13/raw_ear.py` | Connect source-fresh audio/text A5 to the same `Runtime._turn` path; preserve provenance and consent |
+| B1 detail + B2 gist as genuinely distinct concurrent/serial organs | `v13/bodies.py`, `v13/cognition.py`, `v13/observer_schedule.py`, `v13/runners.py` | Observe live model outputs, not only a declared model role; concurrent when RAM permits, sequential otherwise |
+| B3 and Enlightened Space across **all** organs | `v13/enlightened_space.py`, `v13/callosum.py`, `v13/b3bridge.py`, `v13/latent_bridge.py` | Complete typed A↔B↔C/world/self exchange; a **real trained latent** needs real sender/receiver activations and native consumer; use exact/control fallback until such a consumer is wired |
+| JEF/C2 decision + C3 language | `v13/executive.py`, `v13/cognition.py`, `v13/fastpolicy.py`, `v13/runtime.py` | Reuse existing native Needle + LFM runners; expose measured first-token and useful output before adding elaborate policy |
+| World/self/memory | `v13/world.py`, `v13/world_jepa.py`, `v13/memory.py`, `v13/selfmodel.py`, `v13/online_world.py` | Persistent transitions, provenance, recall, prediction, restart and genuine second-attempt tests in the normal answer loop |
+| JEPA/body weights and plasticity | `v13/body_jepa.py`, `v13/body_training.py`, `v13/world_jepa_runtime_checkpoint.py`, `v13/plasticity.py` | Make one real lab-only weight-update path selectable with local master weights (not fake GGUF writes), compare before/after and recover on restart |
+| Sleep/replay | `v13/sleep.py`, `v13/sleep_offline.py`, `v13/consolidation.py` | Execute from recorded episodes without requiring another user message; no fake autonomous outputs |
+| Tools/actions and future controlled self-edit | `v13/toolstep.py`, `v13/actionlearn.py`, `v13/transaction.py` | End-to-end propose→explicit approval→execute→outcome→learn; self-edit is staged diff and review/rollback, not silent live source changes |
+| Operator/Android | `v13/managed_console.py`, `v13/mobile_dashboard.py`, `v13/runtime_deploy.py` | Expose whole-stack controls and real statuses, including lab Age vs official Age; one actual phone session tests performance |
+
+These are *candidate implementation locations*, **not** claims of functional completeness. Reuse the existing `Runtime` spine instead of inventing another independent demo/harness.
+
+## Open-source reuse decisions (checked 2026-11-19)
+
+- **llama.cpp** [repository](https://github.com/ggml-org/llama.cpp) / [MIT](https://github.com/ggml-org/llama.cpp/blob/master/LICENSE) / [Android-Termux guide](https://github.com/ggml-org/llama.cpp/blob/master/docs/android.md): **primary candidate** for native GGUF/model streaming, prompt caching and bounded sessions, especially C3. Existing V13 native runner should be reused and benchmarked, not replaced with a duplicate inference engine. [LFM2 recurrent-state batching issue #29002](https://github.com/ggml-org/llama.cpp/issues/29002) is a targeted upstream consideration; reproduce against V13 pinned version before any configuration change.
+- **ExecuTorch** [repository](https://github.com/pytorch/executorch) / [BSD](https://github.com/pytorch/executorch/blob/main/LICENSE): **candidate** for tiny native/mobile tensor predictor and projector, *not* an automatic replacement for GGUF; requires a concrete export, ABI and memory comparison before Android use.
+- **River** [repository](https://github.com/online-ml/river) / [BSD-3](https://github.com/online-ml/river/blob/main/LICENSE): **candidate** for small online-memory, drift and evaluation algorithms, where on-device dependency wheels actually build. Reuse algorithmic references rather than assuming full Python environment fits Termux.
+- **Avalanche** [repository](https://github.com/ContinualAI/avalanche) / [MIT](https://github.com/ContinualAI/avalanche/blob/master/README.md): **offline** continual-learning baselines and replay/retention evaluation. No promise of fitting its PyTorch-heavy stack on Redmi.
+- **V-JEPA 2** [repository](https://github.com/facebookresearch/vjepa2) / [license caveat](https://github.com/facebookresearch/vjepa2/blob/main/README.md): **research source** for predictor/EMA architecture; the project has separately licensed portions and model weights require separate terms. Not a 6-GB Android runtime plug-in.
+
+**Dependency/legal rule:** record *exact dependency revision* at integration time and verify upstream LICENSE, files with other headers, NOTICE, model-card/weight permissions, Android build feasibility and attribution; never copy an unlicensed snippet. This research map makes no claim a library was installed on the phone.
+
+## New work cadence: build instead of polishing isolated mini-fixes
+
+1. Start from last source-verifiable GitHub branch. Search repo and upstream first. Assign separate ownership for the functional vertical slices above; no multiple agents rewriting the same source files.
+2. Make a **single connected in-process runtime** that activates the existing organs and displays real provenance, even when some run in sequential/fallback/shadow mode on the Redmi. No fake substitute weights, latent influence or self-edit promotion.
+3. Implement actual test-lab feature and learning-right controls. Allow higher lab stage for experimentation while official Age remains 0; do not conflate Age with token or deadline budgets.
+4. Deliver a working Android chat session and measure prompt→first token, successful B1/B2 offers, C3 output, persistence, memory/JEPA training/replay and genuine post-restart behavior. Fix measured failures in **priority order** while continuing independent whole-system integration.
+5. Use smoke and negative/security tests for each substantive merge, but CI-only green without real connected behavior is not the deliverable. Never remove license, user consent or safety gates to make a feature appear implemented.
+6. After an integration stalls, research an existing upstream alternative, compare it, or switch to a distinct missing Canon subsystem. Do not cycle on the same two fixture failures for a whole development session.
+
+## Reporting
+Each agent reports a useful integration step, the actual consumer and evidence category, previous code reused (repo or external), missing behavior, and the next functional connection. All unfinished Canon scope stays visible. This replaces PR-count-oriented progress reporting without falsifying any measured FAIL.
+
+
+
+---
+
+## QUELLANHANG H — Multi-Agent Integration Playbook (vollständig, zuvor öffentliches Repository)
+
+Quelle: v13/code/docs/coordination/V13_FAST_INTEGRATION_AGENT_PLAYBOOK_20261110.md
+Blob: 99eb97e4b43bbb86b36463616d57f16eaf09ec62
+
+# V13 fast integration agent playbook (2026-11-10)
+
+**Purpose:** Finish programming the user's full existing V13 Canon as an integrated, patchable, Termux-ready learning system **before** extensive real-weights learning experiments. This document is an execution guide, not a replacement for the Canon, AGENTS.md, security/approval contracts, or SourceHandoff runtime freeze.
+
+**References (reviewed 2026-11-10):**
+- OpenAI, Harness engineering: https://openai.com/index/harness-engineering/
+- OpenAI, Run long horizon tasks with Codex: https://developers.openai.com/blog/run-long-horizon-tasks-with-codex
+- OpenAI, Codex best practices / AGENTS.md: https://learn.chatgpt.com/guides/best-practices
+- Anthropic, steering Claude Code (CLAUDE.md, skills, subagents, hooks): https://claude.com/resources/articles/steering-claude-code-skills-hooks-rules-subagents-and-more
+These are engineering patterns, not a guarantee of finishing V13 in hours.
+
+## Non-negotiable execution target
+
+- **One evolving codebase**, not a growing set of disconnected demo branches. Start with the latest verified V13 integration branch/commit; fetch HEAD and cross-check owners before every write. Reconcile existing PR chains and canonical contracts before inventing a new subsystem.
+- **Implement the entire agreed blueprint**, not a fake scaffold: actual data paths, model/training adapters, persistence and restart, parameter/config controls, native-capable interfaces, debugging/export, telemetry, patches/rollback, and bounded tests. Do not quietly re-scope or redefine "complete".
+- **Separate code completion from learning efficacy:** a tiny synthetic update proves a runnable learning mechanism, not a useful trained B1/B2/C3 or AGI result. Keep every promotion/proof gate unchanged (STEP2/B3 negative gates, SourceHandoff freeze).
+- **Minimize early dependence on the user's Redmi:** use disposable toy models, bounded real NumPy/PyTorch weight updates, source-provenance fixtures, emulator/CI, and contract fakes. Reserve real-weight native model learning, memory measurements and battery/storage validation for follow-up with the user. Never fabricate device evidence.
+- **Explain to the human as a Vibe Coder:** name the organ (e.g., left/detail B1, right/gist B2, dispatcher JEF, C3 language, World-JEPA), one-sentence function, actual connected status, exact missing proof, and how to view errors. Preserve technical identifiers alongside labels.
+
+## One run = execution, not another planning report
+
+1. **Read, verify and research:** current HEAD of integration branch; AGENTS.md; Canon; current work ledger/CI; code owners; frozen files; existing implementations. Identify ONE highest-leverage missing integration edge or blueprint obligation. Dispatch bounded R1/R2/R3 investigations if useful; keep coding on unblocked tasks while research proceeds. Before adding new code, look for an existing V13 implementation and upstream solution.
+2. **Define executable acceptance:** record source module, consumer/owner, real input and output contract, persistence, failure/rollback behavior, and the smallest concrete command proving the update. If model training, show parameters/gradient before and after plus no-op/invalid-input negative control.
+3. **Build while research runs:** modify existing modules and their wiring rather than producing another standalone candidate. Keep clean extension seams and operator knobs so later changes do not require rewriting the core. If touching a frozen runtime source is forbidden, work on a reviewed hash-bound candidate and mark the frozen merge BLOCKED; do not silently promote.
+4. **Verify cheaply first:** syntax/import, unit/regression and one actual integration smoke. Use toy models when feasible; test restart/checkpoint and that previously negative gates stay negative. Test source/provenance isolation and rollback where relevant. Avoid requiring a full CI suite for every two-line change; run focused tests per milestone and broader suites at integration boundaries. Known unrelated failing tests must be logged precisely, never relabelled PASS.
+5. **Integrate before starting the next feature:** make the actual runtime/operator call path reach the new capability in the shared integration checkout; test this path. Small independent owner-scoped PRs are allowed to avoid collisions, but should be reconciled promptly with the integration branch. Never leave success as "in a branch somewhere".
+6. **Persist/checkpoint:** save source, tests and continuation ledger with exact commit and verification. Read them back. Append tested command, outcome, open blockers and the exact next code location/command. No unverified percentage/ETA.
+7. **Continue to next highest-leverage integration edge within the available execution window.** Do not stop merely because a task unit is done. If a tool or dependency fails, switch to a different executable, nonconflicting code path and preserve a bounded actionable blocker. Do not claim background progress without an actual scheduled run.
+
+## Three parallel research tracks (research must feed V13 code)
+
+Research accompanies implementation; it does not replace it. When available, delegate independent read-only research work to different agents while the coordinator continues coding an unblocked integration edge. If tools do not permit concurrent agents, perform bounded sequential searches; never claim parallel workers were launched. Preserve the full user-approved blueprint rather than simplifying it without approval.
+
+### R1 — Scientific and architectural research: WHAT and WHY?
+- Search up-to-date primary papers, official releases, model cards and repositories for underdefined V13 functions: JEPA/EMA, continual online learning, replay, metaplasticity, world and self models, attention, cross-organ learning and scalable memory. Follow new research when it directly addresses an existing issue.
+- Compare at least one plausible alternative or a simpler control when a mechanism is uncertain. Explain its assumptions, failures, latency/memory consequences, and the tiny falsifiable test for V13.
+- Current research candidate, accessed 2026-11-10: Meta's V-JEPA 2.1 official source (https://github.com/facebookresearch/vjepa2) describes dense predictive loss and deep self-supervision. This large video-world-model code is NOT a Redmi-compatible drop-in or evidence of V13's own learning. Investigate whether a small objective can be adapted and compare it with the current JEPA baseline.
+
+### R2 — Code, open-source solutions and issue research: HOW do others implement it?
+- Search the V13 repo first, then upstream open-source source code, releases, issues, PRs, bug reports and regression tests for analogous bugs or architectures, before writing a new one-off component.
+- Record URL, date, revision/tag, license, dependencies, trusted source, security risks, Android aarch64/Termux feasibility, memory footprint and license compatibility. Prefer a narrow adapter with source attribution over wholesale copying.
+- Sources examined 2026-11-10: Avalanche continual-learning baselines (https://github.com/ContinualAI/avalanche) can inform replay/retention tests but may require PyTorch outside native Termux; Hugging Face PEFT docs (https://huggingface.co/docs/transformers/peft) for LoRA adapter training and restart; llama.cpp separate GGUF LoRA inference (https://github.com/ggml-org/llama.cpp/blob/master/tools/completion/README.md) is NOT evidence of supported native training for pinned V13 models.
+- If upstream implementation cannot run on Redmi, extract only a tested small algorithm or interoperable interface that meets the pinned model contract and license. No unreviewed dependency or architecture replacement.
+
+### R3 — Research the development process itself: HOW to deliver faster?
+- Periodically review coding-agent guides and actual V13 outcome metrics for parallel agents, context/compaction, reviewing, worktrees, harnesses, deterministic tests, cost, model selection and integration cadence.
+- Current sources, accessed 2026-11-10: Codex subagent instructions https://learn.chatgpt.com/docs/agent-configuration/subagents ; Anthropic multiquestion researcher guide https://github.com/anthropics/claude-cookbooks/blob/main/patterns/agents/prompts/research_lead_agent.md .
+- Separate independent source review from writing shared runtime files; one coordinator owns merge and integration. Parallel research is helpful only if time saved exceeds extra token/coordination cost. Test proposed workflow changes against elapsed cycle time, merged functionality and regressions, not number of agent messages.
+
+### Research-to-code handoff (required for every research track)
+1. Trigger: specify concrete organ, code path or unresolved blueprint requirement; state the user-visible function it unblocks.
+2. Evidence: primary source URL, date, exact release/commit, license and compatibility; separate verified upstream behavior from a hypothesis about V13.
+3. Proposal: integration seam, existing V13 component to reuse, tradeoffs, mobile budget, expected failure conditions and smallest control experiment.
+4. Decision: ADOPT, ADAPT, EXPERIMENT, REJECT or WAIT_FOR_DEVICE, with rationale, owner and next code file/test.
+5. Action: implement and test an actionable solution in the shared integration branch rather than opening another indefinite research PR; preserve frozen/runtime promotion gates and tests. If blocked, record exact blocker and continue unrelated integration.
+6. Keep time bounded: research only deep enough for the next architectural decision. Deeper background study is permitted when the decision materially depends on it; never halt coding merely to accumulate links.
+
+Research ledger line: Track | V13 organ/problem | source/revision/date/license | comparison | decision | exact integration path/test | owner | next step.
+Do not count research notes as finished code. The coordinator must review and connect adopted research results.
+## Multiple-agent partition
+
+- Coordinator: owns shared Runtime/operator integration, HEAD, merge resolution, Canary smoke, ledger; only coordinator edits shared orchestration files.
+- Worker A (Brain learning): owns B1/B2 training adapters, ability to update a tiny trainable layer, checkpoint+rollback, no change to native GGUF until proof.
+- Worker B (World learning): owns T8/World-JEPA source-bound learning, holdouts, replay, private checkpoints; must produce an invocable runtime call.
+- Worker C (Language/memory): owns C3-LoRA and Context OS interfaces, saved model metadata, memory/diagnosis exports, with separate specific file ownership.
+- Independent reviewer: inspects exact diffs, provenance, safety gates, test claims, conflicts and privacy without mutating the worker's files. One agent should not be asked to merge simultaneous overlapping edits.
+These workers describe **delegation assignments when multiple agents are actually available**, not a claim that they have been launched.
+
+## Definition of 'blank programmed' vs 'fully validated'
+
+- **PROGRAMMED/CONNECTED:** callable from the integrated runtime; consumes the intended actual packet/provenance; changes intended trainable state in a controlled tiny test; stores/restarts where required; emits meaningful error code and diagnostic; has configured knobs and a rollback path; focused tests and integration tests passed at an exact commit.
+- **NOT YET VALIDATED:** target GGUF training port, real memory/RAM/timing on Redmi, extended old/new holdout retention, learning usefulness, model generality, AGI. Label this separately, never treat absence of measurement as a pass.
+- **BLOCKED:** exact missing model master weights/training port/permission/frozen cohort/hardware evidence; keep an owner, link and retry command.
+
+## One compact status line per completed milestone
+
+`Organ | Blueprint requirement | actual integrated path | code status (PROGRAMMED / PARTIAL / BLOCKED) | focused test output | native proof (YES/NO) | commit | next edge`.
+
+No raw "percent complete" without a stable denominator. Measure the number of connected requirements that meet the above definition instead of counting commits, PRs, lines or files.
+
+## Pasteable coordinator prompt for Codex/Claude/Work
+
+> You are V13's code integration coordinator, not an isolated prototype generator. Read AGENTS.md, the canonical V13 handoff and the latest verified integration HEAD. Prioritize fully implementing the user's agreed blueprint, including actual online-learning mechanisms and the interfaces for eventual on-phone diagnostics, without requiring preliminary full model training. Do not simplify the agreed architecture merely to make a demo. Audit existing code and PRs first to avoid duplicating features. Pick the most important missing integration edge, implement it in the common integration worktree, prove it with small genuine weight-update, restart and end-to-end tests where relevant, preserve all frozen-source restrictions and negative safety gates, commit/push and verify, and continue with the next nonconflicting edge within your active execution budget. Parallelize only file-disjoint packages with explicit owners and a single integrator. Add R1 science/new-releases, R2 existing code/bugs, and R3 coding-process research where relevant, requiring an actionable ADOPT/ADAPT/EXPERIMENT/REJECT/WAIT_FOR_DEVICE decision for each research result. Do not spend whole runs documenting CI failures; try a bounded reproduction, log the blocker, and work on another executable feature. Report what changed, exact tests and the remaining unimplemented edges, not an invented completion percentage. Use accessible brain-part names alongside technical names so the user can understand and operate V13.
+
+## Relevant exact paths and baseline
+
+- Integration PR: https://github.com/RedMentos/Aii/pull/1655
+- Canon: `v13/code/docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md`
+- Runtime: `v13/code/v13/runtime.py`, Operator: `v13/code/v13/operator.py`
+- World: `v13/code/v13/online_world.py`, `v13/code/v13/world_jepa.py`, `v13/code/v13/world_jepa_online_experiment.py`
+- C3: `v13/code/v13/lora_trainer.py`
+- Tracking: `v13/code/docs/work_ledgers/CORE_INTEGRATION_20261110.json`
+- Existing focused test family:
+  `PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_runtime_jepa_integration_20261110.py v13/code/tests/test_online_world_20261108.py v13/code/tests/test_world_jepa_online_experiment_20261108.py v13/code/tests/test_lora_resume_safety.py`
+- Public repo privacy scan before review/merge. Never save raw private chat, device identifiers or credentials.
+
+**Reminder:** good prompting can reduce wasted effort, but it cannot authorize a frozen runtime merge, invent a training ABI, or prove an unmeasured model improves.
+
+
+
+---
+
+## QUELLANHANG I — Component Contracts Inventory (vollständig, zuvor öffentliches Repository)
+
+Quelle: v13/code/specs/component-contracts.json
+Blob: daeddb775f1c0df42fa350b11f5957abbd215432
+
+{
+  "schema_version": 1,
+  "canon_file": "docs/canon/V13_v10.16.1_WORK_HANDOFF_SINGLE_SOURCE_B3_HARDENED.md",
+  "canon_sha256": "3423906b01b24443fcef733fb5c7ef47296963df63e603d8f843c99d544877ee",
+  "canonical_architecture_complete": false,
+  "components": [
+    {
+      "component_id": "A0",
+      "name": "Raw sources",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/store.py"
+      ],
+      "schemas": [
+        "SourceRef",
+        "EventEnvelope"
+      ],
+      "runtime_owner": "A0",
+      "state_owner": "A0",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Exact text only; other modalities unavailable",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "A1",
+      "name": "Segmentation",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py"
+      ],
+      "schemas": [
+        "PerceptPacket"
+      ],
+      "runtime_owner": "A1",
+      "state_owner": "A1",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Text boundaries only",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "A2",
+      "name": "Frozen input teacher",
+      "current_mode": "UNAVAILABLE",
+      "implementation_files": [],
+      "schemas": [],
+      "runtime_owner": "A2",
+      "state_owner": "A2",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "No semantic input teacher wired",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "A3",
+      "name": "Student projector",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/student_worker.py",
+        "v13/learning.py",
+        "v13/cognition.py"
+      ],
+      "schemas": [
+        "PerceptPacket",
+        "TrainRunnerProof"
+      ],
+      "runtime_owner": "A3",
+      "state_owner": "A3",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "No trained representation alignment",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "A4",
+      "name": "Perceptual attention",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py"
+      ],
+      "schemas": [
+        "PerceptPacket"
+      ],
+      "runtime_owner": "A4",
+      "state_owner": "A4",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Bounded text views; no learned salience or region requests",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "A5",
+      "name": "Percept source binding",
+      "current_mode": "IMPLEMENTED",
+      "implementation_files": [
+        "v13/cognition.py",
+        "v13/store.py"
+      ],
+      "schemas": [
+        "PerceptPacket",
+        "SourceRef"
+      ],
+      "runtime_owner": "A5",
+      "state_owner": "A5",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Text identity path",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "B1",
+      "name": "Detail body",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py",
+        "v13/runners.py"
+      ],
+      "schemas": [
+        "QueryPacket",
+        "OfferPacket",
+        "LatentTapPacket"
+      ],
+      "runtime_owner": "B1",
+      "state_owner": "B1",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Native dense body; sparse expert training unavailable",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "B2",
+      "name": "Gist body",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py",
+        "v13/runners.py"
+      ],
+      "schemas": [
+        "QueryPacket",
+        "OfferPacket",
+        "LatentTapPacket"
+      ],
+      "runtime_owner": "B2",
+      "state_owner": "B2",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Bounded persisted source context; semantic complementarity unproven",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "B3",
+      "name": "Callosum",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py"
+      ],
+      "schemas": [
+        "MessagePacket",
+        "ReceiverCalibration"
+      ],
+      "runtime_owner": "B3",
+      "state_owner": "B3",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "NONE/EXACT/CONTROL/SYMBOLIC; native latent taps/injection unavailable",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "B4",
+      "name": "Active workspace",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py",
+        "v13/store.py"
+      ],
+      "schemas": [
+        "WorkspaceSlot"
+      ],
+      "runtime_owner": "B4",
+      "state_owner": "B4",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Explicit source slots; no trained latent admission",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "B5",
+      "name": "Fabric interfaces",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/memory.py",
+        "v13/world.py"
+      ],
+      "schemas": [
+        "MemoryRecord",
+        "QueryPacket"
+      ],
+      "runtime_owner": "B5",
+      "state_owner": "B5",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "State/recall interfaces; no learned access policy",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C0",
+      "name": "Shell and permissions",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/operator.py",
+        "v13/runtime.py"
+      ],
+      "schemas": [
+        "CapabilityProfile"
+      ],
+      "runtime_owner": "C0",
+      "state_owner": "C0",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Local operator origin and text gate; external actions off",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C1",
+      "name": "Executive continuity",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/executive.py",
+        "v13/runtime.py"
+      ],
+      "schemas": [
+        "ExecState",
+        "ExecutiveControlContext",
+        "JEFBroadcastPacket",
+        "OutputSnapshot"
+      ],
+      "runtime_owner": "C1",
+      "state_owner": "C1",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Bounded source-validated explicit executive task/state/action continuity and actual native context consumer. No learned executive latent objective or broad taskcompletion claim.",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C2",
+      "name": "Structured control",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/runners.py",
+        "v13/learning.py",
+        "v13/control_calibration_worker.py",
+        "v13/runtime.py"
+      ],
+      "schemas": [
+        "ExecutiveDecision",
+        "ModelManifest",
+        "StudentEvaluation",
+        "ControlCalibration",
+        "TrainRunnerProof"
+      ],
+      "runtime_owner": "C2",
+      "state_owner": "C2",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Actual Needle, external route head and approved first-native-proposal agreement calibration; general semantic confidence/native confidence-head training unproved",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C3",
+      "name": "Language organ",
+      "current_mode": "IMPLEMENTED",
+      "implementation_files": [
+        "v13/runners.py",
+        "v13/runtime.py",
+        "v13/output_adapter_worker.py",
+        "v13/learning.py"
+      ],
+      "schemas": [
+        "ModelManifest",
+        "OutputAdapterContext",
+        "OutputAdapterDecision"
+      ],
+      "runtime_owner": "C3",
+      "state_owner": "C3",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Real baseline local free language; limited model quality; human-approved external first-native-token rowdelta now implemented; native base frozen, general language/semantic OOD and phone proof remain open",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C4",
+      "name": "Focal coalition",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py"
+      ],
+      "schemas": [
+        "FocalItem",
+        "ExecutiveDecision"
+      ],
+      "runtime_owner": "C4",
+      "state_owner": "C4",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Bounded fresh offers and one reentry; no learned competition",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C5",
+      "name": "Action/report intent",
+      "current_mode": "IMPLEMENTED",
+      "implementation_files": [
+        "v13/executive.py",
+        "v13/runtime.py",
+        "v13/store.py",
+        "v13/output_policy.py"
+      ],
+      "schemas": [
+        "ActionIntent",
+        "CorollaryCopy",
+        "OutputSnapshot",
+        "OutputPolicyDecision"
+      ],
+      "runtime_owner": "C5",
+      "state_owner": "C5",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Single local text report owner",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C6",
+      "name": "Egress port manager",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/store.py",
+        "v13/runtime.py"
+      ],
+      "schemas": [
+        "ActionOutcome"
+      ],
+      "runtime_owner": "C6",
+      "state_owner": "C6",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Text only",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "C7",
+      "name": "Effectors",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/ui.py"
+      ],
+      "schemas": [
+        "ActionOutcome"
+      ],
+      "runtime_owner": "C7",
+      "state_owner": "C7",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "TTY text; speech/image/UI/motor unavailable",
+      "canon_source": "§31.1"
+    },
+    {
+      "component_id": "F1",
+      "name": "Attention/gain/admission",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/cognition.py"
+      ],
+      "schemas": [
+        "FocalItem",
+        "OfferPacket"
+      ],
+      "runtime_owner": "F1",
+      "state_owner": "F1",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Deterministic source/freshness gates; learned gain unavailable",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F2",
+      "name": "Salience/interrupt/reflex",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/runtime.py",
+        "v13/resources.py"
+      ],
+      "schemas": [
+        "EventEnvelope"
+      ],
+      "runtime_owner": "F2",
+      "state_owner": "F2",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Preemption/cancel/resource guard; learned salience unavailable",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F3",
+      "name": "Memory/context/provenance",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/memory.py",
+        "v13/store.py",
+        "v13/retrieval_worker.py",
+        "v13/learning.py",
+        "v13/consolidation.py"
+      ],
+      "schemas": [
+        "MemoryRecord",
+        "ExperienceRecord",
+        "HumanDecision",
+        "MemoryRetrievalDecision"
+      ],
+      "runtime_owner": "F3",
+      "state_owner": "F3",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Source-backed exact/episodic memory plus approved learned Needle pair relevance; repeated cue-family native proof only, no learned fact truth or semantic/skill consolidation; Human-approved repeated-confirmation compaction and exact authored procedural cues now executable; no native weight merge or novel semantic generalization",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F4",
+      "name": "Self/body/world prediction",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/world.py",
+        "v13/world_worker.py",
+        "v13/learning.py"
+      ],
+      "schemas": [
+        "ActionPrediction",
+        "PredictionOutcome",
+        "WorldTransition",
+        "ModulatorPacket"
+      ],
+      "runtime_owner": "F4",
+      "state_owner": "F4",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Observed digital state/timing plus approved external action-conditioned latent predictor; no external-world causal truth, native body training or automatic semantic consolidation",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F5",
+      "name": "Action selection/safety/corollary",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/store.py",
+        "v13/runtime.py"
+      ],
+      "schemas": [
+        "ActionIntent",
+        "CorollaryCopy",
+        "ActionOutcome"
+      ],
+      "runtime_owner": "F5",
+      "state_owner": "F5",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Actual local text-action ordering; no general action competition",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F6",
+      "name": "Learning/eligibility/modulation",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/learning.py",
+        "v13/learning_worker.py"
+      ],
+      "schemas": [
+        "LearningTrace",
+        "ModulatorPacket",
+        "UpdateManifest",
+        "TrainRunnerProof"
+      ],
+      "runtime_owner": "F6",
+      "state_owner": "F6",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Ten independent external component paths with actual frozen inputs/native taps, explicit source-bound targets, gradients, scoped calibration/retention/ablations and individual approval. Full body/cross/executive JEPA, active sparse-expert training and native base masters remain unavailable.",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F7",
+      "name": "Metaplasticity/homeostasis/stability",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/resources.py",
+        "v13/learning_worker.py",
+        "v13/proofs.py",
+        "v13/plasticity.py",
+        "v13/learning.py"
+      ],
+      "schemas": [
+        "TrainRunnerProof",
+        "PlasticityState",
+        "PlasticityBudget"
+      ],
+      "runtime_owner": "F7",
+      "state_owner": "F7",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Measured slow per-component shadow-budget feedback, atomic restart/idempotence, stability tags, bounded damping/reopening. No neural metaplasticity training, native shared-layer interference, source truth or autonomous commit authority.",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F8",
+      "name": "Age/human control/rules",
+      "current_mode": "IMPLEMENTED",
+      "implementation_files": [
+        "v13/operator.py",
+        "v13/store.py"
+      ],
+      "schemas": [
+        "HumanDecision",
+        "BrainGenerationManifest"
+      ],
+      "runtime_owner": "F8",
+      "state_owner": "F8",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Individual artifact approval/rollback, rule generations, Age0 only",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F9",
+      "name": "Replay/dream/consolidation",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/runtime.py",
+        "v13/consolidation.py"
+      ],
+      "schemas": [
+        "ReplayItem"
+      ],
+      "runtime_owner": "F9",
+      "state_owner": "F9",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Actual episodic replay and hypothetical dream; no autonomous consolidation; Human-approved repeated-confirmation compaction and exact authored procedural cues now executable; no native weight merge or novel semantic generalization",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F10",
+      "name": "Runtime/cache/scheduling/governor",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/pressure.py",
+        "v13/resources.py",
+        "v13/runners.py",
+        "v13/runtime.py",
+        "v13/store.py"
+      ],
+      "schemas": [
+        "ModelManifest",
+        "BrainGenerationManifest"
+      ],
+      "runtime_owner": "F10",
+      "state_owner": "F10",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Actual durable accepted queue, transactional schema migration, bounded continuous native RSS/PSS and cancellation. Current Redmi thermal/energy/KV and long-duration proofs remain open.",
+      "canon_source": "§31.2"
+    },
+    {
+      "component_id": "F11",
+      "name": "Metrics/calibration/retention",
+      "current_mode": "PARTIAL",
+      "implementation_files": [
+        "v13/verification.py",
+        "v13/proofs.py"
+      ],
+      "schemas": [
+        "TrainRunnerProof",
+        "ReceiverCalibration"
+      ],
+      "runtime_owner": "F11",
+      "state_owner": "F11",
+      "capability_age": 0,
+      "latent_read_authority": 0,
+      "latent_learn_authority": 0,
+      "known_limits": "Real metrics/proofs; general calibration/OOD/semantic utility open",
+      "canon_source": "§31.2"
+    }
+  ],
+  "legacy_producer_aliases": {
+    "F1_MEMORY": "F3",
+    "F1_EPISODIC": "F3",
+    "F3_SELF": "F4; CorollaryCopy function belongs to F5",
+    "F4_LEARNING": "F6",
+    "F4_REPLAY": "F9",
+    "F5_HUMAN_CONTROL": "F8",
+    "F7_RUNTIME": "F10"
+  },
+  "alias_policy": "Historical producer IDs retained; resolve by schema and edition mapping, not prefix alone"
+}
+
