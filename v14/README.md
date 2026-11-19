@@ -4,6 +4,8 @@
 
 **V14 Vollarchiv:** [Master mit komplettem V13-Canon, Roadmaps und Nutzerentscheidungen](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md)
 
+**Zusätzliche Drive-Sichtung, alte Handovers und Age-0/JEPA-Review:** [V14 ergänzende Primärquellen und Lern-/Lizenzforschung](V14_ADDITIONAL_DRIVE_AND_LEARNING_RESEARCH_20261119.md).
+
 Status: **V14 design baseline 2026-11-19**, nicht als bereits laufende/neue App missverstehen. Der laufende V13-Code bleibt unverändert, bis eine real geprüfte V14-Integration ihn kontrolliert ersetzt.
 
 Die Masterdatei hat drei Bereiche:
