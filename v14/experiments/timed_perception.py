@@ -1,7 +1,7 @@
 """V14 A5 timed audio feature adapter: synthetic/offline, no microphone access."""
 from dataclasses import dataclass
 from hashlib import sha256
-from math import sqrt
+from math import sqrt, isfinite
 import struct
 
 @dataclass(frozen=True)
@@ -58,7 +58,15 @@ def validate_packet_sequence(packets, source):
             raise ValueError('gap/overlap/empty window')
         if p['time_start_ms'] != source.started_ms+cursor*1000//source.sample_rate:
             raise ValueError('timestamp mismatch')
-        if p['sample_end'] > source.sample_count or p['time_end_ms'] != source.started_ms+p['sample_end']*1000//source.sample_rate:\n            raise ValueError('invalid frame end')\n        if p.get('receiver_authority') != 'OBSERVATION_ONLY' or p.get('provenance') != ('PROVISIONAL' if source.provisional else 'FINAL_SOURCE_BOUND'):\n            raise PermissionError('authority/provenance mismatch')\n        for feature in ('rms', 'peak', 'zero_crossing_rate'):\n            value = p.get(feature)\n            if type(value) not in (int, float) or not 0 <= value <= 1:\n                raise ValueError('invalid feature')\n        cursor = p['sample_end']
+        if p['sample_end'] > source.sample_count or p['time_end_ms'] != source.started_ms+p['sample_end']*1000//source.sample_rate:
+            raise ValueError('invalid frame end')
+        if p.get('receiver_authority') != 'OBSERVATION_ONLY' or p.get('provenance') != ('PROVISIONAL' if source.provisional else 'FINAL_SOURCE_BOUND'):
+            raise PermissionError('authority/provenance mismatch')
+        for feature in ('rms', 'peak', 'zero_crossing_rate'):
+            value = p.get(feature)
+            if type(value) not in (int, float) or not isfinite(value) or not 0 <= value <= 1:
+                raise ValueError('invalid feature')
+        cursor = p['sample_end']
     if cursor != source.sample_count:
         raise ValueError('incomplete source coverage')
     return True
