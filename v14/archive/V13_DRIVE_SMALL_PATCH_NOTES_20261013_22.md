@@ -804,3 +804,228 @@ Git: RedMentos/Aii Branch `claude/project-thread-dq33gk` (PR #7, Basis `claude/p
 Ganzen Live-Turn mit Werkzeug + Antworttext messen; dann Schalter + Werkzeug gemeinsam einschalten (Nutzerentscheidung); neues Handy-Paket; STEP2-Fixtures mit B1-eigener Information.
 
 
+
+---
+
+## QUELLE: THREAD_GEGENSEITIGE_PRUEFUNG_20261021.md
+
+# Thread „Gegenseitige Prüfung mit GPT“ — 2026-10-21
+
+Nutzerwunsch: Claude und GPT prüfen sich gegenseitig.
+
+Git: Branch `claude/project-thread-g2f277` @ 58c5d1a, Draft-PR #8 (Basis `claude/project-thread-0zelvf`).
+Projektordner: v13/PRUEFUNG_CLAUDE_FUER_GPT.md (volles Protokoll + Checkliste für GPT), AGENTS.md, UEBERGABE, ROADMAP aktualisiert.
+
+## Runde 1: Claude prüft GPT bis a1973d4 (PR #2–#4)
+- Laufzeitcode (listarith, toolstep, tools, transaction, broker, toolforecast): korrekt; Werkzeuge standardmäßig aus, nur mit Nutzer-Erlaubnis; Vorhersage bleibt SHADOW.
+- Gate-Angaben ehrlich: canonical_gate_pass=false, phone_measured=false, FAILs bleiben FAIL. Urteilsname CONTINUAL_LEARNING_CONFIRMED (stammt von Claude M) klingt größer als gemessen -> immer mit „SHADOW, zwei Werkzeugwelten“ nennen.
+- GPT hatte zwei echte Claude-Fehler gefunden (Vorzeichen im list_arith-Wächter; M-Analyse akzeptierte 4/21 Zeilen). Beide inzwischen drin.
+- Privatsphäre: neues scripts/public_repo_privacy_scan.py, alle GPT-Branches CLEAN; „private“ STEP2-Fixtures sind synthetisch.
+- PR #3: Code-Kandidaten in a1973d4 enthalten; 51 Review-Belege nur auf dem PR-#3-Branch.
+
+## Behoben
+- list_arith-Zahlen-Wächter zählt Vorkommen (doppelt gelesener Posten: 800 statt 500 lief durch).
+- 19 Belegordner bench-results/*-20261012 fehlten im Git -> Suite auf frischem Checkout war 1 FAIL.
+
+## Tests (v13/code, PYTHONPATH=.:tests python -m unittest discover -s tests)
+- GPT a1973d4: 1439 OK, 5 Skips
+- Basis cc527f0: 1582, 1 FAIL (fehlende Belege)
+- nach Runde 1: 1585 OK, 5 Skips
+
+## Offen
+- GPT: Runde 2 (Claudes Arbeit prüfen), Checkliste Abschnitt 4 in PRUEFUNG_CLAUDE_FUER_GPT.md.
+- list_arith: ausgelassener Posten wird nicht erkannt; „Total cost: 65“ zählt als Posten (braucht Messung).
+- Nutzer: alte GPT-Draft-PRs #2–#4 schließen oder offen lassen.
+
+
+---
+
+## QUELLE: V13-Zielabgleich-20261021.md
+
+Sicherung Thread „Ziele gegen Blueprint abgleichen“, 2026-10-21. Git: RedMentos/Aii Branch claude/project-thread-rxq188 @ 1c27c2a (v13/ZIELABGLEICH.md, ROADMAP.md §0 + WP-Z1..Z12, ABDECKUNG.md §12, NUTZER_ENTSCHEIDUNGEN.md offene Punkte). Projektordner: /v13/ZIELABGLEICH.md.
+
+# V13 Zielabgleich: Blueprint v10.16.1 gegen ROADMAP/ABDECKUNG (2026-10-21)
+
+## Kurzfassung
+1. Die Roadmap ist seit dem 12.10. ein Arbeitsprotokoll und keine Zielliste mehr; ihr Kopf (Zielbild, Stand, Reihenfolge) war vom 09.10.
+2. Die Blueprint-Ziele fehlten als Liste: §29 „V13 funktioniert“ (24 Eigenschaften) und §100 (10 Gates). Sechs der zehn §100-Gates kamen in ROADMAP/ABDECKUNG nie vor.
+3. Stand nach Blueprint-Regeln: 0 von 10 §100-Gates grün (alle PARTIAL, measure_suite 21.10.); §29: 8 erreicht, 14 teilweise, 2 fehlen (Latent-Kanal-Nutzen, Message-Subspace-Austausch). Nach Blueprint-Wortlaut noch Harness-Prototyp.
+4. „56 % ✅“ in ABDECKUNG = Code existiert, nicht Ziel erreicht. §24: nur 6 von 35 gemessen (24.11 durchgefallen), 25 nur Existenz-Test, 2 NEEDS_REDMI, 2 NOT_IMPLEMENTED.
+5. Drift: R4 Teile 4–11 (Rechen-Werkzeug-Regeln), Action-JEPA Runden 1–9, Werkzeug-Vorhersage schließen kein §100-Gate. STEP2 (Komplementarität B1/B2) ist seit 09.10. offen.
+
+## §96 STEP-Ausgänge
+STEP0 ✅, STEP1 ✅, STEP2 ❌ (UTILITY_FAIL; gate-graph.json meldet trotzdem GREEN), STEP3 ✅, STEP4 🟡 (kein Referenz-Lehrer), STEP5 🟡 (TRAIN_RUNNER_PROOF Redmi fehlt), STEP6A ✅, STEP6B ❌ (B3 L1 FAIL), STEP6C 🟡 (keine Expert-Deltas), STEP7 ❌ (Redmi-Wochenlauf), STEP8–11 ⏸.
+
+## §100 Gates (alle PARTIAL)
+G-B-TIMESCALE-DIVERGENCE-001 → Z2; G-CALLOSUM-UTILITY-002 → Z4; G-FOCAL-CAPACITY-003 → Z5; G-PROCEDURALIZATION-004 → Z6/Z7; G-SELF-WORLD-005 → Z12; G-TRAIN-RUNNER-PROOF-001 → Z7; G-REPLAY-CONSOLIDATION-001 → Z9; G-MODULATOR-SPECIFICITY-001 → Z6; G-AGE-REOPEN-001 → Z8; G-MOBILE-LONGRUN-001 → Z7.
+
+## Was nicht passte
+a ROADMAP §1–§4 veraltet (jetzt historisch, neuer §0). b „R4 Teile 4–11“ sind Werkzeug-Regeln, nicht §31 R4. c Blueprint hat zwei R-Nummerierungen (§31 R0–R9, §79 R0–R6); Roadmap folgt §31. d Vision-Lab vor STEP7 (Blueprint: erst danach) – keine weitere Arbeit. e Action-JEPA/Werkzeug-Vorhersage ersetzen kein World-JEPA im Körper. f WP-AG (12 AGI-Lücken) ist Nutzerziel, nicht Blueprint. g ABDECKUNG-✅ widerspricht Gate-🟡 (Effort/G5B, Inquisition/G5, Koalition/G3D). h gate-graph STEP2 GREEN trotz FAIL.
+
+## Neue Pakete WP-Z
+Z1 Gate-Ehrlichkeit (STEP2_HARNESS vs STEP2_EXIT, §29-Tabelle in measure_suite). Z2 STEP2 neu mit B1-eigener Detail-Information + 4 Kontrollen. Z3 C3-Konsument isolieren (C3 vs B1 vs Werkzeug). Z4 B3 L1 Versuch 4 (läuft in anderem Thread). Z5 Fokus-Koalition gegen Voll-Kontext/Retrieval/feste Slots. Z6 §24 Gehirn-Mitte messen (24.22, 24.23, 24.17, 24.25, 24.26, 24.32). Z7 ein Redmi-Paket für alle Handy-Pflichtmessungen. Z8 Nutzerwahl Age-Plastizität. Z9 Dream-Kontrolle policy-only. Z10 MoE verdrahten + 24.19. Z11 Referenz-Lehrer STEP4. Z12 JEPA im Körper + echte Self/World-Fälle.
+Start sofort: Z1, Z2, Z3, Z5. Seitenzweige nicht weiter ausbauen bis Z2–Z5 Ergebnisse haben.
+
+## Offene Nutzerentscheidungen
+1 age_plasticity_policy boot|stable_reopen|noise_aware (seit 10.10.). 2 offer_quote_context_chars=200 (seit 20.10.). 3 Redmi-Läufe (Z7).
+
+
+---
+
+## QUELLE: THREAD_B3_L1_DIAGNOSE_20261020.md
+
+# Thread „B3 L1 Gate reparieren“ — 2026-10-20
+
+Branch `claude/project-thread-0zelvf`, Commits dbd9df7 (Vorregistrierung), 8568949 (Diagnose + aux-Parameter), cc527f0 (aux-Lauf, Doku). Projektordner gespiegelt (v13/code, v13/bench-results/b3-l1-diagnose-20261020).
+
+## Ergebnis
+- L1-FAIL liegt NICHT an Bytes (64 B kosten nur 0,004 Nutzen mehr) und NICHT am Kanal: die 64-B-Nachricht trägt U/F (R² 0,88–0,94); mit U/F-Sonde gelesen ist sie so gut wie SCALAR (89/93/86 % vs 91/94/84 %, n.s.).
+- Ursache: Brücke lernt nur aus ≤360 Aufgabenlabels, SYMBOLIC_ATTR/SCALAR bekommen privilegierte U/F-Labels. Eingefrorener NO_MESSAGE-Kopf kostet weitere ~2 Punkte. Mehr Aufgabenlabels (180→360) schließen die Lücke nicht.
+- Fix-Kandidat: `Bridge(aux=A).fit(..., aux=...)` in v13/b3bridge.py (nur Trainingssignal; Empfängerpfad und 64 B unverändert; Default byte-identisch; Test mit Gradientenprüfung).
+- Explorativ (gesehene Testitems): LATENT_AUX +5,5/+4,7/+9,8 Punkte; Gate PASS auf `action` (auch strikt vs SCALAR), escalate/apologize weiter FAIL gegen Attributwörter.
+- Kein Canon-PASS: B3_LATENT bleibt unavailable, L2 gesperrt.
+
+## Nächstes Paket
+B3 L1 Versuch 4: vorregistriert, neue Datensaat (neue B1/B2-Zustände, Modelle wie Versuch 3), aux-Brücke, Gate unverändert, Rollen-Retention neu messen.
+
+## Suite
+1572 Tests, 5 Skips, 1 Fehler = vorbestehender test_neuro_ledger (fehlende bench-results im Git-Baum), auch ohne diese Änderung.
+
+
+---
+
+## QUELLE: THREAD_HANDY_PAKET_WERKZEUG_20261020.md
+
+# Thread „Handy-Paket Werkzeug-Vorhersage“ (2026-10-20, Claude)
+
+Paket 4 aus ROADMAP „Nächste offene Pakete“. Git: Branch `claude/project-thread-0zelvf`, Commits `5571a0b` (Paket) und `d341be2` (ROADMAP-Merge).
+
+## Ergebnis
+- Ein Befehl am Redmi: `bash WERKZEUG_TESTEN.sh [paritaet|kurz|voll]` (neu `code/WERKZEUG_TESTEN.sh`, `code/scripts/werkzeug_handy.py`, Tests `tests/test_werkzeug_handy.py` 9/9, Anleitung `code/WERKZEUG_ANLEITUNG.txt`).
+- Ablauf: Vorprüfung (RAM >= 1,5 GB frei, Speicher, kein Chat), bei Bedarf `setup.sh` ohne Chat-Autostart, `termux-wake-lock`, GPTs begrenzter Treiber `tool_forecast_bounded_phone_candidate.py` mit Frist 2/4/10 h, RAM-/Akku-Temperatur-Verlauf alle 10 s, Ergebnis-ZIP `V13-Werkzeug-Ergebnis-<stufe>-<zeit>.zip` in Downloads (nur Berichte/Logs, KURZ.txt). Kein Plan/Gate geändert, Autorität 0, SHADOW.
+- Fehler behoben: Handy-ZIP brach im Setup-Selbsttest ab (2 Belegdateien fehlten in `package_source.py` PHONE_REQUIRED_FIXTURES). Selbsttest im entpackten ZIP jetzt 1580 OK.
+- Cloud-Probelauf aus entpacktem ZIP, frisches Home (Linux, 4 CPUs, KEIN Redmi): `voll` → LIVE_PATH_CONFIRMED+CONTINUAL_LEARNING_CONFIRMED in 22 min; Parität PASS 45 s; Live 245/245, Median 1,47 s/Aufruf, Spitzen-RSS Tap-Prozess 1213 MB; Lernen 610 Aufrufe 14,8 min, Integrität PASS. Verhältnisse identisch zu 12./13.10.
+- Handy-ZIP: Claude-Projektordner `export/V13-Werkzeug-Handy-20261020.zip` (12,2 MB, SHA f8fb5719…, 714 Dateien). Nicht auf Drive (Größe/Inline-Upload).
+- Bekannt, nicht von diesem Thread: `test_neuro_ledger` scheitert im reinen Git-Baum (fehlender Belegordner `bench-results/homeo-meta-20261012`), Thread uvi2sq hat die Ordner auf seinem Branch nachgezogen.
+
+## Offen (Nutzer)
+Redmi: ZIP entpacken, `bash WERKZEUG_TESTEN.sh` (kurz, geschätzt 30–90 min), Ergebnis-ZIP hochladen; optional `voll` über Nacht. SHADOW → active erst danach.
+
+
+---
+
+## QUELLE: THREAD_STEP2_ENGPASS_20261020.md
+
+# Thread „STEP2-Nutzen Engpass“ — 2026-10-20
+
+Git: RedMentos/Aii Branch `claude/project-thread-dq33gk` (Basis `claude/project-thread-0zelvf`), Commits `3d9e767` (Code + Prereg, vor Inferenz) und `7109977` (Ergebnis, ROADMAP, Handoff).
+Projektordner: v13/code (Code übernommen), v13/bench-results/step2-quote-context-20261020 (volle Reports), ROADMAP-Abschnitt gleichen Namens.
+
+## Ursache
+Qwen-B2 findet die frühere Projektregel, zitiert sie aber zerstückelt oder klein geschrieben. Die exakte Zitatprüfung verwirft das; volle Regel erreichte C3 nur in 7/30 „Regel behalten“-Offers.
+
+## Änderung
+`v13/cognition.quote_span`, Schalter `offer_quote_context_chars` (Standard 0 = aus = bisher). Bei 200: Zitat ist Zeiger auf ganze exakte Quellsätze (≤200 Zeichen derselben Quelle), transportiert wird nur exakter Quelltext. Kettenglied `integrated_candidates.quote_context`. Tests `tests/test_quote_context.py` 7/7.
+
+## Native Messung (Linux, gleiche Modelle wie 13.10.), CONTEXT_SUPPORTED
+- volle Regel an C3: 7/30 → 23/30
+- mit Eignungs-Werkzeug, „Regel behalten“ B2-Varianten exakt: 11/30 → 24/30
+- 0 falsch festgelegt; b2_only/both_none/both_control 10/10; Überschreibungen 16/16 in beiden Armen
+
+## Unverändert
+STEP2 UTILITY_FAIL (B1 ohne eigene Information; both_exact .842 < b2_only .917 mit Werkzeug). Ohne Werkzeug 0/70 exakt: C3 (350M) rechnet nicht. Kein Redmi/Kanon.
+
+## Offen
+1. Nutzerentscheidung: Schalter einschalten (offer_quote_context_chars=200 + b2_offer_body_state=false + offer_quote_min_chars=90).
+2. Eignungs-Werkzeug in den Live-Antwortpfad (C5/READ_LOCAL).
+3. Neue vorregistrierte STEP2-Fixtures mit B1-eigener Information.
+4. Rest 7/30: B2 zitiert die frühere Regel gar nicht.
+
+
+---
+
+## QUELLE: THREAD_WP_G2_GIST_READOUT_20261020.md
+
+# Thread „Nächste Pakete Abdeckung“ — WP-G2 nativer Gist-Readout-Konsument (2026-10-20)
+
+Git: RedMentos/Aii Branch `claude/project-thread-uvi2sq` (Basis `claude/project-thread-0zelvf` @ 13acfc3), Commits 8036f62, 86a500f, d4336a6.
+Projektordner: /mnt/project-files/v13 (Code, ROADMAP, ABDECKUNG, HANDOFF_CURRENT aktualisiert).
+
+## Was gebaut wurde
+- `code/v13/gist_readout.py`: konsumiert gespeicherten B2-Tap (Qwen3.5-0.8B Endnorm pro Token), bytegenaue Token→Zeichen-Bindung über native Pieces, Gruppierung ~8 Tokens (fixed|text|native|hybrid), 12 Slots, §3.2A-Felder, verlustfrei geprüft. `:tap B2_GIST` → `:gist readout [Modus]`. SHADOW, keine Rechte.
+- Tests `tests/test_gist_readout.py` (11). Volle Suite 1582 OK / 5 Skips.
+- 19 fehlende §102-Belegordner (`bench-results/*-20261012`, 444 KB) ins Git nachgezogen (Test test_neuro_ledger schlug sonst im Git-Baum fehl).
+
+## Messung (nativ Linux, vorregistriert, Prereg vor Lauf gepusht)
+- Runde 1 (160 Fragen): hybrid .594, text .563, nativ .563, fest .481, zufällig .355 → SUPPORTED.
+- Explorativ: fest Größe 9 (gleiche Gruppenzahl) .544 → Teil-Effekt durch Gruppenzahl.
+- Runde 2 (640 Fragen, Kontrolle gleiche Gruppenzahl): hybrid +.022 CI [-.016,.061] FAIL; text +.081 CI [.045,.114]; nativ -.005.
+- Folge: Standardmodus `text`. Natives Sprungsignal liegt an Satzgrenzen (AUC .88), bringt aber keinen Zusatznutzen.
+
+## Offen
+Andere Tap-Schicht; gelernter Grenz-Kopf (neues Prereg); Antwort-Nutzen mit `:gist active`; native Firing-Diagnostik (anderer Teil von Paket 5) nicht angefasst. Redmi nicht gemessen.
+
+
+---
+
+## QUELLE: THREAD_STEP2_PILOT_20261020.md
+
+# THREAD Privater STEP2-Pilot — 2026-10-20
+
+Git: RedMentos/Aii Branch claude/project-thread-s7943o @ 5ae02fd (Registrierung vorab @ abc5dc4). Projektordner: v13/code/docs/proofs/continuation-20261016/step2-private-fixtures/pilot-run-20261020/
+
+# Privater STEP2-Pilot — nativer Lauf 2026-10-20
+
+**Status: gelaufen, 18/18 Zeilen abgedeckt, Kohorte `NOT_CONFIRMED` (1 Zeile ERROR), 0/18 exakt. Diagnostik, kein Gate. Historisches STEP2 `UTILITY_FAIL` und B3 L1 `FAIL` unverändert.**
+
+## Ablauf
+1. GPTs read-only Auditor (Drive `V13_PRIVATE_PILOT_AUDIT_RUN7_DELTA_20261019.zip`, alle 10 Manifest-Hashes geprüft) eingebunden: `audit_private_pilot.py`, `test_audit_private_pilot.py` (11/11 OK).
+2. Original-Registrierung `pilot/native-registration.json` hier nicht ausführbar (bindet GPTs Gerät/Pfade); bleibt unverändert `REGISTERED_NOT_RUN`.
+3. Neues Home aus dem gepinnten Katalog: B1/B2/C3-GGUF, Runner b10964 und alle 39 Bibliotheken byte-identisch zur Original-Registrierung.
+4. Zweite Registrierung `native-registration-20261020.json` vor dem Lauf veröffentlicht (Commit abc5dc4), Quellen = exakt a1973d4.
+5. Auditor-Preflight: PREPARED_NOT_RUN, 0 Fehler.
+6. Lauf seriell 19:27–19:30 UTC, 188 s, Linux x86_64, 4 CPUs, Peak-RSS 1408 MB. report.json sha256 50ed2226…
+7. Auditor nach Lauf: REFUSED nur wegen der einen ERROR-Zeile; sonst konsistent.
+
+## Ergebnis
+| Arm | RECORDED | exakt | Aktion richtig | Feld-Utility |
+| --- | ---: | ---: | ---: | ---: |
+| b1_model_quotes | 3/3 | 0 | 0 | 0.667 |
+| b2_model_quotes | 3/3 | 0 | 0 | 0.639 |
+| paired_model_quotes | 3/3 | 0 | 0 | 0.639 |
+| same_policy_dual | 3/3 | 0 | 0 | 0.639 |
+| no_message | 2/3 | 0 | 0 | 0.361 |
+| exact_source_control | 3/3 | 0 | 0 | 0.667 |
+
+## Befunde
+- Flaschenhals ist C3 (LFM2.5-350M), nicht der Zitat-Transport: auch die Exakt-Quellen-Kontrolle liefert 0/3 exakt und immer action UNKNOWN; C3 rechnet remaining nicht.
+- B1 zitiert seine Regel korrekt; mehr Zitate helfen C3 nicht.
+- ERROR-Zeile bfzwzwww/no_message: B2 zitierte den öffentlichen Text unter seiner privaten SourceRef, Adapter lehnt korrekt ab (strenge registrierte Regel).
+- project-Format ("Project X" statt "X") kostet 12 Felder.
+
+## Nächster Schritt
+Konsument isoliert testen (neue Registrierung): Exakt-Quellen-Kontrolle mit größerem Konsumenten (B1) oder deterministischem calc/eligibility-Tool vor C3.
+
+
+---
+
+## QUELLE: THREAD_GPT_UEBERNAHME_20261020.md
+
+## GPT/Codex-Stand 13.–19.10. übernommen — ERLEDIGT 2026-10-20 (Thread „GPT-Stand erneut übernehmen“)
+Git: Branch `claude/project-thread-0zelvf` (Draft-PR https://github.com/RedMentos/Aii/pull/5, baut auf GPT-PR #4 auf). Bitte künftig hier aufsetzen.
+
+- Quelle: **GPT/Codex** Branch `codex/continuation-20261016` @ `a1973d4` (PR #4, 12 Commits seit `1941d07`, 16.10.), dazu Drive: `V13-Codex-Fortsetzung-20261016.md`, Native-Abend-ZIPs (geschlossen `V13-Native-Evening-0610-closed.zip`, SHA `0260f539…`), Preregistrierungen, und am 19.10. ein **nicht integrierter** Kandidat `V13_PRIVATE_PILOT_AUDIT_RUN7_DELTA_20261019.zip` (read-only Auditor für den privaten STEP2-Pilot, 11/11 eigene Tests, kein Modelllauf; GPT konnte ihn nicht auf GitHub pushen, Branch `assistant/private-pilot-readonly-audit-20261019` = `a1973d4` ohne neuen Code). PR #3 (`codex/continuation-review-20261013`) war schon von M umgesetzt; seine restlichen Review-Kandidaten bleiben dort.
+- Was GPT gebracht hat: K (list_arith) + M (calc/note/ToolForecast) zusammengeführt; enger Fix gegen Quellentausch während Outcome-Tap (`toolforecast.py`); Lernintegritäts-Gate gegen falschen PASS aus unvollständigen Zeilen, in die normalen Phone-Skripte integriert; Vorzeichen-Guard in `agi/listarith.py` (−5/Unicode-Minus wird nicht mehr als +5 akzeptiert); **native ToolForecast-v2-Lernkohorte 610/610 geschlossen** (Linux, SHADOW, Qwen-Taps): verschobene Zahlen calc MSE-Verhältnis .386–.707, Notizen .504–.666, feste Retention calc .982–1.002, Notizen 1.000, beide Lerngates PASS im engen Scope, unabhängig nachgerechnet. Erster abgebrochener Lauf bleibt UNKNOWN/negativ. Neuer Runtime/Store-Adapter für private STEP2-Quelle (28 Tests) und registrierter 18-Zeilen-Pilot — **noch nicht gelaufen**.
+- Übernahme: 152 neue GPT-Dateien + 7 nur von GPT geänderte Dateien übernommen; `tools.py`, `broker.py`, `toolstep.py`, `transaction.py` behalten den Projektstand (hatte K+M bereits, plus WP-W2c `eligibility`-Tool, das GPT fehlte; GPT-Unterschiede dort nur Kommentare/Reihenfolge). Vorherige Fassungen in `archiv/vor-gpt-uebernahme-20261020/`. Kein Überschreiben, kein Force-Push.
+- Prüfung: volle Suite (auch auf dem reinen Git-Tree) → **1571 Tests OK, 6 Skips**. Privatsphäre-Grep: nichts Privates.
+- Unverändert offen/negativ: STEP2 original 70/70 UTILITY_FAIL, B3 L1 FAIL, Redmi-Messungen, Canon/Fullscope.
+
+### Nächste offene Pakete (für sechs parallele Threads)
+1. Privater STEP2-Pilot nativ ausführen (18 Zeilen/max 42 Aufrufe) + GPTs read-only Auditor vom 19.10. prüfen und binden.
+2. B3 L1 / LATENT weiter (L1 FAIL, L2–L4 gesperrt).
+3. STEP2-Nutzen: B2-Produzent/C3-Konsument-Flaschenhals, nächste Ablation auf Basis R4-Teile 5–8.
+4. ToolForecast v2 → Gerät: Phone-Paket bauen, Neuinstallation + Redmi-Messung durch Nutzer.
+5. Canon-Abdeckung: nächste offene WP aus ABDECKUNG.md (~56 %), Gist-Readout-Consumer, native Firing-Diagnostik.
+6. Git-Konsolidierung: welcher Branch ist Hauptstand (PR #2/#3/#4/#5).
+
+
