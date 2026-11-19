@@ -1,0 +1,22 @@
+name: V14 temporal outcomes synthetic integration
+on:
+  push:
+    branches:
+      - gpt6/v14-core-temporal-outcome-20261119
+  pull_request:
+    paths:
+      - 'v13/code/v13/temporal_outcomes.py'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/tests/test_v14_temporal_outcomes.py'
+      - '.github/workflows/v14-temporal-outcomes.yml'
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pytest
+      - run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_v14_temporal_outcomes.py
+      - run: python -m compileall -q v13/code/v13/temporal_outcomes.py v13/code/v13/runtime.py
