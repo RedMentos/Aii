@@ -55,9 +55,13 @@ def _native(control):
     # traversal used to promote unrelated nested user/source/tool metadata into
     # native authority, e.g. a quoted tool name inside an observation.
     if not isinstance(control,dict):return out
+    # Only the declared C2 executive envelope can contribute native fields.
+    # Unschematized runner metadata, nested user content and sibling keys
+    # have no executive authority, even if they happen to be named "tool".
     typed=control.get('executive')
-    if isinstance(typed,dict) and control.get('schema')=='C2ExecutiveFields/1':
-        control=typed
+    if control.get('schema')!='C2ExecutiveFields/1' or not isinstance(typed,dict):
+        return out
+    control=typed
     for k in ('answer_type','memory_key','tool'):
         v=control.get(k)
         if isinstance(v,str) and v.strip():
