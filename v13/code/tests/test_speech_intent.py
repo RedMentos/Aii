@@ -1,7 +1,6 @@
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import Mock
 from v13.runtime import Runtime
 from v13.speech_intent import final_text_intent, verify_intent
 
@@ -22,22 +21,31 @@ class SpeechIntentContract(unittest.TestCase):
         self.assertIsNone(final_text_intent(17, "complete", "FINAL"))
         self.assertIsNone(final_text_intent(17, "", "FINAL", enabled=True))
 
-    def test_runtime_read_only_final_message_consumer(self):
+    def test_runtime_sqlite_final_and_restart(self):
         with TemporaryDirectory() as tmp:
-            runtime = Runtime(Path(tmp))
+            home = Path(tmp)
+            runtime = Runtime(home)
             try:
-                runtime.store.one = Mock(return_value={
-                    "id": 41, "text": "A final answer", "status": "FINAL"})
-                intent = runtime.speech_intent(41)
-                self.assertTrue(verify_intent(intent, 41, "A final answer"))
+                session = runtime.session
+                mid = runtime.store.message(session, None, "assistant",
+                                            "A final answer", "FINAL")
+                partial = runtime.store.message(session, None, "assistant",
+                                                "unfinished", "DEADLINE")
+                intent = runtime.speech_intent(mid)
+                self.assertTrue(verify_intent(intent, mid, "A final answer"))
                 self.assertEqual(intent["execution"], "OFF")
-                self.assertEqual(runtime.store.one.call_count, 1)
-                runtime.store.one.return_value["status"] = "DEADLINE"
-                self.assertIsNone(runtime.speech_intent(41))
+                self.assertIsNone(runtime.speech_intent(partial))
                 with self.assertRaises(ValueError):
                     runtime.speech_intent(True)
             finally:
                 runtime.close()
+            restarted = Runtime(home)
+            try:
+                self.assertTrue(verify_intent(
+                    restarted.speech_intent(mid), mid, "A final answer"))
+                self.assertIsNone(restarted.speech_intent(partial))
+            finally:
+                restarted.close()
 
     def test_bounded_input_and_types(self):
         with self.assertRaises(ValueError):
