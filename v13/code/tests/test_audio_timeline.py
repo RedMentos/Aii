@@ -24,6 +24,15 @@ class TimelineTests(unittest.TestCase):
     def test_boolean_timestamp(self):
         t=AudioTimeline();q=p(True,20)
         with self.assertRaises(ValueError):t.accept(q)
+    def test_external_mutation_cannot_change_committed_provenance(self):
+        t=AudioTimeline();q=p(0,20);t.accept(q)
+        q['source_ref']['start_ms']=999999
+        q['source_ref']['source_id']='forged'
+        q['acoustic_features']['rms']=float('nan')
+        self.assertEqual(t.frames[0]['source_ref']['start_ms'],0)
+        self.assertEqual(t.frames[0]['source_ref']['source_id'],'fixture')
+        self.assertEqual(t.frames[0]['acoustic_features']['rms'],0.0)
+        self.assertEqual(t.accept(p(20,40,'FINAL'))['start_ms'],0)
     def test_failed_frame_no_mutation(self):
         t=AudioTimeline();t.accept(p(0,20));before=(len(t.frames),t.last_end_ms)
         with self.assertRaises(ValueError):t.accept(p(10,40))
