@@ -1,5 +1,6 @@
 """Bounded A5 audio timeline; no microphone, model authority or storage."""
 from dataclasses import dataclass, field
+from copy import deepcopy
 
 @dataclass
 class AudioTimeline:
@@ -33,7 +34,7 @@ class AudioTimeline:
         self.source_id, self.consent_id = ref['source_id'], ref['consent_id']
         self.last_end_ms = end
         self.final_seen = packet['status'] == 'FINAL'
-        self.frames.append(packet)
+        self.frames.append(deepcopy(packet))
         return {'kind':'A5_AUDIO_TIMELINE','frame_count':len(self.frames), 'status':packet['status'],
                 'source_id':self.source_id, 'start_ms':self.frames[0]['source_ref']['start_ms'],
                 'end_ms':end, 'may_train':False, 'may_act':False}
