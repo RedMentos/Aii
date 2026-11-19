@@ -2004,3 +2004,81 @@
 | [#81](https://github.com/RedMentos/Aii/pull/81) | WP-S7 Run46: learned key-binding synthetic PASS with strict native gate limits | OPEN | 2026-10-24 |
 | [#80](https://github.com/RedMentos/Aii/pull/80) | WP-S7 Run45: exact native_history source with synthetic Store lineage tests | OPEN | 2026-10-24 |
 | [#79](https://github.com/RedMentos/Aii/pull/79) | WP-S7 Run44: preregistered synthetic context utility FAIL (preserved) | OPEN | 2026-10-24 |
+| [#78](https://github.com/RedMentos/Aii/pull/78) | WP-J Run43: Callosum exactly-once outcome credit candidate (isolated) | OPEN | 2026-10-24 |
+| [#77](https://github.com/RedMentos/Aii/pull/77) | WP-S7 Run42: source-bound Sleep TTT staging candidate (isolated) | OPEN | 2026-10-24 |
+| [#76](https://github.com/RedMentos/Aii/pull/76) | WP-C/JEF Run40: synthetic multi-head control cohort (preregistered FAIL preserved) | OPEN | 2026-10-24 |
+| [#75](https://github.com/RedMentos/Aii/pull/75) | WP-B Run39: exact synthetic JEPA Adam and RNG checkpoint/resume | OPEN | 2026-10-24 |
+| [#74](https://github.com/RedMentos/Aii/pull/74) | WP-B/§13H Run38: preregistered synthetic Body-JEPA ObjectiveAdapter micro-port | OPEN | 2026-10-24 |
+| [#73](https://github.com/RedMentos/Aii/pull/73) | WP-T8 Run37: reject physically impossible World-Model counterfactuals | OPEN | 2026-10-24 |
+| [#72](https://github.com/RedMentos/Aii/pull/72) | WP-N7 Run36: source-bound ContextOS pinned-history ACTIVE fail-closed candidate | OPEN | 2026-10-24 |
+| [#71](https://github.com/RedMentos/Aii/pull/71) | WP-Z8 Run35: fail-closed source-root lineage guard (SHADOW, no Age authority) | OPEN | 2026-10-24 |
+| [#70](https://github.com/RedMentos/Aii/pull/70) | Run34: 93-test cross-package isolated integration with closed raw evidence | OPEN | 2026-10-24 |
+| [#69](https://github.com/RedMentos/Aii/pull/69) | WP-T14 Run33: JEF/C2 fabric budget input and checkpoint inventory guards | OPEN | 2026-10-24 |
+| [#68](https://github.com/RedMentos/Aii/pull/68) | WP-N7 Run32: fail-closed Context OS pinned-history budget invariant (isolated) | OPEN | 2026-10-24 |
+| [#67](https://github.com/RedMentos/Aii/pull/67) | WP-Z8 Run31: majority source-consensus candidate, fresh-seed synthetic PASS only | OPEN | 2026-10-24 |
+| [#66](https://github.com/RedMentos/Aii/pull/66) | WP-Z8 Run30: independent source disagreement signal — preregistered FAIL retained | OPEN | 2026-10-24 |
+| [#65](https://github.com/RedMentos/Aii/pull/65) | WP-T8 Run29: SQLite persistence/restart integration tests for World-Model | OPEN | 2026-10-24 |
+| [#64](https://github.com/RedMentos/Aii/pull/64) | WP-T8 Run28: fail-closed world-model transition and counterfactual inputs | OPEN | 2026-10-24 |
+| [#63](https://github.com/RedMentos/Aii/pull/63) | WP-Z6b Run27: source-bound off-policy C3-first wake diagnostic | OPEN | 2026-10-24 |
+| [#62](https://github.com/RedMentos/Aii/pull/62) | WP-Z6b Run26: C3 draft arithmetic contradiction signal (SHADOW, not wake) | OPEN | 2026-10-24 |
+| [#61](https://github.com/RedMentos/Aii/pull/61) | LP3 Run25: close marker ambiguity and realpath stack-buffer risk (isolated) | OPEN | 2026-10-24 |
+| [#60](https://github.com/RedMentos/Aii/pull/60) | WP-LP3 Run24: staged static clone3 atomic child-placement candidate (kernel unverified) | OPEN | 2026-10-24 |
+| [#59](https://github.com/RedMentos/Aii/pull/59) | WP-LP3 Run23: fail closed on pre-join ELF loader hooks (software candidate) | OPEN | 2026-10-24 |
+| [#58](https://github.com/RedMentos/Aii/pull/58) | WP-LP3 Run22: isolate pre-join Python startup before cgroup membership | OPEN | 2026-10-24 |
+| [#57](https://github.com/RedMentos/Aii/pull/57) | WP-LP3 Run21: avoid post-reap numeric-PGID signaling; cgroup-only cleanup | OPEN | 2026-10-24 |
+| [#56](https://github.com/RedMentos/Aii/pull/56) | WP-LP3 Run20: fail-closed cgroup-v2 detached-session containment candidate | OPEN | 2026-10-24 |
+| [#55](https://github.com/RedMentos/Aii/pull/55) | WP-LP3 Run19: guard direct SIGTERM; preserve detached-session FAIL-OPEN | OPEN | 2026-10-24 |
+| [#54](https://github.com/RedMentos/Aii/pull/54) | WP-LP3 Run18: fail closed on surviving owned process-group descendants | OPEN | 2026-10-24 |
+| [#53](https://github.com/RedMentos/Aii/pull/53) | WP-LP3 Run17: independent serial launcher lifecycle review (software only) | OPEN | 2026-10-24 |
+| [#52](https://github.com/RedMentos/Aii/pull/52) | WP-LP3 Run16: staged serial native launcher, synthetic tests and closed evidence | OPEN | 2026-10-24 |
+| [#51](https://github.com/RedMentos/Aii/pull/51) | WP-LP3 Run15: bind native readiness to registered source identities | OPEN | 2026-10-24 |
+| [#50](https://github.com/RedMentos/Aii/pull/50) | WP-LP3 Run14: typed evidence protocol + read-only native host readiness | OPEN | 2026-10-24 |
+| [#49](https://github.com/RedMentos/Aii/pull/49) | WP-LP3 Run13: fail-closed registered evidence schema (software only) | OPEN | 2026-10-24 |
+| [#48](https://github.com/RedMentos/Aii/pull/48) | WP-LP3 Run12: independent audit of source/claim/numeric evidence (software only) | OPEN | 2026-10-24 |
+| [#47](https://github.com/RedMentos/Aii/pull/47) | WP-LP3 Run 11: postflight immutable-input consistency before report closure | OPEN | 2026-10-24 |
+| [#46](https://github.com/RedMentos/Aii/pull/46) | WP-LP3 Run 10: fail-closed evidence binding and external receipt isolation | OPEN | 2026-10-24 |
+| [#45](https://github.com/RedMentos/Aii/pull/45) | WP-LP3: independent closed raw-evidence auditor and externally anchorable receipt | OPEN | 2026-10-24 |
+| [#44](https://github.com/RedMentos/Aii/pull/44) | WP-LP3 review: pin HF master and bind tokenizer/fixture inputs before evidence | OPEN | 2026-10-24 |
+| [#43](https://github.com/RedMentos/Aii/pull/43) | WP-LP3: isolated causal latent-key answer consumer (software candidate; gates unchanged) | OPEN | 2026-10-23 |
+| [#42](https://github.com/RedMentos/Aii/pull/42) | V13: repair organ restore integrity and durable phone evidence recovery | OPEN | 2026-10-23 |
+| [#41](https://github.com/RedMentos/Aii/pull/41) | V13: technical handoff for optional recurrent learning (no personal context) | OPEN | 2026-10-23 |
+| [#40](https://github.com/RedMentos/Aii/pull/40) | User rules v7 + sealed round 7: USER_RULES_V7_UNSAFE, no gain over v6 on fresh data | OPEN | 2026-10-22 |
+| [#39](https://github.com/RedMentos/Aii/pull/39) | WP-DS3b/DS3c: answer<->tool cross-check and tool sentence instead of 'unsicher' (switch tool_answer_check, default off) | OPEN | 2026-10-22 |
+| [#38](https://github.com/RedMentos/Aii/pull/38) | Ziel-Pakete Z6–Z12: Z8 Age-Wiederöffnen, Z9 Traum-Kontrollen, Z7 Handy-Paket, Z6a/Z11 vorregistriert | OPEN | 2026-10-22 |
+| [#37](https://github.com/RedMentos/Aii/pull/37) | WP-DS2 + WP-DS3: sandbox curiosity+goal and generalizing grounding; calibrated answer/recipe/"unsicher" policy | OPEN | 2026-10-22 |
+| [#36](https://github.com/RedMentos/Aii/pull/36) | B3 L1 attempt 6 (WP-Z4d): escalate PASS not replicated on two fresh seeds | OPEN | 2026-10-22 |
+| [#35](https://github.com/RedMentos/Aii/pull/35) | WP-LP2: Lernziel für C3, das die richtige Zuordnung belohnt → LP2_ALIGNS_NO_GAIN | OPEN | 2026-10-22 |
+| [#34](https://github.com/RedMentos/Aii/pull/34) | WP-UI1: Termux statt APK, Stopp-Knöpfe auf dem Startbildschirm | OPEN | 2026-10-22 |
+| [#33](https://github.com/RedMentos/Aii/pull/33) | WP-HX1/HX3/HX4: harness proposals in AG8, experience library, blind selector (SHADOW) | OPEN | 2026-10-22 |
+| [#32](https://github.com/RedMentos/Aii/pull/32) | WP-AGE0c: false-alarm rate of late self-correction → stays shadow | OPEN | 2026-10-22 |
+| [#31](https://github.com/RedMentos/Aii/pull/31) | Regel-Leser v3–v6 + versiegelte Runden 3–6 (alle noch UNSAFE, v6 halbiert die Fehler) | OPEN | 2026-10-22 |
+| [#30](https://github.com/RedMentos/Aii/pull/30) | Gegenprüfung Runde 2 (GPT 22.10.) + :stillstand hält alles an (WP-SAFE2) | OPEN | 2026-10-22 |
+| [#29](https://github.com/RedMentos/Aii/pull/29) | V13: Lernpfad prüfen und Promptverlust im LoRA-Kandidaten verhindern | OPEN | 2026-10-21 |
+| [#28](https://github.com/RedMentos/Aii/pull/28) | Quote help on by default + user rules read by a fixed component (no model) | OPEN | 2026-10-21 |
+| [#27](https://github.com/RedMentos/Aii/pull/27) | V13: Age-0, Freeze und gemeinsame technische Übergabe | OPEN | 2026-10-21 |
+| [#26](https://github.com/RedMentos/Aii/pull/26) | WP-SAFE1: Feste Verbote, Notaus und Vorabansage außerhalb aller Modelle | OPEN | 2026-10-21 |
+| [#25](https://github.com/RedMentos/Aii/pull/25) | DeepSeek critique checked + WP-DS1 lab sandbox (active inference vs. learning progress) | OPEN | 2026-10-21 |
+| [#24](https://github.com/RedMentos/Aii/pull/24) | WP-Z5c: Aktualitäts-Term für Notizen in der Fokus-Koalition (Schalter, Standard aus) – gemessen, hilft nicht | OPEN | 2026-10-21 |
+| [#23](https://github.com/RedMentos/Aii/pull/23) | Research: Google Harness² für V13 ausgewertet (WP-HX) | OPEN | 2026-10-21 |
+| [#22](https://github.com/RedMentos/Aii/pull/22) | B3 L1 attempt 5: L1 PASS on private/escalate (receiver-conditioned readout), apologize FAIL | OPEN | 2026-10-21 |
+| [#21](https://github.com/RedMentos/Aii/pull/21) | STEP2: B2 rule quotes, recency guard and newest-quoted rule reader (WP-Z2d..Z2k) | OPEN | 2026-10-21 |
+| [#20](https://github.com/RedMentos/Aii/pull/20) | B3 L2 prefix SHADOW on private/action (WP-Z4b): L2 FAIL | OPEN | 2026-10-21 |
+| [#19](https://github.com/RedMentos/Aii/pull/19) | WP-Z2c: gezielte Körper-Frage als Live-Schalter (Standard aus) | OPEN | 2026-10-21 |
+| [#18](https://github.com/RedMentos/Aii/pull/18) | WP-Z2b: STEP2 Rauschband (3 Seeds) + gezielte Körper-Fragen — Gate FAIL, Frage hilft +.23 | OPEN | 2026-10-21 |
+| [#17](https://github.com/RedMentos/Aii/pull/17) | B3 L1 attempt 4 (L1 PASS on private/action) + fast-trace key separation (native firing) | OPEN | 2026-10-21 |
+| [#16](https://github.com/RedMentos/Aii/pull/16) | WP-Z5b: Fokus-Koalition unter echtem Platzmangel (vorregistriert) | OPEN | 2026-10-21 |
+| [#15](https://github.com/RedMentos/Aii/pull/15) | WP-Z5 + Z5c: Fokus-Koalition gegen Voll-Kontext, Retrieval und feste Slots | OPEN | 2026-10-21 |
+| [#14](https://github.com/RedMentos/Aii/pull/14) | WP-Z2: STEP2 mit B1-eigener Information (Gate FAIL, Schalter aus) | OPEN | 2026-10-21 |
+| [#13](https://github.com/RedMentos/Aii/pull/13) | WP-Z3c: extensible rule parser (parser_v2) — PARSER_V2_CARRIES_AUTHOR_ONLY | OPEN | 2026-10-21 |
+| [#12](https://github.com/RedMentos/Aii/pull/12) | WP-Z3b: fixed rule parser vs C3 as reader (paraphrase cohort) -> PARSER_SUFFICIENT_NO_C3_GAIN | OPEN | 2026-10-21 |
+| [#11](https://github.com/RedMentos/Aii/pull/11) | Eignungs-Werkzeug im ganzen Live-Turn (vorregistriert, TOOL_LIVE_SUPPORTED) | OPEN | 2026-10-21 |
+| [#10](https://github.com/RedMentos/Aii/pull/10) | WP-Z3: C3-Konsument isoliert (Urteil NO_CONSUMER_PATH) | OPEN | 2026-10-21 |
+| [#9](https://github.com/RedMentos/Aii/pull/9) | WP-Z1 Gate-Ehrlichkeit: STEP2 HARNESS/EXIT getrennt, Blueprint-Kriterien je Gate, §29-Tabelle | OPEN | 2026-10-21 |
+| [#8](https://github.com/RedMentos/Aii/pull/8) | Gegenseitige Prüfung Claude ↔ GPT, Runde 1 (Claude prüft GPT bis a1973d4) | OPEN | 2026-10-21 |
+| [#7](https://github.com/RedMentos/Aii/pull/7) | STEP2 B2→C3: quote-as-pointer switch, analyst_context fix, merged eligibility live tool (thread Q) | OPEN | 2026-10-20 |
+| [#6](https://github.com/RedMentos/Aii/pull/6) | Private STEP2 pilot: native 18-row run + GPT read-only auditor | OPEN | 2026-10-20 |
+| [#5](https://github.com/RedMentos/Aii/pull/5) | Adopt GPT/Codex state to 19.10 and merge Claude threads K–P content | OPEN | 2026-10-20 |
+| [#4](https://github.com/RedMentos/Aii/pull/4) | Integrate K list arithmetic with current M forecast and bind fresh v2 learning | CLOSED | 2026-10-16 |
+| [#3](https://github.com/RedMentos/Aii/pull/3) | Draft: ToolForecast restart bindings, bounded device checks and extracted release audit | CLOSED | 2026-10-13 |
+| [#2](https://github.com/RedMentos/Aii/pull/2) | Draft V13 review: 68 tests, bounded checkpoints and atomic Action-JEPA recovery | CLOSED | 2026-10-11 |
+| [#1](https://github.com/RedMentos/Aii/pull/1) | Add V13 project files (code, docs, roadmap) for handoff | MERGED | 2026-10-11 |
