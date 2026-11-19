@@ -25,7 +25,11 @@ def raw_ear_packet(frame: AudioFrame):
         raise ValueError('unsupported sample rate')
     if not frame.pcm16le or len(frame.pcm16le)%2:
         raise ValueError('invalid PCM16LE')
-    if len(frame.pcm16le)>2*1024*1024:\n        raise ValueError('PCM frame exceeds 2 MiB bound')\n    n=len(frame.pcm16le)//2\n    if n/frame.sample_rate>30:\n        raise ValueError('PCM frame exceeds 30 second bound')
+    if len(frame.pcm16le)>2*1024*1024:
+        raise ValueError('PCM frame exceeds 2 MiB bound')
+    n=len(frame.pcm16le)//2
+    if n/frame.sample_rate>30:
+        raise ValueError('PCM frame exceeds 30 second bound')
     if frame.start_ms<0 or frame.end_ms<=frame.start_ms:
         raise ValueError('invalid time bounds')
     duration=1000*n/frame.sample_rate
@@ -35,13 +39,18 @@ def raw_ear_packet(frame: AudioFrame):
     rms=sqrt(sum(float(x)*x for x in samples)/n)/32768.
     peak=max(abs(x) for x in samples)/32768.
     zcr=sum((a<0)!=(b<0) for a,b in zip(samples,samples[1:]))/max(1,n-1)
-    # 20 ms envelope retains temporal acoustic changes without pretending ASR.\n    width=max(1,frame.sample_rate//50)\n    envelope=[round(sqrt(sum(float(x)*x for x in samples[i:i+width])/len(samples[i:i+width]))/32768.,5)\n              for i in range(0,n,width)]\n    return {'schema':'v13.a5.raw_ear/1','modality':'audio',
+    # 20 ms envelope retains temporal acoustic changes without pretending ASR.
+    width=max(1,frame.sample_rate//50)
+    envelope=[round(sqrt(sum(float(x)*x for x in samples[i:i+width])/len(samples[i:i+width]))/32768.,5)
+              for i in range(0,n,width)]
+    return {'schema':'v13.a5.raw_ear/1','modality':'audio',
       'source_ref':{'source_id':frame.source_id,'sha256':hashlib.sha256(frame.pcm16le).hexdigest(),
         'start_ms':frame.start_ms,'end_ms':frame.end_ms,'consent_id':frame.consent_id},
       'provenance':'RAW_PCM_OBSERVATION','status':'FINAL' if frame.final else 'PROVISIONAL',
       'learning_eligible':False,'sample_rate':frame.sample_rate,'sample_count':n,
       'acoustic_features':{'rms':round(rms,6),'peak':round(peak,6),
-        'zero_crossing_rate':round(zcr,6),'silence_candidate':rms<.01,'clipped':peak>=.999,\n        'envelope_20ms':envelope},
+        'zero_crossing_rate':round(zcr,6),'silence_candidate':rms<.01,'clipped':peak>=.999,
+        'envelope_20ms':envelope},
       'teacher_asr':None,'speaker_identity':None,'speech_effector':None}
 
 def jef_audio_observation(packet):
