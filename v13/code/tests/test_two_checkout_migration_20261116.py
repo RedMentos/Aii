@@ -122,6 +122,24 @@ def exercise_worker_migration(base):
         # actual immutable Git commit, not a cosmetic UPDATED status.
         assert old['result']['runtime'] == 'UPDATED', old
         assert old['result']['dashboard'] in ('UPDATED', 'UP_TO_DATE'), old
+        # Diagnose a mismatched source/receipt without confusing launcher activation
+        # with an actual Git checkout advance. The text is only local synthetic
+        # clone refs and bounded update states; no user data or tokens.
+        diagnostic = {
+            'base': base[:12], 'target': target[:12],
+            'old_result': {k: old['result'].get(k) for k in
+                           ('last_result','runtime','dashboard','last_error','updated_commit')},
+            'checkouts': {checkout.name: {
+                'head': git('rev-parse', 'HEAD', cwd=checkout)[:12],
+                'tracked': git('rev-parse',
+                    'refs/remotes/origin/' + RELEASE_BRANCH,
+                    cwd=checkout)[:12]}
+                for checkout in (agent, runtime)},
+            'bare': git('--git-dir', remote, 'rev-parse',
+                        'refs/heads/' + RELEASE_BRANCH)[:12],
+        }
+        print('V13_TWO_CHECKOUT_MIGRATION_DIAG=' +
+              json.dumps(diagnostic, sort_keys=True), flush=True)
         for checkout in (agent, runtime):
             # A source branch that is falsely called UP_TO_DATE is worse than
             # a still-pending update: capture both Git refs to pin the cause.
