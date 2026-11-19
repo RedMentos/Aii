@@ -138,6 +138,11 @@ class OnlinePredictor:
             raise
         finally:
             self.path=current
+        if self.processed_ids is None:
+            # Legacy snapshots cannot atomically rewind the trusted T8 cursor.
+            # Refuse BEFORE replacing the active checkpoint on disk.
+            if current.exists():self.restore()
+            raise ValueError('Rolled-back checkpoint has no trusted T8 cursor')
         temp=current.with_name(current.name+'.rollback.tmp.npz')
         try:
             shutil.copy2(previous,temp)
