@@ -41,11 +41,17 @@ from v13 import source_updater as u
 from v13 import runtime_deploy as d
 
 remote = Path(sys.argv[1])
+fetches = []
 def local_fetch(root, branch):
     ref = 'refs/remotes/origin/' + branch
+    before = u.git(root, 'rev-parse', ref)
+    remote_head = u.git(remote, 'rev-parse', 'refs/heads/' + branch)
     u.git(root, 'fetch', '--no-tags', str(remote),
           'refs/heads/' + branch + ':' + ref, timeout=90)
-    return u.git(root, 'rev-parse', ref)
+    after = u.git(root, 'rev-parse', ref)
+    fetches.append({'root':Path(root).name,'before':before[:12],
+                    'remote':remote_head[:12],'after':after[:12]})
+    return after
 
 # Only the remote transport, exact-SHA CI response and live stop are simulated.
 u._fetch = local_fetch
@@ -64,7 +70,9 @@ else:
         p.set_enabled(True)
     result = relay._run_pending_migration_after_reload(p)
 print(json.dumps({'result': result, 'profile': d.BUILD_PROFILE,
-                  'module_path': str(Path(d.__file__).resolve())}))
+                  'module_path': str(Path(d.__file__).resolve()),
+                  'fetches': fetches, 'same_source_updater':p.updates is u,
+                  'home': str(Path.home())}))
 """
 
 
@@ -129,6 +137,8 @@ def exercise_worker_migration(base):
             'base': base[:12], 'target': target[:12],
             'old_result': {k: old['result'].get(k) for k in
                            ('last_result','runtime','dashboard','last_error','updated_commit')},
+            'old_fetches': old.get('fetches'), 'same_source_updater':old.get('same_source_updater'),
+            'worker_home':old.get('home'),
             'checkouts': {checkout.name: {
                 'head': git('rev-parse', 'HEAD', cwd=checkout)[:12],
                 'tracked': git('rev-parse',
