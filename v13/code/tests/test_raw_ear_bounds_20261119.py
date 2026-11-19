@@ -31,18 +31,18 @@ class RawEarBounds(unittest.TestCase):
             raw_ear_packet(self.frame(b'\0\0'*(8000*31)))
 
     def test_reject_malformed_source_consent_and_clock(self):
-        data = b'\\0\\0' * 800
+        data = b'\0\0' * 800
         valid = dict(source_id='fixture', pcm16le=data, sample_rate=8000,
                      start_ms=1000, end_ms=1100, consent_id='test-consent', final=True)
-        for patch in ({'source_id': 7}, {'source_id': 'bad\\nsource'},
-                      {'consent_id': 1}, {'consent_id': 'bad\\rconsent'},
+        for patch in ({'source_id': 7}, {'source_id': 'bad\nsource'},
+                      {'consent_id': 1}, {'consent_id': 'bad\rconsent'},
                       {'start_ms': True}, {'end_ms': '1100'},
                       {'pcm16le': bytearray(data)}, {'final': 'yes'}):
             with self.subTest(patch=patch), self.assertRaises((ValueError, PermissionError)):
                 raw_ear_packet(AudioFrame(**dict(valid, **patch)))
 
     def test_jef_rejects_untrusted_packet_shape(self):
-        packet = raw_ear_packet(self.frame(b'\\0\\0' * 800))
+        packet = raw_ear_packet(self.frame(b'\0\0' * 800))
         for patch in ({'source_ref': None}, {'source_ref': {'consent_id': 'x'}},
                       {'acoustic_features': None}, {'status': 'UNKNOWN'}):
             with self.subTest(patch=patch), self.assertRaises(ValueError):
