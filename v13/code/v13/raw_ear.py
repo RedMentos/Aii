@@ -19,8 +19,18 @@ class AudioFrame:
 def raw_ear_packet(frame: AudioFrame):
     if not isinstance(frame, AudioFrame):
         raise TypeError('AudioFrame required')
-    if not frame.consent_id or not frame.source_id:
-        raise PermissionError('source and explicit consent required')
+    if (type(frame.source_id) is not str or not 0 < len(frame.source_id) <= 128 or
+            any(ord(c) < 32 or ord(c) == 127 for c in frame.source_id)):
+        raise ValueError('invalid source id')
+    if (type(frame.consent_id) is not str or not 0 < len(frame.consent_id) <= 128 or
+            any(ord(c) < 32 or ord(c) == 127 for c in frame.consent_id)):
+        raise PermissionError('valid explicit consent reference required')
+    if type(frame.final) is not bool:
+        raise ValueError('final must be boolean')
+    if type(frame.start_ms) is not int or type(frame.end_ms) is not int:
+        raise ValueError('timestamps must be integers')
+    if type(frame.pcm16le) is not bytes:
+        raise ValueError('PCM16LE must be bytes')
     if frame.sample_rate not in (8000,16000,24000,32000,44100,48000):
         raise ValueError('unsupported sample rate')
     if not frame.pcm16le or len(frame.pcm16le)%2:
@@ -55,8 +65,16 @@ def raw_ear_packet(frame: AudioFrame):
 
 def jef_audio_observation(packet):
     """Structured A5->JEF adapter; not a native JEF runtime hook or permission grant."""
-    if packet.get('schema')!='v13.a5.raw_ear/1' or not packet.get('source_ref',{}).get('consent_id'):
+    if type(packet) is not dict or packet.get('schema') != 'v13.a5.raw_ear/1':
         raise ValueError('untrusted A5 audio packet')
+    source = packet.get('source_ref')
+    if (type(source) is not dict or type(source.get('consent_id')) is not str or
+            not source['consent_id'] or type(source.get('sha256')) is not str or
+            len(source['sha256']) != 64 or
+            any(c not in '0123456789abcdef' for c in source['sha256'])):
+        raise ValueError('invalid source provenance')
+    if packet.get('status') not in ('FINAL', 'PROVISIONAL') or type(packet.get('acoustic_features')) is not dict:
+        raise ValueError('invalid acoustic observation')
     return {'kind':'A5_AUDIO_OBSERVATION','source_ref':dict(packet['source_ref']),
       'status':packet['status'],'features':dict(packet['acoustic_features']),
       'may_train':False,'may_act':False,'text':None}
