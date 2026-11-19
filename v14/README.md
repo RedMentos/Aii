@@ -1,6 +1,8 @@
 # V14 / Inquisition-JEPA
 
-**Start here:** [V14 Master Blueprint + Research + vollständige V13-Quellenanhänge](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md)
+**Neue V14-Architektur & Forschungs-/Implementierungsplan:** [Lesefassung ohne historische Anhänge](V14_ARCHITECTURE_AND_RESEARCH_ONLY_20261119.md)
+
+**V14 Vollarchiv:** [Master mit komplettem V13-Canon, Roadmaps und Nutzerentscheidungen](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md)
 
 Status: **V14 design baseline 2026-11-19**, nicht als bereits laufende/neue App missverstehen. Der laufende V13-Code bleibt unverändert, bis eine real geprüfte V14-Integration ihn kontrolliert ersetzt.
 
