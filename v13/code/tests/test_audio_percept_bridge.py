@@ -31,6 +31,16 @@ class TestAudioBridge(unittest.TestCase):
     def test_learning_authority(self):
         p=fixture();p["learning_eligible"]=True
         with self.assertRaises(ValueError):acoustic_percept(p)
+    def test_long_source_id_consumer_boundary(self):
+        p=fixture();p['source_ref']['source_id']='s'*128
+        admitted=admit_acoustic_packets([p],512)
+        self.assertEqual(len(admitted.selected),1)
+        self.assertLessEqual(len(admitted.selected[0].source_id),128)
+    def test_consent_and_timing_bind_identity(self):
+        p=fixture();q=deepcopy(p);q['source_ref']['consent_id']='different'
+        self.assertNotEqual(acoustic_percept(p).source_id,acoustic_percept(q).source_id)
+        q=deepcopy(p);q['source_ref']['start_ms']=1
+        self.assertNotEqual(acoustic_percept(p).source_id,acoustic_percept(q).source_id)
     def test_frame_identity(self):
         p=fixture();q=deepcopy(p);q["source_ref"]["sha256"]="b"*64
         self.assertNotEqual(acoustic_percept(p).source_id,acoustic_percept(q).source_id)
