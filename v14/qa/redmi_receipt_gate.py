@@ -9,11 +9,19 @@ import json
 import math
 from pathlib import Path
 
-REQUIRED = ("turn_id", "receipt_id", "installed_sha", "evidence", "status",
+REQUIRED = ("scenario", "turn_id", "receipt_id", "installed_sha", "evidence", "status",
             "correct", "source_bound", "total_ms", "first_token_ms",
             "b1_attempted", "b1_delivered", "b1_consumed",
             "b2_attempted", "b2_delivered", "b2_consumed")
-PRIVATE = {"prompt", "response", "transcript", "messages", "device_path", "secret"}
+PRIVATE = {"prompt", "response", "transcript", "messages", "device_path", "secret", "raw_text", "conversation", "token", "password", "api_key"}
+SCENARIOS = {"greeting", "arithmetic", "ambiguity", "memory_recall", "cross_organ"}
+
+def contains_private_keys(value):
+    if isinstance(value, dict):
+        return any(str(k).lower() in PRIVATE or contains_private_keys(v) for k, v in value.items())
+    if isinstance(value, list):
+        return any(contains_private_keys(v) for v in value)
+    return False
 
 def percentile(values, q):
     if not values:
@@ -24,13 +32,15 @@ def percentile(values, q):
     return round(v[lo] + (v[min(lo + 1, len(v)-1)] - v[lo]) * (x-lo), 2)
 
 def evaluate(data):
+    if not isinstance(data, dict):
+        return {"status": "INVALID", "errors": ["top level must be an object"]}
     rows = data.get("turns")
     if not isinstance(rows, list):
         return {"status": "INVALID", "errors": ["turns must be an array"]}
     errors = []
     if len(rows) < 20:
         errors.append("fewer than 20 turns")
-    seen, receipts, shas, totals, firsts = set(), set(), set(), [], []
+    seen, receipts, shas, totals, firsts, scenarios = set(), set(), set(), [], [], set()
     for i, row in enumerate(rows):
         if not isinstance(row, dict):
             errors.append(f"turn {i}: not an object")
@@ -39,8 +49,12 @@ def evaluate(data):
         if missing:
             errors.append(f"turn {i}: missing {sorted(missing)}")
             continue
-        if PRIVATE.intersection(row):
+        if contains_private_keys(row):
             errors.append(f"turn {i}: private fields present")
+        if not isinstance(row["scenario"], str) or row["scenario"] not in SCENARIOS:
+            errors.append(f"turn {i}: invalid scenario")
+        else:
+            scenarios.add(row["scenario"])
         if not isinstance(row["turn_id"], str) or not row["turn_id"] or row["turn_id"] in seen:
             errors.append(f"turn {i}: duplicate/invalid turn id")
         seen.add(row["turn_id"])
@@ -66,6 +80,8 @@ def evaluate(data):
             a,d,c = (row[f"{organ}_{key}"] for key in ("attempted","delivered","consumed"))
             if not all(type(v) is int and v >= 0 for v in (a,d,c)) or not a >= d >= c:
                 errors.append(f"turn {i}: invalid {organ} offer accounting")
+    if scenarios != SCENARIOS:
+        errors.append("missing required diverse scenarios: " + ",".join(sorted(SCENARIOS - scenarios)))
     if len(shas) != 1:
         errors.append("mixed installed release SHAs")
     for organ in ("b1", "b2"):
