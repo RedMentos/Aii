@@ -24,7 +24,7 @@ def to_v13_a5_audio(packets, source, *, consent_active: bool):
             end = start + 1
         v13_packet = {
             "modality": "audio",
-            "source_ref": {"source_id": source.source_id, "sha256": source.pcm_sha256},
+            "source_ref": {"source_id": (source.source_id[:80] + ":" + str(packet["sample_start"])), "sha256": source.pcm_sha256},
             "segments": [{
                 "consent_receipt_ref": source.consent_id,
                 "start_ms": start, "end_ms": end,
