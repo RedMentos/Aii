@@ -101,6 +101,23 @@ class AtomicT8CursorTests(unittest.TestCase):
         np.testing.assert_array_equal(OnlineWorld(self.runtime).model.W,active)
         self.assertEqual(OnlineWorld(self.runtime).processed,['a','b'])
 
+    def test_legacy_rollback_rejected_before_active_checkpoint_replacement(self):
+        # A legacy prior snapshot lacks committed IDs, while the current
+        # checkpoint has valid source-bound T8 IDs.
+        world=OnlineWorld(self.runtime)
+        world.model.checkpoint()  # prior legacy state with no cursor
+        with patch.object(world_model,'transitions',return_value=[transition('a')]):
+            world.update()
+        active_bytes=world.model.path.read_bytes()
+        active_weights=world.model.W.copy()
+        active_ids=list(world.processed)
+        with self.assertRaisesRegex(ValueError,'no trusted T8 cursor'):
+            world.rollback()
+        self.assertEqual(world.model.path.read_bytes(),active_bytes)
+        np.testing.assert_array_equal(world.model.W,active_weights)
+        self.assertEqual(world.processed,active_ids)
+        self.assertEqual(OnlineWorld(self.runtime).processed,active_ids)
+
     def test_reject_invalid_checkpoint_identifiers(self):
         world=OnlineWorld(self.runtime)
         with self.assertRaises(ValueError):
