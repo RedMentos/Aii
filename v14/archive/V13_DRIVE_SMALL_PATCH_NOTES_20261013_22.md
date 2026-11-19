@@ -450,3 +450,191 @@ Nächster Schritt: Ersetzungs-Kette sichtbar im Kontext statt veraltete Notizen 
 Cloud-Hinweis: Container wird im Leerlauf zurückgesetzt; lange Läufe als überwachte Hintergrund-Aufgabe mit Zwischenspeicher.
 
 
+
+---
+
+## QUELLE: THREAD_B3_L1_ESCALATE_APOLOGIZE_20261021.md
+
+# Thread "B3 L1 escalate apologize" (2026-10-21)
+
+Branch claude/project-thread-yub2lf (stacked on c122qc / PR #20), draft PR #22.
+
+## Cause (exploratory diagnosis on attempt-4 states)
+escalate/apologize need a receiver-private fact (capacity/client, 100 % decodable from receiver state) combined with U/F. The bridge read as an additive residual on the FROZEN NO_MESSAGE readout, so the fact weights could not be rescaled to the message. With the true U/F that costs 8.2/9.3 points (on action it helps, -5.5). The same message with a jointly refit readout gains +8.0/+5.5 points (5/5 seeds). 72-78 % of errors fall within 1 of the threshold.
+
+## Fix
+Bridge(recv_cond=dim) + Bridge.refit_readout (default off, byte-identical; gate closed = old readout).
+
+## Attempt 5 (preregistered 9d52f49, fresh seed 20261105, new B1/B2 states, gate unchanged)
+- escalate 90.5 vs attr words 84.7 / label 78.7 / SCALAR 89.2: canon L1 PASS (strict FAIL n.s.)
+- apologize 89.0 vs attr words 88.5: FAIL (n.s.)
+- action replication 86.7 vs label 83.5: FAIL (n.s.). The attempt-4 action PASS depends on the seed.
+
+Consequence: L2 prefix SHADOW is allowed only for private/escalate. Next: WP-Z4d L1 robustness on 2 more fresh seeds, then L2 for escalate.
+Evidence: project folder v13/bench-results/b3-l1-escapo-diagnose-20261021/, v13/bench-results/b3-l1-v5-20261021/ (states.npz only there).
+
+
+---
+
+## QUELLE: THREAD_Z2D_B2_REGELZITAT_20261021.md
+
+# Thread „B2 zitiert Regel selten“ — WP-Z2d (Code: z2c), 2026-10-21
+
+Branch `claude/project-thread-0fckhc` (Basis `s439sv` = Z2b), Draft-PR #21. Prereg `8cc006d` (vor Inferenz), Ergebnis `058e8c7`.
+
+## Ursache
+B2 kennt die alte Regel, schreibt sie aber um oder zitiert den Aufgabentext. Von 384 Z2b-B2-Angeboten (RULE/SPLIT) trugen nur 115 die volle Regel; 110 scheiterten an einer Umschreibung bzw. kaputten Kopie des richtigen Satzes, 65 zitierten den aktuellen Aufgabentext.
+
+## Änderung
+Schalter `b2_quote_select` off (Standard) | anchor | pointer. Kettenglied `integrated_candidates.b2_quote_select`, Tests `test_b2_quote_select.py`.
+
+## Ergebnis (CQ/CQA/CQP × Seeds 17–19, 630 Zeilen)
+- B2-Regelquote: Kontrolle .167, Anker .542 (teilweise), **Zeiger .969 (FIXED)**
+- 0 falsche Regelwerte, 0 falsch festgelegte Entscheidungen
+- Zeiger: zwei Körper .881 vs. b1_only .581 (+.30, CI > 0, jeder Seed), 27/30 exakt
+- STEP2 bleibt formal FAIL (Kriterium 3, Ein-Körper-Kontrolle offen)
+
+## Offen
+Nutzerentscheidung: Zeiger einschalten; vorher live-`analyst_context` reparieren. Neues Prereg mit Ein-Körper-Kontrolle und längeren Regeln. Merge-Hinweis: Thread 4ttld7 (Kettenglied body_question) beim Zusammenführen hintereinander anwenden.
+Befund: `v13/code/docs/proofs/continuation-20261021/step2-z2c-b2-rule/BEFUND.md`
+
+
+---
+
+## QUELLE: V13-Z4b-L2-Prefix-action-20261021.md
+
+# WP-Z4b B3 L2-Prefix-SHADOW nur private/action — 2026-10-21
+
+Thread „Z4b L2 nur für action“, Branch claude/project-thread-c122qc (auf PR #17), Draft-PR #20. Commits e0d6cd5 (Präregistrierung, vor Messung), df5c6cc (Ergebnis).
+
+Aufbau: 64-B-Nachricht der L1-Brücke (Versuch 4, exakt reproduziert, Digest 3c75aad1…) -> Ausrichtung in den Eingabe-Embedding-Raum von Qwen3.5-0.8B Q4_0 -> Kalibrierung auf native Token-Statistik (Normverhältnis 1,00) -> 4 Prefix-Slots über llama.cpp b10964 batch.embd -> Auslesen nur über die eigenen Text-Tokens des Empfängers (eingefrorenes Rückgrat).
+
+Ergebnis (5 Seeds): Prefix 80,2 % | aus 41,5 | vertauscht 37,5 | zufällig 37,8 | EXACT-Text 76,5 | Label-Wort-Text 81,5 | Attribut-Wörter 74,8 | L1 (Adapter) 90,0.
+Urteil: L2 FAIL (einzig fehlendes Kriterium: Nutzen vs. Label-Wort −0,017). Explorative Variante EXACT_ALIGN 77,5 % ebenfalls FAIL.
+Nebenbefunde: L2 9,8 Punkte unter L1; alter Themen-Kopf fällt mit Prefix 100 % -> 40 % (neu trainiert 0 Verlust).
+Folge: B3 bleibt L1_shadow, L3 gesperrt, Autorität 0, Runtime unverändert. Neuer L2-Versuch nur auf Aufgabe ohne billiges Label-Wort (vorher L1 auf escalate/apologize bestehen).
+
+Belege: Repo v13/bench-results/b3-l2-prefix-20261021/ (README, report.json, run.log); Projektordner gleich. Werkzeug code/scripts/native/b3_prefix_embd.cpp, Skript code/scripts/b3_l2_prefix_bench.py, Gate b3bridge.l2_gate.
+
+
+---
+
+## QUELLE: THREAD_Z2C_B1_FRAGE_SCHALTER_20261021.md
+
+# Thread „B1-Frage als Schalter“ (WP-Z2c), 2026-10-21
+
+Branch `claude/project-thread-4ttld7` (Basis Z2b `s439sv`), Draft-PR #19, Commits 061d778 (Code+Tests+Runner, vor Lauf) und 915ff6d (Ergebnis).
+
+- Neue Schalter `body_question_b1` / `body_question_b2` (Standard '' = aus, live unverändert). Feste Frage als jef_query (FILL_GAP) an jedes Körper-Angebot ohne Re-Entry-Fokus. Kettenglied integrated_candidates.body_question, Tests test_body_question.py. Suite 1608, nur Altfehler test_neuro_ledger.
+- Bestätigung Seed 14 (echte Modelle, Linux): Schalter beide both_exact .592 (ohne .375, Z2b-Patch .675); nur B1 .450; b1_only .275 -> .575; 0 falsch in 140 Werkzeug-Zeilen.
+- Frage ist STEP2-spezifisch -> bleibt aus. Offen: Nutzerentscheidung, allgemeine Chat-Frage ungemessen, Paket „B2 liefert Regel-Zitat“, Seed-Bug cognition.offer.
+- Rohdaten: Projektordner v13/bench-results/step2-z2c-switch-20261021/; Befund im Repo docs/proofs/continuation-20261021/step2-z2c-switch/BEFUND.md.
+
+
+---
+
+## QUELLE: V13-Z5b-Koalition-Platzmangel-20261021.md
+
+# WP-Z5b: Fokus-Koalition unter echtem Platzmangel (G-FOCAL-CAPACITY-003), 2026-10-21
+
+Thread „Z5b Koalition mit Platzmangel“, Git-Branch claude/project-thread-bn7n5k (Basis: Z5-Branch hmopsm), Draft-PR #16 (RedMentos/Aii).
+Beleg im Repo: v13/code/bench-results/z5b-capacity-20261021/ (PREREGISTRATION.md, README.md, z5b.json, Logs); Skript v13/code/scripts/z5b_capacity.py; Tests v13/code/tests/test_z5b_capacity.py. Auch im Projektordner v13/code/ gespiegelt.
+
+## Aufbau
+60 neue Aufgaben (update / combine / correction / distract, Saat 11), je 6 gespeicherte Notizen (alle abgerufen, memory_top_k 6), Effort max, 4 Plätze, 5 Läufe, echte Modelle (C3 LFM2.5-350M, B1 LFM2.5-1.2B, B2 Qwen3.5-0.8B), Cloud-CPU. Vorregistriert vor dem Lauf. Wiedergabe-Treue 300/300.
+
+## Ergebnis
+- Platzgrenze greift jetzt in 300/300 Turns (9 Kandidaten für 4 Plätze; in Z5 nie). 11 Verdrängungen.
+- Bestanden/300: ausgeliefert 68, Koalition als Engpass 60, Voll-Kontext 54, feste Slots 55, nur Retrieval 64, ohne Kontext 47.
+- Koalition vs. Voll-Kontext 33:27, p = 0,52, Vorsprung 1,2 je Lauf < Rauschband 4 → „schlägt Voll-Kontext“ FAIL. Nicht schlechter als Retrieval und feste Slots.
+- Eigenschaften 1, 2, 3, 5, 6, 7 gemessen; 4 (Aufnahme nur über Salienz) nie → G-FOCAL-CAPACITY-003 bleibt PARTIAL.
+- Nach Art (ausgeliefert / Koalition / voll / fest / Retrieval / ohne): update 0,23/0,16/0,21/0,15/0,07/0; correction 0,25/0,16/0,05/0,01/0,53/0; distract 0,43/0,48/0,45/0,57/0,25/0,63; combine überall 0.
+
+## Befunde
+1. Unter echtem Platzmangel ist die Koalition nicht besser als „alles in den Kontext“ (Rauschen).
+2. Die Koalition behält oft die falsche Notiz (correction: Retrieval 0,53 vs. Koalition 0,16), weil die Priorität keinen Term für Aktualität/Ersetzung hat.
+3. Im ausgelieferten Pfad gehen abgerufene Notizen an der Koalition vorbei in die Antwort; die Koalition filtert nur Körper-Angebote.
+4. Die Auswahl spart 44 % Kontext ohne messbaren Verlust (Ressourcen-Argument, kein Gate-PASS).
+
+## Abweichungen
+Lauf 5 brach zweimal ab (Container-Neustart; ein Wiedergabe-Arm überschritt das native Kontextfenster). Fehlerbehandlung repariert (Skip statt Absturz, keine Regeländerung), Lauf 5 vollständig neu, ohne Skip.
+
+## Nächster Schritt
+Aktualitäts-/Ersetzungs-Term für Notizen in der Fokus-Priorität, neu vorregistrieren, dieselben 60 Aufgaben gegen dieselben Kontrollen. Aufgaben für Eigenschaft 4 (salienter Kandidat unter der Prioritätsschwelle).
+
+
+---
+
+## QUELLE: THREAD_Z2B_STEP2_SEEDS_20261021.md
+
+# Thread „Z2b STEP2 mit mehreren Seeds“ (2026-10-21)
+
+Branch `claude/project-thread-s439sv` (Basis: Z2-Branch hsm0ga), Draft-PR #18. Vorregistrierung f5b9d03, Ergebnis f7d9611.
+Belege: v13/code/docs/proofs/continuation-20261021/step2-z2b-seeds/ (PREREG.md, BEFUND.md), v13/code/bench-results/step2-z2b-seeds-20261021/. Volle STEP2-Berichte liegen im Projektordner v13/bench-results/step2-z2b-seeds-20261021/.
+
+## Was gemacht wurde
+- Arme C/D (wie Z2) und CQ/DQ: dazu eine feste gezielte Frage über jef_query, nur in der aktuellen Runde. B2 soll die früheren Regeln zitieren, B1 die Optionswerte. Alles mal Seeds 14/15/16, ergibt 840 Zeilen plus Werkzeug-Replay. Echte Modelle, Linux-Cloud, kein Redmi.
+- Fund vor dem Lauf: Die Körper-Angebote haben cfg['seed'] nie benutzt (immer Seed 13). Das ist im Skript behoben, der Live-Code ist unverändert.
+
+## Ergebnis
+- Z2B_DIVERGENCE_NOT_SUPPORTED: Zwei Körper liegen bei .611, B1 allein bei .592, Differenz +.019 (CI −.075 bis +.106). Ein Körper mit zwei Zuständen ist gleich gut.
+- Z2 war Rauschen: C both_exact schwankt über die Seeds zwischen .308 und .450. Zwischen Qwen und LFM als B2 zeigt sich kein klarer Unterschied.
+- Die gezielte Frage hilft klar: +.23 (CI +.12 bis +.34). B1 liefert die Optionswerte dann in 170 statt 63 von 210 Zeilen.
+- 0 falsch festgelegte Entscheidungen.
+- Engpass ist jetzt B2: Es zitiert die alte Regel nur in etwa ¼ der Zeilen.
+
+## Offen
+(a) Nutzerentscheidung, ob die gezielte B1-Frage als Schalter (aus) in den Live-Pfad kommt. (b) Paket „B2 liefert das Regel-Zitat“. (c) cognition.offer soll seed=cfg['seed'] übergeben.
+
+
+---
+
+## QUELLE: THREAD_R_B3L1_V4_UND_SCHLUESSELTRENNUNG_20261021.md
+
+# Thread „Nächste Pakete R“ – 2026-10-21
+
+Branch `claude/project-thread-8hlx74` (Basis `claude/project-thread-0zelvf`), Draft-PR #17. Commits: eaf49b7 (Prereg B3 v4), f2f6976 (Fix + Prereg v3), f09ef8b (nativer Scope-Fix + Prereg v3b), ffc3d8e (Ergebnisse + Doku).
+
+## WP-Z4 B3 L1 Versuch 4 – L1 PASS auf private/action
+- Frische Saat 20261021 (600 Zeilen, 0 Überschneidung mit Versuch 3), neue B1 LFM2.5-1.2B / B2 Qwen3.5-0.8B Zustände (b10964), aux-Brücke (U,F nur Training), Gate unverändert.
+- action: LATENT 90,0 % (ohne aux 80,0; SYMBOLIC 81,5; Attribut-Wörter 76,7; SCALAR 85,2) -> Kanon-L1 PASS (Rollen-Verlust 0, OOD 1,3 %, Reload bitgleich). escalate 83,0 / apologize 85,0 -> FAIL gegen Attribut-Wörter. Strikt gegen SCALAR FAIL.
+- Folge: nur L2-Prefix-SHADOW für private/action erlaubt (nächstes Paket Z4b); Autorität 0, Runtime unverändert.
+- Belege: Projektordner v13/bench-results/b3-l1-v4-20261021/ (inkl. states.npz 231 MB), Git ohne states.
+
+## Native Firing-Diagnostik / WP-T9 v3 – Schlüsseltrennung
+- Ursachen falschen Feuerns: gemeinsame Guard-Wörter („favourite“) und Guard auf ganzem Prompt (Exakt-Block öffnet fremde Slots).
+- Fix (Standard aus): guard_distinct + guard_vocab, guard_scope='last_user' (torch + nativ; V13SMEM1 Feld 6 = 2+Marker).
+- v3: fremdes Feuern 24->17 Zeilen, auf Faktfragen 4->0. Nativen Fehler gefunden (Scope nur im Cache-Präfix), behoben, v3b: combined 84->17, selektiv 25->16.
+- KEY_SEPARATION_SUPPORTED; SELECTIVE_DOES_NOT_WIN (2:5 gegen exakt, vorher 2:9; Verluste = falsche Spur-Werte auf Paraphrasen).
+- Belege: v13/bench-results/selective-delivery-v3-20261021/ (+ v3b/).
+
+## Sonst
+- b3bridge.save übernahm alte Revisionen -> behoben + Test.
+- 19 fehlende §102-Belegordner ins Git, test_neuro_ledger grün. Suite 1591 Tests.
+- Zwei Läufe wurden durch einen Container-Neustart abgebrochen (vor Ergebnissen), danach neu gestartet.
+
+## Offen
+- Z4b: L2-Prefix-SHADOW für private/action (vorregistrieren).
+- Schnelle Spur: Wertqualität auf Paraphrasen (z. B. Paraphrase-Kontexte beim Schlüssel-Schreiben).
+
+
+---
+
+## QUELLE: V13-Z5-Fokus-Koalition-20261021.md
+
+# WP-Z5 Fokus-Koalition gegen §99-Kontrollen (2026-10-21)
+
+Git: RedMentos/Aii, Branch claude/project-thread-hmopsm @ db31f9c, PR #15 (Basis claude/project-thread-rxq188).
+Belege: v13/code/bench-results/z5-focal-controls-20261021/ (PREREGISTRATION.md, README.md, z5.json), Skript scripts/z5_focal_controls.py, Tests tests/test_z5_focal_controls.py.
+
+Aufbau: 60 WP-T3b-Aufgaben x 5 Läufe, echte Modelle, Effort max. Kontroll-Arme im selben Turn aus denselben Angeboten an dasselbe Organ (C5 wählte B1 165x, B2 135x, nie C3). Wiedergabe-Treue 300/300.
+
+Bestanden (300): Koalition 186, Voll-Kontext 183, feste Slots 193, Retrieval 184, ohne Hypothesen 195.
+Gepaart: vs Voll 17:14 p 0,72; vs feste Slots 15:22 p 0,32; vs Retrieval 32:30 p 0,90. Rauschband 7.
+Verdikt: schlägt Voll-Kontext FAIL; nicht schlechter als Retrieval/feste Slots. G-FOCAL-CAPACITY-003 bleibt PARTIAL.
+7 Eigenschaften: Wettbewerb 201/886 abgelehnt, Re-entry 289/300, Quellbindung 685/685, Halten/Wiederherstellen 886/886 ja. Kapazitätsgrenze, Ersetzung, Interrupt 0 (max. 3 Kandidaten bei 4 Slots).
+Nach Art: Hypothesen helfen bei summary (0,57 -> 0,71), schaden bei compare (0,33 -> 0,12).
+Lauf 5 nach Sitzungsabbruch komplett neu gefahren.
+Nächster Schritt: neue Vorregistrierung mit Kapazitätsdruck (Ablenker-Erinnerungen, mehrere Turns, Embedding-Retrieval).
+
+
