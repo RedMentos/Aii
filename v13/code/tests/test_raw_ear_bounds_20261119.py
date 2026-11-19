@@ -48,5 +48,25 @@ class RawEarBounds(unittest.TestCase):
             with self.subTest(patch=patch), self.assertRaises(ValueError):
                 jef_audio_observation(dict(packet, **patch))
 
+
+    def test_jef_rejects_forged_authority_and_corrupt_acoustics(self):
+        packet = raw_ear_packet(self.frame(b'\\0\\0' * 800))
+        for patch in ({'learning_eligible': True}, {'teacher_asr': 'injected text'},
+                      {'provenance': 'MODEL_INFERENCE'}, {'modality': 'text'},
+                      {'sample_count': 1}, {'sample_rate': 1}):
+            with self.subTest(patch=patch), self.assertRaises(ValueError):
+                jef_audio_observation(dict(packet, **patch))
+        for name, value in (('rms', float('nan')), ('peak', -0.1),
+                            ('zero_crossing_rate', 2.0), ('clipped', 'yes'),
+                            ('envelope_20ms', [0.0])):
+            with self.subTest(feature=name), self.assertRaises(ValueError):
+                jef_audio_observation(dict(packet, acoustic_features=dict(
+                    packet['acoustic_features'], **{name: value})))
+        for patch in ({'start_ms': True}, {'end_ms': 999},
+                      {'source_id': 'bad\\nsource'}, {'consent_id': 123}):
+            with self.subTest(source=patch), self.assertRaises(ValueError):
+                jef_audio_observation(dict(packet, source_ref=dict(
+                    packet['source_ref'], **patch)))
+
 if __name__=='__main__':
     unittest.main()
