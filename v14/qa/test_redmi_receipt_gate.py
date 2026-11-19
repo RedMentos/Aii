@@ -64,6 +64,17 @@ class GateTests(unittest.TestCase):
     def test_unhashable_identifiers_are_blocked_not_crash(self):
         x=rows();x[0]["turn_id"]=["malformed"];x[1]["receipt_id"]={"bad":"id"}
         self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+    def test_reject_unknown_fields_even_without_private_key_names(self):
+        x=rows(); x[0]["notes"]="private chat content under innocent field"
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
+        self.assertEqual(evaluate({"turns":rows(),"debug":"private"})["status"],"INVALID")
+    def test_both_organs_must_be_consumed_in_same_cross_organ_turn(self):
+        x=rows()
+        cross=[r for r in x if r["scenario"]=="cross_organ"]
+        for r in cross: r["b2_consumed"]=0
+        cross[0]["b1_consumed"]=0
+        cross[0]["b2_consumed"]=1
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
     def test_missing_input(self):
         self.assertEqual(evaluate({"turns":None})["status"],"INVALID")
 
