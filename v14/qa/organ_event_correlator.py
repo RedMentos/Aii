@@ -8,6 +8,8 @@ def correlate(events):
     if not isinstance(events,list):
         return {"status":"INVALID","errors":["events must be a list"]}
     errors=[]; ids=set(); turns=defaultdict(list)
+    if not events:
+        errors.append("no events")
     for i,e in enumerate(events):
         if not isinstance(e,dict) or set(e)!=FIELDS:
             errors.append(f"event {i}: invalid schema"); continue
@@ -32,16 +34,19 @@ def correlate(events):
                 errors.append(f"{turn}: broken source/consumer/time chain");continue
             consumed.add((role,oid,seq[0]["source_id"]))
         inputs=[e for e in rows if e["kind"]=="c3_input"]
-        used=set()
+        used=set(); valid_inputs=[]
         for e in inputs:
             key=(e["role"],e["offer_id"],e["source_id"])
             if key not in consumed or e["consumer"]!="C3":
                 errors.append(f"{turn}: unproven C3 input");continue
             if e["timestamp_ms"]<=max(x["timestamp_ms"] for x in offers[(e["role"],e["offer_id"])]):
                 errors.append(f"{turn}: C3 input predates C4 consumption");continue
-            used.add(e["role"])
+            used.add(e["role"]); valid_inputs.append(e)
         finals=[e for e in rows if e["kind"]=="final"]
-        if len(finals)!=1 or finals[0]["consumer"]!="USER" or not inputs or finals[0]["timestamp_ms"]<=max(e["timestamp_ms"] for e in inputs):
+        if (len(finals)!=1 or finals[0]["consumer"]!="USER" or finals[0]["role"]!="C3"
+            or not valid_inputs or len(valid_inputs)!=len(inputs)
+            or finals[0]["timestamp_ms"]<=max(e["timestamp_ms"] for e in inputs)
+            or any(e["source_id"]!=finals[0]["source_id"] for e in valid_inputs)):
             errors.append(f"{turn}: missing/early final")
-        result[turn]={"b1_c3_used":"B1" in used,"b2_c3_used":"B2" in used,"cross_organ_trace":used=={"B1","B2"} and len(finals)==1}
+        result[turn]={"b1_c3_used":"B1" in used,"b2_c3_used":"B2" in used,"cross_organ_trace":used=={"B1","B2"} and len(finals)==1 and not errors}
     return {"status":"TRACE_CONSISTENT" if not errors else "BLOCKED","independent_device_proof":False,"native_weight_proof":False,"turns":result,"errors":errors}
