@@ -48,6 +48,9 @@ class GateTests(unittest.TestCase):
         self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
     def test_invalid_root(self):
         self.assertEqual(evaluate([])["status"],"INVALID")
+    def test_unhashable_identifiers_are_blocked_not_crash(self):
+        x=rows();x[0]["turn_id"]=["malformed"];x[1]["receipt_id"]={"bad":"id"}
+        self.assertEqual(evaluate({"turns":x})["status"],"BLOCKED")
     def test_missing_input(self):
         self.assertEqual(evaluate({"turns":None})["status"],"INVALID")
 
