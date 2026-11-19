@@ -34,6 +34,8 @@ def percentile(values, q):
 def evaluate(data):
     if not isinstance(data, dict):
         return {"status": "INVALID", "errors": ["top level must be an object"]}
+    if set(data) != {"turns"}:
+        return {"status": "INVALID", "errors": ["unexpected top-level fields"]}
     rows = data.get("turns")
     if not isinstance(rows, list):
         return {"status": "INVALID", "errors": ["turns must be an array"]}
@@ -45,6 +47,9 @@ def evaluate(data):
         if not isinstance(row, dict):
             errors.append(f"turn {i}: not an object")
             continue
+        extra = row.keys() - set(REQUIRED)
+        if extra:
+            errors.append(f"turn {i}: unexpected fields (sanitized schema only)")
         missing = set(REQUIRED) - row.keys()
         if missing:
             errors.append(f"turn {i}: missing {sorted(missing)}")
@@ -87,9 +92,9 @@ def evaluate(data):
     # Cross-organ evidence must be consumed on the cross-organ scenario itself.
     # Consumed greeting offers do not demonstrate a B1/B2 -> C4 -> C3 path.
     cross = [r for r in rows if isinstance(r, dict) and r.get("scenario") == "cross_organ"]
-    for organ in ("b1", "b2"):
-        if not any(type(r.get(f"{organ}_consumed")) is int and r[f"{organ}_consumed"] > 0 for r in cross):
-            errors.append(f"no cross_organ turn consumed {organ} offers")
+    if not any(all(type(r.get(f"{organ}_consumed")) is int and r[f"{organ}_consumed"] > 0
+                   for organ in ("b1", "b2")) for r in cross):
+        errors.append("no single cross_organ turn consumed both B1 and B2 offers")
     if len(shas) != 1:
         errors.append("mixed installed release SHAs")
     for organ in ("b1", "b2"):
