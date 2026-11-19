@@ -2,7 +2,7 @@
 **Datum:** 19.11.2026
 **Status:** Historisches Quellenarchiv, Implementierungs- und Integrationsplan. Kein Zeugnis, dass jeder enthaltene historische Erfolg heute noch auf Gerät und aktivem Branch gilt.
 
-**Lies zuerst:** ../v14/V14_CANONICAL_BLUEPRINT_20261119.md. Der dortige Hauptteil ist der neue normative V14-Entwurf; dieses Buch bewahrt die danach entstandenen GitHub-/Drive-Arbeitspakete, Nutzerentscheidungen, Lücken- und Arbeitsregeln vollständig als lesbare Anhänge, sodass die über Jahre gewachsenen Pläne und Patches nicht im Neuformulierungsprozess verlorengehen.
+**Lies zuerst:** [V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md), die verbindliche V14-Masterfassung; als ergänzende technische Kommentierung [V14_CANONICAL_BLUEPRINT_20261119.md](V14_CANONICAL_BLUEPRINT_20261119.md). Dieses Quellenbuch ist kein eigener konkurrierender Canon; dieses Buch bewahrt die danach entstandenen GitHub-/Drive-Arbeitspakete, Nutzerentscheidungen, Lücken- und Arbeitsregeln vollständig als lesbare Anhänge, sodass die über Jahre gewachsenen Pläne und Patches nicht im Neuformulierungsprozess verlorengehen.
 
 ## 0. Ganzes Ziel und Aufteilung
 
