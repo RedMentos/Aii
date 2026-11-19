@@ -6,6 +6,8 @@ from math import sqrt
 import hashlib
 import struct
 
+MAX_AUDIO_FRAME_MS = 30000  # bounded local observation, not a microphone permission
+
 @dataclass(frozen=True)
 class AudioFrame:
     source_id: str
@@ -23,6 +25,14 @@ def raw_ear_packet(frame: AudioFrame):
         raise PermissionError('source and explicit consent required')
     if frame.sample_rate not in (8000,16000,24000,32000,44100,48000):
         raise ValueError('unsupported sample rate')
+    if type(frame.start_ms) is not int or type(frame.end_ms) is not int:
+        raise ValueError('integer timestamps required')
+    if type(frame.final) is not bool:
+        raise ValueError('final flag must be bool')
+    if not isinstance(frame.pcm16le, bytes):
+        raise ValueError('PCM16LE bytes required')
+    if len(frame.pcm16le)>frame.sample_rate*2*MAX_AUDIO_FRAME_MS//1000:
+        raise ValueError('audio frame exceeds bounded duration')
     if not frame.pcm16le or len(frame.pcm16le)%2:
         raise ValueError('invalid PCM16LE')
     n=len(frame.pcm16le)//2
@@ -46,7 +56,7 @@ def raw_ear_packet(frame: AudioFrame):
 
 def jef_audio_observation(packet):
     """Structured A5->JEF adapter; not a native JEF runtime hook or permission grant."""
-    if packet.get('schema')!='v13.a5.raw_ear/1' or not packet.get('source_ref',{}).get('consent_id'):
+    if not isinstance(packet, dict) or packet.get('schema')!='v13.a5.raw_ear/1' or not isinstance(packet.get('source_ref'),dict) or not packet['source_ref'].get('consent_id') or not packet['source_ref'].get('source_id') or packet.get('status') not in ('PROVISIONAL','FINAL') or not isinstance(packet.get('acoustic_features'),dict):
         raise ValueError('untrusted A5 audio packet')
     return {'kind':'A5_AUDIO_OBSERVATION','source_ref':dict(packet['source_ref']),
       'status':packet['status'],'features':dict(packet['acoustic_features']),
