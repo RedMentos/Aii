@@ -41,12 +41,35 @@ from v13 import source_updater as u
 from v13 import runtime_deploy as d
 
 remote = Path(sys.argv[1])
+fetch_trace = []
 def local_fetch(root, branch):
+    # The fake network transport must populate the actual local Git objects
+    # and move the tracking ref to the *advertised* local bare tip. The remote
+    # and commit object are real, only GitHub networking and CI are mocked.
     ref = 'refs/remotes/origin/' + branch
-    u.git(root, 'fetch', '--no-tags', str(remote),
-          'refs/heads/' + branch + ':' + ref, timeout=90)
-    return u.git(root, 'rev-parse', ref)
-
+    audit = {'checkout': Path(root).name, 'stage': 'entry'}
+    fetch_trace.append(audit)
+    try:
+        before = u.git(root, 'rev-parse', ref)
+        bare_tip = u.git(remote, 'rev-parse', 'refs/heads/' + branch)
+        audit.update(stage='read_bare', old_tracking=before, bare_tip=bare_tip)
+        u.git(root, 'fetch', '--no-tags', str(remote),
+              'refs/heads/' + branch, timeout=90)
+        # Never claim a tip was fetched until the exact commit object exists
+        # and the expected tracking reference atomically advances.
+        u.git(root, 'cat-file', '-e', bare_tip + '^{commit}')
+        if bare_tip != before:
+            u.git(root, 'merge-base', '--is-ancestor', before, bare_tip)
+            u.git(root, 'update-ref', ref, bare_tip, before)
+        after = u.git(root, 'rev-parse', ref)
+        if after != bare_tip:
+            raise u.UpdateDenied('Local remote ref did not advance to fetched commit')
+        audit.update(stage='complete', new_tracking=after)
+        return after
+    except Exception as exc:
+        audit['failure_class'] = type(exc).__name__
+        audit['failure_summary'] = str(exc)[:128]
+        raise
 # Only the remote transport, exact-SHA CI response and live stop are simulated.
 u._fetch = local_fetch
 u.ci_passed = lambda commit, scope='runtime': True
@@ -64,7 +87,8 @@ else:
         p.set_enabled(True)
     result = relay._run_pending_migration_after_reload(p)
 print(json.dumps({'result': result, 'profile': d.BUILD_PROFILE,
-                  'module_path': str(Path(d.__file__).resolve())}))
+                  'module_path': str(Path(d.__file__).resolve()),
+                  'fetch_trace': fetch_trace}))
 """
 
 
@@ -115,7 +139,16 @@ def exercise_worker_migration(base):
         old = worker('old')
         assert old['module_path'].startswith(str(agent) + os.sep)
         assert old['profile'] == 'raw-runtime-plain-ui-history-recovery-v1'
-        assert old['result']['last_result'] == 'UPDATED', old
+        if old['result']['last_result'] != 'UPDATED':
+            diagnostics = {'last_result': old['result'].get('last_result'),
+                           'runtime': old['result'].get('runtime'),
+                           'dashboard': old['result'].get('dashboard'),
+                           'last_error': old['result'].get('last_error'),
+                           'fetch_trace': old.get('fetch_trace', [])}
+            # The only paths are disposable temporary checkout labels; no phone
+            # transcripts, URLs or user account data are emitted here.
+            print('MIGRATION_FETCH_DIAG ' + json.dumps(diagnostics, sort_keys=True))
+            raise AssertionError('Old worker rejected actual Git migration; see diagnostic above')
         # A one-click update may find the dashboard already checked out at
         # the exact target while the model launcher still needs staging.
         # UP_TO_DATE is correct for that individual checkout; require the
@@ -128,10 +161,21 @@ def exercise_worker_migration(base):
             local = git('rev-parse', 'HEAD', cwd=checkout)
             tracking = git('rev-parse',
                 'refs/remotes/origin/' + RELEASE_BRANCH, cwd=checkout)
-            assert local == target, {'old': old, 'checkout': checkout.name,
-                                     'local': local, 'tracking': tracking,
-                                     'bare': git('--git-dir', remote, 'rev-parse',
-                                                 'refs/heads/' + RELEASE_BRANCH)}
+            if local != target:
+                # Failure detail contains only synthetic Git SHA refs and
+                # enum/status fields from a disposable local bare repo.
+                diagnosis = {'checkout': checkout.name, 'local': local,
+                             'tracking': tracking,
+                             'expected': target,
+                             'bare': git('--git-dir', remote, 'rev-parse',
+                                         'refs/heads/' + RELEASE_BRANCH),
+                             'fetch_trace': old.get('fetch_trace', []),
+                             'worker': {k: old['result'].get(k) for k in
+                                        ('last_result','runtime','dashboard',
+                                         'last_error','updated_commit')}}
+                raise AssertionError('Two-checkout ref discrepancy: ' +
+                                     json.dumps(diagnosis, sort_keys=True))
+
         assert (agent / 'v13/code/v13/mobile_dashboard.html').is_file()
         assert (agent / 'v13/code/v13/mobile_dashboard.py').is_file()
         for name in ('mobile_dashboard.py', 'mobile_dashboard.html'):

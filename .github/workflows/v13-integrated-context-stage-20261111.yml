@@ -24,7 +24,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-          fetch-depth: 64
+          # Old sparse-phone migration reproduces a remote with two successive
+          # full-history checkouts; a 64-commit shallow source can report a
+          # fetched tip while missing ancestry in its shared object database.
+          fetch-depth: 0
       - name: Verify the history needed by the phone migration test
         env:
           V13_TEST_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -42,6 +45,11 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.2.6
+      - name: Verify real-Git old-phone migration in fresh Python process
+        working-directory: v13/code
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m pytest -q -s tests/test_two_checkout_migration_20261116.py
       - name: Stage, source recall, SQLite turn, revocation and JEPA restart
         working-directory: v13/code
         env:
@@ -72,7 +80,6 @@ jobs:
           tests/test_record_only_online_guard_20261116.py
           tests/test_record_only_controller_guard_20261116.py
           tests/test_runtime_deploy_integrated_20261116.py
-          tests/test_two_checkout_migration_20261116.py
           tests/test_audio_pcm_a5_bridge.py
           tests/test_exact_arithmetic.py
           tests/test_latent_bridge.py
