@@ -1,3 +1,5 @@
+**Team-Betrieb und proaktives Nutzer-Update:** [Fünf stündliche Fachagenten als ein Entwicklungsteam](V14_TEAM_OPERATING_SYSTEM.md) · [gemeinsames Prioritäten-/Testboard](V14_WORK_BOARD.json) · [nächste verifizierte Nutzeraktion und mögliche Modell-Vorschläge](V14_USER_NEXT_ACTION.md). Bevor neue Termux-Schritte verlangt werden, selbst auf GitHub pushen, in der Integrationskette testen und den vorhandenen Updatepfad prüfen; **GitHub-Push ist keine bestätigte Installation auf Android**. Modellwechsel werden erst nach echten Tests und separater Zustimmung vorgeschlagen.
+
 # V14 / Inquisition-JEPA — LIVE, 20.11.2026
 
 **Ein einziger aktiv gepflegter Canon, plus unveränderliche Sicherungen.** Künftige Agenten bearbeiten den bestehenden V14-Master **direkt** nach überprüfter Sicherung und synchronisieren Lesefassung, laufenden Arbeitsplan und Forschungsjournal. Die ursprünglichen V13-Quellen in Teil III bleiben als wortgetreues Archiv erhalten.
