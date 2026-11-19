@@ -84,6 +84,12 @@ def evaluate(data):
                 errors.append(f"turn {i}: invalid {organ} offer accounting")
     if scenarios != SCENARIOS:
         errors.append("missing required diverse scenarios: " + ",".join(sorted(SCENARIOS - scenarios)))
+    # Cross-organ evidence must be consumed on the cross-organ scenario itself.
+    # Consumed greeting offers do not demonstrate a B1/B2 -> C4 -> C3 path.
+    cross = [r for r in rows if isinstance(r, dict) and r.get("scenario") == "cross_organ"]
+    for organ in ("b1", "b2"):
+        if not any(type(r.get(f"{organ}_consumed")) is int and r[f"{organ}_consumed"] > 0 for r in cross):
+            errors.append(f"no cross_organ turn consumed {organ} offers")
     if len(shas) != 1:
         errors.append("mixed installed release SHAs")
     for organ in ("b1", "b2"):
