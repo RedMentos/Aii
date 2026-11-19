@@ -37,6 +37,17 @@ class CorrelationTests(unittest.TestCase):
     def test_private_fields_rejected(self):
         x=trace();x[0]["prompt"]="private"
         self.assertEqual(correlate(x)["status"],"BLOCKED")
+    def test_empty_not_consistent(self):
+        self.assertEqual(correlate([])["status"],"BLOCKED")
+    def test_wrong_final_role(self):
+        x=trace();x[-1]["role"]="B1"
+        self.assertEqual(correlate(x)["status"],"BLOCKED")
+    def test_wrong_final_source(self):
+        x=trace();x[-1]["source_id"]="unrelated"
+        self.assertEqual(correlate(x)["status"],"BLOCKED")
+    def test_unproven_extra_input(self):
+        x=trace();x.insert(-1,dict(x[3],event_id="rogue",offer_id="unknown"))
+        self.assertEqual(correlate(x)["status"],"BLOCKED")
     def test_out_of_order(self):
         x=trace();x[1]["timestamp_ms"]=0
         self.assertEqual(correlate(x)["status"],"BLOCKED")
