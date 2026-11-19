@@ -1029,3 +1029,29 @@ Git: Branch `claude/project-thread-0zelvf` (Draft-PR https://github.com/RedMento
 6. Git-Konsolidierung: welcher Branch ist Hauptstand (PR #2/#3/#4/#5).
 
 
+
+---
+
+## QUELLE: Thread_N_Sicherung_2026-10-13.md
+
+# V13 Thread „Nächste offene Pakete N“ – Sicherungsnotiz 2026-10-13
+
+Repo: RedMentos/Aii, Branch `claude/project-thread-lmo0ri`, HEAD `434b19b` (Remote geprüft). Basis: Branch von Thread H (`claude/project-thread-3w32al`).
+Gleicher Stand liegt im geteilten Projektordner `v13/code/` (Live-Kopie aller Threads).
+
+| Paket | Commit | Inhalt |
+|---|---|---|
+| WP-N16 §97.2 | e60340b | Ressourcen-Modi GREEN/YELLOW/ORANGE/RED (`v13/resource_modes.py`), im Turn, Effort, Bodies, Sleep, Lern-Jobs |
+| WP-N17 §22.2.4/§73 | 9a190fc | Observer-Scheduling-Regler (`v13/observer_schedule.py`), RSS-Budget als Modus-Eingang |
+| WP-N18 G13 | c94eb00 | Langlauf-Soak `scripts/longrun_soak.py`; Fix: Wach-Replays verdrängten Nacht-Schlaf (`v13/sleep.py`) |
+| WP-N19 B3-H10/H11 | f06696c | Degradations-Leiter + 10 Auslöser (`v13/b3degrade.py`), `:doctor`-Pflichtfelder |
+| WP-N20 B3-H4/H5/H9 | bbedb57 | Empfänger-Kalibrierungspaket + hartes Tor (`v13/b3calibration.py`) |
+| WP-N21 | bd356d3 | Körper-Größen aus RAM-Messung (`v13/body_sizes.py`, `specs/body-sizes.json`) |
+| WP-N22 B3-H8 | ff214a0 | Trainingsreihenfolge erzwungen (`v13/b3order.py`) |
+| – | 434b19b | `.gitignore` für Python-Caches |
+
+Volle Suite 1333 OK / 4 Skips (Linux-Softwaretest, kein Redmi). Doku: `code/docs/RESOURCE_MODES.md`, `LONGRUN_SOAK.md`, `B3_DEGRADATION.md`.
+Offen: Redmi-Messungen (WP-R): `:resources calibrate`, RAM-Bench von Thread P + `:resources bodies import <json>`, `longrun_soak.py --native`.
+Keine privaten Daten im Repo geprüft (keine Tokens, E-Mails, Geräte-IDs).
+
+
