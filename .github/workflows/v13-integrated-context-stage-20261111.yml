@@ -24,7 +24,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-          fetch-depth: 64
+          # Old sparse-phone migration reproduces a remote with two successive
+          # full-history checkouts; a 64-commit shallow source can report a
+          # fetched tip while missing ancestry in its shared object database.
+          fetch-depth: 0
       - name: Verify the history needed by the phone migration test
         env:
           V13_TEST_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
