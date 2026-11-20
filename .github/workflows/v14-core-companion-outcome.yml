@@ -4,6 +4,7 @@ on:
     branches: ['gpt6/v14-core-companion-outcome-20261121']
   pull_request:
     paths:
+      - 'v13/code/v13/contracts.py'
       - 'v13/code/v13/android_control.py'
       - 'v13/code/v13/android_outcomes.py'
       - 'v13/code/v13/android_companion_protocol.py'
@@ -21,6 +22,6 @@ jobs:
       - name: Install test runner
         run: python -m pip install pytest
       - name: Compile companion boundary
-        run: python -m py_compile v13/code/v13/android_control.py v13/code/v13/android_outcomes.py v13/code/v13/android_companion_protocol.py v13/code/tests/test_android_companion_outcome_adapter.py
+        run: python -m py_compile v13/code/v13/contracts.py v13/code/v13/android_control.py v13/code/v13/android_outcomes.py v13/code/v13/android_companion_protocol.py v13/code/tests/test_android_companion_outcome_adapter.py
       - name: Run existing and new Android control regressions
         run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_android_control.py v13/code/tests/test_android_outcomes.py v13/code/tests/test_android_companion_protocol.py v13/code/tests/test_android_companion_outcome_adapter.py
