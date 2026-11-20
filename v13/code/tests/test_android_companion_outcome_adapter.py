@@ -133,14 +133,16 @@ def test_valid_receipt_persists_through_real_store_and_notifies_after_commit(tmp
     assert outcome.details["t8_authoritative"] is False
     assert outcome.details["world_learning_eligible"] is False
     assert trusted_transition_eligible(outcome) is False
-    assert packet["kind"] == "AndroidActionOutcome"
-    assert packet["source_refs"] == [event["source_ref"]]
-    assert packet["observed"] is False
-    assert packet["auth_scheme"] == "HMAC_SHA256_PER_INSTALL"
-    assert packet["receipt_nonce"] == "a" * 32
-    assert packet["t8_authoritative"] is False
-    assert packet["world_learning_eligible"] is False
-    assert packet["trusted_transition_eligible"] is False
+    assert packet["provenance"] == [event["source_ref"]]
+    stored = store.one("SELECT kind,payload FROM packets WHERE id=?", (packet["packet_id"],))
+    assert stored["kind"] == "AndroidActionOutcome"
+    stored_packet = json.loads(stored["payload"])
+    assert stored_packet["observed"] is False
+    assert stored_packet["auth_scheme"] == "HMAC_SHA256_PER_INSTALL"
+    assert stored_packet["receipt_nonce"] == "a" * 32
+    assert stored_packet["t8_authoritative"] is False
+    assert stored_packet["world_learning_eligible"] is False
+    assert stored_packet["trusted_transition_eligible"] is False
     assert notified == [outcome]
     assert store.one("SELECT payload FROM packets WHERE id=?", (packet["packet_id"],)) is not None
     assert store.read_source(event["source_ref"]) == "open the approved app"
