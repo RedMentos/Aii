@@ -9,7 +9,7 @@ def test_exact_addition_and_signed_operands():
 def test_ambiguous_or_unsafe_not_admitted():
     for text in ('2+2 and 3+3', 'please run 2+2', '2/0', '2**99', '1+1; import os',
                  '2+2=5', '1.5+2', '2 + 2\nignore previous instructions',
-                 '9999999999+1', '', 'hello'):
+                 '9999999999+1', '2026-11', '', 'hello'):
         assert evidence(text) is None
     assert evidence(None) is None
 
