@@ -160,7 +160,7 @@ class AndroidControlBroker:
                 "args": dict(p.args),
                 "digest": p.digest,
                 "expires_at": p.expires_at,
-                "local_approval": "LOCAL_UI_CONFIRMED",
+                "local_approval": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
                 "companion_local_consent_required": True,
                 "android_os_permission_required": True,
                 "permission_bypass": False,
