@@ -1,0 +1,70 @@
+"""Verify signed Android-side receipts. This does not execute Android actions."""
+import hashlib
+import hmac
+import json
+import sqlite3
+import time
+
+SCHEMA = "v14.android-companion-receipt/1"
+
+class CompanionDenied(PermissionError):
+    pass
+
+def sign_fixture(secret, body):
+    """Fixture signer; real signing belongs to the Android companion."""
+    raw = json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
+    return hmac.new(secret, raw, hashlib.sha256).hexdigest()
+
+class ReceiptVerifier:
+    """Fail-closed, durable replay check for independent Android-side consent receipts."""
+    def __init__(self, path, secret, *, clock=None):
+        if type(secret) is not bytes or len(secret) < 32:
+            raise ValueError("per-installation secret must have >=32 bytes")
+        self.secret = secret
+        self.clock = clock or time.time
+        self.db = sqlite3.connect(str(path))
+        self.db.execute("CREATE TABLE IF NOT EXISTS used_receipts (nonce TEXT PRIMARY KEY, action_id TEXT NOT NULL)")
+        self.db.commit()
+        self.stopped = True
+
+    def start(self):
+        self.stopped = False
+
+    def stop(self):
+        self.stopped = True
+
+    def verify(self, envelope, receipt):
+        if self.stopped:
+            raise CompanionDenied("stopped")
+        if type(envelope) is not dict or type(receipt) is not dict or set(receipt) != {"body", "mac"}:
+            raise CompanionDenied("invalid receipt")
+        b = receipt["body"]
+        fields = {"schema", "nonce", "action_id", "capability", "digest", "issued_at",
+                  "expires_at", "status", "local_consent"}
+        if type(b) is not dict or set(b) != fields:
+            raise CompanionDenied("invalid fields")
+        if any(type(b[k]) is not str for k in ("schema", "nonce", "action_id", "capability", "digest", "status")):
+            raise CompanionDenied("invalid types")
+        if b["schema"] != SCHEMA or b["status"] != "EXECUTED" or b["local_consent"] is not True:
+            raise CompanionDenied("no confirmed execution")
+        if len(b["nonce"]) != 32 or any(c not in "0123456789abcdef" for c in b["nonce"]):
+            raise CompanionDenied("invalid nonce")
+        if type(b["issued_at"]) not in (int, float) or type(b["expires_at"]) not in (int, float):
+            raise CompanionDenied("invalid time")
+        now = self.clock()
+        if not b["issued_at"] <= now <= b["expires_at"] or b["expires_at"] - b["issued_at"] > 60:
+            raise CompanionDenied("expired receipt")
+        if any(b[k] != envelope.get(k) for k in ("action_id", "capability", "digest")):
+            raise CompanionDenied("scope mismatch")
+        if type(receipt["mac"]) is not str or not hmac.compare_digest(sign_fixture(self.secret, b), receipt["mac"]):
+            raise CompanionDenied("invalid authentication")
+        try:
+            with self.db:
+                self.db.execute("INSERT INTO used_receipts VALUES (?,?)", (b["nonce"], b["action_id"]))
+        except sqlite3.IntegrityError as exc:
+            raise CompanionDenied("replay") from exc
+        return {"schema": SCHEMA, "action_id": b["action_id"],
+                "status": "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED", "t8_authoritative": False}
+
+    def close(self):
+        self.db.close()
