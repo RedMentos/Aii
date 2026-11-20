@@ -201,7 +201,7 @@ def test_companion_persistence_is_idempotent_after_store_restart(tmp_path):
     reopened = Store(home)
     second = persist_companion_outcome(reopened, outcome)
     assert second["packet_id"] == first["packet_id"]
-    assert len(reopened.rows("SELECT id FROM packets WHERE kind='AndroidActionOutcome'")) == 1
+    assert len(reopened.rows("SELECT id FROM packets WHERE kind='ActionOutcome'")) == 1
     reopened.close()
     broker.close()
     verifier.close()
