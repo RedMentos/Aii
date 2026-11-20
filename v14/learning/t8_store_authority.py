@@ -155,9 +155,13 @@ def _verify_one(store, row):
     if (type(source_id) is not str or source_id != meta.get("source_id")
             or type(source_sha) is not str or not _HEX64.fullmatch(source_sha)):
         raise ValueError("source identity")
+    # V13 EventEnvelope stores source references in the packet-level
+    # provenance list; source_refs is accepted only for newer explicit producers.
     source_refs = event.get("source_refs")
+    if source_refs is None:
+        source_refs = event.get("provenance")
     if type(source_refs) is not list or len(source_refs) != 1 or source_refs[0] != source_ref:
-        raise ValueError("source refs")
+        raise ValueError("source provenance")
     # Store.read_source verifies source row, blob digest and span; text is discarded.
     if type(store.read_source(source_ref)) is not str:
         raise ValueError("source read")
