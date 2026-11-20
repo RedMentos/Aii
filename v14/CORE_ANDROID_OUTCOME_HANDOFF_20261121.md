@@ -34,6 +34,17 @@
 3. Next native package: a separately installed Android companion with a user-visible per-action consent UI, OS API permission checks and Android Keystore-backed asymmetric signing; the Python runtime should hold only a pinned public key. Verify the actual API/security behavior for Android 13 before implementation. Keep the executor OFF until the user explicitly authorizes installation and device testing.
 4. Only after native receipts are independently verified should a separate reviewed consumer map observed outcomes into trusted T8 transitions.
 
+## Android 13 native-design research (primary documentation; not device proof)
+
+- Android Keystore documents EC key-pair generation in `AndroidKeyStore` and SHA-256 signing. The private key can remain non-exportable; hardware-backed/StrongBox availability is device-dependent. Initial candidate for the companion receipt is ECDSA P-256 + SHA-256, with runtime verification using only the pinned public key. Confirm key security level and user-authentication requirements on the actual Redmi before treating it as a boundary.
+  - https://developer.android.com/privacy-and-security/keystore
+  - https://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec
+- Android 12+ restricts starting foreground services from the background. Android 13's restricted battery state can prevent foreground services, alarms and jobs, and users can stop foreground-service apps from the Task Manager. Therefore the first executor should be user-initiated from a visible companion UI; do not assume an always-on invisible service.
+  - https://developer.android.com/develop/background-work/services/fgs/restrictions-bg-start
+  - https://developer.android.com/about/versions/13/behavior-changes-all
+- AccessibilityService is a separate, user-enabled fallback and requires an explicit service configuration; it is not a silent substitute for official APIs.
+  - https://developer.android.com/guide/topics/ui/accessibility/views/service
+
 ## User action
 
 None for repository continuation. No Termux command, model download, permission change or phone update is requested.
