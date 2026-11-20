@@ -40,5 +40,25 @@ class ReceiptTests(unittest.TestCase):
                 v.verify(env, signed(dict(body, nonce="b" * 32)))
             v.close()
 
+    def test_deferred_nonce_verification_requires_atomic_consumer_commit(self):
+        secret = b"d" * 32
+        env = {"action_id": "b2", "capability": "back", "digest": "e" * 64}
+        body = dict(schema=SCHEMA, nonce="f" * 32, action_id="b2",
+                    capability="back", digest="e" * 64, issued_at=100,
+                    expires_at=130, status="EXECUTED", local_consent=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            v = ReceiptVerifier(Path(tmp) / "receipts.db", secret, clock=lambda: 110)
+            v.start()
+            receipt = {"body": body, "mac": sign_fixture(secret, body)}
+            first = v.verify(env, receipt, consume_nonce=False)
+            second = v.verify(env, receipt, consume_nonce=False)
+            self.assertEqual(first["nonce"], body["nonce"])
+            self.assertEqual(second["nonce"], body["nonce"])
+            v.verify(env, receipt)
+            with self.assertRaises(CompanionDenied):
+                v.verify(env, receipt)
+            v.close()
+
+
 if __name__ == "__main__":
     unittest.main()
