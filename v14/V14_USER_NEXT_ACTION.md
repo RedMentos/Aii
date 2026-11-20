@@ -40,3 +40,9 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | next_developer_action | Board-Tickets V14-001/002/003/004 parallel umsetzen und testen; Boss integriert den ersten nachgewiesenen E2E-Pfad |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
+
+## Research/Perception checkpoint — 20.11.2026 20:56 CET
+
+- Ausgangs-HEAD `14d7386484dfce6728aa404d89eae98403b4dba0`, PR [#2127](https://github.com/RedMentos/Aii/pull/2127), HEAD vor diesem Handoff `d5373ea6662bdbf18fb8b6a7568a54e04b8e043e`. A5 RAW EAR Inputvalidierung verschärft: echte boolesche Consent-/Finality-Gates, strikt numerische Werte, typisierte Quell-/Lehrer-Annotationen. Keine neue Android-/ASR-/Learning-Funktion.
+- `LOCAL_LINUX`: isolierter, manuell äquivalent nachgebildeter Validator-Smoketest `python -m unittest -v /tmp/v14check/test_contract.py`: 2/2 PASS (positive und negative Fälle). **Nicht** als Ausführung des GitHub-Originalmoduls zählen. Exakter Repo-Unittest und CI: `BLOCKED/NOT_VERIFIED`, weil dieser Container GitHub DNS nicht auflösen kann. Connector-Readback beider GitHub-Dateien erfolgreich. `REDMI_UNVERIFIED`, `NOT_RELEASED`, `phone_installed_sha=UNKNOWN`.
+- Nächste Entwickleraktion: Boss/QA soll PR #2127 nach echten Repository-Unittests und Regressionen prüfen; anschließend A5-Audio-Packet zu tatsächlich konsumiertem B/C-Percept anschließen. Kein Termux-Befehl und keine Modellentscheidung vom Nutzer erforderlich.
