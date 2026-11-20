@@ -11,7 +11,7 @@ PINS = {
     'vision.py': '758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5',
     'archive_reader_guard_candidate.py': '8771f937ed58dc010ebdf42ab8efcacf3e4c86875eb89609d2118d51d3cea6fb',
     'archive_stream_range_candidate.py': 'e869eaa278bf567463f7f4bbf41b2b5f5bae51c52f7034c2edcd9250d4f917e8',
-    'source_lifecycle_candidate.py': 'acd0b801e3acc113085803d4c915d1bc08c97d78a4162c27fa0bc552459a20f1',
+    'source_lifecycle_candidate.py': '517a56665a9ced38b9b42495b19368037431783e3804aec1ba83946a1b368a5a',
 }
 GUARD_SCRIPT_SHA = 'a825149f711dead291890458a30c014652cfed26a8dbe85c60ea350e86a83a72'
 OLD_ARCHIVE_INTEGRATED_SHA = '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'
