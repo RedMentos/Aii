@@ -62,14 +62,6 @@ FIELDS["C2ExecutivePacket"]={"route":str,"fields":dict,"truth_authority":int}  #
 FIELDS["OutputBrokerDecision"]={"authority":str,"egress_type":str,"status":str,"overridden":list,"conflicts":list,"committed":bool,"late":list,"rewrites":int}  # WP-T7 C7 output broker
 FIELDS["AttentionResponse"]={"request_packet_id":str,"status":str,"granted_budget":int,"truth_authority":int}  # WP-N5 §4B.3
 FIELDS["BodySourceIdSelection"]={"role":str,"model_revision":str,"source_ref":dict,"candidates":list,"selected_id":str,"selected_span":(dict,type(None)),"selection_correct_shadow":bool,"raw_output_sha256":str,"raw_output_bytes":int,"model_metrics_reported_unverified":dict,"source_semantic_truth_authority":bool,"model_hypothesis_not_fact":bool,"delivery_authority":int,"learning_authority":int,"output_committed":bool}  # Run117AH zero-authority Body quote ID selection
-FIELDS["AndroidActionOutcome"] = {
-    "action_id": str, "capability": str, "status": str, "observed": bool,
-    "evidence_level": str, "receipt_schema": str, "auth_scheme": str,
-    "digest": str, "receipt_nonce": str, "companion_local_consent": bool,
-    "android_os_permission_independently_required": bool,
-    "t8_authoritative": bool, "world_learning_eligible": bool,
-    "trusted_transition_eligible": bool,
-}
 # §8.2 / §8.2A / §93: minimum fields of every important workspace slot (FocalItem and WorkspaceSlot.content)
 SLOT_FIELDS={"self_generated":bool,"created_wall":(int,float),"origin_event_id":str,"age_ms":int,"expiry":dict,"confidence_type":str,
              "exact_fallback":str,"exact_fallback_refs":list,"scale":str,"covered_range":list,"compression_ratio":(int,float,type(None)),
@@ -142,22 +134,6 @@ def validate(kind,obj):
         if c["state_type"] not in {"ACTIVE","REACTIVATABLE","EPISODIC_POINTER"}:raise ValueError("WorkspaceSlot state")
     if kind=="InquisitionStep" and (obj["speaker"] not in {"P1","P2"} or obj.get("fact_authority")):raise ValueError("Inquisition scaffold authority")
     if kind=="FocalCycle" and obj["decision"] not in {"IGNORE","INCORPORATE_A","INCORPORATE_B","INCORPORATE_AB","QUERY_A","QUERY_B","QUERY_AB"}:raise ValueError("FocalCycle decision")
-    if kind=="AndroidActionOutcome":
-        is_hex=lambda value,size: type(value) is str and len(value)==size and all(ch in "0123456789abcdef" for ch in value)
-        if (not is_hex(obj["action_id"],32)
-                or obj["capability"] not in {"launch_app","observe_ui","tap","swipe","type_text","back"}
-                or obj["status"]!="COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
-                or obj["observed"] is not False
-                or obj["evidence_level"]!="COMPANION_RECEIPT_ONLY"
-                or obj["receipt_schema"]!="v14.android-companion-receipt/1"
-                or obj["auth_scheme"]!="HMAC_SHA256_PER_INSTALL"
-                or not is_hex(obj["digest"],64) or not is_hex(obj["receipt_nonce"],32)
-                or obj["companion_local_consent"] is not True
-                or obj["android_os_permission_independently_required"] is not True
-                or obj["t8_authoritative"] is not False
-                or obj["world_learning_eligible"] is not False
-                or obj["trusted_transition_eligible"] is not False):
-            raise ValueError("Android companion receipt authority/provenance")
     if kind=="EventEnvelope" and obj["authority"] not in {"AUTHORITATIVE","PROVISIONAL"}:raise ValueError("Authority")
     return obj
 def packet(schema,producer,event,generation,provenance=None,**payload):
