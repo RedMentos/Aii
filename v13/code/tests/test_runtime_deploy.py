@@ -596,8 +596,8 @@ class RealRuntimeSelftestDiagnosticsTests(unittest.TestCase):
                                          stdout=b'ok', stderr=b'')
         broken = subprocess.CompletedProcess(['python', '-c', 'script'], 2,
                                              stdout=b'', stderr=(
-                                                 b'Traceback: local secret 123\\n'
-                                                 b'sqlite3.OperationalError: readonly database\\n'))
+                                                 b'Traceback: local secret 123\n'
+                                                 b'sqlite3.OperationalError: readonly database\n'))
         with mock.patch.object(d.subprocess, "run", side_effect=(ok, broken)):
             with self.assertRaises(d.RuntimeDeployError) as cm:
                 d._selftest(Path('/nonexistent-staged-code'))
