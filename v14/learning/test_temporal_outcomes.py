@@ -65,7 +65,7 @@ class TemporalTest(unittest.TestCase):
 
     def test_failed_resolve_save_rolls_back_memory_and_disk(self):
         self.add(); before = self.path.read_bytes()
-        with patch.object(self.store, "save", side_effect=OSError("disk full")):
+        with patch.object(self.store, "_save_unlocked", side_effect=OSError("disk full")):
             with self.assertRaises(OSError): self.store.resolve("x", at=11, observed=False, evidence="T8:window", observation_complete=True)
         self.assertEqual(self.store.records["x"].status, "PENDING")
         self.assertEqual(self.path.read_bytes(), before)
@@ -73,7 +73,7 @@ class TemporalTest(unittest.TestCase):
 
     def test_failed_expect_save_rolls_back_memory_and_disk(self):
         before = dict(self.store.records)
-        with patch.object(self.store, "save", side_effect=OSError("disk full")):
+        with patch.object(self.store, "_save_unlocked", side_effect=OSError("disk full")):
             with self.assertRaises(OSError): self.add()
         self.assertEqual(self.store.records, before)
         self.assertFalse(self.path.exists())

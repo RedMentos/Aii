@@ -1,43 +1,58 @@
-# V14 temporal outcome semantics integration handoff — 2026-11-20
+# V14 temporal outcome semantics integration handoff — 2026-11-21
 
-**Owner:** Boss & Integration. **Work item:** V14-004 / V14-007.
-**Branch:** `boss/v14-temporal-outcome-semantics-20261120`. **Base:** `14d7386484dfce6728aa404d89eae98403b4dba0`. **Status:** candidate only; not merged or released.
+**Owner:** Boss & Integration. **Work item:** V14-004 / V14-007.  
+**Branch:** boss/v14-temporal-outcome-semantics-20261120. **Base:** 14d7386484dfce6728aa404d89eae98403b4dba0.  
+**Candidate HEAD:** 3319a5199602d6d305857dbdc3aad93466b871da. **Status:** DRAFT / NOT MERGED / NOT RELEASED.
 
-## Functional change
+## Functional candidate
 
-The temporal outcome substrate now distinguishes:
-- `OBSERVED`: expected outcome inside the time window; error = `1-p`.
-- `MISMATCHED`: a different outcome was actually observed; error = `-p`.
-- `EARLY` / `DELAYED`: expected outcome outside the predicted window; error = `-p`.
-- `OMITTED`: the observation window completed with source-bound evidence and no event; error = `-p`.
-- `CENSORED` / `CANCELLED`: no learning signal.
+v14/learning/t8_store_authority.py calls the existing world_model.transitions(store) admission path, then cross-checks each candidate against:
+- exactly one persisted action row joined to its event and CorollaryCopy;
+- event/generation identity and one source reference;
+- Store.read_source(source_ref) for source-row, blob-digest and span validation;
+- exactly one matching ActionOutcome packet with matching status and actual outcome;
+- the status-derived success target in the world-model row.
 
-Previously, any `observed=True` was scored positively and the expected `outcome` label was not compared. That incorrectly rewarded late or wrong outcomes. The receiver now checks explicit expected/observed labels, exact boolean permissions, finite numeric values, bounded identifiers, and persistent rollback/restart behavior.
+The resulting immutable VerifiedT8Transition carries source and outcome digests, not raw source text. TemporalT8Bridge.consume() requires this typed receipt. The previous caller-supplied trusted=True API is removed. The private issuer object prevents accidental construction through the public constructor, but is not a security boundary against arbitrary Python code in the same process.
+
+Temporal outcome semantics:
+- OBSERVED: expected outcome inside the predicted time window; error = 1-p.
+- MISMATCHED: a different outcome was actually observed; error = -p.
+- EARLY / DELAYED: same outcome outside the predicted time window; error = -p.
+- OMITTED: only when a complete observation window has source-bound evidence and no event; error = -p.
+- CENSORED / CANCELLED: no learning signal.
+
+## QA correction: multi-writer persistence
+
+The earlier atomic-replace implementation had a reproducible lost-update bug: two stale TemporalOutcomes or TemporalReadout instances could overwrite each other's committed records/weights. Both stores now use per-file POSIX fcntl.flock locks, reload and validate the newest file inside the exclusive lock, write via temp + os.replace, and fsync the file and parent directory. Read APIs used by the bridge refresh under shared locks. Bridge replay is idempotent across separate instances; the receiver event-ID check closes the check/update race.
 
 ## Local evidence
 
-Environment: **LOCAL_LINUX**, Python 3.13.5, x86_64.
-Commands:
-- `python -m py_compile temporal_outcomes.py temporal_receiver.py t8_temporal_bridge.py`
-- `python -m unittest -v test_temporal_outcomes test_temporal_receiver test_t8_temporal_bridge`
+Environment: LOCAL_LINUX, CPython 3.13.5, x86_64.
 
-Result: **18/18 tests PASS**. These are the exact source/test files assembled from the GitHub candidate plus this correction, executed as an isolated package. This is not a full repository test run and not a native/Android test.
+Commands executed against an isolated local package with a synthetic v13.world_model stub:
+- python -m pytest -q v14/learning — 29 passed;
+- py_compile of temporal_outcomes.py, temporal_receiver.py, t8_store_authority.py, t8_temporal_bridge.py, and test_t8_store_authority.py — PASS.
 
-SHA-256:
-- `temporal_outcomes.py`: `a53d3dca9aa97f43620997f17081b5553b6b1b25483473fb824b01591013eef1`
-- `temporal_receiver.py`: `9bb6be6815bf48c548b8d441a2d445ba33b5577a4231edf6a24141f4a4b33316`
-- `t8_temporal_bridge.py`: `37e413dcf5576c9b024c4c81c7de6b88ffcfb6d420c649de08b81ddf77cd674e`
-- `test_temporal_outcomes.py`: `094dc6ab2909f660d6407e9892973870c79230d7ef31b8173770fc4581e09be3`
-- `test_temporal_receiver.py`: `175826ea4d9cad38e9a215f6a103d5b1295d07dec978df6a845578fc6b1c31b2`
-- `test_t8_temporal_bridge.py`: `f1d1fadf52526043a39e6c1beb76928e68fffde23ae4a8b9cd483bf13327f975`
+The suite includes correct/mismatched/early/delayed scoring; source-hash tampering; missing/mismatched/duplicate ActionOutcome rejection; exact permission and default-off learning checks; stale two-instance writes for ledger and readout; multiprocessing writers for ledger and readout; and replay through two stale bridge instances with exactly one scalar update.
+
+Four DeprecationWarnings are emitted because the local Python host is multithreaded and the regression uses the fork multiprocessing start method. Tests completed successfully; this warning should be removed by a later spawn-safe fixture where practical.
+
+Evidence classification: SYNTHETIC / LOCAL_LINUX. These are not full repository tests. FakeStore and patched world_model.transitions() do not prove the actual SQLite schema/packet path. No GitHub CI run has been returned for the new HEAD yet.
 
 ## Explicit limitations
 
-- The receiver is a tiny persistent scalar readout, not a JEPA encoder, native B1/B2 model adapter, GGUF optimizer, or full model-weight update.
-- `trusted=True` remains a caller-supplied contract. It is **not authentication**; this bridge is not safe for live producer integration until a Store/World-bound authenticated T8 envelope replaces it.
-- No runtime consumer, actual T8 producer, held-out utility/retention experiment, Termux test, or Redmi receipt exists for this branch.
-- No model, model weights, permissions, Age, updater, or phone state was changed.
+- The adapter is not yet called by the installed V13 runtime. Runtime Python remains frozen for the current SourceHandoff cohort; integration must be a separate hash-bound stage and must not edit runtime.py or other frozen source files directly.
+- No actual Store fixture, full runtime consumer, held-out utility/retention experiment, native inference, Android/Termux test, or Redmi receipt exists for this PR.
+- TemporalReadout is a tiny scalar readout only. It is not a JEPA encoder, learned latent coupling, native B1/B2 model adapter, GGUF optimizer, or full model-weight update.
+- learning_enabled defaults to False; no product learning permission, Age state, model, weight file, updater, or phone state was changed.
+- Temporal omission is only valid when observation coverage is complete; absence of a row alone is not evidence of omission.
 
-## Next executable gate
+## Next gate
 
-Implement a producer that reads and verifies the actual persisted Store/World T8 action/transition records, binds event identity and source hashes, and issues a non-forgeable in-process capability to the temporal bridge. Then connect it to the real runtime learning consumer and test holdout utility, retention, checkpoint/restart, rollback, and negative controls. Until then V14-004 remains **IN_PROGRESS_PARTIAL**, not complete.
+1. Exact GitHub CI for this candidate SHA.
+2. A real SQLite Store integration fixture creating source/event, CorollaryCopy, ActionSelection and ActionOutcome records.
+3. A hash-bound runtime-consumer stage with restart, rollback and negative controls.
+4. Separate utility/retention and Redmi tests before any claim of active system learning.
+
+Until those gates pass, V14-004 remains IMPLEMENTING / PARTIAL, not complete.

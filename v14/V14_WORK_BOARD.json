@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-20",
+  "updated_at": "2026-11-21",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
-  "state_notice": "Evidence updated from a local isolated test run and GitHub readback. IN_PROGRESS_PARTIAL is not release completion; CI, full runtime consumer and Redmi proof remain separate gates.",
+  "state_notice": "Candidate implementation evidence is recorded per ticket; no ticket is complete from documentation or synthetic tests alone.",
   "tickets": [
     {
       "id": "V14-001",
@@ -50,12 +50,15 @@
       "owner": "JEPA & Memory",
       "reviewer": "Core & QA",
       "priority": "P0",
-      "status": "IN_PROGRESS_PARTIAL",
+      "status": "IMPLEMENTING",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "LOCAL_LINUX Python 3.13.5 x86_64: isolated py_compile PASS and 18/18 unit tests PASS in draft PR #2130. Not full repository, CI, Termux or Redmi. No authenticated T8 producer or runtime consumer.",
-      "next_step": "Replace caller-supplied trusted boolean with a Store/World-bound authenticated T8 envelope; connect to the real runtime consumer; then measure held-out utility, retention, actual parameter diffs, restart and rollback.",
-      "user_action_required": false
+      "proof_environment": "SYNTHETIC",
+      "next_step": "Run exact branch CI; add a real Store/ActionSelection/ActionOutcome integration fixture; then stage a hash-bound runtime consumer without editing frozen V13 runtime files",
+      "user_action_required": false,
+      "last_verified_sha": "3319a5199602d6d305857dbdc3aad93466b871da",
+      "local_test": "LOCAL_LINUX CPython 3.13.5: python -m pytest v14/learning — 29 passed; py_compile 5 files; 4 multiprocessing fork deprecation warnings",
+      "blockers": "Store adapter uses a synthetic Store fixture and patched world_model.transitions; no exact repository Store integration, no live runtime consumer (source-handoff freeze), no CI run or Redmi receipt"
     },
     {
       "id": "V14-005",
@@ -89,12 +92,15 @@
       "owner": "Boss & Integration",
       "reviewer": "QA",
       "priority": "P0",
-      "status": "IN_PROGRESS_PARTIAL",
+      "status": "IMPLEMENTING",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Current release HEAD 14d738; draft direct-base PR #2130 at 605427de, isolated 18/18 local tests PASS. Current release push CI not complete; PR #2123 conflicts with frozen runtime source and fails staged composition; #2129 lacks independent measured-latency evidence. Redmi unverified.",
-      "next_step": "Run and review exact PR CI; collapse/supersede the temporal stack only after verification; resolve runtime source-freeze and audio contract conflicts; preserve V13 appendix and do not claim release.",
-      "user_action_required": false
+      "proof_environment": "SYNTHETIC",
+      "next_step": "Review updated PR diff and exact CI; retain draft until Store integration, runtime consumer path and regression review are proven",
+      "user_action_required": false,
+      "last_verified_sha": "3319a5199602d6d305857dbdc3aad93466b871da",
+      "local_test": "LOCAL_LINUX CPython 3.13.5: 29/29 V14 learning tests passed, including stale-instance and multiprocessing writers",
+      "blockers": "PR #2130 remains draft; exact GitHub CI has not reported a run; no merge or Android activation"
     },
     {
       "id": "V14-008",

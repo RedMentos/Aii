@@ -22,7 +22,7 @@ class TestReceiver(unittest.TestCase):
             with self.assertRaises(PermissionError): r.update(I, "x")
             with self.assertRaises(ValueError): r.update({**I, "source": "unknown"}, "x", True)
             with self.assertRaises(ValueError): r.update({**I, "prediction_error": float("nan")}, "x", True)
-            with patch.object(r, "save", side_effect=OSError("disk")):
+            with patch.object(r, "_save_unlocked", side_effect=OSError("disk")):
                 with self.assertRaises(OSError): r.update(I, "x", True)
             self.assertEqual(r.weights["WORLD"], 0); r.update(I, "x", True)
             with self.assertRaises(ValueError): r.update(I, "x", True)
