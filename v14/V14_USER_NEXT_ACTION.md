@@ -40,3 +40,9 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | next_developer_action | Board-Tickets V14-001/002/003/004 parallel umsetzen und testen; Boss integriert den ersten nachgewiesenen E2E-Pfad |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
+
+## Forschung/Perception Checkpoint 2026-11-20 17:xx CET (Branch, nicht Release)
+
+- PR #2126, Branch `research-perception/v14-raw-ear-a4-20261120`, Commit `cb36d01361a395ed7587d7d93d8827aa73870f13`: RAW EAR acoustic features -> existing A4 `Attention.modulate` adapter; GitHub file readback succeeded. No automatic microphone access or model changes.
+- LOCAL_LINUX: `python -m py_compile audio_attention_bridge.py` PASS; `python -m unittest -v test_bridge` 4/4 PASS against equivalent local module; tests are synthetic. Exact repository test invocation and full runtime integration are pending QA; REDMI_UNVERIFIED, NOT_RELEASED.
+- Next developer action: wire adapter to consented A5 event intake, run package integration tests, independent review/CI, then native authorized Redmi verification. Updater/phone installed SHA not verified in this run. No user action needed.
