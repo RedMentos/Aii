@@ -612,9 +612,9 @@ class RealRuntimeSelftestDiagnosticsTests(unittest.TestCase):
                                            stdout=b'ok', stderr=b'')
         denied = subprocess.CompletedProcess(
             ['python', '-c', 'probe'], 1, stdout=b'',
-            stderr=(b'Traceback: PRIVATE TEXT and /data/data/com.termux/secret\\n'
-                    b'V13_PROBE_LOCATION=source_lifecycle_candidate._rename_named_no_replace:174:13\\n'
-                    b'PermissionError: /data/data/com.termux/very_private_path\\n'))
+            stderr=(b'Traceback: PRIVATE TEXT and /data/data/com.termux/secret\n'
+                    b'V13_PROBE_LOCATION=source_lifecycle_candidate._rename_named_no_replace:174:13\n'
+                    b'PermissionError: /data/data/com.termux/very_private_path\n'))
         with mock.patch.object(d.subprocess, 'run', side_effect=(good, denied)):
             with self.assertRaises(d.RuntimeDeployError) as cm:
                 d._selftest(Path('/nonexistent-staged-code'))
@@ -630,8 +630,8 @@ class RealRuntimeSelftestDiagnosticsTests(unittest.TestCase):
                                            stdout=b'ok', stderr=b'')
         denied = subprocess.CompletedProcess(
             ['python', '-c', 'probe'], 1, stdout=b'',
-            stderr=(b'V13_PROBE_LOCATION=../../secret.private:42:13\\n'
-                    b'PermissionError: private-path\\n'))
+            stderr=(b'V13_PROBE_LOCATION=../../secret.private:42:13\n'
+                    b'PermissionError: private-path\n'))
         with mock.patch.object(d.subprocess, 'run', side_effect=(good, denied)):
             with self.assertRaises(d.RuntimeDeployError) as cm:
                 d._selftest(Path('/nonexistent-staged-code'))
