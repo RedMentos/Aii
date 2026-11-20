@@ -24,6 +24,17 @@ STORE_NEW = b'''        with self.tx() as c:
             verify_or_create_blob(p,b,h)
             c.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,0)",(sid,h,kind,len(b),len(text),now()))
 '''
+RECOVER_OLD = b'''    def _recover(self):
+        with self.tx() as c:
+'''
+RECOVER_NEW = b'''    def _recover(self):
+        # Both file publication and forget use the global Store write lock.
+        # Recover privately staged crash leftovers before any sources are read.
+        from .source_lifecycle_candidate import cleanup_pending
+        cleanup_pending(self.home / 'data/blobs')
+        with self.tx() as c:
+'''
+
 EVENT_OLD = b'''        path=self.home/'data/blobs'/h
         if not path.exists():atomic_write(path,b)
 '''
@@ -116,6 +127,7 @@ def build_sources(source_dir):
         raise ValueError('unexpected materialized archive revision')
     for filename, old, new in (
             ('store.py', STORE_OLD, STORE_NEW),
+            ('store.py', RECOVER_OLD, RECOVER_NEW),
             ('store.py', EVENT_OLD, EVENT_NEW),
             ('memory.py', MEMORY_OLD, MEMORY_NEW),
             ('vision.py', VISION_OLD, VISION_NEW),
