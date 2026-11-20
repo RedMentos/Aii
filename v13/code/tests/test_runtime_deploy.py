@@ -607,6 +607,40 @@ class RealRuntimeSelftestDiagnosticsTests(unittest.TestCase):
         self.assertNotIn('readonly database', result)
         self.assertNotIn('local secret', result)
 
+    def test_permission_error_reports_allowlisted_site_and_errno_only(self):
+        good = subprocess.CompletedProcess(['python', '-m', 'v13'], 0,
+                                           stdout=b'ok', stderr=b'')
+        denied = subprocess.CompletedProcess(
+            ['python', '-c', 'probe'], 1, stdout=b'',
+            stderr=(b'Traceback: PRIVATE TEXT and /data/data/com.termux/secret\\n'
+                    b'V13_PROBE_LOCATION=source_lifecycle_candidate._rename_named_no_replace:174:13\\n'
+                    b'PermissionError: /data/data/com.termux/very_private_path\\n'))
+        with mock.patch.object(d.subprocess, 'run', side_effect=(good, denied)):
+            with self.assertRaises(d.RuntimeDeployError) as cm:
+                d._selftest(Path('/nonexistent-staged-code'))
+        message = str(cm.exception)
+        self.assertIn('error=PermissionError', message)
+        self.assertIn('site=source_lifecycle_candidate._rename_named_no_replace:174', message)
+        self.assertIn('errno=13', message)
+        self.assertNotIn('/data/data/com.termux', message)
+        self.assertNotIn('PRIVATE TEXT', message)
+
+    def test_untrusted_site_marker_is_never_reflected(self):
+        good = subprocess.CompletedProcess(['python', '-m', 'v13'], 0,
+                                           stdout=b'ok', stderr=b'')
+        denied = subprocess.CompletedProcess(
+            ['python', '-c', 'probe'], 1, stdout=b'',
+            stderr=(b'V13_PROBE_LOCATION=../../secret.private:42:13\\n'
+                    b'PermissionError: private-path\\n'))
+        with mock.patch.object(d.subprocess, 'run', side_effect=(good, denied)):
+            with self.assertRaises(d.RuntimeDeployError) as cm:
+                d._selftest(Path('/nonexistent-staged-code'))
+        message = str(cm.exception)
+        self.assertIn('error=PermissionError', message)
+        self.assertNotIn('site=', message)
+        self.assertNotIn('private-path', message)
+        self.assertNotIn('secret', message)
+
     def test_signal_like_exit_remains_a_failed_selftest(self):
         killed = subprocess.CompletedProcess(['python', '-m', 'v13'], -9,
                                              stdout=b'', stderr=b'')
