@@ -610,7 +610,7 @@ except OSError as exc:
                 location = re.search(
                     r"^V13_PROBE_LOCATION=(source_lifecycle_candidate|store|"
                     r"source_reuse_archive_candidate|config|archive_stream_range_candidate)"
-                    r"\\.([a-zA-Z_][a-zA-Z_0-9]*):([0-9]{1,6}):([0-9]{1,4})$",
+                    r"\.([a-zA-Z_][a-zA-Z_0-9]*):([0-9]{1,6}):([0-9]{1,4})$",
                     tail, re.MULTILINE)
                 if location:
                     detail = ", site=" + location.group(1) + "." + location.group(2) + \
