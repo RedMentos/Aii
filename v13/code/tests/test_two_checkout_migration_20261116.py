@@ -161,16 +161,38 @@ def exercise_worker_migration(base):
         }
         print('V13_TWO_CHECKOUT_MIGRATION_DIAG=' +
               json.dumps(diagnostic, sort_keys=True), flush=True)
+        # The *historical* workers at PREVIOUS_RELEASE / CURRENT_RELEASE
+        # are known to have a shallow-fetch bug: a zero exit status may leave
+        # both the local HEAD and origin ref at BASE. Never mistake the old
+        # worker's cosmetic UPDATED result for an installed new release.
+        # This test deliberately executes that old binary before recovery.
+        assert old.get('same_source_updater') is True
+        assert old.get('fetches')
         for checkout in (agent, runtime):
-            # A source branch that is falsely called UP_TO_DATE is worse than
-            # a still-pending update: capture both Git refs to pin the cause.
-            local = git('rev-parse', 'HEAD', cwd=checkout)
-            tracking = git('rev-parse',
-                'refs/remotes/origin/' + RELEASE_BRANCH, cwd=checkout)
-            assert local == target, {'old': old, 'checkout': checkout.name,
-                                     'local': local, 'tracking': tracking,
-                                     'bare': git('--git-dir', remote, 'rev-parse',
-                                                 'refs/heads/' + RELEASE_BRANCH)}
+            assert git('rev-parse', 'HEAD', cwd=checkout) == base
+            assert git('rev-parse', 'refs/remotes/origin/' + RELEASE_BRANCH,
+                       cwd=checkout) == base
+        assert any('shallow roots' in f.get('fetch_stderr','')
+                   for f in old['fetches']), old['fetches']
+
+        # The currently shipped *one-command Termux bootstrap* has a separate
+        # out-of-process git fetch of the branch into FETCH_HEAD followed by
+        # merge --ff-only FETCH_HEAD. It can cross this legacy failure WITHOUT
+        # running the legacy source_updater._fetch implementation. Simulate
+        # exactly that migration from an actual local Git bare remote.
+        for checkout in (agent, runtime):
+            git('fetch', '--no-tags', str(remote),
+                'refs/heads/' + RELEASE_BRANCH, cwd=checkout)
+            assert git('rev-parse', 'FETCH_HEAD', cwd=checkout) == target
+            git('merge', '--ff-only', 'FETCH_HEAD', cwd=checkout)
+            assert git('rev-parse', 'HEAD', cwd=checkout) == target
+            assert git('branch', '--show-current', cwd=checkout) == RELEASE_BRANCH
+
+        # The legacy worker may have staged BASE as the current runtime.
+        # Bootstrap must never touch model/user database, and the *new*
+        # imported worker must still independently activate TARGET.
+        assert model.read_bytes() == b'GGUF_SENTINEL_UNCHANGED'
+        assert database.read_bytes() == b'SQLITE_SENTINEL_UNCHANGED'
         assert (agent / 'v13/code/v13/mobile_dashboard.html').is_file()
         assert (agent / 'v13/code/v13/mobile_dashboard.py').is_file()
         for name in ('mobile_dashboard.py', 'mobile_dashboard.html'):
