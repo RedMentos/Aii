@@ -27,7 +27,7 @@ command -v gh >/dev/null || fail "gh fehlt trotz Installation"
 # recognized current-user V13 chat processes via their isolated process group.
 # Do not signal other Termux/Python processes or kill a running task with SIGKILL.
 python - <<'PY'
-import json, os, signal, time
+import fcntl, json, os, signal, stat, time
 from pathlib import Path
 
 home = Path.home()
@@ -155,7 +155,7 @@ if ai_daemons:
             raise SystemExit("V13: KI-Dienst konnte nicht sicher neu gestartet werden.")
     print("V13: vorheriger KI-Hintergrunddienst beendet.")
 if not targets:
-    print("V13: keine aktive Chat-Sitzung; kein Stop nötig.")
+    pass  # Only print 'no session' AFTER checking the actual Store lock.
 else:
     print(f"V13: beende {len(targets)} erkannte lokale Chat-Sitzung(en) automatisch ...")
     def alive(pid):
@@ -207,6 +207,47 @@ else:
         os.fsync(out.fileno())
     flag.chmod(0o600)
     print("V13: Chat beendet; automatischer Neustart nach Installation vorgemerkt.")
+
+# V13_STORE_LOCK_CHECK_BEGIN
+def checked_store_lock_available(data_home):
+    """Never mistake a still-owned SQLite Store lock for an idle chat.
+
+    Read-only flock probes the *same* per-home inode used by Store.__init__,
+    without removing, truncating, creating or taking possession of user data.
+    """
+    lock = data_home / "data/coordinator.lock"
+    try:
+        before = lock.lstat()
+    except FileNotFoundError:
+        return True
+    if not stat.S_ISREG(before.st_mode):
+        raise RuntimeError("V13-Sperrpfad ist keine regulaere Datei; nicht anfassen")
+    fd = os.open(lock, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        actual = os.fstat(fd)
+        if (actual.st_dev, actual.st_ino) != (before.st_dev, before.st_ino):
+            raise RuntimeError("V13-Sperrdatei wurde zwischenzeitlich ersetzt")
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return False
+        else:
+            fcntl.flock(fd, fcntl.LOCK_UN)
+            return True
+    finally:
+        os.close(fd)
+# V13_STORE_LOCK_CHECK_END
+try:
+    available = checked_store_lock_available(home / "v13")
+except (OSError, RuntimeError) as exc:
+    raise SystemExit("V13: Store-Sperre nicht sicher pruefbar (" +
+                     type(exc).__name__ + "); kein Quellupdate") from exc
+if not available:
+    raise SystemExit("V13: Der bestehende Store ist NOCH durch eine laufende Sitzung "
+                     "gesperrt. Keine aktive-Sitzung-Fehlmeldung, keine Sperre geloescht; "
+                     "V13 zuerst regulaer beenden.")
+if not targets:
+    print("V13: keine aktive Chat-Sitzung erkannt; Store-Sperre frei.")
 PY
 
 # Stop idle old dashboards before changing their on-disk HTML/Python sources.
