@@ -11,12 +11,15 @@
       "owner": "Core & Harness",
       "reviewer": "Boss & QA",
       "priority": "P0",
-      "status": "READY",
+      "status": "IMPLEMENTING",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Inspect existing v13/code/v13/runtime.py consumer chain and current PRs; wire the first missing real consumer; run local integration tests",
-      "user_action_required": false
+      "proof_environment": "CI",
+      "next_step": "Core owner repairs authority enum/diagnostics and World transition recomputation; rerun safe-additive policy, staged migration and full integrated regression on the exact new SHA, then test a real Runtime turn with correct 2+2 output",
+      "user_action_required": false,
+      "last_verified_sha": "3e7876400fbbf68be8ac252b40ebe0a92019bbf8",
+      "ci_result": "V14 exact-arithmetic workflow PASS; V13 safe-additive candidate gate FAILS scope policy; staged context/integrated regression FAILS with 7 arithmetic contract failures (35 passed, 37 subtests); wider staged run 1 failed, 239 passed, 10 skipped, 47 subtests",
+      "blockers": "PR #2131 arithmetic candidate mislabels builtin arithmetic as APPROVED_FIXED_RULE, sets exact_policy_matched for non-human rules, and does not bind persisted World outcome to recomputed arithmetic source. Do not merge until fixed and all exact-head workflows green."
     },
     {
       "id": "V14-002",
@@ -79,12 +82,17 @@
       "owner": "Research & Perception",
       "reviewer": "JEPA & Boss",
       "priority": "P1",
-      "status": "IN_PROGRESS_PARTIAL",
+      "status": "IMPLEMENTING",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Release HEAD 14d738 includes the PCM16 RAW-EAR producer from PR #2120; the open A4 adapter expects a different packet schema. No complete A5-to-A4 runtime consumer or Redmi capture proof. Research entries R-007 to R-009 reviewed.",
-      "next_step": "Unify the actual producer/consumer packet contract and prove PCM16 -> A5 admission -> A4 attention -> runtime consumer with source-bound tests and explicit Android capture consent.",
-      "user_action_required": false
+      "proof_environment": "SYNTHETIC",
+      "next_step": "Research/Perception aligns a typed consented A5 producer/receiver contract, validates receipt and revocation at the A4 boundary, and adds one end-to-end synthetic negative-control suite before any native test",
+      "user_action_required": false,
+      "candidate_shas": [
+        "89e241a8d066eef45dcc4abab8bb09d7a58f9775",
+        "920ad02a7a97ccf11f21fc9bce8922bcad41d756"
+      ],
+      "blockers": "PR #2124 PCM16 producer and PR #2126 A4 adapter do not share a packet contract; QA reproduced producer→adapter ValueError. Adapter accepts caller-forged acoustic dict without rechecking current consent/typed A5 receipt. No runtime or Redmi audio path."
     },
     {
       "id": "V14-007",
@@ -95,12 +103,12 @@
       "status": "IMPLEMENTING",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "SYNTHETIC",
-      "next_step": "Review updated PR diff and exact CI; retain draft until Store integration, runtime consumer path and regression review are proven",
+      "proof_environment": "CI",
+      "next_step": "Integrate only after exact CI and consumer-path review; keep current candidates draft, resolve source-handoff pin conflicts, and avoid another isolated ledger/guard PR without a real end-to-end consumer",
       "user_action_required": false,
-      "last_verified_sha": "3319a5199602d6d305857dbdc3aad93466b871da",
+      "last_verified_sha": "a24bc46700cc59bd6059c383ba8efb5f5fafa2fe",
       "local_test": "LOCAL_LINUX CPython 3.13.5: 29/29 V14 learning tests passed, including stale-instance and multiprocessing writers",
-      "blockers": "PR #2130 remains draft; exact GitHub CI has not reported a run; no merge or Android activation"
+      "blockers": "PR #2130 has 29 local synthetic tests but no GitHub CI run, real Store fixture or runtime consumer. PR #2131 and #2129 are direct-base drafts with integrated CI failures. PR #2124/#2126 are incompatible audio drafts. No safe candidate is merge-ready."
     },
     {
       "id": "V14-008",
