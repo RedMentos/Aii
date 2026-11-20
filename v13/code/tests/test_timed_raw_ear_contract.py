@@ -40,6 +40,17 @@ class TimedRawEarTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.packet(EarFrame("x", 0, 20, .1, transcript="unknown source"))
 
+    def test_malformed_source_types_and_false_consent(self):
+        for frame in (EarFrame(123, 0, 20, .2), EarFrame("  ", 0, 20, .2),
+                      EarFrame("x", False, 20, .2), EarFrame("x", 0, 20, True),
+                      EarFrame("x", 0, 20, .2, final=1),
+                      EarFrame("x", 0, 20, .2, transcript=123),
+                      EarFrame("x", 0, 20, .2, non_speech_label=123)):
+            with self.subTest(frame=frame), self.assertRaises(ValueError):
+                self.packet(frame)
+        with self.assertRaises(PermissionError):
+            self.packet(consent=1)
+
 
 if __name__ == "__main__":
     unittest.main()

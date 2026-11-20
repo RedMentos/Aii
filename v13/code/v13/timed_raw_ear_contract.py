@@ -26,18 +26,18 @@ class EarFrame:
 
 def to_percept_packet(frame: EarFrame, *, consent: bool, source_authorized: bool) -> dict:
     """Produce a JSON-compatible A5 proposal; never grants model/action authority."""
-    if not consent or not source_authorized:
+    if consent is not True or source_authorized is not True:
         raise PermissionError("RAW_EAR_CONSENT_REQUIRED")
-    if not frame.source_id or len(frame.source_id) > 128:
+    if not isinstance(frame.source_id, str) or not frame.source_id.strip() or len(frame.source_id) > 128:
         raise ValueError("invalid source id")
-    if not (isinstance(frame.start_ms, int) and isinstance(frame.end_ms, int)
+    if not (type(frame.start_ms) is int and type(frame.end_ms) is int
             and 0 <= frame.start_ms < frame.end_ms):
         raise ValueError("invalid monotonic interval")
     if frame.end_ms - frame.start_ms > 30_000:
         raise ValueError("audio frame exceeds bounded duration")
     for name, value in (("rms", frame.rms), ("pitch_hz", frame.pitch_hz),
                         ("voiced_probability", frame.voiced_probability)):
-        if value is not None and (not isinstance(value, (int, float)) or not isfinite(value)):
+        if value is not None and (type(value) not in (int, float) or not isfinite(value)):
             raise ValueError("nonfinite " + name)
     if not 0 <= frame.rms <= 1:
         raise ValueError("rms outside normalized range")
@@ -45,6 +45,12 @@ def to_percept_packet(frame: EarFrame, *, consent: bool, source_authorized: bool
         raise ValueError("pitch outside bounded range")
     if frame.voiced_probability is not None and not 0 <= frame.voiced_probability <= 1:
         raise ValueError("invalid voiced probability")
+    if type(frame.final) is not bool:
+        raise ValueError("invalid finality")
+    for name, value in (("transcript", frame.transcript), ("teacher_revision", frame.teacher_revision),
+                        ("non_speech_label", frame.non_speech_label), ("speaker_hint", frame.speaker_hint)):
+        if value is not None and not isinstance(value, str):
+            raise ValueError("invalid " + name)
     if frame.transcript is not None and not frame.teacher_revision:
         raise ValueError("teacher transcript requires provenance")
     if frame.teacher_revision and not frame.transcript:
