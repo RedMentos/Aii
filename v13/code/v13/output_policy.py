@@ -1,6 +1,8 @@
-"""Bounded operator-approved exact answers at the existing C5/F6 boundary.
+"""Bounded exact outputs at the existing C5/F6 boundary.
 
-No fuzzy matching, model judge, inferred fact authority or implicit activation.
+Operator-authored fixed answers remain source-validated. A separate code-reviewed
+integer-arithmetic rule may produce only a deterministic local text result; it
+does not grant model authority, external action authority or tool permission.
 Free-text rules stay prompt guidance. Invalid active exact rules fail closed.
 """
 import re
@@ -104,6 +106,25 @@ def preview(store, rules):
 
 
 def match(store, text):
+    """Return a deterministic local arithmetic policy or an operator fixed rule."""
+    # This is a tiny, exact, integer-only parser. It does not use eval and does
+    # not treat prose, multi-step expressions, dates or tool instructions as math.
+    from .exact_arithmetic import evidence as arithmetic_evidence
+    arithmetic = arithmetic_evidence(text)
+    if arithmetic is not None:
+        query_ref = store.source(text, 'SYSTEM_DETERMINISTIC_QUERY')
+        answer_ref = store.source(arithmetic['result'], 'SYSTEM_DETERMINISTIC_ANSWER')
+        return {
+            'kind': 'SYSTEM_DETERMINISTIC_ARITHMETIC',
+            'rule_id': 'fixed_builtin_exact_integer_arithmetic_v1',
+            'rule_version': 'builtin-1',
+            'query_ref': query_ref,
+            'answer_ref': answer_ref,
+            'answer': arithmetic['result'],
+            'model_generated': False,
+            'output_authority': 'APPROVED_FIXED_RULE',
+            'evidence': arithmetic,
+        }
     """Read current rule generation atomically and revalidate its source blobs."""
     with store.mutex:
         generation = store.generation()
