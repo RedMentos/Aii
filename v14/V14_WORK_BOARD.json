@@ -40,12 +40,13 @@
       "owner": "Core & Harness",
       "reviewer": "JEPA & QA",
       "priority": "P0",
-      "status": "READY",
+      "status": "IMPLEMENTING",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
       "proof_environment": "NOT_RUN",
-      "next_step": "Inventory native hidden-state taps and compatible model revisions; implement testable receiver pathway in isolated branch",
-      "user_action_required": false
+      "next_step": "Implement a real two-model latent producer/receiver path with revision/shape binding, activation delta and negative controls; compare against exact/symbolic/control baseline and require downstream utility before any authority",
+      "user_action_required": false,
+      "blockers": "V13 coverage records B3 exact/symbolic path, B3-L1 receiver adapter native Linux PASS only for private/action, L2-L4 unmeasured, and STEP2 B3 utility FAIL. No trained cross-organ latent exchange or activation-to-activation Android proof. PR #2130 is a temporal outcome candidate, not a latent channel."
     },
     {
       "id": "V14-004",
@@ -122,6 +123,108 @@
       "proof_environment": "v14/V14_USER_NEXT_ACTION.md updated in the Boss candidate branch with release HEAD, PR #2130, exact local test scope, CI gap and REDMI_UNVERIFIED status.",
       "next_step": "Read back the handoff after PR CI/merge changes and keep device SHA, runtime receipt, tests and required user action factual.",
       "user_action_required": false
+    },
+    {
+      "id": "V14-009",
+      "title": "Android background/API and UI control with independent consent",
+      "owner": "Core & Harness",
+      "reviewer": "QA & Android",
+      "priority": "P1",
+      "status": "IMPLEMENTING",
+      "proof_environment": "SYNTHETIC",
+      "dependencies": [
+        "V14-002",
+        "V14-007"
+      ],
+      "code_paths": [
+        "v13/code/v13/android_companion_protocol.py",
+        "v13/code/v13/android_capability_registry.py",
+        "v13/code/v13/android_control.py"
+      ],
+      "blockers": "PR #2119 is a receipt verifier only and accepts malformed signed fields per QA review; base is stale. PR #2108 is simulation-only and uses caller-supplied confirmed_by_local_ui=True. No Android companion, OS-authenticated consent, executor, background API path, AccessibilityService/MediaProjection integration or Redmi proof.",
+      "next_step": "Build the Android-side challenge/response and Keystore-backed per-install signing, bind exact locally pending action/capability/digest/expiry, then implement one permitted API-first background action plus UI observation/tap path with STOP/audit/rollback and negative consent/replay tests",
+      "owner_action": "Core & Harness implements; QA adversarially reviews; Boss integrates"
+    },
+    {
+      "id": "V14-010",
+      "title": "VOICE_AUDIO and multimodal perception learning (RAW EAR, speech effector, full duplex)",
+      "owner": "Research & Perception",
+      "reviewer": "Core & QA",
+      "priority": "P1",
+      "status": "IMPLEMENTING",
+      "proof_environment": "SYNTHETIC",
+      "dependencies": [
+        "V14-006",
+        "V14-007"
+      ],
+      "code_paths": [
+        "v13/code/v13/timed_raw_ear_contract.py",
+        "v13/code/v13/audio_ear.py",
+        "v14/learning"
+      ],
+      "blockers": "Canon §18.10 / STEP9 / G10C/G10D remains OPEN. A5 contract/PCM producer/A4 adapter use incompatible schemas; adapter does not independently re-check live consent. No microphone capture, RAW EAR student learning, separate speech effector/vocoder consumer, streaming full-duplex or Android evidence. Vision remains lab-only.",
+      "next_step": "Agree one typed consented timestamped A5 packet; wire RAW EAR features to A4/B1/B2/JEF and a separate speech output effector; preserve nonverbal cues and provisional/final segments; test barging-in and asynchronous offers without blocking the media loop",
+      "owner_action": "Research & Perception owns producer; Core owns consumer; QA owns consent/finality"
+    },
+    {
+      "id": "V14-011",
+      "title": "SELF_OPTIMIZATION and actual cross-organ parameter/weight changes",
+      "owner": "JEPA & Memory",
+      "reviewer": "Boss & QA",
+      "priority": "P1",
+      "status": "READY",
+      "proof_environment": "NOT_RUN",
+      "dependencies": [
+        "V14-004",
+        "V14-003"
+      ],
+      "code_paths": [
+        "v13/code/docs/CROSS_ORGAN_WEIGHT_EDIT_CONTRACT_20261111.md",
+        "v13/code/v13/neuromod.py",
+        "v13/code/v13/lora_trainer.py"
+      ],
+      "blockers": "User addendum requires target-organ-controlled numeric deltas and later structural self-edit. Existing objective/credit/LoRA scaffolds do not prove live cross-organ parameter changes, B1/B2/C3 utility, holdout retention or restart. PR #2130 scalar readout is not JEPA or body weights.",
+      "next_step": "Build a tiny isolated target-owned adapter update with eligibility×prediction-error×modulator×plasticity, parameter diff, held-out utility, retention, checkpoint/restart and rollback; keep official Age 0 rights separate from X10 lab testing"
+    },
+    {
+      "id": "V14-012",
+      "title": "Sleep / Dream / Replay / consolidation across World, Self and Memory",
+      "owner": "JEPA & Memory",
+      "reviewer": "QA & Boss",
+      "priority": "P2",
+      "status": "READY",
+      "proof_environment": "NOT_RUN",
+      "dependencies": [
+        "V14-004",
+        "V14-011"
+      ],
+      "code_paths": [
+        "v13/code/v13/sleep.py",
+        "v13/code/v13/episodes.py",
+        "v13/code/v13/consolidation.py"
+      ],
+      "blockers": "Replay/Dream scaffolds exist, but full cross-organ hypothesis validation, learned weight consolidation, anti-forgetting/retention and real idle lifecycle proof remain incomplete. No Redmi idle-learning receipt.",
+      "next_step": "Connect source-bound episode → replay/dream → held-out World/Self prediction update → restart/retention/rollback; measure interference and ensure user-visible output is never blocked"
+    },
+    {
+      "id": "V14-013",
+      "title": "Age 0–5 rights and X10 experimental lab separation",
+      "owner": "Core & Harness",
+      "reviewer": "QA & Boss",
+      "priority": "P1",
+      "status": "READY",
+      "proof_environment": "NOT_RUN",
+      "dependencies": [
+        "V14-009",
+        "V14-011"
+      ],
+      "code_paths": [
+        "v13/code/v13/age.py",
+        "v13/code/v13/authority.py",
+        "v13/code/v13/config.py"
+      ],
+      "blockers": "Age is a capability/learning-right envelope, never a compute/time budget. Official Age 0 must remain independent from experimental X10 selector; no current Redmi receipt validates the full separation after recent V14 work.",
+      "next_step": "Audit every tool/learning/self-edit permission consumer against AgeControl.may; test official Age 0 plus X10 lab selection without mutating production Age, model weights or compute-budget semantics"
     }
   ]
 }
