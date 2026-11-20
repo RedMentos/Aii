@@ -10,6 +10,9 @@ _PATTERN = re.compile(r"[ \t]*(?:what is|what's|calculate|compute|was ist|wie vi
 def evidence(source):
     if not isinstance(source, str) or len(source) > 96:
         return None
+    # A bare ISO year-month is more likely a date than an arithmetic request.
+    if re.fullmatch(r"[ \\t]*\\d{4}-\\d{1,2}[ \\t]*", source):
+        return None
     m = _PATTERN.fullmatch(source)
     if m is None:
         return None
