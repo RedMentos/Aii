@@ -1,0 +1,23 @@
+name: V13 C3 native reserve
+on:
+  push:
+    branches:
+      - gpt6/core-c3-deadline-admission-20261115
+  pull_request:
+    paths:
+      - 'v13/code/v13/native_budget.py'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/tests/test_native_budget.py'
+jobs:
+  admission:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and test
+        run: |
+          python -m compileall -q v13/code/v13/native_budget.py v13/code/v13/runtime.py
+          python -m pip install pytest
+          PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_native_budget.py
