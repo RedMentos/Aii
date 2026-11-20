@@ -108,10 +108,20 @@ def _parameter_snapshot(model):
 def _group_delta(before, after, groups):
     total = 0.0
     for group in groups:
-        if set(before[group]) != set(after[group]):
-            raise ValueError("parameter snapshot mismatch")
-        for key in before[group]:
-            left, right = before[group][key], after[group][key]
+        left_group, right_group = before[group], after[group]
+        if group == "preds":
+            if len(left_group) != len(right_group):
+                raise ValueError("parameter ensemble mismatch")
+            pairs = []
+            for left_pred, right_pred in zip(left_group, right_group):
+                if set(left_pred) != set(right_pred):
+                    raise ValueError("parameter snapshot mismatch")
+                pairs.extend((left_pred[key], right_pred[key]) for key in left_pred)
+        else:
+            if set(left_group) != set(right_group):
+                raise ValueError("parameter snapshot mismatch")
+            pairs = [(left_group[key], right_group[key]) for key in left_group]
+        for left, right in pairs:
             if left.shape != right.shape:
                 raise ValueError("parameter shape changed")
             total += float(np.square(right - left).sum())
@@ -241,8 +251,11 @@ class WorldJEPAStoreConsumer:
                        for value in fingerprints.values())):
             raise ValueError("invalid processed receipt map")
         processed = record["processed_ids"]
-        if (type(processed) is not list or len(processed) != len(fingerprints)
-                or set(processed) != set(fingerprints) or len(set(processed)) != len(processed)):
+        if (type(processed) is not list
+                or any(type(item) is not str or not item or len(item) > 128 for item in processed)
+                or len(processed) != len(fingerprints)
+                or set(processed) != set(fingerprints)
+                or len(set(processed)) != len(processed)):
             raise ValueError("processed cursor mismatch")
         rows = record["experience_rows"]
         if type(rows) is not list or len(rows) > MAX_ROWS:
@@ -268,13 +281,30 @@ class WorldJEPAStoreConsumer:
         if len(set(row_ids)) != len(row_ids):
             raise ValueError("duplicate replay row")
         train_ids, holdout_ids = record["train_ids"], record["holdout_ids"]
-        if (type(train_ids) is not list or type(holdout_ids) is not list
-                or set(train_ids) & set(holdout_ids)
+        for ids in (train_ids, holdout_ids):
+            if (type(ids) is not list
+                    or any(type(item) is not str or not item for item in ids)
+                    or len(set(ids)) != len(ids)):
+                raise ValueError("invalid train/holdout ids")
+        if (set(train_ids) & set(holdout_ids)
                 or not set(train_ids + holdout_ids).issubset(set(row_ids))):
             raise ValueError("train/holdout cursor mismatch")
         heads = record["receiver_heads"]
         if type(heads) is not dict or set(heads) != set(ROLE_TARGETS):
             raise ValueError("receiver head set")
+        for role, indices in ROLE_TARGETS.items():
+            head = heads[role]
+            if (type(head) is not dict or set(head) != {"target_indices", "weights", "bias"}
+                    or head["target_indices"] != list(indices)
+                    or type(head["weights"]) is not list
+                    or len(head["weights"]) != world_jepa.Z
+                    or type(head["bias"]) is not list
+                    or len(head["bias"]) != len(indices)
+                    or any(type(row) is not list or len(row) != len(indices)
+                           or any(not _finite_number(value) for value in row)
+                           for row in head["weights"])
+                    or any(not _finite_number(value) for value in head["bias"])):
+                raise ValueError("invalid receiver head parameters")
         if type(record["metrics"]) is not dict or type(record["self_state"]) is not dict:
             raise ValueError("metrics/self state")
         if type(record["fit_steps"]) is not int or record["fit_steps"] < 1:
