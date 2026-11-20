@@ -1,0 +1,36 @@
+name: V14 WorldJEPA Store Consumer Recheck
+
+on:
+  push:
+    branches:
+      - "jepa-memory/v14-world-jepa-store-consumer-recheck-*"
+    paths:
+      - ".github/workflows/v14-world-jepa-store-consumer-recheck.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recheck-r2-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: jepa-memory/v14-world-jepa-store-consumer-20261121-r2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install test dependencies
+        run: python -m pip install --disable-pip-version-check numpy pytest
+      - name: Compile candidate source
+        run: |
+          python -m py_compile \
+            v14/learning/world_jepa_consumer.py \
+            v14/learning/test_world_jepa_consumer.py \
+            v14/learning/test_t8_store_authority_real_store.py
+      - name: Run V14 learning tests with T8 diagnostics
+        env:
+          PYTHONPATH: v13/code:v14/learning
+        run: python -m pytest -q -s v14/learning
