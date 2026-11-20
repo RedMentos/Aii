@@ -66,6 +66,25 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertFalse(d["recovery"])
         self.assertEqual(d["recent_success_streak"],2)
 
+    def test_final_without_measured_native_c3_tokens_does_not_reset_recovery(self):
+        # Direct/reflex FINALs are useful but cannot prove the native prefill
+        # regression recovered. Two such turns must not suppress C3 reserve.
+        rows=[turn("FINAL",generated=0,phase="prefill"),
+              {"status":"FINAL","metadata":"{}"},
+              turn(),turn()]
+        d=budget.plan(100,130,104,recent=rows)
+        self.assertTrue(d["recovery"])
+        self.assertEqual(d["recent_success_streak"],0)
+
+    def test_final_from_other_organ_or_invalid_token_count_not_native_success(self):
+        for first in (turn("FINAL",generated=9,phase="stream",role="B2_GIST"),
+                      turn("FINAL",generated=True,phase="stream"),
+                      {"status":"FINAL","metadata":"not json"}):
+            with self.subTest(first=first):
+                d=budget.plan(100,130,104,recent=[first,turn(),turn()])
+                self.assertTrue(d["recovery"])
+                self.assertEqual(d["recent_success_streak"],0)
+
     def test_untrusted_missing_data_is_not_a_phone_failure(self):
         bad=[
             turn("ERROR",generated=0),
