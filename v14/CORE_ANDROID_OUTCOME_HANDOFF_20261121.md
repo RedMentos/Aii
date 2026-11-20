@@ -3,7 +3,7 @@
 ## Checkpoint
 
 - Work branch: `gpt6/v14-core-companion-outcome-20261121`
-- Current branch HEAD at this checkpoint: `29133ebb3546b38f21e36a0f3d83423a00d8c0d4` (latest code test update); earlier handoff commits: `67f1fd07a9d2377a2bc06d992325db94c80064ac`, `a95b7bfb9f7ba74bd34cbbc15e64fead0c0edb7d`
+- Current branch HEAD at this checkpoint: `25c7f35ad3d88f13d50f32bb0dc2e6c2e7893b00` (latest code test update); earlier handoff commits: `67f1fd07a9d2377a2bc06d992325db94c80064ac`, `a95b7bfb9f7ba74bd34cbbc15e64fead0c0edb7d`
 - Stacked dependency: draft PR #2119, branch `gpt6/v14-core-companion-receipt-20261120`, head `6622218640c6859a628d96d7b63e3625ac46ba28`
 - Integration base observed: `gpt6/v13-private-remote-bridge-20261111` at `14d7386484dfce6728aa404d89eae98403b4dba0`
 - This is a review candidate, not a release or a device deployment.
