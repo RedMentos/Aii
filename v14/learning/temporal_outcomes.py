@@ -151,9 +151,9 @@ class TemporalOutcomes:
 
     def learning_intent(self, id):
         r = self.records[id]
-        if r.error is not None:
+        if r.error is None:
             return None
         return {"source": r.source, "evidence": r.evidence, "owner": r.owner,
                 "expected_outcome": r.outcome, "observed_outcome": r.observed_outcome,
-                "prediction_error": r.error, "target": "WORLD_TEMP_ORAL",
+                "prediction_error": r.error, "target": "WORLD_TEMPORAL",
                 "requires_optimizer_permission": True}
