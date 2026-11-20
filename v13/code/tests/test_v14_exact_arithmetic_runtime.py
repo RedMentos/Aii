@@ -1,31 +1,70 @@
-"""V14 regression for the current Runtime's exact-arithmetic direct path."""
+"""V14 regression for the real fixed-policy consumer of exact arithmetic."""
 import ast
+import hashlib
+import threading
 from pathlib import Path
 
-from v13.exact_arithmetic import evidence, direct_output
+from v13.output_policy import match
 
 
-def test_direct_output_priority_and_missing_match_safety():
-    arithmetic = evidence("2+2")
-    assert arithmetic["result"] == "4"
-    assert direct_output(arithmetic=arithmetic) == "4"
-    assert direct_output(fixed_answer="approved", arithmetic=arithmetic) == "approved"
-    assert direct_output(exact_copy="literal", arithmetic=arithmetic) == "literal"
+class FakeStore:
+    def __init__(self):
+        self.mutex = threading.RLock()
+        self.sources = []
+
+    def source(self, text, kind):
+        digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        ref = {
+            "source_id": f"source-{len(self.sources) + 1}",
+            "sha256": digest,
+            "char_start": 0,
+            "char_end": len(text),
+            "modality": "text",
+        }
+        self.sources.append((text, kind, ref))
+        return ref
+
+    def generation(self):
+        return {"rule_version": 1}
+
+    def one(self, sql, params):
+        return {"rules": "[]"}
 
 
-def test_runtime_wires_evidence_to_direct_c5_output():
+def test_exact_arithmetic_returns_source_bound_fixed_policy():
+    store = FakeStore()
+    policy = match(store, "2+2")
+    assert policy["answer"] == "4"
+    assert policy["kind"] == "SYSTEM_DETERMINISTIC_ARITHMETIC"
+    assert policy["rule_id"] == "fixed_builtin_exact_integer_arithmetic_v1"
+    assert policy["rule_version"] == "builtin-1"
+    assert policy["model_generated"] is False
+    assert policy["output_authority"] == "APPROVED_FIXED_RULE"
+    assert [item[1] for item in store.sources] == [
+        "SYSTEM_DETERMINISTIC_QUERY", "SYSTEM_DETERMINISTIC_ANSWER"
+    ]
+    assert store.sources[0][0] == "2+2"
+    assert store.sources[1][0] == "4"
+
+
+def test_ambiguous_or_date_shaped_input_stays_on_normal_route():
+    store = FakeStore()
+    for prompt in ("2+2 and explain", "1+2+3", "2026-11", "please run 2+2"):
+        assert match(store, prompt) is None
+    assert store.sources == []
+
+
+def test_runtime_already_consumes_policy_before_perception_and_output():
     runtime = Path(__file__).resolve().parents[1] / "v13" / "runtime.py"
-    tree = ast.parse(runtime.read_text(encoding="utf-8"), filename=str(runtime))
+    source = runtime.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(runtime))
     turn = next(node for node in ast.walk(tree)
                 if isinstance(node, ast.FunctionDef) and node.name == "_turn")
     calls = {node.func.id for node in ast.walk(turn)
              if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)}
-    imports = {node.module for node in ast.walk(turn)
-               if isinstance(node, ast.ImportFrom)}
     literals = {node.value for node in ast.walk(turn)
                 if isinstance(node, ast.Constant) and isinstance(node.value, str)}
-    assert "evidence" in calls or "arithmetic_evidence" in calls
-    assert "direct_output" in calls
-    assert "exact_arithmetic" in imports
-    assert "ExactArithmeticDecision" in literals
-    assert "EXACT_ARITHMETIC" in literals
+    assert "match" in calls
+    assert "output_policy" in literals
+    assert "APPROVED_FIXED_RULE" in literals
+    assert "fixed_policy['answer']" in source
