@@ -40,3 +40,7 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | next_developer_action | Board-Tickets V14-001/002/003/004 parallel umsetzen und testen; Boss integriert den ersten nachgewiesenen E2E-Pfad |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
+
+## Research/Perception handoff — 2026-11-20 06:xx CET (PR #2118)
+
+Branch `research-perception/v14-readonly-model-probe-20261120`, head `804e5de394f6df3a50023439de79d9faeca1c936`: read-only GGUF probe now rejects symlinks and missing provenance, caps timeout/threads/tokens/prompt, discards native stdout/stderr to avoid sensitive leakage; adds timeout/negative tests. LOCAL_LINUX: analogous implementation `python -m py_compile` PASS and `python -m unittest -v` 3 PASS; **exact pushed revision not executed locally**, CI not checked, no real GGUF run, no native token or TTFT claim. Redmi: REDMI_UNVERIFIED. Release: NOT_RELEASED; updater/deployment unchanged. Next: QA review exact PR diff and run pushed revision in CI/local, then native GGUF role benchmark with opt-in and actual output-quality check before suggesting any model experiment. No user action needed.
