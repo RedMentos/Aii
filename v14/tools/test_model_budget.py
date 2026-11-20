@@ -21,5 +21,15 @@ class ModelBudgetTest(unittest.TestCase):
 
     def test_negative_capacity_rejected(self):
         with self.assertRaises(ValueError): audit(self.registry, -1)
+        with self.assertRaises(ValueError): audit(self.registry, True)
+        with self.assertRaises(ValueError): audit(self.registry, 1.0)
+
+    def test_optional_models_not_baseline(self):
+        self.registry['models']['vision'] = {'model_id': 'eye', 'revision': 'sha2', 'files': [{'size': 900}]}
+        result = audit(self.registry, 100)
+        self.assertTrue(result['baseline_fits_disk_only'])
+        self.assertFalse(result['fits_disk_only'])
+        self.assertEqual(result['baseline_disk_bytes'], 100)
+        self.assertEqual(result['optional_disk_bytes'], 900)
 
 if __name__ == '__main__': unittest.main()
