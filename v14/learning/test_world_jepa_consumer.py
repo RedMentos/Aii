@@ -96,6 +96,7 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
         assert metrics["train_rows"] >= 8 and metrics["holdout_rows"] >= 8
         assert metrics["parameter_delta_norm"] > 0
         assert metrics["ema_target_delta_norm"] > 0
+        assert metrics["optimizer_moments_persisted"] is False
         assert math.isfinite(metrics["holdout_loss_before"])
         assert math.isfinite(metrics["holdout_loss_after"])
         assert math.isfinite(metrics["shuffled_action_holdout_loss"])
@@ -122,6 +123,7 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
         assert second["metrics"]["old_holdout_loss_before"] is not None
         assert second["metrics"]["old_holdout_loss_after"] is not None
         assert second["checkpoint_sha256"] != first_sha
+        assert len(list((tmp_path / "private-jepa").glob("jepa-*.npz"))) == 2
 
         restarted = WorldJEPAStoreConsumer(
             store, tmp_path / "private-jepa", learning_enabled=True
@@ -135,6 +137,7 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
         assert rolled_back["checkpoint_sha256"] == first_sha
         restored_first = restarted.restore()
         assert restored_first["checkpoint_sha256"] == first_sha
+        assert len(list((tmp_path / "private-jepa").glob("jepa-*.npz"))) == 2
 
         payload, version = store.state("v14.world_jepa.store_consumer", None)
         assert version >= 3
