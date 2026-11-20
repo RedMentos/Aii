@@ -5,6 +5,8 @@ or grant optimizer permission; callers must provide those boundaries separately.
 """
 from dataclasses import dataclass, asdict, replace
 from pathlib import Path
+from contextlib import contextmanager
+import fcntl
 import json
 import math
 import os
@@ -38,22 +40,46 @@ def _label(value, name, maximum):
 
 
 class TemporalOutcomes:
-    def __init__(self, path, max_pending=512):
+    def __init__(self, path, max_pending=512, max_records=4096):
         if type(max_pending) is not int or max_pending < 1:
             raise ValueError("max_pending")
+        if type(max_records) is not int or max_records < max_pending:
+            raise ValueError("max_records")
         self.path = Path(path)
+        self.lock_path = self.path.with_name(self.path.name + ".lock")
         self.max_pending = max_pending
+        self.max_records = max_records
         self.records = {}
-        if self.path.exists():
-            data = json.loads(self.path.read_text())
-            if data.get("schema") != 1 or not isinstance(data.get("records"), list):
-                raise ValueError("schema")
-            self.records = {x["id"]: Expectation(**x) for x in data["records"]}
-            if len(self.records) != len(data["records"]):
-                raise ValueError("duplicate persisted id")
+        self._refresh()
 
-    def save(self):
+    @contextmanager
+    def _locked(self, exclusive):
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.lock_path, "a+") as lock:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH)
+            try:
+                yield
+            finally:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+
+    def _load_unlocked(self):
+        if not self.path.exists():
+            self.records = {}
+            return
+        data = json.loads(self.path.read_text())
+        if (data.get("schema") != 1 or not isinstance(data.get("records"), list)
+                or len(data["records"]) > self.max_records):
+            raise ValueError("schema")
+        loaded = {x["id"]: Expectation(**x) for x in data["records"]}
+        if len(loaded) != len(data["records"]):
+            raise ValueError("duplicate persisted id")
+        self.records = loaded
+
+    def _refresh(self):
+        with self._locked(False):
+            self._load_unlocked()
+
+    def _save_unlocked(self):
         fd, name = tempfile.mkstemp(dir=self.path.parent, prefix=".outcomes-")
         try:
             with os.fdopen(fd, "w") as f:
@@ -61,9 +87,32 @@ class TemporalOutcomes:
                 f.flush()
                 os.fsync(f.fileno())
             os.replace(name, self.path)
+            dfd = os.open(self.path.parent, os.O_RDONLY)
+            try:
+                os.fsync(dfd)
+            finally:
+                os.close(dfd)
         finally:
             if os.path.exists(name):
                 os.unlink(name)
+
+    def save(self):
+        # Mutations are committed by expect/resolve. This only republishes the
+        # latest locked state and cannot overwrite another instance's changes.
+        with self._locked(True):
+            self._load_unlocked()
+            self._save_unlocked()
+
+    def get(self, id):
+        with self._locked(False):
+            self._load_unlocked()
+            record = self.records.get(id)
+            return asdict(record) if record else None
+
+    def count(self):
+        with self._locked(False):
+            self._load_unlocked()
+            return len(self.records)
 
     def expect(self, r):
         if not isinstance(r, Expectation):
@@ -80,17 +129,28 @@ class TemporalOutcomes:
             raise ValueError("probability/status")
         if r.evidence != "" or r.observed_at is not None or r.error is not None or r.observed_outcome is not None:
             raise ValueError("initial state")
-        if r.id in self.records:
-            raise ValueError("duplicate")
-        if sum(x.status == "PENDING" for x in self.records.values()) >= self.max_pending:
-            raise OverflowError("pending budget")
-        before = self.records
-        self.records = {**before, r.id: replace(r)}
-        try:
-            self.save()
-        except Exception:
-            self.records = before
-            raise
+        with self._locked(True):
+            self._load_unlocked()
+            if r.id in self.records:
+                raise ValueError("duplicate")
+            if sum(x.status == "PENDING" for x in self.records.values()) >= self.max_pending:
+                raise OverflowError("pending budget")
+            before = self.records
+            candidate = {**before, r.id: replace(r)}
+            if len(candidate) > self.max_records:
+                for old_id, old in list(candidate.items()):
+                    if len(candidate) <= self.max_records:
+                        break
+                    if old.status != "PENDING" and old_id != r.id:
+                        del candidate[old_id]
+            if len(candidate) > self.max_records:
+                raise OverflowError("record budget")
+            self.records = candidate
+            try:
+                self._save_unlocked()
+            except Exception:
+                self.records = before
+                raise
 
     def resolve(self, id, *, at, observed, evidence="", observed_outcome=None,
                 observation_complete=False, cancelled=False):
@@ -103,57 +163,59 @@ class TemporalOutcomes:
             raise ValueError("evidence")
         if observed_outcome is not None:
             _label(observed_outcome, "observed outcome", 128)
-        r = self.records[id]
-        if r.status != "PENDING" or at < r.opened_at:
-            raise ValueError("state/time")
-        if cancelled and (observed or observation_complete or observed_outcome is not None):
-            raise ValueError("cancelled outcome conflict")
-        if observed and (observed_outcome is None or not evidence):
-            raise ValueError("observed outcome/evidence required")
-        if not observed and observed_outcome is not None:
-            raise ValueError("unexpected observed outcome")
-        if not cancelled and not observed and at < r.deadline:
-            # An incomplete early observation is not a terminal outcome.
-            return asdict(r)
-
-        next_r = replace(r)
-        if cancelled:
-            next_r.status = "CANCELLED"
-        elif observed:
-            next_r.observed_outcome = observed_outcome
-            if observed_outcome != r.outcome:
-                next_r.status = "MISMATCHED"
-                next_r.error = -r.probability
-            elif at < r.earliest:
-                next_r.status = "EARLY"
-                next_r.error = -r.probability
-            elif at > r.deadline:
-                next_r.status = "DELAYED"
+        with self._locked(True):
+            self._load_unlocked()
+            r = self.records[id]
+            if r.status != "PENDING" or at < r.opened_at:
+                raise ValueError("state/time")
+            if cancelled and (observed or observation_complete or observed_outcome is not None):
+                raise ValueError("cancelled outcome conflict")
+            if observed and (observed_outcome is None or not evidence):
+                raise ValueError("observed outcome/evidence required")
+            if not observed and observed_outcome is not None:
+                raise ValueError("unexpected observed outcome")
+            if not cancelled and not observed and at < r.deadline:
+                return asdict(r)
+            next_r = replace(r)
+            if cancelled:
+                next_r.status = "CANCELLED"
+            elif observed:
+                next_r.observed_outcome = observed_outcome
+                if observed_outcome != r.outcome:
+                    next_r.status = "MISMATCHED"
+                    next_r.error = -r.probability
+                elif at < r.earliest:
+                    next_r.status = "EARLY"
+                    next_r.error = -r.probability
+                elif at > r.deadline:
+                    next_r.status = "DELAYED"
+                    next_r.error = -r.probability
+                else:
+                    next_r.status = "OBSERVED"
+                    next_r.error = 1 - r.probability
+            elif observation_complete and at >= r.deadline and evidence:
+                next_r.status = "OMITTED"
                 next_r.error = -r.probability
             else:
-                next_r.status = "OBSERVED"
-                next_r.error = 1 - r.probability
-        elif observation_complete and at >= r.deadline and evidence:
-            next_r.status = "OMITTED"
-            next_r.error = -r.probability
-        else:
-            next_r.status = "CENSORED"
-        next_r.observed_at = at
-        next_r.evidence = evidence
-        before = self.records
-        self.records = {**before, id: next_r}
-        try:
-            self.save()
-        except Exception:
-            self.records = before
-            raise
-        return asdict(next_r)
+                next_r.status = "CENSORED"
+            next_r.observed_at = at
+            next_r.evidence = evidence
+            before = self.records
+            self.records = {**before, id: next_r}
+            try:
+                self._save_unlocked()
+            except Exception:
+                self.records = before
+                raise
+            return asdict(next_r)
 
     def learning_intent(self, id):
-        r = self.records[id]
-        if r.error is None:
-            return None
-        return {"source": r.source, "evidence": r.evidence, "owner": r.owner,
-                "expected_outcome": r.outcome, "observed_outcome": r.observed_outcome,
-                "prediction_error": r.error, "target": "WORLD_TEMPORAL",
-                "requires_optimizer_permission": True}
+        with self._locked(False):
+            self._load_unlocked()
+            r = self.records[id]
+            if r.error is None:
+                return None
+            return {"source": r.source, "evidence": r.evidence, "owner": r.owner,
+                    "expected_outcome": r.outcome, "observed_outcome": r.observed_outcome,
+                    "prediction_error": r.error, "target": "WORLD_TEMPORAL",
+                    "requires_optimizer_permission": True}
