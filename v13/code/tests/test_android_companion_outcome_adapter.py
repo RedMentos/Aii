@@ -189,7 +189,7 @@ def test_companion_persistence_is_idempotent_after_store_restart(tmp_path):
     )
     outcome = accept_companion_receipt(
         broker, verifier, proposal.action_id,
-        make_receipt(proposal, nonce="j" * 32),
+        make_receipt(proposal, nonce="6" * 32),
     )
     first = persist_companion_outcome(store, outcome)
     store.close()
@@ -266,13 +266,13 @@ def _verify_once(verifier, envelope, receipt):
 def test_invalid_mac_and_expired_receipt_consume_dispatch(tmp_path):
     broker, verifier = setup(tmp_path)
     proposal, _ = approved_dispatch(broker)
-    bad_mac = make_receipt(proposal, nonce="h" * 32)
+    bad_mac = make_receipt(proposal, nonce="8" * 32)
     bad_mac["mac"] = "0" * 64
     with pytest.raises(CompanionDenied, match="invalid authentication"):
         accept_companion_receipt(broker, verifier, proposal.action_id, bad_mac)
     assert proposal.action_id not in broker.dispatched
     proposal2, _ = approved_dispatch(broker)
-    too_long = make_receipt(proposal2, nonce="i" * 32)
+    too_long = make_receipt(proposal2, nonce="9" * 32)
     too_long["body"]["issued_at"] = 900.0
     too_long["body"]["expires_at"] = 1100.0
     too_long["mac"] = sign_fixture(SECRET, too_long["body"])
@@ -298,7 +298,7 @@ def test_persist_requires_source_binding(tmp_path):
     proposal, _ = approved_dispatch(broker, source_ref=None, event_id=None)
     outcome = accept_companion_receipt(
         broker, verifier, proposal.action_id,
-        make_receipt(proposal, nonce="g" * 32),
+        make_receipt(proposal, nonce="7" * 32),
     )
     with pytest.raises(InvalidOutcome, match="source-bound event"):
         persist_companion_outcome(FakeStore("evt-android-1", SOURCE_REF), outcome)
