@@ -1,0 +1,26 @@
+name: V14 Core exact arithmetic regression
+on:
+  push:
+    branches: ['gpt6/v14-core-exact-arithmetic-fix-20261121']
+  pull_request:
+    paths:
+      - 'v13/code/v13/exact_arithmetic.py'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/tests/test_exact_arithmetic.py'
+      - 'v13/code/tests/test_v14_exact_arithmetic_runtime.py'
+      - '.github/workflows/v14-core-exact-arithmetic.yml'
+jobs:
+  exact-local:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Compile changed Python
+        run: python -m py_compile v13/code/v13/exact_arithmetic.py v13/code/v13/runtime.py v13/code/tests/test_v14_exact_arithmetic_runtime.py
+      - name: Run exact arithmetic and Runtime wiring regressions
+        run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_exact_arithmetic.py v13/code/tests/test_v14_exact_arithmetic_runtime.py
