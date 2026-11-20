@@ -13,25 +13,32 @@ def validate_model(registry, role, model_path):
     file = next((f for f in record['files'] if f['local_name'] == Path(model_path).name), None)
     if file is None:
         raise ValueError('unregistered model filename for role')
-    if not Path(model_path).is_file():
-        raise ValueError('model file missing')
+    if not Path(model_path).is_file() or Path(model_path).is_symlink():
+        raise ValueError('model missing or symlink')
     if Path(model_path).stat().st_size != file['size']:
         raise ValueError('model size mismatch')
     with open(model_path, 'rb') as stream:
         digest = hashlib.file_digest(stream, 'sha256').hexdigest()
     if digest != file['sha256']:
         raise ValueError('model sha256 mismatch')
+    for key in ('model_id', 'revision', 'license_id'):
+        if not record.get(key):
+            raise ValueError('missing registry provenance: ' + key)
     return {'role': role, 'model_id': record['model_id'], 'revision': record['revision'], 'license_id': record['license_id'], 'sha256': digest}
 
 
 def probe(binary, model, prompt, timeout, threads, predict):
+    if not 0 < timeout <= 300 or not 1 <= threads <= 16 or not 1 <= predict <= 512:
+        raise ValueError('invalid resource limits')
+    if len(prompt) > 2048:
+        raise ValueError('prompt too long')
     cmd = [str(binary), '-m', str(model), '-p', prompt, '-t', str(threads), '-n', str(predict)]
     start = time.monotonic()
     try:
-        run = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, check=False)
+        run = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=timeout, check=False)
     except subprocess.TimeoutExpired:
         return {'status': 'TIMEOUT', 'elapsed_s': round(time.monotonic()-start, 3)}
-    return {'status': 'PASS' if run.returncode == 0 else 'FAIL', 'returncode': run.returncode, 'elapsed_s': round(time.monotonic()-start, 3), 'output_chars': len(run.stdout), 'stderr_tail': run.stderr[-1200:]}
+    return {'status': 'PASS' if run.returncode == 0 else 'FAIL', 'returncode': run.returncode, 'elapsed_s': round(time.monotonic()-start, 3)}
 
 
 def main():
@@ -45,11 +52,11 @@ def main():
     p.add_argument('--threads', type=int, default=2)
     p.add_argument('--predict', type=int, default=32)
     a = p.parse_args()
-    if a.timeout <= 0 or a.threads < 1 or not 1 <= a.predict <= 512:
+    if not 0 < a.timeout <= 300 or not 1 <= a.threads <= 16 or not 1 <= a.predict <= 512:
         p.error('invalid resource limits')
     registry = json.loads(Path(a.registry).read_text())
     proof = validate_model(registry, a.role, a.model)
-    if not Path(a.binary).is_file() or not os.access(a.binary, os.X_OK):
+    if not Path(a.binary).is_file() or Path(a.binary).is_symlink() or not os.access(a.binary, os.X_OK):
         p.error('binary not executable')
     print(json.dumps({'model': proof, 'probe': probe(a.binary, a.model, a.prompt, a.timeout, a.threads, a.predict)}, sort_keys=True))
 
