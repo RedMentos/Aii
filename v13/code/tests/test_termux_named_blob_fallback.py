@@ -93,6 +93,43 @@ class NamedPublicationTests(unittest.TestCase):
             lifecycle._hardlink_named_no_replace(21, "pending", "final")
         self.assertEqual(calls, [(21, b"pending", 21, b"final", 0)])
 
+    def test_android_hardlink_denied_renameat2_still_publishes(self):
+        # Mirrors Termux's previously working integrated-stage renameat2.
+        with mock.patch.object(lifecycle, "_link_anonymous",
+                               side_effect=PermissionError(errno.EACCES, "anon denied")):
+            with mock.patch.object(lifecycle, "_hardlink_named_no_replace",
+                                   side_effect=PermissionError(errno.EPERM, "hardlink denied")):
+                self.assertEqual(lifecycle.verify_or_create_blob(self.path, self.data,
+                                                                  self.key), "CREATED")
+        self.assertEqual(self.path.read_bytes(), self.data)
+        self.assertFalse(list(self.root.glob(".v13-pending-*")))
+        self.assertEqual(stat.S_IMODE(self.path.stat().st_mode), 0o600)
+
+    def test_renameat2_refuses_existing_final_filename(self):
+        stage = self.root / "stage"
+        stage.write_bytes(self.data)
+        self.path.write_bytes(b"PROTECTED EXISTING")
+        fd = os.open(self.root, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            with self.assertRaises(FileExistsError):
+                lifecycle._rename_named_no_replace(fd, "stage", self.key)
+        finally:
+            os.close(fd)
+        self.assertEqual(self.path.read_bytes(), b"PROTECTED EXISTING")
+        self.assertEqual(stage.read_bytes(), self.data)
+
+    def test_renameat2_denied_fails_closed_without_temp_copy(self):
+        with mock.patch.object(lifecycle, "_link_anonymous",
+                               side_effect=PermissionError(errno.EACCES, "anon denied")):
+            with mock.patch.object(lifecycle, "_hardlink_named_no_replace",
+                                   side_effect=PermissionError(errno.EACCES, "hardlink denied")):
+                with mock.patch.object(lifecycle, "_rename_named_no_replace",
+                                       side_effect=PermissionError(errno.EACCES, "rename denied")):
+                    with self.assertRaises(PermissionError):
+                        lifecycle.verify_or_create_blob(self.path, self.data, self.key)
+        self.assertFalse(self.path.exists())
+        self.assertFalse(list(self.root.glob(".v13-pending-*")))
+
     def test_crash_recovery_reaps_only_digest_bound_pending(self):
         pending_a = ".v13-pending-" + self.key + "-" + "a" * 24
         other_hash = "b" * 64
