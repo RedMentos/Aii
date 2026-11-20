@@ -33,16 +33,3 @@ def evidence(source):
         'model_generated': False,
         'authority': 'DETERMINISTIC_EVIDENCE_ONLY',
     }
-
-
-def direct_output(*, fixed_answer=None, exact_copy=None, arithmetic=None):
-    """Choose a verified local direct output without dereferencing an absent copy match."""
-    if fixed_answer is not None:
-        return fixed_answer
-    if exact_copy is not None:
-        return exact_copy
-    if (type(arithmetic) is dict
-            and arithmetic.get('authority') == 'DETERMINISTIC_EVIDENCE_ONLY'
-            and type(arithmetic.get('result')) is str):
-        return arithmetic['result']
-    raise ValueError('No verified direct output')
