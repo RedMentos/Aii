@@ -41,11 +41,13 @@ class ReceiptVerifier:
         with self.lock:
             self.stopped = True
 
-    def verify(self, envelope, receipt):
+    def verify(self, envelope, receipt, *, consume_nonce=True):
+        if type(consume_nonce) is not bool:
+            raise CompanionDenied("invalid nonce policy")
         with self.lock:
-            return self._verify_locked(envelope, receipt)
+            return self._verify_locked(envelope, receipt, consume_nonce=consume_nonce)
 
-    def _verify_locked(self, envelope, receipt):
+    def _verify_locked(self, envelope, receipt, *, consume_nonce=True):
         if self.stopped:
             raise CompanionDenied("stopped")
         if type(envelope) is not dict or type(receipt) is not dict or set(receipt) != {"body", "mac"}:
@@ -70,12 +72,14 @@ class ReceiptVerifier:
             raise CompanionDenied("scope mismatch")
         if type(receipt["mac"]) is not str or not hmac.compare_digest(sign_fixture(self.secret, b), receipt["mac"]):
             raise CompanionDenied("invalid authentication")
-        try:
-            with self.db:
-                self.db.execute("INSERT INTO used_receipts VALUES (?,?)", (b["nonce"], b["action_id"]))
-        except sqlite3.IntegrityError as exc:
-            raise CompanionDenied("replay") from exc
+        if consume_nonce:
+            try:
+                with self.db:
+                    self.db.execute("INSERT INTO used_receipts VALUES (?,?)", (b["nonce"], b["action_id"]))
+            except sqlite3.IntegrityError as exc:
+                raise CompanionDenied("replay") from exc
         return {"schema": SCHEMA, "action_id": b["action_id"],
+                "nonce": b["nonce"],
                 "status": "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
                 "auth_scheme": "HMAC_SHA256_PER_INSTALL",
                 "key_storage_status": "UNVERIFIED",
