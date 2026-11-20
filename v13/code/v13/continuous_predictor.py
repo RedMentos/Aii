@@ -22,7 +22,7 @@ class OnlinePredictor:
         self.path=Path(home)/'online_predictor.npz';self.rng=np.random.default_rng(seed)
         self.W=np.eye(features);self.U=np.zeros((actions,features));self.bias=np.zeros(features)
         self.x=np.zeros((0,features));self.act=np.zeros(0,dtype=np.int64);self.y=np.zeros((0,features))
-        self.seen=0;self.updates=0
+        self.seen=0;self.updates=0;self.processed_ids=None
         if self.path.exists():self.restore()
 
     def _check(self,x,action,y=None):
@@ -97,14 +97,22 @@ class OnlinePredictor:
         if count%checkpoint_every:self.checkpoint()
         return {'observed':count,'last':last,'checkpoint':str(self.path) if count else None}
 
-    def checkpoint(self):
+    def checkpoint(self,processed_ids=None):
+        if processed_ids is not None:
+            if (not isinstance(processed_ids,list) or len(processed_ids)>2048
+                or any(type(v) is not str or not v for v in processed_ids)
+                or len(set(processed_ids))!=len(processed_ids)):
+                raise ValueError('Invalid committed transition identifiers')
+            self.processed_ids=list(processed_ids)
+
         self.path.parent.mkdir(parents=True,exist_ok=True)
         temp=self.path.with_name(self.path.name+'.tmp.npz')
         try:
             np.savez_compressed(temp,revision=np.array(REVISION),dimensions=np.array([self.d,self.a,self.cap]),
                 W=self.W,U=self.U,bias=self.bias,x=self.x,act=self.act,y=self.y,
                 counters=np.array([self.seen,self.updates]),
-                rng_state=np.array(json.dumps(self.rng.bit_generator.state)))
+                rng_state=np.array(json.dumps(self.rng.bit_generator.state)),
+                processed_ids=np.array(json.dumps(self.processed_ids)))
             if self.path.exists():
                 shutil.copy2(self.path,self.path.with_suffix('.previous.npz'))
             os.replace(temp,self.path)
@@ -113,14 +121,33 @@ class OnlinePredictor:
         return str(self.path)
 
     def rollback(self):
-        """Restore last committed snapshot; never overwrite current checkpoint on failure."""
+        """Durably restore the prior committed weights AND trusted T8 cursor.
+
+        Validate the candidate before replacing the active snapshot. A failed
+        disk replacement leaves the original active checkpoint loadable.
+        """
         previous=self.path.with_suffix('.previous.npz')
         if not previous.exists():raise FileNotFoundError('No prior predictor checkpoint')
         current=self.path
         self.path=previous
-        try:self.restore()
-        finally:self.path=current
-        return {'status':'ROLLED_BACK_IN_MEMORY','source':str(previous)}
+        try:
+            self.restore()
+        except Exception:
+            self.path=current
+            if current.exists():self.restore()
+            raise
+        finally:
+            self.path=current
+        temp=current.with_name(current.name+'.rollback.tmp.npz')
+        try:
+            shutil.copy2(previous,temp)
+            os.replace(temp,current)
+        except Exception:
+            if current.exists():self.restore()
+            raise
+        finally:
+            if temp.exists():temp.unlink()
+        return {'status':'ROLLED_BACK_PERSISTED','source':str(previous)}
 
     def restore(self):
         with np.load(self.path,allow_pickle=False) as data:
@@ -130,6 +157,9 @@ class OnlinePredictor:
                     'x':(None,self.d),'act':(None,),'y':(None,self.d),'counters':(2,)}
             loaded={k:data[k].copy() for k in shapes}
             rng_state=json.loads(str(data['rng_state']))
+            processed_ids=json.loads(str(data['processed_ids'])) if 'processed_ids' in data.files else None
+            if processed_ids is not None and (not isinstance(processed_ids,list) or len(processed_ids)>2048 or len(set(processed_ids))!=len(processed_ids) or any(type(v) is not str or not v for v in processed_ids)):
+                raise ValueError('Invalid checkpoint transition identifiers')
         n=len(loaded['x'])
         if (n>self.cap or len(loaded['act'])!=n or len(loaded['y'])!=n
             or any(v.shape!=tuple(n if d is None else d for d in shapes[k]) for k,v in loaded.items())
@@ -140,3 +170,4 @@ class OnlinePredictor:
         for k in ('W','U','bias','x','act','y'):setattr(self,k,loaded[k])
         self.seen,self.updates=map(int,loaded['counters'])
         self.rng.bit_generator.state=rng_state
+        self.processed_ids=processed_ids
