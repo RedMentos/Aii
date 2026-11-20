@@ -334,6 +334,23 @@ class WorldJEPAStoreConsumer:
             path, record["source_sha256"], record["checkpoint_sha256"]
         )
 
+    def _prune_checkpoints(self, state):
+        keep = {
+            record["checkpoint"]
+            for record in (state.get("active"), state.get("previous"))
+            if record is not None
+        }
+        removed = errors = 0
+        for path in self.home.glob("jepa-*.npz"):
+            if path.name in keep or path.is_symlink() or not path.is_file():
+                continue
+            try:
+                path.unlink()
+                removed += 1
+            except OSError:
+                errors += 1
+        return removed, errors
+
     def update(self, *, limit=MAX_ROWS, steps=80, optimizer_permission=False):
         if type(limit) is not int or not 1 <= limit <= MAX_ROWS:
             raise ValueError("limit")
@@ -512,6 +529,8 @@ class WorldJEPAStoreConsumer:
                 "fit_steps_after": fit_steps_after,
                 "checkpoint_sha_before": checkpoint_before,
                 "checkpoint_sha_after": checkpoint_after,
+                "optimizer_moments_persisted": False,
+                "inverse_dynamics_optimizer_persisted": False,
             }
             metrics.update(receiver_metrics)
             record = {
@@ -561,9 +580,12 @@ class WorldJEPAStoreConsumer:
                     pass
                 raise
 
+            pruned_checkpoints, prune_errors = self._prune_checkpoints(next_state)
             return {
                 "status": "UPDATED_EXPERIMENTAL_WORLD_JEPA",
                 "verified_receipts": len(receipts),
+                "orphan_checkpoints_removed": pruned_checkpoints,
+                "checkpoint_prune_errors": prune_errors,
                 "rejected_receipts": rejected,
                 "new_receipts": len(new_ids),
                 "processed": len(prior_fingerprints),
