@@ -58,11 +58,11 @@
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
       "proof_environment": "SYNTHETIC",
-      "next_step": "Run exact branch CI; add a real Store/ActionSelection/ActionOutcome integration fixture; then stage a hash-bound runtime consumer without editing frozen V13 runtime files",
+      "next_step": "Run the new real-Store integration test in exact PR CI; then stage a hash-bound runtime consumer without editing frozen V13 runtime files",
       "user_action_required": false,
       "last_verified_sha": "3319a5199602d6d305857dbdc3aad93466b871da",
       "local_test": "LOCAL_LINUX CPython 3.13.5: python -m pytest v14/learning — 29 passed; py_compile 5 files; 4 multiprocessing fork deprecation warnings",
-      "blockers": "Store adapter uses a synthetic Store fixture and patched world_model.transitions; no exact repository Store integration, no live runtime consumer (source-handoff freeze), no CI run or Redmi receipt"
+      "blockers": "Store adapter has 29 synthetic local passes; a new real SQLite Store/ActionSelection/CorollaryCopy/ActionOutcome integration test is now added but has not run in CI. No live runtime consumer (source-handoff freeze), no Redmi receipt."
     },
     {
       "id": "V14-005",
@@ -105,11 +105,11 @@
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
       "proof_environment": "CI",
-      "next_step": "Integrate only after exact CI and consumer-path review; keep current candidates draft, resolve source-handoff pin conflicts, and avoid another isolated ledger/guard PR without a real end-to-end consumer",
+      "next_step": "Trigger exact PR CI and review the real-Store test result; keep draft until source-handoff consumer, exact integration suite and negative controls pass",
       "user_action_required": false,
       "last_verified_sha": "a24bc46700cc59bd6059c383ba8efb5f5fafa2fe",
       "local_test": "LOCAL_LINUX CPython 3.13.5: 29/29 V14 learning tests passed, including stale-instance and multiprocessing writers",
-      "blockers": "PR #2130 has 29 local synthetic tests but no GitHub CI run, real Store fixture or runtime consumer. PR #2131 and #2129 are direct-base drafts with integrated CI failures. PR #2124/#2126 are incompatible audio drafts. No safe candidate is merge-ready."
+      "blockers": "PR #2130 has 29 local synthetic tests plus a newly added real-Store integration test pending CI; no runtime consumer or Android activation. PR #2131/#2129 remain blocked by integrated CI failures; audio producer/receiver contracts remain incompatible."
     },
     {
       "id": "V14-008",

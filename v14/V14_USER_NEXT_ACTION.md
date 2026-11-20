@@ -6,11 +6,11 @@
 ## Letzter gesicherter Gesamtstand
 
 - Release-Arbeitsbranch gpt6/v13-private-remote-bridge-20261111: letzter verifizierter HEAD 14d7386484dfce6728aa404d89eae98403b4dba0. Dieser Stand ist keine neue Redmi-Installationsbestätigung.
-- V14-Kandidat PR #2130, Branch boss/v14-temporal-outcome-semantics-20261120. Code-/Test-Checkpoint a24bc46700cc59bd6059c383ba8efb5f5fafa2fe; aktueller Branch-HEAD nach Handoff-/Board-Updates 17dcbdcafa4e6e12b6498cbe115a3726b0c07234. Base 14d7386484dfce6728aa404d89eae98403b4dba0. PR bleibt DRAFT / NOT MERGED / NOT RELEASED.
+- V14-Kandidat PR #2130, Branch boss/v14-temporal-outcome-semantics-20261120. Code-/Test-Checkpoint a24bc46700cc59bd6059c383ba8efb5f5fafa2fe; aktueller Branch-HEAD nach Live-Coverage- und Real-Store-Test-Update wird beim Readback verifiziert. Base 14d7386484dfce6728aa404d89eae98403b4dba0. PR bleibt DRAFT / NOT MERGED / NOT RELEASED.
 - Neue Kandidatenfunktion: t8_store_authority.py bindet vom vorhandenen world_model.transitions() zugelassene T8-Zeilen zusätzlich an Event-Quelle, CorollaryCopy, genau ein passendes ActionOutcome und Store.read_source()-Hashprüfung. Ein getypter VerifiedT8Transition ersetzt das frei gesetzte trusted=True im Temporal-Bridge-API. Der Python-Issuer ist eine In-Process-Vertragsgrenze, kein Schutz vor beliebigem Code im selben Prozess.
 - Temporal-Outcome- und Scalar-Readout-Dateien serialisieren Schreibtransaktionen pro Datei über fcntl.flock, laden den neuesten Stand innerhalb des Locks neu, schreiben atomar und synchronisieren Datei + Verzeichnis. Das behebt den von QA reproduzierten Lost-Update-Fehler bei mehreren veralteten Instanzen.
 - Lokale Tests auf LOCAL_LINUX / CPython 3.13.5: python -m pytest -q v14/learning — 29 passed; py_compile — 5 Dateien PASS. Vier fork-Deprecation-Warnungen aus Multiprozess-Regressionen.
-- Tests sind isoliert/synthetisch: FakeStore und gepatchtes world_model.transitions(). Kein vollständiger Repository-Test, keine echte SQLite-Store-/ActionSelection-Integration, keine Runtime-Verkabelung, kein Redmi-Test. GitHub-CI für den neuen Kandidatenstand hat bisher keinen Run geliefert.
+- Tests sind isoliert/synthetisch: FakeStore und gepatchtes world_model.transitions(). Der neue echte SQLite-Store-/ActionSelection-/CorollaryCopy-/ActionOutcome-Integrationstest wurde hinzugefügt, aber noch nicht durch GitHub-CI ausgeführt. Keine Runtime-Verkabelung und kein Redmi-Test. GitHub-CI für den neuen Kandidatenstand hat bisher keinen Run geliefert.
 - TemporalReadout bleibt standardmäßig learning_enabled=False; numerische Deltas wurden nur in isolierten Tests mit beiden expliziten Gates geprüft. Das ist ein kleiner Scalar-Readout, keine JEPA-Repräsentation und keine B1/B2-Modellgewichtsänderung.
 
 ## Whole-Canon / Capability ledger
@@ -35,7 +35,7 @@ Die vollständige additive Statusmatrix steht in V14_CANON_COVERAGE_INDEX.md unt
 
 ## Nächster ausführbarer Schritt
 
-1. Exakte CI für PR #2130 aktivieren/abholen; aktuell draft ohne gemeldeten CI-Run.
+1. Exakte CI für PR #2130 aktivieren/abholen; der neue Real-Store-Test muss auf dem exakten Branch-HEAD laufen.
 2. Echten SQLite-Store-Integrationstest mit ActionSelection, CorollaryCopy, ActionOutcome und Source-Blob bauen.
 3. Den Adapter als hash-gebundenen Kandidaten in den eingefrorenen Runtime-Consumer-Pfad überführen, ohne runtime.py oder fremde Source-Handoff-Dateien direkt zu überschreiben.
 4. Core repariert #2131 arithmetic contracts und #2129 source pins; Research/Perception richtet A5 producer/receiver/consent aus.
