@@ -74,6 +74,7 @@ jobs:
           tests/test_runtime_deploy_integrated_20261116.py
           tests/test_two_checkout_migration_20261116.py
           tests/test_termux_anonymous_linkat.py
+          tests/test_termux_named_blob_fallback.py
           tests/test_audio_pcm_a5_bridge.py
           tests/test_exact_arithmetic.py
           tests/test_latent_bridge.py
