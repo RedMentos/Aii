@@ -65,7 +65,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     if hashlib.sha256(context).hexdigest() != 'e4962d932294490b8f4b63a79115212a7000285290444484ec3bf7e50b243cad':
         raise ValueError('Integrated ContextOS output changed')
     recall = result['v13/context_source_recall_candidate.py']
-    if hashlib.sha256(recall).hexdigest() != '6c9e6efd9a9a7fc00099366d96d8ea3f341ed741e44ec549af318b99f2355a56':
+    if hashlib.sha256(recall).hexdigest() != '7f73ec6c4a15e6790a40e7f94d4a0bc5f2fba63bfc23c9368286aa2d83457d7c':
         raise ValueError('Integrated source recall changed')
     old_pin = b'a35966dbe77a603470d73285eac9c8087163d8cf675a1b8516e3b9f38b267232'
     if recall.count(old_pin) != 1:
