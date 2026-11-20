@@ -7,9 +7,11 @@ import pytest
 
 from v13.android_control import AndroidControlBroker, ControlDenied
 from v13.android_outcomes import (
-    accept_companion_receipt, persist_companion_outcome,
-    trusted_transition_eligible, InvalidOutcome,
+    accept_companion_receipt, accept_and_persist_companion_receipt,
+    persist_companion_outcome, trusted_transition_eligible, InvalidOutcome,
 )
+from v13.store import Store
+from v13.contracts import validate
 from v13.android_companion_protocol import (
     ReceiptVerifier, CompanionDenied, SCHEMA, sign_fixture,
 )
@@ -65,6 +67,16 @@ class FakeStore:
         self.packets.append((kind, value))
 
 
+def make_real_store(tmp_path):
+    home = tmp_path / "runtime"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    session = store.new_session()
+    event = store.event(session, "open the approved app")
+    return store, event, home
+
+
 def setup(tmp_path, *, clock=lambda: 1000.0):
     broker = AndroidControlBroker(tmp_path / "broker.sqlite", clock=clock)
     verifier = ReceiptVerifier(tmp_path / "receipt.sqlite", SECRET, clock=clock)
@@ -100,44 +112,90 @@ def test_dispatch_requires_local_approval_and_marks_companion_boundaries(tmp_pat
     broker.close()
 
 
-def test_valid_receipt_returns_non_authoritative_typed_outcome_and_packet(tmp_path):
+def test_valid_receipt_persists_through_real_store_and_notifies_after_commit(tmp_path):
     broker, verifier = setup(tmp_path)
-    proposal, envelope = approved_dispatch(broker)
+    store, event, _ = make_real_store(tmp_path)
+    proposal, envelope = approved_dispatch(
+        broker, event_id=event["event_id"], source_ref=event["source_ref"]
+    )
     assert envelope["action_id"] == proposal.action_id
     receipt = make_receipt(proposal, nonce="a" * 32)
-    outcome = accept_companion_receipt(broker, verifier, proposal.action_id, receipt)
+    notified = []
+    outcome, packet = accept_and_persist_companion_receipt(
+        store, broker, verifier, proposal.action_id, receipt,
+        on_outcome=notified.append,
+    )
     assert outcome.status == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
     assert outcome.observed is False
     assert outcome.evidence_level == "COMPANION_RECEIPT_ONLY"
     assert outcome.details["auth_scheme"] == "HMAC_SHA256_PER_INSTALL"
+    assert outcome.details["receipt_nonce"] == "a" * 32
     assert outcome.details["t8_authoritative"] is False
     assert outcome.details["world_learning_eligible"] is False
     assert trusted_transition_eligible(outcome) is False
-    store = FakeStore("evt-android-1", SOURCE_REF)
-    packet = persist_companion_outcome(store, outcome)
     assert packet["kind"] == "AndroidActionOutcome"
-    assert packet["source_refs"] == [SOURCE_REF]
+    assert packet["source_refs"] == [event["source_ref"]]
     assert packet["observed"] is False
     assert packet["auth_scheme"] == "HMAC_SHA256_PER_INSTALL"
+    assert packet["receipt_nonce"] == "a" * 32
     assert packet["t8_authoritative"] is False
     assert packet["world_learning_eligible"] is False
     assert packet["trusted_transition_eligible"] is False
-    assert store.packets == [("AndroidActionOutcome", packet)]
+    assert notified == [outcome]
+    assert store.one("SELECT payload FROM packets WHERE id=?", (packet["packet_id"],)) is not None
+    assert store.read_source(event["source_ref"]) == "open the approved app"
+    forged = dict(packet)
+    forged["observed"] = True
+    with pytest.raises(ValueError, match="Android companion receipt authority"):
+        validate("AndroidActionOutcome", forged)
+    store.close()
     broker.close()
     verifier.close()
 
 
-def test_replay_rejects_and_consumes_second_approval(tmp_path):
+def test_replay_rejects_second_action_at_atomic_store_commit(tmp_path):
     broker, verifier = setup(tmp_path)
-    first, _ = approved_dispatch(broker)
+    store, event, _ = make_real_store(tmp_path)
+    first, _ = approved_dispatch(
+        broker, event_id=event["event_id"], source_ref=event["source_ref"]
+    )
     receipt = make_receipt(first, nonce="b" * 32)
-    accept_companion_receipt(broker, verifier, first.action_id, receipt)
-    second, _ = approved_dispatch(broker)
+    first_outcome = accept_companion_receipt(broker, verifier, first.action_id, receipt)
+    first_packet = persist_companion_outcome(store, first_outcome)
+    second, _ = approved_dispatch(
+        broker, event_id=event["event_id"], source_ref=event["source_ref"]
+    )
     replay = make_receipt(second, nonce="b" * 32)
-    with pytest.raises(CompanionDenied, match="replay"):
-        accept_companion_receipt(broker, verifier, second.action_id, replay)
+    second_outcome = accept_companion_receipt(broker, verifier, second.action_id, replay)
+    with pytest.raises(InvalidOutcome, match="receipt nonce replay"):
+        persist_companion_outcome(store, second_outcome)
     assert second.action_id not in broker.dispatched
-    assert any(row[1] == "companion_receipt_rejected" for row in broker.events())
+    assert store.one(
+        "SELECT payload FROM packets WHERE id=?", (first_packet["packet_id"],)
+    ) is not None
+    assert len(store.rows("SELECT id FROM packets WHERE kind='AndroidActionOutcome'")) == 1
+    store.close()
+    broker.close()
+    verifier.close()
+
+
+def test_companion_persistence_is_idempotent_after_store_restart(tmp_path):
+    broker, verifier = setup(tmp_path)
+    store, event, home = make_real_store(tmp_path)
+    proposal, _ = approved_dispatch(
+        broker, event_id=event["event_id"], source_ref=event["source_ref"]
+    )
+    outcome = accept_companion_receipt(
+        broker, verifier, proposal.action_id,
+        make_receipt(proposal, nonce="j" * 32),
+    )
+    first = persist_companion_outcome(store, outcome)
+    store.close()
+    reopened = Store(home)
+    second = persist_companion_outcome(reopened, outcome)
+    assert second["packet_id"] == first["packet_id"]
+    assert len(reopened.rows("SELECT id FROM packets WHERE kind='AndroidActionOutcome'")) == 1
+    reopened.close()
     broker.close()
     verifier.close()
 
