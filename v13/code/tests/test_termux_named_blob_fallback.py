@@ -52,14 +52,17 @@ class NamedPublicationTests(unittest.TestCase):
         self.assertEqual(self.path.read_bytes(), b"CORRUPTED EXISTING CONTENT")
         self.assertFalse(list(self.root.glob(".v13-pending-*")))
 
-    def test_link_failure_reaps_temporary_name_and_does_not_publish(self):
+    def test_both_regular_publication_methods_denied_leave_no_temporary_file(self):
         with mock.patch.object(lifecycle, "_link_anonymous",
                                side_effect=PermissionError(errno.EACCES, "proc denied")):
             with mock.patch.object(lifecycle, "_hardlink_named_no_replace",
                                    side_effect=PermissionError(errno.EACCES,
                                                                "hardlink unavailable")):
-                with self.assertRaises(PermissionError):
-                    lifecycle.verify_or_create_blob(self.path, self.data, self.key)
+                with mock.patch.object(lifecycle, "_rename_named_no_replace",
+                                       side_effect=PermissionError(errno.EACCES,
+                                                                   "rename unavailable")):
+                    with self.assertRaises(PermissionError):
+                        lifecycle.verify_or_create_blob(self.path, self.data, self.key)
         self.assertEqual(list(self.root.iterdir()), [])
 
     def test_android_python_without_os_link_can_publish(self):
