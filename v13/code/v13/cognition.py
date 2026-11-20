@@ -178,7 +178,20 @@ class Cognition:
         self.s.read_source(p['source_ref']);path=(self.r.home/p['feature_path']).resolve()
         if not path.is_relative_to((self.r.home/'data/blobs').resolve()) or file_hash(path)!=p['feature_sha256']:raise ValueError('Tap feature file/source binding invalid')
         data=json.loads(path.read_text())
-        if data['token_ids']!=p['token_ids'] or len(data['vectors'])!=p['shape'][0] or any(len(v)!=p['shape'][1] for v in data['vectors']):raise ValueError('Tap feature shape/token mismatch')
+        if (type(p.get('shape')) is not list or len(p['shape'])!=2 or
+                any(type(n) is not int or n<0 for n in p['shape']) or
+                p['shape'][1]>65536 or p['shape'][0]>131072):
+            raise ValueError('Tap dimensions invalid')
+        if (type(data) is not dict or type(data.get('token_ids')) is not list or
+                type(data.get('vectors')) is not list or
+                data['token_ids']!=p['token_ids'] or
+                len(data['vectors'])!=p['shape'][0] or
+                len(data['token_ids'])!=p['shape'][0]):
+            raise ValueError('Tap token/row binding invalid')
+        if any(type(row) is not list or len(row)!=p['shape'][1] or
+               any(type(v) not in (int,float) or not math.isfinite(v) for v in row)
+               for row in data['vectors']):
+            raise ValueError('Tap non-finite or malformed native feature')
         return data
     def body_context(self,role,e):
         """B2's bounded long window; persisted IDs, exact sources, no fact promotion.
