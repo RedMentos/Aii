@@ -131,3 +131,33 @@ jobs:
         run: |
           bash -n scripts/termux_one_command.sh scripts/v13-update
           python -m unittest discover -s tests -p 'test_termux_bootstrap.py' -v
+
+  termux-python314-staged-startup:
+    name: Python 3.14 staged runtime startup and SQLite source refs
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Actually stage source and execute exact installer selftest on Python 3.14
+        working-directory: v13/code
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python -m py_compile v13/runtime_deploy.py
+          python - <<'PY'
+          from pathlib import Path
+          from tempfile import TemporaryDirectory
+          import sys
+          from v13.runtime_deploy import _stage_integrated_runtime, _selftest
+          print('Python', sys.version, flush=True)
+          with TemporaryDirectory(prefix='v13-python314-stage-') as t:
+              stage = Path(t) / 'code'
+              _stage_integrated_runtime(Path.cwd(), stage)
+              _selftest(stage)
+              print('PASS: exact immutable staged runtime selftest on Python 3.14', flush=True)
+          PY
