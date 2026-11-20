@@ -64,8 +64,10 @@ def test_runtime_already_consumes_policy_before_perception_and_output():
              if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)}
     literals = {node.value for node in ast.walk(turn)
                 if isinstance(node, ast.Constant) and isinstance(node.value, str)}
+    imports = {node.module for node in ast.walk(turn)
+               if isinstance(node, ast.ImportFrom)}
     assert "match" in calls
-    assert "output_policy" in literals
+    assert "output_policy" in imports
     assert "APPROVED_FIXED_RULE" in literals
     assert "fixed_policy['answer']" in source
 
