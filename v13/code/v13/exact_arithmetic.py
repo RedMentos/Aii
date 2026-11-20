@@ -5,7 +5,7 @@ fuzzy intent detection, implicit tool execution or floating point.
 """
 import re
 
-_PATTERN = re.compile(r"[ \t]*(?:what is|what's|calculate|compute|was ist|wieviel ist)?[ \t]*([+-]?\d{1,9})[ \t]*([+*×-])[ \t]*([+-]?\d{1,9})[ \t]*\??[ \t]*", re.IGNORECASE)
+_PATTERN = re.compile(r"[ \t]*(?:what is|what's|calculate|compute|was ist|wie viel ist|wieviel ist)?[ \t]*([+-]?\d{1,9})[ \t]*([+*×-])[ \t]*([+-]?\d{1,9})[ \t]*\??[ \t]*", re.IGNORECASE)
 
 def evidence(source):
     if not isinstance(source, str) or len(source) > 96:
@@ -30,3 +30,16 @@ def evidence(source):
         'model_generated': False,
         'authority': 'DETERMINISTIC_EVIDENCE_ONLY',
     }
+
+
+def direct_output(*, fixed_answer=None, exact_copy=None, arithmetic=None):
+    """Choose a verified local direct output without dereferencing an absent copy match."""
+    if fixed_answer is not None:
+        return fixed_answer
+    if exact_copy is not None:
+        return exact_copy
+    if (type(arithmetic) is dict
+            and arithmetic.get('authority') == 'DETERMINISTIC_EVIDENCE_ONLY'
+            and type(arithmetic.get('result')) is str):
+        return arithmetic['result']
+    raise ValueError('No verified direct output')
