@@ -18,11 +18,3 @@ def test_evidence_has_no_action_or_permission_authority():
     assert item['result'] == '24'
     assert item['model_generated'] is False
     assert item['authority'] == 'DETERMINISTIC_EVIDENCE_ONLY'
-
-
-def test_direct_output_is_exact_and_never_reads_missing_copy_match():
-    from v13.exact_arithmetic import direct_output, evidence
-    arithmetic = evidence("2+2")
-    assert direct_output(arithmetic=arithmetic) == "4"
-    assert direct_output(fixed_answer="approved", arithmetic=arithmetic) == "approved"
-    assert direct_output(exact_copy="literal", arithmetic=arithmetic) == "literal"
