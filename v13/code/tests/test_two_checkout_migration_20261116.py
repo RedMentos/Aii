@@ -47,7 +47,12 @@ def local_fetch(root, branch):
     before = u.git(root, 'rev-parse', ref)
     remote_head = u.git(remote, 'rev-parse', 'refs/heads/' + branch)
     import subprocess
-    fetched=subprocess.run(['git','-C',str(root),'fetch','--no-tags',str(remote),
+    # The original phone checkout is shallow. Without --update-shallow Git
+    # can exit 0 yet reject the tracking-ref update, and the previous worker
+    # falsely says UP_TO_DATE. Simulate Git transport faithfully and fail if
+    # the caller ever mistakes that no-op for a completed update.
+    fetched=subprocess.run(['git','-C',str(root),'fetch','--no-tags',
+                            '--update-shallow',str(remote),
                             'refs/heads/' + branch + ':' + ref],
                            capture_output=True,text=True,timeout=90,check=False)
     after = u.git(root, 'rev-parse', ref)
@@ -55,6 +60,8 @@ def local_fetch(root, branch):
                     'remote':remote_head[:12],'after':after[:12],
                     'fetch_rc':fetched.returncode,
                     'fetch_stderr':fetched.stderr[:500]})
+    if fetched.returncode != 0 or after != remote_head:
+        raise RuntimeError('Shallow Git fetch did not update remote tracking ref')
     return after
 
 # Only the remote transport, exact-SHA CI response and live stop are simulated.
