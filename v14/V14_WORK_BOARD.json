@@ -58,8 +58,9 @@
       "next_step": "Review PR #2135 exactly-once checkpoint consumer; resolve staged hash-bound composition; then add held-out retention and authorized Redmi proof",
       "user_action_required": false,
       "candidate_pr": "https://github.com/RedMentos/Aii/pull/2135",
-      "candidate_head": "e729a8c51df24fd6b60ea5d46115096f05630e27",
-      "known_gap": "No full JEPA, trained B1/B2 receiver, cross-organ gradients or Redmi proof"
+      "candidate_head": "47a0894f0cb17deae129783fb8b2c12a69f55120",
+      "known_gap": "No full JEPA, trained B1/B2 receiver, cross-organ gradients or Redmi proof",
+      "code_head": "e729a8c51df24fd6b60ea5d46115096f05630e27"
     },
     {
       "id": "V14-005",
@@ -118,7 +119,7 @@
     "date": "2026-11-21",
     "release_base_head": "14d7386484dfce6728aa404d89eae98403b4dba0",
     "candidate_branch": "boss/v14-online-world-atomic-consumer-20261121",
-    "candidate_head": "e729a8c51df24fd6b60ea5d46115096f05630e27",
+    "candidate_head": "47a0894f0cb17deae129783fb8b2c12a69f55120",
     "pull_request": 2135,
     "status": "DRAFT_NOT_MERGED_NOT_RELEASED",
     "focused_ci": "PASS_13",
@@ -128,6 +129,7 @@
     "safe_additive_scope": "FAIL_POLICY_EXISTING_MODULE_EDITS",
     "local_reconstructed": "PASS_8",
     "redmi": "NO_LIVE_RECEIPT_REDMI_UNVERIFIED",
-    "phone_installed_sha": "UNKNOWN"
+    "phone_installed_sha": "UNKNOWN",
+    "code_head": "e729a8c51df24fd6b60ea5d46115096f05630e27"
   }
 }
