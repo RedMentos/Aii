@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import re
+import secrets
 import stat
 import zlib
 
@@ -24,6 +25,7 @@ CHUNK = 64 * 1024
 READER_LIMIT = 64 * 1024 * 1024
 AT_EMPTY_PATH = 0x1000
 AT_SYMLINK_FOLLOW = 0x400
+PENDING_RE = re.compile(r'\.v13-pending-([0-9a-f]{64})-([0-9a-f]{24})\Z')
 
 
 def _key(value):
@@ -88,6 +90,117 @@ def _link_anonymous(fd, dir_fd, name):
             return
         code = ctypes.get_errno()
     raise OSError(code, os.strerror(code), name)
+
+
+
+def _pending_names(dir_fd, key=None):
+    """Only our 0600 digest-bound staging names, never arbitrary user files."""
+    if key is not None:
+        _key(key)
+    for name in os.listdir(dir_fd):
+        matched = PENDING_RE.fullmatch(name)
+        if matched and (key is None or matched.group(1) == key):
+            yield name
+
+
+def _cleanup_pending_fd(dir_fd, key=None):
+    """Reap abandoned named temporary blobs under the global Store lock.
+
+    A killed writer can leave a private staging name. The names are deterministic
+    and include their content hash; startup and forget both reap them. Do NOT
+    delete unknown names or follow links. This cannot erase backups elsewhere.
+    """
+    removed = 0
+    for name in _pending_names(dir_fd, key):
+        try:
+            info = os.stat(name, dir_fd=dir_fd, follow_symlinks=False)
+        except FileNotFoundError:
+            continue
+        if not stat.S_ISREG(info.st_mode):
+            raise ValueError('unsafe pending blob entry')
+        os.unlink(name, dir_fd=dir_fd)
+        removed += 1
+    if removed:
+        os.fsync(dir_fd)
+    return removed
+
+
+def cleanup_pending(path, key=None):
+    """Store startup/forget recovery: remove crash-abandoned staging names."""
+    dir_fd = _directory(path)
+    try:
+        return _cleanup_pending_fd(dir_fd, key)
+    finally:
+        os.close(dir_fd)
+
+
+def _link_named_fallback(source_fd, dir_fd, key, size):
+    """No-capability Android fallback: private named stage + hardlink no-clobber.
+
+    The anonymous fd has already been SHA-verified. Copy it to a 0600,
+    unpredictable staging name in this same trusted directory; verify again,
+    hard-link to the digest name atomically without replacing existing files,
+    verify the published inode and remove the transient link. A crash before
+    removal leaves only a recognizable, digest-bound private pending file
+    that cleanup_pending / forget removes under the Store's global lock.
+    """
+    key = _key(key)
+    if type(size) is not int or size < 0 or size > READER_LIMIT:
+        raise ValueError('unsupported named fallback size')
+    pending = '.v13-pending-' + key + '-' + secrets.token_hex(12)
+    pending_fd = None
+    try:
+        pending_fd = os.open(
+            pending, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+            0o600, dir_fd=dir_fd)
+        os.lseek(source_fd, 0, os.SEEK_SET)
+        remaining = size
+        while remaining:
+            block = os.read(source_fd, min(CHUNK, remaining))
+            if not block:
+                raise ValueError('anonymous blob truncated during fallback')
+            _write_all(pending_fd, block)
+            remaining -= len(block)
+        if os.read(source_fd, 1):
+            raise ValueError('anonymous blob grew during fallback')
+        os.fsync(pending_fd)
+        _verify_open_named(dir_fd, pending, pending_fd, key, size)
+        # No rename/replace: hardlink refuses an existing destination.
+        os.link(pending, key, src_dir_fd=dir_fd, dst_dir_fd=dir_fd,
+                follow_symlinks=False)
+        verified = _verify_linked(dir_fd, key, pending_fd, key, size)
+        os.fsync(dir_fd)
+        _check_linked_identity(dir_fd, key, pending_fd, verified)
+    finally:
+        if pending_fd is not None:
+            os.close(pending_fd)
+            # Best-effort here, but the next Store startup / forget reaps a
+            # pending name even if a process is killed between link/unlink.
+            try:
+                info = os.stat(pending, dir_fd=dir_fd, follow_symlinks=False)
+            except FileNotFoundError:
+                pass
+            else:
+                if not stat.S_ISREG(info.st_mode):
+                    raise ValueError('unsafe pending blob after staging')
+                os.unlink(pending, dir_fd=dir_fd)
+                os.fsync(dir_fd)
+
+
+def _publish_prepared_blob(dir_fd, source_fd, key, size):
+    """Publish a SHA-verified prepared file; safe on Linux and Termux alike."""
+    try:
+        _link_anonymous(source_fd, dir_fd, key)
+    except OSError as exc:
+        # EEXIST deliberately does NOT use fallback. The caller must verify
+        # the winner's bytes and identity, and must never replace its name.
+        if exc.errno not in (errno.EPERM, errno.EACCES, errno.ENOENT):
+            raise
+        _link_named_fallback(source_fd, dir_fd, key, size)
+        return
+    verified = _verify_linked(dir_fd, key, source_fd, key, size)
+    os.fsync(dir_fd)
+    _check_linked_identity(dir_fd, key, source_fd, verified)
 
 
 def _hash_fd(fd, limit):
@@ -165,7 +278,7 @@ def verify_or_create_blob(path, data, expected_hash):
         if os.fstat(tmp_fd).st_size != len(data) or _hash_fd(tmp_fd, len(data)) != (expected_hash, len(data)):
             raise ValueError('prepared blob failed verification')
         try:
-            _link_anonymous(tmp_fd, dir_fd, expected_hash)
+            _publish_prepared_blob(dir_fd, tmp_fd, expected_hash, len(data))
         except FileExistsError:
             # A non-cooperating writer won the name. Never replace it.
             existing_fd = _open_existing(dir_fd, expected_hash)
@@ -174,9 +287,6 @@ def verify_or_create_blob(path, data, expected_hash):
             finally:
                 os.close(existing_fd)
             return 'EXISTING'
-        verified = _verify_linked(dir_fd, expected_hash, tmp_fd, expected_hash, len(data))
-        os.fsync(dir_fd)
-        _check_linked_identity(dir_fd, expected_hash, tmp_fd, verified)
         return 'CREATED'
     finally:
         if tmp_fd is not None:
@@ -204,6 +314,9 @@ def cleanup_unreferenced(store, source_id):
             return 'PRESERVED_LIVE'
         dir_fd = _directory(store.home / 'data/blobs')
         try:
+            # The hash is no longer live; reclaim crash-abandoned private
+            # staging copies as well as the canonical/archived filenames.
+            _cleanup_pending_fd(dir_fd, key)
             names = (key, key + '.z')
             for name in names:
                 try:
@@ -315,11 +428,8 @@ def restore(store, key):
             if (_identity(named_archive) != _identity(archive_info)
                     or _identity(os.fstat(archive_fd)) != _identity(archive_info)):
                 raise ValueError('archive changed before publication')
-            _link_anonymous(tmp_fd, dir_fd, key)
-            verified_plain = _verify_linked(dir_fd, key, tmp_fd, key, size)
+            _publish_prepared_blob(dir_fd, tmp_fd, key, size)
             # Archive remains intact until the new plain directory entry is durable.
-            os.fsync(dir_fd)
-            _check_linked_identity(dir_fd, key, tmp_fd, verified_plain)
             named_archive = os.stat(key + '.z', dir_fd=dir_fd, follow_symlinks=False)
             if (_identity(named_archive) != _identity(archive_info)
                     or _identity(os.fstat(archive_fd)) != _identity(archive_info)):
