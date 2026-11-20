@@ -148,7 +148,8 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
-          python -m py_compile v13/runtime_deploy.py
+          python -m py_compile v13/runtime_deploy.py v13/source_lifecycle_candidate.py tests/test_termux_anonymous_linkat.py
+          python -m unittest discover -s tests -p 'test_termux_anonymous_linkat.py' -v
           python - <<'PY'
           from pathlib import Path
           from tempfile import TemporaryDirectory
