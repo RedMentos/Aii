@@ -572,5 +572,48 @@ def stage(source, target):
         self.assertEqual(self.git(self.seed, "rev-parse", "HEAD"), before)
 
 
+
+class RealRuntimeSelftestDiagnosticsTests(unittest.TestCase):
+    """Fail closed and report only fixed phase, exit and exception class."""
+
+    def test_missing_sqlite_reports_phase_without_private_stderr(self):
+        raw = (b'Traceback: private=/data/data/com.termux/files/home/token\n'
+               b"ModuleNotFoundError: No module named 'sqlite3'\n")
+        failed = subprocess.CompletedProcess(['python', '-m', 'v13'], 1,
+                                             stdout=b'', stderr=raw)
+        with mock.patch.object(d.subprocess, "run", return_value=failed):
+            with self.assertRaises(d.RuntimeDeployError) as cm:
+                d._selftest(Path('/nonexistent-staged-code'))
+        result = str(cm.exception)
+        self.assertIn('phase=module_help', result)
+        self.assertIn('error=ModuleNotFoundError(sqlite3)', result)
+        self.assertIn('exit=1', result)
+        self.assertNotIn('token', result)
+        self.assertNotIn('/data/data/', result)
+
+    def test_second_phase_reports_sqlite_error_class_without_raw_trace(self):
+        ok = subprocess.CompletedProcess(['python', '-m', 'v13'], 0,
+                                         stdout=b'ok', stderr=b'')
+        broken = subprocess.CompletedProcess(['python', '-c', 'script'], 2,
+                                             stdout=b'', stderr=(
+                                                 b'Traceback: local secret 123\\n'
+                                                 b'sqlite3.OperationalError: readonly database\\n'))
+        with mock.patch.object(d.subprocess, "run", side_effect=(ok, broken)):
+            with self.assertRaises(d.RuntimeDeployError) as cm:
+                d._selftest(Path('/nonexistent-staged-code'))
+        result = str(cm.exception)
+        self.assertIn('phase=sqlite_source_roundtrip', result)
+        self.assertIn('error=sqlite3.OperationalError', result)
+        self.assertNotIn('readonly database', result)
+        self.assertNotIn('local secret', result)
+
+    def test_signal_like_exit_remains_a_failed_selftest(self):
+        killed = subprocess.CompletedProcess(['python', '-m', 'v13'], -9,
+                                             stdout=b'', stderr=b'')
+        with mock.patch.object(d.subprocess, "run", return_value=killed):
+            with self.assertRaisesRegex(d.RuntimeDeployError, r'exit=-9'):
+                d._selftest(Path('/nonexistent-staged-code'))
+
+
 if __name__ == "__main__":
     unittest.main()
