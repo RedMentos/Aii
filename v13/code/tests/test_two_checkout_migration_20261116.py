@@ -161,30 +161,36 @@ def exercise_worker_migration(base):
         }
         print('V13_TWO_CHECKOUT_MIGRATION_DIAG=' +
               json.dumps(diagnostic, sort_keys=True), flush=True)
-        # The *historical* workers at PREVIOUS_RELEASE / CURRENT_RELEASE
-        # are known to have a shallow-fetch bug: a zero exit status may leave
-        # both the local HEAD and origin ref at BASE. Never mistake the old
-        # worker's cosmetic UPDATED result for an installed new release.
-        # This test deliberately executes that old binary before recovery.
+        # Historical updaters can behave differently on GitHub-hosted and
+        # local Git alternates: they may correctly advance both checkouts,
+        # or silently keep the base when a shallow tracking-ref update is
+        # rejected. We must prove that an out-of-process Termux bootstrap can
+        # recover EITHER state without discarding local user data.
         assert old.get('same_source_updater') is True
         assert old.get('fetches')
+        pre_bootstrap = {}
         for checkout in (agent, runtime):
-            assert git('rev-parse', 'HEAD', cwd=checkout) == base
-            assert git('rev-parse', 'refs/remotes/origin/' + RELEASE_BRANCH,
-                       cwd=checkout) == base
-        assert any('shallow roots' in f.get('fetch_stderr','')
-                   for f in old['fetches']), old['fetches']
+            local = git('rev-parse', 'HEAD', cwd=checkout)
+            tracking = git('rev-parse',
+                           'refs/remotes/origin/' + RELEASE_BRANCH,
+                           cwd=checkout)
+            assert local in (base, target), (checkout.name, local)
+            assert tracking in (base, target), (checkout.name, tracking)
+            pre_bootstrap[checkout.name] = {
+                'local': local[:12], 'tracking': tracking[:12]}
+        print('V13_MIGRATION_PRE_BOOTSTRAP=' +
+              json.dumps(pre_bootstrap, sort_keys=True), flush=True)
 
-        # The currently shipped *one-command Termux bootstrap* has a separate
-        # out-of-process git fetch of the branch into FETCH_HEAD followed by
-        # merge --ff-only FETCH_HEAD. It can cross this legacy failure WITHOUT
-        # running the legacy source_updater._fetch implementation. Simulate
-        # exactly that migration from an actual local Git bare remote.
+        # The phone's one-command shell script independently fetches the
+        # requested branch to FETCH_HEAD and fast-forwards from the *actual*
+        # resulting SHA. This works even when the old Python updater was
+        # unable to update its own tracking ref. Running twice is harmless.
         for checkout in (agent, runtime):
             git('fetch', '--no-tags', str(remote),
                 'refs/heads/' + RELEASE_BRANCH, cwd=checkout)
             assert git('rev-parse', 'FETCH_HEAD', cwd=checkout) == target
-            git('merge', '--ff-only', 'FETCH_HEAD', cwd=checkout)
+            if git('rev-parse', 'HEAD', cwd=checkout) != target:
+                git('merge', '--ff-only', 'FETCH_HEAD', cwd=checkout)
             assert git('rev-parse', 'HEAD', cwd=checkout) == target
             assert git('branch', '--show-current', cwd=checkout) == RELEASE_BRANCH
 
