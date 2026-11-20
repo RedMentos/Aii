@@ -40,3 +40,10 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | next_developer_action | Board-Tickets V14-001/002/003/004 parallel umsetzen und testen; Boss integriert den ersten nachgewiesenen E2E-Pfad |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
+
+## Core checkpoint 2026-11-20 14:01 UTC — REVIEW ONLY
+
+- Branch `gpt6/v14-core-terminal-learning-20261120`, source commit `d7345bfbbf3bc4a9d677f3d1b3d04dda37f26b81`, draft PR #2123; base `14d7386484dfce6728aa404d89eae98403b4dba0`.
+- `v13/code/v13/runtime.py`: automatic `online_world_update(limit=64)` moved behind `store.finish_turn(..., 'FINAL')`; non-FINAL turns no longer invoke automatic update. Existing T8 learning remains; no pretrained GGUF mutation. Consumer is actual Runtime worker, not a mock.
+- GitHub source readback PASS. LOCAL_LINUX executable tests BLOCKED (local git remote DNS failure); CI status none visible at checkpoint, not PASS. TERMUX/REDMI UNVERIFIED; NOT_RELEASED; updater and installed SHA unverified.
+- Reviewer next: exact PR checkout `python -m compileall -q v13/code/v13`; run focused Runtime/online-world integration, failed-turn negative control and restart tests. Verify that `finish_turn` persistence and `world_model.transitions` semantics agree, and that earlier failed transitions are not accidentally consumed by later successful turns. Integrate only after QA/Boss approval. No user action needed, no model swap.
