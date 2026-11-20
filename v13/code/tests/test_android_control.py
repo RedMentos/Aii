@@ -101,6 +101,10 @@ def test_companion_receipt_is_persisted_in_real_store(tmp_path):
         assert actual["t8_authoritative"] is False
         assert actual["world_learning_eligible"] is False
         assert actual["receipt_nonce"] == "a" * 32
+        assert actual["companion_local_consent_claim"] is True
+        assert actual["local_approval_evidence"] == "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
+        assert actual["android_os_permission_status"] == "REQUIRED_NOT_VERIFIED"
+        assert actual["key_storage_status"] == "UNVERIFIED"
         # Companion receipts are audit packets only: World-JEPA's T8 source
         # consumer reads committed Store.actions + ActionSelection, not this packet.
         assert store.one("SELECT COUNT(*) AS n FROM actions")["n"] == 0
