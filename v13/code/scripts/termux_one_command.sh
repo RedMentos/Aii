@@ -40,6 +40,48 @@ if not proc.is_dir():
     raise SystemExit("V13: Prozesssicht fehlt, sicherer Neustart nicht möglich.")
 own = os.getuid()
 expected_launcher = str(home / "v13/bin/v13")
+# V13_SESSION_CLASSIFIER_BEGIN
+def v13_process_mode(argv, expected_launcher, expected_home):
+    """Detect chat even when the CLI defaults to chat with NO 'chat' arg.
+
+    Return CHAT, OTHER, or None. Do not terminate a different V13 --home,
+    or a one-shot command that may briefly hold the Store lock.
+    """
+    pos = next((i for i in range(len(argv) - 1)
+                if argv[i:i + 2] == ["-m", "v13"]), None)
+    if pos is not None and Path(argv[0]).name.startswith("python"):
+        rest = argv[pos + 2:]
+    elif expected_launcher in argv:
+        rest = argv[argv.index(expected_launcher) + 1:]
+        if rest and rest[0].endswith("/code"):
+            rest = rest[1:]  # Legacy -c bootstrap carries verified code path.
+    else:
+        return None
+    words = []
+    i = 0
+    while i < len(rest):
+        token = rest[i]
+        if token == "--home":
+            if i + 1 >= len(rest) or os.path.abspath(rest[i + 1]) != expected_home:
+                return "OTHER"
+            i += 2
+            continue
+        if token.startswith("--home="):
+            if os.path.abspath(token[7:]) != expected_home:
+                return "OTHER"
+            i += 1
+            continue
+        if token in {"--plain", "--welcome", "-P", "-B"}:
+            i += 1
+            continue
+        words.append(token)
+        i += 1
+    # In __main__.py no subcommand enters chat; so an empty command line
+    # is a live interactive chat, not an idle/unowned process.
+    if not words or words[0] == "chat":
+        return "CHAT"
+    return "OTHER"
+# V13_SESSION_CLASSIFIER_END
 seen = 0
 targets = []
 unknown_v13 = []
@@ -63,14 +105,19 @@ for p in proc.iterdir():
     if not args:
         continue
     seen += 1
-    controlled = (expected_launcher in args and "chat" in args)
-    module = ("-m" in args and "v13" in args and "chat" in args)
-    if controlled or module:
+    mode = v13_process_mode(args, expected_launcher, str(home / "v13"))
+    # A custom V13_HOME belongs to another Store and must never be killed.
+    # Treat it as an unknown V13 process, not as an installer's chat target.
+    alternate = next((v[len(b"V13_HOME="):] for v in env
+                      if v.startswith(b"V13_HOME=")), None)
+    if alternate and os.path.abspath(os.fsdecode(alternate)) != str(home / "v13"):
+        mode = "OTHER"
+    if mode == "CHAT":
         targets.append(int(p.name))
     elif (len(args)>=4 and args[-3:]==["-m","v13.chat_service","serve"]
           and Path(args[0]).name.startswith("python")):
         ai_daemons.append(int(p.name))
-    elif any(a == "v13" or a.endswith("/bin/v13") for a in args):
+    elif mode == "OTHER" or any(a == "v13" or a.endswith("/bin/v13") for a in args):
         unknown_v13.append(int(p.name))
 if unknown_v13:
     raise SystemExit("V13: Ein nicht verwalteter V13-Prozess ist aktiv. "
