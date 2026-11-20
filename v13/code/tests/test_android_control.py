@@ -54,9 +54,11 @@ def test_invalid_actions_fail_closed(tmp_path, cap, args):
 
 def test_companion_receipt_is_persisted_in_real_store(tmp_path):
     from v13.android_companion_protocol import ReceiptVerifier, SCHEMA, sign_fixture
-    from v13.android_outcomes import accept_and_persist_companion_receipt
+    from v13.android_outcomes import (
+        ActionOutcome, InvalidOutcome, accept_and_persist_companion_receipt,
+        persist_companion_outcome,
+    )
     from v13.store import Store
-    from v13.contracts import validate
     import json
 
     home = tmp_path / "runtime"
@@ -89,17 +91,22 @@ def test_companion_receipt_is_persisted_in_real_store(tmp_path):
         row = store.one(
             "SELECT kind,payload FROM packets WHERE id=?", (packet["packet_id"],)
         )
-        assert row["kind"] == "AndroidActionOutcome"
+        assert row["kind"] == "ActionOutcome"
         persisted = json.loads(row["payload"])
         assert persisted["provenance"] == [event["source_ref"]]
-        assert persisted["observed"] is False
-        assert persisted["t8_authoritative"] is False
-        assert persisted["world_learning_eligible"] is False
-        assert persisted["receipt_nonce"] == "a" * 32
-        forged = dict(persisted)
-        forged["observed"] = True
-        with pytest.raises(ValueError, match="Android companion receipt authority"):
-            validate("AndroidActionOutcome", forged)
+        actual = persisted["actual"]
+        assert actual["outcome_kind"] == "ANDROID_COMPANION_RECEIPT"
+        assert actual["observed"] is False
+        assert actual["t8_authoritative"] is False
+        assert actual["world_learning_eligible"] is False
+        assert actual["receipt_nonce"] == "a" * 32
+        forged = ActionOutcome(
+            action_id=outcome.action_id, capability=outcome.capability,
+            status=outcome.status, observed=True, evidence_level=outcome.evidence_level,
+            details=outcome.details,
+        )
+        with pytest.raises(InvalidOutcome, match="non-authoritative"):
+            persist_companion_outcome(store, forged)
         assert outcome.observed is False
     finally:
         store.close()
