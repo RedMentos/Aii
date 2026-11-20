@@ -3,7 +3,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-from model_probe import validate_model, probe
+from model_probe import validate_model, probe, evaluate_output
 
 class ProbeTests(unittest.TestCase):
     def test_hash_and_role_guard(self):
@@ -19,10 +19,17 @@ class ProbeTests(unittest.TestCase):
             p.unlink(); p.write_bytes(b'abc')
             registry['models']['language']['license_id'] = ''
             with self.assertRaisesRegex(ValueError,'provenance'): validate_model(registry,'language',p)
+
     def test_process_and_timeout(self):
-        self.assertEqual(probe('/bin/true','/tmp/none','x',2,1,1)['status'],'PASS')
-        self.assertEqual(probe('/bin/false','/tmp/none','x',2,1,1)['status'],'FAIL')
+        self.assertEqual(probe('/bin/true','/tmp/none','x',2,1,1,'4')['status'],'NO_VISIBLE_OUTPUT')
+        self.assertEqual(probe('/bin/false','/tmp/none','x',2,1,1)['status'],'PROCESS_FAIL')
         self.assertEqual(probe(sys.executable,'/tmp/none','x',0.001,1,1)['status'],'TIMEOUT')
+
+    def test_grade_negative_controls(self):
+        self.assertEqual(evaluate_output('2+2=4','2+2=','4')['status'],'ANSWER_CORRECT')
+        for output in ('2+2=2','2+2=24','2+2=The answer is 4','2+2='):
+            self.assertNotEqual(evaluate_output(output,'2+2=','4')['status'],'ANSWER_CORRECT')
+        self.assertEqual(evaluate_output('2+2=4','2+2=',None)['status'],'OUTPUT_UNGRADED')
 
     def test_resource_and_prompt_guards(self):
         for timeout, threads, predict in [(0,1,1),(301,1,1),(1,0,1),(1,17,1),(1,1,0),(1,1,513)]:
