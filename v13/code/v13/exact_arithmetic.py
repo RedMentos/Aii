@@ -11,7 +11,7 @@ def evidence(source):
     if not isinstance(source, str) or len(source) > 96:
         return None
     # A bare ISO year-month is more likely a date than an arithmetic request.
-    if re.fullmatch(r"[ \\t]*\\d{4}-\\d{1,2}[ \\t]*", source):
+    if re.fullmatch(r"[ \t]*\d{4}-\d{1,2}[ \t]*", source):
         return None
     m = _PATTERN.fullmatch(source)
     if m is None:
