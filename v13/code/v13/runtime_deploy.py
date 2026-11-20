@@ -555,15 +555,42 @@ with TemporaryDirectory(prefix="v13-install-probe-") as t:
         assert s.read_source(event["source_ref"]) == message
     s.close()
 """
-    for args in ([sys.executable, "-m", "v13", "--help"],
-                 [sys.executable, "-c", script]):
+    # Probe output is never forwarded to a public repo, a telemetry endpoint
+    # or an AI agent. Only a fixed phase, exit status and recognized exception
+    # class may appear in the local installer error. No traceback/user paths.
+    for phase, args in (("module_help", [sys.executable, "-m", "v13", "--help"]),
+                        ("sqlite_source_roundtrip", [sys.executable, "-c", script])):
         try:
             run = subprocess.run(args, cwd=str(code), env=env,
                                  capture_output=True, timeout=45, check=False)
-        except (OSError, subprocess.TimeoutExpired) as exc:
-            raise RuntimeDeployError("Staged runtime startup/selftest timed out") from exc
+        except subprocess.TimeoutExpired as exc:
+            raise RuntimeDeployError(
+                "Staged runtime selftest timed out (phase=" + phase + ")") from exc
+        except OSError as exc:
+            raise RuntimeDeployError(
+                "Staged runtime selftest spawn failed (phase=" + phase +
+                ", error=" + type(exc).__name__ + ")") from exc
         if run.returncode:
-            raise RuntimeDeployError("Staged V13 source-ref/startup selftest failed")
+            tail = run.stderr.decode("utf-8", errors="replace")
+            kind = "UNKNOWN_ERROR"
+            for line in reversed(tail.splitlines()):
+                found = re.match(
+                    r"^\\s*([a-zA-Z_][a-zA-Z_0-9.]*(?:Error|Exception))(?::|$)",
+                    line)
+                if found:
+                    kind = found.group(1)[:80]
+                    if kind == "ModuleNotFoundError":
+                        missing = re.search(
+                            r"No module named ['\\\"]([a-zA-Z_][a-zA-Z_0-9.]*)['\\\"]",
+                            line)
+                        if missing:
+                            kind += "(" + missing.group(1)[:70] + ")"
+                    break
+            raise RuntimeDeployError(
+                "Staged V13 source-ref/startup selftest failed " +
+                "(phase=" + phase + ", exit=" + str(run.returncode) +
+                ", error=" + kind + ", python=" +
+                str(sys.version_info.major) + "." + str(sys.version_info.minor) + ")")
 
 
 def _launcher_bytes(code, home):
