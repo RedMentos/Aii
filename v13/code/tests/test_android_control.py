@@ -102,7 +102,7 @@ def test_companion_receipt_is_persisted_in_real_store(tmp_path):
         assert actual["receipt_nonce"] == "a" * 32
         forged = ActionOutcome(
             action_id=outcome.action_id, capability=outcome.capability,
-            status=outcome.status, observed=True, evidence_level=outcome.evidence_level,
+            status=outcome.status, timestamp=outcome.timestamp, observed=True, evidence_level=outcome.evidence_level,
             details=outcome.details,
         )
         with pytest.raises(InvalidOutcome, match="non-authoritative"):
