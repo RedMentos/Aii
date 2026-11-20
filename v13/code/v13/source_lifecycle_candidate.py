@@ -134,6 +134,25 @@ def cleanup_pending(path, key=None):
         os.close(dir_fd)
 
 
+def _hardlink_named_no_replace(dir_fd, source, dest):
+    """Publish a regular named file without overwrite on Android and Linux.
+
+    CPython on Android/Termux may not export os.link at all. Use the
+    already-required libc linkat entrypoint with two ordinary names in the
+    same verified directory. AT_EMPTY_PATH and /proc are intentionally absent.
+    """
+    try:
+        linkat = ctypes.CDLL(None, use_errno=True).linkat
+    except (OSError, AttributeError) as exc:
+        raise OSError('linkat unavailable for named file publication') from exc
+    linkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int,
+                       ctypes.c_char_p, ctypes.c_int]
+    linkat.restype = ctypes.c_int
+    if linkat(dir_fd, os.fsencode(source), dir_fd, os.fsencode(dest), 0) != 0:
+        code = ctypes.get_errno()
+        raise OSError(code, os.strerror(code), dest)
+
+
 def _link_named_fallback(source_fd, dir_fd, key, size):
     """No-capability Android fallback: private named stage + hardlink no-clobber.
 
@@ -166,8 +185,7 @@ def _link_named_fallback(source_fd, dir_fd, key, size):
         os.fsync(pending_fd)
         _verify_open_named(dir_fd, pending, pending_fd, key, size)
         # No rename/replace: hardlink refuses an existing destination.
-        os.link(pending, key, src_dir_fd=dir_fd, dst_dir_fd=dir_fd,
-                follow_symlinks=False)
+        _hardlink_named_no_replace(dir_fd, pending, key)
         verified = _verify_linked(dir_fd, key, pending_fd, key, size)
         os.fsync(dir_fd)
         _check_linked_identity(dir_fd, key, pending_fd, verified)
