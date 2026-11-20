@@ -575,13 +575,13 @@ with TemporaryDirectory(prefix="v13-install-probe-") as t:
             kind = "UNKNOWN_ERROR"
             for line in reversed(tail.splitlines()):
                 found = re.match(
-                    r"^\\s*([a-zA-Z_][a-zA-Z_0-9.]*(?:Error|Exception))(?::|$)",
+                    r"^\s*([a-zA-Z_][a-zA-Z_0-9.]*(?:Error|Exception))(?::|$)",
                     line)
                 if found:
                     kind = found.group(1)[:80]
                     if kind == "ModuleNotFoundError":
                         missing = re.search(
-                            r"No module named ['\\\"]([a-zA-Z_][a-zA-Z_0-9.]*)['\\\"]",
+                            r"""No module named ['"]([a-zA-Z_][a-zA-Z_0-9.]*)['"]""",
                             line)
                         if missing:
                             kind += "(" + missing.group(1)[:70] + ")"
