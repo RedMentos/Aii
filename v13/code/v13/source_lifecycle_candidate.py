@@ -23,6 +23,7 @@ from .common import digest, dumps, now, uid
 CHUNK = 64 * 1024
 READER_LIMIT = 64 * 1024 * 1024
 AT_EMPTY_PATH = 0x1000
+AT_SYMLINK_FOLLOW = 0x400
 
 
 def _key(value):
@@ -71,9 +72,22 @@ def _link_anonymous(fd, dir_fd, name):
         raise OSError('linkat unavailable') from exc
     linkat.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_int]
     linkat.restype = ctypes.c_int
-    if linkat(fd, b'', dir_fd, os.fsencode(name), AT_EMPTY_PATH) != 0:
+    if linkat(fd, b'', dir_fd, os.fsencode(name), AT_EMPTY_PATH) == 0:
+        return
+    code = ctypes.get_errno()
+    if code == errno.ENOENT:
+        # Unprivileged Android/Termux can return ENOENT for AT_EMPTY_PATH,
+        # despite a valid O_TMPFILE fd (no CAP_DAC_READ_SEARCH). Linux documents
+        # linkat(/proc/self/fd/N, ..., AT_SYMLINK_FOLLOW) as the safe alternate.
+        # The source refers ONLY to this process's already hash-verified fd;
+        # it neither writes a visible intermediate copy nor replaces a name.
+        # Never retry on EEXIST: another final blob may already be present.
+        proc_fd = b'/proc/self/fd/' + str(fd).encode('ascii')
+        if linkat(getattr(os, 'AT_FDCWD', -100), proc_fd, dir_fd,
+                  os.fsencode(name), AT_SYMLINK_FOLLOW) == 0:
+            return
         code = ctypes.get_errno()
-        raise OSError(code, os.strerror(code), name)
+    raise OSError(code, os.strerror(code), name)
 
 
 def _hash_fd(fd, limit):
