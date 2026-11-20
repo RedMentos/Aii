@@ -150,7 +150,7 @@ def test_valid_receipt_persists_through_real_store_and_notifies_after_commit(tmp
     assert store.read_source(event["source_ref"]) == "open the approved app"
     forged = ActionOutcome(
         action_id=outcome.action_id, capability=outcome.capability,
-        status=outcome.status, observed=True, evidence_level=outcome.evidence_level,
+        status=outcome.status, timestamp=outcome.timestamp, observed=True, evidence_level=outcome.evidence_level,
         details=outcome.details,
     )
     with pytest.raises(InvalidOutcome, match="non-authoritative"):
