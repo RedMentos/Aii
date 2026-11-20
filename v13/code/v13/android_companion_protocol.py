@@ -1,4 +1,8 @@
-"""Verify signed Android-side receipts. This does not execute Android actions."""
+"""Verify per-install HMAC-authenticated Android receipts; no Android action execution.
+
+This is a protocol prototype, not an asymmetric Android Keystore signature or
+proof of OS permission state. The caller must supply a per-install secret.
+"""
 import hashlib
 import hmac
 import json
@@ -72,7 +76,10 @@ class ReceiptVerifier:
         except sqlite3.IntegrityError as exc:
             raise CompanionDenied("replay") from exc
         return {"schema": SCHEMA, "action_id": b["action_id"],
-                "status": "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED", "t8_authoritative": False}
+                "status": "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+                "auth_scheme": "HMAC_SHA256_PER_INSTALL",
+                "key_storage_status": "UNVERIFIED",
+                "t8_authoritative": False}
 
     def close(self):
         with self.lock:
