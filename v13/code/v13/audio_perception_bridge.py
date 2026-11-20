@@ -28,14 +28,12 @@ def _require_current_consent(consent_check, source_id, receipt_ref):
         raise PermissionError("current audio consent is not active")
 
 
-def _validate_audio_packet(runtime, event_id, audio_packet):
+def _validate_packet_shape(audio_packet):
     validate("PerceptPacket", audio_packet)
-    if type(event_id) is not str or not event_id or audio_packet.get("event_id") != event_id:
-        raise ValueError("audio packet event binding mismatch")
-    if audio_packet.get("brain_generation_id") != runtime.store.generation_id:
-        raise ValueError("audio packet generation is stale")
-    if runtime.store.one("SELECT id FROM events WHERE id=?", (event_id,)) is None:
-        raise ValueError("audio packet event is not in the active Store")
+    if type(audio_packet.get("event_id")) is not str or not audio_packet["event_id"]:
+        raise ValueError("missing audio event binding")
+    if type(audio_packet.get("brain_generation_id")) is not str or not audio_packet["brain_generation_id"]:
+        raise ValueError("missing audio generation binding")
     if audio_packet.get("modality") != "audio":
         raise ValueError("expected audio PerceptPacket")
     source = audio_packet.get("source_ref")
@@ -49,7 +47,9 @@ def _validate_audio_packet(runtime, event_id, audio_packet):
         raise ValueError("invalid audio source ID")
     if type(digest) is not str or not _SHA256.fullmatch(digest):
         raise ValueError("invalid audio source digest")
-    if source.get("modality") != "audio" or source.get("char_start") != 0 or source.get("char_end") != 0:
+    if (source.get("modality") != "audio" or type(source.get("char_start")) is not int
+            or type(source.get("char_end")) is not int
+            or source["char_start"] != 0 or source["char_end"] != 0):
         raise ValueError("invalid audio SourceRef")
     segments = audio_packet.get("segments")
     if type(segments) is not list or len(segments) != 1 or type(segments[0]) is not dict:
@@ -76,9 +76,20 @@ def _validate_audio_packet(runtime, event_id, audio_packet):
     return source_id, receipt, float(rms), float(zcr), segment
 
 
+def _validate_runtime_binding(runtime, event_id, audio_packet):
+    source_id, receipt, rms, zcr, segment = _validate_packet_shape(audio_packet)
+    if type(event_id) is not str or not event_id or audio_packet["event_id"] != event_id:
+        raise ValueError("audio packet event binding mismatch")
+    if audio_packet["brain_generation_id"] != runtime.store.generation_id:
+        raise ValueError("audio packet generation is stale")
+    if runtime.store.one("SELECT id FROM events WHERE id=?", (event_id,)) is None:
+        raise ValueError("audio packet event is not in the active Store")
+    return source_id, receipt, rms, zcr, segment
+
+
 def consume_audio_packet(runtime, event_id, audio_packet, *, consent_check):
     """Persist a canonical A5 packet and feed real A4 Attention under live consent."""
-    source_id, receipt, rms, zcr, segment = _validate_audio_packet(runtime, event_id, audio_packet)
+    source_id, receipt, rms, zcr, segment = _validate_runtime_binding(runtime, event_id, audio_packet)
     _require_current_consent(consent_check, source_id, receipt)
     runtime.store.add_packet("PerceptPacket", audio_packet)
     # Recheck after persistence and immediately before the A4 consumer.
@@ -100,15 +111,9 @@ def consume_audio_packet(runtime, event_id, audio_packet, *, consent_check):
     }
 
 
-def admit_audio_packet(audio_packet, *, consent_check, token_budget):
+def admit_audio_packet(runtime, event_id, audio_packet, *, consent_check, token_budget):
     """Return a bounded C3 Percept admission; this does not inject it into C3 prompts."""
-    source = audio_packet.get("source_ref") if type(audio_packet) is dict else None
-    segments = audio_packet.get("segments") if type(audio_packet) is dict else None
-    if type(source) is not dict or type(segments) is not list or len(segments) != 1:
-        raise ValueError("invalid audio packet")
-    segment = segments[0]
-    source_id = source.get("source_id")
-    receipt = segment.get("consent_receipt_ref") if type(segment) is dict else None
+    source_id, receipt, _, _, _ = _validate_runtime_binding(runtime, event_id, audio_packet)
     _require_current_consent(consent_check, source_id, receipt)
     candidate = audio_to_admission(audio_packet, consent_active=True)
     return admit((candidate,), token_budget)
@@ -139,7 +144,8 @@ def consume_pcm16_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         runtime, event_id, audio_packet, consent_check=consent_check
     )
     c3 = admit_audio_packet(
-        audio_packet, consent_check=consent_check, token_budget=token_budget
+        runtime, event_id, audio_packet,
+        consent_check=consent_check, token_budget=token_budget
     )
     return {
         "status": "SYNTHETIC_PCM16_A5_A4_C3_ADMISSION",
