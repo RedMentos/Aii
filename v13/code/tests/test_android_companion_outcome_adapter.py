@@ -9,9 +9,9 @@ from v13.android_control import AndroidControlBroker, ControlDenied
 from v13.android_outcomes import (
     accept_companion_receipt, accept_and_persist_companion_receipt,
     persist_companion_outcome, trusted_transition_eligible, InvalidOutcome,
+    ActionOutcome,
 )
 from v13.store import Store
-from v13.contracts import validate
 from v13.android_companion_protocol import (
     ReceiptVerifier, CompanionDenied, SCHEMA, sign_fixture,
 )
@@ -135,21 +135,26 @@ def test_valid_receipt_persists_through_real_store_and_notifies_after_commit(tmp
     assert trusted_transition_eligible(outcome) is False
     assert packet["provenance"] == [event["source_ref"]]
     stored = store.one("SELECT kind,payload FROM packets WHERE id=?", (packet["packet_id"],))
-    assert stored["kind"] == "AndroidActionOutcome"
+    assert stored["kind"] == "ActionOutcome"
     stored_packet = json.loads(stored["payload"])
-    assert stored_packet["observed"] is False
-    assert stored_packet["auth_scheme"] == "HMAC_SHA256_PER_INSTALL"
-    assert stored_packet["receipt_nonce"] == "a" * 32
-    assert stored_packet["t8_authoritative"] is False
-    assert stored_packet["world_learning_eligible"] is False
-    assert stored_packet["trusted_transition_eligible"] is False
+    actual = stored_packet["actual"]
+    assert actual["outcome_kind"] == "ANDROID_COMPANION_RECEIPT"
+    assert actual["observed"] is False
+    assert actual["auth_scheme"] == "HMAC_SHA256_PER_INSTALL"
+    assert actual["receipt_nonce"] == "a" * 32
+    assert actual["t8_authoritative"] is False
+    assert actual["world_learning_eligible"] is False
+    assert actual["trusted_transition_eligible"] is False
     assert notified == [outcome]
     assert store.one("SELECT payload FROM packets WHERE id=?", (packet["packet_id"],)) is not None
     assert store.read_source(event["source_ref"]) == "open the approved app"
-    forged = dict(packet)
-    forged["observed"] = True
-    with pytest.raises(ValueError, match="Android companion receipt authority"):
-        validate("AndroidActionOutcome", forged)
+    forged = ActionOutcome(
+        action_id=outcome.action_id, capability=outcome.capability,
+        status=outcome.status, observed=True, evidence_level=outcome.evidence_level,
+        details=outcome.details,
+    )
+    with pytest.raises(InvalidOutcome, match="non-authoritative"):
+        persist_companion_outcome(store, forged)
     store.close()
     broker.close()
     verifier.close()
@@ -175,7 +180,7 @@ def test_replay_rejects_second_action_at_atomic_store_commit(tmp_path):
     assert store.one(
         "SELECT payload FROM packets WHERE id=?", (first_packet["packet_id"],)
     ) is not None
-    assert len(store.rows("SELECT id FROM packets WHERE kind='AndroidActionOutcome'")) == 1
+    assert len(store.rows("SELECT id FROM packets WHERE kind='ActionOutcome'")) == 1
     store.close()
     broker.close()
     verifier.close()
