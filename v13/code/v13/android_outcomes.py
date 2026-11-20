@@ -115,8 +115,10 @@ def accept_companion_receipt(
             "receipt_schema": attestation["schema"],
             "auth_scheme": attestation["auth_scheme"],
             "receipt_nonce": attestation["nonce"],
-            "companion_local_consent": True,
-            "android_os_permission_independently_required": True,
+            "companion_local_consent_claim": True,
+            "local_approval_evidence": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
+            "android_os_permission_status": "REQUIRED_NOT_VERIFIED",
+            "key_storage_status": attestation["key_storage_status"],
             "t8_authoritative": False,
             "world_learning_eligible": False,
             "event_id": proposal.event_id,
@@ -156,8 +158,10 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
             or any(ch not in "0123456789abcdef" for ch in digest)
             or outcome.details.get("receipt_schema") != "v14.android-companion-receipt/1"
             or outcome.details.get("auth_scheme") != "HMAC_SHA256_PER_INSTALL"
-            or outcome.details.get("companion_local_consent") is not True
-            or outcome.details.get("android_os_permission_independently_required") is not True):
+            or outcome.details.get("companion_local_consent_claim") is not True
+            or outcome.details.get("local_approval_evidence") != "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
+            or outcome.details.get("android_os_permission_status") != "REQUIRED_NOT_VERIFIED"
+            or outcome.details.get("key_storage_status") != "UNVERIFIED"):
         raise InvalidOutcome("companion receipt metadata is incomplete")
     row = store.one("SELECT packet FROM events WHERE id=?", (event_id,))
     if not row:
@@ -176,8 +180,10 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
         "auth_scheme": outcome.details["auth_scheme"],
         "digest": digest,
         "receipt_nonce": nonce,
-        "companion_local_consent": True,
-        "android_os_permission_independently_required": True,
+        "companion_local_consent_claim": True,
+        "local_approval_evidence": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
+        "android_os_permission_status": "REQUIRED_NOT_VERIFIED",
+        "key_storage_status": "UNVERIFIED",
         "t8_authoritative": False,
         "world_learning_eligible": False,
         "trusted_transition_eligible": False,
