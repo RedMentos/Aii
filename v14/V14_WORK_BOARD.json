@@ -24,12 +24,13 @@
       "owner": "QA & Android",
       "reviewer": "Boss",
       "priority": "P0",
-      "status": "READY",
+      "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Audit existing updater implementation and prior auto-update bug; create local simulated update test first, then native Redmi verification if authenticated access exists",
-      "user_action_required": false
+      "proof_environment": "SOURCE_REVIEW + LOCAL_LINUX_SYNTHETIC; PRIVATE_RELAY_NO_RECEIPT; REDMI_UNVERIFIED",
+      "next_step": "Updater source review completed (termux_one_command.sh, source_updater.py, pipeline_agent.py, runtime_deploy.py); one consented private PIPELINE_STATUS request #343 remains open with zero device comments, so no installed SHA or Redmi result is verified. Continue with a read-only authorized receipt when available; do not repeat installer or claim deployment. Native update/restart/rollback remains open.",
+      "user_action_required": false,
+      "last_checkpoint": "2026-11-21 QA: source review only; no runtime deployment or user data changed."
     },
     {
       "id": "V14-003",
