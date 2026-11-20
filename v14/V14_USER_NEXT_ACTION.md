@@ -28,16 +28,16 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 
 | Feld | Aktueller Wert |
 |---|---|
-| source_HEAD | Nur nach aktuellem Remote-Readback einsetzen; Branch `gpt6/v13-private-remote-bridge-20261111` ist ein bekannter Anker |
-| last_integrated_functional_change | UNVERIFIED |
-| local_test_result | NOT_RUN in dieser Übergaberunde |
-| ci_test_result | NOT_VERIFIED |
-| phone_installed_sha | UNKNOWN |
-| phone_auto_update_verified | NO |
+| source_HEAD | Release-base `14d7386484dfce6728aa404d89eae98403b4dba0`; candidate branch HEAD `d9d6e736a1191e3e8a12fc87b0c22b2b49defd57` (PR #2135, not release) |
+| last_integrated_functional_change | PR #2135 candidate only: existing OnlineWorld consumer has atomic exactly-once checkpoint; NOT MERGED |
+| local_test_result | LOCAL_LINUX reconstructed CPython 3.13: 8/8 PASS; exact PR-head GitHub Actions focused suite: 13 passed |
+| ci_test_result | Focused 13 PASS; continuous-local-plasticity 49 PASS; combined online JEPA PASS; staged-runtime FAIL (20 failed, 218 passed, 10 skipped, 2 errors); staged integrated regression FAIL (1 test); safe-additive scope policy FAIL |
+| phone_installed_sha | UNKNOWN — private owner-read issue #344 has no device receipt |
+| phone_auto_update_verified | UNKNOWN_NO_LIVE_RECEIPT |
 | device_model_comparison | NOT_RUN |
 | proposed_model_change | NONE – erst anhand echter Tests |
 | requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
-| next_developer_action | Board-Tickets V14-001/002/003/004 parallel umsetzen und testen; Boss integriert den ersten nachgewiesenen E2E-Pfad |
+| next_developer_action | Rebuild/review the complete hash-bound online-world candidate chain against current source; rerun staged runtime and integrated regression; continue P0 arithmetic/B1-B2 and whole-Canon integration |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
