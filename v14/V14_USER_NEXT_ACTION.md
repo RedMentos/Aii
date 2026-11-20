@@ -40,3 +40,9 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | next_developer_action | Board-Tickets V14-001/002/003/004 parallel umsetzen und testen; Boss integriert den ersten nachgewiesenen E2E-Pfad |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
+
+## Core-Checkpoint 20.11.2026, 09:02 UTC — PR #2119 (noch nicht integriert)
+
+- Basis-HEAD `d3ac638b04d166c4fe7611f3d314b1633b7036f8`; eigener PR-HEAD `6622218640c6859a628d96d7b63e3625ac46ba28`, Draft https://github.com/RedMentos/Aii/pull/2119. Signierte, aktionsgebundene Android-Companion-Receipts werden mit Ablaufzeit, STOP, Consent-Feld und SQLite-Nonce-Replay-Schutz geprüft. **Noch kein echter Android-Transport, keine unabhängige OS-Consent-Implementierung, keine T8-Lernpromotion.**
+- LOCAL_LINUX: 1/1 PASS auf lokalem semantisch gleichartigen Kandidaten; exakt gepushte Bytes lokal **NOT_RUN**, weil GitHub-DNS im Container nicht erreichbar. Exakt-Branch CI-Workflow hinzugefügt, Ergebnis bei Checkpoint **PENDING**. Native Tokens/Redmi **NOT_RUN**. GitHub-Dateien nach Push readback bestätigt.
+- **NOT_RELEASED**; installierter Redmi-SHA und aktueller Updater-Status nicht neu verifiziert. Keine Nutzeraktion nötig. Nächster Core-Schritt: CI prüfen; Android-seitig authentifizierte lokale Zustimmung und echte Companion-Verbindung implementieren, dann C5/Outcome-Konsument mit Replay-/Restart-/Negativtests, separat auf Redmi messen. Keine neue Modellinstallation oder Freigabe.
