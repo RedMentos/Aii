@@ -73,7 +73,20 @@ def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=Fal
         if not isinstance(row, dict):
             break
         status=row.get("status")
-        if status == "FINAL":
+        # A FINAL status alone is not proof that native C3 delivered text.
+        # Synthetic/fallback completions and zero-token native runs must not
+        # suppress recovery from independently observed prefill failures.
+        data = row.get("metadata")
+        if isinstance(data, str):
+            try:
+                data = json.loads(data)
+            except (ValueError, TypeError):
+                data = None
+        native = data.get("runner") if isinstance(data, dict) else None
+        if (status == "FINAL" and isinstance(native, dict)
+                and native.get("role") == "C3_LANGUAGE"
+                and type(native.get("generated_tokens")) is int
+                and native["generated_tokens"] > 0):
             recent_good += 1
         else:
             break
