@@ -48,7 +48,7 @@ Neue Agenten prüfen vor Änderungen GitHub-HEAD und andere offene Arbeiten. Bei
 | **B3/B4 / Latent + verteilte Integration** | Aktivierungen/Projektoren, Receiver-Injection, verteilter Zustand, Rekurrenz, dynamisches Routing; genau definierte Lastpfade | Latent vs Exact vs None, echter Receiver-Effekt, nicht nur JSON-Routing |
 | **C / JEF / Inquisition / Language** | kleine C2-/C3-Organe, flexible Fokus-/Interrupt-/Kritik-/Outputpfade; kein JEF-Zentralbewusstsein | richtige schnelle C3 Native Tokens, nachweislich konsumierte Alternativen, Sicherheits-/Toolgrenze |
 | **Memory / World / Self / Motivation** | Fast/Slow; Episodic + semantischer Weltgraph, getrennter Self-Kopf, Zeit-/Outcome-/Omission-Erwartungen, Goal-Registry/Curiosity | second-attempt, Quellenbindung, realer Outcome/negative controls, Widerruf/Restart |
-| **JEPA / Online Plasticity / Meta** | lokale und Cross-Organ-Head-/Adapter-/Expert-Gewichte; JEPA EMA, Eligibility×Modulation, Teacher/Student nur als flexible Rollen, kleine selektive Distillation, Sleep/Dream | Lernkurve vs Kontrollgruppen, alte Fähigkeit behalten, nach Reboot nutzbar |
+| **JEPA / Online Plasticity / Meta** | lokale und Cross-Organ-Head-/Adapter-/Expert-Gewichte; JEPA EMA, Eligibility×Modulation, Teacher/Student nur als flexible Rollen, kleine selektive Distillation, Sleep/Dream | Lernkurve vs Kontrollgruppen, alte Fähigkeit behalten, nach Reboot nutzbar; Retention und zukünftige Adaptierbarkeit getrennt messen (Linear+Replay vs kleiner Transformer+Replay vs kein Replay) |
 | **Android / Runtime / UI** | ein Befehl, Update/Automerge ohne Verlust, lebendige Buttons, Autostart/Cancel/Resume, bounded native multi-model runs, echte Performance | 20+ native korrelierte Turns, p50/p95, RSS/PSS, Crash-/Update-Recovery |
 | **Tools / Safety / Self-Edit** | Rechte/Consent/Age getrennt von Ressourcen; C5 Action→Outcome; künftig begrenzter Code-/Organ-Ersatz via Tests, Review, Rollback | realer genehmigter Pfad, Negative Cases, keine Selbstvergabe von Rechten |
 | **Research / Open Source** | laufend Primärquellen/Releases/Benchmarks, Lizenz-/Weight-Prüfung, Experimente, konkrete Integrations-Vorschläge | datiertes Research Ledger, verknüpfte Tests und Pull Requests, auch negative Befunde |
@@ -77,9 +77,16 @@ Mehrere Agents dürfen die Architektur kreativ herausfordern; sie dürfen weder 
 
 ## 6. Unvollständigkeitskennzeichnung
 
-**Gesamtstatus 2026-11-20:** V14-Design/Kanon vorhanden; vollständiger auf Redmi gelebter Organverbund, echter systemweiter Latent-Transfer und permanente lernende Zwei-Body-MoE-Endarchitektur **NICHT NACHGEWIESEN**. Die historischen STEP2/B3-FAILs bleiben offen, bis auf genau diese Ziele bezogene Re-Tests erfolgreich sind. Kein `COMPLETE`, kein Reife-/Age-Aufstieg aus Dokumentation.
+**Gesamtstatus 2026-11-21:** V14-Design/Kanon vorhanden; vollständiger auf Redmi gelebter Organverbund, echter systemweiter Latent-Transfer und permanente lernende Zwei-Body-MoE-Endarchitektur **NICHT NACHGEWIESEN**. Die historischen STEP2/B3-FAILs bleiben offen, bis auf genau diese Ziele bezogene Re-Tests erfolgreich sind. Kein `COMPLETE`, kein Reife-/Age-Aufstieg aus Dokumentation.
 
-## Aktuelle Team- und Nutzer-Übergabe (20.11.2026)
+## Aktuelle Team- und Nutzer-Übergabe (21.11.2026)
 
 Die bestehenden fünf stündlichen Jobs arbeiten als **ein Engineering-Team** mit [Arbeitsvertrag](V14_TEAM_OPERATING_SYSTEM.md), [gemeinsamem Ticket-Board](V14_WORK_BOARD.json) und [nutzbarer Übergabe für das nächste Gespräch](V14_USER_NEXT_ACTION.md). Vorrangig ist **tatsächliches Coding, lokales Testen, Fixen, direktes Pushen in die eigene GitHub-Lane, Review, Integration und sichere automatische Übernahme nur mit verifiziertem Geräte-Updater**; der Nutzer soll für normale Pushes nicht jedes Mal einen Befehl eingeben müssen. Alternative kleine/größere Modelle sind ausdrücklich als isolierte Messversuche erlaubt; produktiver Wechsel nur nach transparenter Messung und Zustimmung. Der Terminal-Name kann `v13` bleiben. Keine falsche Behauptung von Android-Installation aus einem GitHub-Commit.
 
+
+### Neue technische Evidenz am 21.11.2026
+
+- [PR #2135](https://github.com/RedMentos/Aii/pull/2135) baut einen genau-einmaligen, crash-konsistenten Commitpfad in den vorhandenen OnlineWorld-Consumer: Modellparameter und verarbeitete T8-Action-IDs liegen in derselben atomaren Checkpoint-Generation; interprozessuales flock + Reload unter Lock verhindern stale-writer-Duplikate. Fokus-CI 13/13, bestehende Online-Plasticity-CI 49/49 und kombinierte Online-JEPA-CI PASS. Das bleibt ein kleiner linearer Predictor, kein vollständiges JEPA.
+- Die vollständige Staging-Kette ist noch BLOCKED: der hash-gebundene Candidate integrated_online_world_candidate_20261110.py lehnt den geänderten OnlineWorld-Quellstand ab; Staged Runtime 20 FAIL / 218 PASS / 10 SKIP / 2 ERR. Keine Hash-Pins blind aktualisieren und keine Runtime-Freeze-Regel umgehen.
+- Forschung R-009 verlangt zusätzlich einen Langstrom-Test der zukünftigen Lernfähigkeit. Die aktuelle Replay-/Retention-Probe beweist nicht, dass ein linearer Predictor seine Plastizität über viele Aufgaben erhält.
+- Privater Owner-Read #344 ohne Geräteantwort; Redmi/Updater bleiben UNVERIFIED / UNKNOWN. PR #2135 ist DRAFT, nicht gemerged und nicht released.

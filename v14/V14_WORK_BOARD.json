@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-20",
+  "updated_at": "2026-11-21",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Initial backlog, not proof of any functionality; update ticket evidence after actually running code and tests.",
@@ -11,12 +11,13 @@
       "owner": "Core & Harness",
       "reviewer": "Boss & QA",
       "priority": "P0",
-      "status": "READY",
+      "status": "BLOCKED_STAGED_SOURCE_CHAIN",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Inspect existing v13/code/v13/runtime.py consumer chain and current PRs; wire the first missing real consumer; run local integration tests",
-      "user_action_required": false
+      "proof_environment": "CI_EXACT_HEAD_FAIL",
+      "next_step": "Rebuild the existing hash-bound arithmetic/online-world composition against the current source; preserve frozen runtime.py and all source pins, then run the exact staged Runtime/SQLite/C5/C6/restart tests",
+      "user_action_required": false,
+      "candidate_pr": "https://github.com/RedMentos/Aii/pull/2131 (withdrawn; existing staged candidate remains the intended path)"
     },
     {
       "id": "V14-002",
@@ -24,11 +25,11 @@
       "owner": "QA & Android",
       "reviewer": "Boss",
       "priority": "P0",
-      "status": "READY",
+      "status": "NO_LIVE_RECEIPT",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Audit existing updater implementation and prior auto-update bug; create local simulated update test first, then native Redmi verification if authenticated access exists",
+      "proof_environment": "PRIVATE_OWNER_READ_NO_RESPONSE",
+      "next_step": "Keep installed SHA and auto-update state UNKNOWN until a fresh authorized phone receipt exists; do not issue a manual command or flip update settings",
       "user_action_required": false
     },
     {
@@ -50,12 +51,16 @@
       "owner": "JEPA & Memory",
       "reviewer": "Core & QA",
       "priority": "P0",
-      "status": "READY",
+      "status": "PR_OPEN_FOCUSED_CI_PASS",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Inspect current JEPA, outcomes, LoRA trainer and adjacent PRs, integrate smallest real trainable runtime loop; local tests",
-      "user_action_required": false
+      "proof_environment": "LOCAL_LINUX_RECONSTRUCTED_8_PASS; GITHUB_CI_13_PASS; COMBINED_ONLINE_JEPA_PASS",
+      "next_step": "Review PR #2135 exactly-once checkpoint consumer; resolve staged hash-bound composition; then add held-out retention and authorized Redmi proof",
+      "user_action_required": false,
+      "candidate_pr": "https://github.com/RedMentos/Aii/pull/2135",
+      "candidate_head": "e729a8c51df24fd6b60ea5d46115096f05630e27",
+      "known_gap": "No full JEPA, trained B1/B2 receiver, cross-organ gradients or Redmi proof",
+      "code_head": "e729a8c51df24fd6b60ea5d46115096f05630e27"
     },
     {
       "id": "V14-005",
@@ -76,11 +81,11 @@
       "owner": "Research & Perception",
       "reviewer": "JEPA & Boss",
       "priority": "P1",
-      "status": "READY",
+      "status": "WIRED_SYNTHETIC_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Review newest papers, current A-plane code and native perceiver constraints; build and test next integrated piece",
+      "proof_environment": "PR_CANDIDATES_ONLY_NO_ANDROID_CAPTURE",
+      "next_step": "Review consent-bound PCM16→A5 admission and the A4 receiver boundary; connect a real A5 event to A4 without bypassing live consent, then measure on authorized Android",
       "user_action_required": false
     },
     {
@@ -89,11 +94,11 @@
       "owner": "Boss & Integration",
       "reviewer": "QA",
       "priority": "P0",
-      "status": "READY",
+      "status": "INTEGRATION_BLOCKED",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Triage existing V14 PRs and select compatible connected batch; assign file ownership and validate tests, check backup/integrity",
+      "proof_environment": "CI_STAGED_RUNTIME_FAIL",
+      "next_step": "Rebuild the complete pinned candidate chain against current source; independently review PR #2135 and the remaining compatible PRs; do not merge draft/stacked/failed candidates",
       "user_action_required": false
     },
     {
@@ -102,12 +107,31 @@
       "owner": "Boss & Integration",
       "reviewer": "QA & Core",
       "priority": "P0",
-      "status": "READY",
+      "status": "UPDATED",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Keep last verified HEAD, deployed hash, tests, current blocker, next suggestion and permission question accurate",
+      "proof_environment": "GITHUB_READBACK",
+      "next_step": "Use this handoff plus latest base HEAD/PR/CI/phone receipt on the next user-facing turn",
       "user_action_required": false
     }
-  ]
+  ],
+  "last_verified_checkpoint": {
+    "date": "2026-11-21",
+    "release_base_head": "14d7386484dfce6728aa404d89eae98403b4dba0",
+    "candidate_branch": "boss/v14-online-world-atomic-consumer-20261121",
+    "candidate_head": "e729a8c51df24fd6b60ea5d46115096f05630e27",
+    "pull_request": 2135,
+    "status": "DRAFT_NOT_MERGED_NOT_RELEASED",
+    "focused_ci": "PASS_13",
+    "continuous_local_plasticity_ci": "PASS_49",
+    "combined_online_jepa_ci": "PASS",
+    "staged_runtime": "FAIL_20_218_10SKIP_2ERROR_SOURCE_HASH_PIN",
+    "safe_additive_scope": "FAIL_POLICY_EXISTING_MODULE_EDITS",
+    "local_reconstructed": "PASS_8",
+    "redmi": "NO_LIVE_RECEIPT_REDMI_UNVERIFIED",
+    "phone_installed_sha": "UNKNOWN",
+    "code_head": "e729a8c51df24fd6b60ea5d46115096f05630e27",
+    "docs_handoff_commit": "47a0894f0cb17deae129783fb8b2c12a69f55120",
+    "docs_board_commit": "49781898bea92c5eb72ef9af5be00132030e91b1"
+  }
 }
