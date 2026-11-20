@@ -118,11 +118,16 @@ def _lock():
 def _fetch(root, branch):
     # Only the *already checked out branch* and *already configured source*.
     ref = "refs/remotes/origin/" + branch
-    git(root, "fetch", "--no-tags", "--filter=blob:none", "origin",
+    # A shallow Git checkout can exit 0 while rejecting an updated remote
+    # tracking ref with a warning ("shallow roots are not allowed to be
+    # updated"). If we trust only the process exit, a stale checkout is falsely
+    # reported UP_TO_DATE and the dashboard/runtime diverge.
+    git(root, "fetch", "--no-tags", "--update-shallow", "--filter=blob:none", "origin",
         "refs/heads/" + branch + ":" + ref, timeout=90)
     new = git(root, "rev-parse", ref)
-    if not SHA.fullmatch(new):
-        raise UpdateDenied("Remote source revision could not be verified")
+    fetched = git(root, "rev-parse", "FETCH_HEAD")
+    if not SHA.fullmatch(new) or not SHA.fullmatch(fetched) or new != fetched:
+        raise UpdateDenied("Shallow source fetch did not advance the expected remote ref")
     return new
 
 
