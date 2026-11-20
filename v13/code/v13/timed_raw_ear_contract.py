@@ -45,7 +45,13 @@ def to_percept_packet(frame: EarFrame, *, consent: bool, source_authorized: bool
         raise ValueError("pitch outside bounded range")
     if frame.voiced_probability is not None and not 0 <= frame.voiced_probability <= 1:
         raise ValueError("invalid voiced probability")
-    if type(frame.final) is not bool:\n        raise ValueError("invalid finality")\n    for name, value in (("transcript", frame.transcript), ("teacher_revision", frame.teacher_revision),\n                        ("non_speech_label", frame.non_speech_label), ("speaker_hint", frame.speaker_hint)):\n        if value is not None and not isinstance(value, str):\n            raise ValueError("invalid " + name)\n    if frame.transcript is not None and not frame.teacher_revision:
+    if type(frame.final) is not bool:
+        raise ValueError("invalid finality")
+    for name, value in (("transcript", frame.transcript), ("teacher_revision", frame.teacher_revision),
+                        ("non_speech_label", frame.non_speech_label), ("speaker_hint", frame.speaker_hint)):
+        if value is not None and not isinstance(value, str):
+            raise ValueError("invalid " + name)
+    if frame.transcript is not None and not frame.teacher_revision:
         raise ValueError("teacher transcript requires provenance")
     if frame.teacher_revision and not frame.transcript:
         raise ValueError("teacher provenance without transcript")
