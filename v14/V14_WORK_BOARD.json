@@ -63,12 +63,13 @@
       "owner": "Research & Perception",
       "reviewer": "Core & QA",
       "priority": "P1",
-      "status": "READY",
+      "status": "IN_PROGRESS_PARTIAL",
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Audit specs/models.json, model manager and available tests; produce comparative executable experiment without automatic production swap",
-      "user_action_required": false
+      "proof_environment": "LOCAL_LINUX 4/4 unit PASS; py_compile PASS; no native benchmark; REDMI_UNVERIFIED",
+      "next_step": "PR #2122 QA exact-SHA retest and integrate; then measure real runner PSS/TTFT/quality on authorized device before proposing any model candidate",
+      "user_action_required": false,
+      "evidence_pr": "https://github.com/RedMentos/Aii/pull/2122"
     },
     {
       "id": "V14-006",
