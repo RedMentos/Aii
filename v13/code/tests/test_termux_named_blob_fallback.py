@@ -53,17 +53,45 @@ class NamedPublicationTests(unittest.TestCase):
         self.assertFalse(list(self.root.glob(".v13-pending-*")))
 
     def test_link_failure_reaps_temporary_name_and_does_not_publish(self):
-        original = os.link
-        def blocked(src, dst, **kwargs):
-            if src.startswith(".v13-pending-"):
-                raise PermissionError(errno.EACCES, "hardlink unavailable")
-            return original(src, dst, **kwargs)
         with mock.patch.object(lifecycle, "_link_anonymous",
                                side_effect=PermissionError(errno.EACCES, "proc denied")):
-            with mock.patch.object(lifecycle.os, "link", side_effect=blocked):
+            with mock.patch.object(lifecycle, "_hardlink_named_no_replace",
+                                   side_effect=PermissionError(errno.EACCES,
+                                                               "hardlink unavailable")):
                 with self.assertRaises(PermissionError):
                     lifecycle.verify_or_create_blob(self.path, self.data, self.key)
         self.assertEqual(list(self.root.iterdir()), [])
+
+    def test_android_python_without_os_link_can_publish(self):
+        # Termux/bionic's CPython 3.14 does not export os.link.
+        present = hasattr(os, "link")
+        original = getattr(os, "link", None)
+        if present:
+            delattr(os, "link")
+        try:
+            self.assertFalse(hasattr(os, "link"))
+            with mock.patch.object(lifecycle, "_link_anonymous",
+                                   side_effect=PermissionError(errno.EACCES,
+                                                               "proc denied")):
+                self.assertEqual(
+                    lifecycle.verify_or_create_blob(self.path, self.data, self.key),
+                    "CREATED")
+            self.assertEqual(self.path.read_bytes(), self.data)
+            self.assertEqual({x.name for x in self.root.iterdir()}, {self.key})
+        finally:
+            if present:
+                setattr(os, "link", original)
+
+    def test_named_hardlink_uses_ordinary_paths_without_special_flags(self):
+        calls = []
+        def pretend(src_dir_fd, src, dst_dir_fd, dst, flags):
+            calls.append((src_dir_fd, src, dst_dir_fd, dst, flags))
+            return 0
+        import types
+        with mock.patch.object(lifecycle.ctypes, "CDLL",
+                               return_value=types.SimpleNamespace(linkat=pretend)):
+            lifecycle._hardlink_named_no_replace(21, "pending", "final")
+        self.assertEqual(calls, [(21, b"pending", 21, b"final", 0)])
 
     def test_crash_recovery_reaps_only_digest_bound_pending(self):
         pending_a = ".v13-pending-" + self.key + "-" + "a" * 24
