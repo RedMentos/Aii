@@ -76,8 +76,15 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
     store, session = _make_store(tmp_path / "brain")
     try:
         _add_transitions(store, session, 0, 256)
+        raw_rows = world_model.transitions(store, limit=256)
         verified, rejected = verify_committed_transitions(store, limit=256)
-        assert len(verified) >= 16
+        assert len(verified) >= 16, {
+            "raw_rows": len(raw_rows),
+            "rejected": rejected,
+            "actions": store.rows("SELECT id,status,expected,outcome,created FROM actions ORDER BY created DESC LIMIT 2"),
+            "selections": store.rows("SELECT event_id,generation_id,created,payload FROM packets WHERE kind='ActionSelection' ORDER BY created DESC LIMIT 2"),
+            "raw_head": raw_rows[:1],
+        }
         assert rejected == 0
 
         consumer = WorldJEPAStoreConsumer(
