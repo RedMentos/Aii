@@ -142,6 +142,10 @@ def test_valid_receipt_persists_through_real_store_and_notifies_after_commit(tmp
     assert actual["observed"] is False
     assert actual["auth_scheme"] == "HMAC_SHA256_PER_INSTALL"
     assert actual["receipt_nonce"] == "a" * 32
+        assert actual["companion_local_consent_claim"] is True
+        assert actual["local_approval_evidence"] == "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
+        assert actual["android_os_permission_status"] == "REQUIRED_NOT_VERIFIED"
+        assert actual["key_storage_status"] == "UNVERIFIED"
     assert actual["t8_authoritative"] is False
     assert actual["world_learning_eligible"] is False
     assert actual["trusted_transition_eligible"] is False
