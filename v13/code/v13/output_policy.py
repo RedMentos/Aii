@@ -106,26 +106,9 @@ def preview(store, rules):
 
 
 def match(store, text):
-    """Return a deterministic local arithmetic policy or an operator fixed rule."""
-    # This is a tiny, exact, integer-only parser. It does not use eval and does
-    # not treat prose, multi-step expressions, dates or tool instructions as math.
+    """Return an operator fixed rule or a source-bound deterministic local arithmetic policy."""
     from .exact_arithmetic import evidence as arithmetic_evidence
     arithmetic = arithmetic_evidence(text)
-    if arithmetic is not None:
-        query_ref = store.source(text, 'SYSTEM_DETERMINISTIC_QUERY')
-        answer_ref = store.source(arithmetic['result'], 'SYSTEM_DETERMINISTIC_ANSWER')
-        return {
-            'kind': 'SYSTEM_DETERMINISTIC_ARITHMETIC',
-            'rule_id': 'fixed_builtin_exact_integer_arithmetic_v1',
-            'rule_version': 'builtin-1',
-            'query_ref': query_ref,
-            'answer_ref': answer_ref,
-            'answer': arithmetic['result'],
-            'model_generated': False,
-            'output_authority': 'APPROVED_FIXED_RULE',
-            'evidence': arithmetic,
-        }
-    """Read current rule generation atomically and revalidate its source blobs."""
     with store.mutex:
         generation = store.generation()
         row = store.one('SELECT rules FROM rules WHERE id=?',
@@ -138,6 +121,7 @@ def match(store, text):
         except (ValueError, TypeError) as exc:
             raise InvalidRule('Aktive Regeln beschädigt') from exc
         fixed = validate_rules(store, rules)
+        # Human-authored exact answers retain precedence over the built-in rule.
         for item in fixed:
             if item['query'] == text:
                 return {'kind': KIND, 'rule_id': item['entry']['rule_id'],
@@ -146,4 +130,18 @@ def match(store, text):
                         'answer_ref': dict(item['entry']['answer_ref']),
                         'answer': item['answer'], 'model_generated': False,
                         'output_authority': 'APPROVED_FIXED_RULE'}
+    if arithmetic is None:
         return None
+    query_ref = store.source(text, 'SYSTEM_DETERMINISTIC_QUERY')
+    answer_ref = store.source(arithmetic['result'], 'SYSTEM_DETERMINISTIC_ANSWER')
+    return {
+        'kind': 'SYSTEM_DETERMINISTIC_ARITHMETIC',
+        'rule_id': 'fixed_builtin_exact_integer_arithmetic_v1',
+        'rule_version': 'builtin-1',
+        'query_ref': query_ref,
+        'answer_ref': answer_ref,
+        'answer': arithmetic['result'],
+        'model_generated': False,
+        'output_authority': 'APPROVED_FIXED_RULE',
+        'evidence': arithmetic,
+    }
