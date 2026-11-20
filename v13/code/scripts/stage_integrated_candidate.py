@@ -13,7 +13,7 @@ import shutil
 import tempfile
 
 BUILDER = 'scripts/termux_runtime_recovery_candidate_20261112.py'
-BUILDER_SHA = '7438fb8fd950733842e58fc565c83ea64a967452edcdb6257aa78318858b4bd7'
+BUILDER_SHA = '16ba5fc3a6535c737502151a0a6362f067acedcd7102425086df4721b071b34a'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
