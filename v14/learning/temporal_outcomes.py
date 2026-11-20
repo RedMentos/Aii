@@ -1,5 +1,5 @@
 """V14 source-bound temporal outcome ledger; no automatic weight edits."""
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, replace
 from pathlib import Path
 import json, os, tempfile
 
@@ -47,27 +47,42 @@ class TemporalOutcomes:
         if r.id in self.records: raise ValueError("duplicate")
         if sum(x.status == "PENDING" for x in self.records.values()) >= self.max_pending:
             raise OverflowError("pending budget")
-        self.records[r.id] = r
-        self.save()
+        before = self.records
+        self.records = {**before, r.id: replace(r)}
+        try:
+            self.save()
+        except Exception:
+            self.records = before
+            raise
 
     def resolve(self, id, *, at, observed, evidence="", observation_complete=False, cancelled=False):
         r = self.records[id]
         if r.status != "PENDING" or at < r.opened_at: raise ValueError("state/time")
+        if not cancelled and not observed and at < r.deadline:
+            # An incomplete early observation is not a terminal outcome.
+            return asdict(r)
+        next_r = replace(r)
         if cancelled:
-            r.status = "CANCELLED"
+            next_r.status = "CANCELLED"
         elif observed:
             if not evidence: raise ValueError("outcome evidence")
-            r.status = "OBSERVED" if at <= r.deadline else "DELAYED"
-            r.error = 1 - r.probability
+            next_r.status = "OBSERVED" if at <= r.deadline else "DELAYED"
+            next_r.error = 1 - r.probability
         elif observation_complete and at >= r.deadline and evidence:
-            r.status = "OMITTED"
-            r.error = -r.probability
+            next_r.status = "OMITTED"
+            next_r.error = -r.probability
         else:
-            r.status = "CENSORED"
-        r.observed_at = at
-        r.evidence = evidence
-        self.save()
-        return asdict(r)
+            next_r.status = "CENSORED"
+        next_r.observed_at = at
+        next_r.evidence = evidence
+        before = self.records
+        self.records = {**before, id: next_r}
+        try:
+            self.save()
+        except Exception:
+            self.records = before
+            raise
+        return asdict(next_r)
 
     def learning_intent(self, id):
         r = self.records[id]
