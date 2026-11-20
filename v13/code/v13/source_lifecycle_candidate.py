@@ -153,6 +153,26 @@ def _hardlink_named_no_replace(dir_fd, source, dest):
         raise OSError(code, os.strerror(code), dest)
 
 
+def _rename_named_no_replace(dir_fd, source, dest):
+    """Android-safe no-clobber publish: renameat2 with RENAME_NOREPLACE.
+
+    The same Linux syscall successfully publishes the integrated staged
+    runtime on Termux. Unlike a hardlink this needs no hardlink permission.
+    We never use os.rename/replace: those could overwrite existing blobs.
+    """
+    try:
+        renameat2 = ctypes.CDLL(None, use_errno=True).renameat2
+    except (AttributeError, OSError) as exc:
+        raise OSError(errno.ENOSYS, 'renameat2 unavailable') from exc
+    renameat2.argtypes = [ctypes.c_int, ctypes.c_char_p,
+                          ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+    renameat2.restype = ctypes.c_int
+    if renameat2(dir_fd, os.fsencode(source), dir_fd,
+                 os.fsencode(dest), 1) != 0:
+        code = ctypes.get_errno()
+        raise OSError(code, os.strerror(code), dest)
+
+
 def _link_named_fallback(source_fd, dir_fd, key, size):
     """No-capability Android fallback: private named stage + hardlink no-clobber.
 
@@ -184,8 +204,17 @@ def _link_named_fallback(source_fd, dir_fd, key, size):
             raise ValueError('anonymous blob grew during fallback')
         os.fsync(pending_fd)
         _verify_open_named(dir_fd, pending, pending_fd, key, size)
-        # No rename/replace: hardlink refuses an existing destination.
-        _hardlink_named_no_replace(dir_fd, pending, key)
+        # Both publication paths are atomic and refuse an existing final
+        # digest. Termux/Android can forbid hardlinks even between two 0600
+        # files in the application's own directory; the staged runtime uses
+        # renameat2(RENAME_NOREPLACE) successfully on this same device.
+        try:
+            _hardlink_named_no_replace(dir_fd, pending, key)
+        except OSError as exc:
+            if exc.errno not in (errno.EPERM, errno.EACCES, errno.ENOSYS,
+                                 errno.EOPNOTSUPP, errno.ENOTSUP):
+                raise
+            _rename_named_no_replace(dir_fd, pending, key)
         verified = _verify_linked(dir_fd, key, pending_fd, key, size)
         os.fsync(dir_fd)
         _check_linked_identity(dir_fd, key, pending_fd, verified)
