@@ -59,6 +59,7 @@ def test_companion_receipt_is_persisted_in_real_store(tmp_path):
         persist_companion_outcome,
     )
     from v13.store import Store
+    from v13.world_model import transitions
     import json
 
     home = tmp_path / "runtime"
@@ -100,6 +101,10 @@ def test_companion_receipt_is_persisted_in_real_store(tmp_path):
         assert actual["t8_authoritative"] is False
         assert actual["world_learning_eligible"] is False
         assert actual["receipt_nonce"] == "a" * 32
+        # Companion receipts are audit packets only: World-JEPA's T8 source
+        # consumer reads committed Store.actions + ActionSelection, not this packet.
+        assert store.one("SELECT COUNT(*) AS n FROM actions")["n"] == 0
+        assert all(item["action_id"] != proposal.action_id for item in transitions(store))
         forged = ActionOutcome(
             action_id=outcome.action_id, capability=outcome.capability,
             status=outcome.status, timestamp=outcome.timestamp, observed=True, evidence_level=outcome.evidence_level,
