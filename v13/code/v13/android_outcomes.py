@@ -11,6 +11,7 @@ import time
 
 from .android_control import AndroidControlBroker, ControlDenied
 from .contracts import packet
+from .common import dumps, now
 
 
 class InvalidOutcome(ValueError):
@@ -90,7 +91,7 @@ def accept_companion_receipt(
         "digest": proposal.digest,
     }
     try:
-        attestation = verifier.verify(envelope, receipt)
+        attestation = verifier.verify(envelope, receipt, consume_nonce=False)
         if (type(attestation) is not dict
                 or attestation.get("status") != "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
                 or attestation.get("t8_authoritative") is not False):
@@ -113,6 +114,7 @@ def accept_companion_receipt(
             "digest": proposal.digest,
             "receipt_schema": attestation["schema"],
             "auth_scheme": attestation["auth_scheme"],
+            "receipt_nonce": attestation["nonce"],
             "companion_local_consent": True,
             "android_os_permission_independently_required": True,
             "t8_authoritative": False,
@@ -127,18 +129,35 @@ def accept_companion_receipt(
 
 
 def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
-    """Persist a source-bound audit packet; never create a WorldAction transition."""
+    """Atomically persist one source-bound, non-authoritative companion receipt.
+
+    The receipt nonce is committed in the same SQLite transaction as its packet.
+    Repeating the same outcome is idempotent; a nonce or action-id collision with
+    different content is rejected. This is an audit record, never a WorldAction.
+    """
     if (not isinstance(outcome, ActionOutcome)
             or outcome.status != "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
             or outcome.observed is not False
             or outcome.evidence_level != "COMPANION_RECEIPT_ONLY"
+            or not isinstance(outcome.details, Mapping)
             or outcome.details.get("t8_authoritative") is not False
             or outcome.details.get("world_learning_eligible") is not False):
         raise InvalidOutcome("only non-authoritative companion receipts may be persisted here")
     event_id = outcome.details.get("event_id")
     source_ref = outcome.details.get("source_ref")
+    nonce = outcome.details.get("receipt_nonce")
+    digest = outcome.details.get("digest")
     if type(event_id) is not str or type(source_ref) is not dict:
         raise InvalidOutcome("source-bound event required before persistence")
+    if (type(nonce) is not str or len(nonce) != 32
+            or any(ch not in "0123456789abcdef" for ch in nonce)
+            or type(digest) is not str or len(digest) != 64
+            or any(ch not in "0123456789abcdef" for ch in digest)
+            or outcome.details.get("receipt_schema") != "v14.android-companion-receipt/1"
+            or outcome.details.get("auth_scheme") != "HMAC_SHA256_PER_INSTALL"
+            or outcome.details.get("companion_local_consent") is not True
+            or outcome.details.get("android_os_permission_independently_required") is not True):
+        raise InvalidOutcome("companion receipt metadata is incomplete")
     row = store.one("SELECT packet FROM events WHERE id=?", (event_id,))
     if not row:
         raise InvalidOutcome("source event missing")
@@ -155,11 +174,51 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
         evidence_level="COMPANION_RECEIPT_ONLY",
         receipt_schema=outcome.details["receipt_schema"],
         auth_scheme=outcome.details["auth_scheme"],
-        digest=outcome.details["digest"],
+        digest=digest, receipt_nonce=nonce,
         companion_local_consent=True,
         android_os_permission_independently_required=True,
         t8_authoritative=False, world_learning_eligible=False,
         trusted_transition_eligible=False,
     )
-    store.add_packet("AndroidActionOutcome", p)
+    # BEGIN IMMEDIATE serializes competing writers. The uniqueness check and
+    # packet insert therefore commit together, without a second replay ledger.
+    with store.tx() as c:
+        rows = c.execute(
+            "SELECT payload FROM packets WHERE kind=? AND event_id=?",
+            ("AndroidActionOutcome", event_id),
+        ).fetchall()
+        for prior_row in rows:
+            prior = json.loads(prior_row["payload"])
+            if prior.get("receipt_nonce") == nonce:
+                if (prior.get("action_id") == outcome.action_id
+                        and prior.get("digest") == digest):
+                    return prior
+                raise InvalidOutcome("receipt nonce replay")
+            if prior.get("action_id") == outcome.action_id:
+                raise InvalidOutcome("action already has a different companion receipt")
+        c.execute(
+            "INSERT INTO packets VALUES (?,?,?,?,?,?)",
+            (p["packet_id"], "AndroidActionOutcome", event_id,
+             event["brain_generation_id"], dumps(p), now()),
+        )
     return p
+
+
+def accept_and_persist_companion_receipt(
+    store,
+    broker: AndroidControlBroker,
+    verifier,
+    action_id: str,
+    receipt: dict,
+    *,
+    on_outcome: Callable[[ActionOutcome], None] | None = None,
+    clock: Callable[[], float] = time.time,
+):
+    """One C5 receipt-consumer call: authenticate, persist, then notify downstream."""
+    outcome = accept_companion_receipt(
+        broker, verifier, action_id, receipt, on_outcome=None, clock=clock
+    )
+    packet_value = persist_companion_outcome(store, outcome)
+    if on_outcome is not None:
+        on_outcome(outcome)
+    return outcome, packet_value
