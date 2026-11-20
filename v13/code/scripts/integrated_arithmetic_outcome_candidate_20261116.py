@@ -16,8 +16,8 @@ SOURCE_PINS = {
 UPSTREAM_PINS = {
     'v13/world.py': SOURCE_PINS['v13/world.py'],
     'v13/broker.py': 'd035f8bcdcc7acade340a2db893c32a93a892598f2be6e280ccdae3f6fe6899d',
-    'v13/world_semantic_evidence_candidate.py': 'cf96e18228423e2148f98c63577992d82f48af8359ed06a3e80052816b53ca96',
-    'v13/local_error_route_shadow_candidate.py': '141c2685f4f5b9f4a6966693d968f3b9426d3dbc254226ae74e1f3936598cb6c',
+    'v13/world_semantic_evidence_candidate.py': '0711ed851c5126c3b1c414725b99b509ff53a6e821cf5a021cbc443e93ea3b5e',
+    'v13/local_error_route_shadow_candidate.py': '3106cb3eb0808c16a7d91c1199eff5eb6b310cab9f1f67c06097026e7b621893',
 }
 REVIEWED_WORLD_SHA = 'bcb96249eb1e7cb914ea82949d106118f4738c2605e02b2c360d4b4f2d276e27'
 
