@@ -42,6 +42,12 @@ class ReceiptVerifier:
             self.stopped = True
 
     def verify(self, envelope, receipt, *, consume_nonce=True):
+        """Verify a receipt; defer nonce commit only when a caller commits it with its outcome.
+
+        Normal callers keep the default durable verifier ledger. The C5 Store
+        consumer uses consume_nonce=False so nonce and packet share one SQLite
+        transaction; callers must not discard that verified nonce.
+        """
         if type(consume_nonce) is not bool:
             raise CompanionDenied("invalid nonce policy")
         with self.lock:
