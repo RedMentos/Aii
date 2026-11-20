@@ -25,11 +25,11 @@ class ProbeTests(unittest.TestCase):
         self.assertEqual(probe('/bin/false','/tmp/none','x',2,1,1)['status'],'PROCESS_FAIL')
         with tempfile.TemporaryDirectory() as d:
             script = Path(d)/'slow.sh'
-            script.write_text('#!/bin/sh\\nsleep 2\\n')
+            script.write_text('#!/bin/sh\nsleep 2\n')
             script.chmod(0o700)
             self.assertEqual(probe(script,'/tmp/none','x',0.01,1,1)['status'],'TIMEOUT')
             good = Path(d)/'good.sh'
-            good.write_text('#!/bin/sh\\nprintf "2+2=4"\\n')
+            good.write_text('#!/bin/sh\nprintf "2+2=4"\n')
             good.chmod(0o700)
             self.assertEqual(probe(good,'/tmp/none','2+2=',2,1,1,'4')['status'],'ANSWER_CORRECT')
 
