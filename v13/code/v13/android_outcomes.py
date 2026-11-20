@@ -131,9 +131,10 @@ def accept_companion_receipt(
 def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
     """Atomically persist one source-bound, non-authoritative companion receipt.
 
-    The receipt nonce is committed in the same SQLite transaction as its packet.
-    Repeating the same outcome is idempotent; a nonce or action-id collision with
-    different content is rejected. This is an audit record, never a WorldAction.
+    The receipt nonce is committed in the same SQLite transaction as its
+    canonical ActionOutcome packet. Repeating the same outcome is idempotent;
+    a nonce or action-id collision with different content is rejected. This
+    audit record is never a WorldAction or a T8 learning transition.
     """
     if (not isinstance(outcome, ActionOutcome)
             or outcome.status != "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
@@ -166,39 +167,50 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
     if event.get("source_ref") != source_ref:
         raise InvalidOutcome("source event binding mismatch")
     store.read_source(source_ref)
+    actual = {
+        "outcome_kind": "ANDROID_COMPANION_RECEIPT",
+        "capability": outcome.capability,
+        "observed": False,
+        "evidence_level": "COMPANION_RECEIPT_ONLY",
+        "receipt_schema": outcome.details["receipt_schema"],
+        "auth_scheme": outcome.details["auth_scheme"],
+        "digest": digest,
+        "receipt_nonce": nonce,
+        "companion_local_consent": True,
+        "android_os_permission_independently_required": True,
+        "t8_authoritative": False,
+        "world_learning_eligible": False,
+        "trusted_transition_eligible": False,
+    }
     p = packet(
-        "AndroidActionOutcome", "C5_ANDROID_COMPANION", event_id,
+        "ActionOutcome", "C5_ANDROID_COMPANION", event_id,
         event["brain_generation_id"], [source_ref],
-        action_id=outcome.action_id, capability=outcome.capability,
-        status=outcome.status, observed=False,
-        evidence_level="COMPANION_RECEIPT_ONLY",
-        receipt_schema=outcome.details["receipt_schema"],
-        auth_scheme=outcome.details["auth_scheme"],
-        digest=digest, receipt_nonce=nonce,
-        companion_local_consent=True,
-        android_os_permission_independently_required=True,
-        t8_authoritative=False, world_learning_eligible=False,
-        trusted_transition_eligible=False,
+        action_id=outcome.action_id, status=outcome.status, actual=actual,
     )
     # BEGIN IMMEDIATE serializes competing writers. The uniqueness check and
     # packet insert therefore commit together, without a second replay ledger.
     with store.tx() as c:
         rows = c.execute(
             "SELECT payload FROM packets WHERE kind=? AND event_id=?",
-            ("AndroidActionOutcome", event_id),
+            ("ActionOutcome", event_id),
         ).fetchall()
         for prior_row in rows:
             prior = json.loads(prior_row["payload"])
-            if prior.get("receipt_nonce") == nonce:
+            prior_actual = prior.get("actual")
+            if (prior.get("producer_component") != "C5_ANDROID_COMPANION"
+                    or not isinstance(prior_actual, dict)
+                    or prior_actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"):
+                continue
+            if prior_actual.get("receipt_nonce") == nonce:
                 if (prior.get("action_id") == outcome.action_id
-                        and prior.get("digest") == digest):
+                        and prior_actual.get("digest") == digest):
                     return prior
                 raise InvalidOutcome("receipt nonce replay")
             if prior.get("action_id") == outcome.action_id:
                 raise InvalidOutcome("action already has a different companion receipt")
         c.execute(
             "INSERT INTO packets VALUES (?,?,?,?,?,?)",
-            (p["packet_id"], "AndroidActionOutcome", event_id,
+            (p["packet_id"], "ActionOutcome", event_id,
              event["brain_generation_id"], dumps(p), now()),
         )
     return p
