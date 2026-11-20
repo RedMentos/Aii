@@ -68,3 +68,21 @@ def test_runtime_already_consumes_policy_before_perception_and_output():
     assert "output_policy" in literals
     assert "APPROVED_FIXED_RULE" in literals
     assert "fixed_policy['answer']" in source
+
+def test_human_fixed_rule_keeps_precedence_over_builtin_arithmetic():
+    from unittest.mock import patch
+    store = FakeStore()
+    item = {
+        "entry": {
+            "rule_id": "fixed_0123456789abcdef0123456789abcdef",
+            "query_ref": {"source_id": "human-query"},
+            "answer_ref": {"source_id": "human-answer"},
+        },
+        "query": "2+2",
+        "answer": "operator answer",
+    }
+    with patch("v13.output_policy.validate_rules", return_value=[item]):
+        policy = match(store, "2+2")
+    assert policy["answer"] == "operator answer"
+    assert policy["rule_id"] == item["entry"]["rule_id"]
+    assert store.sources == []
