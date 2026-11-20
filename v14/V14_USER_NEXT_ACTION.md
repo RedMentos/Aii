@@ -40,3 +40,9 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | next_developer_action | Board-Tickets V14-001/002/003/004 parallel umsetzen und testen; Boss integriert den ersten nachgewiesenen E2E-Pfad |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
+
+## Research & Perception — 2026-11-20, PR #2122 (noch nicht integriert)
+
+- Auf Branch `research-perception/v14-model-budget-audit-20261120` liegt ein **read-only** CLI für die bestehende Modellregistry mit deklarierter Dateigröße, Revision und Lizenz. Lokal unter Linux: `python -m unittest -v test_model_budget.py` **4/4 PASS**; `python -m py_compile model_budget.py` **PASS**. Dies sind keine Modell-/Native-/Redmi-Messungen.
+- PR: https://github.com/RedMentos/Aii/pull/2122 ; Stand auf diesem Branch vor unabhängiger QA: `687cc7eb99238641808546436742c65651f1a813` (Board-Checkpoint). **NOT_RELEASED / REDMI_UNVERIFIED**. Die statische Größe beweist weder RAM-Eignung noch TTFT oder Qualität. Keine Gewichte, Modelle oder Gerätefreigaben verändert.
+- **Nächster Entwickler-Schritt:** QA soll den exakten PR-SHA neu testen und danach tatsächliche PSS/TTFT/Qualitätsvergleiche auf autorisierter Hardware anstoßen; Boss prüft Integration. **Nutzeraktion: keine.**
