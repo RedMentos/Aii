@@ -4,6 +4,7 @@ import hmac
 import json
 import sqlite3
 import time
+import threading
 
 SCHEMA = "v14.android-companion-receipt/1"
 
@@ -22,18 +23,25 @@ class ReceiptVerifier:
             raise ValueError("per-installation secret must have >=32 bytes")
         self.secret = secret
         self.clock = clock or time.time
-        self.db = sqlite3.connect(str(path))
+        self.db = sqlite3.connect(str(path), check_same_thread=False)
+        self.lock = threading.RLock()
         self.db.execute("CREATE TABLE IF NOT EXISTS used_receipts (nonce TEXT PRIMARY KEY, action_id TEXT NOT NULL)")
         self.db.commit()
         self.stopped = True
 
     def start(self):
-        self.stopped = False
+        with self.lock:
+            self.stopped = False
 
     def stop(self):
-        self.stopped = True
+        with self.lock:
+            self.stopped = True
 
     def verify(self, envelope, receipt):
+        with self.lock:
+            return self._verify_locked(envelope, receipt)
+
+    def _verify_locked(self, envelope, receipt):
         if self.stopped:
             raise CompanionDenied("stopped")
         if type(envelope) is not dict or type(receipt) is not dict or set(receipt) != {"body", "mac"}:
@@ -67,4 +75,6 @@ class ReceiptVerifier:
                 "status": "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED", "t8_authoritative": False}
 
     def close(self):
-        self.db.close()
+        with self.lock:
+            self.stopped = True
+            self.db.close()
