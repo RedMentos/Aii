@@ -1,0 +1,8 @@
+# Core & Harness handoff — 2026-11-20 22:08 UTC
+
+- Ticket: V14-001; branch `gpt6/v14-core-ff-measured-gate-20261120`; base SHA `14d7386484dfce6728aa404d89eae98403b4dba0`; PR #2129; commit `abebbf7573263477e73f801f7639f1d4e85a90a8`.
+- Actual runtime consumer: `v13/code/v13/fastforward.py::FastForward.record_turn` determines whether a compiled body-skip procedure becomes READY. Existing code treated missing fast-latency measurement as a passing speed gate. New code requires a measured nonnegative fast prediction and a deliberative baseline.
+- Regression file: `v13/code/tests/test_fastforward_measured_gate.py` (missing/faster/slower). GitHub source readback for changed runtime module PASS. Local exact checkout and pytest BLOCKED: local Linux environment cannot resolve github.com; no cloned repository was present. Tests are **NOT_RUN**, not green. Native Linux/Redmi **NOT_RUN**, CI **UNVERIFIED**.
+- Reviewer action: run `PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_fastforward_measured_gate.py` on exact PR SHA, then existing fastforward/runtime integration suite and negative gate check; inspect mergeability against newest release HEAD. Merge only after independent QA and integration checks. No device deployment has occurred.
+- Next Core action: instrument real procedural policy fast vs deliberative time and confirm `predicted_fast_s` has genuine per-turn measurement provenance; without it the corrected state machine correctly remains SHADOW. Continue native B1/B2->C3 source-bound delivery, with actual Redmi profiling when available.
+- Model proposal: none. User action: none. Updater status: unverified in this run; GitHub commit is not installed Android code.
