@@ -541,19 +541,36 @@ from tempfile import TemporaryDirectory
 from v13.config import initialize
 from v13.store import Store
 from v13.common import digest
-with TemporaryDirectory(prefix="v13-install-probe-") as t:
-    home = Path(t)
-    initialize(home)
-    s = Store(home)
-    session = s.new_session()
-    for message in ("Hi", "Test", "..."):
-        ref = s.source(message)
-        assert ref["sha256"] == digest(message)
-        assert s.read_source(ref) == message
-        event = s.event(session, message)
-        assert event["source_ref"]["sha256"] == digest(message)
-        assert s.read_source(event["source_ref"]) == message
-    s.close()
+import sys
+import traceback
+try:
+    with TemporaryDirectory(prefix="v13-install-probe-") as t:
+        home = Path(t)
+        initialize(home)
+        s = Store(home)
+        session = s.new_session()
+        for message in ("Hi", "Test", "..."):
+            ref = s.source(message)
+            assert ref["sha256"] == digest(message)
+            assert s.read_source(ref) == message
+            event = s.event(session, message)
+            assert event["source_ref"]["sha256"] == digest(message)
+            assert s.read_source(event["source_ref"]) == message
+        s.close()
+except OSError as exc:
+    # Only allowlisted source BASENAMES, Python function names, line and errno.
+    # Never leak the private probe path, filesystem names, text or traceback.
+    allowed = {"source_lifecycle_candidate.py", "store.py",
+               "source_reuse_archive_candidate.py", "config.py",
+               "archive_stream_range_candidate.py"}
+    for entry in reversed(traceback.extract_tb(exc.__traceback__)):
+        name = Path(entry.filename).name
+        if name in allowed and entry.name.isidentifier():
+            print("V13_PROBE_LOCATION=" + name[:-3] + "." + entry.name
+                  + ":" + str(entry.lineno) + ":" + str(int(exc.errno or 0)),
+                  file=sys.stderr)
+            break
+    raise
 """
     # Probe output is never forwarded to a public repo, a telemetry endpoint
     # or an AI agent. Only a fixed phase, exit status and recognized exception
@@ -586,10 +603,22 @@ with TemporaryDirectory(prefix="v13-install-probe-") as t:
                         if missing:
                             kind += "(" + missing.group(1)[:70] + ")"
                     break
+            # Trusted selftest emits only a whitelisted source module name,
+            # function identifier, line number and errno. Never show stderr.
+            detail = ""
+            if phase == "sqlite_source_roundtrip":
+                location = re.search(
+                    r"^V13_PROBE_LOCATION=(source_lifecycle_candidate|store|"
+                    r"source_reuse_archive_candidate|config|archive_stream_range_candidate)"
+                    r"\\.([a-zA-Z_][a-zA-Z_0-9]*):([0-9]{1,6}):([0-9]{1,4})$",
+                    tail, re.MULTILINE)
+                if location:
+                    detail = ", site=" + location.group(1) + "." + location.group(2) + \
+                             ":" + location.group(3) + ", errno=" + location.group(4)
             raise RuntimeDeployError(
                 "Staged V13 source-ref/startup selftest failed " +
                 "(phase=" + phase + ", exit=" + str(run.returncode) +
-                ", error=" + kind + ", python=" +
+                ", error=" + kind + detail + ", python=" +
                 str(sys.version_info.major) + "." + str(sys.version_info.minor) + ")")
 
 
