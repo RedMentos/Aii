@@ -426,6 +426,41 @@ PY
 python -m v13.runtime_deploy --source "$RUNTIME_ROOT" || fail "V13 Runtime-Aktivierung fehlgeschlagen; alter Launcher bleibt erhalten"
 printf 'V13 Runtime: Launcher zeigt auf neuen, verifizierten Code-Snapshot.\n'
 
+# V13_VERIFIED_INSTALLER_REFRESH_BEGIN
+# The user's ~/v13-start.sh is a cached copy of the one-command installer.
+# Refresh it ONLY after successful exact-commit CI-gated runtime activation.
+# Read the tracked bytes directly from that commit, never from an untrusted
+# mutable file. Subsequent invocations then include the improved session
+# detection without requiring a new curl/paste every time.
+INSTALLER_CACHE="$HOME/v13-start.sh"
+if [[ -L "$INSTALLER_CACHE" ]]; then
+  fail "Installer-Cache ist ein Symlink; kein unkontrolliertes Ueberschreiben"
+fi
+if [[ ! -e "$INSTALLER_CACHE" || -f "$INSTALLER_CACHE" ]]; then
+  if [[ ! -e "$INSTALLER_CACHE" ]] ||
+     grep -Fq '# V13 one-command Termux private owner-authorized chat' "$INSTALLER_CACHE"; then
+    NEXT_INSTALLER="$(mktemp "$HOME/.v13-installer-refresh.XXXXXXXX")" ||
+      fail "Kann privaten Installer-Cache nicht vorbereiten"
+    if ! git -C "$RUNTIME_ROOT" show HEAD:v13/code/scripts/termux_one_command.sh > "$NEXT_INSTALLER"; then
+      rm -f -- "$NEXT_INSTALLER"
+      fail "Verifizierten Installer aus Git-Commit laden fehlgeschlagen"
+    fi
+    if ! grep -Fq '# V13 one-command Termux private owner-authorized chat' "$NEXT_INSTALLER"; then
+      rm -f -- "$NEXT_INSTALLER"
+      fail "Installersignatur im verifizierten Git-Commit fehlt"
+    fi
+    chmod 700 "$NEXT_INSTALLER"
+    mv -f -- "$NEXT_INSTALLER" "$INSTALLER_CACHE" ||
+      fail "Installer-Cache konnte nicht atomar aktualisiert werden"
+    printf 'V13 Installer-Cache nach CI-Freigabe aktualisiert.\n'
+  else
+    printf 'V13 Installer-Cache stammt nicht vom V13-Installer; bleibt unveraendert.\n'
+  fi
+else
+  printf 'V13 Installer-Cache ist kein regulaeres File; bleibt unveraendert.\n'
+fi
+# V13_VERIFIED_INSTALLER_REFRESH_END
+
 # Preserve existing phone-generated per-agent keys. Only extend the preexisting
 # RedMentos read-only scope by an allowlisted structured technical diagnostic.
 python - <<'PY'
