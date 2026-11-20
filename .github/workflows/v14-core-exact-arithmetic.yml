@@ -5,7 +5,7 @@ on:
   pull_request:
     paths:
       - 'v13/code/v13/exact_arithmetic.py'
-      - 'v13/code/v13/runtime.py'
+      - 'v13/code/v13/output_policy.py'
       - 'v13/code/tests/test_exact_arithmetic.py'
       - 'v13/code/tests/test_v14_exact_arithmetic_runtime.py'
       - '.github/workflows/v14-core-exact-arithmetic.yml'
