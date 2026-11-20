@@ -1,0 +1,52 @@
+name: V14 WorldJEPA Store Consumer
+
+on:
+  push:
+    branches:
+      - jepa-memory/v14-world-jepa-store-consumer-20261121
+    paths:
+      - "v14/learning/**"
+      - "v13/code/v13/world_jepa.py"
+      - "v13/code/v13/world_jepa_action_outcome_adapter.py"
+      - "v13/code/v13/world_jepa_shadow_checkpoint.py"
+      - "v13/code/v13/world_model.py"
+      - "v13/code/v13/store.py"
+      - ".github/workflows/v14-world-jepa-store-consumer.yml"
+  pull_request:
+    paths:
+      - "v14/learning/**"
+      - "v13/code/v13/world_jepa.py"
+      - "v13/code/v13/world_jepa_action_outcome_adapter.py"
+      - "v13/code/v13/world_jepa_shadow_checkpoint.py"
+      - "v13/code/v13/world_model.py"
+      - "v13/code/v13/store.py"
+      - ".github/workflows/v14-world-jepa-store-consumer.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  world-jepa-store-consumer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+      - name: Install test dependencies
+        run: python -m pip install --disable-pip-version-check numpy pytest
+      - name: Compile JEPA consumer and tests
+        run: |
+          python -m py_compile \
+            v14/learning/world_jepa_consumer.py \
+            v14/learning/test_world_jepa_consumer.py \
+            v14/learning/t8_store_authority.py \
+            v14/learning/t8_temporal_bridge.py \
+            v14/learning/temporal_outcomes.py \
+            v14/learning/temporal_receiver.py
+      - name: Run V14 learning and real SQLite Store integration tests
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v14/learning
