@@ -1,4 +1,4 @@
-name: V14 Core Android companion outcome adapter and Store integration
+name: V14 Core Android companion outcome adapter, Store integration and claim gates
 on:
   push:
     branches: ['gpt6/v14-core-companion-outcome-20261121']
