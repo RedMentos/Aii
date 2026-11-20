@@ -188,13 +188,6 @@ class Runtime:
                     if time.monotonic()-queued>self.cfg['queue_ttl_seconds']:self._rejected(payload,'Warteschlangen-Zeitlimit; bitte erneut senden.')
                     else:
                         self._turn(payload)
-                        # Local plasticity runs after the turn's committed action
-                        # record, never on an uncommitted prediction. Failure is
-                        # isolated from user-visible output and logged for repair.
-                        try:self.online_world_update(limit=64)
-                        except Exception as exc:
-                            self.store.log('online_world_learning_error',payload['event_id'],
-                                           {'error':type(exc).__name__})
                 elif kind=='download':self.models.install(payload or 'all',self.notice,self.cancel_event)
                 elif kind=='shadow':
                     if payload=='memory_retrieval':self.notice(self.learner.shadow_retrieval())
@@ -243,6 +236,14 @@ class Runtime:
                             if not row['text']:self.store.append_message(row['id'],'[Systemdiagnose; keine Modellantwort] Verarbeitung unterbrochen; :doctor prüfen.')
                             self.store.finish_message(row['id'],status,json.loads(row['metadata'])|{'coordinator_interrupted':True})
                         self.store.finish_turn(payload['event_id'],status)
+                        # A learner may consume a turn only after its terminal
+                        # status has been durably recorded. Failed/cancelled turns
+                        # cannot be silently promoted as successful experiences.
+                        if status=='FINAL':
+                            try:self.online_world_update(limit=64)
+                            except Exception as exc:
+                                self.store.log('online_world_learning_error',payload['event_id'],
+                                               {'error':type(exc).__name__})
                 except Exception as exc:
                     self.notice('Abschluss konnte nicht gespeichert werden: '+type(exc).__name__+'; Neustart rekonstruiert den Status.')
                 finally:

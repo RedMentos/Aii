@@ -11,12 +11,13 @@
       "owner": "Core & Harness",
       "reviewer": "Boss & QA",
       "priority": "P0",
-      "status": "READY",
+      "status": "IMPLEMENTING",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
       "proof_environment": "NOT_RUN",
-      "next_step": "Inspect existing v13/code/v13/runtime.py consumer chain and current PRs; wire the first missing real consumer; run local integration tests",
-      "user_action_required": false
+      "next_step": "Draft PR #2123 (a8751ba): review actual Runtime post-FINAL learner ordering, negative ERROR/DEADLINE tests and T8 cross-turn provenance; exact-branch CI/LOCAL_LINUX and Redmi still unverified",
+      "user_action_required": false,
+      "candidate_pr": "https://github.com/RedMentos/Aii/pull/2123"
     },
     {
       "id": "V14-002",
