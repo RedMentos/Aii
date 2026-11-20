@@ -22,7 +22,7 @@ class OnlinePredictor:
         self.path=Path(home)/'online_predictor.npz';self.rng=np.random.default_rng(seed)
         self.W=np.eye(features);self.U=np.zeros((actions,features));self.bias=np.zeros(features)
         self.x=np.zeros((0,features));self.act=np.zeros(0,dtype=np.int64);self.y=np.zeros((0,features))
-        self.seen=0;self.updates=0
+        self.seen=0;self.updates=0;self.metadata={}
         if self.path.exists():self.restore()
 
     def _check(self,x,action,y=None):
@@ -97,19 +97,36 @@ class OnlinePredictor:
         if count%checkpoint_every:self.checkpoint()
         return {'observed':count,'last':last,'checkpoint':str(self.path) if count else None}
 
-    def checkpoint(self):
+    def checkpoint(self,metadata=None):
+        next_metadata=self.metadata if metadata is None else metadata
+        if type(next_metadata) is not dict:raise ValueError('Invalid predictor metadata')
+        try:encoded=json.dumps(next_metadata,sort_keys=True,separators=(',',':'),allow_nan=False)
+        except (TypeError,ValueError) as exc:raise ValueError('Invalid predictor metadata') from exc
+        if len(encoded.encode('utf-8'))>131072:raise ValueError('Predictor metadata exceeds bound')
         self.path.parent.mkdir(parents=True,exist_ok=True)
         temp=self.path.with_name(self.path.name+'.tmp.npz')
+        previous=self.path.with_suffix('.previous.npz')
+        backup_temp=previous.with_name(previous.name+'.tmp.npz')
+        if temp.is_symlink() or backup_temp.is_symlink():raise ValueError('Predictor checkpoint temp cannot be a symlink')
         try:
             np.savez_compressed(temp,revision=np.array(REVISION),dimensions=np.array([self.d,self.a,self.cap]),
                 W=self.W,U=self.U,bias=self.bias,x=self.x,act=self.act,y=self.y,
                 counters=np.array([self.seen,self.updates]),
-                rng_state=np.array(json.dumps(self.rng.bit_generator.state)))
+                rng_state=np.array(json.dumps(self.rng.bit_generator.state)),
+                metadata=np.array(encoded))
+            with temp.open('rb') as stream:os.fsync(stream.fileno())
             if self.path.exists():
-                shutil.copy2(self.path,self.path.with_suffix('.previous.npz'))
+                shutil.copyfile(self.path,backup_temp)
+                with backup_temp.open('rb') as stream:os.fsync(stream.fileno())
+                os.replace(backup_temp,previous)
             os.replace(temp,self.path)
+            directory=os.open(self.path.parent,os.O_RDONLY|getattr(os,'O_DIRECTORY',0))
+            try:os.fsync(directory)
+            finally:os.close(directory)
+            self.metadata=json.loads(encoded)
         finally:
-            if temp.exists():temp.unlink()
+            for path in (temp,backup_temp):
+                if path.exists():path.unlink()
         return str(self.path)
 
     def rollback(self):
@@ -130,13 +147,21 @@ class OnlinePredictor:
                     'x':(None,self.d),'act':(None,),'y':(None,self.d),'counters':(2,)}
             loaded={k:data[k].copy() for k in shapes}
             rng_state=json.loads(str(data['rng_state']))
+            metadata_json=str(data['metadata']) if 'metadata' in data.files else '{}'
+        if len(metadata_json.encode('utf-8'))>131072:raise ValueError('Predictor metadata exceeds bound')
+        try:
+            metadata=json.loads(metadata_json)
+            json.dumps(metadata,allow_nan=False)
+        except (TypeError,ValueError) as exc:
+            raise ValueError('Invalid predictor checkpoint metadata') from exc
         n=len(loaded['x'])
         if (n>self.cap or len(loaded['act'])!=n or len(loaded['y'])!=n
             or any(v.shape!=tuple(n if d is None else d for d in shapes[k]) for k,v in loaded.items())
             or any(not np.isfinite(v).all() for v in loaded.values())
             or np.any(loaded['act']<0) or np.any(loaded['act']>=self.a)
-            or not np.all(loaded['counters']>=0)):
+            or not np.all(loaded['counters']>=0) or type(metadata) is not dict):
             raise ValueError('Invalid predictor checkpoint')
         for k in ('W','U','bias','x','act','y'):setattr(self,k,loaded[k])
         self.seen,self.updates=map(int,loaded['counters'])
         self.rng.bit_generator.state=rng_state
+        self.metadata=metadata
