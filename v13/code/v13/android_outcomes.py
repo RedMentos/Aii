@@ -13,6 +13,10 @@ from .android_control import AndroidControlBroker, ControlDenied
 from .contracts import packet
 
 
+class InvalidOutcome(ValueError):
+    pass
+
+
 @dataclass(frozen=True)
 class ActionOutcome:
     action_id: str
@@ -108,6 +112,7 @@ def accept_companion_receipt(
         details={
             "digest": proposal.digest,
             "receipt_schema": attestation["schema"],
+            "auth_scheme": attestation["auth_scheme"],
             "companion_local_consent": True,
             "android_os_permission_independently_required": True,
             "t8_authoritative": False,
@@ -149,6 +154,7 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
         status=outcome.status, observed=False,
         evidence_level="COMPANION_RECEIPT_ONLY",
         receipt_schema=outcome.details["receipt_schema"],
+        auth_scheme=outcome.details["auth_scheme"],
         digest=outcome.details["digest"],
         companion_local_consent=True,
         android_os_permission_independently_required=True,
