@@ -10,6 +10,7 @@ import pytest
 
 from v13 import contracts, world_model
 from v13.store import Store
+from t8_store_authority import verify_committed_transitions
 from world_jepa_consumer import WorldJEPAStoreConsumer
 
 
@@ -24,7 +25,7 @@ def _make_store(home):
 def _add_transitions(store, session, start, count):
     actions = tuple(world_model.ACTIONS)
     for index in range(start, start + count):
-        text = f"synthetic-user-content-{index:04d}"
+        text = f"synthetic-user-content-{index:04d}" + ("x" * (index % 29))
         event = store.event(session, text)
         event_id = event["event_id"]
         generation = event["brain_generation_id"]
@@ -46,7 +47,7 @@ def _add_transitions(store, session, start, count):
         )
         store.add_packet("ActionSelection", selection)
 
-        store.start_action(
+        action_id = store.start_action(
             event_id,
             generation,
             forecast={
@@ -54,16 +55,11 @@ def _add_transitions(store, session, start, count):
                 "resource_state": "NORMAL",
             },
         )
-        action = store.one(
-            "SELECT id FROM actions WHERE event_id=? ORDER BY created DESC LIMIT 1",
-            (event_id,),
-        )
-        assert action is not None
         duration = 0.15 + (index % 13) * 0.07 + (index % len(actions)) * 0.025
         characters = 9 + (index % 23) * 3 + (index % len(actions)) * 2
         status = "FAILED" if index % 5 == 0 else "FINAL"
         store.finish_action(
-            action["id"],
+            action_id,
             status,
             {"action_duration_s": duration, "characters": characters},
         )
@@ -73,9 +69,7 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
     store, session = _make_store(tmp_path / "brain")
     try:
         _add_transitions(store, session, 0, 256)
-        verified, rejected = __import__(
-            "t8_store_authority"
-        ).verify_committed_transitions(store, limit=256)
+        verified, rejected = verify_committed_transitions(store, limit=256)
         assert len(verified) >= 16
         assert rejected == 0
 
