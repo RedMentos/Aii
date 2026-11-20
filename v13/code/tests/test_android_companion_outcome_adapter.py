@@ -109,6 +109,7 @@ def test_valid_receipt_returns_non_authoritative_typed_outcome_and_packet(tmp_pa
     assert outcome.status == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
     assert outcome.observed is False
     assert outcome.evidence_level == "COMPANION_RECEIPT_ONLY"
+    assert outcome.details["auth_scheme"] == "HMAC_SHA256_PER_INSTALL"
     assert outcome.details["t8_authoritative"] is False
     assert outcome.details["world_learning_eligible"] is False
     assert trusted_transition_eligible(outcome) is False
@@ -117,6 +118,7 @@ def test_valid_receipt_returns_non_authoritative_typed_outcome_and_packet(tmp_pa
     assert packet["kind"] == "AndroidActionOutcome"
     assert packet["source_refs"] == [SOURCE_REF]
     assert packet["observed"] is False
+    assert packet["auth_scheme"] == "HMAC_SHA256_PER_INSTALL"
     assert packet["t8_authoritative"] is False
     assert packet["world_learning_eligible"] is False
     assert packet["trusted_transition_eligible"] is False
@@ -199,6 +201,36 @@ def _verify_once(verifier, envelope, receipt):
         if "replay" in str(exc):
             return "REPLAY"
         raise
+
+
+def test_invalid_mac_and_expired_receipt_consume_dispatch(tmp_path):
+    broker, verifier = setup(tmp_path)
+    proposal, _ = approved_dispatch(broker)
+    bad_mac = make_receipt(proposal, nonce="h" * 32)
+    bad_mac["mac"] = "0" * 64
+    with pytest.raises(CompanionDenied, match="invalid authentication"):
+        accept_companion_receipt(broker, verifier, proposal.action_id, bad_mac)
+    assert proposal.action_id not in broker.dispatched
+    proposal2, _ = approved_dispatch(broker)
+    too_long = make_receipt(proposal2, nonce="i" * 32)
+    too_long["body"]["issued_at"] = 900.0
+    too_long["body"]["expires_at"] = 1100.0
+    too_long["mac"] = sign_fixture(SECRET, too_long["body"])
+    with pytest.raises(CompanionDenied, match="expired receipt"):
+        accept_companion_receipt(broker, verifier, proposal2.action_id, too_long)
+    assert proposal2.action_id not in broker.dispatched
+    broker.close()
+    verifier.close()
+
+
+def test_source_reference_validation_is_fail_closed(tmp_path):
+    broker = AndroidControlBroker(tmp_path / "broker.sqlite", clock=lambda: 1000.0)
+    broker.start()
+    with pytest.raises(ControlDenied):
+        broker.propose("back", {}, event_id="evt", source_ref={"source_id": "x", "sha256": "bad"})
+    with pytest.raises(ControlDenied):
+        broker.propose("back", {}, event_id="evt", source_ref=None)
+    broker.close()
 
 
 def test_persist_requires_source_binding(tmp_path):
