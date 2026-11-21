@@ -934,3 +934,11 @@ QA PR #2261 exact CI run `44950978469` now completes the broader staged/integrat
 Core owns the idle and lifecycle builder repairs; JEPA owns the record-only online-world guard pin; Perception owns the missing A5 bridge composition; QA owns the speech fixture correction and independent test verification. Do not loosen strict source pins or skip tests. `test_speech_output.py` was not part of the #2261 workflow run, so the fixture edit remains unexecuted until the existing audio workflow includes that path or the exact test is run in an already-existing job. No standalone duplicate workflow is warranted.
 
 No LOCAL_LINUX full checkout and no authenticated Redmi receipt. Keep NOT_RELEASED / REDMI_UNVERIFIED.
+
+## QA V14-014 Age rights status — 2026-11-21 22:22 CET
+
+QA #2235 has now fixed the nested AST callback attribution without widening the allowlist. Exact code/test head `b22129a03bbd3395605b951d55d3f187f442bda6` and handoff-only head `c224610959e598cb9c79f38d1b4bd454ffea0019` have: Lab-Age/WebView PASS (14 main tests); private owner-read plus Python 3.14 staged startup/SQLite refs PASS; two-checkout migration PASS (2 tests); runtime-deploy integrity PASS; staged-runtime PASS (251 passed, 10 skipped, 47 subtests); integrated regression PASS (424 passed, 3 skipped, 58 subtests). Strict safe-additive remains `FAIL_BY_POLICY`; no bypass.
+
+Current release-development branch head is `bdcad466ffea75a2b41f7d23be168f53c7197d20`; GitHub compare confirms #2235 branch `qa/v14-age-rights-resource-separation-20261121` is 43 commits ahead / 121 behind and diverged. Do not merge or blindly rebase. Boss #2241 is closed as superseded by #2235; its `learning_limit()` API is already carried in the QA candidate. The current #2258 GoalStore wake-publication fix also changes `agi/goals.py`, so Boss/Core must compose the rights API and wake rollback atomically rather than cherry-picking whole files.
+
+The Age invariant remains: Age grants developmental/tool/learning rights; it never limits CPU, RAM, wall-clock, focal compute or replay volume. ResourceGuard/deadlines/Sleep policy own physical budgets. This candidate has Linux GitHub CI evidence only, no full local checkout, native weight learning, Android permission test or Redmi proof. The next gate is current-base composition and a complete exact-head rerun, not another AST micro-fix.
