@@ -48,7 +48,6 @@ bool valid_positions(int rows, const std::vector<int> & positions, int context_l
     }
     return true;
 }
-}
 
 std::vector<float> zero_control(std::size_t size) {
     return std::vector<float>(size, 0.0f);
