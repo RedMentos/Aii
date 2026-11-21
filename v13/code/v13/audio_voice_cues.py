@@ -412,6 +412,12 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         audio_segment["unmeasured"] = [
             "speaker_identity", "speaker_timbre", "calibrated_speech_probability", "ASR"
         ]
+        # Do not claim pitch/prosody were measured when the window had no usable
+        # voiced frames. A single voiced frame estimates pitch, but not dynamics.
+        if cues["f0_median_hz"] is None:
+            audio_segment["unmeasured"].append("pitch")
+        if round(cues["voiced_fraction"] * cues["frame_count"]) < 2:
+            audio_segment["unmeasured"].append("prosody")
 
         source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
             runtime, event_id, audio_packet
