@@ -579,7 +579,7 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         assert metrics.get("holdout_used_for_backtracking") is False
         trace = metrics.get("backtracking_trace")
         assert type(trace) is list and trace
-        assert all("new_guard_loss_after" in item for item in trace)
+        assert all("old_guard_cohort_gate" in item for item in trace)
         assert all(
             "holdout_loss_after" not in item and "old_holdout_loss_after" not in item
             for item in trace
@@ -694,8 +694,6 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         "holdout_improved": metrics.get("holdout_improved"),
         "utility_gate_accepted": result.get("utility_gate_accepted"),
         "guard_gate_accepted": metrics.get("guard_gate_accepted"),
-        "new_guard_loss_before": metrics.get("new_guard_loss_before"),
-        "new_guard_loss_after": metrics.get("new_guard_loss_after"),
         "old_guard_cohort_gate": metrics.get("old_guard_cohort_gate"),
         "backtracking_selection_fold": metrics.get("backtracking_selection_fold"),
         "holdout_used_for_backtracking": metrics.get("holdout_used_for_backtracking"),
@@ -1088,7 +1086,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         "old_holdout_cohort_retained", "old_holdout_retention_delta",
         "old_holdout_cohort_gate", "checkpoint_before", "checkpoint_after",
         "update_scale", "new_holdout_improved", "gradient_projection",
-        "guard_gate_accepted", "new_guard_loss_before", "new_guard_loss_after",
+        "guard_gate_accepted",
         "old_guard_cohort_gate", "backtracking_selection_fold",
         "holdout_used_for_backtracking",
         "replay_conflict_scores_sha256",
