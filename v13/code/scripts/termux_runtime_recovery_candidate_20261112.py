@@ -131,7 +131,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         # pre-postcommit builder must retain its earlier exact Runtime hash.
         # RAW Age/operator/UI remain pristine for the old phone updater.
         laboratory = load(code_dir, 'scripts/lab_age_stage_candidate_20261118.py',
-                          'c09e31ae86901302b8414ddae794e5df5ccbe59292cc700f22ba709701d5acdf')
+                          '7395fc8911132fe4ae853facb9c7693a8a1e2217cb34ce71184e39784a2a2571')
         result = laboratory.apply_sources(code_dir, result)
     # Integrate the reviewed C4 source-span rule into the ordinary pinned stage.
     # The overlay is exact-blob-pinned and changes only the FocalLoop redundancy calculation.
