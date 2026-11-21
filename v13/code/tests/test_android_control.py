@@ -123,18 +123,46 @@ def test_audit_database_rejects_hardlink_without_chmodding_target(tmp_path):
     assert target.read_bytes() == b"not an audit database"
 
 
-def test_audit_database_allows_platform_symlinked_ancestor(tmp_path):
+def test_audit_database_rejects_unapproved_symlinked_ancestor(tmp_path):
+    real_dir = tmp_path / "real"
+    nested = real_dir / "nested"
+    nested.mkdir(parents=True)
+    alias = tmp_path / "caller-controlled-alias"
+    alias.symlink_to(real_dir, target_is_directory=True)
+
+    with pytest.raises(ControlDenied, match="unapproved symlink"):
+        AndroidControlBroker(alias / "nested" / "audit.sqlite")
+
+    assert not (nested / "audit.sqlite").exists()
+
+
+def test_audit_database_allows_only_configured_platform_symlink_alias(tmp_path, monkeypatch):
+    import v13.android_control as android_control
+
     real_dir = tmp_path / "real"
     nested = real_dir / "nested"
     nested.mkdir(parents=True)
     alias = tmp_path / "platform-alias"
     alias.symlink_to(real_dir, target_is_directory=True)
+    monkeypatch.setattr(android_control, "_ANDROID_PLATFORM_SYMLINKS", ((alias, real_dir),))
 
     broker = AndroidControlBroker(alias / "nested" / "audit.sqlite")
     try:
         assert stat.S_IMODE((nested / "audit.sqlite").stat().st_mode) == 0o600
     finally:
         broker.close()
+
+
+def test_audit_database_rejects_fifo_without_opening_it_for_blocking_io(tmp_path):
+    if not hasattr(os, "mkfifo"):
+        pytest.skip("FIFO creation unavailable")
+    fifo = tmp_path / "audit.sqlite"
+    os.mkfifo(fifo)
+
+    with pytest.raises(ControlDenied):
+        AndroidControlBroker(fifo)
+
+    assert stat.S_ISFIFO(fifo.lstat().st_mode)
 
 
 def test_audit_database_rejects_group_or_world_writable_parent(tmp_path):
