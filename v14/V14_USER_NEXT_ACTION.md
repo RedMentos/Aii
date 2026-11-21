@@ -1,3 +1,23 @@
+# Latest Boss integration update — 2026-11-21 20:31 CET
+
+**No user action is required. Do not run Termux commands, request a phone update, change models/weights/permissions, or alter device data.**
+
+- Research-only PR #2243 is merged at 6bbaa66e4e2454cc2178bd145da95d1e9cf6530f; exact PR head f440a5a330e709c06cab1f818de8c83362897b2b passed 4/4. The merge-push has 29/31 checks green and two integrated-regression runs still in progress. It adds a tiny PyTorch K/V adapter experiment only, not production B3 or Android.
+- **Core #2242** advanced to edefe004735513bfa531984fb2662da5adb6a997. The two-phase audio revocation, worker-before-tombstone close, persisted packet cleanup and shared-blob refcount code now exist. Exact CI still fails because stage_integrated_candidate.py:48 rejects its recovery-candidate hash (BUILDER_SHA=558633... does not match current bytes); after correcting that, the nested runtime_deploy.STAGER_SHA256 must be recomputed. Three older stage fixtures still omit the mandatory arithmetic overlay. Exact status: 6 success / 7 failure / 3 in progress. validate-additive failure is by policy and must not be bypassed. See [Boss review comment](https://github.com/RedMentos/Aii/pull/2242#issuecomment-7068061383).
+- **QA #2244** is still based on old Core head 4cca4987... and is non-mergeable. Its Python 3.13/3.14 tests on that old base show pre-lock cancellation, fail-closed missing-subscription, close-order and packet/blob revocation failures. Rebase onto current Core after the stage hash is repaired; preserve Scenarios 7–9.
+- **Perception #2246** is still based on old parent d7380cb. Its A5 tests fail both Python versions: context() missing grants, NameError: grant, and ingress assertion 0 != 1 (3 checks pass / 4 fail). The current source passes brain_generation_id; the import path/signature and failing callsites must be diagnosed, not bypassed. Rebase to shared branch 6bbaa66 after fixing.
+- **JEPA #2247** remains 11/14: both optimizer-resume jobs reject A-GEM because old-session holdout retention regresses across seeds 13/19/43; checkpoint unchanged. Keep learning gates OFF. **Age #2235** remains 7/10 because the AST inventory misattributes the nested GoalStore.add callback as f; preserve the exact caller audit and fix attribution, not the allowlist.
+- Last fully accepted code release remains f279286a4453248004c670fcaabecd85da6ab299 (34/34 checks, 19/19 workflows). The later merged code candidate 728cdc763f09bee20ac00e1f0faadffcd33dfbb2 remains 18/19 due the correct JEPA utility-gate rejection. No new code release is certified.
+- Five V14 scheduled jobs are enabled (Boss, QA/Android, JEPA/Memory, Research/Perception, Core/Harness); legacy V13 jobs are disabled. No extra agents are claimed.
+- Research R-040/R-041 has been reviewed in full text and handed to Perception for ledger entry; no code/dependency was imported. R-040 is conditional/task-geometry dependent (arXiv version CC BY-NC-ND 4.0); R-041 uses source-specific reference-loss selection but has replay-pool/proxy-loss limitations and single-seed-per-condition experiments.
+- Private PIPELINE_STATUS request [RedMentos/Aiiii #428](https://github.com/RedMentos/Aiiii/issues/428) remains open with no authenticated reply. Installed SHA and updater consent are UNKNOWN. **REDMI_UNVERIFIED.** No diagnostics/log-page/update request or device mutation occurred.
+- Boss docs-only PR #2249 has its offline-bridge-security check green (1/1); it remains a draft and is not yet merged. The active master blob remains unchanged; the historical V13 appendix is untouched.
+- The local container has no Aii .git checkout, so no local project tests ran. All evidence above is GitHub CI/synthetic, not LOCAL_LINUX full-suite or Redmi proof.
+
+**Next internal work:** Core fixes the nested builder hash and arithmetic fixture; QA rebases #2244 and fixes #2235 AST attribution; Perception fixes A5 test import/call errors and rebases #2246, then appends R-040/R-041; JEPA replaces A-GEM with a retention-preserving experiment; Boss integrates only after exact-base tests and merge-push CI. No user command is needed.
+
+---
+
 # Latest integration update — 2026-11-21 20:25 CET
 
 **No user action is required. No Termux command, phone update, model/weight/permission change or device mutation is authorized or needed.**
