@@ -248,3 +248,13 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - Private read-only issues #351–354 have no device comments; installed SHA and auto-update consent remain UNKNOWN / REDMI_UNVERIFIED. No UPDATE_REQUEST or phone mutation.
 - Exact local full-suite checkout remains BLOCKED by GitHub DNS resolution; no LOCAL_LINUX full-suite PASS is claimed. No Redmi/native-model/voice/Android-control proof.
 - No model, weights, Age, permissions, database, chat or user data changed. **User action: none.**
+
+
+### Later exact merge-push correction — 21 November 2026
+
+The earlier 01:05 checkpoint's "integrated-regression push still IN_PROGRESS" is superseded by the later exact-SHA readback:
+
+- Merge commit 3db6d1f00fceab9e7755bc8f4c25882ef7f19258 now has all 13 associated workflow runs completed with conclusion SUCCESS.
+- Exact staged-context/integrated-regression run 44847403139: staged-runtime 240 passed, 10 skipped, 47 subtests; integrated regression 415 passed, 3 skipped, 58 subtests.
+- Exact V14 T8 real-Store workflow 44847403231: PASS.
+- This establishes merge-push CI green for 3db6d1f. It does not establish Redmi installation, normal Runtime learning-consumer acceptance, native JEPA/latent coupling, or P0 chat correctness. Private owner-read issues #351–354 still have no device comments; REDMI_UNVERIFIED remains.
