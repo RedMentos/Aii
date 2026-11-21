@@ -1,0 +1,39 @@
+name: V14 QA audio lease through complete C3 stream
+
+on:
+  pull_request:
+    branches:
+      - core/v14-audio-lease-runtime-20261121
+    paths:
+      - v13/code/tests/test_v14_audio_lease_full_lifecycle_qa.py
+      - .github/workflows/v14-qa-audio-lease-streaming.yml
+  push:
+    branches:
+      - qa/v14-audio-lease-streaming-20261121
+    paths:
+      - v13/code/tests/test_v14_audio_lease_full_lifecycle_qa.py
+      - .github/workflows/v14-qa-audio-lease-streaming.yml
+
+jobs:
+  audio-lease-streaming:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install focused CPU test dependencies
+        run: >-
+          python -m pip install --disable-pip-version-check pytest==9.2.0
+          "numpy==2.2.6; python_version < '3.14'"
+          "numpy==2.5.5; python_version >= '3.14'"
+      - name: Compile staged Runtime lease regression
+        run: python -m py_compile v13/code/tests/test_v14_audio_lease_full_lifecycle_qa.py
+      - name: Run staged Runtime lease and revocation E2E
+        working-directory: v13/code
+        run: python -m pytest -q tests/test_v14_audio_lease_full_lifecycle_qa.py
