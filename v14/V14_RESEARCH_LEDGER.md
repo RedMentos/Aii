@@ -102,3 +102,35 @@ PR #2137 is merged as `3db6d1f00fceab9e7755bc8f4c25882ef7f19258`. It converts th
 - distinguishes observed negative outcomes from CANCELLED/ABORTED and OUTCOME_UNKNOWN/INTERRUPTED; cancelled/censored cases produce no prediction error or receiver update;
 - persists the scalar temporal readout with rollback and parent-directory fsync.
 Exact PR-head V14 real-Store tests and V13 staged/integrated tests pass. The exact merge-commit push integrated regression is still pending at this checkpoint. This is a scalar temporal receiver only: no normal Runtime consumer, no full JEPA, no cross-organ latent coupling and no native B1/B2 body-weight update. The next falsifiable experiment is a real postcommit Runtime consumer with source-bound predictions, held-out utility, no-predictor/replay-only controls, restart, retention and rollback.
+
+
+
+## Research and measurement update — 2026-11-21, 02:58 CET
+
+### Action-conditioned utility is a separate acceptance gate
+
+The current WorldJEPA candidate (#2143 with source-digest follow-up #2147) has a real negative-control failure. On exact head `fb25bcbfcdd9b130d309f5151328cce535b14c15`, the V14 workflow fails on both Python 3.13 and 3.14 because the trained predictor does not outperform shuffled actions on the source-disjoint holdout. The 3.14 metrics are: holdout loss 0.480152, shuffled-action loss 0.479097, zero-action loss 0.560362. A parameter delta and lower pre/post loss are insufficient if action conditioning has no demonstrated marginal utility. Preserve the negative control. Proposed test refinement: create repeated source-digest groups, with all four action routes represented within each group and a measurable action-conditioned target; partition whole digest groups so no source bytes cross train/holdout. This tests whether the predictor learns consequences of actions rather than source or cohort artifacts. This is a synthetic evaluation improvement, not proof of real Android experience or native JEPA.
+
+### Runtime provenance finding
+
+The first T8 postcommit consumer candidate (#2145) failed because a verified receipt reduced SourceRef to `source_id + sha256`, while its exact-matching SelfCorollary/ActionPrediction consumers require the full verified SourceRef (`source_id`, `sha256`, `char_start`, `char_end`, `modality`). The Boss follow-up commit `08d14737f1ee554f2b160986f95d9f28d6bc1fa2` preserves the complete verified reference and validates span/modality; public provenance remains non-content metadata. Exact-head CI is not yet visible, so this remains CODE_WRITTEN / NOT_TESTED / NOT_MERGED. The next integration must also carry #2143/#2147's newer paginated Store authority and source-digest-disjoint checkpoint validation; do not replace it with an older copied snapshot.
+
+### Paper: V-JEPA 2 and action-conditioned post-training
+
+Assran et al., *V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning*, arXiv:2506.09985 (2025-06-11), [primary source](https://arxiv.org/abs/2506.09985). The work separates action-free visual representation pretraining from V-JEPA 2-AC, a distinct action-conditioned predictor post-trained on robot trajectories. The paper reports real robot planning after this second stage; the pretraining result alone is not the action-conditioned control result. V14 implication: keep perception/world representation learning distinct from the additional action-outcome learning needed for useful decisions. Do not call a synthetic transition predictor an action-capable world model without held-out action ablation and closed-loop consumer benefit. The paper's visual encoder, scale and robot data are not a drop-in Android text/runtime solution.
+
+### Paper: planning horizon and closed-loop feedback
+
+Alrasheed, Azam and Akhtar, *The Planning Limits of Latent World Models*, arXiv:2609.39235 (2026-09-30), [primary source](https://arxiv.org/abs/2609.39235). Across Meta-World and BridgeData V2, the study reports that a five-step imagined rollout reliably ranks actions mainly for targets five to ten control steps ahead; longer target distances degrade even with a perfect simulator predictor. Feedback/MPC helps modestly, while nearer subgoals help more. V14 implication: use short, source-bound predictions, observe actual outcomes, and replan; require horizon-matched evaluation before extending long speculative rollouts. This is robotics evidence and a design hypothesis for the digital Android agent, not direct proof for text/UI tasks.
+
+### Exploratory paper: UniJEPA
+
+Lanji et al., *UniJEPA: A Unified Joint-Embedding Predictive Architecture for Task-Agnostic Visual World Modeling*, arXiv:2608.07409 (2026-08-07), [primary source](https://arxiv.org/abs/2608.07409). It proposes a shared photometric + temporal visual prediction objective with a Gaussian anti-collapse regularizer and reports an end-to-end recipe without EMA/stop-gradient. This is worth tracking against V14's long-term trainable multi-organ latent space, but it is a vision architecture; no Android-compatible implementation, memory profile or text/runtime transfer was measured here. No architecture replacement is approved from this paper alone.
+
+### Candidate model license and test boundary
+
+PR #2142 pins `LiquidAI/LFM2.5-230M-GGUF` at revision `cdf97bd8205908758f44aec508d68ac1aef98f5c`, file size 149,081,056 bytes and SHA256 `e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292`. The official [LFM Open License v1.0](https://huggingface.co/LiquidAI/LFM2.5-230M-GGUF/blob/main/LICENSE) §5 conditions commercial-use rights on the user/legal entity not exceeding USD 10,000,000 annual revenue; commercial use by an entity at or above the threshold is not licensed under that agreement, with a limited qualified non-profit exception for non-commercial/research use. This is not Apache-2.0. PR #2142's model-lab and synthetic tests pass, but no GGUF inference occurred and the candidate is not confirmed installed on Redmi. No download, trial or production swap was performed; the candidate remains diagnostic-only.
+
+### Current decision
+
+No new paper justifies changing the V14 master architecture this run. The immediate evidence-driven work remains: (1) fix full SourceRef propagation in the T8 Runtime consumer and run exact-head CI; (2) restore the newer paginated/source-digest authority in the deployable package; (3) make the action-conditioned negative control meaningful without weakening it; (4) require a real consumer and closed-loop outcome evidence before calling the WorldJEPA path useful.
