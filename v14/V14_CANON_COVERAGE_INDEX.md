@@ -1609,3 +1609,17 @@ Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. The 
 | Device / release | Code head 23ea3ef; docs head 49fd1e9; #407-#410 expired without replies | Exact post-merge push-CI and authenticated Redmi install receipt unknown |
 
 Primary source for Bionic availability: AOSP Bionic status lists `renameat2` among new libc functions in Android R/API 30: https://android.googlesource.com/platform/bionic/+/82c90724e/docs/status.md. Redmi target Android 13 is API 33; this establishes symbol availability only, not the phone's filesystem behavior. Historical 1,255-heading Canon inventory and V13 appendix remain unchanged; semantic clause-level mapping is incomplete.
+
+
+### Boss integration evidence overlay — 2026-11-21 15:33 CET
+
+| Area | Exact evidence | Acceptance still open |
+|---|---|---|
+| Release / CI | Current HEAD `6c444e1dfdea19583002519a682fd64bca465098` includes #2218. Its 19 associated workflows are `action_required` with no jobs. #2215 code-bearing PR-head CI passed; post-merge push-CI unknown. | Not a PASS; exact post-merge workflow execution and release gate unresolved |
+| JEPA optimizer | #2218 audit/test merged; exact PR-head safe-additive/staged/integrated PASS | Dedicated Python 3.13/3.14 on exact audit-module head missing; synthetic Store/T8 only; gates OFF |
+| C4 B1/B2 diversity | #2195 dedicated C4 Python 3.13/3.14 PASS and staged/integrated PASS | Disposable overlay only; safe-additive fail; missing modality/malformed/disjoint-but-redundant negatives; old base and no normal-stage wiring |
+| RAW EAR consent | #2219 broad staged/integrated PASS; #2214 deterministic focused test still fails on old producer | Combined post-fix test and provider lock contract unresolved |
+| Checkpoint publication | #2213 dirfd-based hardlink then libc renameat2(RENAME_NOREPLACE) fallback; Bionic API 30+ | Forced hardlink-denial, target-race EEXIST and directory-fsync rollback tests missing |
+| Device / P0 | #407-#410 expired without replies; #1904 open | No installed SHA, updater consent, correct native 2+2, native latency or B1/B2→C4→C3 Redmi proof |
+
+AOSP Bionic status lists `renameat2` as a libc addition from Android R/API 30: https://android.googlesource.com/platform/bionic/+/82c90724e/docs/status.md. This establishes API symbol availability for the Android 13/API 33 target, not filesystem behavior on the phone. Historical 1,255-heading inventory and V13 appendix remain unchanged; semantic clause-level coverage is incomplete.
