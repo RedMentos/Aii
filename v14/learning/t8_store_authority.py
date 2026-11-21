@@ -37,6 +37,16 @@ def _object(raw, name):
     return value
 
 
+def _mapping(row, name):
+    """Normalize Store dict/SQLite Row results without assuming dict.get()."""
+    if type(row) is dict:
+        return row
+    try:
+        return {key: row[key] for key in row.keys()}
+    except Exception as exc:
+        raise ValueError(name) from exc
+
+
 def _hash(value):
     raw = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     return hashlib.sha256(raw).hexdigest()
@@ -128,8 +138,11 @@ def _verify_one(store, row):
                   cp.kind AS corollary_kind,cp.payload AS corollary_payload
            FROM actions a JOIN events e ON e.id=a.event_id
            LEFT JOIN packets cp ON cp.id=a.corollary_id WHERE a.id=?""", (action_id,))
-    if not meta or meta.get("action_id") != action_id:
+    if not meta:
         raise ValueError("action row missing")
+    meta = _mapping(meta, "action row")
+    if meta.get("action_id") != action_id:
+        raise ValueError("action row identity")
     status = meta.get("status")
     if type(status) is not str or status not in _TERMINAL:
         raise ValueError("action not terminal")
@@ -155,9 +168,10 @@ def _verify_one(store, row):
     if (type(source_id) is not str or source_id != meta.get("source_id")
             or type(source_sha) is not str or not _HEX64.fullmatch(source_sha)):
         raise ValueError("source identity")
-    source_refs = event.get("source_refs")
+    # V13 Store._event_in_tx persists packet-level provenance, not source_refs.
+    source_refs = event.get("provenance")
     if type(source_refs) is not list or len(source_refs) != 1 or source_refs[0] != source_ref:
-        raise ValueError("source refs")
+        raise ValueError("event provenance")
     # Store.read_source verifies source row, blob digest and span; text is discarded.
     if type(store.read_source(source_ref)) is not str:
         raise ValueError("source read")
@@ -166,6 +180,7 @@ def _verify_one(store, row):
            ORDER BY created DESC LIMIT 17""", (meta["event_id"], meta["generation_id"]))
     matching = []
     for packet_row in packets:
+        packet_row = _mapping(packet_row, "ActionOutcome row")
         payload = _object(packet_row.get("payload"), "ActionOutcome")
         if payload.get("action_id") == action_id:
             matching.append(payload)
