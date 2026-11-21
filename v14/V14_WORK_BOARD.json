@@ -309,7 +309,7 @@
       "wired": "SYNTHETIC_OFFER_SELECTION_TO_C4_FOCAL_AND_C3_CONTEXT",
       "tested_synthetic": "PR2228_PRIOR_STAGED_251_10SKIP_47; INTEGRATED_424_3SKIP_58",
       "tested_android": "HISTORICAL_FAIL_ISSUE_1904",
-      "active": "NOT_ACCEPTED_NO_NATIVE_MODEL_OR_REDM I_PROOF",
+      "active": "NOT_ACCEPTED_NO_NATIVE_MODEL_OR_REDMI_PROOF",
       "evidence": "The staged B1/B2 offer-selection → C4/Focal → C3 source-span path is synthetic. No native offer-quality, mutual peer re-entry, correct Redmi 2+2, 20-turn quality, latency or RSS acceptance. P0 #1904 remains open."
     },
     {
@@ -336,7 +336,7 @@
       "wired": "SYNTHETIC_C4_SOURCE_SPAN; NO_ACCEPTED_AUDIO_OR_C5_NORMAL_RUNTIME_CONSUMER",
       "tested_synthetic": "PR2242_HEAD_3DC8_9_PASS_4_FAIL; PY314_STARTUP_AND_STAGED_RUNTIME_FAIL_ON_STAGER_PIN; MIGRATION_PARTIAL",
       "tested_android": "HISTORICAL_FAIL_ISSUE_1904",
-      "active": "NO_REDM I_ACCEPTANCE",
+      "active": "NO_REDMI_ACCEPTANCE",
       "evidence": "The previous C4 source-span heuristic is in the pinned stage at f279. Core #2242 has an exact arithmetic/audio candidate, but `runtime_deploy.STAGER_SHA256` still pins the old stage builder; three staged tests lack the mandatory arithmetic-overlay fixture; migration returns PARTIAL. No correct Redmi 2+2 or native C3 acceptance."
     },
     {
