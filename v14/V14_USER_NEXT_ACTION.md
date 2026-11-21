@@ -781,3 +781,11 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 - The exact staged consumer pin chain was updated after CI caught stale hashes. The latest Python 3.13/3.14, staged and integrated runs were pending at last readback; no PASS is claimed until those complete.
 - Local full-suite testing remains blocked because there is no local Aii checkout and GitHub DNS could not resolve. GitHub Actions results are CI/Linux only. Redmi remains `REDMI_UNVERIFIED`; no native GGUF B1/B2/C3 weight update or Android installation is proven.
 - Next internal action: finish CI, inspect each seed's A/B utility and retention, and only keep the predictor-only arm experimental unless it passes the full matched acceptance. Then continue the T8→World/Self/Memory→B1/B2 receiver integration. No manual action is required from the user.
+
+
+### Latest JEPA handoff correction — 2026-11-21
+
+- Current PR head: `d7b5613dc3a3118a3c6a5856478c6e2a665db27c`; predictor-only code SHA: `ac92200699e2838d99ccd3dd7036debf2a755414`; runtime-deploy pin correction: `08a521b2b445af44b13ddd8c0a8ea25ae7652713`.
+- The staged source chain now also updates `runtime_deploy.py:STAGER_SHA256`, which had caused the old-phone-to-new-runtime migration and staged deployment tests to return `PARTIAL`. The new pin chain is readback-verified; exact CI is queued, not yet PASS.
+- A further measured retention gap is now tracked: the gate checks the prior aggregate holdout, not stable holdouts per session/cohort. The next code task is to preserve and test each historical cohort independently across A→B→A, with restart and rollback.
+- **No user action.** Do not run a Termux command, request a phone update, download/swap a model, or change learning permissions. Redmi remains `REDMI_UNVERIFIED`.
