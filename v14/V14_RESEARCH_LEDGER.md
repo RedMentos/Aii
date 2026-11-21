@@ -303,3 +303,29 @@ The merged #2155 adapter extracts heuristic pitch/voicing/energy/activity cues f
 - The inspected method summary describes content-based, uniform and hard replay. The reported matched-compute controls indicate that historical replay contributes beyond simply adding token exposure or replaying only the current batch; this remains a paper result, not a V14 reproduction.
 - Limitation: no V13/Android implementation, source-bound ActionOutcome provenance, native B1/B2 receiver proof or identified reusable implementation/weight license.
 - V14 consequence: keep uniform replay as the measured baseline and no-replay as an ablation. A future content/error-prioritized replay experiment must match update steps and memory/byte budget and use source/content-disjoint new/old holdouts, retention, restart and negative controls. No external code, weights or dependencies imported.
+
+
+
+## R-021 — Persistent optimizer state and action mean-delta baseline follow-up (2026-11-21)
+
+### JEPA-TTT: persistence is a hypothesis to reproduce, not an anti-forgetting result
+- **Primary sources:** JEPA-TTT paper, https://arxiv.org/abs/2610.00722 ; official project page, https://jepa-ttt.github.io/ (accessed 2026-11-21).
+- **Evidence reviewed:** full-paper ablation/limitations and the official project page. The paper reports a matched persistence control in which retaining predictor, optimizer and replay state across episodes outperforms per-episode reset in its evaluated continuous-control setting. The paper explicitly does not establish return to earlier dynamics, sequential multi-shift retention, or broad catastrophic-forgetting behavior. Its test-time setup freezes the visual encoder/reward head; that is not a V14 architecture decision.
+- **V14 code status:** Boss PR #2179 at exact head 68ba0ee703b872f5dd2e0d9e0ae940343284a05f carries Adam main/bootstrap moments, inverse-dynamics optimizer state and RNG through the staged numeric WorldJEPA checkpoint. The Runtime worker regression verifies checkpoint readback/restart/rollback. This is staged candidate evidence only; the base source tree and release are not yet promoted.
+- **Ablation design:** PR #2186 clones the same DB, source blobs and initial checkpoint into persistent and moment-reset arms. Both process the same 288-row source/digest-disjoint T8 cohort with equal steps and uniform replay. The reset control zeros Adam m/v but retains the global step/bias-correction clock. It is deliberately labelled a moment-reset control, not a full optimizer reset. The next experiment must include A→B→A return-to-old retention and no-replay/replay controls.
+
+### Action-conditioned latent mean-delta baseline
+- **Hypothesis:** the nonlinear JEPA predictor should be compared against a simpler per-action mean latent shift, not only shuffled/zero-action controls. On the same split, estimate mean z_(t+1)-z_t for each action from training rows only; apply z_t + mean_delta(action) to held-out rows. Use online encoder z_t and EMA target z_(t+1) so the metric is in the same latent space as the JEPA prediction loss.
+- **Implementation candidate:** PR #2186 adds this diagnostic to the Store-backed WorldJEPA consumer before and after each update and on utility-gate rejection. It does not gate learning or confer authority. A deterministic exact-zero test and unsupported-action negative control pass in an isolated Linux reproduction; full repository CI is pending.
+- **Interpretation:** if JEPA does not beat this baseline, the additional predictor complexity has not demonstrated predictive utility on that cohort. Keep the result diagnostic until repeated seeds/cohorts, source-disjoint retention and delayed outcomes are measured. Do not promote the predictor based on training loss alone.
+
+### ER-JEPA: replay-selection follow-up
+- **Primary source:** ER-JEPA, https://arxiv.org/abs/2609.36952 (accessed 2026-11-21).
+- **Evidence reviewed:** full-text method/evaluation summary describes content-based, uniform and hard replay over stored input/target pairs. This supports testing replay selection under matched compute and memory, but it is a paper result from its evaluated LLM/LoRA setting, not an Android or numeric T8 result.
+- **Reuse/license:** no official reusable implementation, model-weight artifact or license was verified in this scan; no code, weights or dependency imported.
+- **V14 experiment:** retain uniform replay as the current baseline and no-replay as a control. Add content-similarity and prediction-error/hard replay only with equal checkpoint bytes, replay bytes and optimizer steps; preserve source/content-disjoint new/old holdouts, retention, restart, rollback, shuffled-action and zero-action controls.
+
+### Evidence boundary and next step
+- Exact parent Runtime/JEPA candidate #2179: staged-runtime and integrated-regression PASS on run 44889906551; combined JEPA PASS on 44889906527; runtime-deploy integrity PASS on 44889906653; safe-additive gate FAIL on 44889906635 and remains a manual-review blocker.
+- PR #2186 exact staged/integrated CI was queued at the time of this entry. Local full Aii checkout remains blocked by GitHub DNS; Redmi remains REDMI_UNVERIFIED. No native GGUF body weights, model swaps or device permissions changed.
+- Next: read exact #2186 CI output; if the moment-reset control is valid, run A→B→A retention and then matched content/error-prioritized replay. If the mean-delta baseline matches or beats JEPA, keep the predictor in SHADOW and investigate representation/target choice rather than lowering the utility gate.
