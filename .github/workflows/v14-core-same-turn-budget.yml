@@ -1,0 +1,39 @@
+name: V14 Core same-turn body budget
+
+on:
+  push:
+    branches:
+      - core/v14-same-turn-budget-admission-20261122
+    paths:
+      - v13/code/v13/native_turn_budget.py
+      - v13/code/tests/test_native_turn_budget.py
+      - .github/workflows/v14-core-same-turn-budget.yml
+  pull_request:
+    branches:
+      - boss/v14-core-perception-store-audio-integration-20261121
+    paths:
+      - v13/code/v13/native_turn_budget.py
+      - v13/code/tests/test_native_turn_budget.py
+      - .github/workflows/v14-core-same-turn-budget.yml
+
+jobs:
+  same-turn-budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install test dependencies
+        run: python -m pip install --upgrade pytest==9.2.0 numpy==2.2.6 psutil PyYAML
+      - name: Compile exact budget consumer and tests
+        working-directory: v13/code
+        run: python -m py_compile v13/native_turn_budget.py tests/test_native_turn_budget.py
+      - name: Test budget policy and real Cognition.offer admission boundary
+        working-directory: v13/code
+        run: python -m pytest -q tests/test_native_turn_budget.py
