@@ -80,13 +80,21 @@ final class CompanionDb extends SQLiteOpenHelper {
         return out;
     }
 
-    synchronized void finish(String actionId, String status, String receiptJson) {
+    synchronized boolean claimForExecution(String actionId) {
+        ContentValues values = new ContentValues();
+        values.put("status", "EXECUTING");
+        int changed = getWritableDatabase().update("actions", values,
+                "action_id=? AND status='PENDING_USER_APPROVAL'", new String[]{actionId});
+        return changed == 1;
+    }
+
+    synchronized void finish(String actionId, String expectedStatus, String status, String receiptJson) {
         ContentValues values = new ContentValues();
         values.put("status", status);
         values.put("receipt_json", receiptJson);
         int changed = getWritableDatabase().update("actions", values,
-                "action_id=? AND status='PENDING_USER_APPROVAL'", new String[]{actionId});
-        if (changed != 1) throw new IllegalStateException("action is no longer pending");
+                "action_id=? AND status=?", new String[]{actionId, expectedStatus});
+        if (changed != 1) throw new IllegalStateException("action is no longer in expected state");
     }
 
     synchronized boolean cancel(String actionId) {
