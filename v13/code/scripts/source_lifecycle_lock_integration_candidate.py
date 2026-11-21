@@ -5,24 +5,25 @@ from pathlib import Path
 
 PINS = {
     'archive.py': 'adbdd844c2275d527a689eda789a3f247759967677e573b92bf7af7ad68404bf',
-    'store.py': 'fe66f92533b20738b5ec384e9d7c0b5ac8b4b4f658c6c1ad23792d813ff29980',
+    'store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
     'common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
     'memory.py': '391668fff0b4ad3d7c36d5d7a9823055ff74821c10f71b945e87edaa62597484',
     'vision.py': '758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5',
-    'archive_reader_guard_candidate.py': '8771f937ed58dc010ebdf42ab8efcacf3e4c86875eb89609d2118d51d3cea6fb',
-    'archive_stream_range_candidate.py': 'e869eaa278bf567463f7f4bbf41b2b5f5bae51c52f7034c2edcd9250d4f917e8',
+    'archive_reader_guard_candidate.py': '84c06a9f5c0b6054f836615023822ff577984d3efe9ddfb07cae569ec124f438',
+    'archive_stream_range_candidate.py': 'd2d021adcc844c1f321312cbfa60a4affb0a6b7fddc09e41a234cdf83f1eec98',
     'source_lifecycle_candidate.py': '3ace74b802d3e3e7340eabcccb03275d348deae2297fe8a1b4d2e1eab17d62b0',
 }
-GUARD_SCRIPT_SHA = 'a825149f711dead291890458a30c014652cfed26a8dbe85c60ea350e86a83a72'
+GUARD_SCRIPT_SHA = '69a20b1c9e10882f80086c0620e8f87575c4559e7113ed19fd53002330be8747'
 OLD_ARCHIVE_INTEGRATED_SHA = '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'
 
-STORE_OLD = b'''        if not p.exists():atomic_write(p,b)
-        with self.tx() as c:c.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,0)",(sid,h,kind,len(b),len(text),now()))
+STORE_OLD = b'''        with self.mutex:
+            if not p.exists():atomic_write(p,b)
+            with self.tx() as c:c.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,0)",(sid,h,kind,len(b),len(text),now()))
 '''
-STORE_NEW = b'''        with self.tx() as c:
+STORE_NEW = b'''        with self.mutex:
             from .source_lifecycle_candidate import verify_or_create_blob
             verify_or_create_blob(p,b,h)
-            c.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,0)",(sid,h,kind,len(b),len(text),now()))
+            with self.tx() as c:c.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,0)",(sid,h,kind,len(b),len(text),now()))
 '''
 RECOVER_OLD = b'''    def _recover(self):
         with self.tx() as c:

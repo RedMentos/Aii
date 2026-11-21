@@ -8,7 +8,7 @@ on:
       - gpt6/v13-private-remote-bridge-20261111
     # A specialist may publish a Draft before this workflow exists; when
     # it becomes ready the new modules/tests must still receive exact-head CI.
-    types: [opened, synchronize, reopened, ready_for_review, edited]
+    types: [opened, synchronize, reopened, ready_for_review, edited, labeled]
     paths:
       - 'v13/code/v13/**'
       - 'v13/code/tests/**'
@@ -18,6 +18,11 @@ permissions:
 
 jobs:
   validate-additive:
+    # This strict 2..30-file ADD-only harness is for explicitly designated
+    # inert specialist candidates, not broad Boss integration PRs that modify
+    # reviewed runtime/builders. Such integration PRs receive the full staged,
+    # runtime, security and manual protected-file review instead.
+    if: startsWith(github.head_ref, 'v13-additive/') || contains(github.event.pull_request.labels.*.name, 'v13-additive-candidate')
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:

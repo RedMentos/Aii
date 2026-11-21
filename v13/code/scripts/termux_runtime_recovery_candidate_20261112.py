@@ -8,10 +8,10 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': 'ac6986cd4d719e4f3d75bd42ec3a2c4314afbabac76adbf9fc86b0dc1e661ebd',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': '5ababdcb3faecae4fb3847ae3281b691e302b63f678c3e7e45675220f0e7ae82',
     'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
-    'scripts/termux_chat_recovery_candidate_20261112.py': 'e0885ebc04ae16826f2a8d5cc3210ddc2f76d1ef40d22824190deaafaa13ffa8',
-    'scripts/termux_idle_recovery_candidate_20261112.py': '97887387b927f9e30a06b9883253e9b866b5c579da97cfbb4f24788d1102817f',
+    'scripts/termux_chat_recovery_candidate_20261112.py': 'befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7',
+    'scripts/termux_idle_recovery_candidate_20261112.py': '2cc656b102b9950fdb9cb81970708692573189995218bff8a18f95ff01fa97d7',
 }
 
 
@@ -43,7 +43,7 @@ def build_sources(code_dir, *, include_postcommit=True):
                       '72bf8a829a7de064e7703271228bcdf02632108418c41c571126fbd8c05d5567')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
-                              'c65d6ac26c72dbd7c9563cca3dfc165d6336320624f5a6083bc7b707dbc7c1b3')
+                              'b568613863fef6a687a3237d089b91d8b612ce4163ccb5795df9e21af51c1489')
     result = arithmetic_outcome.apply_sources(code_dir, result)
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
                      '44216ae22cc92e638ca36b71a9e62f95b130cf21ce0c2b550a6ecdc3ccca9a94')
@@ -65,10 +65,25 @@ def build_sources(code_dir, *, include_postcommit=True):
     if hashlib.sha256(context).hexdigest() != 'e4962d932294490b8f4b63a79115212a7000285290444484ec3bf7e50b243cad':
         raise ValueError('Integrated ContextOS output changed')
     recall = result['v13/context_source_recall_candidate.py']
-    if hashlib.sha256(recall).hexdigest() != '7f73ec6c4a15e6790a40e7f94d4a0bc5f2fba63bfc23c9368286aa2d83457d7c':
-        raise ValueError('Integrated source recall changed')
+
+    def recall_pin(raw, name):
+        needle = b"    '" + name.encode('ascii') + b"': '"
+        if raw.count(needle) != 1:
+            raise ValueError('Integrated source recall pin ambiguous: ' + name)
+        start = raw.index(needle) + len(needle)
+        value = raw[start:start + 64]
+        if (len(value) != 64 or raw[start + 64:start + 65] != b"'"
+                or any(char not in b"0123456789abcdef" for char in value)):
+            raise ValueError('Integrated source recall pin malformed: ' + name)
+        return value.decode('ascii')
+
+    if recall_pin(recall, 'store.py') != hashlib.sha256(result['v13/store.py']).hexdigest():
+        raise ValueError('Integrated source recall Store binding changed')
+    if recall_pin(recall, 'archive_stream_range_candidate.py') != hashlib.sha256(
+            result['v13/archive_stream_range_candidate.py']).hexdigest():
+        raise ValueError('Integrated source recall stream binding changed')
     old_pin = b'a35966dbe77a603470d73285eac9c8087163d8cf675a1b8516e3b9f38b267232'
-    if recall.count(old_pin) != 1:
+    if recall_pin(recall, 'context_os.py').encode('ascii') != old_pin:
         raise ValueError('Integrated source recall ContextOS pin changed')
     result['v13/context_os.py'] = context
     result['v13/context_source_recall_candidate.py'] = recall.replace(
@@ -125,7 +140,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             '01e034e478eea9d7ec6c034adaa313e7e0b2e9bccaf21712671b0b3546cccfab')
+                             'bfcf25e8ffb4996aaae97f000c9d7086ac5530b064ed9979ee952c8250852004')
         result = control_guard.apply_sources(code_dir, result)
         # Feature Age belongs to the final deployed stage. The partial
         # pre-postcommit builder must retain its earlier exact Runtime hash.
