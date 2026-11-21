@@ -696,6 +696,9 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
             assert metrics.get("current_guard_split_content_disjoint") is True
             assert metrics.get("current_guard_gate_accepted") is True
         assert metrics.get("optimizer_moments_persisted") is True
+        if metrics.get("prior_selected_update_scale") is not None:
+            assert float(metrics["selected_update_scale"]) <= float(metrics["update_scale_cap"])
+            assert float(metrics["update_scale_cap"]) <= 0.25
         checkpoint = home / "world_jepa" / after["active"]["checkpoint"]
         audit = world_jepa_optimizer_audit.audit_checkpoint(
             checkpoint,
@@ -792,6 +795,8 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         "optimizer_state_bootstrapped": metrics.get("optimizer_state_bootstrapped"),
         "update_scale": metrics.get("update_scale"),
         "selected_update_scale": metrics.get("selected_update_scale"),
+        "update_scale_cap": metrics.get("update_scale_cap"),
+        "prior_selected_update_scale": metrics.get("prior_selected_update_scale"),
         "backtracking_trace": metrics.get("backtracking_trace"),
         "holdout_improved": metrics.get("holdout_improved"),
         "utility_gate_accepted": result.get("utility_gate_accepted"),
@@ -1189,7 +1194,8 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         "status", "retention_gate_accepted", "old_holdout_retained",
         "old_holdout_cohort_retained", "old_holdout_retention_delta",
         "old_holdout_cohort_gate", "checkpoint_before", "checkpoint_after",
-        "update_scale", "selected_update_scale", "new_holdout_improved", "gradient_projection",
+        "update_scale", "selected_update_scale", "update_scale_cap",
+        "prior_selected_update_scale", "new_holdout_improved", "gradient_projection",
         "guard_gate_accepted", "current_guard_gate_accepted",
         "new_guard_rows", "new_guard_cohort_gate",
         "old_guard_cohort_gate", "backtracking_selection_fold",

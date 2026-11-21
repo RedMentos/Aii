@@ -1567,9 +1567,39 @@ class WorldJEPAStoreConsumer:
             # deterministic trust-region ladder. Guard rows select the scale;
             # final holdouts are evaluated only once and never select a retry.
             # This keeps Android cost bounded to one optimizer pass per candidate.
-            update_scales = ([1.0] if active is None else
-                             [1.0, 0.5, 0.25, 0.125, 0.0625, 0.03125,
-                              0.015625, 0.0078125, 0.00390625])
+            base_update_scales = ([1.0] if active is None else
+                                  [1.0, 0.5, 0.25, 0.125, 0.0625, 0.03125,
+                                   0.015625, 0.0078125, 0.00390625])
+            previous_scale_value = (
+                active.get("metrics", {}).get("selected_update_scale")
+                if active is not None and isinstance(active.get("metrics"), dict)
+                else None
+            )
+            previous_selected_scale = (
+                float(previous_scale_value)
+                if type(previous_scale_value) in (int, float)
+                and math.isfinite(float(previous_scale_value))
+                and 0.0 < float(previous_scale_value) <= 1.0
+                else None
+            )
+            update_scale_cap = (
+                1.0 if active is None
+                else min(0.25, max(0.015625, (previous_selected_scale or 0.0625) * 4.0))
+            )
+            update_scales = [
+                scale for scale in base_update_scales if scale <= update_scale_cap
+            ]
+            if not update_scales:
+                update_scales = [min(base_update_scales)]
+            replay_metrics.update({
+                "prior_selected_update_scale": previous_selected_scale,
+                "update_scale_cap": float(update_scale_cap),
+                "update_scale_cap_policy": (
+                    "INITIAL_FULL_STEP" if active is None
+                    else "MIN_0.25_MAX_4X_PREVIOUS_ACCEPTED_SCALE"
+                ),
+                "update_scale_schedule": list(update_scales),
+            })
             attempts = []
             selected_scale = None
             candidate = model
@@ -1860,9 +1890,7 @@ class WorldJEPAStoreConsumer:
             ]
             if set(checkpoint_train_ids) | set(checkpoint_holdout_ids) != checkpoint_ids:
                 raise ValueError("checkpoint rows are not covered by the source-disjoint split")
-            receiver_train_rows = [
-                row for row in train_rows if row["action_id"] not in new_guard_ids
-            ]
+            receiver_train_rows = list(new_fit_rows) + list(old_fit_rows)
             receiver_heads, receiver_metrics = _fit_role_receivers(
                 model, _arrays(receiver_train_rows), holdout,
                 receiver_train_rows, holdout_rows,
