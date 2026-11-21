@@ -336,18 +336,18 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX_ALGORITHM_ONLY_PASS / GITHUB_CI_FAIL_44958073016_AND_44958072992 / REDMI_UNVERIFIED",
-      "next_step": "#2275 focused 3.13/3.14 both fail 920 ms vs 800; staged/integrated fails audio_voice_cues pin. Keep optional speaker model/NumPy OFF; repair frame-age expectation and exact pin chain.",
+      "proof_environment": "LOCAL_LINUX_ALGORITHM_ONLY_PASS / GITHUB_CI_RAW_EAR_3.13_3.14_PASS / STAGED_RUNTIME_FAIL / INTEGRATED_REGRESSION_FAIL / REDMI_UNVERIFIED",
+      "next_step": "Core refreshes integrated_audio_context_candidate_20261121.py SOURCE_BLOBS['v13/audio_voice_cues.py'] from b62442c6e740d136982b2bc8080cef6227ba266f to 94aa6931fad702ccec4b1f7494758034a1bf5942, then recomputes termux_runtime_recovery_candidate_20261121.py AUDIO_BUILDER_BLOB_SHA1, stage_integrated_candidate.py BUILDER_SHA, runtime_deploy.py STAGER_SHA256 and dependent test pins. Rerun exact staged/integrated suites. Keep optional NumPy and speaker model OFF; no Redmi proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T23:06:00Z",
+      "last_checkpoint": "2026-11-21T23:19:57.541Z",
       "latest_candidate_pr": {
         "pr": 2275,
-        "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
-        "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
-        "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
-        "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
+        "head_sha": "bb07ef4e8e46b9c16c4f18a4b2f0db01dafe7a01",
+        "base_sha": "9922cf86ecf8801d30a46a1e98817e5c6c1db092",
+        "tested_code_sha": "10d1f54540fd3f225f3ac905e2841dd15f545ed4",
+        "ci": "RAW_EAR_3.13_3.14_PASS; OFFLINE_SECURITY_PASS; STAGED_RUNTIME_FAIL_44960843977; INTEGRATED_REGRESSION_FAIL_44960843977"
       },
-      "proof": "The pre-batch snapshot algorithm passed a local CPython 3.13.5 x86_64 algorithm-only reproduction, but current exact CI fails: reference_age_ms 920 vs expected 800; staged/integrated rejects the changed audio_voice_cues blob and migration becomes PARTIAL. No full Aii local test, microphone/model/Redmi test or identity inference."
+      "proof": "The same-batch look-back contamination is fixed by snapshotting pre-batch history. LOCAL_LINUX CPython 3.13.5 algorithm-only reproduction PASS (1s/2s batch invariance; old algorithm negative control reproduces false negative). Exact RAW EAR focused CI on 10d1f545: Python 3.13 and 3.14 PASS; offline bridge security PASS. Staged Runtime 44960843977 FAILS (16 failed, 234 passed, 10 skipped, 2 errors, 47 subtests) and integrated regression FAILS before selected tests; both reject the changed audio_voice_cues blob because Core's composer pins b62442c6e740d136982b2bc8080cef6227ba266f while #2275 has 94aa6931fad702ccec4b1f7494758034a1bf5942. Migration remains PARTIAL because staging cannot be built. This is a fail-closed composition blocker, not a reason to relax hashes. No full local Aii checkout, real encoder, microphone, Android/Termux or Redmi proof; no identity inference."
     }
   ],
   "current_redmi_status": "REDMI_UNVERIFIED — private PIPELINE_STATUS request #443 has no authenticated reply. Installed SHA and updater consent UNKNOWN; no LOG_PAGE, UPDATE_REQUEST, remote shell or device mutation.",
