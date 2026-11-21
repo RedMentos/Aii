@@ -77,3 +77,9 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 ## Canon scope addition — Android control and full voice path
 
 The live V14 work board now has V14-009 for the previously implicit but mandatory Android-agent/voice acceptance path. It covers API-first permitted app control, separately consented Accessibility/MediaProjection observation, action audit/cancel/revocation, native microphone/raw-ear features and speech output separated from C3 planning. It remains `NOT_RUN`; no Android UI-control or microphone success is inferred from the synthetic PCM adapter.
+
+## Additional whole-Canon lanes made explicit on the V14 board
+
+- **V14-010 — Cross-organ self-optimization and controlled self-edit:** future numeric target-weight changes, measured holdout/retention/rollback and sandboxed human-approved code/structure edits. No production weight or privilege change is claimed.
+- **V14-011 — Sleep, Dream, Replay and source-bound consolidation:** idempotent restart-safe replay, observed-vs-generated provenance, slow EMA, retention/ablation and rollback. Dream samples do not become truth or tool authority.
+Both are `READY / NOT_RUN` work packages; they preserve these Canon requirements as visible work rather than implying implementation.
