@@ -848,6 +848,24 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         and item["stable_drift_control"] is True
         and item["replay_projection"] is True
     ]
+    print("A_GEM_RETENTION_DIAGNOSTIC=" + json.dumps([
+        {
+            "seed": item["data_seed"],
+            "B": {key: item["B"].get(key) for key in (
+                "status", "retention_gate_accepted", "old_holdout_retained",
+                "old_holdout_cohort_retained", "old_holdout_retention_delta",
+                "old_holdout_cohort_gate", "checkpoint_before", "checkpoint_after",
+                "update_scale", "new_holdout_improved",
+            )},
+            "A2": {key: item["A2"].get(key) for key in (
+                "status", "retention_gate_accepted", "old_holdout_retained",
+                "old_holdout_cohort_retained", "old_holdout_retention_delta",
+                "old_holdout_cohort_gate", "checkpoint_before", "checkpoint_after",
+                "update_scale", "new_holdout_improved",
+            )},
+        }
+        for item in projected_reports
+    ], sort_keys=True))
     assert any(
         phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         for item in projected_reports for phase in (item["B"], item["A2"])
