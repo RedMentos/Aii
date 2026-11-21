@@ -551,13 +551,19 @@ class A5UIRuntimeAdapter:
                     or grant.source_id not in subscriptions):
                 raise PermissionError("UI context lease is stale, revoked, or not bound to this turn")
             allowed_sources.add(grant.source_id)
-        return tuple(
-            packet for packet in self.runtime._a5_ui_context_cache.values()
-            if packet.get("source_id") in allowed_sources
-            and packet.get("event_id") == event_id
-            and packet.get("modality") == "ui"
-            and packet.get("finality") == "FINAL"
-        )
+        packets = []
+        for item in self.runtime._a5_ui_context_cache.values():
+            source_ref = item.get("source_ref")
+            if (
+                isinstance(source_ref, dict)
+                and source_ref.get("source_id") in allowed_sources
+                and item.get("event_id") == event_id
+                and item.get("brain_generation_id") == generation_id
+                and item.get("modality") == "ui"
+                and item.get("finality") == "FINAL"
+            ):
+                packets.append(item)
+        return tuple(packets)
 
     def revoke(self, source_id):
         return revoke_ui_observation(self.runtime, source_id)

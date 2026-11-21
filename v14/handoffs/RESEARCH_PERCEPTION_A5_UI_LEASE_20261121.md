@@ -27,7 +27,7 @@
 - LOCAL_LINUX / CPython 3.13.5: isolated bridge py_compile PASS.
 - LOCAL_LINUX / CPython 3.13.5: isolated harness 14/14 PASS with a synthetic SQLite Store and fake A4/provider. Covered source/generation/receipt/thread binding, provisional exclusion, Android API scope rules, non-reentrant revocation race, packet/source/cache/blob cleanup, and raw-field/authority rejection.
 - The isolated harness is not the full Aii repository test suite. The added repository-level unittest has not yet run locally because no complete checkout is mounted in this execution environment.
-- CI: no exact-head PR workflow result is available for #2246. Do not promote CI to PASS.
+- Exact PR-head CI on `ad0d6a3b1f4935b22677c6f9c521ec97e099deec`, run `44940487917`: `py_compile` PASS on Python 3.13.18/3.14.10; A5 UI lease tests FAIL 3 / PASS 12 / 5 subtests on both versions; staged-runtime PASS; integrated-regression was IN_PROGRESS at the last read. The failing tests and adapter source-ref bug are recorded in R-043. Corrective rerun is pending.
 - Redmi/Android: REDMI_UNVERIFIED. No connected authorized phone, OS capture provider, AccessibilityService, NotificationListenerService or MediaProjection session was exercised.
 
 ## Actual consumer effect and limits
@@ -71,3 +71,13 @@ R-042 is a candidate only: use as an A4-triggered visual teacher, not an always-
 4. Boss: review the adapter/contract, update the shared board and V14_USER_NEXT_ACTION.md, and retarget #2246 to the integration branch after #2243 is accepted.
 
 No user action is needed now. Current installed Redmi SHA/updater status was not queried in this run; no update request or deployment was attempted.
+
+
+## Exact-head regression repair — 2026-11-21 20:25 CET
+
+- Reviewed failing CI logs from run `44940487917` on exact code head `ad0d6a3b1f4935b22677c6f9c521ec97e099deec`.
+- Fixed the actual context-readout defect: `PerceptPacket` has nested `source_ref.source_id`, not a top-level `source_id`; the adapter now checks nested source identity plus exact event and generation.
+- Fixed two test defects without weakening the API: the generation test now binds `grant`; tests pass the required live lease, keep provisional context empty, and assert lease-free reads fail closed. Added wrong-source and wrong-generation cache entries as negative controls.
+- Exact rerun after this patch is pending. The full local Aii checkout is not mounted and GitHub DNS fails in this worker, so no local repository-level PASS is claimed.
+- #2243 is merged at `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`; this PR is being synchronized to that current base and retargeted from the now-merged research stack to `gpt6/v13-private-remote-bridge-20261111`.
+- No OS capture provider, microphone, screenshot, model, permission, updater or Redmi operation was added or changed. REDMI_UNVERIFIED / NOT_RELEASED.

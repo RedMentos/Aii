@@ -590,3 +590,29 @@ These are current official API references reviewed on 2026-11-21, not research p
 - Compare against MobileVLM V2 only after the same-device measurement; its 1.7B Q4 model+projector is about 961 MB on disk and its published Android reference is Snapdragon 778G, not the Redmi 732G.
 
 **Status:** PAPER_FULLTEXT_REVIEWED / MODEL_CARD_AND_BASE_LICENSES_REVIEWED / GGUF_REVISION_AND_FILE_SIZES_VERIFIED / LLAMA_CPP_ANDROID_PATH_DOCUMENTED_NOT_RUN / CANDIDATE_ONLY / NO_DOWNLOAD / NO_MODEL_CHANGE / REDMI_UNVERIFIED.
+
+
+## R-043 — A5 UI Runtime context readout source binding and lease regression (2026-11-21)
+
+### Exact-head failure reviewed
+
+- PR #2246 code head `ad0d6a3b1f4935b22677c6f9c521ec97e099deec`, GitHub Actions run `44940487917`, failed the same three tests on CPython 3.13.18 and 3.14.10: 12 passed, 3 failed, 5 subtests passed in each job. `py_compile` passed on both versions; staged Runtime passed; integrated regression was still in progress at review time.
+- Root cause 1 (real adapter defect): `PerceptPacket` in `v13/code/v13/contracts.py` stores its source identity in nested `source_ref.source_id`; it has no top-level `source_id`. `A5UIRuntimeAdapter.context()` filtered on `packet.get("source_id")`, so every valid cached packet was silently excluded.
+- Root cause 2 (test defect): the different-generation test used `grant` without binding it in the context manager.
+- Root cause 3 (test/API mismatch): two tests called `context()` without the required lease argument, contradicting the method's fail-closed contract. The API must not become permissive merely to satisfy those tests.
+
+### Corrective change
+
+- Context readout now resolves `source_ref.source_id`, checks the current `event_id` and `brain_generation_id`, and still requires the live thread-bound lease(s), FINAL state and UI modality.
+- Regressions now bind the lease variable correctly, test source-ref and generation spoofing as negative controls, assert provisional packets remain unavailable even with a valid lease, and assert lease-free reads raise `PermissionError`.
+- No Android provider, capture, screenshot, AccessibilityService, MediaProjection, notification reader, action executor or B1/B2/C3 turn hookup was added. This remains a synthetic-provider adapter path.
+
+### Verification boundary
+
+- Exact failing CI evidence is reproducible from run `44940487917` on Python 3.13/3.14; the corrective head's new CI result is pending and must be read before promotion.
+- This worker has no mounted full Aii checkout and GitHub DNS resolution fails, so the full repository test cannot be run locally here. Any standalone logic check is synthetic and is not a substitute.
+- `REDMI_UNVERIFIED` / `NOT_RELEASED`; no model, weight, permission, updater, app or user data changed.
+
+### Next integration
+
+Core must provide an authenticated Android observe_ui receipt provider and retain the lease through the actual active turn and all downstream reads/generation. QA must verify provider revoke-request cancellation and post-lock cleanup through the complete consumer chain. Research/Perception owns this adapter contract and will only add real screen features after that provider exists.

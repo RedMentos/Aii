@@ -146,8 +146,18 @@ class A5UIObservationLeaseTests(unittest.TestCase):
                 "api=33 clock=ELAPSED_REALTIME interval_ms=20"
             )
             self.assertEqual(self.store.read_source(result["source_ref"]), expected)
+            # Context is readable only while the matching lease is held.
             self.assertEqual(
-                self.adapter.context(self.event["event_id"]),
+                self.adapter.context(self.event["event_id"], grant),
+                (result["packet"],),
+            )
+            wrong_source = dict(result["packet"])
+            wrong_source["source_ref"] = dict(result["packet"]["source_ref"], source_id="src_ui_forged")
+            wrong_generation = dict(result["packet"], brain_generation_id="generation_other")
+            self.runtime._a5_ui_context_cache["forged_source"] = wrong_source
+            self.runtime._a5_ui_context_cache["forged_generation"] = wrong_generation
+            self.assertEqual(
+                self.adapter.context(self.event["event_id"], grant),
                 (result["packet"],),
             )
             segment = result["packet"]["segments"][0]
@@ -155,6 +165,8 @@ class A5UIObservationLeaseTests(unittest.TestCase):
             for forbidden in ("screenshot", "node_tree", "window_text", "package_name", "notification_text"):
                 self.assertNotIn(forbidden, result["packet"])
                 self.assertNotIn(forbidden, segment)
+        with self.assertRaises(PermissionError):
+            self.adapter.context(self.event["event_id"], ())
 
     def test_revocation_prelock_cancels_c3_then_postlock_tombstones(self):
         obs = observation()
@@ -199,7 +211,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
     def test_revocation_prelock_does_not_cancel_a_different_generation(self):
         obs = observation()
         self.runtime.cancel_event.clear()
-        with self.lease(obs):
+        with self.lease(obs) as grant:
             self.runtime.turn_event = dict(self.event, brain_generation_id="later_generation")
             self.assertFalse(grant.active_for(self.runtime, "gen_ui_lease_test"))
             revoker = threading.Thread(target=self.provider.revoke)
@@ -219,10 +231,12 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         obs = observation(finality="PROVISIONAL")
         with self.lease(obs) as grant:
             result = self.adapter.ingest(obs, grant)
+            self.assertEqual(self.adapter.context(self.event["event_id"], grant), ())
         self.assertEqual(result["admission"].status, "EMPTY_OR_UNAUTHORIZED")
         self.assertEqual(result["admission"].omitted, (obs["source_id"],))
         self.assertFalse(result["a4"]["requests"])
-        self.assertEqual(self.adapter.context(self.event["event_id"]), ())
+        with self.assertRaises(PermissionError):
+            self.adapter.context(self.event["event_id"], ())
         self.assertTrue(self.store.read_source(result["source_ref"]))
 
     def test_receipt_generation_and_runtime_binding_are_mandatory(self):

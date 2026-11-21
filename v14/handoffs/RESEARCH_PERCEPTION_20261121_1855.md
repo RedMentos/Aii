@@ -4,36 +4,32 @@
 
 - Draft PR: https://github.com/RedMentos/Aii/pull/2243
 - Branch: `research-perception/v14-dense-latent-kv-toy-20261121`
-- Exact branch/PR head: `0bb3adbfc064a32ebbcb61d49e8a65a2babf3e20`
-- Latest shared base readback: `1b01014d1038668498a747fee8a90d39f323f01d`
-- Latest normal two-parent sync commit: `0bb3adbfc064a32ebbcb61d49e8a65a2babf3e20` (parents: prior PR head `e8df851ac314d48864b55e368f973bbf644de767`, shared base `1b01014d1038668498a747fee8a90d39f323f01d`).
-- GitHub compare: ahead 17 / behind 0; mergeable=true; PR remains DRAFT.
-- Readback confirms `V14_WORK_BOARD.json`, `V14_LIVE_WORKPLAN.md`, and `V14_USER_NEXT_ACTION.md` are byte-identical to the latest shared base. Older overlapping edits from this branch were discarded; latest Boss-owned documents were preserved.
-- R-037 is appended to the latest shared research ledger; the active V14 master and historical V13 appendix remain untouched.
+- Exact tested PR head: `d7380cb4a3d5a1cdf7a2cbd124d39a09f05fa547`
+- Latest shared base: `0c9ede256e9a3bdafc728fe6be1b4bead8fe13bd`
+- Normal two-parent sync commit: `d7380cb4...` (parents: previous PR head `7b65bc25161876b620933b2e61f01ae002c736ab`, shared base `0c9ede256e9a3bdafc728fe6be1b4bead8fe13bd`).
+- GitHub compare: ahead 20 / behind 0; mergeable=true; PR remains DRAFT.
+- Readback confirms `V14_WORK_BOARD.json`, `V14_LIVE_WORKPLAN.md`, and `V14_USER_NEXT_ACTION.md` are byte-identical to the latest shared base. No Boss-owned document edits are present in this PR diff.
+- R-037 is appended to the latest shared research ledger. The active V14 master and historical V13 appendix are untouched.
 - Status: OPEN / DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.
 
 ## Boss-requested CI reproduction — complete
 
-The earlier green generic `model-lab` discovery did not recurse into `latent_cache_tiny/`. The workflow now has a separate `latent-cache-tiny` job that:
-
-1. Installs pinned test-only `numpy==2.3.5` and CPU `torch==2.10.0+cpu`.
-2. Verifies both exact package versions.
-3. Explicitly compiles `latent_cache_tiny.py` and `test_latent_cache_tiny.py`.
-4. Runs `python -m unittest -v` with the experiment folder as working directory.
-
-Exact PR-head checks for `ae26c94700ca8077b38cbd87c40db89b4ae46360`:
-- Actions run **44938520228** — `latent-cache-tiny` PASS; existing `model-lab` PASS.
-- Actions run **44938520229** — public privacy scan PASS.
-- Local YAML parse/structure check on the workflow — PASS.
-- The experiment code and tests themselves were unchanged by this workflow-only commit. The prior LOCAL_LINUX experiment evidence below is still tied to the same unchanged source/test blobs; the new exact-head Actions run independently executes them.
-- PyTorch and NumPy are BSD-3-Clause test-only CI dependencies. They are not product/runtime dependencies. No model weights, user data or training data were downloaded.
+- Exact current PR-head Actions run **44940036784** on `d7380cb4...` — PASS:
+  - `model-lab`: compile, candidate manifest validation, isolated safety/grading tests and public privacy scan all PASS.
+  - `latent-cache-tiny`: pinned CPU-only NumPy/PyTorch environment verification, compile and directed cross-geometry KV-cache regressions all PASS.
+- Previous exact PR head `7b65bc2516...` also passed both jobs in run **44939564635**.
+- The workflow concurrency group is scoped per PR/ref, preventing push and PR runs on different refs from cancelling each other.
+- Local YAML parse/structure check for the workflow — PASS.
+- Experiment source/test blobs are unchanged since the prior local 3/3 run; no model weights or user data were downloaded. Test-only CI dependencies are CPU NumPy/PyTorch.
+- Full local Aii checkout is unavailable in this execution environment, so no new full-repository LOCAL_LINUX run is claimed. Redmi remains unverified.
 
 ## Final base synchronization
 
-- Normal two-parent merge commit `e8df851ac314d48864b55e368f973bbf644de767` synchronized the PR with shared base `5a281b9ef06860ecc240b3188880d9d69559b496`.
-- A second normal two-parent merge commit `0bb3adbfc064a32ebbcb61d49e8a65a2babf3e20` synchronized with the newer shared base `1b01014d1038668498a747fee8a90d39f323f01d`.
-- Both updates used explicit expected prior heads and `force=false`; no force-push or destructive rewrite.
-- Latest readback shows the Boss-owned board, live workplan and user next-action files are byte-identical to the shared branch. The PR diff now contains only the experiment workflow, R-037 ledger entry, experiment files and this handoff.
+- Normal two-parent merge commit `e8df851ac314d48864b55e368f973bbf644de767` synchronized with shared base `5a281b9ef06860ecc240b3188880d9d69559b496`.
+- Normal two-parent merge commit `0bb3adbfc064a32ebbcb61d49e8a65a2babf3e20` synchronized with shared base `1b01014d1038668498a747fee8a90d39f323f01d`.
+- Latest normal two-parent merge commit `d7380cb4a3d5a1cdf7a2cbd124d39a09f05fa547` synchronized with shared base `0c9ede256e9a3bdafc728fe6be1b4bead8fe13bd`.
+- Every update used an explicit expected prior head and `force=false`; no force-push or destructive rewrite.
+- Latest readback confirms the Boss-owned board, live workplan and user next-action files are byte-identical to the shared branch. The PR diff contains only the experiment workflow, R-037 ledger entry, experiment files and this handoff.
 
 ## Branch and scope
 
