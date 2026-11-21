@@ -17,7 +17,7 @@ import shutil
 BASE_STAGER = "scripts/stage_integrated_candidate.py"
 BASE_STAGER_GIT_BLOB = "ea9d16902d7c19837e0734f23dd9f307912ef896"
 OVERLAY = "scripts/integrated_focal_scale_diversity_candidate_20261121.py"
-OVERLAY_GIT_BLOB = "9987525960ba0955dd2fd57d421e32f4b76b892c"
+OVERLAY_GIT_BLOB = "925eea5dde0c9ca3776a38c4c5492ced66694ca3"
 ARITHMETIC_OVERLAY = "scripts/integrated_arithmetic_guard_candidate_20261121.py"
 ARITHMETIC_OVERLAY_GIT_BLOB = "2428a07373ec42b8812836da2b8aacf0646b864f"
 
