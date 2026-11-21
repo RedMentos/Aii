@@ -1,3 +1,19 @@
+# Current user-facing handoff — 2026-11-21 16:51 CET
+
+**No user action is required. Do not run a manual Termux command, change installed models/weights, alter permissions/Age/updater settings, or mutate phone data.**
+
+- Current GitHub integration HEAD is f279286a4453248004c670fcaabecd85da6ab299; all 19 associated workflows are SUCCESS. Boss #2228 added the C4 source-span redundancy rule to the ordinary pinned staged Runtime, with staged 251/10/47 and integrated 424/3/58 on its PR head. The body runners are synthetic; no native B1/B2 or Redmi behavior is proven. Last code-bearing release remains 6c444e1dfdea19583002519a682fd64bca465098; no release/deployment is implied.
+- Perception PR #2226 is now based on f279286a4453248004c670fcaabecd85da6ab299, current PR head 2c09d30dec1ab01fe77f1f49de2ab99e4cd60a65; code-bearing commit 3868383b4ccac1b709d6310ed69bb53b9e924b47. It adds caller-supplied PCM16 RAW EAR → temporal evidence → A4 → C3 admission with a provider consent lease and accurate pitch/prosody unmeasured-field provenance. It is open, not merged/released, and does not open the microphone.
+- Rebased-head CI: RAW EAR 53 passed (Python 3.11/3.13); consent 29 passed; comparator 8/8 (3.13/3.14) plus Linux libfvad 13 PASS per job; privacy PASS; staged 251 passed/10 skipped/47 subtests; integrated 424 passed/3 skipped/58 subtests. Strict safe-additive failed because the PR changes existing workflows/shared V14 docs; no bypass. Boss/QA review is required.
+- Local full Aii suite remains BLOCKED by GitHub DNS. GitHub CI is not local or Android proof. No microphone, native C3 inference, Android/Bionic or Redmi test is claimed.
+- Core #2200/#2211 still need to use the yielded lease without re-entering the provider lock, tombstone/delete derived audio context, clear process-local context, and hold/reacquire the provider lease through final C3 generation. Until then this is a producer candidate, not end-to-end voice chat.
+- P0 #1904 remains OPEN. A historical user comment reports one visible answer on release 38846cb but wrong 2+2 and no independently confirmed B1/B2 contribution; it is not current installation evidence. Latest private V13OBS #115 found is dated 2026-11-18 and still records B1/B2 native failures, zero valid offers and C3 TTFT 41.5–63.7 s. Installed SHA and updater consent remain UNKNOWN: **REDMI_UNVERIFIED**.
+- FD-VAD and S4VAD remain research only. FD-VAD TurnBench uses a 1-second Silero silence gate and has 1,019 ms median commit latency; its separate 190 ms point is not the same operating point. No model/dependency/weight was downloaded or changed.
+
+**Next internal step:** QA independently reviews #2226; Core repairs the downstream audio-context consumer/revocation chain. **No user action is needed.**
+
+---
+
 # Current user-facing handoff — 2026-11-21 16:41 CET
 
 **No user action is required. Do not run a manual Termux command, change installed models/weights, alter permissions/Age/updater settings, or mutate phone data.**

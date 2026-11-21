@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T15:41:00Z",
+  "updated_at": "2026-11-21T15:51:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -159,17 +159,18 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Current integration HEAD f279286a4453248004c670fcaabecd85da6ab299 includes #2228 C4 source-span rule in normal pinned staged Runtime (PR-head staged 251/10/47, integrated 424/3/58; synthetic body runners). PR #2226 code head 3868383b4ccac1b709d6310ed69bb53b9e924b47; producer source blob 9cae3b93388ea2c488e5af37a544ed0df5727f07; test blob 6da1844a27c1a89affaa1b69d176ff9428dc7daf. Packet-provenance regression: silence/no F0 marks pitch+prosody unmeasured; one voiced frame marks pitch measured/prosody unmeasured; multi-frame voiced marks both measured. GitHub Actions: RAW EAR/temporal/Silero/A4→C3 53 passed on CPython 3.11/3.13 (44920019796); consent preflight/revocation/non-reentrant 29 passed (44920019816); comparator 8/8 on 3.13/3.14 and pinned Linux libfvad 13 PASS per job (44920019777); privacy PASS (44920019761); staged 249 passed/10 skipped/47 subtests and integrated 424 passed/3 skipped/58 subtests (44920019773). Local full Aii suite BLOCKED by GitHub DNS; no local full-suite PASS, no microphone or Redmi proof.",
-      "next_step": "QA independently reviews #2226. Core rebases #2200/#2211 onto current C4 integration and consumes the yielded lease authorization without re-entering consent_check; derived AUDIO_ACOUSTIC_CONTEXT must be tombstoned/deleted on revocation, process-local _audio_contexts cleared, and consent rechecked immediately before native C3 generation. Keep caller-PCM-only status; no microphone/Redmi/native C3 claim.",
+      "proof_environment": "Current integration HEAD f279286a4453248004c670fcaabecd85da6ab299 includes #2228 C4 source-span rule in normal pinned staged Runtime (PR-head staged 251/10/47, integrated 424/3/58; synthetic body runners). PR #2226 rebased head 2c09d30dec1ab01fe77f1f49de2ab99e4cd60a65, code head 3868383b4ccac1b709d6310ed69bb53b9e924b47; producer source blob 9cae3b93388ea2c488e5af37a544ed0df5727f07; test blob 6da1844a27c1a89affaa1b69d176ff9428dc7daf. Packet-provenance regression: silence/no F0 marks pitch+prosody unmeasured; one voiced frame marks pitch measured/prosody unmeasured; multi-frame voiced marks both. Rebased-head GitHub Actions: RAW EAR 53 passed on CPython 3.11/3.13 (44920992137); consent 29 passed (44920992201); comparator 8/8 on 3.13/3.14 and pinned Linux libfvad 13 PASS per job (44920992088); privacy PASS (44920992150); staged 251 passed/10 skipped/47 subtests and integrated 424 passed/3 skipped/58 subtests (44920992063); integration check PASS (44921146124). Safe-additive failed on existing workflow/shared-doc paths (44921045681); no bypass. Local full Aii suite BLOCKED by GitHub DNS; no microphone or Redmi proof.",
+      "next_step": "QA independently reviews #2226. Core rebases #2200/#2211 onto current C4 integration and consumes yielded lease authorization without re-entering consent_check; derived AUDIO_ACOUSTIC_CONTEXT must be tombstoned/deleted on revocation, process-local _audio_contexts cleared, and the provider lease held/reacquired through final native C3 generation. Keep caller-PCM-only status; no microphone/Redmi/native C3 claim.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 16:41 CET",
+      "last_checkpoint": "2026-11-21 16:51 CET",
       "latest_candidate_pr": {
         "pr": 2226,
-        "head_sha": "3868383b4ccac1b709d6310ed69bb53b9e924b47",
+        "head_sha": "2c09d30dec1ab01fe77f1f49de2ab99e4cd60a65",
+        "code_head_sha": "3868383b4ccac1b709d6310ed69bb53b9e924b47",
         "base_branch": "gpt6/v13-private-remote-bridge-20261111",
         "base_sha": "f279286a4453248004c670fcaabecd85da6ab299",
-        "status": "READY_FOR_BOSS_AND_QA_REVIEW_NOT_MERGED",
-        "ci": "RAW_EAR_53_PY311_313; CONSENT_29; COMPARATOR_8_PY313_314; LIBFVAD_13_PASS_PER_JOB; PRIVACY_PASS; STAGED_249_10SKIP_47; INTEGRATED_424_3SKIP_58",
+        "status": "READY_FOR_BOSS_AND_QA_REVIEW_NOT_MERGED_SAFE_ADDITIVE_FAIL",
+        "ci": "RAW_EAR_53_PY311_313; CONSENT_29; COMPARATOR_8_PY313_314; LIBFVAD_13_PASS_PER_JOB; PRIVACY_PASS; STAGED_251_10SKIP_47; INTEGRATED_424_3SKIP_58; SAFE_ADDITIVE_FAIL_REVIEW_REQUIRED",
         "scope": "RAW EAR caller PCM16 acoustic/prosody + optional caller-supplied Silero + temporal evidence + source-bound A4/C3 admission; lease held through producer; accurate unmeasured-field provenance"
       }
     },
@@ -272,8 +273,8 @@
   "current_redmi_status": "REDMI_UNVERIFIED — private UPDATE_REQUEST #407, PIPELINE_STATUS #408, DIAGNOSTICS #409 and PIPELINE_STATUS #410 all expired with zero replies. Installed SHA UNKNOWN; updater consent UNKNOWN.",
   "last_code_release_head": "6c444e1dfdea19583002519a682fd64bca465098",
   "latest_integrated_head": "f279286a4453248004c670fcaabecd85da6ab299",
-  "latest_integrated_head_verified_at": "2026-11-21T15:41:00Z",
-  "release_gate_status": "Current integration HEAD f279286a4453248004c670fcaabecd85da6ab299 includes Boss PR #2228 source-span C4 overlay in the normal pinned stage and QA #2223 checkpoint-publisher regressions. #2228 PR-head staged 251/10/47 and integrated 424/3/58 passed with synthetic body runners; safe-additive failed due existing builder/workflow changes, no bypass, Boss reviewed/merged. At post-merge readback 10/19 associated workflows were SUCCESS and 9/19 still IN_PROGRESS. GitHub/Linux CI only. No phone release/install; REDMI_UNVERIFIED.",
+  "latest_integrated_head_verified_at": "2026-11-21T15:51:00Z",
+  "release_gate_status": "Current integration HEAD f279286a4453248004c670fcaabecd85da6ab299 includes Boss PR #2228 source-span C4 overlay in the normal pinned stage and QA #2223 checkpoint-publisher regressions. The 19 associated integration-head workflows are 19/19 SUCCESS. #2228 PR-head staged 251/10/47 and integrated 424/3/58 passed with synthetic body runners. This is GitHub/Linux CI only; last code-bearing release remains 6c444e1dfdea19583002519a682fd64bca465098. No phone release/install; REDMI_UNVERIFIED.",
   "phone_receipt": {
     "issue": "RedMentos/Aiiii#410",
     "state": "ALL_PRIVATE_READS_407_408_409_410_EXPIRED_NO_REPLY",
@@ -461,7 +462,7 @@
   "current_working_base": {
     "branch": "gpt6/v13-private-remote-bridge-20261111",
     "sha": "f279286a4453248004c670fcaabecd85da6ab299",
-    "verified_at": "2026-11-21T15:41:00Z",
-    "note": "Current GitHub integration branch HEAD after Boss merged PR #2228; C4 source-span rule is in the normal staged Runtime. No Redmi installation is inferred."
+    "verified_at": "2026-11-21T15:51:00Z",
+    "note": "Current GitHub integration branch HEAD after Boss #2228 merge; all 19 associated workflows succeeded. No Redmi installation is inferred."
   }
 }

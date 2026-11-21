@@ -1636,3 +1636,16 @@ AOSP Bionic status lists `renameat2` as a libc addition from Android R/API 30: h
 | P0 / whole Canon | NOT_ACCEPTED | #1904 remains OPEN; PR #2226 does not solve native 2+2, B1/B2 delivery, C4 coalition or C3 quality/latency | No fresh Redmi receipt, no accepted whole-system path; historical 1,255-heading inventory preserved |
 
 All evidence above is candidate/CI evidence only. No Canon family is promoted to ACCEPTED.
+
+### Research & Perception evidence overlay — 2026-11-21 16:51 CET
+
+| Canon family | Candidate implementation status | Exact current-head evidence | Still not accepted |
+|---|---|---|---|
+| A0–A5 RAW EAR / A4 attention | WIRED_SYNTHETIC producer candidate in PR #2226; caller PCM16 → acoustic/prosody cues → optional Silero → temporal evidence → source-bound AudioPerceptPacket → A4 → C3 admission | On rebased PR head 2c09d30dec1ab01fe77f1f49de2ab99e4cd60a65: 53/53 Python 3.11/3.13; consent 29/29; comparator 8/8 Python 3.13/3.14; Linux libfvad 13 PASS per job; privacy PASS; staged 251/10/47; integrated 424/3/58 | No microphone capture, native C3 inference, native audio learning, real Android feed or Redmi proof; Core derived-context revocation remains open |
+| C4 complementarity dependency | WIRED_SYNTHETIC in current integration head f279286a4453248004c670fcaabecd85da6ab299 | Boss #2228 PR-head staged 251/10/47 and integrated 424/3/58; both body OfferPackets reached a synthetic C3 prompt under source-span controls | Body runners are synthetic; no native B1/B2 output, learned latent exchange or phone evidence |
+| Audio field provenance | CODE + consumer-facing packet metadata correction | Silence/no F0 marks pitch and prosody unmeasured; one voiced frame marks pitch measured but prosody unmeasured; multi-frame voiced packet marks both. Source blob 9cae3b93388ea2c488e5af37a544ed0df5727f07; tests blob 6da1844a27c1a89affaa1b69d176ff9428dc7daf | CI tests are synthetic PCM fixtures; no real speech-corpus calibration |
+| VAD comparator | NATIVE_LINUX_PROOF for test-only libfvad build; synthetic PCM comparison harness | Pinned libfvad make check 13 PASS / 0 FAIL on CPython 3.13 and 3.14; comparator 8/8 both versions | Linux build is not Android/Bionic/Termux; no phone RSS/PSS, battery, onset/offset or thermal measurement |
+| Semantic turn completion | RESEARCH_ONLY / separate future TURN_STATE | FD-VAD arXiv:2609.35791v1; S4VAD arXiv:2609.11110v1 | No model imported, no learned endpoint head, no full-duplex/voice-output path |
+| P0 / whole Canon | NOT_ACCEPTED | #1904 remains OPEN; PR #2226 does not solve native 2+2, B1/B2 delivery, C4 coalition or C3 quality/latency | No fresh Redmi receipt, no accepted whole-system path; historical 1,255-heading inventory preserved |
+
+**Policy gate:** strict safe-additive failed because PR #2226 modifies existing workflows and shared V14 docs; no bypass. Boss/QA review required before merge. No Canon family is promoted to ACCEPTED.

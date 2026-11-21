@@ -59,3 +59,10 @@ This is still a caller-supplied PCM adapter, not microphone capture. It does not
 - Local full suite remains BLOCKED by GitHub DNS. No Android/Bionic or Redmi evidence. No microphone permission, model/weight, Age, updater or device data change.
 - FD-VAD TurnBench is gated by at least 1 s of post-speech silence; its 0.853 EOT recall at FP 0.097 is accompanied by 1,019 ms median commit latency. The 190 ms/2% point is a separate operating point. No model imported.
 - Core #2200/#2211 still need the non-reentrant lease token path, derived-context tombstone/clear and final pre-C3 consent check. QA review of #2226 remains required.
+
+## 2026-11-21 16:51 CET — rebased-head CI completion and review gate
+
+- PR #2226 is based on current integration f279286a4453248004c670fcaabecd85da6ab299; PR head 2c09d30dec1ab01fe77f1f49de2ab99e4cd60a65; code-bearing head 3868383b4ccac1b709d6310ed69bb53b9e924b47. The current integration branch has 19/19 associated workflows SUCCESS. Boss #2228's C4 source-span rule is in the normal staged Runtime, but its body runners remain synthetic.
+- Exact PR-head checks: RAW EAR 53/53 Python 3.11/3.13; consent 29/29; comparator 8/8 Python 3.13/3.14; libfvad 13 PASS / 0 FAIL per job; privacy PASS; staged 251/10/47; integrated 424/3/58; integration check PASS. Safe-additive failed because this PR modifies existing workflows and shared V14 docs; no bypass. Boss/QA review remains required.
+- Local full Aii suite remains BLOCKED by GitHub DNS. No native Android/Bionic, microphone or Redmi proof. NOT_RELEASED / REDMI_UNVERIFIED.
+- Next: QA review #2226; Core #2200/#2211 must fix lease re-entry, derived AUDIO_ACOUSTIC_CONTEXT tombstone/cache cleanup, and hold the provider lease through final C3 generation.
