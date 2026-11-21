@@ -16,9 +16,7 @@ SOURCE_PINS = {
 UPSTREAM_PINS = {
     'v13/world.py': SOURCE_PINS['v13/world.py'],
     'v13/broker.py': 'd035f8bcdcc7acade340a2db893c32a93a892598f2be6e280ccdae3f6fe6899d',
-    'v13/local_error_route_shadow_candidate.py': '3106cb3eb0808c16a7d91c1199eff5eb6b310cab9f1f67c06097026e7b621893',
 }
-FEEDBACK_SEMANTIC_SHA = '0711ed851c5126c3b1c414725b99b509ff53a6e821cf5a021cbc443e93ea3b5e'
 REVIEWED_WORLD_SHA = 'bcb96249eb1e7cb914ea82949d106118f4738c2605e02b2c360d4b4f2d276e27'
 
 
@@ -82,9 +80,9 @@ def apply_sources(code_dir, sources):
                 or any(char not in b"0123456789abcdef" for char in value)):
             raise ValueError('arithmetic outcome semantic pin malformed: ' + filename)
         return value.decode('ascii')
-    # ContextOS legitimately rebinds Store after feedback bootstrap. Validate
-    # the semantic file's live Store/Memory pins instead of freezing that
-    # generated intermediate hash; its original source and World anchor remain pinned.
+    # ContextOS rebinds Store and propagates the new semantic digest into the
+    # local-error candidate. Validate those live links rather than freezing
+    # generated intermediate hashes; original source bytes remain pinned.
     for filename, expected in (
         ('store.py', hashlib.sha256(result['v13/store.py']).hexdigest()),
         ('memory.py', hashlib.sha256(result['v13/memory.py']).hexdigest()),
@@ -93,12 +91,12 @@ def apply_sources(code_dir, sources):
         if source_pin(semantic, filename) != expected:
             raise ValueError('arithmetic outcome semantic source binding changed: ' + filename)
 
+    old_semantic_sha = hashlib.sha256(semantic).hexdigest()
     result[semantic_name] = _replace(
         semantic, SOURCE_PINS['v13/world.py'], new_world_sha, 'semantic World source pin')
     result['v13/local_error_route_shadow_candidate.py'] = _replace(
-        result['v13/local_error_route_shadow_candidate.py'],
-        FEEDBACK_SEMANTIC_SHA, hashlib.sha256(result[semantic_name]).hexdigest(),
-        'local error semantic source pin')
+        result['v13/local_error_route_shadow_candidate.py'], old_semantic_sha,
+        hashlib.sha256(result[semantic_name]).hexdigest(), 'local error semantic source pin')
 
     # A diagnostic was produced instead of the requested answer. Stale fixed,
     # exact-copy or arithmetic route flags cannot claim authority for it.
@@ -106,6 +104,8 @@ def apply_sources(code_dir, sources):
         "        if meta.get('output_authority')=='SOURCE_SYSTEM_REPORT':cands.append('SOURCE_SYSTEM_REPORT')\n",
         "        if meta.get('output_authority')=='SOURCE_SYSTEM_REPORT':cands=['SOURCE_SYSTEM_REPORT']\n",
         'diagnostic owns its actual output')
-    for name in UPSTREAM_PINS:
+    for name in ('v13/world.py', 'v13/broker.py',
+                 'v13/world_semantic_evidence_candidate.py',
+                 'v13/local_error_route_shadow_candidate.py'):
         compile(result[name], name, 'exec')
     return result
