@@ -198,4 +198,4 @@ def test_body_offer_and_c3_use_the_same_audio_context_with_separate_provenance()
     assert "audio_context_refs=query_packet.get('audio_context_refs',[])" in cognition_source
     assert "query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])" in cognition_source
     assert "volatile.append(audio_layer)" in runtime_source
-    assert "provenance=[e['source_ref']]+([audio_source_ref] if audio_source_ref else [])" in runtime_source
+    assert "provenance=[e['source_ref']]+meta.get('source_recall_refs',[])+([audio_source_ref] if audio_source_ref else [])" in runtime_source
