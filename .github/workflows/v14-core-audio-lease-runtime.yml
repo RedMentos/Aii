@@ -24,6 +24,8 @@ on:
       - v13/code/tests/test_arithmetic_stage_20261116.py
       - v13/code/tests/test_runtime_deploy.py
       - v13/code/tests/test_runtime_deploy_integrity.py
+      - v13/code/tests/test_v14_audio_lease_full_lifecycle_qa.py
+      - v13/code/tests/test_v14_exact_arithmetic_date_ambiguity_qa.py
       - .github/workflows/v14-core-audio-lease-runtime.yml
   pull_request:
     branches:
@@ -48,6 +50,8 @@ on:
       - v13/code/tests/test_arithmetic_stage_20261116.py
       - v13/code/tests/test_runtime_deploy.py
       - v13/code/tests/test_runtime_deploy_integrity.py
+      - v13/code/tests/test_v14_audio_lease_full_lifecycle_qa.py
+      - v13/code/tests/test_v14_exact_arithmetic_date_ambiguity_qa.py
       - .github/workflows/v14-core-audio-lease-runtime.yml
 
 jobs:
@@ -76,6 +80,8 @@ jobs:
           v13/runtime_deploy.py
           tests/test_v14_exact_arithmetic_runtime_20261121.py
           tests/test_v14_audio_revocation_request.py
+          tests/test_v14_audio_lease_full_lifecycle_qa.py
+          tests/test_v14_exact_arithmetic_date_ambiguity_qa.py
       - name: Stage and test Runtime audio, exact arithmetic, C5 and persistence
         working-directory: v13/code
         run: >-
@@ -83,6 +89,8 @@ jobs:
           tests/test_termux_runtime_recovery_stage.py
           tests/test_v14_audio_lease_runtime.py
           tests/test_v14_audio_revocation_request.py
+          tests/test_v14_audio_lease_full_lifecycle_qa.py
+          tests/test_v14_exact_arithmetic_date_ambiguity_qa.py
           tests/test_v14_exact_arithmetic_runtime_20261121.py
           tests/test_arithmetic_reflex.py
           tests/test_speech_output.py
