@@ -28,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Last code-bearing release 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e has exact updater-required push CI GREEN. Current docs-only HEAD d61b695739023d0bf0a3cfa4022770f0de2615fa: owner-read push 44846409890 PASS; private bridge push 44846409984 PASS; staged-runtime job within staged-context run 44846409816 PASS; integrated-regression step remains IN_PROGRESS since 00:51:24Z (>5 min at 01:56 CET). Exact workflow not complete; no phone receipt / installed SHA UNKNOWN / REDMI_UNVERIFIED.",
-      "next_step": "Wait for integrated-regression on exact d61b695 to finish; then read #353 PIPELINE_STATUS if a device comment arrives. Do not reuse parent SHA green or claim deployment. Only Boss may send one UPDATE_REQUEST after current owner-authenticated state/consent receipt.",
+      "proof_environment": "Current branch HEAD d61b695739023d0bf0a3cfa4022770f0de2615fa is documentation-only and now has all three updater-required exact push workflows GREEN: owner-read 44846409890 PASS, private bridge 44846409984 PASS, staged-context 44846409816 PASS (staged-runtime 240 passed/10 skipped/47 subtests; integrated regression 415 passed/3 skipped/58 subtests; both two-checkout migration diagnostics show UPDATED). Last code-bearing release 5b9171a also green. Private issues #351–354 have zero device comments; installed SHA UNKNOWN / REDMI_UNVERIFIED.",
+      "next_step": "Use an existing fresh owner-authenticated PIPELINE_STATUS receipt if one arrives; only then may Boss issue one UPDATE_REQUEST after confirming explicit consent, followed by a separate installed-SHA receipt. No repeated installer or phone mutation without device evidence.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 QA: d61b695 exact push staged-runtime job PASS; integrated-regression still executing its shared staged organ/memory path (>5 min, no failure/log readback). Keep latest-run gate closed until the entire workflow completes.",
+      "last_checkpoint": "2026-11-21 QA: exact latest branch HEAD d61b695 push gate GREEN; staged-runtime 240/10 skipped/47 subtests and integrated regression 415/3 skipped/58 subtests PASS. Two-checkout migration updated both source and runtime checkouts to exact d61b695. This is CI only; no phone receipt.",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -119,10 +119,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Last code-bearing release 5b9171a exact updater-required CI GREEN; current docs-only HEAD d61b695 owner-read/bridge push PASS, staged-context push still IN_PROGRESS. PR #2137 previous code-identical head passed staged/integrated; new retargeted head a3e193 exact CI pending. Whole-Canon acceptance incomplete.",
-      "next_step": "Finish exact current release push and #2137 retargeted CI; Boss review T8 platform/policy and Core/JEPA continue real consumer integration.",
+      "proof_environment": "Code-bearing release 5b9171a and current docs-only HEAD d61b695 both have updater-required exact push CI GREEN. Current d61b staged-runtime 240/10 skipped/47 subtests, integrated regression 415/3 skipped/58 subtests; migration diagnostics UPDATED. PR #2137 retargeted head a3e193 has T8 workflow and private bridge PASS, but staged/integrated PR run still IN_PROGRESS; Python3.14/policy/Runtime-consumer gates remain.",
+      "next_step": "Boss obtains fresh private device state/consent before any update. Core/JEPA continue functional integration and #2137 review; no whole-Canon completion claim.",
       "user_action_required": false,
-      "last_checkpoint": "QA recorded the code-identical T8 pass but did not promote the retargeted head without its own exact CI."
+      "last_checkpoint": "QA independently verified exact d61b695 push CI green and #2137 code-identical predecessor 52/240/415 pass; no production learning or Redmi claim."
     },
     {
       "id": "V14-008",
