@@ -6,13 +6,17 @@ deserialization. Never put trained checkpoints in public Git.
 """
 from __future__ import annotations
 
+import ctypes
+import errno
 import hashlib
 import io
 import json
 import math
 import os
 from pathlib import Path
+import platform
 import re
+import stat
 import tempfile
 import zipfile
 
@@ -165,6 +169,142 @@ def _sync_dir(parent):
         os.close(fd)
 
 
+
+_AT_FDCWD = -100
+_RENAME_NOREPLACE = 1
+_RENAMEAT2_SYSCALLS = {
+    'x86_64': 316, 'amd64': 316, 'aarch64': 276, 'arm64': 276,
+    'arm64-v8a': 276, 'riscv64': 276, 'armv7l': 382, 'i386': 353, 'i686': 353,
+}
+
+
+def _renameat2_noreplace(source, destination):
+    """Atomically rename within one directory without replacing a target.
+
+    Android/Linux expose renameat2 on supported kernels. Prefer the libc symbol;
+    use the architecture syscall number when Bionic/libc does not export it.
+    There is deliberately no unsafe os.rename fallback.
+    """
+    source_b = os.fsencode(source)
+    destination_b = os.fsencode(destination)
+    libc = ctypes.CDLL(None, use_errno=True)
+    renameat2 = getattr(libc, 'renameat2', None)
+    if renameat2 is not None:
+        renameat2.argtypes = (ctypes.c_int, ctypes.c_char_p, ctypes.c_int,
+                              ctypes.c_char_p, ctypes.c_uint)
+        renameat2.restype = ctypes.c_int
+        result = renameat2(_AT_FDCWD, source_b, _AT_FDCWD, destination_b,
+                           _RENAME_NOREPLACE)
+    else:
+        number = _RENAMEAT2_SYSCALLS.get(platform.machine().lower())
+        syscall = getattr(libc, 'syscall', None)
+        if number is None or syscall is None:
+            raise OSError(errno.ENOSYS, 'renameat2(RENAME_NOREPLACE) unavailable',
+                          os.fsdecode(destination_b))
+        syscall.restype = ctypes.c_long
+        result = syscall(ctypes.c_long(number), ctypes.c_int(_AT_FDCWD),
+                         ctypes.c_char_p(source_b), ctypes.c_int(_AT_FDCWD),
+                         ctypes.c_char_p(destination_b), ctypes.c_uint(_RENAME_NOREPLACE))
+    if result != 0:
+        error = ctypes.get_errno() or errno.EIO
+        raise OSError(error, os.strerror(error), os.fsdecode(destination_b))
+
+
+def _file_identity(info):
+    return info.st_dev, info.st_ino
+
+
+def _verify_published(path, original, expected_sha256, expected_size):
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        before = os.fstat(fd)
+        if (not stat.S_ISREG(before.st_mode)
+                or _file_identity(before) != _file_identity(original)
+                or before.st_size != expected_size):
+            raise ValueError('WorldJEPA published checkpoint identity/size mismatch')
+        digest = hashlib.sha256()
+        total = 0
+        while True:
+            chunk = os.read(fd, 65536)
+            if not chunk:
+                break
+            digest.update(chunk)
+            total += len(chunk)
+        after = os.fstat(fd)
+        named = os.stat(path, follow_symlinks=False)
+        if (_file_identity(after) != _file_identity(before)
+                or _file_identity(named) != _file_identity(before)
+                or not stat.S_ISREG(named.st_mode)
+                or total != expected_size
+                or after.st_size != expected_size
+                or named.st_size != expected_size):
+            raise ValueError('WorldJEPA checkpoint changed during publication verification')
+        if digest.hexdigest() != expected_sha256:
+            raise ValueError('WorldJEPA published checkpoint hash mismatch')
+    finally:
+        os.close(fd)
+
+
+def _publish_exclusive(temp, path, expected_sha256, expected_size):
+    """Publish a same-directory temp file without ever replacing a checkpoint.
+
+    Hardlinks remain the preferred fast path. Android filesystems that deny them
+    with EPERM/EACCES use atomic renameat2(RENAME_NOREPLACE). Both paths verify
+    the exact inode and bytes, remove the temporary name, then fsync the parent.
+    """
+    original = os.stat(temp, follow_symlinks=False)
+    if (not stat.S_ISREG(original.st_mode) or original.st_nlink != 1
+            or original.st_size != expected_size):
+        raise ValueError('WorldJEPA temporary checkpoint identity/size mismatch')
+    published = False
+    try:
+        try:
+            os.link(temp, path)
+        except OSError as exc:
+            if exc.errno not in (errno.EPERM, errno.EACCES):
+                raise
+            _renameat2_noreplace(temp, path)
+        published = True
+        _verify_published(path, original, expected_sha256, expected_size)
+        try:
+            current_temp = os.stat(temp, follow_symlinks=False)
+        except FileNotFoundError:
+            pass
+        else:
+            if (_file_identity(current_temp) != _file_identity(original)
+                    or not stat.S_ISREG(current_temp.st_mode)):
+                raise ValueError('WorldJEPA temporary checkpoint changed before cleanup')
+            os.unlink(temp)
+        _sync_dir(path.parent)
+    except BaseException:
+        # If verification or durability fails after publication, remove only the
+        # exact inode this call created. A racing replacement is never deleted.
+        if published:
+            try:
+                current = os.stat(path, follow_symlinks=False)
+                if (_file_identity(current) == _file_identity(original)
+                        and stat.S_ISREG(current.st_mode)):
+                    os.unlink(path)
+                    try:
+                        _sync_dir(path.parent)
+                    except OSError:
+                        pass
+            except OSError:
+                pass
+        raise
+    finally:
+        # A successful rename consumes the temp name; a hardlink leaves it.
+        # Clean up only the original temp inode, never a swapped-in path.
+        try:
+            current_temp = os.stat(temp, follow_symlinks=False)
+        except FileNotFoundError:
+            pass
+        else:
+            if (_file_identity(current_temp) == _file_identity(original)
+                    and stat.S_ISREG(current_temp.st_mode)):
+                os.unlink(temp)
+
+
 def save(model, path, source_sha256):
     """Exclusive, fsynced private NPZ export; returns hash to pin externally."""
     meta, arrays = _extract(model, source_sha256)
@@ -191,8 +331,7 @@ def save(model, path, source_sha256):
             out.write(data)
             out.flush()
             os.fsync(out.fileno())
-        os.link(temp, path)  # exclusive; never overwrite an existing target
-        _sync_dir(path.parent)
+        _publish_exclusive(temp, path, hashlib.sha256(data).hexdigest(), len(data))
     finally:
         if os.path.exists(temp):
             os.unlink(temp)
