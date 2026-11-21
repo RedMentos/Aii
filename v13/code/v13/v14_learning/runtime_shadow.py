@@ -324,7 +324,7 @@ def consume_recent_committed(store, home, limit=64):
                 "prediction_packet_id": prediction["packet_id"],
                 "prediction_source": prediction["source"],
                 "calibration_status": prediction["calibration_status"],
-                "outcome_status": result.get("outcome_status"),
+                "outcome_status": result.get("outcome"),
                 "prediction_error": result.get("prediction_error"),
                 "updated": bool(result.get("updated", False)),
                 "pending_optimizer": bool(result.get("pending_optimizer", False)),
