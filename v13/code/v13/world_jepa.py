@@ -49,7 +49,11 @@ class Adam:
         self.steps = {k: 0 for k in params}
         self.m = {k: np.zeros_like(v) for k, v in params.items()}; self.v = {k: np.zeros_like(v) for k, v in params.items()}
 
-    def step(self, grads, *, constraint_gradients=None):
+    def step(self, grads, *, constraint_gradients=None, update_scale=1.0):
+        if (type(update_scale) not in (int, float) or not np.isfinite(update_scale)
+                or not 0.0 < float(update_scale) <= 1.0):
+            raise ValueError("WorldJEPA update scale must be finite and in (0,1]")
+        update_scale = float(update_scale)
         if type(grads) is not dict or not grads or any(k not in self.p for k in grads):
             raise ValueError("WorldJEPA Adam received an unknown parameter")
         if constraint_gradients is not None:
@@ -101,7 +105,7 @@ class Adam:
                            "direction_norm_sq": float(sum(np.sum(v*v, dtype=np.float64) for v in directions.values())),
                            "constraint_tolerance": tolerance})
         for key, direction in directions.items():
-            self.p[key] -= self.lr*direction
+            self.p[key] -= self.lr*update_scale*direction
         return report
 
 
@@ -166,7 +170,7 @@ class WorldJEPA:
 
     def fit(self, X, A, X2, steps=3000, log_every=500, warm_start=False, cancel_check=None,
             allow_optimizer_bootstrap=False, train_encoder=True, drift_control=None,
-            replay_start=None):
+            replay_start=None, update_scale=1.0):
         # Invalid transitions cannot establish learned SHADOW inference evidence.
         # The covariance objective divides by n-1; never fit a single row.
         from . import world_jepa_training_state as training_state
@@ -179,6 +183,8 @@ class WorldJEPA:
                 or type(allow_optimizer_bootstrap) is not bool
                 or type(train_encoder) is not bool
                 or (replay_start is not None and type(replay_start) is not int)
+                or type(update_scale) not in (int, float) or not np.isfinite(update_scale)
+                or not 0.0 < float(update_scale) <= 1.0
                 or (cancel_check is not None and not callable(cancel_check))):
             raise ValueError('Invalid WorldJEPA fit configuration')
         drift_config = drift.normalize_config(drift_control)
@@ -320,7 +326,8 @@ class WorldJEPA:
                 constraint_gradients = pack_gradients(replay_out)
             if drift_prepared['active']:
                 gradients = drift.apply_pullback(params_by_group, gradients, drift_prepared)
-            step_report = opt.step(gradients, constraint_gradients=constraint_gradients)
+            step_report = opt.step(gradients, constraint_gradients=constraint_gradients,
+                                   update_scale=update_scale)
             if replay_start is not None:
                 projection_stats["steps"] += 1
                 if step_report.get("projected") is True: projection_stats["projected_steps"] += 1
@@ -378,7 +385,7 @@ class WorldJEPA:
                     raise InterruptedError('WorldJEPA fit cancelled')
                 b = idx[r2.integers(0, len(idx), min(BATCH, len(idx)))]
                 _, _, gp, _ = loss_grads(enc, p, x[b], A[b], zt_all[b], train_enc=False)
-                o.step(gp)
+                o.step(gp, update_scale=update_scale)
             preds.append(p)
             bootstrap_training.append({'adam':training_state.snapshot(o),'rng':r2.bit_generator.state})
         ztrain = z_all
@@ -414,7 +421,7 @@ class WorldJEPA:
         return self
 
     def partial_fit(self,X,A,X2,steps=100,log_every=50,cancel_check=None,allow_optimizer_bootstrap=False,
-                    train_encoder=True, drift_control=None, replay_start=None):
+                    train_encoder=True, drift_control=None, replay_start=None, update_scale=1.0):
         """Continue JEPA weights and EMA target instead of reinitializing.
 
         Callers should mix replay transitions with new ones to reduce forgetting.
@@ -422,7 +429,7 @@ class WorldJEPA:
         """
         return self.fit(X,A,X2,steps=steps,log_every=log_every,warm_start=True,cancel_check=cancel_check,
                         allow_optimizer_bootstrap=allow_optimizer_bootstrap,train_encoder=train_encoder,
-                        drift_control=drift_control,replay_start=replay_start)
+                        drift_control=drift_control,replay_start=replay_start,update_scale=update_scale)
 
     # -- inference -------------------------------------------------------------------------------------------------
     @_read_locked
