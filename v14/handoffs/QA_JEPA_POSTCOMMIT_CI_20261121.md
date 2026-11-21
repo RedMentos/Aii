@@ -51,7 +51,7 @@ QA posted review comment [6004094094](https://github.com/RedMentos/Aii/pull/2178
 
 - Exact base branch CI is green; PR #2178 is not.
 - No exact local Aii checkout was available in this run. The previous local checkout attempts reported GitHub DNS resolution failure; no local full-suite PASS is claimed.
-- No connected authorized Redmi receipt exists. Private owner-read #373 and #368 expired without comments; installed SHA and updater consent remain UNKNOWN/UNVERIFIED.
+- No connected authorized Redmi receipt exists. Latest private owner-read PIPELINE_STATUS #379 is OPEN with zero comments at readback (expires 2026-11-21T08:30:59Z); prior #373 and #368 expired. Installed SHA and updater consent remain UNKNOWN/UNVERIFIED. No duplicate request was created.
 - No update request, shell action, install, model/weight change, permission change or user-data mutation was performed.
 - The historical real-device failure #1904 remains open. CI metadata tests do not establish correct 2+2, useful B1/B2 offers, C4/C3 consumption, p50/p95 native latency, PSS/RSS, or 20 real mixed turns.
 - Numeric WorldJEPA/EMA and role-specific B1/B2/SELF readouts are not native GGUF body learning, not sparse-MoE proof, and not true B3 activation-to-activation latent coupling.
