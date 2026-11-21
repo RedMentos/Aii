@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T22:29:39.614Z",
+  "updated_at": "2026-11-21T22:27:49Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -143,9 +143,9 @@
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
       "proof_environment": "PR #2142 remains OPEN and non-mergeable on stale base c3c32; head 67c1300093dd99ffcf818f370fff29b58fd7fc3b. Its exact code/test commit 40deb8a56686455b361ba41e63cb57b981b5a71b passed model-lab workflow 44861145442: compile, manifest JSON and 23/23 synthetic tests. License snapshot bytes, lock-before-read, read-only staged copies and executable identity are checked. No real GGUF inference was run; no current verified candidate was demonstrated present, no staged-context workflow is green, no download/swap or Redmi test. #2154's license snapshot fix is included in #2142's current branch.",
-      "next_step": "Perception must freeze the pre-batch look-back snapshot for the entire incoming batch and compute score-only output when threshold is absent; rerun the exact 3.13/3.14 and staged/integrated workflows. No NumPy backend promotion before this regression is fixed.",
+      "next_step": "After exact-head CI/review for #2275, resume the model-candidate lab: compare two or three read-only candidates on exact model/weight license, ARM64 ABI, cold-load RSS, TTFT, output quality and rollback. Do not download or swap a model without separate explicit approval.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "last_checkpoint": "2026-11-21T22:27:49Z",
       "latest_candidate_pr": {
         "pr": 2142,
         "head_sha": "67c1300093dd99ffcf818f370fff29b58fd7fc3b",
@@ -326,6 +326,27 @@
       "proof_environment": "CI_BLOCKED_ANDROID_UNVERIFIED",
       "proof": "PR #2271 head 7013fe166b8a45437e45ccfa9b44b9fdb58ee1b4 is a default-OFF companion prototype limited to launch_app, paired Termux signer check and ECDSA receipt. Android build failed before Gradle compile because setup-android received one malformed semicolon-joined package string. QA separately identified a P1 duplicate-approval race: two ConsentActivity instances can both dispatch startActivity before the database CAS, and a shared-UID caller/notification-ID collision needs review. No APK/device install or Redmi proof.",
       "next_step": "Fix SDK package list delimiter, implement atomic PENDING→DISPATCHING claim before startActivity with exactly-one dispatch tests and stop/expiry/restart controls, verify caller identity and collision-resistant notification IDs, then rerun Gradle/provider/transport/outcome CI."
+    },
+    {
+      "id": "V14-018",
+      "title": "RAW EAR speaker-change evidence: batch-isolated A5→A4→C3 path",
+      "owner": "Research & Perception",
+      "reviewer": "Core & QA",
+      "priority": "P1",
+      "status": "IN_PROGRESS_PARTIAL",
+      "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
+      "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
+      "proof_environment": "LOCAL_LINUX_ALGORITHM_ONLY_PASS / GITHUB_CI_PENDING_NO_RUN_RETURNED / REDMI_UNVERIFIED",
+      "next_step": "Core/QA: run exact-head workflow and staged/integrated checks on #2275, review the current-base diff and source pins. Keep NumPy and speaker model off by default. Only after CI and independent review consider integration; later obtain a consented Redmi audio measurement without uploading raw speech.",
+      "user_action_required": false,
+      "last_checkpoint": "2026-11-21T22:27:49Z",
+      "latest_candidate_pr": {
+        "pr": 2275,
+        "head_sha": "631eb42cff2f3de7f066070e96896d996b019294",
+        "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
+        "ci": "PENDING_NO_PR_RUN_RETURNED"
+      },
+      "proof": "The prior algorithm's negative control reproduced the false-negative: a long same-batch tail replaced a cross-window speaker-change score with cosine 1.0. The pre-batch snapshot algorithm passed a local CPython 3.13.5 x86_64 reproduction for warmup, same-speaker, unvoiced, threshold-absent and 1-s/2-s invariance. This is algorithm-level only; no full Aii checkout test ran. PR #2275 is current-base and draft; no exact CI run was returned at readback. No microphone/model/Redmi test."
     }
   ],
   "current_redmi_status": "REDMI_UNVERIFIED — private PIPELINE_STATUS #435 is open with zero authenticated comments; prior #431/#432 also had no authenticated receipt. Installed SHA and updater consent remain UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action or device mutation.",
@@ -690,16 +711,16 @@
       "tested_synthetic": "PARTIAL_CI_PASS",
       "tested_android": "UNVERIFIED",
       "active": "NOT_ACCEPTED",
-      "evidence": "A5/UI/audio/arithmetic and stage paths in #2258; B1/B2 useful native offers and true B3 remain unproven"
+      "evidence": "A5/UI/audio/arithmetic and stage paths in #2258; optional source-bound RAW EAR speaker-change scalar now wired A5→A4→C3 in #2275, with batch-isolation regression pending exact CI; B1/B2 useful native offers and true B3 remain unproven"
     },
     {
       "capability": "VOICE_AUDIO",
-      "code": "PARTIAL_CALLER_PCM16_AND_EXPLICIT_TTS",
+      "code": "PARTIAL_CALLER_PCM16_EXPLICIT_TTS_OPTIONAL_SPEAKER_EVIDENCE",
       "wired": "WIRED_SYNTHETIC_A5_A4_C3_ADMISSION",
-      "tested_synthetic": "PASS_CI_PY313_PY314",
+      "tested_synthetic": "BASE_CI_PASS_NEW_SPEAKER_ALGORITHM_LOCAL_PASS_CI_PENDING",
       "tested_android": "UNVERIFIED",
       "active": "NO",
-      "evidence": "No microphone capture, ASR, trainable decoder/vocoder, full-duplex/barging-in or audio weight learning"
+      "evidence": "No microphone capture, ASR, trainable decoder/vocoder, full-duplex/barging-in or audio weight learning; optional speaker embeddings are caller-supplied and no identity is emitted."
     },
     {
       "capability": "ANDROID_BACKGROUND_CONTROL",
@@ -832,9 +853,9 @@
     {
       "id": "R-047",
       "topic": "Optional NumPy RAW EAR autocorrelation",
-      "status": "HISTORICAL_X86_PARITY_CURRENT_PR_FAILS_2_TESTS",
+      "status": "HISTORICAL_X86_PARITY_SPEAKER_BATCH_FIX_IN_PR_2275_CI_PENDING",
       "primary": "Perception #2256 / arXiv and Termux NumPy recipe",
-      "next": "Freeze pre-batch speaker look-back history; rerun 3.13/3.14; Python stays default"
+      "next": "PR #2275 fixes the same-batch look-back contamination; run exact 3.13/3.14 and staged/integrated CI. Python stays default; no ARM64/Redmi promotion."
     },
     {
       "id": "R-048",
@@ -863,6 +884,20 @@
       "status": "FULL_TEXT_PREPRINT_RESEARCH_ONLY",
       "primary": "arXiv:2608.01475",
       "next": "After JEPA per-session retention is stable, compare fixed/AGN/AEN small heads with old-session holdout, gradient, parameter diff, restart and rollback"
+    },
+    {
+      "id": "R-052",
+      "topic": "FASTDIAR causal frame embeddings for RAW EAR speaker-change evidence",
+      "status": "FULL_TEXT_PREPRINT_AND_MIT_REPO_REVIEWED_OPTIONAL_WIRED_SYNTHETIC_BATCH_FIX_IN_PR_2275",
+      "primary": "arXiv:2610.02941v1; microsoft/fastdiar commit f48bff53b9a6a0cce4539e94b6def95f609eaea4",
+      "next": "Run exact #2275 Python 3.13/3.14 and staged/integrated CI; later require real consented speech and ARM64/Redmi false-positive/latency evidence."
+    },
+    {
+      "id": "R-053",
+      "topic": "ReDimNet2 compact utterance-level speaker embeddings and ONNX Android route",
+      "status": "FULL_TEXT_PREPRINT_OFFICIAL_MIT_REPO_AND_B3_ONNX_CARD_REVIEWED_NO_DOWNLOAD",
+      "primary": "arXiv:2603.11841; PalabraAI/redimnet2; soulmachine/evertranscript-redimnet2-b3-vox2-lm; ONNX Runtime mobile docs",
+      "next": "Keep as segment-level reference/enrollment candidate only; if useful, request separate experimental-download approval and compare cold-load RSS/CPU/EER on consented speech. Not a streaming FASTDIAR replacement."
     }
   ]
 }
