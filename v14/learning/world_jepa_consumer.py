@@ -462,13 +462,16 @@ class WorldJEPAStoreConsumer:
         return removed, errors
 
 
-    def update(self, *, limit=DEFAULT_PAGE_SIZE, steps=80, optimizer_permission=False):
+    def update(self, *, limit=DEFAULT_PAGE_SIZE, steps=80, optimizer_permission=False,
+               replay_mode="uniform"):
         if type(limit) is not int or not 16 <= limit <= MAX_ROWS:
             raise ValueError("limit")
         if type(steps) is not int or not 1 <= steps <= 2000:
             raise ValueError("steps")
         if type(optimizer_permission) is not bool:
             raise ValueError("optimizer_permission must be bool")
+        if replay_mode not in {"uniform", "none"}:
+            raise ValueError("replay_mode must be uniform or none")
         with self._locked(True):
             state, version = self._read_state()
             receipts, rejected, next_cursor, scanned, censored_skipped, has_more = (
@@ -538,6 +541,8 @@ class WorldJEPAStoreConsumer:
             row_by_id = {row["action_id"]: row for row in experience_rows}
             train_rows = [row_by_id[action_id] for action_id in train_ids]
             holdout_rows = [row_by_id[action_id] for action_id in holdout_ids]
+            new_train_rows = [row for row in train_rows if row["action_id"] in new_set]
+            old_train_rows = [row for row in train_rows if row["action_id"] not in new_set]
             train, holdout = split["train"], split["holdout"]
             if active is not None:
                 model = self._load_model(active)
@@ -556,7 +561,19 @@ class WorldJEPAStoreConsumer:
                 if len(old_holdout_rows) >= 2:
                     old_holdout = _arrays(old_holdout_rows)
                     old_holdout_before = model.prediction_loss(*old_holdout)
-            model.partial_fit(*train, steps=steps, log_every=max(1, steps // 4))
+            # Uniform replay is the default. The no-replay mode is an explicit
+            # ablation: it trains only on newly admitted train-fold rows while
+            # retaining the complete source-disjoint cohort for future replay.
+            fit_rows = (train_rows if replay_mode == "uniform" or active is None
+                        else new_train_rows)
+            if len(fit_rows) < 2:
+                return {"status": "INSUFFICIENT_NEW_TRAIN_ROWS",
+                        "new_train_rows": len(new_train_rows),
+                        "replay_candidate_rows": len(old_train_rows),
+                        "scan_cursor": state["scan_cursor"],
+                        "native_body_weights_changed": False}
+            fit_arrays = _arrays(fit_rows)
+            model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4))
             after = _parameter_snapshot(model)
             holdout_after = model.prediction_loss(*holdout)
             shuffled_action_loss = model.prediction_loss(holdout[0], np.roll(holdout[1], 1, axis=0), holdout[2])
@@ -579,9 +596,14 @@ class WorldJEPAStoreConsumer:
                 "rejected_receipts": rejected, "censored_skipped": censored_skipped,
                 "scanned_rows": scanned, "has_more": has_more,
                 "scan_cursor_before": state["scan_cursor"], "scan_cursor_after": next_cursor,
-                "replay_rows": len(set(active["train_ids"]) & set(train_ids)) if active else 0,
-                "new_train_rows": len(set(new_ids) & set(train_ids)),
+                "replay_mode": replay_mode,
+                "replay_candidate_rows": len(old_train_rows),
+                "replay_rows": len(old_train_rows) if replay_mode == "uniform" and active else 0,
+                "new_train_rows": len(new_train_rows),
                 "new_holdout_rows": len(set(new_ids) & set(holdout_ids)),
+                "fit_rows": len(fit_rows),
+                "fit_action_ids": [row["action_id"] for row in fit_rows],
+                "new_train_action_ids": [row["action_id"] for row in new_train_rows],
                 "train_rows": len(train_ids), "holdout_rows": len(holdout_ids),
                 "train_source_count": split["manifest"]["train_source_count"],
                 "holdout_source_count": split["manifest"]["holdout_source_count"],
