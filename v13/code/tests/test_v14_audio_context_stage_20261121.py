@@ -15,7 +15,7 @@ SOURCE_BLOBS = {
     "v13/cognition.py": "90138474db6f7c0b66cea24f52d22cd7a6e2f87b",
     "v13/audio_voice_cues.py": "7ac80a0d0deec8f52361fe89756ebd743b0a3537",
 }
-BUILDER_SHA256 = "563c77338970aebb84f1836a930c34671bf0a94455d924aa51a510b101eae1fc"
+BUILDER_SHA256 = "5d24951dabe314237bd3237000f9ea7a970c5c66a1d417204ad82f15df45ac6c"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
