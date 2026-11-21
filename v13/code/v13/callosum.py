@@ -209,9 +209,9 @@ def controller(runtime):
 def on_rating(store,event_id,score):return Callosum(store).on_rating(event_id,(score-1)/9)
 
 def operator_command(r,args):
-    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <sender> <receiver> --confirm]"""
+    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <sender> <receiver> --last-source --confirm]"""
     c=controller(r)
-    if len(args)==4 and args[0]=='native-probe' and args[3]=='--confirm':
+    if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
         sender,receiver=args[1],args[2]
         if sender not in {'B1_DETAIL','B2_GIST'} or receiver not in {'B1_DETAIL','B2_GIST','C3_LANGUAGE'} or sender==receiver:
             raise ValueError('Native probe requires distinct B1/B2 sender and B1/B2/C3 receiver')
@@ -234,4 +234,4 @@ def operator_command(r,args):
     if args==['degrade']:return dumps({d:{k:x[k] for k in ('degradation_level','status','calibration_valid','degradation')} for d,x in c.doctor(r.cfg).items()})
     if len(args)==2 and args[0]=='promote' and args[1] in b3degrade.RECEIVER:  # typed by the human at the operator console
         return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})
-    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|native-probe B1_DETAIL|B2_GIST B1_DETAIL|B2_GIST|C3_LANGUAGE --confirm]')
+    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|native-probe B1_DETAIL|B2_GIST B1_DETAIL|B2_GIST|C3_LANGUAGE --last-source --confirm]')
