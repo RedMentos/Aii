@@ -33,6 +33,20 @@ BODY = {
     "key_id": KEY_ID,
 }
 RECEIPT = {"body": BODY, "key_id": KEY_ID, "signature": SIGNATURE}
+DENIAL_BODY = {
+    **BODY, "nonce": "3" * 32, "status": "USER_DENIED", "local_consent": False,
+}
+DENIAL_RECEIPT = {
+    "body": DENIAL_BODY, "key_id": KEY_ID,
+    "signature": "MEYCIQCYn0+HoA+9gtJtrgVHZQKBjFyYZYlx8rZCwrGmXW1l+QIhALh6j5POEMCWZ/+3Kv0o2b6SwLHze1CATCRbGHjZhkgQ",
+}
+FAILED_BODY = {
+    **BODY, "nonce": "4" * 32, "status": "FAILED_TO_DISPATCH", "local_consent": True,
+}
+FAILED_RECEIPT = {
+    "body": FAILED_BODY, "key_id": KEY_ID,
+    "signature": "MEYCIQCP5EHhE3jytExvf7pDOuTWiJ68O/EnaVUYEGfgUxI7wgIhALxgnBWYC60h84Zkk/ez/IGotFur/iLq9egH1zTS17n+",
+}
 ENVELOPE = {
     "action_id": BODY["action_id"],
     "capability": BODY["capability"],
@@ -54,6 +68,21 @@ def test_pinned_android_keystore_signature_verifies(tmp_path):
     assert attestation["local_approval_evidence"] == "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
     assert attestation["key_storage_status"] == "ANDROID_KEYSTORE_SOFTWARE_BACKED"
     assert attestation["t8_authoritative"] is False
+    value.close()
+
+
+def test_signed_user_denial_and_dispatch_failure_remain_non_authoritative(tmp_path):
+    value = verifier(tmp_path / "outcomes.sqlite")
+    denied = value.verify(ENVELOPE, DENIAL_RECEIPT, consume_nonce=False)
+    failed = value.verify(ENVELOPE, FAILED_RECEIPT, consume_nonce=False)
+    assert denied["status"] == "COMPANION_USER_DENIED"
+    assert denied["companion_local_consent_claim"] is False
+    assert denied["local_approval_evidence"] == "ANDROID_COMPANION_USER_DENIAL"
+    assert failed["status"] == "COMPANION_DISPATCH_FAILED"
+    assert failed["companion_local_consent_claim"] is True
+    assert failed["local_approval_evidence"] == "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+    assert denied["t8_authoritative"] is False
+    assert failed["t8_authoritative"] is False
     value.close()
 
 
@@ -80,6 +109,41 @@ def test_ecdsa_nonce_is_single_use_when_verifier_owns_commit(tmp_path):
     with pytest.raises(CompanionDenied, match="replay"):
         value.verify(ENVELOPE, RECEIPT, consume_nonce=True)
     value.close()
+
+
+def test_signed_user_denial_persists_without_learning_authority(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+    home = tmp_path / "runtime"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    session = store.new_session()
+    event = store.event(session, "open the approved app")
+    broker = android_control.AndroidControlBroker(tmp_path / "denied-broker.sqlite", clock=lambda: 1000.0)
+    receipt_verifier = verifier(tmp_path / "denied-ecdsa.sqlite")
+    broker.start()
+    proposal = broker.propose(
+        "launch_app", {"package": "com.example.app"}, ttl=30,
+        event_id=event["event_id"], source_ref=event["source_ref"],
+    )
+    broker.approve(proposal.action_id, confirmed_by_local_ui=True)
+    broker.dispatch_approved(proposal.action_id)
+    outcome, packet = accept_and_persist_companion_receipt(
+        store, broker, receipt_verifier, proposal.action_id, DENIAL_RECEIPT
+    )
+    assert outcome.status == "COMPANION_USER_DENIED"
+    assert outcome.details["companion_local_consent_claim"] is False
+    assert outcome.details["local_approval_evidence"] == "ANDROID_COMPANION_USER_DENIAL"
+    assert outcome.observed is False
+    assert trusted_transition_eligible(outcome) is False
+    stored = store.one("SELECT payload FROM packets WHERE id=?", (packet["packet_id"],))
+    actual = json.loads(stored["payload"])["actual"]
+    assert actual["status"] == "COMPANION_USER_DENIED"
+    assert actual["companion_local_consent_claim"] is False
+    assert actual["world_learning_eligible"] is False
+    store.close()
+    broker.close()
+    receipt_verifier.close()
 
 
 def test_keystore_receipt_persists_source_bound_non_authoritative_outcome(tmp_path, monkeypatch):
