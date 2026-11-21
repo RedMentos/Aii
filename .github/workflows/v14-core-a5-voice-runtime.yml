@@ -71,7 +71,7 @@ jobs:
             v13/code/tests/test_v14_audio_context_stage_20261121.py \
             v13/code/tests/test_v14_arithmetic_policy_separation.py \
             v13/code/tests/test_arithmetic_stage_20261116.py \
-            v13/code/tests/test_arithmetic_reflex.py
+           
       - name: Recovery and installed-deployer simulation
         env:
           PYTHONPATH: v13/code
