@@ -322,3 +322,30 @@ Next integrated vertical slice: after Core's staged runtime is green, invoke the
 5. QA rebases #2163 and continues private owner-read; no update request before a positive receipt.
 
 No material V14 master edit was made; no master backup was required. Historical V13 Canon bytes were not changed.
+
+## Research & Perception checkpoint — 2026-11-21 08:36 CET
+
+- Queue owner: V14-006. Verified release-development HEAD: `569680bc10eabeb94ea5a1695d4bf77b8584e0a0`.
+- PR #2177 is now based on the current release branch SHA `569680bc10eabeb94ea5a1695d4bf77b8584e0a0`; current head `feb318611b2cdf46fbd34de74565016d26f52e75`, merge base `04635a5522ab095f79544e23d9aa0330b0c9ff7a` (18 ahead / 14 behind; no overlapping changed paths in the 14 release commits; GitHub reports mergeable=true). It remains DRAFT / NOT_RELEASED pending independent Boss review.
+- Changed files are limited to the two Perception workflows, `audio_voice_cues.py`, its focused test, this research ledger and the dedicated handoff. No Core Runtime/stager/deployer, master Canon or historical V13 bytes are changed.
+- Producer blob `0e328d14883840190937f0fef24a8e895ba7261c`; test blob `96b00b2e1b6340e2a61a8b6f230be8747889ab38`; tested code/test tree `1c4bb678025b421b98766cbce61570eec4683a52`.
+- New exact code/test-head CI: focused 12/12 on Python 3.11 and 12/12 on Python 3.13 PASS; privacy PASS; staged-runtime 240 passed / 10 skipped / 47 subtests PASS; integrated-regression 415 passed / 3 skipped / 58 subtests PASS; safe-additive FAIL as expected for an existing-module edit. The earlier exact code/test tree completed staged 240 passed / 10 skipped / 47 subtests and integrated 415 passed / 3 skipped / 58 subtests.
+- Full local Aii checkout remains BLOCKED because `git ls-remote` cannot resolve `github.com`; this run did not claim a local repository test. Redmi is REDMI_UNVERIFIED.
+- Research R-022: full 24-page ICLR 2026 PACE paper reviewed; audio continual learning needs layer-selective adaptation and subspace-projected updates, not blind vision-LoRA transfer. S4VAD was checked at abstract level only. libfvad is BSD-3-Clause with a separate patent grant; VoxRT's Android wrapper is Apache-2.0 but its binary runtime is proprietary. No code/dependency/weights were imported.
+- Next: Boss review #2177; after review/merge Core updates #2158's V3 pin and proves normal Runtime, text/audio modality separation, and B1/B2 OfferPacket consumption through C4/C3. Perception then runs a matched RAW EAR/libfvad benchmark. No phone action or model swap.
+
+
+## Research & Perception checkpoint — 2026-11-21 10:21 CET
+
+- Owner: V14-006 / Research & Perception. Release-development HEAD remains 569680bc10eabeb94ea5a1695d4bf77b8584e0a0; existing Perception PR #2177 is based on that head and remains DRAFT / NOT_RELEASED.
+- New executable correction: audio_temporal_evidence.py now separates unobserved audio gaps from the actually observed window. Previously the current VOICED label was applied retroactively across the entire gap; a 500 ms pause produced about 0.999739 evidence and kept voice artificially active. The new code decays prior evidence with the release time constant through the gap, then updates only the newly observed duration. Overlapping windows advance only their newly covered suffix. Existing consumer: consume_pcm16_voice_window -> A4 attention.
+- New regressions: gap offset followed by new onset, silence after a gap, overlapping windows, and reset beyond the gap threshold. The old timing rule was reproduced as a negative control.
+- Also repaired: the RAW EAR CI workflow had doubled backslashes in its pytest command and passed a literal backslash path to pytest. The invocation is now one explicit command.
+- Exact code/test/workflow commit: ce692a87e585c8cc7a6a871dd550ca585a6bac3d. Code blob f693f8b8394558a63d87a35fc67ea3db9dcb1929; test blob 6681eabf5dbcc8cfc2795c777ff17bf7862f3303; workflow blob e0b93213165ec4423c9a32e163cbd94a43b30ad4.
+- Exact GitHub Actions code/test HEAD: focused RAW EAR run 44888560930 — 23 passed on Python 3.11 and 23 passed on Python 3.13, compile PASS; staged-runtime 44888560905 — 240 passed / 10 skipped / 47 subtests; integrated-regression — 415 passed / 3 skipped / 58 subtests; privacy scan 44888560951 PASS. Safe-additive 44888560942 FAILs as expected because an existing producer/workflow path is modified; the protected policy was not bypassed.
+- LOCAL_LINUX: isolated mirror of the updated state filter plus six existing and four new state regressions: 10/10 PASS; py_compile PASS; legacy negative-control calculation PASS. Full Aii checkout remains BLOCKED by GitHub DNS resolution, so no full-repository local test is claimed. CI is Linux CI, not a local checkout.
+- Research R-022 updated: full 8-page S4VAD arXiv text reviewed 2026-11-21. Its state decay and onset-latency evaluation inform future VAD benchmarking; its reported 0.3 ms latency was measured on Apple M4 Max, not Redmi. No code, model, dependency or weights imported.
+- User impact: fewer false sustained-voice states after an input gap and no double-counting of overlapping windows in the temporal A4 attention smoother. This is not a trained VAD, microphone path, full-duplex voice, speech effector, or normal Runtime B1/B2->C4->C3 proof.
+- Redmi/device/updater: no authenticated device receipt in this run; installed SHA and update consent remain UNKNOWN; REDMI_UNVERIFIED. No update request, deployment, model swap, permission change or user-data action.
+- Next: Boss independently reviews #2177; Core updates #2158 to the exact V3 producer and proves normal Runtime modality separation plus B1/B2 OfferPacket->C4->C3 consumption. After that, Perception runs a matched RAW EAR/libfvad comparison; libfvad remains research-only pending BSD-3-Clause + PATENTS, ARM ABI and measured device-cost review.
+- User action: keine Aktion nötig.

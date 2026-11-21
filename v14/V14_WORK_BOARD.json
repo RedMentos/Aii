@@ -151,18 +151,22 @@
       "priority": "P1",
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
-      "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Perception PR #2161 head 02f58e2f3f7789dd4bfbeb96d75d6fc71465cffb contains RAW EAR V3 pause-robust voiced-only prosody. Dedicated tests: 12 passed on Python 3.11 and 12 passed on Python 3.13; staged-runtime 240 passed / 10 skipped / 47 subtests; integrated-regression 415 passed / 3 skipped / 58 subtests; privacy scan PASS. validate-additive rejects the existing producer/test edit, as expected. The PR is stale/dirty relative to current release c76a: 26 ahead / 25 behind, merge base 034a941694b9e8994d1bfe5cd781d27b943e1ed0. Exact V3 producer blob is 0e328d14883840190937f0fef24a8e895ba7261c. No microphone capture or Redmi proof.",
-      "next_step": "Perception: rebase/retarget #2161 onto current release and synchronize shared board/workplan edits with Boss. Core: update #2158's exact V3 source pin and consumer contract. Keep PCM caller-supplied and process-local; do not call the adapter VAD, ASR, speech learning or microphone capture.",
+      "acceptance": "Source-bound audio PerceptPacket consumed by existing A4 attention and synthetic C3 admission; temporal gap/overlap semantics now tested. Full A0-A5, normal Runtime B1/B2->C4->C3 and Android/native acceptance remain open.",
+      "proof_environment": "CI",
+      "next_step": "Boss independently reviews PR #2177. After review/merge, Core updates #2158 to exact RAW EAR V3 producer and proves normal Runtime modality separation plus B1/B2 OfferPacket->C4->C3. Perception then benchmarks RAW EAR V3 against libfvad on matched fixtures; no model/dependency/device change without license/ABI/cost evidence.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 07:49 CET",
+      "last_checkpoint": "2026-11-21 10:21 CET",
       "latest_candidate_pr": {
-        "pr": 2155,
-        "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
-        "merge_commit_sha": "c0cedbde718ede6107f4df1f1bf9c784df4e00cf",
-        "ci": "PASS_44862523075_8_TESTS_AND_44862523082_240_STAGED_415_INTEGRATED",
-        "scope": "additive RAW EAR acoustic-cue adapter only; no normal Runtime consumer"
-      }
+        "pr": 2177,
+        "code_test_head_sha": "ce692a87e585c8cc7a6a871dd550ca585a6bac3d",
+        "producer_blob": "7b1d519cd36ede4b520d78e22c0f89132a1c73a5",
+        "temporal_state_blob": "f693f8b8394558a63d87a35fc67ea3db9dcb1929",
+        "test_blob": "6681eabf5dbcc8cfc2795c777ff17bf7862f3303",
+        "workflow_blob": "e0b93213165ec4423c9a32e163cbd94a43b30ad4",
+        "ci": "PASS_FOCUSED_23_PY311_AND_23_PY313_44888560930;PASS_STAGED_240_10SKIP_47SUBTESTS_AND_INTEGRATED_415_3SKIP_58SUBTESTS_44888560905;PASS_PRIVACY_44888560951;FAIL_EXPECTED_SAFE_ADDITIVE_EXISTING_PATH_EDIT_44888560942",
+        "scope": "RAW EAR V3 caller-supplied PCM16 -> source-bound AudioPerceptPacket -> A4 temporal attention -> C3 admission; no microphone/VAD/ASR/learning/Android"
+      },
+      "proof": "PR #2177 code/test head ce692a87e585c8cc7a6a871dd550ca585a6bac3d. RAW EAR focused 23/23 PASS on Python 3.11 and 23/23 on 3.13 (44888560930); staged 240 passed/10 skipped/47 subtests and integrated 415 passed/3 skipped/58 subtests (44888560905); privacy 44888560951 PASS. LOCAL_LINUX isolated module mirror 10/10 PASS + py_compile PASS; full Aii checkout BLOCKED by GitHub DNS. Safe-additive 44888560942 fails because existing producer/workflow edits are intentionally outside its additive-only allowlist. REDMI_UNVERIFIED; NOT_RELEASED."
     },
     {
       "id": "V14-007",

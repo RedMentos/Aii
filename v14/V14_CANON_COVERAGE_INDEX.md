@@ -1498,3 +1498,17 @@ The historical 1,255-heading inventory and all original V13 appendix bytes remai
 | Release / Redmi | Development branch `aa79b05037f6fedfffd84801105f00321c7f6055` | Post-merge exact push workflows queued/in progress at readback | Required exact-HEAD CI must all finish green; private owner-read RedMentos/Aiiii#368 still OPEN_NO_REPLY; installed SHA UNKNOWN |
 
 **Environment boundary:** exact local repository tests BLOCKED by GitHub DNS; CI tests use Linux runners and synthetic Store data. No local native-model training, Android/Redmi validation, installed SHA, user data, model download or permission change is claimed.
+
+### RAW EAR temporal salience overlay — PR #2177 (2026-11-21)
+
+| Canon path | CODE / Consumer | Evidence | Still not accepted |
+|---|---|---|---|
+| A0/A5 audio ingress | Caller-supplied mono PCM16 -> source-hash/time-bound AudioPerceptPacket; no microphone capture | Existing adapter integration tests in PR #2177 | Native microphone permission/feed and Redmi capture remain REDMI_UNVERIFIED |
+| A1 segmentation | One bounded caller window becomes one timed segment; no learned multi-scale boundary model | Synthetic adapter coverage only | Full audio segmentation, streaming frame boundaries and A1 parity remain open |
+| A2 teacher ear | Optional ASR/teacher view remains separate and absent from this producer | No teacher path claimed | ASR teacher, transcript provenance and teacher removal not accepted |
+| A3 student projector | No trainable audio projector added | NOT_IMPLEMENTED by this PR | Learned audio latent/projector and cross-modal alignment remain open |
+| A4 attention/salience | RAW EAR V3 voiced prosody cues plus TemporalVoiceEvidence feed the existing attention controller; gap decay and overlap accounting corrected | PR #2177 exact head ce692a87e585c8cc7a6a871dd550ca585a6bac3d; focused 23/23 on Python 3.11 and 23/23 on 3.13; staged 240/10 skipped/47 subtests; integrated 415/3 skipped/58 subtests; local isolated temporal 10/10 | Deterministic heuristic, not calibrated VAD or trained salience; no Redmi latency/quality proof |
+| A5->C3 admission | Source-bound acoustic summary can enter the bounded synthetic C3 admission adapter | Synthetic A5/A4/C3 adapter regression in #2177 | Not normal Runtime; no verified B1/B2->C4->C3 offer delivery |
+| G10C/G10D voice | RAW EAR acoustic path only | Partial synthetic path | No full-duplex media loop, speech effector/vocoder, microphone stream or interrupt-in-output test |
+
+**Environment:** GitHub Actions/Linux synthetic Store and focused fixtures; one isolated local Python module mirror. Full local Aii checkout BLOCKED by GitHub DNS. No native audio model, trained weights, Termux/Redmi test or phone receipt. PR #2177 remains DRAFT / NOT_RELEASED; safe-additive workflow rejects the intentional existing-file edit and is not bypassed. Whole-canon completion remains false.
