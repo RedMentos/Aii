@@ -117,3 +117,16 @@ Exact-head CI for the current source/test changes is pending. Full local Aii che
 - Strict safe-additive run 44908779431 **FAIL** by design at the existing-module allowlist: it reports "path outside inert-module/test/handoff scope". No bypass; Boss manual review remains required.
 
 The comparator workflow pin was corrected to afb27968b8d932e718020f6043d38fc34cc21986 in commit 39c2f1fb84657b459c40cde0ef7f3db62ca36b69. Exact-head rerun for that commit was not yet visible at readback. Do not treat the previous comparator failure as a benchmark failure; it was a stale source pin, but the new pin still requires a green rerun.
+
+
+## Comparator source-pin rerun — 2026-11-21
+
+The exact producer blob after the consent-lease change is afb27968b8d932e718020f6043d38fc34cc21986. The first comparator run at dd96 correctly detected that its expected pin was stale; no metric result was accepted from that failed run. The workflow pin was corrected in commit 39c2f1fb84657b459c40cde0ef7f3db62ca36b69.
+
+Exact comparator run 44909020840 then passed:
+- Python 3.13: 8/8 comparator tests PASS.
+- Python 3.14: 8/8 comparator tests PASS.
+- Pinned upstream dpirch/libfvad revision 532ab666c20d3cfda38bca63abbb0f152706c369 built on Linux; native make check 13/13 PASS on both Python runners.
+- Exact V3/temporal source blob verification and compile passed. This is LOCAL? No: GitHub-hosted Linux CI with native Linux libfvad. It is not Android/Bionic or Redmi.
+
+Staged/integrated run 44909020846 remained in progress at the last readback. The current branch head has later documentation/Board/Next Action commits; code/test blobs remain unchanged from the tested producer/test tree. Keep REDMI_UNVERIFIED / NOT_RELEASED.
