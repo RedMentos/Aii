@@ -58,6 +58,46 @@ def _estimate_pitch(frame: list[float], sample_rate: float) -> tuple[float | Non
     return sample_rate / lag, max(0.0, min(1.0, confidence))
 
 
+
+def _load_numpy():
+    """Load NumPy only when the explicitly requested accelerated backend is used."""
+    try:
+        import numpy as np
+    except ImportError:
+        return None
+    return np
+
+
+def _estimate_pitch_numpy(frame, sample_rate: float, np) -> tuple[float | None, float]:
+    """NumPy autocorrelation equivalent of _estimate_pitch for short 40-ms frames."""
+    values = np.asarray(frame, dtype=np.float64)
+    count = int(values.size)
+    minimum_lag = max(2, int(sample_rate / 400))
+    maximum_lag = min(count // 2, int(sample_rate / 65))
+    if maximum_lag < minimum_lag:
+        return None, 0.0
+    correlation = np.correlate(values, values, mode="full")[
+        count - 1 + minimum_lag:count + maximum_lag
+    ]
+    prefix = np.concatenate(([0.0], np.cumsum(values * values)))
+    lags = np.arange(minimum_lag, maximum_lag + 1)
+    denominator = np.sqrt(prefix[count - lags] * (prefix[count] - prefix[lags]))
+    valid = denominator > 1e-9
+    if not np.any(valid):
+        return None, 0.0
+    normalized = np.full(lags.shape, -np.inf, dtype=np.float64)
+    normalized[valid] = correlation[valid] / denominator[valid]
+    peak = float(np.max(normalized))
+    threshold = max(0.55, peak * 0.99)
+    candidates = np.flatnonzero(normalized >= threshold)
+    if not candidates.size:
+        return None, max(0.0, min(1.0, peak))
+    index = int(candidates[0])
+    lag = int(lags[index])
+    confidence = float(normalized[index])
+    return sample_rate / lag, max(0.0, min(1.0, confidence))
+
+
 def _percentile(values: list[float], fraction: float) -> float | None:
     """Return a linearly interpolated percentile for a small bounded frame list."""
     if not values:
@@ -129,7 +169,7 @@ def validate_voice_cues(cues: dict) -> dict:
     return dict(cues)
 
 
-def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
+def extract_voice_cues(pcm: bytes, sample_rate: int, *, backend: str = "python") -> dict:
     """Extract bounded pitch, voicing, energy and non-speech hints from mono PCM16."""
     if type(pcm) is not bytes or not pcm or len(pcm) % 2:
         raise ValueError("voice cue input must be complete PCM16 bytes")
@@ -137,6 +177,11 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
         raise ValueError("voice cue sample rate must be 8000..48000")
     if len(pcm) > sample_rate * 2:
         raise ValueError("voice cue window is limited to one second")
+    if type(backend) is not str or backend not in {"python", "numpy"}:
+        raise ValueError("voice cue backend must be 'python' or 'numpy'")
+    numpy_module = _load_numpy() if backend == "numpy" else None
+    if backend == "numpy" and numpy_module is None:
+        raise RuntimeError("NumPy voice cue backend is unavailable")
     samples = struct.unpack("<" + "h" * (len(pcm) // 2), pcm)
     overall_energy = sum(value * value for value in samples) / len(samples)
     overall_rms = math.sqrt(overall_energy) / 32768.0
@@ -167,7 +212,10 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
         frame_rms.append(rms)
         if rms < 0.002:
             continue
-        pitch, confidence = _estimate_pitch(frame, effective_rate)
+        if numpy_module is None:
+            pitch, confidence = _estimate_pitch(frame, effective_rate)
+        else:
+            pitch, confidence = _estimate_pitch_numpy(frame, effective_rate, numpy_module)
         if pitch is not None and confidence >= 0.55:
             pitches.append(pitch)
             voicing_scores.append(confidence)
@@ -493,8 +541,11 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                consent_check, finality, consent_guard=None, token_budget=512,
                                temporal_state: TemporalVoiceEvidence | None = None,
                                vad_stream: SileroVADStream | None = None,
-                               consent_lease: AudioConsentLease | None = None):
+                               consent_lease: AudioConsentLease | None = None,
+                               voice_backend: str = "python"):
     """Persist source-bound acoustic cues under an owned or caller-held consent lease."""
+    if type(voice_backend) is not str or voice_backend not in {"python", "numpy"}:
+        raise ValueError("voice_backend must be 'python' or 'numpy'")
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
     # A Runtime-wide caller may already hold the same provider lease through
@@ -507,7 +558,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             pcm, sample_rate, start_ms, consent=True, source_id=source_id, max_seconds=1
         )
         segment = raw["segments"][0]
-        cues = extract_voice_cues(pcm, sample_rate)
+        cues = extract_voice_cues(pcm, sample_rate, backend=voice_backend)
         vad_evidence = None
         if vad_stream is not None:
             vad_evidence = vad_stream.push_pcm16(
