@@ -336,14 +336,14 @@ class ModelCompareTests(unittest.TestCase):
     def test_report_write_is_private_exclusive_and_readback(self):
         path = model_compare.write_report_safely(self.home, "model-lab-report.json", '{"safe":true}')
         self.assertEqual(path.parent, self.home / "data")
-        self.assertEqual(path.read_text(encoding="utf-8"), '{"safe":true}\\n')
+        self.assertEqual(path.read_text(encoding="utf-8"), '{"safe":true}\n')
         info = path.stat()
         self.assertTrue(stat.S_ISREG(info.st_mode))
         self.assertEqual(stat.S_IMODE(info.st_mode), 0o600)
         self.assertEqual(info.st_nlink, 1)
         with self.assertRaisesRegex(FileExistsError, "refusing overwrite"):
             model_compare.write_report_safely(self.home, "model-lab-report.json", '{"safe":false}')
-        self.assertEqual(path.read_text(encoding="utf-8"), '{"safe":true}\\n')
+        self.assertEqual(path.read_text(encoding="utf-8"), '{"safe":true}\n')
 
     def test_report_symlink_target_refused_without_touching_target(self):
         outside = Path(self.tmp.name) / "outside-report.txt"
