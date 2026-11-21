@@ -533,3 +533,15 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 - Core PR [#2158](https://github.com/RedMentos/Aii/pull/2158), exact inspected head `79e7ffa7b5f81a4f3ac003c5ae34ee412baa04c6`: staged voice job fails on both Python 3.11 and 3.13 at one stale assertion expecting one total `PerceptPacket`. The normal text perception path and RAW EAR audio path each persist a different modality. QA review asks for exactly one text + one audio packet and a raw-PCM absence scan across all packet payloads; do not remove text perception to satisfy the count. Staged/integrated generic regression passes 240/415.
 - Existing private owner-read request `RedMentos/Aiiii#368` remains OPEN with zero comments. Installed Redmi SHA and updater consent remain UNKNOWN. No duplicate read request, UPDATE_REQUEST, shell action, device update, model/permission change or user-data mutation was performed.
 - **User action: none.** Keep `REDMI_UNVERIFIED`; wait for the existing owner-read receipt. Next code actions are Boss sync/review of #2163 and Core correction of #2158's modality-count regression.
+
+## Research & Perception — 2026-11-21 08:22 CET
+
+- Current release base at final candidate creation: 04635a5522ab095f79544e23d9aa0330b0c9ff7a.
+- Rebased candidate: PR #2177, exact head 1c4bb678025b421b98766cbce61570eec4683a52. The RAW EAR V3 producer blob is 0e328d14883840190937f0fef24a8e895ba7261c; test blob 96b00b2e1b6340e2a61a8b6f230be8747889ab38.
+- Verified: GitHub CI focused tests PASS on Python 3.11 and 3.13 (12 each); privacy scan PASS. Staged/integrated checks were pending at the last readback. Generic safe-additive fails by design because an existing producer is changed; no policy bypass. Local isolated synthetic algorithm reproduction 13/13 PASS; exact local repo suite blocked because GitHub DNS is unavailable.
+- User-visible capability remains limited to caller-supplied PCM16 windows feeding bounded timestamped voice cues into A4 attention and C3 admission. It is not microphone capture, VAD, ASR, speaker identification, learned speech or normal Runtime integration. Core PR #2158 still needs the V3 pin and actual downstream consumer.
+- Full-text research added as R-021: cross-model activation transfer is architecture-dependent; one tested pair had a modest causal effect while two Mistral-targeted pairs were null. Hidden-state retrieval does not prove semantic correctness. ggml-extractor is MIT and potentially useful for same-context middle-layer capture, but its exact b10964 build and Android ABI are unverified; V13 already contains a read-only native_layer_taps.cpp, so no dependency was added.
+- Phone status: private owner-read #115 is dated 18 Nov, with no newer receipt; installed SHA and updater consent remain unknown. REDMI_UNVERIFIED. No device action, update request, model download/swap or permission change.
+- Next: Boss review #2177; Core update #2158 pin and prove normal Runtime plus B1/B2→C4→C3 delivery; Research validates middle-layer extraction on exact b10964 and then measures real receiver utility with no-message/shuffled/symbolic controls.
+
+User action: none.
