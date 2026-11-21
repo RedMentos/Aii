@@ -49,6 +49,11 @@ R-024 records the full kiloVAD paper (arXiv:2607.25870v1, accepted INTERSPEECH 2
 - This remains a caller-supplied PCM16 adapter. Microphone capture, trained VAD, ASR, speech decoder/vocoder, full-duplex, native B1/B2 inference, trained B3 latent coupling and whole-Canon acceptance remain open.
 - The V3 producer/comparator surfaces from #2177/#2187 are present here with temporal-state additions. Those older drafts remain open until Boss decides the safe integration path; this PR did not close them.
 
+
+## Cross-organ research checkpoint — B3 latent acceptance
+
+R-007 in the research ledger is now upgraded from abstract-only to FULLTEXT_REVIEWED for arXiv:2608.16347v2 (2026-11-09). Its key result is not “latent communication works generally”: projection retrieval was 45–50% for three decoder-only pairs, but actual generation-level injection passed the pre-registered test for only Qwen2-0.5B→Phi-3-mini (23.3% vs 0% negative control, FDR p=0.0469, n=30); both Mistral-targeting pairs were null, and the positive trials often produced related-but-wrong answers. The paper explicitly measures transfer of a representational vehicle, not shared meaning, and reports no latency/token savings. It also identifies loss of human-readable monitoring as a risk. The V14 consequence is pair-specific receiver injection plus task-level utility over SOURCE_EXACT/NO_MESSAGE, wrong-source/shuffle/zero-vector controls, semantic correctness, retention, and resource measurements. This strengthens the existing B3 gate; it does not turn B3 ON. Paper-reported code/data availability: Zenodo 10.5281/zenodo.24088479 (MIT code, CC BY 4.0 data/docs); no code, weights or dataset were downloaded.
+
 ## Next
 
 1. Boss performs independent manual review of the non-additive existing-module edit; keep the strict safe-additive failure visible.
