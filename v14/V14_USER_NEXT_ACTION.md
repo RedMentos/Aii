@@ -31,7 +31,7 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | source_HEAD | `c3c32c05a0374e970d274f8a777a7ab85c067d66` (verified current `gpt6/v13-private-remote-bridge-20261111` branch HEAD at JEPA readback; V14 PRs #2143/#2147/#2148 are unmerged candidates above it) |
 | last_integrated_functional_change | PR #2138 merged as `5b9171a4` (release/updater checkpoint); PR #2137 T8 temporal Store path merged as `3db6d1f`, still experimental/not normal-Runtime-wired. PR #2136 PCM16 RAW-EAR adapter remains synthetic and not called by normal Runtime/chat input. |
 | local_test_result | BLOCKED — no full Aii checkout; container DNS cannot resolve github.com. No exact LOCAL_LINUX repository test claimed. |
-| ci_test_result | PR #2148 code/test head `10e058a7`, exact run `44854219157` on docs/coverage head `3d8e5544`: Python 3.13 `59 passed in 8.18s`, Python 3.14 `59 passed in 7.74s`, compile PASS. Current PR head `e46b87d7` adds only docs after the tested head. #2145 separate runtime candidate: 52 V14 learning tests PASS but one Runtime test FAILs on `prediction_error` vs persisted `error`; its T8 consumer still uses newest-first latest-N without persistent cursor. |
+| ci_test_result | PR #2148 current head `fb5e75f2`; exact code/test tree head `e46b87d7`, run `44854338438`: Python 3.13 `59 passed in 6.52s`, Python 3.14 `59 passed in 8.81s`, compile PASS. Only later commit is a next-action Markdown table refresh. #2145 separate runtime candidate: 52 V14 learning tests PASS but one Runtime test FAILs on `prediction_error` vs persisted `error`; its T8 consumer still uses newest-first latest-N without persistent cursor. |
 | phone_installed_sha | UNKNOWN — no fresh owner-verified PIPELINE_STATUS receipt |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
 | device_model_comparison | NOT_RUN — no current device measurements or approved model experiment |
@@ -294,3 +294,8 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - PR #2148 remains open/mergeable and stacked on #2147, which is stacked on #2143. No merge, release or deployment has occurred. Release SHA: NOT_RELEASED. Phone SHA: UNKNOWN. REDMI_UNVERIFIED.
 - Next: independent review/merge chain #2143→#2147→#2148, then integrate the source/digest-disjoint oldest-first T8 cursor into #2145 and wire WorldJEPAStoreConsumer to the postcommit Runtime in SHADOW. #2145 still has the field-name test mismatch and newest-first scan; it does not invoke the JEPA learner.
 - User action: none. No manual Termux command, model download, model swap, permission change or phone action is needed for this repository checkpoint.
+
+
+## Latest exact CI readback — 2026-11-21
+
+PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed GitHub Actions run 44854338438: Python 3.13 59 passed in 6.52s; Python 3.14 59 passed in 8.81s; compile and both jobs PASS. The only later commit is a next-action Markdown table refresh; no code or test file changed after the tested e46b head. The earlier run 44854219157 also passed 59/59 on both versions and is superseded by this readback.
