@@ -133,3 +133,8 @@ PR #2143 is no longer a draft and is ready for independent review. The exact tes
 ## Final JEPA PR readback — 2026-11-21
 
 PR #2148 current head 6fec2dec1534285b654db60349efcd81f81b846c; code/test head 10e058a7418a5356b96f22f5344a5a3384f96214. Exact run 44854219157 tested docs/coverage head 3d8e55441d208eb8aec76cd121cc9f068376a88c and passed 59 tests on Python 3.13 (8.18s) and 59 on Python 3.14 (7.74s), including compilation. The only subsequent commit is research-ledger documentation; no code/test changes followed the tested head. PR is open, stacked on #2147, and not released. No local checkout or Redmi proof.
+
+
+## Latest exact CI readback — 2026-11-21
+
+PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed GitHub Actions run 44854338438: Python 3.13 59 passed in 6.52s; Python 3.14 59 passed in 8.81s; compile and both jobs PASS. The only later commit is a next-action Markdown table refresh; no code or test file changed after the tested e46b head. The earlier run 44854219157 also passed 59/59 on both versions and is superseded by this readback.
