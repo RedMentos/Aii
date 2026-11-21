@@ -54,5 +54,5 @@
 ## Shared handoff updated — 2026-11-21
 
 - V14_WORK_BOARD.json: V14-005 moved from READY to IN_PROGRESS_PARTIAL with PR #2142, exact CI run 44849343250, and explicit NOT_RUN/REDMI_UNVERIFIED native evidence.
-- V14_USER_NEXT_ACTION.md: added a Research & Perception checkpoint and corrected source_HEAD (shared base c3c32c05; last code-bearing release 5b9171a), local-test boundary, candidate-only status and next action.
-- The PR's current head is authoritative and should be read live; the code-bearing CI-tested commit remains 3e13188a414b1cc3ff327fe9897a07d0d5ff8900. Subsequent commits only update board/next-action/handoff/ledger.
+- V14_USER_NEXT_ACTION.md: added a Research & Perception checkpoint and corrected source_HEAD (shared base c3c32c05; latest code-bearing merge 3db6d1f has exact merge-push CI green but no Redmi install receipt), local-test boundary, candidate-only status and next action.
+- The PR's current head is authoritative and should be read live; code/manifest commit 6aadf841434bcc43fbde1827a4ed2ef9d61bc4b0 passed exact CI run 44849343250. Subsequent candidate-manifest edits only clarified license wording and fixed a status label; LOCAL_LINUX JSON_PARSE_PASS, no CI rerun for those metadata-only edits. Subsequent other commits update board/next-action/handoff/ledger.
