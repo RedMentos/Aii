@@ -8,7 +8,7 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': '5743bb6fbba9ec2a46b4ed59d53f9bc6a6f9f9a872ff59740ecac8b4ad1d5805',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': '78a41a3603f94967a64880c7668f3d9d6c82cc28399cb1c04ccdcc04c4ecd2b7',
     'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
     'scripts/termux_chat_recovery_candidate_20261112.py': 'e0885ebc04ae16826f2a8d5cc3210ddc2f76d1ef40d22824190deaafaa13ffa8',
     'scripts/termux_idle_recovery_candidate_20261112.py': '97887387b927f9e30a06b9883253e9b866b5c579da97cfbb4f24788d1102817f',
