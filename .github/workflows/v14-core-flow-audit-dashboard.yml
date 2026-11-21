@@ -19,6 +19,7 @@ on:
       - "v13/code/v13/flow_audit_dashboard.py"
       - "v13/code/v13/mobile_dashboard.py"
       - "v13/code/v13/mobile_dashboard.html"
+      - "v13/code/tests/test_flow_audit.py"
       - "v13/code/tests/test_flow_audit_dashboard.py"
       - "v13/code/tests/test_mobile_dashboard.py"
       - ".github/workflows/v14-core-flow-audit-dashboard.yml"
@@ -40,7 +41,7 @@ jobs:
           python -m pytest -q tests/test_mobile_dashboard.py -k dashboard_contains_real_click_targets_not_shell
       - name: Compile Python
         run: |
-          python -m py_compile v13/code/v13/flow_audit_dashboard.py v13/code/v13/mobile_dashboard.py
+          python -m py_compile v13/code/v13/flow_audit.py v13/code/v13/flow_audit_dashboard.py v13/code/v13/mobile_dashboard.py
       - name: Validate inline dashboard JavaScript syntax
         run: |
           python - <<'PY'
