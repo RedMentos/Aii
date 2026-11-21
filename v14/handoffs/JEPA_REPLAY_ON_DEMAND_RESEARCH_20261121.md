@@ -88,3 +88,17 @@ Next code task, after Boss review/rebase of #2247:
 5. Test source provenance, duplicate suppression, veto/no-eligibility negative controls, parameter/optimizer/EMA diffs, restart/readback, rollback and B1/B2/SELF receiver behavior. Keep production gates unchanged until evidence and independent review.
 
 **User action:** none required now. No model swap/download, Termux command, permission grant or device approval is requested.
+
+
+## 7. Integration sequencing and shared-file ownership
+
+- Boss/Core integration branch behind PR [#2258](https://github.com/RedMentos/Aii/pull/2258) is code-bearing; its current base/branch head is `9922cf86ecf8801d30a46a1e98817e5c6c1db092`.
+- PR #2247 and the Boss integration lane overlap in the pin/deployment chain, specifically:
+  - `v13/code/scripts/integrated_world_training_resume_candidate_20261111.py`
+  - `v13/code/scripts/stage_integrated_candidate.py`
+  - `v13/code/scripts/termux_runtime_recovery_candidate_20261112.py`
+  - `v13/code/v13/runtime_deploy.py`
+- Core PR [#2278](https://github.com/RedMentos/Aii/pull/2278) was closed into the Boss integration branch at `94cc7089d8e4138ae4d75123d7373626d15d0f6c`. Follow-up Boss pin-chain PR [#2279](https://github.com/RedMentos/Aii/pull/2279) is stacked on that commit, current head `98892cfb7338baf7c3fd7a69092f03b1b50b` (verify latest before acting).
+- At this checkpoint, #2279's integrated PyTorch/Transformers/PEFT regression passes, but its staged-runtime job fails with `StagedReleaseError: Staged V14 release contract is incomplete: MISSING_BASELINE_VALIDATION`. This is a Boss-owned pin-chain blocker, not a JEPA consumer failure.
+- **Do not merge #2247 independently or mark it release-ready.** Keep it draft. After Boss resolves #2279 and the shared pin chain lands, rebase #2247 onto the new verified integration/release ancestor, reconcile the four overlapping files, recompute every dependent pin/hash, then rerun the full exact-head workflow set. The JEPA consumer/test/handoff changes are not a substitute for that integration proof.
+- The shared `V14_WORK_BOARD.json`, `V14_USER_NEXT_ACTION.md`, master blueprint and research ledger remain Boss/Integrator-owned. This lane has supplied exact status and evidence in comments on #2258 and whole-system issue #1984 rather than writing those files concurrently.
