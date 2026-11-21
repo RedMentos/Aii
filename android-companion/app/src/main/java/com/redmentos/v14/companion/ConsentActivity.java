@@ -58,10 +58,19 @@ public final class ConsentActivity extends Activity {
                         + "Expires: " + action.expiresAt + "\n\n"
                         + "This dispatches the app launch intent only. It does not verify that the app reached foreground, "
                         + "does not observe its screen, and cannot authorize learning.")
-                .setNegativeButton("Deny", (dialog, which) -> finishWithReceipt("USER_DENIED", false))
+                .setNegativeButton("Deny", (dialog, which) -> deny())
                 .setPositiveButton("Approve launch", (dialog, which) -> launch())
-                .setOnCancelListener(dialog -> finishWithReceipt("USER_DENIED", false))
+                .setOnCancelListener(dialog -> deny())
                 .show();
+    }
+
+    private void deny() {
+        if (!db.claimForDenial(action.actionId, System.currentTimeMillis())) {
+            Toast.makeText(this, "Action was cancelled, expired or already decided", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        finishWithReceipt("USER_DENIED", false, "DENYING");
     }
 
     private void launch() {
@@ -76,7 +85,7 @@ public final class ConsentActivity extends Activity {
             finish();
             return;
         }
-        if (!db.claimForExecution(action.actionId)) {
+        if (!db.claimForExecution(action.actionId, System.currentTimeMillis())) {
             Toast.makeText(this, "Action was cancelled or already claimed", Toast.LENGTH_LONG).show();
             finish();
             return;

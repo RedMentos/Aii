@@ -80,11 +80,20 @@ final class CompanionDb extends SQLiteOpenHelper {
         return out;
     }
 
-    synchronized boolean claimForExecution(String actionId) {
+    synchronized boolean claimForExecution(String actionId, long nowMillis) {
+        return claim(actionId, nowMillis, "EXECUTING");
+    }
+
+    synchronized boolean claimForDenial(String actionId, long nowMillis) {
+        return claim(actionId, nowMillis, "DENYING");
+    }
+
+    private boolean claim(String actionId, long nowMillis, String decisionState) {
         ContentValues values = new ContentValues();
-        values.put("status", "EXECUTING");
+        values.put("status", decisionState);
         int changed = getWritableDatabase().update("actions", values,
-                "action_id=? AND status='PENDING_USER_APPROVAL'", new String[]{actionId});
+                "action_id=? AND status='PENDING_USER_APPROVAL' AND expires_at>?",
+                new String[]{actionId, Long.toString(nowMillis)});
         return changed == 1;
     }
 
