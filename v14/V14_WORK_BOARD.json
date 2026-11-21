@@ -28,8 +28,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Current branch HEAD 8f1b260dce19047a04df45d510b6642d009826bc is a documentation/handoff checkpoint atop code release 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e. The code release exact updater-required push CI is GREEN (owner-read, private bridge, staged-context; staged-runtime 240 passed/10 skipped/47 subtests; integrated regression 415 passed/3 skipped/58 subtests). New docs-commit push CI is QUEUED. Private issues #351–354 have zero device comments; installed SHA UNKNOWN / REDMI_UNVERIFIED.",
-      "next_step": "Do not send UPDATE_REQUEST until a fresh owner-authenticated PIPELINE_STATUS receipt confirms the phone state and consent. Current read-only requests #351–354 are unanswered; no duplicate installer or phone mutation.",
+      "proof_environment": "Last code-bearing release commit is 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e, with updater-required exact push CI GREEN. Subsequent commits are documentation-only handoff/board checkpoints; their own push CI must be read fresh. Private issues #351–354 have zero device comments; installed SHA UNKNOWN / REDMI_UNVERIFIED.",
+      "next_step": "Do not send UPDATE_REQUEST until a fresh owner-authenticated PIPELINE_STATUS receipt confirms phone state and consent. Current read-only requests #351–354 are unanswered; no duplicate installer or phone mutation.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 Boss readback: exact merge SHA 5b9171a is green on updater-required push CI. GitHub CI is not Android installation.",
       "latest_qa_candidate": {
@@ -118,7 +118,7 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Code release PR #2138 merged as 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e; exact updater-required push CI GREEN. Current branch HEAD 8f1b260dce19047a04df45d510b6642d009826bc adds only V14 board/handoff docs; its push CI is QUEUED. Whole-Canon implementation remains open and Redmi is unverified.",
+      "proof_environment": "Code release PR #2138 merged as 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e; exact updater-required push CI GREEN. Later branch commits are documentation-only; verify their exact push CI separately. Whole-Canon implementation remains open and Redmi is unverified.",
       "next_step": "Continue one compatible end-to-end candidate at a time, resolve semantic source-pin dependencies rather than refreshing hashes blindly, and keep the whole-Canon coverage/owner matrix current.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21: #2138 merged/read back; exact release push CI green; Redmi receipt absent."
@@ -132,7 +132,7 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "V14_USER_NEXT_ACTION and V14_WORK_BOARD were updated/read back in docs-only commit 8f1b260dce19047a04df45d510b6642d009826bc. Current docs-commit push CI is QUEUED; phone installed SHA remains unknown.",
+      "proof_environment": "V14_USER_NEXT_ACTION and V14_WORK_BOARD were updated in Boss-owned documentation-only commits after code release 5b9171a. No runtime source changed in those handoff commits; always read live branch HEAD at next run.",
       "next_step": "Keep this file and board synchronized after #2137 CI completion or any new release/device receipt; no user command until autonomous verified updater path is available.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 Boss: no user action required; no device update requested."
@@ -191,7 +191,6 @@
       "user_action_required": false
     }
   ],
-  "current_release_head": "8f1b260dce19047a04df45d510b6642d009826bc",
   "current_redmi_status": "NO_LIVE_RECEIPT / REDMI_UNVERIFIED",
   "last_code_release_head": "5b9171a457f32cafa6cc05fb88e80ef8b4dad08e"
 }
