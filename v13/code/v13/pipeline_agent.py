@@ -280,6 +280,11 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits, manual):
         updated = {"status":"UP_TO_DATE"}
     activated = False
     if name == "runtime":
+        # Source checkout may take time. Recheck the latest exact-commit CI
+        # result after that mutation and immediately before launcher activation.
+        if not updates.ci_passed(commit, scope="runtime"):
+            state[name] = "CI_WAIT"
+            return
         # A Git checkout update is NOT a runtime update. Stage a complete
         # code snapshot, check source/Canon, and atomically switch bin/v13.
         receipt = runtime_deploy.deploy(
