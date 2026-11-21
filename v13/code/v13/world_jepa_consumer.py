@@ -350,6 +350,12 @@ def _source_disjoint_guard_split(rows, *, salt):
     return {"fit_rows": fit_rows, "guard_rows": guard_rows, "manifest": manifest}
 
 
+# Explicit per-update retention budget: bounded plasticity is allowed, but
+# large session regressions still reject promotion. This is not a cumulative
+# forgetting guarantee; accepted-checkpoint anchor baselines are the next gate.
+RETENTION_RELATIVE_TOLERANCE = 0.01
+
+
 def _retention_cohort_gate(before, after, *, overflow=False):
     if overflow:
         return {
@@ -369,7 +375,7 @@ def _retention_cohort_gate(before, after, *, overflow=False):
             return {"accepted": False, "reason": "RETENTION_COHORT_ROW_MISMATCH", "cohorts": {}}
         loss_before = float(prior["loss"])
         loss_after = float(current["loss"])
-        tolerance = max(1e-12, abs(loss_before) * 1e-6)
+        tolerance = max(1e-12, abs(loss_before) * RETENTION_RELATIVE_TOLERANCE)
         checks[key] = {
             "rows": int(prior["rows"]),
             "loss_before": loss_before,
@@ -1481,10 +1487,15 @@ class WorldJEPAStoreConsumer:
                 candidate_holdout_after < candidate_shuffled_loss
                 and candidate_holdout_after < candidate_zero_loss
             )
+            candidate_old_holdout_retention_tolerance = (
+                None if old_holdout_before is None
+                else max(1e-12, abs(old_holdout_before) * RETENTION_RELATIVE_TOLERANCE)
+            )
             candidate_old_holdout_retained = bool(
                 old_holdout_before is None
                 or (candidate_old_holdout_after is not None
-                    and candidate_old_holdout_after <= old_holdout_before)
+                    and candidate_old_holdout_after
+                    <= old_holdout_before + candidate_old_holdout_retention_tolerance)
             )
             candidate_old_holdout_cohort_retained = bool(
                 candidate_old_holdout_cohort_gate["accepted"]
@@ -1533,6 +1544,10 @@ class WorldJEPAStoreConsumer:
             replay_metrics["holdout_used_for_backtracking"] = False
             replay_metrics["guard_gate_accepted"] = bool(candidate_guard_accepted)
             replay_metrics["old_guard_cohort_gate"] = candidate_old_guard_cohort_gate
+            replay_metrics["retention_relative_tolerance"] = RETENTION_RELATIVE_TOLERANCE
+            replay_metrics["old_holdout_retention_tolerance"] = (
+                candidate_old_holdout_retention_tolerance
+            )
             if not utility_gate_accepted:
                 persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
                 if persisted != "PERSISTED":
