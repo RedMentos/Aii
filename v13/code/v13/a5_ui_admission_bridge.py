@@ -560,12 +560,20 @@ class A5UIRuntimeAdapter:
         return revoke_ui_observation(self.runtime, source_id)
 
     def close(self):
-        """Cancel an active consuming turn, then clear every local UI source before Store close."""
+        """Clear local UI state after provider revocation and Runtime worker exit.
+
+        The OS provider must revoke its session first (pre-lock cancel, then
+        post-lock cleanup). If a turn is still active, request cancellation but
+        fail closed: the caller must wait for worker exit and retry before Store
+        shutdown. This method does not revoke an Android OS permission itself.
+        """
         active = getattr(self.runtime, "turn_event", None)
         cancel_event = getattr(self.runtime, "cancel_event", None)
         if (isinstance(active, dict)
                 and type(active.get("brain_generation_id")) is str
-                and getattr(self.runtime, "current", None) == "turn"
-                and callable(getattr(cancel_event, "set", None))):
-            cancel_event.set()
+                and getattr(self.runtime, "current", None) == "turn"):
+            setter = getattr(cancel_event, "set", None)
+            if callable(setter):
+                setter()
+            raise RuntimeError("A5 UI close requires provider revocation and Runtime turn exit")
         return tuple(self.revoke(source_id) for source_id in list(self.runtime._a5_ui_unsubscribe))

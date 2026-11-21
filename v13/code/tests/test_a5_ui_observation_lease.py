@@ -272,6 +272,27 @@ class A5UIObservationLeaseTests(unittest.TestCase):
             with self.lease(second) as grant:
                 self.adapter.ingest(second, grant)
 
+    def test_close_cancels_active_turn_and_refuses_early_local_cleanup(self):
+        obs = observation()
+        with self.lease(obs) as grant:
+            result = self.adapter.ingest(obs, grant)
+            with self.assertRaises(RuntimeError):
+                self.adapter.close()
+            self.assertTrue(self.runtime.cancel_event.is_set())
+            self.assertIn(obs["source_id"], self.runtime._a5_ui_unsubscribe)
+            source = self.store.one("SELECT deleted FROM sources WHERE id=?", (obs["source_id"],))
+            self.assertEqual(source["deleted"], 0)
+        # Provider revocation/cleanup is separate; only after the worker exits
+        # may Runtime close its local adapter state before Store shutdown.
+        self.runtime.current = None
+        self.runtime.turn_event = None
+        result = self.adapter.close()
+        self.assertEqual(len(result), 1)
+        source = self.store.one("SELECT deleted FROM sources WHERE id=?", (obs["source_id"],))
+        self.assertEqual(source["deleted"], 1)
+        self.assertNotIn(obs["source_id"], self.runtime._a5_ui_unsubscribe)
+        self.assertTrue(result[0]["source_tombstoned"])
+
     def test_no_active_runtime_turn_rejects_ui_observation(self):
         self.runtime.turn_event = None
         with self.assertRaises(ValueError):
