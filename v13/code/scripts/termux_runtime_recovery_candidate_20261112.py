@@ -8,10 +8,10 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': '104bd5d36d5157d61bcd97069a76da92ef8a31451de2ffddb4bb5d2cae51b96c',
-    'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
-    'scripts/termux_chat_recovery_candidate_20261112.py': 'e0885ebc04ae16826f2a8d5cc3210ddc2f76d1ef40d22824190deaafaa13ffa8',
-    'scripts/termux_idle_recovery_candidate_20261112.py': '97887387b927f9e30a06b9883253e9b866b5c579da97cfbb4f24788d1102817f',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': '0ca70ba8b6b21d2225fa9f0f731d8733dcb8f2104bfcfc86ad3543ad1a4b56c8',
+    'scripts/termux_probe_recovery_candidate_20261112.py': 'a39910115f231f6979546ab5fb28d41d5ba82e11e6adbe65e8a199ca6430c42d',
+    'scripts/termux_chat_recovery_candidate_20261112.py': '704c8bb082301c428e16fcff4bf7e02169844bf694c6196fb5f4fb1f04cfa932',
+    'scripts/termux_idle_recovery_candidate_20261112.py': '6d997fab79c183aedd6ccd39b2f82b03adc102333ae6f3b1f8aac1435bcbf23a',
 }
 
 
@@ -40,13 +40,13 @@ def build_sources(code_dir, *, include_postcommit=True):
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
     arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
-                      '72bf8a829a7de064e7703271228bcdf02632108418c41c571126fbd8c05d5567')
+                      'e6d77a5ccd6c44f940c0f9122e6586ea0fde39e2886d0049f1a29260835ff4e9')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
-                              'c65d6ac26c72dbd7c9563cca3dfc165d6336320624f5a6083bc7b707dbc7c1b3')
+                              'e629dba68dccdbf2019673b59ec9475a7839af4bcfc030c79560a505b48d3815')
     result = arithmetic_outcome.apply_sources(code_dir, result)
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     '44216ae22cc92e638ca36b71a9e62f95b130cf21ce0c2b550a6ecdc3ccca9a94')
+                     '51ae58d0282e798cff08be1ff45a411e53d3ffc1e9fb074a1443c2a7ec1ea2bb')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
@@ -54,7 +54,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     if path.is_symlink() or not path.is_file():
         raise ValueError('Context budget builder missing or unsafe')
     candidate = path.read_bytes()
-    if hashlib.sha256(candidate).hexdigest() != 'e904eba285af6c5079a91e886e7b6d9b9a6c2ecbcd352adcd351ddef3b150fa7':
+    if hashlib.sha256(candidate).hexdigest() != '7ef3a233ff9884b371bd323fd48f7481c13ebbf3f1808bd2daff19da939c4295':
         raise ValueError('Context budget builder source changed')
     namespace = {'__name__': 'v13_checked_context_budget', '__file__': str(path)}
     exec(compile(candidate, str(path), 'exec'), namespace)
@@ -78,13 +78,14 @@ def build_sources(code_dir, *, include_postcommit=True):
         if path.is_symlink() or not path.is_file():
             raise ValueError('Postcommit observer builder missing or unsafe')
         raw_candidate = path.read_bytes()
-        if hashlib.sha256(raw_candidate).hexdigest() != '0fec24d5b5bf7c1d270a3143811a4e62da65893beae84c3b8ce72baf3765e670':
+        if hashlib.sha256(raw_candidate).hexdigest() != '29f3a88d9de64596ba086886913a1a09a0d37ac01a7ea144b80c5015a90f6946':
             raise ValueError('Postcommit observer builder source changed')
         namespace = {'__name__': 'v13_checked_postcommit', '__file__': str(path)}
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
         runtime = result['v13/runtime.py']
-        if hashlib.sha256(runtime).hexdigest() != 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2':
-            raise ValueError('Integrated observer Runtime source changed')
+        runtime_hash = hashlib.sha256(runtime).hexdigest()
+        if runtime_hash != 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2':
+            raise ValueError('Integrated observer Runtime source changed: ' + runtime_hash)
         runtime = namespace['apply_source'](runtime)
         # LateWatch runs during C3 streaming and must obey the same resolved
         # per-turn body selection as the foreground and post-answer schedules.
@@ -125,13 +126,13 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             '01e034e478eea9d7ec6c034adaa313e7e0b2e9bccaf21712671b0b3546cccfab')
+                             '9e518fc7220b6b96b98871263921c4e3c01c8ea41005a9a5dbe53c2b2ef16197')
         result = control_guard.apply_sources(code_dir, result)
         # Feature Age belongs to the final deployed stage. The partial
         # pre-postcommit builder must retain its earlier exact Runtime hash.
         # RAW Age/operator/UI remain pristine for the old phone updater.
         laboratory = load(code_dir, 'scripts/lab_age_stage_candidate_20261118.py',
-                          'c09e31ae86901302b8414ddae794e5df5ccbe59292cc700f22ba709701d5acdf')
+                          '783564cd31bb665c6391aa67e85a1a2dcad2a214a539a98b252d37c31f8f2f1c')
         result = laboratory.apply_sources(code_dir, result)
     for name, raw in result.items():
         if name.endswith('.py'):
