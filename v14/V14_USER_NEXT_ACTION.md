@@ -28,16 +28,16 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 
 | Feld | Aktueller Wert |
 |---|---|
-| source_HEAD | `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (PR #2138 merge readback 2026-11-21; exact staged push CI still running) |
+| source_HEAD | `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (PR #2138 merge; exact updater-required push CI GREEN 2026-11-21) |
 | last_integrated_functional_change | PR #2136 merged in `16f75fca`: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter; not yet called by normal Runtime/chat input, synthetic only |
 | local_test_result | NOT_RUN — no full local repository checkout in this worker |
-| ci_test_result | PR #2138 exact head `8ca7a298` passed owner-read (27+33 tests), Python 3.14 staged startup, offline bridge, staged-runtime (240/10 skipped/47 subtests), integrated regression (415/3 skipped/58 subtests); additive-only policy check failed on intentional existing-file changes and was not bypassed. Boss merged it as `5b9171a4`. On the exact merge SHA: owner-read push PASS, private-bridge push PASS, staged-context push IN_PROGRESS; source-contracts and integrated-regression also IN_PROGRESS. Latest-run gate correctly blocks until the newer staged run finishes. |
+| ci_test_result | PR #2138 exact head `8ca7a298` passed owner-read (27+33 tests), Python 3.14 staged startup, offline bridge, staged-runtime (240/10 skipped/47 subtests), integrated regression (415/3 skipped/58 subtests); additive-only policy check failed on intentional existing-file changes and was not bypassed. Boss merged it as `5b9171a4`. Exact merge SHA: owner-read push PASS, private-bridge push PASS, staged-context push PASS (staged-runtime 240/10 skipped/47 subtests; integrated regression 415/3 skipped/58 subtests), coordinated source contracts PASS. This verifies the updater gate on CI, not Android deployment. |
 | phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
 | device_model_comparison | NOT_RUN |
 | proposed_model_change | NONE – erst anhand echter Tests |
 | requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
-| next_developer_action | Finish exact merge-SHA CI for `5b9171a4`; if green, obtain a fresh owner-verified PIPELINE_STATUS receipt before any device update. Core/JEPA rebuild staged hash-pinned candidate chains for #2139/#2140/#2135, fix the actual consumer failures and rerun staged-runtime + integrated regression; continue whole-Canon integration. |
+| next_developer_action | Obtain a fresh owner-verified PIPELINE_STATUS receipt; if it confirms explicit auto-update consent and a compatible updater, Boss may send one UPDATE_REQUEST and then verify a separate installed-SHA receipt. Core/JEPA rebuild staged hash-pinned candidate chains for #2139/#2140/#2135, fix actual consumer failures and rerun staged-runtime + integrated regression; continue whole-Canon integration. |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
@@ -150,3 +150,14 @@ Private V13OBS issue #115 is the newest device receipt currently available; it i
 - **Local execution:** full repository checkout/tests NOT_RUN because this worker cannot resolve `github.com`; exact GitHub Actions logs were inspected instead.
 
 **User action:** none. No new Termux command, model download/swap, permission change or phone update is justified.
+
+
+## Exact release CI completion — 2026-11-21 01:46 CET
+
+- **Current release SHA:** `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (PR #2138 merged).
+- **Exact updater-required CI:** owner-read push PASS [44845659008](https://github.com/RedMentos/Aii/actions/runs/44845659008); private-bridge push PASS [44845658907](https://github.com/RedMentos/Aii/actions/runs/44845658907); staged-context push PASS [44845658992](https://github.com/RedMentos/Aii/actions/runs/44845658992), including staged-runtime 240 passed / 10 skipped / 47 subtests and integrated regression 415 passed / 3 skipped / 58 subtests. Coordinated source contracts PASS [44845662784](https://github.com/RedMentos/Aii/actions/runs/44845662784). The latest-run updater fix is CI-verified on this exact merge SHA.
+- **Release boundary:** CI_GREEN, but NOT_ANDROID_DEPLOYED. Private HEALTH #352, PIPELINE_STATUS #353 and DIAGNOSTICS #354 still have no device comments; phone installed SHA and updater state remain UNKNOWN / `REDMI_UNVERIFIED`. No UPDATE_REQUEST, installer, shell, model, permission or data mutation was made.
+- **Next device step:** use the existing #353 owner-read receipt if it arrives. Only if it confirms the current pipeline and explicit auto-update consent may Boss send one UPDATE_REQUEST, followed by a separate PIPELINE_STATUS readback proving the installed SHA. If no receipt, no device action.
+- **Functional blockers remain:** #2139 staged Runtime pin chain; #2140 arithmetic output/source-authority tests; #2135 online-world candidate pin chain; #2133/#2137 temporal learning safety/holdout integration. P0 #1904 real phone correctness/latency/B1-B2 delivery remains unverified.
+
+**User action:** none. GitHub CI green does not imply the Redmi has updated.
