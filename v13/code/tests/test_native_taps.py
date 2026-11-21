@@ -65,5 +65,14 @@ class NativeTapIdentity(unittest.TestCase):
         from v13.runners import TAP_SPECS
         self._tap('B2_GIST','lfm2.result_norm.final.v1',2048,TAP_SPECS['body'])
 
+    def test_cross_role_tap_binding_fails_before_native_request(self):
+        with tempfile.TemporaryDirectory() as folder:
+            home=Path(folder)
+            runner=LlamaRunner(home,'B1_DETAIL',home/'unused.gguf',{},purpose='tap')
+            runner.tap_id='qwen35.result_norm.final.v1'
+            runner.tap_dim=1024
+            with self.assertRaises(Unavailable):
+                runner.tap('synthetic source',threading.Event(),time.monotonic()+10)
+
 
 if __name__=='__main__':unittest.main()
