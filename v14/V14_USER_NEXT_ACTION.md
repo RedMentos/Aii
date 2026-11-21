@@ -265,3 +265,15 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - The code commit is `2311b039eb49375829876e1bea8f2ac2d6975fe8`; tested PR head was `a2788aacdae09bb675fff220cbda4ba74d400912`. The later commit only records the test evidence and handoff.
 - Still open: runtime postcommit wiring, native B1/B2 GGUF weight updates, full cross-organ JEPA/latent coupling, and real Redmi validation. `REDMI_UNVERIFIED`.
 - **User action: none.**
+
+
+## JEPA & Memory lane update — 2026-11-21, 03:00 CET
+
+- Current release integration branch was read back at `c3c32c05a0374e970d274f8a777a7ab85c067d66` (compare result: identical to the branch ref at inspection). #2143 head `f0309ab3` carries the source-disjoint/paginated T8 consumer; #2147 head `fb25bcbf` adds source-content-digest disjointness.
+- #2147 exact CI run `44852394807` failed on both Python 3.13 and 3.14 only at the action-shuffled negative-control assertion. The source/digest-disjointness checks ran before that point. Logs show shuffled-action loss marginally lower than trained-action loss; zero-action loss was higher. The assertion remains strict.
+- A follow-up test branch `jepa-memory/v14-action-conditioned-control-20261121` now has commit `52690943522df331b20ab3990c7dd8ee72c1ba84`: controlled action-dependent synthetic outcomes, independent nuisance variation, and 120 JEPA update steps. This is a synthetic positive-control adjustment; its exact CI has not yet run. No product code or installed model changed in this commit.
+- **Tests:** exact GitHub CI for #2147 = FAIL (1/57 test on each Python version); exact local Aii checkout = BLOCKED (container DNS cannot resolve github.com); Redmi = `REDMI_UNVERIFIED`. No Android or native GGUF proof.
+- **Integration:** #2145 is the Boss runtime-shadow consumer candidate and touches the same T8 authority/temporal files. It must carry #2143's source verification, digest-disjoint paging, censored-outcome and cursor/rollback semantics before its runtime-package shims replace any files. No merge/release/deploy is claimed.
+- **Research:** JEPA-TTT (arXiv:2610.00722) supports persistent action-conditioned predictor adaptation with dense replay as an ablation; Replay on Demand (arXiv:2609.40089, Apache-2.0 reference implementation) suggests retention-error-driven replay allocation; A-JEPA (arXiv:2609.31161) cautions that predictive accuracy alone does not establish causal state identification. See the dated entries in `V14_RESEARCH_LEDGER.md`.
+- **Next:** open the stacked action-control test PR against #2147, read back exact 3.13/3.14 CI, then coordinate the merged T8 authority into the normal post-commit Runtime consumer and a SHADOW World/Planner receiver. Native B1/B2 weights remain untouched; optimizer permission remains OFF by default.
+- **User action:** none. No Termux command, model download, model swap or phone action is required for this repository work.
