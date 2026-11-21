@@ -263,3 +263,64 @@ ui.serve(open_browser=False)
 
 if __name__=="__main__":
     unittest.main()
+
+
+class LabAgeLearningRights(unittest.TestCase):
+    class _AlwaysExplore:
+        @staticmethod
+        def random():
+            return 0.0
+
+    def _runtime(self, home):
+        from v13 import lab_age
+        from v13.age import AgeControl
+        from v13.lab_age_runtime import LaboratoryAgeControl
+        cfg = initialize(home)
+        store = Store(home)
+        lab_age.save(home, stage=10, mode="active")
+        return cfg, store, AgeControl(store, cfg), LaboratoryAgeControl(store, cfg)
+
+    def test_x10_exercises_learning_rights_without_changing_official_age_or_compute(self):
+        from v13.agi.curiosity import Curiosity
+        with tempfile.TemporaryDirectory(prefix="v13-lab-learning-rights-") as dirname:
+            home = Path(dirname)
+            cfg, store, earned, lab = self._runtime(home)
+            try:
+                self.assertEqual(earned.system_stage(), 0)
+                self.assertEqual(lab.system_stage(), 0)
+                self.assertEqual(earned.learning_rights("tool")["exploration_rate"], 0.0)
+                self.assertGreater(lab.learning_rights("tool")["exploration_rate"], 0.0)
+                self.assertEqual(lab.budgets("system"), earned.budgets("system"))
+                self.assertFalse(lab.may("active_info_search", resource_mode="RED"))
+
+                curiosity = Curiosity(store, age=lab, rng=self._AlwaysExplore())
+                curiosity.observe("lab-only-region", 0.5)
+                self.assertEqual(curiosity.choose(["lab-only-region"]), "lab-only-region")
+                self.assertTrue(curiosity.report()["autonomous"])
+
+                official = Curiosity(store, age=earned, rng=self._AlwaysExplore())
+                self.assertIsNone(official.choose(["lab-only-region"]))
+                self.assertFalse(official.report()["autonomous"])
+                self.assertEqual(earned.system_stage(), 0)
+            finally:
+                store.close()
+
+    def test_x10_goal_depth_is_a_planning_right_not_a_compute_cap(self):
+        from v13.agi.goals import GoalStore, MAX_DEPTH
+        with tempfile.TemporaryDirectory(prefix="v13-lab-goal-depth-") as dirname:
+            home = Path(dirname)
+            cfg, store, earned, lab = self._runtime(home)
+            try:
+                goals = GoalStore(store, age=lab, clock=lambda: 1.0)
+                parent = goals.add("root", origin="SELF")
+                for index in range(1, MAX_DEPTH):
+                    parent = goals.add(f"subgoal-{index}", origin="SELF", parent=parent)
+                state = goals.box.load()[0]
+                self.assertEqual(goals._depth(state, parent), MAX_DEPTH)
+                with self.assertRaisesRegex(ValueError, "Zieltiefe > 6"):
+                    goals.add("too-deep", origin="SELF", parent=parent)
+                self.assertEqual(lab.system_stage(), 0)
+                self.assertEqual(lab.budgets("system")["focal_depth"],
+                                 earned.budgets("system")["focal_depth"])
+            finally:
+                store.close()

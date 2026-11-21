@@ -41,6 +41,20 @@ def budget(age,name,default=0):
     try:return age.budgets('system').get(name,default)
     except Exception:return default
 
+def learning_limit(age, name, default=0, capability='system'):
+    """Read a developmental learning/planning right, never a runtime resource budget."""
+    if age is None:
+        return default
+    try:
+        getter = getattr(age, 'learning_rights', None)
+        if callable(getter):
+            return getter(capability).get(name, default)
+        # Compatibility for older controller adapters; callers are restricted
+        # to developmental fields, not CPU/time/memory/replay quantities.
+        return age.budgets(capability).get(name, default)
+    except Exception:
+        return default
+
 def clamp01(x):return max(0.,min(1.,float(x)))
 
 def new_id(prefix):return uid(prefix)

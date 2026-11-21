@@ -230,6 +230,27 @@ class AgeControl:
         out['teacher_reliance']=round(1-.15*stage-.1*mm['trust'],6)
         out['route_authority']=round(min(1.,.15*stage+.25*mm['trust']),6)
         return out
+    def learning_rights(self, capability='system', st=None):
+        """Graded developmental permissions; never a physical compute/resource budget.
+
+        LabAge inherits this method and virtualizes only the capability ceiling.
+        Official maturity/evidence remains unchanged; ResourceGuard owns CPU,
+        memory, thermal, token and wall-time limits.
+        """
+        st = st or self.state()[0]
+        stage = self.ceiling(capability, st)
+        maturity = self.maturity(capability, st)
+        def level(name):
+            lo, hi = BUDGETS[name][stage]
+            return lo + (hi - lo) * maturity
+        return {
+            'stage': stage,
+            'exploration_rate': round(level('exploration_rate'), 6),
+            # Goal-tree depth is a developmental planning right, not per-turn
+            # focal compute depth. The latter is controlled by ResourceGuard.
+            'goal_depth': int(round(level('focal_depth'))),
+        }
+
     def gist_resolution(self,capability='language',novelty=0.,conflict=False,literal=False,boundary_confidence=1.):
         """Age ↑ ≠ group size monotone ↑: novelty/conflict/literal/low boundary confidence refine temporarily."""
         st=self.state()[0];stage=self.ceiling(capability,st);m=self.maturity(capability,st)

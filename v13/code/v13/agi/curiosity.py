@@ -9,7 +9,7 @@ exploration_rate (0 at Age 0) and the right active_info_search bound what it may
 its own. Blocked regions (user/hard rules) are never chosen.
 """
 import random
-from .base import StateBox,age_allows,budget,clamp01
+from .base import StateBox,age_allows,learning_limit,clamp01
 
 KEY='G5_CURIOSITY';REVISION='g5-curiosity-v1'
 WINDOW=32;NOVELTY=.2;MAX_REGIONS=256
@@ -51,7 +51,7 @@ class Curiosity:
         if not vals:return None
         if origin!='USER':
             if not age_allows(self.age,'active_info_search',origin):return None
-            if self.rng.random()>=budget(self.age,'exploration_rate',0.):return None
+            if self.rng.random()>=learning_limit(self.age,'exploration_rate',0.,capability='tool'):return None
         return max(vals,key=lambda k:(vals[k]['intrinsic'],k))
     def modulators(self,region):
         """Typed Layer-6 signals for the learning fabric; never a global reward."""
@@ -62,4 +62,4 @@ class Curiosity:
         vals=self.values()
         top=sorted(vals.items(),key=lambda kv:-kv[1]['intrinsic'])[:8]
         return {'revision':REVISION,'regions':len(vals),'top':dict(top),'blocked':self.box.load()[0]['blocked'],
-                'autonomous':age_allows(self.age,'active_info_search','SELF') and budget(self.age,'exploration_rate',0.)>0}
+                'autonomous':age_allows(self.age,'active_info_search','SELF') and learning_limit(self.age,'exploration_rate',0.,capability='tool')>0}
