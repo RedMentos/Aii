@@ -260,10 +260,11 @@ class WorldJEPA:
                 or type(train_encoder) is not bool
                 or (replay_start is not None and type(replay_start) is not int)
                 or (replay_cohort_ranges is not None and replay_start is None)
-                or type(update_scale) not in (int, float) or not np.isfinite(update_scale)
-                or not 0.0 < float(update_scale) <= 1.0
                 or (cancel_check is not None and not callable(cancel_check))):
             raise ValueError('Invalid WorldJEPA fit configuration')
+        if (type(update_scale) not in (int, float) or not np.isfinite(update_scale)
+                or not 0.0 < float(update_scale) <= 1.0):
+            raise ValueError('WorldJEPA update scale must be finite and in (0,1]')
         drift_config = drift.normalize_config(drift_control)
         if cancel_check is not None and cancel_check():
             raise InterruptedError('WorldJEPA fit cancelled')
@@ -572,16 +573,29 @@ class WorldJEPA:
 
     # -- inference -------------------------------------------------------------------------------------------------
     @_read_locked
-    def prediction_loss(self,X,A,X2):
-        """Read-only observed-transition error for retention measurements."""
+    def prediction_loss(self,X,A,X2,*,target_snapshot=None):
+        """Read-only transition error, optionally in a fixed pre-update EMA space.
+
+        Retention comparisons must use the same target coordinates before and
+        after an online update. Otherwise EMA movement is mistaken for task
+        forgetting. The snapshot is evaluation-only and never used for gradients.
+        """
         X=np.asarray(X,dtype=float);A=np.asarray(A,dtype=float);X2=np.asarray(X2,dtype=float)
         if (not hasattr(self,'mu') or X.ndim!=2 or X2.shape!=X.shape
                 or X.shape[1]!=len(self.mu) or A.shape!=(len(X),self.preds[0]['P1'].shape[1]-Z)
                 or not len(X) or not all(np.isfinite(v).all() for v in (X,A,X2))):
             raise ValueError('Invalid JEPA retention probe')
+        target_params=self.tgt if target_snapshot is None else target_snapshot
+        if type(target_params) is not dict or set(target_params)!=set(self.tgt):
+            raise ValueError('Invalid JEPA retention target snapshot')
+        for key,value in target_params.items():
+            arr=np.asarray(value)
+            if (arr.shape!=self.tgt[key].shape or arr.dtype.kind not in 'fiub'
+                    or not np.isfinite(arr).all()):
+                raise ValueError('Invalid JEPA retention target snapshot')
         x=(X-self.mu)/self.sd;x2=(X2-self.mu)/self.sd
         z=encode(self.enc,x)[0]
-        target=encode(self.tgt,x2)[0]
+        target=encode(target_params,x2)[0]
         pred=predict(self.preds[0],z,A)[0]
         return float(np.mean((pred-target)**2))
 
