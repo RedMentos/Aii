@@ -2,9 +2,10 @@
 
 This module is deliberately separate from the Core-pinned A5 bridge. It uses
 caller-supplied PCM16 only; it never opens a microphone, stores raw PCM, runs
-ASR, identifies a speaker, or grants learning/action authority. The acoustic
-classes and prosody-change score are deterministic heuristics, not a trained
-VAD, speech classifier, or calibrated probability.
+ASR, assigns speaker identity, or grants learning/action authority. An optional
+caller-supplied frame-embedding batch may produce only a source-bound change-or-
+overlap hint; no model is loaded here. Acoustic classes and prosody scores remain
+deterministic heuristics, not a trained VAD, speech classifier, or calibrated probability.
 """
 from __future__ import annotations
 
@@ -727,6 +728,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             summary += f" speaker_change_score={speaker_evidence['change_score']:.2f}"
             if speaker_evidence.get("speaker_change_candidate") is not None:
                 summary += f" speaker_change_candidate={int(speaker_evidence['speaker_change_candidate'])}"
+                if speaker_evidence.get("candidate_kind"):
+                    summary += " speaker_change_kind=CHANGE_OR_OVERLAP"
         if vad_evidence is not None:
             summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
         candidate = Percept(
