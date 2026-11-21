@@ -169,3 +169,10 @@ The negative controls show why the signals must remain separate: RAW_EAR classif
 OSS review: webrtcvad-wheels 2.0.14.post1 has an MIT wrapper and bundled WebRTC BSD-style C license, but its Linux ARM64 wheels are glibc/musl rather than Android Bionic. libfvad is BSD-3-Clause C, but its open noise false-positive issue and old release history require caution. The current optional Silero ONNX path was not run and no weights were downloaded.
 
 Next: measure incremental 40–100-ms RAW_EAR on Redmi with explicit test-audio consent, then compare a native/vectorized autocorrelation backend while retaining separate VAD and non-speech cues. This is a local synthetic benchmark only, not a product runtime or phone result.
+
+
+## 2026-11-21 — RAW_EAR optional NumPy backend (R-047, PR #2256)
+
+The current pure-Python RAW_EAR pitch autocorrelation measured 131.30 ms median / 135.89 ms p95 per one-second 16-kHz synthetic window on LOCAL_LINUX Python 3.13.5 x86_64. A hybrid NumPy implementation that vectorizes only normalized autocorrelation measured 6.23 ms median / 8.37 ms p95 (~21× faster) and matched the Python output on 100/100 random synthetic windows across 8–48 kHz and 40-ms to 1-s durations. tracemalloc peak increased by ~12 KB while NumPy was already imported; cold import and process RSS were not measured.
+
+PR #2256 exposes this as an explicit opt-in backend on extract_voice_cues and consume_pcm16_voice_window. Default remains pure Python; Core must not enable the NumPy path on the installed phone until cold import/RSS/latency and full-duplex behavior are measured on Redmi. No model, microphone permission or user audio was used.
