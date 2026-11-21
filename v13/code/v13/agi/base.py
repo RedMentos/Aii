@@ -36,10 +36,6 @@ def age_allows(age,right,origin='SELF',resource_mode='GREEN'):
     try:return age.may(right,resource_mode=resource_mode) if hasattr(age,'may') else age.allowed(right,resource_mode=resource_mode)  # WP-T2 per capability
     except Exception:return False
 
-def budget(age,name,default=0):
-    if age is None:return default
-    try:return age.budgets('system').get(name,default)
-    except Exception:return default
 
 def clamp01(x):return max(0.,min(1.,float(x)))
 
