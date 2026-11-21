@@ -143,7 +143,7 @@
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
       "proof_environment": "PR #2142 remains OPEN and non-mergeable on stale base c3c32; head 67c1300093dd99ffcf818f370fff29b58fd7fc3b. Its exact code/test commit 40deb8a56686455b361ba41e63cb57b981b5a71b passed model-lab workflow 44861145442: compile, manifest JSON and 23/23 synthetic tests. License snapshot bytes, lock-before-read, read-only staged copies and executable identity are checked. No real GGUF inference was run; no current verified candidate was demonstrated present, no staged-context workflow is green, no download/swap or Redmi test. #2154's license snapshot fix is included in #2142's current branch.",
-      "next_step": "After exact-head CI/review for #2275, resume the model-candidate lab: compare two or three read-only candidates on exact model/weight license, ARM64 ABI, cold-load RSS, TTFT, output quality and rollback. Do not download or swap a model without separate explicit approval.",
+      "next_step": "First inventory only already-present C3 model files and exact SHA/runner compatibility. If a candidate is present, compare it against the installed 230M baseline on arithmetic, reasoning, source recall, language, tool adherence, TTFT, decode, RSS, cold load, restart and rollback while preserving the full multi-organ route. If no candidate is present, request separate explicit experimental-download approval; only after measured results request a separate productive-swap approval. Preserve exact model/weight license. No model changes now.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21T22:27:49Z",
       "latest_candidate_pr": {
@@ -153,7 +153,7 @@
         "ci": "PASS_44861145442_23_TESTS",
         "scope": "read-only sequential C3 candidate lab; native inference NOT_RUN"
       },
-      "proof": "Perception PR #2256 head 08fce3420ff2fc548276c421e99e79390d78e910 failed the RAW EAR speaker-evidence tests on Python 3.13 and 3.14: test_low_similarity_without_voiced_activity_is_not_speaker_change expected confidence_gate_passed=false but got true; test_missing_threshold_emits_score_without_a_decision expected change_score=0.5 but got 0.0. Inspection shows later frames in the same incoming batch are added to the look-back state and then reused as their own reference, overwriting the earlier cross-window score. No model/dependency download or swap occurred."
+      "proof": "Perception PR #2256 head 08fce3420ff2fc548276c421e99e79390d78e910 failed the RAW EAR speaker-evidence tests on Python 3.13 and 3.14: test_low_similarity_without_voiced_activity_is_not_speaker_change expected confidence_gate_passed=false but got true; test_missing_threshold_emits_score_without_a_decision expected change_score=0.5 but got 0.0. Inspection shows later frames in the same incoming batch are added to the look-back state and then reused as their own reference, overwriting the earlier cross-window score. No model/dependency download or swap occurred. Model-lab PR #2142 is CLOSED/NOT_MERGED; 23 focused harness tests pass but candidate is not installed, so no model inference or comparison exists. Official LFM2.5-230M card says not recommended for reasoning-heavy math/code; LFM Open License v1.0 includes a USD 10M annual-revenue commercial-use threshold. Research shortlist only: LFM2.5-350M, Qwen3-0.6B Apache-2.0, Qwen3.5-0.8B Apache-2.0; no download or swap."
     },
     {
       "id": "V14-006",
@@ -907,6 +907,13 @@
       "status": "PINNED_NATIVE_API_VERIFIED_LINUX_BUILD_ANDROID_ARM64_CI_PASS_STAGED_INTEGRATION_FAIL",
       "primary": "ggml-org/llama.cpp b29c606e28a01b1bc8c1351026a0fa6e616bf6c4; Core PR #2266 head 3166858133844fc80201334f53ade450557d1191",
       "next": "Core rebase/stack #2266 on current Boss #2258; repair the separate staged arithmetic source pin and migration failures; then require a real model and trained/versioned projector with held-out semantic/retention tests. No Redmi proof."
+    },
+    {
+      "id": "R-055",
+      "topic": "C3 model-lab audit and small Android candidate shortlist",
+      "status": "MODEL_LAB_HARNESS_SYNTHETIC_ONLY_CANDIDATE_NOT_INSTALLED_NO_REAL_COMPARISON",
+      "primary": "LiquidAI LFM2.5-230M official card and LFM Open License v1.0; Qwen/Qwen3-0.6B Apache-2.0 card; Qwen/Qwen3.5-0.8B Apache-2.0 card; community MNN vs Termux report",
+      "next": "Inventory only existing model files; if none, ask separately for experimental download approval. Do not swap until exact Redmi output/TTFT/RSS/rollback and full multi-organ E2E evidence."
     }
   ]
 }
