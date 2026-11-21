@@ -561,3 +561,66 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         ]
     finally:
         reopened.close()
+
+
+def _noreplace_checkpoint_model():
+    import numpy as np
+    from v13 import world_jepa
+
+    x = np.asarray([
+        [float(i), float((i * i) % 11), float((i * 7) % 13)]
+        for i in range(24)
+    ], dtype=np.float64)
+    actions = np.eye(3, dtype=np.float64)[np.arange(24) % 3]
+    x2 = x.copy()
+    x2[:, 0] += actions[:, 0] * 0.25
+    x2[:, 1] += actions[:, 1] * 0.50
+    x2[:, 2] += actions[:, 2] * 0.75
+    return world_jepa.WorldJEPA(seed=31, ensemble=1).fit(
+        x, actions, x2, steps=2, log_every=1
+    )
+
+
+def test_checkpoint_save_uses_renameat2_when_hardlinks_are_denied(tmp_path, monkeypatch):
+    import errno
+    import hashlib
+    from v13 import world_jepa_shadow_checkpoint as checkpoint
+
+    model = _noreplace_checkpoint_model()
+    destination = tmp_path / ("jepa-" + ("a" * 32) + ".npz")
+
+    def deny_hardlink(_source, target, *args, **kwargs):
+        raise OSError(errno.EPERM, "hardlinks denied by filesystem", str(target))
+
+    monkeypatch.setattr(checkpoint.os, "link", deny_hardlink)
+    saved = checkpoint.save(model, destination, "a" * 64)
+
+    assert saved["optimizer_state_persisted"] is True
+    assert destination.is_file()
+    assert hashlib.sha256(destination.read_bytes()).hexdigest() == saved["sha256"]
+    restored = checkpoint.load(destination, "a" * 64, saved["sha256"])
+    assert restored._training_state["main"]["t"] == model._training_state["main"]["t"]
+    assert not list(tmp_path.glob(".world-jepa-shadow-*"))
+
+
+def test_checkpoint_renameat2_fallback_never_replaces_a_racing_target(tmp_path, monkeypatch):
+    import errno
+    import pytest
+    from v13 import world_jepa_shadow_checkpoint as checkpoint
+
+    model = _noreplace_checkpoint_model()
+    destination = tmp_path / ("jepa-" + ("b" * 32) + ".npz")
+
+    def race_target_then_deny(_source, target, *args, **kwargs):
+        target = __import__("pathlib").Path(target)
+        target.write_bytes(b"operator-owned-existing-checkpoint")
+        raise OSError(errno.EACCES, "hardlinks denied by filesystem", str(target))
+
+    monkeypatch.setattr(checkpoint.os, "link", race_target_then_deny)
+    with pytest.raises(FileExistsError) as raised:
+        checkpoint.save(model, destination, "b" * 64)
+
+    assert raised.value.errno == errno.EEXIST
+    assert destination.read_bytes() == b"operator-owned-existing-checkpoint"
+    assert not list(tmp_path.glob(".world-jepa-shadow-*"))
+
