@@ -623,7 +623,7 @@ class SleepRuntime:
         return self.scheduler.post(
             'IDLE',origin='SYSTEM',action='jepa_update',
             payload={'event_id':event_id},
-            dedup='v14-world-jepa:'+event_id,ttl=86400)
+            dedup='v14-world-jepa',ttl=86400)
     def resource_state(self):
         try:return self.r.guard.update(self.r.resources())
         except Exception:return 'CRITICAL'  # unknown resources: do not start background work
@@ -687,6 +687,11 @@ class SleepRuntime:
                     'learning_status':learning.get('status') if type(learning) is dict else None,
                     'planner_status':planner.get('status') if type(planner) is dict else None}
             self.scheduler.complete(e['id'],'FAILED' if result['status']=='ERROR' else 'DONE',result)
+            # One pending JEPA event coalesces a burst of committed turns. If
+            # the bounded T8 page reports more rows, continue in another idle
+            # scheduler dispatch instead of building an unbounded per-turn queue.
+            if type(learning) is dict and learning.get('has_more') is True:
+                result['continuation_scheduled']=bool(self.schedule_world_jepa(event_id))
             return out
         if e['action']=='lab_check':
             from .lab_native_cycle import run
