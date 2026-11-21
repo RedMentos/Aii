@@ -507,6 +507,66 @@ def compare(home: Path, candidate_id: str, candidate_path: Path | None = None,
         lock.close()
 
 
+def write_report_safely(home: Path, output_path: str | Path, encoded: str) -> Path:
+    """Create a new private report only as a direct child of the existing V13 data dir.
+
+    Refuses symlink components and overwrites. Reports contain digests/metrics, never
+    raw model text; this helper also prevents an accidental --out from truncating
+    an unrelated user file through a path or symlink.
+    """
+    raw_home = Path(home).expanduser()
+    if has_symlink_component(raw_home):
+        raise ValueError("V13 home path contains a symlink")
+    resolved_home = raw_home.resolve(strict=True)
+    data_dir = resolved_home / "data"
+    if has_symlink_component(data_dir) or not data_dir.is_dir():
+        raise ValueError("V13 data directory missing or symlink")
+    data_root = data_dir.resolve(strict=True)
+
+    requested = Path(output_path).expanduser()
+    target = requested if requested.is_absolute() else data_root / requested
+    if has_symlink_component(target):
+        raise ValueError("report path contains a symlink")
+    try:
+        parent = target.parent.resolve(strict=True)
+    except (OSError, RuntimeError) as exc:
+        raise ValueError("report parent must already exist inside V13 data") from exc
+    if parent != data_root:
+        raise ValueError("report must be a direct child of V13 data directory")
+    if target.exists():
+        raise FileExistsError("report already exists; refusing overwrite")
+    if not hasattr(os, "O_NOFOLLOW"):
+        raise RuntimeError("platform lacks O_NOFOLLOW; safe report writing unavailable")
+
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+    fd = os.open(target, flags, 0o600)
+    try:
+        info = os.fstat(fd)
+        if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1
+                or info.st_uid != os.getuid()):
+            raise RuntimeError("report file identity is unsafe")
+        os.fchmod(fd, 0o600)
+        payload = (encoded + "\n").encode("utf-8")
+        view = memoryview(payload)
+        while view:
+            written = os.write(fd, view)
+            if written <= 0:
+                raise OSError("short report write")
+            view = view[written:]
+        os.fsync(fd)
+        after = os.fstat(fd)
+        if (not stat.S_ISREG(after.st_mode) or after.st_nlink != 1
+                or after.st_size != len(payload)):
+            raise RuntimeError("report readback metadata mismatch")
+    except Exception:
+        os.close(fd)
+        target.unlink(missing_ok=True)
+        raise
+    else:
+        os.close(fd)
+    return target
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--home", required=True, help="existing V13 home; never initialized or modified")
@@ -515,13 +575,13 @@ def main(argv=None) -> int:
     parser.add_argument("--timeout", type=float, default=90.0)
     parser.add_argument("--max-tokens", type=int, default=32)
     parser.add_argument("--order", choices=("baseline-first", "candidate-first"), default="baseline-first")
-    parser.add_argument("--out", help="optional report path; raw model output is never stored")
+    parser.add_argument("--out", help="new report filename/direct path inside V13 data; refuses symlinks and overwrite")
     args = parser.parse_args(argv)
     try:
         report = compare(args.home, args.candidate, args.candidate_path, args.timeout, args.max_tokens, args.order)
         encoded = json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2)
         if args.out:
-            Path(args.out).expanduser().write_text(encoded + "\n", encoding="utf-8")
+            write_report_safely(args.home, args.out, encoded)
         print(encoded)
         return 0 if report["status"] in {"COMPARISON_COMPLETE", "CANDIDATE_NOT_INSTALLED"} else 2
     except Exception as exc:
