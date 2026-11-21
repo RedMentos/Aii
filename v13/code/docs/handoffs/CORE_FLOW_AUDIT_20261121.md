@@ -6,14 +6,24 @@ Adds a read-only Store consumer for one persisted turn. It correlates A5 Percept
 ## Safety and evidence boundary
 - Opens `brain.sqlite3` with SQLite `mode=ro` and `query_only=ON`; does not instantiate Runtime or acquire the live Store lock.
 - Returns no user text, prompt text, body summaries, token IDs, raw audio or source bytes.
-- Verifies SourceRef row, blob SHA-256 and character bounds without returning source content.
+- Verifies SourceRef rows, blob SHA-256 and character bounds without returning source content.
+- C4 only counts an OfferPacket when the matching FocalItem retains that offer's valid source evidence; an ID-only match is insufficient.
+- C3 separates `context_binding_status` from semantic-use status. Source-bound context alone is never called a successful semantic consumption; a runtime-reported use flag remains explicitly not independently verified.
 - Explicitly labels synthetic fixture metrics and leaves `native_injection_proven=false`.
 - This is a local diagnostics consumer, not a Redmi test, native model benchmark, weight update, Android control, or release.
 
 ## Verification
 - Exact tests are in `v13/code/tests/test_flow_audit.py`; the existing V13 additive and integrated-regression workflows execute them.
 - The additive workflow compiles the new module and test, then runs the exact test file in its configured Python environment.
-- Full local Aii checkout remains unavailable in this run because GitHub DNS resolution failed; no local Linux or Redmi test is claimed.
+- LOCAL_LINUX_ISOLATED: PASS for the session-scoped read-only SQLite path, foreign-session rejection and unchanged DB bytes.
+- Full Aii checkout/exact repository test suite remains BLOCKED because GitHub DNS resolution failed in the local container. This is not a full-repository local PASS.
+- Redmi/native proof remains REDMI_UNVERIFIED.
 
 ## Usage and next integration
-Run from the repository's v13/code directory with `python -m v13.flow_audit --home ~/v13` (or set PYTHONPATH=v13/code). After review, expose the report through existing operator/dashboard diagnostics without modifying frozen Runtime bytes. Then use a fresh authorized private Redmi PIPELINE_STATUS/DIAGNOSTICS receipt to verify whether the installed turn actually delivered both B1/B2 offers through C4 into C3.
+From the active Termux runtime, read the current session ID with `:status`, then run from the repository's `v13/code` directory (or with `PYTHONPATH=v13/code`):
+
+```bash
+python -m v13.flow_audit --home ~/v13 --session-id <SESSION-ID> --compact
+```
+
+An optional `--event-id <EVENT-ID>` is restricted to that same session. Without `--session-id`, the standalone CLI retains its legacy all-session latest-event behavior; the operator/dashboard command is not wired because doing so would require changing hash-pinned existing modules and a separate Boss-reviewed stage/deployer re-pin. Next: review the additive PR, then use a fresh authorized private Redmi PIPELINE_STATUS/DIAGNOSTICS receipt to compare actual persisted B1/B2 → C4 → C3 evidence. No private relay receipt was available in this run.
