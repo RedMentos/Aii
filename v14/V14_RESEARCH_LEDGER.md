@@ -697,3 +697,145 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - Staged Runtime: `251 passed, 10 skipped, 47 subtests`.
 - Integrated regression: `424 passed, 3 skipped, 58 subtests` (6 warnings).
 - These are CI staged/synthetic tests. They do not establish Android OS capture, a real UI provider, active-turn consumer wiring or Redmi behavior.
+
+
+
+## R-045 — MobileExplorer: latency-overlapped mobile UI exploration, with strict rollback and consent limits (2026-11-21)
+
+### Primary paper reviewed
+
+- Runxi Huang, Liyu Zhang, Shengzhong Liu and Xiaomin Ouyang, **MobileExplorer: Accelerating On-Device Inference for Mobile GUI Agents via Online Exploration**, arXiv:2605.26546, submitted 2026-05-26. This is an arXiv preprint; peer-review status was not verified. Full arXiv HTML was reviewed across the motivation, exploration, rollback, alignment and evaluation sections: https://arxiv.org/abs/2605.26546.
+- Method: while a vision-language model reasons, a lightweight controller parses the Android accessibility tree, ranks clickable elements by text-embedding similarity to the task, probes selected elements, records screen/interaction traces, attempts a two-level rollback, aligns explored states to the later screen with perceptual hashes, and injects compact template-generated hints into the next reasoning step.
+- Reported AndroidWorld result: 50.86% success (59/116 tasks) versus 46.55% for the M3A VLM baseline; 9.24 versus 10.93 interaction steps on average (15.5% fewer in the table); average task time is 185.82 s, reported as 15.9% lower than M3A. The conclusion separately says approximately 23% fewer interaction steps, which is inconsistent with the table's 15.5%; this discrepancy is retained rather than treating 23% as a latency reduction. Ablations are informative: random exploration falls to 42.2%, removing two-level rollback to 39.7%, and removing exploration alignment to 47.4%. The method therefore depends on task relevance, rollback and state alignment together; speculative probes are not automatically useful.
+- Evaluation caveat: the implementation section describes AndroidWorld UI interaction running in an Android emulator while model inference runs on separate target hardware through an HTTP interface. Phone inference uses llama.cpp inside Termux, but this is not proof that the complete UI provider, exploration controller and model all ran as one resident Android app. Listed platforms include a 12-GB Samsung Galaxy S24, a 64-GB Jetson AGX Orin and a 24-GB MacBook Air M4. The paper's 4B VLM/device conditions are not a Redmi Note 10 Pro or a 5.84-GB budget benchmark.
+- The paper says the added control logic costs only tens of milliseconds per step and that memory/power remain stable, but the inspected results do not establish a Redmi memory peak, a universal rollback success guarantee, or safety for irreversible app actions. No exact rollback success percentage was verified in the primary text reviewed here.
+
+### OSS, license and reuse
+
+- The primary arXiv record did not provide a linked implementation repository in the inspected text; an exact-title repository search did not identify a matching maintained source tree. No code, model weights or dataset were imported. No implementation/dependency license was verified. The arXiv metadata's copyright field is not a substitute for a code or paper reuse license.
+- No Android/ARM build, GGUF conversion, Termux installation or Redmi benchmark was attempted.
+
+### V14 implications and testable adaptation
+
+- The useful hypothesis is **latency-overlapped information gathering**, not blind UI exploration. A future V14 experiment may compare no exploration, task-relevance-ranked read-only candidates and shuffled candidates while keeping the same task/model/device. It must preserve source, capture receipt, generation, session and state fingerprint; cap work by the remaining inference window; and record whether later screen-state alignment accepted or rejected each hint.
+- The paper's probes include real clicks. Those can mutate data, trigger permission dialogs or enter irreversible flows. The current A5 UI adapter is metadata-only and explicitly grants neither action nor learning authority. Do not port speculative taps into it. Any later action-based exploration requires a separately authorized Android executor, bounded app/scope allowlist, explicit per-action approval, visible stop/cancel, state verification and a tested rollback path. A rollback algorithm is not permission to act.
+- Keep the current A5 provider-independent lease and source-bound A4 admission as the non-mutating baseline. No new model candidate is recommended from this paper.
+
+**Status:** PAPER_FULLTEXT_REVIEWED / PREPRINT / NO_MATCHING_OSS_REPOSITORY_VERIFIED / NO_CODE_OR_MODEL_IMPORTED / RESEARCH_HYPOTHESIS_ONLY / NO_ANDROID_PROOF.
+
+
+
+## R-046 — RAW_EAR versus WebRTC VAD: synthetic behavior and CPU baseline (2026-11-21)
+
+### Reproduction scope
+
+- Reviewed the exact current shared-source implementation of `v13/code/v13/audio_voice_cues.py` at shared HEAD `bdcad466ffea75a2b41f7d23be168f53c7197d20`, then copied its `extract_voice_cues` / pitch-estimation logic into a standalone Python 3.13.5 Linux x86_64 benchmark. This is a copied-code experiment, not a full Aii checkout test or Redmi benchmark.
+- Compared it with the locally installed `webrtcvad` module reporting version 2.0.14 (the sandbox did not expose distribution metadata or an exact wheel hash). WebRTC used 20-ms PCM16 frames at 16 kHz, modes 0/2/3. RAW_EAR used its 40-ms frame / 20-ms hop, 8-kHz internal representation and 49 frames per one-second window.
+- Inputs were deterministic synthetic PCM16 controls only: silence, low two-tone background, pure 140-Hz tone, amplitude/frequency-modulated harmonic voice-like signal, broadband white noise, impulse bursts and voiced segments with pauses. They are not human speech and do not establish real speech accuracy.
+
+### Observed outputs
+
+- Silence: RAW_EAR = SILENCE; WebRTC mode 0/2/3 = 0% speech frames.
+- Harmonic voice-like control: RAW_EAR = VOICED, voiced fraction 1.0, median F0 142.86 Hz, prosody-change score 0.4889; WebRTC mode 0/2/3 = 1.00 / 0.70 / 0.52 speech fraction.
+- Voiced-with-pauses control: RAW_EAR = VOICED, voiced fraction 0.6327, median F0 150.94 Hz, prosody score 0.1505; WebRTC mode 0/2/3 = 0.92 / 0.70 / 0.16.
+- Pure 140-Hz tone: RAW_EAR = VOICED with near-zero prosody score; WebRTC mode 2 = 0.10. This is a useful reminder that periodicity is not synonymous with speech.
+- Low two-tone background: both systems returned a high activity result (RAW_EAR VOICED; WebRTC 100% in all modes). Broadband white noise and impulse bursts were classified by RAW_EAR as UNVOICED_NOISE / IMPULSIVE, while WebRTC mode 2 returned 100% / 86% speech frames. The WebRTC noise sweep likewise rose to 100% at high synthetic amplitudes. These are deliberate negative controls, not measured real-world false-positive rates.
+
+### CPU and memory
+
+- RAW_EAR one-second window at 16 kHz: median 131.30 ms, p95 135.89 ms over 40 runs. At 8/16/48 kHz the median stayed near 131 ms because the implementation downsamples internally and still processes 49 frames.
+- RAW_EAR duration sweep at 16 kHz: 40 ms 2.68 ms; 100 ms 10.58 ms; 200 ms 24.07 ms; 500 ms 63.53 ms; 1 s 132.42 ms median.
+- WebRTC VAD mode 2 over the same one-second window (50 × 20-ms frames): median 0.094 ms, p95 0.116 ms. This is not an apples-to-apples quality comparison: WebRTC emits a binary activity decision; RAW_EAR also estimates pitch and prosodic variation.
+- Python tracemalloc peak for one RAW_EAR 1-s call: 921,426 bytes (~0.88 MiB); process RSS and native allocator memory were not measured. No ARM/Termux/Redmi benchmark was run.
+
+### OSS and license review
+
+- `webrtcvad-wheels==2.0.14.post1` (published 2026-10-02) is a reproducible baseline candidate: MIT Python wrapper; bundled WebRTC VAD C code carries the WebRTC BSD-style license. PyPI provenance identifies publisher repository commit `726a8c72ce8b33b2df7ecd292372690fea2bad0c`. Wheels include CPython 3.13/3.14 Linux ARM64 manylinux/musllinux variants, but no Android Bionic wheel was listed; Termux would need a source/native build path. It is not added to V14 runtime dependencies.
+- `dpirch/libfvad` is a standalone C library under BSD-3-Clause with 8/16/32/48-kHz input and 10/20/30-ms frames. Its repository release list only surfaced v1.0 and an open issue #23 reports noise classified as voice (opened 2020-04-30); maintenance and noise robustness need review before production reuse.
+- Current A5 audio code's optional Silero ONNX path remains local-file + expected-hash + CPU-only; no weights were present or downloaded, so no Silero inference result is claimed.
+
+### V14 interpretation and next experiment
+
+- RAW_EAR is a rich acoustic-cue extractor, not a calibrated speech/no-speech detector. Keep F0, energy, impulsive/noise and VAD evidence separate; never let a binary VAD erase nonverbal prosody or treat a periodic tone as human speech.
+- A one-second pure-Python RAW_EAR call costs ~13% of audio duration on this x86 runner; for full-duplex Android, measure 40–100-ms incremental windows and compare a C/native or vectorized autocorrelation backend before enabling continuous use. This x86 number is not an ARM prediction.
+- Next acceptance experiment: with explicit test-audio consent or a suitably licensed public speech/noise corpus, measure false positives, false negatives, onset/offset latency, CPU/RSS and interruption/barging behavior on the actual Redmi. Preserve non-speech cues and compare VAD modes without using VAD as ground truth.
+
+**Status:** SYNTHETIC_BEHAVIOR_BENCHMARKED / LOCAL_X86_CPU_MEASURED / WEBRTC_LICENSE_REVIEWED / NO_REAL_SPEECH_CORPUS / NO_ARM_OR_REDM I_MEASUREMENT / NO_MODEL_DOWNLOADED.
+
+
+
+## R-047 — Optional NumPy acceleration for RAW_EAR autocorrelation (2026-11-21)
+
+### Hypothesis and implementation
+
+- The existing RAW_EAR extractor in `v13/code/v13/audio_voice_cues.py` spends most of its pure-Python time in the per-lag normalized-autocorrelation loop. Replacing only that calculation with `numpy.correlate` should preserve the current frame segmentation, activity classes, F0/prosody outputs and schema while reducing CPU cost.
+- PR #2256 adds an explicit `backend="numpy"` option to `extract_voice_cues` and `voice_backend="numpy"` to the actual `consume_pcm16_voice_window` A5→A4→C3 consumer. Default remains `python`; NumPy is imported lazily only when explicitly selected. No new mandatory runtime dependency and no automatic backend swap.
+- The hybrid implementation vectorizes only pitch autocorrelation; it deliberately leaves the rest of the Python extractor unchanged to minimize semantic drift. A more aggressive fully vectorized prototype was faster but is not the chosen implementation.
+
+### Local evidence
+
+- LOCAL_LINUX Python 3.13.5 x86_64, NumPy already loaded: one-second 16-kHz window median 131.30 ms / p95 135.89 ms for pure Python versus 6.23 ms / p95 8.37 ms for the hybrid NumPy backend (~21× median speedup).
+- Exact output parity across 100 deterministic random synthetic PCM windows at 8/12/16/32/44.1/48 kHz and durations 40 ms–1 s; seven additional silence/tone/noise/impulse/voice-like controls also matched exactly.
+- tracemalloc peak: 922,767 bytes for Python and 934,805 bytes for the hybrid NumPy path (+12,038 bytes while NumPy was already imported). Process RSS and cold NumPy import cost were not measured.
+- A full vectorized prototype measured ~2.19 ms per one-second window, but duplicates more of the extraction pipeline; it remains an experiment, not the implementation.
+- CI matrix for PR #2256 is pending. No full local Aii checkout test or Redmi/ARM measurement is claimed.
+
+### Constraints and next acceptance
+
+- The backend is opt-in and the Runtime default remains Python. Core may pass `voice_backend="numpy"` only in an explicitly experimental path after the actual device confirms cold import cost, RSS, 40–100-ms incremental latency, full-duplex interruption behavior and output retention.
+- Synthetic PCM is not a speech corpus. The benchmark establishes algorithm parity and CPU cost only; it does not establish real speech accuracy, VAD calibration or human-prosody validity.
+- Keep WebRTC/Silero VAD evidence separate from RAW_EAR pitch/prosody and non-speech classes. No model weights, speech dataset, microphone access or Android permission was downloaded or enabled.
+- Official Termux packaging was checked directly at `termux/termux-packages/packages/python-numpy/build.sh` (blob `36b2c798600562acea3250ae2c3f8e9014610d2a`): current recipe pins NumPy 2.5.5, declares BSD-3-Clause, and builds Android wheels including the `aarch64 → arm64_v8a` path; declared runtime dependencies are `libc++`, `libopenblas`, and `python`. This establishes a maintained Android/Termux packaging route, not that NumPy is installed on this Redmi or that cold import/RSS is affordable. No package was installed.
+- Exact PR #2256 code head `176a6cff` initially passed `py_compile` and all 42 tests on CPython 3.13/3.14, but its benchmark step failed on both because direct script execution did not include `v13/code` on `sys.path`. Fixed in `63b5410769b872ddb64e002ab1c764e9e90966af` by adding the script-relative code root. Exact workflow `44946779051` passes both Python 3.13 and 3.14, including benchmark and privacy scan. Exact staged/integrated workflow `44946779195` also passes: staged-runtime 251 passed / 10 skipped / 47 subtests; integrated regression 424 passed / 3 skipped / 58 subtests. Safe-additive validation still fails by policy because this PR modifies an existing production module; no bypass or allowlist weakening was attempted.
+
+**Status:** OPT_IN_CODE_IMPLEMENTED_PR_2256 / SYNTHETIC_PARITY_100_OF_100 / LOCAL_X86_CPU_MEASURED / EXACT_FOCUSED_CI_PASS_3_13_3_14 / STAGED_RUNTIME_AND_INTEGRATED_CI_PASS_44946779195 / SAFE_ADDITIVE_FAIL_BY_POLICY / REDMI_UNVERIFIED.
+
+
+## R-048 — Tandem: hybrid recurrent-state reuse on mobile NPUs (2026-11-21)
+
+### Source and review depth
+
+- Primary paper: Zhuomin Chen et al., *Tandem: Serving Hybrid Linear-Attention GUI Agents on Mobile NPUs*, arXiv:2610.26660v1, submitted 2026-10-19. Full HTML paper read, including Sections 3–6, evaluation tables and discussion; it is a preprint, not a peer-reviewed result in the source reviewed here.
+- Maintained implementation inspected: `flyingdoog/tandem`, a fork of `ggml-org/llama.cpp` b11200. Repository LICENSE is MIT (blob `e7dca554bcb802f98408383a864404e3aa4eacca`). The fork adds roughly 3,000 C/C++ lines across 24 files and builds with Android NDK r28b + Hexagon SDK 6.6. A separate dependency/SDK license and provenance audit would be required before reuse; no code was imported.
+
+### Method and measured results
+
+- Tandem checkpoints hybrid recurrent state at observed prompt-divergence points rather than generic chat message boundaries; for speculation it retains only a short rollback tail so the bulk of prefill remains on the NPU matrix path; it shares weight-block reads across candidate verification; it releases NPU active-power votes after 3 s idle while keeping model weights/state resident.
+- Primary device: OnePlus 13T, Snapdragon 8 Elite / Hexagon v79, Android 16, 16 GB RAM; model Qwen3.5-4B Q4_K_M. Second device: OnePlus 15, Snapdragon 8 Elite Gen 5 / Hexagon v81, Android 16, 16 GB. Measurements include a 61-request replay trace, 21-screen app set, 510 held-out steps, 300 AndroidControl steps and 100 real phone tasks.
+- On the primary device, text-step latency fell 1.96 s → 1.38 s (30%) and screenshot-step latency 5.66 s → 4.76 s (16%) against the fastest llama.cpp NPU configuration. Energy per text step fell 15.1 J → 10.1 J (33%); screen-off standby with the model loaded fell 0.76 W → 0.22 W. On the next NPU generation text-step latency fell 27%.
+- On 510 held-out steps, action fidelity was 265/510 correct text steps and 287 vs 288 correct screenshot steps (Tandem vs llama.cpp); the paper reports identical action outputs for the 100 real-task runs, while some free-text summaries can differ due to floating-point rounding. These are step-level results, not a general task-success guarantee.
+- Other recurrent architectures: the checkpoint policy alone reduces new prompt tokens by 11–12% and latency by 9–12% on LFM2-2.6B and Granite-4.0-H-Micro on the same Snapdragon NPU; with all Tandem kernels LFM2 is 16% faster than llama.cpp. This does not establish results for V13's installed LFM2.5-1.2B model or CPU/GPU backend.
+
+### V14 interpretation / fit
+
+- Strong transferable hypothesis: an agent's stable Context OS header/task prefix and changing recent event/screen tail create a different cache boundary from ordinary chat. If the current model/backend exposes safe recurrent-state save/restore, measure a divergence-point checkpoint against the existing prompt-cache path; verify exact output, state restore, memory overhead and restart/eviction behavior.
+- NPU-specific parts (Hexagon HMX/HVX kernels, power votes, NDK/SDK integration and Qwen3.5 MTP head) are not directly portable to the Redmi Note 10 Pro target and must not be presented as a ready alternative. The paper's devices have Snapdragon 8 Elite/Gen 5 and 16 GB RAM; no Redmi-class evidence.
+- Do not import the fork wholesale: it is a large llama.cpp fork tied to a specific NPU path and older base b11200. A small server-side checkpoint policy experiment may be more tractable only after inspecting the exact current llama.cpp recurrent-state API and V13's actual model architecture.
+
+**Status:** FULL_TEXT_PREPRINT_REVIEWED / OSS_README_AND_MIT_LICENSE_CHECKED / NPU_HARDWARE_SPECIFIC / NO_CODE_IMPORTED / NO_MODEL_OR_WEIGHT_CHANGE / NO_REDMI_PROOF / RESEARCH_HYPOTHESIS_ONLY.
+
+
+## R-049 — LFM2.5 recurrent prompt-cache applicability and license (2026-11-21)
+
+### Exact model family and license
+
+- Official Liquid AI model cards identify LFM2.5-1.2B-Instruct as 16 layers (10 double-gated convolution blocks + 6 GQA blocks), 1.17B parameters; LFM2.5-230M as 14 layers (8 double-gated convolution blocks + 6 GQA blocks). The installed V13 quantized variants are not independently remeasured here; the model-card architecture is a family-level reference, not proof of exact local GGUF metadata.
+- Both official Hugging Face cards declare `lfm1.0`, the LFM Open License v1.0. Liquid AI's license page says it is Apache-2.0-based but **not Apache-2.0**: commercial-use rights are limited to legal entities below the USD 10M annual-revenue threshold; qualified non-profits and research/non-commercial use are exempt; attribution is required and there is no copyleft. Treat this as a custom open-weight license and retain its exact text with any model provenance. No model was downloaded or swapped.
+
+### V13 current runtime readback
+
+- Current `gpt6/v13-private-remote-bridge-20261111` source readback: `v13/code/v13/runners.py` blob `96d91b8aa0d110a7dbcfd438fc8b3b7c504eed9a`; `config.py` blob `a4fa0e0eeb6c544035ebf8ec0b46f5ebe11151481`.
+- `LlamaRunner` starts each model server with `-np 1`, configured `-t/-tb`, `-b/-ub`, `--cache-ram` and `--ctx-checkpoints`; current defaults are 128 MiB host prompt cache and 6 checkpoints per slot. Each generation sends `cache_prompt=true` and `id_slot=0`. `RunnerPool` retains one resident runner per role when its resource/fabric policy allows it. `bodies.py` pins C3_LANGUAGE and enables the body fabric when `body_residency_mb>0`; current config default is 1,800 MiB for resident bodies (B1/B2/C3), with RED/ORANGE pressure modes allowed to evict non-pinned bodies. These are BOOT values, not Redmi measurements. Thus the normal path uses an in-memory prompt cache/checkpoint path and single-sequence server slots; it does not add `--slot-save-path` or issue slot save/restore on every turn.
+- Existing historical V13 note `v13/code/docs/NATIVE_CACHE.md` (2026-10-12; Linux cloud, 4-vCPU Xeon, llama.cpp b10964, not Redmi) measured warm prefix reuse for LFM2.5-1.2B and LFM2.5-350M and A→B→A host-cache reuse. It also found no cache path bit-identical to cold prefill; exact-output paths therefore kept full prefill. This historical bench is not a current model/runner or Android acceptance test.
+
+### Upstream llama.cpp status and risk separation
+
+- llama.cpp PR #26004, merge commit `033df86b69ec1a333eb241f0c16325a4d43dcff5`, merged 2026-10-08 and is present in current upstream `master`: server slot save/restore now persists the context-checkpoint appendix. This fixes the disk slot-restore gap reported in #25913. It matters for explicit save→restart→restore; it is separate from the in-memory per-turn cache used by V13's current runner.
+- LFM2.5 co-batching report #29002 is not a confirmed state-corruption bug: a maintainer traced the early-EOG result to the reproducer's logits-row indexing after a sequence finished; after correcting the harness, F32 was byte-identical and remaining Q4_K_M differences were numerical. V13's `-np 1` also avoids multi-sequence co-batching in each model server. Do not disable a future multi-sequence path based only on the original report; require a corrected reproducer and output/logit comparison.
+
+### Concrete next measurement (no device action issued)
+
+- For the next owner-authorized Redmi diagnostic, capture per-role `cache_n`, `prompt_n`, prompt-eval time, TTFT, runner PID/restart, body-residency mode/live-process count, model revision and cache/checkpoint flags on (a) a repeated same-prefix turn, (b) a changed recent tail, (c) A→B→A role/session switching, and (d) after resource-driven runner eviction/reload. A large `cache_n` separates model decode/prefill speed from cache-miss problems; zero reuse despite an identical prefix points to prompt/template/session continuity or an older binary. Do not infer either from the existing 28.72-s C3 prefill report alone.
+- Private owner-read issues Aiiii #431 and #432 and V13OBS #115 were checked: all still have zero comments/no new authenticated receipt. No new request was issued. No Termux command, model download, weight change, updater request or phone mutation.
+
+**Status:** MODEL_ARCHITECTURE_AND_LICENSE_VERIFIED / RUNTIME_CACHE_FLAGS_READBACK / UPSTREAM_SLOT_CHECKPOINT_FIX_MERGED / CACHE_HIT_ON_REDMI_UNVERIFIED / NO_MODEL_CHANGE / NO_DEVICE_ACTION.
