@@ -729,3 +729,96 @@ def test_hard_replay_selects_high_error_old_train_rows_and_uniform_sample_is_det
     )
     assert len(old_only) == 8
     assert old_only_metrics["replay_selection_error_mean"] is not None
+
+
+def test_source_ref_v3_migration_and_revocation_rolls_back_to_previous_checkpoint(tmp_path):
+    from world_jepa_consumer import REVISION, STATE_KEY, STATE_SCHEMA
+
+    home = tmp_path / "brain-source-lineage"
+    store, session = _make_store(home)
+    checkpoint_dir = home / "world_jepa"
+    try:
+        _add_transitions(store, session, 0, 256)
+        learner = WorldJEPAStoreConsumer(
+            store, checkpoint_dir, learning_enabled=True, seed=23, ensemble=2
+        )
+        first = learner.update(
+            limit=256, steps=120, optimizer_permission=True, replay_mode="uniform"
+        )
+        assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        first_state, version = learner._read_state()
+        first_sha = first_state["active"]["checkpoint_sha256"]
+        assert STATE_SCHEMA == first_state["schema"] == 4
+        assert first_state["revision"] == REVISION
+        assert first_state["active"]["source_ref_sha256"]
+        for row in first_state["active"]["experience_rows"]:
+            assert set(row["source_ref"]) == {
+                "source_id", "sha256", "char_start", "char_end", "modality"
+            }
+            assert row["source_ref"]["source_id"] == row["source_id"]
+            assert row["source_ref"]["sha256"] == row["source_sha256"]
+
+        # Recreate the persisted v3 shape; migration must recover SourceRefs
+        # from authoritative EventEnvelope packets without changing weights.
+        legacy = dict(first_state)
+        legacy["schema"] = 3
+        legacy["revision"] = "v14-world-jepa-store-consumer-v3"
+
+        def strip_source_refs(record):
+            if record is None:
+                return None
+            migrated = dict(record)
+            migrated.pop("source_ref_sha256", None)
+            migrated["experience_rows"] = [
+                {key: value for key, value in row.items() if key != "source_ref"}
+                for row in record["experience_rows"]
+            ]
+            return migrated
+
+        legacy["active"] = strip_source_refs(legacy["active"])
+        legacy["previous"] = strip_source_refs(legacy["previous"])
+        legacy["pending_rows"] = [
+            {key: value for key, value in row.items() if key != "source_ref"}
+            for row in legacy["pending_rows"]
+        ]
+        store.set_state(STATE_KEY, legacy, expected=version)
+        migrated, _ = learner._read_state()
+        assert migrated["schema"] == 4
+        assert migrated["revision"] == REVISION
+        assert migrated["active"]["checkpoint_sha256"] == first_sha
+        assert migrated["active"]["source_ref_sha256"]
+        assert all("source_ref" in row for row in migrated["active"]["experience_rows"])
+
+        second_ids = _add_transitions(store, session, 256, 32)
+        second = learner.update(
+            limit=256, steps=24, optimizer_permission=True, replay_mode="uniform"
+        )
+        assert second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        after_second, _ = learner._read_state()
+        assert after_second["previous"]["checkpoint_sha256"] == first_sha
+        revoked = next(
+            row for row in after_second["active"]["experience_rows"]
+            if row["action_id"] == second_ids[1]
+        )
+        with store.tx() as connection:
+            connection.execute(
+                "UPDATE sources SET deleted=1 WHERE id=?", (revoked["source_id"],)
+            )
+
+        reopened = WorldJEPAStoreConsumer(
+            store, checkpoint_dir, learning_enabled=True
+        )
+        restored = reopened.restore()
+        assert restored["status"] == "RESTORED"
+        assert restored["checkpoint_sha256"] == first_sha
+        final_state, _ = reopened._read_state()
+        assert final_state["active"]["checkpoint_sha256"] == first_sha
+        assert final_state["previous"] is None
+        assert final_state["scan_cursor"] == 256
+        assert all(
+            row["source_id"] != revoked["source_id"]
+            for row in final_state["active"]["experience_rows"]
+        )
+        assert len(list(checkpoint_dir.glob("jepa-*.npz"))) == 1
+    finally:
+        store.close()
