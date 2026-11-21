@@ -3,7 +3,8 @@
 This module is deliberately separate from the Core-pinned A5 bridge. It uses
 caller-supplied PCM16 only; it never opens a microphone, stores raw PCM, runs
 ASR, identifies a speaker, or grants learning/action authority. The acoustic
-classes are deterministic heuristics, not a trained VAD or calibrated probability.
+classes and prosody-change score are deterministic heuristics, not a trained
+VAD, speech classifier, or calibrated probability.
 """
 from __future__ import annotations
 
@@ -55,16 +56,16 @@ def validate_voice_cues(cues: dict) -> dict:
     required = {
         "method", "frame_ms", "hop_ms", "frame_count", "voiced_fraction",
         "voicing_confidence", "f0_median_hz", "f0_range_hz",
-        "energy_range_db", "activity_hint", "activity_score",
+        "energy_range_db", "activity_hint", "activity_score", "prosody_change_score",
     }
-    if set(cues) != required or cues.get("method") != "RAW_EAR_AUTOCORR_V1":
+    if set(cues) != required or cues.get("method") != "RAW_EAR_AUTOCORR_V2":
         raise ValueError("voice cue fields or method are invalid")
     if cues.get("frame_ms") != 40 or cues.get("hop_ms") != 20:
         raise ValueError("voice cue timing is invalid")
     count = cues.get("frame_count")
     if type(count) is not int or not 0 <= count <= 50:
         raise ValueError("voice cue frame count is invalid")
-    for key in ("voiced_fraction", "voicing_confidence", "activity_score"):
+    for key in ("voiced_fraction", "voicing_confidence", "activity_score", "prosody_change_score"):
         value = cues.get(key)
         if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1:
             raise ValueError("voice cue score is invalid")
@@ -81,6 +82,8 @@ def validate_voice_cues(cues: dict) -> dict:
         raise ValueError("voice cues cannot claim pitch or voicing without frames")
     if cues["f0_median_hz"] is None and cues["f0_range_hz"] is not None:
         raise ValueError("pitch range requires a median pitch")
+    if cues["activity_hint"] != "VOICED" and cues["prosody_change_score"] != 0:
+        raise ValueError("prosody change requires voiced activity")
     return dict(cues)
 
 
@@ -157,8 +160,15 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
         activity_hint = "UNCERTAIN"
         activity_score = 0.25
 
+    # Relative salience only: pitch excursion or within-window energy dynamics.
+    # This is not a speech probability and is emitted only for voiced activity.
+    pitch_component = 0.0 if f0_range is None else min(1.0, f0_range / 100.0)
+    energy_component = min(1.0, energy_range_db / 20.0)
+    prosody_change_score = (max(pitch_component, energy_component)
+                            if activity_hint == "VOICED" else 0.0)
+
     return validate_voice_cues({
-        "method": "RAW_EAR_AUTOCORR_V1",
+        "method": "RAW_EAR_AUTOCORR_V2",
         "frame_ms": frame_ms,
         "hop_ms": hop_ms,
         "frame_count": len(frame_rms),
@@ -169,6 +179,7 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
         "energy_range_db": round(energy_range_db, 2),
         "activity_hint": activity_hint,
         "activity_score": round(activity_score, 6),
+        "prosody_change_score": round(prosody_change_score, 6),
     })
 
 
@@ -207,13 +218,13 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
     runtime.store.add_packet("PerceptPacket", audio_packet)
     _require_current_consent(consent_check, source_id, receipt)
 
-    voice_novelty = 0.0
-    if cues["activity_hint"] != "SILENCE":
-        voice_novelty = max(0.6 * cues["voiced_fraction"], 0.35 * cues["activity_score"])
+    voice_novelty = max(0.35 * cues["voiced_fraction"], 0.9 * cues["prosody_change_score"])
+    if cues["activity_hint"] in {"UNVOICED_NOISE", "IMPULSIVE"}:
+        voice_novelty = max(voice_novelty, 0.35 * cues["activity_score"])
     attention = attctl.controller(runtime)
     attention_result = attention.modulate(event_id, sal={
         "novelty": min(1.0, max(zcr, voice_novelty)),
-        "external_interrupt": min(1.0, rms * 0.5),
+        "external_interrupt": min(1.0, max(rms * 0.5, 0.25 * cues["prosody_change_score"])),
     })
     a4 = {
         "packet_id": audio_packet["packet_id"],
@@ -221,6 +232,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         "finality": audio_segment["finality"],
         "voice_activity_hint": cues["activity_hint"],
         "voice_cues": cues,
+        "prosody_change_score": cues["prosody_change_score"],
         "attention": attention_result,
         "learning_authority": False,
         "action_authority": False,
@@ -236,13 +248,14 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
     if cues["f0_range_hz"] is not None:
         summary += f" f0_range_hz={cues['f0_range_hz']:.0f}"
     summary += f" energy_range_db={cues['energy_range_db']:.1f}"
+    summary += f" prosody_change={cues['prosody_change_score']:.2f}"
     candidate = Percept(
         candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
         summary[:256], candidate.consent, candidate.final, candidate.priority,
     )
     c3 = admit((candidate,), token_budget)
     return {
-        "status": "SYNTHETIC_PCM16_A5_A4_C3_ADMISSION",
+        "status": "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION",
         "packet": audio_packet,
         "a4": a4,
         "c3_admission": c3,
