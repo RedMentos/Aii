@@ -106,3 +106,14 @@ Core integration required: PR #2200's staged audio_window contract must add a pr
 QA coordination: the #2206 test that mutates a boolean after the callback has returned but does not acquire the provider's revocation lock is a useful counterexample to the old callback-only contract, but is not a conforming linearizable provider. The new shared-lock race test is the acceptance test for the provider protocol; retain the separate negative test for a final in-transaction false result.
 
 Exact-head CI for the current source/test changes is pending. Full local Aii checkout remains BLOCKED by GitHub DNS; the only local check so far is a small standalone Python threading/lease-ordering reproduction, not the repository module. No local full-suite PASS, native microphone, ONNX model inference, Redmi test or deployment is claimed. NOT_RELEASED / REDMI_UNVERIFIED.
+
+
+## Exact-head CI update — 2026-11-21
+
+- Producer/test head dd96c8d7d76a7e2022d8476c9ef2b59e4efbbbdf: RAW EAR focused workflow 44908779459 **PASS** on Python 3.11 and 3.13; each ran py_compile and **48/48 tests PASS**. This includes the new shared-provider lease ordering and callback-only fail-closed regressions.
+- Model-lab run 44908779416 **PASS**; public privacy scan 44908779475 **PASS**.
+- Staged/integrated run 44908779460 was still in progress at the last readback; no result is claimed yet.
+- Comparator run 44908779474 **FAIL** on Python 3.13 and 3.14 only because its workflow still expected the pre-lease producer blob d406e89faf9fc2c62f667a0dcd1fe1d493561d03; actual exact producer blob is afb27968b8d932e718020f6043d38fc34cc21986. The pinned native libfvad build and comparator compile passed; the exact-source-blob assertion failed.
+- Strict safe-additive run 44908779431 **FAIL** by design at the existing-module allowlist: it reports "path outside inert-module/test/handoff scope". No bypass; Boss manual review remains required.
+
+The comparator workflow pin was corrected to afb27968b8d932e718020f6043d38fc34cc21986 in commit 39c2f1fb84657b459c40cde0ef7f3db62ca36b69. Exact-head rerun for that commit was not yet visible at readback. Do not treat the previous comparator failure as a benchmark failure; it was a stale source pin, but the new pin still requires a green rerun.
