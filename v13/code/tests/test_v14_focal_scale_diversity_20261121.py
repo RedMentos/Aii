@@ -40,14 +40,16 @@ def test_review_stage_applies_only_scale_aware_c4_overlay(tmp_path):
     destination = tmp_path / "candidate"
     manifest = _load_stager().stage(CODE, destination)
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
-    assert manifest["overlay"]["cross_scale_redundancy_factor"] == 0.15
+    assert manifest["overlay"]["cross_scale_rule"] == "DISJOINT_SAME_SOURCE_SPANS_ONLY"
     assert manifest["arithmetic_overlay"]["status"] == "SHADOW_REVIEW_ONLY"
     assert "v13/focal.py" in manifest["replaced_files"]
     assert "v13/arithmetic_reflex.py" in manifest["replaced_files"]
 
     staged = (destination / "v13" / "focal.py").read_bytes()
-    assert b"CROSS_SCALE_REDUNDANCY_FACTOR = 0.15" in staged
+    assert b"SCALE_AWARE_C4_RULE = 'DISJOINT_SAME_SOURCE_SPANS_ONLY'" in staged
+    assert b"_has_disjoint_source_evidence" in staged
     assert b"_scale_aware_redundancy(c,a)" in staged
+    assert b"CROSS_SCALE_REDUNDANCY_FACTOR" not in staged
     assert hashlib.sha256(staged).hexdigest() == manifest["files_sha256"]["v13/focal.py"]
     staged_arithmetic = (destination / "v13" / "arithmetic_reflex.py").read_bytes()
     assert b"_YEAR_MONTH = re.compile(" in staged_arithmetic
@@ -90,25 +92,56 @@ assert arithmetic_reflex.exact_arithmetic("berechne 2026-11") == "2015"
 # Direct C4 negative controls: cross-scale overlap is discounted, but same-role
 # duplicates and body/memory overlap still compete normally.
 same = "The total budget is 391 rent 120 plus food 271"
-def candidate(kind, item_id):
-    return focal.item(kind, item_id, [], same, "evt",
+def ref(start, end, source_id="source-1", digest="a"*64, modality="text"):
+    return {"source_id": source_id, "sha256": digest, "char_start": start,
+            "char_end": end, "modality": modality}
+
+def candidate(kind, item_id, refs=()):
+    return focal.item(kind, item_id, list(refs), same, "evt",
                       uncertainty=0.2, salience=0.0, goal=0.5,
                       utility=0.8, sq=1.0, cost=0.0)
 
-b1, b2 = candidate("B1_DETAIL", "b1"), candidate("B2_GIST", "b2")
+b1 = candidate("B1_DETAIL", "b1", [ref(0, 12)])
+b2 = candidate("B2_GIST", "b2", [ref(20, 32)])
 active, rest = focal.admit([b1, b2], 2, 0.45)
 assert {item["source_kind"] for item in active} == {"B1_DETAIL", "B2_GIST"}
 
-same_role = candidate("B1_DETAIL", "b1-duplicate")
-active, rest = focal.admit([candidate("B1_DETAIL", "b1"), same_role], 2, 0.45)
+overlap = [
+    candidate("B1_DETAIL", "b1-overlap", [ref(0, 20)]),
+    candidate("B2_GIST", "b2-overlap", [ref(10, 30)]),
+]
+active, rest = focal.admit(overlap, 2, 0.45)
+assert len(active) == 1, "overlapping source evidence must retain the full penalty"
+
+cross_source = [
+    candidate("B1_DETAIL", "b1-source", [ref(0, 12, "source-1")]),
+    candidate("B2_GIST", "b2-source", [ref(20, 32, "source-2")]),
+]
+active, rest = focal.admit(cross_source, 2, 0.45)
+assert len(active) == 1, "different source identities are not assumed complementary"
+
+hash_mismatch = [
+    candidate("B1_DETAIL", "b1-hash", [ref(0, 12, digest="a"*64)]),
+    candidate("B2_GIST", "b2-hash", [ref(20, 32, digest="b"*64)]),
+]
+active, rest = focal.admit(hash_mismatch, 2, 0.45)
+assert len(active) == 1, "different source digests must not receive a discount"
+
+same_role = candidate("B1_DETAIL", "b1-duplicate", [ref(20, 32)])
+active, rest = focal.admit([candidate("B1_DETAIL", "b1", [ref(0, 12)]), same_role], 2, 0.45)
 assert len(active) == 1 and same_role["admission"] == "BELOW_THRESHOLD"
 
-memory = candidate("MEMORY", "memory")
-active, rest = focal.admit([candidate("B1_DETAIL", "b1"), memory], 2, 0.45)
+memory = candidate("MEMORY", "memory", [ref(20, 32)])
+active, rest = focal.admit([candidate("B1_DETAIL", "b1", [ref(0, 12)]), memory], 2, 0.45)
 assert len(active) == 1 and memory["admission"] == "BELOW_THRESHOLD"
 
+no_refs = [candidate("B1_DETAIL", "b1-no-ref"), candidate("B2_GIST", "b2-no-ref")]
+active, rest = focal.admit(no_refs, 2, 0.45)
+assert len(active) == 1, "missing source evidence must not receive a discount"
+
 active, rest = focal.admit(
-    [candidate("B1_DETAIL", "b1"), candidate("B2_GIST", "b2")], 1, 0.45
+    [candidate("B1_DETAIL", "b1", [ref(0, 12)]),
+     candidate("B2_GIST", "b2", [ref(20, 32)])], 1, 0.45
 )
 assert len(active) == 1, "scale diversity must not exceed configured capacity"
 
@@ -133,7 +166,7 @@ class Runner:
                 "summary": "The total budget is 391.",
                 "uncertainty": "low",
                 "needs_reentry": False,
-                "quotes": ["rent 120 plus food 271"],
+                "quotes": ["Rent is 120." if self.role == "B1_DETAIL" else "Food is 271."],
             }
             return iter([json.dumps(offer)])
         seen["c3_messages"] = messages
@@ -151,7 +184,7 @@ try:
     r.learner.output_delta = Mock(return_value=None)
     r.pool.get = lambda role: Runner(role)
 
-    r.submit("Compute the total budget: rent 120 plus food 271. Explain the detailed items and overall picture.")
+    r.submit("Compute the total budget: Rent is 120. Food is 271. Explain the detailed items and overall picture.")
     until = time.monotonic() + 25
     while not r.idle() and time.monotonic() < until:
         time.sleep(0.01)
@@ -173,6 +206,7 @@ try:
     rendered = "\n".join(item.get("content", "") for item in messages if isinstance(item, dict))
     assert "B1_DETAIL" in rendered and "B2_GIST" in rendered, rendered
     assert rendered.count("The total budget is 391.") >= 2, rendered
+    assert "Rent is 120." in rendered and "Food is 271." in rendered, rendered
     print("PASS: real staged Runtime/SQLite selected both B1/B2 offers and delivered both to C3; model outputs were synthetic")
 finally:
     r.close()
