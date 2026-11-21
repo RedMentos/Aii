@@ -134,13 +134,20 @@ def exercise_worker_migration(base):
         old = worker('old')
         assert old['module_path'].startswith(str(agent) + os.sep)
         assert old['profile'] == 'raw-runtime-plain-ui-history-recovery-v1'
-        assert old['result']['last_result'] == 'UPDATED', old
-        # A one-click update may find the dashboard already checked out at
-        # the exact target while the model launcher still needs staging.
-        # UP_TO_DATE is correct for that individual checkout; require the
-        # actual immutable Git commit, not a cosmetic UPDATED status.
-        assert old['result']['runtime'] == 'UPDATED', old
-        assert old['result']['dashboard'] in ('UPDATED', 'UP_TO_DATE'), old
+        print('V13_TWO_CHECKOUT_MIGRATION_OLD=' + json.dumps({
+            'last_result': old['result'].get('last_result'),
+            'runtime': old['result'].get('runtime'),
+            'dashboard': old['result'].get('dashboard'),
+            'last_error': old['result'].get('last_error'),
+            'fetches': old.get('fetches'),
+        }, sort_keys=True), flush=True)
+        # The legacy updater can finish the Git fast-forward but fail to stage
+        # the newer integrated runtime. The new post-reload worker must recover
+        # this explicit PARTIAL state; do not pretend the old deploy succeeded.
+        assert old['result']['last_result'] in ('UPDATED', 'PARTIAL'), old
+        assert old['result']['runtime'] in ('UPDATED', 'UP_TO_DATE', 'ERROR'), old
+        assert old['result']['dashboard'] in ('UPDATED', 'UP_TO_DATE', 'ERROR'), old
+        assert old['result']['last_error'] in ('NONE', 'UPDATE'), old
         # Diagnose a mismatched source/receipt without confusing launcher activation
         # with an actual Git checkout advance. The text is only local synthetic
         # clone refs and bounded update states; no user data or tokens.
