@@ -3,7 +3,7 @@
 ## Checkpoint
 
 - Work branch: `gpt6/v14-core-companion-outcome-20261121`
-- Current branch HEAD at this checkpoint: `25c7f35ad3d88f13d50f32bb0dc2e6c2e7893b00` (latest code test update); earlier handoff commits: `67f1fd07a9d2377a2bc06d992325db94c80064ac`, `a95b7bfb9f7ba74bd34cbbc15e64fead0c0edb7d`
+- Current branch HEAD at this checkpoint: `10d88d74ebd353c342a7a8e5f58c8a437a1495e1` (latest code test update); earlier handoff commits: `67f1fd07a9d2377a2bc06d992325db94c80064ac`, `a95b7bfb9f7ba74bd34cbbc15e64fead0c0edb7d`
 - Stacked dependency: draft PR #2119, branch `gpt6/v14-core-companion-receipt-20261120`, head `6622218640c6859a628d96d7b63e3625ac46ba28`
 - Integration base observed: `gpt6/v13-private-remote-bridge-20261111` at `14d7386484dfce6728aa404d89eae98403b4dba0`
 - This is a review candidate, not a release or a device deployment.
@@ -20,11 +20,11 @@
 
 - LOCAL_LINUX: isolated SQLite transaction/concurrency reproduction PASS — one packet committed, one cross-action nonce replay rejected. This was a small algorithm reproduction, not execution of the exact repository checkout.
 - Exact PR workflow on the first PR merge commit: compile PASS; adapter pytest 20 passed / 3 failed because test fixtures used non-hex nonce characters (`g`–`j`). Those fixtures were corrected to valid hex on the newer head `29133ebb`; exact-head rerun is PENDING.
-- The first staged/integrated regression run failed because the initial patch changed pinned `v13/code/v13/contracts.py`; 17 tests hit the expected arithmetic source-pin guard, plus two migration assertions returned `PARTIAL` instead of `UPDATED`. The global contracts file was restored exactly to the dependency branch blob `7b21d9c5076015716851b5d432a5730e4e17da92`. Re-run required; the two migration assertions remain separately unclassified until the rerun.
+- The first staged/integrated regression run failed because the initial patch changed pinned `v13/code/v13/contracts.py`; 17 tests hit the expected arithmetic source-pin guard, plus two migration assertions returned `PARTIAL` instead of `UPDATED`. The global contracts file was restored exactly to the dependency branch blob `7b21d9c5076015716851b5d432a5730e4e17da92`. A later staged-runtime job passed after restoration; the integrated-regression job was still running at the previous checkpoint. Latest exact-head rerun is queued; the two earlier migration assertions remain separately unclassified.
 - GitHub checkout in the local container: BLOCKED; `git ls-remote` failed with DNS resolution for `github.com`. Do not report the exact branch as locally tested.
 - CI for the stacked dependency PR #2119: V14 receipt workflow passed; its separate additive-only scope gate failed because that PR adds a workflow file outside the gate's allowed inert-module/test/handoff paths. On PR #2134's first merge commit, the V13 Android broker, V13 sandbox replay, V14 receipt verifier and V13 Android outcome-contract workflows passed; the V14 Core outcome adapter workflow failed only on the invalid hex test fixtures described above. The V13 staged/integrated regression workflow failed on the temporary pin mismatch described above.
 - Android companion app/service, Android Keystore key custody, OS permission prompts, live transport, real Android execution and Redmi receipt: NOT IMPLEMENTED / REDMI_UNVERIFIED.
-- HMAC test secret is supplied to the Python verifier; `key_storage_status=UNVERIFIED`. This is not an independent OS security boundary and cannot authorize T8 learning.
+- HMAC test secret is supplied to the Python verifier; `key_storage_status=UNVERIFIED`. The `confirmed_by_local_ui=True` flag is a caller assertion, not authenticated consent. The stored receipt labels `android_os_permission_status=REQUIRED_NOT_VERIFIED` and `observed=false`. This is not an independent OS security boundary and cannot authorize T8 learning.
 - No production model, weights, Age, user permissions, Termux installation, database or device state was changed.
 
 ## Next executable step
@@ -44,6 +44,11 @@
   - https://developer.android.com/about/versions/13/behavior-changes-all
 - AccessibilityService is a separate, user-enabled fallback and requires an explicit service configuration; it is not a silent substitute for official APIs.
   - https://developer.android.com/guide/topics/ui/accessibility/views/service
+
+## Shared coordination
+
+- QA's draft PR #2132 owns the shared `V14_WORK_BOARD.json` and `V14_USER_NEXT_ACTION.md` edits. Core did not write those same files in parallel. A coordination comment was added to #2132 pointing to this handoff and asking the integrator to fold the verified Core status into the common board/next-action after review.
+- PR #2134 is a draft stacked dependency on #2119; it is not merged or released.
 
 ## User action
 
