@@ -161,3 +161,8 @@ Private V13OBS issue #115 is the newest device receipt currently available; it i
 - **Functional blockers remain:** #2139 staged Runtime pin chain; #2140 arithmetic output/source-authority tests; #2135 online-world candidate pin chain; #2133/#2137 temporal learning safety/holdout integration. P0 #1904 real phone correctness/latency/B1-B2 delivery remains unverified.
 
 **User action:** none. GitHub CI green does not imply the Redmi has updated.
+
+
+## T8 temporal safety follow-up — 2026-11-21 01:47 CET
+
+PR #2137 current head `7f67a69eb2c4add039ad853f7a34502eaf1a44c9` has source-level corrections for the previous QA findings: cancelled/unknown outcomes are now censored without prediction error or receiver update; ActionOutcome cardinality scans up to 4096 rows and fails closed on overflow; rollback fsyncs the directory. Exact focused CI is **48 passed** on push [44845970725](https://github.com/RedMentos/Aii/actions/runs/44845970725) and PR [44845973418](https://github.com/RedMentos/Aii/actions/runs/44845973418), private bridge PASS [44845970739](https://github.com/RedMentos/Aii/actions/runs/44845970739). Staged/integrated regression remains IN_PROGRESS [44845973377](https://github.com/RedMentos/Aii/actions/runs/44845973377); PR remains draft and not Runtime-wired. This is not actual JEPA body learning or Redmi proof. Keep optimizer closed until exact staged integration, source-disjoint holdout, backlog catch-up, retention and restart/rollback are measured.
