@@ -511,6 +511,7 @@ Runtime.close = _audio_lease_close
     result["v13/audio_context_store.py"] = b'''"""Process-local consent-bound acoustic context with revocation tombstones."""
 import json
 import threading
+from pathlib import Path
 
 from .common import dumps
 
