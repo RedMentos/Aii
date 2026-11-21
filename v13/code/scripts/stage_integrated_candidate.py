@@ -84,7 +84,7 @@ def stage(code_dir: Path, destination: Path) -> dict:
             raise ValueError('arithmetic guard overlay missing or unsafe')
         arithmetic_overlay_raw = arithmetic_overlay_path.read_bytes()
         arithmetic_overlay_blob = hashlib.sha1(
-            b'blob ' + str(len(arithmetic_overlay_raw)).encode('ascii') + b'\\0' + arithmetic_overlay_raw
+            b'blob ' + str(len(arithmetic_overlay_raw)).encode('ascii') + b'\0' + arithmetic_overlay_raw
         ).hexdigest()
         if arithmetic_overlay_blob != ARITHMETIC_OVERLAY_GIT_BLOB:
             raise ValueError('arithmetic guard overlay source changed')

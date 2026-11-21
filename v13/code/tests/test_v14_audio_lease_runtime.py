@@ -30,6 +30,8 @@ def test_staged_audio_lease_covers_bodies_and_complete_c3_then_revokes(tmp_path)
     assert "consent_lease=audio_window.get('_consent_lease')" in staged_runtime
     assert "SCALE_AWARE_C4_RULE" in staged_focal
     assert "LOCAL_EXACT_ARITHMETIC" in staged_runtime
+    assert manifest["arithmetic_overlay"]["status"] == "SHADOW_REVIEW_ONLY"
+    assert {"v13/arithmetic_reflex.py", "v13/runtime.py"} <= set(manifest["arithmetic_overlay"]["replaced_files"])
     staged_arithmetic = (destination / "v13/arithmetic_reflex.py").read_text()
     assert "_DATE_SHAPE = re.compile(" in staged_arithmetic
     assert "wie\\\\s+viel\\\\s+ist" in staged_arithmetic

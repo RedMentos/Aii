@@ -7,18 +7,16 @@ on:
     paths:
       - v13/code/scripts/integrated_audio_context_candidate_20261121.py
       - v13/code/scripts/integrated_arithmetic_guard_candidate_20261121.py
-      - v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py
-      - v13/code/tests/test_arithmetic_reflex.py
-      - v13/code/tests/test_arithmetic_stage_20261116.py
-      - v13/code/scripts/integrated_arithmetic_guard_candidate_20261121.py
-      - v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py
-      - v13/code/tests/test_arithmetic_reflex.py
-      - v13/code/tests/test_arithmetic_stage_20261116.py
       - v13/code/scripts/termux_runtime_recovery_candidate_20261121.py
       - v13/code/scripts/stage_integrated_candidate.py
       - v13/code/v13/runtime_deploy.py
       - v13/code/tests/test_termux_runtime_recovery_stage.py
       - v13/code/tests/test_v14_audio_lease_runtime.py
+      - v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py
+      - v13/code/tests/test_arithmetic_reflex.py
+      - v13/code/tests/test_arithmetic_stage_20261116.py
+      - v13/code/tests/test_runtime_deploy.py
+      - v13/code/tests/test_runtime_deploy_integrity.py
       - .github/workflows/v14-core-audio-lease-runtime.yml
   pull_request:
     branches:
@@ -26,15 +24,21 @@ on:
       - research-perception/v14-raw-ear-shared-lease-api-20261121-run13
     paths:
       - v13/code/scripts/integrated_audio_context_candidate_20261121.py
+      - v13/code/scripts/integrated_arithmetic_guard_candidate_20261121.py
       - v13/code/scripts/termux_runtime_recovery_candidate_20261121.py
       - v13/code/scripts/stage_integrated_candidate.py
       - v13/code/v13/runtime_deploy.py
       - v13/code/tests/test_termux_runtime_recovery_stage.py
       - v13/code/tests/test_v14_audio_lease_runtime.py
+      - v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py
+      - v13/code/tests/test_arithmetic_reflex.py
+      - v13/code/tests/test_arithmetic_stage_20261116.py
+      - v13/code/tests/test_runtime_deploy.py
+      - v13/code/tests/test_runtime_deploy_integrity.py
       - .github/workflows/v14-core-audio-lease-runtime.yml
 
 jobs:
-  staged-audio-lease:
+  staged-audio-arithmetic:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -48,17 +52,17 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install lightweight test dependencies
         run: python -m pip install --upgrade pytest==9.2.0 numpy==2.2.6 psutil PyYAML
-      - name: Compile exact stage and deploy sources
+      - name: Compile exact stage, arithmetic overlay and deploy sources
         working-directory: v13/code
         run: >-
           python -m py_compile
           scripts/integrated_audio_context_candidate_20261121.py
           scripts/integrated_arithmetic_guard_candidate_20261121.py
-          tests/test_v14_exact_arithmetic_runtime_20261121.py
           scripts/termux_runtime_recovery_candidate_20261121.py
           scripts/stage_integrated_candidate.py
           v13/runtime_deploy.py
-      - name: Stage and test Runtime lease, body and C3 revocation path
+          tests/test_v14_exact_arithmetic_runtime_20261121.py
+      - name: Stage and test Runtime audio, exact arithmetic, C5 and persistence
         working-directory: v13/code
         run: >-
           python -m pytest -q
