@@ -33,7 +33,23 @@ class TermuxTtsAdapter:
         self._thread_lock = threading.Lock()
         self._degraded = False
 
-    def status(self, enabled):
+    @staticmethod
+    def _marker_path(home):
+        return Path(home) / "tmp" / "termux-tts.degraded"
+
+    @classmethod
+    def _marker_state(cls, home):
+        path = cls._marker_path(home)
+        try:
+            marker_stat = os.lstat(path)
+        except FileNotFoundError:
+            return False, False
+        unsafe = (not stat.S_ISREG(marker_stat.st_mode) or marker_stat.st_nlink != 1
+                  or marker_stat.st_uid != os.getuid() or marker_stat.st_mode & 0o077)
+        return True, unsafe
+
+    def status(self, enabled, home):
+        marked, unsafe = self._marker_state(home)
         return {
             "enabled": enabled is True,
             "available": shutil.which(self.executable) is not None,
@@ -41,8 +57,43 @@ class TermuxTtsAdapter:
             "automatic_playback": False,
             "microphone_access": False,
             "trainable_voice_model": False,
-            "degraded": self._degraded,
+            "degraded": self._degraded or marked,
+            "degraded_marker_unsafe": unsafe,
         }
+
+    def reset(self, home, *, confirmed=False, enabled=False):
+        if confirmed is not True:
+            return {"status": "CONFIRMATION_REQUIRED"}
+        if enabled is True:
+            return {"status": "DISABLE_FIRST"}
+        path = self._marker_path(home)
+        try:
+            marker_stat = os.lstat(path)
+        except FileNotFoundError:
+            self._degraded = False
+            return {"status": "NO_MARKER"}
+        if (not stat.S_ISREG(marker_stat.st_mode) or marker_stat.st_nlink != 1
+                or marker_stat.st_uid != os.getuid() or marker_stat.st_mode & 0o077):
+            return {"status": "LOCK_UNSAFE"}
+        os.unlink(path)
+        self._degraded = False
+        return {"status": "RESET", "manual_service_restart_required": True}
+
+    def _write_degraded_marker(self, home):
+        path = self._marker_path(home)
+        flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+        fd = None
+        try:
+            fd = os.open(str(path), flags, 0o600)
+            os.write(fd, str(int(time.time())).encode("ascii"))
+            os.fsync(fd)
+        except FileExistsError:
+            pass
+        except OSError:
+            pass
+        finally:
+            if fd is not None:
+                os.close(fd)
 
     @staticmethod
     def _terminate_group(proc):
@@ -65,8 +116,9 @@ class TermuxTtsAdapter:
             pass
 
     def speak(self, runtime, intent, row):
-        if self._degraded:
-            return {"status": "DEGRADED", "audibility_verified": False}
+        marked, marker_unsafe = self._marker_state(runtime.home)
+        if self._degraded or marked:
+            return {"status": "DEGRADED", "degraded_marker_unsafe": marker_unsafe, "audibility_verified": False}
         if not verify_intent(intent, row["id"], row["event_id"], row["text"]):
             return {"status": "INVALID_INTENT", "audibility_verified": False}
         text = row["text"]
@@ -112,6 +164,7 @@ class TermuxTtsAdapter:
             except subprocess.TimeoutExpired:
                 self._terminate_group(proc)
                 self._degraded = True
+                self._write_degraded_marker(runtime.home)
                 return {
                     "status": "TIMEOUT",
                     "duration_ms": int((time.monotonic() - started) * 1000),
@@ -122,6 +175,7 @@ class TermuxTtsAdapter:
             except KeyboardInterrupt:
                 self._terminate_group(proc)
                 self._degraded = True
+                self._write_degraded_marker(runtime.home)
                 return {"status": "INTERRUPTED", "audibility_verified": False}
             return {
                 "status": "CLI_COMPLETED" if proc.returncode == 0 else "CLI_FAILED",
@@ -206,7 +260,7 @@ def operator_command(runtime, args):
     action = args[0] if args else "status"
     adapter = _adapter(runtime)
     if action == "status" and len(args) <= 1:
-        return dumps(adapter.status(runtime.cfg.get("speech_output_enabled", False)))
+        return dumps(adapter.status(runtime.cfg.get("speech_output_enabled", False), runtime.home))
     if action == "on" and len(args) == 1:
         cfg = runtime.cfg | {"speech_output_enabled": True}
         save_config(runtime.home, cfg)
@@ -219,4 +273,7 @@ def operator_command(runtime, args):
         return "Platform TTS fallback disabled for future requests; an already-started Android utterance may continue."
     if action == "speak" and len(args) == 1:
         return dumps(_speak_last(runtime, adapter))
-    raise ValueError(":voice [status|on|off|speak]")
+    if action == "reset" and args == ["reset", "--confirm"]:
+        return dumps(adapter.reset(runtime.home, confirmed=True,
+                                   enabled=runtime.cfg.get("speech_output_enabled", False) is True))
+    raise ValueError(":voice [status|on|off|speak|reset --confirm]")
