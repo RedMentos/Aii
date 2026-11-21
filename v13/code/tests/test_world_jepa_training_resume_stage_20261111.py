@@ -38,3 +38,4 @@ def test_v14_world_planner_receiver_positive_and_negative_controls_in_staged_sui
     module.test_world_planner_receiver_rejects_uncommitted_or_source_mismatched_event(
         tmp_path
     )
+    print("V14_WORLD_PLANNER_RECEIVER_POSITIVE_NEGATIVE_PASS")
