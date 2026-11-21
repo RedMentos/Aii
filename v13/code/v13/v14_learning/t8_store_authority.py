@@ -269,19 +269,20 @@ def _transition_from_action_row(store, raw_row):
     row = _mapping(raw_row, "action page row")
     action_id, status, created = row.get("id"), row.get("status"), row.get("created")
     if (type(action_id) is not str or not action_id or len(action_id) > 128
-            or status not in _OBSERVED_LEARNING_STATUSES
+            or status not in _TERMINAL
             or type(created) not in (int, float) or not math.isfinite(created)):
-        raise ValueError("observed action identity")
+        raise ValueError("terminal action identity")
     expected, actual = _object(row.get("expected"), "expected"), _object(row.get("outcome"), "actual")
     forecast = expected.get("forecast")
     if type(forecast) is not dict:
         raise ValueError("forecast")
-    characters = actual.get("characters")
-    characters = 0 if characters is None else characters
+    censored_statuses = {"CANCELLED", "ABORTED", "OUTCOME_UNKNOWN", "INTERRUPTED"}
+    duration = actual.get("action_duration_s", 0 if status in censored_statuses else None)
+    characters = actual.get("characters", 0 if status in censored_statuses else None)
     if (not world_model._finite_nonnegative(forecast.get("input_chars"))
-            or not world_model._finite_nonnegative(actual.get("action_duration_s"))
+            or not world_model._finite_nonnegative(duration)
             or not world_model._finite_nonnegative(characters)):
-        raise ValueError("observed action numeric")
+        raise ValueError("terminal action numeric")
     resource = forecast.get("resource_state", "NORMAL")
     if type(resource) is not str:
         raise ValueError("resource state")
@@ -319,7 +320,7 @@ def _transition_from_action_row(store, raw_row):
         "action_id": action_id,
         "s": world_model.state_vec(forecast["input_chars"], resource, hour),
         "a": route,
-        "y": [math.log1p(float(actual["action_duration_s"])),
+        "y": [math.log1p(float(duration)),
               1.0 if status == "FINAL" else 0.0,
               math.log1p(float(characters)) / 8.0],
         "latent": latent,
@@ -370,3 +371,48 @@ def verify_committed_transition_page(store, *, after_seq=0, limit=world_model.MA
         except (ValueError, TypeError, KeyError, OSError, OverflowError, json.JSONDecodeError):
             rejected += 1
     return verified, rejected, next_cursor, len(page), censored_skipped, has_more
+
+
+def verify_committed_temporal_page(store, *, after_seq=0, limit=64):
+    """Oldest-first page of verified terminal outcomes, including censored ledger-only records."""
+    if type(after_seq) is not int or after_seq < 0:
+        raise ValueError("after_seq")
+    if type(limit) is not int or not 1 <= limit <= 64:
+        raise ValueError("limit")
+    if not all(callable(getattr(store, name, None)) for name in ("one", "rows", "read_source")):
+        raise TypeError("Store reader API required")
+    rows = store.rows(
+        """SELECT a.rowid AS scan_seq,a.id,a.event_id,a.status,a.expected,a.outcome,a.created,
+                  e.generation_id
+           FROM actions a JOIN events e ON e.id=a.event_id
+           WHERE a.rowid>? AND a.outcome IS NOT NULL AND a.expected LIKE ?
+             AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED',
+                              'CANCELLED','ABORTED','OUTCOME_UNKNOWN','INTERRUPTED')
+           ORDER BY a.rowid ASC LIMIT ?""",
+        (after_seq, '%"forecast"%', limit + 1),
+    )
+    if type(rows) is not list:
+        raise ValueError("T8 temporal page")
+    has_more = len(rows) > limit
+    page = rows[:limit]
+    if not page:
+        return [], 0, after_seq, 0, 0, False
+    next_cursor, verified, rejected, censored_observed, seen = after_seq, [], 0, 0, set()
+    censored = {"CANCELLED", "ABORTED", "OUTCOME_UNKNOWN", "INTERRUPTED"}
+    for raw_row in page:
+        try:
+            action_row = _mapping(raw_row, "action temporal page row")
+            scan_seq = action_row.get("scan_seq")
+            if type(scan_seq) is not int or scan_seq <= next_cursor:
+                raise ValueError("T8 temporal scan sequence")
+            next_cursor = scan_seq
+            receipt = _verify_one(store, _transition_from_action_row(store, action_row))
+            if receipt.action_id in seen:
+                raise ValueError("duplicate action in temporal page")
+            seen.add(receipt.action_id)
+            if receipt.status in censored:
+                censored_observed += 1
+            verified.append(receipt)
+        except (ValueError, TypeError, KeyError, OSError, OverflowError, json.JSONDecodeError):
+            rejected += 1
+    return verified, rejected, next_cursor, len(page), censored_observed, has_more
