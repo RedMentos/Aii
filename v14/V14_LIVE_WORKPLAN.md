@@ -1055,3 +1055,21 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 The source-derived B1/B2 suppression hypothesis remains: background + A_THEN_B_SEQUENTIAL, after two recent C3 zero-token failures and a configured deadline <=50 s, can leave only 4 s of pre-answer time at a 30 s deadline. Both body offers may be deferred before C4; a post-commit observer cannot satisfy same-answer B1/B2→C4→C3. This is not a Redmi finding; the actual device config and failure telemetry are unknown. Core owns the measured budget fix; QA owns same-turn nontrivial regression.
 
 Private PIPELINE_STATUS issue #443 has no authenticated reply. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell or device mutation. No full local Aii checkout exists, so no LOCAL_LINUX repository suite ran.
+
+
+## Boss integration checkpoint — 2026-11-21T23:54:03.290Z (UTC)
+
+The current release-development base recorded by PR #2258 metadata is `bdcad466ffea75a2b41f7d23be168f53c7197d20`; the last accepted release remains `f279286a4453248004c670fcaabecd85da6ab299`. Boss integration candidate #2258 head `9922cf86ecf8801d30a46a1e98817e5c6c1db092` has 12 exact PR workflows SUCCESS, 2 policy skips and no failures, but remains DRAFT / NOT_RELEASED pending #2235 Age-rights composition and whole-system review.
+
+Core #2278's same-turn budget fix passed its focused Python 3.13/3.14 suite (12 tests + 6 subtests each). It changes the policy so two recent C3 zero-token prefill failures do not defer B1/B2 while the Runtime's actual 45% pre-answer window remains open. The first staged/integrated run exposed the missing helper pin. Boss #2279 updates all five nested SHA links; independent exact readback confirms every link. Its first staged run then reached the suite (252 passed / 10 skipped / 47 subtests) and failed one outdated disposable test that conflated `recovery_detected` with the actual defer flag. That test is corrected at #2279 head `98892df9531900a99ba1fef172294893b81bd101`; exact staged/integrated, migration and owner-read workflows are running. No local full suite or Redmi proof.
+
+QA rollback PR #2276 has exact CI green, but Boss review found a race between UI startup and the final rollback launcher switch; integration is held for a shared activation guard and barrier-based test. Private PIPELINE_STATUS #447 has no authenticated response: `REDMI_UNVERIFIED / NO_LIVE_RECEIPT`. No device action or data mutation.
+
+### Next steps
+
+1. Wait for exact #2279 head checks; if green, integrate #2279→#2278→#2258 and then test downstream C4 consumption of both same-turn B1/B2 offers.
+2. Resolve #2276 UI-start/rollback synchronization before merging runtime rollback.
+3. Rebase and compose #2235 full Age/X10 learning-rights semantics; rerun GoalWake, Lab-Age, migration and runtime deploy.
+4. Continue whole-Canon work across JEPA checkpoint retention, RAW EAR, true B3 latent receiver, Android control, voice, Context OS/Memorilla, self-optimization and permissions. No feature is accepted from file presence alone.
+
+**No user action required.**
