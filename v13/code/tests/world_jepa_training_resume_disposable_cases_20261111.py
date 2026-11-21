@@ -10,7 +10,7 @@ import pytest
 
 from v13 import world_jepa as wj
 from v13 import world_jepa_shadow_checkpoint as checkpoint
-from v13 import world_jepa_training_state_candidate as state
+from v13 import world_jepa_training_state as state
 from v13.operator import Operator
 from v13.runtime import Runtime
 from integrated_jepa_disposable_cases import populate
@@ -150,6 +150,33 @@ def test_inference_only_state_is_not_silently_resumed(fitted):
     model, data = fitted
     del model._training_state
     before = model.enc['W1'].copy()
-    with pytest.raises(ValueError, match='training state'):
+    with pytest.raises(ValueError, match='explicit optimizer bootstrap permission'):
         model.partial_fit(*data, steps=2)
     assert np.array_equal(before, model.enc['W1'])
+    model.partial_fit(*data, steps=2, allow_optimizer_bootstrap=True)
+    assert model._training_state['origin'] == 'BOOTSTRAPPED_FROM_INFERENCE_ONLY'
+    assert model._training_state['main']['t'] == 2
+    assert model._fit_steps == 4
+    assert not np.array_equal(before, model.enc['W1'])
+
+
+def test_legacy_inference_checkpoint_bootstrap_is_explicit_and_persisted(tmp_path, fitted):
+    model, data = fitted
+    del model._training_state
+    legacy = tmp_path / 'legacy-inference.npz'
+    receipt = checkpoint.save(model, legacy, '1' * 64)
+    assert receipt['optimizer_state_persisted'] is False
+    restored = checkpoint.load(legacy, '1' * 64, receipt['sha256'])
+    before = restored.enc['W1'].copy()
+    with pytest.raises(ValueError, match='explicit optimizer bootstrap permission'):
+        restored.partial_fit(*data, steps=2)
+    assert np.array_equal(before, restored.enc['W1'])
+    restored.partial_fit(*data, steps=2, allow_optimizer_bootstrap=True)
+    assert restored._training_state['origin'] == 'BOOTSTRAPPED_FROM_INFERENCE_ONLY'
+    saved = tmp_path / 'resumed.npz'
+    receipt = checkpoint.save(restored, saved, '1' * 64)
+    assert receipt['optimizer_state_persisted'] is True
+    assert receipt['optimizer_state_bootstrapped'] is True
+    roundtrip = checkpoint.load(saved, '1' * 64, receipt['sha256'])
+    same(roundtrip._training_state, restored._training_state)
+
