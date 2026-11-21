@@ -9,6 +9,10 @@
 - The former strict additive job failed before tests because #2258 modifies 60 changed files (59 original composed paths plus the workflow-scope file) while the additive-only harness allows only 2..30 newly added inert modules/tests/handoffs. Boss changed only the workflow scope: the unchanged strict validator now runs only for `v13-additive/*` branches or a PR labelled `v13-additive-candidate`. It is skipped on this broad integration PR, not reported as a PASS. Exact CI on head `273a60b` is still queued.
 - #2258 is not merged. Manual review of its protected runtime, audio consent, Store/GoalStore and deployment paths is still required.
 
+## Research intake now integrated — 2026-11-21 23:28 CET
+
+Research/Perception PR #2260 was CLOSED_DRAFT, not merged. Its reviewed R-047–R-051 ledger entries and the research handoff are now integrated into the Boss branch. No code/model/weight was imported. Current #2256 head 08fce fails two same-batch speaker-evidence tests on Python 3.13/3.14; keep NumPy opt-in. XKV/HeteroFold are research-only; #2266 is a diagnostic input-embedding probe with CI pending, not trained B3. AGN/AEN is a future small-head hypothesis after JEPA retention. Full details and license caveats are in the research ledger and handoff.
+
 ## Other active integration blockers
 
 - [#2235 Age/X10 rights](https://github.com/RedMentos/Aii/pull/2235): 9/11 checks pass; nested callback attribution and negative control are fixed. Compose its Age-rights changes with #2258 without overwriting GoalWake atomicity. Official Age remains 0; Age controls developmental/tool/learning rights, never compute budget.
