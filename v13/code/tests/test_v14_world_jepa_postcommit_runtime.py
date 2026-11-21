@@ -230,6 +230,8 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert first["status"] == "POSTCOMMIT_PROCESSED"
         assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         first_metrics = first["learning"]["metrics"]
+        assert first_metrics["old_retention_target_reference"] == "NONE"
+        assert first_metrics["old_retention_target_sha256"] is None
         assert first_metrics["optimizer_moments_persisted"] is EXPECT_OPTIMIZER_STATE_PERSISTED
         assert first_metrics["inverse_dynamics_optimizer_persisted"] is EXPECT_OPTIMIZER_STATE_PERSISTED
         assert first_metrics["optimizer_state_bootstrapped"] is False
@@ -277,6 +279,8 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         second = sleep._run_world_jepa(second_events[-1], limit=256)
         assert second["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         second_metrics = second["learning"]["metrics"]
+        assert second_metrics["old_retention_target_reference"] == "PRE_UPDATE_EMA_SNAPSHOT"
+        assert len(second_metrics["old_retention_target_sha256"]) == 64
         assert second_metrics["new_train_rows"] >= 48
         assert second_metrics["replay_rows"] >= 8
         assert second_metrics["fit_steps_after"] > second_metrics["fit_steps_before"]
