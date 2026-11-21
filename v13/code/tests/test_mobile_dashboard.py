@@ -172,6 +172,7 @@ class MobileDashboardTests(unittest.TestCase):
 
     def test_flow_audit_http_route_is_token_scoped_local_and_read_only(self):
         # Store expects its private data root before opening coordinator.lock.
+        (self.data / "data" / "db").mkdir(parents=True, exist_ok=True)
         (self.data / "data" / "blobs").mkdir(parents=True, exist_ok=True)
         store = Store(self.data)
         try:
