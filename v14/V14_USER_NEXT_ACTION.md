@@ -1,3 +1,19 @@
+# Current user-facing handoff — 2026-11-21 19:50 CET
+
+**No user action is required. Do not run another Termux installer or change models, weights, Age, permissions, updater settings or phone data.**
+
+- Current release-development HEAD: `b267ed641f4dbff1e2c28f492baf0182e9bb656b`. Prior code-bearing release: `f279286a4453248004c670fcaabecd85da6ab299` (previous exact CI 19/19). Latest integrated code candidate: `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` (exact merge-push 18/19; SleepRuntime JEPA positive acceptance returns `UTILITY_GATE_REJECTED`). No new code release or Android install is confirmed.
+- Core audio candidate #2242 is still draft and fails its current staged source-hash chain; the same staging error cascades into staged/integrated/deployer checks. It also needs a pre-lock revoke-cancel signal and mandatory revocation subscriptions before it is safe to promote. QA #2244 is green only on its older Core base; it must rebase after the fix.
+- Research/Perception #2243 has a reported local tiny-model K/V experiment, but the green model-lab workflow did not execute its new test file. This is not production B3 or native B1/B2 latent communication. #2246 is a synthetic metadata-only A5 UI lease seam, not Android screen capture or control.
+- JEPA #2237 latest head f92c156 has no exact CI attached; the previous cohort failed old-task retention and optimizer-state continuation. Learning/optimizer gates stay OFF. No native body-weight changes or self-edit.
+- P0 #1904 remains open: no fresh 20-turn Redmi acceptance, correct native 2+2, verified B1/B2→C4→C3 offers, native latency/RSS or installed SHA.
+- Private PIPELINE_STATUS and DIAGNOSTICS owner-read requests have no authenticated reply at this checkpoint. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No device action or update request was performed.
+- The full Aii local test suite could not run here because the checkout is not mounted and GitHub DNS resolution failed. CI evidence is not LOCAL_LINUX or Android evidence.
+
+**Next internal work:** Core fixes the staging hash and revocation cancellation; QA rebases and tests automatic revoke-through-C3 cleanup; JEPA preserves the strict retention gate and proves accepted updates or rollback; Perception adds experiment-specific CI and continues actual model-native K/V research. The full 1,255-heading Canon remains open and its semantic coverage map is incomplete.
+
+---
+
 # Final mergeability refresh — 2026-11-21 18:05:59Z
 
 - Current verified documentation HEAD before this refresh: `7c9841ae9d665aab19e60d524307342a219047f0`; code integration head remains `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`.
