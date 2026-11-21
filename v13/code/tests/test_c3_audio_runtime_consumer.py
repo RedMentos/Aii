@@ -175,7 +175,7 @@ def test_real_store_audio_packet_becomes_source_bound_body_and_c3_context(tmp_pa
 def test_provisional_audio_is_observed_by_a4_but_never_promoted_to_body_or_c3(tmp_path):
     from types import SimpleNamespace
 
-    store, event, _home = _store(tmp_path)
+    store, event, home = _store(tmp_path)
     runtime = Runtime.__new__(Runtime)
     runtime.store = store
     runtime.home = home
@@ -192,7 +192,6 @@ def test_provisional_audio_is_observed_by_a4_but_never_promoted_to_body_or_c3(tm
         generation_id=store.generation_id, source_id=window["source_id"],
         consent_receipt=window["consent_receipt"],
         consent_check=window["consent_check"], token_budget=512,
-        finality=window["finality"],
         finality=window["finality"],
     )
 
