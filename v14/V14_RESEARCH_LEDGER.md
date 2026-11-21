@@ -697,3 +697,137 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - Staged Runtime: `251 passed, 10 skipped, 47 subtests`.
 - Integrated regression: `424 passed, 3 skipped, 58 subtests` (6 warnings).
 - These are CI staged/synthetic tests. They do not establish Android OS capture, a real UI provider, active-turn consumer wiring or Redmi behavior.
+
+
+## R-047 — Optional NumPy acceleration for RAW_EAR autocorrelation (2026-11-21)
+
+### Hypothesis and implementation
+
+- The existing RAW_EAR extractor in `v13/code/v13/audio_voice_cues.py` spends most of its pure-Python time in the per-lag normalized-autocorrelation loop. Replacing only that calculation with `numpy.correlate` should preserve the current frame segmentation, activity classes, F0/prosody outputs and schema while reducing CPU cost.
+- PR #2256 adds an explicit `backend="numpy"` option to `extract_voice_cues` and `voice_backend="numpy"` to the actual `consume_pcm16_voice_window` A5→A4→C3 consumer. Default remains `python`; NumPy is imported lazily only when explicitly selected. No new mandatory runtime dependency and no automatic backend swap.
+- The hybrid implementation vectorizes only pitch autocorrelation; it deliberately leaves the rest of the Python extractor unchanged to minimize semantic drift. A more aggressive fully vectorized prototype was faster but is not the chosen implementation.
+
+### Local evidence
+
+- LOCAL_LINUX Python 3.13.5 x86_64, NumPy already loaded: one-second 16-kHz window median 131.30 ms / p95 135.89 ms for pure Python versus 6.23 ms / p95 8.37 ms for the hybrid NumPy backend (~21× median speedup).
+- Exact output parity across 100 deterministic random synthetic PCM windows at 8/12/16/32/44.1/48 kHz and durations 40 ms–1 s; seven additional silence/tone/noise/impulse/voice-like controls also matched exactly.
+- tracemalloc peak: 922,767 bytes for Python and 934,805 bytes for the hybrid NumPy path (+12,038 bytes while NumPy was already imported). Process RSS and cold NumPy import cost were not measured.
+- A full vectorized prototype measured ~2.19 ms per one-second window, but duplicates more of the extraction pipeline; it remains an experiment, not the implementation.
+- CI matrix for PR #2256 is pending. No full local Aii checkout test or Redmi/ARM measurement is claimed.
+
+### Constraints and next acceptance
+
+- The backend is opt-in and the Runtime default remains Python. Core may pass `voice_backend="numpy"` only in an explicitly experimental path after the actual device confirms cold import cost, RSS, 40–100-ms incremental latency, full-duplex interruption behavior and output retention.
+- Synthetic PCM is not a speech corpus. The benchmark establishes algorithm parity and CPU cost only; it does not establish real speech accuracy, VAD calibration or human-prosody validity.
+- Keep WebRTC/Silero VAD evidence separate from RAW_EAR pitch/prosody and non-speech classes. No model weights, speech dataset, microphone access or Android permission was downloaded or enabled.
+- Official Termux packaging was checked directly at `termux/termux-packages/packages/python-numpy/build.sh` (blob `36b2c798600562acea3250ae2c3f8e9014610d2a`): current recipe pins NumPy 2.5.5, declares BSD-3-Clause, and builds Android wheels including the `aarch64 → arm64_v8a` path; declared runtime dependencies are `libc++`, `libopenblas`, and `python`. This establishes a maintained Android/Termux packaging route, not that NumPy is installed on this Redmi or that cold import/RSS is affordable. No package was installed.
+- Exact PR #2256 code head `176a6cff` initially passed `py_compile` and all 42 tests on CPython 3.13/3.14, but its benchmark step failed on both because direct script execution did not include `v13/code` on `sys.path`. Fixed in `63b5410769b872ddb64e002ab1c764e9e90966af` by adding the script-relative code root. Exact workflow `44946779051` passes both Python 3.13 and 3.14, including benchmark and privacy scan. Exact staged/integrated workflow `44946779195` also passes: staged-runtime 251 passed / 10 skipped / 47 subtests; integrated regression 424 passed / 3 skipped / 58 subtests. Safe-additive validation still fails by policy because this PR modifies an existing production module; no bypass or allowlist weakening was attempted.
+
+**Status:** OPT_IN_CODE_IMPLEMENTED_PR_2256 / SYNTHETIC_PARITY_100_OF_100 / LOCAL_X86_CPU_MEASURED / EXACT_FOCUSED_CI_PASS_3_13_3_14 / STAGED_RUNTIME_AND_INTEGRATED_CI_PASS_44946779195 / SAFE_ADDITIVE_FAIL_BY_POLICY / REDMI_UNVERIFIED.
+
+
+
+## R-048 — Tandem: hybrid recurrent-state reuse on mobile NPUs (2026-11-21)
+
+### Source and review depth
+
+- Primary paper: Zhuomin Chen et al., *Tandem: Serving Hybrid Linear-Attention GUI Agents on Mobile NPUs*, arXiv:2610.26660v1, submitted 2026-10-19. Full HTML paper read, including Sections 3–6, evaluation tables and discussion; it is a preprint, not a peer-reviewed result in the source reviewed here.
+- Maintained implementation inspected: `flyingdoog/tandem`, a fork of `ggml-org/llama.cpp` b11200. Repository LICENSE is MIT (blob `e7dca554bcb802f98408383a864404e3aa4eacca`). The fork adds roughly 3,000 C/C++ lines across 24 files and builds with Android NDK r28b + Hexagon SDK 6.6. A separate dependency/SDK license and provenance audit would be required before reuse; no code was imported.
+
+### Method and measured results
+
+- Tandem checkpoints hybrid recurrent state at observed prompt-divergence points rather than generic chat message boundaries; for speculation it retains only a short rollback tail so the bulk of prefill remains on the NPU matrix path; it shares weight-block reads across candidate verification; it releases NPU active-power votes after 3 s idle while keeping model weights/state resident.
+- Primary device: OnePlus 13T, Snapdragon 8 Elite / Hexagon v79, Android 16, 16 GB RAM; model Qwen3.5-4B Q4_K_M. Second device: OnePlus 15, Snapdragon 8 Elite Gen 5 / Hexagon v81, Android 16, 16 GB. Measurements include a 61-request replay trace, 21-screen app set, 510 held-out steps, 300 AndroidControl steps and 100 real phone tasks.
+- On the primary device, text-step latency fell 1.96 s → 1.38 s (30%) and screenshot-step latency 5.66 s → 4.76 s (16%) against the fastest llama.cpp NPU configuration. Energy per text step fell 15.1 J → 10.1 J (33%); screen-off standby with the model loaded fell 0.76 W → 0.22 W. On the next NPU generation text-step latency fell 27%.
+- On 510 held-out steps, action fidelity was 265/510 correct text steps and 287 vs 288 correct screenshot steps (Tandem vs llama.cpp); the paper reports identical action outputs for the 100 real-task runs, while some free-text summaries can differ due to floating-point rounding. These are step-level results, not a general task-success guarantee.
+- Other recurrent architectures: the checkpoint policy alone reduces new prompt tokens by 11–12% and latency by 9–12% on LFM2-2.6B and Granite-4.0-H-Micro on the same Snapdragon NPU; with all Tandem kernels LFM2 is 16% faster than llama.cpp. This does not establish results for V13's installed LFM2.5-1.2B model or CPU/GPU backend.
+
+### V14 interpretation / fit
+
+- Strong transferable hypothesis: an agent's stable Context OS header/task prefix and changing recent event/screen tail create a different cache boundary from ordinary chat. If the current model/backend exposes safe recurrent-state save/restore, measure a divergence-point checkpoint against the existing prompt-cache path; verify exact output, state restore, memory overhead and restart/eviction behavior.
+- NPU-specific parts (Hexagon HMX/HVX kernels, power votes, NDK/SDK integration and Qwen3.5 MTP head) are not directly portable to the Redmi Note 10 Pro target and must not be presented as a ready alternative. The paper's devices have Snapdragon 8 Elite/Gen 5 and 16 GB RAM; no Redmi-class evidence.
+- Do not import the fork wholesale: it is a large llama.cpp fork tied to a specific NPU path and older base b11200. A small server-side checkpoint policy experiment may be more tractable only after inspecting the exact current llama.cpp recurrent-state API and V13's actual model architecture.
+
+**Status:** FULL_TEXT_PREPRINT_REVIEWED / OSS_README_AND_MIT_LICENSE_CHECKED / NPU_HARDWARE_SPECIFIC / NO_CODE_IMPORTED / NO_MODEL_OR_WEIGHT_CHANGE / NO_REDMI_PROOF / RESEARCH_HYPOTHESIS_ONLY.
+
+
+
+## R-049 — LFM2.5 recurrent prompt-cache applicability and license (2026-11-21)
+
+### Exact model family and license
+
+- Official Liquid AI model cards identify LFM2.5-1.2B-Instruct as 16 layers (10 double-gated convolution blocks + 6 GQA blocks), 1.17B parameters; LFM2.5-230M as 14 layers (8 double-gated convolution blocks + 6 GQA blocks). The installed V13 quantized variants are not independently remeasured here; the model-card architecture is a family-level reference, not proof of exact local GGUF metadata.
+- Both official Hugging Face cards declare `lfm1.0`, the LFM Open License v1.0. Liquid AI's license page says it is Apache-2.0-based but **not Apache-2.0**: commercial-use rights are limited to legal entities below the USD 10M annual-revenue threshold; qualified non-profits and research/non-commercial use are exempt; attribution is required and there is no copyleft. Treat this as a custom open-weight license and retain its exact text with any model provenance. No model was downloaded or swapped.
+
+### V13 current runtime readback
+
+- Current `gpt6/v13-private-remote-bridge-20261111` source readback: `v13/code/v13/runners.py` blob `96d91b8aa0d110a7dbcfd438fc8b3b7c504eed9a`; `config.py` blob `a4fa0e0eeb6c544035ebf8ec0b46f5ebe11151481`.
+- `LlamaRunner` starts each model server with `-np 1`, configured `-t/-tb`, `-b/-ub`, `--cache-ram` and `--ctx-checkpoints`; current defaults are 128 MiB host prompt cache and 6 checkpoints per slot. Each generation sends `cache_prompt=true` and `id_slot=0`. `RunnerPool` retains one resident runner per role when its resource/fabric policy allows it. `bodies.py` pins C3_LANGUAGE and enables the body fabric when `body_residency_mb>0`; current config default is 1,800 MiB for resident bodies (B1/B2/C3), with RED/ORANGE pressure modes allowed to evict non-pinned bodies. These are BOOT values, not Redmi measurements. Thus the normal path uses an in-memory prompt cache/checkpoint path and single-sequence server slots; it does not add `--slot-save-path` or issue slot save/restore on every turn.
+- Existing historical V13 note `v13/code/docs/NATIVE_CACHE.md` (2026-10-12; Linux cloud, 4-vCPU Xeon, llama.cpp b10964, not Redmi) measured warm prefix reuse for LFM2.5-1.2B and LFM2.5-350M and A→B→A host-cache reuse. It also found no cache path bit-identical to cold prefill; exact-output paths therefore kept full prefill. This historical bench is not a current model/runner or Android acceptance test.
+
+### Upstream llama.cpp status and risk separation
+
+- llama.cpp PR #26004, merge commit `033df86b69ec1a333eb241f0c16325a4d43dcff5`, merged 2026-10-08 and is present in current upstream `master`: server slot save/restore now persists the context-checkpoint appendix. This fixes the disk slot-restore gap reported in #25913. It matters for explicit save→restart→restore; it is separate from the in-memory per-turn cache used by V13's current runner.
+- LFM2.5 co-batching report #29002 is not a confirmed state-corruption bug: a maintainer traced the early-EOG result to the reproducer's logits-row indexing after a sequence finished; after correcting the harness, F32 was byte-identical and remaining Q4_K_M differences were numerical. V13's `-np 1` also avoids multi-sequence co-batching in each model server. Do not disable a future multi-sequence path based only on the original report; require a corrected reproducer and output/logit comparison.
+
+### Concrete next measurement (no device action issued)
+
+- For the next owner-authorized Redmi diagnostic, capture per-role `cache_n`, `prompt_n`, prompt-eval time, TTFT, runner PID/restart, body-residency mode/live-process count, model revision and cache/checkpoint flags on (a) a repeated same-prefix turn, (b) a changed recent tail, (c) A→B→A role/session switching, and (d) after resource-driven runner eviction/reload. A large `cache_n` separates model decode/prefill speed from cache-miss problems; zero reuse despite an identical prefix points to prompt/template/session continuity or an older binary. Do not infer either from the existing 28.72-s C3 prefill report alone.
+- Private owner-read issues Aiiii #431 and #432 and V13OBS #115 were checked: all still have zero comments/no new authenticated receipt. No new request was issued. No Termux command, model download, weight change, updater request or phone mutation.
+
+**Status:** MODEL_ARCHITECTURE_AND_LICENSE_VERIFIED / RUNTIME_CACHE_FLAGS_READBACK / UPSTREAM_SLOT_CHECKPOINT_FIX_MERGED / CACHE_HIT_ON_REDMI_UNVERIFIED / NO_MODEL_CHANGE / NO_DEVICE_ACTION.
+
+
+## R-050 — Cross-family latent cache transfer and native receiver ingress feasibility (2026-11-21)
+
+### XKV — receiver-aware dual-cache communication
+
+- **Paper:** Jiyao Liu, Qi Zhang, Yaoyi Jia, Ziwen Kan, Song Wang, “Dual-Cache Latent Space Communication between Heterogeneous Language Models,” arXiv:2608.20617, submitted 2026-08-20. Full arXiv text reviewed; this is an arXiv preprint, not a verified peer-reviewed publication. Primary source: https://arxiv.org/abs/2608.20617
+- **Method:** both frozen models prefill complementary contexts. A learned-query pooler compresses both sender and receiver K/V caches; a learned layer-axis map and cross-layer attention form a compact receiver-aligned memory; each raw receiver cache position queries that memory and receives a per-head-gated K/V residual in native receiver geometry. Only the translator is trained; zero-initialized output heads make the initial update an identity.
+- **Reported evidence:** 45 dataset/model-pair settings across five split-evidence QA datasets and the 3×3 ordered grid of Qwen-0.6B, Gemma-1B and Llama-3B. The six heterogeneous pairs vary family, depth, KV-head count, head dimension and tokenizer. The paper reports 4.55M translator parameters, 5.8 ms average translator latency and 167.6 ms average end-to-end latency; the comparison is 59.9/227.9 ms for LCF-X and 1,139.5 ms for text-to-text. XKV's macro score is 52.37 vs 49.76 for LCF-X and 48.86 for text communication. Hardware was one NVIDIA A100 80GB, Ubuntu 22.04, CUDA 12.2; each experiment was run once.
+- **Limits:** translator-only latency is not total inference time; both models still prefill their own contexts. The paper itself lists larger-model scaling, multi-turn/many-agent communication and latent-message interpretation as future work. No Redmi/ARM64, Android, LFM2.5 or Qwen3.5 measurements. No official code repository or code license was located in this review; do not import an implementation or weights.
+- **V14 implication:** this is the strongest reviewed design match for the eventual B1/B2 Callosum path because it makes communication receiver-aware and position-specific instead of broadcasting one sender summary. It is a research target, not proof that our current runtime can read or write native K/V tensors.
+
+### HeteroFold — cross-tokenizer and cross-depth K/V transfer
+
+- **Paper:** Vincent-Daniel Yun et al., “Prefill-Free Cross-Family KV Cache Transfer for Heterogeneous Multi-Agent LLMs,” arXiv:2609.32259, submitted 2026-09-26. Full paper reviewed. Primary source: https://arxiv.org/abs/2609.32259
+- **Method:** shared character-boundary token alignment; proportional layer alignment with sender layers at offsets −4/0/+4; moment-matched Recolor affine K/V maps; receiver-attention/output-aware rank-16 correction; fold the correction into fixed per-layer K/V maps. Both base models remain frozen.
+- **Reported evidence and limits:** six directed pairs among Llama-3.1-8B, Qwen3-4B and Ministral-3-14B in BF16. At 32K context, the paper reports 10.7× speedup over native prefill for Llama→Ministral, but results are not uniformly equal to text communication: some long-context scores remain substantially lower. The official repo README states about 50 GB for its three model weights and 0.5 GB of data, CUDA GPU requirements, and testing on A40/A100/H100/RTX 6000 Ada. This is not a mobile implementation.
+- **OSS/license check:** official repo https://github.com/daniel-eai/Prefill-Free-Multi-Agent-LLMs at main SHA d8018c9a103094511fd58bb6572d1e4b038e071e. pyproject.toml declares MIT metadata, but the repository has no root LICENSE file at this readback; treat reuse as license-unverified until the actual license text is confirmed. Requirements pin PyTorch 2.9.1 and CUDA 12.8 wheels, Transformers 5.10.2 and other large Python dependencies. Llama-3.1 and Ministral weights are gated; each model's weight license is separate. No import, model download or weight swap was performed.
+- **V14 implication:** reuse the algorithmic ideas only after legal review and a small compatible-model benchmark. HeteroFold's character alignment is useful where tokenizers differ; its BF16/CUDA stack and model scale are not a Redmi candidate.
+
+### Native llama.cpp ingress: a concrete intermediate path, not K/V injection
+
+- **Pinned upstream:** ggml-org/llama.cpp tag b10964 resolves to commit b29c606e28a01b1bc8c1351026a0fa6e616bf6c4; MIT license. Header: https://github.com/ggml-org/llama.cpp/blob/b10964/include/llama.h
+- **Verified API facts from that exact header:** llama_batch has an embd pointer for raw input token embeddings when token IDs are NULL; the header exposes llama_model_n_embd_inp and llama_model_n_embd_out. It also exposes llama_state_seq_get_data / llama_state_seq_set_data for serializing/restoring one sequence in a context. That state API does not promise compatibility across different model architectures or revisions.
+- **Verified server boundary:** the b10964 server registers /embedding, /embeddings and /v1/embeddings output routes. No raw input-embedding injection HTTP route was found in server.cpp. Therefore an HTTP-only LlamaRunner cannot inject projected activations into a receiver.
+- **Current V13 nuance:** the normal LlamaRunner tap path can request per-token final embeddings through the embedding server mode; that is an output-state tap, not a K/V tensor tap and not a receiver injection path. It must not be described as native K/V coupling.
+- **Actionable staged path:** Core can build a local-only libllama receiver wrapper that feeds a projected sender activation sequence through llama_batch.embd. The sender final-state width and receiver input width must be read from the actual loaded model metadata, not assumed equal. This is a soft-prefix/activation-ingress bridge, not XKV and not direct K/V-cache transfer. It requires a custom native receiver runner because the current HTTP server exposes output embeddings only. First prove same-model token-embedding parity, then zero/shuffle/dimension/revision negative controls, then a trained B1→B2 adapter with frozen bodies and held-out receiver utility. Keep the existing symbolic/text fallback and all production gates unchanged.
+- **No claim:** no native input-embedding receiver was built or run in this pass; no K/V cache was extracted or injected; no trained cross-organ adapter exists; no model was downloaded; B3 remains symbolic/SHADOW in production and Redmi remains unverified.
+
+### Concrete next experiment
+
+1. Core: implement the pinned b10964 native receiver seam behind an OFF-by-default experimental gate; expose model revision, input/output dimensions, positions, dtype and sequence identity; reject non-finite vectors, dimension mismatch and revision mismatch.
+2. Perception + JEPA: use actual B1/B2 activation pairs only after a permitted native runner exists; train only a small adapter, keep both base models frozen, and record gradient norm, adapter parameter diff, holdout utility, per-session retention, restart and rollback.
+3. Compare exact text, symbolic, latent, zero, shuffled, reversed-position and OOD controls on the same questions. Report TTFT, prefill, RSS/PSS and adapter overhead separately.
+4. Only after the activation ingress works should Core pursue native K/V tap/injection and an XKV-style receiver-position translator. Do not assume llama.cpp sequence-state serialization is a cross-model K/V API.
+
+
+## R-051 — Plasticity of Growing and Elastic Neural Networks in Online Continual Learning (2026-11-21)
+
+- **Paper:** Jeong Min Kong and Richard S. Sutton, arXiv:2608.01475, submitted 2026-08-02. Full paper reviewed; preprint status only, no peer-review record or maintained official code repository verified. Primary source: https://arxiv.org/abs/2608.01475
+- **Experimental setup:** online permuted MNIST and FashionMNIST, 10,000 or 40,000 samples per task, SGD learning rate 0.001, one-sample-at-a-time updates. Dormancy is estimated from a random 5% task sample. The headline plots report within-task online training accuracy, not held-out old-task retention. The study compares fixed networks, staged growth with frozen old connections, adaptive growth (AGN) that keeps all connections trainable, and adaptive elastic networks (AEN) that prune estimated-dead units at task boundaries.
+- **Result:** AGN maintains high online accuracy despite an increasing estimated dormant-unit fraction; AEN maintains high accuracy with near-zero estimated dormancy and a network size that plateaus. The staged/frozen variant loses accuracy. Two-layer variants show similar trends but can converge to larger connection counts.
+- **Limits:** small supervised image-classification task streams; no language-model, multimodal, world-model, causal-memory or Android evaluation. AEN's 5% sample can misclassify active units as dead, and the reported online accuracy does not prove retained knowledge on prior held-out sessions. No measured V13 RSS/latency or parameter-retention evidence. No code/license reuse was verified.
+- **V14 implication:** this supports testing structural plasticity in small trainable A4/attention/perception adapters, not freezing the existing organs and not growing the large B1/B2 bodies. First repair the current per-session JEPA retention gate. Then compare fixed, AGN and AEN heads with source-disjoint old-session holdouts, random-prune and no-growth controls, gradient/parameter diffs, restart/rollback, and bounded parameter/RSS/latency budgets. Keep learning gates OFF until those tests pass.
+
+## R-052 — FASTDIAR frame embeddings as a bounded RAW EAR speaker-change signal (2026-11-21)
+
+- **Primary paper:** FASTDIAR: Frame-Level Speaker Encoder for Streaming Diarization, arXiv:2610.02941v1, submitted 2026-10-02. Full 5-page PDF reviewed; arXiv preprint, no peer-review record verified. The paper reports a 192-D embedding every 80 ms, a cosine confidence comparison against 10 frames earlier (800 ms), and a fixed 960 ms delay for finalized online clustering. The confidence gate is tuned on development data; it is not a universal threshold.
+- **Reported experiments:** distillation from ReDimNet2-B6 using VoxCeleb2 and simulated mixtures/LibriHeavyMix; evaluation on six diarization benchmarks and VoxCeleb1 EER. Table 3 reports CPU real-time factors around 0.05/0.09/0.19 for small/medium/large on one AMD Threadripper PRO 5995WX CPU thread. This is not an Android measurement. The paper reports weak generalization on DIHARD3 and limitations under overlapping speech because one speaker label is emitted per frame.
+- **Size discrepancy:** paper table reports small/medium/large as 2.7M/4.6M/10.4M parameters; the checked repository README reports 2.4M/4.6M/10.4M. Treat the small-model count as unresolved until checkpoint/config inspection.
+- **OSS source revision:** microsoft/fastdiar commit f48bff53b9a6a0cce4539e94b6def95f609eaea4 (read 2026-11-21). Repository LICENSE is MIT and NOTICE identifies incorporated ReDimNet2 material under MIT. The release checkpoint is a .pt artifact; a separate checkpoint/dataset license statement was not independently verified. Requirements pin PyTorch 2.13.0, torchaudio 2.11.0, torchcodec 0.15.0, NumPy 2.2.6, SciPy 1.15.1 and silero-vad 6.2.1; FFmpeg is required for decoding. CPU inference is documented, but Android/Termux ARM64 ABI and performance are not. No weights or code were downloaded or vendored.
+- **V14 implementation:** v13/code/v13/audio_speaker_evidence.py validates schema, source/generation, model revision/checkpoint SHA, embedding dimension, frame step, look-back and timestamps; it keeps normalized frame embeddings only in a bounded process-local registry. It emits cosine/change scores and an explicitly unverified caller-threshold candidate. No speaker label/identity is emitted. reset_runtime_temporal_voice_states clears this registry with the existing source/generation teardown path.
+- **Actual consumer seam:** consume_pcm16_voice_window(..., speaker_embeddings=...) optionally writes scalar evidence and provenance into the A5 audio PerceptPacket, exposes it to A4 salience/novelty, and adds a non-identifying change-or-overlap hint to C3's summary. Default calls pass no embeddings, load no model and preserve the prior behavior. A low cosine score is only a candidate during the heuristic VOICED state; it can also reflect overlap, channel or acoustic changes.
+- **Verification:** v13/code/tests/test_audio_speaker_evidence.py contains synthetic same-speaker, changed-embedding, non-voiced, unconfigured-threshold, model-revision reset, malformed/non-finite/source-mismatch, revocation-reset, A5→A4→C3 and no-vector-persistence tests. The exact PR #2272 code-bearing checkpoint b69a4ce77ae53907a9a4a20e9846b910455ebc85 had focused RAW EAR workflow 44955899600 and staged/integrated workflow 44955899475 queued at last readback; no PASS is claimed here. Full local Aii checkout tests are BLOCKED in this worker. No model inference or Redmi measurement.
+- **Canon status:** WIRED_SYNTHETIC optional receiver path only. Not NATIVE_LINUX_PROOF, not REAL_REDMI_PROOF, not diarization acceptance. A2 teacher encoder, real frame embeddings, full speaker-turn segmentation, voice learning, Android microphone and native resource measurements remain OPEN. Keep NumPy and the speaker-embedding path opt-in; Python/no-speaker-model remains the default.
