@@ -157,9 +157,11 @@ class PipelineTests(unittest.TestCase):
         self.assertTrue(p.refresh_requested("ui"))
         self.assertTrue(p.refresh_requested("bridge"))
         self.assertTrue(p.refresh_requested("ai"))
-        self.assertEqual(ci.call_count, 2, "UI and runtime use different CI gates")
-        self.assertEqual({c.kwargs["scope"] for c in ci.call_args_list},
-                         {"runtime","dashboard"})
+        scopes = [c.kwargs["scope"] for c in ci.call_args_list]
+        self.assertEqual(scopes.count("runtime"), 2,
+                         "runtime CI is checked before source update and before activation")
+        self.assertEqual(scopes.count("dashboard"), 1)
+        self.assertEqual(set(scopes), {"runtime", "dashboard"})
         self.assertEqual(apply.call_args.kwargs["expected_tip"], commit)
         self.assertEqual(dash.call_args.kwargs["expected_tip"], commit)
         self.assertTrue(p.acknowledge_refresh("ui"))
@@ -184,7 +186,10 @@ class PipelineTests(unittest.TestCase):
         deploy.assert_called_once()
         apply.assert_not_called()
         dash.assert_not_called()
-        ci.assert_called_once_with(revision,scope="runtime")
+        self.assertEqual(ci.call_count, 2)
+        self.assertTrue(all(call.args == (revision,) and
+                            call.kwargs == {"scope": "runtime"}
+                            for call in ci.call_args_list))
 
     def test_each_refresh_acknowledges_only_its_own_target(self):
         # Regression: AI previously acknowledged BRIDGE, re-execed forever.
