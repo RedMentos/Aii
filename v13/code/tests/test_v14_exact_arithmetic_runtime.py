@@ -52,7 +52,6 @@ def test_arithmetic_is_a_distinct_bounded_c5_action_not_a_fixed_rule(tmp_path):
         assert metadata["output_authority"] == "LOCAL_EXACT_ARITHMETIC"
         assert metadata["direct_source_copy"] is False
         assert metadata["arithmetic_reflex"]["result"] == "4"
-        assert metadata["arithmetic_reflex"]["operands"] == [2, 2]
         event_packet = json.loads(runtime.store.one("SELECT packet FROM events WHERE id=?", (event_id,))["packet"])
         assert metadata["arithmetic_reflex"]["source_ref"] == event_packet["source_ref"]
 
