@@ -140,7 +140,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
             self.assertTrue(result["a4"]["highres"])
             admitted_context = self.adapter.context(self.event["event_id"], grant)
             self.assertEqual(len(admitted_context), 1)
-            self.assertEqual(admitted_context[0]["source_id"], obs["source_id"])
+            self.assertEqual(admitted_context[0]["source_ref"]["source_id"], obs["source_id"])
             expected = (
                 "ui event=APP_INTENT_RESULT method=APP_INTENT scope=APP_DATA "
                 "api=33 clock=ELAPSED_REALTIME interval_ms=20"
@@ -212,6 +212,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         obs = observation()
         self.runtime.cancel_event.clear()
         with self.lease(obs) as grant:
+            self.adapter.ingest(obs, grant)
             self.runtime.turn_event = dict(self.event, brain_generation_id="later_generation")
             self.assertFalse(grant.active_for(self.runtime, "gen_ui_lease_test"))
             revoker = threading.Thread(target=self.provider.revoke)

@@ -78,6 +78,13 @@ No user action is needed now. Current installed Redmi SHA/updater status was not
 - Reviewed failing CI logs from run `44940487917` on exact code head `ad0d6a3b1f4935b22677c6f9c521ec97e099deec`.
 - Fixed the actual context-readout defect: `PerceptPacket` has nested `source_ref.source_id`, not a top-level `source_id`; the adapter now checks nested source identity plus exact event and generation.
 - Fixed two test defects without weakening the API: the generation test now binds `grant`; tests pass the required live lease, keep provisional context empty, and assert lease-free reads fail closed. Added wrong-source and wrong-generation cache entries as negative controls.
-- Exact rerun after this patch is pending. The full local Aii checkout is not mounted and GitHub DNS fails in this worker, so no local repository-level PASS is claimed.
+- The first corrective rerun (run `44941137655`) reached the fixed source-ref readout but still had 2 test failures / 13 passes on both Python 3.13 and 3.14: one assertion still used a top-level source_id, and one generation-revocation test had not persisted an observation before asserting tombstone state. Both test defects are now corrected; the next exact-head rerun is pending. The full local Aii checkout is not mounted and GitHub DNS fails in this worker, so no local repository-level PASS is claimed.
 - #2243 is merged at `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`; this PR is being synchronized to that current base and retargeted from the now-merged research stack to `gpt6/v13-private-remote-bridge-20261111`.
 - No OS capture provider, microphone, screenshot, model, permission, updater or Redmi operation was added or changed. REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+## Second CI diagnosis — 2026-11-21 20:25 CET
+
+- Exact head `cbdd888bb25fc430d7bdef0487f16ed8db5139e8`, run `44941137655`: py_compile PASS; 13 tests PASS / 2 FAIL / 5 subtests on both Python 3.13.18 and 3.14.10.
+- The adapter fix itself now returns the cached packet. Remaining failures were test-only: the assertion still expected `packet["source_id"]` rather than `packet["source_ref"]["source_id"]`; the generation-revocation test asserted deletion of a source it had never ingested.
+- Updated the assertion and made the test persist the packet before switching the active generation. The next exact-head CI is pending.

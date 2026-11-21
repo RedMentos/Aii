@@ -616,3 +616,11 @@ These are current official API references reviewed on 2026-11-21, not research p
 ### Next integration
 
 Core must provide an authenticated Android observe_ui receipt provider and retain the lease through the actual active turn and all downstream reads/generation. QA must verify provider revoke-request cancellation and post-lock cleanup through the complete consumer chain. Research/Perception owns this adapter contract and will only add real screen features after that provider exists.
+
+
+### Second exact-head run and remaining test corrections
+
+- The next exact run (`44941137655`) reached the corrected context reader: 13 tests passed and 2 failed on both Python 3.13.18 and 3.14.10; `py_compile` passed. The source-bound readout no longer returned an empty tuple.
+- Remaining failures were test assertions/setup, not a new adapter exception: one assertion still expected a nonexistent top-level packet `source_id` instead of `source_ref.source_id`; the different-generation revocation test never called `ingest`, so there was no persisted source row to tombstone.
+- The test now checks the nested SourceRef and persists the observation before changing the active generation. These preserve the original contract: revocation must not cancel a different generation, but it must tombstone the already-persisted source.
+- Corrective exact-head CI is pending. Do not promote this PR until both Python versions, staged Runtime and integrated regression are green.
