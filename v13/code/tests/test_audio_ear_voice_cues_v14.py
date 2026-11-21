@@ -626,7 +626,7 @@ def test_provider_revocation_winning_before_lease_has_no_audio_side_effects(tmp_
                 runtime, tone(140), sample_rate=16000, start_ms=100,
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
-                consent_check=provider.check, finality="FINAL",
+                consent_check=provider.check, consent_guard=provider.lease, finality="FINAL",
                 consent_guard=provider.lease, token_budget=512,
             )
         assert packet_count(runtime.store, event["event_id"]) == 0
