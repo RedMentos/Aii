@@ -45,7 +45,7 @@ def amplitude_burst(sample_rate=16000):
 
 def silence_padded_tone(sample_rate=16000):
     body = tone(frequency=140, sample_rate=sample_rate, seconds=0.5)
-    silence = b"\\x00\\x00" * int(sample_rate * 0.25)
+    silence = bytes(2 * int(sample_rate * 0.25))
     return silence + body + silence
 
 
