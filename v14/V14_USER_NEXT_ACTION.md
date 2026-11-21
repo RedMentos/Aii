@@ -1,3 +1,18 @@
+# Current next action — 2026-11-21T21:42:00Z
+
+**No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
+
+- Boss integration head remains `06ebe5d29d1244dc1d7afa40d846d227d5f3930e`. A5 lease, combined JEPA and runtime-deploy integrity pass; GoalWake focused tests pass 7/7.
+- Current common blocker: `record_only_controller_guard_20261116.py:191` raises `semantic dependency changed: v13/world_semantic_evidence_candidate.py`. Its `semantic_pin` `9fbcb808...` and `local_pin` `44a8882c...` predate the upstream arithmetic/World/Store transformation. Core/JEPA must recompute both exact outputs and rebind controller guard → recovery → stage → deployer, retaining raw source pins.
+- Staged-runtime fails (6/43/26 subtests); integrated regression fails (18 failed, 232 passed, 10 skipped, 2 errors, 44 subtests); owner-read passes but Python 3.14 startup fails; Lab-Age fails; migration is PARTIAL; Core audio 3.13 fails and 3.14 was still running at last poll. Safe-additive remains FAIL_BY_POLICY.
+- QA #2235 Age-rights exact tests pass, but its branch is 43 ahead / 121 behind current base; compose `learning_limit()` with GoalStore wake rollback, do not merge/rebase the full branch.
+- Private PIPELINE_STATUS #435 has no authenticated response. Installed SHA/updater consent unknown. No device action. `REDMI_UNVERIFIED`.
+- No full local Aii checkout. GitHub CI is not local, native Android, native weight learning or Redmi evidence.
+
+**Next internal actions:** Core/JEPA rebind the controller semantic/local-error pins and all dependent hashes; Boss reruns the exact 3.13/3.14 staged, integrated, owner-read, Lab-Age, migration, audio and deploy matrix; QA validates the complete path. No user action is required.
+
+---
+
 # Current next action — 2026-11-21T21:38:00Z
 
 **No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
