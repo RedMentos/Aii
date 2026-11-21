@@ -2,7 +2,8 @@
 
 The Android companion must obtain OS permissions independently, present the user
 with each request, and supply an authenticated local transport. Model text never
-issues grants. This broker defaults to dry-run and refuses replayed approvals.
+issues grants. This Python broker is only a test scaffold: its local-UI boolean is
+caller-asserted, not authenticated evidence. It performs no OS operation.
 """
 from __future__ import annotations
 from dataclasses import dataclass
@@ -67,8 +68,10 @@ def _canonical(capability, args):
 class AndroidControlBroker:
     """Per-action approval broker; transport and user-confirmation UI are separate.
 
-    A trusted operator UI calls approve(), never the model or an untrusted tool.
-    execute() returns a signed-off command envelope, not a claim of Android execution.
+    The caller is expected to be a trusted operator UI, but this module cannot
+    authenticate that caller; confirmed_by_local_ui is only a test assertion.
+    Production approval must be enforced by the separate Android companion.
+    execute() returns a command envelope, not a claim of Android execution.
     """
     def __init__(self, db_path, *, clock=None):
         self.clock = clock or time.time
@@ -87,7 +90,7 @@ class AndroidControlBroker:
         self.db.commit()
 
     def start(self):
-        """Only a trusted local operator control may call this."""
+        """Test-scaffold gate only; caller identity is not authenticated here."""
         with self.lock:
             self.stopped = False
             self._audit(None, "operator_start")
@@ -130,6 +133,7 @@ class AndroidControlBroker:
             return p
 
     def approve(self, action_id, *, confirmed_by_local_ui=False):
+        """Accept a caller-asserted test flag; never treat it as Android consent proof."""
         with self.lock:
             p = self.pending.pop(action_id, None)
             if p is None or self.stopped or self.clock() > p.expires_at:
