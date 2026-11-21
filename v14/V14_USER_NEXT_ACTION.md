@@ -280,3 +280,12 @@ The earlier 01:05 checkpoint's "integrated-regression push still IN_PROGRESS" is
 - Remaining A5 gap: current RAW EAR measures RMS/peak/ZCR only; pitch, voicing, speech/non-speech and prosody are explicitly unmeasured. The staged Core overlay rechecks consent at downstream consumers but is still caller-supplied synthetic PCM, not microphone or full voice I/O.
 - Next developer action: independent Core/QA review of #2142; then keep the C3 candidate diagnostic-only until a separately authorized Redmi comparison. In parallel, develop a lightweight timed prosody/voicing feature layer and test ARM cost before wiring it into the normal audio consumer.
 - User action: none.
+
+
+### A5 Perception contract review — 21 November 2026
+
+- Review of Core PR #2144 found that its Runtime `audio_window` contract has no explicit finality field and calls the current PCM bridge with default `FINAL`. A partial/provisional capture could therefore be promoted to final at the Runtime boundary.
+- I posted a code-level coordination finding on #2144: pass explicit validated `PROVISIONAL|FINAL` through the queue and packet builder; verify provisional audio can influence A4 only as provisional but is excluded from B1/B2/C3 prompt admission, while final audio can be admitted and revocation still blocks every consumer.
+- The staged Core path does recheck consent at A5 admission, context creation and each B1/B2/C3 read. It remains caller-supplied synthetic PCM, not Android microphone capture.
+- The existing RAW EAR extractor currently measures RMS/peak/zero-crossing rate only; pitch, voicing, speech/non-speech probability and prosody are explicitly unmeasured. A future lightweight feature layer should add timed energy/F0/voicing/prosody and a non-identifying speaker-change cue, then measure ARM CPU/RSS before use.
+- No Core-owned source was modified. No phone action or model operation occurred. Redmi remains REDMI_UNVERIFIED; user action: none.
