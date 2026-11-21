@@ -235,6 +235,27 @@ class PipelineTests(unittest.TestCase):
         apply.assert_called_once()
         dash.assert_called_once()
 
+    def test_new_ci_failure_after_graceful_stop_blocks_mutation_and_restores_chat(self):
+        self.turn_on()
+        commit = "c" * 40
+        with mock.patch.object(u, "_runtime_active", side_effect=[True, False]), \
+             mock.patch.object(u, "status", return_value={
+                 "status": "UPDATE_AVAILABLE", "available": commit,
+                 "current": "0" * 40, "changed_files": 4}), \
+             mock.patch.object(u, "ci_passed", side_effect=[True, False]) as ci, \
+             mock.patch.object(p.lifecycle, "request_stop", return_value=True) as stop, \
+             mock.patch.object(p.lifecycle, "request_resume") as resume, \
+             mock.patch.object(u, "apply") as apply, \
+             mock.patch.object(p.runtime_deploy, "deploy") as deploy:
+            report = p.run_cycle(force=True, manual=True, target="runtime")
+        self.assertEqual(ci.call_count, 2, "CI must be rechecked after the graceful stop")
+        stop.assert_called_once()
+        resume.assert_called_once_with(reason="RESTORE")
+        apply.assert_not_called()
+        deploy.assert_not_called()
+        self.assertEqual(report["runtime"], "CI_WAIT")
+        self.assertEqual(report["last_result"], "CI_WAIT")
+
     def test_ci_failure_does_not_interrupt_running_model(self):
         self.turn_on()
         with mock.patch.object(u, "_runtime_active", return_value=True), \

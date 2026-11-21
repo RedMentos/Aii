@@ -259,8 +259,10 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits, manual):
         state[name] = "ERROR"
         return
     key = (commit, name)
-    if key not in tested_commits:
-        tested_commits[key] = updates.ci_passed(commit, scope=name)
+    # The first check may have happened before a graceful chat stop.
+    # Re-read the exact-commit workflow results immediately before mutation so
+    # a newer failed/queued run cannot be hidden by the pre-stop success.
+    tested_commits[key] = updates.ci_passed(commit, scope=name)
     if not tested_commits[key]:
         state[name] = "CI_WAIT"
         return
