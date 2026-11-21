@@ -209,3 +209,8 @@ The latest code-bearing release `5b9171a4` remains CI-green. Current branch HEAD
 ## Latest exact HEAD job boundary — 2026-11-21 01:56 CET
 
 On docs-only HEAD `d61b695739023d0bf0a3cfa4022770f0de2615fa`, owner-read push and private-bridge push PASS; the staged-runtime job within exact push staged-context run `44846409816` PASS. The integrated-regression job is still executing step 6 (shared staged organ/memory path) from 00:51:24Z; it had run >5 minutes at readback with no reported failure and no downloadable log. The workflow remains IN_PROGRESS, so the latest-SHA updater gate is not complete. The last fully CI-green code-bearing SHA remains `5b9171a4`. Do not deploy or claim exact latest-head CI-green until integrated regression completes.
+
+
+## T8 retargeted exact-head boundary — 2026-11-21 01:57 CET
+
+PR #2137 now points to `a3e19370d7fefe500e8edebf6942624207ff2865`. This last commit changes only `v14/V14_USER_NEXT_ACTION.md`; the code is identical to previous head `2d8eb79bdefe3c6c3bef63fea7d25563b7f56952`, which passed 52 focused T8 tests, staged-runtime 240 passed / 10 skipped / 47 subtests, integrated regression 415 passed / 3 skipped / 58 subtests, and private bridge. Exact CI for the retargeted head is now pending/in progress. Do not transfer the previous SHA's green result to the new head. The dedicated T8 workflow remains Python 3.11 only; Python 3.14 coverage is still requested. No normal Runtime consumer, optimizer or Redmi proof.
