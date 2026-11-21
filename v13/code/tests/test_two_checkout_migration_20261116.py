@@ -132,6 +132,14 @@ def exercise_worker_migration(base):
                                   cwd=home, env=env))
 
         old = worker('old')
+        print("V13_TWO_CHECKOUT_MIGRATION_DIAG", json.dumps({
+            "last_result": old["result"].get("last_result"),
+            "runtime": old["result"].get("runtime"),
+            "dashboard": old["result"].get("dashboard"),
+            "last_error": old["result"].get("last_error"),
+            "fetches": old.get("fetches"),
+            "profile": old.get("profile"),
+        }, sort_keys=True))
         assert old['module_path'].startswith(str(agent) + os.sep)
         assert old['profile'] == 'raw-runtime-plain-ui-history-recovery-v1'
         assert old['result']['last_result'] == 'UPDATED', old
