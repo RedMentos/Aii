@@ -390,3 +390,9 @@ The merged #2155 adapter extracts heuristic pitch/voicing/energy/activity cues f
 ### R-024 status correction — 2026-11-21
 
 The earlier statement that production Adam/inverse/RNG state was not persisted is historical and was superseded by PR #2213, merged at `5a141153f7d33906408fd638ce56cfbee459cf08` into the current code-bearing release lineage. The production Runtime/SleepRuntime Store consumer now persists WorldJEPA predictor/EMA plus optimizer moments, inverse-dynamics parameters and RNG state with checkpoint readback. This remains a small NumPy WorldJEPA predictor, not native GGUF B1/B2/C3 weight learning. PR #2231 extends this with parameter-specific optimizer clocks and an experimental predictor-only mode; it does not change the default mode or enable the learning gates.
+
+
+### R-016 staged-consumer follow-up — 2026-11-21
+
+- The first staged correction exposed a second exact consumer pin: `runtime_deploy.py:STAGER_SHA256` verifies `scripts/stage_integrated_candidate.py`. The previous staged/old-phone CI therefore returned `PARTIAL` / `Integrated stage builder changed`. PR #2231 now rebinds that final pin to the fetched stager bytes at code head `d7b5613dc3a3118a3c6a5856478c6e2a665db27c` (runtime-deploy correction commit `08a521b2b445af44b13ddd8c0a8ea25ae7652713`). The complete chain is readback-verified; latest exact CI is queued.
+- The next retention experiment should preserve stable source/session-bound cohort holdouts, not only the latest aggregate holdout. The current consumer's active retention comparison uses the prior aggregate holdout. A→B→A can contain multiple earlier regimes, so the gate must evaluate each retained cohort independently and survive restart/rollback. Keep the memory bounded and source-provenanced; synthetic session IDs must not be promoted as user truth.
