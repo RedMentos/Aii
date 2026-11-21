@@ -446,7 +446,8 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
     assert projection_metrics.get("enabled") is replay_projection
     if replay_projection:
         assert projection_metrics.get("steps") == metrics.get("optimizer_steps_added")
-        assert projection_metrics.get("projected_steps", 0) > 0
+        assert projection_metrics.get("constraint_count") == metrics.get("replay_constraint_session_count")
+        assert projection_metrics.get("active_constraint_count", 0) >= 1
         assert projection_metrics.get("post_constraint_violation_steps") == 0
     assert type(drift_metrics) is dict
     assert drift_metrics.get("enabled") is (drift_control is not None)
@@ -514,7 +515,7 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
             metrics.get("replay_requested_budget_rows", 0),
             metrics.get("replay_candidate_rows", 0),
         )
-        if replay_mode == "session_contiguous" and before is not None:
+        if replay_mode in {"session_contiguous", "on_demand_conflict"} and before is not None:
             assert metrics.get("replay_session_count", 0) > 0
             assert metrics.get("replay_window_count", 0) > 0
         if replay_mode == "uniform_budget":
