@@ -346,8 +346,9 @@ class Runtime:
     arithmetic = result.get("v13/arithmetic_reflex.py")
     if not isinstance(arithmetic, bytes):
         arithmetic = (code_dir / "v13/arithmetic_reflex.py").read_bytes()
-    if b"date_shape" not in arithmetic or b"compute" not in arithmetic:
-        raise ValueError("arithmetic source module lacks the reviewed date-abstention policy")
+    if (b"def exact_arithmetic(" not in arithmetic
+            or b"Fraction" not in arithmetic or b"eval(" in arithmetic):
+        raise ValueError("arithmetic source module lacks the bounded exact-arithmetic contract")
 
 
     runtime += b'''
