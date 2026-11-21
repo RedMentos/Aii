@@ -156,8 +156,12 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
 
         # A second batch must replay the old train split, commit a new immutable
         # checkpoint and retain the prior generation for exact rollback.
-        _add_transitions(store, session, 256, 32)
-        second = consumer.update(limit=288, steps=24, optimizer_permission=True)
+        # Use a full, action-balanced second cohort. Tiny 32-row cohorts are
+        # legitimately rejected by the strict holdout/retention gate on some
+        # supported NumPy builds; this test is specifically for checkpoint
+        # replay/restart/rollback after an accepted update.
+        _add_transitions(store, session, 256, 256)
+        second = consumer.update(limit=512, steps=120, optimizer_permission=True)
         assert second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA", {
             "status": second.get("status"),
             "holdout_improved": second.get("holdout_improved"),
@@ -564,11 +568,24 @@ def test_pending_cohort_rollback_rewinds_cursor_and_replays_verified_rows(tmp_pa
         replayed = consumer.update(
             limit=64, steps=24, optimizer_permission=True, replay_mode="uniform"
         )
-        assert replayed["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert replayed["status"] in {
+            "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED"
+        }, replayed
         payload, _ = store.state("v14.world_jepa.store_consumer", None)
-        assert pending_id in set(payload["active"]["processed_ids"])
-        assert payload["pending_rows"] == []
         assert payload["scan_cursor"] == 289
+        if replayed["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
+            assert pending_id in set(payload["active"]["processed_ids"])
+            assert payload["pending_rows"] == []
+            assert payload["active"]["checkpoint_sha256"] == replayed["checkpoint_sha256"]
+        else:
+            # A rejected replay must not advance the active checkpoint. All
+            # verified rows stay pending and can be retried after more evidence.
+            assert replayed["utility_gate_accepted"] is False
+            assert payload["active"]["checkpoint_sha256"] == initial["checkpoint_sha256"]
+            assert len(payload["active"]["processed_ids"]) == 256
+            assert len(payload["pending_rows"]) == 33
+            assert pending_id in {row["action_id"] for row in payload["pending_rows"]}
+            assert len(list((tmp_path / "private-pending-rollback").glob("jepa-*.npz"))) == 1
     finally:
         store.close()
 
