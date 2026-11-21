@@ -1034,3 +1034,12 @@ Core/QA: trigger and inspect exact-head #2275 Python 3.13/3.14 and staged/integr
 - Exact workflow 44955501021 PASS for pinned Linux build, Python 3.13/3.14 tests and Android arm64-v8a cross-compile. No real GGUF model was loaded; Python tests use a fake runner/model fixture. This is not semantic alignment or Redmi proof.
 - Staged/integrated run 44955501004 FAILS due stale arithmetic source pin v13/contracts.py and migration assertions returning PARTIAL rather than UPDATED (19 failed, 230 passed, 10 skipped, 2 errors). This is a separate Core/QA integration blocker.
 - #2266 is based on old release base bdcad466..., not current Boss #2258. Core was asked to rebase/stack on #2258 and repair the staged failure. A trained/versioned projector plus held-out semantic/retention evidence remains required for real cross-model latent coupling.
+
+
+
+### C3 model candidate lab audit (Research/Perception)
+
+- Model-lab PR #2142 is closed/unmerged. Its 23 focused tests validate the harness, but the candidate is not installed; no candidate model inference, output-quality, TTFT or RSS comparison occurred.
+- Official LFM2.5-230M documentation explicitly positions it for data extraction/lightweight on-device agentic tasks, not reasoning-heavy math/code. Vendor benchmarks show LFM2.5-350M ahead on several instruction/tool tasks, but they are not local V13 evidence. The LFM Open License v1.0 has a USD 10M annual-revenue threshold for commercial-use rights.
+- Research-only alternatives: LFM2.5-350M (same family/license), Qwen3-0.6B (Apache-2.0; third-party Q4_K_M roughly 0.45–0.48 GB), Qwen3.5-0.8B (Apache-2.0; third-party Q4 roughly 0.5 GB, newer hybrid attention). A community MNN benchmark on a newer Redmi Note 14 Pro+ reports 21.2 tok/s / 792 MB for Qwen3.5-0.8B, while the same poster reports 2–3 tok/s in Termux on that device; this is anecdotal and not the target Redmi Note 10 Pro.
+- Next: inventory only already-present model files and compare against the 230M baseline if a candidate is already present. If absent, request explicit experimental download approval, then separate productive-swap approval only after exact device quality/TTFT/RSS/rollback and full multi-organ E2E evidence. No model download or swap now.
