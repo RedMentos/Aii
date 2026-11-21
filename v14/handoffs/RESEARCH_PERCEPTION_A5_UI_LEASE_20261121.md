@@ -215,3 +215,8 @@ PR #2256 exposes this as an explicit opt-in backend on extract_voice_cues and co
 - Official Liquid cards: LFM2.5-1.2B = 10 convolution + 6 GQA blocks; 230M = 8 convolution + 6 GQA. License is LFM Open License v1.0 with USD 10M annual-revenue commercial threshold, not Apache-2.0. No model changed.
 - #29002 co-batching corruption was challenged by a maintainer as a reproducer logits-row indexing bug; do not claim a confirmed recurrent-state bug. V13's `-np 1` avoids multi-sequence co-batching per runner.
 - P0 next measurement: real Redmi `cache_n/prompt_n/prompt_ms/TTFT`, runner PID/restart and model revision across repeated-prefix, changed-tail, A→B→A and eviction/reload. No new owner-read receipt; Aiiii #431/#432 and V13OBS #115 have zero comments. No device action. `REDMI_UNVERIFIED` / `NOT_RELEASED`.
+
+
+## Residency diagnostic detail — 2026-11-21T20:46:00.962Z
+
+Current `config.py` default `body_residency_mb=1800` is a BOOT value, not a Redmi measurement. `bodies.py` pins C3_LANGUAGE; RED/ORANGE pressure modes can evict non-pinned B1/B2. Include current resource mode, `RunnerPool.resident_roles()`, live process count and per-role PID in the next authorized cache receipt. This is needed to separate cache misses from process eviction/restart. Do not alter the 1,800-MiB budget without Redmi RSS/PSS evidence.
