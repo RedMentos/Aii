@@ -1595,3 +1595,17 @@ Historical inventory above remains **1,255 V13 headings**; no historical wording
 | Release / Android | Code-bearing release-development HEAD 23ea3ef includes #2215; PR-head tests green | Exact post-merge push CI unknown; private #407/#408 expired without reply, #409/#410 pending; installed SHA/updater consent UNKNOWN; REDMI_UNVERIFIED |
 
 Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. The V14 master was not edited. This overlay records exact environment boundaries and open blockers; no Canon family is promoted to accepted.
+
+
+### Boss integration evidence overlay — 2026-11-21 15:30 CET
+
+| Area | Verified status | Remaining acceptance |
+|---|---|---|
+| Android action proposal integrity | PR #2215 merged at `23ea3efc7d1951e20664ce6d07883141e9b601c5`; PR-head broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58, migration UPDATED | Post-merge push-CI not independently verified; broker DRY_RUN_ONLY; no OS executor or Redmi proof |
+| WorldJEPA optimizer resume | #2218 head 4ad72 safe-additive, staged and integrated PASS | Dedicated Python 3.13/3.14 run on exact current head missing; synthetic SQLite/T8 only; gates OFF |
+| RAW EAR consent | #2219 broad staged/integrated PASS; #2214 deterministic focused test still fails on old producer | Combined deterministic post-fix test and lock contract unresolved; no microphone/Redmi proof |
+| Checkpoint publication | #2213 current dirfd publisher uses hardlink then libc renameat2(RENAME_NOREPLACE) fallback; Bionic exports renameat2 from Android R/API 30 | Forced EPERM/EACCES, racing-target EEXIST and directory-fsync rollback tests are not yet in merged suite |
+| P0 chat / arithmetic | #2210 remains C5 SHADOW + source-pin failing; #1904 remains open | Correct 2+2, responsive native C3 and source-bound B1/B2→C4→C3 delivery on Redmi |
+| Device / release | Code head 23ea3ef; docs head 49fd1e9; #407-#410 expired without replies | Exact post-merge push-CI and authenticated Redmi install receipt unknown |
+
+Primary source for Bionic availability: AOSP Bionic status lists `renameat2` among new libc functions in Android R/API 30: https://android.googlesource.com/platform/bionic/+/82c90724e/docs/status.md. Redmi target Android 13 is API 33; this establishes symbol availability only, not the phone's filesystem behavior. Historical 1,255-heading Canon inventory and V13 appendix remain unchanged; semantic clause-level mapping is incomplete.
