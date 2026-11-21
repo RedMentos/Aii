@@ -600,6 +600,8 @@ def write_report_safely(home: Path, output_path: str | Path, encoded: str) -> Pa
         flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
         try:
             fd = os.open(name, flags, 0o600, dir_fd=data_fd)
+        except FileExistsError as exc:
+            raise FileExistsError("report already exists; refusing overwrite") from exc
         except TypeError as exc:
             raise RuntimeError("platform lacks directory-relative open support") from exc
         created = os.fstat(fd)
