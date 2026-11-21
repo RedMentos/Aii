@@ -301,3 +301,24 @@ Research recorded in `V14_RESEARCH_LEDGER.md`: libfvad/WebRTC VAD is the first n
 - **Local execution:** exact Aii checkout remains blocked by GitHub DNS. CI and synthetic SQLite tests are not local native model training or Redmi evidence.
 
 Next integrated vertical slice: after Core's staged runtime is green, invoke the merged JEPA facade after durable T8/ActionOutcome commit with exact event_id, route the persisted source-bound SHADOW packet to a real consumer, and only then evaluate utility/retention. Keep optimizer gates closed and all device permissions untouched.
+
+
+## Boss integration checkpoint — 2026-11-21 07:49 CET
+
+- Release branch `gpt6/v13-private-remote-bridge-20261111` is `c76a018b37be18f9a4706a32fa7a817f7b4828b9`. #2160/#2164/#2167 are merged. Exact branch CI currently has 26 checks: 24 success, one Python 3.13 failure and one integrated-regression in progress. The failure is the oldest-first 64-row backlog test returning `UTILITY_GATE_REJECTED`; preserve the utility gate and make the cursor/pending-cohort test independent of utility acceptance. Focused request posted to #2160.
+- #2158 is synced to the current release base at `11853c66d8986c751b3884a91ced6ed3de50989b`; A5 69/47, staged 240/10/47, integrated 415/3/58, Python 3.14 stage startup and old-phone migration PASS. It still pins old adapter blob `7ac80a0d0deec8f52361fe89756ebd743b0a3537`, while #2161 V3 is `0e328d14883840190937f0fef24a8e895ba7261c`; safe-additive rejects the existing builder/deployer edit. Not released.
+- #2161 V3 prosody has 12/12 tests on Python 3.11 and 3.13; staged 240 and integrated 415 PASS; privacy scan PASS. It is 25 commits behind current release and dirty; rebase and coordinate shared-doc updates.
+- #2169 role-specific tap provenance has 11/12 checks green (only safe-additive rejection); Python 3.11/3.13, staged/integrated and Python 3.14 pass. Tests use stubbed token/embedding endpoints; no native vector or receiver-effect proof.
+- #2168 direct Runtime/Sleep JEPA hook still fails staged/integrated/Python 3.14 due the frozen `runtime.py` source pin. Rework as a hash-bound overlay; do not bypass safe-additive.
+- #2163 Android audit DB hardening has broker 18/18, sandbox 42/42, staged 240, integrated 415 CI pass, but remains stale and safe-additive rejects its existing-module edit; it is dry-run only, not an OS executor.
+- Private PIPELINE_STATUS #373 is OPEN_NO_REPLY; #368 also unanswered. Installed SHA UNKNOWN, auto-update consent UNVERIFIED, REDMI_UNVERIFIED. No device action or user action.
+- Exact local Aii checkout remains BLOCKED by GitHub DNS. CI is not local Linux-native, Android-native or weight-update evidence.
+
+### Next executable integration sequence
+1. Fix #2160's Python 3.13 backlog test by asserting pending-row persistence/cursor fairness on utility rejection; retain all learning acceptance gates and rerun exact branch CI.
+2. Core updates #2158 to the exact V3 blob and proves consumed B1/B2 offers through C4/C3.
+3. Perception rebases #2161; Boss reviews #2169 after branch CI is green.
+4. JEPA rewrites #2168 as a hash-bound overlay with real worker-lifecycle, restart, cancellation and idempotency tests.
+5. QA rebases #2163 and continues private owner-read; no update request before a positive receipt.
+
+No material V14 master edit was made; no master backup was required. Historical V13 Canon bytes were not changed.
