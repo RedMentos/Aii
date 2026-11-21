@@ -155,3 +155,76 @@ print("PASS: staged exact arithmetic is date-safe, source-bound and connected th
     )
     assert result.returncode == 0, result.stdout + "\n" + result.stderr
     assert "PASS: staged exact arithmetic" in result.stdout
+
+
+def test_experience_record_survives_optional_world_observer_failures(tmp_path):
+    destination = tmp_path / "candidate"
+    manifest = _stage(CODE, destination)
+    assert manifest["status"] == "SHADOW_REVIEW_ONLY"
+    assert "v13/runtime.py" in manifest["replaced_files"]
+
+    script = r'''
+import json
+import time
+from pathlib import Path
+from unittest.mock import Mock
+from v13.runtime import Runtime
+
+def wait(runtime):
+    until = time.monotonic() + 10
+    while not runtime.idle() and time.monotonic() < until:
+        time.sleep(0.005)
+    assert runtime.idle(), "Runtime did not finish the bounded test turn"
+    return runtime.last_answer()
+
+def packet(runtime, event_id, kind):
+    row = runtime.store.one(
+        "SELECT payload FROM packets WHERE event_id=? AND kind=? ORDER BY rowid DESC LIMIT 1",
+        (event_id, kind),
+    )
+    return json.loads(row["payload"]) if row else None
+
+runtime = Runtime(Path(__import__("sys").argv[1]))
+try:
+    runtime.sleep.cycle.set_policy("enabled", "off")
+    runtime.world.observe = Mock(side_effect=RuntimeError("injected World failure"))
+    runtime.world.self_state = Mock(side_effect=RuntimeError("injected Self failure"))
+
+    event_id = runtime.submit("2+2")
+    answer = wait(runtime)
+    assert answer["event_id"] == event_id
+    assert answer["status"] == "FINAL"
+    assert answer["text"] == "4"
+
+    experience = packet(runtime, event_id, "ExperienceRecord")
+    assert experience is not None
+    assert experience["outcome"] == "FINAL"
+    assert runtime.world.observe.call_count == 1
+    assert runtime.world.self_state.call_count == 1
+
+    rows = runtime.store.rows(
+        "SELECT kind,metrics FROM telemetry WHERE event_id=? AND kind IN (?,?) ORDER BY id",
+        (event_id, "world_observe_unavailable", "world_self_state_unavailable"),
+    )
+    failures = {row["kind"]: json.loads(row["metrics"]) for row in rows}
+    assert failures["world_observe_unavailable"]["stage"] == "observe"
+    assert failures["world_self_state_unavailable"]["stage"] == "self_state"
+    assert runtime.store.integrity(True) == []
+finally:
+    runtime.close()
+
+print("PASS: optional World/Self failures are logged without suppressing the durable ExperienceRecord")
+'''
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(destination)
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    result = subprocess.run(
+        [sys.executable, "-c", script, str(tmp_path / "private-home")],
+        cwd=destination,
+        env=env,
+        text=True,
+        capture_output=True,
+        timeout=45,
+    )
+    assert result.returncode == 0, result.stdout + "\n" + result.stderr
+    assert "PASS: optional World/Self failures" in result.stdout
