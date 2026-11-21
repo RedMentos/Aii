@@ -208,6 +208,7 @@ def _select_replay_rows(model, old_rows, *, replay_mode, seed, new_row_count):
         "replay_selection_error_mean": float(np.mean(selected_errors)),
         "replay_selection_error_min": float(np.min(selected_errors)),
         "replay_selection_error_max": float(np.max(selected_errors)),
+        "replay_selection_budget": budget,
     }
 
 
