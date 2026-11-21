@@ -34,7 +34,6 @@ class AndroidCompanionController:
         self.clock = clock or time.time
         self.transport = transport or AndroidCompanionTransport()
         self.broker = AndroidControlBroker(self.db_dir / "android_control.sqlite", clock=self.clock)
-        self.broker.start()
         self.trust_path = self.db_dir / "android_companion_trust.json"
         self.verifier_path = self.db_dir / "android_companion_receipts.sqlite"
 
@@ -132,6 +131,7 @@ class AndroidCompanionController:
         )
         if not launch_capability or launch_capability.get("status") != "READY_WITH_PER_ACTION_CONSENT":
             raise ControlDenied("launch_app capability is not ready")
+        self.broker.start()
         session = self.runtime.session or self.runtime.store.new_session()
         event = self.runtime.store.event(session, "Operator requested launch_app package=" + package)
         proposal = self.broker.propose(
@@ -168,6 +168,7 @@ class AndroidCompanionController:
     def poll(self, action_id):
         self.runtime.require_idle()
         trust, public_key, _ = self._pinned_key()
+        self.broker.start()
         response = self.transport.outcome(action_id)
         if response.get("status") != "READY":
             return dumps(response)
@@ -192,7 +193,6 @@ class AndroidCompanionController:
         })
 
     def cancel(self, action_id):
-        self.runtime.require_idle()
         local = False
         try:
             local = self.broker.cancel(action_id)
