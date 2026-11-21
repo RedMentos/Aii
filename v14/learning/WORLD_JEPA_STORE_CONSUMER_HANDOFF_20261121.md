@@ -83,3 +83,11 @@ Two new real-SQLite Store regressions cover (1) 64 rows from one identical sourc
 - Additional private remote bridge push run 44856794261 passed. This is CI/Linux evidence only.
 - Exact local Aii checkout tests remain BLOCKED because the container cannot resolve github.com. No Redmi receipt, normal Runtime postcommit wiring, native B1/B2 GGUF learning or device deployment is claimed.
 - PR #2150 is a draft stacked on #2148/#2147/#2143, pending independent review. RELEASE_SHA=NOT_RELEASED; REDMI_UNVERIFIED; user action none.
+
+
+## Superseding exact CI readback — rollback of pending cohort (2026-11-21)
+
+- Current code/test head: afd71180e1c87d9081bf84083315bb7f6a923da6.
+- Exact PR workflow run 44857040946 passed compile and the full V14 learning suite on both versions: Python 3.13 — 61 passed in 10.00s; Python 3.14 — 61 passed in 14.53s.
+- The existing no-replay liveness regression now also creates a pending one-row cohort after a successful checkpoint, rolls back to the prior checkpoint, verifies that pending rows are cleared and the scan cursor rewinds, then re-reads and learns the previously pending ActionOutcome. This keeps rollback/replay semantics covered, not only the ordinary successful-checkpoint rollback.
+- GitHub Actions/Linux only. Exact local repository checkout remains blocked by DNS; no Runtime wiring, native body-weight update or Redmi proof.
