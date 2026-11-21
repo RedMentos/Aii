@@ -655,6 +655,10 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         trace = metrics.get("backtracking_trace")
         assert type(trace) is list and trace
         assert all("old_guard_cohort_gate" in item for item in trace)
+        if metrics.get("current_guard_split_enabled"):
+            assert all("new_guard_cohort_gate" in item for item in trace)
+            assert metrics.get("current_guard_selection_fold") == "source_disjoint_current_training_guard"
+            assert metrics.get("current_guard_gate_accepted") is True
         assert all(
             "holdout_loss_after" not in item and "old_holdout_loss_after" not in item
             for item in trace
@@ -680,7 +684,17 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
     after_sha = after["active"]["checkpoint_sha256"]
     if result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
         assert after_sha != before_sha
-        assert after["pending_rows"] == []
+        pending_ids = {row["action_id"] for row in after["pending_rows"]}
+        expected_pending_ids = set(metrics.get("new_guard_action_ids", []))
+        assert pending_ids == expected_pending_ids
+        assert pending_ids.isdisjoint(set(after["active"]["processed_ids"]))
+        assert pending_ids.isdisjoint({
+            row["action_id"] for row in after["active"]["experience_rows"]
+        })
+        if expected_pending_ids:
+            assert metrics.get("current_guard_split_source_disjoint") is True
+            assert metrics.get("current_guard_split_content_disjoint") is True
+            assert metrics.get("current_guard_gate_accepted") is True
         assert metrics.get("optimizer_moments_persisted") is True
         checkpoint = home / "world_jepa" / after["active"]["checkpoint"]
         audit = world_jepa_optimizer_audit.audit_checkpoint(
@@ -751,6 +765,11 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         "has_more": has_more,
         "fit_rows": metrics.get("fit_rows"),
         "new_train_rows": metrics.get("new_train_rows"),
+        "new_fit_rows": metrics.get("new_fit_rows"),
+        "new_guard_rows": metrics.get("new_guard_rows"),
+        "new_guard_action_ids": metrics.get("new_guard_action_ids", []),
+        "new_guard_cohort_gate": metrics.get("current_guard_cohort_gate"),
+        "current_guard_gate_accepted": metrics.get("current_guard_gate_accepted"),
         "replay_candidate_rows": metrics.get("replay_candidate_rows"),
         "replay_mode": replay_mode,
         "replay_rows": metrics.get("replay_rows"),
@@ -1171,7 +1190,8 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         "old_holdout_cohort_retained", "old_holdout_retention_delta",
         "old_holdout_cohort_gate", "checkpoint_before", "checkpoint_after",
         "update_scale", "selected_update_scale", "new_holdout_improved", "gradient_projection",
-        "guard_gate_accepted",
+        "guard_gate_accepted", "current_guard_gate_accepted",
+        "new_guard_rows", "new_guard_cohort_gate",
         "old_guard_cohort_gate", "backtracking_selection_fold",
         "holdout_used_for_backtracking",
         "replay_conflict_scores_sha256",
@@ -1270,9 +1290,15 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 compact_trace = []
                 for attempt in trace:
                     cohorts = attempt.get("old_guard_cohort_gate", {}).get("cohorts", {})
+                    new_cohorts = attempt.get("new_guard_cohort_gate", {}).get("cohorts", {})
                     compact_trace.append({
                         "scale": attempt.get("update_scale"),
                         "guard_accepted": attempt.get("guard_accepted"),
+                        "new_guard_accepted": attempt.get("new_guard_cohort_gate", {}).get("accepted"),
+                        "new_guard_max_delta": max(
+                            (float(value.get("delta", 0.0)) for value in new_cohorts.values()),
+                            default=None,
+                        ),
                         "max_delta": max(
                             (float(value.get("delta", 0.0)) for value in cohorts.values()),
                             default=None,

@@ -1276,13 +1276,17 @@ class WorldJEPAStoreConsumer:
                         old_receiver_cohort_before = _receiver_cohort_losses(
                             model, active["receiver_heads"], old_holdout_cohorts
                         )
-            # Split only the prior training fold into replay-fit and guard rows.
-            # The guard is never used for gradients or replay. It selects replay
-            # demand and bounded update scales; the independent final holdout is
-            # reserved for the promotion decision. Current-task training rows are
-            # kept intact so small online batches are not starved by validation.
+            # One source/content-disjoint guard partition spans the whole training fold.
+            # Prior-session guard rows select retention-safe replay/update scales; current-task
+            # guard rows select adaptation-safe scales. Neither guard receives gradients or
+            # enters replay. Current guard rows remain in the durable pending queue.
             replay_salt = (active["checkpoint_sha256"] if active else "fresh") + ":" + _cohort_sha(new_train_rows)
             new_fit_rows = list(new_train_rows)
+            new_guard_rows = []
+            new_guard_cohorts = ()
+            new_guard_cohort_overflow = False
+            new_guard_cohort_before = {}
+            new_guard_manifest = None
             old_fit_rows = list(old_train_rows)
             old_guard_rows = []
             old_guard_cohorts = ()
@@ -1290,32 +1294,74 @@ class WorldJEPAStoreConsumer:
             old_guard_cohort_before = {}
             old_guard_manifest = None
             if active is not None:
-                old_guard_split = _source_disjoint_guard_split(
-                    old_train_rows, salt=replay_salt + ":prior"
+                combined_guard_split = _source_disjoint_guard_split(
+                    train_rows, salt=replay_salt + ":combined"
                 )
-                if old_guard_split is None:
-                    persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
-                    if persisted != "PERSISTED":
-                        return {"status": persisted, "pending_rows": len(pending_by_id),
-                                "scan_cursor": state["scan_cursor"],
-                                "native_body_weights_changed": False}
-                    return {
-                        "status": "INSUFFICIENT_SOURCE_DISJOINT_GUARD_COHORT",
-                        "prior_train_rows": len(old_train_rows),
-                        "prior_guard_split_ready": False,
-                        "pending_rows": len(pending_by_id),
-                        "scan_cursor": next_cursor,
-                        "native_body_weights_changed": False,
-                    }
-                old_fit_rows = old_guard_split["fit_rows"]
-                old_guard_rows = old_guard_split["guard_rows"]
-                old_guard_manifest = old_guard_split["manifest"]
+                combined_guard_ready = combined_guard_split is not None
+                if combined_guard_ready:
+                    combined_guard_rows = combined_guard_split["guard_rows"]
+                    combined_fit_rows = combined_guard_split["fit_rows"]
+                    candidate_new_guard_rows = [
+                        row for row in combined_guard_rows if row["action_id"] in new_set
+                    ]
+                    candidate_old_guard_rows = [
+                        row for row in combined_guard_rows if row["action_id"] not in new_set
+                    ]
+                    candidate_new_fit_rows = [
+                        row for row in combined_fit_rows if row["action_id"] in new_set
+                    ]
+                    candidate_old_fit_rows = [
+                        row for row in combined_fit_rows if row["action_id"] not in new_set
+                    ]
+                    combined_guard_ready = (
+                        len(candidate_new_guard_rows) >= 2
+                        and len(candidate_old_guard_rows) >= 2
+                        and len(candidate_new_fit_rows) >= 2
+                        and len(candidate_old_fit_rows) >= 2
+                    )
+                if combined_guard_ready:
+                    new_fit_rows = candidate_new_fit_rows
+                    new_guard_rows = candidate_new_guard_rows
+                    old_fit_rows = candidate_old_fit_rows
+                    old_guard_rows = candidate_old_guard_rows
+                    old_guard_manifest = combined_guard_split["manifest"]
+                    new_guard_manifest = combined_guard_split["manifest"]
+                else:
+                    # Small or highly skewed batches retain the existing prior-only
+                    # guard behavior; no current rows are silently discarded.
+                    old_guard_split = _source_disjoint_guard_split(
+                        old_train_rows, salt=replay_salt + ":prior"
+                    )
+                    if old_guard_split is None:
+                        persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                        if persisted != "PERSISTED":
+                            return {"status": persisted, "pending_rows": len(pending_by_id),
+                                    "scan_cursor": state["scan_cursor"],
+                                    "native_body_weights_changed": False}
+                        return {
+                            "status": "INSUFFICIENT_SOURCE_DISJOINT_GUARD_COHORT",
+                            "prior_train_rows": len(old_train_rows),
+                            "prior_guard_split_ready": False,
+                            "pending_rows": len(pending_by_id),
+                            "scan_cursor": next_cursor,
+                            "native_body_weights_changed": False,
+                        }
+                    old_fit_rows = old_guard_split["fit_rows"]
+                    old_guard_rows = old_guard_split["guard_rows"]
+                    old_guard_manifest = old_guard_split["manifest"]
                 old_guard_cohorts = _retention_cohorts(old_guard_rows)
                 old_guard_cohort_overflow = old_guard_cohorts is None
-                if not old_guard_cohort_overflow:
+                if old_guard_rows and not old_guard_cohort_overflow:
                     old_guard_cohort_before = _retention_cohort_losses(
                         model, old_guard_cohorts, target_snapshot=old_target_snapshot
                     )
+                if new_guard_rows:
+                    new_guard_cohorts = _retention_cohorts(new_guard_rows)
+                    new_guard_cohort_overflow = new_guard_cohorts is None
+                    if not new_guard_cohort_overflow:
+                        new_guard_cohort_before = _retention_cohort_losses(
+                            model, new_guard_cohorts, target_snapshot=old_target_snapshot
+                        )
 
             conflict_probe = {
                 "scores": {}, "scored_session_count": 0,
@@ -1438,6 +1484,22 @@ class WorldJEPAStoreConsumer:
                     None if old_guard_manifest is None
                     else old_guard_manifest["manifest_sha256"]
                 ),
+                "current_guard_split_enabled": bool(new_guard_rows),
+                "current_guard_rows": len(new_guard_rows),
+                "current_guard_action_ids": [row["action_id"] for row in new_guard_rows],
+                "current_guard_split_source_disjoint": (
+                    None if new_guard_manifest is None
+                    else bool(new_guard_manifest["source_disjoint"])
+                ),
+                "current_guard_split_content_disjoint": (
+                    None if new_guard_manifest is None
+                    else bool(new_guard_manifest["content_disjoint"])
+                ),
+                "current_guard_manifest_sha256": (
+                    None if new_guard_manifest is None
+                    else new_guard_manifest["manifest_sha256"]
+                ),
+                "current_guard_cohort_before": new_guard_cohort_before,
                 "loss_demand_probe_fold": (
                     "prior_training_guard" if replay_mode == "on_demand_loss" and active is not None
                     else None
@@ -1562,7 +1624,6 @@ class WorldJEPAStoreConsumer:
                         "accepted": True, "reason": "NO_PRIOR_GUARD_COHORT", "cohorts": {},
                     }
                     candidate_old_guard_cohort_retained = True
-                    candidate_guard_accepted = True
                 else:
                     candidate_old_guard_cohort_after = (
                         _retention_cohort_losses(
@@ -1578,12 +1639,38 @@ class WorldJEPAStoreConsumer:
                     candidate_old_guard_cohort_retained = bool(
                         candidate_old_guard_cohort_gate["accepted"]
                     )
-                    candidate_guard_accepted = candidate_old_guard_cohort_retained
+
+                if new_guard_rows:
+                    candidate_new_guard_cohort_after = (
+                        _retention_cohort_losses(
+                            candidate, new_guard_cohorts, target_snapshot=old_target_snapshot
+                        )
+                        if not new_guard_cohort_overflow else {}
+                    )
+                    candidate_new_guard_cohort_gate = _retention_cohort_gate(
+                        new_guard_cohort_before,
+                        candidate_new_guard_cohort_after,
+                        overflow=new_guard_cohort_overflow,
+                    )
+                else:
+                    candidate_new_guard_cohort_after = {}
+                    candidate_new_guard_cohort_gate = {
+                        "accepted": True, "reason": "NO_CURRENT_GUARD_COHORT", "cohorts": {},
+                    }
+                candidate_new_guard_cohort_retained = bool(
+                    candidate_new_guard_cohort_gate["accepted"]
+                )
+                candidate_guard_accepted = bool(
+                    candidate_old_guard_cohort_retained
+                    and candidate_new_guard_cohort_retained
+                )
 
                 attempts.append({
                     "update_scale": float(update_scale),
                     "old_guard_cohort_retained": bool(candidate_old_guard_cohort_retained),
                     "old_guard_cohort_gate": candidate_old_guard_cohort_gate,
+                    "new_guard_cohort_retained": bool(candidate_new_guard_cohort_retained),
+                    "new_guard_cohort_gate": candidate_new_guard_cohort_gate,
                     "guard_accepted": bool(candidate_guard_accepted),
                 })
                 if candidate_guard_accepted:
@@ -1650,6 +1737,7 @@ class WorldJEPAStoreConsumer:
             )
             candidate_accepted = bool(
                 selected_scale is not None
+                and candidate_new_guard_cohort_retained
                 and candidate_holdout_improved
                 and candidate_negative_controls_separated
                 and candidate_retention_gate_accepted
@@ -1692,6 +1780,12 @@ class WorldJEPAStoreConsumer:
             replay_metrics["backtracking_selection_fold"] = (
                 "source_disjoint_training_guard" if active is not None else "single_initial_step"
             )
+            replay_metrics["current_guard_selection_fold"] = (
+                "source_disjoint_current_training_guard" if new_guard_rows else "NONE"
+            )
+            replay_metrics["current_guard_cohort_after"] = candidate_new_guard_cohort_after
+            replay_metrics["current_guard_cohort_gate"] = candidate_new_guard_cohort_gate
+            replay_metrics["current_guard_gate_accepted"] = candidate_new_guard_cohort_retained
             replay_metrics["holdout_used_for_backtracking"] = False
             replay_metrics["guard_gate_accepted"] = bool(candidate_guard_accepted)
             replay_metrics["old_guard_cohort_gate"] = candidate_old_guard_cohort_gate
@@ -1750,7 +1844,29 @@ class WorldJEPAStoreConsumer:
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
                         "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
                         "native_body_weights_changed":False}
-            receiver_heads, receiver_metrics = _fit_role_receivers(model, train, holdout, train_rows, holdout_rows)
+            new_guard_ids = {row["action_id"] for row in new_guard_rows}
+            checkpoint_rows = [
+                row for row in experience_rows if row["action_id"] not in new_guard_ids
+            ]
+            checkpoint_ids = {row["action_id"] for row in checkpoint_rows}
+            checkpoint_fingerprints = {
+                action_id: prior_fingerprints[action_id] for action_id in checkpoint_ids
+            }
+            checkpoint_train_ids = [
+                action_id for action_id in train_ids if action_id in checkpoint_ids
+            ]
+            checkpoint_holdout_ids = [
+                action_id for action_id in holdout_ids if action_id in checkpoint_ids
+            ]
+            if set(checkpoint_train_ids) | set(checkpoint_holdout_ids) != checkpoint_ids:
+                raise ValueError("checkpoint rows are not covered by the source-disjoint split")
+            receiver_train_rows = [
+                row for row in train_rows if row["action_id"] not in new_guard_ids
+            ]
+            receiver_heads, receiver_metrics = _fit_role_receivers(
+                model, _arrays(receiver_train_rows), holdout,
+                receiver_train_rows, holdout_rows,
+            )
             receiver_cohort_after = _receiver_cohort_losses(
                 model, receiver_heads, old_holdout_cohorts
             )
@@ -1765,7 +1881,7 @@ class WorldJEPAStoreConsumer:
             receiver_metrics["receiver_old_session_retention_gate_accepted"] = all(
                 gate["accepted"] is True for gate in receiver_retention_gates.values()
             )
-            source_sha = _cohort_sha(experience_rows)
+            source_sha = _cohort_sha(checkpoint_rows)
             if cancel_check is not None and cancel_check():
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
                         "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
@@ -1789,10 +1905,18 @@ class WorldJEPAStoreConsumer:
                 "replay_candidate_rows": len(old_fit_rows),
                 **replay_metrics,
                 "new_train_rows": len(new_train_rows),
+                "new_fit_rows": len(new_fit_rows),
+                "new_guard_rows": len(new_guard_rows),
+                "new_guard_action_ids": sorted(new_guard_ids),
                 "new_holdout_rows": len(set(new_ids) & set(holdout_ids)),
                 "fit_rows": len(fit_rows),
                 "fit_action_ids": [row["action_id"] for row in fit_rows],
                 "new_train_action_ids": [row["action_id"] for row in new_fit_rows],
+                "checkpoint_experience_rows": len(checkpoint_rows),
+                "checkpoint_processed_rows": len(checkpoint_ids),
+                "checkpoint_train_rows": len(checkpoint_train_ids),
+                "checkpoint_holdout_rows": len(checkpoint_holdout_ids),
+                "pending_rows": len(new_guard_rows),
                 "train_rows": len(train_ids), "holdout_rows": len(holdout_ids),
                 "train_source_count": split["manifest"]["train_source_count"],
                 "holdout_source_count": split["manifest"]["holdout_source_count"],
@@ -1833,9 +1957,9 @@ class WorldJEPAStoreConsumer:
             metrics.update(receiver_metrics)
             record = {
                 "checkpoint": checkpoint_name, "checkpoint_sha256": checkpoint_after,
-                "source_sha256": source_sha, "processed_ids": sorted(prior_fingerprints),
-                "fingerprints": prior_fingerprints, "experience_rows": experience_rows,
-                "train_ids": train_ids, "holdout_ids": holdout_ids,
+                "source_sha256": source_sha, "processed_ids": sorted(checkpoint_ids),
+                "fingerprints": checkpoint_fingerprints, "experience_rows": checkpoint_rows,
+                "train_ids": checkpoint_train_ids, "holdout_ids": checkpoint_holdout_ids,
                 "receiver_heads": receiver_heads, "metrics": metrics,
                 "self_state": {"update_count": previous_updates + 1,
                                "last_prediction_error": float(holdout_after),
@@ -1848,7 +1972,7 @@ class WorldJEPAStoreConsumer:
             }
             next_state = {"schema": STATE_SCHEMA, "revision": REVISION,
                           "active": record, "previous": active, "scan_cursor": next_cursor,
-                          "pending_rows": []}
+                          "pending_rows": list(new_guard_rows)}
             if cancel_check is not None and cancel_check():
                 try: checkpoint_path.unlink(missing_ok=True)
                 except OSError: pass
@@ -1880,7 +2004,8 @@ class WorldJEPAStoreConsumer:
                 "checkpoint_prune_errors": prune_errors, "rejected_receipts": rejected,
                 "censored_skipped": censored_skipped, "scanned_rows": scanned,
                 "has_more": has_more, "new_receipts": len(new_ids),
-                "processed": len(prior_fingerprints), "scan_cursor": next_cursor,
+                "processed": len(checkpoint_ids), "scan_cursor": next_cursor,
+                "pending_rows": len(new_guard_rows),
                 "checkpoint_sha256": checkpoint_after, "source_sha256": source_sha,
                 "metrics": metrics, "utility_gate_accepted": True,
                 "native_body_weights_changed": False,
