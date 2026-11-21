@@ -102,3 +102,35 @@ PR #2137 is merged as `3db6d1f00fceab9e7755bc8f4c25882ef7f19258`. It converts th
 - distinguishes observed negative outcomes from CANCELLED/ABORTED and OUTCOME_UNKNOWN/INTERRUPTED; cancelled/censored cases produce no prediction error or receiver update;
 - persists the scalar temporal readout with rollback and parent-directory fsync.
 Exact PR-head V14 real-Store tests and V13 staged/integrated tests pass. The exact merge-commit push integrated regression is still pending at this checkpoint. This is a scalar temporal receiver only: no normal Runtime consumer, no full JEPA, no cross-organ latent coupling and no native B1/B2 body-weight update. The next falsifiable experiment is a real postcommit Runtime consumer with source-bound predictions, held-out utility, no-predictor/replay-only controls, restart, retention and rollback.
+
+
+## 2026-11-21 — Research & Perception: latency-aware C3 model lab (V14-005)
+
+### Primary research reviewed
+
+- **Transferable Latency Prediction for Fast LLM Screening on Heterogeneous Edge Devices**, Xiaolong Tu et al., arXiv:2607.21602, posted 2026-05-11. Full arXiv text reviewed; peer-reviewed venue/status not independently confirmed. The paper models each run as a hardware-runtime-model-prompt configuration, separates prefill and decode, and fuses static descriptors with dynamic telemetry. It reports Pixel 8/8 Pro and Jetson/Orange Pi/RTX 3090-class experiments. Its reported cross-device calibration improvements are evidence that latency predictors need target-device calibration, not that Pixel numbers predict Redmi results. Concrete V14 adaptation: retain separate prefill-to-first-token, TTFT, decode throughput, RSS/PSS, runtime revision, prompt suite and device/thermal context for every candidate run. Source: https://arxiv.org/abs/2607.21602
+- **DVFS for Small Language Model Inference on Mobile Edge Devices**, Jiesong Chen et al., arXiv:2609.13153, posted 2026-07-08. Full arXiv text reviewed; preprint status, no peer-review claim. DVFSLM reports up to 12.4% lower energy/token than built-in governors and up to 8.4% versus GearDVFS, with QoS gains, on NVIDIA Jetson AGX Orin and Orin NX. Its prototype coordinates GPU/EMC frequencies and a CPU threshold. Those hardware controls are not a safe or available assumption for ordinary Redmi/Termux CPU inference; no DVFS code is adopted. Source: https://arxiv.org/abs/2609.13153
+
+### Candidate provenance and licensing
+
+- Current C3 baseline from v13/code/specs/models.json: LiquidAI/LFM2.5-350M-GGUF, pinned revision 657e078d8f8d3b44b7f82df4e1b5b1f9b8d3b7d2, QAD_Q4_0, 219312832 bytes, LFM Open License 1.0.
+- Prior C3 candidate from the same registry history: LiquidAI/LFM2.5-230M-GGUF, revision cdf97bd8205908758f44aec508d68ac1aef98f5c, QAD_Q4_0, 149081056 bytes, SHA256 e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292. Official model page and LICENSE checked 2026-11-21: LFM Open License 1.0, not Apache-2.0; commercial-use limitation applies to legal entities above USD 10M annual revenue. Model source: https://huggingface.co/LiquidAI/LFM2.5-230M-GGUF
+- Candidate file is 70231776 bytes (~32.0%) smaller than the current 350M file. This is only a disk-size fact. No Redmi TTFT/RSS/PSS/quality comparison exists, and no download or swap was performed.
+
+### Executable experiment added
+
+- v14/experiments/model_candidates.json: exact candidate revision, file size/hash and license provenance.
+- v14/experiments/model_compare.py: read-only, sequential C3 comparison through the existing V13 LlamaRunner/llama-server path. It refuses a busy coordinator lock, verifies baseline/candidate GGUF size/hash and baseline registry revision, runs four exact-output tasks (2+2, source extraction, abstention, constraints), captures prefill/TTFT/decode/RSS/PSS metrics, redacts raw output, and never downloads, edits the installed manifest or swaps weights. Both run orders are supported to expose order/thermal bias. No active LoRA, user memory or Context OS prompt is applied, so this is an isolated C3 probe rather than E2E acceptance.
+- v14/experiments/test_model_compare.py: 13 tests cover sequential runner use, exact-match negative controls, missing candidate, hash/revision failures, lock contention, symlinks, role/order bounds, native error/reaping, output redaction, same-artifact rejection and reverse order.
+
+### Evidence state
+
+- LOCAL_LINUX / Python 3.13.5 isolated implementation copy: py_compile PASS; 13/13 synthetic unit tests PASS. The tests use a fake runner; they are not native model inference.
+- Full repository checkout/test discovery BLOCKED: local git could not resolve github.com. GitHub readback confirms the three experiment files exist on the research branch; exact PR CI remains pending.
+- Native Linux/Termux model inference NOT RUN. Candidate GGUF and local V13 home are not present in this execution environment.
+- Redmi status REDMI_UNVERIFIED; no authorized live device receipt.
+- Release/deployment NOT_RELEASED; no UPDATE_REQUEST, download, install, weight swap or updater action.
+
+### Next step
+
+Review and run the exact branch tests in CI. If the pinned 230M GGUF is already present on the authorized Redmi, run both orders while V13 is idle and compare TTFT/prefill, decode, RSS/PSS and task checks. If absent, obtain separate explicit consent before downloading it to an isolated lab slot; keep the 350M production model unchanged. B1/B2 model comparisons remain separate work and are not claimed complete.
