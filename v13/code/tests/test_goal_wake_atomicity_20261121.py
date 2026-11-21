@@ -90,7 +90,8 @@ class GoalWakeAtomicityTests(unittest.TestCase):
         goal_id = self.goals.add("valid wake", wake_at=1060)
         goal = self.goals.get(goal_id)
         self.assertEqual(goal["wake_at"], 1060.0)
-        self.assertIsNotNone(goal["wake_event"])
+        event_id = goal["wake_event"]
+        self.assertIsNotNone(event_id)
         pending = self.scheduler.pending()
         self.assertEqual(len(pending), 1)
         self.assertEqual(pending[0]["id"], goal["wake_event"])
