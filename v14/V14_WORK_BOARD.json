@@ -28,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Last code-bearing release 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e has exact updater-required push CI GREEN. Current branch HEAD d61b695739023d0bf0a3cfa4022770f0de2615fa is documentation-only; owner-read push 44846409890 PASS and private-bridge push 44846409984 PASS, but exact staged-context push 44846409816 remains IN_PROGRESS. Private issues #351–354 have zero device comments; installed SHA UNKNOWN / REDMI_UNVERIFIED.",
-      "next_step": "Wait for exact staged-context push on d61b695; do not reuse parent SHA success. Then read existing owner-authenticated PIPELINE_STATUS #353. Only if it confirms compatible updater and explicit consent may Boss send one UPDATE_REQUEST followed by a separate installation receipt.",
+      "proof_environment": "Last code-bearing release 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e has exact updater-required push CI GREEN. Current docs-only HEAD d61b695739023d0bf0a3cfa4022770f0de2615fa: owner-read push 44846409890 PASS; private bridge push 44846409984 PASS; staged-runtime job within staged-context run 44846409816 PASS; integrated-regression step remains IN_PROGRESS since 00:51:24Z (>5 min at 01:56 CET). Exact workflow not complete; no phone receipt / installed SHA UNKNOWN / REDMI_UNVERIFIED.",
+      "next_step": "Wait for integrated-regression on exact d61b695 to finish; then read #353 PIPELINE_STATUS if a device comment arrives. Do not reuse parent SHA green or claim deployment. Only Boss may send one UPDATE_REQUEST after current owner-authenticated state/consent receipt.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 QA: exact code-bearing SHA 5b9171a green; newer docs-only HEAD d61b695 has 2/3 updater-required push workflows green and staged-context still in progress. No phone receipt or UPDATE_REQUEST.",
+      "last_checkpoint": "2026-11-21 QA: d61b695 exact push staged-runtime job PASS; integrated-regression still executing its shared staged organ/memory path (>5 min, no failure/log readback). Keep latest-run gate closed until the entire workflow completes.",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -118,10 +118,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Last code-bearing release 5b9171a exact updater-required CI GREEN; current docs-only branch HEAD d61b695 has owner-read and private bridge PASS but staged-context push IN_PROGRESS. PR #2137 exact staged/integrated CI PASS but remains draft pending Boss review, Python3.14 and Runtime-consumer work. Whole-Canon acceptance remains incomplete.",
-      "next_step": "Finish exact current-HEAD updater CI, then use only a fresh private PIPELINE_STATUS receipt for device decisions. Boss reviews T8 policy and Core/JEPA continue connected consumer integration.",
+      "proof_environment": "Code-bearing release 5b9171a exact updater-required CI GREEN. Current docs-only HEAD d61b695 owner-read/bridge push PASS and staged-runtime PASS; integrated-regression still IN_PROGRESS. PR #2137 staged/integrated CI PASS but draft, Python3.14/policy/Runtime consumer gates remain. Whole-Canon acceptance incomplete.",
+      "next_step": "Wait for exact latest-SHA integrated regression; Boss reviews T8 and coordinates Core/JEPA consumer integration. No phone update without private receipt.",
       "user_action_required": false,
-      "last_checkpoint": "QA independently verified #2137 52/240/415 tests PASS; no production learning or Redmi claim."
+      "last_checkpoint": "QA verified d61b695 staged-runtime PASS; integrated-regression still running since 00:51:24Z. No new device evidence."
     },
     {
       "id": "V14-008",
