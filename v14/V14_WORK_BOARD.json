@@ -99,7 +99,6 @@
       "last_checkpoint": "2026-11-21 Research & Perception: PR #2142 added read-only C3 sequential comparison, pinned 230M candidate provenance and exact 13-test CI PASS. No native inference, download, swap or Redmi proof.",
       "latest_candidate_pr": {
         "pr": 2142,
-        "head_sha": "cfa3ee63cc697414a2368d5859688c76fbe6fea9",
         "tested_code_sha": "3e13188a414b1cc3ff327fe9897a07d0d5ff8900",
         "ci": "V14 model-lab workflow run 44848887759 PASS; 13 tests; exact code-bearing CI at 3e13188; later changes are handoff/ledger only",
         "scope": "Read-only C3 LFM2.5-350M baseline vs pinned LFM2.5-230M candidate; no B1/B2, no download, no production swap"
