@@ -1388,3 +1388,6 @@ The 1255-heading mechanical inventory and family overlay do not replace clause-l
 | Whole Canon | Mechanical 1255-heading inventory remains; clause-level code→consumer→test→environment→rollback mapping remains incomplete | NO_CAPABILITY_FAMILY_ACCEPTED |
 
 **Evidence boundary:** GitHub Actions runs are CI/Linux. The local full checkout/test suite was blocked by GitHub DNS resolution in this execution environment. Private owner-read PIPELINE_STATUS issue #357 has no reply, so installed SHA/updater state/current consent are unknown. No model download/swap, weight edit, permission change, database/chat mutation or device action occurred. No Redmi, native model, native JEPA, sparse-MoE, full voice, Android-control or cross-organ latent claim is promoted by this checkpoint.
+
+
+**Historical Redmi baseline (not current acceptance):** QA's private V13OBS #115 on 2026-11-18 reported C3 TTFT 77.51 s / total 84.37 s / 11 generated tokens; B1/B2 TIME_BUDGET at 60.1 s / 50.5 s with zero source-bound offers; native residency UNKNOWN_NO_GROUP_CHILDREN. Fresh PIPELINE_STATUS #357 remains unanswered, so current installed SHA/runtime/performance are still UNKNOWN / REDMI_UNVERIFIED.
