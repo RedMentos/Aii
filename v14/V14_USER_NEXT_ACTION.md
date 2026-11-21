@@ -592,3 +592,43 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 - Core PR [#2158](https://github.com/RedMentos/Aii/pull/2158), exact inspected head `79e7ffa7b5f81a4f3ac003c5ae34ee412baa04c6`: staged voice job fails on both Python 3.11 and 3.13 at one stale assertion expecting one total `PerceptPacket`. The normal text perception path and RAW EAR audio path each persist a different modality. QA review asks for exactly one text + one audio packet and a raw-PCM absence scan across all packet payloads; do not remove text perception to satisfy the count. Staged/integrated generic regression passes 240/415.
 - Existing private owner-read request `RedMentos/Aiiii#368` remains OPEN with zero comments. Installed Redmi SHA and updater consent remain UNKNOWN. No duplicate read request, UPDATE_REQUEST, shell action, device update, model/permission change or user-data mutation was performed.
 - **User action: none.** Keep `REDMI_UNVERIFIED`; wait for the existing owner-read receipt. Next code actions are Boss sync/review of #2163 and Core correction of #2158's modality-count regression.
+
+## Boss integration checkpoint — 2026-11-21 11:38 CET
+
+- Live release branch readback: `4a471ae40dd9b768c8130fafdba51900b5417800`. It is two documentation-only commits ahead of the code-bearing release `e18c664d954fa5a44a1b2e5bec76850d5a40f89f`; no code-bearing release change is represented by this docs HEAD. Exact HEAD GitHub Actions check-runs read back green, including Python 3.13/3.14, staged-runtime, integrated-regression, owner-read and private-bridge checks. CI/Linux only.
+- Runtime JEPA is now genuinely wired as a bounded postcommit SleepRuntime job: a committed T8 event invokes the Store-backed WorldJEPA consumer and then the World/Planner SHADOW receiver. It is source-bound/cancellable and has no decision authority. Learning/optimizer permissions remain OFF by default; current inference checkpoint still does not persist Adam moments, and native B1/B2 GGUF weights are unchanged.
+- RAW EAR temporal candidate #2192 exact head `24d482ac049d00e3affe02426a7276c54c5b22c4`: staged-runtime and integrated-regression PASS; Python 3.13/3.14 comparison, RAW EAR prosody, model-lab, privacy and private-bridge checks PASS. `validate-additive` fails because the PR modifies an existing voice-cue module. Boss reviewed the bounded source/generation-keyed A4 temporal state and requested rebase from stale base `e18c664...` to current `4a471ae...` before ready/review. Scope remains caller-supplied PCM16 A4/C3 admission, not microphone capture, ASR, TTS/vocoder, full duplex, learned audio weights or Redmi proof.
+- #2183 read-only flow-audit candidate remains unapproved: cross-session default when session_id is omitted, plus C4 role/state and blob-symlink findings. #2186 remains a staged optimizer-resume overlay only; production Adam moments are not yet persisted. #2158 voice Runtime stack remains blocked/stale.
+- P0 #1904 remains open: no new real 20-turn Redmi acceptance, correct 2+2, B1/B2 delivered-and-consumed offers, native latency/RSS or installed SHA. Fresh private owner-read has no reply: `NO_LIVE_RECEIPT / REDMI_UNVERIFIED`. No UPDATE_REQUEST or device mutation.
+- Local full-suite test: BLOCKED; no Aii checkout and `git ls-remote` failed because github.com DNS could not resolve. No LOCAL_LINUX full-suite PASS is claimed.
+
+### Next executable actions
+1. Core: repair real B1/B2 → C4/Focal → C3 delivery and prefill/latency without dropping bodies or merely extending deadlines.
+2. JEPA/Memory + Boss: move model + EMA + Adam moments into the production Store checkpoint with source pins, holdout utility/retention, restart, crash and rollback tests; keep gates OFF.
+3. Research/Perception: rebase #2192 to current release head and retain the consent-bound caller-supplied PCM16 boundary.
+4. QA/Android: continue read-only owner relay; no deployment/update request until a fresh authenticated receipt proves consent and installed SHA.
+
+**Release:** no new code released in this checkpoint. **Redmi:** REDMI_UNVERIFIED. **User action:** none.
+
+
+## Latest Boss integration checkpoint — 2026-11-21 13:30 CET
+
+- Release-development branch now reads back at `0fc4d2f9a76d530c366d67ea8148cd1c69666acd` after manual integration of PR #2197. It narrowly permits Android 13 `/data/user/0` only when the directory is exact system:system 0771 and has the same device/inode as `/data/data`. PR-head broker (37), sandbox replay (61), staged runtime (249 passed / 10 skipped / 47 subtests) and integrated regression (415 passed / 3 skipped / 58 subtests) passed. The safe-additive policy rejection was not bypassed; this was a documented manual review. The exact push CI for the merged branch was queued/in progress at last readback, so the last fully green code-bearing head remains `e18c664d954fa5a44a1b2e5bec76850d5a40f89f` until every new push workflow finishes.
+- Core PR #2200 now connects caller-supplied synthetic PCM16 through the staged A5/A4 path into B1/B2 QueryPacket/OfferPacket scopes and C3 acoustic context. Exact A5 Python 3.11/3.13, staged-runtime and integrated-regression passed. Its Runtime test uses fake B1/B2/C3 runners: WIRED_SYNTHETIC only, not native model inference, microphone capture or Redmi validation. It is blocked by Perception #2192's consent-revocation race after PerceptPacket persistence; #2200 also leaves the derived AUDIO_ACOUSTIC_CONTEXT source stored after consent revocation.
+- JEPA PR #2198 has a newer exact head `cd0b54053f51d5227f7860a80f5f6adbd3973598`; optimizer-resume, staged/integrated and Python 3.14 CI now pass, including the prior Planner-gate failures. It is still unmerged and uses `os.link` without the Android EPERM/EACCES `renameat2(RENAME_NOREPLACE)` fallback, so it is not Android-ready.
+- C4 candidate #2195 passes its separate review/stage tests but is not in the normal pinned recovery builder/runtime_deploy artifact; its zero-overlap rule is uncalibrated and lacks a disjoint-but-redundant negative control.
+- P0 #1904 remains open: no current proof of correct/fast native 2+2, B1/B2 offer delivery through C4 into C3, 20 mixed Redmi turns, native latency/RSS or trained B3 latent exchange.
+- Fresh private owner-read PIPELINE_STATUS request [#403](https://github.com/RedMentos/Aiiii/issues/403) is open with no response at last readback. Installed SHA and updater consent remain unknown. No UPDATE_REQUEST, shell action, model download/swap, permission change or phone mutation occurred.
+
+**User action required: none.** Do not run a new Termux command; do not change installed models, weights, permissions or data. The next work is internal: close the #2192/#2200 consent and derived-source revocation blockers, add the #2198 Android-safe checkpoint publisher, and integrate/calibrate C4 only in the normal pinned stage. Redmi remains `REDMI_UNVERIFIED`.
+
+
+## Exact release CI and learning readback — 2026-11-21 13:34 CET
+
+- The code-bearing release head `0fc4d2f9a76d530c366d67ea8148cd1c69666acd` is now fully green: **28/28 exact-head check-runs and 17/17 workflows SUCCESS**, including staged-runtime, integrated-regression, Python 3.13/3.14, owner-read and private bridge. PR #2197 is merged. This only validates GitHub Linux/CI; it does not mean the Redmi installed it.
+- The integrated synthetic Runtime/SQLite JEPA regression passed **415 tests / 3 skipped / 58 subtests**. Two ID-disjoint holdout runs reduced prediction loss from 0.96002 to 0.90302 (15 holdout rows) and from 0.96272 to 0.90349 (17 holdout rows); numeric parameter change plus save/restore/restart were checked. This is a small Python WorldJEPA predictor on synthetic Store data, not native GGUF B1/B2 weights or Android learning.
+- The other blockers remain unchanged: #2192's consent-revocation race after PerceptPacket persistence; #2200's derived audio context remains stored after revocation; #2195's C4 candidate is not in the normal pinned runtime stage and is uncalibrated; #2198's optimizer-resume candidate passes CI but still has no Android-safe hardlink-denial fallback.
+- P0 #1904 remains open: no fresh Redmi proof of correct/fast 2+2, native B1/B2 offers through C4 into C3, 20 mixed turns, native latency/RSS or trained B3 latent exchange.
+- Private owner-read [#403](https://github.com/RedMentos/Aiiii/issues/403) remains open with no response; installed SHA and updater consent are unknown. No UPDATE_REQUEST, shell action, model download/swap, permission change or phone mutation occurred.
+
+**User action required: none.** Do not run a new Termux command or change installed models, weights, permissions or data. The code branch is CI-green but not phone-verified; REDMI_UNVERIFIED remains the release status.
