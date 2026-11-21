@@ -865,3 +865,59 @@ def test_consent_revocation_after_preflight_before_lease_cannot_process_pcm(tmp_
         assert attention_count(runtime.store, event["event_id"]) == 0
     finally:
         runtime.store.close()
+
+
+class _NonReentrantConsentProvider:
+    """Models a normal threading.Lock-backed provider (not an RLock)."""
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._owner = None
+        self._active = True
+
+    @contextmanager
+    def _locked(self):
+        ident = threading.get_ident()
+        if self._owner == ident:
+            raise RuntimeError("provider lock must not be reacquired under its lease")
+        self._lock.acquire()
+        self._owner = ident
+        try:
+            yield
+        finally:
+            self._owner = None
+            self._lock.release()
+
+    def check(self, source_id, receipt):
+        with self._locked():
+            return self._active and source_id == SOURCE_ID and receipt == RECEIPT
+
+    @contextmanager
+    def lease(self, source_id, receipt):
+        with self._locked():
+            yield self._active and source_id == SOURCE_ID and receipt == RECEIPT
+
+    def revoke(self):
+        with self._locked():
+            self._active = False
+
+
+def test_consent_lease_does_not_reacquire_a_non_reentrant_provider_lock(tmp_path):
+    """The guard's yielded authorization must suffice while its provider lock is held."""
+    runtime, event = make_runtime(tmp_path)
+    provider = _NonReentrantConsentProvider()
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(140), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=provider.check, consent_guard=provider.lease,
+            finality="FINAL", token_budget=512,
+        )
+        assert result["c3_admission"] is not None
+        assert packet_count(runtime.store, event["event_id"]) == 1
+        assert attention_count(runtime.store, event["event_id"]) == 1
+        provider.revoke()
+        assert provider.check(SOURCE_ID, RECEIPT) is False
+    finally:
+        runtime.store.close()
