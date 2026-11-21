@@ -32,3 +32,11 @@ QA found that two distinct source_id values can still carry the same source_sha2
 After this PR is reviewed, compose this consumer with the #2135 exact-once OnlineWorld checkpoint in the automatic postcommit path without modifying frozen `runtime.py`. Expose source-bound World predictions to a real cognition/world/planner consumer in SHADOW, compare against no-predictor and replay-only baselines, then test restart/rollback and resource use. Keep the learning/optimizer gates closed by default until the actual runtime opt-in and device proof exist.
 
 **User action:** none.
+
+
+## Action-conditioned negative-control correction — 2026-11-21
+
+- The source-digest child PR #2147 fixed the identified train/holdout byte-identity leak, but its exact CI run `44852394807` failed on both Python 3.13 and 3.14 in the end-to-end test's `negative_controls_separated` assertion. The trained holdout loss was slightly worse than the shuffled-action control (3.13: 0.480152 vs 0.479097; 3.14: 0.511960 vs 0.510329); zero-action loss was worse in both runs. The source/digest disjointness assertions passed before this failure.
+- This exposes a weak action-identifiability signal in the old synthetic fixture, not a reason to relax the negative control. The follow-up branch `jepa-memory/v14-action-conditioned-control-20261121` makes the synthetic transition's route effect explicit in duration and output size, keeps independent nuisance variation, and raises the first JEPA update from 40 to 120 steps. This is a controlled positive test fixture only, not a claim about real-user outcome distributions.
+- Follow-up code commit: `52690943522df331b20ab3990c7dd8ee72c1ba84`. Exact CI is pending until the stacked PR is opened. No full local checkout is available because the container cannot resolve `github.com`; no LOCAL_LINUX exact-repository test is claimed. No Redmi receipt, normal Runtime consumer, or native B1/B2 body-weight update is claimed.
+- Keep the action-shuffled negative control strict. If the follow-up still fails, investigate action-conditioned predictor/encoder gradients and the synthetic source split rather than weakening the assertion.
