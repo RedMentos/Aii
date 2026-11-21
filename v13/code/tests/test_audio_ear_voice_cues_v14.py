@@ -582,3 +582,78 @@ def test_consent_revocation_between_pre_and_post_persist_leaves_no_packet(tmp_pa
         assert attention_count(runtime.store, event["event_id"]) == 0
     finally:
         runtime.store.close()
+
+
+def test_revocation_after_packet_insert_before_final_check_rolls_back(tmp_path):
+    """The final consent check must abort the uncommitted packet insert."""
+    from contextlib import contextmanager
+
+    runtime, event = make_runtime(tmp_path)
+    revoked = False
+    original_tx = runtime.store.tx
+
+    @contextmanager
+    def revoke_after_insert():
+        with original_tx() as connection:
+            class ConnectionProxy:
+                def execute(self, sql, params=()):
+                    nonlocal revoked
+                    result = connection.execute(sql, params)
+                    if "INSERT INTO packets" in sql and len(params) > 1 and params[1] == "PerceptPacket":
+                        revoked = True
+                    return result
+            yield ConnectionProxy()
+
+    def current_consent(source_id, receipt):
+        return not revoked and source_id == SOURCE_ID and receipt == RECEIPT
+
+    runtime.store.tx = revoke_after_insert
+    try:
+        with pytest.raises(PermissionError):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=current_consent, finality="FINAL", token_budget=512,
+            )
+        assert revoked is True
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
+
+
+def test_revocation_before_sqlite_commit_is_serialized_with_consent_check(tmp_path):
+    """A revocation that wins before transaction commit must not publish audio."""
+    from contextlib import contextmanager
+
+    runtime, event = make_runtime(tmp_path)
+    revoked = False
+    original_tx = runtime.store.tx
+
+    @contextmanager
+    def revoke_before_commit():
+        nonlocal revoked
+        with original_tx() as connection:
+            yield connection
+            # The producer's final consent check has returned, but the Store
+            # transaction has not committed yet. Revocation wins this boundary.
+            revoked = True
+
+    def current_consent(source_id, receipt):
+        return not revoked and source_id == SOURCE_ID and receipt == RECEIPT
+
+    runtime.store.tx = revoke_before_commit
+    try:
+        with pytest.raises(PermissionError):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=current_consent, finality="FINAL", token_budget=512,
+            )
+        assert revoked is True
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
