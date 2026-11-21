@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T19:18:00.000Z",
+  "updated_at": "2026-11-21T19:24:00.000Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -536,7 +536,7 @@
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT; container inspection found no .git checkout. No local Python/Android full-suite PASS claimed.",
     "p0_chat": "OPEN_ISSUE_1904; real correct 2+2, B1/B2 offer delivery, 20 mixed Redmi turns, native TTFT/RSS and production C3 correctness remain unverified.",
     "canon_coverage": "1255_HISTORICAL_HEADINGS_PRESERVED; semantic clause→implementation→consumer→test→environment→rollback mapping remains incomplete.",
-    "research": "R040 Mahdaviyeh et al. PMLR 330:15–42 (2026): official PMLR record/abstract verified; replay may be non-monotonic or harmful depending on sample/task geometry; PDF not newly read in this run. R041 Thede et al. arXiv:2609.40089: official abstract, public README, exact commit 9ecc05173a4a5a8b872e18608c319df0eab5db81 and Apache-2.0 LICENSE checked; RoD needs NeMo-RL/Megatron/Ray/SLURM and 8×80GB GPU main setup, so only the demand-sensitive selection principle is a possible tiny experiment. No code/dependency imported. Ledger-owner comment 7067926479 asks Perception to append both.",
+    "research": "R040 Mahdaviyeh et al., arXiv:2506.04377v1 / PMLR 330:15–42 (2026): full arXiv HTML reviewed; arXiv version license CC BY-NC-ND 4.0. The worst-case construction shows replay can move error onto other old samples (O(1/T) to Θ(1)); the average-case result shows random replay can increase expected forgetting for certain task-subspace relationships; MLP/MNIST results are non-monotonic and task/sample-dependent. The result is conditional, not a universal anti-replay rule. No code or figures imported. R041 Thede et al., arXiv:2609.40089v1: full 31-page PDF reviewed. RoD jointly top-k selects adaptation by current loss minus specialist reference and replay by current loss minus pretrained reference; references are precomputed/hash-keyed; each step scores m*k candidates with a forward-only pass (m=2 in the paper), then trains on k. Specialist reference has offline cost; a smaller source model can transfer a curriculum to a larger target. Limits: only replay-pool-covered forgetting is visible, LM loss is not downstream capability, proxy replay can misalign with task retention, and each experimental condition is single-seed (seed 42) despite cross-family/scale/domain replication. Main experiments use distributed NVIDIA B200 GPUs with count varying by model/setting. Public OSS repo exact main SHA 9ecc05173a4a5a8b872e18608c319df0eab5db81, Apache-2.0; NeMo-RL v0.6.0/Megatron/Ray/SLURM; no code/dependency imported and no Android evidence. Ledger-owner comment 7067983358 corrects prior notes and asks Perception to append both.",
     "user_action_required": "NONE; no manual Termux command, update request, model/weight change, permission change or device mutation."
   }
 }
