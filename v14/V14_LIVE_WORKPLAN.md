@@ -128,3 +128,8 @@ PR #2143 is no longer a draft and is ready for independent review. The exact tes
 - The current learner's replay-on/off comparison is an experimental code-path ablation, not yet evidence of improved real-user retention. The next experiment must compare new-cohort holdout utility and old-cohort retention under equal update and memory budgets.
 - Integration blocker: #2145 currently records temporal/World SHADOW outcomes but does not call WorldJEPAStoreConsumer; its T8 authority uses newest-first latest-N scans without the persisted cursor/digest-disjoint page from #2143/#2147. Its runtime test also has the prediction_error vs persisted error field mismatch. Port the authoritative source/digest/cursor path and invoke the learner after committed outcomes, still with optimizer gates closed.
 - No native B1/B2 GGUF weights, no normal Runtime learning loop, no Android install and no Redmi test are claimed. Release SHA: NOT_RELEASED; Redmi: REDMI_UNVERIFIED.
+
+
+## Final JEPA PR readback — 2026-11-21
+
+PR #2148 current head 6fec2dec1534285b654db60349efcd81f81b846c; code/test head 10e058a7418a5356b96f22f5344a5a3384f96214. Exact run 44854219157 tested docs/coverage head 3d8e55441d208eb8aec76cd121cc9f068376a88c and passed 59 tests on Python 3.13 (8.18s) and 59 on Python 3.14 (7.74s), including compilation. The only subsequent commit is research-ledger documentation; no code/test changes followed the tested head. PR is open, stacked on #2147, and not released. No local checkout or Redmi proof.
