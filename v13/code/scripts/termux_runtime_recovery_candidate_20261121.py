@@ -8,7 +8,7 @@ from pathlib import Path
 BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
 BASE_BUILDER_SHA256 = "16ba5fc3a6535c737502151a0a6362f067acedcd7102425086df4721b071b34a"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
-AUDIO_BUILDER_SHA256 = "734a6786fec61c4fe15d8861e56b9303496b44967cd76327931908321844a17f"
+AUDIO_BUILDER_SHA256 = "0b534fdf16c6916e8c6ada1ac8da60d6c0f8a3619a700b30adb44120db5272fc"
 ONLINE_BUILDER = "scripts/integrated_online_world_candidate_20261110.py"
 ONLINE_BUILDER_SHA256 = "9edd375d308f3e1026a93ef0cb4bbe6a4fdc9cb5f4fcab2f73461133b9f514b0"
 
