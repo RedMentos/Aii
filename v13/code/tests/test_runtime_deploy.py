@@ -321,9 +321,13 @@ class RuntimeDeploymentTests(unittest.TestCase):
 
     def test_first_install_rollback_restores_original_launcher_and_removes_marker(self):
         self.assertEqual(self._run()["status"], "DEPLOYED")
+        record = json.loads((self.private / d.MARKER_NAME).read_text())
+        backup = Path(record["backup_launcher"])
+        self.assertEqual(backup.stat().st_mode & 0o777, 0o600)
         receipt = d.rollback(home=self.home, private=self.private, builds=self.builds)
         self.assertEqual(receipt["status"], "ROLLED_BACK_LEGACY")
         self.assertEqual(self.launcher.read_bytes(), self.old)
+        self.assertEqual(self.launcher.stat().st_mode & 0o777, 0o700)
         self.assertFalse((self.private / d.MARKER_NAME).exists())
         self.assertEqual((self.home / "models/model.gguf").read_bytes(), b"GGUF_NOT_A_REAL_MODEL")
         self.assertEqual((self.home / "data/db/brain.sqlite3").read_bytes(), b"EXISTING_DB_DO_NOT_CHANGE")
