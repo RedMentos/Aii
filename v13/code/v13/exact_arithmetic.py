@@ -10,8 +10,11 @@ _PATTERN = re.compile(r"[ \t]*(?:what is|what's|calculate|compute|was ist|wie vi
 def evidence(source):
     if not isinstance(source, str) or len(source) > 96:
         return None
-    # A bare ISO year-month is more likely a date than an arithmetic request.
-    if re.fullmatch(r"[ \t]*\d{4}-\d{1,2}[ \t]*", source):
+    # Date-shaped subtraction is ambiguous: require spacing or an explicit
+    # arithmetic phrase instead of treating bare month-day/year-month as math.
+    if re.fullmatch(r"[ \t]*(?:(?:what is|what's|calculate|compute|was ist|wie viel ist|wieviel ist)[ \t]*)?\d{4}[ \t]*-[ \t]*\d{1,2}[ \t]*\??[ \t]*", source, re.IGNORECASE):
+        return None
+    if re.fullmatch(r"[ \t]*\d{1,2}-\d{1,2}[ \t]*\??[ \t]*", source):
         return None
     m = _PATTERN.fullmatch(source)
     if m is None:
