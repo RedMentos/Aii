@@ -2,6 +2,7 @@
 
 Does not authorize capture, infer consent from a receipt, or perform native tokenization.
 """
+from .audio_percept_contract import validate_voice_cues
 from .percept_admission import Percept, admit
 
 
@@ -46,9 +47,17 @@ def audio_to_admission(packet, *, consent_active: bool, priority: int = 0):
         if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1:
             raise ValueError("invalid acoustic feature")
         values.append(float(value))
+    voice_cues = validate_voice_cues(acoustic.get("voice_cues")) if "voice_cues" in acoustic else None
     if seg.get("learning_authority") is not False or seg.get("action_authority") is not False:
         raise PermissionError("audio observation cannot grant authority")
     summary = f"audio rms={values[0]:.3f} zcr={values[1]:.3f} interval_ms={end-start}"
+    if voice_cues:
+        summary += f" activity={voice_cues['activity_hint']} voiced={voice_cues['voiced_fraction']:.2f}"
+        if voice_cues["f0_median_hz"] is not None:
+            summary += f" f0_med_hz={voice_cues['f0_median_hz']:.0f}"
+        if voice_cues["f0_range_hz"] is not None:
+            summary += f" f0_range_hz={voice_cues['f0_range_hz']:.0f}"
+        summary += f" energy_range_db={voice_cues['energy_range_db']:.1f}"
     return Percept(sid, "audio", start, end, summary, True, finality == "FINAL", priority)
 
 
