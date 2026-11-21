@@ -14,6 +14,8 @@ on:
   pull_request:
     paths:
       - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_speaker_evidence.py"
+      - "v13/code/tests/test_audio_speaker_evidence.py"
       - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
       - "v13/code/experiments/benchmark_raw_ear_backends.py"
       - ".github/workflows/v14-raw-ear-fastpath.yml"
