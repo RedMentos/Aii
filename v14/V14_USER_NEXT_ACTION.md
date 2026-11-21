@@ -1196,3 +1196,19 @@ The branch was read back at `d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff` immediate
 ## Post-merge readback — 2026-11-21
 
 Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/2253) merged at `838482cea5271732ddc9710d2c6ca737a94b4718`. Its exact PR privacy scan passed 1/1. The merge commit's 13/19 workflows have succeeded, 4 remain in progress and 2 remain queued (0 failures) at the latest poll; post-merge CI is not yet certified green. This merge only updates V14 board, workplan, next-action, coverage and research notes. It is not a production code release and has no device effect. The merged documentation checkpoint is `838482cea5271732ddc9710d2c6ca737a94b4718`; the assigned board and handoff files have since been refreshed on the same release branch. The current code release remains `f279286a4453248004c670fcaabecd85da6ab299`; Redmi remains REDMI_UNVERIFIED. No user action is required.
+
+
+
+## Research/Perception exact-head update — 2026-11-21 23:27 CET
+
+**No user action is required. Do not run a Termux command or change models, weights, permissions, updater settings or phone data.**
+
+- New current-base Perception PR [#2275](https://github.com/RedMentos/Aii/pull/2275), branch research-perception/v14-raw-ear-speaker-batch-isolation-20261121-r2, starts from the current Boss #2258 head 34eb645357d65bdd5ac69b9fb2c834d043086dac and reads back at 631eb42cff2f3de7f066070e96896d996b019294. It is DRAFT / NOT_RELEASED. The older #2272 branch was 16 commits behind and non-mergeable; it was closed as superseded, without force-push or merge.
+- The optional speaker-change path accepts caller-supplied frame embeddings, binds them to source/generation/model revision/checkpoint hash, keeps vectors only in bounded process-local memory, and sends scalar change evidence into A5 → A4 → C3. It emits no speaker identity and grants no learning/action authority. Python remains the default; NumPy and embeddings are opt-in.
+- A reviewed defect was fixed: later frames in the same incoming batch could become their own look-back reference and overwrite a real cross-window change. All frames now compare against one pre-batch history snapshot; the batch is appended only after scoring. The first batch is WARMUP.
+- LOCAL_LINUX CPython 3.13.5 x86_64 algorithm-level reproduction: PASS for warmup, same-speaker stability, unvoiced negative control, threshold-absent score-only behavior and 1-second/2-second batch invariance. The old algorithm's negative control reproduced the false-negative. This is not the full repository test suite.
+- Full local Aii checkout tests: BLOCKED because no checkout is mounted and GitHub DNS is unavailable. At last readback, no PR-triggered workflow run was returned for #2275; exact Python 3.13/3.14 and staged/integrated CI remain PENDING, not PASS.
+- Research candidate: ReDimNet2 B3 ONNX is an MIT-licensed segment-level 192-D speaker embedding artifact of about 18 MB; it is not a drop-in replacement for FASTDIAR's causal 80-ms stream encoder. No model was downloaded, no weights were changed, and no model swap is proposed without separate experimental and productive approvals.
+- Release status remains NOT_RELEASED. No authenticated phone receipt was obtained; installed SHA and updater state remain UNKNOWN. REDMI_UNVERIFIED. GitHub push is not deployment.
+
+**Next internal action:** Boss/Core/QA should trigger and inspect exact-head #2275 tests plus staged/integrated regression, then review the current-base consumer diff. After that, Research/Perception returns to the broader model-candidate lab and whole-Canon gaps. No manual Termux command is needed now.
