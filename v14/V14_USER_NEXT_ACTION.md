@@ -1122,3 +1122,19 @@ The branch was read back at `d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff` immediate
 - The code-bearing C4 integration at f279 remains synthetic-only. P0 #1904 remains open. Installed SHA and updater consent are unknown; **REDMI_UNVERIFIED**. Existing private owner-read requests have no authenticated response.
 
 **No user action.** Do not run Termux, change Age/permissions/models/weights/updater settings, or request a device update. Internal next steps: rebase each candidate to the latest shared HEAD, preserve Boss-owned docs, fix exact pin chains, then rerun full CI and independent review.
+
+## Current verified handoff — 2026-11-21
+
+**No user action is needed.** Do not run a new Termux command or change models, weights, permissions or updater settings on the basis of this checkpoint.
+
+- Shared development branch is `48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4`; it is a documentation/research-only head with 19/19 GitHub workflows SUCCESS. Last code release remains `f279286a4453248004c670fcaabecd85da6ab299` (34/34 checks, 19/19 workflows). Candidate `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` is still NOT_RELEASED (18/19; JEPA utility gate rejected the positive update).
+- Core #2242 current head `46411a59e55d615f6db3d7f6026f6f30f184ef37`: all current nested audio/arithmetic/stage/deployer source pins independently match. Python 3.13 has 42 pass / 1 fixture failure / 26 subtests because a test uses `char_end=100000` for a shorter source; Python 3.14 was in progress at last poll. Separate staged-runtime and integrated-regression pass. Core must fix the fixture and normal-sync its branch (41 ahead / 21 behind) before release review. QA #2244 must then rebase and pass.
+- JEPA #2247 current head `2b3f4ad2942e6cbae3a1a23a355065e6e7e3a9b6`: 3.13 A→B→A retention fails; 3.14 accepts one seed/phase only under an `any()` assertion while other source-disjoint cohorts reject; 3.14 staged optimizer-resume and integrated regression fail a nested source pin. Exact recalculated pin values are recorded in the live workplan. No accepted checkpoint; learning gates OFF.
+- A5 UI #2246 is still a synthetic metadata lease. QA #2250 fails on both Python versions because a live source row can remain after its shared blob is unlinked. Perception must serialize source publication and revocation under the same Store lock; QA must test the producer on a separate thread. No Android UI provider/capture/action.
+- Age-rights #2235 remains 7/10 due nested GoalStore.add AST attribution. Official Age and X10 learning/tool rights remain separate from physical ResourceGuard budgets; no release.
+- Voice/audio is still caller PCM16 producer only; no microphone, ASR, decoder/vocoder, full duplex or audio learner. Android background broker remains DRY_RUN; no OS executor. B3 remains symbolic in production; the tiny K/V experiment is research-only. #1983 Memorilla remains additive SHADOW without a production consumer.
+- Private PIPELINE_STATUS #431 and DIAGNOSTICS #432 have zero authenticated replies. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE or UPDATE_REQUEST was sent.
+- Local full-repository tests did not run: no Aii checkout exists in the local workspace. The exact source-pin checks above were computed from GitHub-fetched bytes; CI must not be described as local or Android proof.
+- The historical 1,255-heading Canon inventory is preserved. Clause-level code/consumer/test/environment/rollback coverage is still incomplete. Five active V14 jobs only.
+
+**Next work:** Core fixes and syncs #2242; QA rebases #2244 and fixes the A5 race test plus #2235 AST audit; Perception fixes shared-blob serialization; JEPA repairs its pin chain and obtains stable per-session retention. Boss integrates only after exact current-base tests pass. No user action required.
