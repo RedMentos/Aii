@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T20:38:49.674Z",
+  "updated_at": "2026-11-21T20:39:26.297Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -162,12 +162,12 @@
       "proof_environment": "Perception PR #2255 current branch head 69c4ffcd2836292cbc2c3b764c1297cdf48dfa86. Source publication, A5 producer and revocation blob lifecycle are serialized under the same Store RLock; generic Store.source() race test is scheduler-independent at code/test commit ebcbca01d539f2b1a3a5eef8ac3c19e4d80e23a4 (observed producer lock attempt + blob-exists barrier). Exact focused A5 workflow 44946951711 PASS on CPython 3.13 and 3.14: 16 passed / 5 subtests each, compile and public privacy scan CLEAN. Staged/integrated workflow on that code commit FAILS only at Core's stale source-lifecycle Store pin: expected old Store SHA-256 fe66f925..., actual new Store SHA-256 40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb; Core must reconcile the semantic anchor and downstream pin chain, not merely replace the hash. Safe-additive remains FAIL_BY_POLICY; no bypass. Perception PR #2256 head 63b5410769b872ddb64e002ab1c764e9e90966af: opt-in NumPy autocorrelation backend; focused workflow 44946779051 PASS on Python 3.13/3.14 (compile, 42 tests each, deterministic synthetic benchmark, privacy); prosody, consent-revocation and WebRTC/libfvad workflows PASS; staged-runtime 251 passed / 10 skipped / 47 subtests and integrated regression 424 passed / 3 skipped / 58 subtests in 44946779195. Safe-additive policy still fails because an existing production module changes. LOCAL_LINUX full Aii checkout NOT_RUN (no checkout/DNS); copied-code x86 benchmark 131.30 ms → 6.23 ms median per 1-s 16-kHz synthetic window (~21×), 100/100 synthetic parity, +12,038 bytes tracemalloc while NumPy preloaded. Official Termux recipe NumPy 2.5.5, BSD-3-Clause, Android aarch64 path, dependencies libc++/libopenblas/python; no package installed. Research R-048 full-text Tandem preprint reviewed; its Hexagon v79/v81 + 16-GB NPU results are not Redmi-portable. No Redmi/Termux measurement, microphone, Android provider, native model or learning claim. REDMI_UNVERIFIED / NOT_RELEASED.",
       "next_step": "Core: compose #2255's Store.source()/A5 atomic-lock implementation into the current source-lifecycle builder, preserve the outer RLock in the semantic replacement, refresh and verify the complete recovery→stage→deployer pin chain, then rerun staged/integrated CI. QA: rebase #2250 onto #2255 and keep the deterministic separate-thread A5-to-A5 lock-attempt/blob-check regression; verify the generic Store.source() barrier on 3.13/3.14. Boss: review both PRs and resolve safe-additive policy without bypass. Core may test voice_backend='numpy' only as a separately authorized experimental device path after cold import, RSS, 40–100-ms latency and full-duplex measurements; installed Runtime default stays Python. Later, inspect the exact LFM2.5 recurrent-state API before any divergence-point checkpoint experiment inspired by R-048; no Tandem NPU fork import.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T20:38:49.674Z",
+      "last_checkpoint": "2026-11-21T20:39:26.297Z",
       "latest_candidate_pr": {
         "pr": 2255,
-        "head_sha": "69c4ffcd2836292cbc2c3b764c1297cdf48dfa86",
+        "head_sha": "ebcbca01d539f2b1a3a5eef8ac3c19e4d80e23a4",
+        "branch_head_before_final_board_refresh": "4a421d80f26be147f4a2918ca62c4595b0b99103",
         "code_fix_sha": "d8f3494e3ff516edc1da6dba525d1945751d4e3b",
-        "test_hardening_sha": "ebcbca01d539f2b1a3a5eef8ac3c19e4d80e23a4",
         "ci": "A5_FOCUSED_PASS_44946951711_PY313_PY314_16_TESTS_5_SUBTESTS_EACH; STAGED_INTEGRATION_FAIL_STALE_CORE_STORE_PIN; SAFE_ADDITIVE_FAIL_BY_POLICY",
         "status": "DRAFT_NOT_RELEASED_REDMI_UNVERIFIED"
       },
