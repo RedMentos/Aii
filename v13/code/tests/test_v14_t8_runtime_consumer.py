@@ -12,6 +12,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from v13.runtime import Runtime
+from v13 import world_jepa
+from v13.v14_learning.world_jepa_consumer import WorldJEPAStoreConsumer
 from v13.contracts import packet
 from v13.v14_learning.runtime_shadow import (
     consume_recent_committed,
@@ -278,5 +280,81 @@ def test_runtime_world_jepa_paginates_t8_and_exposes_b1_b2_self_shadow_receivers
         restored = consumer.restore()
         assert restored["status"] == "RESTORED"
         assert restored["checkpoint_sha256"] == payload["active"]["checkpoint_sha256"]
+    finally:
+        runtime.close()
+
+
+
+def test_runtime_world_jepa_retention_gate_rejects_old_holdout_regression(tmp_path, monkeypatch):
+    runtime = Runtime(Path(tmp_path))
+    checkpoint_dir = Path(tmp_path) / "private-jepa-retention"
+    try:
+        actions = ("simple", "detail", "gist", "both")
+        for index in range(256):
+            route_index = index % len(actions)
+            _committed_action(
+                runtime,
+                include_predictions=False,
+                text=f"unique-retention-source-{index:04d}",
+                route=actions[route_index],
+                input_chars=80 + (index % 31),
+                duration_s=0.2 + route_index * 0.65 + (index % 7) * 0.01,
+                characters=12 + route_index * 26 + (index % 11) * 0.5,
+            )
+
+        consumer = WorldJEPAStoreConsumer(
+            runtime.store, checkpoint_dir, learning_enabled=True, seed=13, ensemble=2
+        )
+        first = consumer.update(limit=256, steps=120, optimizer_permission=True)
+        assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        first_metrics = first["metrics"]
+        assert first_metrics["parameter_delta_norm"] > 0.0
+        assert first_metrics["ema_target_delta_norm"] > 0.0
+        assert first_metrics["train_holdout_source_sha256_disjoint"] is True
+        assert first_metrics["negative_controls_separated"] is True
+        assert first_metrics["old_holdout_retained"] is True
+        first_sha = first["checkpoint_sha256"]
+
+        for index in range(256, 288):
+            route_index = index % len(actions)
+            _committed_action(
+                runtime,
+                include_predictions=False,
+                text=f"unique-retention-source-{index:04d}",
+                route=actions[route_index],
+                input_chars=80 + (index % 31),
+                duration_s=0.2 + route_index * 0.65 + (index % 7) * 0.01,
+                characters=12 + route_index * 26 + (index % 11) * 0.5,
+            )
+
+        # Calls: new holdout before, old holdout before, new holdout after,
+        # shuffled-action control, zero-action control, old holdout after.
+        losses = iter((1.0, 0.5, 0.4, 0.8, 0.7, 0.6))
+        with monkeypatch.context() as patch:
+            patch.setattr(
+                world_jepa.WorldJEPA, "partial_fit",
+                lambda self, *args, **kwargs: None,
+            )
+            patch.setattr(
+                world_jepa.WorldJEPA, "prediction_loss",
+                lambda self, *args, **kwargs: next(losses),
+            )
+            rejected = consumer.update(limit=288, steps=8, optimizer_permission=True)
+
+        assert rejected["status"] == "UTILITY_GATE_REJECTED"
+        assert rejected["holdout_improved"] is True
+        assert rejected["negative_controls_separated"] is True
+        assert rejected["old_holdout_retained"] is False
+        assert rejected["retention_gate_accepted"] is False
+        assert rejected["utility_gate_accepted"] is False
+        assert rejected["old_holdout_loss_before"] == 0.5
+        assert rejected["old_holdout_loss_after"] == 0.6
+
+        payload, _ = runtime.store.state("v14.world_jepa.store_consumer", None)
+        assert payload["active"]["checkpoint_sha256"] == first_sha
+        assert payload["scan_cursor"] == 288
+        assert len(payload["pending_rows"]) == 32
+        assert len(list(checkpoint_dir.glob("jepa-*.npz"))) == 1
+        assert consumer.restore()["checkpoint_sha256"] == first_sha
     finally:
         runtime.close()
