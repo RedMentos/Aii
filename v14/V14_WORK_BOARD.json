@@ -72,15 +72,15 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2137 latest head a3e19370d7fefe500e8edebf6942624207ff2865 is code-identical to prior head 2d8eb79b; prior exact head passed focused T8 52, staged-runtime 240/10 skipped/47 subtests and integrated regression 415/3 skipped/58 subtests, plus private bridge. New retargeted head exact CI is PENDING (T8, private bridge and staged/integrated runs in progress). Dedicated workflow remains Python 3.11 only; Python 3.14 requested. Safe-additive policy needs Boss review. No normal Runtime consumer, optimizer update, native B1/B2 weights or Redmi proof.",
-      "next_step": "Wait for exact a3e19370 CI; add Python 3.14 coverage; Boss reviews safe-additive policy and then wire T8 into normal Runtime only after source-disjoint holdout/backlog fixes. Keep optimizer closed.",
+      "proof_environment": "PR #2137 retargeted head a3e19370: dedicated V14 T8 workflow PASS, private bridge PASS, staged-runtime 240 passed/10 skipped/47 subtests PASS; both two-checkout migration diagnostics UPDATED. Integrated-regression on this exact head remains IN_PROGRESS. Code-identical predecessor 2d8eb79 passed integrated 415/3 skipped/58 subtests. Python 3.14 T8 coverage requested; safe-additive policy needs Boss review; no normal Runtime consumer, optimizer update, native B1/B2 weights or Redmi proof.",
+      "next_step": "Finish integrated regression on a3e19370; add Python 3.14 coverage and Boss review safe-additive policy. Then integrate T8 into normal Runtime only after source-disjoint holdout and keyset backlog fixes; keep optimizer closed.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 QA: PR #2137 retargeted head a3e19370 only changes handoff metadata; previous code-identical head 2d8eb79 exact 52/240/415 tests PASS. Current retargeted-head CI is running; no fresh result yet.",
+      "last_checkpoint": "2026-11-21 QA: PR #2137 a3e19370 staged-runtime and migration pass; integrated-regression still running. Previous code-identical head passed 415/3/58; do not transfer that exact-SHA result to a3e19370.",
       "latest_candidate_pr": {
         "pr": 2137,
         "head_sha": "a3e19370d7fefe500e8edebf6942624207ff2865",
         "previous_code_identical_sha": "2d8eb79bdefe3c6c3bef63fea7d25563b7f56952",
-        "ci": "Previous code-identical SHA PASS: 52 focused T8; staged 240/10 skipped/47 subtests; integrated 415/3 skipped/58 subtests; private bridge PASS. Retargeted head exact CI pending.",
+        "ci": "Current retargeted head: V14 T8 workflow PASS, private bridge PASS, staged-runtime 240 passed/10 skipped/47 subtests PASS, two-checkout migration UPDATED; integrated-regression IN_PROGRESS. Previous code-identical head passed integrated 415/3 skipped/58 subtests.",
         "scope": "Store-verified scalar temporal adapter; no normal Runtime learning loop, no native JEPA/B1/B2 body-weight change, optimizer gate closed"
       }
     },
