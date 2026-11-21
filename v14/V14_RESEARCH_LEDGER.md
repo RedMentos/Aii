@@ -339,3 +339,16 @@ The merged #2155 adapter extracts heuristic pitch/voicing/energy/activity cues f
 **V14 implication:** production WorldJEPA currently persists predictor/EMA checkpoint state but its checkpoint module explicitly reports `optimizer_state_persisted=false`. The #2186 staged overlay is not production evidence. The next implementation should compare, on identical source-disjoint cohorts and equal update counts: (A) reset moments, (B) persistent Adam moments, and (C) persistent moments plus a bounded drift controller. Keep replay modes separately ablated (none/uniform; do not reuse the previously rejected hard-replay setting). Record parameter/EMA deltas, new and old holdout loss, negative controls, restart equivalence, and rollback. Only promote the method with repeated seeds and no retention regression; optimizer permission remains OFF by default.
 
 **Status:** RESEARCHED / NOT_IMPLEMENTED / NO_ANDROID_PROOF. The two papers study different environments and model families; neither justifies automatic optimizer-state carryover or a live weight update in V14.
+
+
+## R-025 — Android Bionic renameat2 API surface and no-clobber publication
+
+- **Question:** Can the no-clobber checkpoint publication fallback call the libc `renameat2` symbol on the Android 13 target, and what exactly does `RENAME_NOREPLACE` guarantee?
+- **Primary platform source:** Android Bionic status documentation lists `renameat2` among new libc functions in Android R / API level 30. Android 13 is API level 33, so the symbol is in the target API surface: https://android.googlesource.com/platform/bionic/+/master/docs/status.md
+- **Kernel/API semantics:** Linux man-pages define `RENAME_NOREPLACE` as refusing to overwrite an existing destination and returning an error if it already exists; support is filesystem-dependent: https://manpages.debian.org/bookworm/manpages-dev/renameat2.2.en.html
+- **Implementation consequence:** same-directory staging plus directory-fd-relative `renameat2(..., RENAME_NOREPLACE)` is a plausible Android 13 fallback when ordinary hardlink publication is denied. The fallback must fail closed on unsupported flags/filesystems, preserve existing targets, and retain file/directory fsync and inode/digest verification. It must not silently fall back to overwriting `rename()`.
+- **Evidence:** PR #2213 includes forced EPERM/EACCES hardlink-denial and existing-target negative tests. An isolated LOCAL_LINUX helper probe confirmed atomic move, EEXIST on an existing destination, preservation of both byte sequences and successful directory fsync. PR #2213 merged as `5a141153f7d33906408fd638ce56cfbee459cf08`; exact merged-head push CI 30/30 PASS.
+- **Limit:** API availability is not device proof. Redmi filesystem support, SELinux policy, Python ctypes ABI and actual runtime invocation remain REDMI_UNVERIFIED. This JEPA checkpoint fallback does not prove the separate SQLite source-roundtrip hardlink failure is fixed.
+- **Reuse/licensing:** no third-party code or weights imported; this is a platform API use, not a dependency addition.
+- **Next experiment:** after a valid private PIPELINE_STATUS receipt confirms the exact release SHA, exercise the exact checkpoint path on Redmi with a forced/observed hardlink-denied condition if safely reproducible, confirm no-clobber and restart retention, and preserve the previous checkpoint on failure.
+

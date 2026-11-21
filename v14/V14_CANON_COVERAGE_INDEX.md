@@ -1563,3 +1563,22 @@ Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. The 
 | A5 voice / B1/B2/C3 | #2200 staged A5 3.11/3.13, staged-runtime 249/10/47 and integrated 415/3/58 PASS with fake runners | Consent race in #2192; derived audio context remains stored after revocation; no microphone or native body proof |
 
 No master edit; historical 1,255-heading inventory and V13 appendix bytes remain unchanged. These results do not mark any Canon family complete.
+
+
+## Additive live evidence overlay — 2026-11-21 15:05 CET
+
+Historical inventory above remains **1,255 V13 headings**; no historical wording or V13 appendix bytes were changed.
+
+| Requirement family | Current implementation status | Exact evidence | Acceptance / rollback still open |
+|---|---|---|---|
+| Runtime / World / Self / JEPA | Runtime/SleepRuntime Store-backed WorldJEPA optimizer resume merged; numeric predictor and EMA only; B1/B2/SELF readouts remain SHADOW | #2213 merged SHA `5a141153f7d33906408fd638ce56cfbee459cf08`; PR-head staged 249/10/47, integrated 424/3/58, optimizer resume 20+14+1, Python 3.13/3.14 64 each; merged push CI 30/30 | No native GGUF body-weight updates, cross-organ gradients, trained B3 receiver, multi-seed meta-learning or Redmi utility; dual gates OFF |
+| Checkpoint publication | No-clobber renameat2 fallback after hardlink denial; dependent builder/deployer SHA chain rebound and read back | Forced EPERM/EACCES and EEXIST negative tests; exact five-file SHA-256 readback; isolated LOCAL_LINUX renameat2 helper PASS | Redmi filesystem/SELinux and actual Android execution unverified; separate SQLite source-roundtrip failure not proven fixed |
+| A0-A5 / RAW EAR / audio | Producer-side consent lease candidate plus synthetic A5/A4 Runtime consumer | #2207 producer 49/49, comparator 8/8, libfvad native Linux 13/13, staged 249/10/47, integrated 415/3/58 | #2200 consumer stale/non-mergeable; #2211 revocation tests fail because derived context survives; no mic/ASR/TTS/full-duplex |
+| B1/B2 / C4 / C3 | Distinct bodies and source-bound offer contracts exist; synthetic voice consumer candidate | #2200 fake-runner tests emit B1/B2 OfferPackets and C3 context | No accepted C4 selection, no real native offer quality, no Redmi proof; P0 #1904 still open |
+| C5 arithmetic | Bounded exact arithmetic candidate is a separate local-text action, not a general parser | #2210 unit tests PASS | Runtime Python 3.14 C5 SHADOW regression and stale builder pins FAIL; not merged or Android-tested |
+| Android background/UI control | Narrow Android 13 audit-DB identity guard merged; broker remains DRY_RUN_ONLY | Exact release push CI 30/30 | No OS executor, AccessibilityService, MediaProjection, UI action, app navigation or Redmi proof |
+| Voice output / multimodal learning | Raw acoustic feature extraction only | Synthetic producer tests | No ASR, learned speech decoder/vocoder, full-duplex, source-bound modality learning or native weight updates |
+| Context OS / Memorilla | Context OS exists; additive companion remains draft/isolated | Existing partial synthetic checks | No integrated overflow consumer, learned B1/B2/C3 readers or native latent injection |
+| Release / updater / rollback | Exact branch push CI green; private update request pending | `5a141153f7d33906408fd638ce56cfbee459cf08` push CI 30/30 | PIPELINE_STATUS #406 expired without reply; UPDATE_REQUEST #407 no reply; installed SHA UNKNOWN; REDMI_UNVERIFIED |
+| Whole Canon | Historical inventory preserved | 1,255-heading mechanical index | Clause-level mapping to code + actual consumer + negative tests + environment + rollback + owner remains incomplete |
+

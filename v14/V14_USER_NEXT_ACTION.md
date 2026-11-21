@@ -1,3 +1,18 @@
+# Current user-facing handoff — 2026-11-21 15:05 CET
+
+**No user action is required right now.** The release-development branch is `5a141153f7d33906408fd638ce56cfbee459cf08` and its exact merged-head push CI is green (30/30 check-runs). That proves the GitHub candidate passed CI, not that it is installed on the Redmi.
+
+- PR #2213 is merged. It adds persistent optimizer state for the small numeric WorldJEPA Runtime/SleepRuntime consumer, with learning and optimizer gates still OFF. It does not update native B1/B2/C3 GGUF weights or provide trained B3 latent coupling.
+- A private PIPELINE_STATUS read (#406) expired without a phone reply. After exact push CI became green, an UPDATE_REQUEST was issued through the private owner relay (#407); it has no receipt yet. Installed SHA and updater consent remain UNKNOWN.
+- Do not run a manual Termux command, change models, enable permissions or share logs. If #407 produces an authenticated device receipt, Boss will issue a separate PIPELINE_STATUS read and verify the installed SHA. Without that receipt the status stays REDMI_UNVERIFIED.
+- The separate P0 chat defect remains open: wrong 2+2, slow turns and unverified B1/B2 → C4 → C3 delivery (#1904). The new JEPA checkpoint work does not close it.
+- The voice path is still a synthetic candidate: #2207 producer CI is green but requires manual review; #2200/#2211 currently fail downstream consent-revocation checks. No microphone, ASR, speech decoder/vocoder or full-duplex Redmi proof.
+- The next code work is internal: Core repairs #2210's C5 SHADOW selection regression and stale source pins, then rebases #2200 onto #2207's shared consent lease; QA verifies derived-context deletion and the final pre-C3 consent check.
+
+Historical V13 functions and the V14 master remain intact. Whole-Canon clause-level code/consumer/test/rollback coverage is still incomplete.
+
+---
+
 # Boss integration checkpoint — 2026-11-21 11:27 CET
 
 ## Verified code and release state
