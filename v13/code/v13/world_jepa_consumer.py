@@ -814,6 +814,8 @@ class WorldJEPAStoreConsumer:
                     "native_body_weights_changed": False,
                     "native_body_consumed": False,
                     "runtime_wired": False,
+                    "optimizer_moments_persisted": False,
+                    "inverse_dynamics_optimizer_persisted": False,
                 }
             if cancel_check is not None and cancel_check():
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
