@@ -28,8 +28,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Exact release-development branch HEAD 569680bc10eabeb94ea5a1695d4bf77b8584e0a0: 15/15 associated GitHub workflows SUCCESS, including staged-runtime 240 passed/10 skipped/47 subtests, integrated-regression 415 passed/3 skipped/58 subtests and Python 3.14 staged startup. This is CI/Linux/synthetic only. Private owner-read #373 and prior #368 expired with zero device comments; installed SHA UNKNOWN; updater consent UNVERIFIED; REDMI_UNVERIFIED.",
-      "next_step": "Do not send UPDATE_REQUEST, run an installer, or mutate the phone without a fresh owner-authenticated receipt and exact green candidate SHA. Continue read-only QA of update/rollback code and wait for the owner-authorized receipt path; no user action or Termux command is justified now.",
+      "proof_environment": "Exact release-development branch HEAD 569680bc10eabeb94ea5a1695d4bf77b8584e0a0: 15/15 associated GitHub workflows SUCCESS, including staged-runtime 240 passed/10 skipped/47 subtests, integrated-regression 415 passed/3 skipped/58 subtests and Python 3.14 staged startup. This is CI/Linux/synthetic only. Latest private owner-read #379 is OPEN with zero comments at readback (expires 2026-11-21T08:30:59Z); prior #373/#368 expired; installed SHA UNKNOWN; updater consent UNVERIFIED; REDMI_UNVERIFIED.",
+      "next_step": "Do not create another owner-read request or send UPDATE_REQUEST while #379 is pending. Wait for that owner-authenticated receipt; then verify installed SHA and updater consent before considering a separate update request. No user action or Termux command is justified now.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 09:15 CET",
       "latest_qa_candidate": {
@@ -260,18 +260,19 @@
       "last_checkpoint": "2026-11-21 06:42 CET: 1,255 headings preserved; clause-level completion remains OPEN."
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED — private owner-read #373 and previous #368 expired with no reply; installed SHA and auto-update consent UNKNOWN/UNVERIFIED.",
+  "current_redmi_status": "REDMI_UNVERIFIED — latest private owner-read PIPELINE_STATUS #379 is OPEN with zero comments at readback (expires 2026-11-21T08:30:59Z); prior #373/#368 expired without reply.",
   "last_code_release_head": "569680bc10eabeb94ea5a1695d4bf77b8584e0a0",
   "latest_integrated_head": "569680bc10eabeb94ea5a1695d4bf77b8584e0a0",
   "latest_integrated_head_verified_at": "2026-11-21T08:15:56Z",
   "release_gate_status": "DEVELOPMENT_CI_GREEN_NOT_RELEASED: exact release-development head 569680bc10eabeb94ea5a1695d4bf77b8584e0a0 has 15/15 associated GitHub workflows SUCCESS (staged 240 passed/10 skipped/47 subtests; integrated 415 passed/3 skipped/58 subtests; Python 3.14 staged startup and owner-read PASS). This is CI/synthetic evidence, not Redmi installation. PR #2178 candidate c16da4b3c0de1e5d857240e4fee7576aa3bf9a15 fails staged/integrated and Python 3.14 startup due a syntax error and stale training-resume source pin; NOT_RELEASED.",
   "phone_receipt": {
-    "issue": "RedMentos/Aiiii#373",
-    "state": "EXPIRED_NO_REPLY",
+    "issue": "RedMentos/Aiiii#379",
+    "state": "OPEN_NO_REPLY_PENDING",
+    "expires_at": "2026-11-21T08:30:59Z",
     "installed_sha": "UNKNOWN",
     "auto_update": "UNVERIFIED",
     "redmi_status": "REDMI_UNVERIFIED",
-    "older_pending_issue": "RedMentos/Aiiii#368 (EXPIRED_NO_REPLY)"
+    "older_pending_issue": "RedMentos/Aiiii#373 and #368 (EXPIRED_NO_REPLY)"
   },
   "capability_snapshot": [
     {
