@@ -1337,3 +1337,11 @@ Do not alter the separate base builder or arithmetic overlay pins unless their b
 
 - R-058 reviews the 2026-10-02 FASTDIAR preprint: 192-D embeddings every 80 ms, two-second causal past, fixed 960-ms label delay; small model 2.7M params / RTF 0.05 in the paper, while the v0.1.0 release calls it 2.4M and ships a 10.6-MB checkpoint. The discrepancy is unresolved. Benchmarks are on one Threadripper CPU, not Android; training uses simulated VoxCeleb2 mixtures + LibriHeavyMix, no real diarization corpus, and overlap is a major limitation.
 - The repository code is MIT and requires PyTorch 2.13 / torchaudio 2.11 / torchcodec 0.15; no ONNX export script is present in the inspected tree. The release bundles checkpoints but does not separately state a checkpoint-only license in the release body, so no download/reuse until that scope is verified. Candidate only; no download, install, export or model swap.
+
+
+## Final branch-head readback — 2026-11-22 00:23 CET
+
+- Current PR #2275 branch head `0e78b1be3781214573e1913158e1c61e582e5609`; base #2258 `9922cf86ecf8801d30a46a1e98817e5c6c1db092`; GitHub mergeable=true, PR remains DRAFT. Code/test commit is `10d1f54540fd3f225f3ac905e2841dd15f545ed4`; the later commits only synchronize the board, workplan, handoff and research ledger.
+- Exact code/test commit `10d1f545` focused RAW EAR 3.13/3.14 PASS and offline bridge security PASS; local CPython 3.13.5 algorithm-only reproduction PASS. The completed staged/integrated run `44960843977` failed on the stale Core audio pin (details above). The latest docs-only head `0e78b1b` has duplicate CI runs in progress; no new result is claimed until they complete.
+- #2258 base CI remains 17 SUCCESS / 2 SKIPPED with 424 integrated and 252 staged tests passed in CI; it is not merged or released. The #2275 optional path is not yet part of a green normal Runtime composition.
+- No current private phone receipt; installed SHA/updater unknown; REDMI_UNVERIFIED. No user action or manual Termux command.
