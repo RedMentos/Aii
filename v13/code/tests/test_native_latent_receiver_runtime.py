@@ -107,7 +107,7 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     status = controller(runtime).report(runtime.cfg)
     assert status["native_receiver_probe"]["status"] == "NATIVE_INPUT_EFFECT"
     assert status["native_receiver_probe"]["production_route"] is False
-    assert "remains blocked" in status["gate"]
+    assert "LATENT blocked" in status["gate"]
 
     promoted = dict(packet, production_route=True)
     with pytest.raises(ValueError, match="cannot grant"):
