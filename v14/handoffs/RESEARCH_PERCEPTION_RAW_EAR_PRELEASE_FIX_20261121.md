@@ -35,3 +35,21 @@ The first exact push on `829637cd26e11bc8fd294e50c0aa9a940c083098` exposed two i
 2. The comparator's exact source pin still expected the prior producer blob `e75c393939183d2f16e071ebf4a6f5ff65417a61`; the new producer blob changed by design. The workflow pin is updated to `2c7c5ff203afa8da8a6cd6841cc24ccd5db67aed`. The pinned libfvad source and temporal evidence pin are unchanged.
 
 Both failures were real and are not being marked PASS. The next exact-head CI must prove the corrected call ordering, Store rollback, pre-lease revocation behavior and comparator source identity. Full local Aii tests remain blocked by GitHub DNS.
+ 
+## Exact post-fix verification — 2026-11-21 14:16 UTC
+
+**Exact branch head:** `8defa00862bee38190a6a7362d8bad3dbb7052f1`  
+**RAW EAR producer blob:** `2c7c5ff203afa8da8a6cd6841cc24ccd5db67aed`
+
+- GitHub Actions run `44912705879`: exact RAW EAR → A4 → C3 suite **50/50 PASS** on Python 3.11 and **50/50 PASS** on Python 3.13; compile step passed. Includes the pre-PCM revocation race and the in-transaction Store rollback negative control.
+- GitHub Actions run `44912705872`: comparator suite **8/8 PASS** on Python 3.13 and **8/8 PASS** on Python 3.14. The pinned libfvad C source built on Ubuntu; `make check` passed **13/13**. WebRTC comparator was also available. This is GitHub-hosted LOCAL_LINUX native comparator evidence, not Android.
+- GitHub Actions run `44912705940`: Perception public privacy scan PASS.
+- GitHub Actions run `44912705906`: offline bridge security PASS.
+- GitHub Actions run `44912711686`: staged-runtime **249 passed / 10 skipped / 47 subtests**; staged arithmetic/broker/output-policy **42 passed / 37 subtests**; integrated-regression **415 passed / 3 skipped / 58 subtests**. This is a separate staged Linux candidate/recovery harness, not proof that the live Android installation changed.
+- LOCAL_LINUX isolated concurrency harness: PASS for (a) revoked-before-lease → zero PCM processing and (b) revocation during an acquired lease → revoker waits until processing exits.
+- Full local repository checkout/test remains BLOCKED by GitHub DNS. No full LOCAL_LINUX Aii test suite PASS is claimed.
+
+**Integration/release boundary:** this PR remains stacked on QA #2214, which targets Perception #2207. The current release-development branch HEAD is `5a141153f7d33906408fd638ce56cfbee459cf08`; #2207 still requires Boss-controlled rebase onto it before integration. No PR was merged and no release SHA was produced: **NOT_RELEASED**. No connected Redmi receipt was obtained during this run: **REDMI_UNVERIFIED**. No microphone capture, installed model, weight, permission, updater state or phone data was changed.
+
+**Remaining system gap:** Core #2200's source-bound acoustic context is rechecked at each view and tombstoned on a later revoked view, but the current staged test is primarily source-pin/string coverage; it does not yet prove an eager revocation callback or execute a full record → revoke → B1/B2/C3 view → Store tombstone/restart sequence. This was reported directly on #2200. P0 #1904 remains open and is not addressed by this audio-consent fix.
+
