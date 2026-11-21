@@ -394,3 +394,14 @@ No material V14 master edit was made; no master backup was required. Historical 
 - Boss: after these blockers, re-run exact release-head CI, update this board and the user handoff, then continue across B3 latent coupling, Context OS/Memorilla, Android agency, speech output, cross-organ gradients, sparse MoE and clause-level Canon coverage.
 
 No model, weight, permission, updater setting, device data or phone state was changed. No user action is required.
+
+
+## Exact release and JEPA evidence — 2026-11-21 13:34 CET
+
+- Code-bearing release head `0fc4d2f9a76d530c366d67ea8148cd1c69666acd` is fully green: 28/28 exact check-runs and 17/17 workflows SUCCESS. This is GitHub Linux/CI, not local full checkout or Redmi validation. PR #2197 is merged; the V14 master remains unchanged.
+- The integrated staged Runtime/SQLite WorldJEPA test passed 415/3 skipped/58 subtests. Two ID-disjoint synthetic holdout runs reduced prediction loss 0.9600228 -> 0.9030210 (49 train / 15 holdout) and 0.9627244 -> 0.9034923 (47 train / 17 holdout); numeric parameter change and save/restore/restart checks passed. Treat this as synthetic Python predictor utility only, not native GGUF body-weight learning.
+- Current PR #2198 head cd0b54053f51d5227f7860a80f5f6adbd3973598 passes optimizer-resume, staged/integrated and Python 3.14 CI; its checkpoint publisher still uses os.link only. Add the same-directory renameat2(RENAME_NOREPLACE) fallback after EPERM/EACCES, with forced-denial and existing-target tests before Android review.
+- #2192/#2200 remains blocked by the persist-then-recheck consent race and derived-context retention after revocation. #2195 remains separate-stage-only and uncalibrated. #1904 remains the P0 native chat acceptance blocker.
+- Private owner-read #403 has no reply; installed SHA and updater consent unknown. No UPDATE_REQUEST or device action.
+
+Continue with the consent-safe audio path, Android-safe optimizer publisher and calibrated normal-stage C4 integration; then continue the rest of the Canon. Do not promote synthetic evidence to Android/native claims.
