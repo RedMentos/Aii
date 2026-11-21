@@ -838,3 +838,38 @@ Private PIPELINE_STATUS request [RedMentos/Aiiii #428](https://github.com/RedMen
 #### Active scheduled team capacity (verified)
 
 Exactly five V14 automations are enabled: Boss & Integration, QA & Android, JEPA & Memory, Forschung & Perception, and Core & Harness. The five legacy V13 automations and V13 Weekly Burst are disabled. No extra agent capacity is claimed.
+
+## Boss integration checkpoint — 2026-11-21 (run 13)
+
+**Verified shared base:** `gpt6/v13-private-remote-bridge-20261111` at `48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4`. The shared head is documentation/research-only and has 19/19 GitHub workflows SUCCESS. It is not a new code release. Last accepted code release remains `f279286a4453248004c670fcaabecd85da6ab299` (34/34 exact checks, 19/19 workflows). Integrated code candidate `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` remains NOT_RELEASED (18/19; JEPA utility gate rejected the positive update).
+
+### Current end-to-end blockers and owners
+
+1. **Core normal Runtime audio/arithmetic — PR #2242, head `46411a59e55d615f6db3d7f6026f6f30f184ef37` (Core owns code).** Exact source-pin audit passes: recovery wrapper SHA256 `492b52e4099f032b98be5bbf018582aea0582c62327d3ae8e3868497c589ec30` matches stage `BUILDER_SHA`; stage SHA256 `608f8c34d00e73274f6e30cb1c6d60df390094b2ce019ffc79a8ad60b4513d56` matches deployer `STAGER_SHA256`; base/audio/arithmetic Git blob pins match. Workflow 44942663184 Python 3.13 has 42 passed, 1 failed, 26 subtests; the only failure is a fixture passing `char_end=100000` to `Store.read_source` for a shorter source. Python 3.14 was still running at last poll. Separate staged-runtime and integrated-regression pass; migration, Lab-Age, deployer and owner-read workflows pass. Fix the fixture using the source row's actual `chars` or known summary length. Then sync the branch to the current base by normal merge; current comparison is 41 ahead / 21 behind. Do not bypass safe-additive policy.
+
+2. **Independent streaming QA — PR #2244, head `7f5df160c0479d38edfb2a6dc7e6b840ffdfc8b5`.** It is still on an earlier Core base. QA must rebase after #2242's fixture correction and final base sync, preserving full-stream, pre-lock cancel, worker-exit-before-cleanup, packet deletion, unshared-blob removal and shared-blob retention checks. No Android provider is covered.
+
+3. **Per-session JEPA / optimizer resume — PR #2247, head `2b3f4ad2942e6cbae3a1a23a355065e6e7e3a9b6` (JEPA owns learning code).** Python 3.13 A→B→A retention assertion fails. Python 3.14 passes only because an `any()` assertion accepts one seed/phase; seed 13 A2 and both phases for seeds 19/43 reject old-session cohorts. Python 3.14 staged optimizer-resume and integrated regression fail a nested source pin. Exact current world-training builder SHA256 is `4d4f966478abd4d15d751dbabd7a6728323b6492eee5b33ff9d6cf66769ece12`, but recovery builder expects `ac6986cd4d719e4f3d75bd42ec3a2c4314afbabac76adbf9fc86b0dc1e661ebd`. After changing that inner pin, recalculated values are recovery SHA256 `80219968cae7d8d9a70898e3e322cea99f6ab8569365e035152828fd40d390aa`, stage `BUILDER_SHA` same, stage SHA256 `5713fc6996b0942c49306fce430906ec59813712318b4b45db4ca58d523af4b8`, and deployer `STAGER_SHA256` same. JEPA must verify these after readback and fix the learning mechanism, not the retention threshold. Gates remain OFF.
+
+4. **A5 UI source/consent lifecycle — Perception #2246 / QA #2250.** Exact QA run 44942622194 fails on both Python 3.13 and 3.14: revocation tombstones source A and computes active refs inside `Store.tx`, then unlinks the blob after the mutex is released; producer B can reuse the existing blob and commit a live source row in the gap. `Store.read_source(B)` then raises `FileNotFoundError`. Perception must serialize blob existence/write + source/packet commit and tombstone/refcount/unlink under the same Store critical section, including generic `Store.source()`. QA must run the producer on a separate thread and assert blocking while the revoker holds the critical section, then verify B is readable after release. No Android OS provider/capture/action exists.
+
+5. **Age rights vs resource budgets — QA #2235.** Still 7/10; nested `GoalStore.add` callback AST attribution blocks owner-read/Lab-Age. The candidate's conceptual separation remains correct: Age governs developmental/tool/learning rights; ResourceGuard governs physical compute/replay budgets. Fix attribution and add unrelated-closure negative control; do not conflate Age with hardware budget.
+
+6. **Android/voice and P0 chat.** Caller-supplied PCM16 feature producer exists; no microphone capture, ASR, speech decoder/vocoder, full duplex or raw audio learner. Android broker remains DRY_RUN; A5 is metadata-only and synthetic. Issue #1904 remains open: no new correct native 2+2, B1/B2 offer, mixed-turn, TTFT/RSS or Redmi acceptance receipt.
+
+### Device, local-test and research boundaries
+
+- Private read-only requests #431 PIPELINE_STATUS and #432 DIAGNOSTICS have zero authenticated comments at last poll. Installed SHA and updater consent are UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action or device mutation. REDMI_UNVERIFIED.
+- No local Aii checkout exists under `/mnt/data`, `/workspace` or `/workspaces`; no LOCAL_LINUX Python project tests ran. Exact source-pin audits were computed from fetched GitHub bytes. CI is CI, not local Linux or Android.
+- The shared research ledger now includes missing R-038–R-044 entries. R-040 records Mahdaviyeh et al.'s conditional replay/forgetting result (full arXiv HTML; CC BY-NC-ND 4.0). R-041 records Thede et al.'s full-text RoD method and limitations plus Apache-2.0 OSS revision; no code or dependency imported.
+- Historical 1,255-heading Canon inventory remains intact; semantic clause→implementation→consumer→test→environment→rollback mapping remains incomplete. No whole-system completion claim.
+
+### Next executable ownership
+
+- **Core:** correct the invalid SourceRef fixture, complete 3.14, normal-sync #2242 to current base, preserve arithmetic/audio and full cancellation/close semantics.
+- **QA:** rebase #2244; repair #2250's thread choreography and run the race on 3.13/3.14; fix #2235 AST attribution with negative control.
+- **Perception:** implement the shared Store critical section for A5 blob publication/revocation; keep OS provider OFF until Android permission/lifecycle tests exist.
+- **JEPA/Memory:** fix the nested pin chain; investigate the per-session retention failures and cross-version divergence without loosening the gate.
+- **Boss:** integrate only after exact-head current-base CI and actual consumer-path review; maintain the whole-Canon ledger and historical V13 bytes.
+
+**User action: none.** No Termux command, model/weight download or swap, permission change or device action is requested.

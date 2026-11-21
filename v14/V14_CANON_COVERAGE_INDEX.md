@@ -1779,3 +1779,31 @@ This section supplements the historical heading inventory; it does not remove or
 
 
 **Active team capacity:** five enabled V14 jobs only (Boss & Integration, QA & Android, JEPA & Memory, Forschung & Perception, Core & Harness). Legacy V13 jobs are disabled; no extra agent capacity is claimed.
+
+## Evidence overlay — Boss integration readback 2026-11-21 (run 13)
+
+This overlay supplements the historical inventory; it does not remove, simplify or close any Canon requirement. Status vocabulary remains: NOT_IMPLEMENTED / ISOLATED_MOCK / WIRED_SYNTHETIC / NATIVE_LINUX_PROOF / REAL_REDM I_PROOF / ACCEPTED. The evidence below is synthetic CI unless explicitly stated; no real Redmi proof was obtained.
+
+| Canon family | CODE | WIRED | TESTED_SYNTHETIC | TESTED_ANDROID | ACTIVE / acceptance |
+| --- | --- | --- | --- | --- | --- |
+| A0–A5 perception / attention / source-time | Raw/caller PCM16 feature producer exists; A5 UI metadata lease draft exists | Synthetic A5/A4/B1/B2/C3 paths only; no Android OS provider | Core #2242 source pins match; 3.13 has one invalid SourceRef range fixture; QA #2250 reproduces a shared-blob deletion race on 3.13 and 3.14 | NOT_TESTED | No microphone, screen capture or Android perception provider; A5 UI lease not accepted |
+| B1_DETAIL / B2_GIST | Distinct model roles and synthetic offer structures exist | Synthetic offers through C4/Focal→C3 | Prior staged 251/10/47 and integrated 424/3/58 | NOT_TESTED | No native offer-quality, useful mutual re-entry or Redmi acceptance; #1904 remains open |
+| B3 Enlightened Space / latent coupling | Symbolic production path; tiny cross-geometry K/V experiment in research-only #2243 | No production receiver/tap/injection | Tiny mechanism experiment 3/3 on its exact research head; shared branch workflows 19/19 | NOT_TESTED | PARTIAL_SYMBOLIC_ONLY; no native B1↔B2 latent receiver or OOD causal effect |
+| B4 / C4 coalition and source-span selection | Source-span redundancy heuristic merged at f279 | Synthetic Runtime consumer | Prior staged 251/10/47 and integrated 424/3/58 | NOT_TESTED | No native semantic complementarity proof |
+| C/JEF/C2/C3/C5 and arithmetic | Synthetic output/control; Core #2242 exact arithmetic/audio candidate | Current source-pin chain passes; one 3.13 test fixture failure, 3.14 pending | Separate staged-runtime and integrated-regression pass; arithmetic/audio lifecycle matrix not fully green | NOT_TESTED | No native correct 2+2 or Redmi C3 acceptance |
+| World / Self / Memory / JEPA / Sleep | Persistent WorldJEPA predictor and optimizer structures exist in SHADOW | B1/B2/SELF readout remains SHADOW; no accepted production update | #2247 has 3.13 retention failure, 3.14 one-seed/phase acceptance under weak any() assertion, and staged pin failure | NOT_TESTED | Gates OFF; no accepted checkpoint, cross-organ gradients or native weight update |
+| VOICE_AUDIO | Caller-supplied PCM16 producer only | No microphone-to-Runtime OS path; no ASR/decoder/vocoder/full duplex | Producer and synthetic feature tests; Core consumer draft not fully green | NOT_TESTED | No Android audio capture, speech generation or raw audio learning |
+| ANDROID_BACKGROUND_CONTROL | Immutable proposal args and DRY_RUN broker exist | No OS executor or approved background API path | Synthetic proposal/approval tests only | NOT_TESTED | DRY_RUN_ONLY; no real Android action |
+| ANDROID_UI_CONTROL | Synthetic A5 metadata lease draft | No AccessibilityService/NotificationListener/MediaProjection provider | #2250 proves a shared-blob race; both Python versions fail | NOT_TESTED | No Android observation, tap, type, screenshot or app action |
+| Age 0–5 / X10 rights | Candidate separates developmental rights from ResourceGuard budgets | Candidate reads learning/tool rights; resource limits remain separate | #2235 7/10; nested GoalStore.add AST attribution blocks owner-read/Lab-Age | NOT_TESTED | NOT_RELEASED; Age is not a compute budget |
+| SELF_OPTIMIZATION / cross-organ weight edits | Numeric JEPA shadow and optimizer state exist | No accepted sender→receiver gradient or self-edit path | Retention gates reject; exact parameter/checkpoint proof does not meet acceptance | NOT_TESTED | OFF; no persistent B1/B2/C3 weight edit or structural self-edit |
+| Multimodal learning (audio/vision) | Audio features and visual-teacher research candidates | No accepted modality-specific learner/weight consumer | Synthetic producers and research-only tiny experiments | NOT_TESTED | No persistent multimodal learning or Android proof |
+| Context OS / Memorilla | Context OS partial; #1983 additive draft | No production overflow companion or learned role-specific reader/writer | Partial synthetic tests only | NOT_TESTED | SHADOW; original Context OS/forget/archive obligations remain |
+| Technical OS sandbox / adaptive behavior judge | Signed proposal and trainable risk-head prototypes | No independent Android OS enforcement | Synthetic only | NOT_TESTED | Not production permission authority; no claim of safe autonomous action |
+| REMOTE_MAINTENANCE | Signed patch-review prototype draft | Read-only owner-read requests only; no authenticated reply | CI bootstrap checks only | NOT_VERIFIED | PATCH_STAGE/SANDBOX/APPLY/RESTORE/DEVICE_VERIFIED all unproven |
+| Sparse MoE bodies | Not implemented/proven | No two different sparse expert bodies or native routing | No accepted sparse-MoE test | NOT_TESTED | NOT_IMPLEMENTED |
+| Install / update / rollback | Last accepted code release f279; current shared branch 48ded is docs/research only | Updater code exists; current phone install state unknown | f279 34/34; shared head 48ded 19/19 workflows; candidate 728cdc 18/19 | NO_AUTHENTICATED_RECEIPT | REDMI_UNVERIFIED; installed SHA and updater consent UNKNOWN |
+
+**Environment separation:** no local Aii checkout was present; no LOCAL_LINUX project tests ran. GitHub CI is not local Linux. Synthetic/staged Runtime is not native model inference. No Android/Termux or real Redmi receipt was obtained. The private owner-read requests #431/#432 had zero authenticated comments at last poll.
+
+**Coverage verdict:** 1,255 historical headings remain preserved; semantic clause→implementation→runtime consumer→test→environment→rollback mapping remains incomplete. No row above is promoted to ANDROID_VERIFIED or ACCEPTED.
