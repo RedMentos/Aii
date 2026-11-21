@@ -12,7 +12,7 @@ import json
 import math
 
 REPLAY_MODES = ("uniform", "none", "uniform_budget", "session_contiguous")
-MAX_REPLAY_ROWS = 100000
+MAX_REPLAY_ROWS = 2048
 
 
 def _validate_rows(rows, label):
