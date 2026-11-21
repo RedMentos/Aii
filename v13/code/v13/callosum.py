@@ -191,7 +191,7 @@ class Callosum:
             except (ValueError,TypeError):probe={'status':'INVALID_STORED_RECEIPT'}
         return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,
                 'directions':self.doctor(cfg),'native_receiver_probe':probe,
-                'gate':'G-CALLOSUM-UTILITY-002: LATENT remains blocked for production; native probe is separate-context and non-authoritative',
+                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative',
                 'claim_limit':'Channel choice among exact/control/symbolic baselines; probe does not establish trained alignment or production latent exchange'}
 
 def controller(runtime):
