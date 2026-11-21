@@ -31,7 +31,7 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | source_HEAD | `16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19` (Release-Branch-Readback 2026-11-21) |
 | last_integrated_functional_change | PR #2136 merged in `16f75fca`: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter; not yet called by normal Runtime/chat input, synthetic only |
 | local_test_result | NOT_RUN — no full local repository checkout in this worker |
-| ci_test_result | PR #2138 head `eb038f7e`: owner-read PASS, Python 3.14 staged startup PASS, offline bridge PASS; staged-runtime + integrated-regression IN_PROGRESS at readback; additive-only validator is not applicable to this modifying QA PR |
+| ci_test_result | PR #2138 head `8ca7a298`: owner-read PASS (27 source-updater + 33 pipeline-agent tests), Python 3.14 staged startup PASS, offline bridge PASS, same-repo integration PASS; staged-runtime + integrated-regression IN_PROGRESS at readback; additive-only validator is not applicable to this modifying QA PR |
 | phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
 | device_model_comparison | NOT_RUN |
@@ -66,9 +66,14 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 
 - Release integration HEAD read back from `gpt6/v13-private-remote-bridge-20261111`: `16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19`. No release-branch mutation was made by this QA lane.
 - A real release-gate weakness was found in `v13/code/v13/source_updater.py`: `ci_passed()` accepted any successful exact-SHA run for a workflow, so an older success could mask a newer failed/in-progress run. `pipeline_agent.run_cycle()` also reused the pre-stop CI result after a graceful chat stop.
-- QA candidate PR #2138: [https://github.com/RedMentos/Aii/pull/2138](https://github.com/RedMentos/Aii/pull/2138), latest SHA `eb038f7e90ce5370547e338fad01bad40741c059`. It selects latest run_number/run_attempt per workflow identity, distinguishes recreated workflow IDs, fails closed on missing ordering metadata, and rechecks exact-SHA CI after graceful stop immediately before source mutation. It adds 9 run-order cases plus the stop-window regression.
+- QA candidate PR #2138: [https://github.com/RedMentos/Aii/pull/2138](https://github.com/RedMentos/Aii/pull/2138), latest SHA `8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5`. It selects latest run_number/run_attempt per workflow identity, distinguishes recreated workflow IDs, fails closed on missing ordering metadata, and rechecks exact-SHA CI after graceful stop immediately before source mutation. It adds 9 run-order cases plus stop-window and post-fast-forward activation regressions.
 - CI evidence on prior candidate `39f190e7666e41d69d2c5c6665da4a3ef24f0444`: owner-read PASS and Python 3.14 staged startup PASS; the exact logs show 27 source-updater tests and 32 pipeline-agent tests passing after fixture correction. On latest `eb038f7e`, owner-read PASS, Python 3.14 staged startup PASS, offline bridge security PASS, integrate-same-repo PASS; staged-runtime and integrated-regression still IN_PROGRESS at last readback. The safe-additive workflow fails by design because this PR modifies existing updater files; it is not the phone release gate.
 - LOCAL_LINUX full repository suite: NOT_RUN (no checkout available). CI is the only execution evidence. This is not Linux-native runtime or Android proof.
 - Private owner-read HEALTH request [RedMentos/Aiiii issue #348](https://github.com/RedMentos/Aiiii/issues/348) expired with zero device comments: `NO_LIVE_RECEIPT`. `phone_installed_sha=UNKNOWN`, `phone_auto_update_verified=NO`, `REDMI_UNVERIFIED`. No new installer command, remote shell, update, restart, rollback, model/weight, SQLite or chat-history mutation was attempted.
 - PR #2136 is merged into the repo, but source readback shows `runtime.py` does not yet call `audio_perception_bridge`; this is a synthetic PCM adapter to A4/C3 admission, not Android microphone capture or a normal C3 prompt consumer. The full V14 audio/voice Canon path remains open.
 - Next: finish exact PR #2138 staged/integrated CI; review with Boss before merge; then request a new private read-only device receipt only if the relay responds. Continue actual Runtime/consumer integration across the Canon. **User action: none.**
+
+
+## Canon scope addition — Android control and full voice path
+
+The live V14 work board now has V14-009 for the previously implicit but mandatory Android-agent/voice acceptance path. It covers API-first permitted app control, separately consented Accessibility/MediaProjection observation, action audit/cancel/revocation, native microphone/raw-ear features and speech output separated from C3 planning. It remains `NOT_RUN`; no Android UI-control or microphone success is inferred from the synthetic PCM adapter.

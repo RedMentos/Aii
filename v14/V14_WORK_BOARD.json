@@ -27,16 +27,16 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "SOURCE_REVIEW + CI_OWNER_READ_PASS + PY314_STAGED_PASS + BRIDGE_PASS + STAGED/INTEGRATED_PENDING; PRIVATE_RELAY_NO_RECEIPT; REDMI_UNVERIFIED",
-      "next_step": "QA PR #2138 (latest CI run ordering + post-stop recheck) is open at eb038f7e90ce5370547e338fad01bad40741c059. Owner-read, Python 3.14 staged startup, offline bridge and same-repo integration PASS; staged-runtime/integrated regression were still running at last readback. Finish exact CI, obtain Boss review before merge, then request a fresh private PIPELINE_STATUS receipt. No installer or device mutation until a real receipt exists.",
+      "proof_environment": "SOURCE_REVIEW + CI_OWNER_READ_PASS + PY314_STAGED_PASS + BRIDGE_PASS + SAME_REPO_PASS + STAGED/INTEGRATED_PENDING; PRIVATE_RELAY_NO_RECEIPT; REDMI_UNVERIFIED",
+      "next_step": "QA PR #2138 latest SHA 8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5: owner-read (27 source-updater + 33 pipeline-agent tests), Python 3.14 staged startup, offline bridge and same-repo integration PASS; staged-runtime/integrated regression still running at last readback. Finish exact CI, Boss review/merge, then request fresh private PIPELINE_STATUS. No installer/device mutation until a real receipt exists.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 QA: source-updater stale-success gate fixed in draft PR #2138; CI partly green/pending; private HEALTH #348 returned no device receipt; no phone data changed.",
+      "last_checkpoint": "2026-11-21 QA: stale-success CI gate plus pre-stop/post-fast-forward rechecks are in draft PR #2138; core checks partly green/pending; private HEALTH #348 no device receipt; no phone data changed.",
       "latest_qa_candidate": {
         "pr": 2138,
-        "head_sha": "eb038f7e90ce5370547e338fad01bad40741c059",
+        "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
         "status": "CI_PENDING",
         "proof": {
-          "owner_read": "PASS",
+          "owner_read": "PASS (27 source-updater + 33 pipeline-agent tests)",
           "python314_staged_startup": "PASS",
           "offline_bridge_security": "PASS",
           "same_repo_integration": "PASS",
@@ -123,6 +123,19 @@
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
       "proof_environment": "NOT_RUN",
       "next_step": "Keep last verified HEAD, deployed hash, tests, current blocker, next suggestion and permission question accurate",
+      "user_action_required": false
+    },
+    {
+      "id": "V14-009",
+      "title": "Permissioned Android device control and full voice I/O",
+      "owner": "Core & Harness + Perception",
+      "reviewer": "QA & Android",
+      "priority": "P0",
+      "status": "READY",
+      "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
+      "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
+      "proof_environment": "NOT_RUN; REDMI_UNVERIFIED",
+      "next_step": "Inventory current Android companion/manifest/services and audio input/output code; map Android 13 lifecycle and permissions; implement synthetic consent/contract tests, then schedule one bounded real-device acceptance run when authenticated access exists.",
       "user_action_required": false
     }
   ]
