@@ -5,6 +5,9 @@ from pathlib import Path
 
 BASE_SHA = '47cab72f604fc94b4cca23ad1dd0db55b4b44a154db8d51b5ca14f5cc55987a0'
 WORLD_SHA = '959092940bf8abc1f10b716b918cb3c300b6203e9946a8a41c033f8cf293e02b'
+# The generated runtime guard still pins the pre-resume WorldJEPA source.
+# Keep that baseline distinct from WORLD_SHA, which verifies the current input.
+GUARD_WORLD_SHA = '14ee7982ab3866a13b2cca83086123281cf112a3c133b91c06df9df3669715fd'
 CHECKPOINT_SHA = 'f88ad5eea241aacd55e5c3d0f53eb0b132a164a2d49cc0185726f1a0a8a076ae'
 STATE_SHA = '19e522c9f6af61f366044b355c42c3c6ef4da1d0f7301b6e71ec96adb1a23e29'
 
@@ -80,7 +83,7 @@ def build_sources(code_dir):
                     b"'history', 'enc', 'tgt', 'preds', 'zsd', '_ztrain', '_nn_med', '_training_state'})", 'exact model state fields')
     guard = replace(guard, b'    clone_meta, clone_arrays = checkpoint._extract(staged, VALIDATION_TAG)\n',
                     b'    staged._training_state=training_state.from_model(model)\n    clone_meta, clone_arrays = checkpoint._extract(staged, VALIDATION_TAG)\n', 'detached training state')
-    for old, raw in ((WORLD_SHA, world), (CHECKPOINT_SHA, checkpoint)):
+    for old, raw in ((GUARD_WORLD_SHA, world), (CHECKPOINT_SHA, checkpoint)):
         guard = replace(guard, old.encode(), hashlib.sha256(raw).hexdigest().encode(), 'World/checkpoint pin')
     guard = replace(guard, b'PINS = {\n', b"PINS = {\n    'world_jepa_training_state_candidate.py': '" + STATE_SHA.encode() + b"',\n", 'training helper pin')
     guard = replace(guard, b"        return dict(result, source_verified=True, trained=True, active_model_promoted=False,\n",
