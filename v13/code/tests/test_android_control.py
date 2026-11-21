@@ -1,8 +1,11 @@
 import os
 import sqlite3
 import stat
+from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
+import v13.android_control as android_control
 from v13.android_control import AndroidControlBroker, ControlDenied
 
 
@@ -136,10 +139,12 @@ def test_audit_database_rejects_unapproved_symlinked_ancestor(tmp_path):
     assert not (nested / "audit.sqlite").exists()
 
 
-def test_android_platform_alias_direction_matches_aosp():
+def test_legacy_android_data_symlink_allowlist_is_exact():
     from pathlib import Path
     import v13.android_control as android_control
 
+    # Compatibility fallback for releases where this path is a symlink.
+    # Android 13 uses a bind mount and is tested separately below.
     assert android_control._ANDROID_PLATFORM_SYMLINKS == (
         (Path("/data/user/0"), Path("/data/data")),
     )
@@ -191,7 +196,7 @@ def test_audit_database_rejects_parent_owned_by_another_uid(tmp_path, monkeypatc
     real_uid = os.getuid()
     monkeypatch.setattr(os, "getuid", lambda: real_uid + 1)
 
-    with pytest.raises(ControlDenied, match="owner-controlled"):
+    with pytest.raises(ControlDenied, match="owner"):
         AndroidControlBroker(tmp_path / "audit.sqlite")
 
     assert not (tmp_path / "audit.sqlite").exists()
@@ -207,3 +212,149 @@ def test_audit_database_allows_nonwritable_shared_parent(tmp_path):
         assert stat.S_IMODE((parent / "audit.sqlite").stat().st_mode) == 0o600
     finally:
         broker.close()
+
+
+def test_audit_database_rejects_writable_ancestor_even_when_parent_is_private(tmp_path):
+    shared = tmp_path / "shared"
+    private = shared / "private"
+    private.mkdir(parents=True)
+    os.chmod(shared, 0o777)
+    os.chmod(private, 0o700)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
+
+
+def test_audit_database_allows_sticky_shared_ancestor(tmp_path):
+    shared = tmp_path / "sticky"
+    private = shared / "private"
+    private.mkdir(parents=True)
+    os.chmod(shared, 0o1777)
+    os.chmod(private, 0o700)
+    broker = AndroidControlBroker(private / "audit.sqlite")
+    assert stat.S_IMODE(broker.db_path.stat().st_mode) == 0o600
+    broker.close()
+
+
+def _android13_data_user_zero_path(
+    tmp_path, monkeypatch, *, data_mode=0o771, data_uid=1000, data_gid=1000, user_mode=0o711
+):
+    data_root = tmp_path / "data"
+    user_root = data_root / "user"
+    user_zero = user_root / "0"
+    private = user_zero / "com.termux"
+    private.mkdir(parents=True)
+    os.chmod(data_root, data_mode)
+    os.chmod(user_root, user_mode)
+    os.chmod(user_zero, 0o700)
+    os.chmod(private, 0o700)
+    monkeypatch.setattr(android_control, "_ANDROID_DATA_ROOT", data_root)
+    real_lstat = Path.lstat
+    owners = {
+        data_root: (data_uid, data_gid),
+        user_root: (android_control._ANDROID_SYSTEM_UID, android_control._ANDROID_SYSTEM_GID),
+        user_zero: (android_control._ANDROID_SYSTEM_UID, android_control._ANDROID_SYSTEM_GID),
+    }
+
+    def android_lstat(path):
+        info = real_lstat(path)
+        owner = owners.get(path)
+        if owner is not None:
+            return SimpleNamespace(st_mode=info.st_mode, st_uid=owner[0], st_gid=owner[1])
+        return info
+
+    monkeypatch.setattr(Path, "lstat", android_lstat)
+    return private
+
+
+def test_android13_data_user_zero_bind_mount_ancestors_allow_exact_system_0771(tmp_path, monkeypatch):
+    # AOSP Android 13: /data is system:system 0771; /data/user is 0711;
+    # /data/user/0 is a system-owned bind mount; the Termux app dir is private.
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch)
+    broker = AndroidControlBroker(private / "audit.sqlite")
+    assert stat.S_IMODE(broker.db_path.stat().st_mode) == 0o600
+    broker.close()
+
+
+def test_android13_data_0771_rejects_wrong_system_group(tmp_path, monkeypatch):
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch, data_gid=1001)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
+
+
+def test_android13_data_world_writable_mode_is_rejected(tmp_path, monkeypatch):
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch, data_mode=0o773)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
+
+
+def test_android13_data_user_group_writable_ancestor_is_rejected(tmp_path, monkeypatch):
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch, user_mode=0o771)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
+
+
+def test_audit_database_rejects_writable_parent_of_allowlisted_symlink(tmp_path, monkeypatch):
+    shared = tmp_path / "shared"
+    target = tmp_path / "safe-target"
+    private = target / "private"
+    shared.mkdir()
+    private.mkdir(parents=True)
+    os.chmod(shared, 0o777)
+    os.chmod(private, 0o700)
+    alias = shared / "alias"
+    alias.symlink_to(target, target_is_directory=True)
+    monkeypatch.setattr(
+        android_control,
+        "_ANDROID_PLATFORM_SYMLINKS",
+        ((alias, target),),
+    )
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(alias / "private" / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
+
+
+
+def test_android13_data_0771_rejects_wrong_system_owner(tmp_path, monkeypatch):
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch, data_uid=999)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
+
+
+def test_legacy_android_data_target_group_write_exception_is_exact(tmp_path, monkeypatch):
+    data_root = tmp_path / "data"
+    legacy_data = data_root / "data"
+    legacy_data.mkdir(parents=True)
+    monkeypatch.setattr(android_control, "_ANDROID_DATA_ROOT", data_root)
+    exact = SimpleNamespace(
+        st_uid=android_control._ANDROID_SYSTEM_UID,
+        st_gid=android_control._ANDROID_SYSTEM_GID,
+        st_mode=stat.S_IFDIR | 0o771,
+    )
+    assert android_control._trusted_android_data_group_write(legacy_data, exact)
+    assert not android_control._trusted_android_data_group_write(
+        legacy_data, SimpleNamespace(
+            st_uid=999, st_gid=android_control._ANDROID_SYSTEM_GID,
+            st_mode=stat.S_IFDIR | 0o771,
+        )
+    )
+    assert not android_control._trusted_android_data_group_write(
+        legacy_data, SimpleNamespace(
+            st_uid=android_control._ANDROID_SYSTEM_UID, st_gid=1001,
+            st_mode=stat.S_IFDIR | 0o771,
+        )
+    )
+    assert not android_control._trusted_android_data_group_write(
+        legacy_data, SimpleNamespace(
+            st_uid=android_control._ANDROID_SYSTEM_UID,
+            st_gid=android_control._ANDROID_SYSTEM_GID,
+            st_mode=stat.S_IFDIR | 0o773,
+        )
+    )
+    assert not android_control._trusted_android_data_group_write(
+        data_root / "other", exact
+    )
