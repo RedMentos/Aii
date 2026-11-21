@@ -117,8 +117,10 @@ def test_revoke_unlink_serializes_with_concurrent_a5_shared_source_publication(t
     producer = threading.Thread(target=publish_second_a5_source, name="a5-ui-source-producer")
     store.mutex = TrackingRLock()
     try:
-        with patch.object(Path, "exists", observe_producer_blob_check), \\
-             patch.object(Path, "unlink", pause_before_blob_unlink):
+        with (
+            patch.object(Path, "exists", observe_producer_blob_check),
+            patch.object(Path, "unlink", pause_before_blob_unlink),
+        ):
             revoker.start()
             assert unlink_entered.wait(2), "revocation did not reach the blob unlink"
 
