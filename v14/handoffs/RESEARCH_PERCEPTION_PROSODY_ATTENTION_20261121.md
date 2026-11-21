@@ -98,3 +98,11 @@ arXiv:2608.16347v2 (2026-11-09) was read in full. The study's middle-layer causa
 - Core handoff: update the staged adapter pin to the new module blob above. Core #2158 still has independent QueryPacket audio_context, arithmetic-source and recovery-manifest failures. Perception changed no Core-owned runtime/stager/deployer files.
 - Research: PACE full-text review confirms audio continual adaptation needs task/session-aware stability and selective subspace protection; it is not an Android RAW EAR implementation. libfvad is BSD-3-Clause plus a separate WebRTC patent grant and remains a no-weight VAD comparator only.
 - Device: REDMI_UNVERIFIED / NOT_RELEASED. No microphone, phone, model, weight, permission, data or updater operation occurred. User action: none.
+
+
+## Exact-head CI and B1/B2 native tap inventory — 2026-11-21 07:11 CET
+
+- Current RAW EAR PR head e523f539febb659b6aa56710e9072738b75698cc: dedicated producer/consumer suite 12/12 on Python 3.11.18 and 3.13.18; staged Runtime and integrated regression PASS; privacy scan PASS. Safe-additive scope guard FAIL is expected because the existing producer/test are modified. No policy bypass; draft remains unmerged.
+- Native tap inventory: b10964 / b29c606e2, --embedding --pooling none, per-token final RMSNorm output. TAP_SPECS: B1 LFM2 2048, B2 Qwen3.5 1024, C3 LFM2 1024. Exact model revisions/hashes and cross-tokenizer geometry are in R-023.
+- Core defect: RunnerPool.get_tap binds qwen35.result_norm.final.v1 for B2/GIST, but LlamaRunner.tap hardcodes lfm2.result_norm.final.v1 in returned metrics. This breaks provenance/bridge keys for B2. Core owns the runner file; finding handed off on #2158. Fix is to propagate the bound tap ID and fail closed if missing.
+- No native model taps, B3 receiver effect, Android hardware, microphone or installed-device measurements were run. REDMI_UNVERIFIED / NOT_RELEASED.
