@@ -14,7 +14,7 @@ AUDIO_BUILDER_BLOB_SHA1 = "2015ad383241608f9ff9ba31c0c6ea0724477d9b"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
-    return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
 
 
 def _load(code_dir: Path, relative: str, expected: str):
