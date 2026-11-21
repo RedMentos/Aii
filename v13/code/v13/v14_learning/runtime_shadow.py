@@ -99,7 +99,9 @@ def online_world_shadow_prediction(runtime, store, event, role, input_chars, emp
             readouts = {}
             for receiver_role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL"):
                 try:
-                    readouts[receiver_role] = jepa_owner.readout(receiver_role, state, route)
+                    readout = jepa_owner.readout(receiver_role, state, route)
+                    readout["decision_authority"] = "NONE"
+                    readouts[receiver_role] = readout
                 except (ValueError, TypeError, KeyError, OSError, OverflowError, ArithmeticError) as exc:
                     readouts[receiver_role] = {
                         "status": "UNAVAILABLE",
