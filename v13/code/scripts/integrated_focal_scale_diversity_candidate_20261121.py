@@ -1,12 +1,11 @@
-"""Scale-aware C4 redundancy for the two independent body roles.
+"""Source-span-aware C4 redundancy for the two independent body roles.
 
-The existing FocalLoop admits B1_DETAIL and B2_GIST into one bounded coalition.
-They operate at different representational scales; lexical overlap between
-their summaries is therefore weaker evidence of duplication than overlap
-between two offers from the same role. Same-role and body/memory redundancy
-remain unchanged.
-
-This is a staged candidate only. It never edits the historical V13 source.
+B1_DETAIL and B2_GIST can summarize overlapping language while citing distinct
+parts of the same source. Cross-scale redundancy is discounted only when both
+offers carry same-source, same-digest, same-modality, non-overlapping spans.
+Same-role, overlapping, cross-source and body/memory redundancy keep the full
+existing penalty. This is a conservative evidence-span rule, not a semantic
+calibration claim.
 """
 from __future__ import annotations
 
@@ -14,7 +13,7 @@ import hashlib
 from pathlib import Path
 
 SOURCE_FOCAL_GIT_BLOB = "a0588a768cc91266ef02243bcfda2e631860d8ad"
-CROSS_SCALE_REDUNDANCY_FACTOR = 0.15
+CROSS_SCALE_RULE = "DISJOINT_SAME_SOURCE_SPANS_ONLY"
 
 BODY_MARKER = b"BODY=('B1_DETAIL','B2_GIST')\n"
 REDUNDANCY_LINE = (
@@ -41,21 +40,40 @@ def apply_staged_focal(code_dir: Path, raw: bytes) -> bytes:
         raise ValueError("base stage is not the reviewed arithmetic/C5 candidate")
     if raw.count(BODY_MARKER) != 1 or raw.count(REDUNDANCY_LINE) != 1:
         raise ValueError("focal scale-diversity anchors changed")
-    if b"CROSS_SCALE_REDUNDANCY_FACTOR" in raw or b"_scale_aware_redundancy" in raw:
-        raise ValueError("focal scale-diversity overlay already present")
+    if b"SCALE_AWARE_C4_RULE" in raw or b"_scale_aware_redundancy" in raw:
+        raise ValueError("focal source-span rule already present")
 
-    constant = (
-        BODY_MARKER
-        + b"CROSS_SCALE_REDUNDANCY_FACTOR = 0.15  # ENG: uncalibrated cross-scale discount\n"
-    )
-    result = raw.replace(BODY_MARKER, constant, 1)
+    rule = BODY_MARKER + b"SCALE_AWARE_C4_RULE = 'DISJOINT_SAME_SOURCE_SPANS_ONLY'\n"
+    result = raw.replace(BODY_MARKER, rule, 1)
 
     helper = (
+        b"def _valid_source_span(ref):\n"
+        b"    return (isinstance(ref,dict)\n"
+        b"            and isinstance(ref.get('source_id'),str) and bool(ref.get('source_id'))\n"
+        b"            and isinstance(ref.get('sha256'),str) and len(ref['sha256'])==64\n"
+        b"            and isinstance(ref.get('modality'),str) and bool(ref.get('modality'))\n"
+        b"            and type(ref.get('char_start')) is int and type(ref.get('char_end')) is int\n"
+        b"            and ref['char_start']>=0 and ref['char_end']>ref['char_start'])\n\n"
+        b"def _has_disjoint_source_evidence(candidate, admitted):\n"
+        b"    left=candidate.get('source_refs');right=admitted.get('source_refs')\n"
+        b"    if not isinstance(left,(list,tuple)) or not left or not isinstance(right,(list,tuple)) or not right:\n"
+        b"        return False\n"
+        b"    shared=False\n"
+        b"    for a in left:\n"
+        b"        if not _valid_source_span(a):return False\n"
+        b"        for b in right:\n"
+        b"            if not _valid_source_span(b):return False\n"
+        b"            if a['source_id'] != b['source_id']:continue\n"
+        b"            shared=True\n"
+        b"            if a['sha256'] != b['sha256'] or a['modality'] != b['modality']:return False\n"
+        b"            if a['char_start'] < b['char_end'] and b['char_start'] < a['char_end']:return False\n"
+        b"    return shared\n\n"
         b"def _scale_aware_redundancy(candidate, admitted):\n"
         b"    overlap=relevance(candidate['text'],admitted['text'])\n"
         b"    if (candidate['source_kind'] in BODY and admitted['source_kind'] in BODY\n"
-        b"            and candidate['source_kind'] != admitted['source_kind']):\n"
-        b"        return overlap * CROSS_SCALE_REDUNDANCY_FACTOR\n"
+        b"            and candidate['source_kind'] != admitted['source_kind']\n"
+        b"            and _has_disjoint_source_evidence(candidate,admitted)):\n"
+        b"        return 0.0\n"
         b"    return overlap\n\n\n"
     )
     if result.count(ADMIT_MARKER) != 1:
