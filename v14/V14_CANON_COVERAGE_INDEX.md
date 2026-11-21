@@ -1827,3 +1827,10 @@ This overlay supplements the historical Canon inventory; it does not close or si
 **Still OPEN across the whole Canon:** native B1_DETAIL/B2_GIST offer quality and mutual re-entry; trained B3 cross-model latent receiver; accepted JEPA per-session retention and numeric parameter/checkpoint changes; sparse MoE bodies; audio/vision weight learning; Android background/API and UI providers; trainable speech decoder/vocoder/full duplex; cross-organ gradients and controlled self-edit; independent technical OS sandbox; adaptive behavior judge; complete declared memory/egress registry; Memorilla production overflow consumer. P0 issue #1904 remains open.
 
 **Proof boundary:** #2258 exact-head workflows were queued at last poll. No combined PASS, local project test, Android test, Redmi receipt, release or installation is claimed.
+
+
+## QA exact-head correction — Boss integration 8dc3828 (2026-11-21 22:28 CET)
+
+Current A5 UI lease is PASS and the composed A5 bridge exports the current adapter; idle/online-world operator pins and the prior lifecycle anchor have also advanced. The exact remaining shared staged blocker is the transformed `world_semantic_evidence_candidate.py` upstream digest mismatch in `integrated_arithmetic_outcome_candidate_20261116.py`. It blocks staged/integrated, Python 3.14 startup, Lab-Age, migration and audio; A5, combined JEPA and offline deploy integrity pass. Safe-additive remains FAIL_BY_POLICY. Keep runtime integration PARTIAL/OPEN, NOT_RELEASED and REDMI_UNVERIFIED.
+
+Age-rights #2235 exact CI passes its nested AST negative control, Lab-Age, owner-read, migration, deploy, staged and integrated suites; its branch remains diverged 43 ahead / 121 behind current base and requires deliberate composition with GoalStore wake rollback. No local full checkout, Android provider, native weight change or Redmi receipt is proven.
