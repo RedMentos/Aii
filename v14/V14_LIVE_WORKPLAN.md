@@ -331,3 +331,27 @@ No material V14 master edit was made; no master backup was required. Historical 
 - The underlying learner remains synthetic-Store evidence only. It updates local numeric WorldJEPA/EMA and B1/B2/SELF SHADOW heads; native GGUF body weights remain unchanged and decision authority remains NONE.
 - Exact repository local tests are blocked in this worker by GitHub DNS resolution. CI must run on the new exact PR head; no local or Redmi PASS is claimed.
 - Next: review exact PR-head focused/staged/integrated CI; then persist Adam moments with the checkpoint and compare persistent-vs-reset optimizer under equal update/replay budgets.
+
+
+## JEPA & Memory integration checkpoint — 2026-11-21
+
+### Candidate with exact CI evidence
+- Boss PR #2179 head `268bebaf282188a67dde9ed63246ca024067b6f2` is the current pin-chain candidate based on release-development HEAD `569680bc10eabeb94ea5a1695d4bf77b8584e0a0`.
+- The earlier #2178 candidate had a missing exception colon and stale training-resume source pins. The syntax fix at `e361235ee52c9b612ddd3b87449ff5b41d9c3fd0` plus the #2179 pin/deployer rebind repairs those specific staged blockers.
+- Exact CI on #2179: staged-runtime **249 passed / 10 skipped / 47 subtests**, integrated-regression **415 passed / 3 skipped / 58 subtests** (run 44884557196); combined online JEPA **49 passed** (run 44884557244). Runtime deploy integrity and synthetic two-checkout migration also passed.
+- Safe-additive remains **FAIL** (run 44884584190) because existing builder/deployer modules are edited. This was not bypassed; Boss must independently review those edits. #2179 is not merged or released.
+- Local full checkout is still BLOCKED by DNS resolution for `github.com`; CI is not LOCAL_LINUX-native training or Redmi evidence.
+
+### Optimizer-state telemetry/readback follow-up
+- JEPA PR #2182 head `72914a4e3b8cfbb9834cef36dabd1878135e30a7` is draft, stacked on #2179.
+- The Store consumer now reports optimizer-moment persistence from the actual checkpoint receipt rather than hard-coding false. The inverse-dynamics head uses the shared main Adam parameter group; there is no separate inverse optimizer.
+- Its regression asserts the persistence receipt and verifies the Adam step counter after checkpoint reload and after rollback. Exact-head CI has not yet appeared; no PASS is claimed for #2182.
+- No model/weight/permission/device change occurred. Both optimizer/learning gates remain default-off outside explicitly configured tests.
+
+### Next integrated slice
+1. Boss independently reviews #2179's existing-file changes and safe-additive failure; no bypass.
+2. After #2179 is merged, rebase #2182 onto the new release-development HEAD and run exact staged, integrated and combined JEPA tests.
+3. Run matched persistent-vs-reset optimizer ablation on the same source/digest-disjoint T8 cohorts, with equal update steps, batch size and replay bytes; measure new holdout, old-cohort retention, shuffled/zero-action controls, restart and rollback.
+4. Only after this candidate is integrated, proceed to the next actual receiver/utility experiment. Keep B1/B2/SELF numeric heads SHADOW, native GGUF weights untouched and Redmi status UNVERIFIED.
+
+No user action, Termux command, model download/swap or device permission change is required.
