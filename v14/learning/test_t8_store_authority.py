@@ -96,6 +96,20 @@ def test_store_authority_rejects_mismatched_or_duplicate_action_outcome():
     assert good == [] and bad == 1
 
 
+def test_store_authority_rejects_duplicate_beyond_previous_seventeen_packet_window():
+    store = FakeStore()
+    packets = []
+    for index in range(18):
+        action_id = "act-1" if index == 0 else f"act-{index + 1}"
+        payload = dict(store.outcome, action_id=action_id, packet_id=f"pkt-{index + 1}")
+        packets.append({"payload": canonical(payload)})
+    # The old LIMIT 17 saw the first valid packet but missed this older duplicate.
+    packets.append({"payload": canonical(dict(store.outcome, packet_id="pkt-old-duplicate"))})
+    store.outcome_packets = packets
+    good, bad = verified(store)
+    assert good == [] and bad == 1
+
+
 
 
 class SQLiteRowStore(FakeStore):
@@ -160,6 +174,38 @@ def test_temporal_bridge_updates_only_with_explicit_lab_and_optimizer_gates(tmp_
     again = bridge.consume(good[0], prediction, optimizer_permission=True)
     assert again["duplicate"] is True
     assert bridge.receiver.seen == ["act-1"]
+
+
+@pytest.mark.parametrize("status, expected_result", [
+    ("CANCELLED", "CANCELLED"),
+    ("ABORTED", "CANCELLED"),
+    ("OUTCOME_UNKNOWN", "CENSORED"),
+    ("INTERRUPTED", "CENSORED"),
+])
+@pytest.mark.parametrize("expected_label", ["FINAL", "NOT_FINAL"])
+@pytest.mark.parametrize("learning_enabled", [False, True])
+def test_cancelled_and_unknown_outcomes_never_create_learning_intent(
+        tmp_path, status, expected_result, expected_label, learning_enabled):
+    store = FakeStore(status=status)
+    good, rejected = verified(store)
+    assert rejected == 0 and len(good) == 1
+    directory = tmp_path / f"{status}-{expected_label}-{learning_enabled}"
+    prediction = {"expected_outcome": expected_label, "probability": .8,
+                  "duration_s": 1.0, "tolerance_s": .25}
+    bridge = TemporalT8Bridge(directory, learning_enabled=learning_enabled)
+    result = bridge.consume(good[0], prediction, optimizer_permission=True)
+    assert result["outcome"] == expected_result
+    assert result["prediction_error"] is None
+    assert result["updated"] is False
+    assert bridge.receiver.seen == []
+    assert bridge.receiver.weights == {"WORLD": 0.0, "B1": 0.0, "B2": 0.0}
+
+    restarted = TemporalT8Bridge(directory, learning_enabled=learning_enabled)
+    replay = restarted.consume(good[0], prediction, optimizer_permission=True)
+    assert replay["outcome"] == expected_result
+    assert replay["prediction_error"] is None
+    assert replay["updated"] is False
+    assert restarted.receiver.seen == []
 
 
 def test_mismatch_and_late_outcome_are_negative_prediction_errors(tmp_path):
