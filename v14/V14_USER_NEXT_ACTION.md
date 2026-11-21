@@ -1,6 +1,6 @@
 # Research & Perception checkpoint — 2026-11-21 18:55 CET
 
-**Draft PR:** [#2243](https://github.com/RedMentos/Aii/pull/2243), branch research-perception/v14-dense-latent-kv-toy-20261121, based on the latest shared HEAD e788dcf0b82849f4de7df229978aa9973d845093. Boss review required; NOT_RELEASED.
+**Draft PR:** [#2243](https://github.com/RedMentos/Aii/pull/2243), branch research-perception/v14-dense-latent-kv-toy-20261121, synchronized onto latest shared HEAD b267ed641f4dbff1e2c28f492baf0182e9bb656b by a normal merge commit. Boss review required; NOT_RELEASED.
 
 - New runnable mechanism experiment: tiny sender (2×24) → learned K/V adapter → receiver (3×32), with actual receiver cache injection, two-stage training, negative controls and save/reload check.
 - LOCAL_LINUX CPython 3.13 / PyTorch 2.10 CPU: py_compile PASS; 3/3 unit tests PASS in 9.93 s. Seed 13: held-out K/V MSE 6.5134→0.2054; latent accuracy 100% vs exact-context 100%, no-message 0%, shuffled 12.50%, random adapter 13.28%; parameter ΔL2 20.2719; max gradient norm 2.1451; restart max-logit delta 0.0. Three more seeds reached 100%.
@@ -11,6 +11,43 @@
 - No model/weight change, permission change, phone action, updater request or user-data mutation. **No user action is needed.**
 
 Next executable step: Core exposes a model-specific native K/V tap/injection seam; Research/Perception then tests the actual LFM2.5↔Qwen3.5 pair with exact-context, no-message, symbolic, shuffled and OOD controls, privacy, gradient/retention, restart/rollback, RSS and TTFT.
+
+
+---
+
+# Final mergeability refresh — 2026-11-21 18:05:59Z
+
+- Current verified documentation HEAD before this refresh: `7c9841ae9d665aab19e60d524307342a219047f0`; code integration head remains `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`.
+- Exact merge-push CI is complete: **18/19 PASS, 1 FAIL**. The only failed workflow is staged context/integrated regression; staged-runtime failed because normal SleepRuntime's JEPA acceptance test received the truthful `UTILITY_GATE_REJECTED` instead of a positive accepted update. Integrated-regression itself passed.
+- Base movement after merging #2240 means **#2235 and #2234 are now NON-MERGEABLE against the current release branch**. Do not attempt merge or rebase while their functional blockers remain. After fixes, rebase onto `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` and recompute every nested recovery/stage/deployer pin from exact bytes. #2235 also still has the current-head AST closure attribution failure. #2234 still removes the normal C4 overlay.
+- #2237 is mergeable as a branch but NOT merge-ready: old-holdout retention fails on Python 3.13/3.14 and second-update cloning omits validated `_training_state`. Keep optimizer gates OFF.
+- #2200 remains non-mergeable and must rebase onto merged #2240's lease API before any normal voice consumer review.
+- Private owner-read request expired without authenticated reply; installed SHA and updater consent remain UNKNOWN. REDMI_UNVERIFIED. No device action. **User action: none.**
+
+---
+
+# Boss integration checkpoint — 2026-11-21 18:05:08Z
+
+**No user action is required. Do not run Termux commands, change Age/permissions, swap models or weights, alter updater settings, or modify phone data.**
+
+- **Current code integration:** Perception #2240 is merged at [`728cdc763f09bee20ac00e1f0faadffcd33dfbb2`](https://github.com/RedMentos/Aii/commit/728cdc763f09bee20ac00e1f0faadffcd33dfbb2). Exact merge-push CI has finished: **18/19 workflows PASS, 1/19 FAIL**. The failed workflow is `V13 staged context and integrated regression`; its staged-runtime job fails because the normal SleepRuntime post-commit JEPA test expected `UPDATED_EXPERIMENTAL_WORLD_JEPA` but the actual retention gate returned `UTILITY_GATE_REJECTED`. The integrated-regression job itself passed. The other 18 workflows, including Python 3.14 staged startup, migration, runtime-deploy integrity, owner-read bootstrap, Android control broker isolated tests, phone-offer receipt evidence and JEPA checkpoint retention, passed in CI. The prior code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299` with 19/19 workflows green. **The new merge is not a release.**
+- **What is now in the shared branch:** caller-supplied PCM16 → bounded RAW EAR cues → source-bound Store packet → temporal voice evidence → A4 salience → bounded C3 admission, plus the ephemeral same-thread, source/runtime/generation/receipt-bound `AudioConsentLease`. No microphone, ASR/TTS, Android UI, or normal Runtime C3 generator is connected yet. Core must keep the lease through derived-context reads, B1/B2 and the full C3 iterator; QA must prove revocation, derived-context deletion and cache clearing. Add a cancellation/stop path so revocation or barging-in does not wait indefinitely on a long-held lease.
+- **JEPA / replay — [#2237](https://github.com/RedMentos/Aii/pull/2237):** head `d91f4683fe96619efa94b5fcd64bc1f55e9c39ec` fixed the nested source-pin chain; migration, owner-read bootstrap, Lab-Age, runtime-deploy integrity, incremental World JEPA and combined online integration pass. Two workflows still fail: projected old-holdout retention is worse than stable predictor (Python 3.13: 0.0140033 vs 0.0066121; Python 3.14: 0.0145535 vs 0.0075072), and second optimizer continuation fails because `world_jepa_runtime_guard_candidate._clone` omits the validated `_training_state` (main/bootstrap/inverse moments, EMA and RNG). The normal SleepRuntime release test also gets `UTILITY_GATE_REJECTED`. Keep the retention gate and optimizer rights OFF; do not rewrite rejected outcomes as successful learning.
+- **Age / resource separation — [QA #2235](https://github.com/RedMentos/Aii/pull/2235):** current PR head `150e92b0dd62f389bdb1245d938e753b46bf78f1` remains DRAFT. Its staged 251/10/47, integrated 424/3/58, migration and deploy checks passed on prior tested code heads, but the current Lab-Age and owner-read workflows fail because the AST inventory reports the nested `f(st)` closure inside `GoalStore.add` instead of the enclosing method `add`. The latest commit fixes parsing of the `learning_limit` mapping expression but still leaves that enclosing-function attribution issue. Safe-additive remains FAIL BY POLICY. #2241 is closed unmerged as redundant.
+- **C4 / exact arithmetic — [Core #2234](https://github.com/RedMentos/Aii/pull/2234):** still DRAFT. The normal recovery builder removes the existing C4 source-span overlay while `runtime_deploy` still calls `stage_integrated_candidate.py`; the new candidate stager is not the ordinary Runtime consumer. Do not merge until C4 is preserved and arithmetic is wired through the real pinned deployer.
+- **Core voice consumer — [#2200](https://github.com/RedMentos/Aii/pull/2200):** still stale/non-mergeable. Rebase onto merged #2240 and hold the same lease on the same worker thread through derived context, B1/B2 and complete C3 generation; add revoke cleanup and cancellation.
+- **Research now recorded in V14 ledger:** R-034 Counterfactual World Models is simulator-scoped and needs additive disturbance/action channels; R-035 Age of Learning's error-persistence signal is a possible modulator, not official Age, and is vulnerable to noisy/OOD streams; R-036 omission research supports keeping PRESENT / EXPECTED_OMISSION / UNEXPECTED_OMISSION / UNKNOWN distinct, with only source-bound high-confidence time-windowed omissions treated as negative events. These are research hypotheses/constraints, not validated runtime learning.
+- **Whole Canon / P0:** [#1984](https://github.com/RedMentos/Aii/issues/1984) contains the integration evidence. [#1904](https://github.com/RedMentos/Aii/issues/1904) remains open: correct 2+2, real B1/B2 delivery through C4→C3, native B3 latent exchange and real latency/RSS remain unproven on Redmi. The 1,255-heading historical inventory is preserved; semantic clause → implementation → consumer → test → environment → rollback mapping remains incomplete.
+- **Device / local evidence:** private PIPELINE_STATUS request expired without authenticated reply; installed SHA and updater consent remain UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action, model/weight/permission change or phone mutation. Full local Aii suite remains BLOCKED (no checkout mounted; GitHub DNS unavailable). **REDMI_UNVERIFIED.**
+
+### Next internal sequence
+1. JEPA validates and copies the complete optimizer state, then demonstrates a source-disjoint update that improves new holdout without degrading old holdout; keep positive accepted-update and negative exact-rollback controls.
+2. Core/QA preserve C4 in the ordinary pinned deployer and compose Age/resource + arithmetic only after recomputing the full recovery → stage → deployer chain.
+3. Core rebases the audio consumer onto merged #2240, holds the lease through full C3 generation and adds a prompt cancellation/revocation path plus derived-context/cache deletion.
+4. QA fixes the AST enclosing-method attribution and reruns current-head Lab-Age/owner-read/staged/integrated/migration.
+5. Boss tracks the 1 failed merge-push workflow to closure, then rechecks exact-head CI and the full Canon ledger. GitHub merge is not phone deployment.
+
+**User action: none.**
 
 ---
 

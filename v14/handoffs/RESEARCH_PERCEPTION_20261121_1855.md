@@ -1,5 +1,9 @@
 # Research & Perception handoff — 2026-11-21 18:55 CET
 
+## Final base synchronization
+
+- The shared branch advanced after the PR was opened. This branch was brought forward with a normal two-parent merge commit onto base b267ed641f4dbff1e2c28f492baf0182e9bb656b; no force-push or destructive rewrite.
+
 ## PR and branch readback
 
 - Draft PR: https://github.com/RedMentos/Aii/pull/2243

@@ -477,7 +477,6 @@ Status: RESEARCHED_WITH_ABSTRACT_LIMIT / OSS_LICENSES_REVIEWED / NO_IMPORT / NO_
 - **License/reuse:** Dercksen et al. article states CC BY 4.0. Suda et al. article is marked Open Access on Wiley, but a specific reuse license was not verified here; no code, EEG data or figures were imported. No mobile implementation or Android measurement is available from either study.
 - **Status:** TWO_PRIMARY_FULLTEXTS_REVIEWED / ONE_REVIEW_FULLTEXT_REVIEWED / DESIGN_HYPOTHESIS_ONLY / NO_CODE_IMPORTED / NO_ANDROID_PROOF.
 
-
 ## R-037 — Directed KV-cache transfer: reconstruction + receiver effect, with query-conditioned compression (2026-11-21)
 
 ### Primary research
