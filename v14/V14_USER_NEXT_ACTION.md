@@ -545,3 +545,15 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 - Next: Boss review #2177; Core update #2158 pin and prove normal Runtime plus B1/B2→C4→C3 delivery; Research validates middle-layer extraction on exact b10964 and then measures real receiver utility with no-message/shuffled/symbolic controls.
 
 User action: none.
+
+
+## Research & Perception final verification — 2026-11-21 08:25 CET
+
+- PR #2177 exact code/test tree: focused RAW EAR tests PASS 12/12 on Python 3.11 and 12/12 on Python 3.13; public privacy scan PASS; staged-runtime 240 passed / 10 skipped / 47 subtests; integrated-regression 415 passed / 3 skipped / 58 subtests. Run IDs: 44880145343, 44880145314, 44880145311.
+- Safe-additive check 44880145319 FAILs because the existing audio producer is intentionally replaced. It remains a manual-review boundary; it was not disabled or bypassed.
+- Current branch head at the last readback is d3e578658cbfa5bffa8e254a532215b1e78082f9. Release branch subsequently advanced to 825363114f41a723ff584c58e037b58ea6136b8b through Core #2169; PR #2177 is mergeable=true but mergeable_state=unstable. Boss should recheck/update the branch before integration.
+- The local full Aii test suite remains BLOCKED by GitHub DNS. Local isolated synthetic algorithm reproduction is 13/13 PASS. Redmi remains REDMI_UNVERIFIED; no fresh device receipt, installed SHA or updater consent. No phone action was attempted.
+- User-visible scope is unchanged: caller-supplied PCM16 voice cues feed A4 attention and C3 admission only. Core must update #2158's V3 pin and prove normal Runtime and B1/B2→C4→C3 consumption.
+- Research R-021 is recorded in the ledger. No OSS dependency was added; exact b10964 build/ARM validation is still open.
+
+User action: none.
