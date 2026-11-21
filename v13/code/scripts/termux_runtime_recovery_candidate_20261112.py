@@ -12,6 +12,7 @@ BUILDERS = {
     'scripts/termux_probe_recovery_candidate_20261112.py': 'a39910115f231f6979546ab5fb28d41d5ba82e11e6adbe65e8a199ca6430c42d',
     'scripts/termux_chat_recovery_candidate_20261112.py': '704c8bb082301c428e16fcff4bf7e02169844bf694c6196fb5f4fb1f04cfa932',
     'scripts/termux_idle_recovery_candidate_20261112.py': '6d997fab79c183aedd6ccd39b2f82b03adc102333ae6f3b1f8aac1435bcbf23a',
+    'scripts/integrated_online_world_candidate_20261110.py': '4064f902f6b914e97d858ea05c95295060a32d71c45d7aa15385624065367de1',
 }
 
 
@@ -28,7 +29,7 @@ def load(code_dir, relative, expected):
 def build_sources(code_dir, *, include_postcommit=True):
     code_dir = Path(code_dir)
     modules = [load(code_dir, name, pin) for name, pin in BUILDERS.items()]
-    base, probe, chat, idle = modules
+    base, probe, chat, idle, online = modules
     result = base.build_sources(code_dir)
     for name, raw in probe.build_sources(code_dir).items():
         if name in result:
@@ -128,6 +129,9 @@ def build_sources(code_dir, *, include_postcommit=True):
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
                              '9e518fc7220b6b96b98871263921c4e3c01c8ea41005a9a5dbe53c2b2ef16197')
         result = control_guard.apply_sources(code_dir, result)
+        # Compose the source-pinned online-world candidate on the already
+        # integrated Runtime/World tree; do not overwrite prior Runtime hooks.
+        result.update(online.build_sources(code_dir, base_sources=result))
         # Feature Age belongs to the final deployed stage. The partial
         # pre-postcommit builder must retain its earlier exact Runtime hash.
         # RAW Age/operator/UI remain pristine for the old phone updater.
