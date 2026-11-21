@@ -1,0 +1,43 @@
+name: V14 Core exact arithmetic C5 fastpath
+
+on:
+  push:
+    branches: [core/v14-exact-arithmetic-c5-20261121]
+    paths:
+      - "v13/code/v13/exact_arithmetic.py"
+      - "v13/code/v13/output_policy.py"
+      - "v13/code/tests/test_v14_exact_arithmetic_runtime.py"
+      - ".github/workflows/v14-core-exact-arithmetic.yml"
+  pull_request:
+    branches: [gpt6/v13-private-remote-bridge-20261111]
+    paths:
+      - "v13/code/v13/exact_arithmetic.py"
+      - "v13/code/v13/output_policy.py"
+      - "v13/code/tests/test_v14_exact_arithmetic_runtime.py"
+      - ".github/workflows/v14-core-exact-arithmetic.yml"
+
+jobs:
+  exact-arithmetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install isolated CPU test dependencies
+        run: python -m pip install --upgrade pip numpy==2.2.6 psutil PyYAML pytest==9.2.0
+      - name: Compile exact policy and tests
+        run: python -m py_compile v13/code/v13/exact_arithmetic.py v13/code/v13/output_policy.py v13/code/tests/test_v14_exact_arithmetic_runtime.py
+      - name: Exact evidence, source persistence and Runtime-to-C5 integration
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_v14_exact_arithmetic_runtime.py v13/code/tests/test_output_policy.py v13/code/tests/test_output_policy_runtime.py
+      - name: Existing arithmetic and focal regressions
+        env:
+          PYTHONPATH: v13/code
+        run: python -m pytest -q v13/code/tests/test_arithmetic_reflex.py v13/code/tests/test_arithmetic_route_regression_20261118.py v13/code/tests/test_focal.py
