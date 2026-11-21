@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "CI_SYNTHETIC candidates only; release HEAD 16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19; PR #2136 A5 adapter merged but not called by normal Runtime; PR #2139 focused 58 tests PASS but staged-runtime/integrated-regression FAIL due downstream hash-pinned candidates and two-checkout migration PARTIAL; REDMI_UNVERIFIED.",
-      "next_step": "Core must publish a new immutable staged candidate for the Runtime changes and rebuild all affected pinned downstream candidates; then run staged-runtime + integrated regression. Keep A5 audio input separate from Android microphone proof. Do not merge #2139 as-is.",
+      "proof_environment": "Release HEAD 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e includes #2138 updater gate, but exact push staged-runtime/integrated regression still IN_PROGRESS; PR #2139 focused audio tests pass but staged/integrated fail 30 tests due stale runtime.py builder pins; REDMI_UNVERIFIED.",
+      "next_step": "Core rebuilds all immutable staged candidates after the runtime.py change in #2139, then reruns staged-runtime + integrated regression. Do not claim normal chat audio input or correct fast multi-organ output.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 01:40 CET QA readback: release HEAD 16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19. PR #2138 exact head 8ca7a298 has owner-read 27+33 tests, Python 3.14 staged startup, offline bridge security, staged-runtime 240 passed/10 skipped/47 subtests, and integrated regression 415 passed/3 skipped/58 subtests; NOT_MERGED. Its additive-only workflow fails because existing updater files are intentionally modified; no release gate was bypassed. Exact current release HEAD has three eligible required push/dispatch workflows green (owner-read dispatch, integrated-context dispatch, private bridge push); 11 PR-only runs are action_required, so do not restate 12/12 for this newer SHA. Private read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests #352–354 have no device comments; NO_LIVE_RECEIPT, installed SHA UNKNOWN, REDMI_UNVERIFIED. Full local checkout/tests are BLOCKED because this worker cannot resolve github.com. P0 #1904 remains open: no current 20-turn device acceptance, no proven correct/fast B1/B2→C4→C3 chat."
+      "last_checkpoint": "2026-11-21 01:44 CET QA readback: Boss merged PR #2138 into release as 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e. Exact push CI remains IN_PROGRESS: owner-read 44845659008 PASS, private bridge 44845658907 PASS, staged-context 44845658992 IN_PROGRESS; source-contracts 44845662784 and integrated-regression 44845662714 IN_PROGRESS. Private read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS #352–354 have no device comments; installed SHA UNKNOWN / REDMI_UNVERIFIED. No device update or user-data mutation. P0 #1904 remains open; no current 20-turn quality/latency/device acceptance."
     },
     {
       "id": "V14-002",
@@ -28,23 +28,27 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "PR #2138 exact CI GREEN / Boss review pending; release HEAD 16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19 has only three eligible required push/dispatch workflows green on exact SHA; 11 PR-only runs are action_required and are not release proof. Private #352–354 have no device comments; phone SHA UNKNOWN / REDMI_UNVERIFIED.",
-      "next_step": "Boss independently reviews and integrates PR #2138; then request a fresh owner-verified PIPELINE_STATUS/DIAGNOSTICS receipt. Do not infer installed SHA or run another installer while device state is unknown.",
+      "proof_environment": "PR #2138 merged into release at 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e; exact current push CI incomplete (owner-read PASS, bridge PASS, staged-context IN_PROGRESS; source-contracts/integrated-regression IN_PROGRESS). No private device receipt; installed SHA UNKNOWN / REDMI_UNVERIFIED.",
+      "next_step": "Wait for the exact newer staged-context push run to finish; fail closed on any red/in-progress result. After exact release gate is green, obtain a fresh owner-verified PIPELINE_STATUS receipt before considering the normal updater. No repeated installer or device mutation without a real receipt.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 01:40 CET QA readback: release HEAD 16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19. PR #2138 exact head 8ca7a298 has owner-read 27+33 tests, Python 3.14 staged startup, offline bridge security, staged-runtime 240 passed/10 skipped/47 subtests, and integrated regression 415 passed/3 skipped/58 subtests; NOT_MERGED. Its additive-only workflow fails because existing updater files are intentionally modified; no release gate was bypassed. Exact current release HEAD has three eligible required push/dispatch workflows green (owner-read dispatch, integrated-context dispatch, private bridge push); 11 PR-only runs are action_required, so do not restate 12/12 for this newer SHA. Private read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests #352–354 have no device comments; NO_LIVE_RECEIPT, installed SHA UNKNOWN, REDMI_UNVERIFIED. Full local checkout/tests are BLOCKED because this worker cannot resolve github.com.",
+      "last_checkpoint": "2026-11-21 01:44 CET QA readback: Boss merged PR #2138 into release as 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e. Exact push CI remains IN_PROGRESS: owner-read 44845659008 PASS, private bridge 44845658907 PASS, staged-context 44845658992 IN_PROGRESS; source-contracts 44845662784 and integrated-regression 44845662714 IN_PROGRESS. Private read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS #352–354 have no device comments; installed SHA UNKNOWN / REDMI_UNVERIFIED. No device update or user-data mutation.",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
-        "status": "CI_GREEN_REVIEW_PENDING",
+        "merge_commit_sha": "5b9171a457f32cafa6cc05fb88e80ef8b4dad08e",
+        "status": "MERGED_EXACT_PUSH_CI_PENDING",
         "proof": {
-          "owner_read": "PASS (27 source-updater + 33 pipeline-agent tests)",
-          "python314_staged_startup": "PASS",
-          "offline_bridge_security": "PASS",
-          "staged_runtime": "PASS (240 passed, 10 skipped, 47 subtests)",
-          "integrated_regression": "PASS (415 passed, 3 skipped, 58 subtests)",
-          "additive_only_validator": "FAIL (expected policy rejection for intentional existing updater/runtime modifications; not bypassed)",
-          "local_linux": "NOT_RUN; full checkout unavailable",
-          "redmi": "NO_LIVE_RECEIPT; issues #352–354 unanswered; installed SHA unknown"
+          "premerge_owner_read": "PASS (27 source-updater + 33 pipeline-agent tests)",
+          "premerge_python314_staged_startup": "PASS",
+          "premerge_offline_bridge_security": "PASS",
+          "premerge_staged_runtime": "PASS (240 passed, 10 skipped, 47 subtests)",
+          "premerge_integrated_regression": "PASS (415 passed, 3 skipped, 58 subtests)",
+          "current_merge_push_owner_read": "PASS run 44845659008",
+          "current_merge_push_bridge": "PASS run 44845658907",
+          "current_merge_push_staged_context": "IN_PROGRESS run 44845658992",
+          "current_source_contracts": "IN_PROGRESS run 44845662784",
+          "current_integrated_regression": "IN_PROGRESS run 44845662714",
+          "redmi": "NO_LIVE_RECEIPT; #352–354 unanswered; installed SHA unknown"
         }
       }
     },
@@ -70,10 +74,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2133 CI 32 PASS over synthetic events + real SQLite Store/checkpoint; shadow readouts only; QA source-disjoint/cancellation/backlog findings open. PR #2135 exactly-once online-world candidate focused 13 tests + existing 49-test local-plasticity workflow + combined JEPA pass, but staged-runtime fails 20/218/10 skipped/2 errors and integrated regression fails due stale integrated_online_world_candidate hash pin. No native body-weight or Redmi proof.",
-      "next_step": "JEPA/Boss must correct T8 cancellation/unknown semantics and exact source-disjoint split, implement keyset catch-up, then rebuild pinned candidate chain for #2135. Keep all optimizer gates closed until trusted producer, holdout, retention, restart and rollback are verified.",
+      "proof_environment": "PR #2133 remains experimental/NOT_RUNTIME_WIRED with source-disjoint, cancellation and backlog findings. PR #2135 exactly-once OnlineWorld focused 13 + existing 49 + combined JEPA tests PASS, but staged-runtime fails 20/218/10 skipped/2 errors due stale integrated_online_world_candidate pin for v13/online_world.py. PR #2137 T8 cancellation/cardinality/durability findings remain.",
+      "next_step": "JEPA/Integrator rebuild immutable online-world/observer/postcommit/record-only chain, then rerun exact staged/integrated regression. Fix T8 cancellation/unknown and source-disjoint leakage before any optimizer gate opens.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 QA: PR #2133 still not Runtime-wired and has source_id leakage, cancelled/unknown-label and latest-N starvation findings. PR #2135 fixes the existing OnlineWorld consumer's two-file crash window with one atomic checkpoint/flock, but cannot integrate until hash-pinned candidate chain is rebuilt. PR #2137 remains draft with cancellation/unknown semantics, ActionOutcome LIMIT 17 cardinality and rollback fsync findings.",
+      "last_checkpoint": "2026-11-21 QA: exact staged log for #2135 confirms integrated_online_world_candidate_20261110.py rejects changed v13/online_world.py; observer/postcommit/record-only downstream candidates and two-checkout migration also fail. QA posted exact test evidence to #2135.",
       "latest_candidate_pr": {
         "pr": 2133,
         "head_sha": "34cdc9efca094324848b3c49237b341c6d86a6d4",
@@ -116,10 +120,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Current release HEAD 16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19 read back; full Canon index has 1,255 historical headings but atom-level implementation/consumer mapping remains incomplete. PR #2132 handoff is stale relative to current candidate results; no full-system acceptance.",
-      "next_step": "Boss reviews and integrates QA handoff; continue cross-owner whole-Canon mapping and prioritize connected E2E consumers, not PR counts.",
+      "proof_environment": "Release HEAD 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e integrates #2138 exact-run CI/activation race fix; exact merge push staged-context and source-contract/integrated jobs are still IN_PROGRESS. Full Canon feature/consumer acceptance remains incomplete.",
+      "next_step": "Boss monitors exact release jobs and coordinates Core/JEPA pin repairs; integrate only compatible green candidates and maintain per-Canon evidence.",
       "user_action_required": false,
-      "last_checkpoint": "QA refreshed the shared evidence branch with exact CI and integration boundaries; no Master edit, no V13 historical bytes changed, no release or device action."
+      "last_checkpoint": "QA handoff branch updated with #2138 merge SHA and exact in-progress push checks; no V13 historical bytes or Master edited."
     },
     {
       "id": "V14-008",
@@ -130,10 +134,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "Handoff is being updated on QA PR #2132; current HEAD 16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19; no current phone receipt.",
-      "next_step": "At next user-facing checkpoint report only verified CI/local/device evidence and ask for a device action only if a fresh owner-read receipt proves it is necessary.",
+      "proof_environment": "QA handoff branch is updated through #2138 merge checkpoint; current release HEAD 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e; device receipt still absent.",
+      "next_step": "Keep next-chat handoff synchronized after exact push CI and any real phone receipt; explain the difference between CI merge and installed phone state.",
       "user_action_required": false,
-      "last_checkpoint": "No user action needed for repository work; do not request duplicate Termux command. Device state remains unknown."
+      "last_checkpoint": "No user action needed; no new Termux command justified."
     },
     {
       "id": "V14-009",
@@ -144,10 +148,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
-      "proof_environment": "PR #2136 merged: synthetic PCM16 -> canonical PerceptPacket -> A4 Attention + C3 Admission adapter; no microphone capture or Runtime consumer. PR #2139 adds caller-supplied bounded PCM16 Runtime consumer for B1/B2 and C3; focused CI 58 tests + 30 subtests PASS, but full staged-runtime/integrated-regression FAIL because hash-pinned consumers still target old runtime.py. No Android OS permission provider, native audio model, full-duplex, TTS or Redmi proof.",
-      "next_step": "Core/Perception must rebuild staged candidates for runtime.py, then connect a real Android companion with OS-backed microphone consent, revocation and lifecycle; only a real Redmi receipt can promote Android voice status.",
+      "proof_environment": "PR #2136 adapter merged; PR #2139 caller-supplied PCM16 consumer focused CI PASS but staged/integrated FAIL 30/208/10 skipped/2 errors because runtime.py pin chain is stale. No Android OS microphone, voice output/full-duplex or Redmi proof.",
+      "next_step": "Core/Perception rebuild the runtime.py dependent candidate chain and integrate only after full stage passes; then implement/test OS-backed Android consent/revocation and native audio on real Redmi.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 QA: A5 adapter is now in release tree but not called by normal chat input. #2139 is a partial CI-synthetic consumer and not releasable until all staged pins are rebuilt."
+      "last_checkpoint": "2026-11-21 QA posted exact staged root failure on #2139; not releasable until all downstream candidate pins are rebuilt and staged tests pass."
     },
     {
       "id": "V14-010",
