@@ -281,7 +281,9 @@ class Runtime:
                 except Exception as exc:
                     self.notice('Abschluss konnte nicht gespeichert werden: '+type(exc).__name__+'; Neustart rekonstruiert den Status.')
                 finally:
-                    if kind=='turn':self.turn_event=None
+                    if kind=='turn':
+                        getattr(self,'_audio_contexts',{}).pop(payload['event_id'],None)
+                        self.turn_event=None
                     if hasattr(self._session_local,'session_id'):del self._session_local.session_id
                     with self.lock:self.current=None;self.jobs.task_done();self.status='Pausiert' if self.paused else 'Bereit'
     def _rejected(self,e,reason):
@@ -398,28 +400,26 @@ class Runtime:
     def _action_gain(self,eid):
         try:return attctl.controller(self).gains()['action']  # WP-N5 thalamic action coupling for C5 (caution lowers it)
         except Exception as exc:self.store.log('attention_unavailable',eid,{'stage':'action_gain','error':type(exc).__name__});return None
-    def _audio_prompt_layer(self,eid,audio_result,audio_window):
-        """Build a source-resolvable C3 layer from consented acoustic features only."""
-        if not isinstance(audio_result,dict):return None,None
-        admission=audio_result.get('c3_admission')
-        packet_value=audio_result.get('packet')
+    def _audio_context_record(self,eid,audio_result,audio_window):
+        """Persist a small derived acoustic summary; keep PCM and consent callback process-local."""
+        if not isinstance(audio_result,dict):return None
+        admission=audio_result.get('c3_admission');packet_value=audio_result.get('packet')
         selected=getattr(admission,'selected',()) if admission is not None else ()
         if (getattr(admission,'status',None)!='ADMITTED' or not selected
                 or not isinstance(packet_value,dict)):
-            return None,None
-        source=packet_value.get('source_ref')
-        segments=packet_value.get('segments')
-        if (type(source) is not dict or type(segments) is not list or len(segments)!=1
+            return None
+        source=packet_value.get('source_ref');segments_value=packet_value.get('segments')
+        if (type(source) is not dict or type(segments_value) is not list or len(segments_value)!=1
                 or packet_value.get('event_id')!=eid
                 or packet_value.get('brain_generation_id')!=self.store.generation_id):
-            return None,None
-        receipt=segments[0].get('consent_receipt_ref') if type(segments[0]) is dict else None
+            return None
+        receipt=segments_value[0].get('consent_receipt_ref') if type(segments_value[0]) is dict else None
         check_consent=audio_window.get('consent_check') if type(audio_window) is dict else None
         try:current=check_consent(source.get('source_id'),receipt) if callable(check_consent) else False
         except Exception:current=False
         if current is not True:
-            self.store.log('audio_input_unavailable',eid,{'stage':'c3_prompt_consent','reason':'REVOKED_OR_UNAVAILABLE'})
-            return None,None
+            self.store.log('audio_input_unavailable',eid,{'stage':'context_record_consent','reason':'REVOKED_OR_UNAVAILABLE'})
+            return None
         observations=[]
         for item in selected:
             summary=getattr(item,'summary',None)
@@ -434,19 +434,44 @@ class Runtime:
                                  'modality':getattr(item,'modality',None),
                                  'start_ms':start,'end_ms':end,
                                  'summary':summary,'priority':getattr(item,'priority',0)})
-        if not observations:return None,None
+        if not observations:return None
         body={'schema':'v14.raw-ear-acoustic-context/1',
               'audio_packet_id':packet_value.get('packet_id'),
               'audio_source_ref':source,'observations':observations,
               'authority':'ACOUSTIC_FEATURES_ONLY','transcript':None,
               'learning_authority':False,'action_authority':False}
-        # Store only a short derived summary, never the caller's PCM bytes.
         summary_ref=self.store.source(dumps(body),'AUDIO_ACOUSTIC_CONTEXT')
-        layer_body=body|{'summary_source_ref':summary_ref}
-        layer=('RAW_EAR_ACOUSTIC',
-               '\nRAW_EAR_ACOUSTIC (consent-bound; acoustic features only; not a transcript):',
-               layer_body)
-        return layer,summary_ref
+        context={'body':body,'summary_source_ref':summary_ref,
+                 'source_id':source.get('source_id'),'receipt':receipt,
+                 'consent_check':check_consent}
+        if not hasattr(self,'_audio_contexts'):self._audio_contexts={}
+        self._audio_contexts[eid]=context
+        return context
+    def _audio_context_view(self,eid,consumer='C3'):
+        """Revalidate consent and immutable summary provenance at each real consumer."""
+        context=getattr(self,'_audio_contexts',{}).get(eid)
+        if not isinstance(context,dict):return None
+        check_consent=context.get('consent_check')
+        try:current=check_consent(context.get('source_id'),context.get('receipt')) if callable(check_consent) else False
+        except Exception:current=False
+        if current is not True:
+            self.store.log('audio_input_unavailable',eid,{'stage':'consumer_consent','consumer':str(consumer)[:32],
+                                                          'reason':'REVOKED_OR_UNAVAILABLE'})
+            return None
+        try:
+            stored=json.loads(self.store.read_source(context['summary_source_ref']))
+            if stored!=context['body']:raise ValueError('audio summary source mismatch')
+        except Exception as exc:
+            self.store.log('audio_input_unavailable',eid,{'stage':'consumer_source','consumer':str(consumer)[:32],
+                                                          'error':type(exc).__name__})
+            return None
+        return context['body']|{'summary_source_ref':context['summary_source_ref']}
+    def _audio_prompt_layer(self,eid):
+        view=self._audio_context_view(eid,'C3')
+        if not view:return None,None
+        return ('RAW_EAR_ACOUSTIC',
+                '\nRAW_EAR_ACOUSTIC (consent-bound; acoustic features only; not a transcript):',
+                view),view['summary_source_ref']
     def _turn(self,e):
         audio_window=e.pop('_audio_window',None);audio_result=None;audio_source_ref=None
         eid=e['event_id'];g=e['brain_generation_id'];text=self.store.read_source(e['source_ref']);start=time.monotonic();deadline=start+self.cfg['deadline_seconds'];mid=self.store.message(self.session,eid,'assistant');meta={'model_generated':False,'memory_ids':[],'output_owner':'C5_REPORT_BROKER','effective_config':dict(self.cfg),'first_output_monotonic_ns':None};status='FINAL';output='';aid=None;offers=[];version=0;direct=False;runner=None;wake_decision=None;effort_plan=None;ff_x=ff_key=ff_surprise=None
@@ -494,6 +519,8 @@ class Runtime:
                                          'source_id':audio_window['source_id'],
                                          'capture_authority':'CALLER_SUPPLIED_PCM16',
                                          'learning_authority':False,'action_authority':False}
+                    audio_context=self._audio_context_record(eid,audio_result,audio_window)
+                    meta['audio_input']['context_recorded']=bool(audio_context)
                 except Exception as exc:
                     self.store.log('audio_input_unavailable',eid,
                                    {'stage':'a5_a4_admission','error':type(exc).__name__})
@@ -650,7 +677,7 @@ class Runtime:
                 if guidance:stable+='\n'+prompt(self.cfg,'operator_rules')+dumps(guidance)
                 volatile=[]
                 if audio_result is not None:
-                    audio_layer,audio_source_ref=self._audio_prompt_layer(eid,audio_result,audio_window)
+                    audio_layer,audio_source_ref=self._audio_prompt_layer(eid)
                     admission=audio_result.get('c3_admission')
                     meta['audio_admission']={'status':getattr(admission,'status','UNAVAILABLE'),
                                              'selected_count':len(getattr(admission,'selected',()) or ()),
