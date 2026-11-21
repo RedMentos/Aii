@@ -2,7 +2,7 @@
 
 ## V14-006 — current-base RAW EAR / consent / perception handoff
 
-- Current candidate: [PR #2233](https://github.com/RedMentos/Aii/pull/2233), branch `research-perception/v14-raw-ear-consent-current-20261121-run12`, current documentation head `e30f4b3aa3b738dca05d6c88eab8a887ed4cfbfa`; exact code/test tree `17f273395a869fd7469110773a5fe777a522909b`, based on `9d8f91960c568be7fe7dcf894555ce7250f635f4`.
+- Current candidate: [PR #2233](https://github.com/RedMentos/Aii/pull/2233), branch `research-perception/v14-raw-ear-consent-current-20261121-run12`, tested code/test tree `17f273395a869fd7469110773a5fe777a522909b`; subsequent branch commits are documentation-only and do not change the tested code, based on `9d8f91960c568be7fe7dcf894555ce7250f635f4`.
 - Exact code/test CI: consent 29/29; RAW EAR temporal/producer/Silero/A4/C3 53/53 on Python 3.11 and 3.13; VAD comparison 8/8 on 3.13/3.14 plus native Linux libfvad 13 PASS/0 FAIL/0 ERROR per matrix job; staged 251 passed/10 skipped/47 subtests; integrated 424 passed/3 skipped/58 subtests; privacy, model-lab, offline-bridge-security and same-repo queue contract PASS.
 - Strict safe-additive validation is a policy FAIL (existing Runtime modules and workflows are changed); no bypass. Release queue returns `review_only_paths`. Draft / NOT_RELEASED. Local exact-source checkout is BLOCKED by DNS; REDMI_UNVERIFIED.
 - Research R-031/R-032 records FD-VAD and S4VAD full-text findings, licenses and mobile caveats. Neither was imported/downloaded.

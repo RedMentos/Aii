@@ -4,7 +4,7 @@
 **Queue:** V14-006 — Research & Perception  
 **Base:** `9d8f91960c568be7fe7dcf894555ce7250f635f4` (`gpt6/v13-private-remote-bridge-20261111`)  
 **Branch:** `research-perception/v14-raw-ear-consent-current-20261121-run12`  
-**PR head:** `17f273395a869fd7469110773a5fe777a522909b`  
+**Tested code/test tree:** `17f273395a869fd7469110773a5fe777a522909b`  
 **Status:** REBASED_CANDIDATE / CI_GREEN_EXCEPT_SAFE_ADDITIVE / NOT_RELEASED / REDMI_UNVERIFIED
 
 ## What changed
