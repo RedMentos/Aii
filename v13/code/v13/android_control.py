@@ -70,8 +70,8 @@ _ANDROID_DATA_ROOT = Path("/data")
 _ANDROID_SYSTEM_UID = 1000
 
 
-def _reject_unapproved_symlink_ancestors(parent):
-    """Reject caller-controlled symlink components, except the verified Android data alias."""
+def _reject_unapproved_symlink_ancestors(parent, uid):
+    """Validate the original path before resolving the exact Android data alias."""
     absolute = Path(os.path.abspath(os.fspath(parent)))
     parts = absolute.parts
     current = Path(parts[0])
@@ -79,19 +79,36 @@ def _reject_unapproved_symlink_ancestors(parent):
         current = current / component
         try:
             info = current.lstat()
-        except FileNotFoundError:
-            continue
         except OSError as exc:
-            raise ControlDenied("unsafe audit database path") from exc
-        if not stat.S_ISLNK(info.st_mode):
-            continue
-        resolved = Path(os.path.realpath(os.fspath(current)))
-        allowed = any(
-            current == Path(alias) and resolved == Path(target)
-            for alias, target in _ANDROID_PLATFORM_SYMLINKS
+            raise ControlDenied("unsafe audit database ancestor") from exc
+        under_android_data = (
+            current == _ANDROID_DATA_ROOT or _ANDROID_DATA_ROOT in current.parents
         )
-        if not allowed:
-            raise ControlDenied("unapproved symlink in audit database path")
+        if stat.S_ISLNK(info.st_mode):
+            resolved = Path(os.path.realpath(os.fspath(current)))
+            allowed = any(
+                current == Path(alias) and resolved == Path(target)
+                for alias, target in _ANDROID_PLATFORM_SYMLINKS
+            )
+            allowed_owners = {0, uid}
+            if under_android_data:
+                allowed_owners.add(_ANDROID_SYSTEM_UID)
+            if not allowed or info.st_uid not in allowed_owners:
+                raise ControlDenied("unapproved symlink in audit database path")
+            continue
+        if not stat.S_ISDIR(info.st_mode):
+            raise ControlDenied("audit database ancestor must be a directory")
+        if current == absolute:
+            if info.st_uid != uid or info.st_mode & 0o022:
+                raise ControlDenied("audit database parent must be owner-controlled")
+            continue
+        allowed_owners = {0, uid}
+        if under_android_data:
+            allowed_owners.add(_ANDROID_SYSTEM_UID)
+        if info.st_uid not in allowed_owners:
+            raise ControlDenied("untrusted audit database ancestor owner")
+        if info.st_mode & 0o022 and not (info.st_mode & stat.S_ISVTX):
+            raise ControlDenied("group/world-writable audit database ancestor")
     return Path(os.path.realpath(os.fspath(absolute)))
 
 
@@ -154,11 +171,12 @@ def _private_audit_db_path(db_path):
     """
     try:
         raw_path = Path(os.path.abspath(os.path.expanduser(os.fspath(db_path))))
-        canonical_parent = _reject_unapproved_symlink_ancestors(raw_path.parent)
         getuid = getattr(os, "getuid", None)
         if getuid is None:
             raise ControlDenied("safe audit storage unavailable")
-        parent = _validate_audit_parent_ancestry(canonical_parent, getuid())
+        uid = getuid()
+        canonical_parent = _reject_unapproved_symlink_ancestors(raw_path.parent, uid)
+        parent = _validate_audit_parent_ancestry(canonical_parent, uid)
         path = parent / raw_path.name
     except ControlDenied:
         raise
