@@ -5,7 +5,12 @@ on:
     branches: [gpt6/v13-private-remote-bridge-20261111]
     paths:
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
+      - "v13/code/scripts/integrated_online_world_candidate_20261110.py"
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
+      - "v13/code/v13/v14_learning/**"
+      - "v13/code/tests/test_v14_t8_runtime_consumer.py"
+      - "v14/learning/**"
+      - ".github/workflows/v14-t8-temporal-bridge.yml"
       - "v13/code/scripts/stage_integrated_candidate.py"
       - "v13/code/v13/runtime_deploy.py"
       - "v13/code/tests/test_c3_audio_runtime_consumer.py"
@@ -21,7 +26,10 @@ on:
       - "v13/code/scripts/stage_integrated_candidate.py"
       - "v13/code/v13/runtime_deploy.py"
       - "v13/code/tests/**"
+      - "v13/code/v13/v14_learning/**"
+      - "v14/learning/**"
       - ".github/workflows/v14-core-audio-context-staged.yml"
+      - ".github/workflows/v14-t8-temporal-bridge.yml"
   workflow_dispatch:
 
 jobs:
@@ -43,19 +51,26 @@ jobs:
         run: |
           sha256sum \
             v13/code/scripts/integrated_audio_context_candidate_20261121.py \
+            v13/code/scripts/integrated_online_world_candidate_20261110.py \
             v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
-            v13/code/scripts/stage_integrated_candidate.py
+            v13/code/scripts/stage_integrated_candidate.py \
+            v13/code/v13/runtime_deploy.py
           test "$(sha256sum v13/code/scripts/integrated_audio_context_candidate_20261121.py | cut -d' ' -f1)" = "734a6786fec61c4fe15d8861e56b9303496b44967cd76327931908321844a17f"
-          test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py | cut -d' ' -f1)" = "fbaaed41a84bc548fcf5edb1aa0d1d04adbd21d1ad25ad0c40e20460e4375021"
-          test "$(sha256sum v13/code/scripts/stage_integrated_candidate.py | cut -d' ' -f1)" = "7a9f369c27c748f2a4caff4dad83a8fc57ca4fabefe87b3c1d03ac9a36d81cc5"
+          test "$(sha256sum v13/code/scripts/integrated_online_world_candidate_20261110.py | cut -d' ' -f1)" = "1d2a593a7127864bdaa5afb72ea6c947af3173e93fc58402a5acd762ead0eb2f"
+          test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py | cut -d' ' -f1)" = "6ad41baad91f3790f79253f1967e23e7d17a9a24cd16598896fde2ec15636768"
+          test "$(sha256sum v13/code/scripts/stage_integrated_candidate.py | cut -d' ' -f1)" = "c0640aba0eaeb7f6e9454c61006f5175b7a92db5378b12a8ac74c57ab6bace81"
+          test "$(sha256sum v13/code/v13/runtime_deploy.py | cut -d' ' -f1)" = "7c836edff0be94f4a6e48aa194d52bdd589e2153547bdb31667a7a01c4dd3012"
       - name: Compile candidate builders and deployment gate
         run: |
           python -m py_compile \
             v13/code/scripts/integrated_audio_context_candidate_20261121.py \
+            v13/code/scripts/integrated_online_world_candidate_20261110.py \
             v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
             v13/code/scripts/stage_integrated_candidate.py \
             v13/code/v13/runtime_deploy.py \
-            v13/code/tests/test_v14_audio_context_stage_20261121.py
+            v13/code/v13/v14_learning/*.py \
+            v13/code/tests/test_v14_audio_context_stage_20261121.py \
+            v13/code/tests/test_v14_t8_runtime_consumer.py
       - name: Audio bridge and whole-context regressions
         env:
           PYTHONPATH: v13/code
