@@ -34,7 +34,7 @@
 
 - Open PRs #2115, #2116 and #2122 already cover registry provenance/integrity/disk-budget slices; this PR does not duplicate their files.
 - Older PR #2118 contains a single-model probe on a stale branch. This PR is based on the current V14 branch and adds the missing sequential two-model comparison using the runtime LlamaRunner.
-- Draft PR #2141 currently touches V14_WORK_BOARD.json and V14_USER_NEXT_ACTION.md. This handoff deliberately does not edit those shared files to avoid a cross-agent conflict; the Boss/Integrator should carry this checkpoint into V14_USER_NEXT_ACTION after reconciling #2141.
+- Draft PR #2141 also touches V14_WORK_BOARD.json and V14_USER_NEXT_ACTION.md for QA-owned tickets. This branch updates only the separate V14-005 ticket and inserts the Research & Perception snapshot near the top of V14_USER_NEXT_ACTION; #2141's QA append is at the end. The edits are disjoint by section, but the merge order should still be checked. A coordination comment was posted on #2141.
 
 ## Next executable step
 
@@ -49,3 +49,10 @@
 - Code-bearing checkpoint commit: 64ff26aa51f3a9ec4c6a169588ef41004b7ba2a0; this also adds .github/workflows/v14-model-lab.yml for future V14 experiment changes.
 - Exact branch CI now PASS: workflow run 44848887759, job model-lab, on head commit 3e13188a414b1cc3ff327fe9897a07d0d5ff8900. It compiled both Python files, validated the candidate JSON, and ran 13 tests in 0.042s (Python 3.13.18, GitHub Linux runner). This is exact-commit CI, not native inference.
 - No actual GGUF or llama-server is present in the CI runner, so native model inference remains NOT RUN; no candidate download and no Redmi proof.
+
+
+## Shared handoff updated — 2026-11-21
+
+- V14_WORK_BOARD.json: V14-005 moved from READY to IN_PROGRESS_PARTIAL with PR #2142, exact CI run 44848887759, and explicit NOT_RUN/REDMI_UNVERIFIED native evidence.
+- V14_USER_NEXT_ACTION.md: added a Research & Perception checkpoint and corrected source_HEAD (shared base c3c32c05; last code-bearing release 5b9171a), local-test boundary, candidate-only status and next action.
+- Current research branch head after these documentation updates: 85f65cb8086ce664a091ec592fbbc5d010f8b500. The code-bearing CI-tested commit remains 3e13188a414b1cc3ff327fe9897a07d0d5ff8900; subsequent commits only update board/next-action/handoff/ledger.
