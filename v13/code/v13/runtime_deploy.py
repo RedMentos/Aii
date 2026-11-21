@@ -694,7 +694,9 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False,
                 or previous.get("launcher_sha256") != hashlib.sha256(before).hexdigest()):
             raise RuntimeDeployError("Existing runtime marker does not match launcher")
     backup = private / ("launcher-backup-" + secrets.token_hex(8) + ".sh")
-    _atomic_file(backup, before, stat.S_IMODE(launcher.stat().st_mode))
+    # The backup lives in the private directory and is data, not an executable.
+    # Keep it owner-only regardless of the installed launcher's original mode.
+    _atomic_file(backup, before, 0o600)
     stage = builds / ("v13-" + commit[:12] + "-" + secrets.token_hex(4))
     if stage.exists() or stage.is_symlink():
         raise RuntimeDeployError("Runtime staging collision")
