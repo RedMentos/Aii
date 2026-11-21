@@ -1,5 +1,10 @@
 # Research & Perception handoff — 2026-11-21 18:55 CET
 
+## PR and branch readback
+
+- Draft PR: https://github.com/RedMentos/Aii/pull/2243
+- PR was opened at head 8732a395058745b8c9fdbee7d4e8d0e4b241abcb; subsequent handoff/board refresh commits are part of the same draft PR. Final head is reported in the chat after readback.
+
 ## Branch and scope
 
 - Repository: RedMentos/Aii
