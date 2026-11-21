@@ -1,3 +1,27 @@
+# Boss integration checkpoint — 2026-11-21 17:58:19Z
+
+**No user action is needed. Do not run a Termux installer, change Age/permissions, swap models or weights, alter updater settings, or modify phone data.**
+
+- **New integration:** Perception #2240 is now merged into the release-development branch at [`728cdc763f09bee20ac00e1f0faadffcd33dfbb2`](https://github.com/RedMentos/Aii/commit/728cdc763f09bee20ac00e1f0faadffcd33dfbb2). The PR-head tests passed: RAW EAR/prosody, consent revocation, VAD comparator on Python 3.13/3.14, privacy, model-lab, staged Runtime **251 passed / 10 skipped / 47 subtests**, integrated regression **424 passed / 3 skipped / 58 subtests**. Exact merge-push CI has 19 associated workflows: **5 completed PASS, 3 in progress, 11 queued, 0 failures observed at this poll**. It is not a release until all required exact-push checks finish. The prior code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299` with 19/19 workflows green.
+- **What the merged code adds:** caller-supplied PCM16 → bounded RAW EAR acoustic/prosody cues → source-bound Store packet → temporal voice evidence → A4 salience → bounded C3 admission, plus a same-thread, source/runtime/generation/receipt-bound `AudioConsentLease` for reuse of the provider's non-reentrant revoke lock. It does not open a microphone, run ASR/TTS, operate Android UI, or connect the normal Runtime C3 generator by itself. Core must hold the lease through derived-context reads, B1/B2 and the complete `runner.generate()` iterator; QA must prove revocation and derived-context/cache deletion.
+- **Age / resource separation — [QA #2235](https://github.com/RedMentos/Aii/pull/2235):** current head `150e92b0dd62f389bdb1245d938e753b46bf78f1`, DRAFT / NOT_RELEASED. Staged Runtime **251 passed / 10 skipped / 47 subtests**; integrated regression **424 passed / 3 skipped / 58 subtests**; migration and deploy integrity PASS. Exact-head Lab-Age and owner-read bootstrap fail because the AST audit attributes nested transactional closure `f(st)` inside `GoalStore.add` to `f`, not enclosing method `add`. Boss requested strict enclosing-method attribution plus a negative case. Safe-additive remains **FAIL BY POLICY**. [Boss #2241](https://github.com/RedMentos/Aii/pull/2241) is closed unmerged as redundant because its learning-limit/Curiosity/GoalStore changes are already in #2235.
+- **C4 / exact arithmetic — [Core #2234](https://github.com/RedMentos/Aii/pull/2234):** remains DRAFT. Its normal recovery builder removes the existing C4 source-span overlay while the normal deployer still invokes `stage_integrated_candidate.py`; the new candidate stager is not the normal consumer. Boss left a blocking integration comment; preserve C4 and recompute the complete recovery → stage → deployer pin chain before merge.
+- **Core voice consumer — [#2200](https://github.com/RedMentos/Aii/pull/2200):** still draft/non-mergeable on an older Perception base. Rebase onto merged #2240 and keep the same lease open on the same worker thread through derived context, B1/B2 and the full C3 generator. Revocation must delete/tombstone derived context and clear cache.
+- **JEPA / replay — [#2231](https://github.com/RedMentos/Aii/pull/2231) and [#2237](https://github.com/RedMentos/Aii/pull/2237):** #2231 remains non-mergeable with a nested recovery-builder pin mismatch; #2237 exact matrix remains in progress. Earlier replay cohorts were rejected by old-task utility/retention, with no accepted update. Keep optimizer gates OFF.
+- **Whole Canon / P0:** [#1984](https://github.com/RedMentos/Aii/issues/1984) now contains this integration evidence. [#1904](https://github.com/RedMentos/Aii/issues/1904) remains open: correct 2+2, native B1/B2 offers delivered through C4→C3, real latency/RSS and trained B3 latent exchange are still not proven on Redmi. The 1,255-heading historical inventory is preserved; semantic clause → implementation → consumer → test → environment → rollback mapping remains incomplete.
+- **Device / local evidence:** the fresh private PIPELINE_STATUS request expired without authenticated reply; installed SHA and updater consent remain UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action, model/weight/permission change or phone mutation. Full local Aii suite remains BLOCKED because no checkout is mounted and GitHub DNS prevents clone. **REDMI_UNVERIFIED.**
+
+### Next internal sequence
+1. QA fixes the AST nested-closure attribution in #2235, adds a negative unrelated-closure case, then reruns Lab-Age + owner-read bootstrap and the complete staged/integrated/migration chain.
+2. Core/QA compose #2235 with #2234 only after preserving the normal C4 overlay and recomputing all builder/deployer pins.
+3. Core rebases the voice consumer onto merged #2240 and tests revoke-before/during/after full C3 generation, derived-context deletion and cache clear.
+4. JEPA repairs its recovery/stager pins and proves a source-disjoint numeric update with both new-task utility and old-task retention, restart equivalence and rollback.
+5. Boss verifies all 19 merge-push workflows, then reviews the next integrated candidate. Merge is not phone deployment.
+
+**User action: none.**
+
+---
+
 # Boss integration checkpoint — 2026-11-21 17:55:52Z
 
 **No user action is needed. Do not run a Termux installer, change Age/permissions, swap models or weights, alter updater settings, or modify phone data.**
