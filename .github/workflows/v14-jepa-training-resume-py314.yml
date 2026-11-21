@@ -11,6 +11,7 @@ on:
       - "v13/code/v13/world_jepa_planner.py"
       - "v13/code/v13/world_jepa_optimizer_audit.py"
       - "v13/code/tests/test_world_jepa_optimizer_resume_store.py"
+      - "v13/code/tests/test_v14_world_jepa_store_aba_replay.py"
       - "v13/code/tests/test_world_jepa_training_resume_stage_20261111.py"
       - "v13/code/tests/world_jepa_training_resume_disposable_cases_20261111.py"
       - "v13/code/tests/test_v14_world_jepa_postcommit_runtime.py"
@@ -44,5 +45,7 @@ jobs:
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_optimizer_resume_store.py
       - name: Verify staged optimizer-resume regression
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_training_resume_stage_20261111.py
+      - name: Verify production Store A-B-A replay / retention / receiver loop
+        run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_v14_world_jepa_store_aba_replay.py
       - name: Public repository privacy scan
         run: python v13/code/scripts/public_repo_privacy_scan.py --base 99ec54534fc9e99ce5689d335c80162f018de288 --head HEAD
