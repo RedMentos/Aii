@@ -187,7 +187,7 @@ def test_missing_online_world_and_censored_outcome_do_not_promote_learning(tmp_p
         record = TemporalT8Bridge(Path(tmp_path) / "v14_temporal", learning_enabled=False).ledger.get(action_id)
         assert record is not None
         assert record["status"] == "CANCELLED"
-        assert record["prediction_error"] is None
+        assert record["error"] is None
         assert runtime.cfg["learning_mode"] == "RECORD_ONLY"
     finally:
         runtime.close()
