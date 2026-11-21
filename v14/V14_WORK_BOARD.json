@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Core #2242 branch head 1850b9ba025074be89476ee32c87ae57b0345f29. Source audit confirms native_turn_budget recovery currently makes Cognition.offer(B1_DETAIL) and Cognition.offer(B2_GIST) raise Limits after two C3 zero-token prefill failures, moving both to POSTCOMMIT_ELIGIBLE before the same-turn C4 focal loop. QA regression #2277 head 5b06e1f5 is stacked on Core; current workflow pull_request filters exclude Core base/new test path, so TEST_NOT_EXECUTED. No local full checkout and no Redmi receipt.",
+      "proof_environment": "Core #2242 branch head 1850b9ba025074be89476ee32c87ae57b0345f29. Source audit confirms native_turn_budget recovery currently makes Cognition.offer(B1_DETAIL) and Cognition.offer(B2_GIST) raise Limits after two C3 zero-token prefill failures, moving both to POSTCOMMIT_ELIGIBLE before the same-turn C4 focal loop. QA regression #2277 head 709ced72 is stacked on Core; current workflow pull_request filters exclude Core base/new test path, so TEST_NOT_EXECUTED. No local full checkout and no Redmi receipt.",
       "next_step": "Core: preserve a measured C3 reserve without silently deferring both pre-answer bodies on a nontrivial wake='both' turn. QA #2277 provides a source-bound same-turn B1+B2 generation-boundary regression; after Core fix, run it and add the downstream C4 OfferPacket-consumption receipt. Keep native/Redmi claims UNVERIFIED.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21T23:25:00Z",
-      "proof": "QA PR #2277 (head 5b06e1f5) adds test_same_turn_body_delivery_qa.py against actual Cognition.offer for both roles. The test is not executed; source path predicts Limits for each role. C4 receives no same-turn offers under the current recovery branch. No native inference or phone evidence."
+      "proof": "QA PR #2277 (head 709ced72) adds test_same_turn_body_delivery_qa.py against actual Cognition.offer for both roles. The test is not executed; source path predicts Limits for each role. C4 receives no same-turn offers under the current recovery branch. No native inference or phone evidence."
     },
     {
       "id": "V14-002",
