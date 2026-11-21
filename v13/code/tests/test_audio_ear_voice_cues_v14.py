@@ -663,6 +663,64 @@ def test_provider_revocation_winning_before_lease_has_no_audio_side_effects(tmp_
         runtime.store.close()
 
 
+
+def test_linearizable_lease_blocks_revocation_before_sqlite_commit(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    provider = _LinearizableConsentProvider()
+    at_commit = threading.Event()
+    allow_commit = threading.Event()
+    revoke_started = threading.Event()
+    revoke_finished = threading.Event()
+    original_tx = runtime.store.tx
+    blocked_once = False
+
+    @contextmanager
+    def block_before_first_commit():
+        nonlocal blocked_once
+        with original_tx() as connection:
+            yield connection
+            if not blocked_once:
+                blocked_once = True
+                at_commit.set()
+                if not allow_commit.wait(5):
+                    raise TimeoutError("test did not release blocked SQLite commit")
+
+    runtime.store.tx = block_before_first_commit
+
+    def revoke():
+        revoke_started.set()
+        provider.revoke()
+        revoke_finished.set()
+
+    try:
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            consumer = pool.submit(
+                consume_pcm16_voice_window,
+                runtime, tone(140),
+                sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=provider.check, consent_guard=provider.lease,
+                finality="FINAL", token_budget=512,
+            )
+            assert at_commit.wait(5)
+            revoker = pool.submit(revoke)
+            assert revoke_started.wait(5)
+            # The lease is still held after the final callback check and before COMMIT.
+            assert not revoke_finished.wait(0.05)
+            allow_commit.set()
+            result = consumer.result(timeout=5)
+            revoker.result(timeout=5)
+
+        assert revoke_finished.is_set()
+        assert provider.check(SOURCE_ID, RECEIPT) is False
+        assert result["c3_admission"].status == "ADMITTED"
+        assert packet_count(runtime.store, event["event_id"]) == 1
+        assert attention_count(runtime.store, event["event_id"]) == 1
+    finally:
+        allow_commit.set()
+        runtime.store.close()
+
 def test_linearizable_lease_serializes_revocation_through_a4_and_c3(tmp_path, monkeypatch):
     runtime, event = make_runtime(tmp_path)
     provider = _LinearizableConsentProvider()
