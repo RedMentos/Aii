@@ -1,4 +1,4 @@
-name: V14 JEPA training-resume Python 3.14
+name: V14 JEPA optimizer resume Python 3.13 and 3.14
 
 on:
   pull_request:
@@ -9,6 +9,9 @@ on:
       - "v13/code/v13/world_jepa_consumer.py"
       - "v13/code/v13/world_jepa_receiver_matrix.py"
       - "v13/code/v13/world_jepa_planner.py"
+      - "v13/code/v13/world_jepa_optimizer_audit.py"
+      - "v13/code/tests/test_world_jepa_optimizer_resume_store.py"
+      - "v13/code/tests/test_v14_world_jepa_store_aba_replay.py"
       - "v13/code/tests/test_world_jepa_training_resume_stage_20261111.py"
       - "v13/code/tests/world_jepa_training_resume_disposable_cases_20261111.py"
       - "v13/code/tests/test_v14_world_jepa_postcommit_runtime.py"
@@ -20,14 +23,29 @@ permissions:
 
 jobs:
   optimizer-resume:
+    name: optimizer resume / Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          python-version: ${{ matrix.python-version }}
       - name: Install pinned test dependencies
         run: python -m pip install --disable-pip-version-check numpy==2.3.5 pytest==9.2.0
-      - name: Run staged optimizer-resume and postcommit regression on Python 3.14
+      - name: Compile optimizer audit and production Store test
+        run: python -m py_compile v13/code/v13/world_jepa_optimizer_audit.py v13/code/tests/test_world_jepa_optimizer_resume_store.py
+      - name: Verify production SQLite / T8 / checkpoint resume against reset control
+        run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_optimizer_resume_store.py
+      - name: Verify staged optimizer-resume regression
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_training_resume_stage_20261111.py
+      - name: Verify production Store A-B-A replay / retention / receiver loop
+        run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_v14_world_jepa_store_aba_replay.py
+      - name: Public repository privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 99ec54534fc9e99ce5689d335c80162f018de288 --head HEAD
