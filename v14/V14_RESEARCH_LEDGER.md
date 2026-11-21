@@ -134,3 +134,8 @@ Exact PR-head V14 real-Store tests and V13 staged/integrated tests pass. The exa
 ### Next step
 
 Review and run the exact branch tests in CI. If the pinned 230M GGUF is already present on the authorized Redmi, run both orders while V13 is idle and compare TTFT/prefill, decode, RSS/PSS and task checks. If absent, obtain separate explicit consent before downloading it to an isolated lab slot; keep the 350M production model unchanged. B1/B2 model comparisons remain separate work and are not claimed complete.
+
+
+### PR / CI checkpoint — 2026-11-21
+
+PR #2142 (https://github.com/RedMentos/Aii/pull/2142) is open, ready for review and mergeable at last readback, based on c3c32c05a0374e970d274f8a777a7ab85c067d66. Code-bearing checkpoint 64ff26aa51f3a9ec4c6a169588ef41004b7ba2a0 adds a focused V14 experiment workflow at .github/workflows/v14-model-lab.yml. No PR workflow run or commit status was observed for this V14-only path; CI is NOT_RUN, not PASS. The workflow is committed for subsequent V14 experiment changes. Exact CI remains a review/merge follow-up.
