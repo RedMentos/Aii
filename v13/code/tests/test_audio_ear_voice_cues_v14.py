@@ -268,6 +268,8 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path)
         assert segment["learning_authority"] is False
         assert segment["action_authority"] is False
         assert "speaker_identity" in segment["unmeasured"]
+        assert "pitch" not in segment["unmeasured"]
+        assert "prosody" not in segment["unmeasured"]
         assert "speaker_id" not in cues and "speaker_identity" not in cues
         assert cues["method"] == "RAW_EAR_AUTOCORR_V3"
         assert cues["voiced_energy_range_db"] is not None
@@ -302,6 +304,48 @@ def test_prosody_dynamics_reach_a4_attention_and_c3_summary(tmp_path, monkeypatc
         assert observed["external_interrupt"] >= 0.25 * score
         assert result["a4"]["attention"] == {"captured": True}
         assert "prosody_change=" in result["c3_admission"].selected[0].summary
+    finally:
+        runtime.store.close()
+
+
+def test_silent_audio_marks_pitch_and_prosody_unmeasured(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, bytes(2 * 16000), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+            finality="FINAL", token_budget=512,
+        )
+        segment = result["packet"]["segments"][0]
+        cues = segment["acoustic"]["voice_cues"]
+        assert cues["activity_hint"] == "SILENCE"
+        assert cues["f0_median_hz"] is None
+        assert "pitch" in segment["unmeasured"]
+        assert "prosody" in segment["unmeasured"]
+        assert "calibrated_speech_probability" in segment["unmeasured"]
+        assert packet_count(runtime.store, event["event_id"]) == 1
+    finally:
+        runtime.store.close()
+
+
+def test_single_voiced_frame_measures_pitch_but_not_prosody(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(140, sample_rate=16000, seconds=0.04),
+            sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok),
+            finality="FINAL", token_budget=512,
+        )
+        segment = result["packet"]["segments"][0]
+        cues = segment["acoustic"]["voice_cues"]
+        assert cues["f0_median_hz"] is not None
+        assert "pitch" not in segment["unmeasured"]
+        assert "prosody" in segment["unmeasured"]
     finally:
         runtime.store.close()
 
