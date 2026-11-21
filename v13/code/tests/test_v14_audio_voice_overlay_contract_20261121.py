@@ -3,8 +3,6 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-from v13.common import sha256_bytes
-
 
 CODE = Path(__file__).resolve().parents[1]
 OVERLAY = CODE / "scripts/integrated_audio_context_candidate_20261121.py"
