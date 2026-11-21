@@ -1533,7 +1533,6 @@ class WorldJEPAStoreConsumer:
             candidate_gradient_projection["effective_update_scale"] = effective_scale
             replay_metrics["line_search_mode"] = "POST_FIT_PARAMETER_INTERPOLATION"
             replay_metrics["line_search_optimizer_passes"] = 1
-            replay_metrics["line_search_attempts"] = attempts
             replay_metrics["selected_update_scale"] = selected_scale
             # Final holdouts are evaluated once after guard-based scale selection.
             # They never choose a retry scale and are never used for gradients.
