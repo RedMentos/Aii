@@ -1,0 +1,45 @@
+name: V14 QA A5 UI shared-blob revocation race
+
+on:
+  pull_request:
+    branches:
+      - boss/v14-core-perception-store-audio-integration-20261121
+    paths:
+      - v13/code/tests/test_a5_ui_revocation_blob_race.py
+      - .github/workflows/v14-qa-a5-ui-revocation-blob-race.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v14-qa-a5-ui-revocation-blob-race-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  shared-blob-race:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --disable-pip-version-check pytest==9.2.0
+      - name: Compile targeted regression
+        working-directory: v13/code
+        run: python -m py_compile tests/test_a5_ui_revocation_blob_race.py
+      - name: Run deterministic concurrent revocation regression
+        working-directory: v13/code
+        env:
+          PYTHONPATH: ${{ github.workspace }}/v13/code
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python -m pytest -q -s tests/test_a5_ui_revocation_blob_race.py
+      - name: Scan changed public content for secrets and private identifiers
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/boss/v14-core-perception-store-audio-integration-20261121 --head HEAD --no-worktree
