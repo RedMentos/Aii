@@ -6,6 +6,7 @@ import unittest
 
 from v13 import lab_age, effort
 from v13.age import AgeControl
+from v13.lab_age_runtime import LaboratoryAgeControl
 from v13.config import initialize
 from v13.store import Store
 
@@ -19,6 +20,7 @@ class LabAgeTests(unittest.TestCase):
         self.store = Store(self.home)
         self.addCleanup(self.store.close)
         self.age = AgeControl(self.store, self.cfg)
+        self.lab = LaboratoryAgeControl(self.store, self.cfg)
 
     def test_initially_owner_requested_level_ten_active_and_official_age_zero(self):
         v = lab_age.view(self.home, official_stage=self.age.system_stage())
@@ -29,7 +31,7 @@ class LabAgeTests(unittest.TestCase):
         self.assertFalse(v["config_persisted"])
         self.assertTrue(v["test_only"])
         self.assertEqual(self.age.view()["system_stage"], 0)
-        current = effort.age_limits(self.age)
+        current = effort.age_limits(self.lab)
         self.assertEqual(current["stage"], 0)
         # Runtime compute is independent of Age; the default X10 lab exposes test rights only.
         self.assertEqual(current["focal_depth"], 3)
@@ -43,7 +45,7 @@ class LabAgeTests(unittest.TestCase):
 
     def test_active_level_ten_does_not_change_compute_or_earned_permissions(self):
         lab_age.save(self.home, mode="active", stage=10)
-        limits = effort.age_limits(self.age)
+        limits = effort.age_limits(self.lab)
         self.assertEqual(limits["stage"], 0)
         self.assertEqual(limits["lab_stage"], 10)
         self.assertTrue(limits["lab_feature_test_requested"])
@@ -53,17 +55,19 @@ class LabAgeTests(unittest.TestCase):
         self.assertTrue(limits["tools"])
         self.assertTrue(limits["deliberation"])
         self.assertTrue(limits["long_loops"])
-        self.assertTrue(self.age.may("simple_tool_choice"))
-        self.assertFalse(self.age.may("body_swap"))  # structural lock still wins
-        status = lab_age.rights_status(self.age)
+        self.assertFalse(self.age.may("simple_tool_choice"))  # official Age remains 0
+        self.assertTrue(self.lab.may("simple_tool_choice"))
+        self.assertFalse(self.lab.may("body_swap"))  # structural lock still wins
+        status = self.lab.rights()
         self.assertEqual(status["official_stage"], 0)
-        self.assertEqual(status["implemented_test_stage"], 5)
-        self.assertIn("simple_tool_choice", status["newly_testable"])
-        self.assertFalse(self.age.allowed("simple_tool_choice", hard_rule_block=True))
-        self.assertFalse(self.age.allowed("simple_tool_choice", user_permissions={"direct_route"}))
-        self.assertFalse(self.age.may("long_loops", resource_mode="RED"))
-        self.age.lock_structural(False)
-        self.assertTrue(self.age.may("body_swap"))
+        self.assertEqual(status["lab_effective_implemented_stage"], 5)
+        self.assertTrue(status["test_only"])
+        self.assertTrue(status["experiment_feature_rights_only"])
+        self.assertFalse(self.lab.allowed("simple_tool_choice", hard_rule_block=True))
+        self.assertFalse(self.lab.allowed("simple_tool_choice", user_permissions={"direct_route"}))
+        self.assertFalse(self.lab.may("long_loops", resource_mode="RED"))
+        self.lab.lock_structural(False)
+        self.assertTrue(self.lab.may("body_swap"))
         self.assertEqual(self.age.view()["system_stage"], 0)
         hard = effort.signals("Vergleiche A und B für mein Budget", "both",
                               {"source": "BOOT_SCAFFOLD", "scaffold": "both"})
@@ -77,7 +81,7 @@ class LabAgeTests(unittest.TestCase):
     def test_off_and_shadow_return_earned_age_limits(self):
         for mode in ("off", "shadow"):
             lab_age.save(self.home, mode=mode, stage=10)
-            a = effort.age_limits(self.age)
+            a = effort.age_limits(self.lab)
             self.assertFalse(a["lab_compute_active"])
             self.assertEqual(a["focal_depth"], 3)
             self.assertEqual(a["autonomous_effort_max"], "max")
@@ -85,11 +89,11 @@ class LabAgeTests(unittest.TestCase):
             self.assertFalse(a["deliberation"])
             self.assertFalse(a["long_loops"])
         lab_age.save(self.home, mode="active", stage=0)
-        self.assertFalse(effort.age_limits(self.age)["lab_compute_active"])
+        self.assertFalse(effort.age_limits(self.lab)["lab_compute_active"])
 
     def test_resource_guard_does_not_change_lab_feature_selection(self):
         lab_age.save(self.home, mode="active", stage=10)
-        observed = effort.age_limits(self.age, "CRITICAL")
+        observed = effort.age_limits(self.lab, "CRITICAL")
         self.assertFalse(observed["lab_compute_active"])
         self.assertEqual(observed["lab_compute_gate"], "NOT_A_COMPUTE_SETTING")
         self.assertTrue(observed["lab_feature_test_requested"])
@@ -123,8 +127,8 @@ class LabAgeTests(unittest.TestCase):
         for level in (0, 3, 7, 10):
             with self.subTest(level=level):
                 lab_age.save(self.home, mode="active", stage=level)
-                green = effort.age_limits(self.age, "GREEN")
-                red = effort.age_limits(self.age, "CRITICAL")
+                green = effort.age_limits(self.lab, "GREEN")
+                red = effort.age_limits(self.lab, "CRITICAL")
                 self.assertEqual(green["stage"], 0)
                 self.assertEqual(green["lab_stage"], level)
                 self.assertEqual(red["lab_stage"], level)
@@ -136,7 +140,10 @@ class LabAgeTests(unittest.TestCase):
                 self.assertEqual(red["tools"], level >= 1)
                 self.assertEqual(green["long_loops"], level >= 3)
                 self.assertFalse(red["long_loops"])  # resource veto is independent
-                self.assertFalse(self.age.may("body_swap"))  # structural lock is independent
+                self.assertFalse(self.lab.may("body_swap"))  # structural lock is independent
+                self.assertFalse(self.age.may("simple_tool_choice"))
+                self.assertEqual(self.lab.may("simple_tool_choice"), level >= 1)
+                self.assertFalse(self.lab.may("long_loops", resource_mode="RED"))
                 self.assertEqual(self.cfg["learning_mode"], "RECORD_ONLY")
 
     def test_config_persists_reversible_with_private_permissions(self):
@@ -146,7 +153,7 @@ class LabAgeTests(unittest.TestCase):
         self.assertTrue(lab_age.view(self.home)["config_persisted"])
         self.assertEqual((self.home / "config/lab-age.json").stat().st_mode & 0o077, 0)
         lab_age.save(self.home, mode="off")
-        self.assertFalse(effort.age_limits(self.age)["lab_compute_active"])
+        self.assertFalse(effort.age_limits(self.lab)["lab_compute_active"])
         self.assertEqual(self.age.view()["system_stage"], 0)
 
 
