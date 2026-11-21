@@ -906,3 +906,23 @@ This correction supersedes older branch-level status claims without deleting the
 - Candidate experiment only: if explicitly approved, compare an already-present or separately downloaded ReDimNet2 B0/B1/B3 ONNX model against the FASTDIAR-style frame provider on identical consented speech segments. Measure cold-load RSS, per-window CPU/TTFT, cosine stability under noise/channel change, same/different-speaker EER, overlap false positives and restart behavior. Do not infer a threshold from VoxCeleb verification EER.
 - Licensing: PalabraAI code/weights and the checked B3 ONNX conversion declare MIT; the training dataset's terms remain separate. The alternative speakeronnx package is Apache-2.0, but its registry mixes model-specific CC-BY-4.0 and Apache-2.0 licenses; each weight artifact must be checked individually.
 - Status: FULL_TEXT_PREPRINT_REVIEWED / OFFICIAL_REPO_AND_MIT_LICENSE_CHECKED / B3_ONNX_CARD_AND_PARITY_CLAIMS_REVIEWED / ANDROID_RUNTIME_ROUTE_DOCUMENTED / NO_MODEL_DOWNLOADED / NO_WEIGHT_OR_DEVICE_CHANGE / REDMI_UNVERIFIED.
+
+
+
+## R-054 — Native llama.cpp input-embedding receiver API and cross-model limits (2026-11-21)
+
+### Exact primary-source verification
+
+- Upstream: ggml-org/llama.cpp commit b29c606e28a01b1bc8c1351026a0fa6e616bf6c4; pinned LICENSE is MIT. The exact include/llama.h at that revision was fetched and inspected.
+- The public C API contains llama_batch.embd, llama_batch_init(n_tokens, embd, n_seq_max), llama_model_n_embd_inp/out, llama_decode, llama_get_embeddings_ith and llama_memory_clear. llama_batch_init allocates n_tokens × embd floats when embd is nonzero. The native receiver's use of llama_batch.embd is therefore a real native input-embedding ingress mechanism, not a symbolic JSON relay.
+- Core PR #2266 head 3166858133844fc80201334f53ade450557d1191 was reviewed. Exact workflow run 44955501021 PASS: Linux build against the pinned llama.cpp API, Python runtime/contract tests on 3.13 and 3.14, and Android arm64-v8a cross-compile.
+- The native receiver currently loads no model in CI. Its C++ workflow compiles the real llama.cpp path and runs a native self-test, while Python tests use a fake executable and fixture model bytes. No real GGUF decode, model-to-model semantic transfer, or Redmi inference was performed.
+- The receiver rejects dimension mismatch rather than padding, truncating or applying an untrained resize. Positive-vs-zero input-effect RMS plus shuffle/repeat controls can show that supplied vectors affect the receiver's native output. They do not prove semantic alignment, a learned projector, B3 callosum integration or JEPA learning.
+- The same head's staged/integrated workflow 44955501004 FAILS independently: the arithmetic candidate's pinned source hash for v13/contracts.py is stale; migration assertions also return PARTIAL instead of UPDATED. The log reports 19 failed, 230 passed, 10 skipped and 2 errors. This is not a native-receiver compile failure.
+- PR #2266 is based on old release branch head bdcad466ffea75a2b41f7d23be168f53c7197d20, not the current Boss #2258 candidate. Perception left the Core branch unchanged and posted the API/CI review on #2266.
+
+### V14 interpretation
+
+- Status: NATIVE_LINUX_BUILD_PROOF / ANDROID_ARM64_CROSS_COMPILE_CI / PYTHON_FAKE-RUNNER_CONTRACT_PASS / NO_NATIVE_MODEL_INFERENCE / NO_REAL_REDMI_PROOF.
+- Keep the probe diagnostic and OFF the production route. A native decode/input effect is not semantic alignment. Cross-model transfer requires exact sender/receiver revisions, a trained and versioned projector/adapter for dimension or representation mismatch, source-bound paired training data, held-out semantic task evaluation, positive/zero/shuffle/repeat controls, retention/restart and rollback evidence.
+- Next step: Core rebase/stack #2266 on the current #2258 head; repair the separate staged arithmetic source pin and migration failures; then, only with an already-installed authorized model and explicit local consent, run a real native receiver probe. Do not download or swap models from this research result.
