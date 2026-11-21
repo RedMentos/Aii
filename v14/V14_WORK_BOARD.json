@@ -56,12 +56,13 @@
       "owner": "Core & Harness",
       "reviewer": "JEPA & QA",
       "priority": "P0",
-      "status": "READY",
+      "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "NOT_RUN for true trained activation-to-activation exchange. Current B3/Enlightened symbolic/source-exact contracts remain fallback communication; no sender activation -> trained projector -> receiver injection utility proof is in the current release.",
-      "next_step": "Core + Research: inventory model-native hidden-state taps and compatible pinned model revisions, then implement a reversible receiver-effect experiment against SOURCE_EXACT and NO_MESSAGE baselines. Do not label JSON/text traffic latent coupling.",
-      "user_action_required": false
+      "proof_environment": "Source inventory verified on current release base: LlamaRunner.tap uses pinned llama.cpp b10964 with --embedding/--pooling none; at pinned source b29c606e2 the server returns llama_get_embeddings_ith per token and LFM2 graph exposes result_norm after final RMSNorm before output projection. TAP_SPECS pins body=LFM2 2048, language=LFM2 1024, gist=Qwen3.5 1024; RunnerPool.get_tap checks exact GGUF revision and file hash. No actual model tap or receiver-effect run was executed. Critical binding defect: LlamaRunner.tap hardcodes tap_id=lfm2.result_norm.final.v1 even when RunnerPool sets qwen35.result_norm.final.v1 for B2/GIST. Model configs show LFM2 vocab 65,536 vs Qwen3.5 vocab 248,320, so token IDs cannot be aligned across bodies. Existing b3bridge L1 is a readout adapter; Enlightened Space remains symbolic. Native B3 effect NOT_RUN; REDMI_UNVERIFIED.",
+      "next_step": "Core fixes LlamaRunner.tap to emit the bound TAP_SPECS tap_id and rejects missing tap bindings; add a B2/GIST negative/positive regression. Research then builds a native L1 harness using source/event-paired B1/B2 final-norm taps, model-specific tokenizers and the existing Bridge receiver adapter; compare LATENT vs SOURCE_EXACT vs NO_MESSAGE, shuffled/random controls, OOD, role retention, restart and rollback. No direct backbone/router injection; no model download.",
+      "user_action_required": false,
+      "last_checkpoint": "2026-11-21 07:11 CET: native tap source contract and model geometry inventoried; B2 tap_id misbinding found and handed to Core; no native model execution."
     },
     {
       "id": "V14-004",
@@ -158,17 +159,17 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "PR #2161 V3 RAW EAR -> A4 Attention -> C3 admission; prior exact V3 run 44872181368 passed 11/11 on Python 3.11/3.13 and staged/integrated run 44872181361 passed (staged Runtime; integrated 415 passed/3 skipped/58 subtests). Boss review found a 40 ms/one-of-four single-voiced-frame defect. Fix now uses a zero single-sample range and rejects unsupported one-frame dynamics; module blob 0e328d14883840190937f0fef24a8e895ba7261c, test blob 96b00b2e1b6340e2a61a8b6f230be8747889ab38. Local Python 3.13.5 isolated edge fixtures + validator negatives 2/2 PASS; exact checkout blocked by GitHub DNS; new exact CI pending. Safe-additive rejection remains intentional; no policy bypass. REDMI_UNVERIFIED.",
-      "next_step": "Read exact CI on the retargeted #2161 head. If green, Core updates #2158 to pin adapter blob 0e328d14883840190937f0fef24a8e895ba7261c and repairs the independent QueryPacket audio_context, arithmetic-source and recovery-manifest failures; QA verifies consent/revocation. Do not claim microphone, B1/B2 Runtime consumption or Android proof.",
+      "proof_environment": "PR #2161 exact current head e523f539febb659b6aa56710e9072738b75698cc. RAW EAR dedicated CI run 44874325052: 12/12 PASS on Python 3.11.18 and 3.13.18; staged-runtime and integrated-regression run 44874325026 PASS (stage, source recall, SQLite turn, revocation, JEPA restart, integrated organ/memory paths); privacy scan 44874325009 PASS. Safe-additive run 44874325018 FAILS at the intended non-additive path-scope gate because this PR modifies an existing producer and test; no policy bypass. Local Python 3.13.5 isolated edge fixtures + validator negatives 2/2 PASS; exact checkout blocked by DNS. REDMI_UNVERIFIED.",
+      "next_step": "Boss reviews the non-additive existing-producer change; Core updates its staged module pin to 0e328d14883840190937f0fef24a8e895ba7261c and repairs its separate QueryPacket audio_context, arithmetic-source and recovery-manifest failures. QA independently reviews consent/revocation. Keep microphone capture and Android claims OFF/UNVERIFIED.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 06:58 CET: one-frame review defect fixed on #2161; focused new-head CI pending; local isolated reproduction 2/2; NOT_RELEASED / REDMI_UNVERIFIED.",
+      "last_checkpoint": "2026-11-21 07:11 CET: exact RAW EAR 12/12 on Python 3.11/3.13; staged/integrated PASS; privacy PASS; safe-additive policy rejection is expected; NOT_RELEASED / REDMI_UNVERIFIED.",
       "latest_candidate_pr": {
         "pr": 2161,
-        "head_sha": "see live PR #2161",
+        "head_sha": "e523f539febb659b6aa56710e9072738b75698cc",
         "base_sha": "034a941694b9e8994d1bfe5cd781d27b943e1ed0",
         "module_blob": "0e328d14883840190937f0fef24a8e895ba7261c",
         "test_blob": "96b00b2e1b6340e2a61a8b6f230be8747889ab38",
-        "ci": "PENDING_EXACT_RETARGETED_HEAD",
+        "ci": "PASS_RAW_EAR_12_ON_3.11_AND_3.13; PASS_STAGED_INTEGRATED; PASS_PRIVACY; FAIL_SAFE_ADDITIVE_BY_DESIGN",
         "scope": "RAW EAR V3 one-frame correction; no microphone/Android proof"
       },
       "previous_candidate_pr": {
