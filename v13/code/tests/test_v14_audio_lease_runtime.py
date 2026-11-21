@@ -134,13 +134,17 @@ def configure(runtime):
 
 
 class Runner:
-    def __init__(self, role, seen, entered=None, release=None, first_chunk=None, finished=None):
+    def __init__(
+        self, role, seen, entered=None, release=None, first_chunk=None,
+        finished=None, cancel_observed=None,
+    ):
         self.role = role
         self.seen = seen
         self.entered = entered
         self.release = release
         self.first_chunk = first_chunk
         self.finished = finished
+        self.cancel_observed = cancel_observed
         self.last_metrics = {
             "role": role, "status": "FINAL", "generated_tokens": 5,
             "synthetic": True,
@@ -164,14 +168,27 @@ class Runner:
             if self.entered is not None:
                 self.entered.set()
             # The lease must remain active after the first streamed chunk too.
-            yield "First response chunk."
-            if self.first_chunk is not None:
-                self.first_chunk.set()
-            if self.release is not None and not self.release.wait(8):
-                raise TimeoutError("test did not release the second C3 chunk")
-            yield "Second response chunk."
-            if self.finished is not None:
-                self.finished.set()
+            try:
+                yield "First response chunk."
+                if self.first_chunk is not None:
+                    self.first_chunk.set()
+                if self.cancel_observed is not None:
+                    cancel_deadline = time.monotonic() + 8
+                    while self.release is not None and not self.release.wait(0.01):
+                        if cancel is not None and cancel.is_set():
+                            self.cancel_observed.set()
+                            return
+                        if time.monotonic() >= cancel_deadline:
+                            raise TimeoutError("test did not observe Runtime.cancel")
+                    if cancel is not None and cancel.is_set():
+                        self.cancel_observed.set()
+                        return
+                elif self.release is not None and not self.release.wait(8):
+                    raise TimeoutError("test did not release the second C3 chunk")
+                yield "Second response chunk."
+            finally:
+                if self.finished is not None:
+                    self.finished.set()
 
 
 question = (
@@ -284,7 +301,69 @@ try:
 finally:
     runtime.close()
 
-print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 keeps one lease until iterator exhaustion; revocation tombstones; pre-revoked audio falls back to text")
+# Scenario 3: a real Runtime.cancel() interrupts the blocked C3 iterator,
+# releases the provider lease, and lets a concurrent revocation tombstone audio.
+home = Path(sys.argv[1]) / "cancelled"
+runtime = Runtime(home)
+provider = Provider()
+entered = threading.Event()
+first_chunk = threading.Event()
+finished = threading.Event()
+cancel_observed = threading.Event()
+release = threading.Event()
+revoke_started = threading.Event()
+revoke_finished = threading.Event()
+seen = {}
+try:
+    configure(runtime)
+    runners = {
+        role: Runner(
+            role, seen,
+            entered if role == "C3_LANGUAGE" else None,
+            release if role == "C3_LANGUAGE" else None,
+            first_chunk if role == "C3_LANGUAGE" else None,
+            finished if role == "C3_LANGUAGE" else None,
+            cancel_observed if role == "C3_LANGUAGE" else None,
+        )
+        for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")
+    }
+    runtime.pool.get = Mock(side_effect=lambda role: runners[role])
+    runtime.submit(question, audio_window=make_window(provider))
+    assert entered.wait(30), "cancel test did not reach C3 generation"
+    assert first_chunk.wait(5), "cancel test did not stream its first C3 chunk"
+
+    def revoke_after_cancel():
+        revoke_started.set()
+        provider.revoke()
+        revoke_finished.set()
+
+    revoker = threading.Thread(target=revoke_after_cancel, daemon=True)
+    revoker.start()
+    assert revoke_started.wait(5)
+    blocked_before_cancel = not revoke_finished.wait(0.15)
+    runtime.cancel()
+    assert cancel_observed.wait(5), "C3 runner did not observe Runtime.cancel"
+    assert finished.wait(5), "C3 iterator did not exit after Runtime.cancel"
+
+    deadline = time.monotonic() + 30
+    while not runtime.idle() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert runtime.idle(), "cancelled audio Runtime turn did not settle"
+    assert revoke_finished.wait(5), "revocation stayed blocked after C3 cancellation"
+    revoker.join(timeout=5)
+    assert blocked_before_cancel, "revocation completed before Runtime.cancel released the lease"
+    rows = runtime.store.rows(
+        "SELECT deleted FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT'"
+    )
+    assert rows and all(row["deleted"] == 1 for row in rows), rows
+    assert provider.check("mic-test-1", "opaque-local-receipt") is False
+    saved_context = last_context(runtime.store, runtime.session)
+    assert saved_context and saved_context["messages"] is None and saved_context["preview"] == ""
+finally:
+    release.set()
+    runtime.close()
+
+print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 holds lease to iterator exhaustion; Runtime.cancel releases lease for revocation; tombstones and text fallback stay safe")
 '''
     result = subprocess.run(
         [sys.executable, "-c", script, str(tmp_path / "private-home")],
@@ -293,4 +372,5 @@ print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 keeps one lease until iterator
         text=True, capture_output=True, timeout=90,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "PASS: staged A5 -> B1/B2 -> multi-chunk C3 keeps one lease until iterator exhaustion" in result.stdout
+    assert "PASS: staged A5 -> B1/B2 -> multi-chunk C3 holds lease to iterator exhaustion" in result.stdout
+    assert "Runtime.cancel releases lease for revocation" in result.stdout
