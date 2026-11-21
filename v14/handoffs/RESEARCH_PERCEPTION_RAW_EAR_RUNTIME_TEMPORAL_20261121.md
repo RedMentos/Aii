@@ -83,3 +83,26 @@ Current PR #2192 head `0bba3da8cd57ed808c98f9f79ae2dedcda3647fe`; code-bearing b
 - Replaced the separately committed Store.add_packet() call followed by a consent recheck with an audio-owned transaction boundary: validate, insert the packet, then perform the final current-consent check inside the same Store.tx() before COMMIT. A failed check raises and the Store transaction rolls the packet insert back; SQLite readers cannot observe the uncommitted row. Temporal/VAD reset remains fail-closed.
 - This serializes the database commit against the final authoritative callback result. A future OS consent provider that can revoke concurrently must make that callback linearizable with its own revocation state; a generic boolean callback cannot make an external OS permission and SQLite one atomic primitive.
 - Exact new-commit CI is pending. Full local Aii checkout remains BLOCKED by GitHub DNS; no local repository PASS, microphone, native Silero inference or Redmi proof is claimed.
+## Linearizable provider-revocation correction — 2026-11-21
+
+QA's #2206 reproduction identified the remaining gap in the earlier Store-only guard: a plain boolean callback can return True, then the provider can revoke before SQLite COMMIT. A final check inside the transaction is necessary for rollback, but it does not serialize an external provider's state transition with that commit.
+
+The current Perception candidate now adds an explicit consent_guard(source_id, receipt) context-manager contract:
+
+- The guard must yield exactly True while holding the same synchronization primitive used by every application-level revocation path for that source/receipt.
+- The lease is held across the PerceptPacket SQLite transaction, the final in-transaction consent recheck, temporal evidence update, A4 attention modulation, and C3 admission. A plain boolean callback or an unrelated lock is insufficient.
+- The final callback recheck remains inside Store.tx(); if it returns false, the packet insert rolls back before readers can observe it.
+- Missing/invalid guards fail closed. A revoked provider before lease acquisition produces no PerceptPacket, temporal update, A4 telemetry, or C3 admission.
+- This protocol serializes application-provider revocation. It does not claim that Android's external OS permission state can be locked atomically; a future native adapter still needs permission-change callbacks, source cleanup and device tests.
+
+New regression coverage in test_audio_ear_voice_cues_v14.py:
+- callback-only use fails closed before any packet/A4/C3 side effect;
+- revocation already won before lease acquisition leaves no packet, temporal registry, attention telemetry or C3 call;
+- a revoke thread started while the consumer holds the lease cannot complete until the producer has finished packet commit, A4 and C3;
+- a deliberately non-coordinated callback that turns false at the final in-transaction check still causes SQLite rollback.
+
+Core integration required: PR #2200's staged audio_window contract must add a process-local consent_guard, validate it as callable, and pass it to consume_pcm16_voice_window. Its consent_check and consent_guard must belong to the same provider. The provider's revoke method must acquire the same lock. Core must also keep its existing AUDIO_ACOUSTIC_CONTEXT rechecks and clear the derived context on revocation; the producer lease alone does not cover later B1/B2/C3 consumption.
+
+QA coordination: the #2206 test that mutates a boolean after the callback has returned but does not acquire the provider's revocation lock is a useful counterexample to the old callback-only contract, but is not a conforming linearizable provider. The new shared-lock race test is the acceptance test for the provider protocol; retain the separate negative test for a final in-transaction false result.
+
+Exact-head CI for the current source/test changes is pending. Full local Aii checkout remains BLOCKED by GitHub DNS; the only local check so far is a small standalone Python threading/lease-ordering reproduction, not the repository module. No local full-suite PASS, native microphone, ONNX model inference, Redmi test or deployment is claimed. NOT_RELEASED / REDMI_UNVERIFIED.
