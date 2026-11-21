@@ -10,6 +10,8 @@ on:
       - "v13/code/tests/test_a5_ui_observation_lease.py"
       - "v13/code/tests/test_v14_store_source_blob_serialization.py"
       - ".github/workflows/v14-a5-ui-lease.yml"
+      - "v14/V14_RESEARCH_LEDGER.md"
+      - "v14/handoffs/RESEARCH_PERCEPTION_A5_UI_LEASE_20261121.md"
   pull_request:
     paths:
       - "v13/code/v13/a5_ui_admission_bridge.py"
