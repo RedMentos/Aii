@@ -248,7 +248,7 @@ def test_utility_gate_rejects_old_holdout_regression_even_when_new_holdout_impro
         assert payload["active"]["checkpoint_sha256"] == previous_sha
         assert payload["scan_cursor"] == 288
         assert len(payload["pending_rows"]) == 32
-        assert not list(checkpoint_dir.glob("jepa-*.npz"))[1:]
+        assert len(list(checkpoint_dir.glob("jepa-*.npz"))) == 1
     finally:
         store.close()
 
