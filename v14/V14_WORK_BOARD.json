@@ -72,15 +72,15 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2137 Boss branch head 2d8eb79bdefe3c6c3bef63fea7d25563b7f56952 now includes exact bounded ActionOutcome scan (4096 maximum; over-bound fail-closed), CANCELLED/ABORTED vs OUTCOME_UNKNOWN/INTERRUPTED censoring without prediction error/receiver update, and rollback directory fsync. Focused V14 T8 workflow PASS run 44846178337; private bridge push PASS run 44846173169; staged/integrated runs 44846178374 still IN_PROGRESS at last readback. PR #2135 remains blocked by 20 failed staged tests; PR #2133 remains experimental/not Runtime wired with source-disjoint/cancellation/backlog findings.",
-      "next_step": "Wait for exact #2137 staged/integrated results. If green, review it as a Store-verified temporal adapter only; then wire a real Runtime consumer and combine with the JEPA/World receiver without opening Age/optimizer gates. Rebuild the #2135 source-pinned online-world candidate chain before considering its exactly-once persistence fix.",
+      "proof_environment": "PR #2137 head 2d8eb79: focused V14 T8 workflow 52 PASS; staged-runtime 240 passed/10 skipped/47 subtests PASS; integrated regression 415 passed/3 skipped/58 subtests PASS; private bridge PASS. This is Linux CI/SQLite integration only. Dedicated V14 workflow remains Python 3.11 only; Python 3.14 requested. Safe-additive policy is red pending Boss review. No normal Runtime learning consumer, optimizer update, native B1/B2 weights or Redmi proof. PR #2133 still has source-disjoint/backlog findings; PR #2135 remains blocked by online_world.py candidate pin.",
+      "next_step": "Boss independently reviews #2137 and resolves its safe-additive policy status; add Python 3.14 coverage; only then wire the verified T8 adapter into normal Runtime after source-disjoint holdout and keyset backlog fixes. Keep optimizer closed until measured holdout/retention/restart/rollback and actual target-weight delta.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 Boss updated #2137 on its own branch; new negative/restart/durability tests committed. Focused V14 workflow passed; full staged/integrated evidence still pending.",
+      "last_checkpoint": "2026-11-21 QA: exact #2137 staged/integrated CI completed successfully on head 2d8eb79 (52 focused; 240 staged; 415 integrated). QA confirmed earlier cancellation/censoring, 4096-row ActionOutcome and rollback fsync fixes. Remaining gaps: Python3.14 test, safe-additive policy/Boss review, normal Runtime consumer, source-disjoint/backlog.",
       "latest_candidate_pr": {
         "pr": 2137,
         "head_sha": "2d8eb79bdefe3c6c3bef63fea7d25563b7f56952",
-        "ci": "V14 T8 temporal bridge workflow PASS run 44846178337; private bridge push PASS run 44846173169; staged/integrated IN_PROGRESS run 44846178374",
-        "scope": "Store-verified scalar temporal receiver; no normal Runtime consumer, no native JEPA/B1/B2 body-weight change, optimizer gate closed"
+        "ci": "PASS: 52 focused T8 tests; staged-runtime 240 passed/10 skipped/47 subtests; integrated regression 415 passed/3 skipped/58 subtests; private bridge PASS. Python3.14 and normal Runtime consumer remain OPEN.",
+        "scope": "Store-verified scalar temporal adapter; no normal Runtime learning loop, no native JEPA/B1/B2 body-weight change, optimizer gate closed"
       }
     },
     {
@@ -118,10 +118,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Code release PR #2138 merged as 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e; exact updater-required push CI GREEN. Later branch commits are documentation-only; verify their exact push CI separately. Whole-Canon implementation remains open and Redmi is unverified.",
-      "next_step": "Continue one compatible end-to-end candidate at a time, resolve semantic source-pin dependencies rather than refreshing hashes blindly, and keep the whole-Canon coverage/owner matrix current.",
+      "proof_environment": "Code-bearing release 5b9171a exact updater-required CI GREEN; later docs-only HEAD d61b695 has exact push CI pending. PR #2137 exact staged/integrated CI now green but remains draft pending Boss review, Python3.14 and Runtime-consumer work. Whole-Canon acceptance remains incomplete.",
+      "next_step": "Boss reviews and integrates only the source-bound T8 component after policy and platform gates; Core/JEPA continue connected consumer integration and other Canon lanes.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21: #2138 merged/read back; exact release push CI green; Redmi receipt absent."
+      "last_checkpoint": "QA independently verified PR #2137 52/240/415 tests PASS; no production learning or Redmi claim."
     },
     {
       "id": "V14-008",
