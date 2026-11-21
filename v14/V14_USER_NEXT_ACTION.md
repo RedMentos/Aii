@@ -38,9 +38,9 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 
 | Feld | Aktueller Wert |
 |---|---|
-| source_HEAD | `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (PR #2138 merge readback 2026-11-21; exact staged push CI still running) |
+| source_HEAD | Current shared branch base `c3c32c05a0374e970d274f8a777a7ab85c067d66`; last code-bearing release `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (updater-required exact push CI green). The newer base is a coordination/docs checkpoint, not a new Android release. |
 | last_integrated_functional_change | PR #2136 merged in `16f75fca`: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter; not yet called by normal Runtime/chat input, synthetic only |
-| local_test_result | NOT_RUN — no full local repository checkout in this worker |
+| local_test_result | Full repository checkout NOT_RUN (GitHub DNS blocked); isolated model-lab implementation copy: py_compile PASS, 13/13 synthetic tests PASS. Exact branch CI run 44848887759 PASS. |
 | ci_test_result | PR #2138 exact release gate is green on code-bearing `5b9171a4`. V14 model-lab PR #2142 exact CI run 44848887759 PASS (13 tests, Python 3.13.18); isolated lab only, no native inference. |
 | phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
