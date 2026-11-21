@@ -281,6 +281,13 @@ class Cognition:
             self.s.log('enlightened_space_unavailable',e['event_id'],
                        {'stage':'perception','error':type(exc).__name__})
         return stored
+    def _audio_context_query(self,e,role):
+        """Return consent-rechecked acoustic context separately from quotable text evidence."""
+        view=self.r._audio_context_view(e['event_id'],consumer=role)
+        if not view:return None,[]
+        ref=view.get('summary_source_ref')
+        if type(ref) is not dict:return None,[]
+        return view,[ref]
     def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):
         if role not in {'B1_DETAIL','B2_GIST'}:raise ValueError('Unbekannte Body-Rolle')
         # Inference must finish within its own budget. A completed foreground
@@ -333,6 +340,10 @@ class Cognition:
         context=self.body_context(role,e)
         prior=previous.get('offer',{}).get('summary','')[:240]
         query={'source_segments':view,'peer_message':peer,'prior_hypothesis':prior if policy=='B1_DETAIL' else ''}
+        audio_context,audio_context_refs=self._audio_context_query(e,role)
+        if audio_context:
+            query['audio_context']=audio_context
+            instructions+=' audio_context is consent-bound acoustic features only, not a transcript or semantic truth; do not quote it as textual evidence, infer speaker identity, or treat it as learning/action authority.'
         key='body_question_b1' if role=='B1_DETAIL' else 'body_question_b2'  # WP-Z2c: standing body question ('' = off, live)
         if focus is None and self.r.cfg.get(key,'') and (self.r.cfg.get('body_question_scope','always')=='always' or asks_rule_decision(text)):focus={'question':self.r.cfg[key],'kind':'FILL_GAP','target_role':role,'reason':'CFG_STANDING_QUESTION','authority':'EXECUTIVE_QUESTION_NOT_FACT'}
         if focus:  # WP-T1 §3.4.7 top-down QUERY_PACKET: the executive question of this re-entry (a question, never a fact)
@@ -413,10 +424,10 @@ class Cognition:
             self.s.log('enlightened_space_unavailable',e['event_id'],
                        {'stage':'body_query','error':type(exc).__name__})
         query_packet=packet('QueryPacket','C1_EXEC',e['event_id'],e['brain_generation_id'],[e['source_ref']],target_role=role,goal=text,source_refs=[e['source_ref']],broadcast_packet_id=broadcast['packet_id'] if broadcast else None,peer_message_packet_id=peer_id,source_view_width_chars=width,based_on_state_version=version,probe_only=version==0)
-        query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW')
+        query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW',audio_context_refs=audio_context_refs)
         query_packet.update(compute_deadline_monotonic_ns=int(deadline*1e9),offer_valid_until_monotonic_ns=int(valid_until*1e9))
         query_packet['enlightened_source_refs']=enlightened_refs
-        query_packet['provenance'] += query_packet['context_source_refs']+bv_refs+enlightened_refs
+        query_packet['provenance'] += query_packet['context_source_refs']+bv_refs+enlightened_refs+audio_context_refs
         if bv:query_packet['bodyview']=bv
         query_packet['jbc_fields']=jbc_fields
         if focus:query_packet['jef_query']=focus
@@ -431,7 +442,7 @@ class Cognition:
             raw=''.join(runner.generate([{'role':'system','content':instructions},{'role':'user','content':dumps(query)}],self.r.cancel_event,deadline,self.r.cfg['observer_tokens'],schema));attempt_status='FINAL'
         finally:
             metrics=dict(runner.last_metrics) if runner else {'status':'ERROR','duration_s':time.monotonic()-started}
-            self.s.log('body_offer_attempt',e['event_id'],{'role':role,'query_packet_id':query_packet['packet_id'],'status':metrics.get('status',attempt_status),'runner':metrics,'context_offer_ids':query_packet['context_offer_ids'],'context_chars':query_packet['context_chars'],'state_policy':query_packet['state_policy']})
+            self.s.log('body_offer_attempt',e['event_id'],{'role':role,'query_packet_id':query_packet['packet_id'],'status':metrics.get('status',attempt_status),'runner':metrics,'context_offer_ids':query_packet['context_offer_ids'],'context_chars':query_packet['context_chars'],'audio_context_count':len(audio_context_refs),'state_policy':query_packet['state_policy']})
         obj=json.loads(raw)
         check(self.r.cancel_event,deadline)
         if set(obj)!=set(OFFER_SCHEMA['required']) or not isinstance(obj['needs_reentry'],bool) or not isinstance(obj['quotes'],list) or not all(isinstance(obj[k],str) for k in ['summary','uncertainty']):raise ValueError('Offer-Schema ungültig')
@@ -460,9 +471,10 @@ class Cognition:
         p=packet('OfferPacket',role,e['event_id'],e['brain_generation_id'],[e['source_ref']],role=role,based_on_state_version=version,deadline_monotonic_ns=int(valid_until*1e9),compute_deadline_monotonic_ns=int(deadline*1e9),evidence_refs=refs,offer=obj,confidence=0.,confidence_status='UNCALIBRATED',rejected_quotes=rejected,model_revision=self.r.models.revision(role),native_metrics=runner.last_metrics,query_packet_id=query_packet['packet_id'],broadcast_packet_id=query_packet['broadcast_packet_id'],peer_message_packet_id=peer_id,source_view_width_chars=width)
         if wide:p['quote_context_chars']=wide  # analyst_context accepts the widened spans only for this offer
         p.update(context_offer_ids=query_packet['context_offer_ids'],context_source_refs=query_packet['context_source_refs'],context_chars=query_packet['context_chars'],state_policy=query_packet['state_policy'],
-                 enlightened_source_refs=enlightened_refs)
+                 enlightened_source_refs=enlightened_refs,
+                 audio_context_refs=query_packet.get('audio_context_refs',[]))
         if selected:p['b2_quote_select']=selected
-        p['provenance'] += query_packet['context_source_refs']+enlightened_refs
+        p['provenance'] += query_packet['context_source_refs']+enlightened_refs+query_packet.get('audio_context_refs',[])
         self.s.add_packet('OfferPacket',p);self.retain_body_offer(p)
         # Model summaries are never granted the exact source's factual status.
         try:
@@ -515,8 +527,10 @@ class Cognition:
                     or query['target_role']!=offer['role'] or query.get('based_on_state_version')!=version
                     or query['source_refs']!=[e['source_ref']]
                     or query.get('context_source_refs',[])!=offer.get('context_source_refs',[])
-                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])):
+                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])
+                    or query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])):
                 raise ValueError('Consumer query scope changed')
+            for audio_ref in query.get('audio_context_refs',[]):self.s.read_source(audio_ref)
             allowed=[e['source_ref']]+query.get('context_source_refs',[])+query.get('enlightened_source_refs',[])
             verified=[]
             for ref in offer['evidence_refs']:
