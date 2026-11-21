@@ -65,6 +65,9 @@ def _canonical(capability, args):
     return json.dumps({"capability": capability, "args": args}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
 
 
+# Legacy compatibility only: some Android releases expose this exact mapping as a symlink.
+# AOSP Android 13 instead bind-mounts /data/data onto /data/user/0; lstat sees a
+# directory there, and the narrowly scoped system-UID ancestry rule below handles it.
 _ANDROID_PLATFORM_SYMLINKS = ((Path("/data/user/0"), Path("/data/data")),)
 _ANDROID_DATA_ROOT = Path("/data")
 _ANDROID_SYSTEM_UID = 1000
