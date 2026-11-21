@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from v13.config import initialize
 from v13.store import Store
-from v13 import age, lab_age
+from v13 import age
 
 GOOD={'experience':10000,'competence':.95,'stability':.95,'retention':.98,'calibration':.9,'memory_health':.97,'safe_self_control':.999,'regression_pass':True}
 
@@ -13,9 +13,7 @@ def good(**kw):return GOOD|kw
 
 class AgeChecks(unittest.TestCase):
     def setUp(self):
-        self.td=tempfile.TemporaryDirectory();self.home=Path(self.td.name);self.cfg=initialize(self.home)|{'age_plasticity_policy':'boot'}
-        lab_age.save(self.home,mode='off',stage=0)  # isolate official Age from the lab overlay
-        self.store=Store(self.home)  # these checks pin the boot policy
+        self.td=tempfile.TemporaryDirectory();self.home=Path(self.td.name);self.cfg=initialize(self.home)|{'age_plasticity_policy':'boot'};self.store=Store(self.home)  # these checks pin the boot policy
     def tearDown(self):
         self.store.close();self.td.cleanup()
     def ctl(self,cap=5,ceiling=5):
@@ -50,10 +48,10 @@ class AgeChecks(unittest.TestCase):
         # below the promotion gate but inside the maintenance band: no demotion
         for _ in range(4):a.record('system',good(competence=.57,experience=60))
         self.assertEqual(a.system_stage(),1)
-        before=a.development_profile()
+        before=a.budgets()
         a.record('system',good(competence=.3));self.assertEqual(a.system_stage(),1)
         self.assertEqual(a.record('system',good(competence=.3))['change']['kind'],'DEMOTE');self.assertEqual(a.system_stage(),0)
-        after=a.development_profile();self.assertLessEqual(after['route_authority'],before['route_authority'])
+        after=a.budgets();self.assertLessEqual(after['own_loops'],before['own_loops']);self.assertLessEqual(after['dream_seconds'],before['dream_seconds'])
 
     def test_severe_regression_demotes_immediately(self):
         a=self.ctl()
@@ -78,16 +76,15 @@ class AgeChecks(unittest.TestCase):
         self.assertFalse(a.allowed('edit_hard_rules'))
         self.assertFalse(a.allowed('long_loops',hard_rule_block=True));self.assertFalse(a.allowed('long_loops',user_permissions={'direct_route'}))
         self.assertFalse(a.allowed('short_dream',resource_mode='RED'));self.assertTrue(a.allowed('short_dream',resource_mode='GREEN'))
-        self.assertFalse(a.allowed('short_dream',resource_mode='RED'))
+        self.assertEqual(a.budgets(resource_mode='RED')['dream_seconds'],0)
 
-    def test_continuous_maturity_changes_development_profile_within_stage(self):
+    def test_continuous_maturity_changes_budgets_smoothly_within_stage(self):
         a=self.ctl(cap=0)
         values=[]
-        for _ in range(8):
-            a.record('system',good());values.append(a.maturity('system'))
+        for _ in range(8):a.record('system',good());values.append(a.budgets()['context_edit_tokens'])
         self.assertEqual(a.system_stage(),0)
-        self.assertEqual(values,sorted(values))
-        self.assertTrue(all(0<=v<=1 for v in values))
+        self.assertEqual(values,sorted(values));self.assertTrue(all(0<=v<=32 for v in values))
+        self.assertTrue(all(b-x<=8 for x,b in zip(values,values[1:])))
 
     def test_gist_resolution_grows_with_maturity_but_refines_on_novelty(self):
         a=self.ctl()
