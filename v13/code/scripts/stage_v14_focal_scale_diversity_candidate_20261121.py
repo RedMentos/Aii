@@ -15,7 +15,7 @@ import secrets
 import shutil
 
 BASE_STAGER = "scripts/stage_integrated_candidate.py"
-BASE_STAGER_GIT_BLOB = "ea9d16902d7c19837e0734f23dd9f307912ef896"
+BASE_STAGER_GIT_BLOB = "c1191fe199408c95809bcd14b4d7261754db3e2c"
 OVERLAY = "scripts/integrated_focal_scale_diversity_candidate_20261121.py"
 OVERLAY_GIT_BLOB = "925eea5dde0c9ca3776a38c4c5492ced66694ca3"
 ARITHMETIC_OVERLAY = "scripts/integrated_arithmetic_guard_candidate_20261121.py"
