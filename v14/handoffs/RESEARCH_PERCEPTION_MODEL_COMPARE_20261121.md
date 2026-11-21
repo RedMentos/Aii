@@ -96,3 +96,8 @@ The first post-fix workflow run 44853309109 failed only because the new loaded-e
 Core PR #2144 currently validates an exact process-local PCM16 window, but the window schema does not carry finality and the Runtime overlay calls `consume_pcm16_window` without an explicit finality argument. The bridge's default is `FINAL`, so the Runtime cannot preserve a provisional capture as provisional. I posted this finding on #2144 and requested an explicit `PROVISIONAL|FINAL` field with a negative test proving provisional windows are excluded from B1/B2/C3 prompt admission while remaining non-authoritative A4 observations.
 
 The staged path does recheck consent at admission, context creation and each consumer read. However, the current extractor measures only RMS/peak/ZCR; pitch, voicing, speech/non-speech and prosody are unmeasured. This is a partial synthetic PCM path, not Android microphone/full voice completion. Next Perception work should build a low-cost time-windowed feature extractor and measure ARM CPU/RSS before integration. No Core-owned files were edited.
+
+
+## Core A5 staged-consumer CI follow-up
+
+Core PR #2144 remains draft. Exact-head run 44853452893 fails one provenance assertion because it expects the old literal without `meta.get('source_recall_refs',[])`; the staged builder adds the audio ref after the source-recall refs. Earlier run 44853319109 fails because `staged_tests.mkdir()` collides with the `tests/` directory created by the stager. Both are test fixture/assertion failures, not audio runtime proof. I posted the exact provenance expression and the separate finality-field gap to Core. Keep #2144 unmerged until its tests pass and explicit PROVISIONAL/FINAL handling is present.
