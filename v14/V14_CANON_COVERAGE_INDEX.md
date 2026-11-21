@@ -1456,3 +1456,12 @@ Boss reviewed #2158 and posted the exact arithmetic-fixture and high-authority-p
 
 These columns are independent. `CODE` is not `WIRED`; synthetic CI is not Android proof; an existing feature in the app is not evidence that it is currently active on the phone. `UNKNOWN` is not PASS. Whole-Canon completion remains false.
 
+
+
+### R-018 RAW EAR VAD comparison (research-only, 2026-11-21)
+
+- Current #2155 adapter: heuristic acoustic cues, not calibrated VAD.
+- libfvad/WebRTC: BSD-3-Clause C baseline; upstream Android.mk precedent exists, but the separate WebRTC PATENTS notice needs review and Termux/Redmi build is unverified.
+- Silero VAD: MIT Torch/ONNX candidate; 8/16 kHz and ~2 MB JIT are documented upstream, but upstream speed numbers are not Redmi measurements.
+- Silero C port: MIT, 16 kHz, NEON arm64 claimed; only Windows/macOS/Linux prebuilt targets are documented, no Android proof.
+- No code/dependency/weights imported. Next: identical PCM fixtures, FPR/FNR, onset/offset, CPU/RSS, ARM ABI and license/patent checks.
