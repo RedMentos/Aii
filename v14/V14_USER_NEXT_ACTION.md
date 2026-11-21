@@ -1,3 +1,16 @@
+# Current user-facing follow-up — 2026-11-21 19:57 CET
+
+**No user action is required. Do not run another Termux installer or change models, weights, Age, permissions, updater settings or phone data.**
+
+- Core #2242 advanced to head `3dc8a194df9230b191236b8011216362d00c88cd`. The arithmetic blob-header bug is fixed and Python 3.13 staged audio now passes. The deployer still has the old `STAGER_SHA256`, so Python 3.14 startup fails with `Integrated stage builder changed`; staged-runtime/migration fail downstream. Current exact checks: 4 failures, 3 in progress, 6 successes. Revocation still cannot cancel C3 during a blocked stream, and the revocation subscription is optional. Not released.
+- The docs-only run-11 handoff/coverage PR is [#2248](https://github.com/RedMentos/Aii/pull/2248), head `7462a9b`, with offline-bridge-security 1/1 green; it is not a code release.
+- The prior code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`; integrated candidate `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` remains 18/19 because SleepRuntime JEPA acceptance returns `UTILITY_GATE_REJECTED`.
+- No authenticated private owner-read reply; installed SHA and updater consent remain UNKNOWN. REDMI_UNVERIFIED. No device update or action.
+
+Next internal work: Core fixes the deployer pin chain and permission-revoke cancellation; QA rebases and tests automatic revoke-through-C3 cleanup; JEPA keeps strict retention gates; Perception adds explicit CI for the tiny K/V experiment. Full Canon remains open.
+
+---
+
 # Current user-facing handoff — 2026-11-21 19:50 CET
 
 **No user action is required. Do not run another Termux installer or change models, weights, Age, permissions, updater settings or phone data.**
