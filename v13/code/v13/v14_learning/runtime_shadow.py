@@ -10,8 +10,9 @@ import time
 
 from .. import world_model
 from ..contracts import packet
-from .t8_store_authority import verify_rows, _object
+from .t8_store_authority import verify_committed_transition_page, _object
 from .t8_temporal_bridge import TemporalT8Bridge
+from .world_jepa_consumer import WorldJEPAStoreConsumer
 
 
 def _finite(value):
@@ -56,7 +57,7 @@ def _selection_for_event(store, event_id, generation_id, source_ref, before=None
 
 
 def online_world_shadow_prediction(runtime, store, event, role, input_chars, empirical_duration_s=None):
-    """Read the prior OnlineWorld predictor into WorldState.forecast without control authority."""
+    """Expose OnlineWorld and numeric WorldJEPA receiver readouts as non-authoritative SHADOW data."""
     base = {
         "status": "NOT_READY",
         "role": str(role),
@@ -65,6 +66,8 @@ def online_world_shadow_prediction(runtime, store, event, role, input_chars, emp
         "decision_authority": "NONE",
         "calibration_status": "UNCALIBRATED",
         "empirical_duration_median_s": empirical_duration_s if _finite(empirical_duration_s) else None,
+        "native_body_consumed": False,
+        "native_body_weights_changed": False,
     }
     try:
         event_id = event.get("event_id")
@@ -81,6 +84,36 @@ def online_world_shadow_prediction(runtime, store, event, role, input_chars, emp
         route = selection.get("route_hint")
         base["route_hint"] = route
         base["action_selection_packet_id"] = str(selection_row.get("id"))
+        if route not in world_model.ACTIONS or type(input_chars) is not int or input_chars < 0:
+            base["status"] = "INVALID_MODEL_INPUT"
+            return base
+        event_created = event.get("created")
+        clock = float(event_created) if _finite(event_created) else time.time()
+        state = world_model.state_vec(input_chars, "NORMAL", (clock % 86400.0) / 3600.0)
+
+        # The B1/B2/SELF readouts are numeric receiver heads, not native body
+        # weights. They are exposed only after the explicitly gated JEPA
+        # consumer has produced a persisted checkpoint.
+        jepa_owner = getattr(store, "_v14_world_jepa_consumer", None)
+        if jepa_owner is not None:
+            readouts = {}
+            for receiver_role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL"):
+                try:
+                    readouts[receiver_role] = jepa_owner.readout(receiver_role, state, route)
+                except (ValueError, TypeError, KeyError, OSError, OverflowError, ArithmeticError) as exc:
+                    readouts[receiver_role] = {
+                        "status": "UNAVAILABLE",
+                        "error": type(exc).__name__,
+                        "decision_authority": "NONE",
+                        "native_body_consumed": False,
+                        "native_body_weights_changed": False,
+                    }
+            base["world_jepa_receivers"] = readouts
+            if any(item.get("status") == "SHADOW_READOUT_ONLY" for item in readouts.values()):
+                base["status"] = "SHADOW_ONLY"
+                base["world_jepa_source"] = "PERSISTED_NUMERIC_WORLD_JEPA"
+                base["world_jepa_decision_authority"] = "NONE"
+
         model_owner = getattr(runtime, "_online_world", None)
         if model_owner is None or getattr(model_owner, "model", None) is None:
             return base
@@ -90,17 +123,13 @@ def online_world_shadow_prediction(runtime, store, event, role, input_chars, emp
         base["model_seen"] = int(seen) if type(seen) is int else 0
         base["model_updates"] = int(updates) if type(updates) is int else 0
         if type(seen) is not int or seen < 8:
-            base["status"] = "INSUFFICIENT_TRAINING_DATA"
+            if base["status"] != "SHADOW_ONLY":
+                base["status"] = "INSUFFICIENT_TRAINING_DATA"
             return base
-        if route not in world_model.ACTIONS or type(input_chars) is not int or input_chars < 0:
-            base["status"] = "INVALID_MODEL_INPUT"
-            return base
-        event_created = event.get("created")
-        clock = float(event_created) if _finite(event_created) else time.time()
-        state = world_model.state_vec(input_chars, "NORMAL", (clock % 86400.0) / 3600.0)
         raw = model_owner.predict(state, route)
         if type(raw) not in (list, tuple) or len(raw) != 3 or not all(_finite(x) for x in raw):
-            base["status"] = "INVALID_PREDICTION"
+            if base["status"] != "SHADOW_ONLY":
+                base["status"] = "INVALID_PREDICTION"
             return base
         raw_duration = float(raw[0])
         raw_chars = float(raw[2]) * 8.0
@@ -122,7 +151,6 @@ def online_world_shadow_prediction(runtime, store, event, role, input_chars, emp
         base["status"] = "UNAVAILABLE"
         base["error"] = type(exc).__name__
         return base
-
 
 def _secure_root(home):
     root = Path(home) / "v14_temporal"
@@ -278,32 +306,46 @@ def _world_prediction_for_receipt(store, receipt):
     return {"status": "CREATED", "packet_id": created["packet_id"]}
 
 
+TEMPORAL_CURSOR_KEY = "v14.temporal.runtime_cursor"
+WORLD_JEPA_PERMISSION_KEY = "v14.world_jepa.permissions"
+
+
+def _world_jepa_permission_state(store):
+    value, _ = store.state(
+        WORLD_JEPA_PERMISSION_KEY,
+        {"learning_enabled": False, "optimizer_permission": False, "steps": 40},
+    )
+    if type(value) is not dict:
+        return False, False, 40
+    learning_enabled = value.get("learning_enabled") is True
+    optimizer_permission = value.get("optimizer_permission") is True
+    steps = value.get("steps", 40)
+    if type(steps) is not int or not 1 <= steps <= 2000:
+        steps = 40
+    return learning_enabled, optimizer_permission, steps
+
+
 def consume_recent_committed(store, home, limit=64):
-    """Consume only verified, not-yet-ledgered committed transitions after a turn."""
+    """Consume oldest-first verified T8 pages; optionally train JEPA behind per-organ local gates."""
     if type(limit) is not int or not 1 <= limit <= 64:
         raise ValueError("limit")
     root = _secure_root(home)
     bridge = TemporalT8Bridge(root, learning_enabled=False)
-    rows = world_model.transitions(store, limit=limit)
-    if type(rows) is not list:
-        return {"status": "INVALID_T8_FEED", "candidate_rows": 0, "verified": 0, "rejected": 0}
-    pending = []
-    for row in rows:
-        action_id = row.get("action_id") if isinstance(row, dict) else None
-        if not isinstance(action_id, str):
-            continue
-        if bridge.ledger.get(action_id) is None:
-            pending.append(row)
-    if not pending:
-        return {"status": "NO_NEW_TRANSITIONS", "candidate_rows": len(rows), "verified": 0, "rejected": 0,
-                "temporal_recorded": 0, "world_outcomes_created": 0, "weight_updates": 0}
-    verified, rejected = verify_rows(store, pending)
+    cursor_state, cursor_version = store.state(TEMPORAL_CURSOR_KEY, {"scan_cursor": 0})
+    if (type(cursor_state) is not dict or type(cursor_state.get("scan_cursor")) is not int
+            or cursor_state["scan_cursor"] < 0):
+        return {"status": "INVALID_TEMPORAL_CURSOR", "candidate_rows": 0, "verified": 0, "rejected": 0}
+    cursor_before = cursor_state["scan_cursor"]
+    receipts, rejected, next_cursor, scanned, censored_skipped, has_more = (
+        verify_committed_transition_page(store, after_seq=cursor_before, limit=limit)
+    )
     temporal_recorded = 0
     world_created = 0
     temporal_skipped = 0
     world_statuses = {}
-    errors = 0
-    for receipt in verified:
+    temporal_errors = 0
+    world_errors = 0
+    for receipt in receipts:
         try:
             world_result = _world_prediction_for_receipt(store, receipt)
             world_status = world_result.get("status", "UNKNOWN")
@@ -311,8 +353,9 @@ def consume_recent_committed(store, home, limit=64):
             if world_status == "CREATED":
                 world_created += 1
         except (ValueError, TypeError, KeyError, OSError, OverflowError) as exc:
-            errors += 1
-            world_statuses["ERROR_" + type(exc).__name__] = world_statuses.get("ERROR_" + type(exc).__name__, 0) + 1
+            world_errors += 1
+            key = "ERROR_" + type(exc).__name__
+            world_statuses[key] = world_statuses.get(key, 0) + 1
         try:
             prediction, prediction_status = _self_corollary_prediction(store, receipt)
             if prediction is None:
@@ -332,25 +375,85 @@ def consume_recent_committed(store, home, limit=64):
             })
             temporal_recorded += 1
         except (ValueError, TypeError, KeyError, OSError, OverflowError) as exc:
-            errors += 1
+            temporal_errors += 1
             try:
                 store.log("v14_t8_temporal_shadow_error", receipt.event_id, {
                     "action_id": receipt.action_id, "error": type(exc).__name__,
                 })
             except Exception:
                 pass
-    status = "RECORDED" if temporal_recorded or world_created else "NO_VALID_PREDICTIONS"
+
+    cursor_advanced = False
+    cursor_error = None
+    if next_cursor > cursor_before and temporal_errors == 0:
+        try:
+            store.set_state(TEMPORAL_CURSOR_KEY, {"scan_cursor": next_cursor}, expected=cursor_version)
+            cursor_advanced = True
+        except (ValueError, TypeError, OSError) as exc:
+            cursor_error = type(exc).__name__
+
+    learning_enabled, optimizer_permission, steps = _world_jepa_permission_state(store)
+    jepa_result = {
+        "status": "OFF" if not learning_enabled else "PENDING_OPTIMIZER_PERMISSION",
+        "learning_enabled": learning_enabled,
+        "optimizer_permission": optimizer_permission,
+        "native_body_weights_changed": False,
+        "decision_authority": "NONE",
+    }
+    if learning_enabled and optimizer_permission:
+        try:
+            consumer = getattr(store, "_v14_world_jepa_consumer", None)
+            if consumer is None:
+                consumer = WorldJEPAStoreConsumer(store, root / "world_jepa", learning_enabled=True)
+                setattr(store, "_v14_world_jepa_consumer", consumer)
+            jepa_result = consumer.update(
+                limit=max(16, min(limit, 64)),
+                steps=steps,
+                optimizer_permission=True,
+            )
+            jepa_result["runtime_wired"] = True
+            jepa_result["native_body_weights_changed"] = False
+            jepa_result["decision_authority"] = "NONE"
+        except (ValueError, TypeError, KeyError, OSError, OverflowError, ArithmeticError) as exc:
+            jepa_result = {
+                "status": "ERROR",
+                "error": type(exc).__name__,
+                "runtime_wired": True,
+                "native_body_weights_changed": False,
+                "decision_authority": "NONE",
+            }
+            try:
+                store.log("v14_world_jepa_runtime_error", None, {"error": type(exc).__name__})
+            except Exception:
+                pass
+
+    status = "RECORDED" if temporal_recorded or world_created else (
+        "NO_VALID_PREDICTIONS" if receipts else "NO_NEW_TRANSITIONS"
+    )
+    if cursor_error:
+        status = "CURSOR_CONFLICT_RETRY"
+    elif temporal_errors:
+        status = "TEMPORAL_RETRY_REQUIRED"
     return {
         "status": status,
-        "candidate_rows": len(rows),
-        "verified": len(verified),
+        "candidate_rows": scanned,
+        "verified": len(receipts),
         "rejected": rejected,
+        "censored_skipped": censored_skipped,
         "temporal_recorded": temporal_recorded,
         "temporal_skipped": temporal_skipped,
         "world_outcomes_created": world_created,
         "world_outcome_statuses": world_statuses,
-        "errors": errors,
+        "errors": temporal_errors + world_errors,
+        "temporal_cursor_before": cursor_before,
+        "temporal_cursor_after": next_cursor if cursor_advanced else cursor_before,
+        "temporal_cursor_advanced": cursor_advanced,
+        "has_more": has_more,
         "weight_updates": 0,
         "optimizer_permission": False,
         "learning_enabled": False,
+        "world_jepa": jepa_result,
+        "world_jepa_parameter_updates": jepa_result.get("status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA",
+        "native_body_weights_changed": False,
+        "decision_authority": "NONE",
     }
