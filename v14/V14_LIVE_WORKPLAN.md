@@ -220,3 +220,12 @@ PR #2137 now points to `a3e19370d7fefe500e8edebf6942624207ff2865`. This last com
 
 - Static handoff validation: V14_WORK_BOARD.json parsed; 12 unique ticket IDs; all tickets contain owner/reviewer/priority/status/scope/acceptance/proof/next-step fields; REDMI_UNVERIFIED preserved; handoff distinguishes code-bearing `5b9171a` from docs-only `d61b695`; T8 52/240/415 counts present. PASS.
 - Retried `git ls-remote https://github.com/RedMentos/Aii.git refs/heads/gpt6/v13-private-remote-bridge-20261111` in the local container; still BLOCKED because `github.com` DNS cannot resolve. No local full repository test is claimed.
+
+
+## Exact current-head updater gate GREEN — 2026-11-21 01:58 CET
+
+Current docs-only HEAD `d61b695739023d0bf0a3cfa4022770f0de2615fa` now has all updater-required exact push workflows GREEN: owner-read [44846409890](https://github.com/RedMentos/Aii/actions/runs/44846409890), private bridge [44846409984](https://github.com/RedMentos/Aii/actions/runs/44846409984), and staged-context [44846409816](https://github.com/RedMentos/Aii/actions/runs/44846409816). Staged-runtime: **240 passed / 10 skipped / 47 subtests**. Integrated regression: **415 passed / 3 skipped / 58 subtests**. Both two-checkout migration diagnostics report runtime/dashboard UPDATED, last_error NONE, and both source/runtime checkouts at exact d61b695. This is CI/Linux evidence only, not phone installation.
+
+Private #351–354 still have no device comments, installed SHA UNKNOWN, REDMI_UNVERIFIED. No UPDATE_REQUEST or device mutation. The existing relay requests are unanswered; do not infer deployment.
+
+PR #2137 retargeted head `a3e19370` has dedicated T8 workflow and private bridge PASS, while its exact staged/integrated PR run remains IN_PROGRESS. The prior code-identical `2d8eb79b` passed 52 focused T8 tests, 240 staged tests and 415 integrated tests. Python 3.14 T8 coverage and a normal Runtime learning consumer remain open.
