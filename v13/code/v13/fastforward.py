@@ -110,7 +110,7 @@ class FastForward:
         """Should the compiled policy set the wake decision for this turn? Never on salient/novel turns."""
         st,_=self._load();p=st['procs'].get(key);sig=sig or {}
         calm=all(sig.get(k,0.)<v for k,v in CALM.items())
-        if not p or p['stage'] not in ('READY',) or not p.get('compiled'):return {'apply':False,'stage':p['stage'] if p else None,'key':key}
+        if not p or p['stage'] not in ('READY',) or not p.get('compiled') or not (p.get('gate') or {}).get('latency_ok'):return {'apply':False,'stage':p['stage'] if p else None,'key':key}
         return {'apply':st['mode']=='ACTIVE' and calm,'wake':p['compiled']['wake'],'stage':p['stage'],'key':key,'calm':calm,
                 'reason':None if calm else 'salience_reopens_focal'}
     def record_turn(self,key,wake,status,duration_s,surprise=0.,predicted_fast_s=None,applied=False):
@@ -119,9 +119,9 @@ class FastForward:
             p=st['procs'].setdefault(key,{'stage':'OBSERVE','succ':0,'n':0,'decisions':{},'durations':[],'shadow':{'n':0,'agree':0,'fail':0},'compiled':None,'history':[]})
             p['n']+=1;ok=status=='FINAL'
             if not ok and p['stage'] in ('SHADOW','READY') and SKILL['reopen_on_failure']>=1:
-                p.update(stage='OBSERVE',succ=0,decisions={},compiled=None,shadow={'n':0,'agree':0,'fail':0});p['history'].append(['REOPEN_FAILURE',p['n']]);return p['stage']
+                p.update(stage='OBSERVE',succ=0,decisions={},compiled=None,gate=None,shadow={'n':0,'agree':0,'fail':0});p['history'].append(['REOPEN_FAILURE',p['n']]);return p['stage']
             if applied and surprise>=SKILL['reopen_on_surprise']:
-                p.update(stage='SHADOW',shadow={'n':0,'agree':0,'fail':0});p['history'].append(['REOPEN_SURPRISE',p['n']]);return p['stage']
+                p.update(stage='SHADOW',gate=None,shadow={'n':0,'agree':0,'fail':0});p['history'].append(['REOPEN_SURPRISE',p['n']]);return p['stage']
             if p['stage']=='OBSERVE':
                 if ok:
                     p['succ']+=1;p['decisions'][wake]=p['decisions'].get(wake,0)+1;p['durations']=(p['durations']+[duration_s])[-20:]
@@ -133,7 +133,7 @@ class FastForward:
                 if ok:p['durations']=(p['durations']+[duration_s])[-20:]
                 if s['n']>=SKILL['shadow_cycles']:
                     delib=sum(p['durations'])/len(p['durations']) if p['durations'] else None
-                    faster=predicted_fast_s is None or delib is None or predicted_fast_s<=delib
+                    faster=(predicted_fast_s is not None and math.isfinite(predicted_fast_s) and predicted_fast_s>0 and delib is not None and math.isfinite(delib) and predicted_fast_s<delib)
                     if s['agree']/s['n']>=AGREE_MIN and s['fail']==0 and faster:
                         p['stage']='READY';p['gate']={'agreement':round(s['agree']/s['n'],3),'failures':0,'latency_ok':faster,'G':'G-PROCEDURALIZATION-004'}
                         p['history'].append(['READY',p['n']])
