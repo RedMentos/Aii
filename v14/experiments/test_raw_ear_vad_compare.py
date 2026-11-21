@@ -153,9 +153,6 @@ int fvad_process(Fvad *p, const int16_t *frame, size_t length) {
                 backend.close()
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 
     def test_transition_latency_uses_state_change_window_end(self):
         predictions = [
@@ -180,3 +177,6 @@ if __name__ == "__main__":
                 temporal_class=temporal, backend=EnergyBaseline(),
                 source_sha256=sha256, source_git_blob=blob,
             )
+
+if __name__ == "__main__":
+    unittest.main()
