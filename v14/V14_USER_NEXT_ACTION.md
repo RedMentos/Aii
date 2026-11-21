@@ -1,3 +1,26 @@
+# JEPA & Memory checkpoint — 2026-11-21 13:25 CET
+
+## Verified candidate state
+- PR #2198 current head `cd0b54053f51d5227f7860a80f5f6adbd3973598`, base `4a471ae40dd9b768c8130fafdba51900b5417800`. Open/draft; **NOT_RELEASED**.
+- Production Store/Runtime candidate now persists numeric WorldJEPA model, EMA, Adam/inverse-dynamics optimizer and RNG continuation in the private checkpoint; T8 cursor, restart and rollback remain covered by staged Runtime tests.
+- The actual batched Planner receiver path now enforces the per-role B1_DETAIL/B2_GIST/SELF_MODEL utility gate. Failed roles produce no prediction and cannot contribute to a ranked candidate. Planner schema /2 fingerprints the readout evidence so stale idempotency cannot reuse a prior admission result.
+- Native B1/B2 sparse-MoE weights, trained B3 latent coupling, GGUF body updates and C3 foreground answer delivery remain open. The new planner is numeric SHADOW only.
+
+## Exact tests on this PR head
+- Python 3.14.10 optimizer-resume workflow **44903330976**: 1 outer staged test, 14 disposable optimizer-resume cases and 13 postcommit Runtime tests passed.
+- Staged-runtime **44903330765**: 249 passed / 10 skipped / 47 subtests (Python 3.11).
+- Integrated-regression **44903330765**: 418 passed / 3 skipped / 58 subtests (Python 3.11).
+- Combined online JEPA **49 passed**; checkpoint retention **21 passed**; incremental JEPA **27 passed**; runtime deployment integrity **3 + 31 passed**; two-checkout migration **2 passed**.
+- Safe-additive **44903330714** remains FAIL by policy because the candidate changes existing production modules and adds a workflow outside its allowlist. No bypass/waiver; Boss/QA review still required.
+- Exact full local repository tests remain BLOCKED by GitHub DNS. Isolated local source compilation, receiver-matrix positive/three-negative-control checks, AST and workflow-YAML checks passed, but are not a full Runtime test.
+- Redmi: **REDMI_UNVERIFIED**; no authenticated receipt, installed SHA, native Termux training, updater installation or phone benchmark. GitHub push/CI is not deployment.
+
+## User effect and next work
+The Planner can no longer rank from a numeric role head whose held-out performance fails its own mean/zero/shuffled controls. This can correctly leave the Planner unavailable when one role does not qualify; do not weaken the gate to make a test green. The candidate still does not change installed models, permissions or user data. **No user action is needed.**
+
+Next after Boss review: a matched multi-seed **A -> B -> A** continual-learning experiment with old-A/new-B disjoint holdouts, equal steps and replay bytes, persistent-vs-reset optimizer, uniform-vs-no-replay, gradient/parameter/EMA diffs and rollback equivalence. Keep hard replay OFF because its prior retention result regressed. P0 #1904 chat accuracy/latency and B1/B2 -> C4 -> C3 delivery remain separate blockers.
+
+---
 # Boss integration checkpoint — 2026-11-21 11:27 CET
 
 ## Verified code and release state
