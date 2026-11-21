@@ -1827,3 +1827,8 @@ This overlay supplements the historical Canon inventory; it does not close or si
 **Still OPEN across the whole Canon:** native B1_DETAIL/B2_GIST offer quality and mutual re-entry; trained B3 cross-model latent receiver; accepted JEPA per-session retention and numeric parameter/checkpoint changes; sparse MoE bodies; audio/vision weight learning; Android background/API and UI providers; trainable speech decoder/vocoder/full duplex; cross-organ gradients and controlled self-edit; independent technical OS sandbox; adaptive behavior judge; complete declared memory/egress registry; Memorilla production overflow consumer. P0 issue #1904 remains open.
 
 **Proof boundary:** #2258 exact-head workflows were queued at last poll. No combined PASS, local project test, Android test, Redmi receipt, release or installation is claimed.
+
+
+## QA exact-head correction — 2026-11-21 22:17 CET
+
+The composed #2258 evidence supersedes the prior `queued` note: A5 lease, staged/integrated, Lab-Age, Python 3.14 staged startup, old-phone migration and audio/arithmetic checks are **FAIL** on exact head `0ecbb1aac1f70c63cb39428a18811cfe4fd66d56`. The common stage failure is an old-reader SHA replacement mismatch in `source_lifecycle_lock_integration_candidate.py`; A5 import collection separately lacks the current Perception adapter exports. The speech-output fixture-only fix is PR #2261 and CI is pending. Combined JEPA and offline deploy-integrity workflows passed. Safe-additive remains policy-blocked. No local full checkout, Redmi receipt, installed SHA, Android provider or device update is proven. Keep all affected Canon rows PARTIAL/OPEN; do not promote A5 UI to native Android or mark deployment accepted.
