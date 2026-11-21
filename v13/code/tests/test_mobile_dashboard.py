@@ -249,7 +249,7 @@ class MobileDashboardTests(unittest.TestCase):
                 self.assertEqual(payload["availability"], "AVAILABLE")
                 self.assertEqual(payload["selection_scope"], "LATEST_COMPLETED_TURN_ALL_SESSIONS")
                 self.assertEqual(payload["redmi_status"], "REDMI_UNVERIFIED")
-                self.assertIs(payload["native_injection_proven"], False)
+                self.assertIs(payload["latent"]["native_injection_proven"], False)
                 self.assertNotIn(event["event_id"], rendered)
                 self.assertNotIn(session, rendered)
                 self.assertNotIn("PRIVATE_EVENT_TEXT_SENTINEL", rendered)
