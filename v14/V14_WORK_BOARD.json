@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T16:13:53.627Z",
+  "updated_at": "2026-11-21T16:15:50.137Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Code-bearing release f279286a4453248004c670fcaabecd85da6ab299 remains exact-CI green (34/34 check-runs, 19/19 workflows). Branch HEAD 9d8f91960c568be7fe7dcf894555ce7250f635f4 is documentation-only #2232 and has 36/36 check-runs green. #2228 C4 is in the normal pinned stage/deployer; synthetic staged 251 passed/10 skipped/47 subtests and integrated 424 passed/3 skipped/58 subtests. Current Perception #2233 adds a caller-PCM producer but is not yet a normal Runtime consumer. P0 #1904 remains open; no native B1/B2 or Redmi acceptance.",
-      "next_step": "Core: connect #2233's exact consent-bound RAW EAR producer to the normal Runtime and C3 runner.generate path, with derived-context deletion/cache clear on revocation and no callback re-entry. In parallel fix #2230's arithmetic/focal source-pin chain and preserve the Age tool-right veto. Require native model/Redmi evidence separately.",
+      "proof_environment": "Code-bearing release f279286a remains the last integrated code head with 34/34 exact merge checks and 19/19 workflows green. Current shared branch HEAD at this readback is a6b2aeaa (documentation-only handoff); 30 exact-head checks were queued. #2228 C4 normal-stage synthetic evidence remains staged 251/10/47 and integrated 424/3/58. Perception #2233 code/test evidence is at 17f27339; its branch advanced to 398b8072 with documentation-only changes, but current head checks are 6 success/1 failure/5 pending and base 9d8f is stale. No native B1/B2 or Redmi acceptance.",
+      "next_step": "Core/QA: rebase Perception #2233 onto current shared HEAD without overwriting Boss-owned docs, then wire its exact producer into normal Runtime and hold the consent lease through C3 runner.generate; implement derived-context tombstone/cache clear on revocation. Core also rebase #2230 and repair the arithmetic/focal pin chain.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 17:06 CET"
+      "last_checkpoint": "2026-11-21 17:14 CET"
     },
     {
       "id": "V14-002",
@@ -28,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Release branch f279286a is CI-green; current branch HEAD 9d8f9196 is documentation-only and CI-green. Existing private owner-read HEALTH/PIPELINE_STATUS/DIAGNOSTICS requests remain open without authenticated replies. Installed SHA and updater consent UNKNOWN; REDMI_UNVERIFIED.",
-      "next_step": "No manual Termux command, UPDATE_REQUEST, model swap or setting change. Wait for the existing owner-read requests; use a fresh request only after these are closed/expired.",
+      "proof_environment": "No authenticated private owner-read response. Installed SHA/updater consent remain UNKNOWN; REDMI_UNVERIFIED. Shared branch docs commits have pending exact-head CI; code-bearing f279 remains the last verified integrated release.",
+      "next_step": "No user action, manual Termux command or UPDATE_REQUEST. Wait for existing owner-read requests; do not change device settings or installed models.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 17:06 CET",
+      "last_checkpoint": "2026-11-21 17:14 CET",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -73,10 +73,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2231 current head 324e5af9e2cf98d5e49096696337ab290f566912 is based on current release HEAD 9d8f9196, but exact CI readback is 4/11 success, 6/11 failure, 1/11 in progress. Python 3.13/3.14 optimizer-resume and staged Runtime fail on stale integrated-builder/recovery source pins; lab-age and old-phone migration also fail (PARTIAL vs expected UPDATED). Production small numeric WorldJEPA model/EMA/training state remains synthetic Store/NumPy evidence; no native GGUF weights, B3 receiver training or Redmi utility. Productive learning gates remain OFF.",
-      "next_step": "JEPA: rebind the nested integrated builder and recovery pins from current base in dependency order; diagnose the old-phone migration PARTIAL result without weakening the test; rerun exact 3.13/3.14, staged and integrated CI. Preserve the earlier 0/12 B/A2 retention-rejection result until a new exact-head experiment proves otherwise.",
+      "proof_environment": "JEPA #2231 latest head 3fc1f2a7, base 9d8f (behind current shared HEAD a6b2aeaa), mergeable false. The PR body still identifies 6c9706c. Only offline-bridge-security was queued for the new head at readback; no exact JEPA/staged/optimizer matrix yet. Earlier 324e5af9 head had 4/11 success, 6 failures, 1 running due stale nested builder/recovery pins and migration PARTIAL. Production small numeric WorldJEPA remains synthetic Store/NumPy; no native GGUF or Redmi learning.",
+      "next_step": "JEPA: rebase to current HEAD, preserve Boss-owned board/workplan/coverage/next-action files, update body and nested builder/recovery pins, then rerun exact Python 3.13/3.14 optimizer, staged, integrated and migration checks. Preserve 0/12 old-holdout retention rejection and keep gates OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 17:06 CET",
+      "last_checkpoint": "2026-11-21 17:14 CET",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -159,10 +159,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Perception PR #2233 current head 17f273395a869fd7469110773a5fe777a522909b is based on 9d8f9196. Exact CI: consent/revocation 29 passed; RAW EAR producer/temporal 53 passed on Python 3.11 and 3.13; VAD comparator 8/8 on Python 3.13/3.14 with native Linux libfvad 13 PASS per matrix; staged 251/10 skipped/47 subtests; integrated 424/3 skipped/58 subtests; privacy/model-lab/offline-security PASS. Three validate-additive checks fail because production modules/workflows exceed the inert-module allowlist. Caller PCM16 only; no microphone, native model or Redmi proof.",
-      "next_step": "Core + QA: build and adversarially test the actual normal Runtime consumer, delete/tombstone derived audio context and clear cache on revocation, and hold the provider lease through the full C3 generation call. Keep microphone capture and speech output OFF pending Android permission and device proof.",
+      "proof_environment": "Perception #2233 latest head 398b8072618ee03add643fa74d917606b41fe938, base 9d8f (behind current shared HEAD a6b2aeaa), mergeable false. Code/test evidence remains exact SHA 17f273395a869fd7469110773a5fe777a522909b: consent 29, RAW EAR 53 on Python 3.11/3.13, VAD comparator 8 on Python 3.13/3.14, libfvad Linux 13 PASS per matrix, staged 251/10/47, integrated 424/3/58. Current head checks 6 success/1 failure/5 pending. Branch includes stale Boss-owned docs; no Runtime microphone consumer or Redmi proof.",
+      "next_step": "Perception: rebase current head, preserve Boss-owned docs, keep research/handoff changes scoped. Core + QA: integrate producer into normal Runtime with revocation deletion/cache clearing and a lease through actual C3 generation. Keep mic/ASR/TTS off until separately proven.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 17:06 CET",
+      "last_checkpoint": "2026-11-21 17:14 CET",
       "latest_candidate_pr": {
         "pr": 2155,
         "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
@@ -180,10 +180,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Boss reviewed the current PR stack. #2233 is a substantive producer candidate but has no normal Runtime consumer and three strict safe-additive policy failures; kept draft. #2230 has stale base f279 and exact Python 3.13 failure at integrated_arithmetic_candidate_20261116.py:34 (focal.py source pin mismatch); Python 3.14 pending at readback. #2231 is current-base but 4/11 checks pass, 6 fail and 1 running due nested builder/recovery pin mismatch and migration PARTIAL. No unreviewed merge.",
-      "next_step": "Boss: integrate only after each dependency chain is rebased to current HEAD, exact-head CI is green, and critical production changes receive independent review. Keep the 36/36 docs-head CI distinct from the 34/34 code-release CI. Continue whole-Canon clause mapping; no micro-PR stack is accepted as system completion.",
+      "proof_environment": "Boss posted exact failure/pin findings and rebase instructions on #2230/#2231/#2233 and recorded the whole-Canon checkpoint on #1984. Latest PR heads: #2230 512c4ca7 (base f279, 3 checks queued, non-mergeable); #2231 3fc1f2a7 (base 9d8f, only offline-security queued, non-mergeable, stale Boss docs in diff); #2233 398b8072 (base 9d8f, 6 pass/1 fail/5 pending, stale Boss docs in diff). Current shared HEAD a6b2aeaa had 30 checks queued at readback. No merge.",
+      "next_step": "Boss: re-review after each branch is rebased onto current HEAD, exact-head CI is fully green and shared docs ownership is preserved. Do not use the low-authority release queue for Age, voice/consent or learning/weight paths. Keep f279 as last verified code-bearing release.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 17:06 CET"
+      "last_checkpoint": "2026-11-21 17:14 CET"
     },
     {
       "id": "V14-008",
@@ -194,10 +194,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "Existing private owner-read requests for HEALTH, PIPELINE_STATUS and DIAGNOSTICS remain open with zero authenticated replies at readback. Installed SHA/updater consent unknown; REDMI_UNVERIFIED.",
-      "next_step": "No user action. Do not ask for another Termux run or issue duplicate relay requests while current ones remain open. No UPDATE_REQUEST until an authenticated receipt establishes the installed SHA and consent.",
+      "proof_environment": "Existing private owner-read requests for HEALTH, PIPELINE_STATUS and DIAGNOSTICS remain open with no authenticated response. Installed SHA/updater consent unknown; REDMI_UNVERIFIED.",
+      "next_step": "No user action. Do not issue duplicate private requests or UPDATE_REQUEST while current owner-read requests remain open. No device mutation.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 17:06 CET"
+      "last_checkpoint": "2026-11-21 17:14 CET"
     },
     {
       "id": "V14-009",
@@ -222,10 +222,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Selected trainable adapters/heads and later cross-organ weights; meta update predictor; sandboxed code/structure proposals; independent OS capability boundary; approval, holdout, retention and rollback",
       "acceptance": "Prove a real numeric parameter diff on an approved target, measurable heldout utility and retention, checkpoint/restart/rollback, and cross-organ consumer benefit. Code/structure self-edit remains sandboxed and human-approved; no self-issued permissions.",
-      "proof_environment": "PR #2231 introduces per-parameter Adam clocks and predictor-only/full encoder modes in the small numeric WorldJEPA candidate, but its exact staged/optimizer CI fails on nested builder hash mismatches and migration PARTIAL. Existing merged WorldJEPA numeric checkpoint/EMA/training state is synthetic Store/NumPy only. No native GGUF body-weight edits, cross-organ gradients, sparse MoE or self-edit. Production learning/optimizer gates OFF.",
-      "next_step": "JEPA: repair the exact pin chain, then measure multi-seed parameter/EMA/optimizer deltas, new/old holdout utility, A→B→A retention, restart and rollback. Do not promote a failed candidate or turn on production gates.",
+      "proof_environment": "PR #2231 current head 3fc1f2a7 has not run its full optimizer/staged/integrated matrix on the new SHA; prior 324e5af9 head failed staged/optimizer pins and migration PARTIAL. Existing small numeric WorldJEPA checkpoint/EMA/training state is synthetic and gated OFF. No native body-weight edits, cross-organ gradients, sparse MoE or self-edit.",
+      "next_step": "Repair current-base pin chain and obtain repeated-seed holdout/retention/restart/rollback evidence before any learning-gate change. No production weight permission or native model swap.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 17:06 CET"
+      "last_checkpoint": "2026-11-21 17:14 CET"
     },
     {
       "id": "V14-011",
@@ -236,10 +236,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
-      "proof_environment": "The merged SleepRuntime postcommit WorldJEPA path remains a bounded synthetic Store/NumPy SHADOW learner. PR #2231's new A→B→A/replay/predictor-only candidate has not passed its exact staged/optimizer CI; prior head's 0/12 shifted B/A2 candidates were rejected by old-holdout retention. No native Android lifecycle or dream consolidation proof.",
-      "next_step": "After pin and CI repair, compare uniform/no-replay and predictor-only/full modes under equal update/replay-byte budgets, repeated seeds, old/new holdouts, censored outcomes, checkpoint restart and rollback. Keep gates OFF.",
+      "proof_environment": "Merged bounded postcommit WorldJEPA remains a synthetic Store/NumPy SHADOW learner. Latest #2231 head 3fc1f2a7 is non-mergeable on stale base 9d8f and has no full exact-head CI yet. Prior candidate rejected 12/12 shifted B/A2 updates on old-holdout retention.",
+      "next_step": "Rebase and fix pin chain, then test matched session-contiguous vs uniform/no replay and predictor-only/full modes under equal byte/update budgets. Preserve retention gate; no production learning activation.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 17:06 CET"
+      "last_checkpoint": "2026-11-21 17:14 CET"
     },
     {
       "id": "V14-012",
@@ -261,17 +261,17 @@
       "priority": "P1",
       "status": "READY",
       "owner": "Boss & Integration",
-      "proof_environment": "The historical inventory remains 1,255 headings; current Boss evidence now covers C4 normal-stage integration and the RAW EAR producer candidate, but semantic clause→code→consumer→test→environment→rollback mapping is still incomplete across all Canon families.",
-      "next_step": "Continue clause-level mapping across W0-W10, A0-A5, B1-B5, C/JEF, latent coupling, attention, world/self/memory, audio/vision, Android background/UI, tools, learning, self-edit, Age, permissions, recovery and UX. Do not infer whole-system acceptance from CI or one integrated slice.",
-      "last_checkpoint": "2026-11-21 17:06 CET",
+      "proof_environment": "1,255 historical headings remain inventoried. The 17:06 Boss evidence overlay covers C4 normal-stage integration and RAW EAR caller-PCM candidate, but semantic clause mapping is incomplete. Latest PRs include stale shared-doc snapshots and must be rebased without overwriting the current index.",
+      "next_step": "Continue clause-level mapping across the entire Canon after resolving current PR base and file-ownership conflicts; preserve all historical V13 appendix bytes and do not infer full-scope completion.",
+      "last_checkpoint": "2026-11-21 17:14 CET",
       "user_action_required": false
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED — existing private owner-read requests for HEALTH, PIPELINE_STATUS and DIAGNOSTICS remain open without an authenticated response. Installed SHA and updater consent are UNKNOWN. No UPDATE_REQUEST, shell action, model change or device mutation.",
+  "current_redmi_status": "REDMI_UNVERIFIED — private owner-read requests for HEALTH, PIPELINE_STATUS and DIAGNOSTICS remain open without authenticated response. Installed SHA and updater consent UNKNOWN. No UPDATE_REQUEST, shell action, model change or device mutation.",
   "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
   "latest_integrated_head": "f279286a4453248004c670fcaabecd85da6ab299",
   "latest_integrated_head_verified_at": "2026-11-21T15:50:16.712Z",
-  "release_gate_status": "CODE_CI_GREEN_NOT_PHONE_RELEASED. Code-bearing release f279286a4453248004c670fcaabecd85da6ab299 retains 34/34 exact merge check-runs and 19/19 associated workflows SUCCESS. The Boss documentation handoff was read back at d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff; its 30 exact-head check-runs were queued at that readback. Subsequent board/user-handoff refresh commits may trigger a new exact-head run. No Redmi receipt or installed SHA.",
+  "release_gate_status": "CODE_CI_GREEN_NOT_PHONE_RELEASED. Code-bearing release f279286a4453248004c670fcaabecd85da6ab299 retains 34/34 exact merge check-runs and 19/19 associated workflows SUCCESS. Shared branch parent at a6b2aeaaa6cb92a0948c272c0b099e6265bca487 was documentation-only and had 30 exact-head checks queued. Latest PR heads have not passed their full exact-base CI; no new code merge or Redmi proof.",
   "phone_receipt": {
     "state": "NO_LIVE_RECEIPT_PRIVATE_OWNER_READ_REQUESTS_PENDING_NO_AUTHENTICATED_REPLY",
     "installed_sha": "UNKNOWN",
@@ -435,34 +435,22 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-21T16:13:53.627Z",
-    "branch_head": "d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff",
-    "branch_head_type": "DOCUMENTATION_ONLY_BOSS_HANDOFF_PARENT_BEFORE_FINAL_BOARD_REFRESH",
+    "timestamp": "2026-11-21 17:14 CET",
+    "branch_head": "a6b2aeaaa6cb92a0948c272c0b099e6265bca487",
+    "branch_head_type": "DOCUMENTATION_ONLY_SHARED_HEAD_BEFORE_LATEST_HANDOFF_REFRESH",
+    "branch_head_checks": "30_OF_30_QUEUED_AT_READBACK",
     "code_bearing_release_sha": "f279286a4453248004c670fcaabecd85da6ab299",
-    "branch_head_checks": "30_OF_30_QUEUED_AT_READBACK; FINAL_REFRESH_COMMITS_REQUIRE_NEW_EXACT_HEAD_CHECK",
     "code_release_checks": "34_OF_34_SUCCESS; 19_OF_19_WORKFLOWS_SUCCESS",
+    "pr2230": "HEAD_512c4ca7_BASE_F279_STALE_NONMERGEABLE_3_CHECKS_QUEUED",
+    "pr2231": "HEAD_3fc1f2a7_BASE_9d8f_STALE_NONMERGEABLE_OFFLINE_SECURITY_ONLY_QUEUED_BODY_STALE_SHARED_DOCS_IN_DIFF",
+    "pr2233": "HEAD_398b8072_BASE_9d8f_STALE_NONMERGEABLE_6_PASS_1_FAIL_5_PENDING_CODE_TEST_SHA_17f273",
     "pr2228": "MERGED_NORMAL_STAGE_C4_SYNTHETIC_CONSUMER",
     "pr2228_tests": "STAGED_251_PASSED_10_SKIPPED_47_SUBTESTS; INTEGRATED_424_PASSED_3_SKIPPED_58_SUBTESTS",
-    "pr2233": "DRAFT_CURRENT_BASE_HEAD_17f273395a869fd7469110773a5fe777a522909b; FOCUSED_AND_STAGED_INTEGRATED_CI_PASS; THREE_VALIDATE_ADDITIVE_POLICY_FAILURES; NO_NORMAL_RUNTIME_CONSUMER",
-    "pr2230": "DRAFT_STALE_BASE_F279_HEAD_e64b9ee; PY313_STAGED_C4_FAILS_ARITHMETIC_FOCAL_SOURCE_PIN; PY314_PENDING_AT_READBACK",
-    "pr2231": "DRAFT_CURRENT_BASE_HEAD_324e5af9; 4_OF_11_PASS_6_FAIL_1_RUNNING; STAGED_AND_OPTIMIZER_PIN_FAILURES; MIGRATION_PARTIAL",
     "redmi": "REDMI_UNVERIFIED; INSTALLED_SHA_AND_UPDATER_CONSENT_UNKNOWN",
     "private_owner_read": "HEALTH_PIPELINE_STATUS_DIAGNOSTICS_REQUESTS_OPEN_NO_AUTHENTICATED_REPLY",
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_AND_GITHUB_DNS_FAILURE",
     "p0_chat": "OPEN_ISSUE_1904",
     "canon_coverage": "1255_HISTORICAL_HEADINGS; SEMANTIC_CLAUSE_MAPPING_INCOMPLETE",
-    "next_actions": [
-      "Core: connect PR2233 RAW EAR producer to normal Runtime and hold consent lease through C3 generation; delete derived context on revocation.",
-      "Core: rebase PR2230 and recompute arithmetic/C4/stager/deployer source pins; preserve Age tool-right ordering.",
-      "JEPA: repair PR2231 nested builder/recovery pins and migration PARTIAL failure; rerun exact 3.13/3.14 and integrated tests.",
-      "Boss: re-review only after exact-head CI and independent review; no release/deploy until accepted."
-    ],
-    "user_action_required": "NONE",
-    "docs_sync_commits": [
-      "8e37ee7b33d0b3899cd2c997b4b307df338ce390",
-      "fbad923fa24a2caf044b35de29fb1f6d5d7433a4",
-      "56edf08f0ae20cd8414c9620a1aaa6a1fd79c5fb",
-      "d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff"
-    ]
+    "user_action_required": "NONE"
   }
 }
