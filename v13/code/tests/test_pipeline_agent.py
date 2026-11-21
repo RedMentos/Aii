@@ -414,7 +414,15 @@ class PipelineTests(unittest.TestCase):
 class GitHubCIProofTests(unittest.TestCase):
     @staticmethod
     def workflow(commit, name=u.CI_WORKFLOW, **changes):
-        result = {"head_sha": commit, "name": name,
+        workflow_id = list(u.CI_WORKFLOW_PATHS).index(name) + 1
+        timestamp = "2026-11-21T00:00:00Z"
+        result = {"id": 10000 + workflow_id,
+                  "workflow_id": workflow_id,
+                  "run_number": 1,
+                  "run_attempt": 1,
+                  "created_at": timestamp,
+                  "updated_at": timestamp,
+                  "head_sha": commit, "name": name,
                   "path": u.CI_WORKFLOW_PATHS[name]+"@refs/heads/gpt6/v13-private-remote-bridge-20261111",
                   "event": "push",
                   "status": "completed", "conclusion": "success",
