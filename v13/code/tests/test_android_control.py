@@ -237,30 +237,45 @@ def test_audit_database_allows_sticky_shared_ancestor(tmp_path):
 
 
 def _android13_data_user_zero_path(
-    tmp_path, monkeypatch, *, data_mode=0o771, data_uid=1000, data_gid=1000, user_mode=0o711
+    tmp_path, monkeypatch, *, data_mode=0o771, data_uid=1000, data_gid=1000,
+    user_mode=0o711, bind_mode=0o771, bind_uid=1000, bind_gid=1000,
+    target_mode=0o771, target_uid=1000, target_gid=1000, bind_inode_matches=True,
 ):
     data_root = tmp_path / "data"
+    data_root.mkdir()
+    data_data = data_root / "data"
+    data_data.mkdir()
     user_root = data_root / "user"
+    user_root.mkdir()
     user_zero = user_root / "0"
+    user_zero.mkdir()
     private = user_zero / "com.termux"
-    private.mkdir(parents=True)
+    private.mkdir()
     os.chmod(data_root, data_mode)
+    os.chmod(data_data, target_mode)
     os.chmod(user_root, user_mode)
-    os.chmod(user_zero, 0o700)
+    os.chmod(user_zero, bind_mode)
     os.chmod(private, 0o700)
     monkeypatch.setattr(android_control, "_ANDROID_DATA_ROOT", data_root)
     real_lstat = Path.lstat
-    owners = {
-        data_root: (data_uid, data_gid),
-        user_root: (android_control._ANDROID_SYSTEM_UID, android_control._ANDROID_SYSTEM_GID),
-        user_zero: (android_control._ANDROID_SYSTEM_UID, android_control._ANDROID_SYSTEM_GID),
+    target_info = real_lstat(data_data)
+    synthetic = {
+        data_root: (data_uid, data_gid, real_lstat(data_root).st_dev, real_lstat(data_root).st_ino, real_lstat(data_root).st_mode),
+        user_root: (android_control._ANDROID_SYSTEM_UID, android_control._ANDROID_SYSTEM_GID, real_lstat(user_root).st_dev, real_lstat(user_root).st_ino, real_lstat(user_root).st_mode),
+        data_data: (target_uid, target_gid, target_info.st_dev, target_info.st_ino, stat.S_IFDIR | target_mode),
+        user_zero: (
+            bind_uid, bind_gid, target_info.st_dev,
+            target_info.st_ino if bind_inode_matches else target_info.st_ino + 1,
+            stat.S_IFDIR | bind_mode,
+        ),
     }
 
     def android_lstat(path):
         info = real_lstat(path)
-        owner = owners.get(path)
-        if owner is not None:
-            return SimpleNamespace(st_mode=info.st_mode, st_uid=owner[0], st_gid=owner[1])
+        item = synthetic.get(path)
+        if item is not None:
+            uid, gid, dev, ino, mode = item
+            return SimpleNamespace(st_mode=mode, st_uid=uid, st_gid=gid, st_dev=dev, st_ino=ino)
         return info
 
     monkeypatch.setattr(Path, "lstat", android_lstat)
@@ -268,12 +283,47 @@ def _android13_data_user_zero_path(
 
 
 def test_android13_data_user_zero_bind_mount_ancestors_allow_exact_system_0771(tmp_path, monkeypatch):
-    # AOSP Android 13: /data is system:system 0771; /data/user is 0711;
-    # /data/user/0 is a system-owned bind mount; the Termux app dir is private.
+    # AOSP Android 13: /data is 0771 system:system; /data/user is 0711;
+    # /data/user/0 and /data/data share the same device/inode via bind mount.
     private = _android13_data_user_zero_path(tmp_path, monkeypatch)
     broker = AndroidControlBroker(private / "audit.sqlite")
     assert stat.S_IMODE(broker.db_path.stat().st_mode) == 0o600
     broker.close()
+
+
+def test_android13_data_user_zero_rejects_unverified_bind_mount_inode(tmp_path, monkeypatch):
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch, bind_inode_matches=False)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
+
+
+def test_android13_data_user_zero_rejects_wrong_bind_mount_uid(tmp_path, monkeypatch):
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch, bind_uid=999)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
+
+
+def test_android13_data_user_zero_rejects_wrong_bind_mount_gid(tmp_path, monkeypatch):
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch, bind_gid=1001)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
+
+
+def test_android13_data_user_zero_rejects_wrong_bind_mount_mode(tmp_path, monkeypatch):
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch, bind_mode=0o773)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
+
+
+def test_android13_data_user_zero_rejects_wrong_bind_mount_target_mode(tmp_path, monkeypatch):
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch, target_mode=0o773)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
 
 
 def test_android13_data_0771_rejects_wrong_system_group(tmp_path, monkeypatch):
@@ -358,3 +408,17 @@ def test_legacy_android_data_target_group_write_exception_is_exact(tmp_path, mon
     assert not android_control._trusted_android_data_group_write(
         data_root / "other", exact
     )
+
+
+def test_android13_data_user_zero_rejects_wrong_bind_mount_target_uid(tmp_path, monkeypatch):
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch, target_uid=999)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
+
+
+def test_android13_data_user_zero_rejects_wrong_bind_mount_target_gid(tmp_path, monkeypatch):
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch, target_gid=1001)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
