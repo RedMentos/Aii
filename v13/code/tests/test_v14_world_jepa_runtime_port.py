@@ -797,6 +797,36 @@ def test_postcommit_world_planner_consumes_numeric_b1_b2_receivers_without_openi
         assert again["planner_shadow"]["idempotent"] is True
         active_after, _ = store.state("v14.world_jepa.store_consumer", None)
         assert active_after["active"]["checkpoint_sha256"] == checkpoint_before
+
+        active_for_stale, version = store.state("v14.world_jepa.store_consumer", None)
+        tampered_active = dict(active_for_stale)
+        tampered_active["active"] = dict(active_for_stale["active"])
+        tampered_active["active"]["checkpoint_sha256"] = "0" * 64
+        store.set_state(
+            "v14.world_jepa.store_consumer", tampered_active, expected=version
+        )
+        stale = read_world_planner_shadow(store, event["event_id"])
+        assert stale["status"] == "STALE_CHECKPOINT"
+        current_state, current_version = store.state(
+            "v14.world_jepa.store_consumer", None
+        )
+        store.set_state(
+            "v14.world_jepa.store_consumer", active_for_stale,
+            expected=current_version,
+        )
+
+        event_row = store.one(
+            "SELECT packet FROM events WHERE id=?", (event["event_id"],)
+        )
+        envelope = json.loads(event_row["packet"])
+        envelope["source_ref"]["sha256"] = "0" * 64
+        with store.tx() as connection:
+            connection.execute(
+                "UPDATE events SET packet=? WHERE id=?",
+                (json.dumps(envelope, sort_keys=True), event["event_id"]),
+            )
+        revoked = read_world_planner_shadow(store, event["event_id"])
+        assert revoked["status"] == "SOURCE_REVOKED_OR_CHANGED"
     finally:
         store.close()
 
