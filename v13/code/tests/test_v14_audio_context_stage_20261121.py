@@ -15,7 +15,7 @@ SOURCE_BLOBS = {
     "v13/cognition.py": "90138474db6f7c0b66cea24f52d22cd7a6e2f87b",
     "v13/audio_voice_cues.py": "7ac80a0d0deec8f52361fe89756ebd743b0a3537",
 }
-BUILDER_SHA256 = "984b962dd7ce9097bd7641cee0176bc4f7056583e36496f2a0436e9868aad513"
+BUILDER_SHA256 = "563c77338970aebb84f1836a930c34671bf0a94455d924aa51a510b101eae1fc"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -62,6 +62,9 @@ def test_audio_voice_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     assert "c3_prompt_included" in runtime
     assert "if not included:meta.pop('audio_source_refs',None);audio_source_ref=None" in runtime
     assert "audio_context_refs" in cognition
+    assert "audio_context=audio_context_packet" in cognition
+    assert "self._audio_context_query(e,offer['role'])" in cognition
+    assert "audio_offer_omitted" in cognition
     assert "Consumer audio context source mismatch" in cognition
     assert (destination / "v13/audio_voice_cues.py").is_file()
 
