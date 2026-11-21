@@ -331,3 +331,14 @@ No material V14 master edit was made; no master backup was required. Historical 
 - The underlying learner remains synthetic-Store evidence only. It updates local numeric WorldJEPA/EMA and B1/B2/SELF SHADOW heads; native GGUF body weights remain unchanged and decision authority remains NONE.
 - Exact repository local tests are blocked in this worker by GitHub DNS resolution. CI must run on the new exact PR head; no local or Redmi PASS is claimed.
 - Next: review exact PR-head focused/staged/integrated CI; then persist Adam moments with the checkpoint and compare persistent-vs-reset optimizer under equal update/replay budgets.
+
+
+## Boss integration checkpoint — 2026-11-21 11:20 CET
+
+- Release code head e18c664d954fa5a44a1b2e5bec76850d5a40f89f is verified and its exact-SHA push CI is **5/5 PASS**. PR #2190 is merged; its tested head passed 30 broker tests, Android sandbox replay, staged 249/10/47 and integrated 415/3/58. The exact Android 13 path exception is limited to AOSP /data and legacy /data/data system:system 0771; it does not add an OS executor.
+- #2179 is merged: the bounded cancellable JEPA postcommit worker is wired through Runtime/SleepRuntime after a committed/observed T8 event. Numeric WorldJEPA/EMA and B1/B2/SELF readouts remain SHADOW; learning gates are OFF by default; the training cohort in CI is synthetic. No native GGUF body-weight change or trained B3 receiver is claimed.
+- #2186 exact candidate head 4b01ecdfb87e4e5b1b5bc59d934d1536aef8d836 passed T8/Store 66 on Python 3.13 and 66 on 3.14, staged 249/10/47 and integrated 415/3/58. Its hard-replay arm was rejected by the utility/retention gate (holdout 0.366633 -> 0.905487); retain this negative result and keep hard replay non-default/OFF. Rebase to e18c664d954fa5a44a1b2e5bec76850d5a40f89f, remove shared status-document edits from the specialist PR, and do not merge the overlapping #2189 subset alongside it.
+- #2183 remains blocked: one focused test raises NameError because event_id is undefined, and the audit Store path check rejects AOSP /data 0771. Boss posted the exact findings; #2188 remains stacked and NOT_RELEASED.
+- Private owner-read #389 expired with no response. Installed SHA and updater consent remain unknown. No UPDATE_REQUEST or device action; REDMI_UNVERIFIED.
+- Local full checkout is blocked by GitHub DNS. Exact local repository tests are not claimed. The V14 master and historical V13 appendices were not changed.
+- Next integrated slice: P0 correct B1/B2 -> C4 -> C3 answer delivery, plus RAW EAR V3 A5 consumption; keep voice output, Android OS/UI control, true B3 latent coupling, cross-organ gradients, native weight updates and self-edit explicitly open.

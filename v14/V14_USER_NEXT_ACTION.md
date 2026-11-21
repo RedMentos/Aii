@@ -1,3 +1,42 @@
+# Boss integration checkpoint — 2026-11-21 11:20 CET
+
+## Current code release and evidence
+- Release branch gpt6/v13-private-remote-bridge-20261111 was verified at e18c664d954fa5a44a1b2e5bec76850d5a40f89f after PR #2190 was rebase-merged. Exact-SHA push CI: **5/5 workflows PASS**. Sixteen of seventeen PR-associated checks were green at readback; one staged PR-associated run remained in progress, plus one redundant workflow-dispatch staged run.
+- PR #2190 tested head 852a552c49ac75e2e9074b1aa31e59e3aa203958: **30 broker tests PASS**, Android sandbox replay integration PASS, staged-runtime **249 passed / 10 skipped / 47 subtests**, integrated-regression **415 passed / 3 skipped / 58 subtests**, private-bridge tests PASS. Safe-additive rejected the intentional existing security-module edit; Boss reviewed and merged directly, without bypassing the check.
+- V14 master blob remains 9748ad5ba9a4d4f5c3d004a0577141f6779fcbca; no Master/Part III rewrite occurred. Historical V13 appendices remain byte-identical.
+- Exact local checkout/test remains **BLOCKED**: git ls-remote https://github.com/RedMentos/Aii.git HEAD failed because this runner could not resolve github.com. CI is Linux Actions evidence, not local checkout, Android-native or Redmi evidence.
+
+## What V13/V14 can newly do
+- #2190 fixes a narrowly scoped Android 13 audit-DB path rejection for the exact AOSP /data and legacy /data/data system:system 0771 ancestors. This improves the broker's ability to initialize on the target filesystem; it does **not** add an Android OS executor or UI control.
+- #2179 is merged: after a committed/observed T8 outcome, a bounded cancellable idle worker now routes a postcommit JEPA update through Runtime/SleepRuntime and persists the numeric WorldJEPA/EMA checkpoint/cursor plus B1/B2/SELF SHADOW readouts. The test cohort is synthetic; both learning gates remain OFF by default; no native GGUF body weights changed.
+- #2186 exact candidate head 4b01ecdfb87e4e5b1b5bc59d934d1536aef8d836 passed V14 T8/Store **66 tests on Python 3.13 and 66 on Python 3.14**, staged **249/10 skipped/47 subtests**, and integrated **415/3 skipped/58 subtests**. The optimizer-moment arms both passed the current retention gate in one synthetic cohort. The hard-replay arm was a negative result: holdout loss rose **0.366633 -> 0.905487**, and the utility/retention gate rejected it. Keep hard replay non-default/OFF. #2186 must rebase to the current release; #2189 is an overlapping subset and must not be merged alongside it.
+
+## Device and user action
+- Private owner-read PIPELINE_STATUS request RedMentos/Aiiii#389 expired at **2026-11-21T10:19:16Z** with zero comments. Installed SHA is UNKNOWN; auto-update consent is UNVERIFIED. No UPDATE_REQUEST, device update, remote shell, model swap, permission change or user-data mutation was performed.
+- **User action: none required.** Redmi remains **REDMI_UNVERIFIED**. Do not run a new Termux command based on CI alone.
+
+## Highest-priority remaining system gaps
+1. **P0 chat path (#1904):** wrong 2+2 result, slow turns and missing B1/B2 offer delivery remain unverified/failing on the last device evidence. Fix actual B1/B2 -> C4 -> C3 consumption and correct answer quality without dropping organs or merely raising deadlines.
+2. **Voice/audio:** rebase RAW EAR V3 and the staged A5 consumer together; preserve text+audio modalities and prove the actual B1/B2 consumer. Microphone capture, ASR, trainable speech decoder/vocoder and full-duplex remain open.
+3. **Android agency:** #2190 is only the path guard. Background/API-first executor, authenticated companion, capability consent, stop/revocation, action audit and UI observation/action remain unimplemented.
+4. **JEPA/replay:** preserve #2179's bounded runtime worker; rebase #2186, retain its negative replay result, run multi-seed and A->B->A retention controls. Keep optimizer/learning gates OFF until the separate acceptance evidence exists.
+5. **B3/latent:** symbolic/tap traffic is not trained latent coupling; native receiver-effect/OOD/NO_MESSAGE/SYMBOLIC ablations remain open.
+6. **Whole Canon:** the mechanical index still contains 1,255 headings; clause-level mapping across A/B/C/JEF, attention, world/self/memory, tools, age, permissions, multimodal learning, sparse MoE, cross-organ gradients, self-edit, install/recovery and UX remains incomplete.
+
+## Open review blockers
+- #2183 flow-audit candidate: focused test has a NameError (event_id undefined) and its Store path validator rejects AOSP /data 0771. Boss review comment records both; keep out of release.
+- #2188 dashboard is stacked on #2183; do not release it first.
+- #2158/#2177 voice and #2169 tap-provenance candidates remain stale/non-mergeable against the current release.
+- #1983 Memorilla remains optional SHADOW; no native context-overflow consumer is accepted.
+
+## Next execution
+1. Rebase/review #2186 on the current release head; remove shared board/workplan/ledger/next-action edits from the specialist code PR and keep the hard-replay negative result.
+2. Fix #2183's test and AOSP path validator before exposing any dashboard consumer.
+3. Rebase #2158/#2177 and prove B1/B2 offer delivery through C4/C3.
+4. Fix #1904 answer quality/latency using the full multi-organ path, not organ removal or timeout inflation.
+5. Obtain a fresh authenticated private owner-read receipt before any device update request.
+
+---
 # JEPA & Memory checkpoint — 2026-11-21 08:4x CET
 
 ## Current repository and candidate
