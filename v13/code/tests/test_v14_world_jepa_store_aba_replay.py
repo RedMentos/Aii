@@ -58,30 +58,34 @@ def _add_phase(store, *, seed, phase, domain, count):
         source = prefix + ("x" * (index % 29))
         event = store.event(session_id, source)
         source_ref = event["source_ref"]
+        generation = event["brain_generation_id"]
         source_hashes[source_ref["sha256"]] = phase
 
         action_index = index % len(actions)
         route = actions[action_index]
         selection = contracts.packet(
             "ActionSelection",
-            "A5_SOURCE",
+            "C2_CONTROL",
             event["event_id"],
-            event["generation"],
+            generation,
             [source_ref],
             selected={
-                "action_id": route,
+                "action_id": "TEXT_REPORT",
                 "action_type": "TEXT_REPORT",
                 "score": 0.0,
-                "permission_class": "LOCAL_ONLY",
-                "focal_support": [],
+                "permission_class": "local_text_only",
+                "focal_support": 0.0,
             },
+            candidates=[],
+            suppressed=[],
+            permission_class="local_text_only",
             route_hint=route,
             stage="COMMIT",
         )
-        store.add_packet(selection)
+        store.add_packet("ActionSelection", selection)
         action_id = store.start_action(
             event["event_id"],
-            event["generation"],
+            generation,
             forecast={
                 "input_chars": len(source),
                 "resource_state": "NORMAL",
@@ -128,7 +132,6 @@ def _add_phase(store, *, seed, phase, domain, count):
         "event_ids": event_ids,
         "last_event_id": event_ids[-1],
     }
-
 
 def _sync_data_preserving_arm_state(master_home, arm_home):
     arm_store = Store(arm_home)
