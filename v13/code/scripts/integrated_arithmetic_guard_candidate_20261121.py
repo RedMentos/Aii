@@ -105,7 +105,7 @@ def apply_staged_arithmetic(code_dir: Path, staged_root: Path) -> dict[str, byte
     runtime = _replace(
         runtime,
         b"            self.world.self_state()\n",
-        b"            try:\n                self.world.self_state()\n            except Exception as exc:\n                self.store.log('world_self_state_unavailable',eid,{'stage':'self_state','error':type(exc).__name__})\n",
+        b"            try:\n                self.world.self_state()\n            except Exception as exc:\n                self.store.log('world_self_state_unavailable',eid,{'stage':'observe','error':type(exc).__name__})\n",
         "post-turn Self state failure isolation",
     )
     for name, raw in (("v13/arithmetic_reflex.py", arithmetic),
