@@ -72,14 +72,15 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2137 head 2d8eb79: focused V14 T8 52 PASS; staged-runtime 240 passed/10 skipped/47 subtests PASS; integrated regression 415 passed/3 skipped/58 subtests PASS; private bridge PASS. Dedicated T8 workflow remains Python 3.11 only; QA requested Python 3.14 coverage. Safe-additive policy is red pending Boss review. No normal Runtime learning consumer, optimizer update, native B1/B2 weights or Redmi proof. PR #2133 source-disjoint/backlog and #2135 online_world.py pin failures remain.",
-      "next_step": "Boss reviews #2137 policy/scope; add Python 3.14 coverage; integrate the T8 adapter into normal Runtime only after source-disjoint holdout and keyset backlog fixes. Keep optimizer closed until measured holdout/retention/restart/rollback and actual target-weight delta.",
+      "proof_environment": "PR #2137 latest head a3e19370d7fefe500e8edebf6942624207ff2865 is code-identical to prior head 2d8eb79b; prior exact head passed focused T8 52, staged-runtime 240/10 skipped/47 subtests and integrated regression 415/3 skipped/58 subtests, plus private bridge. New retargeted head exact CI is PENDING (T8, private bridge and staged/integrated runs in progress). Dedicated workflow remains Python 3.11 only; Python 3.14 requested. Safe-additive policy needs Boss review. No normal Runtime consumer, optimizer update, native B1/B2 weights or Redmi proof.",
+      "next_step": "Wait for exact a3e19370 CI; add Python 3.14 coverage; Boss reviews safe-additive policy and then wire T8 into normal Runtime only after source-disjoint holdout/backlog fixes. Keep optimizer closed.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 QA: exact #2137 staged/integrated CI completed PASS; previous cancellation/censoring, 4096-row ActionOutcome and rollback fsync findings fixed. Remaining gates: Python 3.14, safe-additive/Boss review, normal Runtime consumer, source-disjoint/backlog.",
+      "last_checkpoint": "2026-11-21 QA: PR #2137 retargeted head a3e19370 only changes handoff metadata; previous code-identical head 2d8eb79 exact 52/240/415 tests PASS. Current retargeted-head CI is running; no fresh result yet.",
       "latest_candidate_pr": {
         "pr": 2137,
-        "head_sha": "2d8eb79bdefe3c6c3bef63fea7d25563b7f56952",
-        "ci": "PASS: 52 focused T8 tests; staged-runtime 240 passed/10 skipped/47 subtests; integrated regression 415 passed/3 skipped/58 subtests; private bridge PASS. Python3.14, policy and normal Runtime consumer remain OPEN.",
+        "head_sha": "a3e19370d7fefe500e8edebf6942624207ff2865",
+        "previous_code_identical_sha": "2d8eb79bdefe3c6c3bef63fea7d25563b7f56952",
+        "ci": "Previous code-identical SHA PASS: 52 focused T8; staged 240/10 skipped/47 subtests; integrated 415/3 skipped/58 subtests; private bridge PASS. Retargeted head exact CI pending.",
         "scope": "Store-verified scalar temporal adapter; no normal Runtime learning loop, no native JEPA/B1/B2 body-weight change, optimizer gate closed"
       }
     },
@@ -118,10 +119,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Code-bearing release 5b9171a exact updater-required CI GREEN. Current docs-only HEAD d61b695 owner-read/bridge push PASS and staged-runtime PASS; integrated-regression still IN_PROGRESS. PR #2137 staged/integrated CI PASS but draft, Python3.14/policy/Runtime consumer gates remain. Whole-Canon acceptance incomplete.",
-      "next_step": "Wait for exact latest-SHA integrated regression; Boss reviews T8 and coordinates Core/JEPA consumer integration. No phone update without private receipt.",
+      "proof_environment": "Last code-bearing release 5b9171a exact updater-required CI GREEN; current docs-only HEAD d61b695 owner-read/bridge push PASS, staged-context push still IN_PROGRESS. PR #2137 previous code-identical head passed staged/integrated; new retargeted head a3e193 exact CI pending. Whole-Canon acceptance incomplete.",
+      "next_step": "Finish exact current release push and #2137 retargeted CI; Boss review T8 platform/policy and Core/JEPA continue real consumer integration.",
       "user_action_required": false,
-      "last_checkpoint": "QA verified d61b695 staged-runtime PASS; integrated-regression still running since 00:51:24Z. No new device evidence."
+      "last_checkpoint": "QA recorded the code-identical T8 pass but did not promote the retargeted head without its own exact CI."
     },
     {
       "id": "V14-008",
