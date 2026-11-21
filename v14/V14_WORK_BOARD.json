@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T22:40:02Z",
+  "updated_at": "2026-11-21T22:27:49Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -337,14 +337,15 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "LOCAL_LINUX_ALGORITHM_ONLY_PASS / GITHUB_CI_PENDING_NO_RUN_RETURNED / REDMI_UNVERIFIED",
-      "next_step": "Core/QA: complete exact-head RAW EAR run 44957913408 on Python 3.13/3.14 and staged/integrated run 44957913340; inspect failures and rerun after fixes. Keep NumPy and speaker model off by default. Only integrate after green exact-head checks and independent review.",
+      "next_step": "Core/QA: inspect exact code/test tree 880bfc (RAW EAR 44958073016; staged/integrated 44958072992), then review docs-only current head 35cf9a0. Separately Core must rebase #2266 on #2258 and repair the staged arithmetic source pin/migration failures. Keep NumPy and speaker model off by default.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21T22:40:02Z",
       "latest_candidate_pr": {
         "pr": 2275,
-        "head_sha": "631eb42cff2f3de7f066070e96896d996b019294",
+        "head_sha": "35cf9a0f474dacce2942e7786878dab43218f55d",
         "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
-        "ci": "QUEUED_RAW_EAR_44957913408_STAGED_44957913340"
+        "ci": "QUEUED_RAW_EAR_44958073016_STAGED_44958072992",
+        "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
       },
       "proof": "The prior algorithm's negative control reproduced the false-negative: a long same-batch tail replaced a cross-window speaker-change score with cosine 1.0. The pre-batch snapshot algorithm passed a local CPython 3.13.5 x86_64 reproduction for warmup, same-speaker, unvoiced, threshold-absent and 1-s/2-s invariance. This is algorithm-level only; no full Aii checkout test ran. PR #2275 is current-base and draft; no exact CI run was returned at readback. No microphone/model/Redmi test."
     }
@@ -890,7 +891,7 @@
       "topic": "FASTDIAR causal frame embeddings for RAW EAR speaker-change evidence",
       "status": "FULL_TEXT_PREPRINT_AND_MIT_REPO_REVIEWED_OPTIONAL_WIRED_SYNTHETIC_BATCH_FIX_IN_PR_2275",
       "primary": "arXiv:2610.02941v1; microsoft/fastdiar commit f48bff53b9a6a0cce4539e94b6def95f609eaea4",
-      "next": "Exact-head CI queued: RAW EAR 44957913408 (Python 3.13/3.14) and staged/integrated 44957913340. Read results; no backend promotion until green and later ARM64/Redmi evidence."
+      "next": "Exact code/test tree 880bfc: RAW EAR 44958073016 and staged/integrated 44958072992 remain queued. Native receiver cross-review R-054 confirms pinned API/build but not semantic transfer; Core must rebase and repair its separate staged failure."
     },
     {
       "id": "R-053",
@@ -898,6 +899,13 @@
       "status": "FULL_TEXT_PREPRINT_OFFICIAL_MIT_REPO_AND_B3_ONNX_CARD_REVIEWED_NO_DOWNLOAD",
       "primary": "arXiv:2603.11841; PalabraAI/redimnet2; soulmachine/evertranscript-redimnet2-b3-vox2-lm; ONNX Runtime mobile docs",
       "next": "Keep as segment-level reference/enrollment candidate only; if useful, request separate experimental-download approval and compare cold-load RSS/CPU/EER on consented speech. Not a streaming FASTDIAR replacement."
+    },
+    {
+      "id": "R-054",
+      "topic": "Native llama.cpp input-embedding receiver API and cross-model latent limits",
+      "status": "PINNED_NATIVE_API_VERIFIED_LINUX_BUILD_ANDROID_ARM64_CI_PASS_STAGED_INTEGRATION_FAIL",
+      "primary": "ggml-org/llama.cpp b29c606e28a01b1bc8c1351026a0fa6e616bf6c4; Core PR #2266 head 3166858133844fc80201334f53ade450557d1191",
+      "next": "Core rebase/stack #2266 on current Boss #2258; repair the separate staged arithmetic source pin and migration failures; then require a real model and trained/versioned projector with held-out semantic/retention tests. No Redmi proof."
     }
   ]
 }
