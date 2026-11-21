@@ -90,6 +90,8 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
         raise ValueError("voice cue input must be complete PCM16 bytes")
     if type(sample_rate) is not int or not 8000 <= sample_rate <= 48000:
         raise ValueError("voice cue sample rate must be 8000..48000")
+    if len(pcm) > sample_rate * 2:
+        raise ValueError("voice cue window is limited to one second")
     samples = struct.unpack("<" + "h" * (len(pcm) // 2), pcm)
     overall_energy = sum(value * value for value in samples) / len(samples)
     overall_rms = math.sqrt(overall_energy) / 32768.0
