@@ -12,6 +12,7 @@ import math
 
 from . import world_model
 from .world_jepa_runtime import memory_recall, receiver_matrix
+from .world_jepa_store_authority import MAX_ACTION_OUTCOMES_PER_EVENT
 
 STATE_PREFIX = "v14.world_jepa.planner_shadow:"
 SCHEMA = "v14.world_jepa.planner-shadow/1"
@@ -98,9 +99,11 @@ def _committed_context(store, event_id):
 
     outcomes = store.rows(
         "SELECT payload FROM packets WHERE kind='ActionOutcome' "
-        "AND event_id=? AND generation_id=? ORDER BY created DESC LIMIT 32",
-        (event_id, generation),
+        "AND event_id=? AND generation_id=? ORDER BY created DESC LIMIT ?",
+        (event_id, generation, MAX_ACTION_OUTCOMES_PER_EVENT + 1),
     )
+    if type(outcomes) is not list or len(outcomes) > MAX_ACTION_OUTCOMES_PER_EVENT:
+        raise ValueError("ActionOutcome scan bound")
     matching = []
     for row in outcomes:
         payload = _object(row["payload"])
@@ -199,8 +202,9 @@ def consume_world_planner_shadow(store, event_id, home=None, actions=None, memor
     except (ValueError, TypeError, KeyError, OSError, UnicodeError,
             OverflowError, ArithmeticError) as exc:
         return {
-            "status": "NO_COMMITTED_OUTCOME" if "ActionOutcome" in str(exc)
-                      or "terminal ActionOutcome" in str(exc) else "SOURCE_OR_RECEIPT_REJECTED",
+            "status": "NO_COMMITTED_OUTCOME"
+                      if "no committed terminal ActionOutcome" in str(exc)
+                      else "SOURCE_OR_RECEIPT_REJECTED",
             "error": type(exc).__name__,
             "decision_authority": "NONE",
             "dispatch": False,
