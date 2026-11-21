@@ -20,6 +20,8 @@ import uuid
 import numpy as np
 
 from v13 import world_jepa
+from v13 import world_jepa_replay
+from v13 import world_jepa_drift
 from v13 import world_jepa_shadow_checkpoint
 from v13 import world_model
 from .world_jepa_store_authority import verify_committed_transition_page
@@ -70,9 +72,13 @@ def _receipt_row(receipt):
     source_id = proof.get("source_id")
     if type(source_id) is not str or not source_id or len(source_id) > 256:
         raise ValueError("invalid verified source id")
+    session_id = receipt.session_id
+    if type(session_id) is not str or not session_id or len(session_id) > 128:
+        raise ValueError("invalid verified session id")
     return {
         "action_id": receipt.action_id,
         "source_id": source_id,
+        "session_id": session_id,
         "fingerprint": _sha(receipt.fingerprint),
         "source_sha256": _sha(proof.get("source_sha256")),
         "outcome_sha256": _sha(proof.get("outcome_sha256")),
@@ -86,7 +92,8 @@ def _receipt_row(receipt):
 def _cohort_sha(rows):
     body = [
         {"action_id": row["action_id"], "source_id": row["source_id"],
-         "source_sha256": row["source_sha256"], "fingerprint": row["fingerprint"]}
+         "source_sha256": row["source_sha256"], "fingerprint": row["fingerprint"],
+         "session_id": row.get("session_id")}
         for row in sorted(rows, key=lambda item: item["action_id"])
     ]
     raw = json.dumps(body, sort_keys=True, separators=(",", ":"), allow_nan=False)
@@ -171,6 +178,73 @@ def _source_disjoint_split(rows):
             "within_supplied_records_content_disjoint": True,
             "train_rows_sha256": _cohort_sha(train), "holdout_rows_sha256": _cohort_sha(holdout),
         },
+    }
+
+
+MAX_RETENTION_COHORTS = 64
+
+
+def _retention_cohorts(rows):
+    """Stable, privacy-preserving session cohorts from the prior holdout fold."""
+    grouped = {}
+    for row in rows:
+        session_id = row.get("session_id")
+        if type(session_id) is str and session_id:
+            key = "session:" + hashlib.sha256(session_id.encode("utf-8")).hexdigest()
+        else:
+            key = "legacy:ungrouped"
+        grouped.setdefault(key, []).append(row)
+    if len(grouped) > MAX_RETENTION_COHORTS:
+        return None
+    return tuple(
+        (key, tuple(sorted(values, key=lambda item: item["action_id"])))
+        for key, values in sorted(grouped.items())
+    )
+
+
+def _retention_cohort_losses(model, cohorts):
+    result = {}
+    for key, rows in cohorts or ():
+        loss = float(model.prediction_loss(*_arrays(list(rows))))
+        if not math.isfinite(loss) or loss < 0.0:
+            raise ValueError("invalid per-session WorldJEPA retention loss")
+        result[key] = {"rows": len(rows), "loss": loss}
+    return result
+
+
+def _retention_cohort_gate(before, after, *, overflow=False):
+    if overflow:
+        return {
+            "accepted": False,
+            "reason": "RETENTION_COHORT_LIMIT_EXCEEDED",
+            "max_cohorts": MAX_RETENTION_COHORTS,
+            "cohorts": {},
+        }
+    if not before:
+        return {"accepted": True, "reason": "NO_PRIOR_HOLDOUT", "cohorts": {}}
+    if set(before) != set(after):
+        return {"accepted": False, "reason": "RETENTION_COHORT_SET_MISMATCH", "cohorts": {}}
+    checks = {}
+    for key, prior in before.items():
+        current = after[key]
+        if int(prior["rows"]) != int(current["rows"]):
+            return {"accepted": False, "reason": "RETENTION_COHORT_ROW_MISMATCH", "cohorts": {}}
+        loss_before = float(prior["loss"])
+        loss_after = float(current["loss"])
+        tolerance = max(1e-12, abs(loss_before) * 1e-6)
+        checks[key] = {
+            "rows": int(prior["rows"]),
+            "loss_before": loss_before,
+            "loss_after": loss_after,
+            "delta": loss_after - loss_before,
+            "tolerance": tolerance,
+            "retained": loss_after <= loss_before + tolerance,
+        }
+    accepted = all(item["retained"] for item in checks.values())
+    return {
+        "accepted": accepted,
+        "reason": "ALL_PRIOR_SESSIONS_RETAINED" if accepted else "SESSION_RETENTION_REGRESSED",
+        "cohorts": checks,
     }
 
 
@@ -378,12 +452,17 @@ class WorldJEPAStoreConsumer:
         if type(rows) is not list or len(rows) > MAX_ROWS:
             raise ValueError("replay memory budget")
         row_ids = []
+        row_fields = {
+            "action_id", "source_id", "fingerprint", "source_sha256", "outcome_sha256",
+            "created", "s", "a", "y",
+        }
         for row in rows:
-            if type(row) is not dict or set(row) != {
-                "action_id", "source_id", "fingerprint", "source_sha256", "outcome_sha256",
-                "created", "s", "a", "y",
-            }:
+            if type(row) is not dict or set(row) not in (row_fields, row_fields | {"session_id"}):
                 raise ValueError("invalid replay memory row")
+            if ("session_id" in row and
+                    (type(row["session_id"]) is not str or not row["session_id"]
+                     or len(row["session_id"]) > 128)):
+                raise ValueError("invalid replay session provenance")
             if (type(row["source_id"]) is not str or not row["source_id"]
                     or len(row["source_id"]) > 256
                     or row["action_id"] not in fingerprints
@@ -465,8 +544,12 @@ class WorldJEPAStoreConsumer:
             "created", "s", "a", "y",
         }
         for row in rows:
-            if type(row) is not dict or set(row) != required:
+            if type(row) is not dict or set(row) not in (required, required | {"session_id"}):
                 raise ValueError("invalid pending T8 row")
+            if ("session_id" in row and
+                    (type(row["session_id"]) is not str or not row["session_id"]
+                     or len(row["session_id"]) > 128)):
+                raise ValueError("invalid pending session provenance")
             action_id, source_id = row["action_id"], row["source_id"]
             if (type(action_id) is not str or not action_id or len(action_id) > 128
                     or action_id in active_ids or action_id in seen
@@ -563,15 +646,23 @@ class WorldJEPAStoreConsumer:
 
 
     def update(self, *, limit=DEFAULT_PAGE_SIZE, steps=80, optimizer_permission=False,
-               replay_mode="uniform", cancel_check=None):
+               replay_mode="uniform", encoder_mode="full", cancel_check=None, drift_control=None,
+               replay_projection=False):
         if type(limit) is not int or not 16 <= limit <= MAX_ROWS:
             raise ValueError("limit")
         if type(steps) is not int or not 1 <= steps <= 2000:
             raise ValueError("steps")
         if type(optimizer_permission) is not bool:
             raise ValueError("optimizer_permission must be bool")
-        if replay_mode not in {"uniform", "none"}:
-            raise ValueError("replay_mode must be uniform or none")
+        if replay_mode not in world_jepa_replay.REPLAY_MODES:
+            raise ValueError("unsupported WorldJEPA replay_mode")
+        if encoder_mode not in {"full", "predictor_only"}:
+            raise ValueError("encoder_mode must be full or predictor_only")
+        if type(replay_projection) is not bool:
+            raise ValueError("replay_projection must be bool")
+        if replay_projection and replay_mode not in {"uniform_budget", "session_contiguous"}:
+            raise ValueError("replay projection requires a budgeted replay mode")
+        drift_config = world_jepa_drift.normalize_config(drift_control)
         if cancel_check is not None and not callable(cancel_check):
             raise ValueError("cancel_check must be callable")
         if cancel_check is not None and cancel_check():
@@ -666,6 +757,10 @@ class WorldJEPAStoreConsumer:
                         "censored_skipped": censored_skipped, "scanned_rows": scanned,
                         "pending_rows": len(pending_by_id),
                         "native_body_weights_changed": False}
+            if encoder_mode == "predictor_only" and active is None:
+                return {"status": "ENCODER_BOOTSTRAP_REQUIRED", "new_receipts": len(new_ids),
+                        "pending_rows": len(pending_by_id), "scan_cursor": state["scan_cursor"],
+                        "native_body_weights_changed": False, "native_body_consumed": False}
             new_set = set(new_ids)
             candidates = list(prior_rows.values())
             if len(candidates) > MAX_ROWS:
@@ -716,17 +811,60 @@ class WorldJEPAStoreConsumer:
             before = _parameter_snapshot(model)
             holdout_before = model.prediction_loss(*holdout)
             old_holdout_before = old_holdout_after = None
+            old_holdout_cohorts = ()
+            old_holdout_cohort_overflow = False
+            old_holdout_cohort_before = {}
             if active is not None:
                 old_holdout_ids = set(active["holdout_ids"])
                 old_holdout_rows = [row for row in active["experience_rows"] if row["action_id"] in old_holdout_ids]
                 if len(old_holdout_rows) >= 2:
                     old_holdout = _arrays(old_holdout_rows)
                     old_holdout_before = model.prediction_loss(*old_holdout)
-            # Uniform replay is the default. The no-replay mode is an explicit
-            # ablation: it trains only on newly admitted train-fold rows while
-            # retaining the complete source-disjoint cohort for future replay.
-            fit_rows = (train_rows if replay_mode == "uniform" or active is None
-                        else new_train_rows)
+                    old_holdout_cohorts = _retention_cohorts(old_holdout_rows)
+                    old_holdout_cohort_overflow = old_holdout_cohorts is None
+                    if not old_holdout_cohort_overflow:
+                        old_holdout_cohort_before = _retention_cohort_losses(model, old_holdout_cohorts)
+            # All replay modes receive only the prior source-disjoint train fold.
+            # Budgeted arms match the new train-row count; session-contiguous
+            # excludes legacy rows whose trusted session provenance is absent.
+            replay_salt = (active["checkpoint_sha256"] if active else "fresh") + ":" + _cohort_sha(new_train_rows)
+            replay_selection = world_jepa_replay.select_replay_rows(
+                replay_mode, new_train_rows, old_train_rows,
+                budget=len(new_train_rows), salt=replay_salt,
+            )
+            replay_rows = replay_selection["rows"]
+            # Preserve the historical uniform baseline's exact sorted cohort
+            # order; the budgeted experimental arms use the explicit new+replay
+            # sequence selected above.
+            fit_rows = (
+                train_rows if replay_mode == "uniform"
+                else list(new_train_rows) + list(replay_rows)
+            )
+            replay_start = None
+            if replay_projection:
+                if active is None or len(new_train_rows) < 2 or len(replay_rows) < 2:
+                    persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                    if persisted != "PERSISTED":
+                        return {"status": persisted, "pending_rows": len(pending_by_id),
+                                "scan_cursor": state["scan_cursor"],
+                                "native_body_weights_changed": False}
+                    return {"status": "INSUFFICIENT_REPLAY_FOR_PROJECTION",
+                            "new_train_rows": len(new_train_rows), "replay_rows": len(replay_rows),
+                            "pending_rows": len(pending_by_id), "scan_cursor": next_cursor,
+                            "native_body_weights_changed": False}
+                replay_start = len(new_train_rows)
+            replay_metrics = {
+                "replay_mode": replay_mode,
+                "replay_rows": len(replay_rows),
+                "replay_budget_rows": replay_selection["budget_rows"],
+                "replay_requested_budget_rows": replay_selection["requested_budget_rows"],
+                "replay_budget_matched": replay_selection["budget_matched"],
+                "replay_session_count": replay_selection["session_count"],
+                "replay_window_count": replay_selection["window_count"],
+                "replay_manifest_sha256": replay_selection["manifest_sha256"],
+                "replay_projection_requested": replay_projection,
+                "replay_projection_enabled": replay_start is not None,
+            }
             if len(fit_rows) < 2:
                 persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
                 if persisted != "PERSISTED":
@@ -736,45 +874,145 @@ class WorldJEPAStoreConsumer:
                 return {"status": "INSUFFICIENT_NEW_TRAIN_ROWS",
                         "new_train_rows": len(new_train_rows),
                         "replay_candidate_rows": len(old_train_rows),
+                        **replay_metrics,
                         "pending_rows": len(pending_by_id),
                         "scan_cursor": next_cursor,
                         "native_body_weights_changed": False}
             fit_arrays = _arrays(fit_rows)
-            try:
-                model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4),
-                                  cancel_check=cancel_check, allow_optimizer_bootstrap=True)
-            except InterruptedError:
-                return {"status":"CANCELLED","pending_rows":len(pending_by_id),
-                        "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
-                        "native_body_weights_changed":False}
-            if cancel_check is not None and cancel_check():
-                return {"status":"CANCELLED","pending_rows":len(pending_by_id),
-                        "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
-                        "native_body_weights_changed":False}
-            after = _parameter_snapshot(model)
-            holdout_after = model.prediction_loss(*holdout)
-            shuffled_action_loss = model.prediction_loss(holdout[0], np.roll(holdout[1], 1, axis=0), holdout[2])
-            zero_action_loss = model.prediction_loss(holdout[0], np.zeros_like(holdout[1]), holdout[2])
-            if old_holdout_before is not None:
-                old_holdout_after = model.prediction_loss(*old_holdout)
-            fit_steps_after = int(getattr(model, "_fit_steps", 0))
-            parameter_delta = _group_delta(before, after, ("enc", "preds"))
-            ema_delta = _group_delta(before, after, ("tgt",))
-            retention_delta = None if old_holdout_before is None else float(old_holdout_after - old_holdout_before)
-            holdout_improved = bool(holdout_after < holdout_before)
-            negative_controls_separated = bool(
-                holdout_after < shuffled_action_loss and holdout_after < zero_action_loss
+            replay_array_bytes = (
+                int(sum(int(array.nbytes) for array in _arrays(replay_rows)))
+                if replay_rows else 0
             )
-            # A new cohort must not be accepted by sacrificing the previous
-            # held-out cohort. This is a separate retention gate, not merely
-            # telemetry; when no prior checkpoint exists there is no old cohort.
-            old_holdout_retained = bool(
-                old_holdout_before is None
-                or (old_holdout_after is not None and old_holdout_after <= old_holdout_before)
-            )
-            utility_gate_accepted = (
-                holdout_improved and negative_controls_separated and old_holdout_retained
-            )
+            replay_metrics.update({
+                "fit_array_bytes": int(sum(int(array.nbytes) for array in fit_arrays)),
+                "replay_array_bytes": replay_array_bytes,
+            })
+            # A bounded line search over the optimizer step multiplier.
+            # Each retry reloads the same committed checkpoint: rejected candidates
+            # cannot leak parameters, EMA, Adam moments, RNG or drift state.
+            update_scales = ([1.0] if active is None else
+                             [1.0, 0.5, 0.25, 0.125, 0.0625])
+            attempts = []
+            selected_scale = None
+            candidate = model
+            for attempt_index, update_scale in enumerate(update_scales):
+                if attempt_index:
+                    candidate = self._load_model(active)
+                try:
+                    candidate.partial_fit(
+                        *fit_arrays, steps=steps, log_every=max(1, steps // 4),
+                        cancel_check=cancel_check, allow_optimizer_bootstrap=True,
+                        train_encoder=(encoder_mode == "full"),
+                        drift_control=drift_config, replay_start=replay_start,
+                        update_scale=update_scale,
+                    )
+                except InterruptedError:
+                    return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                            "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                            "native_body_weights_changed":False}
+                if cancel_check is not None and cancel_check():
+                    return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                            "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                            "native_body_weights_changed":False}
+
+                candidate_drift_metrics = world_jepa_drift.summary(
+                    candidate._training_state.get("drift"), enabled=drift_config["enabled"]
+                )
+                candidate_gradient_projection = dict(
+                    getattr(candidate, "_last_gradient_projection", {})
+                )
+                candidate_gradient_projection["requested"] = replay_projection
+                candidate_after = _parameter_snapshot(candidate)
+                candidate_holdout_after = candidate.prediction_loss(*holdout)
+                candidate_shuffled_loss = candidate.prediction_loss(
+                    holdout[0], np.roll(holdout[1], 1, axis=0), holdout[2]
+                )
+                candidate_zero_loss = candidate.prediction_loss(
+                    holdout[0], np.zeros_like(holdout[1]), holdout[2]
+                )
+                candidate_old_holdout_after = (
+                    candidate.prediction_loss(*old_holdout)
+                    if old_holdout_before is not None else None
+                )
+                candidate_old_holdout_cohort_after = (
+                    _retention_cohort_losses(candidate, old_holdout_cohorts)
+                    if old_holdout_cohorts is not None else {}
+                )
+                candidate_old_holdout_cohort_gate = _retention_cohort_gate(
+                    old_holdout_cohort_before,
+                    candidate_old_holdout_cohort_after,
+                    overflow=old_holdout_cohort_overflow,
+                )
+                candidate_fit_steps_after = int(getattr(candidate, "_fit_steps", 0))
+                candidate_encoder_delta = _group_delta(before, candidate_after, ("enc",))
+                candidate_predictor_delta = _group_delta(before, candidate_after, ("preds",))
+                candidate_parameter_delta = math.sqrt(
+                    candidate_encoder_delta ** 2 + candidate_predictor_delta ** 2
+                )
+                candidate_ema_delta = _group_delta(before, candidate_after, ("tgt",))
+                candidate_retention_delta = (
+                    None if old_holdout_before is None
+                    else float(candidate_old_holdout_after - old_holdout_before)
+                )
+                candidate_holdout_improved = bool(candidate_holdout_after < holdout_before)
+                candidate_negative_controls_separated = bool(
+                    candidate_holdout_after < candidate_shuffled_loss
+                    and candidate_holdout_after < candidate_zero_loss
+                )
+                candidate_old_holdout_retained = bool(
+                    old_holdout_before is None
+                    or (candidate_old_holdout_after is not None
+                        and candidate_old_holdout_after <= old_holdout_before)
+                )
+                candidate_accepted = (
+                    candidate_holdout_improved
+                    and candidate_negative_controls_separated
+                    and candidate_old_holdout_retained
+                    and candidate_old_holdout_cohort_gate["accepted"]
+                )
+                attempts.append({
+                    "update_scale": float(update_scale),
+                    "holdout_loss_after": float(candidate_holdout_after),
+                    "old_holdout_loss_after": (
+                        None if candidate_old_holdout_after is None
+                        else float(candidate_old_holdout_after)
+                    ),
+                    "holdout_improved": candidate_holdout_improved,
+                    "negative_controls_separated": candidate_negative_controls_separated,
+                    "old_holdout_retained": candidate_old_holdout_retained,
+                    "old_holdout_cohort_gate": candidate_old_holdout_cohort_gate,
+                    "accepted": bool(candidate_accepted),
+                })
+                if candidate_accepted:
+                    selected_scale = float(update_scale)
+                    break
+
+            model = candidate
+            after = candidate_after
+            holdout_after = candidate_holdout_after
+            shuffled_action_loss = candidate_shuffled_loss
+            zero_action_loss = candidate_zero_loss
+            old_holdout_after = candidate_old_holdout_after
+            fit_steps_after = candidate_fit_steps_after
+            drift_metrics = candidate_drift_metrics
+            gradient_projection = candidate_gradient_projection
+            encoder_delta = candidate_encoder_delta
+            predictor_delta = candidate_predictor_delta
+            parameter_delta = candidate_parameter_delta
+            ema_delta = candidate_ema_delta
+            retention_delta = candidate_retention_delta
+            holdout_improved = candidate_holdout_improved
+            negative_controls_separated = candidate_negative_controls_separated
+            old_holdout_retained = candidate_old_holdout_retained
+            old_holdout_cohort_gate = candidate_old_holdout_cohort_gate
+            utility_gate_accepted = selected_scale is not None
+            replay_metrics["optimizer_steps_added"] = fit_steps_after - fit_steps_before
+            replay_metrics["backtracking_attempts"] = len(attempts)
+            replay_metrics["backtracking_scales"] = [
+                item["update_scale"] for item in attempts
+            ]
+            replay_metrics["selected_update_scale"] = selected_scale
+            replay_metrics["backtracking_trace"] = attempts
             if not utility_gate_accepted:
                 persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
                 if persisted != "PERSISTED":
@@ -795,14 +1033,21 @@ class WorldJEPAStoreConsumer:
                     "old_holdout_loss_before": None if old_holdout_before is None else float(old_holdout_before),
                     "old_holdout_loss_after": None if old_holdout_after is None else float(old_holdout_after),
                     "old_holdout_retention_delta": retention_delta,
+                    "old_holdout_cohort_gate": old_holdout_cohort_gate,
+                    "drift_control": drift_metrics,
+                    "gradient_projection": gradient_projection,
                     "parameter_delta_norm": float(parameter_delta),
+                    "encoder_parameter_delta_norm": float(encoder_delta),
+                    "predictor_parameter_delta_norm": float(predictor_delta),
+                    "encoder_mode": encoder_mode,
+                    "encoder_updated": bool(encoder_delta > 0.0),
+                    "ema_updated": bool(ema_delta > 0.0),
                     "ema_target_delta_norm": float(ema_delta),
                     "fit_steps_before": fit_steps_before,
                     "fit_steps_after": fit_steps_after,
-                    "replay_mode": replay_mode,
                     "new_train_rows": len(new_train_rows),
                     "replay_candidate_rows": len(old_train_rows),
-                    "replay_rows": len(old_train_rows) if replay_mode == "uniform" and active else 0,
+                    **replay_metrics,
                     "fit_rows": len(fit_rows),
                     "fit_action_ids": [row["action_id"] for row in fit_rows],
                     "new_train_action_ids": [row["action_id"] for row in new_train_rows],
@@ -812,6 +1057,8 @@ class WorldJEPAStoreConsumer:
                     "native_body_consumed": False,
                     "runtime_wired": False,
                 }
+            # The accepted candidate is the first scale that passed all three
+            # gates; no rejected trial is published or checkpointed.
             if cancel_check is not None and cancel_check():
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
                         "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
@@ -838,9 +1085,8 @@ class WorldJEPAStoreConsumer:
                 "rejected_receipts": rejected, "censored_skipped": censored_skipped,
                 "scanned_rows": scanned, "has_more": has_more,
                 "scan_cursor_before": state["scan_cursor"], "scan_cursor_after": next_cursor,
-                "replay_mode": replay_mode,
                 "replay_candidate_rows": len(old_train_rows),
-                "replay_rows": len(old_train_rows) if replay_mode == "uniform" and active else 0,
+                **replay_metrics,
                 "new_train_rows": len(new_train_rows),
                 "new_holdout_rows": len(set(new_ids) & set(holdout_ids)),
                 "fit_rows": len(fit_rows),
@@ -865,12 +1111,21 @@ class WorldJEPAStoreConsumer:
                 "old_holdout_loss_before": None if old_holdout_before is None else float(old_holdout_before),
                 "old_holdout_loss_after": None if old_holdout_after is None else float(old_holdout_after),
                 "old_holdout_retention_delta": retention_delta,
-                "parameter_delta_norm": float(parameter_delta), "ema_target_delta_norm": float(ema_delta),
+                "old_holdout_cohort_gate": old_holdout_cohort_gate,
+                "parameter_delta_norm": float(parameter_delta),
+                "encoder_parameter_delta_norm": float(encoder_delta),
+                "predictor_parameter_delta_norm": float(predictor_delta),
+                "encoder_mode": encoder_mode,
+                "encoder_updated": bool(encoder_delta > 0.0),
+                "ema_updated": bool(ema_delta > 0.0),
+                "ema_target_delta_norm": float(ema_delta),
                 "fit_steps_before": fit_steps_before, "fit_steps_after": fit_steps_after,
                 "checkpoint_sha_before": checkpoint_before, "checkpoint_sha_after": checkpoint_after,
                 "optimizer_moments_persisted": saved.get("optimizer_state_persisted") is True,
                 "inverse_dynamics_optimizer_persisted": saved.get("optimizer_state_persisted") is True,
                 "optimizer_state_bootstrapped": saved.get("optimizer_state_bootstrapped") is True,
+                "drift_control": drift_metrics,
+                "gradient_projection": gradient_projection,
             }
             metrics.update(receiver_metrics)
             record = {
@@ -883,6 +1138,7 @@ class WorldJEPAStoreConsumer:
                                "last_prediction_error": float(holdout_after),
                                "last_parameter_delta_norm": float(parameter_delta),
                                "last_retention_delta": retention_delta,
+                               "last_cohort_retention": old_holdout_cohort_gate,
                                "last_scan_cursor": next_cursor},
                 "fit_steps": fit_steps_after, "scan_cursor": next_cursor,
             }
@@ -922,7 +1178,8 @@ class WorldJEPAStoreConsumer:
                 "has_more": has_more, "new_receipts": len(new_ids),
                 "processed": len(prior_fingerprints), "scan_cursor": next_cursor,
                 "checkpoint_sha256": checkpoint_after, "source_sha256": source_sha,
-                "metrics": metrics, "native_body_weights_changed": False,
+                "metrics": metrics, "utility_gate_accepted": True,
+                "native_body_weights_changed": False,
                 "native_body_consumed": False, "runtime_wired": False,
                 "scope": "WORLD_JEPA_EMA_SELF_MEMORY_AND_B1_B2_NUMERIC_SHADOW",
             }

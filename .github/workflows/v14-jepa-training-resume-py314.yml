@@ -1,4 +1,4 @@
-name: V14 JEPA training-resume Python 3.14
+name: V14 JEPA Store A-B-A and Runtime Python 3.13 and 3.14
 
 on:
   pull_request:
@@ -7,8 +7,19 @@ on:
       - "v13/code/v13/world_jepa_training_state.py"
       - "v13/code/v13/world_jepa_shadow_checkpoint.py"
       - "v13/code/v13/world_jepa_consumer.py"
+      - "v13/code/v13/world_jepa_replay.py"
+      - "v13/code/v13/world_jepa_drift.py"
+      - "v13/code/v13/world_jepa_store_authority.py"
       - "v13/code/v13/world_jepa_receiver_matrix.py"
       - "v13/code/v13/world_jepa_planner.py"
+      - "v13/code/v13/world_jepa_optimizer_audit.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/scripts/integrated_world_training_resume_candidate_20261111.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261112.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/tests/test_world_jepa_optimizer_resume_store.py"
+      - "v13/code/tests/test_world_jepa_predictor_only_resume.py"
+      - "v13/code/tests/test_v14_world_jepa_store_aba_replay.py"
       - "v13/code/tests/test_world_jepa_training_resume_stage_20261111.py"
       - "v13/code/tests/world_jepa_training_resume_disposable_cases_20261111.py"
       - "v13/code/tests/test_v14_world_jepa_postcommit_runtime.py"
@@ -20,14 +31,40 @@ permissions:
 
 jobs:
   optimizer-resume:
+    name: optimizer resume / Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          python-version: ${{ matrix.python-version }}
+      - name: Report exact JEPA source pin chain
+        run: |
+          sha256sum \
+            v13/code/v13/world_jepa.py \
+            v13/code/scripts/integrated_world_training_resume_candidate_20261111.py \
+            v13/code/scripts/termux_runtime_recovery_candidate_20261112.py \
+            v13/code/scripts/stage_integrated_candidate.py
       - name: Install pinned test dependencies
         run: python -m pip install --disable-pip-version-check numpy==2.3.5 pytest==9.2.0
-      - name: Run staged optimizer-resume and postcommit regression on Python 3.14
+      - name: Compile production JEPA, optimizer state, staged consumers and Store regressions
+        run: python -m py_compile v13/code/v13/world_jepa.py v13/code/v13/world_jepa_training_state.py v13/code/v13/world_jepa_consumer.py v13/code/v13/world_jepa_replay.py v13/code/v13/world_jepa_drift.py v13/code/v13/world_jepa_store_authority.py v13/code/v13/world_jepa_runtime.py v13/code/v13/world_jepa_planner.py v13/code/v13/world_jepa_optimizer_audit.py v13/code/v13/runtime_deploy.py v13/code/scripts/integrated_world_training_resume_candidate_20261111.py v13/code/scripts/termux_runtime_recovery_candidate_20261112.py v13/code/scripts/stage_integrated_candidate.py v13/code/tests/test_world_jepa_optimizer_resume_store.py v13/code/tests/test_world_jepa_predictor_only_resume.py v13/code/tests/test_v14_world_jepa_store_aba_replay.py v13/code/tests/test_v14_world_jepa_postcommit_runtime.py
+      - name: Verify production SQLite / T8 / checkpoint resume against reset control
+        run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_optimizer_resume_store.py
+      - name: Verify production Store A-B-A replay / retention / B1-B2-SELF receiver loop
+        run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_v14_world_jepa_store_aba_replay.py
+      - name: Verify staged optimizer-resume regression
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_training_resume_stage_20261111.py
+      - name: Verify selective predictor plasticity and per-parameter Adam resume
+        run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_predictor_only_resume.py
+      - name: Verify Runtime idle postcommit JEPA / EMA / replay / rollback integration
+        run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_v14_world_jepa_postcommit_runtime.py
+      - name: Public repository privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base b267ed641f4dbff1e2c28f492baf0182e9bb656b --head HEAD
