@@ -4,7 +4,7 @@ Date: 2026-11-21 11:53 CET
 Queue: V14-006 / Research & Perception  
 Current release-development base: 4a471ae40dd9b768c8130fafdba51900b5417800  
 Branch: research-perception/v14-raw-ear-runtime-temporal-state-20261121  
-Status: DRAFT / NOT_RELEASED / REDMI_UNVERIFIED
+Status: READY_FOR_REVIEW / NOT_RELEASED / REDMI_UNVERIFIED
 
 ## Rebase and ownership boundary
 
@@ -51,8 +51,6 @@ R-024 records the full kiloVAD paper (arXiv:2607.25870v1, accepted INTERSPEECH 2
 
 ## Next
 
-1. Read the new exact-head comparator run and verify libfvad source pin, autoreconf/configure/make check/install, shared-library load and native test.
-2. Re-read current-head staged/integrated regression.
-3. Boss reviews this non-additive current-base candidate and synchronizes shared board/next-action files.
-4. Core rebinds #2158 to both exact source blobs and proves its staged Runtime path.
-5. Only after integration review can QA request a separate owner-consented Redmi test. No user action is needed now.
+1. Boss performs independent manual review of the non-additive existing-module edit; keep the strict safe-additive failure visible.
+2. Core rebinds #2158 to both exact source blobs and proves text + audio PerceptPacket separation and the staged A5→B1/B2→C4→C3 consumer path.
+3. QA may request a separate owner-consented Redmi test only after integration/release gates; no current handset receipt or deployment exists. No user action is needed now.
