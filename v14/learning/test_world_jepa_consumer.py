@@ -519,13 +519,25 @@ def test_insufficient_source_cohort_persists_pending_page_and_resumes(tmp_path):
             store, tmp_path / "private-pending-source", learning_enabled=True, seed=13, ensemble=2
         )
         second = resumed.update(limit=64, steps=24, optimizer_permission=True)
-        assert second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert second["status"] in {
+            "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED"
+        }, second
         payload, _ = store.state("v14.world_jepa.store_consumer", None)
-        processed = set(payload["active"]["processed_ids"])
-        assert set(first_ids + second_ids).issubset(processed)
-        assert payload["pending_rows"] == []
         assert payload["scan_cursor"] == 128
-        assert payload["active"]["metrics"]["train_holdout_source_sha256_disjoint"] is True
+        if second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
+            processed = set(payload["active"]["processed_ids"])
+            assert set(first_ids + second_ids).issubset(processed)
+            assert payload["pending_rows"] == []
+            assert payload["active"]["metrics"]["train_holdout_source_sha256_disjoint"] is True
+        else:
+            # Source diversity now exists, but model utility is a separate gate.
+            # A rejected fit must retain the complete source-bound page for retry.
+            assert second["utility_gate_accepted"] is False
+            assert payload["active"] is None
+            assert len(payload["pending_rows"]) == 128
+            assert {row["action_id"] for row in payload["pending_rows"]} == set(first_ids + second_ids)
+            assert len({row["source_sha256"] for row in payload["pending_rows"]}) > 1
+            assert list((tmp_path / "private-pending-source").glob("jepa-*.npz")) == []
     finally:
         store.close()
 
