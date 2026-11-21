@@ -833,7 +833,7 @@ class WorldJEPAStoreConsumer:
                 "parameter_delta_norm": float(parameter_delta), "ema_target_delta_norm": float(ema_delta),
                 "fit_steps_before": fit_steps_before, "fit_steps_after": fit_steps_after,
                 "checkpoint_sha_before": checkpoint_before, "checkpoint_sha_after": checkpoint_after,
-                "optimizer_moments_persisted": False, "inverse_dynamics_optimizer_persisted": False,
+                "optimizer_moments_persisted": saved.get("optimizer_state_persisted") is True, "inverse_dynamics_optimizer_persisted": saved.get("optimizer_state_persisted") is True,
             }
             metrics.update(receiver_metrics)
             record = {
