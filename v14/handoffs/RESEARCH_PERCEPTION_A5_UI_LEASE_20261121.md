@@ -88,3 +88,10 @@ No user action is needed now. Current installed Redmi SHA/updater status was not
 - Exact head `cbdd888bb25fc430d7bdef0487f16ed8db5139e8`, run `44941137655`: py_compile PASS; 13 tests PASS / 2 FAIL / 5 subtests on both Python 3.13.18 and 3.14.10.
 - The adapter fix itself now returns the cached packet. Remaining failures were test-only: the assertion still expected `packet["source_id"]` rather than `packet["source_ref"]["source_id"]`; the generation-revocation test asserted deletion of a source it had never ingested.
 - Updated the assertion and made the test persist the packet before switching the active generation. The next exact-head CI is pending.
+
+
+## Third exact-head attempt — code correction checkpoint
+
+- Code/test correction commit: `bd094187cb7391a5a7e29ecbd94600290496347e`.
+- Fixed the remaining two test-only failures from run `44941137655`: source assertion now reads `source_ref.source_id`; the different-generation revocation fixture ingests the event before asserting source tombstoning.
+- The GitHub ref update did not yet expose a new Actions run for this code commit. This handoff-only commit is intended to produce a normal push event so the exact corrected code can be re-tested; no pass is assumed.
