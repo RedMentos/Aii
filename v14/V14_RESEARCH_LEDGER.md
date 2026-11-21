@@ -558,3 +558,36 @@ These are current official API references reviewed on 2026-11-21, not research p
 - No model download, conversion, build, swap, or device permission was attempted. No weights were loaded.
 
 **Status:** PAPER_MAIN_SECTIONS_REVIEWED / OFFICIAL_CODE_APACHE_2 / LLAMA_CPP_ANDROID_PATH_DOCUMENTED / SNAPDRAGON_778G_REFERENCE_ONLY / DATASET_LICENSE_REVIEW_REQUIRED / REDMI_UNVERIFIED / NO_MODEL_CHANGE.
+
+
+## R-042 — SmolVLM-256M as a low-storage, on-demand A5 visual teacher candidate (2026-11-21)
+
+### Primary paper reviewed
+
+- Andrés Marafioti et al., **SmolVLM: Redefining small and efficient multimodal models**, arXiv:2504.05299v1, submitted 2025-04-07; preprint, not peer-reviewed evidence. Full HTML sections 1–4.5 reviewed: https://arxiv.org/html/2504.05299v1.
+- SmolVLM-256M combines a 93M SigLIP-B/16 vision encoder with a SmolLM2-135M language backbone. The paper reports 0.8 GB GPU VRAM at batch 1, 44.0 average across its listed image/video benchmark suite, OCRBench 52.6%, TextVQA 50.2%, DocVQA 58.3%. The 500M variant raises those scores to 61.0%, 60.2%, and 70.5%, at 1.2 GB GPU VRAM. These are the paper's evaluation settings, not Redmi measurements.
+- The paper's on-device/edge section benchmarks throughput on NVIDIA A100 and L4 GPUs (e.g. 256M reaches 2.7 examples/s at batch 8 on L4); the smartphone demo is not a Snapdragon 732G benchmark. It explicitly notes that visual compression can hurt fine-grained OCR/localization and that smaller models struggle beyond 8k context.
+
+### Model, GGUF and runtime provenance
+
+- Original checkpoint: https://huggingface.co/HuggingFaceTB/SmolVLM-256M-Instruct, current model revision `d039ab0d4b9311b617e8ffec1d06c8464364aeb3` (last modified 2026-11-13); model card labels Apache-2.0 and identifies base models HuggingFaceTB/SmolLM2-135M-Instruct and google/siglip-base-patch16-512. Both base model cards also label Apache-2.0. No original checkpoint was downloaded.
+- llama.cpp conversion: https://huggingface.co/ggml-org/SmolVLM-256M-Instruct-GGUF, revision `b9e4379657e1450d04d02eec8e345667265b0a00`, model card labels Apache-2.0. Q8 files: language model 175 MB + mmproj 104 MB = 279 MB on disk. F16 files: 328 MB + 190 MB = 518 MB on disk. These are storage sizes, not peak RSS/PSS or total runtime memory.
+- Official llama.cpp multimodal docs use `libmtmd`, list SmolVLM-256M/500M GGUF models, and describe image/audio/video input: https://github.com/ggml-org/llama.cpp/blob/master/docs/multimodal.md. The Android guide documents building/running llama.cpp CLI from Termux: https://github.com/ggml-org/llama.cpp/blob/master/docs/android.md. The combination suggests a testable Android path but does not prove this exact model/projector builds or runs on Redmi; that combined path remains UNVERIFIED.
+- The SmolVLM model card lists The Cauldron and Docmatix training datasets. Their full dataset-license/provenance terms were not audited in this pass; do not infer every training-source term from the checkpoint's Apache-2.0 card label.
+
+### V14 fit and caveats
+
+- Candidate role: A4-triggered, on-demand visual teacher for A5 screen/image input, not an always-on loop, B1/B2 replacement, action executor, or native B3 latent body.
+- At 279 MB Q8 on disk and a paper-reported 0.8 GB GPU memory at batch 1, the 256M model is a plausible low-storage experiment for the 6-GB-class device, but current B1/B2 residency, CPU-only execution, image tiling, allocator peaks, thermal throttling and Redmi memory pressure are unknown.
+- OCRBench 52.6 and TextVQA 50.2 indicate useful but limited recognition; the 500M model is materially stronger but uses more memory. Neither model card nor paper establishes reliable Android UI element coordinates, tap-target grounding, or safe action selection. Use structured app/API events where available; visual output may inform perception but must not itself authorize actions.
+- The paper evaluates images at longest edge 1920 for the 256M/500M models. High-resolution tiling can increase work; downscaling may erase small UI text. A4 should request bounded crops only when needed and preserve source/time/consent provenance.
+
+### Test plan and permission boundary
+
+- Before any download, obtain explicit user consent for a separate experimental model download. Do not change installed models or the production selector.
+- On the actual Redmi/Termux environment, compare 256M Q8 and 500M Q8 only if approved; first verify the exact llama.cpp revision and that its Android build includes libmtmd and the matching mmproj loader.
+- Measure model+mmproj disk size/checksums, load RSS/PSS, peak memory during a 512/1024/1920-longest-edge image, TTFT, output tokens/s, thermal/battery, and OCR/UI-task quality. Use only synthetic or explicitly consented local screen fixtures; no private app screenshots in public logs.
+- Negative controls: no-image, blurred text, shuffled screen/crop, stale capture receipt, and text-only API event. Acceptance requires source-bound visual evidence and human/permission-gated actions; no direct tap authority from VLM output.
+- Compare against MobileVLM V2 only after the same-device measurement; its 1.7B Q4 model+projector is about 961 MB on disk and its published Android reference is Snapdragon 778G, not the Redmi 732G.
+
+**Status:** PAPER_FULLTEXT_REVIEWED / MODEL_CARD_AND_BASE_LICENSES_REVIEWED / GGUF_REVISION_AND_FILE_SIZES_VERIFIED / LLAMA_CPP_ANDROID_PATH_DOCUMENTED_NOT_RUN / CANDIDATE_ONLY / NO_DOWNLOAD / NO_MODEL_CHANGE / REDMI_UNVERIFIED.
