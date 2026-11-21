@@ -72,10 +72,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2133 remains experimental/NOT_RUNTIME_WIRED with source-disjoint, cancellation and backlog findings. PR #2135 exactly-once OnlineWorld focused 13 + existing 49 + combined JEPA tests PASS, but staged-runtime fails 20/218/10 skipped/2 errors due stale integrated_online_world_candidate pin for v13/online_world.py. PR #2137 T8 cancellation/cardinality/durability findings remain.",
-      "next_step": "JEPA/Integrator rebuild immutable online-world/observer/postcommit/record-only chain, then rerun exact staged/integrated regression. Fix T8 cancellation/unknown and source-disjoint leakage before any optimizer gate opens.",
+      "proof_environment": "PR #2133 remains experimental/NOT_RUNTIME_WIRED with source-disjoint and backlog findings. PR #2135 exactly-once OnlineWorld focused tests pass but staged-runtime fails 20 due stale online_world.py candidate pin. PR #2137 current head 7f67a69 has 48 focused V14 T8 tests PASS (real SQLite Row/Store + cancellation/censoring + full bounded ActionOutcome cardinality + rollback durability), private bridge PASS; staged/integrated regression still IN_PROGRESS. No normal Runtime consumer, optimizer update, native B1/B2 body weights or Redmi proof.",
+      "next_step": "Complete exact staged/integrated regression for #2137. Then wire the verified T8 consumer into the normal Runtime learning loop only after source-disjoint train/holdout and keyset backlog are fixed; keep optimizer permission closed until measured holdout/retention/restart/rollback and actual target-weight delta.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 QA: exact staged log for #2135 confirms integrated_online_world_candidate_20261110.py rejects changed v13/online_world.py; observer/postcommit/record-only downstream candidates and two-checkout migration also fail. QA posted exact test evidence to #2135.",
+      "last_checkpoint": "2026-11-21 QA re-review of PR #2137 head 7f67a69: prior P1 cancellation/unknown false-learning and LIMIT 17 hidden-duplicate findings are corrected in source; rollback directory fsync also present. Exact focused CI 48 passed on push+PR; staged/integrated still pending. QA posted updated review.",
       "latest_candidate_pr": {
         "pr": 2133,
         "head_sha": "34cdc9efca094324848b3c49237b341c6d86a6d4",
