@@ -32,7 +32,7 @@ def permission_state(store):
     if type(steps) is not int or not 1 <= steps <= MAX_RUNTIME_STEPS:
         steps = DEFAULT_PERMISSIONS["steps"]
     replay_mode = value.get("replay_mode", "uniform")
-    if replay_mode not in ("uniform", "none"):
+    if replay_mode not in ("uniform", "none", "uniform_sampled", "hard"):
         replay_mode = "uniform"
     return {
         "learning_enabled": learning_enabled,
