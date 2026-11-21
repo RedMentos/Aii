@@ -734,3 +734,12 @@ No local full Aii checkout was available in this worker (GitHub DNS resolution f
 - PFR official code + MIT license: https://github.com/alviur/CVPR_PFR
 - LDC paper: https://arxiv.org/abs/2407.08536
 - LDC official repository (license not present at checked path): https://github.com/alviur/ldc
+
+
+### R-045 implementation follow-up — single-pass trust-region (2026-11-21)
+
+The exact Python 3.13/3.14 run at head 3fac198b completed the A-B-A Store experiment and passed its current assertions, but the result was not robust enough for acceptance: **3 of 96 B/A2 phase candidates** committed, all three on seed 19 / A2; seed 13 and seed 43 had no accepted phase. The production on-demand-loss + per-session-GEM arm accepted **0 of 6** seed/phase candidates. The one accepted per-session-GEM result was in the on-demand-conflict comparison arm, not the on-demand-loss candidate. Thus the previous green A-B-A step was a weak aggregate assertion, not proof of reliable continual learning.
+
+The next code head **3849730b455dc6666e67a29503c616f6982d7163** changes the backtracking algorithm: run one optimizer pass, then interpolate the resulting enc/predictor/EMA parameter delta along a deterministic nine-point trust-region ladder (1 through 1/256). The source-disjoint old-training guard chooses the scale; the final holdout is evaluated once and cannot choose a retry. This avoids repeating a full training pass for each scale, which is materially more suitable for Android. The test now requires at least one accepted on-demand-loss + per-session-GEM update for each data seed and directly tests that interpolation touches enc/predictor/EMA arrays without resetting optimizer state. CI run **44953329088** was queued at this checkpoint; no result is claimed.
+
+The preceding CI run **44952328878** passed compile, SQLite/T8/checkpoint-reset and the A-B-A experiment on both Python 3.13 and 3.14, but both jobs failed at staged optimizer-resume due a stale nested source pin. CI measured the integrated training-resume builder hash as 6f0f9a1ed2d4c173e56d9f864617b2d916fb34a8e5b22dfbb74b17e2592563d7. The recovery builder's child pin has been corrected to that exact runner-measured value in code commit 5703510d2d25e353b9d3a9a533f1fcffe17f477c. The stage builder and runtime-deployer pins still need to be refreshed from the next runner-measured hashes; do not call the nested chain complete yet.
