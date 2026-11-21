@@ -161,9 +161,18 @@ class ECDSAReceiptVerifier:
                         "os_permission_status", "key_storage_status", "key_id"):
                 if type(body[key]) is not str:
                     raise CompanionDenied("invalid types")
-            if (body["schema"] != SCHEMA or body["status"] != "DISPATCHED_UNVERIFIED"
-                    or body["local_consent"] is not True or body["observed"] is not False):
-                raise CompanionDenied("no signed foreground approval")
+            status_map = {
+                "DISPATCHED_UNVERIFIED": (True, "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+                                          "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"),
+                "USER_DENIED": (False, "COMPANION_USER_DENIED",
+                                "ANDROID_COMPANION_USER_DENIAL"),
+                "FAILED_TO_DISPATCH": (True, "COMPANION_DISPATCH_FAILED",
+                                       "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"),
+            }
+            mapped = status_map.get(body["status"])
+            if (body["schema"] != SCHEMA or mapped is None
+                    or body["local_consent"] is not mapped[0] or body["observed"] is not False):
+                raise CompanionDenied("invalid signed action outcome")
             if len(body["nonce"]) != 32 or any(c not in "0123456789abcdef" for c in body["nonce"]):
                 raise CompanionDenied("invalid nonce")
             if (len(body["action_id"]) != 32 or any(c not in "0123456789abcdef" for c in body["action_id"])
@@ -203,11 +212,14 @@ class ECDSAReceiptVerifier:
                 "schema": SCHEMA,
                 "action_id": body["action_id"],
                 "nonce": body["nonce"],
-                "status": "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+                "status": mapped[1],
+                "receipt_status": body["status"],
+                "companion_local_consent_claim": body["local_consent"],
+                "observed": False,
                 "auth_scheme": "ECDSA_P256_SHA256_ANDROID_KEYSTORE",
                 "key_storage_status": body["key_storage_status"],
                 "android_os_permission_status": body["os_permission_status"],
-                "local_approval_evidence": "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION",
+                "local_approval_evidence": mapped[2],
                 "t8_authoritative": False,
             }
 
