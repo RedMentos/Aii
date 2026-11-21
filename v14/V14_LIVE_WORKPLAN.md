@@ -322,3 +322,12 @@ Next integrated vertical slice: after Core's staged runtime is green, invoke the
 5. QA rebases #2163 and continues private owner-read; no update request before a positive receipt.
 
 No material V14 master edit was made; no master backup was required. Historical V13 Canon bytes were not changed.
+
+
+## JEPA & Memory runtime integration candidate — 2026-11-21 08:4x CET
+
+- New current-base candidate is being prepared from release-development HEAD `569680bc10eabeb94ea5a1695d4bf77b8584e0a0`; it ports the existing #2168 SleepRuntime postcommit path onto the latest verified base rather than carrying its 24-commit stale ancestry.
+- Functional scope: latest observed ActionOutcome/T8 selection (censored newest events no longer starve older observed backlog), independent learning/planner event cursors (a planner-only SHADOW readout cannot consume a later learning opt-in), and cooperative cancellation/resource-pressure checks through the numeric WorldJEPA optimizer loop. Cancellation before Store-state commit discards the temporary candidate/checkpoint; the scheduler requeues the idle job.
+- The underlying learner remains synthetic-Store evidence only. It updates local numeric WorldJEPA/EMA and B1/B2/SELF SHADOW heads; native GGUF body weights remain unchanged and decision authority remains NONE.
+- Exact repository local tests are blocked in this worker by GitHub DNS resolution. CI must run on the new exact PR head; no local or Redmi PASS is claimed.
+- Next: review exact PR-head focused/staged/integrated CI; then persist Adam moments with the checkpoint and compare persistent-vs-reset optimizer under equal update/replay budgets.

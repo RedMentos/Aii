@@ -528,7 +528,7 @@ class WorldJEPAStoreConsumer:
 
 
     def update(self, *, limit=DEFAULT_PAGE_SIZE, steps=80, optimizer_permission=False,
-               replay_mode="uniform"):
+               replay_mode="uniform", cancel_check=None):
         if type(limit) is not int or not 16 <= limit <= MAX_ROWS:
             raise ValueError("limit")
         if type(steps) is not int or not 1 <= steps <= 2000:
@@ -537,6 +537,11 @@ class WorldJEPAStoreConsumer:
             raise ValueError("optimizer_permission must be bool")
         if replay_mode not in {"uniform", "none"}:
             raise ValueError("replay_mode must be uniform or none")
+        if cancel_check is not None and not callable(cancel_check):
+            raise ValueError("cancel_check must be callable")
+        if cancel_check is not None and cancel_check():
+            return {"status":"CANCELLED","pending_rows":0,"checkpoint_committed":False,
+                    "native_body_weights_changed":False}
         with self._locked(True):
             state, version = self._read_state()
             receipts, rejected, next_cursor, scanned, censored_skipped, has_more = (
@@ -665,7 +670,12 @@ class WorldJEPAStoreConsumer:
                 checkpoint_before = active["checkpoint_sha256"]
             else:
                 model = world_jepa.WorldJEPA(seed=self.seed, ensemble=self.ensemble)
-                model.fit(*train, steps=0, log_every=1)
+                try:
+                    model.fit(*train, steps=0, log_every=1, cancel_check=cancel_check)
+                except InterruptedError:
+                    return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                            "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                            "native_body_weights_changed":False}
                 checkpoint_before = None
             fit_steps_before = int(getattr(model, "_fit_steps", 0))
             before = _parameter_snapshot(model)
@@ -695,7 +705,17 @@ class WorldJEPAStoreConsumer:
                         "scan_cursor": next_cursor,
                         "native_body_weights_changed": False}
             fit_arrays = _arrays(fit_rows)
-            model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4))
+            try:
+                model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4),
+                                  cancel_check=cancel_check)
+            except InterruptedError:
+                return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                        "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                        "native_body_weights_changed":False}
+            if cancel_check is not None and cancel_check():
+                return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                        "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                        "native_body_weights_changed":False}
             after = _parameter_snapshot(model)
             holdout_after = model.prediction_loss(*holdout)
             shuffled_action_loss = model.prediction_loss(holdout[0], np.roll(holdout[1], 1, axis=0), holdout[2])
@@ -757,12 +777,26 @@ class WorldJEPAStoreConsumer:
                     "native_body_consumed": False,
                     "runtime_wired": False,
                 }
+            if cancel_check is not None and cancel_check():
+                return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                        "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                        "native_body_weights_changed":False}
             receiver_heads, receiver_metrics = _fit_role_receivers(model, train, holdout, train_rows, holdout_rows)
             source_sha = _cohort_sha(experience_rows)
+            if cancel_check is not None and cancel_check():
+                return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                        "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                        "native_body_weights_changed":False}
             checkpoint_name = "jepa-" + uuid.uuid4().hex + ".npz"
             checkpoint_path = self.home / checkpoint_name
             saved = world_jepa_shadow_checkpoint.save(model, checkpoint_path, source_sha)
             checkpoint_after = _sha(saved.get("sha256"))
+            if cancel_check is not None and cancel_check():
+                try: checkpoint_path.unlink(missing_ok=True)
+                except OSError: pass
+                return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                        "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                        "native_body_weights_changed":False}
             previous_updates = int(active["self_state"].get("update_count", 0)) if active else 0
             metrics = {
                 "source_verified": True, "verified_receipts": len(receipts),
@@ -818,6 +852,12 @@ class WorldJEPAStoreConsumer:
             next_state = {"schema": STATE_SCHEMA, "revision": REVISION,
                           "active": record, "previous": active, "scan_cursor": next_cursor,
                           "pending_rows": []}
+            if cancel_check is not None and cancel_check():
+                try: checkpoint_path.unlink(missing_ok=True)
+                except OSError: pass
+                return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                        "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                        "native_body_weights_changed":False}
             try:
                 self.store.set_state(STATE_KEY, next_state, expected=version)
             except ValueError as exc:
