@@ -759,7 +759,7 @@ def test_sleep_runtime_hard_replay_vs_matched_uniform_sampled(tmp_path):
     try:
         _add_transitions(seed_store, session, 0, 256)
         seed_consumer = WorldJEPAStoreConsumer(
-            seed_store, seed_home / "private-jepa", learning_enabled=True,
+            seed_store, seed_home / "world_jepa", learning_enabled=True,
             seed=13, ensemble=2,
         )
         first = seed_consumer.update(
@@ -774,7 +774,7 @@ def test_sleep_runtime_hard_replay_vs_matched_uniform_sampled(tmp_path):
 
     cohort_home = tmp_path / "cohort"
     shutil.copytree(seed_home / "data", cohort_home / "data")
-    shutil.copytree(seed_home / "private-jepa", cohort_home / "private-jepa")
+    shutil.copytree(seed_home / "world_jepa", cohort_home / "world_jepa")
     cohort_store = Store(cohort_home)
     try:
         new_events = _add_transitions(cohort_store, session, 256, 32)
@@ -786,7 +786,7 @@ def test_sleep_runtime_hard_replay_vs_matched_uniform_sampled(tmp_path):
     for mode in ("uniform_sampled", "hard"):
         arm_home = tmp_path / mode
         shutil.copytree(cohort_home / "data", arm_home / "data")
-        shutil.copytree(cohort_home / "private-jepa", arm_home / "private-jepa")
+        shutil.copytree(cohort_home / "world_jepa", arm_home / "world_jepa")
         arm_store = Store(arm_home)
         try:
             arm_store.set_state(PERMISSION_KEY, {
