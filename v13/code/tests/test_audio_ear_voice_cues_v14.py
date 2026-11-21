@@ -554,3 +554,36 @@ def test_optional_silero_rejects_non_16khz_before_packet_or_attention(tmp_path):
         assert attention_count(runtime.store, event["event_id"]) == 0
     finally:
         runtime.store.close()
+
+
+def test_consent_revocation_during_packet_commit_leaves_no_packet(tmp_path):
+    """A revocation that wins before SQLite commit must leave no persisted packet."""
+    runtime, event = make_runtime(tmp_path)
+    revoked = False
+    original_add_packet = runtime.store.add_packet
+
+    def revoke_at_store_boundary(kind, packet):
+        nonlocal revoked
+        # Inject revocation after the producer's pre-write check but before
+        # the underlying Store insert. The producer must serialize this race.
+        revoked = True
+        return original_add_packet(kind, packet)
+
+    def current_consent(source_id, receipt):
+        return not revoked and source_id == SOURCE_ID and receipt == RECEIPT
+
+    runtime.store.add_packet = revoke_at_store_boundary
+    try:
+        with pytest.raises(PermissionError):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=current_consent, finality="FINAL", token_budget=512,
+            )
+        assert revoked is True
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.add_packet = original_add_packet
+        runtime.store.close()
