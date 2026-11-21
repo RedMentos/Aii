@@ -5,6 +5,7 @@ on:
     branches: [core/v14-focal-scale-diversity-20261121]
     paths:
       - "v13/code/scripts/integrated_focal_scale_diversity_candidate_20261121.py"
+      - "v13/code/scripts/integrated_arithmetic_date_guard_candidate_20261121.py"
       - "v13/code/scripts/stage_v14_focal_scale_diversity_candidate_20261121.py"
       - "v13/code/tests/test_v14_focal_scale_diversity_20261121.py"
       - ".github/workflows/v14-core-focal-scale-diversity.yml"
@@ -12,6 +13,7 @@ on:
     branches: [gpt6/v13-private-remote-bridge-20261111]
     paths:
       - "v13/code/scripts/integrated_focal_scale_diversity_candidate_20261121.py"
+      - "v13/code/scripts/integrated_arithmetic_date_guard_candidate_20261121.py"
       - "v13/code/scripts/stage_v14_focal_scale_diversity_candidate_20261121.py"
       - "v13/code/tests/test_v14_focal_scale_diversity_20261121.py"
       - ".github/workflows/v14-core-focal-scale-diversity.yml"
@@ -38,6 +40,7 @@ jobs:
         run: |
           python -m py_compile \
             v13/code/scripts/integrated_focal_scale_diversity_candidate_20261121.py \
+            v13/code/scripts/integrated_arithmetic_date_guard_candidate_20261121.py \
             v13/code/scripts/stage_v14_focal_scale_diversity_candidate_20261121.py \
             v13/code/tests/test_v14_focal_scale_diversity_20261121.py
       - name: Staged C4 admission and Runtime-to-C3 integration
@@ -45,6 +48,11 @@ jobs:
           PYTHONPATH: v13/code
         run: |
           python -m pytest -q v13/code/tests/test_v14_focal_scale_diversity_20261121.py
+      - name: Existing arithmetic fastpath regressions
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q v13/code/tests/test_arithmetic_reflex.py v13/code/tests/test_arithmetic_stage_20261116.py
       - name: Existing focal-loop regressions
         env:
           PYTHONPATH: v13/code
