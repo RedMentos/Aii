@@ -151,3 +151,20 @@ The previous exact staged-runtime 249/10/47 and integrated 415/3/58 PASS belonge
 ### Revocation ordering semantics
 
 This provider-lock design is linearizable, not an immediate asynchronous cancellation token. Revocation becomes effective when the provider's revoke method acquires the shared lock and returns. If a producer already owns the lease, revoke waits until the packet/A4/C3-admission critical section exits; the caller must not display revocation as completed before that method returns. If revoke acquires the lock first, the producer observes inactive consent and fails before side effects. The Android OS permission itself is outside this app lock and remains separately unverified. If product UX requires revocation to interrupt an already-running lease immediately, that is a separate cancellation/compensation design requiring an epoch/cancel signal plus exact packet and attention-telemetry cleanup; this candidate does not claim that behavior.
+
+
+## Final exact-head acceptance readback — 2026-11-21
+
+Code/test head 03237482d4534e1a3d4a3c0e9093ec14084f32b9 completed all functional GitHub CI except the deliberately restrictive additive-policy gate:
+
+- RAW EAR prosody/attention regression: 49/49 PASS on Python 3.11 and 3.13; py_compile PASS on both.
+- RAW EAR vs libfvad comparator: 8/8 PASS on Python 3.13 and 3.14.
+- Pinned native Linux libfvad build: make check 13/13 PASS on both runners.
+- Staged runtime: 249 passed, 10 skipped, 47 subtests passed; recovery shell syntax PASS.
+- Integrated regression: 415 passed, 3 skipped, 58 subtests passed.
+- Model-lab and public privacy scan: PASS.
+- Safe-additive: FAIL, exact reason "path outside inert-module/test/handoff scope" for the existing producer module change. This is a required manual Boss review; no allowlist bypass.
+
+R-030 was added to the research ledger after exact upstream license readback: pinned dpirch/libfvad BSD-3-Clause LICENSE plus Google PATENTS grant/termination terms; Silero VAD MIT LICENSE. No dependency or weights imported/downloaded. The comparator is Linux-native CI only, not Android/Bionic.
+
+Full LOCAL_LINUX repository checkout remains BLOCKED by GitHub DNS; only a small isolated threading/SQLite lease model was run locally. The exact Aii module tests are GitHub-hosted CI, not local execution. No Redmi receipt; installed SHA/updater consent unknown; NOT_RELEASED / REDMI_UNVERIFIED. Core #2200 and QA #2211 still own derived AUDIO_ACOUSTIC_CONTEXT deletion, process-local cache clearing, and the separate final C3 inference lease.
