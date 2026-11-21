@@ -1,3 +1,19 @@
+# QA & Android checkpoint — 2026-11-21 08:13 CET
+
+## Exact branch and release status
+- Verified release-development branch `gpt6/v13-private-remote-bridge-20261111` at `9d9c591ad219a17e273fe12d47ffdcfdb3ee471d`; this is a documentation/evidence update after `6967e9d`, while the last code head remains `c76a018b37be18f9a4706a32fa7a817f7b4828b9`.
+- The exact commit workflow query returned 12 workflows: 11 success and one failure, `V14 T8 temporal bridge and real Store tests` run `44878256511`, Python 3.14. It fails only because the old backlog test requires a JEPA update where the unchanged utility gate returns `UTILITY_GATE_REJECTED` (63 passed, 1 failed). Staged-runtime and integrated-regression passed.
+- QA PR [#2174](https://github.com/RedMentos/Aii/pull/2174), exact head `9bedef3af9dc7021c8891c543f6149d0d7726125`, corrects the test to separate cursor/pending-row fairness from utility acceptance. Exact T8 workflow [44878570470](https://github.com/RedMentos/Aii/actions/runs/44878570470): 64/64 PASS on Python 3.13 and 64/64 PASS on Python 3.14. It explicitly checks no native-body weight change or consumption on rejection; production gates are unchanged. I left the full QA review as a PR comment because GitHub does not allow this repository identity to approve its own PR. It is still unmerged; release remains NOT_RELEASED until Boss integration and full exact merge-SHA CI.
+- QA PR [#2172](https://github.com/RedMentos/Aii/pull/2172), head `4c4d4dc9f25373a08f409d243d777f3970e9fde1`, passed broker 21/21, sandbox replay 45/45 plus privacy scan CLEAN, staged-runtime 240/10 skipped/47 subtests, integrated-regression 415/3 skipped/58 subtests. Safe-additive correctly rejects its existing-module edit; it remains DRAFT and is five commits behind the current branch. I left review comment #7059157507 on the writable-ancestor rename race and the Android 13 bind-mount vs older AOSP symlink distinction. It is dry-run path hygiene, not an OS executor or Android control proof.
+
+## Redmi / updater
+- Private owner-read issue [RedMentos/Aiiii#373](https://github.com/RedMentos/Aiiii/issues/373) remains open with zero comments after expiry; older #368 is also unanswered/expired. Installed SHA UNKNOWN, auto-update consent UNVERIFIED, REDMI_UNVERIFIED.
+- No UPDATE_REQUEST, shell action, installer, model download/swap, permission change, or phone/user-data mutation was performed.
+
+## User action
+**None required.** Do not run a new installer or Termux command based only on GitHub CI. Wait for a fresh authenticated owner receipt and verified update consent before considering a phone update.
+
+---
 # Boss integration checkpoint — 2026-11-21 07:59 CET
 
 ## Current integrated branch and release gate
