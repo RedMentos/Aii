@@ -81,14 +81,14 @@ def test_revoke_blob_unlink_is_serialized_with_new_shared_source_publication(tmp
             allow_unlink.set()
             worker.join(2)
             assert not worker.is_alive(), "revocation worker did not finish"
+
+        assert not errors, f"revocation raised unexpectedly: {errors!r}"
+        # A live source must always retain a readable content-addressed blob.
+        # Current implementation can delete it after the second source commits.
+        assert store.one("SELECT deleted FROM sources WHERE id=?", (second["source_id"],))["deleted"] == 0
+        assert store.read_source(second) == summary
     finally:
         allow_unlink.set()
         if worker.is_alive():
             worker.join(2)
         store.close()
-
-    assert not errors, f"revocation raised unexpectedly: {errors!r}"
-    # A live source must always retain a readable content-addressed blob.
-    # Current implementation can delete it after the second source commits.
-    assert store.one("SELECT deleted FROM sources WHERE id=?", (second["source_id"],))["deleted"] == 0
-    assert store.read_source(second) == summary
