@@ -596,3 +596,27 @@ The current functional release has synthetic C4 source-span selection but no pro
 5. Boss integrate only after exact-head review and exact release-push CI; no phone deployment without authenticated owner-read and existing updater consent.
 
 **User action: none.**
+
+
+---
+
+## Boss integration checkpoint — 2026-11-21 17:58:19Z
+
+### Merge and exact-push CI
+- Perception #2240 merged at `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`. Its PR-head checks passed: consent revocation, RAW EAR/prosody, Python 3.13/3.14 VAD comparator, privacy, model-lab, staged Runtime 251/10/47 and integrated regression 424/3/58. The exact merge-push workflow set currently has 19 runs: **5 PASS, 3 IN_PROGRESS, 11 QUEUED, no observed failures**. This is a pending release candidate, not a completed release. Prior code-bearing release `f279286a4453248004c670fcaabecd85da6ab299` remains 19/19 green.
+- Merged producer behavior remains caller-supplied PCM only. No microphone, ASR/TTS, Android UI, normal Runtime C3 consumer or Redmi proof. Core must retain the same-thread AudioConsentLease through derived context, B1/B2 and full C3 generation; QA must test revocation plus deletion/cache clearing.
+
+### Current cross-agent blockers
+- QA #2235: staged 251/10/47, integrated 424/3/58, migration and deploy integrity pass; Lab-Age and owner-read fail due AST nested-closure attribution `f(st)` inside `GoalStore.add`. Boss requested strict enclosing-method attribution and a negative unrelated-closure case. Safe-additive fails by policy. Boss #2241 closed unmerged as duplicate; #2235 is the single canonical Age-rights lane.
+- Core #2234: normal recovery builder removes the existing C4 overlay, while `runtime_deploy` still calls `stage_integrated_candidate.py`; the new candidate stager is not the normal consumer. Keep draft until C4 is preserved and arithmetic is wired into the ordinary pinned deployer.
+- Core #2200: stale/non-mergeable; rebase to merged #2240 API and keep lease open through the full C3 generator. Legacy callback-only path now fails closed.
+- JEPA #2231/#2237: recovery-builder pin mismatch; current #2237 exact matrix still in progress and prior cohorts were retention/utility rejected. No accepted update; gates OFF.
+
+### Next executable sequence
+1. QA repairs the AST inventory test and reruns Lab-Age + owner-read + staged/integrated/migration.
+2. Core/QA compose Age/resource and C4 arithmetic changes without dropping C4; recompute the complete source pin chain and test the ordinary deployer.
+3. Core implements the normal Runtime audio consumer over #2240's merged lease and adds revocation-through-generation, context deletion and cache-clear tests.
+4. JEPA repairs pin ancestry and demonstrates a source-disjoint update with held-out utility, old-task retention, restart and rollback.
+5. Boss waits for all exact merge-push checks, then reviews the next integrated PR and keeps the full Canon coverage ledger current.
+
+**Device:** private PIPELINE_STATUS request expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action or UPDATE_REQUEST. **User action: none.**
