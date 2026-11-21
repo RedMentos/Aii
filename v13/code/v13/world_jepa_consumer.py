@@ -21,6 +21,7 @@ import numpy as np
 
 from v13 import world_jepa
 from v13 import world_jepa_replay
+from v13 import world_jepa_stable
 from v13 import world_jepa_shadow_checkpoint
 from v13 import world_model
 from .world_jepa_store_authority import verify_committed_transition_page
@@ -578,7 +579,7 @@ class WorldJEPAStoreConsumer:
 
 
     def update(self, *, limit=DEFAULT_PAGE_SIZE, steps=80, optimizer_permission=False,
-               replay_mode="uniform", encoder_mode="full", cancel_check=None):
+               replay_mode="uniform", encoder_mode="full", stable_mode="off", cancel_check=None):
         if type(limit) is not int or not 16 <= limit <= MAX_ROWS:
             raise ValueError("limit")
         if type(steps) is not int or not 1 <= steps <= 2000:
@@ -589,6 +590,8 @@ class WorldJEPAStoreConsumer:
             raise ValueError("unsupported WorldJEPA replay_mode")
         if encoder_mode not in {"full", "predictor_only"}:
             raise ValueError("encoder_mode must be full or predictor_only")
+        if stable_mode not in {"off", "stable"}:
+            raise ValueError("stable_mode must be off or stable")
         if cancel_check is not None and not callable(cancel_check):
             raise ValueError("cancel_check must be callable")
         if cancel_check is not None and cancel_check():
@@ -733,6 +736,13 @@ class WorldJEPAStoreConsumer:
                             "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
                             "native_body_weights_changed":False}
                 checkpoint_before = None
+            stable_state_before = None
+            if stable_mode == "stable" and active is not None:
+                stable_state_before = active.get("metrics", {}).get("stable_controller_state")
+                if stable_state_before is not None:
+                    stable_state_before = world_jepa_stable.validate_state(
+                        stable_state_before, self.ensemble
+                    )
             fit_steps_before = int(getattr(model, "_fit_steps", 0))
             before = _parameter_snapshot(model)
             holdout_before = model.prediction_loss(*holdout)
@@ -794,7 +804,9 @@ class WorldJEPAStoreConsumer:
             try:
                 model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4),
                                   cancel_check=cancel_check, allow_optimizer_bootstrap=True,
-                                  train_encoder=(encoder_mode == "full"))
+                                  train_encoder=(encoder_mode == "full"),
+                                  stable_enabled=(stable_mode == "stable"),
+                                  stable_state=stable_state_before)
             except InterruptedError:
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
                         "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
@@ -811,6 +823,23 @@ class WorldJEPAStoreConsumer:
                 old_holdout_after = model.prediction_loss(*old_holdout)
             fit_steps_after = int(getattr(model, "_fit_steps", 0))
             replay_metrics["optimizer_steps_added"] = fit_steps_after - fit_steps_before
+            stable_metrics = {"stable_mode": stable_mode}
+            if stable_mode == "stable":
+                stable_state_after = world_jepa_stable.validate_state(
+                    getattr(model, "_stable_state", None), self.ensemble
+                )
+                if stable_state_after is None:
+                    raise ValueError("STABLE learner did not publish controller state")
+                stable_metrics.update({
+                    "stable_controller_state": stable_state_after,
+                    "stable_main_lambda": stable_state_after["main"]["lambda"],
+                    "stable_main_budget_per_step": stable_state_after["main"]["budget_per_step"],
+                    "stable_main_drift_sq": stable_state_after["main"]["last_drift_sq"],
+                    "stable_bootstrap_lambdas": [
+                        item["lambda"] for item in stable_state_after["bootstrap"]
+                    ],
+                })
+            optimizer_state_origin = getattr(model, "_training_state", {}).get("origin")
             encoder_delta = _group_delta(before, after, ("enc",))
             predictor_delta = _group_delta(before, after, ("preds",))
             parameter_delta = math.sqrt(encoder_delta ** 2 + predictor_delta ** 2)
@@ -859,6 +888,8 @@ class WorldJEPAStoreConsumer:
                     "ema_target_delta_norm": float(ema_delta),
                     "fit_steps_before": fit_steps_before,
                     "fit_steps_after": fit_steps_after,
+                    "optimizer_state_origin": optimizer_state_origin,
+                    **stable_metrics,
                     "new_train_rows": len(new_train_rows),
                     "replay_candidate_rows": len(old_train_rows),
                     **replay_metrics,
@@ -935,6 +966,8 @@ class WorldJEPAStoreConsumer:
                 "optimizer_moments_persisted": saved.get("optimizer_state_persisted") is True,
                 "inverse_dynamics_optimizer_persisted": saved.get("optimizer_state_persisted") is True,
                 "optimizer_state_bootstrapped": saved.get("optimizer_state_bootstrapped") is True,
+                "optimizer_state_origin": optimizer_state_origin,
+                **stable_metrics,
             }
             metrics.update(receiver_metrics)
             record = {
