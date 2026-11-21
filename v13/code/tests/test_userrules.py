@@ -109,12 +109,14 @@ class Live(unittest.TestCase):
         self.assertEqual((p['status'],p['reason']),('DENIED','USER_RULE:R1'));self.assertIsNone(ts.shadow(e,p))
         text=rule_notice_text('calc',U.texts_for(self.r.store,p['reason']))
         self.assertIn("„Don't use the calculator“",text);self.assertTrue(text.startswith('[Nicht getan]'))
-    def test_live_turn_ask_rule_becomes_visible_proposal(self):
+    def test_live_turn_ask_rule_cannot_override_age_zero_tool_right(self):
         self.reg.enable('calc');U.add(self.r.store,'Tell me before you do anything.','USER_TYPED')
         e=self.r.store.event(self.r.session,'What is 17 * 23?');ts=T.ToolStep(self.r);p=ts.plan(e,'What is 17 * 23?')
-        self.assertEqual(p['status'],'PROPOSED')  # Age 0 would only shadow it; the rule makes it a visible question instead
-        pend=ts.propose_call(e,p);text=preview_text(pend)
-        self.assertIn('Vorhaben: calc',text);self.assertIn('„Tell me before you do anything“',text);self.assertIn(':tx approve '+pend['call_id'],text)
+        self.assertEqual(p['status'],'DENIED')
+        self.assertTrue(p['reason'].startswith('AGE_RIGHT:simple_tool_choice'))
+        self.assertIn('USER_RULE_ASK:R1',p['reason'])
+        self.assertIsNone(ts.propose_call(e,p))
+        self.assertIsNone(ts.shadow(e,p))
     def test_no_rules_no_change(self):
         self.reg.enable('calc');self.assertEqual(self.reg.call('calc',{'expression':'2+2'},origin='USER')['status'],'EXECUTED')
         e=self.r.store.event(self.r.session,'What is 17 * 23?');p=T.ToolStep(self.r).plan(e,'What is 17 * 23?')
