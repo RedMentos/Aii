@@ -41,6 +41,7 @@ class SameTurnBodyDeliveryTests(unittest.TestCase):
                 self.attempted = []
                 self.deferred = []
                 self.assert_bounded_query = False
+                self.current_role = None
 
             def rows(self, query, args):
                 self.assert_bounded_query = (
@@ -54,7 +55,7 @@ class SameTurnBodyDeliveryTests(unittest.TestCase):
                     self.deferred.append((metrics.get("role"), metrics.get("status")))
 
             def read_source(self, ref):
-                self.attempted.append(ref.get("role"))
+                self.attempted.append(self.current_role)
                 raise BodyAttemptReached("body reached source/generation boundary")
 
         class Runtime:
@@ -84,7 +85,7 @@ class SameTurnBodyDeliveryTests(unittest.TestCase):
         attempted = []
         deferred = []
         for role in ("B1_DETAIL", "B2_GIST"):
-            event["source_ref"]["role"] = role
+            store.current_role = role
             try:
                 cognition.offer(
                     role, event, version=0, deadline=deadline,
