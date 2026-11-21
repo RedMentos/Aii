@@ -1,4 +1,5 @@
 """Synthetic, read/write boundary tests for independent laboratory Age 0–10."""
+import ast
 import json
 from pathlib import Path
 import tempfile
@@ -9,6 +10,8 @@ from v13.age import AgeControl
 from v13.lab_age_runtime import LaboratoryAgeControl
 from v13.config import initialize
 from v13.store import Store
+from v13.agi.curiosity import Curiosity
+from v13.agi.goals import GoalStore, MAX_DEPTH
 
 
 class LabAgeTests(unittest.TestCase):
@@ -185,6 +188,128 @@ class LabAgeTests(unittest.TestCase):
                 cycle.age.budgets.assert_not_called()
             finally:
                 runtime.close()
+
+    
+    def test_curiosity_uses_the_named_learning_right_not_an_age_probability_budget(self):
+        class ForbiddenRandom:
+            def random(self):
+                raise AssertionError("Age must not probabilistically throttle runtime compute")
+
+        curiosity = Curiosity(self.store, self.age, rng=ForbiddenRandom())
+        curiosity.observe("math", 0.4)
+        self.assertIsNone(curiosity.choose(origin="SELF"))
+        self.assertFalse(curiosity.report()["autonomous"])
+        self.assertEqual(curiosity.choose(origin="USER"), "math")
+
+        lab_age.save(self.home, mode="active", stage=10)
+        lab = LaboratoryAgeControl(self.store, self.cfg)
+        lab_curiosity = Curiosity(self.store, lab, rng=ForbiddenRandom())
+        lab_curiosity.observe("math", 0.4)
+        self.assertEqual(lab_curiosity.choose(origin="SELF"), "math")
+        self.assertTrue(lab_curiosity.report()["autonomous"])
+        self.assertEqual(self.age.system_stage(), 0)
+
+    def test_goal_tree_depth_uses_a_named_right_not_focal_depth_budget(self):
+        goals = GoalStore(self.store, self.age)
+        system_root = goals.add("system root", origin="SYSTEM")
+        with self.assertRaises(ValueError):
+            goals.add("system child", origin="SYSTEM", parent=system_root)
+
+        user_parent = goals.add("user root", origin="USER")
+        for index in range(1, MAX_DEPTH):
+            user_parent = goals.add(f"user child {index}", origin="USER", parent=user_parent)
+        with self.assertRaises(ValueError):
+            goals.add("user too deep", origin="USER", parent=user_parent)
+        with self.assertRaises(PermissionError):
+            goals.add("self root", origin="SELF")
+
+        lab_age.save(self.home, mode="active", stage=10)
+        lab = LaboratoryAgeControl(self.store, self.cfg)
+        lab_goals = GoalStore(self.store, lab)
+        self_parent = lab_goals.add("self root", origin="SELF")
+        for index in range(1, MAX_DEPTH):
+            self_parent = lab_goals.add(f"self child {index}", origin="SELF", parent=self_parent)
+        with self.assertRaises(ValueError):
+            lab_goals.add("self too deep", origin="SELF", parent=self_parent)
+        self.assertEqual(lab_goals.get(self_parent)["origin"], "SELF")
+        self.assertEqual(self.age.system_stage(), 0)
+
+    def test_repository_wide_age_budget_consumer_inventory_is_closed(self):
+        code_root = Path(__file__).resolve().parents[1]
+        legacy_fields = {
+            "autonomous_effort_max", "focal_depth", "dream_seconds",
+            "replay_items", "context_edit_tokens", "exploration_rate", "own_loops",
+        }
+        expected_budget_attributes = {
+            ("v13/age.py", "view", "self.budgets"),
+            ("v13/lab_age_runtime.py", "budgets", "real.budgets"),
+        }
+        budget_attributes = []
+        helper_calls = []
+        helper_imports = []
+        field_reads = []
+
+        def dotted(node):
+            if isinstance(node, ast.Name):
+                return node.id
+            if isinstance(node, ast.Attribute):
+                return dotted(node.value) + "." + node.attr
+            return "<dynamic>"
+
+        for path in sorted(code_root.rglob("*.py")):
+            relative = path.relative_to(code_root)
+            if relative.parts[0] == "tests" or "__pycache__" in relative.parts:
+                continue
+            try:
+                source = path.read_text(encoding="utf-8")
+                tree = ast.parse(source, filename=str(relative))
+            except (OSError, SyntaxError) as exc:
+                self.fail(f"Could not audit {relative}: {type(exc).__name__}")
+            parents = {}
+            for parent in ast.walk(tree):
+                for child in ast.iter_child_nodes(parent):
+                    parents[child] = parent
+
+            def enclosing_function(node):
+                current = node
+                while current in parents:
+                    current = parents[current]
+                    if isinstance(current, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        return current.name
+                return "<module>"
+
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Attribute) and node.attr in {"budgets", "budget"}:
+                    budget_attributes.append(
+                        (relative.as_posix(), enclosing_function(node), dotted(node))
+                    )
+                if isinstance(node, ast.Call):
+                    if isinstance(node.func, ast.Name) and node.func.id == "budget":
+                        helper_calls.append((relative.as_posix(), node.lineno))
+                    if (isinstance(node.func, ast.Name) and node.func.id in {"getattr", "hasattr"}
+                            and len(node.args) > 1 and isinstance(node.args[1], ast.Constant)
+                            and node.args[1].value in legacy_fields):
+                        field_reads.append((relative.as_posix(), node.lineno, node.args[1].value))
+                    if (isinstance(node.func, ast.Attribute) and node.func.attr in {"get", "pop"}
+                            and node.args and isinstance(node.args[0], ast.Constant)
+                            and node.args[0].value in legacy_fields):
+                        field_reads.append((relative.as_posix(), node.lineno, node.args[0].value))
+                if isinstance(node, ast.Subscript) and isinstance(node.slice, ast.Constant):
+                    if node.slice.value in legacy_fields:
+                        field_reads.append((relative.as_posix(), node.lineno, node.slice.value))
+                if isinstance(node, ast.ImportFrom) and node.module and node.module.endswith(".base"):
+                    if any(alias.name == "budget" for alias in node.names):
+                        helper_imports.append((relative.as_posix(), node.lineno))
+                if isinstance(node, ast.Attribute) and node.attr in legacy_fields:
+                    field_reads.append((relative.as_posix(), node.lineno, node.attr))
+
+        self.assertEqual(
+            set(budget_attributes), expected_budget_attributes,
+            "Age budgets must be reporting/delegation only; inspect every new .budgets/.budget use",
+        )
+        self.assertEqual(helper_calls, [], "Legacy agi.base.budget() must have no runtime callers")
+        self.assertEqual(helper_imports, [], "Runtime modules must not import the legacy budget helper")
+        self.assertEqual(field_reads, [], "No runtime module may read a legacy Age budget field")
 
 
 if __name__ == "__main__":
