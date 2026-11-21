@@ -116,8 +116,12 @@ def accept_companion_receipt(
             "auth_scheme": attestation["auth_scheme"],
             "receipt_nonce": attestation["nonce"],
             "companion_local_consent_claim": True,
-            "local_approval_evidence": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
-            "android_os_permission_status": "REQUIRED_NOT_VERIFIED",
+            "local_approval_evidence": attestation.get(
+                "local_approval_evidence", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
+            ),
+            "android_os_permission_status": attestation.get(
+                "android_os_permission_status", "REQUIRED_NOT_VERIFIED"
+            ),
             "key_storage_status": attestation["key_storage_status"],
             "t8_authoritative": False,
             "world_learning_eligible": False,
@@ -152,16 +156,36 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
     digest = outcome.details.get("digest")
     if type(event_id) is not str or type(source_ref) is not dict:
         raise InvalidOutcome("source-bound event required before persistence")
-    if (type(nonce) is not str or len(nonce) != 32
-            or any(ch not in "0123456789abcdef" for ch in nonce)
-            or type(digest) is not str or len(digest) != 64
-            or any(ch not in "0123456789abcdef" for ch in digest)
-            or outcome.details.get("receipt_schema") != "v14.android-companion-receipt/1"
-            or outcome.details.get("auth_scheme") != "HMAC_SHA256_PER_INSTALL"
-            or outcome.details.get("companion_local_consent_claim") is not True
-            or outcome.details.get("local_approval_evidence") != "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
+    auth_scheme = outcome.details.get("auth_scheme")
+    common_invalid = (
+        type(nonce) is not str or len(nonce) != 32
+        or any(ch not in "0123456789abcdef" for ch in nonce)
+        or type(digest) is not str or len(digest) != 64
+        or any(ch not in "0123456789abcdef" for ch in digest)
+        or outcome.details.get("receipt_schema") != "v14.android-companion-receipt/1"
+        or outcome.details.get("companion_local_consent_claim") is not True
+    )
+    legacy_hmac_invalid = (
+        auth_scheme == "HMAC_SHA256_PER_INSTALL"
+        and (
+            outcome.details.get("local_approval_evidence") != "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
             or outcome.details.get("android_os_permission_status") != "REQUIRED_NOT_VERIFIED"
-            or outcome.details.get("key_storage_status") != "UNVERIFIED"):
+            or outcome.details.get("key_storage_status") != "UNVERIFIED"
+        )
+    )
+    android_keystore_invalid = (
+        auth_scheme == "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
+        and (
+            outcome.details.get("local_approval_evidence") != "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+            or outcome.details.get("android_os_permission_status") != "NOT_REQUIRED_FOR_LAUNCH_APP"
+            or outcome.details.get("key_storage_status") not in {
+                "ANDROID_KEYSTORE_SOFTWARE_BACKED", "ANDROID_KEYSTORE_HARDWARE_BACKED"
+            }
+        )
+    )
+    if common_invalid or legacy_hmac_invalid or android_keystore_invalid or auth_scheme not in {
+        "HMAC_SHA256_PER_INSTALL", "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
+    }:
         raise InvalidOutcome("companion receipt metadata is incomplete")
     row = store.one("SELECT packet FROM events WHERE id=?", (event_id,))
     if not row:
@@ -181,9 +205,9 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
         "digest": digest,
         "receipt_nonce": nonce,
         "companion_local_consent_claim": True,
-        "local_approval_evidence": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
-        "android_os_permission_status": "REQUIRED_NOT_VERIFIED",
-        "key_storage_status": "UNVERIFIED",
+        "local_approval_evidence": outcome.details["local_approval_evidence"],
+        "android_os_permission_status": outcome.details["android_os_permission_status"],
+        "key_storage_status": outcome.details["key_storage_status"],
         "t8_authoritative": False,
         "world_learning_eligible": False,
         "trusted_transition_eligible": False,
