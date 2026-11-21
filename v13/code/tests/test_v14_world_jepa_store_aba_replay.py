@@ -26,7 +26,12 @@ from v13.world_jepa_planner import consume_world_planner_shadow
 STATE_KEY = "v14.world_jepa.store_consumer"
 PERMISSION_KEY = world_jepa_runtime.PERMISSION_KEY
 DEFAULT_PERMISSIONS = dict(world_jepa_runtime.DEFAULT_PERMISSIONS)
-ARMS = ("uniform", "none")
+ARMS = (
+    ("uniform", "full"),
+    ("none", "full"),
+    ("uniform", "predictor_only"),
+    ("none", "predictor_only"),
+)
 DATA_SEEDS = (13, 19, 43)
 A1_COUNT = 256
 SHIFT_COUNT = 96
@@ -34,13 +39,14 @@ A1_STEPS = 120
 SHIFT_STEPS = 40
 
 
-def _set_permissions(store, *, steps, replay_mode, learning_enabled=True,
-                     optimizer_permission=True):
+def _set_permissions(store, *, steps, replay_mode, encoder_mode="full",
+                     learning_enabled=True, optimizer_permission=True):
     payload = {
         "learning_enabled": learning_enabled is True,
         "optimizer_permission": optimizer_permission is True,
         "steps": steps,
         "replay_mode": replay_mode,
+        "encoder_mode": encoder_mode,
     }
     _, version = store.state(PERMISSION_KEY, DEFAULT_PERMISSIONS)
     store.set_state(PERMISSION_KEY, payload, expected=version)
@@ -167,8 +173,10 @@ def _active_state(store):
     return value
 
 
-def _run_phase(store, home, *, steps, replay_mode):
-    _set_permissions(store, steps=steps, replay_mode=replay_mode)
+def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
+    _set_permissions(
+        store, steps=steps, replay_mode=replay_mode, encoder_mode=encoder_mode
+    )
     state_before = store.state(STATE_KEY, None)[0]
     after_seq = int(state_before.get("scan_cursor", 0)) if type(state_before) is dict else 0
     verified, rejected, next_cursor, scanned, censored, has_more = (
@@ -197,10 +205,19 @@ def _run_phase(store, home, *, steps, replay_mode):
     if "train_holdout_source_sha256_disjoint" in metrics:
         assert metrics["train_holdout_source_sha256_disjoint"] is True
     assert metrics.get("replay_mode") == replay_mode
+    assert metrics.get("encoder_mode") == encoder_mode
     parameter_delta = float(metrics.get("parameter_delta_norm", 0.0))
+    encoder_delta = float(metrics.get("encoder_parameter_delta_norm", 0.0))
+    predictor_delta = float(metrics.get("predictor_parameter_delta_norm", 0.0))
     ema_delta = float(metrics.get("ema_target_delta_norm", 0.0))
     assert math.isfinite(parameter_delta) and parameter_delta > 0.0
-    assert math.isfinite(ema_delta) and ema_delta > 0.0
+    assert math.isfinite(encoder_delta) and encoder_delta >= 0.0
+    assert math.isfinite(predictor_delta) and predictor_delta > 0.0
+    assert math.isfinite(ema_delta) and ema_delta >= 0.0
+    if encoder_mode == "full":
+        assert encoder_delta > 0.0 and ema_delta > 0.0
+    else:
+        assert encoder_delta == 0.0 and ema_delta == 0.0
     fit_before = metrics.get("fit_steps_before")
     fit_after = metrics.get("fit_steps_after")
     assert type(fit_before) is int and type(fit_after) is int and fit_after > fit_before
@@ -246,6 +263,9 @@ def _run_phase(store, home, *, steps, replay_mode):
         "holdout_improved": metrics.get("holdout_improved"),
         "negative_controls_separated": metrics.get("negative_controls_separated"),
         "old_holdout_retained": metrics.get("old_holdout_retained"),
+        "encoder_mode": encoder_mode,
+        "encoder_parameter_delta_norm": metrics.get("encoder_parameter_delta_norm"),
+        "predictor_parameter_delta_norm": metrics.get("predictor_parameter_delta_norm"),
         "parameter_delta_norm": metrics.get("parameter_delta_norm"),
         "ema_target_delta_norm": metrics.get("ema_target_delta_norm"),
     }
@@ -401,12 +421,15 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         master.close()
 
         arms = {}
-        for replay_mode in ARMS:
-            arm_home = tmp_path / f"arm-{data_seed}-{replay_mode}"
+        for replay_mode, encoder_mode in ARMS:
+            arm_key = f"{replay_mode}-{encoder_mode}"
+            arm_home = tmp_path / f"arm-{data_seed}-{arm_key}"
             shutil.copytree(master_home, arm_home)
-            arms[replay_mode] = {
+            arms[arm_key] = {
                 "home": arm_home,
                 "store": Store(arm_home),
+                "replay_mode": replay_mode,
+                "encoder_mode": encoder_mode,
                 "phases": {"A1": {
                     "status": a1_result["status"],
                     "checkpoint_sha256": a1_sha,
@@ -418,14 +441,15 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             master, seed=data_seed, phase="B", domain="B", count=SHIFT_COUNT
         )
         master.close()
-        for replay_mode, arm in arms.items():
+        for arm in arms.values():
             arm["store"].close()
             arm["store"] = _sync_data_preserving_arm_state(
                 master_home, arm["home"]
             )
             arm["phases"]["B"] = _run_phase(
                 arm["store"], arm["home"],
-                steps=SHIFT_STEPS, replay_mode=replay_mode,
+                steps=SHIFT_STEPS, replay_mode=arm["replay_mode"],
+                encoder_mode=arm["encoder_mode"],
             )
             arm["store"].close()
             arm["store"] = Store(arm["home"])
@@ -444,14 +468,15 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             a2_phase["source_hashes"]
         )
 
-        for replay_mode, arm in arms.items():
+        for arm in arms.values():
             arm["store"].close()
             arm["store"] = _sync_data_preserving_arm_state(
                 master_home, arm["home"]
             )
             arm["phases"]["A2"] = _run_phase(
                 arm["store"], arm["home"],
-                steps=SHIFT_STEPS, replay_mode=replay_mode,
+                steps=SHIFT_STEPS, replay_mode=arm["replay_mode"],
+                encoder_mode=arm["encoder_mode"],
             )
             arm["holdout"] = _cohort_holdout_metrics(
                 arm["store"], phase_by_sha
@@ -499,7 +524,8 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
 
             reports.append({
                 "data_seed": data_seed,
-                "replay_mode": replay_mode,
+                "replay_mode": arm["replay_mode"],
+                "encoder_mode": arm["encoder_mode"],
                 "A1_checkpoint_sha256": a1_sha,
                 "B": arm["phases"]["B"],
                 "A2": arm["phases"]["A2"],
