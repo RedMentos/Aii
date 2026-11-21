@@ -678,3 +678,13 @@ The current functional release has synthetic C4 source-span selection but no pro
 5. Boss: close the one exact merge-push workflow failure only after the learning path genuinely passes; maintain whole-Canon coverage.
 
 **Device:** private owner-read expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action. **User action: none.**
+
+
+---
+
+## Final mergeability refresh — 2026-11-21 18:05:59Z
+
+- Current code integration head: `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`; exact merge-push CI **18/19 PASS, 1 FAIL** (staged-runtime JEPA acceptance test gets `UTILITY_GATE_REJECTED`; integrated-regression job PASS).
+- After #2240 moved the base, #2235 and #2234 are both now non-mergeable against the current release branch. Do not merge/rebase them while their functional blockers remain. Once fixed, rebase on `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` and recompute all nested source pins from exact bytes.
+- #2235 still has current-head AST nested-closure attribution failure; #2234 still removes normal C4 overlay. #2237 is mergeable but test-blocked by retention and optimizer-state clone. #2200 is stale/non-mergeable and must rebase onto #2240's lease API.
+- Private owner-read expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action; user action none.
