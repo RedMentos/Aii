@@ -40,7 +40,7 @@ def _estimate_pitch(frame: list[float], sample_rate: float) -> tuple[float | Non
     if not correlations:
         return None, 0.0
     peak = max(item[0] for item in correlations)
-    threshold = max(0.55, peak * 0.97)
+    threshold = max(0.55, peak * 0.99)
     candidates = [(lag, corr) for corr, lag in correlations if corr >= threshold]
     if not candidates:
         return None, max(0.0, min(1.0, peak))
