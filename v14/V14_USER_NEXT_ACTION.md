@@ -1298,3 +1298,11 @@ Private PIPELINE_STATUS issue #443 has no authenticated reply. Installed SHA and
 - #2275 current code/test head is now `10d1f54540fd3f225f3ac905e2841dd15f545ed4`. The test assertion now checks the symmetric nearest-sample tolerance `abs(reference_age_ms - 800) <= 120`, matching an 800-ms target and ±120-ms tolerance for 80-ms frames; it no longer assumes the selected sample can only be older than target.
 - LOCAL_LINUX CPython 3.13.5 isolated reproduction: **PASS** (1-s/2-s batch invariance and old same-batch false-negative negative control). Exact-head RAW EAR Python 3.13, Python 3.14 and offline-bridge-security CI are queued; the preceding code/test head 84a33 had all three PASS. No new full staged/integrated run is claimed.
 - #2258 base remains fully CI-green as recorded above. #2275 remains DRAFT / NOT_RELEASED; Core's `audio_voice_cues.py` nested pin still needs refresh. Redmi remains REDMI_UNVERIFIED; no user action.
+
+
+## Exact #2275 staged failure — 2026-11-22 00:16 CET
+
+- Code/test commit `10d1f54540fd3f225f3ac905e2841dd15f545ed4`: RAW EAR focused workflow **PASS on Python 3.13 and 3.14**; offline-bridge-security **PASS**. LOCAL_LINUX CPython 3.13.5 isolated algorithm reproduction **PASS**.
+- Exact staged-runtime workflow `44960843977` **FAIL**: 16 failed, 234 passed, 10 skipped, 2 errors, 47 subtests. The repeated root cause is `ValueError: audio source blob changed: v13/audio_voice_cues.py`: Core stage expects blob `b62442c6e740d136982b2bc8080cef6227ba266f`, but #2275's source is `94aa6931fad702ccec4b1f7494758034a1bf5942`. The two migration cases consequently remain `PARTIAL` rather than `UPDATED` because the integrated stage cannot be built; the new bootstrap does not claim success. This is the exact source-pin composition blocker, not a reason to relax hash checks.
+- Integrated-regression on the same commit was still running at last poll; no result is claimed. #2275 stays DRAFT / NOT_RELEASED. Core owns the nested audio pin and downstream stage/deployer refresh; it was notified with this exact failure.
+- No Android/Termux, microphone, native encoder, Redmi or user-device test. Installed SHA/updater consent unknown; REDMI_UNVERIFIED. No user action.
