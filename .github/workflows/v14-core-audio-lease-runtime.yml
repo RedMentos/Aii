@@ -1,0 +1,53 @@
+name: V14 Core audio lease runtime
+
+on:
+  push:
+    branches:
+      - core/v14-audio-lease-runtime-20261121
+    paths:
+      - v13/code/scripts/integrated_audio_context_candidate_20261121.py
+      - v13/code/scripts/termux_runtime_recovery_candidate_20261121.py
+      - v13/code/scripts/stage_integrated_candidate.py
+      - v13/code/v13/runtime_deploy.py
+      - v13/code/tests/test_termux_runtime_recovery_stage.py
+      - v13/code/tests/test_v14_audio_lease_runtime.py
+      - .github/workflows/v14-core-audio-lease-runtime.yml
+  pull_request:
+    branches:
+      - gpt6/v13-private-remote-bridge-20261111
+    paths:
+      - v13/code/scripts/integrated_audio_context_candidate_20261121.py
+      - v13/code/scripts/termux_runtime_recovery_candidate_20261121.py
+      - v13/code/scripts/stage_integrated_candidate.py
+      - v13/code/v13/runtime_deploy.py
+      - v13/code/tests/test_termux_runtime_recovery_stage.py
+      - v13/code/tests/test_v14_audio_lease_runtime.py
+      - .github/workflows/v14-core-audio-lease-runtime.yml
+
+jobs:
+  staged-audio-lease:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install lightweight test dependencies
+        run: python -m pip install --upgrade pytest numpy
+      - name: Compile exact stage and deploy sources
+        working-directory: v13/code
+        run: >-
+          python -m py_compile
+          scripts/integrated_audio_context_candidate_20261121.py
+          scripts/termux_runtime_recovery_candidate_20261121.py
+          scripts/stage_integrated_candidate.py
+          v13/runtime_deploy.py
+      - name: Stage and test Runtime lease, body and C3 revocation path
+        working-directory: v13/code
+        run: >-
+          python -m pytest -q
+          tests/test_termux_runtime_recovery_stage.py
+          tests/test_v14_audio_lease_runtime.py
+          tests/test_runtime_deploy.py
+          tests/test_runtime_deploy_integrity.py
