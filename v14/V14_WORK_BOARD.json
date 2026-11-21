@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T16:06:34Z",
+  "updated_at": "2026-11-21T16:13:53.627Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -271,7 +271,7 @@
   "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
   "latest_integrated_head": "f279286a4453248004c670fcaabecd85da6ab299",
   "latest_integrated_head_verified_at": "2026-11-21T15:50:16.712Z",
-  "release_gate_status": "CODE_CI_GREEN_NOT_PHONE_RELEASED. Code-bearing release f279286a4453248004c670fcaabecd85da6ab299 (PR #2228) has 34/34 exact merge check-runs and 19/19 associated workflows SUCCESS. Current branch HEAD 9d8f91960c568be7fe7dcf894555ce7250f635f4 is the documentation-only #2232 handoff and has 36/36 check-runs SUCCESS. No Redmi receipt or installed SHA.",
+  "release_gate_status": "CODE_CI_GREEN_NOT_PHONE_RELEASED. Code-bearing release f279286a4453248004c670fcaabecd85da6ab299 retains 34/34 exact merge check-runs and 19/19 associated workflows SUCCESS. The Boss documentation handoff was read back at d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff; its 30 exact-head check-runs were queued at that readback. Subsequent board/user-handoff refresh commits may trigger a new exact-head run. No Redmi receipt or installed SHA.",
   "phone_receipt": {
     "state": "NO_LIVE_RECEIPT_PRIVATE_OWNER_READ_REQUESTS_PENDING_NO_AUTHENTICATED_REPLY",
     "installed_sha": "UNKNOWN",
@@ -435,11 +435,11 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-21 17:06 CET",
-    "branch_head": "9d8f91960c568be7fe7dcf894555ce7250f635f4",
-    "branch_head_type": "DOCUMENTATION_ONLY_HANDOFF_COMMIT",
+    "timestamp": "2026-11-21T16:13:53.627Z",
+    "branch_head": "d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff",
+    "branch_head_type": "DOCUMENTATION_ONLY_BOSS_HANDOFF_PARENT_BEFORE_FINAL_BOARD_REFRESH",
     "code_bearing_release_sha": "f279286a4453248004c670fcaabecd85da6ab299",
-    "branch_head_checks": "36_OF_36_SUCCESS",
+    "branch_head_checks": "30_OF_30_QUEUED_AT_READBACK; FINAL_REFRESH_COMMITS_REQUIRE_NEW_EXACT_HEAD_CHECK",
     "code_release_checks": "34_OF_34_SUCCESS; 19_OF_19_WORKFLOWS_SUCCESS",
     "pr2228": "MERGED_NORMAL_STAGE_C4_SYNTHETIC_CONSUMER",
     "pr2228_tests": "STAGED_251_PASSED_10_SKIPPED_47_SUBTESTS; INTEGRATED_424_PASSED_3_SKIPPED_58_SUBTESTS",
@@ -457,6 +457,12 @@
       "JEPA: repair PR2231 nested builder/recovery pins and migration PARTIAL failure; rerun exact 3.13/3.14 and integrated tests.",
       "Boss: re-review only after exact-head CI and independent review; no release/deploy until accepted."
     ],
-    "user_action_required": "NONE"
+    "user_action_required": "NONE",
+    "docs_sync_commits": [
+      "8e37ee7b33d0b3899cd2c997b4b307df338ce390",
+      "fbad923fa24a2caf044b35de29fb1f6d5d7433a4",
+      "56edf08f0ae20cd8414c9620a1aaa6a1fd79c5fb",
+      "d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff"
+    ]
   }
 }
