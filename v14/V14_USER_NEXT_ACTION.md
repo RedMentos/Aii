@@ -1258,3 +1258,24 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 The source-derived B1/B2 suppression hypothesis remains: background + A_THEN_B_SEQUENTIAL, after two recent C3 zero-token failures and a configured deadline <=50 s, can leave only 4 s of pre-answer time at a 30 s deadline. Both body offers may be deferred before C4; a post-commit observer cannot satisfy same-answer B1/B2→C4→C3. This is not a Redmi finding; the actual device config and failure telemetry are unknown. Core owns the measured budget fix; QA owns same-turn nontrivial regression.
 
 Private PIPELINE_STATUS issue #443 has no authenticated reply. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell or device mutation. No full local Aii checkout exists, so no LOCAL_LINUX repository suite ran.
+
+
+## Boss integration checkpoint — 2026-11-21T23:54:03.290Z (UTC)
+
+- **Release baseline:** PR #2258 current head `9922cf86ecf8801d30a46a1e98817e5c6c1db092`; exact PR CI is **12 SUCCESS / 2 SKIPPED / 0 failures**. It remains DRAFT / NOT_RELEASED because the complete #2235 Age/X10 learning-rights composition is not yet integrated. Last accepted release SHA remains `f279286a4453248004c670fcaabecd85da6ab299`; no new release is claimed.
+- **Same-turn B1/B2 P0:** Core PR [#2278](https://github.com/RedMentos/Aii/pull/2278), code head `94cc7089d8e4138ae4d75123d7373626d15d0f6c), passed the focused same-turn budget tests on Python 3.13 and 3.14: 12 tests + 6 subtests on each version. The tests exercise both real `Cognition.offer` generation boundaries after two C3 zero-token prefill failures; this is not yet proof that C4 consumes both offers.
+- **Integration repair:** Boss PR [#2279](https://github.com/RedMentos/Aii/pull/2279), current head `98892df9531900a99ba1fef172294893b81bd101`, is stacked on #2278. It repairs five exact nested source pins: observer helper→native budget SHA256; recovery builder→helper SHA256; recovery wrapper→base-builder Git blob SHA1; stager→wrapper SHA256; runtime deployer→stager SHA256. Independent GitHub readback matched all five links exactly. No verification gate was removed.
+- **Test follow-up:** On prior #2279 head `bc8815df`, integrated regression passed; staged runtime reached the full stage and produced **252 passed / 10 skipped / 47 subtests**, with one failure because an older disposable test treated `recovery` as detection rather than the new defer decision. The test now asserts `recovery_detected`, `preanswer_eligible`, and `recovery` separately. Exact-head staged/integrated, migration and owner-read workflows are running on `98892df`; do not call them PASS until completed.
+- **Rollback review:** QA PR [#2276](https://github.com/RedMentos/Aii/pull/2276) has exact code-head CI green for launcher/marker rollback, staged integration, migration and Lab-Age. Boss comment #7071131646 identifies a remaining race between UI chat startup and rollback's final stopped-check/launcher replacement. Integration is held pending a shared guard and deterministic barrier test.
+- **Redmi:** private PIPELINE_STATUS request #447 has no authenticated response. Installed SHA, runtime health and updater consent remain UNKNOWN. `REDMI_UNVERIFIED / NO_LIVE_RECEIPT`. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, remote shell, device update or data mutation.
+- **Local testing:** no full Aii checkout exists in this container; no LOCAL_LINUX repository suite ran. GitHub CI only. The source/pin audit was readback-based, not a native runtime test.
+
+### Next internal ownership
+
+- **Core & Harness:** complete #2278/#2279 stack only after exact staged/integrated + migration checks pass; then add a real downstream C4 consumer test for both same-turn B1/B2 offers, not merely generation-boundary admission.
+- **QA & Android:** fix #2276's shared UI-start/rollback activation race with a barrier test; rebase full #2235 Age/X10 rights onto current integration ancestry while preserving GoalWake atomicity.
+- **JEPA & Memory:** fix #2247 A→B→A checkpoint hash propagation and keep old-session retention, optimizer-state restart, diff and rollback gates strict; no production weights.
+- **Research & Perception:** repair #2275 frame-age expectation and audio_voice_cues pin chain; keep NumPy/speaker model OFF until exact Python checks and Redmi resource measurements exist.
+- **Boss & Integration:** maintain whole-Canon coverage, integrate only exact-green reviewed stacks, and keep Android/UI/voice/JEPA/latent/remote-maintenance claims separate by evidence tier.
+
+**User action: none.** Do not run another installer or change model, permission, Age, updater or device settings based on these CI results.
