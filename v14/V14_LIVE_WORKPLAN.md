@@ -906,3 +906,19 @@ Exactly five V14 automations are enabled: Boss & Integration, QA & Android, JEPA
 - **Whole-Canon ledger:** keep B1/B2 native offer quality, B3 trained latent receiver, audio/vision learning, Android background/UI providers, full voice decoder/vocoder, sparse MoE, cross-organ gradients, self-edit, technical OS sandbox and declared memory/egress as separate OPEN requirements.
 
 **User action: none.**
+
+
+## QA exact-head refresh — Boss integration 8dc3828 (2026-11-21 22:28 CET)
+
+Current Boss branch `boss/v14-core-perception-store-audio-integration-20261121` is at `8dc3828ff7c1efa6a7c34563adcbd48caf39ad92`, based on current release-development HEAD `bdcad466ffea75a2b41f7d23be168f53c7197d20`. This supersedes the older 0ec-head QA failure report:
+
+- A5 composition is now current: `a5_ui_admission_bridge.py` is 27,872 bytes and exports `A5UIRuntimeAdapter` plus `_persist_source_and_packet`; exact A5 UI lease workflow 44951469829 PASS.
+- Idle recovery and record-only online-world candidates now pin the current operator SHA; their earlier stale-operator errors are no longer current.
+- The lifecycle guard/stream anchor error is no longer the reported blocker. The current common failure has advanced to `integrated_arithmetic_outcome_candidate_20261116.py:45`: `ValueError: arithmetic outcome upstream changed: v13/world_semantic_evidence_candidate.py`.
+- The raw `SOURCE_PINS` value `354306bb...` matches the exact base `world_semantic_evidence_candidate.py` bytes. The transformed `UPSTREAM_PINS` value `0711ed85...` no longer matches the output produced by the current World/Store composition. Recompute that exact transformed intermediate from the current builder chain; do not replace it with the raw source digest or relax the check. Then rebind outcome-builder → recovery-wrapper → stage → runtime-deployer hashes.
+- Exact run outcomes: A5 lease PASS (44951469829); combined online JEPA PASS (44951469809); runtime-deploy integrity PASS (44951469798); release-event integration PASS (44951469879). Staged-runtime/integrated-regression FAIL (44951469784); owner-read job PASS but Python 3.14 staged startup FAIL (44951469800); Lab-Age E2E FAIL at the same stage (44951469834); old-phone migration PARTIAL (44951469804); Core audio 3.13 and 3.14 FAIL at the same stage (44951469872); safe-additive FAIL_BY_POLICY (44951469864).
+- The three speech fixture `mkdir(exist_ok=True)` calls are already present in current 8dc, so QA #2261 code change is superseded by Core #2254. Its earlier test-fixture fix is not a new runtime feature.
+
+QA #2235 Age rights evidence remains exact-CI green on code/test head `b22129a03bbd3395605b951d55d3f187f442bda6` (handoff-only `c224610959e598cb9c79f38d1b4bd454ffea0019`): Lab-Age, owner-read/Python 3.14, migration, runtime deploy, staged (251/10/47) and integrated (424/3/58) pass; safe-additive remains FAIL_BY_POLICY. The branch is 43 ahead / 121 behind current base and diverged; do not merge or rebase blindly. Compose `learning_limit()` with #2258 GoalStore wake rollback deliberately.
+
+Private PIPELINE_STATUS #435 still has zero authenticated comments. Installed SHA and updater consent remain unknown; no update or device action. No full local Aii checkout. `NOT_RELEASED / REDMI_UNVERIFIED`.
