@@ -238,7 +238,7 @@ class MobileDashboardTests(unittest.TestCase):
             try:
                 self.assertEqual(server.server_address[0], "127.0.0.1")
                 port = server.server_port
-                url = f"http://127.0.0.1:{port}/{token}/flow-audit"
+                url = f"http://127.0.0.1:{port}/t/{token}/flow-audit"
                 with urllib.request.urlopen(url, timeout=3) as response:
                     self.assertEqual(response.status, 200)
                     self.assertIn("no-store", response.headers.get("Cache-Control", ""))
@@ -257,7 +257,7 @@ class MobileDashboardTests(unittest.TestCase):
 
                 for bad_url in (
                     f"http://127.0.0.1:{port}/flow-audit",
-                    f"http://127.0.0.1:{port}/{'a' * 48}/flow-audit",
+                    f"http://127.0.0.1:{port}/t/{'a' * 48}/flow-audit",
                 ):
                     with self.assertRaises(urllib.error.HTTPError) as denied:
                         urllib.request.urlopen(bad_url, timeout=3)
