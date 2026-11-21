@@ -45,6 +45,22 @@ class LearningTests(Base):
         self.assertLess(self.c.report()['agreement_with_boot'],1.)
         with self.assertRaises(PermissionError):self.c.set_mode('ACTIVE')
 
+
+    def test_age_tool_right_veto_precedes_per_call_approval(self):
+        event = self.event()
+        tool = {"utility": 0.4, "risk": "EXTERNAL", "status": "APPROVED"}
+        result = ActionGate(self.r.store).select(
+            event, route="simple", direct=False, resource_state="NORMAL",
+            effort=0.5, tool=tool, age={"tools": False},
+        )
+        packet = json.loads(self.r.store.one(
+            "SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=?",
+            (event["event_id"],),
+        )["payload"])
+        suppressed = {item["action_id"]: item["reason"] for item in packet["suppressed"]}
+        self.assertEqual(suppressed["EXTERNAL_TOOL"], "AGE_NO_TOOLS")
+        self.assertNotEqual(result["role"], "EXTERNAL_TOOL")
+
 class EgressTests(unittest.TestCase):
     def test_typed_checks(self):
         self.assertTrue(A.egress('TEXT_REPORT','Hello.')['ok'])
