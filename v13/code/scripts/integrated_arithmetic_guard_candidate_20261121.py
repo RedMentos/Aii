@@ -1,8 +1,8 @@
-"""Refine the already-composed exact-arithmetic path in a disposable V14 stage.
+"""Refine the exact-arithmetic path and preserve post-turn experience receipts.
 
 This does not add a second arithmetic engine. It adds date disambiguation,
-German/English intent prefixes, a result receipt and a no-model world profile
-to the existing pinned Runtime/C5/Broker arithmetic candidate.
+German/English intent prefixes, a result receipt, no-model routing and isolated
+World/Self observer failures so optional state cannot suppress F1 experience.
 """
 from __future__ import annotations
 
@@ -95,6 +95,18 @@ def apply_staged_arithmetic(code_dir: Path, staged_root: Path) -> dict[str, byte
         b"meta['arithmetic_reflex']={'source_ref':e['source_ref'],'model_generated':False,'bounded':True}",
         b"meta['arithmetic_reflex']={'source_ref':e['source_ref'],'result':arithmetic_answer,'model_generated':False,'bounded':True}",
         "source-bound arithmetic result receipt",
+    )
+    runtime = _replace(
+        runtime,
+        b"                self.world.observe(aid)\n",
+        b"                try:\n                    self.world.observe(aid)\n                except Exception as exc:\n                    self.store.log('world_observe_unavailable',eid,{'stage':'observe','error':type(exc).__name__})\n",
+        "post-action World observer failure isolation",
+    )
+    runtime = _replace(
+        runtime,
+        b"            self.world.self_state()\n",
+        b"            try:\n                self.world.self_state()\n            except Exception as exc:\n                self.store.log('world_self_state_unavailable',eid,{'stage':'self_state','error':type(exc).__name__})\n",
+        "post-turn Self state failure isolation",
     )
     for name, raw in (("v13/arithmetic_reflex.py", arithmetic),
                       ("v13/runtime.py", runtime)):
