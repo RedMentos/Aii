@@ -18,6 +18,16 @@
 
 Wenn QA den Auto-Updater auf dem Redmi unabhängig überprüft hat, darf ein freigegebenes, rücksetzbares Update künftig ohne neue manuelle Terminalbefehle erfolgen. Wenn die Geräteverbindung/Updater fehlt, **genau das** mitteilen und nur den kleinsten tatsächlichen notwendigen Schritt nennen.
 
+## Research & Perception checkpoint — 2026-11-21
+
+- PR #2142 is open and ready for review: https://github.com/RedMentos/Aii/pull/2142. It adds a read-only C3 comparison lab using the V13 LlamaRunner, exact candidate hashes/licensing, sequential one-model-at-a-time execution, and four diagnostic tasks including 2+2.
+- Exact V14 model-lab CI run 44848887759 PASS: Python 3.13.18, py_compile, candidate JSON validation, 13/13 tests. This proves the lab code path and negative controls only; no real GGUF inference was run.
+- Candidate: prior LFM2.5-230M QAD_Q4_0, 149,081,056 bytes, about 32% smaller than the registry's 350M C3 baseline. It is only a candidate. LFM Open License 1.0 is not Apache-2.0; its Section 5 limits commercial use by legal entities at/above USD 10M annual revenue. No model file was downloaded, no installed manifest or weights changed, and no production swap is recommended from file size alone.
+- Native model comparison: NOT_RUN. Candidate presence on the Redmi is UNKNOWN. Redmi remains REDMI_UNVERIFIED. The lab requires both models already present or a separate explicit consent for an isolated candidate download; a later production swap would require a second separate approval and rollback evidence.
+- Current code-bearing release SHA remains 5b9171a; PR #2142 is a research branch, not a release or deployment. No updater action or device mutation was attempted.
+- Next developer action: Core/QA review #2142; if the exact 230M GGUF is already present on the authorized Redmi, run baseline-first and candidate-first with V13 idle and record TTFT/prefill/decode/RSS/PSS and task checks. If absent, ask for explicit isolated-download consent first. B1/B2 comparisons remain open.
+- User action: none.
+
 ## Wie eine nützliche Meldung aussehen muss
 
 **Beispiel – nur als Format, nicht als echter Testbericht:** „Seit unserem letzten Gespräch hat das Team den B1/B2→C3-Consumer in Commit ABC integriert. Test X lief lokal (12/12), Redmi ist noch ungetestet. Eine Alternative zu C3 spart in echten Messungen Y MB, verliert aber auf Z Testfällen; willst du sie versuchsweise in einem getrennten Slot testen? Ich habe noch nichts an deiner Installation geändert.“
@@ -31,13 +41,13 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | source_HEAD | `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (PR #2138 merge readback 2026-11-21; exact staged push CI still running) |
 | last_integrated_functional_change | PR #2136 merged in `16f75fca`: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter; not yet called by normal Runtime/chat input, synthetic only |
 | local_test_result | NOT_RUN — no full local repository checkout in this worker |
-| ci_test_result | PR #2138 exact head `8ca7a298` passed owner-read (27+33 tests), Python 3.14 staged startup, offline bridge, staged-runtime (240/10 skipped/47 subtests), integrated regression (415/3 skipped/58 subtests); additive-only policy check failed on intentional existing-file changes and was not bypassed. Boss merged it as `5b9171a4`. On the exact merge SHA: owner-read push PASS, private-bridge push PASS, staged-context push IN_PROGRESS; source-contracts and integrated-regression also IN_PROGRESS. Latest-run gate correctly blocks until the newer staged run finishes. |
+| ci_test_result | PR #2138 exact release gate is green on code-bearing `5b9171a4`. V14 model-lab PR #2142 exact CI run 44848887759 PASS (13 tests, Python 3.13.18); isolated lab only, no native inference. |
 | phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
-| device_model_comparison | NOT_RUN |
-| proposed_model_change | NONE – erst anhand echter Tests |
+| device_model_comparison | LAB_CODE_READY / NATIVE_NOT_RUN / REDMI_UNVERIFIED |
+| proposed_model_change | NONE — LFM2.5-230M is a lab candidate only; no download or swap |
 | requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
-| next_developer_action | Finish exact merge-SHA CI for `5b9171a4`; if green, obtain a fresh owner-verified PIPELINE_STATUS receipt before any device update. Core/JEPA rebuild staged hash-pinned candidate chains for #2139/#2140/#2135, fix the actual consumer failures and rerun staged-runtime + integrated regression; continue whole-Canon integration. |
+| next_developer_action | Review PR #2142; if the exact 230M GGUF is already present on the authorized Redmi, run both comparison orders while V13 is idle. If absent, request separate consent before an isolated download. Keep production unchanged; continue Core/JEPA whole-Canon integration. |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
