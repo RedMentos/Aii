@@ -282,7 +282,7 @@ for shared in (False, True):
         configure(runtime)
         runners = {role: Runner(role, seen) for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")}
         runtime.pool.get = Mock(side_effect=lambda role: runners[role])
-        runtime.submit(question, audio_window=make_window(provider))
+        event_id = runtime.submit(question, audio_window=make_window(provider))
         wait_idle(runtime)
         assert runtime.last_answer()["status"] == "FINAL"
         packets_before = runtime.store.rows("SELECT id,payload FROM packets")
@@ -295,10 +295,8 @@ for shared in (False, True):
         blob_path = Path(runtime.store.home) / "data/blobs" / derived["hash"]
         assert blob_path.is_file(), "derived audio blob missing before revoke"
         if shared:
-            body = runtime.store.read_source({
-                "source_id": derived["id"], "sha256": derived["hash"],
-                "char_start": 0, "char_end": 100000, "modality": "text",
-            })
+            context = runtime._audio_revocation_contexts[event_id]
+            body = runtime.store.read_source(context["summary_source_ref"])
             duplicate = runtime.store.source(body, "AUDIO_SHARED_TEST")
             assert duplicate["sha256"] == derived["hash"]
         provider.revoke()
