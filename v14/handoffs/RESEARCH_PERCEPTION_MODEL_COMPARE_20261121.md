@@ -141,3 +141,13 @@ The shared V14 board, ledger and next-action files are left to Boss/Integrator P
 - No fresh private Redmi receipt; **REDMI_UNVERIFIED / NOT_RELEASED**. No device action, updater request, model download/swap, permission change or weight edit occurred.
 - Exact staged-context workflow is still absent; the green model-lab CI does not make #2142 release-ready. Ask QA/Core for independent review and the staged-context gate before any integration.
 - Research/Perception owns the R-007 full-text note; shared board and `V14_USER_NEXT_ACTION.md` remain on Boss's open #2149 branch to avoid concurrent edits. Boss was asked to sync the new SHA, 23/23 CI and paper result there.
+
+
+## A5 RAW EAR follow-up — 2026-11-21
+
+- Additive-only PR #2155 now contains the separate `v13.audio_voice_cues` module and eight synthetic regressions. Current exact code/test head: `40e1f877157df57643267470bab3aff39c1eaaee`.
+- Exact safe-additive CI [44862523075](https://github.com/RedMentos/Aii/actions/runs/44862523075): **PASS**, Python 3.11.18, compile PASS, 8/8 tests PASS in 2.20 s. This includes voiced pitch, deterministic noise/silence/impulse, sample-rate stability, Store/A4/C3 admission, provisional-only A4, malformed-cue rejection, consent revocation and one-second bound.
+- New module blob `7ac80a0d0deec8f52361fe89756ebd743b0a3537`; test blob `e1fa096f12c8ad9b8ca7c68098bad8cda96e4e23b`. Existing Core-pinned A5 bridge/contract/ear files are unchanged. Core can opt in by adding this one new module to its staged candidate and calling `consume_pcm16_voice_window`; no old source hash needs refreshing.
+- The exact staged-context/integrated regression [44862523082](https://github.com/RedMentos/Aii/actions/runs/44862523082) is still IN_PROGRESS at this readback; it is not a pass. Core's #2144/#2153 stage overlay has not yet consumed the new module.
+- LOCAL_LINUX full checkout remains DNS-blocked. The local Python helper check is only a copied algorithm smoke test, not repository integration. No Android microphone/OS permission, native model, speaker identity, ASR, full-duplex, Redmi receipt or deployment. REDMI_UNVERIFIED / NOT_RELEASED.
+- Next: read exact staged-context workflow result; coordinate Core opt-in and only then run staged Runtime regression. Do not mark full RAW EAR/voice complete from this partial acoustic cue adapter.
