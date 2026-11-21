@@ -1376,3 +1376,8 @@ PR #2148 head 10e058a7418a5356b96f22f5344a5a3384f96214 passed GitHub Actions run
 ### JEPA exact CI readback — 2026-11-21
 
 PR #2148 current head 6fec2dec1534285b654db60349efcd81f81b846c; tested docs/coverage head 3d8e55441d208eb8aec76cd121cc9f068376a88c; code/test head 10e058a7418a5356b96f22f5344a5a3384f96214. Run 44854219157 passed 59 tests on Python 3.13 (8.18s) and 59 on Python 3.14 (7.74s), with compile PASS. Only later change is research-ledger documentation. This remains WIRED_SYNTHETIC / CI_LINUX, NOT_ACCEPTED; no local full checkout, normal Runtime, native B1/B2 GGUF or Redmi proof.
+
+
+### Latest JEPA CI readback — 2026-11-21
+
+PR #2148 current head fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5; exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87; run 44854338438 passed 59 tests on Python 3.13 (6.52s) and 59 tests on Python 3.14 (8.81s), with compile PASS. The only later commit is a Markdown next-action table refresh. Status remains WIRED_SYNTHETIC / CI_LINUX, NOT_ACCEPTED; no normal Runtime, native B1/B2 GGUF or Redmi proof.
