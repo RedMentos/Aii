@@ -303,7 +303,8 @@ def test_matched_persistent_vs_reset_optimizer_ablation_on_disjoint_holdouts(tmp
         assert np.isclose(new_before, reset.prediction_loss(*holdout_new), atol=1e-12)
 
         persistent.partial_fit(*train_new, steps=32)
-        reset.partial_fit(*train_new, steps=32, allow_optimizer_bootstrap=True)
+        # The reset state is already explicitly bootstrapped and checkpointed; this page only resumes it.
+        reset.partial_fit(*train_new, steps=32)
         persistent_final_path = tmp_path / f'persistent-{seed}-final.npz'
         reset_final_path = tmp_path / f'reset-{seed}-final.npz'
         persistent_final = checkpoint.save(
