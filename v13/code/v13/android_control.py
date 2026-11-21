@@ -87,6 +87,7 @@ class AndroidControlBroker:
         self.pending = {}
         self.approved = {}
         self.dispatched = {}
+        self.consumed = {}
         self.stopped = True
         self._restore_actions()
 
@@ -99,6 +100,7 @@ class AndroidControlBroker:
         self.pending.clear()
         self.approved.clear()
         self.dispatched.clear()
+        self.consumed.clear()
         rows = list(self.db.execute(
             "SELECT action_id,capability,args_json,expires_at,digest,event_id,source_ref_json,state "
             "FROM control_actions WHERE state IN ('PROPOSED','APPROVED','DISPATCHED','RECEIPT_CONSUMED')"
@@ -124,8 +126,10 @@ class AndroidControlBroker:
                 self.pending[action_id] = proposal
             elif state == "APPROVED":
                 self.approved[action_id] = proposal
-            elif state in ("DISPATCHED", "RECEIPT_CONSUMED"):
+            elif state == "DISPATCHED":
                 self.dispatched[action_id] = proposal
+            elif state == "RECEIPT_CONSUMED":
+                self.consumed[action_id] = proposal
         self.db.commit()
 
     def _set_state(self, action_id, state, expected=None):
@@ -147,7 +151,7 @@ class AndroidControlBroker:
     def stop(self):
         with self.lock:
             self.stopped = True
-            for action_id in set(self.pending) | set(self.approved) | set(self.dispatched):
+            for action_id in set(self.pending) | set(self.approved) | set(self.dispatched) | set(self.consumed):
                 self._audit(action_id, "operator_stop_cancelled")
             self.db.execute(
                 "UPDATE control_actions SET state='CANCELLED' WHERE state IN "
@@ -157,6 +161,7 @@ class AndroidControlBroker:
             self.pending.clear()
             self.approved.clear()
             self.dispatched.clear()
+            self.consumed.clear()
             self._audit(None, "operator_stop")
 
     def propose(self, capability, args, *, ttl=30, event_id=None, source_ref=None):
@@ -250,12 +255,14 @@ class AndroidControlBroker:
     def consume_dispatched(self, action_id):
         """Consume a dispatched request once before verifying its companion receipt."""
         with self.lock:
-            p = self.dispatched.get(action_id)
+            p = self.consumed.get(action_id) or self.dispatched.get(action_id)
             if p is None or self.stopped or self.clock() > p.expires_at:
                 self._audit(action_id, "companion_receipt_denied")
                 raise ControlDenied("dispatched action unavailable")
-            self.dispatched.pop(action_id, None)
-            self._set_state(action_id, "RECEIPT_CONSUMED", expected="DISPATCHED")
+            if action_id in self.dispatched:
+                self.dispatched.pop(action_id, None)
+                self._set_state(action_id, "RECEIPT_CONSUMED", expected="DISPATCHED")
+                self.consumed[action_id] = p
             self._audit(action_id, "companion_receipt_pending", p.digest)
             return p
 
@@ -263,6 +270,10 @@ class AndroidControlBroker:
         if type(verified) is not bool:
             raise ControlDenied("invalid receipt result")
         with self.lock:
+            p = self.consumed.get(action_id)
+            if p is None or p.digest != digest:
+                raise ControlDenied("receipt is not bound to a consumed dispatch")
+            self.consumed.pop(action_id, None)
             self._set_state(action_id, "RECEIPT_VERIFIED" if verified else "RECEIPT_REJECTED",
                             expected="RECEIPT_CONSUMED")
             self._audit(action_id, "companion_receipt_verified" if verified else
@@ -270,7 +281,8 @@ class AndroidControlBroker:
 
     def cancel(self, action_id):
         with self.lock:
-            p = self.pending.pop(action_id, None) or self.approved.pop(action_id, None) or self.dispatched.pop(action_id, None)
+            p = (self.pending.pop(action_id, None) or self.approved.pop(action_id, None)
+                 or self.dispatched.pop(action_id, None) or self.consumed.pop(action_id, None))
             row = self.db.execute("SELECT state,digest FROM control_actions WHERE action_id=?", (action_id,)).fetchone()
             if p is None and (row is None or row[0] not in _ACTIVE_STATES):
                 raise ControlDenied("action is not cancellable")
