@@ -89,3 +89,18 @@ def test_model_authority_and_permission_bypass_are_rejected_before_ipc():
     }
     with pytest.raises(CompanionTransportError, match="authority"):
         client.submit(request)
+
+
+
+def test_cancel_uses_only_paired_companion_method():
+    seen = []
+
+    def runner(command, **kwargs):
+        seen.append(command)
+        return subprocess.CompletedProcess(command, 0, response({"status": "CANCELLED"}), "")
+
+    client = AndroidCompanionTransport(content_path="/system/bin/content", runner=runner)
+    assert client.cancel("e" * 32)["status"] == "CANCELLED"
+    assert seen[0][5] == "cancel"
+    with pytest.raises(CompanionTransportError, match="action id"):
+        client.cancel("bad")
