@@ -46,7 +46,7 @@ def build_sources(code_dir, *, include_postcommit=True):
                               'b568613863fef6a687a3237d089b91d8b612ce4163ccb5795df9e21af51c1489')
     result = arithmetic_outcome.apply_sources(code_dir, result)
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     '98654dd80e97bdd6416be855c7ba3c569959e345caea5067c534866a7de95047')
+                     'ca9f7f2b09f6ea5f6033b008c71f1fcae27dd592c8a91e4bb8454222168cf275')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
