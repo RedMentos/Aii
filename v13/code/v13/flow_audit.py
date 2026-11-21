@@ -11,7 +11,9 @@ import codecs
 import hashlib
 import json
 import math
+import os
 import sqlite3
+import stat
 import sys
 import zlib
 from pathlib import Path
@@ -55,21 +57,51 @@ def _source_valid(conn: sqlite3.Connection, home: Path, ref: Any) -> bool:
     if not (0 <= start <= end <= row["chars"]):
         return False
 
-    # Verify large/archived sources without loading the whole blob into RAM.
+    # Resolve only a private, regular content-addressed entry. lstat + O_NOFOLLOW
+    # + fstat identity prevents a symlink swap between validation and open.
     max_bytes = 32 * 1024 * 1024
-    blob = home / "data" / "blobs" / sha
-    compressed = blob.with_name(sha + ".z")
-    path = blob if blob.is_file() else compressed
-    if not path.is_file() or path.stat().st_size > max_bytes:
-        return False
-
-    digest = hashlib.sha256()
-    utf8 = codecs.getincrementaldecoder("utf-8")()
-    char_count = 0
-    total = 0
-    decompressor = zlib.decompressobj() if path == compressed else None
+    blobs_dir = home / "data" / "blobs"
+    blob = blobs_dir / sha
+    compressed = blobs_dir / (sha + ".z")
+    fd = None
     try:
-        with path.open("rb") as stream:
+        for directory in (home / "data", blobs_dir):
+            directory_stat = directory.lstat()
+            if (not stat.S_ISDIR(directory_stat.st_mode)
+                    or directory_stat.st_uid != os.getuid()):
+                return False
+
+        # If an uncompressed entry exists but is unsafe, fail closed rather
+        # than silently falling back to a second representation.
+        try:
+            blob.lstat()
+            path = blob
+        except FileNotFoundError:
+            path = compressed
+
+        if not hasattr(os, "O_NOFOLLOW"):
+            return False
+        before = path.lstat()
+        if (not stat.S_ISREG(before.st_mode) or before.st_nlink != 1
+                or before.st_uid != os.getuid() or before.st_size > max_bytes):
+            return False
+        flags = (os.O_RDONLY | os.O_NOFOLLOW
+                 | getattr(os, "O_CLOEXEC", 0)
+                 | getattr(os, "O_NONBLOCK", 0))
+        fd = os.open(path, flags)
+        opened = os.fstat(fd)
+        if (not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1
+                or opened.st_uid != os.getuid()
+                or (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino)
+                or opened.st_size != before.st_size or opened.st_size > max_bytes):
+            return False
+
+        digest = hashlib.sha256()
+        utf8 = codecs.getincrementaldecoder("utf-8")()
+        char_count = 0
+        total = 0
+        decompressor = zlib.decompressobj() if path == compressed else None
+        with os.fdopen(fd, "rb", closefd=False) as stream:
             while True:
                 chunk = stream.read(64 * 1024)
                 if not chunk:
@@ -91,9 +123,12 @@ def _source_valid(conn: sqlite3.Connection, home: Path, ref: Any) -> bool:
                 digest.update(tail)
                 char_count += len(utf8.decode(tail, final=False))
         char_count += len(utf8.decode(b"", final=True))
+        return digest.hexdigest() == sha and char_count == row["chars"] and end <= char_count
     except (OSError, UnicodeDecodeError, zlib.error):
         return False
-    return digest.hexdigest() == sha and char_count == row["chars"] and end <= char_count
+    finally:
+        if fd is not None:
+            os.close(fd)
 
 
 def _safe_metrics(value: Any) -> dict:
@@ -218,12 +253,13 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
 
         focal_cycles = by_kind.get("FocalCycle", [])
         focal_items = by_kind.get("FocalItem", [])
+        # Only the most recent C4 cycle represents the current coalition.
+        current_cycle = focal_cycles[-1] if focal_cycles else {}
+        current_coalition = current_cycle.get("coalition", [])
         coalition_ids = {
-            item_id
-            for cycle in focal_cycles
-            for item_id in cycle.get("coalition", [])
+            item_id for item_id in current_coalition
             if isinstance(item_id, str)
-        }
+        } if isinstance(current_coalition, list) else set()
         focal_by_id = {
             item.get("item_id"): item for item in focal_items
             if isinstance(item.get("item_id"), str)
@@ -270,7 +306,16 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
             focal_sources = focal.get("source_refs") if isinstance(focal, dict) else None
             evidence_keys = {_ref_key(ref) for ref in evidence} if isinstance(evidence, list) else set()
             focal_keys = {_ref_key(ref) for ref in focal_sources} if isinstance(focal_sources, list) else set()
-            if evidence_keys and None not in evidence_keys and evidence_keys <= focal_keys and evidence_keys <= valid_keys:
+            if (
+                isinstance(focal, dict)
+                and focal.get("source_kind") == offer.get("role")
+                and focal.get("state_type") == "ACTIVE"
+                and focal.get("origin_event_id") == event_id
+                and evidence_keys
+                and None not in evidence_keys
+                and evidence_keys <= focal_keys
+                and evidence_keys <= valid_keys
+            ):
                 c4_consumed_ids.add(packet_id)
 
         c3_context_ids = set()
@@ -460,25 +505,22 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
         conn.close()
 
 
-def audit_latest(home: str | Path, *, session_id: str | None = None) -> dict:
+def audit_latest(home: str | Path, *, session_id: str) -> dict:
     root = Path(home).expanduser().resolve()
-    if session_id is not None and (not isinstance(session_id, str) or not session_id):
-        raise ValueError("session_id must be a nonempty string")
+    if not isinstance(session_id, str) or not session_id:
+        raise ValueError("session_id is required for latest-event audit")
     db_path = root / "data" / "db" / "brain.sqlite3"
     if not db_path.is_file():
         raise FileNotFoundError("V13 Store database not found")
     conn = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
     try:
         conn.execute("PRAGMA query_only=ON")
-        if session_id is None:
-            row = conn.execute("SELECT id FROM events ORDER BY created DESC LIMIT 1").fetchone()
-        else:
-            row = conn.execute(
-                "SELECT id FROM events WHERE session_id=? ORDER BY created DESC LIMIT 1",
-                (session_id,),
-            ).fetchone()
+        row = conn.execute(
+            "SELECT id FROM events WHERE session_id=? ORDER BY created DESC LIMIT 1",
+            (session_id,),
+        ).fetchone()
         if not row:
-            raise KeyError("no events in Store")
+            raise KeyError("no events in Store for this session")
         event_id = row[0]
     finally:
         conn.close()
@@ -489,10 +531,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Read-only V13 per-turn organ-flow audit")
     parser.add_argument("--home", default="~/v13", help="V13 runtime home")
     parser.add_argument("--event-id", help="audit one event; default is latest")
-    parser.add_argument("--session-id", help="restrict audit to one chat session")
+    parser.add_argument("--session-id", help="required for latest-event selection; restrict to one chat session")
     parser.add_argument("--compact", action="store_true", help="emit compact JSON")
     args = parser.parse_args(argv)
     try:
+        if not args.event_id and not args.session_id:
+            raise ValueError("session_id is required when selecting the latest event")
         report = (
             audit_event(args.home, args.event_id, session_id=args.session_id)
             if args.event_id

@@ -353,3 +353,167 @@ def test_c4_requires_focal_item_to_retain_offer_source_refs(tmp_path):
     assert report["c4"]["consumed_roles"] == ["B2_GIST"]
     assert report["c3"]["context_binding_status"] == "PARTIAL"
     assert report["c3"]["status"] == "PARTIAL_CONTEXT"
+
+
+
+def test_c4_rejects_focal_item_with_wrong_source_role(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        focal_rows = conn.execute(
+            "SELECT id,payload FROM packets WHERE event_id=? AND kind='FocalItem'",
+            (event_id,),
+        ).fetchall()
+        for row_id, raw in focal_rows:
+            item = json.loads(raw)
+            if item.get("source_kind") == "B1_DETAIL":
+                item["source_kind"] = "B2_GIST"
+                conn.execute("UPDATE packets SET payload=? WHERE id=?", (json.dumps(item), row_id))
+        conn.commit()
+    finally:
+        conn.close()
+
+    report = audit_event(home, event_id)
+    assert report["c4"]["status"] == "PARTIAL"
+    assert report["c4"]["consumed_roles"] == ["B2_GIST"]
+    assert report["c3"]["context_binding_status"] == "PARTIAL"
+
+
+def test_c4_rejects_non_active_focal_item(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        focal_rows = conn.execute(
+            "SELECT id,payload FROM packets WHERE event_id=? AND kind='FocalItem'",
+            (event_id,),
+        ).fetchall()
+        for row_id, raw in focal_rows:
+            item = json.loads(raw)
+            if item.get("source_kind") == "B1_DETAIL":
+                item["state_type"] = "REACTIVATABLE"
+                conn.execute("UPDATE packets SET payload=? WHERE id=?", (json.dumps(item), row_id))
+        conn.commit()
+    finally:
+        conn.close()
+
+    report = audit_event(home, event_id)
+    assert report["c4"]["status"] == "PARTIAL"
+    assert report["c4"]["consumed_roles"] == ["B2_GIST"]
+
+
+def test_c4_uses_only_the_latest_focal_cycle(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        event_packet = json.loads(
+            conn.execute("SELECT packet FROM events WHERE id=?", (event_id,)).fetchone()[0]
+        )
+        offers = [
+            json.loads(raw)
+            for (raw,) in conn.execute(
+                "SELECT payload FROM packets WHERE event_id=? AND kind='OfferPacket' ORDER BY created,id",
+                (event_id,),
+            ).fetchall()
+        ]
+        b2_id = next(item["packet_id"] for item in offers if item.get("role") == "B2_GIST")
+    finally:
+        conn.close()
+
+    store = Store(home)
+    try:
+        store.add_packet(
+            "FocalCycle",
+            packet(
+                "FocalCycle", "C4_FOCAL", event_id, event_packet["brain_generation_id"],
+                [event_packet["source_ref"]], cycle=1, decision="INCORPORATE_B",
+                coalition=[b2_id], signals={}, budget={},
+            ),
+        )
+    finally:
+        store.close()
+
+    report = audit_event(home, event_id)
+    assert report["c4"]["status"] == "PARTIAL"
+    assert report["c4"]["consumed_roles"] == ["B2_GIST"]
+
+
+def test_source_blob_symlink_is_rejected_without_following(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        sha = conn.execute("SELECT hash FROM sources ORDER BY id LIMIT 1").fetchone()[0]
+    finally:
+        conn.close()
+
+    blob = home / "data" / "blobs" / sha
+    original = blob.read_bytes()
+    external = tmp_path / "outside-source.txt"
+    external.write_bytes(original)
+    blob.unlink()
+    blob.symlink_to(external)
+
+    report = audit_event(home, event_id)
+    assert report["source_integrity"]["invalid_refs"] >= 1
+    assert report["source_integrity"]["valid_refs"] >= 1
+    assert "outside-source" not in json.dumps(report)
+
+
+def test_source_blob_non_regular_entry_is_rejected(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        sha = conn.execute("SELECT hash FROM sources ORDER BY id LIMIT 1").fetchone()[0]
+    finally:
+        conn.close()
+
+    blob = home / "data" / "blobs" / sha
+    blob.unlink()
+    blob.mkdir()
+
+    report = audit_event(home, event_id)
+    assert report["source_integrity"]["invalid_refs"] >= 1
+
+
+def test_latest_event_audit_requires_explicit_session_with_multiple_chats(tmp_path, capsys):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        session_id = conn.execute(
+            "SELECT session_id FROM events WHERE id=?", (event_id,)
+        ).fetchone()[0]
+    finally:
+        conn.close()
+
+    store = Store(home)
+    try:
+        other_session = store.new_session("other chat")
+        store.event(other_session, "OTHER_PRIVATE_TEXT_SENTINEL")
+    finally:
+        store.close()
+
+    try:
+        audit_latest(home)
+    except ValueError as exc:
+        assert "session_id" in str(exc)
+    else:
+        raise AssertionError("latest-event audit must not choose across chat sessions")
+
+    assert main(["--home", str(home), "--compact"]) == 2
+    error = json.loads(capsys.readouterr().err)
+    assert error["error"] == "ValueError"
+    assert main(["--home", str(home), "--session-id", session_id, "--compact"]) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["event_id"] == event_id
+    assert "OTHER_PRIVATE_TEXT_SENTINEL" not in json.dumps(report)
