@@ -13,7 +13,7 @@
   - incremental JEPA `44882581533` and combined online JEPA `44882581581`: PASS.
   - safe-additive `44882581536`: rejects the PR because it intentionally changes existing runtime modules; this is an expected scope-policy boundary, not permission to bypass the validator.
 - Root cause for the pin failure: #2178 modifies `v13/code/v13/world_jepa.py`, while the frozen training-resume builder still pins the previous `WORLD_SHA`. Recompute that exact raw-source digest and every dependent builder/composition/stage/deployer digest in order. Do not weaken the source-integrity chain.
-- QA review comment `6004094094` is recorded on PR #2178 with the syntax line comment, exact failing job IDs, pin-chain diagnosis and required retests. The persistent QA board/workplan/handoff readback is in [QA PR #2180](https://github.com/RedMentos/Aii/pull/2180).
+- QA review comment `6004094094` is recorded on PR #2178 with the syntax line comment, exact failing job IDs, pin-chain diagnosis and required retests. The persistent QA board/workplan/handoff readback is in [QA PR #2180](https://github.com/RedMentos/Aii/pull/2180). A second QA review comment `6004143702` flags that current tests instantiate `SleepRuntime` with `object.__new__` and a fake Store/runtime, so a real `Runtime._turn` → worker queue → idle JEPA → restart/preemption/rollback integration test is still required.
 
 ## Device, updater and whole-system boundary
 - Latest private owner-read PIPELINE_STATUS #379 is OPEN with zero comments at this readback (expires 2026-11-21T08:30:59Z); prior #373/#368 expired without reply. No duplicate request was created. Installed Redmi SHA is UNKNOWN; updater consent/state is UNVERIFIED; `REDMI_UNVERIFIED`.
