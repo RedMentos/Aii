@@ -141,7 +141,6 @@ class AndroidControlBroker:
     def start(self):
         """Open the local operator gate and restore durable non-sensitive actions."""
         with self.lock:
-            self._restore_actions()
             self.stopped = False
             self._audit(None, "operator_start")
 
@@ -149,8 +148,12 @@ class AndroidControlBroker:
         with self.lock:
             self.stopped = True
             for action_id in set(self.pending) | set(self.approved) | set(self.dispatched):
-                self._set_state(action_id, "CANCELLED")
                 self._audit(action_id, "operator_stop_cancelled")
+            self.db.execute(
+                "UPDATE control_actions SET state='CANCELLED' WHERE state IN "
+                "('PROPOSED','APPROVED','DISPATCHED','RECEIPT_CONSUMED')"
+            )
+            self.db.commit()
             self.pending.clear()
             self.approved.clear()
             self.dispatched.clear()
