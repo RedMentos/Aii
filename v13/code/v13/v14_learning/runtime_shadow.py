@@ -416,7 +416,7 @@ def consume_recent_committed(store, home, limit=64):
             jepa_result["runtime_wired"] = True
             jepa_result["native_body_weights_changed"] = False
             jepa_result["decision_authority"] = "NONE"
-        except (ValueError, TypeError, KeyError, OSError, OverflowError, ArithmeticError) as exc:
+        except (ValueError, TypeError, KeyError, OSError, OverflowError, ArithmeticError, AttributeError) as exc:
             jepa_result = {
                 "status": "ERROR",
                 "error": type(exc).__name__,
@@ -454,6 +454,10 @@ def consume_recent_committed(store, home, limit=64):
         "weight_updates": 0,
         "optimizer_permission": False,
         "learning_enabled": False,
+        "temporal_learning_enabled": False,
+        "temporal_optimizer_permission": False,
+        "world_jepa_learning_enabled": learning_enabled,
+        "world_jepa_optimizer_permission": optimizer_permission,
         "world_jepa": jepa_result,
         "world_jepa_parameter_updates": jepa_result.get("status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA",
         "native_body_weights_changed": False,
