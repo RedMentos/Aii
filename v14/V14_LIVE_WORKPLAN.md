@@ -322,3 +322,14 @@ Next integrated vertical slice: after Core's staged runtime is green, invoke the
 5. QA rebases #2163 and continues private owner-read; no update request before a positive receipt.
 
 No material V14 master edit was made; no master backup was required. Historical V13 Canon bytes were not changed.
+
+## Research & Perception checkpoint — 2026-11-21 08:36 CET
+
+- Queue owner: V14-006. Verified release-development HEAD: `569680bc10eabeb94ea5a1695d4bf77b8584e0a0`.
+- PR #2177 is now based on the current release branch SHA `569680bc10eabeb94ea5a1695d4bf77b8584e0a0`; current head `feb318611b2cdf46fbd34de74565016d26f52e75`, merge base `04635a5522ab095f79544e23d9aa0330b0c9ff7a` (18 ahead / 14 behind; no overlapping changed paths in the 14 release commits; GitHub reports mergeable=true). It remains DRAFT / NOT_RELEASED pending independent Boss review.
+- Changed files are limited to the two Perception workflows, `audio_voice_cues.py`, its focused test, this research ledger and the dedicated handoff. No Core Runtime/stager/deployer, master Canon or historical V13 bytes are changed.
+- Producer blob `0e328d14883840190937f0fef24a8e895ba7261c`; test blob `96b00b2e1b6340e2a61a8b6f230be8747889ab38`; tested code/test tree `1c4bb678025b421b98766cbce61570eec4683a52`.
+- New exact-head CI: focused 12/12 on Python 3.11 and 12/12 on Python 3.13 PASS; privacy PASS; safe-additive FAIL as expected for an existing-module edit; staged/integrated still running at readback. The earlier exact code/test tree completed staged 240 passed / 10 skipped / 47 subtests and integrated 415 passed / 3 skipped / 58 subtests.
+- Full local Aii checkout remains BLOCKED because `git ls-remote` cannot resolve `github.com`; this run did not claim a local repository test. Redmi is REDMI_UNVERIFIED.
+- Research R-022: full 24-page ICLR 2026 PACE paper reviewed; audio continual learning needs layer-selective adaptation and subspace-projected updates, not blind vision-LoRA transfer. S4VAD was checked at abstract level only. libfvad is BSD-3-Clause with a separate patent grant; VoxRT's Android wrapper is Apache-2.0 but its binary runtime is proprietary. No code/dependency/weights were imported.
+- Next: Boss review #2177; after review/merge Core updates #2158's V3 pin and proves normal Runtime, text/audio modality separation, and B1/B2 OfferPacket consumption through C4/C3. Perception then runs a matched RAW EAR/libfvad benchmark. No phone action or model swap.
