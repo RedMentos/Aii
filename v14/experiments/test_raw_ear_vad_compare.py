@@ -3,9 +3,9 @@ import os
 import shutil
 import struct
 import subprocess
+import tempfile
+import unittest
 from pathlib import Path
-
-import pytest
 
 from raw_ear_vad_compare import (
     LibFvadBackend,
@@ -49,79 +49,83 @@ class EnergyBaseline:
         return rms > 1000
 
 
-def load_sources():
-    extractor, sha256, blob = _load_v3_extractor(V3_SOURCE)
-    temporal = _load_temporal_class(TEMPORAL_SOURCE)
-    return extractor, temporal, sha256, blob
+class RawEarVadCompareTests(unittest.TestCase):
+    def load_sources(self):
+        extractor, sha256, blob = _load_v3_extractor(V3_SOURCE)
+        temporal = _load_temporal_class(TEMPORAL_SOURCE)
+        return extractor, temporal, sha256, blob
 
+    def test_comparison_alignment_metrics_and_exact_source_hashes(self):
+        extractor, temporal, sha256, blob = self.load_sources()
+        result = compare_pcm(
+            voice_like(), 16000, [[500, 1500]], extractor=extractor,
+            temporal_class=temporal, backend=EnergyBaseline(),
+            source_sha256=sha256, source_git_blob=blob,
+        )
+        self.assertEqual(result["schema"], "v14.raw-ear-vad-comparison/1")
+        self.assertTrue(result["alignment"].startswith("WebRTC 20ms decisions OR-combined"))
+        self.assertEqual(result["raw_ear_v3"]["raw"]["annotated_speech_intervals"], 1)
+        self.assertEqual(result["webrtc_baseline"]["raw"]["annotated_speech_intervals"], 1)
+        self.assertEqual(result["processed_duration_ms"], 2000)
+        self.assertEqual(result["source"]["v3_source_git_blob"], blob)
+        expected_v3 = os.getenv("V14_EXPECTED_RAW_EAR_V3_BLOB")
+        expected_temporal = os.getenv("V14_EXPECTED_TEMPORAL_VOICE_BLOB")
+        if expected_v3:
+            self.assertEqual(blob, expected_v3)
+        if expected_temporal:
+            import hashlib
+            temporal_blob = hashlib.sha1(
+                b"blob " + str(TEMPORAL_SOURCE.stat().st_size).encode() + b"\0" + TEMPORAL_SOURCE.read_bytes()
+            ).hexdigest()
+            self.assertEqual(temporal_blob, expected_temporal)
+        self.assertGreaterEqual(result["raw_ear_v3"]["processing_wall_ms"], 0)
+        self.assertGreaterEqual(result["webrtc_baseline"]["processing_wall_ms"], 0)
 
-def test_comparison_aligns_both_paths_and_reports_separate_raw_and_smoothed_metrics():
-    extractor, temporal, sha256, blob = load_sources()
-    result = compare_pcm(
-        voice_like(), 16000, [[500, 1500]], extractor=extractor,
-        temporal_class=temporal, backend=EnergyBaseline(),
-        source_sha256=sha256, source_git_blob=blob,
-    )
-    assert result["schema"] == "v14.raw-ear-vad-comparison/1"
-    assert result["alignment"].startswith("WebRTC 20ms decisions OR-combined")
-    assert result["raw_ear_v3"]["raw"]["annotated_speech_intervals"] == 1
-    assert result["webrtc_baseline"]["raw"]["annotated_speech_intervals"] == 1
-    assert result["processed_duration_ms"] == 2000
-    assert result["source"]["v3_source_git_blob"] == blob
-    expected_v3 = os.getenv("V14_EXPECTED_RAW_EAR_V3_BLOB")
-    expected_temporal = os.getenv("V14_EXPECTED_TEMPORAL_VOICE_BLOB")
-    if expected_v3:
-        assert blob == expected_v3
-    if expected_temporal:
-        temporal_blob = __import__("hashlib").sha1(
-            b"blob " + str(TEMPORAL_SOURCE.stat().st_size).encode() + b"\0" + TEMPORAL_SOURCE.read_bytes()
-        ).hexdigest()
-        assert temporal_blob == expected_temporal
-    assert result["raw_ear_v3"]["processing_wall_ms"] >= 0
-    assert result["webrtc_baseline"]["processing_wall_ms"] >= 0
+    def test_invalid_sample_rate_and_annotations_fail_closed(self):
+        extractor, temporal, sha256, blob = self.load_sources()
+        with self.assertRaisesRegex(ValueError, "sample rate"):
+            compare_pcm(b"\x00\x00" * 800, 11025, [], extractor=extractor,
+                        temporal_class=temporal, backend=EnergyBaseline(),
+                        source_sha256=sha256, source_git_blob=blob)
+        with self.assertRaisesRegex(ValueError, "sorted and non-overlapping"):
+            compare_pcm(b"\x00\x00" * 16000, 16000, [[500, 900], [800, 1000]],
+                        extractor=extractor, temporal_class=temporal,
+                        backend=EnergyBaseline(), source_sha256=sha256, source_git_blob=blob)
 
+    def test_webrtc_backend_handles_valid_silence_frame_when_available(self):
+        try:
+            import webrtcvad  # noqa: F401
+        except ImportError:
+            self.skipTest("test-only WebRTC wrapper is not installed")
+        backend = WebRtcVadBackend(mode=2)
+        silence = bytes(2 * (16000 * 20 // 1000))
+        self.assertFalse(backend.is_speech(silence, 16000))
 
-def test_invalid_sample_rate_and_annotations_fail_closed():
-    extractor, temporal, sha256, blob = load_sources()
-    with pytest.raises(ValueError, match="sample rate"):
-        compare_pcm(b"\x00\x00" * 800, 11025, [], extractor=extractor,
-                    temporal_class=temporal, backend=EnergyBaseline(),
-                    source_sha256=sha256, source_git_blob=blob)
-    with pytest.raises(ValueError, match="sorted and non-overlapping"):
-        compare_pcm(b"\x00\x00" * 16000, 16000, [[500, 900], [800, 1000]],
-                    extractor=extractor, temporal_class=temporal,
-                    backend=EnergyBaseline(), source_sha256=sha256, source_git_blob=blob)
+    def test_real_webrtc_backend_comparison_smoke_when_available(self):
+        try:
+            import webrtcvad  # noqa: F401
+        except ImportError:
+            self.skipTest("test-only WebRTC wrapper is not installed")
+        extractor, temporal, sha256, blob = self.load_sources()
+        result = compare_pcm(
+            voice_like(), 16000, [[500, 1500]], extractor=extractor,
+            temporal_class=temporal, backend=WebRtcVadBackend(mode=2),
+            source_sha256=sha256, source_git_blob=blob,
+        )
+        self.assertEqual(result["webrtc_baseline"]["name"], "WEBRTCVAD_PYTHON_WHEELS")
+        self.assertTrue({"fpr", "fnr", "f1", "onset_delay_ms_median", "offset_delay_ms_median"} <=
+                        set(result["webrtc_baseline"]["raw"]))
+        self.assertTrue(result["process_peak_rss"] is None or result["process_peak_rss"] > 0)
 
-
-def test_webrtc_backend_handles_valid_silence_frame_when_available():
-    pytest.importorskip("webrtcvad")
-    backend = WebRtcVadBackend(mode=2)
-    silence = bytes(2 * (16000 * 20 // 1000))
-    assert backend.is_speech(silence, 16000) is False
-
-
-def test_real_webrtc_backend_comparison_smoke_when_available():
-    pytest.importorskip("webrtcvad")
-    extractor, temporal, sha256, blob = load_sources()
-    result = compare_pcm(
-        voice_like(), 16000, [[500, 1500]], extractor=extractor,
-        temporal_class=temporal, backend=WebRtcVadBackend(mode=2),
-        source_sha256=sha256, source_git_blob=blob,
-    )
-    assert result["webrtc_baseline"]["name"] == "WEBRTCVAD_PYTHON_WHEELS"
-    assert set(("fpr", "fnr", "f1", "onset_delay_ms_median", "offset_delay_ms_median")) <= set(
-        result["webrtc_baseline"]["raw"]
-    )
-    assert result["process_peak_rss"] is None or result["process_peak_rss"] > 0
-
-
-def test_libfvad_ctypes_binding_against_documented_c_abi_stub(tmp_path):
-    compiler = shutil.which("cc") or shutil.which("gcc")
-    if not compiler:
-        pytest.skip("C compiler unavailable")
-    source = tmp_path / "fvad_stub.c"
-    library = tmp_path / "libfvad_stub.so"
-    source.write_text(r'''#include <stdint.h>
+    def test_libfvad_ctypes_binding_against_documented_c_abi_stub(self):
+        compiler = shutil.which("cc") or shutil.which("gcc")
+        if not compiler:
+            self.skipTest("C compiler unavailable")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "fvad_stub.c"
+            library = root / "libfvad_stub.so"
+            source.write_text(r'''#include <stdint.h>
 #include <stddef.h>
 #include <stdlib.h>
 typedef struct { int mode; int rate; } Fvad;
@@ -135,12 +139,16 @@ int fvad_process(Fvad *p, const int16_t *frame, size_t length) {
   return 0;
 }
 ''', encoding="utf-8")
-    subprocess.run([compiler, "-shared", "-fPIC", str(source), "-o", str(library)], check=True)
-    backend = LibFvadBackend(str(library), mode=2, sample_rate=16000)
-    silence = bytes(2 * 320)
-    voice = struct.pack("<" + "h" * 320, *([2000] * 320))
-    try:
-        assert backend.is_speech(silence, 16000) is False
-        assert backend.is_speech(voice, 16000) is True
-    finally:
-        backend.close()
+            subprocess.run([compiler, "-shared", "-fPIC", str(source), "-o", str(library)], check=True)
+            backend = LibFvadBackend(str(library), mode=2, sample_rate=16000)
+            silence = bytes(2 * 320)
+            voice = struct.pack("<" + "h" * 320, *([2000] * 320))
+            try:
+                self.assertFalse(backend.is_speech(silence, 16000))
+                self.assertTrue(backend.is_speech(voice, 16000))
+            finally:
+                backend.close()
+
+
+if __name__ == "__main__":
+    unittest.main()
