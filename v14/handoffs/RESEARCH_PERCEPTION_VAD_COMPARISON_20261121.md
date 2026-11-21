@@ -18,7 +18,7 @@
 - Synthetic noise-only and impulse-only negatives were run; see R-023 for counts. These are not speech-corpus accuracy claims.
 - Full Aii checkout/local exact tests: BLOCKED by GitHub DNS. The local scratch copy contains the V3 algorithm excerpt, not the full repo source file.
 - Real `libfvad.so`: unavailable locally; its C adapter is only ABI-smoke-tested against a fake stub. Actual libfvad build/test is BLOCKED.
-- CI: pending exact-source hash check and Python 3.13/3.14 workflow. No PR SHA exists until this handoff is pushed.
+- Exact-source CI: run 44891098086 PASS, Python 3.13 5/5 and Python 3.14 5/5; both verified V3/temporal Git blob hashes and ran WebRTC + fake-C-ABI checks. Existing V14 model-lab run 44891067617 PASS (28 tests, 2 optional WebRTC skips). An initial model-lab failure 44890888702 from a pytest import was fixed by converting tests to unittest; the correction is verified.
 - Redmi / Termux / microphone: REDMI_UNVERIFIED. No deployment or device action.
 
 ## Source/license boundary
@@ -31,6 +31,6 @@
 
 This is an evaluation tool, not a Runtime microphone consumer and not a replacement for RAW EAR's nonverbal/prosody channels. Do not mark A0-A5, VOICE_AUDIO or V14-006 accepted. Do not add a product dependency, download model weights, or swap models.
 
-**Next:** run the new exact-source CI matrix, then build the pinned C library for Termux/aarch64 and evaluate on an appropriately licensed annotated speech/noise corpus. Core may later use a fast native VAD gate alongside RAW EAR prosody, but only after matched CPU/RSS/onset/FPR/FNR and Redmi measurements. Boss owns shared board and user-next-action synchronization; proposed V14-006 note: `LOCAL_LINUX_ISOLATED_SYNTHETIC` harness added; exact-source CI pending; real libfvad/ARM/Redmi unverified.
+**PR:** #2187, head `6333a2c95b85342c341fcfe00a6e4693bd56f2c0`, stacked on #2177 and still DRAFT / NOT_RELEASED. Exact-source CI is green. **Next:** Boss independently reviews/merges #2177 first; then rebase this stacked comparator onto the integrated release head, build the pinned C library for Termux/aarch64 and evaluate on an appropriately licensed annotated speech/noise corpus. Core may later use a fast native VAD gate alongside RAW EAR prosody, but only after matched CPU/RSS/onset/FPR/FNR and Redmi measurements. Boss owns shared board and user-next-action synchronization; proposed V14-006 note: `LOCAL_LINUX_ISOLATED_SYNTHETIC` harness added; exact-source CI pending; real libfvad/ARM/Redmi unverified.
 
 No user action is required.
