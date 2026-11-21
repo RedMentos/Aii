@@ -249,6 +249,7 @@ def audit_event(home: str | Path, event_id: str) -> dict:
                 c3_context_ids.add(packet_id)
 
         c4_roles = {offer_roles[x] for x in c4_consumed_ids}
+        required_roles = {"B1_DETAIL", "B2_GIST"}
         query_bound_roles = {
             offer.get("role") for offer in offers
             if isinstance(offer.get("role"), str)
@@ -258,7 +259,6 @@ def audit_event(home: str | Path, event_id: str) -> dict:
         c3_roles = {
             offer_roles[x] for x in (c3_context_ids & c4_consumed_ids & selected_ids)
         }
-        required_roles = {"B1_DETAIL", "B2_GIST"}
         c4_status = "PASS" if required_roles <= c4_roles else ("PARTIAL" if c4_roles else "FAIL")
         c3_status = "PASS" if required_roles <= c3_roles else ("PARTIAL" if c3_roles else "FAIL")
 
