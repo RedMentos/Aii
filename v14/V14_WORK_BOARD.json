@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T15:52:02.964Z",
+  "updated_at": "2026-11-21T16:10:02.991Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -156,20 +156,27 @@
       "owner": "Research & Perception",
       "reviewer": "JEPA & Boss",
       "priority": "P1",
-      "status": "IN_PROGRESS_PARTIAL",
+      "status": "IN_REVIEW_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "PR #2226 head 3868383b4ccac1b709d6310ed69bb53b9e924b47 has five exact CI groups green (RAW EAR, pre-PCM revocation/non-reentrant lease, VAD comparator, privacy, staged/integrated), but it diverges from current release f279286a4453248004c670fcaabecd85da6ab299: 5 ahead / 35 behind. It is caller-supplied PCM only; no mic permission/capture, ASR, TTS/vocoder, full duplex or Redmi proof.",
-      "next_step": "Perception: rebase #2226 on the current release head and reconcile shared V14 docs rather than restoring stale snapshots; rerun the exact consent, RAW EAR, VAD, privacy, staged and integrated checks. Keep microphone capture OFF until a separately tested Android permission path exists.",
+      "proof_environment": "PR #2233 current-base candidate: exact tested code/test tree 17f273395a869fd7469110773a5fe777a522909b; later branch commits are documentation-only and do not change that tested code/test tree. Exact GitHub CI: consent 29 passed; RAW EAR 53 passed on CPython 3.11 and 3.13; comparator 8/8 on CPython 3.13/3.14 plus native Linux libfvad 13 PASS/0 FAIL/0 ERROR per job; staged 251 passed/10 skipped/47 subtests; integrated 424 passed/3 skipped/58 subtests; privacy, model-lab, offline-bridge-security and same-repo queue-contract PASS. Strict safe-additive FAILS by policy because existing Runtime/workflow files are modified; queue marks review_only_paths. LOCAL_LINUX exact checkout/tests BLOCKED by GitHub DNS. REDMI_UNVERIFIED; private read-only #415–417 pending, no device receipt.",
+      "next_step": "Boss: independently review #2233's existing Runtime/workflow scope and safe-additive rejection without bypass; decide manual integration. Core: after producer review, rebase #2200 onto #2233, update audio_voice_cues pin to 9cae3b93388ea2c488e5af37a544ed0df5727f07, use yielded active=True inside non-reentrant record/view leases, tombstone derived AUDIO_ACOUSTIC_CONTEXT + clear cache on revoke, and hold provider lease across full C3 runner.generate; keep the two QA races distinct. QA: refresh #2211 after Core fix. No mic capture or model download.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 16:49 CET",
+      "last_checkpoint": "2026-11-21 17:08 CET",
       "latest_candidate_pr": {
-        "pr": 2155,
-        "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
-        "merge_commit_sha": "c0cedbde718ede6107f4df1f1bf9c784df4e00cf",
-        "ci": "PASS_44862523075_8_TESTS_AND_44862523082_240_STAGED_415_INTEGRATED",
-        "scope": "additive RAW EAR acoustic-cue adapter only; no normal Runtime consumer"
-      }
+        "pr": 2233,
+        "branch": "research-perception/v14-raw-ear-consent-current-20261121-run12",
+        "tested_code_test_sha": "17f273395a869fd7469110773a5fe777a522909b",
+        "merge_commit_sha": null,
+        "ci": "RAW_EAR_53x2_CONSENT_29_VAD_8x2_LIBFVAD_13_STAGED_251_INTEGRATED_424_PRIVACY_MODEL_LAB_SECURITY_PASS_SAFE_ADDITIVE_FAIL_REVIEW_ONLY",
+        "scope": "source-bound caller-supplied PCM16 RAW EAR -> temporal voice state -> A4 attention and bounded C3 admission; optional hash-pinned local Silero ONNX adapter; current-base CI trigger repair; no mic/native model/Redmi proof"
+      },
+      "superseded_prs": [
+        2207,
+        2214,
+        2219,
+        2226
+      ]
     },
     {
       "id": "V14-007",

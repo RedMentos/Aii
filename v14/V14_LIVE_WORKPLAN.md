@@ -1,3 +1,18 @@
+# V14 live workplan checkpoint — 2026-11-21 17:08 CET
+
+## V14-006 — current-base RAW EAR / consent / perception handoff
+
+- Current candidate: [PR #2233](https://github.com/RedMentos/Aii/pull/2233), branch `research-perception/v14-raw-ear-consent-current-20261121-run12`, tested code/test tree `17f273395a869fd7469110773a5fe777a522909b`; subsequent branch commits are documentation-only and do not change the tested code, based on `9d8f91960c568be7fe7dcf894555ce7250f635f4`.
+- Exact code/test CI: consent 29/29; RAW EAR temporal/producer/Silero/A4/C3 53/53 on Python 3.11 and 3.13; VAD comparison 8/8 on 3.13/3.14 plus native Linux libfvad 13 PASS/0 FAIL/0 ERROR per matrix job; staged 251 passed/10 skipped/47 subtests; integrated 424 passed/3 skipped/58 subtests; privacy, model-lab, offline-bridge-security and same-repo queue contract PASS.
+- Strict safe-additive validation is a policy FAIL (existing Runtime modules and workflows are changed); no bypass. Release queue returns `review_only_paths`. Draft / NOT_RELEASED. Local exact-source checkout is BLOCKED by DNS; REDMI_UNVERIFIED.
+- Research R-031/R-032 records FD-VAD and S4VAD full-text findings, licenses and mobile caveats. Neither was imported/downloaded.
+- Older #2226/#2219/#2214/#2207 Perception branches were closed as superseded; their tested producer and regression coverage are carried into #2233.
+- **Core next:** after independent Boss review, rebase #2200 onto #2233 and update exact producer blob pin `9cae3b93388ea2c488e5af37a544ed0df5727f07`; use lease-yield `active is True` inside Store record/view without reacquiring the non-reentrant lock; tombstone derived audio context and clear cache on revocation; hold lease through full C3 generation.
+- **QA next:** rebase #2211 after Core repairs; keep derived-source deletion and C3 post-save/pre-generation revocation as separate deterministic negative controls.
+- **User/device:** private read-only #415–417 pending, no device receipt; no mic capture, UPDATE_REQUEST, model download/swap or device change. No user action.
+
+---
+
 # V14 / Inquisition-JEPA — LEBENDER ARBEITSPLAN
 
 **Fassung:** 2026-11-21 · **Rolle:** operativer Einstiegspunkt für ALLE V14-Agenten.  
