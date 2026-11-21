@@ -288,8 +288,6 @@ The merged #2155 adapter extracts heuristic pitch/voicing/energy/activity cues f
 - **V14 role:** comparator for speech-activity probability only. Keep raw waveform-derived prosody, pauses, pitch, energy and nonverbal acoustic cues as separate A5 signals. A VAD must not become a transcript, emotion/speaker inference or learning/permission authority.
 - **Decision:** research-only. First compare the current deterministic RAW EAR cue extractor with libfvad/WebRTC no-weight baseline and Silero on identical fixtures; then measure Android ABI, RSS/PSS, CPU, onset/offset and battery. No dependency, weight, model or device change is authorized by this note.
 
-
-
 ## R-021 — Native middle-layer capture and causal activation-transfer limits (2026-11-21)
 
 ### Primary paper: architecture-dependent causal transfer
@@ -311,3 +309,26 @@ The merged #2155 adapter extracts heuristic pitch/voicing/energy/activity cues f
 ### Reproducible next experiment
 
 For B1 LFM2 and B2 Qwen3.5, capture model-specific middle layers near 0.5 depth with exact token-count/sequence/source hashes; fit separate directional projectors on disjoint source sets; inject into the actual receiver only in an isolated diagnostic worker. Compare learned latent, exact text, symbolic, no-message, shuffled source and random projection on held-out tasks. Measure receiver answer correctness/utility, full output distribution, TTFT, RSS/PSS, and reset/restart/rollback. Keep CAN_LATENT_INJECT and production authority false until a preregistered utility gate passes. This is a proposed experiment, not a current feature.
+## R-022 — Audio continual adaptation, RAW EAR boundaries and low-latency VAD (2026-11-21)
+
+### PACE — full paper review
+
+- **Primary source:** Chang Li, Kanglei Zhou, Liyuan Wang, “PACE: Pretrained Audio Continual Learning,” ICLR 2026 conference paper; arXiv:2602.03355v1 submitted 2026-02-03. Full 24-page PDF, method, tables, ablations, appendix and training-time table reviewed. Official proceedings: https://proceedings.iclr.cc/paper_files/paper/2026/hash/26cce1e512793f2072fd27c391e04652-Abstract-Conference.html ; PDF: https://arxiv.org/pdf/2602.03355 .
+- **Setup:** EAT audio backbone, 12 ViT Transformer blocks, pretrained on AudioSet-2M (~5,000 h). Six class-incremental benchmarks: ESC-50, UrbanSound8K, Speech Commands V2, TIMIT-2, TIMIT-3 and VocalSet. The paper uses an 8:2 train/test split; the main EAT evaluation is not a streaming Android workload.
+- **Mechanism:** first-session adaptation (FSA) uses CKA to choose a layer boundary (reported threshold rho_layer=0.94), adapts only deeper layers with LoRA, then replaces the temporary classifier with an analytic classifier. Fine-grained multi-session adaptation subtracts prior LoRA factors to form an unlearned feature extractor, estimates a feature subspace with SVD, projects updates away from previously occupied directions, and uses time-frequency masking to approximate boundary-prone samples. Adaptation stops at a sample-count threshold and freezes the backbone thereafter.
+- **Reported EAT results (average top-1, paper table 2):** PACE 95.75 ESC-50, 97.49 US8K, 91.87 SC2, 90.95 TIMIT-2, 94.05 TIMIT-3, 69.08 VocalSet. RanPAC is 92.25, 97.08, 90.53, 85.63, 89.92, 62.82 respectively. These are benchmark claims, not V14 measurements. Removing gradient projection reduces VocalSet from 69.08 to 58.55; the session heatmap without GP shows session-1 accuracy at 7.9% after session 8, illustrating severe forgetting in that ablation.
+- **Compute caveat:** appendix reports a single-GPU PACE/RanPAC training-time ratio of 1.22x VocalSet, 2.96x TIMIT-3 and 3.13x TIMIT-2. It is more expensive than RanPAC on the fine-grained tasks; this is not CPU/ARM inference latency, RAM, model size or Redmi evidence.
+- **Limits and rights:** results use curated class-incremental datasets and a large EAT backbone; speaker identity and singing-technique classification are not RAW EAR prosody or open-ended conversational audio. A second SSLAM backbone is evaluated in appendix, but no phone runtime is shown. The paper says source code will be released upon acceptance; no official implementation, weight license or dataset redistribution terms were verified in this scan. No code, dependency or weights imported.
+- **V14 consequence:** do not transplant generic vision LoRA into the RAW EAR path. Keep the deterministic, transcript-independent acoustic cue extractor distinct from a later semantic/audio-task learner. When a permitted source-bound audio learning path exists, compare (a) analytic cue classifier, (b) FSA with only selected deeper layers trainable, (c) subspace-projected multi-session updates and (d) no-projection/no-replay controls. Measure source-disjoint new-task utility, old-session retention, boundary/onset stability, gradient/parameter diffs, restart and rollback. PACE is a candidate design for a later audio semantic adapter, not a replacement for A0-A5 or raw nonverbal perception.
+
+### S4VAD — onset-aware streaming VAD research
+
+- **Primary source:** Elad Cohen, Arnon Netzer, Hai Victor Habi, “Low-Latency State Space Voice Activity Detection with Robust Onset Time Evaluation,” arXiv:2609.11110, submitted 2026-09-10. Abstract checked; full text and implementation were not verified. https://arxiv.org/abs/2609.11110 .
+- **Claim:** a diagonal/state-space streaming VAD with explicit evidence decay and a probabilistic correction for noisy onset annotations; the paper argues AUROC alone is insufficient for interactive latency.
+- **V14 use:** add onset/offset delay under noisy labels to the evaluation protocol, alongside FPR/FNR and AUROC. Do not adopt its latency claim or model until code, weights, license and matched hardware tests are available.
+
+### OSS VAD candidates and licensing
+
+- **libfvad:** https://github.com/dpirch/libfvad — standalone C port of WebRTC VAD, BSD-3-Clause. The repository includes a separate PATENTS file with Google's additional patent grant; preserve both license and patent notices. The documented API accepts 8/16/32/48 kHz and 10/20/30 ms frames. It is a useful no-weight native comparator, not yet built against V14's pinned Android toolchain; the repository's removed platform-specific assembly and lack of an exact Redmi build remain ABI/performance caveats.
+- **VoxRT Silero Android:** https://github.com/VoxRT/voxrt-silero-android advertises arm64-v8a and a small Android VAD wrapper, but the Kotlin wrapper is Apache-2.0 while the compiled inference runtime is proprietary (redistributable under its binary terms); Silero VAD v5 weights are MIT. Do not treat the runtime as open source or select it by default. No package or binary was downloaded.
+- **Decision:** no dependency or model selected. First benchmark current RAW EAR V3 against libfvad on identical synthetic/consented PCM windows. Keep VAD as a separate activity signal; preserve prosody, pauses, impulsive/non-speech events and source/finality independently. Any Silero/VoxRT comparison requires explicit license/runtime review and separate user approval before download or production use.
