@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T20:58:26.786Z",
+  "updated_at": "2026-11-21T22:21:06.563Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -15,9 +15,10 @@
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
       "proof_environment": "Core #2242 current branch head 46411a59e55d615f6db3d7f6026f6f30f184ef37. Independent exact-byte audit confirms the complete current nested pin chain: recovery wrapper SHA256 492b52e4099f032b98be5bbf018582aea0582c62327d3ae8e3868497c589ec30 matches stage BUILDER_SHA; stage SHA256 608f8c34d00e73274f6e30cb1c6d60df390094b2ce019ffc79a8ad60b4513d56 matches runtime_deploy.STAGER_SHA256; base/audio/arithmetic Git blob pins match. Exact workflow 44942663184: Python3.13 42 passed / 1 failed / 26 subtests; sole failure is fixture char_end=100000 exceeding actual stored source length. Python3.14 still in progress at last poll. Separate staged-runtime and integrated-regression jobs pass; migration, Lab-Age, runtime-deploy and owner-read workflows pass. safe-additive remains FAIL BY POLICY. Branch is 41 ahead / 21 behind shared base 48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4; no merge or Android proof.",
-      "next_step": "Core + Boss: finish exact PR #2258 staged audio/arithmetic, integrated Runtime, migration, owner-read and deploy checks on Python 3.13/3.14. If Context recall reports a generated Store SHA mismatch, pin that exact digest and rerun the complete chain; preserve the date guard, PCM16 consent lease and all B1/B2 paths.",
+      "next_step": "Read exact-head CI for 273a60b; finish protected-file review of all 59 composed paths, then integrate only if the new exact head stays green. Do not merge a draft or call this a phone release.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T18:05:08.230Z"
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "proof": "Boss PR #2258 code-bearing head 0dc337edfb7a71168e15f3db08bcedc424e32d4f, based on release-development HEAD bdcad466ffea75a2b41f7d23be168f53c7197d20. Exact code-head CI: integrated regression 424 passed / 3 skipped / 58 subtests; staged runtime 252 passed / 10 skipped / 47 subtests; arithmetic/broker 39 passed / 17 subtests; audio/arithmetic 52 passed / 26 subtests on Python 3.13 and 3.14; A5 UI lease 17 passed / 5 subtests on both versions; old-phone migration, Lab-Age, owner-read, deploy integrity, offline and privacy checks passed. Workflow-scope fix commit 273a60bda3105f3163bf2ad606e58f885681da8b is now on the Boss branch; its exact-head CI is queued. No full local Aii checkout and no Redmi receipt; CI only."
     },
     {
       "id": "V14-002",
@@ -29,9 +30,9 @@
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
       "proof_environment": "Fresh private owner-read requests #431 PIPELINE_STATUS and #432 DIAGNOSTICS have zero authenticated comments at last poll. Installed SHA and updater consent remain UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, shell action or phone mutation. REDMI_UNVERIFIED.",
-      "next_step": "QA remains read-only. Fresh private PIPELINE_STATUS #435 has no authenticated response; installed SHA and updater consent remain unknown. Do not send UPDATE_REQUEST or deploy without a valid owner receipt and confirmed consent.",
+      "next_step": "Continue read-only polling of #440 only; do not deploy or request an update until an authenticated owner receipt proves installed SHA and explicit updater consent.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T18:05:08.230Z",
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -48,7 +49,8 @@
           "local_linux": "NOT_RUN; no full checkout",
           "redmi": "NO_LIVE_RECEIPT; issues #351–354 unanswered; installed SHA unknown"
         }
-      }
+      },
+      "proof": "Fresh private owner-read PIPELINE_STATUS request RedMentos/Aiiii #440 was created for this run; it has zero authenticated replies at last read. Earlier #431/#432/#439 also had no receipt. Installed SHA and updater consent remain UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, CHAT_SEND, remote shell or device mutation. REDMI_UNVERIFIED."
     },
     {
       "id": "V14-003",
@@ -60,9 +62,10 @@
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
       "proof_environment": "Research-only PR #2243 is merged at 6bbaa66e4e2454cc2178bd145da95d1e9cf6530f. The current shared branch 48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4 has 19/19 workflows SUCCESS. Tiny K/V experiment remains a synthetic research proof only: no production B1/B2 native tap/injection, no OOD receiver effect and no Redmi proof. B3 remains PARTIAL_SYMBOLIC_ONLY.",
-      "next_step": "Keep B3 symbolic in production. Core must expose a real model-specific native K/V tap/injection seam; then run exact source, no-message, symbolic, shuffled, OOD and receiver-task controls on the actual heterogeneous model pair. No model swap.",
+      "next_step": "Review #2266 exact Python 3.13/3.14, pinned llama.cpp Linux link and Android arm64 cross-compile results. Keep normal production routing OFF; only after CI/review may a separately approved one-shot installed-model probe be considered.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 11:20 CET"
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "proof": "Production B3 remains SYMBOLIC_ONLY. Core PR #2266 head 3166858133844fc80201334f53ade450557d1191 adds an explicit :callosum native-probe input-embedding receiver using llama.cpp b29c606e28a01b1bc8c1351026a0fa6e616bf6c4; source-bound tap/model hashes, dimension refusal, positive/zero/shuffle/repeat controls, no model-weight changes, production_route=false and training_authority=0. Owner reports 6 isolated wrapper tests, C++ -Wall -Wextra -Werror compile/selftest and stub-header syntax compile PASS. Exact Python/native/Android cross-compile CI is queued; no actual pinned llama.cpp model execution or Redmi proof."
     },
     {
       "id": "V14-004",
@@ -74,9 +77,9 @@
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
       "proof_environment": "JEPA #2247 current branch head 2b3f4ad2942e6cbae3a1a23a355065e6e7e3a9b6. Python3.13 A→B→A retention assertion fails. Python3.14 A→B→A passes only because the test uses any() across seeds/phases: seed 13 B accepts one cohort, while seed 13 A2 and both phases for seeds 19/43 reject old-session cohorts. Python3.14 staged optimizer-resume and integrated regression fail the nested source pin: world-training builder actual SHA256 4d4f966478abd4d15d751dbabd7a6728323b6492eee5b33ff9d6cf66769ece12 vs expected ac6986cd4d719e4f3d75bd42ec3a2c4314afbabac76adbf9fc86b0dc1e661ebd. No stable per-session retention or accepted checkpoint.",
-      "next_step": "JEPA updates the nested pin and every downstream hash from exact bytes, then fixes the replay/update mechanism rather than loosening the gate. Require per-seed and per-session retention, zero/uniform/session-contiguous controls, exact parameter/checkpoint diff, restart and rollback. Keep all learning gates OFF until Python3.13 and 3.14 agree.",
+      "next_step": "Wait for all current-head #2247 tests; inspect every seed/session, checkpoint/optimizer persistence and negative controls. Rebase only after #2258's composed Core operator.py is finalized, then recompute the entire JEPA builder/deployer pin chain. Keep learning gates OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T18:05:08.230Z",
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -127,7 +130,8 @@
         "merge_commit_sha": "5a141153f7d33906408fd638ce56cfbee459cf08",
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
-      }
+      },
+      "proof": "JEPA PR #2247 head 4ec92e89d3bb22fb6cf2792d01d02ae131feacff has exact A→B→A, staged, migration and deploy workflows queued. On prior head 77b3239, synthetic loss-demand + per-session-GEM A2 updates were accepted for seeds 13/19/43 on Python 3.13 and 3.14 with changed checkpoint hashes and old-session gates accepted, but that workflow failed on a boolean/string test-filter bug. Current head fixes the test and pin implementation; current-head acceptance is NOT YET VERIFIED. No native B1/B2 GGUF update, production weight promotion or Redmi proof."
     },
     {
       "id": "V14-005",
@@ -139,16 +143,17 @@
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
       "proof_environment": "PR #2142 remains OPEN and non-mergeable on stale base c3c32; head 67c1300093dd99ffcf818f370fff29b58fd7fc3b. Its exact code/test commit 40deb8a56686455b361ba41e63cb57b981b5a71b passed model-lab workflow 44861145442: compile, manifest JSON and 23/23 synthetic tests. License snapshot bytes, lock-before-read, read-only staged copies and executable identity are checked. No real GGUF inference was run; no current verified candidate was demonstrated present, no staged-context workflow is green, no download/swap or Redmi test. #2154's license snapshot fix is included in #2142's current branch.",
-      "next_step": "Keep #2256 optional NumPy backend separate pending exact ARM64/Termux memory, import and latency measurements. Python fallback remains default; no model/dependency download or swap.",
+      "next_step": "Perception must freeze the pre-batch look-back snapshot for the entire incoming batch and compute score-only output when threshold is absent; rerun the exact 3.13/3.14 and staged/integrated workflows. No NumPy backend promotion before this regression is fixed.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21: #2142 23/23 synthetic CI PASS but no native inference, no staged-context proof, stale base, NOT_RELEASED; no model change.",
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
       "latest_candidate_pr": {
         "pr": 2142,
         "head_sha": "67c1300093dd99ffcf818f370fff29b58fd7fc3b",
         "tested_code_sha": "40deb8a56686455b361ba41e63cb57b981b5a71b",
         "ci": "PASS_44861145442_23_TESTS",
         "scope": "read-only sequential C3 candidate lab; native inference NOT_RUN"
-      }
+      },
+      "proof": "Perception PR #2256 head 08fce3420ff2fc548276c421e99e79390d78e910 failed the RAW EAR speaker-evidence tests on Python 3.13 and 3.14: test_low_similarity_without_voiced_activity_is_not_speaker_change expected confidence_gate_passed=false but got true; test_missing_threshold_emits_score_without_a_decision expected change_score=0.5 but got 0.0. Inspection shows later frames in the same incoming batch are added to the look-back state and then reused as their own reference, overwriting the earlier cross-window score. No model/dependency download or swap occurred."
     },
     {
       "id": "V14-006",
@@ -160,16 +165,17 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "Perception #2246 latest branch head 80c74e6c69caa88d99dbae484c927cb35494fef4 contains a synthetic A5 UI lease adapter. Independent QA PR #2250 head 4d9a976d63d5d901a4892b01922e72886e24b638 reproduces a shared-blob deletion race on both Python3.13 and 3.14: a second live source row remains in SQLite after revocation unlinks its content-addressed blob, and Store.read_source raises FileNotFoundError. Current producer checks/writes the blob before Store.tx; revoker computes active refs inside tx and unlinks after the mutex is released. No Android OS provider/capture/action.",
-      "next_step": "Perception's generic Store.source() RLock fix and deterministic producer-vs-revocation test are composed in #2258. Read back focused A5 3.13/3.14 and full staged/integrated checks on the final exact head; then continue toward an official permissioned Android UI provider without claiming one exists.",
+      "next_step": "Keep the A5 lease synthetic/SHADOW; continue toward an official consented Android UI provider only after a real companion/provider API and device tests exist.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T18:05:08.230Z",
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
       "latest_candidate_pr": {
         "pr": 2155,
         "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
         "merge_commit_sha": "c0cedbde718ede6107f4df1f1bf9c784df4e00cf",
         "ci": "PASS_44862523075_8_TESTS_AND_44862523082_240_STAGED_415_INTEGRATED",
         "scope": "additive RAW EAR acoustic-cue adapter only; no normal Runtime consumer"
-      }
+      },
+      "proof": "Perception's A5 UI source-publication/revocation race fix is composed into #2258. Focused A5 UI lease tests passed 17 tests / 5 subtests on Python 3.13 and 3.14, including privacy scan. This proves a synthetic source-bound metadata lease and Store blob serialization only; there is no official Android UI observation provider, MediaProjection capture or Android action consumer."
     },
     {
       "id": "V14-007",
@@ -181,9 +187,10 @@
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
       "proof_environment": "Boss docs/research PR #2253 merged at 838482cea5271732ddc9710d2c6ca737a94b4718 after exact PR privacy scan 1/1 PASS. Post-merge workflows are 13/19 SUCCESS, 4 IN_PROGRESS, 2 QUEUED, 0 failures at last poll. No production code PR was promoted. #2242 has identical 3.13/3.14 invalid SourceRef fixture failures; #2244 is old-base; #2246/#2250 expose the A5 blob race; #2247 has retention and pin failures; #2235 remains 7/10 with nested-closure AST attribution.",
-      "next_step": "Boss owns #2258 protected-file review. Wait for all exact-head CI, resolve the generated Store digest pin, review the stage/deployer and Store/GoalStore semantics manually, retain FAIL_BY_POLICY without bypass, and only then decide merge/release. #2254/#2255/#2257 are source PRs and must not merge separately.",
+      "next_step": "Read exact-head 273a CI, then complete independent review of stage/deployer, audio consent, Store/GoalStore transactions, speech fallback and updater paths. No blind merge; do not weaken the additive validator.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 18:04 CET"
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "proof": "Boss integration PR #2258 remains DRAFT / NOT_RELEASED. Current branch head after workflow-scope commit is 273a60bda3105f3163bf2ad606e58f885681da8b; code-bearing tested head is 0dc337edfb7a71168e15f3db08bcedc424e32d4f. The prior strict additive job failed before running tests because the integration PR changed 59 files while the additive harness accepts 2..30 strictly-added files. Boss changed only the workflow scope: the validator now runs only on v13-additive/* branches or PRs labelled v13-additive-candidate; the 2..30/add-only checks themselves are unchanged. Exact CI for the new head is queued. Manual protected-file review is not complete."
     },
     {
       "id": "V14-008",
@@ -195,9 +202,10 @@
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
       "proof_environment": "Shared handoff/board base is 48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4; documentation-only branch checks 19/19 workflows SUCCESS. Current board, next action, workplan, coverage overlay and missing R-038–R-044 research entries are being synchronized on Boss branch gpt6/boss-v14-run13-integration-evidence-20261121. No user action.",
-      "next_step": "Keep V14_USER_NEXT_ACTION.md synchronized with PR #2258 and the private receipt. No user action or Termux command is currently required.",
+      "next_step": "Keep this file current with exact-head CI and any authenticated private receipt. Ask the user only if a real permission/model/device decision becomes necessary.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 18:04 CET"
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "proof": "Current user handoff is being refreshed against #2258 head 273a60b and private PIPELINE_STATUS #440 (no authenticated response). No user action, Termux command, model/weight/Age/permission change or updater change is required."
     },
     {
       "id": "V14-009",
@@ -209,9 +217,10 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "Voice/audio remains caller-supplied PCM16 producer only. Core #2242 has a synthetic normal-Runtime audio/arithmetic candidate; its source pins match, but 3.13 has one invalid SourceRef fixture and 3.14 is pending. A5 UI #2246 is synthetic metadata ingress; QA #2250 exposes a shared-blob race. No Android AudioRecord/microphone, AccessibilityService, NotificationListenerService, MediaProjection, screenshot decoder or OS action provider; REDMI_UNVERIFIED.",
-      "next_step": "#2258 adds a staged caller-PCM16 consent lease and explicit user-triggered OFF-by-default Termux TTS fallback. Verify synthetic CI; keep microphone capture, ASR, trainable decoder/vocoder, full-duplex barge-in and Android API provider OPEN.",
+      "next_step": "Keep mic capture, ASR, trainable decoder/vocoder, nonverbal audio learning and full-duplex as OPEN scope. Do not describe the caller-PCM16 bridge or optional TTS as full voice/audio completion.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 18:04 CET"
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "proof": "#2258 adds a caller-supplied PCM16 audio-window lease with process-local consent callbacks, one-second bounds, revocation lifecycle and A5/A4/C3 admission, plus an explicit local Termux TTS fallback disabled by default. Synthetic audio lifecycle/arithmetic suite: 52 passed / 26 subtests on Python 3.13 and 3.14. This is not microphone capture, ASR, trainable speech decoder/vocoder, full duplex/barge-in or Android AudioRecord."
     },
     {
       "id": "V14-010",
@@ -223,9 +232,10 @@
       "scope": "Selected trainable adapters/heads and later cross-organ weights; meta update predictor; sandboxed code/structure proposals; independent OS capability boundary; approval, holdout, retention and rollback",
       "acceptance": "Prove a real numeric parameter diff on an approved target, measurable heldout utility and retention, checkpoint/restart/rollback, and cross-organ consumer benefit. Code/structure self-edit remains sandboxed and human-approved; no self-issued permissions.",
       "proof_environment": "#2247 has no stable retention-preserving accepted update. Python3.13 fails the A→B→A retention assertion; Python3.14's broad any() passes on one seed/phase while other cohorts reject; staged optimizer-resume fails the nested source pin. No accepted persistent checkpoint, native B1/B2/C3 weight change, cross-organ gradients or self-edit. Gates OFF.",
-      "next_step": "JEPA/Core continue a real bounded update mechanism with per-session source-disjoint holdouts, negative controls, numeric parameter/checkpoint diff, retention, restart and rollback. Do not weaken gates.",
+      "next_step": "Require current-head per-seed A→B→A, source-disjoint holdout, optimizer-state persistence, checkpoint diff, restart, rollback and negative controls; only then consider an isolated SHADOW acceptance. Never change production weights.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 18:04 CET"
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "proof": "Current JEPA code candidate #2247 has not yet passed its exact current head. Previous head 77b3239 showed per-seed synthetic A2 predictor/EMA changes and checkpoint deltas, but current head 4ec92e is still queued. No accepted production optimizer/checkpoint path, B1/B2/C3 master-weight change, cross-organ gradients or self-edit. All learning gates remain OFF."
     },
     {
       "id": "V14-011",
@@ -237,9 +247,10 @@
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
       "proof_environment": "SleepRuntime remains SHADOW. The new JEPA branch has a per-session gate, but the current exact 3.13/3.14 evidence is not stable and no checkpoint is accepted. No native Dream consolidation or Android lifecycle proof.",
-      "next_step": "Keep Sleep/Dream promotion OFF; test zero/uniform/session-contiguous/loss-selected replay with per-session holdouts and multi-seed controls before any accepted consolidation.",
+      "next_step": "Keep Sleep/Dream promotion OFF; continue zero/uniform/session-contiguous/loss-selected replay controls and per-session retention checks.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 18:04 CET"
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "proof": "Sleep/Dream remains SHADOW/OFF for promotion. WorldJEPA candidate evidence is synthetic and current exact-head CI is pending; no accepted native Dream consolidation or Android lifecycle proof."
     },
     {
       "id": "V14-012",
@@ -247,13 +258,14 @@
       "owner": "JEPA & Memory + Core & Harness",
       "reviewer": "QA & Boss",
       "priority": "P1",
-      "status": "READY",
+      "status": "IN_PROGRESS_PARTIAL",
       "scope": "Fixed Context OS header and bounded context; exact episodic memory; semantic/world graph with temporal validity and source revocation; additive overflow/missing-context companion with source pointers and query-sensitive connections; role-specific readers/writers",
       "acceptance": "Actual runtime consumers retrieve source-grounded memories; overflow companion runs only when context is missing/overflowed and never replaces the canonical memory or user-visible history; restart, forget/revoke, privacy, query-relevance and resource-cost tests pass.",
       "proof_environment": "#1983 remains additive SHADOW draft: no native overflow companion Runtime consumer or role-specific reader/writer training. Existing Context OS exact/raw/restore/archive/forget obligations remain untouched.",
-      "next_step": "JEPA/Memory + Core review the actual archive/context consumers and add one source-pointer-preserving overflow path with restart/forget/revocation tests; do not replace Context OS or infer native latent injection.",
+      "next_step": "Add one source-pointer-preserving overflow consumer only after review of archive/context read paths, with restart, forget, revocation and negative tests; retain the full Context OS.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 11:20 CET"
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "proof": "Context OS remains partial. Memorilla #1983 is an additive SHADOW draft without a production overflow consumer or role-specific reader/writer training. No evidence that it replaces or completes the existing Context OS."
     },
     {
       "id": "V14-013",
@@ -262,9 +274,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "owner": "Boss & Integration",
       "proof_environment": "The 1,255-heading historical Canon inventory remains preserved. Current Boss overlay records the Core audio/arithmetic fixture failure, JEPA source-pin and per-session retention failures, A5 shared-blob race, Age AST attribution blocker, B3 symbolic-only state, voice and Android control gaps. Research ledger is being synchronized with R-038 through R-044. Semantic clause→implementation→consumer→test→environment→rollback mapping remains incomplete.",
-      "next_step": "Continue mapping every A0–A5, B1–B5, C/JEF, latent, World/Self/Memory, voice/vision, Android control, learning, self-edit, resources, install and rollback requirement. Preserve historical appendix bytes.",
-      "last_checkpoint": "2026-11-21 18:04 CET",
-      "user_action_required": false
+      "next_step": "Continue clause-level mapping and link each status to a real source consumer, exact test, environment and rollback; do not delete or downgrade any Canon entry.",
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "user_action_required": false,
+      "proof": "The 1,255-heading historical Canon inventory remains intact; this update appends an evidence overlay only. Semantic clause→code→consumer→test→environment→rollback mapping remains incomplete across perception, B1/B2/B3/B4/B5, C/JEF, World/Self/Memory, audio/vision, Android control, learning, self-edit, resources, install and recovery."
     },
     {
       "id": "V14-014",
@@ -272,22 +285,47 @@
       "owner": "QA & Android",
       "reviewer": "Boss & Integration",
       "priority": "P0",
-      "status": "INTEGRATION_REVIEW",
+      "status": "IN_PROGRESS_PARTIAL",
       "scope": "All AgeControl.budgets()/legacy budget consumers; LaboratoryAgeControl; effort, Sleep replay, ResourceGuard and the normal staged Runtime",
       "acceptance": "Official Age remains 0 while X10 test selection can exercise only explicitly implemented tool/learning rights; Age never caps physical compute, wall time, memory, focal cycles or replay volume; every consumer is audited; ResourceGuard/deadline/policy remain independent; staged, integrated, migration and rollback tests pass.",
       "proof_environment": "QA #2235 remains blocked at 7/10 by nested-closure AST attribution in GoalStore.add; the candidate separation of official Age/test rights from ResourceGuard compute/replay budgets is still not released. No safe-additive policy bypass and no Android proof.",
-      "next_step": "QA continues #2235 AST enclosing-method attribution and adds an unrelated-closure negative control. The GoalWake rollback fix in #2258 is separate; Age remains developmental/tool/learning rights only, never a compute budget.",
+      "next_step": "Compose the Age-rights hunks into the finalized #2258 goals/effort/sleep/recovery files without overwriting the GoalWake atomicity fix; rerun exact staged/integrated/owner-read tests. Keep official Age 0 and lab controls isolated.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T18:05:08.230Z"
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "proof": "QA PR #2235 head c224610959e598cb9c79f38d1b4bd454ffea0019 now reports 9/11 exact checks success: nested GoalStore callback attribution has been fixed with an unrelated-closure negative control; Lab-Age, owner-read, staged startup, migration, staged Runtime and integrated regression pass. Strict additive check failed because this is not a 2..30-file ADD-only candidate. Its Age/X10 rights separation is still not merged; it overlaps #2258's GoalStore work in agi/goals.py and runtime_deploy.py. Official Age remains 0; Age controls developmental/tool/learning rights, not compute budget."
     },
     {
       "id": "V14-015",
       "owner": "QA & Android + Core & Harness",
-      "status": "INTEGRATION_REVIEW",
+      "status": "IN_PROGRESS_PARTIAL",
       "priority": "P1",
       "title": "Long-horizon GoalStore and scheduler wake publication atomicity",
-      "next_step": "GoalStore finite timestamp validation, Store-RLock publication and exact pending-event compensation are included in #2258. Require GoalWake/Lab-Age/owner-read and full staged/integrated exact-head CI on the final composed SHA; preserve rollback and scheduler rights, with no Android proof claim.",
-      "user_action_required": false
+      "next_step": "Review the GoalStore/Store lock ordering and cancellation semantics against concurrent wake dispatch, then rerun exact 3.13/3.14 integration after any Age-rights composition.",
+      "user_action_required": false,
+      "proof": "#2258 contains GoalStore finite wake timestamp validation before mutation, exact pending-event cancellation/compensation, Store-RLock publication and restart/rollback tests. Lab-Age and integrated CI pass on code head 0dc337; no Android scheduler or device proof.",
+      "last_checkpoint": "2026-11-21T22:21:06.563Z"
+    },
+    {
+      "id": "V14-016",
+      "title": "Native input-embedding receiver probe for B3/Enlightened Space",
+      "owner": "Core & Harness + Boss",
+      "priority": "P0",
+      "status": "INTEGRATION_REVIEW",
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "proof_environment": "LOCAL_LINUX_ISOLATED_AND_CI_PENDING",
+      "proof": "PR #2266 head 3166858133844fc80201334f53ade450557d1191; explicit operator-only probe through pinned llama.cpp input-embedding API. Six isolated wrapper tests and C++ core compile/selftest reported PASS; real pinned library/model run and Android arm64 build remain pending. production_route=false; no semantic use, trained alignment, cross-organ learning or Redmi proof.",
+      "next_step": "Read exact Python 3.13/3.14, Linux pinned llama.cpp link, Android arm64 cross-compile and source-provenance CI; keep normal B3 routing OFF and preserve NO_MESSAGE/SOURCE_EXACT/SYMBOLIC controls."
+    },
+    {
+      "id": "V14-017",
+      "title": "Android companion: authenticated, user-approved background app launch",
+      "owner": "Core & Harness + QA & Android",
+      "priority": "P0",
+      "status": "BLOCKED_REVIEW",
+      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "proof_environment": "CI_BLOCKED_ANDROID_UNVERIFIED",
+      "proof": "PR #2271 head 7013fe166b8a45437e45ccfa9b44b9fdb58ee1b4 is a default-OFF companion prototype limited to launch_app, paired Termux signer check and ECDSA receipt. Android build failed before Gradle compile because setup-android received one malformed semicolon-joined package string. QA separately identified a P1 duplicate-approval race: two ConsentActivity instances can both dispatch startActivity before the database CAS, and a shared-UID caller/notification-ID collision needs review. No APK/device install or Redmi proof.",
+      "next_step": "Fix SDK package list delimiter, implement atomic PENDING→DISPATCHING claim before startActivity with exactly-one dispatch tests and stop/expiry/restart controls, verify caller identity and collision-resistant notification IDs, then rerun Gradle/provider/transport/outcome CI."
     }
   ],
   "current_redmi_status": "REDMI_UNVERIFIED — private PIPELINE_STATUS #435 is open with zero authenticated comments; prior #431/#432 also had no authenticated receipt. Installed SHA and updater consent remain UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action or device mutation.",
@@ -613,6 +651,167 @@
     {
       "title": "V13 Weekly Burst 2",
       "enabled": false
+    }
+  ],
+  "latest_checkpoint": {
+    "timestamp": "2026-11-21T22:21:06.563Z",
+    "boss_branch": "boss/v14-core-perception-store-audio-integration-20261121",
+    "boss_head": "273a60bda3105f3163bf2ad606e58f885681da8b",
+    "code_candidate_sha": "0dc337edfb7a71168e15f3db08bcedc424e32d4f",
+    "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
+    "release_development_head": "bdcad466ffea75a2b41f7d23be168f53c7197d20",
+    "release_status": "NOT_RELEASED",
+    "last_accepted_code_release": "f279286a4453248004c670fcaabecd85da6ab299",
+    "redmi_status": "REDMI_UNVERIFIED",
+    "private_owner_read_issue": 440,
+    "private_owner_read_authenticated_reply": false,
+    "local_full_checkout": "BLOCKED_GITHUB_DNS",
+    "user_action_required": false
+  },
+  "capability_matrix": [
+    {
+      "capability": "BRAIN_ORGANS_A0_A5_B1_B2_B3_B4_C_JEF",
+      "code": "PARTIAL_CODE_PRESENT",
+      "wired": "PARTIAL_SYNTHETIC",
+      "tested_synthetic": "PARTIAL_CI_PASS",
+      "tested_android": "UNVERIFIED",
+      "active": "NOT_ACCEPTED",
+      "evidence": "A5/UI/audio/arithmetic and stage paths in #2258; B1/B2 useful native offers and true B3 remain unproven"
+    },
+    {
+      "capability": "VOICE_AUDIO",
+      "code": "PARTIAL_CALLER_PCM16_AND_EXPLICIT_TTS",
+      "wired": "WIRED_SYNTHETIC_A5_A4_C3_ADMISSION",
+      "tested_synthetic": "PASS_CI_PY313_PY314",
+      "tested_android": "UNVERIFIED",
+      "active": "NO",
+      "evidence": "No microphone capture, ASR, trainable decoder/vocoder, full-duplex/barging-in or audio weight learning"
+    },
+    {
+      "capability": "ANDROID_BACKGROUND_CONTROL",
+      "code": "PROTOTYPE_IN_PR_2271",
+      "wired": "NOT_IN_RELEASE_RUNTIME",
+      "tested_synthetic": "QUEUED_OR_BLOCKED",
+      "tested_android": "UNVERIFIED",
+      "active": "OFF",
+      "evidence": "Only launch_app prototype; paired caller and ECDSA receipts; duplicate approval race blocks review"
+    },
+    {
+      "capability": "ANDROID_UI_CONTROL",
+      "code": "A5_METADATA_LEASE_PARTIAL",
+      "wired": "WIRED_SYNTHETIC",
+      "tested_synthetic": "PASS_CI_PY313_PY314",
+      "tested_android": "UNVERIFIED",
+      "active": "OFF",
+      "evidence": "No AccessibilityService, MediaProjection, screenshot decoder or native UI executor"
+    },
+    {
+      "capability": "SELF_OPTIMIZATION",
+      "code": "SHADOW_WORLD_JEPA_CANDIDATE",
+      "wired": "PARTIAL_STORE_CONSUMER",
+      "tested_synthetic": "PREVIOUS_HEAD_PASS_CURRENT_HEAD_PENDING",
+      "tested_android": "UNVERIFIED",
+      "active": "OFF",
+      "evidence": "No accepted production optimizer/Adam checkpoint, native B1/B2/C3 weight update, cross-organ gradients or self-edit"
+    },
+    {
+      "capability": "B3_LATENT_COUPLING",
+      "code": "SYMBOLIC_PLUS_RESEARCH_AND_NATIVE_PROBE",
+      "wired": "NOT_PRODUCTION",
+      "tested_synthetic": "ISOLATED_PROBE_PASS_CI_PENDING",
+      "tested_android": "UNVERIFIED",
+      "active": "OFF",
+      "evidence": "#2243 tiny K/V experiment is research-only; #2266 is input-embedding ingress probe, not trained cross-model latent alignment"
+    },
+    {
+      "capability": "B1_DETAIL_B2_GIST",
+      "code": "CODE_PRESENT_DISTINCT_ROLES",
+      "wired": "PARTIAL_SYNTHETIC",
+      "tested_synthetic": "PARTIAL_CI",
+      "tested_android": "UNVERIFIED",
+      "active": "NO_ACCEPTED_NATIVE_OFFERS",
+      "evidence": "No measured useful source-bound B1/B2 offers, mutual re-entry and C4 consumption on Redmi"
+    },
+    {
+      "capability": "C3_CORRECTNESS_AND_LATENCY",
+      "code": "CODE_PRESENT_WITH_ARITHMETIC_GUARD_CANDIDATE",
+      "wired": "WIRED_SYNTHETIC",
+      "tested_synthetic": "PASS_CI",
+      "tested_android": "LAST_DEVICE_PROOF_WRONG_2_PLUS_2_2026_11_13_NO_NEW_RECEIPT",
+      "active": "NOT_ACCEPTED",
+      "evidence": "FINAL alone is insufficient; no fresh 20-turn mixed-task phone benchmark"
+    },
+    {
+      "capability": "WORLD_SELF_MEMORY_JEPA_SLEEP",
+      "code": "PARTIAL_PERSISTENT_STORE_AND_SHADOW_JEPA",
+      "wired": "PARTIAL",
+      "tested_synthetic": "PARTIAL_CI_CURRENT_JEPA_PENDING",
+      "tested_android": "UNVERIFIED",
+      "active": "SLEEP_AND_LEARNING_PROMOTION_OFF",
+      "evidence": "No accepted per-session retention-preserving current-head checkpoint or native master-weight update"
+    },
+    {
+      "capability": "MULTIMODAL_LEARNING",
+      "code": "PARTIAL_AUDIO_AND_A5_METADATA",
+      "wired": "SYNTHETIC_ONLY",
+      "tested_synthetic": "PARTIAL_CI",
+      "tested_android": "UNVERIFIED",
+      "active": "NO",
+      "evidence": "No real mic/screen sensor ingress, multimodal weight update or source-disjoint retention proof"
+    },
+    {
+      "capability": "CONTEXT_OS_AND_MEMORILLA",
+      "code": "CONTEXT_OS_PARTIAL_MEMORILLA_DRAFT",
+      "wired": "NO_PRODUCTION_OVERFLOW_CONSUMER",
+      "tested_synthetic": "PARTIAL_CONTEXT_CI",
+      "tested_android": "UNVERIFIED",
+      "active": "NO",
+      "evidence": "#1983 remains SHADOW; preserve archive/forget/revocation contracts"
+    },
+    {
+      "capability": "SPARSE_MOE_B1_B2",
+      "code": "NOT_PROVEN",
+      "wired": "NO_DISTINCT_NATIVE_SPARSE_EXPERT_ROUTING",
+      "tested_synthetic": "NOT_ACCEPTED",
+      "tested_android": "UNVERIFIED",
+      "active": "NO",
+      "evidence": "Two genuinely different sparse trainable MoE bodies remain end goals"
+    },
+    {
+      "capability": "AGE_RIGHTS_AND_X10_LAB",
+      "code": "CANDIDATE_PR_2235",
+      "wired": "PARTIAL_SHADOW",
+      "tested_synthetic": "9_OF_11_CHECKS_PASS",
+      "tested_android": "UNVERIFIED",
+      "active": "OFFICIAL_AGE_0",
+      "evidence": "Age is developmental/tool/learning rights only; runtime_resources are separate"
+    },
+    {
+      "capability": "REMOTE_MAINTENANCE",
+      "code": "OWNER_READ_BRIDGE_CODE_PRESENT",
+      "wired": "NO_AUTHENTICATED_LIVE_RECEIPT",
+      "tested_synthetic": "CI_PASS",
+      "tested_android": "UNVERIFIED",
+      "active": "READ_ONLY_NO_PATCH_OR_SHELL",
+      "evidence": "Private owner-read #440 has no authenticated response"
+    },
+    {
+      "capability": "TECHNICAL_OS_SANDBOX_AND_BEHAVIOR_JUDGE",
+      "code": "PROTOTYPES_ONLY",
+      "wired": "NOT_INTEGRATED",
+      "tested_synthetic": "PARTIAL",
+      "tested_android": "UNVERIFIED",
+      "active": "NO",
+      "evidence": "No independent Android OS enforcement or production trainable judge acceptance"
+    },
+    {
+      "capability": "INSTALL_UPDATE_AND_ROLLBACK",
+      "code": "CODE_AND_CI_PRESENT",
+      "wired": "NO_CURRENT_PHONE_RECEIPT",
+      "tested_synthetic": "MIGRATION_AND_DEPLOY_CI_PASS",
+      "tested_android": "UNVERIFIED",
+      "active": "NO_NEW_DEPLOY",
+      "evidence": "GitHub push is not deployment; updater consent and installed SHA unknown"
     }
   ]
 }
