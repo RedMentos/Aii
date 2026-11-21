@@ -82,40 +82,76 @@ class TemporalVoiceEvidence:
             self.reset()
             reset_reason = "SOURCE_OR_GENERATION_CHANGED"
 
-        if self._last_end_ms is not None:
-            if end_ms <= self._last_end_ms:
+        previous_end_ms = self._last_end_ms
+        gap_ms = 0
+        gap_offset = False
+        if previous_end_ms is not None:
+            if end_ms <= previous_end_ms:
                 raise ValueError("audio windows must advance monotonically")
-            if start_ms - self._last_end_ms > self.reset_gap_ms:
+            gap_ms = max(0, start_ms - previous_end_ms)
+            if gap_ms > self.reset_gap_ms:
                 self.reset()
                 reset_reason = "STREAM_GAP"
+                previous_end_ms = None
 
-        elapsed_ms = end_ms - start_ms if self._last_end_ms is None else end_ms - self._last_end_ms
-        if reset_reason is not None:
-            elapsed_ms = end_ms - start_ms
+        if previous_end_ms is None:
+            # First window or a deliberate stream reset: no unobserved interval
+            # is allowed to contribute positive evidence.
+            gap_evidence = 0.0
+            active_after_gap = False
+            observed_ms = end_ms - start_ms
+            elapsed_ms = observed_ms
+            gap_decay_ms = 0
+        else:
+            # Decay old evidence through an unobserved gap before applying the
+            # new window. Never smear the new window's label backward in time.
+            if gap_ms:
+                gap_evidence = self._evidence * math.exp(-gap_ms / self.release_tau_ms)
+                gap_offset = self._active and gap_evidence <= self.offset_threshold
+                active_after_gap = self._active and not gap_offset
+            else:
+                gap_evidence = self._evidence
+                active_after_gap = self._active
+            # Sliding windows may overlap. Only the newly covered suffix advances
+            # the state, avoiding double-counting already observed audio.
+            observed_start_ms = max(start_ms, previous_end_ms)
+            observed_ms = end_ms - observed_start_ms
+            if observed_ms <= 0:
+                raise ValueError("audio windows must add newly observed time")
+            elapsed_ms = gap_ms + observed_ms
+            gap_decay_ms = gap_ms
 
         # Only the already-voiced RAW EAR class contributes speech evidence.
         # Silence, impulsive activity and unvoiced noise remain distinct cues.
         target = float(score) if hint == "VOICED" else 0.0
-        tau = self.attack_tau_ms if target > self._evidence else self.release_tau_ms
-        alpha = math.exp(-elapsed_ms / tau)
-        evidence = alpha * self._evidence + (1.0 - alpha) * target
-        onset = not self._active and evidence >= self.onset_threshold
-        offset = self._active and evidence <= self.offset_threshold
+        tau = self.attack_tau_ms if target > gap_evidence else self.release_tau_ms
+        alpha = math.exp(-observed_ms / tau)
+        evidence = alpha * gap_evidence + (1.0 - alpha) * target
+        onset = not active_after_gap and evidence >= self.onset_threshold
+        window_offset = active_after_gap and evidence <= self.offset_threshold
         if onset:
-            self._active = True
-        elif offset:
-            self._active = False
+            active = True
+        elif window_offset:
+            active = False
+        else:
+            active = active_after_gap
+        offset = gap_offset or window_offset
 
         self._source_id = source_id
         self._generation_id = generation_id
         self._last_end_ms = end_ms
         self._evidence = max(0.0, min(1.0, evidence))
+        self._active = active
         return {
             "method": self.METHOD,
             "voice_evidence": round(self._evidence, 6),
             "voice_active": self._active,
             "voice_onset": onset,
             "voice_offset": offset,
+            "gap_offset": gap_offset,
+            "gap_ms": gap_ms,
+            "gap_decay_ms": gap_decay_ms,
+            "observed_ms": observed_ms,
             "elapsed_ms": elapsed_ms,
             "state_reset": reset_reason is not None,
             "reset_reason": reset_reason,
