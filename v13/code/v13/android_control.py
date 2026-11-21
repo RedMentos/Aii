@@ -109,18 +109,23 @@ def _validate_audit_parent_ancestry(parent, uid):
     under_android_data = (
         resolved == _ANDROID_DATA_ROOT or _ANDROID_DATA_ROOT in resolved.parents
     )
-    chain = list(reversed(resolved.parents)) + [resolved]
-    for directory in chain:
+    try:
+        parent_info = resolved.lstat()
+    except OSError as exc:
+        raise ControlDenied("unsafe audit database parent") from exc
+    if (
+        not stat.S_ISDIR(parent_info.st_mode)
+        or parent_info.st_uid != uid
+        or parent_info.st_mode & 0o022
+    ):
+        raise ControlDenied("audit database parent must be owner-controlled")
+    for directory in reversed(resolved.parents):
         try:
             info = directory.lstat()
         except OSError as exc:
             raise ControlDenied("unsafe audit database ancestor") from exc
         if not stat.S_ISDIR(info.st_mode):
             raise ControlDenied("audit database ancestor must be a directory")
-        if directory == resolved:
-            if info.st_uid != uid or info.st_mode & 0o022:
-                raise ControlDenied("audit database parent must be owner-controlled")
-            continue
         allowed_owners = {0, uid}
         if under_android_data and (
             directory == _ANDROID_DATA_ROOT or _ANDROID_DATA_ROOT in directory.parents
