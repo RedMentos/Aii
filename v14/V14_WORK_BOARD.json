@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T20:58:26.786Z",
+  "updated_at": "2026-11-21T21:28:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,10 +14,31 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Core #2242 current branch head 46411a59e55d615f6db3d7f6026f6f30f184ef37. Independent exact-byte audit confirms the complete current nested pin chain: recovery wrapper SHA256 492b52e4099f032b98be5bbf018582aea0582c62327d3ae8e3868497c589ec30 matches stage BUILDER_SHA; stage SHA256 608f8c34d00e73274f6e30cb1c6d60df390094b2ce019ffc79a8ad60b4513d56 matches runtime_deploy.STAGER_SHA256; base/audio/arithmetic Git blob pins match. Exact workflow 44942663184: Python3.13 42 passed / 1 failed / 26 subtests; sole failure is fixture char_end=100000 exceeding actual stored source length. Python3.14 still in progress at last poll. Separate staged-runtime and integrated-regression jobs pass; migration, Lab-Age, runtime-deploy and owner-read workflows pass. safe-additive remains FAIL BY POLICY. Branch is 41 ahead / 21 behind shared base 48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4; no merge or Android proof.",
-      "next_step": "Core + Boss: finish exact PR #2258 staged audio/arithmetic, integrated Runtime, migration, owner-read and deploy checks on Python 3.13/3.14. If Context recall reports a generated Store SHA mismatch, pin that exact digest and rerun the complete chain; preserve the date guard, PCM16 consent lease and all B1/B2 paths.",
+      "proof_environment": "Boss integration branch boss/v14-core-perception-store-audio-integration-20261121 exact head 8dc3828ff7c1efa6a7c34563adcbd48caf39ad92, based on release-development HEAD bdcad466ffea75a2b41f7d23be168f53c7197d20. Exact CI: A5 UI lease PASS (run 44951469829; current 27,872-byte adapter exports A5UIRuntimeAdapter and _persist_source_and_packet); combined online JEPA PASS (44951469809); runtime-deploy integrity PASS (44951469798); release event integration PASS (44951469879). The common staged failure has advanced past earlier lifecycle and operator pin mismatches and now fails at integrated_arithmetic_outcome_candidate_20261116.py:45: ValueError arithmetic outcome upstream changed: v13/world_semantic_evidence_candidate.py. Raw SOURCE_PINS 354306bb... matches base bytes, but transformed UPSTREAM_PINS 0711ed85... is stale after the current World/Store builder composition. This blocks staged-runtime/integrated-regression (44951469784), Python 3.14 staged startup in owner-read (44951469800; owner-read job itself PASS), Lab-Age E2E (44951469834), migration (44951469804; PARTIAL) and Core audio 3.13/3.14 (44951469872). Safe-additive remains FAIL_BY_POLICY (44951469864). No full local Aii checkout; no Redmi receipt or installation.",
+      "next_step": "Core/JEPA: recompute the exact transformed world_semantic_evidence_candidate bytes produced by the current World/Store composition, update UPSTREAM_PINS without substituting the raw SOURCE_PINS digest, then recompute the outcome builder, recovery wrapper, stage and runtime_deploy STAGER_SHA256 chain. Rerun exact Python 3.13/3.14 staged, integrated, owner-read, Lab-Age, migration, audio and deploy checks. Perception A5 lease and idle/online-world operator pins now pass on 8dc; do not reintroduce old versions. Boss reviews protected files and only integrates after all functional gates pass. No Redmi proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T18:05:08.230Z"
+      "last_checkpoint": "2026-11-21T21:28:00Z",
+      "latest_qa_candidate": {
+        "pr": 2258,
+        "head_sha": "8dc3828ff7c1efa6a7c34563adcbd48caf39ad92",
+        "status": "NOT_RELEASED_COMMON_STAGE_PIN_FAILURE",
+        "current_error": "arithmetic outcome upstream changed: v13/world_semantic_evidence_candidate.py",
+        "checks": {
+          "a5_lease": "PASS",
+          "combined_jepa": "PASS",
+          "runtime_deploy": "PASS",
+          "release_event": "PASS",
+          "staged_runtime": "FAIL",
+          "integrated_regression": "FAIL",
+          "owner_read": "PASS",
+          "python314_staged_startup": "FAIL",
+          "lab_age": "FAIL_AT_STAGE",
+          "migration": "PARTIAL",
+          "core_audio_313_314": "FAIL",
+          "safe_additive": "FAIL_BY_POLICY"
+        },
+        "redmi": "REDMI_UNVERIFIED"
+      }
     },
     {
       "id": "V14-002",
@@ -28,10 +49,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Fresh private owner-read requests #431 PIPELINE_STATUS and #432 DIAGNOSTICS have zero authenticated comments at last poll. Installed SHA and updater consent remain UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, shell action or phone mutation. REDMI_UNVERIFIED.",
+      "proof_environment": "Private RedMentos/Aiiii PIPELINE_STATUS request #435 still has zero authenticated comments. Installed SHA and updater consent remain UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, shell action or phone mutation. REDMI_UNVERIFIED.",
       "next_step": "QA remains read-only. Fresh private PIPELINE_STATUS #435 has no authenticated response; installed SHA and updater consent remain unknown. Do not send UPDATE_REQUEST or deploy without a valid owner receipt and confirmed consent.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T18:05:08.230Z",
+      "last_checkpoint": "2026-11-21T21:28:00Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -275,10 +296,20 @@
       "status": "INTEGRATION_REVIEW",
       "scope": "All AgeControl.budgets()/legacy budget consumers; LaboratoryAgeControl; effort, Sleep replay, ResourceGuard and the normal staged Runtime",
       "acceptance": "Official Age remains 0 while X10 test selection can exercise only explicitly implemented tool/learning rights; Age never caps physical compute, wall time, memory, focal cycles or replay volume; every consumer is audited; ResourceGuard/deadline/policy remain independent; staged, integrated, migration and rollback tests pass.",
-      "proof_environment": "QA #2235 remains blocked at 7/10 by nested-closure AST attribution in GoalStore.add; the candidate separation of official Age/test rights from ResourceGuard compute/replay budgets is still not released. No safe-additive policy bypass and no Android proof.",
-      "next_step": "QA continues #2235 AST enclosing-method attribution and adds an unrelated-closure negative control. The GoalWake rollback fix in #2258 is separate; Age remains developmental/tool/learning rights only, never a compute budget.",
+      "proof_environment": "QA #2235 code/test head b22129a03bbd3395605b951d55d3f187f442bda6; handoff-only head c224610959e598cb9c79f38d1b4bd454ffea0019. Exact CI: Lab-Age/WebView PASS (14 main tests), private owner-read and Python 3.14 staged startup/SQLite refs PASS, two-checkout migration PASS (2 tests), runtime-deploy integrity PASS, staged-runtime PASS (251 passed/10 skipped/47 subtests), integrated regression PASS (424 passed/3 skipped/58 subtests). AST nested GoalStore.add callback attribution fixed with unrelated-closure negative control; safe-additive FAIL_BY_POLICY. Current base bdcad466ffea75a2b41f7d23be168f53c7197d20; branch diverged 43 ahead / 121 behind. No local full checkout, native weight proof or Redmi receipt.",
+      "next_step": "Do not merge or blindly rebase. Boss/Core must compose tested learning_limit() rights API and exhaustive QA callsite inventory with #2258 GoalStore wake-publication rollback, preserve all current builder/deployer pins, then rerun full current-base audit and exact CI. Age remains developmental/tool/learning rights only; ResourceGuard/deadlines/Sleep own physical budgets.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T18:05:08.230Z"
+      "last_checkpoint": "2026-11-21T21:28:00Z",
+      "latest_qa_candidate": {
+        "pr": 2235,
+        "code_test_sha": "b22129a03bbd3395605b951d55d3f187f442bda6",
+        "handoff_sha": "c224610959e598cb9c79f38d1b4bd454ffea0019",
+        "status": "EXACT_CI_PASS_PENDING_CURRENT_BASE_COMPOSITION",
+        "base_sha": "bdcad466ffea75a2b41f7d23be168f53c7197d20",
+        "ahead": 43,
+        "behind": 121,
+        "redmi": "REDMI_UNVERIFIED"
+      }
     },
     {
       "id": "V14-015",
@@ -287,7 +318,9 @@
       "priority": "P1",
       "title": "Long-horizon GoalStore and scheduler wake publication atomicity",
       "next_step": "GoalStore finite timestamp validation, Store-RLock publication and exact pending-event compensation are included in #2258. Require GoalWake/Lab-Age/owner-read and full staged/integrated exact-head CI on the final composed SHA; preserve rollback and scheduler rights, with no Android proof claim.",
-      "user_action_required": false
+      "user_action_required": false,
+      "proof_environment": "GoalWake atomicity focused suite passed 15 tests on Python 3.11 and 7 tests on Python 3.14 in QA #2257. Current #2258 integrated Lab-Age/staged acceptance is still blocked earlier by the transformed World-semantic upstream pin mismatch; no complete integration or Android proof.",
+      "last_checkpoint": "2026-11-21T21:28:00Z"
     }
   ],
   "current_redmi_status": "REDMI_UNVERIFIED — private PIPELINE_STATUS #435 is open with zero authenticated comments; prior #431/#432 also had no authenticated receipt. Installed SHA and updater consent remain UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action or device mutation.",
