@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T17:06:46.622Z",
+  "updated_at": "2026-11-21T17:33:05.455Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "f279 normal pinned stage includes source-span C4; synthetic quote→SourceRef→C4 coalition→selected offer→C3 context passes. Core #2234 exact arithmetic/ExperienceRecord candidate has a stale outer stager pin and staged deployment fails; Perception #2233 caller-PCM producer still lacks normal Runtime consumer and C3 lease. No native B1/B2 or Redmi proof.",
-      "next_step": "Core: compose #2234 with QA #2235 after its Age-budget consumer audit, then add the consent-bound audio consumer and revocation cleanup. Preserve B1/B2 complementary offers; run exact staged/integrated and push CI.",
+      "proof_environment": "Code-bearing release f279 and documentation-only shared parent HEAD 1185 both have 19/19 associated workflows SUCCESS. Core #2234 exact head e84d28c has focused C4/arithmetic, staged-runtime, integrated regression and two-checkout migration PASS (251 passed/10 skipped/47 subtests; 424 passed/3 skipped/58 subtests), but Boss review found its new stage wrapper is not called by runtime_deploy (STAGER remains stage_integrated_candidate) while the PR removes the existing normal C4 source-span overlay. Therefore the new arithmetic/focal behavior is not a normal Runtime consumer and the patch would regress C4 if merged as-is. No new user-visible Runtime behavior or Redmi proof.",
+      "next_step": "Core: preserve the existing normal C4 source-span overlay and route the exact-arithmetic/focal candidate through the ordinary pinned stage/deployer chain, or keep it shadow-only without removing C4. Recompose only after QA #2235 and Boss #2241 are reviewed; rerun exact staged/integrated/migration and release push CI. Perception still owns a normal consent-bound audio consumer and revocation cleanup.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 18:04 CET"
+      "last_checkpoint": "2026-11-21T17:33:05.455Z"
     },
     {
       "id": "V14-002",
@@ -275,10 +275,10 @@
       "status": "INTEGRATION_REVIEW",
       "scope": "All AgeControl.budgets()/legacy budget consumers; LaboratoryAgeControl; effort, Sleep replay, ResourceGuard and the normal staged Runtime",
       "acceptance": "Official Age remains 0 while X10 test selection can exercise only explicitly implemented tool/learning rights; Age never caps physical compute, wall time, memory, focal cycles or replay volume; every consumer is audited; ResourceGuard/deadline/policy remain independent; staged, integrated, migration and rollback tests pass.",
-      "proof_environment": "PR #2235 head fe05369357f5d1ad6cefe4e8faa8ba79b2b5f126: staged 251 passed/10 skipped/47 subtests; integrated 424 passed/3 skipped/58 subtests; Lab-Age E2E, two-checkout migration, runtime-deploy integrity and owner-read bootstrap PASS. Strict safe-additive fails by policy. Repository-wide Age-budget consumer inventory remains outstanding. Draft / NOT_RELEASED / REDMI_UNVERIFIED.",
-      "next_step": "QA: enumerate every runtime callsite of AgeControl.budgets() and fields autonomous_effort_max, focal_depth, dream_seconds, replay_items, exploration_rate and own_loops; show that remaining uses are display/compatibility only or remove resource use. Add regression. Boss performs manual review and exact release push CI; no queue bypass.",
+      "proof_environment": "QA #2235 head fe05369357f5d1ad6cefe4e8faa8ba79b2b5f126: staged Runtime 251 passed/10 skipped/47 subtests; integrated regression 424 passed/3 skipped/58 subtests; Lab-Age E2E, two-checkout migration, runtime-deploy integrity and owner-read bootstrap PASS; safe-additive FAIL BY POLICY; NOT_RELEASED. Boss #2241 corrected head 87d7241a6bf06cab65dfa1506c9112629d1b2fd8: Lab-Age control/WebView workflow PASS; staged+integrated regression still IN_PROGRESS at last poll; safe-additive FAIL BY POLICY; first draft's age.py hash-pin failure was corrected by restoring the exact base age.py blob. Targeted residual consumers were agi/curiosity.py (exploration_rate) and agi/goals.py (focal_depth) via agi/base.py:budget(); #2241 now uses a separate learning_limit derived from effective capability ceiling+maturity, without calling AgeControl.budgets(). QA's exhaustive all-module callsite audit is still outstanding. Local full suite BLOCKED; REDMI_UNVERIFIED.",
+      "next_step": "QA: finish and publish the exhaustive all-module direct/indirect AgeControl.budgets()/legacy-field inventory, including any remaining runtime consumers, and rebase #2235 to the current shared head. Boss: wait for #2241 exact integrated regression, manually review its corrected head, then compose #2241 with #2235 without touching competing pin chains; require exact staged/integrated/migration and release push CI. Keep #2235/#2241 DRAFT until this is complete; no release or Redmi claim.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 18:04 CET"
+      "last_checkpoint": "2026-11-21T17:33:05.455Z"
     }
   ],
   "current_redmi_status": "REDMI_UNVERIFIED — private owner-read requests for HEALTH, PIPELINE_STATUS and DIAGNOSTICS remain open without authenticated response. Installed SHA and updater consent UNKNOWN. No UPDATE_REQUEST, shell action, model change or device mutation.",
@@ -455,25 +455,26 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-21 18:06 CET",
-    "branch_head": "81766056a6d946fb22683816e0d3478ea6bc6bf9",
-    "branch_head_type": "DOCUMENTATION_ONLY_SHARED_HEAD_AFTER_BOSS_HANDOFF_BOARD_WORKPLAN_RESEARCH_AND_COVERAGE_REFRESH",
-    "branch_head_checks": "NOT_YET_RUN_FOR_BOSS_DOC_REFRESH_COMMITS; PRIOR_DOC_HEAD_7A07_18_OF_19_WORKFLOWS_SUCCESS_WITH_ONE_V14_T8_PY314_UTILITY_GATE_ASSERTION_FAILURE",
+    "timestamp": "2026-11-21T17:33:05.455Z",
+    "branch_head": "1185dac228afefd8ace5294cd6f099ac6530b2ed",
+    "branch_head_type": "DOCUMENTATION_ONLY_CHECKPOINT_BASED_ON_1185DAC; this checkpoint commit itself changes only V14 board and user handoff; code-bearing release remains f279286a4453248004c670fcaabecd85da6ab299",
+    "branch_head_checks": "EXACT shared parent HEAD 1185dac: 19/19 associated workflows SUCCESS. Code-bearing release f279: 19/19 SUCCESS. Neither is a Redmi receipt.",
     "code_bearing_release_sha": "f279286a4453248004c670fcaabecd85da6ab299",
     "code_release_checks": "19_OF_19_ASSOCIATED_WORKFLOWS_SUCCESS",
-    "pr2235": "HEAD_fe053693_BASE_7a07_DRAFT; STAGED_251_PASSED_10_SKIPPED_47_SUBTESTS; INTEGRATED_424_PASSED_3_SKIPPED_58_SUBTESTS; LAB_AGE_E2E_MIGRATION_RUNTIME_DEPLOY_OWNER_READ_BOOTSTRAP_PASS; SAFE_ADDITIVE_FAIL_BY_POLICY; GLOBAL_AGE_BUDGET_CALLSITE_AUDIT_OUTSTANDING; NOT_RELEASED",
-    "pr2234": "HEAD_53316a72_BASE_7a07; FOCUSED_C4_ARITHMETIC_EXPERIENCE_TEST_PASS; STAGER_SHA256_MISMATCH; STAGED_DEPLOY_FAIL; MIGRATION_PARTIAL; REBASE_AFTER_QA_COMPOSITION",
+    "pr2235": "HEAD_fe05369357f5d1ad6cefe4e8faa8ba79b2b5f126; STAGED_251_PASSED_10_SKIPPED_47_SUBTESTS; INTEGRATED_424_PASSED_3_SKIPPED_58_SUBTESTS; LAB_AGE_E2E_MIGRATION_DEPLOY_OWNER_READ_PASS; SAFE_ADDITIVE_FAIL_BY_POLICY; GLOBAL_AGE_CALLSITE_AUDIT_OUTSTANDING; DRAFT_NOT_RELEASED",
+    "pr2234": "HEAD_e84d28c5114de84072aaf90157c3e500f30b79b1; FOCUSED_C4_ARITHMETIC_STAGED_INTEGRATED_MIGRATION_PASS; BOSS_REVIEW_BLOCKER_NORMAL_DEPLOYER_STILL_CALLS_STAGE_INTEGRATED_WHILE_PR_REMOVES_NORMAL_C4_OVERLAY; NEW_WRAPPER_TEST_ONLY; DRAFT_NOT_RELEASED",
     "pr2231": "HEAD_11b85db0_BASE_7a07; INCREMENTAL_LEARNER_PASS; RECOVERY_BUILDER_INTEGRATED_WORLD_TRAINING_RESUME_SHA_MISMATCH; STAGED_TRAINING_RESUME_BLOCKED",
     "pr2237": "STACKED_ON_2231; UNIFORM_UNIFORM_BUDGET_AND_SESSION_CONTIGUOUS_REPLAY_ALL_UTILITY_GATE_REJECTED; OLD_HOLDOUT_LOSS_DELTA_APPROX_PLUS_0.009_TO_0.270; NO_ACCEPTED_UPDATE; GATES_OFF",
     "pr2233": "HEAD_5b9882e1_BASE_9d8f_STALE_NONMERGEABLE; CALLER_PCM16_ONLY; NO_NORMAL_RUNTIME_CONSUMER_MICROPHONE_OR_C3_LEASE; CORE_PLANS_STACKED_CONSUMER",
     "pr2228": "MERGED_NORMAL_STAGE_C4_SYNTHETIC_CONSUMER_AT_F279",
     "pr2228_tests": "STAGED_251_PASSED_10_SKIPPED_47_SUBTESTS; INTEGRATED_424_PASSED_3_SKIPPED_58_SUBTESTS; MERGE_PUSH_CI_GREEN",
-    "redmi": "REDMI_UNVERIFIED; INSTALLED_SHA_AND_UPDATER_CONSENT_UNKNOWN",
-    "private_owner_read": "EXISTING_HEALTH_PIPELINE_STATUS_DIAGNOSTICS_REQUESTS_OPEN_NO_AUTHENTICATED_REPLY",
+    "redmi": "REDMI_UNVERIFIED; INSTALLED_SHA_AND_UPDATER_CONSENT_UNKNOWN; NO_AUTHENTICATED_OWNER_READ_RECEIPT",
+    "private_owner_read": "EXISTING_HEALTH_PIPELINE_STATUS_DIAGNOSTICS_REQUESTS_421_422_423_OPEN_NO_AUTHENTICATED_REPLY; NO_DUPLICATE_REQUESTS; NO_LOG_PAGE; NO_UPDATE_REQUEST",
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_AND_GITHUB_DNS_FAILURE; GITHUB_CI_ONLY",
     "p0_chat": "OPEN_ISSUE_1904",
     "canon_coverage": "1255_HISTORICAL_HEADINGS_PRESERVED; SEMANTIC_CLAUSE_MAPPING_INCOMPLETE",
     "user_action_required": "NONE",
-    "boss_docs_commits": "USER_HANDOFF_89cdf97a; BOARD_16dfed98; WORKPLAN_4fea93a5; RESEARCH_LEDGER_fcddeec9; CANON_COVERAGE_81766056"
+    "boss_docs_commits": "PARENT_1185DAC_19_OF_19; BOSS_PR_2241_HEAD_87D7241; CORE_2234_NORMAL_CONSUMER_REVIEW_BLOCKER; QA_2235_GLOBAL_AGE_AUDIT_PENDING",
+    "pr2241": "HEAD_87d7241a6bf06cab65dfa1506c9112629d1b2fd8; LAB_AGE_CONTROL_WEBVIEW_PASS; STAGED_INTEGRATED_REGRESSION_IN_PROGRESS_AT_LAST_POLL; SAFE_ADDITIVE_FAIL_BY_POLICY; CORRECTED_AGE_SOURCE_PIN_RESTORED; DRAFT_NOT_RELEASED; LOCAL_BLOCKED; REDMI_UNVERIFIED"
   }
 }
