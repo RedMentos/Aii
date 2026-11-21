@@ -121,3 +121,17 @@ def test_audit_database_rejects_hardlink_without_chmodding_target(tmp_path):
 
     assert stat.S_IMODE(target.stat().st_mode) == 0o644
     assert target.read_bytes() == b"not an audit database"
+
+
+def test_audit_database_allows_platform_symlinked_ancestor(tmp_path):
+    real_dir = tmp_path / "real"
+    nested = real_dir / "nested"
+    nested.mkdir(parents=True)
+    alias = tmp_path / "platform-alias"
+    alias.symlink_to(real_dir, target_is_directory=True)
+
+    broker = AndroidControlBroker(alias / "nested" / "audit.sqlite")
+    try:
+        assert stat.S_IMODE((nested / "audit.sqlite").stat().st_mode) == 0o600
+    finally:
+        broker.close()
