@@ -47,5 +47,5 @@
 
 - PR #2142: https://github.com/RedMentos/Aii/pull/2142 — ready for review, open, mergeable at last readback; base commit c3c32c05a0374e970d274f8a777a7ab85c067d66.
 - Code-bearing checkpoint commit: 64ff26aa51f3a9ec4c6a169588ef41004b7ba2a0; this also adds .github/workflows/v14-model-lab.yml for future V14 experiment changes.
-- Exact PR workflow runs and commit statuses were still empty at last readback. CI is NOT_RUN, not PASS. The existing V13-specific workflows did not trigger for this V14-only path; the new workflow is committed but was not observed executing in this run.
-- Local 13/13 synthetic tests remain the only execution evidence for the lab logic. No native inference, no candidate download and no Redmi proof.
+- Exact branch CI now PASS: workflow run 44848887759, job model-lab, on head commit 3e13188a414b1cc3ff327fe9897a07d0d5ff8900. It compiled both Python files, validated the candidate JSON, and ran 13 tests in 0.042s (Python 3.13.18, GitHub Linux runner). This is exact-commit CI, not native inference.
+- No actual GGUF or llama-server is present in the CI runner, so native model inference remains NOT RUN; no candidate download and no Redmi proof.
