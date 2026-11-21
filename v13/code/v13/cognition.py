@@ -218,6 +218,7 @@ class Cognition:
             receiver_model_revision=installed["exact_revision"],
             source_id=source_ref["source_id"],generation_id=e["brain_generation_id"],
             vectors=data["vectors"],deadline=deadline,threads=min(2,max(1,int(self.r.cfg.get("threads",1)))),
+            cancel_event=self.r.cancel_event,
         )
         p=packet("LatentReceiverPacket","B3_NATIVE_RECEIVER_PROBE",e["event_id"],e["brain_generation_id"],[source_ref],
                  source_ref=source_ref,sender_tap_packet_id=tap["packet_id"],
