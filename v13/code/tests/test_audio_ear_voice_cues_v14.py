@@ -877,7 +877,7 @@ def test_consent_revocation_racing_after_initial_check_cannot_process_pcm_unleas
             thread.join(timeout=5)
             assert not thread.is_alive(), "consent revocation did not finish"
 
-        assert race == ["REVOCATION_WON", "LEASE_HELD"][:len(race)]
+        assert len(race) == 1
         if race[0] == "REVOCATION_WON":
             assert outcome == "REJECTED"
             assert processed == [], "RAW EAR processed PCM after revocation had won"
