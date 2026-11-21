@@ -99,7 +99,7 @@
       "last_checkpoint": "2026-11-21 Research & Perception: PR #2142 adds read-only C3 comparison and exact 13-test CI PASS. #1904 historical Redmi receipt warns 230M answered 2 instead of 4 for 2+2. No new native A/B inference, download, swap or current Redmi receipt.",
       "latest_candidate_pr": {
         "pr": 2142,
-        "tested_code_sha": "3e13188a414b1cc3ff327fe9897a07d0d5ff8900",
+        "tested_code_sha": "6aadf841434bcc43fbde1827a4ed2ef9d61bc4b0",
         "ci": "Exact code/test CI run 44849343250 PASS on 6aadf841 (13 tests); later candidate-manifest text/status-label edits have LOCAL_LINUX JSON_PARSE_PASS but no repeat CI; native inference NOT_RUN",
         "scope": "Read-only C3 LFM2.5-350M baseline vs pinned LFM2.5-230M candidate; no B1/B2, no download, no production swap"
       }
