@@ -280,6 +280,36 @@ def test_censored_outcomes_are_never_learned_or_added_to_processed_ids(tmp_path)
         store.close()
 
 
+
+
+def test_non_boolean_optimizer_permission_cannot_advance_censored_cursor(tmp_path):
+    store, session = _make_store(tmp_path / "brain-strict-optimizer-gate")
+    try:
+        _add_transitions(
+            store, session, 0, 8,
+            status_overrides={index: "CANCELLED" for index in range(8)},
+        )
+        consumer = WorldJEPAStoreConsumer(
+            store, tmp_path / "private-strict-optimizer-gate", learning_enabled=True
+        )
+        denied = consumer.update(limit=64, optimizer_permission=1)
+        assert denied["status"] == "NO_NEW_TRANSITIONS"
+        assert denied["verified_receipts"] == 0
+        assert denied["censored_skipped"] == 8
+        assert denied["scan_cursor"] == 0
+        payload, version = store.state("v14.world_jepa.store_consumer", None)
+        assert payload is None and version == 0
+
+        allowed = consumer.update(limit=64, optimizer_permission=True)
+        assert allowed["status"] == "NO_NEW_TRANSITIONS"
+        assert allowed["scan_cursor"] == 8
+        payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert payload["scan_cursor"] == 8
+        assert payload["pending_rows"] == []
+    finally:
+        store.close()
+
+
 def test_oldest_first_pages_do_not_starve_older_t8_backlog(tmp_path):
     store, session = _make_store(tmp_path / "brain-backlog")
     try:
