@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T12:35:15.510Z",
+  "updated_at": "2026-11-21T14:16:09+01:00",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -152,16 +152,16 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Perception #2192 head 3df5bfd415978db3d8f958bd46522697cbd61bbe: RAW EAR V3 29/29 on Python 3.11/3.13, libfvad native Linux make check 13/13, comparator 8/8, staged 249/10/47 and integrated 415/3/58 PASS. QA's true/true/false consent race remains after packet persistence. Core #2200 head 6072440ef505c1c540fc7123cd1fc0cad3d1a67f now passes staged A5 Python 3.11/3.13, staged-runtime (249/10/47) and integrated-regression (415/3/58), wiring derived acoustic context into B1/B2/C3 with synthetic PCM/fake runners. No microphone capture, ASR, TTS/vocoder, full-duplex or Redmi proof.",
-      "next_step": "Perception: make packet persistence and final consent check atomic or compensate exact packet deletion; test no packet, temporal state, attention or C3 admission on mid-call revocation. Core: delete/revoke AUDIO_ACOUSTIC_CONTEXT and clear process-local context when consent is revoked. Re-run stacked #2200 exact CI only after producer fix.",
+      "proof_environment": "Perception PR #2207 exact code/test head dd96c8d7d76a7e2022d8476c9ef2b59e4efbbbdf: RAW EAR focused tests 48/48 PASS on Python 3.11 and 3.13; py_compile PASS. Model-lab 44908779416 PASS; privacy scan 44908779475 PASS. Comparator at that head failed only due stale expected source blob d406e89; workflow pin corrected to actual producer blob afb27968b8d932e718020f6043d38fc34cc21986 in commit 39c2f1fb84657b459c40cde0ef7f3db62ca36b69; comparator Python 3.14 run 44909020840 PASS 8/8, Python 3.13 and staged/integrated still running at checkpoint. Safe-additive failed at the existing-module allowlist as expected; no bypass. LOCAL_LINUX full checkout BLOCKED by GitHub DNS; only isolated threading/SQLite lease model PASS. REDMI_UNVERIFIED / NOT_RELEASED.",
+      "next_step": "Core: rebase #2200 onto #2207, add/pass the same provider's consent_guard through audio_window, re-pin producer blob afb27968b8d932e718020f6043d38fc34cc21986 and regenerate all builder/deployer pins; tombstone/delete AUDIO_ACOUSTIC_CONTEXT and clear _audio_contexts on revocation; recheck/drop audio before C3 runner.generate. QA: rebase #2208 and use the shared-lock provider contract (revoke-before-lease => no packet/A4/C3; revoke-during-lease waits; final false in-transaction check rolls back). Boss: manually review existing-module change; keep safe-additive failure visible. No phone action until separate owner-consented receipt.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 13:34 CET",
+      "last_checkpoint": "2026-11-21 14:16 CET",
       "latest_candidate_pr": {
-        "pr": 2155,
-        "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
-        "merge_commit_sha": "c0cedbde718ede6107f4df1f1bf9c784df4e00cf",
-        "ci": "PASS_44862523075_8_TESTS_AND_44862523082_240_STAGED_415_INTEGRATED",
-        "scope": "additive RAW EAR acoustic-cue adapter only; no normal Runtime consumer"
+        "pr": 2207,
+        "head_sha": "fb63bb7bde93dda0a70bacdd3a4292df6656c442",
+        "merge_commit_sha": null,
+        "ci": "RAW_EAR_48_48_PY311_AND_PY313_PASS; COMPARATOR_PY314_8_8_PASS; PY313_COMPARATOR_AND_STAGED_IN_PROGRESS; SAFE_ADDITIVE_EXPECTED_FAILURE; NOT_RELEASED",
+        "scope": "RAW EAR V3 producer with provider-level linearizable consent lease through PerceptPacket commit, temporal state, A4 and C3 admission; no microphone/Android proof"
       }
     },
     {
