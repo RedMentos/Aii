@@ -3,7 +3,7 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-BASE_BUILDER_SHA = 'dd17f1e35393e5d43293070447434f9e277ae0aa0f52fb30f6c69ccc3caa0aea'
+BASE_BUILDER_SHA = 'e291f17f2b009c61cf698c5c558db863a7b19e1044bb2cf1816142486f505af2'
 RECALL_SHA = '56282c1d95610ce3c3266d63f48b78362d0bf32e2a7291b90a3f55e386aa1f64'
 BUDGET_SHA = 'a9fdddeb9ff67b5bb733e86bc845508d8d883afed2a035b42fc39ebc0a11526a'
 CONTEXT_SHA = '2fe8bfc4c7857f24411fea71038485900ca6fcbad2ec3361fa4ede080657861f'
@@ -70,7 +70,7 @@ def build_sources(code_dir):
     result = module.build_sources(code_dir)
     store = result['v13/store.py']
     if hashlib.sha256(store).hexdigest() != STORE_SHA:
-        raise ValueError('context recall Store source changed')
+        raise ValueError('context recall Store source changed: ' + hashlib.sha256(store).hexdigest())
     source_import = b'from .source_lifecycle_candidate import verify_or_create_blob'
     if store.count(source_import) != 2:
         raise ValueError('unexpected text source publication imports')
