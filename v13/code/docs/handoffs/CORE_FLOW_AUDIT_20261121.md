@@ -1,29 +1,25 @@
-# Core handoff — read-only turn-flow audit (2026-11-21)
+# Core handoff — read-only per-turn organ-flow audit (2026-11-21)
 
 ## Scope
-Adds a read-only Store consumer for one persisted turn. It correlates A5 PerceptPacket modalities, B1/B2 QueryPacket and OfferPacket telemetry, C4 FocalCycle/FocalItem consumption, C3 source-bound context references and C3 runner token/latency metrics. It also reports symbolic/tap evidence without upgrading it to native latent injection.
 
-## Safety and evidence boundary
-- Opens `brain.sqlite3` with SQLite `mode=ro` and `query_only=ON`; does not instantiate Runtime or acquire the live Store lock.
-- Returns no user text, prompt text, body summaries, token IDs, raw audio or source bytes.
-- Verifies SourceRef rows, blob SHA-256 and character bounds without returning source content.
-- C4 only counts an OfferPacket when the matching FocalItem retains that offer's valid source evidence; an ID-only match is insufficient.
-- C3 separates `context_binding_status` from semantic-use status. Source-bound context alone is never called a successful semantic consumption; a runtime-reported use flag remains explicitly not independently verified.
-- Explicitly labels synthetic fixture metrics and leaves `native_injection_proven=false`.
-- This is a local diagnostics consumer, not a Redmi test, native model benchmark, weight update, Android control, or release.
+Adds a read-only Store consumer for one persisted turn and exposes a bounded projection in the existing local WebView. It correlates A5 PerceptPacket modalities, B1/B2 QueryPacket and OfferPacket telemetry, C4 FocalCycle/FocalItem consumption, C3 source-bound context references, C3 runner token/latency metrics, C5 ActionOutcome and B3 tap/symbolic/receiver evidence.
 
-## Verification
-- Exact tests are in `v13/code/tests/test_flow_audit.py`; the existing V13 additive and integrated-regression workflows execute them.
-- The additive workflow compiles the new module and test, then runs the exact test file in its configured Python environment.
-- LOCAL_LINUX_ISOLATED: PASS for the session-scoped read-only SQLite path, foreign-session rejection and unchanged DB bytes.
-- Full Aii checkout/exact repository test suite remains BLOCKED because GitHub DNS resolution failed in the local container. This is not a full-repository local PASS.
-- Redmi/native proof remains REDMI_UNVERIFIED.
+## Selection and privacy
 
-## Usage and next integration
-From the active Termux runtime, read the current session ID with `:status`, then run from the repository's `v13/code` directory (or with `PYTHONPATH=v13/code`):
+- The dashboard selects the latest completed assistant turn across all chats; it does not claim to represent the currently open chat. The selected event is then audited against its own actual session.
+- SQLite access is read-only and query-only, with the shared AndroidControl parent-path policy and final database O_NOFOLLOW/owner/link/inode checks.
+- Returns no user text, prompt text, body summaries, token IDs, raw audio, event/session/source IDs, source hashes or source bytes.
+- C4 counts an OfferPacket only when the current FocalCycle and matching active FocalItem retain the exact valid source evidence.
+- C3 separates source-bound context from semantic-use status; context binding never proves model attention.
+- Synthetic fixture metrics are labeled SYNTHETIC_FIXTURE; native injection remains explicitly false.
 
-```bash
-python -m v13.flow_audit --home ~/v13 --session-id <SESSION-ID> --compact
-```
+## Tests
 
-An optional `--event-id <EVENT-ID>` is restricted to that same session. Without `--session-id`, the standalone CLI retains its legacy all-session latest-event behavior; the operator/dashboard command is not wired because doing so would require changing hash-pinned existing modules and a separate Boss-reviewed stage/deployer re-pin. Next: review the additive PR, then use a fresh authorized private Redmi PIPELINE_STATUS/DIAGNOSTICS receipt to compare actual persisted B1/B2 → C4 → C3 evidence. No private relay receipt was available in this run.
+- Exact test files: `v13/code/tests/test_flow_audit.py`, `test_flow_audit_dashboard.py`, and the dashboard click-target test in `test_mobile_dashboard.py`.
+- Dedicated CI also compiles the Python and checks inline JavaScript syntax.
+- Local full checkout is blocked by GitHub DNS in this environment; no local repository suite is claimed.
+- No Redmi receipt or installation is available; REDMI_UNVERIFIED / NOT_RELEASED.
+
+## User-visible access
+
+Open the existing local V13 dashboard and select **Organdurchlauf prüfen**. The result is explicitly labeled as the latest completed turn across all chats. The standalone CLI remains available with an explicit `--session-id`; it is not required for the dashboard flow.
