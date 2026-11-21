@@ -264,3 +264,27 @@ These columns are independent. `CODE` is not `WIRED`; synthetic CI is not Androi
 ## Research checkpoint — R-018 — RAW EAR VAD comparator (2026-11-21)
 
 Research recorded in `V14_RESEARCH_LEDGER.md`: libfvad/WebRTC VAD is the first no-weight C baseline candidate (BSD-3-Clause; upstream Android.mk precedent; review PATENTS separately); Silero VAD is the MIT learned comparator (Torch/ONNX); a small MIT C port claims arm64 NEON but has no Android target proof. No dependency/weight was imported. Next experiment: same PCM fixtures, FPR/FNR, onset/offset, CPU/RSS, then exact ARM build and patent/license review. No production selection or Redmi claim.
+
+
+## JEPA & Memory receiver checkpoint — 2026-11-21 / PR #2164
+
+### New executable slice
+- Parent #2160 provides the direct V13 source-bound T8 authority, persistent numeric WorldJEPA/EMA Store consumer, strict dual permission gates and role-specific B1/B2/SELF numeric readouts.
+- Follow-up #2164 adds WorldJEPAStoreConsumer.readout_matrix() so a candidate-action matrix is evaluated under one checkpoint load, rather than reopening the checkpoint for every role/action pair.
+- world_jepa_planner.py verifies the authoritative EventEnvelope, exact SourceRef bytes/digest, terminal action row and exactly one matching durable ActionOutcome packet. It then consumes B1_DETAIL/B2_GIST/SELF_MODEL numeric predictions, produces an explicitly uncalibrated route comparison, recalls source-linked episodes for the top shadow candidate, and persists an idempotent Store-state record.
+- read_world_planner_shadow() rechecks the event/source binding and current checkpoint identity; source changes/revocation and stale checkpoints fail closed.
+- consume_after_commit(..., event_id=...) optionally attaches this planner SHADOW result after Core supplies the exact committed event ID. Learning and optimizer permissions remain false by default; the planner has no dispatch/decision authority and does not consume native body activations.
+
+### Exact evidence
+- PR #2164 head 14a647c04b28e9cd5bbd5a19ae14d6cbb77d29a1; GitHub Actions run 44872134464 PASS:
+  - staged-runtime: 241 passed, 10 skipped, 47 subtests (Python 3.11.18). The suite entry point explicitly calls both new receiver tests: positive numeric B1/B2/SELF matrix + memory recall + persistent idempotency with gates closed; negative missing ActionOutcome and mismatched SourceRef.
+  - integrated-regression: 415 passed, 3 skipped, 58 subtests. This is broad staged-platform regression, not a Redmi or native-body test.
+- Parent #2160 exact safe-additive run 44870089869 PASS (16/16); parent staged/integrated run 44870089892 PASS (240 staged, 415 integrated).
+- LOCAL_LINUX exact repository checkout/tests remain BLOCKED by GitHub DNS resolution. CI evidence is not local Linux-native execution.
+- No real user data was used. The learner and planner fixtures are synthetic SQLite Store receipts. No Android/Redmi, native B1/B2 weight, B3 latent-injection or production routing claim.
+
+### Integration boundary / next
+- #2164 is stacked on #2160; neither has merged. The API still has no normal Runtime caller. Core must integrate in dependency order and invoke the JEPA facade only after durable T8/ActionOutcome commit, passing the exact event ID. #2145's current temporal/World shadow path does not yet invoke this learner. Core #2158 remains blocked by arithmetic fixture and high-authority stage-builder policy failures; do not bypass the additive policy.
+- Keep both optimizer gates false until separately authorized. Do not use the uncalibrated planner score for routing. After the normal Runtime consumer exists, add persistent optimizer moments and matched replay ablations (none/uniform/content-or-error-prioritized) with source-disjoint new/old holdouts, retention, restart and rollback.
+- Release HEAD remains c0cedbde718ede6107f4df1f1bf9c784df4e00cf; NOT_RELEASED. Phone SHA UNKNOWN; private owner-read Aiiii#367 unanswered; REDMI_UNVERIFIED. No user/device action is required.
+
