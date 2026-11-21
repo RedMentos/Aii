@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T22:25:13.423Z",
+  "updated_at": "2026-11-21T22:27:56.713Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -274,10 +274,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "owner": "Boss & Integration",
       "proof_environment": "The 1,255-heading historical Canon inventory remains preserved. Current Boss overlay records the Core audio/arithmetic fixture failure, JEPA source-pin and per-session retention failures, A5 shared-blob race, Age AST attribution blocker, B3 symbolic-only state, voice and Android control gaps. Research ledger is being synchronized with R-038 through R-044. Semantic clause→implementation→consumer→test→environment→rollback mapping remains incomplete.",
-      "next_step": "Continue clause-level mapping and link each status to a real source consumer, exact test, environment and rollback; do not delete or downgrade any Canon entry.",
-      "last_checkpoint": "2026-11-21T22:21:06.563Z",
+      "next_step": "Continue clause-level mapping; preserve the whole Canon and keep all research claims linked to exact primary sources, license state, implementation revision, consumer, tests, environment and rollback. Do not infer code acceptance from a paper.",
+      "last_checkpoint": "2026-11-21T22:27:56.713Z",
       "user_action_required": false,
-      "proof": "The 1,255-heading historical Canon inventory remains intact; this update appends an evidence overlay only. Semantic clause→code→consumer→test→environment→rollback mapping remains incomplete across perception, B1/B2/B3/B4/B5, C/JEF, World/Self/Memory, audio/vision, Android control, learning, self-edit, resources, install and recovery."
+      "proof": "Historical Canon inventory is preserved; exact master Part III substring remains byte-identical to the immutable backup. The current Boss branch now integrates research ledger entries R-047–R-051 and handoff v14/handoffs/RESEARCH_PERCEPTION_LATENT_PLASTICITY_20261121.md. R-047's prior NumPy parity/speed evidence is x86-only and historical; current #2256 head 08fce fails two same-batch speaker-evidence tests. R-050's XKV/HeteroFold research is not production B3; exact b10964 input-embedding API is verified and Core #2266 has a diagnostic-only probe with CI pending. R-051 AGN/AEN is a future small-head hypothesis, not accepted learning."
     },
     {
       "id": "V14-014",
@@ -656,7 +656,7 @@
   "latest_checkpoint": {
     "timestamp": "2026-11-21T22:21:06.563Z",
     "boss_branch": "boss/v14-core-perception-store-audio-integration-20261121",
-    "boss_head": "0dd3837a7ec64d958388eff84e64991705171c37",
+    "boss_head": "1c16a1618e3ed8436f046888fe9517677663cb36",
     "code_candidate_sha": "0dc337edfb7a71168e15f3db08bcedc424e32d4f",
     "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
     "release_development_head": "bdcad466ffea75a2b41f7d23be168f53c7197d20",
@@ -674,7 +674,10 @@
       "completed_success": 0,
       "completed_failure": 0,
       "read_at": "2026-11-21T22:25:13.423Z"
-    }
+    },
+    "research_ledger_blob": "67284d44068adfd644b65199898337c6876e4d86",
+    "research_handoff": "v14/handoffs/RESEARCH_PERCEPTION_LATENT_PLASTICITY_20261121.md",
+    "research_integrated_from_closed_draft_pr": 2260
   },
   "capability_matrix": [
     {
@@ -820,6 +823,43 @@
       "tested_android": "UNVERIFIED",
       "active": "NO_NEW_DEPLOY",
       "evidence": "GitHub push is not deployment; updater consent and installed SHA unknown"
+    }
+  ],
+  "research_intake": [
+    {
+      "id": "R-047",
+      "topic": "Optional NumPy RAW EAR autocorrelation",
+      "status": "HISTORICAL_X86_PARITY_CURRENT_PR_FAILS_2_TESTS",
+      "primary": "Perception #2256 / arXiv and Termux NumPy recipe",
+      "next": "Freeze pre-batch speaker look-back history; rerun 3.13/3.14; Python stays default"
+    },
+    {
+      "id": "R-048",
+      "topic": "Tandem recurrent-state reuse on mobile NPUs",
+      "status": "FULL_TEXT_RESEARCH_ONLY_HARDWARE_SPECIFIC",
+      "primary": "Tandem arXiv:2610.26660; MIT fork reviewed",
+      "next": "Only test cache checkpoint policy if current llama.cpp API and Redmi hardware support it; no wholesale fork"
+    },
+    {
+      "id": "R-049",
+      "topic": "LFM2.5 recurrent prompt-cache applicability and license",
+      "status": "MODEL_LICENSE_AND_RUNNER_FLAGS_REVIEWED_NO_REDMI_MEASUREMENT",
+      "primary": "Liquid AI model cards/license and V13 runners/config readback",
+      "next": "On an authorized phone receipt measure cache_n, prompt_n, TTFT, PSS, residency and A→B→A"
+    },
+    {
+      "id": "R-050",
+      "topic": "XKV/HeteroFold cross-family latent transfer and llama.cpp ingress",
+      "status": "RESEARCH_VERIFIED_NATIVE_RECEIVER_PROBE_IN_PR_2266_CI_PENDING",
+      "primary": "arXiv:2608.20617; arXiv:2609.32259; llama.cpp b10964 exact header/LICENSE",
+      "next": "Review #2266 exact CI, prove same-model parity and controls before any adapter or K/V work"
+    },
+    {
+      "id": "R-051",
+      "topic": "AGN/AEN plasticity in online continual learning",
+      "status": "FULL_TEXT_PREPRINT_RESEARCH_ONLY",
+      "primary": "arXiv:2608.01475",
+      "next": "After JEPA per-session retention is stable, compare fixed/AGN/AEN small heads with old-session holdout, gradient, parameter diff, restart and rollback"
     }
   ]
 }
