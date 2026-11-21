@@ -1839,7 +1839,7 @@ This overlay is additive. No historical Canon heading, requirement, or inventory
 
 - [Boss integration PR #2258](https://github.com/RedMentos/Aii/pull/2258), current branch head `273a60bda3105f3163bf2ad606e58f885681da8b`; code-bearing tested parent `0dc337edfb7a71168e15f3db08bcedc424e32d4f); release base `bdcad466ffea75a2b41f7d23be168f53c7197d20`. DRAFT / NOT_RELEASED. Current-head CI after the workflow-scope commit is pending.
 - Exact code-head CI: integrated regression 424 passed / 3 skipped / 58 subtests; staged runtime 252 passed / 10 skipped / 47 subtests; arithmetic/broker 39 passed / 17 subtests; A5 UI lease 17 passed / 5 subtests on Python 3.13 and 3.14; audio lease/arithmetic 52 passed / 26 subtests on both versions. Migration, Lab-Age, owner-read, deploy integrity, offline and privacy checks passed. All are CI/synthetic evidence, not local full-repository or Android evidence.
-- The former additive-only job rejected the broad 59-file integration before running tests (2..30 newly-added-file limit). Boss commit `273a60b` scopes that unchanged strict validator to explicit `v13-additive/*` branches or the `v13-additive-candidate` label. The job is expected to skip on the integration PR; it is not a validator PASS.
+- The former additive-only job rejected the broad 60-file integration before running tests (2..30 newly-added-file limit). Boss commit `273a60b` scopes that unchanged strict validator to explicit `v13-additive/*` branches or the `v13-additive-candidate` label. The job is expected to skip on the integration PR; it is not a validator PASS.
 - [Native input-embedding receiver #2266](https://github.com/RedMentos/Aii/pull/2266): explicit operator-only probe, pinned llama.cpp revision, no production routing or training authority. Exact Python/native/Android cross-compile CI pending; no model or Redmi execution.
 - [Android companion #2271](https://github.com/RedMentos/Aii/pull/2271): launch_app-only, default-OFF prototype. Android build is blocked by SDK package-list syntax and a P1 duplicate-approval race must be fixed before review.
 - [JEPA #2247](https://github.com/RedMentos/Aii/pull/2247): current exact A→B→A/staged/deploy CI pending. Previous-head synthetic A2 results do not accept the current head or production weights.
@@ -1873,3 +1873,8 @@ This overlay is additive. No historical Canon heading, requirement, or inventory
 Private PIPELINE_STATUS issue RedMentos/Aiiii **#440** was created as a read-only request and has no authenticated reply. Installed SHA and updater consent are UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, CHAT_SEND, shell, model/weight/Age/permission change or device mutation was made. Local full Aii tests are BLOCKED by missing checkout and GitHub DNS resolution failure. Therefore `REDMI_UNVERIFIED`, `NOT_RELEASED`.
 
 The board and live workplan carry the full per-ticket evidence and next actions. This overlay does not turn any synthetic, isolated Linux, or GitHub CI test into Android acceptance and does not reduce any historical Canon requirement.
+
+
+### Exact-head CI poll — 2026-11-21T22:25:13.423Z
+
+Boss #2258 head `0dd3837a7ec64d958388eff84e64991705171c37`: 16 check runs total, 14 queued and 2 expected additive-validator skips; no completed check on this exact head at readback. Previous code-bearing parent `0dc337e` has green functional CI. This distinction is preserved; no new-head PASS is claimed.
