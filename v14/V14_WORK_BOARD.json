@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T18:59:46.366Z",
+  "updated_at": "2026-11-21T19:01:19.030Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -59,8 +59,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "B3 remains PARTIAL_SYMBOLIC_ONLY. Research/Perception #2243 head 543349894b5392582969f06a4485ff9d18e4504d reports a LOCAL_LINUX tiny-model K/V adapter proof (different 2×24 and 3×32 decoder geometries, reported 3/3 local tests and four seeds) with no-message/shuffled/random controls and exact restart. Its green model-lab CI did NOT execute the new latent_cache_tiny tests; explicit workflow coverage is requested. Actual LFM2.5↔Qwen3.5 llama.cpp tap/injection, OOD, symbolic baseline, production receiver and Redmi remain untested.",
-      "next_step": "Perception adds exact py_compile + unittest steps for latent_cache_tiny and reruns final-head CI. Core investigates model-specific native K/V tap/injection support for the heterogeneous B1/B2 pair. Keep CAN_LATENT_TAP/INJECT and B3 authority OFF until actual production receiver utility, OOD, ablation, retention and rollback pass.",
+      "proof_environment": "Research/Perception #2243 current head ae26c94700ca8077b38cbd87c40db89b4ae46360 adds explicit `latent-cache-tiny` CI. At this read: model-lab, privacy and offline-bridge-security are green; latent-cache-tiny is still in progress (earlier duplicate run cancelled). Local CPython 3.13/PyTorch 2.10 experiment is reported 3/3 across four seeds, but exact CI for the new test is not yet complete. Actual LFM2.5↔Qwen3.5 native tap/injection, OOD, production receiver and Redmi remain untested.",
+      "next_step": "Perception obtains final exact `latent-cache-tiny` result and keeps the PR research-only. Then rebase #2246 onto #2243 final head. Core investigates native K/V tap/injection for actual B1/B2; no B3 promotion until native receiver utility, OOD/exact/symbolic/no-message controls, retention and rollback pass.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 11:20 CET"
     },
@@ -159,8 +159,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Perception #2240 caller-supplied PCM16 producer/lease merged at 728cdc; merge-push 18/19 due separate SleepRuntime JEPA acceptance failure. Core #2242 head 3dc8a19 fixes its first blob-header defect but current exact matrix has 4 failures / 3 in progress / 6 successes because runtime_deploy STAGER_SHA256 is stale and migration returns PARTIAL. Revocation cancellation still missing. #2246 metadata-only A5 UI lease head 4456 has 3/3 synthetic CI, no OS provider or capture.",
-      "next_step": "Core repairs the exact deployer pin chain and the provider revoke-cancel signal. QA rebases #2244 only after final Core head and proves automatic revoke through C3. Perception adds explicit CI for #2243 tiny-KV tests, then re-bases #2246 after #2243 integration; no Android capture claim.",
+      "proof_environment": "#2240 caller-PCM RAW EAR producer merged at 728cdc; merge-push 18/19 due separate SleepRuntime JEPA acceptance failure. Core #2242 head 3dc8a19 passes Python3.13 and 3.14 staged-audio arithmetic tests but still fails Python3.14 deployer STAGER_SHA256, staged-runtime and two-checkout migration; exact checks 4 failure / 9 success. #2246 head 273884 has 3/3 synthetic CI but is still based on #2243 head 543349, one commit behind new #2243 head ae26; no OS provider/capture.",
+      "next_step": "Core repairs deployer/source pin chain and adds pre-lock revoke cancellation + mandatory subscriptions. QA rebases #2244 only after final Core head and proves automatic revoke through C3. Perception rebases #2246 on final #2243 and coordinates the OS provider with Core/QA.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21T18:05:08.230Z",
       "latest_candidate_pr": {
@@ -180,8 +180,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Boss review: #2242 latest head 3dc8a19 has 4 failures / 3 in progress / 6 successes; current blocker is runtime_deploy.STAGER_SHA256 after the corrected stage file plus unresolved revocation cancellation. #2244 is green on stale base 4cca; #2243 local toy tests are not covered by model-lab CI; #2246 3/3 synthetic checks green but stacked and no OS provider. #2237 latest f92c156 no exact checks; previous cohort fails retention/clone. #2235 AST closure attribution; #2234 C4 normal-deployer blocker; #2200 stale. No unsafe merge.",
-      "next_step": "Re-review exact current-head code and tests after Core pin/revocation fixes. Require exact-base 3.13/3.14 staged/integrated/migration/deployer CI; no merge or release from a green isolated test alone.",
+      "proof_environment": "Boss docs checkpoint PR #2248 merged documentation-only at a1b1e9aad5e805b484ea6412dbd84abc454e66e0; exact offline-bridge-security 1/1 PASS. Core #2242 head 3dc8a19 still has 4 failures / 9 successes; #2243 head ae26 has explicit latent-cache CI in progress; #2246 head 273884 is 1 commit behind #2243; #2247 head e8137fd has 10 success / 3 failure with all A-GEM arms rejected for per-session retention. #2235 nested-closure AST blocker; #2234 C4 deployer blocker; #2200 stale. No code PR promoted.",
+      "next_step": "Boss continues exact-head integration review; merge only after exact test/consumer proof. Reconcile PR stacks after owner rebase; no force-push, no safe-additive bypass, no release claim from synthetic CI.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 18:04 CET"
     },
@@ -194,8 +194,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "Run-11 whole-Canon handoff and additive coverage checkpoint are in draft PR #2248 (head currently 7462a9b); exact offline-bridge-security check 1/1 green. This is docs-only and not yet merged; no device proof.",
-      "next_step": "Merge #2248 only after exact PR check and base readback; then refresh the handoff with the resulting documentation merge SHA. No user action required.",
+      "proof_environment": "Run-11 handoff, work board, workplan and additive coverage index merged via PR #2248 at documentation merge SHA a1b1e9aad5e805b484ea6412dbd84abc454e66e0. PR offline-bridge-security 1/1 PASS. Historical V13 appendix/master unchanged; no code/release/device change.",
+      "next_step": "Keep this handoff current with verified exact-head changes and receipts. No user action required.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 18:04 CET"
     },
@@ -281,17 +281,17 @@
       "last_checkpoint": "2026-11-21T18:05:08.230Z"
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED — fresh private PIPELINE_STATUS and DIAGNOSTICS requests remain unanswered; installed SHA and updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action or device mutation.",
+  "current_redmi_status": "REDMI_UNVERIFIED — fresh private PIPELINE_STATUS and DIAGNOSTICS requests have no authenticated owner reply; installed SHA and updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action or device mutation.",
   "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
   "latest_integrated_head": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
   "latest_integrated_head_verified_at": "2026-11-21T18:05:08.230Z",
-  "release_gate_status": "NOT_RELEASED: prior code release f279 exact CI 19/19; integrated candidate 728cdc exact merge-push 18/19 with SleepRuntime JEPA UTILITY_GATE_REJECTED. Core #2242 head 3dc8a19 fixes the arithmetic blob header but now fails the deployer STAGER_SHA256 pin and migration/staged runtime; revocation cancellation is still unresolved.",
+  "release_gate_status": "NOT_RELEASED: prior code release f279 exact CI 19/19; integrated candidate 728cdc exact merge-push 18/19 with SleepRuntime JEPA UTILITY_GATE_REJECTED. Core #2242 head 3dc8a19 still fails deployer/source pin and migration/staged runtime; audio revocation cancellation unresolved. PR #2248 merged documentation only.",
   "phone_receipt": {
     "state": "NO_AUTHENTICATED_OWNER_READ_REPLY",
     "installed_sha": "UNKNOWN",
     "auto_update": "UNKNOWN",
     "redmi_status": "REDMI_UNVERIFIED",
-    "last_request": "Fresh private PIPELINE_STATUS and DIAGNOSTICS requests remain open and unanswered; no LOG_PAGE or UPDATE_REQUEST."
+    "last_request": "Fresh private PIPELINE_STATUS and DIAGNOSTICS requests unanswered; no LOG_PAGE or UPDATE_REQUEST."
   },
   "capability_snapshot": [
     {
@@ -455,31 +455,31 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-21T18:57:54.377Z",
-    "branch_head": "b267ed641f4dbff1e2c28f492baf0182e9bb656b",
-    "branch_head_type": "CURRENT_RELEASE_DEVELOPMENT_BASE; no new code merge or phone deployment",
-    "branch_head_checks": "The shared base remains b267ed641f4dbff1e2c28f492baf0182e9bb656b; this checkpoint's docs-only PR #2248 is separate and has offline-bridge-security 1/1 success.",
+    "timestamp": "2026-11-21T19:01:19.030Z",
+    "branch_head": "a1b1e9aad5e805b484ea6412dbd84abc454e66e0",
+    "branch_head_type": "DOCUMENTATION_ONLY_MERGE_OF_PR2248; no code release or phone deployment",
+    "branch_head_checks": "PR #2248 offline-bridge-security 1/1 SUCCESS. Documentation-only; not a code-bearing release gate.",
     "code_bearing_release_sha": "f279286a4453248004c670fcaabecd85da6ab299",
     "code_release_checks": "PRIOR_EXACT_CODE_RELEASE_CI_19_OF_19_SUCCESS",
     "integrated_code_candidate": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
     "integrated_code_candidate_checks": "EXACT_MERGE_PUSH_18_OF_19; normal SleepRuntime JEPA positive acceptance returns UTILITY_GATE_REJECTED.",
-    "pr2242": "DRAFT_NOT_RELEASED_HEAD_3DC8A19; blob header fixed and Python3.13 staged-audio passes; Python3.14 startup fails stale runtime_deploy.STAGER_SHA256; staged-runtime/migration fail downstream; 4_FAILURE_3_IN_PROGRESS_6_SUCCESS at last read; pre-lock revoke-cancel and mandatory subscriptions still missing.",
-    "pr2244": "DRAFT_STACKED_ON_STALE_4cca498; prior Python3.13/3.14, staged 251/10/47, integrated 424/3/58 pass; manual cancel/close only, not automatic provider-revoke cancellation; rebase after final Core fix.",
-    "pr2243": "DRAFT_HEAD_543349; model-lab CI green but does not execute latent_cache_tiny tests; explicit workflow step requested; local tiny K/V 3/3 reported; B3 PARTIAL_SYMBOLIC_ONLY.",
-    "pr2246": "DRAFT_HEAD_273884C; exact staged/integrated/offline-bridge 3/3 success; metadata-only A5 UI lease with synthetic provider; no Android OS provider/capture/action.",
-    "pr2237": "HEAD_f92c156; no exact-head checks attached; prior d91f468 cohort failed old-task retention and second-update optimizer clone; gates OFF.",
+    "pr2242": "DRAFT_NOT_RELEASED_HEAD_3DC8A19; exact checks 4_FAILURE_9_SUCCESS; corrected blob header and Python3.13/3.14 staged arithmetic pass; runtime_deploy STAGER_SHA256 stale causes Python3.14 startup and staged/migration failures; revocation subscription optional and no pre-lock C3 cancel.",
+    "pr2244": "DRAFT_STACKED_ON_STALE_4CCA498; prior Python3.13/3.14, staged 251/10/47, integrated 424/3/58 pass; manual cancel/close only; rebase after Core final fix and add automatic provider-revoke cancellation.",
+    "pr2243": "DRAFT_HEAD_AE26C94; explicit latent-cache-tiny CI added; model-lab/privacy/offline-bridge green; latent-cache-tiny still in progress at read; earlier duplicate runs cancelled; local tiny K/V 3/3 reported; B3 PARTIAL_SYMBOLIC_ONLY.",
+    "pr2246": "DRAFT_HEAD_273884C; exact staged/integrated/offline-bridge 3/3 success; base 543349 is one commit behind #2243 ae26; metadata-only A5 UI lease with fake provider; no OS provider/capture/action.",
+    "pr2247": "DRAFT_HEAD_E8137FD; exact CI 10_SUCCESS_3_FAILURE; all A-GEM replay arms rejected by per-session retention gate across seeds 13/19/43; no checkpoint commit; staged/migration/Lab-Age/integrated pass; safe-additive FAIL BY POLICY; gates OFF.",
+    "pr2237": "OLDER_HEAD_F92C156; superseded by active JEPA #2247 candidate; prior tests also failed retention/source pins.",
     "pr2235": "Nested-closure AST attribution blocker; safe-additive FAIL BY POLICY; no merge.",
     "pr2234": "Normal recovery/deployer path drops C4 overlay; non-mergeable; no merge.",
     "pr2200": "STALE_RELATIVE_TO_AUDIO_LEASE_API; rebase required.",
-    "pr2248": "DRAFT_OR_OPEN_DOCS_CHECKPOINT; head 7462a9b; four shared V14 docs updated; offline-bridge-security 1/1 PASS; no code/release claim.",
+    "pr2248": "MERGED_DOCS_ONLY_AT_A1B1E9; offline-bridge-security 1/1 PASS; no code or phone release.",
     "redmi": "REDMI_UNVERIFIED; installed SHA/updater consent UNKNOWN; no authenticated owner-read reply.",
-    "private_owner_read": "Fresh PIPELINE_STATUS and DIAGNOSTICS requests still unanswered; no LOG_PAGE/UPDATE_REQUEST.",
+    "private_owner_read": "Fresh PIPELINE_STATUS and DIAGNOSTICS requests unanswered; no LOG_PAGE/UPDATE_REQUEST.",
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_AND_GITHUB_DNS_FAILURE; no local full-suite claim.",
     "p0_chat": "OPEN_ISSUE_1904; real 2+2, B1/B2 offer delivery, 20 mixed Redmi turns, native latency/RSS unverified.",
     "canon_coverage": "1255_HISTORICAL_HEADINGS_PRESERVED; semantic clause mapping incomplete.",
-    "research": "R037 tiny cross-geometry K/V mechanism reported locally; explicit CI gap. JEPA proposes R040 replay non-monotonicity (Caccia et al., PMLR 330, 2026) and R041 Replay-on-Demand (arXiv:2609.40089, Apache-2.0 code) as method references; not yet in shared ledger. No product-native B3 or Android proof.",
+    "research": "R037 tiny K/V mechanism local proof with explicit CI added (still running); R040 replay non-monotonicity and R041 Replay-on-Demand proposed by JEPA, pending shared ledger. No product-native B3 or Android proof.",
     "user_action_required": "NONE",
-    "boss_docs_commits": "PR2248_BRANCH_HEAD_7462A9B; board/workplan/handoff/coverage updated; exact readback pending.",
-    "pr2247": "DRAFT_HEAD_E8137FD; exact CI 10_SUCCESS_3_FAILURE; all A-GEM replay arms rejected per-session old-holdout gate across 3 seeds; no checkpoint commit; stage/migration/Lab-Age/integrated PASS; safe-additive FAIL BY POLICY; learning gates OFF."
+    "boss_docs_commits": "PR2248_MERGE_A1B1E9; MASTER_BLOB_UNCHANGED_9748AD5"
   }
 }
