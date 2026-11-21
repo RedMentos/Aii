@@ -542,3 +542,13 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 - Research R-022 records full-text PACE (ICLR 2026), abstract-only S4VAD, libfvad BSD-3-Clause + patent notice and the proprietary VoxRT runtime caveat. No dependency, model or weight was downloaded.
 - Redmi installation SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No device action or user-data change was performed.
 - **User action: none.** Boss review #2177 and Core's separate #2158 V3-pin/normal-Runtime/B1-B2→C4→C3 integration are the next steps. No Termux command or model approval is needed now.
+
+## Research & Perception checkpoint — 2026-11-21 10:21 CET
+
+- PR #2177 / branch research-perception/v14-prosody-attention-current-20261121 contains the RAW EAR V3 A5->A4/C3 adapter plus a temporal-state correction. Code/test/workflow commit: ce692a87e585c8cc7a6a871dd550ca585a6bac3d. It remains DRAFT / NOT_RELEASED pending independent Boss review.
+- New behavior: unobserved audio gaps now decay prior voice evidence before the next window; overlapping windows advance only newly observed time. This prevents a new voiced chunk from being treated as speech throughout a previous gap and prevents overlap double-counting. Existing consumer is consume_pcm16_voice_window -> A4 attention. No microphone capture, ASR, trained VAD, speech effector or Android permission was added.
+- Exact GitHub CI: focused RAW EAR 23 passed on Python 3.11 and 23 on Python 3.13 (run 44888560930); staged 240 passed / 10 skipped / 47 subtests and integrated 415 passed / 3 skipped / 58 subtests (44888560905); privacy scan PASS (44888560951). Safe-additive check 44888560942 rejects the intentional existing-file/workflow edit; this gate was not bypassed.
+- Local: isolated Python 3.13 mirror 10/10 temporal tests + py_compile PASS. Full Aii checkout still blocked by GitHub DNS; no full local repository test is claimed. Redmi remains REDMI_UNVERIFIED.
+- S4VAD (arXiv:2609.11110, 2026-09-10) full text was reviewed; its state-decay design and onset-time evaluation are relevant future benchmarks, but its reported 0.3 ms latency was measured on Apple M4 Max, not Redmi. No code/weights imported. libfvad remains the first no-weight comparator, pending license/patent/ABI and same-fixture measurement.
+- No authenticated phone receipt in this run; installed SHA and update consent UNKNOWN. No deployment, model swap, permission change or data action. **User action: keine Aktion nötig.**
+- Next owner sequence: Boss reviews #2177; Core updates #2158 to the exact V3 producer and proves normal Runtime text/audio separation plus B1/B2 OfferPacket->C4->C3 delivery; Perception then benchmarks RAW EAR V3 against libfvad.
