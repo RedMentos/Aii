@@ -401,3 +401,12 @@ Run the exact-source CI matrix on Python 3.13/3.14, then build pinned libfvad C 
 - Same exact head: public privacy scan **44891205336 PASS** and private-bridge regression workflow **44891205261 PASS**. These are CI checks, not Android evidence.
 - The earlier exact-source run 44891098086 on code/test head 6333a2c is superseded by this latest-head run. No code or test changes occurred between those two tested code trees; later commits only updated the ledger/handoff.
 
+
+
+
+### Final PR readback — 2026-11-21
+
+- PR #2187 latest head is \`26985c31c122ef6922bd556a3811211be823fb99\`, still DRAFT and mergeable, stacked on #2177 head \`3c2ccac8cdda1ccbf3abe5f1ca78b2bac8ef9100\`.
+- The latest code/test tree remains \`6333a2c95b85342c341fcfe00a6e4693bd56f2c0\`; subsequent commits only corrected runner compatibility and appended research/handoff/license evidence. Exact-source CI run 44891206658 remains applicable to that unchanged code/test tree.
+- No release or device deployment occurred. The V14-006 board and V14_USER_NEXT_ACTION are intentionally left to Boss/Integrator ownership; the proposed checkpoint and next step are in the handoff and the #1984 epic comment.
+
