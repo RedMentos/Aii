@@ -73,3 +73,13 @@ The follow-up candidate bumps the Store state schema to v3 and adds a bounded pe
 
 Two new real-SQLite Store regressions cover (1) 64 rows from one identical source digest followed by a diverse second page, and (2) a single new train-fold row under no-replay followed by a second row from the same digest. Both must progress without losing receipts. These are synthetic T8 rows through the real Store and numeric learner, not live user data, Runtime wiring, native GGUF learning or Redmi proof.
 
+
+
+## Exact CI verification — pending-cohort liveness follow-up (2026-11-21)
+
+- PR #2150 tested code head: 3743302118298bfe7939ddd913955424e54823c0.
+- GitHub Actions run 44856839722 passed the full V14 learning suite and compile on both Python versions: Python 3.13 — 61 passed in 8.43s; Python 3.14 — 61 passed in 8.12s.
+- The new two SQLite liveness regressions passed on both versions: same-digest first page resumes with a later diverse page; a one-row no-replay train fold persists until the second matching-fold row arrives.
+- Additional private remote bridge push run 44856794261 passed. This is CI/Linux evidence only.
+- Exact local Aii checkout tests remain BLOCKED because the container cannot resolve github.com. No Redmi receipt, normal Runtime postcommit wiring, native B1/B2 GGUF learning or device deployment is claimed.
+- PR #2150 is a draft stacked on #2148/#2147/#2143, pending independent review. RELEASE_SHA=NOT_RELEASED; REDMI_UNVERIFIED; user action none.
