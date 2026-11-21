@@ -556,32 +556,39 @@ def test_optional_silero_rejects_non_16khz_before_packet_or_attention(tmp_path):
         runtime.store.close()
 
 
-def test_consent_revocation_between_pre_and_post_persist_leaves_no_packet(tmp_path):
-    """Revocation at the post-write check must not leave a persisted audio packet.
-
-    This is a privacy gate: packet commit and consent revocation need one ordering point.
-    """
+def test_consent_revocation_during_packet_commit_leaves_no_packet(tmp_path):
+    """Revocation at the Store commit boundary must prevent a persisted audio packet."""
     runtime, event = make_runtime(tmp_path)
-    calls = 0
+    revoked = False
+    original_add_packet = runtime.store.add_packet
 
-    def revoke_after_pre_persist_checks(source_id, receipt):
-        nonlocal calls
-        calls += 1
-        # The producer checks before packet construction and again after
-        # validating the Store/event binding. Revoke at its post-write check.
-        return calls <= 2
+    def revoke_at_store_boundary(kind, packet):
+        nonlocal revoked
+        # Simulate an external consent revocation after the producer's last
+        # pre-write check but before the Store performs its SQLite insert.
+        revoked = True
+        return original_add_packet(kind, packet)
 
+    def current_consent(source_id, receipt):
+        return (
+            not revoked
+            and source_id == SOURCE_ID
+            and receipt == RECEIPT
+        )
+
+    runtime.store.add_packet = revoke_at_store_boundary
     try:
         with pytest.raises(PermissionError):
             consume_pcm16_voice_window(
                 runtime, tone(140), sample_rate=16000, start_ms=100,
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
-                consent_check=revoke_after_pre_persist_checks,
+                consent_check=current_consent,
                 finality="FINAL", token_budget=512,
             )
-        assert calls == 3
+        assert revoked is True
         assert packet_count(runtime.store, event["event_id"]) == 0
         assert attention_count(runtime.store, event["event_id"]) == 0
     finally:
+        runtime.store.add_packet = original_add_packet
         runtime.store.close()
