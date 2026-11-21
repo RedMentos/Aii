@@ -660,3 +660,6 @@ This is explicitly LOCAL_LINUX_TINY_MODEL_PROOF_NOT_PRODUCT_NATIVE: synthetic as
 Research R-037 records two full-text 2026 latent-communication papers, one abstract-only negative causal-transfer study, and the Apache-2.0 CacheBack OSS review. The important architecture split is context-aware (receiver has source input; sparse query-conditioned transfer may suffice) vs context-unaware (receiver depends on transferred state; much denser retention is needed). CacheBack's main API only supports same-model/matching copies and explicitly lacks cross-model alignment. Current B1 LFM2.5-1.2B and B2 Qwen3.5-0.8B are heterogeneous; current llama.cpp Runner still reports CAN_LATENT_TAP=False / CAN_LATENT_INJECT=False. Native K/V tap/injection remains the next blocker.
 
 No models, weights, dependencies or datasets were downloaded or swapped. No phone permission or updater action occurred. Redmi remains unverified.
+
+
+PR #2243 (draft) now carries the R-037 tiny cross-geometry K/V adapter experiment and the updated board/ledger/handoff. Its base is the shared branch HEAD e788dcf0b82849f4de7df229978aa9973d845093. No CI or Android proof is inferred from the local Linux experiment.
