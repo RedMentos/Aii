@@ -247,8 +247,119 @@ def _retention_cohort_gate(before, after, *, overflow=False):
         "cohorts": checks,
     }
 
+MAX_CONFLICT_PROBES = 32
+MAX_CONFLICT_SAMPLE_ROWS = 64
 
-def _parameter_snapshot(model):
+
+def _gradient_vector(model, rows, *, train_encoder, salt):
+    sampled = sorted(
+        rows,
+        key=lambda row: hashlib.sha256(
+            (salt + "\0" + row["action_id"]).encode("utf-8")
+        ).digest(),
+    )[:MAX_CONFLICT_SAMPLE_ROWS]
+    if len(sampled) < 2:
+        return None
+    x, actions, x2 = _arrays(sampled)
+    x = (x - model.mu) / model.sd
+    x2 = (x2 - model.mu) / model.sd
+    target = world_jepa.encode(model.tgt, x2)[0]
+    out = world_jepa.loss_grads(
+        model.enc, model.preds[0], x, actions, target,
+        world_jepa.VAR_W, world_jepa.COV_W, train_enc=train_encoder,
+    )
+    predictor_gradients = out[2]
+    encoder_gradients = out[3]
+    pieces = []
+    if encoder_gradients is not None:
+        pieces.extend(
+            np.asarray(encoder_gradients[key], dtype=np.float64).reshape(-1)
+            for key in sorted(encoder_gradients)
+        )
+    pieces.extend(
+        np.asarray(predictor_gradients[key], dtype=np.float64).reshape(-1)
+        for key in sorted(predictor_gradients)
+    )
+    vector = np.concatenate(pieces)
+    if vector.size == 0 or not np.isfinite(vector).all():
+        raise ValueError("invalid WorldJEPA replay-conflict gradient")
+    return vector
+
+
+def _session_gradient_conflict_scores(model, new_rows, old_rows, *, train_encoder, salt):
+    """Bounded training-fold-only proxy for which prior sessions conflict with new learning."""
+    grouped = {}
+    for row in old_rows:
+        session_id = row.get("session_id")
+        if type(session_id) is str and session_id:
+            grouped.setdefault(session_id, []).append(row)
+    eligible = {
+        session_id: values for session_id, values in grouped.items() if len(values) >= 2
+    }
+    ranked = sorted(
+        eligible,
+        key=lambda session_id: hashlib.sha256(
+            (salt + "\0probe\0" + session_id).encode("utf-8")
+        ).digest(),
+    )
+    scored = ranked[:MAX_CONFLICT_PROBES]
+    new_gradient = _gradient_vector(
+        model, new_rows, train_encoder=train_encoder, salt=salt + ":new"
+    )
+    new_norm = float(np.linalg.norm(new_gradient))
+    scores = {}
+    probe_rows = min(len(new_rows), MAX_CONFLICT_SAMPLE_ROWS)
+    for session_id in scored:
+        rows = eligible[session_id]
+        old_gradient = _gradient_vector(
+            model, rows, train_encoder=train_encoder, salt=salt + ":" + session_id
+        )
+        old_norm = float(np.linalg.norm(old_gradient))
+        probe_rows += min(len(rows), MAX_CONFLICT_SAMPLE_ROWS)
+        if new_norm <= 1e-20 or old_norm <= 1e-20:
+            conflict = 0.0
+        else:
+            cosine = float(np.dot(new_gradient, old_gradient) / (new_norm * old_norm))
+            conflict = max(0.0, min(1.0, -cosine))
+        scores[session_id] = conflict
+    return {
+        "scores": scores,
+        "scored_session_count": len(scores),
+        "unscored_session_count": len(grouped) - len(scores),
+        "legacy_rows_excluded": sum(1 for row in old_rows if not row.get("session_id")),
+        "probe_rows": probe_rows,
+    }
+
+
+def _ordered_replay_rows_and_ranges(rows, replay_start):
+    """Group selected replay rows into bounded contiguous per-session GEM ranges."""
+    grouped = {}
+    for row in rows:
+        session_id = row.get("session_id")
+        if type(session_id) is not str or not session_id:
+            return None
+        key = hashlib.sha256(session_id.encode("utf-8")).hexdigest()
+        grouped.setdefault(key, []).append(row)
+    if not grouped or len(grouped) > world_jepa.MAX_REPLAY_CONSTRAINTS:
+        return None
+    ordered, ranges, session_keys = [], [], []
+    cursor = replay_start
+    for key, values in sorted(grouped.items()):
+        values = sorted(values, key=lambda row: (float(row["created"]), row["action_id"]))
+        if len(values) < 2:
+            return None
+        start = cursor
+        ordered.extend(values)
+        cursor += len(values)
+        ranges.append((start, cursor))
+        session_keys.append(key[:16])
+    if cursor != replay_start + len(rows):
+        raise ValueError("WorldJEPA replay cohort ranges do not cover selected rows")
+    return ordered, tuple(ranges), tuple(session_keys)
+
+
+
+def _parameter_snapshot(model)
 
     return {
         "enc": {key: np.asarray(value).copy() for key, value in model.enc.items()},
@@ -824,23 +935,47 @@ class WorldJEPAStoreConsumer:
                     old_holdout_cohort_overflow = old_holdout_cohorts is None
                     if not old_holdout_cohort_overflow:
                         old_holdout_cohort_before = _retention_cohort_losses(model, old_holdout_cohorts)
-            # All replay modes receive only the prior source-disjoint train fold.
-            # Budgeted arms match the new train-row count; session-contiguous
-            # excludes legacy rows whose trusted session provenance is absent.
+            # Replay selection and constraints see only the prior source-disjoint
+            # training fold. The per-session audit holdout above is evaluation-only.
             replay_salt = (active["checkpoint_sha256"] if active else "fresh") + ":" + _cohort_sha(new_train_rows)
+            conflict_probe = {
+                "scores": {}, "scored_session_count": 0,
+                "unscored_session_count": 0, "legacy_rows_excluded": 0, "probe_rows": 0,
+            }
+            cohort_scores = None
+            if replay_mode == "on_demand_conflict":
+                if active is not None and len(new_train_rows) >= 2 and len(old_train_rows) >= 2:
+                    conflict_probe = _session_gradient_conflict_scores(
+                        model, new_train_rows, old_train_rows,
+                        train_encoder=(encoder_mode == "full"), salt=replay_salt,
+                    )
+                cohort_scores = conflict_probe["scores"]
             replay_selection = world_jepa_replay.select_replay_rows(
                 replay_mode, new_train_rows, old_train_rows,
                 budget=len(new_train_rows), salt=replay_salt,
+                cohort_scores=cohort_scores,
             )
             replay_rows = replay_selection["rows"]
-            # Preserve the historical uniform baseline's exact sorted cohort
-            # order; the budgeted experimental arms use the explicit new+replay
-            # sequence selected above.
-            fit_rows = (
-                train_rows if replay_mode == "uniform"
-                else list(new_train_rows) + list(replay_rows)
-            )
+            if replay_mode == "on_demand_conflict" and replay_selection["budget_matched"] is not True:
+                persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                if persisted != "PERSISTED":
+                    return {"status": persisted, "pending_rows": len(pending_by_id),
+                            "scan_cursor": state["scan_cursor"],
+                            "native_body_weights_changed": False}
+                return {
+                    "status": "ON_DEMAND_REPLAY_BUDGET_UNMATCHED",
+                    "replay_candidate_rows": len(old_train_rows),
+                    "replay_rows": len(replay_rows),
+                    "replay_requested_budget_rows": replay_selection["requested_budget_rows"],
+                    "replay_budget_rows": replay_selection["budget_rows"],
+                    "replay_legacy_rows_excluded": replay_selection["legacy_rows_excluded"],
+                    "replay_scored_sessions": conflict_probe["scored_session_count"],
+                    "pending_rows": len(pending_by_id), "scan_cursor": next_cursor,
+                    "native_body_weights_changed": False,
+                }
             replay_start = None
+            replay_cohort_ranges = None
+            replay_constraint_session_keys = ()
             if replay_projection:
                 if active is None or len(new_train_rows) < 2 or len(replay_rows) < 2:
                     persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
@@ -853,6 +988,33 @@ class WorldJEPAStoreConsumer:
                             "pending_rows": len(pending_by_id), "scan_cursor": next_cursor,
                             "native_body_weights_changed": False}
                 replay_start = len(new_train_rows)
+                if replay_mode in {"session_contiguous", "on_demand_conflict"}:
+                    grouped = _ordered_replay_rows_and_ranges(replay_rows, replay_start)
+                    if grouped is None:
+                        persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                        if persisted != "PERSISTED":
+                            return {"status": persisted, "pending_rows": len(pending_by_id),
+                                    "scan_cursor": state["scan_cursor"],
+                                    "native_body_weights_changed": False}
+                        return {
+                            "status": "INSUFFICIENT_REPLAY_COHORT_CAPACITY",
+                            "replay_rows": len(replay_rows),
+                            "max_replay_constraints": world_jepa.MAX_REPLAY_CONSTRAINTS,
+                            "pending_rows": len(pending_by_id), "scan_cursor": next_cursor,
+                            "native_body_weights_changed": False,
+                        }
+                    replay_rows, replay_cohort_ranges, replay_constraint_session_keys = grouped
+            fit_rows = (
+                train_rows if replay_mode == "uniform" and not replay_projection
+                else list(new_train_rows) + list(replay_rows)
+            )
+            conflict_manifest = [
+                {
+                    "session_key": hashlib.sha256(session_id.encode("utf-8")).hexdigest()[:16],
+                    "score": float(score),
+                }
+                for session_id, score in sorted(conflict_probe["scores"].items())
+            ]
             replay_metrics = {
                 "replay_mode": replay_mode,
                 "replay_rows": len(replay_rows),
@@ -862,8 +1024,24 @@ class WorldJEPAStoreConsumer:
                 "replay_session_count": replay_selection["session_count"],
                 "replay_window_count": replay_selection["window_count"],
                 "replay_manifest_sha256": replay_selection["manifest_sha256"],
+                "replay_legacy_rows_excluded": replay_selection["legacy_rows_excluded"],
+                "replay_scored_session_count": conflict_probe["scored_session_count"],
+                "replay_unscored_session_count": conflict_probe["unscored_session_count"],
+                "replay_conflict_probe_rows": conflict_probe["probe_rows"],
+                "replay_conflict_scores_sha256": hashlib.sha256(json.dumps(
+                    conflict_manifest, sort_keys=True, separators=(",", ":"), allow_nan=False
+                ).encode("utf-8")).hexdigest(),
                 "replay_projection_requested": replay_projection,
                 "replay_projection_enabled": replay_start is not None,
+                "replay_projection_mode": (
+                    "per_session_gem" if replay_cohort_ranges is not None
+                    else "aggregate_agem" if replay_start is not None else "off"
+                ),
+                "replay_constraint_session_count": (
+                    len(replay_cohort_ranges) if replay_cohort_ranges is not None
+                    else (1 if replay_start is not None else 0)
+                ),
+                "replay_constraint_session_keys": list(replay_constraint_session_keys),
             }
             if len(fit_rows) < 2:
                 persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
@@ -905,6 +1083,7 @@ class WorldJEPAStoreConsumer:
                         train_encoder=(encoder_mode == "full"),
                         drift_control=drift_config, replay_start=replay_start,
                         update_scale=update_scale,
+                        replay_cohort_ranges=replay_cohort_ranges,
                     )
                 except InterruptedError:
                     return {"status":"CANCELLED","pending_rows":len(pending_by_id),
@@ -922,6 +1101,8 @@ class WorldJEPAStoreConsumer:
                     getattr(candidate, "_last_gradient_projection", {})
                 )
                 candidate_gradient_projection["requested"] = replay_projection
+                candidate_gradient_projection["mode"] = replay_metrics["replay_projection_mode"]
+                candidate_gradient_projection["constraint_session_count"] = replay_metrics["replay_constraint_session_count"]
                 candidate_after = _parameter_snapshot(candidate)
                 candidate_holdout_after = candidate.prediction_loss(*holdout)
                 candidate_shuffled_loss = candidate.prediction_loss(

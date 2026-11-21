@@ -11,8 +11,9 @@ import hashlib
 import json
 import math
 
-REPLAY_MODES = ("uniform", "none", "uniform_budget", "session_contiguous")
+REPLAY_MODES = ("uniform", "none", "uniform_budget", "session_contiguous", "on_demand_conflict")
 MAX_REPLAY_ROWS = 2048
+MAX_REPLAY_CONSTRAINTS = 8
 
 
 def _validate_rows(rows, label):
