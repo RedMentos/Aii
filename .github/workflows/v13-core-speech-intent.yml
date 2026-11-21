@@ -1,0 +1,33 @@
+name: V13 C3 speech-intent runtime contract
+on:
+  push:
+    branches: [core/c3-speech-intent-boundary-20261119]
+    paths:
+      - 'v13/code/v13/speech_intent.py'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/tests/test_speech_intent.py'
+      - '.github/workflows/v13-core-speech-intent.yml'
+  pull_request:
+    paths:
+      - 'v13/code/v13/speech_intent.py'
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/tests/test_speech_intent.py'
+      - '.github/workflows/v13-core-speech-intent.yml'
+permissions:
+  contents: read
+jobs:
+  synthetic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: v13/code
+      V13_NO_AUTOSTART: '1'
+      NO_MODEL_DOWNLOADS: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Syntax check
+        run: python -m py_compile v13/code/v13/speech_intent.py v13/code/v13/runtime.py v13/code/tests/test_speech_intent.py
+      - name: Source-bound speech intent synthetic Runtime test
+        run: python -m unittest discover -s v13/code/tests -p test_speech_intent.py -v
