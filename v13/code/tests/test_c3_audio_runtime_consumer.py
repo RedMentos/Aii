@@ -340,7 +340,8 @@ def test_normal_runtime_turn_delivers_voice_cues_to_b1_b2_and_c3(tmp_path):
             time.sleep(0.01)
         assert runtime.idle(), "synthetic audio Runtime turn did not settle"
         answer = runtime.last_answer()
-        assert answer["status"] == "FINAL", json.loads(answer["metadata"])
+        metadata = json.loads(answer["metadata"])
+        assert answer["status"] == "FINAL", {key: metadata.get(key) for key in ("error", "detail", "failure_stage")}
         metadata = json.loads(answer["metadata"])
         assert metadata["audio_input"]["status"] == "A5_A4_C3_VOICE_CUE_ADMISSION"
         assert metadata["audio_input"]["voice_activity_hint"] == "VOICED"
