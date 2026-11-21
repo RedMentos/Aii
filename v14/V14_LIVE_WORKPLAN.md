@@ -370,3 +370,27 @@ No material V14 master edit was made; no master backup was required. Historical 
 4. QA/Android: continue read-only owner relay; no deployment/update request until a fresh authenticated receipt proves consent and installed SHA.
 
 **Release:** no new code released in this checkpoint. **Redmi:** REDMI_UNVERIFIED. **User action:** none.
+
+
+## Boss integration checkpoint and executable sequence — 2026-11-21 13:30 CET
+
+### Current verified branch state
+- Release-development branch HEAD: `0fc4d2f9a76d530c366d67ea8148cd1c69666acd`, merged PR #2197 (Android 13 bind-mount identity guard) after manual source review. PR-head CI: broker 37, sandbox replay 61, staged 249/10/47, integrated 415/3/58 PASS. Exact merged-head push workflows were queued/in progress at readback. Last fully green code-bearing head: `e18c664d954fa5a44a1b2e5bec76850d5a40f89f`; do not promote `0fc4d2f9a76d530c366d67ea8148cd1c69666acd` until every exact push workflow finishes.
+- Local full checkout remains BLOCKED by GitHub DNS. No full LOCAL_LINUX test is claimed. No current Redmi receipt; REDMI_UNVERIFIED.
+
+### Functional candidates and hard blockers
+1. **A5 voice path (#2192 + #2200):** #2200 head `6072440ef505c1c540fc7123cd1fc0cad3d1a67f` passes staged A5 on Python 3.11/3.13, staged-runtime and integrated-regression. It wires caller-supplied synthetic PCM16 -> A5/A4 -> B1/B2 query/offer context -> C3 acoustic prompt using fake runners. This is WIRED_SYNTHETIC, not native inference or microphone proof. Do not merge before #2192 fixes the true/true/false consent race after packet persistence. #2200 must also revoke/delete the derived AUDIO_ACOUSTIC_CONTEXT source and clear process-local state when consent is revoked; current test incorrectly treats a hidden-but-stored source as acceptable.
+2. **C4 complementary offers (#2195):** its separate staged candidate passes CI, but normal `termux_runtime_recovery_candidate.build_sources()` / `runtime_deploy` do not consume the overlay. It must not be described as installed. Before default behavior changes, add a disjoint-but-genuinely-redundant negative control and evaluate 0.0/0.15/0.5/1.0 on a fixed held-out offer set. Boss coordinates the normal builder/stager/deployer pin chain only after this evidence.
+3. **JEPA optimizer resume (#2198):** current head `cd0b54053f51d5227f7860a80f5f6adbd3973598` passes focused, combined, incremental, optimizer-resume, staged/integrated and Python 3.14 CI; earlier Planner utility-gate failures are resolved. It is not merged. `world_jepa_shadow_checkpoint.save()` still uses os.link-only publication; add a same-directory `renameat2(RENAME_NOREPLACE)` fallback on EPERM/EACCES, preserve no-clobber/hash/inode verification and fsync, and test forced hardlink denial plus target-exists. Keep all learning gates OFF.
+4. **Android audit DB (#2197):** merged at `0fc4d2f9a76d530c366d67ea8148cd1c69666acd`; exact path exception only. Broker remains DRY_RUN_ONLY; no OS executor, background API action, AccessibilityService, MediaProjection, UI tap/type or Redmi proof.
+5. **P0 real chat (#1904):** still blocks acceptance. Correct 2+2, native TTFT/quality, actual B1/B2 OfferPacket -> C4 selection -> C3 consumption and mixed Redmi task set remain unverified. Do not solve by dropping organs or merely extending deadlines.
+
+### Next executable sequence
+- QA: finish exact push CI for `0fc4d2f9a76d530c366d67ea8148cd1c69666acd`; continue read-only owner receipt #403 only, with no UPDATE_REQUEST until an authenticated response proves installed SHA and updater consent.
+- Perception: fix #2192's persist/recheck transaction or exact-packet compensation; negative test must leave zero packet, attention/temporal side effect and C3 admission on mid-call revocation.
+- Core: fix #2200 derived-source revocation and rerun staged A5 + integrated regression after #2192 is corrected; preserve the synthetic/native proof distinction.
+- JEPA: add Android-safe no-clobber checkpoint publication to #2198 and rerun Python 3.11/3.14, staged, integrated, crash/restart and target-exists tests.
+- Core/Boss: calibrate and integrate #2195 only in the normal pinned stage, with exact builder/stager/runtime_deploy pins and end-to-end B1/B2 -> C4 -> C3 tests.
+- Boss: after these blockers, re-run exact release-head CI, update this board and the user handoff, then continue across B3 latent coupling, Context OS/Memorilla, Android agency, speech output, cross-organ gradients, sparse MoE and clause-level Canon coverage.
+
+No model, weight, permission, updater setting, device data or phone state was changed. No user action is required.
