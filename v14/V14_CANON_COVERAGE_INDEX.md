@@ -1465,3 +1465,20 @@ These columns are independent. `CODE` is not `WIRED`; synthetic CI is not Androi
 - Silero VAD: MIT Torch/ONNX candidate; 8/16 kHz and ~2 MB JIT are documented upstream, but upstream speed numbers are not Redmi measurements.
 - Silero C port: MIT, 16 kHz, NEON arm64 claimed; only Windows/macOS/Linux prebuilt targets are documented, no Android proof.
 - No code/dependency/weights imported. Next: identical PCM fixtures, FPR/FNR, onset/offset, CPU/RSS, ARM ABI and license/patent checks.
+
+
+### JEPA/Memory receiver evidence overlay — 2026-11-21 / PR #2164
+
+This is an additive status note; the 1,255 historical V13 headings and their original wording/status inventory above are unchanged.
+
+| Canon family | CODE | Consumer wiring | Test evidence | Redmi/native body |
+|---|---|---|---|---|
+| Trusted T8 / ActionOutcome -> WorldJEPA/EMA | PR #2151/#2152 merged; direct V13 port in #2160 | Importable dual-gated postcommit API; normal Runtime caller still absent | Synthetic SQLite Store, numeric parameter/EMA diffs, disjoint holdout, retention, replay, restart/rollback; #2160 safe-additive 16/16 and staged/integrated 240/415 | REDMI_UNVERIFIED; no native B1/B2 weight change |
+| B1_DETAIL / B2_GIST / SELF_MODEL receiver heads | Numeric readout heads in #2160; batched candidate matrix in #2164 | Source-bound World/Planner SHADOW function consumes the role readouts and episodic recall; not normal Runtime-wired | Exact #2164 head 14a647c04b28e9cd5bbd5a19ae14d6cbb77d29a1, run 44872134464: staged 241 passed/10 skipped/47 subtests; integrated 415 passed/3 skipped/58 subtests. New positive persistence/idempotency and negative ActionOutcome/SourceRef tests are invoked by staged suite | Not native model activations, not B3, no GGUF updates, no Redmi proof |
+| World/Planner source-bound shadow record | world_jepa_planner.py in #2164 | Callable via consume_after_commit(..., event_id=...) after Core supplies the committed event id; record is persisted and readback checks source/checkpoint | Synthetic source revocation, stale checkpoint, receipt and idempotency controls; uncalibrated score explicitly has decision_authority NONE and dispatch false | No action dispatch or production route authority |
+| Sleep/Replay/retention | Existing synthetic numeric learner and replay modes | Not yet normal Runtime wired; optimizer moments still not persisted | Prior learner CI and #2164 staged/integrated checks; new replay allocation experiment still open | No Android/Redmi evidence |
+
+**Next required connection:** Core must integrate #2160/#2164 in dependency order and invoke the JEPA facade only after durable T8/ActionOutcome commit, passing the exact event id. Do not bypass the #2158 staged builder/deployer policy failures. Keep both learning/optimizer gates closed until separate authorization. After the normal Runtime consumer is present, measure source-disjoint new/old holdout utility, retention, replay-off/uniform/content-or-error replay, restart and rollback.
+
+**Evidence boundary:** exact Aii local checkout/tests remain BLOCKED by GitHub DNS in this worker. GitHub Actions/Linux synthetic Store tests are not native Linux model training or Redmi evidence. Release branch remains c0cedbde718ede6107f4df1f1bf9c784df4e00cf; NOT_RELEASED. Phone SHA UNKNOWN; REDMI_UNVERIFIED. Whole-canon and Android product completion remain false.
+
