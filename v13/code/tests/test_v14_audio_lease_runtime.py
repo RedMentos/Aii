@@ -475,6 +475,8 @@ assert getattr(runtime, "_audio_revocation_contexts", {}) == {}
 with provider.callback_lock:
     assert provider.callbacks == []
 
+failures = []
+
 # Scenario 5: the provider's pre-lock request callback cancels the active C3
 # stream, allowing the lease to release before the provider obtains its guard.
 home = Path(sys.argv[1]) / "prelock-revocation"
@@ -545,6 +547,8 @@ try:
     text_context = last_context(runtime.store, runtime.session)
     assert text_context and text_context["messages"] is not None
     assert "RAW_EAR_ACOUSTIC" not in json.dumps(text_context["messages"], ensure_ascii=False)
+except AssertionError as exc:
+    failures.append("two-phase provider revocation: " + str(exc))
 finally:
     release.set()
     runtime.close()
@@ -577,9 +581,12 @@ try:
     assert runtime.store.rows(
         "SELECT id FROM sources WHERE id='mic-test-1' OR kind='AUDIO_ACOUSTIC_CONTEXT'"
     ) == []
+except AssertionError as exc:
+    failures.append("missing subscription fail-closed: " + str(exc))
 finally:
     runtime.close()
 
+assert not failures, "; ".join(failures)
 print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 lease spans iterator; Runtime.cancel and Runtime.close release lease for revocation; tombstones, unsubscribe and text fallback stay safe")
 '''
     result = subprocess.run(
