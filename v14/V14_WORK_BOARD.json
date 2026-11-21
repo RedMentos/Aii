@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-20",
+  "updated_at": "2026-11-21",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Initial backlog, not proof of any functionality; update ticket evidence after actually running code and tests.",
@@ -24,12 +24,28 @@
       "owner": "QA & Android",
       "reviewer": "Boss",
       "priority": "P0",
-      "status": "READY",
+      "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Audit existing updater implementation and prior auto-update bug; create local simulated update test first, then native Redmi verification if authenticated access exists",
-      "user_action_required": false
+      "proof_environment": "SOURCE_REVIEW + CI_OWNER_READ_PASS + PY314_STAGED_PASS + BRIDGE_PASS + STAGED/INTEGRATED_PENDING; PRIVATE_RELAY_NO_RECEIPT; REDMI_UNVERIFIED",
+      "next_step": "QA PR #2138 (latest CI run ordering + post-stop recheck) is open at eb038f7e90ce5370547e338fad01bad40741c059. Owner-read, Python 3.14 staged startup, offline bridge and same-repo integration PASS; staged-runtime/integrated regression were still running at last readback. Finish exact CI, obtain Boss review before merge, then request a fresh private PIPELINE_STATUS receipt. No installer or device mutation until a real receipt exists.",
+      "user_action_required": false,
+      "last_checkpoint": "2026-11-21 QA: source-updater stale-success gate fixed in draft PR #2138; CI partly green/pending; private HEALTH #348 returned no device receipt; no phone data changed.",
+      "latest_qa_candidate": {
+        "pr": 2138,
+        "head_sha": "eb038f7e90ce5370547e338fad01bad40741c059",
+        "status": "CI_PENDING",
+        "proof": {
+          "owner_read": "PASS",
+          "python314_staged_startup": "PASS",
+          "offline_bridge_security": "PASS",
+          "same_repo_integration": "PASS",
+          "staged_runtime": "IN_PROGRESS",
+          "integrated_regression": "IN_PROGRESS",
+          "local_linux": "NOT_RUN",
+          "redmi": "UNVERIFIED"
+        }
+      }
     },
     {
       "id": "V14-003",
