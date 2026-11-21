@@ -139,3 +139,8 @@ Review and run the exact branch tests in CI. If the pinned 230M GGUF is already 
 ### PR / CI checkpoint — 2026-11-21
 
 PR #2142 (https://github.com/RedMentos/Aii/pull/2142) is open, ready for review and mergeable at last readback, based on c3c32c05a0374e970d274f8a777a7ab85c067d66. Code-bearing checkpoint 64ff26aa51f3a9ec4c6a169588ef41004b7ba2a0 adds a focused V14 experiment workflow at .github/workflows/v14-model-lab.yml. Exact branch CI PASS: workflow run 44848887759, job model-lab, on head commit 3e13188a414b1cc3ff327fe9897a07d0d5ff8900. It compiled both Python files, validated the candidate JSON, and ran 13 tests in 0.042s on GitHub Linux/Python 3.13.18. This is exact-commit CI, not native inference. Native model execution and Redmi proof remain NOT_RUN/REDMI_UNVERIFIED.
+
+
+### Shared V14 handoff updated — 2026-11-21
+
+V14_WORK_BOARD.json now marks V14-005 IN_PROGRESS_PARTIAL and links PR #2142 plus exact CI run 44848887759. V14_USER_NEXT_ACTION.md now records the lab candidate, license, no-download/no-swap boundary, exact CI, native NOT_RUN and Redmi UNVERIFIED. The current shared base is c3c32c05a0374e970d274f8a777a7ab85c067d66; last code-bearing release remains 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e. The branch's code-bearing CI-tested commit is 3e13188a414b1cc3ff327fe9897a07d0d5ff8900; later changes are documentation-only.
