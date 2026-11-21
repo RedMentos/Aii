@@ -86,18 +86,23 @@ class EffortPolicy(unittest.TestCase):
         p=effort.decide('max',s,cfg={'max_reentry':0,'focal_slots':2})
         self.assertEqual((p['max_reentry'],p['focal_slots']),(0,2))
         p=effort.decide('max',s,cfg=CFG)
-        self.assertEqual((p['tool_steps'],p['verify'],p['focal_cycles']),(0,False,1))
-        for reason in ('AGE_NO_TOOLS','AGE_NO_DELIBERATION_MODES','AGE_FOCAL_DEPTH'):self.assertIn(reason,p['constraints'])
+        self.assertEqual((p['tool_steps'],p['verify'],p['focal_cycles']),(0,False,3))
+        for reason in ('AGE_NO_TOOLS','AGE_NO_DELIBERATION_MODES'):self.assertIn(reason,p['constraints'])
 
-    def test_age_bounds_autonomous_escalation_but_older_stage_opens_it(self):
+    def test_age_rights_do_not_change_compute_effort_or_focal_cycles(self):
         hot=sig('Vergleiche A und B','both')|{'uncertainty':1.,'conflict':1.,'novelty':1.,'salience':1.}
-        young=effort.decide('adaptive',hot,cfg=CFG)
-        self.assertEqual(young['requested_effort'],1.);self.assertLessEqual(young['effort'],.79)
-        self.assertEqual(young['band'],'FOCAL_TARGETED');self.assertEqual(young['wake'],'both')
-        self.assertIn('AGE_AUTONOMOUS_EFFORT_MAX_LOW',young['constraints'])
-        old={'stage':5,'autonomous_effort_max':'max','focal_depth':5,'deliberation':True,'tools':True,'long_loops':True,'resource_mode':'GREEN'}
-        mature=effort.decide('adaptive',hot,cfg=CFG,age=old)
-        self.assertEqual((mature['band'],mature['verify'],mature['tool_steps'],mature['focal_cycles']),('DEEP_FOCAL',True,1,3))
+        young={'stage':0,'deliberation':False,'tools':False,'long_loops':False,'resource_mode':'GREEN'}
+        mature={'stage':5,'deliberation':True,'tools':True,'long_loops':True,'resource_mode':'GREEN'}
+        a=effort.decide('adaptive',hot,cfg=CFG,age=young)
+        b=effort.decide('adaptive',hot,cfg=CFG,age=mature)
+        keys=('effort','band','wake','max_reentry','focal_cycles','focal_slots','observer_scale')
+        self.assertEqual(tuple(a[k] for k in keys),tuple(b[k] for k in keys))
+        self.assertEqual(a['requested_effort'],1.)
+        self.assertEqual(a['focal_cycles'],3)
+        self.assertFalse(a['verify']);self.assertTrue(b['verify'])
+        self.assertEqual(a['tool_steps'],0);self.assertEqual(b['tool_steps'],1)
+        self.assertNotIn('AGE_AUTONOMOUS_EFFORT_MAX_LOW',a['constraints'])
+        self.assertNotIn('AGE_FOCAL_DEPTH',a['constraints'])
 
     def test_age_limits_are_read_from_age_module(self):
         from v13.age import AgeControl
@@ -106,16 +111,17 @@ class EffortPolicy(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             home=Path(tmp);cfg=initialize(home);store=Store(home)
             try:
-                limits=effort.age_limits(AgeControl(store,cfg),'NORMAL')
-                # Age 10 is a laboratory feature gate, NOT CPU budget escalation.
-                self.assertEqual((limits['stage'],limits['autonomous_effort_max'],
-                                  limits['deliberation'],limits['tools']),
-                                 (0,'low',False,False))
+                control=AgeControl(store,cfg)
+                control.budgets=Mock(side_effect=AssertionError('Age budget read'))
+                limits=effort.age_limits(control,'NORMAL')
+                self.assertEqual((limits['stage'],limits['deliberation'],limits['tools']),(0,False,False))
+                self.assertNotIn('autonomous_effort_max',limits)
+                self.assertNotIn('focal_depth',limits)
                 self.assertEqual(limits['lab_stage'],10)
                 self.assertFalse(limits['lab_compute_active'])
                 self.assertEqual(limits['lab_compute_gate'],'NOT_A_COMPUTE_SETTING')
-                self.assertEqual(effort.age_limits(AgeControl(store,cfg),'PRESSURE')['resource_mode'],'ORANGE')
-                self.assertEqual(effort.age_limits(AgeControl(store,cfg),'CRITICAL')['resource_mode'],'RED')
+                self.assertEqual(effort.age_limits(control,'PRESSURE')['resource_mode'],'ORANGE')
+                self.assertEqual(effort.age_limits(control,'CRITICAL')['resource_mode'],'RED')
             finally:store.close()
 
     def test_learned_wake_only_inside_ceiling_and_never_over_user_mode(self):
