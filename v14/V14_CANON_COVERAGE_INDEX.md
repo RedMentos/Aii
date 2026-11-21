@@ -1381,3 +1381,120 @@ PR #2148 current head 6fec2dec1534285b654db60349efcd81f81b846c; tested docs/cove
 ### Latest JEPA CI readback — 2026-11-21
 
 PR #2148 current head fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5; exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87; run 44854338438 passed 59 tests on Python 3.13 (6.52s) and 59 tests on Python 3.14 (8.81s), with compile PASS. The only later commit is a Markdown next-action table refresh. Status remains WIRED_SYNTHETIC / CI_LINUX, NOT_ACCEPTED; no normal Runtime, native B1/B2 GGUF or Redmi proof.
+
+
+## Boss verified coverage overlay — 2026-11-21 05:00 CET
+
+This overlay supersedes older family-level status summaries where newer evidence exists. It does **not** replace the historical 1,255-heading inventory or the requirement for clause-level mapping. Release branch readback: `c0cedbde718ede6107f4df1f1bf9c784df4e00cf`. Exact post-merge release-required workflows on that SHA are `action_required`, so this is not a phone release.
+
+| Capability family | Current evidence level | Verified behavior / evidence | Remaining acceptance gap |
+|---|---|---|---|
+| A0/A1 text ingress, segmentation, SourceRef | WIRED_SYNTHETIC | Existing text event/segment/source path and Store consumers | Full multimodal source/time/provenance path and Android-native input coverage |
+| A2 reference/teacher + A3 student/projector | WIRED_SYNTHETIC (partial) | Existing reference/student scaffolding and synthetic contracts | Student's own trainable representation transfer, retention, and eventual removal/replacement of temporary teacher roles |
+| A4 salience/attention | WIRED_SYNTHETIC | Existing text attention path; #2155 tests derived acoustic novelty into the real A4 controller | Normal Runtime consumer for voice cues; calibrated perception and live input |
+| A5 audio / RAW EAR | WIRED_SYNTHETIC | #2155 merged; caller-supplied <=1s PCM16 -> source-bound PerceptPacket -> A4 and C3 admission in synthetic Store tests; 8/8 focused tests | Not normal Runtime-wired; no microphone permission/capture, trained VAD, ASR, speech decoder, full duplex or Redmi proof |
+| A5 vision / video / sensors | ISOLATED_MOCK | Prior lab scaffolds only | Real Android permissioned sensor/image/video input and downstream consumers |
+| B1_DETAIL / B2_GIST | WIRED_SYNTHETIC; historical NATIVE_LINUX_PROOF partial | Existing distinct model roles and synthetic prompt/offer contracts | STEP2 utility remains FAIL; current Redmi evidence #1904 reports timeouts and zero valid offers; no two sparse MoE proof |
+| B3 symbolic / exact / control exchange | WIRED_SYNTHETIC | Source-bound symbolic and exact fallback contracts | These are not trained latent transfer |
+| B3 trained latent receiver path | NOT_IMPLEMENTED (target; partial prior Linux experiments remain non-accepted) | No current sender activation -> trainable projection -> actual receiver injection + task utility proof | SOURCE_EXACT vs LATENT vs NO_MESSAGE ablation, OOD/retention/cost and rollback |
+| B4 distributed workspace / re-entry | WIRED_SYNTHETIC (partial) | Existing workspace/re-entry contracts | Dynamic multi-organ receiver contribution and normal Runtime end-to-end proof |
+| C1/JEF/C2/C3 | WIRED_SYNTHETIC; REAL_REDMI_PROOF historical FAIL | Native output path exists; #1904 records incorrect 2+2 and long/failed turns | Correct 2+2, fast and deep paths, source-bound B1/B2 contributions consumed by C4/C3, current Redmi latency/accuracy |
+| C4 coalition / focal / inquisition | WIRED_SYNTHETIC (partial) | Contracts and synthetic candidate/offer handling | Real B1/B2 offers delivered, selected and used in final response; genuine adversarial/uncertainty utility |
+| World / Self / episodic memory | WIRED_SYNTHETIC | #2151 merged: Store-verified T8 receipts, numeric WorldJEPA predictor/EMA, separate B1/B2/SELF readouts, numeric episodic recall, persistent checkpoints | Not normal postcommit Runtime-wired; no real-user World/Planner utility or Redmi proof |
+| JEPA / EMA / local plasticity | WIRED_SYNTHETIC | #2151/#2152: numeric parameter changes, source/digest-disjoint train/holdout, shuffled/zero-action controls, new utility + prior retention gate, restart/rollback | Synthetic T8 only; no normal Runtime consumer, no native B1/B2/C3 weights, no real-user heldout/retention proof |
+| Sleep / Dream / Replay | WIRED_SYNTHETIC (partial) | Existing Sleep A/B/C and replay infrastructure; #2151 includes uniform vs no-replay experiment | No integrated Sleep -> WorldJEPA consolidation path, no real-user retention or Android lifecycle proof |
+| Tools / JEF agency | WIRED_SYNTHETIC | Typed action/permission contracts and synthetic outcome handling | No OS-authenticated Android action executor or user-approved API/UI action on Redmi |
+| Android background/API control | ISOLATED_MOCK | Capability/companion receipt prototypes | No Keystore-backed transport plus real permitted Android API action receipt |
+| Android UI observation/control | NOT_IMPLEMENTED | No accepted AccessibilityService/MediaProjection path | Explicit OS permission, observation/action, audit, cancel, revocation, restart on Redmi |
+| VOICE_AUDIO / speech output / full duplex | NOT_IMPLEMENTED (full path) | #2155 supplies acoustic feature metadata only | Microphone capture, trainable speech decoder/vocoder, TTS effector, timestamp alignment, barging-in/full duplex and speech learning |
+| Remote Termux maintenance | CODE_ONLY / REDMI_UNVERIFIED | Source code for private owner-read/update protocol; current read request has no device reply | Fresh authenticated receipt for status; patch-stage/sandbox/apply/restore lifecycle evidence; no shell grant |
+| Context OS / Memorilla companion | ISOLATED_TEST (additive draft) | #1983 remains an optional shadow overflow-companion candidate | Source-pointer-preserving archive integration, forget/revoke/restart, real B1/B2/C3 readers and device footprint |
+| C3 model candidate laboratory | ISOLATED_TEST | #2142 head 67c1300; code/test commit 40deb8a passed 23/23 model-lab tests with pinned license snapshot and executable identity checks | Native GGUF comparison NOT_RUN; staged-context gate missing; no user-approved experiment, download or swap |
+| Updater / installer / rollback | WIRED_SYNTHETIC (partial) | #2138 exact updater gate/race fixes previously tested; current c0ced post-merge required workflows are action_required | Current exact SHA green gate, real phone installed SHA, restart/rollback and consent receipt |
+| Cross-organ self-optimization / self-edit | NOT_IMPLEMENTED (production) | Synthetic WorldJEPA predictor/head parameters update; no native model or code self-edit | Actual trainable B1/B2/C3 adapters, cross-organ gradients, heldout/retention/rollback and later human-reviewed code changes |
+| Canon traceability | CODE_ONLY / IN_PROGRESS | Mechanical inventory of 1,255 historical headings | Atomic sentence/requirement mapping to organ, code, consumer, tests, environment evidence, status and rollback |
+
+**Evidence discipline:** no row above is ACCEPTED. GitHub Actions results are CI, synthetic fixtures remain synthetic, and prior Linux-native experiments remain partial. Current Redmi receipt is absent; current phone installed SHA is UNKNOWN. Whole-system completion remains false.
+
+
+
+## Latest evidence overlay — 2026-11-21 05:49 CET (additive; historical inventory unchanged)
+
+| Requirement family | Latest code/evidence | Current acceptance boundary |
+|---|---|---|
+| A5 / RAW EAR voice cues | #2155 merged at `c0cedbde718ede6107f4df1f1bf9c784df4e00cf`; exact safe-additive 8/8 tests and generic staged/integrated 240/415 CI passed | Caller-supplied PCM16 adapter only; not normal Runtime microphone capture, ASR, TTS, full-duplex or voice learning |
+| A5 → B1/B2/C3 staged Runtime | Draft #2158 head `2bbf9caf96f8fa90dc080afd00ba99db8329350d`; exact staged-a5 fails two ambiguous arithmetic fixture assertions; staged-runtime aggregate fails 1 test | `CODE_PRESENT / WIRED_SYNTHETIC_CANDIDATE`; not promoted, no Android proof; deployment-path additive gate remains blocking |
+| Arithmetic / C5 fastpath | Existing ambiguity policy intentionally abstains on bare date-shaped `7-12`; current #2158 positive fixtures incorrectly treat it as subtraction | Preserve ambiguity guard; positive fixture must use explicit/spaced arithmetic and negative fixture must assert abstention |
+| Runtime deployer / release | Current branch c0ced has 13 required PR-triggered runs in `action_required`; selected push/dispatch runs green | `NOT_RELEASED`; no updater or phone installation claim |
+| Redmi / Android voice and agency | Fresh private owner-read unanswered; installed SHA unknown | `REDMI_UNVERIFIED`; no microphone, API action, UI control, speech effector or device acceptance |
+
+Boss reviewed #2158 and posted the exact arithmetic-fixture and high-authority-path findings. No historical V13 Canon appendix or heading inventory was modified. Whole-system completion remains false.
+
+
+## Explicit CODE/WIRED/TESTED_SYNTHETIC/TESTED_ANDROID/ACTIVE snapshot — 2026-11-21
+
+### Whole-system capability status — explicit proof levels (2026-11-21 05:49 CET)
+
+| Capability | CODE | WIRED | TESTED_SYNTHETIC | TESTED_ANDROID | ACTIVE |
+|---|---|---|---|---|---|
+| A0-A5 perception/attention | PARTIAL | PARTIAL | PASS_PARTIAL | NOT_VERIFIED | NO_DEVICE_PROOF |
+| B1_DETAIL / B2_GIST | PRESENT_DISTINCT_ROLES | PARTIAL | PASS_PARTIAL | HISTORICAL_FAIL (#1904) | UNKNOWN |
+| B3 true latent receiver coupling | SYMBOLIC_ONLY | NO_TRAINED_RECEIVER | NO_ACCEPTED_UTILITY_PROOF | NOT_TESTED | NO |
+| B4 distributed workspace / C4 | PARTIAL | WIRED_SYNTHETIC_PARTIAL | PASS_PARTIAL | NOT_VERIFIED | UNKNOWN |
+| C1/JEF/C2/C3 | PRESENT | PARTIAL | PASS_PARTIAL | HISTORICAL_FAIL (#1904) | UNKNOWN |
+| World/Self/Memory/JEPA | EXPERIMENTAL_CODE_PRESENT | ISOLATED_STORE_CONSUMER | PASS (64/64 on 3.13 and 3.14) | NOT_TESTED | SHADOW; optimizer OFF |
+| Sleep/Dream/Replay | PRESENT_PARTIAL | PARTIAL | PASS_PARTIAL | NOT_TESTED | EXISTING_SLEEP_ONLY |
+| Context OS / Memorilla | CONTEXT_OS_PRESENT; companion draft | PARTIAL / isolated companion | PASS_PARTIAL | NOT_VERIFIED | UNKNOWN |
+| VOICE_AUDIO | RAW EAR cues present; TTS/vocoder absent | Synthetic adapter only; #2158 draft not promoted | PASS (8/8 adapter tests); #2158 staged tests FAIL | NOT_TESTED | NO |
+| ANDROID_BACKGROUND_CONTROL | Receipt-verifier prototype | No OS executor | PARTIAL | NOT_TESTED | NO |
+| ANDROID_UI_CONTROL | NOT_IMPLEMENTED | NO | NO | NOT_TESTED | NO |
+| SELF_OPTIMIZATION / cross-organ weights | Numeric WorldJEPA experiment only | Isolated Store learner | PASS_PARTIAL | NOT_TESTED | NO production weight edits |
+| Multimodal learning | Audio feature extraction only | No learning consumer | PARTIAL | NOT_TESTED | NO |
+| Tools / action fabric | Contracts present | WIRED_SYNTHETIC | PASS_PARTIAL | NOT_TESTED | NO device-action proof |
+| Updater / install / rollback | PRESENT | WIRED_SYNTHETIC_PARTIAL | PASS_PARTIAL | UNKNOWN; no receipt | UNKNOWN |
+| Two genuinely different sparse MoE bodies | NOT_PROVEN | NO sparse-MoE path | NO accepted sparse-MoE test | NOT_TESTED | NO |
+
+These columns are independent. `CODE` is not `WIRED`; synthetic CI is not Android proof; an existing feature in the app is not evidence that it is currently active on the phone. `UNKNOWN` is not PASS. Whole-Canon completion remains false.
+
+
+
+### R-018 RAW EAR VAD comparison (research-only, 2026-11-21)
+
+- Current #2155 adapter: heuristic acoustic cues, not calibrated VAD.
+- libfvad/WebRTC: BSD-3-Clause C baseline; upstream Android.mk precedent exists, but the separate WebRTC PATENTS notice needs review and Termux/Redmi build is unverified.
+- Silero VAD: MIT Torch/ONNX candidate; 8/16 kHz and ~2 MB JIT are documented upstream, but upstream speed numbers are not Redmi measurements.
+- Silero C port: MIT, 16 kHz, NEON arm64 claimed; only Windows/macOS/Linux prebuilt targets are documented, no Android proof.
+- No code/dependency/weights imported. Next: identical PCM fixtures, FPR/FNR, onset/offset, CPU/RSS, ARM ABI and license/patent checks.
+
+
+### JEPA/Memory receiver evidence overlay — 2026-11-21 / PR #2164
+
+This is an additive status note; the 1,255 historical V13 headings and their original wording/status inventory above are unchanged.
+
+| Canon family | CODE | Consumer wiring | Test evidence | Redmi/native body |
+|---|---|---|---|---|
+| Trusted T8 / ActionOutcome -> WorldJEPA/EMA | PR #2151/#2152 merged; direct V13 port in #2160 | Importable dual-gated postcommit API; normal Runtime caller still absent | Synthetic SQLite Store, numeric parameter/EMA diffs, disjoint holdout, retention, replay, restart/rollback; #2160 safe-additive 16/16 and staged/integrated 240/415 | REDMI_UNVERIFIED; no native B1/B2 weight change |
+| B1_DETAIL / B2_GIST / SELF_MODEL receiver heads | Numeric readout heads in #2160; batched candidate matrix in #2164 | Source-bound World/Planner SHADOW function consumes the role readouts and episodic recall; not normal Runtime-wired | Exact #2164 head 14a647c04b28e9cd5bbd5a19ae14d6cbb77d29a1, run 44872134464: staged 241 passed/10 skipped/47 subtests; integrated 415 passed/3 skipped/58 subtests. New positive persistence/idempotency and negative ActionOutcome/SourceRef tests are invoked by staged suite | Not native model activations, not B3, no GGUF updates, no Redmi proof |
+| World/Planner source-bound shadow record | world_jepa_planner.py in #2164 | Callable via consume_after_commit(..., event_id=...) after Core supplies the committed event id; record is persisted and readback checks source/checkpoint | Synthetic source revocation, stale checkpoint, receipt and idempotency controls; uncalibrated score explicitly has decision_authority NONE and dispatch false | No action dispatch or production route authority |
+| Sleep/Replay/retention | Existing synthetic numeric learner and replay modes | Not yet normal Runtime wired; optimizer moments still not persisted | Prior learner CI and #2164 staged/integrated checks; new replay allocation experiment still open | No Android/Redmi evidence |
+
+**Next required connection:** Core must integrate #2160/#2164 in dependency order and invoke the JEPA facade only after durable T8/ActionOutcome commit, passing the exact event id. Do not bypass the #2158 staged builder/deployer policy failures. Keep both learning/optimizer gates closed until separate authorization. After the normal Runtime consumer is present, measure source-disjoint new/old holdout utility, retention, replay-off/uniform/content-or-error replay, restart and rollback.
+
+**Evidence boundary:** exact Aii local checkout/tests remain BLOCKED by GitHub DNS in this worker. GitHub Actions/Linux synthetic Store tests are not native Linux model training or Redmi evidence. Release branch remains c0cedbde718ede6107f4df1f1bf9c784df4e00cf; NOT_RELEASED. Phone SHA UNKNOWN; REDMI_UNVERIFIED. Whole-canon and Android product completion remain false.
+
+
+
+### Boss integration evidence overlay — 2026-11-21 06:42 CET
+
+The historical 1,255-heading inventory and all original V13 appendix bytes remain unchanged. This is an additive current-state overlay.
+
+| Canon family | Latest code/consumer | Test evidence | Acceptance still open |
+|---|---|---|---|
+| T8 / World / Self / JEPA | #2160 merged at `aa79b05037f6fedfffd84801105f00321c7f6055`; persistent source-bound numeric WorldJEPA/EMA learner and B1/B2/SELF SHADOW heads, dual gates default OFF | Exact pre-merge CI: 16/16 safe-additive; 240 staged-runtime; 415 integrated-regression, synthetic SQLite Store | No normal Runtime postcommit caller, no native B1/B2/C3 weight changes, no Redmi/real-user utility |
+| World/Planner numeric receiver | #2164 candidate head 14a647c04b28e9cd5bbd5a19ae14d6cbb77d29a1; 241 staged / 415 integrated pass | Synthetic Store positive/idempotency and negative SourceRef/ActionOutcome controls | Exact-one ActionOutcome scan must cover the declared bound (currently truncates at 32); not normal Runtime-wired or authoritative routing |
+| RAW EAR / A4 attention | #2161 V3 pause-robust voiced-energy feature; dedicated 11/11 CI | Python 3.11/3.13 focused suite PASS; staged integration pending | No microphone capture, trained VAD, speech decoding/output, full duplex or Redmi proof |
+| A5→B1/B2/C3 voice Runtime | #2158 draft current head fails | Exact staged voice test ends ERROR because QueryPacket lacks derived audio_context; arithmetic/date-shaped source tests and recovery builder assertion also fail | Fix source and packet consumer, pin V3 adapter, full offer-consumption E2E, exact staged/integrated/migration green |
+| Android control audit storage | #2163 draft symlink/hardlink-safe local DB path candidate | Isolated helper 6/6 and broker test workflow PASS; safe-additive workflow still fails | Review all path/race/permission cases; not OS sandbox, authenticated consent, background executor or UI control |
+| Release / Redmi | Development branch `aa79b05037f6fedfffd84801105f00321c7f6055` | Post-merge exact push workflows queued/in progress at readback | Required exact-HEAD CI must all finish green; private owner-read RedMentos/Aiiii#368 still OPEN_NO_REPLY; installed SHA UNKNOWN |
+
+**Environment boundary:** exact local repository tests BLOCKED by GitHub DNS; CI tests use Linux runners and synthetic Store data. No local native-model training, Android/Redmi validation, installed SHA, user data, model download or permission change is claimed.
