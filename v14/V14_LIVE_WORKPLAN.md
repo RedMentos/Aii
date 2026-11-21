@@ -355,3 +355,20 @@ No material V14 master edit was made; no master backup was required. Historical 
 4. Only after this candidate is integrated, proceed to the next actual receiver/utility experiment. Keep B1/B2/SELF numeric heads SHADOW, native GGUF weights untouched and Redmi status UNVERIFIED.
 
 No user action, Termux command, model download/swap or device permission change is required.
+
+
+## JEPA & Memory checkpoint — staged consumer proof, 2026-11-21
+
+- JEPA follow-up #2182 code/test commit `b69820b5740aadc76871c1ccccf02e51a03bcd46` passed exact CI run 44885838336: staged runtime 249 passed / 10 skipped / 47 subtests; integrated regression 415 passed / 3 skipped / 58 subtests.
+- The staged-runtime job now builds the exact integrated stage, copies the postcommit consumer test into that tree, and runs it in a fresh subprocess. Its 9 tests passed, including checkpoint optimizer receipt, Adam step readback after consumer restart, and prior-step restoration after rollback. The ordinary source-tree test expects the honest inference-only receipt=false; the staged overlay expects true.
+- First attempt 44885361818 failed only the staged test because it applied the staged expectation to the ordinary source tree; integrated regression passed. The context split fixed that.
+- The staged training-resume test reports main_steps=4, bootstrap_steps=2, exact EMA/inverse/moments/RNG/source-lineage continuation. Synthetic disjoint holdout: 0.69993 → 0.66339 (delta −0.03653; 47 train / 17 holdout rows).
+- This is CI evidence for a staged NumPy WorldJEPA/EMA consumer with synthetic T8/SQLite data. It is not local checkout execution, native GGUF body learning, learned cross-organ latent transfer or Redmi proof.
+- #2182 remains draft and stacked on Boss #2179. Parent #2179's safe-additive gate failed because existing builder/deployer files were modified; do not bypass. Independent Boss review is required before integration.
+
+### Next executable experiment
+1. Boss reviews/integrates #2179 without bypassing safe-additive.
+2. Rebase #2182 onto the new release HEAD and rerun exact staged/integrated/combined JEPA CI.
+3. Run persistent-vs-reset optimizer and mean-delta baseline comparisons on identical source/digest-disjoint T8 cohorts, matched update steps/batch/replay bytes; measure new and old cohorts including return-to-old dynamics, action-shuffled/zero-action controls, optimizer-step continuity, restart and rollback.
+4. Only then advance the next real B1/B2/SELF receiver-utility experiment. Keep native GGUF body updates and permissions untouched; Redmi remains UNVERIFIED.
+
