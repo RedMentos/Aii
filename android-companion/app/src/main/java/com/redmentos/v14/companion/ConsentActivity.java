@@ -76,21 +76,30 @@ public final class ConsentActivity extends Activity {
             finish();
             return;
         }
+        if (!db.claimForExecution(action.actionId)) {
+            Toast.makeText(this, "Action was cancelled or already claimed", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
         try {
             Intent launch = getPackageManager().getLaunchIntentForPackage(action.packageName);
             if (launch == null) {
-                finishWithReceipt("FAILED_TO_DISPATCH", true);
+                finishWithReceipt("FAILED_TO_DISPATCH", true, "EXECUTING");
                 return;
             }
             launch.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             startActivity(launch);
-            finishWithReceipt("DISPATCHED_UNVERIFIED", true);
+            finishWithReceipt("DISPATCHED_UNVERIFIED", true, "EXECUTING");
         } catch (Exception e) {
-            finishWithReceipt("FAILED_TO_DISPATCH", true);
+            finishWithReceipt("FAILED_TO_DISPATCH", true, "EXECUTING");
         }
     }
 
     private void finishWithReceipt(String status, boolean localConsent) {
+        finishWithReceipt(status, localConsent, "PENDING_USER_APPROVAL");
+    }
+
+    private void finishWithReceipt(String status, boolean localConsent, String expectedStatus) {
         try {
             JSONObject key = signer.publicKeyInfo();
             JSONObject body = new JSONObject();
@@ -109,7 +118,7 @@ public final class ConsentActivity extends Activity {
             body.put("key_storage_status", key.getString("key_storage_status"));
             body.put("key_id", key.getString("key_id"));
             JSONObject receipt = signer.sign(body);
-            db.finish(action.actionId, status, receipt.toString());
+            db.finish(action.actionId, expectedStatus, status, receipt.toString());
             Toast.makeText(this, status, Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Toast.makeText(this, "Receipt signing failed: " + e.getClass().getSimpleName(), Toast.LENGTH_LONG).show();
