@@ -15,8 +15,16 @@ import platform
 import random
 import statistics
 import struct
+import sys
 import time
 import tracemalloc
+from pathlib import Path
+
+# Keep the documented direct-script invocation working: Python otherwise puts
+# only this experiments/ directory at sys.path[0], not the v13/code package root.
+CODE_ROOT = Path(__file__).resolve().parents[1]
+if str(CODE_ROOT) not in sys.path:
+    sys.path.insert(0, str(CODE_ROOT))
 
 from v13.audio_voice_cues import extract_voice_cues
 
