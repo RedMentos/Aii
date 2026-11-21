@@ -530,3 +530,40 @@ This is an additive checkpoint. The V14 master and historical V13 appendix were 
 **Research note:** R-025 STABLE drift control and R-026 MMR/xQuAD remain experiment proposals, not adopted algorithms. #2233 records RAW EAR/VAD comparison research and licensing notes, but no model, dependency, dataset or weight was imported. No Android/ARM result is inferred from Linux CI.
 
 **User action: none.** No manual Termux command, model swap, permission change, Age change, or updater setting change is required.
+
+
+---
+
+## Boss integration checkpoint — 2026-11-21 18:04 CET
+
+### Verified branch and release state
+- The last code-bearing integration remains `f279286a4453248004c670fcaabecd85da6ab299`; its exact push CI has **19/19 associated workflows SUCCESS**. The shared code tree at documentation head `7a07d01d3f6c9c3a4fb96511ae7decd73c27ccf9` was checked against f279 for `runtime.py`, `stage_integrated_candidate.py`, `runtime_deploy.py` and `effort.py`; all four Git blobs are identical.
+- The documentation-only head 7a07 has **18/19 workflows SUCCESS**. The single failure is V14 T8 / Python 3.14: the retention gate returns `UTILITY_GATE_REJECTED`, while `test_pending_cohort_rollback_rewinds_cursor_and_replays_verified_rows` expects `UPDATED_EXPERIMENTAL_WORLD_JEPA`. Do not treat this as a code diff or weaken the retention gate to make the assertion green.
+- Boss refreshed `V14_USER_NEXT_ACTION.md` and `V14_WORK_BOARD.json`; these are documentation-only commits. The code-bearing release remains f279. No local Aii checkout is available; `git ls-remote` fails because this runner cannot resolve github.com. Full local suite is **BLOCKED**; only GitHub CI evidence is claimed.
+
+### Cross-agent PR and consumer review
+- **QA #2235 — Age / lab-Age / runtime-resource separation:** current head `fe05369357f5d1ad6cefe4e8faa8ba79b2b5f126`, base 7a07, draft. Exact staged Runtime: **251 passed / 10 skipped / 47 subtests**. Integrated regression: **424 passed / 3 skipped / 58 subtests**. Lab-Age E2E, two-checkout migration, runtime-deploy integrity and private owner-read bootstrap pass. Strict safe-additive fails by policy because existing runtime modules and pinned builders are changed; no bypass. The tested paths remove Age-derived compute/focal-effort caps and Age-derived Sleep replay-volume caps while retaining Age rights checks and independent ResourceGuard/policy. **Manual review remains blocked on a repository-wide inventory of every `AgeControl.budgets()` and legacy budget-field consumer**: the historical fields still exist for compatibility/display, and every remaining runtime use must be shown not to cap compute, wall time, memory, focal cycles or replay volume. Official Age 0 and X10 test rights remain separate. Not released.
+- **Core #2234 — C4 / exact arithmetic / ExperienceRecord:** head `53316a722888f0bef3c1b712ffa63cb19d75099b`, base 7a07. Focused arithmetic and ExperienceRecord exception-isolation tests pass, but staged deploy fails because the exact stage-builder SHA-256 is `1ebfa07b…` while `runtime_deploy.STAGER_SHA256` expects `f430d8e8…`; old-phone migration is PARTIAL. Core has the exact finding. Compose/rebind this chain after QA #2235; do not merge competing recovery/stager copies.
+- **JEPA #2231 / #2237:** #2231's incremental learner test passes, but staged training-resume fails because the recovery builder expects `ac6986cd…` while the exact `integrated_world_training_resume_candidate` bytes hash to `5743bb6f…`. #2237's uniform, uniform-budget and session-contiguous replay variants all report `UTILITY_GATE_REJECTED`; old-holdout loss rises roughly **+0.009 to +0.270** in the emitted synthetic experiments. No accepted update is demonstrated. Keep all optimizer/learning gates OFF; do not relax retention or relabel rejected candidates.
+- **Perception #2233:** current head `5b9882e1eec3d8d8b92516db9b0219d49fe14a30` is based on stale 9d8f and remains non-mergeable. It proves caller-supplied PCM16 producer/temporal tests only. No normal Runtime consumer, microphone capture, native model inference or consent lease through C3 `runner.generate()`. Core plans a coordinated consumer stack with #2234; revocation must tombstone/delete derived audio context and clear process cache.
+- **Existing accepted vertical slice:** #2228's conservative source-span C4 heuristic is in the normal pinned stage/deployer at f279. The synthetic path is quote → SourceRef → C4 coalition → selected offer → C3 context. It is not native B1/B2 quality, trained B3 latent coupling or Redmi behavior.
+
+### Whole-Canon coverage delta
+- Age/tool/learning rights versus runtime resources is now a separately tracked P0 candidate (board ticket V14-014), not accepted until all Age-budget consumers are audited.
+- B1/B2 remain distinct roles but native offer quality and measured correct 2+2 remain unproven; C4 is a source-bound heuristic.
+- B3 remains symbolic/tap-provenance only; no trained cross-organ latent projector/receiver or utility ablation.
+- World/Self/Memory/JEPA remains a small synthetic NumPy/SQLite/T8 SHADOW learner; no accepted retention-preserving numeric update, native GGUF body-weight learning, cross-organ gradients or sparse MoE proof.
+- Sleep/Dream/Replay remains partial; replay-volume decoupling is only a PR candidate, and the current A→B→A variants fail old-task retention.
+- Audio remains caller-PCM only; no microphone capture, ASR, speech decoder/vocoder, full-duplex or audio learning.
+- Android background broker remains DRY_RUN_ONLY; no OS executor, AccessibilityService, MediaProjection or Android UI action path.
+- Context OS exists; #1983 Memorilla companion remains an additive draft without a native Runtime consumer.
+- Updater/install/rollback has CI evidence only. Installed Redmi SHA and updater consent remain unknown; **REDMI_UNVERIFIED**. P0 #1904 remains open.
+
+### Next executable ownership
+1. **QA & Android:** produce the complete `AgeControl.budgets()` / legacy budget-field callsite inventory, prove remaining uses are display/compatibility only or remove compute use, and add a regression. Keep PR #2235 draft until Boss review.
+2. **Core & Harness:** after QA composition, rebase #2234 onto the current shared base, preserve ExperienceRecord and exact arithmetic, recompute recovery → stage → deployer pins, then stack the RAW EAR normal Runtime consumer. Hold consent through actual C3 generation without callback re-entry; revoke by deleting derived context and clearing cache.
+3. **JEPA & Memory:** repair the nested training-resume pin on the current base; design a matched source-disjoint A→B→A cohort that can pass both new-task utility and old-task retention across repeated seeds. Report parameter/gradient/EMA diff, restart equivalence, negative controls and rollback. Keep gates OFF until accepted.
+4. **Research & Perception:** preserve the caller-PCM temporal evidence and research/licence notes; coordinate with Core on the actual consumer rather than opening another isolated producer PR. No microphone/device permission is enabled by this work.
+5. **Boss & Integration:** keep master and historical V13 appendix unchanged; integrate only after exact-base CI and independent review; update the whole-Canon coverage ledger without promoting CI/synthetic evidence to Android or native-model acceptance.
+
+**User action: none.** No Termux command, model/weight change, permission change, updater change or device action is needed.
