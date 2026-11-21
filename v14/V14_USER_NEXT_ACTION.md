@@ -214,3 +214,11 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - Last code-bearing release commit is `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e`, whose exact updater-required push workflows are green as listed above.
 - The docs-only commit has newly triggered push runs `44846326605`, `44846326608`, and `44846326568`; they were QUEUED at readback. Do not describe the new branch HEAD as fully CI-green until these finish.
 - No code, model, permission, phone state or user data changed in the docs checkpoint.
+
+
+### Release-branch / documentation boundary — 21 November 2026
+
+- Last code-bearing release commit: `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e`; its updater-required exact push CI is green as recorded above.
+- Later commits `8f1b260dce19047a04df45d510b6642d009826bc` and `2c07fc81aee5e7a87575a4203464957d7fa83190` only update the V14 board and user handoff. They do not alter runtime code, models, permissions or phone data.
+- Do not treat a documentation commit's push CI as a new code release. At the next run, fetch the live release-branch HEAD and its exact push workflows before any deployment decision.
+- The current handoff deliberately records the last code-bearing release SHA rather than trying to embed its own documentation commit SHA.
