@@ -1832,3 +1832,8 @@ This overlay supplements the historical Canon inventory; it does not close or si
 ## QA exact-head correction — 2026-11-21 22:17 CET
 
 The composed #2258 evidence supersedes the prior `queued` note: A5 lease, staged/integrated, Lab-Age, Python 3.14 staged startup, old-phone migration and audio/arithmetic checks are **FAIL** on exact head `0ecbb1aac1f70c63cb39428a18811cfe4fd66d56`. The common stage failure is an old-reader SHA replacement mismatch in `source_lifecycle_lock_integration_candidate.py`; A5 import collection separately lacks the current Perception adapter exports. The speech-output fixture-only fix is PR #2261 and CI is pending. Combined JEPA and offline deploy-integrity workflows passed. Safe-additive remains policy-blocked. No local full checkout, Redmi receipt, installed SHA, Android provider or device update is proven. Keep all affected Canon rows PARTIAL/OPEN; do not promote A5 UI to native Android or mark deployment accepted.
+
+
+## QA follow-up — additional staged pin blockers (2026-11-21 22:20 CET)
+
+Exact #2261 run `44950978469` shows the composed candidate is still **FAIL**: staged-runtime and integrated-regression do not pass; integrated suite reports 226 passed, 10 skipped, 41 subtests, 24 failed and 2 errors. Beyond the lifecycle old-reader pin mismatch, both the idle recovery builder and record-only online-world guard still pin the prior `v13/operator.py` SHA (`67f2118e...`) instead of current `b81aa415...`. These are separate dependent builder chains and must be rebound without relaxing source checks. A5 adapter exports are still missing from the composed branch. The speech fixture change is not directly tested by this run. Keep V14-001 PARTIAL/OPEN, NOT_RELEASED, REDMI_UNVERIFIED.
