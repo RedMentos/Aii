@@ -41,3 +41,11 @@
 1. Review this PR and run the exact test file in CI.
 2. If the pinned 230M GGUF already exists locally, run the lab in both baseline-first and candidate-first order on the actual Redmi while the V13 runtime is idle.
 3. If it is absent, request separate explicit consent before any experimental download into an isolated lab slot. Keep the 350M production model unchanged. A production swap would require a second, separate explicit approval after real comparisons and rollback verification.
+
+
+## PR / CI checkpoint — 2026-11-21
+
+- PR #2142: https://github.com/RedMentos/Aii/pull/2142 — ready for review, open, mergeable at last readback; base commit c3c32c05a0374e970d274f8a777a7ab85c067d66.
+- Code-bearing checkpoint commit: 64ff26aa51f3a9ec4c6a169588ef41004b7ba2a0; this also adds .github/workflows/v14-model-lab.yml for future V14 experiment changes.
+- Exact PR workflow runs and commit statuses were still empty at last readback. CI is NOT_RUN, not PASS. The existing V13-specific workflows did not trigger for this V14-only path; the new workflow is committed but was not observed executing in this run.
+- Local 13/13 synthetic tests remain the only execution evidence for the lab logic. No native inference, no candidate download and no Redmi proof.
