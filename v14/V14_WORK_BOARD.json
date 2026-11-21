@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T21:28:00Z",
+  "updated_at": "2026-11-21T21:32:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,15 +14,15 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Boss integration branch boss/v14-core-perception-store-audio-integration-20261121 exact head 8dc3828ff7c1efa6a7c34563adcbd48caf39ad92, based on release-development HEAD bdcad466ffea75a2b41f7d23be168f53c7197d20. Exact CI: A5 UI lease PASS (run 44951469829; current 27,872-byte adapter exports A5UIRuntimeAdapter and _persist_source_and_packet); combined online JEPA PASS (44951469809); runtime-deploy integrity PASS (44951469798); release event integration PASS (44951469879). The common staged failure has advanced past earlier lifecycle and operator pin mismatches and now fails at integrated_arithmetic_outcome_candidate_20261116.py:45: ValueError arithmetic outcome upstream changed: v13/world_semantic_evidence_candidate.py. Raw SOURCE_PINS 354306bb... matches base bytes, but transformed UPSTREAM_PINS 0711ed85... is stale after the current World/Store builder composition. This blocks staged-runtime/integrated-regression (44951469784), Python 3.14 staged startup in owner-read (44951469800; owner-read job itself PASS), Lab-Age E2E (44951469834), migration (44951469804; PARTIAL) and Core audio 3.13/3.14 (44951469872). Safe-additive remains FAIL_BY_POLICY (44951469864). No full local Aii checkout; no Redmi receipt or installation.",
-      "next_step": "Core/JEPA: recompute the exact transformed world_semantic_evidence_candidate bytes produced by the current World/Store composition, update UPSTREAM_PINS without substituting the raw SOURCE_PINS digest, then recompute the outcome builder, recovery wrapper, stage and runtime_deploy STAGER_SHA256 chain. Rerun exact Python 3.13/3.14 staged, integrated, owner-read, Lab-Age, migration, audio and deploy checks. Perception A5 lease and idle/online-world operator pins now pass on 8dc; do not reintroduce old versions. Boss reviews protected files and only integrates after all functional gates pass. No Redmi proof.",
+      "proof_environment": "Boss integration branch boss/v14-core-perception-store-audio-integration-20261121 exact head 4c1023dcd59bea5790bfe8a0999460431b169c73, based on release-development HEAD bdcad466ffea75a2b41f7d23be168f53c7197d20. Exact CI: A5 UI lease PASS (44951931825); combined online JEPA PASS (44951931760); runtime-deploy integrity PASS (44951931802); release-event integration PASS (44951931844). Previous lifecycle/guard, idle/online-world operator and A5 composition blockers have advanced/passed. Current common stage error is now ValueError arithmetic outcome upstream changed: v13/local_error_route_shadow_candidate.py at integrated_arithmetic_outcome_candidate_20261116.py:45. The raw SOURCE_PINS entry 87bb77ed... is the source identity; derived UPSTREAM_PINS still expects 3106cb3e... and is stale after the current World-semantic rebind. Staged/integrated FAIL (44951931769); owner-read job PASS but Python 3.14 staged startup FAIL at the same pin (44951931772); Lab-Age E2E FAIL (44951931715); old-phone migration PARTIAL (44951931857); Core audio 3.13 FAIL and 3.14 still running (44951931787); safe-additive FAIL_BY_POLICY (44951931754). No full local Aii checkout; no Redmi receipt or installation.",
+      "next_step": "Core/JEPA: recompute the exact transformed local_error_route_shadow_candidate bytes produced by the current World-semantic builder after the new semantic pin, update the derived UPSTREAM_PINS value without replacing it with raw SOURCE_PINS, and recompute outcome-builder → recovery-wrapper → stage → runtime-deployer hashes. Rerun exact Python 3.13/3.14 staged, integrated, owner-read, Lab-Age, migration, audio and deploy checks. A5, idle and online-world pins now pass; retain these fixes. Boss performs protected-file review only after all functional gates pass. No Redmi proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T21:28:00Z",
+      "last_checkpoint": "2026-11-21T21:32:00Z",
       "latest_qa_candidate": {
         "pr": 2258,
-        "head_sha": "8dc3828ff7c1efa6a7c34563adcbd48caf39ad92",
-        "status": "NOT_RELEASED_COMMON_STAGE_PIN_FAILURE",
-        "current_error": "arithmetic outcome upstream changed: v13/world_semantic_evidence_candidate.py",
+        "head_sha": "4c1023dcd59bea5790bfe8a0999460431b169c73",
+        "status": "NOT_RELEASED_DERIVED_LOCAL_ERROR_PIN_FAILURE",
+        "current_error": "arithmetic outcome upstream changed: v13/local_error_route_shadow_candidate.py",
         "checks": {
           "a5_lease": "PASS",
           "combined_jepa": "PASS",
@@ -34,7 +34,8 @@
           "python314_staged_startup": "FAIL",
           "lab_age": "FAIL_AT_STAGE",
           "migration": "PARTIAL",
-          "core_audio_313_314": "FAIL",
+          "core_audio_313": "FAIL",
+          "core_audio_314": "IN_PROGRESS",
           "safe_additive": "FAIL_BY_POLICY"
         },
         "redmi": "REDMI_UNVERIFIED"
