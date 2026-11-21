@@ -78,3 +78,14 @@ Three regressions cover a different environment override (refused before generat
 - Native GGUF inference NOT_RUN; no candidate download or model swap; no phone action. REDMI_UNVERIFIED / NOT_RELEASED.
 
 Next: read back exact-head CI, then obtain independent Core/QA review. Keep 230M diagnostic-only unless a new authorized Redmi A/B comparison proves quality and performance; no production swap without a separate approval and rollback evidence.
+
+
+### Corrected exact CI readback — 21 November 2026
+
+The first post-fix workflow run 44853309109 failed only because the new loaded-executable regression expected a different error string than the fail-closed helper emitted. The implementation correctly rejected the changed executable. The test assertion was aligned; no safety check was relaxed.
+
+- Exact code/test SHA: `f5c5265a89258a6fd1ab5d25c20c733d21bb2ab4`.
+- Exact GitHub Actions run: [44853451281](https://github.com/RedMentos/Aii/actions/runs/44853451281), Linux/Python 3.13.18, compile PASS, manifest JSON PASS, 16/16 tests PASS.
+- LOCAL_LINUX helper-level identity suite: `py_compile` PASS, 5/5 tests PASS. Full repository checkout/test is still blocked by DNS.
+- Native GGUF inference NOT_RUN; no candidate download/swap; no Redmi receipt; NOT_RELEASED.
+- Current PR head includes subsequent documentation-only checkpoints; code/test bytes remain the tested SHA above.
