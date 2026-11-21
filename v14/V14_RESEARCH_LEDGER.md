@@ -635,3 +635,30 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - `V13 staged context and integrated regression` run `44941328011` was still IN_PROGRESS at final readback. No claim is made for those broader tests.
 - Local standalone nested-source/event/generation/finality/modality filter check: **4/4 PASS**. Full repository LOCAL_LINUX test remains BLOCKED because the complete checkout is not mounted and GitHub DNS resolution fails in this worker.
 - Device and release: `REDMI_UNVERIFIED` / `NOT_RELEASED`. The adapter uses a synthetic OS provider; no phone, capture, microphone, model or permission was exercised.
+
+
+## R-044 — Lightweight visual UI grounding candidates and Android capture boundary (2026-11-21)
+
+### GoClick — primary record and maintained OSS
+
+- **Paper:** Hongxin Li, Yuntao Chen, Zhaoxiang Zhang, “GoClick: Lightweight Element Grounding Model for Autonomous GUI Interaction,” arXiv:2604.23941, submitted 2026-04-27. Only the arXiv abstract/metadata was accessible in this review; **full paper not read**, and peer review status not verified. The abstract claims a 230M-parameter encoder-decoder grounding model and a 3.8M curated core set refined from 10.8M examples. Do not treat its reported accuracy as a Redmi result.
+- **Code:** https://github.com/ZJULiHongxin/GoClick, repository declares MIT. README describes a two-stage plan→function-description→grounding architecture, Florence-2 based; requires Transformers 4.45.0, timm and PyTorch 2+, with CUDA recommended. Its benchmark scripts use external planners (for example GPT-4o) and GPU-oriented evaluation; not a standalone on-device Android agent.
+- **Weights:** https://huggingface.co/HongxinLi/GoClick-Base declares MIT, 0.3B parameters, F32 Safetensors, based on microsoft/Florence-2-large, and uses `trust_remote_code=True`. No GGUF/llama.cpp/ARM64 path, quantized file or Android measurement was verified. Training recipe uses multi-GPU `torchrun`; no mobile training claim. Dataset provenance/license was not audited. **Not a current Redmi candidate**; only a possible future grounding teacher after a real ARM/quantization path and explicit opt-in.
+
+### MobileExplorer — architecture idea, not a verified dependency
+
+- **Paper:** Runxi Huang et al., “MobileExplorer: Accelerating On-Device Inference for Mobile GUI Agents via Online Exploration,” arXiv:2605.26546, submitted 2026-05-26. Abstract only reviewed; full text, implementation, license and exact device matrix were not verified.
+- Abstract reports lightweight parallel UI-element exploration during VLM reasoning, structured traces, and two-level rollback; claims 23% fewer reasoning steps / end-to-end latency and up to 5% success improvement on its AndroidWorld + custom tasks. Conditions are not independently checked here. Treat as a **research hypothesis**, not a measured V13 optimization.
+- Testable V14 adaptation: while the planner reasons, perform only bounded, read-only, consented element exploration; store source/generation/session-bound candidate traces; require verified state restoration and a stop switch; compare no-exploration, shuffled traces and failed-rollback controls. Do not execute taps or mutate UI during speculative exploration.
+
+### Android platform boundary
+
+- Official Android foreground-service documentation: https://developer.android.com/develop/background-work/services/fgs/service-types. MediaProjection requires calling `createScreenCaptureIntent()` and obtaining the user's grant before `getMediaProjection()`; Android 14+ additionally requires the `mediaProjection` foreground-service type and permission, and Android 15 disallows starting that FGS from `BOOT_COMPLETED`. This reinforces an explicit, user-visible capture session; no covert boot-time screen capture.
+- For the Redmi's Android 13, do not import API-34+ manifest rules as if they were already required on that device. The user-granted capture intent remains the key authorization boundary. Verify exact target SDK and device behavior on hardware before claiming support.
+
+### Decision / next experiment
+
+- Keep the metadata-only A5 UI lease as a provider-independent contract; do not couple it to a specific VLM.
+- Prefer Android API/accessibility event metadata when available and explicitly granted; use MediaProjection only with the platform grant and an active visible session. A visual grounding model may rank/locate elements but must never itself authorize a tap.
+- No GoClick/MobileExplorer model or dataset was downloaded, imported, or swapped. No Android permission was requested. ARM64 build, memory/PSS, TTFT and Redmi grounding quality remain NOT_TESTED.
+- Status: PAPER_ABSTRACT_ONLY / OSS_README_AND_LICENSE_REVIEWED / MODEL_CARD_REVIEWED / NO_IMPORT / NO_DOWNLOAD / NO_ANDROID_PROOF.

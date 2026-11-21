@@ -113,3 +113,10 @@ No user action is needed now. Current installed Redmi SHA/updater status was not
 
 - Current Core PR #2242 head `edefe004735513bfa531984fb2662da5adb6a997` is based on the same declared release SHA `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`, but its diff deletes the merged #2243 experiment folder, R-037 from the research ledger, the Perception handoff, and the dedicated latent-cache model-lab workflow job.
 - This is an accidental ownership/ancestry conflict with already-merged research, not a requested removal. A blocking comment was posted on Core #2242 and on whole-system issue #1984. Research/Perception did not edit Core-owned files; preserve these merged artifacts before any Core merge.
+
+
+## New A5 visual grounding research — 2026-11-21
+
+- Added R-044 to the research ledger: GoClick (arXiv:2604.23941) is a promising two-stage GUI grounding research lead, but only its abstract and maintained MIT repo/model card were reviewed. The 0.3B F32 GoClick-Base uses Florence-2-large, Transformers `trust_remote_code`, PyTorch and timm; no GGUF/ARM64/Android path or device benchmark was found. Dataset license/provenance remains unaudited. It is not a Redmi download candidate today.
+- MobileExplorer (arXiv:2605.26546) abstract proposes parallel read-only exploration and two-level rollback; full paper/code/license/device conditions were not verified. Treat the claimed 23% latency and up-to-5% success deltas as abstract-reported only. Possible experiment: bounded speculative UI exploration with source-bound traces, explicit state rollback and no tap authority.
+- Official Android docs confirm MediaProjection's user-grant flow and API-34+ foreground-service requirements. No screen capture or permission was attempted. Links and limitations are in R-044.
