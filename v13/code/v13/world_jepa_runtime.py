@@ -102,7 +102,7 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None):
         result.update({"status":"CANCELLED","native_body_weights_changed":False})
         return result
     except (ValueError, TypeError, KeyError, OSError, OverflowError,
-            ArithmeticError, AttributeError) as exc
+            ArithmeticError, AttributeError) as exc:
         result.update({"status": "ERROR", "error": type(exc).__name__})
         return result
 
