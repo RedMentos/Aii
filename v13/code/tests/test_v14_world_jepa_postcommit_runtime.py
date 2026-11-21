@@ -621,3 +621,64 @@ def test_receiver_readout_fails_closed_when_its_shuffled_latent_control_fails(tm
         assert "prediction" not in rejected
     finally:
         store.close()
+
+def test_planner_withholds_each_role_when_its_own_negative_control_fails(tmp_path):
+    """The actual batched Planner consumer must honor every role's utility gate."""
+    home = tmp_path / "brain-planner-receiver-utility"
+    store, session = _make_store(home)
+    try:
+        event_ids = _add_transitions(store, session, 0, 256)
+        store.set_state(PERMISSION_KEY, {
+            "learning_enabled": True, "optimizer_permission": True,
+            "steps": 120, "replay_mode": "uniform",
+        })
+        sleep = _sleep(store, home)
+        trained = sleep._run_world_jepa(event_ids[-1], limit=256)
+        assert trained["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        original_state, _ = store.state("v14.world_jepa.store_consumer", None)
+        original_metrics = dict(original_state["active"]["metrics"])
+        for role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL"):
+            current, version = store.state("v14.world_jepa.store_consumer", None)
+            active = dict(current["active"])
+            metrics = dict(active["metrics"])
+            prefix = role.lower()
+            holdout_key = prefix + "_holdout_mse"
+            shuffled_key = prefix + "_shuffled_latent_mse"
+            assert holdout_key in metrics and shuffled_key in metrics
+            metrics[shuffled_key] = metrics[holdout_key]
+            active["metrics"] = metrics
+            current = dict(current)
+            current["active"] = active
+            store.set_state("v14.world_jepa.store_consumer", current, expected=version)
+
+            planner = consume_world_planner_shadow(
+                store, event_ids[-1], home=home
+            )
+            assert planner["status"] == "SHADOW_PLANNER_UNAVAILABLE"
+            assert planner["ranked_actions"] == []
+            assert planner["decision_authority"] == "NONE"
+            assert planner["dispatch"] is False
+            assert planner["native_body_consumed"] is False
+            for action in world_model.ACTIONS:
+                readout = planner["candidate_readouts"][action][role]
+                assert readout["status"] == "RECEIVER_UTILITY_REJECTED"
+                assert readout["receiver_utility"]["accepted"] is False
+                assert "prediction" not in readout
+                assert readout["decision_authority"] == "NONE"
+                assert readout["native_body_consumed"] is False
+                assert readout["native_body_weights_changed"] is False
+            assert all(
+                item["status"] == "UNAVAILABLE"
+                for item in planner["candidate_readouts"].values()
+            )
+
+            # Restore the exact original metrics before testing the next role.
+            current, version = store.state("v14.world_jepa.store_consumer", None)
+            active = dict(current["active"])
+            active["metrics"] = dict(original_metrics)
+            current = dict(current)
+            current["active"] = active
+            store.set_state("v14.world_jepa.store_consumer", current, expected=version)
+    finally:
+        store.close()
