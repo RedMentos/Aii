@@ -299,10 +299,9 @@ def test_non_boolean_optimizer_permission_cannot_advance_censored_cursor(tmp_pat
 
         allowed = consumer.update(limit=64, optimizer_permission=True)
         assert allowed["status"] == "NO_NEW_TRANSITIONS"
-        assert allowed["scan_cursor"] == 8
-        payload, _ = store.state("v14.world_jepa.store_consumer", None)
-        assert payload["scan_cursor"] == 8
-        assert payload["pending_rows"] == []
+        assert allowed["scan_cursor"] == 0
+        payload, version = store.state("v14.world_jepa.store_consumer", None)
+        assert payload is None and version == 0
     finally:
         store.close()
 
