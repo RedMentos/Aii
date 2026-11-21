@@ -592,3 +592,20 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 - Core PR [#2158](https://github.com/RedMentos/Aii/pull/2158), exact inspected head `79e7ffa7b5f81a4f3ac003c5ae34ee412baa04c6`: staged voice job fails on both Python 3.11 and 3.13 at one stale assertion expecting one total `PerceptPacket`. The normal text perception path and RAW EAR audio path each persist a different modality. QA review asks for exactly one text + one audio packet and a raw-PCM absence scan across all packet payloads; do not remove text perception to satisfy the count. Staged/integrated generic regression passes 240/415.
 - Existing private owner-read request `RedMentos/Aiiii#368` remains OPEN with zero comments. Installed Redmi SHA and updater consent remain UNKNOWN. No duplicate read request, UPDATE_REQUEST, shell action, device update, model/permission change or user-data mutation was performed.
 - **User action: none.** Keep `REDMI_UNVERIFIED`; wait for the existing owner-read receipt. Next code actions are Boss sync/review of #2163 and Core correction of #2158's modality-count regression.
+
+## Boss integration checkpoint — 2026-11-21 11:38 CET
+
+- Live release branch readback: `4a471ae40dd9b768c8130fafdba51900b5417800`. It is two documentation-only commits ahead of the code-bearing release `e18c664d954fa5a44a1b2e5bec76850d5a40f89f`; no code-bearing release change is represented by this docs HEAD. Exact HEAD GitHub Actions check-runs read back green, including Python 3.13/3.14, staged-runtime, integrated-regression, owner-read and private-bridge checks. CI/Linux only.
+- Runtime JEPA is now genuinely wired as a bounded postcommit SleepRuntime job: a committed T8 event invokes the Store-backed WorldJEPA consumer and then the World/Planner SHADOW receiver. It is source-bound/cancellable and has no decision authority. Learning/optimizer permissions remain OFF by default; current inference checkpoint still does not persist Adam moments, and native B1/B2 GGUF weights are unchanged.
+- RAW EAR temporal candidate #2192 exact head `24d482ac049d00e3affe02426a7276c54c5b22c4`: staged-runtime and integrated-regression PASS; Python 3.13/3.14 comparison, RAW EAR prosody, model-lab, privacy and private-bridge checks PASS. `validate-additive` fails because the PR modifies an existing voice-cue module. Boss reviewed the bounded source/generation-keyed A4 temporal state and requested rebase from stale base `e18c664...` to current `4a471ae...` before ready/review. Scope remains caller-supplied PCM16 A4/C3 admission, not microphone capture, ASR, TTS/vocoder, full duplex, learned audio weights or Redmi proof.
+- #2183 read-only flow-audit candidate remains unapproved: cross-session default when session_id is omitted, plus C4 role/state and blob-symlink findings. #2186 remains a staged optimizer-resume overlay only; production Adam moments are not yet persisted. #2158 voice Runtime stack remains blocked/stale.
+- P0 #1904 remains open: no new real 20-turn Redmi acceptance, correct 2+2, B1/B2 delivered-and-consumed offers, native latency/RSS or installed SHA. Fresh private owner-read has no reply: `NO_LIVE_RECEIPT / REDMI_UNVERIFIED`. No UPDATE_REQUEST or device mutation.
+- Local full-suite test: BLOCKED; no Aii checkout and `git ls-remote` failed because github.com DNS could not resolve. No LOCAL_LINUX full-suite PASS is claimed.
+
+### Next executable actions
+1. Core: repair real B1/B2 → C4/Focal → C3 delivery and prefill/latency without dropping bodies or merely extending deadlines.
+2. JEPA/Memory + Boss: move model + EMA + Adam moments into the production Store checkpoint with source pins, holdout utility/retention, restart, crash and rollback tests; keep gates OFF.
+3. Research/Perception: rebase #2192 to current release head and retain the consent-bound caller-supplied PCM16 boundary.
+4. QA/Android: continue read-only owner relay; no deployment/update request until a fresh authenticated receipt proves consent and installed SHA.
+
+**Release:** no new code released in this checkpoint. **Redmi:** REDMI_UNVERIFIED. **User action:** none.
