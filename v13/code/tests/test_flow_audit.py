@@ -554,57 +554,6 @@ def test_explicit_event_selector_is_unscoped_but_sanitized(tmp_path, capsys):
     assert error["error"] == "KeyError"
 
 
-def test_explicit_event_selector_is_unscoped_but_sanitized(tmp_path, capsys):
-    home = tmp_path / "runtime"
-    first_event = _fixture(home)
-    first_session = _session_id(home, first_event)
-
-    store = Store(home)
-    try:
-        other_session = store.new_session("other chat")
-        other_event = store.event(other_session, "OTHER_PRIVATE_TEXT_SENTINEL")
-    finally:
-        store.close()
-
-    # An explicit event ID is a deliberate local selector and may select any
-    # session. The report must still contain metadata only, never source/chat text.
-    report = audit_event(home, other_event["event_id"])
-    assert report["event_id"] == other_event["event_id"]
-    assert report["read_only"] is True
-    assert report["private_text_returned"] is False
-    rendered = json.dumps(report)
-    for private_value in (
-        "OTHER_PRIVATE_TEXT_SENTINEL",
-        "PRIVATE_USER_TEXT_SENTINEL",
-        "PRIVATE_BODY_EVIDENCE_SENTINEL",
-        "PRIVATE_OFFER_TEXT_SENTINEL",
-        "PRIVATE_ASSISTANT_TEXT_SENTINEL",
-    ):
-        assert private_value not in rendered
-
-    # Supplying a session ID opts into strict session binding.
-    try:
-        audit_event(home, other_event["event_id"], session_id=first_session)
-    except KeyError:
-        pass
-    else:
-        raise AssertionError("explicit event with a wrong supplied session must be hidden")
-
-    assert main([
-        "--home", str(home), "--event-id", other_event["event_id"], "--compact",
-    ]) == 0
-    cli_report = json.loads(capsys.readouterr().out)
-    assert cli_report["event_id"] == other_event["event_id"]
-    assert "OTHER_PRIVATE_TEXT_SENTINEL" not in json.dumps(cli_report)
-
-    assert main([
-        "--home", str(home), "--event-id", other_event["event_id"],
-        "--session-id", first_session, "--compact",
-    ]) == 2
-    error = json.loads(capsys.readouterr().err)
-    assert error["error"] == "KeyError"
-
-
 def test_readonly_audit_rejects_symlinked_database(tmp_path):
     home = tmp_path / "runtime"
     event_id = _fixture(home)
