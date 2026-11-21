@@ -1,12 +1,12 @@
 # QA handoff — Age rights and runtime-resource separation
 
-**Updated:** 2026-11-21 17:55 CET  
+**Updated:** 2026-11-21 18:16 CET  
 **Owner:** QA & Android  
 **PR:** [#2235](https://github.com/RedMentos/Aii/pull/2235)  
 **Branch:** `qa/v14-age-rights-resource-separation-20261121`  
-**Current exact head:** `dc87281cd41236e759c1a80a12949bb2fc9aacc0`  
+**Current exact head:** `8d3df9ba655597e60f0b542aa252af7ae4d8aca8`  
 **Base:** `gpt6/v13-private-remote-bridge-20261111` at `7a07d01d3f6c9c3a4fb96511ae7decd73c27ccf9`  
-**Status:** CI runtime/integration matrix green; strict safe-additive gate intentionally blocks automatic integration; DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.
+**Status:** targeted Age/Lab CI PASS; Python 3.14 staged bootstrap PASS; staged/integrated regression still running at last readback; strict safe-additive gate intentionally blocks automatic integration; DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.
 
 ## Canonical contract
 
@@ -56,3 +56,47 @@ This is not a V14 whole-system completion, not a phone release and not proof of 
 - Keep PR #2235 in DRAFT until Boss/Core independently reviews the existing runtime-path changes and resolves builder-file ownership with #2234 and #2231. Do not merge based on CI counts alone.
 - #2234 and #2231 were notified of the shared recovery/stager/deployer pin-chain collision and their exact failing CI evidence; each branch must recompute its own full chain after composition.
 - No user action, Termux command, UPDATE_REQUEST, model change or device permission change is needed.
+
+
+## Repository-wide Age-budget consumer audit — 2026-11-21 18:16 CET
+
+**Audit head:** `8d3df9ba655597e60f0b542aa252af7ae4d8aca8`
+
+The Boss review blocker is now answered with an executable AST inventory over live `v13/` runtime modules and `scripts/` builder sources. It enumerates all `.budgets` attribute uses, legacy field reads (`autonomous_effort_max`, `focal_depth`, `dream_seconds`, `replay_items`, `context_edit_tokens`, `exploration_rate`, `own_loops`), and imports/calls of the old AGI budget helper.
+
+### Exact remaining callsites
+
+| Callsite | Classification | Runtime effect |
+|---|---|---|
+| `v13/age.py: AgeControl.view → self.budgets('system')` | Legacy status/report projection | Exposes the compatibility report; does not constrain compute, wall time, memory, focal cycles or replay |
+| `v13/lab_age_runtime.py: LaboratoryAgeControl.budgets → real.budgets(...)` | Compatibility delegation to a fresh earned-Age controller | Deliberately prevents virtual Lab Age from changing the legacy report |
+| `v13/agi/base.py: budget(...)` | Removed | No longer provides a path from runtime organs to numeric Age budgets |
+
+No other live runtime or builder module reads the listed legacy numeric fields or calls `.budgets()`. The `age.py` producer still computes its legacy report fields internally; that provider is not a resource consumer. The executable test will fail if a new runtime callsite, field read, helper import or helper call is introduced.
+
+### Residual developmental rights are now named rights
+
+- `agi/curiosity.py`: self-directed practice is gated by `active_info_search`; `exploration_rate` no longer probabilistically throttles a turn or acts as a compute budget. USER-originated practice remains available.
+- `agi/goals.py`: non-user goal nesting is gated by `choose_learning_goals`; numeric `focal_depth` no longer caps planning depth. USER goals keep the hard `MAX_DEPTH`; SYSTEM nesting without the right remains shallow; SELF goal creation still requires the right.
+- `sleep.py`: replay volume remains Sleep-policy + ResourceGuard controlled; Age gates the learning phase only.
+- `effort.py`: compute/focal effort remains independent of Age; ResourceGuard, deadline and feature policy remain the actual limits.
+
+### Exact current CI readback
+
+| Workflow / job | Run | Result |
+|---|---:|---|
+| Lab Age control state and WebView truth | `44930169527` | **PASS** — `test_lab_age.py`: 13 tests, including the two new behavioral tests and repository-wide AST inventory |
+| Laboratory Age two-checkout updater migration | `44930169456` | **PASS** |
+| Private owner-read bootstrap + Python 3.14 staged startup/SQLite refs | `44930169409` | **PASS** |
+| Runtime deployment integrity | `44930169422` | **PASS** |
+| Reviewed-PR integration queue | `44930169447` | **PASS** |
+| Staged context + integrated regression | `44930169421` | **IN PROGRESS** at this readback |
+| Strict safe-additive validator | `44930169466` | **FAIL BY POLICY** — existing runtime/builder modifications are outside the additive allowlist. No bypass or waiver. |
+
+The full local Aii checkout remains unavailable: `git ls-remote https://github.com/RedMentos/Aii.git` failed with DNS resolution error. No LOCAL_LINUX full-suite result is claimed. The workflow evidence above is CI only.
+
+### Integration and phone boundary
+
+This resolves the requested callsite inventory, but does not authorize automatic merge. Keep #2235 DRAFT until Boss/Core manually review the existing runtime-path and branch-specific builder changes, and until exact staged/integrated CI completes. The current code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`; this QA branch is **NOT_RELEASED**. No authenticated private owner-read response has established the installed phone SHA or updater consent; **REDMI_UNVERIFIED**. No UPDATE_REQUEST, Termux command, device action, model/weight change, permission change or user-data mutation was performed.
+
+**User action:** none.
