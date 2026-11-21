@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T18:03:06.796Z",
+  "updated_at": "2026-11-21T18:55:30+01:00",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -59,10 +59,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "Core #2169 role-specific tap provenance remains stale on c76a ancestry and non-mergeable against current release. Tests stub /tokenize and /embeddings; no native vector, trained projection, receiver injection, OOD gate or B3 utility proof. Symbolic/tap evidence remains distinct from learned latent coupling.",
-      "next_step": "Rebase the metadata-only provenance correction to the current release and rerun exact tests if still useful. Keep CAN_LATENT_INJECT and CAN_TRAIN_BODY false. A separate native tap/receiver-effect experiment must compare OOD, NO_MESSAGE, EXACT and SYMBOLIC controls before B3 advances.",
+      "proof_environment": "Core #2169 role-specific tap provenance remains stale on c76a ancestry and non-mergeable against current release. Tests stub /tokenize and /embeddings; no native vector, trained projection, receiver injection, OOD gate or B3 utility proof. Symbolic/tap evidence remains distinct from learned latent coupling. Research/Perception R-037 adds LOCAL_LINUX_TINY_MODEL_PROOF only: different tiny decoder geometries, trained K/V adapter, actual receiver injection, 3/3 tests PASS, four seeds 100% on synthetic associative recall, no-message/shuffled/random controls negative, parameter/gradient diff and exact restart. This is not native B1/B2 or OOD. Current production B1=LFM2.5-1.2B and B2=Qwen3.5-0.8B are heterogeneous; current llama.cpp Runner still reports CAN_LATENT_TAP=false and CAN_LATENT_INJECT=false. B3 remains PARTIAL_SYMBOLIC_ONLY.",
+      "next_step": "Core: expose a model-specific native K/V tap + receiver-injection seam for the existing llama.cpp/Android runner. Research/Perception then runs exact-context, no-message, symbolic, shuffled and OOD controls on the actual LFM2.5↔Qwen3.5 pair, with privacy, gradient/parameter, retention, restart/rollback and RSS/TTFT evidence. Do not set CAN_LATENT_INJECT true or advance B3 from the tiny-model proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 11:20 CET"
+      "last_checkpoint": "2026-11-21T18:55:30+01:00"
     },
     {
       "id": "V14-004",
@@ -159,10 +159,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Perception #2240 merged at 728cdc763f09bee20ac00e1f0faadffcd33dfbb2. Caller-PCM RAW EAR producer and ephemeral thread/source/runtime/generation/receipt-bound AudioConsentLease are present in shared branch. PR-head tests pass; exact merge-push 17/19 workflows PASS, 2 in progress; staged-runtime job fails on the separate normal SleepRuntime JEPA retention acceptance. No normal Runtime C3 consumer, mic capture, ASR/TTS, full duplex or Redmi proof. Lease currently serializes revoke through full scope; prompt cancellation/barging-in remains a consumer requirement.",
-      "next_step": "Core: rebase #2200 onto merged #2240; hold the lease through derived-context reads, B1/B2 and full C3 generation, with a cancellation/stop path and revoke cleanup. QA: prove context deletion/tombstone and cache clear. Perception: separate A5 UI observe grant/lease path remains unimplemented; no screen capture claim.",
+      "proof_environment": "Perception #2240 merged at 728cdc763f09bee20ac00e1f0faadffcd33dfbb2. Caller-PCM RAW EAR producer and ephemeral thread/source/runtime/generation/receipt-bound AudioConsentLease are present in shared branch. PR-head tests pass; exact merge-push 17/19 workflows PASS, 2 in progress; staged-runtime job fails on the separate normal SleepRuntime JEPA retention acceptance. No normal Runtime C3 consumer, mic capture, ASR/TTS, full duplex or Redmi proof. Lease currently serializes revoke through full scope; prompt cancellation/barging-in remains a consumer requirement. Research/Perception R-037 full-text/OSS review plus LOCAL_LINUX tiny-model K/V receiver-injection proof (3/3 tests; four-seed synthetic result); no native LFM2.5/Qwen3.5 consumer or Android proof. A5 UI observation remains SHADOW/isolated; no real OS observation lease or screen capture.",
+      "next_step": "Perception: continue the A5 UI path only against a real Core-issued OS observation grant/lease; replace boolean-only admission with source/runtime/generation-bound capability evidence when the broker exposes it. Keep audio producer #2240 separate from Core #2242's pending normal Runtime consumer. Native latent experiment awaits a real runner tap/injection seam.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T18:03:06.796Z",
+      "last_checkpoint": "2026-11-21T18:55:30+01:00",
       "latest_candidate_pr": {
         "pr": 2155,
         "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
