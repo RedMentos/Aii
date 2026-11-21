@@ -1709,3 +1709,8 @@ This additive overlay preserves the original **1,255 historical headings** and d
 **Environment separation:** GitHub CI synthetic/staged checks are not LOCAL_LINUX full-repository tests, native model inference, Android/Termux or real Redmi proof. This worker's local full checkout/test is BLOCKED by unavailable GitHub DNS. The private owner-read requests have no authenticated response; no phone action occurred.
 
 Historical inventory remains **1,255 headings**. Semantic clause → implementation → runtime consumer → test → environment → rollback mapping remains incomplete across the full Canon. No row above certifies whole-Canon or V14 completion.
+
+
+### Exact-head follow-up — Core #2242 head 3dc8a19 (2026-11-21 19:57 CET)
+
+The earlier arithmetic overlay Git blob-header mismatch is fixed; Python 3.13 staged-audio-arithmetic now passes. The exact current branch still fails Python 3.14 startup because `runtime_deploy.py` has not updated its `STAGER_SHA256` to the changed stage script; staged-runtime and migration tests fail/return PARTIAL downstream. Current exact checks are 4 failures / 3 in progress / 6 successes, with safe-additive still FAIL BY POLICY. The audio consent design still lacks a pre-lock revoke-cancel signal and permits a missing revocation subscription. This does not advance A5 audio to an accepted normal Runtime consumer or Android proof.
