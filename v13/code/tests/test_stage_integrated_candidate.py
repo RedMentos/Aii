@@ -61,7 +61,7 @@ class StageTest(unittest.TestCase):
         stage_bytes = MODULE_PATH.read_bytes()
         self.assertEqual(module.BUILDER_SHA, hashlib.sha256(recovery.read_bytes()).hexdigest())
         deploy_source = (code / 'v13/runtime_deploy.py').read_text()
-        match = re.search(r'STAGER_SHA256 = [\"\\']([a-f0-9]{64})[\"\\']', deploy_source)
+        match = re.search(r"""STAGER_SHA256 = ["']([a-f0-9]{64})["']""", deploy_source)
         self.assertIsNotNone(match)
         self.assertEqual(match.group(1), hashlib.sha256(stage_bytes).hexdigest())
 
