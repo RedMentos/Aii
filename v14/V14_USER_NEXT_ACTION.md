@@ -222,3 +222,23 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - Later commits `8f1b260dce19047a04df45d510b6642d009826bc` and `2c07fc81aee5e7a87575a4203464957d7fa83190` only update the V14 board and user handoff. They do not alter runtime code, models, permissions or phone data.
 - Do not treat a documentation commit's push CI as a new code release. At the next run, fetch the live release-branch HEAD and its exact push workflows before any deployment decision.
 - The current handoff deliberately records the last code-bearing release SHA rather than trying to embed its own documentation commit SHA.
+
+
+## QA verified T8 completion — 2026-11-21 01:55 CET
+
+PR #2137 head `2d8eb79bdefe3c6c3bef63fea7d25563b7f56952` completed:
+- Focused V14 T8: **52 passed** (push 44846173142; PR 44846178337).
+- Staged-runtime: **240 passed / 10 skipped / 47 subtests** (job 136666315084).
+- Integrated regression: **415 passed / 3 skipped / 58 subtests** (job 136666315262; run 44846178374).
+- Private bridge: PASS (44846173169).
+
+The source corrections cover CANCELLED/ABORTED and OUTCOME_UNKNOWN/INTERRUPTED without prediction error/receiver update, full bounded ActionOutcome verification (4096-row fail-closed bound), and rollback directory fsync. Remaining: dedicated T8 workflow is Python 3.11 only (QA requested Python 3.14); safe-additive policy is red and needs Boss review; no normal Runtime learning consumer. No optimizer, native B1/B2 weight update or Redmi proof.
+
+## Current exact branch HEAD — 2026-11-21 01:55 CET
+
+- Last code-bearing release: `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e`, updater-required exact push CI green.
+- Current branch HEAD: `d61b695739023d0bf0a3cfa4022770f0de2615fa`, documentation-only. Owner-read push [44846409890](https://github.com/RedMentos/Aii/actions/runs/44846409890) PASS; private-bridge push [44846409984](https://github.com/RedMentos/Aii/actions/runs/44846409984) PASS; staged-context push [44846409816](https://github.com/RedMentos/Aii/actions/runs/44846409816) IN_PROGRESS. The latest exact-SHA gate is not complete.
+- Private owner-read #351–354 still have no device comments. Installed SHA UNKNOWN / `NO_LIVE_RECEIPT` / `REDMI_UNVERIFIED`. No UPDATE_REQUEST, installer, shell or device mutation.
+- No local full-suite run: worker cannot resolve GitHub DNS. GitHub Actions is CI/Linux only.
+
+**User action:** none.
