@@ -214,3 +214,49 @@ The JEPA-TTT full-paper ablation/limitations sections were checked after the ini
 - LOCAL_LINUX Python 3.13.5 isolated reproduction: 5/5 PASS (flat-tone negative, pitch-sweep positive, amplitude-burst positive, unvoiced-noise negative, monotonic attention relation). Exact repository test file is pending the new PR workflow; full local checkout is BLOCKED by GitHub DNS. No model inference or Redmi microphone evidence.
 - **Next:** read exact-head CI; Core updates its staged overlay source pin to the new adapter blob before the staged B1/B2/C3 Runtime test. REDMI_UNVERIFIED / NOT_RELEASED.
 
+
+
+## Research & Perception update — 2026-11-21 / RAW EAR robustness and model alternatives
+
+### R-016 — PACE: audio continual learning requires explicit representation-stability tests
+
+- **Primary source:** Chang Li, Kanglei Zhou & Liyuan Wang, *PACE: Pretrained Audio Continual Learning*, ICLR 2026 (conference paper): https://proceedings.iclr.cc/paper_files/paper/2026/hash/26cce1e512793f2072fd27c391e04652-Abstract-Conference.html ; full paper: https://proceedings.iclr.cc/paper_files/paper/2026/file/26cce1e512793f2072fd27c391e04652-Paper-Conference.pdf
+- **Evidence:** FULLTEXT_REVIEWED 2026-11-21; published at ICLR 2026, not merely an abstract/preprint.
+- **Setup:** EAT self-supervised audio backbone pretrained on AudioSet-2M (~5,000 hours), evaluated on six sequential audio-CL benchmarks: ESC-50, UrbanSound8K, SpeechCommands V2, TIMIT-2, TIMIT-3 and VocalSet. Three are coarse-grained and three fine-grained.
+- **Reported results:** PACE top-1 accuracy: 95.75 / 97.49 / 91.87 on the three coarse benchmarks and 90.95 / 94.05 / 69.08 on the fine-grained benchmarks. It combines regularized analytic first-session adaptation, multi-session adaptive subspace-orthogonal PEFT and boundary-aware spectrogram perturbations. The paper reports direct transfer of vision PEFT strategies to audio can fail through representation saturation or representation shift; naive full-layer adaptation can damage reusable shallow features.
+- **Limits:** the evaluated backbone and training setup are not a Redmi drop-in; results are benchmark/session classification, not raw-ear conversational learning or live voice-agent utility. The paper states code will be released after acceptance, but the inspected official author page did not expose a maintained implementation repository. No code/dependency or weight was imported.
+- **V14 consequence:** before any audio-adapter training, retain source-disjoint old/new cohorts, measure representation drift and held-out utility per session, compare no-update / analytic-head / selective-adapter paths, and test old-cohort retention plus rollback. Do not infer that ordinary LoRA is safe for the audio encoder; do not turn a temporary frozen baseline into a permanent teacher.
+
+### R-017 — S4VAD: low-latency onset detection is a separate capability from prosody
+
+- **Primary source:** Elad Cohen, Arnon Netzer & Hai Victor Habi, *Low-Latency State Space Voice Activity Detection with Robust Onset Time Evaluation*, arXiv:2609.11110, submitted 2026-09-10: https://arxiv.org/abs/2609.11110
+- **Evidence:** FULLTEXT_REVIEWED 2026-11-21; arXiv preprint, not a peer-reviewed conference result in the inspected record.
+- **Method/setup:** S4VAD uses four causal S4 blocks with hidden dimension 64, state dimension 64 and a length-201 causal kernel. It consumes 64-dimensional log-Mel features from 16 kHz audio, 32 ms frames and 10 ms hop. Training uses synthetic noisy LibriSpeech mixtures (100-hour subset, SNR -5 to +20 dB); evaluation also includes AVA-Speech. The paper explicitly models noisy onset labels rather than treating timestamps as exact.
+- **Reported result:** under its LibriSpeech onset-latency protocol, S4VAD reports P50 10 ms, P90 90 ms and P95 130 ms, versus MarbleNet P90 150 ms / P95 210 ms. These are paper-specific onset metrics, not end-to-end Android response times. Hardware comparison used XNNPACK on an Apple M4 Max 64 GB, not Redmi.
+- **Limits:** no maintained official code/weights or license was located during this review; no Android/ARM benchmark, no full-duplex interruption test and no paralinguistic/non-speech understanding. A VAD posterior cannot replace RAW EAR acoustic/prosody channels.
+- **V14 consequence:** if onset responsiveness becomes a measured bottleneck, compare a small stateful VAD candidate against the current bounded RAW EAR path using onset delay, false interruption rate and tail latency under noisy speech, silence, backchannels and overlapping speech. Keep VAD probability as a separate optional cue.
+
+### R-018 — Silero VAD: small MIT-licensed optional speech-probability candidate
+
+- **Primary implementation:** https://github.com/snakers4/silero-vad/tree/066409f3d9db45a30d21dfcbf9147826ffdd7052 ; inspected upstream commit `066409f3d9db45a30d21dfcbf9147826ffdd7052`, 2026-10-22.
+- **License:** repository `LICENSE` is MIT (blob `0bf5e90cac691b999d4a35044f97167d7bbbf0b9`). The upstream README describes an approximately 2 MB JIT model, ONNX support, 8 kHz / 16 kHz input and stateful streaming use; the repository includes C++ ONNX examples.
+- **Limits:** the README's sub-millisecond chunk claim is not an Android measurement. ONNX Runtime availability/ABI on this exact Termux Android target is not established. Model weights and package versions still need an exact pinned hash and dependency review before integration.
+- **V14 consequence:** candidate only for a parallel calibrated speech-activity hint, never a replacement for RAW EAR, prosody, non-speech vocalization or acoustic provenance. Do not download or swap it without an explicit experiment gate and a real ARM test.
+
+### R-019 — VoiceNet / VoiceCLAP-Small: richer paralinguistic supervision, but not a Redmi default
+
+- **Primary paper:** Christoph Schuhmann et al., *VoiceNet: Fine-Grained Voice Understanding Beyond Emotion at Scale*, arXiv:2609.32016, submitted 2026-09-25: https://arxiv.org/abs/2609.32016 . **Implementation:** https://github.com/LAION-AI/voicenet . **Model card:** https://huggingface.co/laion/voiceclap-small
+- **Evidence:** FULLTEXT_REVIEWED 2026-11-21; arXiv preprint, with a public companion repository and model card. The repo/model card state CC-BY-4.0 for the released VoiceNet model/annotations; underlying encoder provenance/licensing must still be checked independently before redistribution.
+- **Method/results:** VoiceNet-Emo has 40 emotion categories; VoiceNet-Ext has 57 talking-style attributes. VoiceCLAP-Small is ~110M parameters, a BUD-E-Whisper-Small / MiniLM dual tower with 768-dimensional normalized embeddings. The paper reports 0.6754 per-prompt balanced accuracy on VoiceNet-Emo, compared with 0.7021 for the 7B VoiceCLAP-Large; the comparison is representation-level ranking, not live assistant behavior.
+- **Mobile caveats:** the model card reports F32 weights (~0.1B parameters) and zero-pads clips up to 30 seconds to a full 30-second Whisper-style window. This is not a 40 ms streaming ear, and no Android quantized TTFT/RSS/quality measurement was found. The repository's broad CC-BY-4.0 statement does not replace a separate audit of bundled base weights and all dependencies.
+- **V14 consequence:** retain as an offline teacher/benchmark candidate only. If considered, isolate a short-window distilled student and evaluate style/prosody attributes with consented, source-bound examples; do not download or install on Redmi by default.
+
+## Implementation evidence — RAW EAR V3 pause-robust prosody (2026-11-21)
+
+- **Defect reproduced:** V2 derived prosody salience from the full-window energy range. A 0.5 s constant voiced tone with 0.25 s leading and trailing silence produced a 102.31 dB window range and a false maximum `prosody_change_score=1.0`.
+- **Fix:** V3 retains `energy_range_db` as the full-window acoustic fact, adds `voiced_energy_range_db` from the 10th–90th percentile of periodic voiced-frame RMS, and computes prosody salience from voiced-only energy dynamics plus F0 excursion. The cue schema is versioned `RAW_EAR_AUTOCORR_V3`.
+- **Consumer:** the existing A5 → PerceptPacket → A4 `Attention.modulate` → source-bound C3 admission path receives the new field and score; no transcript or identity is inferred.
+- **Exact branch head:** `5e1e9c0ccdce48fd319c24903a6a92ab8a0f6432`; adapter blob `4324813f00eb86db2538ded63dfd1f711188d2cf`; test blob `d457b66cfd792e625f5588f900d876269e551aa9`.
+- **CI:** GitHub Actions run `44871559784` PASS: Python 3.11 11/11 and Python 3.13 11/11; compile PASS. Additional staged/integrated run `44871559783` was still running at the first exact readback. Local isolated reproduction across 8, 12, 16, 44.1 and 48 kHz passed; this is not the full repository suite.
+- **Integration blocker:** Core PR #2158 still pins the old adapter blob `7ac80a0d0deec8f52361fe89756ebd743b0a3537`; Core was notified to pin V3 blob `4324813f00eb86db2538ded63dfd1f711188d2cf` and rerun the staged B1/B2/C3 consumer. No Core-owned file was changed.
+- **Device/release:** no connected authorized Redmi or microphone receipt; REDMI_UNVERIFIED / NOT_RELEASED. No native model inference, learning, Android performance, or phone deployment is claimed.
