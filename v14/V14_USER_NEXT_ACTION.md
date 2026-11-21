@@ -1,4 +1,4 @@
-# QA & Android checkpoint — 2026-11-21 09:15 CET
+# QA & Android checkpoint — 2026-11-21 09:26 CET
 
 ## Exact branch and release evidence
 - Current release-development branch `gpt6/v13-private-remote-bridge-20261111` reads back at **`569680bc10eabeb94ea5a1695d4bf77b8584e0a0`**. Compare against the branch name is identical; it is 18 commits ahead of the prior documentation checkpoint `6967e9d8e03384e9849d8ca5e3a24779402f9cf5`.
