@@ -110,7 +110,7 @@ class ToolRegistry:
         try:return base|spec.preview(**args)
         except Exception as exc:return base|{'effect':'PREVIEW_FAILED','error':type(exc).__name__+': '+str(exc)[:120]}
     def approve(self,tx_id):
-        """Human per-call approval for a PROPOSED call; it then runs as a WP-K action transaction."""
+        """Approve only after rechecking the original origin current Age right; then run a WP-K transaction."""
         st=self.box.load()[0];tx=next((c for c in st['calls'] if c['id']==tx_id),None)
         if not tx or tx['status']!='PROPOSED':raise ValueError('Kein offener Vorschlag')
         spec=self.tools[tx['tool']];status,why,steps=self._policy(spec,tx.get('origin','USER'),tx['args'],confirmed=True)
