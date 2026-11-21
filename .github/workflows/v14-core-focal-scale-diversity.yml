@@ -45,7 +45,8 @@ jobs:
             v13/code/scripts/stage_v14_focal_scale_diversity_candidate_20261121.py \
             v13/code/scripts/integrated_arithmetic_guard_candidate_20261121.py \
             v13/code/tests/test_v14_focal_scale_diversity_20261121.py \
-            v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py
+            v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py \
+            v13/code/tests/test_actionlearn.py
       - name: Staged C4 admission and Runtime-to-C3 integration
         env:
           PYTHONPATH: v13/code
@@ -65,7 +66,7 @@ jobs:
         env:
           PYTHONPATH: v13/code
         run: |
-          python -m pytest -q v13/code/tests/test_focal.py
+          python -m pytest -q v13/code/tests/test_focal.py v13/code/tests/test_actionlearn.py
       - name: Base integrated-stage pin regression
         env:
           PYTHONPATH: v13/code
