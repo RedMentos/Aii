@@ -117,7 +117,14 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift
         return result
     except (ValueError, TypeError, KeyError, OSError, OverflowError,
             ArithmeticError, AttributeError) as exc:
-        result.update({"status": "ERROR", "error": type(exc).__name__})
+        # Keep diagnostics useful without returning paths or arbitrary payloads.
+        detail = None
+        if type(exc) in (ValueError, TypeError):
+            candidate = str(exc).splitlines()[0][:120]
+            if candidate and all(ch.isalnum() or ch in " _.,:;()=-" for ch in candidate):
+                detail = candidate
+        result.update({"status": "ERROR", "error": type(exc).__name__,
+                       "error_detail": detail})
         return result
 
 
