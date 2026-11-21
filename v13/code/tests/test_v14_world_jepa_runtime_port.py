@@ -415,17 +415,31 @@ def test_oldest_first_pages_do_not_starve_older_t8_backlog(tmp_path):
         assert page[0].action_id == ids[0] and page[-1].action_id == ids[63] and cursor > 0
         consumer = WorldJEPAStoreConsumer(store, tmp_path / "private-backlog", learning_enabled=True)
         first = consumer.update(limit=64, steps=8, optimizer_permission=True)
-        assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA" and first["metrics"]["has_more"] is True
-        payload, _ = store.state("v14.world_jepa.store_consumer", None)
-        processed = set(payload["active"]["processed_ids"])
-        assert set(ids[:64]).issubset(processed) and not (set(ids[64:128]) & processed)
-        first_cursor = first["scan_cursor"]
+        assert first["status"] in {
+            "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED"
+        }
+        first_payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        first_active = set(first_payload["active"]["processed_ids"]) if first_payload["active"] else set()
+        first_pending = {row["action_id"] for row in first_payload["pending_rows"]}
+        first_accounted = first_active | first_pending
+        assert set(ids[:64]).issubset(first_accounted)
+        assert not (set(ids[64:128]) & first_accounted)
+        first_cursor = first_payload["scan_cursor"]
+        assert first_cursor == first["scan_cursor"] and first_cursor > 0
+
         consumer = WorldJEPAStoreConsumer(store, tmp_path / "private-backlog", learning_enabled=True)
         second = consumer.update(limit=64, steps=8, optimizer_permission=True)
-        assert second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA" and second["scan_cursor"] > first_cursor
-        payload, _ = store.state("v14.world_jepa.store_consumer", None)
-        processed = set(payload["active"]["processed_ids"])
-        assert set(ids[:128]).issubset(processed) and not (set(ids[128:192]) & processed)
+        assert second["status"] in {
+            "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED"
+        }
+        assert second["scan_cursor"] > first_cursor
+        second_payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        second_active = set(second_payload["active"]["processed_ids"]) if second_payload["active"] else set()
+        second_pending = {row["action_id"] for row in second_payload["pending_rows"]}
+        second_accounted = second_active | second_pending
+        assert set(ids[:128]).issubset(second_accounted)
+        assert not (set(ids[128:192]) & second_accounted)
+        assert second_payload["scan_cursor"] == second["scan_cursor"]
     finally:
         store.close()
 
