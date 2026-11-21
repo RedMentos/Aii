@@ -76,7 +76,7 @@ def test_noise_silence_and_impulse_are_not_misreported_as_voiced():
 
 
 def test_pitch_estimate_is_stable_across_supported_sample_rates():
-    for sample_rate in (8000, 16000, 48000):
+    for sample_rate in (8000, 12000, 16000, 44100, 48000):
         cues = extract_voice_cues(tone(180, sample_rate=sample_rate), sample_rate)
         assert cues["f0_median_hz"] is not None and 160 <= cues["f0_median_hz"] <= 200
 
