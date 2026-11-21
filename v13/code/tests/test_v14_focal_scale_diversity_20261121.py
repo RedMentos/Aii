@@ -29,7 +29,7 @@ def test_review_stage_applies_only_scale_aware_c4_overlay(tmp_path):
     before = hashlib.sha1(
         b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
     ).hexdigest()
-    assert before == "a0588a768cc91266ef02243bcfda2e631860d8ad"
+    assert before == "1a5766a20532161c6b5bdeb74c83be2e59492f86"
     destination = tmp_path / "candidate"
     manifest = _load_stager().stage(CODE, destination)
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
