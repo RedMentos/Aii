@@ -1714,3 +1714,8 @@ Historical inventory remains **1,255 headings**. Semantic clause → implementat
 ### Exact-head follow-up — Core #2242 head 3dc8a19 (2026-11-21 19:57 CET)
 
 The earlier arithmetic overlay Git blob-header mismatch is fixed; Python 3.13 staged-audio-arithmetic now passes. The exact current branch still fails Python 3.14 startup because `runtime_deploy.py` has not updated its `STAGER_SHA256` to the changed stage script; staged-runtime and migration tests fail/return PARTIAL downstream. Current exact checks are 4 failures / 3 in progress / 6 successes, with safe-additive still FAIL BY POLICY. The audio consent design still lacks a pre-lock revoke-cancel signal and permits a missing revocation subscription. This does not advance A5 audio to an accepted normal Runtime consumer or Android proof.
+
+
+### JEPA current-head follow-up — #2247 e8137fd (2026-11-21 20:00 CET)
+
+The per-session replay/retention candidate is now the active JEPA review path. It passes staged Runtime, integrated regression, migration, Lab-Age, owner-read and incremental-JEPA CI, but both Python 3.13/3.14 optimizer-resume jobs fail because every A-GEM replay arm regresses at least one source-disjoint old-session holdout across seeds 13/19/43. The candidate leaves the checkpoint SHA unchanged and returns `UTILITY_GATE_REJECTED`; this is a valid negative result. No numeric update is accepted. `validate-additive` remains FAIL BY POLICY. Keep all learning gates OFF until a different mechanism passes per-session retention, utility, restart and rollback.
