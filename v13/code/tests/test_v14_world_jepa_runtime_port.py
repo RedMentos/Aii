@@ -5,6 +5,7 @@ CorollaryCopy, ActionSelection and ActionOutcome producers. Its rows are
 synthetic test experiences, not live user or Redmi data.
 """
 import hashlib
+import json
 import math
 
 import pytest
