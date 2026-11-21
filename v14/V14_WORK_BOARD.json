@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21",
+  "updated_at": "2026-11-21T02:55:46+01:00",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -93,14 +93,14 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
-      "proof_environment": "PR #2142 open/ready for review. Exact V14 model-lab CI run 44849343250 PASS on code/manifest SHA 6aadf841 (Python 3.13.18; compile + JSON validation + 13 tests). Later candidate-manifest wording/status-label-only edits were checked with LOCAL_LINUX JSON_PARSE_PASS; exact CI not rerun for those metadata-only edits. LOCAL_LINUX isolated implementation copy 13/13 PASS. New native A/B inference NOT_RUN; no download or swap. Historical #1904 Redmi evidence: C3 230M answered 2 instead of 4 for 2+2, so it is not a trusted reasoning replacement. REDMI_UNVERIFIED for current install.",
-      "next_step": "Core & QA review PR #2142. Treat 230M as diagnostic-only because #1904 recorded a wrong 2+2 answer on Redmi. If the exact candidate is already present, compare both orders against the 350M baseline on the actual Redmi with V13 idle; otherwise request separate explicit consent before an isolated download. Require broader mixed-task quality, latency/RSS/PSS and rollback evidence before any separate production-swap approval. Extend B1/B2 comparison separately.",
+      "proof_environment": "LOCAL_LINUX isolated executable-identity regression 5/5 PASS (Python stdlib; helper-level, not repository suite). PR #2142 head fef505ac3f6ea30f034fdce5ee5a9abc6b5c30b7 adds three LlamaRunner executable-identity regressions (16 tests total); exact model-lab CI run 44853309109 IN_PROGRESS at last readback. Full local repository checkout/test remains BLOCKED by GitHub DNS. Native GGUF inference NOT_RUN; no download/swap. REDMI_UNVERIFIED.",
+      "next_step": "Wait for exact-head CI run 44853309109 and independent Core/QA review. If green, retain the candidate as diagnostic-only; run both orders only if the pinned GGUF is already present on the authorized Redmi, otherwise request separate explicit consent for an isolated download. Do not promote or swap production C3 without broad quality, latency/RSS/PSS, and rollback evidence.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 Research & Perception: PR #2142 adds read-only C3 comparison and exact 13-test CI PASS. #1904 historical Redmi receipt warns 230M answered 2 instead of 4 for 2+2. No new native A/B inference, download, swap or current Redmi receipt.",
+      "last_checkpoint": "2026-11-21 Research & Perception: fixed QA's V13_LLAMA_SERVER benchmark identity finding by checking LlamaRunner.binary before generation and _loaded_binary after launch; report hashes the resolved executable actually used. Three regressions added. LOCAL_LINUX helper checks 5/5 PASS; exact PR CI run 44853309109 IN_PROGRESS. No native inference, download, swap, or current Redmi receipt.",
       "latest_candidate_pr": {
         "pr": 2142,
-        "tested_code_sha": "6aadf841434bcc43fbde1827a4ed2ef9d61bc4b0",
-        "ci": "Exact code/test CI run 44849343250 PASS on 6aadf841 (13 tests); later candidate-manifest text/status-label edits have LOCAL_LINUX JSON_PARSE_PASS but no repeat CI; native inference NOT_RUN",
+        "tested_code_sha": "fef505ac3f6ea30f034fdce5ee5a9abc6b5c30b7",
+        "ci": "Exact PR head fef505ac: model-lab run 44853309109 IN_PROGRESS; 16 tests expected from current test file. LOCAL_LINUX helper-level executable identity checks 5/5 PASS. Full repository suite BLOCKED by GitHub DNS; native inference NOT_RUN; Redmi UNVERIFIED.",
         "scope": "Read-only C3 LFM2.5-350M baseline vs pinned LFM2.5-230M candidate; no B1/B2, no download, no production swap"
       }
     },
