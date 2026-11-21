@@ -1,7 +1,8 @@
-"""Private inference-only checkpoint for fitted NumPy WorldJEPA SHADOW.
+"""Private fitted NumPy WorldJEPA SHADOW checkpoint.
 
-No optimizer/EMA training resume, runtime hook, age authority or gate promotion.
-No pickle/object deserialization. Never put trained checkpoints in public Git.
+Stores numeric model/EMA state and, when present, validated Adam/inverse/RNG resume
+state in the same atomic archive. No age authority or gate promotion. No pickle/object
+deserialization. Never put trained checkpoints in public Git.
 """
 from __future__ import annotations
 
