@@ -103,7 +103,8 @@ class MobileDashboardTests(unittest.TestCase):
         c = d.RuntimeControls()
         page = d.dashboard_html("f" * 48, c)
         for s in ("Nachricht senden", "Gehirnstatus", "Modelle testen",
-                  "Diagnose-ZIP", "V13 beenden", "Gesamten Chat kopieren"):
+                  "Diagnose-ZIP", "V13 beenden", "Gesamten Chat kopieren",
+                  "Letzter abgeschlossener Durchlauf (alle Chats)"):
             self.assertIn(s, page)
         self.assertIn('id="live-native-roles"', page)
         self.assertIn('id="brain-evidence"', page)
