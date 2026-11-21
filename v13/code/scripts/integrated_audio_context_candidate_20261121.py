@@ -13,7 +13,7 @@ SOURCE_BLOBS = {
     "v13/runtime.py": "30360f40eb784be5ea975ee85e94a57f0b154164",
     "v13/cognition.py": "06de0acf2c6d30d50301d5073f5569822edff813",
     "v13/audio_perception_bridge.py": "719034281ee32af4207c8ec407fbf358b9800ad7",
-    "v13/audio_voice_cues.py": "4ddb61865deb56b0048390740d35770d4d89316e",
+    "v13/audio_voice_cues.py": "e75c393939183d2f16e071ebf4a6f5ff65417a61",
     "v13/audio_temporal_evidence.py": "098ce2ec6bb0b744166d711a3401b7acf0252de1",
     "v13/audio_ear.py": "86e93ae5b55e76ecd68864a7f51bd477e601e9b6",
     "v13/audio_percept_contract.py": "f3ee37426fc3e3a8cf70f8a107e7074783118a66",
@@ -66,7 +66,7 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
         b"class Runtime:\n",
         b'''_AUDIO_WINDOW_FIELDS = {
     "pcm16", "sample_rate", "start_ms", "source_id",
-    "consent_receipt", "consent_check", "finality",
+    "consent_receipt", "consent_check", "consent_guard", "finality",
 }
 
 
@@ -94,6 +94,8 @@ def _validate_audio_window(value):
         raise ValueError("audio_window consent receipt is required")
     if not callable(value["consent_check"]):
         raise ValueError("audio_window requires a live consent provider")
+    if not callable(value["consent_guard"]):
+        raise ValueError("audio_window requires a linearizable consent guard")
     return {key: value[key] for key in _AUDIO_WINDOW_FIELDS}
 
 
@@ -129,64 +131,11 @@ class Runtime:
         runtime,
         b"    def _turn(self,e):\n        eid=e['event_id']",
         b"    def _audio_context_record(self,eid,audio_result,audio_window):\n"
-        b"        \"\"\"Persist derived acoustic features; keep PCM and consent callback process-local.\"\"\"\n"
-        b"        if not isinstance(audio_result,dict):return None\n"
-        b"        admission=audio_result.get('c3_admission');packet_value=audio_result.get('packet')\n"
-        b"        selected=getattr(admission,'selected',()) if admission is not None else ()\n"
-        b"        if (getattr(admission,'status',None)!='ADMITTED' or not selected or not isinstance(packet_value,dict)):return None\n"
-        b"        source=packet_value.get('source_ref');segments_value=packet_value.get('segments')\n"
-        b"        if (type(source) is not dict or type(segments_value) is not list or len(segments_value)!=1\n"
-        b"                or packet_value.get('event_id')!=eid or packet_value.get('brain_generation_id')!=self.store.generation_id):return None\n"
-        b"        segment=segments_value[0]\n"
-        b"        if type(segment) is not dict or segment.get('finality')!='FINAL':\n"
-        b"            self.store.log('audio_input_unavailable',eid,{'stage':'context_record_finality','reason':'PROVISIONAL_OR_INVALID'});return None\n"
-        b"        try:\n"
-        b"            from .audio_voice_cues import validate_voice_cues\n"
-        b"            voice_cues=validate_voice_cues((segment.get('acoustic') or {}).get('voice_cues'))\n"
-        b"        except Exception:\n"
-        b"            self.store.log('audio_input_unavailable',eid,{'stage':'voice_cue_validation','reason':'MISSING_OR_INVALID'});return None\n"
-        b"        receipt=segment.get('consent_receipt_ref')\n"
-        b"        check_consent=audio_window.get('consent_check') if type(audio_window) is dict else None\n"
-        b"        try:current=check_consent(source.get('source_id'),receipt) if callable(check_consent) else False\n"
-        b"        except Exception:current=False\n"
-        b"        if current is not True:\n"
-        b"            self.store.log('audio_input_unavailable',eid,{'stage':'context_record_consent','reason':'REVOKED_OR_UNAVAILABLE'});return None\n"
-        b"        observations=[]\n"
-        b"        for item in selected:\n"
-        b"            summary=getattr(item,'summary',None);start=getattr(item,'start_ms',None);end=getattr(item,'end_ms',None)\n"
-        b"            if (getattr(item,'source_id',None)!=source.get('source_id') or getattr(item,'modality',None)!='audio'\n"
-        b"                    or type(summary) is not str or not summary or len(summary)>256 or type(start) is not int\n"
-        b"                    or type(end) is not int or start<0 or end<=start or end-start>1000):continue\n"
-        b"            observations.append({'source_id':getattr(item,'source_id',None),'modality':'audio','start_ms':start,\n"
-        b"                                 'end_ms':end,'summary':summary,'priority':getattr(item,'priority',0)})\n"
-        b"        if not observations:return None\n"
-        b"        body={'schema':'v14.raw-ear-acoustic-context/1','audio_packet_id':packet_value.get('packet_id'),\n"
-        b"              'audio_source_ref':source,'observations':observations,'voice_cues':voice_cues,\n"
-        b"              'authority':'ACOUSTIC_FEATURES_ONLY',\n"
-        b"              'transcript':None,'learning_authority':False,'action_authority':False}\n"
-        b"        summary_ref=self.store.source(dumps(body),'AUDIO_ACOUSTIC_CONTEXT')\n"
-        b"        context={'body':body,'summary_source_ref':summary_ref,'source_id':source.get('source_id'),\n"
-        b"                 'receipt':receipt,'consent_check':check_consent}\n"
-        b"        if not hasattr(self,'_audio_contexts'):self._audio_contexts={}\n"
-        b"        self._audio_contexts[eid]=context\n"
-        b"        return context\n"
+        b"        from .audio_context_store import record\n"
+        b"        return record(self,eid,audio_result,audio_window)\n"
         b"    def _audio_context_view(self,eid,consumer='C3'):\n"
-        b"        \"\"\"Revalidate consent and immutable summary provenance at each consumer.\"\"\"\n"
-        b"        context=getattr(self,'_audio_contexts',{}).get(eid)\n"
-        b"        if not isinstance(context,dict):return None\n"
-        b"        check_consent=context.get('consent_check')\n"
-        b"        try:current=check_consent(context.get('source_id'),context.get('receipt')) if callable(check_consent) else False\n"
-        b"        except Exception:current=False\n"
-        b"        if current is not True:\n"
-        b"            self.store.log('audio_input_unavailable',eid,{'stage':'consumer_consent','consumer':str(consumer)[:32],\n"
-        b"                                                          'reason':'REVOKED_OR_UNAVAILABLE'});return None\n"
-        b"        try:\n"
-        b"            stored=json.loads(self.store.read_source(context['summary_source_ref']))\n"
-        b"            if stored!=context['body']:raise ValueError('audio summary source mismatch')\n"
-        b"        except Exception as exc:\n"
-        b"            self.store.log('audio_input_unavailable',eid,{'stage':'consumer_source','consumer':str(consumer)[:32],\n"
-        b"                                                          'error':type(exc).__name__});return None\n"
-        b"        return context['body']|{'summary_source_ref':context['summary_source_ref']}\n"
+        b"        from .audio_context_store import view\n"
+        b"        return view(self,eid,consumer)\n"
         b"    def _audio_prompt_layer(self,eid):\n"
         b"        view=self._audio_context_view(eid,'C3')\n"
         b"        if not view:return None,None\n"
@@ -203,7 +152,7 @@ class Runtime:
         b"                    from .audio_voice_cues import consume_pcm16_voice_window\n"
         b"                    audio_result=consume_pcm16_voice_window(self,audio_window['pcm16'],sample_rate=audio_window['sample_rate'],\n"
         b"                        start_ms=audio_window['start_ms'],event_id=eid,generation_id=g,source_id=audio_window['source_id'],\n"
-        b"                        consent_receipt=audio_window['consent_receipt'],consent_check=audio_window['consent_check'],\n"
+        b"                        consent_receipt=audio_window['consent_receipt'],consent_check=audio_window['consent_check'],consent_guard=audio_window['consent_guard'],\n"
         b"                        token_budget=512,finality=audio_window['finality'])\n"
         b"                    meta['audio_input']={'status':'A5_A4_C3_VOICE_CUE_ADMISSION','packet_id':audio_result['packet']['packet_id'],\n"
         b"                        'voice_activity_hint':audio_result['a4']['voice_activity_hint'],\n"
@@ -252,6 +201,24 @@ class Runtime:
         b"                try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context\n",
         "Context OS admission receipt",
     )
+    runtime = _replace(
+        runtime,
+        b"                try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context\n",
+        b"                try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context\n"
+        b"                if audio_source_ref is not None and self._audio_context_view(eid,'C3_NATIVE_DISPATCH') is None:\n"
+        b"                    volatile=[item for item in volatile if item[0]!='RAW_EAR_ACOUSTIC']\n"
+        b"                    try:\n"
+        b"                        cplan=ctxos.controller(self).plan(eid,runner.role,stable,volatile,history_records,text,verdicts=[x['verdict'] for x in focal_run['inquisition']] if focal_run else [],warm_ids=warm_ids,provenance=[e['source_ref']],budget_scale=body['modulation'].get('context_budget_scale',1.))\n"
+        b"                        messages=cplan['messages'];meta['context_plan']={'packet_id':cplan['packet_id'],'applied':cplan['applied']}\n"
+        b"                    except Exception as exc:\n"
+        b"                        self.store.log('context_os_unavailable',eid,{'stage':'audio_revocation_rebuild','error':type(exc).__name__})\n"
+        b"                        sys=stable+''.join(head+dumps(value) for _,head,value in volatile)\n"
+        b"                        messages=[{'role':'system','content':sys}]+history+[{'role':'user','content':text}]\n"
+        b"                    try:save_context(self.store,self.session,eid,runner.role,messages)\n"
+        b"                    except Exception as exc:self.store.log('context_save_failed',eid,{'stage':'audio_revocation_rebuild','error':type(exc).__name__})\n"
+        b"                    if 'audio_admission' in meta:meta['audio_admission'].update(status='REVOKED_BEFORE_C3_DISPATCH',c3_prompt_included=False)\n"
+        b"                    meta.pop('audio_source_refs',None);audio_source_ref=None\n"
+        b"                    if 'audio_input' in meta:meta['audio_input']['context_revoked_before_c3']=True\n",
     runtime = _replace(
         runtime,
         b"context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[]),*meta.get('source_recall_refs',[])]",
@@ -317,6 +284,21 @@ class Runtime:
     )
     cognition = _replace(
         cognition,
+        b"        self.s.add_packet('QueryPacket',query_packet)\n",
+        b"        if query_packet.get('audio_context_refs'):\n"
+        b"            current_audio,current_audio_refs=self._audio_context_query(e,role)\n"
+        b"            if current_audio_refs!=query_packet.get('audio_context_refs',[]):\n"
+        b"                removed_audio_refs=query_packet.get('audio_context_refs',[])\n"
+        b"                query.pop('audio_context',None);query_packet.pop('audio_context',None)\n"
+        b"                query_packet['audio_context_refs']=[];query_packet['audio_context_count']=0\n"
+        b"                query_packet['provenance']=[ref for ref in query_packet.get('provenance',[]) if ref not in removed_audio_refs]\n"
+        b"                audio_context_refs=[]\n"
+        b"                self.s.log('audio_offer_omitted',e['event_id'],{'role':role,'reason':'CONSENT_REVOKED_BEFORE_DISPATCH'})\n"
+        b"        self.s.add_packet('QueryPacket',query_packet)\n",
+        "B1/B2 pre-dispatch consent recheck",
+    )
+    cognition = _replace(
+        cognition,
         b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])):\n",
         b"                    or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])\n"
         b"                    or query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])):\n",
@@ -359,6 +341,142 @@ class Runtime:
     _compile(runtime, "v13/runtime.py")
     _compile(cognition, "v13/cognition.py")
     _compile(arithmetic, "v13/arithmetic_reflex.py")
+
+    result["v13/audio_context_store.py"] = b'''"""Process-local consent-bound acoustic context with durable revocation tombstones."""
+import json
+
+from .common import dumps
+
+
+def _lease(window, source_id, receipt):
+    guard = window.get("consent_guard") if type(window) is dict else None
+    check = window.get("consent_check") if type(window) is dict else None
+    if not callable(guard) or not callable(check):
+        raise PermissionError("linearizable audio consent provider unavailable")
+    manager = guard(source_id, receipt)
+    if not hasattr(manager, "__enter__") or not hasattr(manager, "__exit__"):
+        raise PermissionError("audio consent guard must return a context manager")
+    return manager, check
+
+
+def _revoke(runtime, event_id, context):
+    ref = context.get("summary_source_ref") if type(context) is dict else None
+    if type(ref) is dict:
+        sid, blob_hash = ref.get("source_id"), ref.get("sha256")
+        if type(sid) is str and type(blob_hash) is str:
+            with runtime.store.tx() as connection:
+                connection.execute(
+                    "UPDATE sources SET deleted=1 WHERE id=? AND hash=? AND kind='AUDIO_ACOUSTIC_CONTEXT' AND deleted=0",
+                    (sid, blob_hash),
+                )
+    contexts = getattr(runtime, "_audio_contexts", None)
+    if isinstance(contexts, dict) and contexts.get(event_id) is context:
+        contexts.pop(event_id, None)
+
+
+def record(runtime, event_id, audio_result, audio_window):
+    if not isinstance(audio_result, dict) or type(audio_window) is not dict:
+        return None
+    admission = audio_result.get("c3_admission")
+    packet_value = audio_result.get("packet")
+    selected = getattr(admission, "selected", ()) if admission is not None else ()
+    if getattr(admission, "status", None) != "ADMITTED" or not selected or not isinstance(packet_value, dict):
+        return None
+    source = packet_value.get("source_ref")
+    segments_value = packet_value.get("segments")
+    if (type(source) is not dict or type(segments_value) is not list or len(segments_value) != 1
+            or packet_value.get("event_id") != event_id
+            or packet_value.get("brain_generation_id") != runtime.store.generation_id):
+        return None
+    segment = segments_value[0]
+    if type(segment) is not dict or segment.get("finality") != "FINAL":
+        runtime.store.log("audio_input_unavailable", event_id,
+                          {"stage": "context_record_finality", "reason": "PROVISIONAL_OR_INVALID"})
+        return None
+    try:
+        from .audio_voice_cues import validate_voice_cues
+        voice_cues = validate_voice_cues((segment.get("acoustic") or {}).get("voice_cues"))
+    except Exception:
+        runtime.store.log("audio_input_unavailable", event_id,
+                          {"stage": "voice_cue_validation", "reason": "MISSING_OR_INVALID"})
+        return None
+    receipt = segment.get("consent_receipt_ref")
+    source_id = source.get("source_id")
+    if source_id != audio_window.get("source_id") or receipt != audio_window.get("consent_receipt"):
+        return None
+    try:
+        manager, check = _lease(audio_window, source_id, receipt)
+        with manager as active:
+            if active is not True or check(source_id, receipt) is not True:
+                raise PermissionError("audio consent revoked before context persistence")
+            observations = []
+            for item in selected:
+                summary = getattr(item, "summary", None)
+                start = getattr(item, "start_ms", None)
+                end = getattr(item, "end_ms", None)
+                if (getattr(item, "source_id", None) != source_id
+                        or getattr(item, "modality", None) != "audio"
+                        or type(summary) is not str or not summary or len(summary) > 256
+                        or type(start) is not int or type(end) is not int
+                        or start < 0 or end <= start or end - start > 1000):
+                    continue
+                observations.append({
+                    "source_id": source_id, "modality": "audio",
+                    "start_ms": start, "end_ms": end,
+                    "summary": summary, "priority": getattr(item, "priority", 0),
+                })
+            if not observations:
+                return None
+            body = {
+                "schema": "v14.raw-ear-acoustic-context/1",
+                "audio_packet_id": packet_value.get("packet_id"),
+                "audio_source_ref": source,
+                "observations": observations,
+                "voice_cues": voice_cues,
+                "authority": "ACOUSTIC_FEATURES_ONLY",
+                "transcript": None,
+                "learning_authority": False,
+                "action_authority": False,
+            }
+            summary_ref = runtime.store.source(dumps(body), "AUDIO_ACOUSTIC_CONTEXT")
+            context = {
+                "body": body, "summary_source_ref": summary_ref,
+                "source_id": source_id, "receipt": receipt,
+                "consent_check": check, "consent_guard": audio_window["consent_guard"],
+            }
+            if not hasattr(runtime, "_audio_contexts"):
+                runtime._audio_contexts = {}
+            runtime._audio_contexts[event_id] = context
+            return context
+    except Exception as exc:
+        runtime.store.log("audio_input_unavailable", event_id,
+                          {"stage": "context_record_consent", "reason": type(exc).__name__})
+        return None
+
+
+def view(runtime, event_id, consumer="C3"):
+    context = getattr(runtime, "_audio_contexts", {}).get(event_id)
+    if not isinstance(context, dict):
+        return None
+    try:
+        manager, check = _lease(context, context.get("source_id"), context.get("receipt"))
+        with manager as active:
+            if active is not True or check(context.get("source_id"), context.get("receipt")) is not True:
+                raise PermissionError("audio consent revoked")
+            stored = json.loads(runtime.store.read_source(context["summary_source_ref"]))
+            if stored != context["body"]:
+                raise ValueError("audio summary source mismatch")
+            return context["body"] | {"summary_source_ref": context["summary_source_ref"]}
+    except Exception as exc:
+        _revoke(runtime, event_id, context)
+        runtime.store.log(
+            "audio_input_unavailable", event_id,
+            {"stage": "consumer_consent", "consumer": str(consumer)[:32],
+             "reason": "REVOKED_OR_UNAVAILABLE" if isinstance(exc, PermissionError) else "SOURCE_REVOKED_OR_MISMATCH"},
+        )
+        return None
+'''
+
     result.update({
         "v13/runtime.py": runtime,
         "v13/cognition.py": cognition,

@@ -2,7 +2,7 @@ name: V14 Core staged A5 voice and arithmetic integration
 
 on:
   pull_request:
-    branches: [research-perception/v14-raw-ear-runtime-temporal-state-20261121]
+    branches: [research-perception/v14-raw-ear-consent-commit-guard-20261121]
     paths:
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
@@ -56,13 +56,13 @@ jobs:
           python -m pip install numpy==2.2.6 psutil PyYAML pytest==9.2.0
       - name: Verify exact builder and deployer pin chain
         run: |
-          test "$(sha256sum v13/code/scripts/integrated_audio_context_candidate_20261121.py | cut -d' ' -f1)" = "1a3ccb0160706c1c5fc39f67cb91ed2f8083a481519b558f16ead8109304f238"
-          test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py | cut -d' ' -f1)" = "d495452982268e96d66ba6fdf491759f0bbbdcd828a33ace7b87e5ca728bd6d5"
-          test "$(sha256sum v13/code/scripts/stage_integrated_candidate.py | cut -d' ' -f1)" = "8d68f2bbae90f28675c35bec22b04834bbd2732aad40e2ea1e2217596cc06cba"
+          test "$(sha256sum v13/code/scripts/integrated_audio_context_candidate_20261121.py | cut -d' ' -f1)" = "28454766d9a752549423ffae3ba3099fe68225442043f33f0bf62cfacc75b419"
+          test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py | cut -d' ' -f1)" = "e856f28ce8fde6dd631ae950c6bdd266cf6e0d1d9e84d0e5eaa7de1d2e01a62f"
+          test "$(sha256sum v13/code/scripts/stage_integrated_candidate.py | cut -d' ' -f1)" = "4c3b3f67abfa951d04d417bdedcb5d1b91231c3334ce0bae298ef7248e6c94df"
           test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261112.py | cut -d' ' -f1)" = "ff0920afd2311827678ff9cfa115c63cd4ff06cda3a9cddf5f298fd4719ad9d5"
           test "$(sha256sum v13/code/scripts/integrated_arithmetic_candidate_20261116.py | cut -d' ' -f1)" = "728a229ea8316aa97fdd8cf83fa7d5358bc1c187cfcc556b62005e9e0e872128"
           test "$(sha256sum v13/code/v13/arithmetic_reflex.py | cut -d' ' -f1)" = "3874df3a75137239336e42af304437531562c96eff8323b0d8cd6dd43c3cc653"
-          grep -F 'STAGER_SHA256 = "8d68f2bbae90f28675c35bec22b04834bbd2732aad40e2ea1e2217596cc06cba"' v13/code/v13/runtime_deploy.py
+          grep -F 'STAGER_SHA256 = "4c3b3f67abfa951d04d417bdedcb5d1b91231c3334ce0bae298ef7248e6c94df"' v13/code/v13/runtime_deploy.py
       - name: Compile composed builders and Runtime consumers
         run: |
           python -m py_compile \

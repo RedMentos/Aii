@@ -352,3 +352,56 @@ No material V14 master edit was made; no master backup was required. Historical 
 - #2183 new head e8abb54... fixes the earlier NameError and uses the merged AOSP /data path policy. Safe-additive 21, staged 249/10/47, integrated 415/3/58 and private-bridge tests PASS on that old head; it must rebase to current d4834... and rerun exact-head CI before queue approval.
 - #2190 remains merged at code head e18c664...; exact push CI is green. It is only an audit-DB path fix, not Android control.
 - Next integrated work: promote training-resume checkpoint into the actual Store/Runtime path; fix #1904 B1/B2 -> C4 -> C3; rebase RAW EAR V3/A5 consumer together. Redmi remains unverified.
+
+
+## Boss integration checkpoint — 2026-11-21 11:38 CET
+
+- Live release branch readback: `4a471ae40dd9b768c8130fafdba51900b5417800`. It is two documentation-only commits ahead of the code-bearing release `e18c664d954fa5a44a1b2e5bec76850d5a40f89f`; no code-bearing release change is represented by this docs HEAD. Exact HEAD GitHub Actions check-runs read back green, including Python 3.13/3.14, staged-runtime, integrated-regression, owner-read and private-bridge checks. CI/Linux only.
+- Runtime JEPA is now genuinely wired as a bounded postcommit SleepRuntime job: a committed T8 event invokes the Store-backed WorldJEPA consumer and then the World/Planner SHADOW receiver. It is source-bound/cancellable and has no decision authority. Learning/optimizer permissions remain OFF by default; current inference checkpoint still does not persist Adam moments, and native B1/B2 GGUF weights are unchanged.
+- RAW EAR temporal candidate #2192 exact head `24d482ac049d00e3affe02426a7276c54c5b22c4`: staged-runtime and integrated-regression PASS; Python 3.13/3.14 comparison, RAW EAR prosody, model-lab, privacy and private-bridge checks PASS. `validate-additive` fails because the PR modifies an existing voice-cue module. Boss reviewed the bounded source/generation-keyed A4 temporal state and requested rebase from stale base `e18c664...` to current `4a471ae...` before ready/review. Scope remains caller-supplied PCM16 A4/C3 admission, not microphone capture, ASR, TTS/vocoder, full duplex, learned audio weights or Redmi proof.
+- #2183 read-only flow-audit candidate remains unapproved: cross-session default when session_id is omitted, plus C4 role/state and blob-symlink findings. #2186 remains a staged optimizer-resume overlay only; production Adam moments are not yet persisted. #2158 voice Runtime stack remains blocked/stale.
+- P0 #1904 remains open: no new real 20-turn Redmi acceptance, correct 2+2, B1/B2 delivered-and-consumed offers, native latency/RSS or installed SHA. Fresh private owner-read has no reply: `NO_LIVE_RECEIPT / REDMI_UNVERIFIED`. No UPDATE_REQUEST or device mutation.
+- Local full-suite test: BLOCKED; no Aii checkout and `git ls-remote` failed because github.com DNS could not resolve. No LOCAL_LINUX full-suite PASS is claimed.
+
+### Next executable actions
+1. Core: repair real B1/B2 → C4/Focal → C3 delivery and prefill/latency without dropping bodies or merely extending deadlines.
+2. JEPA/Memory + Boss: move model + EMA + Adam moments into the production Store checkpoint with source pins, holdout utility/retention, restart, crash and rollback tests; keep gates OFF.
+3. Research/Perception: rebase #2192 to current release head and retain the consent-bound caller-supplied PCM16 boundary.
+4. QA/Android: continue read-only owner relay; no deployment/update request until a fresh authenticated receipt proves consent and installed SHA.
+
+**Release:** no new code released in this checkpoint. **Redmi:** REDMI_UNVERIFIED. **User action:** none.
+
+
+## Boss integration checkpoint and executable sequence — 2026-11-21 13:30 CET
+
+### Current verified branch state
+- Release-development branch HEAD: `0fc4d2f9a76d530c366d67ea8148cd1c69666acd`, merged PR #2197 (Android 13 bind-mount identity guard) after manual source review. PR-head CI: broker 37, sandbox replay 61, staged 249/10/47, integrated 415/3/58 PASS. Exact merged-head push workflows were queued/in progress at readback. Last fully green code-bearing head: `e18c664d954fa5a44a1b2e5bec76850d5a40f89f`; do not promote `0fc4d2f9a76d530c366d67ea8148cd1c69666acd` until every exact push workflow finishes.
+- Local full checkout remains BLOCKED by GitHub DNS. No full LOCAL_LINUX test is claimed. No current Redmi receipt; REDMI_UNVERIFIED.
+
+### Functional candidates and hard blockers
+1. **A5 voice path (#2192 + #2200):** #2200 head `6072440ef505c1c540fc7123cd1fc0cad3d1a67f` passes staged A5 on Python 3.11/3.13, staged-runtime and integrated-regression. It wires caller-supplied synthetic PCM16 -> A5/A4 -> B1/B2 query/offer context -> C3 acoustic prompt using fake runners. This is WIRED_SYNTHETIC, not native inference or microphone proof. Do not merge before #2192 fixes the true/true/false consent race after packet persistence. #2200 must also revoke/delete the derived AUDIO_ACOUSTIC_CONTEXT source and clear process-local state when consent is revoked; current test incorrectly treats a hidden-but-stored source as acceptable.
+2. **C4 complementary offers (#2195):** its separate staged candidate passes CI, but normal `termux_runtime_recovery_candidate.build_sources()` / `runtime_deploy` do not consume the overlay. It must not be described as installed. Before default behavior changes, add a disjoint-but-genuinely-redundant negative control and evaluate 0.0/0.15/0.5/1.0 on a fixed held-out offer set. Boss coordinates the normal builder/stager/deployer pin chain only after this evidence.
+3. **JEPA optimizer resume (#2198):** current head `cd0b54053f51d5227f7860a80f5f6adbd3973598` passes focused, combined, incremental, optimizer-resume, staged/integrated and Python 3.14 CI; earlier Planner utility-gate failures are resolved. It is not merged. `world_jepa_shadow_checkpoint.save()` still uses os.link-only publication; add a same-directory `renameat2(RENAME_NOREPLACE)` fallback on EPERM/EACCES, preserve no-clobber/hash/inode verification and fsync, and test forced hardlink denial plus target-exists. Keep all learning gates OFF.
+4. **Android audit DB (#2197):** merged at `0fc4d2f9a76d530c366d67ea8148cd1c69666acd`; exact path exception only. Broker remains DRY_RUN_ONLY; no OS executor, background API action, AccessibilityService, MediaProjection, UI tap/type or Redmi proof.
+5. **P0 real chat (#1904):** still blocks acceptance. Correct 2+2, native TTFT/quality, actual B1/B2 OfferPacket -> C4 selection -> C3 consumption and mixed Redmi task set remain unverified. Do not solve by dropping organs or merely extending deadlines.
+
+### Next executable sequence
+- QA: finish exact push CI for `0fc4d2f9a76d530c366d67ea8148cd1c69666acd`; continue read-only owner receipt #403 only, with no UPDATE_REQUEST until an authenticated response proves installed SHA and updater consent.
+- Perception: fix #2192's persist/recheck transaction or exact-packet compensation; negative test must leave zero packet, attention/temporal side effect and C3 admission on mid-call revocation.
+- Core: fix #2200 derived-source revocation and rerun staged A5 + integrated regression after #2192 is corrected; preserve the synthetic/native proof distinction.
+- JEPA: add Android-safe no-clobber checkpoint publication to #2198 and rerun Python 3.11/3.14, staged, integrated, crash/restart and target-exists tests.
+- Core/Boss: calibrate and integrate #2195 only in the normal pinned stage, with exact builder/stager/runtime_deploy pins and end-to-end B1/B2 -> C4 -> C3 tests.
+- Boss: after these blockers, re-run exact release-head CI, update this board and the user handoff, then continue across B3 latent coupling, Context OS/Memorilla, Android agency, speech output, cross-organ gradients, sparse MoE and clause-level Canon coverage.
+
+No model, weight, permission, updater setting, device data or phone state was changed. No user action is required.
+
+
+## Exact release and JEPA evidence — 2026-11-21 13:34 CET
+
+- Code-bearing release head `0fc4d2f9a76d530c366d67ea8148cd1c69666acd` is fully green: 28/28 exact check-runs and 17/17 workflows SUCCESS. This is GitHub Linux/CI, not local full checkout or Redmi validation. PR #2197 is merged; the V14 master remains unchanged.
+- The integrated staged Runtime/SQLite WorldJEPA test passed 415/3 skipped/58 subtests. Two ID-disjoint synthetic holdout runs reduced prediction loss 0.9600228 -> 0.9030210 (49 train / 15 holdout) and 0.9627244 -> 0.9034923 (47 train / 17 holdout); numeric parameter change and save/restore/restart checks passed. Treat this as synthetic Python predictor utility only, not native GGUF body-weight learning.
+- Current PR #2198 head cd0b54053f51d5227f7860a80f5f6adbd3973598 passes optimizer-resume, staged/integrated and Python 3.14 CI; its checkpoint publisher still uses os.link only. Add the same-directory renameat2(RENAME_NOREPLACE) fallback after EPERM/EACCES, with forced-denial and existing-target tests before Android review.
+- #2192/#2200 remains blocked by the persist-then-recheck consent race and derived-context retention after revocation. #2195 remains separate-stage-only and uncalibrated. #1904 remains the P0 native chat acceptance blocker.
+- Private owner-read #403 has no reply; installed SHA and updater consent unknown. No UPDATE_REQUEST or device action.
+
+Continue with the consent-safe audio path, Android-safe optimizer publisher and calibrated normal-stage C4 integration; then continue the rest of the Canon. Do not promote synthetic evidence to Android/native claims.

@@ -5,12 +5,14 @@ import json
 import queue
 import struct
 import threading
+from contextlib import contextmanager
 
 import pytest
 
 from v13.audio_voice_cues import consume_pcm16_voice_window
 from v13.cognition import Cognition
 from v13.runtime import Runtime, _validate_audio_window
+import v13.runtime as runtime_module
 from v13.store import Store
 from v13.operator import Operator
 from unittest.mock import Mock
@@ -23,6 +25,17 @@ def _tone(frequency=140, sample_rate=16000, seconds=1.0, amplitude=6000):
     return struct.pack("<" + "h" * count, *samples)
 
 
+_CONSENT_LOCK = threading.RLock()
+
+
+def _consent_guard(source_id, receipt):
+    @contextmanager
+    def lease():
+        with _CONSENT_LOCK:
+            yield True
+    return lease()
+
+
 def _window(consent_check, finality="FINAL"):
     return {
         "pcm16": _tone(),
@@ -32,6 +45,7 @@ def _window(consent_check, finality="FINAL"):
         "finality": finality,
         "consent_receipt": "opaque-local-receipt",
         "consent_check": consent_check,
+        "consent_guard": _consent_guard,
     }
 
 
@@ -52,8 +66,11 @@ def test_audio_window_is_bounded_and_requires_live_consent_provider():
 
     missing_finality = dict(valid)
     missing_finality.pop("finality")
+    missing_guard = dict(valid)
+    missing_guard.pop("consent_guard")
     for invalid in (
         missing_finality,
+        missing_guard,
         valid | {"finality": "PARTIAL"},
         valid | {"finality": True},
         valid | {"sample_rate": True},
@@ -125,7 +142,7 @@ def test_real_store_audio_packet_becomes_source_bound_body_and_c3_context(tmp_pa
         start_ms=window["start_ms"], event_id=event["event_id"],
         generation_id=store.generation_id, source_id=window["source_id"],
         consent_receipt=window["consent_receipt"],
-        consent_check=window["consent_check"], token_budget=512,
+        consent_check=window["consent_check"], consent_guard=window["consent_guard"], token_budget=512,
         finality=window["finality"],
     )
     context = runtime._audio_context_record(event["event_id"], result, window)
@@ -191,7 +208,7 @@ def test_provisional_audio_is_observed_by_a4_but_never_promoted_to_body_or_c3(tm
         start_ms=window["start_ms"], event_id=event["event_id"],
         generation_id=store.generation_id, source_id=window["source_id"],
         consent_receipt=window["consent_receipt"],
-        consent_check=window["consent_check"], token_budget=512,
+        consent_check=window["consent_check"], consent_guard=window["consent_guard"], token_budget=512,
         finality=window["finality"],
     )
 
@@ -224,31 +241,38 @@ def test_c3_layer_is_omitted_when_consent_is_revoked_before_prompt_assembly(tmp_
     runtime = Runtime.__new__(Runtime)
     runtime.store = store
     runtime.home = home
+    revoked = False
     calls = []
 
-    def revoke_on_c3(source_id, receipt):
+    def consent(source_id, receipt):
         calls.append((source_id, receipt))
-        return len(calls) <= 5
+        return not revoked
 
-    window = _validate_audio_window(_window(revoke_on_c3))
+    window = _validate_audio_window(_window(consent))
     result = consume_pcm16_voice_window(
         runtime, window["pcm16"], sample_rate=window["sample_rate"],
         start_ms=window["start_ms"], event_id=event["event_id"],
         generation_id=store.generation_id, source_id=window["source_id"],
         consent_receipt=window["consent_receipt"],
-        consent_check=window["consent_check"], token_budget=512,
-        finality=window["finality"],
+        consent_check=window["consent_check"], consent_guard=window["consent_guard"], consent_guard=window["consent_guard"],
+        token_budget=512, finality=window["finality"],
     )
     context = runtime._audio_context_record(event["event_id"], result, window)
     assert context is not None
+    context_ref = context["summary_source_ref"]
+    revoked = True
     layer, summary_ref = runtime._audio_prompt_layer(event["event_id"])
 
-    assert len(calls) == 6
+    assert len(calls) >= 2
     assert layer is None
     assert summary_ref is None
-    assert store.rows("SELECT id FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT'") != []
+    assert event["event_id"] not in getattr(runtime, "_audio_contexts", {})
+    assert store.rows(
+        "SELECT id FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT' AND deleted=0"
+    ) == []
+    with pytest.raises(ValueError):
+        store.read_source(context_ref)
     store.close()
-
 
 def test_body_offer_and_c3_use_the_same_audio_context_with_separate_provenance():
     from pathlib import Path
@@ -389,5 +413,106 @@ def test_normal_runtime_turn_delivers_voice_cues_to_b1_b2_and_c3(tmp_path):
         assert len(audio_packets) == 1
         raw_pcm_hex = window["pcm16"].hex()
         assert all(raw_pcm_hex not in json.dumps(packet, ensure_ascii=False) for packet in packets)
+    finally:
+        runtime.close()
+
+
+def test_c3_native_prompt_rechecks_audio_consent_after_context_save(tmp_path, monkeypatch):
+    """Revocation after C3 context persistence must withhold the audio layer before inference."""
+    runtime = Runtime(tmp_path)
+    revoked = False
+    original_save_context = runtime_module.save_context
+
+    def save_context_then_revoke(store, session, event_id, role, messages):
+        nonlocal revoked
+        result = original_save_context(store, session, event_id, role, messages)
+        if role == "C3_LANGUAGE":
+            # This is after the exact prompt snapshot was stored but before the
+            # Runtime calls runner.generate() for C3.
+            revoked = True
+        return result
+
+    monkeypatch.setattr(runtime_module, "save_context", save_context_then_revoke)
+    try:
+        runtime.sleep.cycle.set_policy("enabled", "off")
+        runtime.cfg.update(
+            deadline_seconds=90,
+            observer_seconds=5,
+            max_reentry=0,
+            observer_mode="background",
+            b2_quote_select="off",
+            offer_quote_context_chars=0,
+            b2_state_slots=0,
+        )
+        operator = Operator(runtime)
+        operator.run(":effort max")
+        operator.run(":ctxos active")
+        runtime._route = Mock(return_value=("both", {"source": "SYNTHETIC_AUDIO_E2E"}))
+        runtime.learner.output_delta = Mock(return_value=None)
+        seen = {}
+
+        def consent(source_id, receipt):
+            return (
+                not revoked
+                and source_id == "mic-test-1"
+                and receipt == "opaque-local-receipt"
+            )
+
+        class Runner:
+            def __init__(self, role):
+                self.role = role
+                self.last_metrics = {
+                    "role": role, "status": "FINAL", "generated_tokens": 5,
+                    "synthetic": True,
+                }
+
+            def generate(self, messages, cancel, deadline, *args, **kwargs):
+                seen[self.role] = messages
+                if self.role == "B1_DETAIL":
+                    yield json.dumps({
+                        "summary": "The rent is 120 euros.",
+                        "quotes": ["The rent is 120 euros."],
+                        "uncertainty": "low", "needs_reentry": False,
+                    })
+                elif self.role == "B2_GIST":
+                    yield json.dumps({
+                        "summary": "A long-term reserve is needed.",
+                        "quotes": ["The plan preserves a long-term reserve."],
+                        "uncertainty": "low", "needs_reentry": False,
+                    })
+                else:
+                    yield "One combined response."
+
+        runners = {
+            role: Runner(role)
+            for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")
+        }
+        runtime.pool.get = Mock(side_effect=lambda role: runners[role])
+        question = (
+            "Compare details with planning. The rent is 120 euros. "
+            "The plan preserves a long-term reserve."
+        )
+        runtime.submit(question, audio_window=_window(consent))
+
+        deadline = time.monotonic() + 30
+        while not runtime.idle() and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert runtime.idle(), "synthetic audio Runtime turn did not settle"
+        assert revoked is True
+
+        c3_rendered = json.dumps(seen.get("C3_LANGUAGE", []), ensure_ascii=False)
+        assert "RAW_EAR_ACOUSTIC" not in c3_rendered
+        last_context = runtime.store.state(
+            "LAST_NATIVE_CONTEXT:" + runtime.session, None
+        )[0]
+        if last_context:
+            saved = json.dumps(
+                last_context.get("messages") or last_context.get("preview", ""),
+                ensure_ascii=False,
+            )
+            assert "RAW_EAR_ACOUSTIC" not in saved
+        assert runtime.store.rows(
+            "SELECT id FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT' AND deleted=0"
+        ) == []
     finally:
         runtime.close()

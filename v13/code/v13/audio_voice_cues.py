@@ -10,16 +10,20 @@ from __future__ import annotations
 
 import math
 import struct
+from contextlib import contextmanager
 import threading
 from statistics import median
 
 from . import attention as attctl
 from .audio_temporal_evidence import TemporalVoiceEvidence, TemporalVoiceEvidenceRegistry
+from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
 from .audio_percept_contract import audio_percept_packet
 from .audio_perception_bridge import _require_current_consent, _validate_runtime_binding
 from .percept_admission import Percept, admit
+from .common import dumps, now
+from .contracts import validate
 
 
 _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
@@ -78,7 +82,9 @@ def validate_voice_cues(cues: dict) -> dict:
         "energy_range_db", "voiced_energy_range_db", "activity_hint", "activity_score",
         "prosody_change_score",
     }
-    if set(cues) != required or cues.get("method") != "RAW_EAR_AUTOCORR_V3":
+    extra = set(cues) - required
+    if (not required.issubset(cues) or not extra.issubset({"vad"})
+            or cues.get("method") != "RAW_EAR_AUTOCORR_V3"):
         raise ValueError("voice cue fields or method are invalid")
     if cues.get("frame_ms") != 40 or cues.get("hop_ms") != 20:
         raise ValueError("voice cue timing is invalid")
@@ -118,6 +124,8 @@ def validate_voice_cues(cues: dict) -> dict:
         raise ValueError("a single voiced frame cannot establish prosody dynamics")
     if cues["activity_hint"] == "VOICED" and cues["voiced_energy_range_db"] is None:
         raise ValueError("voiced activity requires voiced energy range")
+    if "vad" in cues:
+        validate_vad_evidence(cues["vad"])
     return dict(cues)
 
 
@@ -268,7 +276,7 @@ def _runtime_temporal_voice_registry(runtime):
     return registry
 
 
-def _require_current_consent_and_reset(runtime, source_id, generation_id, consent_check, receipt, temporal_state=None):
+def _require_current_consent_and_reset(runtime, source_id, generation_id, consent_check, receipt, temporal_state=None, vad_stream=None):
     try:
         _require_current_consent(consent_check, source_id, receipt)
     except Exception:
@@ -277,20 +285,118 @@ def _require_current_consent_and_reset(runtime, source_id, generation_id, consen
         )
         if isinstance(temporal_state, TemporalVoiceEvidence):
             temporal_state.reset()
+        if isinstance(vad_stream, SileroVADStream):
+            vad_stream.reset()
         raise
 
 
+def _reset_audio_temporal_state(runtime, source_id, generation_id, temporal_state=None, vad_stream=None):
+    reset_runtime_temporal_voice_states(
+        runtime, source_id=source_id, generation_id=generation_id
+    )
+    if isinstance(temporal_state, TemporalVoiceEvidence):
+        temporal_state.reset()
+    if isinstance(vad_stream, SileroVADStream):
+        vad_stream.reset()
+
+
+@contextmanager
+def _linearizable_audio_consent_lease(runtime, source_id, generation_id, receipt,
+                                      consent_check, consent_guard, temporal_state=None,
+                                      vad_stream=None):
+    """Hold the provider's revocation lock through persistence, A4 and C3 admission.
+
+    consent_guard(source_id, receipt) must return a context manager that yields
+    exactly True while holding the same synchronization primitive used by every
+    revocation path for this source/receipt. A boolean callback alone is not
+    linearizable: revocation can otherwise occur after the final check but before
+    SQLite COMMIT. The lease remains held until the caller has completed all
+    packet, temporal, attention and C3 side effects.
+    """
+    if not callable(consent_guard):
+        _reset_audio_temporal_state(
+            runtime, source_id, generation_id, temporal_state, vad_stream,
+        )
+        raise PermissionError("a linearizable audio consent lease is required")
+    try:
+        manager = consent_guard(source_id, receipt)
+    except Exception:
+        _reset_audio_temporal_state(
+            runtime, source_id, generation_id, temporal_state, vad_stream,
+        )
+        raise PermissionError("linearizable audio consent lease is unavailable") from None
+    if not hasattr(manager, "__enter__") or not hasattr(manager, "__exit__"):
+        _reset_audio_temporal_state(
+            runtime, source_id, generation_id, temporal_state, vad_stream,
+        )
+        raise PermissionError("audio consent guard must return a context manager")
+    try:
+        with manager as active:
+            if active is not True:
+                raise PermissionError("current audio consent is not active")
+            _require_current_consent_and_reset(
+                runtime, source_id, generation_id, consent_check, receipt,
+                temporal_state, vad_stream,
+            )
+            yield
+    except BaseException:
+        _reset_audio_temporal_state(
+            runtime, source_id, generation_id, temporal_state, vad_stream,
+        )
+        raise
+
+
+def _persist_audio_packet_at_consent_commit_boundary(runtime, audio_packet, *, source_id,
+                                                     generation_id, receipt, consent_check,
+                                                     temporal_state=None, vad_stream=None):
+    """Persist only if the final consent check succeeds before SQLite commit.
+
+    The insert and final provider check share one Store transaction. A failed
+    check raises inside Store.tx(), rolling the insert back before any reader can
+    observe the packet. The provider must report current, authoritative consent.
+    """
+    validate("PerceptPacket", audio_packet)
+    with runtime.store.tx() as connection:
+        connection.execute(
+            "INSERT INTO packets VALUES (?,?,?,?,?,?)",
+            (
+                audio_packet["packet_id"],
+                "PerceptPacket",
+                audio_packet["event_id"],
+                audio_packet["brain_generation_id"],
+                dumps(audio_packet),
+                now(),
+            ),
+        )
+        # Deliberately after INSERT but before COMMIT: permission loss aborts
+        # the same transaction instead of leaving a stale committed row.
+        _require_current_consent_and_reset(
+            runtime, source_id, generation_id, consent_check, receipt,
+            temporal_state, vad_stream,
+        )
+
 def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                generation_id, source_id, consent_receipt,
-                               consent_check, finality, token_budget=512,
-                               temporal_state: TemporalVoiceEvidence | None = None):
-    """Persist one source-bound acoustic packet and deliver cues to A4 and C3 admission."""
-    _require_current_consent_and_reset(runtime, source_id, generation_id, consent_check, consent_receipt, temporal_state)
+                               consent_check, finality, consent_guard=None, token_budget=512,
+                               temporal_state: TemporalVoiceEvidence | None = None,
+                               vad_stream: SileroVADStream | None = None):
+    """Persist source-bound acoustic cues to A4/C3 under a linearizable consent lease."""
+    if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
+        raise ValueError("vad_stream must be a SileroVADStream instance")
+    _require_current_consent_and_reset(runtime, source_id, generation_id, consent_check, consent_receipt, temporal_state, vad_stream)
     raw = observe_pcm16(
         pcm, sample_rate, start_ms, consent=True, source_id=source_id, max_seconds=1
     )
     segment = raw["segments"][0]
     cues = extract_voice_cues(pcm, sample_rate)
+    vad_evidence = None
+    if vad_stream is not None:
+        vad_evidence = vad_stream.push_pcm16(
+            pcm, sample_rate=sample_rate,
+            stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
+        )
+        cues["vad"] = validate_vad_evidence(vad_evidence)
+        cues = validate_voice_cues(cues)
     audio_packet = audio_percept_packet(
         event_id=event_id,
         generation_id=generation_id,
@@ -312,81 +418,97 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
     source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
         runtime, event_id, audio_packet
     )
-    _require_current_consent_and_reset(runtime, source_id, generation_id, consent_check, receipt, temporal_state)
-    runtime.store.add_packet("PerceptPacket", audio_packet)
-    _require_current_consent_and_reset(runtime, source_id, generation_id, consent_check, receipt, temporal_state)
-
-    if temporal_state is None:
-        temporal_voice = _runtime_temporal_voice_registry(runtime).update(
-            source_id=source_id,
-            generation_id=generation_id,
-            start_ms=audio_segment["start_ms"],
-            end_ms=audio_segment["end_ms"],
-            cues=cues,
+    with _linearizable_audio_consent_lease(
+        runtime, source_id, generation_id, receipt, consent_check, consent_guard,
+        temporal_state, vad_stream,
+    ):
+        _persist_audio_packet_at_consent_commit_boundary(
+            runtime, audio_packet, source_id=source_id, generation_id=generation_id,
+            receipt=receipt, consent_check=consent_check,
+            temporal_state=temporal_state, vad_stream=vad_stream,
         )
-    else:
-        if not isinstance(temporal_state, TemporalVoiceEvidence):
-            raise ValueError("temporal_state must be a TemporalVoiceEvidence instance")
-        temporal_voice = temporal_state.update(
-            source_id=source_id,
-            generation_id=generation_id,
-            start_ms=audio_segment["start_ms"],
-            end_ms=audio_segment["end_ms"],
-            cues=cues,
-        )
-    voice_novelty = max(
-        0.35 * temporal_voice["voice_evidence"],
-        0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
-    )
-    prosody_interrupt = (0.25 * cues["prosody_change_score"]
-                         if temporal_voice["voice_active"] else 0.0)
-    onset_interrupt = 0.5 if temporal_voice["voice_onset"] else 0.0
-    if cues["activity_hint"] in {"UNVOICED_NOISE", "IMPULSIVE"}:
-        # Preserve non-speech events as their own salience channel.
-        voice_novelty = max(voice_novelty, 0.35 * cues["activity_score"])
-    attention = attctl.controller(runtime)
-    attention_result = attention.modulate(event_id, sal={
-        "novelty": min(1.0, max(zcr, voice_novelty)),
-        "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt)),
-    })
-    a4 = {
-        "packet_id": audio_packet["packet_id"],
-        "source_id": source_id,
-        "finality": audio_segment["finality"],
-        "voice_activity_hint": cues["activity_hint"],
-        "voice_cues": cues,
-        "prosody_change_score": cues["prosody_change_score"],
-        "temporal_voice": temporal_voice,
-        "attention": attention_result,
-        "learning_authority": False,
-        "action_authority": False,
-    }
 
-    _require_current_consent_and_reset(runtime, source_id, generation_id, consent_check, receipt, temporal_state)
-    candidate = audio_to_admission(audio_packet, consent_active=True)
-    summary = candidate.summary + (
-        f" activity={cues['activity_hint']} voiced={cues['voiced_fraction']:.2f}"
-    )
-    if cues["f0_median_hz"] is not None:
-        summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
-    if cues["f0_range_hz"] is not None:
-        summary += f" f0_range_hz={cues['f0_range_hz']:.0f}"
-    summary += f" energy_range_db={cues['energy_range_db']:.1f}"
-    if cues["voiced_energy_range_db"] is not None:
-        summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
-    summary += f" prosody_change={cues['prosody_change_score']:.2f}"
-    candidate = Percept(
-        candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
-        summary[:256], candidate.consent, candidate.final, candidate.priority,
-    )
-    c3 = admit((candidate,), token_budget)
-    return {
-        "status": "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION",
-        "packet": audio_packet,
-        "a4": a4,
-        "c3_admission": c3,
-        "temporal_voice": temporal_voice,
-        "capture_authority": "CALLER_SUPPLIED_PCM16",
-        "learning_authority": False,
-        "action_authority": False,
-    }
+        if temporal_state is None:
+            temporal_voice = _runtime_temporal_voice_registry(runtime).update(
+                source_id=source_id,
+                generation_id=generation_id,
+                start_ms=audio_segment["start_ms"],
+                end_ms=audio_segment["end_ms"],
+                cues=cues,
+            )
+        else:
+            if not isinstance(temporal_state, TemporalVoiceEvidence):
+                raise ValueError("temporal_state must be a TemporalVoiceEvidence instance")
+            temporal_voice = temporal_state.update(
+                source_id=source_id,
+                generation_id=generation_id,
+                start_ms=audio_segment["start_ms"],
+                end_ms=audio_segment["end_ms"],
+                cues=cues,
+            )
+        voice_novelty = max(
+            0.35 * temporal_voice["voice_evidence"],
+            0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
+        )
+        prosody_interrupt = (0.25 * cues["prosody_change_score"]
+                             if temporal_voice["voice_active"] else 0.0)
+        onset_interrupt = 0.5 if temporal_voice["voice_onset"] else 0.0
+        vad_speech_fraction = 0.0 if vad_evidence is None else vad_evidence["speech_fraction"]
+        vad_interrupt = 0.25 * vad_speech_fraction
+        voice_novelty = max(voice_novelty, 0.35 * vad_speech_fraction)
+        if cues["activity_hint"] in {"UNVOICED_NOISE", "IMPULSIVE"}:
+            # Preserve non-speech events as their own salience channel.
+            voice_novelty = max(voice_novelty, 0.35 * cues["activity_score"])
+        attention = attctl.controller(runtime)
+        attention_result = attention.modulate(event_id, sal={
+            "novelty": min(1.0, max(zcr, voice_novelty)),
+            "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt)),
+        })
+        a4 = {
+            "packet_id": audio_packet["packet_id"],
+            "source_id": source_id,
+            "finality": audio_segment["finality"],
+            "voice_activity_hint": cues["activity_hint"],
+            "voice_cues": cues,
+            "prosody_change_score": cues["prosody_change_score"],
+            "temporal_voice": temporal_voice,
+            "attention": attention_result,
+            "learning_authority": False,
+            "action_authority": False,
+        }
+        if vad_evidence is not None:
+            a4["vad_evidence"] = vad_evidence
+
+        _require_current_consent_and_reset(runtime, source_id, generation_id, consent_check, receipt, temporal_state, vad_stream)
+        candidate = audio_to_admission(audio_packet, consent_active=True)
+        summary = candidate.summary + (
+            f" activity={cues['activity_hint']} voiced={cues['voiced_fraction']:.2f}"
+        )
+        if cues["f0_median_hz"] is not None:
+            summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
+        if cues["f0_range_hz"] is not None:
+            summary += f" f0_range_hz={cues['f0_range_hz']:.0f}"
+        summary += f" energy_range_db={cues['energy_range_db']:.1f}"
+        if cues["voiced_energy_range_db"] is not None:
+            summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
+        summary += f" prosody_change={cues['prosody_change_score']:.2f}"
+        if vad_evidence is not None:
+            summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
+        candidate = Percept(
+            candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
+            summary[:256], candidate.consent, candidate.final, candidate.priority,
+        )
+        c3 = admit((candidate,), token_budget)
+        result = {
+            "status": "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION",
+            "packet": audio_packet,
+            "a4": a4,
+            "c3_admission": c3,
+            "temporal_voice": temporal_voice,
+            "capture_authority": "CALLER_SUPPLIED_PCM16",
+            "learning_authority": False,
+            "action_authority": False,
+        }
+        if vad_evidence is not None:
+            result["vad_evidence"] = vad_evidence
+        return result

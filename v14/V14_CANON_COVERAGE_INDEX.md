@@ -1525,3 +1525,41 @@ This overlay is additive; the historical 1,255-heading inventory and V13 appendi
 | Android agency | #2190 merged exact AOSP /data path guard; broker tests PASS | No OS executor, Android API/UI control, authenticated companion or Redmi proof |
 | Release / Redmi | d4834... exact push CI PASS; code head e18c664... | #389 expired without reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED |
 
+
+
+### Boss integration evidence overlay — 2026-11-21 11:38 CET
+
+| Canon family | Current connected code | Verified evidence | Still not accepted |
+|---|---|---|---|
+| T8 / World / JEPA / Planner | SleepRuntime postcommit worker in code-bearing release `e18c664...`; Store-backed WorldJEPA consumer followed by World/Planner SHADOW receiver | Exact release CI green; code path and default-off dual gates inspected | No Adam-moment persistence in production checkpoint; no native B1/B2/C3 GGUF changes; no Android/Redmi utility proof |
+| RAW EAR / A4 attention | #2192 candidate adds source/generation-keyed bounded temporal evidence to caller-supplied PCM16 path | Exact PR head: staged-runtime + integrated-regression PASS; Python 3.13/3.14, prosody, model-lab, privacy and private-bridge PASS | Draft/stale base; additive guard rejects existing-module edit; no mic, ASR, speech decoder/vocoder, full duplex or Redmi proof |
+| B1/B2 → C4 → C3 | Existing source-bound OfferPacket, focal selection and analyst-context consumer remain in Runtime | Code path exists; last real Redmi evidence still records zero valid offers/time-budget failures | No fresh device proof of delivery + selection + actual C3 consumption; P0 remains open |
+| B3 / Enlightened Space | Symbolic/exact source channels and tap provenance only | Existing synthetic/source-contract checks | No trained activation-to-activation latent receiver, OOD/NO_MESSAGE/SYMBOLIC ablation or measured utility |
+| Android agency / release | Audit DB guard and owner-read bridge are code/CI paths | Current branch exact CI green | No OS executor/UI control or current owner-authenticated installed-SHA receipt; REDMI_UNVERIFIED |
+
+Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. This overlay records evidence boundaries; it does not promote any requirement to accepted.
+
+
+### Boss integration evidence overlay — 2026-11-21 13:30 CET
+
+| Canon family | New verified code / consumer | Exact evidence | Still not accepted |
+|---|---|---|---|
+| Android audit DB / V14-009 | PR #2197 merged at `0fc4d2f9a76d530c366d67ea8148cd1c69666acd`; exact AOSP Android 13 `/data/user/0` bind-mount identity exception only when system:system 0771 and device/inode equal `/data/data` | PR head broker 37, sandbox replay 61, staged 249/10/47, integrated 415/3/58 PASS; safe-additive policy rejection retained; exact merged-head push CI pending | No actual bind mount or Redmi proof; broker remains DRY_RUN_ONLY; no Android OS/API/UI executor |
+| RAW EAR / A5 / B1/B2 / C3 | #2192 producer + #2200 staged Runtime consumer; caller-supplied PCM16, derived acoustic cues, source-bound B1/B2 query/offer refs and C3 acoustic prompt | #2192: V3 29/29 Python 3.11/3.13, libfvad native Linux 13/13, comparator 8/8, staged 249/10/47, integrated 415/3/58; #2200: A5 3.11/3.13, staged-runtime and integrated-regression PASS | WIRED_SYNTHETIC only; #2192 true/true/false consent race after packet persistence; #2200 leaves derived AUDIO_ACOUSTIC_CONTEXT stored after revocation; no mic/ASR/TTS/full-duplex/Redmi |
+| B1/B2 -> C4 -> C3 | #2200 synthetic Runtime test delivers mock B1/B2 OfferPackets and their summaries to C3; #2195 separate source-span C4 candidate | #2200 synthetic fake-runner end-to-end PASS; #2195 dedicated/staged/integrated candidate CI PASS | #2200 does not prove native model quality or accepted C4 coalition; #2195 not in normal pinned recovery builder/runtime_deploy and cross-scale redundancy is uncalibrated; P0 #1904 remains open |
+| C5 exact arithmetic | #2200 carries the separate LOCAL_EXACT_ARITHMETIC path with date-shaped subtraction requiring explicit calculation cue; #2199 is superseded | #2200 staged arithmetic-policy separation and integrated regression PASS | No real Redmi correctness/latency proof; operator fixed-rule authority remains distinct; 2+2 remains last historical device failure until fresh receipt |
+| World / JEPA / optimizer | #2198 current head `cd0b54053f51d5227f7860a80f5f6adbd3973598` adds persistent Adam/inverse/RNG resume state to the Store-backed checkpoint candidate | Current focused, combined, incremental, optimizer-resume, staged/integrated and Python 3.14 CI PASS; earlier Planner utility-gate failures fixed | PR unmerged; checkpoint publisher still os.link-only and lacks EPERM/EACCES no-clobber renameat2 fallback; no Android or native GGUF body-weight proof; gates OFF |
+| Release / Redmi | Release branch HEAD `0fc4d2f9a76d530c366d67ea8148cd1c69666acd`; previous fully green code-bearing head `e18c664d954fa5a44a1b2e5bec76850d5a40f89f`; private owner-read #403 pending | #2197 exact PR-head CI PASS; merged-head push CI queued/in progress at last readback | Installed SHA UNKNOWN, updater consent UNVERIFIED, REDMI_UNVERIFIED; no UPDATE_REQUEST or device mutation |
+
+Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. The V14 master was not edited; no immutable master backup was required. This overlay records candidate evidence and open blockers only; it does not promote any Canon family to accepted.
+
+
+### Exact release and numeric-learning evidence — 2026-11-21 13:34 CET
+
+| Canon family | Exact verified evidence | Acceptance still open |
+|---|---|---|
+| Release / Android audit DB | Code-bearing release `0fc4d2f9a76d530c366d67ea8148cd1c69666acd`; PR #2197 merged; 28/28 exact-head check-runs and 17/17 workflows SUCCESS | No owner-authenticated Redmi receipt; installed SHA/updater consent unknown; no real bind-mount or OS executor proof |
+| WorldJEPA numeric learner | Integrated staged Runtime/SQLite regression: 415 passed / 3 skipped / 58 subtests; two content/ID-disjoint holdouts reduced prediction loss 0.9600228 -> 0.9030210 (49 train / 15 holdout) and 0.9627244 -> 0.9034923 (47 train / 17 holdout); parameter diff + save/restore/restart verified | Synthetic Python predictor only; no native GGUF B1/B2/C3 weight update; no multi-seed/ablations on Android; optimizer resume PR #2198 remains unmerged and os.link-only publisher lacks Android fallback |
+| A5 voice / B1/B2/C3 | #2200 staged A5 3.11/3.13, staged-runtime 249/10/47 and integrated 415/3/58 PASS with fake runners | Consent race in #2192; derived audio context remains stored after revocation; no microphone or native body proof |
+
+No master edit; historical 1,255-heading inventory and V13 appendix bytes remain unchanged. These results do not mark any Canon family complete.

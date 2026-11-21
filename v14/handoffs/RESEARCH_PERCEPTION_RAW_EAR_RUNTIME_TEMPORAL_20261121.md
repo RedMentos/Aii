@@ -2,8 +2,8 @@
 
 Date: 2026-11-21 11:53 CET  
 Queue: V14-006 / Research & Perception  
-Current release-development base: 4a471ae40dd9b768c8130fafdba51900b5417800  
-Branch: research-perception/v14-raw-ear-runtime-temporal-state-20261121  
+Current release-development base: 840a53ab19d0d9609e649f00b25e840465a15bcf  
+Branch: research-perception/v14-raw-ear-consent-commit-guard-20261121  
 Status: READY_FOR_REVIEW / NOT_RELEASED / REDMI_UNVERIFIED
 
 ## Rebase and ownership boundary
@@ -21,7 +21,7 @@ The release-development branch is 4a471ae40dd9b768c8130fafdba51900b5417800. This
 
 ## Exact source pins
 
-- audio_voice_cues.py: 4ddb61865deb56b0048390740d35770d4d89316e
+- audio_voice_cues.py: d406e89faf9fc2c62f667a0dcd1fe1d493561d03
 - audio_temporal_evidence.py: 098ce2ec6bb0b744166d711a3401b7acf0252de1
 - dpirch/libfvad: 532ab666c20d3cfda38bca63abbb0f152706c369 (BSD-3-Clause plus separate WebRTC PATENTS grant)
 
@@ -76,3 +76,78 @@ Current PR #2192 head `0bba3da8cd57ed808c98f9f79ae2dedcda3647fe`; code-bearing b
 - Model-lab `44897542295`, public privacy scan `44897542364`, and integration-event/private-bridge `44897553859`: PASS.
 - Strict safe-additive `44897553946`: expected FAIL because this PR modifies the existing RAW EAR producer/temporal modules rather than adding only inert modules. The exact log says `path outside inert-module/test/handoff scope`; no validator bypass was used. Manual Boss review is required.
 - All above are GitHub-hosted Linux CI, not LOCAL_LINUX or Redmi. Full local checkout remains blocked by GitHub DNS; REDMI_UNVERIFIED / NOT_RELEASED.
+
+## Commit-time consent regression — 2026-11-21
+
+- Added the QA-authored test_consent_revocation_between_pre_and_post_persist_leaves_no_packet regression to this Perception branch. It flips the provider to revoked on the third check and asserts zero persisted PerceptPacket rows and zero A4 telemetry.
+- Replaced the separately committed Store.add_packet() call followed by a consent recheck with an audio-owned transaction boundary: validate, insert the packet, then perform the final current-consent check inside the same Store.tx() before COMMIT. A failed check raises and the Store transaction rolls the packet insert back; SQLite readers cannot observe the uncommitted row. Temporal/VAD reset remains fail-closed.
+- This serializes the database commit against the final authoritative callback result. A future OS consent provider that can revoke concurrently must make that callback linearizable with its own revocation state; a generic boolean callback cannot make an external OS permission and SQLite one atomic primitive.
+- Exact new-commit CI is pending. Full local Aii checkout remains BLOCKED by GitHub DNS; no local repository PASS, microphone, native Silero inference or Redmi proof is claimed.
+## Linearizable provider-revocation correction — 2026-11-21
+
+QA's #2206 reproduction identified the remaining gap in the earlier Store-only guard: a plain boolean callback can return True, then the provider can revoke before SQLite COMMIT. A final check inside the transaction is necessary for rollback, but it does not serialize an external provider's state transition with that commit.
+
+The current Perception candidate now adds an explicit consent_guard(source_id, receipt) context-manager contract:
+
+- The guard must yield exactly True while holding the same synchronization primitive used by every application-level revocation path for that source/receipt.
+- The lease is held across the PerceptPacket SQLite transaction, the final in-transaction consent recheck, temporal evidence update, A4 attention modulation, and C3 admission. A plain boolean callback or an unrelated lock is insufficient.
+- The final callback recheck remains inside Store.tx(); if it returns false, the packet insert rolls back before readers can observe it.
+- Missing/invalid guards fail closed. A revoked provider before lease acquisition produces no PerceptPacket, temporal update, A4 telemetry, or C3 admission.
+- This protocol serializes application-provider revocation. It does not claim that Android's external OS permission state can be locked atomically; a future native adapter still needs permission-change callbacks, source cleanup and device tests.
+
+New regression coverage in test_audio_ear_voice_cues_v14.py:
+- callback-only use fails closed before any packet/A4/C3 side effect;
+- revocation already won before lease acquisition leaves no packet, temporal registry, attention telemetry or C3 call;
+- a revoke thread started while the consumer holds the lease cannot complete until the producer has finished packet commit, A4 and C3;
+- a deliberately non-coordinated callback that turns false at the final in-transaction check still causes SQLite rollback.
+
+Core integration required: PR #2200's staged audio_window contract must add a process-local consent_guard, validate it as callable, and pass it to consume_pcm16_voice_window. Its consent_check and consent_guard must belong to the same provider. The provider's revoke method must acquire the same lock. Core must also keep its existing AUDIO_ACOUSTIC_CONTEXT rechecks and clear the derived context on revocation; the producer lease alone does not cover later B1/B2/C3 consumption.
+
+QA coordination: the #2206 test that mutates a boolean after the callback has returned but does not acquire the provider's revocation lock is a useful counterexample to the old callback-only contract, but is not a conforming linearizable provider. The new shared-lock race test is the acceptance test for the provider protocol; retain the separate negative test for a final in-transaction false result.
+
+Exact-head CI for the current source/test changes is pending. Full local Aii checkout remains BLOCKED by GitHub DNS; the only local check so far is a small standalone Python threading/lease-ordering reproduction, not the repository module. No local full-suite PASS, native microphone, ONNX model inference, Redmi test or deployment is claimed. NOT_RELEASED / REDMI_UNVERIFIED.
+
+
+## Exact-head CI update — 2026-11-21
+
+- Producer/test head dd96c8d7d76a7e2022d8476c9ef2b59e4efbbbdf: RAW EAR focused workflow 44908779459 **PASS** on Python 3.11 and 3.13; each ran py_compile and **48/48 tests PASS**. This includes the new shared-provider lease ordering and callback-only fail-closed regressions.
+- Model-lab run 44908779416 **PASS**; public privacy scan 44908779475 **PASS**.
+- Staged/integrated run 44908779460 was still in progress at the last readback; no result is claimed yet.
+- Comparator run 44908779474 **FAIL** on Python 3.13 and 3.14 only because its workflow still expected the pre-lease producer blob d406e89faf9fc2c62f667a0dcd1fe1d493561d03; actual exact producer blob is afb27968b8d932e718020f6043d38fc34cc21986. The pinned native libfvad build and comparator compile passed; the exact-source-blob assertion failed.
+- Strict safe-additive run 44908779431 **FAIL** by design at the existing-module allowlist: it reports "path outside inert-module/test/handoff scope". No bypass; Boss manual review remains required.
+
+The comparator workflow pin was corrected to afb27968b8d932e718020f6043d38fc34cc21986 in commit 39c2f1fb84657b459c40cde0ef7f3db62ca36b69. Exact-head rerun for that commit was not yet visible at readback. Do not treat the previous comparator failure as a benchmark failure; it was a stale source pin, but the new pin still requires a green rerun.
+
+
+## Comparator source-pin rerun — 2026-11-21
+
+The exact producer blob after the consent-lease change is afb27968b8d932e718020f6043d38fc34cc21986. The first comparator run at dd96 correctly detected that its expected pin was stale; no metric result was accepted from that failed run. The workflow pin was corrected in commit 39c2f1fb84657b459c40cde0ef7f3db62ca36b69.
+
+Exact comparator run 44909020840 then passed:
+- Python 3.13: 8/8 comparator tests PASS.
+- Python 3.14: 8/8 comparator tests PASS.
+- Pinned upstream dpirch/libfvad revision 532ab666c20d3cfda38bca63abbb0f152706c369 built on Linux; native make check 13/13 PASS on both Python runners.
+- Exact V3/temporal source blob verification and compile passed. This is LOCAL? No: GitHub-hosted Linux CI with native Linux libfvad. It is not Android/Bionic or Redmi.
+
+Staged/integrated run 44909020846 remained in progress at the last readback. The current branch head has later documentation/Board/Next Action commits; code/test blobs remain unchanged from the tested producer/test tree. Keep REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+## Consent-lease failure reset and commit-boundary regression — 2026-11-21
+
+A follow-up review found that a missing/invalid guard must also clear already-buffered VAD and caller-supplied temporal state, even when the boolean consent callback still returns true. The producer now centralizes that reset in _reset_audio_temporal_state() and uses it for missing guards, guard-factory errors, invalid managers and exceptions inside the lease.
+
+New test coverage now includes a preloaded SileroVADStream and TemporalVoiceEvidence instance; callback-only use fails closed, empties VAD buffering and resets the temporal accumulator so the same time window can be accepted afresh. A second shared-provider race test blocks immediately after the final consent recheck but before SQLite COMMIT, starts a revoke thread, and proves revoke cannot complete until COMMIT plus the producer's A4/C3 critical section exits.
+
+Exact current producer/test code head: 03237482d4534e1a3d4a3c0e9093ec14084f32b9.
+- Producer blob: e75c393939183d2f16e071ebf4a6f5ff65417a61.
+- Focused test blob: b96ffa3770935d1add9d46af7d7ccca22c987dd4.
+- Comparator workflow source pin: e75c393939183d2f16e071ebf4a6f5ff65417a61.
+
+Exact-head run 44909559421: RAW EAR 49/49 PASS on Python 3.11 and 3.13; py_compile PASS on both. Model-lab 44909559414 PASS and privacy scan 44909559570 PASS. Comparator run 44909559394: Python 3.13 8/8 PASS plus native Linux libfvad make check 13/13 PASS; Python 3.14 was still running at last readback. Staged/integrated run 44909559396 was still running. Safe-additive 44909559415 fails at the existing-module allowlist, as expected; no bypass.
+
+The previous exact staged-runtime 249/10/47 and integrated 415/3/58 PASS belonged to the earlier 39c2 source/test tree, before the latest state-reset and exact pre-COMMIT tests. Do not attribute those broad integration passes to 0323748 until the current 44909559396 run completes.
+
+
+### Revocation ordering semantics
+
+This provider-lock design is linearizable, not an immediate asynchronous cancellation token. Revocation becomes effective when the provider's revoke method acquires the shared lock and returns. If a producer already owns the lease, revoke waits until the packet/A4/C3-admission critical section exits; the caller must not display revocation as completed before that method returns. If revoke acquires the lock first, the producer observes inactive consent and fails before side effects. The Android OS permission itself is outside this app lock and remains separately unverified. If product UX requires revocation to interrupt an already-running lease immediately, that is a separate cancellation/compensation design requiring an epoch/cancel signal plus exact packet and attention-telemetry cleanup; this candidate does not claim that behavior.

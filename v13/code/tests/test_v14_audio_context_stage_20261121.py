@@ -13,10 +13,10 @@ CODE = Path(__file__).resolve().parents[1]
 SOURCE_BLOBS = {
     "v13/runtime.py": "30360f40eb784be5ea975ee85e94a57f0b154164",
     "v13/cognition.py": "06de0acf2c6d30d50301d5073f5569822edff813",
-    "v13/audio_voice_cues.py": "4ddb61865deb56b0048390740d35770d4d89316e",
+    "v13/audio_voice_cues.py": "e75c393939183d2f16e071ebf4a6f5ff65417a61",
     "v13/audio_temporal_evidence.py": "098ce2ec6bb0b744166d711a3401b7acf0252de1",
 }
-BUILDER_SHA256 = "d495452982268e96d66ba6fdf491759f0bbbdcd828a33ace7b87e5ca728bd6d5"
+BUILDER_SHA256 = "e856f28ce8fde6dd631ae950c6bdd266cf6e0d1d9e84d0e5eaa7de1d2e01a62f"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -54,6 +54,9 @@ def test_audio_voice_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     assert "not fixed_policy and arithmetic_answer is None" in runtime
     assert "LOCAL_EXACT_ARITHMETIC" in runtime
     assert "audio_source_refs" in runtime
+    assert "consent_guard=audio_window['consent_guard']" in runtime
+    assert "C3_NATIVE_DISPATCH" in runtime
+    assert "REVOKED_BEFORE_C3_DISPATCH" in runtime
     assert "finality=audio_window['finality']" in runtime
     assert "segment.get('finality')!='FINAL'" in runtime
     assert "consume_pcm16_voice_window" in runtime
@@ -63,6 +66,7 @@ def test_audio_voice_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     assert "c3_prompt_included" in runtime
     assert "if not included:meta.pop('audio_source_refs',None);audio_source_ref=None" in runtime
     assert "audio_context_refs" in cognition
+    assert "CONSENT_REVOKED_BEFORE_DISPATCH" in cognition
     assert "audio_context=audio_context_packet" in cognition
     assert "self._audio_context_query(e,offer['role'])" in cognition
     assert "audio_offer_omitted" in cognition
@@ -70,6 +74,9 @@ def test_audio_voice_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     assert "QUERY_CONTEXT_MISMATCH" in cognition
     assert (destination / "v13/audio_voice_cues.py").is_file()
     assert (destination / "v13/audio_temporal_evidence.py").is_file()
+    audio_store = destination / "v13/audio_context_store.py"
+    assert audio_store.is_file()
+    assert "UPDATE sources SET deleted=1" in audio_store.read_text(encoding="utf-8")
 
     test_names = (
         "test_c3_audio_runtime_consumer.py",

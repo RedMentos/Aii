@@ -5,11 +5,14 @@ import random
 import struct
 import threading
 import time
+from contextlib import contextmanager
 from types import SimpleNamespace
 
 import pytest
+import numpy as np
 
 from v13 import audio_voice_cues as audio_voice_cues_module
+from v13.audio_silero_vad import SileroVADStream
 from v13.audio_voice_cues import (
     consume_pcm16_voice_window,
     extract_voice_cues,
@@ -72,6 +75,44 @@ def make_runtime(tmp_path):
 
 def consent_ok(source_id, receipt):
     return source_id == SOURCE_ID and receipt == RECEIPT
+
+
+def _guard_for(check):
+    """Non-racing fixture lease; concurrency tests use a shared provider below."""
+    lock = threading.RLock()
+
+    @contextmanager
+    def lease(source_id, receipt):
+        with lock:
+            yield check(source_id, receipt)
+
+    return lease
+
+
+@contextmanager
+def _always_authorized_lease(source_id, receipt):
+    yield source_id == SOURCE_ID and receipt == RECEIPT
+
+
+class _LinearizableConsentProvider:
+    """Test provider whose check, lease and revoke share one lock."""
+
+    def __init__(self):
+        self._lock = threading.RLock()
+        self._active = True
+
+    def check(self, source_id, receipt):
+        with self._lock:
+            return self._active and source_id == SOURCE_ID and receipt == RECEIPT
+
+    @contextmanager
+    def lease(self, source_id, receipt):
+        with self._lock:
+            yield self._active and source_id == SOURCE_ID and receipt == RECEIPT
+
+    def revoke(self):
+        with self._lock:
+            self._active = False
 
 
 def packet_count(store, event_id):
@@ -214,7 +255,7 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path)
             runtime, pcm, sample_rate=16000, start_ms=100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, finality="FINAL", token_budget=512,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
         )
         segment = result["packet"]["segments"][0]
         cues = segment["acoustic"]["voice_cues"]
@@ -258,7 +299,7 @@ def test_prosody_dynamics_reach_a4_attention_and_c3_summary(tmp_path, monkeypatc
             runtime, sweep_tone(), sample_rate=16000, start_ms=100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, finality="FINAL", token_budget=512,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
         )
         score = result["a4"]["prosody_change_score"]
         assert score > 0.6
@@ -277,7 +318,7 @@ def test_provisional_voice_cues_remain_a4_only(tmp_path):
             runtime, tone(140), sample_rate=16000, start_ms=100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, finality="PROVISIONAL", token_budget=512,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="PROVISIONAL", token_budget=512,
         )
         assert result["a4"]["finality"] == "PROVISIONAL"
         assert result["a4"]["voice_activity_hint"] == "VOICED"
@@ -304,7 +345,7 @@ def test_revoked_consent_has_no_store_or_attention_side_effect(tmp_path):
                 runtime, tone(140), sample_rate=16000, start_ms=100,
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
-                consent_check=lambda source, receipt: False,
+                consent_check=lambda source, receipt: False, consent_guard=_guard_for(lambda source, receipt: False),
                 finality="FINAL", token_budget=512,
             )
         assert packet_count(runtime.store, event["event_id"]) == 0
@@ -330,14 +371,14 @@ def test_temporal_voice_evidence_gates_only_voice_salience_in_a4(tmp_path, monke
             runtime, short_tone, sample_rate=16000, start_ms=100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, finality="FINAL", token_budget=512,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
             temporal_state=state,
         )
         second = consume_pcm16_voice_window(
             runtime, short_tone, sample_rate=16000, start_ms=140,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, finality="FINAL", token_budget=512,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
             temporal_state=state,
         )
         assert first["a4"]["temporal_voice"]["voice_active"] is False
@@ -373,13 +414,13 @@ def test_runtime_default_temporal_state_persists_across_audio_windows(tmp_path, 
             runtime, short_tone, sample_rate=16000, start_ms=100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, finality="FINAL", token_budget=512,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
         )
         second = consume_pcm16_voice_window(
             runtime, short_tone, sample_rate=16000, start_ms=140,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, finality="FINAL", token_budget=512,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
         )
         assert first["a4"]["temporal_voice"]["voice_active"] is False
         assert first["a4"]["temporal_voice"]["voice_onset"] is False
@@ -402,7 +443,7 @@ def test_consent_revocation_clears_default_temporal_state_before_resume(tmp_path
             runtime, short_tone, sample_rate=16000, start_ms=100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, finality="FINAL", token_budget=512,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
         )
         assert first["a4"]["temporal_voice"]["voice_active"] is False
         with pytest.raises(PermissionError):
@@ -410,14 +451,14 @@ def test_consent_revocation_clears_default_temporal_state_before_resume(tmp_path
                 runtime, short_tone, sample_rate=16000, start_ms=140,
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
-                consent_check=lambda source, receipt: False,
+                consent_check=lambda source, receipt: False, consent_guard=_guard_for(lambda source, receipt: False),
                 finality="FINAL", token_budget=512,
             )
         resumed = consume_pcm16_voice_window(
             runtime, short_tone, sample_rate=16000, start_ms=140,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, finality="FINAL", token_budget=512,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
         )
         assert resumed["a4"]["temporal_voice"]["voice_active"] is False
         assert resumed["a4"]["temporal_voice"]["voice_onset"] is False
@@ -436,7 +477,7 @@ def test_consent_revocation_resets_caller_supplied_temporal_state(tmp_path):
             runtime, short_tone, sample_rate=16000, start_ms=100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, temporal_state=state,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), temporal_state=state,
             finality="FINAL", token_budget=512,
         )
         assert first["a4"]["temporal_voice"]["voice_active"] is False
@@ -445,17 +486,320 @@ def test_consent_revocation_resets_caller_supplied_temporal_state(tmp_path):
                 runtime, short_tone, sample_rate=16000, start_ms=140,
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
-                consent_check=lambda source, receipt: False,
+                consent_check=lambda source, receipt: False, consent_guard=_guard_for(lambda source, receipt: False),
                 temporal_state=state, finality="FINAL", token_budget=512,
             )
         resumed = consume_pcm16_voice_window(
             runtime, short_tone, sample_rate=16000, start_ms=140,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, temporal_state=state,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), temporal_state=state,
             finality="FINAL", token_budget=512,
         )
         assert resumed["a4"]["temporal_voice"]["voice_active"] is False
         assert resumed["a4"]["temporal_voice"]["voice_onset"] is False
+    finally:
+        runtime.store.close()
+
+
+class _FakeSileroSession:
+    def __init__(self):
+        self.calls = []
+
+    def run(self, output_names, inputs):
+        self.calls.append(inputs)
+        frame = inputs["input"][:, 64:]
+        rms = float(np.sqrt(np.mean(frame * frame)))
+        score = 0.9 if rms >= 0.08 else 0.1
+        return [np.asarray([[score]], dtype=np.float32), inputs["state"] + 1.0]
+
+
+def test_optional_silero_vad_is_source_bound_and_reaches_a4_c3(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    session = _FakeSileroSession()
+    vad = SileroVADStream(
+        session, model_sha256="b" * 64, model_revision="synthetic-fixture"
+    )
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(140), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
+            vad_stream=vad,
+        )
+        evidence = result["vad_evidence"]
+        segment = result["packet"]["segments"][0]
+        cues = segment["acoustic"]["voice_cues"]
+        assert evidence["method"] == "SILERO_VAD_ONNX"
+        assert evidence["model_sha256"] == "b" * 64
+        assert evidence["frame_count"] == 31
+        assert evidence["speech_fraction"] == 1.0
+        assert evidence["pending_samples"] == 128
+        assert cues["vad"] == evidence
+        assert result["a4"]["vad_evidence"] == evidence
+        assert "vad_speech_fraction=1.00" in result["c3_admission"].selected[0].summary
+        assert result["a4"]["learning_authority"] is False
+        assert result["a4"]["action_authority"] is False
+        assert segment["asr_transcript"] is None
+        assert "pcm16" not in segment
+        assert packet_count(runtime.store, event["event_id"]) == 1
+        assert attention_count(runtime.store, event["event_id"]) == 1
+    finally:
+        runtime.store.close()
+
+
+def test_consent_revocation_resets_optional_silero_stream_before_resume(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    vad = SileroVADStream(
+        _FakeSileroSession(), model_sha256="c" * 64, model_revision="synthetic-fixture"
+    )
+    try:
+        vad.push_pcm16(
+            tone(140, seconds=0.04), sample_rate=16000,
+            stream_id=SOURCE_ID + ":" + event["brain_generation_id"], start_ms=100,
+        )
+        assert vad.pending_samples > 0
+        with pytest.raises(PermissionError):
+            consume_pcm16_voice_window(
+                runtime, tone(140, seconds=0.04), sample_rate=16000, start_ms=140,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=lambda source, receipt: False, consent_guard=_guard_for(lambda source, receipt: False),
+                finality="FINAL", token_budget=512, vad_stream=vad,
+            )
+        assert vad.pending_samples == 0
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
+
+
+def test_optional_silero_rejects_non_16khz_before_packet_or_attention(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    vad = SileroVADStream(
+        _FakeSileroSession(), model_sha256="d" * 64, model_revision="synthetic-fixture"
+    )
+    try:
+        with pytest.raises(ValueError, match="16000 Hz"):
+            consume_pcm16_voice_window(
+                runtime, tone(140, sample_rate=8000), sample_rate=8000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
+                vad_stream=vad,
+            )
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
+
+
+
+def test_audio_packet_fails_closed_without_linearizable_consent_lease(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    vad = SileroVADStream(
+        _FakeSileroSession(), model_sha256="e" * 64, model_revision="synthetic-fixture"
+    )
+    vad.push_pcm16(
+        tone(140, seconds=0.04), sample_rate=16000,
+        stream_id=SOURCE_ID + ":" + event["brain_generation_id"], start_ms=60,
+    )
+    assert vad.pending_samples > 0
+    state = TemporalVoiceEvidence()
+    state.update(
+        source_id=SOURCE_ID, generation_id=event["brain_generation_id"],
+        start_ms=0, end_ms=100,
+        cues={"activity_hint": "VOICED", "activity_score": 0.9},
+    )
+    monkeypatch.setattr(
+        audio_voice_cues_module, "admit",
+        lambda *args, **kwargs: pytest.fail("C3 admission must not run without a lease"),
+    )
+    try:
+        with pytest.raises(PermissionError, match="linearizable audio consent lease"):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=consent_ok, finality="FINAL", token_budget=512,
+                vad_stream=vad, temporal_state=state,
+            )
+        assert vad.pending_samples == 0
+        # The same window can be accepted after reset; stale temporal state is gone.
+        resumed = state.update(
+            source_id=SOURCE_ID, generation_id=event["brain_generation_id"],
+            start_ms=0, end_ms=100,
+            cues={"activity_hint": "VOICED", "activity_score": 0.9},
+        )
+        assert resumed["voice_active"] is True
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+        assert getattr(runtime, "_raw_ear_temporal_registry", None) is None
+    finally:
+        runtime.store.close()
+
+
+def test_provider_revocation_winning_before_lease_has_no_audio_side_effects(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    provider = _LinearizableConsentProvider()
+    provider.revoke()
+    monkeypatch.setattr(
+        audio_voice_cues_module, "admit",
+        lambda *args, **kwargs: pytest.fail("C3 admission must not run after revocation"),
+    )
+    try:
+        with pytest.raises(PermissionError):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=provider.check, consent_guard=provider.lease, finality="FINAL", token_budget=512,
+            )
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+        assert getattr(runtime, "_raw_ear_temporal_registry", None) is None
+    finally:
+        runtime.store.close()
+
+
+
+def test_linearizable_lease_blocks_revocation_before_sqlite_commit(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    provider = _LinearizableConsentProvider()
+    at_commit = threading.Event()
+    allow_commit = threading.Event()
+    revoke_started = threading.Event()
+    revoke_finished = threading.Event()
+    original_tx = runtime.store.tx
+    blocked_once = False
+
+    @contextmanager
+    def block_before_first_commit():
+        nonlocal blocked_once
+        with original_tx() as connection:
+            yield connection
+            if not blocked_once:
+                blocked_once = True
+                at_commit.set()
+                if not allow_commit.wait(5):
+                    raise TimeoutError("test did not release blocked SQLite commit")
+
+    runtime.store.tx = block_before_first_commit
+
+    def revoke():
+        revoke_started.set()
+        provider.revoke()
+        revoke_finished.set()
+
+    try:
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            consumer = pool.submit(
+                consume_pcm16_voice_window,
+                runtime, tone(140),
+                sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=provider.check, consent_guard=provider.lease,
+                finality="FINAL", token_budget=512,
+            )
+            assert at_commit.wait(5)
+            revoker = pool.submit(revoke)
+            assert revoke_started.wait(5)
+            # The lease is still held after the final callback check and before COMMIT.
+            assert not revoke_finished.wait(0.05)
+            allow_commit.set()
+            result = consumer.result(timeout=5)
+            revoker.result(timeout=5)
+
+        assert revoke_finished.is_set()
+        assert provider.check(SOURCE_ID, RECEIPT) is False
+        assert result["c3_admission"].status == "ADMITTED"
+        assert packet_count(runtime.store, event["event_id"]) == 1
+        assert attention_count(runtime.store, event["event_id"]) == 1
+    finally:
+        allow_commit.set()
+        runtime.store.close()
+
+def test_linearizable_lease_serializes_revocation_through_a4_and_c3(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    provider = _LinearizableConsentProvider()
+    entered_attention = threading.Event()
+    allow_attention = threading.Event()
+    revoke_started = threading.Event()
+    revoke_finished = threading.Event()
+    real_attention = audio_voice_cues_module.attctl.controller(runtime)
+
+    class BlockingAttention:
+        def modulate(self, event_id, *, sal):
+            entered_attention.set()
+            if not allow_attention.wait(5):
+                raise TimeoutError("test did not release blocked attention")
+            return real_attention.modulate(event_id, sal=sal)
+
+    blocking_attention = BlockingAttention()
+    monkeypatch.setattr(
+        audio_voice_cues_module.attctl, "controller",
+        lambda _runtime: blocking_attention,
+    )
+
+    def revoke():
+        revoke_started.set()
+        provider.revoke()
+        revoke_finished.set()
+
+    try:
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            consumer = pool.submit(
+                consume_pcm16_voice_window,
+                runtime, tone(140),
+                sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=provider.check, consent_guard=provider.lease,
+                finality="FINAL", token_budget=512,
+            )
+            assert entered_attention.wait(5)
+            revoker = pool.submit(revoke)
+            assert revoke_started.wait(5)
+            # Revocation cannot linearize while the producer owns the lease.
+            assert not revoke_finished.wait(0.05)
+            allow_attention.set()
+            result = consumer.result(timeout=5)
+            revoker.result(timeout=5)
+
+        assert revoke_finished.is_set()
+        assert provider.check(SOURCE_ID, RECEIPT) is False
+        assert result["c3_admission"].status == "ADMITTED"
+        assert packet_count(runtime.store, event["event_id"]) == 1
+        assert attention_count(runtime.store, event["event_id"]) == 1
+    finally:
+        allow_attention.set()
+        runtime.store.close()
+
+def test_consent_revocation_between_pre_and_post_persist_leaves_no_packet(tmp_path):
+    """Revocation at the post-write check must not leave a persisted audio packet."""
+    runtime, event = make_runtime(tmp_path)
+    calls = 0
+
+    def revoke_after_pre_persist_checks(source_id, receipt):
+        nonlocal calls
+        calls += 1
+        # This deliberately non-coordinated callback turns false at the
+        # final in-transaction recheck; the SQLite insert must roll back.
+        return calls <= 2
+
+    try:
+        with pytest.raises(PermissionError):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=revoke_after_pre_persist_checks, consent_guard=_always_authorized_lease,
+                finality="FINAL", token_budget=512,
+            )
+        assert calls == 3
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
     finally:
         runtime.store.close()
