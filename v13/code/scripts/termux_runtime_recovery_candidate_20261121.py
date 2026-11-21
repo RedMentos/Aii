@@ -8,16 +8,20 @@ import importlib.util
 from pathlib import Path
 
 BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
-BASE_BUILDER_SHA256 = "751e32f17db5199d80f1315f589ff12775a978c2ca56eb7d4d08468c7c1f9e77"
+BASE_BUILDER_BLOB_SHA1 = "b185808c3540868d8b53b24995a997431b991808"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
-AUDIO_BUILDER_SHA256 = "56ced78b478585d09d24c1ba3bf0c866957322edac57cff969dab94c09cb125c"
+AUDIO_BUILDER_BLOB_SHA1 = "2015ad383241608f9ff9ba31c0c6ea0724477d9b"
+
+
+def _git_blob_sha1(raw: bytes) -> str:
+    return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw).hexdigest()
 
 
 def _load(code_dir: Path, relative: str, expected: str):
     path = code_dir / relative
     if path.is_symlink() or not path.is_file():
         raise ValueError("pinned audio composition input missing or unsafe: " + relative)
-    if hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+    if _git_blob_sha1(path.read_bytes()) != expected:
         raise ValueError("pinned audio composition input changed: " + relative)
     spec = importlib.util.spec_from_file_location("v14_audio_" + path.stem, path)
     if spec is None or spec.loader is None:
@@ -29,8 +33,8 @@ def _load(code_dir: Path, relative: str, expected: str):
 
 def build_sources(code_dir: Path, *, include_postcommit=True):
     code_dir = Path(code_dir).resolve(strict=True)
-    base = _load(code_dir, BASE_BUILDER, BASE_BUILDER_SHA256)
-    audio = _load(code_dir, AUDIO_BUILDER, AUDIO_BUILDER_SHA256)
+    base = _load(code_dir, BASE_BUILDER, BASE_BUILDER_BLOB_SHA1)
+    audio = _load(code_dir, AUDIO_BUILDER, AUDIO_BUILDER_BLOB_SHA1)
 
     result = base.build_sources(code_dir, include_postcommit=include_postcommit)
     focal_before = result.get("v13/focal.py")
