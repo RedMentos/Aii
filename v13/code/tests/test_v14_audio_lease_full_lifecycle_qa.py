@@ -781,8 +781,10 @@ try:
     entered_unlink = threading.Event()
     publisher_lock_attempted = threading.Event()
     publisher_blob_check = threading.Event()
+    import v13.source_lifecycle_candidate as source_lifecycle
     original_unlink = Path.unlink
     original_exists = Path.exists
+    original_verify = source_lifecycle.verify_or_create_blob
 
     class TrackingRLock:
         """Expose the generic publisher's attempt to enter the shared Store lock."""
@@ -815,6 +817,11 @@ try:
             publisher_blob_check.set()
         return original_exists(path, *args, **kwargs)
 
+    def observed_verify(path, data, expected_hash):
+        if Path(path) == blob_path and threading.current_thread().name == "audio-source-publisher":
+            publisher_blob_check.set()
+        return original_verify(path, data, expected_hash)
+
     def revoke_audio():
         try:
             provider.revoke()
@@ -828,7 +835,9 @@ try:
             errors.append(("publish", exc))
 
     runtime.store.mutex = TrackingRLock()
-    with patch.object(Path, "exists", observed_exists), patch.object(Path, "unlink", gated_unlink):
+    with patch.object(Path, "exists", observed_exists), \
+         patch.object(source_lifecycle, "verify_or_create_blob", observed_verify), \
+         patch.object(Path, "unlink", gated_unlink):
         revoker = threading.Thread(target=revoke_audio, name="audio-source-revoker")
         revoker.start()
         assert entered_unlink.wait(2), "audio revocation did not reach final blob unlink"
