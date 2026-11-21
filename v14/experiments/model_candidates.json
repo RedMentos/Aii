@@ -1,0 +1,22 @@
+{
+  "schema": "v14.model-candidates/1",
+  "checked_at": "2026-11-21",
+  "candidates": [
+    {
+      "id": "lfm25-230m-c3",
+      "role": "C3_LANGUAGE",
+      "model_id": "LiquidAI/LFM2.5-230M-GGUF",
+      "revision": "cdf97bd8205908758f44aec508d68ac1aef98f5c",
+      "license_id": "LFM Open License 1.0",
+      "license_url": "https://huggingface.co/LiquidAI/LFM2.5-230M-GGUF/blob/main/LICENSE",
+      "license_evidence": "Official model page and LICENSE file checked 2026-11-21; LFM Open License v1.0 includes a commercial-use limitation for legal entities above USD 10M annual revenue.",
+      "quant_format": "QAD_Q4_0",
+      "file": {
+        "local_name": "LFM2.5-230M-QAD_Q4_0.gguf",
+        "size": 149081056,
+        "sha256": "e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292"
+      },
+      "selection_status": "CANDIDATE_ONLY_NOT_DOWNLOADED_OR_TESTED"
+    }
+  ]
+}
