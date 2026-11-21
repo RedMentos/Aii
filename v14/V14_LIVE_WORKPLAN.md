@@ -286,5 +286,5 @@ Research recorded in `V14_RESEARCH_LEDGER.md`: libfvad/WebRTC VAD is the first n
 ### Integration boundary / next
 - #2164 is stacked on #2160; neither has merged. The API still has no normal Runtime caller. Core must integrate in dependency order and invoke the JEPA facade only after durable T8/ActionOutcome commit, passing the exact event ID. #2145's current temporal/World shadow path does not yet invoke this learner. Core #2158 remains blocked by arithmetic fixture and high-authority stage-builder policy failures; do not bypass the additive policy.
 - Keep both optimizer gates false until separately authorized. Do not use the uncalibrated planner score for routing. After the normal Runtime consumer exists, add persistent optimizer moments and matched replay ablations (none/uniform/content-or-error-prioritized) with source-disjoint new/old holdouts, retention, restart and rollback.
-- Release HEAD remains c0cedbde718ede6107f4df1f1bf9c784df4e00cf; NOT_RELEASED. Phone SHA UNKNOWN; private owner-read Aiiii#367 unanswered; REDMI_UNVERIFIED. No user/device action is required.
+- Release HEAD remains c0cedbde718ede6107f4df1f1bf9c784df4e00cf; NOT_RELEASED. Phone SHA UNKNOWN; private owner-read Aiiii#369 has no reply as of 06:50 CET; prior #367 expired; REDMI_UNVERIFIED. No user/device action is required.
 
