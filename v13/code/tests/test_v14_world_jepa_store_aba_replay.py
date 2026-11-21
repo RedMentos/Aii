@@ -362,6 +362,7 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
         "replay_budget_matched": metrics.get("replay_budget_matched"),
         "replay_session_count": metrics.get("replay_session_count"),
         "replay_window_count": metrics.get("replay_window_count"),
+        "replay_manifest_sha256": metrics.get("replay_manifest_sha256"),
         "fit_array_bytes": metrics.get("fit_array_bytes"),
         "replay_array_bytes": metrics.get("replay_array_bytes"),
         "optimizer_steps_added": metrics.get("optimizer_steps_added"),
