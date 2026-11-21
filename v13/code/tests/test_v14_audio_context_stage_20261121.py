@@ -13,6 +13,7 @@ CODE = Path(__file__).resolve().parents[1]
 SOURCE_BLOBS = {
     "v13/runtime.py": "30360f40eb784be5ea975ee85e94a57f0b154164",
     "v13/cognition.py": "90138474db6f7c0b66cea24f52d22cd7a6e2f87b",
+    "v13/audio_voice_cues.py": "7ac80a0d0deec8f52361fe89756ebd743b0a3537",
 }
 BUILDER_SHA256 = "b55abb25e2d8cebb138dd92d646f7a51a2c6fb5cbce981af48e58bf4cb99c962"
 
@@ -51,6 +52,7 @@ def test_audio_voice_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     assert "not fixed_policy and arithmetic_answer is None" in runtime
     assert "LOCAL_EXACT_ARITHMETIC" in runtime
+    assert "audio_source_refs" in runtime
     assert "finality=audio_window['finality']" in runtime
     assert "segment.get('finality')!='FINAL'" in runtime
     assert "consume_pcm16_voice_window" in runtime
