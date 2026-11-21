@@ -83,3 +83,12 @@ Run the exact PR CI/staged test chain. If green, have the Boss review and integr
 - Research follow-up: the RoD note above should be mirrored by Research & Perception into the shared V14 research ledger as a dated entry; this handoff does not edit their shared ledger. No third-party code or weights were reused.
 - Next executable JEPA step after independent review/merge: matched multi-seed persistent-vs-reset optimizer runs with identical source-disjoint cohorts/update counts/replay bytes, reporting new and old holdout, parameter/EMA diffs and restart equivalence. Keep uniform/no-replay controls; hard replay stays OFF because its staged retention result regressed.
 - **User action: none required.** Do not run a Termux command or change model/permissions from this candidate.
+
+
+## Receiver utility admission — 2026-11-21
+
+The production Store consumer now exposes B1_DETAIL, B2_GIST and SELF_MODEL numeric readouts only when that role's own held-out MSE beats all three controls: the training-fold mean predictor, zero-latent/bias-only prediction and shuffled-latent prediction by a finite numerical margin. Missing, malformed or nonfinite receiver metrics fail closed as `RECEIVER_UTILITY_REJECTED`; the planner therefore cannot treat an unqualified numeric head as a usable receiver. The learner/checkpoint can still advance independently when the WorldJEPA utility/retention gate passes.
+
+This is a role-readout admission gate, not native B1/B2 activation consumption, not a trained B3 latent path and not GGUF body-weight learning. The existing receiver values remain SHADOW with decision authority NONE. A dedicated negative-control regression mutates one persisted role metric and verifies that its prediction is withheld without granting authority.
+
+Exact-head CI is required after this commit. Full local Aii tests remain BLOCKED by GitHub DNS in this runner; Redmi remains REDMI_UNVERIFIED.

@@ -12,7 +12,7 @@ from v13 import contracts, world_model
 from v13.scheduler import EventScheduler
 from v13.sleep import SleepRuntime
 from v13.store import Store
-from v13.world_jepa_consumer import WorldJEPAStoreConsumer
+from v13.world_jepa_consumer import WorldJEPAStoreConsumer, receiver_utility_gate
 from v13.world_jepa_planner import consume_world_planner_shadow, read_world_planner_shadow
 from v13.world_jepa_runtime import PERMISSION_KEY
 
@@ -561,3 +561,63 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         ]
     finally:
         reopened.close()
+
+
+def test_receiver_utility_gate_requires_mean_and_all_negative_controls():
+    metrics = {
+        "b1_detail_holdout_mse": 0.10,
+        "b1_detail_mean_baseline_mse": 0.20,
+        "b1_detail_zero_latent_mse": 0.18,
+        "b1_detail_shuffled_latent_mse": 0.17,
+    }
+    accepted = receiver_utility_gate(metrics, "B1_DETAIL")
+    assert accepted["accepted"] is True
+    assert accepted["reason"] == "HELDOUT_BEATS_MEAN_AND_NEGATIVE_CONTROLS"
+
+    for key in (
+        "b1_detail_mean_baseline_mse",
+        "b1_detail_zero_latent_mse",
+        "b1_detail_shuffled_latent_mse",
+    ):
+        failed = dict(metrics)
+        failed[key] = metrics["b1_detail_holdout_mse"]
+        result = receiver_utility_gate(failed, "B1_DETAIL")
+        assert result["accepted"] is False
+        assert result["reason"] == "HELDOUT_DID_NOT_BEAT_ALL_CONTROLS"
+
+    invalid = dict(metrics, b1_detail_shuffled_latent_mse=float("nan"))
+    assert receiver_utility_gate(invalid, "B1_DETAIL")["reason"] == "RECEIVER_METRICS_INVALID"
+
+
+def test_receiver_readout_fails_closed_when_its_shuffled_latent_control_fails(tmp_path):
+    home = tmp_path / "brain-receiver-utility-gate"
+    store, session = _make_store(home)
+    try:
+        event_ids = _add_transitions(store, session, 0, 256)
+        store.set_state(PERMISSION_KEY, {
+            "learning_enabled": True, "optimizer_permission": True,
+            "steps": 120, "replay_mode": "uniform",
+        })
+        sleep = _sleep(store, home)
+        result = sleep._run_world_jepa(event_ids[-1], limit=256)
+        assert result["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        state, version = store.state("v14.world_jepa.store_consumer", None)
+        active = state["active"]
+        metrics = active["metrics"]
+        metrics["b1_detail_shuffled_latent_mse"] = metrics["b1_detail_holdout_mse"]
+        store.set_state("v14.world_jepa.store_consumer", state, expected=version)
+
+        from v13.world_jepa_runtime import receiver_readout
+        rejected = receiver_readout(
+            store, "B1_DETAIL", [12.0, 0.0, 4.0, 0.5],
+            world_model.ACTIONS[0], home=home,
+        )
+        assert rejected["status"] == "RECEIVER_UTILITY_REJECTED"
+        assert rejected["receiver_utility"]["accepted"] is False
+        assert rejected["decision_authority"] == "NONE"
+        assert rejected["native_body_consumed"] is False
+        assert rejected["native_body_weights_changed"] is False
+        assert "prediction" not in rejected
+    finally:
+        store.close()
