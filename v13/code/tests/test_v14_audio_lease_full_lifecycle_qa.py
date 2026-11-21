@@ -828,29 +828,29 @@ try:
             errors.append(("publish", exc))
 
     runtime.store.mutex = TrackingRLock()
-    try:
-        with patch.object(Path, "exists", observed_exists), patch.object(Path, "unlink", gated_unlink):
-            revoker = threading.Thread(target=revoke_audio, name="audio-source-revoker")
-            revoker.start()
-            assert entered_unlink.wait(2), "audio revocation did not reach final blob unlink"
-            publisher = threading.Thread(target=publish_shared_source, name="audio-source-publisher")
-            publisher.start()
+    with patch.object(Path, "exists", observed_exists), patch.object(Path, "unlink", gated_unlink):
+        revoker = threading.Thread(target=revoke_audio, name="audio-source-revoker")
+        revoker.start()
+        assert entered_unlink.wait(2), "audio revocation did not reach final blob unlink"
+        publisher = threading.Thread(target=publish_shared_source, name="audio-source-publisher")
+        publisher.start()
 
-            # The publisher must request the same Store lock before it checks
-            # the digest path. While revocation is paused at unlink, it cannot
-            # observe the soon-to-be-removed blob or commit a new source row.
-            assert publisher_lock_attempted.wait(2), "generic publisher did not request the Store lock"
-            assert not publisher_blob_check.is_set(), (
-                "Store.source checked the blob before acquiring the shared Store lock"
-            )
-            assert not published, "generic source publication completed inside the revocation critical section"
+        # The publisher must request the same Store lock before it checks
+        # the digest path. While revocation is paused at unlink, it cannot
+        # observe the soon-to-be-removed blob or commit a new source row.
+        assert publisher_lock_attempted.wait(2), "generic publisher did not request the Store lock"
+        assert not publisher_blob_check.is_set(), (
+            "Store.source checked the blob before acquiring the shared Store lock"
+        )
+        assert not published, "generic source publication completed inside the revocation critical section"
 
-            allow_unlink.set()
-            assert publisher_blob_check.wait(2), "generic publisher did not resume after revocation"
-            revoker.join(2)
-            publisher.join(2)
-            assert not revoker.is_alive(), "audio revocation worker did not finish"
-            assert not publisher.is_alive(), "shared-source publisher did not finish"
+        allow_unlink.set()
+        assert publisher_blob_check.wait(2), "generic publisher did not resume after revocation"
+        revoker.join(2)
+        publisher.join(2)
+        assert not revoker.is_alive(), "audio revocation worker did not finish"
+        assert not publisher.is_alive(), "shared-source publisher did not finish"
+
 
     assert not errors, f"concurrent audio source operations raised: {errors!r}"
     assert len(published) == 1
