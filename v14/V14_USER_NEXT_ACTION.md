@@ -1,3 +1,18 @@
+# Latest integration update — 2026-11-21 20:25 CET
+
+**No user action is required. No Termux command, phone update, model/weight/permission change or device mutation is authorized or needed.**
+
+- Research-only PR #2243 is now merged at `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`. Its exact PR head `f440a5a330e709c06cab1f818de8c83362897b2b` passed all four relevant checks. It adds a tiny cross-geometry PyTorch K/V adapter/injection experiment, negative controls, restart equivalence, R-037 ledger/handoff and an isolated workflow. It does **not** change production B3, llama.cpp, V13 Runtime, installed models, weights or permissions. The exact merge-push CI is still 31 checks (25 queued, 6 in progress at last read), so no new code release is certified.
+- The shared release-development branch head is now `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`. The last fully accepted code release remains `f279286a4453248004c670fcaabecd85da6ab299`; the latest merged code candidate `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` remains 18/19 due to the correct JEPA utility-gate rejection.
+- #2246 is still based on the old #2243 head `d7380cb`; Perception was asked to rebase/retarget it to the shared branch after the parent merge and append R-040/R-041. The current A5 adapter passes `brain_generation_id` and includes two-phase synthetic revoke tests, but there is no OS provider/capture/action or Android proof.
+- R-040 and R-041 are now both full-text reviewed. R-040 (Mahdaviyeh et al., arXiv:2506.04377v1 / PMLR 330:15–42, 2026) is conditional and sample/task-geometry dependent, not a universal anti-replay theorem; arXiv version license is CC BY-NC-ND 4.0. R-041 (Thede et al., arXiv:2609.40089v1) uses joint source-specific reference-loss selection; it adds a forward-only candidate-scoring pass, requires a representative replay pool, and its reported conditions are single-seed. No code/dependency imported. Perception has been asked to add both with these caveats to the ledger.
+- Boss documentation-only PR #2249 contains the current board/workplan/coverage/user handoff. Its offline-bridge-security check is still queued; it is not merged.
+- Private PIPELINE_STATUS request [RedMentos/Aiiii #428](https://github.com/RedMentos/Aiiii/issues/428) remains open with no authenticated reply. Installed SHA and updater consent are UNKNOWN. **REDMI_UNVERIFIED.** No diagnostics/log page/update request or device mutation occurred.
+
+**Next internal work:** Core repairs #2242 stage/deployer pin, overlay fixture and pre-lock audio revocation; QA fixes #2235 AST attribution and rebases #2244; Perception rebases #2246 and appends R-040/R-041; JEPA tests alternatives without weakening per-session retention; Boss waits for exact merge-push CI and integrates only fully tested, compatible slices.
+
+---
+
 Research clarification: both replay papers have now been reviewed at full text. R-040 is Mahdaviyeh et al. (arXiv:2506.04377v1; PMLR 330:15–42, 2026), not Caccia; its arXiv version is CC BY-NC-ND 4.0 and shows conditional, task/sample-dependent harmful replay rather than a universal anti-replay result. R-041 is Thede et al. (arXiv:2609.40089v1); RoD uses source-specific reference-loss deltas, precomputed reference losses, and a forward-only candidate-scoring pass; the paper's per-condition runs are single-seed and its replay-pool coverage/proxy-loss limitations matter. No code or dependencies were imported. The Perception ledger owner has been asked to add both entries and the exact caveats in [PR #2246](https://github.com/RedMentos/Aii/pull/2246#issuecomment-7067983358). This does not change the current release/device status.
 
 # Latest Boss handoff — 2026-11-21 20:18 CET
