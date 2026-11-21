@@ -118,3 +118,26 @@ The candidate license URL is pinned to the exact weight revision. An immutable L
 New negative/integrity tests cover a candidate replacement immediately before lock acquisition, mutation of installed model files after staging, read-only staged bytes, runner binary replacement after preflight, and the repository manifest's pinned license snapshot. The exact model-lab workflow must be rerun on the new commit. Full local checkout remains blocked by GitHub DNS; native GGUF inference and Redmi remain NOT_RUN / REDMI_UNVERIFIED.
 
 The shared V14 board, ledger and next-action files are left to Boss/Integrator PR #2149 to avoid competing edits; that PR already carries the whole-system status and the prior model-lab checkpoint.
+
+
+## Latest Research & Perception checkpoint — 2026-11-21
+
+### Verified code checkpoint
+
+- The QA license-snapshot patch from draft PR #2154 is now integrated into this branch's model lab. Code/test commit: `40deb8a56686455b361ba41e63cb57b981b5a71b`; current PR #2142 branch head should be read live.
+- `verify_license_snapshot()` now reads the pinned snapshot, rejects absolute/traversal paths, symlink components, missing files and SHA256 mismatches, and runs before either native inference or the `CANDIDATE_NOT_INSTALLED` return. Reports mark the snapshot verified and emit only the digest actually read.
+- The earlier integrity fixes remain present: coordinator lock before installed-state reads; baseline/candidate copies staged on the V13 data volume, no-follow and hash-verified, fsynced and read-only; revalidation around runs; runner executable identity checked before and after load.
+- Exact GitHub Actions workflow [44861145442](https://github.com/RedMentos/Aii/actions/runs/44861145442), job `model-lab`, exact code/test SHA above: **PASS** on GitHub Linux / Python 3.13.18 — `py_compile`, candidate-manifest JSON validation, **23/23 synthetic tests**. Tests include missing/tampered/traversal snapshot, pre-lock candidate replacement, staged-file replacement, runner identity and sequential one-at-a-time execution.
+- LOCAL_LINUX full-checkout suite remains **BLOCKED** because this worker cannot resolve github.com; no local full-suite PASS is claimed. GitHub Actions is CI/Linux, not a local or Redmi measurement.
+
+### Research completed in this run
+
+- R-007, arXiv:2608.16347v2, was upgraded from ABSTRACT_VERIFIED to FULLTEXT_REVIEWED in the V14 ledger. Only one of three causal decoder-only pairs showed modest held-out activation-injection effect (23.3% vs 0% unrelated-state control); the two Mistral-target pairs were null. The positive pair's generated text was often not the correct answer. This argues for pair-specific causal receiver tests against text and no-message baselines, not a universal latent bridge.
+- R-010 records Qwen3-0.6B-GGUF as a possible comparison lead only: Apache-2.0, Q4_0 429 MB, Q8_0 805 MB, BF16 1.51 GB; official Qwen3 guide says llama.cpp support from b5092. No exact model revision/SHA was pinned and no download or trial is authorized or performed. Its Q4_0 file is about 1.96× the current 219,312,832-byte LFM2.5-350M baseline; memory and quality are unknown.
+
+### Boundaries and next action
+
+- No GGUF candidate was present/verified for this run, so actual native model comparison remains **NOT_RUN**. The LFM2.5-230M candidate remains diagnostic-only and has historical Redmi 2+2 failure in #1904.
+- No fresh private Redmi receipt; **REDMI_UNVERIFIED / NOT_RELEASED**. No device action, updater request, model download/swap, permission change or weight edit occurred.
+- Exact staged-context workflow is still absent; the green model-lab CI does not make #2142 release-ready. Ask QA/Core for independent review and the staged-context gate before any integration.
+- Research/Perception owns the R-007 full-text note; shared board and `V14_USER_NEXT_ACTION.md` remain on Boss's open #2149 branch to avoid concurrent edits. Boss was asked to sync the new SHA, 23/23 CI and paper result there.
