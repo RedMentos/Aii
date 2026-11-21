@@ -45,6 +45,10 @@ def test_audio_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     assert "not fixed_policy and arithmetic_answer is None" in runtime
     assert "audio_source_refs" in runtime and "LOCAL_EXACT_ARITHMETIC" in runtime
     assert "c3_prompt_included" in runtime
+    assert "consume_pcm16_voice_window" in runtime
+    assert "finality=audio_window['finality']" in runtime
+    assert "voice_activity_hint" in runtime
+    assert (destination / "v13/audio_voice_cues.py").is_file()
     assert "if not included:meta.pop('audio_source_refs',None);audio_source_ref=None" in runtime
     assert runtime.index("c3_prompt_included") < runtime.index("source_recall.verify_before_use") < runtime.index("try:save_context")
     assert "audio_context_refs" in cognition and "Consumer audio context source mismatch" in cognition
@@ -54,6 +58,7 @@ def test_audio_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     assert "COUNTERFACTUAL_READOUT_ONLY" in (destination / "v13/latent_runtime.py").read_text(encoding="utf-8")
 
     test_names = (
+        "test_audio_ear_voice_cues_v14.py",
         "test_b3_latent_runtime.py",
         "test_callosum.py",
         "test_c3_audio_runtime_consumer.py",
