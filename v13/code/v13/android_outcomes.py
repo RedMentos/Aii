@@ -93,7 +93,11 @@ def accept_companion_receipt(
     try:
         attestation = verifier.verify(envelope, receipt, consume_nonce=False)
         if (type(attestation) is not dict
-                or attestation.get("status") != "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+                or attestation.get("status") not in {
+                    "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+                    "COMPANION_USER_DENIED",
+                    "COMPANION_DISPATCH_FAILED",
+                }
                 or attestation.get("t8_authoritative") is not False):
             raise InvalidOutcome("companion verifier returned an unsupported authority level")
         with broker.lock:
@@ -106,7 +110,7 @@ def accept_companion_receipt(
     outcome = ActionOutcome(
         action_id=proposal.action_id,
         capability=proposal.capability,
-        status="COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+        status=attestation["status"],
         observed=False,
         evidence_level="COMPANION_RECEIPT_ONLY",
         timestamp=float(clock()),
@@ -115,7 +119,8 @@ def accept_companion_receipt(
             "receipt_schema": attestation["schema"],
             "auth_scheme": attestation["auth_scheme"],
             "receipt_nonce": attestation["nonce"],
-            "companion_local_consent_claim": True,
+            "companion_local_consent_claim": attestation.get("companion_local_consent_claim", True),
+            "receipt_status": attestation.get("receipt_status", "EXECUTED"),
             "local_approval_evidence": attestation.get(
                 "local_approval_evidence", "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
             ),
@@ -143,7 +148,11 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
     audit record is never a WorldAction or a T8 learning transition.
     """
     if (not isinstance(outcome, ActionOutcome)
-            or outcome.status != "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+            or outcome.status not in {
+                "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+                "COMPANION_USER_DENIED",
+                "COMPANION_DISPATCH_FAILED",
+            }
             or outcome.observed is not False
             or outcome.evidence_level != "COMPANION_RECEIPT_ONLY"
             or not isinstance(outcome.details, Mapping)
@@ -157,13 +166,15 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
     if type(event_id) is not str or type(source_ref) is not dict:
         raise InvalidOutcome("source-bound event required before persistence")
     auth_scheme = outcome.details.get("auth_scheme")
+    consent_claim = outcome.details.get("companion_local_consent_claim")
+    receipt_status = outcome.details.get("receipt_status")
     common_invalid = (
         type(nonce) is not str or len(nonce) != 32
         or any(ch not in "0123456789abcdef" for ch in nonce)
         or type(digest) is not str or len(digest) != 64
         or any(ch not in "0123456789abcdef" for ch in digest)
         or outcome.details.get("receipt_schema") != "v14.android-companion-receipt/1"
-        or outcome.details.get("companion_local_consent_claim") is not True
+        or type(consent_claim) is not bool
     )
     legacy_hmac_invalid = (
         auth_scheme == "HMAC_SHA256_PER_INSTALL"
@@ -176,11 +187,28 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
     android_keystore_invalid = (
         auth_scheme == "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
         and (
-            outcome.details.get("local_approval_evidence") != "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
-            or outcome.details.get("android_os_permission_status") != "NOT_REQUIRED_FOR_LAUNCH_APP"
+            outcome.details.get("android_os_permission_status") != "NOT_REQUIRED_FOR_LAUNCH_APP"
             or outcome.details.get("key_storage_status") not in {
                 "ANDROID_KEYSTORE_SOFTWARE_BACKED", "ANDROID_KEYSTORE_HARDWARE_BACKED"
             }
+            or (
+                outcome.status == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+                and (consent_claim is not True
+                     or receipt_status != "DISPATCHED_UNVERIFIED"
+                     or outcome.details.get("local_approval_evidence") != "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION")
+            )
+            or (
+                outcome.status == "COMPANION_USER_DENIED"
+                and (consent_claim is not False
+                     or receipt_status != "USER_DENIED"
+                     or outcome.details.get("local_approval_evidence") != "ANDROID_COMPANION_USER_DENIAL")
+            )
+            or (
+                outcome.status == "COMPANION_DISPATCH_FAILED"
+                and (consent_claim is not True
+                     or receipt_status != "FAILED_TO_DISPATCH"
+                     or outcome.details.get("local_approval_evidence") != "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION")
+            )
         )
     )
     if common_invalid or legacy_hmac_invalid or android_keystore_invalid or auth_scheme not in {
@@ -204,7 +232,8 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
         "auth_scheme": outcome.details["auth_scheme"],
         "digest": digest,
         "receipt_nonce": nonce,
-        "companion_local_consent_claim": True,
+        "companion_local_consent_claim": consent_claim,
+        "receipt_status": receipt_status,
         "local_approval_evidence": outcome.details["local_approval_evidence"],
         "android_os_permission_status": outcome.details["android_os_permission_status"],
         "key_storage_status": outcome.details["key_storage_status"],
