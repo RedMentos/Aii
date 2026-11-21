@@ -1325,3 +1325,9 @@ The minimal Core-owned refresh needed for #2275 is:
 4. Recompute `stage_integrated_candidate.py` SHA-256 and update `v13/runtime_deploy.py` `STAGER_SHA256` (current `15b5c22fde6f406bdaeda007fe4b67d0670c37d2229ee750e236c1382305d329`), plus exact dependent test pins.
 
 Do not alter the separate base builder or arithmetic overlay pins unless their bytes change. Perception did not edit Core-owned files.
+
+
+## Android UI policy research intake — 2026-11-22
+
+- R-057 records the official Google Play AccessibilityService policy and Android MediaProjection lifecycle. A general autonomous agent must not use AccessibilityService as a Play-distributed automation engine; the policy prohibits autonomous decision-making agents except a narrow verified disability-assistance exception. Keep the current A5 `ACCESSIBILITY_ASSISTIVE` / `DISABILITY_ASSISTANCE` gate; do not set `isAccessibilityTool=true` without genuine product eligibility. This Play policy does not itself govern every sideloaded APK, but Android OS consent and other constraints remain.
+- Preferred V14 path: narrow API-first actions (Intents/ContentProviders) plus a separately user-consented MediaProjection observation session. Android 13 supports FULL_DISPLAY; API34+ requires a typed mediaProjection foreground service and permission, one consented token per session; Android 15+ cannot launch it from BOOT_COMPLETED. No implementation, permission request or device test was performed. No user action.
