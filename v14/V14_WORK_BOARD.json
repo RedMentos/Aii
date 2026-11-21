@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T18:05:08.230Z",
+  "updated_at": "2026-11-21T18:05:59.714Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -285,7 +285,7 @@
   "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
   "latest_integrated_head": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
   "latest_integrated_head_verified_at": "2026-11-21T18:05:08.230Z",
-  "release_gate_status": "MERGED_NOT_RELEASED_EXACT_PUSH_CI_18_OF_19. Perception merge 728cdc763f09bee20ac00e1f0faadffcd33dfbb2; 18 workflows PASS, 1 workflow FAIL. Failed workflow: staged context/integrated regression, staged-runtime job rejected the normal SleepRuntime JEPA update via UTILITY_GATE_REJECTED; integrated-regression job PASS.",
+  "release_gate_status": "MERGED_NOT_RELEASED_EXACT_PUSH_CI_18_OF_19; staged-runtime JEPA acceptance test failed with UTILITY_GATE_REJECTED; integrated-regression job passed.",
   "phone_receipt": {
     "state": "NO_AUTHENTICATED_OWNER_READ_REPLY",
     "installed_sha": "UNKNOWN",
@@ -456,16 +456,16 @@
   ],
   "latest_boss_checkpoint": {
     "timestamp": "2026-11-21T18:05:08.230Z",
-    "branch_head": "e788dcf0b82849f4de7df229978aa9973d845093",
-    "branch_head_type": "DOCUMENTATION_ONLY_BOSS_CHECKPOINT; code merge head 728cdc; docs refresh follows; no Redmi deployment",
-    "branch_head_checks": "Exact merge-push CI completed 18/19 PASS, 1/19 FAIL. Failed workflow V13 staged context/integrated regression: staged-runtime job fails normal SleepRuntime JEPA positive acceptance because actual retention gate returns UTILITY_GATE_REJECTED; integrated-regression job PASS.",
+    "branch_head": "7c9841ae9d665aab19e60d524307342a219047f0",
+    "branch_head_type": "DOCUMENTATION_ONLY_HANDOFF_REFRESH; code merge head 728cdc; board refresh follows; no Redmi deployment",
+    "branch_head_checks": "Exact merge-push CI 18/19 PASS, 1 FAIL: staged-runtime SleepRuntime JEPA positive acceptance got UTILITY_GATE_REJECTED; integrated-regression job PASS.",
     "code_bearing_release_sha": "f279286a4453248004c670fcaabecd85da6ab299",
     "code_release_checks": "19_OF_19_ASSOCIATED_WORKFLOWS_SUCCESS_ON_PRIOR_CODE_RELEASE",
     "pr2240": "MERGED_728cdc763f09bee20ac00e1f0faadffcd33dfbb2; MERGE_PUSH_18_PASS_1_FAIL; FAILURE_IS_NORMAL_SLEEP_RUNTIME_JEPA_RETENTION_ACCEPTANCE; NOT_RELEASED",
-    "pr2237": "HEAD_d91f4683; SOURCE_PINS_FIXED; MIGRATION_OWNER_READ_LAB_AGE_RUNTIME_DEPLOY_INCREMENTAL_COMBINED_PASS; RETENTION_FAIL_PY313_PY314; SECOND_UPDATE_CLONE_OMITS_TRAINING_STATE; DRAFT",
-    "pr2235": "HEAD_150e92b; PRIOR_CODE_HEADS_STAGED_INTEGRATED_MIGRATION_DEPLOY_PASS; CURRENT_LAB_AGE_AND_OWNER_READ_FAIL_AST_NESTED_CLOSURE_GOALSTORE_ADD; MAPPING_EXPR_PARSE_FIX_ONLY; SAFE_ADDITIVE_FAIL_BY_POLICY; DRAFT",
-    "pr2234": "HEAD_e84d28c_BASE_7a07; NORMAL_DEPLOYER_C4_OVERLAY_REMOVAL_BLOCKER; DRAFT",
-    "pr2200": "HEAD_9eaffb2_BASE_3df5_STALE_NONMERGEABLE; REBASE_TO_MERGED_2240_LEASE_AND_HOLD_THROUGH_C3",
+    "pr2237": "HEAD_d91f4683; SOURCE_PINS_FIXED; RETENTION_FAIL_PY313_PY314; SECOND_UPDATE_CLONE_OMITS_TRAINING_STATE; MERGEABLE_BUT_NOT_READY",
+    "pr2235": "HEAD_150e92b; CURRENT_LAB_AGE_AND_OWNER_READ_FAIL_AST_NESTED_CLOSURE_GOALSTORE_ADD; PRIOR_CODE_HEAD_STAGED_INTEGRATED_MIGRATION_DEPLOY_PASS; SAFE_ADDITIVE_FAIL_BY_POLICY; NOW_NONMERGEABLE_AFTER_BASE_ADVANCED_TO_728cdc; DRAFT",
+    "pr2234": "HEAD_e84d28c; NORMAL_DEPLOYER_C4_OVERLAY_REMOVAL_BLOCKER; NOW_NONMERGEABLE_AFTER_BASE_ADVANCED_TO_728cdc; DRAFT",
+    "pr2200": "HEAD_9eaffb2; STALE_NONMERGEABLE; REBASE_TO_MERGED_2240_LEASE_AND_HOLD_THROUGH_C3",
     "pr2231": "HEAD_8f742854; STACKED_JEPA_SOURCE_PINS_UPDATED_IN_2237; NOT_MERGEABLE",
     "pr2239": "HEAD_f914b918_BASE_1deac63; READ_ONLY_FLOW_AUDIT; NOT_PRODUCT_COMPLETION",
     "pr2241": "CLOSED_UNMERGED_AS_REDUNDANT; SOURCE_CHANGES_ALREADY_PRESENT_IN_QA_2235",
@@ -476,6 +476,6 @@
     "canon_coverage": "1255_HISTORICAL_HEADINGS_PRESERVED; SEMANTIC_CLAUSE_MAPPING_INCOMPLETE",
     "research": "R034_COUNTERFACTUAL_WORLD_MODELS_SIMULATOR_SCOPED; R035_ERROR_PERSISTENCE_MODULATOR_NOT_AGE; R036_OMISSION_STATES_SOURCE_BOUND",
     "user_action_required": "NONE",
-    "boss_docs_commits": "HANDOFF_f425e4aff7e4abe71d92c7d6e44f5ef54953033e; WORKPLAN_b63ffba1e54a0906ae2a67c695b05b722ad101bf; BOARD_REFRESH_COMMIT_FOLLOWS"
+    "boss_docs_commits": "HANDOFF_78c10ff3389049734ab56e8462bc39c5f07a256d; WORKPLAN_39eb26c6d20f73def51785820ebe542289c89431; BOARD_REFRESH_COMMIT_FOLLOWS"
   }
 }
