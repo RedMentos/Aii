@@ -112,3 +112,12 @@ Two new real-SQLite Store regressions cover (1) 64 rows from one identical sourc
 - V14 test implication: retain the existing uniform-vs-none numeric T8 ablation, then compare content/error-prioritized replay only with fixed update/byte budgets and a separate source-disjoint audit holdout. A JEPA-TTT dense temporal-window comparison is only valid once V14 has a genuinely time-ordered multi-step action trajectory; do not synthesize trajectory continuity from unrelated user turns.
 
 These papers reinforce persistent replay and independent retention testing, but neither removes the need for V14's source provenance, rollback, active encoder/EMA comparison, real runtime consumer and Android evidence.
+
+
+## Strict optimizer-gate regression and final code/test readback — 2026-11-21
+
+- Exact code/test head: 06868d23e681d9ee2a71e52cf7856cd575333514.
+- Run 44857847187 PASS: Python 3.13 compile PASS + 62 tests (9.82s); Python 3.14 compile PASS + 62 tests (9.75s).
+- The no-new-receipt cursor path now reports the persisted cursor, not a speculative next cursor, and only writes when optimizer_permission is the exact boolean True. The API already rejects non-boolean values; a new regression verifies that integer 1 raises before any Store-state write. A censored-only page with no eligible action does not create a cursor or state.
+- Two intermediate test attempts were correctly rejected by CI and corrected without weakening the API: run 44857621212 passed integer 1 into the strict bool API; run 44857721741 then expected a cursor advance for a page containing only censored actions, although the authority deliberately returns no eligible scan row. The corrected exact-head run above is green on both Python versions.
+- Current PR head after this handoff update is expected to contain documentation only after the tested code/test head; no Android, native body weights, model swap, or deployment occurred.
