@@ -27,6 +27,7 @@ if str(CODE_ROOT) not in sys.path:
     sys.path.insert(0, str(CODE_ROOT))
 
 from v13.audio_voice_cues import extract_voice_cues
+from v13.audio_speaker_evidence import SCHEMA, SpeakerChangeEvidenceRegistry
 
 
 SAMPLE_RATE = 16000
@@ -109,6 +110,54 @@ def web_rtc_fractions(pcm):
     return result, None
 
 
+def benchmark_speaker_tracker(iterations):
+    """Measure only the synthetic 192-D/80-ms embedding consumer, not model inference."""
+    rng = random.Random(20261121)
+    vectors = []
+    for _ in range(12):
+        vector = [rng.uniform(-1.0, 1.0) for _ in range(192)]
+        vectors.append(vector)
+    batches = []
+    for index in range(iterations):
+        start_ms = 1000 + index * 1000
+        frames = [
+            {"end_ms": start_ms + offset * 80, "vector": vectors[offset % len(vectors)]}
+            for offset in range(1, 13)
+        ]
+        batches.append({
+            "schema": SCHEMA,
+            "source_id": "benchmark:raw-ear",
+            "generation_id": "benchmark:generation",
+            "model_id": "synthetic:192d",
+            "model_revision": "fixture-v1",
+            "model_sha256": "a" * 64,
+            "embedding_dim": 192,
+            "frame_step_ms": 80,
+            "lookback_frames": 10,
+            "confidence_threshold": 0.8,
+            "calibration_id": "synthetic-only",
+            "frames": frames,
+        })
+    registry = SpeakerChangeEvidenceRegistry()
+    index = 0
+
+    def update():
+        nonlocal index
+        start_ms = 1000 + index * 1000
+        result = registry.update(
+            source_id="benchmark:raw-ear",
+            generation_id="benchmark:generation",
+            start_ms=start_ms,
+            end_ms=start_ms + 1000,
+            activity_hint="VOICED",
+            embeddings=batches[index],
+        )
+        index += 1
+        return result
+
+    return measure(update, iterations)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--iterations", type=int, default=20)
@@ -130,6 +179,7 @@ def main():
         "synthetic_only": True,
         "real_speech_accuracy_claim": False,
         "device_benchmark": False,
+        "speaker_embedding_consumer": {"embedding_dim": 192, "frame_step_ms": 80, "lookback_ms": 800, "model_inference_included": False, "synthetic_benchmark": True, "timing": benchmark_speaker_tracker(args.iterations)},
         "results": {},
     }
     try:
