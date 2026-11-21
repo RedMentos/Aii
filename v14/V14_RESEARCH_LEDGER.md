@@ -188,3 +188,11 @@ Review of Core PR #2144 found a real promotion risk at the Runtime boundary:
 **Maintained OSS candidate:** [dpirch/libfvad](https://github.com/dpirch/libfvad), standalone WebRTC VAD fork, repository labels it BSD-3-Clause and documents Autotools/CMake plus `make check`. It also carries a separate [PATENTS](https://github.com/dpirch/libfvad/blob/master/PATENTS) file with Google's additional patent grant/termination language; preserve and review that file with the BSD license. Upstream WebRTC API accepts 8/16/32/48 kHz and 10/20/30 ms frames ([pinned upstream source example](https://webrtc.googlesource.com/src/%2B/f8e91dfdf4ddb91fe8308e33e4d960994612217a/common_audio/vad/webrtc_vad.c)). This is a VAD baseline only, not pitch/prosody or speaker diarization. No exact libfvad revision, Android ABI build, Termux packaging, RSS or Redmi latency has yet been verified.
 
 **Concrete next experiment:** compare current RMS/peak/ZCR-only RAW EAR against (1) a small framed F0/voicing + energy-contour feature extractor and (2) optional libfvad VAD. Use synthetic voiced tone, unvoiced/noise, silence, burst noise and mixed speech-like frames; measure CPU time/RSS and false-accept/false-reject under multiple noise conditions. First compile the pinned C source for aarch64/Termux; do not claim Android support from Linux CI. Preserve PROVISIONAL/FINAL timing and never drop non-speech packets merely because VAD says non-speech.
+
+
+### Core audio PR CI coordination — 2026-11-21
+
+Latest readback of Core PR #2144 head `634382a5ca9f32fb7ccb5f0bfb69e78821ed3eee`:
+- Run 44853452893 FAIL: one test asserts an obsolete provenance string without the existing `meta.get('source_recall_refs',[])` component. The staged builder's replacement includes that component plus `audio_source_ref`; I posted the exact expression and requested a semantic/AST assertion.
+- Earlier run 44853319109 FAIL: `staged_tests.mkdir()` raises because the stage builder already created `tests/`; Boss has the exact finding. I reiterated that the fixture should use `exist_ok=True` or a unique destination.
+- These are test failures, not evidence of broken or working native audio. PR #2144 remains draft; no merge/release claim. The separate missing-finality field issue remains open.
