@@ -1,3 +1,17 @@
+# Current next action — 2026-11-21T21:22:00Z
+
+**No user action is required. Do not run Termux commands or change models, weights, permissions, updater settings or device data.**
+
+- Age/X10 rights audit PR [#2235](https://github.com/RedMentos/Aii/pull/2235) has fixed the nested `GoalStore.add → f(st)` AST attribution and includes an unrelated-closure negative control. Exact code/test head `b22129a03bbd3395605b951d55d3f187f442bda6`; handoff-only head `c224610959e598cb9c79f38d1b4bd454ffea0019`. Lab-Age, owner-read/Python 3.14 startup, migration, deploy, staged runtime (251/10/47) and integrated regression (424/3/58) all PASS. Safe-additive remains `FAIL_BY_POLICY`.
+- #2235 is 43 commits ahead / 121 behind current release-development HEAD `bdcad466ffea75a2b41f7d23be168f53c7197d20` and diverged. Do not merge or blindly rebase. Boss #2241 is closed as superseded by #2235. Boss/Core must compose the `learning_limit()` API with current #2258 GoalStore wake rollback and rebind the builder chain, then rerun the full current-base audit.
+- Age remains developmental/tool/learning rights only; ResourceGuard/deadlines/Sleep own physical compute and replay budgets. No CPU/RAM/time limits are derived from Age.
+- The separate #2258 integration candidate remains blocked by lifecycle old-reader pin mismatch, stale idle and online-world operator pins, missing A5 lease exports, and speech fixture test failures. QA #2261 records the exact failures and fixture correction; its staged/integrated CI remains red on those pre-existing pins.
+- Private PIPELINE_STATUS #435 still has zero authenticated comments; installed SHA and updater consent remain unknown. `REDMI_UNVERIFIED`; no update or device action.
+
+**Next internal actions:** Boss/Core compose #2235 rights with #2258 GoalStore and current base; Core/JEPA rebind lifecycle, idle and online-world source pins; Perception carries the current A5 lease source; QA verifies the speech fixture in the existing audio job and runs the exact current-base regression matrix. No user action is required.
+
+---
+
 # Current next action — 2026-11-21T21:20:00Z
 
 **No user action is required. Do not run Termux commands, request a device update, or change models, weights, permissions, updater settings or phone data.**
