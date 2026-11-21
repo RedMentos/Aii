@@ -1,3 +1,18 @@
+# Current next action — 2026-11-21T21:17:19Z
+
+**No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
+
+- Boss integration PR [#2258](https://github.com/RedMentos/Aii/pull/2258) exact head: `0ecbb1aac1f70c63cb39428a18811cfe4fd66d56`. Exact CI is not green. The common staged/owner-read/Python-3.14/Lab-Age/migration failure is a source-builder mismatch: current Store source pin `40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb` is incorrectly used to replace the old reader pin `fe66f92533b20738b5ec384e9d7c0b5ac8b4b4f658c6c1ad23792d813ff29980` in the generated archive guard and stream candidates. It finds zero matches and aborts staging. Core must use an explicit old-reader pin and recompute the complete downstream hash chain; no guard or CI relaxation.
+- A5 lease collection also fails on Python 3.13/3.14: the composed 2,267-byte bridge lacks `A5UIRuntimeAdapter` and `_persist_source_and_packet`. The reviewed Perception source at commit `acca00e11192dafc20fa55de5fbf0752f7e4f7ba` exports both and must be carried into the integration.
+- Old-phone migration reports `PARTIAL` because staging fails; no update is accepted.
+- QA opened [PR #2261](https://github.com/RedMentos/Aii/pull/2261), head `fe97f4bb0eb3c3ff7745c9e626774a1b8aa9b7e3`, fixing three speech-output test fixtures that redundantly create the `bin/` directory already made by `config.initialize()`. GitHub readback is exact; CI run `44950978469` is in progress. No Runtime code changed.
+- Private owner-read [RedMentos/Aiiii #435](https://github.com/RedMentos/Aiiii/issues/435) has zero authenticated comments. Installed SHA and updater consent remain UNKNOWN. No device action or deployment. `REDMI_UNVERIFIED`.
+- Full local Aii checkout is unavailable; no LOCAL_LINUX project suite was run. Combined JEPA and offline deploy-integrity CI passed; the above staged/A5/migration/audio failures remain open. Safe-additive is `FAIL_BY_POLICY`, not waived.
+
+**Next internal actions:** Core repairs the old-reader pin and downstream hash chain; Perception composes the current A5 lease source; QA verifies #2261 and the exact Python 3.13/3.14 regression matrix; Boss reviews protected files and merges only after all required exact-head checks pass. The whole Canon remains open: native B1/B2 correctness, trained B3 latent receiver, accepted JEPA retention/weight changes, sparse MoE, full voice learning and Android OS control are not established.
+
+---
+
 # Current next action — 2026-11-21T20:58:26.786Z
 
 **No user action is required. Do not run Termux commands or change models, weights, permissions, updater settings or device data.**
