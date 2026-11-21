@@ -191,7 +191,7 @@ class LabAgeTests(unittest.TestCase):
                 runtime.close()
 
     
-    def test_curiosity_uses_the_named_learning_right_not_an_age_probability_budget(self):
+    def test_curiosity_uses_graded_learning_right_not_runtime_compute_budget(self):
         class AlwaysExplore:
             def random(self):
                 return 0.0
