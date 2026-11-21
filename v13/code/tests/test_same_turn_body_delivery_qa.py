@@ -40,6 +40,7 @@ class SameTurnBodyDeliveryTests(unittest.TestCase):
             def __init__(self):
                 self.attempted = []
                 self.deferred = []
+                self.assert_bounded_query = False
 
             def rows(self, query, args):
                 self.assert_bounded_query = (
