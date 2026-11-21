@@ -14,7 +14,7 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "STALE_REDM I_V13OBS #115 (2026-11-18): C3 FINAL, TTFT 77.51s / total 84.37s; B1/B2 TIME_BUDGET 60.1s/50.5s and 0 valid offers; native residency UNKNOWN_NO_GROUP_CHILDREN; not current V14 proof",
+      "proof_environment": "STALE_REDMI_V13OBS #115 (2026-11-18): C3 FINAL, TTFT 77.51s / total 84.37s; B1/B2 TIME_BUDGET 60.1s/50.5s and 0 valid offers; native residency UNKNOWN_NO_GROUP_CHILDREN; not current V14 proof",
       "next_step": "Resolve the real multi-organ chat bottleneck without dropping Canon organs: measure 20 diverse correlated turns, B1/B2→C4→C3 offer delivery, source-bound correctness, p50/p95 TTFT/total latency and simultaneous native residency. Obtain a fresh authorized Redmi receipt; do not infer from the stale #115 report.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 QA: latest known Redmi observation #115 (2026-11-18) shows C3 FINAL but 77.51s TTFT/84.37s total; B1/B2 both TIME_BUDGET and 0 valid offers; native process group unreadable. Fresh #348 HEALTH produced no receipt."
