@@ -137,12 +137,42 @@ def safe_metrics(metrics: dict) -> dict:
     }
 
 
-def run_model(runner_cls, lab_home: Path, model_path: Path, cfg: dict, timeout_s: float, max_tokens: int) -> dict:
+def verified_runner_binary(runner, expected_binary: Path, *, loaded: bool = False) -> dict:
+    """Fail closed unless LlamaRunner is configured to launch the verified binary.
+
+    LlamaRunner honors V13_LLAMA_SERVER before its home/bin default. Compare the
+    resolved path after construction and again after load so the report cannot
+    attribute a different executable's output to the installed binary.
+    """
+    attribute = "_loaded_binary" if loaded else "binary"
+    configured = getattr(runner, attribute, None)
+    if not isinstance(configured, (str, os.PathLike)) or not str(configured):
+        raise RuntimeError("LlamaRunner executable identity unavailable")
+    try:
+        actual = Path(configured).expanduser().resolve(strict=True)
+        expected = Path(expected_binary).expanduser().resolve(strict=True)
+    except (OSError, RuntimeError) as exc:
+        raise RuntimeError("LlamaRunner executable path cannot be verified") from exc
+    if actual != expected:
+        raise RuntimeError("LlamaRunner executable differs from verified installed binary")
+    if not actual.is_file() or not os.access(actual, os.X_OK):
+        raise RuntimeError("LlamaRunner executable is not a regular executable file")
+    return {
+        "file_name": actual.name,
+        "size_bytes": actual.stat().st_size,
+        "sha256": sha256_file(actual),
+    }
+
+
+def run_model(runner_cls, lab_home: Path, model_path: Path, cfg: dict,
+              timeout_s: float, max_tokens: int, expected_binary: Path) -> dict:
     runner = runner_cls(lab_home, ROLE, model_path, cfg, purpose="generate")
     cancel = threading.Event()
     rows = []
     release = {"process_reaped": False}
     try:
+        runner_binary = verified_runner_binary(runner, expected_binary)
+        loaded_binary = None
         for task in TASKS:
             messages = [
                 {"role": "system", "content": "Follow the user's instruction exactly. Do not add a preamble."},
@@ -152,20 +182,23 @@ def run_model(runner_cls, lab_home: Path, model_path: Path, cfg: dict, timeout_s
                 output = "".join(runner.generate(
                     messages, cancel, time.monotonic() + timeout_s,
                     max_tokens=max_tokens, seed=cfg.get("seed", 13)))
-                metrics = safe_metrics(dict(runner.last_metrics or {}))
-                final = metrics["status"] == "FINAL"
-                rows.append({
-                    "task_id": task["id"],
-                    "status": "FINAL" if final else metrics["status"],
-                    "exact_match": bool(final and output.strip() == task["expected"]),
-                    "output_chars": len(output),
-                    "output_sha256": hashlib.sha256(output.encode("utf-8")).hexdigest(),
-                    "metrics": metrics,
-                })
-                if not final:
-                    break
             except Exception as exc:
                 rows.append({"task_id": task["id"], "status": "ERROR", "error_type": type(exc).__name__})
+                break
+            loaded_binary = verified_runner_binary(runner, expected_binary, loaded=True)
+            if loaded_binary != runner_binary:
+                raise RuntimeError("loaded LlamaRunner executable changed during comparison")
+            metrics = safe_metrics(dict(runner.last_metrics or {}))
+            final = metrics["status"] == "FINAL"
+            rows.append({
+                "task_id": task["id"],
+                "status": "FINAL" if final else metrics["status"],
+                "exact_match": bool(final and output.strip() == task["expected"]),
+                "output_chars": len(output),
+                "output_sha256": hashlib.sha256(output.encode("utf-8")).hexdigest(),
+                "metrics": metrics,
+            })
+            if not final:
                 break
     finally:
         try:
@@ -189,6 +222,8 @@ def run_model(runner_cls, lab_home: Path, model_path: Path, cfg: dict, timeout_s
             "max_sampled_pss_bytes": max(pss) if pss else None,
         },
         "release": {"process_reaped": release.get("process_reaped") is True, "error_type": release.get("error_type")},
+        "runner_binary": loaded_binary or runner_binary,
+        "runner_launch_verified": loaded_binary is not None,
     }
 
 
@@ -289,16 +324,26 @@ def compare(home: Path, candidate_id: str, candidate_path: Path | None = None,
             results = {}
             for label in sequence:
                 path = baseline_path if label == "baseline" else candidate_path
-                results[label] = run_model(runner_cls, lab_home, path, cfg, timeout_s, max_tokens)
+                results[label] = run_model(
+                    runner_cls, lab_home, path, cfg, timeout_s, max_tokens, expected_binary=binary)
                 if not results[label]["release"]["process_reaped"]:
                     break
+            runner_infos = [results[label]["runner_binary"] for label in sequence if label in results]
+            if len({info["sha256"] for info in runner_infos}) > 1:
+                raise RuntimeError("LlamaRunner executable changed between candidate runs")
+            runner_launch_verified = bool(runner_infos) and all(
+                results[label]["runner_launch_verified"] for label in sequence if label in results)
             complete = all(label in results and results[label]["status"] == "INFERENCE_COMPLETE" for label in ("baseline", "candidate"))
             return {
                 "schema": "v14.model-compare/1",
                 "status": "COMPARISON_COMPLETE" if complete else "COMPARISON_PARTIAL",
                 "environment": environment_name(), "platform_machine": platform.machine(),
                 "role": ROLE, "order": order, "model": model_rows, "results": results,
-                "runner": {"file_name": binary.name, "size_bytes": binary.stat().st_size, "sha256": sha256_file(binary)},
+                "runner": {
+                    **runner_infos[0],
+                    "identity": "MATCHED_INSTALLED_BINARY",
+                    "launch_verified": runner_launch_verified,
+                },
                 "runtime_config": {k: cfg.get(k) for k in ("threads", "context_tokens", "native_batch_tokens", "temperature", "answer_tokens", "c3_sampling", "c3_decode_mode", "native_cache_ram_mb", "native_ctx_checkpoints")},
                 "selection": {"winner": None, "automatic_promotion": False,
                               "reason": "Diagnostic four-task comparison only; no production selection or swap is inferred."},
