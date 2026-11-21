@@ -120,11 +120,11 @@ def test_store_authority_rejects_event_history_over_hard_scan_bound():
     assert good == [] and bad == 1
 
 
-def test_known_failed_outcome_can_match_not_final_without_censoring():
+def test_known_failed_outcome_can_match_not_final_without_censoring(tmp_path):
     store = FakeStore(status="FAILED")
     good, rejected = verified(store)
     assert rejected == 0 and len(good) == 1
-    bridge = TemporalT8Bridge(Path("unused-ledger-test"))
+    bridge = TemporalT8Bridge(tmp_path / "known-failed")
     result = bridge.consume(good[0], {
         "expected_outcome": "NOT_FINAL", "probability": .8,
         "duration_s": 1.0, "tolerance_s": .25,
