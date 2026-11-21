@@ -59,3 +59,12 @@
 4. Extract per-seed A/B holdout loss, negative-control deltas, encoder/predictor/EMA parameter diffs, optimizer clocks, restart and rollback outcomes. The candidate is accepted only if the new mode improves adaptation without sacrificing retention across prior cohorts.
 5. Keep `full` as default and all learning/optimizer gates OFF until matched utility/retention passes and Boss review completes.
 6. Then continue the wider source-bound T8 → World/Self/Memory → B1/B2 receiver integration. Do not claim native body-weight learning or whole-Canon completion from this small NumPy predictor.
+
+
+## Final stager-consumer correction
+
+The first pin update was incomplete: `runtime_deploy.py` also pins `stage_integrated_candidate.py` via `STAGER_SHA256`. The exact staged/old-phone tests exposed this as `Integrated stage builder changed` and `last_result=PARTIAL`. Commit `08a521b2b445af44b13ddd8c0a8ea25ae7652713` updates the runtime-deploy pin to the current stager bytes; workflow path/compile coverage was updated in `d7b5613dc3a3118a3c6a5856478c6e2a665db27c`. The complete chain now reads back consistently. The corrected exact CI was queued at last readback.
+
+## Next architectural gap
+
+The current retention gate uses the prior aggregate holdout, not stable source/session-bound holdouts for each historical cohort. The next JEPA/Memory code task is to persist bounded per-cohort holdout probes and require each prior cohort to satisfy its own retention tolerance after every candidate update. This must be tested across A→B→A, disjoint source/digest controls, checkpoint restart and rollback. Do not accept an update because a recent aggregate masks forgetting of an earlier regime.
