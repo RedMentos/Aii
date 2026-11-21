@@ -23,6 +23,7 @@ Degradation (B3-H10)     a receiver model revision change resets that direction 
 import json
 import math
 import re
+import time
 from . import b3degrade
 from .common import dumps
 from .neuromod import step
@@ -222,12 +223,18 @@ def operator_command(r,args):
         event=json.loads(row['packet'])
         ref=event.get('source_ref')
         if not isinstance(ref,dict) or not ref.get('source_id'):raise ValueError('Letzte Eingabe hat keine gültige SourceRef')
-        r.models.path_for(receiver)  # read-only installed-model check; no model is loaded here
-        r.enqueue('latent_probe',(event,sender,receiver,ref))
-        return dumps({'queued':True,'sender_role':sender,'receiver_role':receiver,
+        r.require_idle()
+        r.models.path_for(receiver)  # read-only installed-model check; no model is swapped
+        deadline=time.monotonic()+max(120,r.cfg['observer_seconds'])
+        try:
+            packet=r.cognition.native_receive(sender,receiver,event,ref,deadline)
+        finally:
+            r.pool.unload()
+        return dumps({**packet,'queued':False,'completed':True,
+                      'sender_role':sender,'receiver_role':receiver,
                       'requires_explicit_confirmation':True,'production_route':False,
                       'semantic_use_proven':False,'training_authority':0,'native_receiver_authority':0,
-                      'notice':'Sequential sender-unload then receiver-load; existing model only, no weight or routing change'})
+                      'notice':'Synchronous, user-initiated probe; existing model only, no weight or routing change'})
     if not args or args==['status']:return dumps(c.report(r.cfg))
     if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
     if args==['active']:return dumps({'mode':c.set_mode('ACTIVE','EXPLICIT_HUMAN')})
