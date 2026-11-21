@@ -1036,6 +1036,44 @@ def test_outer_audio_lease_rejects_wrong_source_and_boolean_bypass(tmp_path):
         runtime.store.close()
 
 
+@pytest.mark.parametrize("mismatch", ["source", "receipt"])
+def test_outer_audio_lease_rejects_runtime_binding_mismatch(tmp_path, monkeypatch, mismatch):
+    runtime, event = make_runtime(tmp_path)
+    provider = _NonReentrantConsentProvider()
+    original = audio_voice_cues_module._validate_runtime_binding
+
+    def mismatched_binding(runtime_arg, event_id, packet):
+        source_id, receipt, rms, zcr, segment = original(runtime_arg, event_id, packet)
+        if mismatch == "source":
+            source_id = "different-source"
+        else:
+            receipt = "different-receipt"
+        return source_id, receipt, rms, zcr, segment
+
+    try:
+        with audio_consent_lease(
+            runtime, SOURCE_ID, event["brain_generation_id"], RECEIPT,
+            provider.check, provider.lease,
+        ) as lease:
+            monkeypatch.setattr(
+                audio_voice_cues_module, "_validate_runtime_binding",
+                mismatched_binding,
+            )
+            with pytest.raises(PermissionError, match="active consent lease"):
+                consume_pcm16_voice_window(
+                    runtime, tone(140), sample_rate=16000, start_ms=100,
+                    event_id=event["event_id"],
+                    generation_id=event["brain_generation_id"],
+                    source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                    consent_check=None, consent_guard=None,
+                    consent_lease=lease, finality="FINAL", token_budget=512,
+                )
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
+
+
 def test_outer_audio_lease_serializes_revoke_until_scope_exit(tmp_path):
     runtime, event = make_runtime(tmp_path)
     provider = _NonReentrantConsentProvider()
