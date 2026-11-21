@@ -890,8 +890,10 @@ def main(argv=None):
     a = p.parse_args(argv)
     try:
         if a.rollback:
-            # Rollback must use the pipeline lock, disable auto-update, and
-            # request managed-chat resume; never bypass that transaction here.
+            # Rollback is only supported for the managed V13 home. It must use
+            # the pipeline lock, disable auto-update and request chat resume.
+            if Path(a.home).expanduser() != (Path.home() / "v13"):
+                raise RuntimeDeployError("Rollback is limited to the managed V13 home")
             from .pipeline_agent import rollback_runtime
             result = rollback_runtime()
         else:
