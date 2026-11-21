@@ -20,7 +20,7 @@ def test_recovery_composes_with_existing_learning_and_preserves_frozen_sources(t
     manifest = stage.stage(CODE, dest)
     assert manifest['status'] == 'SHADOW_REVIEW_ONLY'
     assert manifest['builder'] == 'scripts/termux_runtime_recovery_candidate_20261121.py'
-    assert manifest['builder_sha256'] == '5d24951dabe314237bd3237000f9ea7a970c5c66a1d417204ad82f15df45ac6c'
+    assert manifest['builder_sha256'] == '8de85c18c7efec7d9490b3547e5e0fa4ee9ab6ce0e7bb60515554135eaa43530'
     assert b'onlineworld' in (dest / 'v13/agi/__init__.py').read_bytes()
     assert (dest / 'scripts/ask_verified_budget.py').is_file()
     assert (dest / 'scripts/native_prefill_stream_client.py').is_file()
