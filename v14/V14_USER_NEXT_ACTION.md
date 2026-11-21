@@ -783,3 +783,8 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 - The local full Aii suite could not run: no repository checkout is present and GitHub DNS resolution fails. GitHub Actions results are CI evidence only.
 
 Next work is internal: Core repairs the pin chain and connects the consent-bound audio producer; JEPA repairs the staged training-resume pin chain; Boss reviews only after exact-head CI and independent review. **No manual Termux command is needed now.**
+
+
+## Final documentation-sync readback — 2026-11-21T16:13:53.627Z
+
+The branch was read back at `d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff` immediately before this final board/handoff refresh. It is a documentation-only commit after the code-bearing release `f279286a4453248004c670fcaabecd85da6ab299`. At that readback, **30 exact-head check-runs were queued**; the final board and user-handoff commits will cause another exact-head CI readback. Do not treat pending checks as green or as a phone deployment. The code-bearing release's previously verified 34/34 check-runs and 19/19 workflows remain the only code-release CI evidence. Redmi remains **REDMI_UNVERIFIED**; installed SHA and updater consent are unknown. Existing private owner-read requests remain pending without authenticated response. No user action or manual Termux command is required.
