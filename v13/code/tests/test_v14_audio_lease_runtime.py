@@ -690,6 +690,55 @@ except AssertionError as exc:
 finally:
     runtime.close()
 
+# Scenario 9: a blob shared by another live source must survive revocation
+# of this one audio context; packet cleanup is independent of blob sharing.
+home = Path(sys.argv[1]) / "shared-context-blob"
+runtime = Runtime(home)
+provider = TwoPhaseProvider()
+seen = {}
+try:
+    configure(runtime)
+    runners = {
+        role: Runner(role, seen)
+        for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")
+    }
+    runtime.pool.get = Mock(side_effect=lambda role: runners[role])
+    runtime.submit(question, audio_window=make_window(provider))
+    deadline = time.monotonic() + 30
+    while not runtime.idle() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert runtime.idle() and runtime.last_answer()["status"] == "FINAL"
+    context_row = runtime.store.one(
+        "SELECT id,hash,deleted FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT'"
+    )
+    assert context_row and context_row["deleted"] == 0
+    blob_path = Path(runtime.store.home) / "data/blobs" / context_row["hash"]
+    content = blob_path.read_text(encoding="utf-8")
+    shared_ref = runtime.store.source(content, "SHARED_CONTROL")
+    assert shared_ref["sha256"] == context_row["hash"]
+    assert runtime.store.one(
+        "SELECT COUNT(*) AS n FROM sources WHERE hash=? AND deleted=0",
+        (context_row["hash"],),
+    )["n"] == 2
+    provider.revoke()
+    assert runtime.store.one(
+        "SELECT deleted FROM sources WHERE id=?",
+        (context_row["id"],),
+    )["deleted"] == 1
+    assert runtime.store.one(
+        "SELECT deleted FROM sources WHERE id=?",
+        (shared_ref["source_id"],),
+    )["deleted"] == 0
+    assert runtime.store.one(
+        "SELECT COUNT(*) AS n FROM sources WHERE hash=? AND deleted=0",
+        (context_row["hash"],),
+    )["n"] == 1
+    assert blob_path.is_file(), "revocation removed a blob still referenced by a live source"
+except AssertionError as exc:
+    failures.append("shared-blob retention: " + str(exc))
+finally:
+    runtime.close()
+
 assert not failures, "; ".join(failures)
 print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 lease spans iterator; Runtime.cancel and Runtime.close release lease for revocation; tombstones, unsubscribe and text fallback stay safe")
 '''
