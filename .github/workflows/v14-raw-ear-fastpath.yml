@@ -6,6 +6,10 @@ on:
       - "research-perception/**"
     paths:
       - "v13/code/v13/audio_voice_cues.py"
+      - "v14/V14_RESEARCH_LEDGER.md"
+      - "v14/V14_USER_NEXT_ACTION.md"
+      - "v14/V14_WORK_BOARD.json"
+      - "v14/handoffs/RESEARCH_PERCEPTION_LATENT_PLASTICITY_20261121.md"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/tests/test_audio_speaker_evidence.py"
       - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
@@ -14,6 +18,10 @@ on:
   pull_request:
     paths:
       - "v13/code/v13/audio_voice_cues.py"
+      - "v14/V14_RESEARCH_LEDGER.md"
+      - "v14/V14_USER_NEXT_ACTION.md"
+      - "v14/V14_WORK_BOARD.json"
+      - "v14/handoffs/RESEARCH_PERCEPTION_LATENT_PLASTICITY_20261121.md"
       - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/tests/test_audio_speaker_evidence.py"
       - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
