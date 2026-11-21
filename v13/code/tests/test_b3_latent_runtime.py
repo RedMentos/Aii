@@ -124,6 +124,7 @@ class B3LatentRuntimeTests(unittest.TestCase):
         result = latent_runtime.train_candidate(self.r, "B1_TO_B2")
         self.assertEqual(result["status"], "CANDIDATE_SAVED_NOT_ACTIVATED")
         self.assertGreater(result["adapter_weight_updates"], 0)
+        self.assertGreater(result["adapter_parameter_diff_l2"], 0.0)
         self.assertEqual(result["body_weight_updates"], 0)
         self.assertEqual(result["latent_authority"], 0)
         self.assertFalse(result["active_bridge_changed"])
@@ -140,6 +141,8 @@ class B3LatentRuntimeTests(unittest.TestCase):
         manifest_path = self.r.home / "b3" / "candidates" / (result["candidate_id"] + ".json")
         manifest = json.loads(manifest_path.read_text())
         self.assertTrue(manifest["training_evidence"]["source_disjoint"])
+        self.assertGreater(manifest["training_evidence"]["parameter_diff_count"], 0)
+        self.assertGreater(manifest["training_evidence"]["parameter_diff_l2"], 0.0)
         self.assertEqual(
             set(manifest["training_evidence"]["train_source_hashes"]).intersection(
                 manifest["training_evidence"]["holdout_source_hashes"]
