@@ -788,3 +788,14 @@ Next work is internal: Core repairs the pin chain and connects the consent-bound
 ## Final documentation-sync readback — 2026-11-21T16:13:53.627Z
 
 The branch was read back at `d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff` immediately before this final board/handoff refresh. It is a documentation-only commit after the code-bearing release `f279286a4453248004c670fcaabecd85da6ab299`. At that readback, **30 exact-head check-runs were queued**; the final board and user-handoff commits will cause another exact-head CI readback. Do not treat pending checks as green or as a phone deployment. The code-bearing release's previously verified 34/34 check-runs and 19/19 workflows remain the only code-release CI evidence. Redmi remains **REDMI_UNVERIFIED**; installed SHA and updater consent are unknown. Existing private owner-read requests remain pending without authenticated response. No user action or manual Termux command is required.
+
+
+## Latest cross-agent readback — 2026-11-21 17:14 CET
+
+- Shared branch parent at this readback: `a6b2aeaaa6cb92a0948c272c0b099e6265bca487`, documentation-only; **30 exact-head check-runs were queued**. The code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`, with its previously verified **34/34 checks and 19/19 workflows**. New documentation commits require their own exact-head CI and are not a new code release.
+- Core #2230 moved to `512c4ca7...` but remains based on f279 and non-mergeable; its new checks were queued. The previous focal.py pin failure is not yet proven fixed.
+- JEPA #2231 moved to `3fc1f2a7...` but remains based on 9d8f and non-mergeable; only offline-security was queued for that new head. Its PR body and nested source pins still need exact-head refresh. Do not merge its stale copies of Boss-owned workboard/workplan/coverage/next-action files.
+- Perception #2233 moved to `398b8072...` but remains based on 9d8f and non-mergeable; current head checks were 6 success / 1 failure / 5 pending. The code/test evidence remains at `17f27339...` as stated by its body; its stale copies of Boss-owned docs must be preserved/rebased. It still has no normal Runtime microphone consumer or lease through C3 generation.
+- The code-bearing C4 integration at f279 remains synthetic-only. P0 #1904 remains open. Installed SHA and updater consent are unknown; **REDMI_UNVERIFIED**. Existing private owner-read requests have no authenticated response.
+
+**No user action.** Do not run Termux, change Age/permissions/models/weights/updater settings, or request a device update. Internal next steps: rebase each candidate to the latest shared HEAD, preserve Boss-owned docs, fix exact pin chains, then rerun full CI and independent review.
