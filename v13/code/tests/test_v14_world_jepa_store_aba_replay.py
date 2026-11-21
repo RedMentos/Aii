@@ -1162,7 +1162,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         "status", "retention_gate_accepted", "old_holdout_retained",
         "old_holdout_cohort_retained", "old_holdout_retention_delta",
         "old_holdout_cohort_gate", "checkpoint_before", "checkpoint_after",
-        "update_scale", "new_holdout_improved", "gradient_projection",
+        "update_scale", "selected_update_scale", "new_holdout_improved", "gradient_projection",
         "guard_gate_accepted",
         "old_guard_cohort_gate", "backtracking_selection_fold",
         "holdout_used_for_backtracking",
@@ -1230,7 +1230,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         ), f"loss-demand guard scored no positive forgetting cohort for seed {seed}"
         projected_reports = [
             item for item in seed_reports
-            if item["replay_projection"] == "per_session_gem"
+            if item["replay_projection"] is True
         ]
         assert len(projected_reports) == 1
         diagnostic = []
@@ -1261,10 +1261,20 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                     "trace": compact_trace,
                 })
         print("WORLDJEPA_LOSS_DEMAND_SEED_DIAGNOSTIC", seed, diagnostic)
-        assert any(
-            phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
-            for phase in (projected_reports[0]["B"], projected_reports[0]["A2"])
-        ), f"on-demand loss + per-session GEM accepted no update for seed {seed}: {diagnostic!r}"
+        a2 = projected_reports[0]["A2"]
+        assert a2["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA", (
+            f"on-demand loss + per-session GEM accepted no A2 update for seed {seed}: {diagnostic!r}"
+        )
+        assert a2["utility_gate_accepted"] is True
+        assert a2["old_holdout_cohort_gate"]["accepted"] is True
+        assert a2["negative_controls_separated"] is True
+        assert a2["predictor_parameter_delta_norm"] > 0.0
+        assert a2["ema_target_delta_norm"] > 0.0
+        assert a2["optimizer_moments_persisted"] is True
+        assert a2["checkpoint_sha_before"] != a2["checkpoint_sha_after"]
+        assert a2["update_scale"] is not None
+        assert a2["selected_update_scale"] == a2["update_scale"]
+        assert a2["gradient_projection"]["projected_steps"] > 0
         for phase in phases:
             if phase["status"] == "UTILITY_GATE_REJECTED":
                 assert phase["checkpoint_after"] == phase["checkpoint_before"]
