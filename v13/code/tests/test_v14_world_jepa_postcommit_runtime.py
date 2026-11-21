@@ -798,7 +798,13 @@ def test_sleep_runtime_hard_replay_vs_matched_uniform_sampled(tmp_path):
             assert permission_state(arm_store)["replay_mode"] == mode
             sleep = _sleep(arm_store, arm_home)
             result = sleep._run_world_jepa(new_events[-1], limit=64)
-            assert result["status"] in {"POSTCOMMIT_PROCESSED", "PARTIAL"}
+            learning_debug = result.get("learning", {})
+            assert result["status"] in {"POSTCOMMIT_PROCESSED", "PARTIAL"}, {
+                "status": result.get("status"),
+                "learning_status": learning_debug.get("status"),
+                "learning_error": learning_debug.get("error"),
+                "replay_mode": permission_state(arm_store)["replay_mode"],
+            }
             learning = result["learning"]
             assert learning["status"] in {
                 "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED"
