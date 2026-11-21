@@ -41,6 +41,23 @@ class GoalWakeAtomicityTests(unittest.TestCase):
         self.runtime.close()
         self.tmp.cleanup()
 
+    def _reopen_runtime(self):
+        self.runtime.close()
+        self.runtime = Runtime(self.home)
+        self.runtime.sleep.cycle.set_policy("enabled", "off")
+        self.runtime.sleep.cycle.set_policy("tick_seconds", "300")
+        self.scheduler = EventScheduler(
+            self.runtime.store,
+            self.runtime.cfg,
+            self.clock,
+            key="G13_GOAL_WAKE_ATOMICITY_TEST",
+        )
+        self.goals = GoalStore(
+            self.runtime.store,
+            scheduler=self.scheduler,
+            clock=self.clock,
+        )
+
     def test_invalid_wake_at_is_rejected_before_goal_or_queue_mutation(self):
         before_goal = self.goals.box.load()[0]
         before_queue = self.scheduler.report()
@@ -73,7 +90,8 @@ class GoalWakeAtomicityTests(unittest.TestCase):
         goal_id = self.goals.add("valid wake", wake_at=1060)
         goal = self.goals.get(goal_id)
         self.assertEqual(goal["wake_at"], 1060.0)
-        self.assertIsNotNone(goal["wake_event"])
+        event_id = goal["wake_event"]
+        self.assertIsNotNone(event_id)
         pending = self.scheduler.pending()
         self.assertEqual(len(pending), 1)
         self.assertEqual(pending[0]["id"], goal["wake_event"])
@@ -81,6 +99,14 @@ class GoalWakeAtomicityTests(unittest.TestCase):
         self.assertEqual(pending[0]["due"], 1060.0)
         self.assertEqual(pending[0]["payload"], {"goal_id": goal_id})
         self.assertEqual(pending[0]["dedup"], "goal:" + goal_id)
+
+        # Both the goal row and the matching wake event must survive a process restart.
+        self._reopen_runtime()
+        restored = self.goals.get(goal_id)
+        self.assertEqual(restored["wake_event"], event_id)
+        self.assertEqual(restored["wake_at"], 1060.0)
+        restored_pending = self.scheduler.pending()
+        self.assertEqual([event["id"] for event in restored_pending], [event_id])
 
     def test_scheduler_refusal_rolls_back_goal_and_sequence(self):
         before_goal = self.goals.box.load()[0]
@@ -138,6 +164,16 @@ class GoalWakeAtomicityTests(unittest.TestCase):
         history = self.scheduler.report()["history"]
         self.assertTrue(history)
         self.assertEqual(history[-1]["status"], "CANCELLED")
+
+        # The compensated state is durable, not merely an in-memory cleanup.
+        self._reopen_runtime()
+        restored_state = self.goals.box.load()[0]
+        self.assertEqual(restored_state["goals"], {})
+        self.assertEqual(restored_state["seq"], 0)
+        self.assertEqual(self.scheduler.pending(), [])
+        restored_history = self.scheduler.report()["history"]
+        self.assertTrue(restored_history)
+        self.assertEqual(restored_history[-1]["status"], "CANCELLED")
 
 
 if __name__ == "__main__":
