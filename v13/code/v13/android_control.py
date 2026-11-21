@@ -306,6 +306,13 @@ class AndroidControlBroker:
             return {"action_id": p.action_id, "capability": p.capability,
                     "args": dict(p.args), "digest": p.digest, "status": "DRY_RUN_ONLY"}
 
+    def action_state(self, action_id):
+        with self.lock:
+            row = self.db.execute(
+                "SELECT state FROM control_actions WHERE action_id=?", (action_id,)
+            ).fetchone()
+            return row[0] if row else None
+
     def events(self):
         with self.lock:
             return list(self.db.execute("SELECT action_id,event,digest,at FROM control_audit ORDER BY id"))
