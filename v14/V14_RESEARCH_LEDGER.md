@@ -66,7 +66,7 @@ git_pr_commit:
 ### R-007 — Architecture-Dependent Causal Transfer of Activation States Across LLMs
 
 - **Source:** arXiv:2608.16347, version 2, 2026-08-17. https://arxiv.org/abs/2608.16347
-- **Evidence:** ABSTRACT_VERIFIED; no independent reproduction in V14.
+- **Evidence:** FULLTEXT_REVIEWED on 2026-11-21; arXiv v2 preprint (not peer-reviewed); no independent V14 reproduction.
 - **Reported result:** learned projections retrieve related activations across several decoder-only model pairs, but causal activation injection improves downstream behavior significantly for only one of the three evaluated pairs.
 - **What is not shown:** general semantic interchangeability, universal cross-family transfer, mobile feasibility, or a trained B1/B2 receiver in V14.
 - **V14 consequence:** do not infer latent compatibility from cosine similarity or retrieval alone. Require pair-specific receiver injection, causal ablation, task utility over exact-message and no-message baselines, negative controls, and rollback. This supports the existing V14-003 acceptance gate; it does not justify turning B3 on.
@@ -102,3 +102,23 @@ PR #2137 is merged as `3db6d1f00fceab9e7755bc8f4c25882ef7f19258`. It converts th
 - distinguishes observed negative outcomes from CANCELLED/ABORTED and OUTCOME_UNKNOWN/INTERRUPTED; cancelled/censored cases produce no prediction error or receiver update;
 - persists the scalar temporal readout with rollback and parent-directory fsync.
 Exact PR-head V14 real-Store tests and V13 staged/integrated tests pass. The exact merge-commit push integrated regression is still pending at this checkpoint. This is a scalar temporal receiver only: no normal Runtime consumer, no full JEPA, no cross-organ latent coupling and no native B1/B2 body-weight update. The next falsifiable experiment is a real postcommit Runtime consumer with source-bound predictions, held-out utility, no-predictor/replay-only controls, restart, retention and rollback.
+
+
+## Research update — 2026-11-21 (full-text review + model lead)
+
+### R-007 — Architecture-Dependent Causal Transfer of Activation States Across LLMs
+
+- **Source / evidence:** Fernando Cárdenas Piepereit, arXiv:2608.16347v2, version dated 2026-11-09; 13-page full text reviewed on 2026-11-21. This is an arXiv preprint, not a peer-reviewed publication. The paper discloses substantial AI-agent assistance and explicitly says its simulated reviewer panel is not independent human peer review. Code and released results are on Zenodo DOI [10.5281/zenodo.24088479](https://doi.org/10.5281/zenodo.24088479): code MIT; data/documentation CC BY 4.0.
+- **Method actually reviewed:** four open-weight models (Qwen2-0.5B, Phi-3-mini 4-bit, Mistral-7B 4-bit, FLAN-T5-base); a learned MLP projection; held-out top-1 target-state retrieval; then activation injection during generation against an unrelated-state negative control. The end-to-end test uses 10 questions × 3 seeds per model pair, 25 generated tokens and a manual layer loop that re-runs the full sequence rather than using KV cache (quadratic sequence compute).
+- **Results:** projected-state retrieval reached 45–50% top-1 versus 5% chance for the three causal decoder-only pairs, but causal generation transfer met the pre-registered criterion for only Qwen2-0.5B→Phi-3-mini: 23.3% versus 0.0% negative control, FDR-corrected p=0.0469, 95% CI [10%, 40%]. Both Mistral-target pairs were 0.0% versus 3.3% and showed no effect. Hidden-state alignment therefore did not predict causal receiver utility.
+- **Critical semantic limit:** even the positive pair often produced text that was only thematically/structurally related, not the correct answer to the injected source question. The authors claim transfer of a causal representational *vehicle*, not shared meaning, grounding or reliable communication. No comparison against an exact-text message or a no-message baseline was reported; no practical token/latency saving or channel capacity was measured.
+- **Limitations:** 0.5B–7B models, CPU-bound execution, two 4-bit models, only 30 trials per causal pair and one modest positive result; causes of the Mistral null results remain unresolved. The authors also identify activation-level opacity as an interpretability/monitoring risk because the channel is not human-readable.
+- **V14 consequence:** keep B3 OFF until each exact source→receiver pair passes causal injection, grounded task correctness and held-out utility against **both** SOURCE_EXACT/text and NO_MESSAGE baselines, with shuffled/unrelated-state controls, multiple seeds, latency/RSS, rollback and human-auditable provenance. Similarity/cosine/k-NN or projection retrieval alone is not acceptance. This paper strengthens the current V14-003 gate; it does not justify universal latent compatibility or an architecture change.
+- **V14 reproduction:** NOT_RUN. No V14 activation adapter, hidden-state export or receiver injection was implemented in this checkpoint.
+
+### R-010 — Qwen3-0.6B-GGUF as a possible C3 comparison lead (not selected)
+
+- **Primary implementation/model source:** [ggml-org/Qwen3-0.6B-GGUF](https://huggingface.co/ggml-org/Qwen3-0.6B-GGUF); official Qwen3 llama.cpp guide says Qwen3/Qwen3MoE support starts at llama.cpp b5092: [Qwen3 local inference guide](https://github.com/QwenLM/Qwen3/blob/main/docs/source/run_locally/llama.cpp.md).
+- **Repository page metadata:** Apache-2.0; Q4_0 429 MB, Q8_0 805 MB, BF16 1.51 GB. The page labels the repository Qwen3-0.6B but displays 0.8B parameters in its model-size field; verify exact model config/weight revision before any candidate pin.
+- **Comparison context:** current V13 C3 registry baseline in this lab is LFM2.5-350M QAD_Q4_0, 219,312,832 bytes. The Qwen3 Q4_0 file is roughly 1.96× that baseline's on-disk size; this says nothing by itself about RSS, TTFT or output quality. Its tokenizer/chat-template and the installed llama-server revision/architecture support still need exact validation.
+- **Decision:** research lead only. No manifest entry, download, inference, Termux test, production swap or user-data change. It is not yet a recommendation. If later considered, first pin the exact model revision, GGUF SHA/size and Apache-2.0 license snapshot; then request separate explicit consent for an isolated experimental download and, only after measured quality/performance plus rollback, a separate production-swap approval.
