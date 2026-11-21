@@ -28,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Exact release-development HEAD 569680bc10eabeb94ea5a1695d4bf77b8584e0a0: 15/15 associated GitHub workflows SUCCESS (CI/Linux/synthetic only). Private owner-read PIPELINE_STATUS #382 remains OPEN with zero comments at last readback, expires 2026-11-21 09:23:23Z; no receipt. Installed Redmi SHA UNKNOWN; updater consent/state UNVERIFIED; REDMI_UNVERIFIED. No UPDATE_REQUEST, installer, shell action, model swap, permission change or device data mutation.",
-      "next_step": "Wait for the existing owner-authenticated #382 receipt. If it expires without reply, record NO_LIVE_RECEIPT and wait for the next authorized device receipt; do not create a duplicate or send UPDATE_REQUEST without a positive receipt. No user action or Termux command is justified now.",
+      "proof_environment": "Exact release-development HEAD 569680bc10eabeb94ea5a1695d4bf77b8584e0a0: 15/15 associated GitHub workflows SUCCESS (CI/Linux/synthetic only). Private owner-read PIPELINE_STATUS #382 expired 2026-11-21T09:23:23Z with zero comments; #381/#380 also have no receipt. Status is NO_LIVE_RECEIPT, not an install result. Installed Redmi SHA UNKNOWN; updater consent/state UNVERIFIED; REDMI_UNVERIFIED. No UPDATE_REQUEST, duplicate request, installer, shell action, model swap, permission change or device data mutation.",
+      "next_step": "Wait for a new authorized owner-authenticated receipt; do not create duplicate requests. If the user later supplies a current receipt or explicit device-test action, verify installed SHA and updater consent before any UPDATE_REQUEST. No user action or Termux command is justified now.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 10:21 CET",
+      "last_checkpoint": "2026-11-21 10:24 CET",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -260,11 +260,11 @@
       "last_checkpoint": "2026-11-21 06:42 CET: 1,255 headings preserved; clause-level completion remains OPEN."
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED — private PIPELINE_STATUS #382 remains OPEN with zero comments at last readback; expires 2026-11-21 09:23:23Z. Installed SHA UNKNOWN; updater consent UNVERIFIED. No UPDATE_REQUEST or device action.",
+  "current_redmi_status": "NO_LIVE_RECEIPT — private PIPELINE_STATUS #382 expired 2026-11-21T09:23:23Z with zero comments; #381/#380 also unanswered. Installed SHA UNKNOWN; updater consent UNVERIFIED; REDMI_UNVERIFIED. No UPDATE_REQUEST or device action.",
   "last_code_release_head": "569680bc10eabeb94ea5a1695d4bf77b8584e0a0",
   "latest_integrated_head": "569680bc10eabeb94ea5a1695d4bf77b8584e0a0",
   "latest_integrated_head_verified_at": "2026-11-21T08:26:11Z",
-  "release_gate_status": "DEVELOPMENT_CI_GREEN_NOT_RELEASED: exact release-development HEAD 569680bc10eabeb94ea5a1695d4bf77b8584e0a0 has 15/15 associated GitHub workflows SUCCESS (staged 240/10/47; integrated 415/3/58; Python 3.14 startup and owner-read PASS). CI/Linux/synthetic only. #2179 exact candidate d6094ea6017727d12343e9643b3207d1aeb4a249 has staged-runtime FAIL 44889021452 because Store.log telemetry sanitization strips the new postcommit learning metrics; integrated regression PASS. #2183 exact staged/integrated CI passes but QA role/state and symlink audit findings remain open. REDMI_UNVERIFIED.",
+  "release_gate_status": "DEVELOPMENT_CI_GREEN_NOT_RELEASED: exact release-development HEAD 569680bc10eabeb94ea5a1695d4bf77b8584e0a0 has 15/15 associated GitHub workflows SUCCESS (staged 240/10/47; integrated 415/3/58; Python 3.14 startup and owner-read PASS). CI/Linux/synthetic only. #2179 exact candidate d6094ea6017727d12343e9643b3207d1aeb4a249 has staged-runtime FAIL 44889021452 because Store.log telemetry sanitization strips postcommit learning metrics; integrated regression PASS. #2183 staged/integrated CI passes but QA role/state and symlink audit findings remain open. NO_LIVE_RECEIPT / REDMI_UNVERIFIED.",
   "phone_receipt": {
     "issue": "RedMentos/Aiiii#379",
     "state": "OPEN_NO_REPLY_PENDING",
