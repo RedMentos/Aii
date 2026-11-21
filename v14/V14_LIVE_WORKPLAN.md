@@ -141,3 +141,17 @@ Boss merged QA PR [#2138](https://github.com/RedMentos/Aii/pull/2138) into the r
 
 ### Phone evidence
 Private read-only [HEALTH #352](https://github.com/RedMentos/Aiiii/issues/352), [PIPELINE_STATUS #353](https://github.com/RedMentos/Aiiii/issues/353), and [DIAGNOSTICS #354](https://github.com/RedMentos/Aiiii/issues/354) remain without device comments. Current installed SHA and pipeline state remain UNKNOWN / `NO_LIVE_RECEIPT` / `REDMI_UNVERIFIED`. No installer, shell, model, permission, launcher, SQLite or chat-history mutation was attempted. User action remains **none**.
+
+
+## Exact release CI completion — 2026-11-21 01:46 CET
+
+The updater gate fix from PR #2138 is merged in `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e`. The exact merge-SHA phone-gate workflows are now GREEN:
+- Owner-read push [44845659008](https://github.com/RedMentos/Aii/actions/runs/44845659008) PASS.
+- Private bridge push [44845658907](https://github.com/RedMentos/Aii/actions/runs/44845658907) PASS.
+- Staged-context push [44845658992](https://github.com/RedMentos/Aii/actions/runs/44845658992) PASS: staged-runtime **240 passed / 10 skipped / 47 subtests**; integrated regression **415 passed / 3 skipped / 58 subtests**.
+- Coordinated source contracts [44845662784](https://github.com/RedMentos/Aii/actions/runs/44845662784) PASS.
+The new latest-run logic is therefore CI-verified on the exact merge SHA. This is **CI_GREEN / NOT_ANDROID_DEPLOYED**. The 11 PR-only `action_required` runs from the earlier parent SHA were not release proof; the exact merge push above is the authoritative evidence.
+
+Private owner-read #352 HEALTH, #353 PIPELINE_STATUS and #354 DIAGNOSTICS still have no device comments at this readback. Installed SHA remains UNKNOWN; no UPDATE_REQUEST was sent. The updater is not assumed installed on the phone. If #353 produces a valid owner receipt showing the current pipeline and explicit auto-update consent, Boss can issue one UPDATE_REQUEST and then require a separate PIPELINE_STATUS installation receipt. If the relay remains silent, do not repeat the installer or claim deployment.
+
+The functional P0 remains open: #1904's last phone evidence is stale and showed wrong 2+2, B1/B2 time-budget failures and zero valid offers. #2139/#2140/#2135 still have staged integration failures. Green updater CI proves the gate logic, not the quality or completeness of V14.
