@@ -928,9 +928,9 @@ Exactly five V14 automations are enabled: Boss & Integration, QA & Android, JEPA
 - A5 UI lease run `44954629368`: **17 passed, 5 subtests passed** on Python 3.13 and 3.14; source-publication/revocation regression and privacy scan passed.
 - Audio lease + exact arithmetic run `44954629375`: **52 passed, 26 subtests passed** on Python 3.13 and 3.14.
 - Lab-Age, private owner-read CI, Python 3.14 staged startup/SQLite source references, deploy integrity, offline and bridge-security checks passed. These are code/CI checks, not an authenticated phone receipt.
-- The previous safe-additive job `44954629355` failed before running candidate tests because the Boss integration PR changes **59 files** while the strict additive harness accepts only 2..30 files and only newly-added inert modules/tests/handoffs. This was not a functional test failure and must not be described as a validator PASS.
+- The previous safe-additive job `44954629355` failed before running candidate tests because the Boss integration PR changes **60 changed files (59 original composed paths plus the workflow-scope file)** while the strict additive harness accepts only 2..30 files and only newly-added inert modules/tests/handoffs. This was not a functional test failure and must not be described as a validator PASS.
 - Boss commit `273a60b` scopes that unchanged strict validator to explicit `v13-additive/*` branches or PRs carrying `v13-additive-candidate`. It does not relax the 2..30/add-only checks. The exact new-head workflow `44956011562` is SKIPPED as intended for this integration branch; the other new-head workflows are queued. Wait for their exact results before any merge decision.
-- Manual protected-file review of the 59-file integration is still incomplete. Do not merge #2258 yet.
+- Manual protected-file review of the 60-file integration is still incomplete. Do not merge #2258 yet.
 
 ### Cross-agent PR reconciliation and actual next blockers
 
@@ -970,3 +970,8 @@ Exactly five V14 automations are enabled: Boss & Integration, QA & Android, JEPA
 - No UPDATE_REQUEST, LOG_PAGE, CHAT_SEND, shell, model/weight/Age/permission change or device data mutation was performed. **REDMI_UNVERIFIED / NOT_RELEASED.**
 - Next: (1) finish exact-head CI for #2258 commit 273a; (2) manually review the full integration and compose the Age-rights changes without overwriting GoalWake; (3) get #2247 current-head per-seed acceptance; (4) review #2266 native receiver build and keep it diagnostic-only; (5) require #2271 one-shot atomic approval and build fix; (6) require #2256 same-batch look-back correction. Continue whole-Canon coverage; do not narrow the project to any one probe.
 - **User action:** none. No Termux command, model swap, permission change or updater change is currently justified.
+
+
+### Exact-head CI poll — 2026-11-21T22:25:13.423Z
+
+Current Boss PR #2258 head `0dd3837a7ec64d958388eff84e64991705171c37` has 16 check runs: **14 queued, 2 skipped, 0 completed on this head** at this readback. Both skips are the strict additive validator, now correctly scoped away from this non-additive Boss integration branch. The previous 59-file code-bearing head `0dc337e` passed its functional CI; the workflow-scope commit adds the 60th changed path. No new-head PASS is claimed.
