@@ -5,6 +5,7 @@ import threading
 from pathlib import Path
 
 from v13.output_policy import match
+from v13.store import Store
 
 
 class FakeStore:
@@ -49,7 +50,7 @@ def test_exact_arithmetic_returns_source_bound_fixed_policy():
 
 def test_ambiguous_or_date_shaped_input_stays_on_normal_route():
     store = FakeStore()
-    for prompt in ("2+2 and explain", "1+2+3", "2026-11", "please run 2+2"):
+    for prompt in ("2+2 and explain", "1+2+3", "2026-11", "2026 - 11", "11-21", "12-24", "please run 2+2"):
         assert match(store, prompt) is None
     assert store.sources == []
 
@@ -88,3 +89,18 @@ def test_human_fixed_rule_keeps_precedence_over_builtin_arithmetic():
     assert policy["answer"] == "operator answer"
     assert policy["rule_id"] == item["entry"]["rule_id"]
     assert store.sources == []
+
+def test_real_store_persists_resolvable_query_and_answer_sources(tmp_path):
+    home = tmp_path / "runtime"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    policy = match(store, "2+2")
+    assert policy["answer"] == "4"
+    assert store.read_source(policy["query_ref"]) == "2+2"
+    assert store.read_source(policy["answer_ref"]) == "4"
+    rows = store.rows("SELECT kind FROM sources WHERE kind LIKE 'SYSTEM_DETERMINISTIC_%'")
+    assert {row["kind"] for row in rows} == {
+        "SYSTEM_DETERMINISTIC_QUERY", "SYSTEM_DETERMINISTIC_ANSWER"
+    }
+    store.close()
