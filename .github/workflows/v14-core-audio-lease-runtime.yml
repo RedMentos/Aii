@@ -15,6 +15,11 @@ on:
       - v13/code/tests/test_v14_audio_revocation_request.py
       - v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py
       - v13/code/tests/test_arithmetic_reflex.py
+      - v13/code/tests/test_speech_output.py
+      - v13/code/v13/speech_intent.py
+      - v13/code/v13/speech_output.py
+      - v13/code/v13/operator.py
+      - v13/code/v13/config.py
       - v13/code/tests/test_arithmetic_stage_20261116.py
       - v13/code/tests/test_runtime_deploy.py
       - v13/code/tests/test_runtime_deploy_integrity.py
@@ -34,6 +39,11 @@ on:
       - v13/code/tests/test_v14_audio_revocation_request.py
       - v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py
       - v13/code/tests/test_arithmetic_reflex.py
+      - v13/code/tests/test_speech_output.py
+      - v13/code/v13/speech_intent.py
+      - v13/code/v13/speech_output.py
+      - v13/code/v13/operator.py
+      - v13/code/v13/config.py
       - v13/code/tests/test_arithmetic_stage_20261116.py
       - v13/code/tests/test_runtime_deploy.py
       - v13/code/tests/test_runtime_deploy_integrity.py
@@ -74,6 +84,7 @@ jobs:
           tests/test_v14_audio_revocation_request.py
           tests/test_v14_exact_arithmetic_runtime_20261121.py
           tests/test_arithmetic_reflex.py
+          tests/test_speech_output.py
           tests/test_arithmetic_stage_20261116.py
           tests/test_runtime_deploy.py
           tests/test_runtime_deploy_integrity.py
