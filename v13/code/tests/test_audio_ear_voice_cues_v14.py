@@ -5,6 +5,7 @@ import random
 import struct
 import threading
 import time
+from contextlib import contextmanager
 from types import SimpleNamespace
 
 import pytest
@@ -74,6 +75,39 @@ def make_runtime(tmp_path):
 
 def consent_ok(source_id, receipt):
     return source_id == SOURCE_ID and receipt == RECEIPT
+
+
+def _guard_for(check):
+    """Non-racing fixture lease; concurrency tests use a shared provider below."""
+    lock = threading.RLock()
+
+    @contextmanager
+    def lease(source_id, receipt):
+        with lock:
+            yield check(source_id, receipt)
+
+    return lease
+
+
+class _LinearizableConsentProvider:
+    """Test provider whose check, lease and revoke share one lock."""
+
+    def __init__(self):
+        self._lock = threading.RLock()
+        self._active = True
+
+    def check(self, source_id, receipt):
+        with self._lock:
+            return self._active and source_id == SOURCE_ID and receipt == RECEIPT
+
+    @contextmanager
+    def lease(self, source_id, receipt):
+        with self._lock:
+            yield self._active and source_id == SOURCE_ID and receipt == RECEIPT
+
+    def revoke(self):
+        with self._lock:
+            self._active = False
 
 
 def packet_count(store, event_id):
@@ -216,7 +250,7 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path)
             runtime, pcm, sample_rate=16000, start_ms=100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, finality="FINAL", token_budget=512,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
         )
         segment = result["packet"]["segments"][0]
         cues = segment["acoustic"]["voice_cues"]
@@ -306,7 +340,7 @@ def test_revoked_consent_has_no_store_or_attention_side_effect(tmp_path):
                 runtime, tone(140), sample_rate=16000, start_ms=100,
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
-                consent_check=lambda source, receipt: False,
+                consent_check=lambda source, receipt: False, consent_guard=_guard_for(lambda source, receipt: False),
                 finality="FINAL", token_budget=512,
             )
         assert packet_count(runtime.store, event["event_id"]) == 0
@@ -556,6 +590,108 @@ def test_optional_silero_rejects_non_16khz_before_packet_or_attention(tmp_path):
         runtime.store.close()
 
 
+
+def test_audio_packet_fails_closed_without_linearizable_consent_lease(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    monkeypatch.setattr(
+        audio_voice_cues_module, "admit",
+        lambda *args, **kwargs: pytest.fail("C3 admission must not run without a lease"),
+    )
+    try:
+        with pytest.raises(PermissionError, match="linearizable audio consent lease"):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=consent_ok, finality="FINAL", token_budget=512,
+            )
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+        assert getattr(runtime, "_raw_ear_temporal_registry", None) is None
+    finally:
+        runtime.store.close()
+
+
+def test_provider_revocation_winning_before_lease_has_no_audio_side_effects(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    provider = _LinearizableConsentProvider()
+    provider.revoke()
+    monkeypatch.setattr(
+        audio_voice_cues_module, "admit",
+        lambda *args, **kwargs: pytest.fail("C3 admission must not run after revocation"),
+    )
+    try:
+        with pytest.raises(PermissionError):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=provider.check, finality="FINAL",
+                consent_guard=provider.lease, token_budget=512,
+            )
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+        assert getattr(runtime, "_raw_ear_temporal_registry", None) is None
+    finally:
+        runtime.store.close()
+
+
+def test_linearizable_lease_serializes_revocation_through_a4_and_c3(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    provider = _LinearizableConsentProvider()
+    entered_attention = threading.Event()
+    allow_attention = threading.Event()
+    revoke_started = threading.Event()
+    revoke_finished = threading.Event()
+    real_attention = audio_voice_cues_module.attctl.controller(runtime)
+
+    class BlockingAttention:
+        def modulate(self, event_id, *, sal):
+            entered_attention.set()
+            if not allow_attention.wait(5):
+                raise TimeoutError("test did not release blocked attention")
+            return real_attention.modulate(event_id, sal=sal)
+
+    blocking_attention = BlockingAttention()
+    monkeypatch.setattr(
+        audio_voice_cues_module.attctl, "controller",
+        lambda _runtime: blocking_attention,
+    )
+
+    def revoke():
+        revoke_started.set()
+        provider.revoke()
+        revoke_finished.set()
+
+    try:
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            consumer = pool.submit(
+                consume_pcm16_voice_window,
+                runtime, tone(140),
+                sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=provider.check, consent_guard=provider.lease,
+                finality="FINAL", token_budget=512,
+            )
+            assert entered_attention.wait(5)
+            revoker = pool.submit(revoke)
+            assert revoke_started.wait(5)
+            # Revocation cannot linearize while the producer owns the lease.
+            assert not revoke_finished.wait(0.05)
+            allow_attention.set()
+            result = consumer.result(timeout=5)
+            revoker.result(timeout=5)
+
+        assert revoke_finished.is_set()
+        assert provider.check(SOURCE_ID, RECEIPT) is False
+        assert result["c3_admission"].status == "ADMITTED"
+        assert packet_count(runtime.store, event["event_id"]) == 1
+        assert attention_count(runtime.store, event["event_id"]) == 1
+    finally:
+        allow_attention.set()
+        runtime.store.close()
+
 def test_consent_revocation_between_pre_and_post_persist_leaves_no_packet(tmp_path):
     """Revocation at the post-write check must not leave a persisted audio packet."""
     runtime, event = make_runtime(tmp_path)
@@ -574,7 +710,7 @@ def test_consent_revocation_between_pre_and_post_persist_leaves_no_packet(tmp_pa
                 runtime, tone(140), sample_rate=16000, start_ms=100,
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
-                consent_check=revoke_after_pre_persist_checks,
+                consent_check=revoke_after_pre_persist_checks, consent_guard=_guard_for(revoke_after_pre_persist_checks),
                 finality="FINAL", token_budget=512,
             )
         assert calls == 3
