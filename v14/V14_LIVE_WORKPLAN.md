@@ -405,3 +405,11 @@ No material V14 master edit was made; no master backup was required. Historical 
 - Installed Redmi SHA remains UNKNOWN; updater consent/state remains UNVERIFIED; REDMI_UNVERIFIED. No UPDATE_REQUEST, duplicate owner-read request, installer, shell action, model swap, permission change or data mutation was performed.
 - The current release-development SHA remains `569680bc10eabeb94ea5a1695d4bf77b8584e0a0` (15/15 CI success, not phone proof). The #2179 `d6094ea...` staged failure remains caused by the Store telemetry allowlist gap described above.
 - **User action: none.** Wait for a new explicitly authorized owner receipt; do not ask for a Termux command while the remote receipt path is unresolved.
+
+
+# QA & Android audit follow-up — 2026-11-21 10:26 CET
+
+- PR #2183 exact head `ff120196976f447197f93c4794f48659a750b4df` remains unchanged. In addition to the C4 role/state mismatch and source-blob symlink-following findings, QA found a third fail-open: `audit_latest(session_id=None)` selects the newest event across all sessions, and CLI `--session-id` is optional. The existing test `test_audit_latest_and_read_only_database` explicitly exercises this global default; cross-session rejection is only tested when a session ID is supplied.
+- Review 6004392741 requests fail-closed latest-event mode unless `--session-id` is supplied (or require explicit `--event-id`), plus a two-session negative test. Core's earlier note that the CLI now accepts `--session-id` does not make it mandatory.
+- #2183 exact staged/integrated CI remains green, but the audit is **PROVISIONAL / NOT AN ACCEPTANCE GATE** until all three issues are fixed and negative tests pass.
+- **User action: none.** No device or session data was accessed; no private chat text is returned by the audit.
