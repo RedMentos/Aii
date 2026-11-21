@@ -1,3 +1,21 @@
+# Current user-facing handoff — 2026-11-21 16:04 CET
+
+**No user action is needed. Do not run another Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
+
+- Current release-development branch HEAD is `f48ca649c126d50076779e044c6627a5f75124e6`, a research-ledger-only R-025 STABLE drift-control note. Its exact GitHub status is now **29/29 check-runs SUCCESS and 24/24 associated workflow runs SUCCESS**. The prior fully verified head `99ec54534fc9e99ce5689d335c80162f018de288` had 30/30 check-runs SUCCESS. R-025 is a research proposal, not an implementation or weight update. This is CI evidence only, not release or phone installation.
+- PR #2218's read-only WorldJEPA optimizer audit/test is merged at `6c444e1dfdea19583002519a682fd64bca465098`. Follow-up PR #2222's exact production Store/SQLite optimizer-resume and staged tests passed on CPython 3.13/3.14 (run `44914934454`). These remain synthetic T8/NumPy predictor experiments, not native GGUF B1/B2/C3 weight training or trained B3 latent coupling. Learning and optimizer permissions remain OFF.
+- QA PR #2223 adds production checkpoint-publication regressions: hardlink EPERM/EACCES fallback through dirfd `renameat2(RENAME_NOREPLACE)`, concurrent destination EEXIST for both publication routes, and rollback after directory-fsync failure. Latest pinned matrix `44916974869`: **26 passed on each CPython 3.11.18, 3.13.18 and 3.14.10**. The current staged/integrated run `44916974849` was still running at this readback; the previous code-equivalent run passed staged **249/10 skipped/47 subtests** and integrated **424/3 skipped/58 subtests**. Same-repository guard passed. Safe-additive fails because the PR changes an existing workflow and V14 handoff/board files; no bypass was applied. PR #2223 remains draft pending independent Boss review.
+- A handoff file was accidentally created on default `main` by one contents update that omitted its branch argument. No runtime, workflow, model or user data changed. Cleanup PR #2224 deleted that file and was merged; default-branch readback is now `5b8f5616421fb94b02df6d7d0d5d2ef5e996849b`, and the file is absent again. The intended handoff remains on the QA branch/PR #2223.
+- The checkpoint tests are GitHub/Linux only. CPython-version coverage is not Android Bionic/SELinux proof. **REDMI_UNVERIFIED.** No actual phone receipt, installed SHA or updater-consent confirmation is available.
+- Private owner-read #407/#408/#409/#410 expired without replies. Installed SHA and auto-update consent remain UNKNOWN. No further private request or device action was issued.
+- P0 #1904 remains open: no current Redmi proof of correct 2+2, bounded native latency, or B1/B2 offers delivered and consumed by C4→C3. #2195 remains a staged C4 overlay with unresolved negative controls/base/pin integration; #2210 C5 SHADOW/source-pin failures remain open.
+- RAW EAR #2219 still needs deterministic #2214 pre-PCM revocation and non-reentrant provider-lease tests to pass together. #2200/#2211 still need derived audio-context deletion and immediate pre-C3 revocation.
+- Full local Aii checkout/tests remain BLOCKED because this worker cannot resolve GitHub DNS. GitHub Actions is not local or Redmi proof. The 1,255-heading historical inventory is preserved, but semantic clause-to-consumer/test/rollback mapping remains incomplete.
+
+Next work is internal: Boss reviews #2223's workflow/docs scope without waiving the failed policy check; Perception/QA combine the RAW EAR lease producer and deterministic controls; Core continues C4/C5 and P0 chat integration; JEPA continues multi-seed temporal retention. **No user action is required.**
+
+---
+
 # Current user-facing handoff — 2026-11-21 16:01 CET
 
 **No user action is needed. Do not run another Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
