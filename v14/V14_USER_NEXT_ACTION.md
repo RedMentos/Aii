@@ -28,16 +28,16 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 
 | Feld | Aktueller Wert |
 |---|---|
-| source_HEAD | `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (PR #2138 merge; exact updater-required push CI GREEN 2026-11-21) |
+| source_HEAD | `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (PR #2138 merge readback 2026-11-21; exact staged push CI still running) |
 | last_integrated_functional_change | PR #2136 merged in `16f75fca`: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter; not yet called by normal Runtime/chat input, synthetic only |
 | local_test_result | NOT_RUN — no full local repository checkout in this worker |
-| ci_test_result | PR #2138 exact head `8ca7a298` passed owner-read (27+33 tests), Python 3.14 staged startup, offline bridge, staged-runtime (240/10 skipped/47 subtests), integrated regression (415/3 skipped/58 subtests); additive-only policy check failed on intentional existing-file changes and was not bypassed. Boss merged it as `5b9171a4`. Exact merge SHA: owner-read push PASS, private-bridge push PASS, staged-context push PASS (staged-runtime 240/10 skipped/47 subtests; integrated regression 415/3 skipped/58 subtests), coordinated source contracts PASS. This verifies the updater gate on CI, not Android deployment. |
+| ci_test_result | PR #2138 exact head `8ca7a298` passed owner-read (27+33 tests), Python 3.14 staged startup, offline bridge, staged-runtime (240/10 skipped/47 subtests), integrated regression (415/3 skipped/58 subtests); additive-only policy check failed on intentional existing-file changes and was not bypassed. Boss merged it as `5b9171a4`. On the exact merge SHA: owner-read push PASS, private-bridge push PASS, staged-context push IN_PROGRESS; source-contracts and integrated-regression also IN_PROGRESS. Latest-run gate correctly blocks until the newer staged run finishes. |
 | phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
 | device_model_comparison | NOT_RUN |
 | proposed_model_change | NONE – erst anhand echter Tests |
 | requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
-| next_developer_action | Obtain a fresh owner-verified PIPELINE_STATUS receipt; if it confirms explicit auto-update consent and a compatible updater, Boss may send one UPDATE_REQUEST and then verify a separate installed-SHA receipt. Core/JEPA rebuild staged hash-pinned candidate chains for #2139/#2140/#2135, fix actual consumer failures and rerun staged-runtime + integrated regression; continue whole-Canon integration. |
+| next_developer_action | Finish exact merge-SHA CI for `5b9171a4`; if green, obtain a fresh owner-verified PIPELINE_STATUS receipt before any device update. Core/JEPA rebuild staged hash-pinned candidate chains for #2139/#2140/#2135, fix the actual consumer failures and rerun staged-runtime + integrated regression; continue whole-Canon integration. |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
@@ -152,22 +152,65 @@ Private V13OBS issue #115 is the newest device receipt currently available; it i
 **User action:** none. No new Termux command, model download/swap, permission change or phone update is justified.
 
 
-## Exact release CI completion — 2026-11-21 01:46 CET
+---
 
-- **Current release SHA:** `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (PR #2138 merged).
-- **Exact updater-required CI:** owner-read push PASS [44845659008](https://github.com/RedMentos/Aii/actions/runs/44845659008); private-bridge push PASS [44845658907](https://github.com/RedMentos/Aii/actions/runs/44845658907); staged-context push PASS [44845658992](https://github.com/RedMentos/Aii/actions/runs/44845658992), including staged-runtime 240 passed / 10 skipped / 47 subtests and integrated regression 415 passed / 3 skipped / 58 subtests. Coordinated source contracts PASS [44845662784](https://github.com/RedMentos/Aii/actions/runs/44845662784). The latest-run updater fix is CI-verified on this exact merge SHA.
-- **Release boundary:** CI_GREEN, but NOT_ANDROID_DEPLOYED. Private HEALTH #352, PIPELINE_STATUS #353 and DIAGNOSTICS #354 still have no device comments; phone installed SHA and updater state remain UNKNOWN / `REDMI_UNVERIFIED`. No UPDATE_REQUEST, installer, shell, model, permission or data mutation was made.
-- **Next device step:** use the existing #353 owner-read receipt if it arrives. Only if it confirms the current pipeline and explicit auto-update consent may Boss send one UPDATE_REQUEST, followed by a separate PIPELINE_STATUS readback proving the installed SHA. If no receipt, no device action.
-- **Functional blockers remain:** #2139 staged Runtime pin chain; #2140 arithmetic output/source-authority tests; #2135 online-world candidate pin chain; #2133/#2137 temporal learning safety/holdout integration. P0 #1904 real phone correctness/latency/B1-B2 delivery remains unverified.
+## Boss integration checkpoint — 21. November 2026, 01:50 CET (latest authoritative section)
 
-**User action:** none. GitHub CI green does not imply the Redmi has updated.
+This section supersedes earlier status paragraphs in this file where they conflict.
+
+### Release / updater
+
+- Release branch: `gpt6/v13-private-remote-bridge-20261111`
+- Verified current HEAD: `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e`
+- PR #2138 merged directly after exact diff review; merge commit readback matches the branch HEAD.
+- Exact merge-commit push CI:
+  - `v13-private-remote-bridge-tests`: PASS, run [44845658907](https://github.com/RedMentos/Aii/actions/runs/44845658907)
+  - `V13 staged context and integrated regression`: PASS, run [44845658992](https://github.com/RedMentos/Aii/actions/runs/44845658992) — staged-runtime 240 passed, 10 skipped, 47 subtests; integrated regression 415 passed, 3 skipped, 58 subtests
+  - `V13 private owner-read Termux bootstrap`: PASS, run [44845659008](https://github.com/RedMentos/Aii/actions/runs/44845659008), including Python 3.14 staged startup
+  - `V13 Lab Age control state and WebView truth`: PASS, run [44845658946](https://github.com/RedMentos/Aii/actions/runs/44845658946)
+  - `V13 integrate reviewed agent PRs on release events`: PASS, run [44845658989](https://github.com/RedMentos/Aii/actions/runs/44845658989)
+- This repairs the updater's stale-green CI acceptance: it now selects the newest exact-SHA run per workflow identity/rerun and rechecks after graceful stop and immediately before launcher activation.
+- GitHub CI is not a phone deployment. Private owner-read issues #351, #352, #353 and #354 have no device comments at readback. Installed phone SHA and current auto-update state remain UNKNOWN / REDMI_UNVERIFIED. No UPDATE_REQUEST, installer command, model change, permission change, database mutation or phone action was attempted.
+
+### New Boss implementation on temporal Store candidate
+
+Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t8-temporal-store-integration-20261121`, current head `2d8eb79bdefe3c6c3bef63fea7d25563b7f56952`:
+
+- Replaced the former 17-packet ActionOutcome window with a complete bounded per-event scan: up to 4096 packets; if the event exceeds the bound, fail closed. This prevents an older duplicate from hiding outside the previous window.
+- Distinguished observed `FAILED/ERROR/DEADLINE/REJECTED` outcomes from censored/cancelled events. `CANCELLED/ABORTED` are recorded as cancelled; `OUTCOME_UNKNOWN/INTERRUPTED` are recorded as censored. Neither creates prediction error, optimizer intent, receiver parameter change or seen-ID insertion.
+- Added replay/restart tests across both expected labels and learning enabled/disabled, an observed-NOT_FINAL positive control, a 4097-packet fail-closed bound, and a duplicate older than the previous 17-row window.
+- Added directory fsync after scalar-readout rollback replace and a targeted fsync/restart regression.
+- Exact focused V14 temporal workflow: PASS [44846178337](https://github.com/RedMentos/Aii/actions/runs/44846178337); private bridge push: PASS [44846173169](https://github.com/RedMentos/Aii/actions/runs/44846173169). The staged/integrated regression [44846178374](https://github.com/RedMentos/Aii/actions/runs/44846178374) was still IN_PROGRESS at last readback; safe-additive policy is not treated as a release gate. PR remains DRAFT / NOT_MERGED / NOT_RELEASED.
+- This is a Store-verified scalar temporal receiver candidate, not full JEPA, not trained native B1/B2 bodies, and not yet called by the normal Runtime learning loop. Optimizer and Age permissions remain unchanged/off.
+
+### Whole-system blockers still open
+
+- **P0 real chat:** issue #1904 remains open. Last available device report (18 November) showed an incorrect `2+2 → 2`, C3 TTFT/total latency still very high, B1/B2 time-budget failures and zero valid source-bound offers. There is no newer phone receipt. Do not claim a correct or responsive brain.
+- **Arithmetic candidate #2140:** exact arithmetic module/Store SourceRefs have focused CI, but staged-runtime reports 6 failed, 36 passed, 37 subtests; wider staged run 1 failed, 239 passed, 10 skipped, 47 subtests. Authority metadata, source-diagnostic precedence, pre-output failure handling and forged/mismatched World-transition rejection remain incomplete. Do not merge as-is.
+- **Audio Runtime candidate #2139:** focused consented PCM16 path tests pass, but staged-runtime and integrated regression fail 30 failed, 208 passed, 10 skipped, 2 errors, 36 subtests due downstream candidates pinning the old `v13/runtime.py`. No Android microphone, speech effector or full-duplex proof.
+- **Exactly-once OnlineWorld #2135:** focused 13 tests, existing continuous-plasticity 49 tests and combined online-JEPA workflow passed, but staged-runtime fails 20 failed, 218 passed, 10 skipped, 2 errors because `integrated_online_world_candidate_20261110.py` still pins the old `v13/online_world.py`; downstream observer/postcommit/record-only and migration candidates also fail closed. Do not refresh hashes without reviewing semantic anchors.
+- **WorldJEPA/B1/B2 receiver #2133:** remains experimental and not Runtime-wired. QA found source-disjoint holdout leakage (source_id omitted), cancelled/unknown outcomes could be learned, and latest-N backlog can starve older transitions. No native B1/B2 body-weight change.
+- **Other mandatory Canon lanes remain OPEN:** real activation-to-activation B3 latent coupling; independent B1/B2 sparse-MoE bodies and useful offers; full C/JEF/output; world/self/causal/episodic/semantic/procedural memory; JEPA/EMA/eligibility/plasticity; sleep/dream/replay; adaptive Judge; Age 0–5 plus separate X10 lab rights; permissioned Android background/API and UI control; VOICE_AUDIO/raw acoustic input/speech effector/full duplex; cross-organ self-optimization; Context OS and additive Memorilla; model registry/license/ARM/performance comparison. None is ACCEPTED from this checkpoint.
+
+### Execution boundaries
+
+- Exact local repository checkout and full local pytest were BLOCKED: this runner has no Aii checkout and GitHub DNS resolution failed. No LOCAL_LINUX full-suite PASS is claimed.
+- GitHub Actions evidence is CI/Linux only. No Redmi/Termux, native model, microphone, voice, body-weight or Android-control result is inferred.
+- No model, GGUF, weights, Age, permissions, local DB, chats or device services were changed.
+
+### Next concrete actions
+
+1. Finish the exact #2137 staged/integrated jobs. If green, independently review and integrate only the source-bound temporal component, then add a real Runtime consumer while keeping both learning gates closed by default.
+2. Core repairs #2140's arithmetic authority/source/World contracts and rebuilds the immutable runtime candidate chain for #2139; no stale-hash bypass.
+3. JEPA/Memory and Boss rebuild the #2135 online-world candidate composition semantically, then rerun full staged/integrated regressions; integrate #2133 only after source-disjoint, cancellation and backlog fixes.
+4. QA/Android continues read-only device status only when an owner-authenticated receipt is available. No new installer command or update request without a current consented receipt.
+
+**User action: none.** No Termux command, model download, model swap, permission change or phone approval is required to continue repository work.
 
 
-## T8 temporal safety follow-up — 2026-11-21 01:47 CET
+### Branch readback correction — 21 November 2026, 01:51 CET
 
-PR #2137 current head `7f67a69eb2c4add039ad853f7a34502eaf1a44c9` has source-level corrections for the previous QA findings: cancelled/unknown outcomes are now censored without prediction error or receiver update; ActionOutcome cardinality scans up to 4096 rows and fails closed on overflow; rollback fsyncs the directory. Exact focused CI is **48 passed** on push [44845970725](https://github.com/RedMentos/Aii/actions/runs/44845970725) and PR [44845973418](https://github.com/RedMentos/Aii/actions/runs/44845973418), private bridge PASS [44845970739](https://github.com/RedMentos/Aii/actions/runs/44845970739). Staged/integrated regression remains IN_PROGRESS [44845973377](https://github.com/RedMentos/Aii/actions/runs/44845973377); PR remains draft and not Runtime-wired. This is not actual JEPA body learning or Redmi proof. Keep optimizer closed until exact staged integration, source-disjoint holdout, backlog catch-up, retention and restart/rollback are measured.
-
-
-## T8 exact-head update — 2026-11-21 01:48 CET
-
-PR #2137 current head `2d8eb79bdefe3c6c3bef63fea7d25563b7f56952` has **52 focused V14 T8 tests passing** on push [44846173142](https://github.com/RedMentos/Aii/actions/runs/44846173142) and PR [44846178337](https://github.com/RedMentos/Aii/actions/runs/44846178337); private bridge push is PASS. The staged-runtime/integrated-regression run [44846178374](https://github.com/RedMentos/Aii/actions/runs/44846178374) remains IN_PROGRESS. The dedicated workflow is Python 3.11 only; QA requested Python 3.14 coverage for the Redmi target. This candidate still does not call the normal Runtime learning loop, change native B1/B2 weights, or prove Android/Redmi behavior. Keep the optimizer closed.
+- Current release branch HEAD is `8f1b260dce19047a04df45d510b6642d009826bc`; this is a docs-only board/handoff checkpoint.
+- Last code-bearing release commit is `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e`, whose exact updater-required push workflows are green as listed above.
+- The docs-only commit has newly triggered push runs `44846326605`, `44846326608`, and `44846326568`; they were QUEUED at readback. Do not describe the new branch HEAD as fully CI-green until these finish.
+- No code, model, permission, phone state or user data changed in the docs checkpoint.
