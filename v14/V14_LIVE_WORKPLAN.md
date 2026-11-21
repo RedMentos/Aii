@@ -138,3 +138,13 @@ PR #2148 current head 6fec2dec1534285b654db60349efcd81f81b846c; code/test head 1
 ## Latest exact CI readback — 2026-11-21
 
 PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed GitHub Actions run 44854338438: Python 3.13 59 passed in 6.52s; Python 3.14 59 passed in 8.81s; compile and both jobs PASS. The only later commit is a next-action Markdown table refresh; no code or test file changed after the tested e46b head. The earlier run 44854219157 also passed 59/59 on both versions and is superseded by this readback.
+
+
+### Research & Perception implementation checkpoint — 2026-11-21 / PR #2161
+
+- **V14-006:** the A5 RAW EAR adapter now derives a bounded `prosody_change_score` from F0 excursion or energy dynamics in the 40 ms / 20 ms window stream, only for voiced activity. It feeds A4 `Attention.modulate` and is preserved in the source-bound C3 admission summary. It is a deterministic salience heuristic, not a trained VAD, speech probability, ASR, or speaker identity.
+- **Exact code/test commit:** `3cba5118e8b9641220ec411f859d20147218c6f9`; adapter blob `ff88fd1e9a6898c6355592eb1d4349055b54939d`; test blob `e8a10620a500ca5d9ba2d92092c108730e8f8362`.
+- **CI:** [44870157024](https://github.com/RedMentos/Aii/actions/runs/44870157024) PASS; Python 3.11: 11/11, Python 3.13: 11/11, both compile and targeted A5→A4→C3 tests pass. LOCAL_LINUX isolated algorithm reproduction 5/5 PASS; exact local repository checkout/test remains BLOCKED by GitHub DNS.
+- **Integration:** Core PR #2158 owns the staged Runtime consumer. It must pin the reviewed adapter blob and repair its stale runtime/cognition pins plus arithmetic regressions before its B1/B2/C3 integration can pass. Its exact run 44866310899 failed; no Core-owned file was modified by Perception.
+- **Device:** REDMI_UNVERIFIED; no microphone capture, ARM resource measurement, native model inference, or deployment. NOT_RELEASED.
+- **Next:** Boss/QA review the non-additive adapter update; Core updates the staged source pin and reruns the exact Runtime integration; only then obtain explicit Redmi microphone consent and measure CPU/PSS/RSS/latency/revocation. V14-003 native latent injection remains NOT_RUN.
