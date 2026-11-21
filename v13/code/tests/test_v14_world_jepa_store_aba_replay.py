@@ -336,6 +336,18 @@ def test_on_demand_loss_replay_selects_only_positive_forgetting_demand():
         raise AssertionError("negative loss-demand score accepted")
 
 
+def test_retention_gate_allows_small_bounded_drift_but_rejects_larger_regression():
+    before = {"session:a": {"rows": 20, "loss": 0.25}}
+    within_budget = {"session:a": {"rows": 20, "loss": 0.252}}
+    over_budget = {"session:a": {"rows": 20, "loss": 0.253}}
+    accepted = world_jepa_consumer._retention_cohort_gate(before, within_budget)
+    rejected = world_jepa_consumer._retention_cohort_gate(before, over_budget)
+    assert accepted["accepted"] is True
+    assert accepted["cohorts"]["session:a"]["tolerance"] == 0.0025
+    assert rejected["accepted"] is False
+    assert rejected["reason"] == "SESSION_RETENTION_REGRESSED"
+
+
 def test_source_disjoint_guard_split_is_deterministic_and_keeps_duplicates_together():
     rows = []
     for session in ("guard-alpha", "guard-beta"):
@@ -575,6 +587,7 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
     if before is not None:
         assert metrics.get("guard_split_source_disjoint") is True
         assert metrics.get("guard_split_content_disjoint") is True
+        assert metrics.get("retention_relative_tolerance") == 0.01
         assert metrics.get("backtracking_selection_fold") == "source_disjoint_training_guard"
         assert metrics.get("holdout_used_for_backtracking") is False
         trace = metrics.get("backtracking_trace")
@@ -697,6 +710,8 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         "old_guard_cohort_gate": metrics.get("old_guard_cohort_gate"),
         "backtracking_selection_fold": metrics.get("backtracking_selection_fold"),
         "holdout_used_for_backtracking": metrics.get("holdout_used_for_backtracking"),
+        "retention_relative_tolerance": metrics.get("retention_relative_tolerance"),
+        "old_holdout_retention_tolerance": metrics.get("old_holdout_retention_tolerance"),
         "holdout_loss_before": metrics.get("holdout_loss_before"),
         "holdout_loss_after": metrics.get("holdout_loss_after"),
         "holdout_loss_delta": metrics.get("holdout_loss_delta"),
