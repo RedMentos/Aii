@@ -11,16 +11,25 @@ semantic-use proof, or a weight-learning path.
 - Pinned source revision: `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` (b10964)
 - License: MIT, verified from the upstream `LICENSE` at that revision
 - Public C API used: `llama_model_n_embd_inp`, `llama_model_n_embd_out`,
-  `llama_batch_init` with `llama_batch.embd`, `llama_decode`,
-  `llama_get_embeddings_ith`, and `llama_memory_clear`
+  `llama_model_n_ctx_train`, `llama_batch_init` with `llama_batch.embd`,
+  explicit `llama_batch.pos`, `llama_decode`, `llama_get_embeddings_ith`,
+  and `llama_memory_clear`
 
-The source tap is converted to little-endian float32 rows. The receiver checks
-its native input dimension and refuses mismatches; no untrained resize or
-synthetic projection is inserted. The probe runs a positive input, zero
-control, shuffled control and repeat input in one receiver context, clearing
-native memory between passes. It reports decode status, output norm,
-positive-vs-zero RMS effect and control cosine similarities. An effect is not
-semantic alignment.
+The source tap is converted to little-endian float32 rows and carries the exact
+sender checkpoint SHA, optional tokenizer revision, token IDs and explicit
+zero-based contiguous position IDs from the whole-sequence tokenizer prefill.
+The receiver validates row count, uniqueness, monotonicity and model-context
+bounds, then uses those exact positions in llama_batch.pos. It checks its
+native input dimension and refuses mismatches; no untrained resize or
+synthetic projection is inserted.
+
+The probe runs positive, zero, embedding-dimension-shuffle, reversed-row
+(position-mismatch) and repeat controls in one receiver context, clearing
+native memory between passes. For a one-row tap the row-order control is
+explicitly marked not applicable. It reports sender/receiver checkpoint
+provenance, position mode, decode status, dimensions, output norm,
+positive-vs-zero RMS effect and separate control cosine values. An effect is
+not semantic alignment.
 
 ## Runtime boundary
 

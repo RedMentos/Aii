@@ -23,12 +23,41 @@ class TapBinding(unittest.TestCase):
         with self.assertRaises(Unavailable):self.r.pool.get_tap('C3_LANGUAGE')
         with self.assertRaises(Unavailable):self.r.pool.get_tap('B1_DETAIL')
     def test_tamper_or_dangling_source_detected_on_read_and_doctor(self):
-        r=self.r;e=r.store.event(r.session,'Numerical binding fixture');path=r.home/'data/blobs/tap-fixture.json';atomic_write(path,dumps({'token_ids':[1],'vectors':[[.1,.2]]}))
-        p=packet('LatentTapPacket','B1_DETAIL',e['event_id'],e['brain_generation_id'],[e['source_ref']],role='B1_DETAIL',source_ref=e['source_ref'],tap_id='unit_fixture_not_native',model_revision='fixture',token_ids=[1],feature_path='data/blobs/tap-fixture.json',feature_sha256=file_hash(path),shape=[1,2]);r.store.add_packet('LatentTapPacket',p)
+        r=self.r;e=r.store.event(r.session,'Numerical binding fixture')
+        from v13.models import model_key
+        model_path=r.home/'models'/'fixture.gguf';model_path.parent.mkdir(parents=True,exist_ok=True);model_path.write_bytes(b'fixture-model')
+        sender_sha=file_hash(model_path);key=model_key('B1_DETAIL',r.models.b2_control)
+        r.models.installed[key]={'download_complete':True,'exact_revision':'fixture','main_file':'fixture.gguf','files':{'fixture.gguf':{'path':str(model_path.relative_to(r.home)),'sha256':sender_sha,'size':model_path.stat().st_size}}}
+        r.models.path_for=lambda role:model_path;r.models.revision=lambda role:'fixture'
+        path=r.home/'data/blobs/tap-fixture.json'
+        atomic_write(path,dumps({'token_ids':[1],'position_ids':[0],'position_mode':'ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL','vectors':[[.1,.2]]}))
+        p=packet('LatentTapPacket','B1_DETAIL',e['event_id'],e['brain_generation_id'],[e['source_ref']],role='B1_DETAIL',source_ref=e['source_ref'],tap_id='unit_fixture_not_native',model_revision='fixture',sender_model_sha256=sender_sha,tokenizer_revision=None,token_ids=[1],position_ids=[0],position_mode='ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL',feature_path='data/blobs/tap-fixture.json',feature_sha256=file_hash(path),shape=[1,2]);r.store.add_packet('LatentTapPacket',p)
         self.assertEqual(r.cognition.read_tap(p)['vectors'],[[.1,.2]])
         atomic_write(path,'tampered')
         with self.assertRaises(ValueError):r.cognition.read_tap(p)
         self.assertTrue(any('Tap-Artefakt' in x for x in r.store.integrity(True)))
+
+    def test_cognition_tap_records_sender_hash_and_explicit_positions(self):
+        r=self.r;e=r.store.event(r.session,'Tap provenance fixture')
+        from v13.models import model_key
+        model_path=r.home/'models'/'tap.gguf';model_path.parent.mkdir(parents=True,exist_ok=True);model_path.write_bytes(b'tap-model')
+        sender_sha=file_hash(model_path);key=model_key('B2_GIST',r.models.b2_control)
+        r.models.installed[key]={'download_complete':True,'exact_revision':'fixture-r1','main_file':'tap.gguf','files':{'tap.gguf':{'path':str(model_path.relative_to(r.home)),'sha256':sender_sha,'size':model_path.stat().st_size}}}
+        r.models.path_for=lambda role:model_path;r.models.revision=lambda role:'fixture-r1'
+        class FakeTap:
+            tap_id='qwen35.result_norm.final.v1'
+            tap_dim=2
+            def tap(self,text,cancel,deadline):
+                return {'tap_id':self.tap_id,'token_ids':[11,22],'vectors':[[.1,.2],[.3,.4]],'metrics':{'tap_id':self.tap_id}}
+        r.pool.get_tap=lambda role:FakeTap()
+        packet_value=r.cognition.tap('B2_GIST',e,e['source_ref'],time.monotonic()+5)
+        data=r.cognition.read_tap(packet_value)
+        self.assertEqual(packet_value['sender_model_sha256'],sender_sha)
+        self.assertIsNone(packet_value['tokenizer_revision'])
+        self.assertEqual(packet_value['position_ids'],[0,1])
+        self.assertEqual(data['position_ids'],[0,1])
+        self.assertEqual(data['position_mode'],'ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL')
+
 
 class NativeTapIdentity(unittest.TestCase):
     def _tap(self,role,expected_id,dimension,bound=None):

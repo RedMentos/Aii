@@ -186,8 +186,10 @@ class Callosum:
         if row:
             try:
                 q=json.loads(row['payload'])
-                probe={k:q.get(k) for k in ('sender_role','receiver_role','status','input_rows','input_dim',
-                    'receiver_input_dim','output_dim','decode_status','native_input_consumed','input_effect_detected')}
+                probe={k:q.get(k) for k in ('sender_role','receiver_role','sender_model_sha256','tokenizer_revision',
+                    'receiver_model_revision','receiver_model_sha256','status','input_rows','input_dim','position_ids',
+                    'position_mode','receiver_input_dim','output_dim','decode_status','row_shuffle_control_applicable',
+                    'row_shuffle_control_cosine','native_input_consumed','input_effect_detected')}
                 probe.update(production_route=False,semantic_use_proven=False,training_authority=0,native_receiver_authority=0)
             except (ValueError,TypeError):probe={'status':'INVALID_STORED_RECEIPT'}
         return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,

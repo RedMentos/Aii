@@ -19,6 +19,8 @@ def receipt(model_sha):
         "receiver_role": "C3_LANGUAGE",
         "sender_tap_id": "qwen35.result_norm.final.v1",
         "sender_model_revision": "qwen35-r1",
+        "sender_model_sha256": "b" * 64,
+        "tokenizer_revision": None,
         "receiver_model_revision": "lfm2-r1",
         "receiver_model_sha256": model_sha,
         "runner_revision": native.PINNED_LLAMA_REVISION,
@@ -28,11 +30,15 @@ def receipt(model_sha):
         "receiver_input_dim": 2,
         "output_dim": 4,
         "input_sha256": "a" * 64,
+        "position_ids": [0, 1],
+        "position_mode": native.POSITION_MODE,
         "decode_status": 0,
         "output_norm": 1.25,
         "input_effect_rms": 0.5,
         "zero_control_cosine": 0.2,
         "shuffle_control_cosine": 0.1,
+        "row_shuffle_control_cosine": 0.05,
+        "row_shuffle_control_applicable": True,
         "repeat_cosine": 1.0,
         "native_input_consumed": True,
         "input_effect_detected": True,
@@ -71,15 +77,27 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
         "source_ref": event["source_ref"],
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
+        "sender_model_sha256": "b" * 64,
+        "tokenizer_revision": None,
+        "position_ids": [0, 1],
+        "position_mode": native.POSITION_MODE,
     }
     runtime.cognition.tap = lambda role, e, ref, deadline: (order.append("tap") or tap)
-    runtime.cognition.read_tap = lambda packet: {"vectors": [[0.25, -0.5], [1.0, 0.75]]}
+    runtime.cognition.read_tap = lambda packet: {
+        "vectors": [[0.25, -0.5], [1.0, 0.75]],
+        "position_ids": [0, 1],
+        "position_mode": native.POSITION_MODE,
+    }
     runtime.pool.unload = lambda: order.append("unload")
 
     def fake_probe(**kwargs):
         assert order == ["tap", "unload"]
         assert kwargs["model_path"] == model_path
         assert kwargs["expected_model_sha256"] == digest
+        assert kwargs["sender_model_sha256"] == "b" * 64
+        assert kwargs["tokenizer_revision"] is None
+        assert kwargs["position_ids"] == [0, 1]
+        assert kwargs["position_mode"] == native.POSITION_MODE
         assert kwargs["source_id"] == event["source_ref"]["source_id"]
         assert kwargs["generation_id"] == event["brain_generation_id"]
         return receipt(digest)
@@ -110,8 +128,8 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     assert "LATENT blocked" in status["gate"]
 
     promoted = dict(packet, production_route=True)
-    with pytest.raises(ValueError, match="cannot grant"):
-        validate("LatentReceiverPacket", promoted)
+    with pytest.raises(native.NativeReceiverError, match="cannot grant"):
+        native.validate_packet(promoted)
     runtime.close()
 
 
@@ -124,18 +142,30 @@ def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp
         "source_ref": event["source_ref"],
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
+        "sender_model_sha256": "b" * 64,
+        "tokenizer_revision": None,
+        "position_ids": [0],
+        "position_mode": native.POSITION_MODE,
     }
     runtime.cognition.tap = lambda *args: tap
-    runtime.cognition.read_tap = lambda packet: {"vectors": [[1.0, 2.0]]}
+    runtime.cognition.read_tap = lambda packet: {
+        "vectors": [[1.0, 2.0]],
+        "position_ids": [0],
+        "position_mode": native.POSITION_MODE,
+    }
     runtime.pool.unload = lambda: None
     mismatch = receipt(digest)
     mismatch.update({
+        "input_rows": 1,
+        "position_ids": [0],
         "receiver_input_dim": 3,
         "decode_status": -100,
         "output_norm": 0.0,
         "input_effect_rms": 0.0,
         "zero_control_cosine": None,
         "shuffle_control_cosine": None,
+        "row_shuffle_control_cosine": None,
+        "row_shuffle_control_applicable": False,
         "repeat_cosine": None,
         "native_input_consumed": False,
         "input_effect_detected": False,

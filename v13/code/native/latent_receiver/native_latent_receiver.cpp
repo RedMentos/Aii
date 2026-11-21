@@ -22,6 +22,8 @@
 namespace v14 {
 constexpr int kMaxRows = 64;
 constexpr int kMaxDim = 8192;
+constexpr int kMaxPosition = 131072;
+constexpr const char * kPositionMode = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL";
 constexpr std::size_t kMaxElements = 262144;
 constexpr double kEffectEpsilon = 1.0e-7;
 
@@ -33,6 +35,18 @@ bool valid_batch(int rows, int dim, const std::vector<float> & values) {
         if (!std::isfinite(value) || std::abs(value) > 1.0e6f) return false;
     }
     return true;
+
+bool valid_positions(int rows, const std::vector<int> & positions, int context_limit) {
+    if (rows < 1 || rows > kMaxRows || positions.size() != static_cast<std::size_t>(rows)) return false;
+    if (context_limit < rows) return false;
+    int previous = -1;
+    for (int row = 0; row < rows; ++row) {
+        const int position = positions[static_cast<std::size_t>(row)];
+        if (position < 0 || position >= context_limit || position >= kMaxPosition || position <= previous || position != row) return false;
+        previous = position;
+    }
+    return true;
+}
 }
 
 std::vector<float> zero_control(std::size_t size) {
@@ -57,6 +71,17 @@ std::vector<float> shuffle_control(const std::vector<float> & input, int rows, i
         }
     } else {
         output = input;
+    }
+    return output;
+}
+
+std::vector<float> reverse_rows(const std::vector<float> & input, int rows, int dim) {
+    std::vector<float> output(input.size(), 0.0f);
+    if (rows < 1 || dim < 1 || input.size() != static_cast<std::size_t>(rows) * static_cast<std::size_t>(dim)) return output;
+    for (int row = 0; row < rows; ++row) {
+        const std::size_t source = static_cast<std::size_t>(rows - 1 - row) * dim;
+        const std::size_t target = static_cast<std::size_t>(row) * dim;
+        std::copy_n(input.data() + source, dim, output.data() + target);
     }
     return output;
 }
@@ -116,6 +141,30 @@ std::string json_escape(const std::string & value) {
     return out;
 }
 
+std::string positions_json(const std::vector<int> & positions) {
+    std::ostringstream out;
+    out << "[";
+    for (std::size_t i = 0; i < positions.size(); ++i) {
+        if (i) out << ",";
+        out << positions[i];
+    }
+    out << "]";
+    return out.str();
+}
+
+bool parse_positions(const std::string & raw, int rows, std::vector<int> & positions) {
+    std::stringstream stream(raw);
+    std::string token;
+    while (std::getline(stream, token, ',')) {
+        if (token.empty()) return false;
+        char * end = nullptr;
+        const long value = std::strtol(token.c_str(), &end, 10);
+        if (end == token.c_str() || *end != '\0' || value < 0 || value >= kMaxPosition) return false;
+        positions.push_back(static_cast<int>(value));
+    }
+    return valid_positions(rows, positions, kMaxPosition);
+}
+
 int selftest() {
     const std::vector<float> input{1.0f, 2.0f, 3.0f, 4.0f};
     if (!valid_batch(2, 2, input)) return 1;
@@ -136,6 +185,11 @@ int selftest() {
     if (std::abs(cosine(input, input) - 1.0) > 1.0e-12) return 10;
     if (std::isfinite(cosine(input, zeros))) return 11; // zero-vector cosine must be undefined
     if (!all_finite(shuffled)) return 12;
+    if (!valid_positions(2, std::vector<int>{0, 1}, 64)) return 13;
+    if (valid_positions(2, std::vector<int>{1, 0}, 64)) return 14;
+    if (valid_positions(2, std::vector<int>{0, 0}, 64)) return 15;
+    if (valid_positions(2, std::vector<int>{0, 64}, 64)) return 16;
+    if (reverse_rows(input, 2, 2) == input) return 17;
     std::cout << "PASS\n";
     return 0;
 }
@@ -162,8 +216,9 @@ struct BatchGuard {
 };
 
 bool decode_embeddings(llama_context * ctx, int rows, int input_dim, int output_dim,
-                       const std::vector<float> & input, std::vector<float> & output, int & decode_status) {
-    if (!v14::valid_batch(rows, input_dim, input)) return false;
+                       const std::vector<int> & positions, const std::vector<float> & input,
+                       std::vector<float> & output, int & decode_status) {
+    if (!v14::valid_batch(rows, input_dim, input) || !v14::valid_positions(rows, positions, v14::kMaxPosition)) return false;
     llama_memory_clear(llama_get_memory(ctx), true);
     BatchGuard batch;
     batch.value = llama_batch_init(rows, input_dim, 1);
@@ -174,7 +229,7 @@ bool decode_embeddings(llama_context * ctx, int rows, int input_dim, int output_
     for (int row = 0; row < rows; ++row) {
         const std::size_t offset = static_cast<std::size_t>(row) * input_dim;
         std::copy_n(input.data() + offset, input_dim, batch.value.embd + offset);
-        batch.value.pos[row] = row;
+        batch.value.pos[row] = positions[static_cast<std::size_t>(row)];
         batch.value.n_seq_id[row] = 1;
         if (!batch.value.seq_id[row]) return false;
         batch.value.seq_id[row][0] = 0;
@@ -194,13 +249,13 @@ bool decode_embeddings(llama_context * ctx, int rows, int input_dim, int output_
 
 void print_version() {
     const char * version = llama_version();
-    std::cout << "{\"schema\":\"v14.native-latent-receiver/1\",\"runner_revision\":\""
+    std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
               << V14_LLAMA_REVISION << "\",\"llama_version\":\""
               << v14::json_escape(version ? version : "unknown") << "\"}\n";
 }
 
 int run_native(const std::string & model_path, int rows, int input_dim, int threads,
-               const std::vector<float> & input) {
+               const std::vector<int> & positions, const std::vector<float> & input) {
     if (!v14::valid_batch(rows, input_dim, input)) {
         std::cerr << "invalid input batch\n";
         return 2;
@@ -216,6 +271,11 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
         std::cerr << "model load failed\n";
         return 3;
     }
+    const int model_context = llama_model_n_ctx_train(model.value);
+    if (model_context <= 0 || !v14::valid_positions(rows, positions, model_context)) {
+        std::cerr << "sender position mapping exceeds receiver model context\n";
+        return 4;
+    }
     int receiver_input_dim = llama_model_n_embd_inp(model.value);
     if (receiver_input_dim <= 0) receiver_input_dim = llama_model_n_embd(model.value);
     int output_dim = llama_model_n_embd_out(model.value);
@@ -225,16 +285,20 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
         return 4;
     }
     if (receiver_input_dim != input_dim) {
-        std::cout << "{\"schema\":\"v14.native-latent-receiver/1\",\"runner_revision\":\""
+        std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
                   << V14_LLAMA_REVISION << "\",\"llama_version\":\""
                   << v14::json_escape(llama_version() ? llama_version() : "unknown")
                   << "\",\"status\":\"DIMENSION_MISMATCH\",\"input_rows\":" << rows
                   << ",\"input_dim\":" << input_dim << ",\"receiver_input_dim\":" << receiver_input_dim
-                  << ",\"output_dim\":" << output_dim << ",\"decode_status\":-100,\"finite_output\":false}\n";
+                  << ",\"output_dim\":" << output_dim
+                  << ",\"position_ids\":" << v14::positions_json(positions)
+                  << ",\"position_mode\":\"" << v14::kPositionMode << "\""
+                  << ",\"row_shuffle_control_applicable\":false,\"row_shuffle_control_cosine\":null"
+                  << ",\"decode_status\":-100,\"finite_output\":false}\n";
         return 0;
     }
     llama_context_params context_params = llama_context_default_params();
-    context_params.n_ctx = static_cast<uint32_t>(std::max(64, rows));
+    context_params.n_ctx = static_cast<uint32_t>(std::min(model_context, std::max(64, positions.back() + 1)));
     context_params.n_batch = static_cast<uint32_t>(rows);
     context_params.n_ubatch = static_cast<uint32_t>(rows);
     context_params.n_seq_max = 1;
@@ -251,27 +315,36 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
 
     const auto zero = v14::zero_control(input.size());
     const auto shuffled = v14::shuffle_control(input, rows, input_dim);
-    std::vector<float> positive_out, zero_out, shuffled_out, repeat_out;
-    int positive_status = -999, zero_status = -999, shuffle_status = -999, repeat_status = -999;
-    if (!decode_embeddings(context.value, rows, input_dim, output_dim, input, positive_out, positive_status) ||
-        !decode_embeddings(context.value, rows, input_dim, output_dim, zero, zero_out, zero_status) ||
-        !decode_embeddings(context.value, rows, input_dim, output_dim, shuffled, shuffled_out, shuffle_status) ||
-        !decode_embeddings(context.value, rows, input_dim, output_dim, input, repeat_out, repeat_status)) {
+    const auto row_shuffled = v14::reverse_rows(input, rows, input_dim);
+    std::vector<float> positive_out, zero_out, shuffled_out, row_shuffled_out, repeat_out;
+    int positive_status = -999, zero_status = -999, shuffle_status = -999, row_shuffle_status = -999, repeat_status = -999;
+    const bool row_shuffle_applicable = rows >= 2;
+    if (!decode_embeddings(context.value, rows, input_dim, output_dim, positions, input, positive_out, positive_status) ||
+        !decode_embeddings(context.value, rows, input_dim, output_dim, positions, zero, zero_out, zero_status) ||
+        !decode_embeddings(context.value, rows, input_dim, output_dim, positions, shuffled, shuffled_out, shuffle_status) ||
+        (row_shuffle_applicable && !decode_embeddings(context.value, rows, input_dim, output_dim, positions, row_shuffled, row_shuffled_out, row_shuffle_status)) ||
+        !decode_embeddings(context.value, rows, input_dim, output_dim, positions, input, repeat_out, repeat_status)) {
         std::cerr << "native decode or output embedding failed\n";
         return 6;
     }
+
     const double output_norm = v14::l2_norm(positive_out);
     const double input_effect = v14::rms_delta(positive_out, zero_out);
-    std::cout << "{\"schema\":\"v14.native-latent-receiver/1\",\"runner_revision\":\""
+    std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
               << V14_LLAMA_REVISION << "\",\"llama_version\":\""
               << v14::json_escape(llama_version() ? llama_version() : "unknown")
               << "\",\"status\":\"DECODED\",\"input_rows\":" << rows
               << ",\"input_dim\":" << input_dim << ",\"receiver_input_dim\":" << receiver_input_dim
-              << ",\"output_dim\":" << output_dim << ",\"decode_status\":" << positive_status
+              << ",\"output_dim\":" << output_dim
+              << ",\"position_ids\":" << v14::positions_json(positions)
+              << ",\"position_mode\":\"" << v14::kPositionMode << "\""
+              << ",\"decode_status\":" << positive_status
               << ",\"output_norm\":" << v14::number(output_norm)
               << ",\"input_effect_rms\":" << v14::number(input_effect)
               << ",\"zero_control_cosine\":" << v14::number(v14::cosine(positive_out, zero_out))
               << ",\"shuffle_control_cosine\":" << v14::number(v14::cosine(positive_out, shuffled_out))
+              << ",\"row_shuffle_control_applicable\":" << (row_shuffle_applicable ? "true" : "false")
+              << ",\"row_shuffle_control_cosine\":" << v14::number(row_shuffle_applicable ? v14::cosine(positive_out, row_shuffled_out) : std::numeric_limits<double>::quiet_NaN())
               << ",\"repeat_cosine\":" << v14::number(v14::cosine(positive_out, repeat_out))
               << ",\"finite_output\":" << (v14::all_finite(positive_out) ? "true" : "false") << "}\n";
     return 0;
@@ -288,22 +361,25 @@ int main(int argc, char ** argv) {
         print_version();
         return 0;
     }
-    std::string model_path;
+    std::string model_path, positions_text;
     int rows = 0, input_dim = 0, threads = 1;
     for (int i = 1; i < argc; ++i) {
         const std::string arg(argv[i]);
         if (arg == "--model" && i + 1 < argc) model_path = argv[++i];
         else if (arg == "--rows" && i + 1 < argc) rows = std::atoi(argv[++i]);
         else if (arg == "--input-dim" && i + 1 < argc) input_dim = std::atoi(argv[++i]);
+        else if (arg == "--positions" && i + 1 < argc) positions_text = argv[++i];
         else if (arg == "--threads" && i + 1 < argc) threads = std::atoi(argv[++i]);
         else {
             std::cerr << "unknown or incomplete argument\n";
             return 64;
         }
     }
+    std::vector<int> positions;
     if (model_path.empty() || rows < 1 || input_dim < 1 || threads < 1 ||
-        !v14::valid_batch(rows, input_dim, std::vector<float>(static_cast<std::size_t>(rows) * input_dim, 0.0f))) {
-        std::cerr << "usage: native_latent_receiver --model PATH --rows N --input-dim D --threads N\n";
+        !v14::valid_batch(rows, input_dim, std::vector<float>(static_cast<std::size_t>(rows) * input_dim, 0.0f)) ||
+        !v14::parse_positions(positions_text, rows, positions)) {
+        std::cerr << "usage: native_latent_receiver --model PATH --rows N --input-dim D --positions CSV --threads N\n";
         return 64;
     }
     const std::size_t count = static_cast<std::size_t>(rows) * input_dim;
@@ -314,10 +390,10 @@ int main(int argc, char ** argv) {
         std::cerr << "invalid binary input payload\n";
         return 65;
     }
-    return run_native(model_path, rows, input_dim, threads, input);
+    return run_native(model_path, rows, input_dim, threads, positions, input);
 #else
     if (argc == 2 && std::string(argv[1]) == "--version") {
-        std::cout << "{\"schema\":\"v14.native-latent-receiver/1\",\"runner_revision\":\""
+        std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
                   << V14_LLAMA_REVISION << "\",\"llama_version\":\"LOCAL_CORE_ONLY\"}\n";
         return 0;
     }

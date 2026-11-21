@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - gpt6/v13-private-remote-bridge-20261111
+      - boss/v14-core-perception-store-audio-integration-20261121
     paths:
       - "v13/code/native/latent_receiver/**"
       - "v13/code/v13/native_latent_receiver.py"
@@ -15,6 +16,7 @@ on:
       - "v13/code/v13/callosum.py"
       - "v13/code/v13/runtime.py"
       - "v13/code/tests/test_native_latent_receiver*.py"
+      - "v13/code/tests/test_native_taps.py"
       - ".github/workflows/v14-native-latent-receiver.yml"
 
 permissions:
@@ -39,7 +41,7 @@ jobs:
           PYTHONPATH: v13/code
         run: |
           python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/v13/contracts.py v13/code/v13/cognition.py v13/code/v13/callosum.py v13/code/v13/runtime.py
-          python -m pytest -q v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_callosum.py
+          python -m pytest -q v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_native_taps.py v13/code/tests/test_callosum.py
 
   linux-pinned-api:
     runs-on: ubuntu-latest
