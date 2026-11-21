@@ -35,6 +35,7 @@ bool valid_batch(int rows, int dim, const std::vector<float> & values) {
         if (!std::isfinite(value) || std::abs(value) > 1.0e6f) return false;
     }
     return true;
+}
 
 bool valid_positions(int rows, const std::vector<int> & positions, int context_limit) {
     if (rows < 1 || rows > kMaxRows || positions.size() != static_cast<std::size_t>(rows)) return false;
