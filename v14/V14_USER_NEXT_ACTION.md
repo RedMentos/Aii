@@ -1,3 +1,13 @@
+# Latest A5 research note — 2026-11-21 20:12 CET
+
+Perception #2246 now has a new head `e9a40aff...`; four checks are queued. It is still a synthetic metadata-only UI lease, with no Android OS provider/capture/action and no immediate revoke-cancel path. It must rebase after #2243 synchronizes.
+
+R-042 identifies SmolVLM-256M-Instruct as a possible optional visual teacher: Apache-2.0, image+text only, 256M parameters, Q8 GGUF model 175 MB plus Q8 mmproj 104 MB (279 MB total at the pinned revision). Official llama.cpp supports it through libmtmd; Android Termux CLI is documented, but no ARM64/Redmi benchmark exists. No model was downloaded or swapped. Before any trial, measure ARM64 build, image-size scaling, TTFT, RSS/PSS and quality; explicit consent is required for download/production use.
+
+**No user action is required.** Existing B1/B2/C3 models and permissions remain untouched. Full Canon and Redmi acceptance remain open.
+
+---
+
 # Latest research / integration handoff — 2026-11-21 20:07 CET
 
 **No user action is required.**

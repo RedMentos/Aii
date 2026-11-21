@@ -4,11 +4,13 @@
 
 - Draft PR: https://github.com/RedMentos/Aii/pull/2243
 - Branch: `research-perception/v14-dense-latent-kv-toy-20261121`
-- Exact branch/PR head read back: `ae26c94700ca8077b38cbd87c40db89b4ae46360`
-- Previous head: `543349894b5392582969f06a4485ff9d18e4504d`
-- New commit: `ae26c94700ca8077b38cbd87c40db89b4ae46360` — explicit CI reproduction of the tiny K/V experiment.
-- Workflow blob readback: `9210514dee0225940bbc1219db4cd53c30de28e7`; README blob readback: `6498e6111af9ea6f6574f6246f3bb2ba4a0861b0`.
-- Status: OPEN / DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. GitHub currently reports mergeable=false during refresh; do not assume ready-to-merge from the successful tests alone.
+- Exact branch/PR head: `0bb3adbfc064a32ebbcb61d49e8a65a2babf3e20`
+- Latest shared base readback: `1b01014d1038668498a747fee8a90d39f323f01d`
+- Latest normal two-parent sync commit: `0bb3adbfc064a32ebbcb61d49e8a65a2babf3e20` (parents: prior PR head `e8df851ac314d48864b55e368f973bbf644de767`, shared base `1b01014d1038668498a747fee8a90d39f323f01d`).
+- GitHub compare: ahead 17 / behind 0; mergeable=true; PR remains DRAFT.
+- Readback confirms `V14_WORK_BOARD.json`, `V14_LIVE_WORKPLAN.md`, and `V14_USER_NEXT_ACTION.md` are byte-identical to the latest shared base. Older overlapping edits from this branch were discarded; latest Boss-owned documents were preserved.
+- R-037 is appended to the latest shared research ledger; the active V14 master and historical V13 appendix remain untouched.
+- Status: OPEN / DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.
 
 ## Boss-requested CI reproduction — complete
 
@@ -28,8 +30,10 @@ Exact PR-head checks for `ae26c94700ca8077b38cbd87c40db89b4ae46360`:
 
 ## Final base synchronization
 
-- The shared branch advanced after the PR was opened. This branch was brought forward with a normal two-parent merge commit onto base `b267ed641f4dbff1e2c28f492baf0182e9bb656b`; no force-push or destructive rewrite.
-- The workflow/README commit was a normal fast-forward update using expected previous head `543349894b5392582969f06a4485ff9d18e4504d`.
+- Normal two-parent merge commit `e8df851ac314d48864b55e368f973bbf644de767` synchronized the PR with shared base `5a281b9ef06860ecc240b3188880d9d69559b496`.
+- A second normal two-parent merge commit `0bb3adbfc064a32ebbcb61d49e8a65a2babf3e20` synchronized with the newer shared base `1b01014d1038668498a747fee8a90d39f323f01d`.
+- Both updates used explicit expected prior heads and `force=false`; no force-push or destructive rewrite.
+- Latest readback shows the Boss-owned board, live workplan and user next-action files are byte-identical to the shared branch. The PR diff now contains only the experiment workflow, R-037 ledger entry, experiment files and this handoff.
 
 ## Branch and scope
 

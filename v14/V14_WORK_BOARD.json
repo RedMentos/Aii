@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T19:02:33.380Z",
+  "updated_at": "2026-11-21T19:04:57.519Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -159,8 +159,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Core #2242 head 3dc8a19 exact CI 9 success / 4 failure; stage arithmetic tests pass but runtime_deploy STAGER_SHA256 remains stale, causing Python3.14 startup/staged-runtime/migration failures; revoke-cancel missing. Perception #2246 head 273884 has 3/3 synthetic CI but its base #2243 head 543349 is stale and diverged; no OS provider/capture.",
-      "next_step": "Core fixes deployer/source pins and two-phase audio revocation; QA rebases #2244 after final Core. Perception syncs #2243 to current base and re-bases #2246; Core/QA add trusted OS provider/consumer only after pre-lock cancellation and cleanup proof.",
+      "proof_environment": "Core #2242 head 3dc8a19 exact checks 9 success / 4 failure; arithmetic stage passes but stale runtime_deploy STAGER_SHA256 causes Python3.14 startup, staged-runtime and migration failures; audio revoke-cancel missing. Perception #2246 current head e9a40affd11ff830986fce3b6e672febdf122fd4 has 4 checks queued; still metadata-only A5 UI lease, base 543349 is stale relative to #2243 3e52. R-042 SmolVLM visual teacher research is optional only; no download.",
+      "next_step": "Core fixes deployer/source pins and two-phase audio revocation. QA rebases #2244 and proves provider-revoke cancellation through C3. Perception syncs #2243/#2246 without overwriting Boss docs; add two-phase revocation before active-turn use and keep visual teacher in shadow pending ARM64 measurements.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21T18:05:08.230Z",
       "latest_candidate_pr": {
@@ -208,8 +208,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
-      "proof_environment": "Android broker remains DRY_RUN_ONLY. #2246 metadata-only A5 UI lease has 3/3 synthetic CI; no OS provider, AccessibilityService, NotificationListenerService, MediaProjection, screen capture or action. #2242 audio Runtime consumer still not accepted; current head 3dc8a19 has deployer pin failures and no pre-lock revoke cancellation.",
-      "next_step": "Core supplies a trusted Android observe_ui provider and active-turn consumer; QA tests lease revocation through A4/context/C3. Audio path must cancel C3 immediately on revoke request and clean source/cache after guard release. No OS action/capture before explicit permission receipts and device tests.",
+      "proof_environment": "Android broker remains DRY_RUN_ONLY. #2246 current head e9a40 is a metadata-only A5 UI lease; four checks queued, no OS provider, AccessibilityService, NotificationListenerService, MediaProjection, screen capture or action. Its lease subscription still has no pre-lock cancel signal. R-042 SmolVLM is only an optional visual teacher candidate; no download, Android build or Redmi proof.",
+      "next_step": "Perception/QA implement and test two-phase revoke cancellation before active-turn use; Core supplies trusted Android observe_ui provider and downstream consumer. Evaluate R-042 only via explicit license-pinned shadow tests after ARM64/libmtmd build and RSS/TTFT; no model swap without explicit consent.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 18:04 CET"
     },
@@ -466,7 +466,7 @@
     "pr2242": "DRAFT_NOT_RELEASED_HEAD_3DC8A19; exact checks 4_FAILURE_9_SUCCESS; corrected blob header and Python3.13/3.14 staged arithmetic pass; runtime_deploy STAGER_SHA256 stale causes Python3.14 startup and staged/migration failures; revocation subscription optional and no pre-lock C3 cancel.",
     "pr2244": "DRAFT_STACKED_ON_STALE_4CCA498; prior Python3.13/3.14, staged 251/10/47, integrated 424/3/58 pass; manual cancel/close only; rebase after Core final fix and add automatic provider-revoke cancellation.",
     "pr2243": "DRAFT_HEAD_3E52C96; explicit latent-cache-tiny job on prior exact head AE26C94 PASS (3/3 tests; pinned NumPy/PyTorch; py_compile); current PR head diverged from shared base 7b91d8 by 15 ahead / 17 behind due overlapping old board/workplan/next-action docs; mergeable=false; preserve Boss docs and re-sync normally. B3 PARTIAL_SYMBOLIC_ONLY.",
-    "pr2246": "DRAFT_HEAD_273884C; 3/3 synthetic CI; base 543349 is stale and branch is diverged from current #2243; rebase after #2243 final base sync. Metadata-only A5 UI lease; no OS provider/capture/action; require pre-lock revoke-cancel before active-turn use.",
+    "pr2246": "DRAFT_HEAD_E9A40AF; 4 exact checks queued at last read; current base 543349 is stale relative to #2243 3e52; metadata-only A5 UI lease with no request-cancel signal, no OS provider/capture/action. R-042 optional visual teacher research added; no model download/swap.",
     "pr2247": "DRAFT_HEAD_E8137FD; exact CI 11_SUCCESS_3_FAILURE; A-GEM arms rejected by per-session retention across seeds 13/19/43; no checkpoint commit; gates OFF.",
     "pr2237": "OLDER_HEAD_F92C156; superseded by active JEPA #2247 candidate; prior tests also failed retention/source pins.",
     "pr2235": "Nested-closure AST attribution blocker; safe-additive FAIL BY POLICY; no merge.",
@@ -478,7 +478,7 @@
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_AND_GITHUB_DNS_FAILURE; no local full-suite claim.",
     "p0_chat": "OPEN_ISSUE_1904; real 2+2, B1/B2 offer delivery, 20 mixed Redmi turns, native latency/RSS unverified.",
     "canon_coverage": "1255_HISTORICAL_HEADINGS_PRESERVED; semantic clause mapping incomplete.",
-    "research": "R037 tiny cross-geometry K/V experiment explicit CI PASS 3/3 on prior exact head AE26C94; current PR head 3E52C96 is diverged and not merged. R040 replay non-monotonicity and R041 Replay-on-Demand proposed by JEPA, pending shared ledger. No product-native B3 or Android proof.",
+    "research": "R037 tiny cross-geometry K/V experiment 3/3 CI PASS on exact code head AE26C94; current #2243 docs head 3E52 has privacy queued/offline bridge pass and is diverged. R040 replay non-monotonicity and R041 Replay-on-Demand proposed by JEPA, pending ledger. R042 SmolVLM-256M-Instruct optional vision teacher research (Apache-2.0, Q8 model+mmproj 279MB); no model downloaded, ARM64/Redmi not tested.",
     "user_action_required": "NONE",
     "boss_docs_commits": "PR2248_MERGE_A1B1E9; MASTER_BLOB_UNCHANGED_9748AD5"
   }

@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: v14-model-lab
+  group: v14-model-lab-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
