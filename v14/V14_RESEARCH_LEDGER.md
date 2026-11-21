@@ -743,3 +743,26 @@ The exact Python 3.13/3.14 run at head 3fac198b completed the A-B-A Store experi
 The next code head **3849730b455dc6666e67a29503c616f6982d7163** changes the backtracking algorithm: run one optimizer pass, then interpolate the resulting enc/predictor/EMA parameter delta along a deterministic nine-point trust-region ladder (1 through 1/256). The source-disjoint old-training guard chooses the scale; the final holdout is evaluated once and cannot choose a retry. This avoids repeating a full training pass for each scale, which is materially more suitable for Android. The test now requires at least one accepted on-demand-loss + per-session-GEM update for each data seed and directly tests that interpolation touches enc/predictor/EMA arrays without resetting optimizer state. CI run **44953329088** was queued at this checkpoint; no result is claimed.
 
 The preceding CI run **44952328878** passed compile, SQLite/T8/checkpoint-reset and the A-B-A experiment on both Python 3.13 and 3.14, but both jobs failed at staged optimizer-resume due a stale nested source pin. CI measured the integrated training-resume builder hash as 6f0f9a1ed2d4c173e56d9f864617b2d916fb34a8e5b22dfbb74b17e2592563d7. The recovery builder's child pin has been corrected to that exact runner-measured value in code commit 5703510d2d25e353b9d3a9a533f1fcffe17f477c. The stage builder and runtime-deployer pins still need to be refreshed from the next runner-measured hashes; do not call the nested chain complete yet.
+
+## R-046 — STABLE: optimizer-level adaptive drift control (2026-11-21)
+
+### Primary source and method
+
+- Li, Li, Coppola, Lomonaco & Carta, “STABLE: A Continual Learning Optimizer with Adaptive Drift Control,” arXiv:2611.10655 (submitted 2026-11-07; accepted at NeurIPS 2026): https://arxiv.org/abs/2611.10655
+- STABLE stores the previous task's parameters as an anchor and constrains squared parameter drift to a budget. It adds the Lagrangian pullback term 2 * lambda * (theta - theta_anchor) to the gradient. A primal-dual controller raises lambda when drift exceeds the budget and relaxes it when the trajectory returns inside a deadzone. The paper's formal margin-erosion bound is specifically for distance-based classifiers under a local score-stability assumption; it is not a general theorem about JEPA predictive loss.
+- Official implementation: https://github.com/atlas-luiss/STABLE. The repository LICENSE is MIT. Its README specifies Python 3.12, PyTorch 2.8, CUDA 12.8 and one NVIDIA A100 (64 GB) per run; do not import its GPU stack into the Android runtime.
+
+### Existing V14 overlap and reuse decision
+
+- v13/code/v13/world_jepa_drift.py (Git blob 6a3109fa3302cf295fe49b945284992e19450ae9) already contains a NumPy-only, per-group STABLE-style primal-dual pullback for encoder, predictor and inverse-dynamics parameters. It is opt-in and checkpointed. Its task-1 budget calibration (L/5 times the 75th percentile of rolling five-step sums) is a V14-specific rule, not a verbatim reproduction of the paper's calibration.
+- Therefore no external code or dependency is imported. Treat the paper as support for the existing optimizer-level direction, not as proof that the current JEPA controller is equivalent or that its retention gate is solved.
+
+### Testable V14 adaptation
+
+- On the same source-disjoint A→B→A seeds, log per-group anchor drift, squared budget, lambda before/after each step, overshoot duration and old-session holdout loss. Compare drift OFF, current dynamic dual, and a fixed-pullback control at identical optimizer/replay budgets.
+- Require a nonzero useful predictor update, per-session holdout retention, independent negative controls, restart-equivalent optimizer/controller state and bounded CPU/RSS. Do not transfer the distance-classifier margin theorem to the WorldJEPA loss without a separate proof.
+- Related candidate: Wang, Gupta & MacLellan, “Trust Region Continual Learning as an Implicit Meta-Learner,” arXiv:2602.02417v3 / NeurIPS 2026: https://arxiv.org/abs/2602.02417. It combines generative replay with a Fisher-metric trust region. No verified reusable implementation/license was found in this run; keep as research-only and consider a small diagonal/low-rank Fisher ablation only after the current per-session GEM path is stable.
+
+### Status
+
+PAPER_FULLTEXT_REVIEWED / OFFICIAL_REPO_AND_MIT_LICENSE_CHECKED / EXISTING_NUMPY_ANALOGUE_IDENTIFIED / NO_CODE_IMPORTED / NO_DEPENDENCY_ADDED / NO_ANDROID_PROOF.
