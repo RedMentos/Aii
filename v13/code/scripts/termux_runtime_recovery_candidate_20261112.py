@@ -140,7 +140,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             raise ValueError('LateWatch output changed')
         result['v13/latewatch.py'] = late
         control_guard = load(code_dir, 'scripts/record_only_controller_guard_20261116.py',
-                             '01e034e478eea9d7ec6c034adaa313e7e0b2e9bccaf21712671b0b3546cccfab')
+                             '16d0db81acd6b38db80ec0bfe49370105bf1199cb811f63b72fe4503ddf8f1ac')
         result = control_guard.apply_sources(code_dir, result)
         # Feature Age belongs to the final deployed stage. The partial
         # pre-postcommit builder must retain its earlier exact Runtime hash.
