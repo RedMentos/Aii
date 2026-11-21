@@ -1837,3 +1837,8 @@ The composed #2258 evidence supersedes the prior `queued` note: A5 lease, staged
 ## QA follow-up — additional staged pin blockers (2026-11-21 22:20 CET)
 
 Exact #2261 run `44950978469` shows the composed candidate is still **FAIL**: staged-runtime and integrated-regression do not pass; integrated suite reports 226 passed, 10 skipped, 41 subtests, 24 failed and 2 errors. Beyond the lifecycle old-reader pin mismatch, both the idle recovery builder and record-only online-world guard still pin the prior `v13/operator.py` SHA (`67f2118e...`) instead of current `b81aa415...`. These are separate dependent builder chains and must be rebound without relaxing source checks. A5 adapter exports are still missing from the composed branch. The speech fixture change is not directly tested by this run. Keep V14-001 PARTIAL/OPEN, NOT_RELEASED, REDMI_UNVERIFIED.
+
+
+## QA V14-014 Age-rights evidence update — 2026-11-21 22:22 CET
+
+PR #2235 exact CI now passes the nested-closure AST inventory (including unrelated-closure negative control), Lab-Age/WebView, private owner-read/Python 3.14 staged startup, migration, runtime-deploy, staged-runtime and integrated-regression. Exact code/test head `b22129a03bbd3395605b951d55d3f187f442bda6`; handoff-only head `c224610959e598cb9c79f38d1b4bd454ffea0019`. Safe-additive is still FAIL_BY_POLICY. The branch is 43 ahead / 121 behind current shared base `bdcad466ffea75a2b41f7d23be168f53c7197d20`; it is not mergeable without a deliberate current-base composition. The rights implementation is not a Redmi or native-weight proof.
