@@ -21,6 +21,8 @@ from .audio_ear import observe_pcm16
 from .audio_percept_contract import audio_percept_packet
 from .audio_perception_bridge import _require_current_consent, _validate_runtime_binding
 from .percept_admission import Percept, admit
+from .common import dumps, now
+from .contracts import validate
 
 
 _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
@@ -287,6 +289,35 @@ def _require_current_consent_and_reset(runtime, source_id, generation_id, consen
         raise
 
 
+def _persist_audio_packet_at_consent_commit_boundary(runtime, audio_packet, *, source_id,
+                                                     generation_id, receipt, consent_check,
+                                                     temporal_state=None, vad_stream=None):
+    """Persist only if the final consent check succeeds before SQLite commit.
+
+    The insert and final provider check share one Store transaction. A failed
+    check raises inside Store.tx(), rolling the insert back before any reader can
+    observe the packet. The provider must report current, authoritative consent.
+    """
+    validate("PerceptPacket", audio_packet)
+    with runtime.store.tx() as connection:
+        connection.execute(
+            "INSERT INTO packets VALUES (?,?,?,?,?,?)",
+            (
+                audio_packet["packet_id"],
+                "PerceptPacket",
+                audio_packet["event_id"],
+                audio_packet["brain_generation_id"],
+                dumps(audio_packet),
+                now(),
+            ),
+        )
+        # Deliberately after INSERT but before COMMIT: permission loss aborts
+        # the same transaction instead of leaving a stale committed row.
+        _require_current_consent_and_reset(
+            runtime, source_id, generation_id, consent_check, receipt,
+            temporal_state, vad_stream,
+        )
+
 def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                generation_id, source_id, consent_receipt,
                                consent_check, finality, token_budget=512,
@@ -331,8 +362,11 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         runtime, event_id, audio_packet
     )
     _require_current_consent_and_reset(runtime, source_id, generation_id, consent_check, receipt, temporal_state, vad_stream)
-    runtime.store.add_packet("PerceptPacket", audio_packet)
-    _require_current_consent_and_reset(runtime, source_id, generation_id, consent_check, receipt, temporal_state, vad_stream)
+    _persist_audio_packet_at_consent_commit_boundary(
+        runtime, audio_packet, source_id=source_id, generation_id=generation_id,
+        receipt=receipt, consent_check=consent_check,
+        temporal_state=temporal_state, vad_stream=vad_stream,
+    )
 
     if temporal_state is None:
         temporal_voice = _runtime_temporal_voice_registry(runtime).update(
