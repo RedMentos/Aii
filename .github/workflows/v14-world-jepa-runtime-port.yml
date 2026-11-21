@@ -1,0 +1,29 @@
+name: V14 WorldJEPA deployable runtime port
+on:
+  pull_request:
+    paths:
+      - v13/code/v13/v14_learning/**
+      - v13/code/tests/test_v14_world_jepa_runtime_port.py
+      - .github/workflows/v14-world-jepa-runtime-port.yml
+  push:
+    branches:
+      - jepa-memory/v14-world-jepa-runtime-port-20261121
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install runtime test dependencies
+        run: python -m pip install numpy pytest psutil
+      - name: Compile deployable JEPA package
+        run: PYTHONPATH=v13/code python -m py_compile v13/code/v13/v14_learning/*.py
+      - name: Run exact SQLite T8 / WorldJEPA / runtime bridge tests
+        run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_v14_world_jepa_runtime_port.py
