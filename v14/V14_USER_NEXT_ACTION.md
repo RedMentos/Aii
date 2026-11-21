@@ -1240,3 +1240,9 @@ Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/225
 - PR remains DRAFT / NOT_RELEASED. The optional speaker path is caller-supplied embeddings → A5 scalar evidence → A4 salience → C3 summary only; no real encoder inference, microphone, diarization labels, Android/Termux test, model download, model/weight change or Redmi proof. `REDMI_UNVERIFIED`.
 
 **Next internal action:** Core refreshes the integrated audio source pin and nested stage/deployer hashes against the exact #2275 audio blob, then reruns staged/integrated tests; Boss/QA review the stacked diff. No user action is needed.
+
+
+## Research intake — sherpa-onnx offline diarization candidate (2026-11-21)
+
+- R-056 added after inspecting sherpa-onnx main `8a667ab114e8a007f671678ddb031729dd81dce4`: Apache-2.0 native stack with Android arm64 support and an Android diarization APK path. Its official speaker diarization API is explicitly offline/non-streaming and reads the whole WAV; it is only a possible replay/teacher candidate, not the live RAW EAR encoder. The documented model chain includes a 5.7-MB FP32 / 1.5-MB INT8 pyannote segmentation model and a ~39.6-MB ERes2Net-base embedding model. Exact sherpa release bundle weight notices/conditions need verification; the reverb model is non-commercial and excluded.
+- No model or dependency was downloaded. No device test, Termux ABI proof, Redmi benchmark or microphone capture occurred. Candidate remains research-only; no user action is needed.
