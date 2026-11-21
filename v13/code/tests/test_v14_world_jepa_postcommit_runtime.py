@@ -430,9 +430,23 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         ) is not None
         assert _wait_until(runtime.idle)
 
+        # Keep the actual Runtime turn as the worker-lifecycle proof. Start the
+        # learner cursor after it so the numeric update below uses a full,
+        # source-disjoint 256-row synthetic cohort rather than mixing the generic
+        # copy-exact action forecast into the JEPA training/holdout split.
+        from v13.world_jepa_consumer import STATE_KEY, WorldJEPAStoreConsumer
+        runtime_action = runtime.store.one(
+            "SELECT rowid AS scan_seq FROM actions WHERE event_id=?", (turn_event_id,)
+        )
+        assert runtime_action is not None
+        consumer = WorldJEPAStoreConsumer(runtime.store, home)
+        consumer_state, consumer_version = consumer._read_state()
+        consumer_state["scan_cursor"] = runtime_action["scan_seq"]
+        runtime.store.set_state(STATE_KEY, consumer_state, expected=consumer_version)
+
         # Add a source-disjoint T8 cohort through the same durable Store API.
         # The temporary permission is test-only; production gates remain OFF.
-        _add_transitions(runtime.store, runtime.session, 1000, 255)
+        _add_transitions(runtime.store, runtime.session, 1000, 256)
         latest = runtime.store.one(
             "SELECT event_id FROM actions WHERE outcome IS NOT NULL "
             "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
