@@ -1,9 +1,10 @@
 """Persistent Store-backed JEPA consumer for verified V13 T8 action outcomes.
 
 This is a trainable numeric WorldJEPA + role-specific B1/B2 readout candidate.
-It is not a native LLM/GGUF weight editor and is not registered in frozen
-runtime.py. The Store state pointer atomically binds the immutable checkpoint
-to the processed receipt cursor, replay memory and receiver heads.
+It is not a native LLM/GGUF weight editor. SleepRuntime calls the persistent
+consumer after committed T8 outcomes; WorldPlanner then reads the persisted
+B1/B2/SELF heads in SHADOW. The Store pointer binds checkpoint, receipt cursor,
+replay memory and receiver heads atomically.
 """
 from __future__ import annotations
 
@@ -771,7 +772,7 @@ class WorldJEPAStoreConsumer:
             raise ValueError("encoder_mode must be full or predictor_only")
         if type(replay_projection) is not bool:
             raise ValueError("replay_projection must be bool")
-        if replay_projection and replay_mode not in {"uniform_budget", "session_contiguous"}:
+        if replay_projection and replay_mode not in {"uniform_budget", "session_contiguous", "on_demand_conflict"}:
             raise ValueError("replay projection requires a budgeted replay mode")
         drift_config = world_jepa_drift.normalize_config(drift_control)
         if cancel_check is not None and not callable(cancel_check):

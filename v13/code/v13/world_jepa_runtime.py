@@ -1,8 +1,8 @@
 """Permission-gated runtime facade for the persistent WorldJEPA Store consumer.
 
-This module is a deployable adapter API. It does not alter Runtime itself; Core
-must call consume_after_commit after a committed T8 action and explicitly route
-receiver_readouts to a real SHADOW consumer. Both local gates default closed.
+SleepRuntime calls consume_after_commit after a committed T8 ActionOutcome;
+the WorldPlanner consumes the persisted B1/B2/SELF receiver matrix in SHADOW.
+Both local learning gates and the replay-projection permission default closed.
 The booleans in Store state are not an OS/security boundary.
 """
 from pathlib import Path
@@ -18,6 +18,7 @@ DEFAULT_PERMISSIONS = {
     "steps": 40,
     "replay_mode": "uniform",
     "encoder_mode": "full",
+    "replay_projection": False,
 }
 MAX_RUNTIME_PAGE = 256
 MAX_RUNTIME_STEPS = 2000
@@ -40,12 +41,14 @@ def permission_state(store):
     encoder_mode = value.get("encoder_mode", "full")
     if encoder_mode not in ("full", "predictor_only"):
         encoder_mode = "full"
+    replay_projection = value.get("replay_projection") is True
     return {
         "learning_enabled": learning_enabled,
         "optimizer_permission": optimizer_permission,
         "steps": steps,
         "replay_mode": replay_mode,
         "encoder_mode": encoder_mode,
+        "replay_projection": replay_projection,
     }
 
 
@@ -62,15 +65,12 @@ def _consumer(store, home, *, learning_enabled):
     return current
 
 
-def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift_control=None,
-                         replay_projection=False):
+def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift_control=None):
     """Run persistent JEPA only after a committed turn and only behind both gates."""
     if type(limit) is not int or not 16 <= limit <= MAX_RUNTIME_PAGE:
         raise ValueError("runtime page must be 16..256")
     if cancel_check is not None and not callable(cancel_check):
         raise ValueError("cancel_check must be callable")
-    if type(replay_projection) is not bool:
-        raise ValueError("replay_projection must be bool")
     if cancel_check is not None and cancel_check():
         return {"status":"CANCELLED","decision_authority":"NONE",
                 "native_body_consumed":False,"native_body_weights_changed":False}
@@ -100,7 +100,7 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift
             encoder_mode=gates["encoder_mode"],
             cancel_check=cancel_check,
             drift_control=drift_config,
-            replay_projection=replay_projection,
+            replay_projection=gates["replay_projection"],
         )
         result.update(updated)
         result.update({

@@ -276,13 +276,14 @@ def test_on_demand_conflict_replay_is_bounded_deterministic_and_budget_matched()
 
 
 def _set_permissions(store, *, steps, replay_mode, encoder_mode="full",
-                     learning_enabled=True, optimizer_permission=True):
+                     replay_projection=False, learning_enabled=True, optimizer_permission=True):
     payload = {
         "learning_enabled": learning_enabled is True,
         "optimizer_permission": optimizer_permission is True,
         "steps": steps,
         "replay_mode": replay_mode,
         "encoder_mode": encoder_mode,
+        "replay_projection": replay_projection,
     }
     _, version = store.state(PERMISSION_KEY, DEFAULT_PERMISSIONS)
     store.set_state(PERMISSION_KEY, payload, expected=version)
@@ -412,7 +413,8 @@ def _active_state(store):
 def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_control=None,
                replay_projection=False):
     _set_permissions(
-        store, steps=steps, replay_mode=replay_mode, encoder_mode=encoder_mode
+        store, steps=steps, replay_mode=replay_mode, encoder_mode=encoder_mode,
+        replay_projection=replay_projection,
     )
     state_before = store.state(STATE_KEY, None)[0]
     after_seq = int(state_before.get("scan_cursor", 0)) if type(state_before) is dict else 0
@@ -425,7 +427,6 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
 
     result = world_jepa_runtime.consume_after_commit(
         store, home=home, limit=256, drift_control=drift_control,
-        replay_projection=replay_projection,
     )
     assert result.get("runtime_adapter_called") is True
     assert result.get("learning_enabled") is True
