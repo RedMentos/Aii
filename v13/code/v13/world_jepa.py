@@ -339,6 +339,11 @@ class WorldJEPA:
                       'pred':{k:v.copy() for k,v in self.preds[0].items()},
                       'ensemble':[{k:v.copy() for k,v in p.items()} for p in self.preds]}
                      if warm_start else None)
+        # Keep a frozen prior-EMA target for replay constraints. The live tgt
+        # below is updated by EMA each step and must not move this reference.
+        replay_target_anchor = (
+            {k: v.copy() for k, v in prior['tgt'].items()} if prior else None
+        )
         mu = prior['mu'] if prior else X.mean(0)
         sd = prior['sd'] if prior else X.std(0)+1e-3
         x, x2 = (X-mu)/sd, (X2-mu)/sd
@@ -368,8 +373,9 @@ class WorldJEPA:
             for name, params in params_by_group.items() if params
         } if drift_config['enabled'] else {}
         update_norms = {name: [] for name in previous_step_params}
-        projection_stats = {"enabled": replay_start is not None, "steps": 0,
-                            "projected_steps": 0, "reference_zero_steps": 0,
+        projection_stats = {"enabled": replay_start is not None,
+                            "replay_target_anchor": "prior_ema_snapshot" if replay_start is not None else None,
+                            "steps": 0, "projected_steps": 0, "reference_zero_steps": 0,
                             "post_constraint_violation_steps": 0,
                             "constraint_dot_before_sum": 0.0, "constraint_dot_after_sum": 0.0,
                             "min_constraint_dot_before": None, "max_constraint_dot_after": None,
@@ -437,7 +443,7 @@ class WorldJEPA:
                 constraint_gradients = []
                 for (start, end), replay_size in zip(replay_ranges, replay_sizes):
                     replay_batch = rng.integers(start, end, replay_size)
-                    replay_target = encode(tgt, x2[replay_batch])[0]
+                    replay_target = encode(replay_target_anchor, x2[replay_batch])[0]
                     replay_out = loss_grads(
                         enc, pred, x[replay_batch], A[replay_batch], replay_target,
                         VAR_W, COV_W, train_enc=train_encoder,

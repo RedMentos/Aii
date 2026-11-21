@@ -510,6 +510,7 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         assert projection_metrics.get("steps") == metrics.get("optimizer_steps_added")
         assert projection_metrics.get("constraint_count") == metrics.get("replay_constraint_session_count")
         assert projection_metrics.get("active_constraint_count", 0) >= 1
+        assert projection_metrics.get("replay_target_anchor") == "prior_ema_snapshot"
         assert projection_metrics.get("post_constraint_violation_steps") == 0
     assert type(drift_metrics) is dict
     assert drift_metrics.get("enabled") is (drift_control is not None)
@@ -1006,8 +1007,8 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         "status", "retention_gate_accepted", "old_holdout_retained",
         "old_holdout_cohort_retained", "old_holdout_retention_delta",
         "old_holdout_cohort_gate", "checkpoint_before", "checkpoint_after",
-        "update_scale", "new_holdout_improved", "replay_projection_mode",
-        "replay_constraint_session_count", "replay_conflict_scores_sha256",
+        "update_scale", "new_holdout_improved", "gradient_projection",
+        "replay_conflict_scores_sha256",
     )
     print("AGGREGATE_AGEM_CONTROL=" + json.dumps([
         {
