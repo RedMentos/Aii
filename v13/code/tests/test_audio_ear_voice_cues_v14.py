@@ -598,6 +598,14 @@ def test_optional_silero_rejects_non_16khz_before_packet_or_attention(tmp_path):
 
 def test_audio_packet_fails_closed_without_linearizable_consent_lease(tmp_path, monkeypatch):
     runtime, event = make_runtime(tmp_path)
+    vad = SileroVADStream(
+        _FakeSileroSession(), model_sha256="e" * 64, model_revision="synthetic-fixture"
+    )
+    vad.push_pcm16(
+        tone(140, seconds=0.04), sample_rate=16000,
+        stream_id=SOURCE_ID + ":" + event["brain_generation_id"], start_ms=60,
+    )
+    assert vad.pending_samples > 0
     monkeypatch.setattr(
         audio_voice_cues_module, "admit",
         lambda *args, **kwargs: pytest.fail("C3 admission must not run without a lease"),
@@ -609,7 +617,9 @@ def test_audio_packet_fails_closed_without_linearizable_consent_lease(tmp_path, 
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
                 consent_check=consent_ok, finality="FINAL", token_budget=512,
+                vad_stream=vad,
             )
+        assert vad.pending_samples == 0
         assert packet_count(runtime.store, event["event_id"]) == 0
         assert attention_count(runtime.store, event["event_id"]) == 0
         assert getattr(runtime, "_raw_ear_temporal_registry", None) is None
