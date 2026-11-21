@@ -3,6 +3,16 @@
 **Stand:** 21. November 2026. **Zuständig:** V14 Boss & Integration (QA verifiziert technische und lokale Angaben).  
 **Zweck:** Bei der nächsten V14-Frage in ChatGPT **zuerst diese Datei plus neuesten GitHub-HEAD und Work Board prüfen**, dann konkrete Ergebnisse und nur erforderliche Entscheidungen nennen. Datei ist kein automatischer Push an das Handy.
 
+## Neuer Research-&-Perception-Checkpoint — 21. November 2026
+
+- **PR #2161 (DRAFT):** [RAW EAR prosodic dynamics → A4 attention](https://github.com/RedMentos/Aii/pull/2161). Branch head after research/board handoff sync: `0f2dda371ca2e8a36326cf8e5b2890d20f5e7a2d`; code/test tree: `3cba5118e8b9641220ec411f859d20147218c6f9`. The new `prosody_change_score` is a bounded deterministic cue from F0 excursion or energy dynamics, only for voiced windows. It reaches A4 `Attention.modulate` and the source-bound C3 admission summary; no ASR, speaker identity, or trained speech classifier is implied.
+- **Tests:** LOCAL_LINUX Python 3.13.5 isolated algorithm reproduction **5/5 PASS** (flat-tone negative, pitch-sweep positive, amplitude-burst positive, unvoiced-noise negative, monotonic attention relation). Exact repository `py_compile`/pytest is **BLOCKED** because no checkout is mounted and GitHub DNS resolution fails. PR workflow run `44870157024` was queued at last readback; exact repository tests remain pending CI.
+- **Runtime consumer:** the existing A5 adapter now passes prosodic novelty to A4 and carries it into C3 admission. Core PR #2158 is the staged Runtime owner for B1/B2/C3; it must update its `audio_voice_cues.py` source pin from the old blob to `ff88fd1e9a6898c6355592eb1d4349055b54939d` before the staged integration is valid.
+- **Latent research:** R-007 arXiv:2608.16347v2 was read in full. Its middle-layer causal intervention succeeded only for Qwen2-0.5B→Phi-3-mini (23.3% vs 0% unrelated-state control; FDR p=0.0469); two pairs targeting Mistral showed no effect. Pinned llama.cpp b10964 exposes final output embeddings and context-level `llama_set_adapter_cvec`, but no per-request control-vector HTTP route. V14-003 therefore remains **NOT_IMPLEMENTED / NOT_RUN** until a native receiver path and pair-specific causal test exist.
+- **Device/deployment:** no authorized Redmi receipt, microphone capture, native model inference, update request, or rollback test was available/performed. `REDMI_UNVERIFIED`, `NOT_RELEASED`; updater/device state was not reverified in this run. No models, weights, permissions, or installed data were changed.
+- **Next:** read exact PR #2161 CI, then Core updates the staged source pin and reruns B1/B2/C3 Runtime integration. After that, obtain explicit Android microphone consent and measure native ARM CPU/RSS/latency. Speaker identity, ASR and full-duplex remain open.
+- **User action:** keine Aktion nötig.
+
 ## Letzter gesicherter Gesamtstand
 
 - Aktiver V14-Master: `v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md`; ursprüngliche komplette V13-Anhänge aus Teil III wurden bei der letzten Editor-Runde bytegleich erhalten.
