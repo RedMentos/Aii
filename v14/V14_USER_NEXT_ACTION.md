@@ -1,3 +1,81 @@
+# Current next action — 2026-11-21T21:44:00Z
+
+**No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
+
+- Current Boss integration head: `06ebe5d29d1244dc1d7afa40d846d227d5f3930e`.
+- Shared staged blocker remains `record_only_controller_guard_20261116.py:191`: stale semantic/local-error pins after the arithmetic/World/Store transformation. Core/JEPA must rebind both exact outputs and the guard→recovery→stage→deployer chain without weakening raw source verification.
+- Staged-runtime FAIL (6 failed, 43 passed, 26 subtests); integrated-regression FAIL (18 failed, 232 passed, 10 skipped, 2 errors, 44 subtests); owner-read job PASS but Python 3.14 startup FAIL; Lab-Age FAIL; migration PARTIAL; Core audio 3.13 and 3.14 both FAIL at the same guard. A5 lease, combined JEPA, deploy integrity and GoalWake focused tests pass. Safe-additive FAIL_BY_POLICY.
+- Age/X10 rights PR #2235 exact checks pass, but its branch is 43 ahead / 121 behind current base and needs deliberate composition with GoalStore rollback.
+- Private PIPELINE_STATUS #435 has no authenticated response. Installed SHA/updater consent unknown. No device action. `REDMI_UNVERIFIED`.
+- No full local Aii checkout. GitHub CI is not local, native Android, native weight learning or Redmi evidence.
+
+**Next internal actions:** Core/JEPA rebind the controller semantic/local-error pins and all dependent hashes; Boss reruns the exact 3.13/3.14 staged, integrated, owner-read, Lab-Age, migration, audio and deploy matrix; QA validates the complete path. No user action is required.
+
+---
+
+# Current next action — 2026-11-21T21:42:00Z
+
+**No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
+
+- Boss integration head remains `06ebe5d29d1244dc1d7afa40d846d227d5f3930e`. A5 lease, combined JEPA and runtime-deploy integrity pass; GoalWake focused tests pass 7/7.
+- Current common blocker: `record_only_controller_guard_20261116.py:191` raises `semantic dependency changed: v13/world_semantic_evidence_candidate.py`. Its `semantic_pin` `9fbcb808...` and `local_pin` `44a8882c...` predate the upstream arithmetic/World/Store transformation. Core/JEPA must recompute both exact outputs and rebind controller guard → recovery → stage → deployer, retaining raw source pins.
+- Staged-runtime fails (6/43/26 subtests); integrated regression fails (18 failed, 232 passed, 10 skipped, 2 errors, 44 subtests); owner-read passes but Python 3.14 startup fails; Lab-Age fails; migration is PARTIAL; Core audio 3.13 fails and 3.14 was still running at last poll. Safe-additive remains FAIL_BY_POLICY.
+- QA #2235 Age-rights exact tests pass, but its branch is 43 ahead / 121 behind current base; compose `learning_limit()` with GoalStore wake rollback, do not merge/rebase the full branch.
+- Private PIPELINE_STATUS #435 has no authenticated response. Installed SHA/updater consent unknown. No device action. `REDMI_UNVERIFIED`.
+- No full local Aii checkout. GitHub CI is not local, native Android, native weight learning or Redmi evidence.
+
+**Next internal actions:** Core/JEPA rebind the controller semantic/local-error pins and all dependent hashes; Boss reruns the exact 3.13/3.14 staged, integrated, owner-read, Lab-Age, migration, audio and deploy matrix; QA validates the complete path. No user action is required.
+
+---
+
+# Current next action — 2026-11-21T21:38:00Z
+
+**No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
+
+- Current Boss integration head: `06ebe5d29d1244dc1d7afa40d846d227d5f3930e`, based on release-development HEAD `bdcad466ffea75a2b41f7d23be168f53c7197d20`.
+- A5 UI lease, combined online JEPA and runtime-deploy integrity PASS. GoalWake focused tests passed 7/7 on Python 3.14. Earlier lifecycle, A5 adapter, idle/online-world and Context-recall errors have advanced.
+- Current staged blocker: `ValueError: semantic dependency changed: v13/world_semantic_evidence_candidate.py` at `record_only_controller_guard_20261116.py:191`. Its fixed `semantic_pin` `9fbcb808...` and `local_pin` `44a8882c...` refer to pre-arithmetic semantic bytes; the upstream World/Store/Context composition transforms both modules. Core/JEPA must recompute and rebind both exact outputs and the guard→recovery→stage→deployer chain without weakening raw source checks.
+- Lab-Age E2E fails at that guard; owner-read job passes but Python 3.14 staged startup fails; migration and staged/audio jobs were still running at last poll; safe-additive FAIL_BY_POLICY.
+- Age/X10 rights PR #2235 exact tests pass, but its branch is 43 ahead / 121 behind current base; Boss/Core must compose `learning_limit()` with GoalStore wake rollback rather than merge/rebase the full branch.
+- Private PIPELINE_STATUS #435 has no authenticated response. Installed SHA and updater consent unknown. No update or device action. `REDMI_UNVERIFIED`.
+- No full local Aii checkout; no LOCAL_LINUX project suite ran. CI is not Android/native weight or Redmi evidence.
+
+**Next internal actions:** Core/JEPA recompute controller guard semantic/local-error pins and downstream builder chain; Boss reruns the exact 3.13/3.14 matrix; QA verifies all stage, migration, audio and rollback paths; Perception keeps A5 lease integration intact. No user action is required.
+
+---
+
+# Current next action — 2026-11-21T21:32:00Z
+
+**No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
+
+- Current Boss integration head: `4c1023dcd59bea5790bfe8a0999460431b169c73` on `boss/v14-core-perception-store-audio-integration-20261121`, based on release-development base `bdcad466ffea75a2b41f7d23be168f53c7197d20`.
+- A5 UI lease, combined online JEPA, runtime-deploy integrity and release-event workflows PASS. The earlier lifecycle, A5 adapter, idle and online-world operator pin blockers have advanced/passed.
+- Current shared staged failure: `ValueError: arithmetic outcome upstream changed: v13/local_error_route_shadow_candidate.py` at `integrated_arithmetic_outcome_candidate_20261116.py:45`. Raw source pin `87bb77ed...` remains the source identity; derived upstream pin `3106cb3e...` is stale after the current World-semantic rebind. Core/JEPA must compute the exact transformed local-error digest, update that derived pin, and recompute outcome→recovery→stage→deployer hashes. Do not use the raw source hash or relax verification.
+- Exact CI: staged/integrated FAIL; owner-read job PASS but Python 3.14 staged startup FAIL; Lab-Age E2E FAIL at the same pin; old-phone migration PARTIAL; Core audio 3.13 FAIL and 3.14 still in progress; safe-additive FAIL_BY_POLICY. A5, combined JEPA and offline deploy integrity pass.
+- Age/X10 rights PR #2235 code/test head `b22129a03bbd3395605b951d55d3f187f442bda6` passes Lab-Age, owner-read/Python 3.14, migration, deploy, staged (251/10/47) and integrated (424/3/58). It remains 43 ahead / 121 behind current base; Boss/Core must compose `learning_limit()` with GoalStore wake rollback, not merge/rebase the full branch.
+- Private PIPELINE_STATUS #435 has no authenticated comment. Installed SHA and updater consent are unknown. No update or device action. `REDMI_UNVERIFIED`.
+- No full local Aii checkout, so no LOCAL_LINUX project suite ran. GitHub CI is not local, native Android, native weight learning or Redmi evidence.
+
+**Next internal actions:** Core/JEPA compute and rebind the transformed local-error pin chain; Boss reruns the exact 3.13/3.14 staged, integrated, owner-read, Lab-Age, migration, audio and deploy checks; Perception preserves A5; QA reviews the current-base Age-rights composition. No user action is required.
+
+---
+
+# Current next action — 2026-11-21T21:28:00Z
+
+**No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
+
+- Current Boss integration head: `8dc3828ff7c1efa6a7c34563adcbd48caf39ad92` on `boss/v14-core-perception-store-audio-integration-20261121`, based on release-development HEAD `bdcad466ffea75a2b41f7d23be168f53c7197d20`.
+- A5 UI lease now PASS; the current bridge exports the required adapter and persistence functions. Idle and online-world operator pins have also been refreshed. The earlier lifecycle anchor error has been passed.
+- The current shared staged blocker is `ValueError: arithmetic outcome upstream changed: v13/world_semantic_evidence_candidate.py` at `integrated_arithmetic_outcome_candidate_20261116.py:45`. The raw source SHA `354306bb...` is correct, but the derived upstream SHA `0711ed85...` is stale after the current World/Store composition. Core/JEPA must compute the actual transformed intermediate, update that pin, and recompute the outcome→recovery→stage→deployer chain. Do not use the raw source hash or relax verification.
+- Exact CI: A5 lease PASS, combined JEPA PASS, runtime deploy integrity PASS and release event PASS. Staged/integrated FAIL; owner-read job PASS but Python 3.14 staged startup FAIL; Lab-Age E2E FAIL at stage; old-phone migration PARTIAL; Core audio 3.13/3.14 FAIL at stage; safe-additive FAIL_BY_POLICY. The speech test fixture correction is already present in current 8dc.
+- Age/X10 rights candidate #2235 code/test head `b22129a03bbd3395605b951d55d3f187f442bda6` passes Lab-Age, owner-read/Python 3.14, migration, deploy, staged (251/10/47) and integrated (424/3/58). It remains 43 ahead / 121 behind the current base; Boss/Core must compose its `learning_limit()` rights API with GoalStore wake rollback, not merge or rebase the whole branch.
+- Private PIPELINE_STATUS #435 has no authenticated comment. Installed SHA and updater consent are unknown. No update or device action. `REDMI_UNVERIFIED`.
+- No full local Aii checkout, so no LOCAL_LINUX project suite ran. GitHub CI is not local, native Android, native weight learning or Redmi evidence.
+
+**Next internal actions:** Core/JEPA compute and rebind the transformed World-semantic pin chain; Boss reruns all exact 3.13/3.14 staged, integrated, owner-read, Lab-Age, migration, audio and deploy checks; Perception preserves the A5 lease path; QA composes Age rights after current-base review. No user action is required.
+
+---
+
 # Current next action — 2026-11-21T20:58:26.786Z
 
 **No user action is required. Do not run Termux commands or change models, weights, permissions, updater settings or device data.**

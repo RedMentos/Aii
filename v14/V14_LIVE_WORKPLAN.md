@@ -906,3 +906,56 @@ Exactly five V14 automations are enabled: Boss & Integration, QA & Android, JEPA
 - **Whole-Canon ledger:** keep B1/B2 native offer quality, B3 trained latent receiver, audio/vision learning, Android background/UI providers, full voice decoder/vocoder, sparse MoE, cross-organ gradients, self-edit, technical OS sandbox and declared memory/egress as separate OPEN requirements.
 
 **User action: none.**
+
+
+## QA exact-head refresh — Boss integration 8dc3828 (2026-11-21 22:28 CET)
+
+Current Boss branch `boss/v14-core-perception-store-audio-integration-20261121` is at `8dc3828ff7c1efa6a7c34563adcbd48caf39ad92`, based on current release-development HEAD `bdcad466ffea75a2b41f7d23be168f53c7197d20`. This supersedes the older 0ec-head QA failure report:
+
+- A5 composition is now current: `a5_ui_admission_bridge.py` is 27,872 bytes and exports `A5UIRuntimeAdapter` plus `_persist_source_and_packet`; exact A5 UI lease workflow 44951469829 PASS.
+- Idle recovery and record-only online-world candidates now pin the current operator SHA; their earlier stale-operator errors are no longer current.
+- The lifecycle guard/stream anchor error is no longer the reported blocker. The current common failure has advanced to `integrated_arithmetic_outcome_candidate_20261116.py:45`: `ValueError: arithmetic outcome upstream changed: v13/world_semantic_evidence_candidate.py`.
+- The raw `SOURCE_PINS` value `354306bb...` matches the exact base `world_semantic_evidence_candidate.py` bytes. The transformed `UPSTREAM_PINS` value `0711ed85...` no longer matches the output produced by the current World/Store composition. Recompute that exact transformed intermediate from the current builder chain; do not replace it with the raw source digest or relax the check. Then rebind outcome-builder → recovery-wrapper → stage → runtime-deployer hashes.
+- Exact run outcomes: A5 lease PASS (44951469829); combined online JEPA PASS (44951469809); runtime-deploy integrity PASS (44951469798); release-event integration PASS (44951469879). Staged-runtime/integrated-regression FAIL (44951469784); owner-read job PASS but Python 3.14 staged startup FAIL (44951469800); Lab-Age E2E FAIL at the same stage (44951469834); old-phone migration PARTIAL (44951469804); Core audio 3.13 and 3.14 FAIL at the same stage (44951469872); safe-additive FAIL_BY_POLICY (44951469864).
+- The three speech fixture `mkdir(exist_ok=True)` calls are already present in current 8dc, so QA #2261 code change is superseded by Core #2254. Its earlier test-fixture fix is not a new runtime feature.
+
+QA #2235 Age rights evidence remains exact-CI green on code/test head `b22129a03bbd3395605b951d55d3f187f442bda6` (handoff-only `c224610959e598cb9c79f38d1b4bd454ffea0019`): Lab-Age, owner-read/Python 3.14, migration, runtime deploy, staged (251/10/47) and integrated (424/3/58) pass; safe-additive remains FAIL_BY_POLICY. The branch is 43 ahead / 121 behind current base and diverged; do not merge or rebase blindly. Compose `learning_limit()` with #2258 GoalStore wake rollback deliberately.
+
+Private PIPELINE_STATUS #435 still has zero authenticated comments. Installed SHA and updater consent remain unknown; no update or device action. No full local Aii checkout. `NOT_RELEASED / REDMI_UNVERIFIED`.
+
+## QA exact-head follow-up — 4c1023d (2026-11-21 22:32 CET)
+
+Boss added commit `4c1023dcd59bea5790bfe8a0999460431b169c73` (semantic source-pin parsing exact/whitespace-safe). The earlier 8dc failure at `world_semantic_evidence_candidate.py` has advanced one level. Exact Python 3.14 staged and Lab-Age logs now report `ValueError: arithmetic outcome upstream changed: v13/local_error_route_shadow_candidate.py` at `integrated_arithmetic_outcome_candidate_20261116.py:45`.
+
+The raw `SOURCE_PINS` entry for local-error remains `87bb77ed...`; the derived `UPSTREAM_PINS` entry remains `3106cb3e...`. The upstream World-semantic rebind changes the already-composed local-error candidate bytes, so the derived digest is stale. Recompute the exact pre-rebind local-error output from the current builder chain, update only the derived pin, then rebind outcome builder → recovery wrapper → stage → runtime deployer. Do not substitute the raw source SHA or weaken verification. Include expected/actual SHA-256 in the safe builder diagnostic if another iteration is needed.
+
+Exact 4c1023 outcomes: A5 lease PASS (44951931825); combined online JEPA PASS (44951931760); runtime-deploy integrity PASS (44951931802); release-event integration PASS (44951931844). Staged/integrated FAIL (44951931769); owner-read job PASS but Python 3.14 staged startup FAIL (44951931772); Lab-Age E2E FAIL (44951931715); old-phone migration PARTIAL (44951931857); Core audio 3.13 FAIL and 3.14 still in progress (44951931787); safe-additive FAIL_BY_POLICY (44951931754). Earlier A5/lifecycle/idle/operator failures are superseded by the current local-error pin mismatch.
+
+No full local Aii checkout and no authenticated Redmi receipt. Installed SHA/updater consent remain unknown. Keep NOT_RELEASED / REDMI_UNVERIFIED.
+
+## QA exact-head follow-up — 06ebe5d (2026-11-21 22:38 CET)
+
+Commit `06ebe5d29d1244dc1d7afa40d846d227d5f3930e` dynamically binds generated Context recall to composed Store/stream sources. The prior `Integrated source recall changed` failure has advanced. The current Lab-Age and Python 3.14 staged logs fail in `record_only_controller_guard_20261116.py:191` with `ValueError: semantic dependency changed: v13/world_semantic_evidence_candidate.py`.
+
+The controller guard currently expects `semantic_pin = 9fbcb808...` and `local_pin = 44a8882c...`, both from before the upstream arithmetic/World/Store transformation. The current composed semantic and local-error bytes are different. Recompute both exact intermediate digests after the known upstream transformation, update both pins as one change, and rebind the controller guard parent → recovery wrapper → stage → runtime deployer. Preserve raw source pins and the strict transformation chain; do not accept arbitrary bytes. Add expected/actual SHA-256 to the fail-closed diagnostic.
+
+Exact 06ebe5 outcomes so far: A5 UI lease PASS; combined online JEPA PASS; runtime-deploy integrity PASS; GoalWake focused tests 7/7 PASS in the Python 3.14 job. Lab-Age E2E FAIL at the controller semantic pin; owner-read job PASS but Python 3.14 staged startup FAIL; migration and staged/audio jobs are still in progress at the last poll; safe-additive FAIL_BY_POLICY. Earlier lifecycle/A5/operator/context-recall errors are superseded by this controller semantic pin.
+
+No full local Aii checkout and no authenticated Redmi receipt. Installed SHA/updater consent unknown. Keep NOT_RELEASED / REDMI_UNVERIFIED.
+
+## QA exact run completion — 06ebe5d (2026-11-21 22:42 CET)
+
+The completed 06ebe5 CI jobs confirm the same controller-guard semantic pin blocks the full stage:
+
+- `staged-runtime`: **FAIL**, 6 failed / 43 passed / 26 subtests (job 136992584877).
+- `integrated-regression`: **FAIL**, 18 failed / 232 passed / 10 skipped / 2 errors / 44 subtests (job 136992584668).
+- `owner-read`: PASS, but Python 3.14 staged startup **FAIL** (job 136992585359).
+- Lab-Age E2E **FAIL** (job 136992585361); old-phone migration **PARTIAL** (job 136992584344).
+- Core audio 3.13 **FAIL** (job 136992584451); 3.14 was still in progress at this checkpoint (job 136992584655).
+- A5 UI lease, combined JEPA and runtime-deploy integrity **PASS**; GoalWake focused tests **7/7 PASS** in Python 3.14.
+
+All stage failures converge on `record_only_controller_guard_20261116.py:191`, where the guard still expects semantic/local-error pins from before the upstream arithmetic/World/Store transformation. The correction must update both pins as one verified composition and rebind all downstream builder hashes. No tests should be skipped or source guards relaxed.
+
+## QA audio matrix completion — 06ebe5d (2026-11-21 22:44 CET)
+
+The Python 3.14 staged-audio job 136992584655 has now completed **FAIL** with the same `record_only_controller_guard_20261116.py:191` semantic dependency mismatch as Python 3.13 job 136992584451. Both audio versions are blocked before audio/lease behavior can be accepted; this is not an audio-specific native failure. Keep audio integration PARTIAL/OPEN until the shared staged builder succeeds and both 3.13/3.14 audio suites pass.

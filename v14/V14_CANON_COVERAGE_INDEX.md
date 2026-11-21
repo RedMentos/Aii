@@ -1827,3 +1827,27 @@ This overlay supplements the historical Canon inventory; it does not close or si
 **Still OPEN across the whole Canon:** native B1_DETAIL/B2_GIST offer quality and mutual re-entry; trained B3 cross-model latent receiver; accepted JEPA per-session retention and numeric parameter/checkpoint changes; sparse MoE bodies; audio/vision weight learning; Android background/API and UI providers; trainable speech decoder/vocoder/full duplex; cross-organ gradients and controlled self-edit; independent technical OS sandbox; adaptive behavior judge; complete declared memory/egress registry; Memorilla production overflow consumer. P0 issue #1904 remains open.
 
 **Proof boundary:** #2258 exact-head workflows were queued at last poll. No combined PASS, local project test, Android test, Redmi receipt, release or installation is claimed.
+
+
+## QA exact-head correction — Boss integration 8dc3828 (2026-11-21 22:28 CET)
+
+Current A5 UI lease is PASS and the composed A5 bridge exports the current adapter; idle/online-world operator pins and the prior lifecycle anchor have also advanced. The exact remaining shared staged blocker is the transformed `world_semantic_evidence_candidate.py` upstream digest mismatch in `integrated_arithmetic_outcome_candidate_20261116.py`. It blocks staged/integrated, Python 3.14 startup, Lab-Age, migration and audio; A5, combined JEPA and offline deploy integrity pass. Safe-additive remains FAIL_BY_POLICY. Keep runtime integration PARTIAL/OPEN, NOT_RELEASED and REDMI_UNVERIFIED.
+
+Age-rights #2235 exact CI passes its nested AST negative control, Lab-Age, owner-read, migration, deploy, staged and integrated suites; its branch remains diverged 43 ahead / 121 behind current base and requires deliberate composition with GoalStore wake rollback. No local full checkout, Android provider, native weight change or Redmi receipt is proven.
+
+## QA exact-head correction — 4c1023d (2026-11-21 22:32 CET)
+
+The current Boss integration head has passed A5 lease, combined JEPA and offline deploy integrity, and the earlier lifecycle/idle/operator pin failures are no longer current. The shared stage now fails at the derived `local_error_route_shadow_candidate.py` upstream SHA in `integrated_arithmetic_outcome_candidate_20261116.py`; raw source pin remains distinct and correct, derived pin `3106cb3e...` is stale after World-semantic rebind. This blocks staged/integrated, Python 3.14 startup, Lab-Age, migration and audio. Keep runtime PARTIAL/OPEN, NOT_RELEASED and REDMI_UNVERIFIED.
+
+
+## QA exact-head correction — 06ebe5d (2026-11-21 22:38 CET)
+
+The current shared staged failure has advanced to `record_only_controller_guard_20261116.py:191`: stale semantic/local-error pins after the arithmetic/World/Store transformation. A5 lease, combined JEPA, runtime deploy and GoalWake focused tests pass; Lab-Age and Python 3.14 staged startup fail; migration/staged/audio are pending at the latest poll. Keep V14-001 PARTIAL/OPEN, NOT_RELEASED and REDMI_UNVERIFIED. The guard must rebind both dependent modules without weakening source identity checks.
+
+## QA exact run completion — 06ebe5d (2026-11-21 22:42 CET)
+
+Staged-runtime (6 failures), integrated-regression (18 failures / 232 passes), Python 3.14 staged startup, Lab-Age and migration remain blocked by `record_only_controller_guard_20261116.py:191` semantic dependency pin mismatch. A5 lease, combined JEPA, runtime-deploy integrity and GoalWake focused tests pass. Core audio 3.13 fails; 3.14 was still running. Keep V14-001 PARTIAL/OPEN, NOT_RELEASED and REDMI_UNVERIFIED. The controller guard must rebind both semantic and local-error pins against the exact known transformed bytes without relaxing source identity checks.
+
+## QA audio matrix completion — 06ebe5d (2026-11-21 22:44 CET)
+
+Both staged-audio Python 3.13 and 3.14 jobs now FAIL at the shared `record_only_controller_guard_20261116.py:191` semantic dependency pin. Audio-specific lease/revocation behavior is not accepted until the common stage passes and both versions complete. Keep audio PARTIAL/OPEN, NOT_RELEASED, REDMI_UNVERIFIED.
