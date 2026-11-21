@@ -1,26 +1,47 @@
-# Research & Perception handoff — 2026-11-21 18:55 CET
+# Research & Perception handoff — 2026-11-21 19:02 CET
+
+## Latest exact-head checkpoint
+
+- Draft PR: https://github.com/RedMentos/Aii/pull/2243
+- Branch: `research-perception/v14-dense-latent-kv-toy-20261121`
+- Exact branch/PR head read back: `ae26c94700ca8077b38cbd87c40db89b4ae46360`
+- Previous head: `543349894b5392582969f06a4485ff9d18e4504d`
+- New commit: `ae26c94700ca8077b38cbd87c40db89b4ae46360` — explicit CI reproduction of the tiny K/V experiment.
+- Workflow blob readback: `9210514dee0225940bbc1219db4cd53c30de28e7`; README blob readback: `6498e6111af9ea6f6574f6246f3bb2ba4a0861b0`.
+- Status: OPEN / DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. GitHub currently reports mergeable=false during refresh; do not assume ready-to-merge from the successful tests alone.
+
+## Boss-requested CI reproduction — complete
+
+The earlier green generic `model-lab` discovery did not recurse into `latent_cache_tiny/`. The workflow now has a separate `latent-cache-tiny` job that:
+
+1. Installs pinned test-only `numpy==2.3.5` and CPU `torch==2.10.0+cpu`.
+2. Verifies both exact package versions.
+3. Explicitly compiles `latent_cache_tiny.py` and `test_latent_cache_tiny.py`.
+4. Runs `python -m unittest -v` with the experiment folder as working directory.
+
+Exact PR-head checks for `ae26c94700ca8077b38cbd87c40db89b4ae46360`:
+- Actions run **44938520228** — `latent-cache-tiny` PASS; existing `model-lab` PASS.
+- Actions run **44938520229** — public privacy scan PASS.
+- Local YAML parse/structure check on the workflow — PASS.
+- The experiment code and tests themselves were unchanged by this workflow-only commit. The prior LOCAL_LINUX experiment evidence below is still tied to the same unchanged source/test blobs; the new exact-head Actions run independently executes them.
+- PyTorch and NumPy are BSD-3-Clause test-only CI dependencies. They are not product/runtime dependencies. No model weights, user data or training data were downloaded.
 
 ## Final base synchronization
 
-- The shared branch advanced after the PR was opened. This branch was brought forward with a normal two-parent merge commit onto base b267ed641f4dbff1e2c28f492baf0182e9bb656b; no force-push or destructive rewrite.
-
-## PR and branch readback
-
-- Draft PR: https://github.com/RedMentos/Aii/pull/2243
-- PR was opened at head 8732a395058745b8c9fdbee7d4e8d0e4b241abcb; subsequent handoff/board refresh commits are part of the same draft PR. Final head is reported in the chat after readback.
+- The shared branch advanced after the PR was opened. This branch was brought forward with a normal two-parent merge commit onto base `b267ed641f4dbff1e2c28f492baf0182e9bb656b`; no force-push or destructive rewrite.
+- The workflow/README commit was a normal fast-forward update using expected previous head `543349894b5392582969f06a4485ff9d18e4504d`.
 
 ## Branch and scope
 
 - Repository: RedMentos/Aii
-- Branch: research-perception/v14-dense-latent-kv-toy-20261121
-- Base at branch creation: e788dcf0b82849f4de7df229978aa9973d845093 (latest shared development branch HEAD at read time)
-- Last code-bearing experiment file commit: c5fc51e876847fd075ed5b3a51a5c838c18c2e45
+- Base branch: `gpt6/v13-private-remote-bridge-20261111`
+- Last code-bearing experiment file commit: `c5fc51e876847fd075ed5b3a51a5c838c18c2e45`
 - Shared V14 ticket updates: V14-003 and V14-006 proof/next-step fields; R-037 in research ledger; matching live-workplan checkpoint.
 - This is a research/mechanism PR, not a production B3 integration and not a release.
 
 ## What now executes
 
-The new folder v14/experiments/latent_cache_tiny contains two independently trained tiny decoder-only models with different geometries (sender 2×24, receiver 3×32), a directed learned K/V adapter with layer interpolation and per-head gates, two-stage adapter training, actual receiver-side cache injection, negative controls, and serialization/restart equivalence.
+The new folder `v14/experiments/latent_cache_tiny` contains two independently trained tiny decoder-only models with different geometries (sender 2×24, receiver 3×32), a directed learned K/V adapter with layer interpolation and per-head gates, two-stage adapter training, actual receiver-side cache injection, negative controls, and serialization/restart equivalence.
 
 The sender and receiver are frozen during adapter training. Phase I reconstructs the receiver's own K/V cache from the sender cache. Phase II optimizes receiver task loss while the receiver receives only the adapted cache plus the answer marker. This is a real gradient-updated adapter and a real receiver cache consumer in the tiny PyTorch experiment.
 
@@ -28,15 +49,15 @@ The sender and receiver are frozen during adapter training. Phase I reconstructs
 
 Environment: LOCAL_LINUX, CPython 3.13, PyTorch 2.10.0+cpu, NumPy 2.3.5. No Transformers package, no Aii checkout, no GGUF weights.
 
-- python -m py_compile latent_cache_tiny.py test_latent_cache_tiny.py — PASS
-- python -m unittest -v — 3/3 PASS, 9.93 s
+- `python -m py_compile latent_cache_tiny.py test_latent_cache_tiny.py` — PASS
+- `python -m unittest -v` — 3/3 PASS, 9.93 s
 - Full seed-13 run — 12.41 s wall; peak RSS 344,584 KiB
 - Held-out K/V reconstruction MSE — 6.5134 to 0.2054
 - Phase-I latent accuracy — 85.94%; final latent accuracy — 100%
 - Exact receiver-context — 100%; no-message — 0%; shuffled-cache — 12.50%; random-adapter — 13.28%
 - Adapter parameter delta L2 — 20.2719; max Phase-I gradient norm — 2.1451
 - Save/reload max absolute receiver-logit delta — 0.0
-- Additional seeds 17/29/41 each reached 100% latent accuracy; shuffled and random controls remained near chance. Exact values are in results_20261121.json.
+- Additional seeds 17/29/41 each reached 100% latent accuracy; shuffled and random controls remained near chance. Exact values are in `results_20261121.json`.
 
 ## Research findings
 
@@ -59,4 +80,4 @@ A5 UI observation remains SHADOW/isolated until Core supplies a real OS observat
 
 ## Safety and release boundary
 
-No model/weight download or swap, no new dependency in the app, no microphone/UI permission, no remote shell, no device update and no user-data mutation. Full local Aii suite was not available because no checkout is mounted and GitHub DNS resolution fails. CI is not local proof. Redmi installed SHA and updater consent remain unknown: REDMI_UNVERIFIED / NOT_RELEASED. No user action is needed.
+No model/weight download or swap, no product dependency addition, no microphone/UI permission, no remote shell, no device update and no user-data mutation. Full local Aii suite was not available because no checkout is mounted and GitHub DNS resolution fails. CI is not local proof. Redmi installed SHA and updater consent remain unknown: REDMI_UNVERIFIED / NOT_RELEASED. No user action is needed.
