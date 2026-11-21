@@ -558,6 +558,33 @@ These are current official API references reviewed on 2026-11-21, not research p
 
 **Status:** PAPER_MAIN_SECTIONS_REVIEWED / OFFICIAL_CODE_APACHE_2 / LLAMA_CPP_ANDROID_PATH_DOCUMENTED / SNAPDRAGON_778G_REFERENCE_ONLY / DATASET_LICENSE_REVIEW_REQUIRED / REDMI_UNVERIFIED / NO_MODEL_CHANGE.
 
+## R-040 — Replay can provably increase forgetting (2026-11-21)
+
+### Primary research and scope
+
+- **Mahdaviyeh et al., “Replay can provably increase forgetting,” PMLR 330:15–42 (CoLLAs 2026).** Official proceedings: https://proceedings.mlr.press/v330/mahdaviyeh26a.html . Full arXiv HTML reviewed: https://arxiv.org/html/2506.04377v1 . The arXiv version identifies its license as **CC BY-NC-ND 4.0**; cite and summarize only, do not copy/adapt its figures or text.
+- The result is conditional, not “replay is bad.” In over-parameterized continual linear regression, the worst-case construction shows replay can move error from one old sample onto another, changing forgetting from O(1/T) to Θ(1). The average-case result shows random replay can increase expected forgetting for some task-subspace relationships. MLP / Rotated-MNIST / Split-MNIST experiments are non-monotonic and sample-, class- and task-dependent; some settings benefit only after a larger replay count. The paper also gives sufficient benign conditions in its studied setting. It is not an LLM/JEPA result and does not establish a universal anti-replay theorem.
+- **V14 consequence:** replay volume is not a safety or retention guarantee. Preserve source/session-disjoint holdouts and compare zero replay, uniform replay, session-contiguous replay and loss-selected replay across multiple seeds. Report each old session separately and keep exact checkpoint rollback. Do not relax the per-session gate to make an update pass.
+
+### Testable adaptation
+
+- Keep the existing source-disjoint per-session acceptance gate.
+- Add matched zero/uniform/session-contiguous/loss-selected controls and multi-seed results; separate new-task utility from old-session retention.
+- A replay policy that improves the aggregate while regressing any protected old session remains rejected.
+
+- **Status:** FULL_ARXIV_HTML_REVIEWED / PMLR_RECORD_VERIFIED / CONDITIONAL_RESULT / NO_CODE_IMPORTED / NO_ANDROID_PROOF.
+
+## R-041 — Replay on Demand: an emergent curriculum for continued pretraining (2026-11-21)
+
+### Primary research and method
+
+- **Thede et al., “Replay on Demand: An Emergent Curriculum for Balancing Adaptation and Forgetting in Continued Pretraining,” arXiv:2609.40089 (2026).** Official preprint: https://arxiv.org/abs/2609.40089 ; full 31-page text reviewed: https://pdfs.assets.alphaxiv.org/2609.40089v1.pdf .
+- RoD scores adaptation examples by current language-model loss minus an adaptation-specialist reference loss, and replay examples by current loss minus the pretrained model's reference loss. It jointly top-k selects from both streams under one budget. Reference losses are precomputed and content-hash keyed. Each step scores m×k candidates with a forward-only pass (m=2 in the paper), then trains on k. The specialist reference requires an offline no-replay continued-pretraining run unless already available; a smaller source/reference model can transfer a curriculum to a larger target.
+- **Limitations:** only forgetting represented in the replay pool is visible; LM loss is not downstream capability; proxy replay can fit the proxy distribution rather than restore the pretrained function; each experimental condition is a single-seed run (seed 42), despite replication across model families/scales/domains. Main experiments use distributed NVIDIA B200 GPUs with GPU count varying by model and setting; this is not a mobile recipe.
+- **OSS:** https://github.com/bethgelab/replay-on-demand at exact main SHA `9ecc05173a4a5a8b872e18608c319df0eab5db81`; repository LICENSE is Apache-2.0. The public implementation uses NVIDIA NeMo-RL v0.6.0 / Megatron / Ray / SLURM and an NGC container; it is not a Redmi dependency candidate. No code or dependency was imported.
+- **V14 consequence:** only the small principle of demand-sensitive replay is a possible future local experiment, after strict per-session retention is stable. Do not port the second reference-model scoring loop or GPU stack to Android. Use bounded candidate pools, stored per-cohort loss baselines, zero/uniform/session-contiguous controls, multiple seeds, exact parameter diff, restart and rollback.
+
+- **Status:** FULL_TEXT_REVIEWED / OSS_APACHE2_REVISION_CHECKED / SINGLE_SEED_AND_EXTRA_FORWARD_PASS_LIMITATIONS_RECORDED / NO_CODE_IMPORTED / NO_ANDROID_PROOF.
 
 ## R-042 — SmolVLM-256M as a low-storage, on-demand A5 visual teacher candidate (2026-11-21)
 
@@ -670,3 +697,28 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - Staged Runtime: `251 passed, 10 skipped, 47 subtests`.
 - Integrated regression: `424 passed, 3 skipped, 58 subtests` (6 warnings).
 - These are CI staged/synthetic tests. They do not establish Android OS capture, a real UI provider, active-turn consumer wiring or Redmi behavior.
+
+
+
+## R-045 — MobileExplorer: latency-overlapped mobile UI exploration, with strict rollback and consent limits (2026-11-21)
+
+### Primary paper reviewed
+
+- Runxi Huang, Liyu Zhang, Shengzhong Liu and Xiaomin Ouyang, **MobileExplorer: Accelerating On-Device Inference for Mobile GUI Agents via Online Exploration**, arXiv:2605.26546, submitted 2026-05-26. This is an arXiv preprint; peer-review status was not verified. Full arXiv HTML was reviewed across the motivation, exploration, rollback, alignment and evaluation sections: https://arxiv.org/abs/2605.26546.
+- Method: while a vision-language model reasons, a lightweight controller parses the Android accessibility tree, ranks clickable elements by text-embedding similarity to the task, probes selected elements, records screen/interaction traces, attempts a two-level rollback, aligns explored states to the later screen with perceptual hashes, and injects compact template-generated hints into the next reasoning step.
+- Reported AndroidWorld result: 50.86% success (59/116 tasks) versus 46.55% for the M3A VLM baseline; 9.24 versus 10.93 interaction steps on average (15.5% fewer); the paper reports approximately 23% lower end-to-end latency. Ablations are informative: random exploration falls to 42.2%, removing two-level rollback to 39.7%, and removing exploration alignment to 47.4%. The method therefore depends on task relevance, rollback and state alignment together; speculative probes are not automatically useful.
+- Evaluation caveat: the implementation section describes AndroidWorld UI interaction running in an Android emulator while model inference runs on separate target hardware through an HTTP interface. Phone inference uses llama.cpp inside Termux, but this is not proof that the complete UI provider, exploration controller and model all ran as one resident Android app. Listed platforms include a 12-GB Samsung Galaxy S24, a 64-GB Jetson AGX Orin and a 24-GB MacBook Air M4. The paper's 4B VLM/device conditions are not a Redmi Note 10 Pro or a 5.84-GB budget benchmark.
+- The paper says the added control logic costs only tens of milliseconds per step and that memory/power remain stable, but the inspected results do not establish a Redmi memory peak, a universal rollback success guarantee, or safety for irreversible app actions. No exact rollback success percentage was verified in the primary text reviewed here.
+
+### OSS, license and reuse
+
+- The primary arXiv record did not provide a linked implementation repository in the inspected text; an exact-title repository search did not identify a matching maintained source tree. No code, model weights or dataset were imported. No implementation/dependency license was verified. The arXiv metadata's copyright field is not a substitute for a code or paper reuse license.
+- No Android/ARM build, GGUF conversion, Termux installation or Redmi benchmark was attempted.
+
+### V14 implications and testable adaptation
+
+- The useful hypothesis is **latency-overlapped information gathering**, not blind UI exploration. A future V14 experiment may compare no exploration, task-relevance-ranked read-only candidates and shuffled candidates while keeping the same task/model/device. It must preserve source, capture receipt, generation, session and state fingerprint; cap work by the remaining inference window; and record whether later screen-state alignment accepted or rejected each hint.
+- The paper's probes include real clicks. Those can mutate data, trigger permission dialogs or enter irreversible flows. The current A5 UI adapter is metadata-only and explicitly grants neither action nor learning authority. Do not port speculative taps into it. Any later action-based exploration requires a separately authorized Android executor, bounded app/scope allowlist, explicit per-action approval, visible stop/cancel, state verification and a tested rollback path. A rollback algorithm is not permission to act.
+- Keep the current A5 provider-independent lease and source-bound A4 admission as the non-mutating baseline. No new model candidate is recommended from this paper.
+
+**Status:** PAPER_FULLTEXT_REVIEWED / PREPRINT / NO_MATCHING_OSS_REPOSITORY_VERIFIED / NO_CODE_OR_MODEL_IMPORTED / RESEARCH_HYPOTHESIS_ONLY / NO_ANDROID_PROOF.
