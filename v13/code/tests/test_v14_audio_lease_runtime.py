@@ -575,9 +575,9 @@ try:
     while not runtime.idle() and time.monotonic() < deadline:
         time.sleep(0.01)
     assert runtime.idle() and runtime.last_answer()["status"] == "FINAL"
-    assert "audio_context" not in json.dumps(seen["B1_DETAIL"], ensure_ascii=False)
-    assert "audio_context" not in json.dumps(seen["B2_GIST"], ensure_ascii=False)
-    assert "RAW_EAR_ACOUSTIC" not in json.dumps(seen["C3_LANGUAGE"], ensure_ascii=False)
+    assert "audio_context" not in json.dumps(seen["B1_DETAIL"], ensure_ascii=False), "audio context was admitted without a revocation subscription"
+    assert "audio_context" not in json.dumps(seen["B2_GIST"], ensure_ascii=False), "GIST received audio without a revocation subscription"
+    assert "RAW_EAR_ACOUSTIC" not in json.dumps(seen["C3_LANGUAGE"], ensure_ascii=False), "C3 received audio without a revocation subscription"
     assert runtime.store.rows(
         "SELECT id FROM sources WHERE id='mic-test-1' OR kind='AUDIO_ACOUSTIC_CONTEXT'"
     ) == []
@@ -676,15 +676,17 @@ try:
     )
     assert source_after and source_after["deleted"] == 1
     packets_after = runtime.store.rows("SELECT id,payload FROM packets")
-    assert not any("mic-test-1" in row["payload"] for row in packets_after), (
-        "revocation left a source-bound acoustic PerceptPacket in SQLite"
-    )
+    cleanup_failures = []
+    if any("mic-test-1" in row["payload"] for row in packets_after):
+        cleanup_failures.append("revocation left a source-bound acoustic PerceptPacket in SQLite")
     active_refs = runtime.store.one(
         "SELECT COUNT(*) AS n FROM sources WHERE hash=? AND deleted=0",
         (source_after["hash"],),
     )["n"]
-    if active_refs == 0:
-        assert not blob_path.exists(), "revocation left an unshared acoustic-context blob on disk"
+    if active_refs == 0 and blob_path.exists():
+        cleanup_failures.append("revocation left an unshared acoustic-context blob on disk")
+    if cleanup_failures:
+        raise AssertionError("; ".join(cleanup_failures))
 except AssertionError as exc:
     failures.append("packet/blob revocation: " + str(exc))
 finally:
