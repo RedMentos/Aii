@@ -329,7 +329,7 @@ No material V14 master edit was made; no master backup was required. Historical 
 ### Verified release-development base
 - `gpt6/v13-private-remote-bridge-20261111` exact readback: `569680bc10eabeb94ea5a1695d4bf77b8584e0a0`; compare against the branch ref is identical.
 - Exact associated GitHub Actions: **15/15 SUCCESS**. Staged-runtime: 240 passed / 10 skipped / 47 subtests; integrated-regression: 415 passed / 3 skipped / 58 subtests (run 44881038726). Python 3.14 staged startup and owner-read bootstrap both PASS (44881038782). This is CI/Linux/synthetic evidence, not an Android install or native model proof.
-- Redmi remains REDMI_UNVERIFIED: private owner-read #373/#368 has no current receipt; installed SHA and updater consent are unknown.
+- Redmi remains REDMI_UNVERIFIED: latest private owner-read PIPELINE_STATUS #379 is OPEN with zero comments at readback (expires 2026-11-21T08:30:59Z); prior #373/#368 expired. No duplicate request was created; installed SHA and updater consent remain unknown.
 
 ### QA finding — JEPA PR #2178 exact candidate
 - Candidate: `c16da4b3c0de1e5d857240e4fee7576aa3bf9a15`, direct child of `569680bc...`.
