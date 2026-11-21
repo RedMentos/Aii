@@ -151,18 +151,22 @@
       "priority": "P1",
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
-      "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "CI current PR head feb318611b2cdf46fbd34de74565016d26f52e75: focused RAW EAR 12/12 on Python 3.11 and 12/12 on Python 3.13 PASS (44882111454); privacy scan PASS (44882111514); staged/integrated 44882111436 PASS: staged 240 passed / 10 skipped / 47 subtests; integrated 415 passed / 3 skipped / 58 subtests; safe-additive 44882111427 FAIL as expected because the existing producer is modified. Earlier exact code/test tree 1c4bb678025b421b98766cbce61570eec4683a52 passed staged 240/10 skipped/47 subtests and integrated 415/3 skipped/58 subtests (44880145311). Producer blob 0e328d14883840190937f0fef24a8e895ba7261c; test blob 96b00b2e1b6340e2a61a8b6f230be8747889ab38. LOCAL_LINUX full checkout BLOCKED by GitHub DNS; REDMI_UNVERIFIED.",
-      "next_step": "Boss: independently review PR #2177 and decide the intentional existing-producer/safe-additive scope. After review/merge, Core updates #2158's exact V3 producer pin and proves separate text/audio PerceptPackets plus normal Runtime and B1/B2 OfferPacket -> C4/C3 consumption. Perception then compares RAW EAR V3 against libfvad on matched fixtures. No dependency/model download or production swap without separate approval.",
+      "acceptance": "Source-bound audio PerceptPacket consumed by existing A4 attention and synthetic C3 admission; temporal gap/overlap semantics now tested. Full A0-A5, normal Runtime B1/B2->C4->C3 and Android/native acceptance remain open.",
+      "proof_environment": "CI",
+      "next_step": "Boss independently reviews PR #2177. After review/merge, Core updates #2158 to exact RAW EAR V3 producer and proves normal Runtime modality separation plus B1/B2 OfferPacket->C4->C3. Perception then benchmarks RAW EAR V3 against libfvad on matched fixtures; no model/dependency/device change without license/ABI/cost evidence.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 08:36 CET",
+      "last_checkpoint": "2026-11-21 10:21 CET",
       "latest_candidate_pr": {
         "pr": 2177,
-        "head_sha": "feb318611b2cdf46fbd34de74565016d26f52e75",
-        "merge_commit_sha": null,
-        "ci": "PASS_44882111454_12_TESTS_PY311_AND_313;PASS_44882111514_PRIVACY;PASS_44882111436_240_STAGED_415_INTEGRATED;FAIL_EXPECTED_44882111427_SAFE_ADDITIVE_EXISTING_FILE_EDIT",
-        "scope": "RAW EAR V3 caller-supplied PCM16 -> source-bound AudioPerceptPacket -> A4 attention -> C3 admission; not microphone/VAD/ASR/learning/Android"
-      }
+        "code_test_head_sha": "ce692a87e585c8cc7a6a871dd550ca585a6bac3d",
+        "producer_blob": "0e328d14883840190937f0fef24a8e895ba7261c",
+        "temporal_state_blob": "f693f8b8394558a63d87a35fc67ea3db9dcb1929",
+        "test_blob": "6681eabf5dbcc8cfc2795c777ff17bf7862f3303",
+        "workflow_blob": "e0b93213165ec4423c9a32e163cbd94a43b30ad4",
+        "ci": "PASS_FOCUSED_23_PY311_AND_23_PY313_44888560930;PASS_STAGED_240_10SKIP_47SUBTESTS_AND_INTEGRATED_415_3SKIP_58SUBTESTS_44888560905;PASS_PRIVACY_44888560951;FAIL_EXPECTED_SAFE_ADDITIVE_EXISTING_PATH_EDIT_44888560942",
+        "scope": "RAW EAR V3 caller-supplied PCM16 -> source-bound AudioPerceptPacket -> A4 temporal attention -> C3 admission; no microphone/VAD/ASR/learning/Android"
+      },
+      "proof": "PR #2177 code/test head ce692a87e585c8cc7a6a871dd550ca585a6bac3d. RAW EAR focused 23/23 PASS on Python 3.11 and 23/23 on 3.13 (44888560930); staged 240 passed/10 skipped/47 subtests and integrated 415 passed/3 skipped/58 subtests (44888560905); privacy 44888560951 PASS. LOCAL_LINUX isolated module mirror 10/10 PASS + py_compile PASS; full Aii checkout BLOCKED by GitHub DNS. Safe-additive 44888560942 fails because existing producer/workflow edits are intentionally outside its additive-only allowlist. REDMI_UNVERIFIED; NOT_RELEASED."
     },
     {
       "id": "V14-007",
