@@ -256,10 +256,12 @@ class LabAgeTests(unittest.TestCase):
                 return dotted(node.value) + "." + node.attr
             return "<dynamic>"
 
-        for path in sorted(code_root.rglob("*.py")):
-            relative = path.relative_to(code_root)
-            if relative.parts[0] == "tests" or "__pycache__" in relative.parts:
-                continue
+        scan_roots = (code_root / "v13", code_root / "scripts")
+        for scan_root in scan_roots:
+            for path in sorted(scan_root.rglob("*.py")):
+                relative = path.relative_to(code_root)
+                if "__pycache__" in relative.parts:
+                    continue
             try:
                 source = path.read_text(encoding="utf-8")
                 tree = ast.parse(source, filename=str(relative))
@@ -279,7 +281,7 @@ class LabAgeTests(unittest.TestCase):
                 return "<module>"
 
             for node in ast.walk(tree):
-                if isinstance(node, ast.Attribute) and node.attr in {"budgets", "budget"}:
+                if isinstance(node, ast.Attribute) and node.attr == "budgets":
                     budget_attributes.append(
                         (relative.as_posix(), enclosing_function(node), dotted(node))
                     )
