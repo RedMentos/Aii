@@ -4,6 +4,8 @@
 **Owner:** Research & Perception / V14-006
 **PR:** https://github.com/RedMentos/Aii/pull/2177
 **Branch:** research-perception/v14-prosody-attention-current-20261121
+**Producer blob:** 7b1d519cd36ede4b520d78e22c0f89132a1c73a5  
+**Temporal-state blob:** f693f8b8394558a63d87a35fc67ea3db9dcb1929  
 **Code/test/workflow commit:** ce692a87e585c8cc7a6a871dd550ca585a6bac3d
 **Base:** release-development branch gpt6/v13-private-remote-bridge-20261111 at 569680bc10eabeb94ea5a1695d4bf77b8584e0a0
 
