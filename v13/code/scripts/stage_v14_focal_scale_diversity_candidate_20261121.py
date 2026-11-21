@@ -17,7 +17,7 @@ import shutil
 BASE_STAGER = "scripts/stage_integrated_candidate.py"
 BASE_STAGER_GIT_BLOB = "ea9d16902d7c19837e0734f23dd9f307912ef896"
 OVERLAY = "scripts/integrated_focal_scale_diversity_candidate_20261121.py"
-OVERLAY_SHA256 = "c25b69a562eb6f0f6352e33d30ca58493484820b2a1d20a10e537bd088c01d0f"
+OVERLAY_GIT_BLOB = "9987525960ba0955dd2fd57d421e32f4b76b892c"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -54,7 +54,7 @@ def stage(code_dir: Path, destination: Path) -> dict:
         raise ValueError("destination overlaps source tree")
 
     stager = _load(code_dir, BASE_STAGER, BASE_STAGER_GIT_BLOB, "base_stager", git_blob=True)
-    overlay = _load(code_dir, OVERLAY, OVERLAY_SHA256, "focal_overlay")
+    overlay = _load(code_dir, OVERLAY, OVERLAY_GIT_BLOB, "focal_overlay", git_blob=True)
     base_destination = destination.parent / (".v14-focal-base-" + secrets.token_hex(8))
     try:
         manifest = stager.stage(code_dir, base_destination)
@@ -68,7 +68,7 @@ def stage(code_dir: Path, destination: Path) -> dict:
         manifest = dict(manifest)
         manifest["overlay"] = {
             "name": OVERLAY,
-            "sha256": OVERLAY_SHA256,
+            "git_blob_sha1": OVERLAY_GIT_BLOB,
             "source_focal_git_blob": overlay.SOURCE_FOCAL_GIT_BLOB,
             "cross_scale_rule": overlay.CROSS_SCALE_RULE,
             "effect": "cross-scale redundancy is discounted only for same-source, same-digest, same-modality, non-overlapping exact evidence spans when lexical relevance is below the active C4 threshold; high-overlap paraphrases retain the full penalty",
