@@ -53,6 +53,8 @@ ARMS = (
     ("session_contiguous", "full", True, True),
     ("on_demand_conflict", "full", True, True),
     ("on_demand_conflict", "predictor_only", True, True),
+    ("on_demand_loss", "full", False, False),
+    ("on_demand_loss", "full", False, True),
     ("on_demand_loss", "predictor_only", False, False),
     ("on_demand_loss", "predictor_only", False, True),
 )
@@ -1219,26 +1221,25 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         }
         for item in per_session_reports
     ], sort_keys=True))
-    # The full-encoder arm must still demonstrate a real EMA update in each seed.
-    # A2 may be rejected when any individual old-session holdout regresses; that
-    # rejection is expected and must leave its checkpoint unchanged.
+    # On-demand conflict + per-session GEM is a comparison arm. Its final
+    # source-disjoint holdout may legitimately reject a candidate; rejection
+    # must leave the checkpoint unchanged. Full-encoder acceptance is tested
+    # separately against the loss-demand replay policy below.
     for seed in DATA_SEEDS:
         full_reports = [
             item for item in per_session_reports
             if item["data_seed"] == seed and item["encoder_mode"] == "full"
         ]
         assert len(full_reports) == 1
-        accepted_full_phases = [
-            phase for phase in (full_reports[0]["B"], full_reports[0]["A2"])
-            if phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
-        ]
-        assert accepted_full_phases, f"full encoder/EMA path produced no accepted update for seed {seed}"
-        for phase in accepted_full_phases:
-            assert phase["old_holdout_cohort_gate"]["accepted"] is True
-            assert phase["predictor_parameter_delta_norm"] > 0.0
-            assert phase["encoder_parameter_delta_norm"] > 0.0
-            assert phase["ema_target_delta_norm"] > 0.0
-            assert phase["checkpoint_sha_before"] != phase["checkpoint_sha_after"]
+        for phase in (full_reports[0]["B"], full_reports[0]["A2"]):
+            assert phase["gradient_projection"]["mode"] == "per_session_gem"
+            if phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
+                assert phase["old_holdout_cohort_gate"]["accepted"] is True
+                assert phase["encoder_parameter_delta_norm"] > 0.0
+                assert phase["ema_target_delta_norm"] > 0.0
+            else:
+                assert phase["status"] == "UTILITY_GATE_REJECTED"
+                assert phase["checkpoint_sha_before"] == phase["checkpoint_sha_after"]
 
     per_session_gem_acceptance = any(
         phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
@@ -1253,7 +1254,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
     loss_demand_reports = [
         item for item in reports
         if item["replay_mode"] == "on_demand_loss"
-        and item["encoder_mode"] == "predictor_only"
+        and item["encoder_mode"] in {"full", "predictor_only"}
         and item["stable_drift_control"] is False
     ]
     print("WORLDJEPA_LOSS_DEMAND=" + json.dumps([
@@ -1277,21 +1278,26 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
     ], sort_keys=True))
     for seed in DATA_SEEDS:
         seed_reports = [item for item in loss_demand_reports if item["data_seed"] == seed]
-        assert len(seed_reports) == 2
+        assert len(seed_reports) == 4
         phases = [phase for item in seed_reports for phase in (item["B"], item["A2"])]
         assert any(
             phase.get("replay_loss_demand_positive_session_count", 0) > 0
             for phase in phases
         ), f"loss-demand guard scored no positive forgetting cohort for seed {seed}"
-        projected_reports = [
-            item for item in seed_reports
-            if item["replay_projection"] is True
-        ]
-        assert len(projected_reports) == 1
-        diagnostic = []
-        for item in projected_reports:
+
+        for encoder_mode in ("full", "predictor_only"):
+            mode_reports = [
+                item for item in seed_reports if item["encoder_mode"] == encoder_mode
+            ]
+            assert len(mode_reports) == 2
+            projected_reports = [
+                item for item in mode_reports if item["replay_projection"] is True
+            ]
+            assert len(projected_reports) == 1
+            projected = projected_reports[0]
+            diagnostic = []
             for phase_name in ("B", "A2"):
-                phase = item[phase_name]
+                phase = projected[phase_name]
                 trace = phase.get("backtracking_trace", [])
                 compact_trace = []
                 for attempt in trace:
@@ -1321,23 +1327,29 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                     "holdout_delta": phase.get("old_holdout_retention_delta"),
                     "trace": compact_trace,
                 })
-        print("WORLDJEPA_LOSS_DEMAND_SEED_DIAGNOSTIC", seed, diagnostic)
-        a2 = projected_reports[0]["A2"]
-        assert a2["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA", (
-            f"on-demand loss + per-session GEM accepted no A2 update for seed {seed}: {diagnostic!r}"
-        )
-        assert a2["utility_gate_accepted"] is True
-        assert a2["old_holdout_cohort_gate"]["accepted"] is True
-        assert a2["negative_controls_separated"] is True
-        assert a2["predictor_parameter_delta_norm"] > 0.0
-        # Predictor-only adaptation changes the trainable predictor, not the encoder/EMA target.
-        # Full-encoder EMA plasticity is asserted independently below for each data seed.
-        assert a2["ema_target_delta_norm"] == 0.0
-        assert a2["optimizer_moments_persisted"] is True
-        assert a2["checkpoint_sha_before"] != a2["checkpoint_sha_after"]
-        assert a2["update_scale"] is not None
-        assert a2["selected_update_scale"] == a2["update_scale"]
-        assert a2["gradient_projection"]["projected_steps"] > 0
+            print("WORLDJEPA_LOSS_DEMAND_SEED_DIAGNOSTIC", seed, encoder_mode, diagnostic)
+
+            a2 = projected["A2"]
+            assert a2["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA", (
+                f"on-demand loss + per-session GEM accepted no {encoder_mode} A2 update "
+                f"for seed {seed}: {diagnostic!r}"
+            )
+            assert a2["utility_gate_accepted"] is True
+            assert a2["old_holdout_cohort_gate"]["accepted"] is True
+            assert a2["negative_controls_separated"] is True
+            assert a2["predictor_parameter_delta_norm"] > 0.0
+            if encoder_mode == "predictor_only":
+                assert a2["encoder_parameter_delta_norm"] == 0.0
+                assert a2["ema_target_delta_norm"] == 0.0
+            else:
+                assert a2["encoder_parameter_delta_norm"] > 0.0
+                assert a2["ema_target_delta_norm"] > 0.0
+            assert a2["optimizer_moments_persisted"] is True
+            assert a2["checkpoint_sha_before"] != a2["checkpoint_sha_after"]
+            assert a2["update_scale"] is not None
+            assert a2["selected_update_scale"] == a2["update_scale"]
+            assert a2["gradient_projection"]["projected_steps"] > 0
+
         for phase in phases:
             if phase["status"] == "UTILITY_GATE_REJECTED":
                 assert phase["checkpoint_after"] == phase["checkpoint_before"]
