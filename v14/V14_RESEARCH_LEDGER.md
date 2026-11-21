@@ -722,3 +722,42 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - Keep the current A5 provider-independent lease and source-bound A4 admission as the non-mutating baseline. No new model candidate is recommended from this paper.
 
 **Status:** PAPER_FULLTEXT_REVIEWED / PREPRINT / NO_MATCHING_OSS_REPOSITORY_VERIFIED / NO_CODE_OR_MODEL_IMPORTED / RESEARCH_HYPOTHESIS_ONLY / NO_ANDROID_PROOF.
+
+
+
+## R-046 — RAW_EAR versus WebRTC VAD: synthetic behavior and CPU baseline (2026-11-21)
+
+### Reproduction scope
+
+- Reviewed the exact current shared-source implementation of `v13/code/v13/audio_voice_cues.py` at shared HEAD `bdcad466ffea75a2b41f7d23be168f53c7197d20`, then copied its `extract_voice_cues` / pitch-estimation logic into a standalone Python 3.13.5 Linux x86_64 benchmark. This is a copied-code experiment, not a full Aii checkout test or Redmi benchmark.
+- Compared it with the locally installed `webrtcvad` module reporting version 2.0.14 (the sandbox did not expose distribution metadata or an exact wheel hash). WebRTC used 20-ms PCM16 frames at 16 kHz, modes 0/2/3. RAW_EAR used its 40-ms frame / 20-ms hop, 8-kHz internal representation and 49 frames per one-second window.
+- Inputs were deterministic synthetic PCM16 controls only: silence, low two-tone background, pure 140-Hz tone, amplitude/frequency-modulated harmonic voice-like signal, broadband white noise, impulse bursts and voiced segments with pauses. They are not human speech and do not establish real speech accuracy.
+
+### Observed outputs
+
+- Silence: RAW_EAR = SILENCE; WebRTC mode 0/2/3 = 0% speech frames.
+- Harmonic voice-like control: RAW_EAR = VOICED, voiced fraction 1.0, median F0 142.86 Hz, prosody-change score 0.4889; WebRTC mode 0/2/3 = 1.00 / 0.70 / 0.52 speech fraction.
+- Voiced-with-pauses control: RAW_EAR = VOICED, voiced fraction 0.6327, median F0 150.94 Hz, prosody score 0.1505; WebRTC mode 0/2/3 = 0.92 / 0.70 / 0.16.
+- Pure 140-Hz tone: RAW_EAR = VOICED with near-zero prosody score; WebRTC mode 2 = 0.10. This is a useful reminder that periodicity is not synonymous with speech.
+- Low two-tone background: both systems returned a high activity result (RAW_EAR VOICED; WebRTC 100% in all modes). Broadband white noise and impulse bursts were classified by RAW_EAR as UNVOICED_NOISE / IMPULSIVE, while WebRTC mode 2 returned 100% / 86% speech frames. The WebRTC noise sweep likewise rose to 100% at high synthetic amplitudes. These are deliberate negative controls, not measured real-world false-positive rates.
+
+### CPU and memory
+
+- RAW_EAR one-second window at 16 kHz: median 131.30 ms, p95 135.89 ms over 40 runs. At 8/16/48 kHz the median stayed near 131 ms because the implementation downsamples internally and still processes 49 frames.
+- RAW_EAR duration sweep at 16 kHz: 40 ms 2.68 ms; 100 ms 10.58 ms; 200 ms 24.07 ms; 500 ms 63.53 ms; 1 s 132.42 ms median.
+- WebRTC VAD mode 2 over the same one-second window (50 × 20-ms frames): median 0.094 ms, p95 0.116 ms. This is not an apples-to-apples quality comparison: WebRTC emits a binary activity decision; RAW_EAR also estimates pitch and prosodic variation.
+- Python tracemalloc peak for one RAW_EAR 1-s call: 921,426 bytes (~0.88 MiB); process RSS and native allocator memory were not measured. No ARM/Termux/Redmi benchmark was run.
+
+### OSS and license review
+
+- `webrtcvad-wheels==2.0.14.post1` (published 2026-10-02) is a reproducible baseline candidate: MIT Python wrapper; bundled WebRTC VAD C code carries the WebRTC BSD-style license. PyPI provenance identifies publisher repository commit `726a8c72ce8b33b2df7ecd292372690fea2bad0c`. Wheels include CPython 3.13/3.14 Linux ARM64 manylinux/musllinux variants, but no Android Bionic wheel was listed; Termux would need a source/native build path. It is not added to V14 runtime dependencies.
+- `dpirch/libfvad` is a standalone C library under BSD-3-Clause with 8/16/32/48-kHz input and 10/20/30-ms frames. Its repository release list only surfaced v1.0 and an open issue #23 reports noise classified as voice (opened 2020-04-30); maintenance and noise robustness need review before production reuse.
+- Current A5 audio code's optional Silero ONNX path remains local-file + expected-hash + CPU-only; no weights were present or downloaded, so no Silero inference result is claimed.
+
+### V14 interpretation and next experiment
+
+- RAW_EAR is a rich acoustic-cue extractor, not a calibrated speech/no-speech detector. Keep F0, energy, impulsive/noise and VAD evidence separate; never let a binary VAD erase nonverbal prosody or treat a periodic tone as human speech.
+- A one-second pure-Python RAW_EAR call costs ~13% of audio duration on this x86 runner; for full-duplex Android, measure 40–100-ms incremental windows and compare a C/native or vectorized autocorrelation backend before enabling continuous use. This x86 number is not an ARM prediction.
+- Next acceptance experiment: with explicit test-audio consent or a suitably licensed public speech/noise corpus, measure false positives, false negatives, onset/offset latency, CPU/RSS and interruption/barging behavior on the actual Redmi. Preserve non-speech cues and compare VAD modes without using VAD as ground truth.
+
+**Status:** SYNTHETIC_BEHAVIOR_BENCHMARKED / LOCAL_X86_CPU_MEASURED / WEBRTC_LICENSE_REVIEWED / NO_REAL_SPEECH_CORPUS / NO_ARM_OR_REDM I_MEASUREMENT / NO_MODEL_DOWNLOADED.
