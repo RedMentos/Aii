@@ -342,12 +342,12 @@
       "last_checkpoint": "2026-11-21T22:40:02Z",
       "latest_candidate_pr": {
         "pr": 2275,
-        "head_sha": "35cf9a0f474dacce2942e7786878dab43218f55d",
+        "head_sha": "56cfddaea3d153e7894813f7d2426293051718c7",
         "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
         "ci": "QUEUED_RAW_EAR_44958073016_STAGED_44958072992",
         "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
       },
-      "proof": "The prior algorithm's negative control reproduced the false-negative: a long same-batch tail replaced a cross-window speaker-change score with cosine 1.0. The pre-batch snapshot algorithm passed a local CPython 3.13.5 x86_64 reproduction for warmup, same-speaker, unvoiced, threshold-absent and 1-s/2-s invariance. This is algorithm-level only; no full Aii checkout test ran. PR #2275 is current-base and draft; no exact CI run was returned at readback. No microphone/model/Redmi test."
+      "proof": "The prior algorithm's negative control reproduced the false-negative: a long same-batch tail replaced a cross-window speaker-change score with cosine 1.0. The pre-batch snapshot algorithm passed a local CPython 3.13.5 x86_64 reproduction for warmup, same-speaker, unvoiced, threshold-absent and 1-s/2-s invariance. This is algorithm-level only; no full Aii checkout test ran. PR #2275 is current-base and draft; no exact CI run was returned at readback. No microphone/model/Redmi test. Native latent receiver cross-review R-054: Core #2266 pinned llama.cpp API/build and Android arm64 cross-compile CI PASS, but no real GGUF model; separate staged/integrated CI FAILS on stale arithmetic source pin and PARTIAL migration."
     }
   ],
   "current_redmi_status": "REDMI_UNVERIFIED — private PIPELINE_STATUS #435 is open with zero authenticated comments; prior #431/#432 also had no authenticated receipt. Installed SHA and updater consent remain UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action or device mutation.",
