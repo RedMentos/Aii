@@ -66,8 +66,8 @@ def _canonical(capability, args):
 
 
 # Legacy compatibility only: some Android releases expose this exact mapping as a symlink.
-# AOSP Android 13 instead bind-mounts /data/data onto /data/user/0; lstat sees a
-# directory there, and the narrowly scoped system-UID ancestry rule below handles it.
+# AOSP Android 13 sets /data to system:system 0771 and bind-mounts /data/data
+# onto /data/user/0; only that exact 0771 root (plus legacy /data/data) is exempted.
 _ANDROID_PLATFORM_SYMLINKS = ((Path("/data/user/0"), Path("/data/data")),)
 _ANDROID_DATA_ROOT = Path("/data")
 _ANDROID_SYSTEM_UID = 1000
@@ -132,8 +132,8 @@ def _validate_audit_parent_ancestry(parent, uid):
 
     The immediate parent must belong to this process and not be group/world writable.
     Higher ancestors must be root- or caller-owned and non-writable, except sticky
-    shared directories (for example /tmp). Android's /data ancestors may also be
-    owned by the trusted system UID 1000; this exception is restricted to /data.
+    shared directories (for example /tmp). Under /data, only the exact AOSP
+    system:system 0771 /data root (and legacy /data/data target) may be group-writable.
     """
     resolved = Path(os.path.realpath(os.fspath(parent)))
     if not resolved.is_absolute():
@@ -177,12 +177,13 @@ def _private_audit_db_path(db_path):
 
     This rejects final-file, caller-controlled symlink, hardlink, and cross-UID
     writable-ancestor redirection. The sole ancestor alias exception is the exact
-    Android platform mapping /data/user/0 -> /data/data. Android /data ancestors
-    owned by system UID 1000 are accepted only when they are not group/world
-    writable; sticky shared ancestors such as /tmp are also safe for other UIDs.
-    This is not an OS sandbox or a defense against a malicious same-UID process
-    racing the subsequent SQLite open; the native companion must still own
-    authenticated consent and storage.
+    Android platform mapping /data/user/0 -> /data/data. The only group-writable
+    ancestor exception is exact mode 0771 with system:system ownership on /data
+    (or the legacy /data/data target); world-write and writable child ancestors
+    remain rejected. Sticky shared ancestors such as /tmp retain their normal
+    sticky-bit rule. This is not an OS sandbox or a defense against a malicious
+    same-UID process racing the subsequent SQLite open; the native companion
+    must still own authenticated consent and storage.
     """
     try:
         raw_path = Path(os.path.abspath(os.path.expanduser(os.fspath(db_path))))
