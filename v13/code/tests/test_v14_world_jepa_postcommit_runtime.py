@@ -793,3 +793,29 @@ def test_checkpoint_renameat2_fallback_never_replaces_a_racing_target(tmp_path, 
     assert destination.read_bytes() == b"operator-owned-existing-checkpoint"
     assert not list(tmp_path.glob(".world-jepa-shadow-*"))
 
+
+
+def test_checkpoint_publication_rolls_back_and_cleans_temp_on_directory_fsync_failure(tmp_path, monkeypatch):
+    import errno
+    import os
+    import pytest
+    import stat
+    from v13 import world_jepa_shadow_checkpoint as checkpoint
+
+    model = _noreplace_checkpoint_model()
+    destination = tmp_path / ("jepa-" + ("c" * 32) + ".npz")
+    real_fsync = checkpoint.os.fsync
+
+    def fail_directory_fsync(fd):
+        if stat.S_ISDIR(os.fstat(fd).st_mode):
+            raise OSError(errno.EIO, "injected directory fsync failure")
+        return real_fsync(fd)
+
+    monkeypatch.setattr(checkpoint.os, "fsync", fail_directory_fsync)
+    with pytest.raises(OSError) as raised:
+        checkpoint.save(model, destination, "c" * 64)
+
+    assert raised.value.errno == errno.EIO
+    assert not destination.exists()
+    assert not list(tmp_path.glob(".world-jepa-shadow-*"))
+
