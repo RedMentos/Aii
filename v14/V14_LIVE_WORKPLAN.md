@@ -1000,7 +1000,7 @@ Boss branch pre-final-handoff head `ce7ca26a08e9bf0d8dea79835035a4281b53bba1`: 1
 
 ### Scope and connected consumer
 
-- Current-base PR #2275, branch research-perception/v14-raw-ear-speaker-batch-isolation-20261121-r2, is stacked on Boss #2258 head 34eb645357d65bdd5ac69b9fb2c834d043086dac. Current branch head at readback: 511d692c7e1ee0906617bae82c9843e5c8c3f386; code/test tree: 880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c. Draft / not released.
+- Current-base PR #2275, branch research-perception/v14-raw-ear-speaker-batch-isolation-20261121-r2, is stacked on Boss #2258 head 34eb645357d65bdd5ac69b9fb2c834d043086dac. Tested code/test tree: 880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c; later commits in this PR update only research/handoff/board/workplan metadata. Draft / not released.
 - Caller-supplied frame embeddings are source/generation/model-revision/checkpoint-hash bound, normalized and held in a bounded process-local registry. The optional consumer supplies scalar change evidence to A5 PerceptPacket, A4 salience/novelty and C3 summary. No speaker label, identity authority, learning authority or action authority; vectors are not persisted. No model is loaded by default.
 - Optional NumPy pitch acceleration remains explicit; pure Python stays the default. No production backend or model change.
 
