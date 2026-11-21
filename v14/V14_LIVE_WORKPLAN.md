@@ -649,3 +649,14 @@ The current functional release has synthetic C4 source-span selection but no pro
 5. Boss: await all exact merge-push workflows, integrate only after exact-head tests, and keep the 1,255-heading Canon coverage map honest.
 
 **Device:** private owner-read expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action. **User action: none.**
+
+
+## Research & Perception checkpoint — 2026-11-21 18:55 CET (R-037)
+
+A new local proof-of-mechanism now exists at v14/experiments/latent_cache_tiny/. It trains two tiny decoders with different layer/width geometry, maps actual sender K/V tensors into the receiver, injects the mapped cache, then compares exact-context, no-message, shuffled-cache and random-adapter controls. Local Linux CPython 3.13 / PyTorch 2.10 CPU: 3/3 tests PASS; seed 13 held-out reconstruction MSE 6.5134→0.2054, final latent accuracy 100% vs 0% no-message and 12.5% shuffled; adapter ΔL2 20.2719, nonzero gradients, restart max-logit delta 0.0; three additional seeds also reached 100%. Wall 12.41 s, peak RSS 344,584 KiB.
+
+This is explicitly LOCAL_LINUX_TINY_MODEL_PROOF_NOT_PRODUCT_NATIVE: synthetic associative recall, newly initialized toy weights, no OOD or symbolic baseline, no production Runtime consumer, no actual LFM2.5/Qwen3.5 or Redmi. It does not advance B3 acceptance.
+
+Research R-037 records two full-text 2026 latent-communication papers, one abstract-only negative causal-transfer study, and the Apache-2.0 CacheBack OSS review. The important architecture split is context-aware (receiver has source input; sparse query-conditioned transfer may suffice) vs context-unaware (receiver depends on transferred state; much denser retention is needed). CacheBack's main API only supports same-model/matching copies and explicitly lacks cross-model alignment. Current B1 LFM2.5-1.2B and B2 Qwen3.5-0.8B are heterogeneous; current llama.cpp Runner still reports CAN_LATENT_TAP=False / CAN_LATENT_INJECT=False. Native K/V tap/injection remains the next blocker.
+
+No models, weights, dependencies or datasets were downloaded or swapped. No phone permission or updater action occurred. Redmi remains unverified.
