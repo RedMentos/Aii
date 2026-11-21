@@ -1,12 +1,14 @@
 import hashlib
 import json
 import os
+import stat
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from model_compare import compare, TASKS
+import model_compare
+from model_compare import compare, TASKS, read_candidate_manifest
 
 
 class FakeModels:
@@ -70,7 +72,11 @@ class ModelCompareTests(unittest.TestCase):
         self.manifest.write_text(json.dumps({"schema": "v14.model-candidates/1", "candidates": [{
             "id": "candidate", "role": "C3_LANGUAGE", "model_id": "candidate/model",
             "revision": "a" * 40, "license_id": "Apache-2.0",
-            "license_url": "https://example.test/LICENSE", "file": self.candidate_spec
+            "license_url": "https://huggingface.co/candidate/model/blob/" + ("a" * 40) + "/LICENSE",
+            "license_snapshot_path": "v14/experiments/licenses/test-license.txt",
+            "license_snapshot_sha256": "b" * 64,
+            "license_snapshot_source": "https://example.test/snapshot/LICENSE",
+            "file": self.candidate_spec
         }]}))
         self.registry = {"models": {"language": {"model_id": "base/model", "revision": "base-rev",
             "license_id": "Apache-2.0", "license_url": "https://example.test/LICENSE",
@@ -233,6 +239,71 @@ class ModelCompareTests(unittest.TestCase):
             compare(self.home, "candidate", timeout_s=1, manifest_path=self.manifest, **self.deps())
         with self.assertRaisesRegex(ValueError, "max_tokens"):
             compare(self.home, "candidate", max_tokens=256, manifest_path=self.manifest, **self.deps())
+
+
+    def test_candidate_replaced_before_lock_is_revalidated(self):
+        original_lock = model_compare.acquire_home_lock
+
+        def replace_before_lock(home):
+            self.candidate.write_bytes(b"GGUFtampered-candidate")
+            return original_lock(home)
+
+        with patch.object(model_compare, "acquire_home_lock", side_effect=replace_before_lock):
+            with self.assertRaisesRegex(ValueError, "model size mismatch|model SHA256 mismatch"):
+                self.run_compare()
+        self.assertEqual(FakeRunner.generate_calls, 0)
+        self.assertEqual(FakeRunner.active, 0)
+
+    def test_models_are_staged_read_only_and_source_replacement_after_stage_is_ignored(self):
+        original_run = model_compare.run_model
+        seen = []
+
+        def inspect_staged(runner_cls, lab_home, model_path, cfg, timeout_s, max_tokens,
+                           expected_binary, expected_binary_info):
+            if not seen:
+                self.base.write_bytes(b"GGUFreplacement-base")
+                self.candidate.write_bytes(b"GGUFreplacement-candidate")
+            expected = self.base_spec if model_path.name == "baseline.gguf" else self.candidate_spec
+            self.assertEqual(lab_home.parent, self.home / "data")
+            self.assertFalse(model_path.is_symlink())
+            self.assertEqual(stat.S_IMODE(model_path.stat().st_mode), 0o400)
+            self.assertEqual(model_compare.sha256_file(model_path), expected["sha256"])
+            seen.append(model_path)
+            return original_run(runner_cls, lab_home, model_path, cfg, timeout_s, max_tokens,
+                                expected_binary, expected_binary_info)
+
+        with patch.object(model_compare, "run_model", side_effect=inspect_staged):
+            result = self.run_compare()
+        self.assertEqual(result["status"], "COMPARISON_COMPLETE")
+        self.assertEqual(len(seen), 2)
+        self.assertTrue(result["safety"]["model_files_staged"])
+        self.assertTrue(result["safety"]["staged_model_files_read_only"])
+        self.assertEqual(FakeRunner.max_active, 1)
+
+    def test_installed_runner_binary_replacement_after_preflight_fails_closed(self):
+        original_run = model_compare.run_model
+        calls = []
+
+        def replace_binary_then_run(runner_cls, lab_home, model_path, cfg, timeout_s, max_tokens,
+                                    expected_binary, expected_binary_info):
+            if not calls:
+                self.binary.write_text("#!/bin/sh\nexit 1\n")
+            calls.append(model_path)
+            return original_run(runner_cls, lab_home, model_path, cfg, timeout_s, max_tokens,
+                                expected_binary, expected_binary_info)
+
+        with patch.object(model_compare, "run_model", side_effect=replace_binary_then_run):
+            with self.assertRaisesRegex(RuntimeError, "runner executable digest"):
+                self.run_compare()
+        self.assertEqual(FakeRunner.generate_calls, 0)
+        self.assertEqual(FakeRunner.active, 0)
+
+    def test_repository_candidate_license_url_and_snapshot_are_pinned(self):
+        rows = read_candidate_manifest(model_compare.MANIFEST_PATH)
+        row = rows["lfm25-230m-c3"]
+        self.assertIn(f"/blob/{row['revision']}/LICENSE", row["license_url"])
+        snapshot = Path(__file__).with_name("licenses") / "LFM-OPEN-LICENSE-v1.0.txt"
+        self.assertEqual(hashlib.sha256(snapshot.read_bytes()).hexdigest(), row["license_snapshot_sha256"])
 
 
 if __name__ == "__main__":

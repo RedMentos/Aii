@@ -11,6 +11,8 @@ import hashlib
 import json
 import os
 import platform
+import shutil
+import stat
 import statistics
 import tempfile
 import threading
@@ -62,6 +64,65 @@ def validate_gguf(path: Path, spec: dict) -> dict:
     return {"file_name": path.name, "size_bytes": spec["size"], "sha256": digest}
 
 
+def stage_verified_file(source: Path, destination: Path, *, expected_size: int | None = None,
+                        expected_sha256: str | None = None) -> dict:
+    """Copy an installed artifact into a private lab directory and verify its exact bytes."""
+    source = Path(source).expanduser()
+    if has_symlink_component(source):
+        raise ValueError("artifact source contains a symlink")
+    source = source.resolve(strict=True)
+    nofollow = getattr(os, "O_NOFOLLOW", None)
+    if nofollow is None:
+        raise RuntimeError("platform lacks O_NOFOLLOW; safe model staging unavailable")
+    source_fd = os.open(source, os.O_RDONLY | nofollow)
+    destination = Path(destination)
+    created = False
+    try:
+        before = os.fstat(source_fd)
+        if not stat.S_ISREG(before.st_mode):
+            raise ValueError("artifact source is not a regular file")
+        if expected_size is not None and before.st_size != expected_size:
+            raise ValueError("model size mismatch")
+        destination_fd = os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        created = True
+        digest = hashlib.sha256()
+        total = 0
+        with os.fdopen(destination_fd, "wb") as output:
+            while True:
+                chunk = os.read(source_fd, 1024 * 1024)
+                if not chunk:
+                    break
+                output.write(chunk)
+                digest.update(chunk)
+                total += len(chunk)
+            output.flush()
+            os.fsync(output.fileno())
+        after = os.fstat(source_fd)
+        current = os.stat(source, follow_symlinks=False)
+        identity = lambda item: (
+            item.st_dev, item.st_ino, item.st_size, item.st_mtime_ns, item.st_ctime_ns
+        )
+        if identity(before) != identity(after) or identity(after) != identity(current):
+            raise RuntimeError("artifact source changed during staging")
+        if total != before.st_size:
+            raise RuntimeError("artifact byte count changed during staging")
+        digest_hex = digest.hexdigest()
+        if expected_size is not None and total != expected_size:
+            raise ValueError("model size mismatch")
+        if expected_sha256 is not None and digest_hex != expected_sha256:
+            raise ValueError("model SHA256 mismatch")
+        if destination.stat().st_size != total or sha256_file(destination) != digest_hex:
+            raise RuntimeError("staged artifact failed readback verification")
+        os.chmod(destination, 0o400)
+        return {"file_name": source.name, "size_bytes": total, "sha256": digest_hex}
+    except Exception:
+        if created:
+            destination.unlink(missing_ok=True)
+        raise
+    finally:
+        os.close(source_fd)
+
+
 def read_candidate_manifest(path: Path) -> dict:
     if has_symlink_component(path) or not path.is_file():
         raise ValueError("candidate manifest missing or symlink")
@@ -87,8 +148,14 @@ def read_candidate_manifest(path: Path) -> dict:
             raise ValueError("candidate file size invalid")
         if len(file_spec["sha256"]) != 64 or any(c not in "0123456789abcdef" for c in file_spec["sha256"]):
             raise ValueError("candidate file SHA256 invalid")
-        if not row["license_url"].startswith("https://"):
-            raise ValueError("candidate license URL must be HTTPS")
+        expected_license_url = "https://huggingface.co/" + row["model_id"] + "/blob/" + row["revision"] + "/LICENSE"
+        if row["license_url"] != expected_license_url:
+            raise ValueError("candidate license URL must be pinned to the model revision")
+        snapshot_sha = row.get("license_snapshot_sha256")
+        if not isinstance(snapshot_sha, str) or len(snapshot_sha) != 64 or any(c not in "0123456789abcdef" for c in snapshot_sha):
+            raise ValueError("candidate license snapshot SHA256 invalid")
+        if not row.get("license_snapshot_path") or not str(row.get("license_snapshot_source", "")).startswith("https://"):
+            raise ValueError("candidate license snapshot provenance incomplete")
         by_id[row["id"]] = row
     return by_id
 
@@ -165,13 +232,16 @@ def verified_runner_binary(runner, expected_binary: Path, *, loaded: bool = Fals
 
 
 def run_model(runner_cls, lab_home: Path, model_path: Path, cfg: dict,
-              timeout_s: float, max_tokens: int, expected_binary: Path) -> dict:
+              timeout_s: float, max_tokens: int, expected_binary: Path,
+              expected_binary_info: dict) -> dict:
     runner = runner_cls(lab_home, ROLE, model_path, cfg, purpose="generate")
     cancel = threading.Event()
     rows = []
     release = {"process_reaped": False}
     try:
         runner_binary = verified_runner_binary(runner, expected_binary)
+        if runner_binary != expected_binary_info:
+            raise RuntimeError("runner executable digest differs from locked preflight")
         loaded_binary = None
         for task in TASKS:
             messages = [
@@ -186,7 +256,7 @@ def run_model(runner_cls, lab_home: Path, model_path: Path, cfg: dict,
                 rows.append({"task_id": task["id"], "status": "ERROR", "error_type": type(exc).__name__})
                 break
             loaded_binary = verified_runner_binary(runner, expected_binary, loaded=True)
-            if loaded_binary != runner_binary:
+            if loaded_binary != expected_binary_info or loaded_binary != runner_binary:
                 raise RuntimeError("loaded LlamaRunner executable changed during comparison")
             metrics = safe_metrics(dict(runner.last_metrics or {}))
             final = metrics["status"] == "FINAL"
@@ -264,68 +334,115 @@ def compare(home: Path, candidate_id: str, candidate_path: Path | None = None,
         if runner_cls is None:
             from v13.runners import LlamaRunner as runner_cls
 
-    settings_path = home / "config" / "settings.json"
-    if has_symlink_component(settings_path) or not settings_path.is_file():
-        raise RuntimeError("existing V13 config/settings.json required; no initialization or writes performed")
-    cfg = dict(defaults)
-    cfg.update(json.loads(settings_path.read_text(encoding="utf-8")))
-    config_validator(cfg)
-    if cfg.get("c3_decode_mode", "server") != "server":
-        raise RuntimeError("C3 is not using the standard llama-server path; comparison refused")
-
-    models = model_manager_cls(home, cfg.get("b2_control", "two_body"))
-    registry = catalog_fn()
-    baseline_spec = registry["models"]["language"]
-    if models.revision(ROLE) != baseline_spec["revision"]:
-        raise RuntimeError("installed C3 revision differs from the pinned registry baseline")
-    baseline_path = Path(models.path_for(ROLE))
-    baseline_file = next((f for f in baseline_spec["files"] if f["local_name"] == baseline_spec["main_file"]), None)
-    if baseline_file is None:
-        raise RuntimeError("registry baseline main file missing")
-    baseline_info = validate_gguf(baseline_path, baseline_file)
-
-    candidate_path = Path(candidate_path).expanduser() if candidate_path is not None else home / "models" / "language" / candidate["file"]["local_name"]
-    if has_symlink_component(candidate_path):
-        raise ValueError("candidate path contains a symlink")
-    if not candidate_path.exists():
-        return {
-            "schema": "v14.model-compare/1", "status": "CANDIDATE_NOT_INSTALLED",
-            "role": ROLE, "candidate_id": candidate_id,
-            "candidate": {"model_id": candidate["model_id"], "revision": candidate["revision"],
-                          "license_id": candidate["license_id"], "license_url": candidate["license_url"],
-                          "expected_size_bytes": candidate["file"]["size"], "expected_sha256": candidate["file"]["sha256"]},
-            "download_performed": False, "manifest_mutated": False, "production_swap": False,
-            "next_step": "Place the exact pinned GGUF in the isolated lab slot only after separate explicit download consent; then rerun this read-only comparison.",
-        }
-    candidate_info = validate_gguf(candidate_path, candidate["file"])
-    if candidate_info["sha256"] == baseline_info["sha256"]:
-        raise ValueError("candidate and installed baseline are the same artifact")
-    binary = home / "bin" / "llama-server"
-    if has_symlink_component(binary) or not binary.is_file() or not os.access(binary, os.X_OK):
-        raise RuntimeError("installed llama-server missing or not executable")
-
+    # Lock first: all installed settings, registry and model paths are read under it.
     lock = acquire_home_lock(home)
     try:
-        with tempfile.TemporaryDirectory(prefix="v14-model-compare-") as tmp:
+        settings_path = home / "config" / "settings.json"
+        if has_symlink_component(settings_path) or not settings_path.is_file():
+            raise RuntimeError("existing V13 config/settings.json required; no initialization or writes performed")
+        cfg = dict(defaults)
+        cfg.update(json.loads(settings_path.read_text(encoding="utf-8")))
+        config_validator(cfg)
+        if cfg.get("c3_decode_mode", "server") != "server":
+            raise RuntimeError("C3 is not using the standard llama-server path; comparison refused")
+
+        models = model_manager_cls(home, cfg.get("b2_control", "two_body"))
+        registry = catalog_fn()
+        baseline_spec = registry["models"]["language"]
+        if models.revision(ROLE) != baseline_spec["revision"]:
+            raise RuntimeError("installed C3 revision differs from the pinned registry baseline")
+        baseline_path = Path(models.path_for(ROLE))
+        baseline_file = next((f for f in baseline_spec["files"] if f["local_name"] == baseline_spec["main_file"]), None)
+        if baseline_file is None:
+            raise RuntimeError("registry baseline main file missing")
+
+        candidate_path = Path(candidate_path).expanduser() if candidate_path is not None else home / "models" / "language" / candidate["file"]["local_name"]
+        if has_symlink_component(candidate_path):
+            raise ValueError("candidate path contains a symlink")
+        if not candidate_path.exists():
+            return {
+                "schema": "v14.model-compare/1", "status": "CANDIDATE_NOT_INSTALLED",
+                "role": ROLE, "candidate_id": candidate_id,
+                "candidate": {"model_id": candidate["model_id"], "revision": candidate["revision"],
+                              "license_id": candidate["license_id"], "license_url": candidate["license_url"],
+                              "license_snapshot_sha256": candidate["license_snapshot_sha256"],
+                              "expected_size_bytes": candidate["file"]["size"], "expected_sha256": candidate["file"]["sha256"]},
+                "download_performed": False, "manifest_mutated": False, "production_swap": False,
+                "next_step": "Place the exact pinned GGUF in the isolated lab slot only after separate explicit download consent; then rerun this read-only comparison.",
+            }
+
+        binary = home / "bin" / "llama-server"
+        if has_symlink_component(binary) or not binary.is_file() or not os.access(binary, os.X_OK):
+            raise RuntimeError("installed llama-server missing or not executable")
+        binary_resolved = binary.resolve(strict=True)
+        override = os.environ.get("V13_LLAMA_SERVER")
+        if override:
+            try:
+                override_resolved = Path(override).expanduser().resolve(strict=True)
+            except (OSError, RuntimeError) as exc:
+                raise RuntimeError("V13_LLAMA_SERVER override cannot be verified") from exc
+            if override_resolved != binary_resolved:
+                raise RuntimeError("V13_LLAMA_SERVER override differs from installed llama-server")
+
+        binary_before = binary_resolved.stat()
+        binary_info = {
+            "file_name": binary_resolved.name,
+            "size_bytes": binary_before.st_size,
+            "sha256": sha256_file(binary_resolved),
+        }
+        binary_after = binary_resolved.stat()
+        binary_identity = lambda item: (
+            item.st_dev, item.st_ino, item.st_size, item.st_mtime_ns, item.st_ctime_ns
+        )
+        if binary_identity(binary_before) != binary_identity(binary_after):
+            raise RuntimeError("installed llama-server changed during preflight")
+
+        # Keep large copies on the V13 data volume, not a possibly RAM-backed /tmp.
+        with tempfile.TemporaryDirectory(prefix="v14-model-compare-", dir=str(home / "data")) as tmp:
             lab_home = Path(tmp)
-            for folder in ("bin", "logs", "tmp", "config"):
+            for folder in ("bin", "logs", "tmp", "config", "models"):
                 (lab_home / folder).mkdir()
-            (lab_home / "bin" / "llama-server").symlink_to(binary.resolve())
+            (lab_home / "bin" / "llama-server").symlink_to(binary_resolved)
+
+            required_bytes = baseline_file["size"] + candidate["file"]["size"] + 32 * 1024 * 1024
+            if shutil.disk_usage(lab_home).free < required_bytes:
+                raise RuntimeError("insufficient free disk for two verified model staging copies")
+
+            staged_baseline = lab_home / "models" / "baseline.gguf"
+            staged_candidate = lab_home / "models" / "candidate.gguf"
+            stage_verified_file(
+                baseline_path, staged_baseline,
+                expected_size=baseline_file["size"], expected_sha256=baseline_file["sha256"])
+            stage_verified_file(
+                candidate_path, staged_candidate,
+                expected_size=candidate["file"]["size"], expected_sha256=candidate["file"]["sha256"])
+            baseline_info = {**validate_gguf(staged_baseline, baseline_file), "file_name": baseline_path.name}
+            candidate_info = {**validate_gguf(staged_candidate, candidate["file"]), "file_name": candidate_path.name}
+            if candidate_info["sha256"] == baseline_info["sha256"]:
+                raise ValueError("candidate and installed baseline are the same artifact")
+
             model_rows = {
                 "baseline": {"model_id": baseline_spec["model_id"], "revision": baseline_spec["revision"],
                              "license_id": baseline_spec["license_id"], "license_url": baseline_spec.get("license_url"),
                              "quant_format": baseline_spec.get("quant_format"), **baseline_info},
                 "candidate": {"model_id": candidate["model_id"], "revision": candidate["revision"],
                               "license_id": candidate["license_id"], "license_url": candidate["license_url"],
+                              "license_snapshot_sha256": candidate["license_snapshot_sha256"],
+                              "license_snapshot_path": candidate["license_snapshot_path"],
                               "license_evidence": candidate.get("license_evidence"),
                               "quant_format": candidate.get("quant_format"), **candidate_info},
             }
             sequence = ["baseline", "candidate"] if order == "baseline-first" else ["candidate", "baseline"]
+            specs = {"baseline": baseline_file, "candidate": candidate["file"]}
+            staged_paths = {"baseline": staged_baseline, "candidate": staged_candidate}
             results = {}
             for label in sequence:
-                path = baseline_path if label == "baseline" else candidate_path
+                path = staged_paths[label]
+                validate_gguf(path, specs[label])
                 results[label] = run_model(
-                    runner_cls, lab_home, path, cfg, timeout_s, max_tokens, expected_binary=binary)
+                    runner_cls, lab_home, path, cfg, timeout_s, max_tokens,
+                    expected_binary=binary_resolved, expected_binary_info=binary_info)
+                validate_gguf(path, specs[label])
                 if not results[label]["release"]["process_reaped"]:
                     break
             runner_infos = [results[label]["runner_binary"] for label in sequence if label in results]
@@ -350,10 +467,13 @@ def compare(home: Path, candidate_id: str, candidate_path: Path | None = None,
                 "safety": {"download_performed": False, "manifest_mutated": False, "production_swap": False,
                            "chat_history_read": False, "sqlite_database_read": False,
                            "active_lora_applied": False, "user_memory_applied": False, "context_os_applied": False,
-                           "max_concurrent_native_runners": 1, "coordinator_lock_acquired": True},
+                           "max_concurrent_native_runners": 1, "coordinator_lock_acquired": True,
+                           "model_files_staged": True, "staged_model_files_read_only": True},
                 "limits": ["C3 isolated native model probe, not full Runtime/Context OS/B1/B2 E2E.",
                            "Four exact-output tasks are diagnostic, not a broad quality benchmark.",
                            "No active LoRA, user memory or Context OS prompt is applied.",
+                           "Installed model files are copied and hash-verified under the coordinator lock before inference.",
+                           "The temporary staging directory is on the V13 data volume, not a RAM-backed default temp path.",
                            "One model runs at a time; run both order settings on a cool device to expose thermal/order bias.",
                            "Linux/Termux measurements do not prove Redmi performance unless executed on the actual phone."],
             }

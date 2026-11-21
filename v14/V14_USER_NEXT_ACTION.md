@@ -18,17 +18,6 @@
 
 Wenn QA den Auto-Updater auf dem Redmi unabhängig überprüft hat, darf ein freigegebenes, rücksetzbares Update künftig ohne neue manuelle Terminalbefehle erfolgen. Wenn die Geräteverbindung/Updater fehlt, **genau das** mitteilen und nur den kleinsten tatsächlichen notwendigen Schritt nennen.
 
-## Research & Perception checkpoint — 2026-11-21
-
-- PR #2142 is open and ready for review: https://github.com/RedMentos/Aii/pull/2142. It adds a read-only C3 comparison lab using the V13 LlamaRunner, exact candidate hashes/licensing, sequential one-model-at-a-time execution, and four diagnostic tasks including 2+2.
-- Exact V14 model-lab CI run 44849343250 PASS on code/manifest SHA 6aadf841: Python 3.13.18, py_compile, candidate JSON validation, 13/13 tests. Later candidate-manifest license wording/status-label edits were checked with LOCAL_LINUX JSON_PARSE_PASS; CI was not rerun for those metadata-only edits. No real GGUF inference was run.
-- Candidate: prior LFM2.5-230M QAD_Q4_0, 149,081,056 bytes, about 32% smaller than the registry's 350M C3 baseline. It is only a candidate. Historical Redmi evidence in issue #1904 reports C3 230M answered 2 instead of 4 for 2+2, so it is not a trusted reasoning replacement. LFM Open License 1.0 is not Apache-2.0; its Section 5 restricts commercial use by legal entities exceeding the defined USD 10M annual-revenue threshold and states a qualified non-profit exception for non-commercial/research purposes. No model file was downloaded, no installed manifest or weights changed, and no production swap is recommended from file size alone.
-- Research caveat: Transferable Latency Prediction (arXiv:2607.21602, 2026-05-11) supports separating prefill/decode, but its request-level random split plus per-run telemetry/generated-token descriptors leaves a possible test-telemetry leakage ambiguity; within-device test sets are only 11/41 requests. We adopt the measurement schema, not the predictor or its headline R². DVFSLM (arXiv:2609.13153, 2026-07-08) is evaluated with Jetson GPU/EMC frequency controls, not ordinary Termux CPU inference.
-- Native model comparison: NOT_RUN. Candidate presence on the Redmi is UNKNOWN. Redmi remains REDMI_UNVERIFIED. The lab requires both models already present or a separate explicit consent for an isolated candidate download; a later production swap would require a second separate approval and rollback evidence.
-- Latest merged code-bearing SHA 3db6d1f (#2137) now has exact merge-push CI GREEN. It is still not installed on the Redmi. PR #2142 is a research branch, not a release or deployment. No updater action or device mutation was attempted.
-- Next developer action: Core/QA review #2142; if the exact 230M GGUF is already present on the authorized Redmi, run baseline-first and candidate-first with V13 idle and record TTFT/prefill/decode/RSS/PSS and task checks. If absent, ask for explicit isolated-download consent first. B1/B2 comparisons remain open.
-- User action: none.
-
 ## Wie eine nützliche Meldung aussehen muss
 
 **Beispiel – nur als Format, nicht als echter Testbericht:** „Seit unserem letzten Gespräch hat das Team den B1/B2→C3-Consumer in Commit ABC integriert. Test X lief lokal (12/12), Redmi ist noch ungetestet. Eine Alternative zu C3 spart in echten Messungen Y MB, verliert aber auf Z Testfällen; willst du sie versuchsweise in einem getrennten Slot testen? Ich habe noch nichts an deiner Installation geändert.“
@@ -39,16 +28,16 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 
 | Feld | Aktueller Wert |
 |---|---|
-| source_HEAD | Current shared branch base `c3c32c05a0374e970d274f8a777a7ab85c067d66` (Boss integration/docs checkpoint). Latest code-bearing merge `3db6d1f00fceab9e7755bc8f4c25882ef7f19258` (#2137) now has exact merge-push CI GREEN: staged-runtime 240 passed/10 skipped/47 subtests; integrated regression 415 passed/3 skipped/58 subtests; V14 T8 real-Store workflow PASS. Current shared branch base `c3c32c05a0374e970d274f8a777a7ab85c067d66` is a docs/integration checkpoint on top. None is a verified Redmi installation. |
-| last_integrated_functional_change | PR #2136 merged: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter, synthetic only; PR #2137 merged as `3db6d1f` adds a Store-bound scalar T8 receiver with exact merge-push CI green, but it is not yet a normal Runtime learning consumer |
-| local_test_result | Full repository checkout NOT_RUN (GitHub DNS blocked); isolated model-lab implementation copy: py_compile PASS, 13/13 synthetic tests PASS. Exact branch CI run 44849343250 PASS. |
-| ci_test_result | PR #2138 updater gate is green on `5b9171a4`. Latest merged code SHA `3db6d1f` now has exact merge-push staged-runtime and integrated regression PASS (240/10 skipped/47 subtests; 415/3 skipped/58 subtests) plus V14 T8 real-Store workflow 44847403231 PASS. V14 model-lab PR #2142 exact CI run 44849343250 PASS (13 tests, Python 3.13.18); isolated lab only, no native model inference. |
+| source_HEAD | `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (PR #2138 merge readback 2026-11-21; exact staged push CI still running) |
+| last_integrated_functional_change | PR #2136 merged in `16f75fca`: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter; not yet called by normal Runtime/chat input, synthetic only |
+| local_test_result | NOT_RUN — no full local repository checkout in this worker |
+| ci_test_result | PR #2138 exact head `8ca7a298` passed owner-read (27+33 tests), Python 3.14 staged startup, offline bridge, staged-runtime (240/10 skipped/47 subtests), integrated regression (415/3 skipped/58 subtests); additive-only policy check failed on intentional existing-file changes and was not bypassed. Boss merged it as `5b9171a4`. On the exact merge SHA: owner-read push PASS, private-bridge push PASS, staged-context push IN_PROGRESS; source-contracts and integrated-regression also IN_PROGRESS. Latest-run gate correctly blocks until the newer staged run finishes. |
 | phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
-| device_model_comparison | LAB_CODE_READY / NEW_A_B_NATIVE_NOT_RUN / HISTORICAL_230M_2_PLUS_2_FAIL / REDMI_UNVERIFIED |
-| proposed_model_change | NONE — LFM2.5-230M is a diagnostic candidate only; historical Redmi 2+2 quality failure; no download or swap |
+| device_model_comparison | NOT_RUN |
+| proposed_model_change | NONE – erst anhand echter Tests |
 | requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
-| next_developer_action | Core/QA review #2142. If the exact 230M GGUF is already present on the authorized Redmi, run both comparison orders while V13 is idle. If absent, request separate consent before an isolated download. Keep production unchanged; continue Core/JEPA whole-Canon integration. |
+| next_developer_action | Finish exact merge-SHA CI for `5b9171a4`; if green, obtain a fresh owner-verified PIPELINE_STATUS receipt before any device update. Core/JEPA rebuild staged hash-pinned candidate chains for #2139/#2140/#2135, fix the actual consumer failures and rerun staged-runtime + integrated regression; continue whole-Canon integration. |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
@@ -248,70 +237,3 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - Private read-only issues #351–354 have no device comments; installed SHA and auto-update consent remain UNKNOWN / REDMI_UNVERIFIED. No UPDATE_REQUEST or phone mutation.
 - Exact local full-suite checkout remains BLOCKED by GitHub DNS resolution; no LOCAL_LINUX full-suite PASS is claimed. No Redmi/native-model/voice/Android-control proof.
 - No model, weights, Age, permissions, database, chat or user data changed. **User action: none.**
-
-
-### Later exact merge-push correction — 21 November 2026
-
-The earlier 01:05 checkpoint's "integrated-regression push still IN_PROGRESS" is superseded by the later exact-SHA readback:
-
-- Merge commit 3db6d1f00fceab9e7755bc8f4c25882ef7f19258 now has all 13 associated workflow runs completed with conclusion SUCCESS.
-- Exact staged-context/integrated-regression run 44847403139: staged-runtime 240 passed, 10 skipped, 47 subtests; integrated regression 415 passed, 3 skipped, 58 subtests.
-- Exact V14 T8 real-Store workflow 44847403231: PASS.
-- This establishes merge-push CI green for 3db6d1f. It does not establish Redmi installation, normal Runtime learning-consumer acceptance, native JEPA/latent coupling, or P0 chat correctness. Private owner-read issues #351–354 still have no device comments; REDMI_UNVERIFIED remains.
-
-
-### Research & Perception — QA measurement-integrity correction, 21 November 2026
-
-- QA found a real benchmark attribution bug in PR #2142: V13 `LlamaRunner` honors the `V13_LLAMA_SERVER` environment override, but the original report hashed only the installed `home/bin/llama-server`. A different override could have produced measurements attributed to the wrong executable.
-- Fixed on branch `research-perception/model-compare-c3-20261121`, head `fef505ac3f6ea30f034fdce5ee5a9abc6b5c30b7`: the lab now verifies the runner's resolved executable before generation, checks the actual loaded `_loaded_binary` after launch, compares the baseline/candidate executable digests, and reports identity from the runner rather than assuming the installed path.
-- Added three regressions; the model-lab test file now contains 16 tests. LOCAL_LINUX isolated helper checks: `py_compile` PASS and 5/5 executable-identity tests PASS. This is not a full repository test. Local full checkout remains BLOCKED by GitHub DNS.
-- Exact PR-head model-lab CI run 44853309109 was IN_PROGRESS at last readback; do not promote it to PASS until a completed exact-head result is read back.
-- No GGUF inference, download, model swap, updater action or Redmi operation occurred. Redmi remains REDMI_UNVERIFIED; NOT_RELEASED. The 230M candidate remains diagnostic-only due to the historical #1904 2+2 failure.
-- Next: wait for exact-head CI and independent Core/QA review. If the candidate is already present on the authorized Redmi, compare both orders while V13 is idle; otherwise request separate consent before any isolated download. No user action is currently required.
-
-
-### Research & Perception — exact executable-identity regression result, 21 November 2026
-
-- The first rerun exposed a test-message mismatch, not a bypass: the implementation rejected the changed loaded executable, while one assertion expected a more specific error phrase. The assertion was corrected; the fail-closed executable check was not weakened.
-- Exact code/test SHA `f5c5265a89258a6fd1ab5d25c20c733d21bb2ab4` passed GitHub model-lab run 44853451281 on Linux/Python 3.13.18: `py_compile`, candidate-manifest JSON validation and 16/16 tests.
-- LOCAL_LINUX isolated helper-level checks: `py_compile` PASS, 5/5 identity tests PASS. Full repository checkout remains blocked by DNS; this is not a local full-suite or native inference result.
-- LlamaRunner's configured executable and actual loaded executable are now both resolved against the verified installed binary; the baseline and candidate must use the same digest. A mismatched `V13_LLAMA_SERVER` override fails before generation.
-- No GGUF inference, download, model swap, updater action or phone operation occurred. Redmi remains REDMI_UNVERIFIED; PR #2142 is not a release.
-- Remaining A5 gap: current RAW EAR measures RMS/peak/ZCR only; pitch, voicing, speech/non-speech and prosody are explicitly unmeasured. The staged Core overlay rechecks consent at downstream consumers but is still caller-supplied synthetic PCM, not microphone or full voice I/O.
-- Next developer action: independent Core/QA review of #2142; then keep the C3 candidate diagnostic-only until a separately authorized Redmi comparison. In parallel, develop a lightweight timed prosody/voicing feature layer and test ARM cost before wiring it into the normal audio consumer.
-- User action: none.
-
-
-### A5 Perception contract review — 21 November 2026
-
-- Review of Core PR #2144 found that its Runtime `audio_window` contract has no explicit finality field and calls the current PCM bridge with default `FINAL`. A partial/provisional capture could therefore be promoted to final at the Runtime boundary.
-- I posted a code-level coordination finding on #2144: pass explicit validated `PROVISIONAL|FINAL` through the queue and packet builder; verify provisional audio can influence A4 only as provisional but is excluded from B1/B2/C3 prompt admission, while final audio can be admitted and revocation still blocks every consumer.
-- The staged Core path does recheck consent at A5 admission, context creation and each B1/B2/C3 read. It remains caller-supplied synthetic PCM, not Android microphone capture.
-- The existing RAW EAR extractor currently measures RMS/peak/zero-crossing rate only; pitch, voicing, speech/non-speech probability and prosody are explicitly unmeasured. A future lightweight feature layer should add timed energy/F0/voicing/prosody and a non-identifying speaker-change cue, then measure ARM CPU/RSS before use.
-- No Core-owned source was modified. No phone action or model operation occurred. Redmi remains REDMI_UNVERIFIED; user action: none.
-
-
-### RAW EAR research candidate — 21 November 2026
-
-- Full rVAD paper read: Tan, Sarkar & Dehak, *Computer Speech & Language* 59 (2020), DOI 10.1016/j.csl.2019.06.005; arXiv preprint 2019-06-09. It reports rVAD-fast roughly 14–17× faster than the pitch version on a desktop i7-4790/16 GB, but the spectral-flatness variant breaks down under white noise. That speed figure is not Android evidence.
-- Reuse candidate: `libfvad`, a standalone WebRTC VAD fork marked BSD-3-Clause; its separate PATENTS file also carries Google's additional patent grant/termination language. The upstream API accepts 8/16/32/48 kHz and 10/20/30 ms frames. No pinned revision or ARM64/Termux build has been tested.
-- rVAD's linked ZIP source license remains unverified; no code copied.
-- Next test: current RMS/peak/ZCR baseline versus framed F0/voicing + energy contour and optional libfvad; synthetic voiced/unvoiced/silence/burst-noise controls, false-accept/false-reject, CPU/RSS, then an authorized ARM64 build. Keep non-speech acoustic events; VAD must not erase them from RAW EAR.
-
-
-### Core audio CI follow-up — 21 November 2026
-
-- Latest PR #2144 exact-head run 44853452893 fails one assertion because the test expects a provenance expression that omits the already-present `source_recall_refs` component. The staged builder includes both source-recall refs and the audio source; I posted the exact replacement expression to Core.
-- Earlier run 44853319109 fails because `staged_tests.mkdir()` is called after the stager already created `tests/`; use `exist_ok=True` or a fresh destination.
-- PR #2144 remains draft. Neither CI failure is an Android/audio success. The separate Runtime finality-promotion risk (implicit FINAL) still needs an explicit contract field and negative test.
-
-
-### Core staged-audio integration — full CI blocker set, 21 November 2026
-
-PR #2144 remains draft. Exact-head workflows currently expose four separate failures:
-1. `44853319109`: `staged_tests.mkdir()` collides with the `tests/` directory created by the stager.
-2. `44853452893`: provenance assertion expects the old expression without `source_recall_refs`; builder includes source-recall refs plus the audio ref.
-3. `44853452891`: strict additive validator rejects staged builder/script paths outside its allowed inert-module/test/handoff scope. Do not broadly weaken this safety gate; Core needs an explicit narrow scope decision or a restructured candidate.
-4. `44853452940`: 239 passed, 10 skipped, 47 subtests passed, 1 failed; recovery-stage test expects the 2026-11-12 builder name while the manifest uses the hash-bound 2026-11-21 builder.
-
-I posted these findings to Core. The separate missing FINAL/PROVISIONAL Runtime field still needs a negative test. No audio feature has been Android-verified.

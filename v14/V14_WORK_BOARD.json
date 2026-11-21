@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T03:12:00+01:00",
+  "updated_at": "2026-11-21",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -90,19 +90,12 @@
       "owner": "Research & Perception",
       "reviewer": "Core & QA",
       "priority": "P1",
-      "status": "IN_PROGRESS_PARTIAL",
+      "status": "READY",
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
-      "proof_environment": "Exact PR code/test SHA f5c5265a89258a6fd1ab5d25c20c733d21bb2ab4: GitHub Linux/Python 3.13.18 model-lab run 44853451281 PASS (py_compile, JSON validation, 16/16 tests). LOCAL_LINUX isolated helper-level executable identity checks 5/5 PASS; full local repository checkout/test BLOCKED by GitHub DNS. Native GGUF inference NOT_RUN; no download/swap. REDMI_UNVERIFIED.",
-      "next_step": "Independent Core/QA review of PR #2142. If accepted, run both orders only if the exact pinned 230M GGUF is already present on the authorized Redmi and V13 is idle; otherwise request separate explicit consent before an isolated download. Require broad quality, TTFT/prefill/decode, RSS/PSS and rollback evidence before any separate production-swap approval. Extend B1/B2 comparison separately.",
-      "user_action_required": false,
-      "last_checkpoint": "2026-11-21 Research & Perception: LlamaRunner executable-identity QA finding fixed; preflight runner.binary and post-load _loaded_binary must resolve to the verified installed executable. Exact CI run 44853451281 PASS on code/test SHA f5c5265 (16/16). Local helper 5/5 PASS. Native inference NOT_RUN; no model download/swap or current Redmi receipt.",
-      "latest_candidate_pr": {
-        "pr": 2142,
-        "tested_code_sha": "f5c5265a89258a6fd1ab5d25c20c733d21bb2ab4",
-        "ci": "Exact code/test SHA f5c5265: GitHub Linux/Python 3.13.18 run 44853451281 PASS (py_compile, JSON validation, 16/16 tests). LOCAL_LINUX helper-level identity checks 5/5 PASS. Full repository checkout BLOCKED by DNS; native inference NOT_RUN; Redmi UNVERIFIED.",
-        "scope": "Read-only C3 LFM2.5-350M baseline vs pinned LFM2.5-230M candidate; no B1/B2, no download, no production swap"
-      }
+      "proof_environment": "NOT_RUN",
+      "next_step": "Audit specs/models.json, model manager and available tests; produce comparative executable experiment without automatic production swap",
+      "user_action_required": false
     },
     {
       "id": "V14-006",
@@ -113,10 +106,9 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "PR #2136 merged in release ancestor 16f75fca: consented PCM16 → PerceptPacket → A4/C3-admission adapter. Runtime does not yet consume it from normal audio/chat input. PR #2139 adds caller-supplied PCM16 B1/B2/C3 context but staged/integrated regression fails 30/208/10 skipped/2 errors because hash-pinned downstream candidates still target old runtime.py. No Android microphone or voice proof. Additional Perception review of Core PR #2144: staged audio consumer rechecks consent at A5 admission and B1/B2/C3 reads, but its Runtime audio_window schema has no finality field and calls consume_pcm16_window with default FINAL; PROVISIONAL cannot currently survive the Runtime boundary. Current RAW EAR features remain RMS/peak/ZCR only; pitch/voicing/speech-nonspeech/prosody are explicitly unmeasured. No microphone/Android proof. Research read 2026-11-21: full rVAD paper sections/results inspected; no source-code license verified for its linked ZIP. libfvad repository reports BSD-3-Clause and carries a separate PATENTS grant; no Android/ARM64 build measured. Core PR #2144 latest exact-head CI 44853452893 FAIL: over-specific provenance string assertion omits the existing source_recall_refs term; prior 44853319109 FAIL: staged_tests.mkdir() collides with directory created by stager. Both are test fixture/assertion failures, not audio proof; PR remains draft. Further exact-head Core PR #2144 CI: run 44853452891 FAIL because candidate paths are outside strict additive validator allowlist (not a guard to bypass broadly); run 44853452940 FAIL 239 passed/10 skipped/47 subtests/1 failure because recovery-stage test still expects 2026-11-12 builder name instead of hash-bound 2026-11-21 builder. These are separate from the provenance assertion and mkdir fixture.",
-      "next_step": "Core: resolve all four CI blockers on #2144: idempotent staged_tests directory, provenance assertion includes source_recall_refs, stale recovery builder filename expectation updated to the actual hash-bound 2026-11-21 builder, and an explicit safe additive-scope decision for the new script paths (do not widen the validator generically). Then add explicit FINAL/PROVISIONAL pass-through and negative admission test. Keep draft until all exact-head workflows pass and Boss review accepts the single shared stage chain.",
-      "user_action_required": false,
-      "last_checkpoint": "2026-11-21 Research/Perception review of #2144: found finality promotion risk (Runtime path always defaults FINAL) and confirmed current acoustic features RMS/peak/ZCR only. Posted exact fix/test request to Core; no edits to Core-owned files."
+      "proof_environment": "PR #2136 merged in release ancestor 16f75fca: consented PCM16 → PerceptPacket → A4/C3-admission adapter. Runtime does not yet consume it from normal audio/chat input. PR #2139 adds caller-supplied PCM16 B1/B2/C3 context but staged/integrated regression fails 30/208/10 skipped/2 errors because hash-pinned downstream candidates still target old runtime.py. No Android microphone or voice proof.",
+      "next_step": "Research/Perception align the A5 producer/receiver consent receipt and A4 revocation boundary; Core rebuilds downstream immutable Runtime candidates and wires a normal input consumer; QA keeps microphone and voice-output acceptance REDMI_UNVERIFIED until real OS permission evidence.",
+      "user_action_required": false
     },
     {
       "id": "V14-007",

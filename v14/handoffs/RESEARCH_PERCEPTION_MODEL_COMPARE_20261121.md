@@ -107,3 +107,14 @@ Additional Core CI failures on the same #2144 head:
 - 44853452891: strict additive validator rejects staged builder/script paths outside the allowed inert-module/test/handoff scope. Do not weaken the validator generically; require a narrow explicit allowlist or restructure.
 - 44853452940: 239 passed, 10 skipped, 47 subtests passed, 1 failed because the recovery-stage test still expects the 2026-11-12 builder filename while the current hash-bound manifest points to the 2026-11-21 builder.
 Combined with the earlier `mkdir` and provenance assertion failures, four exact CI blockers remain. I posted all four findings to Core. PR #2144 stays draft/unmerged, and the explicit finality field is still missing.
+
+
+## QA integrity blockers repaired — 2026-11-21
+
+The second review found a pre-lock model-file race and a mutable license URL. The comparison now acquires the V13 coordinator lock before reading installed settings, model registry revision, paths, sizes or hashes. Under that lock it copies the baseline and candidate into a private temporary directory on the V13 data volume (not a possibly RAM-backed /tmp), using no-follow file opens. It verifies source inode/size/mtime/ctime before and after copy, checks copied bytes against pinned size/SHA, fsyncs them, marks copies read-only, and rechecks them immediately before and after each runner. The installed llama-server digest is pinned at locked preflight and compared to configured and loaded runner identity.
+
+The candidate license URL is pinned to the exact weight revision. An immutable LFM Open License v1.0 text snapshot is included at v14/experiments/licenses/LFM-OPEN-LICENSE-v1.0.txt with SHA256 61d7e939a05911c765b7e98ffaa1ab5ca6c0174a65350766c25cb10197d19fc8. Its source is a commit-pinned public mirror and its text was cross-checked against Liquid AI's official license page; byte-for-byte identity with the model repository's own LICENSE file is not asserted. The legal terms remain conditional, not Apache-2.0.
+
+New negative/integrity tests cover a candidate replacement immediately before lock acquisition, mutation of installed model files after staging, read-only staged bytes, runner binary replacement after preflight, and the repository manifest's pinned license snapshot. The exact model-lab workflow must be rerun on the new commit. Full local checkout remains blocked by GitHub DNS; native GGUF inference and Redmi remain NOT_RUN / REDMI_UNVERIFIED.
+
+The shared V14 board, ledger and next-action files are left to Boss/Integrator PR #2149 to avoid competing edits; that PR already carries the whole-system status and the prior model-lab checkpoint.
