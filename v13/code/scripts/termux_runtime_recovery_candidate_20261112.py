@@ -140,7 +140,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         raise ValueError('C4 source-span overlay missing or unsafe')
     focal_overlay_raw = focal_overlay_path.read_bytes()
     focal_overlay_blob = hashlib.sha1(
-        b'blob ' + str(len(focal_overlay_raw)).encode('ascii') + b'\\0' + focal_overlay_raw
+        b'blob ' + str(len(focal_overlay_raw)).encode('ascii') + b'\0' + focal_overlay_raw
     ).hexdigest()
     if focal_overlay_blob != '9987525960ba0955dd2fd57d421e32f4b76b892c':
         raise ValueError('C4 source-span overlay source changed')
