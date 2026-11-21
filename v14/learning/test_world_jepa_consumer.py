@@ -420,6 +420,12 @@ def test_oldest_first_pages_do_not_starve_older_t8_backlog(tmp_path):
         assert first["status"] in {
             "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED",
         }
+        if first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
+            assert first["metrics"]["has_more"] is True
+        else:
+            assert first["utility_gate_accepted"] is False
+            assert first["native_body_weights_changed"] is False
+            assert first["native_body_consumed"] is False
         payload, _ = store.state("v14.world_jepa.store_consumer", None)
         first_cursor = payload["scan_cursor"]
         assert first_cursor == cursor
@@ -443,6 +449,12 @@ def test_oldest_first_pages_do_not_starve_older_t8_backlog(tmp_path):
         assert second["status"] in {
             "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED",
         }
+        if second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
+            assert second["metrics"]["has_more"] is True
+        else:
+            assert second["utility_gate_accepted"] is False
+            assert second["native_body_weights_changed"] is False
+            assert second["native_body_consumed"] is False
         payload, _ = store.state("v14.world_jepa.store_consumer", None)
         second_cursor = payload["scan_cursor"]
         assert second_cursor == cursor2 and second_cursor > first_cursor
