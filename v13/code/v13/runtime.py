@@ -161,7 +161,7 @@ class Runtime:
         if not self.idle():raise ValueError('Erst laufenden Vorgang beenden (:cancel); dann erneut ausführen.')
     def submit(self,text,*,audio_window=None):
         if audio_window is not None:audio_window=_validate_audio_window(audio_window)
-        b=len(text.encode())
+        b=len(text.encode())+(len(audio_window['pcm16']) if audio_window is not None else 0)
         if not text.strip():raise ValueError('Leere Eingabe')
         if b>self.cfg['input_bytes']:raise Limits('Eingabe zu lang: '+str(self.cfg['input_bytes'])+' Bytes')
         with self.lock:
@@ -409,7 +409,9 @@ class Runtime:
             return None,None
         source=packet_value.get('source_ref')
         segments=packet_value.get('segments')
-        if type(source) is not dict or type(segments) is not list or len(segments)!=1:
+        if (type(source) is not dict or type(segments) is not list or len(segments)!=1
+                or packet_value.get('event_id')!=eid
+                or packet_value.get('brain_generation_id')!=self.store.generation_id):
             return None,None
         receipt=segments[0].get('consent_receipt_ref') if type(segments[0]) is dict else None
         check_consent=audio_window.get('consent_check') if type(audio_window) is dict else None
@@ -422,7 +424,9 @@ class Runtime:
         for item in selected:
             summary=getattr(item,'summary',None)
             start=getattr(item,'start_ms',None);end=getattr(item,'end_ms',None)
-            if (type(summary) is not str or not summary or len(summary)>256
+            if (getattr(item,'source_id',None)!=source.get('source_id')
+                    or getattr(item,'modality',None)!='audio'
+                    or type(summary) is not str or not summary or len(summary)>256
                     or type(start) is not int or type(end) is not int
                     or start<0 or end<=start or end-start>1000):
                 continue
