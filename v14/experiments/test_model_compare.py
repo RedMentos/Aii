@@ -333,5 +333,45 @@ class ModelCompareTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(snapshot.read_bytes()).hexdigest(), row["license_snapshot_sha256"])
 
 
+    def test_report_write_is_private_exclusive_and_readback(self):
+        path = model_compare.write_report_safely(self.home, "model-lab-report.json", '{"safe":true}')
+        self.assertEqual(path.parent, self.home / "data")
+        self.assertEqual(path.read_text(encoding="utf-8"), '{"safe":true}\\n')
+        info = path.stat()
+        self.assertTrue(stat.S_ISREG(info.st_mode))
+        self.assertEqual(stat.S_IMODE(info.st_mode), 0o600)
+        self.assertEqual(info.st_nlink, 1)
+        with self.assertRaisesRegex(FileExistsError, "refusing overwrite"):
+            model_compare.write_report_safely(self.home, "model-lab-report.json", '{"safe":false}')
+        self.assertEqual(path.read_text(encoding="utf-8"), '{"safe":true}\\n')
+
+    def test_report_symlink_target_refused_without_touching_target(self):
+        outside = Path(self.tmp.name) / "outside-report.txt"
+        outside.write_text("preserve this file", encoding="utf-8")
+        link = self.home / "data" / "linked-report.json"
+        link.symlink_to(outside)
+        with self.assertRaisesRegex(ValueError, "symlink"):
+            model_compare.write_report_safely(self.home, "linked-report.json", '{"secret":false}')
+        self.assertEqual(outside.read_text(encoding="utf-8"), "preserve this file")
+
+    def test_report_traversal_and_external_paths_refused(self):
+        with self.assertRaisesRegex(ValueError, "direct child"):
+            model_compare.write_report_safely(self.home, "../escape.json", "{}")
+        outside = Path(self.tmp.name) / "outside.json"
+        with self.assertRaisesRegex(ValueError, "direct child"):
+            model_compare.write_report_safely(self.home, outside, "{}")
+        self.assertFalse(outside.exists())
+
+    def test_report_symlinked_data_directory_refused(self):
+        old_data = self.home / "data"
+        moved_data = self.home / "data-original"
+        old_data.rename(moved_data)
+        external_data = Path(self.tmp.name) / "external-data"
+        external_data.mkdir()
+        old_data.symlink_to(external_data, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, "symlink"):
+            model_compare.write_report_safely(self.home, "report.json", "{}")
+        self.assertFalse((external_data / "report.json").exists())
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
