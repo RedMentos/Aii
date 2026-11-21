@@ -375,3 +375,26 @@ The merged #2155 adapter extracts heuristic pitch/voicing/energy/activity cues f
 - No paper code, third-party dependency, dataset or weights were imported. ACM/ACL paper text is cited as research only; no license to copy its code is inferred. The proposed experiment is not a native model or Redmi result.
 
 **Status:** RESEARCHED / EXPERIMENT_PROPOSED / C4_SOURCE_SPAN_RULE_MERGED_INTEGRATION_CI_GREEN / NO_ANDROID_PROOF.
+
+
+---
+
+## Implementation evidence update — 2026-11-21 18:04 CET
+
+This is a negative experimental result from the current V14 implementation branches, not a new paper and not a claim of native model learning.
+
+### WorldJEPA A→B→A retention result
+- **PR #2231 exact head:** `11b85db03c906d8616916bc6325a4c11ff2a9870`, base `7a07d01d3f6c9c3a4fb96511ae7decd73c27ccf9`.
+- **PR #2237 exact head:** `390c12c2822645ec46a849901c467e0748f00390`, stacked on #2231.
+- The uniform, uniform-budget and session-contiguous replay variants, in both full and predictor-only modes, report `UTILITY_GATE_REJECTED`. The emitted old-holdout-retention checks fail, with old-task loss deltas roughly **+0.009 to +0.270**. Some new-task holdouts improve, but those gains do not compensate for old-task regression.
+- The shared documentation head `7a07d01` also has a Python 3.14 T8 failure in `test_pending_cohort_rollback_rewinds_cursor_and_replays_verified_rows`: the utility gate rejects the candidate, while the test expects `UPDATED_EXPERIMENTAL_WORLD_JEPA`. This is consistent with a fixture/utility mismatch, not evidence that an update should be forced through.
+- **Environment:** GitHub Actions / synthetic Python–NumPy–SQLite–T8 state. No native GGUF body, Android device, Redmi training run or accepted production parameter update is involved.
+- **Conclusion:** zero accepted updates are established by this experiment. The utility gate is doing its job by rejecting old-task regression. Do not lower thresholds, relabel rejected candidates as successful learning, or enable the optimizer/learning gates.
+
+### Required next experiment
+1. Fix the staged recovery-builder pin for #2231 from the exact candidate bytes; rebind the recovery → integrated stage → runtime deployer SHA chain after every composed change.
+2. Construct matched source-disjoint A→B→A cohorts that can pass both new-task utility and old-task retention. Match update steps, replay mode/bytes, optimizer state and checkpoint budget; repeat across multiple seeds.
+3. Report exact parameter/gradient/EMA/optimizer-moment diffs, old and new holdout losses, action-shuffled and zero-update negative controls, restart equivalence, cursor replay and exact rollback.
+4. Keep the utility gate and all production/native learning permissions OFF until an accepted, reproducible update is demonstrated. A successful NumPy/SQLite experiment remains synthetic evidence only.
+
+**Research interpretation:** R-025 (STABLE-style per-organ drift governor) remains an experiment proposal, not an adopted algorithm. R-026 (source-bound C4 diversity, with MMR/xQuAD as future ablations) remains a separate heuristic/research track. No paper, source code, dependency, dataset or model weight was imported or promoted in this checkpoint.
