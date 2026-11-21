@@ -193,12 +193,13 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
         event["brain_generation_id"], [source_ref],
         action_id=outcome.action_id, status=outcome.status, actual=actual,
     )
-    # BEGIN IMMEDIATE serializes competing writers. The uniqueness check and
-    # packet insert therefore commit together, without a second replay ledger.
+    # BEGIN IMMEDIATE serializes competing writers. The nonce is scoped to
+    # the installation key, not to an event, so replay detection must scan all
+    # companion receipts while the packet insert is in the same transaction.
     with store.tx() as c:
         rows = c.execute(
-            "SELECT payload FROM packets WHERE kind=? AND event_id=?",
-            ("ActionOutcome", event_id),
+            "SELECT payload FROM packets WHERE kind=?",
+            ("ActionOutcome",),
         ).fetchall()
         for prior_row in rows:
             prior = json.loads(prior_row["payload"])
@@ -209,6 +210,7 @@ def persist_companion_outcome(store, outcome: ActionOutcome) -> dict:
                 continue
             if prior_actual.get("receipt_nonce") == nonce:
                 if (prior.get("action_id") == outcome.action_id
+                        and prior.get("event_id") == event_id
                         and prior_actual.get("digest") == digest):
                     return prior
                 raise InvalidOutcome("receipt nonce replay")
