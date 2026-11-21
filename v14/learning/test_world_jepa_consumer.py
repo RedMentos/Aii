@@ -133,6 +133,8 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
         assert math.isfinite(metrics["mean_delta_baseline_loss_before"])
         assert math.isfinite(metrics["mean_delta_baseline_loss_after"])
         assert metrics["mean_delta_baseline_action_count"] >= 2
+        assert metrics["optimizer_moments_persisted"] is False
+        assert metrics["inverse_dynamics_optimizer_persisted"] is False
         assert type(metrics["jepa_beats_mean_delta_before"]) is bool
         assert type(metrics["jepa_beats_mean_delta_after"]) is bool
         assert metrics["optimizer_moments_persisted"] is False
