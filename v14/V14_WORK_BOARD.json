@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T14:03:00Z",
+  "updated_at": "2026-11-21T14:04:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -202,9 +202,9 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "PR #2197 merged at 0fc4d2f9a76d530c366d67ea8148cd1c69666acd; exact push CI 28/28 check-runs and 17/17 workflows PASS. The narrow Android 13 /data/user/0 bind-mount identity guard requires system:system 0771 and st_dev/st_ino equality with /data/data; PR-head negative metadata fixtures pass. No real bind mount or Redmi proof. #2190 broker remains DRY_RUN_ONLY. #2200 adds synthetic caller-PCM16 A5/A4 -> B1/B2/C3 context but is blocked by #2192 consent race and derived-source revocation. No Android API executor, AccessibilityService, MediaProjection, UI action or device instrumentation. QA security follow-up: #2215 head 1eb484dd2e7243f1eb6f4a4de2c875353e831172 makes Proposal.args immutable via MappingProxyType and rechecks the canonical digest at approval and execution, closing post-approval mutable-dict substitution. Exact Android broker isolated run 44911591784: 38 passed. Safe-additive run 44911592029 fails by existing-module policy, as expected; Android sandbox replay run 44911591862 PASS (62 tests); staged/integrated remained in progress at the latest #2215 readback. The broker's live executor is still absent. The broker remains DRY_RUN_ONLY; confirmed_by_local_ui is still only a caller-supplied boolean and no authenticated companion/OS executor exists. No Android or Redmi action is implemented.",
-      "next_step": "Boss: manually review #2215 and its exact remaining staged/sandbox checks; do not waive safe-additive policy. Before any live executor, replace the caller-supplied confirmation boolean with authenticated local-UI/companion provenance and OS-permission checks, one-shot signed approvals, stop/revocation and audit. Verify on authorized Android 13 hardware only after a fresh owner receipt. Keep current broker DRY_RUN_ONLY.",
+      "next_step": "Boss: manually review #2215 and decide the existing-module safe-additive exception through normal review (no waiver). Before any live executor, replace the caller-supplied confirmation boolean with authenticated local-UI/companion provenance and OS-permission checks, one-shot signed approvals, stop/revocation and audit. Verify on authorized Android 13 hardware only after a fresh owner receipt. Keep current broker DRY_RUN_ONLY.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 #2215 broker 38 and sandbox replay 62 passed; staged/integrated pending"
+      "last_checkpoint": "2026-11-21 #2215 broker 38, sandbox 62, staged 249/10/47 and integrated 415/3/58 all PASS; safe-additive policy FAIL"
     },
     {
       "id": "V14-010",
