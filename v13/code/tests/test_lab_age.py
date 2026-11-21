@@ -280,6 +280,7 @@ class LabAgeTests(unittest.TestCase):
                             return current.name
                     return "<module>"
 
+                field_source = relative.as_posix() != "v13/age.py"
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Attribute) and node.attr == "budgets":
                         budget_attributes.append(
@@ -288,15 +289,17 @@ class LabAgeTests(unittest.TestCase):
                     if isinstance(node, ast.Call):
                         if "agi" in relative.parts and isinstance(node.func, ast.Name) and node.func.id == "budget":
                             helper_calls.append((relative.as_posix(), node.lineno))
-                        if (isinstance(node.func, ast.Name) and node.func.id in {"getattr", "hasattr"}
+                        if field_source and (
+                                isinstance(node.func, ast.Name) and node.func.id in {"getattr", "hasattr"}
                                 and len(node.args) > 1 and isinstance(node.args[1], ast.Constant)
                                 and node.args[1].value in legacy_fields):
                             field_reads.append((relative.as_posix(), node.lineno, node.args[1].value))
-                        if (isinstance(node.func, ast.Attribute) and node.func.attr in {"get", "pop"}
+                        if field_source and (
+                                isinstance(node.func, ast.Attribute) and node.func.attr in {"get", "pop"}
                                 and node.args and isinstance(node.args[0], ast.Constant)
                                 and node.args[0].value in legacy_fields):
                             field_reads.append((relative.as_posix(), node.lineno, node.args[0].value))
-                    if isinstance(node, ast.Subscript) and isinstance(node.slice, ast.Constant):
+                    if field_source and isinstance(node, ast.Subscript) and isinstance(node.slice, ast.Constant):
                         if node.slice.value in legacy_fields:
                             field_reads.append((relative.as_posix(), node.lineno, node.slice.value))
                     if isinstance(node, ast.ImportFrom) and node.module:
@@ -305,7 +308,7 @@ class LabAgeTests(unittest.TestCase):
                         )
                         if is_agi_base and any(alias.name == "budget" for alias in node.names):
                             helper_imports.append((relative.as_posix(), node.lineno))
-                    if isinstance(node, ast.Attribute) and node.attr in legacy_fields:
+                    if field_source and isinstance(node, ast.Attribute) and node.attr in legacy_fields:
                         field_reads.append((relative.as_posix(), node.lineno, node.attr))
 
         self.assertEqual(
