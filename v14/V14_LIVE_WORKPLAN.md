@@ -9,7 +9,7 @@
 - Older #2226/#2219/#2214/#2207 Perception branches were closed as superseded; their tested producer and regression coverage are carried into #2233.
 - **Core next:** after independent Boss review, rebase #2200 onto #2233 and update exact producer blob pin `9cae3b93388ea2c488e5af37a544ed0df5727f07`; use lease-yield `active is True` inside Store record/view without reacquiring the non-reentrant lock; tombstone derived audio context and clear cache on revocation; hold lease through full C3 generation.
 - **QA next:** rebase #2211 after Core repairs; keep derived-source deletion and C3 post-save/pre-generation revocation as separate deterministic negative controls.
-- **User/device:** private read-only #415–417 pending, no device receipt; no mic capture, UPDATE_REQUEST, model download/swap or device change. No user action.
+- **User/device:** read-only #415–417 expired without response and were closed. Last private V13OBS #115 (18 Nov): updated commit `89333289b8cd50da92cbf7074c9ef689a2972dbf`, `auto_enabled=true`, pipeline `PARTIAL` / `UPDATE` error; this is stale and does not verify current installation. No new 21 Nov receipt; REDMI_UNVERIFIED. No mic capture, UPDATE_REQUEST, model download/swap or device change. No user action.
 
 ---
 
