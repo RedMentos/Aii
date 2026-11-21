@@ -906,3 +906,18 @@ Exactly five V14 automations are enabled: Boss & Integration, QA & Android, JEPA
 - **Whole-Canon ledger:** keep B1/B2 native offer quality, B3 trained latent receiver, audio/vision learning, Android background/UI providers, full voice decoder/vocoder, sparse MoE, cross-organ gradients, self-edit, technical OS sandbox and declared memory/egress as separate OPEN requirements.
 
 **User action: none.**
+
+
+## QA checkpoint — composed Runtime exact-head review (2026-11-21 22:17 CET)
+
+**Boss integration PR #2258:** exact head `0ecbb1aac1f70c63cb39428a18811cfe4fd66d56`, DRAFT / NOT_RELEASED. GitHub CI failures were inspected from the exact-head logs:
+
+- The A5 lease job fails during collection on both Python 3.13 and 3.14. The composed `v13/a5_ui_admission_bridge.py` is the older 2,267-byte bridge and lacks `A5UIRuntimeAdapter` and `_persist_source_and_packet`. The reviewed Perception implementation at commit `acca00e11192dafc20fa55de5fbf0752f7e4f7ba` is 27,872 bytes and exports both. The composed integration must carry that exact implementation and its matching tests; this still does not create an Android OS provider.
+- The common staged/runtime/Lab-Age/Python-3.14-startup failure is `ValueError: ambiguous lifecycle candidate anchor: guard store pin`. The lifecycle builder verifies current Store source SHA `40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb`, but generated archive guard and stream candidates still contain the old reader SHA `fe66f92533b20738b5ec384e9d7c0b5ac8b4b4f658c6c1ad23792d813ff29980`. Replacing the new source pin therefore finds zero matches. Introduce an explicit old-reader pin and use it in both guard/stream materializations; then recompute the entire downstream SHA-256 chain. Do not relax `_replace_once` or any release gate.
+- Old-phone migration reports `PARTIAL` because the same stage builder fails, even though both checkout refs reached the candidate. It is not an accepted update.
+- The audio workflow also fails three speech test cases because `config.initialize(home)` already creates `bin/`, then tests call non-idempotent `bin_dir.mkdir()`. QA PR [#2261](https://github.com/RedMentos/Aii/pull/2261), head `fe97f4bb0eb3c3ff7745c9e626774a1b8aa9b7e3`, changes those three fixture calls to `exist_ok=True`; exact GitHub readback is verified. Its staged/integrated CI run `44950978469` is still in progress at this checkpoint.
+- On #2258, combined JEPA and offline runtime-deploy integrity jobs passed; A5 lease, Lab-Age, old-phone migration, staged/integrated and audio/arithmetic jobs failed. Safe-additive remains `FAIL_BY_POLICY`; no bypass. No full local Aii checkout is available, so LOCAL_LINUX project tests were not run.
+
+**Android boundary:** private PIPELINE_STATUS request [RedMentos/Aiiii #435](https://github.com/RedMentos/Aiiii/issues/435) has zero authenticated comments. Installed SHA and updater consent remain unknown. No UPDATE_REQUEST, LOG_PAGE, shell action, deployment or device mutation. `REDMI_UNVERIFIED`.
+
+**Ownership handoff:** Core fixes the explicit old-reader pin and rebinds downstream builders; Perception carries the current A5 lease adapter; QA validates #2261 and the exact two-version matrix; Boss performs protected-file review and integration only after green exact-head checks. No user action is required.
