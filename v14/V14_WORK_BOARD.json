@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T22:27:49Z",
+  "updated_at": "2026-11-21T22:40:02Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -337,14 +337,14 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "LOCAL_LINUX_ALGORITHM_ONLY_PASS / GITHUB_CI_PENDING_NO_RUN_RETURNED / REDMI_UNVERIFIED",
-      "next_step": "Core/QA: run exact-head workflow and staged/integrated checks on #2275, review the current-base diff and source pins. Keep NumPy and speaker model off by default. Only after CI and independent review consider integration; later obtain a consented Redmi audio measurement without uploading raw speech.",
+      "next_step": "Core/QA: complete exact-head RAW EAR run 44957913408 on Python 3.13/3.14 and staged/integrated run 44957913340; inspect failures and rerun after fixes. Keep NumPy and speaker model off by default. Only integrate after green exact-head checks and independent review.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T22:27:49Z",
+      "last_checkpoint": "2026-11-21T22:40:02Z",
       "latest_candidate_pr": {
         "pr": 2275,
         "head_sha": "631eb42cff2f3de7f066070e96896d996b019294",
         "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
-        "ci": "PENDING_NO_PR_RUN_RETURNED"
+        "ci": "QUEUED_RAW_EAR_44957913408_STAGED_44957913340"
       },
       "proof": "The prior algorithm's negative control reproduced the false-negative: a long same-batch tail replaced a cross-window speaker-change score with cosine 1.0. The pre-batch snapshot algorithm passed a local CPython 3.13.5 x86_64 reproduction for warmup, same-speaker, unvoiced, threshold-absent and 1-s/2-s invariance. This is algorithm-level only; no full Aii checkout test ran. PR #2275 is current-base and draft; no exact CI run was returned at readback. No microphone/model/Redmi test."
     }
@@ -890,7 +890,7 @@
       "topic": "FASTDIAR causal frame embeddings for RAW EAR speaker-change evidence",
       "status": "FULL_TEXT_PREPRINT_AND_MIT_REPO_REVIEWED_OPTIONAL_WIRED_SYNTHETIC_BATCH_FIX_IN_PR_2275",
       "primary": "arXiv:2610.02941v1; microsoft/fastdiar commit f48bff53b9a6a0cce4539e94b6def95f609eaea4",
-      "next": "Run exact #2275 Python 3.13/3.14 and staged/integrated CI; later require real consented speech and ARM64/Redmi false-positive/latency evidence."
+      "next": "Exact-head CI queued: RAW EAR 44957913408 (Python 3.13/3.14) and staged/integrated 44957913340. Read results; no backend promotion until green and later ARM64/Redmi evidence."
     },
     {
       "id": "R-053",
