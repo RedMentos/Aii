@@ -265,5 +265,125 @@ class SourceUpdateTests(unittest.TestCase):
         self.assertEqual(git(self.phone, "rev-parse", "HEAD"), current)
 
 
+
+class LatestCIGateTests(unittest.TestCase):
+    COMMIT = "a" * 40
+    BASE_TIME = "2026-11-21T00:00:00Z"
+
+    def make_run(self, name, workflow_id, run_number, *, attempt=1,
+                 status="completed", conclusion="success", event="push",
+                 repo="RedMentos/Aii", path=None, created_at=None,
+                 updated_at=None, run_id=None, head_sha=None):
+        return {
+            "id": run_id if run_id is not None else workflow_id * 10000 + run_number * 10 + attempt,
+            "workflow_id": workflow_id,
+            "run_number": run_number,
+            "run_attempt": attempt,
+            "name": name,
+            "path": path if path is not None else u.CI_WORKFLOW_PATHS[name],
+            "head_sha": head_sha if head_sha is not None else self.COMMIT,
+            "event": event,
+            "head_repository": {"full_name": repo},
+            "created_at": created_at if created_at is not None else self.BASE_TIME,
+            "updated_at": updated_at if updated_at is not None else (
+                created_at if created_at is not None else self.BASE_TIME
+            ),
+            "status": status,
+            "conclusion": conclusion,
+        }
+
+    def successful_runtime_runs(self):
+        return [
+            self.make_run(name, 100 + index, 10, run_id=1000 + index)
+            for index, name in enumerate(u.REQUIRED_CI["runtime"])
+        ]
+
+    def check(self, runs, scope="runtime"):
+        with mock.patch.object(u, "_ci_runs", return_value=runs):
+            return u.ci_passed(self.COMMIT, scope=scope)
+
+    def test_newer_failed_push_overrides_older_success(self):
+        runs = self.successful_runtime_runs()
+        name = u.REQUIRED_CI["runtime"][0]
+        runs.append(self.make_run(
+            name, 100, 11, status="completed", conclusion="failure",
+            created_at="2026-11-21T00:01:00Z", run_id=2000,
+        ))
+        self.assertFalse(self.check(runs))
+
+    def test_newer_in_progress_run_overrides_older_success(self):
+        runs = self.successful_runtime_runs()
+        name = u.REQUIRED_CI["runtime"][1]
+        runs.append(self.make_run(
+            name, 101, 11, status="in_progress", conclusion=None,
+            created_at="2026-11-21T00:01:00Z", run_id=2001,
+        ))
+        self.assertFalse(self.check(runs))
+
+    def test_newer_success_supersedes_older_failure(self):
+        runs = self.successful_runtime_runs()
+        name = u.REQUIRED_CI["runtime"][0]
+        runs[0]["conclusion"] = "failure"
+        runs[0]["status"] = "completed"
+        runs.append(self.make_run(
+            name, 100, 11, status="completed", conclusion="success",
+            created_at="2026-11-21T00:01:00Z", run_id=2002,
+        ))
+        self.assertTrue(self.check(runs))
+
+    def test_failed_rerun_attempt_overrides_same_run_success(self):
+        runs = self.successful_runtime_runs()
+        name = u.REQUIRED_CI["runtime"][0]
+        runs.append(self.make_run(
+            name, 100, 10, attempt=2, status="completed", conclusion="failure",
+            updated_at="2026-11-21T00:02:00Z", run_id=2003,
+        ))
+        self.assertFalse(self.check(runs))
+
+    def test_recreated_workflow_generation_supersedes_old_generation(self):
+        runs = self.successful_runtime_runs()
+        name = u.REQUIRED_CI["runtime"][0]
+        runs.append(self.make_run(
+            name, 999, 1, status="completed", conclusion="failure",
+            created_at="2026-11-21T00:03:00Z",
+            updated_at="2026-11-21T00:03:00Z", run_id=2004,
+        ))
+        self.assertFalse(self.check(runs))
+
+    def test_malformed_matching_latest_run_fails_closed(self):
+        runs = self.successful_runtime_runs()
+        name = u.REQUIRED_CI["runtime"][0]
+        malformed = self.make_run(
+            name, 100, 11, status="completed", conclusion="success",
+            created_at="2026-11-21T00:01:00Z", run_id=2005,
+        )
+        malformed.pop("run_number")
+        runs.append(malformed)
+        self.assertFalse(self.check(runs))
+
+    def test_pull_request_or_wrong_repository_runs_do_not_count(self):
+        runs = self.successful_runtime_runs()
+        for run in runs:
+            run["event"] = "pull_request"
+        self.assertFalse(self.check(runs))
+        for run in runs:
+            run["event"] = "push"
+            run["head_repository"]["full_name"] = "someone/fork"
+        self.assertFalse(self.check(runs))
+
+    def test_dashboard_scope_requires_only_dashboard_workflows(self):
+        runs = [
+            self.make_run(name, 300 + index, 1, run_id=3000 + index)
+            for index, name in enumerate(u.REQUIRED_CI["dashboard"])
+        ]
+        self.assertTrue(self.check(runs, scope="dashboard"))
+        self.assertFalse(self.check(runs, scope="runtime"))
+
+    def test_invalid_scope_or_commit_fails_closed(self):
+        self.assertFalse(self.check([], scope="unknown"))
+        with mock.patch.object(u, "_ci_runs", return_value=self.successful_runtime_runs()):
+            self.assertFalse(u.ci_passed("not-a-commit", scope="runtime"))
+
+
 if __name__ == "__main__":
     unittest.main()

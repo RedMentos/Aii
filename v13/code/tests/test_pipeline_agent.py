@@ -157,9 +157,11 @@ class PipelineTests(unittest.TestCase):
         self.assertTrue(p.refresh_requested("ui"))
         self.assertTrue(p.refresh_requested("bridge"))
         self.assertTrue(p.refresh_requested("ai"))
-        self.assertEqual(ci.call_count, 2, "UI and runtime use different CI gates")
-        self.assertEqual({c.kwargs["scope"] for c in ci.call_args_list},
-                         {"runtime","dashboard"})
+        scopes = [c.kwargs["scope"] for c in ci.call_args_list]
+        self.assertEqual(scopes.count("runtime"), 2,
+                         "runtime CI is checked before source update and before activation")
+        self.assertEqual(scopes.count("dashboard"), 1)
+        self.assertEqual(set(scopes), {"runtime", "dashboard"})
         self.assertEqual(apply.call_args.kwargs["expected_tip"], commit)
         self.assertEqual(dash.call_args.kwargs["expected_tip"], commit)
         self.assertTrue(p.acknowledge_refresh("ui"))
@@ -184,7 +186,10 @@ class PipelineTests(unittest.TestCase):
         deploy.assert_called_once()
         apply.assert_not_called()
         dash.assert_not_called()
-        ci.assert_called_once_with(revision,scope="runtime")
+        self.assertEqual(ci.call_count, 2)
+        self.assertTrue(all(call.args == (revision,) and
+                            call.kwargs == {"scope": "runtime"}
+                            for call in ci.call_args_list))
 
     def test_each_refresh_acknowledges_only_its_own_target(self):
         # Regression: AI previously acknowledged BRIDGE, re-execed forever.
@@ -234,6 +239,44 @@ class PipelineTests(unittest.TestCase):
         resume.assert_called_once_with(reason="UPDATED")
         apply.assert_called_once()
         dash.assert_called_once()
+
+    def test_new_ci_failure_after_graceful_stop_blocks_mutation_and_restores_chat(self):
+        self.turn_on()
+        commit = "c" * 40
+        with mock.patch.object(u, "_runtime_active", side_effect=[True, False]), \
+             mock.patch.object(u, "status", return_value={
+                 "status": "UPDATE_AVAILABLE", "available": commit,
+                 "current": "0" * 40, "changed_files": 4}), \
+             mock.patch.object(u, "ci_passed", side_effect=[True, False]) as ci, \
+             mock.patch.object(p.lifecycle, "request_stop", return_value=True) as stop, \
+             mock.patch.object(p.lifecycle, "request_resume") as resume, \
+             mock.patch.object(u, "apply") as apply, \
+             mock.patch.object(p.runtime_deploy, "deploy") as deploy:
+            report = p.run_cycle(force=True, manual=True, target="runtime")
+        self.assertEqual(ci.call_count, 2, "CI must be rechecked after the graceful stop")
+        stop.assert_called_once()
+        resume.assert_called_once_with(reason="RESTORE")
+        apply.assert_not_called()
+        deploy.assert_not_called()
+        self.assertEqual(report["runtime"], "CI_WAIT")
+        self.assertEqual(report["last_result"], "CI_WAIT")
+
+    def test_ci_turns_red_after_source_update_blocks_launcher_activation(self):
+        self.turn_on()
+        commit = "c" * 40
+        with mock.patch.object(u, "_runtime_active", return_value=False), \
+             mock.patch.object(u, "status", return_value={
+                 "status": "UPDATE_AVAILABLE", "available": commit,
+                 "current": "0" * 40, "changed_files": 4}), \
+             mock.patch.object(u, "ci_passed", side_effect=[True, False]) as ci, \
+             mock.patch.object(u, "apply", return_value={"status": "UPDATED"}) as apply, \
+             mock.patch.object(p.runtime_deploy, "deploy") as deploy:
+            report = p.run_cycle(force=True, manual=True, target="runtime")
+        self.assertEqual(ci.call_count, 2, "CI must be rechecked after source fast-forward")
+        apply.assert_called_once()
+        deploy.assert_not_called()
+        self.assertEqual(report["runtime"], "CI_WAIT")
+        self.assertEqual(report["last_result"], "CI_WAIT")
 
     def test_ci_failure_does_not_interrupt_running_model(self):
         self.turn_on()
@@ -414,7 +457,15 @@ class PipelineTests(unittest.TestCase):
 class GitHubCIProofTests(unittest.TestCase):
     @staticmethod
     def workflow(commit, name=u.CI_WORKFLOW, **changes):
-        result = {"head_sha": commit, "name": name,
+        workflow_id = list(u.CI_WORKFLOW_PATHS).index(name) + 1
+        timestamp = "2026-11-21T00:00:00Z"
+        result = {"id": 10000 + workflow_id,
+                  "workflow_id": workflow_id,
+                  "run_number": 1,
+                  "run_attempt": 1,
+                  "created_at": timestamp,
+                  "updated_at": timestamp,
+                  "head_sha": commit, "name": name,
                   "path": u.CI_WORKFLOW_PATHS[name]+"@refs/heads/gpt6/v13-private-remote-bridge-20261111",
                   "event": "push",
                   "status": "completed", "conclusion": "success",
