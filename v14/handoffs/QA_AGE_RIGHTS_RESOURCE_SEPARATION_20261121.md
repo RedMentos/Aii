@@ -100,3 +100,33 @@ The full local Aii checkout remains unavailable: `git ls-remote https://github.c
 This resolves the requested callsite inventory, but does not authorize automatic merge. Keep #2235 DRAFT until Boss/Core manually review the existing runtime-path and branch-specific builder changes, and until exact staged/integrated CI completes. The current code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`; this QA branch is **NOT_RELEASED**. No authenticated private owner-read response has established the installed phone SHA or updater consent; **REDMI_UNVERIFIED**. No UPDATE_REQUEST, Termux command, device action, model/weight change, permission change or user-data mutation was performed.
 
 **User action:** none.
+
+
+## QA run 11 follow-up — AST callback attribution repaired — 2026-11-21 20:53 CET
+
+**Exact branch head:** `b22129a03bbd3395605b951d55d3f187f442bda6`
+
+The previous exact-head failure was an AST scanner attribution error: `learning_limit()` was inside a nested transactional callback `f(st)` in `GoalStore.add`, but the inventory recorded the callback name `f`. The test now has a separate outer-owner resolver for `learning_limit` calls, while retaining nearest-function attribution for the budget-field inventory. Its negative control proves that `GoalStore.add → f` is attributed to `add`, while a distinct `unrelated → f` closure remains attributed to `unrelated`. No allowlist was widened and no runtime behavior was changed by this QA fix.
+
+### Exact current-head CI
+
+| Workflow / job | Run | Result |
+|---|---:|---|
+| Lab Age control state and WebView truth | `44943189875` | **PASS** — main suite 14 tests; workflow sub-suites also PASS |
+| Private owner-read Termux bootstrap | `44943189926` | **PASS** — includes Lab-Age AST test, dashboard/native-role polling, and real SQLite Store Hi/Test source roundtrip |
+| Python 3.14 staged startup and SQLite source refs | `44943189926` | **PASS** — staged startup and Store reference tests |
+| Two-checkout updater migration | `44943189854` | **PASS** — 2 tests |
+| Offline / offline-bridge-security | current head | **PASS** |
+| Staged runtime | `44943189865` | **IN PROGRESS** at this handoff |
+| Integrated regression | `44943189865` | **IN PROGRESS** at this handoff |
+| Strict safe-additive | `44943189872` | **FAIL BY POLICY** — existing runtime/builder changes are outside the additive allowlist; no bypass |
+
+A separate isolated Python 3.13.5 AST-helper probe passed locally; this is not a local full-repository test. Full Aii checkout execution remains unavailable in this environment. CI evidence above is not Android or native-model evidence.
+
+### Integration status / ownership
+
+Current shared release-development HEAD is `48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4`. This QA branch compares as **42 commits ahead / 110 behind / diverged** from that HEAD. It modifies existing effort, Sleep, AGI and builder/recovery/deployer files. Boss has a separate current-base `learning_rights()` change in #2241, and Core's current-base audio/recovery/stage work is in #2251. Do not merge or blindly rebase this stale branch: compose the Age-rights changes with #2241 and the current Core builder chain, then recompute every nested pin and rerun the exact staged/integrated suite. Keep the branch DRAFT until that ownership/rebase review is complete.
+
+### Device and user boundary
+
+The private owner-read request #433 is still awaiting an authenticated phone receipt; installed SHA/updater state remain unknown. The expired no-reply request #428 was closed and was not replayed. No UPDATE_REQUEST, CHAT_SEND, shell, Termux installer, model/weight change, permission change or device mutation was sent. **REDMI_UNVERIFIED / NOT_RELEASED. User action: none.**
