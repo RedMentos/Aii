@@ -10,6 +10,15 @@ on:
       - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
       - "v13/code/tests/test_v14_audio_voice_overlay_contract_20261121.py"
       - ".github/workflows/v14-research-audio-voice-overlay.yml"
+  pull_request:
+    branches:
+      - gpt6/v14-core-staged-audio-context-20261121
+    paths:
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
+      - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
+      - "v13/code/tests/test_v14_audio_voice_overlay_contract_20261121.py"
+      - ".github/workflows/v14-research-audio-voice-overlay.yml"
 
 jobs:
   voice-overlay:
