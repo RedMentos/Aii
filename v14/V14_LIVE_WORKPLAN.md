@@ -481,11 +481,11 @@ This is an additive checkpoint. The V14 master and historical V13 appendix were 
 - **Boss:** reconcile current 6c444e1, the workflow gate and whole-Canon evidence. No device action or user command.
 
 
-## Boss integration checkpoint — 2026-11-21 16:49 CET (run 11)
+## Boss integration checkpoint — 2026-11-21 16:49 CET (run 11 — exact merge CI complete)
 
 - Current release branch head is f279286a4453248004c670fcaabecd85da6ab299, the direct merge of Boss PR #2228. The change wires the source-span C4 redundancy overlay into the normal pinned stage/deployer; it does not alter pretrained model weights, permissions, Age, updater settings or user data.
 - Exact PR-head tests: staged Runtime **251 passed / 10 skipped / 47 subtests**; integrated regression **424 passed / 3 skipped / 58 subtests**. Exact PR-head checks: 9/10 success; validate-additive failed because existing critical stage/deployer files were modified. Boss independently reviewed all six changed files, recomputed the nested SHA-256 pins from GitHub-readback bytes, and directly integrated rather than using the low-authority release queue. The failed policy check remains recorded, not misreported as green or waived.
-- Exact merge-commit push CI at this checkpoint: **30/34 check-runs success, 0 failed, 0 pending**; associated push workflows **19/19 success, 0 running**. Do not call the branch fully green until the pending checks finish.
+- Exact merge-commit push CI at this checkpoint: **34/34 check-runs success, 0 failed, 0 pending**; associated push workflows **19/19 success, 0 running**. The exact merge-commit push CI is fully green; this still does not establish Android installation.
 - The C4 rule uses only source-bound quote spans from the same source ID/digest/modality; it discounts redundancy only when spans are disjoint and lexical overlap is low. The test exercises quote→SourceRef→FocalLoop→selected offer→C3 context with synthetic runners. It is not native model quality, learned semantic diversity, trained B3 latent exchange, or Android proof.
 - P0 #1904 remains open. Correct native 2+2, bounded native latency/RSS, and real B1/B2→C4→C3 delivery on Redmi remain unverified. Private owner-read expired without a response; installed SHA and updater consent remain unknown; REDMI_UNVERIFIED.
 - Core #2227: exact Python 3.13/3.14 staged arithmetic test reaches FINAL answer, ActionSelection, Broker and Egress, but the ExperienceRecord packet is absent. The first failure is after the unguarded world.observe / world.self_state calls in Runtime's post-turn path; Core has been asked to preserve the source-bound ExperienceRecord while logging derived World failures.
