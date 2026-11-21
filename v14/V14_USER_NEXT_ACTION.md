@@ -1,3 +1,18 @@
+# Current next action — 2026-11-21T21:44:00Z
+
+**No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
+
+- Current Boss integration head: `06ebe5d29d1244dc1d7afa40d846d227d5f3930e`.
+- Shared staged blocker remains `record_only_controller_guard_20261116.py:191`: stale semantic/local-error pins after the arithmetic/World/Store transformation. Core/JEPA must rebind both exact outputs and the guard→recovery→stage→deployer chain without weakening raw source verification.
+- Staged-runtime FAIL (6 failed, 43 passed, 26 subtests); integrated-regression FAIL (18 failed, 232 passed, 10 skipped, 2 errors, 44 subtests); owner-read job PASS but Python 3.14 startup FAIL; Lab-Age FAIL; migration PARTIAL; Core audio 3.13 and 3.14 both FAIL at the same guard. A5 lease, combined JEPA, deploy integrity and GoalWake focused tests pass. Safe-additive FAIL_BY_POLICY.
+- Age/X10 rights PR #2235 exact checks pass, but its branch is 43 ahead / 121 behind current base and needs deliberate composition with GoalStore rollback.
+- Private PIPELINE_STATUS #435 has no authenticated response. Installed SHA/updater consent unknown. No device action. `REDMI_UNVERIFIED`.
+- No full local Aii checkout. GitHub CI is not local, native Android, native weight learning or Redmi evidence.
+
+**Next internal actions:** Core/JEPA rebind the controller semantic/local-error pins and all dependent hashes; Boss reruns the exact 3.13/3.14 staged, integrated, owner-read, Lab-Age, migration, audio and deploy matrix; QA validates the complete path. No user action is required.
+
+---
+
 # Current next action — 2026-11-21T21:42:00Z
 
 **No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
