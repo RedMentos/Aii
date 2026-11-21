@@ -114,7 +114,9 @@ def test_embedding_shift_is_only_a_change_candidate_during_voiced_activity():
         activity_hint="VOICED", embeddings=second,
     )
     assert evidence["status"] == "MEASURED"
-    assert evidence["reference_age_ms"] == 800
+    # The nearest retained frame can be up to 1.5 frame steps from the
+    # requested look-back timestamp; report the measured age, not the target.
+    assert 800 <= evidence["reference_age_ms"] <= 920
     assert evidence["cosine_similarity"] == 0.0
     assert evidence["change_score"] == 0.5
     assert evidence["speaker_change_candidate"] is True
