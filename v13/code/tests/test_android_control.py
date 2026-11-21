@@ -139,10 +139,12 @@ def test_audit_database_rejects_unapproved_symlinked_ancestor(tmp_path):
     assert not (nested / "audit.sqlite").exists()
 
 
-def test_android_platform_alias_direction_matches_aosp():
+def test_legacy_android_data_symlink_allowlist_is_exact():
     from pathlib import Path
     import v13.android_control as android_control
 
+    # Compatibility fallback for releases where this path is a symlink.
+    # Android 13 uses a bind mount and is tested separately below.
     assert android_control._ANDROID_PLATFORM_SYMLINKS == (
         (Path("/data/user/0"), Path("/data/data")),
     )
@@ -234,20 +236,22 @@ def test_audit_database_allows_sticky_shared_ancestor(tmp_path):
     broker.close()
 
 
-def test_android_system_owned_data_ancestors_are_allowed(tmp_path, monkeypatch):
+def test_android13_data_user_zero_bind_mount_ancestors_are_allowed(tmp_path, monkeypatch):
     data_root = tmp_path / "data"
-    system_user = data_root / "user"
-    private = system_user / "app"
+    user_root = data_root / "user"
+    user_zero = user_root / "0"
+    private = user_zero / "com.termux"
     private.mkdir(parents=True)
     os.chmod(data_root, 0o711)
-    os.chmod(system_user, 0o711)
+    os.chmod(user_root, 0o711)
+    os.chmod(user_zero, 0o700)
     os.chmod(private, 0o700)
     monkeypatch.setattr(android_control, "_ANDROID_DATA_ROOT", data_root)
     real_lstat = Path.lstat
 
     def android_lstat(path):
         info = real_lstat(path)
-        if path in {data_root, system_user}:
+        if path in {data_root, user_root, user_zero}:
             return SimpleNamespace(st_mode=info.st_mode, st_uid=android_control._ANDROID_SYSTEM_UID)
         return info
 
