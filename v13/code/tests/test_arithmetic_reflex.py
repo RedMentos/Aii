@@ -8,12 +8,19 @@ class ExactArithmetic(unittest.TestCase):
         cases = {
             "2+2": "4", "Was ist 2+2?": "4",
             "What is 2 + 2?": "4", "calculate -12 * 3": "-36",
-            "8/4": "2", "1/3": "1/3", "7 - 12": "-5",
+            "8/4": "2", "1/3": "1/3", "calculate 7-12": "-5",
             "2--3": "5", "0*123": "0",
         }
         for question, answer in cases.items():
             with self.subTest(question=question):
                 self.assertEqual(exact_arithmetic(question), answer)
+
+    def test_date_shaped_subtraction_requires_explicit_math_cue(self):
+        for question in ("2026-11", "2026 - 11", "11-21", "12-24", "7-12"):
+            with self.subTest(question=question):
+                self.assertIsNone(exact_arithmetic(question))
+        self.assertEqual(exact_arithmetic("calculate 2026 - 11"), "2015")
+        self.assertEqual(exact_arithmetic("What is 11-21?"), "-10")
 
     def test_no_unsafe_or_ambiguous_shortcuts(self):
         for question in (
