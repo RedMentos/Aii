@@ -16,15 +16,15 @@ PUBLIC_KEY = bytes.fromhex(
     "4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5"
 )
 KEY_ID = "698bea63dc44a344663ff1429aea10842df27b6b991ef25866b2c6c02cdcc5be"
-SIGNATURE = "MEYCIQCziGI8yVaOpqD44U0ixlQwAozWkzJLFcxmL6ctiZ0vXAIhAOak8bzITwEOurnhMGyRgeu8L/rwm5kgB3bVG2WhZqdd"
+SIGNATURE = "MEUCIQCj6DaMCL0/ofDX/AxaFXbnT+ItjasEn7c0HNpRmsW28AIgQ6UwgRkmD46+1dAyhr1NOR6tBMlnER7j/f6Lz9RiKBI="
 BODY = {
     "schema": "v14.android-companion-receipt/1",
     "nonce": "1" * 32,
     "action_id": "2" * 32,
     "capability": "launch_app",
     "digest": "0e1b8771ccce5e24b8dcfd99466b6e553413dc684f3ef3cd4c3da52ad52d6b15",
-    "issued_at": 999.0,
-    "expires_at": 1030.0,
+    "issued_at": 999,
+    "expires_at": 1030,
     "status": "DISPATCHED_UNVERIFIED",
     "local_consent": True,
     "observed": False,
