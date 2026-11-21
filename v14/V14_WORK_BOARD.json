@@ -251,5 +251,151 @@
     "installed_sha": "UNKNOWN",
     "auto_update": "UNVERIFIED",
     "redmi_status": "REDMI_UNVERIFIED"
-  }
+  },
+  "capability_snapshot": [
+    {
+      "capability": "A0-A5 perception and attention",
+      "code": "PARTIAL",
+      "wired": "PARTIAL",
+      "tested_synthetic": "PASS_PARTIAL",
+      "tested_android": "NOT_VERIFIED",
+      "active": "NO_DEVICE_PROOF",
+      "evidence": "#2155 8/8 adapter tests; #2158 staged Runtime candidate fails two arithmetic fixtures"
+    },
+    {
+      "capability": "B1_DETAIL and B2_GIST bodies",
+      "code": "PRESENT_DISTINCT_ROLES",
+      "wired": "PARTIAL",
+      "tested_synthetic": "PASS_PARTIAL",
+      "tested_android": "HISTORICAL_FAIL",
+      "active": "UNKNOWN",
+      "evidence": "Synthetic offer contracts exist; #1904 last Redmi evidence shows B1/B2 timeouts and zero valid offers"
+    },
+    {
+      "capability": "B3 Enlightened Space true latent coupling",
+      "code": "PARTIAL_SYMBOLIC_ONLY",
+      "wired": "NO_TRAINED_RECEIVER",
+      "tested_synthetic": "NO_ACCEPTED_UTILITY_PROOF",
+      "tested_android": "NOT_TESTED",
+      "active": "NO",
+      "evidence": "Symbolic/source-exact exchange is fallback, not activation-to-activation latent transfer"
+    },
+    {
+      "capability": "B4 distributed workspace and C4 coalition",
+      "code": "PARTIAL",
+      "wired": "WIRED_SYNTHETIC_PARTIAL",
+      "tested_synthetic": "PASS_PARTIAL",
+      "tested_android": "NOT_VERIFIED",
+      "active": "UNKNOWN",
+      "evidence": "Contracts and synthetic offer handling; no accepted real B1/B2-to-C4/C3 delivery"
+    },
+    {
+      "capability": "C1/JEF/C2/C3 control and language output",
+      "code": "PRESENT",
+      "wired": "PARTIAL",
+      "tested_synthetic": "PASS_PARTIAL",
+      "tested_android": "HISTORICAL_FAIL",
+      "active": "UNKNOWN",
+      "evidence": "#1904 wrong 2+2/slow turns remains last device failure; #2158 preserves the candidate arithmetic path"
+    },
+    {
+      "capability": "World/Self/Memory/JEPA numeric learner",
+      "code": "PRESENT_EXPERIMENTAL",
+      "wired": "ISOLATED_STORE_CONSUMER",
+      "tested_synthetic": "PASS_64_ON_PY313_AND_PY314",
+      "tested_android": "NOT_TESTED",
+      "active": "SHADOW_OPTIMIZER_OFF",
+      "evidence": "#2151/#2152 exact CI; normal postcommit Runtime consumer remains open"
+    },
+    {
+      "capability": "Sleep/Dream/Replay consolidation",
+      "code": "PRESENT_PARTIAL",
+      "wired": "PARTIAL",
+      "tested_synthetic": "PASS_PARTIAL",
+      "tested_android": "NOT_TESTED",
+      "active": "PARTIAL_EXISTING_SLEEP_ONLY",
+      "evidence": "Sleep A/B/C and ReplayQueue exist; JEPA replay ablation is not integrated into Sleep"
+    },
+    {
+      "capability": "Context OS and Memorilla companion",
+      "code": "CONTEXT_OS_PRESENT_COMPANION_DRAFT",
+      "wired": "CONTEXT_OS_PARTIAL_COMPANION_ISOLATED",
+      "tested_synthetic": "PASS_PARTIAL",
+      "tested_android": "NOT_VERIFIED",
+      "active": "UNKNOWN",
+      "evidence": "#1983 remains additive SHADOW candidate; no native companion runtime consumer"
+    },
+    {
+      "capability": "VOICE_AUDIO input and speech output",
+      "code": "RAW_EAR_CUES_PRESENT_TTS_NOT_IMPLEMENTED",
+      "wired": "SYNTHETIC_ADAPTER_ONLY",
+      "tested_synthetic": "PASS_8_OF_8_ADAPTER_TESTS",
+      "tested_android": "NOT_TESTED",
+      "active": "NO",
+      "evidence": "#2155 adapter; #2158 staged Runtime candidate not promoted; no microphone/TTS/vocoder/full duplex"
+    },
+    {
+      "capability": "ANDROID_BACKGROUND_CONTROL",
+      "code": "RECEIPT_VERIFIER_PROTOTYPE",
+      "wired": "ISOLATED_MOCK_NO_OS_EXECUTOR",
+      "tested_synthetic": "PARTIAL",
+      "tested_android": "NOT_TESTED",
+      "active": "NO",
+      "evidence": "No owner-authenticated API action receipt or real Android background executor"
+    },
+    {
+      "capability": "ANDROID_UI_CONTROL",
+      "code": "NOT_IMPLEMENTED",
+      "wired": "NO",
+      "tested_synthetic": "NO",
+      "tested_android": "NOT_TESTED",
+      "active": "NO",
+      "evidence": "No accepted AccessibilityService/MediaProjection observation/action path"
+    },
+    {
+      "capability": "SELF_OPTIMIZATION and cross-organ weight editing",
+      "code": "NUMERIC_WORLDJEPA_EXPERIMENT_ONLY",
+      "wired": "ISOLATED_STORE_LEARNER",
+      "tested_synthetic": "PASS_PARTIAL",
+      "tested_android": "NOT_TESTED",
+      "active": "NO_PRODUCTION_WEIGHT_EDITS",
+      "evidence": "#2151 changes experimental predictor/EMA parameters; no native B1/B2/C3 updates or cross-organ gradients"
+    },
+    {
+      "capability": "Multimodal learning",
+      "code": "AUDIO_FEATURE_EXTRACTION_ONLY",
+      "wired": "NO_LEARNING_CONSUMER",
+      "tested_synthetic": "PARTIAL",
+      "tested_android": "NOT_TESTED",
+      "active": "NO",
+      "evidence": "No audio/vision continual learning, source-bound gradient path or native modality learning"
+    },
+    {
+      "capability": "Tools/JEF action and permission fabric",
+      "code": "PRESENT_CONTRACTS",
+      "wired": "WIRED_SYNTHETIC",
+      "tested_synthetic": "PASS_PARTIAL",
+      "tested_android": "NOT_TESTED",
+      "active": "NO_DEVICE_ACTION_PROOF",
+      "evidence": "Typed action/outcome contracts; no OS-authenticated approved Android action"
+    },
+    {
+      "capability": "Updater/install/rollback",
+      "code": "PRESENT",
+      "wired": "WIRED_SYNTHETIC_PARTIAL",
+      "tested_synthetic": "PASS_PARTIAL",
+      "tested_android": "UNKNOWN_NO_RECEIPT",
+      "active": "UNKNOWN",
+      "evidence": "Current c0ced has 13 required PR-triggered runs action_required; no installed SHA receipt"
+    },
+    {
+      "capability": "Two genuinely different sparse MoE bodies",
+      "code": "NOT_PROVEN",
+      "wired": "NO_SPARSE_MOE_PATH",
+      "tested_synthetic": "NO_ACCEPTED_SPARSE_MOE_TEST",
+      "tested_android": "NOT_TESTED",
+      "active": "NO",
+      "evidence": "B1/B2 role separation does not itself prove sparse MoE routing/experts"
+    }
+  ]
 }
