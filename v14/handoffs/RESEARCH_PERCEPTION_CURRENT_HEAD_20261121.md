@@ -1,3 +1,37 @@
+# Run 11 update — RAW EAR lease repair and new research (2026-11-21 18:25 CET)
+
+## Verified GitHub state
+
+- PR #2240 is still DRAFT / NOT_RELEASED. Its code-bearing current-base synchronization commit is 88220f803178eada2377a06d96420465610d9c3b. This commit has the previous PR head and shared base 3b8c8bb671e9b52b22e052fcfa9fdc6e721012ea as parents; no force-push was used. The latest PR head 1ce5501b5f3e444342594c46276ea49d45d9744a adds research-ledger text only after that code commit.
+- The code fix snapshots expected_source_id and expected_receipt before _validate_runtime_binding, then rejects either mismatch. This replaces the prior undefined lease_source_id / lease_receipt comparison that caused NameError on the supplied-lease path. Added a parameterized negative test for wrong source and wrong receipt; both assert no packet or A4 attention persistence.
+- The VAD comparator workflow now pins the exact RAW EAR source blob b62442c6e740d136982b2bc8080cef6227ba266f rather than the stale 9cae3b... blob.
+- A coordination comment was posted on QA PR #2238 (comment 7066589536) with the lease API contract: one outer provider scope must cover producer → derived audio-context view → B1/B2 → full C3 generation iterator; the view must validate lease.matches(...) and must not call provider callbacks/reacquire the lock.
+
+## Exact-head test state at code SHA 88220f803178eada2377a06d96420465610d9c3b
+
+- GitHub Actions consent-revocation: PASS (run 44930787843).
+- Strict safe-additive: FAIL BY POLICY (run 44930881558); production-module changes are outside the inert-module-only validator scope. No bypass requested.
+- Staged Runtime and integrated regression: IN_PROGRESS at last poll.
+- RAW EAR prosody Python 3.11/3.13 and comparator Python 3.13/3.14: QUEUED at last poll.
+- Privacy and offline-bridge-security: QUEUED; model-lab was cancelled by workflow concurrency. These are not pass claims.
+- LOCAL_LINUX isolated source/receipt binding reproduction: 3/3 PASS (one valid binding; wrong-source and wrong-receipt negative controls). This is a minimal helper-level check, not the repository suite.
+- Full local Aii checkout / repository pytest: BLOCKED because no checkout is mounted and this runner cannot resolve github.com. No exact full-source local test is claimed.
+
+## New research
+
+- R-034 records full-text review of Counterfactual World Models (arXiv:2611.24778v1) and official MIT code revision 5c84bba92b2ff19d41175070a61238fa1396d10d. The proposed same-event residual correction is limited by additive disturbance assumptions, action support, sufficient context and coordinates; all seven evaluation environments are simulated. The official reproduction needs Linux x86_64/CUDA 13 and about 150 GPU-hours. No code/data/weights imported.
+- R-035 records full-text review of Age of Learning (arXiv:2609.32593v1) and official MIT repository revision 686fd16da98c31c5ad601d1b018deeb318f03e97. Its temporal persistence signal is based on verified binary classification correctness and can overemphasize noisy/OOD cases; fast-changing sparse streams can destabilize it. V14 may test a separately named source-bound error-persistence modulator, with PENDING outcomes kept distinct from verified omissions. It is not official Age 0–5 and grants no learning rights. No code/dependency/data/weights imported.
+
+## Remaining acceptance gaps and next owner
+
+1. Research/Perception: finish exact-head CI and repair any real test failure without weakening consent, source pins or privacy checks.
+2. Core: rebase the normal Runtime consumer onto PR #2240 and keep the same AudioConsentLease open through audio-context reads and the entire C3 generation iterator. Do not re-enter consent callbacks while the provider lock is held.
+3. QA: rebase #2238 after Core refreshes the nested builder/recovery/stager/deployer pins; prove non-reentrant provider behavior, revocation blocked through generation, derived-context deletion and cache clearing after revocation.
+4. Only after Core/QA acceptance should the team implement a consented Android AudioRecord input. No microphone capture, ASR, TTS, full duplex or model swap is enabled by this PR.
+
+**Product status:** caller-PCM RAW EAR producer remains synthetic/CI-validated only; no normal Runtime C3 consumer has adopted this lease yet. Android microphone, native inference, installed SHA, updater state and Redmi behavior remain REDMI_UNVERIFIED. No release SHA. No user action required.
+
+---
 # Research & Perception — current-head RAW EAR shared consent lease API
 
 Date: 2026-11-21  
