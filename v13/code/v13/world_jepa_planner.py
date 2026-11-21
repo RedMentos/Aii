@@ -208,8 +208,8 @@ def consume_world_planner_shadow(store, event_id, home=None, actions=None, memor
         }
     candidates = tuple(world_model.ACTIONS if actions is None else actions)
     if (not candidates or len(candidates) > len(world_model.ACTIONS)
-            or len(set(candidates)) != len(candidates)
-            or any(type(item) is not str or item not in world_model.ACTIONS for item in candidates)):
+            or any(type(item) is not str or item not in world_model.ACTIONS for item in candidates)
+            or len(set(candidates)) != len(candidates)):
         raise ValueError("invalid planner candidate actions")
     if type(memory_limit) is not int or not 1 <= memory_limit <= 32:
         raise ValueError("invalid memory limit")
@@ -302,9 +302,11 @@ def read_world_planner_shadow(store, event_id):
             raise ValueError("event missing")
         envelope = _object(event["packet"])
         source_ref = record.get("source_ref")
-        if (envelope.get("brain_generation_id") != record.get("brain_generation_id")
+        if (type(source_ref) is not dict
+                or envelope.get("brain_generation_id") != record.get("brain_generation_id")
                 or envelope.get("source_ref") != source_ref
-                or source_ref.get("source_id") != event["source_id"]):
+                or source_ref.get("source_id") != event["source_id"]
+                or _fingerprint(record) != record.get("fingerprint")):
             raise ValueError("source binding changed")
         store.read_source(source_ref)
     except (ValueError, TypeError, KeyError, OSError, UnicodeError,
@@ -312,7 +314,7 @@ def read_world_planner_shadow(store, event_id):
         return {"status": "SOURCE_REVOKED_OR_CHANGED", "decision_authority": "NONE"}
     state, _ = store.state("v14.world_jepa.store_consumer", {})
     active = state.get("active") if type(state) is dict else None
-    if (type(active) is dict
-            and active.get("checkpoint_sha256") != record.get("checkpoint_sha256")):
+    if (type(active) is not dict
+            or active.get("checkpoint_sha256") != record.get("checkpoint_sha256")):
         return record | {"status": "STALE_CHECKPOINT", "decision_authority": "NONE"}
     return record | {"persisted": True, "decision_authority": "NONE"}
