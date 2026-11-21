@@ -237,7 +237,7 @@ def test_audit_database_allows_sticky_shared_ancestor(tmp_path):
 
 
 def _android13_data_user_zero_path(
-    tmp_path, monkeypatch, *, data_mode=0o771, data_gid=1000, user_mode=0o711
+    tmp_path, monkeypatch, *, data_mode=0o771, data_uid=1000, data_gid=1000, user_mode=0o711
 ):
     data_root = tmp_path / "data"
     user_root = data_root / "user"
@@ -251,7 +251,7 @@ def _android13_data_user_zero_path(
     monkeypatch.setattr(android_control, "_ANDROID_DATA_ROOT", data_root)
     real_lstat = Path.lstat
     owners = {
-        data_root: (android_control._ANDROID_SYSTEM_UID, data_gid),
+        data_root: (data_uid, data_gid),
         user_root: (android_control._ANDROID_SYSTEM_UID, android_control._ANDROID_SYSTEM_GID),
         user_zero: (android_control._ANDROID_SYSTEM_UID, android_control._ANDROID_SYSTEM_GID),
     }
@@ -315,3 +315,46 @@ def test_audit_database_rejects_writable_parent_of_allowlisted_symlink(tmp_path,
     with pytest.raises(ControlDenied, match="ancestor"):
         AndroidControlBroker(alias / "private" / "audit.sqlite")
     assert not (private / "audit.sqlite").exists()
+
+
+
+def test_android13_data_0771_rejects_wrong_system_owner(tmp_path, monkeypatch):
+    private = _android13_data_user_zero_path(tmp_path, monkeypatch, data_uid=999)
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(private / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
+
+
+def test_legacy_android_data_target_group_write_exception_is_exact(tmp_path, monkeypatch):
+    data_root = tmp_path / "data"
+    legacy_data = data_root / "data"
+    legacy_data.mkdir(parents=True)
+    monkeypatch.setattr(android_control, "_ANDROID_DATA_ROOT", data_root)
+    exact = SimpleNamespace(
+        st_uid=android_control._ANDROID_SYSTEM_UID,
+        st_gid=android_control._ANDROID_SYSTEM_GID,
+        st_mode=stat.S_IFDIR | 0o771,
+    )
+    assert android_control._trusted_android_data_group_write(legacy_data, exact)
+    assert not android_control._trusted_android_data_group_write(
+        legacy_data, SimpleNamespace(
+            st_uid=999, st_gid=android_control._ANDROID_SYSTEM_GID,
+            st_mode=stat.S_IFDIR | 0o771,
+        )
+    )
+    assert not android_control._trusted_android_data_group_write(
+        legacy_data, SimpleNamespace(
+            st_uid=android_control._ANDROID_SYSTEM_UID, st_gid=1001,
+            st_mode=stat.S_IFDIR | 0o771,
+        )
+    )
+    assert not android_control._trusted_android_data_group_write(
+        legacy_data, SimpleNamespace(
+            st_uid=android_control._ANDROID_SYSTEM_UID,
+            st_gid=android_control._ANDROID_SYSTEM_GID,
+            st_mode=stat.S_IFDIR | 0o773,
+        )
+    )
+    assert not android_control._trusted_android_data_group_write(
+        data_root / "other", exact
+    )
