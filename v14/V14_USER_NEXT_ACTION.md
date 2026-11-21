@@ -1,3 +1,35 @@
+# Current user-facing handoff — 2026-11-21 15:23 CET
+
+**No user action is required. Do not run a manual Termux command or change models, weights, permissions, Age, updater settings or device data based on GitHub CI alone.**
+
+- Release-development branch now reads `23ea3efc7d1951e20664ce6d07883141e9b601c5`, merging PR #2215's immutable Android action-proposal arguments and digest revalidation. PR-head tests passed: broker 38, sandbox replay 62, staged 249/10 skipped/47 subtests, integrated 415/3 skipped/58 subtests, two-checkout migration UPDATED. The post-merge push-CI for 23ea3ef is not yet independently verified, so it is **NOT_RELEASED**.
+- The Android broker is still **DRY_RUN_ONLY**. No OS executor, AccessibilityService, MediaProjection, app action or UI observation was activated.
+- Private relay readbacks: UPDATE_REQUEST #407 expired/no reply; PIPELINE_STATUS #408 expired/no reply; DIAGNOSTICS #409 open/no reply; PIPELINE_STATUS #410 open/no reply. Installed SHA and updater consent remain UNKNOWN: **REDMI_UNVERIFIED**.
+- P0 #1904 remains open: no fresh Redmi evidence for correct 2+2, native latency, delivered B1/B2 offers and C4→C3 consumption. Core #2210 still has a C5 SHADOW failure and stale source pins; do not treat its unit tests as phone correctness.
+- RAW EAR #2219 has a producer-side lease candidate, but the deterministic QA #2214 regression still fails on the old producer. The combined post-fix run and provider lock contract remain open. #2200/#2211 still need derived audio-context deletion and clear-before-C3.
+- JEPA #2218's exact current head has safe-additive and staged-runtime PASS; integrated regression was still running and the dedicated Python 3.13/3.14 test for this exact head is missing. All learning/optimizer gates remain OFF; no native GGUF body weights or trained B3 latent coupling are claimed.
+- Full local Aii checkout remains blocked by GitHub DNS. GitHub CI is not LOCAL_LINUX proof and not Redmi proof.
+- The whole V13 Canon remains the scope: historical 1,255-heading inventory preserved, semantic clause-level consumer/test/rollback mapping incomplete. No feature family is marked complete from these isolated passes.
+
+Next work is internal: Boss verifies post-merge push CI; Core repairs arithmetic and audio consumer integration; Perception/QA close the deterministic consent race; JEPA adds current-head multi-version optimizer evidence. No user decision is needed.
+
+---
+
+# Current user-facing handoff — 2026-11-21 15:05 CET
+
+**No user action is required right now.** The release-development branch is `5a141153f7d33906408fd638ce56cfbee459cf08` and its exact merged-head push CI is green (30/30 check-runs). That proves the GitHub candidate passed CI, not that it is installed on the Redmi.
+
+- PR #2213 is merged. It adds persistent optimizer state for the small numeric WorldJEPA Runtime/SleepRuntime consumer, with learning and optimizer gates still OFF. It does not update native B1/B2/C3 GGUF weights or provide trained B3 latent coupling.
+- A private PIPELINE_STATUS read (#406) expired without a phone reply. After exact push CI became green, an UPDATE_REQUEST was issued through the private owner relay (#407); it has no receipt yet. Installed SHA and updater consent remain UNKNOWN.
+- Do not run a manual Termux command, change models, enable permissions or share logs. If #407 produces an authenticated device receipt, Boss will issue a separate PIPELINE_STATUS read and verify the installed SHA. Without that receipt the status stays REDMI_UNVERIFIED.
+- The separate P0 chat defect remains open: wrong 2+2, slow turns and unverified B1/B2 → C4 → C3 delivery (#1904). The new JEPA checkpoint work does not close it.
+- The voice path is still a synthetic candidate: #2207 producer CI is green but requires manual review; #2200/#2211 currently fail downstream consent-revocation checks. No microphone, ASR, speech decoder/vocoder or full-duplex Redmi proof.
+- The next code work is internal: Core repairs #2210's C5 SHADOW selection regression and stale source pins, then rebases #2200 onto #2207's shared consent lease; QA verifies derived-context deletion and the final pre-C3 consent check.
+
+Historical V13 functions and the V14 master remain intact. Whole-Canon clause-level code/consumer/test/rollback coverage is still incomplete.
+
+---
+
 # Boss integration checkpoint — 2026-11-21 11:27 CET
 
 ## Verified code and release state
