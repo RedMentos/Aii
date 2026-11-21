@@ -385,6 +385,8 @@ class Runtime:
                 raise Limits('Ressourcenlimit: zu wenig freier RAM oder zu heiß; :resources')
             from .output_policy import match
             mark('policy_check');fixed_policy=match(self.store,text)
+            from .arithmetic_reflex import exact_arithmetic
+            arithmetic_answer=None if fixed_policy else exact_arithmetic(text)
             mark('perception_and_state')
             if fixed_policy:
                 self.store.add_packet('PerceptPacket',packet('PerceptPacket','A5_PERCEPT',eid,g,[e['source_ref']],source_ref=e['source_ref'],segments=segments(text,e['source_ref'],240,percept_mode(self.cfg)),modality='text'))
@@ -427,6 +429,9 @@ class Runtime:
                 decision=self.store.add_packet('OutputPolicyDecision',packet('OutputPolicyDecision','C5_REPORT_BROKER',eid,g,refs,rule_id=fixed_policy['rule_id'],rule_version=fixed_policy['rule_version'],query_ref=fixed_policy['query_ref'],answer_ref=fixed_policy['answer_ref'],output_authority='APPROVED_FIXED_RULE',model_generated=False))
                 meta.update(output_policy={k:fixed_policy[k] for k in ['kind','rule_id','rule_version','query_ref','answer_ref']},output_authority='APPROVED_FIXED_RULE',exact_policy_matched=True,skipped_native_stages=['A3_NATIVE_ALIGNMENT','SEMANTIC_RECALL','C2_CONTROL','B_OBSERVERS','C3_DECODE','NATIVE_WORLD_PREDICTION'])
                 meta['context_source_refs']=refs
+            elif arithmetic_answer is not None:
+                direct=True;route='simple';meta['route']={'source':'EXACT_ARITHMETIC_REFLEX'}
+                meta['arithmetic_reflex']={'source_ref':e['source_ref'],'model_generated':False,'bounded':True}
             elif exact:direct=True;route='simple';meta['route']={'source':'EXPLICIT_EXACT_COPY'}
             else:  # WP-T6: a trusted route-only skill routes before C_fast (no Needle call); else the full path
                 auto=skilllive.automatic(self,e,text,meta) if self.cfg['route_override']=='auto' else None
@@ -526,10 +531,12 @@ class Runtime:
             exec_state=self.executive.update(e,self.session,offers=selected,action_id=aid,user_beliefs=meta.get('user_beliefs') or [])
             meta['executive_state_version']=exec_state['state_version']
             if direct:
-                output=safe_text(fixed_policy['answer'] if fixed_policy else exact.group(1))
+                output=safe_text(fixed_policy['answer'] if fixed_policy else arithmetic_answer if arithmetic_answer is not None else exact.group(1))
                 if not visible_text(output):
                     output='';raise Unavailable('Exakte Quelle enthält keinen sichtbaren Text')
-                txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=True
+                txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output)
+                meta['direct_source_copy']=arithmetic_answer is None
+                if arithmetic_answer is not None:meta['output_authority']='LOCAL_EXACT_ARITHMETIC'
             else:
                 role=c5['role']
                 if any(x['reason']=='RESOURCE_PRESSURE' and x['action_id']==ActionGate.PRIOR[route] for x in c5['suppressed']):meta['resource_fallback']=ActionGate.PRIOR[route]+' -> '+role
