@@ -776,3 +776,65 @@ The current functional release has synthetic C4 source-span selection but no pro
 - **Adapter wiring blocker:** `ui_observation_lease()` requires keyword-only `generation_id`, but `A5UIRuntimeAdapter.lease()` does not pass it. The adapter test helper calls this path, so the exact integrated test should fail with missing-argument `TypeError`. Perception has been asked to derive/validate `runtime.turn_event['brain_generation_id']`, pass it, and test adapter-level revoke. Current exact CI: 2 queued / 1 in progress. No OS provider/capture/action; keep SHADOW.
 - #2243 current head `e8df851...` is mergeable and has exact latent-cache-tiny 3/3, privacy and offline-bridge PASS; model-lab rerun queued. The PR diff does not include Boss-owned board/workplan/next-action/coverage, so merging its research/workflow/experiment files will preserve the current shared docs. It remains research-only.
 - #2242 audio must adopt the same two-phase semantics but has a separate deployer-pin blocker; current head 3dc8a19 remains 9 success / 4 failure.
+
+
+### Boss run-12 whole-system integration checkpoint — 2026-11-21 20:18 CET
+
+**Shared release-branch base read:** `0c9ede256e9a3bdafc728fe6be1b4bead8fe13bd`. This is the current development branch head, not an installed-phone receipt. Its exact merge-push GitHub check-runs are 31 total: **29 success, 2 in progress, 0 failures at last read**. The last fully accepted code release remains `f279286a4453248004c670fcaabecd85da6ab299` (34/34 check-runs, 19/19 workflows). The later merged code candidate `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` is **18/19** on exact merge-push CI because the positive SleepRuntime JEPA acceptance test correctly returns `UTILITY_GATE_REJECTED`; it is not a release.
+
+#### Current cross-agent integration state
+
+- **Core #2242** — current head `edefe004735513bfa531984fb2662da5adb6a997`, DRAFT / NOT_RELEASED, 6 success / 7 failures / 3 in progress. The audio lifecycle code now contains two-phase pre-lock cancellation, worker-before-tombstone close, persisted packet deletion and shared-blob refcount. Exact nested hash chain: recovery candidate SHA-256 is `a4f9f4714f09d35043a999cf2b5c1f7f3588c0e7441fad8538b39707da30b00d` (2,878 bytes; Git blob SHA-1 `0eb9955f167256d954c960b7836642877735670c`); stage builder still pins `BUILDER_SHA=558633...`. Current stage builder SHA-256 is `8406b55ab6e6e4155db58598a83adf6fd686106baa63cacfecd6b25531c8e297`, not `runtime_deploy.STAGER_SHA256=45fd...`. After setting BUILDER_SHA to the recovery hash, the stage builder SHA-256 becomes `27be6c08d711dbbbd8d33539918d29befc4189fd310a002f3859cb59bebb6e78`; set STAGER_SHA256 to that exact value. Arithmetic overlay source pin is correct: its file exists at Git blob SHA-1 `d7063a42ee559eb3340a38ab42cf01960a48a7a3`, matching the stage builder; three test fixtures omit the file. Staged-runtime is 19 failed / 230 passed / 10 skipped / 2 errors / 47 subtests; Python 3.14 startup, lab-age and migration fail downstream. `validate-additive` FAIL BY POLICY is expected. Boss comments: [#2242](https://github.com/RedMentos/Aii/pull/2242#issuecomment-7068061383), [hash chain](https://github.com/RedMentos/Aii/pull/2242#issuecomment-7068094554), [overlay readback](https://github.com/RedMentos/Aii/pull/2242#issuecomment-7068096475).
+- **QA #2244** — current head `cea753e56674a786a060d7099f1ec13f6a5b6803`, based on old Core head `4cca4987...` and currently non-mergeable; both Python streaming jobs fail while offline security passes. On that old base, tests show revocation does not cancel C3, missing subscription does not fail closed, cleanup runs before iterator exit, and source-bound packets/unshared blobs survive. Scenarios 7–9 must be rebased onto current Core `edefe...` and rerun after the nested hash chain is repaired.
+- **Research/Perception #2243** — independently reviewed and merged at `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f` after exact PR head `f440a5a330e709c06cab1f818de8c83362897b2b` passed `latent-cache-tiny`, `model-lab`, `privacy` and `offline-bridge-security` (4/4 green). The diff is limited to a V14 tiny K/V experiment, its tests/results/README, R-037 ledger/handoff and an isolated model-lab workflow. The merge-push CI on 6bbaa is now 31 checks = 29 success / 2 in progress / 0 failures at last read, so this remains a research-only merge and not a code release. It proves only a tiny PyTorch mechanism between newly initialized models, not production B3, actual LFM2.5↔Qwen3.5, llama.cpp or Android.
+- **Research/Perception #2246** — current head `ad0d6a3b1f4935b22677c6f9c521ec97e099deec`, still based on old #2243 head `d7380cb`; 3 checks pass / 4 fail. The adapter derives and passes `brain_generation_id`, but A5 tests fail both Python versions: `context()` missing `grants`, `NameError: grant`, and ingress assertion `0 != 1`. Verify imported module path/signature in CI, fix without weakening source/generation checks, and rebase onto merged parent `6bbaa66`. No authenticated Android OS provider, capture or action consumer exists; keep SHADOW.
+- **JEPA/Memory #2247** — head `e8137fd3d873ee08d7159a32ddd2240ab8f43f31`, 11/14 checks pass. Both Python 3.13 and 3.14 optimizer-resume jobs reject all A-GEM arms because source-disjoint old-session holdouts regress across seeds 13/19/43. The checkpoint SHA is unchanged. This is correct fail-closed behavior; do not weaken the gate or activate learning.
+- **QA #2235 Age separation** — head `150e92b0dd62f389bdb1245d938e753b46bf78f1`, 7/10 checks pass. The proposed distinction is correct: Age supplies developmental/tool/learning rights; ResourceGuard and feature policy supply physical compute/replay limits. Owner-read and Lab-Age E2E fail because the AST audit attributes the nested `GoalStore.add` transaction callback as `f` instead of its enclosing `add`; `validate-additive` fails by policy because existing runtime/builder files change. QA was asked to fix the attribution and rerun exact checks; no policy bypass.
+- **Perception #2240** is merged at `728cdc`, but supplies caller-provided PCM16/features, not Android microphone capture or a fully accepted normal C3 consumer. **#1983** Memorilla remains a draft additive companion without a production consumer. **#1756** signed Termux patch review and **#1757** trainable behavior-judge prototype remain drafts on old bases. **#2215** immutable action-proposal argument binding is merged, but there is no Android OS executor.
+
+#### Whole-Canon status overlay
+
+| Requirement family | Current state | Acceptance still missing |
+| --- | --- | --- |
+| A0–A5 perception / attention | RAW EAR caller-PCM producer merged; A5 UI metadata lease synthetic draft | Android mic/UI provider, authenticated receipts, normal Runtime consumer, revocation through C3 |
+| B1_DETAIL / B2_GIST | Distinct roles and synthetic offer path | Native useful offers, mutual re-entry, correct/fast Redmi turns, model residency/RSS |
+| B3 Enlightened Space | Symbolic path plus tiny K/V research draft | Actual model-specific native tap/injection, trained receiver effect, OOD and no-message controls |
+| B4 workspace / C4 coalition | Source-span heuristic in prior pinned stage | Native semantic complementarity and Redmi consumer proof |
+| C/JEF/C2/C3/C5 | Synthetic output/control path; exact arithmetic candidate blocked | Correct native 2+2, robust C3 final, tool/voice/action end-to-end |
+| World/Self/Memory/JEPA/Sleep | Persistent predictor shadow and bounded worker | Accepted numeric update, per-session retention, restart/rollback, native master/adapter update |
+| Age rights / X10 lab | Separation candidate with repository-wide AST inventory | Fix AST nested-call attribution, exact CI, manual integration, preserve official Age 0 |
+| Voice/audio | Caller PCM16 feature producer | Microphone, ASR/decoder/vocoder, full-duplex, source-bound audio learning and Redmi proof |
+| Android background/UI control | DRY_RUN broker, immutable proposal binding, synthetic A5 metadata | OS-authenticated API/UI executor, per-action consent, audit, stop/rollback, Redmi proof |
+| Self-optimization / cross-organ weights | JEPA SHADOW only | Accepted persistent parameter diff, cross-organ gradients, gated self-edit and rollback |
+| Context OS / Memorilla | Context OS partial; #1983 draft | Integrated companion reader/writer and tested source-preserving overflow consumer |
+| Remote maintenance | Signed patch-review prototype draft | Read-only receipt, patch stage, sandbox, local approval, restore and device verification |
+| Technical OS sandbox / behavior judge | Proposal binding merged; judge prototype draft | Independent OS enforcement plus separate trainable judge; no single model as permission authority |
+| Sparse MoE | Not proven | Two genuinely different sparse bodies, native routing, expert load/quality and device budget |
+| Install/update/recovery | Prior release CI green; new candidate not released | Exact current-head CI, authenticated phone install SHA, rollback receipt |
+
+**Historical coverage:** all 1,255 recognized heading entries remain preserved. Semantic clause→implementation→consumer→test→environment→rollback mapping is still incomplete. This overlay adds evidence; it does not delete or downgrade any Canon requirement.
+
+#### Research handoff
+
+- **R-040 — Mahdaviyeh et al.**, arXiv:2506.04377v1 / *Replay can provably increase forgetting*, PMLR 330:15–42 (2026), not Caccia. Full arXiv HTML reviewed: https://arxiv.org/html/2506.04377v1. The arXiv version is CC BY-NC-ND 4.0; no figures/text derivatives or code imported. The worst-case construction shows replay can move error onto other old samples (forgetting from O(1/T) to Θ(1)); the average-case result shows random replay can increase expected forgetting for certain task-subspace relationships. MLP/MNIST results are non-monotonic and task/sample-dependent. The result is conditional, not a universal anti-replay rule. Keep zero/uniform/session-contiguous controls and source-disjoint per-session holdouts.
+- **R-041 — Thede et al.**, *Replay on Demand*, arXiv:2609.40089v1. Full 31-page PDF reviewed: https://pdfs.assets.alphaxiv.org/2609.40089v1.pdf. RoD jointly top-k selects adaptation by current loss minus a specialist reference and replay by current loss minus the pretrained reference; reference losses are precomputed/hash-keyed; each step scores m*k candidates with a forward-only pass (m=2 in the paper), then trains on k. The specialist reference has offline cost; a smaller source model can transfer a curriculum to a larger target. Limits: only replay-pool-covered forgetting is visible, LM loss is not downstream capability, proxy replay can misalign with task retention, and each experimental condition is single-seed (seed 42) despite cross-family/scale/domain replication. Main experiments use distributed NVIDIA B200 GPUs with count varying by model/setting. OSS repo exact main SHA `9ecc05173a4a5a8b872e18608c319df0eab5db81`, Apache-2.0; NeMo-RL v0.6.0/Megatron/Ray/SLURM. No code/dependency imported and no Android evidence.
+- Ledger-owner comment [#2246 research handoff](https://github.com/RedMentos/Aii/pull/2246#issuecomment-7067926479) asks Perception to append R-040/R-041; the shared research ledger has not yet been updated.
+
+#### Device / local test boundary
+
+Private PIPELINE_STATUS request [RedMentos/Aiiii #428](https://github.com/RedMentos/Aiiii/issues/428) remains open with no authenticated reply. Installed SHA and updater consent are UNKNOWN. No DIAGNOSTICS/LOG_PAGE/UPDATE_REQUEST, shell, model/weight, permission or data mutation occurred. Container inspection found no local Aii `.git` checkout, so no local full-suite test ran. All test results above are GitHub CI or synthetic tests, not LOCAL_LINUX execution or Redmi proof. **REDMI_UNVERIFIED.**
+
+#### Next executable ownership
+
+1. **Core:** fix the exact deployer pin and overlay test fixture; implement mandatory two-phase audio revocation and rerun staged/integrated/migration tests.
+2. **QA:** rebase #2244 after Core; fix #2235 AST attribution without widening its allowlist; preserve Age 0 and independent ResourceGuard.
+3. **Research/Perception:** finish exact #2243 and #2246 CI; append R-040/R-041 to the research ledger; continue actual llama.cpp receiver feasibility, not only toy K/V.
+4. **JEPA/Memory:** replace the failing replay/update mechanism, keep per-session retention strict, and require a changed checkpoint plus restart/rollback proof.
+5. **Boss:** integrate only after exact-base tests; continue full Canon coverage across voice, Android control, remote maintenance, OS sandbox, judge, weight learning, context and sparse MoE. No merge or release by PR count alone.
+
+**User action: none.** No Termux command or device change is needed.
+
+
+#### Active scheduled team capacity (verified)
+
+Exactly five V14 automations are enabled: Boss & Integration, QA & Android, JEPA & Memory, Forschung & Perception, and Core & Harness. The five legacy V13 automations and V13 Weekly Burst are disabled. No extra agent capacity is claimed.
