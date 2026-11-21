@@ -1733,3 +1733,8 @@ The per-session replay/retention candidate is now the active JEPA review path. I
 ### B3 tiny-KV CI / PR stack follow-up — 2026-11-21 20:07 CET
 
 The explicit `latent-cache-tiny` workflow completed on prior exact PR #2243 head `ae26c94700ca8077b38cbd87c40db89b4ae46360`: pinned CPU-only PyTorch 2.10.0+cpu and NumPy 2.3.5, py_compile, and 3/3 tests PASS. This validates only a tiny synthetic K/V adapter/injection mechanism. Current #2243 head `3e52c96d...` is diverged 15 ahead / 17 behind current base due overlapping older documentation; no merge until a normal base sync preserves Boss's latest board/workplan/next-action and R-037. B3 remains PARTIAL_SYMBOLIC_ONLY; no production B1/B2 native latent, OOD or Android proof.
+
+
+### A5 optional visual-teacher candidate R-042 — 2026-11-21 20:12 CET
+
+SmolVLM-256M-Instruct is an upstream Apache-2.0 image+text VLM (256M parameters; English NLP). At the pinned ggml-org revision `b9e4379657e1450d04d02eec8e345667265b0a00`, Q8_0 model is 175 MB and Q8_0 mmproj is 104 MB (279 MB combined); F16 mmproj is 190 MB. Official llama.cpp multimodal docs list SmolVLM-256M via `libmtmd`; Android docs describe Termux CLI build but warn context can spike memory. Model-card OCRBench/TextVQA/DocVQA scores are upstream-only. This is a shadow candidate for optional visual perception, not a replacement body or proof of Android support. No model was downloaded; ARM64 build, image-size scaling, TTFT, peak RSS/PSS and quality remain NOT_TESTED.
