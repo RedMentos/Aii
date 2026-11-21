@@ -623,4 +623,15 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - The next exact run (`44941137655`) reached the corrected context reader: 13 tests passed and 2 failed on both Python 3.13.18 and 3.14.10; `py_compile` passed. The source-bound readout no longer returned an empty tuple.
 - Remaining failures were test assertions/setup, not a new adapter exception: one assertion still expected a nonexistent top-level packet `source_id` instead of `source_ref.source_id`; the different-generation revocation test never called `ingest`, so there was no persisted source row to tombstone.
 - The test now checks the nested SourceRef and persists the observation before changing the active generation. These preserve the original contract: revocation must not cancel a different generation, but it must tombstone the already-persisted source.
-- Corrective exact-head CI is pending. Do not promote this PR until both Python versions, staged Runtime and integrated regression are green.
+- Final exact-head A5 lease CI is PASS on Python 3.13 and 3.14 (15 tests + 5 subtests each); privacy scan is PASS. Staged/integrated regression remained IN_PROGRESS at final readback. The strict additive-candidate validator is FAIL_BY_POLICY because this PR modifies an existing bridge plus shared V14 research/handoff files; no bypass is requested. Do not merge or release until Boss review and the remaining integration checks complete.
+
+
+### Final code-bearing SHA and CI readback
+
+- Code-bearing SHA: `01ce1c5fc9c8d2c1dc3f41718e3b6508d7b9d723`. PR #2246 is retargeted directly to the current release-development branch and includes the merged #2243 base.
+- A5 lease workflow run `44941324466` (push) and `44941328040` (pull_request): **PASS** on CPython 3.13.18 and 3.14.10; `py_compile` PASS; `15 passed, 5 subtests passed` on each interpreter; public privacy scan PASS.
+- `v13-private-remote-bridge-tests` run `44941324373`: PASS. Perception public privacy scan run `44941327893`: PASS. Agent-PR integration policy run `44941327955`: PASS.
+- `V13 safe additive candidate tests` run `44941327931`: **FAIL_BY_POLICY**, not a functional test failure. The validator accepts only strictly added inert modules/tests/handoff files; this PR intentionally modifies an existing A5 bridge and the shared V14 research ledger/handoff. No bypass was attempted; independent Boss review is required.
+- `V13 staged context and integrated regression` run `44941328011` was still IN_PROGRESS at final readback. No claim is made for those broader tests.
+- Local standalone nested-source/event/generation/finality/modality filter check: **4/4 PASS**. Full repository LOCAL_LINUX test remains BLOCKED because the complete checkout is not mounted and GitHub DNS resolution fails in this worker.
+- Device and release: `REDMI_UNVERIFIED` / `NOT_RELEASED`. The adapter uses a synthetic OS provider; no phone, capture, microphone, model or permission was exercised.

@@ -87,7 +87,7 @@ No user action is needed now. Current installed Redmi SHA/updater status was not
 
 - Exact head `cbdd888bb25fc430d7bdef0487f16ed8db5139e8`, run `44941137655`: py_compile PASS; 13 tests PASS / 2 FAIL / 5 subtests on both Python 3.13.18 and 3.14.10.
 - The adapter fix itself now returns the cached packet. Remaining failures were test-only: the assertion still expected `packet["source_id"]` rather than `packet["source_ref"]["source_id"]`; the generation-revocation test asserted deletion of a source it had never ingested.
-- Updated the assertion and made the test persist the packet before switching the active generation. The next exact-head CI is pending.
+- Updated the assertion and made the test persist the packet before switching the active generation. Final exact-head A5 lease CI passed on both Python versions; broader staged/integrated checks were still pending at final readback.
 
 
 ## Third exact-head attempt — code correction checkpoint
@@ -95,3 +95,15 @@ No user action is needed now. Current installed Redmi SHA/updater status was not
 - Code/test correction commit: `bd094187cb7391a5a7e29ecbd94600290496347e`.
 - Fixed the remaining two test-only failures from run `44941137655`: source assertion now reads `source_ref.source_id`; the different-generation revocation fixture ingests the event before asserting source tombstoning.
 - The GitHub ref update did not yet expose a new Actions run for this code commit. This handoff-only commit is intended to produce a normal push event so the exact corrected code can be re-tested; no pass is assumed.
+
+
+## Final exact code-bearing SHA and CI — 2026-11-21
+
+- Code-bearing SHA: `01ce1c5fc9c8d2c1dc3f41718e3b6508d7b9d723`; PR #2246 is retargeted to `gpt6/v13-private-remote-bridge-20261111`, with #2243's merged base in ancestry.
+- A5 lease push run `44941324466` and PR run `44941328040`: **PASS** on CPython 3.13.18 and 3.14.10; py_compile PASS; 15 tests + 5 subtests PASS on each; privacy scan PASS.
+- Generic V13 bridge tests run `44941324373`: PASS. V14 Perception privacy scan run `44941327893`: PASS. Agent-PR integration policy run `44941327955`: PASS.
+- Strict safe-additive candidate run `44941327931`: FAIL_BY_POLICY because the PR modifies an existing bridge and shared V14 research/handoff files; the validator only accepts new additive module/test/handoff files. No bypass; manual Boss review remains required.
+- Broader staged context/integrated regression run `44941328011` was IN_PROGRESS at final readback. Do not treat this PR as merged or release-ready.
+- Local standalone filter test: 4/4 PASS. Full repository local test BLOCKED (no mounted checkout; GitHub DNS unavailable).
+- The PR remains synthetic-provider only. No OS observation grant provider, screen capture, actual Android permission, B1/B2/C3 turn hookup or Redmi evidence. `REDMI_UNVERIFIED` / `NOT_RELEASED`.
+- No model/weight, updater, permission, app setting or user data changed. No user action is needed for this research/adapter checkpoint.
