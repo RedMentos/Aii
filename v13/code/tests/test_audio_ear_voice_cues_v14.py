@@ -554,3 +554,34 @@ def test_optional_silero_rejects_non_16khz_before_packet_or_attention(tmp_path):
         assert attention_count(runtime.store, event["event_id"]) == 0
     finally:
         runtime.store.close()
+
+
+def test_consent_revocation_between_pre_and_post_persist_leaves_no_packet(tmp_path):
+    """Revocation at the post-write check must not leave a persisted audio packet.
+
+    This is a privacy gate: packet commit and consent revocation need one ordering point.
+    """
+    runtime, event = make_runtime(tmp_path)
+    calls = 0
+
+    def revoke_after_pre_persist_checks(source_id, receipt):
+        nonlocal calls
+        calls += 1
+        # The producer checks before packet construction and again after
+        # validating the Store/event binding. Revoke at its post-write check.
+        return calls <= 2
+
+    try:
+        with pytest.raises(PermissionError):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=revoke_after_pre_persist_checks,
+                finality="FINAL", token_budget=512,
+            )
+        assert calls == 3
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
