@@ -293,4 +293,4 @@ print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 keeps one lease until iterator
         text=True, capture_output=True, timeout=90,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "PASS: staged A5 -> B1/B2 -> C3" in result.stdout
+    assert "PASS: staged A5 -> B1/B2 -> multi-chunk C3 keeps one lease until iterator exhaustion" in result.stdout
