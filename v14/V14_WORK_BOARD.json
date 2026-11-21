@@ -72,10 +72,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2151 (including QA retention fix #2152) is merged into release ancestry. Exact PR-head run 44861797478: V14 T8 real-SQLite workflow PASS, 64 tests on Python 3.13 and 64 on Python 3.14, compile PASS; private bridge workflow 44861792591 PASS. It verifies source/event/generation/Corollary/terminal receipts, oldest-first cursor + bounded pending cohort, source-ID and source-digest disjoint train/holdout, censored-status exclusion, numeric WorldJEPA encoder/predictor + EMA target, separate B1/B2/SELF readouts, checkpoint/restart/rollback and replay ablation. Evidence is synthetic Store receipts on GitHub Actions/Linux. It is not normal Runtime-wired, not native B1/B2 GGUF learning, not Redmi utility. #2145 remains an older failing Runtime candidate and must not replace #2151's authority.",
-      "next_step": "Core + JEPA/Memory: port the exact #2151 source/digest/pending-cohort/retention authority into the normal postcommit Runtime consumer, then expose the prediction to a real World/Planner decision consumer in SHADOW. Preserve optimizer_permission=false; add no-predictor/replay-only ablations, restart/rollback and equal-budget old/new cohort retention.",
+      "proof_environment": "PR #2151/#2152 remains the merged numeric WorldJEPA/EMA learner authority in release HEAD c0cedbde718ede6107f4df1f1bf9c784df4e00cf; exact PR-head workflow 44861797478 passed 64 tests on Python 3.13 and 64 on Python 3.14, compile PASS. New additive PR #2160 (draft, head a5678c2119dea2c29d038829bd5abaa23d454530, base c0ced...) ports the full-SourceRef authority, persistent consumer and permission-gated runtime facade into direct importable V13 modules. Safe-additive run 44870089869 (#547) passed 16/16 tests in 12.16s on Linux/Python 3.11.18; 3 modules compiled. Earlier staged-runtime/integrated run 44869725256 (#1420) passed both jobs on parent code head 101933c...; rerun 44870089892 (#1426) is still in progress after a test-only robustness correction. The correction makes oldest-first backlog assertions independent of whether the 8-step utility gate accepts or rejects a small batch. Local Python 3.13.5 wrapper-stub smoke PASS; exact local Aii checkout/tests remain BLOCKED by GitHub DNS. The API is not yet called by normal postcommit Runtime; B1/B2/SELF are numeric SHADOW heads, not native body consumers or GGUF updates. Optimizer moments are not persisted. No Redmi utility or native-body proof.",
+      "next_step": "Core owns the current staged builder/deployer chain. After the #2158 staged arithmetic fixture and source-pin failures are repaired and exact staged/integrated/migration checks pass, call v13.world_jepa_runtime.consume_after_commit only after durable ActionOutcome/T8 commit, then route receiver_readouts and memory_recall into a source-bound SHADOW packet consumed by a real World/Planner decision path. Keep both optimizer gates false until the local user-approved gate is explicitly set; then measure new/old holdout, replay, restart and rollback. Do not change native B1/B2 GGUF weights in this step.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21: #2151/#2152 merged code is in c0ced release branch; 64/64 Python 3.13 and 3.14 exact PR-head CI. Runtime consumer remains disconnected; NOT_PHONE_RELEASED; REDMI_UNVERIFIED.",
+      "last_checkpoint": "2026-11-21 06:19 CET: #2160 head a5678c2119dea2c29d038829bd5abaa23d454530; safe-additive 16/16 PASS; #1426 pending; no normal Runtime hook or Redmi proof.",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -101,7 +101,16 @@
       },
       "release_sha": "NOT_PHONE_RELEASED",
       "phone_installed_sha": "UNKNOWN",
-      "redmi_status": "REDMI_UNVERIFIED"
+      "redmi_status": "REDMI_UNVERIFIED",
+      "latest_runtime_port_pr": {
+        "pr": 2160,
+        "branch": "jepa-memory/v14-world-jepa-runtime-port-20261121-r2",
+        "head_sha": "a5678c2119dea2c29d038829bd5abaa23d454530",
+        "base_sha": "c0cedbde718ede6107f4df1f1bf9c784df4e00cf",
+        "status": "OPEN_DRAFT_SAFE_ADDITIVE_PASS_INTEGRATED_RERUN_PENDING",
+        "ci": "PASS_44870089869_16_TESTS_PY311; STAGED_INTEGRATED_44870089892_IN_PROGRESS",
+        "scope": "Deployable direct V13 module port of #2151/#2152; full SourceRef; dual-gated postcommit API; B1/B2/SELF numeric SHADOW readouts and memory recall; no normal Runtime wiring/native body updates"
+      }
     },
     {
       "id": "V14-005",
@@ -246,7 +255,7 @@
   "latest_integrated_head_verified_at": "2026-11-21T04:00:49Z",
   "release_gate_status": "POST_MERGE_REQUIRED_WORKFLOWS_ACTION_REQUIRED; NOT_RELEASED",
   "phone_receipt": {
-    "issue": "RedMentos/Aiiii#362",
+    "issue": "RedMentos/Aiiii#367",
     "state": "OPEN_NO_REPLY",
     "installed_sha": "UNKNOWN",
     "auto_update": "UNVERIFIED",
@@ -302,10 +311,10 @@
       "capability": "World/Self/Memory/JEPA numeric learner",
       "code": "PRESENT_EXPERIMENTAL",
       "wired": "ISOLATED_STORE_CONSUMER",
-      "tested_synthetic": "PASS_64_ON_PY313_AND_PY314",
+      "tested_synthetic": "PASS_64_PY313_PY314_PLUS_16_PY311_RUNTIME_PORT",
       "tested_android": "NOT_TESTED",
       "active": "SHADOW_OPTIMIZER_OFF",
-      "evidence": "#2151/#2152 exact CI; normal postcommit Runtime consumer remains open"
+      "evidence": "#2151/#2152 exact CI 64/64 on Python 3.13/3.14. #2160 direct V13 runtime API port: safe-additive CI #547 16/16 PASS, full SourceRef and dual gates; normal postcommit Runtime hook and real World/Planner/B1/B2 consumer still not wired. Synthetic Store evidence only; no native body weights or Redmi utility proof."
     },
     {
       "capability": "Sleep/Dream/Replay consolidation",
