@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T18:05:59.714Z",
+  "updated_at": "2026-11-21T18:38:36Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Perception #2240 merged at 728cdc763f09bee20ac00e1f0faadffcd33dfbb2. Exact merge-push CI complete: 18/19 workflows PASS; 1 workflow FAIL because the staged-runtime job's normal SleepRuntime post-commit JEPA test receives UTILITY_GATE_REJECTED instead of a positive accepted update; integrated-regression job PASS. Prior code-bearing release f279286a4453248004c670fcaabecd85da6ab299 remains 19/19. Audio producer/lease API is present but normal Runtime C3 consumer is not wired. No Redmi proof.",
-      "next_step": "JEPA: fix validated optimizer-state clone and produce a retention-preserving accepted update without lowering the gate; maintain exact rollback. Core/QA: preserve C4 in normal deployer. Core: wire audio lease through C3 with cancellation and revoke cleanup.",
+      "proof_environment": "Perception #2240 merged at 728cdc763f09bee20ac00e1f0faadffcd33dfbb2; exact merge-push CI 18/19 PASS, 1 FAIL in staged-runtime normal SleepRuntime JEPA acceptance (truthful UTILITY_GATE_REJECTED); integrated-regression PASS. Core #2242 head 4cca4987e1cf42cacfdbd69fbccf6339062746b8 adds a normal staged Runtime AudioConsentLease through A5/derived context/B1/B2/full C3 iterator; exact-head audio suite 36 tests/6 subtests PASS, staged 251/10/47 PASS, integrated 424/3/58 PASS, runtime-deploy integrity PASS, owner-read/bootstrap and Lab-Age migration/control PASS. Safe-additive remains BLOCKED_BY_POLICY. QA #2244 current run fails only a stale outer success-string assertion; embedded scenario reaches its success line. Lease currently holds provider guard through C3, so revoke cannot trigger cancellation while generation is blocked; pre-revoke cancellation signal/revocable token remains open. Core #2245 adds read-only per-turn flow audit, current-base head f099bc8; old source head f914 exact CI 26+8 tests, compile and JS syntax PASS; current-base CI pending. No native model, microphone, Android installation or Redmi proof. Full local checkout unavailable; CI only. REDMI_UNVERIFIED.",
+      "next_step": "Core/Perception: add a nonblocking revocation-request signal or revocable lease token so Runtime.cancel_event can stop C3 promptly, then tombstone derived audio context and clear native/process caches; QA fixes #2244 assertion and adds mid-stream cancel/revoke test. Boss reviews #2242 and #2245, including safe-additive policy. Keep C4 normal deployer intact; continue P0 #1904 correctness/B1-B2 delivery and native evidence.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T18:05:08.230Z"
+      "last_checkpoint": "2026-11-21T18:38:36Z"
     },
     {
       "id": "V14-002",
@@ -208,10 +208,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
-      "proof_environment": "PR #2233 head 5b9882e1 is caller-supplied PCM16 only and based on stale 9d8f; no microphone capture, normal Runtime consumer, native model inference or lease through C3 runner.generate(). Android background broker remains DRY_RUN_ONLY; no AccessibilityService/MediaProjection executor or Redmi proof.",
-      "next_step": "Core + Perception: compose the exact RAW EAR producer with a current-base normal Runtime consumer, keep the provider lease through actual C3 generation without consent callback re-entry, and tombstone derived audio context plus clear cache on revocation. QA adversarially tests consent races.",
+      "proof_environment": "Perception #2240 merged at 728cdc763f09bee20ac00e1f0faadffcd33dfbb2: caller-supplied PCM16 RAW EAR producer, bounded source-bound packet and same-thread AudioConsentLease. Core #2242 head 4cca4987e1cf42cacfdbd69fbccf6339062746b8 composes the producer into the ordinary staged Runtime through B1/B2/full C3 iteration; synthetic exact-head CI passes 36 tests/6 subtests plus staged/integrated/migration/deploy checks. Revocation currently waits for the held provider guard, so prompt cancellation is not yet implemented. No microphone capture, ASR/TTS, Android UI or live companion. REDMI_UNVERIFIED.",
+      "next_step": "Core + Perception: provide a revocation-request callback that can fire before waiting on the held provider guard, or an equivalent revocable lease token; Core sets Runtime.cancel_event, closes the C3 iterator, tombstones derived audio context and clears caches. QA proves revoke/barging-in during a blocked native-like stream. Keep microphone capture OFF until an actual authorized provider is connected; no Redmi claim.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 18:04 CET"
+      "last_checkpoint": "2026-11-21T18:38:36Z"
     },
     {
       "id": "V14-010",
@@ -279,6 +279,20 @@
       "next_step": "QA: fix AST enclosing-method attribution for GoalStore.add's nested closure, add negative unrelated-closure case, rerun Lab-Age/owner-read/staged/integrated/migration. Boss/Core: compose #2235 with #2234 only after preserving normal C4 and recomputing recovery→stage→deployer pins.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21T18:05:08.230Z"
+    },
+    {
+      "id": "V14-014",
+      "title": "Read-only per-turn organ-flow audit",
+      "owner": "Core & Harness",
+      "reviewer": "Boss & QA",
+      "priority": "P0",
+      "status": "DRAFT_CI_PENDING",
+      "scope": "A5/B1/B2/C4/C3/C5/B3 persisted turn flow; local token-scoped dashboard projection",
+      "acceptance": "Read-only local dashboard shows source-bound organ delivery, consumed offers, model/token/timing metadata and action outcomes without private text, prompt text, event/session/source IDs, source hashes, token IDs or raw audio; native attention/latent claims remain explicitly unproven; exact current-base CI and independent privacy review pass.",
+      "proof_environment": "PR #2245 branch core/v14-flow-audit-current-base-20261121 head f099bc803653b79e1ad7e4fa81f12ad2d9e7b7a8; current-base CI pending. Prior source head f914b918 exact GitHub Actions: flow-audit tests 26 passed, dashboard tests 8 passed, py_compile PASS, inline JS node --check PASS; staged/integrated/migration/owner-read workflows PASS. Safe-additive FAIL BY POLICY because existing dashboard modules change. No local full checkout, no Android or Redmi proof.",
+      "next_step": "Wait for exact-head current-base CI; Boss independently reviews privacy and existing dashboard edits. If green, integrate only through normal review. Do not treat token counts/source binding as semantic-use or native latent proof.",
+      "user_action_required": false,
+      "last_checkpoint": "2026-11-21T18:38:36Z"
     }
   ],
   "current_redmi_status": "REDMI_UNVERIFIED — private PIPELINE_STATUS request expired without authenticated reply; installed SHA and updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action or device mutation.",
