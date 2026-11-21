@@ -97,6 +97,42 @@ final class CompanionDb extends SQLiteOpenHelper {
         return changed == 1;
     }
 
+    /** Atomically reserves a still-live pending action for exactly one dispatch attempt. */
+    synchronized boolean claimForDispatch(String actionId, long nowMillis) {
+        return claim(actionId, nowMillis, "DISPATCHING");
+    }
+
+    /** Denial is also a one-shot decision; it must win before another activity can approve. */
+    synchronized boolean claimForDenial(String actionId, long nowMillis) {
+        return claim(actionId, nowMillis, "DENYING");
+    }
+
+    private boolean claim(String actionId, long nowMillis, String decisionState) {
+        ContentValues values = new ContentValues();
+        values.put("status", decisionState);
+        int changed = getWritableDatabase().update("actions", values,
+                "action_id=? AND status='PENDING_USER_APPROVAL' AND expires_at>?",
+                new String[]{actionId, Long.toString(nowMillis)});
+        return changed == 1;
+    }
+
+    synchronized void finishDispatch(String actionId, String status, String receiptJson) {
+        finishDecision(actionId, status, receiptJson, "DISPATCHING");
+    }
+
+    synchronized void finishDenial(String actionId, String status, String receiptJson) {
+        finishDecision(actionId, status, receiptJson, "DENYING");
+    }
+
+    private void finishDecision(String actionId, String status, String receiptJson, String expectedState) {
+        ContentValues values = new ContentValues();
+        values.put("status", status);
+        values.put("receipt_json", receiptJson);
+        int changed = getWritableDatabase().update("actions", values,
+                "action_id=? AND status=?", new String[]{actionId, expectedState});
+        if (changed != 1) throw new IllegalStateException("action decision is no longer claimable");
+    }
+
     synchronized String receipt(String actionId) {
         Action action = get(actionId);
         return action == null ? null : action.receiptJson;
