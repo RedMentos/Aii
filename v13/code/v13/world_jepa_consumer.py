@@ -610,6 +610,37 @@ def _parameter_snapshot(model):
     }
 
 
+def _apply_parameter_interpolation(model, before, after, scale):
+    if (type(scale) not in (int, float) or not np.isfinite(scale)
+            or not 0.0 < float(scale) <= 1.0):
+        raise ValueError("invalid WorldJEPA parameter interpolation scale")
+    for group in ("enc", "tgt"):
+        current = getattr(model, group)
+        left, right = before[group], after[group]
+        if set(current) != set(left) or set(current) != set(right):
+            raise ValueError("parameter interpolation fields changed")
+        for key, target in current.items():
+            start = np.asarray(left[key])
+            end = np.asarray(right[key])
+            destination = np.asarray(target)
+            if start.shape != end.shape or start.shape != destination.shape:
+                raise ValueError("parameter interpolation shape changed")
+            np.copyto(destination, start + (end - start) * float(scale))
+    if len(model.preds) != len(before["preds"]) or len(model.preds) != len(after["preds"]):
+        raise ValueError("parameter interpolation ensemble changed")
+    for index, predictor in enumerate(model.preds):
+        left, right = before["preds"][index], after["preds"][index]
+        if set(predictor) != set(left) or set(predictor) != set(right):
+            raise ValueError("parameter interpolation predictor fields changed")
+        for key, target in predictor.items():
+            start = np.asarray(left[key])
+            end = np.asarray(right[key])
+            destination = np.asarray(target)
+            if start.shape != end.shape or start.shape != destination.shape:
+                raise ValueError("parameter interpolation predictor shape changed")
+            np.copyto(destination, start + (end - start) * float(scale))
+
+
 def _group_delta(before, after, groups):
     total = 0.0
     for group in groups:
@@ -1407,46 +1438,54 @@ class WorldJEPAStoreConsumer:
                 "fit_array_bytes": int(sum(int(array.nbytes) for array in fit_arrays)),
                 "replay_array_bytes": replay_array_bytes,
             })
-            # A bounded line search over the optimizer step multiplier.
-            # Each retry reloads the same committed checkpoint: rejected candidates
-            # cannot leak parameters, EMA, Adam moments, RNG or drift state.
+            # Train once, then backtrack the resulting parameter delta along a
+            # deterministic trust-region ladder. Guard rows select the scale;
+            # final holdouts are evaluated only once and never select a retry.
+            # This keeps Android cost bounded to one optimizer pass per candidate.
             update_scales = ([1.0] if active is None else
-                             [1.0, 0.5, 0.25, 0.125, 0.0625])
+                             [1.0, 0.5, 0.25, 0.125, 0.0625, 0.03125,
+                              0.015625, 0.0078125, 0.00390625])
             attempts = []
             selected_scale = None
             candidate = model
+            try:
+                candidate.partial_fit(
+                    *fit_arrays, steps=steps, log_every=max(1, steps // 4),
+                    cancel_check=cancel_check, allow_optimizer_bootstrap=True,
+                    train_encoder=(encoder_mode == "full"),
+                    drift_control=drift_config, replay_start=replay_start,
+                    update_scale=1.0,
+                    replay_cohort_ranges=replay_cohort_ranges,
+                )
+            except InterruptedError:
+                return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                        "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                        "native_body_weights_changed":False}
+            if cancel_check is not None and cancel_check():
+                return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                        "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                        "native_body_weights_changed":False}
+
+            candidate_drift_metrics = world_jepa_drift.summary(
+                candidate._training_state.get("drift"), enabled=drift_config["enabled"]
+            )
+            candidate_gradient_projection = dict(
+                getattr(candidate, "_last_gradient_projection", {})
+            )
+            candidate_gradient_projection["requested"] = replay_projection
+            candidate_gradient_projection["mode"] = replay_metrics["replay_projection_mode"]
+            candidate_gradient_projection["constraint_session_count"] = replay_metrics["replay_constraint_session_count"]
+            candidate_gradient_projection["optimizer_direction_scale"] = 1.0
+            full_candidate_after = _parameter_snapshot(candidate)
+            candidate_fit_steps_after = int(getattr(candidate, "_fit_steps", 0))
+
             for attempt_index, update_scale in enumerate(update_scales):
-                if attempt_index:
-                    candidate = self._load_model(active)
-                try:
-                    candidate.partial_fit(
-                        *fit_arrays, steps=steps, log_every=max(1, steps // 4),
-                        cancel_check=cancel_check, allow_optimizer_bootstrap=True,
-                        train_encoder=(encoder_mode == "full"),
-                        drift_control=drift_config, replay_start=replay_start,
-                        update_scale=update_scale,
-                        replay_cohort_ranges=replay_cohort_ranges,
-                    )
-                except InterruptedError:
-                    return {"status":"CANCELLED","pending_rows":len(pending_by_id),
-                            "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
-                            "native_body_weights_changed":False}
                 if cancel_check is not None and cancel_check():
                     return {"status":"CANCELLED","pending_rows":len(pending_by_id),
                             "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
                             "native_body_weights_changed":False}
-
-                candidate_drift_metrics = world_jepa_drift.summary(
-                    candidate._training_state.get("drift"), enabled=drift_config["enabled"]
-                )
-                candidate_gradient_projection = dict(
-                    getattr(candidate, "_last_gradient_projection", {})
-                )
-                candidate_gradient_projection["requested"] = replay_projection
-                candidate_gradient_projection["mode"] = replay_metrics["replay_projection_mode"]
-                candidate_gradient_projection["constraint_session_count"] = replay_metrics["replay_constraint_session_count"]
+                _apply_parameter_interpolation(candidate, before, full_candidate_after, update_scale)
                 candidate_after = _parameter_snapshot(candidate)
-                candidate_fit_steps_after = int(getattr(candidate, "_fit_steps", 0))
                 candidate_encoder_delta = _group_delta(before, candidate_after, ("enc",))
                 candidate_predictor_delta = _group_delta(before, candidate_after, ("preds",))
                 candidate_parameter_delta = math.sqrt(
@@ -1488,6 +1527,14 @@ class WorldJEPAStoreConsumer:
                     selected_scale = float(update_scale)
                     break
 
+            effective_scale = (
+                float(selected_scale) if selected_scale is not None else float(update_scales[-1])
+            )
+            candidate_gradient_projection["effective_update_scale"] = effective_scale
+            replay_metrics["line_search_mode"] = "POST_FIT_PARAMETER_INTERPOLATION"
+            replay_metrics["line_search_optimizer_passes"] = 1
+            replay_metrics["line_search_attempts"] = attempts
+            replay_metrics["selected_update_scale"] = selected_scale
             # Final holdouts are evaluated once after guard-based scale selection.
             # They never choose a retry scale and are never used for gradients.
             candidate_holdout_after = candidate.prediction_loss(*holdout)
