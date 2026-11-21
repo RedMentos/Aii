@@ -847,3 +847,67 @@ def test_sleep_runtime_hard_replay_vs_matched_uniform_sampled(tmp_path):
     assert arms["hard"]["fit_rows"] == arms["uniform_sampled"]["fit_rows"]
     assert arms["hard"]["replay_rows"] == arms["uniform_sampled"]["replay_rows"]
     print("V14_JEPA_REPLAY_ABLATION " + json.dumps(arms, sort_keys=True))
+
+
+def test_postcommit_jepa_source_revocation_rolls_back_and_stales_planner(tmp_path):
+    home = tmp_path / "brain-source-revocation"
+    store, session = _make_store(home)
+    try:
+        first_events = _add_transitions(store, session, 0, 256)
+        store.set_state(PERMISSION_KEY, {
+            "learning_enabled": True, "optimizer_permission": True,
+            "steps": 120, "replay_mode": "uniform",
+        })
+        sleep = _sleep(store, home)
+        first = sleep._run_world_jepa(first_events[-1], limit=256)
+        assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        first_sha = first["learning"]["checkpoint_sha256"]
+        assert first["planner"]["status"] == "SHADOW_PLANNER_READY"
+
+        second_events = _add_transitions(store, session, 256, 32)
+        store.set_state(PERMISSION_KEY, {
+            "learning_enabled": True, "optimizer_permission": True,
+            "steps": 24, "replay_mode": "uniform",
+        })
+        second = sleep._run_world_jepa(second_events[-1], limit=256)
+        assert second["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        second_sha = second["learning"]["checkpoint_sha256"]
+        assert second_sha != first_sha
+        assert second["planner"]["status"] == "SHADOW_PLANNER_READY"
+
+        learner = WorldJEPAStoreConsumer(
+            store, home / "world_jepa", learning_enabled=True
+        )
+        active_state, _ = learner._read_state()
+        assert active_state["previous"]["checkpoint_sha256"] == first_sha
+        assert all("source_ref" in row for row in active_state["active"]["experience_rows"])
+        revoked_action = store.one(
+            "SELECT id FROM actions WHERE event_id=?", (second_events[1],)
+        )["id"]
+        revoked_row = next(
+            row for row in active_state["active"]["experience_rows"]
+            if row["action_id"] == revoked_action
+        )
+        with store.tx() as connection:
+            connection.execute(
+                "UPDATE sources SET deleted=1 WHERE id=?", (revoked_row["source_id"],)
+            )
+
+        # Planner readback must reconcile source lineage before exposing the
+        # previously stored readout packet.
+        stale = read_world_planner_shadow(store, second_events[-1])
+        assert stale["status"] == "STALE_CHECKPOINT"
+        restored = learner.restore()
+        assert restored["status"] == "RESTORED"
+        assert restored["checkpoint_sha256"] == first_sha
+        final_state, _ = learner._read_state()
+        assert final_state["active"]["checkpoint_sha256"] == first_sha
+        assert final_state["previous"] is None
+        assert final_state["scan_cursor"] == 256
+        assert all(
+            row["source_id"] != revoked_row["source_id"]
+            for row in final_state["active"]["experience_rows"]
+        )
+        assert len(list((home / "world_jepa").glob("jepa-*.npz"))) == 1
+    finally:
+        store.close()
