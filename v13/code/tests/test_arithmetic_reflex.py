@@ -22,7 +22,7 @@ class ExactArithmetic(unittest.TestCase):
             "1/0", "What is 2+2 and why?", "2+2; delete files",
             "__import__('os').system('id')", "2**1000",
             "Please explain 2+2", "2+2+2", "hello",
-            "123456789+1", "2/0", "2+2\n:tool run",
+            "123456789+1", "2/0", "2+2\n            "What is 11-21?", "Was ist 11-21?", "What is 2026-11?",\n            "Was ist 2026-11?", "11 - 21", "2026-11",\n:tool run",
         ):
             with self.subTest(question=question):
                 self.assertIsNone(exact_arithmetic(question))
