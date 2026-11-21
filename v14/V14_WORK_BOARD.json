@@ -152,16 +152,17 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "LOCAL_LINUX_SYNTHETIC_13/13_PASS; CI_PY3.11_AND_3.13_FOCUSED_PASS; PRIVACY_SCAN_PASS; STAGED_INTEGRATED_PENDING; SAFE_ADDITIVE_FAIL_EXPECTED; REDMI_UNVERIFIED",
-      "next_step": "Boss review PR #2177 on exact release base 04635a5522ab095f79544e23d9aa0330b0c9ff7a. Core updates #2158 audio_voice_cues.py pin to V3 blob 0e328d14883840190937f0fef24a8e895ba7261c after review, preserves separate text/audio modalities, and proves normal Runtime plus B1/B2→C4→C3 consumption. Research compares native mid-layer capture on exact pinned b10964; no model swap.",
+      "proof_environment": "LOCAL_LINUX_SYNTHETIC_13/13_PASS; CI_FOCUSED_12xPY3.11_AND_12xPY3.13_PASS; CI_PRIVACY_PASS; CI_STAGED_240_PASS_10_SKIP_47_SUBTESTS; CI_INTEGRATED_415_PASS_3_SKIP_58_SUBTESTS; SAFE_ADDITIVE_FAIL_EXPECTED; REDMI_UNVERIFIED",
+      "next_step": "Boss rechecks/updates PR #2177 against latest release 825363114f41a723ff584c58e037b58ea6136b8b and performs independent review; Core updates #2158 V3 pin and proves normal Runtime plus B1/B2→C4→C3 consumer. Research validates native middle-layer extraction on exact b10964. No phone action/model swap.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 08:22 CET",
+      "last_checkpoint": "2026-11-21 08:25 CET",
       "latest_candidate_pr": {
         "pr": 2177,
-        "head_sha": "1c4bb678025b421b98766cbce61570eec4683a52",
+        "head_sha": "d3e578658cbfa5bffa8e254a532215b1e78082f9",
+        "tested_code_test_head": "1c4bb678025b421b98766cbce61570eec4683a52",
         "producer_blob": "0e328d14883840190937f0fef24a8e895ba7261c",
         "test_blob": "96b00b2e1b6340e2a61a8b6f230be8747889ab38",
-        "ci": "FOCUSED_PY311_12_PASS_PY313_12_PASS_PRIVACY_PASS_STAGED_INTEGRATED_PENDING",
+        "ci": "FOCUSED_12_PY311_PASS_12_PY313_PASS_PRIVACY_PASS_STAGED_240_PASS_10_SKIP_47_SUBTESTS_INTEGRATED_415_PASS_3_SKIP_58_SUBTESTS_SAFE_ADDITIVE_FAIL_EXPECTED",
         "scope": "caller-supplied PCM16 -> AudioPercept voice cues -> A4 attention -> C3 admission; no mic/ASR/VAD/runtime microphone or B1/B2 delivery"
       }
     },
