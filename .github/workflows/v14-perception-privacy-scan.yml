@@ -1,0 +1,41 @@
+name: V14 Perception public privacy scan
+
+on:
+  push:
+    branches:
+      - "research-perception/**"
+    paths:
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_temporal_evidence.py"
+      - "v13/code/tests/test_audio_temporal_evidence.py"
+      - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
+      - "v14/V14_RESEARCH_LEDGER.md"
+      - "v14/handoffs/RESEARCH_PERCEPTION_*.md"
+      - ".github/workflows/v14-perception-privacy-scan.yml"
+  pull_request:
+    branches:
+      - "qa/v14-jepa-checkpoint-publication-20261121"
+    paths:
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_temporal_evidence.py"
+      - "v13/code/tests/test_audio_temporal_evidence.py"
+      - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
+      - "v14/V14_RESEARCH_LEDGER.md"
+      - "v14/handoffs/RESEARCH_PERCEPTION_*.md"
+      - ".github/workflows/v14-perception-privacy-scan.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  privacy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Scan added public content for secrets and private identifiers
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/qa/v14-jepa-checkpoint-publication-20261121 --head HEAD --no-worktree
