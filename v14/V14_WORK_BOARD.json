@@ -154,10 +154,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Current release branch HEAD c0cedbde is verified. PR #2151/#2152 (WorldJEPA synthetic learner + retention gate) and #2155 (RAW EAR cue adapter) are merged. Exact post-merge required workflows for c0ced returned action_required across 13 runs; current SHA is therefore NOT release-certified. Boss evidence PR #2149 is stale on base c3c32 and mergeable=false. Whole Canon acceptance remains open.",
-      "next_step": "Publish a fresh docs-only evidence sync from current c0ced (this branch), close the stale #2149 after the replacement PR is visible, then continue integration review of the current Core/Runtime stack. Do not mark release or phone install from PR-head CI.",
+      "proof_environment": "Current release branch HEAD c0cedbde is verified. PR #2151/#2152 (WorldJEPA synthetic learner + retention gate) and #2155 (RAW EAR cue adapter) are merged. Exact post-merge required workflows for c0ced returned action_required across 13 runs; current SHA is therefore NOT release-certified. Boss evidence PR #2149 is stale on base c3c32 and mergeable=false. Whole Canon acceptance remains open. Fresh docs-only sync PR #2156 is OPEN, based on exact c0ced HEAD; its head is acb7a5154d7c790f9da0c655fd106e8fe1a1a124, mergeable=true, but no PR workflow runs or combined status checks are available. Stale docs PR #2149 was closed as superseded.",
+      "next_step": "Review #2156's five documentation files and merge only after the docs-only change is independently checked; then continue Core/JEPA integration and wait for current exact release CI + device receipt.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21: c0ced current branch; #2151/#2155 merged; post-merge CI action_required; no phone receipt."
+      "last_checkpoint": "2026-11-21: #2156 opened from c0ced (5 docs only, no CI run); #2149 closed as stale/superseded; no code or device change."
     },
     {
       "id": "V14-008",
