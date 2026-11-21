@@ -186,7 +186,7 @@ class Callosum:
         except Exception as exc:latent_lab={'status':'UNAVAILABLE','error':type(exc).__name__}
         return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),
                 'latent_lab':latent_lab,
-                'gate':'G-CALLOSUM-UTILITY-002: LATENT remains blocked; candidates are not active',
+                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked; candidates are not active',
                 'claim_limit':'Native-tap-backed adapter candidates and counterfactual readout probes only; no live receiver effect or LATENT authority'}
 
 def controller(runtime):
