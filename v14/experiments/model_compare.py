@@ -382,7 +382,7 @@ def compare(home: Path, candidate_id: str, candidate_path: Path | None = None,
             except (OSError, RuntimeError) as exc:
                 raise RuntimeError("V13_LLAMA_SERVER override cannot be verified") from exc
             if override_resolved != binary_resolved:
-                raise RuntimeError("V13_LLAMA_SERVER override differs from installed llama-server")
+                raise RuntimeError("V13_LLAMA_SERVER override differs from verified installed binary")
 
         binary_before = binary_resolved.stat()
         binary_info = {
