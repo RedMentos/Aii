@@ -1,4 +1,40 @@
-## Latest JEPA & Memory checkpoint — 2026-11-21 06:19 CET
+## Latest JEPA & Memory checkpoint — 2026-11-21 06:22 CET
+
+This section updates the JEPA/Memory lane; the release and whole-system status below remains governed by Boss/QA evidence.
+
+### Verified code and branch state
+- Release branch HEAD remains c0cedbde718ede6107f4df1f1bf9c784df4e00cf. This is a GitHub branch readback, not a phone installation. Required post-merge release workflows on this SHA remain action_required; NOT_RELEASED.
+- PR #2160 is now READY_FOR_REVIEW, head a5678c2119dea2c29d038829bd5abaa23d454530, based on c0ced. It adds direct V13 modules for the full-SourceRef T8 authority, persistent WorldJEPA/EMA Store consumer, and permission-gated runtime API. It does not edit Runtime, stage builder, deployer, updater, installed models or phone state.
+- The API reads v14.world_jepa.permissions on every post-commit call. Both learning_enabled and optimizer_permission must be strict booleans true; defaults are false. It exposes B1_DETAIL, B2_GIST and SELF_MODEL numeric SHADOW readouts plus source-linked episodic recall, all with decision_authority=NONE. Native B1/B2 GGUF weights are not changed or consumed.
+
+### Exact test evidence
+- GitHub safe-additive run 44870089869 (#547): PASS, 16/16 tests in 12.16s on Linux/Python 3.11.18; 3 new modules compiled. The tests use synthetic experiences through the real V13 SQLite Store and verify source/digest-disjoint holdouts, numeric encoder/predictor and EMA deltas, replay/retention, checkpoint/restart/rollback, strict gates, B1/B2/SELF readouts and memory recall.
+- Staged-context/integrated workflow 44870089892 (#1426): PASS. Staged-runtime 240 passed, 10 skipped, 47 subtests; integrated-regression 415 passed, 3 skipped, 58 subtests.
+- Earlier #541 failure was a flaky test assumption that every 8-step, 64-row batch must pass the utility gate. The backlog test now checks durable cursor/pending progress whether the learner accepts or rejects that cohort; the current #547 and #1426 runs pass.
+- LOCAL_LINUX Python 3.13.5 wrapper-stub smoke: PASS for compilation, default-off behavior, strict boolean gates, explicit opt-in, revocation, and readout/recall facade. This stub is not the actual JEPA learner.
+- Full local Aii checkout and exact repository tests remain BLOCKED because this worker cannot resolve github.com. CI is not local native execution.
+
+### Functional boundary
+- The #2160 package provides a deployable post-commit API, but normal Runtime does not call it yet. The actual World/Planner consumer has not been wired to read the SHADOW packet. B1/B2/SELF outputs are numeric readout heads, not native body-model consumption. Cross-organ GGUF weight updates remain NOT_IMPLEMENTED.
+- Existing checkpoint format persists model/EMA weights, replay, holdout and rollback state, but not Adam optimizer moments or the temporary inverse-dynamics optimizer head.
+- No user data was used; tests are synthetic Store receipts. No native Android or Redmi measurement is claimed.
+
+### Core dependency
+- Current Core staged Runtime PR #2158 head 84068f31c2654dfe36c0e62779957bf97335d2ae remains DRAFT. Its staged A5 run #21 fails on both Python 3.11 and 3.13: the date-shaped subtraction guard tests reject unspaced examples as intended, but positive arithmetic fixtures and one C3 voice-consumer fixture still expect FINAL; the voice turn returns ERROR. Its safe-additive run #546 rejects the high-authority stage-builder/runtime_deploy paths; do not bypass that gate.
+- Core staged-context/integrated run #1425: staged-runtime FAILED (1 failed, 239 passed, 10 skipped, 47 subtests) at test_termux_runtime_recovery_stage.py:23 due to a recovery-stage source hash mismatch. Integrated-regression PASSED (415 passed, 3 skipped, 58 subtests). Migration run #169 and runtime deployment integrity #263 passed.
+- After Core repairs the arithmetic/voice-finality and recovery-stage hash fixtures and independently reviews the staged chain, integrate consume_after_commit immediately after durable ActionOutcome/T8 commit, then expose source-bound SHADOW readouts to an actual World/Planner consumer.
+
+### Device, updater and user action
+- Last available private V13OBS snapshot Aiiii#115 was updated 2026-11-18. Its metadata reported auto_enabled=true and dashboard UP_TO_DATE, but last_result=PARTIAL and runtime=ERROR; it is stale and does not prove the current installation.
+- A fresh owner-read PIPELINE_STATUS request is open as Aiiii#367 with no device comment yet. Installed SHA remains UNKNOWN; updater state UNVERIFIED; NO_LIVE_RECEIPT / REDMI_UNVERIFIED. No UPDATE_REQUEST, installer, shell command, model download/swap, permission change or data mutation was attempted.
+- User action required: NO. No Termux command or model approval is needed for this repository-side step.
+
+### Research follow-up
+- R-016 JEPA-TTT supports persistent predictor + optimizer + replay under one fixed dynamics shift, but does not test sequences of shifts or forgetting of earlier dynamics; use predictor-only as a comparison arm, not a permanent frozen-encoder design.
+- R-017 ER-JEPA supports testing content/hard/uniform replay against no replay under matched compute and memory budgets. Current V14 learner supports uniform/no-replay only. No paper code, weights or dependencies were imported.
+- Next JEPA-specific code after Runtime wiring: persist optimizer moments across updates and add content/error-prioritized replay ablations with equal update/byte budgets, old/new source-disjoint holdouts and return-to-prior-dynamics retention.
+
+---
 
 This section updates the JEPA/Memory lane; the release and whole-system status below remains governed by Boss/QA evidence.
 
