@@ -1206,10 +1206,38 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             if item["replay_projection"] == "per_session_gem"
         ]
         assert len(projected_reports) == 1
+        diagnostic = []
+        for item in projected_reports:
+            for phase_name in ("B", "A2"):
+                phase = item[phase_name]
+                trace = phase.get("backtracking_trace", [])
+                compact_trace = []
+                for attempt in trace:
+                    cohorts = attempt.get("old_guard_cohort_gate", {}).get("cohorts", {})
+                    compact_trace.append({
+                        "scale": attempt.get("update_scale"),
+                        "guard_accepted": attempt.get("guard_accepted"),
+                        "max_delta": max(
+                            (float(value.get("delta", 0.0)) for value in cohorts.values()),
+                            default=None,
+                        ),
+                        "max_tolerance": max(
+                            (float(value.get("tolerance", 0.0)) for value in cohorts.values()),
+                            default=None,
+                        ),
+                    })
+                diagnostic.append({
+                    "phase": phase_name,
+                    "status": phase.get("status"),
+                    "selected_scale": phase.get("selected_update_scale"),
+                    "holdout_delta": phase.get("old_holdout_retention_delta"),
+                    "trace": compact_trace,
+                })
+        print("WORLDJEPA_LOSS_DEMAND_SEED_DIAGNOSTIC", seed, diagnostic)
         assert any(
             phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
             for phase in (projected_reports[0]["B"], projected_reports[0]["A2"])
-        ), f"on-demand loss + per-session GEM accepted no update for seed {seed}"
+        ), f"on-demand loss + per-session GEM accepted no update for seed {seed}: {diagnostic!r}"
         for phase in phases:
             if phase["status"] == "UTILITY_GATE_REJECTED":
                 assert phase["checkpoint_after"] == phase["checkpoint_before"]
