@@ -158,7 +158,27 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
         # checkpoint and retain the prior generation for exact rollback.
         _add_transitions(store, session, 256, 32)
         second = consumer.update(limit=288, steps=24, optimizer_permission=True)
-        assert second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA", {
+            "status": second.get("status"),
+            "holdout_improved": second.get("holdout_improved"),
+            "negative_controls_separated": second.get("negative_controls_separated"),
+            "old_holdout_retained": second.get("old_holdout_retained"),
+            "holdout_loss_before": second.get("holdout_loss_before"),
+            "holdout_loss_after": second.get("holdout_loss_after"),
+            "shuffled_action_holdout_loss": second.get("shuffled_action_holdout_loss"),
+            "zero_action_holdout_loss": second.get("zero_action_holdout_loss"),
+            "old_holdout_loss_before": second.get("old_holdout_loss_before"),
+            "old_holdout_loss_after": second.get("old_holdout_loss_after"),
+            "old_holdout_retention_delta": second.get("old_holdout_retention_delta"),
+            "parameter_delta_norm": second.get("parameter_delta_norm"),
+            "ema_target_delta_norm": second.get("ema_target_delta_norm"),
+            "fit_steps_before": second.get("fit_steps_before"),
+            "fit_steps_after": second.get("fit_steps_after"),
+            "new_train_rows": second.get("new_train_rows"),
+            "replay_rows": second.get("replay_rows"),
+            "pending_rows": second.get("pending_rows"),
+            "scan_cursor": second.get("scan_cursor"),
+        }
         assert second["metrics"]["replay_rows"] >= 8
         assert second["metrics"]["fit_steps_after"] > second["metrics"]["fit_steps_before"]
         assert second["metrics"]["old_holdout_loss_before"] is not None
