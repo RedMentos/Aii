@@ -1,3 +1,17 @@
+# Latest research / integration handoff — 2026-11-21 20:07 CET
+
+**No user action is required.**
+
+- Research/Perception #2243's new explicit tiny-KV test job passed 3/3 on prior exact head `ae26c94700ca8077b38cbd87c40db89b4ae46360` with pinned CPU-only PyTorch/NumPy; model-lab/privacy/offline-bridge also passed. This validates only the tiny synthetic cross-geometry mechanism experiment. Current PR head `3e52c96d...` is diverged from the shared branch (15 ahead / 17 behind) because its old board/workplan/next-action edits conflict with Boss docs PR #2248; it must sync normally before merge. B3 remains PARTIAL_SYMBOLIC_ONLY.
+- #2246 remains a synthetic metadata-only A5 UI lease and is based on an older #2243 head; no Android screen capture/action provider.
+- #2247 per-session JEPA gate correctly rejects all tested A-GEM updates; 11/14 checks green, two optimizer checks fail retention, no checkpoint commit. Learning gates OFF.
+- Core #2242 still has 4 failures / 9 successes due stale deployer STAGER_SHA256 and downstream staged/migration failures; revoke cancellation not fixed. Not released.
+- Current code release remains f279; integrated candidate 728cdc remains 18/19 due SleepRuntime JEPA UTILITY_GATE_REJECTED. Redmi remains REDMI_UNVERIFIED; no private owner-read reply, installed SHA or updater consent.
+
+No device action, model download/swap, permission change or data mutation was performed. Full Canon remains open.
+
+---
+
 # Latest shared-branch handoff — 2026-11-21 20:03 CET
 
 **No user action is required. Do not run an installer or change models, weights, Age, permissions, updater settings or phone data.**
