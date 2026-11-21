@@ -3,7 +3,8 @@
 ## Exact source state
 
 - Working branch: research-perception/v14-a5-ui-observation-lease-20261121-run11
-- Latest code checkpoint: 508ac19622bfa64dc4bb94602585603716fc0cde (the handoff file is a later documentation-only commit)
+- Runtime source: restored byte-for-byte to the base blob 30360f40eb784be5ea975ee85e94a57f0b154164; no pinned Runtime source edit remains.
+- Latest A5 code checkpoint: 4456c00b72f4ae13b004265ec7b80c5211440982 (later ledger/handoff commits are documentation-only).
 - PR: #2246, DRAFT, stacked on #2243 (branch research-perception/v14-dense-latent-kv-toy-20261121, base SHA 543349894b5392582969f06a4485ff9d18e4504d)
 - Release: NOT_RELEASED. No force-push or merge performed.
 - PR #2246 is mergeable after GitHub refresh, but remains draft because runtime.py is protected and requires independent Boss review. No PR-triggered workflow run is currently reported for this draft head; exact repository-level CI is therefore PENDING/NOT_RUN, not PASS.
@@ -16,10 +17,9 @@
   - Rejects raw screenshot/UI text/node tree/package/notification fields and any action/learning authority.
   - Adds a non-copyable, non-serializable, thread-bound UIObservationLease, with current-grant check, linearizable provider guard and persistent revocation subscription.
   - Persists only a content-free A5_UI_EVENT summary and PerceptPacket; calls existing A4 attention and source-bound admission. Provisional packets are stored but not admitted and do not request A4 re-look.
-- v13/code/v13/runtime.py
-  - Adds Runtime lease acquisition, ingestion, FINAL-only per-event context read and revocation entrypoints.
-  - Revocation tombstones the UI source, deletes dependent packets, clears the process cache, unsubscribes and removes an unshared blob.
-  - Runtime shutdown revokes outstanding UI observation sessions before Store close.
+- v13/code/v13/a5_ui_admission_bridge.py
+  - A5UIRuntimeAdapter wraps the existing Runtime object and uses its real Store and A4 controller without changing the pinned Runtime source.
+  - Provides lease, ingest, FINAL-only context, revoke and explicit close operations. Core must instantiate it in the active-turn path and call adapter.close() before Store shutdown.
 - v13/code/tests/test_a5_ui_observation_lease.py
   - Repository-level test uses the actual Runtime/Store/Attention classes and a synthetic OS provider.
 - v14/V14_RESEARCH_LEDGER.md
@@ -35,9 +35,9 @@
 
 ## Actual consumer effect and limits
 
-The normal Runtime now exposes an A5 ingress API that persists a metadata-only PerceptPacket, drives the existing A4 scorer and returns bounded source-bound admission for an active turn. The process cache exposes FINAL packets only and revocation removes them.
+A5UIRuntimeAdapter consumes the existing Runtime object: it persists a metadata-only PerceptPacket, drives the existing A4 scorer and returns bounded source-bound admission for an active turn. Its process cache exposes FINAL packets only and adapter revocation removes the source and dependent data.
 
-This does not yet make the installed app observe or understand the screen. There is no authenticated OS-issued observe_ui provider, no screenshot decoding/visual model, and no automatic _turn queue hookup or B1/B2/C3 delivery. The Runtime API is the Perception-side seam for Core, not a completed Android feature. A5 UI remains SHADOW / WIRED_SYNTHETIC, not ANDROID_VERIFIED.
+This does not yet make the installed app observe or understand the screen. There is no authenticated OS-issued observe_ui provider, no screenshot decoding/visual model, and no automatic _turn queue hookup or B1/B2/C3 delivery. Core must call the adapter from the active turn and close it before Store shutdown; this Perception adapter is not a completed Android feature. A5 UI remains SHADOW / WIRED_SYNTHETIC, not ANDROID_VERIFIED.
 
 ## Research and permissions
 
@@ -52,6 +52,6 @@ This does not yet make the installed app observe or understand the screen. There
 1. Core: provide a trusted Android observe_ui receipt provider and call Runtime ingress from the active-turn path; hold the lease across all downstream source reads and C3 generation.
 2. QA: adversarially test revocation through capture → admission → A4 → B1/B2/C3/cache, stale receipt/session, Runtime shutdown and provider failure.
 3. Research/Perception: after Core's provider exists, add actual screen/UI feature packets and compare API-first event feeds against permitted visual capture; keep raw UI content out of logs and public artifacts.
-4. Boss: review protected Runtime changes, update the shared board and V14_USER_NEXT_ACTION.md, and retarget #2246 to the integration branch after #2243 is accepted.
+4. Boss: review the adapter/contract, update the shared board and V14_USER_NEXT_ACTION.md, and retarget #2246 to the integration branch after #2243 is accepted.
 
 No user action is needed. Current installed Redmi SHA/updater status was not queried in this run; no update request or deployment was attempted.
