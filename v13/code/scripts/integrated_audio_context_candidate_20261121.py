@@ -285,7 +285,7 @@ class Runtime:
     cognition = _replace(
         cognition,
         b"query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW')",
-        b"        audio_context_packet = ({'body': {k:v for k,v in audio_context.items() if k!='summary_source_ref'}, 'summary_source_ref': audio_context['summary_source_ref']} if audio_context else None)\n"
+        b"audio_context_packet = ({'body': {k:v for k,v in audio_context.items() if k!='summary_source_ref'}, 'summary_source_ref': audio_context['summary_source_ref']} if audio_context else None)\n"
         b"        query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW',audio_context_refs=audio_context_refs,audio_context=audio_context_packet)",
         "QueryPacket audio refs",
     )
