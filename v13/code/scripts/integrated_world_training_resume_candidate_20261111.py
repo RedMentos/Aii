@@ -60,8 +60,9 @@ def build_sources(code_dir):
                     b"    if '_last_gradient_projection' in model.__dict__:\n"
                     b"        report = model.__dict__['_last_gradient_projection']\n"
                     b"        if (type(report) is not dict or any(\n"
-                    b"                type(k) is not str or type(v) not in (bool, int, float, type(None))\n"
+                    b"                type(k) is not str or type(v) not in (bool, int, float, str, type(None))\n"
                     b"                or (type(v) in (int, float) and not np.isfinite(v))\n"
+                     b"                or (type(v) is str and (k != 'projection_method' or v not in ('NO_ACTIVE_REFERENCE', 'ALREADY_FEASIBLE', 'ACTIVE_SET_ENUMERATION')))\n"
                     b"                for k, v in report.items())):\n"
                     b"            raise ValueError('unsupported World-JEPA projection telemetry')\n"
                     b"    if (type(model.seed) is not int or type(model.ensemble) is not int\n",
