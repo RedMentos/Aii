@@ -543,3 +543,71 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         ]
     finally:
         reopened.close()
+
+
+
+def test_postcommit_telemetry_preserves_finite_metrics_and_redacts_untrusted_values(tmp_path):
+    import json
+
+    home = tmp_path / "brain-postcommit-telemetry"
+    store, _session = _make_store(home)
+    event_id = "evt_" + "a" * 28
+    checkpoint_sha = "b" * 64
+    try:
+        store.log("v14_world_jepa_postcommit", event_id, {
+            "action_status": "FAILED",
+            "learning_status": "UPDATED_EXPERIMENTAL_WORLD_JEPA",
+            "planner_status": "SHADOW_PLANNER_READY",
+            "checkpoint_sha256": checkpoint_sha,
+            "parameter_delta_norm": 0.125,
+            "ema_target_delta_norm": 0.25,
+            "verified_receipts": 64,
+            "native_body_weights_changed": False,
+            "decision_authority": "NONE",
+            "raw_user_text": "synthetic-private-source-must-not-persist",
+            "unlisted_diagnostic": "synthetic-private-source-must-not-persist",
+        })
+        row = store.one(
+            "SELECT metrics FROM telemetry WHERE kind=? AND event_id=?",
+            ("v14_world_jepa_postcommit", event_id),
+        )
+        assert row is not None
+        saved = json.loads(row["metrics"])
+        assert saved["action_status"] == "FAILED"
+        assert saved["learning_status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert saved["planner_status"] == "SHADOW_PLANNER_READY"
+        assert saved["checkpoint_sha256"] == checkpoint_sha
+        assert saved["parameter_delta_norm"] == 0.125
+        assert saved["ema_target_delta_norm"] == 0.25
+        assert saved["verified_receipts"] == 64
+        assert saved["native_body_weights_changed"] is False
+        assert saved["decision_authority"] == "NONE"
+        assert "raw_user_text" not in saved
+        assert "unlisted_diagnostic" not in saved
+        assert "synthetic-private-source-must-not-persist" not in repr(saved)
+
+        rejected_event = "evt_" + "c" * 28
+        store.log("v14_world_jepa_postcommit", rejected_event, {
+            "learning_status": "private user text is not a status",
+            "planner_status": "private planner payload",
+            "decision_authority": "model supplied authority",
+            "raw_user_text": "must be dropped",
+        })
+        rejected_row = store.one(
+            "SELECT metrics FROM telemetry WHERE kind=? AND event_id=?",
+            ("v14_world_jepa_postcommit", rejected_event),
+        )
+        rejected = json.loads(rejected_row["metrics"])
+        assert rejected["learning_status"] == {
+            "redacted": True, "bytes": len("private user text is not a status".encode())
+        }
+        assert rejected["planner_status"] == {
+            "redacted": True, "bytes": len("private planner payload".encode())
+        }
+        assert rejected["decision_authority"] == {
+            "redacted": True, "bytes": len("model supplied authority".encode())
+        }
+        assert "raw_user_text" not in rejected
+        assert "private" not in repr(rejected)
+    finally:
+        store.close()
