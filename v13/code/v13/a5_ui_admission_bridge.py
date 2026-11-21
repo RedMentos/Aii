@@ -289,34 +289,41 @@ def ui_observation_lease(runtime, observation, generation_id, consent_check,
 
 
 def _persist_source_and_packet(runtime, source_ref, summary, percept_packet):
-    """Atomically persist the minimal source record and PerceptPacket."""
+    """Persist source bytes and their rows under the Store's shared blob lock.
+
+    Store.tx() takes the same re-entrant mutex. Keeping the outer lock across
+    blob existence/write and the SQL commit prevents a concurrent revocation
+    from unlinking a blob after a new source has reused it but before that
+    source row becomes visible to the revoker's reference count.
+    """
     store = runtime.store
     raw = summary.encode("utf-8")
     blob = Path(store.home) / "data/blobs" / source_ref["sha256"]
-    if not blob.exists():
-        atomic_write(blob, raw)
-    try:
-        with store.tx() as connection:
-            if connection.execute("SELECT 1 FROM sources WHERE id=?", (source_ref["source_id"],)).fetchone():
-                raise ValueError("duplicate UI source id")
-            connection.execute(
-                "INSERT INTO sources VALUES (?,?,?,?,?,?,0)",
-                (source_ref["source_id"], source_ref["sha256"], "A5_UI_EVENT",
-                 len(raw), len(summary), now()),
-            )
-            connection.execute(
-                "INSERT INTO packets VALUES (?,?,?,?,?,?)",
-                (percept_packet["packet_id"], "PerceptPacket", percept_packet["event_id"],
-                 percept_packet["brain_generation_id"], dumps(percept_packet), now()),
-            )
-    except BaseException:
-        referenced = store.one("SELECT 1 FROM sources WHERE hash=? AND deleted=0 LIMIT 1", (source_ref["sha256"],))
-        if not referenced:
-            try:
-                blob.unlink(missing_ok=True)
-            except OSError:
-                pass
-        raise
+    with store.mutex:
+        if not blob.exists():
+            atomic_write(blob, raw)
+        try:
+            with store.tx() as connection:
+                if connection.execute("SELECT 1 FROM sources WHERE id=?", (source_ref["source_id"],)).fetchone():
+                    raise ValueError("duplicate UI source id")
+                connection.execute(
+                    "INSERT INTO sources VALUES (?,?,?,?,?,?,0)",
+                    (source_ref["source_id"], source_ref["sha256"], "A5_UI_EVENT",
+                     len(raw), len(summary), now()),
+                )
+                connection.execute(
+                    "INSERT INTO packets VALUES (?,?,?,?,?,?)",
+                    (percept_packet["packet_id"], "PerceptPacket", percept_packet["event_id"],
+                     percept_packet["brain_generation_id"], dumps(percept_packet), now()),
+                )
+        except BaseException:
+            referenced = store.one("SELECT 1 FROM sources WHERE hash=? AND deleted=0 LIMIT 1", (source_ref["sha256"],))
+            if not referenced:
+                try:
+                    blob.unlink(missing_ok=True)
+                except OSError:
+                    pass
+            raise
 
 
 def consume_ui_observation(runtime, observation, *, consent_lease: UIObservationLease,
@@ -440,42 +447,53 @@ def revoke_ui_observation(runtime, source_id):
     source_tombstoned = False
     active = 1
     deleted_ids = []
+    blob_removed = False
     try:
-        with store.tx() as connection:
-            row = connection.execute(
-                "SELECT hash,deleted FROM sources WHERE id=? AND kind='A5_UI_EVENT'",
-                (source_id,),
-            ).fetchone()
-            if row:
-                blob_hash = row["hash"]
-                source_tombstoned = row["deleted"] == 0
-
-                def contains_source(value):
-                    if isinstance(value, dict):
-                        if value.get("source_id") == source_id:
-                            return True
-                        return any(contains_source(child) for child in value.values())
-                    if isinstance(value, list):
-                        return any(contains_source(child) for child in value)
-                    return False
-
-                for packet_row in connection.execute("SELECT id,payload FROM packets").fetchall():
-                    try:
-                        payload = json.loads(packet_row["payload"])
-                    except (TypeError, ValueError):
-                        continue
-                    if contains_source(payload):
-                        deleted_ids.append(packet_row["id"])
-                for packet_id in set(deleted_ids):
-                    connection.execute("DELETE FROM packets WHERE id=?", (packet_id,))
-                connection.execute(
-                    "UPDATE sources SET deleted=1 WHERE id=? AND kind='A5_UI_EVENT' AND deleted=0",
+        # The same RLock protects producers' blob existence/write + row insert.
+        # Hold it until the post-tombstone refcount check and unlink are complete.
+        with store.mutex:
+            with store.tx() as connection:
+                row = connection.execute(
+                    "SELECT hash,deleted FROM sources WHERE id=? AND kind='A5_UI_EVENT'",
                     (source_id,),
-                )
-                active = connection.execute(
-                    "SELECT COUNT(*) FROM sources WHERE hash=? AND deleted=0",
-                    (blob_hash,),
-                ).fetchone()[0]
+                ).fetchone()
+                if row:
+                    blob_hash = row["hash"]
+                    source_tombstoned = row["deleted"] == 0
+
+                    def contains_source(value):
+                        if isinstance(value, dict):
+                            if value.get("source_id") == source_id:
+                                return True
+                            return any(contains_source(child) for child in value.values())
+                        if isinstance(value, list):
+                            return any(contains_source(child) for child in value)
+                        return False
+
+                    for packet_row in connection.execute("SELECT id,payload FROM packets").fetchall():
+                        try:
+                            payload = json.loads(packet_row["payload"])
+                        except (TypeError, ValueError):
+                            continue
+                        if contains_source(payload):
+                            deleted_ids.append(packet_row["id"])
+                    for packet_id in set(deleted_ids):
+                        connection.execute("DELETE FROM packets WHERE id=?", (packet_id,))
+                    connection.execute(
+                        "UPDATE sources SET deleted=1 WHERE id=? AND kind='A5_UI_EVENT' AND deleted=0",
+                        (source_id,),
+                    )
+                    active = connection.execute(
+                        "SELECT COUNT(*) FROM sources WHERE hash=? AND deleted=0",
+                        (blob_hash,),
+                    ).fetchone()[0]
+            if blob_hash and active == 0:
+                blob = Path(store.home) / "data/blobs" / blob_hash
+                try:
+                    blob.unlink(missing_ok=True)
+                    blob_removed = not blob.exists()
+                except OSError:
+                    pass
     except BaseException:
         if callable(unsubscribe) and type(subscriptions) is dict:
             subscriptions[source_id] = unsubscribe
@@ -483,21 +501,12 @@ def revoke_ui_observation(runtime, source_id):
     cache_cleared = cache.pop(source_id, None) is not None if type(cache) is dict else False
     if callable(unsubscribe):
         unsubscribe()
-    blob_removed = False
-    if blob_hash and active == 0:
-        blob = Path(store.home) / "data/blobs" / blob_hash
-        try:
-            blob.unlink(missing_ok=True)
-            blob_removed = not blob.exists()
-        except OSError:
-            pass
     return {
         "source_tombstoned": source_tombstoned,
         "packets_deleted": len(set(deleted_ids)),
         "cache_cleared": cache_cleared,
         "blob_removed": blob_removed,
     }
-
 
 class A5UIRuntimeAdapter:
     """Perception adapter that consumes an existing Runtime/Store/A4 instance."""
