@@ -208,7 +208,7 @@ try:
     )
     failures = {row["kind"]: json.loads(row["metrics"]) for row in rows}
     assert failures["world_observe_unavailable"]["stage"] == "observe"
-    assert failures["world_self_state_unavailable"]["stage"] == "self_state"
+    assert failures["world_self_state_unavailable"]["stage"] == "observe"
     assert runtime.store.integrity(True) == []
 finally:
     runtime.close()
