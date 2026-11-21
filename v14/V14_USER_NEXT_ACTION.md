@@ -1194,3 +1194,8 @@ Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/225
 3. Device acceptance remains blocked until a fresh authenticated private owner-read receipt and an authorized real Redmi test are available. No user command is needed now.
 
 **Status: NOT_RELEASED / REDMI_UNVERIFIED.**
+
+
+### CI refresh — 2026-11-21 23:04 CET
+
+On exact Boss integration head `6fca4ffe504567c45067bc22347e5f5e33f9f530`, the previously running **staged-runtime** and **integrated-regression** checks have now completed **PASS**. Old-phone migration, Python 3.14 staged startup/SQLite refs, Lab-Age, verify, combined, offline, owner-read, offline bridge security, A5 UI lease Python 3.13/3.14, and staged audio/arithmetic Python 3.13 are also **PASS**. Only staged audio/arithmetic Python 3.14 remains IN_PROGRESS (dependency installation complete; compile/test pending). The strict safe-additive validator still fails because the broad Boss integration PR is being treated as a 2..30-file additive-only candidate; this remains a workflow-scope issue, not a waived test. The PR remains DRAFT / NOT_RELEASED until Python 3.14 completes and the validator is scoped correctly. Redmi remains REDMI_UNVERIFIED; no authenticated device receipt or update action.
