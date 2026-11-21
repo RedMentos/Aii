@@ -1,10 +1,11 @@
-"""Normal Runtime -> idle Sleep scheduler -> persistent WorldJEPA/Planner integration.
+"""SleepRuntime idle scheduler -> persistent WorldJEPA/Planner integration.
 
 All transitions are synthetic fixtures written through the real SQLite Store.
 No native GGUF body, Android device, or Redmi behavior is claimed.
 """
+from types import SimpleNamespace
+
 from v13 import contracts, world_model
-from v13.runtime import Runtime
 from v13.scheduler import EventScheduler
 from v13.sleep import SleepRuntime
 from v13.store import Store
@@ -60,24 +61,25 @@ def _add_transitions(store, session, start, count, status_overrides=None):
     return event_ids
 
 
-def _runtime(store, home):
-    runtime = object.__new__(Runtime)
-    runtime.store = store
-    runtime.home = home
-    return runtime
+def _sleep(store, home):
+    sleep = object.__new__(SleepRuntime)
+    sleep.r = SimpleNamespace(store=store, home=home)
+    sleep.scheduler = EventScheduler(store, {})
+    return sleep
 
 
-def test_runtime_postcommit_requires_observed_outcome_and_keeps_gates_default_off(tmp_path):
-    store, session = _make_store(tmp_path / "brain-default-off")
+def test_sleep_runtime_postcommit_requires_observed_outcome_and_keeps_gates_default_off(tmp_path):
+    home = tmp_path / "brain-default-off"
+    store, session = _make_store(home)
     try:
-        runtime = _runtime(store, tmp_path / "brain-default-off")
+        sleep = _sleep(store, home)
         cancelled = _add_transitions(store, session, 0, 1, {0: "CANCELLED"})[0]
-        skipped = runtime.v14_jepa_postcommit(cancelled)
-        assert skipped["status"] == "CENSORED_OUTCOME_SKIPPED"
+        assert sleep.schedule_world_jepa(cancelled) is None
         assert store.state("v14.world_jepa.store_consumer", None)[0] is None
 
         observed = _add_transitions(store, session, 1, 1)[0]
-        result = runtime.v14_jepa_postcommit(observed)
+        assert sleep.schedule_world_jepa(observed) is None
+        result = sleep._run_world_jepa(observed)
         assert result["status"] == "POSTCOMMIT_PROCESSED"
         assert result["learning"]["status"] == "OFF"
         assert result["planner"]["status"] == "NO_CHECKPOINT"
@@ -88,76 +90,98 @@ def test_runtime_postcommit_requires_observed_outcome_and_keeps_gates_default_of
         assert store.state("v14.world_jepa.store_consumer", None)[0] is None
 
         missing = store.event(session, "no committed action outcome")
-        rejected = runtime.v14_jepa_postcommit(missing["event_id"])
+        rejected = sleep._run_world_jepa(missing["event_id"])
         assert rejected["status"] == "NO_COMMITTED_OUTCOME"
     finally:
         store.close()
 
 
-def test_sleep_scheduler_queues_only_authorized_or_checkpointed_observed_outcomes(tmp_path):
-    store, session = _make_store(tmp_path / "brain-scheduler")
+def test_sleep_tick_schedules_one_authorized_idle_batch_and_coalesces_turn_bursts(tmp_path):
+    home = tmp_path / "brain-scheduler"
+    store, session = _make_store(home)
     try:
-        runtime = _runtime(store, tmp_path / "brain-scheduler")
-        sleep = object.__new__(SleepRuntime)
-        sleep.r = runtime
-        sleep.scheduler = EventScheduler(store, {})
-        event_id = _add_transitions(store, session, 0, 1)[0]
+        sleep = _sleep(store, home)
+        first_event = _add_transitions(store, session, 0, 1)[0]
+        assert sleep.schedule_world_jepa() is None
 
-        assert sleep.schedule_world_jepa(event_id) is None
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 40, "replay_mode": "uniform",
         })
-        scheduled_id = sleep.schedule_world_jepa(event_id)
+        scheduled_id = sleep.schedule_world_jepa()
         assert type(scheduled_id) is str and scheduled_id
         pending = sleep.scheduler.pending()
         scheduled = next(item for item in pending if item["id"] == scheduled_id)
         assert scheduled["kind"] == "IDLE"
         assert scheduled["action"] == "jepa_update"
-        assert scheduled["payload"] == {"event_id": event_id}
-        assert sleep.schedule_world_jepa(event_id) is None
-        later_event = _add_transitions(store, session, 2, 1)[0]
-        assert sleep.schedule_world_jepa(later_event) is None  # one pending JEPA batch coalesces the burst
+        assert scheduled["payload"] == {"event_id": first_event}
+
+        _add_transitions(store, session, 1, 1)
+        assert sleep.schedule_world_jepa() is None
         assert len([item for item in sleep.scheduler.pending() if item["action"] == "jepa_update"]) == 1
 
-        censored = _add_transitions(store, session, 1, 1, {1: "OUTCOME_UNKNOWN"})[0]
+        censored = _add_transitions(store, session, 2, 1, {2: "OUTCOME_UNKNOWN"})[0]
         assert sleep.schedule_world_jepa(censored) is None
     finally:
         store.close()
 
 
-def test_sleep_jepa_job_runs_postcommit_consumer_and_persists_scheduler_completion(tmp_path):
-    store, _ = _make_store(tmp_path / "brain-scheduler-job")
+def test_sleep_jepa_job_runs_real_postcommit_consumer_and_persists_completion(tmp_path):
+    home = tmp_path / "brain-scheduler-job"
+    store, session = _make_store(home)
     try:
-        class FakeRuntime:
-            def v14_jepa_postcommit(self, event_id, limit=64):
-                return {
-                    "status": "POSTCOMMIT_PROCESSED",
-                    "event_id": event_id,
-                    "learning": {"status": "OFF"},
-                    "planner": {"status": "NO_CHECKPOINT"},
-                }
-
-        sleep = object.__new__(SleepRuntime)
-        sleep.r = FakeRuntime()
-        sleep.scheduler = EventScheduler(store, {})
-        from v13.scheduler import ACTIONS
-        ACTIONS.add("jepa_update")  # SleepRuntime.__init__ registers this fixed action in production.
-        posted = sleep.scheduler.post(
-            "IDLE", action="jepa_update", payload={"event_id": "evt-committed"},
-            dedup="test-jepa-job",
-        )
+        event_id = _add_transitions(store, session, 0, 1)[0]
+        store.set_state(PERMISSION_KEY, {
+            "learning_enabled": True, "optimizer_permission": True,
+            "steps": 40, "replay_mode": "uniform",
+        })
+        sleep = _sleep(store, home)
+        posted = sleep.schedule_world_jepa()
         dispatched = sleep.scheduler.next(idle=True, resource_state="NORMAL", quiet=False)
         assert dispatched is not None and dispatched["id"] == posted
         result = sleep.job(dispatched)
         assert result["status"] == "POSTCOMMIT_PROCESSED"
         history = sleep.scheduler.report()["history"]
         assert any(item["id"] == posted and item["status"] == "DONE" for item in history)
+        cursor, _ = store.state("v14.world_jepa.sleep_cursor", None)
+        assert cursor["last_event_id"] == event_id
     finally:
         store.close()
 
 
-def test_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with_restart_rollback(tmp_path):
+def test_sleep_jepa_job_requeues_one_bounded_continuation_when_more_t8_rows_exist(tmp_path):
+    home = tmp_path / "brain-jepa-continuation"
+    store, session = _make_store(home)
+    try:
+        event_id = _add_transitions(store, session, 0, 1)[0]
+        store.set_state(PERMISSION_KEY, {
+            "learning_enabled": True, "optimizer_permission": True,
+            "steps": 40, "replay_mode": "uniform",
+        })
+        sleep = _sleep(store, home)
+        sleep._run_world_jepa = lambda event_id, limit=64: {
+            "status": "POSTCOMMIT_PROCESSED",
+            "event_id": event_id,
+            "learning": {"status": "WAITING_FOR_MORE_T8_DATA", "has_more": True},
+            "planner": {"status": "NO_CHECKPOINT"},
+        }
+        posted = sleep.scheduler.post(
+            "IDLE", action="jepa_update", payload={"event_id": event_id},
+            dedup="v14-world-jepa",
+        )
+        dispatched = sleep.scheduler.next(idle=True, resource_state="NORMAL", quiet=False)
+        assert dispatched is not None and dispatched["id"] == posted
+        result = sleep.job(dispatched)
+        assert result["learning"]["has_more"] is True
+        assert result["continuation_scheduled"] is True
+        pending = [item for item in sleep.scheduler.pending() if item["action"] == "jepa_update"]
+        assert len(pending) == 1
+        assert pending[0]["payload"] == {"event_id": event_id}
+    finally:
+        store.close()
+
+
+def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with_restart_rollback(tmp_path):
     home = tmp_path / "brain-runtime-jepa"
     store, session = _make_store(home)
     try:
@@ -166,8 +190,8 @@ def test_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with_resta
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 120, "replay_mode": "uniform",
         })
-        runtime = _runtime(store, home)
-        first = runtime.v14_jepa_postcommit(first_events[-1], limit=256)
+        sleep = _sleep(store, home)
+        first = sleep._run_world_jepa(first_events[-1], limit=256)
         assert first["status"] == "POSTCOMMIT_PROCESSED"
         assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         first_metrics = first["learning"]["metrics"]
@@ -198,7 +222,7 @@ def test_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with_resta
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 24, "replay_mode": "uniform",
         })
-        second = runtime.v14_jepa_postcommit(second_events[-1], limit=256)
+        second = sleep._run_world_jepa(second_events[-1], limit=256)
         assert second["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         second_metrics = second["learning"]["metrics"]
         assert second_metrics["replay_rows"] >= 8
@@ -230,53 +254,12 @@ def test_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with_resta
 
 
 def test_planner_refuses_censored_action_outcomes_even_when_they_are_terminal(tmp_path):
-    store, session = _make_store(tmp_path / "brain-censored-planner")
+    home = tmp_path / "brain-censored-planner"
+    store, session = _make_store(home)
     try:
         event_id = _add_transitions(store, session, 0, 1, {0: "CANCELLED"})[0]
-        rejected = consume_world_planner_shadow(store, event_id, home=tmp_path / "brain-censored-planner")
+        rejected = consume_world_planner_shadow(store, event_id, home=home)
         assert rejected["status"] == "NO_COMMITTED_OUTCOME"
         assert store.state("v14.world_jepa.planner_shadow:" + event_id, None)[0] is None
-    finally:
-        store.close()
-
-
-
-def test_sleep_jepa_job_requeues_one_bounded_continuation_when_more_t8_rows_exist(tmp_path):
-    store, session = _make_store(tmp_path / "brain-jepa-continuation")
-    try:
-        runtime = _runtime(store, tmp_path / "brain-jepa-continuation")
-        event_id = _add_transitions(store, session, 0, 1)[0]
-        store.set_state(PERMISSION_KEY, {
-            "learning_enabled": True, "optimizer_permission": True,
-            "steps": 40, "replay_mode": "uniform",
-        })
-
-        class FakeRuntime:
-            def __init__(self, store):
-                self.store = store
-            def v14_jepa_postcommit(self, event_id, limit=64):
-                return {
-                    "status": "POSTCOMMIT_PROCESSED",
-                    "event_id": event_id,
-                    "learning": {"status": "WAITING_FOR_MORE_T8_DATA", "has_more": True},
-                    "planner": {"status": "NO_CHECKPOINT"},
-                }
-
-        sleep = object.__new__(SleepRuntime)
-        sleep.r = FakeRuntime(store)
-        sleep.scheduler = EventScheduler(store, {})
-        from v13.scheduler import ACTIONS
-        ACTIONS.add("jepa_update")
-        posted = sleep.scheduler.post(
-            "IDLE", action="jepa_update", payload={"event_id": event_id},
-            dedup="v14-world-jepa",
-        )
-        dispatched = sleep.scheduler.next(idle=True, resource_state="NORMAL", quiet=False)
-        assert dispatched is not None and dispatched["id"] == posted
-        result = sleep.job(dispatched)
-        assert result["learning"]["has_more"] is True
-        pending = [item for item in sleep.scheduler.pending() if item["action"] == "jepa_update"]
-        assert len(pending) == 1
-        assert pending[0]["payload"] == {"event_id": event_id}
     finally:
         store.close()

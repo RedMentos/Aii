@@ -79,53 +79,6 @@ class Runtime:
         if not hasattr(self,'_online_world'):
             self._online_world=OnlineWorld(self)
         return self._online_world.update(limit=limit)
-    def v14_jepa_postcommit(self,event_id,limit=64):
-        """Consume one committed ActionOutcome through the default-off V14 JEPA and SHADOW receiver path."""
-        if type(event_id) is not str or not event_id:
-            raise ValueError('event_id')
-        result={'status':'NO_COMMITTED_OUTCOME','event_id':event_id,
-                'decision_authority':'NONE','dispatch':False,
-                'native_body_consumed':False,'native_body_weights_changed':False,
-                'runtime_hook_wired':True}
-        try:
-            action=self.store.one(
-                "SELECT id,status,outcome FROM actions WHERE event_id=? AND outcome IS NOT NULL ORDER BY created DESC LIMIT 1",
-                (event_id,))
-            if not action:
-                return result
-            action_status=action['status']
-            observed={'FINAL','FAILED','ERROR','DEADLINE','REJECTED'}
-            if action_status not in observed:
-                result.update(status='CENSORED_OUTCOME_SKIPPED',action_status=action_status)
-                self.store.log('v14_world_jepa_postcommit',event_id,
-                               {'action_status':action_status,'learning_status':'SKIPPED',
-                                'planner_status':'SKIPPED','decision_authority':'NONE'})
-                return result
-            from .world_jepa_runtime import consume_after_commit
-            from .world_jepa_planner import consume_world_planner_shadow
-            learning=consume_after_commit(self.store,self.home,limit=limit)
-            planner=consume_world_planner_shadow(self.store,event_id,home=self.home)
-            result.update(status='POSTCOMMIT_PROCESSED',action_status=action_status,
-                          learning=learning,planner=planner)
-            metrics=learning.get('metrics') if type(learning) is dict else None
-            metrics=metrics if type(metrics) is dict else {}
-            self.store.log('v14_world_jepa_postcommit',event_id,{
-                'action_status':action_status,
-                'learning_status':learning.get('status','UNKNOWN'),
-                'planner_status':planner.get('status','UNKNOWN'),
-                'checkpoint_sha256':planner.get('checkpoint_sha256') or learning.get('checkpoint_sha256'),
-                'parameter_delta_norm':metrics.get('parameter_delta_norm',0.0),
-                'ema_target_delta_norm':metrics.get('ema_target_delta_norm',0.0),
-                'verified_receipts':learning.get('verified_receipts',0),
-                'native_body_weights_changed':False,
-                'decision_authority':'NONE',
-            })
-            return result
-        except Exception as exc:
-            try:self.store.log('v14_world_jepa_postcommit_error',event_id,
-                               {'error':type(exc).__name__,'decision_authority':'NONE'})
-            except Exception:pass
-            return result|{'status':'ERROR','error':type(exc).__name__}
     def world_jepa_update(self,steps=10,limit=2048):
         """Explicit, non-promoting JEPA update from committed T8 observations.
 
@@ -241,13 +194,6 @@ class Runtime:
                         try:self.online_world_update(limit=64)
                         except Exception as exc:
                             self.store.log('online_world_learning_error',payload['event_id'],
-                                           {'error':type(exc).__name__})
-                        # Queue the persistent V14 learner only after _turn has
-                        # committed its ActionOutcome; SleepRuntime dispatches it
-                        # later when the foreground queue is idle and resources permit.
-                        try:self.sleep.schedule_world_jepa(payload['event_id'])
-                        except Exception as exc:
-                            self.store.log('v14_world_jepa_schedule_error',payload['event_id'],
                                            {'error':type(exc).__name__})
                 elif kind=='download':self.models.install(payload or 'all',self.notice,self.cancel_event)
                 elif kind=='shadow':
