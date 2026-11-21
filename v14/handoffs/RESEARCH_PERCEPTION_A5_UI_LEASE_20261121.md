@@ -3,7 +3,7 @@
 ## Exact source state
 
 - Working branch: research-perception/v14-a5-ui-observation-lease-20261121-run11
-- Exact branch HEAD: 508ac19622bfa64dc4bb94602585603716fc0cde
+- Latest code checkpoint: 508ac19622bfa64dc4bb94602585603716fc0cde (the handoff file is a later documentation-only commit)
 - PR: #2246, DRAFT, stacked on #2243 (branch research-perception/v14-dense-latent-kv-toy-20261121, base SHA 543349894b5392582969f06a4485ff9d18e4504d)
 - Release: NOT_RELEASED. No force-push or merge performed.
 - PR #2246 is mergeable after GitHub refresh, but remains draft because runtime.py is protected and requires independent Boss review. No PR-triggered workflow run is currently reported for this draft head; exact repository-level CI is therefore PENDING/NOT_RUN, not PASS.
