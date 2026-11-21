@@ -553,6 +553,7 @@ class A5UIRuntimeAdapter:
             allowed_sources.add(grant.source_id)
         packets = []
         for item in self.runtime._a5_ui_context_cache.values():
+            # PerceptPacket stores identity in source_ref; never infer a top-level source_id.
             source_ref = item.get("source_ref")
             if (
                 isinstance(source_ref, dict)
