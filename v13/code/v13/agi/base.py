@@ -5,6 +5,7 @@ the read version), checks Age rights through age.AgeControl and never grants its
 authority: anything that would touch weights, structure, hard rules or the outside
 world ends as a PENDING human request, not as an action.
 """
+import math
 import time
 from ..common import uid,dumps
 
@@ -36,9 +37,24 @@ def age_allows(age,right,origin='SELF',resource_mode='GREEN'):
     try:return age.may(right,resource_mode=resource_mode) if hasattr(age,'may') else age.allowed(right,resource_mode=resource_mode)  # WP-T2 per capability
     except Exception:return False
 
-def budget(age,name,default=0):
-    if age is None:return default
-    try:return age.budgets('system').get(name,default)
+# Graded developmental permissions only; never a physical resource or turn-compute budget.
+LEARNING_LIMITS={
+    'exploration_rate':((0.,0.),(0.,.05),(.05,.1),(.1,.15),(.15,.2),(.2,.25)),
+    'goal_depth':((1,1),(1,2),(2,3),(3,4),(4,5),(5,6)),
+}
+
+def learning_limit(age,name,default=0,capability='system'):
+    """Read a developmental learning/planning allowance without the legacy budget API."""
+    if age is None or name not in LEARNING_LIMITS:return default
+    try:
+        stage=int(age.ceiling(capability))
+        if not 0<=stage<len(LEARNING_LIMITS[name]):return default
+        maturity=float(age.maturity(capability))
+        if not math.isfinite(maturity):return default
+        maturity=max(0.,min(1.,maturity))
+        lo,hi=LEARNING_LIMITS[name][stage]
+        value=lo+(hi-lo)*maturity
+        return int(round(value)) if isinstance(lo,int) else round(value,6)
     except Exception:return default
 
 def clamp01(x):return max(0.,min(1.,float(x)))
