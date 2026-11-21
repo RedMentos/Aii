@@ -3,6 +3,7 @@
 All PCM and model outputs here are synthetic. No microphone, native model or
 Android permission is exercised.
 """
+import ast
 import importlib.util
 import os
 from pathlib import Path
@@ -10,6 +11,31 @@ import subprocess
 import sys
 
 CODE = Path(__file__).resolve().parents[1]
+
+
+def test_audio_context_store_blob_cleanup_imports_path():
+    source_path = CODE / "scripts/integrated_audio_context_candidate_20261121.py"
+    tree = ast.parse(source_path.read_text(encoding="utf-8"))
+    generated_module = None
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
+        if not any(
+            isinstance(target, ast.Subscript)
+            and isinstance(target.value, ast.Name)
+            and target.value.id == "result"
+            and isinstance(target.slice, ast.Constant)
+            and target.slice.value == "v13/audio_context_store.py"
+            for target in node.targets
+        ):
+            continue
+        generated_module = ast.literal_eval(node.value)
+        break
+    assert isinstance(generated_module, bytes), "audio context Store source was not generated"
+    assert b"Path(store.home)" in generated_module, "blob cleanup no longer uses a scoped Store path"
+    assert b"from pathlib import Path" in generated_module, (
+        "generated audio_context_store.py uses Path without importing it"
+    )
 
 
 def test_staged_audio_lease_full_lifecycle_qa(tmp_path):
