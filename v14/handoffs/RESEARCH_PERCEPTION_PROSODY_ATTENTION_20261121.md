@@ -74,3 +74,15 @@ arXiv:2608.16347v2 (2026-11-09) was read in full. The study's middle-layer causa
 2. Core updates its staged A5 source pin to the reviewed V2 blob and fixes its stale runtime/cognition pins and arithmetic regressions; rerun exact staged B1/B2/C3 integration.
 3. Only after Core integration, obtain explicit Android microphone consent and measure actual Redmi/ARM CPU, PSS/RSS, latency, finality and revocation.
 4. For V14-003, Core prototypes a per-request native receiver around the pinned C API; compare real injection against unrelated-vector, exact-message and no-message baselines before any B3 activation.
+
+
+## Follow-up checkpoint — RAW EAR V3 pause-robust prosody (2026-11-21)
+
+- The V2 salience formula had a reproduced false positive: a steady 500 ms tone with 250 ms leading and trailing silence scored 1.0 because the full-window RMS range was 102.31 dB.
+- V3 keeps that full-window energy range as a separate observation, adds the 10th–90th percentile voiced-frame energy range, and derives prosody salience only from voiced-frame energy dynamics and F0 excursion. It is schema-versioned `RAW_EAR_AUTOCORR_V3`.
+- The exact CI run 44871559784 passed the producer/real A4/C3 consumer tests on Python 3.11 (11/11) and 3.13 (11/11), with compile PASS. Local isolated algorithm reproduction across 8, 12, 16, 44.1 and 48 kHz passed; no exact local repository suite was possible because the checkout could not be obtained.
+- Branch head `5e1e9c0ccdce48fd319c24903a6a92ab8a0f6432`; adapter blob `4324813f00eb86db2538ded63dfd1f711188d2cf`; test blob `d457b66cfd792e625f5588f900d876269e551aa9`.
+- Core PR #2158 must update its adapter source pin from the old V2 blob to the V3 blob and rerun its staged B1/B2/C3 Runtime consumer. Core was notified in PR discussion. No Core files were edited.
+- Research follow-up: PACE (ICLR 2026) argues audio PEFT needs session-wise representation-stability/retention tests; S4VAD (arXiv 2609.11110) is a possible separate low-latency VAD architecture but has no verified Android code/weights; Silero VAD is MIT/~2 MB ONNX candidate for a parallel speech-probability cue; VoiceCLAP-Small is CC-BY-4.0/~110M F32 with 30 s padding and is not a Redmi default.
+- **REDMI_UNVERIFIED / NOT_RELEASED.** No microphone capture, native model, ARM PSS/RSS, phone TTFT, weight change, or deployment was performed.
+- Next: Core updates the source pin and passes its exact staged/integrated consumer; QA only then arranges a separate explicit microphone-consent test on the actual Redmi. Perception proceeds to the V14-005 model-candidate lab without changing installed models.
