@@ -1,3 +1,19 @@
+# Current next action — 2026-11-21T21:38:00Z
+
+**No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
+
+- Current Boss integration head: `06ebe5d29d1244dc1d7afa40d846d227d5f3930e`, based on release-development HEAD `bdcad466ffea75a2b41f7d23be168f53c7197d20`.
+- A5 UI lease, combined online JEPA and runtime-deploy integrity PASS. GoalWake focused tests passed 7/7 on Python 3.14. Earlier lifecycle, A5 adapter, idle/online-world and Context-recall errors have advanced.
+- Current staged blocker: `ValueError: semantic dependency changed: v13/world_semantic_evidence_candidate.py` at `record_only_controller_guard_20261116.py:191`. Its fixed `semantic_pin` `9fbcb808...` and `local_pin` `44a8882c...` refer to pre-arithmetic semantic bytes; the upstream World/Store/Context composition transforms both modules. Core/JEPA must recompute and rebind both exact outputs and the guard→recovery→stage→deployer chain without weakening raw source checks.
+- Lab-Age E2E fails at that guard; owner-read job passes but Python 3.14 staged startup fails; migration and staged/audio jobs were still running at last poll; safe-additive FAIL_BY_POLICY.
+- Age/X10 rights PR #2235 exact tests pass, but its branch is 43 ahead / 121 behind current base; Boss/Core must compose `learning_limit()` with GoalStore wake rollback rather than merge/rebase the full branch.
+- Private PIPELINE_STATUS #435 has no authenticated response. Installed SHA and updater consent unknown. No update or device action. `REDMI_UNVERIFIED`.
+- No full local Aii checkout; no LOCAL_LINUX project suite ran. CI is not Android/native weight or Redmi evidence.
+
+**Next internal actions:** Core/JEPA recompute controller guard semantic/local-error pins and downstream builder chain; Boss reruns the exact 3.13/3.14 matrix; QA verifies all stage, migration, audio and rollback paths; Perception keeps A5 lease integration intact. No user action is required.
+
+---
+
 # Current next action — 2026-11-21T21:32:00Z
 
 **No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
