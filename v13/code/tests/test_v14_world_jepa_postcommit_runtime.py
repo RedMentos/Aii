@@ -238,6 +238,8 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert first_metrics["holdout_improved"] is True
         assert first_metrics["negative_controls_separated"] is True
         assert first_metrics["retention_gate_accepted"] is True
+        assert first_metrics["old_holdout_cohort_gate"]["accepted"] is True
+        assert first_metrics["old_holdout_cohort_gate"]["cohorts"] == {}
         first_gate = {
             role: receiver_utility_gate(first_metrics, role)
             for role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL")
@@ -267,18 +269,22 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert first["planner"]["checkpoint_sha256"] == first_sha
         assert read_world_planner_shadow(store, first_events[-1])["status"] == first_planner_status
 
-        second_events = _add_transitions(store, session, 256, 32)
+        second_events = _add_transitions(store, session, 256, 128)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
-            "steps": 24, "replay_mode": "uniform",
+            "steps": 4, "replay_mode": "uniform",
         })
         second = sleep._run_world_jepa(second_events[-1], limit=256)
         assert second["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         second_metrics = second["learning"]["metrics"]
+        assert second_metrics["new_train_rows"] >= 48
         assert second_metrics["replay_rows"] >= 8
         assert second_metrics["fit_steps_after"] > second_metrics["fit_steps_before"]
         assert second_metrics["optimizer_moments_persisted"] is True
         assert second_metrics["optimizer_state_bootstrapped"] is False
+        assert second_metrics["old_holdout_cohort_gate"]["accepted"] is True
+        assert second_metrics["old_holdout_cohort_gate"]["cohorts"]
+        assert all(item["retained"] for item in second_metrics["old_holdout_cohort_gate"]["cohorts"].values())
         second_sha = second["learning"]["checkpoint_sha256"]
         assert second_sha != first_sha
         second_planner_status = _planner_expected_status(second_metrics)
