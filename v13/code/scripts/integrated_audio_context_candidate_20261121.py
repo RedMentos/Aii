@@ -221,17 +221,12 @@ class Runtime:
     )
     runtime = _replace(
         runtime,
+        b"                try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context\n",
         b"                if 'audio_admission' in meta:\n"
         b"                    included=any('RAW_EAR_ACOUSTIC' in (m.get('content') or '') for m in messages)\n"
         b"                    meta['audio_admission']['c3_prompt_included']=included\n"
         b"                    if not included:meta.pop('audio_source_refs',None);audio_source_ref=None\n"
         b"                try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context\n",
-        b"                except Exception as exc:self.store.log('context_os_unavailable',eid,{'stage':'plan','error':type(exc).__name__})\n"
-        b"                if 'audio_admission' in meta:\n"
-        b"                    included=any('RAW_EAR_ACOUSTIC' in (m.get('content') or '') for m in messages)\n"
-        b"                    meta['audio_admission']['c3_prompt_included']=included\n"
-        b"                    if not included:meta.pop('audio_source_refs',None);audio_source_ref=None\n"
-        b"                try:save_context",
         "Context OS admission receipt",
     )
     runtime = _replace(
