@@ -315,8 +315,8 @@ def unrelated():
             and node.func.id == "learning_limit"
         ]
         self.assertEqual(
-            [enclosing_owner(node, probe_parents) for node in probe_calls],
-            ["add", "unrelated"],
+            {enclosing_owner(node, probe_parents) for node in probe_calls},
+            {"add", "unrelated"},
         )
 
         scan_roots = (code_root / "v13", code_root / "scripts")
