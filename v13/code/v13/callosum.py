@@ -180,8 +180,14 @@ class Callosum:
         return out
     def report(self,cfg):
         st,_=self._load();p=st['proposals']
+        try:
+            from . import latent_runtime
+            latent_lab=latent_runtime.status(self.r) if getattr(self,'r',None) is not None else {'status':'RUNTIME_UNBOUND'}
+        except Exception as exc:latent_lab={'status':'UNAVAILABLE','error':type(exc).__name__}
         return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),
-                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}
+                'latent_lab':latent_lab,
+                'gate':'G-CALLOSUM-UTILITY-002: LATENT remains blocked; candidates are not active',
+                'claim_limit':'Native-tap-backed adapter candidates and counterfactual readout probes only; no live receiver effect or LATENT authority'}
 
 def controller(runtime):
     c=getattr(runtime,'callosum',None)
@@ -198,7 +204,7 @@ def controller(runtime):
 def on_rating(store,event_id,score):return Callosum(store).on_rating(event_id,(score-1)/9)
 
 def operator_command(r,args):
-    """:callosum [status|shadow|active|degrade|promote <direction>]"""
+    """:callosum [status|shadow|active|degrade|promote <direction>|train <direction>|probe <direction> <candidate-id>|candidates [direction]]"""
     c=controller(r)
     if not args or args==['status']:return dumps(c.report(r.cfg))
     if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
@@ -206,4 +212,17 @@ def operator_command(r,args):
     if args==['degrade']:return dumps({d:{k:x[k] for k in ('degradation_level','status','calibration_valid','degradation')} for d,x in c.doctor(r.cfg).items()})
     if len(args)==2 and args[0]=='promote' and args[1] in b3degrade.RECEIVER:  # typed by the human at the operator console
         return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})
-    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1]')
+    if len(args)==2 and args[0]=='train' and args[1] in ('B1_TO_B2','B2_TO_B1'):
+        r.require_idle()
+        from . import latent_runtime
+        return dumps(latent_runtime.train_candidate(r,args[1]))
+    if len(args)==3 and args[0]=='probe' and args[1] in ('B1_TO_B2','B2_TO_B1'):
+        r.require_idle()
+        last=r.last_answer()
+        if not last:raise ValueError('Erst einen normalen Chatturn ausführen; :tap B1_DETAIL und :tap B2_GIST auf demselben Turn speichern.')
+        from . import latent_runtime
+        return dumps(latent_runtime.probe_candidate(r,args[1],args[2],last['event_id']))
+    if args==['candidates'] or (len(args)==2 and args[0]=='candidates' and args[1] in ('B1_TO_B2','B2_TO_B1')):
+        from . import latent_runtime
+        return dumps(latent_runtime.list_candidates(r,args[1] if len(args)==2 else None))
+    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|train B1_TO_B2|B2_TO_B1|probe <direction> <candidate-id>|candidates [direction]]')
