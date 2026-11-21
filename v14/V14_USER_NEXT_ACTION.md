@@ -1,8 +1,8 @@
-# Boss integration checkpoint — 2026-11-21 07:49 CET
+# Boss integration checkpoint — 2026-11-21 07:59 CET
 
 ## Current integrated branch and release gate
-- Release-development branch `gpt6/v13-private-remote-bridge-20261111` reads back at `c76a018b37be18f9a4706a32fa7a817f7b4828b9`. PRs **#2160, #2164 and #2167 are merged**: persistent source-bound T8/WorldJEPA numeric learner, B1/B2/SELF numeric SHADOW planner receiver, and NumPy-stable digest negative test.
-- Exact branch CI is **not green**: 26 check runs = 24 success, 1 failure, 1 integrated-regression in progress. Python 3.13 fails `v14/learning/test_world_jepa_consumer.py::test_oldest_first_pages_do_not_starve_older_t8_backlog`: the first 64-row page returns `UTILITY_GATE_REJECTED`. Python 3.14 passes. The test must verify cursor/pending-row fairness independently of model utility; the holdout, shuffled-action, zero-action and old-retention gates must remain strict. I posted the focused correction request to #2160. No release approval while this failure remains.
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` now reads back at `6967e9d8e03384e9849d8ca5e3a24779402f9cf5`; this is a documentation-only merge of Boss PR #2173. The last code head remains `c76a018b37be18f9a4706a32fa7a817f7b4828b9`. PRs **#2160, #2164 and #2167 are merged**: persistent source-bound T8/WorldJEPA numeric learner, B1/B2/SELF numeric SHADOW planner receiver, and NumPy-stable digest negative test.
+- Exact current-head checks: 28 runs queued/in progress at readback. The preceding code head `c76a018b37be18f9a4706a32fa7a817f7b4828b9` had 27/28 checks green; its sole failure was Python 3.13 `v14/learning/test_world_jepa_consumer.py::test_oldest_first_pages_do_not_starve_older_t8_backlog`, where the first 64-row page returns `UTILITY_GATE_REJECTED`. Integrated-regression subsequently completed PASS. Keep the utility/retention gates strict; the backlog test must verify pending-row/cursor fairness independently. I posted the focused correction request to #2160. No release approval while the Python 3.13 failure remains.
 - Exact local Aii checkout is **BLOCKED**: `git ls-remote https://github.com/RedMentos/Aii.git` could not resolve `github.com`. CI results are not local native tests or Redmi proof.
 
 ## Candidate integration readbacks
@@ -13,7 +13,7 @@
 - **QA #2163 — Android audit DB:** current candidate head `47622acc9ec156e9462e1d8ce526549c761c9c5f`; broker 18/18 and sandbox replay 42/42 PASS, staged 240 and integrated 415 PASS; safe-additive rejects the existing-module edit. It is 41 commits behind current release. The broker remains dry-run only, explicitly does not defend against a malicious same-UID race, and is not an OS executor or Android permission boundary.
 
 ## Phone / updater
-- Fresh private owner-read PIPELINE_STATUS request **RedMentos/Aiiii#373** is OPEN with zero comments. Earlier #368 is also unanswered. Installed SHA is UNKNOWN; auto-update consent is UNVERIFIED; REDMI_UNVERIFIED.
+- Private owner-read PIPELINE_STATUS requests **RedMentos/Aiiii#373** and earlier **#368** expired with zero comments. Installed SHA is UNKNOWN; auto-update consent is UNVERIFIED; REDMI_UNVERIFIED.
 - No UPDATE_REQUEST, shell action, installer, model download/swap, permission change, or phone/user-data mutation was performed. No user action is required.
 
 ## Whole-system status and next ownership

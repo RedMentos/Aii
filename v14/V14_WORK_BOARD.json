@@ -28,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Current release-development branch head c76a018b37be18f9a4706a32fa7a817f7b4828b9 has 26 exact-head check runs: 24 success, 1 failure and 1 integrated-regression still in progress at readback. The failing Python 3.13 test is v14/learning/test_world_jepa_consumer.py::test_oldest_first_pages_do_not_starve_older_t8_backlog; it receives UTILITY_GATE_REJECTED on the first 64-row page. This is not release-green. Fresh owner-read PIPELINE_STATUS RedMentos/Aiiii#373 is OPEN with zero comments; older #368 also has no reply. Installed SHA UNKNOWN; updater consent UNVERIFIED; REDMI_UNVERIFIED.",
+      "proof_environment": "Current branch head 6967e9d8e03384e9849d8ca5e3a24779402f9cf5 is a documentation-only merge of #2173; 28 exact-head checks are queued/in progress at readback. Last code head c76a018b37be18f9a4706a32fa7a817f7b4828b9 had 28 checks: 27 success and one Python 3.13 failure in v14/learning/test_world_jepa_consumer.py::test_oldest_first_pages_do_not_starve_older_t8_backlog; integrated-regression completed PASS. The failing test gets UTILITY_GATE_REJECTED on the first 64-row page; keep the utility gate strict. Private owner-read #373 and prior #368 expired with zero comments. Installed SHA UNKNOWN; updater consent UNVERIFIED; REDMI_UNVERIFIED.",
       "next_step": "Wait for the JEPA owner to make the cursor/backlog test independent of utility acceptance while preserving strict holdout and negative-control gates; then require every exact branch check to finish green. Wait for the already-open #373 receipt. Do not send UPDATE_REQUEST, mutate the phone, or ask the user for a Termux command while the receipt is pending.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 07:49 CET",
+      "last_checkpoint": "2026-11-21 07:59 CET",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -173,10 +173,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Boss integration readback: release branch c76a018b37be18f9a4706a32fa7a817f7b4828b9; #2160/#2164/#2167 merged. Exact branch CI is not green: 26 checks = 24 success, 1 Python 3.13 backlog/utility-gate failure, 1 integrated-regression in progress. #2158 is synced to this base at head 11853c66; its staged A5/integrated tests pass, but the overlay pins the older voice adapter. #2161 is 25 commits behind and dirty. #2168 fails staged/integrated/Python3.14 due frozen runtime.py pin. #2169 is a current-base tap-provenance candidate with 11/12 checks green (only safe-additive rejection) but model-free only. QA #2163 head 47622acc is 41 commits behind, with broker 18/18, sandbox 42/42, staged 240 and integrated 415 CI pass; safe-additive rejects existing-module changes. Exact local repository checkout is BLOCKED by GitHub DNS resolution.",
+      "proof_environment": "Boss documentation/evidence PR #2173 merged at 6967e9d8e03384e9849d8ca5e3a24779402f9cf5 (docs-only: WORK_BOARD, USER_NEXT_ACTION, LIVE_WORKPLAN; no runtime/device code). Current branch has 28 check runs queued/in progress at readback. Last code head c76a018b37be18f9a4706a32fa7a817f7b4828b9 had 27/28 checks green with one Python 3.13 WorldJEPA backlog/utility-gate test failure; integrated-regression completed PASS. #2160/#2164/#2167 remain merged. #2158 is synced but still pins old audio adapter; #2161 stale/dirty; #2168 fails frozen Runtime/Sleep source pins; #2169 is a model-free tap provenance candidate; #2163 is stale dry-run audit DB candidate. Local full checkout remains BLOCKED by GitHub DNS.",
       "next_step": "First resolve the current branch's Python 3.13 backlog test without weakening the JEPA utility gate, then obtain a fully green exact release-branch check set. In parallel, coordinate #2158/#2161 V3 pin/rebase, manually review #2169 after release CI is green, and keep #2168/#2163 out of release until their respective source/security reviews pass. Continue the whole-Canon coverage matrix; do not replace functional work with another audit-only PR.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 07:49 CET"
+      "last_checkpoint": "2026-11-21 07:59 CET"
     },
     {
       "id": "V14-008",
@@ -187,10 +187,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "Newest private owner-read request is RedMentos/Aiiii#373 (PIPELINE_STATUS, expires after 600 seconds): OPEN with zero comments at readback. Previous #368 is also still unanswered. No installed revision, current pipeline status, or auto-update consent can be confirmed. No UPDATE_REQUEST or device action was sent. REDMI_UNVERIFIED.",
+      "proof_environment": "Private owner-read PIPELINE_STATUS #373 expired at 2026-11-21T06:49:22Z with zero comments; earlier #368 also expired with zero comments. No authenticated live receipt, installed SHA or updater consent. No UPDATE_REQUEST or device action. REDMI_UNVERIFIED.",
       "next_step": "No user action is required. Keep waiting for the existing authenticated receipt; if it arrives, verify installed SHA and updater state before any update request. Do not infer phone state from green GitHub CI.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 07:49 CET"
+      "last_checkpoint": "2026-11-21 07:59 CET"
     },
     {
       "id": "V14-009",
@@ -259,18 +259,18 @@
       "last_checkpoint": "2026-11-21 06:42 CET: 1,255 headings preserved; clause-level completion remains OPEN."
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED — no live owner-authenticated phone receipt; #373 OPEN_NO_REPLY.",
+  "current_redmi_status": "REDMI_UNVERIFIED — private owner-read #373 and previous #368 expired with no reply.",
   "last_code_release_head": "c76a018b37be18f9a4706a32fa7a817f7b4828b9",
-  "latest_integrated_head": "c76a018b37be18f9a4706a32fa7a817f7b4828b9",
-  "latest_integrated_head_verified_at": "2026-11-21T06:49:20Z",
-  "release_gate_status": "NOT_RELEASED: exact branch CI 26 total / 24 success / 1 failure (Python 3.13 WorldJEPA backlog test) / 1 integrated-regression in progress; phone installation unverified.",
+  "latest_integrated_head": "6967e9d8e03384e9849d8ca5e3a24779402f9cf5",
+  "latest_integrated_head_verified_at": "2026-11-21T07:01:04.818Z",
+  "release_gate_status": "NOT_RELEASED: documentation-only PR #2173 merged at 6967e9d8e03384e9849d8ca5e3a24779402f9cf5; exact current-head checks 28 queued/in progress at readback. Last code head c76a018b37be18f9a4706a32fa7a817f7b4828b9 had 27/28 checks green and one Python 3.13 WorldJEPA backlog test failure; integrated-regression completed. Phone unverified.",
   "phone_receipt": {
     "issue": "RedMentos/Aiiii#373",
-    "state": "OPEN_NO_REPLY",
+    "state": "OPEN_EXPIRED_NO_REPLY",
     "installed_sha": "UNKNOWN",
     "auto_update": "UNVERIFIED",
     "redmi_status": "REDMI_UNVERIFIED",
-    "older_pending_issue": "RedMentos/Aiiii#368"
+    "older_pending_issue": "RedMentos/Aiiii#368 (EXPIRED_NO_REPLY)"
   },
   "capability_snapshot": [
     {
