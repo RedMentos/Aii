@@ -242,7 +242,7 @@ def load(path, source_sha256, expected_sha256):
     model.tgt = {k: arrays['tgt__' + k] for k in ENC_KEYS}
     model.preds = [{k: arrays[f'pred{i}__{k}'] for k in PRED_KEYS}
                    for i in range(meta['ensemble'])]
-    model.history = []  # training history/optimizer not present: inference-only
+    model.history = []  # per-fit diagnostics are transient; resume state is restored separately
     model._fit_steps = 0 if meta['schema'] == LEGACY_SCHEMA else meta['fit_steps']
     if 'training_resume' in meta:
         model._training_state = training_state.unpack(
