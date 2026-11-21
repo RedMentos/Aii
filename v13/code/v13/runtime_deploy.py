@@ -645,6 +645,14 @@ def _launcher_bytes(code, home):
             "exec " + command + shlex.quote(str(home)) + ' "$@"\n').encode("utf-8")
 
 
+def _fsync_directory(path):
+    fd = os.open(str(path), os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
 def _atomic_file(dest, data, mode=0o600):
     fd, name = tempfile.mkstemp(prefix=".v13-deploy-", dir=str(dest.parent))
     try:
@@ -654,6 +662,7 @@ def _atomic_file(dest, data, mode=0o600):
             out.flush()
             os.fsync(out.fileno())
         os.replace(name, dest)
+        _fsync_directory(dest.parent)
     finally:
         if os.path.exists(name):
             os.unlink(name)
@@ -677,8 +686,26 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False,
         return {"status": "UP_TO_DATE", "commit": commit,
                 "launcher_verified": True}
     before = launcher.read_bytes()
+    marker_path = private / MARKER_NAME
+    marker_before = None
+    if marker_path.exists() or marker_path.is_symlink():
+        if (marker_path.is_symlink() or not marker_path.is_file()
+                or marker_path.stat().st_uid != os.getuid()
+                or marker_path.stat().st_mode & 0o077
+                or marker_path.stat().st_size > 4096):
+            raise RuntimeDeployError("Existing runtime marker is unsafe")
+        marker_before = marker_path.read_bytes()
+        try:
+            previous = json.loads(marker_before)
+        except (ValueError, UnicodeError) as exc:
+            raise RuntimeDeployError("Existing runtime marker is invalid") from exc
+        if (not isinstance(previous, dict)
+                or previous.get("launcher_sha256") != hashlib.sha256(before).hexdigest()):
+            raise RuntimeDeployError("Existing runtime marker does not match launcher")
     backup = private / ("launcher-backup-" + secrets.token_hex(8) + ".sh")
-    _atomic_file(backup, before, stat.S_IMODE(launcher.stat().st_mode))
+    # The backup lives in the private directory and is data, not an executable.
+    # Keep it owner-only regardless of the installed launcher's original mode.
+    _atomic_file(backup, before, 0o600)
     stage = builds / ("v13-" + commit[:12] + "-" + secrets.token_hex(4))
     if stage.exists() or stage.is_symlink():
         raise RuntimeDeployError("Runtime staging collision")
@@ -691,13 +718,29 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False,
     _selftest(target)
     if _verify_stage(target) != manifest_sha256:
         raise RuntimeDeployError("Integrated runtime changed during selftest")
+    backup_marker = None
+    backup_marker_sha256 = None
+    if marker_before is not None:
+        backup_marker = private / ("marker-backup-" + secrets.token_hex(8) + ".json")
+        _atomic_file(backup_marker, marker_before, 0o600)
+        backup_marker_sha256 = hashlib.sha256(marker_before).hexdigest()
     with (activation_guard() if activation_guard is not None else nullcontext()):
         try:
             _check_stopped(home)
+            if launcher.read_bytes() != before:
+                raise RuntimeDeployError("Installed launcher changed during staging")
+            if marker_before is None:
+                if marker_path.exists() or marker_path.is_symlink():
+                    raise RuntimeDeployError("Runtime marker appeared during staging")
+            elif marker_path.is_symlink() or not marker_path.is_file() or marker_path.read_bytes() != marker_before:
+                raise RuntimeDeployError("Runtime marker changed during staging")
             next_launcher = _launcher_bytes(target, home)
             _atomic_file(launcher, next_launcher, 0o700)
             record = {"schema": "v13.runtime-deploy/1", "commit": commit,
                       "code": str(target), "backup_launcher": str(backup),
+                      "backup_launcher_sha256": hashlib.sha256(before).hexdigest(),
+                      "backup_marker": str(backup_marker) if backup_marker else None,
+                      "backup_marker_sha256": backup_marker_sha256,
                       "build_profile": BUILD_PROFILE,
                       "source_ui_sha256": UI_SOURCE_SHA256,
                       "derived_ui_sha256": UI_DERIVED_SHA256,
@@ -717,13 +760,143 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False,
             raise
 
 
+
+def _owned_private_backup(path, private, *, max_bytes):
+    if not isinstance(path, str) or not path:
+        raise RuntimeDeployError("Rollback backup path missing")
+    candidate = Path(path)
+    if candidate.is_symlink() or not candidate.is_file():
+        raise RuntimeDeployError("Rollback backup missing or unsafe")
+    resolved = candidate.resolve(strict=True)
+    if private.resolve(strict=True) not in resolved.parents:
+        raise RuntimeDeployError("Rollback backup escapes private directory")
+    info = candidate.stat()
+    if (info.st_uid != os.getuid() or info.st_mode & 0o077
+            or info.st_size > max_bytes):
+        raise RuntimeDeployError("Rollback backup permissions or size invalid")
+    return candidate.read_bytes()
+
+
+def _verified_stage_from_marker(record, builds):
+    commit = record.get("commit")
+    code_value = record.get("code")
+    manifest_sha = record.get("stage_manifest_sha256")
+    if (not isinstance(commit, str) or not HEX40.fullmatch(commit)
+            or not isinstance(code_value, str)
+            or not isinstance(manifest_sha, str)
+            or not re.fullmatch(r"[a-f0-9]{64}", manifest_sha)):
+        raise RuntimeDeployError("Rollback marker fields invalid")
+    code = Path(code_value)
+    if code.is_symlink() or not code.is_dir():
+        raise RuntimeDeployError("Rollback code snapshot missing or unsafe")
+    resolved = code.resolve(strict=True)
+    if builds.resolve(strict=True) not in resolved.parents:
+        raise RuntimeDeployError("Rollback code snapshot escapes runtime builds")
+    if _verify_stage(code) != manifest_sha:
+        raise RuntimeDeployError("Rollback code snapshot integrity mismatch")
+    return commit
+
+
+def rollback(*, home=None, private=None, builds=None, activation_guard=None):
+    """Restore the exact previous launcher/marker saved by the last deployment.
+
+    This never edits models, SQLite, source checkouts or settings. Legacy
+    first-install backups can restore the original launcher but have no
+    previous runtime marker to reinstate.
+    """
+    home = Path(home or Path.home() / "v13").expanduser().resolve()
+    private = _protected_dir(private or Path.home() / ".v13-private")
+    builds = _protected_dir(builds or Path.home() / ".v13-runtime-builds")
+    launcher = _launcher(home)
+    _check_stopped(home)
+    marker_path = private / MARKER_NAME
+    if (marker_path.is_symlink() or not marker_path.is_file()
+            or marker_path.stat().st_uid != os.getuid()
+            or marker_path.stat().st_mode & 0o077
+            or marker_path.stat().st_size > 4096):
+        raise RuntimeDeployError("Current runtime marker missing or unsafe")
+    current_marker_bytes = marker_path.read_bytes()
+    try:
+        current = json.loads(current_marker_bytes)
+    except (ValueError, UnicodeError) as exc:
+        raise RuntimeDeployError("Current runtime marker invalid") from exc
+    if not isinstance(current, dict) or current.get("schema") != "v13.runtime-deploy/1":
+        raise RuntimeDeployError("Current runtime marker schema invalid")
+    current_launcher_bytes = launcher.read_bytes()
+    if current.get("launcher_sha256") != hashlib.sha256(current_launcher_bytes).hexdigest():
+        raise RuntimeDeployError("Current launcher does not match runtime marker")
+    _verified_stage_from_marker(current, builds)
+
+    backup_launcher_bytes = _owned_private_backup(
+        current.get("backup_launcher"), private, max_bytes=65536)
+    expected_launcher_sha = current.get("backup_launcher_sha256")
+    backup_marker_value = current.get("backup_marker")
+    # No prior runtime marker means this restores the pre-runtime legacy launcher,
+    # even when the new deployment correctly recorded a SHA for that launcher.
+    legacy = backup_marker_value is None
+    if expected_launcher_sha is not None:
+        if (not isinstance(expected_launcher_sha, str)
+                or not re.fullmatch(r"[a-f0-9]{64}", expected_launcher_sha)
+                or hashlib.sha256(backup_launcher_bytes).hexdigest() != expected_launcher_sha):
+            raise RuntimeDeployError("Previous launcher backup integrity mismatch")
+
+    previous_marker_bytes = None
+    restored_commit = None
+    if backup_marker_value is not None:
+        previous_marker_bytes = _owned_private_backup(
+            backup_marker_value, private, max_bytes=4096)
+        expected_marker_sha = current.get("backup_marker_sha256")
+        if (not isinstance(expected_marker_sha, str)
+                or not re.fullmatch(r"[a-f0-9]{64}", expected_marker_sha)
+                or hashlib.sha256(previous_marker_bytes).hexdigest() != expected_marker_sha):
+            raise RuntimeDeployError("Previous runtime marker backup integrity mismatch")
+        try:
+            previous = json.loads(previous_marker_bytes)
+        except (ValueError, UnicodeError) as exc:
+            raise RuntimeDeployError("Previous runtime marker backup invalid") from exc
+        if (not isinstance(previous, dict)
+                or previous.get("schema") != "v13.runtime-deploy/1"
+                or previous.get("launcher_sha256") != hashlib.sha256(backup_launcher_bytes).hexdigest()):
+            raise RuntimeDeployError("Previous marker does not match launcher backup")
+        restored_commit = _verified_stage_from_marker(previous, builds)
+        legacy = False
+
+    with (activation_guard() if activation_guard is not None else nullcontext()):
+        try:
+            _check_stopped(home)
+            if (launcher.read_bytes() != current_launcher_bytes
+                    or marker_path.is_symlink()
+                    or marker_path.read_bytes() != current_marker_bytes):
+                raise RuntimeDeployError("Installed runtime changed during rollback")
+            _atomic_file(launcher, backup_launcher_bytes, 0o700)
+            if previous_marker_bytes is None:
+                marker_path.unlink()
+                _fsync_directory(private)
+            else:
+                _atomic_file(marker_path, previous_marker_bytes, 0o600)
+        except BaseException:
+            _atomic_file(launcher, current_launcher_bytes, 0o700)
+            _atomic_file(marker_path, current_marker_bytes, 0o600)
+            raise
+    return {"status": "ROLLED_BACK_LEGACY" if legacy else "ROLLED_BACK",
+            "restored_commit": restored_commit,
+            "models_untouched": True, "sqlite_untouched": True}
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="Activate complete CI-verified V13 runtime without touching models or memory")
     p.add_argument("--source", default=str(Path.home() / ".v13-runtime-source"))
     p.add_argument("--home", default=str(Path.home() / "v13"))
+    p.add_argument("--rollback", action="store_true", help="restore the last verified launcher backup")
     a = p.parse_args(argv)
     try:
-        print(json.dumps(deploy(a.source, home=a.home), ensure_ascii=False, sort_keys=True), flush=True)
+        if a.rollback:
+            # Rollback must use the pipeline lock, disable auto-update, and
+            # request managed-chat resume; never bypass that transaction here.
+            from .pipeline_agent import rollback_runtime
+            result = rollback_runtime()
+        else:
+            result = deploy(a.source, home=a.home)
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True), flush=True)
     except (OSError, ValueError, RuntimeDeployError) as exc:
         p.exit(2, "V13 RUNTIME DEPLOY FAILED: " + str(exc) + "\n")
 
