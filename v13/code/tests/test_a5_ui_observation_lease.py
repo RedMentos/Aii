@@ -137,7 +137,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
     def test_revocation_waits_for_lease_then_tombstones_packets_cache_and_blob(self):
         obs = observation()
         with self.lease(obs) as grant:
-            result = self.runtime.ingest_ui_observation(obs, grant)
+            result = self.adapter.ingest(obs, grant)
             revoker = threading.Thread(target=self.provider.revoke)
             revoker.start()
             time.sleep(0.04)
@@ -148,7 +148,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         self.assertFalse(revoker.is_alive(), "revocation callback did not complete after lease release")
         source = self.store.one("SELECT deleted,hash FROM sources WHERE id=?", (obs["source_id"],))
         self.assertEqual(source["deleted"], 1)
-        self.assertEqual(self.runtime.ui_observation_context(self.event["event_id"]), ())
+        self.assertEqual(self.adapter.context(self.event["event_id"]), ())
         self.assertNotIn(obs["source_id"], self.runtime._a5_ui_context_cache)
         self.assertNotIn(obs["source_id"], self.runtime._a5_ui_unsubscribe)
         remaining = self.store.rows("SELECT id,payload FROM packets")
@@ -160,11 +160,11 @@ class A5UIObservationLeaseTests(unittest.TestCase):
     def test_provisional_is_persisted_but_not_admitted_or_requested(self):
         obs = observation(finality="PROVISIONAL")
         with self.lease(obs) as grant:
-            result = self.runtime.ingest_ui_observation(obs, grant)
+            result = self.adapter.ingest(obs, grant)
         self.assertEqual(result["admission"].status, "EMPTY_OR_UNAUTHORIZED")
         self.assertEqual(result["admission"].omitted, (obs["source_id"],))
         self.assertFalse(result["a4"]["requests"])
-        self.assertEqual(self.runtime.ui_observation_context(self.event["event_id"]), ())
+        self.assertEqual(self.adapter.context(self.event["event_id"]), ())
         self.assertTrue(self.store.read_source(result["source_ref"]))
 
     def test_receipt_generation_and_runtime_binding_are_mandatory(self):
@@ -172,12 +172,12 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         with self.lease(obs) as grant:
             altered = dict(obs, consent_receipt_ref="receipt_other")
             with self.assertRaises(PermissionError):
-                self.runtime.ingest_ui_observation(altered, grant)
+                self.adapter.ingest(altered, grant)
             original = self.runtime.turn_event["brain_generation_id"]
             self.runtime.turn_event["brain_generation_id"] = "generation_other"
             try:
                 with self.assertRaises(PermissionError):
-                    self.runtime.ingest_ui_observation(obs, grant)
+                    self.adapter.ingest(obs, grant)
             finally:
                 self.runtime.turn_event["brain_generation_id"] = original
         self.assertIsNone(self.store.one("SELECT id FROM sources WHERE id=?", (obs["source_id"],)))
@@ -193,7 +193,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
 
             def wrong_thread():
                 try:
-                    self.runtime.ingest_ui_observation(obs, grant)
+                    self.adapter.ingest(obs, grant)
                 except Exception as exc:
                     failures.append(exc)
 
@@ -206,7 +206,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
 
     def test_missing_revocation_subscription_fails_closed(self):
         with self.assertRaises(PermissionError):
-            with self.runtime.ui_observation_lease(
+            with self.adapter.lease(
                 observation(), self.provider.check, self.provider.guard, None
             ):
                 self.fail("lease unexpectedly acquired")
@@ -214,11 +214,11 @@ class A5UIObservationLeaseTests(unittest.TestCase):
     def test_duplicate_source_id_cannot_overwrite_prior_observation(self):
         obs = observation()
         with self.lease(obs) as grant:
-            self.runtime.ingest_ui_observation(obs, grant)
+            self.adapter.ingest(obs, grant)
         second = dict(obs, capture_session_id="ui_session_second", consent_receipt_ref="receipt_second")
         with self.assertRaises(ValueError):
             with self.lease(second) as grant:
-                self.runtime.ingest_ui_observation(second, grant)
+                self.adapter.ingest(second, grant)
 
     def test_no_active_runtime_turn_rejects_ui_observation(self):
         self.runtime.turn_event = None
@@ -282,7 +282,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
             validate_ui_observation(observation(clock="WALL_TIME"))
         with self.lease(observation()) as grant:
             with self.assertRaises(ValueError):
-                self.runtime.ingest_ui_observation(observation(), grant, priority=101)
+                self.adapter.ingest(observation(), grant, priority=101)
 
 
 if __name__ == "__main__":
