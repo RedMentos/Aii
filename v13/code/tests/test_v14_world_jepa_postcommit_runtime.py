@@ -446,7 +446,7 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
 
         # Add a source-disjoint T8 cohort through the same durable Store API.
         # The temporary permission is test-only; production gates remain OFF.
-        _add_transitions(runtime.store, runtime.session, 1000, 256)
+        _add_transitions(runtime.store, runtime.session, 0, 256)
         latest = runtime.store.one(
             "SELECT event_id FROM actions WHERE outcome IS NOT NULL "
             "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
@@ -481,21 +481,35 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         fit_steps = active.get("fit_steps")
         assert type(checkpoint_sha) is str and len(checkpoint_sha) == 64
         telemetry = runtime.store.rows(
-            "SELECT metrics FROM telemetry WHERE kind='v14_world_jepa_postcommit' ORDER BY id"
+            "SELECT event_id,metrics FROM telemetry WHERE kind='v14_world_jepa_postcommit' ORDER BY id"
         )
         assert telemetry
         decoded = [
-            json.loads(row["metrics"]) if isinstance(row["metrics"], str) else row["metrics"]
+            {
+                "event_id": row["event_id"],
+                **(json.loads(row["metrics"]) if isinstance(row["metrics"], str) else row["metrics"]),
+            }
             for row in telemetry
         ]
+        matching = [row for row in decoded if row.get("event_id") == latest]
         assert any(
             row.get("learning_status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
             and row.get("parameter_delta_norm", 0) > 0
             and row.get("ema_target_delta_norm", 0) > 0
             and row.get("decision_authority") == "NONE"
             and row.get("native_body_weights_changed") is False
-            for row in decoded
-        )
+            for row in matching
+        ), [
+            {
+                "event_id": row.get("event_id"),
+                "learning_status": row.get("learning_status"),
+                "parameter_delta_norm": row.get("parameter_delta_norm"),
+                "ema_target_delta_norm": row.get("ema_target_delta_norm"),
+                "decision_authority": row.get("decision_authority"),
+                "native_body_weights_changed": row.get("native_body_weights_changed"),
+            }
+            for row in matching
+        ]
         assert "worker-jepa-lifecycle" not in repr(state)
         assert "worker-jepa-lifecycle" not in repr(telemetry)
     finally:
