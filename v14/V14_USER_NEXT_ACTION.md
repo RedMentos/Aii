@@ -237,3 +237,38 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - Private read-only issues #351–354 have no device comments; installed SHA and auto-update consent remain UNKNOWN / REDMI_UNVERIFIED. No UPDATE_REQUEST or phone mutation.
 - Exact local full-suite checkout remains BLOCKED by GitHub DNS resolution; no LOCAL_LINUX full-suite PASS is claimed. No Redmi/native-model/voice/Android-control proof.
 - No model, weights, Age, permissions, database, chat or user data changed. **User action: none.**
+
+
+
+## Latest verified Boss integration checkpoint — 2026-11-21, 02:58 CET
+
+### Release and device truth
+
+- Release branch HEAD at readback: `c3c32c05a0374e970d274f8a777a7ab85c067d66`. This is a documentation-only checkpoint. Last code-bearing release commit remains `3db6d1f00fceab9e7755bc8f4c25882ef7f19258`.
+- Exact push CI for `3db6d1f` is now fully green: private bridge, owner-read, Lab Age, release-event and staged/integrated regression. Relevant exact runs include [staged/integrated 44847399407](https://github.com/RedMentos/Aii/actions/runs/44847399407) and [V14 T8 Store 44847403231](https://github.com/RedMentos/Aii/actions/runs/44847403231). This is CI/Linux only; it does not prove that the phone installed the commit or that chat quality improved.
+- A fresh private owner-read PIPELINE_STATUS request is open as [Aiiii issue #357](https://github.com/RedMentos/Aiiii/issues/357), with no device reply at this checkpoint. Installed Redmi SHA, updater state and current consent remain UNKNOWN. Status: `NO_LIVE_RECEIPT / REDMI_UNVERIFIED`.
+- No UPDATE_REQUEST, manual installer, model download/swap, permission change, weight edit, database/chat mutation or device action was performed.
+
+### Candidate integration status
+
+- **#2145 — Runtime T8 consumer:** previous exact head failed two runtime-consumer tests because `VerifiedT8Transition.source_ref` returned only source ID + digest, while the SelfCorollary and ActionPrediction consumers compare the full SourceRef including span and modality. Boss fixed the receipt in branch `boss/v14-t8-runtime-shadow-consumer-20261121`, exact commit `08d14737f1ee554f2b160986f95d9f28d6bc1fa2`. The full SourceRef is preserved after verification; public provenance remains metadata-only. Code is read back, but **no exact-head CI is visible yet**. Not merged or released.
+- **#2143/#2147 — WorldJEPA:** #2147's exact V14 workflow fails on Python 3.13 and 3.14 at the shuffled-action negative control. On the 3.14 run, holdout loss is 0.480152 while shuffled-action loss is 0.479097; zero-action is 0.560362. The learner changes parameters and improves the unshuffled holdout relative to before, but does not beat shuffled actions. Keep the gate. Improve the synthetic cohort so each source-digest group contains all four action routes with a measurable action-dependent target; do not weaken the assertion. No full JEPA or useful action-conditioned learning claim.
+- **#2144 — A5 audio + arithmetic stage:** exact V14 workflow fails because the staged test calls `staged/tests.mkdir()` when that directory already exists. The broader stage chain was still in progress at last readback. Keep the overlay on the one shared Boss builder chain; no Android microphone or voice proof.
+- **#2142 — C3 model comparison lab:** exact V14 model-lab and private-bridge workflows pass; 16 tests are synthetic. No GGUF inference ran, candidate installation on Redmi is unknown, and exact staged-context CI is absent. It remains unmerged. The pinned LFM2.5-230M artifact uses LFM Open License v1.0; §5 limits commercial use for entities at/above USD 10M annual revenue unless separately licensed. No download or production swap.
+
+### Whole-system blockers
+
+- P0 chat remains unresolved: issue #1904's last device evidence showed wrong `2+2 → 2`, slow C3 and no valid B1/B2 offers. No newer Redmi receipt exists.
+- The merged T8 Store adapter is still not a normal Runtime learning consumer. The #2145 patch is only a candidate until exact-head CI and integration with #2143/#2147's newer paginated/source-digest authority are proven.
+- No accepted trained activation-to-activation B3 latent coupling, independent sparse-MoE B1/B2 bodies, native body-weight update, cross-organ gradients, self-optimization, Android background/UI control, microphone/speech effector/full-duplex, or whole-Canon acceptance.
+- Local full checkout/tests were BLOCKED because this execution environment could not resolve GitHub DNS. Do not claim LOCAL_LINUX full-suite PASS. GitHub Actions evidence remains CI/Linux; Android evidence remains absent.
+
+### Research note and concrete next work
+
+- V-JEPA 2 separates broad action-free representation pretraining from a distinct action-conditioned predictor trained on interaction trajectories; its robot result is not evidence that a small synthetic digital-transition learner is already useful here. Source: [arXiv:2506.09985](https://arxiv.org/abs/2506.09985).
+- The 30 September 2026 study *The Planning Limits of Latent World Models* finds that planning signals can become unreliable beyond the model's imagined rollout horizon; feedback/replanning and nearer subgoals help more than simply scaling the predictor. This supports short-horizon prediction plus real outcome feedback, not untested long open-loop planning. Source: [arXiv:2609.39235](https://arxiv.org/abs/2609.39235).
+- UniJEPA (August 2026) is an interesting visual end-to-end alternative with a Gaussian anti-collapse regularizer and no EMA/stop-gradient in its proposed objective, but it is a vision model and is not adopted for this Android text/runtime learner without a modality-appropriate test. Source: [arXiv:2608.07409](https://arxiv.org/abs/2608.07409).
+
+**Next implementation order:** (1) get exact-head CI for the #2145 full-SourceRef fix; (2) port the newer #2143/#2147 paginated authority into the deployable runtime consumer without losing SELF_MODEL/recall; (3) fix the #2147 action-conditioned negative control with source-digest-grouped synthetic trajectories and rerun both Python versions; (4) compose #2144 only after the single stage-builder chain is green; (5) continue the P0 C3/B1/B2 runtime path and wait for an actual private Redmi receipt.
+
+**User action: none.** No Termux command is justified while the private phone receipt is absent.
