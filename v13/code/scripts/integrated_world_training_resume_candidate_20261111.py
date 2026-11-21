@@ -44,35 +44,35 @@ def build_sources(code_dir):
     result = base.build_sources(code_dir)
 
     guard = result['v13/world_jepa_runtime_guard_candidate.py']
-    guard = replace(guard, b'from . import world_model\\n',
-                    b'from . import world_model\\nfrom . import world_jepa_training_state as training_state\\n',
+    guard = replace(guard, b'from . import world_model\n',
+                    b'from . import world_model\nfrom . import world_jepa_training_state as training_state\n',
                     'guard training-state import')
     guard = replace(guard, b"'history', 'enc', 'tgt', 'preds', 'zsd', '_ztrain', '_nn_med'})",
                     b"'history', 'enc', 'tgt', 'preds', 'zsd', '_ztrain', '_nn_med', '_training_state'})",
                     'exact model state fields')
-    guard = replace(guard, b'    clone_meta, clone_arrays = checkpoint._extract(staged, VALIDATION_TAG)\\n',
-                    b'    staged._training_state=training_state.from_model(model)\\n'
-                    b'    clone_meta, clone_arrays = checkpoint._extract(staged, VALIDATION_TAG)\\n',
+    guard = replace(guard, b'    clone_meta, clone_arrays = checkpoint._extract(staged, VALIDATION_TAG)\n',
+                    b'    staged._training_state=training_state.from_model(model)\n'
+                    b'    clone_meta, clone_arrays = checkpoint._extract(staged, VALIDATION_TAG)\n',
                     'detached training state')
     for old, raw in ((GUARD_WORLD_SHA, world), (GUARD_CHECKPOINT_SHA, checkpoint)):
         guard = replace(guard, old.encode(), hashlib.sha256(raw).hexdigest().encode(),
                         'production World/checkpoint pin')
-    guard = replace(guard, b'PINS = {\\n',
-                    b"PINS = {\\n    'world_jepa_training_state.py': '" + STATE_SHA.encode() + b"',\\n",
+    guard = replace(guard, b'PINS = {\n',
+                    b"PINS = {\n    'world_jepa_training_state.py': '" + STATE_SHA.encode() + b"',\n",
                     'production training helper pin')
     guard = replace(guard,
-                    b"        return dict(result, source_verified=True, trained=True, active_model_promoted=False,\\n",
-                    b"        return dict(result, source_verified=True, trained=True, active_model_promoted=False,\\n"
+                    b"        return dict(result, source_verified=True, trained=True, active_model_promoted=False,\n",
+                    b"        return dict(result, source_verified=True, trained=True, active_model_promoted=False,\n"
                     b"                    optimizer_steps=candidate._training_state['main']['t'],"
-                    b"optimizer_state_continued=current is not None,\\n",
+                    b"optimizer_state_continued=current is not None,\n",
                     'operator training telemetry')
 
     lineage = result['v13/world_jepa_lineage_checkpoint_candidate.py']
-    lineage = replace(lineage, b"'optimizer_state_persisted': False}\\n            finally:",
-                      b"'optimizer_state_persisted': saved['optimizer_state_persisted']}\\n            finally:",
+    lineage = replace(lineage, b"'optimizer_state_persisted': False}\n            finally:",
+                      b"'optimizer_state_persisted': saved['optimizer_state_persisted']}\n            finally:",
                       'save state receipt')
-    lineage = replace(lineage, b"'optimizer_state_persisted': False,\\n                'selection'",
-                      b"'optimizer_state_persisted': hasattr(model,'_training_state'),\\n                'selection'",
+    lineage = replace(lineage, b"'optimizer_state_persisted': False,\n                'selection'",
+                      b"'optimizer_state_persisted': hasattr(model,'_training_state'),\n                'selection'",
                       'restore state receipt')
     result.update({
         'v13/world_jepa_training_state.py': state,
