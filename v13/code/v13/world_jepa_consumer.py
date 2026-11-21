@@ -359,7 +359,7 @@ def _ordered_replay_rows_and_ranges(rows, replay_start):
 
 
 
-def _parameter_snapshot(model)
+def _parameter_snapshot(model):
 
     return {
         "enc": {key: np.asarray(value).copy() for key, value in model.enc.items()},
