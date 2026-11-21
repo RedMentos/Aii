@@ -213,6 +213,143 @@ def _retention_cohort_losses(model, cohorts):
     return result
 
 
+def _source_disjoint_guard_split(rows, *, salt):
+    """Split a training fold into disjoint fit/guard source groups.
+
+    Guard rows are never used for gradients. They may select replay cohorts and
+    bounded update scales; the independent source-disjoint holdout remains the
+    final promotion gate. Source, source-digest and identical-content groups
+    are kept together so no duplicate crosses the fit/guard boundary.
+    """
+    if (type(rows) not in (list, tuple) or len(rows) < 8
+            or type(salt) is not str or not salt or len(salt) > 512):
+        return None
+
+    parent = {}
+
+    def find(key):
+        parent.setdefault(key, key)
+        if parent[key] != key:
+            parent[key] = find(parent[key])
+        return parent[key]
+
+    def union(left, right):
+        left_root, right_root = find(left), find(right)
+        if left_root == right_root:
+            return
+        if left_root < right_root:
+            parent[right_root] = left_root
+        else:
+            parent[left_root] = right_root
+
+    grouped_rows = []
+    for row in rows:
+        if type(row) is not dict:
+            return None
+        source_id = row.get("source_id")
+        source_sha = row.get("source_sha256")
+        action_id = row.get("action_id")
+        if (type(source_id) is not str or not source_id
+                or type(action_id) is not str or not action_id):
+            return None
+        try:
+            _sha(source_sha)
+            content_payload = json.dumps(
+                {"s": row["s"], "a": row["a"], "y": row["y"]},
+                sort_keys=True, separators=(",", ":"), allow_nan=False,
+            )
+        except (KeyError, TypeError, ValueError):
+            return None
+        content_sha = hashlib.sha256(content_payload.encode("utf-8")).hexdigest()
+        source_key = "source:" + source_sha
+        content_key = "content:" + content_sha
+        identity_key = "identity:" + hashlib.sha256(source_id.encode("utf-8")).hexdigest()
+        union(source_key, content_key)
+        union(source_key, identity_key)
+        session_id = row.get("session_id")
+        if type(session_id) is not str or not session_id:
+            session_id = "legacy:" + source_id
+        grouped_rows.append((row, source_key, session_id, source_sha, content_sha))
+
+    roots = sorted({find(item[1]) for item in grouped_rows})
+    if len(roots) < 4:
+        return None
+    ranked_roots = sorted(
+        roots,
+        key=lambda root: hashlib.sha256(
+            (salt + "\\0guard\\0" + root).encode("utf-8")
+        ).digest(),
+    )
+    guard_group_count = max(1, len(ranked_roots) // 4)
+    guard_group_count = min(guard_group_count, len(ranked_roots) - 2)
+    guard_roots = set(ranked_roots[:guard_group_count])
+
+    fit_rows, guard_rows = [], []
+    session_counts = {}
+    for row, source_key, session_id, _source_sha, _content_sha in grouped_rows:
+        is_guard = find(source_key) in guard_roots
+        (guard_rows if is_guard else fit_rows).append(row)
+        counts = session_counts.setdefault(session_id, {"fit": 0, "guard": 0})
+        counts["guard" if is_guard else "fit"] += 1
+
+    if len(fit_rows) < 2 or len(guard_rows) < 2:
+        return None
+    if any(counts["fit"] < 2 or counts["guard"] < 2
+           for counts in session_counts.values()):
+        return None
+
+    fit_source_ids = {row["source_id"] for row in fit_rows}
+    guard_source_ids = {row["source_id"] for row in guard_rows}
+    fit_source_hashes = {row["source_sha256"] for row in fit_rows}
+    guard_source_hashes = {row["source_sha256"] for row in guard_rows}
+    fit_content_hashes = {
+        hashlib.sha256(json.dumps(
+            {"s": row["s"], "a": row["a"], "y": row["y"]},
+            sort_keys=True, separators=(",", ":"), allow_nan=False,
+        ).encode("utf-8")).hexdigest()
+        for row in fit_rows
+    }
+    guard_content_hashes = {
+        hashlib.sha256(json.dumps(
+            {"s": row["s"], "a": row["a"], "y": row["y"]},
+            sort_keys=True, separators=(",", ":"), allow_nan=False,
+        ).encode("utf-8")).hexdigest()
+        for row in guard_rows
+    }
+    source_disjoint = not (
+        fit_source_ids & guard_source_ids
+        or fit_source_hashes & guard_source_hashes
+    )
+    content_disjoint = not (fit_content_hashes & guard_content_hashes)
+    if not source_disjoint or not content_disjoint:
+        return None
+
+    def digest_ids(items):
+        return hashlib.sha256(
+            "\\n".join(sorted(row["action_id"] for row in items)).encode("utf-8")
+        ).hexdigest()
+
+    manifest_payload = {
+        "salt_sha256": hashlib.sha256(salt.encode("utf-8")).hexdigest(),
+        "fit_action_ids_sha256": digest_ids(fit_rows),
+        "guard_action_ids_sha256": digest_ids(guard_rows),
+        "fit_source_group_count": len(roots) - len(guard_roots),
+        "guard_source_group_count": len(guard_roots),
+        "fit_rows": len(fit_rows),
+        "guard_rows": len(guard_rows),
+    }
+    manifest = {
+        **manifest_payload,
+        "session_count": len(session_counts),
+        "source_disjoint": source_disjoint,
+        "content_disjoint": content_disjoint,
+        "manifest_sha256": hashlib.sha256(json.dumps(
+            manifest_payload, sort_keys=True, separators=(",", ":"), allow_nan=False,
+        ).encode("utf-8")).hexdigest(),
+    }
+    return {"fit_rows": fit_rows, "guard_rows": guard_rows, "manifest": manifest}
+
+
 def _retention_cohort_gate(before, after, *, overflow=False):
     if overflow:
         return {
@@ -1009,9 +1146,58 @@ class WorldJEPAStoreConsumer:
                     old_holdout_cohort_overflow = old_holdout_cohorts is None
                     if not old_holdout_cohort_overflow:
                         old_holdout_cohort_before = _retention_cohort_losses(model, old_holdout_cohorts)
-            # Replay selection and constraints see only the prior source-disjoint
-            # training fold. The per-session audit holdout above is evaluation-only.
+            # A separate guard fold is carved from the already source-disjoint
+            # training folds. Guard rows never receive gradients and never enter
+            # replay; they select replay demand and update scale. The final
+            # source-disjoint holdout is used only once, for promotion.
             replay_salt = (active["checkpoint_sha256"] if active else "fresh") + ":" + _cohort_sha(new_train_rows)
+            new_fit_rows = list(new_train_rows)
+            new_guard_rows = []
+            old_fit_rows = list(old_train_rows)
+            old_guard_rows = []
+            new_guard_before = None
+            old_guard_cohorts = ()
+            old_guard_cohort_overflow = False
+            old_guard_cohort_before = {}
+            new_guard_manifest = None
+            old_guard_manifest = None
+            if active is not None:
+                new_guard_split = _source_disjoint_guard_split(
+                    new_train_rows, salt=replay_salt + ":new"
+                )
+                old_guard_split = _source_disjoint_guard_split(
+                    old_train_rows, salt=replay_salt + ":prior"
+                )
+                if new_guard_split is None or old_guard_split is None:
+                    persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                    if persisted != "PERSISTED":
+                        return {"status": persisted, "pending_rows": len(pending_by_id),
+                                "scan_cursor": state["scan_cursor"],
+                                "native_body_weights_changed": False}
+                    return {
+                        "status": "INSUFFICIENT_SOURCE_DISJOINT_GUARD_COHORT",
+                        "new_train_rows": len(new_train_rows),
+                        "prior_train_rows": len(old_train_rows),
+                        "new_guard_split_ready": new_guard_split is not None,
+                        "prior_guard_split_ready": old_guard_split is not None,
+                        "pending_rows": len(pending_by_id),
+                        "scan_cursor": next_cursor,
+                        "native_body_weights_changed": False,
+                    }
+                new_fit_rows = new_guard_split["fit_rows"]
+                new_guard_rows = new_guard_split["guard_rows"]
+                old_fit_rows = old_guard_split["fit_rows"]
+                old_guard_rows = old_guard_split["guard_rows"]
+                new_guard_manifest = new_guard_split["manifest"]
+                old_guard_manifest = old_guard_split["manifest"]
+                new_guard_before = model.prediction_loss(*_arrays(new_guard_rows))
+                old_guard_cohorts = _retention_cohorts(old_guard_rows)
+                old_guard_cohort_overflow = old_guard_cohorts is None
+                if not old_guard_cohort_overflow:
+                    old_guard_cohort_before = _retention_cohort_losses(
+                        model, old_guard_cohorts
+                    )
+
             conflict_probe = {
                 "scores": {}, "scored_session_count": 0,
                 "unscored_session_count": 0, "legacy_rows_excluded": 0, "probe_rows": 0,
@@ -1023,18 +1209,18 @@ class WorldJEPAStoreConsumer:
             }
             cohort_scores = None
             if replay_mode == "on_demand_conflict":
-                if active is not None and len(new_train_rows) >= 2 and len(old_train_rows) >= 2:
+                if active is not None and len(new_fit_rows) >= 2 and len(old_fit_rows) >= 2:
                     conflict_probe = _session_gradient_conflict_scores(
-                        model, new_train_rows, old_train_rows,
+                        model, new_fit_rows, old_fit_rows,
                         train_encoder=(encoder_mode == "full"), salt=replay_salt,
                     )
                 cohort_scores = conflict_probe["scores"]
             elif replay_mode == "on_demand_loss":
-                if active is not None and len(new_train_rows) >= 2 and len(old_train_rows) >= 2:
+                if active is not None and len(new_fit_rows) >= 2 and len(old_guard_rows) >= 2:
                     try:
                         probe_model = self._load_model(active)
                         loss_probe = _session_loss_demand_scores(
-                            probe_model, new_train_rows, old_train_rows,
+                            probe_model, new_fit_rows, old_guard_rows,
                             train_encoder=(encoder_mode == "full"),
                             salt=replay_salt, steps=steps, cancel_check=cancel_check,
                         )
@@ -1045,8 +1231,8 @@ class WorldJEPAStoreConsumer:
                                 "native_body_weights_changed": False}
                 cohort_scores = loss_probe["scores"]
             replay_selection = world_jepa_replay.select_replay_rows(
-                replay_mode, new_train_rows, old_train_rows,
-                budget=len(new_train_rows), salt=replay_salt,
+                replay_mode, new_fit_rows, old_fit_rows,
+                budget=len(new_fit_rows), salt=replay_salt,
                 cohort_scores=cohort_scores,
             )
             replay_rows = replay_selection["rows"]
@@ -1058,7 +1244,7 @@ class WorldJEPAStoreConsumer:
                             "native_body_weights_changed": False}
                 return {
                     "status": "ON_DEMAND_REPLAY_BUDGET_UNMATCHED",
-                    "replay_candidate_rows": len(old_train_rows),
+                    "replay_candidate_rows": len(old_fit_rows),
                     "replay_rows": len(replay_rows),
                     "replay_requested_budget_rows": replay_selection["requested_budget_rows"],
                     "replay_budget_rows": replay_selection["budget_rows"],
@@ -1071,7 +1257,7 @@ class WorldJEPAStoreConsumer:
             replay_cohort_ranges = None
             replay_constraint_session_keys = ()
             if replay_projection:
-                if active is None or len(new_train_rows) < 2 or len(replay_rows) < 2:
+                if active is None or len(new_fit_rows) < 2 or len(replay_rows) < 2:
                     persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
                     if persisted != "PERSISTED":
                         return {"status": persisted, "pending_rows": len(pending_by_id),
@@ -1081,7 +1267,7 @@ class WorldJEPAStoreConsumer:
                             "new_train_rows": len(new_train_rows), "replay_rows": len(replay_rows),
                             "pending_rows": len(pending_by_id), "scan_cursor": next_cursor,
                             "native_body_weights_changed": False}
-                replay_start = len(new_train_rows)
+                replay_start = len(new_fit_rows)
                 if replay_mode in {"session_contiguous", "on_demand_conflict", "on_demand_loss"}:
                     grouped = _ordered_replay_rows_and_ranges(replay_rows, replay_start)
                     if grouped is None:
@@ -1099,8 +1285,8 @@ class WorldJEPAStoreConsumer:
                         }
                     replay_rows, replay_cohort_ranges, replay_constraint_session_keys = grouped
             fit_rows = (
-                train_rows if replay_mode == "uniform" and not replay_projection
-                else list(new_train_rows) + list(replay_rows)
+                train_rows if active is None
+                else list(new_fit_rows) + list(replay_rows)
             )
             conflict_manifest = [
                 {
@@ -1118,6 +1304,36 @@ class WorldJEPAStoreConsumer:
             ]
             replay_metrics = {
                 "replay_mode": replay_mode,
+                "new_fit_rows": len(new_fit_rows),
+                "new_guard_rows": len(new_guard_rows),
+                "prior_fit_rows": len(old_fit_rows),
+                "prior_guard_rows": len(old_guard_rows),
+                "prior_train_rows_total": len(old_train_rows),
+                "guard_split_enabled": active is not None,
+                "guard_split_source_disjoint": (
+                    None if active is None else bool(
+                        new_guard_manifest["source_disjoint"]
+                        and old_guard_manifest["source_disjoint"]
+                    )
+                ),
+                "guard_split_content_disjoint": (
+                    None if active is None else bool(
+                        new_guard_manifest["content_disjoint"]
+                        and old_guard_manifest["content_disjoint"]
+                    )
+                ),
+                "new_guard_manifest_sha256": (
+                    None if new_guard_manifest is None
+                    else new_guard_manifest["manifest_sha256"]
+                ),
+                "prior_guard_manifest_sha256": (
+                    None if old_guard_manifest is None
+                    else old_guard_manifest["manifest_sha256"]
+                ),
+                "loss_demand_probe_fold": (
+                    "prior_training_guard" if replay_mode == "on_demand_loss" and active is not None
+                    else None
+                ),
                 "replay_rows": len(replay_rows),
                 "replay_budget_rows": replay_selection["budget_rows"],
                 "replay_requested_budget_rows": replay_selection["requested_budget_rows"],
@@ -1163,7 +1379,7 @@ class WorldJEPAStoreConsumer:
                             "native_body_weights_changed": False}
                 return {"status": "INSUFFICIENT_NEW_TRAIN_ROWS",
                         "new_train_rows": len(new_train_rows),
-                        "replay_candidate_rows": len(old_train_rows),
+                        "replay_candidate_rows": len(old_fit_rows),
                         **replay_metrics,
                         "pending_rows": len(pending_by_id),
                         "scan_cursor": next_cursor,
@@ -1216,26 +1432,6 @@ class WorldJEPAStoreConsumer:
                 candidate_gradient_projection["mode"] = replay_metrics["replay_projection_mode"]
                 candidate_gradient_projection["constraint_session_count"] = replay_metrics["replay_constraint_session_count"]
                 candidate_after = _parameter_snapshot(candidate)
-                candidate_holdout_after = candidate.prediction_loss(*holdout)
-                candidate_shuffled_loss = candidate.prediction_loss(
-                    holdout[0], np.roll(holdout[1], 1, axis=0), holdout[2]
-                )
-                candidate_zero_loss = candidate.prediction_loss(
-                    holdout[0], np.zeros_like(holdout[1]), holdout[2]
-                )
-                candidate_old_holdout_after = (
-                    candidate.prediction_loss(*old_holdout)
-                    if old_holdout_before is not None else None
-                )
-                candidate_old_holdout_cohort_after = (
-                    _retention_cohort_losses(candidate, old_holdout_cohorts)
-                    if old_holdout_cohorts is not None else {}
-                )
-                candidate_old_holdout_cohort_gate = _retention_cohort_gate(
-                    old_holdout_cohort_before,
-                    candidate_old_holdout_cohort_after,
-                    overflow=old_holdout_cohort_overflow,
-                )
                 candidate_fit_steps_after = int(getattr(candidate, "_fit_steps", 0))
                 candidate_encoder_delta = _group_delta(before, candidate_after, ("enc",))
                 candidate_predictor_delta = _group_delta(before, candidate_after, ("preds",))
@@ -1243,49 +1439,123 @@ class WorldJEPAStoreConsumer:
                     candidate_encoder_delta ** 2 + candidate_predictor_delta ** 2
                 )
                 candidate_ema_delta = _group_delta(before, candidate_after, ("tgt",))
-                candidate_retention_delta = (
-                    None if old_holdout_before is None
-                    else float(candidate_old_holdout_after - old_holdout_before)
-                )
-                candidate_holdout_improved = bool(candidate_holdout_after < holdout_before)
-                candidate_negative_controls_separated = bool(
-                    candidate_holdout_after < candidate_shuffled_loss
-                    and candidate_holdout_after < candidate_zero_loss
-                )
-                candidate_old_holdout_retained = bool(
-                    old_holdout_before is None
-                    or (candidate_old_holdout_after is not None
-                        and candidate_old_holdout_after <= old_holdout_before)
-                )
-                candidate_old_holdout_cohort_retained = bool(
-                    candidate_old_holdout_cohort_gate["accepted"]
-                )
-                candidate_retention_gate_accepted = bool(
-                    candidate_old_holdout_retained and candidate_old_holdout_cohort_retained
-                )
-                candidate_accepted = (
-                    candidate_holdout_improved
-                    and candidate_negative_controls_separated
-                    and candidate_retention_gate_accepted
-                )
+
+                if active is None:
+                    candidate_new_guard_after = None
+                    candidate_new_guard_shuffled_loss = None
+                    candidate_new_guard_zero_loss = None
+                    candidate_guard_new_improved = True
+                    candidate_guard_negative_controls_separated = True
+                    candidate_old_guard_cohort_after = {}
+                    candidate_old_guard_cohort_gate = {
+                        "accepted": True, "reason": "NO_PRIOR_GUARD_COHORT", "cohorts": {},
+                    }
+                    candidate_old_guard_cohort_retained = True
+                    candidate_guard_accepted = True
+                else:
+                    new_guard_arrays = _arrays(new_guard_rows)
+                    candidate_new_guard_after = candidate.prediction_loss(*new_guard_arrays)
+                    candidate_new_guard_shuffled_loss = candidate.prediction_loss(
+                        new_guard_arrays[0],
+                        np.roll(new_guard_arrays[1], 1, axis=0),
+                        new_guard_arrays[2],
+                    )
+                    candidate_new_guard_zero_loss = candidate.prediction_loss(
+                        new_guard_arrays[0],
+                        np.zeros_like(new_guard_arrays[1]),
+                        new_guard_arrays[2],
+                    )
+                    candidate_old_guard_cohort_after = (
+                        _retention_cohort_losses(candidate, old_guard_cohorts)
+                        if not old_guard_cohort_overflow else {}
+                    )
+                    candidate_old_guard_cohort_gate = _retention_cohort_gate(
+                        old_guard_cohort_before,
+                        candidate_old_guard_cohort_after,
+                        overflow=old_guard_cohort_overflow,
+                    )
+                    candidate_guard_new_improved = bool(
+                        candidate_new_guard_after < new_guard_before
+                    )
+                    candidate_guard_negative_controls_separated = bool(
+                        candidate_new_guard_after < candidate_new_guard_shuffled_loss
+                        and candidate_new_guard_after < candidate_new_guard_zero_loss
+                    )
+                    candidate_old_guard_cohort_retained = bool(
+                        candidate_old_guard_cohort_gate["accepted"]
+                    )
+                    candidate_guard_accepted = bool(
+                        candidate_guard_new_improved
+                        and candidate_guard_negative_controls_separated
+                        and candidate_old_guard_cohort_retained
+                    )
+
                 attempts.append({
                     "update_scale": float(update_scale),
-                    "holdout_loss_after": float(candidate_holdout_after),
-                    "old_holdout_loss_after": (
-                        None if candidate_old_holdout_after is None
-                        else float(candidate_old_holdout_after)
+                    "new_guard_loss_after": (
+                        None if candidate_new_guard_after is None
+                        else float(candidate_new_guard_after)
                     ),
-                    "holdout_improved": candidate_holdout_improved,
-                    "negative_controls_separated": candidate_negative_controls_separated,
-                    "old_holdout_retained": candidate_old_holdout_retained,
-                    "old_holdout_cohort_retained": candidate_old_holdout_cohort_retained,
-                    "retention_gate_accepted": candidate_retention_gate_accepted,
-                    "old_holdout_cohort_gate": candidate_old_holdout_cohort_gate,
-                    "accepted": bool(candidate_accepted),
+                    "new_guard_improved": bool(candidate_guard_new_improved),
+                    "new_guard_negative_controls_separated": bool(
+                        candidate_guard_negative_controls_separated
+                    ),
+                    "old_guard_cohort_retained": bool(candidate_old_guard_cohort_retained),
+                    "old_guard_cohort_gate": candidate_old_guard_cohort_gate,
+                    "guard_accepted": bool(candidate_guard_accepted),
                 })
-                if candidate_accepted:
+                if candidate_guard_accepted:
                     selected_scale = float(update_scale)
                     break
+
+            # Final holdouts are evaluated once after guard-based scale selection.
+            # They never choose a retry scale and are never used for gradients.
+            candidate_holdout_after = candidate.prediction_loss(*holdout)
+            candidate_shuffled_loss = candidate.prediction_loss(
+                holdout[0], np.roll(holdout[1], 1, axis=0), holdout[2]
+            )
+            candidate_zero_loss = candidate.prediction_loss(
+                holdout[0], np.zeros_like(holdout[1]), holdout[2]
+            )
+            candidate_old_holdout_after = (
+                candidate.prediction_loss(*old_holdout)
+                if old_holdout_before is not None else None
+            )
+            candidate_old_holdout_cohort_after = (
+                _retention_cohort_losses(candidate, old_holdout_cohorts)
+                if old_holdout_cohorts is not None else {}
+            )
+            candidate_old_holdout_cohort_gate = _retention_cohort_gate(
+                old_holdout_cohort_before,
+                candidate_old_holdout_cohort_after,
+                overflow=old_holdout_cohort_overflow,
+            )
+            candidate_retention_delta = (
+                None if old_holdout_before is None
+                else float(candidate_old_holdout_after - old_holdout_before)
+            )
+            candidate_holdout_improved = bool(candidate_holdout_after < holdout_before)
+            candidate_negative_controls_separated = bool(
+                candidate_holdout_after < candidate_shuffled_loss
+                and candidate_holdout_after < candidate_zero_loss
+            )
+            candidate_old_holdout_retained = bool(
+                old_holdout_before is None
+                or (candidate_old_holdout_after is not None
+                    and candidate_old_holdout_after <= old_holdout_before)
+            )
+            candidate_old_holdout_cohort_retained = bool(
+                candidate_old_holdout_cohort_gate["accepted"]
+            )
+            candidate_retention_gate_accepted = bool(
+                candidate_old_holdout_retained and candidate_old_holdout_cohort_retained
+            )
+            candidate_accepted = bool(
+                selected_scale is not None
+                and candidate_holdout_improved
+                and candidate_negative_controls_separated
+                and candidate_retention_gate_accepted
+            )
 
             model = candidate
             after = candidate_after
@@ -1307,7 +1577,7 @@ class WorldJEPAStoreConsumer:
             old_holdout_cohort_retained = candidate_old_holdout_cohort_retained
             retention_gate_accepted = candidate_retention_gate_accepted
             old_holdout_cohort_gate = candidate_old_holdout_cohort_gate
-            utility_gate_accepted = selected_scale is not None
+            utility_gate_accepted = bool(selected_scale is not None and candidate_accepted)
             replay_metrics["optimizer_steps_added"] = fit_steps_after - fit_steps_before
             replay_metrics["backtracking_attempts"] = len(attempts)
             replay_metrics["backtracking_scales"] = [
@@ -1315,6 +1585,19 @@ class WorldJEPAStoreConsumer:
             ]
             replay_metrics["selected_update_scale"] = selected_scale
             replay_metrics["backtracking_trace"] = attempts
+            replay_metrics["backtracking_selection_fold"] = (
+                "source_disjoint_training_guard" if active is not None else "single_initial_step"
+            )
+            replay_metrics["holdout_used_for_backtracking"] = False
+            replay_metrics["guard_gate_accepted"] = bool(candidate_guard_accepted)
+            replay_metrics["new_guard_loss_before"] = (
+                None if new_guard_before is None else float(new_guard_before)
+            )
+            replay_metrics["new_guard_loss_after"] = (
+                None if candidate_new_guard_after is None
+                else float(candidate_new_guard_after)
+            )
+            replay_metrics["old_guard_cohort_gate"] = candidate_old_guard_cohort_gate
             if not utility_gate_accepted:
                 persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
                 if persisted != "PERSISTED":
@@ -1349,11 +1632,11 @@ class WorldJEPAStoreConsumer:
                     "fit_steps_before": fit_steps_before,
                     "fit_steps_after": fit_steps_after,
                     "new_train_rows": len(new_train_rows),
-                    "replay_candidate_rows": len(old_train_rows),
+                    "replay_candidate_rows": len(old_fit_rows),
                     **replay_metrics,
                     "fit_rows": len(fit_rows),
                     "fit_action_ids": [row["action_id"] for row in fit_rows],
-                    "new_train_action_ids": [row["action_id"] for row in new_train_rows],
+                    "new_train_action_ids": [row["action_id"] for row in new_fit_rows],
                     "pending_rows": len(pending_by_id),
                     "scan_cursor": next_cursor,
                     "native_body_weights_changed": False,
@@ -1388,13 +1671,13 @@ class WorldJEPAStoreConsumer:
                 "rejected_receipts": rejected, "censored_skipped": censored_skipped,
                 "scanned_rows": scanned, "has_more": has_more,
                 "scan_cursor_before": state["scan_cursor"], "scan_cursor_after": next_cursor,
-                "replay_candidate_rows": len(old_train_rows),
+                "replay_candidate_rows": len(old_fit_rows),
                 **replay_metrics,
                 "new_train_rows": len(new_train_rows),
                 "new_holdout_rows": len(set(new_ids) & set(holdout_ids)),
                 "fit_rows": len(fit_rows),
                 "fit_action_ids": [row["action_id"] for row in fit_rows],
-                "new_train_action_ids": [row["action_id"] for row in new_train_rows],
+                "new_train_action_ids": [row["action_id"] for row in new_fit_rows],
                 "train_rows": len(train_ids), "holdout_rows": len(holdout_ids),
                 "train_source_count": split["manifest"]["train_source_count"],
                 "holdout_source_count": split["manifest"]["holdout_source_count"],
