@@ -91,3 +91,24 @@ Two new real-SQLite Store regressions cover (1) 64 rows from one identical sourc
 - Exact PR workflow run 44857040946 passed compile and the full V14 learning suite on both versions: Python 3.13 — 61 passed in 10.00s; Python 3.14 — 61 passed in 14.53s.
 - The existing no-replay liveness regression now also creates a pending one-row cohort after a successful checkpoint, rolls back to the prior checkpoint, verifies that pending rows are cleared and the scan cursor rewinds, then re-reads and learns the previously pending ActionOutcome. This keeps rollback/replay semantics covered, not only the ordinary successful-checkpoint rollback.
 - GitHub Actions/Linux only. Exact local repository checkout remains blocked by DNS; no Runtime wiring, native body-weight update or Redmi proof.
+
+
+## Primary-source research review — 2026-11-21
+
+### R-010 follow-up — JEPA-TTT (full paper + official project page)
+
+- Sources: [arXiv:2610.00722](https://arxiv.org/abs/2610.00722) and [official project page](https://jepa-ttt.github.io/). The full arXiv text and project-page method/ablation/limitations were checked, beyond the abstract.
+- Method: self-supervised action-conditioned latent prediction from executed action and next observation; dense windows at every valid temporal offset; predictor parameters, optimizer state and replay buffer persist across episodes. The visual encoder and offline reward head are held fixed.
+- Reported scope: eight dynamics shifts in four continuous-control environments, one fixed shift per deployment for 500 episodes; average five-block autoregressive latent MSE reduction 83%, best held-out planning score +153%, AUC +113%. Dense replay adds a small aggregate gain over a dense stream (best score 0.678 vs 0.671; AUC 0.571 vs 0.548); broader temporal coverage contributes more than replay alone.
+- Critical limitation: the paper explicitly does not test sequences of shifts, returning to previous dynamics, retention, transfer or catastrophic forgetting. It is therefore a useful predictor-only experimental baseline, not a justification for freezing V14 encoders/targets permanently.
+- No code repository or code license was linked from the inspected arXiv paper/project page. No code or weights were downloaded or adopted.
+
+### R-011 follow-up — ER-JEPA (full method and experiment sections)
+
+- Source: [arXiv:2609.36952](https://arxiv.org/abs/2609.36952). The method, replay policies and matched-compute/retention controls were inspected.
+- Method: replay stores source-target token pairs and reapplies both next-token and representation-alignment supervision; content, uniform and hard selection share the same replay path. The replay path is removed at inference.
+- Reported scope: Llama-3.2-1B-Instruct on five language tasks. On SYNTH at 240.31 PFLOPs, content replay reaches 83.65±1.48% vs 68.75±4.92% for LLM-JEPA; uniform historical replay reaches 85.04±0.54%, 3.80 percentage points above the current-batch replay-loss control, across five seeds.
+- Limitation: this is a language-model fine-tuning study with paired token views and large training compute, not a small Android online learner, not source-bound T8 action learning and not proof of B1/B2 cross-organ coupling. No code repository or code license was linked from the inspected arXiv page. No code/weights adopted.
+- V14 test implication: retain the existing uniform-vs-none numeric T8 ablation, then compare content/error-prioritized replay only with fixed update/byte budgets and a separate source-disjoint audit holdout. A JEPA-TTT dense temporal-window comparison is only valid once V14 has a genuinely time-ordered multi-step action trajectory; do not synthesize trajectory continuity from unrelated user turns.
+
+These papers reinforce persistent replay and independent retention testing, but neither removes the need for V14's source provenance, rollback, active encoder/EMA comparison, real runtime consumer and Android evidence.
