@@ -13,6 +13,7 @@ FIELDS={
  "WorldTransition":{"action_id":str,"source_ref":dict,"outcome_source_ref":dict,"action_role":str,"corollary_packet_id":str,"teacher_truth_authority":bool},
  "StudentEvaluation":{"percept_packet_id":str,"source_ref":dict,"student_route":str,"teacher_route":str,"agreement":bool,"routing_authority":int},
  "LatentTapPacket":{"role":str,"source_ref":dict,"tap_id":str,"model_revision":str,"token_ids":list,"feature_path":str,"feature_sha256":str,"shape":list},
+ "LatentReceiverPacket":{"sender_role":str,"receiver_role":str,"source_ref":dict,"sender_tap_packet_id":str,"sender_tap_id":str,"sender_model_revision":str,"receiver_model_revision":str,"receiver_model_sha256":str,"runner_revision":str,"llama_version":str,"input_rows":int,"input_dim":int,"receiver_input_dim":int,"output_dim":int,"input_sha256":str,"decode_status":int,"output_norm":(int,float),"input_effect_rms":(int,float),"zero_control_cosine":(int,float,type(None)),"shuffle_control_cosine":(int,float,type(None)),"repeat_cosine":(int,float,type(None)),"native_input_consumed":bool,"input_effect_detected":bool,"production_route":bool,"semantic_use_proven":bool,"training_authority":int,"native_receiver_authority":int,"status":str},
  "ExecutiveDecision":{"component":str,"context_ref":dict,"baseline":str,"action":str,"learned":bool,"context_revision":str,"trajectory_offer_ids":list},
  "ActionPrediction":{"action_type":str,"profile_id":str,"prediction":dict},
  "PredictionOutcome":{"action_id":str,"observation":dict},
@@ -112,6 +113,40 @@ def validate(kind,obj):
                 or not 0<=obj["raw_output_bytes"]<=256):
             raise ValueError("BodySourceIdSelection authority/span boundary")
 
+    if kind=="LatentReceiverPacket":
+        if obj["sender_role"] not in {"B1_DETAIL","B2_GIST"} or obj["receiver_role"] not in {"B1_DETAIL","B2_GIST","C3_LANGUAGE"} or obj["sender_role"]==obj["receiver_role"]:
+            raise ValueError("LatentReceiverPacket role binding")
+        if obj["runner_revision"]!="b29c606e28a01b1bc8c1351026a0fa6e616bf6c4":
+            raise ValueError("LatentReceiverPacket runner revision is not pinned")
+        if not isinstance(obj["source_ref"].get("source_id"),str) or obj["source_ref"] not in obj["provenance"]:
+            raise ValueError("LatentReceiverPacket source provenance")
+        for name in ("receiver_model_sha256","input_sha256"):
+            value=obj[name]
+            if len(value)!=64 or any(ch not in "0123456789abcdef" for ch in value.lower()):
+                raise ValueError("LatentReceiverPacket "+name)
+        if not 1<=obj["input_rows"]<=64 or not 1<=obj["input_dim"]<=8192 or obj["input_rows"]*obj["input_dim"]>262144:
+            raise ValueError("LatentReceiverPacket input geometry")
+        if not 1<=obj["receiver_input_dim"]<=8192 or not 1<=obj["output_dim"]<=8192:
+            raise ValueError("LatentReceiverPacket receiver geometry")
+        if obj["output_norm"]<0 or obj["input_effect_rms"]<0:
+            raise ValueError("LatentReceiverPacket metrics")
+        for name in ("zero_control_cosine","shuffle_control_cosine","repeat_cosine"):
+            value=obj[name]
+            if value is not None and not -1.00001<=value<=1.00001:
+                raise ValueError("LatentReceiverPacket "+name)
+        if obj["production_route"] or obj["semantic_use_proven"] or obj["training_authority"]!=0 or obj["native_receiver_authority"]!=0:
+            raise ValueError("LatentReceiverPacket probe cannot grant production or learning authority")
+        if obj["status"]=="DIMENSION_MISMATCH":
+            if obj["receiver_input_dim"]==obj["input_dim"] or obj["decode_status"]!=-100 or obj["native_input_consumed"] or obj["input_effect_detected"]:
+                raise ValueError("LatentReceiverPacket dimension mismatch receipt")
+        elif obj["status"]=="NATIVE_INPUT_EFFECT":
+            if obj["receiver_input_dim"]!=obj["input_dim"] or obj["decode_status"]!=0 or not obj["native_input_consumed"] or not obj["input_effect_detected"] or obj["input_effect_rms"]<=1e-7:
+                raise ValueError("LatentReceiverPacket input-effect receipt")
+        elif obj["status"]=="NATIVE_DECODE_NO_EFFECT":
+            if obj["receiver_input_dim"]!=obj["input_dim"] or obj["decode_status"]!=0 or not obj["native_input_consumed"] or obj["input_effect_detected"] or obj["input_effect_rms"]>1e-7:
+                raise ValueError("LatentReceiverPacket no-effect receipt")
+        else:
+            raise ValueError("LatentReceiverPacket status")
     if kind=="MessagePacket" and obj["channel"] not in {"NO_MESSAGE","SOURCE_EXACT","CONTROL","SYMBOLIC"}:raise ValueError("B3 latent authority=0")
     if kind=="EffortDecision" and (obj["wake"] not in {"none","detail","gist","both"} or not 0<=obj["effort"]<=1):raise ValueError("Effort wake/range")
     if kind=="ModulatorPacket":
