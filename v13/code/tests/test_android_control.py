@@ -136,6 +136,14 @@ def test_audit_database_rejects_unapproved_symlinked_ancestor(tmp_path):
     assert not (nested / "audit.sqlite").exists()
 
 
+def test_android_platform_alias_direction_matches_aosp():
+    import v13.android_control as android_control
+
+    assert android_control._ANDROID_PLATFORM_SYMLINKS == (
+        (Path("/data/user/0"), Path("/data/data")),
+    )
+
+
 def test_audit_database_allows_only_configured_platform_symlink_alias(tmp_path, monkeypatch):
     import v13.android_control as android_control
 
