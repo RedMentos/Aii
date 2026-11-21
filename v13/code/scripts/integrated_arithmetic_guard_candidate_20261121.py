@@ -12,7 +12,6 @@ from pathlib import Path
 SOURCE_PINS = {
     "v13/arithmetic_reflex.py": "b721b769157b3df3936752419c5b93bed78bc347",
     "v13/runtime.py": "30360f40eb784be5ea975ee85e94a57f0b154164",
-    "v13/world.py": "03c87501862eb773f80b3704f1e2b8f81b5cfc75",
 }
 
 
@@ -39,14 +38,12 @@ def apply_staged_arithmetic(code_dir: Path, staged_root: Path) -> dict[str, byte
 
     arithmetic_path = staged_root / "v13/arithmetic_reflex.py"
     runtime_path = staged_root / "v13/runtime.py"
-    world_path = staged_root / "v13/world.py"
-    for path in (arithmetic_path, runtime_path, world_path):
+    for path in (arithmetic_path, runtime_path):
         if path.is_symlink() or not path.is_file():
             raise ValueError("staged arithmetic consumer missing or unsafe: " + str(path))
 
     arithmetic = arithmetic_path.read_bytes()
     runtime = runtime_path.read_bytes()
-    world = world_path.read_bytes()
 
     # Require the upstream pinned candidate to have already composed the typed
     # LOCAL_EXACT_ARITHMETIC action; this overlay is not a replacement engine.
@@ -99,19 +96,10 @@ def apply_staged_arithmetic(code_dir: Path, staged_root: Path) -> dict[str, byte
         b"meta['arithmetic_reflex']={'source_ref':e['source_ref'],'result':arithmetic_answer,'model_generated':False,'bounded':True}",
         "source-bound arithmetic result receipt",
     )
-    world = _replace(
-        world,
-        b"data={'role':role,'model_revision':r.models.revision(role) if role!='SOURCE_COPY' else None,",
-        b"data={'role':role,'model_revision':r.models.revision(role) if role not in {'SOURCE_COPY','LOCAL_EXACT_ARITHMETIC'} else None,",
-        "non-model arithmetic world profile",
-    )
-
     for name, raw in (("v13/arithmetic_reflex.py", arithmetic),
-                      ("v13/runtime.py", runtime),
-                      ("v13/world.py", world)):
+                      ("v13/runtime.py", runtime)):
         compile(raw, name, "exec")
     return {
         "v13/arithmetic_reflex.py": arithmetic,
         "v13/runtime.py": runtime,
-        "v13/world.py": world,
     }
