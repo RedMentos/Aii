@@ -268,3 +268,15 @@ The earlier 01:05 checkpoint's "integrated-regression push still IN_PROGRESS" is
 - Exact PR-head model-lab CI run 44853309109 was IN_PROGRESS at last readback; do not promote it to PASS until a completed exact-head result is read back.
 - No GGUF inference, download, model swap, updater action or Redmi operation occurred. Redmi remains REDMI_UNVERIFIED; NOT_RELEASED. The 230M candidate remains diagnostic-only due to the historical #1904 2+2 failure.
 - Next: wait for exact-head CI and independent Core/QA review. If the candidate is already present on the authorized Redmi, compare both orders while V13 is idle; otherwise request separate consent before any isolated download. No user action is currently required.
+
+
+### Research & Perception — exact executable-identity regression result, 21 November 2026
+
+- The first rerun exposed a test-message mismatch, not a bypass: the implementation rejected the changed loaded executable, while one assertion expected a more specific error phrase. The assertion was corrected; the fail-closed executable check was not weakened.
+- Exact code/test SHA `f5c5265a89258a6fd1ab5d25c20c733d21bb2ab4` passed GitHub model-lab run 44853451281 on Linux/Python 3.13.18: `py_compile`, candidate-manifest JSON validation and 16/16 tests.
+- LOCAL_LINUX isolated helper-level checks: `py_compile` PASS, 5/5 identity tests PASS. Full repository checkout remains blocked by DNS; this is not a local full-suite or native inference result.
+- LlamaRunner's configured executable and actual loaded executable are now both resolved against the verified installed binary; the baseline and candidate must use the same digest. A mismatched `V13_LLAMA_SERVER` override fails before generation.
+- No GGUF inference, download, model swap, updater action or phone operation occurred. Redmi remains REDMI_UNVERIFIED; PR #2142 is not a release.
+- Remaining A5 gap: current RAW EAR measures RMS/peak/ZCR only; pitch, voicing, speech/non-speech and prosody are explicitly unmeasured. The staged Core overlay rechecks consent at downstream consumers but is still caller-supplied synthetic PCM, not microphone or full voice I/O.
+- Next developer action: independent Core/QA review of #2142; then keep the C3 candidate diagnostic-only until a separately authorized Redmi comparison. In parallel, develop a lightweight timed prosody/voicing feature layer and test ARM cost before wiring it into the normal audio consumer.
+- User action: none.
