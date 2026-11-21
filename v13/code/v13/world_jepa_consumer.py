@@ -203,10 +203,25 @@ def _retention_cohorts(rows):
     )
 
 
-def _retention_cohort_losses(model, cohorts):
+def _target_snapshot_sha256(target_snapshot):
+    if target_snapshot is None:
+        return None
+    digest = hashlib.sha256()
+    for key in sorted(target_snapshot):
+        value = np.ascontiguousarray(target_snapshot[key], dtype=np.float64)
+        digest.update(key.encode("utf-8") + b"\0")
+        digest.update(json.dumps(list(value.shape), separators=(",", ":")).encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(value.tobytes())
+    return digest.hexdigest()
+
+
+def _retention_cohort_losses(model, cohorts, *, target_snapshot=None):
     result = {}
     for key, rows in cohorts or ():
-        loss = float(model.prediction_loss(*_arrays(list(rows))))
+        loss = float(model.prediction_loss(
+            *_arrays(list(rows)), target_snapshot=target_snapshot
+        ))
         if not math.isfinite(loss) or loss < 0.0:
             raise ValueError("invalid per-session WorldJEPA retention loss")
         result[key] = {"rows": len(rows), "loss": loss}
@@ -484,6 +499,9 @@ def _session_loss_demand_scores(model, new_rows, old_rows, *, train_encoder, sal
     No adaptation-specialist reference exists here, so no adaptation score is
     invented. The probe model is discarded and never persisted.
     """
+    target_anchor = {
+        key: np.asarray(value).copy() for key, value in model.tgt.items()
+    }
     grouped = {}
     for row in old_rows:
         session_id = row.get("session_id")
@@ -512,7 +530,9 @@ def _session_loss_demand_scores(model, new_rows, old_rows, *, train_encoder, sal
         )[:MAX_CONFLICT_SAMPLE_ROWS]
         if len(sampled) < 2:
             continue
-        loss_before = float(model.prediction_loss(*_arrays(sampled)))
+        loss_before = float(model.prediction_loss(
+            *_arrays(sampled), target_snapshot=target_anchor
+        ))
         if not math.isfinite(loss_before) or loss_before < 0.0:
             raise ValueError("invalid pre-probe WorldJEPA cohort loss")
         samples[session_id] = sampled
@@ -531,7 +551,9 @@ def _session_loss_demand_scores(model, new_rows, old_rows, *, train_encoder, sal
 
     scores = {}
     for session_id, sampled in samples.items():
-        loss_after = float(model.prediction_loss(*_arrays(sampled)))
+        loss_after = float(model.prediction_loss(
+            *_arrays(sampled), target_snapshot=target_anchor
+        ))
         if not math.isfinite(loss_after) or loss_after < 0.0:
             raise ValueError("invalid post-probe WorldJEPA cohort loss")
         loss_before = before_losses[session_id]
@@ -1137,6 +1159,10 @@ class WorldJEPAStoreConsumer:
                 checkpoint_before = None
             fit_steps_before = int(getattr(model, "_fit_steps", 0))
             before = _parameter_snapshot(model)
+            old_target_snapshot = (
+                {key: np.asarray(value).copy() for key, value in model.tgt.items()}
+                if active is not None else None
+            )
             holdout_before = model.prediction_loss(*holdout)
             old_holdout_before = old_holdout_after = None
             old_holdout_cohorts = ()
@@ -1147,11 +1173,15 @@ class WorldJEPAStoreConsumer:
                 old_holdout_rows = [row for row in active["experience_rows"] if row["action_id"] in old_holdout_ids]
                 if len(old_holdout_rows) >= 2:
                     old_holdout = _arrays(old_holdout_rows)
-                    old_holdout_before = model.prediction_loss(*old_holdout)
+                    old_holdout_before = model.prediction_loss(
+                        *old_holdout, target_snapshot=old_target_snapshot
+                    )
                     old_holdout_cohorts = _retention_cohorts(old_holdout_rows)
                     old_holdout_cohort_overflow = old_holdout_cohorts is None
                     if not old_holdout_cohort_overflow:
-                        old_holdout_cohort_before = _retention_cohort_losses(model, old_holdout_cohorts)
+                        old_holdout_cohort_before = _retention_cohort_losses(
+                            model, old_holdout_cohorts, target_snapshot=old_target_snapshot
+                        )
             # Split only the prior training fold into replay-fit and guard rows.
             # The guard is never used for gradients or replay. It selects replay
             # demand and bounded update scales; the independent final holdout is
@@ -1190,7 +1220,7 @@ class WorldJEPAStoreConsumer:
                 old_guard_cohort_overflow = old_guard_cohorts is None
                 if not old_guard_cohort_overflow:
                     old_guard_cohort_before = _retention_cohort_losses(
-                        model, old_guard_cohorts
+                        model, old_guard_cohorts, target_snapshot=old_target_snapshot
                     )
 
             conflict_probe = {
@@ -1433,7 +1463,9 @@ class WorldJEPAStoreConsumer:
                     candidate_guard_accepted = True
                 else:
                     candidate_old_guard_cohort_after = (
-                        _retention_cohort_losses(candidate, old_guard_cohorts)
+                        _retention_cohort_losses(
+                            candidate, old_guard_cohorts, target_snapshot=old_target_snapshot
+                        )
                         if not old_guard_cohort_overflow else {}
                     )
                     candidate_old_guard_cohort_gate = _retention_cohort_gate(
@@ -1466,11 +1498,15 @@ class WorldJEPAStoreConsumer:
                 holdout[0], np.zeros_like(holdout[1]), holdout[2]
             )
             candidate_old_holdout_after = (
-                candidate.prediction_loss(*old_holdout)
+                candidate.prediction_loss(
+                    *old_holdout, target_snapshot=old_target_snapshot
+                )
                 if old_holdout_before is not None else None
             )
             candidate_old_holdout_cohort_after = (
-                _retention_cohort_losses(candidate, old_holdout_cohorts)
+                _retention_cohort_losses(
+                    candidate, old_holdout_cohorts, target_snapshot=old_target_snapshot
+                )
                 if old_holdout_cohorts is not None else {}
             )
             candidate_old_holdout_cohort_gate = _retention_cohort_gate(
@@ -1531,6 +1567,12 @@ class WorldJEPAStoreConsumer:
             retention_gate_accepted = candidate_retention_gate_accepted
             old_holdout_cohort_gate = candidate_old_holdout_cohort_gate
             utility_gate_accepted = bool(selected_scale is not None and candidate_accepted)
+            replay_metrics["old_retention_target_reference"] = (
+                "PRE_UPDATE_EMA_SNAPSHOT" if old_target_snapshot is not None else "NONE"
+            )
+            replay_metrics["old_retention_target_sha256"] = _target_snapshot_sha256(
+                old_target_snapshot
+            )
             replay_metrics["optimizer_steps_added"] = fit_steps_after - fit_steps_before
             replay_metrics["backtracking_attempts"] = len(attempts)
             replay_metrics["backtracking_scales"] = [
