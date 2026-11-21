@@ -97,11 +97,12 @@ def authorize(spec,args,origin,enabled,age_ok,confirmed=False,hard=None):
     steps.append(['capability',enabled])
     if not enabled:return 'DENIED','TOOL_NOT_ENABLED_BY_USER',steps
     need=spec.risk in CONFIRM_ALWAYS or not spec.reversible;steps.append(['risk',spec.risk+('' if spec.reversible else '+IRREVERSIBLE')])
+    # Per-call confirmation is a separate gate; it can never grant V13's Age right.
+    steps.append(['c5',age_ok])
+    if not age_ok:return 'DENIED','AGE_RIGHT:'+spec.right,steps
     if need and not confirmed:steps.append(['confirmation',False]);return 'PROPOSED','NEEDS_PER_CALL_APPROVAL',steps
     if hard is not None and hard.get('announce') and not confirmed:steps.append(['announce',False]);return 'PROPOSED','ANNOUNCE_BEFORE_ACTION',steps
     steps.append(['confirmation',True if need else 'not_required'])
-    steps.append(['c5',age_ok or confirmed])
-    if not (age_ok or confirmed):return 'DENIED','AGE_RIGHT:'+spec.right,steps
     return 'APPROVED','USER_APPROVED' if confirmed else 'POLICY',steps
 
 # -- IH-H14 transaction -----------------------------------------------------------------------------------------
