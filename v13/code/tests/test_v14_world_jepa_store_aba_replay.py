@@ -336,6 +336,57 @@ def test_on_demand_loss_replay_selects_only_positive_forgetting_demand():
         raise AssertionError("negative loss-demand score accepted")
 
 
+def test_source_disjoint_guard_split_is_deterministic_and_keeps_duplicates_together():
+    rows = []
+    for session in ("guard-alpha", "guard-beta"):
+        for index in range(40):
+            rows.append({
+                "action_id": f"{session}-{index:03d}",
+                "source_id": f"source-{session}-{index:03d}",
+                "source_sha256": hashlib.sha256(
+                    f"guard-source-{session}-{index}".encode()
+                ).hexdigest(),
+                "session_id": session,
+                "s": [float(index % 7), float(index % 5), 0.25, -0.5],
+                "a": world_model.ACTIONS[index % len(world_model.ACTIONS)],
+                "y": [float(index % 11) / 10.0, float(index % 3), float(index % 13) / 8.0],
+            })
+    # Different source IDs with identical transition content must stay in one
+    # fold rather than leak the same example between fit and guard.
+    rows[1]["s"] = list(rows[0]["s"])
+    rows[1]["a"] = rows[0]["a"]
+    rows[1]["y"] = list(rows[0]["y"])
+
+    first = world_jepa_consumer._source_disjoint_guard_split(rows, salt="guard-seed")
+    second = world_jepa_consumer._source_disjoint_guard_split(rows, salt="guard-seed")
+    assert first is not None and second is not None
+    assert first["manifest"]["manifest_sha256"] == second["manifest"]["manifest_sha256"]
+    assert first["manifest"]["source_disjoint"] is True
+    assert first["manifest"]["content_disjoint"] is True
+    assert len(first["fit_rows"]) + len(first["guard_rows"]) == len(rows)
+
+    fit_ids = {row["action_id"] for row in first["fit_rows"]}
+    guard_ids = {row["action_id"] for row in first["guard_rows"]}
+    fit_sources = {row["source_id"] for row in first["fit_rows"]}
+    guard_sources = {row["source_id"] for row in first["guard_rows"]}
+    fit_source_hashes = {row["source_sha256"] for row in first["fit_rows"]}
+    guard_source_hashes = {row["source_sha256"] for row in first["guard_rows"]}
+    content = lambda row: hashlib.sha256(json.dumps(
+        {"s": row["s"], "a": row["a"], "y": row["y"]},
+        sort_keys=True, separators=(",", ":"), allow_nan=False,
+    ).encode()).hexdigest()
+    assert fit_ids.isdisjoint(guard_ids)
+    assert fit_sources.isdisjoint(guard_sources)
+    assert fit_source_hashes.isdisjoint(guard_source_hashes)
+    assert {content(row) for row in first["fit_rows"]}.isdisjoint(
+        {content(row) for row in first["guard_rows"]}
+    )
+    for session in ("guard-alpha", "guard-beta"):
+        assert sum(row["session_id"] == session for row in first["fit_rows"]) >= 2
+        assert sum(row["session_id"] == session for row in first["guard_rows"]) >= 2
+    assert world_jepa_consumer._source_disjoint_guard_split(rows[:3], salt="small") is None
+
+
 def _set_permissions(store, *, steps, replay_mode, encoder_mode="full",
                      replay_projection=False, learning_enabled=True, optimizer_permission=True):
     payload = {
@@ -521,6 +572,18 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         assert metrics["train_holdout_source_sha256_disjoint"] is True
     assert metrics.get("replay_mode") == replay_mode
     assert metrics.get("encoder_mode") == encoder_mode
+    if before is not None:
+        assert metrics.get("guard_split_source_disjoint") is True
+        assert metrics.get("guard_split_content_disjoint") is True
+        assert metrics.get("backtracking_selection_fold") == "source_disjoint_training_guard"
+        assert metrics.get("holdout_used_for_backtracking") is False
+        trace = metrics.get("backtracking_trace")
+        assert type(trace) is list and trace
+        assert all("new_guard_loss_after" in item for item in trace)
+        assert all(
+            "holdout_loss_after" not in item and "old_holdout_loss_after" not in item
+            for item in trace
+        )
     parameter_delta = float(metrics.get("parameter_delta_norm", 0.0))
     encoder_delta = float(metrics.get("encoder_parameter_delta_norm", 0.0))
     predictor_delta = float(metrics.get("predictor_parameter_delta_norm", 0.0))
@@ -629,6 +692,13 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         "replay_array_bytes": metrics.get("replay_array_bytes"),
         "optimizer_steps_added": metrics.get("optimizer_steps_added"),
         "holdout_improved": metrics.get("holdout_improved"),
+        "utility_gate_accepted": result.get("utility_gate_accepted"),
+        "guard_gate_accepted": metrics.get("guard_gate_accepted"),
+        "new_guard_loss_before": metrics.get("new_guard_loss_before"),
+        "new_guard_loss_after": metrics.get("new_guard_loss_after"),
+        "old_guard_cohort_gate": metrics.get("old_guard_cohort_gate"),
+        "backtracking_selection_fold": metrics.get("backtracking_selection_fold"),
+        "holdout_used_for_backtracking": metrics.get("holdout_used_for_backtracking"),
         "holdout_loss_before": metrics.get("holdout_loss_before"),
         "holdout_loss_after": metrics.get("holdout_loss_after"),
         "holdout_loss_delta": metrics.get("holdout_loss_delta"),
@@ -1008,6 +1078,9 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         "old_holdout_cohort_retained", "old_holdout_retention_delta",
         "old_holdout_cohort_gate", "checkpoint_before", "checkpoint_after",
         "update_scale", "new_holdout_improved", "gradient_projection",
+        "guard_gate_accepted", "new_guard_loss_before", "new_guard_loss_after",
+        "old_guard_cohort_gate", "backtracking_selection_fold",
+        "holdout_used_for_backtracking",
         "replay_conflict_scores_sha256",
     )
     print("AGGREGATE_AGEM_CONTROL=" + json.dumps([
@@ -1049,11 +1122,13 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             "projection": item["replay_projection"],
             "B": {key: item["B"].get(key) for key in diagnostic_fields + (
                 "replay_rows", "replay_loss_demand_probe_steps",
+                "replay_loss_demand_probe_fold", "guard_gate_accepted",
                 "replay_loss_demand_positive_session_count",
                 "replay_loss_demand_max_score",
             )},
             "A2": {key: item["A2"].get(key) for key in diagnostic_fields + (
                 "replay_rows", "replay_loss_demand_probe_steps",
+                "replay_loss_demand_probe_fold", "guard_gate_accepted",
                 "replay_loss_demand_positive_session_count",
                 "replay_loss_demand_max_score",
             )},
@@ -1063,10 +1138,16 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
     for seed in DATA_SEEDS:
         seed_reports = [item for item in loss_demand_reports if item["data_seed"] == seed]
         assert len(seed_reports) == 2
+        phases = [phase for item in seed_reports for phase in (item["B"], item["A2"])]
         assert any(
-            phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
-            for item in seed_reports for phase in (item["B"], item["A2"])
-        ), f"loss-demand replay produced no accepted checkpoint for seed {seed}"
+            phase.get("replay_loss_demand_positive_session_count", 0) > 0
+            for phase in phases
+        ), f"loss-demand guard scored no positive forgetting cohort for seed {seed}"
+        for phase in phases:
+            if phase["status"] == "UTILITY_GATE_REJECTED":
+                assert phase["checkpoint_after"] == phase["checkpoint_before"]
+                assert phase["utility_gate_accepted"] is False
+                assert phase["holdout_used_for_backtracking"] is False
 
     print("WORLDJEPA_STORE_A_B_A_REPLAY_RETENTION " + __import__("json").dumps(
         reports, sort_keys=True, allow_nan=False
