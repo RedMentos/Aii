@@ -38,12 +38,16 @@ def test_audio_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     destination = tmp_path / "staged"
     manifest = _load_stager().stage(CODE, destination)
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
-    assert {"v13/runtime.py", "v13/cognition.py", "v13/arithmetic_reflex.py"} <= set(manifest["replaced_files"])
+    assert {"v13/runtime.py", "v13/cognition.py", "v13/arithmetic_reflex.py",
+            "v13/v14_learning/runtime_shadow.py", "v13/v14_learning/t8_store_authority.py",
+            "v13/online_world_policy.py"} <= set(manifest["replaced_files"])
 
     runtime = (destination / "v13/runtime.py").read_text(encoding="utf-8")
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     assert "not fixed_policy and arithmetic_answer is None" in runtime
     assert "audio_source_refs" in runtime and "LOCAL_EXACT_ARITHMETIC" in runtime
+    assert "consume_recent_committed" in runtime
+    assert (destination / "v13/v14_learning/t8_store_authority.py").is_file()
     assert "c3_prompt_included" in runtime
     assert "if not included:meta.pop('audio_source_refs',None);audio_source_ref=None" in runtime
     assert runtime.index("c3_prompt_included") < runtime.index("source_recall.verify_before_use") < runtime.index("try:save_context")
@@ -57,6 +61,14 @@ def test_audio_and_arithmetic_share_one_hash_bound_stage(tmp_path):
         "test_broker.py",
         "test_output_policy.py",
         "test_v14_arithmetic_policy_separation.py",
+        "test_online_world_20261108.py",
+        "test_v14_t8_runtime_consumer.py",
+    )
+    generated_tests = (
+        "tests/test_online_world_safety_20261109.py",
+        "tests/test_checkpoint_guards_1648.py",
+        "tests/test_observe_atomic_1648.py",
+        "tests/test_known_revocation_window.py",
     )
     staged_tests = destination / "tests"
     staged_tests.mkdir(exist_ok=True)
@@ -65,7 +77,9 @@ def test_audio_and_arithmetic_share_one_hash_bound_stage(tmp_path):
 
     env = os.environ.copy()
     env["PYTHONPATH"] = str(destination)
-    command = [sys.executable, "-m", "pytest", "-q"] + ["tests/" + name for name in test_names]
+    command = ([sys.executable, "-m", "pytest", "-q"]
+               + ["tests/" + name for name in test_names]
+               + list(generated_tests))
     result = subprocess.run(command, cwd=destination, env=env, text=True, capture_output=True, timeout=180)
     assert result.returncode == 0, result.stdout + "\n" + result.stderr
     assert {relative: _git_blob_sha1((CODE / relative).read_bytes())
