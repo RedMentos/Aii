@@ -31,13 +31,13 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | source_HEAD | `16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19` (Release-Branch-Readback 2026-11-21) |
 | last_integrated_functional_change | PR #2136 merged in `16f75fca`: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter; not yet called by normal Runtime/chat input, synthetic only |
 | local_test_result | NOT_RUN — no full local repository checkout in this worker |
-| ci_test_result | PR #2138 head `8ca7a298`: owner-read PASS (27 source-updater + 33 pipeline-agent tests), Python 3.14 staged startup PASS, offline bridge PASS, same-repo integration PASS; staged-runtime PASS (240 passed, 10 skipped) + integrated-regression PASS (415 passed, 3 skipped, 58 subtests); additive-only validator is not applicable to this modifying QA PR |
+| ci_test_result | PR #2138 head `8ca7a298`: owner-read PASS (27 source-updater + 33 pipeline-agent tests), Python 3.14 staged startup PASS, offline bridge PASS, staged-runtime PASS (240 passed, 10 skipped, 47 subtests), integrated regression PASS (415 passed, 3 skipped, 58 subtests); additive-only policy check fails on intentional existing updater/runtime modifications and was not bypassed. Current release HEAD `16f75fca` has the three updater-required eligible workflows green; 11 PR-only `action_required` runs are not release proof. |
 | phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
 | device_model_comparison | NOT_RUN |
 | proposed_model_change | NONE – erst anhand echter Tests |
 | requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
-| next_developer_action | Finish exact PR #2138 staged/integrated CI; Boss review/merge only after green; then obtain a fresh authorized PIPELINE_STATUS receipt and continue the actual Runtime audio/C3 consumer + B1/B2→C4→C3 path |
+| next_developer_action | Boss independently reviews/merges #2138; Core/JEPA rebuild staged hash-pinned candidate chains for #2139/#2140/#2135 and rerun staged-runtime + integrated regression; obtain a fresh owner-verified phone receipt before any deploy claim; continue whole-Canon integration. |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
@@ -121,3 +121,18 @@ Private V13OBS issue #115 is the newest device receipt currently available; it i
 - B1_DETAIL and B2_GIST were TIME_BUDGET (60.1 s / 50.5 s), with 0 source-bound offers; no successful B1/B2 delivery.
 - Native residency was not readable: 0 mapped processes and `UNKNOWN_NO_GROUP_CHILDREN`; this is not proof that no native processes existed.
 - The report is dated 2026-11-18 11:30:53 UTC. The newer read-only HEALTH request #348 on 2026-11-21 expired without a device comment. Therefore current installed SHA, current updater state, process residency, and current chat performance remain UNKNOWN / REDMI_UNVERIFIED.
+
+
+## QA/Android update — 2026-11-21 01:40 CET
+
+**Current release HEAD:** `16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19` on `gpt6/v13-private-remote-bridge-20261111`. No new code has been merged or deployed in this checkpoint.
+
+- **Updater candidate #2138:** exact head `8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5` is CI-green for the applicable checks: 27 source-updater + 33 pipeline-agent tests; Python 3.14 staged startup; offline bridge security; staged-runtime 240 passed / 10 skipped / 47 subtests; integrated regression 415 passed / 3 skipped / 58 subtests. The additive-only policy workflow fails because this patch intentionally changes existing updater/runtime files; that check was not bypassed. PR remains open, NOT_MERGED / NOT_RELEASED; independent Boss review is next.
+- **Current release SHA CI scope:** the updater's configured required set has three eligible workflows green on `16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19`: owner-read dispatch, staged-context dispatch, private-bridge push. Eleven other listed runs are PR-only `action_required`. Do not claim 12/12 for this newer SHA.
+- **Runtime/audio:** PR #2136 is merged but is only a synthetic PCM16 → PerceptPacket → A4/C3-admission adapter, not Android microphone capture and not yet a normal Runtime input. PR #2139 focused tests pass (58 + 30 subtests) but full staged/integrated jobs fail because downstream immutable candidates still pin the old `runtime.py`; migration reports PARTIAL. NOT_RELEASED.
+- **Arithmetic:** PR #2140 has 8 focused module/Store tests PASS, but full staged arithmetic tests fail (6 failed / 36 passed; outer 1 failed / 239 passed / 10 skipped). It is not a complete Runtime fastpath and does not fix Redmi 2+2 yet.
+- **Online-world learning:** PR #2135's atomic checkpoint/flock fix has focused 13-test + existing 49-test plasticity + combined JEPA PASS evidence, but full staged-runtime fails 20 tests because the integrated candidate SHA chain is stale. PR #2133/2137 remain draft with source-disjoint, cancellation/unknown, backlog-cardinality and rollback-durability findings.
+- **Device:** private owner-read issues #352 HEALTH, #353 PIPELINE_STATUS and #354 DIAGNOSTICS had no device comments at readback. `NO_LIVE_RECEIPT`; installed SHA UNKNOWN; updater/auto-update/restart/rollback UNKNOWN; `REDMI_UNVERIFIED`. The last device baseline is stale V13OBS #115 from 2026-11-18.
+- **Local environment:** full repository checkout/tests NOT_RUN because `github.com` DNS resolution fails in this worker. Exact GitHub Actions logs were read instead. CI is not LOCAL_LINUX native runtime and not Redmi proof.
+
+**User action:** none. No new Termux command, model download/swap, permission change or device mutation is justified by the available evidence.
