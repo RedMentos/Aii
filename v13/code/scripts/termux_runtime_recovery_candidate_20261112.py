@@ -8,7 +8,7 @@ import importlib.util
 from pathlib import Path
 
 BUILDERS = {
-    'scripts/integrated_world_training_resume_candidate_20261111.py': '98654dd80e97bdd6416be855c7ba3c569959e345caea5067c534866a7de95047',
+    'scripts/integrated_world_training_resume_candidate_20261111.py': '5ababdcb3faecae4fb3847ae3281b691e302b63f678c3e7e45675220f0e7ae82',
     'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
     'scripts/termux_chat_recovery_candidate_20261112.py': 'befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7',
     'scripts/termux_idle_recovery_candidate_20261112.py': '2cc656b102b9950fdb9cb81970708692573189995218bff8a18f95ff01fa97d7',
@@ -46,7 +46,7 @@ def build_sources(code_dir, *, include_postcommit=True):
                               'b568613863fef6a687a3237d089b91d8b612ce4163ccb5795df9e21af51c1489')
     result = arithmetic_outcome.apply_sources(code_dir, result)
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     'e1a8e6a6a5ae899d1b0988866b78b48e87849ee070680275c94866176716cbd7')
+                     '98654dd80e97bdd6416be855c7ba3c569959e345caea5067c534866a7de95047')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
