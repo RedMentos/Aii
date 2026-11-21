@@ -1416,3 +1416,16 @@ This overlay supersedes older family-level status summaries where newer evidence
 
 **Evidence discipline:** no row above is ACCEPTED. GitHub Actions results are CI, synthetic fixtures remain synthetic, and prior Linux-native experiments remain partial. Current Redmi receipt is absent; current phone installed SHA is UNKNOWN. Whole-system completion remains false.
 
+
+
+## Latest evidence overlay — 2026-11-21 05:49 CET (additive; historical inventory unchanged)
+
+| Requirement family | Latest code/evidence | Current acceptance boundary |
+|---|---|---|
+| A5 / RAW EAR voice cues | #2155 merged at `c0cedbde718ede6107f4df1f1bf9c784df4e00cf`; exact safe-additive 8/8 tests and generic staged/integrated 240/415 CI passed | Caller-supplied PCM16 adapter only; not normal Runtime microphone capture, ASR, TTS, full-duplex or voice learning |
+| A5 → B1/B2/C3 staged Runtime | Draft #2158 head `2bbf9caf96f8fa90dc080afd00ba99db8329350d`; exact staged-a5 fails two ambiguous arithmetic fixture assertions; staged-runtime aggregate fails 1 test | `CODE_PRESENT / WIRED_SYNTHETIC_CANDIDATE`; not promoted, no Android proof; deployment-path additive gate remains blocking |
+| Arithmetic / C5 fastpath | Existing ambiguity policy intentionally abstains on bare date-shaped `7-12`; current #2158 positive fixtures incorrectly treat it as subtraction | Preserve ambiguity guard; positive fixture must use explicit/spaced arithmetic and negative fixture must assert abstention |
+| Runtime deployer / release | Current branch c0ced has 13 required PR-triggered runs in `action_required`; selected push/dispatch runs green | `NOT_RELEASED`; no updater or phone installation claim |
+| Redmi / Android voice and agency | Fresh private owner-read unanswered; installed SHA unknown | `REDMI_UNVERIFIED`; no microphone, API action, UI control, speech effector or device acceptance |
+
+Boss reviewed #2158 and posted the exact arithmetic-fixture and high-authority-path findings. No historical V13 Canon appendix or heading inventory was modified. Whole-system completion remains false.
