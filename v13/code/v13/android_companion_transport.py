@@ -43,7 +43,7 @@ class AndroidCompanionTransport:
     def _call(self, method: str, value: str | None = None) -> dict:
         if self.content_path is None:
             raise CompanionTransportError("Android content command unavailable")
-        if method not in {"capabilities", "public_key", "submit", "outcome", "pending"}:
+        if method not in {"capabilities", "public_key", "submit", "outcome", "pending", "cancel"}:
             raise CompanionTransportError("unsupported companion method")
         command = [self.content_path, "call", "--uri", URI, "--method", method]
         if value is not None:
@@ -90,6 +90,11 @@ class AndroidCompanionTransport:
         if type(action_id) is not str or not re.fullmatch(r"[0-9a-f]{32}", action_id):
             raise CompanionTransportError("invalid action id")
         return self._call("outcome", action_id)
+
+    def cancel(self, action_id: str) -> dict:
+        if type(action_id) is not str or not re.fullmatch(r"[0-9a-f]{32}", action_id):
+            raise CompanionTransportError("invalid action id")
+        return self._call("cancel", action_id)
 
     def pending(self) -> dict:
         return self._call("pending")
