@@ -340,6 +340,27 @@ The merged #2155 adapter extracts heuristic pitch/voicing/energy/activity cues f
 
 **Status:** RESEARCHED / NOT_IMPLEMENTED / NO_ANDROID_PROOF. The two papers study different environments and model families; neither justifies automatic optimizer-state carryover or a live weight update in V14.
 
+## R-025 — STABLE: optimizer-level drift control for continual adaptation (2026-11-21)
+
+**Primary paper and implementation**
+- Li et al., *STABLE: A Continual Learning Optimizer with Adaptive Drift Control*, arXiv:2611.10655v2 (first submitted 2026-11-07; v2 2026-11-10), accepted at NeurIPS 2026: https://arxiv.org/abs/2611.10655
+- Official implementation: https://github.com/atlas-luiss/STABLE, exact repository HEAD `41e3e49e86b5fae6714ee564f21d7f637736f4a0`; optimizer source blob `609210850c62276b82a6863def957dad49ad27df`; README blob `a14b48cb0fa482ce55724f46daf1d6babd1a73f1`.
+- **License:** repository MIT (`LICENSE` blob `971b49084efab6b1c458d9184d2f2e35c7e1dd4e`). Third-party notices identify Apache-2.0-derived DualPrompt/timm code in the separate prefix-ViT pipeline. No source, dependency, dataset or weight was imported.
+- **Runtime mismatch:** upstream tested Python 3.12, PyTorch 2.8, CUDA 12.8 and one A100 64-GB GPU; requirements include torch/torchvision/timm. It is not an Android/Termux dependency candidate. The optimizer equations can be independently prototyped in the existing NumPy WorldJEPA learner without importing PyTorch or the vision stack.
+
+**Method checked**
+- At each task boundary, snapshot trainable parameters as an anchor. For later tasks, add the Lagrangian pullback term `2 * lambda * (theta - anchor)` to the gradient before Adam.
+- Measure squared parameter drift from the anchor. Increase the dual multiplier when drift exceeds the budget plus a dead zone; decay it when drift is safely below the budget; otherwise hold it. Optional violation memory increases response to repeated overshoot. The first task can calibrate a drift budget from recent update magnitudes.
+- The paper's guarantee is conditional on local score stability for distance-based classifiers. Its reported experiments are continual vision PEFT (LoRA/prompt adapters), not a JEPA world predictor, language model, native GGUF body or Android workload. Treat the paper's results as a research hypothesis, not V14 evidence.
+
+**V14 consequence / experiment proposal — NOT IMPLEMENTED**
+- Candidate use is a *soft, per-organ drift governor* on a small numeric WorldJEPA predictor or explicitly selected adapter, not a permanent freeze and not an Age/resource-budget control. The anchor should be refreshed only at a measured dynamics/task boundary; the dual multiplier should be able to relax so plasticity returns.
+- After the current production-Store A→B→A experiment is fixture-correct and green, compare (A) reset optimizer, (B) persistent Adam, and (C) persistent Adam plus a STABLE-style NumPy dual drift controller. Match source-disjoint cohorts, update steps, replay mode/bytes, seeds and checkpoint budget. Record per-phase parameter/EMA drift, new/old holdout losses, action-shuffled/zero controls, A→B→A reacquisition, restart equivalence and exact rollback.
+- Do not accept a single-seed gain or a lower drift value as utility. The controller must preserve useful adaptation and improve or at least not regress prior-task retention across repeated seeds. Continuous streams may not have clean task boundaries; boundary detection itself must be measured, and a false boundary can over-constrain learning.
+- Keep runtime learning/optimizer gates OFF. No native model-weight update, device action, dependency install or model swap is authorized by this research note. A future implementation needs its own test/ablation PR and explicit approval before any Redmi/native experiment.
+
+**Status:** RESEARCHED / EXPERIMENT_PROPOSED / NOT_IMPLEMENTED / NO_ANDROID_PROOF.
+
 ## R-031 — FD-VAD semantic endpointing for future full-duplex voice (2026-11-21)
 
 - **Primary paper:** Puneet Mathur and Dinesh Manocha, *FD-VAD: Semantic Endpoint Detection for Streaming Full-Duplex Speech*, arXiv:2609.35791v1, 2026-09-16; accessed 2026-11-21. arXiv entry still labels the work as submitted; treat it as a preprint, not a peer-reviewed result. Full text: https://arxiv.org/abs/2609.35791 ; project page: https://fd-vad.github.io/.
@@ -357,3 +378,10 @@ The merged #2155 adapter extracts heuristic pitch/voicing/energy/activity cues f
 - **Reported evidence:** on LibriSpeech, onset-latency confidence statistics list P50 10 ms, P90 90 ms, P95 130 ms for S4VAD; it remains competitive in AUROC against CNN/Transformer/RNN baselines. The evaluation uses synthetic LibriSpeech+DNS mixtures and AVA-Speech; hardware inference is reported on Apple M4 Max 64 GB with XNNPACK. This is not an Android or 6 GB phone result.
 - **V14 consequence:** improve the existing RAW EAR/libfvad/Silero comparison with event-level onset/offset latency and annotation-uncertainty intervals, not AUROC/F1 alone. If reproducing, match frame size/hop, CPU threads and false-positive operating point; compare a small stateful filter/head before importing a full S4 stack. No code, weights or dependencies imported.
 - **Status:** FULLTEXT_REVIEWED / NO_OFFICIAL_CODE_OR_LICENSE_VERIFIED / NOT_IMPLEMENTED / NO_ANDROID_PROOF.
+
+
+### R-031 implementation audit and TurnBench caveat — 2026-11-21 16:41 CET
+
+- Exact official code repository HEAD: fd-vad/fd-vad commit 99112fc9cf6efbf80f556378d8e553d78a932300; root LICENSE blob 66430db46e696ea2b258a4a4e0889402e233ae7e is MIT. README blob 4ddf047bcadb181a9e807aa4067bdaa99b512a94 says code-only, adapter/LoRA checkpoint ~120 MB, base WavLM/Qwen weights downloaded separately; full offline bundle ~1.5 GB. The repo pyproject.toml lists only NumPy/PyYAML, but the actual model implementation imports PyTorch, Transformers and PEFT; its pinned lock includes PyTorch 2.6.0+CUDA 12.4, torchaudio and a broad training stack. No Android/Termux ARM build or CPU-only runtime was demonstrated.
+- Full-text caveat from arXiv:2609.35791v1: the TurnBench evaluation uses a Silero acoustic gate that requires at least 1 s of post-speech silence before semantic commitment. Therefore 0.853 EOT recall at FP 0.097 is conditional on that gate; the 1,019 ms TurnBench median commit latency is the relevant conversational result. The separate 190 ms median / 2.0% false-interruption point must not be combined with the TurnBench result or presented as its latency.
+- Decision unchanged: do not download/import FD-VAD or replace RAW EAR. Keep a future semantic TURN_STATE separate, optional and separately budgeted; compare a lightweight temporal head before considering a second 0.5B LLM.

@@ -1,17 +1,102 @@
-# Current user-facing handoff — 2026-11-21 16:20 CET
+# Current user-facing handoff — 2026-11-21 16:41 CET
 
-**No user action is required. Do not run a manual Termux command or change models, weights, permissions, Age, updater settings or device data based on this GitHub candidate.**
+**No user action is required. Do not run a manual Termux command, change installed models/weights, alter permissions/Age/updater settings, or mutate phone data.**
 
-- Research & Perception PR [#2226](https://github.com/RedMentos/Aii/pull/2226) is ready for review, not merged. Head `2480bd80a173caf6bcfb0ddb18c5ce184281f5a5`, based on current integration checkpoint `6c444e1dfdea19583002519a682fd64bca465098`. The code-bearing release-development head remains `23ea3efc7d1951e20664ce6d07883141e9b601c5`; **NOT_RELEASED**.
-- The producer now uses the provider lease as the sole in-lease authorization and does not reacquire `consent_check` while the lease is held. It holds that lease through PCM-derived features, transactional AudioPerceptPacket persistence, temporal evidence, A4 attention and C3 admission. Store commit failure rolls back before attention.
-- Exact PR-head CI is green: RAW EAR/temporal/Silero/A4→C3 suite **51/51** on Python 3.11 and 3.13; consent preflight/revocation/non-reentrant suite **27/27**; comparator **8/8** on Python 3.13 and 3.14; pinned native Linux libfvad `make check` **13 pass / 1 skip / 0 fail / 0 errors** on both matrix jobs; privacy scan PASS; staged Runtime **249 pass / 10 skipped / 47 subtests**; integrated regression **424 pass / 3 skipped / 58 subtests**. Local isolated lock/transaction harness **5/5 PASS**, synthetic only. Exact local Aii suite remains BLOCKED because this runner cannot resolve GitHub DNS.
-- This is caller-supplied PCM16, not microphone capture. It does not provide ASR, speech decoder/vocoder, full-duplex, native C3 inference, Android control or learned cross-organ audio weights. Optional Silero requires a caller-supplied hash-checked local ONNX session; no model was downloaded.
-- Latest private V13OBS found is [RedMentos/Aiiii#115](https://github.com/RedMentos/Aiiii/issues/115), last updated 2026-11-18 11:30:53Z; no newer V13OBS receipt was found. Its five metadata-only turns show B1 3/3 native failures, B2 2/2 native failures, zero valid offers/final C3 contributions, and C3 prefill-to-first-token 41.5–63.7 seconds. Installed SHA and updater state remain UNKNOWN. This is stale evidence, not a current live phone receipt: **REDMI_UNVERIFIED**.
-- Core #2200 and QA #2211 were notified that their generated audio-context store still calls the provider check from inside the lease in both `record()` and `view()`, which can deadlock with a non-reentrant lock. They need to use the yielded lease authorization and preserve derived-source tombstone, in-memory clear and final C3 revocation checks. Core must update its producer source pin to `fcf169a29855544e82a96412f5fe5356eaea641e`.
-- P0 #1904 remains open: the latest private receipt still shows no valid B1/B2 offers and very slow C3 prefill. This audio candidate does not solve native chat correctness or latency.
-- Research ledger R-031/R-032 records FD-VAD and S4VAD as preprints. FD-VAD is a future separate semantic turn-state hypothesis, not a replacement for RAW EAR; its A100 timing and ~1.5 GB bundle do not justify a Redmi model swap. No model, weight or permission change is proposed.
+- Latest GitHub integration HEAD is f279286a4453248004c670fcaabecd85da6ab299 after Boss merged #2228. That merge puts the source-span C4 redundancy rule into the ordinary pinned staged Runtime; its PR-head staged test passed **251/10 skipped/47 subtests**, and integrated regression passed **424/3 skipped/58 subtests**. The synthetic body runners do not prove native B1/B2 or Redmi behavior. Post-merge push workflows were still running at readback.
+- Research & Perception PR #2226 carries code head 3868383b4ccac1b709d6310ed69bb53b9e924b47 and is being advanced onto this current integration HEAD. It adds a caller-supplied PCM16 RAW EAR → temporal evidence → A4 → C3-admission producer with a provider consent lease, plus accurate pitch/prosody unmeasured-field provenance. It is not merged/released and does not open the microphone.
+- Exact GitHub Actions evidence for #2226: RAW EAR 53 passed on Python 3.11/3.13; consent 29 passed; comparator 8/8 on Python 3.13/3.14; pinned Linux libfvad 13 PASS per job; privacy PASS; staged 249 passed/10 skipped/47 subtests; integrated 424 passed/3 skipped/58 subtests. Local full Aii suite remains BLOCKED by GitHub DNS; GitHub CI is not local or Android proof.
+- The next required integration is Core #2200/#2211: use the yielded lease authorization without re-entering the provider lock, revoke/tombstone derived audio context, clear process-local context and check consent immediately before native C3 generation. Until then this is a producer candidate, not end-to-end voice chat.
+- P0 #1904 remains OPEN. A historical user comment reports one visible answer on release 38846cb but wrong 2+2 and no independently confirmed B1/B2 contribution; this is not current installation evidence. Latest private V13OBS #115 found is dated 2026-11-18 and still records B1/B2 native failures, zero valid offers and C3 TTFT 41.5–63.7 s. Installed SHA and updater consent remain UNKNOWN: **REDMI_UNVERIFIED**.
+- FD-VAD and S4VAD remain research only. FD-VAD's TurnBench result is behind a 1-second Silero silence gate and has 1,019 ms median commit latency; its separate 190 ms point is not the same operating point. No model/dependency/weight was downloaded or changed.
 
-**Next internal work:** QA review #2226; Core rebase #2200/#2211 and remove lease re-entry in derived audio context; then exact combined tests. No phone update request or user action is needed.
+**Next internal step:** QA independently reviews #2226; Core rebases and repairs the downstream audio-context consumer/revocation chain. **No user action is needed.**
+
+---
+
+# Current user-facing handoff — 2026-11-21 16:04 CET
+
+**No user action is needed. Do not run another Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
+
+- Current release-development branch HEAD is `f48ca649c126d50076779e044c6627a5f75124e6`, a research-ledger-only R-025 STABLE drift-control note. Its exact GitHub status is now **29/29 check-runs SUCCESS and 24/24 associated workflow runs SUCCESS**. The prior fully verified head `99ec54534fc9e99ce5689d335c80162f018de288` had 30/30 check-runs SUCCESS. R-025 is a research proposal, not an implementation or weight update. This is CI evidence only, not release or phone installation.
+- PR #2218's read-only WorldJEPA optimizer audit/test is merged at `6c444e1dfdea19583002519a682fd64bca465098`. Follow-up PR #2222's exact production Store/SQLite optimizer-resume and staged tests passed on CPython 3.13/3.14 (run `44914934454`). These remain synthetic T8/NumPy predictor experiments, not native GGUF B1/B2/C3 weight training or trained B3 latent coupling. Learning and optimizer permissions remain OFF.
+- QA PR #2223 adds production checkpoint-publication regressions: hardlink EPERM/EACCES fallback through dirfd `renameat2(RENAME_NOREPLACE)`, concurrent destination EEXIST for both publication routes, and rollback after directory-fsync failure. Latest pinned matrix `44916974869`: **26 passed on each CPython 3.11.18, 3.13.18 and 3.14.10**. The current staged/integrated run `44916974849` was still running at this readback; the previous code-equivalent run passed staged **249/10 skipped/47 subtests** and integrated **424/3 skipped/58 subtests**. Same-repository guard passed. Safe-additive fails because the PR changes an existing workflow and V14 handoff/board files; no bypass was applied. PR #2223 remains draft pending independent Boss review.
+- A handoff file was accidentally created on default `main` by one contents update that omitted its branch argument. No runtime, workflow, model or user data changed. Cleanup PR #2224 deleted that file and was merged; default-branch readback is now `5b8f5616421fb94b02df6d7d0d5d2ef5e996849b`, and the file is absent again. The intended handoff remains on the QA branch/PR #2223.
+- The checkpoint tests are GitHub/Linux only. CPython-version coverage is not Android Bionic/SELinux proof. **REDMI_UNVERIFIED.** No actual phone receipt, installed SHA or updater-consent confirmation is available.
+- Private owner-read #407/#408/#409/#410 expired without replies. Installed SHA and auto-update consent remain UNKNOWN. No further private request or device action was issued.
+- P0 #1904 remains open: no current Redmi proof of correct 2+2, bounded native latency, or B1/B2 offers delivered and consumed by C4→C3. #2195 remains a staged C4 overlay with unresolved negative controls/base/pin integration; #2210 C5 SHADOW/source-pin failures remain open.
+- RAW EAR #2219 still needs deterministic #2214 pre-PCM revocation and non-reentrant provider-lease tests to pass together. #2200/#2211 still need derived audio-context deletion and immediate pre-C3 revocation.
+- Full local Aii checkout/tests remain BLOCKED because this worker cannot resolve GitHub DNS. GitHub Actions is not local or Redmi proof. The 1,255-heading historical inventory is preserved, but semantic clause-to-consumer/test/rollback mapping remains incomplete.
+
+Next work is internal: Boss reviews #2223's workflow/docs scope without waiving the failed policy check; Perception/QA combine the RAW EAR lease producer and deterministic controls; Core continues C4/C5 and P0 chat integration; JEPA continues multi-seed temporal retention. **No user action is required.**
+
+---
+
+# Current user-facing handoff — 2026-11-21 16:01 CET
+
+**No user action is needed. Do not run another Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
+
+- Current release-development branch HEAD is `f48ca649c126d50076779e044c6627a5f75124e6`, a research-ledger-only R-025 STABLE drift-control note. At the latest readback, **26 of 29 associated checks had completed successfully and 3 were still running** (Python 3.14 optimizer-resume, staged/integrated regression and the staged push job). The last fully verified HEAD, `99ec54534fc9e99ce5689d335c80162f018de288`, had 30/30 check-runs SUCCESS and 19/19 associated PR workflows SUCCESS. R-025 is a research proposal, not an implementation or weight update.
+- PR #2218's read-only WorldJEPA optimizer audit/test is merged at `6c444e1dfdea19583002519a682fd64bca465098`. Follow-up PR #2222's exact production Store/SQLite optimizer-resume and staged tests passed on CPython 3.13/3.14 (run `44914934454`). These remain synthetic T8/NumPy predictor experiments, not native GGUF B1/B2/C3 weight training or trained B3 latent coupling. Learning and optimizer permissions remain OFF.
+- QA PR #2223 adds production checkpoint-publication regressions: hardlink EPERM/EACCES fallback through dirfd `renameat2(RENAME_NOREPLACE)`, concurrent destination EEXIST for both publication routes, and rollback after directory-fsync failure. Exact pinned matrix `44916817647`: **26 passed on each CPython 3.11.18, 3.13.18 and 3.14.10**. Staged-runtime `44916817662` was still running at this readback; the previous code-equivalent staged run passed **249/10 skipped/47 subtests**, and integrated regression passed **424/3 skipped/58 subtests** on head `65699b46e3f5ff5a1fce8d55e81dc5707884bd96`. Safe-additive `44916817845` failed because the PR changes an existing workflow and V14 handoff/board files; no bypass was applied. PR #2223 remains draft pending independent Boss review.
+- The checkpoint tests are GitHub/Linux only. CPython-version coverage is not Android Bionic/SELinux proof. **REDMI_UNVERIFIED.** No actual phone receipt, installed SHA or updater-consent confirmation is available.
+- Private owner-read #407/#408/#409/#410 expired without replies. Installed SHA and auto-update consent remain UNKNOWN. No further private request or device action was issued.
+- P0 #1904 remains open: no current Redmi proof of correct 2+2, bounded native latency, or B1/B2 offers delivered and consumed by C4→C3. #2195 remains a staged C4 overlay with unresolved negative controls/base/pin integration; #2210 C5 SHADOW/source-pin failures remain open.
+- RAW EAR #2219 still needs deterministic #2214 pre-PCM revocation and non-reentrant provider-lease tests to pass together. #2200/#2211 still need derived audio-context deletion and immediate pre-C3 revocation.
+- Full local Aii checkout/tests remain BLOCKED because this worker cannot resolve GitHub DNS. GitHub Actions is not local or Redmi proof. The 1,255-heading historical inventory is preserved, but semantic clause-to-consumer/test/rollback mapping remains incomplete.
+
+Next work is internal: Boss reviews #2223's workflow/docs scope without waiving the failed policy check; Perception/QA combine the RAW EAR lease producer and deterministic controls; Core continues C4/C5 and P0 chat integration; JEPA continues multi-seed temporal retention. **No user action is required.**
+
+---
+
+# Current user-facing handoff — 2026-11-21 15:48 CET
+
+**No user action is needed. Do not run another Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
+
+- Current release-development branch HEAD: `99ec54534fc9e99ce5689d335c80162f018de288`. Exact commit readback shows **30/30 check-runs SUCCESS**, including Python 3.13/3.14 staged startup and SQLite refs, staged-runtime, integrated-regression, JEPA optimizer-resume, source contracts and owner-read bootstrap. The 19 associated PR workflows are 19/19 SUCCESS. Push checks for staged/integrated, owner-read, Lab Age and the private bridge also passed; the ancillary reviewed-agent queue run was cancelled. This is GitHub CI, not an Android installation.
+- PR #2218's read-only WorldJEPA optimizer audit/test is merged at `6c444e1dfdea19583002519a682fd64bca465098`. Follow-up PR #2222 runs the exact production Store/SQLite optimizer-resume test and staged regression on CPython 3.13.18 and 3.14.10; exact run `44914934454` passed. These remain synthetic T8/NumPy predictor experiments, not native GGUF B1/B2/C3 weight training or trained B3 latent coupling. Learning and optimizer permissions remain OFF.
+- QA PR #2223 adds real production checkpoint-publisher regressions: hardlink EPERM/EACCES fallback through dirfd `renameat2(RENAME_NOREPLACE)`, concurrent destination EEXIST for both publication routes, and rollback after directory-fsync failure. Exact focused CI `44915486181`: 26 passed; staged `44915486170`: 249 passed / 10 skipped / 47 subtests; integrated: 424 passed / 3 skipped / 58 subtests. The safe-additive check failed because the PR adds a path filter and test invocation to an existing workflow; the policy does not permit that workflow edit. It was not bypassed. The PR remains draft pending independent Boss review.
+- The checkpoint publisher uses Linux/Bionic-compatible APIs, but Linux CI does not prove Redmi's Bionic/SELinux/filesystem behavior. **REDMI_UNVERIFIED.** No actual phone receipt, installed SHA or updater-consent confirmation is available.
+- Private owner-read #407/#408/#409/#410 expired without replies. Installed SHA and auto-update consent remain UNKNOWN. No further private request or device action was issued.
+- P0 #1904 remains open: no current Redmi proof of correct 2+2, bounded native latency, or B1/B2 offers delivered and consumed by C4→C3. #2195 remains a staged C4 overlay with unresolved negative controls/base/pin integration; #2210 C5 SHADOW/source-pin failures remain open.
+- RAW EAR #2219 still needs the deterministic #2214 pre-PCM revocation and non-reentrant provider-lease tests to pass together. #2200/#2211 still need derived audio-context deletion and immediate pre-C3 revocation.
+- Full local Aii checkout/tests remain BLOCKED because this worker cannot resolve GitHub DNS. The whole V13 Canon remains the scope; the 1,255-heading historical inventory is preserved, but semantic clause-to-consumer/test/rollback mapping is incomplete.
+
+Next work is internal: Boss reviews #2223's workflow-only change without waiving its failed policy check; Perception/QA combine the RAW EAR lease producer and deterministic QA controls; Core continues C4/C5 and P0 chat integration; JEPA continues multi-seed temporal retention. **No user action is required.**
+
+---
+
+# Current user-facing handoff — 2026-11-21 15:33 CET
+
+**No Termux command or device action is needed. Do not change models, weights, permissions, Age or updater settings.**
+
+- Current release-development branch HEAD is `6c444e1dfdea19583002519a682fd64bca465098` after merge of #2218's read-only optimizer audit/test. Its exact PR-head safe-additive, staged and integrated checks passed, but all 19 workflows returned for the merge commit have `action_required` and no jobs. Post-merge CI is **not verified**; do not call this release green.
+- The code-bearing #2215 merge remains `23ea3efc7d1951e20664ce6d07883141e9b601c5`; its PR-head broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58 and migration checks passed. Android action broker remains DRY_RUN_ONLY, with no OS executor or live UI control.
+- Private owner-read #407/#408/#409/#410 all expired without replies. Installed SHA and updater consent remain UNKNOWN: REDMI_UNVERIFIED.
+- P0 #1904 remains open: no fresh Redmi evidence of correct 2+2, native latency or B1/B2→C4→C3 delivery. #2210 still fails C5 SHADOW selection and nested source pins.
+- C4 candidate #2195 has dedicated Python 3.13/3.14 and staged/integrated PASS, but remains a disposable overlay, not normal stage/deployer. It needs negative tests for modality mismatch, malformed spans and disjoint-but-redundant offers, then rebase onto 6c444e1 and pin-chain review.
+- RAW EAR #2219 broad CI passes, but deterministic #2214 still fails on the old producer; combined post-fix test and lock contract remain open. #2200/#2211 still need derived-context deletion and clear-before-C3.
+- JEPA #2218 is merged as a read-only audit/test slice; exact-head Python 3.13/3.14 optimizer-resume proof is missing and merge-commit workflows are action_required. Synthetic Store/SQLite only; learning/optimizer gates OFF; no native GGUF or trained B3 latent claim.
+- #2198/#2205 are closed as superseded by #2213. Checkpoint publisher uses dirfd + libc renameat2 (available in Bionic from API 30), but forced-denial/race/fsync rollback tests remain open.
+- Full local Aii checkout remains blocked by GitHub DNS. GitHub CI is not local or Redmi proof; the whole Canon is not complete.
+
+Next work is internal: Core advances #2195 and P0 integration; Perception/QA close deterministic consent and checkpoint publication tests; JEPA completes current-head optimizer evidence and workflow gates; Boss maintains whole-Canon coverage. No user action is required.
+
+---
+
+# Current user-facing handoff — 2026-11-21 15:30 CET
+
+**No user action is required. Do not run another manual Termux command, request a model download/swap, or change permissions/updater settings.**
+
+- Code-bearing release-development commit is `23ea3efc7d1951e20664ce6d07883141e9b601c5` (PR #2215). PR-head CI passed broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58 and migration UPDATED. The later docs handoff is `49fd1e9f5a9a82b8e2078bef8adfe8a048f07d0f`. Exact post-merge push-CI for the code commit remains unverified: NOT_RELEASED.
+- Android action broker remains DRY_RUN_ONLY; no OS executor, AccessibilityService, MediaProjection or real app/UI control is present.
+- Private owner-read #407/#408/#409/#410 all expired without replies. Installed SHA and updater consent remain UNKNOWN: REDMI_UNVERIFIED.
+- P0 #1904 remains open: no fresh Redmi evidence of correct 2+2, native latency or delivered B1/B2 offers consumed by C4→C3. #2210 still has C5 SHADOW and source-pin failures.
+- RAW EAR #2219 broad CI passes, but deterministic #2214 focused test is still red on the old producer; the combined post-fix run and provider lock contract remain open. #2200/#2211 still need derived-context deletion and clear-before-C3.
+- JEPA #2218 staged/integrated and safe-additive now pass, but exact-head Python 3.13/3.14 optimizer-resume proof is missing. Numeric WorldJEPA remains synthetic SHADOW; learning/optimizer gates OFF; no native GGUF or trained B3 latent claim.
+- #2198/#2205 are closed as superseded by #2213. The current dirfd checkpoint publisher uses libc `renameat2(RENAME_NOREPLACE)`, available in Bionic from Android R/API 30; however the forced-denial/race/fsync-failure regression cases still need to be added against the current implementation.
+- Full local Aii checkout remains blocked by GitHub DNS; GitHub CI is not local or Redmi proof. The whole V13 Canon remains the scope and is not complete.
+
+Next work is internal: Core repairs arithmetic and audio consumer integration; Perception/QA close consent and checkpoint publication regressions; JEPA completes current-head multi-version optimizer evidence; Boss verifies the exact push-CI gate and whole-Canon coverage. **No action is needed from you.**
 
 ---
 

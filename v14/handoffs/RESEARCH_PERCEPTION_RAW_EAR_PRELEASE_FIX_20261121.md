@@ -49,3 +49,13 @@ This is still a caller-supplied PCM adapter, not microphone capture. It does not
 2. Core rebases #2200/#2211, removes callback re-entry inside audio_context_store.record()/view(), updates the producer source pin, and preserves tombstone/clear-before-C3 negative tests.
 3. Run the combined producer→derived-context→C3 staged/integrated tests after that rebase.
 4. Keep the P0 Redmi chat gate, microphone permission, speech decoder/vocoder and full-duplex acceptance open.
+
+## 2026-11-21 16:41 CET — RAW EAR provenance regression and current-base alignment
+
+- Fixed false provenance in AudioPerceptPacket.segments[0].unmeasured: pitch is unmeasured without F0; prosody is unmeasured with fewer than two voiced frames. Added silence, single-frame and multi-frame voiced assertions.
+- Code commit 832f033cb97b5ed50fb5b3e4a9d0549cf986e06a; test commit cbaecd64fc77f1e1ac05f092a5080f54a87fe631; comparator pin commit 3868383b4ccac1b709d6310ed69bb53b9e924b47. Source blob 9cae3b93388ea2c488e5af37a544ed0df5727f07; test blob 6da1844a27c1a89affaa1b69d176ff9428dc7daf.
+- Exact CI: RAW EAR 53/53 on Python 3.11 and 3.13; consent 29/29; comparator 8/8 on Python 3.13/3.14; native Linux libfvad 13 PASS per job; privacy PASS; staged 249/10/47; integrated 424/3/58. The earlier comparator failure was only a stale exact-source hash pin; it was corrected and rerun green.
+- Current base includes #2228 C4 source-span integration in the normal staged Runtime. Its body models remain synthetic and its post-merge push workflows were still in progress at readback.
+- Local full suite remains BLOCKED by GitHub DNS. No Android/Bionic or Redmi evidence. No microphone permission, model/weight, Age, updater or device data change.
+- FD-VAD TurnBench is gated by at least 1 s of post-speech silence; its 0.853 EOT recall at FP 0.097 is accompanied by 1,019 ms median commit latency. The 190 ms/2% point is a separate operating point. No model imported.
+- Core #2200/#2211 still need the non-reentrant lease token path, derived-context tombstone/clear and final pre-C3 consent check. QA review of #2226 remains required.

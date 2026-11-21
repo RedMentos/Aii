@@ -1596,19 +1596,43 @@ Historical inventory above remains **1,255 V13 headings**; no historical wording
 
 Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. The V14 master was not edited. This overlay records exact environment boundaries and open blockers; no Canon family is promoted to accepted.
 
-### Research & Perception evidence overlay — 2026-11-21 16:20 CET
+
+### Boss integration evidence overlay — 2026-11-21 15:30 CET
+
+| Area | Verified status | Remaining acceptance |
+|---|---|---|
+| Android action proposal integrity | PR #2215 merged at `23ea3efc7d1951e20664ce6d07883141e9b601c5`; PR-head broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58, migration UPDATED | Post-merge push-CI not independently verified; broker DRY_RUN_ONLY; no OS executor or Redmi proof |
+| WorldJEPA optimizer resume | #2218 head 4ad72 safe-additive, staged and integrated PASS | Dedicated Python 3.13/3.14 run on exact current head missing; synthetic SQLite/T8 only; gates OFF |
+| RAW EAR consent | #2219 broad staged/integrated PASS; #2214 deterministic focused test still fails on old producer | Combined deterministic post-fix test and lock contract unresolved; no microphone/Redmi proof |
+| Checkpoint publication | #2213 current dirfd publisher uses hardlink then libc renameat2(RENAME_NOREPLACE) fallback; Bionic exports renameat2 from Android R/API 30 | Forced EPERM/EACCES, racing-target EEXIST and directory-fsync rollback tests are not yet in merged suite |
+| P0 chat / arithmetic | #2210 remains C5 SHADOW + source-pin failing; #1904 remains open | Correct 2+2, responsive native C3 and source-bound B1/B2→C4→C3 delivery on Redmi |
+| Device / release | Code head 23ea3ef; docs head 49fd1e9; #407-#410 expired without replies | Exact post-merge push-CI and authenticated Redmi install receipt unknown |
+
+Primary source for Bionic availability: AOSP Bionic status lists `renameat2` among new libc functions in Android R/API 30: https://android.googlesource.com/platform/bionic/+/82c90724e/docs/status.md. Redmi target Android 13 is API 33; this establishes symbol availability only, not the phone's filesystem behavior. Historical 1,255-heading Canon inventory and V13 appendix remain unchanged; semantic clause-level mapping is incomplete.
+
+
+### Boss integration evidence overlay — 2026-11-21 15:33 CET
+
+| Area | Exact evidence | Acceptance still open |
+|---|---|---|
+| Release / CI | Current HEAD `6c444e1dfdea19583002519a682fd64bca465098` includes #2218. Its 19 associated workflows are `action_required` with no jobs. #2215 code-bearing PR-head CI passed; post-merge push-CI unknown. | Not a PASS; exact post-merge workflow execution and release gate unresolved |
+| JEPA optimizer | #2218 audit/test merged; exact PR-head safe-additive/staged/integrated PASS | Dedicated Python 3.13/3.14 on exact audit-module head missing; synthetic Store/T8 only; gates OFF |
+| C4 B1/B2 diversity | #2195 dedicated C4 Python 3.13/3.14 PASS and staged/integrated PASS | Disposable overlay only; safe-additive fail; missing modality/malformed/disjoint-but-redundant negatives; old base and no normal-stage wiring |
+| RAW EAR consent | #2219 broad staged/integrated PASS; #2214 deterministic focused test still fails on old producer | Combined post-fix test and provider lock contract unresolved |
+| Checkpoint publication | #2213 dirfd-based hardlink then libc renameat2(RENAME_NOREPLACE) fallback; Bionic API 30+ | Forced hardlink-denial, target-race EEXIST and directory-fsync rollback tests missing |
+| Device / P0 | #407-#410 expired without replies; #1904 open | No installed SHA, updater consent, correct native 2+2, native latency or B1/B2→C4→C3 Redmi proof |
+
+AOSP Bionic status lists `renameat2` as a libc addition from Android R/API 30: https://android.googlesource.com/platform/bionic/+/82c90724e/docs/status.md. This establishes API symbol availability for the Android 13/API 33 target, not filesystem behavior on the phone. Historical 1,255-heading inventory and V13 appendix remain unchanged; semantic clause-level coverage is incomplete.
+
+### Research & Perception evidence overlay — 2026-11-21 16:41 CET
 
 | Canon family | Candidate implementation status | Exact evidence | Still not accepted |
 |---|---|---|---|
-| A0–A5 RAW EAR / A4 attention | WIRED_SYNTHETIC candidate in PR #2226; caller PCM16, acoustic/prosody, optional Silero VAD, temporal evidence, source-bound A4/C3 admission | Exact PR head 2480bd8: 51/51 Python 3.11 and 3.13; consent/revocation 27/27; staged 249/10/47; integrated 424/3/58; privacy PASS | No microphone capture, native C3 inference, audio learning, native B1/B2 utility or Redmi proof |
-| Consent/revocation at producer boundary | WIRED_SYNTHETIC with lease-bound authorization | Deterministic preflight/revocation + non-reentrant provider tests 27/27; local isolated lock/transaction harness 5/5 | Core derived audio-context `record()`/`view()` still reacquire the provider check inside the lease in #2200/#2211; downstream tombstone/clear-before-C3 must pass |
-| VAD comparison | NATIVE_LINUX_PROOF for test-only libfvad build; synthetic PCM comparison harness | Comparator 8/8 on Python 3.13/3.14; pinned libfvad `make check` 13 PASS / 1 SKIP / 0 FAIL / 0 ERROR | Linux native build is not Android/Bionic/Termux/Redmi; no Android ABI or RSS/PSS/battery measurement |
-| VOICE_AUDIO input | WIRED_SYNTHETIC caller-supplied PCM path only | RAW EAR producer tests and consent suite pass on exact PR head | No microphone/MediaProjection/Android feed, ASR, source-bound audio learning or real-world speech test |
-| Voice output / full duplex | NOT_IMPLEMENTED | No speech decoder/vocoder or barge-in path in this PR | STEP9/G10C/G10D output and full-duplex acceptance remain OPEN |
-| B1/B2 → C4 → native C3 | Existing synthetic audio-context candidate only; separate from producer PR | #2226 reaches C3 admission, not native inference; Core #2200/#2211 remain separate staged candidates | No native model output, C4 accepted coalition, valid Redmi offers or P0 #1904 closure |
-| Whole Canon / Android | Historical inventory remains 1,255 headings; no acceptance promotion | PR #2226 is unmerged, CI-only and based on a QA integration checkpoint | Clause-level consumer/test/rollback mapping remains incomplete; no current owner-authenticated Redmi receipt, Android UI/API executor, trained B3 latent receiver or native body-weight learning |
+| A0–A5 RAW EAR / A4 attention | WIRED_SYNTHETIC producer candidate in PR #2226; caller PCM16 → acoustic/prosody cues → optional Silero → temporal evidence → source-bound AudioPerceptPacket → A4 → C3 admission | 53/53 Python 3.11/3.13; consent 29/29; comparator 8/8 Python 3.13/3.14; Linux libfvad 13 PASS per job; staged 249/10/47; integrated 424/3/58; privacy PASS | No microphone capture, native C3 inference, native audio learning, real Android feed or Redmi proof; Core derived-context revocation remains open |
+| C4 complementarity dependency | WIRED_SYNTHETIC in current staged Runtime head f279286a4453248004c670fcaabecd85da6ab299 | PR #2228 staged 251/10/47 and integrated 424/3/58; both body OfferPackets reached a synthetic C3 prompt under source-span controls | Body runners are synthetic; no native B1/B2 output, learned latent exchange or phone evidence |
+| Audio field provenance | CODE + consumer-facing packet metadata correction | Silence/no F0 marks pitch and prosody unmeasured; one voiced frame marks pitch measured but prosody unmeasured; multi-frame voiced packet marks both measured. Source blob 9cae3b93388ea2c488e5af37a544ed0df5727f07; tests blob 6da1844a27c1a89affaa1b69d176ff9428dc7daf | CI tests are synthetic PCM fixtures; no real speech-corpus calibration |
+| VAD comparator | NATIVE_LINUX_PROOF for test-only libfvad build; synthetic PCM comparison harness | Pinned libfvad make check 13 PASS / 0 FAIL on CPython 3.13 and 3.14; comparator 8/8 both versions | Linux build is not Android/Bionic/Termux; no phone RSS/PSS, battery, onset/offset or thermal measurement |
+| Semantic turn completion | RESEARCH_ONLY / separate future TURN_STATE | FD-VAD arXiv:2609.35791v1; S4VAD arXiv:2609.11110v1 | No model imported, no learned endpoint head, no full-duplex/voice-output path |
+| P0 / whole Canon | NOT_ACCEPTED | #1904 remains OPEN; PR #2226 does not solve native 2+2, B1/B2 delivery, C4 coalition or C3 quality/latency | No fresh Redmi receipt, no accepted whole-system path; historical 1,255-heading inventory preserved |
 
-The latest private V13OBS receipt found is #115 (2026-11-18; no newer receipt): five metadata-only turns, B1 3/3 native failures, B2 2/2 native failures, zero valid offers, C3 prefill-to-first-token 41.5–63.7s. Installed SHA/updater remain unknown. This is stale evidence and does not count as current Redmi proof.
-
-Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. This overlay records candidate evidence only; no Canon family is marked ACCEPTED.
-
+All evidence above is candidate/CI evidence only. No Canon family is promoted to ACCEPTED.
