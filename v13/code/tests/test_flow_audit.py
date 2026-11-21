@@ -1,5 +1,6 @@
 import json
 import sqlite3
+import zlib
 
 from v13.contracts import packet
 from v13.flow_audit import audit_event, audit_latest
@@ -250,3 +251,22 @@ def test_query_role_mismatch_is_reported(tmp_path):
         item["role"] == "B1_DETAIL" and item["query_role_match"] is False
         for item in report["bodies"]["offers"]
     )
+
+
+def test_compressed_source_blob_is_verified_streamingly(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        sha = conn.execute("SELECT hash FROM sources ORDER BY id LIMIT 1").fetchone()[0]
+    finally:
+        conn.close()
+    blob = home / "data" / "blobs" / sha
+    raw = blob.read_bytes()
+    blob.with_name(sha + ".z").write_bytes(zlib.compress(raw))
+    blob.unlink()
+
+    report = audit_event(home, event_id)
+    assert report["source_integrity"]["invalid_refs"] == 0
+    assert report["source_integrity"]["valid_refs"] >= 2

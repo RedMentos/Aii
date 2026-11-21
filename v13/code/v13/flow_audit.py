@@ -7,6 +7,7 @@ attestation and cannot prove native latent injection.
 from __future__ import annotations
 
 import argparse
+import codecs
 import hashlib
 import json
 import math
@@ -53,26 +54,46 @@ def _source_valid(conn: sqlite3.Connection, home: Path, ref: Any) -> bool:
         return False
     if not (0 <= start <= end <= row["chars"]):
         return False
+
+    # Verify large/archived sources without loading the whole blob into RAM.
+    max_bytes = 32 * 1024 * 1024
     blob = home / "data" / "blobs" / sha
-    if blob.is_file():
-        raw = blob.read_bytes()
-    else:
-        compressed = blob.with_name(sha + ".z")
-        if not compressed.is_file():
-            return False
-        try:
-            decoder = zlib.decompressobj()
-            raw = decoder.decompress(compressed.read_bytes(), 64 * 1024 * 1024)
-            if decoder.unconsumed_tail or not decoder.eof:
-                return False
-        except zlib.error:
-            return False
-    if hashlib.sha256(raw).hexdigest() != sha:
+    compressed = blob.with_name(sha + ".z")
+    path = blob if blob.is_file() else compressed
+    if not path.is_file() or path.stat().st_size > max_bytes:
         return False
+
+    digest = hashlib.sha256()
+    utf8 = codecs.getincrementaldecoder("utf-8")()
+    char_count = 0
+    total = 0
+    decompressor = zlib.decompressobj() if path == compressed else None
     try:
-        return end <= len(raw.decode("utf-8"))
-    except UnicodeDecodeError:
+        with path.open("rb") as stream:
+            while True:
+                chunk = stream.read(64 * 1024)
+                if not chunk:
+                    break
+                parts = [decompressor.decompress(chunk, max_bytes - total + 1)] if decompressor else [chunk]
+                for part in parts:
+                    total += len(part)
+                    if total > max_bytes:
+                        return False
+                    digest.update(part)
+                    char_count += len(utf8.decode(part, final=False))
+                    if decompressor and decompressor.unconsumed_tail:
+                        return False
+            if decompressor:
+                tail = decompressor.flush()
+                total += len(tail)
+                if total > max_bytes or not decompressor.eof or decompressor.unused_data:
+                    return False
+                digest.update(tail)
+                char_count += len(utf8.decode(tail, final=False))
+        char_count += len(utf8.decode(b"", final=True))
+    except (OSError, UnicodeDecodeError, zlib.error):
         return False
+    return digest.hexdigest() == sha and char_count == row["chars"] and end <= char_count
 
 
 def _safe_metrics(value: Any) -> dict:
