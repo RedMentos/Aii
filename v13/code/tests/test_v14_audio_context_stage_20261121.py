@@ -59,7 +59,7 @@ def test_audio_and_arithmetic_share_one_hash_bound_stage(tmp_path):
         "test_v14_arithmetic_policy_separation.py",
     )
     staged_tests = destination / "tests"
-    staged_tests.mkdir()
+    staged_tests.mkdir(exist_ok=True)
     for name in test_names:
         shutil.copy2(CODE / "tests" / name, staged_tests / name)
 
