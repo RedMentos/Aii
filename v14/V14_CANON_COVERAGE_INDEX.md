@@ -1525,3 +1525,16 @@ This overlay is additive; the historical 1,255-heading inventory and V13 appendi
 | Android agency | #2190 merged exact AOSP /data path guard; broker tests PASS | No OS executor, Android API/UI control, authenticated companion or Redmi proof |
 | Release / Redmi | d4834... exact push CI PASS; code head e18c664... | #389 expired without reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED |
 
+
+
+### Boss integration evidence overlay — 2026-11-21 11:38 CET
+
+| Canon family | Current connected code | Verified evidence | Still not accepted |
+|---|---|---|---|
+| T8 / World / JEPA / Planner | SleepRuntime postcommit worker in code-bearing release `e18c664...`; Store-backed WorldJEPA consumer followed by World/Planner SHADOW receiver | Exact release CI green; code path and default-off dual gates inspected | No Adam-moment persistence in production checkpoint; no native B1/B2/C3 GGUF changes; no Android/Redmi utility proof |
+| RAW EAR / A4 attention | #2192 candidate adds source/generation-keyed bounded temporal evidence to caller-supplied PCM16 path | Exact PR head: staged-runtime + integrated-regression PASS; Python 3.13/3.14, prosody, model-lab, privacy and private-bridge PASS | Draft/stale base; additive guard rejects existing-module edit; no mic, ASR, speech decoder/vocoder, full duplex or Redmi proof |
+| B1/B2 → C4 → C3 | Existing source-bound OfferPacket, focal selection and analyst-context consumer remain in Runtime | Code path exists; last real Redmi evidence still records zero valid offers/time-budget failures | No fresh device proof of delivery + selection + actual C3 consumption; P0 remains open |
+| B3 / Enlightened Space | Symbolic/exact source channels and tap provenance only | Existing synthetic/source-contract checks | No trained activation-to-activation latent receiver, OOD/NO_MESSAGE/SYMBOLIC ablation or measured utility |
+| Android agency / release | Audit DB guard and owner-read bridge are code/CI paths | Current branch exact CI green | No OS executor/UI control or current owner-authenticated installed-SHA receipt; REDMI_UNVERIFIED |
+
+Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. This overlay records evidence boundaries; it does not promote any requirement to accepted.
