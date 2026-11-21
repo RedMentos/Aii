@@ -26,7 +26,7 @@ def _add_transitions(store, session, start, count):
     action_ids = []
     actions = tuple(world_model.ACTIONS)
     for index in range(start, start + count):
-        source = f"synthetic-optimizer-source-{index:04d}" + ("x" * (index % 29))
+        source = f"synthetic-user-content-{index:04d}" + ("x" * (index % 29))
         event = store.event(session, source)
         event_id = event["event_id"]
         generation = event["brain_generation_id"]
