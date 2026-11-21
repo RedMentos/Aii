@@ -145,7 +145,7 @@ def apply_sources(code_dir, sources):
         'Cognition consumes fair recovery slice')
     store = result.get('v13/store.py', originals['v13/store.py'])
     store = replace(store,
-        b"TELEMETRY_FIELDS.update('observer_schedule schedule pre post parallel sampled rss_mb'.split())  # §22.2.4 observer scheduling, §73 RSS budget\n",
+        b"TELEMETRY_FIELDS.update('observer_schedule schedule pre post parallel sampled rss_mb'.split())  # \xc2\xa722.2.4 observer scheduling, \xc2\xa773 RSS budget\n",
         b"TELEMETRY_FIELDS.update('observer_schedule schedule pre post parallel sampled rss_mb'.split())  # §22.2.4 observer scheduling, §73 RSS budget\nTELEMETRY_FIELDS.update('preanswer_seconds_available c3_reserved_seconds recent_real_prefill_failures'.split())\nTELEMETRY_ENUMS.update('PREANSWER_BUDGETED POSTCOMMIT_ELIGIBLE'.split())\n",
         'budget telemetry allowlist')
     for name, raw in (('v13/runtime.py', runtime), ('v13/observer_schedule.py', schedule),
