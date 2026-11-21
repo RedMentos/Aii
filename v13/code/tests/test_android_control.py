@@ -255,3 +255,23 @@ def test_android_system_owned_data_ancestors_are_allowed(tmp_path, monkeypatch):
     broker = AndroidControlBroker(private / "audit.sqlite")
     assert stat.S_IMODE(broker.db_path.stat().st_mode) == 0o600
     broker.close()
+
+
+def test_audit_database_rejects_writable_parent_of_allowlisted_symlink(tmp_path, monkeypatch):
+    shared = tmp_path / "shared"
+    target = tmp_path / "safe-target"
+    private = target / "private"
+    shared.mkdir()
+    private.mkdir(parents=True)
+    os.chmod(shared, 0o777)
+    os.chmod(private, 0o700)
+    alias = shared / "alias"
+    alias.symlink_to(target, target_is_directory=True)
+    monkeypatch.setattr(
+        android_control,
+        "_ANDROID_PLATFORM_SYMLINKS",
+        ((alias, target),),
+    )
+    with pytest.raises(ControlDenied, match="ancestor"):
+        AndroidControlBroker(alias / "private" / "audit.sqlite")
+    assert not (private / "audit.sqlite").exists()
