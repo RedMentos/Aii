@@ -325,12 +325,13 @@ class Runtime:
         cognition,
         b"                raise ValueError('Consumer query scope changed')\n            allowed=[e['source_ref']]+query.get('context_source_refs',[])+query.get('enlightened_source_refs',[])\n",
         b"                raise ValueError('Consumer query scope changed')\n"
+        b"            audio_context,current_audio_refs=self._audio_context_query(e,role)\n"
+        b"            if current_audio_refs!=query.get('audio_context_refs',[]):raise ValueError('Consumer audio context missing or revoked')\n"
         b"            for audio_ref in query.get('audio_context_refs',[]):\n"
         b"                audio_text=self.s.read_source(audio_ref)\n"
-        b"                audio_context=query.get('audio_context')\n"
-        b"                if not isinstance(audio_context,dict):raise ValueError('Consumer audio context missing')\n"
         b"                supplied={k:v for k,v in audio_context.items() if k!='summary_source_ref'}\n"
         b"                if json.loads(audio_text)!=supplied:raise ValueError('Consumer audio context source mismatch')\n"
+        b"            # Acoustic refs are provenance only; they are never quotable text evidence.\n"
         b"            allowed=[e['source_ref']]+query.get('context_source_refs',[])+query.get('enlightened_source_refs',[])\n",
         "analyst audio source verification",
     )
