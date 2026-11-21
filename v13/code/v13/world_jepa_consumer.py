@@ -104,6 +104,31 @@ def _arrays(rows):
     return x, a, x2
 
 
+def _action_mean_delta_baseline_loss(model, train, holdout):
+    """Action-conditioned constant latent-delta baseline on the same train/holdout split.
+
+    The baseline uses the current online encoder for z(s), the EMA target encoder
+    for z(s'), and one mean delta per action learned only from train rows. It is
+    diagnostic, not an update gate or a substitute for the JEPA predictor.
+    """
+    x, actions, x2 = train
+    hx, ha, hx2 = holdout
+    z_train = model.latent(x, target=False)
+    z_next_train = model.latent(x2, target=True)
+    z_holdout = model.latent(hx, target=False)
+    z_next_holdout = model.latent(hx2, target=True)
+    train_actions = np.argmax(actions, axis=1)
+    holdout_actions = np.argmax(ha, axis=1)
+    deltas = {}
+    for action in np.unique(train_actions):
+        mask = train_actions == action
+        deltas[int(action)] = np.mean(z_next_train[mask] - z_train[mask], axis=0)
+    if any(int(action) not in deltas for action in holdout_actions):
+        raise ValueError("mean-delta baseline lacks source-disjoint action support")
+    prediction = z_holdout + np.stack([deltas[int(action)] for action in holdout_actions])
+    return float(np.mean((prediction - z_next_holdout) ** 2)), len(deltas)
+
+
 def _source_disjoint_split(rows):
     """Deterministic holdout split by source identity, never by action ID."""
     if type(rows) not in (list, tuple) or not 16 <= len(rows) <= MAX_ROWS:
@@ -680,6 +705,7 @@ class WorldJEPAStoreConsumer:
             fit_steps_before = int(getattr(model, "_fit_steps", 0))
             before = _parameter_snapshot(model)
             holdout_before = model.prediction_loss(*holdout)
+            mean_delta_before, mean_delta_action_count = _action_mean_delta_baseline_loss(model, train, holdout)
             old_holdout_before = old_holdout_after = None
             if active is not None:
                 old_holdout_ids = set(active["holdout_ids"])
@@ -718,6 +744,7 @@ class WorldJEPAStoreConsumer:
                         "native_body_weights_changed":False}
             after = _parameter_snapshot(model)
             holdout_after = model.prediction_loss(*holdout)
+            mean_delta_after, mean_delta_action_count_after = _action_mean_delta_baseline_loss(model, train, holdout)
             shuffled_action_loss = model.prediction_loss(holdout[0], np.roll(holdout[1], 1, axis=0), holdout[2])
             zero_action_loss = model.prediction_loss(holdout[0], np.zeros_like(holdout[1]), holdout[2])
             if old_holdout_before is not None:
@@ -755,6 +782,17 @@ class WorldJEPAStoreConsumer:
                     "retention_gate_accepted": old_holdout_retained,
                     "holdout_loss_before": float(holdout_before),
                     "holdout_loss_after": float(holdout_after),
+                    "train_rows": len(train_ids),
+                    "holdout_rows": len(holdout_ids),
+                    "train_holdout_id_disjoint": True,
+                    "train_holdout_source_disjoint": split["manifest"]["source_disjoint"],
+                    "train_holdout_source_sha256_disjoint": split["manifest"]["source_sha256_disjoint"],
+                    "train_holdout_content_disjoint": split["manifest"]["within_supplied_records_content_disjoint"],
+                    "mean_delta_baseline_loss_before": float(mean_delta_before),
+                    "mean_delta_baseline_loss_after": float(mean_delta_after),
+                    "mean_delta_baseline_action_count": int(mean_delta_action_count_after),
+                    "jepa_beats_mean_delta_before": bool(holdout_before < mean_delta_before),
+                    "jepa_beats_mean_delta_after": bool(holdout_after < mean_delta_after),
                     "shuffled_action_holdout_loss": float(shuffled_action_loss),
                     "zero_action_holdout_loss": float(zero_action_loss),
                     "old_holdout_loss_before": None if old_holdout_before is None else float(old_holdout_before),
@@ -776,6 +814,8 @@ class WorldJEPAStoreConsumer:
                     "native_body_weights_changed": False,
                     "native_body_consumed": False,
                     "runtime_wired": False,
+                    "optimizer_moments_persisted": False,
+                    "inverse_dynamics_optimizer_persisted": False,
                 }
             if cancel_check is not None and cancel_check():
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
@@ -819,6 +859,11 @@ class WorldJEPAStoreConsumer:
                 "train_holdout_source_sha256_disjoint": split["manifest"]["source_sha256_disjoint"],
                 "train_holdout_content_disjoint": split["manifest"]["within_supplied_records_content_disjoint"],
                 "holdout_loss_before": float(holdout_before), "holdout_loss_after": float(holdout_after),
+                "mean_delta_baseline_loss_before": float(mean_delta_before),
+                "mean_delta_baseline_loss_after": float(mean_delta_after),
+                "mean_delta_baseline_action_count": int(mean_delta_action_count_after),
+                "jepa_beats_mean_delta_before": bool(holdout_before < mean_delta_before),
+                "jepa_beats_mean_delta_after": bool(holdout_after < mean_delta_after),
                 "holdout_loss_delta": float(holdout_after - holdout_before),
                 "holdout_improved": holdout_improved,
                 "shuffled_action_holdout_loss": float(shuffled_action_loss),
