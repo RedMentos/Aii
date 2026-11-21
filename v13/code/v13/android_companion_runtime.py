@@ -7,6 +7,7 @@ per-action approval, and signs a non-authoritative receipt.
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import re
 import time
@@ -51,6 +52,8 @@ class AndroidCompanionController:
             raise ControlDenied("companion public key encoding invalid") from exc
         if len(point) != 65 or point[0] != 4:
             raise ControlDenied("companion public key is not P-256 SEC1")
+        if hashlib.sha256(point).hexdigest() != info["key_id"]:
+            raise ControlDenied("companion public-key fingerprint mismatch")
         return info, point
 
     def _pinned_key(self):
