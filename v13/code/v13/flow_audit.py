@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import codecs
+import errno
 import hashlib
 import json
 import math
@@ -213,7 +214,12 @@ def _readonly_store_connection(home: str | Path) -> tuple[Path, sqlite3.Connecti
         | getattr(os, "O_CLOEXEC", 0)
         | getattr(os, "O_NONBLOCK", 0)
     )
-    fd = os.open(db_path, flags)
+    try:
+        fd = os.open(db_path, flags)
+    except OSError as exc:
+        if exc.errno in {errno.ELOOP, errno.EISDIR, errno.ENOTDIR}:
+            raise PermissionError("unsafe V13 Store database") from exc
+        raise
     try:
         before = os.fstat(fd)
         if (
