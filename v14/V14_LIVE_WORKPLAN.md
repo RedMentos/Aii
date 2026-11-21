@@ -734,3 +734,11 @@ The current functional release has synthetic C4 source-span selection but no pro
 - Core next: recompute exact deployer/stage pins; rerun 3.13/3.14 audio, staged Runtime, integrated, migration, owner-read, Lab-Age and deployer checks; implement the separate pre-lock cancel signal + mandatory subscriptions.
 - QA next: rebase #2244 onto the final Core head; add automatic provider-revoke cancellation while C3 is blocked, then verify iterator exit, tombstone/cache cleanup and later text-only FINAL.
 - Boss handoff PR #2248 contains the run-11 board/workplan/user handoff/coverage updates. Its only current check is offline-bridge-security 1/1 PASS; no code or release change.
+
+
+### JEPA cross-review follow-up — #2247 e8137fd (2026-11-21 20:00 CET)
+
+- New PR #2247 is a materially better current JEPA candidate than #2237: source/session provenance, per-session old-holdout gating, optimizer-state recovery and nested source pins are integrated. Exact CI is 10 success / 3 failure. Staged Runtime, integrated regression, migration, Lab-Age, owner-read and incremental-JEPA pass; `validate-additive` remains FAIL BY POLICY.
+- Both optimizer-resume Python 3.13/3.14 jobs fail because no A-GEM replay arm produces an accepted checkpoint. The per-session gate reports `SESSION_RETENTION_REGRESSED` across seeds 13/19/43; the checkpoint SHA is unchanged and update is rejected. This is correct fail-closed behavior, not a test to relax.
+- JEPA next: change the replay/learning mechanism, keep per-session holdout and stable baseline, expand paired seeds, preserve checkpoint/rollback; no activation until an accepted retention-preserving update exists.
+- Research note pending in JEPA ledger: R-040 Caccia et al. (PMLR 330, 2026) replay may increase forgetting under task-subspace conditions; R-041 Replay on Demand (arXiv:2609.40089; Apache-2.0 repo at `9ecc0517`) suggests bounded loss-based replay selection. Use only as a low-cost method reference; no NeMo-RL/GPU stack on Android. No code/dependency/model imported.
