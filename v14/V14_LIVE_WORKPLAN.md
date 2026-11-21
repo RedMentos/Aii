@@ -259,3 +259,8 @@ No master architecture edit was made, no backup was required, and historical V13
 
 These columns are independent. `CODE` is not `WIRED`; synthetic CI is not Android proof; an existing feature in the app is not evidence that it is currently active on the phone. `UNKNOWN` is not PASS. Whole-Canon completion remains false.
 
+
+
+## Research checkpoint — R-018 — RAW EAR VAD comparator (2026-11-21)
+
+Research recorded in `V14_RESEARCH_LEDGER.md`: libfvad/WebRTC VAD is the first no-weight C baseline candidate (BSD-3-Clause; upstream Android.mk precedent; review PATENTS separately); Silero VAD is the MIT learned comparator (Torch/ONNX); a small MIT C port claims arm64 NEON but has no Android target proof. No dependency/weight was imported. Next experiment: same PCM fixtures, FPR/FNR, onset/offset, CPU/RSS, then exact ARM build and patent/license review. No production selection or Redmi claim.
