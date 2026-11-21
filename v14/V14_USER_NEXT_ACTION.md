@@ -1,3 +1,18 @@
+# Latest shared-branch handoff — 2026-11-21 20:03 CET
+
+**No user action is required. Do not run an installer or change models, weights, Age, permissions, updater settings or phone data.**
+
+- Run-11 docs PR [#2248](https://github.com/RedMentos/Aii/pull/2248) is merged at `a1b1e9aad5e805b484ea6412dbd84abc454e66e0`; it updates the V14 board, workplan, next-action handoff and Canon evidence overlay. Its offline-bridge-security check passed 1/1. The active master and historical V13 appendix were not modified.
+- Core #2242 head `3dc8a194df9230b191236b8011216362d00c88cd`: 9 checks pass, 4 fail. Stage arithmetic works in Python 3.13/3.14; deployer still rejects the changed stage builder because `runtime_deploy.STAGER_SHA256` is stale. Staged Runtime/migration fail downstream. Audio revoke still cannot cancel C3, and subscription is optional. Not released.
+- JEPA #2247 head `e8137fd3d873ee08d7159a32ddd2240ab8f43f31`: 10/13 checks pass. Every A-GEM arm is rejected by per-session retention on seeds 13/19/43; no checkpoint is committed. Learning gates remain OFF.
+- Perception #2243 head `ae26c94700ca8077b38cbd87c40db89b4ae46360` now has an explicit tiny-KV experiment test workflow; the new test job is still in progress at this read. B3 remains PARTIAL_SYMBOLIC_ONLY. #2246 remains one commit behind and has only synthetic UI-lease checks.
+- Prior code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`; integrated candidate `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` remains 18/19 due SleepRuntime JEPA `UTILITY_GATE_REJECTED`.
+- Private owner-read has no authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device update or action.
+
+The full Canon is still open. No active learning, native B1/B2/C3 weight edit, production latent receiver, microphone capture, Android UI action or Redmi verification is claimed.
+
+---
+
 # Current user-facing JEPA follow-up — 2026-11-21 20:00 CET
 
 **No user action is required.** The newest JEPA candidate #2247 is still draft. It correctly rejects updates that worsen any old session; all A-GEM replay arms are rejected on three seeds, so no numeric update or checkpoint is accepted. Exact CI is 10/13 checks green; the two Python optimizer-resume jobs fail on per-session retention and safe-additive is a policy failure. Keep learning gates OFF. This is preferable to silently damaging old memories, but it does not yet deliver active learning.
