@@ -28,6 +28,18 @@ class TemporalTest(unittest.TestCase):
         self.assertIsNone(self.store.resolve("x", at=11, observed=False)["error"])
         self.assertIsNone(self.store.learning_intent("x"))
 
+    def test_explicit_censored_event_closes_immediately_without_learning_signal(self):
+        self.add()
+        result = self.store.resolve("x", at=2, observed=False,
+                                    evidence="T8:unknown-window", censored=True)
+        self.assertEqual(result["status"], "CENSORED")
+        self.assertIsNone(result["error"])
+        self.assertIsNone(result["observed_outcome"])
+        self.assertIsNone(self.store.learning_intent("x"))
+        restored = TemporalOutcomes(self.path)
+        self.assertEqual(restored.records["x"].status, "CENSORED")
+        self.assertIsNone(restored.learning_intent("x"))
+
     def test_early_missing_then_late_observation(self):
         self.add()
         self.assertEqual(self.store.resolve("x", at=8, observed=False, evidence="T8:window", observation_complete=True)["status"], "PENDING")
