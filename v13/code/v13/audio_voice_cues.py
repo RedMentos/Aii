@@ -40,7 +40,7 @@ def _estimate_pitch(frame: list[float], sample_rate: float) -> tuple[float | Non
     if not correlations:
         return None, 0.0
     peak = max(item[0] for item in correlations)
-    threshold = max(0.55, peak * 0.90)
+    threshold = max(0.55, peak * 0.97)
     candidates = [(lag, corr) for corr, lag in correlations if corr >= threshold]
     if not candidates:
         return None, max(0.0, min(1.0, peak))
@@ -129,10 +129,12 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
     f0_median = median(pitches) if pitches else None
     f0_range = (max(pitches) - min(pitches)) if len(pitches) >= 2 else None
     if frame_rms:
-        energy_range_db = min(
+        maximum_frame_rms = max(frame_rms)
+        minimum_frame_rms = max(min(frame_rms), 1e-6)
+        energy_range_db = (0.0 if maximum_frame_rms <= 1e-6 else min(
             120.0,
-            max(0.0, 20.0 * math.log10(max(frame_rms) / max(min(frame_rms), 1e-6))),
-        )
+            max(0.0, 20.0 * math.log10(maximum_frame_rms / minimum_frame_rms)),
+        ))
     else:
         energy_range_db = 0.0
     crest = overall_peak / max(overall_rms, 1e-6)
