@@ -739,6 +739,9 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         "status": result["status"],
         "checkpoint_before": before_sha,
         "checkpoint_after": after_sha,
+        # Preserve exact content-addressed checkpoint evidence from the consumer.
+        "checkpoint_sha_before": metrics.get("checkpoint_sha_before"),
+        "checkpoint_sha_after": metrics.get("checkpoint_sha_after"),
         "fit_steps_before": metrics.get("fit_steps_before"),
         "fit_steps_after": metrics.get("fit_steps_after"),
         "new_receipts": result.get("new_receipts", len(verified)),
