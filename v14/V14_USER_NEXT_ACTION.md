@@ -1184,3 +1184,12 @@ Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/225
 - GitHub file readback passed: research ledger contains R-047/R-050/R-051; handoff contains the b10964 native API contract; board JSON parses. No local full-repository tests were possible.
 - Next: Core owns the gated b10964 native receiver harness; Perception supplies provenance/dimension/negative-control review; JEPA owns later adapter training and retention. Production B3 remains symbolic/SHADOW until actual receiver consumption is measured.
 - Current user action: none. Redmi remains REDMI_UNVERIFIED.
+
+
+
+## Private device receipt readback — 2026-11-21
+
+- Private owner-read PIPELINE_STATUS request #435 is still open with zero authenticated comments. Earlier requests #431/#432/#403 also have zero comments.
+- Private V13OBS issue #115 was last updated 2026-11-18 and contains an older five-turn snapshot: C3 TTFT/prefill was still very slow, B1/B2 produced zero valid source-bound offers, and the pipeline/runtime fields were not healthy. This is historical evidence only, not the installed state on 2026-11-21.
+- No fresh authenticated phone receipt exists. Installed SHA, current updater status, and whether the latest development branch is installed are UNKNOWN. Keep REDMI_UNVERIFIED; do not infer UP_TO_DATE from GitHub.
+- No UPDATE_REQUEST, LOG_PAGE, shell command, model download/swap, permission change or phone mutation was sent. No user action is required.
