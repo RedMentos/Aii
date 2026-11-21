@@ -72,14 +72,14 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2137 exact head 2d8eb79bdefe3c6c3bef63fea7d25563b7f56952: focused V14 temporal workflow PASS (PR run 44846178337 and push run 44846173142); private bridge push PASS 44846173169; V13 staged-runtime and integrated-regression PASS in run 44846178374. Safe-additive-only policy check FAILS because this candidate modifies existing V14 modules; it is not treated as a phone release gate. No normal Runtime learning consumer, no native JEPA/B1/B2 weight change.",
-      "next_step": "Retarget this candidate to the current release branch and verify exact-base CI; then integrate the temporal bridge into a real normal-Runtime World/Outcome consumer without opening Age/optimizer permissions. Keep the scalar adapter experimental until that consumer, holdout/retention and rollback are proven.",
+      "proof_environment": "PR #2137 Boss branch head 2d8eb79bdefe3c6c3bef63fea7d25563b7f56952 now includes exact bounded ActionOutcome scan (4096 maximum; over-bound fail-closed), CANCELLED/ABORTED vs OUTCOME_UNKNOWN/INTERRUPTED censoring without prediction error/receiver update, and rollback directory fsync. Focused V14 T8 workflow PASS run 44846178337; private bridge push PASS run 44846173169; staged/integrated runs 44846178374 still IN_PROGRESS at last readback. PR #2135 remains blocked by 20 failed staged tests; PR #2133 remains experimental/not Runtime wired with source-disjoint/cancellation/backlog findings.",
+      "next_step": "Wait for exact #2137 staged/integrated results. If green, review it as a Store-verified temporal adapter only; then wire a real Runtime consumer and combine with the JEPA/World receiver without opening Age/optimizer gates. Rebuild the #2135 source-pinned online-world candidate chain before considering its exactly-once persistence fix.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 Boss: corrected cancellation/censoring, bounded outcome cardinality and rollback durability; focused, staged-runtime and integrated-regression CI all PASS. PR remains draft/unmerged.",
+      "last_checkpoint": "2026-11-21 Boss updated #2137 on its own branch; new negative/restart/durability tests committed. Focused V14 workflow passed; full staged/integrated evidence still pending.",
       "latest_candidate_pr": {
         "pr": 2137,
         "head_sha": "2d8eb79bdefe3c6c3bef63fea7d25563b7f56952",
-        "ci": "V14 temporal focused PASS runs 44846178337/44846173142; private bridge PASS 44846173169; staged-runtime and integrated-regression PASS run 44846178374; additive-only policy check FAIL (scope policy, not release gate)",
+        "ci": "V14 T8 temporal bridge workflow PASS run 44846178337; private bridge push PASS run 44846173169; staged/integrated IN_PROGRESS run 44846178374",
         "scope": "Store-verified scalar temporal receiver; no normal Runtime consumer, no native JEPA/B1/B2 body-weight change, optimizer gate closed"
       }
     },
@@ -118,8 +118,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Release code commit 5b9171a has exact updater-required push CI GREEN; docs handoff branch is current. PR #2137 has focused V14, staged-runtime and integrated-regression PASS after Boss fixes, but is not merged yet; whole-Canon acceptance and Redmi proof remain open.",
-      "next_step": "Retarget and independently review #2137 against the current release HEAD; merge only the bounded experimental V14 component after exact-base CI. Continue integrating other organ consumers rather than treating this slice as whole-system progress.",
+      "proof_environment": "Code release PR #2138 merged as 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e; exact updater-required push CI GREEN. Later branch commits are documentation-only; verify their exact push CI separately. Whole-Canon implementation remains open and Redmi is unverified.",
+      "next_step": "Continue one compatible end-to-end candidate at a time, resolve semantic source-pin dependencies rather than refreshing hashes blindly, and keep the whole-Canon coverage/owner matrix current.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21: #2138 merged/read back; exact release push CI green; Redmi receipt absent."
     },
@@ -132,8 +132,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "Current V14_USER_NEXT_ACTION/WORK_BOARD from the release branch were copied into the T8 candidate branch to avoid stale doc overwrites. This candidate now records PR #2137 focused/staged/integrated CI PASS and explicit remaining Runtime/Redmi gaps.",
-      "next_step": "After retarget/merge, keep board and handoff synchronized to the resulting exact release SHA and actual device receipt; no user action needed.",
+      "proof_environment": "V14_USER_NEXT_ACTION and V14_WORK_BOARD were updated in Boss-owned documentation-only commits after code release 5b9171a. No runtime source changed in those handoff commits; always read live branch HEAD at next run.",
+      "next_step": "Keep this file and board synchronized after #2137 CI completion or any new release/device receipt; no user command until autonomous verified updater path is available.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 Boss: no user action required; no device update requested."
     },
