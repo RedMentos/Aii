@@ -5,6 +5,7 @@
 - Core & Harness owns the dashboard consumer.
 - Stacked on the read-only per-turn auditor in PR #2183.
 - Base checkpoint: 12fd5edd3fa2ab2e9dc96c209079962af6d98707.
+- Current implementation checkpoint: 8a20b26d48af6fcd211dfa9b93e2b83d54568ff8.
 - This PR changes the existing local-only dashboard handler/template; it is intentionally DRAFT and requires independent Boss review. No additive gate is bypassed.
 
 ## Executable user-facing behavior
@@ -22,8 +23,8 @@ The projection preserves claim boundaries:
 
 ## Tests and evidence
 
-- Exact local full checkout: BLOCKED by container GitHub DNS failure; no local repository suite is claimed.
-- Dedicated CI workflow runs the flow-audit tests and dashboard target test on Python 3.11 and 3.13, plus py_compile and Node syntax check.
+- Exact local full checkout: BLOCKED by container GitHub DNS failure (git ls-remote failed with name-resolution error); no local repository suite is claimed.
+- Dedicated CI workflow PASS on Python 3.11 at run 44891401045: flow-audit tests, session-bound/redaction projection tests, dashboard target test, py_compile, and Node inline-JavaScript syntax check.
 - Synthetic Store fixtures are labeled SYNTHETIC_FIXTURE; they do not prove native model attention, trained latent receiver effect, microphone capture, or Redmi installation.
 - Deployment: NOT_RELEASED. Existing updater is not invoked by this PR.
 
