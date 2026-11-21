@@ -213,12 +213,6 @@ class Runtime:
                     e,role,ref=payload
                     try:self.notice(dumps(self.cognition.tap(role,e,ref,time.monotonic()+self.cfg['observer_seconds'])))
                     finally:self.pool.unload()
-                elif kind=='latent_probe':
-                    e,sender,receiver,ref=payload
-                    try:
-                        deadline=time.monotonic()+max(120,self.cfg['observer_seconds'])
-                        self.notice(dumps(self.cognition.native_receive(sender,receiver,e,ref,deadline)))
-                    finally:self.pool.unload()
                 elif kind=='probe':
                     if payload=='sustained':
                         from .proofs import probe_sustained
