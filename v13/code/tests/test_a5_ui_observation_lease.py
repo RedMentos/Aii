@@ -11,7 +11,7 @@ from pathlib import Path
 from v13.attention import Attention
 from v13.runtime import Runtime
 from v13.store import Store
-from v13.a5_ui_admission_bridge import validate_ui_observation
+from v13.a5_ui_admission_bridge import A5UIRuntimeAdapter, validate_ui_observation
 
 
 class Provider:
@@ -90,18 +90,16 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         self.runtime.turn_event = self.event
         self.runtime.attention = Attention(self.store)
         self.runtime.closed = False
-        self.runtime._a5_ui_context_cache = {}
-        self.runtime._a5_ui_unsubscribe = {}
+        self.adapter = A5UIRuntimeAdapter(self.runtime)
         self.provider = Provider()
 
     def tearDown(self):
-        for source_id in list(getattr(self.runtime, "_a5_ui_unsubscribe", {})):
-            self.runtime.revoke_ui_observation(source_id)
+        self.adapter.close()
         self.store.close()
         self.temp.cleanup()
 
     def lease(self, observation_packet=None):
-        return self.runtime.ui_observation_lease(
+        return self.adapter.lease(
             observation_packet or observation(),
             self.provider.check,
             self.provider.guard,
@@ -111,7 +109,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
     def test_runtime_ingress_drives_store_a4_and_admission(self):
         obs = observation()
         with self.lease(obs) as grant:
-            result = self.runtime.ingest_ui_observation(obs, grant, goal="open app")
+            result = self.adapter.ingest(obs, grant, goal="open app")
             self.assertEqual(result["status"], "WIRED_SYNTHETIC")
             self.assertEqual(result["admission"].status, "ADMITTED")
             self.assertEqual(result["packet"]["modality"], "ui")
@@ -127,7 +125,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
             )
             self.assertEqual(self.store.read_source(result["source_ref"]), expected)
             self.assertEqual(
-                self.runtime.ui_observation_context(self.event["event_id"]),
+                self.adapter.context(self.event["event_id"]),
                 (result["packet"],),
             )
             segment = result["packet"]["segments"][0]
