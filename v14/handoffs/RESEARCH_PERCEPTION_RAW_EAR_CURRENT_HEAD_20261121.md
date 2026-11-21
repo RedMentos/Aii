@@ -11,6 +11,7 @@
 
 This branch carries the exact RAW EAR candidate source and tests from the prior #2226 work onto the latest shared V14 base, without copying stale shared board/workplan/coverage snapshots. It includes:
 
+- Speaker identity and timbre are explicitly listed as unmeasured in the packet; no speaker identification or biometric inference is claimed.
 - `v13/code/v13/audio_voice_cues.py` blob `9cae3b93388ea2c488e5af37a544ed0df5727f07`: bounded PCM16 pitch/voicing/energy/prosody/non-speech cues; source-bound AudioPerceptPacket; one linearizable consent lease across PCM processing, transactional Store persistence, temporal evidence, A4 attention and bounded C3 admission. The provider lease is authoritative and is not reacquired through a non-reentrant `consent_check` callback.
 - `v13/code/v13/audio_temporal_evidence.py` blob `098ce2ec6bb0b744166d711a3401b7acf0252de1`: per-source/generation attack/release state, bounded 16-stream LRU registry, explicit reset and concurrency-safe first initialization.
 - `v13/code/v13/audio_silero_vad.py` blob `95b6f586efb75910c2bc2f9105d711cd1ca1a87c`: optional caller-owned 16 kHz Silero ONNX stream adapter, 64-sample context + 512-sample frames, recurrent state, bounded incomplete PCM tail, source/generation/timestamp reset, explicit local file + SHA/revision checks, CPU-only single-thread configuration. No model is fetched.
@@ -40,7 +41,7 @@ The strict safe-additive policy is not bypassed. Because this change modifies ex
 
 **LOCAL_LINUX:** exact-source compile/pytest BLOCKED. Python 3.13.5 and Git 2.47.3 are present, but no Aii checkout is available and `git ls-remote` fails with `Could not resolve host: github.com`. GitHub Actions evidence is not a local checkout test.
 
-**TERMUX/REDMI:** REDMI_UNVERIFIED. No current authenticated device receipt yet. Private read-only requests HEALTH #415, PIPELINE_STATUS #416 and DIAGNOSTICS #417 were issued; all three had no response at last readback. No microphone capture, native model inference, installed SHA or updater deployment is claimed.
+**TERMUX/REDMI:** REDMI_UNVERIFIED. No current authenticated device receipt yet. Private read-only requests HEALTH #415, PIPELINE_STATUS #416 and DIAGNOSTICS #417 expired without response and were closed. Last private V13OBS #115 (18 Nov) recorded updated commit `89333289b8cd50da92cbf7074c9ef689a2972dbf`, `auto_enabled=true`, pipeline `PARTIAL` / `UPDATE` error, runtime/service/model process RUNNING; this is stale, not a current device receipt. No microphone capture, native model inference, installed SHA or updater deployment is claimed.
 
 ## Research reviewed
 
