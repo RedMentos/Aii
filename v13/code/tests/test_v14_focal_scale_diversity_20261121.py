@@ -39,7 +39,7 @@ def test_review_stage_applies_only_scale_aware_c4_overlay(tmp_path):
     staged = (destination / "v13" / "focal.py").read_bytes()
     assert b"SCALE_AWARE_C4_RULE = 'DISJOINT_SAME_SOURCE_SPANS_ONLY'" in staged
     assert b"_has_disjoint_source_evidence" in staged
-    assert b"_scale_aware_redundancy(c,a)" in staged
+    assert b"_scale_aware_redundancy(c,a,threshold)" in staged
     assert b"CROSS_SCALE_REDUNDANCY_FACTOR" not in staged
     assert hashlib.sha256(staged).hexdigest() == manifest["files_sha256"]["v13/focal.py"]
     after_raw = source.read_bytes()
