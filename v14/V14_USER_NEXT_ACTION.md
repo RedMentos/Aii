@@ -1291,3 +1291,10 @@ Private PIPELINE_STATUS issue #443 has no authenticated reply. Installed SHA and
 - Private PIPELINE_STATUS #440 remains expired/open with zero comments; no authenticated phone receipt. Installed SHA and updater consent unknown; **REDMI_UNVERIFIED**. P0 #1904 remains open. No UPDATE_REQUEST, LOG_PAGE, CHAT_SEND, shell, Termux, model/weight/permission change or phone mutation occurred.
 
 **Next internal action:** Core refreshes the #2275 audio pin and stage/deployer chain on the finalized #2258 integration base; then run exact staged/integrated tests and independent review. No user action or manual Termux command is required.
+
+
+## Research/Perception exact test refinement — 2026-11-22 00:12 CET
+
+- #2275 current code/test head is now `10d1f54540fd3f225f3ac905e2841dd15f545ed4`. The test assertion now checks the symmetric nearest-sample tolerance `abs(reference_age_ms - 800) <= 120`, matching an 800-ms target and ±120-ms tolerance for 80-ms frames; it no longer assumes the selected sample can only be older than target.
+- LOCAL_LINUX CPython 3.13.5 isolated reproduction: **PASS** (1-s/2-s batch invariance and old same-batch false-negative negative control). Exact-head RAW EAR Python 3.13, Python 3.14 and offline-bridge-security CI are queued; the preceding code/test head 84a33 had all three PASS. No new full staged/integrated run is claimed.
+- #2258 base remains fully CI-green as recorded above. #2275 remains DRAFT / NOT_RELEASED; Core's `audio_voice_cues.py` nested pin still needs refresh. Redmi remains REDMI_UNVERIFIED; no user action.
