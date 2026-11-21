@@ -1,3 +1,12 @@
+# QA & Android audit follow-up — 2026-11-21 10:26 CET
+
+- PR #2183 exact head `ff120196976f447197f93c4794f48659a750b4df` remains unchanged. In addition to the C4 role/state mismatch and source-blob symlink-following findings, QA found a third fail-open: `audit_latest(session_id=None)` selects the newest event across all sessions, and CLI `--session-id` is optional. The existing test `test_audit_latest_and_read_only_database` explicitly exercises this global default; cross-session rejection is only tested when a session ID is supplied.
+- Review 6004392741 requests fail-closed latest-event mode unless `--session-id` is supplied (or require explicit `--event-id`), plus a two-session negative test. Core's earlier note that the CLI now accepts `--session-id` does not make it mandatory.
+- #2183 exact staged/integrated CI remains green, but the audit is **PROVISIONAL / NOT AN ACCEPTANCE GATE** until all three issues are fixed and negative tests pass.
+- **User action: none.** No device or session data was accessed; no private chat text is returned by the audit.
+
+---
+
 # QA & Android device-receipt follow-up — 2026-11-21 10:24 CET
 
 - Private PIPELINE_STATUS request [Aiiii#382](https://github.com/RedMentos/Aiiii/issues/382) expired at **2026-11-21T09:23:23Z with zero comments**. Record this as **NO_LIVE_RECEIPT**, not as an install result. Older #381/#380 also have no receipt.
