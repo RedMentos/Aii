@@ -1,9 +1,10 @@
 import json
+import os
 import sqlite3
 import zlib
 
 from v13.contracts import packet
-from v13.flow_audit import audit_event, audit_latest, main
+from v13.flow_audit import audit_event, audit_latest, audit_latest_completed, main
 from v13.store import Store
 
 
@@ -125,10 +126,21 @@ def _fixture(home, *, include_c4=True, include_context=True):
         store.close()
 
 
+def _session_id(home, event_id):
+    conn = sqlite3.connect(home / "data" / "db" / "brain.sqlite3")
+    try:
+        row = conn.execute("SELECT session_id FROM events WHERE id=?", (event_id,)).fetchone()
+        if not row:
+            raise AssertionError("fixture event missing")
+        return row[0]
+    finally:
+        conn.close()
+
+
 def test_full_b1_b2_c4_c3_path_is_reported_without_private_text(tmp_path):
     home = tmp_path / "runtime"
     event_id = _fixture(home)
-    report = audit_event(home, event_id)
+    report = audit_event(home, event_id, session_id=_session_id(home, event_id))
 
     assert report["read_only"] is True
     assert report["private_text_returned"] is False
@@ -162,7 +174,7 @@ def test_full_b1_b2_c4_c3_path_is_reported_without_private_text(tmp_path):
 def test_missing_c4_or_c3_context_is_not_promoted_to_pass(tmp_path):
     home = tmp_path / "runtime"
     event_id = _fixture(home, include_c4=False, include_context=False)
-    report = audit_event(home, event_id)
+    report = audit_event(home, event_id, session_id=_session_id(home, event_id))
     assert report["c4"]["status"] == "FAIL"
     assert report["c3"]["status"] == "FAIL"
     assert "B1_B2_NOT_BOTH_CONSUMED_BY_C4" in report["warnings"]
@@ -187,11 +199,38 @@ def test_audit_latest_and_read_only_database(tmp_path):
     assert before == after
 
 
+def test_audit_reads_live_store_while_runtime_lock_is_held(tmp_path):
+    home = tmp_path / "runtime"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    try:
+        session = store.new_session("live Store fixture")
+        event = store.event(session, "LIVE_PRIVATE_USER_TEXT_SENTINEL")
+        store.message(
+            session, event["event_id"], "assistant", "LIVE_PRIVATE_ASSISTANT_SENTINEL",
+            status="FINAL", metadata={"runner": {"role": "C3_LANGUAGE", "status": "FINAL"}},
+        )
+
+        # Store still owns its coordinator lock and keeps the WAL connection open.
+        # The audit must read the persisted turn without constructing another Store.
+        report = audit_event(home, event["event_id"], session_id=session)
+        assert report["event_id"] == event["event_id"]
+        assert report["assistant_status"] == "FINAL"
+        assert report["read_only"] is True
+        assert report["private_text_returned"] is False
+        assert "LIVE_PRIVATE_USER_TEXT_SENTINEL" not in json.dumps(report)
+        assert "LIVE_PRIVATE_ASSISTANT_SENTINEL" not in json.dumps(report)
+        assert store.one("SELECT id FROM events WHERE id=?", (event["event_id"],)) is not None
+    finally:
+        store.close()
+
+
 def test_missing_event_fails_closed(tmp_path):
     home = tmp_path / "runtime"
-    _fixture(home)
+    event_id = _fixture(home)
     try:
-        audit_event(home, "evt_missing")
+        audit_event(home, "evt_missing", session_id=_session_id(home, event_id))
     except KeyError:
         pass
     else:
@@ -221,7 +260,7 @@ def test_invalid_source_ref_is_reported_without_exposing_it(tmp_path):
     finally:
         conn.close()
 
-    report = audit_event(home, event_id)
+    report = audit_event(home, event_id, session_id=_session_id(home, event_id))
     assert report["source_integrity"]["invalid_refs"] >= 1
     assert "SOURCE_REF_INTEGRITY_INCOMPLETE" in report["warnings"]
     assert "src_missing_private" not in json.dumps(report)
@@ -255,7 +294,7 @@ def test_query_role_mismatch_is_reported(tmp_path):
     finally:
         conn.close()
 
-    report = audit_event(home, event_id)
+    report = audit_event(home, event_id, session_id=_session_id(home, event_id))
     assert report["bodies"]["query_binding_status"] == "PARTIAL"
     assert any(
         item["role"] == "B1_DETAIL" and item["query_role_match"] is False
@@ -277,7 +316,7 @@ def test_compressed_source_blob_is_verified_streamingly(tmp_path):
     blob.with_name(sha + ".z").write_bytes(zlib.compress(raw))
     blob.unlink()
 
-    report = audit_event(home, event_id)
+    report = audit_event(home, event_id, session_id=_session_id(home, event_id))
     assert report["source_integrity"]["invalid_refs"] == 0
     assert report["source_integrity"]["valid_refs"] >= 2
 
@@ -355,7 +394,7 @@ def test_c4_requires_focal_item_to_retain_offer_source_refs(tmp_path):
     finally:
         conn.close()
 
-    report = audit_event(home, event_id)
+    report = audit_event(home, event_id, session_id=_session_id(home, event_id))
     assert report["c4"]["status"] == "PARTIAL"
     assert report["c4"]["consumed_roles"] == ["B2_GIST"]
     assert report["c3"]["context_binding_status"] == "PARTIAL"
@@ -382,7 +421,7 @@ def test_c4_rejects_focal_item_with_wrong_source_role(tmp_path):
     finally:
         conn.close()
 
-    report = audit_event(home, event_id)
+    report = audit_event(home, event_id, session_id=_session_id(home, event_id))
     assert report["c4"]["status"] == "PARTIAL"
     assert report["c4"]["consumed_roles"] == ["B2_GIST"]
     assert report["c3"]["context_binding_status"] == "PARTIAL"
@@ -407,7 +446,7 @@ def test_c4_rejects_non_active_focal_item(tmp_path):
     finally:
         conn.close()
 
-    report = audit_event(home, event_id)
+    report = audit_event(home, event_id, session_id=_session_id(home, event_id))
     assert report["c4"]["status"] == "PARTIAL"
     assert report["c4"]["consumed_roles"] == ["B2_GIST"]
 
@@ -445,7 +484,7 @@ def test_c4_uses_only_the_latest_focal_cycle(tmp_path):
     finally:
         store.close()
 
-    report = audit_event(home, event_id)
+    report = audit_event(home, event_id, session_id=_session_id(home, event_id))
     assert report["c4"]["status"] == "PARTIAL"
     assert report["c4"]["consumed_roles"] == ["B2_GIST"]
 
@@ -467,7 +506,7 @@ def test_source_blob_symlink_is_rejected_without_following(tmp_path):
     blob.unlink()
     blob.symlink_to(external)
 
-    report = audit_event(home, event_id)
+    report = audit_event(home, event_id, session_id=_session_id(home, event_id))
     assert report["source_integrity"]["invalid_refs"] >= 1
     assert report["source_integrity"]["valid_refs"] >= 1
     assert "outside-source" not in json.dumps(report)
@@ -487,8 +526,106 @@ def test_source_blob_non_regular_entry_is_rejected(tmp_path):
     blob.unlink()
     blob.mkdir()
 
-    report = audit_event(home, event_id)
+    report = audit_event(home, event_id, session_id=_session_id(home, event_id))
     assert report["source_integrity"]["invalid_refs"] >= 1
+
+
+def test_explicit_event_selector_is_unscoped_but_sanitized(tmp_path, capsys):
+    home = tmp_path / "runtime"
+    first_event = _fixture(home)
+    first_session = _session_id(home, first_event)
+
+    store = Store(home)
+    try:
+        other_session = store.new_session("other chat")
+        other_event = store.event(other_session, "OTHER_PRIVATE_TEXT_SENTINEL")
+    finally:
+        store.close()
+
+    # An explicit event ID is a deliberate local selector and may select any
+    # session. The report must still contain metadata only, never source/chat text.
+    report = audit_event(home, other_event["event_id"])
+    assert report["event_id"] == other_event["event_id"]
+    assert report["read_only"] is True
+    assert report["private_text_returned"] is False
+    rendered = json.dumps(report)
+    for private_value in (
+        "OTHER_PRIVATE_TEXT_SENTINEL",
+        "PRIVATE_USER_TEXT_SENTINEL",
+        "PRIVATE_BODY_EVIDENCE_SENTINEL",
+        "PRIVATE_OFFER_TEXT_SENTINEL",
+        "PRIVATE_ASSISTANT_TEXT_SENTINEL",
+    ):
+        assert private_value not in rendered
+
+    # Supplying a session ID opts into strict session binding.
+    try:
+        audit_event(home, other_event["event_id"], session_id=first_session)
+    except KeyError:
+        pass
+    else:
+        raise AssertionError("explicit event with a wrong supplied session must be hidden")
+
+    assert main([
+        "--home", str(home), "--event-id", other_event["event_id"], "--compact",
+    ]) == 0
+    cli_report = json.loads(capsys.readouterr().out)
+    assert cli_report["event_id"] == other_event["event_id"]
+    assert "OTHER_PRIVATE_TEXT_SENTINEL" not in json.dumps(cli_report)
+
+    assert main([
+        "--home", str(home), "--event-id", other_event["event_id"],
+        "--session-id", first_session, "--compact",
+    ]) == 2
+    error = json.loads(capsys.readouterr().err)
+    assert error["error"] == "KeyError"
+
+
+def test_readonly_audit_rejects_symlinked_database(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    real_db = db.with_name("brain.real.sqlite3")
+    db.rename(real_db)
+    db.symlink_to(real_db.name)
+    try:
+        audit_latest(home, session_id=_session_id(home, event_id))
+    except PermissionError:
+        pass
+    else:
+        raise AssertionError("symlinked Store database must be rejected")
+
+
+def test_readonly_audit_rejects_hardlinked_database(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    alias = db.with_name("brain.alias.sqlite3")
+    os.link(db, alias)
+    try:
+        audit_latest(home, session_id=_session_id(home, event_id))
+    except PermissionError:
+        pass
+    else:
+        raise AssertionError("hardlinked Store database must be rejected")
+    finally:
+        alias.unlink(missing_ok=True)
+
+
+def test_readonly_audit_rejects_writable_data_ancestor(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    data_dir = home / "data"
+    original_mode = data_dir.stat().st_mode & 0o7777
+    os.chmod(data_dir, original_mode | 0o002)
+    try:
+        audit_latest(home, session_id=_session_id(home, event_id))
+    except PermissionError:
+        pass
+    else:
+        raise AssertionError("world-writable Store ancestor must be rejected")
+    finally:
+        os.chmod(data_dir, original_mode)
 
 
 def test_latest_event_audit_requires_explicit_session_with_multiple_chats(tmp_path, capsys):
@@ -524,3 +661,40 @@ def test_latest_event_audit_requires_explicit_session_with_multiple_chats(tmp_pa
     report = json.loads(capsys.readouterr().out)
     assert report["event_id"] == event_id
     assert "OTHER_PRIVATE_TEXT_SENTINEL" not in json.dumps(report)
+
+
+def test_latest_completed_audit_ignores_newer_pending_event_across_sessions(tmp_path):
+    home = tmp_path / "runtime"
+    completed_event_id = _fixture(home)
+    store = Store(home)
+    try:
+        pending_session = store.new_session("new active chat without an answer")
+        store.event(pending_session, "PENDING_PRIVATE_TEXT_SENTINEL")
+    finally:
+        store.close()
+
+    db = home / "data" / "db" / "brain.sqlite3"
+    before = db.read_bytes()
+    report = audit_latest_completed(home)
+    after = db.read_bytes()
+
+    assert report is not None
+    assert report["event_id"] == completed_event_id
+    assert report["assistant_status"] == "FINAL"
+    assert report["read_only"] is True
+    assert report["private_text_returned"] is False
+    assert "PENDING_PRIVATE_TEXT_SENTINEL" not in json.dumps(report)
+    assert before == after
+
+
+def test_latest_completed_audit_returns_none_without_assistant_turn(tmp_path):
+    home = tmp_path / "runtime"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    try:
+        session = store.new_session("pending only")
+        store.event(session, "PENDING_ONLY_PRIVATE_TEXT")
+    finally:
+        store.close()
+    assert audit_latest_completed(home) is None
