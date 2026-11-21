@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "research-perception/**"
+      - "gpt6/v13-private-remote-bridge-20261111"
     paths:
       - "v13/code/v13/a5_ui_admission_bridge.py"
       - "v13/code/v13/store.py"
