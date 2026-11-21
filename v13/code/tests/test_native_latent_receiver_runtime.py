@@ -151,21 +151,34 @@ def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp
     runtime.close()
 
 
-def test_callosum_probe_requires_explicit_confirmation_and_uses_last_source(tmp_path):
+def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path):
     runtime, event, model_path, digest = setup_runtime(tmp_path)
     runtime.last_answer = lambda: {"event_id": event["event_id"]}
-    queued = []
-    runtime.enqueue = lambda kind, payload: queued.append((kind, payload))
+    calls = []
+    runtime.require_idle = lambda: calls.append("idle")
+    packet = {
+        "status": "NATIVE_INPUT_EFFECT",
+        "sender_tap_packet_id": "tap-packet-3",
+        "source_ref": event["source_ref"],
+        "native_input_consumed": True,
+        "production_route": False,
+        "semantic_use_proven": False,
+        "training_authority": 0,
+        "native_receiver_authority": 0,
+    }
+    runtime.cognition.native_receive = lambda sender, receiver, e, ref, deadline: (
+        calls.append((sender, receiver, e["event_id"], ref, deadline)) or packet
+    )
+    runtime.pool.unload = lambda: calls.append("unload")
     result = json.loads(operator_command(
         runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source", "--confirm"]
     ))
-    assert result["queued"] is True
+    assert result["completed"] is True
+    assert result["queued"] is False
     assert result["production_route"] is False
-    assert queued[0][0] == "latent_probe"
-    queued_event, sender, receiver, source_ref = queued[0][1]
-    assert queued_event["event_id"] == event["event_id"]
-    assert (sender, receiver) == ("B2_GIST", "C3_LANGUAGE")
-    assert source_ref == event["source_ref"]
+    assert calls[0] == "idle"
+    assert calls[1][:4] == ("B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"])
+    assert calls[2] == "unload"
     with pytest.raises(ValueError):
         operator_command(runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source"])
     with pytest.raises(ValueError):
