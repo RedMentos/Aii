@@ -111,7 +111,7 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
         assert metrics["parameter_delta_norm"] > 0
         assert metrics["ema_target_delta_norm"] > 0
         assert metrics["holdout_improved"] is True
-        assert metrics["negative_controls_separated"] is True
+        assert metrics["negative_controls_separated"] is True, metrics
         assert metrics["holdout_loss_delta"] < 0
         assert metrics["optimizer_moments_persisted"] is False
         assert math.isfinite(metrics["holdout_loss_before"])
