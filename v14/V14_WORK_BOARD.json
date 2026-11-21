@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T19:24:00.000Z",
+  "updated_at": "2026-11-21T19:25:00.000Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -281,11 +281,11 @@
       "last_checkpoint": "2026-11-21T18:05:08.230Z"
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED — fresh PIPELINE_STATUS request #428 in private RedMentos/Aiiii is open with zero authenticated replies; installed SHA and updater consent UNKNOWN. No DIAGNOSTICS follow-up, LOG_PAGE, UPDATE_REQUEST, shell action or device mutation.",
+  "current_redmi_status": "REDMI_UNVERIFIED — private PIPELINE_STATUS request #428 in RedMentos/Aiiii remains open with zero authenticated replies; installed SHA and updater consent UNKNOWN.",
   "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
   "latest_integrated_head": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
   "latest_integrated_head_verified_at": "2026-11-21T18:05:08.230Z",
-  "release_gate_status": "NOT_RELEASED. Last fully accepted code release f279286a4453248004c670fcaabecd85da6ab299 has 34/34 exact check-runs and 19/19 workflows SUCCESS. Latest merged code candidate 728cdc763f09bee20ac00e1f0faadffcd33dfbb2 has 18/19 exact merge-push checks; SleepRuntime JEPA positive acceptance is correctly rejected as UTILITY_GATE_REJECTED. Shared branch HEAD 0c9ede256e9a3bdafc728fe6be1b4bead8fe13bd has 30 check-runs: 24 success, 3 in progress, 3 queued, zero failures at last read; this is not a release. Core #2242 still fails stage/deployer/migration; JEPA #2247 fails retention; #2243/#2246 current rebased checks are pending.",
+  "release_gate_status": "NOT_RELEASED. Last fully accepted code release f279286a4453248004c670fcaabecd85da6ab299 has 34/34 exact check-runs and 19/19 workflows SUCCESS. Latest merged code candidate 728cdc763f09bee20ac00e1f0faadffcd33dfbb2 has 18/19 exact merge-push checks; SleepRuntime JEPA positive acceptance is correctly rejected as UTILITY_GATE_REJECTED. New research-only PR #2243 merged at 6bbaa66e4e2454cc2178bd145da95d1e9cf6530f; its exact PR checks were 4/4 green, but the merge-push release-branch CI is still 31 total = 25 queued, 6 in progress, 0 completed at last read. No new code release or Redmi proof.",
   "phone_receipt": {
     "state": "NO_AUTHENTICATED_OWNER_READ_REPLY",
     "installed_sha": "UNKNOWN",
@@ -314,12 +314,12 @@
     },
     {
       "capability": "B3 Enlightened Space true latent coupling",
-      "code": "TINY_CROSS_GEOMETRY_KV_EXPERIMENT_PR2243_DRAFT",
+      "code": "TINY_CROSS_GEOMETRY_KV_EXPERIMENT_MERGED_6BBAA",
       "wired": "NO_PRODUCTION_RECEIVER",
-      "tested_synthetic": "PR2243_PRIOR_HEAD_7B65_LATENT_CACHE_TINY_3_OF_3_PASS; CURRENT_REBASED_HEAD_D738_2_PASS_2_QUEUED",
+      "tested_synthetic": "PR2243_EXACT_HEAD_F440_4_OF_4_PASS; MERGE_PUSH_6BBAA_31_CHECKS_PENDING",
       "tested_android": "NOT_TESTED",
       "active": "NO",
-      "evidence": "The prior exact head's 3/3 tiny adapter/injection tests passed. PR #2243 was rebased to current shared base 0c9ede; its new exact head d7380cb4a3d5a1cdf7a2cbd124d39a09f05fa547 has privacy/offline-bridge PASS while latent-cache-tiny and model-lab remain queued. This is a toy mechanism proof only, not actual LFM2.5↔Qwen3.5 llama.cpp K/V tap/injection, OOD robustness, production receiver or Android proof. B3 remains PARTIAL_SYMBOLIC_ONLY."
+      "evidence": "PR #2243 merged as a research-only experiment with exact PR checks green. It trains/injects K/V maps between newly initialized tiny PyTorch models and tests no-message/shuffled/random controls plus restart equivalence. The merge-push CI is still pending. No production llama.cpp tap/injection, actual LFM2.5↔Qwen3.5 receiver, OOD evidence, Runtime consumer or Android proof; B3 remains PARTIAL_SYMBOLIC_ONLY."
     },
     {
       "capability": "B4 distributed workspace and C4 coalition",
@@ -513,17 +513,17 @@
   ],
   "latest_boss_checkpoint": {
     "timestamp": "2026-11-21T19:18:00.000Z",
-    "branch_head": "0c9ede256e9a3bdafc728fe6be1b4bead8fe13bd",
-    "branch_head_type": "CURRENT_SHARED_RELEASE_BRANCH_HEAD; includes merged PR #2240 code and Boss documentation checkpoints; not a phone release.",
-    "branch_head_checks": "Exact HEAD check-runs at last read: 30 total = 24 success, 3 in progress, 3 queued, 0 failures. GitHub CI only; wait for exact HEAD completion before any release decision.",
+    "branch_head": "6bbaa66e4e2454cc2178bd145da95d1e9cf6530f",
+    "branch_head_type": "CURRENT_SHARED_RELEASE_BRANCH_HEAD AFTER RESEARCH-ONLY PR2243 MERGE; no production runner/weights/permissions/device change.",
+    "branch_head_checks": "Exact merge-push check-runs: 31 total = 25 queued, 6 in progress, 0 completed at last read. All are CI; no release until exact-head push CI finishes.",
     "code_bearing_release_sha": "f279286a4453248004c670fcaabecd85da6ab299",
     "code_release_checks": "34_OF_34_EXACT_CHECK_RUNS_AND_19_OF_19_WORKFLOWS_SUCCESS",
     "integrated_code_candidate": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
     "integrated_code_candidate_checks": "18_OF_19_EXACT_MERGE_PUSH; SleepRuntime JEPA positive acceptance returns UTILITY_GATE_REJECTED; candidate NOT_RELEASED.",
     "pr2242": "DRAFT_NOT_RELEASED_HEAD_3DC8A19; 9_SUCCESS_4_FAILURE. Python3.14 deployer rejects changed stage builder because STAGER_SHA256 is stale; three stage tests lack mandatory arithmetic overlay fixture; two migration tests return PARTIAL. Audio lease lacks pre-lock revoke-request cancellation and still treats subscription as optional. Boss comment 7067896024 records exact blockers.",
     "pr2244": "DRAFT_STACKED_ON_CORE_2242_HEAD_575F18; 1_PASS_1_IN_PROGRESS_5_QUEUED. C3-like stream tests are synthetic and cannot validate production C3 or Android provider; rebase after Core fix.",
-    "pr2243": "DRAFT_HEAD_D7380CB_BASE_0C9EDE; privacy/offline bridge PASS, latent-cache-tiny and model-lab QUEUED. Prior head 7B65 had 3/3 toy tests PASS; current rebased head still needs exact CI. No production B3 receiver.",
-    "pr2246": "DRAFT_HEAD_AC826225_BASE_D7380CB; exact checks 3_QUEUED. Adapter now derives/passes runtime.turn_event['brain_generation_id']; two-phase pre-lock cancel/post-lock cleanup tests exist. Synthetic fake provider only; no OS capture/action or Android proof. Earlier missing-generation_id comment is stale.",
+    "pr2243": "MERGED_AT_6BBAA66; exact PR head f440a5a330e709c06cab1f818de8c83362897b2b passed latent-cache-tiny, model-lab, privacy and offline-bridge-security. Diff only adds a V14 tiny K/V experiment, its tests/results/README, R-037 research ledger, handoff and isolated workflow. Merge-push CI on 6bbaa is 25 queued / 6 in progress. No production B3 receiver; B3 remains PARTIAL_SYMBOLIC_ONLY.",
+    "pr2246": "DRAFT_HEAD_AD0D6A3_BASE_D7380CB (stale parent). Adapter derives/passes runtime.turn_event['brain_generation_id']; two-phase synthetic revoke tests present; exact checks 3 queued at last read. Boss asked Perception to rebase/retarget to shared release branch after parent #2243 merge and append R-040/R-041. No OS provider/capture/action or Android proof.",
     "pr2247": "DRAFT_HEAD_E8137FD; 11_OF_14_CHECKS_PASS. Python3.13 and Python3.14 optimizer-resume both fail because A-GEM arms regress source-disjoint old-session holdout across seeds 13/19/43; checkpoint SHA unchanged. validate-additive FAIL BY POLICY. Keep learning gates OFF.",
     "pr2235": "DRAFT_HEAD_150E92B; 7_OF_10_CHECKS_PASS. owner-read and lab-age-e2e fail because AST inventory reports nested GoalStore.add callback as f instead of enclosing add; validate-additive FAIL BY POLICY. Candidate correctly separates Age rights from ResourceGuard compute/replay budgets; no release until test fixed and manual review.",
     "pr2240": "MERGED_AT_728CDC; caller-supplied PCM16 producer and audio feature path only; not Android microphone or full production C3 audio consumer.",
@@ -537,6 +537,7 @@
     "p0_chat": "OPEN_ISSUE_1904; real correct 2+2, B1/B2 offer delivery, 20 mixed Redmi turns, native TTFT/RSS and production C3 correctness remain unverified.",
     "canon_coverage": "1255_HISTORICAL_HEADINGS_PRESERVED; semantic clause→implementation→consumer→test→environment→rollback mapping remains incomplete.",
     "research": "R040 Mahdaviyeh et al., arXiv:2506.04377v1 / PMLR 330:15–42 (2026): full arXiv HTML reviewed; arXiv version license CC BY-NC-ND 4.0. The worst-case construction shows replay can move error onto other old samples (O(1/T) to Θ(1)); the average-case result shows random replay can increase expected forgetting for certain task-subspace relationships; MLP/MNIST results are non-monotonic and task/sample-dependent. The result is conditional, not a universal anti-replay rule. No code or figures imported. R041 Thede et al., arXiv:2609.40089v1: full 31-page PDF reviewed. RoD jointly top-k selects adaptation by current loss minus specialist reference and replay by current loss minus pretrained reference; references are precomputed/hash-keyed; each step scores m*k candidates with a forward-only pass (m=2 in the paper), then trains on k. Specialist reference has offline cost; a smaller source model can transfer a curriculum to a larger target. Limits: only replay-pool-covered forgetting is visible, LM loss is not downstream capability, proxy replay can misalign with task retention, and each experimental condition is single-seed (seed 42) despite cross-family/scale/domain replication. Main experiments use distributed NVIDIA B200 GPUs with count varying by model/setting. Public OSS repo exact main SHA 9ecc05173a4a5a8b872e18608c319df0eab5db81, Apache-2.0; NeMo-RL v0.6.0/Megatron/Ray/SLURM; no code/dependency imported and no Android evidence. Ledger-owner comment 7067983358 corrects prior notes and asks Perception to append both.",
-    "user_action_required": "NONE; no manual Termux command, update request, model/weight change, permission change or device mutation."
+    "user_action_required": "NONE; no manual Termux command, update request, model/weight change, permission change or device mutation.",
+    "pr2249": "BOSS_DOCS_ONLY_DRAFT_PR_CREATED; branch gpt6/boss-v14-run12-integration-audit-20261121 head 7131b2ac79b93c361f5ef130f711fe6d84aa5e18; offline-bridge-security queued. Contains board/workplan/coverage/user handoff only. Base was 0c9ede before #2243 merge; no conflicts expected, not yet integrated."
   }
 }
