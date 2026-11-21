@@ -1827,3 +1827,49 @@ This overlay supplements the historical Canon inventory; it does not close or si
 **Still OPEN across the whole Canon:** native B1_DETAIL/B2_GIST offer quality and mutual re-entry; trained B3 cross-model latent receiver; accepted JEPA per-session retention and numeric parameter/checkpoint changes; sparse MoE bodies; audio/vision weight learning; Android background/API and UI providers; trainable speech decoder/vocoder/full duplex; cross-organ gradients and controlled self-edit; independent technical OS sandbox; adaptive behavior judge; complete declared memory/egress registry; Memorilla production overflow consumer. P0 issue #1904 remains open.
 
 **Proof boundary:** #2258 exact-head workflows were queued at last poll. No combined PASS, local project test, Android test, Redmi receipt, release or installation is claimed.
+
+
+---
+
+## Boss evidence overlay — 2026-11-21 23:22 CET
+
+This overlay is additive. No historical Canon heading, requirement, or inventory row was deleted, renamed, or promoted by this checkpoint. The active V14 master was not edited. The substring beginning at `# TEIL III — vollständige historische Quelltexte` in the current master is byte-identical to the corresponding substring in `v14/backups/V14_MASTER_PRE_LIVE_CORRECTIONS_20261120.md` (exact fetched-content comparison: PASS).
+
+### Evidence references
+
+- [Boss integration PR #2258](https://github.com/RedMentos/Aii/pull/2258), current branch head `273a60bda3105f3163bf2ad606e58f885681da8b`; code-bearing tested parent `0dc337edfb7a71168e15f3db08bcedc424e32d4f); release base `bdcad466ffea75a2b41f7d23be168f53c7197d20`. DRAFT / NOT_RELEASED. Current-head CI after the workflow-scope commit is pending.
+- Exact code-head CI: integrated regression 424 passed / 3 skipped / 58 subtests; staged runtime 252 passed / 10 skipped / 47 subtests; arithmetic/broker 39 passed / 17 subtests; A5 UI lease 17 passed / 5 subtests on Python 3.13 and 3.14; audio lease/arithmetic 52 passed / 26 subtests on both versions. Migration, Lab-Age, owner-read, deploy integrity, offline and privacy checks passed. All are CI/synthetic evidence, not local full-repository or Android evidence.
+- The former additive-only job rejected the broad 59-file integration before running tests (2..30 newly-added-file limit). Boss commit `273a60b` scopes that unchanged strict validator to explicit `v13-additive/*` branches or the `v13-additive-candidate` label. The job is expected to skip on the integration PR; it is not a validator PASS.
+- [Native input-embedding receiver #2266](https://github.com/RedMentos/Aii/pull/2266): explicit operator-only probe, pinned llama.cpp revision, no production routing or training authority. Exact Python/native/Android cross-compile CI pending; no model or Redmi execution.
+- [Android companion #2271](https://github.com/RedMentos/Aii/pull/2271): launch_app-only, default-OFF prototype. Android build is blocked by SDK package-list syntax and a P1 duplicate-approval race must be fixed before review.
+- [JEPA #2247](https://github.com/RedMentos/Aii/pull/2247): current exact A→B→A/staged/deploy CI pending. Previous-head synthetic A2 results do not accept the current head or production weights.
+- [RAW EAR speaker evidence #2256](https://github.com/RedMentos/Aii/pull/2256): Python 3.13/3.14 fail two regressions because the incoming batch can contaminate its own look-back reference. No backend promotion.
+- [Age/X10 rights #2235](https://github.com/RedMentos/Aii/pull/2235): 9/11 checks pass, including the corrected nested-closure negative control; manual composition with #2258 remains required.
+
+### Current proof level by whole-system family
+
+| Canon family | Code / consumer | Synthetic / CI | Android-native | Active / accepted |
+| --- | --- | --- | --- | --- |
+| A0–A5 perception and attention | Partial; caller PCM16 and UI metadata leases | Partial CI pass | Unverified; no mic or official UI provider | Not accepted |
+| B1_DETAIL / B2_GIST | Distinct roles and partial offer path | Partial staged CI | Unverified; no useful native offers/re-entry proof | Not accepted |
+| B3 / Enlightened Space | Symbolic production path; tiny research and native input-embedding probe | Research/isolated tests; exact probe CI pending | Unverified; no trained receiver alignment | OFF |
+| B4 / C4 workspace | Partial source-span/coalition path | Synthetic only | Unverified | Not accepted |
+| C/JEF/C2/C3/C5 | Runtime and exact-arithmetic candidate | Current candidate CI pass | Last accepted phone arithmetic evidence remains wrong 2+2; no new receipt | Not accepted |
+| World/Self/Memory/JEPA | Persistent Store and shadow learner components | Partial; current JEPA head pending | Unverified | Learning gates OFF |
+| Sleep/Dream/Replay | Shadow code | Synthetic only | Unverified | Promotion OFF |
+| VOICE_AUDIO | Caller PCM16 lease and explicit Termux TTS fallback | Lease/fallback CI pass | Unverified; no microphone, ASR, decoder/vocoder or full duplex | No |
+| ANDROID_BACKGROUND_CONTROL | Companion launch_app prototype | CI blocked/queued; approval race open | Unverified | OFF |
+| ANDROID_UI_CONTROL | A5 metadata lease | CI pass | Unverified; no AccessibilityService/MediaProjection executor | OFF |
+| MULTIMODAL_LEARNING | Partial audio/UI metadata | Synthetic only | Unverified | No |
+| SELF_OPTIMIZATION / cross-organ weights | WorldJEPA shadow candidate | Previous-head evidence only; current head pending | Unverified | OFF |
+| Age / X10 rights | Candidate separation in #2235 | 9/11 checks | Unverified | Official Age 0 |
+| Context OS / Memorilla | Context OS partial; Memorilla additive draft | Partial context tests | Unverified | No production overflow consumer |
+| Distinct sparse MoE bodies | Not proven | Not accepted | Unverified | No |
+| OS sandbox / adaptive behavior judge | Prototypes only | Partial synthetic | Unverified | Not integrated |
+| Remote maintenance / update / rollback | Bridge and migration code | CI/migration simulation pass | No authenticated owner receipt | No new deployment |
+
+### Device and environment boundary
+
+Private PIPELINE_STATUS issue RedMentos/Aiiii **#440** was created as a read-only request and has no authenticated reply. Installed SHA and updater consent are UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, CHAT_SEND, shell, model/weight/Age/permission change or device mutation was made. Local full Aii tests are BLOCKED by missing checkout and GitHub DNS resolution failure. Therefore `REDMI_UNVERIFIED`, `NOT_RELEASED`.
+
+The board and live workplan carry the full per-ticket evidence and next actions. This overlay does not turn any synthetic, isolated Linux, or GitHub CI test into Android acceptance and does not reduce any historical Canon requirement.
