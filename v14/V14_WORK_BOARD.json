@@ -59,8 +59,8 @@
       "status": "READY",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Inventory native hidden-state taps and compatible model revisions; implement testable receiver pathway in isolated branch",
+      "proof_environment": "Source audit 2026-11-21: pinned llama.cpp b10964 exposes final output embeddings and context-level llama_set_adapter_cvec, but the pinned llama-server has no per-request control-vector HTTP route. Existing V13 tap is final RMSNorm/output only, not middle-layer state. No receiver injection or causal model-pair test has run; V14-003 remains NOT_IMPLEMENTED / NOT_RUN.",
+      "next_step": "Core: implement a custom single-slot C-API runner or authenticated per-request cvec server extension around llama_set_adapter_cvec; add pair-specific middle-layer tap/injection, unrelated-state negative control, exact-message and no-message baselines, held-out receiver utility, restart/rollback and native resource measurements. Do not infer semantic transfer from final taps or retrieval.",
       "user_action_required": false
     },
     {
@@ -127,8 +127,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "PR #2136 merged in release ancestor 16f75fca: consented PCM16 → PerceptPacket → A4/C3-admission adapter. Runtime does not yet consume it from normal audio/chat input. PR #2139 adds caller-supplied PCM16 B1/B2/C3 context but staged/integrated regression fails 30/208/10 skipped/2 errors because hash-pinned downstream candidates still target old runtime.py. No Android microphone or voice proof.",
-      "next_step": "Research/Perception align the A5 producer/receiver consent receipt and A4 revocation boundary; Core rebuilds downstream immutable Runtime candidates and wires a normal input consumer; QA keeps microphone and voice-output acceptance REDMI_UNVERIFIED until real OS permission evidence.",
+      "proof_environment": "PR #2161 draft, branch research-perception/v14-prosody-attention-20261121. Code/test tree at 3cba5118e8b9641220ec411f859d20147218c6f9 adds RAW EAR prosody-change scoring into A4 Attention.modulate and C3 admission; latest branch head after research-ledger sync is 3a74106ae64e66084a492b402a4bd701bc2fb011. LOCAL_LINUX Python 3.13.5 isolated algorithm reproduction 5/5 PASS. Exact repository pytest is BLOCKED by no checkout/GitHub DNS; PR workflow run 44870157024 was queued at last readback. Core PR #2158 must update its staged source pin to adapter blob ff88fd1e9a6898c6355592eb1d4349055b54939d before exact staged B1/B2/C3 CI. No Android microphone, native model, or Redmi proof.",
+      "next_step": "Read PR #2161 exact-head workflow run and fix any regressions; Core updates the staged A5 overlay pin and reruns its B1/B2/C3 Runtime integration. Then obtain authorized Android microphone consent and measure ARM CPU/RSS/latency; keep speaker identity, ASR and full-duplex open.",
       "user_action_required": false
     },
     {
