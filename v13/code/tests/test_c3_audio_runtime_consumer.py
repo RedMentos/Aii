@@ -254,7 +254,7 @@ def test_c3_layer_is_omitted_when_consent_is_revoked_before_prompt_assembly(tmp_
         start_ms=window["start_ms"], event_id=event["event_id"],
         generation_id=store.generation_id, source_id=window["source_id"],
         consent_receipt=window["consent_receipt"],
-        consent_check=window["consent_check"], consent_guard=window["consent_guard"], consent_guard=window["consent_guard"],
+        consent_check=window["consent_check"], consent_guard=window["consent_guard"],
         token_budget=512, finality=window["finality"],
     )
     context = runtime._audio_context_record(event["event_id"], result, window)
