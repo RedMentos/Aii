@@ -533,3 +533,12 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 - Core PR [#2158](https://github.com/RedMentos/Aii/pull/2158), exact inspected head `79e7ffa7b5f81a4f3ac003c5ae34ee412baa04c6`: staged voice job fails on both Python 3.11 and 3.13 at one stale assertion expecting one total `PerceptPacket`. The normal text perception path and RAW EAR audio path each persist a different modality. QA review asks for exactly one text + one audio packet and a raw-PCM absence scan across all packet payloads; do not remove text perception to satisfy the count. Staged/integrated generic regression passes 240/415.
 - Existing private owner-read request `RedMentos/Aiiii#368` remains OPEN with zero comments. Installed Redmi SHA and updater consent remain UNKNOWN. No duplicate read request, UPDATE_REQUEST, shell action, device update, model/permission change or user-data mutation was performed.
 - **User action: none.** Keep `REDMI_UNVERIFIED`; wait for the existing owner-read receipt. Next code actions are Boss sync/review of #2163 and Core correction of #2158's modality-count regression.
+
+## Research & Perception checkpoint — 2026-11-21 08:36 CET
+
+- Current Perception PR: [#2177](https://github.com/RedMentos/Aii/pull/2177), based on verified release HEAD `569680bc10eabeb94ea5a1695d4bf77b8584e0a0`, current branch head `feb318611b2cdf46fbd34de74565016d26f52e75`. It remains a draft pending independent Boss review.
+- Verified scope: RAW EAR V3 caller-supplied PCM16 features → timestamped source-bound audio PerceptPacket → A4 attention → C3 admission. No microphone capture, VAD, ASR, speaker identity, trained audio weights, B1/B2 offer delivery or Android proof.
+- Exact current-head checks: focused RAW EAR 12/12 on Python 3.11 and 12/12 on Python 3.13 PASS; privacy PASS; safe-additive FAIL is expected for the intentional producer edit; staged/integrated was still in progress at 08:36. Earlier exact code/test tree staged 240 and integrated 415 tests passed on GitHub CI. Full local checkout is BLOCKED by GitHub DNS.
+- Research R-022 records full-text PACE (ICLR 2026), abstract-only S4VAD, libfvad BSD-3-Clause + patent notice and the proprietary VoxRT runtime caveat. No dependency, model or weight was downloaded.
+- Redmi installation SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No device action or user-data change was performed.
+- **User action: none.** Boss review #2177 and Core's separate #2158 V3-pin/normal-Runtime/B1-B2→C4→C3 integration are the next steps. No Termux command or model approval is needed now.
