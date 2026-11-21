@@ -1,3 +1,14 @@
+# Final mergeability refresh — 2026-11-21 18:05:59Z
+
+- Current verified documentation HEAD before this refresh: `7c9841ae9d665aab19e60d524307342a219047f0`; code integration head remains `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`.
+- Exact merge-push CI is complete: **18/19 PASS, 1 FAIL**. The only failed workflow is staged context/integrated regression; staged-runtime failed because normal SleepRuntime's JEPA acceptance test received the truthful `UTILITY_GATE_REJECTED` instead of a positive accepted update. Integrated-regression itself passed.
+- Base movement after merging #2240 means **#2235 and #2234 are now NON-MERGEABLE against the current release branch**. Do not attempt merge or rebase while their functional blockers remain. After fixes, rebase onto `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` and recompute every nested recovery/stage/deployer pin from exact bytes. #2235 also still has the current-head AST closure attribution failure. #2234 still removes the normal C4 overlay.
+- #2237 is mergeable as a branch but NOT merge-ready: old-holdout retention fails on Python 3.13/3.14 and second-update cloning omits validated `_training_state`. Keep optimizer gates OFF.
+- #2200 remains non-mergeable and must rebase onto merged #2240's lease API before any normal voice consumer review.
+- Private owner-read request expired without authenticated reply; installed SHA and updater consent remain UNKNOWN. REDMI_UNVERIFIED. No device action. **User action: none.**
+
+---
+
 # Boss integration checkpoint — 2026-11-21 18:05:08Z
 
 **No user action is required. Do not run Termux commands, change Age/permissions, swap models or weights, alter updater settings, or modify phone data.**
