@@ -516,3 +516,191 @@ def test_c3_native_prompt_rechecks_audio_consent_after_context_save(tmp_path, mo
         ) == []
     finally:
         runtime.close()
+
+
+
+def test_audio_context_view_does_not_reenter_non_reentrant_provider_lock(tmp_path):
+    """A consumer lease must use its yielded authorization, not reacquire its own lock."""
+    store, event, home = _store(tmp_path)
+    runtime = Runtime.__new__(Runtime)
+    runtime.store = store
+    runtime.home = home
+    window = _window(lambda source_id, receipt: True)
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, window["pcm16"], sample_rate=window["sample_rate"],
+            start_ms=window["start_ms"], event_id=event["event_id"],
+            generation_id=store.generation_id, source_id=window["source_id"],
+            consent_receipt=window["consent_receipt"],
+            consent_check=window["consent_check"],
+            consent_guard=window["consent_guard"], finality=window["finality"],
+            token_budget=512,
+        )
+        context = runtime._audio_context_record(event["event_id"], result, window)
+        assert context is not None
+
+        lock = threading.Lock()
+        state = {"active": True}
+
+        def check(source_id, receipt):
+            acquired = lock.acquire(timeout=0.05)
+            if not acquired:
+                raise RuntimeError("non-reentrant provider lock was reacquired")
+            try:
+                return (
+                    state["active"]
+                    and source_id == "mic-test-1"
+                    and receipt == "opaque-local-receipt"
+                )
+            finally:
+                lock.release()
+
+        @contextmanager
+        def guard(source_id, receipt):
+            lock.acquire()
+            try:
+                yield (
+                    state["active"]
+                    and source_id == "mic-test-1"
+                    and receipt == "opaque-local-receipt"
+                )
+            finally:
+                lock.release()
+
+        # The context store keeps the exact provider functions for later reads.
+        context["consent_check"] = check
+        context["consent_guard"] = guard
+        view = runtime._audio_context_view(event["event_id"], consumer="C3")
+
+        assert view is not None, "consumer re-entered a non-reentrant consent provider"
+        assert view["authority"] == "ACOUSTIC_FEATURES_ONLY"
+        assert store.rows(
+            "SELECT id FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT' AND deleted=0"
+        )
+    finally:
+        store.close()
+
+
+def test_c3_native_generation_holds_provider_lease_until_stream_completes(tmp_path):
+    """Revocation must wait for the complete C3 generate iterator, not just prompt assembly."""
+    runtime = Runtime(tmp_path)
+    lock = threading.Lock()
+    state = {"active": True}
+    entered_c3 = threading.Event()
+    allow_c3 = threading.Event()
+    revoke_started = threading.Event()
+    revoke_finished = threading.Event()
+    revoker = None
+
+    def consent(source_id, receipt):
+        return (
+            state["active"]
+            and source_id == "mic-test-1"
+            and receipt == "opaque-local-receipt"
+        )
+
+    @contextmanager
+    def guard(source_id, receipt):
+        lock.acquire()
+        try:
+            yield (
+                state["active"]
+                and source_id == "mic-test-1"
+                and receipt == "opaque-local-receipt"
+            )
+        finally:
+            lock.release()
+
+    window = _window(consent)
+    window["consent_guard"] = guard
+    seen = {}
+
+    class Runner:
+        def __init__(self, role):
+            self.role = role
+            self.last_metrics = {
+                "role": role, "status": "FINAL", "generated_tokens": 5,
+                "synthetic": True,
+            }
+
+        def generate(self, messages, cancel, deadline, *args, **kwargs):
+            seen[self.role] = messages
+            if self.role == "B1_DETAIL":
+                yield json.dumps({
+                    "summary": "The rent is 120 euros.",
+                    "quotes": ["The rent is 120 euros."],
+                    "uncertainty": "low", "needs_reentry": False,
+                })
+            elif self.role == "B2_GIST":
+                yield json.dumps({
+                    "summary": "A long-term reserve is needed.",
+                    "quotes": ["The plan preserves a long-term reserve."],
+                    "uncertainty": "low", "needs_reentry": False,
+                })
+            else:
+                assert state["active"] is True
+                entered_c3.set()
+                if not allow_c3.wait(5):
+                    raise TimeoutError("test did not release the blocked C3 iterator")
+                yield "One combined response."
+
+    try:
+        runtime.sleep.cycle.set_policy("enabled", "off")
+        runtime.cfg.update(
+            deadline_seconds=90,
+            observer_seconds=5,
+            max_reentry=0,
+            observer_mode="background",
+            b2_quote_select="off",
+            offer_quote_context_chars=0,
+            b2_state_slots=0,
+        )
+        operator = Operator(runtime)
+        operator.run(":effort max")
+        operator.run(":ctxos active")
+        runtime._route = Mock(return_value=("both", {"source": "SYNTHETIC_AUDIO_E2E"}))
+        runtime.learner.output_delta = Mock(return_value=None)
+        runners = {
+            role: Runner(role)
+            for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")
+        }
+        runtime.pool.get = Mock(side_effect=lambda role: runners[role])
+        question = (
+            "Compare details with planning. The rent is 120 euros. "
+            "The plan preserves a long-term reserve."
+        )
+        runtime.submit(question, audio_window=window)
+
+        assert entered_c3.wait(30), "normal Runtime turn did not reach C3 generation"
+
+        def revoke():
+            revoke_started.set()
+            with lock:
+                state["active"] = False
+            revoke_finished.set()
+
+        revoker = threading.Thread(target=revoke, daemon=True)
+        revoker.start()
+        assert revoke_started.wait(5)
+        blocked_until_generation_finishes = not revoke_finished.wait(0.1)
+
+        # Always release the fake native iterator, even when the assertion is red.
+        allow_c3.set()
+        deadline = time.monotonic() + 30
+        while not runtime.idle() and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert runtime.idle(), "synthetic audio Runtime turn did not settle"
+        assert revoke_finished.wait(5), "consent revocation did not finish after C3 returned"
+        revoker.join(timeout=5)
+
+        assert blocked_until_generation_finishes, (
+            "provider revocation completed after prompt assembly but before C3 generation finished"
+        )
+        assert state["active"] is False
+        assert runtime.last_answer()["status"] == "FINAL"
+        assert "RAW_EAR_ACOUSTIC" in json.dumps(seen["C3_LANGUAGE"], ensure_ascii=False)
+    finally:
+        allow_c3.set()
+        if revoker is not None:
+            revoker.join(timeout=5)
+        runtime.close()
