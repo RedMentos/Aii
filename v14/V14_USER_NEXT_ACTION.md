@@ -1,3 +1,17 @@
+## Follow-up — exact postcommit consumer CI completed (2026-11-21)
+
+- PR #2182 code/test commit **`b69820b5740aadc76871c1ccccf02e51a03bcd46`** passed exact branch CI run [44885838336](https://github.com/RedMentos/Aii/actions/runs/44885838336).
+- Staged-runtime: **249 passed / 10 skipped / 47 subtests**. Integrated-regression: **415 passed / 3 skipped / 58 subtests**.
+- The stage log includes a distinct **9-test postcommit consumer run** against the actual staged tree. It passed with `V13_EXPECT_OPTIMIZER_STATE_PERSISTED=1`; the ordinary source-tree test runs with the expected false receipt. This resolves the earlier test-context mistake from run [44885361818](https://github.com/RedMentos/Aii/actions/runs/44885361818), where the integrated job passed but staged-runtime failed because it asserted staged optimizer state while importing the ordinary source tree.
+- The staged training-resume proof also reports `main_steps=4`, `bootstrap_steps=2`, and exact model/EMA/inverse/moments/RNG/source-lineage continuation. The synthetic postcommit holdout moved from **0.69993 to 0.66339** (delta **−0.03653**, 47 train rows / 17 disjoint holdout rows). Lower is better; this is a small NumPy WorldJEPA test, not a native body model or Redmi measurement.
+- The new staged consumer test reloads the active checkpoint in a fresh consumer and checks the persisted Adam step counter; rollback restores the prior checkpoint's step counter. The base source tree truthfully reports optimizer state absent; the staged overlay reports it present.
+- PR #2182 remains **DRAFT**, stacked on #2179. Parent #2179 still has the safe-additive failure because it modifies existing builder/deployer files; no bypass or merge is claimed. Independent Boss review remains required.
+- Local Aii checkout is still BLOCKED by DNS resolution for `github.com`; no LOCAL_LINUX repository test. Redmi remains **REDMI_UNVERIFIED**, installed SHA UNKNOWN, private owner-read receipt expired. No deployment, model swap, permissions or device data changed.
+
+**Next:** Boss independently reviews #2179; after integration, rebase #2182 onto the new release HEAD and rerun exact staged/integrated/combined tests. Then compare persistent vs reset optimizer and mean-delta baseline under matched T8 cohorts, replay bytes/update count, disjoint new/old holdouts, shuffled/zero-action controls, restart and rollback. No user action required.
+
+---
+
 # JEPA & Memory checkpoint — 21 November 2026
 
 ## Verified candidate and tests
