@@ -7,7 +7,7 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-JEPA_BUILDER_SHA = 'dccda1145833c6c8b5a7440d9e2345e67b0078ca1a4d130e6aaa86f169f951ef'
+JEPA_BUILDER_SHA = 'a91a0d279b507b44be289c1fe88dab32cba6966cb60203a638d32102b3702c2b'
 PREVIOUS_WORLD_SHA = '027f51b9c0fff5e69369adff7faf48343dd7da606154c69c7d5c967f9cf7356d'
 WORLD_MODEL_OLD = b"        self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,lr=lr,replay=replay)\n"
 WORLD_MODEL_NEW = WORLD_MODEL_OLD + b"        self.model._world_source_bound=True\n"
