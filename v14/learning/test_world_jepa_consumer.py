@@ -383,6 +383,34 @@ def test_insufficient_new_train_rows_persists_until_second_new_train_row(tmp_pat
         assert payload["pending_rows"] == []
         assert payload["scan_cursor"] == 82
         assert len(payload["active"]["processed_ids"]) == 82
+
+        pending_id = _add_transitions(
+            store, session, 82, 1, source_text_factory=lambda _index: train_text
+        )[0]
+        staged = consumer.update(
+            limit=64, steps=8, optimizer_permission=True, replay_mode="none"
+        )
+        assert staged["status"] == "INSUFFICIENT_NEW_TRAIN_ROWS"
+        payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert payload["scan_cursor"] == 83
+        assert len(payload["pending_rows"]) == 1
+        assert payload["pending_rows"][0]["action_id"] == pending_id
+
+        rolled_back = consumer.rollback()
+        assert rolled_back["status"] == "ROLLED_BACK"
+        assert rolled_back["checkpoint_sha256"] == initial["checkpoint_sha256"]
+        payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert payload["scan_cursor"] == 64
+        assert payload["pending_rows"] == []
+        assert len(payload["active"]["processed_ids"]) == 64
+
+        replayed = consumer.update(
+            limit=64, steps=8, optimizer_permission=True, replay_mode="uniform"
+        )
+        assert replayed["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert pending_id in set(payload["active"]["processed_ids"])
+        assert payload["pending_rows"] == []
     finally:
         store.close()
 
