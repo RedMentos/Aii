@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-21  
 **Owner:** Core & Harness  
-**Branch head:** e704a1fc8ec797fe00644383a15f4d10d3809d37  
+**Branch head:** 1fa1d0513c232b1e044f57b7a1e786204a31204d  
 **Dependency/base:** Perception PR #2192 branch research-perception/v14-raw-ear-runtime-temporal-state-20261121 at 3df5bfd415978db3d8f958bd46522697cbd61bbe  
 **Status:** staged candidate; CI pending; NOT_RELEASED; REDMI_UNVERIFIED.
 
@@ -31,6 +31,7 @@ The current release has caller-supplied RAW EAR input modules, but the existing 
 ## Test/evidence boundary
 
 - LOCAL_LINUX full checkout and repository pytest: BLOCKED; git ls-remote failed because github.com could not be resolved.
+- LOCAL_LINUX isolated arithmetic_reflex compile and positive/date/negative tests: PASS 3/3 on Python 3.13.5 from exact branch readback; not a full repository or staged Runtime test.
 - LOCAL_LINUX: source/blob and SHA256 chain readback verified from GitHub contents; no claim of a full local build or Runtime test.
 - CI: pending on this exact branch. Workflow covers Python 3.11/3.13, staged Runtime composition, synthetic PCM16 with explicit consent callback, B1/B2/C3 prompt consumption, source/PCM privacy, arithmetic policy separation, stage persistence and deployer pin checks.
 - The audio Runtime test uses a synthetic tone and fake body/language runners. It is a WIRED_SYNTHETIC E2E test, not real microphone, native model, or Android hardware proof.
