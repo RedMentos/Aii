@@ -84,9 +84,33 @@ def _json_output(raw: bytes, stage: str) -> dict:
     return value
 
 
+def _run_cancelable(command, payload, deadline, cancel_event):
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    first = True
+    while True:
+        if cancel_event is not None and cancel_event.is_set():
+            process.kill()
+            process.communicate()
+            raise InterruptedError("native receiver probe cancelled")
+        remaining = float(deadline) - time.monotonic()
+        if not math.isfinite(remaining) or remaining <= 0:
+            process.kill()
+            process.communicate()
+            raise TimeoutError("native receiver model probe timed out")
+        try:
+            if first:
+                stdout, stderr = process.communicate(payload, timeout=min(0.25, remaining))
+                first = False
+            else:
+                stdout, stderr = process.communicate(timeout=min(0.25, remaining))
+            return process.returncode, stdout, stderr
+        except subprocess.TimeoutExpired:
+            first = False
+
+
 def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role,
           sender_tap_id, sender_model_revision, receiver_model_revision,
-          source_id, generation_id, vectors, deadline, threads=1, binary_path=None):
+          source_id, generation_id, vectors, deadline, threads=1, binary_path=None, cancel_event=None):
     """Inject a source-bound tap into a separate receiver context and return metrics only.
 
     Production callers omit binary_path; tests may inject a temporary fake executable.
@@ -126,6 +150,8 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
     remaining = float(deadline) - time.monotonic()
     if not math.isfinite(remaining) or remaining <= 0:
         raise TimeoutError("native receiver probe deadline expired")
+    if cancel_event is not None and cancel_event.is_set():
+        raise InterruptedError("native receiver probe cancelled")
     try:
         version = subprocess.run(
             [str(binary), "--version"], stdin=subprocess.DEVNULL,
@@ -141,18 +167,14 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
     remaining = float(deadline) - time.monotonic()
     if not math.isfinite(remaining) or remaining <= 0:
         raise TimeoutError("native receiver probe deadline expired")
-    try:
-        result = subprocess.run(
-            [str(binary), "--model", str(model), "--rows", str(rows),
-             "--input-dim", str(input_dim), "--threads", str(max(1, min(int(threads), 2)))],
-            input=payload, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            timeout=remaining, check=False,
-        )
-    except subprocess.TimeoutExpired as exc:
-        raise TimeoutError("native receiver model probe timed out") from exc
-    if result.returncode != 0:
+    returncode, stdout, stderr = _run_cancelable(
+        [str(binary), "--model", str(model), "--rows", str(rows),
+         "--input-dim", str(input_dim), "--threads", str(max(1, min(int(threads), 2)))],
+        payload, deadline, cancel_event,
+    )
+    if returncode != 0:
         raise NativeReceiverError("native receiver model probe failed")
-    raw = _json_output(result.stdout, "probe")
+    raw = _json_output(stdout, "probe")
     if raw.get("llama_version") != version_data.get("llama_version"):
         raise NativeReceiverError("native receiver version changed between invocations")
 
