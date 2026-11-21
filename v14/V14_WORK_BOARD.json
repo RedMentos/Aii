@@ -159,7 +159,7 @@
       "latest_candidate_pr": {
         "pr": 2177,
         "code_test_head_sha": "ce692a87e585c8cc7a6a871dd550ca585a6bac3d",
-        "producer_blob": "0e328d14883840190937f0fef24a8e895ba7261c",
+        "producer_blob": "7b1d519cd36ede4b520d78e22c0f89132a1c73a5",
         "temporal_state_blob": "f693f8b8394558a63d87a35fc67ea3db9dcb1929",
         "test_blob": "6681eabf5dbcc8cfc2795c777ff17bf7862f3303",
         "workflow_blob": "e0b93213165ec4423c9a32e163cbd94a43b30ad4",
