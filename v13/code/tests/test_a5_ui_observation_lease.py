@@ -63,6 +63,7 @@ def observation(**overrides):
         "capture_method": "APP_INTENT",
         "capture_scope": "APP_DATA",
         "api_level": 33,
+        "clock": "ELAPSED_REALTIME",
         "event_kind": "APP_INTENT_RESULT",
         "start_ms": 100,
         "end_ms": 120,
@@ -120,7 +121,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
             self.assertTrue(result["a4"]["highres"])
             expected = (
                 "ui event=APP_INTENT_RESULT method=APP_INTENT scope=APP_DATA "
-                "api=33 interval_ms=20"
+                "api=33 clock=ELAPSED_REALTIME interval_ms=20"
             )
             self.assertEqual(self.store.read_source(result["source_ref"]), expected)
             self.assertEqual(
