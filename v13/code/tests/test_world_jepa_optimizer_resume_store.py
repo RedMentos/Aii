@@ -154,6 +154,7 @@ def test_production_checkpoint_resumes_adam_and_reset_control_is_distinct(tmp_pa
         # Clone the exact SQLite database, source blobs and private checkpoint.
         # Both arms therefore start from identical model/EMA/Adam bytes.
         store.close()
+        store = None
         control_home.mkdir(parents=True)
         shutil.copytree(persistent_home / "data", control_home / "data")
         shutil.copytree(persistent_home / "world_jepa", control_home / "world_jepa")
@@ -164,6 +165,7 @@ def test_production_checkpoint_resumes_adam_and_reset_control_is_distinct(tmp_pa
         # the control arm so only optimizer-state handling differs.
         _add_transitions(store, session, 256, 64)
         store.close()
+        store = None
         control_store.close()
         control_store = None
         shutil.rmtree(control_home / "data")
