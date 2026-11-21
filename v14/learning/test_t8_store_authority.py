@@ -69,6 +69,9 @@ def test_store_authority_issues_receipt_without_exporting_raw_text():
     assert len(good) == 1 and bad == 0
     receipt = good[0]
     assert receipt.action_id == "act-1"
+    assert receipt.source_ref == store.source_ref
+    assert receipt.created == pytest.approx(100.0)
+    assert receipt.outcome_created == pytest.approx(101.0)
     assert receipt.public_provenance()["source_sha256"] == store.source_sha
     assert "synthetic user request" not in repr(receipt.public_provenance())
     assert receipt.training_row()["a"] == "simple"
