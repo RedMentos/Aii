@@ -214,3 +214,39 @@ def test_invalid_source_ref_is_reported_without_exposing_it(tmp_path):
     assert report["source_integrity"]["invalid_refs"] >= 1
     assert "SOURCE_REF_INTEGRITY_INCOMPLETE" in report["warnings"]
     assert "src_missing_private" not in json.dumps(report)
+
+
+def test_query_role_mismatch_is_reported(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        query_rows = conn.execute(
+            "SELECT payload FROM packets WHERE event_id=? AND kind='QueryPacket'",
+            (event_id,),
+        ).fetchall()
+        query_ids = {
+            payload["target_role"]: payload["packet_id"]
+            for (raw,) in query_rows
+            for payload in [json.loads(raw)]
+        }
+        offer_rows = conn.execute(
+            "SELECT id,payload FROM packets WHERE event_id=? AND kind='OfferPacket'",
+            (event_id,),
+        ).fetchall()
+        for row_id, raw in offer_rows:
+            payload = json.loads(raw)
+            if payload["role"] == "B1_DETAIL":
+                payload["query_packet_id"] = query_ids["B2_GIST"]
+                conn.execute("UPDATE packets SET payload=? WHERE id=?", (json.dumps(payload), row_id))
+        conn.commit()
+    finally:
+        conn.close()
+
+    report = audit_event(home, event_id)
+    assert report["bodies"]["query_binding_status"] == "PARTIAL"
+    assert any(
+        item["role"] == "B1_DETAIL" and item["query_role_match"] is False
+        for item in report["bodies"]["offers"]
+    )
