@@ -139,8 +139,11 @@ def test_full_b1_b2_c4_c3_path_is_reported_without_private_text(tmp_path):
     assert all(x["evidence_level"] == "SYNTHETIC_FIXTURE" for x in report["bodies"]["offers"])
     assert report["c4"]["status"] == "PASS"
     assert report["c4"]["consumed_roles"] == ["B1_DETAIL", "B2_GIST"]
-    assert report["c3"]["status"] == "PASS"
+    assert report["c3"]["context_binding_status"] == "PASS"
+    assert report["c3"]["status"] == "CONTEXT_PRESENT_SEMANTIC_USE_UNVERIFIED"
+    assert report["c3"]["semantic_use_status"] == "UNVERIFIED"
     assert report["c3"]["source_bound_roles"] == ["B1_DETAIL", "B2_GIST"]
+    assert "C3_SEMANTIC_USE_UNVERIFIED" in report["warnings"]
     assert report["c3"]["prompt_tokens"] == 89
     assert report["c3"]["native_completion_http_200"] is True
     assert report["c3"]["native_template_submitted"] is True
@@ -320,3 +323,33 @@ def test_session_scoped_cli_accepts_session_id(tmp_path, capsys):
     report = json.loads(capsys.readouterr().out)
     assert report["event_id"] == event_id
     assert report["private_text_returned"] is False
+
+
+
+def test_c4_requires_focal_item_to_retain_offer_source_refs(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        event_packet = json.loads(
+            conn.execute("SELECT packet FROM events WHERE id=?", (event_id,)).fetchone()[0]
+        )
+        focal_rows = conn.execute(
+            "SELECT id,payload FROM packets WHERE event_id=? AND kind='FocalItem'",
+            (event_id,),
+        ).fetchall()
+        for row_id, raw in focal_rows:
+            item = json.loads(raw)
+            if item.get("source_kind") == "B1_DETAIL":
+                item["source_refs"] = [event_packet["source_ref"]]
+                conn.execute("UPDATE packets SET payload=? WHERE id=?", (json.dumps(item), row_id))
+        conn.commit()
+    finally:
+        conn.close()
+
+    report = audit_event(home, event_id)
+    assert report["c4"]["status"] == "PARTIAL"
+    assert report["c4"]["consumed_roles"] == ["B2_GIST"]
+    assert report["c3"]["context_binding_status"] == "PARTIAL"
+    assert report["c3"]["status"] == "PARTIAL_CONTEXT"

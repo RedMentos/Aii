@@ -224,11 +224,10 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
             for item_id in cycle.get("coalition", [])
             if isinstance(item_id, str)
         }
-        focal_item_ids = {
-            item.get("item_id") for item in focal_items
+        focal_by_id = {
+            item.get("item_id"): item for item in focal_items
             if isinstance(item.get("item_id"), str)
         }
-        c4_consumed_ids = set(offer_roles) & coalition_ids & focal_item_ids
         selected_ids = metadata.get("selected_offer_ids", [])
         if not isinstance(selected_ids, list):
             selected_ids = []
@@ -259,6 +258,21 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
             key for key, ref in unique_refs.items() if _source_valid(conn, root, ref)
         }
 
+        # A persisted FocalItem counts only when it retains the exact source
+        # evidence from its OfferPacket; an ID-only match is insufficient.
+        c4_consumed_ids = set()
+        for offer in offers:
+            packet_id = offer.get("packet_id")
+            if not isinstance(packet_id, str) or packet_id not in coalition_ids:
+                continue
+            focal = focal_by_id.get(packet_id)
+            evidence = offer.get("evidence_refs") or (offer.get("provenance") or [])[:1]
+            focal_sources = focal.get("source_refs") if isinstance(focal, dict) else None
+            evidence_keys = {_ref_key(ref) for ref in evidence} if isinstance(evidence, list) else set()
+            focal_keys = {_ref_key(ref) for ref in focal_sources} if isinstance(focal_sources, list) else set()
+            if evidence_keys and None not in evidence_keys and evidence_keys <= focal_keys and evidence_keys <= valid_keys:
+                c4_consumed_ids.add(packet_id)
+
         c3_context_ids = set()
         for offer in offers:
             packet_id = offer.get("packet_id")
@@ -283,9 +297,22 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
             offer_roles[x] for x in (c3_context_ids & c4_consumed_ids & selected_ids)
         }
         c4_status = "PASS" if required_roles <= c4_roles else ("PARTIAL" if c4_roles else "FAIL")
-        c3_status = "PASS" if required_roles <= c3_roles else ("PARTIAL" if c3_roles else "FAIL")
-
+        c3_context_status = "PASS" if required_roles <= c3_roles else ("PARTIAL" if c3_roles else "FAIL")
         runner_metrics = _safe_metrics(metadata.get("runner"))
+        semantic_use_reported = runner_metrics.get("native_attention_or_semantic_use_proven") is True
+        c3_semantic_use_status = (
+            "RUNTIME_REPORTED_NOT_INDEPENDENTLY_VERIFIED"
+            if semantic_use_reported else "UNVERIFIED"
+        )
+        if c3_context_status == "PASS":
+            c3_status = (
+                "CONTEXT_PRESENT_RUNTIME_REPORTED_USE"
+                if semantic_use_reported else "CONTEXT_PRESENT_SEMANTIC_USE_UNVERIFIED"
+            )
+        elif c3_context_status == "PARTIAL":
+            c3_status = "PARTIAL_CONTEXT"
+        else:
+            c3_status = "FAIL"
         action_packets = by_kind.get("ActionSelection", [])
         selected_action = action_packets[-1].get("selected", {}) if action_packets else {}
         if not isinstance(selected_action, dict):
@@ -328,8 +355,12 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
             warnings.append("NO_BODY_OFFERS")
         if c4_status != "PASS":
             warnings.append("B1_B2_NOT_BOTH_CONSUMED_BY_C4")
-        if c3_status != "PASS":
+        if c3_context_status != "PASS":
             warnings.append("B1_B2_NOT_BOTH_SOURCE_BOUND_IN_C3_CONTEXT")
+        elif semantic_use_reported:
+            warnings.append("C3_SEMANTIC_USE_RUNTIME_REPORTED_NOT_INDEPENDENTLY_VERIFIED")
+        else:
+            warnings.append("C3_SEMANTIC_USE_UNVERIFIED")
         if not message_row:
             warnings.append("NO_ASSISTANT_MESSAGE")
         if len(valid_keys) != len(unique_refs) or malformed_refs:
@@ -395,6 +426,8 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
                 "can_latent_inject": runner_metrics.get("CAN_LATENT_INJECT"),
                 "can_train_body": runner_metrics.get("CAN_TRAIN_BODY"),
                 "evidence_level": runner_metrics.get("evidence_level", "METRICS_MISSING_OR_INCOMPLETE"),
+                "context_binding_status": c3_context_status,
+                "semantic_use_status": c3_semantic_use_status,
                 "status": c3_status,
             },
             "c5": {
@@ -419,8 +452,8 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
             "evidence_level": overall_evidence,
             "warnings": warnings,
             "claim_boundary": (
-                "Store/runner telemetry only; not Android-device attestation, "
-                "native weight-update proof, or trained latent receiver-effect proof."
+                "Store/runner telemetry only; source-bound context is not proof of model attention or semantic use, "
+                "and this is not Android-device attestation, native weight-update proof, or trained latent receiver-effect proof."
             ),
         }
     finally:
