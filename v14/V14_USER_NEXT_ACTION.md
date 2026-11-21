@@ -1,3 +1,38 @@
+# Current user-facing handoff — 2026-11-21 15:33 CET
+
+**No Termux command or device action is needed. Do not change models, weights, permissions, Age or updater settings.**
+
+- Current release-development branch HEAD is `6c444e1dfdea19583002519a682fd64bca465098` after merge of #2218's read-only optimizer audit/test. Its exact PR-head safe-additive, staged and integrated checks passed, but all 19 workflows returned for the merge commit have `action_required` and no jobs. Post-merge CI is **not verified**; do not call this release green.
+- The code-bearing #2215 merge remains `23ea3efc7d1951e20664ce6d07883141e9b601c5`; its PR-head broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58 and migration checks passed. Android action broker remains DRY_RUN_ONLY, with no OS executor or live UI control.
+- Private owner-read #407/#408/#409/#410 all expired without replies. Installed SHA and updater consent remain UNKNOWN: REDMI_UNVERIFIED.
+- P0 #1904 remains open: no fresh Redmi evidence of correct 2+2, native latency or B1/B2→C4→C3 delivery. #2210 still fails C5 SHADOW selection and nested source pins.
+- C4 candidate #2195 has dedicated Python 3.13/3.14 and staged/integrated PASS, but remains a disposable overlay, not normal stage/deployer. It needs negative tests for modality mismatch, malformed spans and disjoint-but-redundant offers, then rebase onto 6c444e1 and pin-chain review.
+- RAW EAR #2219 broad CI passes, but deterministic #2214 still fails on the old producer; combined post-fix test and lock contract remain open. #2200/#2211 still need derived-context deletion and clear-before-C3.
+- JEPA #2218 is merged as a read-only audit/test slice; exact-head Python 3.13/3.14 optimizer-resume proof is missing and merge-commit workflows are action_required. Synthetic Store/SQLite only; learning/optimizer gates OFF; no native GGUF or trained B3 latent claim.
+- #2198/#2205 are closed as superseded by #2213. Checkpoint publisher uses dirfd + libc renameat2 (available in Bionic from API 30), but forced-denial/race/fsync rollback tests remain open.
+- Full local Aii checkout remains blocked by GitHub DNS. GitHub CI is not local or Redmi proof; the whole Canon is not complete.
+
+Next work is internal: Core advances #2195 and P0 integration; Perception/QA close deterministic consent and checkpoint publication tests; JEPA completes current-head optimizer evidence and workflow gates; Boss maintains whole-Canon coverage. No user action is required.
+
+---
+
+# Current user-facing handoff — 2026-11-21 15:30 CET
+
+**No user action is required. Do not run another manual Termux command, request a model download/swap, or change permissions/updater settings.**
+
+- Code-bearing release-development commit is `23ea3efc7d1951e20664ce6d07883141e9b601c5` (PR #2215). PR-head CI passed broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58 and migration UPDATED. The later docs handoff is `49fd1e9f5a9a82b8e2078bef8adfe8a048f07d0f`. Exact post-merge push-CI for the code commit remains unverified: NOT_RELEASED.
+- Android action broker remains DRY_RUN_ONLY; no OS executor, AccessibilityService, MediaProjection or real app/UI control is present.
+- Private owner-read #407/#408/#409/#410 all expired without replies. Installed SHA and updater consent remain UNKNOWN: REDMI_UNVERIFIED.
+- P0 #1904 remains open: no fresh Redmi evidence of correct 2+2, native latency or delivered B1/B2 offers consumed by C4→C3. #2210 still has C5 SHADOW and source-pin failures.
+- RAW EAR #2219 broad CI passes, but deterministic #2214 focused test is still red on the old producer; the combined post-fix run and provider lock contract remain open. #2200/#2211 still need derived-context deletion and clear-before-C3.
+- JEPA #2218 staged/integrated and safe-additive now pass, but exact-head Python 3.13/3.14 optimizer-resume proof is missing. Numeric WorldJEPA remains synthetic SHADOW; learning/optimizer gates OFF; no native GGUF or trained B3 latent claim.
+- #2198/#2205 are closed as superseded by #2213. The current dirfd checkpoint publisher uses libc `renameat2(RENAME_NOREPLACE)`, available in Bionic from Android R/API 30; however the forced-denial/race/fsync-failure regression cases still need to be added against the current implementation.
+- Full local Aii checkout remains blocked by GitHub DNS; GitHub CI is not local or Redmi proof. The whole V13 Canon remains the scope and is not complete.
+
+Next work is internal: Core repairs arithmetic and audio consumer integration; Perception/QA close consent and checkpoint publication regressions; JEPA completes current-head multi-version optimizer evidence; Boss verifies the exact push-CI gate and whole-Canon coverage. **No action is needed from you.**
+
+---
+
 # Current user-facing handoff — 2026-11-21 15:23 CET
 
 **No user action is required. Do not run a manual Termux command or change models, weights, permissions, Age, updater settings or device data based on GitHub CI alone.**

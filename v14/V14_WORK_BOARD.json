@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T14:24:38.851Z",
+  "updated_at": "2026-11-21T14:33:32.989Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,8 +14,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "PR #2215 merged at 23ea3efc7d1951e20664ce6d07883141e9b601c5. Its exact PR-head CI passed broker 38, sandbox replay 62, staged 249/10/47 and integrated 415/3/58; two-checkout migration reported UPDATED. Post-merge push-CI is not independently verified. P0 #1904 remains open. #2210 exact head fails C5 SHADOW selection on Python 3.13/3.14 and staged/integrated nested source pins; #2219 producer lease candidate still lacks a deterministic post-fix test against #2214; #2200/#2211 audio derived-context revocation remains blocked.",
-      "next_step": "Core: rebase #2210 onto 23ea3ef, compare base/head, repair C5 SHADOW selection and rebuild the entire runtime/stager/deployer pin chain. Separately rebase #2200/#2211 onto the consent-safe producer and clear derived audio context before C3. Keep #1904 open until actual Redmi 2+2, latency and B1/B2→C4→C3 delivery pass.",
+      "proof_environment": "Current head 6c444e1 includes #2218 audit/test merge; 19 workflows action_required with zero jobs, not PASS. P0 #1904 open. C4 candidate #2195 dedicated C4 3.13/3.14 and staged/integrated PASS, safe-additive FAIL; disposable overlay with missing modality/malformed/disjoint-redundancy negatives and old base. #2210 C5 SHADOW/source pins fail.",
+      "next_step": "Core: rebase #2195 onto 6c444e1, add modality/malformed/redundant-span negatives, coordinate one date guard with #2210, then wire into normal pinned stage/deployer only after exact CI. Preserve B1/B2 complementary offers and C4→C3; no model drop.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 15:05 CET"
     },
@@ -28,8 +28,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Release-development head 23ea3efc7d1951e20664ce6d07883141e9b601c5 includes PR #2215. PR-head CI passed broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58 and migration UPDATED. Exact post-merge push-CI is UNKNOWN/not independently verified. Private #407 update request and #408 pipeline read expired/no reply; #409 diagnostics and #410 pipeline reads are open/no reply. Installed SHA and updater consent UNKNOWN; REDMI_UNVERIFIED.",
-      "next_step": "Wait for the existing private #410 PIPELINE_STATUS and #409 DIAGNOSTICS receipts. Only a phone-authenticated receipt can establish installed SHA and updater consent. Do not create duplicate requests, issue another UPDATE_REQUEST, ask for a manual Termux command or change models/permissions.",
+      "proof_environment": "Code-bearing head 23ea3efc7d1951e20664ce6d07883141e9b601c5 after PR #2215; exact PR-head tests passed broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58, migration UPDATED. Docs head 49fd1e9f5a9a82b8e2078bef8adfe8a048f07d0f. Exact post-merge push-CI unknown. Private #407/#408/#409/#410 expired without replies; installed SHA/updater consent UNKNOWN, REDMI_UNVERIFIED.",
+      "next_step": "No new private requests or user command. Wait for a future authenticated phone receipt; only then compare installed SHA and updater consent. Verify exact post-merge push-CI through an authoritative Actions readback before any release claim.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 15:05 CET",
       "latest_qa_candidate": {
@@ -73,8 +73,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2213 production Runtime/SleepRuntime Store-backed WorldJEPA/EMA/Adam checkpoint remains merged at 5a141153f7d33906408fd638ce56cfbee459cf08; synthetic numeric predictor only, gates OFF. PR #2218 current head 4ad72abaa38d0bbf67d703ffa12e433e4e4447c6 adds a read-only optimizer audit helper and matched production Store/T8 persistent-vs-reset test; exact-head safe-additive PASS, staged-runtime PASS, integrated-regression run 44913418634 still in progress. Dedicated 3.13/3.14 optimizer-resume evidence is only for the prior head, not the current audit-module head.",
-      "next_step": "JEPA/Memory: restore or trigger the dedicated Python 3.13/3.14 optimizer-resume workflow on exact head 4ad72abaa38d0bbf67d703ffa12e433e4e4447c6, then run repeated-seed A→B→A retention and temporal-window/replay ablations. Keep learning and optimizer permissions OFF; no native GGUF body-weight or Redmi utility claim.",
+      "proof_environment": "PR #2218 merged at 6c444e1 with read-only optimizer audit helper and matched production Store resume-vs-reset test. Exact PR-head safe-additive/staged/integrated PASS. The 19 merge-commit workflows are action_required and have zero jobs; exact post-merge CI not executed. Dedicated Python 3.13/3.14 optimizer-resume run is missing for current audit-module head 4ad72; prior run was older. Synthetic Store/T8 only; gates OFF.",
+      "next_step": "JEPA: obtain exact-head Python 3.13/3.14 optimizer-resume proof, then repeated-seed A→B→A/retention. Boss: resolve the 19 action_required workflows through an authorized repo-owner path; do not treat empty jobs as PASS.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 15:05 CET",
       "latest_candidate_pr": {
@@ -159,8 +159,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Perception #2219 head 64fcfe1d323737c4c15e88be57217537bf55fd3c acquires a provider lease before PCM processing; the cited 50/50 focused result predates deterministic QA. QA #2214 head c17e4df4df7a53ed74e9057cf5ca5d112c472ad4 deterministically revokes after metadata preflight; focused run 44913001796 fails on the old producer as expected, while broad staged/integrated pass. No combined deterministic post-fix proof. Boss review found a possible deadlock if consent_check reacquires a non-reentrant provider lock under the lease.",
-      "next_step": "Perception: rebase #2219 onto the current deterministic QA #2214 base, prove the new regression passes on the combined exact head, and explicitly require a reentrant provider lock or use a lease-bound token. Core: rebase #2200/#2211 and delete/tombstone AUDIO_ACOUSTIC_CONTEXT, clear _audio_contexts, and check consent immediately before C3 generation. No mic/Redmi proof.",
+      "proof_environment": "#2219 broad staged/integrated PASS (44913130756), but no combined run against latest deterministic #2214 head; #2214 focused run 44914210865 fails on old producer as expected. Provider lock reentrancy contract open. Checkpoint publisher current dirfd + libc renameat2; forced-denial/race/fsync tests absent.",
+      "next_step": "Perception/QA: combine #2219 with current #2214, test revocation before any PCM transform, settle RLock/lease-token semantics, and add forced EPERM/EACCES, racing target EEXIST and directory-fsync rollback tests against current dirfd publisher.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 15:05 CET",
       "latest_candidate_pr": {
@@ -180,8 +180,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Boss manually reviewed and directly merged QA PR #2215 at 23ea3efc7d1951e20664ce6d07883141e9b601c5. Exact PR-head broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58 and migration UPDATED; strict safe-additive failure was not bypassed. Readback confirms source/test blobs. Post-merge push-CI not independently verified; no Redmi receipt. Boss left exact review findings on #2210/#2219/#2218.",
-      "next_step": "Boss: verify exact push-CI for 23ea3ef through an authoritative Actions readback, then continue review of #2219 and #2218 only after their exact-head gates pass. Keep the full Canon coverage matrix active and do not promote isolated tests to system completion.",
+      "proof_environment": "Current HEAD 6c444e1 includes #2218 audit/test merge. 19 associated workflows are action_required and no jobs were created; exact post-merge CI not verified. Code-bearing #2215 merge 23ea3ef has exact PR-head CI pass but post-merge push-CI unknown. Boss reviewed #2195 C4 candidate and left missing-negative/base/pin findings.",
+      "next_step": "Boss: verify an authorized path to execute exact 6c444e1 workflows, review #2195 after rebase/negative tests, and keep full-Canon evidence separate from synthetic tests. No release or Redmi claim.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 15:05 CET"
     },
@@ -194,8 +194,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "Current handoff points to private PIPELINE_STATUS #410 and DIAGNOSTICS #409; both had zero replies at last readback. Earlier #407 UPDATE_REQUEST and #408 PIPELINE_STATUS expired without replies. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED.",
-      "next_step": "No user action. Wait for existing authenticated owner-read receipts; do not request duplicate reads or ask the user to run a manual command. Only after a valid phone receipt compare installed SHA to the verified release candidate.",
+      "proof_environment": "Private #407/#408/#409/#410 all expired without replies. Installed SHA and updater consent UNKNOWN; REDMI_UNVERIFIED.",
+      "next_step": "No user action. Wait for future authenticated owner-read receipt; no duplicate read, manual Termux command or model/permission change.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 15:05 CET"
     },
@@ -261,20 +261,20 @@
       "priority": "P1",
       "status": "READY",
       "owner": "Boss & Integration",
-      "proof_environment": "Historical inventory remains 1,255 V13 headings and the V13 appendix bytes are unchanged. New evidence overlay records #2215's merged approval-integrity hardening and current #2210/#2214/#2218/#2219 blockers. Semantic clause-level mapping to exact code, consumer, test, environment, negative controls and rollback remains incomplete.",
-      "next_step": "Continue atomic clause mapping across W0-W10, A0-A5, B1-B5, C/JEF, latent, attention, world/self/memory, audio/vision, Android background/UI, tools, learning, self-edit, Age, install/recovery and UX; preserve historical source lines and do not mark a family complete from a single module test.",
+      "proof_environment": "Historical inventory remains 1,255 headings; V13 appendix unchanged. Evidence overlay includes #2215 merged approval hardening, #2218 merged read-only optimizer audit/test, #2195 C4 staged candidate, #2219/#2214 consent race, #2210 arithmetic blocker and #2213 checkpoint publisher. Semantic clause→code→consumer→test→environment→rollback mapping incomplete.",
+      "next_step": "Continue atomic mapping across all Canon families: W0-W10, A0-A5, B1-B5, C/JEF, latents, attention, world/self/memory, audio/vision, Android background/UI, tools, learning, self-edit, Age, permissions, recovery and UX. Keep code, synthetic, Linux, Android and accepted status distinct.",
       "last_checkpoint": "2026-11-21 15:05 CET",
       "user_action_required": false
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED — UPDATE_REQUEST #407 expired/no reply; PIPELINE_STATUS #408 expired/no reply; DIAGNOSTICS #409 open/no reply; PIPELINE_STATUS #410 open/no reply. Installed SHA UNKNOWN; updater consent UNKNOWN; no authenticated phone receipt.",
+  "current_redmi_status": "REDMI_UNVERIFIED — private UPDATE_REQUEST #407, PIPELINE_STATUS #408, DIAGNOSTICS #409 and PIPELINE_STATUS #410 all expired with zero replies. Installed SHA UNKNOWN; updater consent UNKNOWN.",
   "last_code_release_head": "23ea3efc7d1951e20664ce6d07883141e9b601c5",
-  "latest_integrated_head": "23ea3efc7d1951e20664ce6d07883141e9b601c5",
-  "latest_integrated_head_verified_at": "2026-11-21T14:24:38.851Z",
-  "release_gate_status": "MERGED_CODE_HEAD 23ea3efc7d1951e20664ce6d07883141e9b601c5; exact PR-head CI for #2215 PASS (broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58, migration UPDATED); exact post-merge push-CI not independently verified through current readback; NOT_RELEASED / REDMI_UNVERIFIED.",
+  "latest_integrated_head": "6c444e1dfdea19583002519a682fd64bca465098",
+  "latest_integrated_head_verified_at": "2026-11-21T14:33:32.989Z",
+  "release_gate_status": "CURRENT HEAD 6c444e1dfdea19583002519a682fd64bca465098 (PR #2218 test/audit merge); 19 associated workflows conclusion=action_required and jobs=[]; NOT A PASS. Code-bearing #2215 head 23ea3ef PR-head CI passed but exact post-merge push-CI remains unknown. NOT_RELEASED / REDMI_UNVERIFIED.",
   "phone_receipt": {
     "issue": "RedMentos/Aiiii#410",
-    "state": "PIPELINE_STATUS #410 OPEN_NO_REPLY; DIAGNOSTICS #409 OPEN_NO_REPLY; PIPELINE_STATUS #408 EXPIRED_NO_REPLY; UPDATE_REQUEST #407 EXPIRED_NO_REPLY",
+    "state": "ALL_PRIVATE_READS_407_408_409_410_EXPIRED_NO_REPLY",
     "installed_sha": "UNKNOWN",
     "auto_update": "UNKNOWN",
     "redmi_status": "REDMI_UNVERIFIED",
@@ -291,7 +291,7 @@
       "tested_synthetic": "PR2219_PRODUCER_TESTS_50_50_ON_OLDER_TEST_HEAD; DETERMINISTIC_QA2214_HEAD_C17E4_FAILS_ON_OLD_PRODUCER; COMBINED_POSTFIX_DETERMINISTIC_TEST_PENDING",
       "tested_android": "NOT_TESTED",
       "active": "NO_DEVICE_MICROPHONE_OR_NATIVE_BODY_PROOF",
-      "evidence": "PR #2219 producer branch acquires the provider lease before PCM observation/extraction/VAD. The 50/50 pass cited in its handoff predates deterministic QA #2214 head c17e4; exact QA run 44913001796 is red on the old producer as intended. Combined exact-head proof and lock reentrancy contract remain open. No mic/Redmi proof."
+      "evidence": "PR #2219 producer branch acquires the provider lease before PCM observation/extraction/VAD. The 50/50 pass cited in its handoff predates deterministic QA #2214 head c17e4; exact QA run 44913001796 is red on the old producer as intended. Combined exact-head proof and lock reentrancy contract remain open. No mic/Redmi proof. #2219 broad staged/integrated PASS; deterministic #2214 focused regression still fails on old producer, combined post-fix proof and lock contract pending."
     },
     {
       "capability": "B1_DETAIL and B2_GIST bodies",
@@ -336,7 +336,7 @@
       "tested_synthetic": "PR2213_STAGED_249_10SKIP_47; INTEGRATED_424_3SKIP_58; OPTIMIZER_RESUME_20_PLUS_14_PLUS_1; PY313_314_64_EACH; MERGED_PUSH_CI_30_OF_30",
       "tested_android": "NOT_TESTED",
       "active": "SHADOW_ONLY_LEARNING_AND_OPTIMIZER_GATES_OFF",
-      "evidence": "PR #2213 merged at 5a141153f7d33906408fd638ce56cfbee459cf08. Exact PR-head CI: staged-runtime 249 passed/10 skipped/47 subtests; integrated-regression 424 passed/3 skipped/58 subtests; focused 21 passed; Python 3.13 and 3.14 64 passed each; optimizer-resume outer 1, disposable 20, postcommit 14 passed. Exact merged-head push CI: 30/30 check-runs SUCCESS. validate-additive failed its strict existing-production-module allowlist on the PR head; no bypass, manual Boss review recorded. Local full Aii checkout BLOCKED by GitHub DNS; isolated local Linux renameat2(RENAME_NOREPLACE) helper probe PASS. Runtime worker → SleepRuntime postcommit → committed/source-bound T8 Store consumer → numeric WorldJEPA/EMA → World/Planner SHADOW receiver is exercised with synthetic Store outcomes. Adam/inverse/bootstrap RNG state persists across checkpoint/restart. No native GGUF body weights, trained B3 latent coupling, Android model run or Redmi utility. PR #2218 current audit-module head 4ad72abaa38d0bbf67d703ffa12e433e4e4447c6 has safe-additive and staged-runtime PASS; integrated run 44913418634 was still running; exact-head Python 3.13/3.14 dedicated optimizer-resume evidence is missing. Synthetic Store/SQLite only; gates OFF."
+      "evidence": "PR #2213 merged at 5a141153f7d33906408fd638ce56cfbee459cf08. Exact PR-head CI: staged-runtime 249 passed/10 skipped/47 subtests; integrated-regression 424 passed/3 skipped/58 subtests; focused 21 passed; Python 3.13 and 3.14 64 passed each; optimizer-resume outer 1, disposable 20, postcommit 14 passed. Exact merged-head push CI: 30/30 check-runs SUCCESS. validate-additive failed its strict existing-production-module allowlist on the PR head; no bypass, manual Boss review recorded. Local full Aii checkout BLOCKED by GitHub DNS; isolated local Linux renameat2(RENAME_NOREPLACE) helper probe PASS. Runtime worker → SleepRuntime postcommit → committed/source-bound T8 Store consumer → numeric WorldJEPA/EMA → World/Planner SHADOW receiver is exercised with synthetic Store outcomes. Adam/inverse/bootstrap RNG state persists across checkpoint/restart. No native GGUF body weights, trained B3 latent coupling, Android model run or Redmi utility. PR #2218 current audit-module head 4ad72abaa38d0bbf67d703ffa12e433e4e4447c6 has safe-additive and staged-runtime PASS; integrated run 44913418634 was still running; exact-head Python 3.13/3.14 dedicated optimizer-resume evidence is missing. Synthetic Store/SQLite only; gates OFF. #2218 current head 4ad72 safe-additive/staged/integrated PASS, but exact-head Python 3.13/3.14 optimizer-resume run missing. Synthetic only; gates OFF. #2218 audit/test merged at 6c444e1; PR-head safe-additive/staged/integrated PASS, but all 19 merge workflows are action_required with no jobs; exact post-merge CI and current-head Python 3.13/3.14 dedicated test missing. Synthetic only; gates OFF."
     },
     {
       "capability": "Sleep/Dream/Replay consolidation",
@@ -363,7 +363,7 @@
       "tested_synthetic": "PR2207_RAW_EAR_49_PY311_313; COMPARATOR_8_PY313_314; LIBFVAD_NATIVE_LINUX_13; AUDIO_CONTEXT_REVOCATION_2_FAILS_PY311_313",
       "tested_android": "NOT_TESTED",
       "active": "NO_MICROPHONE_OR_SPEECH_OUTPUT_PROOF",
-      "evidence": "#2207 provider-side lease candidate passes producer tests. #2200/#2211 downstream revocation is still failing: derived audio context remains in process memory and C3 prompt after consent is revoked. No mic capture, ASR, speech decoder/vocoder, full-duplex or Redmi proof. #2219 now leases before PCM transforms, but deterministic QA #2214 head c17e4 fails on old producer and the combined post-fix test is pending. No microphone, ASR, TTS/vocoder, full duplex or Redmi proof."
+      "evidence": "#2207 provider-side lease candidate passes producer tests. #2200/#2211 downstream revocation is still failing: derived audio context remains in process memory and C3 prompt after consent is revoked. No mic capture, ASR, speech decoder/vocoder, full-duplex or Redmi proof. #2219 now leases before PCM transforms, but deterministic QA #2214 head c17e4 fails on old producer and the combined post-fix test is pending. No microphone, ASR, TTS/vocoder, full duplex or Redmi proof. Deterministic pre-PCM revocation QA remains red on old producer; no post-fix combined test, mic, ASR, TTS/vocoder or Redmi proof."
     },
     {
       "capability": "ANDROID_BACKGROUND_CONTROL",
@@ -372,7 +372,7 @@
       "tested_synthetic": "PR2215_BROKER_38; SANDBOX_62; STAGED_249_10SKIP_47; INTEGRATED_415_3SKIP_58; POSTMERGE_PUSH_CI_UNKNOWN",
       "tested_android": "NOT_TESTED",
       "active": "NO_DEVICE_EXECUTOR",
-      "evidence": "PR #2215 merged at 23ea3ef: Proposal args are immutable and canonical digest is rechecked at approval/execution. Exact PR-head tests pass. Broker remains DRY_RUN_ONLY; no OS executor, companion authentication, AccessibilityService, MediaProjection or Redmi proof."
+      "evidence": "PR #2215 merged at 23ea3ef: Proposal args are immutable and canonical digest is rechecked at approval/execution. Exact PR-head tests pass. Broker remains DRY_RUN_ONLY; no OS executor, companion authentication, AccessibilityService, MediaProjection or Redmi proof. #2215 merged at 23ea3ef hardens immutable Proposal args/digest; broker remains DRY_RUN_ONLY. No OS executor or Android device proof."
     },
     {
       "capability": "ANDROID_UI_CONTROL",
@@ -417,7 +417,7 @@
       "tested_synthetic": "PR2215_HEAD_TESTS_PASS; EXACT_POSTMERGE_PUSH_CI_NOT_VERIFIED",
       "tested_android": "NO_AUTHENTICATED_RECEIPT",
       "active": "UNKNOWN_DEVICE_INSTALL_STATE",
-      "evidence": "Release-development branch head is 23ea3efc7d1951e20664ce6d07883141e9b601c5 after PR #2215. Exact PR-head tests pass, but post-merge push CI is not independently verified. Private #407/#408 expired without reply; #409/#410 pending without reply. Installed SHA/updater consent unknown."
+      "evidence": "Current branch head 6c444e1; 19 associated workflows action_required, no jobs; not a PASS. Code-bearing #2215 PR-head CI passed, post-merge push-CI unknown. Private #407-#410 expired without reply; installed SHA/updater consent unknown."
     },
     {
       "capability": "Two genuinely different sparse MoE bodies",
@@ -439,22 +439,21 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-21T14:24:38.851Z",
-    "branch_head": "23ea3efc7d1951e20664ce6d07883141e9b601c5",
+    "timestamp": "2026-11-21T14:33:32.989Z",
+    "branch_head": "6c444e1dfdea19583002519a682fd64bca465098",
     "code_bearing_release_sha": "23ea3efc7d1951e20664ce6d07883141e9b601c5",
-    "merged_pr2215": "MERGED_DIRECT_AFTER_MANUAL_SOURCE_REVIEW",
-    "pr2215_pr_head_ci": "PASS_BROKER_38_SANDBOX_62_STAGED_249_10_47_INTEGRATED_415_3_58_MIGRATION_UPDATED",
-    "exact_postmerge_push_ci": "UNKNOWN_NOT_VERIFIED_NOT_RELEASED",
-    "android_control": "PROPOSAL_ARGS_IMMUTABLE_AND_DIGEST_RECHECKED; BROKER_DRY_RUN_ONLY_NO_OS_EXECUTOR",
-    "jepa_pr2218": "HEAD_4AD72_SAFE_ADDITIVE_PASS_STAGED_PASS_INTEGRATED_IN_PROGRESS; DEDICATED_PY313_314_CURRENT_HEAD_MISSING",
-    "voice_pr2219": "LEASE_BEFORE_PCM_CANDIDATE; DETERMINISTIC_QA2214_POSTFIX_COMBINED_RUN_PENDING; NONREENTRANT_LOCK_CONTRACT_OPEN",
-    "arithmetic_pr2210": "FOCUSED_C5_SHADOW_FAIL_AND_STALE_NESTED_SOURCE_PINS; NOT_MERGED",
-    "local_full_suite": "BLOCKED_GITHUB_DNS_NO_LOCAL_AII_CHECKOUT",
+    "merged_pr2218": "MERGED_READ_ONLY_AUDIT_AND_TEST_AT_6C444E1",
+    "merge_workflows": "19_ACTION_REQUIRED_ZERO_JOBS_NOT_PASS",
+    "pr2218_head_tests": "SAFE_ADDITIVE_STAGED_INTEGRATED_PASS; DEDICATED_CURRENT_HEAD_PY313_PY314_MISSING",
+    "pr2195": "DEDICATED_C4_PY313_PY314_AND_STAGED_INTEGRATED_PASS; SAFE_ADDITIVE_FAIL; OVERLAY_NOT_NORMAL_STAGE; MISSING_NEGATIVES",
+    "pr2219": "BROAD_STAGED_INTEGRATED_PASS; DETERMINISTIC_QA_POSTFIX_RUN_PENDING; LOCK_CONTRACT_OPEN",
+    "pr2210": "C5_SHADOW_AND_PIN_FAILURES_NOT_MERGED",
+    "pr2198_2205": "CLOSED_SUPERSEDED_BY_2213; CHECKPOINT_ADVERSARIAL_TEST_GAP_RETAINED",
     "redmi": "REDMI_UNVERIFIED",
-    "private_owner_read": "Aiiii_408_PIPELINE_STATUS_EXPIRED_NO_REPLY; Aiiii_409_DIAGNOSTICS_OPEN_NO_REPLY; Aiiii_410_PIPELINE_STATUS_OPEN_NO_REPLY",
-    "private_update_request": "Aiiii_407_UPDATE_REQUEST_EXPIRED_NO_REPLY",
+    "private_owner_read": "Aiiii_407_408_409_410_EXPIRED_NO_REPLY",
+    "local_full_suite": "BLOCKED_GITHUB_DNS_NO_LOCAL_AII_CHECKOUT",
     "p0_chat": "OPEN_ISSUE_1904",
-    "canon_coverage": "1255_HISTORICAL_HEADINGS; SEMANTIC_CLAUSE_CODE_CONSUMER_TEST_ROLLBACK_MAPPING_INCOMPLETE",
-    "user_action_required": false
+    "canon_coverage": "1255_HISTORICAL_HEADINGS; SEMANTIC_CLAUSE_MAPPING_INCOMPLETE",
+    "user_action_required": "Resolve exact-head GitHub workflow action_required gate if post-merge CI is to run; no approval control available in this run."
   }
 }
