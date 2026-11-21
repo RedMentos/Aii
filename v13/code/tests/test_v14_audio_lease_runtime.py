@@ -428,5 +428,5 @@ print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 lease spans iterator; Runtime.
         text=True, capture_output=True, timeout=90,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "PASS: staged A5 -> B1/B2 -> multi-chunk C3 holds lease to iterator exhaustion" in result.stdout
+    assert "PASS: staged A5 -> B1/B2 -> multi-chunk C3 lease spans iterator" in result.stdout
     assert "Runtime.cancel and Runtime.close release lease for revocation" in result.stdout
