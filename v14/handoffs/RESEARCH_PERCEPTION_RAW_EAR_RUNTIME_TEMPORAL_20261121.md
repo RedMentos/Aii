@@ -130,3 +130,19 @@ Exact comparator run 44909020840 then passed:
 - Exact V3/temporal source blob verification and compile passed. This is LOCAL? No: GitHub-hosted Linux CI with native Linux libfvad. It is not Android/Bionic or Redmi.
 
 Staged/integrated run 44909020846 remained in progress at the last readback. The current branch head has later documentation/Board/Next Action commits; code/test blobs remain unchanged from the tested producer/test tree. Keep REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+## Consent-lease failure reset and commit-boundary regression — 2026-11-21
+
+A follow-up review found that a missing/invalid guard must also clear already-buffered VAD and caller-supplied temporal state, even when the boolean consent callback still returns true. The producer now centralizes that reset in _reset_audio_temporal_state() and uses it for missing guards, guard-factory errors, invalid managers and exceptions inside the lease.
+
+New test coverage now includes a preloaded SileroVADStream and TemporalVoiceEvidence instance; callback-only use fails closed, empties VAD buffering and resets the temporal accumulator so the same time window can be accepted afresh. A second shared-provider race test blocks immediately after the final consent recheck but before SQLite COMMIT, starts a revoke thread, and proves revoke cannot complete until COMMIT plus the producer's A4/C3 critical section exits.
+
+Exact current producer/test code head: 03237482d4534e1a3d4a3c0e9093ec14084f32b9.
+- Producer blob: e75c393939183d2f16e071ebf4a6f5ff65417a61.
+- Focused test blob: b96ffa3770935d1add9d46af7d7ccca22c987dd4.
+- Comparator workflow source pin: e75c393939183d2f16e071ebf4a6f5ff65417a61.
+
+Exact-head run 44909559421: RAW EAR 49/49 PASS on Python 3.11 and 3.13; py_compile PASS on both. Model-lab 44909559414 PASS and privacy scan 44909559570 PASS. Comparator run 44909559394: Python 3.13 8/8 PASS plus native Linux libfvad make check 13/13 PASS; Python 3.14 was still running at last readback. Staged/integrated run 44909559396 was still running. Safe-additive 44909559415 fails at the existing-module allowlist, as expected; no bypass.
+
+The previous exact staged-runtime 249/10/47 and integrated 415/3/58 PASS belonged to the earlier 39c2 source/test tree, before the latest state-reset and exact pre-COMMIT tests. Do not attribute those broad integration passes to 0323748 until the current 44909559396 run completes.
