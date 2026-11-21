@@ -114,3 +114,8 @@ Die bestehenden fünf stündlichen Jobs arbeiten als **ein Engineering-Team** mi
 - The tests exercise source-disjoint grouping/digest integrity, censored-status exclusion, oldest-first backlog paging, restart/cursor continuation, nonzero encoder/predictor and EMA parameter changes, negative controls, B1/B2/SELF readouts, numeric Memory recall, checkpoint readback, retention and rollback.
 - These are GitHub Actions/Linux results. No local Aii checkout or Redmi owner receipt is available: `REDMI_UNVERIFIED`. The consumer is still not wired into the normal Runtime postcommit path and does not update native B1/B2 GGUF weights.
 - Next: independent review/merge, then integrate into `Runtime.online_world_update -> OnlineWorld.update` and route the source-bound prediction to a real World/Planner consumer in SHADOW. #2135's nested SourceHandoff builder chain remains the immediate integration blocker. No user action.
+
+
+### JEPA & Memory final verification note — 2026-11-21
+
+PR #2143 is no longer a draft and is ready for independent review. The exact tested code/workflow commit is `a2788aacdae09bb675fff220cbda4ba74d400912`; docs-only handoff updates follow it. Run `44848998581` passed all 57 V14 learning tests on Python 3.13 (4.35s) and Python 3.14 (7.83s), including compilation. Run `44848994421` also passed the private remote-bridge security workflow. No local Aii checkout or Redmi owner receipt exists. Runtime wiring remains the next gap.
