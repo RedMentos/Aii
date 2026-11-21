@@ -99,15 +99,19 @@ public final class CompanionProvider extends ContentProvider {
 
     private JSONObject outcome(String actionId) throws Exception {
         if (!isHex(actionId, 32)) return error("INVALID_ACTION_ID");
-        String receipt = db.receipt(actionId);
+        CompanionDb.Action action = db.get(actionId);
         JSONObject out = new JSONObject();
-        if (receipt == null) {
+        if (action == null) {
+            out.put("status", "NOT_FOUND");
+            out.put("action_id", actionId);
+        } else if (action.receiptJson == null) {
             out.put("status", "NOT_READY");
             out.put("action_id", actionId);
+            out.put("action_status", action.status);
         } else {
             out.put("status", "READY");
             out.put("action_id", actionId);
-            out.put("receipt", new JSONObject(receipt));
+            out.put("receipt", new JSONObject(action.receiptJson));
         }
         return out;
     }
