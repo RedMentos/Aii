@@ -620,3 +620,32 @@ The current functional release has synthetic C4 source-span selection but no pro
 5. Boss waits for all exact merge-push checks, then reviews the next integrated PR and keeps the full Canon coverage ledger current.
 
 **Device:** private PIPELINE_STATUS request expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action or UPDATE_REQUEST. **User action: none.**
+
+
+---
+
+## Boss integration checkpoint — 2026-11-21 18:03:06Z
+
+### Merge-push status and new blocker
+- Perception #2240 merged at `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`. Its PR-head producer/consent/VAD/privacy/model-lab/staged/integrated checks passed. Exact merge-push currently has 19 associated workflows: **17 PASS, 2 IN_PROGRESS, 0 QUEUED**. The staged/integrated workflow's staged-runtime job has already failed: the normal SleepRuntime post-commit JEPA test expected an accepted update but received `UTILITY_GATE_REJECTED`; the integrated-regression job is still running. This is not a green release. Prior code-bearing release `f279286a4453248004c670fcaabecd85da6ab299` remains 19/19 green.
+- The merged RAW EAR path is caller-supplied PCM only. No microphone, ASR/TTS, Android UI or normal Runtime C3 consumer. Core must hold the same-thread lease through derived-context reads, B1/B2 and full C3 generation; add a cancellation/stop path so revoke/barging-in can abort long generation rather than waiting indefinitely.
+
+### JEPA exact-head diagnosis
+- #2237 head `d91f4683fe96619efa94b5fcd64bc1f55e9c39ec` corrected the nested source pin chain. Migration, owner-read bootstrap, Lab-Age, runtime-deploy integrity, incremental World JEPA and combined online integration pass.
+- Two workflows remain failed. Retention: Python 3.13 projected old-holdout delta 0.0140033 vs stable predictor 0.0066121; Python 3.14 0.0145535 vs 0.0075072. This is genuine regression; preserve `UTILITY_GATE_REJECTED` and do not lower the gate.
+- Staged optimizer continuation: second `:growth jepa` call reaches `world_jepa_runtime_guard_candidate._clone(current)` and fails because its exact field allowlist/clone omits the new `_training_state` (main/bootstrap/inverse optimizer moments, EMA and RNG). Extend only through canonical schema validation and explicit safe copying; no generic deepcopy or weakened model guard. Preserve exact restart equivalence and rollback.
+- The exact merge-push staged-runtime failure on `728cdc` is the same live acceptance gap: SleepRuntime returned `UTILITY_GATE_REJECTED` where the positive test expects a real accepted update. Do not change the test to pass by accepting rejection; produce a genuinely retention-preserving update or keep the feature blocked.
+
+### Remaining integration lanes
+- QA #2235: staged 251/10/47, integrated 424/3/58, migration/deploy pass; Lab-Age and owner-read fail on AST nested-closure attribution `f(st)` inside `GoalStore.add`. Fix the enclosing method attribution and add a negative unrelated-closure case. #2241 is closed as redundant. Safe-additive remains FAIL BY POLICY.
+- Core #2234: normal recovery builder drops the existing C4 source-span overlay while ordinary `runtime_deploy` still invokes `stage_integrated_candidate.py`; keep draft until C4 and arithmetic share the real pinned deployer.
+- Core #2200: stale/non-mergeable; rebase on merged #2240 and retain the lease through full C3 generation with revoke cleanup and cancellation.
+
+### Next executable sequence
+1. JEPA: safely copy validated optimizer state and improve the actual old-task retention behavior; retain both positive accepted-update and negative rollback controls.
+2. Core/QA: preserve normal C4, compose arithmetic into the real deployer, and recompute the entire recovery→stage→deployer source pin chain.
+3. Core: implement the normal voice consumer over merged #2240 and add prompt cancellation/revocation through generation plus derived-context deletion/cache clear.
+4. QA: fix AST inventory false positive and rerun Lab-Age/owner-read/staged/integrated/migration.
+5. Boss: await all exact merge-push workflows, integrate only after exact-head tests, and keep the 1,255-heading Canon coverage map honest.
+
+**Device:** private owner-read expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action. **User action: none.**
