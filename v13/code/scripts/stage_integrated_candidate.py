@@ -12,8 +12,8 @@ from pathlib import Path
 import shutil
 import tempfile
 
-BUILDER = 'scripts/termux_runtime_recovery_candidate_20261112.py'
-BUILDER_SHA = '6b85f9842fc017968c3137c5a2ff0d456cc74efbac4b8e7c464e65c2f66a6975'
+BUILDER = 'scripts/termux_runtime_recovery_candidate_20261121.py'
+BUILDER_SHA = 'd495452982268e96d66ba6fdf491759f0bbbdcd828a33ace7b87e5ca728bd6d5'
 IGNORED = ('__pycache__', '*.pyc', '*.db', '*.sqlite', '*.sqlite3', '*.gguf',
            '*.safetensors', '*.pt', '*.pth', '*.log')
 
