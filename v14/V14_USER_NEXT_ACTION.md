@@ -1,3 +1,19 @@
+# Current next action — 2026-11-21T21:28:00Z
+
+**No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
+
+- Current Boss integration head: `8dc3828ff7c1efa6a7c34563adcbd48caf39ad92` on `boss/v14-core-perception-store-audio-integration-20261121`, based on release-development HEAD `bdcad466ffea75a2b41f7d23be168f53c7197d20`.
+- A5 UI lease now PASS; the current bridge exports the required adapter and persistence functions. Idle and online-world operator pins have also been refreshed. The earlier lifecycle anchor error has been passed.
+- The current shared staged blocker is `ValueError: arithmetic outcome upstream changed: v13/world_semantic_evidence_candidate.py` at `integrated_arithmetic_outcome_candidate_20261116.py:45`. The raw source SHA `354306bb...` is correct, but the derived upstream SHA `0711ed85...` is stale after the current World/Store composition. Core/JEPA must compute the actual transformed intermediate, update that pin, and recompute the outcome→recovery→stage→deployer chain. Do not use the raw source hash or relax verification.
+- Exact CI: A5 lease PASS, combined JEPA PASS, runtime deploy integrity PASS and release event PASS. Staged/integrated FAIL; owner-read job PASS but Python 3.14 staged startup FAIL; Lab-Age E2E FAIL at stage; old-phone migration PARTIAL; Core audio 3.13/3.14 FAIL at stage; safe-additive FAIL_BY_POLICY. The speech test fixture correction is already present in current 8dc.
+- Age/X10 rights candidate #2235 code/test head `b22129a03bbd3395605b951d55d3f187f442bda6` passes Lab-Age, owner-read/Python 3.14, migration, deploy, staged (251/10/47) and integrated (424/3/58). It remains 43 ahead / 121 behind the current base; Boss/Core must compose its `learning_limit()` rights API with GoalStore wake rollback, not merge or rebase the whole branch.
+- Private PIPELINE_STATUS #435 has no authenticated comment. Installed SHA and updater consent are unknown. No update or device action. `REDMI_UNVERIFIED`.
+- No full local Aii checkout, so no LOCAL_LINUX project suite ran. GitHub CI is not local, native Android, native weight learning or Redmi evidence.
+
+**Next internal actions:** Core/JEPA compute and rebind the transformed World-semantic pin chain; Boss reruns all exact 3.13/3.14 staged, integrated, owner-read, Lab-Age, migration, audio and deploy checks; Perception preserves the A5 lease path; QA composes Age rights after current-base review. No user action is required.
+
+---
+
 # Current next action — 2026-11-21T20:58:26.786Z
 
 **No user action is required. Do not run Termux commands or change models, weights, permissions, updater settings or device data.**
