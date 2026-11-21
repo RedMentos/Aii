@@ -1498,3 +1498,12 @@ The historical 1,255-heading inventory and all original V13 appendix bytes remai
 | Release / Redmi | Development branch `aa79b05037f6fedfffd84801105f00321c7f6055` | Post-merge exact push workflows queued/in progress at readback | Required exact-HEAD CI must all finish green; private owner-read RedMentos/Aiiii#368 still OPEN_NO_REPLY; installed SHA UNKNOWN |
 
 **Environment boundary:** exact local repository tests BLOCKED by GitHub DNS; CI tests use Linux runners and synthetic Store data. No local native-model training, Android/Redmi validation, installed SHA, user data, model download or permission change is claimed.
+
+### RAW EAR temporal A4 default consumer — candidate research-perception/v14-raw-ear-runtime-temporal-state-20261121
+
+| Canon path | Candidate code / consumer | Evidence | Still not accepted |
+|---|---|---|---|
+| A5 raw audio → A4 attention | audio_voice_cues.consume_pcm16_voice_window defaults to bounded per-Runtime TemporalVoiceEvidenceRegistry; source/generation isolation, LRU cap, consent-failure reset and explicit clear API | Focused CI pending; previous #2177 tests are not this exact candidate | Core #2158 still pins the older adapter; no microphone capture, normal Runtime E2E, Android Bionic or Redmi proof |
+| RAW EAR VAD comparison | Matched V3/WebRTC 20ms→40ms windows; transition-based signed onset/offset latency; libfvad dynamic sample-rate validation; partial-hop rejection | Focused CI pending; WebRTC wrapper is test-only; fake C ABI is not real libfvad | No annotated speech-corpus evaluation, real libfvad build, ARM/Termux measurement or production selection |
+
+Status: CODE_PRESENT / WIRED_SYNTHETIC_CANDIDATE only. Do not mark VOICE_AUDIO, A0–A5, or whole-system Canon accepted.

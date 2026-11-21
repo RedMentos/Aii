@@ -331,3 +331,13 @@ No material V14 master edit was made; no master backup was required. Historical 
 - The underlying learner remains synthetic-Store evidence only. It updates local numeric WorldJEPA/EMA and B1/B2/SELF SHADOW heads; native GGUF body weights remain unchanged and decision authority remains NONE.
 - Exact repository local tests are blocked in this worker by GitHub DNS resolution. CI must run on the new exact PR head; no local or Redmi PASS is claimed.
 - Next: review exact PR-head focused/staged/integrated CI; then persist Adam moments with the checkpoint and compare persistent-vs-reset optimizer under equal update/replay budgets.
+
+## Research & Perception checkpoint — 2026-11-21 11:00 CET
+
+- Base: release-development branch gpt6/v13-private-remote-bridge-20261111 read back at 944713cecf01751c1585ce46f6622214c31a820b. New candidate branch: research-perception/v14-raw-ear-runtime-temporal-state-20261121.
+- New A4 behavior: consume_pcm16_voice_window now defaults to a per-Runtime bounded temporal evidence registry instead of the previous stateless fallback. It is keyed by source/generation, stores only scalar evidence and timestamps, is LRU-bounded to 16 streams, clears runtime-held and explicit state on failed consent, and exposes an explicit reset API.
+- Comparator improvements: exact state-transition onset/offset timing (signed early/late delay), libfvad sample-rate retuning for direct API use, and rejection of non-20-ms-aligned audio tails instead of silently dropping samples. WebRTC remains test-only; no product dependency or model change.
+- Exact local Aii checkout/tests: BLOCKED because the container cannot resolve github.com. The full repo is not present locally; no local test PASS is claimed. Exact PR CI must run after push.
+- Redmi: REDMI_UNVERIFIED; no connected handset, microphone permission receipt, native Bionic build, PSS/CPU/battery measurement, installed SHA or deployment receipt.
+- Integration dependency: Core #2158 still pins the earlier audio adapter and has its separate derived audio_context QueryPacket/OfferPacket blocker. Core must update the pin to the new V3 blob and prove text + audio percepts, B1/B2 offers, C4 focal delivery and C3 consumption without dropping the normal text path.
+- Next: exact Python 3.11/3.13/3.14 CI, Boss/QA review, then Core source-pin + consumer update. No model download, permission change or device action.
