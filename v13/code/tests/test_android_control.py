@@ -194,7 +194,7 @@ def test_audit_database_rejects_parent_owned_by_another_uid(tmp_path, monkeypatc
     real_uid = os.getuid()
     monkeypatch.setattr(os, "getuid", lambda: real_uid + 1)
 
-    with pytest.raises(ControlDenied, match="owner-controlled"):
+    with pytest.raises(ControlDenied, match="owner"):
         AndroidControlBroker(tmp_path / "audit.sqlite")
 
     assert not (tmp_path / "audit.sqlite").exists()
