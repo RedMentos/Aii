@@ -932,3 +932,13 @@ The raw `SOURCE_PINS` entry for local-error remains `87bb77ed...`; the derived `
 Exact 4c1023 outcomes: A5 lease PASS (44951931825); combined online JEPA PASS (44951931760); runtime-deploy integrity PASS (44951931802); release-event integration PASS (44951931844). Staged/integrated FAIL (44951931769); owner-read job PASS but Python 3.14 staged startup FAIL (44951931772); Lab-Age E2E FAIL (44951931715); old-phone migration PARTIAL (44951931857); Core audio 3.13 FAIL and 3.14 still in progress (44951931787); safe-additive FAIL_BY_POLICY (44951931754). Earlier A5/lifecycle/idle/operator failures are superseded by the current local-error pin mismatch.
 
 No full local Aii checkout and no authenticated Redmi receipt. Installed SHA/updater consent remain unknown. Keep NOT_RELEASED / REDMI_UNVERIFIED.
+
+## QA exact-head follow-up — 06ebe5d (2026-11-21 22:38 CET)
+
+Commit `06ebe5d29d1244dc1d7afa40d846d227d5f3930e` dynamically binds generated Context recall to composed Store/stream sources. The prior `Integrated source recall changed` failure has advanced. The current Lab-Age and Python 3.14 staged logs fail in `record_only_controller_guard_20261116.py:191` with `ValueError: semantic dependency changed: v13/world_semantic_evidence_candidate.py`.
+
+The controller guard currently expects `semantic_pin = 9fbcb808...` and `local_pin = 44a8882c...`, both from before the upstream arithmetic/World/Store transformation. The current composed semantic and local-error bytes are different. Recompute both exact intermediate digests after the known upstream transformation, update both pins as one change, and rebind the controller guard parent → recovery wrapper → stage → runtime deployer. Preserve raw source pins and the strict transformation chain; do not accept arbitrary bytes. Add expected/actual SHA-256 to the fail-closed diagnostic.
+
+Exact 06ebe5 outcomes so far: A5 UI lease PASS; combined online JEPA PASS; runtime-deploy integrity PASS; GoalWake focused tests 7/7 PASS in the Python 3.14 job. Lab-Age E2E FAIL at the controller semantic pin; owner-read job PASS but Python 3.14 staged startup FAIL; migration and staged/audio jobs are still in progress at the last poll; safe-additive FAIL_BY_POLICY. Earlier lifecycle/A5/operator/context-recall errors are superseded by this controller semantic pin.
+
+No full local Aii checkout and no authenticated Redmi receipt. Installed SHA/updater consent unknown. Keep NOT_RELEASED / REDMI_UNVERIFIED.
