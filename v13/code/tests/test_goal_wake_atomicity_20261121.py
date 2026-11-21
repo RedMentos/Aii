@@ -83,7 +83,7 @@ class GoalWakeAtomicityTests(unittest.TestCase):
         self.assertEqual(pending[0]["dedup"], "goal:" + goal_id)
 
     def test_scheduler_refusal_rolls_back_goal_and_sequence(self):
-        before_goal = self.goals.box.load()[0][0]
+        before_goal = self.goals.box.load()[0]
         before_queue = self.scheduler.report()
         with patch.object(self.scheduler, "post", return_value=None):
             with self.assertRaisesRegex(RuntimeError, "could not be scheduled"):
@@ -92,7 +92,7 @@ class GoalWakeAtomicityTests(unittest.TestCase):
         self.assertEqual(self.scheduler.report(), before_queue)
 
     def test_scheduler_exception_before_commit_rolls_back_goal(self):
-        before_goal = self.goals.box.load()[0][0]
+        before_goal = self.goals.box.load()[0]
         before_queue = self.scheduler.report()
         with patch.object(self.scheduler, "post", side_effect=OSError("post rejected")):
             with self.assertRaisesRegex(OSError, "post rejected"):
@@ -107,7 +107,7 @@ class GoalWakeAtomicityTests(unittest.TestCase):
             self.assertIsNotNone(original_post(*args, **kwargs))
             raise OSError("simulated post telemetry failure")
 
-        before_goal = self.goals.box.load()[0][0]
+        before_goal = self.goals.box.load()[0]
         with patch.object(self.scheduler, "post", side_effect=post_then_raise):
             with self.assertRaisesRegex(OSError, "telemetry failure"):
                 self.goals.add("post committed then failed", wake_at=1060)
@@ -128,7 +128,7 @@ class GoalWakeAtomicityTests(unittest.TestCase):
                 raise OSError("simulated goal backlink write failure")
             return original_mutate(function)
 
-        before_goal = self.goals.box.load()[0][0]
+        before_goal = self.goals.box.load()[0]
         with patch.object(self.goals.box, "mutate", side_effect=fail_second_mutation):
             with self.assertRaisesRegex(OSError, "backlink write failure"):
                 self.goals.add("backlink failure", wake_at=1060)
