@@ -156,5 +156,111 @@ class RuntimeObserverTests(unittest.TestCase):
                 r.close()
 
 
+    def test_both_same_turn_bodies_reach_c4_and_c3_after_recent_c3_prefill_failures(self):
+        with tempfile.TemporaryDirectory() as folder:
+            r = Runtime(Path(folder))
+            try:
+                r.sleep.cycle.set_policy('enabled', 'off')
+                r.cfg.update(deadline_seconds=30, observer_seconds=35, max_reentry=0,
+                             focal_slots=4, b2_control='two_body',
+                             b2_quote_select='pointer')
+                effort.set_mode(r.store, 'max')
+                r._route = Mock(return_value=('both', {'source': 'SYNTHETIC_BOTH_BODY_BUDGET_TEST'}))
+                r.learner.output_delta = Mock(return_value=None)
+
+                # Two completed C3 prefill failures are real rows in the same
+                # local Store. They must be evidence for recovery detection,
+                # not a veto while the current 45% pre-answer window is open.
+                for index in range(2):
+                    previous = r.store.event(r.session, f'prior synthetic C3 failure {index}')
+                    r.store.message(
+                        r.session, previous['event_id'], 'assistant', '',
+                        status='DEADLINE',
+                        metadata={'runner': {'role': 'C3_LANGUAGE',
+                                             'generated_tokens': 0,
+                                             'last_phase': 'prefill'}})
+
+                now = [time.monotonic()]
+                start = now[0]
+                calls, sent = [], []
+                source = ('Compare Cedar train options. Option A costs 11 and takes 9 minutes. '
+                          'Option B costs 17 and takes 4 minutes. Which is cheaper, and which is faster?')
+
+                def get_runner(role, *_args, **_kwargs):
+                    runner = SimpleNamespace(role=role, last_metrics={})
+                    def generate(messages, cancel, end, *_args, **_kwargs):
+                        calls.append((role, end))
+                        if role in ('B1_DETAIL', 'B2_GIST'):
+                            now[0] += 1.0
+                            runner.last_metrics = {'role': role, 'status': 'FINAL',
+                                                   'generated_tokens': 20}
+                            schema = _args[1] if len(_args) > 1 else {}
+                            pointer = (schema.get('properties', {}).get('quotes', {})
+                                             .get('items', {}).get('type') == 'integer')
+                            if role == 'B1_DETAIL':
+                                payload = {
+                                    'summary': 'Option A costs 11 and takes 9 minutes; option B costs 17 and takes 4 minutes.',
+                                    'quotes': ['Option A costs 11 and takes 9 minutes.',
+                                               'Option B costs 17 and takes 4 minutes.'],
+                                    'uncertainty': 'none', 'needs_reentry': False}
+                            else:
+                                payload = {
+                                    'summary': 'This comparison balances price against travel time: A is cheaper while B is faster.',
+                                    'quotes': [2, 4] if pointer else [
+                                        'Option A costs 11 and takes 9 minutes.',
+                                        'Which is cheaper, and which is faster?'],
+                                    'uncertainty': 'none', 'needs_reentry': False}
+                            yield json.dumps(payload)
+                        else:
+                            sent.append(copy.deepcopy(messages))
+                            runner.last_metrics = {'role': role, 'status': 'FINAL',
+                                                   'generated_tokens': 8}
+                            yield 'Option A is cheaper; option B is faster.'
+                    runner.generate = generate
+                    return runner
+
+                r.pool.get = Mock(side_effect=get_runner)
+                real_run = obs.run
+                def run_with_clock(*args, **kwargs):
+                    return real_run(*args, **dict(kwargs, clock=lambda: now[0]))
+                fake_time = SimpleNamespace(monotonic=lambda: now[0],
+                                            monotonic_ns=lambda: int(now[0] * 1e9))
+                event = r.store.event(r.session, source)
+                with patch.object(runtime_module, 'time', fake_time), patch.object(obs, 'run', run_with_clock):
+                    r._turn(event)
+
+                answer = r.last_answer()
+                self.assertEqual(answer['status'], 'FINAL', answer)
+                self.assertEqual([role for role, _ in calls],
+                                 ['B1_DETAIL', 'B2_GIST', 'C3_LANGUAGE'])
+                self.assertAlmostEqual(calls[0][1] - start, 13.5, places=2)
+                self.assertAlmostEqual(calls[1][1] - start, 13.5, places=2)
+
+                stored = r.store.rows(
+                    "SELECT id,payload FROM packets WHERE event_id=? AND kind='OfferPacket' ORDER BY id",
+                    (event['event_id'],))
+                self.assertEqual(len(stored), 2)
+                offers = [json.loads(row['payload']) for row in stored]
+                by_role = {offer['role']: offer for offer in offers}
+                self.assertEqual(set(by_role), {'B1_DETAIL', 'B2_GIST'})
+                for offer in offers:
+                    self.assertTrue(offer['evidence_refs'])
+                    for ref in offer['evidence_refs']:
+                        self.assertEqual(r.store.read_source(ref), source[ref['char_start']:ref['char_end']])
+
+                meta = json.loads(answer['metadata'])
+                selected = set(meta['selected_offer_ids'])
+                coalition = set(meta['focal']['coalition'])
+                expected = {offer['packet_id'] for offer in offers}
+                self.assertEqual(selected, expected)
+                self.assertTrue(expected.issubset(coalition))
+                self.assertIn(by_role['B1_DETAIL']['offer']['summary'], json.dumps(sent))
+                self.assertIn(by_role['B2_GIST']['offer']['summary'], json.dumps(sent))
+                self.assertEqual(r.cfg['learning_mode'], 'RECORD_ONLY')
+                self.assertFalse(r.pool.pids())
+            finally:
+                r.close()
+
+
 if __name__ == '__main__':
     unittest.main()
