@@ -44,6 +44,84 @@ def _read_locked(fn):
     return read
 
 
+def _project_halfspace_intersection(raw, reference_vectors):
+    """Exact active-set projection onto <=8 GEM half-spaces in parameter space.
+
+    Dykstra's cyclic projection can need thousands of sweeps for nearly
+    opposing session gradients. With at most eight cohorts, enumerating the
+    KKT active set is bounded (256 tiny systems) and avoids a false learner
+    ERROR after an arbitrary sweep cap.
+    """
+    vectors = [np.asarray(item, dtype=float) for item in reference_vectors]
+    norms_sq = [float(np.dot(item, item)) for item in vectors]
+    active = [index for index, value in enumerate(norms_sq) if value > 1e-20]
+    if not active:
+        return raw.copy(), 0, 0.0, 0.0, 0, "NO_ACTIVE_REFERENCE"
+
+    vectors = [vectors[index] for index in active]
+    gram = np.asarray([
+        [float(np.dot(left, right)) for right in vectors]
+        for left in vectors
+    ], dtype=float)
+    before = np.asarray([float(np.dot(item, raw)) for item in vectors], dtype=float)
+    direction_norm = float(np.linalg.norm(raw))
+    tolerance = max(
+        1e-10 * max(1.0, math.sqrt(float(np.dot(item, item))) * direction_norm)
+        for item in vectors
+    )
+    if float(np.min(before)) >= -tolerance:
+        return raw.copy(), 0, tolerance, max(0.0, -float(np.min(before))), 0, "ALREADY_FEASIBLE"
+
+    count = len(vectors)
+    best = None
+    candidates = 1 << count
+    for mask in range(candidates):
+        selected = [index for index in range(count) if mask & (1 << index)]
+        multipliers = np.zeros(count, dtype=float)
+        if selected:
+            submatrix = gram[np.ix_(selected, selected)]
+            rhs = -before[selected]
+            try:
+                solution = np.linalg.solve(submatrix, rhs)
+            except np.linalg.LinAlgError:
+                solution = np.linalg.lstsq(submatrix, rhs, rcond=1e-14)[0]
+            if not np.isfinite(solution).all():
+                continue
+            multiplier_scale = max(1.0, float(np.max(np.abs(solution))))
+            if np.any(solution < -1e-10 * multiplier_scale):
+                continue
+            multipliers[selected] = np.maximum(solution, 0.0)
+
+        projected = raw.copy()
+        for index, multiplier in enumerate(multipliers):
+            if multiplier:
+                projected += multiplier * vectors[index]
+        after = before + gram @ multipliers
+        projected_norm = float(np.linalg.norm(projected))
+        tolerance = max(
+            1e-10 * max(1.0, math.sqrt(float(gram[index, index])) * projected_norm)
+            for index in range(count)
+        )
+        violation = max(0.0, -float(np.min(after)))
+        multiplier_scale = max(1.0, float(np.max(np.abs(multipliers))))
+        complementarity = float(np.max(np.abs(multipliers * after)))
+        if (violation > tolerance
+                or complementarity > 10.0 * tolerance * multiplier_scale):
+            continue
+        delta = projected - raw
+        distance_sq = float(np.dot(delta, delta))
+        score = (violation, complementarity, distance_sq)
+        if best is None or score < best[0]:
+            best = (score, projected, after, tolerance, multipliers)
+
+    if best is None:
+        raise ValueError("WorldJEPA active-set GEM projection did not converge")
+    _, projected, after, tolerance, multipliers = best
+    violation = max(0.0, -float(np.min(after)))
+    kkt_active = int(np.count_nonzero(multipliers > 1e-12))
+    return projected, 1, tolerance, violation, kkt_active, "ACTIVE_SET_ENUMERATION"
+
+
 class Adam:
     def __init__(self, params, lr):
         self.p = params; self.lr = lr; self.t = 0
@@ -121,42 +199,9 @@ class Adam:
                 for reference, norm_sq in zip(reference_vectors, reference_norms)
                 if norm_sq > 1e-20
             ]
-            if active:
-                projected = raw.copy()
-                corrections = [np.zeros_like(projected) for _ in active]
-                sweeps = 0
-                tolerance = 0.0
-                max_violation = 0.0
-                for sweep in range(1, 65):
-                    for index, (reference, norm_sq) in enumerate(active):
-                        shifted = projected + corrections[index]
-                        dot = float(np.dot(reference, shifted))
-                        next_projected = (
-                            shifted - (dot / norm_sq) * reference if dot < 0.0 else shifted
-                        )
-                        corrections[index] = shifted - next_projected
-                        projected = next_projected
-                    direction_norm = float(np.sqrt(np.dot(projected, projected)))
-                    after_active = [
-                        float(np.dot(reference, projected)) for reference, _ in active
-                    ]
-                    tolerance = max(
-                        1e-10 * max(1.0, float(np.sqrt(norm_sq)) * direction_norm)
-                        for _, norm_sq in active
-                    )
-                    max_violation = max(
-                        (max(0.0, -dot) for dot in after_active), default=0.0
-                    )
-                    sweeps = sweep
-                    if max_violation <= tolerance:
-                        break
-                else:
-                    raise ValueError("WorldJEPA per-session GEM projection did not converge")
-            else:
-                projected = raw.copy()
-                sweeps = 0
-                tolerance = 0.0
-                max_violation = 0.0
+            projected, sweeps, tolerance, max_violation, kkt_active, projection_method = (
+                _project_halfspace_intersection(raw, reference_vectors)
+            )
             after_dots = [
                 float(np.dot(reference, projected)) for reference in reference_vectors
             ]
@@ -177,7 +222,10 @@ class Adam:
                 "projection_norm": projection_norm,
                 "constraint_tolerance": tolerance,
                 "active_constraint_count": len(active),
+                "kkt_active_constraint_count": kkt_active,
                 "projection_sweeps": sweeps,
+                "projection_method": projection_method,
+                "projection_candidates_examined": (1 << len(active)) if active else 0,
                 "max_constraint_violation": max_violation,
             })
         for key, direction in directions.items():
