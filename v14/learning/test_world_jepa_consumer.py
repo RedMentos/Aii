@@ -12,7 +12,7 @@ import pytest
 from v13 import contracts, world_jepa, world_model
 from v13.store import Store
 from t8_store_authority import verify_committed_transition_page, verify_committed_transitions
-from world_jepa_consumer import WorldJEPAStoreConsumer, _source_disjoint_split
+from world_jepa_consumer import WorldJEPAStoreConsumer, _action_mean_delta_baseline_loss, _select_replay_rows, _source_disjoint_split
 
 
 def _make_store(home):
@@ -130,6 +130,13 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
         assert metrics["retention_gate_accepted"] is True
         assert metrics["negative_controls_separated"] is True, {key: metrics[key] for key in ("holdout_loss_after", "shuffled_action_holdout_loss", "zero_action_holdout_loss", "holdout_loss_delta")}
         assert metrics["holdout_loss_delta"] < 0
+        assert math.isfinite(metrics["mean_delta_baseline_loss_before"])
+        assert math.isfinite(metrics["mean_delta_baseline_loss_after"])
+        assert metrics["mean_delta_baseline_action_count"] >= 2
+        assert metrics["optimizer_moments_persisted"] is False
+        assert metrics["inverse_dynamics_optimizer_persisted"] is False
+        assert type(metrics["jepa_beats_mean_delta_before"]) is bool
+        assert type(metrics["jepa_beats_mean_delta_after"]) is bool
         assert metrics["optimizer_moments_persisted"] is False
         assert math.isfinite(metrics["holdout_loss_before"])
         assert math.isfinite(metrics["holdout_loss_after"])
@@ -636,3 +643,84 @@ def test_replay_off_ablation_excludes_old_rows_and_uniform_mode_replays_them(tmp
         assert restarted.restore()["checkpoint_sha256"] == active_payload["active"]["checkpoint_sha256"]
     finally:
         store.close()
+
+
+def test_action_mean_delta_baseline_is_train_only_and_action_conditioned():
+    import numpy as np
+
+    class IdentityLatent:
+        @staticmethod
+        def latent(values, target=False):
+            return np.asarray(values, dtype=np.float64)
+
+    train = (
+        np.asarray([[0.0], [2.0], [10.0], [12.0]]),
+        np.asarray([[1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, 1.0]]),
+        np.asarray([[1.0], [3.0], [8.0], [10.0]]),
+    )
+    holdout = (
+        np.asarray([[4.0], [14.0]]),
+        np.asarray([[1.0, 0.0], [0.0, 1.0]]),
+        np.asarray([[5.0], [12.0]]),
+    )
+    loss, action_count = _action_mean_delta_baseline_loss(IdentityLatent(), train, holdout)
+    assert loss == 0.0
+    assert action_count == 2
+
+    unsupported = (holdout[0], np.asarray([[0.0, 0.0, 1.0], [0.0, 0.0, 1.0]]), holdout[2])
+    with pytest.raises(ValueError, match="lacks source-disjoint action support"):
+        _action_mean_delta_baseline_loss(IdentityLatent(), train, unsupported)
+
+
+def test_hard_replay_selects_high_error_old_train_rows_and_uniform_sample_is_deterministic():
+    import numpy as np
+
+    actions = tuple(world_model.ACTIONS)
+    old_rows = [
+        {
+            "action_id": f"old-{index:02d}",
+            "s": [float(index), 0.0, 0.0, 0.0],
+            "a": actions[index % len(actions)],
+            "y": [0.0, 0.0, 0.0],
+        }
+        for index in range(24)
+    ]
+
+    class FixedPrediction:
+        @staticmethod
+        def predict(x, action):
+            return np.zeros((len(x), 2), dtype=np.float64), np.zeros(len(x))
+
+        @staticmethod
+        def latent(x, target=True):
+            return np.asarray(x, dtype=np.float64)[:, :2]
+
+    model = FixedPrediction()
+    uniform, uniform_metrics = _select_replay_rows(
+        model, old_rows, replay_mode="uniform_sampled", seed=7, new_row_count=4
+    )
+    uniform_again, _ = _select_replay_rows(
+        model, old_rows, replay_mode="uniform_sampled", seed=7, new_row_count=4
+    )
+    hard, hard_metrics = _select_replay_rows(
+        model, old_rows, replay_mode="hard", seed=7, new_row_count=4
+    )
+
+    uniform_ids = [row["action_id"] for row in uniform]
+    hard_ids = {row["action_id"] for row in hard}
+    assert uniform_ids == [row["action_id"] for row in uniform_again]
+    assert len(uniform) == len(hard) == 8
+    assert hard_ids.issubset({row["action_id"] for row in old_rows})
+    assert len({row["a"] for row in hard}) == len(actions)
+
+    def row_error(row):
+        target = np.asarray((row["s"] + row["y"])[:2], dtype=np.float64)
+        return float(np.mean(target ** 2))
+
+    unselected_errors = [
+        row_error(row) for row in old_rows if row["action_id"] not in hard_ids
+    ]
+    selected_errors = [row_error(row) for row in hard]
+    assert min(selected_errors) >= max(unselected_errors)
+    assert hard_metrics["replay_selection_error_mean"] > uniform_metrics["replay_selection_error_mean"]
+    assert hard_metrics["replay_selection_budget"] == 8
