@@ -4,7 +4,7 @@
 **Base:** Core #2242 `1850b9ba025074be89476ee32c87ae57b0345f29`  
 **PR:** [#2277](https://github.com/RedMentos/Aii/pull/2277)  
 **Branch:** `qa/v14-same-turn-body-delivery-20261122`  
-**Test branch head at readback:** `5b06e1f5ebe01a5c467eca70ba22a3786be9d630`  
+**Test branch head at readback:** `709ced72045edad60d78ed1d16e6cf24d169e04a`  
 **Status:** SOURCE-REPRODUCED / REGRESSION ADDED / TEST NOT EXECUTED / NOT_RELEASED
 
 ## Defect
