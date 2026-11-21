@@ -7,7 +7,6 @@ runtime/world/arithmetic chain. PCM16 and consent callbacks remain process-local
 from __future__ import annotations
 
 import hashlib
-import re
 from pathlib import Path
 
 SOURCE_BLOBS = {
@@ -286,7 +285,8 @@ class Runtime:
     cognition = _replace(
         cognition,
         b"query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW')",
-        b"query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW',audio_context_refs=audio_context_refs)",
+        b"        audio_context_packet = ({'body': {k:v for k,v in audio_context.items() if k!='summary_source_ref'}, 'summary_source_ref': audio_context['summary_source_ref']} if audio_context else None)\n"
+        b"        query_packet.update(context_offer_ids=[x['offer_id'] for x in context],context_source_refs=[x['source_ref'] for x in context],context_chars=len(dumps(query.get('earlier_context',query.get('recent_source')))) if context else 0,state_policy='B2_BOUNDED_SOURCE_CONTEXT' if role=='B2_GIST' else 'B1_SHORT_WINDOW',audio_context_refs=audio_context_refs,audio_context=audio_context_packet)",
         "QueryPacket audio refs",
     )
     cognition = _replace(
@@ -325,12 +325,25 @@ class Runtime:
         cognition,
         b"                raise ValueError('Consumer query scope changed')\n            allowed=[e['source_ref']]+query.get('context_source_refs',[])+query.get('enlightened_source_refs',[])\n",
         b"                raise ValueError('Consumer query scope changed')\n"
-        b"            audio_context,current_audio_refs=self._audio_context_query(e,role)\n"
-        b"            if current_audio_refs!=query.get('audio_context_refs',[]):raise ValueError('Consumer audio context missing or revoked')\n"
+        b"            audio_context,current_audio_refs=self._audio_context_query(e,offer['role'])\n"
+        b"            if current_audio_refs!=query.get('audio_context_refs',[]):\n"
+        b"                self.s.log('audio_offer_omitted',e['event_id'],{'role':offer['role'],'reason':'CONSENT_OR_SOURCE_REVOKED'});continue\n"
+        b"            persisted_audio_context=query.get('audio_context')\n"
+        b"            if current_audio_refs:\n"
+        b"                expected_audio_context={'body':{k:v for k,v in audio_context.items() if k!='summary_source_ref'},'summary_source_ref':current_audio_refs[0]}\n"
+        b"                if persisted_audio_context!=expected_audio_context:\n"
+        b"                    self.s.log('audio_offer_omitted',e['event_id'],{'role':offer['role'],'reason':'QUERY_CONTEXT_MISMATCH'});continue\n"
+        b"            elif persisted_audio_context is not None:\n"
+        b"                self.s.log('audio_offer_omitted',e['event_id'],{'role':offer['role'],'reason':'UNEXPECTED_QUERY_CONTEXT'});continue\n"
+        b"            audio_context_valid=True\n"
         b"            for audio_ref in query.get('audio_context_refs',[]):\n"
-        b"                audio_text=self.s.read_source(audio_ref)\n"
-        b"                supplied={k:v for k,v in audio_context.items() if k!='summary_source_ref'}\n"
-        b"                if json.loads(audio_text)!=supplied:raise ValueError('Consumer audio context source mismatch')\n"
+        b"                try:\n"
+        b"                    audio_text=self.s.read_source(audio_ref)\n"
+        b"                    supplied={k:v for k,v in audio_context.items() if k!='summary_source_ref'}\n"
+        b"                    if json.loads(audio_text)!=supplied:audio_context_valid=False;break\n"
+        b"                except Exception:audio_context_valid=False;break\n"
+        b"            if not audio_context_valid:\n"
+        b"                self.s.log('audio_offer_omitted',e['event_id'],{'role':offer['role'],'reason':'STORED_SOURCE_MISMATCH'});continue\n"
         b"            # Acoustic refs are provenance only; they are never quotable text evidence.\n"
         b"            allowed=[e['source_ref']]+query.get('context_source_refs',[])+query.get('enlightened_source_refs',[])\n",
         "analyst audio source verification",
@@ -339,23 +352,8 @@ class Runtime:
     arithmetic = result.get("v13/arithmetic_reflex.py")
     if not isinstance(arithmetic, bytes):
         arithmetic = (code_dir / "v13/arithmetic_reflex.py").read_bytes()
-    arithmetic = _replace(
-        arithmetic,
-        b"(?:what\\s+is|what's|was\\s+ist|berechne|calculate)",
-        b"(?:what\\s+is|what's|was\\s+ist|berechne|calculate|compute|wie\\s+viel\\s+ist|wieviel\\s+ist)",
-        "explicit arithmetic prefix",
-    )
-    arithmetic = _replace(
-        arithmetic,
-        b"    match = _PATTERN.fullmatch(text)\n",
-        b"    # Bare subtraction shaped like a calendar date is ambiguous. Require an explicit math cue.\n"
-        b"    explicit = re.match(r\"\\s*(?:what\\s+is|what's|was\\s+ist|berechne|calculate|compute|wie\\s+viel\\s+ist|wieviel\\s+ist)\\s+\", text, re.IGNORECASE)\n"
-        b"    date_shape = re.fullmatch(r\"\\s*(?:\\d{4}\\s*-\\s*\\d{1,2}|\\d{1,2}\\s*-\\s*\\d{1,2})\\s*\\??\\s*\", text)\n"
-        b"    if date_shape and explicit is None:\n"
-        b"        return None\n"
-        b"    match = _PATTERN.fullmatch(text)\n",
-        "date-shaped subtraction abstention",
-    )
+    if b"date_shape" not in arithmetic or b"compute" not in arithmetic:
+        raise ValueError("arithmetic source module lacks the reviewed date-abstention policy")
 
     _compile(runtime, "v13/runtime.py")
     _compile(cognition, "v13/cognition.py")
