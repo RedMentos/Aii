@@ -459,7 +459,14 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
             "replay_mode": "uniform",
         })
         original_run = runtime.sleep._run_world_jepa
-        runtime.sleep._run_world_jepa = lambda event_id, limit=64: original_run(event_id, limit=256)
+        captured_runs = {}
+
+        def capture_run(event_id, limit=64):
+            result = original_run(event_id, limit=256)
+            captured_runs[event_id] = result
+            return result
+
+        runtime.sleep._run_world_jepa = capture_run
         runtime.sleep.last_tick = -1e18
         runtime.wake.set()
 
@@ -474,12 +481,27 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
                 and cursor.get("last_planner_event_id") == latest
             )
 
-        assert _wait_until(learned_and_planned)
+        assert _wait_until(lambda: latest in captured_runs and learned_and_planned())
         state, _ = runtime.store.state("v14.world_jepa.store_consumer", None)
         active = state["active"]
         checkpoint_sha = active["checkpoint_sha256"]
         fit_steps = active.get("fit_steps")
         assert type(checkpoint_sha) is str and len(checkpoint_sha) == 64
+        worker_result = captured_runs[latest]
+        learning = worker_result.get("learning", {})
+        metrics = learning.get("metrics", {})
+        assert learning.get("status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA", {
+            "worker_status": worker_result.get("status"),
+            "learning_status": learning.get("status"),
+            "planner_status": worker_result.get("planner", {}).get("status"),
+        }
+        assert metrics.get("parameter_delta_norm", 0) > 0
+        assert metrics.get("ema_target_delta_norm", 0) > 0
+        assert metrics.get("holdout_loss_after", float("inf")) < metrics.get("holdout_loss_before", float("-inf"))
+        assert metrics.get("train_holdout_source_disjoint") is True
+        assert metrics.get("negative_controls_separated") is True
+        assert metrics.get("retention_gate_accepted") is True
+
         telemetry = runtime.store.rows(
             "SELECT event_id,metrics FROM telemetry WHERE kind='v14_world_jepa_postcommit' ORDER BY id"
         )
@@ -493,23 +515,17 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         ]
         matching = [row for row in decoded if row.get("event_id") == latest]
         assert any(
-            row.get("learning_status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
-            and row.get("parameter_delta_norm", 0) > 0
-            and row.get("ema_target_delta_norm", 0) > 0
-            and row.get("decision_authority") == "NONE"
-            and row.get("native_body_weights_changed") is False
+            row.get("status") == "PASS"
+            and row.get("component") == "world_predictor"
+            and row.get("mode") == "shadow"
+            and row.get("sha256") == checkpoint_sha
+            and row.get("optimizer_steps", 0) > 0
+            and row.get("target_changed") is True
+            and row.get("loss_after", float("inf")) < row.get("loss_before", float("-inf"))
+            and row.get("decision") == "none"
+            and row.get("native_body_parameters_modified") is False
             for row in matching
-        ), [
-            {
-                "event_id": row.get("event_id"),
-                "learning_status": row.get("learning_status"),
-                "parameter_delta_norm": row.get("parameter_delta_norm"),
-                "ema_target_delta_norm": row.get("ema_target_delta_norm"),
-                "decision_authority": row.get("decision_authority"),
-                "native_body_weights_changed": row.get("native_body_weights_changed"),
-            }
-            for row in matching
-        ]
+        ), matching
         assert "worker-jepa-lifecycle" not in repr(state)
         assert "worker-jepa-lifecycle" not in repr(telemetry)
     finally:
