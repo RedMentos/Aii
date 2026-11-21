@@ -2,7 +2,8 @@
 
 The Android companion must obtain OS permissions independently, present the user
 with each request, and supply an authenticated local transport. Model text never
-issues grants. This broker defaults to dry-run and refuses replayed approvals.
+issues grants. This Python broker is only a test scaffold: its local-UI boolean is
+caller-asserted, not authenticated evidence. It performs no OS operation.
 """
 from __future__ import annotations
 from dataclasses import dataclass
@@ -30,6 +31,8 @@ class Proposal:
     args: dict
     expires_at: float
     digest: str
+    event_id: str | None = None
+    source_ref: dict | None = None
 
 
 def _canonical(capability, args):
@@ -65,8 +68,10 @@ def _canonical(capability, args):
 class AndroidControlBroker:
     """Per-action approval broker; transport and user-confirmation UI are separate.
 
-    A trusted operator UI calls approve(), never the model or an untrusted tool.
-    execute() returns a signed-off command envelope, not a claim of Android execution.
+    The caller is expected to be a trusted operator UI, but this module cannot
+    authenticate that caller; confirmed_by_local_ui is only a test assertion.
+    Production approval must be enforced by the separate Android companion.
+    execute() returns a command envelope, not a claim of Android execution.
     """
     def __init__(self, db_path, *, clock=None):
         self.clock = clock or time.time
@@ -76,6 +81,7 @@ class AndroidControlBroker:
         self.db.commit()
         self.pending = {}
         self.approved = {}
+        self.dispatched = {}
         self.stopped = True
 
     def _audit(self, action_id, event, digest=None):
@@ -84,7 +90,7 @@ class AndroidControlBroker:
         self.db.commit()
 
     def start(self):
-        """Only a trusted local operator control may call this."""
+        """Test-scaffold gate only; caller identity is not authenticated here."""
         with self.lock:
             self.stopped = False
             self._audit(None, "operator_start")
@@ -94,21 +100,40 @@ class AndroidControlBroker:
             self.stopped = True
             self.pending.clear()
             self.approved.clear()
+            self.dispatched.clear()
             self._audit(None, "operator_stop")
 
-    def propose(self, capability, args, *, ttl=30):
+    def propose(self, capability, args, *, ttl=30, event_id=None, source_ref=None):
         with self.lock:
             payload = _canonical(capability, args)
+            if (event_id is None) != (source_ref is None):
+                raise ControlDenied("event and source reference must be supplied together")
+            if event_id is not None:
+                if type(event_id) is not str or not 1 <= len(event_id) <= 128:
+                    raise ControlDenied("invalid source event")
+                if (type(source_ref) is not dict
+                        or type(source_ref.get("source_id")) is not str
+                        or type(source_ref.get("sha256")) is not str
+                        or len(source_ref["sha256"]) != 64
+                        or any(ch not in "0123456789abcdef" for ch in source_ref["sha256"])
+                        or type(source_ref.get("char_start")) is not int
+                        or type(source_ref.get("char_end")) is not int
+                        or source_ref["char_start"] < 0
+                        or source_ref["char_end"] <= source_ref["char_start"]
+                        or type(source_ref.get("modality")) is not str):
+                    raise ControlDenied("invalid source binding")
             if type(ttl) not in (int, float) or not 1 <= ttl <= 60:
                 raise ControlDenied("invalid TTL")
             action_id = secrets.token_hex(16)
             digest = hashlib.sha256(payload.encode()).hexdigest()
-            p = Proposal(action_id, capability, dict(args), self.clock() + ttl, digest)
+            p = Proposal(action_id, capability, dict(args), self.clock() + ttl, digest,
+                         event_id, dict(source_ref) if source_ref is not None else None)
             self.pending[action_id] = p
             self._audit(action_id, "proposed", digest)
             return p
 
     def approve(self, action_id, *, confirmed_by_local_ui=False):
+        """Accept a caller-asserted test flag; never treat it as Android consent proof."""
         with self.lock:
             p = self.pending.pop(action_id, None)
             if p is None or self.stopped or self.clock() > p.expires_at:
@@ -119,6 +144,49 @@ class AndroidControlBroker:
                 raise ControlDenied("local confirmation required")
             self.approved[action_id] = p
             self._audit(action_id, "approved", p.digest)
+
+    def dispatch_approved(self, action_id):
+        """Export one locally approved request for a separately consented companion."""
+        with self.lock:
+            p = self.approved.pop(action_id, None)
+            if p is None or self.stopped or self.clock() > p.expires_at:
+                self._audit(action_id, "dispatch_denied")
+                raise ControlDenied("approved action unavailable")
+            if action_id in self.dispatched:
+                self._audit(action_id, "dispatch_replay_denied", p.digest)
+                raise ControlDenied("action already dispatched")
+            self.dispatched[action_id] = p
+            self._audit(action_id, "dispatched", p.digest)
+            return {
+                "schema": "v14.android-action-request/1",
+                "action_id": p.action_id,
+                "capability": p.capability,
+                "args": dict(p.args),
+                "digest": p.digest,
+                "expires_at": p.expires_at,
+                "local_approval": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
+                "companion_local_consent_required": True,
+                "android_os_permission_required": True,
+                "permission_bypass": False,
+                "model_authority": False,
+            }
+
+    def consume_dispatched(self, action_id):
+        """Consume a dispatched request once before verifying its companion receipt."""
+        with self.lock:
+            p = self.dispatched.pop(action_id, None)
+            if p is None or self.stopped or self.clock() > p.expires_at:
+                self._audit(action_id, "companion_receipt_denied")
+                raise ControlDenied("dispatched action unavailable")
+            self._audit(action_id, "companion_receipt_pending", p.digest)
+            return p
+
+    def record_companion_receipt(self, action_id, digest, *, verified):
+        if type(verified) is not bool:
+            raise ControlDenied("invalid receipt result")
+        with self.lock:
+            self._audit(action_id, "companion_receipt_verified" if verified else
+                        "companion_receipt_rejected", digest)
 
     def execute(self, action_id, *, dry_run=True):
         with self.lock:

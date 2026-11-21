@@ -49,3 +49,77 @@ def test_invalid_actions_fail_closed(tmp_path, cap, args):
     b = AndroidControlBroker(tmp_path / "audit.sqlite")
     with pytest.raises(ControlDenied):
         b.propose(cap, args)
+
+
+
+def test_companion_receipt_is_persisted_in_real_store(tmp_path):
+    from v13.android_companion_protocol import ReceiptVerifier, SCHEMA, sign_fixture
+    from v13.android_outcomes import (
+        ActionOutcome, InvalidOutcome, accept_and_persist_companion_receipt,
+        persist_companion_outcome,
+    )
+    from v13.store import Store
+    import json
+
+    home = tmp_path / "runtime"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    broker = AndroidControlBroker(tmp_path / "broker.sqlite", clock=lambda: 1000.0)
+    secret = b"per-install-test-secret-32-bytes!!"
+    verifier = ReceiptVerifier(tmp_path / "receipt.sqlite", secret, clock=lambda: 1000.0)
+    try:
+        broker.start()
+        verifier.start()
+        event = store.event(store.new_session(), "open the approved app")
+        proposal = broker.propose(
+            "back", {}, ttl=30, event_id=event["event_id"],
+            source_ref=event["source_ref"],
+        )
+        broker.approve(proposal.action_id, confirmed_by_local_ui=True)
+        broker.dispatch_approved(proposal.action_id)
+        body = {
+            "schema": SCHEMA, "nonce": "a" * 32,
+            "action_id": proposal.action_id, "capability": proposal.capability,
+            "digest": proposal.digest, "issued_at": 999.0, "expires_at": 1030.0,
+            "status": "EXECUTED", "local_consent": True,
+        }
+        receipt = {"body": body, "mac": sign_fixture(secret, body)}
+        outcome, packet = accept_and_persist_companion_receipt(
+            store, broker, verifier, proposal.action_id, receipt,
+        )
+        row = store.one(
+            "SELECT kind,payload FROM packets WHERE id=?", (packet["packet_id"],)
+        )
+        assert row["kind"] == "ActionOutcome"
+        persisted = json.loads(row["payload"])
+        assert persisted["provenance"] == [event["source_ref"]]
+        actual = persisted["actual"]
+        assert actual["outcome_kind"] == "ANDROID_COMPANION_RECEIPT"
+        assert actual["observed"] is False
+        assert actual["t8_authoritative"] is False
+        assert actual["world_learning_eligible"] is False
+        assert actual["receipt_nonce"] == "a" * 32
+        assert actual["companion_local_consent_claim"] is True
+        assert actual["local_approval_evidence"] == "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
+        assert actual["android_os_permission_status"] == "REQUIRED_NOT_VERIFIED"
+        assert actual["key_storage_status"] == "UNVERIFIED"
+        # World-JEPA's T8 consumer reads committed Store.actions and requires a
+        # committed ActionSelection; this receipt creates neither.
+        assert store.one("SELECT COUNT(*) AS n FROM actions")["n"] == 0
+        assert store.one(
+            "SELECT COUNT(*) AS n FROM packets WHERE kind='ActionSelection' AND event_id=?",
+            (event["event_id"],),
+        )["n"] == 0
+        forged = ActionOutcome(
+            action_id=outcome.action_id, capability=outcome.capability,
+            status=outcome.status, timestamp=outcome.timestamp, observed=True, evidence_level=outcome.evidence_level,
+            details=outcome.details,
+        )
+        with pytest.raises(InvalidOutcome, match="non-authoritative"):
+            persist_companion_outcome(store, forged)
+        assert outcome.observed is False
+    finally:
+        store.close()
+        broker.close()
+        verifier.close()

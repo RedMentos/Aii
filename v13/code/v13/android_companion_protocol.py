@@ -1,9 +1,14 @@
-"""Verify signed Android-side receipts. This does not execute Android actions."""
+"""Verify per-install HMAC-authenticated Android receipts; no Android action execution.
+
+This is a protocol prototype, not an asymmetric Android Keystore signature or
+proof of OS permission state. The caller must supply a per-install secret.
+"""
 import hashlib
 import hmac
 import json
 import sqlite3
 import time
+import threading
 
 SCHEMA = "v14.android-companion-receipt/1"
 
@@ -22,18 +27,33 @@ class ReceiptVerifier:
             raise ValueError("per-installation secret must have >=32 bytes")
         self.secret = secret
         self.clock = clock or time.time
-        self.db = sqlite3.connect(str(path))
+        self.db = sqlite3.connect(str(path), check_same_thread=False)
+        self.lock = threading.RLock()
         self.db.execute("CREATE TABLE IF NOT EXISTS used_receipts (nonce TEXT PRIMARY KEY, action_id TEXT NOT NULL)")
         self.db.commit()
         self.stopped = True
 
     def start(self):
-        self.stopped = False
+        with self.lock:
+            self.stopped = False
 
     def stop(self):
-        self.stopped = True
+        with self.lock:
+            self.stopped = True
 
-    def verify(self, envelope, receipt):
+    def verify(self, envelope, receipt, *, consume_nonce=True):
+        """Verify a receipt; defer nonce commit only when a caller commits it with its outcome.
+
+        Normal callers keep the default durable verifier ledger. The C5 Store
+        consumer uses consume_nonce=False so nonce and packet share one SQLite
+        transaction; callers must not discard that verified nonce.
+        """
+        if type(consume_nonce) is not bool:
+            raise CompanionDenied("invalid nonce policy")
+        with self.lock:
+            return self._verify_locked(envelope, receipt, consume_nonce=consume_nonce)
+
+    def _verify_locked(self, envelope, receipt, *, consume_nonce=True):
         if self.stopped:
             raise CompanionDenied("stopped")
         if type(envelope) is not dict or type(receipt) is not dict or set(receipt) != {"body", "mac"}:
@@ -58,13 +78,20 @@ class ReceiptVerifier:
             raise CompanionDenied("scope mismatch")
         if type(receipt["mac"]) is not str or not hmac.compare_digest(sign_fixture(self.secret, b), receipt["mac"]):
             raise CompanionDenied("invalid authentication")
-        try:
-            with self.db:
-                self.db.execute("INSERT INTO used_receipts VALUES (?,?)", (b["nonce"], b["action_id"]))
-        except sqlite3.IntegrityError as exc:
-            raise CompanionDenied("replay") from exc
+        if consume_nonce:
+            try:
+                with self.db:
+                    self.db.execute("INSERT INTO used_receipts VALUES (?,?)", (b["nonce"], b["action_id"]))
+            except sqlite3.IntegrityError as exc:
+                raise CompanionDenied("replay") from exc
         return {"schema": SCHEMA, "action_id": b["action_id"],
-                "status": "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED", "t8_authoritative": False}
+                "nonce": b["nonce"],
+                "status": "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED",
+                "auth_scheme": "HMAC_SHA256_PER_INSTALL",
+                "key_storage_status": "UNVERIFIED",
+                "t8_authoritative": False}
 
     def close(self):
-        self.db.close()
+        with self.lock:
+            self.stopped = True
+            self.db.close()
