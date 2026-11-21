@@ -889,4 +889,6 @@ class Runtime:
             # PENDING user turns remain durably accepted for the next process;
             # cache removal is not rejection or completion of their work.
             self.jobs.task_done()
-        for source_id in list(getattr(self,'_a5_ui_unsubscribe',{})):\n            self.revoke_ui_observation(source_id)\n        self.pool.unload();self.needle.unload();self.memory.semantic_keys.encoder.unload();self.store.close();self.closed=True
+        for source_id in list(getattr(self,'_a5_ui_unsubscribe',{})):
+            self.revoke_ui_observation(source_id)
+        self.pool.unload();self.needle.unload();self.memory.semantic_keys.encoder.unload();self.store.close();self.closed=True
