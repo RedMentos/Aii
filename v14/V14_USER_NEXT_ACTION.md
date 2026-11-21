@@ -1,3 +1,12 @@
+## Latest device receipt check — 2026-11-21 06:50 CET
+
+- Private owner-read PIPELINE_STATUS request Aiiii#367 expired without a reply. A fresh owner-read request Aiiii#369 was created at 05:50:16Z with a 10-minute expiry; it still has zero device comments at this readback.
+- The last available private V13OBS snapshot is Aiiii#115, updated 2026-11-18. It is stale; its high-level status was runtime ERROR / last_result PARTIAL and no valid B1/B2 offers. It does not establish the current installed build or updater health.
+- Installed SHA UNKNOWN; auto-update UNVERIFIED; NO_LIVE_RECEIPT / REDMI_UNVERIFIED. No UPDATE_REQUEST, installer, shell command, model change, permission change or phone mutation was attempted.
+- User action required: NO. Wait for the owner-authenticated receipt; do not infer installation from GitHub CI or a dashboard label.
+
+---
+
 ## Latest JEPA & Memory checkpoint — 2026-11-21 06:29 CET
 
 This is a repository-side receiver increment. It does not change the release branch, the installed phone, model weights, permissions, or updater state.
@@ -24,7 +33,7 @@ The new code consumes numeric B1/B2/SELF readout heads into a real callable Worl
 - Whole-system P0 chat, B1/B2 delivery and native latent coupling remain unaccepted. The last measured Redmi failure remains issue #1904; no newer phone receipt was found in this run.
 
 ### Device, updater and user action
-- Fresh private owner-read PIPELINE_STATUS request Aiiii#367 still has no device reply. Installed SHA remains UNKNOWN; updater state UNVERIFIED; NO_LIVE_RECEIPT / REDMI_UNVERIFIED.
+- Fresh private owner-read PIPELINE_STATUS request Aiiii#369 has no device reply as of 06:50 CET; previous request Aiiii#367 expired without a reply. Installed SHA remains UNKNOWN; updater state UNVERIFIED; NO_LIVE_RECEIPT / REDMI_UNVERIFIED.
 - No UPDATE_REQUEST, installer, shell command, model download/swap, permission change or data mutation was attempted.
 - User action required: **NO**. No Termux command, model approval or phone action is justified by this repository-side change.
 
