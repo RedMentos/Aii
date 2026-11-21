@@ -23,8 +23,8 @@
 
 ## Source/license boundary
 
-- `dpirch/libfvad` master `532ab666c20d3cfda38bca63abbb0f152706c369`: BSD-3-Clause plus separate WebRTC `PATENTS` notice/grant; no code imported.
-- `daanzu/py-webrtcvad-wheels` release `726a8c72ce8b33b2df7ecd292372690fea2bad0c`, 2.0.14.post1: MIT wrapper + BSD WebRTC C; desktop wheel support only, no Android/aarch64 wheel evidence.
+- [`dpirch/libfvad` commit `532ab666c20d3cfda38bca63abbb0f152706c369`](https://github.com/dpirch/libfvad/commit/532ab666c20d3cfda38bca63abbb0f152706c369): BSD-3-Clause plus separate WebRTC `PATENTS` grant/termination clause. Header confirms 8/16/32/48 kHz and 10/20/30 ms; source tree has CMake/Autotools but no Android.mk/build recipe; no code imported.
+- [`daanzu/py-webrtcvad-wheels` release `2.0.14.post1`](https://github.com/daanzu/py-webrtcvad-wheels/releases/tag/v2.0.14.post1), commit `726a8c72ce8b33b2df7ecd292372690fea2bad0c`: MIT wrapper + BSD WebRTC C. Its build matrix includes manylinux2014 Linux aarch64, but that is glibc—not Android bionic/Termux. The repo tree has no separate PATENTS file; patent-notice provenance must be reviewed before product reuse.
 - S4VAD arXiv:2609.11110 remains paper-only; R-022 contains the prior full-text review. This run only rechecked the abstract because PDF fetch failed.
 
 ## Integration boundary and next owner action
