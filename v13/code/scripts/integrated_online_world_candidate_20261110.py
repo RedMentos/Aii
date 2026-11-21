@@ -32,7 +32,7 @@ FILES = {
     'v13/v14_learning/temporal_receiver.py': '972adcc9991303c41fb65fbd54dff23ade814595f87faec8a04371f9fae93ec6',
     'v13/v14_learning/runtime_shadow.py': 'cfb4cbd2a4b80eb990af647c86db54f4d7b4602d5ab96c32537a28dccd3a8b47',
     'v13/v14_learning/world_jepa_consumer.py': '7493e98604c8def5efc282e6c39c616d3d8e16127117baa55f709ffd34d5b51d',
-    'tests/test_v14_t8_runtime_consumer.py': '0e53f08eaf9c4ddc01fbddba974b9b75d0f748f2e32171570a29b1b02fd447e2',
+    'tests/test_v14_t8_runtime_consumer.py': '51420baff1dfc4ecb9d142db4fe9452755a740d67293ff99847cde51eeb43135',
 }
 ASSETS = {
     'changes.patch': '75d3d269b1f97bb8d63bdd1ce5caa1a8465dd52958a43f23e69656316fbc8f3c',
