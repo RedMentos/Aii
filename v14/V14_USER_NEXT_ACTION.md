@@ -273,3 +273,8 @@ The code-bearing release `5b9171a4` remains green. This proves the CI-gated upda
 PR #2137 retargeted head `a3e19370` has its dedicated T8 workflow and private bridge PASS; its staged/integrated PR run is still IN_PROGRESS. The previous code-identical head `2d8eb79b` passed 52 focused, 240 staged and 415 integrated tests. Python 3.14 coverage and normal Runtime learning consumer remain OPEN.
 
 **User action:** none. CI-green does not imply the Redmi has updated.
+
+
+## T8 retargeted head staged-runtime completion — 2026-11-21 01:59 CET
+
+PR #2137 current head `a3e19370d7fefe500e8edebf6942624207ff2865` now has its dedicated V14 T8 workflow PASS and private bridge PASS. Its staged-runtime job passes **240 passed / 10 skipped / 47 subtests**; both two-checkout migration diagnostics show runtime/dashboard UPDATED, last_error NONE and both checkouts at exact a3e19370. The integrated-regression job is still IN_PROGRESS on this exact head. The previous code-identical head `2d8eb79b` passed integrated **415 passed / 3 skipped / 58 subtests**, but that result is not a substitute for the new head's own integrated run. Python 3.14 T8 coverage remains requested; no normal Runtime consumer or native/Redmi proof.
