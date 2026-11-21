@@ -361,18 +361,21 @@ def test_source_disjoint_holdout_groups_all_actions_from_one_source():
 def test_censored_outcomes_are_never_learned_or_added_to_processed_ids(tmp_path):
     store, session = _make_store(tmp_path / "brain-censored")
     try:
-        ids = _add_transitions(store, session, 0, 64, {
+        ids = _add_transitions(store, session, 0, 256, {
             0: "CANCELLED", 1: "ABORTED", 2: "OUTCOME_UNKNOWN", 3: "INTERRUPTED"
         })
-        consumer = WorldJEPAStoreConsumer(store, tmp_path / "private-censored", learning_enabled=True)
-        result = consumer.update(limit=64, steps=8, optimizer_permission=True)
+        consumer = WorldJEPAStoreConsumer(
+            store, tmp_path / "private-censored", learning_enabled=True,
+            seed=13, ensemble=2,
+        )
+        result = consumer.update(limit=256, steps=120, optimizer_permission=True)
         assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
-        assert result["verified_receipts"] == 60
+        assert result["verified_receipts"] == 252
         assert result["censored_skipped"] == 4
         payload, _ = store.state("v14.world_jepa.store_consumer", None)
         processed = set(payload["active"]["processed_ids"])
-        assert len(processed) == 60 and not (set(ids[:4]) & processed)
-        assert payload["scan_cursor"] == 64
+        assert len(processed) == 252 and not (set(ids[:4]) & processed)
+        assert payload["scan_cursor"] == 256
     finally:
         store.close()
 
