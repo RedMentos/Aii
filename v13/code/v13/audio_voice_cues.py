@@ -236,7 +236,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
     summary += f" energy_range_db={cues['energy_range_db']:.1f}"
     candidate = Percept(
         candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
-        summary[:256], candidate.trusted, candidate.final, candidate.priority,
+        summary[:256], candidate.consent, candidate.final, candidate.priority,
     )
     c3 = admit((candidate,), token_budget)
     return {
