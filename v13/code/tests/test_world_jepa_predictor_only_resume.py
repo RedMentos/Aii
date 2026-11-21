@@ -96,3 +96,28 @@ def test_predictor_only_requires_an_existing_encoder_checkpoint():
         model.fit(x, actions, x2, steps=4, train_encoder=False)
     with pytest.raises(ValueError, match="Invalid WorldJEPA fit configuration"):
         model.fit(x, actions, x2, steps=4, train_encoder=1)
+
+    
+def test_optimizer_update_scale_damps_real_weight_delta_without_changing_step_count():
+    x, actions, x2 = _cohort(51)
+    full = world_jepa.WorldJEPA(seed=51, ensemble=1)
+    damped = world_jepa.WorldJEPA(seed=51, ensemble=1)
+    full.fit(x, actions, x2, steps=0, log_every=1)
+    damped.fit(x, actions, x2, steps=0, log_every=1)
+
+    full_before = full.preds[0]["P1"].copy()
+    damped_before = damped.preds[0]["P1"].copy()
+    assert np.array_equal(full_before, damped_before)
+
+    full.partial_fit(x, actions, x2, steps=1, log_every=1, update_scale=1.0)
+    damped.partial_fit(x, actions, x2, steps=1, log_every=1, update_scale=0.25)
+    full_delta = full.preds[0]["P1"] - full_before
+    damped_delta = damped.preds[0]["P1"] - damped_before
+
+    assert np.linalg.norm(full_delta) > 0.0
+    assert np.allclose(damped_delta, full_delta * 0.25, rtol=1e-9, atol=1e-12)
+    assert full._fit_steps == damped._fit_steps == 1
+    assert full._training_state["main"]["t"] == damped._training_state["main"]["t"] == 1
+
+    with pytest.raises(ValueError, match="update scale"):
+        damped.partial_fit(x, actions, x2, steps=1, log_every=1, update_scale=0.0)
