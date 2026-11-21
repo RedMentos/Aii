@@ -10,7 +10,7 @@ import time
 
 from .. import world_model
 from ..contracts import packet
-from .t8_store_authority import verify_committed_transition_page, _object
+from .t8_store_authority import verify_committed_temporal_page, _object
 from .t8_temporal_bridge import TemporalT8Bridge
 from .world_jepa_consumer import WorldJEPAStoreConsumer
 
@@ -336,8 +336,8 @@ def consume_recent_committed(store, home, limit=64):
             or cursor_state["scan_cursor"] < 0):
         return {"status": "INVALID_TEMPORAL_CURSOR", "candidate_rows": 0, "verified": 0, "rejected": 0}
     cursor_before = cursor_state["scan_cursor"]
-    receipts, rejected, next_cursor, scanned, censored_skipped, has_more = (
-        verify_committed_transition_page(store, after_seq=cursor_before, limit=limit)
+    receipts, rejected, next_cursor, scanned, censored_observed, has_more = (
+        verify_committed_temporal_page(store, after_seq=cursor_before, limit=limit)
     )
     temporal_recorded = 0
     world_created = 0
@@ -439,7 +439,7 @@ def consume_recent_committed(store, home, limit=64):
         "candidate_rows": scanned,
         "verified": len(receipts),
         "rejected": rejected,
-        "censored_skipped": censored_skipped,
+        "censored_observed": censored_observed,
         "temporal_recorded": temporal_recorded,
         "temporal_skipped": temporal_skipped,
         "world_outcomes_created": world_created,
