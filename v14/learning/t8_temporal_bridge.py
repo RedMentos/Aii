@@ -47,7 +47,10 @@ class TemporalT8Bridge:
         earliest = opened + max(0., float(duration) - float(tolerance))
         deadline = opened + float(duration) + float(tolerance)
         observed_at = opened + float(actual_duration)
-        actual_outcome = "FINAL" if receipt.status == "FINAL" else "NOT_FINAL"
+        cancelled = receipt.status in {"CANCELLED", "ABORTED"}
+        censored = receipt.status in {"OUTCOME_UNKNOWN", "INTERRUPTED"}
+        actual_outcome = None if cancelled or censored else (
+            "FINAL" if receipt.status == "FINAL" else "NOT_FINAL")
         ref = receipt.source_ref
         source = "T8:" + ref["source_id"] + ":" + ref["sha256"]
         evidence = receipt.evidence_ref
@@ -69,8 +72,10 @@ class TemporalT8Bridge:
             raise ValueError("conflicting replayed T8 prediction")
         if record["status"] == "PENDING":
             try:
-                result = self.ledger.resolve(receipt.action_id, at=observed_at, observed=True,
-                                             evidence=evidence, observed_outcome=actual_outcome)
+                result = self.ledger.resolve(
+                    receipt.action_id, at=observed_at,
+                    observed=not (cancelled or censored), evidence=evidence,
+                    observed_outcome=actual_outcome, cancelled=cancelled, censored=censored)
             except ValueError:
                 # A concurrent consumer may already have resolved the same receipt.
                 result = self.ledger.get(receipt.action_id)
