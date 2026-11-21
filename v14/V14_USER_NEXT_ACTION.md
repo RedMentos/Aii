@@ -1158,3 +1158,30 @@ The branch was read back at `d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff` immediate
 ## Post-merge readback — 2026-11-21
 
 Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/2253) merged at `838482cea5271732ddc9710d2c6ca737a94b4718`. Its exact PR privacy scan passed 1/1. The merge commit's 13/19 workflows have succeeded, 4 remain in progress and 2 remain queued (0 failures) at the latest poll; post-merge CI is not yet certified green. This merge only updates V14 board, workplan, next-action, coverage and research notes. It is not a production code release and has no device effect. The merged documentation checkpoint is `838482cea5271732ddc9710d2c6ca737a94b4718`; the assigned board and handoff files have since been refreshed on the same release branch. The current code release remains `f279286a4453248004c670fcaabecd85da6ab299`; Redmi remains REDMI_UNVERIFIED. No user action is required.
+
+
+## QA & Android handoff — 2026-11-21 23:20 CET
+
+### Verified code/test integration
+
+- Boss integration PR #2258 current head at handoff creation: `0dc337edfb7a71168e15f3db08bcedc424e32d4f`, based on release branch `bdcad466ffea75a2b41f7d23be168f53c7197d20`.
+- The A5 UI shared-blob race test `test_a5_ui_revocation_blob_race.py` is byte-identical to the QA-authored test and is integrated into the existing A5 UI lease Python 3.13/3.14 workflow.
+- The broader audio lease lifecycle test `test_v14_audio_lease_full_lifecycle_qa.py` and exact arithmetic/date ambiguity test `test_v14_exact_arithmetic_date_ambiguity_qa.py` are byte-identical to QA PR #2269 and are integrated into `.github/workflows/v14-core-audio-lease-runtime.yml`.
+- On the earlier exact Boss head `8eaf67f47902012dc8553b0ec6b82ec68aaf3d50`, all 14 code/runtime checks passed: staged-runtime, integrated-regression, old-phone migration, Python 3.14 staged startup/SQLite refs, Lab-Age, verify, combined, offline, owner-read, offline bridge security, A5 UI lease 3.13/3.14 and audio/arithmetic 3.13/3.14. The sole completed failure was the mis-scoped safe-additive validator.
+- New exact head `0dc337ed` reruns the integrated A5/audio suites. At last poll: old-phone migration, Lab-Age, owner-read, staged startup, A5 UI lease 3.13/3.14, verify, combined, offline, arithmetic 3.13 and offline bridge security PASS; staged-runtime, integrated-regression and audio/arithmetic Python 3.14 are IN_PROGRESS. validate-additive remains FAIL because its strict 2..30-file ADD-only candidate rule is applied to the broad Boss integration PR. Keep the rule strict for real additive candidates; scope its trigger to explicit candidate branches/labels rather than bypassing it.
+- QA audio/lease focused tests on QA code head `f75d1dff5f5ceddcffdd92734b8e4ba96e444f38`: 3 passed on Python 3.13 and 3 passed on Python 3.14 in both push run `44954318285` and PR run `44954327390`; staged-runtime, integrated-regression and offline bridge security also PASS on that QA head. PCM/model runners are synthetic.
+
+### Migration / Android boundary
+
+- Old-phone migration now accepts a recoverable legacy PARTIAL/UPDATE state. The new worker rechecks auto-update consent, exact-commit CI, source state and graceful stop before completing deployment. Consent-OFF preserves the prior marker state and model/SQLite sentinels; consent-ON requires successful deployment. This is GitHub Linux simulation, not Redmi proof.
+- Private owner-read requests #431/#432/#439 have zero authenticated replies. Installed SHA and updater consent remain UNKNOWN. No new request was created; no UPDATE_REQUEST, LOG_PAGE, CHAT_SEND, remote shell or device mutation occurred.
+- No local Aii checkout is mounted. All positive test evidence above is GitHub CI, not LOCAL_LINUX or TERMUX/REDMI. REDMI_UNVERIFIED.
+- P0 #1904 remains open: correct native 2+2, real B1/B2 offer delivery and peer re-entry, trained B3 latent receiver, 20 diverse live turns, native TTFT/RSS, JEPA retention/weight updates, Android UI/background providers and full voice learning are not accepted.
+
+### Active review / next actions
+
+- Boss: finish the exact 0dc337 CI matrix; correct the safe-additive workflow scope without weakening the strict candidate validator; refresh V14_WORK_BOARD.json, V14_LIVE_WORKPLAN.md and V14_CANON_COVERAGE_INDEX.md, which still contain the earlier bdcad/f4ea checkpoint.
+- QA: keep the integrated A5 and audio lifecycle regressions in the composed workflow; inspect any new exact-head failure; no device update without an authenticated owner receipt and explicit update consent.
+- Active broader QA code coverage is integrated into Boss #2258. No user command, model/weight swap or device action is requested.
+
+**Status: DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.**
