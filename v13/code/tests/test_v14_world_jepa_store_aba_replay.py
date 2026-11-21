@@ -54,6 +54,7 @@ ARMS = (
     ("on_demand_conflict", "full", True, True),
     ("on_demand_conflict", "predictor_only", True, True),
     ("on_demand_loss", "predictor_only", False, False),
+    ("on_demand_loss", "predictor_only", False, True),
 )
 DATA_SEEDS = (13, 19, 43)
 A1_COUNT = 256
@@ -1040,11 +1041,11 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         if item["replay_mode"] == "on_demand_loss"
         and item["encoder_mode"] == "predictor_only"
         and item["stable_drift_control"] is False
-        and item["replay_projection"] is False
     ]
     print("WORLDJEPA_LOSS_DEMAND=" + json.dumps([
         {
             "seed": item["data_seed"],
+            "projection": item["replay_projection"],
             "B": {key: item["B"].get(key) for key in diagnostic_fields + (
                 "replay_rows", "replay_loss_demand_probe_steps",
                 "replay_loss_demand_positive_session_count",
@@ -1060,10 +1061,10 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
     ], sort_keys=True))
     for seed in DATA_SEEDS:
         seed_reports = [item for item in loss_demand_reports if item["data_seed"] == seed]
-        assert len(seed_reports) == 1
+        assert len(seed_reports) == 2
         assert any(
             phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
-            for phase in (seed_reports[0]["B"], seed_reports[0]["A2"])
+            for item in seed_reports for phase in (item["B"], item["A2"])
         ), f"loss-demand replay produced no accepted checkpoint for seed {seed}"
 
     print("WORLDJEPA_STORE_A_B_A_REPLAY_RETENTION " + __import__("json").dumps(

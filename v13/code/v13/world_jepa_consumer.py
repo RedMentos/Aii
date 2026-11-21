@@ -845,7 +845,7 @@ class WorldJEPAStoreConsumer:
             raise ValueError("encoder_mode must be full or predictor_only")
         if type(replay_projection) is not bool:
             raise ValueError("replay_projection must be bool")
-        if replay_projection and replay_mode not in {"uniform_budget", "session_contiguous", "on_demand_conflict"}:
+        if replay_projection and replay_mode not in {"uniform_budget", "session_contiguous", "on_demand_conflict", "on_demand_loss"}:
             raise ValueError("replay projection requires a budgeted replay mode")
         drift_config = world_jepa_drift.normalize_config(drift_control)
         if cancel_check is not None and not callable(cancel_check):
@@ -1082,7 +1082,7 @@ class WorldJEPAStoreConsumer:
                             "pending_rows": len(pending_by_id), "scan_cursor": next_cursor,
                             "native_body_weights_changed": False}
                 replay_start = len(new_train_rows)
-                if replay_mode in {"session_contiguous", "on_demand_conflict"}:
+                if replay_mode in {"session_contiguous", "on_demand_conflict", "on_demand_loss"}:
                     grouped = _ordered_replay_rows_and_ranges(replay_rows, replay_start)
                     if grouped is None:
                         persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
