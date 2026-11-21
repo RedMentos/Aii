@@ -51,7 +51,7 @@ def _event(runtime, event_id):
     if not row or row["session_id"] != runtime.session:
         return None
     event = json.loads(row["packet"])
-    if row["generation_id"] != runtime.store.generation_id:
+    if row["generation_id"] != runtime.store.generation_id():
         return None
     return event, row["generation_id"]
 
@@ -404,12 +404,7 @@ def train_candidate(runtime, direction, max_events=MAX_EVENTS):
     manifest["holdout_metrics"]["reload_identical"] = reload_identical
     manifest["candidate_files"] = {
         "weights_sha256": hashlib.sha256(base_path.with_suffix(".npz").read_bytes()).hexdigest(),
-        "manifest_sha256": None,
     }
-    atomic_write(manifest_path, dumps(manifest))
-    manifest["candidate_files"]["manifest_sha256"] = hashlib.sha256(
-        manifest_path.read_bytes()
-    ).hexdigest()
     atomic_write(manifest_path, dumps(manifest))
     checked = b3bridge.Bridge.load(base_path, sender_revision, receiver_revision)
     if checked.digest() != after_digest or not reload_identical:
@@ -445,9 +440,13 @@ def probe_candidate(runtime, direction, candidate_id, event_id):
     if not re.fullmatch(r"b3_[A-Za-z0-9_-]{8,64}", str(candidate_id)):
         raise ValueError("invalid B3 candidate id")
     root = _candidate_root(runtime).resolve(strict=True)
-    base_path = (root / candidate_id).resolve(strict=True)
-    if not base_path.is_relative_to(root) or base_path.is_symlink():
-        raise ValueError("B3 candidate path escapes candidate directory")
+    base_path = root / candidate_id
+    manifest_path = base_path.with_suffix(".json")
+    weights_path = base_path.with_suffix(".npz")
+    if (not manifest_path.is_file() or not weights_path.is_file()
+            or manifest_path.is_symlink() or weights_path.is_symlink()
+            or manifest_path.resolve().parent != root or weights_path.resolve().parent != root):
+        raise ValueError("B3 candidate path is missing or escapes candidate directory")
     pair = _pair_for_event(runtime, event_id, direction, require_outcome=True)
     if pair is None:
         return {
