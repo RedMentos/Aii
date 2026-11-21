@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - "research-perception/v14-raw-ear-consent-commit-guard-20261121"
+      - "qa/v14-raw-ear-prelease-consent-20261121"
     paths:
       - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
       - ".github/workflows/v14-raw-ear-prelease-revocation-qa.yml"
