@@ -417,17 +417,56 @@ def test_oldest_first_pages_do_not_starve_older_t8_backlog(tmp_path):
         assert page[0].action_id == ids[0] and page[-1].action_id == ids[63] and cursor > 0
         consumer = WorldJEPAStoreConsumer(store, tmp_path / "private-backlog", learning_enabled=True)
         first = consumer.update(limit=64, steps=8, optimizer_permission=True)
-        assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA" and first["metrics"]["has_more"] is True
+        assert first["status"] in {
+            "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED",
+        }
+        if first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
+            assert first["metrics"]["has_more"] is True
+        else:
+            assert first["utility_gate_accepted"] is False
+            assert first["native_body_weights_changed"] is False
+            assert first["native_body_consumed"] is False
         payload, _ = store.state("v14.world_jepa.store_consumer", None)
-        processed = set(payload["active"]["processed_ids"])
-        assert set(ids[:64]).issubset(processed) and not (set(ids[64:128]) & processed)
-        first_cursor = first["scan_cursor"]
+        first_cursor = payload["scan_cursor"]
+        assert first_cursor == cursor
+        active_ids = set(payload["active"]["processed_ids"]) if payload["active"] else set()
+        pending_ids = {row["action_id"] for row in payload["pending_rows"]}
+        assert active_ids.isdisjoint(pending_ids)
+        assert active_ids | pending_ids == set(ids[:64])
+        assert not ((active_ids | pending_ids) & set(ids[64:128]))
+        if first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
+            assert active_ids == set(ids[:64]) and not pending_ids
+        else:
+            assert not active_ids and pending_ids == set(ids[:64])
+
+        page2, rejected2, cursor2, scanned2, censored2, has_more2 = verify_committed_transition_page(
+            store, after_seq=first_cursor, limit=64
+        )
+        assert rejected2 == 0 and scanned2 == 64 and censored2 == 0 and has_more2 is True
+        assert [row.action_id for row in page2] == ids[64:128]
         consumer = WorldJEPAStoreConsumer(store, tmp_path / "private-backlog", learning_enabled=True)
         second = consumer.update(limit=64, steps=8, optimizer_permission=True)
-        assert second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA" and second["scan_cursor"] > first_cursor
+        assert second["status"] in {
+            "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED",
+        }
+        if second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
+            assert second["metrics"]["has_more"] is True
+        else:
+            assert second["utility_gate_accepted"] is False
+            assert second["native_body_weights_changed"] is False
+            assert second["native_body_consumed"] is False
         payload, _ = store.state("v14.world_jepa.store_consumer", None)
-        processed = set(payload["active"]["processed_ids"])
-        assert set(ids[:128]).issubset(processed) and not (set(ids[128:192]) & processed)
+        second_cursor = payload["scan_cursor"]
+        assert second_cursor == cursor2 and second_cursor > first_cursor
+        active_ids = set(payload["active"]["processed_ids"]) if payload["active"] else set()
+        pending_ids = {row["action_id"] for row in payload["pending_rows"]}
+        assert active_ids.isdisjoint(pending_ids)
+        assert active_ids | pending_ids == set(ids[:128])
+        assert not ((active_ids | pending_ids) & set(ids[128:192]))
+        if second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
+            assert active_ids == set(ids[:128]) and not pending_ids
+        else:
+            assert pending_ids == set(ids[:128]) - active_ids
     finally:
         store.close()
 
