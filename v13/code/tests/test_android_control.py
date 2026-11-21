@@ -135,3 +135,26 @@ def test_audit_database_allows_platform_symlinked_ancestor(tmp_path):
         assert stat.S_IMODE((nested / "audit.sqlite").stat().st_mode) == 0o600
     finally:
         broker.close()
+
+
+def test_audit_database_rejects_group_or_world_writable_parent(tmp_path):
+    shared = tmp_path / "shared"
+    shared.mkdir()
+    os.chmod(shared, 0o777)
+
+    with pytest.raises(ControlDenied, match="owner-controlled"):
+        AndroidControlBroker(shared / "audit.sqlite")
+
+    assert not (shared / "audit.sqlite").exists()
+
+
+def test_audit_database_rejects_parent_owned_by_another_uid(tmp_path, monkeypatch):
+    if not hasattr(os, "getuid"):
+        pytest.skip("Android/Linux UID ownership check unavailable")
+    real_uid = os.getuid()
+    monkeypatch.setattr(os, "getuid", lambda: real_uid + 1)
+
+    with pytest.raises(ControlDenied, match="owner-controlled"):
+        AndroidControlBroker(tmp_path / "audit.sqlite")
+
+    assert not (tmp_path / "audit.sqlite").exists()
