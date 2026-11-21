@@ -11,7 +11,7 @@ on:
       - "v13/code/tests/test_mobile_dashboard.py"
       - ".github/workflows/v14-core-flow-audit-dashboard.yml"
   pull_request:
-    branches: [gpt6/v14-core-flow-audit-additive-20261121]
+    branches: [gpt6/v13-private-remote-bridge-20261111, gpt6/v14-core-flow-audit-additive-20261121]
     paths:
       - "v13/code/v13/flow_audit_dashboard.py"
       - "v13/code/v13/mobile_dashboard.py"
