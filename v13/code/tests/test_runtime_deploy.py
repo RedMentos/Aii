@@ -363,6 +363,32 @@ class RuntimeDeploymentTests(unittest.TestCase):
         self.assertEqual((self.private / d.MARKER_NAME).read_bytes(), current_marker)
 
 
+
+    def test_atomic_file_fsyncs_parent_directory(self):
+        target = self.root / "durable-marker"
+        with mock.patch.object(d, "_fsync_directory") as sync_dir:
+            d._atomic_file(target, b"durable")
+        self.assertEqual(target.read_bytes(), b"durable")
+        sync_dir.assert_called_once_with(self.root)
+
+    def test_runtime_deploy_rollback_cli_uses_pipeline_transaction(self):
+        from v13 import pipeline_agent
+        expected = {"status": "ROLLED_BACK_RUNTIME_ONLY", "auto_enabled": False}
+        with mock.patch.object(pipeline_agent, "rollback_runtime", return_value=expected) as rollback, \
+             redirect_stdout(io.StringIO()) as output:
+            d.main(["--rollback"])
+        rollback.assert_called_once_with()
+        self.assertIn("ROLLED_BACK_RUNTIME_ONLY", output.getvalue())
+
+    def test_runtime_deploy_rollback_cli_refuses_unmanaged_home(self):
+        from v13 import pipeline_agent
+        with mock.patch.object(pipeline_agent, "rollback_runtime") as rollback:
+            with self.assertRaises(SystemExit) as cm:
+                d.main(["--rollback", "--home", str(self.home)])
+        self.assertEqual(cm.exception.code, 2)
+        rollback.assert_not_called()
+
+
 class RuntimeSourcePreparationTests(unittest.TestCase):
     """Real Git fixtures exercise old/missing checkouts, without network."""
 
@@ -715,30 +741,6 @@ class RealRuntimeSelftestDiagnosticsTests(unittest.TestCase):
             with self.assertRaisesRegex(d.RuntimeDeployError, r'exit=-9'):
                 d._selftest(Path('/nonexistent-staged-code'))
 
-
-    def test_atomic_file_fsyncs_parent_directory(self):
-        target = self.root / "durable-marker"
-        with mock.patch.object(d, "_fsync_directory") as sync_dir:
-            d._atomic_file(target, b"durable")
-        self.assertEqual(target.read_bytes(), b"durable")
-        sync_dir.assert_called_once_with(self.root)
-
-    def test_runtime_deploy_rollback_cli_uses_pipeline_transaction(self):
-        from v13 import pipeline_agent
-        expected = {"status": "ROLLED_BACK_RUNTIME_ONLY", "auto_enabled": False}
-        with mock.patch.object(pipeline_agent, "rollback_runtime", return_value=expected) as rollback, \
-             redirect_stdout(io.StringIO()) as output:
-            d.main(["--rollback"])
-        rollback.assert_called_once_with()
-        self.assertIn("ROLLED_BACK_RUNTIME_ONLY", output.getvalue())
-
-    def test_runtime_deploy_rollback_cli_refuses_unmanaged_home(self):
-        from v13 import pipeline_agent
-        with mock.patch.object(pipeline_agent, "rollback_runtime") as rollback:
-            with self.assertRaises(SystemExit) as cm:
-                d.main(["--rollback", "--home", str(self.home)])
-        self.assertEqual(cm.exception.code, 2)
-        rollback.assert_not_called()
 
 
 if __name__ == "__main__":
