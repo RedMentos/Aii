@@ -28,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Current branch head 6967e9d8e03384e9849d8ca5e3a24779402f9cf5 is a documentation-only merge of #2173; 28 exact-head checks are queued/in progress at readback. Last code head c76a018b37be18f9a4706a32fa7a817f7b4828b9 had 28 checks: 27 success and one Python 3.13 failure in v14/learning/test_world_jepa_consumer.py::test_oldest_first_pages_do_not_starve_older_t8_backlog; integrated-regression completed PASS. The failing test gets UTILITY_GATE_REJECTED on the first 64-row page; keep the utility gate strict. Private owner-read #373 and prior #368 expired with zero comments. Installed SHA UNKNOWN; updater consent UNVERIFIED; REDMI_UNVERIFIED.",
-      "next_step": "Wait for the JEPA owner to make the cursor/backlog test independent of utility acceptance while preserving strict holdout and negative-control gates; then require every exact branch check to finish green. Wait for the already-open #373 receipt. Do not send UPDATE_REQUEST, mutate the phone, or ask the user for a Termux command while the receipt is pending.",
+      "proof_environment": "Exact release-development branch HEAD 569680bc10eabeb94ea5a1695d4bf77b8584e0a0: 15/15 associated GitHub workflows SUCCESS, including staged-runtime 240 passed/10 skipped/47 subtests, integrated-regression 415 passed/3 skipped/58 subtests and Python 3.14 staged startup. This is CI/Linux/synthetic only. Private owner-read #373 and prior #368 expired with zero device comments; installed SHA UNKNOWN; updater consent UNVERIFIED; REDMI_UNVERIFIED.",
+      "next_step": "Do not send UPDATE_REQUEST, run an installer, or mutate the phone without a fresh owner-authenticated receipt and exact green candidate SHA. Continue read-only QA of update/rollback code and wait for the owner-authorized receipt path; no user action or Termux command is justified now.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 07:59 CET",
+      "last_checkpoint": "2026-11-21 09:15 CET",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -70,13 +70,13 @@
       "owner": "JEPA & Memory",
       "reviewer": "Core & QA",
       "priority": "P0",
-      "status": "IN_PROGRESS_PARTIAL",
+      "status": "IN_PROGRESS_BLOCKED",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PRs #2160, #2164 and #2167 are merged on the release branch: persistent source-bound T8/WorldJEPA numeric learner, B1/B2/SELF planner SHADOW receiver and NumPy-stable digest negative test. The normal Runtime consumer is still absent. JEPA PR #2168 head e5bb42a726455662580e16e3dfe4f55039a4c00e attempts direct Runtime/Sleep hooks but exact staged-runtime and integrated-regression fail (30 failed / 208 passed / 10 skipped / 2 errors in staged suite; integrated regression fails the same source pin), Python 3.14 startup also fails because integrated_online_world_candidate_20261110.py expects the old runtime.py SHA256 a5336607…. validate-additive rejects direct Runtime/Sleep edits. No normal runtime learning or native GGUF weight update is established.",
-      "next_step": "JEPA/Core: move the postcommit hook into a separately hash-bound staged overlay or coordinate one complete re-pinned integration chain; do not modify the frozen Runtime/Sleep source in place. Add a real worker-lifecycle test from _turn through durable ActionOutcome/T8, idle dispatch, persistence and restart. Keep both optimizer gates OFF and all B1/B2/SELF receivers SHADOW.",
+      "proof_environment": "Merged #2160/#2164/#2167 provide source-bound T8, persistent numeric WorldJEPA/EMA and B1/B2/SELF numeric SHADOW receiver; optimizer gates remain OFF and native GGUF weights are unchanged. New Runtime/Sleep integration candidate PR #2178 head c16da4b3c0de1e5d857240e4fee7576aa3bf9a15 is based on exact branch head 569680bc10eabeb94ea5a1695d4bf77b8584e0a0. Exact candidate CI: staged/integrated run 44882581486 FAIL (missing colon in world_jepa_runtime.py:105 causes SyntaxError; integrated training-resume builder rejects modified world_jepa.py at stale WORLD_SHA); owner-read run 44882581469 has bridge PASS but Python 3.14 staged startup FAIL on same source pin. Incremental JEPA 44882581533 and combined online JEPA 44882581581 PASS. Safe-additive 44882581536 rejects intentional existing-module edits; no bypass. QA review comment 6004094094 records findings. No native body update or Redmi proof.",
+      "next_step": "JEPA owner: add the missing colon, recompute the exact world_jepa.py raw SHA and every dependent training-resume/recovery/stage/deployer pin in order, then rerun exact staged-runtime, integrated-regression, Python 3.14 startup and source-integrity tests. Boss must review the non-additive Runtime/Sleep/stager scope. QA independently rechecks the exact repaired SHA. Keep both optimizer gates OFF and all B1/B2/SELF outputs SHADOW.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 07:49 CET",
+      "last_checkpoint": "2026-11-21 09:15 CET",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -94,11 +94,12 @@
         "scope": "Strict action-conditioned positive control; explicit uniform replay vs no-replay ablation; fit-ID/source-disjoint/retention/restart tests; not Runtime-wired"
       },
       "latest_runtime_candidate": {
-        "pr": 2145,
-        "branch": "boss/v14-t8-runtime-shadow-consumer-20261121",
-        "head_sha": "08d14737f1ee554f2b160986f95d9f28d6bc1fa2",
-        "ci": "FAIL_ONE_RUNTIME_TEST_SCHEMA_MISMATCH",
-        "scope": "Postcommit TemporalT8Bridge and WorldPredictionOutcome SHADOW only; newest-first latest-N scan; not JEPA/EMA consumer"
+        "pr": 2178,
+        "head_sha": "c16da4b3c0de1e5d857240e4fee7576aa3bf9a15",
+        "base_sha": "569680bc10eabeb94ea5a1695d4bf77b8584e0a0",
+        "status": "OPEN_CI_FAILED_QA_REVIEW_POSTED",
+        "ci": "FAIL_44882581486_STAGED_AND_INTEGRATED; FAIL_44882581469_PY314_STARTUP; PASS_44882581533_INCREMENTAL_JEPA; PASS_44882581581_COMBINED_JEPA; EXPECTED_NONADDITIVE_REJECTION_44882581536",
+        "scope": "Sleep idle worker postcommit T8 -> persistent numeric WorldJEPA/EMA -> B1/B2/SELF numeric SHADOW planner; not native GGUF body learning or B3 trained latent coupling"
       },
       "release_sha": "NOT_PHONE_RELEASED",
       "phone_installed_sha": "UNKNOWN",
@@ -259,14 +260,14 @@
       "last_checkpoint": "2026-11-21 06:42 CET: 1,255 headings preserved; clause-level completion remains OPEN."
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED — private owner-read #373 and previous #368 expired with no reply.",
-  "last_code_release_head": "c76a018b37be18f9a4706a32fa7a817f7b4828b9",
-  "latest_integrated_head": "6967e9d8e03384e9849d8ca5e3a24779402f9cf5",
-  "latest_integrated_head_verified_at": "2026-11-21T07:01:04.818Z",
-  "release_gate_status": "NOT_RELEASED: documentation-only PR #2173 merged at 6967e9d8e03384e9849d8ca5e3a24779402f9cf5; exact current-head checks 28 queued/in progress at readback. Last code head c76a018b37be18f9a4706a32fa7a817f7b4828b9 had 27/28 checks green and one Python 3.13 WorldJEPA backlog test failure; integrated-regression completed. Phone unverified.",
+  "current_redmi_status": "REDMI_UNVERIFIED — private owner-read #373 and previous #368 expired with no reply; installed SHA and auto-update consent UNKNOWN/UNVERIFIED.",
+  "last_code_release_head": "569680bc10eabeb94ea5a1695d4bf77b8584e0a0",
+  "latest_integrated_head": "569680bc10eabeb94ea5a1695d4bf77b8584e0a0",
+  "latest_integrated_head_verified_at": "2026-11-21T08:15:56Z",
+  "release_gate_status": "DEVELOPMENT_CI_GREEN_NOT_RELEASED: exact release-development head 569680bc10eabeb94ea5a1695d4bf77b8584e0a0 has 15/15 associated GitHub workflows SUCCESS (staged 240 passed/10 skipped/47 subtests; integrated 415 passed/3 skipped/58 subtests; Python 3.14 staged startup and owner-read PASS). This is CI/synthetic evidence, not Redmi installation. PR #2178 candidate c16da4b3c0de1e5d857240e4fee7576aa3bf9a15 fails staged/integrated and Python 3.14 startup due a syntax error and stale training-resume source pin; NOT_RELEASED.",
   "phone_receipt": {
     "issue": "RedMentos/Aiiii#373",
-    "state": "OPEN_EXPIRED_NO_REPLY",
+    "state": "EXPIRED_NO_REPLY",
     "installed_sha": "UNKNOWN",
     "auto_update": "UNVERIFIED",
     "redmi_status": "REDMI_UNVERIFIED",
@@ -320,21 +321,21 @@
     },
     {
       "capability": "World/Self/Memory/JEPA numeric learner",
-      "code": "PRESENT_EXPERIMENTAL_MERGED",
-      "wired": "ISOLATED_STORE_API; NORMAL_RUNTIME_HOOK_NOT_INTEGRATED",
-      "tested_synthetic": "PASS_PARENT_STAGED_AND_INTEGRATED; CURRENT_BRANCH_PY313_BACKLOG_TEST_FAIL",
+      "code": "PRESENT_EXPERIMENTAL_MERGED_PLUS_RUNTIME_HOOK_CANDIDATE",
+      "wired": "ISOLATED_STORE_API_MERGED; SLEEP_IDLE_HOOK_CANDIDATE_NOT_STAGEABLE",
+      "tested_synthetic": "PARENT_PASS; PR2178_STAGED_FAIL_SYNTAX_AND_SOURCE_PIN",
       "tested_android": "NOT_TESTED",
       "active": "SHADOW_OPTIMIZER_OFF",
-      "evidence": "#2160/#2164 merged source-bound T8 -> persistent numeric WorldJEPA/EMA -> B1/B2/SELF SHADOW receiver. #2168 Runtime/Sleep hook candidate fails pinned-source staged/integrated/Python3.14 checks. Current branch's Python3.13 oldest-first backlog test returns UTILITY_GATE_REJECTED; optimizer gates remain OFF; no native body weights."
+      "evidence": "#2160/#2164/#2167 are merged: source-bound T8 -> persistent numeric WorldJEPA/EMA -> B1/B2/SELF SHADOW. PR #2178 attempts the normal Sleep idle postcommit consumer but exact staged/integrated tests fail: missing colon in world_jepa_runtime.py:105 and stale WORLD_SHA in the training-resume builder; Python 3.14 startup fails on the same pin. Incremental JEPA and combined online JEPA workflows pass. Optimizer gates OFF; no native GGUF weight changes, no B3 latent coupling, no Redmi proof."
     },
     {
       "capability": "Sleep/Dream/Replay consolidation",
       "code": "PRESENT_PARTIAL",
-      "wired": "EXISTING_SLEEP_ONLY_JEPA_IDLE_HOOK_NOT_INTEGRATED",
-      "tested_synthetic": "PASS_PARTIAL",
+      "wired": "EXISTING_SLEEP_A_B_C; JEPA_IDLE_POSTCOMMIT_HOOK_CANDIDATE_NOT_STAGEABLE",
+      "tested_synthetic": "EXISTING_SLEEP_PARTIAL; PR2178_STAGE_FAIL",
       "tested_android": "NOT_TESTED",
       "active": "PARTIAL_EXISTING_SLEEP_ONLY",
-      "evidence": "Sleep A/B/C and ReplayQueue exist; #2168 idle JEPA scheduling candidate fails source-pinned staged/runtime checks and is not integrated. No Redmi lifecycle proof."
+      "evidence": "Sleep A/B/C and ReplayQueue remain present. PR #2178 adds an idle JEPA postcommit scheduler/consumer but is blocked by the world_jepa_runtime.py syntax error and the stale training-resume source pin; it is not integrated or released. No Redmi lifecycle proof."
     },
     {
       "capability": "Context OS and Memorilla companion",
@@ -403,10 +404,10 @@
       "capability": "Updater/install/rollback",
       "code": "PRESENT",
       "wired": "WIRED_SYNTHETIC_PARTIAL",
-      "tested_synthetic": "PASS_PARTIAL",
+      "tested_synthetic": "PASS_EXACT_BRANCH_15_OF_15_GITHUB_WORKFLOWS",
       "tested_android": "UNKNOWN_NO_RECEIPT",
       "active": "UNKNOWN",
-      "evidence": "GitHub branch c76a018b37be18f9a4706a32fa7a817f7b4828b9 has 26 checks with 24 success, one Python3.13 learning backlog failure and one integrated-regression in progress; NOT_RELEASED. Private owner-read #373 is OPEN_NO_REPLY; installed SHA UNKNOWN and auto-update consent UNVERIFIED."
+      "evidence": "Exact development head 569680bc10eabeb94ea5a1695d4bf77b8584e0a0 has 15/15 associated GitHub workflows SUCCESS, including Python 3.14 staged startup, 240 staged tests and 415 integrated tests. This is not device installation. Private owner-read #373/#368 expired without reply; installed SHA UNKNOWN and update consent UNVERIFIED."
     },
     {
       "capability": "Two genuinely different sparse MoE bodies",
