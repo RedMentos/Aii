@@ -50,6 +50,7 @@ public final class CompanionProvider extends ContentProvider {
             if ("public_key".equals(method)) return result(signer.publicKeyInfo());
             if ("submit".equals(method)) return result(submit(context, decode(arg)));
             if ("outcome".equals(method)) return result(outcome(decode(arg)));
+            if ("cancel".equals(method)) return result(cancel(decode(arg)));
             if ("pending".equals(method)) return result(pending());
             return result(error("UNKNOWN_METHOD"));
         } catch (Exception e) {
@@ -108,6 +109,14 @@ public final class CompanionProvider extends ContentProvider {
             out.put("action_id", actionId);
             out.put("receipt", new JSONObject(receipt));
         }
+        return out;
+    }
+
+    private JSONObject cancel(String actionId) throws Exception {
+        if (!isHex(actionId, 32)) return error("INVALID_ACTION_ID");
+        JSONObject out = new JSONObject();
+        out.put("status", db.cancel(actionId) ? "CANCELLED" : "NOT_CANCELLABLE");
+        out.put("action_id", actionId);
         return out;
     }
 
