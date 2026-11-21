@@ -1331,3 +1331,9 @@ Do not alter the separate base builder or arithmetic overlay pins unless their b
 
 - R-057 records the official Google Play AccessibilityService policy and Android MediaProjection lifecycle. A general autonomous agent must not use AccessibilityService as a Play-distributed automation engine; the policy prohibits autonomous decision-making agents except a narrow verified disability-assistance exception. Keep the current A5 `ACCESSIBILITY_ASSISTIVE` / `DISABILITY_ASSISTANCE` gate; do not set `isAccessibilityTool=true` without genuine product eligibility. This Play policy does not itself govern every sideloaded APK, but Android OS consent and other constraints remain.
 - Preferred V14 path: narrow API-first actions (Intents/ContentProviders) plus a separately user-consented MediaProjection observation session. Android 13 supports FULL_DISPLAY; API34+ requires a typed mediaProjection foreground service and permission, one consented token per session; Android 15+ cannot launch it from BOOT_COMPLETED. No implementation, permission request or device test was performed. No user action.
+
+
+## FASTDIAR paper/model readback — 2026-11-22
+
+- R-058 reviews the 2026-10-02 FASTDIAR preprint: 192-D embeddings every 80 ms, two-second causal past, fixed 960-ms label delay; small model 2.7M params / RTF 0.05 in the paper, while the v0.1.0 release calls it 2.4M and ships a 10.6-MB checkpoint. The discrepancy is unresolved. Benchmarks are on one Threadripper CPU, not Android; training uses simulated VoxCeleb2 mixtures + LibriHeavyMix, no real diarization corpus, and overlap is a major limitation.
+- The repository code is MIT and requires PyTorch 2.13 / torchaudio 2.11 / torchcodec 0.15; no ONNX export script is present in the inspected tree. The release bundles checkpoints but does not separately state a checkpoint-only license in the release body, so no download/reuse until that scope is verified. Candidate only; no download, install, export or model swap.
