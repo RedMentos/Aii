@@ -110,6 +110,30 @@ def test_store_authority_rejects_duplicate_beyond_previous_seventeen_packet_wind
     assert good == [] and bad == 1
 
 
+def test_store_authority_rejects_event_history_over_hard_scan_bound():
+    store = FakeStore()
+    store.outcome_packets = [
+        {"payload": canonical(dict(store.outcome, action_id=f"act-{index}", packet_id=f"pkt-{index}"))}
+        for index in range(4097)
+    ]
+    good, bad = verified(store)
+    assert good == [] and bad == 1
+
+
+def test_known_failed_outcome_can_match_not_final_without_censoring():
+    store = FakeStore(status="FAILED")
+    good, rejected = verified(store)
+    assert rejected == 0 and len(good) == 1
+    bridge = TemporalT8Bridge(Path("unused-ledger-test"))
+    result = bridge.consume(good[0], {
+        "expected_outcome": "NOT_FINAL", "probability": .8,
+        "duration_s": 1.0, "tolerance_s": .25,
+    })
+    assert result["outcome"] == "OBSERVED"
+    assert result["prediction_error"] == pytest.approx(.2)
+    assert result["updated"] is False
+
+
 
 
 class SQLiteRowStore(FakeStore):
