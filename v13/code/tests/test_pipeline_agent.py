@@ -529,7 +529,7 @@ class GitHubCIProofTests(unittest.TestCase):
                 self.assertFalse(u.ci_passed(commit))
 
 
-    def test_runtime_rollback_disables_auto_update_and_restarts_managed_chat(self):
+    def test_runtime_rollback_disables_auto_update_and_requests_managed_chat_resume(self):
         self.turn_on()
         with mock.patch.object(u, "_runtime_active", side_effect=[True, False]), \
              mock.patch.object(p.lifecycle, "request_stop", return_value=True) as stop, \
@@ -539,10 +539,12 @@ class GitHubCIProofTests(unittest.TestCase):
             result = p.rollback_runtime()
         self.assertEqual(result["status"], "ROLLED_BACK_RUNTIME_ONLY")
         self.assertEqual(result["dashboard"], "UNCHANGED")
+        self.assertEqual(result["resume"], "REQUESTED")
+        self.assertEqual(result["resume_confirmation"], "PENDING_UI_CONSUMPTION")
         self.assertFalse(result["auto_enabled"])
         self.assertFalse(p.enabled())
         stop.assert_called_once()
-        resume.assert_called_once_with(reason="ROLLED_BACK")
+        resume.assert_called_once_with(reason="RESTORE")
         rollback.assert_called_once()
         self.assertEqual(p.snapshot()["runtime"], "ROLLED_BACK")
         self.assertEqual(p.snapshot()["last_result"], "ROLLED_BACK_RUNTIME_ONLY")
