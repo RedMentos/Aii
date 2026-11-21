@@ -383,6 +383,12 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
     """Persist source-bound acoustic cues to A4/C3 under a linearizable consent lease."""
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
+    # This preflight check is metadata-only; the authoritative recheck happens
+    # after the provider lease is acquired and before any PCM-derived work.
+    _require_current_consent_and_reset(
+        runtime, source_id, generation_id, consent_check, consent_receipt,
+        temporal_state, vad_stream,
+    )
     # Acquire the linearizable provider lease before any PCM-derived work.
     # Revocation must serialize with observe/extract/VAD as well as Store/A4/C3.
     lease_source_id = source_id

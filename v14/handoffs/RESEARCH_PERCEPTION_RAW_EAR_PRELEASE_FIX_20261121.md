@@ -27,3 +27,11 @@ QA PR #2214 exact head `48bbef90e0ae0cf7bcb36deead1dde1b90551bf5` added a determ
 2. Ensure QA #2214's race test passes against the updated producer, then Boss rebases the stacked #2214/#2207 chain onto current release HEAD and runs exact staged/integrated regression.
 3. Core rebases #2200 to the new producer blob and removes derived audio context on consent revocation; add a negative test proving no stale derived context remains.
 4. Keep the optional Silero model path local/hash-pinned and OFF unless a separately authorized real ARM/Termux comparison is available. Do not change installed models or permissions.
+
+## Post-push CI correction — 2026-11-21
+
+The first exact push on `829637cd26e11bc8fd294e50c0aa9a940c083098` exposed two independent regressions:
+1. RAW EAR Python 3.11 and 3.13 each reported 49 passed / 1 failed. The existing commit-boundary negative test expects its third consent check to occur inside the Store transaction. Moving the preflight check out entirely shifted that check to the later pre-C3 guard; the packet had already committed. The metadata-only preflight check is restored before lease acquisition. The authoritative lease recheck still occurs under the shared provider lock, before any PCM-derived work.
+2. The comparator's exact source pin still expected the prior producer blob `e75c393939183d2f16e071ebf4a6f5ff65417a61`; the new producer blob changed by design. The workflow pin is updated to `2c7c5ff203afa8da8a6cd6841cc24ccd5db67aed`. The pinned libfvad source and temporal evidence pin are unchanged.
+
+Both failures were real and are not being marked PASS. The next exact-head CI must prove the corrected call ordering, Store rollback, pre-lease revocation behavior and comparator source identity. Full local Aii tests remain blocked by GitHub DNS.
