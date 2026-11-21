@@ -568,14 +568,17 @@ class WorldJEPAStoreConsumer:
             if len(prior_fingerprints) > MAX_TRACKED:
                 raise OverflowError("processed T8 identity budget exhausted; fail closed")
             if not new_ids:
-                if next_cursor > state["scan_cursor"] and self.learning_enabled and optimizer_permission:
+                persisted_cursor = state["scan_cursor"]
+                if (next_cursor > state["scan_cursor"] and self.learning_enabled is True
+                        and optimizer_permission is True):
                     next_state = dict(state)
                     next_state["scan_cursor"] = next_cursor
                     self.store.set_state(STATE_KEY, next_state, expected=version)
+                    persisted_cursor = next_cursor
                 return {
                     "status": "NO_NEW_TRANSITIONS", "verified_receipts": len(receipts),
                     "rejected_receipts": rejected, "censored_skipped": censored_skipped,
-                    "scanned_rows": scanned, "scan_cursor": max(next_cursor, state["scan_cursor"]),
+                    "scanned_rows": scanned, "scan_cursor": persisted_cursor,
                     "has_more": has_more, "processed": len(prior_fingerprints),
                     "pending_rows": len(pending_by_id),
                     "native_body_weights_changed": False,
