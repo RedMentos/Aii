@@ -158,3 +158,14 @@ A new CI regression exercises the real `Store.source()` producer against the rea
 - Old pinned SHA-256: fe66f92533b20738b5ec384e9d7c0b5ac8b4b4f658c6c1ad23792d813ff29980. New exact v13/code/v13/store.py SHA-256 on this branch: 40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb. The hash implementation was checked against the standard SHA-256("abc") vector and the old pinned Store file hash. Core owns the integrated stage candidate/pin chain; this dependency was reported on Core #2254 rather than editing Core-owned files here.
 - Local copied-code harness remains 20/20 original A5 race failures vs 20/20 patched passes, and 10/10 original generic Store.source failures vs 10/10 patched passes. Full local repository checkout remains BLOCKED.
 - This branch remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. Boss/Core must update and verify the staged source pin before merge; safe-additive review is also still required.
+
+
+## 2026-11-21 — RAW_EAR / WebRTC VAD benchmark note (R-046)
+
+The exact RAW_EAR extractor logic was copied from the current shared source and exercised locally on Python 3.13.5 x86_64 with deterministic synthetic PCM16 controls. A one-second window cost median 131.30 ms (p95 135.89 ms); a 40-ms window cost 2.68 ms and a 100-ms window 10.58 ms. The WebRTC VAD baseline (mode 2, 50 × 20-ms frames) took 0.094 ms median, but it emits only binary activity, not F0/prosody.
+
+The negative controls show why the signals must remain separate: RAW_EAR classified pure tone as VOICED, broadband noise as UNVOICED_NOISE and impulse bursts as IMPULSIVE; WebRTC VAD treated loud synthetic noise and impulses as speech-like activity. These are synthetic controls, not speech accuracy. No ARM or Redmi timing is inferred.
+
+OSS review: webrtcvad-wheels 2.0.14.post1 has an MIT wrapper and bundled WebRTC BSD-style C license, but its Linux ARM64 wheels are glibc/musl rather than Android Bionic. libfvad is BSD-3-Clause C, but its open noise false-positive issue and old release history require caution. The current optional Silero ONNX path was not run and no weights were downloaded.
+
+Next: measure incremental 40–100-ms RAW_EAR on Redmi with explicit test-audio consent, then compare a native/vectorized autocorrelation backend while retaining separate VAD and non-speech cues. This is a local synthetic benchmark only, not a product runtime or phone result.
