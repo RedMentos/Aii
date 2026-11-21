@@ -45,7 +45,7 @@ Required repair:
 4. Keep all fail-closed source verification, no-clobber, staging and deployment gates. Do not replace exact pins with broad/unverified acceptance.
 5. Rerun exact-head focused WorldJEPA, staged-runtime, integrated-regression, Python 3.14 staged startup, migration, deployment integrity and source-contract workflows. Review every changed digest consumer.
 
-QA posted review comment [6004094094](https://github.com/RedMentos/Aii/pull/2178) with the exact failing job IDs and an inline comment on `world_jepa_runtime.py:105`. The PR author's account cannot submit REQUEST_CHANGES on its own PR, so this is a COMMENT review, not an approval.
+QA posted review comment [6004094094](https://github.com/RedMentos/Aii/pull/2178) with the exact failing job IDs and an inline comment on `world_jepa_runtime.py:105`. The PR author's account cannot submit REQUEST_CHANGES on its own PR, so this is a COMMENT review, not an approval. A second review comment [6004143702](https://github.com/RedMentos/Aii/pull/2178) flags the remaining end-to-end gap: current tests construct `SleepRuntime` via `object.__new__`, use a synthetic Store/fake runtime namespace and call `sleep.job()` directly. Add a real `Runtime._turn` -> durable T8/ActionOutcome -> `Runtime._worker` idle dispatch -> persisted consumer -> restart/preemption/rollback test.
 
 ## 4. Proof boundaries and open risks
 
