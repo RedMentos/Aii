@@ -761,3 +761,29 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - Next acceptance experiment: with explicit test-audio consent or a suitably licensed public speech/noise corpus, measure false positives, false negatives, onset/offset latency, CPU/RSS and interruption/barging behavior on the actual Redmi. Preserve non-speech cues and compare VAD modes without using VAD as ground truth.
 
 **Status:** SYNTHETIC_BEHAVIOR_BENCHMARKED / LOCAL_X86_CPU_MEASURED / WEBRTC_LICENSE_REVIEWED / NO_REAL_SPEECH_CORPUS / NO_ARM_OR_REDM I_MEASUREMENT / NO_MODEL_DOWNLOADED.
+
+
+
+## R-047 — Optional NumPy acceleration for RAW_EAR autocorrelation (2026-11-21)
+
+### Hypothesis and implementation
+
+- The existing RAW_EAR extractor in `v13/code/v13/audio_voice_cues.py` spends most of its pure-Python time in the per-lag normalized-autocorrelation loop. Replacing only that calculation with `numpy.correlate` should preserve the current frame segmentation, activity classes, F0/prosody outputs and schema while reducing CPU cost.
+- PR #2256 adds an explicit `backend="numpy"` option to `extract_voice_cues` and `voice_backend="numpy"` to the actual `consume_pcm16_voice_window` A5→A4→C3 consumer. Default remains `python`; NumPy is imported lazily only when explicitly selected. No new mandatory runtime dependency and no automatic backend swap.
+- The hybrid implementation vectorizes only pitch autocorrelation; it deliberately leaves the rest of the Python extractor unchanged to minimize semantic drift. A more aggressive fully vectorized prototype was faster but is not the chosen implementation.
+
+### Local evidence
+
+- LOCAL_LINUX Python 3.13.5 x86_64, NumPy already loaded: one-second 16-kHz window median 131.30 ms / p95 135.89 ms for pure Python versus 6.23 ms / p95 8.37 ms for the hybrid NumPy backend (~21× median speedup).
+- Exact output parity across 100 deterministic random synthetic PCM windows at 8/12/16/32/44.1/48 kHz and durations 40 ms–1 s; seven additional silence/tone/noise/impulse/voice-like controls also matched exactly.
+- tracemalloc peak: 922,767 bytes for Python and 934,805 bytes for the hybrid NumPy path (+12,038 bytes while NumPy was already imported). Process RSS and cold NumPy import cost were not measured.
+- A full vectorized prototype measured ~2.19 ms per one-second window, but duplicates more of the extraction pipeline; it remains an experiment, not the implementation.
+- CI matrix for PR #2256 is pending. No full local Aii checkout test or Redmi/ARM measurement is claimed.
+
+### Constraints and next acceptance
+
+- The backend is opt-in and the Runtime default remains Python. Core may pass `voice_backend="numpy"` only in an explicitly experimental path after the actual device confirms cold import cost, RSS, 40–100-ms incremental latency, full-duplex interruption behavior and output retention.
+- Synthetic PCM is not a speech corpus. The benchmark establishes algorithm parity and CPU cost only; it does not establish real speech accuracy, VAD calibration or human-prosody validity.
+- Keep WebRTC/Silero VAD evidence separate from RAW_EAR pitch/prosody and non-speech classes. No model weights, speech dataset, microphone access or Android permission was downloaded or enabled.
+
+**Status:** OPT_IN_CODE_IMPLEMENTED_PR_2256 / SYNTHETIC_PARITY_100_OF_100 / LOCAL_X86_CPU_MEASURED / CI_PENDING / REDMI_UNVERIFIED.
