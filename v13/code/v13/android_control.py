@@ -65,19 +65,49 @@ def _canonical(capability, args):
     return json.dumps({"capability": capability, "args": args}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
 
 
+_ANDROID_PLATFORM_SYMLINKS = ((Path("/data/data"), Path("/data/user/0")),)
+
+
+def _reject_unapproved_symlink_ancestors(parent):
+    """Reject caller-controlled symlink components, except the verified Android data alias."""
+    absolute = Path(os.path.abspath(os.fspath(parent)))
+    parts = absolute.parts
+    current = Path(parts[0])
+    for component in parts[1:]:
+        current = current / component
+        try:
+            info = current.lstat()
+        except FileNotFoundError:
+            continue
+        except OSError as exc:
+            raise ControlDenied("unsafe audit database path") from exc
+        if not stat.S_ISLNK(info.st_mode):
+            continue
+        resolved = Path(os.path.realpath(os.fspath(current)))
+        allowed = any(
+            current == Path(alias) and resolved == Path(target)
+            for alias, target in _ANDROID_PLATFORM_SYMLINKS
+        )
+        if not allowed:
+            raise ControlDenied("unapproved symlink in audit database path")
+
+
 def _private_audit_db_path(db_path):
     """Create/open one private regular audit DB without following a final symlink.
 
-    This protects the dry-run audit from final-file / immediate-parent
-    symlink or hardlink redirection and makes stored typed text private by
-    default. Ancestor aliases are allowed because Android commonly exposes
-    app data through platform paths such as /data/data -> /data/user/0.
-    This is not an OS sandbox or a defense against a malicious same-UID process
-    racing the subsequent SQLite open; the native companion must still own
-    authenticated consent and storage.
+    This protects the dry-run audit from final-file, caller-controlled ancestor
+    symlink, and hardlink redirection. The sole ancestor alias exception is the
+    exact Android platform mapping /data/data -> /data/user/0; arbitrary aliases
+    are rejected. O_NONBLOCK prevents special files such as FIFOs from stalling
+    the validation open. This is not an OS sandbox or a defense against a
+    malicious same-UID process racing the subsequent SQLite open; the native
+    companion must still own authenticated consent and storage.
     """
     try:
         path = Path(os.path.abspath(os.path.expanduser(os.fspath(db_path))))
+        _reject_unapproved_symlink_ancestors(path.parent)
+    except ControlDenied:
+        raise
     except (TypeError, ValueError, OSError) as exc:
         raise ControlDenied("invalid audit database path") from exc
     nofollow = getattr(os, "O_NOFOLLOW", None)
@@ -96,7 +126,8 @@ def _private_audit_db_path(db_path):
             or parent_info.st_mode & 0o022
         ):
             raise ControlDenied("audit database parent must be owner-controlled")
-        flags = os.O_RDWR | nofollow | getattr(os, "O_CLOEXEC", 0)
+        flags = (os.O_RDWR | nofollow | getattr(os, "O_CLOEXEC", 0)
+                 | getattr(os, "O_NONBLOCK", 0))
         try:
             fd = os.open(path, flags | os.O_CREAT | os.O_EXCL, 0o600)
         except FileExistsError:
