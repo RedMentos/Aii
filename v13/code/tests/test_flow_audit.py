@@ -1,0 +1,167 @@
+import json
+import sqlite3
+
+from v13.contracts import packet
+from v13.flow_audit import audit_event, audit_latest
+from v13.store import Store
+
+
+def _fixture(home, *, include_c4=True, include_context=True):
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    try:
+        session = store.new_session("flow audit fixture")
+        event = store.event(session, "PRIVATE_USER_TEXT_SENTINEL")
+        evidence = store.source("PRIVATE_BODY_EVIDENCE_SENTINEL", "BODY_EVIDENCE")
+        eid = event["event_id"]
+        generation = event["brain_generation_id"]
+        store.add_packet(
+            "PerceptPacket",
+            packet("PerceptPacket", "A5_PERCEPTION", eid, generation,
+                   [event["source_ref"]], source_ref=event["source_ref"],
+                   segments=[], modality="audio"),
+        )
+        offers = []
+        for role in ("B1_DETAIL", "B2_GIST"):
+            store.add_packet(
+                "QueryPacket",
+                packet("QueryPacket", "C2_CONTROL", eid, generation,
+                       [event["source_ref"]], target_role=role,
+                       goal="source-bound evidence", source_refs=[event["source_ref"]]),
+            )
+            offer = packet(
+                "OfferPacket", role, eid, generation, [event["source_ref"]],
+                role=role, based_on_state_version=0,
+                deadline_monotonic_ns=2**63 - 1,
+                evidence_refs=[evidence],
+                offer={"summary": "PRIVATE_OFFER_TEXT_SENTINEL"},
+                confidence=0.9,
+            )
+            offer["native_metrics"] = {
+                "role": role, "status": "FINAL", "actual_model": "fixture-" + role,
+                "prompt_tokens": 41, "generated_tokens": 7, "ttft_s": 0.2,
+                "duration_s": 0.5, "synthetic": True,
+            }
+            store.add_packet("OfferPacket", offer)
+            offers.append(offer)
+
+        ids = [offer["packet_id"] for offer in offers]
+        if include_c4:
+            store.add_packet(
+                "FocalCycle",
+                packet("FocalCycle", "C4_FOCAL", eid, generation,
+                       [event["source_ref"]], cycle=0, decision="INCORPORATE_AB",
+                       coalition=ids, signals={}, budget={}),
+            )
+            for offer in offers:
+                store.add_packet(
+                    "FocalItem",
+                    packet(
+                        "FocalItem", "C4_FOCAL", eid, generation,
+                        offer["provenance"], item_id=offer["packet_id"],
+                        source_kind=offer["role"], source_refs=offer["evidence_refs"],
+                        fact_hypothesis_status="HYPOTHESIS", state_type="ACTIVE",
+                        salience=0.8, uncertainty=0.2, priority=0.9,
+                        admission="LEGACY_FIRST_N",
+                    ),
+                )
+
+        store.add_packet(
+            "ActionSelection",
+            packet("ActionSelection", "C5_ACTION", eid, generation,
+                   [event["source_ref"]],
+                   selected={"action_type": "ANSWER", "role": "C3_LANGUAGE"},
+                   candidates=[], suppressed=[{"role": "B1_DETAIL"}, {"role": "B2_GIST"}],
+                   permission_class="LOCAL_ONLY"),
+        )
+        store.add_packet(
+            "MessagePacket",
+            packet("MessagePacket", "B3_CALLOSUM", eid, generation,
+                   [event["source_ref"]], channel="SYMBOLIC", sender="B1_DETAIL",
+                   receiver="B2_GIST", source_refs=[evidence],
+                   content={"offer_packet_id": ids[0]}),
+        )
+        store.add_packet(
+            "LatentTapPacket",
+            packet("LatentTapPacket", "B1_DETAIL", eid, generation,
+                   [event["source_ref"]], role="B1_DETAIL",
+                   source_ref=event["source_ref"], tap_id="tap-fixture",
+                   model_revision="fixture-revision", token_ids=[1, 2],
+                   feature_path="fixture/tap.bin", feature_sha256="a" * 64,
+                   shape=[2, 4]),
+        )
+
+        metadata = {
+            "selected_offer_ids": ids,
+            "focal": {"coalition": ids},
+            "context_source_refs": [event["source_ref"], evidence] if include_context else [],
+            "runner": {
+                "role": "C3_LANGUAGE", "status": "FINAL", "actual_model": "fixture-c3",
+                "prompt_tokens": 89, "generated_tokens": 11, "ttft_s": 0.3,
+                "duration_s": 0.8, "synthetic": True,
+            },
+            "model_revision": "fixture-c3-revision",
+        }
+        store.message(
+            session, eid, "assistant", "PRIVATE_ASSISTANT_TEXT_SENTINEL",
+            status="FINAL", metadata=metadata,
+        )
+        return eid
+    finally:
+        store.close()
+
+
+def test_full_b1_b2_c4_c3_path_is_reported_without_private_text(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    report = audit_event(home, event_id)
+
+    assert report["read_only"] is True
+    assert report["private_text_returned"] is False
+    assert report["bodies"]["roles"] == ["B1_DETAIL", "B2_GIST"]
+    assert report["c4"]["status"] == "PASS"
+    assert report["c4"]["consumed_roles"] == ["B1_DETAIL", "B2_GIST"]
+    assert report["c3"]["status"] == "PASS"
+    assert report["c3"]["source_bound_roles"] == ["B1_DETAIL", "B2_GIST"]
+    assert report["c3"]["prompt_tokens"] == 89
+    assert report["evidence_level"] == "SYNTHETIC_FIXTURE"
+    assert report["latent"]["native_injection_proven"] is False
+    assert report["latent"]["status"] == "TAP_ONLY"
+    encoded = json.dumps(report, ensure_ascii=False)
+    assert "PRIVATE_USER_TEXT_SENTINEL" not in encoded
+    assert "PRIVATE_BODY_EVIDENCE_SENTINEL" not in encoded
+    assert "PRIVATE_OFFER_TEXT_SENTINEL" not in encoded
+    assert "PRIVATE_ASSISTANT_TEXT_SENTINEL" not in encoded
+
+
+def test_missing_c4_or_c3_context_is_not_promoted_to_pass(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home, include_c4=False, include_context=False)
+    report = audit_event(home, event_id)
+    assert report["c4"]["status"] == "FAIL"
+    assert report["c3"]["status"] == "FAIL"
+    assert "B1_B2_NOT_BOTH_CONSUMED_BY_C4" in report["warnings"]
+    assert "B1_B2_NOT_BOTH_SOURCE_BOUND_IN_C3_CONTEXT" in report["warnings"]
+
+
+def test_audit_latest_and_read_only_database(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    before = db.read_bytes()
+    report = audit_latest(home)
+    after = db.read_bytes()
+    assert report["event_id"] == event_id
+    assert before == after
+
+
+def test_missing_event_fails_closed(tmp_path):
+    home = tmp_path / "runtime"
+    _fixture(home)
+    try:
+        audit_event(home, "evt_missing")
+    except KeyError:
+        pass
+    else:
+        raise AssertionError("unknown event must fail closed")

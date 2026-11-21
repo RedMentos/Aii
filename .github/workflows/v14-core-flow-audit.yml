@@ -1,0 +1,29 @@
+name: V14 Core read-only turn-flow audit
+on:
+  push:
+    branches: ['gpt6/v14-core-flow-audit-20261121']
+  pull_request:
+    paths:
+      - 'v13/code/v13/flow_audit.py'
+      - 'v13/code/scripts/v13_flow_audit.py'
+      - 'v13/code/tests/test_flow_audit.py'
+      - '.github/workflows/v14-core-flow-audit.yml'
+jobs:
+  flow-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.13', '3.14']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compile
+        run: python -m py_compile v13/code/v13/flow_audit.py v13/code/scripts/v13_flow_audit.py v13/code/tests/test_flow_audit.py
+      - name: Run exact read-only Store integration tests
+        run: |
+          python -m pip install pytest
+          PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_flow_audit.py
