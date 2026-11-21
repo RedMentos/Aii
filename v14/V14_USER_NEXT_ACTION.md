@@ -1,3 +1,21 @@
+# Current user-facing handoff — 2026-11-21 17:08 CET
+
+**No user action is required. Do not run a Termux installer, download/swap models, or change permissions, Age, weights, updater settings or phone data.**
+
+- Research & Perception opened current-base draft [PR #2233](https://github.com/RedMentos/Aii/pull/2233), based on shared V14 HEAD `9d8f91960c568be7fe7dcf894555ce7250f635f4`. Code/test tree `17f273395a869fd7469110773a5fe777a522909b`; a later documentation-only handoff commit moves the PR head to `e30f4b3aa3b738dca05d6c88eab8a887ed4cfbfa`. No release/deployment occurred.
+- Exact code/test-head GitHub CI: RAW EAR→A4→C3 admission **53 passed on Python 3.11 and 53 on 3.13**; consent/revocation/non-reentrant lease **29 passed**; VAD comparator **8/8 on Python 3.13 and 3.14**, with pinned native Linux libfvad **13 PASS / 0 FAIL / 0 ERROR** per job; staged Runtime **251 passed / 10 skipped / 47 subtests**; integrated regression **424 passed / 3 skipped / 58 subtests**. Privacy, model-lab, offline-bridge-security and same-repository queue contract passed.
+- The strict safe-additive gate **failed by policy** because the candidate modifies existing Runtime modules and adds workflows outside the inert-module/test/handoff scope. It was not bypassed. The release queue classified #2233 as `review_only_paths`; no auto-merge or release dispatch occurred. PR remains draft for Boss review.
+- #2226 and its older stacked Perception/QA predecessors #2207, #2214 and #2219 were closed as superseded by #2233; their code/tests were carried forward, not discarded.
+- Runtime boundary: caller-supplied PCM16 → source-bound audio PerceptPacket/temporal evidence → A4 attention and bounded C3 admission is WIRED_SYNTHETIC/CI-tested. It is **not** microphone capture, native C3 inference, speech decoding/vocoder, full duplex or trained voice learning. Core #2200 still needs the derived audio-context revocation and full C3 dispatch lease fixes; QA #2211 remains stale until Core rebases and repairs them.
+- FD-VAD and S4VAD were full-text reviewed and recorded as R-031/R-032. Neither was imported. FD-VAD's ~1.5 GB offline bundle and separate semantic 0.5B model are not justified for the current Android budget; S4VAD's timing was measured on Apple M4 Max 64 GB, not Redmi.
+- LOCAL_LINUX full checkout/tests remain **BLOCKED** because this runner has no Aii checkout and cannot resolve github.com. GitHub CI is not local Linux or Android proof.
+- Private read-only HEALTH #415, PIPELINE_STATUS #416 and DIAGNOSTICS #417 have no response yet; older private V13OBS #115 is dated 18 Nov. Installed SHA and updater state remain unknown: **REDMI_UNVERIFIED**. No UPDATE_REQUEST, shell command or device mutation was made.
+- P0 #1904 remains open: no current Redmi proof of correct 2+2, valid B1/B2 delivery, native latency/RSS or trained latent coupling. No user action is needed.
+
+**Next internal actions:** Boss review #2233's policy-rejected existing-runtime/workflow scope; Core rebase #2200 and fix derived-source deletion/cache cleanup plus the post-save/pre-generation race; QA refresh #2211 and verify the same two negative controls. Keep microphone capture OFF and do not deploy until an authorized device receipt and release-pipeline proof exist.
+
+---
+
 # Current user-facing handoff — 2026-11-21 16:50 CET
 
 **No user action is needed. Do not run a Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
