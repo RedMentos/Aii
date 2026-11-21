@@ -70,6 +70,9 @@ def test_session_contiguous_replay_is_deterministic_bounded_and_session_local():
         "session_contiguous", new_rows, old_rows, budget=6, salt="fixed-cohort"
     )
     assert len(uniform["rows"]) == len(contiguous["rows"]) == 6
+    assert {item["action_id"] for item in uniform["rows"]} != {
+        item["action_id"] for item in contiguous["rows"]
+    }
     assert contiguous["budget_matched"] is True
     assert contiguous["session_count"] == 2
     assert contiguous["window_count"] == 2
