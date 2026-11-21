@@ -444,7 +444,7 @@ class Runtime:
         summary_ref=self.store.source(dumps(body),'AUDIO_ACOUSTIC_CONTEXT')
         layer_body=body|{'summary_source_ref':summary_ref}
         layer=('RAW_EAR_ACOUSTIC',
-               '\nConsent-bound RAW EAR acoustic observations (not a transcript):',
+               '\nRAW_EAR_ACOUSTIC (consent-bound; acoustic features only; not a transcript):',
                layer_body)
         return layer,summary_ref
     def _turn(self,e):
@@ -688,6 +688,11 @@ class Runtime:
                     cplan=ctxos.controller(self).plan(eid,runner.role,stable,volatile,history_records,text,verdicts=[x['verdict'] for x in focal_run['inquisition']] if focal_run else [],warm_ids=warm_ids,provenance=[e['source_ref']]+([audio_source_ref] if audio_source_ref else []),budget_scale=body['modulation'].get('context_budget_scale',1.))
                     messages=cplan['messages'];meta['context_plan']={'packet_id':cplan['packet_id'],'applied':cplan['applied']}
                 except Exception as exc:self.store.log('context_os_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
+                if 'audio_admission' in meta:
+                    included=any('RAW_EAR_ACOUSTIC' in (m.get('content') or '') for m in messages)
+                    meta['audio_admission']['c3_prompt_included']=included
+                    if not included:
+                        meta.pop('audio_source_refs',None);audio_source_ref=None
                 try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context
                 except Exception as exc:self.store.log('context_save_failed',eid,{'error':type(exc).__name__})
                 context_refs=[e['source_ref'],*meta.get('audio_source_refs',[]),*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]
