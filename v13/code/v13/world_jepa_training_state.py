@@ -66,15 +66,31 @@ def _arrays(values, shapes, nonnegative=False):
 
 
 def _adam(value, shapes, upper, exact=None):
-    if (type(value) is not dict or set(value) != {'t', 'lr', 'm', 'v'}
+    legacy_keys = {'t', 'lr', 'm', 'v'}
+    current_keys = legacy_keys | {'steps'}
+    if (type(value) is not dict or set(value) not in (legacy_keys, current_keys)
             or type(value['t']) is not int or not 0 <= value['t'] <= upper
             or (exact is not None and value['t'] != exact)
             or type(value['lr']) is not float or value['lr'] != wj.LR):
         raise ValueError('invalid World-JEPA optimizer step/config')
-    result = {'t': value['t'], 'lr': value['lr'],
+    if 'steps' in value:
+        raw_steps = value['steps']
+        if (type(raw_steps) is not dict or set(raw_steps) != set(shapes)
+                or any(type(raw_steps[key]) is not int
+                       or not 0 <= raw_steps[key] <= value['t'] for key in shapes)):
+            raise ValueError('invalid World-JEPA per-parameter optimizer clocks')
+        parameter_steps = dict(raw_steps)
+    else:
+        # Read old checkpoints whose Adam clock advanced for every parameter.
+        parameter_steps = {key: value['t'] for key in shapes}
+    result = {'t': value['t'], 'lr': value['lr'], 'steps': parameter_steps,
               'm': _arrays(value['m'], shapes), 'v': _arrays(value['v'], shapes, True)}
     if result['t'] == 0 and any(np.any(a) for group in ('m', 'v') for a in result[group].values()):
         raise ValueError('zero-step World-JEPA optimizer has nonzero moments')
+    for key in shapes:
+        if result['steps'][key] == 0 and (
+                np.any(result['m'][key]) or np.any(result['v'][key])):
+            raise ValueError('zero-step World-JEPA parameter has nonzero moments')
     return result
 
 
@@ -110,14 +126,16 @@ def from_model(model):
 def snapshot(adam):
     if type(adam) is not wj.Adam:
         raise ValueError('reviewed World-JEPA Adam required')
-    return {'t': adam.t, 'lr': adam.lr,
+    return {'t': adam.t, 'lr': adam.lr, 'steps': dict(adam.steps),
             'm': {k: v.copy() for k, v in adam.m.items()},
             'v': {k: v.copy() for k, v in adam.v.items()}}
 
 
 def restore_adam(adam, state):
     checked = _adam(state, {k: v.shape for k, v in adam.p.items()}, MAX_STEPS)
-    adam.t, adam.lr, adam.m, adam.v = checked['t'], checked['lr'], checked['m'], checked['v']
+    adam.t, adam.lr, adam.steps, adam.m, adam.v = (
+        checked['t'], checked['lr'], checked['steps'], checked['m'], checked['v']
+    )
 
 
 def capture(opt, inverse, rng, bootstrap, d, actions, seed, ensemble, steps, origin='FRESH'):
@@ -165,7 +183,7 @@ def pack(model):
         for group in ('m', 'v'):
             for key, array in value[group].items():
                 arrays[PREFIX + name + '__' + group + '__' + key] = array
-        return {'t': value['t'], 'lr': value['lr']}
+        return {'t': value['t'], 'lr': value['lr'], 'steps': dict(value['steps'])}
     for key, array in state['inverse'].items():
         arrays[PREFIX + 'inverse__' + key] = array
     meta = {'schema': SCHEMA, 'objective': state['objective'], 'origin': state['origin'], 'rng': state['rng'],
@@ -188,7 +206,8 @@ def unpack(meta, arrays, base_meta, base_arrays):
             raise ValueError('missing World-JEPA optimizer tensor')
         return arrays[name]
     def adam(value, name, shapes):
-        if type(value) is not dict or set(value) != {'t', 'lr'}:
+        if (type(value) is not dict
+                or set(value) not in ({'t', 'lr'}, {'t', 'lr', 'steps'})):
             raise ValueError('invalid World-JEPA optimizer metadata')
         return dict(value, **{group: {key: get(name + '__' + group + '__' + key) for key in shapes}
                               for group in ('m', 'v')})
