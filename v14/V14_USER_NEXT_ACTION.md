@@ -1,3 +1,62 @@
+# QA & Android — latest verified handoff
+
+**Checkpoint:** 2026-11-21 14:17 UTC  
+**Current code release-development HEAD:** `5a141153f7d33906408fd638ce56cfbee459cf08`  
+**Current QA handoff branch:** `qa/v14-qa-handoff-android-20261121`  
+**User action:** none required.
+
+## Integrated release and proof boundary
+
+- Boss merge PR #2213 is present on the release-development branch. Exact-head GitHub push workflows: **19/19 SUCCESS**.
+- Exact merged-head evidence: staged-runtime **249 passed / 10 skipped / 47 subtests**; integrated-regression **424 passed / 3 skipped / 58 subtests**; checkpoint retention **21 passed**; combined JEPA **49 passed**; Python 3.14 optimizer-resume **PASS**; two-checkout migration **2 passed**.
+- This is GitHub-hosted Linux/CI. Full local Aii checkout/tests are **BLOCKED** because this runtime cannot resolve `github.com`. No LOCAL_LINUX full-suite PASS is claimed.
+- The merge adds production WorldJEPA optimizer-state persistence and Android-safe no-clobber checkpoint publication. Its training data are synthetic Store/SleepRuntime cohorts; native B1/B2 GGUF body-weight learning is not proved, and learning/optimizer permissions remain OFF.
+
+## Redmi and updater
+
+- Private owner-read request RedMentos/Aiiii#405 (`PIPELINE_STATUS`) is still open with zero comments as of 14:17 UTC; it expires at 14:21:33 UTC.
+- Installed Redmi SHA: **UNKNOWN**. Updater consent: **UNVERIFIED**. Device state: **REDMI_UNVERIFIED**.
+- No UPDATE_REQUEST, shell action, installer, model/weight change, permission change or phone-data mutation was performed.
+- Do not infer installation from green CI. Do not request another manual Termux command while the existing owner-read is pending. If no reply arrives by expiry, keep the device state unknown and take no update action.
+
+## QA work completed this run
+
+### RAW EAR revocation before processing — PR #2214
+
+- QA branch head: `c17e4df4df7a53ed74e9057cf5ca5d112c472ad4`.
+- Replaced the previous 50 ms thread-scheduling race with a deterministic linearization test: after the metadata-only preflight succeeds, the test completes provider revocation synchronously before the processing lease is acquired. It then asserts that no `observe_pcm16`, `extract_voice_cues`, packet persistence or A4 attention occurs.
+- Exact focused run **44912997875**: `py_compile` PASS; **25 passed / 1 failed**. The failure is expected on the old producer base: both PCM transforms still ran after completed revocation. This is the reproduced pre-fix baseline, not a passing fix.
+- Perception producer PR #2219 head: `8defa00862bee38190a6a7362d8bad3dbb7052f1`. Staged-runtime in run **44912711686** passed **249/10 skipped/47 subtests**; integrated-regression was still running at last read. The run predates the deterministic QA commit.
+- #2219 was opened against QA branch base `48bbef90...`; the QA branch has since advanced to `c17e4df...`. I posted the exact rebase/rerun request. **Do not merge the stack until the deterministic focused test passes on the merged candidate.**
+- Environment: synthetic GitHub Linux only. No microphone, Termux or Redmi proof.
+
+### Android action-approval payload — PR #2215
+
+- Head `1eb484dd2e7243f1eb6f4a4de2c875353e831172` copies proposal arguments into an immutable mapping and rechecks the canonical digest at approval and execution.
+- Exact broker isolated tests: **38 passed** (run 44911591784); Android sandbox replay **62 passed** (44911591862); staged-runtime **249/10 skipped/47 subtests** and integrated-regression **415/3 skipped/58 subtests** (44911591789).
+- Safe-additive check **44911592029** rejects the existing-module edit under current policy; no waiver or bypass was used.
+- Security boundary remains: `confirmed_by_local_ui=True` is still a caller-supplied boolean, not authenticated UI/companion provenance. No live OS executor exists. Broker stays **DRY_RUN_ONLY**. I posted this review boundary for Boss.
+
+### P0 arithmetic Runtime candidate — PR #2210
+
+- Candidate head `7b81362c6c3ad539de0285fc4420ecaec0dd6203` is **NOT merge-ready**.
+- Exact arithmetic workflow **44909218307** fails the broader selected tests, including `test_actionlearn.py::LearningTests::test_gate_shadow_logs_active_reorders_but_never_unsuppresses` (expected BOOT B1_DETAIL, got C3_LANGUAGE).
+- Staged/integrated run **44909218321** reports **30 failed / 217 passed / 10 skipped / 2 errors**, including integrated online-world/observer fairness `runtime.py` source-hash mismatches and a two-checkout migration result `PARTIAL` instead of `UPDATED`.
+- Safe-additive run **44909218373** rejects the existing-module change, requiring normal Boss review.
+- The PR base is `840a53ab...`, behind current release head `5a141153...`. I posted exact CI findings and asked Core to rebase, repair source-builder pins, and resolve the actionlearn failure. A narrow helper test is not a P0 chat acceptance pass.
+
+## Next executable QA steps
+
+1. Poll existing private owner-read #405 until its expiry. If it remains unanswered, keep REDMI_UNVERIFIED; do not issue UPDATE_REQUEST or ask for manual install.
+2. Recheck #2219 after its base update; run the exact deterministic focused RAW EAR test on the combined candidate. Keep the test-only QA branch red until the producer fix proves no PCM work after revocation.
+3. Rebase #2200/#2211 onto the fixed producer; verify derived acoustic context is deleted on revocation and the provider lease protects the immediate C3 inference boundary.
+4. Recheck #2215 after Boss review; never promote the broker beyond DRY_RUN_ONLY without authenticated local UI/companion and OS-permission evidence.
+5. Recheck #2210 after Core rebases to current release HEAD and resolves the broader failures. Keep issue #1904 open until real Redmi correctness, latency and consumed B1/B2→C4→C3 evidence exists.
+
+**Release status:** current code HEAD `5a141153...` is exact-CI-green, but this QA work is documentation/test-only and NOT_RELEASED. **Redmi remains REDMI_UNVERIFIED.** No model, weight, Age, learning permission, updater setting or phone state was changed.
+
+---
+
 # QA & Android checkpoint — 2026-11-21
 
 ## Current release and device boundary
