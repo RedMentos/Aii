@@ -1,3 +1,20 @@
+# Current user-facing handoff — 2026-11-21 16:49 CET
+
+**No user action is needed. Do not run a Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
+
+- Boss merged PR #2228 into the release branch at f279286a4453248004c670fcaabecd85da6ab299. It puts the source-span C4 redundancy rule into the normal pinned stage/deployer. Exact PR-head staged Runtime: **251 passed / 10 skipped / 47 subtests**; integrated regression: **424 passed / 3 skipped / 58 subtests**. Exact PR-head checks were 9/10 green; the strict safe-additive guard rejected the existing normal stage/deployer edits, so this critical path was independently reviewed and directly integrated, not put through the low-authority queue or reported as all-green.
+- The merge-commit push CI at this readback is **30/34 check-runs successful, 0 failed, 0 still pending**. The exact release branch currently points to f279286a4453248004c670fcaabecd85da6ab299; it is not yet marked release-green until all checks finish. The C4 test uses synthetic runners. It proves the source quote→SourceRef→C4→selected offer→C3-context wiring, not native B1/B2 model quality or Android behavior.
+- The C4 rule is deliberately conservative: it discounts cross-scale redundancy only for same-source, same-digest, same-modality, disjoint source spans with low lexical overlap. It is a heuristic, not learned semantic diversity or true B3 latent coupling.
+- P0 #1904 remains open. Correct native 2+2, bounded Redmi latency/RSS and real B1/B2→C4→C3 delivery remain unverified. No current Redmi receipt exists; the latest private owner-read expired without a response. Installed SHA and updater consent are unknown. **REDMI_UNVERIFIED.**
+- Core PR #2227 still fails its exact Python 3.13/3.14 staged arithmetic test: the answer, action selection, broker and egress are FINAL, but the ExperienceRecord packet is missing after the post-turn World calls. Core has the exact failure location and must preserve the experience receipt while logging any derived World failure.
+- JEPA PR #2222 fails its Python 3.13/3.14 optimizer-resume test because its disposable fixture does not create master-13/data before Store opens coordinator.lock; it also needs rebase onto the current release. This is a fixture failure, not proof of native weight learning. Learning/optimizer gates remain OFF.
+- Perception PR #2226 has green RAW EAR, consent-revocation, VAD, privacy and staged/integrated checks, but is diverged from the current release and must be rebased. It accepts caller-supplied PCM only; no microphone capture, ASR, TTS/vocoder, full duplex or Redmi proof.
+- Full local Aii checkout/tests remain blocked by GitHub DNS in this runner. GitHub CI is not LOCAL_LINUX or Redmi proof. The 1,255-heading historical inventory is preserved, but semantic clause→consumer→test→environment→rollback mapping remains incomplete.
+
+**Next work is internal:** finish exact merge push-CI; Core repairs #2227 and rebases without duplicating C4; JEPA fixes the #2222 fixture and rebases; Perception rebases #2226; QA continues Android release/permission evidence. **User action: none.**
+
+---
+
 # Current user-facing handoff — 2026-11-21 16:04 CET
 
 **No user action is needed. Do not run another Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
