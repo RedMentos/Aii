@@ -399,8 +399,11 @@ summary{cursor:pointer;font-weight:650}
     }catch(err){showNotice('Kopieren fehlgeschlagen: '+String(err.message||err)+'. „Verlauf als TXT“ verwenden.');}
     finally{button.disabled=false;button.textContent='Gesamten Chat kopieren';}
   });
-  const flowAuditButton=document.getElementById('flow-audit-refresh');
-  const flowAuditOutput=document.getElementById('flow-audit-output');
+  let flowAuditButton=null, flowAuditOutput=null;
+  try{
+    flowAuditButton=document.getElementById('flow-audit-refresh');
+    flowAuditOutput=document.getElementById('flow-audit-output');
+  }catch(_){}
   if(flowAuditButton&&flowAuditOutput){
     flowAuditButton.addEventListener('click',async()=>{
       flowAuditButton.disabled=true;
