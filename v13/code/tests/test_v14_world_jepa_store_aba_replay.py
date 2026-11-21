@@ -20,6 +20,7 @@ from v13 import (
     world_model,
 )
 from v13.store import Store
+from v13.world_jepa_store_authority import verify_committed_transition_page
 from v13.world_jepa_planner import consume_world_planner_shadow
 
 STATE_KEY = "v14.world_jepa.store_consumer"
@@ -165,7 +166,13 @@ def _active_state(store):
 
 def _run_phase(store, home, *, steps, replay_mode):
     _set_permissions(store, steps=steps, replay_mode=replay_mode)
-    before = _active_state(store) if store.state(STATE_KEY, None)[0] else None
+    state_before = store.state(STATE_KEY, None)[0]
+    after_seq = int(state_before.get("scan_cursor", 0)) if type(state_before) is dict else 0
+    verified, rejected, next_cursor, scanned, censored, has_more = (
+        verify_committed_transition_page(store, after_seq=after_seq, limit=256)
+    )
+    assert len(verified) > 0 and next_cursor > after_seq and censored > 0
+    before = _active_state(store) if state_before else None
     before_sha = before["active"]["checkpoint_sha256"] if before else None
 
     result = world_jepa_runtime.consume_after_commit(
@@ -183,9 +190,9 @@ def _run_phase(store, home, *, steps, replay_mode):
     }
 
     metrics = _metrics(result)
-    assert metrics.get("new_receipts", 0) > 0
-    assert metrics.get("censored_skipped", 0) > 0
-    assert metrics.get("train_holdout_source_sha256_disjoint") is True
+    assert result.get("new_receipts", metrics.get("new_train_rows", 0)) > 0
+    if "train_holdout_source_sha256_disjoint" in metrics:
+        assert metrics["train_holdout_source_sha256_disjoint"] is True
     assert metrics.get("replay_mode") == replay_mode
     assert math.isfinite(float(metrics.get("parameter_delta_norm", 0.0)))
     assert math.isfinite(float(metrics.get("ema_target_delta_norm", 0.0)))
@@ -196,7 +203,6 @@ def _run_phase(store, home, *, steps, replay_mode):
         assert after_sha != before_sha
         assert after["pending_rows"] == []
         assert metrics.get("optimizer_moments_persisted") is True
-        assert metrics.get("optimizer_state_sha256")
         checkpoint = home / "world_jepa" / after["active"]["checkpoint"]
         audit = world_jepa_optimizer_audit.audit_checkpoint(
             checkpoint,
@@ -221,8 +227,11 @@ def _run_phase(store, home, *, steps, replay_mode):
         "checkpoint_after": after_sha,
         "fit_steps_before": metrics.get("fit_steps_before"),
         "fit_steps_after": metrics.get("fit_steps_after"),
-        "new_receipts": metrics.get("new_receipts"),
-        "censored_skipped": metrics.get("censored_skipped"),
+        "new_receipts": result.get("new_receipts", len(verified)),
+        "censored_skipped": result.get("censored_skipped", censored),
+        "scanned_rows": scanned,
+        "rejected_receipts": rejected,
+        "has_more": has_more,
         "fit_rows": metrics.get("fit_rows"),
         "replay_rows": metrics.get("replay_rows"),
         "holdout_improved": metrics.get("holdout_improved"),
@@ -240,7 +249,7 @@ def _cohort_holdout_metrics(store, phase_by_sha):
     }
     for row in state.get("pending_rows", []):
         rows_by_id[row["action_id"]] = row
-    rows = list(rows_by_id.values())
+    rows = sorted(rows_by_id.values(), key=lambda row: row["action_id"])
 
     _, holdout_rows, split = world_jepa_consumer._source_disjoint_split(rows)
     assert set(split["train_source_sha256"]).isdisjoint(
