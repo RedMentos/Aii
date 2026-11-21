@@ -11,7 +11,7 @@ import numpy as np
 
 SCHEMA = "v14.world-jepa.stable-drift.v1"
 GROUP_PREFIX = {"encoder": "e", "predictor": "p", "inverse": "i"}
-_ALLOWED = {"enabled", "budget_sq", "dual_lr", "lambda_init", "lambda_max", "deadzone", "decay"}
+_ALLOWED = {"enabled", "budget_sq", "dual_lr", "lambda_init", "lambda_max", "deadzone"}
 
 
 def default_state():
@@ -87,7 +87,6 @@ def normalize_config(value=None):
         "lambda_init": _number(value.get("lambda_init", 1.0), "initial multiplier"),
         "lambda_max": _number(value.get("lambda_max", 100.0), "multiplier cap"),
         "deadzone": _number(value.get("deadzone", 0.05), "deadzone"),
-        "decay": _number(value.get("decay", 0.95), "multiplier decay"),
     }
     if (result["dual_lr"] <= 0 or result["lambda_init"] < 0
             or result["lambda_max"] <= 0 or result["lambda_max"] < result["lambda_init"]
@@ -221,7 +220,6 @@ def update_dual(prepared, params_by_group):
         tau_minus_sq = tau_sq * (1.0 - eps) ** 2
         multiplier = prepared["lambdas"][name]
         if drift > tau_plus_sq:
-            violation = max(0.0, drift - tau_sq)
             multiplier += cfg["dual_lr"] * (drift - tau_plus_sq + prepared["violation_mean"][name])
         elif drift < tau_minus_sq:
             multiplier *= (max(0.0, drift) / tau_minus_sq) ** cfg["dual_lr"]

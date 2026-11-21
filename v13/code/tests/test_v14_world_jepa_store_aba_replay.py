@@ -35,7 +35,6 @@ DRIFT_CONFIG = {
     "lambda_init": 1.0,
     "lambda_max": 100.0,
     "deadzone": 0.05,
-    "decay": 0.95,
 }
 ARMS = (
     ("uniform", "full", False),
@@ -76,6 +75,7 @@ def test_stable_drift_controller_calibrates_groups_and_updates_dual():
     assert all(calibrated["groups"][name]["budget_sq"] > 0 for name in params)
     assert all(calibrated["groups"][name]["task_count"] == 1 for name in params)
     assert all(calibrated["groups"][name]["budget_method"] == "STABLE_TASK1_P75_ROLLING5" for name in params)
+    assert all(math.isclose(calibrated["groups"][name]["budget_sq"], 0.1, rel_tol=0, abs_tol=1e-12) for name in params)
     assert all(calibrated["groups"][name]["dual_lambda"] == 0.0 for name in params)
 
     prepared = world_jepa_drift.prepare_task(
@@ -88,7 +88,9 @@ def test_stable_drift_controller_calibrates_groups_and_updates_dual():
     controlled = world_jepa_drift.apply_pullback(params, gradients, prepared)
     assert controlled["eW"][0] > gradients["eW"][0]
     world_jepa_drift.update_dual(prepared, params)
-    assert prepared["lambdas"]["encoder"] > DRIFT_CONFIG["lambda_init"]
+    expected_lambda = 1.0 + 0.03 * (0.25 - (0.1 * 1.05 ** 2))
+    assert math.isclose(prepared["lambdas"]["encoder"], expected_lambda, rel_tol=0, abs_tol=1e-12)
+    assert math.isclose(prepared["violation_mean"]["encoder"], 0.15, rel_tol=0, abs_tol=1e-12)
     persisted = world_jepa_drift.finish_task(prepared, params, steps=7)
     assert persisted["groups"]["encoder"]["controlled_steps"] == 7
     assert world_jepa_drift.validate_state(persisted) == persisted

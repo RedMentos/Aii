@@ -197,6 +197,8 @@ class WorldJEPA:
         if saved_training is not None:
             training_state.restore_adam(opt,saved_training['main'])
         drift_state = saved_training.get('drift') if saved_training is not None else drift.default_state()
+        # Drift control covers the primary optimizer's encoder/predictor/inverse groups.
+        # Bootstrap ensemble predictors remain a separately trained uncertainty lane.
         params_by_group = {
             'encoder': {'e'+k: v for k, v in enc.items()} if train_encoder else {},
             'predictor': {'p'+k: v for k, v in pred.items()},
