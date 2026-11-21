@@ -1138,3 +1138,7 @@ The branch was read back at `d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff` immediate
 - The historical 1,255-heading Canon inventory is preserved. Clause-level code/consumer/test/environment/rollback coverage is still incomplete. Five active V14 jobs only.
 
 **Next work:** Core fixes and syncs #2242; QA rebases #2244 and fixes the A5 race test plus #2235 AST audit; Perception fixes shared-blob serialization; JEPA repairs its pin chain and obtains stable per-session retention. Boss integrates only after exact current-base tests pass. No user action required.
+
+## Post-merge readback — 2026-11-21
+
+Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/2253) merged at `838482cea5271732ddc9710d2c6ca737a94b4718`. Its exact PR privacy scan passed 1/1. The merge commit's 19 release-development workflows were queued/in progress at the last poll; post-merge CI is not yet certified green. This merge only updates V14 board, workplan, next-action, coverage and research notes. It is not a production code release and has no device effect. Current shared development branch head at this readback is `838482cea5271732ddc9710d2c6ca737a94b4718`. The current code release remains `f279286a4453248004c670fcaabecd85da6ab299`; Redmi remains REDMI_UNVERIFIED. No user action is required.
