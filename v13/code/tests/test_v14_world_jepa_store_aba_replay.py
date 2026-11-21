@@ -7,6 +7,7 @@ not a Redmi or native GGUF/B1/B2 weight proof.
 from __future__ import annotations
 
 import copy
+import hashlib
 import math
 import shutil
 
@@ -16,6 +17,7 @@ from v13 import (
     contracts,
     world_jepa_consumer,
     world_jepa_optimizer_audit,
+    world_jepa_replay,
     world_jepa_runtime,
     world_model,
 )
@@ -29,14 +31,77 @@ DEFAULT_PERMISSIONS = dict(world_jepa_runtime.DEFAULT_PERMISSIONS)
 ARMS = (
     ("uniform", "full"),
     ("none", "full"),
+    ("uniform_budget", "full"),
+    ("session_contiguous", "full"),
     ("uniform", "predictor_only"),
     ("none", "predictor_only"),
+    ("uniform_budget", "predictor_only"),
+    ("session_contiguous", "predictor_only"),
 )
 DATA_SEEDS = (13, 19, 43)
 A1_COUNT = 256
 SHIFT_COUNT = 96
 A1_STEPS = 120
 SHIFT_STEPS = 40
+
+
+def test_session_contiguous_replay_is_deterministic_bounded_and_session_local():
+    def row(index, session):
+        return {
+            "action_id": f"replay-{index:03d}",
+            "source_sha256": hashlib.sha256(f"source-{index}".encode()).hexdigest(),
+            "created": float(index),
+            "session_id": session,
+        }
+
+    old_rows = (
+        [row(index, "session-a") for index in range(8)]
+        + [row(index + 8, "session-b") for index in range(8)]
+        + [row(index + 16, None) for index in range(2)]
+    )
+    new_rows = [row(index + 18, "new-session") for index in range(4)]
+    uniform = world_jepa_replay.select_replay_rows(
+        "uniform_budget", new_rows, old_rows, budget=6, salt="fixed-cohort"
+    )
+    contiguous = world_jepa_replay.select_replay_rows(
+        "session_contiguous", new_rows, old_rows, budget=6, salt="fixed-cohort"
+    )
+    repeated = world_jepa_replay.select_replay_rows(
+        "session_contiguous", new_rows, old_rows, budget=6, salt="fixed-cohort"
+    )
+    assert len(uniform["rows"]) == len(contiguous["rows"]) == 6
+    assert contiguous["budget_matched"] is True
+    assert contiguous["session_count"] == 2
+    assert contiguous["window_count"] == 2
+    assert contiguous["manifest_sha256"] == repeated["manifest_sha256"]
+    selected_ids = {item["action_id"] for item in contiguous["rows"]}
+    assert selected_ids.isdisjoint({item["action_id"] for item in new_rows})
+    assert len(selected_ids) == 6
+    for window in contiguous["windows"]:
+        group = sorted(
+            [item for item in old_rows if item["session_id"] == window["session_id"]],
+            key=lambda item: (item["created"], item["action_id"]),
+        )
+        expected = group[window["start_index"]:window["start_index"] + window["count"]]
+        selected = [
+            item for item in contiguous["rows"]
+            if item["session_id"] == window["session_id"]
+        ]
+        assert [item["action_id"] for item in selected] == [
+            item["action_id"] for item in expected
+        ]
+
+    # Legacy rows with no trusted session identity are never guessed into a
+    # session window; the budget mismatch is explicit instead of silent.
+    partial = world_jepa_replay.select_replay_rows(
+        "session_contiguous", new_rows, old_rows, budget=10, salt="fixed-cohort"
+    )
+    assert len(partial["rows"]) == 8
+    assert partial["budget_matched"] is False
+    assert all(item["session_id"] is not None for item in partial["rows"])
+    assert world_jepa_replay.select_replay_rows(
+        "none", new_rows, old_rows, budget=6, salt="fixed-cohort"
+    )["rows"] == []
 
 
 def _set_permissions(store, *, steps, replay_mode, encoder_mode="full",
@@ -241,11 +306,38 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
         assert after_sha == before_sha
         assert after["pending_rows"]
 
+    replay_ids = set(metrics.get("fit_action_ids", [])) - set(
+        metrics.get("new_train_action_ids", [])
+    )
+    assert len(replay_ids) == metrics.get("replay_rows", 0)
     if before is not None:
-        if replay_mode == "uniform":
-            assert metrics.get("replay_rows", 0) > 0
-        else:
-            assert metrics.get("replay_rows", 0) == 0
+        prior_train_ids = set(before["active"]["train_ids"])
+        prior_holdout_ids = set(before["active"]["holdout_ids"])
+        assert replay_ids <= prior_train_ids
+        assert replay_ids.isdisjoint(prior_holdout_ids)
+    else:
+        assert not replay_ids
+
+    if replay_mode == "uniform" and before is not None:
+        assert metrics.get("replay_rows", 0) > 0
+    elif replay_mode == "none":
+        assert metrics.get("replay_rows", 0) == 0
+    elif replay_mode in {"uniform_budget", "session_contiguous"}:
+        assert metrics.get("replay_budget_matched") is True
+        assert metrics.get("replay_rows") == min(
+            metrics.get("replay_requested_budget_rows", 0),
+            metrics.get("replay_candidate_rows", 0),
+        )
+        if replay_mode == "session_contiguous" and before is not None:
+            assert metrics.get("replay_session_count", 0) > 0
+            assert metrics.get("replay_window_count", 0) > 0
+        if replay_mode == "uniform_budget":
+            assert metrics.get("replay_window_count", 0) == 0
+
+    assert type(metrics.get("fit_array_bytes")) is int and metrics["fit_array_bytes"] > 0
+    assert type(metrics.get("replay_array_bytes")) is int
+    assert metrics["replay_array_bytes"] >= 0
+    assert metrics.get("optimizer_steps_added") == fit_after - fit_before
 
     return {
         "status": result["status"],
@@ -259,7 +351,15 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
         "rejected_receipts": rejected,
         "has_more": has_more,
         "fit_rows": metrics.get("fit_rows"),
+        "replay_mode": replay_mode,
         "replay_rows": metrics.get("replay_rows"),
+        "replay_budget_rows": metrics.get("replay_budget_rows"),
+        "replay_budget_matched": metrics.get("replay_budget_matched"),
+        "replay_session_count": metrics.get("replay_session_count"),
+        "replay_window_count": metrics.get("replay_window_count"),
+        "fit_array_bytes": metrics.get("fit_array_bytes"),
+        "replay_array_bytes": metrics.get("replay_array_bytes"),
+        "optimizer_steps_added": metrics.get("optimizer_steps_added"),
         "holdout_improved": metrics.get("holdout_improved"),
         "negative_controls_separated": metrics.get("negative_controls_separated"),
         "old_holdout_retained": metrics.get("old_holdout_retained"),
@@ -411,6 +511,10 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         assert a1_result["runtime_adapter_called"] is True
         assert a1_result["native_body_weights_changed"] is False
         a1_state = _active_state(master)
+        assert all(
+            type(row.get("session_id")) is str and row["session_id"] == a1["session_id"]
+            for row in a1_state["active"]["experience_rows"]
+        )
         a1_sha = a1_state["active"]["checkpoint_sha256"]
         a1_audit = world_jepa_optimizer_audit.audit_checkpoint(
             master_home / "world_jepa" / a1_state["active"]["checkpoint"],
@@ -536,6 +640,22 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             arm["store"].close()
 
     assert len(reports) == len(DATA_SEEDS) * len(ARMS)
+    report_by_arm = {
+        (item["data_seed"], item["encoder_mode"], item["replay_mode"]): item
+        for item in reports
+    }
+    for data_seed in DATA_SEEDS:
+        for encoder_mode in ("full", "predictor_only"):
+            uniform_budget = report_by_arm[(data_seed, encoder_mode, "uniform_budget")]
+            contiguous = report_by_arm[(data_seed, encoder_mode, "session_contiguous")]
+            for phase in ("B", "A2"):
+                budget_metrics = uniform_budget[phase]
+                contiguous_metrics = contiguous[phase]
+                assert budget_metrics["replay_rows"] == contiguous_metrics["replay_rows"]
+                assert budget_metrics["fit_array_bytes"] == contiguous_metrics["fit_array_bytes"]
+                assert budget_metrics["replay_array_bytes"] == contiguous_metrics["replay_array_bytes"]
+                assert budget_metrics["optimizer_steps_added"] == contiguous_metrics["optimizer_steps_added"]
+
     print("WORLDJEPA_STORE_A_B_A_REPLAY_RETENTION " + __import__("json").dumps(
         reports, sort_keys=True, allow_nan=False
     ))
