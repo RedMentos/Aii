@@ -44,6 +44,9 @@ def test_audio_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     assert "not fixed_policy and arithmetic_answer is None" in runtime
     assert "audio_source_refs" in runtime and "LOCAL_EXACT_ARITHMETIC" in runtime
+    assert "c3_prompt_included" in runtime
+    assert "if not included:meta.pop('audio_source_refs',None);audio_source_ref=None" in runtime
+    assert runtime.index("source_recall.verify_before_use") < runtime.index("c3_prompt_included") < runtime.index("try:save_context")
     assert "audio_context_refs" in cognition and "Consumer audio context source mismatch" in cognition
 
     test_names = (
