@@ -167,6 +167,9 @@ class AndroidCompanionController:
 
     def poll(self, action_id):
         self.runtime.require_idle()
+        state = self.broker.action_state(action_id)
+        if state in {"RECEIPT_VERIFIED", "RECEIPT_REJECTED", "CANCELLED", "EXPIRED", "DROPPED_ON_RESTART"}:
+            return dumps({"status": "ALREADY_FINAL", "action_id": action_id, "action_state": state})
         trust, public_key, _ = self._pinned_key()
         self.broker.start()
         response = self.transport.outcome(action_id)
@@ -207,13 +210,16 @@ class AndroidCompanionController:
     def stop(self):
         remote = {"status": "UNAVAILABLE"}
         try:
-            pending = self.transport.pending().get("pending", [])
-            results = []
-            for item in pending:
-                action_id = item.get("action_id")
-                if type(action_id) is str and re.fullmatch(r"[0-9a-f]{32}", action_id):
-                    results.append(self.transport.cancel(action_id))
-            remote = {"status": "CANCEL_ATTEMPTED", "results": results}
+            pending_response = self.transport.pending()
+            if pending_response.get("status") != "OK":
+                remote = pending_response
+            else:
+                results = []
+                for item in pending_response.get("pending", []):
+                    action_id = item.get("action_id")
+                    if type(action_id) is str and re.fullmatch(r"[0-9a-f]{32}", action_id):
+                        results.append(self.transport.cancel(action_id))
+                remote = {"status": "CANCEL_ATTEMPTED", "results": results}
         except CompanionTransportError as exc:
             remote = {"status": "UNAVAILABLE", "reason": str(exc)}
         self.broker.stop()
