@@ -4,10 +4,11 @@ This exercises the deployable V13 WorldJEPA consumer, its real SQLite
 ActionOutcome/T8 authority and private checkpoint format. The data are
 synthetic test experiences; this is not Redmi, native GGUF, or user-data proof.
 """
+import copy
 import math
 import shutil
 
-from v13 import contracts, world_jepa_training_state, world_model
+from v13 import contracts, world_jepa_optimizer_audit as optimizer_audit, world_model
 from v13.store import Store
 from v13.world_jepa_consumer import WorldJEPAStoreConsumer
 
@@ -68,9 +69,10 @@ class _CapturingConsumer(WorldJEPAStoreConsumer):
 
     def _load_model(self, record):
         model = super()._load_model(record)
-        state = world_jepa_training_state.from_model(model)
+        self.before_model = copy.deepcopy(model)
+        self.before_audit = optimizer_audit.audit_model(model)
         self.loaded_model = model
-        self.optimizer_before = state["main"]["t"]
+        self.optimizer_before = self.before_audit["optimizer_main_step"]
         return model
 
 
@@ -145,11 +147,15 @@ def test_production_checkpoint_resumes_adam_and_reset_control_is_distinct(tmp_pa
         assert first_metrics["train_holdout_source_sha256_disjoint"] is True
         assert first_metrics["negative_controls_separated"] is True
 
-        first_model = consumer._load_model(
-            store.state(STATE_KEY, None)[0]["active"]
+        first_record = store.state(STATE_KEY, None)[0]["active"]
+        first_audit = optimizer_audit.audit_checkpoint(
+            persistent_home / "world_jepa" / first_record["checkpoint"],
+            first_record["source_sha256"], first_sha,
         )
-        first_training = world_jepa_training_state.from_model(first_model)
-        assert first_training["main"]["t"] == 120
+        assert first_audit["checkpoint_verified"] is True
+        assert first_audit["optimizer_state_present"] is True
+        assert first_audit["optimizer_main_step"] == 120
+        assert first_audit["optimizer_bootstrap_steps"] == [60]
 
         # Clone the exact SQLite database, source blobs and private checkpoint.
         # Both arms therefore start from identical model/EMA/Adam bytes.
@@ -199,12 +205,29 @@ def test_production_checkpoint_resumes_adam_and_reset_control_is_distinct(tmp_pa
         assert persistent.optimizer_before == 120
         assert reset.optimizer_before == 120
 
-        persistent_training = world_jepa_training_state.from_model(persistent.loaded_model)
-        reset_training = world_jepa_training_state.from_model(reset.loaded_model)
-        assert persistent_training["origin"] == "FRESH"
-        assert persistent_training["main"]["t"] == 240
-        assert reset_training["origin"] == "BOOTSTRAPPED_FROM_INFERENCE_ONLY"
-        assert reset_training["main"]["t"] == 120
+        persistent_audit = optimizer_audit.audit_model(persistent.loaded_model)
+        reset_audit = optimizer_audit.audit_model(reset.loaded_model)
+        persistent_delta = optimizer_audit.compare_models(
+            persistent.before_model, persistent.loaded_model
+        )
+        reset_delta = optimizer_audit.compare_models(
+            reset.before_model, reset.loaded_model
+        )
+        assert persistent.before_audit["parameter_sha256"] == reset.before_audit["parameter_sha256"]
+        assert persistent.before_audit["ema_target_sha256"] == reset.before_audit["ema_target_sha256"]
+        assert persistent.before_audit["optimizer_state_sha256"] == reset.before_audit["optimizer_state_sha256"]
+        assert persistent_audit["optimizer_origin"] == "FRESH"
+        assert persistent_audit["optimizer_main_step"] == 240
+        assert persistent_audit["optimizer_bootstrap_steps"] == [120]
+        assert reset_audit["optimizer_origin"] == "BOOTSTRAPPED_FROM_INFERENCE_ONLY"
+        assert reset_audit["optimizer_main_step"] == 120
+        assert reset_audit["optimizer_bootstrap_steps"] == [60]
+        for delta in (persistent_delta, reset_delta):
+            assert delta["parameter_delta_norm"] > 0
+            assert delta["ema_target_delta_norm"] > 0
+            assert delta["optimizer_moment_delta_norm"] > 0
+        assert persistent_audit["optimizer_state_sha256"] != persistent.before_audit["optimizer_state_sha256"]
+        assert reset_audit["optimizer_state_sha256"] != reset.before_audit["optimizer_state_sha256"]
 
         # Both arms saw the same new T8 cohort and equal gradient-step budgets.
         # The test records utility/retention outcomes; it does not assume that
