@@ -121,10 +121,11 @@ class WorldJEPA:
         self.seed = seed; self.ensemble = ensemble
 
     def fit(self, X, A, X2, steps=3000, log_every=500, warm_start=False, cancel_check=None,
-            allow_optimizer_bootstrap=False, train_encoder=True):
+            allow_optimizer_bootstrap=False, train_encoder=True, drift_control=None):
         # Invalid transitions cannot establish learned SHADOW inference evidence.
         # The covariance objective divides by n-1; never fit a single row.
         from . import world_jepa_training_state as training_state
+        from . import world_jepa_drift as drift
         if (type(self.seed) is not int or not 0 <= self.seed <= 2**63-1
                 or type(self.ensemble) is not int or not 1 <= self.ensemble <= 16
                 or type(steps) is not int or steps < 0
@@ -134,6 +135,7 @@ class WorldJEPA:
                 or type(train_encoder) is not bool
                 or (cancel_check is not None and not callable(cancel_check))):
             raise ValueError('Invalid WorldJEPA fit configuration')
+        drift_config = drift.normalize_config(drift_control)
         if cancel_check is not None and cancel_check():
             raise InterruptedError('WorldJEPA fit cancelled')
         if not train_encoder and not warm_start:
@@ -194,6 +196,17 @@ class WorldJEPA:
         opt = Adam({**{'e'+k: v for k, v in enc.items()}, **{'p'+k: v for k, v in pred.items()}, **{'i'+k: v for k, v in inv.items()}}, LR)
         if saved_training is not None:
             training_state.restore_adam(opt,saved_training['main'])
+        drift_state = saved_training.get('drift') if saved_training is not None else drift.default_state()
+        params_by_group = {
+            'encoder': {'e'+k: v for k, v in enc.items()} if train_encoder else {},
+            'predictor': {'p'+k: v for k, v in pred.items()},
+            'inverse': {'i'+k: v for k, v in inv.items()} if train_encoder else {},
+        }
+        prior_steps = int(getattr(self, '_fit_steps', 0)) if warm_start else 0
+        drift_prepared = drift.prepare_task(
+            drift_state, drift_config, params_by_group,
+            has_prior_training=bool(warm_start and prior_steps > 0),
+        )
         history = []
         for s in range(steps):
             if cancel_check is not None and cancel_check():
@@ -206,11 +219,16 @@ class WorldJEPA:
                 x2=x2[b] if train_encoder else None, inv_w=INV_W if train_encoder else 0.,
             )
             loss, parts, gp, ge = out[:4]; gi = out[4] if len(out) > 4 else {}
-            opt.step({
+            gradients = {
                 **({'e'+k: v for k, v in ge.items()} if ge is not None else {}),
                 **{'p'+k: v for k, v in gp.items()},
                 **{'i'+k: v for k, v in gi.items()},
-            })
+            }
+            if drift_prepared['active']:
+                gradients = drift.apply_pullback(params_by_group, gradients, drift_prepared)
+            opt.step(gradients)
+            if drift_prepared['active']:
+                drift.update_dual(drift_prepared, params_by_group)
             if train_encoder:
                 for k in enc: tgt[k] = TAU*tgt[k]+(1-TAU)*enc[k]
             if s % log_every == 0 or s == steps-1: history.append(dict(step=s, loss=round(loss, 5), **{k: round(v, 5) for k, v in parts.items()}))
@@ -257,8 +275,10 @@ class WorldJEPA:
             raise InterruptedError('WorldJEPA fit cancelled')
         total_steps=(getattr(self,'_fit_steps',0)+steps) if warm_start else steps
         origin = saved_training['origin'] if saved_training is not None else 'FRESH'
+        next_drift = drift.finish_task(drift_prepared, params_by_group, steps=steps)
         next_training=training_state.capture(opt,inv,rng,bootstrap_training,X.shape[1],A.shape[1],
-                                            self.seed,self.ensemble,total_steps,origin=origin)
+                                            self.seed,self.ensemble,total_steps,origin=origin,
+                                            drift_state=next_drift)
         with _WORLD_JEPA_IO_LOCK:
             if _WORLD_JEPA_FIT_TICKETS.get(self) != fit_ticket:
                 raise RuntimeError('Superseded WorldJEPA fit cannot publish stale state')
@@ -268,14 +288,15 @@ class WorldJEPA:
         return self
 
     def partial_fit(self,X,A,X2,steps=100,log_every=50,cancel_check=None,allow_optimizer_bootstrap=False,
-                    train_encoder=True):
+                    train_encoder=True, drift_control=None):
         """Continue JEPA weights and EMA target instead of reinitializing.
 
         Callers should mix replay transitions with new ones to reduce forgetting.
         This experimental path does not itself establish durable retention.
         """
         return self.fit(X,A,X2,steps=steps,log_every=log_every,warm_start=True,cancel_check=cancel_check,
-                        allow_optimizer_bootstrap=allow_optimizer_bootstrap,train_encoder=train_encoder)
+                        allow_optimizer_bootstrap=allow_optimizer_bootstrap,train_encoder=train_encoder,
+                        drift_control=drift_control)
 
     # -- inference -------------------------------------------------------------------------------------------------
     @_read_locked

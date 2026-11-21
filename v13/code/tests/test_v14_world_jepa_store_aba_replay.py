@@ -18,6 +18,7 @@ from v13 import (
     world_jepa_consumer,
     world_jepa_optimizer_audit,
     world_jepa_replay,
+    world_jepa_drift,
     world_jepa_runtime,
     world_model,
 )
@@ -28,21 +29,86 @@ from v13.world_jepa_planner import consume_world_planner_shadow
 STATE_KEY = "v14.world_jepa.store_consumer"
 PERMISSION_KEY = world_jepa_runtime.PERMISSION_KEY
 DEFAULT_PERMISSIONS = dict(world_jepa_runtime.DEFAULT_PERMISSIONS)
+DRIFT_CONFIG = {
+    "enabled": True,
+    "dual_lr": 0.03,
+    "lambda_init": 1.0,
+    "lambda_max": 100.0,
+    "deadzone": 0.05,
+    "decay": 0.95,
+}
 ARMS = (
-    ("uniform", "full"),
-    ("none", "full"),
-    ("uniform_budget", "full"),
-    ("session_contiguous", "full"),
-    ("uniform", "predictor_only"),
-    ("none", "predictor_only"),
-    ("uniform_budget", "predictor_only"),
-    ("session_contiguous", "predictor_only"),
+    ("uniform", "full", False),
+    ("none", "full", False),
+    ("uniform_budget", "full", False),
+    ("session_contiguous", "full", False),
+    ("uniform", "predictor_only", False),
+    ("none", "predictor_only", False),
+    ("uniform_budget", "predictor_only", False),
+    ("session_contiguous", "predictor_only", False),
+    ("uniform_budget", "full", True),
+    ("uniform_budget", "predictor_only", True),
 )
 DATA_SEEDS = (13, 19, 43)
 A1_COUNT = 256
 SHIFT_COUNT = 96
 A1_STEPS = 120
 SHIFT_STEPS = 40
+
+
+def test_stable_drift_controller_calibrates_groups_and_updates_dual():
+    params = {
+        "encoder": {"eW": np.array([1.0, 2.0])},
+        "predictor": {"pW": np.array([2.0, 1.0])},
+        "inverse": {"iW": np.array([0.5])},
+    }
+    prepared = world_jepa_drift.prepare_task(
+        world_jepa_drift.default_state(), DRIFT_CONFIG, params,
+        has_prior_training=False,
+    )
+    for group in params.values():
+        for value in group.values():
+            value[0] += 0.1
+    calibrated = world_jepa_drift.finish_task(prepared, params, steps=12)
+    assert all(calibrated["groups"][name]["budget_sq"] > 0 for name in params)
+    assert all(calibrated["groups"][name]["task_count"] == 1 for name in params)
+
+    prepared = world_jepa_drift.prepare_task(
+        calibrated, DRIFT_CONFIG, params, has_prior_training=True,
+    )
+    assert prepared["active"] == set(params)
+    params["encoder"]["eW"][0] += 0.5
+    gradients = {key: np.ones_like(value)
+                 for group in params.values() for key, value in group.items()}
+    controlled = world_jepa_drift.apply_pullback(params, gradients, prepared)
+    assert controlled["eW"][0] > gradients["eW"][0]
+    world_jepa_drift.update_dual(prepared, params)
+    assert prepared["lambdas"]["encoder"] > DRIFT_CONFIG["lambda_init"]
+    persisted = world_jepa_drift.finish_task(prepared, params, steps=7)
+    assert persisted["groups"]["encoder"]["controlled_steps"] == 7
+    assert world_jepa_drift.validate_state(persisted) == persisted
+
+    predictor_only = world_jepa_drift.prepare_task(
+        persisted, DRIFT_CONFIG,
+        {"encoder": {}, "predictor": params["predictor"], "inverse": {}},
+        has_prior_training=True,
+    )
+    assert predictor_only["active"] == {"predictor"}
+    disabled = world_jepa_drift.prepare_task(
+        persisted, None, params, has_prior_training=True,
+    )
+    assert not disabled["active"]
+    for invalid in (
+        {"enabled": True, "budget_sq": 0},
+        {"enabled": True, "deadzone": 0.8},
+        {"enabled": True, "unknown": 1},
+    ):
+        try:
+            world_jepa_drift.normalize_config(invalid)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("invalid drift config accepted")
 
 
 def test_session_contiguous_replay_is_deterministic_bounded_and_session_local():
@@ -241,7 +307,7 @@ def _active_state(store):
     return value
 
 
-def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
+def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_control=None):
     _set_permissions(
         store, steps=steps, replay_mode=replay_mode, encoder_mode=encoder_mode
     )
@@ -255,7 +321,7 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
     before_sha = before["active"]["checkpoint_sha256"] if before else None
 
     result = world_jepa_runtime.consume_after_commit(
-        store, home=home, limit=256
+        store, home=home, limit=256, drift_control=drift_control
     )
     assert result.get("runtime_adapter_called") is True
     assert result.get("learning_enabled") is True
@@ -269,6 +335,11 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
     }
 
     metrics = _metrics(result)
+    drift_metrics = metrics.get("drift_control")
+    assert type(drift_metrics) is dict
+    assert drift_metrics.get("enabled") is (drift_control is not None)
+    if drift_control is not None and before is not None:
+        assert sum(item["controlled_steps"] for item in drift_metrics["groups"].values()) > 0
     assert result.get("new_receipts", metrics.get("new_train_rows", 0)) > 0
     if "train_holdout_source_sha256_disjoint" in metrics:
         assert metrics["train_holdout_source_sha256_disjoint"] is True
@@ -380,6 +451,7 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
         "predictor_parameter_delta_norm": metrics.get("predictor_parameter_delta_norm"),
         "parameter_delta_norm": metrics.get("parameter_delta_norm"),
         "ema_target_delta_norm": metrics.get("ema_target_delta_norm"),
+        "drift_control": drift_metrics,
     }
 
 
@@ -517,7 +589,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             learning_enabled=True, optimizer_permission=True,
         )
         a1_result = world_jepa_runtime.consume_after_commit(
-            master, home=master_home, limit=256
+            master, home=master_home, limit=256, drift_control=DRIFT_CONFIG
         )
         assert a1_result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         assert a1_result["runtime_adapter_called"] is True
@@ -528,6 +600,15 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             for row in a1_state["active"]["experience_rows"]
         )
         a1_sha = a1_state["active"]["checkpoint_sha256"]
+        a1_model = world_jepa_runtime._consumer(
+            master, master_home, learning_enabled=True
+        )._load_model(a1_state["active"])
+        a1_drift = a1_model._training_state["drift"]
+        assert all(
+            a1_drift["groups"][name]["budget_sq"] > 0
+            and a1_drift["groups"][name]["task_count"] == 1
+            for name in ("encoder", "predictor", "inverse")
+        )
         a1_audit = world_jepa_optimizer_audit.audit_checkpoint(
             master_home / "world_jepa" / a1_state["active"]["checkpoint"],
             a1_state["active"]["source_sha256"],
@@ -537,8 +618,8 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         master.close()
 
         arms = {}
-        for replay_mode, encoder_mode in ARMS:
-            arm_key = f"{replay_mode}-{encoder_mode}"
+        for replay_mode, encoder_mode, stable in ARMS:
+            arm_key = f"{replay_mode}-{encoder_mode}" + ("-stable" if stable else "")
             arm_home = tmp_path / f"arm-{data_seed}-{arm_key}"
             shutil.copytree(master_home, arm_home)
             arms[arm_key] = {
@@ -546,6 +627,8 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 "store": Store(arm_home),
                 "replay_mode": replay_mode,
                 "encoder_mode": encoder_mode,
+                "stable": stable,
+                "drift_control": DRIFT_CONFIG if stable else None,
                 "phases": {"A1": {
                     "status": a1_result["status"],
                     "checkpoint_sha256": a1_sha,
@@ -566,6 +649,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 arm["store"], arm["home"],
                 steps=SHIFT_STEPS, replay_mode=arm["replay_mode"],
                 encoder_mode=arm["encoder_mode"],
+                drift_control=arm["drift_control"],
             )
             arm["store"].close()
             arm["store"] = Store(arm["home"])
@@ -593,6 +677,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 arm["store"], arm["home"],
                 steps=SHIFT_STEPS, replay_mode=arm["replay_mode"],
                 encoder_mode=arm["encoder_mode"],
+                drift_control=arm["drift_control"],
             )
             arm["holdout"] = _cohort_holdout_metrics(
                 arm["store"], phase_by_sha
@@ -642,6 +727,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 "data_seed": data_seed,
                 "replay_mode": arm["replay_mode"],
                 "encoder_mode": arm["encoder_mode"],
+                "stable_drift_control": arm["stable"],
                 "A1_checkpoint_sha256": a1_sha,
                 "B": arm["phases"]["B"],
                 "A2": arm["phases"]["A2"],
@@ -653,13 +739,14 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
 
     assert len(reports) == len(DATA_SEEDS) * len(ARMS)
     report_by_arm = {
-        (item["data_seed"], item["encoder_mode"], item["replay_mode"]): item
+        (item["data_seed"], item["encoder_mode"], item["replay_mode"], item["stable_drift_control"]): item
         for item in reports
     }
     for data_seed in DATA_SEEDS:
         for encoder_mode in ("full", "predictor_only"):
-            uniform_budget = report_by_arm[(data_seed, encoder_mode, "uniform_budget")]
-            contiguous = report_by_arm[(data_seed, encoder_mode, "session_contiguous")]
+            uniform_budget = report_by_arm[(data_seed, encoder_mode, "uniform_budget", False)]
+            contiguous = report_by_arm[(data_seed, encoder_mode, "session_contiguous", False)]
+            stable = report_by_arm[(data_seed, encoder_mode, "uniform_budget", True)]
             # B starts from the identical A1 checkpoint in every arm, so the
             # two budgeted policies must consume identical replay/fit bytes and
             # optimizer steps. A2 is reported separately because B promotion
@@ -672,6 +759,13 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             assert budget_metrics["fit_array_bytes"] == contiguous_metrics["fit_array_bytes"]
             assert budget_metrics["replay_array_bytes"] == contiguous_metrics["replay_array_bytes"]
             assert budget_metrics["optimizer_steps_added"] == contiguous_metrics["optimizer_steps_added"]
+            stable_metrics = stable["B"]
+            assert budget_metrics["new_train_rows"] == stable_metrics["new_train_rows"]
+            assert budget_metrics["replay_rows"] == stable_metrics["replay_rows"]
+            assert budget_metrics["fit_array_bytes"] == stable_metrics["fit_array_bytes"]
+            assert budget_metrics["replay_array_bytes"] == stable_metrics["replay_array_bytes"]
+            assert budget_metrics["optimizer_steps_added"] == stable_metrics["optimizer_steps_added"]
+            assert stable_metrics["drift_control"]["enabled"] is True
 
     print("WORLDJEPA_STORE_A_B_A_REPLAY_RETENTION " + __import__("json").dumps(
         reports, sort_keys=True, allow_nan=False

@@ -21,6 +21,7 @@ import numpy as np
 
 from v13 import world_jepa
 from v13 import world_jepa_replay
+from v13 import world_jepa_drift
 from v13 import world_jepa_shadow_checkpoint
 from v13 import world_model
 from .world_jepa_store_authority import verify_committed_transition_page
@@ -578,7 +579,7 @@ class WorldJEPAStoreConsumer:
 
 
     def update(self, *, limit=DEFAULT_PAGE_SIZE, steps=80, optimizer_permission=False,
-               replay_mode="uniform", encoder_mode="full", cancel_check=None):
+               replay_mode="uniform", encoder_mode="full", cancel_check=None, drift_control=None):
         if type(limit) is not int or not 16 <= limit <= MAX_ROWS:
             raise ValueError("limit")
         if type(steps) is not int or not 1 <= steps <= 2000:
@@ -589,6 +590,7 @@ class WorldJEPAStoreConsumer:
             raise ValueError("unsupported WorldJEPA replay_mode")
         if encoder_mode not in {"full", "predictor_only"}:
             raise ValueError("encoder_mode must be full or predictor_only")
+        drift_config = world_jepa_drift.normalize_config(drift_control)
         if cancel_check is not None and not callable(cancel_check):
             raise ValueError("cancel_check must be callable")
         if cancel_check is not None and cancel_check():
@@ -794,7 +796,8 @@ class WorldJEPAStoreConsumer:
             try:
                 model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4),
                                   cancel_check=cancel_check, allow_optimizer_bootstrap=True,
-                                  train_encoder=(encoder_mode == "full"))
+                                  train_encoder=(encoder_mode == "full"),
+                                  drift_control=drift_config)
             except InterruptedError:
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
                         "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
@@ -803,6 +806,9 @@ class WorldJEPAStoreConsumer:
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
                         "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
                         "native_body_weights_changed":False}
+            drift_metrics = world_jepa_drift.summary(
+                model._training_state.get("drift"), enabled=drift_config["enabled"]
+            )
             after = _parameter_snapshot(model)
             holdout_after = model.prediction_loss(*holdout)
             shuffled_action_loss = model.prediction_loss(holdout[0], np.roll(holdout[1], 1, axis=0), holdout[2])
@@ -850,6 +856,7 @@ class WorldJEPAStoreConsumer:
                     "old_holdout_loss_before": None if old_holdout_before is None else float(old_holdout_before),
                     "old_holdout_loss_after": None if old_holdout_after is None else float(old_holdout_after),
                     "old_holdout_retention_delta": retention_delta,
+                    "drift_control": drift_metrics,
                     "parameter_delta_norm": float(parameter_delta),
                     "encoder_parameter_delta_norm": float(encoder_delta),
                     "predictor_parameter_delta_norm": float(predictor_delta),
@@ -935,6 +942,7 @@ class WorldJEPAStoreConsumer:
                 "optimizer_moments_persisted": saved.get("optimizer_state_persisted") is True,
                 "inverse_dynamics_optimizer_persisted": saved.get("optimizer_state_persisted") is True,
                 "optimizer_state_bootstrapped": saved.get("optimizer_state_bootstrapped") is True,
+                "drift_control": drift_metrics,
             }
             metrics.update(receiver_metrics)
             record = {
