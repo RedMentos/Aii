@@ -1552,3 +1552,14 @@ Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. This
 | Release / Redmi | Release branch HEAD `0fc4d2f9a76d530c366d67ea8148cd1c69666acd`; previous fully green code-bearing head `e18c664d954fa5a44a1b2e5bec76850d5a40f89f`; private owner-read #403 pending | #2197 exact PR-head CI PASS; merged-head push CI queued/in progress at last readback | Installed SHA UNKNOWN, updater consent UNVERIFIED, REDMI_UNVERIFIED; no UPDATE_REQUEST or device mutation |
 
 Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. The V14 master was not edited; no immutable master backup was required. This overlay records candidate evidence and open blockers only; it does not promote any Canon family to accepted.
+
+
+### Exact release and numeric-learning evidence — 2026-11-21 13:34 CET
+
+| Canon family | Exact verified evidence | Acceptance still open |
+|---|---|---|
+| Release / Android audit DB | Code-bearing release `0fc4d2f9a76d530c366d67ea8148cd1c69666acd`; PR #2197 merged; 28/28 exact-head check-runs and 17/17 workflows SUCCESS | No owner-authenticated Redmi receipt; installed SHA/updater consent unknown; no real bind-mount or OS executor proof |
+| WorldJEPA numeric learner | Integrated staged Runtime/SQLite regression: 415 passed / 3 skipped / 58 subtests; two content/ID-disjoint holdouts reduced prediction loss 0.9600228 -> 0.9030210 (49 train / 15 holdout) and 0.9627244 -> 0.9034923 (47 train / 17 holdout); parameter diff + save/restore/restart verified | Synthetic Python predictor only; no native GGUF B1/B2/C3 weight update; no multi-seed/ablations on Android; optimizer resume PR #2198 remains unmerged and os.link-only publisher lacks Android fallback |
+| A5 voice / B1/B2/C3 | #2200 staged A5 3.11/3.13, staged-runtime 249/10/47 and integrated 415/3/58 PASS with fake runners | Consent race in #2192; derived audio context remains stored after revocation; no microphone or native body proof |
+
+No master edit; historical 1,255-heading inventory and V13 appendix bytes remain unchanged. These results do not mark any Canon family complete.
