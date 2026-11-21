@@ -501,3 +501,32 @@ This is an additive checkpoint. The V14 master and historical V13 appendix were 
 - **Boss:** finish exact merge push-CI readback, keep whole-Canon coverage current, and integrate only current-base, tested vertical slices.
 
 **User action: none.**
+
+
+## Boss integration checkpoint — 2026-11-21 17:06 CET
+
+### Verified branch and release state
+- Release-development branch HEAD: `9d8f91960c568be7fe7dcf894555ce7250f635f4`. This is documentation-only handoff commit #2232; the current code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299` after the normal-stage C4 integration in #2228.
+- Exact HEAD check-runs: **36/36 SUCCESS**. Exact code-bearing release checks: **34/34 check-runs and 19/19 associated workflows SUCCESS**. GitHub CI is not phone installation.
+- #2228's normal pinned stage/deployer now applies the conservative source-span C4 rule. Its synthetic staged Runtime suite passed **251 / 10 skipped / 47 subtests**; integrated regression passed **424 / 3 skipped / 58 subtests**. This is source quote → SourceRef → C4 → selected offer → C3-context wiring with synthetic runners, not native B1/B2 quality or trained B3 latent coupling.
+
+### Current cross-agent PR reconciliation
+- **Perception #2233** — exact head `17f273395a869fd7469110773a5fe777a522909b`, base `9d8f9196`. Consent/revocation **29 passed**; RAW EAR producer/temporal **53 passed** on Python 3.11 and 3.13; VAD comparator **8/8** on Python 3.13/3.14 with pinned native Linux libfvad **13 PASS per matrix**; model-lab/privacy/offline-security PASS. Staged **251/10 skipped/47 subtests** and integrated **424/3 skipped/58 subtests**. Three `validate-additive` checks fail because the PR modifies existing production modules and adds workflows outside the inert-module/test/handoff allowlist; no waiver or bypass. The producer path is caller-supplied PCM16 → source-bound PerceptPacket → temporal A4 salience → C3 admission. It does not open a microphone or hold the lease through the later native `runner.generate()`. Keep draft until Core supplies a normal Runtime consumer, derived-context revocation deletion/cache clearing, and a lease through C3 generation; QA independently reviews the race boundaries.
+- **Core #2230** — head `e64b9ee70350f72c62e7b13c558c6e6d91c7472f`, still based on stale `f279286a`, non-mergeable. Python 3.13 staged-C4 fails both tests at `integrated_arithmetic_candidate_20261116.py:34`: `ValueError: arithmetic source changed: v13/focal.py`. The Age.tools-before-per-call-APPROVED change is directionally correct, but the old arithmetic overlay pin was not recomputed for the changed focal source. Python 3.14 was still running at readback. Core must rebase onto `9d8f9196`, recompute the complete arithmetic→C4→stage/deployer pin chain, and rerun Python 3.13/3.14 plus staged/integrated tests. No merge.
+- **JEPA #2231** — exact current head `324e5af9e2cf98d5e49096696337ab290f566912`, base `9d8f9196`, draft. Current checks: **4 success / 6 failure / 1 in progress**. Python 3.13/3.14 optimizer-resume and staged Runtime fail because `stage_integrated_candidate.py` reports `integrated builder hash mismatch` and the recovery builder reports `Termux recovery builder source changed: scripts/integrated_world_training_resume_candidate_20261111.py`. Lab-Age E2E and old-phone migration also fail; migration reports `PARTIAL` instead of the expected `UPDATED`. The PR body still names the earlier `6c9706c` head and needs an exact-head refresh. Keep the earlier **0/12 B/A2 retention promotions** visible; do not relax retention or enable production learning gates. No merge.
+
+### Whole-Canon and environment boundary
+- The 1,255 historical headings remain inventoried, but semantic clause→implementation→consumer→test→environment→rollback mapping is incomplete across A/B/C, true latent coupling, World/Self/Memory, audio/vision, Android background/UI control, tools, continual learning, self-edit, Age, permissions, recovery and UX.
+- P0 #1904 remains open: no fresh Redmi proof of correct 2+2, native B1/B2 offers delivered and consumed through C4→C3, 20 mixed turns, latency/RSS, or trained B3 latent exchange.
+- Local environment: CPython 3.13.5 and Git 2.47.3 exist, but there is no Aii checkout and `git ls-remote` fails because this runner cannot resolve github.com. Full local suite is **BLOCKED**; no LOCAL_LINUX full-suite PASS is claimed.
+- Existing private owner-read requests for HEALTH, PIPELINE_STATUS and DIAGNOSTICS remain open without authenticated replies. Installed SHA/updater consent remain UNKNOWN; **REDMI_UNVERIFIED**. No UPDATE_REQUEST, shell action, model/weight/permission change, or device mutation occurred.
+
+### Next executable sequence
+1. Core: rebase #2230 and repair the nested arithmetic/focal source pin chain without weakening the Age-rights test.
+2. Core + QA: connect #2233's caller-PCM producer to the normal Runtime; delete/tombstone derived audio context and clear cache on revocation; hold the provider lease through actual C3 generation.
+3. JEPA: repair #2231's nested builder/recovery pins and diagnose the migration PARTIAL result; rerun exact Python 3.13/3.14, staged and integrated tests.
+4. Boss: re-review only current-base exact-head green candidates, integrate critical changes manually with independent review, then read back exact merge-push CI. No device deployment until an authenticated receipt permits it.
+
+**Research note:** R-025 STABLE drift control and R-026 MMR/xQuAD remain experiment proposals, not adopted algorithms. #2233 records RAW EAR/VAD comparison research and licensing notes, but no model, dependency, dataset or weight was imported. No Android/ARM result is inferred from Linux CI.
+
+**User action: none.** No manual Termux command, model swap, permission change, Age change, or updater setting change is required.
