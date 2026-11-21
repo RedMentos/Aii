@@ -191,3 +191,16 @@ PR #2137 current head `2d8eb79bdefe3c6c3bef63fea7d25563b7f56952` has **52 focuse
 - Private owner-read #351–354 remain unanswered with zero device comments; installed SHA UNKNOWN / `NO_LIVE_RECEIPT` / `REDMI_UNVERIFIED`. No UPDATE_REQUEST, installer, shell, model, permission or data mutation.
 - QA's full-repository LOCAL_LINUX suite remains NOT_RUN because this worker cannot resolve GitHub DNS. Exact GitHub Actions logs were inspected; CI is not native Android proof.
 - Board and Next-Action files on this QA branch are synced byte-for-byte to the Boss-updated release branch. The remaining intended PR change is the QA evidence in this live workplan. **User action: none.**
+
+
+## T8 candidate exact staged/integrated completion — 2026-11-21 01:54 CET
+
+PR #2137 current head `2d8eb79bdefe3c6c3bef63fea7d25563b7f56952` completed exact staged/integrated CI:
+- Focused V14 T8: 52 passed (push 44846173142 and PR 44846178337).
+- Staged-runtime: 240 passed / 10 skipped / 47 subtests (job 136666315084).
+- Integrated regression: 415 passed / 3 skipped / 58 subtests (job 136666315262, run 44846178374).
+- Private bridge: PASS (44846173169).
+
+The previous source-review findings are corrected in this head: cancellation/unknown censoring without prediction error or receiver update; full bounded ActionOutcome cardinality with 4096-row fail-closed limit; rollback directory fsync. The remaining gaps are (1) dedicated V14 workflow still Python 3.11 only; add Python 3.14 coverage for the Redmi target, (2) safe-additive policy failure needs Boss review of the new module/workflow scope, and (3) no normal Runtime learning consumer yet. No optimizer, native body-weight update, or Android/Redmi acceptance is claimed.
+
+The latest code-bearing release `5b9171a4` remains CI-green. Current branch HEAD `d61b6957` is documentation-only and its exact staged-context push run `44846409816` is still IN_PROGRESS. The updater must gate on the exact newest SHA, not reuse parent success. Private #351–354 still have no device comments; no update request or device mutation. User action: none.
