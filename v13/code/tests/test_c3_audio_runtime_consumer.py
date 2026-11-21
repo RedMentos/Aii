@@ -353,6 +353,28 @@ def test_normal_runtime_turn_delivers_voice_cues_to_b1_b2_and_c3(tmp_path):
         c3_rendered = json.dumps(seen["C3_LANGUAGE"], ensure_ascii=False)
         assert "RAW_EAR_ACOUSTIC" in c3_rendered
         assert "voice_cues" in c3_rendered and "VOICED" in c3_rendered
+        assert "The rent is 120 euros." in c3_rendered
+        assert "A long-term reserve is needed." in c3_rendered
+        query_rows = runtime.store.rows("SELECT payload FROM packets WHERE kind='QueryPacket'")
+        query_packets = [json.loads(row["payload"]) for row in query_rows]
+        audio_queries = [packet for packet in query_packets if packet.get("audio_context_refs")]
+        assert {packet["target_role"] for packet in audio_queries} == {"B1_DETAIL", "B2_GIST"}
+        for packet in audio_queries:
+            persisted = packet.get("audio_context")
+            assert isinstance(persisted, dict)
+            assert persisted["summary_source_ref"] == packet["audio_context_refs"][0]
+            assert persisted["body"]["authority"] == "ACOUSTIC_FEATURES_ONLY"
+            encoded = json.dumps(persisted, ensure_ascii=False).lower()
+            assert "consent_check" not in encoded and "consent_receipt" not in encoded
+            assert "pcm16" not in encoded
+        offer_rows = runtime.store.rows("SELECT payload FROM packets WHERE kind='OfferPacket'")
+        audio_offers = [json.loads(row["payload"]) for row in offer_rows
+                        if json.loads(row["payload"]).get("audio_context_refs")]
+        assert {offer["role"] for offer in audio_offers} == {"B1_DETAIL", "B2_GIST"}
+        for offer in audio_offers:
+            query = next(packet for packet in audio_queries
+                         if packet["packet_id"] == offer["query_packet_id"])
+            assert offer["audio_context_refs"] == query["audio_context_refs"]
         assert window["pcm16"].hex() not in json.dumps(seen, ensure_ascii=False)
 
         packet_rows = runtime.store.rows(
