@@ -1172,3 +1172,8 @@ Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/225
 - LFM2.5 co-batching report #29002 was later challenged by a maintainer as a reproducer logits-indexing bug; after correcting the harness, F32 was byte-identical and Q4_K_M differences were numerical. The original recurrent-state corruption claim is not established; V13's current `-np 1` also avoids co-batching within each runner.
 - The old V13 NATIVE_CACHE.md benchmark (2026-10-12, Linux cloud, b10964) measured warm prefix reuse but is not current Redmi evidence. The next meaningful P0 phone receipt should include `cache_n`, `prompt_n`, prompt-eval time, TTFT, runner PID/restart and model revision for repeated-prefix, changed-tail, A→B→A and resource-eviction/reload cases. Existing C3 28.72-s prefill alone does not show whether cache missed or the model was simply slow.
 - Private Aiiii #431/#432 and V13OBS #115 remain open with zero comments; no new device request was issued. No Termux command, package install, model/weight/permission/updater change. `REDMI_UNVERIFIED`, `NOT_RELEASED`.
+
+
+## Residency diagnostic refinement — 2026-11-21T20:46:00.962Z
+
+The current V13 config also defaults `body_residency_mb=1800` (BOOT only); `bodies.py` pins C3_LANGUAGE while RED/ORANGE resource modes can evict non-pinned B1/B2. Therefore the next authenticated Redmi receipt should include `body_residency_mb`, current resource mode, `RunnerPool.resident_roles()` / live process count and per-role PID, in addition to `cache_n`, `prompt_n`, prompt-eval time, TTFT and model revision. This distinguishes a cold C3 restart after eviction from a warm cache miss. No budget change is proposed without measurements.
