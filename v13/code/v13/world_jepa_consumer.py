@@ -752,7 +752,13 @@ class WorldJEPAStoreConsumer:
                 budget=len(new_train_rows), salt=replay_salt,
             )
             replay_rows = replay_selection["rows"]
-            fit_rows = list(new_train_rows) + list(replay_rows)
+            # Preserve the historical uniform baseline's exact sorted cohort
+            # order; the budgeted experimental arms use the explicit new+replay
+            # sequence selected above.
+            fit_rows = (
+                train_rows if replay_mode == "uniform"
+                else list(new_train_rows) + list(replay_rows)
+            )
             replay_metrics = {
                 "replay_mode": replay_mode,
                 "replay_rows": len(replay_rows),
