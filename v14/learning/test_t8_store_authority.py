@@ -34,7 +34,7 @@ class FakeStore:
                        "corollary_id": "pkt-copy", "generation_id": "gen-1", "source_id": "src-1",
                        "event_packet": canonical(self.event), "corollary_kind": "CorollaryCopy",
                        "corollary_payload": canonical(self.corollary)}
-        self.outcome_packets = [{"payload": canonical(self.outcome)}]
+        self.outcome_packets = [{"id": "pkt-out", "payload": canonical(self.outcome), "created": 101.0}]
 
     def one(self, sql, args=()):
         if "FROM actions a" in sql:
@@ -87,11 +87,11 @@ def test_store_authority_rejects_source_tampering():
 def test_store_authority_rejects_mismatched_or_duplicate_action_outcome():
     store = FakeStore()
     altered = dict(store.outcome, actual={"action_duration_s": 2.0, "characters": 20})
-    store.outcome_packets = [{"payload": canonical(altered)}]
+    store.outcome_packets = [{"id": "pkt-out", "payload": canonical(altered), "created": 101.0}]
     good, bad = verified(store)
     assert good == [] and bad == 1
     store = FakeStore()
-    store.outcome_packets = [{"payload": canonical(store.outcome)}, {"payload": canonical(store.outcome)}]
+    store.outcome_packets = [{"id": "pkt-out", "payload": canonical(store.outcome), "created": 101.0}, {"id": "pkt-out-2", "payload": canonical(store.outcome), "created": 102.0}]
     good, bad = verified(store)
     assert good == [] and bad == 1
 
@@ -102,9 +102,9 @@ def test_store_authority_rejects_duplicate_beyond_previous_seventeen_packet_wind
     for index in range(18):
         action_id = "act-1" if index == 0 else f"act-{index + 1}"
         payload = dict(store.outcome, action_id=action_id, packet_id=f"pkt-{index + 1}")
-        packets.append({"payload": canonical(payload)})
+        packets.append({"id": f"pkt-{index + 1}", "payload": canonical(payload), "created": 200.0 - index})
     # The old LIMIT 17 saw the first valid packet but missed this older duplicate.
-    packets.append({"payload": canonical(dict(store.outcome, packet_id="pkt-old-duplicate"))})
+    packets.append({"id": "pkt-old-duplicate", "payload": canonical(dict(store.outcome, packet_id="pkt-old-duplicate")), "created": 100.0})
     store.outcome_packets = packets
     good, bad = verified(store)
     assert good == [] and bad == 1
@@ -113,7 +113,7 @@ def test_store_authority_rejects_duplicate_beyond_previous_seventeen_packet_wind
 def test_store_authority_rejects_event_history_over_hard_scan_bound():
     store = FakeStore()
     store.outcome_packets = [
-        {"payload": canonical(dict(store.outcome, action_id=f"act-{index}", packet_id=f"pkt-{index}"))}
+        {"id": f"pkt-{index}", "payload": canonical(dict(store.outcome, action_id=f"act-{index}", packet_id=f"pkt-{index}")), "created": 5000.0 - index}
         for index in range(4097)
     ]
     good, bad = verified(store)
