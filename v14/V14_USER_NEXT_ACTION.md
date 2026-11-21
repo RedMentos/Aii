@@ -1,4 +1,4 @@
-# Current user-facing handoff — 2026-11-21 18:21 CET
+# Current user-facing handoff — 2026-11-21 18:24 CET
 
 **No user action is needed. Do not run a Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
 
