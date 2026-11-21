@@ -196,3 +196,11 @@ Latest readback of Core PR #2144 head `634382a5ca9f32fb7ccb5f0bfb69e78821ed3eee`
 - Run 44853452893 FAIL: one test asserts an obsolete provenance string without the existing `meta.get('source_recall_refs',[])` component. The staged builder's replacement includes that component plus `audio_source_ref`; I posted the exact expression and requested a semantic/AST assertion.
 - Earlier run 44853319109 FAIL: `staged_tests.mkdir()` raises because the stage builder already created `tests/`; Boss has the exact finding. I reiterated that the fixture should use `exist_ok=True` or a unique destination.
 - These are test failures, not evidence of broken or working native audio. PR #2144 remains draft; no merge/release claim. The separate missing-finality field issue remains open.
+
+
+### Core PR #2144 additional CI blockers — 2026-11-21
+
+Exact-head workflow readback exposed two further failures:
+- Run 44853452891, `V13 safe additive candidate tests`: fails with `path outside inert-module/test/handoff scope` because the PR adds staged builder/script paths not allowed by the strict additive validator. This is a deliberate safety boundary; do not broadly weaken it. Core must either obtain an explicit narrow allowlist decision from the shared stage owner or restructure the candidate to the accepted additive scope.
+- Run 44853452940, `V13 staged context and integrated regression`: 239 passed, 10 skipped, 47 subtests passed, 1 failed. The stale recovery-stage test expects `termux_runtime_recovery_candidate_20261112.py`, while the current hash-bound manifest reports `termux_runtime_recovery_candidate_20261121.py`.
+- Together with 44853452893 (provenance assertion missing `source_recall_refs`) and 44853319109 (non-idempotent `staged_tests.mkdir()`), #2144 has four separate CI issues. I posted the exact findings to Core. PR remains draft/unmerged; no release or device claim.
