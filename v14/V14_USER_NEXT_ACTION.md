@@ -1,3 +1,36 @@
+# QA & Android checkpoint — 2026-11-21 09:15 CET
+
+## Exact branch and release evidence
+- Current release-development branch `gpt6/v13-private-remote-bridge-20261111` reads back at **`569680bc10eabeb94ea5a1695d4bf77b8584e0a0`**. Compare against the branch name is identical; it is 18 commits ahead of the prior documentation checkpoint `6967e9d8e03384e9849d8ca5e3a24779402f9cf5`.
+- Exact-head GitHub Actions associated with `569680bc...`: **15/15 success**. Relevant evidence: staged-runtime **240 passed / 10 skipped / 47 subtests** and integrated-regression **415 passed / 3 skipped / 58 subtests** (run `44881038726`); Python 3.14 staged runtime startup + owner-read bootstrap both PASS (run `44881038782`); private bridge, runtime deployment integrity, migration, phone metadata-gate, Android outcome, control broker, T8 temporal bridge and sandbox replay all PASS. These are GitHub-hosted Linux/synthetic checks, not Redmi installation or native inference.
+- The 20-turn phone metadata workflow validates rejection conditions and evidence accounting; it is not the requested 20 real mixed Redmi conversations.
+
+## JEPA postcommit candidate QA — PR #2178
+- Candidate `c16da4b3c0de1e5d857240e4fee7576aa3bf9a15`, based directly on `569680bc...`, attempts to connect the existing Sleep idle worker to persistent WorldJEPA/EMA and numeric B1/B2/SELF SHADOW readouts. This is a meaningful runtime integration attempt, but **not mergeable/deployable in its current state**.
+- Exact candidate CI:
+  - staged/integrated `44882581486`: FAIL. The staged job fails during test collection because `v13/code/v13/world_jepa_runtime.py:105` is missing the colon after a multiline `except` clause (`SyntaxError: expected ':'`). The integrated regression fails in `scripts/integrated_world_training_resume_candidate_20261111.py:28` with `ValueError: training-resume input source changed`.
+  - owner-read `44882581469`: bridge checks PASS, but the Python 3.14 staged-startup job fails on the same training-resume source pin mismatch.
+  - incremental JEPA `44882581533` and combined online JEPA `44882581581`: PASS.
+  - safe-additive `44882581536`: rejects the PR because it intentionally changes existing runtime modules; this is an expected scope-policy boundary, not permission to bypass the validator.
+- Root cause for the pin failure: #2178 modifies `v13/code/v13/world_jepa.py`, while the frozen training-resume builder still pins the previous `WORLD_SHA`. Recompute that exact raw-source digest and every dependent builder/composition/stage/deployer digest in order. Do not weaken the source-integrity chain.
+- QA review comment `6004094094` is recorded on PR #2178 with the syntax line comment, exact failing job IDs, pin-chain diagnosis and required retests.
+
+## Device, updater and whole-system boundary
+- Private owner-read PIPELINE_STATUS #373 and earlier #368 remain unanswered/expired. Installed Redmi SHA is UNKNOWN; updater consent/state is UNVERIFIED; `REDMI_UNVERIFIED`.
+- No UPDATE_REQUEST, shell action, install, permission change, model download/swap, weight edit, SQLite/chat mutation or phone operation was performed.
+- The historical #1904 device failures remain open: slow/incorrect 2+2, B1/B2 timeout/zero valid offers and no accepted B1/B2→C4→C3 path. No newer device receipt clears them.
+- #2178's numeric WorldJEPA/EMA and B1/B2/SELF numeric SHADOW path is not native GGUF body learning, not B3 trained latent coupling, not sparse-MoE proof and not real user-learning evidence. Optimizer gates default OFF; decision authority remains NONE.
+
+## Next executable actions
+1. JEPA owner fixes the missing colon and repairs the full immutable training-resume builder pin chain without loosening validation.
+2. Rerun exact-head staged-runtime, integrated-regression, Python 3.14 staged startup, source-integrity and adjacent WorldJEPA tests; Boss independently reviews the non-additive Runtime/Sleep/stager changes.
+3. QA rechecks exact candidate SHA and failure logs. Only after the complete candidate gate is green can it be considered for integration; a separate owner-authenticated phone receipt is still required before any update request.
+4. Continue the whole-Canon QA map: normal C3 correctness and B1/B2 consumed offers, true B3 latent receiver, Android OS/API and UI control, voice capture/output, persistent memory, sleep/replay, native weight learning, restart/rollback and 20 real device turns remain distinct acceptance rows.
+
+**User action: none.** Do not request another Termux command or duplicate owner-read while the existing receipt path remains unresolved.
+
+---
+
 # Boss integration checkpoint — 2026-11-21 07:59 CET
 
 ## Current integrated branch and release gate
