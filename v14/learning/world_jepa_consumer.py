@@ -22,7 +22,7 @@ import numpy as np
 from v13 import world_jepa
 from v13 import world_jepa_shadow_checkpoint
 from v13 import world_model
-from t8_store_authority import verify_committed_transitions_page
+from t8_cursor_page import verify_committed_transitions_page
 
 
 REVISION = "v14-world-jepa-store-consumer-v2"

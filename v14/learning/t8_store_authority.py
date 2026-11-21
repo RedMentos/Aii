@@ -224,31 +224,3 @@ def verify_committed_transitions(store, limit=world_model.MAX_ROWS):
         except (ValueError, TypeError, KeyError, OSError, OverflowError, json.JSONDecodeError):
             rejected += 1
     return verified, rejected
-
-
-def verify_committed_transitions_page(store, limit=world_model.MAX_ROWS, after=None):
-    """Verify one oldest-first T8 page and return its raw scan cursor.
-
-    Invalid/malformed rows are counted and skipped; transient source I/O errors
-    propagate so callers do not advance the durable cursor on an incomplete read.
-    """
-    if type(limit) is not int or not 1 <= limit <= world_model.MAX_ROWS:
-        raise ValueError("limit")
-    if not all(callable(getattr(store, name, None)) for name in ("one", "rows", "read_source")):
-        raise TypeError("Store reader API required")
-    rows, cursor = world_model.transitions(
-        store, limit=limit, after=after, return_cursor=True
-    )
-    if type(rows) is not list:
-        raise ValueError("T8 page")
-    verified, rejected, seen = [], 0, set()
-    for row in rows:
-        try:
-            item = _verify_one(store, row)
-            if item.action_id in seen:
-                raise ValueError("duplicate action")
-            seen.add(item.action_id)
-            verified.append(item)
-        except (ValueError, TypeError, KeyError, OverflowError, json.JSONDecodeError):
-            rejected += 1
-    return verified, rejected, cursor

@@ -45,6 +45,7 @@ jobs:
             v14/learning/test_world_jepa_consumer.py \
             v14/learning/test_t8_store_authority_real_store.py \
             v14/learning/t8_store_authority.py \
+            v14/learning/t8_cursor_page.py \
             v13/code/v13/world_model.py \
             v14/learning/t8_temporal_bridge.py \
             v14/learning/temporal_outcomes.py \

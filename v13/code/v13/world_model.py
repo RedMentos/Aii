@@ -63,41 +63,9 @@ def _finite_vector(v,dim):
             return False
     return True
 
-def transitions(store,limit=MAX_ROWS,*,after=None,return_cursor=False):
-    """Observed own transitions.
-
-    The legacy call keeps its newest-N behavior. A cursor page is an additive
-    oldest-first feed for durable consumers: it advances over malformed raw
-    rows too, so a bad row cannot permanently starve later committed actions.
-    """
-    if type(limit) is not int or not 1 <= limit <= MAX_ROWS:
-        raise ValueError('Invalid T8 transition limit')
-    if type(return_cursor) is not bool:
-        raise ValueError('return_cursor must be bool')
-    if after is not None and not return_cursor:
-        raise ValueError('cursor requires return_cursor=True')
-    base_sql = ("SELECT a.id,a.event_id,a.status,a.expected,a.outcome,a.created,e.generation_id "
-                "FROM actions a JOIN events e ON e.id=a.event_id "
-                "WHERE a.outcome IS NOT NULL AND a.expected LIKE ? ")
-    if return_cursor:
-        if after is None:
-            rows=store.rows(base_sql+"ORDER BY a.created ASC,a.id ASC LIMIT ?",('%"forecast"%',limit))
-        else:
-            if (type(after) is not dict or set(after)!={'created','action_id'}
-                    or type(after.get('created')) not in (int,float)
-                    or not math.isfinite(float(after['created']))
-                    or type(after.get('action_id')) is not str
-                    or not after['action_id'] or len(after['action_id'])>128):
-                raise ValueError('Invalid T8 transition cursor')
-            rows=store.rows(base_sql+
-                "AND (a.created > ? OR (a.created = ? AND a.id > ?)) "
-                "ORDER BY a.created ASC,a.id ASC LIMIT ?",
-                ('%"forecast"%',float(after['created']),float(after['created']),after['action_id'],limit))
-        cursor=({"created":float(rows[-1]['created']),"action_id":rows[-1]['id']}
-                if rows else after)
-    else:
-        rows=store.rows(base_sql+"ORDER BY a.created DESC LIMIT ?",('%"forecast"%',limit))
-        cursor=None
+def transitions(store,limit=MAX_ROWS):
+    """Observed own transitions; malformed or nonfinite legacy rows cannot poison a fit."""
+    rows=store.rows("SELECT a.id,a.event_id,a.status,a.expected,a.outcome,a.created,e.generation_id FROM actions a JOIN events e ON e.id=a.event_id WHERE a.outcome IS NOT NULL AND a.expected LIKE ? ORDER BY a.created DESC LIMIT ?",('%"forecast"%',limit))
     out=[]
     for r in rows:
         try:
@@ -115,7 +83,8 @@ def transitions(store,limit=MAX_ROWS,*,after=None,return_cursor=False):
             if type(resource) is not str:continue
             # C5 can emit provisional PREDICTION packets before its COMMIT.
             # Only a unique committed (or legacy unstaged) selection may label
-            # an actual action. Preserve dispatch-time and generation binding.
+            # an actual action. Preserve the dispatch-time and generation
+            # binding; reject saturated scans rather than hiding an ambiguity.
             sel=store.rows("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? AND generation_id=? AND created<=? ORDER BY created DESC LIMIT 17",
                            (r['event_id'],r['generation_id'],r['created']))
             if len(sel)>=17:continue
@@ -143,11 +112,9 @@ def transitions(store,limit=MAX_ROWS,*,after=None,return_cursor=False):
                         'y':[math.log1p(act['action_duration_s']),1. if r['status']=='FINAL' else 0.,math.log1p(chars)/8],
                         'latent':lat})
         except (ValueError,TypeError,KeyError,OverflowError,ZeroDivisionError):
+            # Corrupt/legacy observations are not training evidence.
             continue
-    if return_cursor:
-        return out,cursor
     return list(reversed(out))
-
 
 def ridge(X,Y,lam=RIDGE):
     X=np.asarray(X,float);Y=np.asarray(Y,float);A=X.T@X+lam*np.eye(X.shape[1])

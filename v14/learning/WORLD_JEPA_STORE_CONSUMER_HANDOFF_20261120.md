@@ -10,7 +10,7 @@ Status: implementation candidate; not merged, not released, not wired into norma
 
 - v14/learning/world_jepa_consumer.py consumes only VerifiedT8Transition receipts from the Store authority.
 - The train/holdout split is grouped by source_id, not action ID. Every action derived from one source remains in one fold; cross-fold duplicate (state, action, outcome) content is rejected.
-- world_model.transitions(..., return_cursor=True) and verify_committed_transitions_page() add an oldest-first (created, action_id) cursor feed. Invalid raw rows advance the scan cursor but are never admitted as labels. Transient source I/O errors propagate so the cursor is not committed on an incomplete read.
+- the new v14/learning/t8_cursor_page.py adapter around the canonical world_model.transitions() and verify_committed_transitions() APIs add an oldest-first (created, action_id) cursor feed. Invalid raw rows advance the scan cursor but are never admitted as labels. Transient source I/O errors propagate so the cursor is not committed on an incomplete read.
 - Small pages are durably buffered under Store compare-and-swap until the source-disjoint cohort is large enough. The cursor, pending numeric experience rows and fingerprints are committed together. The learner no longer silently starves an older unprocessed backlog behind a latest-N window.
 - The trainable NumPy WorldJEPA encoder/predictor/EMA target is updated from verified T8 rows. The immutable checkpoint SHA, source cohort SHA, processed fingerprints, replay rows, source-disjoint train/holdout IDs, B1/B2 numeric receiver heads, self metrics and rollback pointer are bound by one Store state CAS.
 - B1_DETAIL shadow readout predicts action duration/output size; B2_GIST shadow readout predicts terminal success. The current consumer returns numeric SHADOW readouts only; no native B1/B2 activation or GGUF weight is changed.
@@ -19,7 +19,7 @@ Status: implementation candidate; not merged, not released, not wired into norma
 
 ## Known limitations / exact scope
 
-- The V13 WorldJEPA checkpoint persists encoder, EMA target and predictor weights, but not Adam moments or the temporary inverse-dynamics optimizer head. partial_fit resumes weights and EMA but resets optimizer moments. The metrics explicitly record optimizer_moments_persisted=False.
+- No V13 world_model.py or t8_store_authority.py source bytes are changed; the new V14 cursor adapter wraps the canonical APIs so the existing staged Runtime hash-pinned builder remains byte-compatible. The V13 WorldJEPA checkpoint persists encoder, EMA target and predictor weights, but not Adam moments or the temporary inverse-dynamics optimizer head. partial_fit resumes weights and EMA but resets optimizer moments. The metrics explicitly record optimizer_moments_persisted=False.
 - The B1/B2 receiver heads are trained numeric shadow readouts; they are not yet read by native B1/B2 bodies or a World/Planner decision consumer.
 - The new consumer is not called by normal Runtime. Existing Runtime._worker already calls online_world_update(limit=64) after committed turns, but runtime.py is under the SourceHandoff ownership freeze. The next integration must use an agreed extension point and coordinate with the open #2135 OnlineWorld exactly-once patch; this branch does not overwrite that branch.
 - Test rows are synthetic, but the tests use the actual V13 SQLite Store, source blobs, EventEnvelope, ActionSelection, CorollaryCopy, ActionOutcome and T8 authority code. They do not use live user conversations.
@@ -33,7 +33,7 @@ ER-JEPA (arXiv:2609.36952, 2026-09-29) reinforces replay as a separate path from
 
 ## Verification
 
-- Exact local repository checkout / py_compile / pytest: BLOCKED in this worker; GitHub DNS checkout was unavailable. No local PASS is claimed.
+- Exact local repository checkout / py_compile / pytest: BLOCKED in this worker; GitHub DNS checkout was unavailable. The first exact candidate CI run passed its dedicated Python 3.13 compile + V14 learning/SQLite Store suite; staged Runtime was then found to reject the initial V13 world_model.py edit because that file is hash-pinned. This follow-up restores the exact base source and moves pagination into a V14 adapter. The full staged regression must be rerun on the new SHA.
 - The dedicated GitHub workflow is configured for the exact branch pattern; a branch update is being pushed to trigger the first exact-SHA run. The exact run result must be fetched before review.
 - Environment: SYNTHETIC_DATA / REAL_SQLITE_STORE_TEST, not LOCAL_LINUX full runtime, not TERMUX/REDMI.
 - REDMI_UNVERIFIED; no private device receipt or authorized device session was available.

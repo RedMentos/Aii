@@ -10,7 +10,7 @@ import pytest
 
 from v13 import contracts, world_model
 from v13.store import Store
-from t8_store_authority import verify_committed_transitions_page
+from t8_cursor_page import verify_committed_transitions_page
 from world_jepa_consumer import (
     WorldJEPAStoreConsumer,
     _source_disjoint_split,
