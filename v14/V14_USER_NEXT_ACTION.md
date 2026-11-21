@@ -1314,3 +1314,14 @@ Private PIPELINE_STATUS issue #443 has no authenticated reply. Installed SHA and
 - Staged Runtime `44960843977`: **FAIL**, 16 failed / 234 passed / 10 skipped / 2 errors / 47 subtests. Integrated regression `44960843977`: **FAIL**, one selected staged-tree test failed before regression execution. Both failures have the same root cause: the Core audio composer rejects #2275's changed `v13/audio_voice_cues.py` blob (`94aa6931fad702ccec4b1f7494758034a1bf5942`) because its pin still expects `b62442c6e740d136982b2bc8080cef6227ba266f`. The two migration tests in staged-runtime consequently stop at PARTIAL rather than UPDATED. This is a correct fail-closed gate; no hashes were weakened.
 - #2275 remains DRAFT / NOT_RELEASED and mergeable against the finalized #2258 base. Core must update the nested audio pin and downstream stage/deployer hashes, then rerun both suites. The standalone RAW EAR path is green; its normal Runtime composition is not.
 - Redmi remains REDMI_UNVERIFIED; no microphone, model inference, Android/Termux, phone updater or device state was exercised. No user action or manual command is required.
+
+
+## Exact Core pin-chain handoff — 2026-11-22 00:19 CET
+
+The minimal Core-owned refresh needed for #2275 is:
+1. `scripts/integrated_audio_context_candidate_20261121.py`: `SOURCE_BLOBS['v13/audio_voice_cues.py']` expected blob `b62442c6e740d136982b2bc8080cef6227ba266f` → #2275 blob `94aa6931fad702ccec4b1f7494758034a1bf5942`.
+2. Recompute the integrated audio candidate Git blob (current `39f7f7bb81529bd8875132ee4ac4e5a3a7e8d9ac`) and update `scripts/termux_runtime_recovery_candidate_20261121.py` `AUDIO_BUILDER_BLOB_SHA1`.
+3. Recompute recovery-candidate SHA-256 and update `scripts/stage_integrated_candidate.py` `BUILDER_SHA` (current `a37e53be28da0ee95fcff8f780f621fd7221318a0bc08c048c5a9073c351f2df`).
+4. Recompute `stage_integrated_candidate.py` SHA-256 and update `v13/runtime_deploy.py` `STAGER_SHA256` (current `15b5c22fde6f406bdaeda007fe4b67d0670c37d2229ee750e236c1382305d329`), plus exact dependent test pins.
+
+Do not alter the separate base builder or arithmetic overlay pins unless their bytes change. Perception did not edit Core-owned files.
