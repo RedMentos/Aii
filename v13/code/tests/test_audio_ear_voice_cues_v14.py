@@ -609,7 +609,7 @@ def test_audio_packet_fails_closed_without_linearizable_consent_lease(tmp_path, 
     state = TemporalVoiceEvidence()
     state.update(
         source_id=SOURCE_ID, generation_id=event["brain_generation_id"],
-        start_ms=0, end_ms=40,
+        start_ms=0, end_ms=100,
         cues={"activity_hint": "VOICED", "activity_score": 0.9},
     )
     monkeypatch.setattr(
@@ -629,7 +629,7 @@ def test_audio_packet_fails_closed_without_linearizable_consent_lease(tmp_path, 
         # The same window can be accepted after reset; stale temporal state is gone.
         resumed = state.update(
             source_id=SOURCE_ID, generation_id=event["brain_generation_id"],
-            start_ms=0, end_ms=40,
+            start_ms=0, end_ms=100,
             cues={"activity_hint": "VOICED", "activity_score": 0.9},
         )
         assert resumed["voice_active"] is True
