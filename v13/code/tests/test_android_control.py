@@ -1,3 +1,4 @@
+import hashlib
 import os
 import sqlite3
 import stat
@@ -422,3 +423,27 @@ def test_android13_data_user_zero_rejects_wrong_bind_mount_target_gid(tmp_path, 
     with pytest.raises(ControlDenied, match="ancestor"):
         AndroidControlBroker(private / "audit.sqlite")
     assert not (private / "audit.sqlite").exists()
+
+
+def test_approved_proposal_arguments_cannot_be_mutated_after_confirmation(tmp_path):
+    broker = AndroidControlBroker(tmp_path / "audit.sqlite")
+    try:
+        broker.start()
+        proposal = broker.propose("tap", {"x": 10, "y": 20})
+        original_digest = hashlib.sha256(
+            android_control._canonical("tap", {"x": 10, "y": 20}).encode()
+        ).hexdigest()
+        assert proposal.digest == original_digest
+
+        broker.approve(proposal.action_id, confirmed_by_local_ui=True)
+        with pytest.raises(TypeError):
+            proposal.args["x"] = 999
+
+        envelope = broker.execute(proposal.action_id)
+        assert envelope["args"] == {"x": 10, "y": 20}
+        assert envelope["digest"] == original_digest
+        # The returned transport envelope is a detached copy too.
+        envelope["args"]["x"] = 999
+        assert proposal.args["x"] == 10
+    finally:
+        broker.close()
