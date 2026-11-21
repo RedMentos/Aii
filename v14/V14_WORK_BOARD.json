@@ -27,21 +27,21 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "SOURCE_REVIEW + OWNER_READ_PASS + PY314_STAGED_PASS + BRIDGE_PASS + SAME_REPO_PASS + STAGED_RUNTIME_PASS(240/10SKIP) + INTEGRATED_PENDING; PRIVATE_RELAY_NO_RECEIPT; REDMI_UNVERIFIED",
-      "next_step": "QA PR #2138 latest SHA 8ca7a298: owner-read (27 source-updater + 33 pipeline-agent tests), Python 3.14 staged startup, offline bridge, same-repo integration and staged-runtime (240 passed/10 skipped) PASS; integrated-regression still running at last readback. Finish exact integration CI, Boss review/merge, then request fresh private PIPELINE_STATUS. No installer/device mutation until a real receipt exists.",
+      "proof_environment": "SOURCE_REVIEW + OWNER_READ_PASS + PY314_STAGED_PASS + BRIDGE_PASS + SAME_REPO_PASS + STAGED_RUNTIME_PASS(240/10SKIP) + INTEGRATED_PASS(415/3SKIP); PRIVATE_RELAY_NO_RECEIPT; REDMI_UNVERIFIED",
+      "next_step": "PR #2138 head 8ca7a298 has all applicable exact QA checks green (owner-read 27+33 tests, Python 3.14 staged startup, offline bridge, same-repo integration, staged-runtime 240/10 skipped, integrated regression 415/3 skipped). PR is ready for independent Boss review, not merged. After review/merge, obtain a fresh private PIPELINE_STATUS receipt; no installer/device mutation until real receipt.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 QA: latest-run CI gate + pre-stop/post-fast-forward rechecks in draft PR #2138; staged runtime PASS 240/10 skipped; integrated regression pending; private HEALTH #348 no device receipt; no phone data changed.",
+      "last_checkpoint": "2026-11-21 QA: PR #2138 exact required CI green and ready for Boss review; additive-only validator not applicable; private HEALTH #348 no device receipt; no phone data changed.",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
-        "status": "INTEGRATED_PENDING",
+        "status": "CI_GREEN_REVIEW_PENDING",
         "proof": {
           "owner_read": "PASS (27 source-updater + 33 pipeline-agent tests)",
           "python314_staged_startup": "PASS",
           "offline_bridge_security": "PASS",
           "same_repo_integration": "PASS",
           "staged_runtime": "PASS (240 passed, 10 skipped)",
-          "integrated_regression": "IN_PROGRESS",
+          "integrated_regression": "PASS (415 passed, 3 skipped, 58 subtests)",
           "local_linux": "NOT_RUN",
           "redmi": "UNVERIFIED"
         }

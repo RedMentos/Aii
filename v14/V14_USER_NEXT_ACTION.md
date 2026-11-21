@@ -31,7 +31,7 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | source_HEAD | `16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19` (Release-Branch-Readback 2026-11-21) |
 | last_integrated_functional_change | PR #2136 merged in `16f75fca`: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter; not yet called by normal Runtime/chat input, synthetic only |
 | local_test_result | NOT_RUN — no full local repository checkout in this worker |
-| ci_test_result | PR #2138 head `8ca7a298`: owner-read PASS (27 source-updater + 33 pipeline-agent tests), Python 3.14 staged startup PASS, offline bridge PASS, same-repo integration PASS; staged-runtime + integrated-regression IN_PROGRESS at readback; additive-only validator is not applicable to this modifying QA PR |
+| ci_test_result | PR #2138 head `8ca7a298`: owner-read PASS (27 source-updater + 33 pipeline-agent tests), Python 3.14 staged startup PASS, offline bridge PASS, same-repo integration PASS; staged-runtime PASS (240 passed, 10 skipped) + integrated-regression PASS (415 passed, 3 skipped, 58 subtests); additive-only validator is not applicable to this modifying QA PR |
 | phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
 | device_model_comparison | NOT_RUN |
@@ -92,3 +92,14 @@ QA source review found two P1 defects; comments are attached to PR #2137 (head `
 1. `TemporalT8Bridge.consume()` maps CANCELLED/OUTCOME_UNKNOWN/INTERRUPTED/ABORTED to observed `NOT_FINAL`, creating a false prediction error or reward. These must be recorded as cancelled/censored with `prediction_error=None` and no receiver update.
 2. `t8_store_authority._verify_one()` limits ActionOutcome rows to 17 before checking exactly-one cardinality. More than 17 outcomes can reject valid old actions and can hide an older duplicate. Use action_id-scoped exact query or bounded fail-closed scan with a regression beyond 17 rows.
 PR #2137 remains DRAFT; no runtime learning or real model-weight update is accepted.
+
+
+## Final QA candidate checkpoint — PR #2138 CI green
+
+At head `8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5`, the applicable release QA checks are all PASS:
+- owner-read: 27 source-updater tests + 33 pipeline-agent tests;
+- Python 3.14 staged startup;
+- offline bridge security;
+- staged-runtime: 240 passed, 10 skipped, 47 subtests;
+- integrated regression: 415 passed, 3 skipped, 58 subtests.
+The additive-only validator is the sole red check because the PR modifies existing updater/runtime files; it is not a release gate and was not disabled. PR #2138 is READY_FOR_REVIEW, NOT_MERGED, NOT_RELEASED. LOCAL_LINUX full-suite and Redmi remain UNVERIFIED.
