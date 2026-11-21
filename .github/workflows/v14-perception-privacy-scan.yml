@@ -7,13 +7,18 @@ on:
     paths:
       - "v13/code/v13/audio_voice_cues.py"
       - "v13/code/v13/audio_temporal_evidence.py"
+      - "v13/code/v13/audio_silero_vad.py"
       - "v13/code/tests/test_audio_temporal_evidence.py"
       - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
+      - "v13/code/tests/test_audio_silero_vad.py"
+      - "v14/experiments/raw_ear_vad_compare.py"
+      - "v14/experiments/test_raw_ear_vad_compare.py"
       - "v14/V14_RESEARCH_LEDGER.md"
       - "v14/handoffs/RESEARCH_PERCEPTION_*.md"
       - ".github/workflows/v14-perception-privacy-scan.yml"
   pull_request:
     branches:
+      - "gpt6/v13-private-remote-bridge-20261111"
       - "qa/v14-jepa-checkpoint-publication-20261121"
     paths:
       - "v13/code/v13/audio_voice_cues.py"
@@ -38,4 +43,6 @@ jobs:
         with:
           python-version: "3.13"
       - name: Scan added public content for secrets and private identifiers
-        run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/qa/v14-jepa-checkpoint-publication-20261121 --head HEAD --no-worktree
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref || 'gpt6/v13-private-remote-bridge-20261111' }}
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base "origin/${BASE_REF}" --head HEAD --no-worktree
