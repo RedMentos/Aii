@@ -475,7 +475,6 @@ def rollback_runtime():
         raise RuntimeError("unsafe pipeline lock")
     fd = os.open(LOCK, os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0), 0o600)
     was_running = False
-    succeeded = False
     try:
         os.fchmod(fd, 0o600)
         try:
@@ -501,13 +500,14 @@ def rollback_runtime():
                 "last_success_utc": int(time.time()),
             })
             _atomic(STATE, state)
-            succeeded = True
             return {
                 "status": "ROLLED_BACK_RUNTIME_ONLY",
                 "runtime": receipt["status"],
                 "restored_commit": receipt.get("restored_commit"),
                 "dashboard": "UNCHANGED",
                 "auto_enabled": False,
+                "resume": "REQUESTED" if was_running else "NOT_NEEDED",
+                "resume_confirmation": "PENDING_UI_CONSUMPTION" if was_running else "NOT_REQUIRED",
                 "models_untouched": True,
                 "sqlite_untouched": True,
             }
@@ -519,7 +519,9 @@ def rollback_runtime():
             raise
         finally:
             if was_running:
-                lifecycle.request_resume(reason="ROLLED_BACK" if succeeded else "RESTORE")
+                # The UI owns the actual restart; RESTORE is the lifecycle's
+                # supported reason and writes a one-shot resume request.
+                lifecycle.request_resume(reason="RESTORE")
     finally:
         os.close(fd)
 
