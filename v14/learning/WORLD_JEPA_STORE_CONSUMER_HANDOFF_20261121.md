@@ -63,3 +63,13 @@ After this PR is reviewed, compose this consumer with the #2135 exact-once Onlin
 ## Latest exact CI readback — 2026-11-21
 
 PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed GitHub Actions run 44854338438: Python 3.13 59 passed in 6.52s; Python 3.14 59 passed in 8.81s; compile and both jobs PASS. The only later commit is a next-action Markdown table refresh; no code or test file changed after the tested e46b head. The earlier run 44854219157 also passed 59/59 on both versions and is superseded by this readback.
+
+
+## Backlog-liveness correction — 2026-11-21
+
+QA identified that an insufficient source-disjoint cohort or fewer than two new train-fold rows returned without committing the verified page cursor. Repeated updates therefore rescanned the same oldest page and could starve later diverse outcomes.
+
+The follow-up candidate bumps the Store state schema to v3 and adds a bounded pending_rows buffer. Verified but not-yet-trained receipts and the oldest-first scan cursor are committed together by Store compare-and-swap when a cohort is insufficient. The next update combines the retained rows with the next page; a successful model/checkpoint commit atomically clears the pending buffer and advances the active checkpoint cursor. Rollback restores the previous checkpoint cursor and clears pending rows so those later receipts are re-read. Legacy v2 state is read and migrated in memory without dropping its active/previous checkpoint.
+
+Two new real-SQLite Store regressions cover (1) 64 rows from one identical source digest followed by a diverse second page, and (2) a single new train-fold row under no-replay followed by a second row from the same digest. Both must progress without losing receipts. These are synthetic T8 rows through the real Store and numeric learner, not live user data, Runtime wiring, native GGUF learning or Redmi proof.
+
