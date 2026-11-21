@@ -25,13 +25,14 @@ FILES = {
     'v13/common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
     'specs/models.json': '81fe561e19b92614555453a1b99a39d8d77fe35dd7c7e06034e6dc7ff2e0bc58',
     'v13/contracts.py': '3726dd19aececcc85526aa7c818483f2748bb4ad4a8b34072f27651544954edb',
-    'v13/v14_learning/__init__.py': 'a976b585e78ea402bf682ac3c33a07a7a298dd4a1bdb2352f881f7b8e9ad4b4d',
-    'v13/v14_learning/t8_store_authority.py': '8db9601f2fb43dc0329b9632abe53eec9f4451b7880a0bd8da769a3511c7aba1',
+    'v13/v14_learning/__init__.py': '2aedefd1825bf1e0e2fbc5e05ceb37fb660945c19fb6324bffd49ccaa396a8f7',
+    'v13/v14_learning/t8_store_authority.py': '7988f6bc26ae657bbb0f1b8ec014ee050059a4ae9a744845d8a83630154ddebf',
     'v13/v14_learning/t8_temporal_bridge.py': 'a10acd11e168c191c2c468dab5bcb6f421c5964ea2d4b7b2511b5ae2e27582ac',
-    'v13/v14_learning/temporal_outcomes.py': '73ec4f5244e98410b6a627af12cd5b8eeb09d3975acbaf8c8ec2817c25503737',
-    'v13/v14_learning/temporal_receiver.py': '3a666cf440d0d092a3c6822268b5a31c92afdc63399ab0c8d636a6b9dd7d3f03',
-    'v13/v14_learning/runtime_shadow.py': '153f634cdff127ce612d458056db98c17c08f311fbec58096e98c42f7e340ceb',
-    'tests/test_v14_t8_runtime_consumer.py': '0bb3fde853815518227a9d0a38d5f94e3d5a3a0fb091106f9fb0cd632899dd15',
+    'v13/v14_learning/temporal_outcomes.py': 'a16d42cfcce880beb57d299fcc28056e5b80de53a425e59612d024c68540994f',
+    'v13/v14_learning/temporal_receiver.py': '972adcc9991303c41fb65fbd54dff23ade814595f87faec8a04371f9fae93ec6',
+    'v13/v14_learning/runtime_shadow.py': 'cfb4cbd2a4b80eb990af647c86db54f4d7b4602d5ab96c32537a28dccd3a8b47',
+    'v13/v14_learning/world_jepa_consumer.py': '7493e98604c8def5efc282e6c39c616d3d8e16127117baa55f709ffd34d5b51d',
+    'tests/test_v14_t8_runtime_consumer.py': '263361ad019bdd263a6147b0c881c02faa4202819d51aa12dc35d958b6abae69',
 }
 ASSETS = {
     'changes.patch': '75d3d269b1f97bb8d63bdd1ce5caa1a8465dd52958a43f23e69656316fbc8f3c',
@@ -227,6 +228,7 @@ def build_sources(code_dir, *, base_sources=None):
             'v13/v14_learning/__init__.py', 'v13/v14_learning/t8_store_authority.py',
             'v13/v14_learning/t8_temporal_bridge.py', 'v13/v14_learning/temporal_outcomes.py',
             'v13/v14_learning/temporal_receiver.py', 'v13/v14_learning/runtime_shadow.py',
+            'v13/v14_learning/world_jepa_consumer.py',
             'tests/test_online_world_20261108.py', 'tests/test_online_world_safety_20261109.py',
             'tests/test_checkpoint_guards_1648.py', 'tests/test_observe_atomic_1648.py',
             'tests/test_known_revocation_window.py', 'tests/test_v14_t8_runtime_consumer.py')
