@@ -374,10 +374,10 @@ def _persist_audio_packet_at_consent_commit_boundary(runtime, audio_packet, *, s
 
 def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                generation_id, source_id, consent_receipt,
-                               consent_check, consent_guard=None, finality, token_budget=512,
+                               consent_check, finality, consent_guard=None, token_budget=512,
                                temporal_state: TemporalVoiceEvidence | None = None,
                                vad_stream: SileroVADStream | None = None):
-    """Persist source-bound acoustic cues and optional local Silero VAD evidence to A4/C3."""
+    """Persist source-bound acoustic cues to A4/C3 under a linearizable consent lease."""
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
     _require_current_consent_and_reset(runtime, source_id, generation_id, consent_check, consent_receipt, temporal_state, vad_stream)
