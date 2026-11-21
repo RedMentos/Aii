@@ -229,3 +229,8 @@ Current docs-only HEAD `d61b695739023d0bf0a3cfa4022770f0de2615fa` now has all up
 Private #351–354 still have no device comments, installed SHA UNKNOWN, REDMI_UNVERIFIED. No UPDATE_REQUEST or device mutation. The existing relay requests are unanswered; do not infer deployment.
 
 PR #2137 retargeted head `a3e19370` has dedicated T8 workflow and private bridge PASS, while its exact staged/integrated PR run remains IN_PROGRESS. The prior code-identical `2d8eb79b` passed 52 focused T8 tests, 240 staged tests and 415 integrated tests. Python 3.14 T8 coverage and a normal Runtime learning consumer remain open.
+
+
+## T8 retargeted-head staged-runtime completion — 2026-11-21 01:59 CET
+
+PR #2137 current head `a3e19370d7fefe500e8edebf6942624207ff2865`: dedicated V14 T8 workflow PASS; private bridge PASS; staged-runtime **240 passed / 10 skipped / 47 subtests**. Both two-checkout migration diagnostics show runtime/dashboard UPDATED, last_error NONE and both source/runtime checkouts at exact a3e19370. Integrated-regression remains IN_PROGRESS on this exact head. The previous code-identical head `2d8eb79b` passed integrated **415 passed / 3 skipped / 58 subtests**, but do not transfer that result to the retargeted SHA. Python 3.14 T8 coverage remains requested; normal Runtime learning consumer remains absent.
