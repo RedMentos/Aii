@@ -175,3 +175,13 @@ PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/te
 - No native Redmi receipt, microphone, model inference, normal Runtime JEPA update, native B1/B2 weights, real-user retention or trained B3 latent exchange is demonstrated.
 - Existing V13 functions and all historical V13 appendices remain in scope. No master architecture edit was made in this checkpoint; no backup operation was required. Do not mark any whole-system or Android acceptance as complete.
 
+
+
+### Documentation sync PR — 2026-11-21 05:08 CET
+
+- Fresh five-file evidence sync is open as [PR #2156](https://github.com/RedMentos/Aii/pull/2156), based directly on exact release HEAD `c0cedbde718ede6107f4df1f1bf9c784df4e00cf`; current PR head after board/handoff refresh is recorded by GitHub readback.
+- PR changes only the work board, user handoff, live workplan, research ledger and additive Canon coverage overlay. No source/runtime code, model, permission, weight, phone data or device state changed.
+- PR is currently mergeable, but its head has no returned workflow runs or combined status checks. Full local checkout is still DNS-blocked. Keep it open for independent review; do not treat it as a release.
+- Stale documentation PR #2149 (base c3c32, mergeable=false) was closed as superseded by #2156 after its useful QA findings were reconciled.
+- Boss posted concrete integration ownership notes on #2142, #2145 and #2153. Core owns the single staged audio/arithmetic builder chain; JEPA/Memory must port #2151/#2152 authority before Runtime wiring; Research/Perception keeps #2142 diagnostic-only until its current-base and staged-context gate are verified.
+
