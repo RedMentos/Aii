@@ -1,6 +1,9 @@
 import json
 import sqlite3
 import zlib
+from types import SimpleNamespace
+
+from v13.operator import Operator
 
 from v13.contracts import packet
 from v13.flow_audit import audit_event, audit_latest
@@ -270,3 +273,36 @@ def test_compressed_source_blob_is_verified_streamingly(tmp_path):
     report = audit_event(home, event_id)
     assert report["source_integrity"]["invalid_refs"] == 0
     assert report["source_integrity"]["valid_refs"] >= 2
+
+
+def test_brain_flow_command_is_session_scoped_and_redacted(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        session_id = conn.execute(
+            "SELECT session_id FROM events WHERE id=?", (event_id,)
+        ).fetchone()[0]
+    finally:
+        conn.close()
+
+    store = Store(home)
+    try:
+        other_session = store.new_session("other chat")
+        other_event = store.event(other_session, "OTHER_PRIVATE_TEXT_SENTINEL")
+        runtime = SimpleNamespace(home=home, session=session_id, store=store)
+        output = Operator(runtime).run(":brain flow")
+        report = json.loads(output)
+        assert report["event_id"] == event_id
+        assert report["c4"]["status"] == "PASS"
+        assert "OTHER_PRIVATE_TEXT_SENTINEL" not in output
+        assert "PRIVATE_USER_TEXT_SENTINEL" not in output
+        try:
+            Operator(runtime).run(":brain flow " + other_event["event_id"])
+        except KeyError:
+            pass
+        else:
+            raise AssertionError("cross-session event must be hidden")
+    finally:
+        store.close()

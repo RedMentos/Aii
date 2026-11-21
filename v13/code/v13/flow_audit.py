@@ -150,7 +150,7 @@ def _payload(row: sqlite3.Row) -> dict:
     return value if isinstance(value, dict) else {}
 
 
-def audit_event(home: str | Path, event_id: str) -> dict:
+def audit_event(home: str | Path, event_id: str, *, session_id: str | None = None) -> dict:
     """Audit one persisted event through read-only SQLite and source blobs."""
     root = Path(home).expanduser().resolve()
     db_path = root / "data" / "db" / "brain.sqlite3"
@@ -158,15 +158,17 @@ def audit_event(home: str | Path, event_id: str) -> dict:
         raise FileNotFoundError("V13 Store database not found")
     if not isinstance(event_id, str) or not event_id:
         raise ValueError("event_id is required")
+    if session_id is not None and (not isinstance(session_id, str) or not session_id):
+        raise ValueError("session_id must be a nonempty string")
 
     conn = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA query_only=ON")
     try:
         event_row = conn.execute(
-            "SELECT packet,created FROM events WHERE id=?", (event_id,)
+            "SELECT packet,created,session_id FROM events WHERE id=?", (event_id,)
         ).fetchone()
-        if not event_row:
+        if not event_row or (session_id is not None and event_row["session_id"] != session_id):
             raise KeyError("event not found")
         event_packet = _json(event_row["packet"], {})
         if not isinstance(event_packet, dict):
@@ -425,21 +427,29 @@ def audit_event(home: str | Path, event_id: str) -> dict:
         conn.close()
 
 
-def audit_latest(home: str | Path) -> dict:
+def audit_latest(home: str | Path, *, session_id: str | None = None) -> dict:
     root = Path(home).expanduser().resolve()
+    if session_id is not None and (not isinstance(session_id, str) or not session_id):
+        raise ValueError("session_id must be a nonempty string")
     db_path = root / "data" / "db" / "brain.sqlite3"
     if not db_path.is_file():
         raise FileNotFoundError("V13 Store database not found")
     conn = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
     try:
         conn.execute("PRAGMA query_only=ON")
-        row = conn.execute("SELECT id FROM events ORDER BY created DESC LIMIT 1").fetchone()
+        if session_id is None:
+            row = conn.execute("SELECT id FROM events ORDER BY created DESC LIMIT 1").fetchone()
+        else:
+            row = conn.execute(
+                "SELECT id FROM events WHERE session_id=? ORDER BY created DESC LIMIT 1",
+                (session_id,),
+            ).fetchone()
         if not row:
             raise KeyError("no events in Store")
         event_id = row[0]
     finally:
         conn.close()
-    return audit_event(root, event_id)
+    return audit_event(root, event_id, session_id=session_id)
 
 
 def main(argv: list[str] | None = None) -> int:
