@@ -363,7 +363,63 @@ finally:
     release.set()
     runtime.close()
 
-print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 holds lease to iterator exhaustion; Runtime.cancel releases lease for revocation; tombstones and text fallback stay safe")
+# Scenario 4: Runtime.close() must cancel an in-flight C3 iterator before
+# the worker/Store is torn down, while a concurrent provider revoke is waiting.
+home = Path(sys.argv[1]) / "closing"
+runtime = Runtime(home)
+provider = Provider()
+entered = threading.Event()
+first_chunk = threading.Event()
+finished = threading.Event()
+cancel_observed = threading.Event()
+release = threading.Event()
+revoke_started = threading.Event()
+revoke_finished = threading.Event()
+seen = {}
+configure(runtime)
+runners = {
+    role: Runner(
+        role, seen,
+        entered if role == "C3_LANGUAGE" else None,
+        release if role == "C3_LANGUAGE" else None,
+        first_chunk if role == "C3_LANGUAGE" else None,
+        finished if role == "C3_LANGUAGE" else None,
+        cancel_observed if role == "C3_LANGUAGE" else None,
+    )
+    for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")
+}
+runtime.pool.get = Mock(side_effect=lambda role: runners[role])
+runtime.submit(question, audio_window=make_window(provider))
+assert entered.wait(30), "close test did not reach C3 generation"
+assert first_chunk.wait(5), "close test did not stream its first C3 chunk"
+
+
+def revoke_before_close():
+    revoke_started.set()
+    provider.revoke()
+    revoke_finished.set()
+
+
+revoker = threading.Thread(target=revoke_before_close, daemon=True)
+revoker.start()
+assert revoke_started.wait(5)
+blocked_before_close = not revoke_finished.wait(0.15)
+closer = threading.Thread(target=runtime.close, daemon=True)
+closer.start()
+assert cancel_observed.wait(5), "Runtime.close did not cancel the blocked C3 iterator"
+assert finished.wait(5), "C3 iterator did not exit during Runtime.close"
+closer.join(timeout=10)
+assert not closer.is_alive(), "Runtime.close hung while releasing the audio lease"
+assert revoke_finished.wait(5), "provider revocation remained blocked after Runtime.close"
+revoker.join(timeout=5)
+assert blocked_before_close, "revocation completed before Runtime.close cancelled the lease"
+assert runtime.closed is True
+assert getattr(runtime, "_audio_contexts", {}) == {}
+assert getattr(runtime, "_audio_revocation_contexts", {}) == {}
+with provider.callback_lock:
+    assert provider.callbacks == []
+
+print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 lease spans iterator; Runtime.cancel and Runtime.close release lease for revocation; tombstones, unsubscribe and text fallback stay safe")
 '''
     result = subprocess.run(
         [sys.executable, "-c", script, str(tmp_path / "private-home")],
@@ -373,4 +429,4 @@ print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 holds lease to iterator exhaus
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "PASS: staged A5 -> B1/B2 -> multi-chunk C3 holds lease to iterator exhaustion" in result.stdout
-    assert "Runtime.cancel releases lease for revocation" in result.stdout
+    assert "Runtime.cancel and Runtime.close release lease for revocation" in result.stdout
