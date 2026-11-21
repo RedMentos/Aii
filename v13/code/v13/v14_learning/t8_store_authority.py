@@ -327,7 +327,7 @@ def _transition_from_action_row(store, raw_row):
 
 
 def verify_committed_transition_page(store, *, after_seq=0, limit=world_model.MAX_ROWS):
-    """Oldest-first source-verified T8 page; censored outcomes never enter learning IDs."""
+    """Oldest-first source-verified T8 page; censored outcomes advance but never enter learning IDs."""
     if type(after_seq) is not int or after_seq < 0:
         raise ValueError("after_seq")
     if type(limit) is not int or not 1 <= limit <= world_model.MAX_ROWS:
@@ -339,7 +339,8 @@ def verify_committed_transition_page(store, *, after_seq=0, limit=world_model.MA
                   e.generation_id
            FROM actions a JOIN events e ON e.id=a.event_id
            WHERE a.rowid>? AND a.outcome IS NOT NULL AND a.expected LIKE ?
-             AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')
+             AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED',
+                              'CANCELLED','ABORTED','OUTCOME_UNKNOWN','INTERRUPTED')
            ORDER BY a.rowid ASC LIMIT ?""",
         (after_seq, '%"forecast"%', limit + 1),
     )
@@ -349,7 +350,8 @@ def verify_committed_transition_page(store, *, after_seq=0, limit=world_model.MA
     page = rows[:limit]
     if not page:
         return [], 0, after_seq, 0, 0, False
-    next_cursor, verified, rejected, seen = after_seq, [], 0, set()
+    next_cursor, verified, rejected, censored_skipped, seen = after_seq, [], 0, 0, set()
+    censored = {"CANCELLED", "ABORTED", "OUTCOME_UNKNOWN", "INTERRUPTED"}
     for raw_row in page:
         try:
             action_row = _mapping(raw_row, "action page row")
@@ -357,6 +359,9 @@ def verify_committed_transition_page(store, *, after_seq=0, limit=world_model.MA
             if type(scan_seq) is not int or scan_seq <= next_cursor:
                 raise ValueError("T8 scan sequence")
             next_cursor = scan_seq
+            if action_row.get("status") in censored:
+                censored_skipped += 1
+                continue
             receipt = _verify_one(store, _transition_from_action_row(store, action_row))
             if receipt.action_id in seen:
                 raise ValueError("duplicate action in page")
@@ -364,14 +369,4 @@ def verify_committed_transition_page(store, *, after_seq=0, limit=world_model.MA
             verified.append(receipt)
         except (ValueError, TypeError, KeyError, OSError, OverflowError, json.JSONDecodeError):
             rejected += 1
-    skipped = store.one(
-        """SELECT COUNT(*) AS n FROM actions
-           WHERE rowid>? AND rowid<=? AND outcome IS NOT NULL AND expected LIKE ?
-             AND status IN ('CANCELLED','ABORTED','OUTCOME_UNKNOWN','INTERRUPTED')""",
-        (after_seq, next_cursor, '%"forecast"%'),
-    )
-    skipped_row = _mapping(skipped, "censored count") if skipped else {"n": 0}
-    censored_skipped = skipped_row.get("n", 0)
-    if type(censored_skipped) is not int or censored_skipped < 0:
-        raise ValueError("censored count")
     return verified, rejected, next_cursor, len(page), censored_skipped, has_more
