@@ -277,8 +277,11 @@ def _transition_from_action_row(store, raw_row):
     if type(forecast) is not dict:
         raise ValueError("forecast")
     censored_statuses = {"CANCELLED", "ABORTED", "OUTCOME_UNKNOWN", "INTERRUPTED"}
-    duration = actual.get("action_duration_s", 0 if status in censored_statuses else None)
-    characters = actual.get("characters", 0 if status in censored_statuses else None)
+    duration = actual.get("action_duration_s")
+    characters = actual.get("characters")
+    if status in censored_statuses:
+        duration = 0 if duration is None else duration
+        characters = 0 if characters is None else characters
     if (not world_model._finite_nonnegative(forecast.get("input_chars"))
             or not world_model._finite_nonnegative(duration)
             or not world_model._finite_nonnegative(characters)):
