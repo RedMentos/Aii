@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T19:04:57.519Z",
+  "updated_at": "2026-11-21T19:10:42.011Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -59,8 +59,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "Research/Perception #2243 current head 3e52c96d7302cdd95896605469ad1fdbe291deee is diverged from current shared base (15 ahead / 17 behind; mergeable=false) because its older board/workplan/next-action edits overlap Boss PR #2248. The new dedicated `latent-cache-tiny` job passed on exact prior head ae26c94700ca8077b38cbd87c40db89b4ae46360: pinned NumPy 2.3.5/PyTorch 2.10.0+cpu, py_compile and all 3 tests PASS; model-lab/privacy/offline-bridge also passed. The current 3e52 head has only privacy/offline-bridge queued at last read. This is LOCAL_LINUX tiny-model mechanism proof only; no actual LFM2.5↔Qwen3.5 native tap/injection, OOD or Redmi proof.",
-      "next_step": "Perception merges current base into #2243 with a normal merge commit, retains R-037/experiment/workflow, and reconciles the latest Boss board/workplan/next-action instead of overwriting. Re-run exact latent-cache-tiny tests on the final synchronized head. Then rebase #2246; keep B3 PARTIAL_SYMBOLIC_ONLY.",
+      "proof_environment": "Research/Perception #2243 current head e8df851ac314d48864b55e368f973bbf644de767 is mergeable against the current release branch. Exact latent-cache-tiny job PASS 3/3; privacy PASS; offline-bridge-security PASS; model-lab rerun queued. The tested experiment/workflow blobs are identical to the prior 3/3 head. The PR diff is limited to workflow, research ledger, experiment and handoff; it does not overwrite Boss-owned board/workplan/next-action/coverage. This is only a tiny local K/V mechanism proof; no production B1/B2 native latent, OOD or Redmi.",
+      "next_step": "Perception waits for model-lab rerun; then mark ready and Boss reviews/merges research-only #2243 with merge commit. Keep B3 PARTIAL_SYMBOLIC_ONLY; no native latent capability claim.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 11:20 CET"
     },
@@ -159,8 +159,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Core #2242 head 3dc8a19 exact checks 9 success / 4 failure; arithmetic stage passes but stale runtime_deploy STAGER_SHA256 causes Python3.14 startup, staged-runtime and migration failures; audio revoke-cancel missing. Perception #2246 current head e9a40affd11ff830986fce3b6e672febdf122fd4 has 4 checks queued; still metadata-only A5 UI lease, base 543349 is stale relative to #2243 3e52. R-042 SmolVLM visual teacher research is optional only; no download.",
-      "next_step": "Core fixes deployer/source pins and two-phase audio revocation. QA rebases #2244 and proves provider-revoke cancellation through C3. Perception syncs #2243/#2246 without overwriting Boss docs; add two-phase revocation before active-turn use and keep visual teacher in shadow pending ARM64 measurements.",
+      "proof_environment": "Core #2242 head 3dc8a19 exact checks 9 success / 4 failure; stage arithmetic passes but stale runtime_deploy STAGER_SHA256 causes Python3.14 startup, staged-runtime and migration failures; audio revoke-cancel missing. Perception #2246 head aec4df678fdb1af783661fa5742eb1dfb357a3cb is stacked on #2243 e8df851 and adds two-phase pre-lock revoke cancel + post-lock cleanup, but A5UIRuntimeAdapter.lease omits required generation_id in its call to ui_observation_lease (adapter-level TypeError expected). Exact CI 2 queued / 1 in progress.",
+      "next_step": "Core fixes deployer pins and aligns audio with two-phase cancellation. Perception binds/validates current generation_id in adapter and adds adapter-level test; run exact staged/integrated CI. QA validates actual C3 cancellation; no Android OS provider yet.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21T18:05:08.230Z",
       "latest_candidate_pr": {
@@ -194,8 +194,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "Run-11 handoff, work board, workplan and additive coverage index merged via PR #2248 at documentation merge SHA a1b1e9aad5e805b484ea6412dbd84abc454e66e0. PR offline-bridge-security 1/1 PASS. Historical V13 appendix/master unchanged; no code/release/device change.",
-      "next_step": "Keep this handoff current with verified exact-head changes and receipts. No user action required.",
+      "proof_environment": "Boss run-11 docs PR #2248 merged at a1b1e9 with offline-bridge-security 1/1. Follow-up board/workplan/user handoff/coverage commits are on shared branch. Current research stack #2243 is mergeable and preserves Boss-owned docs; #2246 remains stacked and has a new adapter blocker.",
+      "next_step": "Keep shared handoff current and merge only exact tested PRs; no user action.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 18:04 CET"
     },
@@ -208,8 +208,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
-      "proof_environment": "Android broker remains DRY_RUN_ONLY. #2246 current head e9a40 is a metadata-only A5 UI lease; four checks queued, no OS provider, AccessibilityService, NotificationListenerService, MediaProjection, screen capture or action. Its lease subscription still has no pre-lock cancel signal. R-042 SmolVLM is only an optional visual teacher candidate; no download, Android build or Redmi proof.",
-      "next_step": "Perception/QA implement and test two-phase revoke cancellation before active-turn use; Core supplies trusted Android observe_ui provider and downstream consumer. Evaluate R-042 only via explicit license-pinned shadow tests after ARM64/libmtmd build and RSS/TTFT; no model swap without explicit consent.",
+      "proof_environment": "Android broker remains DRY_RUN_ONLY. #2246 now implements a two-phase synthetic UI lease: pre-lock revoke request sets matching Runtime.cancel_event; post-guard callback clears source/context. However the adapter does not pass required generation_id, so the main adapter path is currently broken; exact CI still queued/in progress. No Android OS provider, AccessibilityService, NotificationListenerService, MediaProjection, screen capture or action. R-042 SmolVLM visual teacher remains untested.",
+      "next_step": "Perception fixes generation_id binding and proves adapter-level cancel; Core/QA integrate the same protocol with trusted Android provider and real Runtime consumer. Evaluate R-042 only after ARM64/libmtmd and RSS/TTFT/quality measurements; no model download/swap without explicit consent.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 18:04 CET"
     },
@@ -465,8 +465,8 @@
     "integrated_code_candidate_checks": "EXACT_MERGE_PUSH_18_OF_19; normal SleepRuntime JEPA positive acceptance returns UTILITY_GATE_REJECTED.",
     "pr2242": "DRAFT_NOT_RELEASED_HEAD_3DC8A19; exact checks 4_FAILURE_9_SUCCESS; corrected blob header and Python3.13/3.14 staged arithmetic pass; runtime_deploy STAGER_SHA256 stale causes Python3.14 startup and staged/migration failures; revocation subscription optional and no pre-lock C3 cancel.",
     "pr2244": "DRAFT_STACKED_ON_STALE_4CCA498; prior Python3.13/3.14, staged 251/10/47, integrated 424/3/58 pass; manual cancel/close only; rebase after Core final fix and add automatic provider-revoke cancellation.",
-    "pr2243": "DRAFT_HEAD_3E52C96; explicit latent-cache-tiny job on prior exact head AE26C94 PASS (3/3 tests; pinned NumPy/PyTorch; py_compile); current PR head diverged from shared base 7b91d8 by 15 ahead / 17 behind due overlapping old board/workplan/next-action docs; mergeable=false; preserve Boss docs and re-sync normally. B3 PARTIAL_SYMBOLIC_ONLY.",
-    "pr2246": "DRAFT_HEAD_E9A40AF; 4 exact checks queued at last read; current base 543349 is stale relative to #2243 3e52; metadata-only A5 UI lease with no request-cancel signal, no OS provider/capture/action. R-042 optional visual teacher research added; no model download/swap.",
+    "pr2243": "DRAFT_HEAD_E8DF851; exact latent-cache-tiny 3/3 PASS, privacy PASS, offline-bridge PASS; model-lab rerun queued. Branch mergeable true; its diff contains experiment/workflow/research/handoff only, not Boss-owned board/workplan/next-action/coverage. Prior tested experiment blobs unchanged; B3 remains PARTIAL_SYMBOLIC_ONLY.",
+    "pr2246": "DRAFT_HEAD_AEC4DF6, base E8DF851; two-phase on_revoke_requested (pre-lock cancel) + on_revoked (post-lock cleanup) now implemented and synthetic stream tests added. New adapter bug: A5UIRuntimeAdapter.lease omits required generation_id when calling ui_observation_lease, so adapter test should TypeError. Current exact CI 2 queued / 1 in progress; no OS provider/capture/action.",
     "pr2247": "DRAFT_HEAD_E8137FD; exact CI 11_SUCCESS_3_FAILURE; A-GEM arms rejected by per-session retention across seeds 13/19/43; no checkpoint commit; gates OFF.",
     "pr2237": "OLDER_HEAD_F92C156; superseded by active JEPA #2247 candidate; prior tests also failed retention/source pins.",
     "pr2235": "Nested-closure AST attribution blocker; safe-additive FAIL BY POLICY; no merge.",
@@ -478,7 +478,7 @@
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_AND_GITHUB_DNS_FAILURE; no local full-suite claim.",
     "p0_chat": "OPEN_ISSUE_1904; real 2+2, B1/B2 offer delivery, 20 mixed Redmi turns, native latency/RSS unverified.",
     "canon_coverage": "1255_HISTORICAL_HEADINGS_PRESERVED; semantic clause mapping incomplete.",
-    "research": "R037 tiny cross-geometry K/V experiment 3/3 CI PASS on exact code head AE26C94; current #2243 docs head 3E52 has privacy queued/offline bridge pass and is diverged. R040 replay non-monotonicity and R041 Replay-on-Demand proposed by JEPA, pending ledger. R042 SmolVLM-256M-Instruct optional vision teacher research (Apache-2.0, Q8 model+mmproj 279MB); no model downloaded, ARM64/Redmi not tested.",
+    "research": "R037 tiny K/V mechanism experiment 3/3 explicit CI PASS on current exact code blobs; model-lab rerun queued. R040 Mahdaviyeh et al. PMLR 330:15–42 (2026) replay can increase forgetting; R041 Thede et al. arXiv:2609.40089 (2026), RoD code Apache-2.0 but 8-GPU NeMo-RL stack; R040/R041 not yet in shared ledger. R042 SmolVLM-256M optional visual teacher candidate; Apache-2.0, 279MB Q8 model+mmproj, no download or Android test.",
     "user_action_required": "NONE",
     "boss_docs_commits": "PR2248_MERGE_A1B1E9; MASTER_BLOB_UNCHANGED_9748AD5"
   }
