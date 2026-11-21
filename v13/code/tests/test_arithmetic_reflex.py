@@ -10,6 +10,8 @@ class ExactArithmetic(unittest.TestCase):
             "What is 2 + 2?": "4", "calculate -12 * 3": "-36",
             "8/4": "2", "1/3": "1/3", "7-12": "-5",
             "2--3": "5", "0*123": "0",
+            "calculate 11-21": "-10", "berechne 11-21": "-10",
+            "compute 2026-11": "2015",
         }
         for question, answer in cases.items():
             with self.subTest(question=question):
