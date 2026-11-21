@@ -9,7 +9,7 @@
 
 ## Defect
 
-On a 30-second background-observer turn, two recent C3 DEADLINE rows with zero generated tokens in load/template/prefill activate `native_turn_budget.plan()`. The current policy sets a 26.1-second C3 reserve and a pre-answer end at approximately start+3.9 seconds. `Cognition.offer()` then unconditionally raises `Limits` for each pre-answer B1_DETAIL and B2_GIST call. Both offers become POSTCOMMIT_ELIGIBLE, so neither can contribute to the same turn's C4 focal loop.
+On a 30-second background-observer turn, two recent C3 DEADLINE rows with zero generated tokens in load/template/prefill activate `native_turn_budget.plan()`. The current policy sets a 26.0-second C3 reserve and a pre-answer end at approximately start+4.0 seconds. `Cognition.offer()` then unconditionally raises `Limits` for each pre-answer B1_DETAIL and B2_GIST call. Both offers become POSTCOMMIT_ELIGIBLE, so neither can contribute to the same turn's C4 focal loop.
 
 This preserves a C3 time reserve but violates the whole-system same-turn requirement when the executive wakes both bodies for a nontrivial task. Post-commit observer work cannot retroactively satisfy B1+B2→C4→C3 for that answer.
 
