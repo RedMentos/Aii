@@ -1,3 +1,31 @@
+# Boss integration checkpoint — 2026-11-21 07:49 CET
+
+## Current integrated branch and release gate
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` reads back at `c76a018b37be18f9a4706a32fa7a817f7b4828b9`. PRs **#2160, #2164 and #2167 are merged**: persistent source-bound T8/WorldJEPA numeric learner, B1/B2/SELF numeric SHADOW planner receiver, and NumPy-stable digest negative test.
+- Exact branch CI is **not green**: 26 check runs = 24 success, 1 failure, 1 integrated-regression in progress. Python 3.13 fails `v14/learning/test_world_jepa_consumer.py::test_oldest_first_pages_do_not_starve_older_t8_backlog`: the first 64-row page returns `UTILITY_GATE_REJECTED`. Python 3.14 passes. The test must verify cursor/pending-row fairness independently of model utility; the holdout, shuffled-action, zero-action and old-retention gates must remain strict. I posted the focused correction request to #2160. No release approval while this failure remains.
+- Exact local Aii checkout is **BLOCKED**: `git ls-remote https://github.com/RedMentos/Aii.git` could not resolve `github.com`. CI results are not local native tests or Redmi proof.
+
+## Candidate integration readbacks
+- **Core #2158 — RAW EAR staged Runtime consumer:** current head `11853c66d8986c751b3884a91ced6ed3de50989b`, now synced to current release base (63 ahead / 0 behind). Exact candidate CI: A5 tests 69 passed / 47 subtests on Python 3.11 and 3.13; staged-runtime 240 passed / 10 skipped / 47 subtests; integrated-regression 415 passed / 3 skipped / 58 subtests; Python 3.14 staged startup and old-phone migration PASS. The only failing check is the intentional safe-additive rejection of existing builder/deployer edits; no bypass. **Still blocked:** the overlay pins old `audio_voice_cues.py` blob `7ac80a0d0deec8f52361fe89756ebd743b0a3537`, not Perception V3 blob `0e328d14883840190937f0fef24a8e895ba7261c`. Core has been asked to update the exact pin, keep text and audio PerceptPacket modalities separate, and prove B1/B2 OfferPacket consumption through C4/C3. Draft / NOT_RELEASED.
+- **Perception #2161 — RAW EAR V3 prosody:** exact V3 tests 12/12 on Python 3.11 and 12/12 on Python 3.13; staged 240/10 skipped/47 subtests; integrated 415/3 skipped/58 subtests; privacy scan PASS. Safe-additive rejects the intentional existing producer edit. The branch is 26 ahead / 25 behind current release, merge base `034a941694b9e8994d1bfe5cd781d27b943e1ed0`, and GitHub reports dirty. Rebase/sync shared docs before integration. V3 is deterministic caller-supplied PCM feature extraction, not microphone capture, VAD, ASR or learned speech.
+- **Core #2169 — role-specific native tap provenance:** current-base candidate `e4b0ffcfa1c485117e4309df7e3ec477194e7c6a`; 11/12 checks green, with safe-additive rejection because existing `runners.py`/`cognition.py` are modified. Python 3.11/3.13 tap tests, staged-runtime, integrated-regression and Python 3.14 startup PASS. The tests stub `/tokenize` and `/embeddings`; this proves model-role ID/dimension consistency only, not native vectors or a trained B3 receiver. Keep latent injection/training false.
+- **JEPA #2168 — Runtime/Sleep postcommit hook:** head `e5bb42a726455662580e16e3dfe4f55039a4c00e` still fails staged-runtime and integrated-regression (30 failed / 208 passed / 10 skipped / 2 errors) plus Python 3.14 startup. The logs show the frozen `integrated_online_world_candidate_20261110.py` rejecting the changed `runtime.py` hash (expected `a5336607…`). Safe-additive also rejects direct Runtime/Sleep edits. The hook must become a separately hash-bound overlay or a deliberately re-pinned integration chain; it is not integrated.
+- **QA #2163 — Android audit DB:** current candidate head `47622acc9ec156e9462e1d8ce526549c761c9c5f`; broker 18/18 and sandbox replay 42/42 PASS, staged 240 and integrated 415 PASS; safe-additive rejects the existing-module edit. It is 41 commits behind current release. The broker remains dry-run only, explicitly does not defend against a malicious same-UID race, and is not an OS executor or Android permission boundary.
+
+## Phone / updater
+- Fresh private owner-read PIPELINE_STATUS request **RedMentos/Aiiii#373** is OPEN with zero comments. Earlier #368 is also unanswered. Installed SHA is UNKNOWN; auto-update consent is UNVERIFIED; REDMI_UNVERIFIED.
+- No UPDATE_REQUEST, shell action, installer, model download/swap, permission change, or phone/user-data mutation was performed. No user action is required.
+
+## Whole-system status and next ownership
+1. **Core:** update #2158's exact V3 source pin and prove B1/B2 -> C4 -> C3 consumed offers; preserve text+audio modality separation and full source/consent revalidation.
+2. **JEPA/Memory:** repair the #2160 backlog test to assert persisted pending rows/cursor fairness when utility rejects; never lower utility or retention gates. Rework #2168 as a hash-bound staged overlay and test the real worker lifecycle, restart, idempotency and cancellation.
+3. **Perception:** rebase #2161 onto current release; hand Core the exact V3 schema/blob and avoid shared-doc overwrite.
+4. **Core/Boss:** complete #2169 manual review after the release branch is green. It is a tap provenance prerequisite, not latent coupling.
+5. **QA:** rebase/review #2163; continue owner-read/rollback and actual Android instrumentation. No OS background/UI control is verified.
+6. **Boss:** keep whole-Canon coverage active. True B3 receiver coupling, two distinct sparse-MoE bodies, native B1/B2 learning, cross-organ gradients, TTS/vocoder/full duplex, Android background/UI control, and clause-level mapping of the 1,255-heading Canon remain open.
+
+**User action: none required.** Do not request a Termux command while the authenticated device receipt is pending.
+
 ## Boss integration checkpoint — 2026-11-21 06:42 CET
 
 ### Code merged and exact evidence
