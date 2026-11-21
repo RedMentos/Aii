@@ -649,3 +649,32 @@ The current functional release has synthetic C4 source-span selection but no pro
 5. Boss: await all exact merge-push workflows, integrate only after exact-head tests, and keep the 1,255-heading Canon coverage map honest.
 
 **Device:** private owner-read expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action. **User action: none.**
+
+
+---
+
+## Boss integration checkpoint — 2026-11-21 18:05:08Z
+
+### Exact merge-push result
+- Perception #2240 remains merged at `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`. Its exact merge-push set completed **18/19 PASS, 1/19 FAIL**. The only failed workflow is `V13 staged context and integrated regression`: the staged-runtime job fails in the normal SleepRuntime post-commit JEPA test because the actual retention gate returns `UTILITY_GATE_REJECTED` where the positive acceptance test expects `UPDATED_EXPERIMENTAL_WORLD_JEPA`; the integrated-regression job itself passes. The other 18 workflows, including migration, Python 3.14 staged startup, runtime deploy integrity, owner-read bootstrap and Android control broker isolated tests, pass. This is not a green release. Prior code-bearing release `f279286a4453248004c670fcaabecd85da6ab299` remains 19/19 green.
+- Merged Perception scope is caller-supplied PCM16 RAW EAR plus source-bound consent lease. No microphone, ASR/TTS, Android UI or normal Runtime C3 consumer. Core must hold the lease through derived-context reads, B1/B2 and the full C3 iterator; add cancellation so revoke/barging-in is responsive, plus context deletion/cache clear.
+
+### Remaining critical integration failures
+- JEPA #2237 head `d91f4683fe96619efa94b5fcd64bc1f55e9c39ec`: source pin chain fixed; migration/owner-read/Lab-Age/runtime deploy/incremental/combined integration pass. Two workflows still fail: old-holdout retention worse than stable predictor on Python 3.13/3.14, and second update rejects the trained model because the clone guard omits the validated `_training_state` (main/bootstrap/inverse moments, EMA, RNG). Normal SleepRuntime also rejects the candidate in the merge-push positive test. Keep gates OFF; no accepted update claim.
+- QA #2235 current head `150e92b`: prior code heads had staged/integrated/migration/deploy PASS, but current Lab-Age and owner-read workflows fail on nested closure attribution `f(st)` vs enclosing `GoalStore.add`. Latest commit parses the `learning_limit` mapping expression but does not fix the closure owner. Safe-additive remains FAIL BY POLICY; no bypass.
+- Core #2234: normal recovery builder drops the existing C4 source-span overlay while ordinary deployer still uses `stage_integrated_candidate.py`; keep draft until C4 and arithmetic are both consumed by the normal pinned path.
+- Core #2200: stale/non-mergeable; rebase onto merged #2240 and keep lease through full C3 generation with cancellation/revocation cleanup.
+
+### Research notes merged with #2240
+- R-034 Counterfactual World Models: simulator-scoped; additive disturbance/action channels required; no direct mobile dependency.
+- R-035 Age of Learning: verified error-persistence may be a modulator, not official Age; noisy/OOD and rapidly changing sparse streams are risks.
+- R-036 omission/attention: preserve PRESENT / EXPECTED_OMISSION / UNEXPECTED_OMISSION / UNKNOWN; only source-bound, high-confidence time-windowed omission is a negative event.
+
+### Next sequence
+1. JEPA: validate/copy full optimizer state; produce a source-disjoint update that passes new-task utility and old-task retention; preserve exact rollback and restart tests.
+2. Core/QA: preserve C4, compose Age/resource and arithmetic, recompute all nested recovery→stage→deployer pins, and test the ordinary deployer.
+3. Core: implement normal voice consumer over #2240, lease through C3, prompt cancel/revoke and derived-context/cache deletion.
+4. QA: fix AST enclosing-method attribution and rerun exact current-head Lab-Age/owner-read/staged/integrated/migration.
+5. Boss: close the one exact merge-push workflow failure only after the learning path genuinely passes; maintain whole-Canon coverage.
+
+**Device:** private owner-read expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action. **User action: none.**
