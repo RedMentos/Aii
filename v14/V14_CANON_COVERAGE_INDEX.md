@@ -1498,3 +1498,30 @@ The historical 1,255-heading inventory and all original V13 appendix bytes remai
 | Release / Redmi | Development branch `aa79b05037f6fedfffd84801105f00321c7f6055` | Post-merge exact push workflows queued/in progress at readback | Required exact-HEAD CI must all finish green; private owner-read RedMentos/Aiiii#368 still OPEN_NO_REPLY; installed SHA UNKNOWN |
 
 **Environment boundary:** exact local repository tests BLOCKED by GitHub DNS; CI tests use Linux runners and synthetic Store data. No local native-model training, Android/Redmi validation, installed SHA, user data, model download or permission change is claimed.
+
+
+### Boss integration evidence overlay — 2026-11-21 11:20 CET
+
+This overlay is additive; the historical 1,255-heading inventory and V13 appendix bytes remain unchanged.
+
+| Canon family | Latest code/consumer | Test evidence | Acceptance still open |
+|---|---|---|---|
+| Runtime JEPA / World / Self | #2179 merged at e18c664d954fa5a44a1b2e5bec76850d5a40f89f; bounded postcommit Runtime/SleepRuntime worker after committed/observed T8; numeric WorldJEPA/EMA and B1/B2/SELF SHADOW | PR-head staged 249/10/47; integrated 415/3/58; combined JEPA 49; deploy/migration/Python 3.14 checks PASS | Synthetic cohort only; gates OFF; no native B1/B2/C3 weight change, cross-organ gradient or Redmi utility |
+| Optimizer / replay research | #2186 candidate 4b01ecdf...; action mean-delta baseline and matched moment/replay ablations | T8/Store 66 on Python 3.13 + 66 on 3.14; staged 249/10/47; integrated 415/3/58 | Hard replay failed utility/retention; non-default/OFF; rebase and multi-seed A->B->A required |
+| Android audit-DB path | #2190 merged at e18c664...; exact AOSP Android 13 /data and /data/data 0771 owner/mode exception | 30 broker tests; Android replay integration; staged 249/10/47; integrated 415/3/58; exact release push 5/5 PASS | Dry-run broker only; no OS executor, Android API/UI control, authenticated companion or device validation |
+| RAW EAR / voice | #2177 V3 producer and #2158 staged A5 consumer remain stale/unmerged | Candidate synthetic prosody/staged tests only | No microphone capture, ASR, speech learning, decoder/vocoder, full-duplex or Redmi proof |
+| B3 Enlightened Space | Symbolic messages/tap provenance only | Model-free provenance candidate, not current-base integrated | No trained cross-organ latent receiver, OOD/NO_MESSAGE/SYMBOLIC ablation or measured utility |
+| Release / Redmi | Code head e18c664d954fa5a44a1b2e5bec76850d5a40f89f; exact push CI 5/5 PASS | GitHub Actions Linux CI only; local checkout DNS blocked | Private owner-read #389 expired without reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED |
+
+
+
+### Boss correction — 2026-11-21 11:27 CET
+
+| Canon family | Current evidence | Not yet accepted |
+|---|---|---|
+| Runtime JEPA / World / Self | #2179 production worker persists numeric WorldJEPA model/EMA + cursor after committed T8; gates OFF; B1/B2/SELF SHADOW | Production Adam moments reset; staged optimizer-resume overlay is not production; no native GGUF body-weight learning |
+| Optimizer / replay | #2186 staged tree proves a candidate moment-resume overlay; hard replay holdout 0.366633 -> 0.905487 and gate rejects | Promote checkpoint/optimizer state into real Store/Runtime; multi-seed A->B->A; keep hard replay OFF |
+| Flow audit | #2183 head e8abb54... safe-additive 21, staged 249/10/47, integrated 415/3/58 and private bridge PASS | Rebase to current d4834... and rerun exact checks before release queue; diagnostic CLI only |
+| Android agency | #2190 merged exact AOSP /data path guard; broker tests PASS | No OS executor, Android API/UI control, authenticated companion or Redmi proof |
+| Release / Redmi | d4834... exact push CI PASS; code head e18c664... | #389 expired without reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED |
+

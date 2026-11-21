@@ -1,3 +1,40 @@
+# Boss integration checkpoint — 2026-11-21 11:27 CET
+
+## Verified code and release state
+- Code head e18c664d954fa5a44a1b2e5bec76850d5a40f89f includes PR #2190 and has 5/5 exact-SHA push workflows PASS. Documentation branch head d4834ebb6e550064409fc146dbd59d47d7259bb5 also has all exact push workflows PASS. One extra workflow_dispatch run was still in progress; it is not a substitute for push CI.
+- PR #2190 exact candidate 852a552c... passed 30 broker tests, Android sandbox replay, staged 249/10/47 and integrated 415/3/58; it narrowly fixes the Android 13 /data system:system 0771 audit-DB path. This is not an Android OS executor.
+- The V14 master blob remains 9748ad5ba9a4d4f5c3d004a0577141f6779fcbca. No Master/Part III rewrite; historical V13 appendix bytes unchanged.
+- Exact local checkout/test remains BLOCKED: git ls-remote https://github.com/RedMentos/Aii.git HEAD failed because this runner could not resolve github.com. GitHub Actions Linux CI is not local, Android-native or Redmi evidence.
+
+## Corrected JEPA/optimizer status
+- #2179 is merged: a bounded cancellable Runtime/SleepRuntime worker consumes committed/observed T8 and persists numeric WorldJEPA model/EMA state plus cursor. Learning gates remain OFF; the test cohort is synthetic; B1/B2/SELF readouts are SHADOW.
+- **Correction:** production world_jepa_shadow_checkpoint is still inference-only and returns optimizer_state_persisted=false; production WorldJEPAStoreConsumer reports optimizer_moments_persisted=false. Numeric model/EMA weights persist, but Adam moments reset on each production update.
+- The optimizer-moment and hard-replay results in #2186 came from a disposable staged tree created by test_world_jepa_training_resume_stage_20261111.py and integrated_world_training_resume_candidate_20261111.py. The staged tree replaces WorldJEPA/checkpoint sources and sets V13_EXPECT_OPTIMIZER_STATE_PERSISTED=1 only inside that stage. This is candidate evidence, not production Runtime integration.
+- The hard-replay arm in that staged cohort worsened holdout 0.366633 -> 0.905487 and the utility/retention gate rejected it. Keep hard replay non-default/OFF; do not lower gates. #2186 remains draft; #2189 and duplicate #2193 are closed.
+
+## Flow-audit candidate
+- #2183 new head e8abb54d... fixes the previous undefined event_id and reuses the merged AndroidControl AOSP /data ancestor policy; DB access is read-only with O_NOFOLLOW and inode/owner/link checks.
+- Exact old-head CI: safe-additive 21 passed; staged 249/10/47; integrated 415/3/58; private-bridge PASS. It is a read-only local CLI diagnostic, not a runtime fix or UI dashboard. It is based on e18c664..., while current branch head is d4834...; rebase and rerun exact checks before release-queue approval.
+
+## Device and user action
+- Private owner-read request RedMentos/Aiiii#389 expired at 2026-11-21T10:19:16Z with zero comments. Installed SHA UNKNOWN; auto-update consent UNVERIFIED. No UPDATE_REQUEST, phone update, shell, model swap, permission change or user-data mutation.
+- User action: none required. Redmi remains REDMI_UNVERIFIED. Do not run a manual Termux command based on CI alone.
+
+## Remaining whole-Canon priorities
+1. P0 #1904: correct 2+2 answer, reduce real turn latency, and deliver B1/B2 OfferPackets through C4/C3 without dropping organs.
+2. Promote the training-resume overlay into the actual Store/Runtime checkpoint with model+EMA+Adam state, source pins, atomic lineage, restart/crash/rollback tests and negative controls.
+3. Rebase RAW EAR V3 (#2177) and Core A5 consumer (#2158) together; prove actual text/audio consumer delivery, microphone/ASR/speech decoder/vocoder/full-duplex remain open.
+4. Android agency: #2190 is only a path guard; background/API-first executor, authenticated companion, capability consent, stop/revocation, audit and UI observation/action remain unimplemented.
+5. B3 remains symbolic/tap-only; no trained cross-organ latent receiver or OOD/NO_MESSAGE/SYMBOLIC utility proof.
+6. The mechanical index still has 1,255 headings; semantic clause-to-code/test/environment/rollback mapping remains incomplete.
+
+## Next execution
+1. Rebase #2183 onto current d4834..., then verify exact current-head safe-additive + staged/integrated + private-bridge checks before the release-approval comment/label.
+2. Keep #2186 as one draft research candidate; integrate the staged training-resume overlay into actual Runtime/Store before claiming optimizer persistence. Preserve the negative hard-replay result.
+3. Fix #1904 and the B1/B2 -> C4 -> C3 consumer path.
+4. Rebase #2158/#2177 together and validate A5 audio/text consumption.
+
+---
 # JEPA & Memory checkpoint — 2026-11-21 08:4x CET
 
 ## Current repository and candidate
