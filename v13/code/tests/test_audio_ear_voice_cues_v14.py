@@ -606,6 +606,12 @@ def test_audio_packet_fails_closed_without_linearizable_consent_lease(tmp_path, 
         stream_id=SOURCE_ID + ":" + event["brain_generation_id"], start_ms=60,
     )
     assert vad.pending_samples > 0
+    state = TemporalVoiceEvidence()
+    state.update(
+        source_id=SOURCE_ID, generation_id=event["brain_generation_id"],
+        start_ms=0, end_ms=40,
+        cues={"activity_hint": "VOICED", "activity_score": 0.9},
+    )
     monkeypatch.setattr(
         audio_voice_cues_module, "admit",
         lambda *args, **kwargs: pytest.fail("C3 admission must not run without a lease"),
@@ -617,9 +623,16 @@ def test_audio_packet_fails_closed_without_linearizable_consent_lease(tmp_path, 
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
                 consent_check=consent_ok, finality="FINAL", token_budget=512,
-                vad_stream=vad,
+                vad_stream=vad, temporal_state=state,
             )
         assert vad.pending_samples == 0
+        # The same window can be accepted after reset; stale temporal state is gone.
+        resumed = state.update(
+            source_id=SOURCE_ID, generation_id=event["brain_generation_id"],
+            start_ms=0, end_ms=40,
+            cues={"activity_hint": "VOICED", "activity_score": 0.9},
+        )
+        assert resumed["voice_active"] is True
         assert packet_count(runtime.store, event["event_id"]) == 0
         assert attention_count(runtime.store, event["event_id"]) == 0
         assert getattr(runtime, "_raw_ear_temporal_registry", None) is None
