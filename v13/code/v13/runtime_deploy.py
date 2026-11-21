@@ -269,7 +269,10 @@ def prepare_source(source=None):
              "v13/code/candidates/", "v13/code/tests/",
              "v13/code/docs/canon/", "v13/code/setup.sh", "v13/code/STARTEN.sh",
              timeout=180)
-        _, _, commit = _source(checkout)
+        # This helper runs before an old phone checkout is fast-forwarded.
+        # Validate only its trusted Git identity here; current builder pins are
+        # intentionally checked later by deploy() after the update is applied.
+        _, commit = _checkout(checkout)
         if created:
             # rename() refuses a competing populated checkout; only our own
             # temporary download is removed on failure.
