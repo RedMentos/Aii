@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T14:02:00Z",
+  "updated_at": "2026-11-21T14:03:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -74,9 +74,9 @@
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
       "proof_environment": "The exact integrated regression on release head 0fc4d2f9a76d530c366d67ea8148cd1c69666acd passed 415/3 skipped/58 subtests and ran the synthetic Store-backed Runtime WorldJEPA holdout twice: loss 0.9600227693 -> 0.9030210266 (delta -0.0570017428; 49 train / 15 ID-disjoint holdout) and 0.9627244265 -> 0.9034923341 (delta -0.0592320924; 47 train / 17 holdout). The test also checks numeric parameter change, save/restore and restart retention. This is synthetic staged Runtime/SQLite evidence, not native GGUF body-weight learning or Redmi utility. #2198 current head cd0b54053f51d5227f7860a80f5f6adbd3973598 passes focused, combined, incremental, optimizer-resume, staged/integrated and Python 3.14 CI; prior Planner utility-gate failures are fixed. However world_jepa_shadow_checkpoint.save() still uses os.link only, without EPERM/EACCES renameat2(RENAME_NOREPLACE) fallback; PR remains unmerged and not Android-ready. Production optimizer resume and Android-safe checkpoint publication are now merged by #2213 at 5a141153f7d33906408fd638ce56cfbee459cf08. Production WorldJEPA now persists main Adam moments, inverse-dynamics parameters, bootstrap predictor Adam/RNG state and exact optimizer continuation through the checkpoint; checkpoint save uses same-directory renameat2(RENAME_NOREPLACE) after hardlink denial, with inode/SHA/mode/link-count verification, file+directory fsync and pending cleanup. Exact merged-head CI is now fully green: 19/19 workflows SUCCESS; staged-runtime 249 passed / 10 skipped / 47 subtests; integrated-regression 424 passed / 3 skipped / 58 subtests; checkpoint retention 21 passed; combined JEPA 49 passed; Python 3.14 optimizer-resume PASS; two-checkout migration 2 passed. Synthetic Store/SleepRuntime only; native GGUF body weights remain unchanged and learning/optimizer gates remain OFF.",
-      "next_step": "QA: verify exact merged-head integrated-regression run 44911496141 to completion, including postcommit Runtime restart/rollback and pin chain. Then run matched multi-seed persistent-vs-reset and A→B→A retention experiments with identical update/replay budgets; keep learning gates OFF. No native GGUF weight-learning or Redmi utility claim without numeric native proof.",
+      "next_step": "JEPA/Research: run matched multi-seed persistent-vs-reset and A→B→A retention experiments with identical source-disjoint cohorts, optimizer steps and replay bytes; report old/new holdout, parameter/EMA/Adam-state diffs, restart equivalence and rollback. QA: preserve the now-green exact-head integration as baseline and add crash/recovery negatives if a real regression appears. Keep learning/optimizer gates OFF; no native GGUF weight-learning or Redmi utility claim without native proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 merge 5a141153; 19/19 exact workflows PASS, integrated 424/3/58",
+      "last_checkpoint": "2026-11-21 merge 5a141153; 19/19 exact workflows PASS, integrated 424/3/58 verified",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
