@@ -28,6 +28,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -37,3 +39,5 @@ jobs:
         run: python -m json.tool v14/experiments/model_candidates.json > /dev/null
       - name: Run isolated safety and grading tests
         run: python -m unittest discover -s v14/experiments -p "test_*.py" -v
+      - name: Scan added public content for secrets and private identifiers
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
