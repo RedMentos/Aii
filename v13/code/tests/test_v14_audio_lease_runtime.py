@@ -134,11 +134,13 @@ def configure(runtime):
 
 
 class Runner:
-    def __init__(self, role, seen, entered=None, release=None):
+    def __init__(self, role, seen, entered=None, release=None, first_chunk=None, finished=None):
         self.role = role
         self.seen = seen
         self.entered = entered
         self.release = release
+        self.first_chunk = first_chunk
+        self.finished = finished
         self.last_metrics = {
             "role": role, "status": "FINAL", "generated_tokens": 5,
             "synthetic": True,
@@ -161,9 +163,15 @@ class Runner:
         else:
             if self.entered is not None:
                 self.entered.set()
+            # The lease must remain active after the first streamed chunk too.
+            yield "First response chunk."
+            if self.first_chunk is not None:
+                self.first_chunk.set()
             if self.release is not None and not self.release.wait(8):
-                raise TimeoutError("test did not release the C3 iterator")
-            yield "One combined response."
+                raise TimeoutError("test did not release the second C3 chunk")
+            yield "Second response chunk."
+            if self.finished is not None:
+                self.finished.set()
 
 
 question = (
@@ -177,6 +185,8 @@ home = Path(sys.argv[1]) / "blocked"
 runtime = Runtime(home)
 provider = Provider()
 entered = threading.Event()
+first_chunk = threading.Event()
+finished = threading.Event()
 release = threading.Event()
 revoke_started = threading.Event()
 revoke_finished = threading.Event()
@@ -184,13 +194,19 @@ seen = {}
 try:
     configure(runtime)
     runners = {
-        role: Runner(role, seen, entered if role == "C3_LANGUAGE" else None,
-                     release if role == "C3_LANGUAGE" else None)
+        role: Runner(
+            role, seen,
+            entered if role == "C3_LANGUAGE" else None,
+            release if role == "C3_LANGUAGE" else None,
+            first_chunk if role == "C3_LANGUAGE" else None,
+            finished if role == "C3_LANGUAGE" else None,
+        )
         for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")
     }
     runtime.pool.get = Mock(side_effect=lambda role: runners[role])
     event_id = runtime.submit(question, audio_window=make_window(provider))
     assert entered.wait(30), "normal Runtime turn did not reach C3 generation"
+    assert first_chunk.wait(5), "C3 did not stream its first chunk before revocation"
 
     def revoke():
         revoke_started.set()
@@ -200,7 +216,8 @@ try:
     revoker = threading.Thread(target=revoke, daemon=True)
     revoker.start()
     assert revoke_started.wait(5)
-    blocked = not revoke_finished.wait(0.15)
+    blocked_after_first_chunk = not revoke_finished.wait(0.15)
+    assert not finished.is_set(), "C3 iterator unexpectedly finished before its second chunk"
     release.set()
 
     deadline = time.monotonic() + 30
@@ -210,7 +227,10 @@ try:
     assert revoke_finished.wait(5), "revocation did not finish after C3 returned"
     revoker.join(timeout=5)
 
-    assert blocked, "provider revocation completed before the C3 iterator finished"
+    assert blocked_after_first_chunk, (
+        "provider revocation completed after the first C3 chunk but before iterator exhaustion"
+    )
+    assert finished.is_set(), "Runtime returned without exhausting the full C3 iterator"
     assert runtime.last_answer()["status"] == "FINAL"
     assert "RAW_EAR_ACOUSTIC" in json.dumps(seen["C3_LANGUAGE"], ensure_ascii=False)
     assert "audio_context" in json.dumps(seen["B1_DETAIL"], ensure_ascii=False)
@@ -264,7 +284,7 @@ try:
 finally:
     runtime.close()
 
-print("PASS: staged A5 -> B1/B2 -> C3 uses one linearizable lease; revocation tombstones; pre-revoked audio falls back to text")
+print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 keeps one lease until iterator exhaustion; revocation tombstones; pre-revoked audio falls back to text")
 '''
     result = subprocess.run(
         [sys.executable, "-c", script, str(tmp_path / "private-home")],
