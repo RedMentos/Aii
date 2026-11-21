@@ -1,0 +1,30 @@
+name: V14 Core C3 audio-context integration
+on:
+  push:
+    branches: ['gpt6/v14-core-c3-audio-context-20261121']
+  pull_request:
+    paths:
+      - 'v13/code/v13/runtime.py'
+      - 'v13/code/v13/audio_perception_bridge.py'
+      - 'v13/code/v13/audio_ear.py'
+      - 'v13/code/v13/audio_percept_contract.py'
+      - 'v13/code/v13/a5_audio_admission_bridge.py'
+      - 'v13/code/tests/test_c3_audio_runtime_consumer.py'
+      - '.github/workflows/v14-core-c3-audio-context.yml'
+jobs:
+  c3-audio-context:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU test dependencies
+        run: |
+          python -m pip install --disable-pip-version-check torch==2.5.1+cpu --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.2.6 pillow==13.0.0 transformers==4.44.2 peft==0.13.2
+      - name: Compile Runtime and focused tests
+        run: python -m py_compile v13/code/v13/runtime.py v13/code/tests/test_c3_audio_runtime_consumer.py
+      - name: Run real-Store A5 to C3 consumer regressions
+        run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_c3_audio_runtime_consumer.py v13/code/tests/test_audio_perception_bridge_v14.py
