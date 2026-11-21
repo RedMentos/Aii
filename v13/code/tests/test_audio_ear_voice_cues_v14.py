@@ -603,7 +603,7 @@ def test_audio_packet_fails_closed_without_linearizable_consent_lease(tmp_path, 
                 runtime, tone(140), sample_rate=16000, start_ms=100,
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
-                consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
+                consent_check=consent_ok, finality="FINAL", token_budget=512,
             )
         assert packet_count(runtime.store, event["event_id"]) == 0
         assert attention_count(runtime.store, event["event_id"]) == 0
@@ -626,8 +626,7 @@ def test_provider_revocation_winning_before_lease_has_no_audio_side_effects(tmp_
                 runtime, tone(140), sample_rate=16000, start_ms=100,
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
-                consent_check=provider.check, consent_guard=provider.lease, finality="FINAL",
-                consent_guard=provider.lease, token_budget=512,
+                consent_check=provider.check, consent_guard=provider.lease, finality="FINAL", token_budget=512,
             )
         assert packet_count(runtime.store, event["event_id"]) == 0
         assert attention_count(runtime.store, event["event_id"]) == 0
@@ -700,8 +699,8 @@ def test_consent_revocation_between_pre_and_post_persist_leaves_no_packet(tmp_pa
     def revoke_after_pre_persist_checks(source_id, receipt):
         nonlocal calls
         calls += 1
-        # The producer checks before packet construction and again after
-        # validating the Store/event binding. Revoke at its post-write check.
+        # This deliberately non-coordinated callback turns false at the
+        # final in-transaction recheck; the SQLite insert must roll back.
         return calls <= 2
 
     try:
