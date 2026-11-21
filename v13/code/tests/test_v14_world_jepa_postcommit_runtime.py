@@ -4,10 +4,9 @@ All transitions are synthetic fixtures written through the real SQLite Store.
 No native GGUF body, Android device, or Redmi behavior is claimed.
 """
 from types import SimpleNamespace
-import os
 import threading
 
-EXPECT_OPTIMIZER_STATE_PERSISTED = os.environ.get("V13_EXPECT_OPTIMIZER_STATE_PERSISTED") == "1"
+EXPECT_OPTIMIZER_STATE_PERSISTED = True
 
 from v13 import contracts, world_model
 from v13.scheduler import EventScheduler
@@ -203,6 +202,7 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         first_metrics = first["learning"]["metrics"]
         assert first_metrics["optimizer_moments_persisted"] is EXPECT_OPTIMIZER_STATE_PERSISTED
         assert first_metrics["inverse_dynamics_optimizer_persisted"] is EXPECT_OPTIMIZER_STATE_PERSISTED
+        assert first_metrics["optimizer_state_bootstrapped"] is False
         assert first_metrics["parameter_delta_norm"] > 0
         assert first_metrics["ema_target_delta_norm"] > 0
         assert first_metrics["holdout_improved"] is True
@@ -235,6 +235,8 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         second_metrics = second["learning"]["metrics"]
         assert second_metrics["replay_rows"] >= 8
         assert second_metrics["fit_steps_after"] > second_metrics["fit_steps_before"]
+        assert second_metrics["optimizer_moments_persisted"] is True
+        assert second_metrics["optimizer_state_bootstrapped"] is False
         second_sha = second["learning"]["checkpoint_sha256"]
         assert second_sha != first_sha
         assert second["planner"]["status"] == "SHADOW_PLANNER_READY"
@@ -266,6 +268,8 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
             "SELECT metrics FROM telemetry WHERE kind='v14_world_jepa_postcommit' ORDER BY id"
         )
         assert telemetry
+        assert "optimizer_state_persisted" in repr(telemetry)
+        assert "optimizer_state_bootstrapped" in repr(telemetry)
         assert "synthetic-postcommit-source-" not in repr(telemetry)
     finally:
         store.close()
