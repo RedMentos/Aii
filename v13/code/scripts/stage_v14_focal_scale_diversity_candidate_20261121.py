@@ -17,7 +17,7 @@ import shutil
 BASE_STAGER = "scripts/stage_integrated_candidate.py"
 BASE_STAGER_SHA256 = "4b8c5f2b90595dff830ffe0636947c22bf1802f2f2661da4db1748b2104a9dc5"
 OVERLAY = "scripts/integrated_focal_scale_diversity_candidate_20261121.py"
-OVERLAY_SHA256 = "f4baf5120aa80dcea202088544c9c487e88cf6d66d6ab2b2b07184db8f418d4a"
+OVERLAY_SHA256 = "c25b69a562eb6f0f6352e33d30ca58493484820b2a1d20a10e537bd088c01d0f"
 ARITHMETIC_OVERLAY = "scripts/integrated_arithmetic_date_guard_candidate_20261121.py"
 ARITHMETIC_OVERLAY_SHA256 = "8d9609f0bf247b2e4eeff763158524013f9022259b473884f638462a45d26f94"
 
@@ -73,8 +73,8 @@ def stage(code_dir: Path, destination: Path) -> dict:
             "name": OVERLAY,
             "sha256": OVERLAY_SHA256,
             "source_focal_git_blob": overlay.SOURCE_FOCAL_GIT_BLOB,
-            "cross_scale_redundancy_factor": overlay.CROSS_SCALE_REDUNDANCY_FACTOR,
-            "effect": "B1/B2 cross-scale lexical redundancy penalty is discounted; same-role and body/memory penalties are unchanged",
+            "cross_scale_rule": overlay.CROSS_SCALE_RULE,
+            "effect": "cross-scale redundancy is discounted only for same-source, same-digest, same-modality, non-overlapping exact evidence spans; same-role, overlapping, cross-source and body/memory penalties remain unchanged",
             "status": "SHADOW_REVIEW_ONLY",
         }
         manifest["stage_wrapper"] = "scripts/stage_v14_focal_scale_diversity_candidate_20261121.py"
@@ -91,7 +91,7 @@ def stage(code_dir: Path, destination: Path) -> dict:
         manifest["files_sha256"]["v13/arithmetic_reflex.py"] = hashlib.sha256(patched_arithmetic).hexdigest()
         limitations = list(manifest.get("limitations", []))
         limitations.extend([
-            "C4 scale-diversity overlay is a disposable staged candidate, not the installed Runtime",
+            "C4 source-span rule is a disposable staged candidate; this is not evidence of normal updater integration or phone deployment",
             "synthetic Runtime/SQLite tests do not prove native B1/B2 model quality or Redmi latency",
             "no latent injection, model/weight change, permission grant or Android action is included",
             "date guard covers only bare year-month forms and is not a general date or math parser",
