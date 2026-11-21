@@ -43,6 +43,11 @@ def _read_locked(fn):
     return read
 
 
+def _check_cancel(cancel_event):
+    if cancel_event is not None and cancel_event.is_set():
+        raise InterruptedError('WorldJEPA fit cancelled')
+
+
 class Adam:
     def __init__(self, params, lr):
         self.p = params; self.lr = lr; self.t = 0
@@ -115,15 +120,17 @@ class WorldJEPA:
     def __init__(self, seed=0, ensemble=5):
         self.seed = seed; self.ensemble = ensemble
 
-    def fit(self, X, A, X2, steps=3000, log_every=500, warm_start=False):
+    def fit(self, X, A, X2, steps=3000, log_every=500, warm_start=False, cancel_event=None):
         # Invalid transitions cannot establish learned SHADOW inference evidence.
         # The covariance objective divides by n-1; never fit a single row.
         if (type(self.seed) is not int or not 0 <= self.seed <= 2**63-1
                 or type(self.ensemble) is not int or not 1 <= self.ensemble <= 16
                 or type(steps) is not int or steps < 0
                 or type(log_every) is not int or log_every < 1
-                or type(warm_start) is not bool):
+                or type(warm_start) is not bool
+                or (cancel_event is not None and not callable(getattr(cancel_event,'is_set',None)))):
             raise ValueError('Invalid WorldJEPA fit configuration')
+        _check_cancel(cancel_event)
         try:
             X, A, X2 = np.asarray(X), np.asarray(A), np.asarray(X2)
         except (TypeError, ValueError) as exc:
@@ -169,6 +176,7 @@ class WorldJEPA:
         opt = Adam({**{'e'+k: v for k, v in enc.items()}, **{'p'+k: v for k, v in pred.items()}, **{'i'+k: v for k, v in inv.items()}}, LR)
         history = []
         for s in range(steps):
+            _check_cancel(cancel_event)
             b = rng.integers(0, len(x), min(BATCH, len(x)))
             zt = encode(tgt, x2[b])[0]
             out = loss_grads(enc, pred, x[b], A[b], zt, VAR_W, COV_W, inv=inv, x2=x2[b], inv_w=INV_W)
@@ -180,9 +188,11 @@ class WorldJEPA:
         zt_all = encode(tgt, x2)[0]; zsd = zt_all.std(0)+1e-6
         z_all = encode(enc, x)[0]
         for e in range(1, self.ensemble):  # encoder frozen, bootstrap predictors
+            _check_cancel(cancel_event)
             r2 = np.random.default_rng(self.seed*100+e); p = ({k:v.copy() for k,v in prior['ensemble'][e].items()} if prior else _init_pred(r2, A.shape[1])); o = Adam(p, LR)
             idx = r2.integers(0, len(x), len(x))
             for s in range(steps//2):
+                _check_cancel(cancel_event)
                 b = idx[r2.integers(0, len(idx), min(BATCH, len(idx)))]
                 _, _, gp, _ = loss_grads(enc, p, x[b], A[b], zt_all[b], train_enc=False)
                 o.step(gp)
@@ -201,6 +211,7 @@ class WorldJEPA:
                            for key, v in row.items() if key != 'step')):
             raise ValueError('WorldJEPA fit produced nonfinite learned state')
         total_steps=(getattr(self,'_fit_steps',0)+steps) if warm_start else steps
+        _check_cancel(cancel_event)
         with _WORLD_JEPA_IO_LOCK:
             if _WORLD_JEPA_FIT_TICKETS.get(self) != fit_ticket:
                 raise RuntimeError('Superseded WorldJEPA fit cannot publish stale state')
@@ -209,13 +220,13 @@ class WorldJEPA:
                                  zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
         return self
 
-    def partial_fit(self,X,A,X2,steps=100,log_every=50):
+    def partial_fit(self,X,A,X2,steps=100,log_every=50,cancel_event=None):
         """Continue JEPA weights and EMA target instead of reinitializing.
 
         Callers should mix replay transitions with new ones to reduce forgetting.
         This experimental path does not itself establish durable retention.
         """
-        return self.fit(X,A,X2,steps=steps,log_every=log_every,warm_start=True)
+        return self.fit(X,A,X2,steps=steps,log_every=log_every,warm_start=True,cancel_event=cancel_event)
 
     # -- inference -------------------------------------------------------------------------------------------------
     @_read_locked

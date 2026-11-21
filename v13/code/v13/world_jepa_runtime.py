@@ -55,10 +55,12 @@ def _consumer(store, home, *, learning_enabled):
     return current
 
 
-def consume_after_commit(store, home=None, *, limit=64):
+def consume_after_commit(store, home=None, *, limit=64, cancel_event=None):
     """Run persistent JEPA only after a committed turn and only behind both gates."""
     if type(limit) is not int or not 16 <= limit <= MAX_RUNTIME_PAGE:
         raise ValueError("runtime page must be 16..256")
+    if cancel_event is not None and not callable(getattr(cancel_event, "is_set", None)):
+        raise ValueError("cancel_event must expose is_set")
     gates = permission_state(store)
     result = {
         "runtime_adapter_called": True,
@@ -68,6 +70,9 @@ def consume_after_commit(store, home=None, *, limit=64):
         "native_body_consumed": False,
         "native_body_weights_changed": False,
     }
+    if cancel_event is not None and cancel_event.is_set():
+        result["status"] = "CANCELLED"
+        return result
     if not gates["learning_enabled"]:
         result["status"] = "OFF"
         return result
@@ -81,6 +86,7 @@ def consume_after_commit(store, home=None, *, limit=64):
             steps=gates["steps"],
             optimizer_permission=True,
             replay_mode=gates["replay_mode"],
+            cancel_event=cancel_event,
         )
         result.update(updated)
         result.update({
@@ -91,6 +97,9 @@ def consume_after_commit(store, home=None, *, limit=64):
             "native_body_consumed": False,
             "native_body_weights_changed": False,
         })
+        return result
+    except InterruptedError:
+        result.update({"status":"CANCELLED","native_body_weights_changed":False})
         return result
     except (ValueError, TypeError, KeyError, OSError, OverflowError,
             ArithmeticError, AttributeError) as exc:
