@@ -258,3 +258,13 @@ The earlier 01:05 checkpoint's "integrated-regression push still IN_PROGRESS" is
 - Exact staged-context/integrated-regression run 44847403139: staged-runtime 240 passed, 10 skipped, 47 subtests; integrated regression 415 passed, 3 skipped, 58 subtests.
 - Exact V14 T8 real-Store workflow 44847403231: PASS.
 - This establishes merge-push CI green for 3db6d1f. It does not establish Redmi installation, normal Runtime learning-consumer acceptance, native JEPA/latent coupling, or P0 chat correctness. Private owner-read issues #351–354 still have no device comments; REDMI_UNVERIFIED remains.
+
+
+### Research & Perception — QA measurement-integrity correction, 21 November 2026
+
+- QA found a real benchmark attribution bug in PR #2142: V13 `LlamaRunner` honors the `V13_LLAMA_SERVER` environment override, but the original report hashed only the installed `home/bin/llama-server`. A different override could have produced measurements attributed to the wrong executable.
+- Fixed on branch `research-perception/model-compare-c3-20261121`, head `fef505ac3f6ea30f034fdce5ee5a9abc6b5c30b7`: the lab now verifies the runner's resolved executable before generation, checks the actual loaded `_loaded_binary` after launch, compares the baseline/candidate executable digests, and reports identity from the runner rather than assuming the installed path.
+- Added three regressions; the model-lab test file now contains 16 tests. LOCAL_LINUX isolated helper checks: `py_compile` PASS and 5/5 executable-identity tests PASS. This is not a full repository test. Local full checkout remains BLOCKED by GitHub DNS.
+- Exact PR-head model-lab CI run 44853309109 was IN_PROGRESS at last readback; do not promote it to PASS until a completed exact-head result is read back.
+- No GGUF inference, download, model swap, updater action or Redmi operation occurred. Redmi remains REDMI_UNVERIFIED; NOT_RELEASED. The 230M candidate remains diagnostic-only due to the historical #1904 2+2 failure.
+- Next: wait for exact-head CI and independent Core/QA review. If the candidate is already present on the authorized Redmi, compare both orders while V13 is idle; otherwise request separate consent before any isolated download. No user action is currently required.
