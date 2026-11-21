@@ -173,8 +173,15 @@ def test_audit_latest_and_read_only_database(tmp_path):
     home = tmp_path / "runtime"
     event_id = _fixture(home)
     db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        session_id = conn.execute(
+            "SELECT session_id FROM events WHERE id=?", (event_id,)
+        ).fetchone()[0]
+    finally:
+        conn.close()
     before = db.read_bytes()
-    report = audit_latest(home)
+    report = audit_latest(home, session_id=session_id)
     after = db.read_bytes()
     assert report["event_id"] == event_id
     assert before == after

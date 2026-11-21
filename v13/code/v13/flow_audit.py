@@ -310,7 +310,6 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
                 isinstance(focal, dict)
                 and focal.get("source_kind") == offer.get("role")
                 and focal.get("state_type") == "ACTIVE"
-                and focal.get("origin_event_id") == event_id
                 and evidence_keys
                 and None not in evidence_keys
                 and evidence_keys <= focal_keys
@@ -505,7 +504,7 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
         conn.close()
 
 
-def audit_latest(home: str | Path, *, session_id: str) -> dict:
+def audit_latest(home: str | Path, *, session_id: str | None = None) -> dict:
     root = Path(home).expanduser().resolve()
     if not isinstance(session_id, str) or not session_id:
         raise ValueError("session_id is required for latest-event audit")
