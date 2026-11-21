@@ -65,7 +65,8 @@ def test_audio_voice_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     assert "audio_context=audio_context_packet" in cognition
     assert "self._audio_context_query(e,offer['role'])" in cognition
     assert "audio_offer_omitted" in cognition
-    assert "Consumer audio context source mismatch" in cognition
+    assert "STORED_SOURCE_MISMATCH" in cognition
+    assert "QUERY_CONTEXT_MISMATCH" in cognition
     assert (destination / "v13/audio_voice_cues.py").is_file()
 
     test_names = (
