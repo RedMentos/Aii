@@ -96,3 +96,36 @@ Die bestehenden fünf stündlichen Jobs arbeiten als **ein Engineering-Team** mi
 - QA & Android: keep private device status read-only; no UPDATE_REQUEST until a fresh owner-authenticated receipt; separately verify Android background/UI and voice consent on Redmi.
 - Research & Perception: continue A5 RAW EAR consent/producer contract and primary-source/license review; do not call PCM16 synthetic tests microphone proof.
 - Boss: finish exact merge-SHA CI, update coverage/board, and integrate the next compatible vertical slice.
+
+
+
+## Boss integration checkpoint — 2026-11-21, 02:58 CET
+
+### Verified release and integration state
+
+- Release branch HEAD at readback: `c3c32c05a0374e970d274f8a777a7ab85c067d66`; this is documentation-only. Last code-bearing release SHA: `3db6d1f00fceab9e7755bc8f4c25882ef7f19258`.
+- Exact push CI for `3db6d1f` is fully green, including private bridge, owner-read, Lab Age, release event, staged/integrated regression and V14 T8 Store. This does not imply Redmi installation or correct chat.
+- Private owner-read PIPELINE_STATUS issue #357 is unanswered. No UPDATE_REQUEST, phone mutation or local test is authorized from an absent receipt.
+- Local full checkout/tests are BLOCKED by GitHub DNS in this environment. GitHub Actions evidence is CI/Linux only.
+
+### Cross-agent candidate reconciliation
+
+1. **#2145 T8 Runtime consumer (Boss lane):** previous exact head failed because the receipt's SourceRef lost span/modality fields before exact provenance matching. Boss branch `boss/v14-t8-runtime-shadow-consumer-20261121` now preserves full verified SourceRef at `08d14737f1ee554f2b160986f95d9f28d6bc1fa2`. Exact-head CI has not run; do not merge. Before integration, carry forward #2143/#2147's newer paginated authority, source-digest grouping and checkpoint validation; the current #2145 snapshot is older.
+2. **#2143/#2147 JEPA/Memory:** source-digest holdout fix is conceptually necessary, but exact #2147 tests still fail the shuffled-action negative control on Python 3.13 and 3.14. Keep the gate. Improve the fixture with source-digest groups containing all four action variants and a measurable action-conditioned target; do not loosen assertions or claim useful JEPA from parameter delta alone.
+3. **#2144 A5 audio/Core:** exact V14 test fails because the staged test directory already exists; the broader stage chain also needs reconciliation. Fix the fixture idempotently and compose the A5 overlay onto the same Boss-owned builder chain. Do not merge a parallel stage-builder/runtime_deploy pin set.
+4. **#2142 model comparison/Research:** read-only candidate comparison code and 16 synthetic tests pass; no GGUF inference or Redmi candidate verification occurred. Exact staged-context check is absent, so it is not yet eligible for the reviewed release queue. No download or production swap.
+5. **#2137 T8 Store authority:** merged and exact release push CI is green. It remains a Store-verified scalar temporal adapter, not a normal Runtime consumer or full JEPA.
+
+### Explicit next deliverables by existing team role
+
+| Role | Next concrete implementation/review outcome | Acceptance evidence |
+|---|---|---|
+| Core & Harness | Repair arithmetic authority/source diagnostics/World-transition checks; fix the shared stage fixture and rebuild one immutable Runtime candidate chain for A5 + T8 consumer without stale source pins | Exact staged + integrated regression green; preserve fastpath and B1/B2/C3 paths; no fabricated arithmetic authority |
+| JEPA & Memory | Reconcile #2143/#2147 into the deployable authority, preserve pagination/SELF_MODEL/recall, repair action-conditioned holdout fixture and connect T8 outcome to a real World/Planner consumer | Python 3.13/3.14 negative controls pass; source-digest disjointness; before/after parameter diff, heldout utility, replay/no-predictor ablation, restart/retention/rollback |
+| QA & Android | Keep #357 owner-read-only; once a receipt exists, report exact installed SHA/auto-update state; separately test API/UI permissions, stop/revoke/audit, voice and update recovery on Redmi | Actual private owner receipt and device measurements; no CI-to-Android inference |
+| Research & Perception | Repair/verify A5 producer-consumer consent contract and RAW EAR source binding; review model comparison's license/ARM/runtime boundary; keep LFM2.5-230M diagnostic-only | Exact source-bound receiver test; no microphone claim without OS capture; no candidate swap without explicit consent and measurements |
+| Boss & Integration | Keep release ancestry/PR dependency graph current; obtain CI for #2145 SourceRef fix, integrate only the newer T8 authority plus shared builder after tests; continue clause-level Canon map | Read-back commit/PR SHA, exact-head CI, no capability lost, all environment evidence separated |
+
+### Whole-system priority remains unchanged
+
+The top user-facing blocker is still a correct, responsive native Redmi conversation with source-bound B1/B2 contributions, not a dashboard or synthetic arithmetic test. The next integration must preserve the complete Canon: A0–A5, B1/B2/B3/B4/B5, C/JEF/output/tools, World/Self/memory, JEPA/EMA/plasticity, sleep/replay, voice, Android API/UI control, Age/X10 rights, self-optimization, Context OS/Memorilla, model licensing/performance, privacy and rollback. No capability family is accepted from this checkpoint.
