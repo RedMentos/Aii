@@ -57,7 +57,7 @@ None for repository continuation. No Termux command, model download, permission 
 
 ## 2026-11-21 follow-up — cross-event nonce replay closure
 
-- Verified branch HEAD: `96edceec0836ad791b92dd385bdbaa2a8897b9f2` on `gpt6/v14-core-companion-outcome-20261121`; draft PR #2134 remains stacked on the companion-receipt branch and is **NOT RELEASED**.
+- Verified code HEAD: `96edceec0836ad791b92dd385bdbaa2a8897b9f2`. Current branch HEAD is `3cb320e59fcaf4f8c33146e5520a0da038ad4dc4`, a handoff-only commit; `android_outcomes.py` and its regression test have identical blob SHAs at both commits. Draft PR #2134 remains stacked on the companion-receipt branch and is **NOT RELEASED**.
 - Fixed the test-file indentation defect that had prevented collection.
 - Tightened `persist_companion_outcome`: replay detection now scans every persisted `C5_ANDROID_COMPANION/ANDROID_COMPANION_RECEIPT` ActionOutcome, not only rows for the same event. The same nonce is idempotent only for the same action ID, event ID and digest; otherwise it fails with `receipt nonce replay`. The uniqueness check and packet insert remain inside the same Store transaction.
 - Added `test_nonce_replay_rejected_across_distinct_source_events`, covering reuse of one nonce on a different event/action.
