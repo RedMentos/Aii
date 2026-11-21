@@ -55,4 +55,4 @@
 
 - V14_WORK_BOARD.json: V14-005 moved from READY to IN_PROGRESS_PARTIAL with PR #2142, exact CI run 44848887759, and explicit NOT_RUN/REDMI_UNVERIFIED native evidence.
 - V14_USER_NEXT_ACTION.md: added a Research & Perception checkpoint and corrected source_HEAD (shared base c3c32c05; last code-bearing release 5b9171a), local-test boundary, candidate-only status and next action.
-- Current research branch head after these documentation updates: 85f65cb8086ce664a091ec592fbbc5d010f8b500. The code-bearing CI-tested commit remains 3e13188a414b1cc3ff327fe9897a07d0d5ff8900; subsequent commits only update board/next-action/handoff/ledger.
+- The PR's current head is authoritative and should be read live; the code-bearing CI-tested commit remains 3e13188a414b1cc3ff327fe9897a07d0d5ff8900. Subsequent commits only update board/next-action/handoff/ledger.
