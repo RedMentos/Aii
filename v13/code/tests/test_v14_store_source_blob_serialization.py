@@ -41,11 +41,40 @@ def test_store_source_publication_waits_for_a5_revocation_unlink(tmp_path):
 
     unlink_entered = threading.Event()
     allow_unlink = threading.Event()
+    producer_started = threading.Event()
+    producer_lock_attempted = threading.Event()
+    producer_blob_check = threading.Event()
     producer_done = threading.Event()
     errors = []
     result = {}
 
+    original_mutex = store.mutex
     original_unlink = Path.unlink
+    original_exists = Path.exists
+
+    class TrackingRLock:
+        """Expose the producer lock attempt while preserving Store RLock behavior."""
+
+        def acquire(self, *args, **kwargs):
+            if threading.current_thread().name == "generic-source-producer":
+                producer_lock_attempted.set()
+            return original_mutex.acquire(*args, **kwargs)
+
+        def release(self):
+            return original_mutex.release()
+
+        def __enter__(self):
+            self.acquire()
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            self.release()
+            return False
+
+    def observe_producer_blob_check(path, *args, **kwargs):
+        if path == blob and threading.current_thread().name == "generic-source-producer":
+            producer_blob_check.set()
+        return original_exists(path, *args, **kwargs)
 
     def pause_before_unlink(path, *args, **kwargs):
         if path == blob:
@@ -61,6 +90,7 @@ def test_store_source_publication_waits_for_a5_revocation_unlink(tmp_path):
             errors.append(("revoke", repr(exc)))
 
     def publish_generic_source():
+        producer_started.set()
         try:
             result["source_ref"] = store.source(summary, kind="USER")
         except BaseException as exc:
@@ -70,15 +100,23 @@ def test_store_source_publication_waits_for_a5_revocation_unlink(tmp_path):
 
     revoker = threading.Thread(target=revoke, name="a5-ui-revoker")
     producer = threading.Thread(target=publish_generic_source, name="generic-source-producer")
+    store.mutex = TrackingRLock()
     try:
-        with patch.object(Path, "unlink", pause_before_unlink):
+        with patch.object(Path, "exists", observe_producer_blob_check), \
+             patch.object(Path, "unlink", pause_before_unlink):
             revoker.start()
             assert unlink_entered.wait(2), "revocation did not reach blob unlink"
             producer.start()
-            assert not producer_done.wait(0.05), (
-                "generic Store.source() must wait while revocation owns the shared blob lock"
+            assert producer_started.wait(2), "generic source producer did not start"
+            assert producer_lock_attempted.wait(2), "generic source producer did not request the Store lock"
+            assert not producer_blob_check.is_set(), (
+                "generic Store.source() checked blob existence before acquiring the shared Store lock"
+            )
+            assert not producer_done.is_set(), (
+                "generic Store.source() completed while revocation still owned the Store lock"
             )
             allow_unlink.set()
+            assert producer_blob_check.wait(2), "generic source producer did not resume after revocation"
             revoker.join(2)
             producer.join(2)
             assert not revoker.is_alive(), "revocation worker did not finish"
@@ -98,4 +136,5 @@ def test_store_source_publication_waits_for_a5_revocation_unlink(tmp_path):
             revoker.join(2)
         if producer.is_alive():
             producer.join(2)
+        store.mutex = original_mutex
         store.close()
