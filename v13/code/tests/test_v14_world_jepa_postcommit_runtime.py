@@ -138,6 +138,8 @@ def test_sleep_jepa_job_runs_postcommit_consumer_and_persists_scheduler_completi
         sleep = object.__new__(SleepRuntime)
         sleep.r = FakeRuntime()
         sleep.scheduler = EventScheduler(store, {})
+        from v13.scheduler import ACTIONS
+        ACTIONS.add("jepa_update")  # SleepRuntime.__init__ registers this fixed action in production.
         posted = sleep.scheduler.post(
             "IDLE", action="jepa_update", payload={"event_id": "evt-committed"},
             dedup="test-jepa-job",
