@@ -206,3 +206,11 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 4. QA/Android continues read-only device status only when an owner-authenticated receipt is available. No new installer command or update request without a current consented receipt.
 
 **User action: none.** No Termux command, model download, model swap, permission change or phone approval is required to continue repository work.
+
+
+### Branch readback correction — 21 November 2026, 01:51 CET
+
+- Current release branch HEAD is `8f1b260dce19047a04df45d510b6642d009826bc`; this is a docs-only board/handoff checkpoint.
+- Last code-bearing release commit is `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e`, whose exact updater-required push workflows are green as listed above.
+- The docs-only commit has newly triggered push runs `44846326605`, `44846326608`, and `44846326568`; they were QUEUED at readback. Do not describe the new branch HEAD as fully CI-green until these finish.
+- No code, model, permission, phone state or user data changed in the docs checkpoint.
