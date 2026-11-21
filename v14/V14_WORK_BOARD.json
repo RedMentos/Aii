@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T15:52:02.964Z",
+  "updated_at": "2026-11-21T16:10:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -73,16 +73,21 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2222 head 78fe63d4fe63d1ec8842075064ad92e8f2fe7371 is diverged from current release f279286a: 5 commits ahead / 26 behind (merge base 99ec5453). Exact optimizer-resume run 44916321909 fails on Python 3.13 and 3.14: fixture lacks master-13/data before Store opens coordinator.lock. Production Store/SQLite experiment remains synthetic; native GGUF weights and Redmi utility unproven; learning/optimizer gates OFF.",
-      "next_step": "JEPA: create the disposable fixture data directory before Store construction (do not alter production locking), rebase onto current release, rerun exact 3.13/3.14 and staged/integrated tests, then continue matched multi-seed A→B→A/replay/retention. Keep gates OFF.",
+      "proof_environment": "Current shared-doc branch head 9d8f91960c568be7fe7dcf894555ce7250f635f4; code-bearing release remains f279286a4453248004c670fcaabecd85da6ab299. PR #2231 is rebased on that head at ac92200699e2838d99ccd3dd7036debf2a755414. It adds an experimental runtime-selectable predictor-only adaptation mode after an initial full encoder/EMA bootstrap, per-parameter Adam bias-correction clocks with legacy checkpoint readback, and a 4-arm × 3-seed A→B→A replay comparison. First CI attempt exposed stale source pins in the exact staged consumer chain; pins were recomputed and readback-verified. Latest Python 3.13/3.14, staged and integrated CI is queued/in progress; no pass is claimed yet. Local full checkout remains BLOCKED because github.com DNS is unavailable. GitHub Linux CI only; no Redmi proof, native GGUF update or user data/model change.",
+      "next_step": "JEPA: finish exact Python 3.13/3.14 predictor-only resume and four-arm A→B→A CI plus staged/integrated regression. Inspect each arm's disjoint A/B holdouts, parameter/EMA deltas, negative controls, checkpoint restart and rollback; do not enable runtime gates or promote predictor-only as default unless utility and all-cohort retention are demonstrated. Then connect the accepted source-bound learning intent to the actual World/Memory and B1/B2 consumers without claiming native body-weight edits.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 16:49 CET",
+      "last_checkpoint": "2026-11-21 17:10 UTC — PR #2231 rebased; exact CI pending",
       "latest_candidate_pr": {
-        "pr": 2151,
-        "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
-        "merge_commit_sha": "a7a31077213a6e2810270816c716292a64e40905",
-        "ci": "PASS_RUN_44861797478_64_TESTS_PY313_PY314",
-        "scope": "source-bound synthetic Store-backed numeric WorldJEPA/EMA with holdout utility + prior retention gate; not Runtime-wired"
+        "pr": 2231,
+        "branch": "jepa-memory/v14-store-aba-current-20261121-run11b",
+        "head_sha": "ac92200699e2838d99ccd3dd7036debf2a755414",
+        "base_sha": "9d8f91960c568be7fe7dcf894555ce7250f635f4",
+        "status": "OPEN_DRAFT_CI_PENDING_AFTER_REBASE",
+        "scope": "experimental predictor-only adaptation after full encoder/EMA bootstrap; per-parameter Adam clocks; four-arm × three-seed Store-backed A→B→A replay/retention comparison; source-pinned staged consumer chain",
+        "ci": "PENDING_RUN_44923032915_PY313_PY314_AND_44923032868_STAGED_INTEGRATED",
+        "local_linux": "BLOCKED_NO_LOCAL_AII_CHECKOUT_GITHUB_DNS",
+        "redmi": "REDMI_UNVERIFIED",
+        "gates": "LEARNING_AND_OPTIMIZER_OFF_BY_DEFAULT"
       },
       "latest_followup_pr": {
         "pr": 2148,
