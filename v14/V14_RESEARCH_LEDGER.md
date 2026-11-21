@@ -134,3 +134,6 @@ PR #2142 pins `LiquidAI/LFM2.5-230M-GGUF` at revision `cdf97bd8205908758f44aec50
 ### Current decision
 
 No new paper justifies changing the V14 master architecture this run. The immediate evidence-driven work remains: (1) fix full SourceRef propagation in the T8 Runtime consumer and run exact-head CI; (2) restore the newer paginated/source-digest authority in the deployable package; (3) make the action-conditioned negative control meaningful without weakening it; (4) require a real consumer and closed-loop outcome evidence before calling the WorldJEPA path useful.
+
+
+**Additional review finding for #2142:** the baseline and candidate GGUF hashes are currently checked before acquiring the V13 coordinator lock. Revalidate installed revision, baseline/candidate size and SHA after the lock is held, and ensure the model files remain unchanged through inference; add a negative test that replaces a candidate between preflight and lock acquisition. The manifest also points to `blob/main/LICENSE` while pinning a model revision. Pin the license URL to the same immutable model revision and record a license-file digest. Until those integrity conditions and the missing exact staged-context check are satisfied, keep the comparison lab unmerged and diagnostic-only.
