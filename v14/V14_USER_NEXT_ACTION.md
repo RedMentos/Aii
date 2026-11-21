@@ -2,6 +2,19 @@
 
 **No user action is needed. Do not run a Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
 
+- Current release branch HEAD: `b267ed641f4dbff1e2c28f492baf0182e9bb656b` (Boss coordination/documentation commit); current code integration HEAD: `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`. This is not a phone release.
+- JEPA parent PR #2231 is OPEN/DRAFT at `8f74285413f994a43be81b4ee48671cdeab854d9` and is not mergeable against the current release branch. JEPA follow-up PR #2237 is OPEN/DRAFT, branch head `a77ffaa26dd710f53d64537086a11bd6e0c185f9`, code-bearing head `07f78312eb126b58e65980f67dc24a91bfab7416`, stacked on #2231. It is mergeable relative to its parent branch only; it is not merge-ready or released.
+- The code candidate adds bounded optimizer update-scale backtracking `[1.0, 0.5, 0.25, 0.125, 0.0625]`; every attempt reloads the same persisted checkpoint and uses the same data/step budget. Acceptance still requires new-task holdout improvement, old-task holdout non-degradation, and shuffled/zero-action negative-control separation. The staged clone guard permits only validated optional `_last_gradient_projection` telemetry while requiring canonical `_training_state`.
+- **Exact-head verification is pending.** No CI check-run is attached to the new branch head. Previous code head `d91f4683fe96619efa94b5fcd64bc1f55e9c39ec` failed Python 3.13/3.14 retention and staged second-update clone tests. Full local Aii tests are BLOCKED because this worker has no checkout and GitHub DNS is unavailable. Do not call the new candidate passing.
+- No Redmi deployment/update was attempted. Installed SHA and updater consent are UNKNOWN; **REDMI_UNVERIFIED**. No model, weight, permission, Age or user data changed.
+- Next internal action: Boss/Core reconcile #2231 to the current release branch and update parent-owned recovery-builder/stager pins; Boss/QA trigger exact-head CI; JEPA inspects the logs and continues restart/retention/rollback validation. **No user action is needed.**
+
+---
+
+# Current user-facing handoff — 2026-11-21 18:21 CET
+
+**No user action is needed. Do not run a Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
+
 - JEPA PR #2237 is OPEN/DRAFT, stacked on #2231. Current PR branch head: `808751bf7d029629fb9f2781f8880551b942b04a` (docs-only handoff sync); code-bearing candidate head: `07f78312eb126b58e65980f67dc24a91bfab7416`.
 - The code candidate adds bounded optimizer update-scale backtracking `[1.0, 0.5, 0.25, 0.125, 0.0625]`; every attempt reloads the same persisted checkpoint and uses the same data/step budget. Acceptance still requires new-task holdout improvement, old-task holdout non-degradation, and shuffled/zero-action negative-control separation. The staged clone guard permits only validated optional `_last_gradient_projection` telemetry while requiring canonical `_training_state`.
 - **Exact-head verification is pending.** No CI check-run is attached to the new branch head. The previous code head `d91f4683fe96619efa94b5fcd64bc1f55e9c39ec` failed Python 3.13/3.14 retention and staged second-update clone tests. Full local Aii tests are BLOCKED because this worker has no checkout and GitHub DNS is unavailable. Do not call the new candidate passing.

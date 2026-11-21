@@ -99,3 +99,11 @@ The current retention gate uses the prior aggregate holdout, not stable source/s
 
 
 - Current PR branch head after the documentation sync is `808751bf7d029629fb9f2781f8880551b942b04a` (docs-only); the code-bearing candidate remains `07f78312eb126b58e65980f67dc24a91bfab7416`.
+
+## Coordination readback — 2026-11-21
+
+- Release branch HEAD: `b267ed641f4dbff1e2c28f492baf0182e9bb656b`; code integration HEAD: `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`; neither is a phone release.
+- Parent PR #2231: OPEN/DRAFT, head `8f74285413f994a43be81b4ee48671cdeab854d9`, base release branch, mergeable=false.
+- This lane PR #2237: OPEN/DRAFT, current branch head `a77ffaa26dd710f53d64537086a11bd6e0c185f9`, code-bearing head `07f78312eb126b58e65980f67dc24a91bfab7416`, stacked on #2231; mergeable relative to its parent branch only, not merge-ready.
+- JEPA did not edit the parent-owned recovery/stager pin chain. Boss/Core/QA own that rebase and pin refresh. No exact-head CI run is attached to the new branch head.
+
