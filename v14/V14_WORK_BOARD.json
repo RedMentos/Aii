@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T22:27:56.713Z",
+  "updated_at": "2026-11-21T22:29:39.614Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -17,8 +17,8 @@
       "proof_environment": "Core #2242 current branch head 46411a59e55d615f6db3d7f6026f6f30f184ef37. Independent exact-byte audit confirms the complete current nested pin chain: recovery wrapper SHA256 492b52e4099f032b98be5bbf018582aea0582c62327d3ae8e3868497c589ec30 matches stage BUILDER_SHA; stage SHA256 608f8c34d00e73274f6e30cb1c6d60df390094b2ce019ffc79a8ad60b4513d56 matches runtime_deploy.STAGER_SHA256; base/audio/arithmetic Git blob pins match. Exact workflow 44942663184: Python3.13 42 passed / 1 failed / 26 subtests; sole failure is fixture char_end=100000 exceeding actual stored source length. Python3.14 still in progress at last poll. Separate staged-runtime and integrated-regression jobs pass; migration, Lab-Age, runtime-deploy and owner-read workflows pass. safe-additive remains FAIL BY POLICY. Branch is 41 ahead / 21 behind shared base 48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4; no merge or Android proof.",
       "next_step": "Read exact-head CI for 273a60b; finish protected-file review of all 59 composed paths, then integrate only if the new exact head stays green. Do not merge a draft or call this a phone release.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T22:21:06.563Z",
-      "proof": "Boss PR #2258 code-bearing head 0dc337edfb7a71168e15f3db08bcedc424e32d4f, based on release-development HEAD bdcad466ffea75a2b41f7d23be168f53c7197d20. Exact code-head CI: integrated regression 424 passed / 3 skipped / 58 subtests; staged runtime 252 passed / 10 skipped / 47 subtests; arithmetic/broker 39 passed / 17 subtests; audio/arithmetic 52 passed / 26 subtests on Python 3.13 and 3.14; A5 UI lease 17 passed / 5 subtests on both versions; old-phone migration, Lab-Age, owner-read, deploy integrity, offline and privacy checks passed. Workflow-scope fix commit 273a60bda3105f3163bf2ad606e58f885681da8b is now on the Boss branch; its exact-head CI is queued. No full local Aii checkout and no Redmi receipt; CI only."
+      "last_checkpoint": "2026-11-21T22:29:39.614Z",
+      "proof": "Boss PR #2258 code-bearing head 0dc337edfb7a71168e15f3db08bcedc424e32d4f, based on release-development HEAD bdcad466ffea75a2b41f7d23be168f53c7197d20. Exact code-head CI: integrated regression 424 passed / 3 skipped / 58 subtests; staged runtime 252 passed / 10 skipped / 47 subtests; arithmetic/broker 39 passed / 17 subtests; audio/arithmetic 52 passed / 26 subtests on Python 3.13 and 3.14; A5 UI lease 17 passed / 5 subtests on both versions; old-phone migration, Lab-Age, owner-read, deploy integrity, offline and privacy checks passed. Workflow-scope fix commit 273a60bda3105f3163bf2ad606e58f885681da8b is now on the Boss branch; its exact-head CI is queued. No full local Aii checkout and no Redmi receipt; CI only. Current pre-final-handoff head ce7ca26a08e9bf0d8dea79835035a4281b53bba1 has 16 exact check runs: 15 queued, 1 additive-validator skip; no new-head PASS. Research R-047–R-051 and its handoff are integrated; PR #2260 itself remains closed draft."
     },
     {
       "id": "V14-002",
@@ -189,8 +189,8 @@
       "proof_environment": "Boss docs/research PR #2253 merged at 838482cea5271732ddc9710d2c6ca737a94b4718 after exact PR privacy scan 1/1 PASS. Post-merge workflows are 13/19 SUCCESS, 4 IN_PROGRESS, 2 QUEUED, 0 failures at last poll. No production code PR was promoted. #2242 has identical 3.13/3.14 invalid SourceRef fixture failures; #2244 is old-base; #2246/#2250 expose the A5 blob race; #2247 has retention and pin failures; #2235 remains 7/10 with nested-closure AST attribution.",
       "next_step": "Read exact-head 273a CI, then complete independent review of stage/deployer, audio consent, Store/GoalStore transactions, speech fallback and updater paths. No blind merge; do not weaken the additive validator.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T22:25:13.423Z",
-      "proof": "Boss integration PR #2258 remains DRAFT / NOT_RELEASED. Current branch head after workflow-scope commit is 273a60bda3105f3163bf2ad606e58f885681da8b; code-bearing tested head is 0dc337edfb7a71168e15f3db08bcedc424e32d4f. The prior strict additive job failed before running tests because the integration PR changed 60 changed files (the original 59-file code composition plus the workflow-scope file) while the additive harness accepts 2..30 strictly-added files. Boss changed only the workflow scope: the validator now runs only on v13-additive/* branches or PRs labelled v13-additive-candidate; the 2..30/add-only checks themselves are unchanged. Exact CI for the new head is queued. Manual protected-file review is not complete."
+      "last_checkpoint": "2026-11-21T22:29:39.614Z",
+      "proof": "Boss integration PR #2258 remains DRAFT / NOT_RELEASED. Current branch head after workflow-scope commit is 273a60bda3105f3163bf2ad606e58f885681da8b; code-bearing tested head is 0dc337edfb7a71168e15f3db08bcedc424e32d4f. The prior strict additive job failed before running tests because the integration PR changed 60 changed files (the original 59-file code composition plus the workflow-scope file) while the additive harness accepts 2..30 strictly-added files. Boss changed only the workflow scope: the validator now runs only on v13-additive/* branches or PRs labelled v13-additive-candidate; the 2..30/add-only checks themselves are unchanged. Exact CI for the new head is queued. Manual protected-file review is not complete. Current pre-final-handoff exact-head check readback: 16 total, 15 queued, 1 expected additive-validator skip; no completed checks on this head."
     },
     {
       "id": "V14-008",
@@ -656,7 +656,7 @@
   "latest_checkpoint": {
     "timestamp": "2026-11-21T22:21:06.563Z",
     "boss_branch": "boss/v14-core-perception-store-audio-integration-20261121",
-    "boss_head": "1c16a1618e3ed8436f046888fe9517677663cb36",
+    "boss_head": "ce7ca26a08e9bf0d8dea79835035a4281b53bba1",
     "code_candidate_sha": "0dc337edfb7a71168e15f3db08bcedc424e32d4f",
     "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
     "release_development_head": "bdcad466ffea75a2b41f7d23be168f53c7197d20",
@@ -669,15 +669,18 @@
     "user_action_required": false,
     "current_head_checks": {
       "total": 16,
-      "queued": 14,
-      "skipped": 2,
+      "queued": 15,
+      "skipped": 1,
       "completed_success": 0,
       "completed_failure": 0,
-      "read_at": "2026-11-21T22:25:13.423Z"
+      "read_at": "2026-11-21T22:29:39.614Z"
     },
     "research_ledger_blob": "67284d44068adfd644b65199898337c6876e4d86",
     "research_handoff": "v14/handoffs/RESEARCH_PERCEPTION_LATENT_PLASTICITY_20261121.md",
-    "research_integrated_from_closed_draft_pr": 2260
+    "research_integrated_from_closed_draft_pr": 2260,
+    "changed_files": 62,
+    "research_integrated_at": "2026-11-21T22:29:39.614Z",
+    "research_pr2260_state": "CLOSED_DRAFT_NOT_MERGED_CONTENT_INTEGRATED"
   },
   "capability_matrix": [
     {

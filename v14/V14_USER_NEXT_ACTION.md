@@ -13,6 +13,10 @@
 
 Research/Perception PR #2260 was CLOSED_DRAFT, not merged. Its reviewed R-047–R-051 ledger entries and the research handoff are now integrated into the Boss branch. No code/model/weight was imported. Current #2256 head 08fce fails two same-batch speaker-evidence tests on Python 3.13/3.14; keep NumPy opt-in. XKV/HeteroFold are research-only; #2266 is a diagnostic input-embedding probe with CI pending, not trained B3. AGN/AEN is a future small-head hypothesis after JEPA retention. Full details and license caveats are in the research ledger and handoff.
 
+## Research R-047–R-051 now integrated
+
+Research/Perception PR #2260 was CLOSED_DRAFT, not merged. Its reviewed ledger entries and handoff are now present in this Boss branch. R-047's prior x86 NumPy speed/parity result is historical; current #2256 head 08fce fails two same-batch speaker-evidence tests. R-048 Tandem is hardware-specific, R-049 documents LFM2.5 cache/license constraints, R-050 reviews XKV/HeteroFold and the pinned llama.cpp input-embedding API (Core #2266 remains diagnostic-only with CI pending), and R-051 is a future AGN/AEN small-head hypothesis after JEPA retention. No model, dependency or weight was imported.
+
 ## Other active integration blockers
 
 - [#2235 Age/X10 rights](https://github.com/RedMentos/Aii/pull/2235): 9/11 checks pass; nested callback attribution and negative control are fixed. Compose its Age-rights changes with #2258 without overwriting GoalWake atomicity. Official Age remains 0; Age controls developmental/tool/learning rights, never compute budget.

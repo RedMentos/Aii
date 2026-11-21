@@ -928,9 +928,9 @@ Exactly five V14 automations are enabled: Boss & Integration, QA & Android, JEPA
 - A5 UI lease run `44954629368`: **17 passed, 5 subtests passed** on Python 3.13 and 3.14; source-publication/revocation regression and privacy scan passed.
 - Audio lease + exact arithmetic run `44954629375`: **52 passed, 26 subtests passed** on Python 3.13 and 3.14.
 - Lab-Age, private owner-read CI, Python 3.14 staged startup/SQLite source references, deploy integrity, offline and bridge-security checks passed. These are code/CI checks, not an authenticated phone receipt.
-- The previous safe-additive job `44954629355` failed before running candidate tests because the Boss integration PR changes **60 changed files (59 original composed paths plus the workflow-scope file)** while the strict additive harness accepts only 2..30 files and only newly-added inert modules/tests/handoffs. This was not a functional test failure and must not be described as a validator PASS.
+- The previous safe-additive job `44954629355` failed before running candidate tests because the Boss integration PR changes **62 changed files (59 original code-bearing paths plus workflow scope, research ledger and handoff) (59 original composed paths plus the workflow-scope file)** while the strict additive harness accepts only 2..30 files and only newly-added inert modules/tests/handoffs. This was not a functional test failure and must not be described as a validator PASS.
 - Boss commit `273a60b` scopes that unchanged strict validator to explicit `v13-additive/*` branches or PRs carrying `v13-additive-candidate`. It does not relax the 2..30/add-only checks. The exact new-head workflow `44956011562` is SKIPPED as intended for this integration branch; the other new-head workflows are queued. Wait for their exact results before any merge decision.
-- Manual protected-file review of the 60-file integration is still incomplete. Do not merge #2258 yet.
+- Manual protected-file review of the 62-file integration is still incomplete. Do not merge #2258 yet.
 
 ### Cross-agent PR reconciliation and actual next blockers
 
@@ -988,3 +988,8 @@ Research/Perception PR #2260 was a CLOSED DRAFT, not merged. Its reviewed resear
 - **R-051 — AGN/AEN plasticity:** full-text preprint reviewed. Its results are online training accuracy on permuted MNIST/FashionMNIST, not old-session holdout retention. Use only as a future small-head comparison after JEPA retention is stable; no implementation accepted.
 
 Primary papers: https://arxiv.org/abs/2608.20617, https://arxiv.org/abs/2609.32259, https://arxiv.org/abs/2608.01475. Exact license/API notes and caveats are in `v14/V14_RESEARCH_LEDGER.md` and `v14/handoffs/RESEARCH_PERCEPTION_LATENT_PLASTICITY_20261121.md`.
+
+
+### Final exact-head poll before this handoff commit — 2026-11-21T22:29:39.614Z
+
+Boss branch pre-final-handoff head `ce7ca26a08e9bf0d8dea79835035a4281b53bba1`: 16 check runs, 15 queued and 1 expected additive-validator skip. No completed result on this exact head. Current branch has 62 changed files: the original 59 code-bearing paths plus the workflow-scope correction, research ledger and research handoff. Research R-047–R-051 is integrated; #2260 itself remains CLOSED_DRAFT_NOT_MERGED. No new-head PASS or Redmi proof is claimed.

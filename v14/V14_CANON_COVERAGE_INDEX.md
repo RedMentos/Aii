@@ -1839,7 +1839,7 @@ This overlay is additive. No historical Canon heading, requirement, or inventory
 
 - [Boss integration PR #2258](https://github.com/RedMentos/Aii/pull/2258), current branch head `273a60bda3105f3163bf2ad606e58f885681da8b`; code-bearing tested parent `0dc337edfb7a71168e15f3db08bcedc424e32d4f); release base `bdcad466ffea75a2b41f7d23be168f53c7197d20`. DRAFT / NOT_RELEASED. Current-head CI after the workflow-scope commit is pending.
 - Exact code-head CI: integrated regression 424 passed / 3 skipped / 58 subtests; staged runtime 252 passed / 10 skipped / 47 subtests; arithmetic/broker 39 passed / 17 subtests; A5 UI lease 17 passed / 5 subtests on Python 3.13 and 3.14; audio lease/arithmetic 52 passed / 26 subtests on both versions. Migration, Lab-Age, owner-read, deploy integrity, offline and privacy checks passed. All are CI/synthetic evidence, not local full-repository or Android evidence.
-- The former additive-only job rejected the broad 60-file integration before running tests (2..30 newly-added-file limit). Boss commit `273a60b` scopes that unchanged strict validator to explicit `v13-additive/*` branches or the `v13-additive-candidate` label. The job is expected to skip on the integration PR; it is not a validator PASS.
+- The former additive-only job rejected the broad 62-file integration before running tests (2..30 newly-added-file limit). Boss commit `273a60b` scopes that unchanged strict validator to explicit `v13-additive/*` branches or the `v13-additive-candidate` label. The job is expected to skip on the integration PR; it is not a validator PASS.
 - [Native input-embedding receiver #2266](https://github.com/RedMentos/Aii/pull/2266): explicit operator-only probe, pinned llama.cpp revision, no production routing or training authority. Exact Python/native/Android cross-compile CI pending; no model or Redmi execution.
 - [Android companion #2271](https://github.com/RedMentos/Aii/pull/2271): launch_app-only, default-OFF prototype. Android build is blocked by SDK package-list syntax and a P1 duplicate-approval race must be fixed before review.
 - [JEPA #2247](https://github.com/RedMentos/Aii/pull/2247): current exact A→B→A/staged/deploy CI pending. Previous-head synthetic A2 results do not accept the current head or production weights.
@@ -1891,3 +1891,8 @@ Research/Perception PR #2260 was a CLOSED DRAFT, not merged. Its reviewed resear
 - **R-051 — AGN/AEN plasticity:** full-text preprint reviewed. Its results are online training accuracy on permuted MNIST/FashionMNIST, not old-session holdout retention. Use only as a future small-head comparison after JEPA retention is stable; no implementation accepted.
 
 Primary papers: https://arxiv.org/abs/2608.20617, https://arxiv.org/abs/2609.32259, https://arxiv.org/abs/2608.01475. Exact license/API notes and caveats are in `v14/V14_RESEARCH_LEDGER.md` and `v14/handoffs/RESEARCH_PERCEPTION_LATENT_PLASTICITY_20261121.md`.
+
+
+### Final exact-head and research poll — 2026-11-21T22:29:39.614Z
+
+Boss pre-final-handoff head `ce7ca26a08e9bf0d8dea79835035a4281b53bba1`: 16 checks, 15 queued and 1 expected additive-validator skip. The branch has 62 changed paths, including the reviewed research ledger R-047–R-051 and Perception handoff. Research PR #2260 was closed draft, not merged; its reviewed research content is integrated on this branch. No new-head PASS or Android proof is claimed.
