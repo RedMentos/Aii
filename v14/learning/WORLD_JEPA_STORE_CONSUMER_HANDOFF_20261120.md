@@ -2,7 +2,8 @@
 
 Owner: JEPA & Memory. Work item: V14-004.
 Base: gpt6/v13-private-remote-bridge-20261111 at c3c32c05a0374e970d274f8a777a7ab85c067d66.
-Candidate branch: jepa-memory/v14-world-jepa-persistent-consumer-20261121.
+Candidate branch: jepa-memory/v14-world-jepa-store-consumer-persistent-20261121.
+Candidate implementation SHA before this checkpoint: 93d6c877c7263b2966102d8d1c18ba9e312b7933.
 Status: implementation candidate; not merged, not released, not wired into normal Runtime.
 
 ## Implemented in this candidate
@@ -33,7 +34,7 @@ ER-JEPA (arXiv:2609.36952, 2026-09-29) reinforces replay as a separate path from
 ## Verification
 
 - Exact local repository checkout / py_compile / pytest: BLOCKED in this worker; GitHub DNS checkout was unavailable. No local PASS is claimed.
-- The dedicated GitHub workflow must pass on the exact candidate HEAD before review.
+- The dedicated GitHub workflow is configured for the exact branch pattern; a branch update is being pushed to trigger the first exact-SHA run. The exact run result must be fetched before review.
 - Environment: SYNTHETIC_DATA / REAL_SQLITE_STORE_TEST, not LOCAL_LINUX full runtime, not TERMUX/REDMI.
 - REDMI_UNVERIFIED; no private device receipt or authorized device session was available.
 - Updater/deployment: no push to release branch and no device update attempted. NOT_RELEASED.

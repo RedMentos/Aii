@@ -97,7 +97,7 @@ def test_cursor_pages_cover_oldest_backlog_without_starvation(tmp_path):
 def test_source_disjoint_split_groups_same_source_and_rejects_content_leak():
     actions = tuple(world_model.ACTIONS)
     rows = []
-    for source_index in range(32):
+    for source_index in range(64):
         source_id = f"source-{source_index:03d}"
         for action_index in range(2):
             index = source_index * 2 + action_index

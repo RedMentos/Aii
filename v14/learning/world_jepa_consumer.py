@@ -397,6 +397,7 @@ class WorldJEPAStoreConsumer:
                 or set(train_ids) & set(holdout_ids)
                 or not set(train_ids).issubset(row_ids)
                 or not set(holdout_ids).issubset(row_ids)
+                or (set(train_ids) | set(holdout_ids)) != set(row_ids)
                 or len(train_ids) < 8 or len(holdout_ids) < 8):
             raise ValueError("invalid source-disjoint train/holdout IDs")
         by_id = {row["action_id"]: row for row in rows}
