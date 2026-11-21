@@ -586,6 +586,62 @@ except AssertionError as exc:
 finally:
     runtime.close()
 
+# Scenario 7: Runtime.close must cancel and wait for the active C3 iterator
+# before tombstoning any derived acoustic source or closing the Store.
+home = Path(sys.argv[1]) / "close-cleanup-order"
+runtime = Runtime(home)
+provider = Provider()
+entered = threading.Event()
+first_chunk = threading.Event()
+finished = threading.Event()
+cancel_observed = threading.Event()
+release = threading.Event()
+seen = {}
+from v13 import audio_context_store
+original_revoke = audio_context_store._revoke
+cleanup_observations = []
+
+
+def observed_revoke(rt, event_id, context):
+    cleanup_observations.append((rt.cancel_event.is_set(), finished.is_set()))
+    return original_revoke(rt, event_id, context)
+
+
+audio_context_store._revoke = observed_revoke
+try:
+    configure(runtime)
+    runners = {
+        role: Runner(
+            role, seen,
+            entered if role == "C3_LANGUAGE" else None,
+            release if role == "C3_LANGUAGE" else None,
+            first_chunk if role == "C3_LANGUAGE" else None,
+            finished if role == "C3_LANGUAGE" else None,
+            cancel_observed if role == "C3_LANGUAGE" else None,
+        )
+        for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")
+    }
+    runtime.pool.get = Mock(side_effect=lambda role: runners[role])
+    runtime.submit(question, audio_window=make_window(provider))
+    assert entered.wait(30), "close-order test did not reach C3"
+    assert first_chunk.wait(5), "close-order test did not stream first chunk"
+    closer = threading.Thread(target=runtime.close, daemon=True)
+    closer.start()
+    assert cancel_observed.wait(5), "Runtime.close did not cancel the active C3 iterator"
+    assert finished.wait(5), "C3 iterator did not exit before close cleanup"
+    closer.join(timeout=10)
+    assert not closer.is_alive(), "Runtime.close hung while waiting for C3"
+    assert cleanup_observations and all(
+        cancelled and iterator_finished for cancelled, iterator_finished in cleanup_observations
+    ), cleanup_observations
+    assert runtime.closed is True
+except AssertionError as exc:
+    failures.append("close cleanup ordering: " + str(exc))
+finally:
+    release.set()
+    runtime.close()
+    audio_context_store._revoke = original_revoke
+
 assert not failures, "; ".join(failures)
 print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 lease spans iterator; Runtime.cancel and Runtime.close release lease for revocation; tombstones, unsubscribe and text fallback stay safe")
 '''
