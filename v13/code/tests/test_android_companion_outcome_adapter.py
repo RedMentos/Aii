@@ -190,6 +190,35 @@ def test_replay_rejects_second_action_at_atomic_store_commit(tmp_path):
     verifier.close()
 
 
+def test_nonce_replay_rejected_across_distinct_source_events(tmp_path):
+    broker, verifier = setup(tmp_path)
+    store, first_event, _ = make_real_store(tmp_path)
+    second_session = store.new_session("second source")
+    second_event = store.event(second_session, "open settings")
+
+    first, _ = approved_dispatch(
+        broker, event_id=first_event["event_id"], source_ref=first_event["source_ref"]
+    )
+    first_outcome = accept_companion_receipt(
+        broker, verifier, first.action_id, make_receipt(first, nonce="c" * 32)
+    )
+    persist_companion_outcome(store, first_outcome)
+
+    second, _ = approved_dispatch(
+        broker, event_id=second_event["event_id"], source_ref=second_event["source_ref"]
+    )
+    second_outcome = accept_companion_receipt(
+        broker, verifier, second.action_id, make_receipt(second, nonce="c" * 32)
+    )
+    with pytest.raises(InvalidOutcome, match="receipt nonce replay"):
+        persist_companion_outcome(store, second_outcome)
+
+    assert len(store.rows("SELECT id FROM packets WHERE kind='ActionOutcome'")) == 1
+    store.close()
+    broker.close()
+    verifier.close()
+
+
 def test_companion_persistence_is_idempotent_after_store_restart(tmp_path):
     broker, verifier = setup(tmp_path)
     store, event, home = make_real_store(tmp_path)
