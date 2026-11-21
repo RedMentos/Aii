@@ -514,11 +514,16 @@ def test_pending_cohort_rollback_rewinds_cursor_and_replays_verified_rows(tmp_pa
 def test_checkpoint_readback_rejects_source_sha256_leak(tmp_path):
     store, session = _make_store(tmp_path / "brain-digest-leak")
     try:
-        _add_transitions(store, session, 0, 64)
+        # Match the robust action-conditioned cohort used by the main learner
+        # integration test. The strict holdout/negative-control utility gate is
+        # intentionally unchanged; 64 rows / 40 steps can be borderline across
+        # supported NumPy versions (notably 2.5.x on Python 3.14).
+        _add_transitions(store, session, 0, 256)
         consumer = WorldJEPAStoreConsumer(
-            store, tmp_path / "private-digest-leak", learning_enabled=True
+            store, tmp_path / "private-digest-leak", learning_enabled=True,
+            seed=13, ensemble=2,
         )
-        result = consumer.update(limit=64, steps=40, optimizer_permission=True)
+        result = consumer.update(limit=256, steps=120, optimizer_permission=True)
         assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         payload, version = store.state("v14.world_jepa.store_consumer", None)
         record = payload["active"]
