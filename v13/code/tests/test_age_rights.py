@@ -41,6 +41,24 @@ class AgeStageChangesAllowedPaths(unittest.TestCase):
         # Resources still mask rights; a demotion closes the path again.
         self.assertNotIn('own_sleep_planning',permission_flags(a,self.cfg,'CRITICAL')['rights'])
         a.lower('tool',0);self.assertFalse(effort.age_limits(a,'NORMAL')['tools'])
+    def test_age_rights_change_tool_and_verify_only_not_compute(self):
+        hot=effort.signals('Vergleiche A und B','both',
+            {'source':'BOOT_SCAFFOLD','scaffold':'both'}) | {
+                'uncertainty':1.,'conflict':1.,'novelty':1.,'salience':1.}
+        low=effort.age_limits(self.a,'NORMAL')
+        before=effort.decide('adaptive',hot,age=low)
+        for _ in range(9):self.a.record('system',GOOD)
+        for _ in range(3):self.a.record('tool',GOOD)
+        for _ in range(6):self.a.record('language',GOOD)
+        high=effort.age_limits(self.a,'NORMAL')
+        after=effort.decide('adaptive',hot,age=high)
+        keys=('effort','band','wake','max_reentry','focal_cycles','focal_slots','observer_scale')
+        self.assertEqual(tuple(before[k] for k in keys),tuple(after[k] for k in keys))
+        self.assertFalse(before['verify']);self.assertTrue(after['verify'])
+        self.assertEqual(before['tool_steps'],0);self.assertEqual(after['tool_steps'],1)
+        self.assertNotIn('focal_depth',high)
+        self.assertNotIn('autonomous_effort_max',high)
+
     def test_gist_without_adaptive_right_keeps_base_grouping(self):
         a=self.a
         for _ in range(3):a.record('system',GOOD)
