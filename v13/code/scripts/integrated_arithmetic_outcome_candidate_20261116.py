@@ -4,7 +4,6 @@ Apply after the arithmetic layer in the disposable review tree. Model World
 training roles/checkpoints and all permission gates retain their existing scope.
 """
 import hashlib
-import re
 from pathlib import Path
 
 
@@ -74,13 +73,15 @@ def apply_sources(code_dir, sources):
         raise ValueError('arithmetic outcome semantic source missing')
 
     def source_pin(raw, filename):
-        pattern = (rb"(?m)^\\s*'" + re.escape(filename.encode('ascii'))
-                   + rb"'\\s*:\\s*'([0-9a-f]{64})'")
-        matches = re.findall(pattern, raw)
-        if len(matches) != 1:
+        needle = b"    '" + filename.encode('ascii') + b"':'"
+        if raw.count(needle) != 1:
             raise ValueError('arithmetic outcome semantic pin ambiguous: ' + filename)
-        return matches[0].decode('ascii')
-
+        start = raw.index(needle) + len(needle)
+        value = raw[start:start + 64]
+        if (len(value) != 64 or raw[start + 64:start + 65] != b"'"
+                or any(char not in b"0123456789abcdef" for char in value)):
+            raise ValueError('arithmetic outcome semantic pin malformed: ' + filename)
+        return value.decode('ascii')
     # ContextOS legitimately rebinds Store after feedback bootstrap. Validate
     # the semantic file's live Store/Memory pins instead of freezing that
     # generated intermediate hash; its original source and World anchor remain pinned.
