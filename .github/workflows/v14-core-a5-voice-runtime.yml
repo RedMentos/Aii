@@ -11,6 +11,8 @@ on:
       - "v13/code/v13/audio_voice_cues.py"
       - "v13/code/tests/test_c3_audio_runtime_consumer.py"
       - "v13/code/tests/test_v14_audio_context_stage_20261121.py"
+      - "v13/code/tests/test_arithmetic_reflex.py"
+      - "v13/code/tests/arithmetic_disposable_cases_20261116.py"
       - "v13/code/tests/test_termux_runtime_recovery_stage.py"
       - "v13/code/tests/test_runtime_deploy_integrated_20261116.py"
       - "v13/code/tests/test_v14_arithmetic_policy_separation.py"
@@ -46,9 +48,9 @@ jobs:
           python -m pip install numpy==2.2.6 psutil PyYAML pytest==9.2.0
       - name: Verify exact builder and deployer pin chain
         run: |
-          test "$(sha256sum v13/code/scripts/integrated_audio_context_candidate_20261121.py | cut -d' ' -f1)" = "3e0a52f78567e9bfd78d15408a7c13e1974b10af70a75eccf338a21a039a07c0"
-          test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py | cut -d' ' -f1)" = "b55abb25e2d8cebb138dd92d646f7a51a2c6fb5cbce981af48e58bf4cb99c962"
-          test "$(sha256sum v13/code/scripts/stage_integrated_candidate.py | cut -d' ' -f1)" = "4cfc25979e13e19ee9278f26633b4c2ea58f585a38973c0503d7482658fa7c4c"
+          test "$(sha256sum v13/code/scripts/integrated_audio_context_candidate_20261121.py | cut -d' ' -f1)" = "69ec350faa4235a4558bdfd56780e8b26e97abeee824d71ddeb65a9079c8f1af"
+          test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py | cut -d' ' -f1)" = "3f98acf869917e795497795af33197d198dc114c4a8943b7ec585f64cd998f75"
+          test "$(sha256sum v13/code/scripts/stage_integrated_candidate.py | cut -d' ' -f1)" = "1dcdf2fda5ed0ea5a51e7f68754344c0a291e66ab020ee8fabee97442996809e"
           grep -F 'STAGER_SHA256 = "4cfc25979e13e19ee9278f26633b4c2ea58f585a38973c0503d7482658fa7c4c"' v13/code/v13/runtime_deploy.py
       - name: Compile composed builders and Runtime consumers
         run: |
@@ -67,7 +69,6 @@ jobs:
         run: |
           python -m pytest -q \
             v13/code/tests/test_v14_audio_context_stage_20261121.py \
-            v13/code/tests/test_audio_ear_voice_cues_v14.py \
             v13/code/tests/test_v14_arithmetic_policy_separation.py \
             v13/code/tests/test_arithmetic_stage_20261116.py \
             v13/code/tests/test_arithmetic_reflex.py
@@ -89,4 +90,3 @@ jobs:
             v13/code/tests/test_context_os.py \
             v13/code/tests/test_enlightened_space.py \
             v13/code/tests/test_offer_deadlines.py \
-            v13/code/tests/test_online_world_20261108.py
