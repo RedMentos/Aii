@@ -72,7 +72,9 @@ def test_hardlink_denial_falls_back_to_verified_renameat2_publication(
 
     receipt = checkpoint.save(model, destination, SOURCE_SHA)
 
-    assert rename_calls == [(next(iter(_pending_entries(directory))).name, DEST_NAME)] if _pending_entries(directory) else len(rename_calls) == 1
+    assert len(rename_calls) == 1
+    assert rename_calls[0][0].startswith(checkpoint.PENDING_PREFIX)
+    assert rename_calls[0][1] == DEST_NAME
     assert destination.is_file()
     assert stat.S_IMODE(destination.stat().st_mode) == 0o600
     assert _pending_entries(directory) == []
