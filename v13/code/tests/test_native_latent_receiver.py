@@ -3,6 +3,7 @@ import json
 import os
 import struct
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -186,3 +187,29 @@ def test_deadline_is_enforced(tmp_path):
     home, model, binary, digest = fixture(tmp_path, sleep=0.2)
     with pytest.raises(TimeoutError):
         run_probe(home, model, binary, digest, deadline=time.monotonic() + 0.05)
+
+
+def test_cancel_event_terminates_native_receiver_process(tmp_path):
+    home, model, binary, digest = fixture(tmp_path, sleep=0.5)
+    cancelled = threading.Event()
+    thread = threading.Thread(
+        target=lambda: (time.sleep(0.1), cancelled.set()), daemon=True
+    )
+    thread.start()
+    with pytest.raises(InterruptedError, match="cancelled"):
+        probe(
+            home=home,
+            model_path=model,
+            expected_model_sha256=digest,
+            sender_role="B2_GIST",
+            receiver_role="C3_LANGUAGE",
+            sender_tap_id="qwen35.result_norm.final.v1",
+            sender_model_revision="qwen35-r1",
+            receiver_model_revision="lfm2-r1",
+            source_id="source-1",
+            generation_id="generation-1",
+            vectors=[[1.0, 2.0]],
+            deadline=time.monotonic() + 5,
+            binary_path=binary,
+            cancel_event=cancelled,
+        )
