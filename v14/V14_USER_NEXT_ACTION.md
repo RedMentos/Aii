@@ -1193,3 +1193,12 @@ Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/225
 - Still IN_PROGRESS: staged audio/arithmetic Python 3.14 (compile passed; staged Runtime audio/C5/persistence test running) and a fresh offline-bridge-security run. validate-additive remains FAIL under the strict 2..30-file additive-only rule applied to the broad integration PR. No release approval until the current-head jobs complete and the validator scope is reviewed.
 - This exact head includes the A5 and full audio/arithmetic QA test files byte-identically; they are now exercised by the composed Boss workflows. QA code PRs #2265/#2269 are closed as superseded; #2270 is the current-base handoff PR.
 - Redmi remains REDMI_UNVERIFIED; private owner-read #431/#432/#439 has no authenticated reply. No device action or user command.
+
+
+### Final 0dc337 exact-head readback — 2026-11-21 23:29 CET
+
+- Boss PR #2258 exact head `0dc337edfb7a71168e15f3db08bcedc424e32d4f`: **16/16 code/runtime checks PASS**. Old-phone migration, Lab-Age, owner-read, staged startup/SQLite, A5 UI lease 3.13/3.14, staged-runtime, verify, combined, offline, staged audio/arithmetic 3.13/3.14, integrated-regression, same-repository integration guard and offline bridge security all PASS.
+- The only failed check is `validate-additive` (run `44954629355`), because its strict 2..30-file ADD-only candidate rule is applied to the broad Boss integration PR. Preserve all strict checks for true additive candidates; scope the workflow to explicit candidate branches/labels. Do not bypass or weaken the candidate gate. #2258 remains DRAFT / NOT_RELEASED until the scope issue is reviewed and corrected.
+- A5 race and audio lease/arithmetic tests are now integrated into the Boss workflows; their exact QA-focused 3.13/3.14 tests passed before integration. Synthetic PCM/model runners only.
+- Current-base handoff PR #2270 contains this update. QA code PRs #2265/#2269 are closed as superseded by #2258.
+- Redmi remains REDMI_UNVERIFIED: #431/#432/#439 have no authenticated replies; installed SHA and updater consent remain UNKNOWN. No device action or user command.
