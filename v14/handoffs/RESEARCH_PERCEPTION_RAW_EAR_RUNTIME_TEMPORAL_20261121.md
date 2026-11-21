@@ -64,3 +64,15 @@ R-026 in the research ledger records an exact upstream read at llama.cpp `93cb37
 1. Boss performs independent manual review of the non-additive existing-module edit; keep the strict safe-additive failure visible.
 2. Core rebinds #2158 to both exact source blobs and proves text + audio PerceptPacket separation and the staged A5→B1/B2→C4→C3 consumer path.
 3. QA may request a separate owner-consented Redmi test only after integration/release gates; no current handset receipt or deployment exists. No user action is needed now.
+
+
+## Latest exact current-head CI — 2026-11-21
+
+Current PR #2192 head `0bba3da8cd57ed808c98f9f79ae2dedcda3647fe`; code-bearing blobs unchanged from the earlier exact code tree.
+
+- RAW EAR → A4 → C3: run `44897542328`, **29/29 PASS** on Python 3.11.18 and 3.13.18; py_compile also PASS.
+- RAW EAR vs WebRTC/libfvad: run `44897542315`, on Python 3.13.18 and 3.14.10. Each runner built pinned `dpirch/libfvad@532ab666c20d3cfda38bca63abbb0f152706c369`, native `make check` **13/13 PASS**, then the actual shared-library ctypes + comparator tests **8/8 PASS**.
+- Staged context + integrated regression: run `44897542320`: staged-runtime **249 passed / 10 skipped / 47 subtests**; integrated-regression **415 passed / 3 skipped / 58 subtests**.
+- Model-lab `44897542295`, public privacy scan `44897542364`, and integration-event/private-bridge `44897553859`: PASS.
+- Strict safe-additive `44897553946`: expected FAIL because this PR modifies the existing RAW EAR producer/temporal modules rather than adding only inert modules. The exact log says `path outside inert-module/test/handoff scope`; no validator bypass was used. Manual Boss review is required.
+- All above are GitHub-hosted Linux CI, not LOCAL_LINUX or Redmi. Full local checkout remains blocked by GitHub DNS; REDMI_UNVERIFIED / NOT_RELEASED.
