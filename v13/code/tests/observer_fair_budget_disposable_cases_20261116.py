@@ -205,9 +205,9 @@ class RuntimeObserverTests(unittest.TestCase):
                                     'uncertainty': 'none', 'needs_reentry': False}
                             else:
                                 payload = {
-                                    'summary': 'This comparison balances price against travel time: A is cheaper while B is faster.',
-                                    'quotes': [2, 4] if pointer else [
-                                        'Option A costs 11 and takes 9 minutes.',
+                                    'summary': 'This is a price-versus-speed trade-off rather than one overall winner.',
+                                    'quotes': [1, 4] if pointer else [
+                                        'Compare Cedar train options.',
                                         'Which is cheaper, and which is faster?'],
                                     'uncertainty': 'none', 'needs_reentry': False}
                             yield json.dumps(payload)
