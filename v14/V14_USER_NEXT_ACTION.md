@@ -1,3 +1,13 @@
+# Latest user-facing checkpoint — 2026-11-21 07:11 CET
+
+- PR #2161 exact head e523f539febb659b6aa56710e9072738b75698cc: RAW EAR tests 12/12 PASS on Python 3.11.18 and 3.13.18; staged Runtime/source-recall/SQLite/revocation/JEPA-restart and integrated regression PASS; privacy scan PASS. Safe-additive workflow FAIL is the intentional non-additive scope guard because an existing producer/test is modified; no bypass was attempted.
+- The single-voiced-frame bug is fixed. Local Python 3.13.5 isolated fixtures 2/2 PASS; exact repository checkout remained blocked by DNS, so the local full suite is not claimed.
+- New P0 latent finding: the pinned b10964 native tap returns per-token final-RMSNorm rows, but LlamaRunner.tap hardcodes the LFM2 tap_id even for Qwen3.5 B2/GIST. Core must bind the TAP_SPECS tap_id; LFM2/Qwen vocabularies differ, so pairing must be by source/event, not token ID. No native B1/B2 tap or receiver-effect experiment has run.
+- Core #2158 still needs module blob 0e328d14883840190937f0fef24a8e895ba7261c plus its independent QueryPacket/arithmetic/recovery fixes. Research's next step is a source-paired L1 experiment after the tap identity fix.
+- Device/release: NOT_RELEASED; REDMI_UNVERIFIED. No model, weight, permission, updater, phone or user data change. User action: none.
+
+---
+
 # Latest user-facing checkpoint — 2026-11-21 06:58 CET
 
 - New code: the Research & Perception branch fixes the RAW EAR V3 short-window edge where one voiced frame was rejected or could imply unsupported prosody. One-frame windows now carry a zero range and cannot claim dynamic change; the validator rejects malformed one-frame claims.
