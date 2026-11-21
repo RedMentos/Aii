@@ -56,3 +56,30 @@ Boss/integrator: please sync the verified result into `V14_LIVE_WORKPLAN.md`, `V
 ## Next executable step
 
 Run the exact PR CI/staged test chain. If green, have the Boss review and integrate this branch into the current V14 release ancestor. Then run multi-seed persist-vs-reset/replay ablations and measure CPU/RSS/TTFT on Linux; only after an authorized real Redmi receipt can Android performance or deployment be claimed. Next architectural gap remains actual learned latent B1/B2 coupling and later safe cross-organ weight updates, not native GGUF plasticity.
+
+
+## Exact-head CI and product checkpoint — 2026-11-21
+
+- PR #2198 exact head: `a6dd9836404e4de8393e76fa31152a00d3a3824b`, based on the verified development branch head `4a471ae40dd9b768c8130fafdba51900b5417800`. GitHub readback confirms the commit and PR head. This is a candidate branch, **NOT_RELEASED**.
+- Exact-head GitHub Actions:
+  - staged-runtime: **249 passed / 10 skipped / 47 subtests** (Linux, Python 3.11)
+  - integrated-regression: **417 passed / 3 skipped / 58 subtests** (Linux, Python 3.11)
+  - combined online JEPA: **49 passed** (Python 3.11)
+  - JEPA checkpoint retention: **21 passed** (Python 3.11)
+  - incremental WorldJEPA: **27 passed** (Python 3.11)
+  - two-checkout old-phone/current-phone migration: **2 passed**
+  - Lab Age control: **8 + 4 + 7 + 4 tests passed**
+  - runtime deployment integrity: **3 + 31 tests passed**
+  - private owner-read bootstrap: **Python 3.11 suites passed; Python 3.14 staged runtime startup/SQLite source-reference checks passed (11 tests in the 3.14 job)**
+  - generic safe-additive check: **FAIL by policy**, because this PR intentionally changes existing production files; no bypass or waiver was applied. This remains a non-green check and the PR stays draft pending Boss/QA review.
+- Two real integration failures were found and corrected before the final head:
+  1. The staged resume builder encoded newline anchors as literal backslash-n, so it could not bind the real guard source. The builder now uses actual newline anchors and its downstream exact SHA pins are updated.
+  2. The new stage-builder hash was not yet reflected in `runtime_deploy.STAGER_SHA256`; the exact current stage hash is now pinned. The two-checkout migration and runtime-deployment integrity workflows pass after this correction.
+- Local exact repository test: **BLOCKED**. This runner has Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2, but no Aii checkout; `git ls-remote https://github.com/RedMentos/Aii.git` fails with DNS resolution for github.com. No LOCAL_LINUX repository-test PASS is claimed.
+- Python 3.14 CI only proves staged startup and SQLite source-reference roundtrip; the new optimizer-resume training tests themselves ran on Python 3.11. A dedicated Python 3.14 optimizer-resume run remains a useful QA follow-up, not an Android proof.
+- The exact path now exercised in staged CI is: committed/source-verified T8 rows -> persistent WorldJEPA encoder/predictor/inverse head + EMA and Adam/RNG state -> private atomic checkpoint and Store cursor -> restart/rollback/replay -> source-disjoint B1_DETAIL/B2_GIST/SELF numeric ridge readouts -> World/Planner SHADOW consumer. The readout heads are numeric SHADOW models, not the two native sparse-MoE bodies; no trained cross-organ latent injection, native GGUF weight edit or foreground C3 answer change is claimed.
+- User effect: the local postcommit learning candidate can continue the same numeric WorldJEPA optimizer after checkpoint/restart rather than silently restarting Adam each page. Learning/optimizer gates remain OFF by default; all decision authority remains NONE.
+- Device/deployment: **REDMI_UNVERIFIED**; no authenticated phone receipt, installed SHA, native Termux training, Android RSS/latency or updater installation was observed. GitHub push/CI is not deployment. No UPDATE_REQUEST, shell action, model download/swap, permission change or user-data mutation occurred.
+- Research follow-up: the RoD note above should be mirrored by Research & Perception into the shared V14 research ledger as a dated entry; this handoff does not edit their shared ledger. No third-party code or weights were reused.
+- Next executable JEPA step after independent review/merge: matched multi-seed persistent-vs-reset optimizer runs with identical source-disjoint cohorts/update counts/replay bytes, reporting new and old holdout, parameter/EMA diffs and restart equivalence. Keep uniform/no-replay controls; hard replay stays OFF because its staged retention result regressed.
+- **User action: none required.** Do not run a Termux command or change model/permissions from this candidate.
