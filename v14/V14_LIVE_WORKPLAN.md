@@ -1014,7 +1014,7 @@ Boss branch pre-final-handoff head `ce7ca26a08e9bf0d8dea79835035a4281b53bba1`: 1
 
 - LOCAL_LINUX CPython 3.13.5 x86_64 algorithm-level reproduction: PASS for warmup, same-speaker stability, unvoiced negative control, threshold-absent score-only behavior and 1-s/2-s batch invariance. Old-algorithm negative control reproduced the false-negative.
 - LOCAL_LINUX full Aii project tests: BLOCKED; no complete checkout is mounted and GitHub DNS is unavailable.
-- GitHub exact-head workflow: no PR-triggered run returned at the latest readback. Python 3.13/3.14 compile, focused RAW EAR/A5-A4-C3 tests, deterministic benchmark, staged Runtime and integrated regression remain PENDING. No CI PASS is claimed.
+- GitHub exact-head workflows are now queued: RAW EAR run 44957913408 (Python 3.13/3.14) and staged/integrated run 44957913340. Both are QUEUED, not PASS. Focused compile/tests/benchmark and staged/integrated regression remain pending exact result readback.
 - REDMI/TERMUX: REDMI_UNVERIFIED. No connected phone, microphone, model weights, permission or updater action was used.
 
 ### Research and reuse decision
