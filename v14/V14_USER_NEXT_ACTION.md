@@ -609,3 +609,15 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 4. QA/Android: continue read-only owner relay; no deployment/update request until a fresh authenticated receipt proves consent and installed SHA.
 
 **Release:** no new code released in this checkpoint. **Redmi:** REDMI_UNVERIFIED. **User action:** none.
+
+
+## Latest Boss integration checkpoint — 2026-11-21 13:30 CET
+
+- Release-development branch now reads back at `0fc4d2f9a76d530c366d67ea8148cd1c69666acd` after manual integration of PR #2197. It narrowly permits Android 13 `/data/user/0` only when the directory is exact system:system 0771 and has the same device/inode as `/data/data`. PR-head broker (37), sandbox replay (61), staged runtime (249 passed / 10 skipped / 47 subtests) and integrated regression (415 passed / 3 skipped / 58 subtests) passed. The safe-additive policy rejection was not bypassed; this was a documented manual review. The exact push CI for the merged branch was queued/in progress at last readback, so the last fully green code-bearing head remains `e18c664d954fa5a44a1b2e5bec76850d5a40f89f` until every new push workflow finishes.
+- Core PR #2200 now connects caller-supplied synthetic PCM16 through the staged A5/A4 path into B1/B2 QueryPacket/OfferPacket scopes and C3 acoustic context. Exact A5 Python 3.11/3.13, staged-runtime and integrated-regression passed. Its Runtime test uses fake B1/B2/C3 runners: WIRED_SYNTHETIC only, not native model inference, microphone capture or Redmi validation. It is blocked by Perception #2192's consent-revocation race after PerceptPacket persistence; #2200 also leaves the derived AUDIO_ACOUSTIC_CONTEXT source stored after consent revocation.
+- JEPA PR #2198 has a newer exact head `cd0b54053f51d5227f7860a80f5f6adbd3973598`; optimizer-resume, staged/integrated and Python 3.14 CI now pass, including the prior Planner-gate failures. It is still unmerged and uses `os.link` without the Android EPERM/EACCES `renameat2(RENAME_NOREPLACE)` fallback, so it is not Android-ready.
+- C4 candidate #2195 passes its separate review/stage tests but is not in the normal pinned recovery builder/runtime_deploy artifact; its zero-overlap rule is uncalibrated and lacks a disjoint-but-redundant negative control.
+- P0 #1904 remains open: no current proof of correct/fast native 2+2, B1/B2 offer delivery through C4 into C3, 20 mixed Redmi turns, native latency/RSS or trained B3 latent exchange.
+- Fresh private owner-read PIPELINE_STATUS request [#403](https://github.com/RedMentos/Aiiii/issues/403) is open with no response at last readback. Installed SHA and updater consent remain unknown. No UPDATE_REQUEST, shell action, model download/swap, permission change or phone mutation occurred.
+
+**User action required: none.** Do not run a new Termux command; do not change installed models, weights, permissions or data. The next work is internal: close the #2192/#2200 consent and derived-source revocation blockers, add the #2198 Android-safe checkpoint publisher, and integrate/calibrate C4 only in the normal pinned stage. Redmi remains `REDMI_UNVERIFIED`.
