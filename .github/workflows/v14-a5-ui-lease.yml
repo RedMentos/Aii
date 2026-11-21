@@ -52,6 +52,7 @@ jobs:
       - name: Run source-bound UI lease, revocation and shared-blob tests
         working-directory: v13/code
         env:
+          PYTHONPATH: ${{ github.workspace }}/v13/code
           PYTHONDONTWRITEBYTECODE: "1"
         run: python -m pytest -q -s tests/test_a5_ui_observation_lease.py tests/test_v14_store_source_blob_serialization.py
       - name: Scan changed public content for secrets and private identifiers
