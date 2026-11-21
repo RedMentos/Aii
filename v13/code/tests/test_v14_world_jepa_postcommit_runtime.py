@@ -198,6 +198,8 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert first["status"] == "POSTCOMMIT_PROCESSED"
         assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         first_metrics = first["learning"]["metrics"]
+        assert first_metrics["optimizer_moments_persisted"] is True
+        assert first_metrics["inverse_dynamics_optimizer_persisted"] is True
         assert first_metrics["parameter_delta_norm"] > 0
         assert first_metrics["ema_target_delta_norm"] > 0
         assert first_metrics["holdout_improved"] is True
@@ -238,9 +240,13 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         restored = restarted.restore()
         assert restored["status"] == "RESTORED"
         assert restored["checkpoint_sha256"] == second_sha
+        restored_model = restarted._load_model(restarted._read_state()[0]["active"])
+        assert restored_model._training_state["main"]["t"] == second_metrics["fit_steps_after"]
         rolled_back = restarted.rollback()
         assert rolled_back["status"] == "ROLLED_BACK"
         assert rolled_back["checkpoint_sha256"] == first_sha
+        rolled_back_model = restarted._load_model(restarted._read_state()[0]["active"])
+        assert rolled_back_model._training_state["main"]["t"] == first_metrics["fit_steps_after"]
         assert read_world_planner_shadow(store, second_events[-1])["status"] == "STALE_CHECKPOINT"
         assert read_world_planner_shadow(store, first_events[-1])["status"] == "SHADOW_PLANNER_READY"
 
