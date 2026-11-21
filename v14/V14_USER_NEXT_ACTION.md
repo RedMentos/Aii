@@ -103,3 +103,10 @@ At head `8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5`, the applicable release QA ch
 - staged-runtime: 240 passed, 10 skipped, 47 subtests;
 - integrated regression: 415 passed, 3 skipped, 58 subtests.
 The additive-only validator is the sole red check because the PR modifies existing updater/runtime files; it is not a release gate and was not disabled. PR #2138 is READY_FOR_REVIEW, NOT_MERGED, NOT_RELEASED. LOCAL_LINUX full-suite and Redmi remain UNVERIFIED.
+
+
+## QA cross-review — Store-backed WorldJEPA consumer PR #2133
+
+- PR #2133 head `34cdc9efca094324848b3c49237b341c6d86a6d4` has GitHub CI PASS: `world-jepa-store-consumer` 32 passed in 2.67s (both PR and push runs), plus offline bridge security PASS. This is a synthetic event corpus over a real SQLite Store/checkpoint path; it changes the experimental WorldJEPA weights and B1/B2 shadow readouts, but explicitly does NOT change native B1/B2 body weights and is NOT wired into normal Runtime.
+- QA review comments on PR #2133 identify: (1) source identity is dropped before the adapter's claimed source-disjoint split, so it is action-disjoint and can leak multiple actions from one source across train/holdout; (2) until T8 cancellation handling is fixed, cancelled/unknown receipts can be copied into training labels and processed_ids; (3) the latest-N `world_model.transitions(limit=MAX_ROWS)` window can permanently starve older unprocessed backlog after a long offline period. Add exact regressions before merge.
+- PR #2137 remains draft with P1 cancellation/unknown semantics and ActionOutcome LIMIT 17 cardinality findings, plus P2 directory-fsync missing after `TemporalReadout.rollback()`. No native body update or runtime acceptance.

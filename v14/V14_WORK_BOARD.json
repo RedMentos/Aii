@@ -69,10 +69,16 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "SYNTHETIC + REAL SQLITE STORE TEST CANDIDATE; NO ACCEPTED WEIGHT UPDATE; QA REVIEW FINDINGS OPEN",
-      "next_step": "Resolve PR #2137 QA findings: cancellation/unknown outcomes must be censored with no prediction error or receiver update; ActionOutcome cardinality must not be truncated at 17. Then wire the verified receipt into the normal Runtime learning loop and prove numeric target delta, heldout utility, retention, restart and rollback.",
+      "proof_environment": "CI_SYNTHETIC_EVENTS + REAL_SQLITE_STORE/CHECKPOINT TEST PASS (PR #2133: 32 tests); EXPERIMENTAL WORLDJEPA WEIGHTS ONLY; NO NATIVE B1/B2 BODY WEIGHTS; NOT_RUNTIME_WIRED; QA_FINDINGS_OPEN",
+      "next_step": "Before merge, fix PR #2133 source-disjoint split (propagate source_id), reject/censor cancelled/unknown T8 outcomes before training/cursor advance, and add bounded keyset catch-up so older backlog is not starved. Review PR #2137's LIMIT 17 exact-cardinality and rollback directory-fsync findings. Then wire into normal Runtime and prove real target delta/holdout/retention/restart/rollback.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 QA review of PR #2137 found two P1 semantic/cardinality issues; PR remains draft and not runtime-wired."
+      "last_checkpoint": "2026-11-21 QA: PR #2133 CI passes 32 synthetic-event/real-SQLite tests, but three integration/quality findings remain open; PR #2137 has cancellation, cardinality and rollback-durability findings. No native body weights or Runtime wiring.",
+      "latest_candidate_pr": {
+        "pr": 2133,
+        "head_sha": "34cdc9efca094324848b3c49237b341c6d86a6d4",
+        "ci": "PASS (32 tests, 2.67s; offline bridge security PASS)",
+        "scope": "synthetic events + real SQLite Store/checkpoint; experimental WorldJEPA weights + B1/B2 shadow readouts; no native body weights; not Runtime wired"
+      }
     },
     {
       "id": "V14-005",

@@ -98,3 +98,7 @@ PR #2138 (`qa/v13-ci-latest-result-gate-20261121`, head `8ca7a298dddebb29921f8e0
 
 ### T8 QA review
 PR #2137 is still draft. QA identified two P1 findings: cancellation/unknown outcomes are currently collapsed into observed NOT_FINAL (must be censored/no update), and ActionOutcome cardinality is checked only within LIMIT 17 (must be exact or fail closed on overflow). Comments are on the PR; no learning/weight acceptance is claimed.
+
+
+### V14-004 JEPA/Memory cross-review update
+PR #2133 (`34cdc9efca094324848b3c49237b341c6d86a6d4`) has 32 CI tests PASS over synthetic events and a real SQLite Store/checkpoint. It is an experimental WorldJEPA weight path with B1/B2 shadow readouts, not native B1/B2 body weights and not a normal Runtime consumer. QA findings before merge: source_id is omitted from the adapter input so the claimed source-disjoint split is actually action-disjoint; cancelled/unknown T8 outcomes can become training labels until PR #2137 is fixed; latest-N transition scans can starve older unprocessed backlog. PR #2137 also has an ActionOutcome LIMIT 17 cardinality issue and missing rollback directory fsync.
