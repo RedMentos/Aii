@@ -1,3 +1,19 @@
+# Research & Perception checkpoint — 2026-11-21 18:55 CET
+
+**Draft PR:** [#2243](https://github.com/RedMentos/Aii/pull/2243), branch research-perception/v14-dense-latent-kv-toy-20261121, based on the latest shared HEAD e788dcf0b82849f4de7df229978aa9973d845093. Boss review required; NOT_RELEASED.
+
+- New runnable mechanism experiment: tiny sender (2×24) → learned K/V adapter → receiver (3×32), with actual receiver cache injection, two-stage training, negative controls and save/reload check.
+- LOCAL_LINUX CPython 3.13 / PyTorch 2.10 CPU: py_compile PASS; 3/3 unit tests PASS in 9.93 s. Seed 13: held-out K/V MSE 6.5134→0.2054; latent accuracy 100% vs exact-context 100%, no-message 0%, shuffled 12.50%, random adapter 13.28%; parameter ΔL2 20.2719; max gradient norm 2.1451; restart max-logit delta 0.0. Three more seeds reached 100%.
+- R-037 added two full-text latent-communication papers, one abstract-only causal-transfer counterexample, and an Apache-2.0 CacheBack OSS review. CacheBack main does not support cross-model alignment.
+- Actual V13 B1/B2 remain LFM2.5-1.2B and Qwen3.5-0.8B. Current llama.cpp Runner still reports CAN_LATENT_TAP=False / CAN_LATENT_INJECT=False / CAN_TRAIN_BODY=False. B3 remains PARTIAL_SYMBOLIC_ONLY.
+- This experiment is LOCAL_LINUX_TINY_MODEL_PROOF_NOT_PRODUCT_NATIVE. No actual LFM2.5/Qwen3.5, native llama.cpp, OOD, symbolic baseline, V13 Runtime consumer or Redmi test.
+- Audio #2240 is merged as producer/lease API; Core #2242 remains open and synthetic-only. The exact merge-push staged Runtime still has a separate JEPA UTILITY_GATE_REJECTED failure. Redmi installed SHA/updater consent remain UNKNOWN; REDMI_UNVERIFIED.
+- No model/weight change, permission change, phone action, updater request or user-data mutation. **No user action is needed.**
+
+Next executable step: Core exposes a model-specific native K/V tap/injection seam; Research/Perception then tests the actual LFM2.5↔Qwen3.5 pair with exact-context, no-message, symbolic, shuffled and OOD controls, privacy, gradient/retention, restart/rollback, RSS and TTFT.
+
+---
+
 # Boss integration checkpoint — 2026-11-21 18:03:06Z
 
 **No user action is needed. Do not run Termux commands, change Age/permissions, swap models or weights, alter updater settings, or modify phone data.**
