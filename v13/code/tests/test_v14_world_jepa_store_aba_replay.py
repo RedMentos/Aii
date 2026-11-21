@@ -50,12 +50,15 @@ ARMS = (
     ("uniform_budget", "full", True, False),
     ("uniform_budget", "predictor_only", True, False),
     ("uniform_budget", "predictor_only", True, True),
+    ("session_contiguous", "full", True, True),
+    ("on_demand_conflict", "full", True, True),
+    ("on_demand_conflict", "predictor_only", True, True),
 )
 DATA_SEEDS = (13, 19, 43)
 A1_COUNT = 256
-SHIFT_COUNT = 96
+SHIFT_COUNT = 256
 A1_STEPS = 120
-SHIFT_STEPS = 40
+SHIFT_STEPS = 120
 
 
 def test_stable_drift_controller_calibrates_groups_and_updates_dual():
@@ -144,6 +147,26 @@ def test_adam_aware_replay_projection_constrains_the_actual_preconditioned_step(
     assert zero["reference_zero"] is True and zero["projected"] is False
     assert np.allclose(zero_params["w"], np.array([0.1, -0.1]), atol=1e-9)
 
+def test_adam_per_session_gem_projection_satisfies_each_prior_cohort():
+    params = {"w": np.zeros(2, dtype=float)}
+    constraints = [
+        {"w": np.array([1.0, 0.0])},
+        {"w": np.array([1.0, 1.0])},
+    ]
+    report = world_jepa.Adam(params, lr=0.1).step(
+        {"w": np.array([-1.0, 1.0])},
+        constraint_gradients=constraints,
+    )
+    direction = -params["w"] / 0.1
+    assert report["constraint_count"] == 2
+    assert report["active_constraint_count"] == 2
+    assert report["projected"] is True
+    assert report["projection_sweeps"] >= 1
+    assert report["max_constraint_violation"] <= report["constraint_tolerance"]
+    assert all(float(np.dot(item["w"], direction)) >= -1e-10 for item in constraints)
+    assert np.allclose(direction, np.array([0.0, 1.0]), atol=1e-8)
+
+
 def test_session_contiguous_replay_is_deterministic_bounded_and_session_local():
     def row(index, session):
         return {
@@ -204,6 +227,52 @@ def test_session_contiguous_replay_is_deterministic_bounded_and_session_local():
     assert world_jepa_replay.select_replay_rows(
         "none", new_rows, old_rows, budget=6, salt="fixed-cohort"
     )["rows"] == []
+
+
+def test_on_demand_conflict_replay_is_bounded_deterministic_and_budget_matched():
+    def row(index, session):
+        return {
+            "action_id": f"ondemand-{index:03d}",
+            "source_sha256": hashlib.sha256(f"ondemand-source-{index}".encode()).hexdigest(),
+            "created": float(index),
+            "session_id": session,
+        }
+
+    old_rows = (
+        [row(index, "session-a") for index in range(8)]
+        + [row(index + 8, "session-b") for index in range(8)]
+        + [row(index + 16, "session-c") for index in range(8)]
+        + [row(index + 24, "session-d") for index in range(8)]
+        + [row(index + 32, None) for index in range(2)]
+    )
+    new_rows = [row(index + 40, "new-session") for index in range(4)]
+    scores = {
+        "session-a": 0.1,
+        "session-b": 0.9,
+        "session-c": 0.5,
+        "session-d": 0.3,
+    }
+    selected = world_jepa_replay.select_replay_rows(
+        "on_demand_conflict", new_rows, old_rows, budget=6,
+        salt="fixed-on-demand", cohort_scores=scores,
+    )
+    repeated = world_jepa_replay.select_replay_rows(
+        "on_demand_conflict", new_rows, old_rows, budget=6,
+        salt="fixed-on-demand", cohort_scores=scores,
+    )
+    selected_sessions = {item["session_id"] for item in selected["rows"]}
+    assert selected["budget_matched"] is True
+    assert selected["budget_rows"] == selected["requested_budget_rows"] == 6
+    assert selected["session_count"] == 3
+    assert selected["scored_session_count"] == 4
+    assert selected["legacy_rows_excluded"] == 2
+    assert selected["manifest_sha256"] == repeated["manifest_sha256"]
+    assert selected_sessions == {"session-b", "session-c", "session-d"}
+    assert all(item["session_id"] is not None for item in selected["rows"])
+    assert len({item["action_id"] for item in selected["rows"]}) == 6
+    assert {item["action_id"] for item in selected["rows"]}.isdisjoint(
+        {item["action_id"] for item in new_rows}
+    )
 
 
 def _set_permissions(store, *, steps, replay_mode, encoder_mode="full",
@@ -439,7 +508,7 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         assert metrics.get("replay_rows", 0) > 0
     elif replay_mode == "none":
         assert metrics.get("replay_rows", 0) == 0
-    elif replay_mode in {"uniform_budget", "session_contiguous"}:
+    elif replay_mode in {"uniform_budget", "session_contiguous", "on_demand_conflict"}:
         assert metrics.get("replay_budget_matched") is True
         assert metrics.get("replay_rows") == min(
             metrics.get("replay_requested_budget_rows", 0),
@@ -842,35 +911,47 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 else:
                     assert phase["checkpoint_after"] == phase["checkpoint_before"]
 
-    projected_reports = [
+    aggregate_reports = [
         item for item in reports
         if item["encoder_mode"] == "predictor_only"
         and item["replay_mode"] == "uniform_budget"
         and item["stable_drift_control"] is True
         and item["replay_projection"] is True
     ]
-    print("A_GEM_RETENTION_DIAGNOSTIC=" + json.dumps([
+    per_session_reports = [
+        item for item in reports
+        if item["replay_mode"] == "on_demand_conflict"
+        and item["stable_drift_control"] is True
+        and item["replay_projection"] is True
+    ]
+    diagnostic_fields = (
+        "status", "retention_gate_accepted", "old_holdout_retained",
+        "old_holdout_cohort_retained", "old_holdout_retention_delta",
+        "old_holdout_cohort_gate", "checkpoint_before", "checkpoint_after",
+        "update_scale", "new_holdout_improved", "replay_projection_mode",
+        "replay_constraint_session_count", "replay_conflict_scores_sha256",
+    )
+    print("AGGREGATE_AGEM_CONTROL=" + json.dumps([
         {
             "seed": item["data_seed"],
-            "B": {key: item["B"].get(key) for key in (
-                "status", "retention_gate_accepted", "old_holdout_retained",
-                "old_holdout_cohort_retained", "old_holdout_retention_delta",
-                "old_holdout_cohort_gate", "checkpoint_before", "checkpoint_after",
-                "update_scale", "new_holdout_improved",
-            )},
-            "A2": {key: item["A2"].get(key) for key in (
-                "status", "retention_gate_accepted", "old_holdout_retained",
-                "old_holdout_cohort_retained", "old_holdout_retention_delta",
-                "old_holdout_cohort_gate", "checkpoint_before", "checkpoint_after",
-                "update_scale", "new_holdout_improved",
-            )},
+            "B": {key: item["B"].get(key) for key in diagnostic_fields},
+            "A2": {key: item["A2"].get(key) for key in diagnostic_fields},
         }
-        for item in projected_reports
+        for item in aggregate_reports
+    ], sort_keys=True))
+    print("PER_SESSION_GEM_ON_DEMAND=" + json.dumps([
+        {
+            "seed": item["data_seed"],
+            "encoder_mode": item["encoder_mode"],
+            "B": {key: item["B"].get(key) for key in diagnostic_fields},
+            "A2": {key: item["A2"].get(key) for key in diagnostic_fields},
+        }
+        for item in per_session_reports
     ], sort_keys=True))
     assert any(
         phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
-        for item in projected_reports for phase in (item["B"], item["A2"])
-    ), "A-GEM replay arm produced no retention-preserving accepted checkpoint"
+        for item in per_session_reports for phase in (item["B"], item["A2"])
+    ), "Per-session GEM/on-demand replay produced no retention-preserving accepted checkpoint"
 
     print("WORLDJEPA_STORE_A_B_A_REPLAY_RETENTION " + __import__("json").dumps(
         reports, sort_keys=True, allow_nan=False
