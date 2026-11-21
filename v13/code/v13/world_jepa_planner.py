@@ -11,7 +11,8 @@ import json
 import math
 
 from . import world_model
-from .world_jepa_runtime import memory_recall, receiver_matrix
+from .world_jepa_runtime import memory_recall
+from .world_jepa_receiver_matrix import receiver_matrix
 from .world_jepa_store_authority import MAX_ACTION_OUTCOMES_PER_EVENT
 
 STATE_PREFIX = "v14.world_jepa.planner_shadow:"
