@@ -1228,3 +1228,12 @@ On exact Boss integration head `6fca4ffe504567c45067bc22347e5f5e33f9f530`, the p
 - QA PR #2269 exact tested code head `f75d1dff5f5ceddcffdd92734b8e4ba96e444f38`: focused audio-lease/arithmetic tests **3 passed on Python 3.13 and 3 passed on Python 3.14** in both push run `44954318285` and PR run `44954327390`; compile steps PASS; staged-runtime PASS; integrated-regression still IN_PROGRESS. No merge-gate claim until it completes.
 - QA A5 race test is integrated in #2258 head 8eaf67f, with A5 UI lease 3.13/3.14 PASS. Separate QA #2265 is closed as superseded; the same test bytes are in the existing A5 workflow.
 - No local full Aii checkout, authenticated Redmi receipt, private LOG_PAGE opt-in or update consent. Installed phone SHA and updater consent UNKNOWN. REDMI_UNVERIFIED / NOT_RELEASED. No device action or user command.
+
+
+### Expanded QA completion — 2026-11-21 23:18 CET
+
+- QA PR #2269 tested code head `f75d1dff5f5ceddcffdd92734b8e4ba96e444f38`: **all 7 check runs SUCCESS**. Focused audio-lease/arithmetic tests report 3 passed on Python 3.13 and 3 passed on Python 3.14 in both push run `44954318285` and PR run `44954327390`; staged-runtime PASS; integrated-regression PASS; offline bridge security PASS.
+- This is synthetic PCM/model-runner and GitHub Linux evidence. It does not demonstrate microphone capture, native speech decoding/vocoding, Android OS permission providers, full duplex or Redmi behavior.
+- Boss PR #2258 exact head `8eaf67f47902012dc8553b0ec6b82ec68aaf3d50`: all 14 code/runtime checks PASS; only the safe-additive validator fails because it is scoped to additive candidates but runs on the broad integration PR. This remains DRAFT / NOT_RELEASED pending a reviewed workflow-scope correction; do not disable or weaken the strict candidate checks.
+- #2258 includes the A5 UI shared-blob race test and its Python 3.13/3.14 workflow. #2265 is closed as superseded. #2269 is the active broader QA PR and carries this handoff.
+- Redmi remains REDMI_UNVERIFIED: private owner-read requests #431/#432/#439 have no authenticated replies, installed SHA and updater consent are UNKNOWN, and no device update or data mutation occurred. No user action.
