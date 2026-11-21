@@ -277,7 +277,7 @@ def _source_disjoint_guard_split(rows, *, salt):
     ranked_roots = sorted(
         roots,
         key=lambda root: hashlib.sha256(
-            (salt + "\\0guard\\0" + root).encode("utf-8")
+            (salt + "\0guard\0" + root).encode("utf-8")
         ).digest(),
     )
     guard_group_count = max(1, len(ranked_roots) // 4)
@@ -326,7 +326,7 @@ def _source_disjoint_guard_split(rows, *, salt):
 
     def digest_ids(items):
         return hashlib.sha256(
-            "\\n".join(sorted(row["action_id"] for row in items)).encode("utf-8")
+            "\n".join(sorted(row["action_id"] for row in items)).encode("utf-8")
         ).hexdigest()
 
     manifest_payload = {
@@ -1146,29 +1146,24 @@ class WorldJEPAStoreConsumer:
                     old_holdout_cohort_overflow = old_holdout_cohorts is None
                     if not old_holdout_cohort_overflow:
                         old_holdout_cohort_before = _retention_cohort_losses(model, old_holdout_cohorts)
-            # A separate guard fold is carved from the already source-disjoint
-            # training folds. Guard rows never receive gradients and never enter
-            # replay; they select replay demand and update scale. The final
-            # source-disjoint holdout is used only once, for promotion.
+            # Split only the prior training fold into replay-fit and guard rows.
+            # The guard is never used for gradients or replay. It selects replay
+            # demand and bounded update scales; the independent final holdout is
+            # reserved for the promotion decision. Current-task training rows are
+            # kept intact so small online batches are not starved by validation.
             replay_salt = (active["checkpoint_sha256"] if active else "fresh") + ":" + _cohort_sha(new_train_rows)
             new_fit_rows = list(new_train_rows)
-            new_guard_rows = []
             old_fit_rows = list(old_train_rows)
             old_guard_rows = []
-            new_guard_before = None
             old_guard_cohorts = ()
             old_guard_cohort_overflow = False
             old_guard_cohort_before = {}
-            new_guard_manifest = None
             old_guard_manifest = None
             if active is not None:
-                new_guard_split = _source_disjoint_guard_split(
-                    new_train_rows, salt=replay_salt + ":new"
-                )
                 old_guard_split = _source_disjoint_guard_split(
                     old_train_rows, salt=replay_salt + ":prior"
                 )
-                if new_guard_split is None or old_guard_split is None:
+                if old_guard_split is None:
                     persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
                     if persisted != "PERSISTED":
                         return {"status": persisted, "pending_rows": len(pending_by_id),
@@ -1176,21 +1171,15 @@ class WorldJEPAStoreConsumer:
                                 "native_body_weights_changed": False}
                     return {
                         "status": "INSUFFICIENT_SOURCE_DISJOINT_GUARD_COHORT",
-                        "new_train_rows": len(new_train_rows),
                         "prior_train_rows": len(old_train_rows),
-                        "new_guard_split_ready": new_guard_split is not None,
-                        "prior_guard_split_ready": old_guard_split is not None,
+                        "prior_guard_split_ready": False,
                         "pending_rows": len(pending_by_id),
                         "scan_cursor": next_cursor,
                         "native_body_weights_changed": False,
                     }
-                new_fit_rows = new_guard_split["fit_rows"]
-                new_guard_rows = new_guard_split["guard_rows"]
                 old_fit_rows = old_guard_split["fit_rows"]
                 old_guard_rows = old_guard_split["guard_rows"]
-                new_guard_manifest = new_guard_split["manifest"]
                 old_guard_manifest = old_guard_split["manifest"]
-                new_guard_before = model.prediction_loss(*_arrays(new_guard_rows))
                 old_guard_cohorts = _retention_cohorts(old_guard_rows)
                 old_guard_cohort_overflow = old_guard_cohorts is None
                 if not old_guard_cohort_overflow:
@@ -1305,26 +1294,15 @@ class WorldJEPAStoreConsumer:
             replay_metrics = {
                 "replay_mode": replay_mode,
                 "new_fit_rows": len(new_fit_rows),
-                "new_guard_rows": len(new_guard_rows),
                 "prior_fit_rows": len(old_fit_rows),
                 "prior_guard_rows": len(old_guard_rows),
                 "prior_train_rows_total": len(old_train_rows),
                 "guard_split_enabled": active is not None,
                 "guard_split_source_disjoint": (
-                    None if active is None else bool(
-                        new_guard_manifest["source_disjoint"]
-                        and old_guard_manifest["source_disjoint"]
-                    )
+                    None if active is None else bool(old_guard_manifest["source_disjoint"])
                 ),
                 "guard_split_content_disjoint": (
-                    None if active is None else bool(
-                        new_guard_manifest["content_disjoint"]
-                        and old_guard_manifest["content_disjoint"]
-                    )
-                ),
-                "new_guard_manifest_sha256": (
-                    None if new_guard_manifest is None
-                    else new_guard_manifest["manifest_sha256"]
+                    None if active is None else bool(old_guard_manifest["content_disjoint"])
                 ),
                 "prior_guard_manifest_sha256": (
                     None if old_guard_manifest is None
@@ -1441,11 +1419,6 @@ class WorldJEPAStoreConsumer:
                 candidate_ema_delta = _group_delta(before, candidate_after, ("tgt",))
 
                 if active is None:
-                    candidate_new_guard_after = None
-                    candidate_new_guard_shuffled_loss = None
-                    candidate_new_guard_zero_loss = None
-                    candidate_guard_new_improved = True
-                    candidate_guard_negative_controls_separated = True
                     candidate_old_guard_cohort_after = {}
                     candidate_old_guard_cohort_gate = {
                         "accepted": True, "reason": "NO_PRIOR_GUARD_COHORT", "cohorts": {},
@@ -1453,18 +1426,6 @@ class WorldJEPAStoreConsumer:
                     candidate_old_guard_cohort_retained = True
                     candidate_guard_accepted = True
                 else:
-                    new_guard_arrays = _arrays(new_guard_rows)
-                    candidate_new_guard_after = candidate.prediction_loss(*new_guard_arrays)
-                    candidate_new_guard_shuffled_loss = candidate.prediction_loss(
-                        new_guard_arrays[0],
-                        np.roll(new_guard_arrays[1], 1, axis=0),
-                        new_guard_arrays[2],
-                    )
-                    candidate_new_guard_zero_loss = candidate.prediction_loss(
-                        new_guard_arrays[0],
-                        np.zeros_like(new_guard_arrays[1]),
-                        new_guard_arrays[2],
-                    )
                     candidate_old_guard_cohort_after = (
                         _retention_cohort_losses(candidate, old_guard_cohorts)
                         if not old_guard_cohort_overflow else {}
@@ -1474,32 +1435,13 @@ class WorldJEPAStoreConsumer:
                         candidate_old_guard_cohort_after,
                         overflow=old_guard_cohort_overflow,
                     )
-                    candidate_guard_new_improved = bool(
-                        candidate_new_guard_after < new_guard_before
-                    )
-                    candidate_guard_negative_controls_separated = bool(
-                        candidate_new_guard_after < candidate_new_guard_shuffled_loss
-                        and candidate_new_guard_after < candidate_new_guard_zero_loss
-                    )
                     candidate_old_guard_cohort_retained = bool(
                         candidate_old_guard_cohort_gate["accepted"]
                     )
-                    candidate_guard_accepted = bool(
-                        candidate_guard_new_improved
-                        and candidate_guard_negative_controls_separated
-                        and candidate_old_guard_cohort_retained
-                    )
+                    candidate_guard_accepted = candidate_old_guard_cohort_retained
 
                 attempts.append({
                     "update_scale": float(update_scale),
-                    "new_guard_loss_after": (
-                        None if candidate_new_guard_after is None
-                        else float(candidate_new_guard_after)
-                    ),
-                    "new_guard_improved": bool(candidate_guard_new_improved),
-                    "new_guard_negative_controls_separated": bool(
-                        candidate_guard_negative_controls_separated
-                    ),
                     "old_guard_cohort_retained": bool(candidate_old_guard_cohort_retained),
                     "old_guard_cohort_gate": candidate_old_guard_cohort_gate,
                     "guard_accepted": bool(candidate_guard_accepted),
@@ -1590,13 +1532,6 @@ class WorldJEPAStoreConsumer:
             )
             replay_metrics["holdout_used_for_backtracking"] = False
             replay_metrics["guard_gate_accepted"] = bool(candidate_guard_accepted)
-            replay_metrics["new_guard_loss_before"] = (
-                None if new_guard_before is None else float(new_guard_before)
-            )
-            replay_metrics["new_guard_loss_after"] = (
-                None if candidate_new_guard_after is None
-                else float(candidate_new_guard_after)
-            )
             replay_metrics["old_guard_cohort_gate"] = candidate_old_guard_cohort_gate
             if not utility_gate_accepted:
                 persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
