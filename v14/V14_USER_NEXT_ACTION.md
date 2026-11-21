@@ -1,3 +1,5 @@
+Research clarification: both replay papers have now been reviewed at full text. R-040 is Mahdaviyeh et al. (arXiv:2506.04377v1; PMLR 330:15–42, 2026), not Caccia; its arXiv version is CC BY-NC-ND 4.0 and shows conditional, task/sample-dependent harmful replay rather than a universal anti-replay result. R-041 is Thede et al. (arXiv:2609.40089v1); RoD uses source-specific reference-loss deltas, precomputed reference losses, and a forward-only candidate-scoring pass; the paper's per-condition runs are single-seed and its replay-pool coverage/proxy-loss limitations matter. No code or dependencies were imported. The Perception ledger owner has been asked to add both entries and the exact caveats in [PR #2246](https://github.com/RedMentos/Aii/pull/2246#issuecomment-7067983358). This does not change the current release/device status.
+
 # Latest Boss handoff — 2026-11-21 20:18 CET
 
 **No user action is required. Do not run a new Termux installer, send an update request, change Age/permissions/models/weights/updater settings or modify phone data.**
