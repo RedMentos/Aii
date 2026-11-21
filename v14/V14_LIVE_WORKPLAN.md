@@ -776,3 +776,60 @@ The current functional release has synthetic C4 source-span selection but no pro
 - **Adapter wiring blocker:** `ui_observation_lease()` requires keyword-only `generation_id`, but `A5UIRuntimeAdapter.lease()` does not pass it. The adapter test helper calls this path, so the exact integrated test should fail with missing-argument `TypeError`. Perception has been asked to derive/validate `runtime.turn_event['brain_generation_id']`, pass it, and test adapter-level revoke. Current exact CI: 2 queued / 1 in progress. No OS provider/capture/action; keep SHADOW.
 - #2243 current head `e8df851...` is mergeable and has exact latent-cache-tiny 3/3, privacy and offline-bridge PASS; model-lab rerun queued. The PR diff does not include Boss-owned board/workplan/next-action/coverage, so merging its research/workflow/experiment files will preserve the current shared docs. It remains research-only.
 - #2242 audio must adopt the same two-phase semantics but has a separate deployer-pin blocker; current head 3dc8a19 remains 9 success / 4 failure.
+
+
+### Boss run-12 whole-system integration checkpoint — 2026-11-21 20:18 CET
+
+**Shared release-branch base read:** `0c9ede256e9a3bdafc728fe6be1b4bead8fe13bd`. This is the current development branch head, not an installed-phone receipt. Its exact-head GitHub check-runs were 30 total: **24 success, 3 in progress, 3 queued, 0 failures at last read**. The last fully accepted code release remains `f279286a4453248004c670fcaabecd85da6ab299` (34/34 check-runs, 19/19 workflows). The later merged code candidate `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` is **18/19** on exact merge-push CI because the positive SleepRuntime JEPA acceptance test correctly returns `UTILITY_GATE_REJECTED`; it is not a release.
+
+#### Current cross-agent integration state
+
+- **Core #2242** — head `3dc8a194df9230b191236b8011216362d00c88cd`, DRAFT / NOT_RELEASED, 9 success / 4 failures. Python 3.14 deployer startup fails because `runtime_deploy.STAGER_SHA256` still pins the prior stage builder; three staged-runtime tests omit the mandatory arithmetic-overlay fixture; two migration tests return `PARTIAL`. The audio lease still needs a pre-lock `on_revoke_requested` signal that cancels only the owning active generation, followed by post-lock cleanup, and a mandatory subscription. Boss blocker comment: [#2242](https://github.com/RedMentos/Aii/pull/2242#issuecomment-7067896024).
+- **QA #2244** — head `575f18f5b7f21369a0ce9f817dd56266ae871c1c`, stacked on #2242; one check passed, one is in progress and five queued. Its C3-like streaming tests are synthetic. Rebase after Core fixes; require provider revocation to cancel a blocked stream, tombstone derived context and permit a later text-only FINAL.
+- **Research/Perception #2243** — current rebased head `d7380cb4a3d5a1cdf7a2cbd124d39a09f05fa547`, based on the shared head above. Privacy and offline-bridge checks pass; the experiment-specific `latent-cache-tiny` and model-lab checks are queued. Prior head `7b65bc2` passed its 3/3 toy tests, but that is not evidence for the new rebased head. Even when green, this is only a tiny K/V adapter/injection mechanism experiment, not production B3 or Android.
+- **Research/Perception #2246** — current head `ac826225636fbf70de5f499f26b4624464cb0357`, based on #2243 head `d7380cb`; all three exact checks are queued. The earlier adapter `generation_id` finding is fixed in the current source: the adapter derives `runtime.turn_event['brain_generation_id']` and passes it to the lease. Two-phase synthetic revocation tests exist. No authenticated Android OS provider, capture or action consumer exists; keep SHADOW.
+- **JEPA/Memory #2247** — head `e8137fd3d873ee08d7159a32ddd2240ab8f43f31`, 11/14 checks pass. Both Python 3.13 and 3.14 optimizer-resume jobs reject all A-GEM arms because source-disjoint old-session holdouts regress across seeds 13/19/43. The checkpoint SHA is unchanged. This is correct fail-closed behavior; do not weaken the gate or activate learning.
+- **QA #2235 Age separation** — head `150e92b0dd62f389bdb1245d938e753b46bf78f1`, 7/10 checks pass. The proposed distinction is correct: Age supplies developmental/tool/learning rights; ResourceGuard and feature policy supply physical compute/replay limits. Owner-read and Lab-Age E2E fail because the AST audit attributes the nested `GoalStore.add` transaction callback as `f` instead of its enclosing `add`; `validate-additive` fails by policy because existing runtime/builder files change. QA was asked to fix the attribution and rerun exact checks; no policy bypass.
+- **Perception #2240** is merged at `728cdc`, but supplies caller-provided PCM16/features, not Android microphone capture or a fully accepted normal C3 consumer. **#1983** Memorilla remains a draft additive companion without a production consumer. **#1756** signed Termux patch review and **#1757** trainable behavior-judge prototype remain drafts on old bases. **#2215** immutable action-proposal argument binding is merged, but there is no Android OS executor.
+
+#### Whole-Canon status overlay
+
+| Requirement family | Current state | Acceptance still missing |
+| --- | --- | --- |
+| A0–A5 perception / attention | RAW EAR caller-PCM producer merged; A5 UI metadata lease synthetic draft | Android mic/UI provider, authenticated receipts, normal Runtime consumer, revocation through C3 |
+| B1_DETAIL / B2_GIST | Distinct roles and synthetic offer path | Native useful offers, mutual re-entry, correct/fast Redmi turns, model residency/RSS |
+| B3 Enlightened Space | Symbolic path plus tiny K/V research draft | Actual model-specific native tap/injection, trained receiver effect, OOD and no-message controls |
+| B4 workspace / C4 coalition | Source-span heuristic in prior pinned stage | Native semantic complementarity and Redmi consumer proof |
+| C/JEF/C2/C3/C5 | Synthetic output/control path; exact arithmetic candidate blocked | Correct native 2+2, robust C3 final, tool/voice/action end-to-end |
+| World/Self/Memory/JEPA/Sleep | Persistent predictor shadow and bounded worker | Accepted numeric update, per-session retention, restart/rollback, native master/adapter update |
+| Age rights / X10 lab | Separation candidate with repository-wide AST inventory | Fix AST nested-call attribution, exact CI, manual integration, preserve official Age 0 |
+| Voice/audio | Caller PCM16 feature producer | Microphone, ASR/decoder/vocoder, full-duplex, source-bound audio learning and Redmi proof |
+| Android background/UI control | DRY_RUN broker, immutable proposal binding, synthetic A5 metadata | OS-authenticated API/UI executor, per-action consent, audit, stop/rollback, Redmi proof |
+| Self-optimization / cross-organ weights | JEPA SHADOW only | Accepted persistent parameter diff, cross-organ gradients, gated self-edit and rollback |
+| Context OS / Memorilla | Context OS partial; #1983 draft | Integrated companion reader/writer and tested source-preserving overflow consumer |
+| Remote maintenance | Signed patch-review prototype draft | Read-only receipt, patch stage, sandbox, local approval, restore and device verification |
+| Technical OS sandbox / behavior judge | Proposal binding merged; judge prototype draft | Independent OS enforcement plus separate trainable judge; no single model as permission authority |
+| Sparse MoE | Not proven | Two genuinely different sparse bodies, native routing, expert load/quality and device budget |
+| Install/update/recovery | Prior release CI green; new candidate not released | Exact current-head CI, authenticated phone install SHA, rollback receipt |
+
+**Historical coverage:** all 1,255 recognized heading entries remain preserved. Semantic clause→implementation→consumer→test→environment→rollback mapping is still incomplete. This overlay adds evidence; it does not delete or downgrade any Canon requirement.
+
+#### Research handoff
+
+- R-040 attribution is **Mahdaviyeh et al.**, *Replay can provably increase forgetting*, PMLR 330:15–42 (2026), not Caccia. Official PMLR record/abstract verified; the PDF endpoint was not readable in this run. The result warns that replay count/sample choice and task-subspace geometry can make forgetting non-monotonic or worse. Preserve zero/uniform/session-contiguous controls and per-session holdouts.
+- R-041 Thede et al., *Replay on Demand*, arXiv:2609.40089 (2026): official abstract, public README, exact repository commit `9ecc05173a4a5a8b872e18608c319df0eab5db81`, and Apache-2.0 LICENSE checked. The implementation relies on NeMo-RL/Megatron/Ray/SLURM and large GPU training; it is not an Android dependency. Only the demand-sensitive selection principle merits a tiny controlled experiment. No code or dependency imported.
+- Ledger-owner comment [#2246 research handoff](https://github.com/RedMentos/Aii/pull/2246#issuecomment-7067926479) asks Perception to append R-040/R-041; the shared research ledger has not yet been updated.
+
+#### Device / local test boundary
+
+Private PIPELINE_STATUS request [RedMentos/Aiiii #428](https://github.com/RedMentos/Aiiii/issues/428) remains open with no authenticated reply. Installed SHA and updater consent are UNKNOWN. No DIAGNOSTICS/LOG_PAGE/UPDATE_REQUEST, shell, model/weight, permission or data mutation occurred. Container inspection found no local Aii `.git` checkout, so no local full-suite test ran. All test results above are GitHub CI or synthetic tests, not LOCAL_LINUX execution or Redmi proof. **REDMI_UNVERIFIED.**
+
+#### Next executable ownership
+
+1. **Core:** fix the exact deployer pin and overlay test fixture; implement mandatory two-phase audio revocation and rerun staged/integrated/migration tests.
+2. **QA:** rebase #2244 after Core; fix #2235 AST attribution without widening its allowlist; preserve Age 0 and independent ResourceGuard.
+3. **Research/Perception:** finish exact #2243 and #2246 CI; append R-040/R-041 to the research ledger; continue actual llama.cpp receiver feasibility, not only toy K/V.
+4. **JEPA/Memory:** replace the failing replay/update mechanism, keep per-session retention strict, and require a changed checkpoint plus restart/rollback proof.
+5. **Boss:** integrate only after exact-base tests; continue full Canon coverage across voice, Android control, remote maintenance, OS sandbox, judge, weight learning, context and sparse MoE. No merge or release by PR count alone.
+
+**User action: none.** No Termux command or device change is needed.
