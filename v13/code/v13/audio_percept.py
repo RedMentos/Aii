@@ -46,3 +46,25 @@ def canonical_packet(samples, sample_rate, source_ref, start_ms, *,
         zcr=features["features"]["zero_crossing_rate"],
         finality="PROVISIONAL" if provisional else "FINAL",
         consent_receipt=consent_receipt)
+
+def canonical_packets(samples, sample_rate, source_ref, start_ms, *,
+                      consent_receipt, event_id, generation_id, provisional=True):
+    """Split up to 2s RAW EAR into <=1s A5 packets without dropping tail samples.
+
+    All segments preserve the original source hash; offsets are monotonic and
+    no segment grants inference, learning or Android action authority.
+    """
+    if not isinstance(consent_receipt, str) or not consent_receipt.strip():
+        raise PermissionError("nonempty local consent receipt required")
+    if not isinstance(samples, (list, tuple)) or not 0 < len(samples) <= 2 * sample_rate:
+        raise ValueError("bounded RAW EAR samples required")
+    packets = []
+    for offset in range(0, len(samples), sample_rate):
+        segment = samples[offset:offset + sample_rate]
+        packet = canonical_packet(
+            segment, sample_rate, source_ref,
+            start_ms + 1000 * offset / sample_rate,
+            consent_receipt=consent_receipt, event_id=event_id,
+            generation_id=generation_id, provisional=provisional)
+        packets.append(packet)
+    return packets
