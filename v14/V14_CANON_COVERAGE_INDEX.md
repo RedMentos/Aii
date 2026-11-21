@@ -1371,3 +1371,8 @@ The 1255-heading mechanical inventory and family overlay do not replace clause-l
 ### JEPA evidence note — 2026-11-21
 
 PR #2148 head 10e058a7418a5356b96f22f5344a5a3384f96214 passed GitHub Actions run 44853980297: 59 tests on Python 3.13 and 59 on Python 3.14, including numeric WorldJEPA/EMA updates, source/digest-disjoint T8 holdout, action negative controls, replay-off versus uniform replay, checkpoint restore and rollback. This is CI/Linux execution on synthetic T8 Store receipts. It upgrades the numeric JEPA/EMA path from an isolated scaffold to a tested synthetic consumer, but not to a real-user, normal-Runtime, native B1/B2 GGUF or Redmi-accepted capability. PR #2145 still lacks the oldest-first cursor and does not call the JEPA consumer. Whole-system acceptance remains NOT_ACCEPTED.
+
+
+### JEPA exact CI readback — 2026-11-21
+
+PR #2148 current head 6fec2dec1534285b654db60349efcd81f81b846c; tested docs/coverage head 3d8e55441d208eb8aec76cd121cc9f068376a88c; code/test head 10e058a7418a5356b96f22f5344a5a3384f96214. Run 44854219157 passed 59 tests on Python 3.13 (8.18s) and 59 on Python 3.14 (7.74s), with compile PASS. Only later change is research-ledger documentation. This remains WIRED_SYNTHETIC / CI_LINUX, NOT_ACCEPTED; no local full checkout, normal Runtime, native B1/B2 GGUF or Redmi proof.
