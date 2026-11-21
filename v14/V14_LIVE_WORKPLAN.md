@@ -138,3 +138,40 @@ PR #2148 current head 6fec2dec1534285b654db60349efcd81f81b846c; code/test head 1
 ## Latest exact CI readback — 2026-11-21
 
 PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed GitHub Actions run 44854338438: Python 3.13 59 passed in 6.52s; Python 3.14 59 passed in 8.81s; compile and both jobs PASS. The only later commit is a next-action Markdown table refresh; no code or test file changed after the tested e46b head. The earlier run 44854219157 also passed 59/59 on both versions and is superseded by this readback.
+
+
+## Boss integration checkpoint — 2026-11-21 05:00 CET
+
+**Verified integration base:** `gpt6/v13-private-remote-bridge-20261111` HEAD `c0cedbde718ede6107f4df1f1bf9c784df4e00cf`.
+
+### Newly present code (do not overstate its runtime scope)
+
+- **WorldJEPA/EMA learner — PR #2151 with QA retention fix #2152:** merged into the release branch. Exact PR-head workflow `44861797478` passed 64 tests on Python 3.13 and 64 on Python 3.14, including compile. The code verifies source-bound T8 outcomes, oldest-first cursor plus bounded pending cohort, source-ID and content-digest-disjoint folds, censored-status exclusion, numeric encoder/predictor/EMA changes, separate B1/B2/SELF readouts, new-cohort utility, shuffled/zero-action negative controls, prior-cohort retention, persistence, restart, rollback and replay ablation. **Evidence = synthetic SQLite Store receipts on GitHub Actions/Linux.** The learner is not yet invoked by normal Runtime and is not native B1/B2 GGUF learning.
+- **RAW EAR acoustic cues — PR #2155:** merged into the release branch. Exact safe-additive run `44862523075` passed py_compile + 8/8 synthetic tests; generic staged/integrated run `44862523082` passed 240 staged and 415 integrated tests. The separate module extracts bounded pitch/voicing/energy/activity hints from caller-supplied PCM16 and writes through the tested Store/A4/C3-admission adapter. **It is not the normal Runtime consumer**, not microphone capture, not ASR or speaker recognition, and not a trained/calibrated perception model.
+- **Current release gate:** exact post-merge SHA `c0ced...` has 13 associated required workflows in `action_required`, not green. The branch is not release-certified. The current private owner-read has no reply; installed phone SHA is unknown. Do not issue UPDATE_REQUEST or claim Android deployment.
+
+### Shared P0/P1 execution plan
+
+| Owner | Next concrete code outcome | Acceptance before promotion |
+| --- | --- | --- |
+| Core & Harness | One current staged Runtime composition for source-bound arithmetic, A5 audio cues and FINAL/PROVISIONAL boundaries; integrate `audio_voice_cues.py` into the actual consumer and repair the shared candidate-builder chain | Exact staged + integrated + migration tests; 2+2 correct; B1/B2 offers delivered and consumed by C4/C3; no raw PCM persistence; consent-revocation negative control |
+| JEPA & Memory | Port the exact #2151 source/digest/pending-cohort/retention authority into the normal postcommit Runtime consumer; route prediction to a real World/Planner receiver in SHADOW | Restart/idempotence, source-disjoint holdout, prior retention, shuffled/zero-action/no-predictor/replay-only controls; no optimizer permission |
+| QA & Android | Maintain read-only device state until a fresh owner-authenticated receipt; independently validate updater CI ordering and rollback; prepare separate background/API and UI capability acceptance | Exact installed SHA receipt, updater consent, stop/revoke/audit/restart; OS permission evidence on Redmi; no GitHub-to-device inference |
+| Research & Perception | Compare deterministic RAW EAR cues with a measured VAD/prosody baseline; maintain A0–A5 source/time/provenance; continue native hidden-state and latent receiver research | Calibrated task utility vs noise/silence/impulse and no-audio controls; ARM cost; provenance/consent; no learning/action authority from heuristic cues |
+| Boss & Integration | Keep whole-Canon ledger synchronized, retire stale #2149 snapshot only after replacement PR exists, review current PR bases/heads/CI and integrate one compatible vertical slice | Exact current-head tests, consumer proof, immutable V13 appendix unchanged, current branch CI green, and Redmi receipt before release |
+
+### Open PR reconciliation
+
+- #2151 and #2152 are merged into the current release ancestry; #2150/#2148/#2147 are superseded by the #2151 integrated candidate.
+- #2155 is merged. It does not change existing Core source pins, but Core must explicitly consume its new module.
+- #2142 remains an open, stale-base read-only model-lab candidate; 23/23 synthetic tests passed on its code/test SHA, but no native GGUF comparison or staged-context acceptance exists.
+- #2144 and #2153 remain staged Runtime candidates with shared builder/composition failures. #2139/#2140 are older failing alternatives. #2145 remains blocked and must not overwrite the newer #2151 source/digest/pending-cohort authority.
+- #2149 is a stale documentation PR based on c3c32 and is not mergeable against current c0ced. The replacement evidence sync is built from c0ced on a new branch.
+- #1983 remains optional SHADOW context-companion work; it does not replace Context OS.
+
+### Environment and negative evidence
+
+- GitHub CI is the only current exact test environment for the two merged code packages above. Full local Aii checkout is BLOCKED in this worker because GitHub DNS resolution failed; no local repository test is claimed.
+- No native Redmi receipt, microphone, model inference, normal Runtime JEPA update, native B1/B2 weights, real-user retention or trained B3 latent exchange is demonstrated.
+- Existing V13 functions and all historical V13 appendices remain in scope. No master architecture edit was made in this checkpoint; no backup operation was required. Do not mark any whole-system or Android acceptance as complete.
+
