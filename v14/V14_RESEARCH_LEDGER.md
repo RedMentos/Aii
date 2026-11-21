@@ -697,3 +697,40 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - Staged Runtime: `251 passed, 10 skipped, 47 subtests`.
 - Integrated regression: `424 passed, 3 skipped, 58 subtests` (6 warnings).
 - These are CI staged/synthetic tests. They do not establish Android OS capture, a real UI provider, active-turn consumer wiring or Redmi behavior.
+
+
+## R-045 — Stable target coordinates for JEPA retention gates (2026-11-21)
+
+### Observed implementation mismatch
+
+The current WorldJEPA update path uses a **pre-update EMA target snapshot** for replay-gradient constraints, but the Store consumer's old-task guard/holdout measurements previously called prediction_loss() against the candidate's **moving live EMA target**. That compares two different target coordinate systems across an update. A measured old-task loss increase can therefore combine predictor/encoder forgetting with target-representation drift. The on-demand replay-loss probe had the same before/after moving-target mismatch.
+
+### Additive code correction under test
+
+- JEPA PR [#2247](https://github.com/RedMentos/Aii/pull/2247), code head **3fac198b4064b873192ccc2bcb0efaa4e1af9c23**, adds an evaluation-only target_snapshot argument to WorldJEPA.prediction_loss().
+- WorldJEPAStoreConsumer now snapshots the active pre-update EMA target and uses that same snapshot for old-session guard, old-session holdout and on-demand loss probes. The current-task objective and live EMA updates remain plastic; no teacher or target weights are frozen.
+- The report includes the reference type and a SHA-256 digest of the exact target snapshot. A focused regression verifies that the anchored loss is invariant to later live-EMA mutation while the ordinary live-target loss changes.
+- The exact source chain was recalculated and read back: world_jepa.py → integrated_world_training_resume_candidate_20261111.py → termux_runtime_recovery_candidate_20261112.py → stage_integrated_candidate.py → runtime_deploy.py. All four downstream pins match the exact GitHub-fetched UTF-8 bytes.
+- At ledger time the exact Python 3.13/3.14 Store A-B-A workflow was still running. Compile and SQLite/T8/checkpoint-vs-reset steps passed on both versions; A-B-A, staged optimizer-resume, predictor resume and postcommit runtime steps were pending. This is not yet evidence of an accepted retention-preserving update.
+
+### Research notes and reuse decision
+
+1. **ER-JEPA**, Jingnan Pu, Zi-En Fan, Feng Lian, arXiv:2609.36952 (submitted 2026-09-29): the abstract adds episodic memory retrieval to LLM-JEPA, replaying stored training pairs for prediction and representation-alignment supervision. Only abstract/metadata was reviewed here; no official code repository or license was verified. Research reference only; no reuse claim.
+2. **Projected Functional Regularization (PFR)**, Gomez-Villa et al., CVPRW 2022 / arXiv:2112.15022: proposes a temporal projection network to preserve information across changing self-supervised feature spaces, and reports that naive feature distillation can reduce plasticity. Official code repository alviur/CVPR_PFR declares MIT, but its README requires an older CaSSLe/PyTorch 1.10.2/CUDA 11.3 stack plus Lightning/W&B and GPU-oriented runs. Conceptual reference only; not a suitable Android dependency.
+3. **Learnable Drift Compensation (LDC)**, Gomez-Villa et al., ECCV 2024 / arXiv:2407.08536: learns a forward projector to map old prototypes into a moving backbone's new feature space. The official alviur/ldc repository has no LICENSE or requirements.txt at the checked paths; do not copy its code until licensing and dependencies are clarified.
+
+### Testable V14 implication
+
+A fixed pre-update EMA snapshot is a **measurement reference**, not a permanent frozen teacher. If the multi-seed A→B→A test still rejects all new cohorts, the next candidate is a small trainable temporal projection/adapter between old and new latent spaces, with source-disjoint old/new holdouts, zero/shuffle controls, bounded parameter delta, restart and rollback. The projector must not become a shortcut that hides loss of the underlying predictive function; report both unaligned and aligned retention and retain the independent holdout gate.
+
+### Evidence boundary
+
+No local full Aii checkout was available in this worker (GitHub DNS resolution failed), so no LOCAL_LINUX project test ran. CI results must remain labelled CI, not local or Android. No Redmi receipt, deployment, model change or device permission change was made. Status remains NOT_RELEASED / REDMI_UNVERIFIED.
+
+### Sources
+
+- ER-JEPA: https://arxiv.org/abs/2609.36952
+- PFR paper: https://arxiv.org/abs/2112.15022
+- PFR official code + MIT license: https://github.com/alviur/CVPR_PFR
+- LDC paper: https://arxiv.org/abs/2407.08536
+- LDC official repository (license not present at checked path): https://github.com/alviur/ldc
