@@ -292,11 +292,8 @@ def test_non_boolean_optimizer_permission_cannot_advance_censored_cursor(tmp_pat
         consumer = WorldJEPAStoreConsumer(
             store, tmp_path / "private-strict-optimizer-gate", learning_enabled=True
         )
-        denied = consumer.update(limit=64, optimizer_permission=1)
-        assert denied["status"] == "NO_NEW_TRANSITIONS"
-        assert denied["verified_receipts"] == 0
-        assert denied["censored_skipped"] == 8
-        assert denied["scan_cursor"] == 0
+        with pytest.raises(ValueError, match="optimizer_permission must be bool"):
+            consumer.update(limit=64, optimizer_permission=1)
         payload, version = store.state("v14.world_jepa.store_consumer", None)
         assert payload is None and version == 0
 
