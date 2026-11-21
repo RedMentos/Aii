@@ -153,15 +153,15 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI current PR head feb318611b2cdf46fbd34de74565016d26f52e75: focused RAW EAR 12/12 on Python 3.11 and 12/12 on Python 3.13 PASS (44882111454); privacy scan PASS (44882111514); staged/integrated 44882111436 PASS: staged 240 passed / 10 skipped / 47 subtests; integrated 415 passed / 3 skipped / 58 subtests; safe-additive 44882111427 FAIL as expected because the existing producer is modified. Earlier exact code/test tree 1c4bb678025b421b98766cbce61570eec4683a52 passed staged 240/10 skipped/47 subtests and integrated 415/3 skipped/58 subtests (44880145311). Producer blob 0e328d14883840190937f0fef24a8e895ba7261c; test blob 96b00b2e1b6340e2a61a8b6f230be8747889ab38. LOCAL_LINUX full checkout BLOCKED by GitHub DNS; REDMI_UNVERIFIED.",
-      "next_step": "Boss: independently review the V3 producer and decide the intentional safe-additive scope; keep the PR draft after exact staged/integrated CI PASS, review the intentional safe-additive rejection and all release checks. After Boss review/merge, Core updates #2158's exact V3 pin and proves separate text/audio PerceptPackets plus normal Runtime and B1/B2 OfferPacket -> C4/C3 consumption. Perception next compares RAW EAR V3 against libfvad on matched fixtures; no dependency/model download or production swap without separate approval.",
+      "next_step": "Boss: independently review PR #2177 and decide the intentional existing-producer/safe-additive scope. After review/merge, Core updates #2158's exact V3 producer pin and proves separate text/audio PerceptPackets plus normal Runtime and B1/B2 OfferPacket -> C4/C3 consumption. Perception then compares RAW EAR V3 against libfvad on matched fixtures. No dependency/model download or production swap without separate approval.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 08:36 CET",
       "latest_candidate_pr": {
-        "pr": 2155,
-        "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
-        "merge_commit_sha": "c0cedbde718ede6107f4df1f1bf9c784df4e00cf",
-        "ci": "PASS_44862523075_8_TESTS_AND_44862523082_240_STAGED_415_INTEGRATED",
-        "scope": "additive RAW EAR acoustic-cue adapter only; no normal Runtime consumer"
+        "pr": 2177,
+        "head_sha": "feb318611b2cdf46fbd34de74565016d26f52e75",
+        "merge_commit_sha": null,
+        "ci": "PASS_44882111454_12_TESTS_PY311_AND_313;PASS_44882111514_PRIVACY;PASS_44882111436_240_STAGED_415_INTEGRATED;FAIL_EXPECTED_44882111427_SAFE_ADDITIVE_EXISTING_FILE_EDIT",
+        "scope": "RAW EAR V3 caller-supplied PCM16 -> source-bound AudioPerceptPacket -> A4 attention -> C3 admission; not microphone/VAD/ASR/learning/Android"
       }
     },
     {
