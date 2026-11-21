@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import codecs
+import errno
 import hashlib
 import json
 import math
@@ -18,6 +19,8 @@ import sys
 import zlib
 from pathlib import Path
 from typing import Any
+
+from .android_control import _reject_unapproved_symlink_ancestors, _validate_audit_parent_ancestry
 
 
 def _json(value: Any, fallback: Any) -> Any:
@@ -185,20 +188,85 @@ def _payload(row: sqlite3.Row) -> dict:
     return value if isinstance(value, dict) else {}
 
 
+def _readonly_store_connection(home: str | Path) -> tuple[Path, sqlite3.Connection]:
+    """Open the live Store read-only under the shared Android path boundary.
+
+    Reuse AndroidControl's exact parent/ancestor policy, including the narrowly
+    allowed AOSP /data aliases and system:system 0771 directories. The final
+    Store DB is opened once with O_NOFOLLOW for identity/owner/link checks, then
+    SQLite opens it with mode=ro and query_only. Parent protection blocks
+    cross-UID replacement; a malicious same-UID race remains out of scope.
+    """
+    getuid = getattr(os, "getuid", None)
+    nofollow = getattr(os, "O_NOFOLLOW", None)
+    if getuid is None or nofollow is None:
+        raise PermissionError("safe V13 Store read unavailable")
+
+    requested = Path(home).expanduser() / "data" / "db" / "brain.sqlite3"
+    raw_path = Path(os.path.abspath(os.fspath(requested)))
+    canonical_parent = _reject_unapproved_symlink_ancestors(raw_path.parent, getuid())
+    parent = _validate_audit_parent_ancestry(canonical_parent, getuid())
+    db_path = parent / raw_path.name
+
+    flags = (
+        os.O_RDONLY
+        | nofollow
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
+    try:
+        fd = os.open(db_path, flags)
+    except OSError as exc:
+        if exc.errno in {errno.ELOOP, errno.EISDIR, errno.ENOTDIR}:
+            raise PermissionError("unsafe V13 Store database") from exc
+        raise
+    try:
+        before = os.fstat(fd)
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or before.st_uid != getuid()
+            or before.st_nlink != 1
+            or before.st_mode & 0o022
+        ):
+            raise PermissionError("unsafe V13 Store database")
+        current = db_path.lstat()
+        if (
+            not stat.S_ISREG(current.st_mode)
+            or (current.st_dev, current.st_ino) != (before.st_dev, before.st_ino)
+        ):
+            raise PermissionError("V13 Store database changed before SQLite open")
+
+        conn = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
+        try:
+            after = db_path.lstat()
+            if (
+                not stat.S_ISREG(after.st_mode)
+                or after.st_uid != getuid()
+                or after.st_nlink != 1
+                or (after.st_dev, after.st_ino) != (before.st_dev, before.st_ino)
+            ):
+                raise PermissionError("V13 Store database changed during SQLite open")
+            conn.row_factory = sqlite3.Row
+            conn.execute("PRAGMA query_only=ON")
+            root = db_path.parents[2]
+            return root, conn
+        except BaseException:
+            conn.close()
+            raise
+    finally:
+        os.close(fd)
+
+
 def audit_event(home: str | Path, event_id: str, *, session_id: str | None = None) -> dict:
-    """Audit one persisted event through read-only SQLite and source blobs."""
-    root = Path(home).expanduser().resolve()
-    db_path = root / "data" / "db" / "brain.sqlite3"
-    if not db_path.is_file():
-        raise FileNotFoundError("V13 Store database not found")
+    """Audit one event; an optional session_id constrains the local selector."""
     if not isinstance(event_id, str) or not event_id:
         raise ValueError("event_id is required")
-    if session_id is not None and (not isinstance(session_id, str) or not session_id):
-        raise ValueError("session_id must be a nonempty string")
+    if session_id is not None and (
+        not isinstance(session_id, str) or not session_id.strip()
+    ):
+        raise ValueError("session_id must be a nonempty string when supplied")
 
-    conn = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA query_only=ON")
+    root, conn = _readonly_store_connection(home)
     try:
         event_row = conn.execute(
             "SELECT packet,created,session_id FROM events WHERE id=?", (event_id,)
@@ -505,15 +573,10 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
 
 
 def audit_latest(home: str | Path, *, session_id: str | None = None) -> dict:
-    root = Path(home).expanduser().resolve()
-    if not isinstance(session_id, str) or not session_id:
+    if not isinstance(session_id, str) or not session_id.strip():
         raise ValueError("session_id is required for latest-event audit")
-    db_path = root / "data" / "db" / "brain.sqlite3"
-    if not db_path.is_file():
-        raise FileNotFoundError("V13 Store database not found")
-    conn = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
+    root, conn = _readonly_store_connection(home)
     try:
-        conn.execute("PRAGMA query_only=ON")
         row = conn.execute(
             "SELECT id FROM events WHERE session_id=? ORDER BY created DESC LIMIT 1",
             (session_id,),
@@ -526,14 +589,41 @@ def audit_latest(home: str | Path, *, session_id: str | None = None) -> dict:
     return audit_event(root, event_id, session_id=session_id)
 
 
+def audit_latest_completed(home: str | Path) -> dict | None:
+    """Audit the newest persisted assistant turn across all sessions.
+
+    This selector is for the global dashboard only. The standalone CLI keeps
+    its explicit session requirement; the returned audit is still bound to the
+    selected event's actual session before any packet/source inspection.
+    """
+    root, conn = _readonly_store_connection(home)
+    try:
+        row = conn.execute(
+            "SELECT e.id,e.session_id FROM messages m "
+            "JOIN events e ON e.id=m.event_id "
+            "WHERE m.role='assistant' AND m.event_id IS NOT NULL "
+            "ORDER BY m.id DESC LIMIT 1"
+        ).fetchone()
+        if not row:
+            return None
+        event_id, session_id = row["id"], row["session_id"]
+        if not isinstance(event_id, str) or not event_id or not isinstance(session_id, str) or not session_id:
+            raise ValueError("invalid latest assistant event binding")
+    finally:
+        conn.close()
+    return audit_event(root, event_id, session_id=session_id)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Read-only V13 per-turn organ-flow audit")
     parser.add_argument("--home", default="~/v13", help="V13 runtime home")
-    parser.add_argument("--event-id", help="audit one event; default is latest")
-    parser.add_argument("--session-id", help="required for latest-event selection; restrict to one chat session")
+    parser.add_argument("--event-id", help="explicit local event selector; not session-scoped unless --session-id is also supplied")
+    parser.add_argument("--session-id", help="required for latest-event selection; when paired with --event-id, restricts it to that session")
     parser.add_argument("--compact", action="store_true", help="emit compact JSON")
     args = parser.parse_args(argv)
     try:
+        if args.session_id is not None and not args.session_id.strip():
+            raise ValueError("session_id must be nonempty when supplied")
         if not args.event_id and not args.session_id:
             raise ValueError("session_id is required when selecting the latest event")
         report = (
@@ -541,7 +631,7 @@ def main(argv: list[str] | None = None) -> int:
             if args.event_id
             else audit_latest(args.home, session_id=args.session_id)
         )
-    except (FileNotFoundError, KeyError, ValueError, sqlite3.Error) as exc:
+    except (FileNotFoundError, KeyError, ValueError, PermissionError, sqlite3.Error) as exc:
         print(json.dumps({"status": "ERROR", "error": type(exc).__name__}), file=sys.stderr)
         return 2
     print(json.dumps(report, ensure_ascii=False, sort_keys=True, separators=(",", ":") if args.compact else None, indent=None if args.compact else 2))
