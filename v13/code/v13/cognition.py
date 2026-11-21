@@ -163,12 +163,16 @@ class Cognition:
         """Source-bound native body observation; no receiver or learning authority."""
         if source_ref['source_id']!=e['source_ref']['source_id']:raise ValueError('Tap source must belong to this event')
         text=self.s.read_source(source_ref);tap_runner=self.r.pool.get_tap(role);native=tap_runner.tap(text,self.r.cancel_event,deadline)
+        bound_tap_id=getattr(tap_runner,'tap_id',None)
+        if (not isinstance(bound_tap_id,str) or native.get('tap_id')!=bound_tap_id or
+                native.get('metrics',{}).get('tap_id')!=bound_tap_id):
+            raise ValueError('Native tap identity differs from the validated model binding')
         path=self.r.home/'data/blobs'/(uid('tap')+'.json');atomic_write(path,dumps({'token_ids':native['token_ids'],'vectors':native['vectors']}))
         prediction=None
         try:prediction=self.r.learner.predict_states(role,native['vectors'])
         except Exception as exc:self.s.log('local_predictor_unavailable',e['event_id'],{'role':role,'error':type(exc).__name__})
         p=packet('LatentTapPacket',role,e['event_id'],e['brain_generation_id'],[source_ref],role=role,source_ref=source_ref,
-                 tap_id=getattr(tap_runner,'tap_id','lfm2.result_norm.final.v1'),model_revision=self.r.models.revision(role),runner_revision='b10964',
+                 tap_id=bound_tap_id,model_revision=self.r.models.revision(role),runner_revision='b10964',
                  token_ids=native['token_ids'],feature_path=str(path.relative_to(self.r.home)),feature_sha256=file_hash(path),shape=[len(native['vectors']),len(native['vectors'][0]) if native['vectors'] else getattr(tap_runner,'tap_dim',2048)],
                  role_state='INDEPENDENT_READ_ONLY_PREFILL',receiver_read_authority=0,receiver_injection_authority=0,body_learning_authority=0,metrics=native['metrics'],local_prediction=prediction)
         self.s.add_packet('LatentTapPacket',p);self.s.log('native_tap',e['event_id'],native['metrics']|{'model_revision':p['model_revision'],'source_ref':source_ref});return p
