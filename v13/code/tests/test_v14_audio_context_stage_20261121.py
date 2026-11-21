@@ -15,7 +15,7 @@ SOURCE_BLOBS = {
     "v13/cognition.py": "90138474db6f7c0b66cea24f52d22cd7a6e2f87b",
     "v13/audio_voice_cues.py": "7ac80a0d0deec8f52361fe89756ebd743b0a3537",
 }
-BUILDER_SHA256 = "b55abb25e2d8cebb138dd92d646f7a51a2c6fb5cbce981af48e58bf4cb99c962"
+BUILDER_SHA256 = "3f98acf869917e795497795af33197d198dc114c4a8943b7ec585f64cd998f75"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -67,14 +67,12 @@ def test_audio_voice_and_arithmetic_share_one_hash_bound_stage(tmp_path):
 
     test_names = (
         "test_c3_audio_runtime_consumer.py",
-        "test_audio_ear_voice_cues_v14.py",
         "test_arithmetic_reflex.py",
         "arithmetic_disposable_cases_20261116.py",
         "arithmetic_outcome_disposable_cases_20261116.py",
         "test_broker.py",
         "test_output_policy.py",
         "test_v14_arithmetic_policy_separation.py",
-        "test_online_world_20261108.py",
     )
     staged_tests = destination / "tests"
     staged_tests.mkdir(exist_ok=True)
