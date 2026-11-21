@@ -1290,3 +1290,63 @@
 4. Für gestrichene *technische* Altmethoden dokumentieren, welche neue Methode ihre vollständige Nutzerfunktion erhält, warum das messbar besser/gleichwertig ist und wo ihre Tests stehen; niemals alte funktionale Ziele verschwinden lassen.
 
 **Grenze dieses Index:** Für die 1255 Überschriften liegt jetzt eine vollständige mechanische Erfassung vor; die semantische Prüfung jedes Satzes und die tatsächliche Implementierungszuordnung bleiben offene Arbeit, die ausdrücklich nicht als erledigt ausgegeben wird.
+
+
+## Boss live evidence overlay — 2026-11-21 (additive; historical V13 table above is preserved)
+
+Status vocabulary is deliberately strict:
+- NOT_IMPLEMENTED: no executable component.
+- ISOLATED_MOCK: local fixture/simulator only.
+- WIRED_SYNTHETIC: executable software path with synthetic tests, not native utility.
+- NATIVE_LINUX_PROOF: real native execution on Linux only.
+- REAL_REDMI_PROOF: actual authorized Redmi receipt; can be PASS or FAIL.
+- ACCEPTED: exact Canon acceptance criteria passed, including persistence, negative controls, telemetry, ablation and the target platform where required.
+
+| Capability family | Current status / evidence | Actual gap | Priority / owner |
+|---|---|---|---|
+| A0/A1 text ingress, segmentation, SourceRef | WIRED_SYNTHETIC | Complete multimodal A0–A5 integration still not proven | P1 Research/Perception |
+| A2 teacher/reference lane | WIRED_SYNTHETIC | Teacher remains reference, not truth; student learning/retention gates incomplete | P2 Research/Perception |
+| A3/A4 salience and attention | WIRED_SYNTHETIC for text; ISOLATED_MOCK for new audio adapter | A5 producer/consumer schema mismatch; live consent must be checked at the receiving boundary | P1 Research/Perception + Core |
+| A5 vision | ISOLATED_MOCK | Vision Age-0 lab scaffold only; no full runtime multimodal learning | P2 Research/Perception |
+| A5 RAW EAR / audio | ISOLATED_MOCK | No microphone/Android capture; timestamped acoustic path and A4 receiver not aligned | P1 Research/Perception |
+| B1_DETAIL / B2_GIST | WIRED_SYNTHETIC; historical NATIVE_LINUX_PROOF is partial | Canon STEP2 two-body utility remains FAIL; B1/B2 offer delivery and quality must be measured on current Redmi | P0 Core & QA |
+| B3 exact/control/symbolic | WIRED_SYNTHETIC | Existing symbolic communication is not trained latent coupling | P1 Core |
+| B3 latent L1 | NATIVE_LINUX_PROOF (partial receiver effect for private/action only) | No authority; escalate/apologize FAIL; L2–L4 unmeasured; B3 utility FAIL | P1 Core + Research |
+| C2/JEF/C3 output | WIRED_SYNTHETIC; historical REAL_REDMI_PROOF: FAIL on 2+2 returning 2 | Newer current-device result absent; exact arithmetic PR #2131 still has integrated contract failures | P0 Core |
+| World / Self / episodic / semantic / procedural memory | WIRED_SYNTHETIC | Whole-system source-bound cross-organ use and held-out outcome quality not accepted | P1 JEPA/Memory |
+| JEPA / EMA / local plasticity | WIRED_SYNTHETIC for external predictor/EMA scaffolds only | Actual B1/B2 Body-JEPA and cross-organ gradient/parameter consumers are not accepted; PR #2137 is an experimental Store-verified scalar temporal receiver candidate; it is not wired to normal Runtime | P1 JEPA/Memory |
+| Sleep / Dream / Replay | WIRED_SYNTHETIC for existing replay/dream paths | Cross-organ weight consolidation, anti-forgetting, idle lifecycle and Redmi retention remain open | P2 JEPA/Memory |
+| Tools / JEF agency | WIRED_SYNTHETIC for permission broker and typed action contracts | Android execution remains OFF; no OS-authenticated per-action executor | P1 Core + QA |
+| Android background/API control | ISOLATED_MOCK | Companion receipt verifier/capability registry are draft; no Keystore-backed companion transport or permitted native API action | P1 Core + QA |
+| Android UI observation/control | NOT_IMPLEMENTED | No proven AccessibilityService/MediaProjection/action-observation loop on Redmi | P1 Core + QA |
+| VOICE_AUDIO / speech effector / full duplex | NOT_IMPLEMENTED (metadata prototypes are ISOLATED_MOCK) | STEP9/G10C/G10D remains OPEN; no separate speech effector or barge-in media loop | P1 Research/Perception + Core |
+| Self-optimization / cross-organ weight edits | NOT_IMPLEMENTED | No target-controlled cross-organ parameter delta with held-out utility, retention, restart and rollback | P1 JEPA/Memory |
+| Adaptive moral Judge | WIRED_SYNTHETIC candidate only | Synthetic head is not proof of contextual ethical understanding or the OS sandbox | P2 Core + QA |
+| Age 0–5 rights / X10 lab | WIRED_SYNTHETIC | Must keep Age as rights, not compute budget; revalidate official Age 0 and separate lab selector | P1 Core + QA |
+| Remote maintenance / updater | WIRED_SYNTHETIC code path; current REAL_REDMI_PROOF: none | Private owner-read issues #351–354 remain unanswered at last readback; installed SHA/updater state unknown | P0 QA & Android |
+| Model registry / reversible swap | ISOLATED_MOCK / read-only audit candidates | No completed candidate comparison, license/ARM/runtime benchmark, approval or production swap | P2 Research/Perception |
+
+**Acceptance summary:** no whole-system capability is ACCEPTED by this overlay. Historical Redmi evidence includes failures and must not be promoted to current success. Current device status is NO_LIVE_RECEIPT / REDMI_UNVERIFIED. Last code-bearing release HEAD is 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e; current branch documentation commits do not imply installation.
+
+### Current priority order
+- P0: correct C3 output and complete source-bound B1/B2→C4→C3 response on the real Redmi; verify update/recovery and current installed SHA.
+- P1: permissioned Android background/API + UI control, RAW EAR/VOICE_AUDIO and multimodal consumer wiring, actual JEPA/continual-learning path, cross-organ latent channel and Age/X10 rights.
+- P2: sleep/dream consolidation, model alternatives and license/ARM benchmark, adaptive Judge validation.
+- P3: structural self-edit only after the target-controlled weight-update, held-out retention, permission and rollback gates are proven.
+
+
+
+### Boss evidence update — 2026-11-21, 01:53 CET
+
+| Capability family | Latest verified update | Current acceptance status |
+|---|---|---|
+| V13 updater / release | #2138 merged as code commit `5b9171a`; updater-required exact push CI green. Later board/handoff commits do not alter runtime. | CI verified; phone deployment UNVERIFIED |
+| T8 temporal outcome / Store authority | PR #2137 head `2d8eb79b`: exact bounded ActionOutcome scan, explicit cancellation/censoring, directory fsync rollback; focused V14, staged-runtime and integrated regression PASS | Experimental component; not normal-Runtime-wired; not accepted |
+| A5 audio | #2136 adapter merged; #2139 runtime consumer candidate still fails staged/integrated tests due stale `runtime.py` pins | Synthetic adapter only; no Android microphone/speech |
+| B1/B2/C3 | #1904 last device evidence remains incorrect 2+2, slow C3 and no valid B1/B2 offers | P0 FAIL / no newer phone receipt |
+| B3 latent coupling | Symbolic exchange is not trained activation-to-activation receiver coupling | NOT_ACCEPTED |
+| World/JEPA/B1-B2 weight learning | #2133/#2135 candidates remain experimental or blocked; no native body-weight diff, heldout utility or Redmi retention proof | NOT_ACCEPTED |
+| Android background/UI control and full voice | No verified OS API/UI action path, microphone, speech effector or full-duplex path on Redmi | NOT_IMPLEMENTED / REDMI_UNVERIFIED |
+| Sleep/replay, self-edit, Context OS/Memorilla, model swap | Existing pieces/candidates only; no full connected acceptance | PARTIAL / OPEN |
+
+No row above is ACCEPTED. The 1255-heading mechanical inventory remains complete, but clause-by-clause semantic mapping to consumers/tests/rollback is still pending.
