@@ -1807,3 +1807,23 @@ This overlay supplements the historical inventory; it does not remove, simplify 
 **Environment separation:** no local Aii checkout was present; no LOCAL_LINUX project tests ran. GitHub CI is not local Linux. Synthetic/staged Runtime is not native model inference. No Android/Termux or real Redmi receipt was obtained. The private owner-read requests #431/#432 had zero authenticated comments at last poll.
 
 **Coverage verdict:** 1,255 historical headings remain preserved; semantic clause→implementation→runtime consumer→test→environment→rollback mapping remains incomplete. No row above is promoted to ANDROID_VERIFIED or ACCEPTED.
+
+
+## Evidence overlay — Boss integration checkpoint 2026-11-21 (Core + Perception + QA)
+
+This overlay supplements the historical Canon inventory; it does not close or simplify other requirements. Environment labels remain separate: GitHub CI is not LOCAL_LINUX, synthetic staged Runtime is not native inference, and neither is Redmi proof.
+
+| Canon family | CODE | WIRED | TESTED_SYNTHETIC | TESTED_ANDROID | ACTIVE / acceptance |
+| --- | --- | --- | --- | --- | --- |
+| A0–A5 perception / attention / source-time | Caller PCM16 RAW EAR, A5 UI metadata lease shadow, generic Store source-lock fix in #2258 | Staged A5/A4/C3 PCM16 consent path; metadata-only A5 UI ingress; shared Store RLock for producer and revoker | #2255 focused CI: 16 passed / 5 subtests on Python 3.13 and 3.14; combined #2258 A5 + staged/integrated checks queued | NOT_TESTED | No Android microphone, screen capture, AccessibilityService, NotificationListener or UI action provider |
+| C1/JEF/C2/C3 and C5 arithmetic | Exact arithmetic/date guard and explicit-only OFF-by-default Termux TTS fallback in #2258 | Staged Runtime candidate; source-bound arithmetic/audio outcomes; TTS only on explicit user request after FINAL text | Earlier Core source-head checks passed; combined #2258 Python 3.13/3.14 staged and integrated workflows queued | NOT_TESTED | NOT_RELEASED; no correct native Redmi 2+2 or C3 acceptance |
+| Goal tree / scheduler / long-horizon agency | Finite wake validation, Store-RLock GoalStore publication, rollback and EventScheduler.cancel_pending in #2258 | GoalStore.add/schedule ↔ GOAL_WAKE queue/backlink | #2257 adds seven SQLite/Store/EventScheduler regressions; combined GoalWake/Lab-Age/owner-read checks queued on #2258 | NOT_TESTED | INTEGRATION_REVIEW only; no learned planner or Android background agent |
+| VOICE_AUDIO | Caller-supplied PCM16 + staged consent lease + explicit-only system TTS fallback | Synthetic A5/A4/C3 input and user-command output only | Combined audio/TTS tests queued on #2258 | NOT_TESTED | No microphone capture, ASR, trainable decoder/vocoder, full duplex or raw-audio learning |
+| ANDROID_UI_CONTROL | Metadata-only A5 UI lease adapter and Store race fix | Synthetic A5→A4 admission only | Focused source tests pass separately; combined #2258 A5 workflow queued | NOT_TESTED | No OS provider, screen capture, tap, type or app action |
+| Age rights / runtime resources | #2235 rights separation remains draft; GoalWake rollback is a separate improvement | Goal and scheduler lifecycle under Store RLock; no Age rights expansion | #2235 remains 7/10; #2258 GoalWake/Lab-Age tests queued | NOT_TESTED | Age remains developmental/tool/learning rights, not compute budget; no release |
+| Install / update / rollback | Stager/deployer hash chain rebound in #2258 | Candidate snapshot path only; no activation | Runtime deploy, migration and owner-read workflows queued | NO_AUTHENTICATED_RECEIPT | NOT_RELEASED; private PIPELINE_STATUS #435 has no authenticated reply |
+| Optional A5 acceleration | #2256 opt-in NumPy backend remains separate | No default change; Python backend remains default | Reported LOCAL_LINUX synthetic 131.30 ms→6.23 ms median per 1-s 16-kHz window (~21x), 100/100 parity | NOT_TESTED | No ARM64/Termux/Redmi measurement; not included in #2258 |
+
+**Still OPEN across the whole Canon:** native B1_DETAIL/B2_GIST offer quality and mutual re-entry; trained B3 cross-model latent receiver; accepted JEPA per-session retention and numeric parameter/checkpoint changes; sparse MoE bodies; audio/vision weight learning; Android background/API and UI providers; trainable speech decoder/vocoder/full duplex; cross-organ gradients and controlled self-edit; independent technical OS sandbox; adaptive behavior judge; complete declared memory/egress registry; Memorilla production overflow consumer. P0 issue #1904 remains open.
+
+**Proof boundary:** #2258 exact-head workflows were queued at last poll. No combined PASS, local project test, Android test, Redmi receipt, release or installation is claimed.
