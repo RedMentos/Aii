@@ -1,7 +1,11 @@
-"""Race regression: source publication and consent-revocation blob unlink must serialize."""
+"""Race regression: A5 source publication and consent-revocation unlink serialize.
+
+This exercises the real SQLite Store and the Perception-owned A5 producer.
+The test uses separate threads so the producer can be observed waiting on the
+shared Store mutex while revocation is paused at the actual blob unlink.
+"""
 import threading
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from v13.common import digest
@@ -28,7 +32,7 @@ def _packet(packet_id, source_ref):
     }
 
 
-def test_revoke_blob_unlink_is_serialized_with_new_shared_source_publication(tmp_path):
+def test_revoke_unlink_serializes_with_concurrent_a5_shared_source_publication(tmp_path):
     home = Path(tmp_path)
     (home / "data" / "db").mkdir(parents=True)
     (home / "data" / "blobs").mkdir(parents=True)
@@ -45,8 +49,11 @@ def test_revoke_blob_unlink_is_serialized_with_new_shared_source_publication(tmp
     first = _source("src_ui_first", summary)
     second = _source("src_ui_second", summary)
     blob = home / "data" / "blobs" / first["sha256"]
-    entered_unlink = threading.Event()
+    unlink_entered = threading.Event()
     allow_unlink = threading.Event()
+    producer_started = threading.Event()
+    producer_done = threading.Event()
+    results = {}
     errors = []
 
     _persist_source_and_packet(runtime, first, summary, _packet("packet-first", first))
@@ -56,39 +63,64 @@ def test_revoke_blob_unlink_is_serialized_with_new_shared_source_publication(tmp
 
     def pause_before_blob_unlink(path, *args, **kwargs):
         if path == blob:
-            entered_unlink.set()
+            unlink_entered.set()
             if not allow_unlink.wait(5):
                 raise TimeoutError("test did not release the revocation unlink")
         return original_unlink(path, *args, **kwargs)
 
     def revoke():
         try:
-            revoke_ui_observation(runtime, first["source_id"])
+            results["revocation"] = revoke_ui_observation(runtime, first["source_id"])
         except BaseException as exc:
-            errors.append(exc)
+            errors.append(("revoke", repr(exc)))
 
-    worker = threading.Thread(target=revoke, name="ui-source-revoker")
+    def publish_second_a5_source():
+        producer_started.set()
+        try:
+            _persist_source_and_packet(
+                runtime, second, summary, _packet("packet-second", second)
+            )
+        except BaseException as exc:
+            errors.append(("publish", repr(exc)))
+        finally:
+            producer_done.set()
+
+    revoker = threading.Thread(target=revoke, name="a5-ui-source-revoker")
+    producer = threading.Thread(target=publish_second_a5_source, name="a5-ui-source-producer")
     try:
         with patch.object(Path, "unlink", pause_before_blob_unlink):
-            worker.start()
-            assert entered_unlink.wait(2), "revocation did not reach its post-transaction blob unlink"
+            revoker.start()
+            assert unlink_entered.wait(2), "revocation did not reach the blob unlink"
 
-            # This is the exact producer path. The same summary has the same hash,
-            # so it observes the still-present blob and skips atomic_write before
-            # inserting a second live source row.
-            _persist_source_and_packet(runtime, second, summary, _packet("packet-second", second))
+            # The revoker must still own Store.mutex here. The A5 producer must
+            # block, then recreate the digest blob after the old source is gone.
+            producer.start()
+            assert producer_started.wait(2), "A5 producer thread did not start"
+            assert not producer_done.wait(0.1), (
+                "A5 source publication passed the revocation blob critical section"
+            )
 
             allow_unlink.set()
-            worker.join(2)
-            assert not worker.is_alive(), "revocation worker did not finish"
+            revoker.join(2)
+            producer.join(2)
+            assert not revoker.is_alive(), "revocation worker did not finish"
+            assert not producer.is_alive(), "A5 producer did not finish after revocation"
 
-        assert not errors, f"revocation raised unexpectedly: {errors!r}"
-        # A live source must always retain a readable content-addressed blob.
-        # Current implementation can delete it after the second source commits.
-        assert store.one("SELECT deleted FROM sources WHERE id=?", (second["source_id"],))["deleted"] == 0
+        assert not errors, f"concurrent A5 source/revoke operation raised: {errors!r}"
+        assert results["revocation"]["source_tombstoned"] is True
+        assert results["revocation"]["blob_removed"] is True
+        assert store.one(
+            "SELECT deleted FROM sources WHERE id=?", (first["source_id"],)
+        )["deleted"] == 1
+        assert store.one(
+            "SELECT deleted FROM sources WHERE id=?", (second["source_id"],)
+        )["deleted"] == 0
         assert store.read_source(second) == summary
+        assert blob.is_file(), "new live A5 source must own a readable recreated blob"
     finally:
         allow_unlink.set()
-        if worker.is_alive():
-            worker.join(2)
+        if revoker.is_alive():
+            revoker.join(2)
+        if producer.is_alive():
+            producer.join(2)
         store.close()
