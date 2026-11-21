@@ -38,6 +38,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.5.1+cpu
           python -m pip install numpy transformers peft pytest
+      - name: Print exact builder SHA256 chain
+        run: |
+          sha256sum \
+            v13/code/scripts/integrated_audio_context_candidate_20261121.py \
+            v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
+            v13/code/scripts/stage_integrated_candidate.py
       - name: Compile candidate builders and deployment gate
         run: |
           python -m py_compile \
