@@ -11,7 +11,7 @@ BUILDERS = {
     'scripts/integrated_world_training_resume_candidate_20261111.py': '8f0050dd95cd23da17c69feaecccf8b285d5344527bf18ac36e3c3ac891b9d66',
     'scripts/termux_probe_recovery_candidate_20261112.py': '27aec15dc1f003fd2c90d3d5a08d5a4a9af223ab57c188720ea9cd18aebc1b2b',
     'scripts/termux_chat_recovery_candidate_20261112.py': 'e0885ebc04ae16826f2a8d5cc3210ddc2f76d1ef40d22824190deaafaa13ffa8',
-    'scripts/termux_idle_recovery_candidate_20261112.py': '97887387b927f9e30a06b9883253e9b866b5c579da97cfbb4f24788d1102817f',
+    'scripts/termux_idle_recovery_candidate_20261112.py': '6713ae5e27205cccd2eecfe542db7818a98261cc59f54804e4047fa188f34fa5',
 }
 
 
