@@ -151,7 +151,7 @@ def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative
     assert actual["auth_scheme"] == "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
     assert actual["observed"] is False
     assert actual["world_learning_eligible"] is False
-    assert runtime.idle_checks == 3
+    assert runtime.idle_checks == 4
     runtime.store.close()
     controller.broker.close()
 
@@ -183,7 +183,7 @@ def test_key_rotation_and_disabled_companion_fail_closed(tmp_path):
     transport = FakeTransport(enabled=False)
     controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
     controller.trust(KEY_ID, True)
-    with pytest.raises(android_control.ControlDenied, match="not ready"):
+    with pytest.raises(android_control.ControlDenied, match="paired and enabled"):
         controller.launch("com.example.app", True)
     transport.public_key = lambda: {
         **PUBLIC_KEY_INFO,
@@ -197,7 +197,7 @@ def test_key_rotation_and_disabled_companion_fail_closed(tmp_path):
 
 def test_operator_refuses_model_origin_for_android_control(tmp_path):
     runtime = make_runtime(tmp_path)
-    with pytest.raises(ValueError, match="OPERATOR_TTY"):
+    with pytest.raises(ValueError, match="lokale Operator-Eingaben"):
         Operator(runtime).run(":android status", origin="MODEL")
     runtime.store.close()
 

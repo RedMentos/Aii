@@ -35,7 +35,7 @@ def test_submit_uses_fixed_content_provider_and_no_shell():
         }), "")
 
     client = AndroidCompanionTransport(content_path="/system/bin/content", runner=runner)
-    assert client.submit(request) == {"status": "PENDING_USER_APPROVAL"}
+    assert client.submit(request) == {"status": "PENDING_USER_APPROVAL", "action_id": request["action_id"]}
     command, kwargs = seen[0]
     assert command[:6] == [
         "/system/bin/content", "call", "--uri",

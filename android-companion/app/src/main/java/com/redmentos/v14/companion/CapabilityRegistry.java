@@ -27,7 +27,8 @@ final class CapabilityRegistry {
         JSONObject result = new JSONObject();
         result.put("schema", "v14.android-capability-registry/1");
         result.put("android_api", Build.VERSION.SDK_INT);
-        result.put("enabled", enabled);\n        result.put("termux_paired", paired);
+        result.put("enabled", enabled);
+        result.put("termux_paired", paired);
         result.put("capabilities", items);
         result.put("network_enabled", false);
         result.put("shell_enabled", false);

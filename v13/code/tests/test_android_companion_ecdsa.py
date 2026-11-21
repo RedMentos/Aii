@@ -137,8 +137,10 @@ def test_signed_user_denial_persists_without_learning_authority(tmp_path, monkey
     assert outcome.observed is False
     assert trusted_transition_eligible(outcome) is False
     stored = store.one("SELECT payload FROM packets WHERE id=?", (packet["packet_id"],))
-    actual = json.loads(stored["payload"])["actual"]
-    assert actual["status"] == "COMPANION_USER_DENIED"
+    stored_packet = json.loads(stored["payload"])
+    actual = stored_packet["actual"]
+    assert stored_packet["status"] == "COMPANION_USER_DENIED"
+    assert actual["receipt_status"] == "USER_DENIED"
     assert actual["companion_local_consent_claim"] is False
     assert actual["world_learning_eligible"] is False
     store.close()
