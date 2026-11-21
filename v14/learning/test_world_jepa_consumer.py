@@ -109,6 +109,9 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
         assert metrics["train_rows"] >= 8 and metrics["holdout_rows"] >= 8
         assert metrics["parameter_delta_norm"] > 0
         assert metrics["ema_target_delta_norm"] > 0
+        assert metrics["holdout_improved"] is True
+        assert metrics["negative_controls_separated"] is True
+        assert metrics["holdout_loss_delta"] < 0
         assert metrics["optimizer_moments_persisted"] is False
         assert math.isfinite(metrics["holdout_loss_before"])
         assert math.isfinite(metrics["holdout_loss_after"])
@@ -142,6 +145,7 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
         assert second["metrics"]["fit_steps_after"] > second["metrics"]["fit_steps_before"]
         assert second["metrics"]["old_holdout_loss_before"] is not None
         assert second["metrics"]["old_holdout_loss_after"] is not None
+        assert math.isfinite(second["metrics"]["old_holdout_retention_delta"])
         assert second["checkpoint_sha256"] != first_sha
         assert len(list((tmp_path / "private-jepa").glob("jepa-*.npz"))) == 2
 
