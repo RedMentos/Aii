@@ -1637,3 +1637,24 @@ AOSP Bionic status lists `renameat2` as a libc addition from Android R/API 30: h
 | Release / Android | Exact merged release branch head f279286a4453248004c670fcaabecd85da6ab299; PR-head tests for #2228 pass. | Merge push CI is 34/34 success, 0 failed, 0 pending; all associated workflows are SUCCESS. No authenticated owner-read receipt; installed SHA/updater consent UNKNOWN; REDMI_UNVERIFIED. |
 
 Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. Semantic clause→code→consumer→test→environment→rollback mapping remains incomplete; no Canon family is accepted by this one vertical slice.
+
+
+## Boss evidence overlay — 2026-11-21 17:06 CET
+
+This overlay records the current exact integration evidence without promoting synthetic or CI results to native/Android acceptance.
+
+| Canon family | Current evidence | Still open |
+|---|---|---|
+| A0–A5 perception/attention | PR #2233 caller-supplied PCM16 producer: source-bound PerceptPacket, bounded temporal voice evidence, A4 salience and C3 admission; consent 29, RAW EAR 53 on Python 3.11/3.13, VAD comparator 8 on Python 3.13/3.14, libfvad Linux 13 PASS per matrix, staged 251/10/47, integrated 424/3/58. | Draft only; no normal Runtime consumer, microphone permission/capture, native B1/B2/C3 inference, ASR, speech output or Redmi proof. Consent lease must extend through C3 generation; revocation must delete derived context and clear cache. |
+| B1_DETAIL / B2_GIST | Distinct roles and synthetic OfferPacket delivery to C4/C3 context; #2228 C4 source-span heuristic is integrated in normal pinned stage/deployer. | No accepted native model output, no measured 2+2, latency/RSS or real Redmi delivery. |
+| B3 / Enlightened Space | Symbolic/tap provenance candidates remain separately classified. | No trained cross-organ latent projector, native latent receiver, OOD calibration or receiver utility/ablation proof. |
+| B4 / C4 coalition | #2228 exact CI: staged 251/10/47; integrated 424/3/58; merge-push 34/34 checks and 19/19 workflows. | Synthetic runners only; source-span discount is a conservative heuristic, not learned semantic diversity or true latent coupling. |
+| C1/JEF/C2/C3 and C5 | C4 source-span rule reaches the normal stage. PR #2230 contains Age.tools-before-per-call-approval and exact-arithmetic refinements. | #2230 Python 3.13 stage fails because arithmetic overlay still pins an old focal.py blob; no release or Redmi arithmetic acceptance. |
+| World/Self/Memory/JEPA | Small numeric WorldJEPA Store/NumPy predictor, EMA and training-resume state remain a bounded SHADOW path with gates OFF. | PR #2231 current head 324e5af9 has 4/11 checks green, 6 failed, 1 running due nested builder/recovery pin mismatches; no native GGUF body-weight updates, cross-organ gradients or trained B3 receivers. |
+| Sleep/Dream/Replay | Bounded postcommit WorldJEPA job and persisted numeric checkpoint path are present in synthetic Store tests. | PR #2231 A→B→A/predictor-only candidate has not passed exact CI; prior 0/12 B/A2 promotion result remains a retention rejection. General dream consolidation and Redmi lifecycle are open. |
+| Voice/audio | RAW EAR caller-PCM producer candidate is tested in GitHub CI. | No microphone capture, ASR, speech decoder/vocoder, full duplex, audio learning or Android proof. |
+| Android background/UI control | Broker remains DRY_RUN_ONLY. | No OS executor, authenticated companion, AccessibilityService, MediaProjection, app launch/UI observation/tap/type or Redmi proof. |
+| Self-optimization / controlled self-edit | Small numeric WorldJEPA training state only; permissions/gates OFF. | No native B1/B2/C3 weight edits, cross-organ gradients, sparse MoE, algorithm/code self-edit or Android validation. |
+| Updater/install/rollback | Code-bearing release f279 exact CI 34/34 + 19/19; docs HEAD 9d8f exact checks 36/36. | No authenticated private phone receipt; installed SHA and updater consent UNKNOWN; REDMI_UNVERIFIED. |
+
+Historical inventory remains **1,255 headings**. Semantic clause→implementation→consumer→test→environment→rollback mapping is still incomplete. P0 #1904 remains open. This evidence overlay does not mark the whole Canon or V14 complete.
