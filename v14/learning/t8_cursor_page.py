@@ -55,9 +55,12 @@ class _CursorPageStore:
                 created = float(self.after["created"])
                 action_id = self.after["action_id"]
                 rows = self._store.rows(
-                    _PAGE_SELECT
+                    "SELECT page.id,page.event_id,page.status,page.expected,page.outcome,"
+                    "page.created,page.generation_id FROM ("
+                    + _PAGE_SELECT
                     + "AND (a.created > ? OR (a.created = ? AND a.id > ?)) "
-                    "ORDER BY a.created DESC,a.id DESC LIMIT ?",
+                    "ORDER BY a.created ASC,a.id ASC LIMIT ?) AS page "
+                    "ORDER BY page.created DESC,page.id DESC",
                     (pattern, created, created, action_id, self.limit),
                 )
             if rows:
