@@ -21,7 +21,7 @@ class FakeStore:
         self.source_ref = {"source_id": "src-1", "sha256": self.source_sha, "char_start": 0,
                            "char_end": len(source_text), "modality": "text"}
         self.event = {"event_id": "evt-1", "brain_generation_id": "gen-1",
-                      "source_ref": self.source_ref, "source_refs": [self.source_ref]}
+                      "source_ref": self.source_ref, "provenance": [self.source_ref]}
         self.expected = {"forecast": {"input_chars": len(source_text), "resource_state": "NORMAL"}}
         self.actual = actual or {"action_duration_s": 1.0, "characters": 20}
         self.status = status
@@ -78,7 +78,7 @@ def test_store_authority_rejects_source_tampering():
     store = FakeStore()
     store.source_ref["sha256"] = "0" * 64
     store.event["source_ref"] = store.source_ref
-    store.event["source_refs"] = [store.source_ref]
+    store.event["provenance"] = [store.source_ref]
     store.action["event_packet"] = canonical(store.event)
     good, bad = verified(store)
     assert good == [] and bad == 1
@@ -95,6 +95,38 @@ def test_store_authority_rejects_mismatched_or_duplicate_action_outcome():
     good, bad = verified(store)
     assert good == [] and bad == 1
 
+
+
+
+class SQLiteRowStore(FakeStore):
+    def __init__(self):
+        import sqlite3
+        super().__init__()
+        self.connection = sqlite3.connect(":memory:")
+        self.connection.row_factory = sqlite3.Row
+
+    def _row(self, values):
+        columns = list(values)
+        query = "SELECT " + ", ".join("?" + " AS " + key for key in columns)
+        return self.connection.execute(query, tuple(values[key] for key in columns)).fetchone()
+
+    def one(self, sql, args=()):
+        if "FROM actions a" in sql:
+            return self._row(self.action)
+        raise AssertionError("unexpected one query")
+
+    def rows(self, sql, args=()):
+        if "FROM packets" in sql and "ActionOutcome" in sql:
+            return [self._row(row) for row in self.outcome_packets]
+        raise AssertionError("unexpected rows query")
+
+
+def test_store_authority_supports_real_sqlite_row_results():
+    store = SQLiteRowStore()
+    good, bad = verified(store)
+    assert len(good) == 1 and bad == 0
+    assert good[0].action_id == "act-1"
+    store.connection.close()
 
 def test_verified_receipt_cannot_be_constructed_without_private_issuer():
     with pytest.raises(TypeError):
