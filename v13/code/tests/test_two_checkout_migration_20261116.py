@@ -132,6 +132,27 @@ def exercise_worker_migration(base):
                                   cwd=home, env=env))
 
         old = worker('old')
+        # Emit bounded synthetic migration state before assertions so a
+        # failing old-worker migration cannot hide the actual runtime/
+        # dashboard failure behind pytest's abbreviated dict repr.
+        early_diagnostic = {
+            'base': base[:12], 'target': target[:12],
+            'old_result': {k: old['result'].get(k) for k in
+                           ('last_result', 'runtime', 'dashboard',
+                            'last_error', 'updated_commit')},
+            'old_fetches': old.get('fetches'),
+            'same_source_updater': old.get('same_source_updater'),
+            'checkouts': {checkout.name: {
+                'head': git('rev-parse', 'HEAD', cwd=checkout)[:12],
+                'tracked': git('rev-parse',
+                    'refs/remotes/origin/' + RELEASE_BRANCH,
+                    cwd=checkout)[:12]}
+                for checkout in (agent, runtime)},
+            'bare': git('--git-dir', remote, 'rev-parse',
+                        'refs/heads/' + RELEASE_BRANCH)[:12],
+        }
+        print('V13_TWO_CHECKOUT_MIGRATION_EARLY_DIAG=' +
+              json.dumps(early_diagnostic, sort_keys=True), flush=True)
         assert old['module_path'].startswith(str(agent) + os.sep)
         assert old['profile'] == 'raw-runtime-plain-ui-history-recovery-v1'
         assert old['result']['last_result'] == 'UPDATED', old
