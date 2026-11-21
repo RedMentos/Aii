@@ -137,7 +137,7 @@ def bootstrap_from_inference(model):
         return from_model(model)
     if (not hasattr(model, 'enc') or not hasattr(model, 'preds')
             or type(getattr(model, '_fit_steps', None)) is not int
-            or model._fit_steps <= 0):
+            or model._fit_steps < 0):
         raise ValueError('inference-only World-JEPA checkpoint cannot bootstrap training state')
     actions = len(model._action_counts)
     rng = np.random.default_rng(np.random.SeedSequence(
