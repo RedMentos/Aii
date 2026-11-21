@@ -114,7 +114,7 @@ Exact PR-head V14 real-Store tests and V13 staged/integrated tests pass. The exa
 ### Candidate provenance and licensing
 
 - Current C3 baseline from v13/code/specs/models.json: LiquidAI/LFM2.5-350M-GGUF, pinned revision 657e078c94084481950a2d555a941481f715536b, QAD_Q4_0, 219312832 bytes, LFM Open License 1.0.
-- Prior C3 candidate from the same registry history: LiquidAI/LFM2.5-230M-GGUF, revision cdf97bd8205908758f44aec508d68ac1aef98f5c, QAD_Q4_0, 149081056 bytes, SHA256 e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292. Official model page and LICENSE checked 2026-11-21: LFM Open License 1.0, not Apache-2.0; commercial-use limitation applies to legal entities above USD 10M annual revenue. Model source: https://huggingface.co/LiquidAI/LFM2.5-230M-GGUF
+- Prior C3 candidate from the same registry history: LiquidAI/LFM2.5-230M-GGUF, revision cdf97bd8205908758f44aec508d68ac1aef98f5c, QAD_Q4_0, 149081056 bytes, SHA256 e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292. Official model page and LICENSE checked 2026-11-21: LFM Open License 1.0, not Apache-2.0; Section 5 does not license Commercial Use by Legal Entities with annual revenue at or above USD 10M. Model source: https://huggingface.co/LiquidAI/LFM2.5-230M-GGUF
 - Candidate file is 70231776 bytes (~32.0%) smaller than the current 350M file. This is only a disk-size fact. No Redmi TTFT/RSS/PSS/quality comparison exists, and no download or swap was performed.
 
 ### Executable experiment added
