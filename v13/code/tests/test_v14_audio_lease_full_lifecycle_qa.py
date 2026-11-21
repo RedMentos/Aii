@@ -69,7 +69,7 @@ import sys
 import threading
 import time
 from contextlib import contextmanager
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from v13.common import Cancelled
 from v13.inputs import last_context
@@ -745,6 +745,100 @@ try:
 except AssertionError as exc:
     failures.append("shared-blob retention: " + str(exc))
 finally:
+    runtime.close()
+
+# Scenario 10: a new Store.source reference must not slip between audio
+# revocation's refcount transaction and its final blob unlink.
+home = Path(sys.argv[1]) / "concurrent-shared-audio-blob"
+runtime = Runtime(home)
+provider = TwoPhaseProvider()
+seen = {}
+errors = []
+published = []
+revoker = None
+publisher = None
+allow_unlink = threading.Event()
+try:
+    configure(runtime)
+    runners = {
+        role: Runner(role, seen)
+        for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")
+    }
+    runtime.pool.get = Mock(side_effect=lambda role: runners[role])
+    runtime.submit(question, audio_window=make_window(provider))
+    deadline = time.monotonic() + 30
+    while not runtime.idle() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert runtime.idle() and runtime.last_answer()["status"] == "FINAL"
+
+    context_row = runtime.store.one(
+        "SELECT id,hash,deleted FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT'"
+    )
+    assert context_row and context_row["deleted"] == 0
+    blob_path = Path(runtime.store.home) / "data/blobs" / context_row["hash"]
+    content = blob_path.read_text(encoding="utf-8")
+    entered_unlink = threading.Event()
+    publisher_saw_blob = threading.Event()
+    original_unlink = Path.unlink
+    original_exists = Path.exists
+
+    def gated_unlink(path, *args, **kwargs):
+        if path == blob_path:
+            entered_unlink.set()
+            if not allow_unlink.wait(5):
+                raise TimeoutError("test did not release audio blob unlink")
+        return original_unlink(path, *args, **kwargs)
+
+    def observed_exists(path, *args, **kwargs):
+        result = original_exists(path, *args, **kwargs)
+        if path == blob_path and threading.current_thread().name == "audio-source-publisher":
+            publisher_saw_blob.set()
+        return result
+
+    def revoke_audio():
+        try:
+            provider.revoke()
+        except BaseException as exc:
+            errors.append(("revoke", exc))
+
+    def publish_shared_source():
+        try:
+            published.append(runtime.store.source(content, "SHARED_CONCURRENT_CONTROL"))
+        except BaseException as exc:
+            errors.append(("publish", exc))
+
+    with patch.object(Path, "exists", observed_exists), patch.object(Path, "unlink", gated_unlink):
+        revoker = threading.Thread(target=revoke_audio, name="audio-source-revoker")
+        revoker.start()
+        assert entered_unlink.wait(2), "audio revocation did not reach final blob unlink"
+        publisher = threading.Thread(target=publish_shared_source, name="audio-source-publisher")
+        publisher.start()
+        assert publisher_saw_blob.wait(2), "publisher did not observe the pre-unlink shared blob"
+        allow_unlink.set()
+        revoker.join(2)
+        publisher.join(2)
+        assert not revoker.is_alive(), "audio revocation worker did not finish"
+        assert not publisher.is_alive(), "shared-source publisher did not finish"
+
+    assert not errors, f"concurrent audio source operations raised: {errors!r}"
+    assert len(published) == 1
+    assert runtime.store.one(
+        "SELECT deleted FROM sources WHERE id=?", (published[0]["source_id"],)
+    )["deleted"] == 0
+    try:
+        assert runtime.store.read_source(published[0]) == content
+    except FileNotFoundError as exc:
+        raise AssertionError(
+            "Store.source committed a live shared source after audio revocation unlinked its blob"
+        ) from exc
+except AssertionError as exc:
+    failures.append("audio shared-source publication/revocation race: " + str(exc))
+finally:
+    allow_unlink.set()
+    if revoker is not None and revoker.is_alive():
+        revoker.join(2)
+    if publisher is not None and publisher.is_alive():
+        publisher.join(2)
     runtime.close()
 
 assert not failures, "; ".join(failures)
