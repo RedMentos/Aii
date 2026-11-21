@@ -304,3 +304,14 @@ The earlier 01:05 checkpoint's "integrated-regression push still IN_PROGRESS" is
 - Latest PR #2144 exact-head run 44853452893 fails one assertion because the test expects a provenance expression that omits the already-present `source_recall_refs` component. The staged builder includes both source-recall refs and the audio source; I posted the exact replacement expression to Core.
 - Earlier run 44853319109 fails because `staged_tests.mkdir()` is called after the stager already created `tests/`; use `exist_ok=True` or a fresh destination.
 - PR #2144 remains draft. Neither CI failure is an Android/audio success. The separate Runtime finality-promotion risk (implicit FINAL) still needs an explicit contract field and negative test.
+
+
+### Core staged-audio integration — full CI blocker set, 21 November 2026
+
+PR #2144 remains draft. Exact-head workflows currently expose four separate failures:
+1. `44853319109`: `staged_tests.mkdir()` collides with the `tests/` directory created by the stager.
+2. `44853452893`: provenance assertion expects the old expression without `source_recall_refs`; builder includes source-recall refs plus the audio ref.
+3. `44853452891`: strict additive validator rejects staged builder/script paths outside its allowed inert-module/test/handoff scope. Do not broadly weaken this safety gate; Core needs an explicit narrow scope decision or a restructured candidate.
+4. `44853452940`: 239 passed, 10 skipped, 47 subtests passed, 1 failed; recovery-stage test expects the 2026-11-12 builder name while the manifest uses the hash-bound 2026-11-21 builder.
+
+I posted these findings to Core. The separate missing FINAL/PROVISIONAL Runtime field still needs a negative test. No audio feature has been Android-verified.
