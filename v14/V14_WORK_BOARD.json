@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T17:58:19.456Z",
+  "updated_at": "2026-11-21T18:03:06.796Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Perception #2240 merged at 728cdc763f09bee20ac00e1f0faadffcd33dfbb2. PR-head tests pass: caller-PCM RAW EAR/prosody, consent revocation, VAD comparator Python 3.13/3.14, privacy/model-lab, staged 251/10/47 and integrated 424/3/58. Exact merge-push CI has 19 workflows: 5 PASS, 3 IN_PROGRESS, 11 QUEUED, no failures observed yet. The merged code is a producer + consent-lease API only; normal Runtime C3 generation is not yet wired. Core #2234 remains blocked because its normal recovery builder removes C4 while runtime_deploy still uses stage_integrated_candidate. No native B1/B2 or Redmi proof.",
-      "next_step": "Core: wire #2240's same-thread AudioConsentLease through derived audio context, B1/B2 and the full C3 generator; add revoke/context-delete/cache-clear tests. Core/QA: preserve normal C4 and compose arithmetic into the actual pinned deployer chain. Verify exact merge-push CI first.",
+      "proof_environment": "Perception #2240 merged at 728cdc763f09bee20ac00e1f0faadffcd33dfbb2; PR-head RAW EAR/prosody/consent/VAD/privacy/model-lab/staged 251/10/47 and integrated 424/3/58 PASS. Exact merge-push: 17/19 workflow runs complete PASS, 2 IN_PROGRESS. The staged-runtime job has failed because normal SleepRuntime returned UTILITY_GATE_REJECTED instead of an accepted JEPA update; integrated-regression still running. Audio producer/lease API is in repo but normal Runtime C3 consumer is not wired. No Redmi proof.",
+      "next_step": "JEPA: fix validated optimizer-state clone and produce a retention-preserving accepted update without lowering the gate; keep exact rollback. Core/QA: preserve C4 in the ordinary pinned deployer. Core: wire audio lease through normal C3 with prompt cancellation and revoke cleanup.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T17:58:19.456Z"
+      "last_checkpoint": "2026-11-21T18:03:06.796Z"
     },
     {
       "id": "V14-002",
@@ -28,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Fresh private PIPELINE_STATUS owner-read request expired without authenticated reply; installed SHA and updater consent UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, shell action or phone mutation. REDMI_UNVERIFIED.",
-      "next_step": "QA: await an authenticated owner-read receipt; do not alter updater consent or trigger update. Only report an install after exact installed-SHA receipt.",
+      "proof_environment": "Fresh private PIPELINE_STATUS request expired without authenticated reply; installed SHA and updater consent UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, shell action or phone mutation. REDMI_UNVERIFIED.",
+      "next_step": "QA: await authenticated owner-read receipt; do not alter updater consent or trigger update. Require exact installed SHA before phone release claim.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T17:58:19.456Z",
+      "last_checkpoint": "2026-11-21T18:03:06.796Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -73,10 +73,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "JEPA #2231 remains non-mergeable with a nested recovery-builder pin mismatch. #2237 current exact matrix is in progress; earlier replay variants were rejected by old-task utility/retention, with no accepted update. No persistent accepted update or native body-weight proof.",
-      "next_step": "JEPA: repair the current recovery/stager/deployer pin chain and run source-disjoint matched cohorts. Require new-task utility plus old-task retention, numeric parameter/gradient/EMA diff, restart equivalence, negative controls and rollback. Keep optimizer gates OFF.",
+      "proof_environment": "JEPA #2237 head d91f4683 fixed nested source pins; migration, owner-read bootstrap, Lab-Age, runtime-deploy, incremental and combined integration PASS. Two workflows still fail: old-holdout retention is worse than stable predictor on Python 3.13/3.14, and the second update fails because world_jepa_runtime_guard_candidate._clone omits validated _training_state. The exact release merge-push staged Runtime also rejects the normal SleepRuntime update via UTILITY_GATE_REJECTED. No accepted update; optimizer gates OFF.",
+      "next_step": "JEPA: safely validate/copy the complete main/bootstrap/inverse optimizer state, EMA and RNG; fix actual retention using bounded projection/backtracking or another measured method; preserve positive accepted-update and exact rollback tests. Do not weaken retention thresholds or claim rejected updates.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T17:58:19.456Z",
+      "last_checkpoint": "2026-11-21T18:03:06.796Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -159,10 +159,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Perception #2240 merged at 728cdc763f09bee20ac00e1f0faadffcd33dfbb2. Caller-supplied PCM16 → RAW EAR cues → source-bound Store packet → temporal voice evidence → A4 salience → bounded C3 admission plus ephemeral same-thread AudioConsentLease. PR-head consent, RAW EAR/prosody, VAD comparator, privacy, model-lab, staged 251/10/47 and integrated 424/3/58 PASS. Exact merge-push CI 5/19 PASS, 3 in progress, 11 queued. No normal Runtime C3 consumer, microphone, ASR/TTS, full duplex or Redmi proof.",
-      "next_step": "Core: rebase #2200 onto merged #2240; hold the same provider lease through audio-context reads, B1/B2 and full C3 generation. QA: prove revoke serialization, derived-context deletion/tombstone and process-cache clear. Do not enable microphone capture.",
+      "proof_environment": "Perception #2240 merged at 728cdc763f09bee20ac00e1f0faadffcd33dfbb2. Caller-PCM RAW EAR producer and ephemeral thread/source/runtime/generation/receipt-bound AudioConsentLease are present in shared branch. PR-head tests pass; exact merge-push 17/19 workflows PASS, 2 in progress; staged-runtime job fails on the separate normal SleepRuntime JEPA retention acceptance. No normal Runtime C3 consumer, mic capture, ASR/TTS, full duplex or Redmi proof. Lease currently serializes revoke through full scope; prompt cancellation/barging-in remains a consumer requirement.",
+      "next_step": "Core: rebase #2200 onto merged #2240; hold the lease through derived-context reads, B1/B2 and full C3 generation, with a cancellation/stop path and revoke cleanup. QA: prove context deletion/tombstone and cache clear. Perception: separate A5 UI observe grant/lease path remains unimplemented; no screen capture claim.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T17:58:19.456Z",
+      "last_checkpoint": "2026-11-21T18:03:06.796Z",
       "latest_candidate_pr": {
         "pr": 2155,
         "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
@@ -275,17 +275,17 @@
       "status": "INTEGRATION_REVIEW",
       "scope": "All AgeControl.budgets()/legacy budget consumers; LaboratoryAgeControl; effort, Sleep replay, ResourceGuard and the normal staged Runtime",
       "acceptance": "Official Age remains 0 while X10 test selection can exercise only explicitly implemented tool/learning rights; Age never caps physical compute, wall time, memory, focal cycles or replay volume; every consumer is audited; ResourceGuard/deadline/policy remain independent; staged, integrated, migration and rollback tests pass.",
-      "proof_environment": "QA #2235 exact head 150e92b: staged 251/10/47, integrated 424/3/58, migration/deploy integrity PASS. Lab-Age and owner-read bootstrap FAIL because AST inventory misattributes nested GoalStore.add closure f(st) to function f instead of enclosing method add. Boss requested strict enclosing-method attribution plus a negative unrelated-closure case. Safe-additive FAIL BY POLICY. Boss #2241 closed unmerged as redundant; its learning_limit/Curiosity/GoalStore changes are already in #2235. NOT_RELEASED.",
-      "next_step": "QA: repair the AST audit's nested-closure attribution, add a negative unrelated-closure case, rerun Lab-Age and owner-read plus full staged/integrated/migration. Boss/Core: compose #2235 with #2234 only after preserving normal C4 and recomputing recovery→stage→deployer pins.",
+      "proof_environment": "QA #2235 exact head 150e92b: staged 251/10/47, integrated 424/3/58, migration/deploy integrity PASS. Lab-Age and owner-read bootstrap FAIL because AST inventory misattributes nested GoalStore.add closure f(st) to function f rather than enclosing method add. Boss requested strict enclosing-method attribution plus a negative unrelated-closure case. Safe-additive FAIL BY POLICY. #2241 closed as redundant; #2235 is the sole Age-rights lane. NOT_RELEASED.",
+      "next_step": "QA: fix AST nested-closure attribution, add negative unrelated-closure case, rerun Lab-Age/owner-read/staged/integrated/migration. Boss/Core: compose #2235 with #2234 only after preserving normal C4 and recomputing recovery→stage→deployer pins.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T17:58:19.456Z"
+      "last_checkpoint": "2026-11-21T18:03:06.796Z"
     }
   ],
   "current_redmi_status": "REDMI_UNVERIFIED — fresh private PIPELINE_STATUS request expired without authenticated reply; installed SHA and updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action or device mutation.",
   "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
   "latest_integrated_head": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
-  "latest_integrated_head_verified_at": "2026-11-21T17:58:19.456Z",
-  "release_gate_status": "MERGED_CODE_PENDING_EXACT_PUSH_CI_NOT_PHONE_RELEASED. Perception merge 728cdc763f09bee20ac00e1f0faadffcd33dfbb2 is branch head before this documentation refresh; 19 associated push workflows: 5 PASS, 3 IN_PROGRESS, 11 QUEUED, no failures observed at last poll. Prior code-bearing release f279286a4453248004c670fcaabecd85da6ab299 remains 19/19 green.",
+  "latest_integrated_head_verified_at": "2026-11-21T18:03:06.796Z",
+  "release_gate_status": "MERGED_CODE_PENDING_EXACT_PUSH_CI_NOT_PHONE_RELEASED. Perception merge 728cdc763f09bee20ac00e1f0faadffcd33dfbb2: 19 associated workflows, 17 completed PASS, 2 IN_PROGRESS, 0 QUEUED. Staged-runtime job in the staged/integrated workflow has failed because SleepRuntime's JEPA retention gate correctly returned UTILITY_GATE_REJECTED where the positive update test expected acceptance.",
   "phone_receipt": {
     "state": "NO_AUTHENTICATED_OWNER_READ_REPLY",
     "installed_sha": "UNKNOWN",
@@ -455,18 +455,18 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-21T17:58:19.456Z",
+    "timestamp": "2026-11-21T18:03:06.796Z",
     "branch_head": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
-    "branch_head_type": "CODE_MERGE_HEAD_PENDING_EXACT_PUSH_CI; docs refresh follows; no Redmi deployment",
-    "branch_head_checks": "Exact merge-push CI: 19 associated workflows, 5 completed PASS, 3 IN_PROGRESS, 11 QUEUED, no failures observed at last poll. No exact-push completion claim.",
+    "branch_head_type": "CODE_MERGE_HEAD_PENDING_EXACT_PUSH_CI; documentation refresh follows; no Redmi deployment",
+    "branch_head_checks": "19 workflows: 17 completed PASS, 2 IN_PROGRESS, 0 QUEUED. The staged-runtime job within V13 staged context/integrated regression has FAILED on normal SleepRuntime returning UTILITY_GATE_REJECTED instead of a positive accepted update; integrated-regression job remains in progress.",
     "code_bearing_release_sha": "f279286a4453248004c670fcaabecd85da6ab299",
     "code_release_checks": "19_OF_19_ASSOCIATED_WORKFLOWS_SUCCESS_ON_PRIOR_CODE_RELEASE",
-    "pr2240": "MERGED_728cdc763f09bee20ac00e1f0faadffcd33dfbb2; PR_HEAD_STAGED_251_INTEGRATED_424_AND_AUDIO_TESTS_PASS; MERGE_PUSH_5_PASS_3_IN_PROGRESS_11_QUEUED; NOT_YET_RELEASED",
-    "pr2235": "HEAD_150e92b_BASE_3b8c8bb; STAGED_251_10_47_AND_INTEGRATED_424_3_58_PASS; MIGRATION_DEPLOY_PASS; LAB_AGE_AND_OWNER_READ_FAIL_AST_NESTED_CLOSURE_FALSE_POSITIVE; SAFE_ADDITIVE_FAIL_BY_POLICY; DRAFT",
+    "pr2240": "MERGED_728cdc763f09bee20ac00e1f0faadffcd33dfbb2; PR_HEAD_TESTS_PASS; MERGE_PUSH_17_PASS_2_IN_PROGRESS; STAGED_RUNTIME_JOB_FAILED_ON_JEPA_RETENTION_ACCEPTANCE; NOT_RELEASED",
+    "pr2237": "HEAD_d91f4683; NESTED_SOURCE_PINS_FIXED; MIGRATION_OWNER_READ_LAB_AGE_RUNTIME_DEPLOY_INCREMENTAL_COMBINED_PASS; RETENTION_FAIL_PY313_PY314; SECOND_UPDATE_CLONE_FAILS_OMITTED_TRAINING_STATE; DRAFT",
+    "pr2235": "HEAD_150e92b; STAGED_251_10_47_AND_INTEGRATED_424_3_58_PASS; MIGRATION_DEPLOY_PASS; LAB_AGE_AND_OWNER_READ_FAIL_AST_NESTED_CLOSURE_FALSE_POSITIVE; SAFE_ADDITIVE_FAIL_BY_POLICY; DRAFT",
     "pr2234": "HEAD_e84d28c_BASE_7a07; STAGED_INTEGRATED_MIGRATION_DEPLOY_PASS; NORMAL_DEPLOYER_C4_OVERLAY_REMOVAL_BLOCKER; DRAFT",
     "pr2200": "HEAD_9eaffb2_BASE_3df5_STALE_NONMERGEABLE; REBASE_TO_MERGED_2240_LEASE_AND_HOLD_THROUGH_C3",
-    "pr2231": "HEAD_8f742854_BASE_7a07_NONMERGEABLE; RECOVERY_BUILDER_PIN_MISMATCH",
-    "pr2237": "HEAD_17b9fee_STACKED_2231; EXACT_MATRIX_IN_PROGRESS; PRIOR_REPLAY_VARIANTS_UTILITY_GATE_REJECTED; GATES_OFF",
+    "pr2231": "HEAD_8f742854_BASE_7a07_NONMERGEABLE; SOURCE_PIN_CHAIN_UPDATED_ON_STACKED_2237; DO_NOT_MERGE_STACKED_BASE",
     "pr2239": "HEAD_f914b918_BASE_1deac63; READ_ONLY_FLOW_AUDIT; NOT_PRODUCT_COMPLETION",
     "pr2241": "CLOSED_UNMERGED_AS_REDUNDANT; SOURCE_CHANGES_ALREADY_PRESENT_IN_QA_2235",
     "redmi": "REDMI_UNVERIFIED; INSTALLED_SHA_AND_UPDATER_CONSENT_UNKNOWN; NO_AUTHENTICATED_OWNER_READ_REPLY",
@@ -475,6 +475,6 @@
     "p0_chat": "OPEN_ISSUE_1904; WRONG_2_PLUS_2_AND_UNCONFIRMED_B1_B2_DELIVERY_UNRESOLVED",
     "canon_coverage": "1255_HISTORICAL_HEADINGS_PRESERVED; SEMANTIC_CLAUSE_MAPPING_INCOMPLETE",
     "user_action_required": "NONE",
-    "boss_docs_commits": "HANDOFF_f678406eff7b9ca2ce9102c676ac97a6c0f71b32; WORKPLAN_e91f7ffe24460e9db8e924aa3fa0aaca7a84b8cf; BOARD_REFRESH_COMMIT_FOLLOWS"
+    "boss_docs_commits": "HANDOFF_a4979a15e4684ede8fdc1a4af37e369d9e6d39c6; WORKPLAN_95c3c84c2dc0c8e580c218cd8d4dcd5aab25b725; BOARD_REFRESH_COMMIT_FOLLOWS"
   }
 }
