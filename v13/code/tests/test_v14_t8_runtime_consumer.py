@@ -187,10 +187,21 @@ def test_missing_online_world_and_censored_outcome_do_not_promote_learning(tmp_p
         shadow = online_world_shadow_prediction(runtime, runtime.store, event, "C3_LANGUAGE", 96)
         assert shadow["status"] == "NOT_READY"
         _event, action_id, _actual = _committed_action(runtime, status="CANCELLED", include_predictions=True)
+        _permission, version = runtime.store.state(
+            "v14.world_jepa.permissions",
+            {"learning_enabled": False, "optimizer_permission": False, "steps": 8},
+        )
+        runtime.store.set_state(
+            "v14.world_jepa.permissions",
+            {"learning_enabled": True, "optimizer_permission": True, "steps": 8},
+            expected=version,
+        )
         result = consume_recent_committed(runtime.store, runtime.home, limit=16)
         assert result["temporal_recorded"] == 1
         assert result["censored_observed"] == 1
-        assert result["world_jepa"]["status"] == "OFF"
+        assert result["world_jepa"]["status"] == "NO_NEW_TRANSITIONS"
+        assert result["world_jepa"]["censored_skipped"] == 1
+        assert runtime.store._v14_world_jepa_consumer.restore()["status"] == "NO_CHECKPOINT"
         record = TemporalT8Bridge(Path(tmp_path) / "v14_temporal", learning_enabled=False).ledger.get(action_id)
         assert record is not None
         assert record["status"] == "CANCELLED"
