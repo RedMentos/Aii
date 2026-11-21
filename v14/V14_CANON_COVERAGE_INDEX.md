@@ -1623,3 +1623,17 @@ Primary source for Bionic availability: AOSP Bionic status lists `renameat2` amo
 | Device / P0 | #407-#410 expired without replies; #1904 open | No installed SHA, updater consent, correct native 2+2, native latency or B1/B2→C4→C3 Redmi proof |
 
 AOSP Bionic status lists `renameat2` as a libc addition from Android R/API 30: https://android.googlesource.com/platform/bionic/+/82c90724e/docs/status.md. This establishes API symbol availability for the Android 13/API 33 target, not filesystem behavior on the phone. Historical 1,255-heading inventory and V13 appendix remain unchanged; semantic clause-level coverage is incomplete.
+
+
+### Boss integration evidence overlay — 2026-11-21 16:49 CET
+
+| Canon family | Verified integration evidence | Still not accepted |
+|---|---|---|
+| B1/B2 → C4 → C3 | PR #2228 merged at f279286a4453248004c670fcaabecd85da6ab299; normal pinned stage/deployer now composes source-span C4. PR-head staged 251/10/47 and integrated 424/3/58 passed. The synthetic Runtime test follows quote→SourceRef→FocalLoop→selected offer→C3 context. | Synthetic runners only. No native B1/B2 offer quality, correct native 2+2, measured Redmi latency/RSS or phone delivery. |
+| C4 diversity research | Source refs must match source ID, digest and modality; spans must be disjoint and lexical overlap low before the cross-scale redundancy penalty is discounted. MMR (Carbonell & Goldstein 1998) and xQuAD (Santos et al. 2010) are recorded as future ablation references, not reused implementations. | The rule is heuristic, not learned semantic diversity or a trained latent path; disjoint-but-redundant negative controls and repeated-seed utility remain important. |
+| C5 exact arithmetic / P0 chat | Core #2227 exact test produces a FINAL answer and passes ActionSelection/Broker/Egress assertions. | ExperienceRecord packet is missing after post-turn World calls; exact Python 3.13/3.14 staged test fails. #1904 remains open. |
+| RAW EAR / voice | #2226 current head passes RAW EAR, consent-revocation/non-reentrant lease, VAD comparator, privacy and staged/integrated workflow groups. | Branch is diverged from current release and needs rebase. Caller-supplied PCM only; no microphone capture, ASR, TTS/vocoder, full-duplex or Redmi proof. |
+| World/Self/JEPA | Persistent numeric WorldJEPA predictor/optimizer state remains merged under OFF gates. | #2222 exact optimizer-resume fixture currently fails because master-13/data is absent; stale base; no native GGUF weight training, cross-organ gradients or Android utility. |
+| Release / Android | Exact merged release branch head f279286a4453248004c670fcaabecd85da6ab299; PR-head tests for #2228 pass. | Merge push CI is 30/34 success, 0 failed, 0 pending. No authenticated owner-read receipt; installed SHA/updater consent UNKNOWN; REDMI_UNVERIFIED. |
+
+Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. Semantic clause→code→consumer→test→environment→rollback mapping remains incomplete; no Canon family is accepted by this one vertical slice.
