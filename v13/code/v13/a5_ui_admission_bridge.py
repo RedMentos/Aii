@@ -154,6 +154,7 @@ class UIObservationLease:
         return self._active is True
 
     def active_for(self, runtime, generation_id):
+        active_event = getattr(runtime, "turn_event", None)
         cancel_event = getattr(runtime, "cancel_event", None)
         is_set = getattr(cancel_event, "is_set", None)
         return bool(
@@ -162,6 +163,8 @@ class UIObservationLease:
             and self._thread_id == threading.get_ident()
             and self.runtime is runtime
             and self.generation_id == generation_id
+            and isinstance(active_event, dict)
+            and active_event.get("brain_generation_id") == generation_id
             and getattr(runtime, "current", None) == "turn"
             and callable(is_set)
             and not is_set()

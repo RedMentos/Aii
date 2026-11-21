@@ -201,6 +201,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         self.runtime.cancel_event.clear()
         with self.lease(obs):
             self.runtime.turn_event = dict(self.event, brain_generation_id="later_generation")
+            self.assertFalse(grant.active_for(self.runtime, "gen_ui_lease_test"))
             revoker = threading.Thread(target=self.provider.revoke)
             revoker.start()
             self.assertTrue(self.provider.request_started.wait(1))
