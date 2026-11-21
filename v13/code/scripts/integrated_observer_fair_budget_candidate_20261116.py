@@ -9,9 +9,9 @@ import hashlib
 from pathlib import Path
 
 PINS = {
-    'v13/runtime.py': 'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
-    'v13/observer_schedule.py': '343a4544b873e13f3549556ee52849a46dc2b55242536535b56f959022272943',
-    'v13/native_turn_budget.py': '172bf70b05e21fd3c117273473446d0f77a11f625cc2665df1f4991708a1505c',
+    'v13/runtime.py': '74ad6da15a49baa6f0f6f3684191d36ff257d0efb377d3bd262062c1a6effdeb',
+    'v13/observer_schedule.py': 'c90d3d734216daa5e38a11a2a227ba04ce88922fc1920325e8b121756a7d69f6',
+    'v13/native_turn_budget.py': '52f02f316278c55be94e66d9ab9e5a4f71df91e707d05cf5b285ed6db2bf3576',
     'v13/cognition.py': 'e6741dba75023cf7415293d24b6e53cb750ea08d295dc19baa28c31a41ebd073',
     'v13/store.py': '974991f8ce2a79fae11c301625e3e064c54a0053c6b9911a3715ffe3840a52d8',
 }
