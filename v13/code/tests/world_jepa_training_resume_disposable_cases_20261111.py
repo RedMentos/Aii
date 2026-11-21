@@ -254,7 +254,7 @@ def _ablation_moment_norm(model):
 
 
 def test_matched_persistent_vs_reset_optimizer_ablation_on_disjoint_holdouts(tmp_path):
-    """Diagnostic only: same two pages and zero replay; never assume carried Adam always wins."""
+    """Diagnostic only: identical weights/data/updates/zero replay; reset Adam+RNG, not model weights."""
     summaries = []
     for seed in (3, 17, 41):
         train_old = _ablation_cohort(1000 + seed, 'old')
@@ -273,16 +273,30 @@ def test_matched_persistent_vs_reset_optimizer_ablation_on_disjoint_holdouts(tmp
         reset_path = tmp_path / f'reset-{seed}-page1.npz'
         persistent_receipt = checkpoint.save(initial, persistent_path, source_sha_page1)
         reset_copy = copy.deepcopy(initial)
+        reset_inverse = copy.deepcopy(initial._training_state['inverse'])
         delattr(reset_copy, '_training_state')
+        reset_copy._training_state = state.bootstrap_from_inference(reset_copy)
+        reset_copy._training_state['inverse'] = reset_inverse
         reset_receipt = checkpoint.save(reset_copy, reset_path, source_sha_page1)
         assert persistent_receipt['optimizer_state_persisted'] is True
-        assert reset_receipt['optimizer_state_persisted'] is False
+        assert persistent_receipt['optimizer_state_bootstrapped'] is False
+        assert reset_receipt['optimizer_state_persisted'] is True
+        assert reset_receipt['optimizer_state_bootstrapped'] is True
 
         persistent = checkpoint.load(
             persistent_path, source_sha_page1, persistent_receipt['sha256'])
         reset = checkpoint.load(reset_path, source_sha_page1, reset_receipt['sha256'])
         assert np.array_equal(persistent.enc['W1'], reset.enc['W1'])
         assert np.array_equal(persistent.tgt['W1'], reset.tgt['W1'])
+        assert np.isclose(_ablation_parameter_delta(persistent, reset), 0.0, atol=1e-12)
+        assert persistent._training_state['main']['t'] == 32
+        assert reset._training_state['main']['t'] == 0
+        assert persistent._training_state['bootstrap'][0]['adam']['t'] == 16
+        assert reset._training_state['bootstrap'][0]['adam']['t'] == 0
+        same(persistent._training_state['inverse'], reset._training_state['inverse'])
+        assert all(np.count_nonzero(value) == 0
+                   for value in reset._training_state['main']['m'].values())
+        assert reset._training_state['rng'] != persistent._training_state['rng']
         old_before = persistent.prediction_loss(*holdout_old)
         new_before = persistent.prediction_loss(*holdout_new)
         assert np.isclose(old_before, reset.prediction_loss(*holdout_old), atol=1e-12)
