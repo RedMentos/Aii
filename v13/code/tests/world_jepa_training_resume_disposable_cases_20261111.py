@@ -205,3 +205,177 @@ def test_legacy_inference_checkpoint_bootstrap_is_explicit_and_persisted(tmp_pat
     roundtrip = checkpoint.load(saved, '1' * 64, receipt['sha256'])
     same(roundtrip._training_state, restored._training_state)
 
+
+
+def _ablation_cohort(seed, task, n=96):
+    rng = np.random.default_rng(seed)
+    x = rng.normal(0., 0.6, size=(n, 4))
+    action_ids = rng.integers(0, 2, size=n)
+    a = np.eye(2, dtype=float)[action_ids]
+    if task == 'old':
+        action0 = np.array([0.9, -0.45, 0.35, 0.2])
+        action1 = np.array([-0.7, 0.3, -0.2, 0.4])
+    else:
+        action0 = np.array([-0.55, 0.7, 0.15, -0.35])
+        action1 = np.array([0.75, -0.25, 0.45, -0.5])
+    effect = a[:, 0:1] * action0[None, :] + a[:, 1:2] * action1[None, :]
+    x2 = 0.82 * x + effect + 0.03 * rng.normal(size=x.shape)
+    return x, a, x2
+
+
+def _ablation_source_sha(*cohorts):
+    digest = hashlib.sha256()
+    for cohort in cohorts:
+        for value in cohort:
+            digest.update(np.ascontiguousarray(value, dtype=np.float64).tobytes())
+    return digest.hexdigest()
+
+
+def _ablation_parameter_delta(left, right):
+    pairs = []
+    for group in ('enc', 'tgt'):
+        pairs.extend((left.__dict__[group][key], right.__dict__[group][key])
+                     for key in left.__dict__[group])
+    pairs.extend((a[key], b[key]) for a, b in zip(left.preds, right.preds) for key in a)
+    pairs.extend((left._training_state['inverse'][key],
+                  right._training_state['inverse'][key])
+                 for key in left._training_state['inverse'])
+    return float(np.sqrt(sum(float(np.sum((a - b) ** 2)) for a, b in pairs)))
+
+
+def _ablation_moment_norm(model):
+    total = 0.0
+    groups = [model._training_state['main']]
+    groups.extend(item['adam'] for item in model._training_state['bootstrap'])
+    for group in groups:
+        for slot in ('m', 'v'):
+            total += sum(float(np.sum(value ** 2)) for value in group[slot].values())
+    return float(np.sqrt(total))
+
+
+def test_matched_persistent_vs_reset_optimizer_ablation_on_disjoint_holdouts(tmp_path):
+    """Diagnostic only: same two pages and zero replay; never assume carried Adam always wins."""
+    summaries = []
+    for seed in (3, 17, 41):
+        train_old = _ablation_cohort(1000 + seed, 'old')
+        train_new = _ablation_cohort(2000 + seed, 'new')
+        holdout_old = _ablation_cohort(3000 + seed, 'old')
+        holdout_new = _ablation_cohort(4000 + seed, 'new')
+        train_source_ids = {f'train-old-{seed}', f'train-new-{seed}'}
+        holdout_source_ids = {f'holdout-old-{seed}', f'holdout-new-{seed}'}
+        assert train_source_ids.isdisjoint(holdout_source_ids)
+
+        source_sha_page1 = _ablation_source_sha(train_old)
+        source_sha_all = _ablation_source_sha(train_old, train_new)
+        initial = wj.WorldJEPA(seed=seed, ensemble=2).fit(
+            *train_old, steps=32)
+        persistent_path = tmp_path / f'persistent-{seed}-page1.npz'
+        reset_path = tmp_path / f'reset-{seed}-page1.npz'
+        persistent_receipt = checkpoint.save(initial, persistent_path, source_sha_page1)
+        reset_copy = copy.deepcopy(initial)
+        delattr(reset_copy, '_training_state')
+        reset_receipt = checkpoint.save(reset_copy, reset_path, source_sha_page1)
+        assert persistent_receipt['optimizer_state_persisted'] is True
+        assert reset_receipt['optimizer_state_persisted'] is False
+
+        persistent = checkpoint.load(
+            persistent_path, source_sha_page1, persistent_receipt['sha256'])
+        reset = checkpoint.load(reset_path, source_sha_page1, reset_receipt['sha256'])
+        assert np.array_equal(persistent.enc['W1'], reset.enc['W1'])
+        assert np.array_equal(persistent.tgt['W1'], reset.tgt['W1'])
+        old_before = persistent.prediction_loss(*holdout_old)
+        new_before = persistent.prediction_loss(*holdout_new)
+        assert np.isclose(old_before, reset.prediction_loss(*holdout_old), atol=1e-12)
+        assert np.isclose(new_before, reset.prediction_loss(*holdout_new), atol=1e-12)
+
+        persistent.partial_fit(*train_new, steps=32)
+        reset.partial_fit(*train_new, steps=32, allow_optimizer_bootstrap=True)
+        persistent_final_path = tmp_path / f'persistent-{seed}-final.npz'
+        reset_final_path = tmp_path / f'reset-{seed}-final.npz'
+        persistent_final = checkpoint.save(
+            persistent, persistent_final_path, source_sha_all)
+        reset_final = checkpoint.save(reset, reset_final_path, source_sha_all)
+        assert persistent_final['optimizer_state_persisted'] is True
+        assert persistent_final['optimizer_state_bootstrapped'] is False
+        assert reset_final['optimizer_state_persisted'] is True
+        assert reset_final['optimizer_state_bootstrapped'] is True
+        assert persistent._fit_steps == reset._fit_steps == 64
+        assert persistent._training_state['main']['t'] == 64
+        assert reset._training_state['main']['t'] == 32
+        assert persistent._training_state['bootstrap'][0]['adam']['t'] == 32
+        assert reset._training_state['bootstrap'][0]['adam']['t'] == 16
+        assert persistent._training_state['origin'] == 'FRESH'
+        assert reset._training_state['origin'] == 'BOOTSTRAPPED_FROM_INFERENCE_ONLY'
+        assert persistent_final['sha256'] != reset_final['sha256']
+
+        old_persistent = persistent.prediction_loss(*holdout_old)
+        old_reset = reset.prediction_loss(*holdout_old)
+        new_persistent = persistent.prediction_loss(*holdout_new)
+        new_reset = reset.prediction_loss(*holdout_new)
+        perm = np.random.default_rng(9000 + seed).permutation(len(holdout_new[1]))
+        zero_actions = np.zeros_like(holdout_new[1])
+        shuffled_actions = holdout_new[1][perm]
+        controls_persistent = {
+            'actual': new_persistent,
+            'zero': persistent.prediction_loss(holdout_new[0], zero_actions, holdout_new[2]),
+            'shuffled': persistent.prediction_loss(holdout_new[0], shuffled_actions, holdout_new[2]),
+        }
+        controls_reset = {
+            'actual': new_reset,
+            'zero': reset.prediction_loss(holdout_new[0], zero_actions, holdout_new[2]),
+            'shuffled': reset.prediction_loss(holdout_new[0], shuffled_actions, holdout_new[2]),
+        }
+        p_restored = checkpoint.load(
+            persistent_final_path, source_sha_all, persistent_final['sha256'])
+        r_restored = checkpoint.load(
+            reset_final_path, source_sha_all, reset_final['sha256'])
+        same(p_restored._training_state, persistent._training_state)
+        same(r_restored._training_state, reset._training_state)
+        assert np.isclose(p_restored.prediction_loss(*holdout_old), old_persistent, atol=1e-12)
+        assert np.isclose(r_restored.prediction_loss(*holdout_new), new_reset, atol=1e-12)
+
+        persistent_delta = _ablation_parameter_delta(persistent, initial)
+        reset_delta = _ablation_parameter_delta(reset, initial)
+        persistent_vs_reset = _ablation_parameter_delta(persistent, reset)
+        persistent_ema_delta = float(np.sqrt(sum(
+            np.sum((persistent.tgt[key] - initial.tgt[key]) ** 2)
+            for key in persistent.tgt)))
+        reset_ema_delta = float(np.sqrt(sum(
+            np.sum((reset.tgt[key] - initial.tgt[key]) ** 2)
+            for key in reset.tgt)))
+        values = [old_before, new_before, old_persistent, old_reset,
+                  new_persistent, new_reset, persistent_delta, reset_delta,
+                  persistent_vs_reset, persistent_ema_delta, reset_ema_delta,
+                  _ablation_moment_norm(persistent), _ablation_moment_norm(reset),
+                  *controls_persistent.values(), *controls_reset.values()]
+        assert np.isfinite(values).all()
+        assert persistent_delta > 0 and reset_delta > 0 and persistent_vs_reset > 0
+        assert persistent_ema_delta > 0 and reset_ema_delta > 0
+        summaries.append({
+            'seed': seed,
+            'train_source_ids': sorted(train_source_ids),
+            'holdout_source_ids': sorted(holdout_source_ids),
+            'update_steps_each_arm': 64,
+            'replay_bytes_each_arm': 0,
+            'persistent_main_adam_t': persistent._training_state['main']['t'],
+            'reset_main_adam_t': reset._training_state['main']['t'],
+            'persistent_bootstrap_adam_t': persistent._training_state['bootstrap'][0]['adam']['t'],
+            'reset_bootstrap_adam_t': reset._training_state['bootstrap'][0]['adam']['t'],
+            'persistent_origin': persistent._training_state['origin'],
+            'reset_origin': reset._training_state['origin'],
+            'persistent_parameter_delta_norm': persistent_delta,
+            'reset_parameter_delta_norm': reset_delta,
+            'persistent_vs_reset_parameter_delta_norm': persistent_vs_reset,
+            'persistent_ema_delta_norm': persistent_ema_delta,
+            'reset_ema_delta_norm': reset_ema_delta,
+            'persistent_old_holdout_delta': old_persistent - old_before,
+            'reset_old_holdout_delta': old_reset - old_before,
+            'persistent_new_holdout_gain': new_before - new_persistent,
+            'reset_new_holdout_gain': new_before - new_reset,
+            'persistent_action_controls': controls_persistent,
+            'reset_action_controls': controls_reset,
+            'persistent_moment_norm': _ablation_moment_norm(persistent),
+            'reset_moment_norm': _ablation_moment_norm(reset),
+            'final_checkpoint_sha256_differs': persistent_final['sha256'] != reset_final['sha256'],
+        })
+    print('WORLDJEPA_PERSIST_RESET_ABLATION', json.dumps(summaries, sort_keys=True))
