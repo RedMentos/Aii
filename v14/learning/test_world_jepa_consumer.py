@@ -32,7 +32,8 @@ def _add_transitions(store, session, start, count, status_overrides=None):
         event = store.event(session, text)
         event_id = event["event_id"]
         generation = event["brain_generation_id"]
-        route = actions[index % len(actions)]
+        action_index = index % len(actions)
+        route = actions[action_index]
 
         # Selection must be persisted before dispatch: world_model.transitions()
         # admits only the committed selection that existed at action.created.
@@ -65,8 +66,12 @@ def _add_transitions(store, session, start, count, status_overrides=None):
                 "resource_state": "NORMAL",
             },
         )
-        duration = 0.15 + (index % 13) * 0.07 + (index % len(actions)) * 0.025
-        characters = 9 + (index % 23) * 3 + (index % len(actions)) * 2
+        # Controlled action-conditioned signal: the committed route changes
+        # both observed duration and output size; independent nuisance terms
+        # keep the fixture from being a pure action lookup. This is a synthetic
+        # positive control, not a claim about real-user outcome distributions.
+        duration = 0.15 + action_index * 0.65 + (index % 13) * 0.02
+        characters = 9 + action_index * 24 + (index % 23) * 0.75
         status = status_overrides.get(index, "FAILED" if index % 5 == 0 else "FINAL")
         store.finish_action(
             action_id,
@@ -99,7 +104,7 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
             seed=13,
             ensemble=2,
         )
-        first = consumer.update(limit=256, steps=40, optimizer_permission=True)
+        first = consumer.update(limit=256, steps=120, optimizer_permission=True)
         assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         metrics = first["metrics"]
         assert metrics["source_verified"] is True
