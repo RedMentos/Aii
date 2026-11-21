@@ -8,7 +8,7 @@ import pytest
 
 from v13.audio_ear import observe_pcm16
 from v13.audio_percept_contract import audio_percept_packet, validate_voice_cues
-from v13.audio_perception_bridge import consume_audio_packet, consume_pcm16_window
+from v13.audio_perception_bridge import admit_audio_packet, consume_audio_packet, consume_pcm16_window
 from v13.store import Store
 
 
@@ -179,13 +179,13 @@ def test_legacy_packet_without_voice_cues_remains_compatible(tmp_path):
         finality="FINAL", consent_receipt=RECEIPT,
     )
     try:
-        result = consume_pcm16_window(
-            runtime, pcm, sample_rate=8000, start_ms=0,
-            event_id=event["event_id"], generation_id=event["brain_generation_id"],
-            source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, token_budget=512,
+        result = consume_audio_packet(runtime, event["event_id"], packet, consent_check=consent_ok)
+        admission = admit_audio_packet(
+            runtime, event["event_id"], packet, consent_check=consent_ok, token_budget=512
         )
-        assert result["packet"]["segments"][0]["acoustic"]["voice_cues"]["frame_count"] == 0
-        assert result["c3_admission"].status == "ADMITTED"
+        assert result["voice_activity_hint"] == "UNMEASURED"
+        assert admission.status == "ADMITTED"
+        assert packet_count(runtime.store, event["event_id"]) == 1
+        assert attention_count(runtime.store, event["event_id"]) == 1
     finally:
         runtime.store.close()
