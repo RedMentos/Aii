@@ -64,7 +64,7 @@ def receiver_matrix(store, state, actions, home=None):
     root = Path(home if home is not None else store.home) / "world_jepa"
     learner = WorldJEPAStoreConsumer(store, root, learning_enabled=False)
     try:
-        with learner._locked(False):
+        with learner._locked(True):
             stored, _ = learner._read_state()
             active = stored["active"]
             if active is None:
