@@ -125,6 +125,33 @@ def test_prosody_change_tracks_pitch_and_energy_dynamics_not_noise():
     assert padded["prosody_change_score"] < 0.2
 
 
+def test_single_voiced_frame_is_valid_but_cannot_claim_prosody_dynamics():
+    fixtures = (
+        (tone(140, sample_rate=16000, seconds=0.04), 1, 1.0),
+        (
+            tone(140, sample_rate=16000, seconds=0.01)
+            + bytes(2 * int(16000 * 0.09)),
+            4,
+            0.25,
+        ),
+    )
+    for pcm, expected_frames, expected_voiced_fraction in fixtures:
+        cues = extract_voice_cues(pcm, 16000)
+        assert cues["frame_count"] == expected_frames
+        assert cues["voiced_fraction"] == pytest.approx(expected_voiced_fraction)
+        assert cues["activity_hint"] == "VOICED"
+        assert cues["f0_range_hz"] is None
+        assert cues["voiced_energy_range_db"] == 0.0
+        assert cues["prosody_change_score"] == 0.0
+
+        malformed_energy = dict(cues, voiced_energy_range_db=1.0)
+        with pytest.raises(ValueError, match="single voiced frame"):
+            validate_voice_cues(malformed_energy)
+        malformed_score = dict(cues, prosody_change_score=0.1)
+        with pytest.raises(ValueError, match="single voiced frame"):
+            validate_voice_cues(malformed_score)
+
+
 def test_prosody_change_is_rejected_without_voiced_activity():
     cues = extract_voice_cues(white_noise(), 16000)
     cues["prosody_change_score"] = 0.2
