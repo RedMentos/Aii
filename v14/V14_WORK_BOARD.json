@@ -152,15 +152,15 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Perception PR #2207 exact code/test head 03237482d4534e1a3d4a3c0e9093ec14084f32b9: RAW EAR focused suite 49/49 PASS on Python 3.11 and 3.13; py_compile PASS. Model-lab 44909559414 PASS; privacy scan 44909559570 PASS. Comparator 44909559394: Python 3.13 8/8 PASS plus pinned native Linux libfvad make check 13/13 PASS; Python 3.14 still running at checkpoint. Staged/integrated run 44909559396 still running. Safe-additive failed at the existing-module allowlist as expected; no bypass. LOCAL_LINUX full checkout BLOCKED by GitHub DNS; isolated threading/SQLite lease model PASS. REDMI_UNVERIFIED / NOT_RELEASED.",
-      "next_step": "Core: rebase #2200 onto #2207, add/pass the same provider's consent_guard through audio_window, re-pin producer blob afb27968b8d932e718020f6043d38fc34cc21986 and regenerate all builder/deployer pins; tombstone/delete AUDIO_ACOUSTIC_CONTEXT and clear _audio_contexts on revocation; recheck/drop audio before C3 runner.generate. QA: rebase #2208 and use the shared-lock provider contract (revoke-before-lease => no packet/A4/C3; revoke-during-lease waits; final false in-transaction check rolls back). Boss: manually review existing-module change; keep safe-additive failure visible. No phone action until separate owner-consented receipt.",
+      "proof_environment": "Perception PR #2207 code/test head 03237482d4534e1a3d4a3c0e9093ec14084f32b9: RAW EAR focused suite 49/49 PASS on Python 3.11 and 3.13; py_compile PASS. Model-lab 44909559414 PASS; privacy scan 44909559570 PASS. Comparator 44909559394: 8/8 PASS on Python 3.13 and 3.14; pinned native Linux libfvad make check 13/13 PASS on both. Staged-runtime 44909559396: 249 passed, 10 skipped, 47 subtests passed; recovery shell syntax PASS. Integrated-regression 44909559396 still running at checkpoint. Safe-additive failed at existing-module allowlist as expected; no bypass. LOCAL_LINUX full checkout BLOCKED by GitHub DNS; isolated threading/SQLite lease model PASS. REDMI_UNVERIFIED / NOT_RELEASED.",
+      "next_step": "Core: rebase #2200 onto #2207, add/pass the same provider's consent_guard through audio_window, re-pin producer blob e75c393939183d2f16e071ebf4a6f5ff65417a61 and regenerate all builder/deployer pins; tombstone/delete AUDIO_ACOUSTIC_CONTEXT and clear _audio_contexts on revocation; recheck/drop audio before C3 runner.generate. QA: rebase #2208/#2211 and use the shared-lock provider contract; keep producer and later C3 pre-dispatch leases separate. Boss: review existing-module change after integrated-regression finishes; safe-additive failure remains visible. No phone action until a fresh owner-consented receipt.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 14:16 CET",
       "latest_candidate_pr": {
         "pr": 2207,
-        "head_sha": "03237482d4534e1a3d4a3c0e9093ec14084f32b9",
+        "head_sha": "49bd0bc00372931ad52fae196818689c46099afe",
         "merge_commit_sha": null,
-        "ci": "RAW_EAR_49_49_PY311_AND_PY313_PASS; LIBFVAD_NATIVE_LINUX_MAKE_CHECK_13_13_PY313_PASS; COMPARATOR_8_8_PY313_PASS_PY314_IN_PROGRESS; STAGED_INTEGRATED_IN_PROGRESS; SAFE_ADDITIVE_EXPECTED_FAILURE; NOT_RELEASED",
+        "ci": "RAW_EAR_49_49_PY311_AND_PY313_PASS; LIBFVAD_NATIVE_LINUX_MAKE_CHECK_13_13_PY313_AND_PY314_PASS; COMPARATOR_8_8_PY313_AND_PY314_PASS; STAGED_RUNTIME_249_PASS_10_SKIP_47_SUBTESTS; INTEGRATED_REGRESSION_IN_PROGRESS; SAFE_ADDITIVE_EXPECTED_FAILURE; NOT_RELEASED",
         "scope": "RAW EAR V3 producer with provider-level linearizable consent lease through PerceptPacket commit, temporal state, A4 and C3 admission; missing guard resets VAD/temporal state; no microphone/Android proof"
       }
     },
