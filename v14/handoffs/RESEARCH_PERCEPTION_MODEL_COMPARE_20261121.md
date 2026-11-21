@@ -47,12 +47,12 @@
 
 - PR #2142: https://github.com/RedMentos/Aii/pull/2142 — ready for review, open, mergeable at last readback; base commit c3c32c05a0374e970d274f8a777a7ab85c067d66.
 - Code-bearing checkpoint commit: 64ff26aa51f3a9ec4c6a169588ef41004b7ba2a0; this also adds .github/workflows/v14-model-lab.yml for future V14 experiment changes.
-- Exact branch CI now PASS: workflow run 44848887759, job model-lab, on head commit 3e13188a414b1cc3ff327fe9897a07d0d5ff8900. It compiled both Python files, validated the candidate JSON, and ran 13 tests in 0.042s (Python 3.13.18, GitHub Linux runner). This is exact-commit CI, not native inference.
+- Exact branch CI now PASS: workflow run 44849343250, job model-lab, on exact PR head 6aadf841434bcc43fbde1827a4ed2ef9d61bc4b0. It compiled both Python files, validated the candidate JSON, and ran 13 tests in 0.020s (Python 3.13.18, GitHub Linux runner). This is exact-commit CI, not native inference.
 - No actual GGUF or llama-server is present in the CI runner, so native model inference remains NOT RUN; no candidate download and no Redmi proof.
 
 
 ## Shared handoff updated — 2026-11-21
 
-- V14_WORK_BOARD.json: V14-005 moved from READY to IN_PROGRESS_PARTIAL with PR #2142, exact CI run 44848887759, and explicit NOT_RUN/REDMI_UNVERIFIED native evidence.
+- V14_WORK_BOARD.json: V14-005 moved from READY to IN_PROGRESS_PARTIAL with PR #2142, exact CI run 44849343250, and explicit NOT_RUN/REDMI_UNVERIFIED native evidence.
 - V14_USER_NEXT_ACTION.md: added a Research & Perception checkpoint and corrected source_HEAD (shared base c3c32c05; last code-bearing release 5b9171a), local-test boundary, candidate-only status and next action.
 - The PR's current head is authoritative and should be read live; the code-bearing CI-tested commit remains 3e13188a414b1cc3ff327fe9897a07d0d5ff8900. Subsequent commits only update board/next-action/handoff/ledger.
