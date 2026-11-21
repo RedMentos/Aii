@@ -657,3 +657,47 @@ def test_revocation_before_sqlite_commit_is_serialized_with_consent_check(tmp_pa
         assert attention_count(runtime.store, event["event_id"]) == 0
     finally:
         runtime.store.close()
+
+
+
+def test_revocation_immediately_before_a4_modulation_prevents_attention_side_effect(tmp_path, monkeypatch):
+    """Revocation that wins before A4 modulation must not update attention state."""
+    runtime, event = make_runtime(tmp_path)
+    revoked = False
+    original_controller = audio_voice_cues_module.attctl.controller
+
+    class RevokingAttention:
+        def __init__(self, delegate):
+            self.delegate = delegate
+
+        def modulate(self, event_id, *, sal):
+            nonlocal revoked
+            # The PerceptPacket transaction has committed, but A4 has not yet
+            # consumed the evidence. Revoke at the exact consumer boundary.
+            revoked = True
+            return self.delegate.modulate(event_id, sal=sal)
+
+    def controller_with_revocation(target_runtime):
+        return RevokingAttention(original_controller(target_runtime))
+
+    monkeypatch.setattr(
+        audio_voice_cues_module.attctl, "controller", controller_with_revocation
+    )
+    try:
+        with pytest.raises(PermissionError):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=lambda source_id, receipt: (
+                    not revoked and source_id == SOURCE_ID and receipt == RECEIPT
+                ),
+                finality="FINAL", token_budget=512,
+            )
+        assert revoked is True
+        # The packet was committed while consent was still active. The later
+        # revocation must nevertheless stop the pending A4 consumption.
+        assert packet_count(runtime.store, event["event_id"]) == 1
+        assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
