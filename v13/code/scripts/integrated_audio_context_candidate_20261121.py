@@ -65,7 +65,7 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
         b"class Runtime:\n",
         b'''_AUDIO_WINDOW_FIELDS = {
     "pcm16", "sample_rate", "start_ms", "source_id",
-    "consent_receipt", "consent_check",
+    "consent_receipt", "consent_check", "finality",
 }
 
 
@@ -78,6 +78,9 @@ def _validate_audio_window(value):
     start = value["start_ms"]
     source_id = value["source_id"]
     receipt = value["consent_receipt"]
+    finality = value["finality"]
+    if finality not in ("PROVISIONAL", "FINAL"):
+        raise ValueError("audio_window finality must be PROVISIONAL or FINAL")
     if type(pcm) is not bytes or not pcm or len(pcm) % 2:
         raise ValueError("audio_window requires complete mono PCM16 bytes")
     if type(rate) is not int or not 8000 <= rate <= 48000 or len(pcm) > rate * 2:
@@ -127,7 +130,10 @@ class Runtime:
         b"        source=packet_value.get('source_ref');segments_value=packet_value.get('segments')\n"
         b"        if (type(source) is not dict or type(segments_value) is not list or len(segments_value)!=1\n"
         b"                or packet_value.get('event_id')!=eid or packet_value.get('brain_generation_id')!=self.store.generation_id):return None\n"
-        b"        receipt=segments_value[0].get('consent_receipt_ref') if type(segments_value[0]) is dict else None\n"
+        b"        segment=segments_value[0]\n"
+        b"        if type(segment) is not dict or segment.get('finality')!='FINAL':\n"
+        b"            self.store.log('audio_input_unavailable',eid,{'stage':'context_record_finality','reason':'PROVISIONAL_OR_INVALID'});return None\n"
+        b"        receipt=segment.get('consent_receipt_ref')\n"
         b"        check_consent=audio_window.get('consent_check') if type(audio_window) is dict else None\n"
         b"        try:current=check_consent(source.get('source_id'),receipt) if callable(check_consent) else False\n"
         b"        except Exception:current=False\n"
@@ -184,9 +190,11 @@ class Runtime:
         b"                    from .audio_perception_bridge import consume_pcm16_window\n"
         b"                    audio_result=consume_pcm16_window(self,audio_window['pcm16'],sample_rate=audio_window['sample_rate'],\n"
         b"                        start_ms=audio_window['start_ms'],event_id=eid,generation_id=g,source_id=audio_window['source_id'],\n"
-        b"                        consent_receipt=audio_window['consent_receipt'],consent_check=audio_window['consent_check'],token_budget=512)\n"
+        b"                        consent_receipt=audio_window['consent_receipt'],consent_check=audio_window['consent_check'],\n"
+        b"                        token_budget=512,finality=audio_window['finality'])\n"
         b"                    meta['audio_input']={'status':'A5_A4_C3_ADMISSION','packet_id':audio_result['packet']['packet_id'],\n"
-        b"                        'source_id':audio_window['source_id'],'capture_authority':'CALLER_SUPPLIED_PCM16',\n"
+        b"                        'source_id':audio_window['source_id'],'finality':audio_window['finality'],\n"
+        b"                        'capture_authority':'CALLER_SUPPLIED_PCM16',\n"
         b"                        'learning_authority':False,'action_authority':False}\n"
         b"                    audio_context=self._audio_context_record(eid,audio_result,audio_window)\n"
         b"                    meta['audio_input']['context_recorded']=bool(audio_context)\n"
