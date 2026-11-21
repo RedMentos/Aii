@@ -176,12 +176,16 @@ def test_adam_aware_replay_projection_constrains_the_actual_preconditioned_step(
         {"w": np.array([1.0, 2.0])}, constraint_gradients={"w": np.array([1.0, 0.0])}
     )
     assert positive["projected"] is False and positive["constraint_dot_before"] > 0.0
+    assert positive["projection_method"] == "ALREADY_FEASIBLE"
+    assert positive["projection_candidates_examined"] == 0
     assert np.allclose(positive_params["w"], np.array([-0.1, -0.1]), atol=1e-9)
     zero_params = {"w": np.zeros(2, dtype=float)}
     zero = world_jepa.Adam(zero_params, lr=0.1).step(
         {"w": np.array([-1.0, 2.0])}, constraint_gradients={"w": np.zeros(2, dtype=float)}
     )
     assert zero["reference_zero"] is True and zero["projected"] is False
+    assert zero["projection_method"] == "NO_ACTIVE_REFERENCE"
+    assert zero["projection_candidates_examined"] == 0
     assert np.allclose(zero_params["w"], np.array([0.1, -0.1]), atol=1e-9)
 
 def test_adam_per_session_gem_projection_satisfies_each_prior_cohort():
