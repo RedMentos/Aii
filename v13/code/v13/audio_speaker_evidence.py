@@ -162,7 +162,9 @@ class SpeakerChangeEvidenceRegistry:
                 reset_reason = "STREAM_GAP"
 
             latest = None
-            tolerance = max(batch["frame_step_ms"], 80)
+            if self.max_frames < batch["lookback_frames"] + 2:
+                raise SpeakerEvidenceError("speaker history bound is shorter than the configured lookback")
+            tolerance = max(40, int(batch["frame_step_ms"] * 1.5))
             for frame_end, vector in batch["frames"]:
                 if state.last_end_ms is not None and frame_end <= state.last_end_ms:
                     raise SpeakerEvidenceError("speaker frames must advance across windows")
@@ -189,8 +191,9 @@ class SpeakerChangeEvidenceRegistry:
                         "confidence_threshold": threshold,
                         "confidence_gate_passed": gate_passed,
                         "speaker_change_candidate": candidate,
+                        "candidate_kind": "SPEAKER_CHANGE_OR_OVERLAP" if candidate is True else None,
                         "interpretation": (
-                            "LOW_SIMILARITY_DURING_VOICED_ACTIVITY" if candidate is True else
+                            "LOW_SIMILARITY_DURING_VOICED_ACTIVITY_CHANGE_OR_OVERLAP" if candidate is True else
                             "LOW_SIMILARITY_WITHOUT_VOICED_ACTIVITY" if gate_passed is False else
                             "STABLE_OR_UNTHRESHOLDED"
                         ),
@@ -212,6 +215,7 @@ class SpeakerChangeEvidenceRegistry:
                     "confidence_threshold": batch["confidence_threshold"],
                     "confidence_gate_passed": None,
                     "speaker_change_candidate": None,
+                    "candidate_kind": None,
                     "interpretation": "LOOKBACK_NOT_YET_AVAILABLE",
                 }
             return {
