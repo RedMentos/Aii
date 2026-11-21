@@ -65,11 +65,12 @@ git_pr_commit:
 
 ### R-007 — Architecture-Dependent Causal Transfer of Activation States Across LLMs
 
-- **Source:** arXiv:2608.16347, version 2, 2026-08-17. https://arxiv.org/abs/2608.16347
-- **Evidence:** ABSTRACT_VERIFIED; no independent reproduction in V14.
-- **Reported result:** learned projections retrieve related activations across several decoder-only model pairs, but causal activation injection improves downstream behavior significantly for only one of the three evaluated pairs.
-- **What is not shown:** general semantic interchangeability, universal cross-family transfer, mobile feasibility, or a trained B1/B2 receiver in V14.
-- **V14 consequence:** do not infer latent compatibility from cosine similarity or retrieval alone. Require pair-specific receiver injection, causal ablation, task utility over exact-message and no-message baselines, negative controls, and rollback. This supports the existing V14-003 acceptance gate; it does not justify turning B3 on.
+- **Primary source:** arXiv:2608.16347v2, version 2 dated 2026-11-09 (v1: 2026-08-17); https://arxiv.org/abs/2608.16347
+- **Evidence:** FULLTEXT_REVIEWED on 2026-11-21; methods, results, discussion and limitations read. This remains an arXiv preprint, not an independently reproduced V14 result.
+- **Models and method:** Qwen2-0.5B, Phi-3-mini, Mistral-7B and FLAN-T5-base. The projection experiment used 20 held-out questions and a learned MLP; the causal experiment injected at a middle-layer fraction of 0.5 in a manual forward-layer loop, without KV-cache reuse, for up to 25 generated tokens. Each decoder-only pair had 30 paired trials (10 questions × 3 seeds), with an unrelated projected state as negative control and FDR correction.
+- **Reported result:** learned projection retrieval was 45–50% top-1 vs 5% chance for the three causal decoder-only pairs, but this did not predict generation-level success. Only Qwen2-0.5B → Phi-3-mini showed a significant causal effect: 23.3% retrieval vs 0.0% negative control, FDR-corrected p=0.0469. Both pairs targeting Mistral-7B had 0.0% real-condition retrieval vs 3.3% negative control and no causal effect. The paper explicitly scopes the positive finding to a causal effect on the representational *vehicle*, not transfer of meaning; its qualitative successful outputs were often not correct answers.
+- **Limits:** small/medium models (0.5B–7B), two models quantized to 4-bit, only 30 causal trials per pair, wide 95% CI [10%, 40%] for the sole positive pair, no Android/ARM test, no information-theoretic channel-capacity result, and no proof of shared semantic understanding. This is a modest pair-specific preprint result, not a universal latent-communication recipe.
+- **V14 consequence:** keep B3/latent injection OFF. Do not infer receiver compatibility from cosine similarity, retrieval accuracy, or a final-layer tap. Require pair-specific middle-layer extraction/injection, true receiver generation, unrelated-state negative control, exact-message and no-message baselines, held-out task utility, restart/retention and resource measurements. The current V13 tap exposes final output embeddings, so it is not equivalent to the paper's middle-layer intervention.
 
 ### R-008 — SLoRA: Continual Learning with Sparse LoRA Updates
 
@@ -195,3 +196,21 @@ PR #2148 adds a code-level replay ablation to the persistent Store-backed WorldJ
 ## R-013 deeper ablation and limitation readback — 2026-11-21
 
 The JEPA-TTT full-paper ablation/limitations sections were checked after the initial entry. Dense replay modestly improves over a dense chronological stream in the paper's aggregate planning metrics (best score 0.678 vs 0.671; mean AUC 0.571 vs 0.548). A matched persistence control that retains the predictor and optimizer across episodes reports a larger gain (best score 0.729 vs 0.289; mean AUC 0.637 vs 0.273). However, the paper explicitly does not measure retention, forward/backward transfer, catastrophic forgetting, or return to the original training dynamics; it studies one persistent dynamics shift. It also freezes the visual encoder and reward head throughout test-time adaptation. Therefore the paper supports persistent predictor/replay as a useful controlled baseline, but cannot justify permanent encoder freezing or establish V14's anti-forgetting requirements. V14 must retain joint encoder+EMA learning as an experimental path and compare it with predictor-only under old-cohort holdout, replay-off, rollback and return-to-prior-dynamics tests.
+
+
+## OSS implementation feasibility — llama.cpp b10964 (2026-11-21)
+
+- **Primary source/revision:** https://github.com/ggml-org/llama.cpp/tree/b10964. The V13 model registry pins this runner family to source revision `b29c606e2` and archive SHA256 `4c96d72c40cefdacf621457d8a12fe5673b8de5b640ff7fe6d342ea1c579a9fe`.
+- **License:** upstream root `LICENSE` at b10964 is MIT. No upstream code was copied and no dependency was added. Model-weight licenses remain independent.
+- **Exact source facts checked:** `include/llama.h` documents the pinned `llama_batch` as token-ID input when `embd == NULL`, or embedding-vector input when `token == NULL`; this legacy batch does not express a mixed token/embedding sequence. The same header exposes `llama_set_adapter_cvec(ctx, data, len, n_embd, il_start, il_end)`, whose buffer is an `n_embd × n_layers` control-vector matrix applied over an inclusive layer range. The pinned `tools/server/server.cpp` exposes dynamic `/lora-adapters` routes but no per-request control-vector route; `tools/server/README.md` documents control vectors as startup CLI options (`--control-vector[-scaled]`).
+- **Current V13 connection:** the pinned `LlamaRunner` tap uses `--embedding --pooling none` and the server's embeddings endpoint; its tap contract is final output/RMSNorm embeddings, not arbitrary middle-layer hidden states. The server cannot currently receive a new per-turn cvec through its HTTP API.
+- **Engineering conclusion:** a genuine per-request receiver intervention needs a custom C-API runner or a carefully serialized server extension around `llama_set_adapter_cvec`, plus pair-specific trained projection and a negative-control generation test. Restarting the server with a static CLI vector is not a viable interactive substitute. The newer upstream `llama_batch_ext` mixed-input/state-row API must not be assumed available in pinned b10964.
+- **Next hard test:** compile against the pinned b10964 source, run a tiny native model with a neutral vector, learned vector and unrelated-vector control, verify output/activation changes and rollback, then test one real B1/B2 model pair. Record native RSS/PSS and TTFT. Until that exists, native hidden-state injection and V14-003 remain NOT_IMPLEMENTED / NOT_RUN.
+
+## Research-to-code checkpoint — RAW EAR prosody and A4 attention (2026-11-21)
+
+- PR #2161, branch `research-perception/v14-prosody-attention-20261121`, adds `prosody_change_score` from within-window F0 excursion or energy dynamics, emitted only for periodic voiced activity. It is a deterministic salience heuristic, not a speech probability or learned detector.
+- The existing `consume_pcm16_voice_window` now feeds that score to A4 `Attention.modulate` and includes it in the source-bound C3 admission summary. Telemetry is correctly labelled caller-supplied PCM16 rather than assuming every buffer is synthetic.
+- LOCAL_LINUX Python 3.13.5 isolated reproduction: 5/5 PASS (flat-tone negative, pitch-sweep positive, amplitude-burst positive, unvoiced-noise negative, monotonic attention relation). Exact repository test file is pending the new PR workflow; full local checkout is BLOCKED by GitHub DNS. No model inference or Redmi microphone evidence.
+- **Next:** read exact-head CI; Core updates its staged overlay source pin to the new adapter blob before the staged B1/B2/C3 Runtime test. REDMI_UNVERIFIED / NOT_RELEASED.
+
