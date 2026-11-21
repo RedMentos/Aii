@@ -319,3 +319,14 @@ The merged #2155 adapter extracts heuristic pitch/voicing/energy/activity cues f
 - Verified source lines: 673-675 set /data to system:system 0771; 843 creates /data/data as system:system 0771; 915-923 create /data/user and bind-mount /data/data onto /data/user/0.
 - V14 consequence: a strict private-app DB path validator must reject broad group/world-writable ancestors while making only the exact AOSP root/legacy exceptions, with UID, GID and mode checks and negative controls for wrong owner/group/mode and writable descendants. PR #2190 implements this narrow audit-DB path exception and is merged at code head e18c664...; its broker tests remain synthetic. This source review is not proof of the Redmi's vendor-specific mount/SELinux state.
 - Limitations: AOSP init configuration does not attest the user's particular Redmi build, mount namespace, SELinux policy or actual runtime permissions. No device measurement was available; keep REDMI_UNVERIFIED.
+
+
+## Research & implementation update — 2026-11-21 11:29 CET (Research & Perception)
+
+### R-023 — Atomic first-use binding for runtime-local temporal perception state
+- Observed code defect: _runtime_temporal_voice_registry used an unsynchronized get/create/set sequence. Concurrent first audio calls on one Runtime could each construct a registry; each caller could update a different instance while only the last instance remained attached to Runtime. That breaks temporal continuity across simultaneous streams.
+- Change: a short module-level initialization lock plus a second read makes first-use registry binding atomic. The registry remains Runtime-local, source/generation-keyed, internally RLock-protected and LRU-bounded to 16 streams. It retains only scalar evidence/timestamps; PCM, transcripts and speaker identity remain absent.
+- Regression: an eight-worker barrier test delays construction and asserts exactly one registry instance is created and returned to all callers. Exact candidate CI is pending; this is not a local full-repository test.
+- Evidence boundary: local Aii checkout is blocked by GitHub DNS; no local exact-source compile/test PASS. CI evidence must be read from the exact new head. Redmi/Termux remains REDMI_UNVERIFIED.
+- Integration boundary: the adapter still consumes caller-supplied PCM16. Core #2158 must pin the exact V3 producer and temporal module, preserve text/audio PerceptPacket modality separation, and prove B1/B2 OfferPacket delivery through C4/C3. This change does not supply microphone capture, trained VAD, speech decoding, full-duplex or native JEPA coupling.
+- Research note: no new paper is claimed in this checkpoint; this is a concurrency correction derived from the actual Runtime consumer path. The existing R-018 VAD/license/ABI notes remain the source review for WebRTC/libfvad.
