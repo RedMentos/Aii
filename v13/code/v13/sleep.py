@@ -590,7 +590,7 @@ class SleepRuntime:
     def __init__(self,runtime,clock=time.time,monotonic=time.monotonic):
         from .scheduler import EventScheduler, ACTIONS
         # Trusted, fixed G13 extension; not arbitrary user/model commands.
-        ACTIONS.add('lab_check')
+        ACTIONS.update({'lab_check','jepa_update'})
         from .plasticity import Plasticity
         self.r=runtime;self.clock=clock;self.monotonic=monotonic;self.age=None
         try:
@@ -603,6 +603,27 @@ class SleepRuntime:
         self.cycle.runtime=runtime  # WP-T11 homeostasis reads the learned heads through their runtime controllers
         self.scheduler.recover();self.last_tick=-1e18;self.last_resource=None
         runtime.store.set_meta('sleep_boot_wall',clock())  # idle clock restarts with the process
+    def schedule_world_jepa(self,event_id):
+        """Queue source-bound JEPA work for an idle window; never train in the user-turn path."""
+        if type(event_id) is not str or not event_id:
+            raise ValueError('event_id')
+        row=self.r.store.one(
+            "SELECT id,status,outcome FROM actions WHERE event_id=? AND outcome IS NOT NULL ORDER BY created DESC LIMIT 1",
+            (event_id,))
+        if not row or row['status'] not in {'FINAL','FAILED','ERROR','DEADLINE','REJECTED'}:
+            return None
+        from .world_jepa_runtime import permission_state
+        gates=permission_state(self.r.store)
+        state,_=self.r.store.state('v14.world_jepa.store_consumer',None)
+        active=(type(state) is dict and type(state.get('active')) is dict)
+        if not (gates['learning_enabled'] is True and gates['optimizer_permission'] is True) and not active:
+            return None
+        from .scheduler import ACTIONS
+        ACTIONS.add('jepa_update')
+        return self.scheduler.post(
+            'IDLE',origin='SYSTEM',action='jepa_update',
+            payload={'event_id':event_id},
+            dedup='v14-world-jepa:'+event_id,ttl=86400)
     def resource_state(self):
         try:return self.r.guard.update(self.r.resources())
         except Exception:return 'CRITICAL'  # unknown resources: do not start background work
@@ -652,6 +673,21 @@ class SleepRuntime:
         if not queued:self.scheduler.complete(e['id'],'RETRY',{'reason':'BUSY'})
         self.r.wake.set();return e
     def job(self,e):
+        if e['action']=='jepa_update':
+            payload=e.get('payload') or {}
+            event_id=payload.get('event_id') if type(payload) is dict else None
+            try:
+                out=self.r.v14_jepa_postcommit(event_id,limit=64)
+            except BaseException as exc:
+                self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__})
+                raise
+            learning=out.get('learning') if type(out) is dict else None
+            planner=out.get('planner') if type(out) is dict else None
+            result={'status':out.get('status') if type(out) is dict else 'ERROR',
+                    'learning_status':learning.get('status') if type(learning) is dict else None,
+                    'planner_status':planner.get('status') if type(planner) is dict else None}
+            self.scheduler.complete(e['id'],'FAILED' if result['status']=='ERROR' else 'DONE',result)
+            return out
         if e['action']=='lab_check':
             from .lab_native_cycle import run
             try:out=run(self.r)
