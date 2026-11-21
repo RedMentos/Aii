@@ -51,7 +51,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :rules [add <Regel>|remove <Index> [weitere Indizes]] / :permissions / :age [freeze on|off|lower <n>|structural lock|unlock] / :stage cap 0..5
 :rules fixed "exakte Frage" "exakte Antwort" (Diff, dann :approve ID; kein semantischer Abgleich)
 :teacher on|off|compare / :teacher use B1_DETAIL|B2_GIST|C3_LANGUAGE
-:voice [status|on|off|speak] / :speak (optional Termux system-TTS fallback; OFF by default; explicit local command only)
+:voice [status|on|off|speak|reset --confirm] / :speak (optional Termux system-TTS fallback; OFF by default; explicit local command only)
 :dream / :probe [jef-modes|step12|body-state|sustained]
 :sleep [status|digest|run full|a|b|c|wake|in <Minuten> [Modus]|policy [Name Wert]] / :scheduler (Replay/Sleep A-B-C, WP-S7 Tagesdigest + Offline-Rechenzeit, Event-Scheduler)
 :growth [status|eval [run [de] c3|b1|b2|v13 | curve <Solver> <Achse> | compare en-de [Solver]]|teacher [status|cloud on|off|ask <Frage>|run [local|claude]|dataset]|trainer [auto|lora|sparse|none [Master-Ordner] | cfg k=v.. | cfg reset]|goals|goal <Titel>|consolidate|approve <Batch>|reject <Batch>|tools|enable <Werkzeug>|calc <Ausdruck>] (WP-AG1..AG12)
