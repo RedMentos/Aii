@@ -28,17 +28,27 @@ class DummyStore:
 
 
 class NativeTurnBudgetTests(unittest.TestCase):
-    def test_two_observed_c3_zero_token_deadlines_reserve_c3_time(self):
+    def test_two_observed_c3_zero_token_deadlines_keep_the_runtime_body_window(self):
         rows=[turn(),turn(),turn("FINAL",generated=21,phase="stream")]
         d=budget.plan(100,130,104.2,recent=rows,background_enabled=True)
-        self.assertTrue(d["recovery"])
+        self.assertTrue(d["recovery_detected"])
+        self.assertFalse(d["recovery"])
+        self.assertTrue(d["preanswer_eligible"])
         self.assertEqual(d["reason"],"RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS")
-        self.assertLessEqual(d["preanswer_end_monotonic"],104)
-        self.assertGreaterEqual(d["c3_reserved_seconds"],25)
-        self.assertEqual(d["preanswer_seconds_available"],0)
+        self.assertAlmostEqual(d["preanswer_end_monotonic"],113.5)
+        self.assertAlmostEqual(d["c3_reserved_seconds"],16.5)
+        self.assertAlmostEqual(d["preanswer_seconds_available"],9.3)
         self.assertTrue(d["postcommit_body_eligible"])
         self.assertFalse(d["age_changed"])
         self.assertFalse(d["memory_or_native_weights_changed"])
+
+    def test_expired_observer_window_defers_after_repeated_failures(self):
+        d=budget.plan(100,130,112.6,recent=[turn(),turn()])
+        self.assertTrue(d["recovery_detected"])
+        self.assertTrue(d["recovery"])
+        self.assertFalse(d["preanswer_eligible"])
+        self.assertAlmostEqual(d["preanswer_seconds_available"],0.9)
+        self.assertAlmostEqual(d["c3_reserved_seconds"],16.5)
 
     def test_one_failure_keeps_full_synchronous_cognitive_window(self):
         d=budget.plan(100,130,103.5,recent=[turn()])
@@ -94,7 +104,10 @@ class NativeTurnBudgetTests(unittest.TestCase):
         self.assertNotIn("PRIVATE",json.dumps(result))
         self.assertEqual(store.args,(budget.MAX_RECENT,))
 
-    def test_real_cognition_preanswer_is_deferred_but_postcommit_remains(self):
+    def test_real_cognition_keeps_both_roles_inside_window_and_defers_after_expiry(self):
+        class BodyAttemptReached(Exception):
+            pass
+
         class LocalStore(DummyStore):
             def __init__(self, rows):
                 super().__init__(rows)
@@ -104,32 +117,54 @@ class NativeTurnBudgetTests(unittest.TestCase):
                 self.logs.append((kind,event,metrics))
             def read_source(self,ref):
                 self.source_reads+=1
-                raise AssertionError("source should be read only when not deferred")
+                raise BodyAttemptReached("body reached source/generation boundary")
+
         class FakeRuntime:
             def __init__(self, cfg, store):
                 self.cfg=cfg
                 self.store=store
                 self.cancel_event=threading.Event()
                 self.session="s1"
+
+        event={"event_id":"e1","brain_generation_id":"g1",
+               "source_ref":{"sha256":"a"*64,"char_start":0,"char_end":120}}
         store=LocalStore([turn(),turn()])
         runtime=FakeRuntime({"deadline_seconds":30,
-                             "observer_mode":"background"},store)
+                             "observer_mode":"background",
+                             "b2_control":"two_body"},store)
         cognition=Cognition(runtime)
         end=time.monotonic()+30
-        with self.assertRaises(Limits):
-            cognition.offer("B1_DETAIL",{"event_id":"e1"},1,end-18,
-                            valid_until=end)
-        self.assertEqual(store.source_reads,0)
-        self.assertEqual(store.logs[0][0],"native_body_deferred_for_c3")
-        self.assertEqual(store.logs[0][2]["role"],"B1_DETAIL")
-        self.assertEqual(store.logs[0][2]["status"],"POSTCOMMIT_ELIGIBLE")
+        # The real Runtime's 45% observer window is still open. Both roles
+        # must reach the source/generation boundary instead of being blanket
+        # deferred merely because two earlier C3 prefill attempts failed.
+        for role in ("B1_DETAIL","B2_GIST"):
+            with self.assertRaises(BodyAttemptReached):
+                cognition.offer(role,event,1,end-18,valid_until=end)
+        self.assertEqual(store.source_reads,2)
+        self.assertFalse(any(row[0]=="native_body_deferred_for_c3" for row in store.logs))
+        self.assertTrue(store.query and "LIMIT ?" in store.query)
+        self.assertEqual(store.args,(budget.MAX_RECENT,))
 
-        # The identical brain role is still allowed after the outward answer:
-        # the normal background caller never supplies a global valid_until.
-        with self.assertRaisesRegex(AssertionError,"source should be read"):
-            cognition.offer("B1_DETAIL",{"event_id":"e1","source_ref":{}},
-                            1,time.monotonic()+20)
-        self.assertEqual(store.source_reads,1)
+        # A still-live overall turn deadline does not reopen an already
+        # expired observer window. Only then is post-commit deferral valid.
+        expired_store=LocalStore([turn(),turn()])
+        expired_runtime=FakeRuntime({"deadline_seconds":30,
+                                     "observer_mode":"background",
+                                     "b2_control":"two_body"},expired_store)
+        expired_cognition=Cognition(expired_runtime)
+        expired_end=time.monotonic()+15
+        with self.assertRaises(Limits):
+            expired_cognition.offer("B1_DETAIL",event,1,expired_end-1,
+                                    valid_until=expired_end)
+        self.assertEqual(expired_store.source_reads,0)
+        self.assertEqual(expired_store.logs[0][0],"native_body_deferred_for_c3")
+        self.assertEqual(expired_store.logs[0][2]["status"],"POSTCOMMIT_ELIGIBLE")
+
+        # The normal post-commit observer caller still omits valid_until and
+        # remains allowed to run after the outward answer.
+        with self.assertRaises(BodyAttemptReached):
+            cognition.offer("B1_DETAIL",event,1,time.monotonic()+20)
+        self.assertEqual(store.source_reads,3)
 
     def test_cognition_does_not_defer_with_owner_background_disabled(self):
         class LocalStore(DummyStore):
