@@ -59,7 +59,6 @@ def test_companion_receipt_is_persisted_in_real_store(tmp_path):
         persist_companion_outcome,
     )
     from v13.store import Store
-    from v13.world_model import transitions
     import json
 
     home = tmp_path / "runtime"
@@ -105,10 +104,13 @@ def test_companion_receipt_is_persisted_in_real_store(tmp_path):
         assert actual["local_approval_evidence"] == "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
         assert actual["android_os_permission_status"] == "REQUIRED_NOT_VERIFIED"
         assert actual["key_storage_status"] == "UNVERIFIED"
-        # Companion receipts are audit packets only: World-JEPA's T8 source
-        # consumer reads committed Store.actions + ActionSelection, not this packet.
+        # World-JEPA's T8 consumer reads committed Store.actions and requires a
+        # committed ActionSelection; this receipt creates neither.
         assert store.one("SELECT COUNT(*) AS n FROM actions")["n"] == 0
-        assert all(item["action_id"] != proposal.action_id for item in transitions(store))
+        assert store.one(
+            "SELECT COUNT(*) AS n FROM packets WHERE kind='ActionSelection' AND event_id=?",
+            (event["event_id"],),
+        )["n"] == 0
         forged = ActionOutcome(
             action_id=outcome.action_id, capability=outcome.capability,
             status=outcome.status, timestamp=outcome.timestamp, observed=True, evidence_level=outcome.evidence_level,
