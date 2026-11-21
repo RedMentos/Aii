@@ -454,6 +454,46 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(report["last_result"], "PARTIAL")
 
 
+    def test_runtime_rollback_disables_auto_update_and_requests_managed_chat_resume(self):
+        self.turn_on()
+        with mock.patch.object(u, "_runtime_active", side_effect=[True, False]), \
+             mock.patch.object(p.lifecycle, "request_stop", return_value=True) as stop, \
+             mock.patch.object(p.lifecycle, "request_resume") as resume, \
+             mock.patch.object(p.runtime_deploy, "rollback",
+                               return_value={"status": "ROLLED_BACK", "restored_commit": "d" * 40}) as rollback:
+            result = p.rollback_runtime()
+        self.assertEqual(result["status"], "ROLLED_BACK_RUNTIME_ONLY")
+        self.assertEqual(result["dashboard"], "UNCHANGED")
+        self.assertEqual(result["resume"], "REQUESTED")
+        self.assertEqual(result["resume_confirmation"], "PENDING_UI_CONSUMPTION")
+        self.assertFalse(result["auto_enabled"])
+        self.assertFalse(p.enabled())
+        stop.assert_called_once()
+        resume.assert_called_once_with(reason="RESTORE")
+        rollback.assert_called_once()
+        self.assertEqual(p.snapshot()["runtime"], "ROLLED_BACK")
+        self.assertEqual(p.snapshot()["last_result"], "ROLLED_BACK_RUNTIME_ONLY")
+
+    def test_runtime_rollback_refuses_when_update_pipeline_is_busy(self):
+        self.turn_on()
+        fd = os.open(p.LOCK, os.O_CREAT | os.O_RDWR, 0o600)
+        try:
+            import fcntl
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            result = p.rollback_runtime()
+        finally:
+            os.close(fd)
+        self.assertEqual(result["status"], "BUSY")
+        self.assertTrue(p.enabled())
+
+    def test_rollback_cli_uses_launcher_safe_runtime_rollback(self):
+        with mock.patch.object(p, "rollback_runtime",
+                               return_value={"status": "ROLLED_BACK_RUNTIME_ONLY"}):
+            with mock.patch("sys.stdout") as output:
+                code = p.main(["rollback"])
+        self.assertEqual(code, 0)
+        self.assertTrue(output.write.called)
+
 class GitHubCIProofTests(unittest.TestCase):
     @staticmethod
     def workflow(commit, name=u.CI_WORKFLOW, **changes):
@@ -528,46 +568,6 @@ class GitHubCIProofTests(unittest.TestCase):
             with self.subTest(workflow=replaced), self.fake_api(rows):
                 self.assertFalse(u.ci_passed(commit))
 
-
-    def test_runtime_rollback_disables_auto_update_and_requests_managed_chat_resume(self):
-        self.turn_on()
-        with mock.patch.object(u, "_runtime_active", side_effect=[True, False]), \
-             mock.patch.object(p.lifecycle, "request_stop", return_value=True) as stop, \
-             mock.patch.object(p.lifecycle, "request_resume") as resume, \
-             mock.patch.object(p.runtime_deploy, "rollback",
-                               return_value={"status": "ROLLED_BACK", "restored_commit": "d" * 40}) as rollback:
-            result = p.rollback_runtime()
-        self.assertEqual(result["status"], "ROLLED_BACK_RUNTIME_ONLY")
-        self.assertEqual(result["dashboard"], "UNCHANGED")
-        self.assertEqual(result["resume"], "REQUESTED")
-        self.assertEqual(result["resume_confirmation"], "PENDING_UI_CONSUMPTION")
-        self.assertFalse(result["auto_enabled"])
-        self.assertFalse(p.enabled())
-        stop.assert_called_once()
-        resume.assert_called_once_with(reason="RESTORE")
-        rollback.assert_called_once()
-        self.assertEqual(p.snapshot()["runtime"], "ROLLED_BACK")
-        self.assertEqual(p.snapshot()["last_result"], "ROLLED_BACK_RUNTIME_ONLY")
-
-    def test_runtime_rollback_refuses_when_update_pipeline_is_busy(self):
-        self.turn_on()
-        fd = os.open(p.LOCK, os.O_CREAT | os.O_RDWR, 0o600)
-        try:
-            import fcntl
-            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            result = p.rollback_runtime()
-        finally:
-            os.close(fd)
-        self.assertEqual(result["status"], "BUSY")
-        self.assertTrue(p.enabled())
-
-    def test_rollback_cli_uses_launcher_safe_runtime_rollback(self):
-        with mock.patch.object(p, "rollback_runtime",
-                               return_value={"status": "ROLLED_BACK_RUNTIME_ONLY"}):
-            with mock.patch("sys.stdout") as output:
-                code = p.main(["rollback"])
-        self.assertEqual(code, 0)
-        self.assertTrue(output.write.called)
 
 
 if __name__ == "__main__":
