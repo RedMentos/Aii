@@ -710,7 +710,16 @@ class WorldJEPAStoreConsumer:
             negative_controls_separated = bool(
                 holdout_after < shuffled_action_loss and holdout_after < zero_action_loss
             )
-            utility_gate_accepted = holdout_improved and negative_controls_separated
+            # A new cohort must not be accepted by sacrificing the previous
+            # held-out cohort. This is a separate retention gate, not merely
+            # telemetry; when no prior checkpoint exists there is no old cohort.
+            old_holdout_retained = bool(
+                old_holdout_before is None
+                or (old_holdout_after is not None and old_holdout_after <= old_holdout_before)
+            )
+            utility_gate_accepted = (
+                holdout_improved and negative_controls_separated and old_holdout_retained
+            )
             if not utility_gate_accepted:
                 persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
                 if persisted != "PERSISTED":
@@ -722,6 +731,8 @@ class WorldJEPAStoreConsumer:
                     "utility_gate_accepted": False,
                     "holdout_improved": holdout_improved,
                     "negative_controls_separated": negative_controls_separated,
+                    "old_holdout_retained": old_holdout_retained,
+                    "retention_gate_accepted": old_holdout_retained,
                     "holdout_loss_before": float(holdout_before),
                     "holdout_loss_after": float(holdout_after),
                     "shuffled_action_holdout_loss": float(shuffled_action_loss),
@@ -780,7 +791,8 @@ class WorldJEPAStoreConsumer:
                 "zero_action_holdout_loss": float(zero_action_loss),
                 "negative_controls_separated": negative_controls_separated,
                 "utility_gate_accepted": True,
-                "old_holdout_retained": old_holdout_before is None or old_holdout_after <= old_holdout_before,
+                "old_holdout_retained": old_holdout_retained,
+                "retention_gate_accepted": old_holdout_retained,
                 "old_holdout_loss_before": None if old_holdout_before is None else float(old_holdout_before),
                 "old_holdout_loss_after": None if old_holdout_after is None else float(old_holdout_after),
                 "old_holdout_retention_delta": retention_delta,
