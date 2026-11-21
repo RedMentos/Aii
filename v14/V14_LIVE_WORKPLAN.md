@@ -185,3 +185,11 @@ PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/te
 - Stale documentation PR #2149 (base c3c32, mergeable=false) was closed as superseded by #2156 after its useful QA findings were reconciled.
 - Boss posted concrete integration ownership notes on #2142, #2145 and #2153. Core owns the single staged audio/arithmetic builder chain; JEPA/Memory must port #2151/#2152 authority before Runtime wiring; Research/Perception keeps #2142 diagnostic-only until its current-base and staged-context gate are verified.
 
+
+
+### Exact staged-builder failure readback — 2026-11-21 05:10 CET
+
+- #2153 staged/integrated run `44860698029`: **17 failed, 221 passed, 10 skipped, 2 errors, 41 subtests**. The first shared failure is `integrated_jepa_guard_candidate_20261110.py:50`: `ValueError: online-world composition source changed` because `integrated_online_world_candidate_20261110.py` does not match its pinned `ONLINE_BUILDER_SHA`. A separate integrity check reports `integrated online-world hash mismatch: v13/contracts.py`. Two migration tests in `44860698035` report `PARTIAL` because staging did not activate.
+- #2144 staged/integrated run `44856133052`: **22 failed, 206 passed, 10 skipped, 12 errors, 36 subtests**; the shared chain reports `integrated online-world hash mismatch: v13/operator.py` and a recovery/chat candidate pin mismatch.
+- These fail before the intended audio/finality/JEPA Runtime consumers can be accepted. This is not a reason to relax immutable source checks or to update expected hashes blindly. Core must rebuild one composed candidate chain from current release bytes, then rerun Python 3.14 startup, staged-runtime, integrated regression, Lab Age and two-checkout migration.
+
