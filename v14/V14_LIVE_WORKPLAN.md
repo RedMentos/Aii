@@ -922,3 +922,13 @@ Current Boss branch `boss/v14-core-perception-store-audio-integration-20261121` 
 QA #2235 Age rights evidence remains exact-CI green on code/test head `b22129a03bbd3395605b951d55d3f187f442bda6` (handoff-only `c224610959e598cb9c79f38d1b4bd454ffea0019`): Lab-Age, owner-read/Python 3.14, migration, runtime deploy, staged (251/10/47) and integrated (424/3/58) pass; safe-additive remains FAIL_BY_POLICY. The branch is 43 ahead / 121 behind current base and diverged; do not merge or rebase blindly. Compose `learning_limit()` with #2258 GoalStore wake rollback deliberately.
 
 Private PIPELINE_STATUS #435 still has zero authenticated comments. Installed SHA and updater consent remain unknown; no update or device action. No full local Aii checkout. `NOT_RELEASED / REDMI_UNVERIFIED`.
+
+## QA exact-head follow-up — 4c1023d (2026-11-21 22:32 CET)
+
+Boss added commit `4c1023dcd59bea5790bfe8a0999460431b169c73` (semantic source-pin parsing exact/whitespace-safe). The earlier 8dc failure at `world_semantic_evidence_candidate.py` has advanced one level. Exact Python 3.14 staged and Lab-Age logs now report `ValueError: arithmetic outcome upstream changed: v13/local_error_route_shadow_candidate.py` at `integrated_arithmetic_outcome_candidate_20261116.py:45`.
+
+The raw `SOURCE_PINS` entry for local-error remains `87bb77ed...`; the derived `UPSTREAM_PINS` entry remains `3106cb3e...`. The upstream World-semantic rebind changes the already-composed local-error candidate bytes, so the derived digest is stale. Recompute the exact pre-rebind local-error output from the current builder chain, update only the derived pin, then rebind outcome builder → recovery wrapper → stage → runtime deployer. Do not substitute the raw source SHA or weaken verification. Include expected/actual SHA-256 in the safe builder diagnostic if another iteration is needed.
+
+Exact 4c1023 outcomes: A5 lease PASS (44951931825); combined online JEPA PASS (44951931760); runtime-deploy integrity PASS (44951931802); release-event integration PASS (44951931844). Staged/integrated FAIL (44951931769); owner-read job PASS but Python 3.14 staged startup FAIL (44951931772); Lab-Age E2E FAIL (44951931715); old-phone migration PARTIAL (44951931857); Core audio 3.13 FAIL and 3.14 still in progress (44951931787); safe-additive FAIL_BY_POLICY (44951931754). Earlier A5/lifecycle/idle/operator failures are superseded by the current local-error pin mismatch.
+
+No full local Aii checkout and no authenticated Redmi receipt. Installed SHA/updater consent remain unknown. Keep NOT_RELEASED / REDMI_UNVERIFIED.
