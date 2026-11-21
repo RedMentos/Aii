@@ -37,6 +37,10 @@
 
 These columns are independent. `CODE` is not `WIRED`; synthetic CI is not Android proof; an existing feature in the app is not evidence that it is currently active on the phone. `UNKNOWN` is not PASS. Whole-Canon completion remains false.
 
+### New research lead — RAW EAR VAD comparison (2026-11-21)
+
+The current #2155 RAW EAR adapter is a heuristic acoustic-feature source, not a calibrated VAD. A useful next comparison is **libfvad/WebRTC VAD** as a no-weight native C baseline (BSD-3-Clause, but review the upstream WebRTC PATENTS grant) against **Silero VAD** (MIT; Torch/ONNX path) and its small third-party C port (MIT, 16 kHz, NEON arm64 claimed but no Android build proof). This is research only: no dependency or weights were imported, and no device state changed. The proposed test is identical PCM fixtures with speech, silence, noise, impulse, music and transitions; compare FPR/FNR, onset/offset delay, CPU/RSS and ARM compatibility. Neither candidate is production-selected.
+
 ### Whole-system blockers remain
 - P0 #1904 remains the last measured real-Redmi failure: wrong 2+2, B1/B2 native timeouts and zero valid offers; no newer device receipt.
 - #2151 is not yet called from normal postcommit Runtime; no native B1/B2/C3 GGUF updates or accepted real-user retention.
