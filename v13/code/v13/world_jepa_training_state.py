@@ -102,7 +102,7 @@ def validate(state, d, actions, seed, ensemble, steps):
         raise ValueError('invalid World-JEPA training dimensions')
     if (type(state) is not dict or set(state) != {'schema', 'objective', 'origin', 'inverse', 'main', 'rng', 'bootstrap'}
             or state['schema'] != SCHEMA or state['objective'] != objective(seed, ensemble)
-            or state['origin'] not in ('FRESH', 'BOOTSTRAPPED_FROM_INFERENCE_ONLY')
+            or state['origin'] not in ('FRESH', 'BOOTSTRAPPED_FROM_INFERENCE_ONLY', 'RESET_FOR_ABLATION')
             or type(state['bootstrap']) is not list or len(state['bootstrap']) != ensemble - 1):
         raise ValueError('missing or incompatible World-JEPA training state')
     main, pred, inverse = _shapes(d, actions)
@@ -121,6 +121,30 @@ def validate(state, d, actions, seed, ensemble, steps):
 def from_model(model):
     return validate(getattr(model, '_training_state', None), len(model.mu), len(model._action_counts),
                     model.seed, model.ensemble, model._fit_steps)
+
+
+def reset_optimizer_moments(model):
+    """Zero Adam moments/clocks while preserving model, EMA, inverse head and RNG.
+
+    This is an experimental control arm, not a production default. The explicit
+    origin marker makes the reset visible in checkpoint readback and audit.
+    """
+    state = from_model(model)
+    state['origin'] = 'RESET_FOR_ABLATION'
+
+    def reset(adam):
+        adam['t'] = 0
+        adam['steps'] = {key: 0 for key in adam['steps']}
+        adam['m'] = {key: np.zeros_like(value) for key, value in adam['m'].items()}
+        adam['v'] = {key: np.zeros_like(value) for key, value in adam['v'].items()}
+
+    reset(state['main'])
+    for member in state['bootstrap']:
+        reset(member['adam'])
+    return validate(
+        state, len(model.mu), len(model._action_counts),
+        model.seed, model.ensemble, model._fit_steps,
+    )
 
 
 def snapshot(adam):
