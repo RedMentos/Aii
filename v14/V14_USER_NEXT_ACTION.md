@@ -246,3 +246,13 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - It is not yet connected to the normal Runtime postcommit consumer and does not update native B1/B2 GGUF weights. CI is configured for Python 3.13/3.14; exact results are pending. No local full-suite checkout and no Redmi receipt are available: `REDMI_UNVERIFIED`.
 - #2135 remains the next runtime-integration dependency because its nested SourceHandoff builder chain is still blocked. No phone update request, model download/swap, permission change or manual Termux command is needed.
 - **User action: none.**
+
+
+## JEPA & Memory verification — 21 November 2026 / PR #2143
+
+- [PR #2143](https://github.com/RedMentos/Aii/pull/2143) is ready for review. Branch `jepa-memory/v14-world-jepa-source-disjoint-paginated-20261121`; code commit `2311b039eb49375829876e1bea8f2ac2d6975fe8`; current branch head `a2788aacdae09bb675fff220cbda4ba74d400912`.
+- GitHub Actions run `44848998581`: Python 3.13 — **57 passed in 4.35s**; Python 3.14 — **57 passed in 7.83s**. Compilation passed on both. Additional `v13-private-remote-bridge-tests` run `44848994421` passed.
+- The candidate adds source-disjoint T8 holdout, excludes censored outcomes, pages oldest-first with a persisted cursor, trains the numeric WorldJEPA/EMA checkpoint, exposes B1_DETAIL/B2_GIST/SELF_MODEL shadow readouts and source-linked numeric Memory recall, and verifies restart/rollback.
+- CI is not a local device test. No local Aii checkout test and no Redmi receipt: `REDMI_UNVERIFIED`. Normal Runtime postcommit wiring and native B1/B2 GGUF weight learning remain open. #2135's nested SourceHandoff builder chain is the next integration blocker.
+- No phone update request, model download/swap, permission change or manual Termux command is needed.
+- **User action: none.**

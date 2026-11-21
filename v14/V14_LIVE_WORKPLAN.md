@@ -105,3 +105,12 @@ Die bestehenden fünf stündlichen Jobs arbeiten als **ein Engineering-Team** mi
 - State schema v2 persists scan cursor with checkpoint; rollback restores the previous cursor. World/Self readouts and source-linked numeric episodic Memory recall are exposed in the Store-backed consumer.
 - CI is configured for Python 3.13 and 3.14; exact results are pending. No local checkout test or Redmi receipt is claimed. Runtime wiring remains open; #2135's exact-once OnlineWorld candidate is still blocked by its nested SourceHandoff builder chain.
 - Next: independent review, then integrate with the existing postcommit OnlineWorld path and expose predictions to a real World/Planner consumer in SHADOW. Keep learning gates closed by default.
+
+
+### JEPA & Memory verification checkpoint — 2026-11-21 / PR #2143
+
+- PR #2143 is ready for review. Code commit: `2311b039eb49375829876e1bea8f2ac2d6975fe8`; current branch head at this checkpoint: `a2788aacdae09bb675fff220cbda4ba74d400912`.
+- Exact GitHub Actions result: run `44848998581`, Python 3.13 `57 passed in 4.35s`, Python 3.14 `57 passed in 7.83s`; `py_compile` passed on both. Additional push workflow `44848994421` (private remote bridge security) passed.
+- The tests exercise source-disjoint grouping/digest integrity, censored-status exclusion, oldest-first backlog paging, restart/cursor continuation, nonzero encoder/predictor and EMA parameter changes, negative controls, B1/B2/SELF readouts, numeric Memory recall, checkpoint readback, retention and rollback.
+- These are GitHub Actions/Linux results. No local Aii checkout or Redmi owner receipt is available: `REDMI_UNVERIFIED`. The consumer is still not wired into the normal Runtime postcommit path and does not update native B1/B2 GGUF weights.
+- Next: independent review/merge, then integrate into `Runtime.online_world_update -> OnlineWorld.update` and route the source-bound prediction to a real World/Planner consumer in SHADOW. #2135's nested SourceHandoff builder chain remains the immediate integration blocker. No user action.

@@ -3,7 +3,7 @@
 **Lane:** JEPA & Memory  
 **Base:** `gpt6/v13-private-remote-bridge-20261111` at `c3c32c05a0374e970d274f8a777a7ab85c067d66` (latest verified branch HEAD at implementation start)  
 **Candidate branch:** `jepa-memory/v14-world-jepa-source-disjoint-paginated-20261121` at code commit `2311b039eb49375829876e1bea8f2ac2d6975fe8`  
-**PR:** [#2143](https://github.com/RedMentos/Aii/pull/2143) (draft; CI pending)  
+**PR:** [#2143](https://github.com/RedMentos/Aii/pull/2143) (ready for review)  
 **Historical V13 files:** unchanged; no runtime.py or online_world.py edit in this slice
 
 ## Implemented in this candidate
@@ -17,8 +17,8 @@
 
 ## Evidence required / current boundary
 
-- Targeted CI is defined to run `py_compile` plus the full `v14/learning` suite on Python 3.13 and 3.14. New regressions cover source grouping, all four censored statuses, a 2,050-action backlog with two oldest-first pages, restart/cursor continuation, numeric parameter/EMA deltas, negative controls, receiver readouts, checkpoint retention and rollback.
-- No local Aii checkout is available in this runner; no LOCAL_LINUX pytest result is claimed. CI is not local-device proof.
+- Targeted GitHub Actions run `44848998581` passed: Python 3.13 — `57 passed in 4.35s`; Python 3.14 — `57 passed in 7.83s`; `py_compile` passed on both. New regressions cover source grouping, all four censored statuses, a 2,050-action backlog with two oldest-first pages, restart/cursor continuation, numeric parameter/EMA deltas, negative controls, receiver readouts, checkpoint retention and rollback. The additional `v13-private-remote-bridge-tests` run `44848994421` passed.
+- No local Aii checkout is available in this runner; no LOCAL_LINUX pytest result is claimed. These are GitHub Actions/Linux CI results, not local-device proof.
 - No Redmi/Termux connection or owner-authenticated device receipt is available. `REDMI_UNVERIFIED`.
 - The consumer is not wired into the normal `Runtime.online_world_update -> OnlineWorld.update` postcommit call. The #2135 exactly-once OnlineWorld candidate remains blocked by its nested SourceHandoff builder hash chain.
 - Numeric WorldJEPA/EMA checkpoint changes are real trainable parameters in the isolated Store-backed experiment; B1/B2/SELF heads are readout adapters, not native B1/B2 GGUF weight updates. No GGUF or installed model changed. Learning defaults OFF; no device permission, Age, model or updater setting changed.
