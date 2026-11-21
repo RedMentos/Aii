@@ -9,8 +9,10 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+from pathlib import Path
 
 from . import world_model
+from .world_jepa_consumer import WorldJEPAStoreConsumer
 from .world_jepa_runtime import memory_recall
 from .world_jepa_receiver_matrix import receiver_matrix
 from .world_jepa_store_authority import MAX_ACTION_OUTCOMES_PER_EVENT
@@ -318,8 +320,15 @@ def read_world_planner_shadow(store, event_id):
     except (ValueError, TypeError, KeyError, OSError, UnicodeError,
             OverflowError, ArithmeticError):
         return {"status": "SOURCE_REVOKED_OR_CHANGED", "decision_authority": "NONE"}
-    state, _ = store.state("v14.world_jepa.store_consumer", {})
-    active = state.get("active") if type(state) is dict else None
+    try:
+        learner = WorldJEPAStoreConsumer(
+            store, Path(store.home) / "world_jepa", learning_enabled=False
+        )
+        with learner._locked(True):
+            state, _ = learner._read_state()
+        active = state.get("active") if type(state) is dict else None
+    except (ValueError, TypeError, KeyError, OSError, OverflowError):
+        return record | {"status": "SOURCE_REVOKED_OR_CHANGED", "decision_authority": "NONE"}
     if (type(active) is not dict
             or active.get("checkpoint_sha256") != record.get("checkpoint_sha256")):
         return record | {"status": "STALE_CHECKPOINT", "decision_authority": "NONE"}
