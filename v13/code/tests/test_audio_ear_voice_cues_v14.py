@@ -462,7 +462,10 @@ def test_consent_revocation_resets_caller_supplied_temporal_state(tmp_path):
 
 
 def test_consent_revocation_between_pre_and_post_persist_leaves_no_packet(tmp_path):
-    """Revocation at the post-write check must not leave a persisted audio packet."""
+    """Revocation at the post-write check must not leave a persisted audio packet.
+
+    This is a privacy gate: packet commit and consent revocation need one ordering point.
+    """
     runtime, event = make_runtime(tmp_path)
     calls = 0
 
