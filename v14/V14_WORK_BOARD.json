@@ -72,10 +72,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2151/#2152 remains the merged numeric WorldJEPA/EMA learner authority in release HEAD c0cedbde718ede6107f4df1f1bf9c784df4e00cf; exact PR-head workflow 44861797478 passed 64 tests on Python 3.13 and 64 on Python 3.14, compile PASS. PR #2160 is now READY_FOR_REVIEW, head a5678c2119dea2c29d038829bd5abaa23d454530, base c0ced..., with the full-SourceRef T8 authority, persistent consumer and permission-gated runtime facade in direct importable V13 modules. Safe-additive run 44870089869 (#547) passed 16/16 tests in 12.16s on Linux/Python 3.11.18; 3 modules compiled. Exact staged-context/integrated run 44870089892 (#1426) passed: staged-runtime 240 passed/10 skipped/47 subtests; integrated-regression 415 passed/3 skipped/58 subtests. Local Python 3.13.5 wrapper-stub smoke PASS; exact local Aii checkout/tests remain BLOCKED by GitHub DNS. The API is not yet called by normal postcommit Runtime; B1/B2/SELF are numeric SHADOW heads, not native body consumers or GGUF updates. Optimizer moments are not persisted. No Redmi utility or native-body proof.",
-      "next_step": "Core owns the current staged builder/deployer chain. After its #2158 arithmetic, voice-finality and recovery-stage hash-pin failures are repaired and exact staged/integrated/migration checks pass, call v13.world_jepa_runtime.consume_after_commit only after durable ActionOutcome/T8 commit, then route receiver_readouts and memory_recall into a source-bound SHADOW packet consumed by a real World/Planner decision path. Keep both optimizer gates false until the local user-approved gate is explicitly set; then measure new/old holdout, replay, restart and rollback. Do not change native B1/B2 GGUF weights in this step.",
+      "proof_environment": "PR #2151/#2152 remains the merged numeric WorldJEPA/EMA learner authority in release HEAD c0cedbde718ede6107f4df1f1bf9c784df4e00cf; exact PR-head workflow 44861797478 passed 64 tests on Python 3.13 and 64 on Python 3.14, compile PASS. PR #2160 is OPEN/READY_FOR_REVIEW at a5678c2119dea2c29d038829bd5abaa23d454530, based on c0ced; safe-additive run 44870089869 (#547) passed 16/16 tests on Linux/Python 3.11.18 and staged/integrated run 44870089892 (#1426) passed 240 staged-runtime tests (10 skipped, 47 subtests) and 415 integrated-regression tests (3 skipped, 58 subtests). PR #2164 is OPEN/READY_FOR_REVIEW at 14a647c04b28e9cd5bbd5a19ae14d6cbb77d29a1, stacked on #2160; exact run 44872134464 passed staged-runtime 241/10 skipped/47 subtests and integrated-regression 415/3 skipped/58 subtests. The staged entry point invokes both new direct receiver tests: positive B1/B2/SELF numeric candidate matrix + source-linked memory recall + persisted idempotency with gates closed; negative missing ActionOutcome and mismatched SourceRef. This is synthetic data through the real SQLite Store on GitHub Actions/Linux. Exact local Aii checkout/tests remain BLOCKED by GitHub DNS. Normal Runtime still does not call the API; #2164 provides a callable source-bound numeric World/Planner SHADOW receiver but not native B1/B2 activations/GGUF updates or B3 latent coupling. Optimizer moments are not persisted. No Redmi utility or native-body proof.",
+      "next_step": "Core owns the staged builder/deployer chain. After #2158's arithmetic/voice-finality and recovery-stage hash-pin failures are repaired and exact staged/integrated/migration checks pass, integrate #2160 and #2164 in dependency order; call v13.world_jepa_runtime.consume_after_commit only after durable ActionOutcome/T8 commit and pass the exact committed event_id so the persisted source-bound B1/B2/SELF numeric planner SHADOW and memory recall are produced. Keep both optimizer gates false until separately authorized; do not let the uncalibrated SHADOW score affect routing. Then measure new/old source-disjoint holdout utility, replay-on/off/content-vs-uniform, restart/rollback, and retention. Do not change native B1/B2 GGUF weights in this step.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 06:22 CET: #2160 ready for review; safe-additive 16/16 and staged/integrated 240/415 PASS; no normal Runtime hook or Redmi proof.",
+      "last_checkpoint": "2026-11-21 06:29 CET: #2160 parent API remains READY_FOR_REVIEW; #2164 receiver PR head 14a647c passed exact staged 241/10 skipped/47 subtests and integrated 415/3 skipped/58 subtests. No normal Runtime call, release or Redmi proof.",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -110,6 +110,15 @@
         "status": "OPEN_READY_FOR_REVIEW_CI_GREEN",
         "ci": "PASS_44870089869_16_TESTS_PY311; PASS_44870089892_STAGED_240_INTEGRATED_415",
         "scope": "Deployable direct V13 module port of #2151/#2152; full SourceRef; dual-gated postcommit API; B1/B2/SELF numeric SHADOW readouts and memory recall; no normal Runtime wiring/native body updates"
+      },
+      "latest_receiver_pr": {
+        "pr": 2164,
+        "branch": "jepa-memory/v14-world-jepa-planner-receiver-20261121",
+        "head_sha": "14a647c04b28e9cd5bbd5a19ae14d6cbb77d29a1",
+        "base_pr": 2160,
+        "status": "OPEN_READY_FOR_REVIEW",
+        "ci": "PASS_44872134464_STAGED_241_PY311_10_SKIPPED_47_SUBTESTS; PASS_INTEGRATED_415_PY311_3_SKIPPED_58_SUBTESTS",
+        "scope": "Source-bound numeric B1/B2/SELF World/Planner SHADOW receiver; batched readout; ActionOutcome/SourceRef verification; persisted idempotent readback; no normal Runtime hook/native body"
       }
     },
     {
