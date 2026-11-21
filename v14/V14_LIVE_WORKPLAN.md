@@ -906,3 +906,67 @@ Exactly five V14 automations are enabled: Boss & Integration, QA & Android, JEPA
 - **Whole-Canon ledger:** keep B1/B2 native offer quality, B3 trained latent receiver, audio/vision learning, Android background/UI providers, full voice decoder/vocoder, sparse MoE, cross-organ gradients, self-edit, technical OS sandbox and declared memory/egress as separate OPEN requirements.
 
 **User action: none.**
+
+
+---
+
+## Boss whole-system integration checkpoint — 2026-11-21 23:21 CET
+
+**No device action or user action is required.** This checkpoint is based on GitHub readback and exact CI logs, not on a local Aii checkout or an Android receipt.
+
+### Current branch and release boundary
+
+- Release-development branch: `gpt6/v13-private-remote-bridge-20261111` at `bdcad466ffea75a2b41f7d23be168f53c7197d20`.
+- Boss integration PR [#2258](https://github.com/RedMentos/Aii/pull/2258), branch `boss/v14-core-perception-store-audio-integration-20261121`: current head `273a60bda3105f3163bf2ad606e58f885681da8b`; its code-bearing tested parent is `0dc337edfb7a71168e15f3db08bcedc424e32d4f`. The branch remains DRAFT / NOT_RELEASED.
+- The last accepted code release recorded in the current handoff remains `f279286a4453248004c670fcaabecd85da6ab299`. Neither the development branch nor #2258 has been shown installed on Redmi.
+- Local full-suite execution is BLOCKED: no Aii checkout is mounted and `git ls-remote https://github.com/RedMentos/Aii.git` failed because this environment cannot resolve github.com. Do not call CI a local test.
+
+### What #2258 now demonstrates on its exact code head
+
+- Integrated regression run `44954629364`: **424 passed, 3 skipped, 58 subtests passed**.
+- Staged runtime/migration run `44954629364`: **252 passed, 10 skipped, 47 subtests passed**; staged arithmetic/broker/output-policy segment: **39 passed, 17 subtests passed**. Old two-checkout migration simulation reached the candidate SHA in both source checkouts and exercised the legacy PARTIAL/UPDATE state; this is Linux simulation, not Android deployment.
+- A5 UI lease run `44954629368`: **17 passed, 5 subtests passed** on Python 3.13 and 3.14; source-publication/revocation regression and privacy scan passed.
+- Audio lease + exact arithmetic run `44954629375`: **52 passed, 26 subtests passed** on Python 3.13 and 3.14.
+- Lab-Age, private owner-read CI, Python 3.14 staged startup/SQLite source references, deploy integrity, offline and bridge-security checks passed. These are code/CI checks, not an authenticated phone receipt.
+- The previous safe-additive job `44954629355` failed before running candidate tests because the Boss integration PR changes **59 files** while the strict additive harness accepts only 2..30 files and only newly-added inert modules/tests/handoffs. This was not a functional test failure and must not be described as a validator PASS.
+- Boss commit `273a60b` scopes that unchanged strict validator to explicit `v13-additive/*` branches or PRs carrying `v13-additive-candidate`. It does not relax the 2..30/add-only checks. The exact new-head workflow `44956011562` is SKIPPED as intended for this integration branch; the other new-head workflows are queued. Wait for their exact results before any merge decision.
+- Manual protected-file review of the 59-file integration is still incomplete. Do not merge #2258 yet.
+
+### Cross-agent PR reconciliation and actual next blockers
+
+- **Core/Perception/QA integration #2258:** contains the A5 Store source-publication lock, GoalStore wake validation/compensation, staged caller-PCM16 consent lease, exact arithmetic/date disambiguation, explicit OFF-by-default Termux TTS fallback and regenerated runtime pin chain. Keep audio capture, model runners, TTS and Android paths within their actual limits; no full voice or device claim.
+- **Age/X10 rights #2235:** head `c224610959e598cb9c79f38d1b4bd454ffea0019` reports 9/11 checks successful. Nested callback attribution now has an unrelated-closure negative control; Lab-Age, owner-read, staged startup, migration, staged Runtime and integrated regression pass. The strict additive job is not applicable to this existing-code candidate. The Age rights/compute separation still needs manual composition because #2235 and #2258 both touch `agi/goals.py` / recovery-related files. Preserve #2258's GoalWake atomicity while importing only the reviewed Age-rights hunks. Official Age remains 0; lab rights never define compute budget.
+- **JEPA/Memory #2247:** current head `4ec92e89d3bb22fb6cf2792d01d02ae131feacff` has A→B→A, staged, migration and deploy workflows queued. Prior head `77b3239` produced synthetic A2 predictor/EMA updates for seeds 13/19/43 on Python 3.13 and 3.14, with changed checkpoint hashes and old-session gates accepted, but that run failed on a boolean/string test-filter defect. Current head fixes the filter and adds stronger per-seed checks; no current-head PASS is yet claimed. Do not promote learning or weights.
+- **Native B3 receiver #2266:** head `3166858133844fc80201334f53ade450557d1191` adds an explicit operator-only llama.cpp input-embedding probe at pinned revision `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4`. Owner reports six isolated wrapper tests, C++ core `-Wall -Wextra -Werror` compile/selftest and stub-header syntax compile PASS. Exact Python, pinned-library Linux build and Android ARM64 cross-compile are queued. This is not K/V injection, trained alignment, semantic use or production B3; `production_route=false`, authority zero, normal LATENT remains OFF.
+- **Android companion #2271:** head `7013fe166b8a45437e45ccfa9b44b9fdb58ee1b4` is a default-OFF, launch_app-only prototype with paired Termux certificate checking and ECDSA receipts. Its Android build failed before Gradle compile because the SDK action received one semicolon-joined package identifier instead of separate package IDs. More importantly, QA found a P1 race: two approval activities can both dispatch `startActivity` before the database CAS. Require an atomic PENDING→DISPATCHING claim before the Android side effect, exactly-one-dispatch concurrency tests, stop/expiry/restart controls, stronger caller identity and collision-resistant notification IDs. No APK install or device proof.
+- **RAW EAR speaker evidence #2256:** head `08fce3420ff2fc548276c421e99e79390d78e910` fails two tests on both Python versions. The latest frame in an incoming batch can compare against earlier frames from that same batch after they have been appended, overwriting the intended cross-window score with a self-similarity result. Snapshot the pre-batch look-back state for the entire batch; keep threshold-absent behavior score-only. No optional NumPy backend promotion until the exact regression and staged tests pass.
+- **Memorilla #1983:** still additive SHADOW without a production source-pointer-preserving overflow consumer. Preserve all existing Context OS archive/forget/revocation behavior.
+
+### Whole-system capability matrix — current honest status
+
+| Capability | CODE | WIRED | TESTED_SYNTHETIC / CI | TESTED_ANDROID | ACTIVE |
+| --- | --- | --- | --- | --- | --- |
+| A0–A5 perception/attention | Partial | Caller/source-bound synthetic paths | Partial CI PASS | Unverified | Not accepted |
+| B1_DETAIL / B2_GIST | Code present, distinct roles | Partial synthetic offer path | Partial CI | Unverified | No accepted useful native offers |
+| B3 Enlightened Space | Symbolic plus research/native probe | Not production | Tiny research + isolated probe; CI pending | Unverified | OFF |
+| B4 workspace / C4 coalition | Partial heuristic | Partial staged path | Synthetic only | Unverified | Not accepted |
+| C/JEF/C2/C3/C5 | Code present; exact arithmetic candidate | Synthetic runtime path | CI PASS for current candidate | Last phone evidence was wrong 2+2; no new receipt | Not accepted |
+| World/Self/Memory/JEPA | Persistent Store + shadow learner code | Partial | Current JEPA head pending | Unverified | Learning gates OFF |
+| Sleep/Dream/Replay | Code/shadow | Partial | Synthetic only | Unverified | Promotion OFF |
+| VOICE_AUDIO | Caller PCM16 + explicit Termux TTS fallback | Synthetic A5/A4/C3 admission; no microphone | CI PASS for lease/fallback contracts | Unverified | No |
+| ANDROID_BACKGROUND_CONTROL | Companion launch_app prototype | Not in release Runtime | CI blocked/queued | Unverified | OFF |
+| ANDROID_UI_CONTROL | A5 metadata lease | Synthetic only | CI PASS | Unverified | OFF |
+| MULTIMODAL_LEARNING | Partial audio/UI metadata | Synthetic only | Partial CI | Unverified | No |
+| SELF_OPTIMIZATION / cross-organ weights | JEPA shadow candidate | Partial Store consumer | Prior head synthetic; current head pending | Unverified | OFF |
+| Age / X10 rights | Candidate #2235 | Partial SHADOW | 9/11 checks | Unverified | Official Age 0 |
+| Context OS / Memorilla | Context OS partial; Memorilla draft | No overflow consumer | Partial context CI | Unverified | No |
+| Two distinct sparse MoEs | Not proven | Not wired | Not accepted | Unverified | No |
+| Technical OS sandbox / behavior judge | Prototypes only | Not integrated | Partial synthetic | Unverified | No |
+| Remote maintenance / update / rollback | Code + owner-read bridge | No authenticated current receipt | CI/migration simulation | Unverified | No new deploy |
+
+### Private device receipt and next actions
+
+- A fresh read-only PIPELINE_STATUS request was created in private repository RedMentos/Aiiii as issue **#440**. It has no authenticated response at the last poll. Previous #431/#432/#439 requests also had no authenticated reply. Installed SHA and updater consent remain UNKNOWN.
+- No UPDATE_REQUEST, LOG_PAGE, CHAT_SEND, shell, model/weight/Age/permission change or device data mutation was performed. **REDMI_UNVERIFIED / NOT_RELEASED.**
+- Next: (1) finish exact-head CI for #2258 commit 273a; (2) manually review the full integration and compose the Age-rights changes without overwriting GoalWake; (3) get #2247 current-head per-seed acceptance; (4) review #2266 native receiver build and keep it diagnostic-only; (5) require #2271 one-shot atomic approval and build fix; (6) require #2256 same-batch look-back correction. Continue whole-Canon coverage; do not narrow the project to any one probe.
+- **User action:** none. No Termux command, model swap, permission change or updater change is currently justified.
