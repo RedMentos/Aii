@@ -81,6 +81,14 @@ def validate_slot(obj,where):
         if not (isinstance(c,dict) and isinstance(c.get("source_id"),str) and isinstance(c.get("char_start"),int) and isinstance(c.get("char_end"),int) and 0<=c["char_start"]<=c["char_end"]):raise ValueError(where+": covered_range")
     return obj
 BASE={"schema_version":str,"packet_id":str,"producer_component":str,"producer_version":str,"event_id":str,"created_monotonic_ns":int,"created_wall_time":(int,float),"brain_generation_id":str,"provenance":list}
+FIELDS["WorldPredictionOutcome"]={
+ "action_id":str,"prediction_packet_id":str,"action_selection_packet_id":str,"role":str,"route_hint":str,
+ "status":str,"predicted_duration_s":(int,float),"actual_duration_s":(int,float),"duration_error_s":(int,float),
+ "baseline_duration_s":(int,float,type(None)),"baseline_error_s":(int,float,type(None)),
+ "success_score_raw":(int,float),"success_score_clipped":(int,float),
+ "observed_success":(int,float,type(None)),"success_squared_error_clipped":(int,float,type(None)),
+ "model_seen":int,"calibration_status":str,"decision_authority":str,"receipt_fingerprint":str}
+
 def validate(kind,obj):
     if kind not in FIELDS:raise ValueError("Unbekanntes Schema")
     for k,t in (BASE|FIELDS[kind]).items():
