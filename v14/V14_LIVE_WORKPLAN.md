@@ -193,3 +193,12 @@ PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/te
 - #2144 staged/integrated run `44856133052`: **22 failed, 206 passed, 10 skipped, 12 errors, 36 subtests**; the shared chain reports `integrated online-world hash mismatch: v13/operator.py` and a recovery/chat candidate pin mismatch.
 - These fail before the intended audio/finality/JEPA Runtime consumers can be accepted. This is not a reason to relax immutable source checks or to update expected hashes blindly. Core must rebuild one composed candidate chain from current release bytes, then rerun Python 3.14 startup, staged-runtime, integrated regression, Lab Age and two-checkout migration.
 
+
+
+### New Core/Perception stack readback — PR #2157 (2026-11-21 05:12 CET)
+
+- PR #2157 is a DRAFT stacked on Core #2144 at base head `aad02aa66c3200a3253dde8e4b4ceb69cadc0b26`; current head `6b116ddbb34a97bec35a51eb04998b17b7cb4e68`. It adds #2155's acoustic cue module to the staged candidate and requires explicit `PROVISIONAL|FINAL`, passing finality unchanged into the adapter. The intended boundary is correct: provisional is A4-only; final requires current consent; no transcript, speaker identity, learning or action authority.
+- Dedicated workflow `44864887296`: compile PASS; the existing RAW EAR tests pass 8/8; the two new overlay-contract tests FAIL (2 failed, 8 passed). The immediate fixture defect is that the test calls `audio.apply_sources()` with raw Runtime/Cognition/arithmetic bytes even though that function requires an already-composed upstream Runtime containing `arithmetic_answer`, `LOCAL_EXACT_ARITHMETIC`, `source_recall_refs` and `latewatch.start`. Boss posted the exact failure and requested the fixture to compose the pinned base recovery builder first, or to test raw-base rejection separately. Do not weaken those markers.
+- Full staged/integrated workflow `44864887308` was still IN_PROGRESS at the last readback. Even after the fixture is corrected, the base builder may still hit the known stale online-world/contracts/operator pins from #2144; that is a separate shared-chain blocker.
+- Keep #2157 DRAFT and unmerged until the focused overlay contract and full staged/integrated, Python 3.14 startup and migration chain pass on one current composed Core branch. It is not microphone capture or Redmi proof.
+
