@@ -272,3 +272,15 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 **Next implementation order:** (1) get exact-head CI for the #2145 full-SourceRef fix; (2) port the newer #2143/#2147 paginated authority into the deployable runtime consumer without losing SELF_MODEL/recall; (3) fix the #2147 action-conditioned negative control with source-digest-grouped synthetic trajectories and rerun both Python versions; (4) compose #2144 only after the single stage-builder chain is green; (5) continue the P0 C3/B1/B2 runtime path and wait for an actual private Redmi receipt.
 
 **User action: none.** No Termux command is justified while the private phone receipt is absent.
+
+
+
+### QA historical device baseline preserved — 2026-11-21
+
+QA's private V13OBS #115 reported on 2026-11-18 (stale, not current acceptance): C3 TTFT 77.51 s, total 84.37 s, 11 generated tokens; B1/B2 TIME_BUDGET at 60.1 s and 50.5 s, zero source-bound offers; native residency could not be read (`UNKNOWN_NO_GROUP_CHILDREN`). This gives a concrete last-known performance baseline, but it must not be treated as the current phone state. Fresh PIPELINE_STATUS issue #357 remains unanswered.
+
+QA also preserved these exact earlier regression boundaries:
+- #2137 code-identical PR head: focused T8 52 passed, staged-runtime 240 passed / 10 skipped / 47 subtests, integrated regression 415 passed / 3 skipped / 58 subtests, private bridge PASS. The later merged code-bearing SHA #2137 has exact push CI green. The dedicated T8 workflow's Python 3.14 coverage was still requested; no normal Runtime learning consumer was proven.
+- #2138's updater fix covers latest-exact-SHA result selection and rechecks after graceful stop and after source fast-forward immediately before launcher activation. Exact CI is green; the phone has not replied to prove installation.
+- #2139's earlier staged failure was caused by six downstream immutable candidates still pinning the old `v13/runtime.py`; the focused PCM16 adapter is not microphone proof.
+- #2136 remains a synthetic consent-checked PCM16 → PerceptPacket → A4/C3 adapter; no Android microphone capture or speech effector is proven.
