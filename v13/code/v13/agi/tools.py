@@ -63,8 +63,8 @@ class ToolRegistry:
         def f(st):st['enabled']=sorted(set(st['enabled'])|{name}) if on else [t for t in st['enabled'] if t!=name]
         self.box.mutate(f)
     def _policy(self,spec,origin,args,confirmed=False):
-        """WP-K IH-H29 contract: schema -> capability -> risk -> confirmation -> C5 (Age right for own choice).
-        2026-10-21: then the user's own rules (v13/userrules.py, fixed reader): FORBID refuses even an approved call,
+        """WP-K IH-H29 contract: schema -> capability -> risk -> C5 Age right -> confirmation.
+        Confirmation never substitutes for the original SYSTEM/SELF Age right. Then user rules (fixed reader): FORBID refuses even an approved call,
         "ask me first" or an unclear match turns an automatic run into a per-call proposal. Rules only ever add caution."""
         from ..transaction import authorize
         from ..prohibitions import verdict
@@ -84,7 +84,6 @@ class ToolRegistry:
         steps=steps+[['user_rules',v+(':'+ids if v!='ALLOW' else '')]]
         if v=='DENY':return 'DENIED','USER_RULE:'+ids,steps
         if v=='ASK' and status=='APPROVED' and not confirmed:return 'PROPOSED','USER_RULE_ASK:'+ids,steps
-        if v=='ASK' and status=='DENIED' and why.startswith('AGE_RIGHT') and not confirmed:return 'PROPOSED','USER_RULE_ASK:'+ids,steps  # the user asked to be asked: offer the call instead of a silent shadow
         if v=='ASK':return status,why+'+USER_RULE_ASK:'+ids,steps  # already PROPOSED, or DENIED for another reason: keep it, name the rule
         return status,why,steps
     def call(self,name,args,origin='USER',intent=None,predicted=None,event_id=None,idempotency_key=None):
@@ -114,7 +113,7 @@ class ToolRegistry:
         """Human per-call approval for a PROPOSED call; it then runs as a WP-K action transaction."""
         st=self.box.load()[0];tx=next((c for c in st['calls'] if c['id']==tx_id),None)
         if not tx or tx['status']!='PROPOSED':raise ValueError('Kein offener Vorschlag')
-        spec=self.tools[tx['tool']];status,why,steps=self._policy(spec,'USER',tx['args'],confirmed=True)
+        spec=self.tools[tx['tool']];status,why,steps=self._policy(spec,tx.get('origin','USER'),tx['args'],confirmed=True)
         tx=dict(tx,status=status,reason=why,contract=steps)
         if status=='APPROVED':tx=self._execute(spec,tx)
         self._save(tx,replace=True);return tx
