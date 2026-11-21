@@ -12,7 +12,7 @@ import pytest
 
 from v13 import contracts, world_jepa, world_model
 from v13.store import Store
-from v13.world_jepa_store_authority import verify_committed_transition_page, verify_committed_transitions
+from v13.world_jepa_store_authority import (MAX_ACTION_OUTCOMES_PER_EVENT, verify_committed_transition_page, verify_committed_transitions)
 from v13.world_jepa_consumer import WorldJEPAStoreConsumer, _source_disjoint_split
 from v13.world_jepa_runtime import (DEFAULT_PERMISSIONS, PERMISSION_KEY, consume_after_commit, receiver_readout, memory_recall, receiver_matrix)
 from v13.world_jepa_planner import consume_world_planner_shadow, read_world_planner_shadow
@@ -871,3 +871,112 @@ def test_world_planner_receiver_rejects_uncommitted_or_source_mismatched_event(t
         )[0] is None
     finally:
         store.close()
+
+def _make_committed_planner_action(store, session, text):
+    event = store.event(session, text)
+    action_id = store.start_action(
+        event["event_id"],
+        event["brain_generation_id"],
+        forecast={"input_chars": len(text), "resource_state": "NORMAL"},
+    )
+    actual = {"action_duration_s": 0.5, "characters": 12}
+    store.finish_action(action_id, "FINAL", actual)
+    return event, action_id, actual
+
+
+def test_world_planner_rejects_duplicate_action_outcome_beyond_first_32(tmp_path):
+    home = tmp_path / "brain-planner-duplicate-overflow"
+    store, session = _make_store(home)
+    try:
+        event, action_id, actual = _make_committed_planner_action(
+            store, session, "planner duplicate receipt source"
+        )
+        event_id = event["event_id"]
+        generation = event["brain_generation_id"]
+        original = store.rows(
+            "SELECT id FROM packets WHERE kind='ActionOutcome' "
+            "AND event_id=? AND generation_id=?",
+            (event_id, generation),
+        )
+        assert len(original) == 1
+
+        duplicate = contracts.packet(
+            "ActionOutcome", "C6_TEXT", event_id, generation,
+            action_id=action_id, status="FINAL", actual=actual,
+        )
+        store.add_packet("ActionOutcome", duplicate)
+        with store.tx() as connection:
+            connection.execute(
+                "UPDATE packets SET created=? WHERE id=?",
+                (1000.0, original[0]["id"]),
+            )
+            connection.execute(
+                "UPDATE packets SET created=? WHERE id=?",
+                (1.0, duplicate["packet_id"]),
+            )
+
+        # The old LIMIT 32 query sees the original but misses this older
+        # duplicate after 33 newer unrelated outcomes.
+        for index in range(33):
+            unrelated = contracts.packet(
+                "ActionOutcome", "C6_TEXT", event_id, generation,
+                action_id=f"unrelated-{index:03d}", status="FINAL",
+                actual={"action_duration_s": 0.1, "characters": 1},
+            )
+            store.add_packet("ActionOutcome", unrelated)
+            with store.tx() as connection:
+                connection.execute(
+                    "UPDATE packets SET created=? WHERE id=?",
+                    (100.0 + index, unrelated["packet_id"]),
+                )
+
+        old_window = store.rows(
+            "SELECT payload FROM packets WHERE kind='ActionOutcome' "
+            "AND event_id=? AND generation_id=? ORDER BY created DESC LIMIT 32",
+            (event_id, generation),
+        )
+        assert len(old_window) == 32
+        assert sum(
+            json.loads(row["payload"]).get("action_id") == action_id
+            for row in old_window
+        ) == 1
+
+        rejected = consume_world_planner_shadow(store, event_id, home=home)
+        assert rejected["status"] == "SOURCE_OR_RECEIPT_REJECTED"
+        assert store.state("v14.world_jepa.planner_shadow:" + event_id, None)[0] is None
+    finally:
+        store.close()
+
+
+def test_world_planner_fails_closed_above_shared_action_outcome_bound(tmp_path):
+    home = tmp_path / "brain-planner-overbound"
+    store, session = _make_store(home)
+    try:
+        event, action_id, actual = _make_committed_planner_action(
+            store, session, "planner overbound receipt source"
+        )
+        event_id = event["event_id"]
+        generation = event["brain_generation_id"]
+        rows = []
+        for index in range(MAX_ACTION_OUTCOMES_PER_EVENT):
+            packet = contracts.packet(
+                "ActionOutcome", "C6_TEXT", event_id, generation,
+                action_id=f"overbound-{index:04d}", status="FINAL",
+                actual={"action_duration_s": 0.1, "characters": 1},
+            )
+            rows.append((
+                packet["packet_id"], "ActionOutcome", event_id, generation,
+                json.dumps(packet, sort_keys=True, separators=(",", ":")),
+                float(index + 100),
+            ))
+        with store.tx() as connection:
+            connection.executemany(
+                "INSERT INTO packets VALUES (?,?,?,?,?,?)", rows
+            )
+
+        rejected = consume_world_planner_shadow(store, event_id, home=home)
+        assert rejected["status"] == "SOURCE_OR_RECEIPT_REJECTED"
+        assert store.state("v14.world_jepa.planner_shadow:" + event_id, None)[0] is None
+    finally:
+        store.close()
+
