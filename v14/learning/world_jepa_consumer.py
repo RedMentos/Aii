@@ -552,22 +552,53 @@ class WorldJEPAStoreConsumer:
                     raise ValueError("pending T8 row already committed in active checkpoint")
                 prior_fingerprints[action_id] = row["fingerprint"]
                 prior_rows[action_id] = row
-            # Pending rows are new, not-yet-trained receipts. Keep them in the
-            # next fit cohort until a valid source-disjoint split can be formed.
-            new_ids = list(pending_by_id)
+            # Pending rows are retained, but an unchanged cohort is not retrained
+            # on every post-turn callback. Re-enter it only when new verified
+            # evidence arrives; otherwise the same evidence cannot improve.
+            incoming_new_ids = []
             for row in incoming:
                 action_id = row["action_id"]
                 prior_fingerprint = prior_fingerprints.get(action_id)
                 if prior_fingerprint is not None and prior_fingerprint != row["fingerprint"]:
                     raise ValueError("committed T8 receipt changed after learning")
                 if prior_fingerprint is None:
-                    new_ids.append(action_id)
+                    incoming_new_ids.append(action_id)
                     prior_fingerprints[action_id] = row["fingerprint"]
                     pending_by_id[action_id] = row
                     prior_rows[action_id] = row
+            new_ids = list(pending_by_id) if incoming_new_ids else []
             if len(prior_fingerprints) > MAX_TRACKED:
                 raise OverflowError("processed T8 identity budget exhausted; fail closed")
             if not new_ids:
+                if pending_by_id:
+                    if not self.learning_enabled:
+                        return {"status": "LEARNING_DISABLED", "new_receipts": 0,
+                                "verified_receipts": len(receipts), "rejected_receipts": rejected,
+                                "censored_skipped": censored_skipped, "scanned_rows": scanned,
+                                "pending_rows": len(pending_by_id),
+                                "native_body_weights_changed": False}
+                    if optimizer_permission is not True:
+                        return {"status": "PENDING_OPTIMIZER_PERMISSION", "new_receipts": 0,
+                                "verified_receipts": len(receipts), "rejected_receipts": rejected,
+                                "censored_skipped": censored_skipped, "scanned_rows": scanned,
+                                "pending_rows": len(pending_by_id),
+                                "native_body_weights_changed": False}
+                    persisted_cursor = state["scan_cursor"]
+                    if next_cursor > state["scan_cursor"]:
+                        persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                        if persisted != "PERSISTED":
+                            return {"status": persisted, "pending_rows": len(pending_by_id),
+                                    "scan_cursor": state["scan_cursor"],
+                                    "native_body_weights_changed": False}
+                        persisted_cursor = next_cursor
+                    return {
+                        "status": "WAITING_FOR_MORE_T8_DATA", "verified_receipts": len(receipts),
+                        "rejected_receipts": rejected, "censored_skipped": censored_skipped,
+                        "scanned_rows": scanned, "scan_cursor": persisted_cursor,
+                        "has_more": has_more, "processed": len(prior_fingerprints),
+                        "pending_rows": len(pending_by_id),
+                        "native_body_weights_changed": False,
+                    }
                 persisted_cursor = state["scan_cursor"]
                 if (next_cursor > state["scan_cursor"] and self.learning_enabled is True
                         and optimizer_permission is True):
@@ -671,17 +702,50 @@ class WorldJEPAStoreConsumer:
             zero_action_loss = model.prediction_loss(holdout[0], np.zeros_like(holdout[1]), holdout[2])
             if old_holdout_before is not None:
                 old_holdout_after = model.prediction_loss(*old_holdout)
+            fit_steps_after = int(getattr(model, "_fit_steps", 0))
+            parameter_delta = _group_delta(before, after, ("enc", "preds"))
+            ema_delta = _group_delta(before, after, ("tgt",))
+            retention_delta = None if old_holdout_before is None else float(old_holdout_after - old_holdout_before)
+            holdout_improved = bool(holdout_after < holdout_before)
+            negative_controls_separated = bool(
+                holdout_after < shuffled_action_loss and holdout_after < zero_action_loss
+            )
+            utility_gate_accepted = holdout_improved and negative_controls_separated
+            if not utility_gate_accepted:
+                persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                if persisted != "PERSISTED":
+                    return {"status": persisted, "pending_rows": len(pending_by_id),
+                            "scan_cursor": state["scan_cursor"],
+                            "native_body_weights_changed": False}
+                return {
+                    "status": "UTILITY_GATE_REJECTED",
+                    "utility_gate_accepted": False,
+                    "holdout_improved": holdout_improved,
+                    "negative_controls_separated": negative_controls_separated,
+                    "holdout_loss_before": float(holdout_before),
+                    "holdout_loss_after": float(holdout_after),
+                    "shuffled_action_holdout_loss": float(shuffled_action_loss),
+                    "zero_action_holdout_loss": float(zero_action_loss),
+                    "old_holdout_loss_before": None if old_holdout_before is None else float(old_holdout_before),
+                    "old_holdout_loss_after": None if old_holdout_after is None else float(old_holdout_after),
+                    "old_holdout_retention_delta": retention_delta,
+                    "parameter_delta_norm": float(parameter_delta),
+                    "ema_target_delta_norm": float(ema_delta),
+                    "fit_steps_before": fit_steps_before,
+                    "fit_steps_after": fit_steps_after,
+                    "pending_rows": len(pending_by_id),
+                    "scan_cursor": next_cursor,
+                    "native_body_weights_changed": False,
+                    "native_body_consumed": False,
+                    "runtime_wired": False,
+                }
             receiver_heads, receiver_metrics = _fit_role_receivers(model, train, holdout, train_rows, holdout_rows)
             source_sha = _cohort_sha(experience_rows)
             checkpoint_name = "jepa-" + uuid.uuid4().hex + ".npz"
             checkpoint_path = self.home / checkpoint_name
             saved = world_jepa_shadow_checkpoint.save(model, checkpoint_path, source_sha)
             checkpoint_after = _sha(saved.get("sha256"))
-            fit_steps_after = int(getattr(model, "_fit_steps", 0))
-            parameter_delta = _group_delta(before, after, ("enc", "preds"))
-            ema_delta = _group_delta(before, after, ("tgt",))
             previous_updates = int(active["self_state"].get("update_count", 0)) if active else 0
-            retention_delta = None if old_holdout_before is None else float(old_holdout_after - old_holdout_before)
             metrics = {
                 "source_verified": True, "verified_receipts": len(receipts),
                 "rejected_receipts": rejected, "censored_skipped": censored_skipped,
@@ -704,10 +768,12 @@ class WorldJEPAStoreConsumer:
                 "train_holdout_content_disjoint": split["manifest"]["within_supplied_records_content_disjoint"],
                 "holdout_loss_before": float(holdout_before), "holdout_loss_after": float(holdout_after),
                 "holdout_loss_delta": float(holdout_after - holdout_before),
-                "holdout_improved": bool(holdout_after < holdout_before),
+                "holdout_improved": holdout_improved,
                 "shuffled_action_holdout_loss": float(shuffled_action_loss),
                 "zero_action_holdout_loss": float(zero_action_loss),
-                "negative_controls_separated": bool(holdout_after < shuffled_action_loss and holdout_after < zero_action_loss),
+                "negative_controls_separated": negative_controls_separated,
+                "utility_gate_accepted": True,
+                "old_holdout_retained": old_holdout_before is None or old_holdout_after <= old_holdout_before,
                 "old_holdout_loss_before": None if old_holdout_before is None else float(old_holdout_before),
                 "old_holdout_loss_after": None if old_holdout_after is None else float(old_holdout_after),
                 "old_holdout_retention_delta": retention_delta,
