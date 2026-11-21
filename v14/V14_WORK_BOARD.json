@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T18:57:54.377Z",
+  "updated_at": "2026-11-21T18:59:46.366Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -73,8 +73,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "#2237 newest head f92c15674d214edc5c40e89474130d3f2475f3b9 has no exact-head checks attached at this read. Prior d91f468 cohort fixed nested pins but failed old-holdout retention on Python 3.13/3.14 and failed second-update optimizer-state cloning. Normal SleepRuntime merge-push at 728cdc also returns UTILITY_GATE_REJECTED. No accepted parameter update; optimizer/learning gates OFF.",
-      "next_step": "JEPA runs exact CI for f92c156, then proves a real source-disjoint update that improves new-task utility without degrading old-task retention, validates full optimizer/EMA/RNG state, and demonstrates parameter diff, restart equivalence and exact rollback. Do not lower the utility threshold.",
+      "proof_environment": "New JEPA #2247 head e8137fd3d873ee08d7159a32ddd2240ab8f43f31 adds session-bound replay, per-session old-holdout gate and optimizer recovery. Exact CI: 10 successes / 3 failures. Both optimizer-resume Python 3.13/3.14 jobs reject all A-GEM replay arms across three seeds with SESSION_RETENTION_REGRESSED; the checkpoint SHA remains unchanged and consumer returns UTILITY_GATE_REJECTED. Staged Runtime, integrated regression, migration, Lab-Age, owner-read and incremental-JEPA pass; validate-additive is FAIL BY POLICY. No accepted update; gates OFF.",
+      "next_step": "JEPA: preserve strict per-session gate and stable baseline; change the learning/replay mechanism rather than acceptance thresholds. Test a bounded on-demand cohort selector only after explicit matched controls; report per-session loss, exact parameter/checkpoint diff, restart and rollback. Re-run exact 3.13/3.14 matrix after any source change.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21T18:05:08.230Z",
       "latest_candidate_pr": {
@@ -222,8 +222,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Selected trainable adapters/heads and later cross-organ weights; meta update predictor; sandboxed code/structure proposals; independent OS capability boundary; approval, holdout, retention and rollback",
       "acceptance": "Prove a real numeric parameter diff on an approved target, measurable heldout utility and retention, checkpoint/restart/rollback, and cross-organ consumer benefit. Code/structure self-edit remains sandboxed and human-approved; no self-issued permissions.",
-      "proof_environment": "Small Python/NumPy WorldJEPA remains SHADOW. #2237 current f92c156 has no exact-head checks; prior d91f468 fails old-task retention and optimizer-state continuation; normal SleepRuntime acceptance at 728cdc fails. No accepted native B1/B2/C3 weight edits, cross-organ gradients, sparse MoE or code self-edit. All learning/optimizer gates OFF.",
-      "next_step": "JEPA first proves one persistent numeric update with held-out utility and retention, exact gradient/parameter evidence, restart, negative control and rollback. Later native model/weight path remains separately gated; do not activate or swap.",
+      "proof_environment": "#2247 e8137fd adds optimizer recovery and per-session retention; exact checks 10 success / 3 failure. All A-GEM replay arms are rejected for session retention regression across seeds 13/19/43; no checkpoint is committed. No accepted numeric update, native B1/B2/C3 weights, cross-organ gradients, sparse MoE or self-edit. Gates OFF.",
+      "next_step": "JEPA + Core: find a mechanism that improves new-task utility while preserving every old session; use source-disjoint per-session holdouts, zero/uniform/session-contiguous controls, and exact rollback. Do not lower retention or utility thresholds.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 18:04 CET"
     },
@@ -236,8 +236,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
-      "proof_environment": "Bounded SleepRuntime postcommit learner exists but its normal release-candidate positive acceptance is blocked by UTILITY_GATE_REJECTED. #2237 replay cohorts worsen old-task retention; no accepted consolidation, general Dream path or Android lifecycle proof.",
-      "next_step": "Keep Sleep/Dream work separate from Age and resource budgets. Require matched replay, old-task retention, exact checkpoint rollback and restart before any learning activation.",
+      "proof_environment": "SleepRuntime bounded postcommit path remains SHADOW. #2247 adds session-bound replay and per-session gate but all A-GEM candidates are rejected with SESSION_RETENTION_REGRESSED on three seeds; no checkpoint is committed. No accepted Dream consolidation or Android lifecycle proof.",
+      "next_step": "JEPA: test an on-demand replay selector only after per-session retention baseline is stable; keep fixed-budget uniform, zero-replay and session-contiguous comparisons. Preserve Age/resource separation and rollback.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 18:04 CET"
     },
@@ -463,10 +463,10 @@
     "code_release_checks": "PRIOR_EXACT_CODE_RELEASE_CI_19_OF_19_SUCCESS",
     "integrated_code_candidate": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
     "integrated_code_candidate_checks": "EXACT_MERGE_PUSH_18_OF_19; normal SleepRuntime JEPA positive acceptance returns UTILITY_GATE_REJECTED.",
-    "pr2242": "DRAFT_NOT_RELEASED_HEAD_3dc8a19; exact checks 4_FAILURE_3_IN_PROGRESS_6_SUCCESS; blob header corrected and Python3.13 staged audio passes; runtime_deploy STAGER_SHA256 remains stale, causing Python3.14 startup and staged/migration failures; provider revoke cannot cancel C3 and subscription remains optional.",
+    "pr2242": "DRAFT_NOT_RELEASED_HEAD_3DC8A19; blob header fixed and Python3.13 staged-audio passes; Python3.14 startup fails stale runtime_deploy.STAGER_SHA256; staged-runtime/migration fail downstream; 4_FAILURE_3_IN_PROGRESS_6_SUCCESS at last read; pre-lock revoke-cancel and mandatory subscriptions still missing.",
     "pr2244": "DRAFT_STACKED_ON_STALE_4cca498; prior Python3.13/3.14, staged 251/10/47, integrated 424/3/58 pass; manual cancel/close only, not automatic provider-revoke cancellation; rebase after final Core fix.",
-    "pr2243": "DRAFT_HEAD_543349; reported local 3/3 tiny K/V tests; model-lab CI did not execute new test file; explicit workflow step required; B3 PARTIAL_SYMBOLIC_ONLY.",
-    "pr2246": "DRAFT_HEAD_4456; exact staged/integrated/offline-bridge 3/3 success; metadata-only A5 UI ingress with synthetic provider; no Android OS provider/capture/action.",
+    "pr2243": "DRAFT_HEAD_543349; model-lab CI green but does not execute latent_cache_tiny tests; explicit workflow step requested; local tiny K/V 3/3 reported; B3 PARTIAL_SYMBOLIC_ONLY.",
+    "pr2246": "DRAFT_HEAD_273884C; exact staged/integrated/offline-bridge 3/3 success; metadata-only A5 UI lease with synthetic provider; no Android OS provider/capture/action.",
     "pr2237": "HEAD_f92c156; no exact-head checks attached; prior d91f468 cohort failed old-task retention and second-update optimizer clone; gates OFF.",
     "pr2235": "Nested-closure AST attribution blocker; safe-additive FAIL BY POLICY; no merge.",
     "pr2234": "Normal recovery/deployer path drops C4 overlay; non-mergeable; no merge.",
@@ -477,8 +477,9 @@
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_AND_GITHUB_DNS_FAILURE; no local full-suite claim.",
     "p0_chat": "OPEN_ISSUE_1904; real 2+2, B1/B2 offer delivery, 20 mixed Redmi turns, native latency/RSS unverified.",
     "canon_coverage": "1255_HISTORICAL_HEADINGS_PRESERVED; semantic clause mapping incomplete.",
-    "research": "R037 tiny K/V toy mechanism reported locally; explicit CI gap; no product-native B3 claim.",
+    "research": "R037 tiny cross-geometry K/V mechanism reported locally; explicit CI gap. JEPA proposes R040 replay non-monotonicity (Caccia et al., PMLR 330, 2026) and R041 Replay-on-Demand (arXiv:2609.40089, Apache-2.0 code) as method references; not yet in shared ledger. No product-native B3 or Android proof.",
     "user_action_required": "NONE",
-    "boss_docs_commits": "PR2248_BRANCH_HEAD_7462A9B; board/workplan/handoff/coverage updated; exact readback pending."
+    "boss_docs_commits": "PR2248_BRANCH_HEAD_7462A9B; board/workplan/handoff/coverage updated; exact readback pending.",
+    "pr2247": "DRAFT_HEAD_E8137FD; exact CI 10_SUCCESS_3_FAILURE; all A-GEM replay arms rejected per-session old-holdout gate across 3 seeds; no checkpoint commit; stage/migration/Lab-Age/integrated PASS; safe-additive FAIL BY POLICY; learning gates OFF."
   }
 }
