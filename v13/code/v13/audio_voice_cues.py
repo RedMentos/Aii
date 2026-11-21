@@ -383,45 +383,54 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
     """Persist source-bound acoustic cues to A4/C3 under a linearizable consent lease."""
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
-    _require_current_consent_and_reset(runtime, source_id, generation_id, consent_check, consent_receipt, temporal_state, vad_stream)
-    raw = observe_pcm16(
-        pcm, sample_rate, start_ms, consent=True, source_id=source_id, max_seconds=1
-    )
-    segment = raw["segments"][0]
-    cues = extract_voice_cues(pcm, sample_rate)
-    vad_evidence = None
-    if vad_stream is not None:
-        vad_evidence = vad_stream.push_pcm16(
-            pcm, sample_rate=sample_rate,
-            stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
-        )
-        cues["vad"] = validate_vad_evidence(vad_evidence)
-        cues = validate_voice_cues(cues)
-    audio_packet = audio_percept_packet(
-        event_id=event_id,
-        generation_id=generation_id,
-        source_id=source_id,
-        source_sha256=raw["source_ref"]["sha256"],
-        start_ms=segment["start_ms"],
-        end_ms=segment["end_ms"],
-        rms=segment["acoustic"]["rms"],
-        zcr=segment["acoustic"]["zero_crossing_rate"],
-        finality=finality,
-        consent_receipt=consent_receipt,
-    )
-    audio_segment = audio_packet["segments"][0]
-    audio_segment["acoustic"]["voice_cues"] = cues
-    audio_segment["unmeasured"] = [
-        "speaker_identity", "speaker_timbre", "calibrated_speech_probability", "ASR"
-    ]
-
-    source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
-        runtime, event_id, audio_packet
-    )
+    # Acquire the linearizable provider lease before any PCM-derived work.
+    # Revocation must serialize with observe/extract/VAD as well as Store/A4/C3.
+    lease_source_id = source_id
+    lease_receipt = consent_receipt
     with _linearizable_audio_consent_lease(
-        runtime, source_id, generation_id, receipt, consent_check, consent_guard,
-        temporal_state, vad_stream,
+        runtime, lease_source_id, generation_id, lease_receipt, consent_check,
+        consent_guard, temporal_state, vad_stream,
     ):
+        raw = observe_pcm16(
+            pcm, sample_rate, start_ms, consent=True, source_id=source_id, max_seconds=1
+        )
+        segment = raw["segments"][0]
+        cues = extract_voice_cues(pcm, sample_rate)
+        vad_evidence = None
+        if vad_stream is not None:
+            vad_evidence = vad_stream.push_pcm16(
+                pcm, sample_rate=sample_rate,
+                stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
+            )
+            cues["vad"] = validate_vad_evidence(vad_evidence)
+            cues = validate_voice_cues(cues)
+        audio_packet = audio_percept_packet(
+            event_id=event_id,
+            generation_id=generation_id,
+            source_id=source_id,
+            source_sha256=raw["source_ref"]["sha256"],
+            start_ms=segment["start_ms"],
+            end_ms=segment["end_ms"],
+            rms=segment["acoustic"]["rms"],
+            zcr=segment["acoustic"]["zero_crossing_rate"],
+            finality=finality,
+            consent_receipt=consent_receipt,
+        )
+        audio_segment = audio_packet["segments"][0]
+        audio_segment["acoustic"]["voice_cues"] = cues
+        audio_segment["unmeasured"] = [
+            "speaker_identity", "speaker_timbre", "calibrated_speech_probability", "ASR"
+        ]
+
+        source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
+            runtime, event_id, audio_packet
+        )
+        if source_id != lease_source_id or receipt != lease_receipt:
+            _reset_audio_temporal_state(
+                runtime, lease_source_id, generation_id, temporal_state, vad_stream,
+            )
+            raise PermissionError("audio packet binding does not match active consent lease")
+
         _persist_audio_packet_at_consent_commit_boundary(
             runtime, audio_packet, source_id=source_id, generation_id=generation_id,
             receipt=receipt, consent_check=consent_check,
