@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T15:04:30Z",
+  "updated_at": "2026-11-21T15:52:02.964Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Current head 6c444e1 includes #2218 audit/test merge; 19 workflows action_required with zero jobs, not PASS. P0 #1904 open. C4 candidate #2195 dedicated C4 3.13/3.14 and staged/integrated PASS, safe-additive FAIL; disposable overlay with missing modality/malformed/disjoint-redundancy negatives and old base. #2210 C5 SHADOW/source pins fail.",
-      "next_step": "Core: rebase #2195 onto 6c444e1, add modality/malformed/redundant-span negatives, coordinate one date guard with #2210, then wire into normal pinned stage/deployer only after exact CI. Preserve B1/B2 complementary offers and C4→C3; no model drop.",
+      "proof_environment": "Release branch f279286a4453248004c670fcaabecd85da6ab299. PR #2228 normal pinned stage/deployer integration is merged; PR-head staged 251 passed/10 skipped/47 subtests and integrated 424 passed/3 skipped/58 subtests. Exact merge push CI 34/34 check-runs and 19/19 workflows SUCCESS. C4 is a source-span heuristic only; synthetic runner, no native B1/B2 or Redmi evidence. P0 #1904 remains open.",
+      "next_step": "Core: repair #2227's missing post-turn ExperienceRecord in the exact arithmetic Runtime path; the FINAL answer/action/broker pass, but ExperienceRecord is absent after unguarded World observe/self-state calls. Rebase onto the post-#2228 release head, do not duplicate the C4 overlay, and rerun Python 3.13/3.14 plus staged/integrated tests.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 15:05 CET"
+      "last_checkpoint": "2026-11-21 16:50 CET"
     },
     {
       "id": "V14-002",
@@ -28,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Current release-development HEAD f48ca649c126d50076779e044c6627a5f75124e6 (R-025 research-ledger-only) has 29/29 exact check-runs SUCCESS and 24/24 associated workflows SUCCESS. No runtime/weight change in R-025. Private owner-read #407/#408/#409/#410 expired without replies; installed SHA/updater consent UNKNOWN; REDMI_UNVERIFIED. GitHub CI is not a phone receipt.",
-      "next_step": "No duplicate private requests and no manual Termux command. Wait for a future authenticated owner-read receipt; compare installed SHA only after receipt. Keep current device, models, permissions, Age and updater settings untouched.",
+      "proof_environment": "Current release branch f279286a4453248004c670fcaabecd85da6ab299; exact merge push CI 34/34 check-runs and 19/19 workflows SUCCESS. No authenticated owner-read receipt; installed SHA and updater consent UNKNOWN. GitHub CI is not device installation; REDMI_UNVERIFIED.",
+      "next_step": "No user action or manual Termux command. Wait for a future authenticated owner-read receipt; do not issue UPDATE_REQUEST or change device settings until the receipt proves the installed SHA and updater consent.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 15:04 UTC",
+      "last_checkpoint": "2026-11-21 16:50 CET",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -73,10 +73,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2218 merged at 6c444e1. Follow-up PR #2222 exact head 8a1f8c0332610e9ba9295ae1b119d39501eca725; dedicated optimizer-resume run 44914934454 completed SUCCESS on CPython 3.13.18 and 3.14.10. Production Store/SQLite/T8 resume-vs-reset and staged regression are synthetic; no native GGUF body learning, B3 latent receiver or Redmi utility. Learning/optimizer gates remain OFF.",
-      "next_step": "JEPA: continue repeated-seed A→B→A temporal-window/replay comparisons with matched update and replay-byte budgets, source/session/censor boundaries, old/new holdouts, retention, restart and rollback. Keep the optimizer permission OFF.",
+      "proof_environment": "PR #2222 head 78fe63d4fe63d1ec8842075064ad92e8f2fe7371 is diverged from current release f279286a: 5 commits ahead / 26 behind (merge base 99ec5453). Exact optimizer-resume run 44916321909 fails on Python 3.13 and 3.14: fixture lacks master-13/data before Store opens coordinator.lock. Production Store/SQLite experiment remains synthetic; native GGUF weights and Redmi utility unproven; learning/optimizer gates OFF.",
+      "next_step": "JEPA: create the disposable fixture data directory before Store construction (do not alter production locking), rebase onto current release, rerun exact 3.13/3.14 and staged/integrated tests, then continue matched multi-seed A→B→A/replay/retention. Keep gates OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 14:48 UTC",
+      "last_checkpoint": "2026-11-21 16:49 CET",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -159,10 +159,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "QA PR #2223 latest head 5d653f0c2067518decbd4c16c804e4aa185f0040: production checkpoint-publication regressions cover forced EPERM/EACCES fallback, hardlink/renameat2 racing-target EEXIST, and directory-fsync rollback. Pinned Python 3.11.18/3.13.18/3.14.10 matrix 44916974869: 26 passed on each. Current staged/integrated run 44916974849 is still IN_PROGRESS; preceding code-equivalent staged run passed 249/10/47 and integrated 424/3/58. Same-repo guard 44916974760 PASS. Safe-additive 44916974781 FAILS because the PR modifies an existing workflow and V14 board/handoff; no bypass, Boss review required. Local checkout BLOCKED by GitHub DNS; no Android/Redmi proof.",
-      "next_step": "Boss review the explicit workflow invocation/path-filter and V14 handoff changes in #2223; do not waive safe-additive. After current exact-head staged/integrated completion and independent review, merge. Perception+QA still need combined deterministic #2214/#2219 pre-PCM revocation and non-reentrant lease-token proof.",
+      "proof_environment": "PR #2226 head 3868383b4ccac1b709d6310ed69bb53b9e924b47 has five exact CI groups green (RAW EAR, pre-PCM revocation/non-reentrant lease, VAD comparator, privacy, staged/integrated), but it diverges from current release f279286a4453248004c670fcaabecd85da6ab299: 5 ahead / 35 behind. It is caller-supplied PCM only; no mic permission/capture, ASR, TTS/vocoder, full duplex or Redmi proof.",
+      "next_step": "Perception: rebase #2226 on the current release head and reconcile shared V14 docs rather than restoring stale snapshots; rerun the exact consent, RAW EAR, VAD, privacy, staged and integrated checks. Keep microphone capture OFF until a separately tested Android permission path exists.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 15:04 UTC",
+      "last_checkpoint": "2026-11-21 16:49 CET",
       "latest_candidate_pr": {
         "pr": 2155,
         "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
@@ -180,10 +180,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Current release-development HEAD f48ca649c126d50076779e044c6627a5f75124e6 has 29/29 exact check-runs SUCCESS and 24/24 associated workflows SUCCESS; R-025 is research-only. PR #2222 exact Python 3.13/3.14 matrix PASS. QA #2223 latest focused CPython 3.11/3.13/3.14 matrix 26 each PASS; current staged/integrated rerun pending, earlier code-equivalent staged 249/10/47 and integrated 424/3/58 PASS. Same-repo guard PASS; safe-additive fails on workflow/docs scope; Boss review required. No phone installation or release acceptance inferred.",
-      "next_step": "Boss: review #2223's workflow/docs scope without bypassing safe-additive; continue exact-base #2195 and combined RAW EAR producer/QA consumer. Maintain whole-Canon mapping and REDMI_UNVERIFIED.",
+      "proof_environment": "Boss merged #2228 at f279286a4453248004c670fcaabecd85da6ab299 after independent six-file source review and exact pin recomputation. PR-head staged 251/10/47 and integrated 424/3/58 passed; 9/10 checks green, validate-additive failed as expected for critical stage/deployer edits and was manually reviewed, not waived. Exact merge push CI 34/34 check-runs and 19/19 workflows SUCCESS. Whole-Canon semantic mapping incomplete; Redmi unverified.",
+      "next_step": "Boss: finish exact merge push-CI readback; continue cross-agent integration without duplicating C4. Review/rebase #2226, #2227 and #2222 against current head; preserve V13 appendix bytes and keep every Canon family open until its real consumer/evidence is accepted.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 15:04 UTC"
+      "last_checkpoint": "2026-11-21 16:50 CET"
     },
     {
       "id": "V14-008",
@@ -194,10 +194,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "Private #407/#408/#409/#410 all expired without replies. Installed SHA and updater consent UNKNOWN; REDMI_UNVERIFIED.",
-      "next_step": "No user action. Wait for future authenticated owner-read receipt; no duplicate read, manual Termux command or model/permission change.",
+      "proof_environment": "Latest private owner-read request expired and was closed without authenticated response. Installed SHA and updater consent UNKNOWN; REDMI_UNVERIFIED. No user action or device command is needed.",
+      "next_step": "No user action. Wait for a future authenticated receipt; do not ask the user to repeat the same update command or change settings.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 15:05 CET"
+      "last_checkpoint": "2026-11-21 16:49 CET"
     },
     {
       "id": "V14-009",
@@ -208,10 +208,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
-      "proof_environment": "PR #2215 merged at 23ea3ef hardens immutable Android Proposal arguments and rechecks canonical digests at approval/execution. Exact PR-head broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58. Broker remains DRY_RUN_ONLY; no OS executor, authenticated companion, AccessibilityService, MediaProjection, app launch/UI observation/tap/type or Redmi proof. Post-merge push-CI is not yet verified.",
-      "next_step": "Continue API-first Android background/UI companion work with independently authenticated local consent, OS permission checks, cancellation, audit and rollback. Do not interpret Proposal integrity or the audit DB path guard as Android control capability.",
+      "proof_environment": "Android action broker remains DRY_RUN_ONLY; no OS executor, authenticated companion, AccessibilityService, MediaProjection, app launch/UI observation/tap/type, or Redmi proof. RAW EAR #2226 is a caller-supplied PCM candidate and is not microphone capture or speech output.",
+      "next_step": "Core/Perception/QA: continue API-first background action and consent-bound audio integration separately; require OS-level permission, revocation, audit, cancellation and rollback before any live Android control or capture.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 15:05 CET"
+      "last_checkpoint": "2026-11-21 16:49 CET"
     },
     {
       "id": "V14-010",
@@ -222,10 +222,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Selected trainable adapters/heads and later cross-organ weights; meta update predictor; sandboxed code/structure proposals; independent OS capability boundary; approval, holdout, retention and rollback",
       "acceptance": "Prove a real numeric parameter diff on an approved target, measurable heldout utility and retention, checkpoint/restart/rollback, and cross-organ consumer benefit. Code/structure self-edit remains sandboxed and human-approved; no self-issued permissions.",
-      "proof_environment": "#2213 merged as 5a141153f7d33906408fd638ce56cfbee459cf08; exact push CI 30/30 PASS. Persistent Adam/inverse/RNG state now exists for the small numeric WorldJEPA predictor and its Store checkpoint. This is not native GGUF B1/B2/C3 body-weight training, cross-organ gradients, sparse MoE, self-edit or B3 latent coupling. Both runtime learning/optimizer permissions remain OFF; no Android/Redmi proof.",
-      "next_step": "Continue toward genuine target-master/adapters with measured gradients, eligibility × error × modulator × plasticity, replay/meta and eventually controlled cross-organ weight edits. Keep the outer Android/OS boundary independent and learning/optimizer gates OFF. Require multi-seed held-out utility, prior-task retention, restart/rollback and a separate explicit device approval before any native model/weight experiment.",
+      "proof_environment": "Persistent optimizer state for the small numeric WorldJEPA predictor is merged, but no native GGUF B1/B2/C3 weight update, cross-organ gradients, sparse MoE or self-edit is proven. Runtime learning/optimizer gates remain OFF; no Android proof.",
+      "next_step": "Continue measured per-organ parameter/gradient/retention work only in isolated synthetic harnesses until multi-seed utility and rollback pass; keep the independent Android/OS boundary and all productive gates OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 15:05 CET"
+      "last_checkpoint": "2026-11-21 16:49 CET"
     },
     {
       "id": "V14-011",
@@ -261,46 +261,42 @@
       "priority": "P1",
       "status": "READY",
       "owner": "Boss & Integration",
-      "proof_environment": "Historical inventory remains 1,255 headings; V13 appendix unchanged. Evidence overlay includes #2215 merged approval hardening, #2218 merged read-only optimizer audit/test, #2195 C4 staged candidate, #2219/#2214 consent race, #2210 arithmetic blocker and #2213 checkpoint publisher. Semantic clause→code→consumer→test→environment→rollback mapping incomplete.",
-      "next_step": "Continue atomic mapping across all Canon families: W0-W10, A0-A5, B1-B5, C/JEF, latents, attention, world/self/memory, audio/vision, Android background/UI, tools, learning, self-edit, Age, permissions, recovery and UX. Keep code, synthetic, Linux, Android and accepted status distinct.",
-      "last_checkpoint": "2026-11-21 15:05 CET",
+      "proof_environment": "Historical inventory remains 1,255 headings and V13 appendix bytes are preserved. The current C4 evidence is linked to a normal stage/deployer consumer, but semantic clause→code→consumer→test→environment→rollback mapping remains incomplete across the full Canon.",
+      "next_step": "Continue clause-level mapping across W0-W10, A0-A5, B1-B5, C/JEF, latent coupling, attention, world/self/memory, audio/vision, Android background/UI, tools, learning, self-edit, Age, permissions, recovery and UX. Do not infer whole-system acceptance from this one integrated slice.",
+      "last_checkpoint": "2026-11-21 16:49 CET",
       "user_action_required": false
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED — private UPDATE_REQUEST #407, PIPELINE_STATUS #408, DIAGNOSTICS #409 and PIPELINE_STATUS #410 all expired with zero replies. Installed SHA UNKNOWN; updater consent UNKNOWN.",
-  "last_code_release_head": "6c444e1dfdea19583002519a682fd64bca465098",
-  "latest_integrated_head": "f48ca649c126d50076779e044c6627a5f75124e6",
-  "latest_integrated_head_verified_at": "2026-11-21T15:04:30Z",
-  "release_gate_status": "Current release-development HEAD f48ca649c126d50076779e044c6627a5f75124e6 is the R-025 STABLE research-ledger-only note. Exact commit readback: 29/29 check-runs SUCCESS and 24/24 associated workflow runs SUCCESS. This verifies GitHub CI, not a release/device install; no runtime or weights changed in R-025. Previous head 99ec54534fc9e99ce5689d335c80162f018de288 had 30/30 checks SUCCESS. PR #2222 exact Python 3.13/3.14 optimizer-resume run 44914934454 PASS. QA #2223 latest head 5d653f0c2067518decbd4c16c804e4aa185f0040: pinned focused matrix 26 passed on CPython 3.11/3.13/3.14 (44916974869); current staged/integrated run 44916974849 is still in progress; prior code-equivalent staged 249/10/47 and integrated 424/3/58 passed. Same-repo guard 44916974760 PASS; safe-additive 44916974781 FAIL due existing workflow and V14 handoff/board changes; no bypass, Boss review required. NOT_RELEASED / REDMI_UNVERIFIED; installed SHA and updater consent UNKNOWN.",
+  "current_redmi_status": "REDMI_UNVERIFIED — the latest private owner-read request expired and was closed without an authenticated response. Installed SHA and updater consent remain UNKNOWN. No UPDATE_REQUEST, shell action, model change or device mutation occurred.",
+  "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
+  "latest_integrated_head": "f279286a4453248004c670fcaabecd85da6ab299",
+  "latest_integrated_head_verified_at": "2026-11-21T15:50:16.712Z",
+  "release_gate_status": "PR #2228 merged to the release branch at f279286a4453248004c670fcaabecd85da6ab299. Exact PR-head staged-runtime: 251 passed / 10 skipped / 47 subtests; integrated-regression: 424 passed / 3 skipped / 58 subtests. PR-head checks: 9/10 success; validate-additive failed because existing normal stage/deployer files were changed, with direct Boss review recorded (not queued or waived). Exact merge-commit push CI: 34/34 check-runs SUCCESS, 0 failure, 0 pending; 19/19 associated workflows SUCCESS. CI_GREEN_NOT_PHONE_RELEASED / REDMI_UNVERIFIED.",
   "phone_receipt": {
-    "issue": "RedMentos/Aiiii#410",
-    "state": "ALL_PRIVATE_READS_407_408_409_410_EXPIRED_NO_REPLY",
+    "state": "NO_LIVE_RECEIPT_PRIVATE_OWNER_READ_EXPIRED_NO_REPLY",
     "installed_sha": "UNKNOWN",
     "auto_update": "UNKNOWN",
     "redmi_status": "REDMI_UNVERIFIED",
-    "expires_at": 1795271337,
-    "pipeline_status_issue": "RedMentos/Aiiii#410",
-    "diagnostics_issue": "RedMentos/Aiiii#409",
-    "update_request_issue": "RedMentos/Aiiii#407"
+    "last_request": "expired_and_closed_without_authenticated_response"
   },
   "capability_snapshot": [
     {
       "capability": "A0-A5 perception and attention",
-      "code": "RAW_EAR_V3_WITH_PROVIDER_LEASE_BEFORE_PCM_CANDIDATE_NOT_RELEASED",
-      "wired": "STAGED_SYNTHETIC_A5_A4_TO_B1_B2_C3_AUDIO_CONTEXT_CANDIDATE",
-      "tested_synthetic": "PR2219_PRODUCER_TESTS_50_50_ON_OLDER_TEST_HEAD; DETERMINISTIC_QA2214_HEAD_C17E4_FAILS_ON_OLD_PRODUCER; COMBINED_POSTFIX_DETERMINISTIC_TEST_PENDING",
+      "code": "RAW_EAR_CALLER_PCM_CANDIDATE_PR2226_NOT_REBASED",
+      "wired": "SYNTHETIC_CALLER_PCM_TO_A4_C3_CANDIDATE",
+      "tested_synthetic": "PR2226_FIVE_CI_GROUPS_PASS_ON_STALE_BASE",
       "tested_android": "NOT_TESTED",
       "active": "NO_DEVICE_MICROPHONE_OR_NATIVE_BODY_PROOF",
-      "evidence": "PR #2219 producer branch acquires the provider lease before PCM observation/extraction/VAD. The 50/50 pass cited in its handoff predates deterministic QA #2214 head c17e4; exact QA run 44913001796 is red on the old producer as intended. Combined exact-head proof and lock reentrancy contract remain open. No mic/Redmi proof. #2219 broad staged/integrated PASS; deterministic #2214 focused regression still fails on old producer, combined post-fix proof and lock contract pending."
+      "evidence": "PR #2226 currently passes its five exact workflow groups, including pre-PCM consent revocation and non-reentrant lease tests, but its branch is diverged from the current release and must be rebased. It accepts caller-supplied PCM only; no microphone capture or Android permission proof."
     },
     {
       "capability": "B1_DETAIL and B2_GIST bodies",
       "code": "PRESENT_DISTINCT_ROLES",
-      "wired": "SYNTHETIC_AUDIO_CONTEXT_AND_SOURCE_BOUND_QUERY_OFFER_PACKETS; C4_ACCEPTANCE_NOT_PROVEN",
-      "tested_synthetic": "PASS_MOCK_RUNNER_B1_B2_OFFER_PACKETS_AND_C3_AUDIO_CONTEXT",
+      "wired": "SYNTHETIC_OFFER_PACKETS_TO_NORMAL_STAGE_C4_AND_C3_CONTEXT",
+      "tested_synthetic": "PR2228_STAGED_251_10SKIP_47; INTEGRATED_424_3SKIP_58; SOURCE_QUOTE_TO_SPAN_TO_FOCAL_TO_C3",
       "tested_android": "HISTORICAL_FAIL_ISSUE_1904",
-      "active": "NOT_ACCEPTED",
-      "evidence": "Distinct B1/B2 roles remain and #2200 synthetic fake-runner candidate emits source-bound OfferPackets plus C3 context. Current #2200/#2211 consent/revocation chain fails exact tests; no native model inference, measured B1/B2 offer quality, C4-selected acceptance or real C3 use. P0 #1904 remains open."
+      "active": "NOT_ACCEPTED_NO_NATIVE_MODEL_OR_REDMI_PROOF",
+      "evidence": "Distinct B1/B2 roles remain. PR #2228's synthetic Runtime consumer now exercises exact quote→SourceRef→C4 coalition→selected offer→C3 context on the normal pinned stage/deployer path. This verifies wiring with synthetic runners only; native model offer quality, measured 2+2, latency/RSS and Redmi delivery remain unproven. P0 #1904 remains open."
     },
     {
       "capability": "B3 Enlightened Space true latent coupling",
@@ -313,21 +309,21 @@
     },
     {
       "capability": "B4 distributed workspace and C4 coalition",
-      "code": "PARTIAL_SOURCE_SPAN_C4_CANDIDATE_NOT_NORMAL_STAGE",
-      "wired": "SEPARATE_REVIEW_STAGER_ONLY",
-      "tested_synthetic": "PASS_CANDIDATE_STAGED_AND_INTEGRATED_CI",
+      "code": "SOURCE_SPAN_C4_OVERLAY_MERGED_IN_NORMAL_PINNED_STAGE_AT_F279",
+      "wired": "NORMAL_STAGE_BUILDER_AND_RUNTIME_DEPLOYER; SYNTHETIC_RUNTIME_CONSUMER",
+      "tested_synthetic": "PR2228_STAGED_251_10SKIP_47; INTEGRATED_424_3SKIP_58; EXACT_MERGE_PUSH_CI_34_OF_34_SUCCESS",
       "tested_android": "NOT_VERIFIED",
-      "active": "NOT_ACCEPTED",
-      "evidence": "#2195 passes its dedicated/staged/integrated candidate tests but is not in the normal pinned recovery builder/runtime_deploy artifact. Cross-scale zero redundancy is uncalibrated; no disjoint-but-redundant negative control or Redmi offer utility."
+      "active": "NOT_PHONE_VERIFIED",
+      "evidence": "PR #2228 merges a source-span C4 redundancy discount into the normal pinned stage/deployer. It discounts only cross-scale B1/B2 redundancy when source ID, digest and modality match, spans are disjoint and lexical overlap is low; malformed/mismatched/overlapping/missing/redundant cases retain the prior penalty. The Runtime test uses synthetic runners. It is a heuristic, not trained latent integration or semantic proof. Exact merge push CI is now fully green (all check-runs and associated workflows); no Redmi utility."
     },
     {
       "capability": "C1/JEF/C2/C3 control and language output",
       "code": "PRESENT",
-      "wired": "PARTIAL_NORMAL_RUNTIME; AUDIO_CONTEXT_CONSUMER_CANDIDATE_BLOCKED; EXACT_ARITHMETIC_C5_CANDIDATE_NOT_MERGED",
-      "tested_synthetic": "JEPA_RUNTIME_SYNTHETIC_PASS; ARITHMETIC_UNIT_PASS_BUT_RUNTIME_CI_FAILS; AUDIO_REVOCATION_FAILS",
+      "wired": "C4_SOURCE_SPAN_NORMAL_STAGE_INTEGRATED; C5_EXACT_ARITHMETIC_CANDIDATE_FAILS_POSTTURN_EXPERIENCE",
+      "tested_synthetic": "C4_STAGED_251_INTEGRATED_424; CORE2227_EXACT_ARITHMETIC_FINAL_ANSWER_AND_BROKER_PASS_BUT_EXPERIENCERECORD_MISSING",
       "tested_android": "HISTORICAL_FAIL_ISSUE_1904",
       "active": "UNKNOWN",
-      "evidence": "P0 #1904 still records wrong 2+2/slow turns and missing real offers. #2210 exact arithmetic candidate passes its unit tests but fails staged/integrated builder pins and Python 3.14 C5 SHADOW action selection (C3 wins instead of BOOT B1 on a detail route). #2200/#2211 audio revocation tests fail. No native C3 correctness/latency acceptance."
+      "evidence": "C4 is now in the normal pinned stage candidate. Core #2227 exact arithmetic Runtime test reaches FINAL output, ActionSelection, Broker and Egress, but its ExperienceRecord packet is absent; exact staged test fails on Python 3.13/3.14. P0 #1904 remains open for correct native 2+2 and B1/B2→C4→C3 utility."
     },
     {
       "capability": "World/Self/Memory/JEPA numeric learner",
@@ -358,12 +354,12 @@
     },
     {
       "capability": "VOICE_AUDIO input and speech output",
-      "code": "RAW_EAR_V3_AND_A5_RUNTIME_CANDIDATE_NOT_RELEASED; TTS_VOCODER_NOT_IMPLEMENTED",
-      "wired": "SYNTHETIC_CALLER_PCM16_A5_A4_TO_B1_B2_C3_CANDIDATE",
-      "tested_synthetic": "PR2207_RAW_EAR_49_PY311_313; COMPARATOR_8_PY313_314; LIBFVAD_NATIVE_LINUX_13; AUDIO_CONTEXT_REVOCATION_2_FAILS_PY311_313",
+      "code": "RAW_EAR_CALLER_PCM_CANDIDATE_PR2226_STALE_BASE; TTS_VOCODER_NOT_IMPLEMENTED",
+      "wired": "SYNTHETIC_CALLER_PCM_A5_A4_C3_CANDIDATE",
+      "tested_synthetic": "PR2226_RAW_EAR_CONSENT_VAD_PRIVACY_STAGED_INTEGRATED_PASS_ON_STALE_BASE",
       "tested_android": "NOT_TESTED",
       "active": "NO_MICROPHONE_OR_SPEECH_OUTPUT_PROOF",
-      "evidence": "#2207 provider-side lease candidate passes producer tests. #2200/#2211 downstream revocation is still failing: derived audio context remains in process memory and C3 prompt after consent is revoked. No mic capture, ASR, speech decoder/vocoder, full-duplex or Redmi proof. #2219 now leases before PCM transforms, but deterministic QA #2214 head c17e4 fails on old producer and the combined post-fix test is pending. No microphone, ASR, TTS/vocoder, full duplex or Redmi proof. Deterministic pre-PCM revocation QA remains red on old producer; no post-fix combined test, mic, ASR, TTS/vocoder or Redmi proof."
+      "evidence": "PR #2226's current branch has green RAW EAR, consent-revocation/non-reentrant lease, VAD comparator, privacy and staged/integrated checks, but is diverged from current release and not merged. Caller-supplied PCM only; no mic capture, ASR, speech decoder/vocoder, full-duplex or Redmi proof."
     },
     {
       "capability": "ANDROID_BACKGROUND_CONTROL",
@@ -412,12 +408,12 @@
     },
     {
       "capability": "Updater/install/rollback",
-      "code": "RELEASE_DEVELOPMENT_HEAD_23EA3EF_POSTMERGE_PUSH_CI_UNKNOWN",
+      "code": "RELEASE_BRANCH_F279_MERGE_PUSH_CI_GREEN_NOT_PHONE_RELEASED",
       "wired": "BRANCH_UPDATE_PIPELINE_PRESENT; OWNER_READ_RECEIPTS_PENDING",
-      "tested_synthetic": "PR2215_HEAD_TESTS_PASS; EXACT_POSTMERGE_PUSH_CI_NOT_VERIFIED",
+      "tested_synthetic": "PR2228_HEAD_STAGED_251_10SKIP_47_INTEGRATED_424_3SKIP_58; MERGE_PUSH_CI_34_OF_34_SUCCESS",
       "tested_android": "NO_AUTHENTICATED_RECEIPT",
       "active": "UNKNOWN_DEVICE_INSTALL_STATE",
-      "evidence": "Current branch head 6c444e1; 19 associated workflows action_required, no jobs; not a PASS. Code-bearing #2215 PR-head CI passed, post-merge push-CI unknown. Private #407-#410 expired without reply; installed SHA/updater consent unknown."
+      "evidence": "Release branch f279286a4453248004c670fcaabecd85da6ab299 is the exact merged head for #2228. All 34/34 merge-commit check-runs and 19/19 associated workflows are SUCCESS. No authenticated device receipt, installed SHA or updater consent. NOT_PHONE_RELEASED / REDMI_UNVERIFIED."
     },
     {
       "capability": "Two genuinely different sparse MoE bodies",
@@ -439,21 +435,23 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-21T14:33:32.989Z",
-    "branch_head": "6c444e1dfdea19583002519a682fd64bca465098",
-    "code_bearing_release_sha": "23ea3efc7d1951e20664ce6d07883141e9b601c5",
-    "merged_pr2218": "MERGED_READ_ONLY_AUDIT_AND_TEST_AT_6C444E1",
-    "merge_workflows": "19_ACTION_REQUIRED_ZERO_JOBS_NOT_PASS",
-    "pr2218_head_tests": "SAFE_ADDITIVE_STAGED_INTEGRATED_PASS; DEDICATED_CURRENT_HEAD_PY313_PY314_MISSING",
-    "pr2195": "DEDICATED_C4_PY313_PY314_AND_STAGED_INTEGRATED_PASS; SAFE_ADDITIVE_FAIL; OVERLAY_NOT_NORMAL_STAGE; MISSING_NEGATIVES",
-    "pr2219": "BROAD_STAGED_INTEGRATED_PASS; DETERMINISTIC_QA_POSTFIX_RUN_PENDING; LOCK_CONTRACT_OPEN",
-    "pr2210": "C5_SHADOW_AND_PIN_FAILURES_NOT_MERGED",
-    "pr2198_2205": "CLOSED_SUPERSEDED_BY_2213; CHECKPOINT_ADVERSARIAL_TEST_GAP_RETAINED",
+    "timestamp": "2026-11-21T15:50:16.712Z",
+    "branch_head": "f279286a4453248004c670fcaabecd85da6ab299",
+    "code_bearing_release_sha": "f279286a4453248004c670fcaabecd85da6ab299",
+    "pr2228": "MERGED_DIRECT_BOSS_REVIEW",
+    "pr2228_head": "3a20b5afde00eb6ac1cba8b03f952b3ec168570a",
+    "pr2228_merge_ci": "34/34_SUCCESS_0_FAIL_0_PENDING",
+    "pr2228_pr_head_tests": "STAGED_251_PASSED_10_SKIPPED_47_SUBTESTS; INTEGRATED_424_PASSED_3_SKIPPED_58_SUBTESTS",
+    "pr2228_policy": "VALIDATE_ADDITIVE_FAIL_ON_CRITICAL_NORMAL_STAGE_DEPLOYER_PATHS; MANUAL_REVIEW_RECORDED; NOT_QUEUED_OR_WAIVED",
+    "pr2226": "HEAD_3868383_GREEN_FIVE_CI_GROUPS; DIVERGED_5_AHEAD_35_BEHIND_RELEASE_REBASE_REQUIRED",
+    "pr2227": "HEAD_3214238_STAGED_FAIL_PY313_PY314_EXPERIENCERECORD_MISSING; DIVERGED_16_AHEAD_12_BEHIND_F279",
+    "pr2222": "HEAD_78FE63D4_FAIL_PY313_PY314_FIXTURE_DATA_DIR_MISSING; DIVERGED_5_AHEAD_26_BEHIND_F279",
     "redmi": "REDMI_UNVERIFIED",
-    "private_owner_read": "Aiiii_407_408_409_410_EXPIRED_NO_REPLY",
-    "local_full_suite": "BLOCKED_GITHUB_DNS_NO_LOCAL_AII_CHECKOUT",
+    "private_owner_read": "EXPIRED_NO_AUTHENTICATED_REPLY; CLOSED",
+    "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_GITHUB_DNS",
     "p0_chat": "OPEN_ISSUE_1904",
     "canon_coverage": "1255_HISTORICAL_HEADINGS; SEMANTIC_CLAUSE_MAPPING_INCOMPLETE",
-    "user_action_required": "Resolve exact-head GitHub workflow action_required gate if post-merge CI is to run; no approval control available in this run."
+    "user_action_required": "NONE",
+    "pr2228_push_workflows": "19/19_SUCCESS"
   }
 }
