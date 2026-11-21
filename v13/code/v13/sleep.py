@@ -694,16 +694,34 @@ class SleepRuntime:
                 result['status']='PARTIAL'
             metrics=learning.get('metrics') if type(learning) is dict else None
             metrics=metrics if type(metrics) is dict else {}
+            learning_status=learning.get('status')
+            if learning_status=='UPDATED_EXPERIMENTAL_WORLD_JEPA':
+                telemetry_status='PASS'
+            elif learning_status in {'UTILITY_GATE_REJECTED','RETENTION_GATE_REJECTED'}:
+                telemetry_status='REJECTED'
+            elif learning_status in {'OFF','LEARNING_DISABLED','PENDING_OPTIMIZER_PERMISSION'}:
+                telemetry_status='UNAVAILABLE'
+            elif learning_status=='CANCELLED':
+                telemetry_status='CANCELLED'
+            elif learning_status=='ERROR':
+                telemetry_status='ERROR'
+            else:
+                telemetry_status='PENDING'
             self.r.store.log('v14_world_jepa_postcommit',event_id,{
-                'action_status':action_status,
-                'learning_status':learning.get('status','UNKNOWN'),
-                'planner_status':planner.get('status','UNKNOWN'),
-                'checkpoint_sha256':planner.get('checkpoint_sha256') or learning.get('checkpoint_sha256'),
-                'parameter_delta_norm':metrics.get('parameter_delta_norm',0.0),
-                'ema_target_delta_norm':metrics.get('ema_target_delta_norm',0.0),
-                'verified_receipts':learning.get('verified_receipts',0),
-                'native_body_weights_changed':False,
-                'decision_authority':'NONE',
+                # Store.telemetry_metrics is an explicit allowlist. Use its
+                # established scalar names so these diagnostics survive the
+                # privacy filter instead of being silently discarded.
+                'status':telemetry_status,
+                'component':'world_predictor',
+                'mode':'shadow',
+                'sha256':planner.get('checkpoint_sha256') or learning.get('checkpoint_sha256'),
+                'optimizer_steps':metrics.get('fit_steps_after',0),
+                'target_changed':float(metrics.get('ema_target_delta_norm',0.0))>0.0,
+                'loss_before':metrics.get('holdout_loss_before'),
+                'loss_after':metrics.get('holdout_loss_after'),
+                'count':metrics.get('verified_receipts',learning.get('verified_receipts',0)),
+                'decision':'none',
+                'native_body_parameters_modified':False,
             })
             if cancel_check():
                 result['status']='CANCELLED'
