@@ -279,6 +279,9 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         second = sleep._run_world_jepa(second_events[-1], limit=256)
         assert second["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         second_metrics = second["learning"]["metrics"]
+        assert second_metrics["line_search_mode"] == "POST_FIT_PARAMETER_INTERPOLATION"
+        assert second_metrics["line_search_optimizer_passes"] == 1
+        assert 1 <= second_metrics["backtracking_attempts"] <= 9
         assert second_metrics["old_retention_target_reference"] == "PRE_UPDATE_EMA_SNAPSHOT"
         assert len(second_metrics["old_retention_target_sha256"]) == 64
         assert second_metrics["new_train_rows"] >= 48
