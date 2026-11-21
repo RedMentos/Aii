@@ -146,6 +146,11 @@ class TemporalReadout:
                     f.flush()
                     os.fsync(f.fileno())
                 os.replace(tmp, self.path)
+                dfd = os.open(self.path.parent, os.O_RDONLY)
+                try:
+                    os.fsync(dfd)
+                finally:
+                    os.close(dfd)
                 self.weights = dict(data["weights"])
                 self.ema = dict(data["ema"])
                 self.seen = list(data["seen"])
