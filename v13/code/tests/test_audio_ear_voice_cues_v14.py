@@ -1,4 +1,4 @@
-"""Synthetic RAW EAR voice-cue extraction and real A4/C3 bridge regressions."""
+"""Synthetic RAW EAR voice-cue extraction and real A4/C3 adapter regressions."""
 import math
 import random
 import struct
@@ -6,9 +6,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from v13.audio_ear import observe_pcm16
-from v13.audio_percept_contract import audio_percept_packet, validate_voice_cues
-from v13.audio_perception_bridge import admit_audio_packet, consume_audio_packet, consume_pcm16_window
+from v13.audio_voice_cues import (
+    consume_pcm16_voice_window,
+    extract_voice_cues,
+    validate_voice_cues,
+)
 from v13.store import Store
 
 
@@ -55,51 +57,39 @@ def attention_count(store, event_id):
 
 
 def test_voiced_tone_yields_bounded_pitch_and_voicing_cues():
-    raw = observe_pcm16(tone(140), 16000, 100, consent=True, source_id=SOURCE_ID, max_seconds=1)
-    acoustic = raw["segments"][0]["acoustic"]
-    cues = acoustic["voice_cues"]
+    cues = extract_voice_cues(tone(140), 16000)
     assert cues["activity_hint"] == "VOICED"
     assert 125 <= cues["f0_median_hz"] <= 155
     assert cues["voiced_fraction"] >= 0.8
     assert cues["voicing_confidence"] >= 0.55
     assert cues["frame_count"] <= 50
-    assert raw["segments"][0]["transcript"] is None
-    assert raw["segments"][0]["speaker_identity"] is None
-    assert "speaker_id" not in cues and "speaker_identity" not in cues
 
 
-def test_noise_silence_and_impulse_are_not_misreported_as_voiced_speech():
-    noise = observe_pcm16(white_noise(), 16000, 0, consent=True, source_id=SOURCE_ID, max_seconds=1)
+def test_noise_silence_and_impulse_are_not_misreported_as_voiced():
     silence_pcm = struct.pack("<" + "h" * 8000, *([0] * 8000))
-    silence = observe_pcm16(silence_pcm, 8000, 0, consent=True, source_id=SOURCE_ID, max_seconds=1)
     impulse_samples = [0] * 8000
     impulse_samples[1000] = 16000
     impulse_pcm = struct.pack("<" + "h" * 8000, *impulse_samples)
-    impulse = observe_pcm16(impulse_pcm, 8000, 0, consent=True, source_id=SOURCE_ID, max_seconds=1)
-    assert noise["segments"][0]["acoustic"]["voice_cues"]["activity_hint"] == "UNVOICED_NOISE"
-    assert silence["segments"][0]["acoustic"]["voice_cues"]["activity_hint"] == "SILENCE"
-    assert impulse["segments"][0]["acoustic"]["voice_cues"]["activity_hint"] == "IMPULSIVE"
+    assert extract_voice_cues(white_noise(), 16000)["activity_hint"] == "UNVOICED_NOISE"
+    assert extract_voice_cues(silence_pcm, 8000)["activity_hint"] == "SILENCE"
+    assert extract_voice_cues(impulse_pcm, 8000)["activity_hint"] == "IMPULSIVE"
 
 
 def test_pitch_estimate_is_stable_across_supported_sample_rates():
     for sample_rate in (8000, 16000, 48000):
-        raw = observe_pcm16(
-            tone(180, sample_rate=sample_rate), sample_rate, 0,
-            consent=True, source_id=SOURCE_ID, max_seconds=1,
-        )
-        f0 = raw["segments"][0]["acoustic"]["voice_cues"]["f0_median_hz"]
-        assert f0 is not None and 160 <= f0 <= 200
+        cues = extract_voice_cues(tone(180, sample_rate=sample_rate), sample_rate)
+        assert cues["f0_median_hz"] is not None and 160 <= cues["f0_median_hz"] <= 200
 
 
-def test_voice_cues_flow_to_real_a4_and_c3_without_transcript_or_identity(tmp_path):
+def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path):
     runtime, event = make_runtime(tmp_path)
     pcm = tone(140)
     try:
-        result = consume_pcm16_window(
+        result = consume_pcm16_voice_window(
             runtime, pcm, sample_rate=16000, start_ms=100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, token_budget=512,
+            consent_check=consent_ok, finality="FINAL", token_budget=512,
         )
         segment = result["packet"]["segments"][0]
         cues = segment["acoustic"]["voice_cues"]
@@ -112,6 +102,8 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_transcript_or_identity(tmp_pa
         assert segment["asr_transcript"] is None
         assert segment["learning_authority"] is False
         assert segment["action_authority"] is False
+        assert "speaker_identity" in segment["unmeasured"]
+        assert "speaker_id" not in cues and "speaker_identity" not in cues
         assert cues["method"] == "RAW_EAR_AUTOCORR_V1"
         assert packet_count(runtime.store, event["event_id"]) == 1
         assert attention_count(runtime.store, event["event_id"]) == 1
@@ -124,11 +116,11 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_transcript_or_identity(tmp_pa
 def test_provisional_voice_cues_remain_a4_only(tmp_path):
     runtime, event = make_runtime(tmp_path)
     try:
-        result = consume_pcm16_window(
+        result = consume_pcm16_voice_window(
             runtime, tone(140), sample_rate=16000, start_ms=100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, token_budget=512, finality="PROVISIONAL",
+            consent_check=consent_ok, finality="PROVISIONAL", token_budget=512,
         )
         assert result["a4"]["finality"] == "PROVISIONAL"
         assert result["a4"]["voice_activity_hint"] == "VOICED"
@@ -140,52 +132,25 @@ def test_provisional_voice_cues_remain_a4_only(tmp_path):
         runtime.store.close()
 
 
-def test_tampered_voice_cues_fail_before_store_or_attention(tmp_path):
-    runtime, event = make_runtime(tmp_path)
-    raw = observe_pcm16(tone(140), 16000, 100, consent=True, source_id=SOURCE_ID, max_seconds=1)
-    segment = raw["segments"][0]
-    cues = dict(segment["acoustic"]["voice_cues"])
+def test_tampered_voice_cues_fail_validation():
+    cues = extract_voice_cues(tone(140), 16000)
     cues["f0_median_hz"] = 900.0
     with pytest.raises(ValueError, match="voice cue range"):
         validate_voice_cues(cues)
-    packet = audio_percept_packet(
-        event_id=event["event_id"], generation_id=event["brain_generation_id"],
-        source_id=SOURCE_ID, source_sha256=raw["source_ref"]["sha256"],
-        start_ms=segment["start_ms"], end_ms=segment["end_ms"],
-        rms=segment["acoustic"]["rms"], zcr=segment["acoustic"]["zero_crossing_rate"],
-        voice_cues=segment["acoustic"]["voice_cues"], finality="FINAL",
-        consent_receipt=RECEIPT,
-    )
-    packet["segments"][0]["acoustic"]["voice_cues"]["f0_median_hz"] = 900.0
+
+
+def test_revoked_consent_has_no_store_or_attention_side_effect(tmp_path):
+    runtime, event = make_runtime(tmp_path)
     try:
-        with pytest.raises(ValueError, match="voice cue range"):
-            consume_audio_packet(runtime, event["event_id"], packet, consent_check=consent_ok)
+        with pytest.raises(PermissionError):
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=lambda source, receipt: False,
+                finality="FINAL", token_budget=512,
+            )
         assert packet_count(runtime.store, event["event_id"]) == 0
         assert attention_count(runtime.store, event["event_id"]) == 0
-    finally:
-        runtime.store.close()
-
-
-def test_legacy_packet_without_voice_cues_remains_compatible(tmp_path):
-    runtime, event = make_runtime(tmp_path)
-    pcm = struct.pack("<" + "h" * 80, *([1000, -1000] * 40))
-    raw = observe_pcm16(pcm, 8000, 0, consent=True, source_id=SOURCE_ID, max_seconds=1)
-    segment = raw["segments"][0]
-    packet = audio_percept_packet(
-        event_id=event["event_id"], generation_id=event["brain_generation_id"],
-        source_id=SOURCE_ID, source_sha256=raw["source_ref"]["sha256"],
-        start_ms=segment["start_ms"], end_ms=segment["end_ms"],
-        rms=segment["acoustic"]["rms"], zcr=segment["acoustic"]["zero_crossing_rate"],
-        finality="FINAL", consent_receipt=RECEIPT,
-    )
-    try:
-        result = consume_audio_packet(runtime, event["event_id"], packet, consent_check=consent_ok)
-        admission = admit_audio_packet(
-            runtime, event["event_id"], packet, consent_check=consent_ok, token_budget=512
-        )
-        assert result["voice_activity_hint"] == "UNMEASURED"
-        assert admission.status == "ADMITTED"
-        assert packet_count(runtime.store, event["event_id"]) == 1
-        assert attention_count(runtime.store, event["event_id"]) == 1
     finally:
         runtime.store.close()
