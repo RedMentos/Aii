@@ -162,3 +162,15 @@ V14_WORK_BOARD.json now marks V14-005 IN_PROGRESS_PARTIAL and links PR #2142 plu
 Review of the merged A5 source and Core staged consumer confirms the present acoustic path is deliberately bounded and consent-rechecked, but its measured feature vector is still only RMS/peak/zero-crossing rate. The canonical packet explicitly labels pitch, speaker, speech probability and prosody as unmeasured. The staged consumer rechecks the consent provider at packet admission, context creation and each B1/B2/C3 read; raw PCM and the callback remain process-local in the candidate overlay. This is a useful partial A5 path, not full voice/perception completion.
 
 Next implementation hypothesis: add a low-cost framed acoustic feature layer (energy contour, autocorrelation F0/voicing confidence, pause/speech-nonspeech probability, spectral centroid/rolloff and prosodic slope) with explicit per-window time/finality and source digest. Avoid person identification; use only a non-identifying speaker-change/turn-boundary cue if consented. Benchmark CPU/RSS on ARM before considering it for Redmi. Do not mark Android microphone, speech decoding, diarization, full-duplex or live prosody as implemented from these synthetic PCM tests.
+
+
+### A5 timed-audio contract review — 2026-11-21: preserve provisional/final state across Runtime
+
+Review of Core PR #2144 found a real promotion risk at the Runtime boundary:
+- The staged `audio_window` exact-field schema has no `finality` field.
+- The overlay calls `consume_pcm16_window(...)` without its `finality` argument; the existing bridge defaults that argument to `FINAL`.
+- Consequently a caller-supplied partial/provisional audio window cannot remain `PROVISIONAL` through the normal Runtime path. The downstream `audio_to_admission()` and `Percept.final` gate can exclude provisional packets only if the producer passes the correct state.
+- Review comment posted on Core PR #2144 requesting an explicit validated `PROVISIONAL|FINAL` field, pass-through, and tests: provisional remains visible to A4 as provisional but is not admitted to B1/B2/C3; final may be admitted; revocation still blocks each consumer.
+- Consent rechecks are present in the staged path at admission, context creation and per-consumer reads. This is a positive partial result, not microphone/Android proof.
+- The current base RAW EAR extractor still reports RMS/peak/zero-crossing rate only. Pitch, voicing, speech/non-speech probability, prosody and speaker-change cues are explicitly unmeasured. Avoid claiming complete RAW EAR/voice from the PCM fixture.
+- No Core-owned code was changed in this review. Next Perception implementation should add low-cost time-windowed energy/F0/voicing/prosody signals and a non-identifying speaker-change cue, then benchmark CPU/RSS/latency on ARM before wiring. Native Redmi and microphone remain UNVERIFIED.
