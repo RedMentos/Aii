@@ -296,6 +296,69 @@ class RuntimeDeploymentTests(unittest.TestCase):
             self.assertFalse(pipeline.enabled())
 
 
+    def test_second_deploy_rollback_restores_previous_launcher_and_marker(self):
+        self._run()
+        first_launcher = self.launcher.read_bytes()
+        first_marker = (self.private / d.MARKER_NAME).read_bytes()
+        second_commit = "e" * 40
+        with mock.patch.object(d, "_source",
+                               return_value=(self.checkout, self.code, second_commit)):
+            second = d.deploy(self.checkout, home=self.home, private=self.private,
+                              builds=self.builds, ci_verified=True)
+        self.assertEqual(second["status"], "DEPLOYED")
+        current_launcher = self.launcher.read_bytes()
+        current_marker = json.loads((self.private / d.MARKER_NAME).read_text())
+        self.assertNotEqual(current_launcher, first_launcher)
+        self.assertEqual(Path(current_marker["backup_launcher"]).read_bytes(), first_launcher)
+        self.assertEqual(Path(current_marker["backup_marker"]).read_bytes(), first_marker)
+
+        receipt = d.rollback(home=self.home, private=self.private, builds=self.builds)
+        self.assertEqual(receipt["status"], "ROLLED_BACK")
+        self.assertEqual(self.launcher.read_bytes(), first_launcher)
+        self.assertEqual((self.private / d.MARKER_NAME).read_bytes(), first_marker)
+        self.assertEqual((self.home / "models/model.gguf").read_bytes(), b"GGUF_NOT_A_REAL_MODEL")
+        self.assertEqual((self.home / "data/db/brain.sqlite3").read_bytes(), b"EXISTING_DB_DO_NOT_CHANGE")
+
+    def test_first_install_rollback_restores_original_launcher_and_removes_marker(self):
+        self.assertEqual(self._run()["status"], "DEPLOYED")
+        receipt = d.rollback(home=self.home, private=self.private, builds=self.builds)
+        self.assertEqual(receipt["status"], "ROLLED_BACK_LEGACY")
+        self.assertEqual(self.launcher.read_bytes(), self.old)
+        self.assertFalse((self.private / d.MARKER_NAME).exists())
+        self.assertEqual((self.home / "models/model.gguf").read_bytes(), b"GGUF_NOT_A_REAL_MODEL")
+        self.assertEqual((self.home / "data/db/brain.sqlite3").read_bytes(), b"EXISTING_DB_DO_NOT_CHANGE")
+
+    def test_tampered_backup_launcher_fails_closed_without_switch(self):
+        self._run()
+        with mock.patch.object(d, "_source",
+                               return_value=(self.checkout, self.code, "e" * 40)):
+            d.deploy(self.checkout, home=self.home, private=self.private,
+                     builds=self.builds, ci_verified=True)
+        current_launcher = self.launcher.read_bytes()
+        current_marker = (self.private / d.MARKER_NAME).read_bytes()
+        record = json.loads(current_marker)
+        Path(record["backup_launcher"]).write_bytes(b"#!/bin/sh\necho tampered\n")
+        with self.assertRaisesRegex(d.RuntimeDeployError, "launcher backup integrity"):
+            d.rollback(home=self.home, private=self.private, builds=self.builds)
+        self.assertEqual(self.launcher.read_bytes(), current_launcher)
+        self.assertEqual((self.private / d.MARKER_NAME).read_bytes(), current_marker)
+
+    def test_active_runtime_refuses_rollback_before_mutation(self):
+        self._run()
+        with mock.patch.object(d, "_source",
+                               return_value=(self.checkout, self.code, "e" * 40)):
+            d.deploy(self.checkout, home=self.home, private=self.private,
+                     builds=self.builds, ci_verified=True)
+        current_launcher = self.launcher.read_bytes()
+        current_marker = (self.private / d.MARKER_NAME).read_bytes()
+        with mock.patch.object(d, "_check_stopped",
+                               side_effect=d.RuntimeDeployError("running")):
+            with self.assertRaisesRegex(d.RuntimeDeployError, "running"):
+                d.rollback(home=self.home, private=self.private, builds=self.builds)
+        self.assertEqual(self.launcher.read_bytes(), current_launcher)
+        self.assertEqual((self.private / d.MARKER_NAME).read_bytes(), current_marker)
+
+
 class RuntimeSourcePreparationTests(unittest.TestCase):
     """Real Git fixtures exercise old/missing checkouts, without network."""
 
