@@ -13,7 +13,8 @@ from v13 import contracts, world_jepa, world_model
 from v13.store import Store
 from v13.world_jepa_store_authority import verify_committed_transition_page, verify_committed_transitions
 from v13.world_jepa_consumer import WorldJEPAStoreConsumer, _source_disjoint_split
-from v13.world_jepa_runtime import (DEFAULT_PERMISSIONS, PERMISSION_KEY, consume_after_commit, receiver_readout, memory_recall)
+from v13.world_jepa_runtime import (DEFAULT_PERMISSIONS, PERMISSION_KEY, consume_after_commit, receiver_readout, memory_recall, receiver_matrix)
+from v13.world_jepa_planner import consume_world_planner_shadow, read_world_planner_shadow
 
 
 def _make_store(home):
@@ -719,5 +720,123 @@ def test_verified_t8_receipt_preserves_complete_source_ref(tmp_path):
         assert len(receipts) == 16
         source_ref = receipts[0].source_ref
         assert {"source_id", "sha256", "char_start", "char_end", "modality"} <= set(source_ref)
+    finally:
+        store.close()
+
+
+def test_postcommit_world_planner_consumes_numeric_b1_b2_receivers_without_opening_learning_gates(tmp_path):
+    home = tmp_path / "brain-planner"
+    store, session = _make_store(home)
+    try:
+        _add_transitions(store, session, 0, 256)
+        learner = WorldJEPAStoreConsumer(
+            store, home / "world_jepa", learning_enabled=True, seed=13, ensemble=2
+        )
+        trained = learner.update(limit=256, steps=120, optimizer_permission=True)
+        assert trained["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        active_before, _ = store.state("v14.world_jepa.store_consumer", None)
+        checkpoint_before = active_before["active"]["checkpoint_sha256"]
+
+        text = "current planner receiver source with exact source binding"
+        event = store.event(session, text)
+        action_id = store.start_action(
+            event["event_id"],
+            event["brain_generation_id"],
+            forecast={"input_chars": len(text), "resource_state": "NORMAL"},
+        )
+        store.finish_action(
+            action_id, "FINAL", {"action_duration_s": 0.75, "characters": 38}
+        )
+
+        result = consume_after_commit(
+            store, home, limit=64, event_id=event["event_id"]
+        )
+        assert result["status"] == "OFF"  # default local learning/optimizer gates remain closed
+        shadow = result["planner_shadow"]
+        assert shadow["status"] == "SHADOW_PLANNER_READY"
+        assert shadow["persisted"] is True
+        assert shadow["decision_authority"] == "NONE"
+        assert shadow["dispatch"] is False
+        assert shadow["native_body_consumed"] is False
+        assert shadow["native_body_weights_changed"] is False
+        assert shadow["representation"] == "NUMERIC_ROLE_READOUTS_NOT_NATIVE_BODY_LATENT"
+        assert len(shadow["ranked_actions"]) == len(world_model.ACTIONS)
+        assert all(
+            item["status"] == "READY"
+            and item["B1_DETAIL"]["status"] == "SHADOW_READOUT_ONLY"
+            and item["B2_GIST"]["status"] == "SHADOW_READOUT_ONLY"
+            and item["SELF_MODEL"]["status"] == "SHADOW_READOUT_ONLY"
+            for item in shadow["candidate_readouts"].values()
+        )
+        assert shadow["memory_recall"]["status"] == "MEMORY_RECALL_SHADOW"
+        assert shadow["memory_recall"]["items"]
+        assert all("source_sha256" in item and "outcome_sha256" in item
+                   for item in shadow["memory_recall"]["items"])
+        assert text not in repr(shadow)  # only a verified SourceRef, never source content
+
+        persisted = read_world_planner_shadow(store, event["event_id"])
+        assert persisted["status"] == "SHADOW_PLANNER_READY"
+        assert persisted["checkpoint_sha256"] == checkpoint_before
+
+        matrix = receiver_matrix(
+            store,
+            shadow["state_vector"],
+            ["simple", "detail"],
+            home=home,
+        )
+        assert set(matrix) == {"simple", "detail"}
+        assert all(
+            set(matrix[action]) == {"B1_DETAIL", "B2_GIST", "SELF_MODEL"}
+            for action in matrix
+        )
+
+        again = consume_after_commit(
+            store, home, limit=64, event_id=event["event_id"]
+        )
+        assert again["planner_shadow"]["idempotent"] is True
+        active_after, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert active_after["active"]["checkpoint_sha256"] == checkpoint_before
+    finally:
+        store.close()
+
+
+def test_world_planner_receiver_rejects_uncommitted_or_source_mismatched_event(tmp_path):
+    home = tmp_path / "brain-planner-negative"
+    store, session = _make_store(home)
+    try:
+        event = store.event(session, "uncommitted action must not enter planner")
+        missing = consume_world_planner_shadow(
+            store, event["event_id"], home=home
+        )
+        assert missing["status"] == "NO_COMMITTED_OUTCOME"
+        assert store.state(
+            "v14.world_jepa.planner_shadow:" + event["event_id"], None
+        )[0] is None
+
+        text = "source binding negative control"
+        second = store.event(session, text)
+        action_id = store.start_action(
+            second["event_id"],
+            second["brain_generation_id"],
+            forecast={"input_chars": len(text), "resource_state": "NORMAL"},
+        )
+        store.finish_action(
+            action_id, "FINAL", {"action_duration_s": 0.5, "characters": 12}
+        )
+        row = store.one("SELECT packet FROM events WHERE id=?", (second["event_id"],))
+        envelope = json.loads(row["packet"])
+        envelope["source_ref"]["sha256"] = "0" * 64
+        with store.tx() as connection:
+            connection.execute(
+                "UPDATE events SET packet=? WHERE id=?",
+                (json.dumps(envelope, sort_keys=True), second["event_id"]),
+            )
+        rejected = consume_world_planner_shadow(
+            store, second["event_id"], home=home
+        )
+        assert rejected["status"] == "SOURCE_OR_RECEIPT_REJECTED"
+        assert store.state(
+            "v14.world_jepa.planner_shadow:" + second["event_id"], None
+        )[0] is None
     finally:
         store.close()
