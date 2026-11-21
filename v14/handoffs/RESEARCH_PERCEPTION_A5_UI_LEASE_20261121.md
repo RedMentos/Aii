@@ -206,3 +206,12 @@ PR #2256 exposes this as an explicit opt-in backend on extract_voice_cues and co
 - #2256 NumPy focused workflow `44946779051`: **PASS** Python 3.13/3.14, 42 tests each; staged/integrated `44946779195`: **PASS** staged 251/10/47 and integrated 424/3/58; prosody, consent-revocation, WebRTC/libfvad and privacy checks pass. Safe-additive remains FAIL_BY_POLICY. Default remains pure Python.
 - R-048 full-text Tandem preprint and MIT fork review added to the research ledger. Its 16-GB Snapdragon 8 Elite/Gen 5 Hexagon results are not Redmi evidence and the NPU fork is not a direct target fit; only divergence-point checkpointing is a future research hypothesis.
 - No local full Aii checkout test; no Redmi receipt. `NOT_RELEASED` / `REDMI_UNVERIFIED`. No device, model, weight, permission or updater change.
+
+
+## LFM2.5 cache-path handoff — 2026-11-21T20:44:24.786Z
+
+- V13 source readback: runners.py blob `96d91b8aa0d110a7dbcfd438fc8b3b7c504eed9a`, config.py blob `a4fa0e0eeb6c544035ebf8ec0b46f5ebe11151481`. Each runner uses `-np 1`, `--cache-ram 128`, `--ctx-checkpoints 6`; each completion uses `cache_prompt=true`, `id_slot=0`; RunnerPool keeps per-role runners resident where resource policy allows. This is the normal in-memory prompt-cache path.
+- llama.cpp PR #26004 merged 2026-10-08 (merge commit `033df86b69ec1a333eb241f0c16325a4d43dcff5`) persists context checkpoints across explicit slot save/restore. V13's normal runner command does not pass `--slot-save-path`; do not conflate disk restore with per-turn in-memory reuse.
+- Official Liquid cards: LFM2.5-1.2B = 10 convolution + 6 GQA blocks; 230M = 8 convolution + 6 GQA. License is LFM Open License v1.0 with USD 10M annual-revenue commercial threshold, not Apache-2.0. No model changed.
+- #29002 co-batching corruption was challenged by a maintainer as a reproducer logits-row indexing bug; do not claim a confirmed recurrent-state bug. V13's `-np 1` avoids multi-sequence co-batching per runner.
+- P0 next measurement: real Redmi `cache_n/prompt_n/prompt_ms/TTFT`, runner PID/restart and model revision across repeated-prefix, changed-tail, A→B→A and eviction/reload. No new owner-read receipt; Aiiii #431/#432 and V13OBS #115 have zero comments. No device action. `REDMI_UNVERIFIED` / `NOT_RELEASED`.
