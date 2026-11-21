@@ -56,14 +56,23 @@ def admit(messages: Sequence[dict], *, prompt_cap: int = 320,
     if required > cap:
         return Admission(False, tuple(), "REQUIRED_SOURCE_EXCEEDS_PREFILL_BUDGET",
                          required, len(messages) - 2, 0)
-    # Keep complete user/assistant exchange pairs only.  A dangling assistant
-    # answer without its originating user prompt is not admissible context.
+    # Only retain a suffix with complete conversational provenance.  A user
+    # followed by tool output without an assistant tool-call record, or a second
+    # user without an answer, is not a trustworthy standalone native history.
+    # Refuse to *use* malformed history; never mutate the stored source.
     history = list(messages[1:-1])
     kept = []
     total = required
     for i in range(len(history) - 1, -1, -1):
         candidate = history[i:]
         if candidate[0]["role"] != "user":
+            continue
+        # Ordinary completed exchanges only.  Native tool-call transcripts
+        # need a separately source-bound adapter rather than role guessing.
+        if len(candidate) % 2 or any(
+            candidate[j]["role"] != ("user" if j % 2 == 0 else "assistant")
+            for j in range(len(candidate))
+        ):
             continue
         amount = sum(cost(m) for m in candidate)
         if total + amount <= cap:
