@@ -1,0 +1,35 @@
+{
+  "proof_level": "LOCAL_LINUX_TINY_MODEL_PROOF_NOT_PRODUCT_NATIVE",
+  "task": "context-unaware associative recall via receiver KV-cache injection",
+  "torch": "2.10.0+cpu",
+  "python": "3.13",
+  "seed_13": {
+    "sender": {"layers": 2, "width": 24, "heads": 4},
+    "receiver": {"layers": 3, "width": 32, "heads": 4},
+    "model_steps_each": 320,
+    "adapter_phase1_steps": 360,
+    "adapter_phase2_steps": 180,
+    "initial_heldout_reconstruction_mse": 6.5133891105651855,
+    "heldout_reconstruction_mse_after_phase1": 0.20543037354946136,
+    "heldout_latent_accuracy_after_phase1": 0.859375,
+    "heldout_accuracy": {
+      "full_receiver_context": 1.0,
+      "latent_cache": 1.0,
+      "no_message": 0.0,
+      "shuffled_sender_cache": 0.125,
+      "random_adapter": 0.1328125
+    },
+    "adapter_parameter_delta_l2": 20.27194103678895,
+    "max_phase1_gradient_norm": 2.1450791358947754,
+    "restart_max_abs_logit_delta": 0.0,
+    "wall_seconds": 12.41,
+    "max_rss_kib": 344584,
+    "unit_tests": "3/3 PASS"
+  },
+  "additional_seeds": {
+    "17": {"latent_accuracy": 1.0, "shuffled_accuracy": 0.1328125, "random_adapter_accuracy": 0.09375, "initial_heldout_mse": 6.792586803436279, "heldout_mse_after_phase1": 0.20414158701896667},
+    "29": {"latent_accuracy": 1.0, "shuffled_accuracy": 0.0703125, "random_adapter_accuracy": 0.1171875, "initial_heldout_mse": 6.425343990325928, "heldout_mse_after_phase1": 0.24054646492004395},
+    "41": {"latent_accuracy": 1.0, "shuffled_accuracy": 0.1328125, "random_adapter_accuracy": 0.1796875, "initial_heldout_mse": 5.997714042663574, "heldout_mse_after_phase1": 0.20619702339172363}
+  },
+  "not_tested": ["OOD distribution shift", "symbolic-message baseline", "LFM2.5/Qwen3.5", "llama.cpp native tap/injection", "V13 Runtime consumer", "Android/Redmi"]
+}
