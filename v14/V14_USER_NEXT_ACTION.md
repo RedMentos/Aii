@@ -42,7 +42,7 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
 
-## QA & Android Checkpoint 2026-11-21 — review/reproduction only; NOT_RELEASED
+## Historical QA checkpoint — 2026-11-20 (superseded by the later 2026-11-21 release-gate checkpoint)
 
 - Latest observed release integration base: `14d7386484dfce6728aa404d89eae98403b4dba0`, three commits ahead of the previously reported `d3ac638b`; merged PR #2120 added the PCM16 RAW-EAR producer. This is the latest observed base from merged/open PR metadata, not a claim that a new V14 runtime is installed.
 - Device proof: a consented private `PIPELINE_STATUS` owner-read request was created as [RedMentos/Aiiii issue #343](https://github.com/RedMentos/Aiiii/issues/343). At this checkpoint it remained OPEN with zero device comments. Therefore `phone_installed_sha=UNKNOWN`, `phone_auto_update_verified=NO`, `REDMI_UNVERIFIED`. No repeat installer request, shell access, or device mutation was attempted.
@@ -67,7 +67,7 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 - Release integration HEAD read back from `gpt6/v13-private-remote-bridge-20261111`: `16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19`. No release-branch mutation was made by this QA lane.
 - A real release-gate weakness was found in `v13/code/v13/source_updater.py`: `ci_passed()` accepted any successful exact-SHA run for a workflow, so an older success could mask a newer failed/in-progress run. `pipeline_agent.run_cycle()` also reused the pre-stop CI result after a graceful chat stop.
 - QA candidate PR #2138: [https://github.com/RedMentos/Aii/pull/2138](https://github.com/RedMentos/Aii/pull/2138), latest SHA `8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5`. It selects latest run_number/run_attempt per workflow identity, distinguishes recreated workflow IDs, fails closed on missing ordering metadata, and rechecks exact-SHA CI after graceful stop immediately before source mutation. It adds 9 run-order cases plus stop-window and post-fast-forward activation regressions.
-- CI evidence on prior candidate `39f190e7666e41d69d2c5c6665da4a3ef24f0444`: owner-read PASS and Python 3.14 staged startup PASS; the exact logs show 27 source-updater tests and 32 pipeline-agent tests passing after fixture correction. On latest `eb038f7e`, owner-read PASS, Python 3.14 staged startup PASS, offline bridge security PASS, integrate-same-repo PASS; staged-runtime and integrated-regression still IN_PROGRESS at last readback. The safe-additive workflow fails by design because this PR modifies existing updater files; it is not the phone release gate.
+- Exact latest candidate `8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5`: owner-read PASS (27 source-updater + 33 pipeline-agent tests), Python 3.14 staged startup PASS, offline bridge security PASS, same-repo integration PASS, staged-runtime PASS (240 passed, 10 skipped); integrated-regression remained IN_PROGRESS at last readback. The safe-additive workflow fails because this PR modifies existing updater files; it is not the phone release gate.
 - LOCAL_LINUX full repository suite: NOT_RUN (no checkout available). CI is the only execution evidence. This is not Linux-native runtime or Android proof.
 - Private owner-read HEALTH request [RedMentos/Aiiii issue #348](https://github.com/RedMentos/Aiiii/issues/348) expired with zero device comments: `NO_LIVE_RECEIPT`. `phone_installed_sha=UNKNOWN`, `phone_auto_update_verified=NO`, `REDMI_UNVERIFIED`. No new installer command, remote shell, update, restart, rollback, model/weight, SQLite or chat-history mutation was attempted.
 - PR #2136 is merged into the repo, but source readback shows `runtime.py` does not yet call `audio_perception_bridge`; this is a synthetic PCM adapter to A4/C3 admission, not Android microphone capture or a normal C3 prompt consumer. The full V14 audio/voice Canon path remains open.
@@ -85,3 +85,10 @@ The live V14 work board now has V14-009 for the previously implicit but mandator
 Both are `READY / NOT_RUN` work packages; they preserve these Canon requirements as visible work rather than implying implementation.
 
 - **V14-012 — Context OS, episodic/semantic memory and additive Memorilla companion:** preserve the fixed Context OS and exact memory; use the small companion only for overflow/missing context with source pointers, query-sensitive links and explicit forget/revoke. PR #1983 remains a candidate, not proof of an integrated runtime consumer.
+
+## Cross-review on T8 temporal candidate PR #2137
+
+QA source review found two P1 defects; comments are attached to PR #2137 (head `703afba80cac82fca2340500c420cb538e5542f9`):
+1. `TemporalT8Bridge.consume()` maps CANCELLED/OUTCOME_UNKNOWN/INTERRUPTED/ABORTED to observed `NOT_FINAL`, creating a false prediction error or reward. These must be recorded as cancelled/censored with `prediction_error=None` and no receiver update.
+2. `t8_store_authority._verify_one()` limits ActionOutcome rows to 17 before checking exactly-one cardinality. More than 17 outcomes can reject valid old actions and can hide an older duplicate. Use action_id-scoped exact query or bounded fail-closed scan with a regression beyond 17 rows.
+PR #2137 remains DRAFT; no runtime learning or real model-weight update is accepted.

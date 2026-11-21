@@ -83,3 +83,18 @@ Mehrere Agents dürfen die Architektur kreativ herausfordern; sie dürfen weder 
 
 Die bestehenden fünf stündlichen Jobs arbeiten als **ein Engineering-Team** mit [Arbeitsvertrag](V14_TEAM_OPERATING_SYSTEM.md), [gemeinsamem Ticket-Board](V14_WORK_BOARD.json) und [nutzbarer Übergabe für das nächste Gespräch](V14_USER_NEXT_ACTION.md). Vorrangig ist **tatsächliches Coding, lokales Testen, Fixen, direktes Pushen in die eigene GitHub-Lane, Review, Integration und sichere automatische Übernahme nur mit verifiziertem Geräte-Updater**; der Nutzer soll für normale Pushes nicht jedes Mal einen Befehl eingeben müssen. Alternative kleine/größere Modelle sind ausdrücklich als isolierte Messversuche erlaubt; produktiver Wechsel nur nach transparenter Messung und Zustimmung. Der Terminal-Name kann `v13` bleiben. Keine falsche Behauptung von Android-Installation aus einem GitHub-Commit.
 
+
+
+## QA/Android checkpoint and explicit whole-Canon lanes — 2026-11-21
+
+### V14-002 release safety
+PR #2138 (`qa/v13-ci-latest-result-gate-20261121`, head `8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5`) fixes stale-success CI selection and two race windows: after graceful stop, and after source fast-forward immediately before launcher activation. Evidence: owner-read PASS (27 source-updater + 33 pipeline-agent tests), Python 3.14 staged startup PASS, offline bridge PASS, same-repo integration PASS, staged-runtime PASS (240 passed, 10 skipped). Integrated regression remained in progress at this checkpoint. The additive-only candidate validator is not applicable to this modifying QA patch. No LOCAL_LINUX full checkout and no Redmi receipt.
+
+### Explicit ticket mapping added to V14_WORK_BOARD
+- **V14-009 — Android control + full voice:** API-first permitted app actions; separately consented Accessibility/MediaProjection observation; microphone RAW EAR and speech effector; audit/cancel/revocation/lifecycle; real Redmi proof required.
+- **V14-010 — Self-optimization/self-edit:** real target-weight delta, heldout utility, retention, checkpoint/restart/rollback; later code/structure proposals remain sandboxed and human-approved.
+- **V14-011 — Sleep/Dream/Replay:** source-bound idempotent replay, observed-vs-generated provenance, retention/ablation and rollback.
+- **V14-012 — Context OS/Memorilla:** fixed context and canonical memory remain; companion is additive for overflow/missing context with source pointers, query-sensitive links, restart/forget/revoke tests. PR #1983 is only a candidate.
+
+### T8 QA review
+PR #2137 is still draft. QA identified two P1 findings: cancellation/unknown outcomes are currently collapsed into observed NOT_FINAL (must be censored/no update), and ActionOutcome cardinality is checked only within LIMIT 17 (must be exact or fail closed on overflow). Comments are on the PR; no learning/weight acceptance is claimed.

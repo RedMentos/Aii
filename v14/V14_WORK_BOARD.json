@@ -27,20 +27,20 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "SOURCE_REVIEW + CI_OWNER_READ_PASS + PY314_STAGED_PASS + BRIDGE_PASS + SAME_REPO_PASS + STAGED/INTEGRATED_PENDING; PRIVATE_RELAY_NO_RECEIPT; REDMI_UNVERIFIED",
-      "next_step": "QA PR #2138 latest SHA 8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5: owner-read (27 source-updater + 33 pipeline-agent tests), Python 3.14 staged startup, offline bridge and same-repo integration PASS; staged-runtime/integrated regression still running at last readback. Finish exact CI, Boss review/merge, then request fresh private PIPELINE_STATUS. No installer/device mutation until a real receipt exists.",
+      "proof_environment": "SOURCE_REVIEW + OWNER_READ_PASS + PY314_STAGED_PASS + BRIDGE_PASS + SAME_REPO_PASS + STAGED_RUNTIME_PASS(240/10SKIP) + INTEGRATED_PENDING; PRIVATE_RELAY_NO_RECEIPT; REDMI_UNVERIFIED",
+      "next_step": "QA PR #2138 latest SHA 8ca7a298: owner-read (27 source-updater + 33 pipeline-agent tests), Python 3.14 staged startup, offline bridge, same-repo integration and staged-runtime (240 passed/10 skipped) PASS; integrated-regression still running at last readback. Finish exact integration CI, Boss review/merge, then request fresh private PIPELINE_STATUS. No installer/device mutation until a real receipt exists.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 QA: stale-success CI gate plus pre-stop/post-fast-forward rechecks are in draft PR #2138; core checks partly green/pending; private HEALTH #348 no device receipt; no phone data changed.",
+      "last_checkpoint": "2026-11-21 QA: latest-run CI gate + pre-stop/post-fast-forward rechecks in draft PR #2138; staged runtime PASS 240/10 skipped; integrated regression pending; private HEALTH #348 no device receipt; no phone data changed.",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
-        "status": "CI_PENDING",
+        "status": "INTEGRATED_PENDING",
         "proof": {
           "owner_read": "PASS (27 source-updater + 33 pipeline-agent tests)",
           "python314_staged_startup": "PASS",
           "offline_bridge_security": "PASS",
           "same_repo_integration": "PASS",
-          "staged_runtime": "IN_PROGRESS",
+          "staged_runtime": "PASS (240 passed, 10 skipped)",
           "integrated_regression": "IN_PROGRESS",
           "local_linux": "NOT_RUN",
           "redmi": "UNVERIFIED"
@@ -66,12 +66,13 @@
       "owner": "JEPA & Memory",
       "reviewer": "Core & QA",
       "priority": "P0",
-      "status": "READY",
+      "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Inspect current JEPA, outcomes, LoRA trainer and adjacent PRs, integrate smallest real trainable runtime loop; local tests",
-      "user_action_required": false
+      "proof_environment": "SYNTHETIC + REAL SQLITE STORE TEST CANDIDATE; NO ACCEPTED WEIGHT UPDATE; QA REVIEW FINDINGS OPEN",
+      "next_step": "Resolve PR #2137 QA findings: cancellation/unknown outcomes must be censored with no prediction error or receiver update; ActionOutcome cardinality must not be truncated at 17. Then wire the verified receipt into the normal Runtime learning loop and prove numeric target delta, heldout utility, retention, restart and rollback.",
+      "user_action_required": false,
+      "last_checkpoint": "2026-11-21 QA review of PR #2137 found two P1 semantic/cardinality issues; PR remains draft and not runtime-wired."
     },
     {
       "id": "V14-005",
