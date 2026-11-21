@@ -101,3 +101,9 @@ The staged path does recheck consent at admission, context creation and each con
 ## Core A5 staged-consumer CI follow-up
 
 Core PR #2144 remains draft. Exact-head run 44853452893 fails one provenance assertion because it expects the old literal without `meta.get('source_recall_refs',[])`; the staged builder adds the audio ref after the source-recall refs. Earlier run 44853319109 fails because `staged_tests.mkdir()` collides with the `tests/` directory created by the stager. Both are test fixture/assertion failures, not audio runtime proof. I posted the exact provenance expression and the separate finality-field gap to Core. Keep #2144 unmerged until its tests pass and explicit PROVISIONAL/FINAL handling is present.
+
+
+Additional Core CI failures on the same #2144 head:
+- 44853452891: strict additive validator rejects staged builder/script paths outside the allowed inert-module/test/handoff scope. Do not weaken the validator generically; require a narrow explicit allowlist or restructure.
+- 44853452940: 239 passed, 10 skipped, 47 subtests passed, 1 failed because the recovery-stage test still expects the 2026-11-12 builder filename while the current hash-bound manifest points to the 2026-11-21 builder.
+Combined with the earlier `mkdir` and provenance assertion failures, four exact CI blockers remain. I posted all four findings to Core. PR #2144 stays draft/unmerged, and the explicit finality field is still missing.
