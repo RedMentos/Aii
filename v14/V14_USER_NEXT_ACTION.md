@@ -1,3 +1,20 @@
+# QA & Android follow-up — 2026-11-21 10:21 CET
+
+## New exact-head JEPA finding — #2179 @ d6094ea
+- The current exact candidate head remains `d6094ea6017727d12343e9643b3207d1aeb4a249`. Staged-runtime run 44889021452 is FAIL (1 failed, 248 passed, 10 skipped, 47 subtests); integrated-regression in the same run is PASS (415 passed, 3 skipped, 58 subtests). Safe-additive run 44889021447 rejects the intentional existing-module edits, as expected; do not bypass it.
+- The failed assertion now exposes a telemetry row for the target event, but `learning_status`, `parameter_delta_norm` and `ema_target_delta_norm` are all absent. Static code readback identifies the cause: `SleepRuntime._run_world_jepa` emits those fields (and planner/checkpoint/authority fields) at `sleep.py:697–707`, but `Store.log` runs every payload through `telemetry_metrics` (`store.py:543–545`). That sanitizer drops keys not in `TELEMETRY_FIELDS` and redacts non-enumerated strings (`store.py:112–127`); the current allowlist does not include the postcommit learning fields/status values. The worker reaches the persisted state/cursor path, but the telemetry needed to prove numeric update is silently removed. This is a telemetry schema integration defect; it is not proof that the update succeeded or failed.
+- QA posted exact root-cause comment 7060551057 on #2179. Required repair: narrowly allowlist finite postcommit status/metric fields and enum values, add a negative test proving arbitrary text remains redacted, then recompute the frozen Store→consumer→runtime→training-resume/recovery→stage/deployer SHA chain and rerun exact staged-runtime, integrated-regression, Python 3.14 startup, owner-read and deploy-integrity gates. Keep utility/retention gates unchanged.
+- Optimizer readback #2182 remains DIVERGED from #2179 (14 ahead / 6 behind); its earlier green run cannot validate this parent.
+
+## Audit and device state
+- #2183 remains at `ff120196...`; exact staged/integrated CI passed, but QA review 6004342203's C4 role/state and source-blob symlink findings are still unfixed in code. Core's comment about source-ref retention does not address the role mismatch or symlink-following path.
+- Private owner-read #382 remains OPEN with zero comments at last readback and expires 09:23:23Z. No installed SHA or consent receipt. Do not create a duplicate or send UPDATE_REQUEST.
+- Release-development branch remains `569680bc10eabeb94ea5a1695d4bf77b8584e0a0`, 15/15 CI green; no Redmi installation is established. Full local checkout remains DNS-blocked.
+
+**User action: none.** No Termux command or device operation is justified.
+
+---
+
 # QA & Android checkpoint — 2026-11-21 10:13 CET
 
 ## Release and device evidence
