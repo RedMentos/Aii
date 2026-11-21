@@ -328,3 +328,53 @@ The merged #2155 adapter extracts heuristic pitch/voicing/energy/activity cues f
 - Verified source lines: 673-675 set /data to system:system 0771; 843 creates /data/data as system:system 0771; 915-923 create /data/user and bind-mount /data/data onto /data/user/0.
 - V14 consequence: a strict private-app DB path validator must reject broad group/world-writable ancestors while making only the exact AOSP root/legacy exceptions, with UID, GID and mode checks and negative controls for wrong owner/group/mode and writable descendants. PR #2190 implements this narrow audit-DB path exception and is merged at code head e18c664...; its broker tests remain synthetic. This source review is not proof of the Redmi's vendor-specific mount/SELinux state.
 - Limitations: AOSP init configuration does not attest the user's particular Redmi build, mount namespace, SELinux policy or actual runtime permissions. No device measurement was available; keep REDMI_UNVERIFIED.
+
+
+## R-026 — llama.cpp exposes final token embeddings, not a stable general hidden-state injection API
+
+- **Primary upstream revision:** ggml-org/llama.cpp `master` at `93cb37ea7b5f134cc500b1c5b91d971190600a1a` (2026-11-21 10:58:49 UTC). Inspected `tools/server/README-dev.md`, `tools/server/README.md`, `include/llama.h` and `src/llama-batch.cpp` at that exact revision.
+- **Current server semantics:** `POST /embeddings` with `--pooling none` returns an unnormalized vector for each input token. It does not expose arbitrary transformer-layer outputs. The current V13 tap contract `result_norm.final.v1` is therefore a final normalized-state/token-vector tap, not a generic per-layer hidden-state stream. A role/tap ID and matching vector dimension establish provenance, not cross-model compatibility or receiver consumption.
+- **Upstream limitation is explicit:** llama-server's current developer README lists exposing intermediate activations through the API as out of scope; it says there is no stable API for that and warns that relying on `eval_callback` is difficult to maintain in multi-sequence operation.
+- **Exact V13 consumer cross-check:** `v13/code/v13/runners.py` blob `96d91b8aa0d110a7dbcfd438fc8b3b7c504eed9a` implements `LlamaRunner.tap()` as a separate read-only prefill: `/tokenize`, then `/embeddings` with native token IDs and `embd_normalize=-1`, expecting one final vector per token. Metrics explicitly set `pooling=none`, `normalization=native_final_RMSNorm_only`, `CAN_LATENT_TAP=True`, `CAN_LATENT_INJECT=False` and `CAN_TRAIN_BODY=False`. This is a verified source contract, not a native model execution or receiver effect.
+- **C API boundary:** the current header does expose `llama_batch_ext_set_embd_state`, but `src/llama-batch.cpp` selects nonzero state width only for MTP context or when `lilicorr_candidate_topk > 0`; the public header itself says contexts without a state input reject/ignore it. This is not a general arbitrary-hidden-state injection hook for the ordinary LFM2/Qwen3.5 inference contexts. MTP/LiliCorr/DeepStack-specific state is not interchangeable with a B3 adapter without exact architecture and shape proof.
+- **Candidate implementation inspected:** `hrhdegenetrix/llama-sae-feature-interpretability` HEAD `b88060a678cc2d4f6c342ff83a28383074e7fa65` (2026-05-29), LICENSE blob `7be13d2705ea2a0a5109c12794d38179047f0f74` (MIT), README blob `87959de4c4db0fde9ecd81f2058f6eb735de0142`. It adds `l_out` capture via `eval_callback` and uses same-model control-vector steering. Its documented patch currently adds layer callbacks specifically to Qwen3.5; it is a small single-repository patch, not an upstream llama.cpp API, and it does not implement cross-model dynamic receiver injection. Upstream's multi-sequence warning applies directly to this approach.
+- **Reuse decision:** MIT permits study/adaptation, but do not import the patch as a production dependency yet. It needs a current llama.cpp rebase, exact model-architecture coverage for both V14 bodies, multi-sequence/concurrency tests, Bionic/ARM build, measured overhead and a separate dynamic receiver-injection path. The current server API alone cannot supply that path.
+- **V14 consequence:** preserve the existing role-specific final-token tap as a read-only observation surface; do not rename it to a generic hidden-state tap. For B3, first prototype a pinned runner extension that captures a declared intermediate layer and applies a projected vector at a declared receiver layer on one exact model pair. Acceptance must include actual receiver-effect on held-out task utility versus SOURCE_EXACT, NO_MESSAGE, wrong-source, shuffled and zero-vector controls, plus latency/RSS and rollback. Keep `CAN_LATENT_INJECT=False` until that exact native pair passes. No llama.cpp fork, model, weights or dependency was downloaded or modified in this run.
+
+Primary sources:
+- llama.cpp server developer API scope at exact upstream revision: https://github.com/ggml-org/llama.cpp/blob/93cb37ea7b5f134cc500b1c5b91d971190600a1a/tools/server/README-dev.md
+- llama.cpp embedding endpoint semantics: https://github.com/ggml-org/llama.cpp/blob/93cb37ea7b5f134cc500b1c5b91d971190600a1a/tools/server/README.md
+- llama.cpp C API state input: https://github.com/ggml-org/llama.cpp/blob/93cb37ea7b5f134cc500b1c5b91d971190600a1a/include/llama.h
+- llama.cpp state-width selection: https://github.com/ggml-org/llama.cpp/blob/93cb37ea7b5f134cc500b1c5b91d971190600a1a/src/llama-batch.cpp
+- Candidate capture/control-vector patch: https://github.com/hrhdegenetrix/llama-sae-feature-interpretability/tree/b88060a678cc2d4f6c342ff83a28383074e7fa65
+
+
+
+## R-027 — Optional local Silero VAD for RAW EAR (2026-11-21)
+
+**Primary sources inspected**
+
+- Silero VAD upstream README and streaming ONNX wrapper: https://github.com/snakers4/silero-vad and https://github.com/snakers4/silero-vad/blob/master/src/silero_vad/utils_vad.py (accessed 2026-11-21). The source wrapper uses a 64-sample context, 512-sample frames at 16 kHz (32 ms), a recurrent state shaped (2, batch, 128), and one-thread ONNX Runtime settings. The project is MIT; the README documents ONNX Runtime as an optional CPU dependency and describes 8/16 kHz support. Its x86-oriented Python performance statement is not an Android benchmark.
+- sherpa-onnx official Silero VAD docs: https://k2-fsa.github.io/sherpa/onnx/vad/silero-vad.html and Android VAD APK docs: https://k2-fsa.github.io/sherpa/onnx/vad/apk.html (accessed 2026-11-21). The project is Apache-2.0 and documents Android arm64 builds/examples; it lists Silero ONNX artifacts around 629 KB (16 kHz export), 208 KB (int8 16 kHz), and 2.22 MB (v5 8/16 kHz). The Silero model remains MIT; sherpa-onnx explicitly says model licensing must be checked separately.
+- sherpa-onnx C API VAD docs: https://k2-fsa.github.io/sherpa/onnx/c-api/html/vad.html (accessed 2026-11-21): Silero uses a 512-sample window at 16 kHz and supports one-thread configuration. This is a viable future Android-native backend, but it is not yet connected to the Termux Python Runtime.
+- VoxRT's Android wrapper was reviewed as an alternative: its Kotlin wrapper is Apache-2.0, but the shipped native runtime binary is proprietary. It is not selected or imported; the binary licence would need separate review.
+- llama.cpp's server developer README explicitly says intermediate activation exposure is out of scope because there is no stable multi-sequence API. This reinforces that the VAD path is an independent acoustic model, not a shortcut to B3 latent transfer.
+
+**Implementation hypothesis and bounded change**
+
+- Add a caller-owned, optional Silero ONNX stream adapter. It accepts only 16 kHz mono PCM16, uses 512-sample/32 ms windows, carries the 64-sample context and (2,1,128) recurrent state, retains at most 511 incomplete samples in process memory, and resets on source/generation change, timeline discontinuity, explicit reset or consent revocation.
+- Model loading is strictly local and explicit: caller supplies a path, expected SHA-256 and revision. The loader refuses symlinks, oversized files and hash mismatch; it uses CPUExecutionProvider with one intra/inter-op thread. It never downloads a model, opens a microphone or changes installed models.
+- When supplied to the existing RAW EAR consumer, the model score is added as separate VAD evidence alongside pitch, prosody and non-speech cues; it contributes to A4 salience and a bounded C3 admission summary. It does not replace the heuristic cues, create ASR text, identify a speaker, grant learning/action authority or claim calibrated speech probability.
+
+**Evidence and limits**
+
+- LOCAL_LINUX isolated adapter tests: 12/12 PASS on Python 3.13.5, NumPy 2.3.5, pytest 9.0.2; py_compile PASS. Fake ONNX session only; no ONNX Runtime or model weights installed.
+- Full repository local checkout remains BLOCKED by DNS resolution for github.com. Exact integrated Store/Runtime tests are delegated to the PR workflow; no local full-repo PASS is claimed.
+- No Silero model was downloaded or run. No Android/Bionic build, Redmi microphone capture, CPU/RSS/PSS/battery measurement or deployment. REDMI_UNVERIFIED.
+- This is an optional experimental acoustic VAD path, not a calibrated speech recognizer, ASR, voice decoder/vocoder, full-duplex implementation, or trained cross-organ latent channel.
+
+**Next falsifiable experiment**
+
+- With a separately approved, locally present hash-matching Silero artifact, compare RAW EAR V3, pinned libfvad/WebRTC, and Silero on the same public/licensed speech + noise corpus at 16 kHz. Measure speech/non-speech precision/recall, onset/offset latency, false-positive rate on music/noise, model load/RSS, per-frame CPU and real-time factor, and retention of non-speech events. Use equal 32 ms frames and one CPU thread; do not infer Redmi performance from CI. If the Android app path is selected, prototype the sherpa-onnx Apache-2.0 arm64 backend separately and measure Bionic ABI compatibility before adding any dependency.
+
+**Status:** IMPLEMENTED_OPTIONAL_ADAPTER / WIRED_SYNTHETIC_CANDIDATE / NO_REAL_MODEL_RUN / NO_ANDROID_PROOF / NO_DOWNLOAD.
