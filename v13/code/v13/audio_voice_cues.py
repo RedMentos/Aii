@@ -290,6 +290,16 @@ def _require_current_consent_and_reset(runtime, source_id, generation_id, consen
         raise
 
 
+def _reset_audio_temporal_state(runtime, source_id, generation_id, temporal_state=None, vad_stream=None):
+    reset_runtime_temporal_voice_states(
+        runtime, source_id=source_id, generation_id=generation_id
+    )
+    if isinstance(temporal_state, TemporalVoiceEvidence):
+        temporal_state.reset()
+    if isinstance(vad_stream, SileroVADStream):
+        vad_stream.reset()
+
+
 @contextmanager
 def _linearizable_audio_consent_lease(runtime, source_id, generation_id, receipt,
                                       consent_check, consent_guard, temporal_state=None,
@@ -304,23 +314,20 @@ def _linearizable_audio_consent_lease(runtime, source_id, generation_id, receipt
     packet, temporal, attention and C3 side effects.
     """
     if not callable(consent_guard):
-        _require_current_consent_and_reset(
-            runtime, source_id, generation_id, consent_check, receipt,
-            temporal_state, vad_stream,
+        _reset_audio_temporal_state(
+            runtime, source_id, generation_id, temporal_state, vad_stream,
         )
         raise PermissionError("a linearizable audio consent lease is required")
     try:
         manager = consent_guard(source_id, receipt)
     except Exception:
-        _require_current_consent_and_reset(
-            runtime, source_id, generation_id, consent_check, receipt,
-            temporal_state, vad_stream,
+        _reset_audio_temporal_state(
+            runtime, source_id, generation_id, temporal_state, vad_stream,
         )
         raise PermissionError("linearizable audio consent lease is unavailable") from None
     if not hasattr(manager, "__enter__") or not hasattr(manager, "__exit__"):
-        _require_current_consent_and_reset(
-            runtime, source_id, generation_id, consent_check, receipt,
-            temporal_state, vad_stream,
+        _reset_audio_temporal_state(
+            runtime, source_id, generation_id, temporal_state, vad_stream,
         )
         raise PermissionError("audio consent guard must return a context manager")
     try:
@@ -333,13 +340,9 @@ def _linearizable_audio_consent_lease(runtime, source_id, generation_id, receipt
             )
             yield
     except BaseException:
-        reset_runtime_temporal_voice_states(
-            runtime, source_id=source_id, generation_id=generation_id
+        _reset_audio_temporal_state(
+            runtime, source_id, generation_id, temporal_state, vad_stream,
         )
-        if isinstance(temporal_state, TemporalVoiceEvidence):
-            temporal_state.reset()
-        if isinstance(vad_stream, SileroVADStream):
-            vad_stream.reset()
         raise
 
 
