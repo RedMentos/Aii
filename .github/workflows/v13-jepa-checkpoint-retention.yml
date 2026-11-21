@@ -4,8 +4,9 @@ on:
     paths:
       - 'v13/code/v13/world_jepa_runtime_checkpoint.py'
       - 'v13/code/v13/world_jepa_shadow_checkpoint.py'
-      - 'v13/code/tests/test_jepa_checkpoint_malformed_calibration_20261110.py'
+      - 'v13/code/tests/test_jepa_checkpoint_malformed_calibration_20261110.py v13/code/tests/test_world_jepa_checkpoint_publication_qa.py'
       - 'v13/code/tests/test_jepa_checkpoint_retention_20261110.py'
+      - 'v13/code/tests/test_world_jepa_checkpoint_publication_qa.py'
       - '.github/workflows/v13-jepa-checkpoint-retention.yml'
   workflow_dispatch:
 jobs:
