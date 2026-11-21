@@ -1,14 +1,12 @@
-"""Safe, session-bound dashboard projection of the read-only per-turn flow audit."""
+"""Safe dashboard projection of the globally latest completed, session-bound turn audit."""
 from __future__ import annotations
 
 import math
-import os
 import re
 import sqlite3
-import stat
 from pathlib import Path
 
-from .flow_audit import audit_event
+from .flow_audit import audit_latest_completed
 
 _ROLES = frozenset({
     "A5_PERCEPTION", "B1_DETAIL", "B2_GIST", "B3_CALLOSUM",
@@ -68,34 +66,14 @@ def _tokens(value):
 
 def snapshot(home: str | Path) -> dict:
     """Return counts/roles/timing only; never return IDs, text, prompts or source hashes."""
-    root = Path(home).expanduser().resolve()
-    db_path = root / "data" / "db" / "brain.sqlite3"
+    root = Path(home).expanduser()
     try:
-        db_stat = db_path.lstat()
-        uid = os.getuid()
-        if not stat.S_ISREG(db_stat.st_mode) or db_stat.st_uid != uid:
-            return {"availability": "UNAVAILABLE", "reason": "STORE_NOT_PRIVATE_REGULAR"}
-
-        conn = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
-        try:
-            conn.row_factory = sqlite3.Row
-            conn.execute("PRAGMA query_only=ON")
-            row = conn.execute(
-                "SELECT m.event_id,e.session_id FROM messages m "
-                "JOIN events e ON e.id=m.event_id "
-                "WHERE m.role='assistant' AND m.event_id IS NOT NULL "
-                "ORDER BY m.id DESC LIMIT 1"
-            ).fetchone()
-        finally:
-            conn.close()
-
-        if not row:
-            return {"availability": "NO_TURNS"}
-        event_id, session_id = row["event_id"], row["session_id"]
-        if not isinstance(event_id, str) or not event_id or not isinstance(session_id, str) or not session_id:
-            return {"availability": "UNAVAILABLE", "reason": "SESSION_BINDING_MISSING"}
-
-        report = audit_event(root, event_id, session_id=session_id)
+        report = audit_latest_completed(root)
+        if report is None:
+            return {
+                "availability": "NO_TURNS",
+                "selection_scope": "LATEST_COMPLETED_TURN_ALL_SESSIONS",
+            }
         if report.get("read_only") is not True or report.get("private_text_returned") is not False:
             return {"availability": "UNAVAILABLE", "reason": "AUDIT_BOUNDARY_REJECTED"}
 
@@ -131,6 +109,7 @@ def snapshot(home: str | Path) -> dict:
 
         return {
             "availability": "AVAILABLE",
+            "selection_scope": "LATEST_COMPLETED_TURN_ALL_SESSIONS",
             "read_only": True,
             "private_text_returned": False,
             "assistant_status": _token(report.get("assistant_status")),
