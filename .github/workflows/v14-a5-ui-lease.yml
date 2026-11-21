@@ -7,17 +7,15 @@ on:
     paths:
       - "v13/code/v13/a5_ui_admission_bridge.py"
       - "v13/code/v13/store.py"
-      - "v13/code/tests/test_v14_store_source_blob_serialization.py"
-      - "v13/code/v13/store.py"
-      - "v13/code/tests/test_v14_store_source_blob_serialization.py"
       - "v13/code/tests/test_a5_ui_observation_lease.py"
+      - "v13/code/tests/test_v14_store_source_blob_serialization.py"
       - ".github/workflows/v14-a5-ui-lease.yml"
   pull_request:
     paths:
       - "v13/code/v13/a5_ui_admission_bridge.py"
       - "v13/code/v13/store.py"
-      - "v13/code/tests/test_v14_store_source_blob_serialization.py"
       - "v13/code/tests/test_a5_ui_observation_lease.py"
+      - "v13/code/tests/test_v14_store_source_blob_serialization.py"
       - ".github/workflows/v14-a5-ui-lease.yml"
   workflow_dispatch:
 
@@ -46,9 +44,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install minimal A5 test dependencies
         run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.3.5
-      - name: Compile A5 bridge and regression tests
+      - name: Compile A5 bridge, Store and regression tests
         run: python -m py_compile v13/code/v13/a5_ui_admission_bridge.py v13/code/v13/store.py v13/code/tests/test_a5_ui_observation_lease.py v13/code/tests/test_v14_store_source_blob_serialization.py
-      - name: Run source-bound UI lease, revocation and context tests
+      - name: Run source-bound UI lease, revocation and shared-blob tests
         working-directory: v13/code
         env:
           PYTHONDONTWRITEBYTECODE: "1"
