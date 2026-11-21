@@ -4,7 +4,7 @@ from v13.flow_audit_dashboard import snapshot
 from v13.store import Store
 
 
-def test_dashboard_snapshot_is_session_bound_redacted_and_read_only(tmp_path):
+def test_dashboard_snapshot_is_global_latest_completed_turn_redacted_and_read_only(tmp_path):
     home = tmp_path / "runtime"
     (home / "data" / "db").mkdir(parents=True)
     (home / "data" / "blobs").mkdir(parents=True)
@@ -30,6 +30,10 @@ def test_dashboard_snapshot_is_session_bound_redacted_and_read_only(tmp_path):
                            "generated_tokens": 4, "synthetic": True}
             },
         )
+        # A newer active session with no completed assistant turn must not
+        # make the dashboard imply that the prior completed turn was current.
+        pending_session = store.new_session("active chat without a completed answer")
+        pending_event = store.event(pending_session, "PRIVATE_PENDING_TEXT")
     finally:
         store.close()
 
@@ -40,6 +44,7 @@ def test_dashboard_snapshot_is_session_bound_redacted_and_read_only(tmp_path):
     rendered = json.dumps(result, ensure_ascii=False)
 
     assert result["availability"] == "AVAILABLE"
+    assert result["selection_scope"] == "LATEST_COMPLETED_TURN_ALL_SESSIONS"
     assert result["assistant_status"] == "FINAL"
     assert result["c3"]["prompt_tokens"] == 13
     assert result["c3"]["generated_tokens"] == 4
@@ -51,8 +56,9 @@ def test_dashboard_snapshot_is_session_bound_redacted_and_read_only(tmp_path):
     for secret in (
         "PRIVATE_USER_ONE", "PRIVATE_ASSISTANT_ONE",
         "PRIVATE_USER_TWO", "PRIVATE_ASSISTANT_TWO",
-        first_event["event_id"], second_event["event_id"],
-        first_session, second_session,
+        first_event["event_id"], second_event["event_id"], pending_event["event_id"],
+        first_session, second_session, pending_session,
+        "PRIVATE_PENDING_TEXT",
     ):
         assert secret not in rendered
 
@@ -63,7 +69,10 @@ def test_dashboard_snapshot_reports_no_turns(tmp_path):
     (home / "data" / "blobs").mkdir(parents=True)
     store = Store(home)
     store.close()
-    assert snapshot(home) == {"availability": "NO_TURNS"}
+    assert snapshot(home) == {
+        "availability": "NO_TURNS",
+        "selection_scope": "LATEST_COMPLETED_TURN_ALL_SESSIONS",
+    }
 
 
 def test_dashboard_snapshot_fails_closed_when_store_is_missing(tmp_path):
