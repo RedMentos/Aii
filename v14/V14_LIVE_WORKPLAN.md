@@ -752,3 +752,12 @@ The current functional release has synthetic C4 source-span selection but no pro
 - **#2242** remains at `3dc8a194df9230b191236b8011216362d00c88cd`, DRAFT / NOT_RELEASED. Exact checks now 9 success / 4 failure. Both staged-audio arithmetic tests pass; Python 3.14 deployer startup still fails on stale `runtime_deploy.STAGER_SHA256`, staged-runtime and migration fail downstream, and `validate-additive` remains FAIL BY POLICY. Permission revocation still cannot cancel C3 during generation; subscription is optional.
 - **#2247** is the active JEPA retention candidate at `e8137fd3d873ee08d7159a32ddd2240ab8f43f31`: 10 success / 3 failure. The per-session old-holdout gate correctly rejects every A-GEM arm on seeds 13/19/43; no checkpoint is committed. Keep gates OFF; change the learning mechanism, not the gate.
 - Private owner-read still has no authenticated response. Installed SHA/updater consent unknown; REDMI_UNVERIFIED. No phone action. Local full Aii checkout remains blocked by GitHub DNS in this worker.
+
+
+### Research/Perception CI completion and stack-sync checkpoint — 2026-11-21 20:07 CET
+
+- The dedicated #2243 `latent-cache-tiny` job completed on prior exact head `ae26c94700ca8077b38cbd87c40db89b4ae46360`: pinned NumPy 2.3.5 + PyTorch 2.10.0+cpu, py_compile, and all 3 tests PASS; model-lab/privacy/offline-bridge also PASS. This closes the previously identified experiment-test CI gap.
+- #2243 then advanced to `3e52c96d7302cdd95896605469ad1fdbe291deee`, but is now diverged from current shared base `7b91d8e1e722aec954f4139fec35f3c7d47c48c1` (15 ahead / 17 behind, mergeable=false). The overlapping old board/workplan/next-action edits conflict with Boss PR #2248 now merged at `a1b1e9...`. Perception must merge the latest base normally, preserve the Boss docs and retain R-037, experiment code and explicit workflow. No force-push.
+- #2246 remains head `273884c50e53fbe19068e351aeab1e1b479a70c5`, based on old #2243 head `543349...`; it is now stale/diverged. Rebase only after #2243 final sync. Its 3/3 checks are synthetic and do not establish Android OS capture.
+- #2247 now has 11 successful / 3 failing checks; the two optimizer jobs still reject all A-GEM candidates across seeds 13/19/43 under the strict per-session gate. No checkpoint update. Keep learning OFF.
+- #2242 remains 9 success / 4 failure at head 3dc8a19: stage arithmetic passes, but deployer STAGER_SHA256 remains stale; Python3.14 startup, staged Runtime and migration fail. Audio revoke cancellation remains unresolved.
