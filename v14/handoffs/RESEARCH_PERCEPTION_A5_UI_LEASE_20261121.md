@@ -176,3 +176,24 @@ Next: measure incremental 40–100-ms RAW_EAR on Redmi with explicit test-audio 
 The current pure-Python RAW_EAR pitch autocorrelation measured 131.30 ms median / 135.89 ms p95 per one-second 16-kHz synthetic window on LOCAL_LINUX Python 3.13.5 x86_64. A hybrid NumPy implementation that vectorizes only normalized autocorrelation measured 6.23 ms median / 8.37 ms p95 (~21× faster) and matched the Python output on 100/100 random synthetic windows across 8–48 kHz and 40-ms to 1-s durations. tracemalloc peak increased by ~12 KB while NumPy was already imported; cold import and process RSS were not measured.
 
 PR #2256 exposes this as an explicit opt-in backend on extract_voice_cues and consume_pcm16_voice_window. Default remains pure Python; Core must not enable the NumPy path on the installed phone until cold import/RSS/latency and full-duplex behavior are measured on Redmi. No model, microphone permission or user audio was used.
+
+
+## Research/Perception run 11 — 2026-11-21T20:36:33.179Z
+
+### A5 shared-blob test hardening
+
+- QA requested that the generic `Store.source()` race test stop relying on a 50-ms scheduler window. Applied a tracking wrapper around the actual Store RLock and an observed `Path.exists` boundary. The test now proves that the producer thread started, attempted the same lock while revocation was paused at unlink, did not reach blob existence or complete before release, then resumed and published a readable SourceRef.
+- Code/test commit: `ebcbca01d539f2b1a3a5eef8ac3c19e4d80e23a4`; test blob readback `662f9f698ae258a7545b1d5af0e3d0e3e7155e18`. Documentation-only descendants: board `1a369dc1fbab5fca41325c22568aa73f69364e0b`, next-action `538e93843f146df4652eb0ec8b2b58837c80802c`.
+- A5 workflow `44946951711` is still running on Python 3.13; its Python 3.14 job was cancelled when the run was superseded. It must be re-run after the 3.13 job completes. Public privacy scan `44946951817` PASS. Staged/integrated workflows fail on the known Core pin: expected old Store SHA-256 `fe66f925...`, actual new Store source `40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb`. This is a composition blocker; do not patch Core-owned builder here.
+- Core #2254 has been given the exact semantic requirement: its lifecycle builder must preserve the outer `with self.mutex:` around blob verification/write and nested `with self.tx()`, then refresh the full downstream pin chain. A raw hash-only update would reintroduce the race.
+
+### RAW EAR opt-in NumPy backend
+
+- PR #2256 exact code head `63b5410769b872ddb64e002ab1c764e9e90966af`; benchmark direct-invocation path fix is in that commit. Focused workflow `44946779051` PASS on CPython 3.13 and 3.14 (compile, 42 tests each, deterministic synthetic benchmark, privacy). Prosody, consent-revocation and WebRTC/libfvad workflows also PASS. The staged/integrated workflow remained in progress at last readback; safe-additive validator remains FAIL_BY_POLICY.
+- Local x86 synthetic comparison already recorded in R-047: 131.30 ms → 6.23 ms median per 1-s 16-kHz window (~21×), 100/100 output parity, +12,038 bytes tracemalloc while NumPy was already imported. No cold import, process RSS, real speech accuracy, ARM or Redmi measurement.
+- Official Termux package recipe checked: NumPy 2.5.5, BSD-3-Clause, Android aarch64 build path, dependencies libc++/libopenblas/python. This supports feasibility but does not prove installation on the user's device. No package installed; Python remains default and NumPy is explicit opt-in.
+
+### Status / next
+
+- `NOT_RELEASED`; `REDMI_UNVERIFIED`; no device action, updater request, model/weight change, permission or user-data change.
+- Core: compose #2255's Store lock into the staged lifecycle builder and recompute pins. QA: rebase #2250 after composition and retain the deterministic separate-thread A5-to-A5 race. Boss: review protected-file/safe-additive policy and PR ownership. NumPy: leave opt-in until authorized Termux cold-import/RSS/short-window/full-duplex measurements.
