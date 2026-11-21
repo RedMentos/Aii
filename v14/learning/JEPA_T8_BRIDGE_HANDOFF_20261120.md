@@ -56,3 +56,14 @@ Evidence classification: SYNTHETIC / LOCAL_LINUX. These are not full repository 
 4. Separate utility/retention and Redmi tests before any claim of active system learning.
 
 Until those gates pass, V14-004 remains IMPLEMENTING / PARTIAL, not complete.
+
+
+## Boss verification update — 2026-11-21
+
+Current candidate branch: `boss/v14-t8-temporal-store-integration-20261121`, head `2d8eb79bdefe3c6c3bef63fea7d25563b7f56952` before base retarget. This extends the earlier local-only report with exact CI evidence:
+- V14 temporal/real Store workflow PASS: PR run 44846178337 and push run 44846173142.
+- V13 private bridge push PASS: 44846173169.
+- V13 staged-runtime and integrated-regression PASS: run 44846178374.
+- Safe-additive-only scope policy FAIL remains visible; no gate was disabled.
+- New fixes: 4096-row complete bounded ActionOutcome scan (over-bound fail closed), CANCELLED/ABORTED vs OUTCOME_UNKNOWN/INTERRUPTED censored semantics with no learning signal, known FAILED remains observed NOT_FINAL, and parent-directory fsync after rollback.
+- No normal Runtime consumer, no full JEPA, no native body-weight update and no Redmi proof. The bridge defaults learning off and does not change Age or permissions.
