@@ -1,4 +1,4 @@
-name: V14 Core staged audio and arithmetic integration
+name: V14 Core staged audio, arithmetic, and B3 latent integration
 
 on:
   pull_request:
@@ -8,7 +8,12 @@ on:
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
       - "v13/code/scripts/stage_integrated_candidate.py"
       - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/v13/callosum.py"
+      - "v13/code/v13/latent_runtime.py"
+      - "v13/code/v13/operator.py"
       - "v13/code/tests/test_c3_audio_runtime_consumer.py"
+      - "v13/code/tests/test_b3_latent_runtime.py"
+      - "v13/code/tests/test_callosum.py"
       - "v13/code/tests/test_v14_audio_context_stage_20261121.py"
       - "v13/code/tests/test_v14_arithmetic_policy_separation.py"
       - "v13/code/tests/test_arithmetic_reflex.py"
@@ -20,12 +25,15 @@ on:
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
       - "v13/code/scripts/stage_integrated_candidate.py"
       - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/v13/callosum.py"
+      - "v13/code/v13/latent_runtime.py"
+      - "v13/code/v13/operator.py"
       - "v13/code/tests/**"
       - ".github/workflows/v14-core-audio-context-staged.yml"
   workflow_dispatch:
 
 jobs:
-  staged-audio-arithmetic:
+  staged-audio-arithmetic-b3:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -48,13 +56,17 @@ jobs:
           test "$(sha256sum v13/code/scripts/integrated_audio_context_candidate_20261121.py | cut -d' ' -f1)" = "734a6786fec61c4fe15d8861e56b9303496b44967cd76327931908321844a17f"
           test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py | cut -d' ' -f1)" = "fbaaed41a84bc548fcf5edb1aa0d1d04adbd21d1ad25ad0c40e20460e4375021"
           test "$(sha256sum v13/code/scripts/stage_integrated_candidate.py | cut -d' ' -f1)" = "7a9f369c27c748f2a4caff4dad83a8fc57ca4fabefe87b3c1d03ac9a36d81cc5"
-      - name: Compile candidate builders and deployment gate
+      - name: Compile candidate builders, deployment gate, and B3 receiver lab
         run: |
           python -m py_compile \
             v13/code/scripts/integrated_audio_context_candidate_20261121.py \
             v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
             v13/code/scripts/stage_integrated_candidate.py \
             v13/code/v13/runtime_deploy.py \
+            v13/code/v13/callosum.py \
+            v13/code/v13/latent_runtime.py \
+            v13/code/v13/operator.py \
+            v13/code/tests/test_b3_latent_runtime.py \
             v13/code/tests/test_v14_audio_context_stage_20261121.py
       - name: Audio bridge and whole-context regressions
         env:
@@ -73,6 +85,13 @@ jobs:
           python -m pytest -q \
             v13/code/tests/test_v14_audio_context_stage_20261121.py \
             v13/code/tests/test_arithmetic_stage_20261116.py
+      - name: B3 native-tap adapter training and counterfactual probe
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_b3_latent_runtime.py \
+            v13/code/tests/test_callosum.py
       - name: Deployment pin and staged smoke regressions
         env:
           PYTHONPATH: v13/code
