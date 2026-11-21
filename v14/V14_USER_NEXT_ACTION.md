@@ -1,40 +1,38 @@
-# Boss integration checkpoint — 2026-11-21 11:20 CET
+# Boss integration checkpoint — 2026-11-21 11:27 CET
 
-## Current code release and evidence
-- Release branch gpt6/v13-private-remote-bridge-20261111 was verified at e18c664d954fa5a44a1b2e5bec76850d5a40f89f after PR #2190 was rebase-merged. Exact-SHA push CI: **5/5 workflows PASS**. Sixteen of seventeen PR-associated checks were green at readback; one staged PR-associated run remained in progress, plus one redundant workflow-dispatch staged run.
-- PR #2190 tested head 852a552c49ac75e2e9074b1aa31e59e3aa203958: **30 broker tests PASS**, Android sandbox replay integration PASS, staged-runtime **249 passed / 10 skipped / 47 subtests**, integrated-regression **415 passed / 3 skipped / 58 subtests**, private-bridge tests PASS. Safe-additive rejected the intentional existing security-module edit; Boss reviewed and merged directly, without bypassing the check.
-- V14 master blob remains 9748ad5ba9a4d4f5c3d004a0577141f6779fcbca; no Master/Part III rewrite occurred. Historical V13 appendices remain byte-identical.
-- Exact local checkout/test remains **BLOCKED**: git ls-remote https://github.com/RedMentos/Aii.git HEAD failed because this runner could not resolve github.com. CI is Linux Actions evidence, not local checkout, Android-native or Redmi evidence.
+## Verified code and release state
+- Code head e18c664d954fa5a44a1b2e5bec76850d5a40f89f includes PR #2190 and has 5/5 exact-SHA push workflows PASS. Documentation branch head d4834ebb6e550064409fc146dbd59d47d7259bb5 also has all exact push workflows PASS. One extra workflow_dispatch run was still in progress; it is not a substitute for push CI.
+- PR #2190 exact candidate 852a552c... passed 30 broker tests, Android sandbox replay, staged 249/10/47 and integrated 415/3/58; it narrowly fixes the Android 13 /data system:system 0771 audit-DB path. This is not an Android OS executor.
+- The V14 master blob remains 9748ad5ba9a4d4f5c3d004a0577141f6779fcbca. No Master/Part III rewrite; historical V13 appendix bytes unchanged.
+- Exact local checkout/test remains BLOCKED: git ls-remote https://github.com/RedMentos/Aii.git HEAD failed because this runner could not resolve github.com. GitHub Actions Linux CI is not local, Android-native or Redmi evidence.
 
-## What V13/V14 can newly do
-- #2190 fixes a narrowly scoped Android 13 audit-DB path rejection for the exact AOSP /data and legacy /data/data system:system 0771 ancestors. This improves the broker's ability to initialize on the target filesystem; it does **not** add an Android OS executor or UI control.
-- #2179 is merged: after a committed/observed T8 outcome, a bounded cancellable idle worker now routes a postcommit JEPA update through Runtime/SleepRuntime and persists the numeric WorldJEPA/EMA checkpoint/cursor plus B1/B2/SELF SHADOW readouts. The test cohort is synthetic; both learning gates remain OFF by default; no native GGUF body weights changed.
-- #2186 exact candidate head 4b01ecdfb87e4e5b1b5bc59d934d1536aef8d836 passed V14 T8/Store **66 tests on Python 3.13 and 66 on Python 3.14**, staged **249/10 skipped/47 subtests**, and integrated **415/3 skipped/58 subtests**. The optimizer-moment arms both passed the current retention gate in one synthetic cohort. The hard-replay arm was a negative result: holdout loss rose **0.366633 -> 0.905487**, and the utility/retention gate rejected it. Keep hard replay non-default/OFF. #2186 must rebase to the current release; #2189 is an overlapping subset and must not be merged alongside it.
+## Corrected JEPA/optimizer status
+- #2179 is merged: a bounded cancellable Runtime/SleepRuntime worker consumes committed/observed T8 and persists numeric WorldJEPA model/EMA state plus cursor. Learning gates remain OFF; the test cohort is synthetic; B1/B2/SELF readouts are SHADOW.
+- **Correction:** production world_jepa_shadow_checkpoint is still inference-only and returns optimizer_state_persisted=false; production WorldJEPAStoreConsumer reports optimizer_moments_persisted=false. Numeric model/EMA weights persist, but Adam moments reset on each production update.
+- The optimizer-moment and hard-replay results in #2186 came from a disposable staged tree created by test_world_jepa_training_resume_stage_20261111.py and integrated_world_training_resume_candidate_20261111.py. The staged tree replaces WorldJEPA/checkpoint sources and sets V13_EXPECT_OPTIMIZER_STATE_PERSISTED=1 only inside that stage. This is candidate evidence, not production Runtime integration.
+- The hard-replay arm in that staged cohort worsened holdout 0.366633 -> 0.905487 and the utility/retention gate rejected it. Keep hard replay non-default/OFF; do not lower gates. #2186 remains draft; #2189 and duplicate #2193 are closed.
+
+## Flow-audit candidate
+- #2183 new head e8abb54d... fixes the previous undefined event_id and reuses the merged AndroidControl AOSP /data ancestor policy; DB access is read-only with O_NOFOLLOW and inode/owner/link checks.
+- Exact old-head CI: safe-additive 21 passed; staged 249/10/47; integrated 415/3/58; private-bridge PASS. It is a read-only local CLI diagnostic, not a runtime fix or UI dashboard. It is based on e18c664..., while current branch head is d4834...; rebase and rerun exact checks before release-queue approval.
 
 ## Device and user action
-- Private owner-read PIPELINE_STATUS request RedMentos/Aiiii#389 expired at **2026-11-21T10:19:16Z** with zero comments. Installed SHA is UNKNOWN; auto-update consent is UNVERIFIED. No UPDATE_REQUEST, device update, remote shell, model swap, permission change or user-data mutation was performed.
-- **User action: none required.** Redmi remains **REDMI_UNVERIFIED**. Do not run a new Termux command based on CI alone.
+- Private owner-read request RedMentos/Aiiii#389 expired at 2026-11-21T10:19:16Z with zero comments. Installed SHA UNKNOWN; auto-update consent UNVERIFIED. No UPDATE_REQUEST, phone update, shell, model swap, permission change or user-data mutation.
+- User action: none required. Redmi remains REDMI_UNVERIFIED. Do not run a manual Termux command based on CI alone.
 
-## Highest-priority remaining system gaps
-1. **P0 chat path (#1904):** wrong 2+2 result, slow turns and missing B1/B2 offer delivery remain unverified/failing on the last device evidence. Fix actual B1/B2 -> C4 -> C3 consumption and correct answer quality without dropping organs or merely raising deadlines.
-2. **Voice/audio:** rebase RAW EAR V3 and the staged A5 consumer together; preserve text+audio modalities and prove the actual B1/B2 consumer. Microphone capture, ASR, trainable speech decoder/vocoder and full-duplex remain open.
-3. **Android agency:** #2190 is only the path guard. Background/API-first executor, authenticated companion, capability consent, stop/revocation, action audit and UI observation/action remain unimplemented.
-4. **JEPA/replay:** preserve #2179's bounded runtime worker; rebase #2186, retain its negative replay result, run multi-seed and A->B->A retention controls. Keep optimizer/learning gates OFF until the separate acceptance evidence exists.
-5. **B3/latent:** symbolic/tap traffic is not trained latent coupling; native receiver-effect/OOD/NO_MESSAGE/SYMBOLIC ablations remain open.
-6. **Whole Canon:** the mechanical index still contains 1,255 headings; clause-level mapping across A/B/C/JEF, attention, world/self/memory, tools, age, permissions, multimodal learning, sparse MoE, cross-organ gradients, self-edit, install/recovery and UX remains incomplete.
-
-## Open review blockers
-- #2183 flow-audit candidate: focused test has a NameError (event_id undefined) and its Store path validator rejects AOSP /data 0771. Boss review comment records both; keep out of release.
-- #2188 dashboard is stacked on #2183; do not release it first.
-- #2158/#2177 voice and #2169 tap-provenance candidates remain stale/non-mergeable against the current release.
-- #1983 Memorilla remains optional SHADOW; no native context-overflow consumer is accepted.
+## Remaining whole-Canon priorities
+1. P0 #1904: correct 2+2 answer, reduce real turn latency, and deliver B1/B2 OfferPackets through C4/C3 without dropping organs.
+2. Promote the training-resume overlay into the actual Store/Runtime checkpoint with model+EMA+Adam state, source pins, atomic lineage, restart/crash/rollback tests and negative controls.
+3. Rebase RAW EAR V3 (#2177) and Core A5 consumer (#2158) together; prove actual text/audio consumer delivery, microphone/ASR/speech decoder/vocoder/full-duplex remain open.
+4. Android agency: #2190 is only a path guard; background/API-first executor, authenticated companion, capability consent, stop/revocation, audit and UI observation/action remain unimplemented.
+5. B3 remains symbolic/tap-only; no trained cross-organ latent receiver or OOD/NO_MESSAGE/SYMBOLIC utility proof.
+6. The mechanical index still has 1,255 headings; semantic clause-to-code/test/environment/rollback mapping remains incomplete.
 
 ## Next execution
-1. Rebase/review #2186 on the current release head; remove shared board/workplan/ledger/next-action edits from the specialist code PR and keep the hard-replay negative result.
-2. Fix #2183's test and AOSP path validator before exposing any dashboard consumer.
-3. Rebase #2158/#2177 and prove B1/B2 offer delivery through C4/C3.
-4. Fix #1904 answer quality/latency using the full multi-organ path, not organ removal or timeout inflation.
-5. Obtain a fresh authenticated private owner-read receipt before any device update request.
+1. Rebase #2183 onto current d4834..., then verify exact current-head safe-additive + staged/integrated + private-bridge checks before the release-approval comment/label.
+2. Keep #2186 as one draft research candidate; integrate the staged training-resume overlay into actual Runtime/Store before claiming optimizer persistence. Preserve the negative hard-replay result.
+3. Fix #1904 and the B1/B2 -> C4 -> C3 consumer path.
+4. Rebase #2158/#2177 together and validate A5 audio/text consumption.
 
 ---
 # JEPA & Memory checkpoint — 2026-11-21 08:4x CET

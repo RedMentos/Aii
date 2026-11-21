@@ -342,3 +342,13 @@ No material V14 master edit was made; no master backup was required. Historical 
 - Private owner-read #389 expired with no response. Installed SHA and updater consent remain unknown. No UPDATE_REQUEST or device action; REDMI_UNVERIFIED.
 - Local full checkout is blocked by GitHub DNS. Exact local repository tests are not claimed. The V14 master and historical V13 appendices were not changed.
 - Next integrated slice: P0 correct B1/B2 -> C4 -> C3 answer delivery, plus RAW EAR V3 A5 consumption; keep voice output, Android OS/UI control, true B3 latent coupling, cross-organ gradients, native weight updates and self-edit explicitly open.
+
+
+## Boss correction — 2026-11-21 11:27 CET
+
+- The production JEPA postcommit worker from #2179 persists numeric WorldJEPA model/EMA state and cursor, but production world_jepa_shadow_checkpoint remains inference-only and production WorldJEPAStoreConsumer reports optimizer_moments_persisted=false. Adam moments reset on each production update.
+- The optimizer-moment and hard-replay ablations in #2186 were run only in the disposable staged training-resume overlay produced by test_world_jepa_training_resume_stage_20261111.py / integrated_world_training_resume_candidate_20261111.py. The staged tree replaces WorldJEPA/checkpoint sources and sets V13_EXPECT_OPTIMIZER_STATE_PERSISTED=1 only there. This is not production Runtime persistence.
+- The hard-replay staged arm worsened holdout 0.366633 -> 0.905487 and the utility/retention gate rejected it. Keep it non-default/OFF.
+- #2183 new head e8abb54... fixes the earlier NameError and uses the merged AOSP /data path policy. Safe-additive 21, staged 249/10/47, integrated 415/3/58 and private-bridge tests PASS on that old head; it must rebase to current d4834... and rerun exact-head CI before queue approval.
+- #2190 remains merged at code head e18c664...; exact push CI is green. It is only an audit-DB path fix, not Android control.
+- Next integrated work: promote training-resume checkpoint into the actual Store/Runtime path; fix #1904 B1/B2 -> C4 -> C3; rebase RAW EAR V3/A5 consumer together. Redmi remains unverified.

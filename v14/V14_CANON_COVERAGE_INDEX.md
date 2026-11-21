@@ -1513,3 +1513,15 @@ This overlay is additive; the historical 1,255-heading inventory and V13 appendi
 | B3 Enlightened Space | Symbolic messages/tap provenance only | Model-free provenance candidate, not current-base integrated | No trained cross-organ latent receiver, OOD/NO_MESSAGE/SYMBOLIC ablation or measured utility |
 | Release / Redmi | Code head e18c664d954fa5a44a1b2e5bec76850d5a40f89f; exact push CI 5/5 PASS | GitHub Actions Linux CI only; local checkout DNS blocked | Private owner-read #389 expired without reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED |
 
+
+
+### Boss correction — 2026-11-21 11:27 CET
+
+| Canon family | Current evidence | Not yet accepted |
+|---|---|---|
+| Runtime JEPA / World / Self | #2179 production worker persists numeric WorldJEPA model/EMA + cursor after committed T8; gates OFF; B1/B2/SELF SHADOW | Production Adam moments reset; staged optimizer-resume overlay is not production; no native GGUF body-weight learning |
+| Optimizer / replay | #2186 staged tree proves a candidate moment-resume overlay; hard replay holdout 0.366633 -> 0.905487 and gate rejects | Promote checkpoint/optimizer state into real Store/Runtime; multi-seed A->B->A; keep hard replay OFF |
+| Flow audit | #2183 head e8abb54... safe-additive 21, staged 249/10/47, integrated 415/3/58 and private bridge PASS | Rebase to current d4834... and rerun exact checks before release queue; diagnostic CLI only |
+| Android agency | #2190 merged exact AOSP /data path guard; broker tests PASS | No OS executor, Android API/UI control, authenticated companion or Redmi proof |
+| Release / Redmi | d4834... exact push CI PASS; code head e18c664... | #389 expired without reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED |
+
