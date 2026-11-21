@@ -102,3 +102,23 @@ PR #2137 is merged as `3db6d1f00fceab9e7755bc8f4c25882ef7f19258`. It converts th
 - distinguishes observed negative outcomes from CANCELLED/ABORTED and OUTCOME_UNKNOWN/INTERRUPTED; cancelled/censored cases produce no prediction error or receiver update;
 - persists the scalar temporal readout with rollback and parent-directory fsync.
 Exact PR-head V14 real-Store tests and V13 staged/integrated tests pass. The exact merge-commit push integrated regression is still pending at this checkpoint. This is a scalar temporal receiver only: no normal Runtime consumer, no full JEPA, no cross-organ latent coupling and no native B1/B2 body-weight update. The next falsifiable experiment is a real postcommit Runtime consumer with source-bound predictions, held-out utility, no-predictor/replay-only controls, restart, retention and rollback.
+
+
+## R-013 — Persistent test-time JEPA, optimizer state, replay and source-disjoint retention (2026-11-21)
+
+**Evidence level:** ABSTRACT_VERIFIED plus detailed project-page method/ablation review.  
+**Primary source:** Zhang et al., *JEPA-TTT: Persistent Test-Time Training of Latent World Models for Planning under Dynamics Shifts*, arXiv:2610.00722 (2026-09-30), [paper](https://arxiv.org/abs/2610.00722), [authors' project page](https://jepa-ttt.github.io/).
+
+**Findings:**
+- JEPA-TTT adapts an action-conditioned latent dynamics predictor from observed transitions across episodes. The visual encoder and offline reward head remain fixed in that experiment; this is an experimental decomposition, not a reason to freeze V14 organs permanently.
+- The authors retain predictor parameters, optimizer state and replay buffer across episode boundaries. Their matched persistent-vs-reset comparison reports mean best score 0.729 vs 0.289 and mean AUC 0.637 vs 0.273 across eight dynamics shifts. This makes optimizer-state persistence a concrete V14 ablation, not a cosmetic checkpoint feature.
+- Dense replay contributes beyond dense temporal windows, but less than the dense-window change itself: mean best score 0.678 vs 0.671 and mean AUC 0.571 vs 0.548 in the reported dense-vs-dense-replay comparison.
+- Held-out evaluation trajectories remain outside the adaptation buffer. The project page also limits its claim to one fixed dynamics shift per deployment; simultaneous visual/reward shifts and sequences of changing dynamics are not established.
+
+**V14 implementation consequence:**
+- A source-disjoint split must group all action outcomes from the same source/event together; hashing only action_id is insufficient and can leak source-specific content.
+- A bounded latest-N scan can permanently starve old unprocessed actions. The JEPA Store consumer therefore needs a stable oldest-first (created, action_id) cursor, persisted with pending rows and checkpoint pointer.
+- The current V13 WorldJEPA checkpoint persists online encoder, EMA target and predictor weights but not Adam moments or inverse-head optimizer state. A weight-only warm start is not equivalent to JEPA-TTT's persistent optimizer; report optimizer_moments_persisted=False and test a persistent-optimizer checkpoint separately.
+- Keep predictor-only, encoder+EMA, replay-on/off and source-disjoint holdout variants as separate experiments. No native Android inference, reward labels, or body-weight changes follow from these papers.
+
+**Related source:** Pu, Fan & Lian, *ER-JEPA: Experience Replay Improves Joint-Embedding Predictive Learning in Language Models*, arXiv:2609.36952 (2026-09-29), [paper](https://arxiv.org/abs/2609.36952). Its replay branch revisits stored source/target pairs for both token and representation losses; content-based, uniform and hard selection are alternative replay policies. The replay path is removed at inference. This supports treating episodic replay as a separate training path and measuring retrieval policy, not collapsing it into a generic memory lookup. No code, weights or dependency were imported from either paper.
