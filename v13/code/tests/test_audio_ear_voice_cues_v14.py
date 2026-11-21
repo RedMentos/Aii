@@ -96,6 +96,7 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path)
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
             consent_check=consent_ok, finality="FINAL", token_budget=512,
         )
+        assert result["status"] == "CALLER_PCM16_A5_A4_C3_ADMISSION"
         segment = result["packet"]["segments"][0]
         cues = segment["acoustic"]["voice_cues"]
         assert result["a4"]["voice_activity_hint"] == "VOICED"
