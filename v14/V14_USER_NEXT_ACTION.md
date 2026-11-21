@@ -242,3 +242,14 @@ The source corrections cover CANCELLED/ABORTED and OUTCOME_UNKNOWN/INTERRUPTED w
 - No local full-suite run: worker cannot resolve GitHub DNS. GitHub Actions is CI/Linux only.
 
 **User action:** none.
+
+
+## Exact latest-HEAD job status — 2026-11-21 01:56 CET
+
+For current docs-only HEAD `d61b695739023d0bf0a3cfa4022770f0de2615fa`:
+- Owner-read push [44846409890](https://github.com/RedMentos/Aii/actions/runs/44846409890) PASS.
+- Private bridge push [44846409984](https://github.com/RedMentos/Aii/actions/runs/44846409984) PASS.
+- Staged-runtime job in staged-context workflow [44846409816](https://github.com/RedMentos/Aii/actions/runs/44846409816) PASS.
+- Integrated-regression job is still running step 6 (shared staged organ/memory path) since 00:51:24Z; >5 minutes at last readback, no failure and no accessible log yet. The workflow remains IN_PROGRESS, so exact latest-SHA gate is not complete.
+
+Code-bearing release `5b9171a4` remains the last fully CI-green code SHA. Do not claim `d61b695` green or deployed until its integrated-regression job completes. Private #351–354 still unanswered; installed SHA UNKNOWN / REDMI_UNVERIFIED.
