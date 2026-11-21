@@ -129,3 +129,21 @@ No user action is needed now. Current installed Redmi SHA/updater status was not
 - Integrated regression: 424 passed, 3 skipped, 58 subtests (6 warnings).
 - Together with A5 UI lease 15/15 + 5 subtests on Python 3.13/3.14, this validates the CI-staged integration surface at that SHA. It is not a real Android provider or a Redmi test.
 - Strict additive gate remains FAIL_BY_POLICY; Boss review and preservation of #2243 artifacts in Core #2242 remain necessary before merge.
+
+
+## 2026-11-21 — shared content-addressed blob race fix
+
+QA PR #2250 exposed a real integrity race: A5 source revocation could tombstone one source, release the Store mutex, and then unlink a shared content-addressed blob after a second producer had reused it and committed another live source row.
+
+The Perception branch now serializes both sides with the Store's existing re-entrant mutex:
+- A5 publication holds the mutex across blob existence/write, source + PerceptPacket transaction, and failure cleanup.
+- A5 revocation holds the same mutex across tombstone, live-reference count, and final blob unlink.
+- Generic `Store.source()` now holds that mutex across its blob existence/write and source-row transaction, so it cannot race the A5 revocation path.
+
+A new CI regression exercises the real `Store.source()` producer against the real A5 revocation function on separate threads. The QA-owned #2250 A5-to-A5 regression must also move its second producer to a separate thread: a correctly serialized producer blocks while revocation owns the mutex, so a synchronous producer call would deadlock the test until its timeout. Do not weaken that regression.
+
+**Local evidence:** a LOCAL_LINUX isolated reproduction using the exact observed lock/transaction ordering failed before the fix with a live second SourceRef plus `FileNotFoundError`, then passed after the fix with the producer blocked until unlink completed and the new source readable. This is a focused copied-code concurrency harness, not a full Aii checkout test.
+
+**CI status:** pending exact-head CPython 3.13/3.14 run. The full repository checkout is not mounted and GitHub DNS resolution fails in this worker. No full local Aii suite was run.
+
+**Boundary:** this remains a synthetic A5 metadata contract. No Android UI provider, AccessibilityService, MediaProjection, screenshot capture, action executor, microphone, or Redmi test is present. `REDMI_UNVERIFIED` / `NOT_RELEASED`.
