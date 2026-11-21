@@ -16,7 +16,7 @@
 - QA review comment `6004094094` is recorded on PR #2178 with the syntax line comment, exact failing job IDs, pin-chain diagnosis and required retests. The persistent QA board/workplan/handoff readback is in [QA PR #2180](https://github.com/RedMentos/Aii/pull/2180).
 
 ## Device, updater and whole-system boundary
-- Private owner-read PIPELINE_STATUS #373 and earlier #368 remain unanswered/expired. Installed Redmi SHA is UNKNOWN; updater consent/state is UNVERIFIED; `REDMI_UNVERIFIED`.
+- Latest private owner-read PIPELINE_STATUS #379 is OPEN with zero comments at this readback (expires 2026-11-21T08:30:59Z); prior #373/#368 expired without reply. No duplicate request was created. Installed Redmi SHA is UNKNOWN; updater consent/state is UNVERIFIED; `REDMI_UNVERIFIED`.
 - No UPDATE_REQUEST, shell action, install, permission change, model download/swap, weight edit, SQLite/chat mutation or phone operation was performed.
 - The historical #1904 device failures remain open: slow/incorrect 2+2, B1/B2 timeout/zero valid offers and no accepted B1/B2→C4→C3 path. No newer device receipt clears them.
 - #2178's numeric WorldJEPA/EMA and B1/B2/SELF numeric SHADOW path is not native GGUF body learning, not B3 trained latent coupling, not sparse-MoE proof and not real user-learning evidence. Optimizer gates default OFF; decision authority remains NONE.
