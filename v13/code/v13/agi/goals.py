@@ -5,8 +5,8 @@ progress, evidence refs and an optional wake time; wakes go through the G13 Even
 GOAL_WAKE events, so quiet hours, resources and Age rights apply. USER goals are the user's
 own initiative; SELF goals (V13 sets its own) need Age right choose_learning_goals and their
 wakes need resume_open_goals (Age 4) — at Age 0 they stay HELD_AGE. Plans can be scored by a
-pluggable evaluator (later World-JEPA rollouts, AG2) before execution. Depth is bounded by the
-Age budget focal_depth plus a hard ceiling.
+pluggable evaluator (later World-JEPA rollouts, AG2) before execution. Goal-tree depth is a developmental planning right plus a hard ceiling,
+not per-turn focal compute depth.
 """
 import time
 from .base import StateBox,age_allows,learning_limit

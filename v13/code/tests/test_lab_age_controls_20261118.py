@@ -288,8 +288,9 @@ class LabAgeLearningRights(unittest.TestCase):
             try:
                 self.assertEqual(earned.system_stage(), 0)
                 self.assertEqual(lab.system_stage(), 0)
-                self.assertEqual(earned.learning_rights("tool")["exploration_rate"], 0.0)
-                self.assertGreater(lab.learning_rights("tool")["exploration_rate"], 0.0)
+                from v13.agi.base import learning_limit
+                self.assertEqual(learning_limit(earned, "exploration_rate", 0.0, capability="tool"), 0.0)
+                self.assertGreater(learning_limit(lab, "exploration_rate", 0.0, capability="tool"), 0.0)
                 self.assertEqual(lab.budgets("system"), earned.budgets("system"))
                 self.assertFalse(lab.may("active_info_search", resource_mode="RED"))
 
@@ -320,6 +321,8 @@ class LabAgeLearningRights(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "Zieltiefe > 6"):
                     goals.add("too-deep", origin="SELF", parent=parent)
                 self.assertEqual(lab.system_stage(), 0)
+                from v13.agi.base import learning_limit
+                self.assertGreaterEqual(learning_limit(lab, "goal_depth", 1), 5)
                 self.assertEqual(lab.budgets("system")["focal_depth"],
                                  earned.budgets("system")["focal_depth"])
             finally:

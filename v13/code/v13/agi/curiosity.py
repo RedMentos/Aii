@@ -4,9 +4,8 @@ Per region (task family, domain, skill) the tracker keeps a window of prediction
 Learning progress LP = mean(older half) - mean(newer half): positive when V13 is getting
 better there. Intrinsic value = max(0, LP) + novelty bonus for little-visited regions, so
 it is drawn to where it learns, not to noise (unlearnable regions have LP≈0) and not to
-what it already knows (error≈0, LP≈0). choose() picks a practice target; the Age budget
-exploration_rate (0 at Age 0) and the right active_info_search bound what it may do on
-its own. Blocked regions (user/hard rules) are never chosen.
+what it already knows (error≈0, LP≈0). choose() picks a practice target; the developmental active_info_search right and
+its graded exploration allowance bound self-directed practice, not physical compute. Blocked regions (user/hard rules) are never chosen.
 """
 import random
 from .base import StateBox,age_allows,learning_limit,clamp01

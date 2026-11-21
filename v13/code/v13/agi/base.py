@@ -42,16 +42,18 @@ def budget(age,name,default=0):
     except Exception:return default
 
 def learning_limit(age, name, default=0, capability='system'):
-    """Read a developmental learning/planning right, never a runtime resource budget."""
-    if age is None:
+    """Read a developmental learning/planning right without consulting Age budgets."""
+    source = {'exploration_rate': 'exploration_rate',
+              'goal_depth': 'focal_depth'}.get(name)
+    if age is None or source is None:
         return default
     try:
-        getter = getattr(age, 'learning_rights', None)
-        if callable(getter):
-            return getter(capability).get(name, default)
-        # Compatibility for older controller adapters; callers are restricted
-        # to developmental fields, not CPU/time/memory/replay quantities.
-        return age.budgets(capability).get(name, default)
+        from ..age import BUDGETS
+        stage = age.ceiling(capability)
+        maturity = age.maturity(capability)
+        lo, hi = BUDGETS[source][stage]
+        value = lo + (hi - lo) * maturity
+        return int(round(value)) if name == 'goal_depth' else round(value, 6)
     except Exception:
         return default
 
