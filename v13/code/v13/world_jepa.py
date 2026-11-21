@@ -121,10 +121,11 @@ class WorldJEPA:
         self.seed = seed; self.ensemble = ensemble
 
     def fit(self, X, A, X2, steps=3000, log_every=500, warm_start=False, cancel_check=None,
-            allow_optimizer_bootstrap=False, train_encoder=True):
+            allow_optimizer_bootstrap=False, train_encoder=True, stable_enabled=False,
+            stable_state=None):
         # Invalid transitions cannot establish learned SHADOW inference evidence.
         # The covariance objective divides by n-1; never fit a single row.
-        from . import world_jepa_training_state as training_state
+        from . import world_jepa_training_state as training_state, world_jepa_stable
         if (type(self.seed) is not int or not 0 <= self.seed <= 2**63-1
                 or type(self.ensemble) is not int or not 1 <= self.ensemble <= 16
                 or type(steps) is not int or steps < 0
@@ -132,8 +133,15 @@ class WorldJEPA:
                 or type(warm_start) is not bool
                 or type(allow_optimizer_bootstrap) is not bool
                 or type(train_encoder) is not bool
+                or type(stable_enabled) is not bool
                 or (cancel_check is not None and not callable(cancel_check))):
             raise ValueError('Invalid WorldJEPA fit configuration')
+        if stable_state is not None and (not stable_enabled or not warm_start):
+            raise ValueError('STABLE state requires an enabled warm-start update')
+        stable_prior = (
+            world_jepa_stable.validate_state(stable_state, self.ensemble)
+            if stable_enabled and stable_state is not None else None
+        )
         if cancel_check is not None and cancel_check():
             raise InterruptedError('WorldJEPA fit cancelled')
         if not train_encoder and not warm_start:
@@ -194,6 +202,12 @@ class WorldJEPA:
         opt = Adam({**{'e'+k: v for k, v in enc.items()}, **{'p'+k: v for k, v in pred.items()}, **{'i'+k: v for k, v in inv.items()}}, LR)
         if saved_training is not None:
             training_state.restore_adam(opt,saved_training['main'])
+        main_stable = (
+            world_jepa_stable.StableDriftController(
+                opt.p, stable_prior['main'] if stable_prior is not None else None, steps
+            ) if stable_enabled else None
+        )
+        bootstrap_stable = []
         history = []
         for s in range(steps):
             if cancel_check is not None and cancel_check():
@@ -206,11 +220,16 @@ class WorldJEPA:
                 x2=x2[b] if train_encoder else None, inv_w=INV_W if train_encoder else 0.,
             )
             loss, parts, gp, ge = out[:4]; gi = out[4] if len(out) > 4 else {}
-            opt.step({
+            gradients = {
                 **({'e'+k: v for k, v in ge.items()} if ge is not None else {}),
                 **{'p'+k: v for k, v in gp.items()},
                 **{'i'+k: v for k, v in gi.items()},
-            })
+            }
+            if main_stable is not None:
+                gradients = main_stable.adjusted_gradients(gradients)
+            opt.step(gradients)
+            if main_stable is not None:
+                main_stable.observe(s + 1)
             if train_encoder:
                 for k in enc: tgt[k] = TAU*tgt[k]+(1-TAU)*enc[k]
             if s % log_every == 0 or s == steps-1: history.append(dict(step=s, loss=round(loss, 5), **{k: round(v, 5) for k, v in parts.items()}))
@@ -231,15 +250,28 @@ class WorldJEPA:
                 r2 = np.random.default_rng(self.seed*100+e)
                 p = _init_pred(r2, A.shape[1])
                 o = Adam(p, LR)
+            boot_stable = (
+                world_jepa_stable.StableDriftController(
+                    o.p,
+                    stable_prior['bootstrap'][e-1] if stable_prior is not None else None,
+                    steps // 2,
+                ) if stable_enabled else None
+            )
             idx = r2.integers(0, len(x), len(x))
             for s in range(steps//2):
                 if cancel_check is not None and cancel_check():
                     raise InterruptedError('WorldJEPA fit cancelled')
                 b = idx[r2.integers(0, len(idx), min(BATCH, len(idx)))]
                 _, _, gp, _ = loss_grads(enc, p, x[b], A[b], zt_all[b], train_enc=False)
+                if boot_stable is not None:
+                    gp = boot_stable.adjusted_gradients(gp)
                 o.step(gp)
+                if boot_stable is not None:
+                    boot_stable.observe(s + 1)
             preds.append(p)
             bootstrap_training.append({'adam':training_state.snapshot(o),'rng':r2.bit_generator.state})
+            if boot_stable is not None:
+                bootstrap_stable.append(boot_stable)
         ztrain = z_all
         sub = z_all[np.random.default_rng(self.seed).choice(len(z_all), min(400, len(z_all)), replace=False)]
         d = np.sqrt(((sub[:, None]-sub[None])**2).sum(-1)); np.fill_diagonal(d, np.inf); nn_med = float(np.median(d.min(1)))+1e-9
@@ -259,23 +291,41 @@ class WorldJEPA:
         origin = saved_training['origin'] if saved_training is not None else 'FRESH'
         next_training=training_state.capture(opt,inv,rng,bootstrap_training,X.shape[1],A.shape[1],
                                             self.seed,self.ensemble,total_steps,origin=origin)
+        stable_state_out = (
+            world_jepa_stable.compose_state(
+                main_stable.export_state(),
+                [controller.export_state() for controller in bootstrap_stable],
+            ) if main_stable is not None else None
+        )
         with _WORLD_JEPA_IO_LOCK:
             if _WORLD_JEPA_FIT_TICKETS.get(self) != fit_ticket:
                 raise RuntimeError('Superseded WorldJEPA fit cannot publish stale state')
             self.__dict__.update(_training_state=next_training, _fit_steps=total_steps, _action_counts=action_counts, mu=mu, sd=sd,
                                  history=history, enc=enc, tgt=tgt, preds=preds,
-                                 zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
+                                 zsd=zsd, _ztrain=ztrain, _nn_med=nn_med,
+                                 _stable_state=stable_state_out)
         return self
 
     def partial_fit(self,X,A,X2,steps=100,log_every=50,cancel_check=None,allow_optimizer_bootstrap=False,
-                    train_encoder=True):
+                    train_encoder=True,stable_enabled=False,stable_state=None):
         """Continue JEPA weights and EMA target instead of reinitializing.
 
         Callers should mix replay transitions with new ones to reduce forgetting.
         This experimental path does not itself establish durable retention.
         """
         return self.fit(X,A,X2,steps=steps,log_every=log_every,warm_start=True,cancel_check=cancel_check,
-                        allow_optimizer_bootstrap=allow_optimizer_bootstrap,train_encoder=train_encoder)
+                        allow_optimizer_bootstrap=allow_optimizer_bootstrap,train_encoder=train_encoder,
+                        stable_enabled=stable_enabled,stable_state=stable_state)
+
+    def reset_optimizer_state(self):
+        """Reset only Adam moments/clocks for a controlled ablation.
+
+        Model/EMA/inverse parameters and RNG streams are preserved. The reset
+        origin is checkpointed so the control remains auditable after restart.
+        """
+        from . import world_jepa_training_state as training_state
+        self._training_state = training_state.reset_optimizer_moments(self)
+        return self
 
     # -- inference -------------------------------------------------------------------------------------------------
     @_read_locked
