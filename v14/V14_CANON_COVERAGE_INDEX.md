@@ -1728,3 +1728,8 @@ The per-session replay/retention candidate is now the active JEPA review path. I
 - #2247's per-session retention gate rejects every tested A-GEM arm across seeds 13/19/43; no optimizer checkpoint is committed. This is a valid negative result; learning remains OFF.
 - #2242's arithmetic stage passes, but stale `runtime_deploy.STAGER_SHA256` causes Python 3.14 startup and downstream staged/migration failures; audio revoke-cancel is still missing. No audio consumer release.
 - Redmi remains REDMI_UNVERIFIED; no authenticated owner-read, installed SHA or updater consent.
+
+
+### B3 tiny-KV CI / PR stack follow-up — 2026-11-21 20:07 CET
+
+The explicit `latent-cache-tiny` workflow completed on prior exact PR #2243 head `ae26c94700ca8077b38cbd87c40db89b4ae46360`: pinned CPU-only PyTorch 2.10.0+cpu and NumPy 2.3.5, py_compile, and 3/3 tests PASS. This validates only a tiny synthetic K/V adapter/injection mechanism. Current #2243 head `3e52c96d...` is diverged 15 ahead / 17 behind current base due overlapping older documentation; no merge until a normal base sync preserves Boss's latest board/workplan/next-action and R-037. B3 remains PARTIAL_SYMBOLIC_ONLY; no production B1/B2 native latent, OOD or Android proof.
