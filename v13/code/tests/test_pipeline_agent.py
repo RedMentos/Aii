@@ -1,5 +1,6 @@
 """Offline CI-gated pipeline tests; no external GitHub calls or phone writes."""
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
