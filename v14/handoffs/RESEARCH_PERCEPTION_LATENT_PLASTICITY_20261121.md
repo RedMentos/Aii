@@ -88,7 +88,7 @@ The original handoff is preserved above. Its branch snapshots are historical; cu
 
 - LOCAL_LINUX algorithm-level reproduction: PASS on CPython 3.13.5 x86_64. Old algorithm negative control reproduced the false-negative; corrected snapshot algorithm passed the 1-s/2-s invariance check.
 - LOCAL_LINUX full Aii repository suite: BLOCKED — no complete checkout is mounted and GitHub DNS is unavailable in this worker. The repository test file and full staged/integrated suite have not been executed locally.
-- GitHub CI must run on the new current-base PR before this can be treated as a tested integration candidate. No PR/CI PASS is claimed until exact-head readback.
+- Exact-head GitHub CI is queued: RAW EAR run 44957913408 (Python 3.13/3.14) and staged/integrated run 44957913340. Both are QUEUED, not PASS; no integration candidate is accepted until exact-head readback.
 - REDMI/TERMUX: REDMI_UNVERIFIED. No phone, microphone, model weights, permissions, updater or device state was touched. No model download or swap.
 
 ### ReDimNet2 ONNX alternative
