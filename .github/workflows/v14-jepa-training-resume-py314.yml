@@ -31,6 +31,8 @@ jobs:
         python-version: ["3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -42,3 +44,5 @@ jobs:
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_optimizer_resume_store.py
       - name: Verify staged optimizer-resume regression
         run: PYTHONPATH=v13/code PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -s v13/code/tests/test_world_jepa_training_resume_stage_20261111.py
+      - name: Public repository privacy scan
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base 99ec54534fc9e99ce5689d335c80162f018de288 --head HEAD
