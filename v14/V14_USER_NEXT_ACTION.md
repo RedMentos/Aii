@@ -1,3 +1,20 @@
+# Current next action — 2026-11-21T21:47:53.078Z
+
+**No user action is required. No Termux command, model download/swap, weight edit, permission change or device update is authorized by this work.**
+
+- Release/development base: gpt6/v13-private-remote-bridge-20261111 at bdcad466ffea75a2b41f7d23be168f53c7197d20. Boss integration PR [#2258](https://github.com/RedMentos/Aii/pull/2258) is on boss/v14-core-perception-store-audio-integration-20261121, last readback head 06ebe5d29d1244dc1d7afa40d846d227d5f3930e; not merged/released.
+- JEPA code PR [#2247](https://github.com/RedMentos/Aii/pull/2247) current head **3849730b455dc6666e67a29503c616f6982d7163**. It includes the fixed pre-update EMA retention reference and a one-pass parameter-space trust-region backtracking path: one optimizer pass, then nine deterministic enc/predictor/EMA interpolation scales down to 1/256; old training guard selects the scale, final old/new holdouts are evaluated once. The A-B-A test now requires an on-demand-loss + per-session-GEM accepted update per seed and tests that interpolation preserves optimizer-state identity.
+- Previous exact CI run 44952328878 completed: Python 3.13 and 3.14 both PASS compile and SQLite/T8/checkpoint-vs-reset; both PASS the current Store A-B-A test. However its A-B-A metrics show only **3/96** B/A2 candidates committed, all seed 19 / A2; seed 13 and 43 had none. The on-demand-loss + per-session-GEM candidate accepted **0/6** phases. This is not robust continual-learning acceptance. Both Python jobs then FAIL at staged optimizer-resume due a nested pin mismatch; predictor resume and postcommit Runtime were skipped.
+- CI measured the integrated training-resume builder hash as 6f0f9a1ed2d4c173e56d9f864617b2d916fb34a8e5b22dfbb74b17e2592563d7. Recovery builder child pin was corrected in commit 5703510d2d25e353b9d3a9a533f1fcffe17f477c. The stage-builder and runtime-deployer pins are not yet verified; next CI run 44953329088 is queued and must provide the exact new recovery/stage hashes before the chain can be marked valid.
+- The exact JEPA source pin chain was previously checked on the earlier head, but the latest nested builder chain is now **PARTIAL / NOT VERIFIED** pending the new runner output. Do not claim staged deployment success.
+- No local full Aii checkout was available: local GitHub DNS resolution failed, so no LOCAL_LINUX project tests ran. CI is not local or Android proof.
+- No authenticated current phone receipt: private owner-read request #437 has no reply. Installed SHA and updater status remain unknown. No UPDATE_REQUEST was sent. REDMI_UNVERIFIED / NOT_RELEASED.
+- Cross-lane: Boss #2258's latest comment reports a separate staged integration stop at record_only_controller_guard semantic dependency pin. JEPA source blobs in #2247 are newer than the WorldJEPA files currently on Boss #2258; integration must compose the JEPA branch deliberately and recompute pins against the composed bytes.
+
+**Next step:** poll run 44953329088. If the per-seed on-demand-loss acceptance assertion fails, keep the gate closed and investigate the remaining retention conflict rather than relaxing it. Use the CI-measured recovery hash to refresh the stage builder, then the runner-measured stage hash to refresh runtime_deploy. Run predictor-resume and postcommit Runtime on both Python versions before asking Boss to integrate. No user decision is needed.
+
+---
+
 # Current next action — 2026-11-21T21:38:23.398Z
 
 **No user action is required. Do not run Termux commands or change models, weights, permissions, updater settings or device data.**
