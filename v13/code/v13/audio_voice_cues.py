@@ -49,6 +49,20 @@ def _estimate_pitch(frame: list[float], sample_rate: float) -> tuple[float | Non
     return sample_rate / lag, max(0.0, min(1.0, confidence))
 
 
+def _percentile(values: list[float], fraction: float) -> float | None:
+    """Return a linearly interpolated percentile for a small bounded frame list."""
+    if not values:
+        return None
+    ordered = sorted(values)
+    if len(ordered) == 1:
+        return ordered[0]
+    position = (len(ordered) - 1) * fraction
+    lower = int(position)
+    upper = min(len(ordered) - 1, lower + 1)
+    weight = position - lower
+    return ordered[lower] * (1.0 - weight) + ordered[upper] * weight
+
+
 def validate_voice_cues(cues: dict) -> dict:
     """Reject malformed/unbounded acoustic cues before they reach A4 or C3."""
     if type(cues) is not dict:
@@ -56,9 +70,10 @@ def validate_voice_cues(cues: dict) -> dict:
     required = {
         "method", "frame_ms", "hop_ms", "frame_count", "voiced_fraction",
         "voicing_confidence", "f0_median_hz", "f0_range_hz",
-        "energy_range_db", "activity_hint", "activity_score", "prosody_change_score",
+        "energy_range_db", "voiced_energy_range_db", "activity_hint", "activity_score",
+        "prosody_change_score",
     }
-    if set(cues) != required or cues.get("method") != "RAW_EAR_AUTOCORR_V2":
+    if set(cues) != required or cues.get("method") != "RAW_EAR_AUTOCORR_V3":
         raise ValueError("voice cue fields or method are invalid")
     if cues.get("frame_ms") != 40 or cues.get("hop_ms") != 20:
         raise ValueError("voice cue timing is invalid")
@@ -70,7 +85,8 @@ def validate_voice_cues(cues: dict) -> dict:
         if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1:
             raise ValueError("voice cue score is invalid")
     for key, lower, upper in (("f0_median_hz", 65, 400), ("f0_range_hz", 0, 335),
-                              ("energy_range_db", 0, 120)):
+                              ("energy_range_db", 0, 120),
+                              ("voiced_energy_range_db", 0, 120)):
         value = cues.get(key)
         if value is not None and (type(value) not in (int, float) or not math.isfinite(value)
                                   or not lower <= value <= upper):
@@ -84,6 +100,8 @@ def validate_voice_cues(cues: dict) -> dict:
         raise ValueError("pitch range requires a median pitch")
     if cues["activity_hint"] != "VOICED" and cues["prosody_change_score"] != 0:
         raise ValueError("prosody change requires voiced activity")
+    if cues["activity_hint"] == "VOICED" and cues["voiced_energy_range_db"] is None:
+        raise ValueError("voiced activity requires voiced energy range")
     return dict(cues)
 
 
@@ -114,6 +132,7 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
     frame_rms = []
     pitches = []
     voicing_scores = []
+    voiced_frame_rms = []
     for start in range(0, max(0, len(low_rate) - frame_size + 1), hop_size):
         raw_frame = low_rate[start:start + frame_size]
         if len(raw_frame) != frame_size:
@@ -128,6 +147,7 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
         if pitch is not None and confidence >= 0.55:
             pitches.append(pitch)
             voicing_scores.append(confidence)
+            voiced_frame_rms.append(rms)
 
     voiced_fraction = len(pitches) / len(frame_rms) if frame_rms else 0.0
     voicing_confidence = median(voicing_scores) if voicing_scores else 0.0
@@ -142,6 +162,19 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
         ))
     else:
         energy_range_db = 0.0
+
+    # Window energy includes silence; prosodic energy change must not.
+    # Use the 10th–90th percentile of voiced frames to suppress pause/onset outliers.
+    if len(voiced_frame_rms) >= 2:
+        low_voiced_rms = _percentile(voiced_frame_rms, 0.10)
+        high_voiced_rms = _percentile(voiced_frame_rms, 0.90)
+        voiced_energy_range_db = min(
+            120.0,
+            max(0.0, 20.0 * math.log10(max(high_voiced_rms, 1e-6) / max(low_voiced_rms, 1e-6))),
+        )
+    else:
+        voiced_energy_range_db = None
+
     crest = overall_peak / max(overall_rms, 1e-6)
 
     if overall_rms < 0.003:
@@ -163,12 +196,13 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
     # Relative salience only: pitch excursion or within-window energy dynamics.
     # This is not a speech probability and is emitted only for voiced activity.
     pitch_component = 0.0 if f0_range is None else min(1.0, f0_range / 100.0)
-    energy_component = min(1.0, energy_range_db / 20.0)
-    prosody_change_score = (max(pitch_component, energy_component)
+    voiced_energy_component = (0.0 if voiced_energy_range_db is None
+                                else min(1.0, voiced_energy_range_db / 20.0))
+    prosody_change_score = (max(pitch_component, voiced_energy_component)
                             if activity_hint == "VOICED" else 0.0)
 
     return validate_voice_cues({
-        "method": "RAW_EAR_AUTOCORR_V2",
+        "method": "RAW_EAR_AUTOCORR_V3",
         "frame_ms": frame_ms,
         "hop_ms": hop_ms,
         "frame_count": len(frame_rms),
@@ -177,6 +211,8 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
         "f0_median_hz": round(f0_median, 2) if f0_median is not None else None,
         "f0_range_hz": round(f0_range, 2) if f0_range is not None else None,
         "energy_range_db": round(energy_range_db, 2),
+        "voiced_energy_range_db": (round(voiced_energy_range_db, 2)
+                                    if voiced_energy_range_db is not None else None),
         "activity_hint": activity_hint,
         "activity_score": round(activity_score, 6),
         "prosody_change_score": round(prosody_change_score, 6),
@@ -248,6 +284,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
     if cues["f0_range_hz"] is not None:
         summary += f" f0_range_hz={cues['f0_range_hz']:.0f}"
     summary += f" energy_range_db={cues['energy_range_db']:.1f}"
+    if cues["voiced_energy_range_db"] is not None:
+        summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
     summary += f" prosody_change={cues['prosody_change_score']:.2f}"
     candidate = Percept(
         candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
