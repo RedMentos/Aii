@@ -140,7 +140,7 @@ class Runtime:
         if type(event_id) is not str or not event_id:raise ValueError('event id required')
         cache=getattr(self,'_a5_ui_context_cache',{})
         if type(cache) is not dict:raise ValueError('Runtime A5 UI cache is invalid')
-        return tuple(p for p in cache.values() if p.get('event_id')==event_id)
+        return tuple(p for p in cache.values() if p.get('event_id')==event_id and p.get('modality')=='ui' and p.get('finality')=='FINAL')
     def revoke_ui_observation(self,source_id):
         """Tombstone one A5 UI source, delete dependent packets/cache, and unsubscribe."""
         if type(source_id) is not str or not source_id:raise ValueError('UI source id required')
