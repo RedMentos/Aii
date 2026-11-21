@@ -50,3 +50,14 @@ OSS candidate gdonninelli/ggml-extractor main commit 0449f6335ce99f009c204e8c844
 ## Next executable step
 
 Boss independently reviews PR #2177. Core updates the exact V3 source pin in #2158 only after review/merge and completes the staged consumer path. Research then compares existing native_layer_taps.cpp against ggml-extractor on exact pinned b10964, followed by pair-specific middle-layer receiver utility tests with no-message, shuffled, random, symbolic and exact-text controls. No model swap is proposed.
+
+
+## Final exact-head CI readback — 2026-11-21 08:25 CET
+
+- Exact RAW EAR workflow 44880145343: Python 3.11 PASS and Python 3.13 PASS, 12 tests per version.
+- Privacy scan 44880145314: PASS.
+- Staged/integrated workflow 44880145311: staged-runtime PASS (240 passed, 10 skipped, 47 subtests); integrated-regression PASS (415 passed, 3 skipped, 58 subtests).
+- Safe-additive policy workflow 44880145319: FAIL because the existing producer is deliberately changed. This requires independent Boss review; no policy was weakened.
+- Exact code/test blobs did not change after tested code head 1c4bb678025b421b98766cbce61570eec4683a52. Documentation commits were appended afterward.
+- Release branch advanced to 825363114f41a723ff584c58e037b58ea6136b8b after PR #2177 was opened. The PR remains mergeable=true but mergeable_state=unstable; recheck/update against the latest base before merging.
+- Local exact repository suite remains BLOCKED by GitHub DNS. Local synthetic algorithm reproduction remains 13/13 PASS. Redmi remains REDMI_UNVERIFIED.
