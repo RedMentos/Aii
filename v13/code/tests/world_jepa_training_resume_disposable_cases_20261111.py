@@ -146,6 +146,31 @@ def test_resume_checkpoint_rejects_malicious_npy_shape_before_loading(tmp_path, 
         checkpoint.load(dest, '1' * 64, hashlib.sha256(raw).hexdigest())
 
 
+def test_legacy_v1_inference_checkpoint_bootstraps_from_unknown_step_count(tmp_path, fitted):
+    model, data = fitted
+    del model._training_state
+    meta, arrays = checkpoint._extract(model, '1' * 64)
+    meta = dict(meta)
+    meta.pop('fit_steps')
+    meta['schema'] = checkpoint.LEGACY_SCHEMA
+    legacy = tmp_path / 'legacy-v1.npz'
+    raw_stream = io.BytesIO()
+    np.savez_compressed(raw_stream, meta=np.frombuffer(checkpoint._meta_json(meta), dtype=np.uint8),
+                        **arrays)
+    raw = raw_stream.getvalue()
+    legacy.write_bytes(raw)
+    restored = checkpoint.load(legacy, '1' * 64, hashlib.sha256(raw).hexdigest())
+    assert restored._fit_steps == 0
+    before = restored.enc['W1'].copy()
+    with pytest.raises(ValueError, match='explicit optimizer bootstrap permission'):
+        restored.partial_fit(*data, steps=2)
+    assert np.array_equal(before, restored.enc['W1'])
+    restored.partial_fit(*data, steps=2, allow_optimizer_bootstrap=True)
+    assert restored._training_state['origin'] == 'BOOTSTRAPPED_FROM_INFERENCE_ONLY'
+    assert restored._training_state['main']['t'] == 2
+    assert restored._fit_steps == 2
+
+
 def test_inference_only_state_is_not_silently_resumed(fitted):
     model, data = fitted
     del model._training_state
