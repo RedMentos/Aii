@@ -15,12 +15,14 @@ from v13.a5_ui_admission_bridge import A5UIRuntimeAdapter, validate_ui_observati
 
 
 class Provider:
-    """Synthetic OS provider: a non-reentrant guard shared with revocation."""
+    """Synthetic OS provider: pre-lock cancellation + post-lock cleanup."""
     def __init__(self):
         self.lock = threading.Lock()
         self.active = True
         self.callbacks = {}
         self.sequence = 0
+        self.request_started = threading.Event()
+        self.cleanup_lock_states = []
 
     def check(self, *args):
         with self.lock:
@@ -36,10 +38,12 @@ class Provider:
                 self.lock.release()
         return held()
 
-    def subscribe(self, source_id, receipt, session_id, callback):
+    def subscribe(self, source_id, receipt, session_id, on_revoke_requested, on_revoked):
+        if not callable(on_revoke_requested) or not callable(on_revoked):
+            raise TypeError("both revocation phases are required")
         self.sequence += 1
         key = self.sequence
-        self.callbacks[key] = callback
+        self.callbacks[key] = (on_revoke_requested, on_revoked)
 
         def unsubscribe():
             self.callbacks.pop(key, None)
@@ -47,10 +51,17 @@ class Provider:
         return unsubscribe
 
     def revoke(self):
+        callbacks = tuple(self.callbacks.values())
+        # Phase 1 must run before waiting for the non-reentrant consent guard.
+        for request_cancel, _ in callbacks:
+            request_cancel()
+        self.request_started.set()
         with self.lock:
             self.active = False
-        for callback in tuple(self.callbacks.values()):
-            callback()
+        # Phase 2 must run after both the guard and provider lock are released.
+        for _, cleanup in callbacks:
+            self.cleanup_lock_states.append(self.lock.locked())
+            cleanup()
 
 
 def observation(**overrides):
@@ -84,10 +95,13 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         (self.home / "data/blobs").mkdir(parents=True)
         self.store = Store(self.home)
         session = self.store.new_session("A5 UI lease test")
-        self.event = self.store.event(session, "synthetic UI observation test")
+        self.event = dict(self.store.event(session, "synthetic UI observation test"))
+        self.event["brain_generation_id"] = "gen_ui_lease_test"
         self.runtime = Runtime.__new__(Runtime)
         self.runtime.store = self.store
         self.runtime.turn_event = self.event
+        self.runtime.current = "turn"
+        self.runtime.cancel_event = threading.Event()
         self.runtime.attention = Attention(self.store)
         self.runtime.closed = False
         self.adapter = A5UIRuntimeAdapter(self.runtime)
@@ -134,18 +148,32 @@ class A5UIObservationLeaseTests(unittest.TestCase):
                 self.assertNotIn(forbidden, result["packet"])
                 self.assertNotIn(forbidden, segment)
 
-    def test_revocation_waits_for_lease_then_tombstones_packets_cache_and_blob(self):
+    def test_revocation_prelock_cancels_c3_then_postlock_tombstones(self):
         obs = observation()
+        self.runtime.cancel_event.clear()
         with self.lease(obs) as grant:
             result = self.adapter.ingest(obs, grant)
             revoker = threading.Thread(target=self.provider.revoke)
             revoker.start()
-            time.sleep(0.04)
-            self.assertTrue(revoker.is_alive(), "revocation must wait for the held provider guard")
+
+            # A C3-like stream must stop on the non-blocking pre-lock signal.
+            def blocked_c3_stream():
+                yield "first"
+                while not self.runtime.cancel_event.wait(0.01):
+                    yield "still-running"
+
+            chunks = list(blocked_c3_stream())
+            self.assertTrue(chunks)
+            self.assertTrue(self.runtime.cancel_event.is_set())
+            self.assertTrue(self.provider.request_started.wait(1))
+            self.assertTrue(revoker.is_alive(), "provider revoke must still wait for the held consent guard")
+            self.assertEqual(self.provider.cleanup_lock_states, [])
             source = self.store.one("SELECT deleted FROM sources WHERE id=?", (obs["source_id"],))
             self.assertEqual(source["deleted"], 0)
+
         revoker.join(timeout=2)
-        self.assertFalse(revoker.is_alive(), "revocation callback did not complete after lease release")
+        self.assertFalse(revoker.is_alive(), "post-lock cleanup did not complete after lease release")
+        self.assertEqual(self.provider.cleanup_lock_states, [False])
         source = self.store.one("SELECT deleted,hash FROM sources WHERE id=?", (obs["source_id"],))
         self.assertEqual(source["deleted"], 1)
         self.assertEqual(self.adapter.context(self.event["event_id"]), ())
@@ -156,6 +184,22 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.store.read_source(result["source_ref"])
         self.assertFalse((self.home / "data/blobs" / source["hash"]).exists())
+
+    def test_revocation_prelock_does_not_cancel_a_different_generation(self):
+        obs = observation()
+        self.runtime.cancel_event.clear()
+        with self.lease(obs):
+            self.runtime.turn_event = dict(self.event, brain_generation_id="later_generation")
+            revoker = threading.Thread(target=self.provider.revoke)
+            revoker.start()
+            self.assertTrue(self.provider.request_started.wait(1))
+            self.assertFalse(self.runtime.cancel_event.is_set())
+            self.assertTrue(revoker.is_alive(), "provider must wait for the original lease guard")
+        revoker.join(timeout=2)
+        self.assertFalse(revoker.is_alive())
+        self.assertEqual(self.provider.cleanup_lock_states, [False])
+        source = self.store.one("SELECT deleted FROM sources WHERE id=?", (obs["source_id"],))
+        self.assertEqual(source["deleted"], 1)
 
     def test_provisional_is_persisted_but_not_admitted_or_requested(self):
         obs = observation(finality="PROVISIONAL")

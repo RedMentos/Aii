@@ -181,21 +181,49 @@ class UIObservationLease:
         raise TypeError("UIObservationLease cannot be copied")
 
 
+def _request_ui_revoke_cancel(runtime, generation_id):
+    """Non-blocking first phase: cancel only the turn that owns this lease."""
+    active = getattr(runtime, "turn_event", None)
+    if (not isinstance(active, dict)
+            or active.get("brain_generation_id") != generation_id
+            or getattr(runtime, "current", None) != "turn"):
+        return False
+    cancel_event = getattr(runtime, "cancel_event", None)
+    setter = getattr(cancel_event, "set", None)
+    if not callable(setter):
+        return False
+    # Event.set() is deliberately the only operation here: no Runtime lock,
+    # Store transaction, provider guard, logging or subscription mutation.
+    setter()
+    return True
+
+
 @contextmanager
 def ui_observation_lease(runtime, observation, generation_id, consent_check,
                          consent_guard, revocation_subscribe, revoke_callback=None):
-    """Hold the provider's revocation lock for capture/admission/context use.
+    """Hold the provider grant across UI consumption with two-phase revocation.
 
-    consent_guard must share its synchronization primitive with revocation and
-    yield literal True only while the OS grant is active. The revocation
-    subscriber MUST deliver its callback after releasing that same guard;
-    the callback tombstones the source and clears Runtime's UI cache.
+    The provider must register both callbacks before returning:
+      * on_revoke_requested: called BEFORE it waits for/acquires consent_guard;
+        this callback only sets Runtime.cancel_event for this generation.
+      * on_revoked: called AFTER releasing consent_guard AND its subscription
+        registry lock; this callback tombstones the source and clears caches.
+
+    consent_guard shares its synchronization primitive with revocation and
+    yields literal True only while the OS grant is active. The lease stays held
+    through downstream reads/generation; pre-lock cancellation lets C3 exit
+    before the provider can acquire the guard and run post-lock cleanup.
     """
     observation = validate_ui_observation(observation)
     if type(generation_id) is not str or not generation_id:
         raise ValueError("active Runtime generation required")
+    if getattr(runtime, "current", None) != "turn":
+        raise PermissionError("A5 UI lease requires an active Runtime turn")
+    cancel_event = getattr(runtime, "cancel_event", None)
+    if not callable(getattr(cancel_event, "set", None)):
+        raise PermissionError("Runtime cancellation event is required for revocable UI")
     if not callable(consent_check) or not callable(consent_guard) or not callable(revocation_subscribe):
-        raise PermissionError("current check, linearizable guard and revocation subscription are required")
+        raise PermissionError("current check, linearizable guard and two-phase revocation subscription are required")
     args = _provider_args(observation)
     try:
         current = consent_check(*args)
@@ -203,14 +231,20 @@ def ui_observation_lease(runtime, observation, generation_id, consent_check,
         current = False
     if current is not True:
         raise PermissionError("current OS observe_ui grant is not active")
+
+    def request_cancel():
+        return _request_ui_revoke_cancel(runtime, generation_id)
+
+    def cleanup():
+        return (revoke_callback or (lambda sid: revoke_ui_observation(runtime, sid)))(observation["source_id"])
+
     try:
         unsubscribe = revocation_subscribe(
             observation["source_id"], observation["consent_receipt_ref"],
-            observation["capture_session_id"],
-            lambda: (revoke_callback or (lambda sid: revoke_ui_observation(runtime, sid)))(observation["source_id"]),
+            observation["capture_session_id"], request_cancel, cleanup,
         )
     except Exception:
-        raise PermissionError("UI revocation subscription is unavailable") from None
+        raise PermissionError("two-phase UI revocation subscription is unavailable") from None
     if not callable(unsubscribe):
         raise PermissionError("UI revocation subscription must return an unsubscribe callback")
     acquired = False
@@ -496,5 +530,12 @@ class A5UIRuntimeAdapter:
         return revoke_ui_observation(self.runtime, source_id)
 
     def close(self):
-        """Call before Runtime Store close to revoke every outstanding UI session."""
+        """Cancel an active consuming turn, then clear every local UI source before Store close."""
+        active = getattr(self.runtime, "turn_event", None)
+        cancel_event = getattr(self.runtime, "cancel_event", None)
+        if (isinstance(active, dict)
+                and type(active.get("brain_generation_id")) is str
+                and getattr(self.runtime, "current", None) == "turn"
+                and callable(getattr(cancel_event, "set", None))):
+            cancel_event.set()
         return tuple(self.revoke(source_id) for source_id in list(self.runtime._a5_ui_unsubscribe))
