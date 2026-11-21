@@ -1028,3 +1028,30 @@ The release source has a plausible B1/B2 suppression path: default observer mode
 - Boss & Integration: keep #2258 unmerged until the Age-rights composition, exact CI and protected-file review are complete; continue whole-Canon dependency/consumer mapping.
 
 Private owner-read request #443 has no authenticated reply. Installed SHA and updater consent are UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell, or device mutation was attempted.
+
+
+## Cross-agent status refresh — 2026-11-22 00:06 CET
+
+**No user action required.** No Termux command, model/weight change, permission grant, updater toggle, APK installation or device mutation.
+
+### Current Boss candidate
+
+- Boss PR #2258 branch head remains c0e69ce43a5a9f2c541bfbc61f8251b65d8cec83; code-bearing candidate parent 0dc337edfb7a71168e15f3db08bcedc424e32d4f; release-development base bdcad466ffea75a2b41f7d23be168f53c7197d20.
+- Exact #2258 head CI: 12 workflows SUCCESS, 5 SKIPPED, 3 cancelled, 0 failures. These are GitHub CI results, not local or Android proof. PR remains DRAFT / NOT_RELEASED because the full #2235 Age-rights semantics are not yet composed into GoalWake.
+- #2258's three handoff commits changed only V14 handoff/workplan/board documents; no runtime, model, weight, permission or device code changed.
+- Historical V13 appendix blob 08fd3ee987755f3e631e143793929b464d5df27f and active V14 master blob 9748ad5ba9a4d4f5c3d004a0577141f6779fcbca remain byte-identical to release base. The V14 Canon coverage index gained 8 headings and lost 0.
+
+### Updated agent PR review
+
+- #2274 rollback: current head 314d39b has runtime-deploy, staged/integrated, two-checkout migration, Lab-Age and owner-read SUCCESS. Only the additive-only validator fails because this protected rollback change is not additive-only. The branch is 114 commits behind Boss #2258 and overlaps runtime_deploy.py. QA was asked to rebase/stack onto c0e69 and rerun exact deployment/staged/migration checks. No release yet.
+- #2247 JEPA: A→B→A optimizer-resume still fails Python 3.13/3.14 because the test helper drops checkpoint_sha_before/after; staged/integrated passes. Keep the strict checkpoint-change and old-session-retention gates.
+- #2275 RAW EAR: focused tests fail on both Python versions (reference_age_ms 920 vs expected 800); staged/integrated fails the audio_voice_cues source pin. Keep NumPy and the speaker model OFF.
+- #2266 native receiver: exact pinned C++ build and Android arm64 cross-compile fail because native_latent_receiver.cpp misses the closing brace after valid_batch(); staged/integrated also fails the callosum.py pin. It remains diagnostic-only; no production B3.
+- #2271 Android companion: Core branch still has package-install, operator-pin and signed-denial issues. QA #2273 head aa9f509 fixes package setup and denial; Android build, outcome adapter, Lab-Age, deploy-integrity and owner-read are SUCCESS, but staged-runtime fails on audio_voice_cues source pin and two-checkout migration remains PARTIAL (last_error UPDATE); integrated regression is still in progress. It is 18 commits ahead / 1 behind its Core base. No APK install or device proof.
+- #2235 Age rights: still based on 3b8c8bb and 121 commits behind current release base. Rebase/stack the complete learning_limit semantics onto #2258; preserve GoalWake atomicity and recompute all pins.
+
+### Whole-system P0
+
+The source-derived B1/B2 suppression hypothesis remains: background + A_THEN_B_SEQUENTIAL, after two recent C3 zero-token failures and a configured deadline <=50 s, can leave only 4 s of pre-answer time at a 30 s deadline. Both body offers may be deferred before C4; a post-commit observer cannot satisfy same-answer B1/B2→C4→C3. This is not a Redmi finding; the actual device config and failure telemetry are unknown. Core owns the measured budget fix; QA owns same-turn nontrivial regression.
+
+Private PIPELINE_STATUS issue #443 has no authenticated reply. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell or device mutation. No full local Aii checkout exists, so no LOCAL_LINUX repository suite ran.
