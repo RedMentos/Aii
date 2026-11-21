@@ -504,3 +504,196 @@ Status: RESEARCHED_WITH_ABSTRACT_LIMIT / OSS_LICENSES_REVIEWED / NO_IMPORT / NO_
 - **Next executable step:** Core must expose a model-specific native K/V tap/injection seam for the existing llama.cpp/Android path (or explicitly evaluate a reversible native runner alternative without swapping models). Research/Perception can then run the same controls on the actual LFM2.5↔Qwen3.5 pair. No model download or production swap is proposed here.
 
 - **Status:** TWO_LATENT_COMMUNICATION_FULLTEXTS_REVIEWED / ONE_CAUSAL_TRANSFER_ABSTRACT_REVIEWED / CACHEBACK_OSS_APACHE2_CHECKED / LOCAL_LINUX_TINY_MODEL_PROOF / NO_NATIVE_B1_B2_LATENT_PROOF / NO_ANDROID_PROOF.
+
+## R-038 — Android UI observation permissions and source-bound A5 lease (2026-11-21)
+
+### Primary platform documentation reviewed
+
+- **Android AccessibilityService API:** https://developer.android.com/reference/android/accessibilityservice/AccessibilityService. The official reference describes AccessibilityService as an assistive service for users with disabilities, requires the user to enable it in system settings, and gates retrieval of interactive-window content behind declared service capabilities. This is not a general-purpose permission to scrape arbitrary app UI. V14 must not repurpose AccessibilityService for generic screen harvesting; use it only if the shipped feature genuinely provides disability assistance and the user explicitly enables it.
+- **Android MediaProjection guide:** https://developer.android.com/media/grow/media-projection. Projection is a user-consented capture session with a system-mediated prompt and stop/lifecycle handling. Android 14/API 34 adds app-window sharing; on Android 13/API 33 the available projection scope is the full display, which may include unrelated apps, notifications and system UI. A consent receipt is session-bound; it is not a reusable permanent permission.
+- **NotificationListenerService API:** https://developer.android.com/reference/android/service/notification/NotificationListenerService. Notification access is separately granted by the user through system settings; the service must wait for its listener connection before consuming notification events. This is notification-scoped input, not general screen access.
+
+These are current official API references reviewed on 2026-11-21, not research papers. No third-party OSS implementation, model, code, weight, dataset or dependency was imported; no additional license obligation was introduced by this work.
+
+### V14 implementation consequence
+
+- Prefer APP_INTENT and CONTENT_PROVIDER events where the app exposes a supported API. Use NOTIFICATION_LISTENER only for notification-scoped events with current user-granted access. Accept ACCESSIBILITY_ASSISTIVE only with an explicit disability-assistance purpose and a separately verified OS provider. Accept MEDIA_PROJECTION only with a current per-session receipt; reject APP_WINDOW scope below API 34. Redmi Android 13 therefore cannot be described as app-only MediaProjection.
+- Added a strict A5 metadata-only observation schema. It accepts event kind, source/session IDs, receipt reference, method/scope, Android API level, bounded Android ELAPSED_REALTIME interval and PROVISIONAL/FINAL provenance. It rejects screenshot bytes, UI text, node trees, package names, notification content, raw-capture persistence, action authority and learning authority.
+- Added UIObservationLease bound to Runtime identity, active generation, source ID, receipt, capture session, capture method/scope, API level and thread. A5UIRuntimeAdapter consumes the existing Runtime/Store/A4 instance without changing the pinned Runtime source. The provider must expose a current-grant check, a linearizable guard shared with revocation, and a revocation subscription. The subscription remains active after the short lease exits; the provider callback must run after releasing its guard. Adapter revocation tombstones the A5 source, removes all packets referencing it, clears the bounded process cache, unsubscribes, and removes an unshared blob. Downstream cache reads expose FINAL packets only.
+- Added adapter entrypoints for lease acquisition, A5 ingress, bounded per-event FINAL-only UI context reads, revocation and explicit close. Ingress writes only a content-free metadata summary as an A5_UI_EVENT source, persists a PerceptPacket, calls the existing A4 attention scorer, and uses the existing source-bound admission budget. PROVISIONAL observations remain persisted as provisional evidence but are not admitted or allowed to file A4 high-resolution requests. Core must instantiate the adapter in the active-turn path and call adapter.close() before Store shutdown; no automatic Runtime._turn or Runtime.close hook exists yet.
+- This is a Perception adapter over the existing Runtime object, not an Android capture implementation. No authenticated OS receipt provider, AccessibilityService, NotificationListenerService, MediaProjection session, screenshot decoding, visual model, automatic _turn queue hookup, B1/B2/C3 context delivery or Android device test exists yet. A5 UI remains SHADOW / REDMI_UNVERIFIED.
+
+### Local test evidence and limits
+
+- LOCAL_LINUX / CPython 3.13.5: python -m py_compile PASS for the isolated bridge; 14/14 isolated tests PASS using a synthetic SQLite Store and fake A4/provider. Covered Runtime-like ingress, A4/admission, provisional exclusion, source/generation/receipt/thread binding, non-reentrant revocation serialization, tombstone/cache/blob cleanup, raw-field rejection, API 33 vs 34 projection scope, accessibility-purpose gating and NotificationListener API floor.
+- The repository-level unittest is added separately and must be checked by exact-head GitHub CI. The isolated harness does not import the full Aii Runtime/Store, does not use Android APIs and is not a native-device proof.
+- No model/weight, installed permission, microphone/screen-capture setting, updater, user data or device state was changed.
+
+**Status:** OFFICIAL_ANDROID_API_DOCS_REVIEWED / A5_UI_LEASE_AND_RUNTIME_INGRESS_IMPLEMENTED / LOCAL_LINUX_ISOLATED_13_OF_13 / FULL_REPOSITORY_CI_PENDING / OS_CAPTURE_PROVIDER_NOT_IMPLEMENTED / REDMI_UNVERIFIED.
+
+
+## R-039 — MobileVLM V2 as an on-demand A5 visual teacher candidate (2026-11-21)
+
+### Primary paper reviewed
+
+- Xiangxiang Chu et al., **MobileVLM V2: Faster and Stronger Baseline for Vision Language Model**, arXiv:2402.03766v1, submitted 2024-02-06 (preprint; no peer-reviewed venue established by the source reviewed): https://arxiv.org/abs/2402.03766 and full HTML https://arxiv.org/html/2402.03766v1.
+- Main method/experiment sections reviewed: CLIP ViT-L/14 at 336×336, MobileLLaMA-1.4B-Chat, LDPv2 projector, 576→144 visual-token reduction, 1.7B configuration, multi-task data and the mobile latency table. The model freezes the vision encoder but trains the projector and LLM; the paper's training used 8×A100 GPUs, not on-device learning.
+- Reported result: 64.2 average over six VLM benchmarks for MobileVLM V2 1.7B. The paper reports 51.63 generated tokens/s and 4.96 s total for 256 output tokens on NVIDIA Jetson Orin with a 4-bit LLM and llama.cpp. This is an Orin result, not Android/Redmi evidence.
+
+### Maintained OSS and Android implementation evidence
+
+- Official model/code repository: https://github.com/Meituan-AutoML/MobileVLM, README blob 8531f3b890850f904c90fe3a6857763933fc945f, LICENSE blob 261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64. Repository code is Apache-2.0. Its current main HEAD 688fdec914810485c8766da96c63d9d2ce15f750 dates to 2024-04-15, so the model repository itself is not actively maintained in the current cadence; the llama.cpp integration is the actively updated runtime path. The README explicitly says datasets and checkpoints remain subject to their original licenses.
+- Current llama.cpp MobileVLM documentation: https://github.com/ggml-org/llama.cpp/blob/master/docs/multimodal/MobileVLM.md, blob 6c17dbf902eafc6d262d6faa846ff5999fd6d8ab. It explicitly supports MobileVLM_V2-1.7B, uses the mtmd CLI, requires projector type ldpv2 for V2, and includes an Android aarch64 build path under tools/mtmd/android/build_64.sh.
+- The llama.cpp document includes a Snapdragon 778G Android run for MobileVLM_V2-1.7B using the release-2005b build, 4 CPU threads and the F16 mmproj: CLIP image encoding 20.61 s, prompt evaluation 21.12 tok/s, output generation 12.83 tok/s, total 44.41 s for a 377-token response. This is the strongest directly relevant Android evidence found, but it is Snapdragon 778G, not the user's Snapdragon 732G / Redmi Note 10 Pro. It is not transferable as a Redmi benchmark.
+- A separate current-version V1 example in the same document reports a severe regression (0.30 tok/s and 865 s total) compared with an older release. That is a different V1 run, not a V2 result, but it demonstrates that the exact llama.cpp revision and model/projector pairing must be pinned and remeasured.
+- A community GGUF conversion, https://huggingface.co/cyzero-kim/MobileVLM_V2-1.7B-GGUF, is labeled Apache-2.0 and at verified revision bb2cbd1. Its listed files are 792 MB for the Q4_K LLM, 595 MB for F16 mmproj, and 169 MB for Q4_K mmproj. The Q4 pair is about 961 MB on disk; this is a storage figure, not RAM usage. The conversion is third-party, not the official Meituan release; verify hashes and model/projector compatibility before use.
+- Model cards label MobileVLM_V2-1.7B and MobileLLaMA-1.4B-Chat Apache-2.0. The CLIP ViT-L/14-336 Hugging Face model card does not state a license or training-data provenance; do not infer a weight license from the upstream code license. The MobileLLaMA card lists Aeala/ShareGPT_Vicuna_unfiltered as its SFT dataset but does not resolve that dataset's terms. More importantly, the MobileVLM V2 paper uses ShareGPT4V-PT, whose dataset card is CC-BY-NC-4.0 (https://huggingface.co/datasets/Lin-Chen/ShareGPT4V); this conflicts with treating the complete trained artifact as unconditionally Apache-2.0 for commercial redistribution. The model card/license label does not resolve the upstream training-data terms. Keep this candidate out of redistributed/commercial builds until dataset/checkpoint provenance is legally reviewed.
+
+### V14 fit and limits
+
+- Best role: optional on-demand A5 visual teacher after an A5 event/A4 salience request, not an always-on perception loop and not a B1/B2 body. It can describe image content, but the reviewed model card/paper does not establish coordinate-grounded Android tap targets, UI-tree semantics, reliable action grounding, or safe control.
+- The 778G reference suggests image encoding alone can take about 20.6 s with the documented F16 projector; the 732G Redmi may be slower. It therefore belongs behind A4's slow/high-resolution request path if later approved, with small output budgets and explicit timeout/cancel.
+- No RAM/PSS, thermal, battery, TTFT-on-Redmi or Android 13 measurement was found. The 961 MB Q4 file-pair size does not predict runtime memory. The F16 and Q4 projector variants need a quality/latency comparison on the actual target.
+- No model download, conversion, build, swap, or device permission was attempted. No weights were loaded.
+
+**Status:** PAPER_MAIN_SECTIONS_REVIEWED / OFFICIAL_CODE_APACHE_2 / LLAMA_CPP_ANDROID_PATH_DOCUMENTED / SNAPDRAGON_778G_REFERENCE_ONLY / DATASET_LICENSE_REVIEW_REQUIRED / REDMI_UNVERIFIED / NO_MODEL_CHANGE.
+
+## R-040 — Replay can provably increase forgetting (2026-11-21)
+
+### Primary research and scope
+
+- **Mahdaviyeh et al., “Replay can provably increase forgetting,” PMLR 330:15–42 (CoLLAs 2026).** Official proceedings: https://proceedings.mlr.press/v330/mahdaviyeh26a.html . Full arXiv HTML reviewed: https://arxiv.org/html/2506.04377v1 . The arXiv version identifies its license as **CC BY-NC-ND 4.0**; cite and summarize only, do not copy/adapt its figures or text.
+- The result is conditional, not “replay is bad.” In over-parameterized continual linear regression, the worst-case construction shows replay can move error from one old sample onto another, changing forgetting from O(1/T) to Θ(1). The average-case result shows random replay can increase expected forgetting for some task-subspace relationships. MLP / Rotated-MNIST / Split-MNIST experiments are non-monotonic and sample-, class- and task-dependent; some settings benefit only after a larger replay count. The paper also gives sufficient benign conditions in its studied setting. It is not an LLM/JEPA result and does not establish a universal anti-replay theorem.
+- **V14 consequence:** replay volume is not a safety or retention guarantee. Preserve source/session-disjoint holdouts and compare zero replay, uniform replay, session-contiguous replay and loss-selected replay across multiple seeds. Report each old session separately and keep exact checkpoint rollback. Do not relax the per-session gate to make an update pass.
+
+### Testable adaptation
+
+- Keep the existing source-disjoint per-session acceptance gate.
+- Add matched zero/uniform/session-contiguous/loss-selected controls and multi-seed results; separate new-task utility from old-session retention.
+- A replay policy that improves the aggregate while regressing any protected old session remains rejected.
+
+- **Status:** FULL_ARXIV_HTML_REVIEWED / PMLR_RECORD_VERIFIED / CONDITIONAL_RESULT / NO_CODE_IMPORTED / NO_ANDROID_PROOF.
+
+## R-041 — Replay on Demand: an emergent curriculum for continued pretraining (2026-11-21)
+
+### Primary research and method
+
+- **Thede et al., “Replay on Demand: An Emergent Curriculum for Balancing Adaptation and Forgetting in Continued Pretraining,” arXiv:2609.40089 (2026).** Official preprint: https://arxiv.org/abs/2609.40089 ; full 31-page text reviewed: https://pdfs.assets.alphaxiv.org/2609.40089v1.pdf .
+- RoD scores adaptation examples by current language-model loss minus an adaptation-specialist reference loss, and replay examples by current loss minus the pretrained model's reference loss. It jointly top-k selects from both streams under one budget. Reference losses are precomputed and content-hash keyed. Each step scores m×k candidates with a forward-only pass (m=2 in the paper), then trains on k. The specialist reference requires an offline no-replay continued-pretraining run unless already available; a smaller source/reference model can transfer a curriculum to a larger target.
+- **Limitations:** only forgetting represented in the replay pool is visible; LM loss is not downstream capability; proxy replay can fit the proxy distribution rather than restore the pretrained function; each experimental condition is a single-seed run (seed 42), despite replication across model families/scales/domains. Main experiments use distributed NVIDIA B200 GPUs with GPU count varying by model and setting; this is not a mobile recipe.
+- **OSS:** https://github.com/bethgelab/replay-on-demand at exact main SHA `9ecc05173a4a5a8b872e18608c319df0eab5db81`; repository LICENSE is Apache-2.0. The public implementation uses NVIDIA NeMo-RL v0.6.0 / Megatron / Ray / SLURM and an NGC container; it is not a Redmi dependency candidate. No code or dependency was imported.
+- **V14 consequence:** only the small principle of demand-sensitive replay is a possible future local experiment, after strict per-session retention is stable. Do not port the second reference-model scoring loop or GPU stack to Android. Use bounded candidate pools, stored per-cohort loss baselines, zero/uniform/session-contiguous controls, multiple seeds, exact parameter diff, restart and rollback.
+
+- **Status:** FULL_TEXT_REVIEWED / OSS_APACHE2_REVISION_CHECKED / SINGLE_SEED_AND_EXTRA_FORWARD_PASS_LIMITATIONS_RECORDED / NO_CODE_IMPORTED / NO_ANDROID_PROOF.
+
+## R-042 — SmolVLM-256M as a low-storage, on-demand A5 visual teacher candidate (2026-11-21)
+
+### Primary paper reviewed
+
+- Andrés Marafioti et al., **SmolVLM: Redefining small and efficient multimodal models**, arXiv:2504.05299v1, submitted 2025-04-07; preprint, not peer-reviewed evidence. Full HTML sections 1–4.5 reviewed: https://arxiv.org/html/2504.05299v1.
+- SmolVLM-256M combines a 93M SigLIP-B/16 vision encoder with a SmolLM2-135M language backbone. The paper reports 0.8 GB GPU VRAM at batch 1, 44.0 average across its listed image/video benchmark suite, OCRBench 52.6%, TextVQA 50.2%, DocVQA 58.3%. The 500M variant raises those scores to 61.0%, 60.2%, and 70.5%, at 1.2 GB GPU VRAM. These are the paper's evaluation settings, not Redmi measurements.
+- The paper's on-device/edge section benchmarks throughput on NVIDIA A100 and L4 GPUs (e.g. 256M reaches 2.7 examples/s at batch 8 on L4); the smartphone demo is not a Snapdragon 732G benchmark. It explicitly notes that visual compression can hurt fine-grained OCR/localization and that smaller models struggle beyond 8k context.
+
+### Model, GGUF and runtime provenance
+
+- Original checkpoint: https://huggingface.co/HuggingFaceTB/SmolVLM-256M-Instruct, current model revision `d039ab0d4b9311b617e8ffec1d06c8464364aeb3` (last modified 2026-11-13); model card labels Apache-2.0 and identifies base models HuggingFaceTB/SmolLM2-135M-Instruct and google/siglip-base-patch16-512. Both base model cards also label Apache-2.0. No original checkpoint was downloaded.
+- llama.cpp conversion: https://huggingface.co/ggml-org/SmolVLM-256M-Instruct-GGUF, revision `b9e4379657e1450d04d02eec8e345667265b0a00`, model card labels Apache-2.0. Q8 files: language model 175 MB + mmproj 104 MB = 279 MB on disk. F16 files: 328 MB + 190 MB = 518 MB on disk. These are storage sizes, not peak RSS/PSS or total runtime memory.
+- Official llama.cpp multimodal docs use `libmtmd`, list SmolVLM-256M/500M GGUF models, and describe image/audio/video input: https://github.com/ggml-org/llama.cpp/blob/master/docs/multimodal.md. The Android guide documents building/running llama.cpp CLI from Termux: https://github.com/ggml-org/llama.cpp/blob/master/docs/android.md. The combination suggests a testable Android path but does not prove this exact model/projector builds or runs on Redmi; that combined path remains UNVERIFIED.
+- The SmolVLM model card lists The Cauldron and Docmatix training datasets. Their full dataset-license/provenance terms were not audited in this pass; do not infer every training-source term from the checkpoint's Apache-2.0 card label.
+
+### V14 fit and caveats
+
+- Candidate role: A4-triggered, on-demand visual teacher for A5 screen/image input, not an always-on loop, B1/B2 replacement, action executor, or native B3 latent body.
+- At 279 MB Q8 on disk and a paper-reported 0.8 GB GPU memory at batch 1, the 256M model is a plausible low-storage experiment for the 6-GB-class device, but current B1/B2 residency, CPU-only execution, image tiling, allocator peaks, thermal throttling and Redmi memory pressure are unknown.
+- OCRBench 52.6 and TextVQA 50.2 indicate useful but limited recognition; the 500M model is materially stronger but uses more memory. Neither model card nor paper establishes reliable Android UI element coordinates, tap-target grounding, or safe action selection. Use structured app/API events where available; visual output may inform perception but must not itself authorize actions.
+- The paper evaluates images at longest edge 1920 for the 256M/500M models. High-resolution tiling can increase work; downscaling may erase small UI text. A4 should request bounded crops only when needed and preserve source/time/consent provenance.
+
+### Test plan and permission boundary
+
+- Before any download, obtain explicit user consent for a separate experimental model download. Do not change installed models or the production selector.
+- On the actual Redmi/Termux environment, compare 256M Q8 and 500M Q8 only if approved; first verify the exact llama.cpp revision and that its Android build includes libmtmd and the matching mmproj loader.
+- Measure model+mmproj disk size/checksums, load RSS/PSS, peak memory during a 512/1024/1920-longest-edge image, TTFT, output tokens/s, thermal/battery, and OCR/UI-task quality. Use only synthetic or explicitly consented local screen fixtures; no private app screenshots in public logs.
+- Negative controls: no-image, blurred text, shuffled screen/crop, stale capture receipt, and text-only API event. Acceptance requires source-bound visual evidence and human/permission-gated actions; no direct tap authority from VLM output.
+- Compare against MobileVLM V2 only after the same-device measurement; its 1.7B Q4 model+projector is about 961 MB on disk and its published Android reference is Snapdragon 778G, not the Redmi 732G.
+
+**Status:** PAPER_FULLTEXT_REVIEWED / MODEL_CARD_AND_BASE_LICENSES_REVIEWED / GGUF_REVISION_AND_FILE_SIZES_VERIFIED / LLAMA_CPP_ANDROID_PATH_DOCUMENTED_NOT_RUN / CANDIDATE_ONLY / NO_DOWNLOAD / NO_MODEL_CHANGE / REDMI_UNVERIFIED.
+
+
+## R-043 — A5 UI Runtime context readout source binding and lease regression (2026-11-21)
+
+### Exact-head failure reviewed
+
+- PR #2246 code head `ad0d6a3b1f4935b22677c6f9c521ec97e099deec`, GitHub Actions run `44940487917`, failed the same three tests on CPython 3.13.18 and 3.14.10: 12 passed, 3 failed, 5 subtests passed in each job. `py_compile` passed on both versions; staged Runtime passed; integrated regression was still in progress at review time.
+- Root cause 1 (real adapter defect): `PerceptPacket` in `v13/code/v13/contracts.py` stores its source identity in nested `source_ref.source_id`; it has no top-level `source_id`. `A5UIRuntimeAdapter.context()` filtered on `packet.get("source_id")`, so every valid cached packet was silently excluded.
+- Root cause 2 (test defect): the different-generation test used `grant` without binding it in the context manager.
+- Root cause 3 (test/API mismatch): two tests called `context()` without the required lease argument, contradicting the method's fail-closed contract. The API must not become permissive merely to satisfy those tests.
+
+### Corrective change
+
+- Context readout now resolves `source_ref.source_id`, checks the current `event_id` and `brain_generation_id`, and still requires the live thread-bound lease(s), FINAL state and UI modality.
+- Regressions now bind the lease variable correctly, test source-ref and generation spoofing as negative controls, assert provisional packets remain unavailable even with a valid lease, and assert lease-free reads raise `PermissionError`.
+- No Android provider, capture, screenshot, AccessibilityService, MediaProjection, notification reader, action executor or B1/B2/C3 turn hookup was added. This remains a synthetic-provider adapter path.
+
+### Verification boundary
+
+- Exact failing CI evidence is reproducible from run `44940487917` on Python 3.13/3.14. Corrective code-bearing SHA `01ce1c5fc9c8d2c1dc3f41718e3b6508d7b9d723` passed the A5 lease workflow on both Python versions (15 tests + 5 subtests each); staged/integrated regression also passed in run `44941328011`.
+- This worker has no mounted full Aii checkout and GitHub DNS resolution fails, so the full repository test cannot be run locally here. Any standalone logic check is synthetic and is not a substitute.
+- `REDMI_UNVERIFIED` / `NOT_RELEASED`; no model, weight, permission, updater, app or user data changed.
+
+### Next integration
+
+Core must provide an authenticated Android observe_ui receipt provider and retain the lease through the actual active turn and all downstream reads/generation. QA must verify provider revoke-request cancellation and post-lock cleanup through the complete consumer chain. Research/Perception owns this adapter contract and will only add real screen features after that provider exists.
+
+
+### Second exact-head run and remaining test corrections
+
+- The next exact run (`44941137655`) reached the corrected context reader: 13 tests passed and 2 failed on both Python 3.13.18 and 3.14.10; `py_compile` passed. The source-bound readout no longer returned an empty tuple.
+- Remaining failures were test assertions/setup, not a new adapter exception: one assertion still expected a nonexistent top-level packet `source_id` instead of `source_ref.source_id`; the different-generation revocation test never called `ingest`, so there was no persisted source row to tombstone.
+- The test now checks the nested SourceRef and persists the observation before changing the active generation. These preserve the original contract: revocation must not cancel a different generation, but it must tombstone the already-persisted source.
+- Final exact-head A5 lease CI is PASS on Python 3.13 and 3.14 (15 tests + 5 subtests each); privacy scan is PASS. Staged/integrated regression remained IN_PROGRESS at final readback. The strict additive-candidate validator is FAIL_BY_POLICY because this PR modifies an existing bridge plus shared V14 research/handoff files; no bypass is requested. Do not merge or release until Boss review and the remaining integration checks complete.
+
+
+### Final code-bearing SHA and CI readback
+
+- Code-bearing SHA: `01ce1c5fc9c8d2c1dc3f41718e3b6508d7b9d723`. PR #2246 is retargeted directly to the current release-development branch and includes the merged #2243 base.
+- A5 lease workflow run `44941324466` (push) and `44941328040` (pull_request): **PASS** on CPython 3.13.18 and 3.14.10; `py_compile` PASS; `15 passed, 5 subtests passed` on each interpreter; public privacy scan PASS.
+- `v13-private-remote-bridge-tests` run `44941324373`: PASS. Perception public privacy scan run `44941327893`: PASS. Agent-PR integration policy run `44941327955`: PASS.
+- `V13 safe additive candidate tests` run `44941327931`: **FAIL_BY_POLICY**, not a functional test failure. The validator accepts only strictly added inert modules/tests/handoff files; this PR intentionally modifies an existing A5 bridge and the shared V14 research ledger/handoff. No bypass was attempted; independent Boss review is required.
+- `V13 staged context and integrated regression` run `44941328011`: **PASS** — staged-runtime `251 passed, 10 skipped, 47 subtests`; integrated-regression `424 passed, 3 skipped, 58 subtests` (6 warnings). These are CI synthetic/staged checks, not local Redmi evidence.
+- Local standalone nested-source/event/generation/finality/modality filter check: **4/4 PASS**. Full repository LOCAL_LINUX test remains BLOCKED because the complete checkout is not mounted and GitHub DNS resolution fails in this worker.
+- Device and release: `REDMI_UNVERIFIED` / `NOT_RELEASED`. The adapter uses a synthetic OS provider; no phone, capture, microphone, model or permission was exercised.
+
+
+## R-044 — Lightweight visual UI grounding candidates and Android capture boundary (2026-11-21)
+
+### GoClick — primary record and maintained OSS
+
+- **Paper:** Hongxin Li, Yuntao Chen, Zhaoxiang Zhang, “GoClick: Lightweight Element Grounding Model for Autonomous GUI Interaction,” arXiv:2604.23941, submitted 2026-04-27. Only the arXiv abstract/metadata was accessible in this review; **full paper not read**, and peer review status not verified. The abstract claims a 230M-parameter encoder-decoder grounding model and a 3.8M curated core set refined from 10.8M examples. Do not treat its reported accuracy as a Redmi result.
+- **Code:** https://github.com/ZJULiHongxin/GoClick, repository declares MIT. README describes a two-stage plan→function-description→grounding architecture, Florence-2 based; requires Transformers 4.45.0, timm and PyTorch 2+, with CUDA recommended. Its benchmark scripts use external planners (for example GPT-4o) and GPU-oriented evaluation; not a standalone on-device Android agent.
+- **Weights:** https://huggingface.co/HongxinLi/GoClick-Base declares MIT, 0.3B parameters, F32 Safetensors, based on microsoft/Florence-2-large, and uses `trust_remote_code=True`. No GGUF/llama.cpp/ARM64 path, quantized file or Android measurement was verified. Training recipe uses multi-GPU `torchrun`; no mobile training claim. Dataset provenance/license was not audited. **Not a current Redmi candidate**; only a possible future grounding teacher after a real ARM/quantization path and explicit opt-in.
+
+### MobileExplorer — architecture idea, not a verified dependency
+
+- **Paper:** Runxi Huang et al., “MobileExplorer: Accelerating On-Device Inference for Mobile GUI Agents via Online Exploration,” arXiv:2605.26546, submitted 2026-05-26. Abstract only reviewed; full text, implementation, license and exact device matrix were not verified.
+- Abstract reports lightweight parallel UI-element exploration during VLM reasoning, structured traces, and two-level rollback; claims 23% fewer reasoning steps / end-to-end latency and up to 5% success improvement on its AndroidWorld + custom tasks. Conditions are not independently checked here. Treat as a **research hypothesis**, not a measured V13 optimization.
+- Testable V14 adaptation: while the planner reasons, perform only bounded, read-only, consented element exploration; store source/generation/session-bound candidate traces; require verified state restoration and a stop switch; compare no-exploration, shuffled traces and failed-rollback controls. Do not execute taps or mutate UI during speculative exploration.
+
+### Android platform boundary
+
+- Official Android foreground-service documentation: https://developer.android.com/develop/background-work/services/fgs/service-types. MediaProjection requires calling `createScreenCaptureIntent()` and obtaining the user's grant before `getMediaProjection()`; Android 14+ additionally requires the `mediaProjection` foreground-service type and permission, and Android 15 disallows starting that FGS from `BOOT_COMPLETED`. This reinforces an explicit, user-visible capture session; no covert boot-time screen capture.
+- For the Redmi's Android 13, do not import API-34+ manifest rules as if they were already required on that device. The user-granted capture intent remains the key authorization boundary. Verify exact target SDK and device behavior on hardware before claiming support.
+
+### Decision / next experiment
+
+- Keep the metadata-only A5 UI lease as a provider-independent contract; do not couple it to a specific VLM.
+- Prefer Android API/accessibility event metadata when available and explicitly granted; use MediaProjection only with the platform grant and an active visible session. A visual grounding model may rank/locate elements but must never itself authorize a tap.
+- No GoClick/MobileExplorer model or dataset was downloaded, imported, or swapped. No Android permission was requested. ARM64 build, memory/PSS, TTFT and Redmi grounding quality remain NOT_TESTED.
+- Status: PAPER_ABSTRACT_ONLY / OSS_README_AND_LICENSE_REVIEWED / MODEL_CARD_REVIEWED / NO_IMPORT / NO_DOWNLOAD / NO_ANDROID_PROOF.
+
+
+### Final broader CI completion — 2026-11-21
+
+- Run `44941328011` completed successfully on the same code-bearing SHA `01ce1c5fc9c8d2c1dc3f41718e3b6508d7b9d723`.
+- Staged Runtime: `251 passed, 10 skipped, 47 subtests`.
+- Integrated regression: `424 passed, 3 skipped, 58 subtests` (6 warnings).
+- These are CI staged/synthetic tests. They do not establish Android OS capture, a real UI provider, active-turn consumer wiring or Redmi behavior.
