@@ -8,6 +8,7 @@ The booleans in Store state are not an OS/security boundary.
 from pathlib import Path
 
 from .world_jepa_consumer import WorldJEPAStoreConsumer
+from v13 import world_jepa_replay
 
 PERMISSION_KEY = "v14.world_jepa.permissions"
 DEFAULT_PERMISSIONS = {
@@ -33,7 +34,7 @@ def permission_state(store):
     if type(steps) is not int or not 1 <= steps <= MAX_RUNTIME_STEPS:
         steps = DEFAULT_PERMISSIONS["steps"]
     replay_mode = value.get("replay_mode", "uniform")
-    if replay_mode not in ("uniform", "none"):
+    if replay_mode not in world_jepa_replay.REPLAY_MODES:
         replay_mode = "uniform"
     encoder_mode = value.get("encoder_mode", "full")
     if encoder_mode not in ("full", "predictor_only"):
