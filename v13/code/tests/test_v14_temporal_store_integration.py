@@ -2,9 +2,13 @@
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[3]
 V13_CODE = ROOT / "v13" / "code"
 V14_LEARNING = ROOT / "v14" / "learning"
+if not V14_LEARNING.is_dir():
+    pytest.skip("V14 learning files are absent from this staged V13-only tree", allow_module_level=True)
 for path in (V13_CODE, V14_LEARNING):
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
