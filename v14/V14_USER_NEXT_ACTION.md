@@ -1,3 +1,11 @@
+# Current user-facing JEPA follow-up — 2026-11-21 20:00 CET
+
+**No user action is required.** The newest JEPA candidate #2247 is still draft. It correctly rejects updates that worsen any old session; all A-GEM replay arms are rejected on three seeds, so no numeric update or checkpoint is accepted. Exact CI is 10/13 checks green; the two Python optimizer-resume jobs fail on per-session retention and safe-additive is a policy failure. Keep learning gates OFF. This is preferable to silently damaging old memories, but it does not yet deliver active learning.
+
+Research suggests replay is not always beneficial and a bounded loss-based replay selector may be worth testing later (R-040/R-041 proposal, pending shared research-ledger entry). No model or dependency was downloaded/imported. The current code release remains f279; no new release or Redmi install is verified.
+
+---
+
 # Current user-facing follow-up — 2026-11-21 19:57 CET
 
 **No user action is required. Do not run another Termux installer or change models, weights, Age, permissions, updater settings or phone data.**
