@@ -19,7 +19,7 @@ BUILDER_SHA256 = "b55abb25e2d8cebb138dd92d646f7a51a2c6fb5cbce981af48e58bf4cb99c9
 
 
 def _git_blob_sha1(raw: bytes) -> str:
-    return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
 
 
 def _load_stager():
@@ -91,7 +91,7 @@ def test_audio_voice_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     result = subprocess.run(
         command, cwd=destination, env=env, text=True, capture_output=True, timeout=240
     )
-    assert result.returncode == 0, result.stdout + "\\n" + result.stderr
+    assert result.returncode == 0, result.stdout + "\n" + result.stderr
     assert {
         relative: _git_blob_sha1((CODE / relative).read_bytes())
         for relative in SOURCE_BLOBS
