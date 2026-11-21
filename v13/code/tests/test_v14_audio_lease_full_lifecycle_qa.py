@@ -758,6 +758,7 @@ published = []
 revoker = None
 publisher = None
 allow_unlink = threading.Event()
+original_mutex = runtime.store.mutex
 try:
     configure(runtime)
     runners = {
@@ -780,7 +781,6 @@ try:
     entered_unlink = threading.Event()
     publisher_lock_attempted = threading.Event()
     publisher_blob_check = threading.Event()
-    original_mutex = runtime.store.mutex
     original_unlink = Path.unlink
     original_exists = Path.exists
 
