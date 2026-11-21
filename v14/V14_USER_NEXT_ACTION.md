@@ -1158,3 +1158,20 @@ The branch was read back at `d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff` immediate
 ## Post-merge readback — 2026-11-21
 
 Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/2253) merged at `838482cea5271732ddc9710d2c6ca737a94b4718`. Its exact PR privacy scan passed 1/1. The merge commit's 13/19 workflows have succeeded, 4 remain in progress and 2 remain queued (0 failures) at the latest poll; post-merge CI is not yet certified green. This merge only updates V14 board, workplan, next-action, coverage and research notes. It is not a production code release and has no device effect. The merged documentation checkpoint is `838482cea5271732ddc9710d2c6ca737a94b4718`; the assigned board and handoff files have since been refreshed on the same release branch. The current code release remains `f279286a4453248004c670fcaabecd85da6ab299`; Redmi remains REDMI_UNVERIFIED. No user action is required.
+
+
+
+## Research/Perception handoff — 2026-11-21 22:00 CET
+
+**No user action is required. Do not run a new Termux command, download a model, change installed weights, alter Age/permissions or request a phone update.**
+
+- This research checkpoint is stacked on Boss integration PR #2258, base readback 0ecbb1aac1f70c63cb39428a18811cfe4fd66d56. It is not a code release or deployment.
+- Perception PR #2256 exact head 63b5410769b872ddb64e002ab1c764e9e90966af: optional NumPy RAW EAR backend, focused prosody/consent/WebRTC checks and staged/integrated CI passed (workflow runs 5, 173, 40, 117 and 2148). The safe-additive policy validator rejects modifications to the existing voice module by policy; this is not a functional test failure. No ARM64/Termux or Redmi benchmark; Python fallback remains default.
+- Perception PR #2255 exact head acca00e11192dafc20fa55de5fbf0752f7e4f7ba: A5 lease-focused tests and privacy scan pass, but exact staged/integrated workflow 2168 fails. Boss is composing this into #2258; no independent merge or release.
+- Research ledger now carries R-047–R-051. R-050 reviews full XKV and HeteroFold papers and verifies that pinned llama.cpp b10964 has a public C API for raw input embeddings via llama_batch.embd, while the current llama-server HTTP API has output embedding routes only. The current V13 tap is final-state output, not K/V extraction or injection. A custom local libllama receiver wrapper is a concrete intermediate path; it has not yet been implemented or tested.
+- XKV's reported 5.8 ms is translator-only on one A100 80GB run; both models still prefill. HeteroFold uses BF16 CUDA models, roughly 50 GB of weights and 0.5 GB data. Neither result is a Redmi estimate or a ready-to-import dependency.
+- R-051 reviews AGN/AEN online plasticity results on permuted MNIST/FashionMNIST. The reported accuracy is online training accuracy, not old-session held-out retention. Apply only as a future small-adapter experiment after the JEPA per-session retention gate is stable.
+- Local full Aii suite remains BLOCKED: no checkout is mounted and git ls-remote failed because github.com DNS did not resolve. GitHub Actions are CI evidence only. No native model or Redmi test was run.
+- The current Boss integration PR #2258 has a moving head; its newest exact-head CI was not yet returned at this readback. Do not infer deployment from a branch push.
+- Next concrete internal step: Core implements a gated native receiver harness against the pinned llama.cpp b10964 API; Perception supplies adapter/data/negative-control requirements; then prove same-model input-embedding parity before any B1→B2 learned adapter. Keep production B3 symbolic/SHADOW until native receiver consumption is measured.
+- Status: NOT_RELEASED / REDMI_UNVERIFIED. User action: none.
