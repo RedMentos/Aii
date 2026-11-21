@@ -697,3 +697,72 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - Staged Runtime: `251 passed, 10 skipped, 47 subtests`.
 - Integrated regression: `424 passed, 3 skipped, 58 subtests` (6 warnings).
 - These are CI staged/synthetic tests. They do not establish Android OS capture, a real UI provider, active-turn consumer wiring or Redmi behavior.
+
+
+## R-045 — Stable target coordinates for JEPA retention gates (2026-11-21)
+
+### Observed implementation mismatch
+
+The current WorldJEPA update path uses a **pre-update EMA target snapshot** for replay-gradient constraints, but the Store consumer's old-task guard/holdout measurements previously called prediction_loss() against the candidate's **moving live EMA target**. That compares two different target coordinate systems across an update. A measured old-task loss increase can therefore combine predictor/encoder forgetting with target-representation drift. The on-demand replay-loss probe had the same before/after moving-target mismatch.
+
+### Additive code correction under test
+
+- JEPA PR [#2247](https://github.com/RedMentos/Aii/pull/2247), code head **3fac198b4064b873192ccc2bcb0efaa4e1af9c23**, adds an evaluation-only target_snapshot argument to WorldJEPA.prediction_loss().
+- WorldJEPAStoreConsumer now snapshots the active pre-update EMA target and uses that same snapshot for old-session guard, old-session holdout and on-demand loss probes. The current-task objective and live EMA updates remain plastic; no teacher or target weights are frozen.
+- The report includes the reference type and a SHA-256 digest of the exact target snapshot. A focused regression verifies that the anchored loss is invariant to later live-EMA mutation while the ordinary live-target loss changes.
+- The exact source chain was recalculated and read back: world_jepa.py → integrated_world_training_resume_candidate_20261111.py → termux_runtime_recovery_candidate_20261112.py → stage_integrated_candidate.py → runtime_deploy.py. All four downstream pins match the exact GitHub-fetched UTF-8 bytes.
+- At ledger time the exact Python 3.13/3.14 Store A-B-A workflow was still running. Compile and SQLite/T8/checkpoint-vs-reset steps passed on both versions; A-B-A, staged optimizer-resume, predictor resume and postcommit runtime steps were pending. This is not yet evidence of an accepted retention-preserving update.
+
+### Research notes and reuse decision
+
+1. **ER-JEPA**, Jingnan Pu, Zi-En Fan, Feng Lian, arXiv:2609.36952 (submitted 2026-09-29): the abstract adds episodic memory retrieval to LLM-JEPA, replaying stored training pairs for prediction and representation-alignment supervision. Only abstract/metadata was reviewed here; no official code repository or license was verified. Research reference only; no reuse claim.
+2. **Projected Functional Regularization (PFR)**, Gomez-Villa et al., CVPRW 2022 / arXiv:2112.15022: proposes a temporal projection network to preserve information across changing self-supervised feature spaces, and reports that naive feature distillation can reduce plasticity. Official code repository alviur/CVPR_PFR declares MIT, but its README requires an older CaSSLe/PyTorch 1.10.2/CUDA 11.3 stack plus Lightning/W&B and GPU-oriented runs. Conceptual reference only; not a suitable Android dependency.
+3. **Learnable Drift Compensation (LDC)**, Gomez-Villa et al., ECCV 2024 / arXiv:2407.08536: learns a forward projector to map old prototypes into a moving backbone's new feature space. The official alviur/ldc repository has no LICENSE or requirements.txt at the checked paths; do not copy its code until licensing and dependencies are clarified.
+
+### Testable V14 implication
+
+A fixed pre-update EMA snapshot is a **measurement reference**, not a permanent frozen teacher. If the multi-seed A→B→A test still rejects all new cohorts, the next candidate is a small trainable temporal projection/adapter between old and new latent spaces, with source-disjoint old/new holdouts, zero/shuffle controls, bounded parameter delta, restart and rollback. The projector must not become a shortcut that hides loss of the underlying predictive function; report both unaligned and aligned retention and retain the independent holdout gate.
+
+### Evidence boundary
+
+No local full Aii checkout was available in this worker (GitHub DNS resolution failed), so no LOCAL_LINUX project test ran. CI results must remain labelled CI, not local or Android. No Redmi receipt, deployment, model change or device permission change was made. Status remains NOT_RELEASED / REDMI_UNVERIFIED.
+
+### Sources
+
+- ER-JEPA: https://arxiv.org/abs/2609.36952
+- PFR paper: https://arxiv.org/abs/2112.15022
+- PFR official code + MIT license: https://github.com/alviur/CVPR_PFR
+- LDC paper: https://arxiv.org/abs/2407.08536
+- LDC official repository (license not present at checked path): https://github.com/alviur/ldc
+
+
+### R-045 implementation follow-up — single-pass trust-region (2026-11-21)
+
+The exact Python 3.13/3.14 run at head 3fac198b completed the A-B-A Store experiment and passed its current assertions, but the result was not robust enough for acceptance: **3 of 96 B/A2 phase candidates** committed, all three on seed 19 / A2; seed 13 and seed 43 had no accepted phase. The production on-demand-loss + per-session-GEM arm accepted **0 of 6** seed/phase candidates. The one accepted per-session-GEM result was in the on-demand-conflict comparison arm, not the on-demand-loss candidate. Thus the previous green A-B-A step was a weak aggregate assertion, not proof of reliable continual learning.
+
+The next code head **3849730b455dc6666e67a29503c616f6982d7163** changes the backtracking algorithm: run one optimizer pass, then interpolate the resulting enc/predictor/EMA parameter delta along a deterministic nine-point trust-region ladder (1 through 1/256). The source-disjoint old-training guard chooses the scale; the final holdout is evaluated once and cannot choose a retry. This avoids repeating a full training pass for each scale, which is materially more suitable for Android. The test now requires at least one accepted on-demand-loss + per-session-GEM update for each data seed and directly tests that interpolation touches enc/predictor/EMA arrays without resetting optimizer state. CI run **44953329088** was queued at this checkpoint; no result is claimed.
+
+The preceding CI run **44952328878** passed compile, SQLite/T8/checkpoint-reset and the A-B-A experiment on both Python 3.13 and 3.14, but both jobs failed at staged optimizer-resume due a stale nested source pin. CI measured the integrated training-resume builder hash as 6f0f9a1ed2d4c173e56d9f864617b2d916fb34a8e5b22dfbb74b17e2592563d7. The recovery builder's child pin has been corrected to that exact runner-measured value in code commit 5703510d2d25e353b9d3a9a533f1fcffe17f477c. The stage builder and runtime-deployer pins still need to be refreshed from the next runner-measured hashes; do not call the nested chain complete yet.
+
+## R-046 — STABLE: optimizer-level adaptive drift control (2026-11-21)
+
+### Primary source and method
+
+- Li, Li, Coppola, Lomonaco & Carta, “STABLE: A Continual Learning Optimizer with Adaptive Drift Control,” arXiv:2611.10655 (submitted 2026-11-07; accepted at NeurIPS 2026): https://arxiv.org/abs/2611.10655
+- STABLE stores the previous task's parameters as an anchor and constrains squared parameter drift to a budget. It adds the Lagrangian pullback term 2 * lambda * (theta - theta_anchor) to the gradient. A primal-dual controller raises lambda when drift exceeds the budget and relaxes it when the trajectory returns inside a deadzone. The paper's formal margin-erosion bound is specifically for distance-based classifiers under a local score-stability assumption; it is not a general theorem about JEPA predictive loss.
+- Official implementation: https://github.com/atlas-luiss/STABLE. The repository LICENSE is MIT. Its README specifies Python 3.12, PyTorch 2.8, CUDA 12.8 and one NVIDIA A100 (64 GB) per run; do not import its GPU stack into the Android runtime.
+
+### Existing V14 overlap and reuse decision
+
+- v13/code/v13/world_jepa_drift.py (Git blob 6a3109fa3302cf295fe49b945284992e19450ae9) already contains a NumPy-only, per-group STABLE-style primal-dual pullback for encoder, predictor and inverse-dynamics parameters. It is opt-in and checkpointed. Its task-1 budget calibration (L/5 times the 75th percentile of rolling five-step sums) is a V14-specific rule, not a verbatim reproduction of the paper's calibration.
+- Therefore no external code or dependency is imported. Treat the paper as support for the existing optimizer-level direction, not as proof that the current JEPA controller is equivalent or that its retention gate is solved.
+
+### Testable V14 adaptation
+
+- On the same source-disjoint A→B→A seeds, log per-group anchor drift, squared budget, lambda before/after each step, overshoot duration and old-session holdout loss. Compare drift OFF, current dynamic dual, and a fixed-pullback control at identical optimizer/replay budgets.
+- Require a nonzero useful predictor update, per-session holdout retention, independent negative controls, restart-equivalent optimizer/controller state and bounded CPU/RSS. Do not transfer the distance-classifier margin theorem to the WorldJEPA loss without a separate proof.
+- Related candidate: Wang, Gupta & MacLellan, “Trust Region Continual Learning as an Implicit Meta-Learner,” arXiv:2602.02417v3 / NeurIPS 2026: https://arxiv.org/abs/2602.02417. It combines generative replay with a Fisher-metric trust region. No verified reusable implementation/license was found in this run; keep as research-only and consider a small diagonal/low-rank Fisher ablation only after the current per-session GEM path is stable.
+
+### Status
+
+PAPER_FULLTEXT_REVIEWED / OFFICIAL_REPO_AND_MIT_LICENSE_CHECKED / EXISTING_NUMPY_ANALOGUE_IDENTIFIED / NO_CODE_IMPORTED / NO_DEPENDENCY_ADDED / NO_ANDROID_PROOF.
