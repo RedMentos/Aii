@@ -778,9 +778,30 @@ try:
     blob_path = Path(runtime.store.home) / "data/blobs" / context_row["hash"]
     content = blob_path.read_text(encoding="utf-8")
     entered_unlink = threading.Event()
-    publisher_saw_blob = threading.Event()
+    publisher_lock_attempted = threading.Event()
+    publisher_blob_check = threading.Event()
+    original_mutex = runtime.store.mutex
     original_unlink = Path.unlink
     original_exists = Path.exists
+
+    class TrackingRLock:
+        """Expose the generic publisher's attempt to enter the shared Store lock."""
+
+        def acquire(self, *args, **kwargs):
+            if threading.current_thread().name == "audio-source-publisher":
+                publisher_lock_attempted.set()
+            return original_mutex.acquire(*args, **kwargs)
+
+        def release(self):
+            return original_mutex.release()
+
+        def __enter__(self):
+            self.acquire()
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            self.release()
+            return False
 
     def gated_unlink(path, *args, **kwargs):
         if path == blob_path:
@@ -790,10 +811,9 @@ try:
         return original_unlink(path, *args, **kwargs)
 
     def observed_exists(path, *args, **kwargs):
-        result = original_exists(path, *args, **kwargs)
         if path == blob_path and threading.current_thread().name == "audio-source-publisher":
-            publisher_saw_blob.set()
-        return result
+            publisher_blob_check.set()
+        return original_exists(path, *args, **kwargs)
 
     def revoke_audio():
         try:
@@ -807,18 +827,30 @@ try:
         except BaseException as exc:
             errors.append(("publish", exc))
 
-    with patch.object(Path, "exists", observed_exists), patch.object(Path, "unlink", gated_unlink):
-        revoker = threading.Thread(target=revoke_audio, name="audio-source-revoker")
-        revoker.start()
-        assert entered_unlink.wait(2), "audio revocation did not reach final blob unlink"
-        publisher = threading.Thread(target=publish_shared_source, name="audio-source-publisher")
-        publisher.start()
-        assert publisher_saw_blob.wait(2), "publisher did not observe the pre-unlink shared blob"
-        allow_unlink.set()
-        revoker.join(2)
-        publisher.join(2)
-        assert not revoker.is_alive(), "audio revocation worker did not finish"
-        assert not publisher.is_alive(), "shared-source publisher did not finish"
+    runtime.store.mutex = TrackingRLock()
+    try:
+        with patch.object(Path, "exists", observed_exists), patch.object(Path, "unlink", gated_unlink):
+            revoker = threading.Thread(target=revoke_audio, name="audio-source-revoker")
+            revoker.start()
+            assert entered_unlink.wait(2), "audio revocation did not reach final blob unlink"
+            publisher = threading.Thread(target=publish_shared_source, name="audio-source-publisher")
+            publisher.start()
+
+            # The publisher must request the same Store lock before it checks
+            # the digest path. While revocation is paused at unlink, it cannot
+            # observe the soon-to-be-removed blob or commit a new source row.
+            assert publisher_lock_attempted.wait(2), "generic publisher did not request the Store lock"
+            assert not publisher_blob_check.is_set(), (
+                "Store.source checked the blob before acquiring the shared Store lock"
+            )
+            assert not published, "generic source publication completed inside the revocation critical section"
+
+            allow_unlink.set()
+            assert publisher_blob_check.wait(2), "generic publisher did not resume after revocation"
+            revoker.join(2)
+            publisher.join(2)
+            assert not revoker.is_alive(), "audio revocation worker did not finish"
+            assert not publisher.is_alive(), "shared-source publisher did not finish"
 
     assert not errors, f"concurrent audio source operations raised: {errors!r}"
     assert len(published) == 1
@@ -839,6 +871,7 @@ finally:
         revoker.join(2)
     if publisher is not None and publisher.is_alive():
         publisher.join(2)
+    runtime.store.mutex = original_mutex
     runtime.close()
 
 assert not failures, "; ".join(failures)
