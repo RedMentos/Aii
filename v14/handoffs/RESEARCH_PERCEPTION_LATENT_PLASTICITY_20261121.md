@@ -102,3 +102,15 @@ The original handoff is preserved above. Its branch snapshots are historical; cu
 - The earlier #2272 branch was 16 commits behind the current Boss #2258 head and mergeable=false. A clean current-base Perception branch was created from Boss #2258 head 34eb645357d65bdd5ac69b9fb2c834d043086dac; it carries the optional backend, speaker consumer, regression and research update without copying stale board/user-next-action snapshots.
 - Core/QA should run exact Python 3.13/3.14 speaker tests plus staged/integrated workflows on the replacement PR. The staged runtime had an independent source-pin failure in the older #2272 stack; do not attribute that to the speaker algorithm or call it a pass.
 - Keep the speaker path and NumPy backend opt-in until real consented speech, ARM64/Termux cold-load/RSS/latency and Redmi false-positive measurements exist.
+
+
+
+## Native latent receiver cross-review — 2026-11-21
+
+- Verified the exact pinned llama.cpp header at b29c606e28a01b1bc8c1351026a0fa6e616bf6c4. Public input-embedding APIs are present: llama_batch.embd, llama_batch_init with a nonzero embedding dimension, llama_model_n_embd_inp/out, llama_decode, llama_get_embeddings_ith and llama_memory_clear. The Core probe is a genuine native input-embedding ingress mechanism.
+- Core PR #2266 exact head 3166858133844fc80201334f53ade450557d1191: workflow 44955501021 PASS for Linux build against the pinned API, Python 3.13/3.14 runtime/contract tests, and Android arm64-v8a cross-compile.
+- Boundary: CI did not load a real GGUF model. The native self-test exercises the compiled core; Python runtime tests use a fake executable and fixture model bytes. No native model-to-model semantic transfer, trained projector, B3 production route or Redmi execution is proven.
+- The receiver rejects dimension mismatch rather than padding/truncating or using an untrained resize. Positive-vs-zero RMS and shuffle/repeat controls prove only that the supplied vectors affect native output, not that the representation is semantically aligned.
+- Core's staged/integrated workflow 44955501004 FAILS separately: stale source pin for v13/contracts.py plus migration assertions returning PARTIAL instead of UPDATED (19 failed, 230 passed, 10 skipped, 2 errors). This does not invalidate the native receiver compile, but it blocks integrated acceptance.
+- PR #2266 is based on the old release branch bdcad466ffea75a2b41f7d23be168f53c7197d20 rather than current Boss #2258. Perception posted exact API/CI findings on #2266; no Core code was changed.
+- Next: Core rebase/stack #2266 on current #2258, repair the separate staged arithmetic source pin/migration failures, then run a real receiver only with an already-installed authorized model and explicit local consent. A learned, versioned projector plus held-out semantic/retention tests remains necessary for genuine cross-model latent coupling.
