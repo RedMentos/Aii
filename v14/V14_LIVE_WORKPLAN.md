@@ -689,15 +689,75 @@ The current functional release has synthetic C4 source-span selection but no pro
 - #2235 still has current-head AST nested-closure attribution failure; #2234 still removes normal C4 overlay. #2237 is mergeable but test-blocked by retention and optimizer-state clone. #2200 is stale/non-mergeable and must rebase onto #2240's lease API.
 - Private owner-read expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action; user action none.
 
-## Research & Perception checkpoint — 2026-11-21 18:55 CET (R-037)
 
-A new local proof-of-mechanism now exists at v14/experiments/latent_cache_tiny/. It trains two tiny decoders with different layer/width geometry, maps actual sender K/V tensors into the receiver, injects the mapped cache, then compares exact-context, no-message, shuffled-cache and random-adapter controls. Local Linux CPython 3.13 / PyTorch 2.10 CPU: 3/3 tests PASS; seed 13 held-out reconstruction MSE 6.5134→0.2054, final latent accuracy 100% vs 0% no-message and 12.5% shuffled; adapter ΔL2 20.2719, nonzero gradients, restart max-logit delta 0.0; three additional seeds also reached 100%. Wall 12.41 s, peak RSS 344,584 KiB.
+---
 
-This is explicitly LOCAL_LINUX_TINY_MODEL_PROOF_NOT_PRODUCT_NATIVE: synthetic associative recall, newly initialized toy weights, no OOD or symbolic baseline, no production Runtime consumer, no actual LFM2.5/Qwen3.5 or Redmi. It does not advance B3 acceptance.
+## Boss integration checkpoint — 2026-11-21 19:50 CET
 
-Research R-037 records two full-text 2026 latent-communication papers, one abstract-only negative causal-transfer study, and the Apache-2.0 CacheBack OSS review. The important architecture split is context-aware (receiver has source input; sparse query-conditioned transfer may suffice) vs context-unaware (receiver depends on transferred state; much denser retention is needed). CacheBack's main API only supports same-model/matching copies and explicitly lacks cross-model alignment. Current B1 LFM2.5-1.2B and B2 Qwen3.5-0.8B are heterogeneous; current llama.cpp Runner still reports CAN_LATENT_TAP=False / CAN_LATENT_INJECT=False. Native K/V tap/injection remains the next blocker.
+### Verified repository and release state
+- Shared release-development branch HEAD read back as `b267ed641f4dbff1e2c28f492baf0182e9bb656b`. This is the current development base, not an Android install receipt.
+- Prior code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299` with its previously verified exact CI **19/19**. Latest integrated code candidate remains `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`; its exact merge-push CI is **18/19**, with the normal SleepRuntime JEPA positive acceptance receiving `UTILITY_GATE_REJECTED`. No new release is ready.
+- LOCAL_LINUX full Aii suite is **BLOCKED**: no checkout is mounted and `git ls-remote https://github.com/RedMentos/Aii.git ...` failed because this worker could not resolve `github.com`. CI results below are GitHub-runner evidence, not a local full-suite result or Redmi test.
 
-No models, weights, dependencies or datasets were downloaded or swapped. No phone permission or updater action occurred. Redmi remains unverified.
+### Cross-agent integration review
+- **Core #2242**, exact head `8b91763ba1779fd37dbd2c0927755d75496dd985`, remains DRAFT / NOT_RELEASED. Exact checks at this read: 8 failures, 2 in progress, 4 successes. The staging failure is deterministic: `stage_integrated_candidate.py` computes the arithmetic overlay Git blob header incorrectly, raising `ValueError: arithmetic guard overlay source changed`. Staged-audio Python 3.13: 5 failed / 37 passed / 26 subtests; staged-runtime: 19 failed / 230 passed / 10 skipped / 2 errors / 47 subtests. Python 3.14 startup, Lab-Age and integrated regression also fail through the same stage mismatch. Do not weaken source checks or mark the candidate deployable.
+- **Audio revocation defect in #2242:** the provider's linearizable guard is held across the entire normal Runtime turn, including C3 iterator exhaustion, while the completion callback runs only after the guard is released. Revocation can therefore wait behind a long generation and cannot request cancellation. The callback is also optional. Core must add a separate pre-lock revocation-request signal that only sets the active Runtime cancel event, retain post-guard cleanup for source/context/cache tombstoning, and fail closed to text-only if either subscription is missing. QA must prove provider revoke itself cancels a blocked multi-chunk C3 stream; manual `Runtime.cancel()` is not a substitute.
+- **QA #2244** exact head `72f23c243730e8ba11957a1bbdb1a72e2ea98b44` has green 3.13/3.14, staged 251/10/47 and integrated 424/3/58 synthetic checks on its own old Core base `4cca498...`. It is not a current-base integration; rebase only after Core repairs the hash and revocation-request path. Existing manual cancel/close cases remain useful.
+- **Research/Perception #2243** head `543349894b5392582969f06a4485ff9d18e4504d` adds a real tiny PyTorch K/V adapter between 2×24 and 3×32 decoders, with actual receiver injection, no-message/shuffled/random controls and restart equivalence. Reported LOCAL_LINUX tests are 3/3 with four seeds, but the green model-lab workflow does not execute the new `latent_cache_tiny` tests; its discovery only ran 31 unrelated tests. Explicit py_compile + unittest workflow coverage is required. This remains a toy mechanism proof, not B1/B2 native latent coupling.
+- **Research/Perception #2246** head `4456c00b72f4ae13b004265ec7b80c5211440982` has 3/3 CI checks green for a metadata-only A5 UI lease/Runtime ingress with synthetic provider/SQLite. No OS provider, AccessibilityService, NotificationListenerService, MediaProjection, screen capture, B1/B2/C3 consumer or Redmi proof. Keep stacked on #2243 until its experiment CI is corrected and it is rebased.
+- **JEPA #2237** newest head `f92c15674d214edc5c40e89474130d3f2475f3b9` has no exact-head checks attached. Prior `d91f468` tests fixed nested source pins but showed genuine old-holdout retention regression on Python 3.13/3.14 and a second-update optimizer-state clone failure. The normal SleepRuntime merge-push also rejects the candidate. Keep all optimizer/learning gates OFF; do not relax utility/retention.
+- QA #2235 remains blocked by nested-closure AST attribution; Core #2234 still drops the existing C4 overlay from the normal recovery/deployer path; #2200 is stale relative to the merged audio lease API. No blind merge or force-push.
+
+### Whole-Canon status and real user effect
+- A0–A5: caller-supplied PCM16 RAW EAR producer/lease is merged; normal Runtime audio consumer is not accepted. #2246 is metadata-only UI ingress. No microphone, ASR/TTS/vocoder, full duplex or native perception.
+- B1/B2→C4→C3: source-span offer selection is synthetic-wired; native offer quality, correct 2+2, real C3 answer and Redmi latency/RSS remain unverified. P0 #1904 stays open.
+- B3: symbolic/tap-provenance only; tiny K/V toy experiment is not production latent coupling. No two genuinely different sparse MoE bodies are proven.
+- World/Self/Memory/JEPA/Sleep: persistent numeric WorldJEPA remains SHADOW; no accepted retention-preserving update, native B1/B2/C3 weight edit, cross-organ gradient or safe self-edit.
+- Android background/UI: broker remains DRY_RUN_ONLY; no OS executor, authenticated companion action, AccessibilityService/MediaProjection or device control proof.
+- Context OS remains; Memorilla #1983 is additive SHADOW only, with no live companion consumer.
+- Install/update: no authenticated private owner-read reply; installed SHA and updater consent UNKNOWN; REDMI_UNVERIFIED.
+
+### Next executable work, by owner
+1. Core: fix the exact arithmetic overlay blob header/source pins, then add pre-lock revoke cancellation + mandatory request/cleanup subscriptions; rerun exact 3.13/3.14 staged, integrated, migration, owner-read and deployer gates.
+2. QA: rebase #2244 onto the corrected Core SHA and test automatic provider-revoke cancellation through C3 iterator exit, tombstone/cache cleanup, restart and later text-only FINAL.
+3. JEPA/Memory: run exact checks on #2237 f92c156; preserve strict old-task retention and prove a real accepted update or truthful rejection + exact rollback.
+4. Research/Perception: add explicit CI for #2243 tiny K/V experiment; only then integrate #2243 and rebase #2246. Continue model-specific native K/V tap/injection research for LFM2.5↔Qwen3.5, with OOD/exact/symbolic/no-message controls.
+5. Boss: maintain 1,255-heading historical inventory and complete semantic clause→implementation→consumer→test→environment→rollback mapping; review only after exact-base evidence. No PR count or synthetic test certifies the whole Canon.
+
+**Device:** fresh private PIPELINE_STATUS and DIAGNOSTICS requests are open but have no authenticated response at this read. No LOG_PAGE, UPDATE_REQUEST, shell action, model/weight change, permission change or device mutation. **User action: none.**
 
 
-PR #2243 (draft) now carries the R-037 tiny cross-geometry K/V adapter experiment and the updated board/ledger/handoff. The branch was synchronized by a normal two-parent merge commit onto shared HEAD b267ed641f4dbff1e2c28f492baf0182e9bb656b; no force-push was used. No CI or Android proof is inferred from the local Linux experiment.
+### Run-11 follow-up — Core head 3dc8a19 (2026-11-21 19:57 CET)
+
+- Core corrected the arithmetic overlay blob header; the exact Python 3.13 staged-audio-arithmetic job now passes. The next dependency is exposed: `runtime_deploy.py` still pins the old `STAGER_SHA256`, so Python 3.14 startup fails with `Integrated stage builder changed`; staged-runtime and two-checkout migration then fail/return `PARTIAL`. Current #2242 exact checks: **4 failure / 3 in progress / 6 success**. `validate-additive` remains a policy failure; do not bypass it.
+- No change has yet addressed the permission-revocation race: the subscription is still optional and there is no pre-lock revocation-request signal to cancel C3. #2242 remains DRAFT / NOT_RELEASED.
+- Core next: recompute exact deployer/stage pins; rerun 3.13/3.14 audio, staged Runtime, integrated, migration, owner-read, Lab-Age and deployer checks; implement the separate pre-lock cancel signal + mandatory subscriptions.
+- QA next: rebase #2244 onto the final Core head; add automatic provider-revoke cancellation while C3 is blocked, then verify iterator exit, tombstone/cache cleanup and later text-only FINAL.
+- Boss handoff PR #2248 contains the run-11 board/workplan/user handoff/coverage updates. Its only current check is offline-bridge-security 1/1 PASS; no code or release change.
+
+
+### JEPA cross-review follow-up — #2247 e8137fd (2026-11-21 20:00 CET)
+
+- New PR #2247 is a materially better current JEPA candidate than #2237: source/session provenance, per-session old-holdout gating, optimizer-state recovery and nested source pins are integrated. Exact CI is 10 success / 3 failure. Staged Runtime, integrated regression, migration, Lab-Age, owner-read and incremental-JEPA pass; `validate-additive` remains FAIL BY POLICY.
+- Both optimizer-resume Python 3.13/3.14 jobs fail because no A-GEM replay arm produces an accepted checkpoint. The per-session gate reports `SESSION_RETENTION_REGRESSED` across seeds 13/19/43; the checkpoint SHA is unchanged and update is rejected. This is correct fail-closed behavior, not a test to relax.
+- JEPA next: change the replay/learning mechanism, keep per-session holdout and stable baseline, expand paired seeds, preserve checkpoint/rollback; no activation until an accepted retention-preserving update exists.
+- Research note pending in JEPA ledger: R-040 Caccia et al. (PMLR 330, 2026) replay may increase forgetting under task-subspace conditions; R-041 Replay on Demand (arXiv:2609.40089; Apache-2.0 repo at `9ecc0517`) suggests bounded loss-based replay selection. Use only as a low-cost method reference; no NeMo-RL/GPU stack on Android. No code/dependency/model imported.
+
+
+### Final run-11 repository readback — 2026-11-21 20:03 CET
+
+- Boss handoff PR **#2248** is merged documentation-only at `a1b1e9aad5e805b484ea6412dbd84abc454e66e0`; exact `offline-bridge-security` check 1/1 PASS. Board/workplan/next-action/coverage are now on the shared branch. The active V14 master blob remains unchanged (`9748ad5...`); no material master edit was made. Historical V13 appendix remains untouched.
+- **#2243** advanced to `ae26c94700ca8077b38cbd87c40db89b4ae46360` and now has a dedicated `latent-cache-tiny` workflow. At this read, model-lab, privacy and offline-bridge checks pass; the new experiment-specific job is still running. Do not merge until it completes green. The earlier model-lab-only run did not test the experiment.
+- **#2246** remains at `273884c50e53fbe19068e351aeab1e1b479a70c5`, base `543349...`, one commit behind #2243's new `ae26...` head. Its 3/3 checks are synthetic only; rebase after #2243 finalizes. Before active-turn integration, add the two-phase pre-lock revoke-cancel / post-lock cleanup contract; current subscription-only pattern cannot interrupt a blocked C3 stream.
+- **#2242** remains at `3dc8a194df9230b191236b8011216362d00c88cd`, DRAFT / NOT_RELEASED. Exact checks now 9 success / 4 failure. Both staged-audio arithmetic tests pass; Python 3.14 deployer startup still fails on stale `runtime_deploy.STAGER_SHA256`, staged-runtime and migration fail downstream, and `validate-additive` remains FAIL BY POLICY. Permission revocation still cannot cancel C3 during generation; subscription is optional.
+- **#2247** is the active JEPA retention candidate at `e8137fd3d873ee08d7159a32ddd2240ab8f43f31`: 10 success / 3 failure. The per-session old-holdout gate correctly rejects every A-GEM arm on seeds 13/19/43; no checkpoint is committed. Keep gates OFF; change the learning mechanism, not the gate.
+- Private owner-read still has no authenticated response. Installed SHA/updater consent unknown; REDMI_UNVERIFIED. No phone action. Local full Aii checkout remains blocked by GitHub DNS in this worker.
+
+
+### Research/Perception CI completion and stack-sync checkpoint — 2026-11-21 20:07 CET
+
+- The dedicated #2243 `latent-cache-tiny` job completed on prior exact head `ae26c94700ca8077b38cbd87c40db89b4ae46360`: pinned NumPy 2.3.5 + PyTorch 2.10.0+cpu, py_compile, and all 3 tests PASS; model-lab/privacy/offline-bridge also PASS. This closes the previously identified experiment-test CI gap.
+- #2243 then advanced to `3e52c96d7302cdd95896605469ad1fdbe291deee`, but is now diverged from current shared base `7b91d8e1e722aec954f4139fec35f3c7d47c48c1` (15 ahead / 17 behind, mergeable=false). The overlapping old board/workplan/next-action edits conflict with Boss PR #2248 now merged at `a1b1e9...`. Perception must merge the latest base normally, preserve the Boss docs and retain R-037, experiment code and explicit workflow. No force-push.
+- #2246 remains head `273884c50e53fbe19068e351aeab1e1b479a70c5`, based on old #2243 head `543349...`; it is now stale/diverged. Rebase only after #2243 final sync. Its 3/3 checks are synthetic and do not establish Android OS capture.
+- #2247 now has 11 successful / 3 failing checks; the two optimizer jobs still reject all A-GEM candidates across seeds 13/19/43 under the strict per-session gate. No checkpoint update. Keep learning OFF.
+- #2242 remains 9 success / 4 failure at head 3dc8a19: stage arithmetic passes, but deployer STAGER_SHA256 remains stale; Python3.14 startup, staged Runtime and migration fail. Audio revoke cancellation remains unresolved.
