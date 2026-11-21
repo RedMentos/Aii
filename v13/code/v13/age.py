@@ -3,8 +3,9 @@
 Stage gates need several consecutive, distinct passing evidence records (hysteresis); a
 separate lower maintenance band demotes after repeated or severe regression. Stages never
 rise above min(user_stage_cap, BUILD_CEILING); a blocked gate only records a proposal.
-Rights and maturity are orthogonal (§95.2): maturity scales budgets inside what the
-stage ceiling, user cap, hard rules, user permissions and resource state allow.
+Rights and maturity are orthogonal (§95.2): maturity shapes developmental policy; the
+stage ceiling, user cap, hard rules, user permissions and resource state determine rights.
+Physical runtime budgets are owned by ResourceGuard.
 BUILD_CEILING is 0 until STEP7 (Age>0 is not released); all thresholds are BOOT values.
 """
 import math
@@ -44,12 +45,9 @@ RIGHT_CAPABILITY={'simple_tool_choice':'tool','tool_learning':'tool','active_inf
  'deliberation_modes':'language','skip_translator':'language','adaptive_gist_grouping':'language','long_loops':'language',
  'shadow_alternative_routes':'routing_skill','route_exploration':'routing_skill','direct_route':'routing_skill','routine_skip_defaults':'routing_skill',
  'raw_body_attempt':'body_port','integrate_new_body':'body_port','body_swap':'body_port'}
-# Budget range [lo,hi] per stage; maturity interpolates inside the range so budgets change smoothly within a stage.
-BUDGETS={'own_loops':((0,0),(0,1),(1,2),(2,4),(4,6),(6,8)),'focal_depth':((1,1),(1,2),(2,3),(3,4),(4,5),(5,6)),
- 'dream_seconds':((0,5),(5,30),(30,120),(120,300),(300,900),(900,1800)),'replay_items':((0,4),(4,8),(8,16),(16,32),(32,64),(64,128)),
- 'context_edit_tokens':((0,32),(32,64),(64,128),(128,256),(256,512),(512,1024)),'exploration_rate':((0,0),(0,.05),(.05,.1),(.1,.15),(.15,.2),(.2,.25)),
- 'autonomous_effort_max':((1,1),(1,2),(2,2),(2,3),(3,3),(3,4))}
-EFFORT_LEVELS=('disabled','low','adaptive','high','max')
+# Age is a rights/development envelope, not a physical runtime-resource budget.
+# Compute, memory, thermal, token and wall-time ceilings belong to ResourceGuard and
+# feature-specific policy. Keep GIST resolution as a representation policy, not a cap.
 GIST_BASE=(8,8,10,12,14,16);GIST_FINE=4;GIST_SLOTS=12
 PLASTICITY_BASE=(1.,.9,.75,.6,.5,.45)
 HOLD_AFTER_DEMOTION=4  # WP-AB stable_reopen: evidence records during which a demotion does not raise plasticity (BOOT)
@@ -196,7 +194,7 @@ class AgeControl:
         if capability in st['capabilities']:raise ValueError('Capability existiert schon')
         st['capabilities'][capability]=_subject();self._event(st,'NEW_CAPABILITY',capability,None,0,'new sensitive window');self._save(st,v)
 
-    # Rights and budgets (§17.5, §95.2) --------------------------------------------------------------------------
+    # Rights and developmental profile (§17.5, §95.2) ------------------------------------------------------------
     def allowed(self,right,capability='system',resource_mode='GREEN',user_permissions=None,hard_rule_block=False):
         if right in NEVER:return False
         if right not in RIGHTS:raise ValueError('Unbekanntes Recht: '+right)
@@ -204,7 +202,12 @@ class AgeControl:
         if hard_rule_block or (user_permissions is not None and right not in user_permissions):return False
         if right in STRUCTURAL and st['structural_locked']:return False
         if right in RESOURCE_BLOCKED.get(resource_mode,()):return False
-        return self.ceiling(capability,st)>=RIGHTS[right]
+        earned=self.ceiling(capability,st)>=RIGHTS[right]
+        # The experimental lab overlay is applied only after every hard gate above.
+        # It can exercise established rights without promoting official Age or
+        # bypassing NEVER, user permissions, structural locks or resource blocks.
+        from .lab_age import right_enabled
+        return right_enabled(self,right,earned)
     def may(self,right,resource_mode='GREEN',user_permissions=None,hard_rule_block=False):
         """WP-T2: a right judged at its own capability's ceiling (RIGHT_CAPABILITY), not only the system stage."""
         return self.allowed(right,RIGHT_CAPABILITY.get(right,'system'),resource_mode,user_permissions,hard_rule_block)
@@ -218,18 +221,17 @@ class AgeControl:
     def maturity(self,capability='system',st=None):
         st=st or self.state()[0];m=self._subject(st,capability)['maturity']
         return round(min(m['trust'],m['retention'],m['calibration']),6)
-    def budgets(self,capability='system',resource_mode='GREEN'):
-        st=self.state()[0];stage=self.ceiling(capability,st);m=self.maturity(capability,st);out={}
-        for k,ranges in BUDGETS.items():
-            lo,hi=ranges[stage];val=lo+(hi-lo)*m
-            out[k]=int(round(val)) if isinstance(lo,int) and isinstance(hi,int) else round(val,6)
-        if resource_mode=='RED':out.update(dream_seconds=0,replay_items=0,exploration_rate=0,own_loops=0)
-        elif resource_mode=='ORANGE':out.update(dream_seconds=0,replay_items=0,exploration_rate=0)  # §97.2 ORANGE: no replay/dream, Sleep C only
-        out['autonomous_effort_max']=EFFORT_LEVELS[int(out['autonomous_effort_max'])]
+    def development_profile(self,capability='system'):
+        """Development signals only; never physical compute/token/time limits."""
+        st=self.state()[0];stage=self.ceiling(capability,st)
         mm=self._subject(st,capability)['maturity']
-        out['teacher_reliance']=round(1-.15*stage-.1*mm['trust'],6)
-        out['route_authority']=round(min(1.,.15*stage+.25*mm['trust']),6)
-        return out
+        return {'stage':stage,'maturity':self.maturity(capability,st),
+                'teacher_reliance':round(1-.15*stage-.1*mm['trust'],6),
+                'route_authority':round(min(1.,.15*stage+.25*mm['trust']),6),
+                'runtime_budget_source':'ResourceGuard','runtime_budget_applied':False}
+    def budgets(self,capability='system',resource_mode='GREEN'):
+        """Deprecated compatibility alias: returns development signals, not runtime budgets."""
+        return self.development_profile(capability)|{'resource_mode':resource_mode}
     def gist_resolution(self,capability='language',novelty=0.,conflict=False,literal=False,boundary_confidence=1.):
         """Age ↑ ≠ group size monotone ↑: novelty/conflict/literal/low boundary confidence refine temporarily."""
         st=self.state()[0];stage=self.ceiling(capability,st);m=self.maturity(capability,st)
@@ -267,7 +269,7 @@ class AgeControl:
                 'user_stage_cap':int(self.cfg['user_stage_cap']),'build_ceiling':self.build_ceiling,'frozen':st['frozen'],
                 'structural_locked':st['structural_locked'],'auto_promotion':self.cap()>0 and not st['frozen'],
                 'capabilities':{k:{'stage':c['stage'],'effective_ceiling':self.ceiling(k,st),'maturity':self.maturity(k,st),'evidence':c['evidence_count'],'pass_streak':len(c['pass_streak']),'noise_mad':(c.get('noise') or {}).get('mad')} for k,c in st['capabilities'].items()},'plasticity_policy':self.cfg.get('age_plasticity_policy','boot'),
-                'proposals':st['proposals'],'history':st['history'][-8:],'budgets':self.budgets('system')}
+                'proposals':st['proposals'],'history':st['history'][-8:],'development_profile':self.development_profile('system'),'budgets':self.budgets('system')}
 
 def controller(runtime):
     """Runtime-scoped instance without touching runtime.py; reads the live config dict."""
