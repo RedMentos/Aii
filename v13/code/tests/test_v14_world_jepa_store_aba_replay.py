@@ -980,10 +980,20 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 replay = world_jepa_runtime.consume_after_commit(
                     arm["store"], home=arm["home"], limit=256
                 )
-                assert replay["status"] in {
-                    "UPDATED_EXPERIMENTAL_WORLD_JEPA",
-                    "UTILITY_GATE_REJECTED",
-                }
+                if replay["status"] == "INSUFFICIENT_SOURCE_DISJOINT_GUARD_COHORT":
+                    replay_state = _active_state(arm["store"])
+                    assert replay_state["active"]["checkpoint_sha256"] == expected_rollback_sha
+                    assert replay_state["pending_rows"]
+                    assert replay["pending_rows"] == len(replay_state["pending_rows"])
+                    assert replay.get("new_train_rows", 0) > 0
+                    assert replay.get("native_body_weights_changed") is False
+                    arm["rollback"]["replay_deferred_without_checkpoint_change"] = True
+                else:
+                    assert replay["status"] in {
+                        "UPDATED_EXPERIMENTAL_WORLD_JEPA",
+                        "UTILITY_GATE_REJECTED",
+                    }
+                    arm["rollback"]["replay_deferred_without_checkpoint_change"] = False
                 arm["rollback"]["replay_status"] = replay["status"]
             else:
                 arm["rollback"] = {
