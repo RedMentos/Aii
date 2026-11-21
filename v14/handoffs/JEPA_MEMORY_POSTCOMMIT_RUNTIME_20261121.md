@@ -29,3 +29,16 @@ JEPA-TTT (arXiv:2610.00722; https://jepa-ttt.github.io/) reports a matched persi
 
 ## Next action
 Boss/QA review the shared SleepRuntime/WorldJEPA changes and exact CI. After integration, persist optimizer moments and measure the reset-vs-persistent ablation. No user action required.
+
+
+## Verified candidate readback — 2026-11-21
+
+- Release-development HEAD: `569680bc10eabeb94ea5a1695d4bf77b8584e0a0`.
+- Boss PR #2179 head: `268bebaf282188a67dde9ed63246ca024067b6f2`. Exact CI: staged 249 passed / 10 skipped / 47 subtests; integrated 415 passed / 3 skipped / 58 subtests; combined online JEPA 49 passed. Safe-additive fails on existing builder/deployer edits and must be handled by independent review, not bypass.
+- The candidate repairs the prior #2178 missing-colon syntax failure and stale training-resume source pins. It adds a cancellable postcommit SleepRuntime path, older-observed T8 backlog selection, independent learning/planner cursors, staged optimizer-state resume, and B1/B2/SELF numeric SHADOW readouts.
+- Follow-up PR #2182 head `72914a4e3b8cfbb9834cef36dabd1878135e30a7` corrects the consumer's optimizer-state telemetry from the actual checkpoint receipt and adds Adam-step readback after restart and rollback. It is draft; no exact-head CI has run yet.
+- Exact local Aii checkout remains blocked by GitHub DNS. Redmi remains REDMI_UNVERIFIED; no phone receipt, update, model swap, permission change or user data mutation.
+- JEPA-TTT's primary-source persistence ablation supports retaining optimizer state across episodes, but does not measure forgetting across sequential/returning dynamics shifts. The next experiment must compare persistent vs reset optimizer under matched T8 cohorts, update count, batch/replay bytes, old/new holdouts, negative controls, restart and rollback.
+
+## Next action
+Boss independently reviews/integrates #2179 without bypassing safe-additive. After that, rebase #2182 onto the new release HEAD and run exact staged/integrated/combined tests. No user action required.
