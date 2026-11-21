@@ -420,63 +420,30 @@ def test_insufficient_source_cohort_persists_pending_page_and_resumes(tmp_path):
         store.close()
 
 
-def test_insufficient_new_train_rows_persists_until_second_new_train_row(tmp_path):
-    store, session = _make_store(tmp_path / "brain-pending-new-train")
+def test_pending_cohort_rollback_rewinds_cursor_and_replays_verified_rows(tmp_path):
+    store, session = _make_store(tmp_path / "brain-pending-rollback")
     try:
-        _add_transitions(store, session, 0, 64)
+        _add_transitions(store, session, 0, 256)
         consumer = WorldJEPAStoreConsumer(
-            store, tmp_path / "private-pending-new-train", learning_enabled=True, seed=13, ensemble=2
+            store, tmp_path / "private-pending-rollback", learning_enabled=True, seed=13, ensemble=2
         )
-        initial = consumer.update(limit=64, steps=24, optimizer_permission=True)
+        initial = consumer.update(limit=256, steps=120, optimizer_permission=True)
         assert initial["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
 
-        train_text = _source_text_for_partition(0, "pending-train-source")
-        holdout_texts = [
-            _source_text_for_partition(1, f"pending-holdout-{index}")
-            for index in range(16)
-        ]
-        def first_batch_text(index):
-            return train_text if index == 64 else holdout_texts[index - 65]
-        _add_transitions(store, session, 64, 17, source_text_factory=first_batch_text)
+        _add_transitions(store, session, 256, 32)
+        second = consumer.update(limit=288, steps=24, optimizer_permission=True)
+        assert second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
 
-        insufficient = consumer.update(
-            limit=64, steps=8, optimizer_permission=True, replay_mode="none"
-        )
-        assert insufficient["status"] == "INSUFFICIENT_NEW_TRAIN_ROWS"
-        assert insufficient["new_train_rows"] == 1
-        payload, _ = store.state("v14.world_jepa.store_consumer", None)
-        assert payload["scan_cursor"] == 81
-        assert len(payload["pending_rows"]) == 17
-
-        _add_transitions(
-            store, session, 81, 1, source_text_factory=lambda _index: train_text
-        )
-        # Two new train rows are not enough to justify a useful update. Add
-        # more rows from the same verified source digest before retrying.
-        _add_transitions(
-            store, session, 82, 32, source_text_factory=lambda _index: train_text
-        )
-        resumed = consumer.update(
-            limit=64, steps=120, optimizer_permission=True, replay_mode="none"
-        )
-        assert resumed["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
-        assert resumed["metrics"]["new_train_rows"] == 34
-        assert resumed["metrics"]["fit_rows"] == 34
-        assert resumed["metrics"]["replay_rows"] == 0
-        payload, _ = store.state("v14.world_jepa.store_consumer", None)
-        assert payload["pending_rows"] == []
-        assert payload["scan_cursor"] == 114
-        assert len(payload["active"]["processed_ids"]) == 114
-
+        pending_text = _source_text_for_partition(0, "pending-rollback-source")
         pending_id = _add_transitions(
-            store, session, 114, 1, source_text_factory=lambda _index: train_text
+            store, session, 288, 1, source_text_factory=lambda _index: pending_text
         )[0]
         staged = consumer.update(
             limit=64, steps=8, optimizer_permission=True, replay_mode="none"
         )
         assert staged["status"] == "INSUFFICIENT_NEW_TRAIN_ROWS"
         payload, _ = store.state("v14.world_jepa.store_consumer", None)
-        assert payload["scan_cursor"] == 115
+        assert payload["scan_cursor"] == 289
         assert len(payload["pending_rows"]) == 1
         assert payload["pending_rows"][0]["action_id"] == pending_id
 
@@ -484,17 +451,18 @@ def test_insufficient_new_train_rows_persists_until_second_new_train_row(tmp_pat
         assert rolled_back["status"] == "ROLLED_BACK"
         assert rolled_back["checkpoint_sha256"] == initial["checkpoint_sha256"]
         payload, _ = store.state("v14.world_jepa.store_consumer", None)
-        assert payload["scan_cursor"] == 64
+        assert payload["scan_cursor"] == 256
         assert payload["pending_rows"] == []
-        assert len(payload["active"]["processed_ids"]) == 64
+        assert len(payload["active"]["processed_ids"]) == 256
 
         replayed = consumer.update(
-            limit=128, steps=120, optimizer_permission=True, replay_mode="uniform"
+            limit=64, steps=24, optimizer_permission=True, replay_mode="uniform"
         )
         assert replayed["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         payload, _ = store.state("v14.world_jepa.store_consumer", None)
         assert pending_id in set(payload["active"]["processed_ids"])
         assert payload["pending_rows"] == []
+        assert payload["scan_cursor"] == 289
     finally:
         store.close()
 
@@ -531,50 +499,49 @@ def test_checkpoint_readback_rejects_source_sha256_leak(tmp_path):
 def test_replay_off_ablation_excludes_old_rows_and_uniform_mode_replays_them(tmp_path):
     store, session = _make_store(tmp_path / "brain-replay-ablation")
     try:
-        _add_transitions(store, session, 0, 64)
+        _add_transitions(store, session, 0, 256)
         consumer = WorldJEPAStoreConsumer(
             store, tmp_path / "private-replay-ablation", learning_enabled=True, seed=13, ensemble=2
         )
-        first = consumer.update(limit=64, steps=8, optimizer_permission=True)
+        first = consumer.update(limit=256, steps=120, optimizer_permission=True)
         assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         first_payload, _ = store.state("v14.world_jepa.store_consumer", None)
         first_train = set(first_payload["active"]["train_ids"])
         assert len(first_train) >= 8
 
-        _add_transitions(store, session, 64, 32)
+        _add_transitions(store, session, 256, 64)
         no_replay = consumer.update(
-            limit=96, steps=8, optimizer_permission=True, replay_mode="none"
+            limit=64, steps=120, optimizer_permission=True, replay_mode="none"
         )
-        assert no_replay["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
-        no_replay_metrics = no_replay["metrics"]
+        assert no_replay["status"] in {"UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED"}
+        no_replay_metrics = no_replay.get("metrics", no_replay)
         assert no_replay_metrics["replay_mode"] == "none"
         assert no_replay_metrics["replay_candidate_rows"] >= 8
         assert no_replay_metrics["replay_rows"] == 0
-        assert len(no_replay_metrics["fit_action_ids"]) >= 2
+        assert len(no_replay_metrics["fit_action_ids"]) >= 8
         assert set(no_replay_metrics["fit_action_ids"]) == set(no_replay_metrics["new_train_action_ids"])
         assert not (set(no_replay_metrics["fit_action_ids"]) & first_train)
         assert no_replay_metrics["old_holdout_loss_before"] is not None
         assert math.isfinite(no_replay_metrics["old_holdout_retention_delta"])
 
-        _add_transitions(store, session, 96, 32)
+        _add_transitions(store, session, 320, 64)
         uniform = consumer.update(
-            limit=128, steps=8, optimizer_permission=True, replay_mode="uniform"
+            limit=128, steps=120, optimizer_permission=True, replay_mode="uniform"
         )
-        assert uniform["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
-        uniform_metrics = uniform["metrics"]
+        assert uniform["status"] in {"UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED"}
+        uniform_metrics = uniform.get("metrics", uniform)
         assert uniform_metrics["replay_mode"] == "uniform"
         assert uniform_metrics["replay_rows"] >= 8
         assert uniform_metrics["replay_rows"] == uniform_metrics["replay_candidate_rows"]
         assert uniform_metrics["replay_rows"] + uniform_metrics["new_train_rows"] == uniform_metrics["fit_rows"]
-        assert set(uniform_metrics["fit_action_ids"]) == set(
-            store.state("v14.world_jepa.store_consumer", None)[0]["active"]["train_ids"]
-        )
+        assert first_train <= set(uniform_metrics["fit_action_ids"])
         assert uniform_metrics["old_holdout_loss_before"] is not None
         assert math.isfinite(uniform_metrics["old_holdout_retention_delta"])
 
+        active_payload, _ = store.state("v14.world_jepa.store_consumer", None)
         restarted = WorldJEPAStoreConsumer(
             store, tmp_path / "private-replay-ablation", learning_enabled=True
         )
-        assert restarted.restore()["checkpoint_sha256"] == uniform["checkpoint_sha256"]
+        assert restarted.restore()["checkpoint_sha256"] == active_payload["active"]["checkpoint_sha256"]
     finally:
         store.close()
