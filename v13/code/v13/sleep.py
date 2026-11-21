@@ -716,8 +716,6 @@ class SleepRuntime:
                 'mode':'shadow',
                 'sha256':planner.get('checkpoint_sha256') or learning.get('checkpoint_sha256'),
                 'optimizer_steps':metrics.get('fit_steps_after',0),
-                'optimizer_state_persisted':metrics.get('optimizer_moments_persisted') is True,
-                'optimizer_state_bootstrapped':metrics.get('optimizer_state_bootstrapped') is True,
                 'target_changed':float(metrics.get('ema_target_delta_norm',0.0))>0.0,
                 'loss_before':metrics.get('holdout_loss_before'),
                 'loss_after':metrics.get('holdout_loss_after'),

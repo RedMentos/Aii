@@ -15,7 +15,7 @@ The Store-backed WorldJEPA consumer already had a real T8/ActionOutcome → Worl
 - `v13/code/v13/world_jepa_training_state.py`: new bounded numeric codec. It validates model revision/objective, parameter shapes, Adam moments/step counts, inverse-head arrays, PCG64 RNG state and ensemble bootstrap state. A legacy bootstrap retains existing model/EMA parameters and initializes only missing optimizer/inverse state; the checkpoint records `BOOTSTRAPPED_FROM_INFERENCE_ONLY`.
 - `v13/code/v13/world_jepa_shadow_checkpoint.py`: store resume metadata/arrays in the same atomic private archive; preflight NPY headers and bounded archive size before NumPy allocation; no pickle or public weights.
 - `v13/code/v13/world_jepa_consumer.py`: only the already-gated Store update path passes the explicit bootstrap permission after `learning_enabled` and `optimizer_permission` are both true; it reports persisted/bootstrap status.
-- `v13/code/v13/sleep.py` and `store.py`: expose optimizer persistence/bootstrap flags in bounded Sleep telemetry.
+- The Store consumer returns `optimizer_state_persisted` and `optimizer_state_bootstrapped` in its learning metrics; SleepRuntime forwards those metrics in its structured learning result. SQLite telemetry remains on the existing bounded schema (optimizer step count and target-change evidence), avoiding an unrelated schema/hash-chain change.
 - Staged guard/lineage builders are rebound to the production source hashes; their generated test copies no longer overlay a separate training implementation.
 
 No model was downloaded or swapped. No GGUF/B1/B2 base weights were changed. The B1/B2 receivers remain numeric SHADOW readouts, not native body-weight learning.
@@ -43,12 +43,15 @@ Boss/integrator: please sync the verified result into `V14_LIVE_WORKPLAN.md`, `V
 
 ## Research note proposed for R-025
 
-- **JEPA-TTT**, arXiv:2610.00722: persistent test-time predictor updates with dense replay and an explicit persistence-vs-reset comparison support retaining optimizer state across episodes. The paper keeps its visual encoder fixed; that is an experimental control, not a reason to freeze V14 organs. No public code repository/license was verified from the project page, so no code was reused.
+- **JEPA-TTT**, arXiv:2610.00722: persistent test-time predictor updates retain predictor parameters, optimizer state and a dense replay buffer across episodes; its reported setting keeps the visual encoder/reward head fixed and adapts only the latent dynamics predictor. That supports testing persistence, but does not justify freezing V14 encoders or treating its results as evidence for our broader encoder+EMA+inverse-head path. The project page exposes paper/results but no implementation or license link; no code was reused.
   - https://arxiv.org/abs/2610.00722
   - https://jepa-ttt.github.io/
-- **STABLE**, arXiv:2611.10655: a primal-dual drift-budget idea may be worth a future ablation to constrain update magnitude while preserving plasticity. Its formal result is for distance-based classifiers under its stated assumptions, not a guarantee for this WorldJEPA MLP. The public implementation declares MIT but requires a much heavier PyTorch/CUDA setup; no code was reused for Android.
+- **STABLE**, arXiv:2611.10655: its primal-dual optimizer enforces a task-anchor drift budget and may justify a future bounded-drift ablation after multi-seed baselines. The paper's guarantee is for distance-based classifiers under a local score-stability condition, not this WorldJEPA MLP. The official repo is MIT, but its reference setup is Python 3.12 + PyTorch 2.8/CUDA 12.8 on an A100 64 GB; no code was reused for Android.
   - https://arxiv.org/abs/2611.10655
   - https://github.com/atlas-luiss/STABLE
+- **Replay on Demand (RoD)**, arXiv:2609.40089: jointly ranks adaptation examples by remaining learning potential and replay examples by observed source-level forgetting against reference-model losses, rather than fixing a replay ratio. Its official implementation is Apache-2.0, but is a thin layer over NeMo-RL v0.6.0/Megatron/Ray and targets an 8-GPU 80 GB cluster (the paper also reports 4×H100 with optimizer offload); it is not a practical Android dependency. Future V14 experiment only: estimate per-source old-holdout degradation and let it compete with new-learning utility under the same bounded update budget. Do not port its training stack or replace the current uniform/no-replay controls; the hard-replay arm already failed retention in the staged cohort.
+  - https://arxiv.org/abs/2609.40089
+  - https://github.com/bethgelab/replay-on-demand
 
 ## Next executable step
 

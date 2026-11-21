@@ -268,8 +268,6 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
             "SELECT metrics FROM telemetry WHERE kind='v14_world_jepa_postcommit' ORDER BY id"
         )
         assert telemetry
-        assert "optimizer_state_persisted" in repr(telemetry)
-        assert "optimizer_state_bootstrapped" in repr(telemetry)
         assert "synthetic-postcommit-source-" not in repr(telemetry)
     finally:
         store.close()
