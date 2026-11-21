@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - core/v14-audio-lease-runtime-20261121
+      - qa/v14-same-turn-body-delivery-20261122
     paths:
       - v13/code/scripts/integrated_audio_context_candidate_20261121.py
       - v13/code/scripts/integrated_arithmetic_guard_candidate_20261121.py
@@ -16,6 +17,7 @@ on:
       - v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py
       - v13/code/tests/test_arithmetic_reflex.py
       - v13/code/tests/test_arithmetic_stage_20261116.py
+      - v13/code/tests/test_same_turn_body_delivery_qa.py
       - v13/code/tests/test_runtime_deploy.py
       - v13/code/tests/test_runtime_deploy_integrity.py
       - .github/workflows/v14-core-audio-lease-runtime.yml
