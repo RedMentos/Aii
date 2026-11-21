@@ -1,0 +1,98 @@
+name: V14 Core staged A5 voice and arithmetic integration
+
+on:
+  pull_request:
+    branches: [gpt6/v13-private-remote-bridge-20261111]
+    paths:
+      - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/tests/test_c3_audio_runtime_consumer.py"
+      - "v13/code/tests/test_v14_audio_context_stage_20261121.py"
+      - "v13/code/tests/test_arithmetic_reflex.py"
+      - "v13/code/tests/arithmetic_disposable_cases_20261116.py"
+      - "v13/code/tests/test_termux_runtime_recovery_stage.py"
+      - "v13/code/tests/test_runtime_deploy_integrated_20261116.py"
+      - "v13/code/tests/test_v14_arithmetic_policy_separation.py"
+      - ".github/workflows/v14-core-a5-voice-runtime.yml"
+  push:
+    branches: [gpt6/v14-core-a5-voice-runtime-20261121]
+    paths:
+      - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/tests/**"
+      - ".github/workflows/v14-core-a5-voice-runtime.yml"
+  workflow_dispatch:
+
+jobs:
+  staged-a5-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install isolated CPU test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy==2.2.6 psutil PyYAML pytest==9.2.0
+      - name: Verify exact builder and deployer pin chain
+        run: |
+          test "$(sha256sum v13/code/scripts/integrated_audio_context_candidate_20261121.py | cut -d' ' -f1)" = "569e5c593e6cb4891573ece5f3f4e1c23600200dac7186cd9731e3243aad47d0"
+          test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py | cut -d' ' -f1)" = "8de85c18c7efec7d9490b3547e5e0fa4ee9ab6ce0e7bb60515554135eaa43530"
+          test "$(sha256sum v13/code/scripts/stage_integrated_candidate.py | cut -d' ' -f1)" = "f6b06e8ed879092f0b3ada15916af1bf4dfb392d8f99d9bde46848ca1e73bed5"
+          grep -F 'STAGER_SHA256 = "f6b06e8ed879092f0b3ada15916af1bf4dfb392d8f99d9bde46848ca1e73bed5"' v13/code/v13/runtime_deploy.py
+      - name: Compile composed builders and Runtime consumers
+        run: |
+          python -m py_compile \
+            v13/code/scripts/integrated_audio_context_candidate_20261121.py \
+            v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
+            v13/code/scripts/stage_integrated_candidate.py \
+            v13/code/v13/runtime_deploy.py \
+            v13/code/v13/audio_voice_cues.py \
+            v13/code/tests/test_c3_audio_runtime_consumer.py \
+            v13/code/tests/test_v14_audio_context_stage_20261121.py \
+            v13/code/tests/test_termux_runtime_recovery_stage.py
+      - name: Read back exact staged builder SHA256 chain
+        run: |
+          set -euo pipefail
+          sha256sum v13/code/scripts/integrated_audio_context_candidate_20261121.py
+          sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py
+          sha256sum v13/code/scripts/stage_integrated_candidate.py
+          sha256sum v13/code/v13/runtime_deploy.py
+      - name: Staged voice, B1/B2/C3, arithmetic and consent regressions
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_v14_audio_context_stage_20261121.py \
+            v13/code/tests/test_v14_arithmetic_policy_separation.py \
+            v13/code/tests/test_arithmetic_stage_20261116.py
+      - name: Recovery and installed-deployer simulation
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_termux_runtime_recovery_stage.py \
+            v13/code/tests/test_runtime_deploy_integrated_20261116.py \
+            v13/code/tests/test_integrated_stage_real_smoke.py
+      - name: Adjacent cognition and source-provenance regressions
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_broker.py \
+            v13/code/tests/test_output_policy.py \
+            v13/code/tests/test_context_os.py \
+            v13/code/tests/test_enlightened_space.py \
+            v13/code/tests/test_offer_deadlines.py \
