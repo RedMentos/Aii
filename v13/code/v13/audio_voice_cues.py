@@ -540,12 +540,13 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         if round(cues["voiced_fraction"] * cues["frame_count"]) < 2:
             audio_segment["unmeasured"].append("prosody")
 
+        expected_source_id, expected_receipt = source_id, consent_receipt
         source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
             runtime, event_id, audio_packet
         )
-        if source_id != lease_source_id or receipt != lease_receipt:
+        if source_id != expected_source_id or receipt != expected_receipt:
             _reset_audio_temporal_state(
-                runtime, lease_source_id, generation_id, temporal_state, vad_stream,
+                runtime, expected_source_id, generation_id, temporal_state, vad_stream,
             )
             raise PermissionError("audio packet binding does not match active consent lease")
 
