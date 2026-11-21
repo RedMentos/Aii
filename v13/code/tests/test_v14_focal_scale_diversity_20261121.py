@@ -30,23 +30,39 @@ def test_review_stage_applies_only_scale_aware_c4_overlay(tmp_path):
         b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
     ).hexdigest()
     assert before == "a0588a768cc91266ef02243bcfda2e631860d8ad"
+    arithmetic_source = CODE / "v13" / "arithmetic_reflex.py"
+    arithmetic_raw = arithmetic_source.read_bytes()
+    arithmetic_before = hashlib.sha1(
+        b"blob " + str(len(arithmetic_raw)).encode("ascii") + b"\0" + arithmetic_raw
+    ).hexdigest()
+    assert arithmetic_before == "b721b769157b3df3936752419c5b93bed78bc347"
 
     destination = tmp_path / "candidate"
     manifest = _load_stager().stage(CODE, destination)
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
     assert manifest["overlay"]["cross_scale_redundancy_factor"] == 0.15
+    assert manifest["arithmetic_overlay"]["status"] == "SHADOW_REVIEW_ONLY"
     assert "v13/focal.py" in manifest["replaced_files"]
+    assert "v13/arithmetic_reflex.py" in manifest["replaced_files"]
 
     staged = (destination / "v13" / "focal.py").read_bytes()
     assert b"CROSS_SCALE_REDUNDANCY_FACTOR = 0.15" in staged
     assert b"_scale_aware_redundancy(c,a)" in staged
     assert hashlib.sha256(staged).hexdigest() == manifest["files_sha256"]["v13/focal.py"]
+    staged_arithmetic = (destination / "v13" / "arithmetic_reflex.py").read_bytes()
+    assert b"_YEAR_MONTH = re.compile(" in staged_arithmetic
+    assert hashlib.sha256(staged_arithmetic).hexdigest() == manifest["files_sha256"]["v13/arithmetic_reflex.py"]
 
     after_raw = source.read_bytes()
     after = hashlib.sha1(
         b"blob " + str(len(after_raw)).encode("ascii") + b"\0" + after_raw
     ).hexdigest()
     assert after == before, "the historical V13 focal.py source was modified"
+    arithmetic_after_raw = arithmetic_source.read_bytes()
+    arithmetic_after = hashlib.sha1(
+        b"blob " + str(len(arithmetic_after_raw)).encode("ascii") + b"\0" + arithmetic_after_raw
+    ).hexdigest()
+    assert arithmetic_after == arithmetic_before, "the historical arithmetic source was modified"
 
 
 def test_runtime_consumes_both_overlapping_body_offers_in_c3_context(tmp_path):
@@ -62,7 +78,14 @@ from unittest.mock import Mock
 
 from v13.operator import Operator
 from v13.runtime import Runtime
-from v13 import focal
+from v13 import focal, arithmetic_reflex
+
+assert arithmetic_reflex.exact_arithmetic("2+2") == "4"
+assert arithmetic_reflex.exact_arithmetic("2026-11") is None
+assert arithmetic_reflex.exact_arithmetic("2026/11") is None
+assert arithmetic_reflex.exact_arithmetic("What is 2026-11?") is None
+assert arithmetic_reflex.exact_arithmetic("calculate 2026-11") == "2015"
+assert arithmetic_reflex.exact_arithmetic("berechne 2026-11") == "2015"
 
 # Direct C4 negative controls: cross-scale overlap is discounted, but same-role
 # duplicates and body/memory overlap still compete normally.
