@@ -163,6 +163,19 @@
       "proof_environment": "NOT_RUN; SYNTHETIC_AND_NATIVE_SEPARATE",
       "next_step": "Inventory sleep/replay/memory consumers and their persistent cursors; build one idempotent restart-safe replay-to-learning path with provenance, negative controls and retention measurement.",
       "user_action_required": false
+    },
+    {
+      "id": "V14-012",
+      "title": "Context OS, episodic/semantic memory and additive Memorilla companion",
+      "owner": "JEPA & Memory + Core & Harness",
+      "reviewer": "QA & Boss",
+      "priority": "P1",
+      "status": "READY",
+      "scope": "Fixed Context OS header and bounded context; exact episodic memory; semantic/world graph with temporal validity and source revocation; additive overflow/missing-context companion with source pointers and query-sensitive connections; role-specific readers/writers",
+      "acceptance": "Actual runtime consumers retrieve source-grounded memories; overflow companion runs only when context is missing/overflowed and never replaces the canonical memory or user-visible history; restart, forget/revoke, privacy, query-relevance and resource-cost tests pass.",
+      "proof_environment": "NOT_RUN; PR_1983_OPTIONAL_CANDIDATE",
+      "next_step": "Review PR #1983 and existing Mem0/MemoRilla/context code; compare licenses and Android footprint; implement one source-pointer-preserving overflow path with restart/forget tests and actual B1/B2/C3 readers.",
+      "user_action_required": false
     }
   ]
 }

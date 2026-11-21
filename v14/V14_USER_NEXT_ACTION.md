@@ -83,3 +83,5 @@ The live V14 work board now has V14-009 for the previously implicit but mandator
 - **V14-010 — Cross-organ self-optimization and controlled self-edit:** future numeric target-weight changes, measured holdout/retention/rollback and sandboxed human-approved code/structure edits. No production weight or privilege change is claimed.
 - **V14-011 — Sleep, Dream, Replay and source-bound consolidation:** idempotent restart-safe replay, observed-vs-generated provenance, slow EMA, retention/ablation and rollback. Dream samples do not become truth or tool authority.
 Both are `READY / NOT_RUN` work packages; they preserve these Canon requirements as visible work rather than implying implementation.
+
+- **V14-012 — Context OS, episodic/semantic memory and additive Memorilla companion:** preserve the fixed Context OS and exact memory; use the small companion only for overflow/missing context with source pointers, query-sensitive links and explicit forget/revoke. PR #1983 remains a candidate, not proof of an integrated runtime consumer.
