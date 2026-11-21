@@ -56,6 +56,8 @@ class ToolRegistry:
         self.register(ToolSpec('eligibility',eligibility.tool,description='Eignung/Budget-Rezept (deterministisch, Regel-verankert)',schema=eligibility.SCHEMA,effects=({'COMPUTE'},{'CALCULATOR','MONEY'})))
         from . import listarith  # R4 part 6: model reads listed values, fixed recipe computes (sum, max-min)
         self.register(ToolSpec('list_arith',listarith.tool,description='Summe/Differenz über aufgezählte Werte (Rezept, Zahlen-Wächter)',schema=listarith.SCHEMA,effects=({'COMPUTE'},{'CALCULATOR'})))
+        from ..android_companion import make_tool as android_action_tool, preview_tool as android_action_preview
+        self.register(ToolSpec('android_action',android_action_tool(store),risk='EXTERNAL_EFFECT',reversible=False,right='simple_tool_choice',description='Permission-gated Android companion action; companion and OS must independently confirm',schema={'capability':'str','args_b64':'str'},preview=android_action_preview))
     def register(self,spec):self.tools[spec.name]=spec
     def enable(self,name,on=True):
         """User permission per tool (§17.3). Default: nothing enabled."""
