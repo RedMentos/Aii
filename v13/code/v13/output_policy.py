@@ -1,6 +1,8 @@
-"""Bounded operator-approved exact answers at the existing C5/F6 boundary.
+"""Bounded deterministic exact outputs at the existing C5/F6 boundary.
 
-No fuzzy matching, model judge, inferred fact authority or implicit activation.
+Operator-authored fixed answers retain precedence; a separate code-reviewed
+integer-arithmetic policy may return only a deterministic local result. No fuzzy
+matching, model judge, inferred fact authority or implicit activation.
 Free-text rules stay prompt guidance. Invalid active exact rules fail closed.
 """
 import re
