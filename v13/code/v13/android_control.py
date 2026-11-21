@@ -68,10 +68,13 @@ def _canonical(capability, args):
 def _private_audit_db_path(db_path):
     """Create/open one private regular audit DB without following a final symlink.
 
-    This protects the dry-run audit from accidental symlink/hardlink redirection
-    and makes stored typed text private by default. It is not an OS sandbox or
-    a defense against a malicious same-UID process racing the subsequent SQLite
-    open; the native companion must still own authenticated consent and storage.
+    This protects the dry-run audit from final-file / immediate-parent
+    symlink or hardlink redirection and makes stored typed text private by
+    default. Ancestor aliases are allowed because Android commonly exposes
+    app data through platform paths such as /data/data -> /data/user/0.
+    This is not an OS sandbox or a defense against a malicious same-UID process
+    racing the subsequent SQLite open; the native companion must still own
+    authenticated consent and storage.
     """
     try:
         path = Path(os.path.abspath(os.path.expanduser(os.fspath(db_path))))
@@ -83,9 +86,8 @@ def _private_audit_db_path(db_path):
     try:
         if not path.parent.is_dir():
             raise ControlDenied("audit database parent must already exist")
-        for component in reversed(path.parents):
-            if stat.S_ISLNK(component.lstat().st_mode):
-                raise ControlDenied("symlinked audit directory")
+        if stat.S_ISLNK(path.parent.lstat().st_mode):
+            raise ControlDenied("symlinked audit parent")
         flags = os.O_RDWR | nofollow | getattr(os, "O_CLOEXEC", 0)
         try:
             fd = os.open(path, flags | os.O_CREAT | os.O_EXCL, 0o600)
