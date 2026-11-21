@@ -1,3 +1,79 @@
+# Exact hash-chain and test refresh — 2026-11-21 20:33 CET
+
+**No user action. No device command or permission/model/weight change.**
+
+- Core #2242 current head edefe004 has a nested pin mismatch. Exact recovery-candidate bytes (2,878 bytes; Git blob SHA-1 0eb9955f167256d954c960b7836642877735670c) hash to SHA-256 a4f9f4714f09d35043a999cf2b5c1f7f3588c0e7441fad8538b39707da30b00d. The stage builder still expects 558633... . Current stage bytes hash to 8406b55ab6e6e4155db58598a83adf6fd686106baa63cacfecd6b25531c8e297, not its runtime-deployer pin 45fd... . After changing BUILDER_SHA to a4f9..., the stage file will hash to 27be6c08d711dbbbd8d33539918d29befc4189fd310a002f3859cb59bebb6e78; runtime_deploy.STAGER_SHA256 must equal that. The arithmetic overlay source pin itself is correct (Git blob SHA-1 d7063a42ee559eb3340a38ab42cf01960a48a7a3); three test fixtures omit the file. Exact calculations and readbacks are in [Core comments](https://github.com/RedMentos/Aii/pull/2242#issuecomment-7068094554) and [overlay readback](https://github.com/RedMentos/Aii/pull/2242#issuecomment-7068096475).
+- Core candidate has improved two-phase revoke and cleanup code, but current exact CI is 6 success / 7 failure / 3 in progress. No merge or release.
+- QA #2244 remains based on old Core head and fails the old-base close/revoke tests; rebase after Core fixes the hash chain.
+- Perception #2246 has 3 success / 4 failure; A5 tests fail on context(grants), undefined grant and ingress count. Verify import path/signature and fix callsites; rebase after parent #2243 merge.
+- JEPA #2247 and Age #2235 remain blocked by retention and AST-attribution tests respectively; no gates are weakened.
+- Research-only PR #2243 is merged at 6bbaa66; its merge-push CI is 29/31 green, 2 in progress. It is a tiny K/V experiment only, not production B3.
+- Five V14 automations are enabled; the five legacy V13 jobs are disabled.
+- Boss documentation PR #2249 has been updated and marked ready; the latest branch push needs its own exact check readback before merge.
+- Private PIPELINE_STATUS #428 still has no authenticated reply. Installed SHA/updater consent UNKNOWN. REDMI_UNVERIFIED.
+
+No local Aii checkout is present, so no local project tests ran. The V14 master blob and historical V13 appendix remain unchanged.
+
+---
+
+# Latest Boss integration update — 2026-11-21 20:31 CET
+
+**No user action is required. Do not run Termux commands, request a phone update, change models/weights/permissions, or alter device data.**
+
+- Research-only PR #2243 is merged at 6bbaa66e4e2454cc2178bd145da95d1e9cf6530f; exact PR head f440a5a330e709c06cab1f818de8c83362897b2b passed 4/4. The merge-push has 29/31 checks green and two integrated-regression runs still in progress. It adds a tiny PyTorch K/V adapter experiment only, not production B3 or Android.
+- **Core #2242** advanced to edefe004735513bfa531984fb2662da5adb6a997. The two-phase audio revocation, worker-before-tombstone close, persisted packet cleanup and shared-blob refcount code now exist. Exact CI still fails because stage_integrated_candidate.py:48 rejects its recovery-candidate hash (BUILDER_SHA=558633... does not match current bytes); after correcting that, the nested runtime_deploy.STAGER_SHA256 must be recomputed. Three older stage fixtures still omit the mandatory arithmetic overlay. Exact status: 6 success / 7 failure / 3 in progress. validate-additive failure is by policy and must not be bypassed. See [Boss review comment](https://github.com/RedMentos/Aii/pull/2242#issuecomment-7068061383).
+- **QA #2244** is still based on old Core head 4cca4987... and is non-mergeable. Its Python 3.13/3.14 tests on that old base show pre-lock cancellation, fail-closed missing-subscription, close-order and packet/blob revocation failures. Rebase onto current Core after the stage hash is repaired; preserve Scenarios 7–9.
+- **Perception #2246** is still based on old parent d7380cb. Its A5 tests fail both Python versions: context() missing grants, NameError: grant, and ingress assertion 0 != 1 (3 checks pass / 4 fail). The current source passes brain_generation_id; the import path/signature and failing callsites must be diagnosed, not bypassed. Rebase to shared branch 6bbaa66 after fixing.
+- **JEPA #2247** remains 11/14: both optimizer-resume jobs reject A-GEM because old-session holdout retention regresses across seeds 13/19/43; checkpoint unchanged. Keep learning gates OFF. **Age #2235** remains 7/10 because the AST inventory misattributes the nested GoalStore.add callback as f; preserve the exact caller audit and fix attribution, not the allowlist.
+- Last fully accepted code release remains f279286a4453248004c670fcaabecd85da6ab299 (34/34 checks, 19/19 workflows). The later merged code candidate 728cdc763f09bee20ac00e1f0faadffcd33dfbb2 remains 18/19 due the correct JEPA utility-gate rejection. No new code release is certified.
+- Five V14 scheduled jobs are enabled (Boss, QA/Android, JEPA/Memory, Research/Perception, Core/Harness); legacy V13 jobs are disabled. No extra agents are claimed.
+- Research R-040/R-041 has been reviewed in full text and handed to Perception for ledger entry; no code/dependency was imported. R-040 is conditional/task-geometry dependent (arXiv version CC BY-NC-ND 4.0); R-041 uses source-specific reference-loss selection but has replay-pool/proxy-loss limitations and single-seed-per-condition experiments.
+- Private PIPELINE_STATUS request [RedMentos/Aiiii #428](https://github.com/RedMentos/Aiiii/issues/428) remains open with no authenticated reply. Installed SHA and updater consent are UNKNOWN. **REDMI_UNVERIFIED.** No diagnostics/log-page/update request or device mutation occurred.
+- Boss docs-only PR #2249 has its offline-bridge-security check green (1/1); it remains a draft and is not yet merged. The active master blob remains unchanged; the historical V13 appendix is untouched.
+- The local container has no Aii .git checkout, so no local project tests ran. All evidence above is GitHub CI/synthetic, not LOCAL_LINUX full-suite or Redmi proof.
+
+**Next internal work:** Core fixes the nested builder hash and arithmetic fixture; QA rebases #2244 and fixes #2235 AST attribution; Perception fixes A5 test import/call errors and rebases #2246, then appends R-040/R-041; JEPA replaces A-GEM with a retention-preserving experiment; Boss integrates only after exact-base tests and merge-push CI. No user command is needed.
+
+---
+
+# Latest integration update — 2026-11-21 20:25 CET
+
+**No user action is required. No Termux command, phone update, model/weight/permission change or device mutation is authorized or needed.**
+
+- Research-only PR #2243 is now merged at `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`. Its exact PR head `f440a5a330e709c06cab1f818de8c83362897b2b` passed all four relevant checks. It adds a tiny cross-geometry PyTorch K/V adapter/injection experiment, negative controls, restart equivalence, R-037 ledger/handoff and an isolated workflow. It does **not** change production B3, llama.cpp, V13 Runtime, installed models, weights or permissions. The exact merge-push CI is still 31 checks (25 queued, 6 in progress at last read), so no new code release is certified.
+- The shared release-development branch head is now `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`. The last fully accepted code release remains `f279286a4453248004c670fcaabecd85da6ab299`; the latest merged code candidate `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` remains 18/19 due to the correct JEPA utility-gate rejection.
+- #2246 is still based on the old #2243 head `d7380cb`; Perception was asked to rebase/retarget it to the shared branch after the parent merge and append R-040/R-041. The current A5 adapter passes `brain_generation_id` and includes two-phase synthetic revoke tests, but there is no OS provider/capture/action or Android proof.
+- R-040 and R-041 are now both full-text reviewed. R-040 (Mahdaviyeh et al., arXiv:2506.04377v1 / PMLR 330:15–42, 2026) is conditional and sample/task-geometry dependent, not a universal anti-replay theorem; arXiv version license is CC BY-NC-ND 4.0. R-041 (Thede et al., arXiv:2609.40089v1) uses joint source-specific reference-loss selection; it adds a forward-only candidate-scoring pass, requires a representative replay pool, and its reported conditions are single-seed. No code/dependency imported. Perception has been asked to add both with these caveats to the ledger.
+- Boss documentation-only PR #2249 contains the current board/workplan/coverage/user handoff. Its offline-bridge-security check is still queued; it is not merged.
+- Private PIPELINE_STATUS request [RedMentos/Aiiii #428](https://github.com/RedMentos/Aiiii/issues/428) remains open with no authenticated reply. Installed SHA and updater consent are UNKNOWN. **REDMI_UNVERIFIED.** No diagnostics/log page/update request or device mutation occurred.
+
+**Next internal work:** Core repairs #2242 stage/deployer pin, overlay fixture and pre-lock audio revocation; QA fixes #2235 AST attribution and rebases #2244; Perception rebases #2246 and appends R-040/R-041; JEPA tests alternatives without weakening per-session retention; Boss waits for exact merge-push CI and integrates only fully tested, compatible slices.
+
+---
+
+Research clarification: both replay papers have now been reviewed at full text. R-040 is Mahdaviyeh et al. (arXiv:2506.04377v1; PMLR 330:15–42, 2026), not Caccia; its arXiv version is CC BY-NC-ND 4.0 and shows conditional, task/sample-dependent harmful replay rather than a universal anti-replay result. R-041 is Thede et al. (arXiv:2609.40089v1); RoD uses source-specific reference-loss deltas, precomputed reference losses, and a forward-only candidate-scoring pass; the paper's per-condition runs are single-seed and its replay-pool coverage/proxy-loss limitations matter. No code or dependencies were imported. The Perception ledger owner has been asked to add both entries and the exact caveats in [PR #2246](https://github.com/RedMentos/Aii/pull/2246#issuecomment-7067983358). This does not change the current release/device status.
+
+# Latest Boss handoff — 2026-11-21 20:18 CET
+
+**No user action is required. Do not run a new Termux installer, send an update request, change Age/permissions/models/weights/updater settings or modify phone data.**
+
+- Shared release-development branch base read: `0c9ede256e9a3bdafc728fe6be1b4bead8fe13bd`. Its exact-head checks were 24 success / 3 in progress / 3 queued / 0 failures at last read. The last fully accepted code release is `f279286a4453248004c670fcaabecd85da6ab299` (34/34 checks, 19/19 workflows). The later merged code candidate `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` remains 18/19 because the JEPA utility gate rejected its positive update. No new phone release is certified.
+- Core #2242 still blocks normal audio/arithmetic integration: stale `runtime_deploy.STAGER_SHA256`, missing arithmetic-overlay test fixture, downstream migration PARTIAL, and no pre-lock cancellation on consent revocation. Boss left the exact blocker list on [#2242](https://github.com/RedMentos/Aii/pull/2242#issuecomment-7067896024).
+- QA #2244 is still stacked on #2242. Its C3-like streaming tests are synthetic and its current exact checks are pending.
+- Perception #2243 is now rebased to the current shared base; the new exact head's latent-cache/model-lab jobs are still queued. #2246 is stacked on it; the current adapter now passes `generation_id` and includes two-phase synthetic revocation tests, but its exact checks are queued. No Android OS provider/capture/action exists.
+- JEPA #2247's two Python optimizer-resume jobs reject all A-GEM arms because per-session old-holdout retention regresses across seeds 13/19/43. The checkpoint SHA is unchanged; learning gates remain OFF.
+- QA #2235 contains the correct Age-rights vs physical-resource separation, but its repository-wide AST test misattributes a nested `GoalStore.add` callback as `f`; owner-read and Lab-Age E2E fail. Strict safe-additive rejection is expected; no bypass.
+- RAW EAR is caller-provided PCM16 only. B1/B2 remain synthetic. B3 is symbolic plus a tiny K/V experiment, not production latent coupling. Android background/UI control remains DRY_RUN/metadata-only. Memorilla, remote patch review and behavior judge remain drafts. No accepted permanent B1/B2/C3 weight update, cross-organ gradients, sparse MoE or Android executor exists.
+- Research R-040/R-041 was handed to the Perception ledger owner in [#2246 comment](https://github.com/RedMentos/Aii/pull/2246#issuecomment-7067926479); the shared research ledger has not yet been updated.
+- Private PIPELINE_STATUS request [RedMentos/Aiiii #428](https://github.com/RedMentos/Aiiii/issues/428) remains open with no authenticated response. Installed SHA and updater consent are UNKNOWN. No DIAGNOSTICS/LOG_PAGE/UPDATE_REQUEST or device mutation occurred. **REDMI_UNVERIFIED.**
+- The local container has no Aii `.git` checkout, so no local full-suite test ran. GitHub Actions results above are CI, not LOCAL_LINUX or Redmi proof.
+
+The historical 1,255-heading Canon inventory remains preserved; full semantic clause→implementation→consumer→test→environment→rollback mapping remains open. The active master blob is unchanged (`9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`), so the historical V13 appendix remains untouched.
+
+**Next internal actions:** Core repairs #2242's stage/deployer pins and two-phase audio revoke; QA fixes #2235's AST attribution and rebases #2244; Perception finishes exact #2243/#2246 CI and updates R-040/R-041; JEPA replaces the retention-failing update mechanism without weakening the gate; Boss integrates only exact-base, fully tested candidates. No manual Termux command is needed.
+
+---
+
 # Latest Android UI lease review — 2026-11-21 20:18 CET
 
 Perception #2246 now has a two-phase revoke protocol: request-cancel before waiting for the provider guard, then source/context cleanup after the guard is released. This is the correct direction. However, the adapter path currently omits the required `generation_id` argument when calling `ui_observation_lease`; the adapter-level test should fail until that is fixed. Its CI is still queued/in progress. No Android OS provider, screenshot/UI-tree capture or action is implemented.
