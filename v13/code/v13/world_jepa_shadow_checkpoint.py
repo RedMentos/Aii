@@ -18,6 +18,7 @@ import zipfile
 import numpy as np
 
 from v13 import world_jepa as wj
+from v13 import world_jepa_training_state as training_state
 
 SCHEMA = 'v13.world_jepa.shadow_inference_checkpoint.v2'
 LEGACY_SCHEMA = 'v13.world_jepa.shadow_inference_checkpoint.v1'
@@ -83,10 +84,20 @@ def _extract(model, source_sha256):
             raise ValueError('Incomplete WorldJEPA predictor')
         for key in PRED_KEYS:
             arrays[f'pred{i}__{key}'] = np.asarray(pred[key])
+    if hasattr(model, '_training_state'):
+        meta['training_resume'], extra = training_state.pack(model)
+        arrays.update(extra)
     return meta, arrays
 
 
 def _validate(meta, arrays, source_sha256):
+    if type(meta) is dict and 'training_resume' in meta:
+        numeric_meta = {k:v for k,v in meta.items() if k != 'training_resume'}
+        numeric = {k:v for k,v in arrays.items() if not k.startswith(training_state.PREFIX)}
+        extra = {k:v for k,v in arrays.items() if k.startswith(training_state.PREFIX)}
+        _validate(numeric_meta, numeric, source_sha256)
+        training_state.validate_payload(meta['training_resume'], extra, numeric_meta, numeric)
+        return True
     # v1 had no optimizer-step evidence. Read it for numeric inference only;
     # its loaded confidence must remain SIMULATION_UNCERTAIN. New v2 archives
     # bind a positive integer step count and never silently upgrade v1.
@@ -186,8 +197,10 @@ def save(model, path, source_sha256):
             os.unlink(temp)
     return {'schema': SCHEMA, 'source_sha256': source_sha256,
             'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data),
-            'scope': 'PRIVATE_INFERENCE_ONLY_SHADOW', 'age_authority': 0,
-            'optimizer_state_persisted': False}
+            'scope': ('PRIVATE_SHADOW_TRAINING_RESUME' if hasattr(model, '_training_state') else 'PRIVATE_INFERENCE_ONLY_SHADOW'),
+            'age_authority': 0,
+            'optimizer_state_persisted': hasattr(model, '_training_state'),
+            'optimizer_state_bootstrapped': (meta.get('training_resume', {}).get('origin') == 'BOOTSTRAPPED_FROM_INFERENCE_ONLY')}
 
 
 def load(path, source_sha256, expected_sha256):
@@ -198,17 +211,18 @@ def load(path, source_sha256, expected_sha256):
     if (path.is_symlink() or not path.is_file()
             or not 0 < path.stat().st_size <= MAX_BYTES):
         raise ValueError('Missing/unsafe WorldJEPA checkpoint file')
-    raw = path.read_bytes()
+    raw = training_state.read_checkpoint(path, MAX_BYTES)
     if hashlib.sha256(raw).hexdigest() != expected_sha256:
         raise ValueError('WorldJEPA checkpoint bytes changed')
     with zipfile.ZipFile(io.BytesIO(raw)) as archive:
         info = archive.infolist()
-        if (not info or len(info) > 128 or
+        if (not info or len(info) > 512 or
                 len({x.filename for x in info}) != len(info) or
                 any('/' in x.filename or '\\' in x.filename or not x.filename.endswith('.npy')
                     or x.file_size > MAX_UNCOMPRESSED for x in info) or
                 sum(x.file_size for x in info) > MAX_UNCOMPRESSED):
             raise ValueError('Unsafe WorldJEPA NPZ archive members')
+    training_state.validate_archive(raw)
     with np.load(io.BytesIO(raw), allow_pickle=False) as archive:
         if 'meta' not in archive.files:
             raise ValueError('Missing WorldJEPA checkpoint metadata')
@@ -229,4 +243,11 @@ def load(path, source_sha256, expected_sha256):
                    for i in range(meta['ensemble'])]
     model.history = []  # training history/optimizer not present: inference-only
     model._fit_steps = 0 if meta['schema'] == LEGACY_SCHEMA else meta['fit_steps']
+    if 'training_resume' in meta:
+        model._training_state = training_state.unpack(
+            meta['training_resume'],
+            {k:v for k,v in arrays.items() if k.startswith(training_state.PREFIX)},
+            {k:v for k,v in meta.items() if k != 'training_resume'},
+            {k:v for k,v in arrays.items() if not k.startswith(training_state.PREFIX)},
+        )
     return model
