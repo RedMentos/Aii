@@ -103,7 +103,7 @@ No user action is needed now. Current installed Redmi SHA/updater status was not
 - A5 lease push run `44941324466` and PR run `44941328040`: **PASS** on CPython 3.13.18 and 3.14.10; py_compile PASS; 15 tests + 5 subtests PASS on each; privacy scan PASS.
 - Generic V13 bridge tests run `44941324373`: PASS. V14 Perception privacy scan run `44941327893`: PASS. Agent-PR integration policy run `44941327955`: PASS.
 - Strict safe-additive candidate run `44941327931`: FAIL_BY_POLICY because the PR modifies an existing bridge and shared V14 research/handoff files; the validator only accepts new additive module/test/handoff files. No bypass; manual Boss review remains required.
-- Broader staged context/integrated regression run `44941328011` was IN_PROGRESS at final readback. Do not treat this PR as merged or release-ready.
+- Broader staged context/integrated regression run `44941328011` completed **PASS**: staged-runtime 251 passed / 10 skipped / 47 subtests; integrated-regression 424 passed / 3 skipped / 58 subtests (6 warnings). This is CI staged/synthetic evidence only; do not treat the PR as merged or Redmi-verified.
 - Local standalone filter test: 4/4 PASS. Full repository local test BLOCKED (no mounted checkout; GitHub DNS unavailable).
 - The PR remains synthetic-provider only. No OS observation grant provider, screen capture, actual Android permission, B1/B2/C3 turn hookup or Redmi evidence. `REDMI_UNVERIFIED` / `NOT_RELEASED`.
 - No model/weight, updater, permission, app setting or user data changed. No user action is needed for this research/adapter checkpoint.
@@ -120,3 +120,12 @@ No user action is needed now. Current installed Redmi SHA/updater status was not
 - Added R-044 to the research ledger: GoClick (arXiv:2604.23941) is a promising two-stage GUI grounding research lead, but only its abstract and maintained MIT repo/model card were reviewed. The 0.3B F32 GoClick-Base uses Florence-2-large, Transformers `trust_remote_code`, PyTorch and timm; no GGUF/ARM64/Android path or device benchmark was found. Dataset license/provenance remains unaudited. It is not a Redmi download candidate today.
 - MobileExplorer (arXiv:2605.26546) abstract proposes parallel read-only exploration and two-level rollback; full paper/code/license/device conditions were not verified. Treat the claimed 23% latency and up-to-5% success deltas as abstract-reported only. Possible experiment: bounded speculative UI exploration with source-bound traces, explicit state rollback and no tap authority.
 - Official Android docs confirm MediaProjection's user-grant flow and API-34+ foreground-service requirements. No screen capture or permission was attempted. Links and limitations are in R-044.
+
+
+## Broader integration CI completed — 2026-11-21
+
+- Run `44941328011` on code-bearing SHA `01ce1c5fc9c8d2c1dc3f41718e3b6508d7b9d723`: **PASS**.
+- Staged Runtime: 251 passed, 10 skipped, 47 subtests.
+- Integrated regression: 424 passed, 3 skipped, 58 subtests (6 warnings).
+- Together with A5 UI lease 15/15 + 5 subtests on Python 3.13/3.14, this validates the CI-staged integration surface at that SHA. It is not a real Android provider or a Redmi test.
+- Strict additive gate remains FAIL_BY_POLICY; Boss review and preservation of #2243 artifacts in Core #2242 remain necessary before merge.

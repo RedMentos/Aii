@@ -609,7 +609,7 @@ These are current official API references reviewed on 2026-11-21, not research p
 
 ### Verification boundary
 
-- Exact failing CI evidence is reproducible from run `44940487917` on Python 3.13/3.14. Corrective code-bearing SHA `01ce1c5fc9c8d2c1dc3f41718e3b6508d7b9d723` passed the A5 lease workflow on both Python versions (15 tests + 5 subtests each); broader staged/integrated regression remained pending at final readback.
+- Exact failing CI evidence is reproducible from run `44940487917` on Python 3.13/3.14. Corrective code-bearing SHA `01ce1c5fc9c8d2c1dc3f41718e3b6508d7b9d723` passed the A5 lease workflow on both Python versions (15 tests + 5 subtests each); staged/integrated regression also passed in run `44941328011`.
 - This worker has no mounted full Aii checkout and GitHub DNS resolution fails, so the full repository test cannot be run locally here. Any standalone logic check is synthetic and is not a substitute.
 - `REDMI_UNVERIFIED` / `NOT_RELEASED`; no model, weight, permission, updater, app or user data changed.
 
@@ -632,7 +632,7 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - A5 lease workflow run `44941324466` (push) and `44941328040` (pull_request): **PASS** on CPython 3.13.18 and 3.14.10; `py_compile` PASS; `15 passed, 5 subtests passed` on each interpreter; public privacy scan PASS.
 - `v13-private-remote-bridge-tests` run `44941324373`: PASS. Perception public privacy scan run `44941327893`: PASS. Agent-PR integration policy run `44941327955`: PASS.
 - `V13 safe additive candidate tests` run `44941327931`: **FAIL_BY_POLICY**, not a functional test failure. The validator accepts only strictly added inert modules/tests/handoff files; this PR intentionally modifies an existing A5 bridge and the shared V14 research ledger/handoff. No bypass was attempted; independent Boss review is required.
-- `V13 staged context and integrated regression` run `44941328011` was still IN_PROGRESS at final readback. No claim is made for those broader tests.
+- `V13 staged context and integrated regression` run `44941328011`: **PASS** — staged-runtime `251 passed, 10 skipped, 47 subtests`; integrated-regression `424 passed, 3 skipped, 58 subtests` (6 warnings). These are CI synthetic/staged checks, not local Redmi evidence.
 - Local standalone nested-source/event/generation/finality/modality filter check: **4/4 PASS**. Full repository LOCAL_LINUX test remains BLOCKED because the complete checkout is not mounted and GitHub DNS resolution fails in this worker.
 - Device and release: `REDMI_UNVERIFIED` / `NOT_RELEASED`. The adapter uses a synthetic OS provider; no phone, capture, microphone, model or permission was exercised.
 
@@ -662,3 +662,11 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - Prefer Android API/accessibility event metadata when available and explicitly granted; use MediaProjection only with the platform grant and an active visible session. A visual grounding model may rank/locate elements but must never itself authorize a tap.
 - No GoClick/MobileExplorer model or dataset was downloaded, imported, or swapped. No Android permission was requested. ARM64 build, memory/PSS, TTFT and Redmi grounding quality remain NOT_TESTED.
 - Status: PAPER_ABSTRACT_ONLY / OSS_README_AND_LICENSE_REVIEWED / MODEL_CARD_REVIEWED / NO_IMPORT / NO_DOWNLOAD / NO_ANDROID_PROOF.
+
+
+### Final broader CI completion — 2026-11-21
+
+- Run `44941328011` completed successfully on the same code-bearing SHA `01ce1c5fc9c8d2c1dc3f41718e3b6508d7b9d723`.
+- Staged Runtime: `251 passed, 10 skipped, 47 subtests`.
+- Integrated regression: `424 passed, 3 skipped, 58 subtests` (6 warnings).
+- These are CI staged/synthetic tests. They do not establish Android OS capture, a real UI provider, active-turn consumer wiring or Redmi behavior.
