@@ -43,7 +43,12 @@ final class ReceiptSigner {
         PrivateKey privateKey = (PrivateKey) ks.getKey(ALIAS, null);
         Signature signer = Signature.getInstance("SHA256withECDSA");
         signer.initSign(privateKey);
-        signer.update(Canonical.json(body).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        java.util.Map<String, Object> values = new java.util.HashMap<>();
+        for (java.util.Iterator<String> it = body.keys(); it.hasNext();) {
+            String key = it.next();
+            values.put(key, body.get(key));
+        }
+        signer.update(Canonical.json(values).getBytes(java.nio.charset.StandardCharsets.UTF_8));
         byte[] signature = signer.sign();
         JSONObject envelope = new JSONObject();
         envelope.put("body", body);
