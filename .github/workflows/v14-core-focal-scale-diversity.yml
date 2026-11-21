@@ -9,6 +9,7 @@ on:
       - "v13/code/scripts/integrated_arithmetic_guard_candidate_20261121.py"
       - "v13/code/tests/test_v14_focal_scale_diversity_20261121.py"
       - "v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py"
+      - "v13/code/tests/test_actionlearn.py"
       - ".github/workflows/v14-core-focal-scale-diversity.yml"
   pull_request:
     branches: [gpt6/v13-private-remote-bridge-20261111]
@@ -18,6 +19,7 @@ on:
       - "v13/code/scripts/integrated_arithmetic_guard_candidate_20261121.py"
       - "v13/code/tests/test_v14_focal_scale_diversity_20261121.py"
       - "v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py"
+      - "v13/code/tests/test_actionlearn.py"
       - ".github/workflows/v14-core-focal-scale-diversity.yml"
   workflow_dispatch:
 
