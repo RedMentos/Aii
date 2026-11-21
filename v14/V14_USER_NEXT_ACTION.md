@@ -24,7 +24,7 @@ Wenn QA den Auto-Updater auf dem Redmi unabhängig überprüft hat, darf ein fre
 - Exact V14 model-lab CI run 44848887759 PASS: Python 3.13.18, py_compile, candidate JSON validation, 13/13 tests. This proves the lab code path and negative controls only; no real GGUF inference was run.
 - Candidate: prior LFM2.5-230M QAD_Q4_0, 149,081,056 bytes, about 32% smaller than the registry's 350M C3 baseline. It is only a candidate. LFM Open License 1.0 is not Apache-2.0; its Section 5 limits commercial use by legal entities at/above USD 10M annual revenue. No model file was downloaded, no installed manifest or weights changed, and no production swap is recommended from file size alone.
 - Native model comparison: NOT_RUN. Candidate presence on the Redmi is UNKNOWN. Redmi remains REDMI_UNVERIFIED. The lab requires both models already present or a separate explicit consent for an isolated candidate download; a later production swap would require a second separate approval and rollback evidence.
-- Last fully updater-gate-green code SHA remains 5b9171a. Newer merged code-bearing SHA 3db6d1f (#2137) had exact merge-push integrated regression pending at last Boss readback. PR #2142 is a research branch, not a release or deployment. No updater action or device mutation was attempted.
+- Latest merged code-bearing SHA 3db6d1f (#2137) now has exact merge-push CI GREEN. It is still not installed on the Redmi. PR #2142 is a research branch, not a release or deployment. No updater action or device mutation was attempted.
 - Next developer action: Core/QA review #2142; if the exact 230M GGUF is already present on the authorized Redmi, run baseline-first and candidate-first with V13 idle and record TTFT/prefill/decode/RSS/PSS and task checks. If absent, ask for explicit isolated-download consent first. B1/B2 comparisons remain open.
 - User action: none.
 
@@ -38,16 +38,16 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 
 | Feld | Aktueller Wert |
 |---|---|
-| source_HEAD | Current shared branch base `c3c32c05a0374e970d274f8a777a7ab85c067d66` (Boss integration/docs checkpoint). Latest code-bearing merge `3db6d1f00fceab9e7755bc8f4c25882ef7f19258` (#2137) has exact merge-push integrated-regression still pending at last readback. Last fully updater-gate-green code SHA remains `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e`. None is a verified Redmi installation. |
-| last_integrated_functional_change | PR #2136 merged: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter, synthetic only; PR #2137 merged as `3db6d1f` adds a Store-bound scalar T8 receiver but is not yet a normal Runtime learning consumer |
+| source_HEAD | Current shared branch base `c3c32c05a0374e970d274f8a777a7ab85c067d66` (Boss integration/docs checkpoint). Latest code-bearing merge `3db6d1f00fceab9e7755bc8f4c25882ef7f19258` (#2137) now has exact merge-push CI GREEN: staged-runtime 240 passed/10 skipped/47 subtests; integrated regression 415 passed/3 skipped/58 subtests; V14 T8 real-Store workflow PASS. Current shared branch base `c3c32c05a0374e970d274f8a777a7ab85c067d66` is a docs/integration checkpoint on top. None is a verified Redmi installation. |
+| last_integrated_functional_change | PR #2136 merged: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter, synthetic only; PR #2137 merged as `3db6d1f` adds a Store-bound scalar T8 receiver with exact merge-push CI green, but it is not yet a normal Runtime learning consumer |
 | local_test_result | Full repository checkout NOT_RUN (GitHub DNS blocked); isolated model-lab implementation copy: py_compile PASS, 13/13 synthetic tests PASS. Exact branch CI run 44848887759 PASS. |
-| ci_test_result | PR #2138 updater gate is green on `5b9171a4`; newer merged code SHA `3db6d1f` still had exact merge-push integrated regression IN_PROGRESS at last readback. V14 model-lab PR #2142 exact CI run 44848887759 PASS (13 tests, Python 3.13.18); isolated lab only, no native inference. |
+| ci_test_result | PR #2138 updater gate is green on `5b9171a4`. Latest merged code SHA `3db6d1f` now has exact merge-push staged-runtime and integrated regression PASS (240/10 skipped/47 subtests; 415/3 skipped/58 subtests) plus V14 T8 real-Store workflow 44847403231 PASS. V14 model-lab PR #2142 exact CI run 44848887759 PASS (13 tests, Python 3.13.18); isolated lab only, no native model inference. |
 | phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
 | device_model_comparison | LAB_CODE_READY / NATIVE_NOT_RUN / REDMI_UNVERIFIED |
 | proposed_model_change | NONE — LFM2.5-230M is a lab candidate only; no download or swap |
 | requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
-| next_developer_action | Boss/QA finish the exact merge-push integrated-regression gate for #2137; Core/QA review #2142. If the exact 230M GGUF is already present on the authorized Redmi, run both comparison orders while V13 is idle. If absent, request separate consent before an isolated download. Keep production unchanged; continue Core/JEPA whole-Canon integration. |
+| next_developer_action | Core/QA review #2142. If the exact 230M GGUF is already present on the authorized Redmi, run both comparison orders while V13 is idle. If absent, request separate consent before an isolated download. Keep production unchanged; continue Core/JEPA whole-Canon integration. |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
