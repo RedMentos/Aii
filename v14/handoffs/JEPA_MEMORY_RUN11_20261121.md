@@ -68,3 +68,32 @@ The first pin update was incomplete: `runtime_deploy.py` also pins `stage_integr
 ## Next architectural gap
 
 The current retention gate uses the prior aggregate holdout, not stable source/session-bound holdouts for each historical cohort. The next JEPA/Memory code task is to persist bounded per-cohort holdout probes and require each prior cohort to satisfy its own retention tolerance after every candidate update. This must be tested across A→B→A, disjoint source/digest controls, checkpoint restart and rollback. Do not accept an update because a recent aggregate masks forgetting of an earlier regime.
+
+## Run 11 follow-up — 2026-11-21 19:01 CET
+
+### New code-bearing candidate
+
+- Branch: `jepa-memory/v14-session-window-budget-20261121-run11-final`
+- PR: #2237 (OPEN / DRAFT; stacked on #2231)
+- Code-bearing head before this handoff commit: `07f78312eb126b58e65980f67dc24a91bfab7416`
+- No release SHA; `NOT_PHONE_RELEASED`; installed SHA UNKNOWN; `REDMI_UNVERIFIED`.
+
+### Actual implementation added
+
+1. `world_jepa.py`: bounded `update_scale` in `(0,1]` is applied to both the main Adam step and bootstrap predictor Adam steps. Default 1.0 preserves prior behavior.
+2. `world_jepa_consumer.py`: for an existing checkpoint, tries scales 1.0, 0.5, 0.25, 0.125, 0.0625. Each retry reloads the same persisted checkpoint, so rejected candidate parameters, EMA, Adam moments, inverse head and RNG do not leak into the next attempt. The exact same fit rows and optimizer-step budget are used. Acceptance still requires new holdout improvement, old holdout non-degradation, and shuffled/zero-action negative controls. If all attempts fail, pending experience/cursor may be persisted but no model checkpoint is published.
+3. `integrated_world_training_resume_candidate_20261111.py`: clone field validation now allows only optional `_last_gradient_projection` telemetry and validates its values; the canonical `_training_state` remains mandatory and is copied through `training_state.from_model` plus the checkpoint validator. Unknown extra fields remain fail-closed.
+4. Added a one-step numeric regression for 0.25 update scaling and unchanged optimizer step count. Added a CI diagnostic step that prints exact SHA-256 values for the four nested builder-chain files.
+
+### Test and deployment evidence
+
+- **LOCAL_LINUX: BLOCKED.** No local Aii checkout is mounted; GitHub DNS resolution failed in the available container. No local compile or pytest command was run.
+- **CI: NOT_RUN_AFTER_NEW_HEAD.** No check-run is attached to the new branch head yet. Previous exact head `d91f4683fe96619efa94b5fcd64bc1f55e9c39ec` failed the old-holdout retention gate on CPython 3.13/3.14 and failed staged second-update cloning with `ValueError: unsupported or unbound World-JEPA model`. Those failures are the baseline, not success.
+- **SYNTHETIC/CI:** no new passing result yet. The added tests are candidates only until the exact head is executed.
+- **TERMUX/REDMI:** not run; no authenticated device receipt. No updater request, shell action, model download/swap or permission change.
+
+### Ownership and next action
+
+- JEPA did not change the parent-owned `termux_runtime_recovery_candidate.py` or `stage_integrated_candidate.py` pins. The PR is stacked; Boss/Core/QA must update the parent pin chain on its owning integration branch after reading the CI SHA diagnostic.
+- Next: trigger exact-head Python 3.13/3.14, staged-runtime and integrated checks; inspect failures; then report parameter/EMA/optimizer diffs, disjoint holdout utility, restart, retention and rollback. Keep learning/optimizer gates OFF until the full evidence passes.
+

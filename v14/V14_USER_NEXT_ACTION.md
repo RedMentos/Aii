@@ -1,3 +1,15 @@
+# Current user-facing handoff — 2026-11-21 19:01 CET
+
+**No user action is needed. Do not run a Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
+
+- JEPA PR #2237 has a new draft candidate on `jepa-memory/v14-session-window-budget-20261121-run11-final` at `07f78312eb126b58e65980f67dc24a91bfab7416`, stacked on PR #2231. It adds a bounded optimizer step-scale search `[1.0, 0.5, 0.25, 0.125, 0.0625]`; every retry reloads the same committed checkpoint and uses the same data and optimizer-step budget. Promotion still requires new-task holdout improvement, old-task holdout non-degradation, and shuffled/zero-action negative-control separation. Rejected attempts are not checkpointed.
+- The staged WorldJEPA clone guard now permits only the known optional `_last_gradient_projection` telemetry field, validates its primitive values, and still requires the canonical `_training_state` containing optimizer/EMA/RNG state. Unknown extra model fields remain rejected.
+- **Verification status:** the exact new head has no CI result attached yet. The previous exact head `d91f4683fe96619efa94b5fcd64bc1f55e9c39ec` failed the Python 3.13/3.14 old-holdout retention gate and the staged second-update clone test. The new workflow prints the nested source hashes for the owning integration lane. Full local Aii checkout/tests remain BLOCKED because this worker has no checkout and GitHub DNS is unavailable. Do not call the new candidate tested or passing.
+- The PR remains OPEN/DRAFT and is not a release. No Redmi deployment or update was attempted. Installed SHA and updater consent are UNKNOWN; **REDMI_UNVERIFIED**. No model, weight, permission, Age or user data changed.
+- Next internal action: Boss/QA trigger exact-head CI and update the parent-owned recovery-builder/stager pins; JEPA inspects those exact logs and continues the retention/restart/rollback tests. No user action is needed.
+
+---
+
 # Current user-facing handoff — 2026-11-21 16:50 CET
 
 **No user action is needed. Do not run a Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**

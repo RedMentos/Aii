@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T16:15:50.137Z",
+  "updated_at": "2026-11-21T18:01:48Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -73,16 +73,19 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "JEPA #2231 latest head 3fc1f2a7, base 9d8f (behind current shared HEAD a6b2aeaa), mergeable false. The PR body still identifies 6c9706c. Only offline-bridge-security was queued for the new head at readback; no exact JEPA/staged/optimizer matrix yet. Earlier 324e5af9 head had 4/11 success, 6 failures, 1 running due stale nested builder/recovery pins and migration PARTIAL. Production small numeric WorldJEPA remains synthetic Store/NumPy; no native GGUF or Redmi learning.",
-      "next_step": "JEPA: rebase to current HEAD, preserve Boss-owned board/workplan/coverage/next-action files, update body and nested builder/recovery pins, then rerun exact Python 3.13/3.14 optimizer, staged, integrated and migration checks. Preserve 0/12 old-holdout retention rejection and keep gates OFF.",
+      "proof_environment": "PR #2237 new JEPA candidate head pending exact-head validation. Previous exact head d91f4683fe96619efa94b5fcd64bc1f55e9c39ec: Python 3.13/3.14 retention gate rejected the B→A candidate (old holdout worsened); staged-runtime second update failed closed because the clone field allowlist did not include the new fit telemetry field. New branch code adds bounded update-scale backtracking from the same persisted checkpoint, preserves the strict new/old holdout + shuffled/zero gates, and validates the optional _last_gradient_projection field while requiring canonical _training_state. No local checkout; local tests BLOCKED by unavailable repository/DNS. No CI run is attached to the new head yet. No Android receipt.",
+      "next_step": "Boss/QA: trigger exact PR-head Python 3.13/3.14, staged-runtime and integrated CI; update the parent recovery-builder/stager pins through the owning integration lane (JEPA did not modify those parent-owned files). JEPA: inspect exact-head logs, fix any remaining clone/retention failures, then extract per-seed parameter/EMA/optimizer/restart/rollback evidence. Keep learning gates OFF until accepted-update and retention tests pass.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 17:14 CET",
+      "last_checkpoint": "2026-11-21T18:01:48Z",
       "latest_candidate_pr": {
-        "pr": 2151,
-        "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
+        "pr": 2237,
+        "head_sha": "07f78312eb126b58e65980f67dc24a91bfab7416",
         "merge_commit_sha": "a7a31077213a6e2810270816c716292a64e40905",
-        "ci": "PASS_RUN_44861797478_64_TESTS_PY313_PY314",
-        "scope": "source-bound synthetic Store-backed numeric WorldJEPA/EMA with holdout utility + prior retention gate; not Runtime-wired"
+        "ci": "NOT_RUN_AFTER_NEW_HEAD; previous d91f exact-head retention and staged-clone failures remain the baseline",
+        "scope": "bounded optimizer update-scale backtracking from the same persisted checkpoint; strict old/new disjoint holdout and negative-control gates; validated staged clone of canonical optimizer/EMA/RNG state",
+        "branch": "jepa-memory/v14-session-window-budget-20261121-run11-final",
+        "base_pr": 2231,
+        "status": "OPEN_DRAFT_CI_PENDING"
       },
       "latest_followup_pr": {
         "pr": 2148,
