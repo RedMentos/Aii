@@ -99,7 +99,7 @@ def apply_staged_focal(code_dir: Path, raw: bytes) -> bytes:
         b"if c['text'] and a['text']],default=0.)\n",
         1,
     )
-    if result.count(b"_scale_aware_redundancy(c,a)") != 1:
+    if result.count(b"_scale_aware_redundancy(c,a,threshold)") != 1:
         raise ValueError("focal redundancy consumer was not uniquely patched")
     compile(result, "v13/focal.py", "exec")
     return result
