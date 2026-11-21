@@ -89,6 +89,11 @@ def _guard_for(check):
     return lease
 
 
+@contextmanager
+def _always_authorized_lease(source_id, receipt):
+    yield source_id == SOURCE_ID and receipt == RECEIPT
+
+
 class _LinearizableConsentProvider:
     """Test provider whose check, lease and revoke share one lock."""
 
@@ -709,7 +714,7 @@ def test_consent_revocation_between_pre_and_post_persist_leaves_no_packet(tmp_pa
                 runtime, tone(140), sample_rate=16000, start_ms=100,
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
-                consent_check=revoke_after_pre_persist_checks, consent_guard=_guard_for(revoke_after_pre_persist_checks),
+                consent_check=revoke_after_pre_persist_checks, consent_guard=_always_authorized_lease,
                 finality="FINAL", token_budget=512,
             )
         assert calls == 3
