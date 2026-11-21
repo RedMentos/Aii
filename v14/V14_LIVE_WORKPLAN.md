@@ -202,3 +202,33 @@ PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/te
 - Full staged/integrated workflow `44864887308` has now FAILED: staged-runtime 22 failed / 206 passed / 10 skipped / 12 errors / 36 subtests; integrated-regression fails at `integrated_online_world_candidate_20261110.py:118` with `integrated online-world hash mismatch: v13/operator.py`. This is the same shared pin defect already seen in #2144, not an audio-cue algorithm failure. Even after the focused fixture is corrected, the base builder must be rebuilt from current source bytes.
 - Keep #2157 DRAFT and unmerged until the focused overlay contract and full staged/integrated, Python 3.14 startup and migration chain pass on one current composed Core branch. It is not microphone capture or Redmi proof.
 
+
+
+## Boss integration checkpoint — 2026-11-21 05:49 CET
+
+**Release branch readback:** `gpt6/v13-private-remote-bridge-20261111` HEAD remains `c0cedbde718ede6107f4df1f1bf9c784df4e00cf`. No code merge or release occurred in this checkpoint.
+
+### Exact PR #2158 review
+
+- Current draft head: `2bbf9caf96f8fa90dc080afd00ba99db8329350d`; the branch composes the merged #2155 RAW EAR voice cues into the staged Runtime, preserves arithmetic/observer/ContextOS, enforces explicit FINAL/PROVISIONAL and rechecks consent/source lineage before body/C3 consumption.
+- **CI FAIL:** run `44866310899`, both Python 3.11 and 3.13 staged-a5 jobs fail two existing arithmetic fixture assertions. `test_broker_failure_keeps_computed_c6_type` uses `7-12` as a positive operation; `ExactArithmetic.test_correctness` expects `-5` from the same date-ambiguous token. The current parser intentionally abstains on bare date-shaped subtraction. Core should use unambiguous `7 - 12` / explicit wording for positive fixtures and keep a negative bare-`7-12` abstention control.
+- **CI FAIL:** run `44866311032` staged-runtime aggregate (1 failed, 239 passed, 10 skipped, 47 subtests), due to the same fixture mismatch.
+- **CI PASS on this PR head:** integrated-regression, old-phone-to-new-runtime migration, Lab Age E2E, owner-read, offline and Python 3.14 staged startup.
+- **Policy gate FAIL:** `validate-additive` reports `path outside inert-module/test/handoff scope` for the stage-builder and `runtime_deploy.py` changes. This is not permission to bypass the guard. These high-authority deployment files require explicit Boss review, exact tests and complete release-push CI.
+- Boss posted the detailed findings on #2158. Keep it DRAFT / NOT_RELEASED until the two fixture failures are fixed, all exact staged/integrated/migration gates pass and the composed builder chain is independently reviewed.
+
+### Current release/device proof
+
+- Release SHA `c0ced...` has 13 PR-triggered required workflow runs in `action_required`; five private-bridge push runs and selected dispatch runs are green, but the full release-required set is not. `NOT_RELEASED`.
+- Private PIPELINE_STATUS owner-read remains unanswered. Installed SHA/updater state unknown; `REDMI_UNVERIFIED`. No UPDATE_REQUEST or device mutation.
+- Full local Aii checkout/test is BLOCKED by DNS resolution failure for github.com; no exact LOCAL_LINUX repo test is claimed.
+- #1904 remains the last measured Redmi failure. No new 2+2, B1/B2 offer-delivery, native latency or 20-turn phone acceptance evidence.
+
+### Next integration chain
+
+1. Core fixes the two arithmetic test inputs without relaxing date ambiguity; rerun exact focused and full staged/integrated/migration gates.
+2. Boss independently reviews all candidate-builder and deployer source pins/rollback behavior; do not merge a draft or use the safe-additive queue for this critical path.
+3. JEPA/Memory ports #2151/#2152's source/digest/pending-cohort/retention learner into normal postcommit Runtime in SHADOW and connects prediction to an actual World/Planner receiver; optimizer permission remains OFF.
+4. QA maintains read-only device state until a fresh owner-authenticated receipt; only then verify updater consent and installed SHA.
+
+No master architecture edit was made, no backup was required, and historical V13 appendix bytes were not changed.
