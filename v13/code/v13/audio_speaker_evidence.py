@@ -164,14 +164,20 @@ class SpeakerChangeEvidenceRegistry:
             latest = None
             if self.max_frames < batch["lookback_frames"] + 2:
                 raise SpeakerEvidenceError("speaker history bound is shorter than the configured lookback")
+            # A batch is one publication unit. Every frame in it must compare
+            # against the history that existed before this batch; otherwise a
+            # later frame can compare with an earlier same-batch frame from the
+            # new speaker and overwrite the cross-window change evidence.
+            history = tuple(state.frames)
+            last_seen_end_ms = state.last_end_ms
             tolerance = max(40, int(batch["frame_step_ms"] * 1.5))
             for frame_end, vector in batch["frames"]:
-                if state.last_end_ms is not None and frame_end <= state.last_end_ms:
+                if last_seen_end_ms is not None and frame_end <= last_seen_end_ms:
                     raise SpeakerEvidenceError("speaker frames must advance across windows")
                 target_ms = frame_end - batch["lookback_ms"]
                 candidates = [
                     (abs(previous_end - target_ms), previous_end, previous_vector)
-                    for previous_end, previous_vector in state.frames
+                    for previous_end, previous_vector in history
                     if previous_end < frame_end and abs(previous_end - target_ms) <= tolerance
                 ]
                 if candidates:
@@ -198,8 +204,12 @@ class SpeakerChangeEvidenceRegistry:
                             "STABLE_OR_UNTHRESHOLDED"
                         ),
                     }
-                state.frames.append((frame_end, vector))
-                state.last_end_ms = frame_end
+                last_seen_end_ms = frame_end
+
+            # Publish the new frames only after all comparisons used the same
+            # pre-batch snapshot. The next call may then use this batch as history.
+            state.frames.extend(batch["frames"])
+            state.last_end_ms = batch["frames"][-1][0]
 
             self._states.pop(key, None)
             self._states[key] = state
