@@ -157,7 +157,6 @@ def compare_models(before, after):
     deltas["parameter_delta_norm"] = math.sqrt(
         deltas["encoder_delta_norm"] ** 2 + deltas["predictor_delta_norm"] ** 2
     )
-    deltas["ema_target_delta_norm"] = deltas["ema_target_delta_norm"]
     deltas["optimizer_moment_delta_norm"] = math.sqrt(
         deltas["main_moments_delta_norm"] ** 2
         + deltas["bootstrap_moments_delta_norm"] ** 2
