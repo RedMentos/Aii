@@ -8,13 +8,17 @@ It is a mechanism proof, not a V13 production adapter. The models are newly init
 
 ## Run
 
-Requires Python and PyTorch. The measured environment was CPython 3.13, PyTorch 2.10.0+cpu, NumPy 2.3.5; no Transformers package or model weights were present.
+Requires Python 3.13, NumPy 2.3.5 and CPU PyTorch 2.10.0.
 
 ```bash
+python -m pip install numpy==2.3.5
+python -m pip install torch==2.10.0+cpu --extra-index-url https://download.pytorch.org/whl/cpu
 python -m py_compile latent_cache_tiny.py test_latent_cache_tiny.py
 python -m unittest -v
 python latent_cache_tiny.py
 ```
+
+The CI job pins these test-only dependencies and runs the experiment's tests explicitly; the generic experiment-directory discovery does not recurse into this folder. PyTorch and NumPy are BSD-3-Clause test dependencies only; neither is added to the product/runtime dependency set, and no model weights or data are downloaded.
 
 ## Exact local result
 
