@@ -154,38 +154,56 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
         assert 1 <= len(memory["items"]) <= 5
         assert all("source_id" in item and "source_sha256" in item and "outcome_sha256" in item for item in memory["items"])
 
-        # A second batch must replay the old train split, commit a new immutable
-        # checkpoint and retain the prior generation for exact rollback.
+        # A second cohort is promoted only if its new holdout and old-retention
+        # gates both pass. Rejection is also valid: preserve the prior checkpoint
+        # and keep the new cohort pending for a later update with more evidence.
         _add_transitions(store, session, 256, 32)
         second = consumer.update(limit=288, steps=24, optimizer_permission=True)
-        assert second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
-        assert second["metrics"]["replay_rows"] >= 8
-        assert second["metrics"]["fit_steps_after"] > second["metrics"]["fit_steps_before"]
-        assert second["metrics"]["old_holdout_loss_before"] is not None
-        assert second["metrics"]["old_holdout_loss_after"] is not None
-        assert math.isfinite(second["metrics"]["old_holdout_retention_delta"])
-        assert second["checkpoint_sha256"] != first_sha
-        assert len(list((tmp_path / "private-jepa").glob("jepa-*.npz"))) == 2
-
-        restarted = WorldJEPAStoreConsumer(
-            store, tmp_path / "private-jepa", learning_enabled=True
-        )
-        restored = restarted.restore()
-        assert restored["status"] == "RESTORED"
-        assert restored["checkpoint_sha256"] == second["checkpoint_sha256"]
-
-        rolled_back = restarted.rollback()
-        assert rolled_back["status"] == "ROLLED_BACK"
-        assert rolled_back["checkpoint_sha256"] == first_sha
-        restored_first = restarted.restore()
-        assert restored_first["checkpoint_sha256"] == first_sha
-        assert len(list((tmp_path / "private-jepa").glob("jepa-*.npz"))) == 2
-
-        payload, version = store.state("v14.world_jepa.store_consumer", None)
-        assert version >= 3
-        assert payload["active"]["checkpoint_sha256"] == first_sha
-        assert len(payload["active"]["processed_ids"]) == 256
-        assert payload["scan_cursor"] == 256
+        if second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA":
+            assert second["metrics"]["replay_rows"] >= 8
+            assert second["metrics"]["fit_steps_after"] > second["metrics"]["fit_steps_before"]
+            assert second["metrics"]["old_holdout_loss_before"] is not None
+            assert second["metrics"]["old_holdout_loss_after"] is not None
+            assert math.isfinite(second["metrics"]["old_holdout_retention_delta"])
+            assert second["checkpoint_sha256"] != first_sha
+            assert len(list((tmp_path / "private-jepa").glob("jepa-*.npz"))) == 2
+            restarted = WorldJEPAStoreConsumer(
+                store, tmp_path / "private-jepa", learning_enabled=True
+            )
+            restored = restarted.restore()
+            assert restored["status"] == "RESTORED"
+            assert restored["checkpoint_sha256"] == second["checkpoint_sha256"]
+            rolled_back = restarted.rollback()
+            assert rolled_back["status"] == "ROLLED_BACK"
+            assert rolled_back["checkpoint_sha256"] == first_sha
+            restored_first = restarted.restore()
+            assert restored_first["checkpoint_sha256"] == first_sha
+            assert len(list((tmp_path / "private-jepa").glob("jepa-*.npz"))) == 2
+            payload, version = store.state("v14.world_jepa.store_consumer", None)
+            assert version >= 3
+            assert payload["active"]["checkpoint_sha256"] == first_sha
+            assert len(payload["active"]["processed_ids"]) == 256
+            assert payload["scan_cursor"] == 256
+        else:
+            assert second["status"] == "UTILITY_GATE_REJECTED", second
+            assert second["utility_gate_accepted"] is False
+            assert not (second["holdout_improved"] and second["negative_controls_separated"]
+                        and second["old_holdout_retained"])
+            assert second["native_body_weights_changed"] is False
+            assert second["fit_steps_after"] > second["fit_steps_before"]
+            payload, version = store.state("v14.world_jepa.store_consumer", None)
+            assert version >= 3
+            assert payload["active"]["checkpoint_sha256"] == first_sha
+            assert len(payload["active"]["processed_ids"]) == 256
+            assert len(payload["pending_rows"]) == 32
+            assert payload["scan_cursor"] == 288
+            assert len(list((tmp_path / "private-jepa").glob("jepa-*.npz"))) == 1
+            restarted = WorldJEPAStoreConsumer(
+                store, tmp_path / "private-jepa", learning_enabled=True
+            )
+            restored = restarted.restore()
+            assert restored["status"] == "RESTORED"
+            assert restored["checkpoint_sha256"] == first_sha
         assert "synthetic-user-content-" not in repr(payload)
     finally:
         store.close()

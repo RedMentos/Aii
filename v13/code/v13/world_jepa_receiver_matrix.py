@@ -10,7 +10,7 @@ import math
 import numpy as np
 
 from . import world_model
-from .world_jepa_consumer import WorldJEPAStoreConsumer
+from .world_jepa_consumer import WorldJEPAStoreConsumer, receiver_utility_gate
 
 RECEIVER_ROLES = ("B1_DETAIL", "B2_GIST", "SELF_MODEL")
 
@@ -70,6 +70,13 @@ def receiver_matrix(store, state, actions, home=None):
             if active is None:
                 raise ValueError("WorldJEPA checkpoint unavailable")
             model = learner._load_model(active)
+            # Apply the same per-role held-out admission used by the single-readout
+            # API. The Planner consumes this batched path directly, so gating only
+            # WorldJEPAStoreConsumer.readout would leave a real consumer bypass.
+            utility_by_role = {
+                role: receiver_utility_gate(active.get("metrics"), role)
+                for role in RECEIVER_ROLES
+            }
             matrix = {}
             for action in actions:
                 x = np.asarray([vector + [0.0, 0.0, 0.0]], dtype=np.float64)
@@ -80,6 +87,19 @@ def receiver_matrix(store, state, actions, home=None):
                     raise ValueError("nonfinite receiver uncertainty")
                 matrix[action] = {}
                 for role in RECEIVER_ROLES:
+                    utility = utility_by_role[role]
+                    if not utility["accepted"]:
+                        matrix[action][role] = {
+                            "role": role,
+                            "status": "RECEIVER_UTILITY_REJECTED",
+                            "receiver_utility": utility,
+                            "checkpoint_sha256": active["checkpoint_sha256"],
+                            "source_sha256": active["source_sha256"],
+                            "decision_authority": "NONE",
+                            "native_body_consumed": False,
+                            "native_body_weights_changed": False,
+                        }
+                        continue
                     head = active["receiver_heads"][role]
                     weights = np.asarray(head["weights"], dtype=np.float64)
                     bias = np.asarray(head["bias"], dtype=np.float64)
@@ -93,6 +113,7 @@ def receiver_matrix(store, state, actions, home=None):
                         "checkpoint_sha256": active["checkpoint_sha256"],
                         "source_sha256": active["source_sha256"],
                         "status": "SHADOW_READOUT_ONLY",
+                        "receiver_utility": utility,
                         "decision_authority": "NONE",
                         "native_body_consumed": False,
                         "native_body_weights_changed": False,
