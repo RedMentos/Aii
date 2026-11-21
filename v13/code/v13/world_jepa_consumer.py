@@ -508,12 +508,16 @@ class WorldJEPAStoreConsumer:
         if type(rows) is not list or len(rows) > MAX_ROWS:
             raise ValueError("replay memory budget")
         row_ids = []
+        legacy_row_keys = {
+            "action_id", "source_id", "fingerprint", "source_sha256", "outcome_sha256",
+            "created", "s", "a", "y",
+        }
         for row in rows:
-            if type(row) is not dict or set(row) != {
-                "action_id", "source_id", "fingerprint", "source_sha256", "outcome_sha256",
-                "created", "s", "a", "y",
-            }:
+            if (type(row) is not dict
+                    or set(row) not in (legacy_row_keys, legacy_row_keys | {"source_ref"})):
                 raise ValueError("invalid replay memory row")
+            if require_source_ref and "source_ref" not in row:
+                raise ValueError("replay memory SourceRef missing")
             if (type(row["source_id"]) is not str or not row["source_id"]
                     or len(row["source_id"]) > 256
                     or row["action_id"] not in fingerprints
@@ -524,6 +528,8 @@ class WorldJEPAStoreConsumer:
             _sha(row["fingerprint"])
             _sha(row["source_sha256"])
             _sha(row["outcome_sha256"])
+            if "source_ref" in row:
+                _validate_source_ref(row["source_ref"], row["source_id"], row["source_sha256"])
             _vector(row["s"], 4)
             _vector(row["y"], 3)
             row_ids.append(row["action_id"])
