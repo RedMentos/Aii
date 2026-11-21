@@ -36,7 +36,9 @@ jobs:
       - name: Install isolated CPU test dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install numpy==2.2.6 transformers==5.23.0 peft==0.22.0 pytest==9.2.0 torch==2.5.1+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+          # These runtime-contract tests do not load/train a model. Avoid pulling
+          # torch/transformers/PEFT and their CUDA dependencies into this job.
+          python -m pip install numpy==2.2.6 psutil PyYAML pytest==9.2.0
       - name: Verify exact builder SHA256 chain
         run: |
           sha256sum \
