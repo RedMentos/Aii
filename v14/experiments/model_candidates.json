@@ -16,7 +16,7 @@
         "size": 149081056,
         "sha256": "e75f83268de11b2a1bcfab5f3b5c5c0c97569ddbbc0990aad88437e45b8ba292"
       },
-      "selection_status": "CANDIDATE_ONLY_NO_NEW_DOWNLOAD_OR_COMPARISON; HISTORICAL_REDM I_PHONE_RECEIPT_2026-11-13_REPORTED_WRONG_2_PLUS_2",
+      "selection_status": "CANDIDATE_ONLY_NO_NEW_DOWNLOAD_OR_COMPARISON; HISTORICAL_REDMI_PHONE_RECEIPT_2026-11-13_REPORTED_WRONG_2_PLUS_2",
       "known_caveat": "V13 issue #1904 records a historical Redmi run with C3 230M returning 2 for 2+2; not suitable as a trusted reasoning replacement without a new, broader quality gate."
     }
   ]
