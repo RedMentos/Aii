@@ -46,13 +46,18 @@ def _read_locked(fn):
 class Adam:
     def __init__(self, params, lr):
         self.p = params; self.lr = lr; self.t = 0
+        self.steps = {k: 0 for k in params}
         self.m = {k: np.zeros_like(v) for k, v in params.items()}; self.v = {k: np.zeros_like(v) for k, v in params.items()}
 
     def step(self, grads):
+        if type(grads) is not dict or any(k not in self.p for k in grads):
+            raise ValueError("WorldJEPA Adam received an unknown parameter")
         self.t += 1
         for k, g in grads.items():
+            self.steps[k] += 1
             self.m[k] = .9*self.m[k]+.1*g; self.v[k] = .999*self.v[k]+.001*g*g
-            mh = self.m[k]/(1-.9**self.t); vh = self.v[k]/(1-.999**self.t)
+            step = self.steps[k]
+            mh = self.m[k]/(1-.9**step); vh = self.v[k]/(1-.999**step)
             self.p[k] -= self.lr*mh/(np.sqrt(vh)+1e-8)
 
 
@@ -116,7 +121,7 @@ class WorldJEPA:
         self.seed = seed; self.ensemble = ensemble
 
     def fit(self, X, A, X2, steps=3000, log_every=500, warm_start=False, cancel_check=None,
-            allow_optimizer_bootstrap=False):
+            allow_optimizer_bootstrap=False, train_encoder=True):
         # Invalid transitions cannot establish learned SHADOW inference evidence.
         # The covariance objective divides by n-1; never fit a single row.
         from . import world_jepa_training_state as training_state
@@ -126,10 +131,13 @@ class WorldJEPA:
                 or type(log_every) is not int or log_every < 1
                 or type(warm_start) is not bool
                 or type(allow_optimizer_bootstrap) is not bool
+                or type(train_encoder) is not bool
                 or (cancel_check is not None and not callable(cancel_check))):
             raise ValueError('Invalid WorldJEPA fit configuration')
         if cancel_check is not None and cancel_check():
             raise InterruptedError('WorldJEPA fit cancelled')
+        if not train_encoder and not warm_start:
+            raise ValueError('Predictor-only adaptation requires an existing encoder checkpoint')
         try:
             X, A, X2 = np.asarray(X), np.asarray(A), np.asarray(X2)
         except (TypeError, ValueError) as exc:
@@ -192,10 +200,19 @@ class WorldJEPA:
                 raise InterruptedError('WorldJEPA fit cancelled')
             b = rng.integers(0, len(x), min(BATCH, len(x)))
             zt = encode(tgt, x2[b])[0]
-            out = loss_grads(enc, pred, x[b], A[b], zt, VAR_W, COV_W, inv=inv, x2=x2[b], inv_w=INV_W)
+            out = loss_grads(
+                enc, pred, x[b], A[b], zt, VAR_W, COV_W,
+                train_enc=train_encoder, inv=inv if train_encoder else None,
+                x2=x2[b] if train_encoder else None, inv_w=INV_W if train_encoder else 0.,
+            )
             loss, parts, gp, ge = out[:4]; gi = out[4] if len(out) > 4 else {}
-            opt.step({**{'e'+k: v for k, v in ge.items()}, **{'p'+k: v for k, v in gp.items()}, **{'i'+k: v for k, v in gi.items()}})
-            for k in enc: tgt[k] = TAU*tgt[k]+(1-TAU)*enc[k]
+            opt.step({
+                **({'e'+k: v for k, v in ge.items()} if ge is not None else {}),
+                **{'p'+k: v for k, v in gp.items()},
+                **{'i'+k: v for k, v in gi.items()},
+            })
+            if train_encoder:
+                for k in enc: tgt[k] = TAU*tgt[k]+(1-TAU)*enc[k]
             if s % log_every == 0 or s == steps-1: history.append(dict(step=s, loss=round(loss, 5), **{k: round(v, 5) for k, v in parts.items()}))
         preds = [pred]
         bootstrap_training=[]
@@ -250,14 +267,15 @@ class WorldJEPA:
                                  zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
         return self
 
-    def partial_fit(self,X,A,X2,steps=100,log_every=50,cancel_check=None,allow_optimizer_bootstrap=False):
+    def partial_fit(self,X,A,X2,steps=100,log_every=50,cancel_check=None,allow_optimizer_bootstrap=False,
+                    train_encoder=True):
         """Continue JEPA weights and EMA target instead of reinitializing.
 
         Callers should mix replay transitions with new ones to reduce forgetting.
         This experimental path does not itself establish durable retention.
         """
         return self.fit(X,A,X2,steps=steps,log_every=log_every,warm_start=True,cancel_check=cancel_check,
-                        allow_optimizer_bootstrap=allow_optimizer_bootstrap)
+                        allow_optimizer_bootstrap=allow_optimizer_bootstrap,train_encoder=train_encoder)
 
     # -- inference -------------------------------------------------------------------------------------------------
     @_read_locked
