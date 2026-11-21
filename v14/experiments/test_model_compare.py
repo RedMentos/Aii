@@ -373,5 +373,79 @@ class ModelCompareTests(unittest.TestCase):
             model_compare.write_report_safely(self.home, "report.json", "{}")
         self.assertFalse((external_data / "report.json").exists())
 
+
+    def test_report_data_directory_swap_after_open_fails_closed(self):
+        original_open = os.open
+        swapped = False
+        moved = self.home / "data-original"
+        external = Path(self.tmp.name) / "external-data"
+        external.mkdir()
+
+        def racing_open(path, flags, mode=0o777, *, dir_fd=None):
+            nonlocal swapped
+            if path == "race.json" and dir_fd is not None and not swapped:
+                (self.home / "data").rename(moved)
+                (self.home / "data").symlink_to(external, target_is_directory=True)
+                swapped = True
+            return original_open(path, flags, mode, dir_fd=dir_fd)
+
+        with patch("model_compare.os.open", side_effect=racing_open):
+            with self.assertRaisesRegex(RuntimeError, "path changed"):
+                model_compare.write_report_safely(self.home, "race.json", '{"ok":true}')
+        self.assertTrue(swapped)
+        self.assertFalse((external / "race.json").exists())
+        self.assertFalse((moved / "race.json").exists())
+
+    def test_report_home_directory_swap_after_open_fails_closed(self):
+        original_open = os.open
+        swapped = False
+        moved = Path(self.tmp.name) / "home-original"
+        external = Path(self.tmp.name) / "external-home"
+        (external / "data").mkdir(parents=True)
+
+        def racing_open(path, flags, mode=0o777, *, dir_fd=None):
+            nonlocal swapped
+            if path == "race.json" and dir_fd is not None and not swapped:
+                self.home.rename(moved)
+                self.home.symlink_to(external, target_is_directory=True)
+                swapped = True
+            return original_open(path, flags, mode, dir_fd=dir_fd)
+
+        with patch("model_compare.os.open", side_effect=racing_open):
+            with self.assertRaisesRegex(RuntimeError, "path changed"):
+                model_compare.write_report_safely(self.home, "race.json", '{"ok":true}')
+        self.assertTrue(swapped)
+        self.assertFalse((external / "data" / "race.json").exists())
+        self.assertFalse((moved / "data" / "race.json").exists())
+
+    def test_report_cleanup_does_not_unlink_replacement_inode(self):
+        target = self.home / "data" / "replacement.json"
+        original_fsync = os.fsync
+        replaced = False
+
+        def replace_before_sync(fd):
+            nonlocal replaced
+            if not replaced:
+                target.unlink()
+                target.write_text("replacement survives", encoding="utf-8")
+                replaced = True
+            return original_fsync(fd)
+
+        with patch("model_compare.os.fsync", side_effect=replace_before_sync):
+            with self.assertRaisesRegex(RuntimeError, "report readback metadata mismatch"):
+                model_compare.write_report_safely(self.home, "replacement.json", '{"ours":true}')
+        self.assertTrue(replaced)
+        self.assertEqual(target.read_text(encoding="utf-8"), "replacement survives")
+
+    def test_report_symlinked_home_directory_refused(self):
+        moved = Path(self.tmp.name) / "home-original"
+        external = Path(self.tmp.name) / "external-home"
+        (external / "data").mkdir(parents=True)
+        self.home.rename(moved)
+        self.home.symlink_to(external, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, "symlink"):
+            model_compare.write_report_safely(self.home, "race.json", "{}")
+        self.assertFalse((external / "data" / "race.json").exists())
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
