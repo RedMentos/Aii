@@ -442,3 +442,22 @@ This is an additive checkpoint. The V14 master and historical V13 appendix were 
 - **QA & Android:** rerun focused #2214 after the producer fix; preserve #2215 DRY_RUN_ONLY and continue independent Android API/UI consent and lifecycle tests; keep owner-read relay read-only.
 - **JEPA & Memory:** add exact-head Python 3.13/3.14 optimizer-resume evidence for #2218, then repeated-seed A→B→A/retention and temporal-window ablations; do not enable optimizer or model learning gates.
 - **Boss & Integration:** verify exact post-merge push CI for 23ea3ef, maintain the Canon coverage ledger and review compatible stacks. No user action is required.
+
+
+## Boss integration checkpoint — 2026-11-21 15:30 CET
+
+- **Current code-bearing release-development commit:** `23ea3efc7d1951e20664ce6d07883141e9b601c5` (PR #2215). **Current shared-doc integration head before this checkpoint:** `49fd1e9f5a9a82b8e2078bef8adfe8a048f07d0f` (PR #2220). Exact #2215 PR-head CI passed broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58 and two-checkout migration UPDATED. Exact post-merge push-CI for the code-bearing commit remains unverified through the available readback; NOT_RELEASED.
+- **Private phone receipts:** #407 UPDATE_REQUEST expired/no reply; #408 PIPELINE_STATUS expired/no reply; #409 DIAGNOSTICS expired/no reply; #410 PIPELINE_STATUS expired/no reply. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No additional request, shell action, device update or model/permission change was performed.
+- **PR #2218:** exact current head `4ad72abaa38d0bbf67d703ffa12e433e4e4447c6` now has safe-additive PASS, staged-runtime PASS and integrated-regression PASS (run 44913418634). The dedicated Python 3.13/3.14 optimizer-resume workflow is still absent for this exact head; previous 3.13/3.14 result belongs to an earlier head. Keep draft. Synthetic SQLite/Store/T8 numeric predictor only; no native GGUF or Redmi utility; gates OFF.
+- **PR #2219/#2214:** producer branch acquires the lease before PCM transforms; broad staged/integrated run 44913130756 passes. Deterministic QA head `c17e4df4df7a53ed74e9057cf5ca5d112c472ad4` still fails focused run 44913001796 on the old producer, as intended. No exact combined post-fix deterministic run. The provider-lock reentrancy contract remains open. Keep both drafts until the combined test is green.
+- **PR #2210:** remains stale on ancestor `840a53ab...`; exact C5 SHADOW selection and nested source-pin failures remain. No merge.
+- **PR #2198 and #2205:** closed as superseded by #2213's newer production Store consumer, receiver gate, dirfd-based no-clobber checkpoint publisher and complete pin chain. AOSP Bionic documents libc `renameat2` from Android R/API 30; the Redmi Android 13 target is API 33, so the merged libc path covers the target. The #2205 forced-EPERM/EACCES, racing-target EEXIST and directory-fsync rollback tests are **not** in the current merged test suite; they remain an explicit QA follow-up against the current dirfd implementation. Do not reintroduce the older path-based branch merely to obtain those tests.
+- **Local environment:** full Aii checkout is absent and `git ls-remote` fails with `Could not resolve host: github.com`. No full LOCAL_LINUX suite is claimed. GitHub CI remains distinct from local and Redmi proof.
+- **Whole Canon:** #1904 remains OPEN for real correct 2+2, bounded native latency and source-bound B1/B2→C4→C3 delivery. Historical V13 appendix bytes and the 1,255-heading inventory remain unchanged; semantic clause-level code/consumer/test/environment/rollback mapping is incomplete. Android background/UI agency, voice output, trained B3 latent coupling, Context OS/Memorilla, native body-weight learning, cross-organ gradients and controlled self-edit remain open.
+
+### Next executable work
+- Core: rebase/fix #2210 C5 SHADOW plus all pins; rebase #2200/#2211 onto the consent-safe producer and remove derived audio context before C3.
+- Perception + QA: combine #2219 with deterministic #2214, test the exact pre-PCM revocation boundary and settle the reentrant-lock/lease-token contract; add the three checkpoint publication regressions against the current dirfd code.
+- JEPA: exact-head Python 3.13/3.14 test for #2218, then multi-seed A→B→A/retention and temporal-window/replay ablations.
+- Boss: verify exact post-merge push CI when an authoritative readback is available; continue full-Canon coverage and PR integration.
+- **User action: none.**
