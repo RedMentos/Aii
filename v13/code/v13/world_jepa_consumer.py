@@ -1018,7 +1018,8 @@ class WorldJEPAStoreConsumer:
                 "has_more": has_more, "new_receipts": len(new_ids),
                 "processed": len(prior_fingerprints), "scan_cursor": next_cursor,
                 "checkpoint_sha256": checkpoint_after, "source_sha256": source_sha,
-                "metrics": metrics, "native_body_weights_changed": False,
+                "metrics": metrics, "utility_gate_accepted": True,
+                "native_body_weights_changed": False,
                 "native_body_consumed": False, "runtime_wired": False,
                 "scope": "WORLD_JEPA_EMA_SELF_MEMORY_AND_B1_B2_NUMERIC_SHADOW",
             }
