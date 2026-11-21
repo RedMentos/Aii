@@ -504,3 +504,30 @@ Status: RESEARCHED_WITH_ABSTRACT_LIMIT / OSS_LICENSES_REVIEWED / NO_IMPORT / NO_
 - **Next executable step:** Core must expose a model-specific native K/V tap/injection seam for the existing llama.cpp/Android path (or explicitly evaluate a reversible native runner alternative without swapping models). Research/Perception can then run the same controls on the actual LFM2.5↔Qwen3.5 pair. No model download or production swap is proposed here.
 
 - **Status:** TWO_LATENT_COMMUNICATION_FULLTEXTS_REVIEWED / ONE_CAUSAL_TRANSFER_ABSTRACT_REVIEWED / CACHEBACK_OSS_APACHE2_CHECKED / LOCAL_LINUX_TINY_MODEL_PROOF / NO_NATIVE_B1_B2_LATENT_PROOF / NO_ANDROID_PROOF.
+
+
+## R-038 — Android UI observation permissions and source-bound A5 lease (2026-11-21)
+
+### Primary platform documentation reviewed
+
+- **Android AccessibilityService API:** https://developer.android.com/reference/android/accessibilityservice/AccessibilityService. The official reference describes AccessibilityService as an assistive service for users with disabilities, requires the user to enable it in system settings, and gates retrieval of interactive-window content behind declared service capabilities. This is not a general-purpose permission to scrape arbitrary app UI. V14 must not repurpose AccessibilityService for generic screen harvesting; use it only if the shipped feature genuinely provides disability assistance and the user explicitly enables it.
+- **Android MediaProjection guide:** https://developer.android.com/media/grow/media-projection. Projection is a user-consented capture session with a system-mediated prompt and stop/lifecycle handling. Android 14/API 34 adds app-window sharing; on Android 13/API 33 the available projection scope is the full display, which may include unrelated apps, notifications and system UI. A consent receipt is session-bound; it is not a reusable permanent permission.
+- **NotificationListenerService API:** https://developer.android.com/reference/android/service/notification/NotificationListenerService. Notification access is separately granted by the user through system settings; the service must wait for its listener connection before consuming notification events. This is notification-scoped input, not general screen access.
+
+These are current official API references reviewed on 2026-11-21, not research papers. No third-party OSS implementation, model, code, weight, dataset or dependency was imported; no additional license obligation was introduced by this work.
+
+### V14 implementation consequence
+
+- Prefer APP_INTENT and CONTENT_PROVIDER events where the app exposes a supported API. Use NOTIFICATION_LISTENER only for notification-scoped events with current user-granted access. Accept ACCESSIBILITY_ASSISTIVE only with an explicit disability-assistance purpose and a separately verified OS provider. Accept MEDIA_PROJECTION only with a current per-session receipt; reject APP_WINDOW scope below API 34. Redmi Android 13 therefore cannot be described as app-only MediaProjection.
+- Added a strict A5 metadata-only observation schema. It accepts event kind, source/session IDs, receipt reference, method/scope, Android API level, bounded monotonic interval and PROVISIONAL/FINAL provenance. It rejects screenshot bytes, UI text, node trees, package names, notification content, raw-capture persistence, action authority and learning authority.
+- Added UIObservationLease bound to Runtime identity, active generation, source ID, receipt, capture session, capture method/scope, API level and thread. The provider must expose a current-grant check, a linearizable guard shared with revocation, and a revocation subscription. The subscription remains active after the short lease exits; the provider callback must run after releasing its guard. Runtime revocation tombstones the A5 source, removes all packets referencing it, clears the bounded process cache, unsubscribes, and removes an unshared blob.
+- Added normal Runtime entrypoints for lease acquisition, A5 ingress, bounded per-event UI context reads and revocation. Ingress writes only a content-free metadata summary as an A5_UI_EVENT source, persists a PerceptPacket, calls the existing A4 attention scorer, and uses the existing source-bound C3 admission budget. PROVISIONAL observations remain persisted as provisional evidence but are not admitted or allowed to file A4 high-resolution requests.
+- This is a Runtime API/consumer seam, not an Android capture implementation. No authenticated OS receipt provider, AccessibilityService, NotificationListenerService, MediaProjection session, screenshot decoding, visual model, B1/B2 context delivery or Android device test exists yet. A5 UI remains SHADOW / REDMI_UNVERIFIED.
+
+### Local test evidence and limits
+
+- LOCAL_LINUX / CPython 3.13.5: python -m py_compile PASS for the isolated bridge; 13/13 isolated tests PASS using a synthetic SQLite Store and fake A4/provider. Covered Runtime-like ingress, A4/admission, provisional exclusion, source/generation/receipt/thread binding, non-reentrant revocation serialization, tombstone/cache/blob cleanup, raw-field rejection, API 33 vs 34 projection scope, accessibility-purpose gating and NotificationListener API floor.
+- The repository-level unittest is added separately and must be checked by exact-head GitHub CI. The isolated harness does not import the full Aii Runtime/Store, does not use Android APIs and is not a native-device proof.
+- No model/weight, installed permission, microphone/screen-capture setting, updater, user data or device state was changed.
+
+**Status:** OFFICIAL_ANDROID_API_DOCS_REVIEWED / A5_UI_LEASE_AND_RUNTIME_INGRESS_IMPLEMENTED / LOCAL_LINUX_ISOLATED_13_OF_13 / FULL_REPOSITORY_CI_PENDING / OS_CAPTURE_PROVIDER_NOT_IMPLEMENTED / REDMI_UNVERIFIED.
