@@ -47,7 +47,7 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | device_model_comparison | LAB_CODE_READY / NATIVE_NOT_RUN / REDMI_UNVERIFIED |
 | proposed_model_change | NONE — LFM2.5-230M is a lab candidate only; no download or swap |
 | requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
-| next_developer_action | Review PR #2142; if the exact 230M GGUF is already present on the authorized Redmi, run both comparison orders while V13 is idle. If absent, request separate consent before an isolated download. Keep production unchanged; continue Core/JEPA whole-Canon integration. |
+| next_developer_action | Boss/QA finish the exact merge-push integrated-regression gate for #2137; Core/QA review #2142. If the exact 230M GGUF is already present on the authorized Redmi, run both comparison orders while V13 is idle. If absent, request separate consent before an isolated download. Keep production unchanged; continue Core/JEPA whole-Canon integration. |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
