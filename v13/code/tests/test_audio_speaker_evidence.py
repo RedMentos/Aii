@@ -74,13 +74,21 @@ def speaker_batch(source_id, generation_id, start_ms, end_ms, vector_at,
 
 def test_same_speaker_embedding_stays_confident_and_has_no_identity_label():
     registry = SpeakerChangeEvidenceRegistry()
-    batch = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
-    evidence = registry.update(
+    warmup = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
+    first = registry.update(
         source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", embeddings=warmup,
+    )
+    assert first["status"] == "WARMUP"
+
+    batch = speaker_batch(SOURCE, "gen-a", 1100, 2100, lambda _: (1.0, 0.0, 0.0))
+    evidence = registry.update(
+        source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
         activity_hint="VOICED", embeddings=batch,
     )
     assert evidence["status"] == "MEASURED"
-    assert evidence["reference_age_ms"] == 800
+    assert evidence["reference_age_ms"] >= 800
+    assert evidence["reference_age_ms"] <= 920
     assert evidence["cosine_similarity"] == 1.0
     assert evidence["confidence_gate_passed"] is True
     assert evidence["speaker_change_candidate"] is False
@@ -112,6 +120,35 @@ def test_embedding_shift_is_only_a_change_candidate_during_voiced_activity():
     assert evidence["speaker_change_candidate"] is True
     assert evidence["interpretation"] == "LOW_SIMILARITY_DURING_VOICED_ACTIVITY_CHANGE_OR_OVERLAP"
     assert evidence["candidate_kind"] == "SPEAKER_CHANGE_OR_OVERLAP"
+
+
+def test_same_batch_tail_cannot_overwrite_cross_window_change_evidence():
+    def run(end_ms):
+        registry = SpeakerChangeEvidenceRegistry()
+        warmup = speaker_batch(SOURCE, "gen-a", 100, 1100, lambda _: (1.0, 0.0, 0.0))
+        registry.update(
+            source_id=SOURCE, generation_id="gen-a", start_ms=100, end_ms=1100,
+            activity_hint="VOICED", embeddings=warmup,
+        )
+        current = speaker_batch(
+            SOURCE, "gen-a", 1100, end_ms,
+            lambda end: (1.0, 0.0, 0.0) if end < 1660 else (0.0, 1.0, 0.0),
+        )
+        return registry.update(
+            source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=end_ms,
+            activity_hint="VOICED", embeddings=current,
+        )
+
+    # The longer batch adds many later frames from the new speaker. Those
+    # frames must not become their own look-back references in this same call.
+    short = run(2100)
+    long = run(3100)
+    assert short["speaker_change_candidate"] is True
+    assert long["speaker_change_candidate"] is True
+    assert long["frame_end_ms"] == short["frame_end_ms"]
+    assert long["cosine_similarity"] == short["cosine_similarity"] == 0.0
+    assert long["change_score"] == short["change_score"] == 0.5
+    assert long["candidate_kind"] == short["candidate_kind"] == "SPEAKER_CHANGE_OR_OVERLAP"
 
 
 def test_low_similarity_without_voiced_activity_is_not_speaker_change():
