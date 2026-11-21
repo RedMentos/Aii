@@ -45,7 +45,7 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
 | device_model_comparison | LAB_CODE_READY / NEW_A_B_NATIVE_NOT_RUN / HISTORICAL_230M_2_PLUS_2_FAIL / REDMI_UNVERIFIED |
-| proposed_model_change | NONE — LFM2.5-230M is a lab candidate only; no download or swap |
+| proposed_model_change | NONE — LFM2.5-230M is a diagnostic candidate only; historical Redmi 2+2 quality failure; no download or swap |
 | requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
 | next_developer_action | Core/QA review #2142. If the exact 230M GGUF is already present on the authorized Redmi, run both comparison orders while V13 is idle. If absent, request separate consent before an isolated download. Keep production unchanged; continue Core/JEPA whole-Canon integration. |
 
