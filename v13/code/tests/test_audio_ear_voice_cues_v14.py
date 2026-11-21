@@ -81,6 +81,11 @@ def test_pitch_estimate_is_stable_across_supported_sample_rates():
         assert cues["f0_median_hz"] is not None and 160 <= cues["f0_median_hz"] <= 200
 
 
+def test_extractor_rejects_audio_windows_over_one_second():
+    with pytest.raises(ValueError, match="limited to one second"):
+        extract_voice_cues(tone(seconds=1.1), 16000)
+
+
 def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path):
     runtime, event = make_runtime(tmp_path)
     pcm = tone(140)
