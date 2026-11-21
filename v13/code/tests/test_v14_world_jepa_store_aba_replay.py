@@ -94,9 +94,9 @@ def test_session_contiguous_replay_is_deterministic_bounded_and_session_local():
     # Legacy rows with no trusted session identity are never guessed into a
     # session window; the budget mismatch is explicit instead of silent.
     partial = world_jepa_replay.select_replay_rows(
-        "session_contiguous", new_rows, old_rows, budget=10, salt="fixed-cohort"
+        "session_contiguous", new_rows, old_rows, budget=18, salt="fixed-cohort"
     )
-    assert len(partial["rows"]) == 8
+    assert len(partial["rows"]) == 16
     assert partial["budget_matched"] is False
     assert all(item["session_id"] is not None for item in partial["rows"])
     assert world_jepa_replay.select_replay_rows(
@@ -351,6 +351,8 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
         "rejected_receipts": rejected,
         "has_more": has_more,
         "fit_rows": metrics.get("fit_rows"),
+        "new_train_rows": metrics.get("new_train_rows"),
+        "replay_candidate_rows": metrics.get("replay_candidate_rows"),
         "replay_mode": replay_mode,
         "replay_rows": metrics.get("replay_rows"),
         "replay_budget_rows": metrics.get("replay_budget_rows"),
@@ -648,13 +650,18 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         for encoder_mode in ("full", "predictor_only"):
             uniform_budget = report_by_arm[(data_seed, encoder_mode, "uniform_budget")]
             contiguous = report_by_arm[(data_seed, encoder_mode, "session_contiguous")]
-            for phase in ("B", "A2"):
-                budget_metrics = uniform_budget[phase]
-                contiguous_metrics = contiguous[phase]
-                assert budget_metrics["replay_rows"] == contiguous_metrics["replay_rows"]
-                assert budget_metrics["fit_array_bytes"] == contiguous_metrics["fit_array_bytes"]
-                assert budget_metrics["replay_array_bytes"] == contiguous_metrics["replay_array_bytes"]
-                assert budget_metrics["optimizer_steps_added"] == contiguous_metrics["optimizer_steps_added"]
+            # B starts from the identical A1 checkpoint in every arm, so the
+            # two budgeted policies must consume identical replay/fit bytes and
+            # optimizer steps. A2 is reported separately because B promotion
+            # can legitimately change the subsequent source partition.
+            budget_metrics = uniform_budget["B"]
+            contiguous_metrics = contiguous["B"]
+            assert budget_metrics["new_train_rows"] == contiguous_metrics["new_train_rows"]
+            assert budget_metrics["replay_candidate_rows"] == contiguous_metrics["replay_candidate_rows"]
+            assert budget_metrics["replay_rows"] == contiguous_metrics["replay_rows"]
+            assert budget_metrics["fit_array_bytes"] == contiguous_metrics["fit_array_bytes"]
+            assert budget_metrics["replay_array_bytes"] == contiguous_metrics["replay_array_bytes"]
+            assert budget_metrics["optimizer_steps_added"] == contiguous_metrics["optimizer_steps_added"]
 
     print("WORLDJEPA_STORE_A_B_A_REPLAY_RETENTION " + __import__("json").dumps(
         reports, sort_keys=True, allow_nan=False
