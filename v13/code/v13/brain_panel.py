@@ -72,11 +72,5 @@ def status(r):
 def operator_command(r,args):
     if args==["map"]:return overview(r)
     if args==["status"]:return status(r)
-    if args==["flow"]:
-        from .flow_audit import audit_latest
-        return audit_latest(r.home,session_id=r.session)
-    if len(args)==2 and args[0]=="flow":
-        from .flow_audit import audit_event
-        return audit_event(r.home,args[1],session_id=r.session)
     if len(args)==2 and args[0]=="explain":return explain(args[1])
-    raise ValueError(":brain [map|status|explain <name>|flow [Event-ID]]  (ohne Argumente: bisherige Generation) ")
+    raise ValueError(":brain [map|status|explain <name>]  (ohne Argumente: bisherige Generation) ")

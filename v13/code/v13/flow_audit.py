@@ -456,10 +456,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Read-only V13 per-turn organ-flow audit")
     parser.add_argument("--home", default="~/v13", help="V13 runtime home")
     parser.add_argument("--event-id", help="audit one event; default is latest")
+    parser.add_argument("--session-id", help="restrict audit to one chat session")
     parser.add_argument("--compact", action="store_true", help="emit compact JSON")
     args = parser.parse_args(argv)
     try:
-        report = audit_event(args.home, args.event_id) if args.event_id else audit_latest(args.home)
+        report = (
+            audit_event(args.home, args.event_id, session_id=args.session_id)
+            if args.event_id
+            else audit_latest(args.home, session_id=args.session_id)
+        )
     except (FileNotFoundError, KeyError, ValueError, sqlite3.Error) as exc:
         print(json.dumps({"status": "ERROR", "error": type(exc).__name__}), file=sys.stderr)
         return 2

@@ -1,12 +1,9 @@
 import json
 import sqlite3
 import zlib
-from types import SimpleNamespace
-
-from v13.operator import Operator
 
 from v13.contracts import packet
-from v13.flow_audit import audit_event, audit_latest
+from v13.flow_audit import audit_event, audit_latest, main
 from v13.store import Store
 
 
@@ -275,7 +272,7 @@ def test_compressed_source_blob_is_verified_streamingly(tmp_path):
     assert report["source_integrity"]["valid_refs"] >= 2
 
 
-def test_brain_flow_command_is_session_scoped_and_redacted(tmp_path):
+def test_session_scoped_latest_and_cross_session_rejection(tmp_path):
     home = tmp_path / "runtime"
     event_id = _fixture(home)
     db = home / "data" / "db" / "brain.sqlite3"
@@ -291,18 +288,35 @@ def test_brain_flow_command_is_session_scoped_and_redacted(tmp_path):
     try:
         other_session = store.new_session("other chat")
         other_event = store.event(other_session, "OTHER_PRIVATE_TEXT_SENTINEL")
-        runtime = SimpleNamespace(home=home, session=session_id, store=store)
-        output = Operator(runtime).run(":brain flow")
-        report = json.loads(output)
-        assert report["event_id"] == event_id
-        assert report["c4"]["status"] == "PASS"
-        assert "OTHER_PRIVATE_TEXT_SENTINEL" not in output
-        assert "PRIVATE_USER_TEXT_SENTINEL" not in output
-        try:
-            Operator(runtime).run(":brain flow " + other_event["event_id"])
-        except KeyError:
-            pass
-        else:
-            raise AssertionError("cross-session event must be hidden")
     finally:
         store.close()
+
+    before = db.read_bytes()
+    report = audit_latest(home, session_id=session_id)
+    assert report["event_id"] == event_id
+    assert "OTHER_PRIVATE_TEXT_SENTINEL" not in json.dumps(report)
+    try:
+        audit_event(home, other_event["event_id"], session_id=session_id)
+    except KeyError:
+        pass
+    else:
+        raise AssertionError("cross-session event must be hidden")
+    assert db.read_bytes() == before
+
+
+def test_session_scoped_cli_accepts_session_id(tmp_path, capsys):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        session_id = conn.execute(
+            "SELECT session_id FROM events WHERE id=?", (event_id,)
+        ).fetchone()[0]
+    finally:
+        conn.close()
+
+    assert main(["--home", str(home), "--session-id", session_id, "--compact"]) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["event_id"] == event_id
+    assert report["private_text_returned"] is False
