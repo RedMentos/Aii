@@ -621,3 +621,14 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 - Fresh private owner-read PIPELINE_STATUS request [#403](https://github.com/RedMentos/Aiiii/issues/403) is open with no response at last readback. Installed SHA and updater consent remain unknown. No UPDATE_REQUEST, shell action, model download/swap, permission change or phone mutation occurred.
 
 **User action required: none.** Do not run a new Termux command; do not change installed models, weights, permissions or data. The next work is internal: close the #2192/#2200 consent and derived-source revocation blockers, add the #2198 Android-safe checkpoint publisher, and integrate/calibrate C4 only in the normal pinned stage. Redmi remains `REDMI_UNVERIFIED`.
+
+
+## Exact release CI and learning readback — 2026-11-21 13:34 CET
+
+- The code-bearing release head `0fc4d2f9a76d530c366d67ea8148cd1c69666acd` is now fully green: **28/28 exact-head check-runs and 17/17 workflows SUCCESS**, including staged-runtime, integrated-regression, Python 3.13/3.14, owner-read and private bridge. PR #2197 is merged. This only validates GitHub Linux/CI; it does not mean the Redmi installed it.
+- The integrated synthetic Runtime/SQLite JEPA regression passed **415 tests / 3 skipped / 58 subtests**. Two ID-disjoint holdout runs reduced prediction loss from 0.96002 to 0.90302 (15 holdout rows) and from 0.96272 to 0.90349 (17 holdout rows); numeric parameter change plus save/restore/restart were checked. This is a small Python WorldJEPA predictor on synthetic Store data, not native GGUF B1/B2 weights or Android learning.
+- The other blockers remain unchanged: #2192's consent-revocation race after PerceptPacket persistence; #2200's derived audio context remains stored after revocation; #2195's C4 candidate is not in the normal pinned runtime stage and is uncalibrated; #2198's optimizer-resume candidate passes CI but still has no Android-safe hardlink-denial fallback.
+- P0 #1904 remains open: no fresh Redmi proof of correct/fast 2+2, native B1/B2 offers through C4 into C3, 20 mixed turns, native latency/RSS or trained B3 latent exchange.
+- Private owner-read [#403](https://github.com/RedMentos/Aiiii/issues/403) remains open with no response; installed SHA and updater consent are unknown. No UPDATE_REQUEST, shell action, model download/swap, permission change or phone mutation occurred.
+
+**User action required: none.** Do not run a new Termux command or change installed models, weights, permissions or data. The code branch is CI-green but not phone-verified; REDMI_UNVERIFIED remains the release status.
