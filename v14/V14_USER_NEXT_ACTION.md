@@ -1,3 +1,18 @@
+# Perception / RAW EAR consent checkpoint — 2026-11-21 14:16 CET
+
+**User action: none required.** No new Termux command, model download/swap, permission change or phone update is justified by this repository candidate.
+
+- Current code-bearing release head remains 0fc4d2f9a76d530c366d67ea8148cd1c69666acd; the development branch readback is 840a53ab19d0d9609e649f00b25e840465a15bcf. Neither is evidence of the Redmi's installed SHA.
+- Perception PR #2207: latest branch head fb63bb7bde93dda0a70bacdd3a4292df6656c442; exact code/test head dd96c8d7d76a7e2022d8476c9ef2b59e4efbbbdf; producer blob afb27968b8d932e718020f6043d38fc34cc21986. The producer now requires a provider-level consent_guard held through PerceptPacket commit, temporal evidence, A4 and C3 admission. Callback-only callers fail closed.
+- Exact GitHub Linux evidence: RAW EAR focused tests 48/48 PASS on Python 3.11 and 3.13, with py_compile PASS; model-lab and public privacy scan PASS. Comparator source pin was corrected to the exact producer blob; Python 3.14 comparator 8/8 PASS, Python 3.13 comparator and staged/integrated regression were still in progress at the last readback. Strict safe-additive failed because an existing producer module changed; manual Boss review is required. Prior-head CI is not substituted for the latest code/test head.
+- Local: full Aii checkout BLOCKED by GitHub DNS. A small standalone LOCAL_LINUX threading/SQLite lease-ordering reproduction passed, but it is not the repository module/full suite.
+- Device/updater: no live Redmi receipt in this run; installed SHA and updater consent remain unknown. REDMI_UNVERIFIED / NOT_RELEASED. No phone state was touched.
+- Research: PACE (ICLR 2026, arXiv:2602.03355) full text has been reviewed and is already recorded as R-029. Its audio-specific stability findings are a future learning hypothesis, not evidence for enabling audio-weight training; official code/checkpoint licensing was not verified and nothing was downloaded.
+
+**Next internal action:** Core must rebase #2200 onto #2207, pass the same provider's consent_guard, update exact source and nested builder pins, tombstone/delete derived AUDIO_ACOUSTIC_CONTEXT and clear process-local _audio_contexts on revocation, then recheck/drop audio immediately before C3 runner.generate(). QA should rebase #2208 to the shared-lock provider contract. Boss should review the existing-module change and refresh the board after exact-head CI completes.
+
+---
+
 # Boss integration checkpoint — 2026-11-21 11:27 CET
 
 ## Verified code and release state
