@@ -323,3 +323,16 @@ The merged #2155 adapter extracts heuristic pitch/voicing/energy/activity cues f
 - **Limitations:** this is paired-view LLM fine-tuning, not online T8 world dynamics; the results do not establish Android/ARM behavior, native B1/B2 receiver utility or a drop-in replay policy. No official code/weight license was verified in the inspected paper; no code or weights imported.
 - **V14 consequence:** retain uniform replay as the current baseline and no-replay as an ablation. Only later compare content/error-prioritized replay at matched update and memory budgets with source/content-disjoint holdouts, old-cohort retention, restart and negative controls.
 
+
+
+## R-021 follow-up — staged postcommit consumer proof (2026-11-21)
+
+- Exact JEPA follow-up code/test commit `b69820b5740aadc76871c1ccccf02e51a03bcd46` passed CI run 44885838336: staged 249/10/47 and integrated 415/3/58.
+- The first attempt (44885361818) failed because the test ran the ordinary source tree, whose inference-only checkpoint correctly has no optimizer-state payload, while asserting the staged overlay's behavior. The corrected test runs the same postcommit consumer test twice: ordinary source expects `optimizer_state_persisted=false`; the staged tree is built by the actual stager and run in a fresh subprocess with the resume overlay, expecting true.
+- The staged postcommit consumer sub-run passed 9 tests. It verified the checkpoint receipt, Adam main-step continuity after a fresh consumer reload, and restoration of the previous step after rollback. The separate training-resume test reported main_steps=4, bootstrap_steps=2, exact EMA/inverse/moments/RNG and source-lineage continuation.
+- Synthetic disjoint holdout loss moved 0.69993 → 0.66339 (−0.03653; 47 train / 17 holdout rows). This is a numeric NumPy predictor result on synthetic T8/SQLite data, not native B1/B2/C3 GGUF learning, real user utility or Android evidence.
+- The code/test follow-up remains draft on #2179; the parent safe-additive gate still requires independent review. The release branch and installed phone are unchanged.
+
+### Canon implication and next ablation
+WP-T17's historical mean-delta comparison remains important: the next learner evaluation must include a mean-delta baseline, not only shuffled/zero-action controls. Compare persistent vs reset optimizer and mean-delta under identical T8 cohorts, updates, batch/replay bytes; include source/digest-disjoint new and old cohorts, return-to-old-regime retention, checkpoint restart and rollback. Keep content/hard replay as a later matched-budget factor; the current baseline remains uniform vs no replay.
+
