@@ -213,17 +213,23 @@ def exercise_worker_migration(base):
             assert git('rev-parse', 'HEAD:' + path, cwd=agent) == git(
                 'rev-parse', target + ':' + path, cwd=repo), path
         marker = home / '.v13-private/runtime-active.json'
-        old_receipt = json.loads(marker.read_text(encoding='utf-8'))
-        assert old_receipt['build_profile'] == old['profile']
+        marker_before = marker.read_bytes() if marker.is_file() else None
+        if marker_before is not None:
+            old_receipt = json.loads(marker_before.decode('utf-8'))
+            assert old_receipt['build_profile'] == old['profile']
         assert (home / '.v13-private/pipeline-bridge-refresh').is_file()
 
-        # The new relay must not migrate when the owner's consent is off.
+        # The new relay must not migrate when the owner's consent is off,
+        # even when the legacy worker left a recoverable PARTIAL state.
         disabled = worker('new_disabled')
         assert disabled['result'] is None
-        assert json.loads(marker.read_text(encoding='utf-8')) == old_receipt
+        marker_after_disabled = marker.read_bytes() if marker.is_file() else None
+        assert marker_after_disabled == marker_before
+        assert model.read_bytes() == b'GGUF_SENTINEL_UNCHANGED'
+        assert database.read_bytes() == b'SQLITE_SENTINEL_UNCHANGED'
 
         # Simulate relay exec/reload with a new interpreter and consent enabled.
-        # This executes the actual one-shot startup helper, without a timer wait.
+        # The one-shot helper must finish the integrated runtime after PARTIAL.
         new = worker('new')
         assert new['profile'] == 'integrated-runtime-source-pinned-v2'
         assert new['module_path'].startswith(str(agent) + os.sep)
