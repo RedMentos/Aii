@@ -15,6 +15,7 @@ on:
   pull_request:
     branches:
       - gpt6/v13-private-remote-bridge-20261111
+      - research-perception/v14-raw-ear-shared-lease-api-20261121-run13
     paths:
       - v13/code/scripts/integrated_audio_context_candidate_20261121.py
       - v13/code/scripts/termux_runtime_recovery_candidate_20261121.py
