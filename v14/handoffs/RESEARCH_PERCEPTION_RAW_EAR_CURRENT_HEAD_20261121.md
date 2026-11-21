@@ -4,8 +4,8 @@
 **Queue:** V14-006 — Research & Perception  
 **Base:** `9d8f91960c568be7fe7dcf894555ce7250f635f4` (`gpt6/v13-private-remote-bridge-20261111`)  
 **Branch:** `research-perception/v14-raw-ear-consent-current-20261121-run12`  
-**Checkpoint before this handoff:** `0fa79863ef958221c074d9f0d277f265e1d91e54`  
-**Status:** REBASED_CANDIDATE / CI_PENDING / NOT_RELEASED / REDMI_UNVERIFIED
+**PR head:** `17f273395a869fd7469110773a5fe777a522909b`  
+**Status:** REBASED_CANDIDATE / CI_GREEN_EXCEPT_SAFE_ADDITIVE / NOT_RELEASED / REDMI_UNVERIFIED
 
 ## What changed
 
@@ -28,20 +28,19 @@ The old #2226 workflows targeted the prior QA branch, so the new release-base PR
 
 The strict safe-additive policy is not bypassed. Because this change modifies existing Runtime code and workflow files, independent Boss review is still required.
 
-## Test evidence and environment
+## Exact current-head CI evidence — SHA `17f273395a869fd7469110773a5fe777a522909b`
 
-**This branch's exact new-head CI:** pending at handoff creation; do not carry old-head CI results forward as new-head results.
+- Consent/revocation and non-reentrant provider-lock suite: **29 passed** on GitHub Actions CPython 3.13.18 (run `44922430577`).
+- RAW EAR temporal + producer + optional Silero + A4/C3 regressions: **53 passed** on CPython 3.11.18 and **53 passed** on CPython 3.13.18 (run `44922430566`).
+- VAD comparator: **8/8 passed** on CPython 3.13 and 3.14. Pinned native Linux libfvad build/check: **13 PASS / 0 FAIL / 0 ERROR** in each matrix job (run `44922430576`).
+- Staged Runtime regression: **251 passed / 10 skipped / 47 subtests passed**; recovery shell syntax PASS (run `44922430553`).
+- Integrated regression: **424 passed / 3 skipped / 58 subtests passed**, 6 warnings; no test failure (run `44922430553`).
+- Privacy scan, model-lab, offline-bridge-security and same-repository integration-queue contract: PASS. The queue classified PR #2233 as `review_only_paths`; it did not merge or dispatch a release.
+- Strict safe-additive validation: FAIL by policy because this candidate modifies existing Runtime modules and adds workflow files outside the validator's inert-module/test/handoff scope. No bypass; independent Boss review required.
 
-**Prior #2226 head `17af7d7253448930ab9c0c52c8ac1bc6b97babbe` (not this branch):**
-- RAW EAR/temporal/Silero/A4→C3: 53 passed on Python 3.11 and 53 passed on Python 3.13.
-- Consent preflight/revocation/non-reentrant lock: 29 passed.
-- VAD comparator: 8/8 on Python 3.13 and 3.14; pinned native Linux libfvad `make check`: 13 PASS / 1 SKIP / 0 FAIL / 0 ERROR on each matrix job.
-- Privacy, staged Runtime (249 passed / 10 skipped / 47 subtests) and integrated regression (424 passed / 3 skipped / 58 subtests) passed on that earlier head.
-- The strict safe-additive validation failed because the candidate edits existing workflow/Runtime scope; no bypass was used.
+**LOCAL_LINUX:** exact-source compile/pytest BLOCKED. Python 3.13.5 and Git 2.47.3 are present, but no Aii checkout is available and `git ls-remote` fails with `Could not resolve host: github.com`. GitHub Actions evidence is not a local checkout test.
 
-**LOCAL_LINUX:** Python 3.13.5 and Git 2.47.3 are present, but there is no Aii checkout. `git ls-remote https://github.com/RedMentos/Aii.git refs/heads/gpt6/v13-private-remote-bridge-20261111` failed with DNS resolution error (`Could not resolve host: github.com`). Exact-source local `py_compile`/pytest are therefore BLOCKED, not passed.
-
-**TERMUX/REDMI:** REDMI_UNVERIFIED. No authorized connected handset, microphone permission/capture receipt, installed SHA, updater receipt, native B1/B2/C3 run, RSS/PSS/TTFT measurement or deployment proof is available in this run.
+**TERMUX/REDMI:** REDMI_UNVERIFIED. No current authenticated device receipt yet. Private read-only requests HEALTH #415, PIPELINE_STATUS #416 and DIAGNOSTICS #417 were issued; all three had no response at last readback. No microphone capture, native model inference, installed SHA or updater deployment is claimed.
 
 ## Research reviewed
 
