@@ -42,3 +42,15 @@ Boss/QA review the shared SleepRuntime/WorldJEPA changes and exact CI. After int
 
 ## Next action
 Boss independently reviews/integrates #2179 without bypassing safe-additive. After that, rebase #2182 onto the new release HEAD and run exact staged/integrated/combined tests. No user action required.
+
+
+## Exact staged consumer result — 2026-11-21
+
+- Follow-up code/test commit `b69820b5740aadc76871c1ccccf02e51a03bcd46` passed CI run 44885838336: staged 249 passed / 10 skipped / 47 subtests; integrated 415 passed / 3 skipped / 58 subtests.
+- The staged-runtime job ran the postcommit consumer test from the actual staged tree in a fresh subprocess; **9 tests passed**. It checked optimizer receipt=true, main Adam step after checkpoint reload, and rollback to the prior step. The base source-tree test expects optimizer receipt=false because that source remains inference-only.
+- The earlier run 44885361818 failed because the staged expectation was applied to the base source tree; the new test now separates those contexts. This is a test-context correction, not a claim that base runtime already persists optimizer state.
+- Synthetic holdout loss 0.69993 → 0.66339 (delta −0.03653; 47 train / 17 disjoint holdout rows). The separate resume proof reported main_steps=4, bootstrap_steps=2 and exact EMA/inverse/moments/RNG/source-lineage continuation.
+- #2182 remains draft/stacked on #2179. Parent safe-additive failed because existing builder/deployer files changed; independent Boss review required. No merge/release. Local checkout DNS blocked; Redmi unverified.
+
+## Next
+After Boss integrates #2179, rebase #2182 to release HEAD and rerun exact CI. Then compare persistent vs reset optimizer and mean-delta baseline with matched T8 cohorts, replay bytes/update count, new/old and return-to-old holdouts, negative controls, restart and rollback.
