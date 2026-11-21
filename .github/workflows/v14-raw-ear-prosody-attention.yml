@@ -47,6 +47,4 @@ jobs:
         env:
           PYTHONPATH: v13/code
         run: |
-          python -m pytest -q \\
-            v13/code/tests/test_audio_temporal_evidence.py \\
-            v13/code/tests/test_audio_ear_voice_cues_v14.py
+          python -m pytest -q v13/code/tests/test_audio_temporal_evidence.py v13/code/tests/test_audio_ear_voice_cues_v14.py
