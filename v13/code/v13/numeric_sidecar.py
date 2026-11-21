@@ -17,9 +17,12 @@ def _id(value):
 
 class NumericSidecar:
     """Event-scoped numeric transport, not a permission or evidence authority."""
-    def __init__(self, projector: Projector, *, encoder_revision: str, receiver_revision: str):
+    def __init__(self, projector: Projector, *, encoder_revision: str, receiver_revision: str, max_pending: int = 64):
         if not _id(encoder_revision) or not _id(receiver_revision):
             raise ValueError("versioned encoder and receiver required")
+        if type(max_pending) is not int or not 1 <= max_pending <= 4096:
+            raise ValueError("bounded pending capacity required")
+        self.max_pending = max_pending
         self.projector = projector
         self.encoder_revision = encoder_revision
         self.receiver_revision = receiver_revision
@@ -40,6 +43,8 @@ class NumericSidecar:
             raise ValueError("unbounded projection")
         identity = (event["brain_generation_id"], event["event_id"], source_id)
         # No cross-event replay; latest packet overwrites only the same identity.
+        if identity not in self._pending and len(self._pending) >= self.max_pending:
+            raise OverflowError("numeric sidecar pending capacity exhausted; discard event explicitly")
         self._pending[identity] = packet
         return {"schema": SCHEMA, "event_id": event["event_id"],
                 "generation": event["brain_generation_id"], "source_id": source_id,
