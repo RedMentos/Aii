@@ -1220,3 +1220,13 @@ Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/225
 - Exact native receiver workflow 44955501021 PASS: pinned Linux build, Python 3.13/3.14 runtime tests, and Android arm64-v8a cross-compile. CI did not load a real GGUF model; Python tests use a fake executable/model fixture. No Redmi execution or semantic alignment is proven.
 - Core staged/integrated workflow 44955501004 FAILS independently: stale arithmetic source pin for v13/contracts.py and migration assertions returning PARTIAL instead of UPDATED (19 failed, 230 passed, 10 skipped, 2 errors). Core was notified on #2266.
 - #2266 is still based on old release base bdcad466..., not current Boss #2258. Core should rebase/stack it on #2258, repair the separate staged failure, then pursue a trained/versioned projector with held-out semantic/retention tests. No model download or production route.
+
+
+
+## C3 model-lab audit — 2026-11-21
+
+- Model-lab PR #2142 is CLOSED / NOT MERGED. Its 23 focused harness tests pass, but the candidate is not installed and no model inference or quality/TTFT/RSS comparison occurred. Do not treat it as a validated model alternative.
+- The official LFM2.5-230M model card says it is intended for data extraction/lightweight on-device agentic pipelines and is not recommended for reasoning-heavy math/code. LFM2.5-350M scores higher on several vendor-published instruction/tool benchmarks, but this is not a local V13 comparison. LFM Open License v1.0 includes a USD 10M annual-revenue threshold for commercial-use rights.
+- Research-only candidates: LFM2.5-350M (same family, same license), Qwen3-0.6B (Apache-2.0; third-party Q4_K_M files around 0.45–0.48 GB), Qwen3.5-0.8B (Apache-2.0; Q4 around 0.5 GB, newer hybrid attention). Community MNN results on a newer Redmi Note 14 Pro+ are not comparable to the Redmi Note 10 Pro; the same poster reports much slower Termux performance on that newer phone.
+- No model is approved for download or swap. First inventory already-present files; only if a candidate is absent ask separately for experimental download approval, then separately for a productive swap after real quality, TTFT, RSS, rollback and full multi-organ E2E comparison.
+- No user action is required now. Keep installed models unchanged.
