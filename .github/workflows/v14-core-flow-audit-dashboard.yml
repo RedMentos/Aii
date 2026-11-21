@@ -4,9 +4,11 @@ on:
   push:
     branches: [gpt6/v14-core-flow-audit-dashboard-20261121]
     paths:
+      - "v13/code/v13/flow_audit.py"
       - "v13/code/v13/flow_audit_dashboard.py"
       - "v13/code/v13/mobile_dashboard.py"
       - "v13/code/v13/mobile_dashboard.html"
+      - "v13/code/tests/test_flow_audit.py"
       - "v13/code/tests/test_flow_audit_dashboard.py"
       - "v13/code/tests/test_mobile_dashboard.py"
       - ".github/workflows/v14-core-flow-audit-dashboard.yml"
