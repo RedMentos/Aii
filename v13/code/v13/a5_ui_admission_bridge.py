@@ -153,14 +153,24 @@ class UIObservationLease:
     def active(self):
         return self._active is True
 
-    def matches(self, runtime, observation, generation_id):
+    def active_for(self, runtime, generation_id):
+        cancel_event = getattr(runtime, "cancel_event", None)
+        is_set = getattr(cancel_event, "is_set", None)
         return bool(
             self._token is _UI_LEASE_TOKEN
             and self._active is True
             and self._thread_id == threading.get_ident()
             and self.runtime is runtime
-            and self.source_id == observation.get("source_id")
             and self.generation_id == generation_id
+            and getattr(runtime, "current", None) == "turn"
+            and callable(is_set)
+            and not is_set()
+        )
+
+    def matches(self, runtime, observation, generation_id):
+        return bool(
+            self.active_for(runtime, generation_id)
+            and self.source_id == observation.get("source_id")
             and self.receipt == observation.get("consent_receipt_ref")
             and self.capture_session_id == observation.get("capture_session_id")
             and self.capture_method == observation.get("capture_method")
@@ -516,12 +526,32 @@ class A5UIRuntimeAdapter:
             goal=goal, token_budget=token_budget, priority=priority,
         )
 
-    def context(self, event_id):
+    def context(self, event_id, grants):
+        """Return FINAL UI packets only while their matching lease(s) are held."""
         if type(event_id) is not str or not event_id:
             raise ValueError("event id required")
+        if type(grants) is UIObservationLease:
+            grants = (grants,)
+        elif type(grants) not in (tuple, list):
+            raise PermissionError("active UI observation lease is required for context reads")
+        if not grants:
+            raise PermissionError("at least one active UI observation lease is required")
+        event = getattr(self.runtime, "turn_event", None)
+        generation_id = event.get("brain_generation_id") if isinstance(event, dict) else None
+        subscriptions = getattr(self.runtime, "_a5_ui_unsubscribe", None)
+        if type(subscriptions) is not dict:
+            raise PermissionError("UI observation subscriptions are unavailable")
+        allowed_sources = set()
+        for grant in grants:
+            if (type(grant) is not UIObservationLease
+                    or not grant.active_for(self.runtime, generation_id)
+                    or grant.source_id not in subscriptions):
+                raise PermissionError("UI context lease is stale, revoked, or not bound to this turn")
+            allowed_sources.add(grant.source_id)
         return tuple(
             packet for packet in self.runtime._a5_ui_context_cache.values()
-            if packet.get("event_id") == event_id
+            if packet.get("source_id") in allowed_sources
+            and packet.get("event_id") == event_id
             and packet.get("modality") == "ui"
             and packet.get("finality") == "FINAL"
         )

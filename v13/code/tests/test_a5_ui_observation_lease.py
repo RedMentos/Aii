@@ -133,6 +133,9 @@ class A5UIObservationLeaseTests(unittest.TestCase):
             self.assertEqual(result["a4"]["truth_authority"], 0)
             self.assertEqual(len(result["a4"]["segments"]), 1)
             self.assertTrue(result["a4"]["highres"])
+            admitted_context = self.adapter.context(self.event["event_id"], grant)
+            self.assertEqual(len(admitted_context), 1)
+            self.assertEqual(admitted_context[0]["source_id"], obs["source_id"])
             expected = (
                 "ui event=APP_INTENT_RESULT method=APP_INTENT scope=APP_DATA "
                 "api=33 clock=ELAPSED_REALTIME interval_ms=20"
@@ -168,6 +171,8 @@ class A5UIObservationLeaseTests(unittest.TestCase):
             self.assertTrue(self.provider.request_started.wait(1))
             self.assertTrue(revoker.is_alive(), "provider revoke must still wait for the held consent guard")
             self.assertEqual(self.provider.cleanup_lock_states, [])
+            with self.assertRaises(PermissionError):
+                self.adapter.context(self.event["event_id"], grant)
             source = self.store.one("SELECT deleted FROM sources WHERE id=?", (obs["source_id"],))
             self.assertEqual(source["deleted"], 0)
 
@@ -176,7 +181,8 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         self.assertEqual(self.provider.cleanup_lock_states, [False])
         source = self.store.one("SELECT deleted,hash FROM sources WHERE id=?", (obs["source_id"],))
         self.assertEqual(source["deleted"], 1)
-        self.assertEqual(self.adapter.context(self.event["event_id"]), ())
+        with self.assertRaises(PermissionError):
+            self.adapter.context(self.event["event_id"], grant)
         self.assertNotIn(obs["source_id"], self.runtime._a5_ui_context_cache)
         self.assertNotIn(obs["source_id"], self.runtime._a5_ui_unsubscribe)
         remaining = self.store.rows("SELECT id,payload FROM packets")
@@ -194,6 +200,8 @@ class A5UIObservationLeaseTests(unittest.TestCase):
             revoker.start()
             self.assertTrue(self.provider.request_started.wait(1))
             self.assertFalse(self.runtime.cancel_event.is_set())
+            with self.assertRaises(PermissionError):
+                self.adapter.context(self.event["event_id"], grant)
             self.assertTrue(revoker.is_alive(), "provider must wait for the original lease guard")
         revoker.join(timeout=2)
         self.assertFalse(revoker.is_alive())
