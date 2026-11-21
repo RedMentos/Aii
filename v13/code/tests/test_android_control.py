@@ -137,6 +137,7 @@ def test_audit_database_rejects_unapproved_symlinked_ancestor(tmp_path):
 
 
 def test_android_platform_alias_direction_matches_aosp():
+    from pathlib import Path
     import v13.android_control as android_control
 
     assert android_control._ANDROID_PLATFORM_SYMLINKS == (
