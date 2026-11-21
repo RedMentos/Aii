@@ -69,12 +69,16 @@ class ModelCompareTests(unittest.TestCase):
         self.candidate_spec = {"local_name": "candidate.gguf", "size": self.candidate.stat().st_size,
                                "sha256": hashlib.sha256(self.candidate.read_bytes()).hexdigest()}
         self.manifest = Path(self.tmp.name) / "manifest.json"
+        self.license_snapshot = Path(self.tmp.name) / "licenses" / "test-license.txt"
+        self.license_snapshot.parent.mkdir(parents=True)
+        self.license_snapshot.write_text("synthetic license snapshot for tests", encoding="utf-8")
+        license_sha = hashlib.sha256(self.license_snapshot.read_bytes()).hexdigest()
         self.manifest.write_text(json.dumps({"schema": "v14.model-candidates/1", "candidates": [{
             "id": "candidate", "role": "C3_LANGUAGE", "model_id": "candidate/model",
             "revision": "a" * 40, "license_id": "Apache-2.0",
             "license_url": "https://huggingface.co/candidate/model/blob/" + ("a" * 40) + "/LICENSE",
-            "license_snapshot_path": "v14/experiments/licenses/test-license.txt",
-            "license_snapshot_sha256": "b" * 64,
+            "license_snapshot_path": "licenses/test-license.txt",
+            "license_snapshot_sha256": license_sha,
             "license_snapshot_source": "https://example.test/snapshot/LICENSE",
             "file": self.candidate_spec
         }]}))
@@ -112,6 +116,29 @@ class ModelCompareTests(unittest.TestCase):
             result = self.run_compare()
             self.assertFalse(result["results"]["baseline"]["tasks"][0]["exact_match"])
         FakeRunner.outputs["p0_arithmetic_2_plus_2"] = "4"
+
+    def test_license_snapshot_tampering_blocks_inference(self):
+        self.license_snapshot.write_text("tampered license text", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "license snapshot SHA256 mismatch"):
+            self.run_compare()
+        self.assertEqual(FakeRunner.generate_calls, 0)
+        self.assertEqual(FakeRunner.active, 0)
+
+    def test_missing_license_snapshot_blocks_inference_even_if_candidate_missing(self):
+        self.candidate.unlink()
+        self.license_snapshot.unlink()
+        with self.assertRaisesRegex(ValueError, "license snapshot missing"):
+            self.run_compare()
+        self.assertEqual(FakeRunner.generate_calls, 0)
+        self.assertEqual(FakeRunner.active, 0)
+
+    def test_license_snapshot_path_traversal_is_rejected(self):
+        value = json.loads(self.manifest.read_text())
+        value["candidates"][0]["license_snapshot_path"] = "../outside-license.txt"
+        self.manifest.write_text(json.dumps(value))
+        with self.assertRaisesRegex(ValueError, "traversal-free"):
+            self.run_compare()
+        self.assertEqual(FakeRunner.generate_calls, 0)
 
     def test_candidate_not_installed_never_downloads(self):
         self.candidate.unlink()
