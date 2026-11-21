@@ -596,7 +596,7 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
     assert result.get("status") in {
         "UPDATED_EXPERIMENTAL_WORLD_JEPA",
         "UTILITY_GATE_REJECTED",
-    }
+    }, f"unexpected WorldJEPA result: {result!r}"
 
     metrics = _metrics(result)
     drift_metrics = metrics.get("drift_control")
