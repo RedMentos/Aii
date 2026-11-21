@@ -88,6 +88,14 @@ def _private_audit_db_path(db_path):
             raise ControlDenied("audit database parent must already exist")
         if stat.S_ISLNK(path.parent.lstat().st_mode):
             raise ControlDenied("symlinked audit parent")
+        parent_info = path.parent.stat()
+        getuid = getattr(os, "getuid", None)
+        if (
+            getuid is None
+            or parent_info.st_uid != getuid()
+            or parent_info.st_mode & 0o022
+        ):
+            raise ControlDenied("audit database parent must be owner-controlled")
         flags = os.O_RDWR | nofollow | getattr(os, "O_CLOEXEC", 0)
         try:
             fd = os.open(path, flags | os.O_CREAT | os.O_EXCL, 0o600)
