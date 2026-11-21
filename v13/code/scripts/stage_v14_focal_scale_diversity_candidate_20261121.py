@@ -19,7 +19,7 @@ BASE_STAGER_GIT_BLOB = "c1191fe199408c95809bcd14b4d7261754db3e2c"
 OVERLAY = "scripts/integrated_focal_scale_diversity_candidate_20261121.py"
 OVERLAY_GIT_BLOB = "925eea5dde0c9ca3776a38c4c5492ced66694ca3"
 ARITHMETIC_OVERLAY = "scripts/integrated_arithmetic_guard_candidate_20261121.py"
-ARITHMETIC_OVERLAY_GIT_BLOB = "bc6f1281060849157b876162e6018d42d9a17515"
+ARITHMETIC_OVERLAY_GIT_BLOB = "9d7ab62ac5b323a54723d979dcd3d41e82aaa219"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
