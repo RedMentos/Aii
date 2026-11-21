@@ -1,3 +1,9 @@
+# SUPERSEDED — do not merge
+
+This candidate is closed and superseded by PR #2200. The design incorrectly routed built-in deterministic arithmetic through APPROVED_FIXED_RULE, conflating it with operator-authored fixed answers. Existing policy separation requires arithmetic to remain LOCAL_EXACT_ARITHMETIC. The corrected current-base path is in core/v14-a5-voice-current-20261121, stacked on Perception PR #2192.
+
+Historical source and test details below are retained only for audit.
+
 # Core handoff — source-bound exact arithmetic C5 fastpath
 
 **Date:** 2026-11-21  
