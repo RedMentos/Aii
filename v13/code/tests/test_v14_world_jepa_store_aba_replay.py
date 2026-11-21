@@ -260,10 +260,18 @@ def _cohort_holdout_metrics(store, phase_by_sha):
         rows_by_id[row["action_id"]] = row
     rows = sorted(rows_by_id.values(), key=lambda row: row["action_id"])
 
-    _, holdout_rows, split = world_jepa_consumer._source_disjoint_split(rows)
-    assert set(split["train_source_sha256"]).isdisjoint(
-        set(split["holdout_source_sha256"])
-    )
+    split = world_jepa_consumer._source_disjoint_split(rows)
+    by_action_id = {row["action_id"]: row for row in rows}
+    train_rows = [by_action_id[action_id] for action_id in split["train_action_ids"]]
+    holdout_rows = [by_action_id[action_id] for action_id in split["holdout_action_ids"]]
+    train_source_ids = {row["source_id"] for row in train_rows}
+    holdout_source_ids = {row["source_id"] for row in holdout_rows}
+    train_source_hashes = {row["source_sha256"] for row in train_rows}
+    holdout_source_hashes = {row["source_sha256"] for row in holdout_rows}
+    assert train_source_ids.isdisjoint(holdout_source_ids)
+    assert train_source_hashes.isdisjoint(holdout_source_hashes)
+    assert split["manifest"]["source_disjoint"] is True
+    assert split["manifest"]["source_sha256_disjoint"] is True
 
     learner = getattr(store, "_v14_world_jepa_consumer")
     model = learner._load_model(state["active"])
@@ -289,6 +297,7 @@ def _cohort_holdout_metrics(store, phase_by_sha):
             "shuffled_action_loss": shuffled,
             "zero_action_loss": zero,
         }
+    report["_split_manifest"] = split["manifest"]
     return report
 
 
