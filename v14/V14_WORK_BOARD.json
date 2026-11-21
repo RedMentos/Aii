@@ -73,7 +73,7 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "Boss postcommit/runtime candidate PR #2179 is now at exact head 68ba0ee703b872f5dd2e0d9e0ae940343284a05f, based on current release-development ancestry (compare: 34 ahead / 0 behind at earlier readback). It contains the staged WorldJEPA optimizer/inverse/RNG training-state overlay and a real Runtime worker -> durable ActionOutcome/T8 -> idle SleepRuntime -> numeric predictor/EMA -> checkpoint/restart test. Exact run 44889906551: staged-runtime PASS and integrated-regression PASS; run 44889906527 combined online JEPA PASS; run 44889906653 runtime-deploy integrity PASS; run 44889906635 safe-additive FAIL (manual review gate, not bypassed). New JEPA ablation PR #2186 current docs head 6105ad2664611bfe3c2457a2e3200bfd3abb71cf (code/test head 56f2053a792a6f8a6c385963a45777ccea1f9d06) adds action-conditioned latent mean-delta baseline and matched persistent-vs-zeroed-Adam-moment control; exact CI queued at last readback. Full local Aii checkout blocked by GitHub DNS; isolated baseline helper positive/negative tests PASS. Base source remains inference-only; optimizer persistence is staged-candidate evidence, not release. Native GGUF body weights unchanged; decision authority NONE; REDMI_UNVERIFIED.",
+      "proof_environment": "Boss postcommit/runtime candidate PR #2179 is now at exact head 68ba0ee703b872f5dd2e0d9e0ae940343284a05f, based on current release-development ancestry (compare: 34 ahead / 0 behind at earlier readback). It contains the staged WorldJEPA optimizer/inverse/RNG training-state overlay and a real Runtime worker -> durable ActionOutcome/T8 -> idle SleepRuntime -> numeric predictor/EMA -> checkpoint/restart test. Exact run 44889906551: staged-runtime PASS and integrated-regression PASS; run 44889906527 combined online JEPA PASS; run 44889906653 runtime-deploy integrity PASS; run 44889906635 safe-additive FAIL (manual review gate, not bypassed). New JEPA ablation PR #2186 code/test head 56f2053a792a6f8a6c385963a45777ccea1f9d06 (subsequent branch commits are documentation-only) adds action-conditioned latent mean-delta baseline and matched persistent-vs-zeroed-Adam-moment control; exact CI queued at last readback. Full local Aii checkout blocked by GitHub DNS; isolated baseline helper positive/negative tests PASS. Base source remains inference-only; optimizer persistence is staged-candidate evidence, not release. Native GGUF body weights unchanged; decision authority NONE; REDMI_UNVERIFIED.",
       "next_step": "Review Boss #2179 safe-additive failure manually without bypass; keep its exact worker lifecycle, staged and integrated checks green. Run exact-head #2186 staged/integrated CI, inspect its sanitized persistent-vs-moment-reset summary, and verify both arms used the same cloned 288-row source/digest-disjoint T8 cohort, 24 steps and uniform replay. Treat zeroed-m/v with retained global step as a moment-reset control, not full optimizer reset. Then add a return-to-old A→B→A retention experiment and matched content/error-prioritized replay versus uniform/no-replay before any native-body or optimizer-gate promotion.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 10:26 CET",
@@ -126,12 +126,13 @@
       "latest_optimizer_ablation_pr": {
         "pr": 2186,
         "branch": "jepa-memory/v14-optimizer-moment-ablation-20261121",
-        "head_sha": "6105ad2664611bfe3c2457a2e3200bfd3abb71cf",
+        "head_sha": "56f2053a792a6f8a6c385963a45777ccea1f9d06",
         "base_pr": 2179,
         "base_sha": "68ba0ee703b872f5dd2e0d9e0ae940343284a05f",
-        "status": "OPEN_DRAFT_CI_QUEUED_DOCS_HEAD_6105AD",
+        "status": "OPEN_DRAFT_CI_QUEUED_CODE_TEST_HEAD_56F",
         "scope": "Action-conditioned latent mean-delta baseline plus same-DB/checkpoint 288-row persistent-Adam-vs-zeroed-m/v control; step clock retained; diagnostic only",
-        "code_test_sha": "56f2053a792a6f8a6c385963a45777ccea1f9d06"
+        "code_test_sha": "56f2053a792a6f8a6c385963a45777ccea1f9d06",
+        "docs_only_checkpoint_sha": "a2b9cf4b6bff6ace9048a066ffe8b64767df5a7e"
       }
     },
     {
