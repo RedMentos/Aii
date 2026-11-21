@@ -1,3 +1,33 @@
+# JEPA & Memory checkpoint — 21 November 2026
+
+## Verified candidate and tests
+- Current release-development branch `gpt6/v13-private-remote-bridge-20261111` reads back at **`569680bc10eabeb94ea5a1695d4bf77b8584e0a0`**. This is not a phone release.
+- Boss integration PR [#2179](https://github.com/RedMentos/Aii/pull/2179), exact head **`268bebaf282188a67dde9ed63246ca024067b6f2`**, is based on the JEPA runtime candidate after the missing exception colon was fixed at `e361235ee52c9b612ddd3b87449ff5b41d9c3fd0`. The pin-chain rebind addresses the prior staged `training-resume input source changed` failure.
+- Exact candidate CI:
+  - Run [44884557196](https://github.com/RedMentos/Aii/actions/runs/44884557196): staged runtime **249 passed / 10 skipped / 47 subtests**; integrated regression **415 passed / 3 skipped / 58 subtests**.
+  - Run [44884557244](https://github.com/RedMentos/Aii/actions/runs/44884557244): combined online JEPA integration **49 passed**.
+  - Runtime-deploy integrity and two-checkout migration workflows on the same candidate passed; the latter is a synthetic local-Git migration test, not a Redmi test.
+  - Safe-additive run [44884584190](https://github.com/RedMentos/Aii/actions/runs/44884584190) **FAILED** because the candidate changes existing builder/deployer files. This policy gate was not bypassed; independent Boss review is still required.
+- PR [#2182](https://github.com/RedMentos/Aii/pull/2182), head **`72914a4e3b8cfbb9834cef36dabd1878135e30a7`**, is a draft stacked on #2179. It fixes misleading telemetry: the consumer previously hard-coded optimizer persistence to false even when the staged checkpoint stored the shared Adam state. It now reads the checkpoint receipt and tests Adam-step readback after restart and rollback. **No exact-head CI run has appeared yet**, and no local Aii checkout test was possible.
+- The earlier #2178 head `c16da4b3c0de1e5d857240e4fee7576aa3bf9a15` had two reproduced failures: a missing colon in `world_jepa_runtime.py` and stale training-resume source pins. The colon fix and pin-chain work are present in the #2179 candidate; the exact staged/integrated suite is now green on that candidate.
+
+## Actual scope and remaining boundary
+The candidate connects the existing SleepRuntime idle path to a committed, source-verified ActionOutcome/T8 event, invokes the persistent numeric WorldJEPA/EMA Store learner, and writes B1/B2/SELF numeric SHADOW readouts for the planner. It also handles older observed T8 backlog behind newer censored events, separates learning and planner cursors, and cooperatively cancels before checkpoint/Store commit so the idle job can be requeued.
+
+The staged training-resume overlay carries optimizer state and replay state in the checkpoint. The new #2182 test makes the postcommit consumer expose and verify that fact rather than reporting false. This remains numeric WorldJEPA/EMA and numeric SHADOW readouts—not native B1/B2 GGUF weight learning, trained cross-organ latent activation transfer, or production decision authority.
+
+## Local/device/deployment status
+- Exact local Aii checkout: **BLOCKED**; `git ls-remote https://github.com/RedMentos/Aii.git` failed because this worker cannot resolve `github.com`. No LOCAL_LINUX repository test is claimed.
+- Redmi: **REDMI_UNVERIFIED**. Private owner-read #373 expired without a reply; installed SHA is UNKNOWN and updater consent is UNVERIFIED.
+- #2179 is not merged/released. #2182 is draft and not yet exact-head CI-verified. No update request, shell action, model download/swap, permission change, phone data mutation or device action occurred.
+
+## Next executable action
+Boss must independently review #2179's existing builder/deployer edits and resolve the safe-additive gate without bypassing it. After #2179 is integrated, rebase #2182 onto the new release HEAD, run exact-head staged/integrated/combined tests, then review the persistent-vs-reset optimizer ablation under identical T8 cohorts, update steps, replay bytes, source-disjoint holdouts, retention, restart and rollback.
+
+**User action: none.** No Termux command, model download/swap, permission change or phone approval is required for this repository work.
+
+---
+
 # JEPA & Memory checkpoint — 2026-11-21 08:4x CET
 
 ## Current repository and candidate
