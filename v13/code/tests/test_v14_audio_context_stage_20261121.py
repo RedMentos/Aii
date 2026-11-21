@@ -46,6 +46,8 @@ def test_audio_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     assert "not fixed_policy and arithmetic_answer is None" in runtime
     assert "audio_source_refs" in runtime and "LOCAL_EXACT_ARITHMETIC" in runtime
+    assert "finality=audio_window['finality']" in runtime
+    assert "segment.get('finality')!='FINAL'" in runtime
     assert "consume_recent_committed" in runtime
     assert (destination / "v13/v14_learning/t8_store_authority.py").is_file()
     assert "c3_prompt_included" in runtime
