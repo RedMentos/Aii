@@ -73,10 +73,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "Current release-development HEAD at branch readback: 569680bc10eabeb94ea5a1695d4bf77b8584e0a0. JEPA candidate is being rebuilt on this exact head, porting the #2168 SleepRuntime postcommit consumer and adding: observed-only backlog selection (censored newest events cannot starve earlier observed T8), independent learning/planner cursors (planner-only SHADOW does not suppress later learning opt-in), and cooperative cancel/resource-pressure checks through WorldJEPA.fit and before checkpoint/Store commit. The source remains local numeric WorldJEPA/EMA + B1/B2/SELF SHADOW; native GGUF weights unchanged; decision authority NONE. Exact local Aii checkout unavailable because github.com DNS fails. New exact-head CI pending; REDMI_UNVERIFIED.",
-      "next_step": "Review the new exact-base JEPA postcommit PR and its Python 3.11/3.13/3.14 focused/staged/integrated CI. Confirm cancellation leaves no checkpoint/cursor commit, censored-latest backlog remains schedulable, and a planner-only event does not consume learning opt-in. Then persist Adam optimizer moments atomically with model checkpoint/cursor and benchmark reset-vs-persistent optimizer under matched replay/update budgets.",
+      "proof_environment": "Boss PR #2179 exact head 268bebaf282188a67dde9ed63246ca024067b6f2 repairs the #2178 postcommit candidate's exception syntax and pinned training-resume/deployer chain. Exact GitHub CI run 44884557196: staged 249 passed / 10 skipped / 47 subtests; integrated 415 passed / 3 skipped / 58 subtests. Combined online JEPA run 44884557244: 49 passed. Safe-additive run 44884584190 FAILS because existing builder/deployer files changed; no bypass, independent Boss review required. JEPA follow-up #2182 head 72914a4e3b8cfbb9834cef36dabd1878135e30a7 adds truthful optimizer persistence metrics and restart/rollback Adam-step assertions; exact-head CI has not run. Local Aii checkout remains BLOCKED by GitHub DNS. Candidate is not merged/released; no native GGUF body update, native latent receiver, or Redmi proof.",
+      "next_step": "Boss: independently review #2179 existing-file builder/deployer edits and resolve safe-additive without bypass. After integration, JEPA rebases #2182 onto the new release HEAD and runs exact staged/integrated/combined CI. Then run a matched persistent-vs-reset optimizer ablation on the same source/digest-disjoint T8 cohorts, equal update steps, batch size and replay bytes, with new/old holdouts, retention, shuffled/zero-action controls, restart and rollback. Keep gates default-off and B1/B2/SELF SHADOW.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 08:4x CET",
+      "last_checkpoint": "2026-11-21 09:29 CET",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -120,6 +120,22 @@
         "status": "OPEN_READY_FOR_REVIEW",
         "ci": "PASS_44872134464_STAGED_241_PY311_10_SKIPPED_47_SUBTESTS; PASS_INTEGRATED_415_PY311_3_SKIPPED_58_SUBTESTS",
         "scope": "Source-bound numeric B1/B2/SELF World/Planner SHADOW receiver; batched readout; ActionOutcome/SourceRef verification; persisted idempotent readback; no normal Runtime hook/native body"
+      },
+      "latest_postcommit_candidate_pr": {
+        "pr": 2179,
+        "branch": "boss/v14-jepa-postcommit-pin-chain-20261121",
+        "head_sha": "268bebaf282188a67dde9ed63246ca024067b6f2",
+        "status": "OPEN_REVIEW_REQUIRED_SAFE_ADDITIVE_FAIL",
+        "ci": "PASS_249_STAGED_415_INTEGRATED_49_COMBINED_JEPA",
+        "scope": "cancellable SleepRuntime postcommit WorldJEPA/EMA learner with staged optimizer-state resume and B1/B2/SELF numeric SHADOW receiver"
+      },
+      "latest_optimizer_state_followup_pr": {
+        "pr": 2182,
+        "branch": "jepa-memory/v14-world-jepa-optimizer-state-readback-20261121",
+        "head_sha": "72914a4e3b8cfbb9834cef36dabd1878135e30a7",
+        "base_pr": 2179,
+        "status": "DRAFT_CI_PENDING_NO_EXACT_RUN",
+        "scope": "checkpoint-receipt optimizer telemetry plus Adam-step readback after restart and rollback"
       }
     },
     {
@@ -215,8 +231,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Selected trainable adapters/heads and later cross-organ weights; meta update predictor; sandboxed code/structure proposals; independent OS capability boundary; approval, holdout, retention and rollback",
       "acceptance": "Prove a real numeric parameter diff on an approved target, measurable heldout utility and retention, checkpoint/restart/rollback, and cross-organ consumer benefit. Code/structure self-edit remains sandboxed and human-approved; no self-issued permissions.",
-      "proof_environment": "Numeric WorldJEPA/EMA learner and B1/B2/SELF numeric SHADOW receiver are merged via #2160/#2164, with source-disjoint holdout and rollback code. Current release branch has a Python 3.13 backlog test failure returning UTILITY_GATE_REJECTED; do not weaken that gate. Normal Runtime wiring attempted in #2168 is not integrated and fails frozen source pins. No native B1/B2/C3 GGUF weight changes, cross-organ gradients or source self-edit. Optimizer permissions remain OFF by default.",
-      "next_step": "JEPA/Memory: fix the cursor/backlog test semantics without treating rejected cohorts as trained; then build the staged postcommit consumer. Next prove a reversible numeric adapter update with gradient/diff, heldout gain, old-cohort retention, restart and rollback. Native body-weight updates and cross-organ gradients remain separate unimplemented milestones.",
+      "proof_environment": "Numeric WorldJEPA/EMA and B1/B2/SELF numeric SHADOW receiver remain. Candidate #2179 adds the staged postcommit consumer and optimizer-state resume; exact staged/integrated/combined CI passes, but safe-additive review remains and nothing is merged/released. Follow-up #2182 adds checkpoint optimizer-state telemetry/readback with exact CI pending. No native B1/B2/C3 GGUF weight updates, cross-organ gradients or code self-edit.",
+      "next_step": "After #2179/#2182 integration, measure persistent-vs-reset optimizer utility/retention under matched T8 cohorts and rollback; then build the next source-/permission-bound target-organ learning intent and parameter-diff consumer. Keep native body updates off until separately authorized and measured.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 07:49 CET"
     },
@@ -229,8 +245,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
-      "proof_environment": "Existing Sleep A/B/C and ReplayQueue are present. #2168 attempts to coalesce a durable jepa_update event into an idle Sleep window, but the PR is blocked: direct Runtime/Sleep modifications invalidate the pinned integrated_online_world_candidate_20261110.py runtime.py hash, causing staged/integrated and Python 3.14 startup failures. No JEPA idle scheduler is integrated in the release branch and no Redmi lifecycle proof exists.",
-      "next_step": "JEPA/Core: rework the idle update as a hash-bound staged overlay or one deliberately re-pinned integration chain; test cancellation, queue coalescing, resource-pressure/quiet-hours gates, restart recovery and idempotency. Preserve Sleep B no-fact-write and Sleep C homeostasis gates.",
+      "proof_environment": "Existing Sleep A/B/C and ReplayQueue remain. Candidate #2179 head 268bebaf282188a67dde9ed63246ca024067b6f2 adds the cancellable idle SleepRuntime postcommit WorldJEPA path, older-observed-backlog scheduling, separate learning/planner cursors and requeue on cancellation. Exact staged 249/10/47 and integrated 415/3/58 pass; combined JEPA 49 pass. Safe-additive fails on existing builder/deployer edits; candidate not merged/released. No Redmi lifecycle proof.",
+      "next_step": "After Boss review/integration of #2179 and #2182, verify quiet-hours/resource-pressure/cancel/restart/idempotency on the exact release candidate, then add a matched persistent-vs-reset optimizer and replay ablation. Preserve Sleep B no-fact-write and Sleep C homeostasis gates.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 07:49 CET"
     },
@@ -261,9 +277,9 @@
   ],
   "current_redmi_status": "REDMI_UNVERIFIED — private owner-read #373 and previous #368 expired with no reply.",
   "last_code_release_head": "c76a018b37be18f9a4706a32fa7a817f7b4828b9",
-  "latest_integrated_head": "6967e9d8e03384e9849d8ca5e3a24779402f9cf5",
-  "latest_integrated_head_verified_at": "2026-11-21T07:01:04.818Z",
-  "release_gate_status": "NOT_RELEASED: documentation-only PR #2173 merged at 6967e9d8e03384e9849d8ca5e3a24779402f9cf5; exact current-head checks 28 queued/in progress at readback. Last code head c76a018b37be18f9a4706a32fa7a817f7b4828b9 had 27/28 checks green and one Python 3.13 WorldJEPA backlog test failure; integrated-regression completed. Phone unverified.",
+  "latest_integrated_head": "569680bc10eabeb94ea5a1695d4bf77b8584e0a0",
+  "latest_integrated_head_verified_at": "2026-11-21T08:29:50Z",
+  "release_gate_status": "NOT_RELEASED: release-development HEAD 569680bc10eabeb94ea5a1695d4bf77b8584e0a0 has its base CI green; JEPA candidate #2179 is not merged and safe-additive review remains required. Candidate staged 249/10/47, integrated 415/3/58 and combined JEPA 49 pass. Follow-up #2182 is draft with exact-head CI pending. Redmi receipt expired; installed SHA UNKNOWN.",
   "phone_receipt": {
     "issue": "RedMentos/Aiiii#373",
     "state": "OPEN_EXPIRED_NO_REPLY",
@@ -321,20 +337,20 @@
     {
       "capability": "World/Self/Memory/JEPA numeric learner",
       "code": "PRESENT_EXPERIMENTAL_MERGED",
-      "wired": "ISOLATED_STORE_API; NORMAL_RUNTIME_HOOK_NOT_INTEGRATED",
-      "tested_synthetic": "PASS_PARENT_STAGED_AND_INTEGRATED; CURRENT_BRANCH_PY313_BACKLOG_TEST_FAIL",
+      "wired": "CANDIDATE_SLEEP_POSTCOMMIT_STORE_CONSUMER_NOT_RELEASED",
+      "tested_synthetic": "PASS_CANDIDATE_STAGED_249_INTEGRATED_415_COMBINED_JEPA_49; SAFE_ADDITIVE_REVIEW_REQUIRED; #2182_CI_PENDING",
       "tested_android": "NOT_TESTED",
       "active": "SHADOW_OPTIMIZER_OFF",
-      "evidence": "#2160/#2164 merged source-bound T8 -> persistent numeric WorldJEPA/EMA -> B1/B2/SELF SHADOW receiver. #2168 Runtime/Sleep hook candidate fails pinned-source staged/integrated/Python3.14 checks. Current branch's Python3.13 oldest-first backlog test returns UTILITY_GATE_REJECTED; optimizer gates remain OFF; no native body weights."
+      "evidence": "Merged #2160/#2164 provide source-bound T8 numeric WorldJEPA/EMA and B1/B2/SELF SHADOW receiver. Candidate #2179 adds cancellable normal SleepRuntime postcommit invocation and staged optimizer-state resume; staged 249/10/47, integrated 415/3/58, combined JEPA 49 pass. Safe-additive rejects existing builder/deployer edits, so Boss review remains. #2182 adds truthful optimizer-state telemetry and restart/rollback Adam-step assertions; exact CI pending. No release, native body weights or Redmi proof."
     },
     {
       "capability": "Sleep/Dream/Replay consolidation",
       "code": "PRESENT_PARTIAL",
-      "wired": "EXISTING_SLEEP_ONLY_JEPA_IDLE_HOOK_NOT_INTEGRATED",
-      "tested_synthetic": "PASS_PARTIAL",
+      "wired": "CANDIDATE_IDLE_SLEEP_POSTCOMMIT_JEPA_NOT_RELEASED",
+      "tested_synthetic": "PASS_CANDIDATE_STAGED_249_INTEGRATED_415_COMBINED_JEPA_49",
       "tested_android": "NOT_TESTED",
       "active": "PARTIAL_EXISTING_SLEEP_ONLY",
-      "evidence": "Sleep A/B/C and ReplayQueue exist; #2168 idle JEPA scheduling candidate fails source-pinned staged/runtime checks and is not integrated. No Redmi lifecycle proof."
+      "evidence": "Candidate #2179 adds older-observed T8 backlog scheduling, separate planner/learning cursors, cooperative cancellation before checkpoint/Store commit and idle-job requeue. Exact staged/integrated/combined JEPA CI passes; safe-additive review remains. No Redmi lifecycle proof."
     },
     {
       "capability": "Context OS and Memorilla companion",
@@ -374,12 +390,12 @@
     },
     {
       "capability": "SELF_OPTIMIZATION and cross-organ weight editing",
-      "code": "NUMERIC_WORLDJEPA_EXPERIMENT_MERGED",
-      "wired": "ISOLATED_STORE_LEARNER; NORMAL_RUNTIME_HOOK_NOT_INTEGRATED",
-      "tested_synthetic": "PASS_EXPERIMENTAL_NUMERIC_LEARNER; CURRENT_BRANCH_PY313_TEST_FAIL",
+      "code": "NUMERIC_WORLDJEPA_OPTIMIZER_STATE_CANDIDATE",
+      "wired": "CANDIDATE_POSTCOMMIT_NUMERIC_SHADOW_NOT_RELEASED",
+      "tested_synthetic": "PASS_CANDIDATE_STAGED_249_INTEGRATED_415_COMBINED_JEPA_49; #2182_CI_PENDING",
       "tested_android": "NOT_TESTED",
       "active": "NO_PRODUCTION_WEIGHT_EDITS",
-      "evidence": "#2160/#2164 merge persistent numeric WorldJEPA and B1/B2/SELF SHADOW readouts. #2168 normal Runtime hook remains blocked by source pins. Current branch has a Python3.13 backlog/utility-gate test failure. No native GGUF weight update, cross-organ gradient or code self-edit."
+      "evidence": "Candidate #2179 stages persistent WorldJEPA optimizer state with the postcommit learner; #2182 adds checkpoint-receipt telemetry and restart/rollback step readback. No native B1/B2/C3 GGUF changes, cross-organ gradient receiver or code self-edit; safe-additive review remains and Redmi is unverified."
     },
     {
       "capability": "Multimodal learning",
@@ -406,7 +422,7 @@
       "tested_synthetic": "PASS_PARTIAL",
       "tested_android": "UNKNOWN_NO_RECEIPT",
       "active": "UNKNOWN",
-      "evidence": "GitHub branch c76a018b37be18f9a4706a32fa7a817f7b4828b9 has 26 checks with 24 success, one Python3.13 learning backlog failure and one integrated-regression in progress; NOT_RELEASED. Private owner-read #373 is OPEN_NO_REPLY; installed SHA UNKNOWN and auto-update consent UNVERIFIED."
+      "evidence": "Release-development HEAD 569680bc10eabeb94ea5a1695d4bf77b8584e0a0 is the current branch readback; base workflows were reported 15/15 green in QA #2180. This is not phone deployment. #2179 is not merged; private owner-read #373 expired with zero comments, installed SHA UNKNOWN, auto-update consent UNVERIFIED and REDMI_UNVERIFIED."
     },
     {
       "capability": "Two genuinely different sparse MoE bodies",
