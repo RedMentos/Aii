@@ -43,6 +43,12 @@ def amplitude_burst(sample_rate=16000):
     return struct.pack("<" + "h" * len(samples), *samples)
 
 
+def silence_padded_tone(sample_rate=16000):
+    body = tone(frequency=140, sample_rate=sample_rate, seconds=0.5)
+    silence = b"\\x00\\x00" * int(sample_rate * 0.25)
+    return silence + body + silence
+
+
 def white_noise(sample_rate=16000, seconds=1.0, amplitude=4000):
     rng = random.Random(17)
     count = int(sample_rate * seconds)
@@ -107,8 +113,16 @@ def test_prosody_change_tracks_pitch_and_energy_dynamics_not_noise():
     assert flat["prosody_change_score"] < 0.05
     assert sweep["prosody_change_score"] > 0.6
     assert burst["prosody_change_score"] > 0.6
+    assert burst["voiced_energy_range_db"] > 10.0
     assert noise["activity_hint"] == "UNVOICED_NOISE"
+    assert noise["voiced_energy_range_db"] is None
     assert noise["prosody_change_score"] == 0.0
+
+    padded = extract_voice_cues(silence_padded_tone(), 16000)
+    assert padded["activity_hint"] == "VOICED"
+    assert padded["energy_range_db"] > 60.0
+    assert padded["voiced_energy_range_db"] < 2.0
+    assert padded["prosody_change_score"] < 0.2
 
 
 def test_prosody_change_is_rejected_without_voiced_activity():
@@ -116,6 +130,12 @@ def test_prosody_change_is_rejected_without_voiced_activity():
     cues["prosody_change_score"] = 0.2
     with pytest.raises(ValueError, match="prosody change requires voiced activity"):
         validate_voice_cues(cues)
+
+    voiced = extract_voice_cues(tone(), 16000)
+    for invalid in (-1.0, float("nan"), 121.0):
+        malformed = dict(voiced, voiced_energy_range_db=invalid)
+        with pytest.raises(ValueError, match="voice cue range is invalid"):
+            validate_voice_cues(malformed)
 
 
 def test_extractor_rejects_audio_windows_over_one_second():
@@ -143,13 +163,15 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path)
         assert result["c3_admission"].status == "ADMITTED"
         summary = result["c3_admission"].selected[0].summary
         assert "activity=VOICED" in summary and "f0_med_hz=" in summary
+        assert "voiced_energy_range_db=" in summary
         assert "prosody_change=" in summary
         assert segment["asr_transcript"] is None
         assert segment["learning_authority"] is False
         assert segment["action_authority"] is False
         assert "speaker_identity" in segment["unmeasured"]
         assert "speaker_id" not in cues and "speaker_identity" not in cues
-        assert cues["method"] == "RAW_EAR_AUTOCORR_V2"
+        assert cues["method"] == "RAW_EAR_AUTOCORR_V3"
+        assert cues["voiced_energy_range_db"] is not None
         assert packet_count(runtime.store, event["event_id"]) == 1
         assert attention_count(runtime.store, event["event_id"]) == 1
         digest = result["packet"]["source_ref"]["sha256"]
