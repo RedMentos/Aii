@@ -23,12 +23,13 @@ def _make_store(home):
     return store, session
 
 
-def _add_transitions(store, session, start, count, status_overrides=None):
+def _add_transitions(store, session, start, count, status_overrides=None, source_text_factory=None):
     status_overrides = status_overrides or {}
     action_ids = []
     actions = tuple(world_model.ACTIONS)
     for index in range(start, start + count):
-        text = f"synthetic-user-content-{index:04d}" + ("x" * (index % 29))
+        text = (source_text_factory(index) if source_text_factory is not None
+                else f"synthetic-user-content-{index:04d}" + ("x" * (index % 29)))
         event = store.event(session, text)
         event_id = event["event_id"]
         generation = event["brain_generation_id"]
@@ -80,6 +81,15 @@ def _add_transitions(store, session, start, count, status_overrides=None):
         )
         action_ids.append(action_id)
     return action_ids
+
+
+def _source_text_for_partition(target, prefix):
+    for index in range(10000):
+        text = f"{prefix}-{index}"
+        digest = hashlib.sha256(text.encode("utf-8")).digest()
+        if int.from_bytes(digest[:8], "big") % 2 == target:
+            return text
+    raise AssertionError("could not construct source digest partition")
 
 
 def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_path):
@@ -292,6 +302,87 @@ def test_oldest_first_pages_do_not_starve_older_t8_backlog(tmp_path):
         payload, _ = store.state("v14.world_jepa.store_consumer", None)
         processed = set(payload["active"]["processed_ids"])
         assert set(ids[:128]).issubset(processed) and not (set(ids[128:192]) & processed)
+    finally:
+        store.close()
+
+
+
+
+def test_insufficient_source_cohort_persists_pending_page_and_resumes(tmp_path):
+    store, session = _make_store(tmp_path / "brain-pending-source")
+    try:
+        first_ids = _add_transitions(
+            store, session, 0, 64,
+            source_text_factory=lambda _index: "identical-source-content",
+        )
+        consumer = WorldJEPAStoreConsumer(
+            store, tmp_path / "private-pending-source", learning_enabled=True, seed=13, ensemble=2
+        )
+        first = consumer.update(limit=64, steps=8, optimizer_permission=True)
+        assert first["status"] == "INSUFFICIENT_SOURCE_DISJOINT_T8_COHORT"
+        payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert payload["scan_cursor"] == 64
+        assert len(payload["pending_rows"]) == 64
+        assert {row["action_id"] for row in payload["pending_rows"]} == set(first_ids)
+
+        second_ids = _add_transitions(store, session, 64, 64)
+        resumed = WorldJEPAStoreConsumer(
+            store, tmp_path / "private-pending-source", learning_enabled=True, seed=13, ensemble=2
+        )
+        second = resumed.update(limit=64, steps=24, optimizer_permission=True)
+        assert second["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        processed = set(payload["active"]["processed_ids"])
+        assert set(first_ids + second_ids).issubset(processed)
+        assert payload["pending_rows"] == []
+        assert payload["scan_cursor"] == 128
+        assert payload["active"]["metrics"]["train_holdout_source_sha256_disjoint"] is True
+    finally:
+        store.close()
+
+
+def test_insufficient_new_train_rows_persists_until_second_new_train_row(tmp_path):
+    store, session = _make_store(tmp_path / "brain-pending-new-train")
+    try:
+        _add_transitions(store, session, 0, 64)
+        consumer = WorldJEPAStoreConsumer(
+            store, tmp_path / "private-pending-new-train", learning_enabled=True, seed=13, ensemble=2
+        )
+        initial = consumer.update(limit=64, steps=24, optimizer_permission=True)
+        assert initial["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        train_text = _source_text_for_partition(0, "pending-train-source")
+        holdout_texts = [
+            _source_text_for_partition(1, f"pending-holdout-{index}")
+            for index in range(16)
+        ]
+        def first_batch_text(index):
+            return train_text if index == 64 else holdout_texts[index - 65]
+        _add_transitions(store, session, 64, 17, source_text_factory=first_batch_text)
+
+        insufficient = consumer.update(
+            limit=64, steps=8, optimizer_permission=True, replay_mode="none"
+        )
+        assert insufficient["status"] == "INSUFFICIENT_NEW_TRAIN_ROWS"
+        assert insufficient["new_train_rows"] == 1
+        payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert payload["scan_cursor"] == 81
+        assert len(payload["pending_rows"]) == 17
+
+        _add_transitions(
+            store, session, 81, 1, source_text_factory=lambda _index: train_text
+        )
+        resumed = consumer.update(
+            limit=64, steps=8, optimizer_permission=True, replay_mode="none"
+        )
+        assert resumed["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert resumed["metrics"]["new_train_rows"] == 2
+        assert resumed["metrics"]["fit_rows"] == 2
+        assert resumed["metrics"]["replay_rows"] == 0
+        payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert payload["pending_rows"] == []
+        assert payload["scan_cursor"] == 82
+        assert len(payload["active"]["processed_ids"]) == 82
     finally:
         store.close()
 
