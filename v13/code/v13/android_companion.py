@@ -39,9 +39,9 @@ ACTION_OUTCOME_SCHEMA = "v13.android-companion-action-outcome/1"
 MAX_RESPONSE_BYTES = 64 * 1024
 MAX_GRANT_TTL_S = 300.0
 ACTION_TTL_S = 30.0
-HEX32 = re.compile(r"[0-9a-f]{32}\\Z")
-HEX64 = re.compile(r"[0-9a-f]{64}\\Z")
-PACKAGE = re.compile(r"[A-Za-z0-9_]+(?:\\.[A-Za-z0-9_]+)+\\Z")
+HEX32 = re.compile(r"[0-9a-f]{32}")
+HEX64 = re.compile(r"[0-9a-f]{64}")
+PACKAGE = re.compile(r"[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+")
 SAFE_DETAIL_KEYS = frozenset({"package", "screen_id", "elapsed_ms", "api", "state", "display_size"})
 
 
@@ -216,8 +216,8 @@ class CapabilityRegistry:
         if (type(obj) is not dict
                 or obj.get("schema") != CAPABILITY_SCHEMA
                 or obj.get("companion_id") != config.companion_id
-                or type(obj.get("issued_at")) not in (int, float)
-                or type(obj.get("expires_at")) not in (int, float)
+                or type(obj.get("issued_at")) not in (int, float) or type(obj.get("issued_at")) is bool
+                or type(obj.get("expires_at")) not in (int, float) or type(obj.get("expires_at")) is bool
                 or obj["issued_at"] > now + 15
                 or obj["expires_at"] < now
                 or obj["expires_at"] - obj["issued_at"] > MAX_GRANT_TTL_S
@@ -236,7 +236,7 @@ class CapabilityRegistry:
                     or type(grant["enabled"]) is not bool
                     or type(grant["user_granted"]) is not bool
                     or type(grant["os_permission_granted"]) is not bool
-                    or type(grant["expires_at"]) not in (int, float)
+                    or type(grant["expires_at"]) not in (int, float) or type(grant["expires_at"]) is bool
                     or grant["expires_at"] > obj["expires_at"]
                     or type(grant["package_allowlist"]) is not list
                     or len(grant["package_allowlist"]) > 128
@@ -339,11 +339,11 @@ class AndroidCompanionTransport:
         finally:
             db.close()
 
-    def _unavailable(self, capability, digest, status="UNAVAILABLE", error="COMPANION_OFF"):
+    def _unavailable(self, capability, digest, status="UNAVAILABLE", error="COMPANION_OFF", companion_id=""):
         return CompanionActionOutcome(
             action_id=self.id_factory(), capability=capability, status=status,
             observed=False, evidence_level="NONE", timestamp=time.time(),
-            companion_id="", request_digest=digest, source_ref={},
+            companion_id=companion_id, request_digest=digest, source_ref={},
             user_confirmed=False, os_permission_granted=False,
             error_code=error, details={},
         )
@@ -358,10 +358,15 @@ class AndroidCompanionTransport:
             config = _load_config(self.home)
         except CompanionUnavailable:
             return self._unavailable(capability, digest)
-        grants = self.registry.read(config)
+        try:
+            grants = self.registry.read(config)
+        except CompanionUnavailable:
+            return self._unavailable(capability, digest, error="COMPANION_UNAVAILABLE", companion_id=config.companion_id)
+        except CompanionProtocolError:
+            return self._unavailable(capability, digest, status="FAILED", error="INVALID_COMPANION_CAPABILITY_REPLY", companion_id=config.companion_id)
         if not self.registry.allows(capability, args, grants):
             return self._unavailable(
-                capability, digest, status="DENIED", error="CAPABILITY_NOT_GRANTED"
+                capability, digest, status="DENIED", error="CAPABILITY_NOT_GRANTED", companion_id=config.companion_id
             )
         request_id, nonce = self.id_factory(), self.nonce_factory()
         if not HEX32.fullmatch(request_id) or not HEX32.fullmatch(nonce):
@@ -381,7 +386,10 @@ class AndroidCompanionTransport:
             "user_confirmation_required": True,
             "os_permission_recheck_required": True,
         }
-        response = self._request(config, "POST", "/v1/actions", payload)
+        try:
+            response = self._request(config, "POST", "/v1/actions", payload)
+        except CompanionUnavailable:
+            return self._unavailable(capability, digest, error="COMPANION_UNAVAILABLE", companion_id=config.companion_id)
         required = {
             "schema", "companion_id", "request_id", "nonce", "capability",
             "args_sha256", "status", "observed", "evidence_level",
@@ -404,14 +412,21 @@ class AndroidCompanionTransport:
                 or type(response["user_confirmed"]) is not bool
                 or type(response["os_permission_granted"]) is not bool
                 or response["evidence_level"] not in {"ANDROID_OS_CONFIRMED", "ACTION_ACK_ONLY", "NONE"}
-                or type(response["timestamp"]) not in (int, float)
+                or type(response["timestamp"]) not in (int, float) or type(response["timestamp"]) is bool
+                or not math.isfinite(float(response["timestamp"]))
                 or abs(float(response["timestamp"]) - time.time()) > 120
                 or type(response["error_code"]) is not str
                 or len(response["error_code"]) > 64
                 or not response["error_code"].isascii()
                 or type(response["details"]) is not dict
-                or set(response["details"]) - SAFE_DETAIL_KEYS):
+                or set(response["details"]) - SAFE_DETAIL_KEYS
+                or any(type(v) not in (str, int, float, bool)
+                       or (type(v) is str and len(v) > 128)
+                       or (type(v) is float and not math.isfinite(v))
+                       for v in response["details"].values())):
             raise CompanionProtocolError("INVALID_ACTION_OUTCOME_FIELDS")
+        if status == "SUCCEEDED" and (response["user_confirmed"] is not True or response["os_permission_granted"] is not True):
+            raise CompanionProtocolError("SUCCESS_WITHOUT_USER_OR_OS_PERMISSION")
         source_ref = response["source_ref"]
         if response["observed"]:
             if (status != "SUCCEEDED"
