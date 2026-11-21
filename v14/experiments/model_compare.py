@@ -154,10 +154,32 @@ def read_candidate_manifest(path: Path) -> dict:
         snapshot_sha = row.get("license_snapshot_sha256")
         if not isinstance(snapshot_sha, str) or len(snapshot_sha) != 64 or any(c not in "0123456789abcdef" for c in snapshot_sha):
             raise ValueError("candidate license snapshot SHA256 invalid")
-        if not row.get("license_snapshot_path") or not str(row.get("license_snapshot_source", "")).startswith("https://"):
+        snapshot_path = row.get("license_snapshot_path")
+        if (not isinstance(snapshot_path, str) or not snapshot_path
+                or "\\" in snapshot_path or Path(snapshot_path).is_absolute()
+                or ".." in Path(snapshot_path).parts):
+            raise ValueError("candidate license snapshot path must be relative and traversal-free")
+        if not str(row.get("license_snapshot_source", "")).startswith("https://"):
             raise ValueError("candidate license snapshot provenance incomplete")
         by_id[row["id"]] = row
     return by_id
+
+
+def verify_license_snapshot(manifest_path: Path, row: dict) -> dict:
+    """Verify the repository-pinned license text before a model is benchmarked."""
+    relative = Path(row["license_snapshot_path"])
+    if relative.is_absolute() or ".." in relative.parts or "\\" in row["license_snapshot_path"]:
+        raise ValueError("candidate license snapshot path must be relative and traversal-free")
+    manifest = Path(manifest_path).expanduser().resolve(strict=True)
+    repo_manifest = MANIFEST_PATH.resolve()
+    root = Path(__file__).resolve().parents[2] if manifest == repo_manifest else manifest.parent
+    snapshot = root / relative
+    if has_symlink_component(snapshot) or not snapshot.is_file():
+        raise ValueError("candidate license snapshot missing or symlink")
+    digest = sha256_file(snapshot)
+    if digest != row["license_snapshot_sha256"]:
+        raise ValueError("candidate license snapshot SHA256 mismatch")
+    return {"sha256": digest, "size_bytes": snapshot.stat().st_size}
 
 
 def acquire_home_lock(home: Path):
@@ -317,6 +339,7 @@ def compare(home: Path, candidate_id: str, candidate_path: Path | None = None,
     candidate = candidates[candidate_id]
     if candidate["role"] != ROLE:
         raise ValueError("this first comparison slice supports C3_LANGUAGE only")
+    license_snapshot = verify_license_snapshot(manifest_path, candidate)
 
     if model_manager_cls is None or defaults is None or config_validator is None or catalog_fn is None or runner_cls is None:
         import sys
@@ -365,7 +388,8 @@ def compare(home: Path, candidate_id: str, candidate_path: Path | None = None,
                 "role": ROLE, "candidate_id": candidate_id,
                 "candidate": {"model_id": candidate["model_id"], "revision": candidate["revision"],
                               "license_id": candidate["license_id"], "license_url": candidate["license_url"],
-                              "license_snapshot_sha256": candidate["license_snapshot_sha256"],
+                              "license_snapshot_sha256": license_snapshot["sha256"],
+                              "license_snapshot_verified": True,
                               "expected_size_bytes": candidate["file"]["size"], "expected_sha256": candidate["file"]["sha256"]},
                 "download_performed": False, "manifest_mutated": False, "production_swap": False,
                 "next_step": "Place the exact pinned GGUF in the isolated lab slot only after separate explicit download consent; then rerun this read-only comparison.",
@@ -427,7 +451,8 @@ def compare(home: Path, candidate_id: str, candidate_path: Path | None = None,
                              "quant_format": baseline_spec.get("quant_format"), **baseline_info},
                 "candidate": {"model_id": candidate["model_id"], "revision": candidate["revision"],
                               "license_id": candidate["license_id"], "license_url": candidate["license_url"],
-                              "license_snapshot_sha256": candidate["license_snapshot_sha256"],
+                              "license_snapshot_sha256": license_snapshot["sha256"],
+                              "license_snapshot_verified": True,
                               "license_snapshot_path": candidate["license_snapshot_path"],
                               "license_evidence": candidate.get("license_evidence"),
                               "quant_format": candidate.get("quant_format"), **candidate_info},
