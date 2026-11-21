@@ -1185,6 +1185,27 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         }
         for item in per_session_reports
     ], sort_keys=True))
+    # The full-encoder arm must still demonstrate a real EMA update in each seed.
+    # A2 may be rejected when any individual old-session holdout regresses; that
+    # rejection is expected and must leave its checkpoint unchanged.
+    for seed in DATA_SEEDS:
+        full_reports = [
+            item for item in per_session_reports
+            if item["data_seed"] == seed and item["encoder_mode"] == "full"
+        ]
+        assert len(full_reports) == 1
+        accepted_full_phases = [
+            phase for phase in (full_reports[0]["B"], full_reports[0]["A2"])
+            if phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        ]
+        assert accepted_full_phases, f"full encoder/EMA path produced no accepted update for seed {seed}"
+        for phase in accepted_full_phases:
+            assert phase["old_holdout_cohort_gate"]["accepted"] is True
+            assert phase["predictor_parameter_delta_norm"] > 0.0
+            assert phase["encoder_parameter_delta_norm"] > 0.0
+            assert phase["ema_target_delta_norm"] > 0.0
+            assert phase["checkpoint_sha_before"] != phase["checkpoint_sha_after"]
+
     per_session_gem_acceptance = any(
         phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         for item in per_session_reports for phase in (item["B"], item["A2"])
@@ -1269,7 +1290,9 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         assert a2["old_holdout_cohort_gate"]["accepted"] is True
         assert a2["negative_controls_separated"] is True
         assert a2["predictor_parameter_delta_norm"] > 0.0
-        assert a2["ema_target_delta_norm"] > 0.0
+        # Predictor-only adaptation changes the trainable predictor, not the encoder/EMA target.
+        # Full-encoder EMA plasticity is asserted independently below for each data seed.
+        assert a2["ema_target_delta_norm"] == 0.0
         assert a2["optimizer_moments_persisted"] is True
         assert a2["checkpoint_sha_before"] != a2["checkpoint_sha_after"]
         assert a2["update_scale"] is not None
