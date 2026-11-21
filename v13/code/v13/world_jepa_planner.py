@@ -21,6 +21,7 @@ TERMINAL = {
     "FINAL", "FAILED", "CANCELLED", "ERROR", "DEADLINE", "INTERRUPTED",
     "ABORTED", "OUTCOME_UNKNOWN", "REJECTED",
 }
+OBSERVED_ACTION_STATUSES = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"}
 
 
 def _reject_constant(value):
@@ -84,7 +85,7 @@ def _committed_context(store, event_id):
         "WHERE event_id=? AND outcome IS NOT NULL ORDER BY created DESC LIMIT 1",
         (event_id,),
     )
-    if not action or action["status"] not in TERMINAL:
+    if not action or action["status"] not in OBSERVED_ACTION_STATUSES:
         raise ValueError("no committed terminal ActionOutcome")
     actual = _object(action["outcome"])
     expected = _object(action["expected"])

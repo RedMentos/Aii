@@ -1,3 +1,25 @@
+# JEPA & Memory checkpoint — 2026-11-21 08:4x CET
+
+## Current repository and candidate
+- Verified release-development HEAD before this candidate: `569680bc10eabeb94ea5a1695d4bf77b8584e0a0` (GitHub branch readback only; not a phone installation).
+- New JEPA candidate is being rebuilt directly on that HEAD. It ports the SleepRuntime idle postcommit path from the stale #2168 candidate and adds three concrete protections: older observed T8 rows remain schedulable when the newest action is censored; learning and planner cursors are separate so a planner-only readout cannot consume a later learning opt-in for the same event; and user/resource preemption cooperatively cancels the numeric JEPA fit before checkpoint/Store commit.
+- Intended effect: after a committed, source-verified ActionOutcome/T8, the existing idle worker can run one bounded Store-backed WorldJEPA/EMA page and persist B1/B2/SELF numeric SHADOW readouts, without entering foreground turn latency. The worker can stop when a user turn arrives or resources move into PRESSURE/CRITICAL.
+- The candidate does not update native GGUF body weights, does not activate B1/B2 receiver authority, and does not claim trained B3 latent exchange. All readouts remain SHADOW / decision_authority=NONE. Both local learning permissions remain false by default.
+
+## Tests and device
+- Exact local Aii checkout/tests: BLOCKED because this worker cannot resolve `github.com`; no LOCAL_LINUX PASS is claimed.
+- New exact-head GitHub CI: pending until push/readback; report each workflow separately after completion.
+- Redmi: REDMI_UNVERIFIED. No live authenticated receipt, installed SHA, updater consent or device execution is available in this checkpoint. No UPDATE_REQUEST, shell action, installer, model download/swap, permission change or phone data mutation was performed.
+- Existing device issue #1904 remains the measured real-chat blocker; this JEPA change does not resolve C3 prefill latency or B1/B2 native offer delivery.
+
+## Next useful work
+1. Verify exact PR-head focused, staged-runtime and integrated-regression workflows, including cancellation/no-commit, censored-backlog and permission-resume negatives.
+2. Persist Adam optimizer moments atomically alongside the WorldJEPA checkpoint and T8 cursor; compare persistent vs reset optimizer with matched updates/replay bytes, source-disjoint holdouts, old-cohort retention, restart and rollback.
+3. Keep native B1/B2 learning, B3 latent receiver, real user T8 utility and Redmi proof open until their own evidence exists.
+
+**User action: none required.** Do not run a new Termux command or request a model swap from this repository-side candidate.
+---
+
 # Boss integration checkpoint — 2026-11-21 07:59 CET
 
 ## Current integrated branch and release gate

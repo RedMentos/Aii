@@ -185,20 +185,80 @@ def _payload(row: sqlite3.Row) -> dict:
     return value if isinstance(value, dict) else {}
 
 
-def audit_event(home: str | Path, event_id: str, *, session_id: str | None = None) -> dict:
-    """Audit one persisted event through read-only SQLite and source blobs."""
-    root = Path(home).expanduser().resolve()
+def _readonly_store_connection(home: str | Path) -> tuple[Path, sqlite3.Connection]:
+    """Open the Store read-only after constraining every path component.
+
+    The app-private root/data/db directories must belong to this UID. Higher
+    ancestors may belong to root (or Android system UID 1000 under /data), but
+    must not be group/world writable. A root-owned sticky shared directory such
+    as /tmp is allowed. The DB itself must be a single-link regular file owned
+    by this UID, and its identity is checked again after SQLite opens it.
+    This blocks cross-UID path replacement; a malicious same-UID process remains
+    outside this helper's security boundary.
+    """
+    root = Path(home).expanduser().absolute()
+    uid = os.getuid()
+    android_data = Path("/data") == root or Path("/data") in root.parents
+    trusted_ancestor_owners = {0, uid}
+    if android_data:
+        trusted_ancestor_owners.add(1000)
+
+    for ancestor in root.parents:
+        info = ancestor.lstat()
+        if not stat.S_ISDIR(info.st_mode) or info.st_uid not in trusted_ancestor_owners:
+            raise PermissionError("unsafe V13 Store ancestor")
+        if info.st_mode & 0o022 and not (
+            info.st_uid == 0 and bool(info.st_mode & stat.S_ISVTX)
+        ):
+            raise PermissionError("writable V13 Store ancestor")
+
+    for directory in (root, root / "data", root / "data" / "db"):
+        info = directory.lstat()
+        if (
+            not stat.S_ISDIR(info.st_mode)
+            or info.st_uid != uid
+            or info.st_mode & 0o022
+        ):
+            raise PermissionError("unsafe V13 Store directory")
+
     db_path = root / "data" / "db" / "brain.sqlite3"
-    if not db_path.is_file():
-        raise FileNotFoundError("V13 Store database not found")
-    if not isinstance(event_id, str) or not event_id:
-        raise ValueError("event_id is required")
-    if session_id is not None and (not isinstance(session_id, str) or not session_id):
-        raise ValueError("session_id must be a nonempty string")
+    before = db_path.lstat()
+    if (
+        not stat.S_ISREG(before.st_mode)
+        or before.st_uid != uid
+        or before.st_nlink != 1
+        or before.st_mode & 0o022
+    ):
+        raise PermissionError("unsafe V13 Store database")
 
     conn = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA query_only=ON")
+    try:
+        after = db_path.lstat()
+        if (
+            not stat.S_ISREG(after.st_mode)
+            or after.st_uid != uid
+            or after.st_nlink != 1
+            or (after.st_dev, after.st_ino) != (before.st_dev, before.st_ino)
+        ):
+            raise PermissionError("V13 Store database changed during open")
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA query_only=ON")
+        return root, conn
+    except BaseException:
+        conn.close()
+        raise
+
+
+def audit_event(home: str | Path, event_id: str, *, session_id: str | None = None) -> dict:
+    """Audit one event; an optional session_id constrains the local selector."""
+    if not isinstance(event_id, str) or not event_id:
+        raise ValueError("event_id is required")
+    if session_id is not None and (
+        not isinstance(session_id, str) or not session_id.strip()
+    ):
+        raise ValueError("session_id must be a nonempty string when supplied")
+
+    root, conn = _readonly_store_connection(home)
     try:
         event_row = conn.execute(
             "SELECT packet,created,session_id FROM events WHERE id=?", (event_id,)
@@ -505,15 +565,10 @@ def audit_event(home: str | Path, event_id: str, *, session_id: str | None = Non
 
 
 def audit_latest(home: str | Path, *, session_id: str | None = None) -> dict:
-    root = Path(home).expanduser().resolve()
-    if not isinstance(session_id, str) or not session_id:
+    if not isinstance(session_id, str) or not session_id.strip():
         raise ValueError("session_id is required for latest-event audit")
-    db_path = root / "data" / "db" / "brain.sqlite3"
-    if not db_path.is_file():
-        raise FileNotFoundError("V13 Store database not found")
-    conn = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
+    root, conn = _readonly_store_connection(home)
     try:
-        conn.execute("PRAGMA query_only=ON")
         row = conn.execute(
             "SELECT id FROM events WHERE session_id=? ORDER BY created DESC LIMIT 1",
             (session_id,),
@@ -529,11 +584,13 @@ def audit_latest(home: str | Path, *, session_id: str | None = None) -> dict:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Read-only V13 per-turn organ-flow audit")
     parser.add_argument("--home", default="~/v13", help="V13 runtime home")
-    parser.add_argument("--event-id", help="audit one event; default is latest")
-    parser.add_argument("--session-id", help="required for latest-event selection; restrict to one chat session")
+    parser.add_argument("--event-id", help="explicit local event selector; not session-scoped unless --session-id is also supplied")
+    parser.add_argument("--session-id", help="required for latest-event selection; when paired with --event-id, restricts it to that session")
     parser.add_argument("--compact", action="store_true", help="emit compact JSON")
     args = parser.parse_args(argv)
     try:
+        if args.session_id is not None and not args.session_id.strip():
+            raise ValueError("session_id must be nonempty when supplied")
         if not args.event_id and not args.session_id:
             raise ValueError("session_id is required when selecting the latest event")
         report = (
@@ -541,7 +598,7 @@ def main(argv: list[str] | None = None) -> int:
             if args.event_id
             else audit_latest(args.home, session_id=args.session_id)
         )
-    except (FileNotFoundError, KeyError, ValueError, sqlite3.Error) as exc:
+    except (FileNotFoundError, KeyError, ValueError, PermissionError, sqlite3.Error) as exc:
         print(json.dumps({"status": "ERROR", "error": type(exc).__name__}), file=sys.stderr)
         return 2
     print(json.dumps(report, ensure_ascii=False, sort_keys=True, separators=(",", ":") if args.compact else None, indent=None if args.compact else 2))
