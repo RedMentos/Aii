@@ -813,51 +813,120 @@ class WorldJEPAStoreConsumer:
                 "fit_array_bytes": int(sum(int(array.nbytes) for array in fit_arrays)),
                 "replay_array_bytes": replay_array_bytes,
             })
-            try:
-                model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4),
-                                  cancel_check=cancel_check, allow_optimizer_bootstrap=True,
-                                  train_encoder=(encoder_mode == "full"),
-                                  drift_control=drift_config, replay_start=replay_start)
-            except InterruptedError:
-                return {"status":"CANCELLED","pending_rows":len(pending_by_id),
-                        "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
-                        "native_body_weights_changed":False}
-            if cancel_check is not None and cancel_check():
-                return {"status":"CANCELLED","pending_rows":len(pending_by_id),
-                        "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
-                        "native_body_weights_changed":False}
-            drift_metrics = world_jepa_drift.summary(
-                model._training_state.get("drift"), enabled=drift_config["enabled"]
-            )
-            gradient_projection = dict(getattr(model, "_last_gradient_projection", {}))
-            gradient_projection["requested"] = replay_projection
-            after = _parameter_snapshot(model)
-            holdout_after = model.prediction_loss(*holdout)
-            shuffled_action_loss = model.prediction_loss(holdout[0], np.roll(holdout[1], 1, axis=0), holdout[2])
-            zero_action_loss = model.prediction_loss(holdout[0], np.zeros_like(holdout[1]), holdout[2])
-            if old_holdout_before is not None:
-                old_holdout_after = model.prediction_loss(*old_holdout)
-            fit_steps_after = int(getattr(model, "_fit_steps", 0))
+            # A bounded line search over the optimizer step multiplier.
+            # Each retry reloads the same committed checkpoint: rejected candidates
+            # cannot leak parameters, EMA, Adam moments, RNG or drift state.
+            update_scales = ([1.0] if active is None else
+                             [1.0, 0.5, 0.25, 0.125, 0.0625])
+            attempts = []
+            selected_scale = None
+            candidate = model
+            for attempt_index, update_scale in enumerate(update_scales):
+                if attempt_index:
+                    candidate = self._load_model(active)
+                try:
+                    candidate.partial_fit(
+                        *fit_arrays, steps=steps, log_every=max(1, steps // 4),
+                        cancel_check=cancel_check, allow_optimizer_bootstrap=True,
+                        train_encoder=(encoder_mode == "full"),
+                        drift_control=drift_config, replay_start=replay_start,
+                        update_scale=update_scale,
+                    )
+                except InterruptedError:
+                    return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                            "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                            "native_body_weights_changed":False}
+                if cancel_check is not None and cancel_check():
+                    return {"status":"CANCELLED","pending_rows":len(pending_by_id),
+                            "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
+                            "native_body_weights_changed":False}
+
+                candidate_drift_metrics = world_jepa_drift.summary(
+                    candidate._training_state.get("drift"), enabled=drift_config["enabled"]
+                )
+                candidate_gradient_projection = dict(
+                    getattr(candidate, "_last_gradient_projection", {})
+                )
+                candidate_gradient_projection["requested"] = replay_projection
+                candidate_after = _parameter_snapshot(candidate)
+                candidate_holdout_after = candidate.prediction_loss(*holdout)
+                candidate_shuffled_loss = candidate.prediction_loss(
+                    holdout[0], np.roll(holdout[1], 1, axis=0), holdout[2]
+                )
+                candidate_zero_loss = candidate.prediction_loss(
+                    holdout[0], np.zeros_like(holdout[1]), holdout[2]
+                )
+                candidate_old_holdout_after = (
+                    candidate.prediction_loss(*old_holdout)
+                    if old_holdout_before is not None else None
+                )
+                candidate_fit_steps_after = int(getattr(candidate, "_fit_steps", 0))
+                candidate_encoder_delta = _group_delta(before, candidate_after, ("enc",))
+                candidate_predictor_delta = _group_delta(before, candidate_after, ("preds",))
+                candidate_parameter_delta = math.sqrt(
+                    candidate_encoder_delta ** 2 + candidate_predictor_delta ** 2
+                )
+                candidate_ema_delta = _group_delta(before, candidate_after, ("tgt",))
+                candidate_retention_delta = (
+                    None if old_holdout_before is None
+                    else float(candidate_old_holdout_after - old_holdout_before)
+                )
+                candidate_holdout_improved = bool(candidate_holdout_after < holdout_before)
+                candidate_negative_controls_separated = bool(
+                    candidate_holdout_after < candidate_shuffled_loss
+                    and candidate_holdout_after < candidate_zero_loss
+                )
+                candidate_old_holdout_retained = bool(
+                    old_holdout_before is None
+                    or (candidate_old_holdout_after is not None
+                        and candidate_old_holdout_after <= old_holdout_before)
+                )
+                candidate_accepted = (
+                    candidate_holdout_improved
+                    and candidate_negative_controls_separated
+                    and candidate_old_holdout_retained
+                )
+                attempts.append({
+                    "update_scale": float(update_scale),
+                    "holdout_loss_after": float(candidate_holdout_after),
+                    "old_holdout_loss_after": (
+                        None if candidate_old_holdout_after is None
+                        else float(candidate_old_holdout_after)
+                    ),
+                    "holdout_improved": candidate_holdout_improved,
+                    "negative_controls_separated": candidate_negative_controls_separated,
+                    "old_holdout_retained": candidate_old_holdout_retained,
+                    "accepted": bool(candidate_accepted),
+                })
+                if candidate_accepted:
+                    selected_scale = float(update_scale)
+                    break
+
+            model = candidate
+            after = candidate_after
+            holdout_after = candidate_holdout_after
+            shuffled_action_loss = candidate_shuffled_loss
+            zero_action_loss = candidate_zero_loss
+            old_holdout_after = candidate_old_holdout_after
+            fit_steps_after = candidate_fit_steps_after
+            drift_metrics = candidate_drift_metrics
+            gradient_projection = candidate_gradient_projection
+            encoder_delta = candidate_encoder_delta
+            predictor_delta = candidate_predictor_delta
+            parameter_delta = candidate_parameter_delta
+            ema_delta = candidate_ema_delta
+            retention_delta = candidate_retention_delta
+            holdout_improved = candidate_holdout_improved
+            negative_controls_separated = candidate_negative_controls_separated
+            old_holdout_retained = candidate_old_holdout_retained
+            utility_gate_accepted = selected_scale is not None
             replay_metrics["optimizer_steps_added"] = fit_steps_after - fit_steps_before
-            encoder_delta = _group_delta(before, after, ("enc",))
-            predictor_delta = _group_delta(before, after, ("preds",))
-            parameter_delta = math.sqrt(encoder_delta ** 2 + predictor_delta ** 2)
-            ema_delta = _group_delta(before, after, ("tgt",))
-            retention_delta = None if old_holdout_before is None else float(old_holdout_after - old_holdout_before)
-            holdout_improved = bool(holdout_after < holdout_before)
-            negative_controls_separated = bool(
-                holdout_after < shuffled_action_loss and holdout_after < zero_action_loss
-            )
-            # A new cohort must not be accepted by sacrificing the previous
-            # held-out cohort. This is a separate retention gate, not merely
-            # telemetry; when no prior checkpoint exists there is no old cohort.
-            old_holdout_retained = bool(
-                old_holdout_before is None
-                or (old_holdout_after is not None and old_holdout_after <= old_holdout_before)
-            )
-            utility_gate_accepted = (
-                holdout_improved and negative_controls_separated and old_holdout_retained
-            )
+            replay_metrics["backtracking_attempts"] = len(attempts)
+            replay_metrics["backtracking_scales"] = [
+                item["update_scale"] for item in attempts
+            ]
+            replay_metrics["selected_update_scale"] = selected_scale
+            replay_metrics["backtracking_trace"] = attempts
             if not utility_gate_accepted:
                 persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
                 if persisted != "PERSISTED":
@@ -901,6 +970,8 @@ class WorldJEPAStoreConsumer:
                     "native_body_consumed": False,
                     "runtime_wired": False,
                 }
+            # The accepted candidate is the first scale that passed all three
+            # gates; no rejected trial is published or checkpointed.
             if cancel_check is not None and cancel_check():
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
                         "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
