@@ -300,6 +300,7 @@ def train_candidate(runtime, direction, max_events=MAX_EVENTS):
     bridge = b3bridge.Bridge(
         d, K=K, r=R, h=h, classes=2, seed=0, direction=direction
     )
+    before_p = {key: value.copy() for key, value in bridge.p.items()}
     before_digest = bridge.digest()
     bridge.fit_head(Xtr, ytr)
     history = bridge.fit(
@@ -307,7 +308,11 @@ def train_candidate(runtime, direction, max_events=MAX_EVENTS):
     )
     bridge.calibrate(Htr, Mtr)
     after_digest = bridge.digest()
-    if before_digest == after_digest:
+    p_diffs = [bridge.p[key] - before_p[key] for key in bridge.p]
+    head_diffs = list(bridge.head) if bridge.head is not None else []
+    parameter_diff_count = sum(int(np.count_nonzero(value)) for value in p_diffs + head_diffs)
+    parameter_diff_l2 = float(np.sqrt(sum(float(np.sum(value * value)) for value in p_diffs + head_diffs)))
+    if before_digest == after_digest or parameter_diff_count <= 0 or parameter_diff_l2 <= 0:
         return {
             "status": "NO_ADAPTER_WEIGHT_CHANGE",
             "direction": direction,
@@ -354,6 +359,8 @@ def train_candidate(runtime, direction, max_events=MAX_EVENTS):
         "last_loss": history[-1] if history else None,
         "initial_adapter_digest": before_digest,
         "trained_adapter_digest": after_digest,
+        "parameter_diff_count": parameter_diff_count,
+        "parameter_diff_l2": parameter_diff_l2,
         "skipped": skipped,
         "authority": "EXPERIMENTAL_ADAPTER_ONLY",
         "base_model_weights_changed": False,
@@ -431,7 +438,8 @@ def train_candidate(runtime, direction, max_events=MAX_EVENTS):
             "invalid_evidence": partial_gate["invalid_evidence"],
         },
         "reload_identical": reload_identical,
-        "adapter_weight_updates": len(bridge.p),
+        "adapter_weight_updates": parameter_diff_count,
+        "adapter_parameter_diff_l2": parameter_diff_l2,
         "body_weight_updates": 0,
         "latent_authority": 0,
         "active_bridge_changed": False,
