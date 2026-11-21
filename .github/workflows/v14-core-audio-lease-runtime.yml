@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - core/v14-audio-lease-runtime-20261121
+      - gpt6/v13-private-remote-bridge-20261111
     paths:
       - v13/code/scripts/integrated_audio_context_candidate_20261121.py
       - v13/code/scripts/integrated_arithmetic_guard_candidate_20261121.py
