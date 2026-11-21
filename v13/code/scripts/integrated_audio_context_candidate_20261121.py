@@ -14,6 +14,7 @@ SOURCE_BLOBS = {
     "v13/runtime.py": "30360f40eb784be5ea975ee85e94a57f0b154164",
     "v13/cognition.py": "90138474db6f7c0b66cea24f52d22cd7a6e2f87b",
     "v13/audio_perception_bridge.py": "719034281ee32af4207c8ec407fbf358b9800ad7",
+    "v13/audio_voice_cues.py": "7ac80a0d0deec8f52361fe89756ebd743b0a3537",
     "v13/audio_ear.py": "86e93ae5b55e76ecd68864a7f51bd477e601e9b6",
     "v13/audio_percept_contract.py": "f3ee37426fc3e3a8cf70f8a107e7074783118a66",
     "v13/a5_audio_admission_bridge.py": "6d8790f29525b4c32c84b5b63d834cfd70a7037e",
@@ -65,7 +66,7 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
         b"class Runtime:\n",
         b'''_AUDIO_WINDOW_FIELDS = {
     "pcm16", "sample_rate", "start_ms", "source_id",
-    "consent_receipt", "consent_check",
+    "consent_receipt", "consent_check", "finality",
 }
 
 
@@ -78,6 +79,9 @@ def _validate_audio_window(value):
     start = value["start_ms"]
     source_id = value["source_id"]
     receipt = value["consent_receipt"]
+    finality = value["finality"]
+    if type(finality) is not str or finality not in {"PROVISIONAL", "FINAL"}:
+        raise ValueError("audio_window finality must be PROVISIONAL or FINAL")
     if type(pcm) is not bytes or not pcm or len(pcm) % 2:
         raise ValueError("audio_window requires complete mono PCM16 bytes")
     if type(rate) is not int or not 8000 <= rate <= 48000 or len(pcm) > rate * 2:
@@ -181,12 +185,15 @@ class Runtime:
         b"                except Exception as exc:self.store.log('attention_unavailable',eid,{'error':type(exc).__name__})\n"
         b"            if audio_window is not None and not fixed_policy and arithmetic_answer is None:\n"
         b"                try:\n"
-        b"                    from .audio_perception_bridge import consume_pcm16_window\n"
-        b"                    audio_result=consume_pcm16_window(self,audio_window['pcm16'],sample_rate=audio_window['sample_rate'],\n"
+        b"                    from .audio_voice_cues import consume_pcm16_voice_window\n"
+        b"                    audio_result=consume_pcm16_voice_window(self,audio_window['pcm16'],sample_rate=audio_window['sample_rate'],\n"
         b"                        start_ms=audio_window['start_ms'],event_id=eid,generation_id=g,source_id=audio_window['source_id'],\n"
-        b"                        consent_receipt=audio_window['consent_receipt'],consent_check=audio_window['consent_check'],token_budget=512)\n"
+        b"                        consent_receipt=audio_window['consent_receipt'],consent_check=audio_window['consent_check'],\n"
+        b"                        finality=audio_window['finality'],token_budget=512)\n"
         b"                    meta['audio_input']={'status':'A5_A4_C3_ADMISSION','packet_id':audio_result['packet']['packet_id'],\n"
-        b"                        'source_id':audio_window['source_id'],'capture_authority':'CALLER_SUPPLIED_PCM16',\n"
+        b"                        'source_id':audio_window['source_id'],'finality':audio_window['finality'],\n"
+        b"                        'voice_activity_hint':audio_result.get('a4',{}).get('voice_activity_hint'),\n"
+        b"                        'capture_authority':'CALLER_SUPPLIED_PCM16',\n"
         b"                        'learning_authority':False,'action_authority':False}\n"
         b"                    audio_context=self._audio_context_record(eid,audio_result,audio_window)\n"
         b"                    meta['audio_input']['context_recorded']=bool(audio_context)\n"
