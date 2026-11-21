@@ -423,11 +423,13 @@ summary{cursor:pointer;font-weight:650}
         }
         const num=function(v){return Number.isFinite(v)?String(v):'—';};
         const list=function(v){return Array.isArray(v)&&v.length?v.join(', '):'—';};
+        const bool=function(v){return v===true?'YES':v===false?'NO':'UNKNOWN';};
         const offers=Array.isArray(data.bodies&&data.bodies.offers)?data.bodies.offers:[];
         const offerLines=offers.map(function(o){
           return String(o.role||'?')+': '+String(o.status||'?')+
             ' · Prompt '+num(o.prompt_tokens)+' / Output '+num(o.generated_tokens)+
             ' · Query '+(o.query_role_match===true?'match':o.query_role_match===false?'mismatch':'unknown')+
+            ' · Modell '+String(o.actual_model||'UNKNOWN')+
             ' · '+String(o.evidence_level||'UNKNOWN');
         });
         const c3=data.c3||{}, c4=data.c4||{}, latent=data.latent||{}, c5=data.c5||{};
@@ -445,12 +447,20 @@ summary{cursor:pointer;font-weight:650}
             ' · semantische Nutzung '+String(c3.semantic_use_status||'UNKNOWN'),
           'C3 Tokens: Prompt '+num(c3.prompt_tokens)+' / Output '+num(c3.generated_tokens)+
             ' · TTFT '+num(c3.ttft_s)+'s · Dauer '+num(c3.duration_s)+'s'+
+            ' · Modell '+String(c3.actual_model||'UNKNOWN')+
             ' · Quelle '+String(c3.prompt_token_source||'UNKNOWN'),
+          'C3 Native: HTTP200 '+bool(c3.native_completion_http_200)+
+            ' · Template '+bool(c3.native_template_submitted)+
+            ' · Attention/Use proof '+bool(c3.native_attention_or_semantic_use_proven),
+          'C3 rights: latent tap '+bool(c3.can_latent_tap)+
+            ' · latent injection '+bool(c3.can_latent_inject)+
+            ' · body training '+bool(c3.can_train_body),
           'B3: '+String(latent.status||'UNKNOWN')+' · taps '+num(latent.tap_packet_count)+
             ' · symbolisch '+num(latent.symbolic_message_count)+
             ' · Receiver '+num(latent.receiver_packet_count)+' · native Injection: NEIN',
           'C5: '+String(c5.selected_action_type||'NONE')+
-            ' · ActionOutcomes '+num(c5.action_outcome_packet_count),
+            ' · ActionOutcomes '+num(c5.action_outcome_packet_count)+
+            ' · Status '+list(c5.world_action_statuses),
           'SourceRefs: '+num(data.source_integrity&&data.source_integrity.valid_refs)+
             ' / '+num(data.source_integrity&&data.source_integrity.unique_refs_checked)+' gültig',
           'Beleg: '+String(data.evidence_level||'UNKNOWN')+' · Gerät: REDMI_UNVERIFIED',
