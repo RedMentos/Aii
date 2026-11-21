@@ -921,3 +921,16 @@ Exactly five V14 automations are enabled: Boss & Integration, QA & Android, JEPA
 **Android boundary:** private PIPELINE_STATUS request [RedMentos/Aiiii #435](https://github.com/RedMentos/Aiiii/issues/435) has zero authenticated comments. Installed SHA and updater consent remain unknown. No UPDATE_REQUEST, LOG_PAGE, shell action, deployment or device mutation. `REDMI_UNVERIFIED`.
 
 **Ownership handoff:** Core fixes the explicit old-reader pin and rebinds downstream builders; Perception carries the current A5 lease adapter; QA validates #2261 and the exact two-version matrix; Boss performs protected-file review and integration only after green exact-head checks. No user action is required.
+
+
+## QA follow-up — additional exact staged pin failures (2026-11-21 22:20 CET)
+
+QA PR #2261 exact CI run `44950978469` now completes the broader staged/integrated matrix and remains **FAIL**: staged-runtime fails multiple integration tests and integrated-regression reports 226 passed, 10 skipped, 41 subtests, 24 failed and 2 errors. In addition to the previously recorded lifecycle guard/stream old-reader pin mismatch, the logs expose:
+
+- `termux_idle_recovery_candidate_20261112.py` still pins `v13/operator.py` to `67f2118e...`; the current operator SHA-256 is `b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186`. Two idle recovery composition tests fail.
+- `record_only_online_guard_candidate_20261116.py` carries the same stale operator SHA in `SOURCE_SHA256`; three online-world guard tests fail. Its parent builder and downstream recovery/stage/deployer pins must be rebound separately from the idle chain.
+- The migration tests return `PARTIAL` because the stage cannot be composed. Do not treat the two checkout refs advancing as a successful migration.
+
+Core owns the idle and lifecycle builder repairs; JEPA owns the record-only online-world guard pin; Perception owns the missing A5 bridge composition; QA owns the speech fixture correction and independent test verification. Do not loosen strict source pins or skip tests. `test_speech_output.py` was not part of the #2261 workflow run, so the fixture edit remains unexecuted until the existing audio workflow includes that path or the exact test is run in an already-existing job. No standalone duplicate workflow is warranted.
+
+No LOCAL_LINUX full checkout and no authenticated Redmi receipt. Keep NOT_RELEASED / REDMI_UNVERIFIED.
