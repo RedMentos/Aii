@@ -394,3 +394,182 @@ def test_matched_persistent_vs_reset_optimizer_ablation_on_disjoint_holdouts(tmp
             'final_checkpoint_sha256_differs': persistent_final['sha256'] != reset_final['sha256'],
         })
     print('WORLDJEPA_PERSIST_RESET_ABLATION', json.dumps(summaries, sort_keys=True))
+
+def _ablation_reset_optimizer(model):
+    """Reset Adam/RNG while preserving the currently learned model and inverse head."""
+    inverse = copy.deepcopy(model._training_state['inverse'])
+    delattr(model, '_training_state')
+    model._training_state = state.bootstrap_from_inference(model)
+    model._training_state['inverse'] = inverse
+
+
+def _ablation_replay_phase(new_cohort, replay_cohort, replay_enabled):
+    if not replay_enabled:
+        return new_cohort, 0, len(new_cohort[0])
+    count = len(new_cohort[0]) // 2
+    mixed = tuple(
+        np.concatenate((np.asarray(new)[:count], np.asarray(replay)[:count]), axis=0)
+        for new, replay in zip(new_cohort, replay_cohort)
+    )
+    replay_bytes = sum(int(np.asarray(value)[:count].nbytes) for value in replay_cohort)
+    return mixed, replay_bytes, count
+
+
+def _ablation_gradient_norm(model, cohort):
+    x, actions, x2 = cohort
+    target = wj.encode(model.tgt, x2)[0]
+    out = wj.loss_grads(
+        model.enc, model.preds[0], x, actions, target,
+        inv=model._training_state['inverse'], x2=x2, inv_w=wj.INV_W,
+    )
+    gradients = out[2:]
+    arrays = [value for group in gradients if isinstance(group, dict)
+              for value in group.values()]
+    norm = float(np.sqrt(sum(float(np.sum(value ** 2)) for value in arrays)))
+    assert np.isfinite(norm) and norm > 0
+    return norm
+
+
+def _ablation_action_controls(model, cohort, seed):
+    x, actions, x2 = cohort
+    zero = np.zeros_like(actions)
+    permutation = np.random.default_rng(seed).permutation(len(actions))
+    shuffled = actions[permutation]
+    return {
+        'actual': model.prediction_loss(x, actions, x2),
+        'zero': model.prediction_loss(x, zero, x2),
+        'shuffled': model.prediction_loss(x, shuffled, x2),
+    }
+
+
+def test_a_b_a_return_to_old_dynamics_with_optimizer_and_replay_ablation(tmp_path):
+    """Diagnostic only: source-disjoint A->B->A with matched steps and replay accounting."""
+    summaries = []
+    for seed in (5, 19, 43):
+        train_a1 = _ablation_cohort(1100 + seed, 'old')
+        train_b = _ablation_cohort(2100 + seed, 'new')
+        train_a2 = _ablation_cohort(3100 + seed, 'old')
+        holdout_a = _ablation_cohort(4100 + seed, 'old')
+        holdout_b = _ablation_cohort(5100 + seed, 'new')
+        train_sources = {
+            f'train-A1-{seed}', f'train-B-{seed}', f'train-A2-{seed}'
+        }
+        holdout_sources = {f'holdout-A-{seed}', f'holdout-B-{seed}'}
+        assert train_sources.isdisjoint(holdout_sources)
+
+        initial = wj.WorldJEPA(seed=seed, ensemble=2).fit(*train_a1, steps=32)
+        old_before = initial.prediction_loss(*holdout_a)
+        new_before = initial.prediction_loss(*holdout_b)
+        assert np.isfinite([old_before, new_before]).all()
+
+        for replay_mode in ('none', 'uniform'):
+            replay_enabled = replay_mode == 'uniform'
+            b_data, b_replay_bytes, b_new_rows = _ablation_replay_phase(
+                train_b, train_a1, replay_enabled
+            )
+            a_data, a_replay_bytes, a_new_rows = _ablation_replay_phase(
+                train_a2, train_b, replay_enabled
+            )
+            for optimizer_mode in ('persistent', 'reset_each_phase'):
+                model = copy.deepcopy(initial)
+                if optimizer_mode == 'reset_each_phase':
+                    _ablation_reset_optimizer(model)
+                gradient_b = _ablation_gradient_norm(model, b_data)
+                model.partial_fit(*b_data, steps=32)
+
+                source_sha_b = _ablation_source_sha(train_a1, b_data)
+                b_path = tmp_path / f'a-b-a-{seed}-{replay_mode}-{optimizer_mode}-b.npz'
+                b_receipt = checkpoint.save(model, b_path, source_sha_b)
+                assert b_receipt['optimizer_state_persisted'] is True
+                assert b_receipt['optimizer_state_bootstrapped'] is (
+                    optimizer_mode == 'reset_each_phase'
+                )
+                b_restored = checkpoint.load(b_path, source_sha_b, b_receipt['sha256'])
+                same(b_restored._training_state, model._training_state)
+                model = b_restored
+
+                old_after_b = model.prediction_loss(*holdout_a)
+                new_after_b = model.prediction_loss(*holdout_b)
+                if optimizer_mode == 'reset_each_phase':
+                    _ablation_reset_optimizer(model)
+                gradient_a = _ablation_gradient_norm(model, a_data)
+                model.partial_fit(*a_data, steps=32)
+
+                source_sha_final = _ablation_source_sha(train_a1, b_data, a_data)
+                final_path = tmp_path / f'a-b-a-{seed}-{replay_mode}-{optimizer_mode}-final.npz'
+                final_receipt = checkpoint.save(model, final_path, source_sha_final)
+                assert final_receipt['optimizer_state_persisted'] is True
+                assert final_receipt['optimizer_state_bootstrapped'] is (
+                    optimizer_mode == 'reset_each_phase'
+                )
+                final = checkpoint.load(final_path, source_sha_final, final_receipt['sha256'])
+                same(final._training_state, model._training_state)
+                assert final._fit_steps == model._fit_steps == 96
+
+                old_after_a = final.prediction_loss(*holdout_a)
+                new_after_a = final.prediction_loss(*holdout_b)
+                rollback = checkpoint.load(b_path, source_sha_b, b_receipt['sha256'])
+                assert np.isclose(rollback.prediction_loss(*holdout_a), old_after_b, atol=1e-12)
+                assert np.isclose(rollback.prediction_loss(*holdout_b), new_after_b, atol=1e-12)
+                assert np.isclose(final.prediction_loss(*holdout_a), old_after_a, atol=1e-12)
+                assert np.isclose(final.prediction_loss(*holdout_b), new_after_a, atol=1e-12)
+
+                parameter_delta = _ablation_parameter_delta(final, initial)
+                ema_delta = float(np.sqrt(sum(
+                    np.sum((final.tgt[key] - initial.tgt[key]) ** 2)
+                    for key in final.tgt
+                )))
+                persistent_expected = optimizer_mode == 'persistent'
+                expected_main_t = 96 if persistent_expected else 32
+                expected_bootstrap_t = 48 if persistent_expected else 16
+                assert final._training_state['main']['t'] == expected_main_t
+                assert final._training_state['bootstrap'][0]['adam']['t'] == expected_bootstrap_t
+                assert final._training_state['origin'] == (
+                    'FRESH' if persistent_expected else 'BOOTSTRAPPED_FROM_INFERENCE_ONLY'
+                )
+                assert parameter_delta > 0 and ema_delta > 0
+
+                controls_a = _ablation_action_controls(final, holdout_a, 6100 + seed)
+                controls_b = _ablation_action_controls(final, holdout_b, 7100 + seed)
+                values = [
+                    old_before, new_before, old_after_b, new_after_b,
+                    old_after_a, new_after_a, gradient_b, gradient_a,
+                    parameter_delta, ema_delta, _ablation_moment_norm(final),
+                    *controls_a.values(), *controls_b.values(),
+                ]
+                assert np.isfinite(values).all()
+                summaries.append({
+                    'seed': seed,
+                    'replay_mode': replay_mode,
+                    'optimizer_mode': optimizer_mode,
+                    'train_source_ids': sorted(train_sources),
+                    'holdout_source_ids': sorted(holdout_sources),
+                    'source_disjoint': True,
+                    'update_steps_each_phase': 32,
+                    'total_update_steps_after_A1': 96,
+                    'new_rows_per_phase': {'B': b_new_rows, 'A_return': a_new_rows},
+                    'replay_bytes_each_phase': {
+                        'B': b_replay_bytes, 'A_return': a_replay_bytes,
+                    },
+                    'gradient_norms': {'B_before_update': gradient_b, 'A_return_before_update': gradient_a},
+                    'parameter_delta_norm': parameter_delta,
+                    'ema_delta_norm': ema_delta,
+                    'moment_norm': _ablation_moment_norm(final),
+                    'A_holdout_loss': {
+                        'after_A1': old_before, 'after_B': old_after_b, 'after_A_return': old_after_a,
+                    },
+                    'B_holdout_loss': {
+                        'after_A1': new_before, 'after_B': new_after_b, 'after_A_return': new_after_a,
+                    },
+                    'A_reacquisition_gain_after_return': old_after_b - old_after_a,
+                    'B_forgetting_after_return': new_after_a - new_after_b,
+                    'A_negative_controls': controls_a,
+                    'B_negative_controls': controls_b,
+                    'optimizer_main_t': final._training_state['main']['t'],
+                    'optimizer_bootstrap_t': final._training_state['bootstrap'][0]['adam']['t'],
+                    'optimizer_origin': final._training_state['origin'],
+                    'rollback_checkpoint_sha256': b_receipt['sha256'],
+                    'final_checkpoint_sha256': final_receipt['sha256'],
+                    'rollback_readback_exact': True,
+                })
+    print('WORLDJEPA_A_B_A_RETURN_ABLATION', json.dumps(summaries, sort_keys=True))
