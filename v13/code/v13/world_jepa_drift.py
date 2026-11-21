@@ -90,7 +90,7 @@ def normalize_config(value=None):
     }
     if (result["dual_lr"] <= 0 or result["lambda_init"] < 0
             or result["lambda_max"] <= 0 or result["lambda_max"] < result["lambda_init"]
-            or not 0 <= result["deadzone"] < 0.5 or not 0 < result["decay"] < 1):
+            or not 0 <= result["deadzone"] < 0.5):
         raise ValueError("invalid WorldJEPA drift hyperparameters")
     budget = result["budget_sq"]
     if isinstance(budget, dict):
