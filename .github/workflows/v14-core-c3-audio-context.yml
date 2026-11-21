@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - 'v13/code/v13/runtime.py'
+      - 'v13/code/v13/cognition.py'
       - 'v13/code/v13/audio_perception_bridge.py'
       - 'v13/code/v13/audio_ear.py'
       - 'v13/code/v13/audio_percept_contract.py'
@@ -25,6 +26,6 @@ jobs:
           python -m pip install --disable-pip-version-check torch==2.5.1+cpu --index-url https://download.pytorch.org/whl/cpu
           python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.2.6 pillow==13.0.0 transformers==4.44.2 peft==0.13.2
       - name: Compile Runtime and focused tests
-        run: python -m py_compile v13/code/v13/runtime.py v13/code/tests/test_c3_audio_runtime_consumer.py
+        run: python -m py_compile v13/code/v13/runtime.py v13/code/v13/cognition.py v13/code/tests/test_c3_audio_runtime_consumer.py
       - name: Run real-Store A5 to C3 consumer regressions
-        run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_c3_audio_runtime_consumer.py v13/code/tests/test_audio_perception_bridge_v14.py
+        run: PYTHONPATH=v13/code python -m pytest -q v13/code/tests/test_c3_audio_runtime_consumer.py v13/code/tests/test_audio_perception_bridge_v14.py v13/code/tests/test_enlightened_space.py v13/code/tests/test_context_os.py v13/code/tests/test_offer_deadlines.py v13/code/tests/test_native_offer_prompt_receipt_20261118.py
