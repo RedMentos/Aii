@@ -2,8 +2,8 @@
 
 **Date:** 2026-11-21  
 **Owner:** Research & Perception  
-**Branch:** `research-perception/v14-raw-ear-runtime-temporal-state-20261121`  
-**Base:** `3df5bfd415978db3d8f958bd46522697cbd61bbe`  
+**Branch:** `research-perception/v14-raw-ear-consent-commit-guard-20261121`  
+**Base:** `840a53ab19d0d9609e649f00b25e840465a15bcf`  
 **Status:** candidate code; not released; Redmi unverified.
 
 ## Functional change
