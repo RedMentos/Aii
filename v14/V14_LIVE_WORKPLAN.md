@@ -338,7 +338,7 @@ No material V14 master edit was made; no master backup was required. Historical 
 - Confirmed defects:
   1. `v13/code/v13/world_jepa_runtime.py:105` has a missing colon after a multiline `except`, causing `SyntaxError: expected ':'` during staged test collection.
   2. `scripts/integrated_world_training_resume_candidate_20261111.py:28` rejects the modified `world_jepa.py` because `WORLD_SHA` remains pinned to the prior source. Recompute this raw SHA and the complete dependent builder/composition/stage/deployer pin chain; retain fail-closed validation.
-- QA review comment 6004094094 was posted on #2178 with the exact job evidence and blocking syntax line comment. Candidate is NOT_RELEASED and must not be merged/deployed until exact checks are green and Boss reviews the non-additive integration scope. Persistent board/workplan/handoff updates are in [QA PR #2180](https://github.com/RedMentos/Aii/pull/2180).
+- QA review comment 6004094094 was posted on #2178 with the exact job evidence and blocking syntax line comment. Candidate is NOT_RELEASED and must not be merged/deployed until exact checks are green and Boss reviews the non-additive integration scope. Persistent board/workplan/handoff updates are in [QA PR #2180](https://github.com/RedMentos/Aii/pull/2180). A second QA review comment 6004143702 requires a real `Runtime._turn`/worker-queue lifecycle test; the current tests use `object.__new__(SleepRuntime)` and a synthetic Store.
 
 ### Next
 1. JEPA owner repairs the syntax and full immutable pin chain, then reruns staged-runtime, integrated-regression, Python 3.14 staged startup and source-integrity tests on the exact new SHA.
