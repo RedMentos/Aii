@@ -76,3 +76,10 @@ Current PR #2192 head `0bba3da8cd57ed808c98f9f79ae2dedcda3647fe`; code-bearing b
 - Model-lab `44897542295`, public privacy scan `44897542364`, and integration-event/private-bridge `44897553859`: PASS.
 - Strict safe-additive `44897553946`: expected FAIL because this PR modifies the existing RAW EAR producer/temporal modules rather than adding only inert modules. The exact log says `path outside inert-module/test/handoff scope`; no validator bypass was used. Manual Boss review is required.
 - All above are GitHub-hosted Linux CI, not LOCAL_LINUX or Redmi. Full local checkout remains blocked by GitHub DNS; REDMI_UNVERIFIED / NOT_RELEASED.
+
+## Commit-time consent regression — 2026-11-21
+
+- Added the QA-authored test_consent_revocation_between_pre_and_post_persist_leaves_no_packet regression to this Perception branch. It flips the provider to revoked on the third check and asserts zero persisted PerceptPacket rows and zero A4 telemetry.
+- Replaced the separately committed Store.add_packet() call followed by a consent recheck with an audio-owned transaction boundary: validate, insert the packet, then perform the final current-consent check inside the same Store.tx() before COMMIT. A failed check raises and the Store transaction rolls the packet insert back; SQLite readers cannot observe the uncommitted row. Temporal/VAD reset remains fail-closed.
+- This serializes the database commit against the final authoritative callback result. A future OS consent provider that can revoke concurrently must make that callback linearizable with its own revocation state; a generic boolean callback cannot make an external OS permission and SQLite one atomic primitive.
+- Exact new-commit CI is pending. Full local Aii checkout remains BLOCKED by GitHub DNS; no local repository PASS, microphone, native Silero inference or Redmi proof is claimed.
