@@ -28,16 +28,16 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 
 | Feld | Aktueller Wert |
 |---|---|
-| source_HEAD | `16f75fcaea9c83eb0e4b8136c0a2efdad70c1d19` (Release-Branch-Readback 2026-11-21) |
+| source_HEAD | `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (PR #2138 merge readback 2026-11-21; exact staged push CI still running) |
 | last_integrated_functional_change | PR #2136 merged in `16f75fca`: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter; not yet called by normal Runtime/chat input, synthetic only |
 | local_test_result | NOT_RUN — no full local repository checkout in this worker |
-| ci_test_result | PR #2138 head `8ca7a298`: owner-read PASS (27 source-updater + 33 pipeline-agent tests), Python 3.14 staged startup PASS, offline bridge PASS, staged-runtime PASS (240 passed, 10 skipped, 47 subtests), integrated regression PASS (415 passed, 3 skipped, 58 subtests); additive-only policy check fails on intentional existing updater/runtime modifications and was not bypassed. Current release HEAD `16f75fca` has the three updater-required eligible workflows green; 11 PR-only `action_required` runs are not release proof. |
+| ci_test_result | PR #2138 exact head `8ca7a298` passed owner-read (27+33 tests), Python 3.14 staged startup, offline bridge, staged-runtime (240/10 skipped/47 subtests), integrated regression (415/3 skipped/58 subtests); additive-only policy check failed on intentional existing-file changes and was not bypassed. Boss merged it as `5b9171a4`. On the exact merge SHA: owner-read push PASS, private-bridge push PASS, staged-context push IN_PROGRESS; source-contracts and integrated-regression also IN_PROGRESS. Latest-run gate correctly blocks until the newer staged run finishes. |
 | phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
 | device_model_comparison | NOT_RUN |
 | proposed_model_change | NONE – erst anhand echter Tests |
 | requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
-| next_developer_action | Boss independently reviews/merges #2138; Core/JEPA rebuild staged hash-pinned candidate chains for #2139/#2140/#2135 and rerun staged-runtime + integrated regression; obtain a fresh owner-verified phone receipt before any deploy claim; continue whole-Canon integration. |
+| next_developer_action | Finish exact merge-SHA CI for `5b9171a4`; if green, obtain a fresh owner-verified PIPELINE_STATUS receipt before any device update. Core/JEPA rebuild staged hash-pinned candidate chains for #2139/#2140/#2135, fix the actual consumer failures and rerun staged-runtime + integrated regression; continue whole-Canon integration. |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
@@ -136,3 +136,17 @@ Private V13OBS issue #115 is the newest device receipt currently available; it i
 - **Local environment:** full repository checkout/tests NOT_RUN because `github.com` DNS resolution fails in this worker. Exact GitHub Actions logs were read instead. CI is not LOCAL_LINUX native runtime and not Redmi proof.
 
 **User action:** none. No new Termux command, model download/swap, permission change or device mutation is justified by the available evidence.
+
+
+## QA/Android follow-up — 2026-11-21 01:44 CET
+
+- **Release HEAD:** `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e`, merge commit for PR #2138. This integrates the latest exact-commit CI run selection and CI rechecks after graceful stop and source fast-forward. It is not a completed release yet.
+- **Exact push CI:** owner-read run [44845659008](https://github.com/RedMentos/Aii/actions/runs/44845659008) PASS; private bridge run [44845658907](https://github.com/RedMentos/Aii/actions/runs/44845658907) PASS; staged-context run [44845658992](https://github.com/RedMentos/Aii/actions/runs/44845658992) IN_PROGRESS. Source-contracts [44845662784](https://github.com/RedMentos/Aii/actions/runs/44845662784) and integrated-regression [44845662714](https://github.com/RedMentos/Aii/actions/runs/44845662714) IN_PROGRESS. Do not treat the old parent SHA's green run as the new merge SHA's proof.
+- **#2139:** exact staged failure 30 failed / 208 passed / 10 skipped / 2 errors / 36 subtests. Root: changed `v13/runtime.py` not re-pinned in integrated online-world and observer-fair-budget candidates; dependent postcommit/record-only/staged deploy and migration tests fail. QA posted exact evidence to the PR.
+- **#2140:** 8 focused arithmetic/Store tests pass, but staged arithmetic fails 6 cases: fixed-rule path masks the expected exact arithmetic consumer, source-diagnostic negative controls accept stale direct/fixed outcomes, and forged arithmetic SourceRef is not rejected. Not a Redmi arithmetic fix.
+- **#2135:** focused exactly-once tests pass, but staged-runtime fails 20 cases because the integrated online-world candidate still pins the old `v13/online_world.py`; downstream observer/guard/deploy and migration failures cascade. QA posted exact evidence.
+- **#2133/#2137:** remain draft; source-disjoint leakage, cancellation/unknown outcome handling, backlog/cardinality and rollback durability findings are still open. No native B1/B2 body-weight update is accepted.
+- **Device:** private owner-read #352 HEALTH, #353 PIPELINE_STATUS and #354 DIAGNOSTICS still have no device comments. `NO_LIVE_RECEIPT`; installed SHA UNKNOWN; `REDMI_UNVERIFIED`. No installer or device mutation.
+- **Local execution:** full repository checkout/tests NOT_RUN because this worker cannot resolve `github.com`; exact GitHub Actions logs were inspected instead.
+
+**User action:** none. No new Termux command, model download/swap, permission change or phone update is justified.
