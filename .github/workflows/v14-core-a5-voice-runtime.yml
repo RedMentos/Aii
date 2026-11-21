@@ -5,6 +5,8 @@ on:
     branches: [research-perception/v14-raw-ear-consent-commit-guard-20261121]
     paths:
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
+      - "v13/code/scripts/integrated_focal_scale_diversity_candidate_20261121.py"
+      - "v13/code/tests/test_v14_audio_c4_combined_stage_20261121.py"
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
       - "v13/code/scripts/stage_integrated_candidate.py"
       - "v13/code/v13/runtime_deploy.py"
@@ -25,6 +27,8 @@ on:
     branches: [core/v14-a5-voice-current-20261121]
     paths:
       - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
+      - "v13/code/scripts/integrated_focal_scale_diversity_candidate_20261121.py"
+      - "v13/code/tests/test_v14_audio_c4_combined_stage_20261121.py"
       - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
       - "v13/code/scripts/stage_integrated_candidate.py"
       - "v13/code/v13/runtime_deploy.py"
@@ -57,16 +61,19 @@ jobs:
       - name: Verify exact builder and deployer pin chain
         run: |
           test "$(sha256sum v13/code/scripts/integrated_audio_context_candidate_20261121.py | cut -d' ' -f1)" = "28454766d9a752549423ffae3ba3099fe68225442043f33f0bf62cfacc75b419"
-          test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py | cut -d' ' -f1)" = "e856f28ce8fde6dd631ae950c6bdd266cf6e0d1d9e84d0e5eaa7de1d2e01a62f"
-          test "$(sha256sum v13/code/scripts/stage_integrated_candidate.py | cut -d' ' -f1)" = "4c3b3f67abfa951d04d417bdedcb5d1b91231c3334ce0bae298ef7248e6c94df"
+          test "$(sha256sum v13/code/scripts/integrated_focal_scale_diversity_candidate_20261121.py | cut -d' ' -f1)" = "c25b69a562eb6f0f6352e33d30ca58493484820b2a1d20a10e537bd088c01d0f"
+          test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py | cut -d' ' -f1)" = "06297e4f0e9a33e50fe8a5d38f8dc77839889cc09afd8366116c11fffc564b40"
+          test "$(sha256sum v13/code/scripts/stage_integrated_candidate.py | cut -d' ' -f1)" = "2b9e22776af1406befe7736ea30c2936154e5943c0856816e42c1a5e83287170"
           test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261112.py | cut -d' ' -f1)" = "ff0920afd2311827678ff9cfa115c63cd4ff06cda3a9cddf5f298fd4719ad9d5"
           test "$(sha256sum v13/code/scripts/integrated_arithmetic_candidate_20261116.py | cut -d' ' -f1)" = "728a229ea8316aa97fdd8cf83fa7d5358bc1c187cfcc556b62005e9e0e872128"
           test "$(sha256sum v13/code/v13/arithmetic_reflex.py | cut -d' ' -f1)" = "3874df3a75137239336e42af304437531562c96eff8323b0d8cd6dd43c3cc653"
-          grep -F 'STAGER_SHA256 = "4c3b3f67abfa951d04d417bdedcb5d1b91231c3334ce0bae298ef7248e6c94df"' v13/code/v13/runtime_deploy.py
+          grep -F 'STAGER_SHA256 = "2b9e22776af1406befe7736ea30c2936154e5943c0856816e42c1a5e83287170"' v13/code/v13/runtime_deploy.py
       - name: Compile composed builders and Runtime consumers
         run: |
           python -m py_compile \
             v13/code/scripts/integrated_audio_context_candidate_20261121.py \
+            v13/code/scripts/integrated_focal_scale_diversity_candidate_20261121.py \
+            v13/code/tests/test_v14_audio_c4_combined_stage_20261121.py \
             v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
             v13/code/scripts/stage_integrated_candidate.py \
             v13/code/v13/runtime_deploy.py \
@@ -77,11 +84,13 @@ jobs:
             v13/code/scripts/termux_runtime_recovery_candidate_20261112.py \
             v13/code/tests/test_c3_audio_runtime_consumer.py \
             v13/code/tests/test_v14_audio_context_stage_20261121.py \
+            v13/code/tests/test_v14_audio_c4_combined_stage_20261121.py \
             v13/code/tests/test_termux_runtime_recovery_stage.py
       - name: Read back exact staged builder SHA256 chain
         run: |
           set -euo pipefail
           sha256sum v13/code/scripts/integrated_audio_context_candidate_20261121.py
+          sha256sum v13/code/scripts/integrated_focal_scale_diversity_candidate_20261121.py
           sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py
           sha256sum v13/code/scripts/stage_integrated_candidate.py
           sha256sum v13/code/v13/runtime_deploy.py

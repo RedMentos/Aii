@@ -11,6 +11,8 @@ BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
 BASE_BUILDER_SHA256 = "ff0920afd2311827678ff9cfa115c63cd4ff06cda3a9cddf5f298fd4719ad9d5"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
 AUDIO_BUILDER_SHA256 = "28454766d9a752549423ffae3ba3099fe68225442043f33f0bf62cfacc75b419"
+FOCAL_BUILDER = "scripts/integrated_focal_scale_diversity_candidate_20261121.py"
+FOCAL_BUILDER_SHA256 = "c25b69a562eb6f0f6352e33d30ca58493484820b2a1d20a10e537bd088c01d0f"
 
 
 def _load(code_dir, relative, expected, label):
@@ -32,5 +34,11 @@ def build_sources(code_dir, *, include_postcommit=True):
     code_dir = Path(code_dir)
     base = _load(code_dir, BASE_BUILDER, BASE_BUILDER_SHA256, "base")
     audio = _load(code_dir, AUDIO_BUILDER, AUDIO_BUILDER_SHA256, "audio")
+    focal = _load(code_dir, FOCAL_BUILDER, FOCAL_BUILDER_SHA256, "focal")
     sources = base.build_sources(code_dir, include_postcommit=include_postcommit)
-    return audio.apply_sources(code_dir, sources)
+    sources = audio.apply_sources(code_dir, sources)
+    focal_raw = sources.get("v13/focal.py")
+    if not isinstance(focal_raw, bytes):
+        focal_raw = (code_dir / "v13" / "focal.py").read_bytes()
+    sources["v13/focal.py"] = focal.apply_staged_focal(code_dir, focal_raw)
+    return sources

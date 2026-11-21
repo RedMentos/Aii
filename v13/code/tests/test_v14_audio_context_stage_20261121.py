@@ -15,8 +15,9 @@ SOURCE_BLOBS = {
     "v13/cognition.py": "06de0acf2c6d30d50301d5073f5569822edff813",
     "v13/audio_voice_cues.py": "e75c393939183d2f16e071ebf4a6f5ff65417a61",
     "v13/audio_temporal_evidence.py": "098ce2ec6bb0b744166d711a3401b7acf0252de1",
+    "v13/focal.py": "a0588a768cc91266ef02243bcfda2e631860d8ad",
 }
-BUILDER_SHA256 = "e856f28ce8fde6dd631ae950c6bdd266cf6e0d1d9e84d0e5eaa7de1d2e01a62f"
+BUILDER_SHA256 = "06297e4f0e9a33e50fe8a5d38f8dc77839889cc09afd8366116c11fffc564b40"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -77,6 +78,9 @@ def test_audio_voice_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     audio_store = destination / "v13/audio_context_store.py"
     assert audio_store.is_file()
     assert "UPDATE sources SET deleted=1" in audio_store.read_text(encoding="utf-8")
+    staged_focal = (destination / "v13/focal.py").read_text(encoding="utf-8")
+    assert "SCALE_AWARE_C4_RULE = 'DISJOINT_SAME_SOURCE_SPANS_ONLY'" in staged_focal
+    assert "_scale_aware_redundancy(c,a)" in staged_focal
 
     test_names = (
         "test_c3_audio_runtime_consumer.py",
