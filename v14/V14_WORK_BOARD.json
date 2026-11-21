@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T19:25:00.000Z",
+  "updated_at": "2026-11-21T19:31:00.000Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -285,7 +285,7 @@
   "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
   "latest_integrated_head": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
   "latest_integrated_head_verified_at": "2026-11-21T18:05:08.230Z",
-  "release_gate_status": "NOT_RELEASED. Last fully accepted code release f279286a4453248004c670fcaabecd85da6ab299 has 34/34 exact check-runs and 19/19 workflows SUCCESS. Latest merged code candidate 728cdc763f09bee20ac00e1f0faadffcd33dfbb2 has 18/19 exact merge-push checks; SleepRuntime JEPA positive acceptance is correctly rejected as UTILITY_GATE_REJECTED. New research-only PR #2243 merged at 6bbaa66e4e2454cc2178bd145da95d1e9cf6530f; its exact PR checks were 4/4 green, but the merge-push release-branch CI is still 31 total = 25 queued, 6 in progress, 0 completed at last read. No new code release or Redmi proof.",
+  "release_gate_status": "NOT_RELEASED. Last fully accepted code release f279286a4453248004c670fcaabecd85da6ab299: 34/34 exact check-runs, 19/19 workflows SUCCESS. Latest merged code candidate 728cdc763f09bee20ac00e1f0faadffcd33dfbb2: 18/19 exact merge-push; JEPA utility gate rejected the positive update. Research-only PR #2243 merged at 6bbaa66e4e2454cc2178bd145da95d1e9cf6530f; its exact merge-push CI is 31 total = 29 success, 2 in progress, 0 failures at last read. No new production code release or Redmi proof.",
   "phone_receipt": {
     "state": "NO_AUTHENTICATED_OWNER_READ_REPLY",
     "installed_sha": "UNKNOWN",
@@ -297,11 +297,11 @@
     {
       "capability": "A0-A5 perception and attention",
       "code": "RAW_EAR_CALLER_PCM16_PRODUCER_MERGED_2240; A5_UI_METADATA_LEASE_DRAFT_2246",
-      "wired": "CALLER_PCM16_PRODUCER_TO_A5/A4_AND_SYNTHETIC_B1/B2/C3_CONTEXT; UI_METADATA_INGRESS_SYNTHETIC_ONLY",
-      "tested_synthetic": "PR2240_MERGED_PRODUCER_CI; PR2242_HEAD_3DC8_9_PASS_4_FAIL; PR2246_HEAD_AC826_3_CHECKS_QUEUED; PR2244_STREAMING_1_PASS_1_IN_PROGRESS_5_QUEUED",
+      "wired": "CALLER_PCM16_PRODUCER_TO_SYNTHETIC_A5/A4_AND_B1/B2/C3_CONTEXT; UI_METADATA_INGRESS_SYNTHETIC_ONLY",
+      "tested_synthetic": "PR2242_HEAD_EDEFE_6_SUCCESS_7_FAILURE_3_IN_PROGRESS; PR2246_HEAD_AD0D_3_SUCCESS_4_FAILURE; PR2244_HEAD_CEA753_2_FAILURES_1_SUCCESS",
       "tested_android": "NOT_TESTED",
       "active": "NO_ANDROID_MICROPHONE_OR_OS_UI_PROVIDER",
-      "evidence": "Caller-supplied PCM16 is not microphone capture. #2242 normal Runtime audio consumer cannot stage due stale STAGER_SHA256 and missing arithmetic-overlay fixture; migration reports PARTIAL and revocation cannot pre-cancel a blocked C3 stream. #2246 now passes generation_id through its adapter and contains two-phase synthetic revoke callbacks, but its current exact CI is queued and it has no authenticated Android OS receipt provider, screen/UI capture or action consumer."
+      "evidence": "Audio lease code now contains two-phase pre-lock cancellation, worker-before-tombstone close, packet deletion and shared-blob refcount, but the nested stage-builder SHA chain still fails and the overlay fixture is incomplete. A5 UI adapter source passes generation_id, but current tests fail on context signature/import, undefined grant and ingress count. No Android provider/capture or C3 consumer acceptance."
     },
     {
       "capability": "B1_DETAIL and B2_GIST bodies",
@@ -316,10 +316,10 @@
       "capability": "B3 Enlightened Space true latent coupling",
       "code": "TINY_CROSS_GEOMETRY_KV_EXPERIMENT_MERGED_6BBAA",
       "wired": "NO_PRODUCTION_RECEIVER",
-      "tested_synthetic": "PR2243_EXACT_HEAD_F440_4_OF_4_PASS; MERGE_PUSH_6BBAA_31_CHECKS_PENDING",
+      "tested_synthetic": "PR2243_EXACT_HEAD_F440_4_OF_4_PASS; MERGE_PUSH_6BBAA_29_SUCCESS_2_IN_PROGRESS",
       "tested_android": "NOT_TESTED",
       "active": "NO",
-      "evidence": "PR #2243 merged as a research-only experiment with exact PR checks green. It trains/injects K/V maps between newly initialized tiny PyTorch models and tests no-message/shuffled/random controls plus restart equivalence. The merge-push CI is still pending. No production llama.cpp tap/injection, actual LFM2.5↔Qwen3.5 receiver, OOD evidence, Runtime consumer or Android proof; B3 remains PARTIAL_SYMBOLIC_ONLY."
+      "evidence": "Research-only tiny K/V adapter experiment merged; exact PR checks passed. The exact merge-push has two integrated-regression checks in progress. It is not actual LFM2.5↔Qwen3.5 llama.cpp tap/injection, a trained receiver or Android proof."
     },
     {
       "capability": "B4 distributed workspace and C4 coalition",
@@ -512,20 +512,20 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-21T19:18:00.000Z",
+    "timestamp": "2026-11-21T19:31:00.000Z",
     "branch_head": "6bbaa66e4e2454cc2178bd145da95d1e9cf6530f",
     "branch_head_type": "CURRENT_SHARED_RELEASE_BRANCH_HEAD AFTER RESEARCH-ONLY PR2243 MERGE; no production runner/weights/permissions/device change.",
-    "branch_head_checks": "Exact merge-push check-runs: 31 total = 25 queued, 6 in progress, 0 completed at last read. All are CI; no release until exact-head push CI finishes.",
+    "branch_head_checks": "Exact merge-push check-runs: 31 total = 29 success, 2 in progress, 0 failures at last read. The two remaining are integrated-regression runs. CI only; no release until exact-head completion.",
     "code_bearing_release_sha": "f279286a4453248004c670fcaabecd85da6ab299",
     "code_release_checks": "34_OF_34_EXACT_CHECK_RUNS_AND_19_OF_19_WORKFLOWS_SUCCESS",
     "integrated_code_candidate": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
     "integrated_code_candidate_checks": "18_OF_19_EXACT_MERGE_PUSH; SleepRuntime JEPA positive acceptance returns UTILITY_GATE_REJECTED; candidate NOT_RELEASED.",
-    "pr2242": "DRAFT_NOT_RELEASED_HEAD_3DC8A19; 9_SUCCESS_4_FAILURE. Python3.14 deployer rejects changed stage builder because STAGER_SHA256 is stale; three stage tests lack mandatory arithmetic overlay fixture; two migration tests return PARTIAL. Audio lease lacks pre-lock revoke-request cancellation and still treats subscription as optional. Boss comment 7067896024 records exact blockers.",
-    "pr2244": "DRAFT_STACKED_ON_CORE_2242_HEAD_575F18; 1_PASS_1_IN_PROGRESS_5_QUEUED. C3-like stream tests are synthetic and cannot validate production C3 or Android provider; rebase after Core fix.",
-    "pr2243": "MERGED_AT_6BBAA66; exact PR head f440a5a330e709c06cab1f818de8c83362897b2b passed latent-cache-tiny, model-lab, privacy and offline-bridge-security. Diff only adds a V14 tiny K/V experiment, its tests/results/README, R-037 research ledger, handoff and isolated workflow. Merge-push CI on 6bbaa is 25 queued / 6 in progress. No production B3 receiver; B3 remains PARTIAL_SYMBOLIC_ONLY.",
-    "pr2246": "DRAFT_HEAD_AD0D6A3_BASE_D7380CB (stale parent). Adapter derives/passes runtime.turn_event['brain_generation_id']; two-phase synthetic revoke tests present; exact checks 3 queued at last read. Boss asked Perception to rebase/retarget to shared release branch after parent #2243 merge and append R-040/R-041. No OS provider/capture/action or Android proof.",
-    "pr2247": "DRAFT_HEAD_E8137FD; 11_OF_14_CHECKS_PASS. Python3.13 and Python3.14 optimizer-resume both fail because A-GEM arms regress source-disjoint old-session holdout across seeds 13/19/43; checkpoint SHA unchanged. validate-additive FAIL BY POLICY. Keep learning gates OFF.",
-    "pr2235": "DRAFT_HEAD_150E92B; 7_OF_10_CHECKS_PASS. owner-read and lab-age-e2e fail because AST inventory reports nested GoalStore.add callback as f instead of enclosing add; validate-additive FAIL BY POLICY. Candidate correctly separates Age rights from ResourceGuard compute/replay budgets; no release until test fixed and manual review.",
+    "pr2242": "DRAFT_NOT_RELEASED_HEAD_EDEFE004; 6 success, 7 failure, 3 in progress. Previous blockers improved: mandatory two-phase pre-lock cancellation, worker-before-tombstone close, packet cleanup and shared-blob refcount now exist in candidate code. New exact CI root cause: stage_integrated_candidate.py:48 raises `integrated builder hash mismatch` because its BUILDER_SHA pin 558633... does not match current recovery-candidate bytes; update BUILDER_SHA then recompute runtime_deploy.STAGER_SHA256. Three legacy stage fixtures still omit the mandatory arithmetic overlay. Staged runtime has 19 failures/230 passes/10 skips/2 errors/47 subtests; Python3.14 startup, lab-age and migration fail downstream. validate-additive FAIL BY POLICY is expected. Boss comment 7068061383 records exact root cause.",
+    "pr2244": "DRAFT_HEAD_CEA753E_BASE_OLD_CORE_4CCA; non-mergeable. Exact Python3.13/3.14 streaming tests fail on old Core base: revoke does not cancel matching C3, missing subscription does not fail closed, close cleanup precedes iterator exit, packets/blob remain. Scenarios 7-9 are required; QA asked to rebase onto Core head EDEFE004 after stage pin is fixed.",
+    "pr2243": "MERGED_AT_6BBAA66; exact PR head F440A5A passed latent-cache-tiny, model-lab, privacy and offline-bridge-security (4/4). Merge-push CI 29 success / 2 in progress / 0 failures at last read. Research-only tiny K/V proof; no production B3 receiver.",
+    "pr2246": "DRAFT_HEAD_AD0D6A3_BASE_OLD_PARENT_D738; 3 success, 4 failure. A5 tests fail both Python versions: context() missing required grants at line 225; NameError grant at line 204; ingress assertion 0 != 1 at line 142. Current source method signature looks consistent, so inspect imported module/file and signature in CI, then fix call path without weakening lease. Rebase onto shared head 6BBAA66 after parent merge. No OS provider/capture/action or Android proof.",
+    "pr2247": "DRAFT_HEAD_E8137FD; 11/14 checks pass. Python3.13 and Python3.14 optimizer-resume both fail because A-GEM arms regress source-disjoint old-session holdout across seeds 13/19/43; checkpoint SHA unchanged. validate-additive FAIL BY POLICY. Keep learning gates OFF.",
+    "pr2235": "DRAFT_HEAD_150E92B; 7/10 checks pass. Owner-read and Lab-Age E2E fail because AST inventory reports nested GoalStore.add callback as f instead of enclosing add; validate-additive FAIL BY POLICY. Candidate correctly separates Age rights from ResourceGuard compute/replay budgets; no release.",
     "pr2240": "MERGED_AT_728CDC; caller-supplied PCM16 producer and audio feature path only; not Android microphone or full production C3 audio consumer.",
     "pr1983": "DRAFT_ADDITIVE_MEMORILLA_COMPANION; no active production runtime consumer.",
     "pr1756": "DRAFT_SIGNED_TERMUX_PATCH_REVIEW_ON_OLD_BASE; no patch stage/apply/restore/device proof.",
@@ -533,11 +533,62 @@
     "pr2215": "MERGED_IMMUTABLE_ACTION_PROPOSAL_ARGS; no Android OS executor.",
     "redmi": "REDMI_UNVERIFIED; private owner-read #428 open with no authenticated reply; installed SHA and updater consent UNKNOWN.",
     "private_owner_read": "V13READ PIPELINE_STATUS issue #428 created in RedMentos/Aiiii at 2026-11-21T19:14:21Z; still open with zero comments at last read. No DIAGNOSTICS/LOG_PAGE/UPDATE_REQUEST.",
-    "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT; container inspection found no .git checkout. No local Python/Android full-suite PASS claimed.",
-    "p0_chat": "OPEN_ISSUE_1904; real correct 2+2, B1/B2 offer delivery, 20 mixed Redmi turns, native TTFT/RSS and production C3 correctness remain unverified.",
-    "canon_coverage": "1255_HISTORICAL_HEADINGS_PRESERVED; semantic clause→implementation→consumer→test→environment→rollback mapping remains incomplete.",
+    "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT; container has Python 3.13.5, torch 2.10.0+cpu and numpy 2.3.5, but no local Aii .git checkout and outbound GitHub DNS is unavailable. No project local tests ran.",
+    "p0_chat": "OPEN_ISSUE_1904; correct 2+2, native B1/B2 offer delivery, mixed Redmi turns, TTFT/RSS and production C3 correctness remain unverified.",
+    "canon_coverage": "1,255 historical Canon headings preserved; V14 master has 1,283 headings. Semantic clause→implementation→consumer→test→environment→rollback mapping remains incomplete.",
     "research": "R040 Mahdaviyeh et al., arXiv:2506.04377v1 / PMLR 330:15–42 (2026): full arXiv HTML reviewed; arXiv version license CC BY-NC-ND 4.0. The worst-case construction shows replay can move error onto other old samples (O(1/T) to Θ(1)); the average-case result shows random replay can increase expected forgetting for certain task-subspace relationships; MLP/MNIST results are non-monotonic and task/sample-dependent. The result is conditional, not a universal anti-replay rule. No code or figures imported. R041 Thede et al., arXiv:2609.40089v1: full 31-page PDF reviewed. RoD jointly top-k selects adaptation by current loss minus specialist reference and replay by current loss minus pretrained reference; references are precomputed/hash-keyed; each step scores m*k candidates with a forward-only pass (m=2 in the paper), then trains on k. Specialist reference has offline cost; a smaller source model can transfer a curriculum to a larger target. Limits: only replay-pool-covered forgetting is visible, LM loss is not downstream capability, proxy replay can misalign with task retention, and each experimental condition is single-seed (seed 42) despite cross-family/scale/domain replication. Main experiments use distributed NVIDIA B200 GPUs with count varying by model/setting. Public OSS repo exact main SHA 9ecc05173a4a5a8b872e18608c319df0eab5db81, Apache-2.0; NeMo-RL v0.6.0/Megatron/Ray/SLURM; no code/dependency imported and no Android evidence. Ledger-owner comment 7067983358 corrects prior notes and asks Perception to append both.",
     "user_action_required": "NONE; no manual Termux command, update request, model/weight change, permission change or device mutation.",
-    "pr2249": "BOSS_DOCS_ONLY_DRAFT_PR_CREATED; branch gpt6/boss-v14-run12-integration-audit-20261121 head 7131b2ac79b93c361f5ef130f711fe6d84aa5e18; offline-bridge-security queued. Contains board/workplan/coverage/user handoff only. Base was 0c9ede before #2243 merge; no conflicts expected, not yet integrated."
-  }
+    "pr2249": "BOSS_DOCS_ONLY_DRAFT_PR; branch gpt6/boss-v14-run12-integration-audit-20261121 head 5ab807abb1c50d5baa1f07af3532ec2bdedb57bc; offline-bridge-security 1/1 success. Base branch has advanced from 0c9ede to 6bbaa via #2243; no overlapping files. Not yet merged.",
+    "pr2246_research": "R-040/R-041 full-text research notes posted to Perception PR #2246 comments 7067926479 and 7067983358; ledger owner asked to append. Shared research ledger currently contains R-037 from #2243 but not R-040/R-041.",
+    "active_agents": "Five active V14 scheduled jobs only: Boss, QA/Android, JEPA/Memory, Forschung/Perception, Core/Harness. Five legacy V13 jobs are disabled. No additional agents claimed."
+  },
+  "active_agent_automations": [
+    {
+      "title": "V14 Boss & Integration",
+      "automation_id": "6af2e6276dc88191a46cfbead2c0a40d",
+      "enabled": true
+    },
+    {
+      "title": "V14 QA & Android",
+      "automation_id": "6af3a1d9060481919429b13f63c1e05a",
+      "enabled": true
+    },
+    {
+      "title": "V14 JEPA & Memory",
+      "automation_id": "6af3a160118c8191bfdce3f3138d8823",
+      "enabled": true
+    },
+    {
+      "title": "V14 Forschung & Perception",
+      "automation_id": "6af3a23bdbac8191a094fce864806595",
+      "enabled": true
+    },
+    {
+      "title": "V14 Core & Harness",
+      "automation_id": "6ab17322e7d88191b4bcf30100d61fde",
+      "enabled": true
+    }
+  ],
+  "inactive_legacy_automations": [
+    {
+      "title": "V13 Forschung & Perception",
+      "enabled": false
+    },
+    {
+      "title": "V13 QA & Android",
+      "enabled": false
+    },
+    {
+      "title": "V13 JEPA & Memory",
+      "enabled": false
+    },
+    {
+      "title": "V13 weiterbauen",
+      "enabled": false
+    },
+    {
+      "title": "V13 Weekly Burst 2",
+      "enabled": false
+    }
+  ]
 }
