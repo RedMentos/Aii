@@ -422,7 +422,7 @@ def test_staged_runtime_postcommit_updates_world_jepa_and_exposes_receivers(tmp_
         assert metrics["train_holdout_source_sha256_disjoint"] is True
         assert metrics["negative_controls_separated"] is True
         assert set(active["receiver_heads"]) == {"B1_DETAIL", "B2_GIST", "SELF_MODEL"}
-        assert active["native_body_weights_changed"] is False
+        assert metrics["retention_gate_accepted"] is True
         assert payload["scan_cursor"] >= 16
 
         prediction_rows = runtime.store.rows(
