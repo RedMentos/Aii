@@ -15,6 +15,7 @@ from v13 import world_model
 _HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 _SEAL = object()
 _TERMINAL = {"FINAL", "FAILED", "CANCELLED", "ERROR", "DEADLINE", "INTERRUPTED", "OUTCOME_UNKNOWN", "ABORTED", "REJECTED"}
+MAX_ACTION_OUTCOMES_PER_EVENT = 4096
 
 
 def _unique(pairs):
@@ -175,9 +176,15 @@ def _verify_one(store, row):
     # Store.read_source verifies source row, blob digest and span; text is discarded.
     if type(store.read_source(source_ref)) is not str:
         raise ValueError("source read")
+    # Scan the complete event history up to a hard bound. A small LIMIT could
+    # hide an older duplicate and incorrectly certify the remaining packet as
+    # the unique ActionOutcome. Over-bound histories fail closed.
     packets = store.rows(
         """SELECT payload FROM packets WHERE kind='ActionOutcome' AND event_id=? AND generation_id=?
-           ORDER BY created DESC LIMIT 17""", (meta["event_id"], meta["generation_id"]))
+           ORDER BY created DESC LIMIT ?""",
+        (meta["event_id"], meta["generation_id"], MAX_ACTION_OUTCOMES_PER_EVENT + 1))
+    if type(packets) is not list or len(packets) > MAX_ACTION_OUTCOMES_PER_EVENT:
+        raise ValueError("ActionOutcome scan bound")
     matching = []
     for packet_row in packets:
         packet_row = _mapping(packet_row, "ActionOutcome row")
