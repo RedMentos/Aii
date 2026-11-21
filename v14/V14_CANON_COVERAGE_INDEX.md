@@ -1751,15 +1751,15 @@ This section supplements the historical heading inventory; it does not remove or
 
 | Canon family | CODE / WIRING status | Test evidence | Redmi / active status |
 | --- | --- | --- | --- |
-| A0–A5 perception, attention, audio and UI | Caller-supplied PCM16 producer merged (#2240); metadata-only UI lease draft (#2246); no OS provider | #2242 9 pass/4 fail; #2246 rebased checks queued; #2244 streaming checks queued | NOT_TESTED; no microphone, OS UI capture or active C3 consent consumer |
+| A0–A5 perception, attention, audio and UI | Caller-supplied PCM16 producer merged (#2240); two-phase audio lease code in Core candidate; metadata-only UI lease draft (#2246) | #2242 6 pass/7 fail/3 running due nested builder hash and overlay fixture; #2244 old-base Python tests fail; #2246 3 pass/4 fail on context/grant/ingress tests | NOT_TESTED; no microphone, OS UI capture or Android provider; normal C3 consent consumer not accepted |
 | B1_DETAIL / B2_GIST | Distinct roles and synthetic offers wired through C4/Focal→C3 | Prior staged/integrated synthetic suites pass | No native offer-quality, useful mutual re-entry or Redmi acceptance |
-| B3 Enlightened Space | Symbolic path; tiny cross-geometry K/V experiment merged in research-only PR #2243 at 6bbaa | Exact PR head f440 4/4 checks green; merge-push CI 31 checks pending (25 queued / 6 in progress) | No production receiver, actual llama.cpp tap/injection or Android proof |
+| B3 Enlightened Space | Symbolic path; tiny cross-geometry K/V experiment merged in research-only PR #2243 at 6bbaa | Exact PR head f440 4/4 checks green; merge-push CI 31 checks (29 success / 2 in progress / 0 failures) | No production receiver, actual llama.cpp tap/injection or Android proof |
 | B4 workspace / C4 coalition | Source-span redundancy heuristic in prior pinned stage | Prior staged 251/10/47; integrated 424/3/58 | Synthetic only; no native semantic complementarity proof |
-| C/JEF/C2/C3/C5 | Synthetic output/control; exact arithmetic/audio candidate blocked in #2242 | Stage builder pin stale; arithmetic overlay fixture absent; migration PARTIAL | No correct native 2+2 or Redmi C3 acceptance |
-| World/Self/Memory/JEPA/Sleep | Persistent WorldJEPA predictor shadow and bounded worker | #2247 11/14; both optimizer-resume jobs fail per-session retention; checkpoint unchanged | Gates OFF; no accepted update or native weight change |
+| C/JEF/C2/C3/C5 | Synthetic output/control; exact arithmetic/audio candidate in #2242 has improved lifecycle code but stage chain still blocked | `stage_integrated_candidate.py:48` fails `integrated builder hash mismatch`; three legacy fixtures omit arithmetic overlay; migration/old-phone tests fail downstream | No correct native 2+2 or Redmi C3 acceptance |
+| World/Self/Memory/JEPA/Sleep | Persistent WorldJEPA predictor shadow and bounded worker | #2247 11/14; both optimizer-resume jobs fail per-session retention; checkpoint unchanged; 728cdc utility gate rejects positive update | Gates OFF; no accepted update or native weight change |
 | Age rights / X10 | Candidate separates developmental rights from ResourceGuard compute/replay | #2235 7/10; AST nested callback attribution fails two jobs; safe-additive policy failure is expected | Not released; no Android test |
 | Voice/audio | Caller PCM16 feature producer only | #2240 producer CI; #2242/#2244 consumer tests blocked/pending | No microphone, ASR, decoder/vocoder, full duplex or audio learning |
-| Android background/UI control | DRY_RUN broker and immutable action-proposal args merged; A5 metadata lease synthetic draft | #2215 synthetic approval tests; #2246 checks pending | No OS executor, AccessibilityService/MediaProjection provider or Redmi action |
+| Android background/UI control | DRY_RUN broker and immutable action-proposal args merged; A5 metadata lease synthetic draft | #2215 synthetic approval tests; #2246 3 pass/4 fail on A5 context/grant/ingress; #2244 old-base streaming tests fail | No OS executor, AccessibilityService/MediaProjection provider or Redmi action |
 | Self-optimization / cross-organ learning | JEPA SHADOW only; no cross-organ gradient path | A-GEM candidate rejected; no checkpoint diff | No persistent B1/B2/C3 weight update or self-edit |
 | Context OS / Memorilla | Context OS partial; #1983 additive companion draft | Synthetic partial only | No production companion consumer |
 | Remote maintenance | Signed patch-review prototype #1756 draft | No complete device receipt | READ_ONLY_STATUS pending; PATCH_STAGE/SANDBOX/APPLY/RESTORE unverified |
@@ -1771,8 +1771,11 @@ This section supplements the historical heading inventory; it does not remove or
 
 - Last fully accepted code release: `f279286a4453248004c670fcaabecd85da6ab299`, 34/34 exact check-runs and 19/19 workflows SUCCESS.
 - Latest merged code candidate: `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`, 18/19 exact merge-push checks; SleepRuntime JEPA utility gate rejected the positive update. NOT_RELEASED.
-- Shared release-development branch after research-only PR #2243: `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`, 31 exact merge-push check-runs at last read: 25 queued, 6 in progress, 0 completed. Pending exact-head CI is not a release.
+- Shared release-development branch after research-only PR #2243: `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`, 31 exact merge-push check-runs at last read: 29 success, 2 in progress, 0 failures. Pending exact-head CI is not a release.
 - Active master blob remains `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`; no material master edit or historical V13 appendix change was made in this checkpoint.
 - Private owner-read issue [#428](https://github.com/RedMentos/Aiiii/issues/428) has no authenticated response. No device action or update request. Local Aii checkout absent; no local full-suite test ran.
 
 **Coverage verdict:** the 1,255-heading historical inventory remains intact, but semantic clause→implementation→consumer→test→environment→rollback mapping remains incomplete. No feature above is promoted to ANDROID_VERIFIED or ACCEPTED without its exact acceptance evidence.
+
+
+**Active team capacity:** five enabled V14 jobs only (Boss & Integration, QA & Android, JEPA & Memory, Forschung & Perception, Core & Harness). Legacy V13 jobs are disabled; no extra agent capacity is claimed.
