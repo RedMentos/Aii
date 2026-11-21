@@ -8,6 +8,7 @@ package name, or notification content is accepted or persisted here.
 from __future__ import annotations
 
 from contextlib import contextmanager
+import json
 import re
 import threading
 from pathlib import Path
@@ -413,7 +414,7 @@ def revoke_ui_observation(runtime, source_id):
 
                 for packet_row in connection.execute("SELECT id,payload FROM packets").fetchall():
                     try:
-                        payload = __import__("json").loads(packet_row["payload"])
+                        payload = json.loads(packet_row["payload"])
                     except (TypeError, ValueError):
                         continue
                     if contains_source(payload):
