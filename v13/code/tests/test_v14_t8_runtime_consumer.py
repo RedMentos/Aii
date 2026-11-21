@@ -17,6 +17,7 @@ from v13.v14_learning.runtime_shadow import (
     consume_recent_committed,
     online_world_shadow_prediction,
 )
+from v13.v14_learning.t8_store_authority import verify_committed_transitions
 from v13.v14_learning.t8_temporal_bridge import TemporalT8Bridge
 
 
@@ -122,7 +123,11 @@ def test_online_world_prediction_is_a_non_authoritative_world_shadow(tmp_path):
 def test_postcommit_consumer_records_temporal_and_world_outcomes_without_weight_updates(tmp_path):
     runtime = Runtime(Path(tmp_path))
     try:
-        _event, action_id, _actual = _committed_action(runtime)
+        event, action_id, _actual = _committed_action(runtime)
+        receipts = verify_committed_transitions(runtime.store, limit=16)
+        assert len(receipts) == 1
+        assert receipts[0].source_ref == event["source_ref"]
+        assert receipts[0].outcome_created > receipts[0].created
         result = consume_recent_committed(runtime.store, runtime.home, limit=16)
         assert result["status"] == "RECORDED"
         assert result["verified"] == 1
@@ -189,5 +194,27 @@ def test_missing_online_world_and_censored_outcome_do_not_promote_learning(tmp_p
         assert record["status"] == "CANCELLED"
         assert record["error"] is None
         assert runtime.cfg["learning_mode"] == "RECORD_ONLY"
+    finally:
+        runtime.close()
+
+
+def test_runtime_online_world_update_invokes_t8_before_record_only_gate(tmp_path):
+    runtime = Runtime(Path(tmp_path))
+    try:
+        event, action_id, _actual = _committed_action(runtime)
+        result = runtime.online_world_update(limit=16, authority="SYSTEM")
+        assert result["status"].startswith("SKIPPED_")
+        shadow = result["temporal_shadow"]
+        assert shadow["status"] == "RECORDED"
+        assert shadow["verified"] == 1
+        assert shadow["temporal_recorded"] == 1
+        assert shadow["world_outcomes_created"] == 1
+        assert shadow["weight_updates"] == 0
+        assert shadow["optimizer_permission"] is False
+        assert runtime.cfg["learning_mode"] == "RECORD_ONLY"
+        assert not hasattr(runtime, "_online_world")
+        receipts = verify_committed_transitions(runtime.store, limit=16)
+        assert len(receipts) == 1
+        assert receipts[0].source_ref == event["source_ref"]
     finally:
         runtime.close()
