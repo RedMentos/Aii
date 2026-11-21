@@ -25,6 +25,24 @@ def _cohort(seed, offset=0.0):
     return x, a, x2
 
 
+def test_prediction_loss_uses_fixed_preupdate_ema_target_snapshot():
+    x, actions, x2 = _cohort(61)
+    model = world_jepa.WorldJEPA(seed=61, ensemble=1)
+    model.fit(x, actions, x2, steps=16, log_every=4)
+    anchor = {key: value.copy() for key, value in model.tgt.items()}
+    baseline = model.prediction_loss(x, actions, x2, target_snapshot=anchor)
+
+    for value in model.tgt.values():
+        value[...] += 0.1
+
+    anchored = model.prediction_loss(x, actions, x2, target_snapshot=anchor)
+    moving = model.prediction_loss(x, actions, x2)
+    assert anchored == baseline
+    assert not np.isclose(moving, baseline, rtol=1e-9, atol=1e-12)
+    with pytest.raises(ValueError, match="target snapshot"):
+        model.prediction_loss(x, actions, x2, target_snapshot={})
+
+
 def _group_steps(state, prefix):
     return {key: value for key, value in state["main"]["steps"].items()
             if key.startswith(prefix)}
