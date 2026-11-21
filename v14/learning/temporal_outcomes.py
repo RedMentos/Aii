@@ -153,11 +153,12 @@ class TemporalOutcomes:
                 raise
 
     def resolve(self, id, *, at, observed, evidence="", observed_outcome=None,
-                observation_complete=False, cancelled=False):
+                observation_complete=False, cancelled=False, censored=False):
         _label(id, "id", 128)
         if type(at) not in (int, float) or not math.isfinite(at):
             raise ValueError("time")
-        if type(observed) is not bool or type(observation_complete) is not bool or type(cancelled) is not bool:
+        if (type(observed) is not bool or type(observation_complete) is not bool
+                or type(cancelled) is not bool or type(censored) is not bool):
             raise ValueError("boolean fields")
         if type(evidence) is not str or len(evidence) > 512:
             raise ValueError("evidence")
@@ -168,17 +169,23 @@ class TemporalOutcomes:
             r = self.records[id]
             if r.status != "PENDING" or at < r.opened_at:
                 raise ValueError("state/time")
-            if cancelled and (observed or observation_complete or observed_outcome is not None):
-                raise ValueError("cancelled outcome conflict")
+            if cancelled and censored:
+                raise ValueError("cancelled/censored conflict")
+            if (cancelled or censored) and (observed or observation_complete or observed_outcome is not None):
+                raise ValueError("non-observed outcome conflict")
+            if censored and not evidence:
+                raise ValueError("censored evidence required")
             if observed and (observed_outcome is None or not evidence):
                 raise ValueError("observed outcome/evidence required")
             if not observed and observed_outcome is not None:
                 raise ValueError("unexpected observed outcome")
-            if not cancelled and not observed and at < r.deadline:
+            if not cancelled and not censored and not observed and at < r.deadline:
                 return asdict(r)
             next_r = replace(r)
             if cancelled:
                 next_r.status = "CANCELLED"
+            elif censored:
+                next_r.status = "CENSORED"
             elif observed:
                 next_r.observed_outcome = observed_outcome
                 if observed_outcome != r.outcome:
