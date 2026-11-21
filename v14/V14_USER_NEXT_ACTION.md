@@ -31,7 +31,7 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | source_HEAD | `c3c32c05a0374e970d274f8a777a7ab85c067d66` (verified current `gpt6/v13-private-remote-bridge-20261111` branch HEAD at JEPA readback; V14 PRs #2143/#2147/#2148 are unmerged candidates above it) |
 | last_integrated_functional_change | PR #2138 merged as `5b9171a4` (release/updater checkpoint); PR #2137 T8 temporal Store path merged as `3db6d1f`, still experimental/not normal-Runtime-wired. PR #2136 PCM16 RAW-EAR adapter remains synthetic and not called by normal Runtime/chat input. |
 | local_test_result | BLOCKED — no full Aii checkout; container DNS cannot resolve github.com. No exact LOCAL_LINUX repository test claimed. |
-| ci_test_result | PR #2148 current head `fb5e75f2`; exact code/test tree head `e46b87d7`, run `44854338438`: Python 3.13 `59 passed in 6.52s`, Python 3.14 `59 passed in 8.81s`, compile PASS. Only later commit is a next-action Markdown table refresh. #2145 separate runtime candidate: 52 V14 learning tests PASS but one Runtime test FAILs on `prediction_error` vs persisted `error`; its T8 consumer still uses newest-first latest-N without persistent cursor. |
+| ci_test_result | PR #2148 head at last GitHub readback `ac9a79e9`; code/test tree `e46b87d7`, run `44854338438`: Python 3.13 `59 passed in 6.52s`, Python 3.14 `59 passed in 8.81s`, compile PASS. This next-action/board refresh is documentation-only; no code/test changed after e46b. #2145 separate runtime candidate: 52 V14 learning tests PASS but one Runtime test FAILs on `prediction_error` vs persisted `error`; newest-first scan lacks persistent cursor. |
 | phone_installed_sha | UNKNOWN — no fresh owner-verified PIPELINE_STATUS receipt |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
 | device_model_comparison | NOT_RUN — no current device measurements or approved model experiment |
@@ -299,3 +299,7 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 ## Latest exact CI readback — 2026-11-21
 
 PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed GitHub Actions run 44854338438: Python 3.13 59 passed in 6.52s; Python 3.14 59 passed in 8.81s; compile and both jobs PASS. The only later commit is a next-action Markdown table refresh; no code or test file changed after the tested e46b head. The earlier run 44854219157 also passed 59/59 on both versions and is superseded by this readback.
+
+
+## Final readback before documentation-only board refresh — 2026-11-21
+PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/test tree e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed run 44854338438: Python 3.13 59 passed (6.52s), Python 3.14 59 passed (8.81s), compile PASS. The following board/next-action commits contain documentation only; no code or test changes.
