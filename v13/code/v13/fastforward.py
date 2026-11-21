@@ -133,7 +133,7 @@ class FastForward:
                 if ok:p['durations']=(p['durations']+[duration_s])[-20:]
                 if s['n']>=SKILL['shadow_cycles']:
                     delib=sum(p['durations'])/len(p['durations']) if p['durations'] else None
-                    faster=predicted_fast_s is None or delib is None or predicted_fast_s<=delib
+                    faster=(predicted_fast_s is not None and delib is not None and predicted_fast_s>=0 and predicted_fast_s<=delib)
                     if s['agree']/s['n']>=AGREE_MIN and s['fail']==0 and faster:
                         p['stage']='READY';p['gate']={'agreement':round(s['agree']/s['n'],3),'failures':0,'latency_ok':faster,'G':'G-PROCEDURALIZATION-004'}
                         p['history'].append(['READY',p['n']])
