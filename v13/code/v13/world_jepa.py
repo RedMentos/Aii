@@ -225,7 +225,10 @@ class Adam:
                 "kkt_active_constraint_count": kkt_active,
                 "projection_sweeps": sweeps,
                 "projection_method": projection_method,
-                "projection_candidates_examined": (1 << len(active)) if active else 0,
+                "projection_candidates_examined": (
+                    (1 << len(active))
+                    if active and projection_method == "ACTIVE_SET_ENUMERATION" else 0
+                ),
                 "max_constraint_violation": max_violation,
             })
         for key, direction in directions.items():
