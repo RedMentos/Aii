@@ -385,8 +385,10 @@ class Runtime:
                 raise Limits('Ressourcenlimit: zu wenig freier RAM oder zu heiß; :resources')
             from .output_policy import match
             mark('policy_check');fixed_policy=match(self.store,text)
+            from .arithmetic_reflex import exact_arithmetic
+            arithmetic_answer=None if fixed_policy else exact_arithmetic(text)
             mark('perception_and_state')
-            if fixed_policy:
+            if fixed_policy or arithmetic_answer is not None:
                 self.store.add_packet('PerceptPacket',packet('PerceptPacket','A5_PERCEPT',eid,g,[e['source_ref']],source_ref=e['source_ref'],segments=segments(text,e['source_ref'],240,percept_mode(self.cfg)),modality='text'))
             else:
                 percept_packet=self.cognition.percept(e)
@@ -397,17 +399,17 @@ class Runtime:
             exec_state=self.executive.begin(e,self.session,self.cfg,resource,rmode);version=exec_state['state_version']
             mark('memory_recall');retrieval_deadline=min(deadline,time.monotonic()+self.cfg['retrieval_seconds'])
             semantic=(lambda m:self.learner.retrieve(e,m,retrieval_deadline)) if self.store.components().get('memory_retrieval') else None
-            if fixed_policy:memories=[]
+            if fixed_policy or arithmetic_answer is not None:memories=[]
             else:  # WP-T1 memory head (scaffold 'recall' unless an approved readout says skip/deep)
                 top_k,cue,mem_head=fastpol.recall_plan(self,e,text,min(deadline,time.monotonic()+self.cfg['control_seconds']))
                 if mem_head:meta['memory_head']={'action':mem_head.get('action'),'learned':bool(mem_head.get('learned')),'packet_id':mem_head.get('packet_id')}
                 memories=self.memory.recall(cue,self.session,semantic,cancel=self.cancel_event,deadline=deadline,top_k=rmodes.scaled(self.cfg['memory_top_k'] if top_k is None else top_k,rmode,'context_scale'))  # §97.2 YELLOW+: less context
             meta['memory_ids']=[m['id'] for m in memories]
-            if not fixed_policy:
+            if not fixed_policy and arithmetic_answer is None:
                 try:memories=episodes.recall_turn(self,text,memories,meta);meta['memory_ids']=[m['id'] for m in memories]  # WP-N8 §9.4 associative spread (SHADOW default)
                 except Exception as exc:self.store.log('episodes_unavailable',eid,{'stage':'spread','error':type(exc).__name__})
             warm_ids=[]
-            if not fixed_policy:
+            if not fixed_policy and arithmetic_answer is None:
                 try:  # WP-N7 §9.1 warm/activity-silent memory: reactivated only in ACTIVE; SHADOW records ids in the ContextPlan
                     warm=ctxos.controller(self).warm(text,self.session,memories);warm_ids=warm['ids']
                     if warm['applied'] and warm['items']:memories=memories+warm['items'];meta['memory_ids']=[m['id'] for m in memories];meta['warm_memory_ids']=warm_ids
@@ -427,6 +429,10 @@ class Runtime:
                 decision=self.store.add_packet('OutputPolicyDecision',packet('OutputPolicyDecision','C5_REPORT_BROKER',eid,g,refs,rule_id=fixed_policy['rule_id'],rule_version=fixed_policy['rule_version'],query_ref=fixed_policy['query_ref'],answer_ref=fixed_policy['answer_ref'],output_authority='APPROVED_FIXED_RULE',model_generated=False))
                 meta.update(output_policy={k:fixed_policy[k] for k in ['kind','rule_id','rule_version','query_ref','answer_ref']},output_authority='APPROVED_FIXED_RULE',exact_policy_matched=True,skipped_native_stages=['A3_NATIVE_ALIGNMENT','SEMANTIC_RECALL','C2_CONTROL','B_OBSERVERS','C3_DECODE','NATIVE_WORLD_PREDICTION'])
                 meta['context_source_refs']=refs
+            elif arithmetic_answer is not None:
+                direct=True;route='simple';meta['route']={'source':'EXACT_ARITHMETIC_REFLEX'}
+                meta['arithmetic_reflex']={'source_ref':e['source_ref'],'result':arithmetic_answer,'bounded':True,'model_generated':False}
+                meta.update(output_authority='LOCAL_EXACT_ARITHMETIC',skipped_native_stages=['A3_NATIVE_ALIGNMENT','SEMANTIC_RECALL','C2_CONTROL','B_OBSERVERS','C3_DECODE','NATIVE_WORLD_PREDICTION'])
             elif exact:direct=True;route='simple';meta['route']={'source':'EXPLICIT_EXACT_COPY'}
             else:  # WP-T6: a trusted route-only skill routes before C_fast (no Needle call); else the full path
                 auto=skilllive.automatic(self,e,text,meta) if self.cfg['route_override']=='auto' else None
@@ -500,7 +506,7 @@ class Runtime:
                 try:tool_plan=toolctl.ToolStep(self).plan(e,text,offers=selected,version=version)  # WP-K/AG10: concrete tool proposal -> C5 candidate under IH-H29
                 except Exception as exc:self.store.log('tool_step_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
             clar=agi_live.clarify(self,meta) if not direct else None  # WP-N13 AG9 abstain -> C5 ASK_USER
-            c5=ActionGate(self.store).select(e,route=route,direct=direct,resource_state=state,coalition=focal_run['coalition'] if focal_run else [],view=view,age=age_lim,effort=effort_plan['effort'] if effort_plan else None,gain_action=self._action_gain(eid),tool=tool_plan,clarify=clar)
+            c5=ActionGate(self.store).select(e,route=route,direct=direct,direct_action='LOCAL_EXACT_ARITHMETIC' if arithmetic_answer is not None else 'SOURCE_COPY',resource_state=state,coalition=focal_run['coalition'] if focal_run else [],view=view,age=age_lim,effort=effort_plan['effort'] if effort_plan else None,gain_action=self._action_gain(eid),tool=tool_plan,clarify=clar)
             clarify_turn=c5['role']=='ASK_USER'
             if clar:meta['clarify']=clar|{'selected':clarify_turn}
             if clarify_turn:c5['role']='C3_LANGUAGE'  # C3 voices the clarifying question
@@ -526,10 +532,10 @@ class Runtime:
             exec_state=self.executive.update(e,self.session,offers=selected,action_id=aid,user_beliefs=meta.get('user_beliefs') or [])
             meta['executive_state_version']=exec_state['state_version']
             if direct:
-                output=safe_text(fixed_policy['answer'] if fixed_policy else exact.group(1))
+                output=safe_text(fixed_policy['answer'] if fixed_policy else arithmetic_answer if arithmetic_answer is not None else exact.group(1))
                 if not visible_text(output):
                     output='';raise Unavailable('Exakte Quelle enthält keinen sichtbaren Text')
-                txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=True
+                txctl.commit_output(self.store,mid,eid,meta);meta['first_output_monotonic_ns']=time.monotonic_ns();self.store.append_message(mid,output);meta['direct_source_copy']=arithmetic_answer is None
             else:
                 role=c5['role']
                 if any(x['reason']=='RESOURCE_PRESSURE' and x['action_id']==ActionGate.PRIOR[route] for x in c5['suppressed']):meta['resource_fallback']=ActionGate.PRIOR[route]+' -> '+role
@@ -682,7 +688,7 @@ class Runtime:
                 fr=locals().get('focal_run');callosum.controller(self).outcome(eid,[x['item_id'] for x in fr['coalition']] if fr else [],status)
             except Exception as exc:self.store.log('callosum_unavailable',eid,{'stage':'outcome','error':type(exc).__name__})
             if aid:
-                self.store.finish_action(aid,status,{'characters':len(output),'self_candidate_hash':meta['self_candidate_hash'],'action_duration_s':time.monotonic()-action_started,'role':'SOURCE_COPY' if direct else (runner.role if runner else None),'model_generated':meta['model_generated']})
+                self.store.finish_action(aid,status,{'characters':len(output),'self_candidate_hash':meta['self_candidate_hash'],'action_duration_s':time.monotonic()-action_started,'role':predicted_role if direct else (runner.role if runner else None),'model_generated':meta['model_generated']})
                 self.world.observe(aid)
                 try:selfctl.controller(self).observe(eid,[{'channel':'action_status','value':status},{'channel':'duration_s','value':time.monotonic()-action_started}],close=[aid])  # WP-N9 self vs world
                 except Exception as exc:self.store.log('self_unavailable',eid,{'stage':'attribution','error':type(exc).__name__})
@@ -698,7 +704,7 @@ class Runtime:
                             ffc.record_turn(ff_key,wake_route,status,dur,learned['surprise'],fast,applied=bool(meta.get('procedural',{}).get('apply')))
                 except Exception as exc:self.store.log('fast_forward_unavailable',eid,{'stage':'learn','error':type(exc).__name__})
                 try:  # WP-N4: C6 egress schema check + separate C5 modulators for the taken action
-                    eg=(bout if bout and bout['egress_ok'] is not None else c5ctl.check_output(self.store,e,'EXACT_RENDER' if direct else 'TEXT_REPORT',output)) if status=='FINAL' else None  # WP-T7: the broker already ran C6
+                    eg=(bout if bout and bout['egress_ok'] is not None else c5ctl.check_output(self.store,e,'EXACT_RENDER' if direct and not meta.get('arithmetic_reflex') else 'TEXT_REPORT',output)) if status=='FINAL' else None  # WP-T7: the broker already ran C6
                     if eg and 'egress_ok' in eg:eg={'ok':eg['egress_ok']}
                     sel=self.store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=? ORDER BY rowid DESC LIMIT 1",(eid,))
                     if sel:
