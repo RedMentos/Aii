@@ -100,6 +100,17 @@ def validate_voice_cues(cues: dict) -> dict:
         raise ValueError("pitch range requires a median pitch")
     if cues["activity_hint"] != "VOICED" and cues["prosody_change_score"] != 0:
         raise ValueError("prosody change requires voiced activity")
+    voiced_count = round(cues["voiced_fraction"] * count)
+    if count and not math.isclose(cues["voiced_fraction"] * count, voiced_count, abs_tol=1e-3):
+        raise ValueError("voice cue voiced fraction is inconsistent")
+    if voiced_count == 0 and cues["voiced_energy_range_db"] is not None:
+        raise ValueError("voiced energy range requires voiced frames")
+    if voiced_count == 1 and (
+        cues["f0_range_hz"] is not None
+        or cues["voiced_energy_range_db"] != 0.0
+        or cues["prosody_change_score"] != 0.0
+    ):
+        raise ValueError("a single voiced frame cannot establish prosody dynamics")
     if cues["activity_hint"] == "VOICED" and cues["voiced_energy_range_db"] is None:
         raise ValueError("voiced activity requires voiced energy range")
     return dict(cues)
@@ -172,6 +183,9 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
             120.0,
             max(0.0, 20.0 * math.log10(max(high_voiced_rms, 1e-6) / max(low_voiced_rms, 1e-6))),
         )
+    elif len(voiced_frame_rms) == 1:
+        # One observation has a zero range, but cannot establish a change.
+        voiced_energy_range_db = 0.0
     else:
         voiced_energy_range_db = None
 
