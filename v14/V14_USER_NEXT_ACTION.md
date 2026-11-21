@@ -253,3 +253,8 @@ For current docs-only HEAD `d61b695739023d0bf0a3cfa4022770f0de2615fa`:
 - Integrated-regression job is still running step 6 (shared staged organ/memory path) since 00:51:24Z; >5 minutes at last readback, no failure and no accessible log yet. The workflow remains IN_PROGRESS, so exact latest-SHA gate is not complete.
 
 Code-bearing release `5b9171a4` remains the last fully CI-green code SHA. Do not claim `d61b695` green or deployed until its integrated-regression job completes. Private #351–354 still unanswered; installed SHA UNKNOWN / REDMI_UNVERIFIED.
+
+
+## T8 retargeted-head boundary — 2026-11-21 01:57 CET
+
+PR #2137 now points to `a3e19370d7fefe500e8edebf6942624207ff2865`, a documentation/handoff-only change on top of code-identical head `2d8eb79bdefe3c6c3bef63fea7d25563b7f56952`. The previous code-identical head passed focused T8 **52 tests**, staged-runtime **240/10 skipped/47 subtests**, integrated regression **415/3 skipped/58 subtests**, and private bridge. The retargeted head has new exact CI in progress; do not carry the predecessor's success forward as proof for a3e19370. Dedicated T8 workflow remains Python 3.11 only; QA requested Python 3.14 coverage. Still no normal Runtime consumer or native/Redmi learning proof.
