@@ -4,9 +4,14 @@ on:
   push:
     branches:
       - core/v14-android-companion-native-20261121
+      - qa/v14-companion-single-use-approval-20261121
+    paths:
+      - "android-companion/**"
+      - ".github/workflows/v14-android-companion.yml"
   pull_request:
     branches:
       - gpt6/v14-core-companion-outcome-20261121
+      - core/v14-android-companion-native-20261121
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"

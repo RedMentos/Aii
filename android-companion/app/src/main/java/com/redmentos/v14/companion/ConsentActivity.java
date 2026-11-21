@@ -58,39 +58,49 @@ public final class ConsentActivity extends Activity {
                         + "Expires: " + action.expiresAt + "\n\n"
                         + "This dispatches the app launch intent only. It does not verify that the app reached foreground, "
                         + "does not observe its screen, and cannot authorize learning.")
-                .setNegativeButton("Deny", (dialog, which) -> finishWithReceipt("USER_DENIED", false))
+                .setNegativeButton("Deny", (dialog, which) -> deny())
                 .setPositiveButton("Approve launch", (dialog, which) -> launch())
-                .setOnCancelListener(dialog -> finishWithReceipt("USER_DENIED", false))
+                .setOnCancelListener(dialog -> deny())
                 .show();
     }
 
-    private void launch() {
-        SharedPreferences prefs = getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
-        if (!prefs.getBoolean("enabled", false)) {
-            Toast.makeText(this, "Companion is stopped", Toast.LENGTH_LONG).show();
+    private void deny() {
+        if (!db.claimForDenial(action.actionId, System.currentTimeMillis())) {
+            Toast.makeText(this, "Action was already handled or expired", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
-        if (System.currentTimeMillis() >= action.expiresAt) {
-            Toast.makeText(this, "Action expired", Toast.LENGTH_LONG).show();
+        finishWithReceipt("USER_DENIED", false, false);
+    }
+
+    private void launch() {
+        // Reserve the action before the Android side effect. Stale dialogs cannot redispatch.
+        if (!db.claimForDispatch(action.actionId, System.currentTimeMillis())) {
+            Toast.makeText(this, "Action was already handled or expired", Toast.LENGTH_LONG).show();
             finish();
+            return;
+        }
+        SharedPreferences prefs = getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
+        if (!prefs.getBoolean("enabled", false)) {
+            Toast.makeText(this, "Companion is stopped", Toast.LENGTH_LONG).show();
+            finishWithReceipt("COMPANION_STOPPED", false, true);
             return;
         }
         try {
             Intent launch = getPackageManager().getLaunchIntentForPackage(action.packageName);
             if (launch == null) {
-                finishWithReceipt("FAILED_TO_DISPATCH", true);
+                finishWithReceipt("FAILED_TO_DISPATCH", true, true);
                 return;
             }
             launch.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             startActivity(launch);
-            finishWithReceipt("DISPATCHED_UNVERIFIED", true);
+            finishWithReceipt("DISPATCHED_UNVERIFIED", true, true);
         } catch (Exception e) {
-            finishWithReceipt("FAILED_TO_DISPATCH", true);
+            finishWithReceipt("FAILED_TO_DISPATCH", true, true);
         }
     }
 
-    private void finishWithReceipt(String status, boolean localConsent) {
+    private void finishWithReceipt(String status, boolean localConsent, boolean dispatchClaimed) {
         try {
             JSONObject key = signer.publicKeyInfo();
             JSONObject body = new JSONObject();
@@ -109,7 +119,11 @@ public final class ConsentActivity extends Activity {
             body.put("key_storage_status", key.getString("key_storage_status"));
             body.put("key_id", key.getString("key_id"));
             JSONObject receipt = signer.sign(body);
-            db.finish(action.actionId, status, receipt.toString());
+            if (dispatchClaimed) {
+                db.finishDispatch(action.actionId, status, receipt.toString());
+            } else {
+                db.finishDenial(action.actionId, status, receipt.toString());
+            }
             Toast.makeText(this, status, Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Toast.makeText(this, "Receipt signing failed: " + e.getClass().getSimpleName(), Toast.LENGTH_LONG).show();
