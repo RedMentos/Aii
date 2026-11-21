@@ -42,6 +42,11 @@ def _fixture(home, *, include_c4=True, include_context=True):
                 "role": role, "status": "FINAL", "actual_model": "fixture-" + role,
                 "prompt_tokens": 41, "generated_tokens": 7, "ttft_s": 0.2,
                 "duration_s": 0.5, "synthetic": True,
+                "native_offer_prompt_receipt": {
+                    "prompt_tokens": 41, "native_completion_http_200": True,
+                    "native_template_submitted": True,
+                    "native_attention_or_semantic_use_proven": False,
+                },
             }
             store.add_packet("OfferPacket", offer)
             offers.append(offer)
@@ -120,6 +125,8 @@ def test_full_b1_b2_c4_c3_path_is_reported_without_private_text(tmp_path):
     assert report["read_only"] is True
     assert report["private_text_returned"] is False
     assert report["bodies"]["roles"] == ["B1_DETAIL", "B2_GIST"]
+    assert all(x["prompt_token_source"] == "NATIVE_TOKENIZE_RECEIPT" for x in report["bodies"]["offers"])
+    assert all(x["evidence_level"] == "SYNTHETIC_FIXTURE" for x in report["bodies"]["offers"])
     assert report["c4"]["status"] == "PASS"
     assert report["c4"]["consumed_roles"] == ["B1_DETAIL", "B2_GIST"]
     assert report["c3"]["status"] == "PASS"

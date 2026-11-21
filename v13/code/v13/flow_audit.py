@@ -84,6 +84,8 @@ def _safe_metrics(value: Any) -> dict:
         "original_prompt_tokens", "generated_tokens", "ttft_s",
         "duration_s", "sampled_peak_pss_bytes", "sampled_peak_rss_bytes",
         "CAN_LATENT_TAP", "CAN_LATENT_INJECT", "CAN_TRAIN_BODY",
+        "native_completion_http_200", "native_template_submitted",
+        "native_attention_or_semantic_use_proven",
     ):
         item = value.get(key)
         if isinstance(item, bool) and key.startswith("CAN_"):
@@ -95,14 +97,19 @@ def _safe_metrics(value: Any) -> dict:
         elif isinstance(item, str) and len(item) <= 160:
             out[key] = item
     receipt = value.get("native_offer_prompt_receipt")
+    has_receipt_token_count = False
     if isinstance(receipt, dict):
         for key in ("prompt_tokens", "original_prompt_tokens", "admitted_prompt_tokens"):
             item = receipt.get(key)
             if type(item) is int:
                 out.setdefault(key, item)
+                has_receipt_token_count = True
+    if has_receipt_token_count:
         out["prompt_token_source"] = "NATIVE_TOKENIZE_RECEIPT"
     elif type(value.get("prompt_tokens")) is int:
         out["prompt_token_source"] = "RUNNER_REPORTED"
+    elif isinstance(receipt, dict):
+        out["prompt_token_source"] = "NATIVE_TEMPLATE_WITNESS"
     if value.get("synthetic") is True or value.get("test_fixture") is True:
         out["evidence_level"] = "SYNTHETIC_FIXTURE"
     elif isinstance(out.get("actual_model"), str) and type(out.get("prompt_tokens")) is int:
