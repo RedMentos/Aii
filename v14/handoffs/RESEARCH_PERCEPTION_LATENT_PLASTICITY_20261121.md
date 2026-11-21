@@ -79,3 +79,11 @@ Private PIPELINE_STATUS request #435 remains open with zero authenticated commen
 - Full FASTDIAR arXiv preprint 2610.02941v1 reviewed; repository revision f48bff53b9a6a0cce4539e94b6def95f609eaea4. Code MIT; checkpoint-specific license not independently verified. The paper and README disagree on the small checkpoint count (2.7M vs 2.4M). Dependencies are PyTorch/torchaudio/torchcodec/FFmpeg; no ARM64/Termux result. No download.
 - Core/JEPA next: review #2272 on the current #2258 base; only after exact CI, connect a separately approved local frame-embedding provider. Verify model/checkpoint license, ARM ABI, RSS, TTFT and real-speech false-positive/overlap behavior before proposing a model trial. Any download requires explicit user permission; a production swap requires a separate explicit approval.
 - Keep the existing voice, non-speech, prosody, A5 source/clock/provisional-final provenance, A4 salience, C3 and Android microphone goals open. This adapter is not full RAW EAR or voice-learning completion.
+
+
+### Local isolated module verification and independent P0 status
+
+- Exact source blob bb4afd49d36f5508370bdc61e81c6de1c83a6235 was executed locally on Linux x86_64. Focused stable/change-or-overlap/non-voiced/no-threshold/model-reset/5-invalid-packet/reset/bounded-stream checks all PASS.
+- 100 synthetic 192-D/80-ms windows: median 6.9619 ms, p95 8.7649 ms, max 15.9171 ms, tracemalloc peak 866.4 KiB. Encoder inference, audio frontend, SQLite/Runtime and Android are excluded.
+- Full repository local integration remains BLOCKED; final-head CI was QUEUED, not PASS, at last readback.
+- Issue #1904 remains OPEN. Last accepted release f279286a4453248004c670fcaabecd85da6ab299; candidate 728cdc763f09bee20ac00e1f0faadffcd33dfbb2 is 18/19; private PIPELINE_STATUS #428 unanswered; installed SHA UNKNOWN and updater UNVERIFIED. No update request or phone mutation was attempted.
