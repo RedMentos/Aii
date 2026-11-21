@@ -12,12 +12,13 @@ from v13.runtime import Runtime, _validate_audio_window
 from v13.store import Store
 
 
-def _window(consent_check):
+def _window(consent_check, finality="FINAL"):
     return {
         "pcm16": struct.pack("<160h", *([1000] * 160)),
         "sample_rate": 16000,
         "start_ms": 0,
         "source_id": "mic-test-1",
+        "finality": finality,
         "consent_receipt": "opaque-local-receipt",
         "consent_check": consent_check,
     }
@@ -37,7 +38,12 @@ def test_audio_window_is_bounded_and_requires_live_consent_provider():
     valid = _window(lambda source_id, receipt: True)
     assert _validate_audio_window(valid)["pcm16"] == valid["pcm16"]
 
+    missing_finality = dict(valid)
+    missing_finality.pop("finality")
     for invalid in (
+        missing_finality,
+        valid | {"finality": "PARTIAL"},
+        valid | {"finality": True},
         valid | {"sample_rate": True},
         valid | {"pcm16": b"\x00"},
         valid | {"pcm16": b"\x00\x00" * 16001},
@@ -143,6 +149,53 @@ def test_real_store_audio_packet_becomes_source_bound_body_and_c3_context(tmp_pa
     assert window["pcm16"].hex() not in packet_rows[0]["payload"]
     blobs = list((home / "data" / "blobs").iterdir())
     assert all(blob.read_bytes() != window["pcm16"] for blob in blobs)
+    store.close()
+
+
+
+def test_provisional_audio_is_observed_by_a4_but_never_promoted_to_body_or_c3(tmp_path):
+    from types import SimpleNamespace
+
+    store, event, _home = _store(tmp_path)
+    runtime = Runtime.__new__(Runtime)
+    runtime.store = store
+    calls = []
+
+    def consent(source_id, receipt):
+        calls.append((source_id, receipt))
+        return True
+
+    window = _validate_audio_window(_window(consent, finality="PROVISIONAL"))
+    result = consume_pcm16_window(
+        runtime, window["pcm16"], sample_rate=window["sample_rate"],
+        start_ms=window["start_ms"], event_id=event["event_id"],
+        generation_id=store.generation_id, source_id=window["source_id"],
+        consent_receipt=window["consent_receipt"],
+        consent_check=window["consent_check"], token_budget=512,
+        finality=window["finality"],
+    )
+
+    assert result["packet"]["segments"][0]["finality"] == "PROVISIONAL"
+    assert result["a4"]["finality"] == "PROVISIONAL"
+    assert result["c3_admission"].status == "EMPTY_OR_UNAUTHORIZED"
+    assert result["c3_admission"].selected == ()
+    assert "mic-test-1" in result["c3_admission"].omitted
+    assert runtime._audio_context_record(event["event_id"], result, window) is None
+
+    # Even a malformed upstream admission must not promote a provisional packet.
+    fake_percept = SimpleNamespace(
+        source_id="mic-test-1", modality="audio", start_ms=0, end_ms=10,
+        summary="provisional acoustic fixture", priority=1,
+    )
+    forced = dict(result, c3_admission=SimpleNamespace(status="ADMITTED", selected=(fake_percept,)))
+    assert runtime._audio_context_record(event["event_id"], forced, window) is None
+    assert runtime._audio_context_view(event["event_id"], consumer="B1_DETAIL") is None
+    assert runtime._audio_prompt_layer(event["event_id"]) == (None, None)
+    cognition = Cognition.__new__(Cognition)
+    cognition.r = runtime
+    assert cognition._audio_context_query({"event_id": event["event_id"]}, "B1_DETAIL") == (None, [])
+    assert store.rows("SELECT id FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT'") == []
+    assert len(calls) >= 4
     store.close()
 
 
