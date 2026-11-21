@@ -1,3 +1,13 @@
+# Latest Android UI lease review — 2026-11-21 20:18 CET
+
+Perception #2246 now has a two-phase revoke protocol: request-cancel before waiting for the provider guard, then source/context cleanup after the guard is released. This is the correct direction. However, the adapter path currently omits the required `generation_id` argument when calling `ui_observation_lease`; the adapter-level test should fail until that is fixed. Its CI is still queued/in progress. No Android OS provider, screenshot/UI-tree capture or action is implemented.
+
+#2243's explicit tiny-KV experiment CI passed 3/3; privacy/offline-bridge pass; model-lab rerun queued. It is a toy mechanism proof only. #2242 audio still has the deployer pin failure and no two-phase revoke cancel. #2247 learning remains gated because all A-GEM updates fail per-session retention.
+
+**No user action is required.** No device action, model download/swap, permission change or data mutation occurred.
+
+---
+
 # Latest A5 research note — 2026-11-21 20:12 CET
 
 Perception #2246 now has a new head `e9a40aff...`; four checks are queued. It is still a synthetic metadata-only UI lease, with no Android OS provider/capture/action and no immediate revoke-cancel path. It must rebase after #2243 synchronizes.
