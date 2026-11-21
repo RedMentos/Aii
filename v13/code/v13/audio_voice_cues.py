@@ -96,7 +96,7 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
     overall_peak = max(abs(value) for value in samples) / 32768.0
 
     # Block-average downsampling keeps the Python work bounded on ARM.
-    factor = max(1, int(round(sample_rate / 8000.0)))
+    factor = max(1, int(sample_rate // 8000))
     usable = (len(samples) // factor) * factor
     low_rate = [
         sum(samples[index:index + factor]) / factor
