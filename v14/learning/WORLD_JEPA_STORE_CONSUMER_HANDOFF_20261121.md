@@ -10,10 +10,14 @@
 
 1. **Source-bound oldest-first T8 feed.** Added `verify_committed_transition_page` to the merged Store authority. It keyset-pages SQLite actions by monotonically increasing local rowid, verifies each candidate through the existing persisted event/source/CorollaryCopy/ActionOutcome authority, and does not repeatedly read only the latest N rows. The scan cursor is numeric Store position, not a learned action ID.
 2. **Censoring at the read boundary.** Only observed terminal outcomes (`FINAL`, `FAILED`, `ERROR`, `DEADLINE`, `REJECTED`) can enter the WorldJEPA learner. `CANCELLED`, `ABORTED`, `OUTCOME_UNKNOWN`, and `INTERRUPTED` are excluded before receipt creation; a skipped count is telemetry only. They create no training label, processed ID, prediction error or receiver update.
-3. **Source-disjoint holdout.** Experience rows now retain verified `source_id`; the deterministic split hashes `source_id`, not `action_id`, so actions from one source cannot be distributed across train and holdout. Source digest changes, content overlap, ID overlap and incomplete persisted splits fail closed.
+3. **Source- and content-digest-disjoint holdout.** Experience rows now retain verified `source_id`; the deterministic split hashes `source_id`, not `action_id`, so actions from one source cannot be distributed across train and holdout. Source digest changes, content overlap, ID overlap and incomplete persisted splits fail closed.
 4. **Persistent cursor + rollback.** State schema v2 persists the scan cursor alongside the active/previous JEPA checkpoints. Restart resumes the next oldest page. Rollback restores the previous checkpoint and its scan cursor, so the rolled-back page can be replayed.
 5. **World/Self/Memory and body readouts.** The trainable WorldJEPA online encoder/predictor and EMA target continue to receive verified numeric T8 outcomes. Separate numeric shadow heads now expose B1_DETAIL, B2_GIST and SELF_MODEL readouts. A source-linked episodic `recall()` API retrieves nearest persisted numeric experiences with source/outcome digests; it returns no raw chat content.
 6. **Python compatibility.** The dedicated workflow tests Python 3.13 and 3.14.
+
+## Follow-up review correction — 2026-11-21
+
+QA found that two distinct source_id values can still carry the same source_sha256. This child change partitions on source_sha256, keeps source_id-to-digest stability checks, validates source digest disjointness again on checkpoint readback, and adds a regression where two differently partitioned source IDs share the same digest. The earlier source_id-only rule was insufficient.
 
 ## Evidence required / current boundary
 

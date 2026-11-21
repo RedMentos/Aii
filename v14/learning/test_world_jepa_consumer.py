@@ -105,6 +105,7 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
         assert metrics["source_verified"] is True
         assert metrics["train_holdout_id_disjoint"] is True
         assert metrics["train_holdout_source_disjoint"] is True
+        assert metrics["train_holdout_source_sha256_disjoint"] is True
         assert metrics["train_holdout_content_disjoint"] is True
         assert metrics["train_rows"] >= 8 and metrics["holdout_rows"] >= 8
         assert metrics["parameter_delta_norm"] > 0
@@ -209,14 +210,36 @@ def test_source_disjoint_holdout_groups_all_actions_from_one_source():
                 "s": [source_index / 32.0, action_index / 4.0, 0.25, 0.75],
                 "a": route, "y": [0.1 + source_index / 100.0, float(action_index % 2), 0.2 + action_index / 10.0],
             })
+    source_ids = sorted({row["source_id"] for row in rows})
+    def old_source_id_partition(source_id):
+        digest = hashlib.sha256(source_id.encode("utf-8")).digest()
+        return int.from_bytes(digest[:8], "big") % 2
+    source_a, source_b = next(
+        (left, right) for left in source_ids for right in source_ids
+        if left < right and old_source_id_partition(left) != old_source_id_partition(right)
+    )
+    shared_digest = next(row["source_sha256"] for row in rows if row["source_id"] == source_a)
+    # Different source IDs, same exact source bytes, and opposite old partitions.
+    for row in rows:
+        if row["source_id"] == source_b:
+            row["source_sha256"] = shared_digest
+
     split = _source_disjoint_split(rows)
     by_id = {row["action_id"]: row for row in rows}
     train_sources = {by_id[action_id]["source_id"] for action_id in split["train_action_ids"]}
     holdout_sources = {by_id[action_id]["source_id"] for action_id in split["holdout_action_ids"]}
+    train_hashes = {by_id[action_id]["source_sha256"] for action_id in split["train_action_ids"]}
+    holdout_hashes = {by_id[action_id]["source_sha256"] for action_id in split["holdout_action_ids"]}
     assert train_sources.isdisjoint(holdout_sources)
+    assert train_hashes.isdisjoint(holdout_hashes)
     assert split["manifest"]["source_disjoint"] is True
-    for source_id in {row["source_id"] for row in rows}:
+    assert split["manifest"]["source_sha256_disjoint"] is True
+    for source_id in source_ids:
         assert sum(source_id in group for group in (train_sources, holdout_sources)) == 1
+    fold_a = "train" if source_a in train_sources else "holdout"
+    fold_b = "train" if source_b in train_sources else "holdout"
+    assert fold_a == fold_b
+
     corrupt = [dict(row) for row in rows]
     corrupt[-1]["source_sha256"] = hashlib.sha256(b"changed-source").hexdigest()
     with pytest.raises(ValueError, match="source identity changed digest"):
@@ -264,5 +287,34 @@ def test_oldest_first_pages_do_not_starve_older_t8_backlog(tmp_path):
         payload, _ = store.state("v14.world_jepa.store_consumer", None)
         processed = set(payload["active"]["processed_ids"])
         assert set(ids[:128]).issubset(processed) and not (set(ids[128:192]) & processed)
+    finally:
+        store.close()
+
+
+def test_checkpoint_readback_rejects_source_sha256_leak(tmp_path):
+    store, session = _make_store(tmp_path / "brain-digest-leak")
+    try:
+        _add_transitions(store, session, 0, 64)
+        consumer = WorldJEPAStoreConsumer(
+            store, tmp_path / "private-digest-leak", learning_enabled=True
+        )
+        result = consumer.update(limit=64, steps=40, optimizer_permission=True)
+        assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        payload, version = store.state("v14.world_jepa.store_consumer", None)
+        record = payload["active"]
+        by_id = {row["action_id"]: row for row in record["experience_rows"]}
+        train_source = by_id[record["train_ids"][0]]["source_id"]
+        holdout_source = by_id[record["holdout_ids"][0]]["source_id"]
+        train_digest = by_id[record["train_ids"][0]]["source_sha256"]
+        assert train_source != holdout_source
+        for row in record["experience_rows"]:
+            if row["source_id"] == holdout_source:
+                row["source_sha256"] = train_digest
+        store.set_state("v14.world_jepa.store_consumer", payload, expected=version)
+        restarted = WorldJEPAStoreConsumer(
+            store, tmp_path / "private-digest-leak", learning_enabled=True
+        )
+        with pytest.raises(ValueError, match="persisted source digest holdout overlap"):
+            restarted.restore()
     finally:
         store.close()

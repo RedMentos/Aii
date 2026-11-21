@@ -129,15 +129,22 @@ def _source_disjoint_split(rows):
             "a": route, "y": _vector(item.get("y"), 3),
         })
     canonical.sort(key=lambda item: item["action_id"])
-    def partition(source_id):
-        digest = hashlib.sha256(source_id.encode("utf-8")).digest()
+    # Group by the content digest as well as source_id. Two different event/source
+    # IDs can point to byte-identical source content; those must never straddle
+    # train and holdout. The earlier source_id-only split leaked this case.
+    def partition(source_sha256):
+        digest = bytes.fromhex(source_sha256)
         return int.from_bytes(digest[:8], "big") % 2
-    train = [row for row in canonical if partition(row["source_id"]) == 0]
-    holdout = [row for row in canonical if partition(row["source_id"]) == 1]
+    train = [row for row in canonical if partition(row["source_sha256"]) == 0]
+    holdout = [row for row in canonical if partition(row["source_sha256"]) == 1]
     train_sources = {row["source_id"] for row in train}
     holdout_sources = {row["source_id"] for row in holdout}
+    train_source_hashes = {row["source_sha256"] for row in train}
+    holdout_source_hashes = {row["source_sha256"] for row in holdout}
     if train_sources & holdout_sources:
         raise ValueError("source leakage across holdout")
+    if train_source_hashes & holdout_source_hashes:
+        raise ValueError("source digest leakage across holdout")
     if len(train) < 8 or len(holdout) < 8:
         raise ValueError("insufficient source-disjoint split rows")
     if (len({row["a"] for row in train}) < 2 or len({row["a"] for row in holdout}) < 2
@@ -155,7 +162,8 @@ def _source_disjoint_split(rows):
         "train": _arrays(train), "holdout": _arrays(holdout),
         "train_action_ids": train_ids, "holdout_action_ids": holdout_ids,
         "manifest": {
-            "source_disjoint": True, "train_source_count": len(train_sources),
+            "source_disjoint": True, "source_sha256_disjoint": True,
+            "train_source_count": len(train_sources),
             "holdout_source_count": len(holdout_sources),
             "within_supplied_records_id_disjoint": True,
             "within_supplied_records_content_disjoint": True,
@@ -374,6 +382,10 @@ class WorldJEPAStoreConsumer:
         holdout_sources = {row_by_id[action_id]["source_id"] for action_id in holdout_ids}
         if train_sources & holdout_sources:
             raise ValueError("persisted source holdout overlap")
+        train_source_hashes = {row_by_id[action_id]["source_sha256"] for action_id in train_ids}
+        holdout_source_hashes = {row_by_id[action_id]["source_sha256"] for action_id in holdout_ids}
+        if train_source_hashes & holdout_source_hashes:
+            raise ValueError("persisted source digest holdout overlap")
         def persisted_content(action_id):
             row = row_by_id[action_id]
             raw = json.dumps({"s": row["s"], "a": row["a"], "y": row["y"]},
@@ -575,6 +587,7 @@ class WorldJEPAStoreConsumer:
                 "holdout_source_count": split["manifest"]["holdout_source_count"],
                 "train_holdout_id_disjoint": True,
                 "train_holdout_source_disjoint": split["manifest"]["source_disjoint"],
+                "train_holdout_source_sha256_disjoint": split["manifest"]["source_sha256_disjoint"],
                 "train_holdout_content_disjoint": split["manifest"]["within_supplied_records_content_disjoint"],
                 "holdout_loss_before": float(holdout_before), "holdout_loss_after": float(holdout_after),
                 "holdout_loss_delta": float(holdout_after - holdout_before),
