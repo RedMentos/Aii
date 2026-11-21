@@ -642,6 +642,54 @@ finally:
     runtime.close()
     audio_context_store._revoke = original_revoke
 
+# Scenario 8: revocation removes the derived acoustic packet and any
+# unshared context blob, not merely a source tombstone/cache entry.
+home = Path(sys.argv[1]) / "revoked-packet-and-blob"
+runtime = Runtime(home)
+provider = TwoPhaseProvider()
+seen = {}
+try:
+    configure(runtime)
+    runners = {
+        role: Runner(role, seen)
+        for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")
+    }
+    runtime.pool.get = Mock(side_effect=lambda role: runners[role])
+    runtime.submit(question, audio_window=make_window(provider))
+    deadline = time.monotonic() + 30
+    while not runtime.idle() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert runtime.idle() and runtime.last_answer()["status"] == "FINAL"
+    packets_before = runtime.store.rows("SELECT id,payload FROM packets")
+    audio_packets = [row for row in packets_before if "mic-test-1" in row["payload"]]
+    assert audio_packets, "synthetic audio PerceptPacket was not persisted under the lease"
+    source_rows = runtime.store.rows(
+        "SELECT id,hash,deleted FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT'"
+    )
+    assert len(source_rows) == 1 and source_rows[0]["deleted"] == 0, source_rows
+    blob_path = Path(runtime.store.home) / "data/blobs" / source_rows[0]["hash"]
+    assert blob_path.is_file(), "derived acoustic context blob was not present before revocation"
+    provider.revoke()
+    source_after = runtime.store.one(
+        "SELECT hash,deleted FROM sources WHERE id=?",
+        (source_rows[0]["id"],),
+    )
+    assert source_after and source_after["deleted"] == 1
+    packets_after = runtime.store.rows("SELECT id,payload FROM packets")
+    assert not any("mic-test-1" in row["payload"] for row in packets_after), (
+        "revocation left a source-bound acoustic PerceptPacket in SQLite"
+    )
+    active_refs = runtime.store.one(
+        "SELECT COUNT(*) AS n FROM sources WHERE hash=? AND deleted=0",
+        (source_after["hash"],),
+    )["n"]
+    if active_refs == 0:
+        assert not blob_path.exists(), "revocation left an unshared acoustic-context blob on disk"
+except AssertionError as exc:
+    failures.append("packet/blob revocation: " + str(exc))
+finally:
+    runtime.close()
+
 assert not failures, "; ".join(failures)
 print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 lease spans iterator; Runtime.cancel and Runtime.close release lease for revocation; tombstones, unsubscribe and text fallback stay safe")
 '''
