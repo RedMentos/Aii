@@ -6,7 +6,7 @@ IH-H14 action transaction    PREPARED -> COPY_COMMITTED -> EXECUTING -> SUCCEEDE
                              runs, so a crash leaves EXECUTING, which recover() turns into UNKNOWN and never re-runs.
                              An idempotency key deduplicates repeated requests. Reversible tools may carry an undo.
 IH-H29 tool security         model/skill candidate -> typed schema -> capability (user enabled) -> risk/reversibility
-                             -> human confirmation if required -> ActionIntent -> C5 authorization -> executor.
+                             -> C5 Age right -> human confirmation if required -> ActionIntent -> executor.
                              Arguments are typed values (no shell strings); tool names live in their own namespace
                              (never ':'-commands). Secrets are handles {'$secret': NAME}; the value is read from the
                              environment (V13_SECRET_<NAME>) only inside the executor and is scrubbed from result,
