@@ -27,7 +27,7 @@ semantic alignment.
 The only entry is the explicit operator command:
 
 ```text
-:callosum native-probe B2_GIST C3_LANGUAGE --confirm
+:callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm
 ```
 
 It uses the last completed user source, persists a source-bound tap receipt,
