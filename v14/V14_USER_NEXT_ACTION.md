@@ -1,3 +1,19 @@
+# Current next action — 2026-11-21T21:38:23.398Z
+
+**No user action is required. Do not run Termux commands or change models, weights, permissions, updater settings or device data.**
+
+- Current release/development base remains gpt6/v13-private-remote-bridge-20261111 at bdcad466ffea75a2b41f7d23be168f53c7197d20. Boss integration PR [#2258](https://github.com/RedMentos/Aii/pull/2258) is on boss/v14-core-perception-store-audio-integration-20261121, latest readback head 06ebe5d29d1244dc1d7afa40d846d227d5f3930e; it is not merged or a release.
+- JEPA PR [#2247](https://github.com/RedMentos/Aii/pull/2247) now has code head 3fac198b4064b873192ccc2bcb0efaa4e1af9c23. The old-task retention probe previously compared against a moving EMA target even though replay gradients used a pre-update EMA anchor. The new code uses one immutable pre-update target snapshot for old-session guard/holdout and on-demand loss probes; live EMA and current-task learning remain trainable. The target snapshot digest is exposed in metrics.
+- The exact nested JEPA source pin chain (WorldJEPA → training-resume builder → recovery builder → stage builder → runtime deployer) was recalculated and read back; all downstream pins match the current bytes.
+- Exact CI at this checkpoint: V14 JEPA Store A-B-A and Runtime Python 3.13/3.14 run 44952328878 is **IN_PROGRESS**. Both Python jobs passed production compile and SQLite/T8/checkpoint-vs-reset; the multi-seed Store A-B-A/retention step was still running, with staged optimizer-resume, predictor resume and postcommit Runtime tests pending. V13 combined online JEPA integration run 44952328899 **PASS**; V13 incremental World JEPA run 44952328859 **PASS**; V13 runtime deployment integrity run 44952328841 **PASS**; staged context/integrated regression run 44952328801 still running. No PR merge or release is claimed.
+- No full local Aii checkout was available. The local Git probe failed because this worker could not resolve github.com; therefore no LOCAL_LINUX project tests ran. CI is not local or Android evidence.
+- No authenticated current phone receipt is available: private owner-read request #437 has no reply. Installed SHA and updater state remain unknown; no UPDATE_REQUEST or device command was issued. REDMI_UNVERIFIED / NOT_RELEASED.
+- Cross-lane blocker: Boss #2258's latest exact comment reports the staged integration currently stops at record_only_controller_guard semantic dependency pin after upstream composition. This is separate from JEPA's own pin chain and remains Core/QA-owned.
+
+**Next step:** poll exact Python 3.13/3.14 JEPA A-B-A and postcommit results. If the stable-target comparison still rejects updates, keep gates OFF and implement the next retention-preserving mechanism; do not weaken per-session holdouts. Boss should refresh V14-004/011 board evidence from the exact results and integrate #2247 only after current-base review. No user decision is needed.
+
+---
+
 # Current next action — 2026-11-21T20:58:26.786Z
 
 **No user action is required. Do not run Termux commands or change models, weights, permissions, updater settings or device data.**
