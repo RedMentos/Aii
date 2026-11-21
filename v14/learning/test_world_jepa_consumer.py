@@ -323,3 +323,55 @@ def test_checkpoint_readback_rejects_source_sha256_leak(tmp_path):
             restarted.restore()
     finally:
         store.close()
+
+
+def test_replay_off_ablation_excludes_old_rows_and_uniform_mode_replays_them(tmp_path):
+    store, session = _make_store(tmp_path / "brain-replay-ablation")
+    try:
+        _add_transitions(store, session, 0, 64)
+        consumer = WorldJEPAStoreConsumer(
+            store, tmp_path / "private-replay-ablation", learning_enabled=True, seed=13, ensemble=2
+        )
+        first = consumer.update(limit=64, steps=8, optimizer_permission=True)
+        assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        first_payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        first_train = set(first_payload["active"]["train_ids"])
+        assert len(first_train) >= 8
+
+        _add_transitions(store, session, 64, 32)
+        no_replay = consumer.update(
+            limit=96, steps=8, optimizer_permission=True, replay_mode="none"
+        )
+        assert no_replay["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        no_replay_metrics = no_replay["metrics"]
+        assert no_replay_metrics["replay_mode"] == "none"
+        assert no_replay_metrics["replay_candidate_rows"] >= 8
+        assert no_replay_metrics["replay_rows"] == 0
+        assert len(no_replay_metrics["fit_action_ids"]) >= 2
+        assert set(no_replay_metrics["fit_action_ids"]) == set(no_replay_metrics["new_train_action_ids"])
+        assert not (set(no_replay_metrics["fit_action_ids"]) & first_train)
+        assert no_replay_metrics["old_holdout_loss_before"] is not None
+        assert math.isfinite(no_replay_metrics["old_holdout_retention_delta"])
+
+        _add_transitions(store, session, 96, 32)
+        uniform = consumer.update(
+            limit=128, steps=8, optimizer_permission=True, replay_mode="uniform"
+        )
+        assert uniform["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        uniform_metrics = uniform["metrics"]
+        assert uniform_metrics["replay_mode"] == "uniform"
+        assert uniform_metrics["replay_rows"] >= 8
+        assert uniform_metrics["replay_rows"] == uniform_metrics["replay_candidate_rows"]
+        assert uniform_metrics["replay_rows"] + uniform_metrics["new_train_rows"] == uniform_metrics["fit_rows"]
+        assert set(uniform_metrics["fit_action_ids"]) == set(
+            store.state("v14.world_jepa.store_consumer", None)[0]["active"]["train_ids"]
+        )
+        assert uniform_metrics["old_holdout_loss_before"] is not None
+        assert math.isfinite(uniform_metrics["old_holdout_retention_delta"])
+
+        restarted = WorldJEPAStoreConsumer(
+            store, tmp_path / "private-replay-ablation", learning_enabled=True
+        )
+        assert restarted.restore()["checkpoint_sha256"] == uniform["checkpoint_sha256"]
+    finally:
+        store.close()
