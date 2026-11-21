@@ -1,6 +1,6 @@
 # V14 / Inquisition-JEPA — laufendes Forschungsjournal
 
-**Stand:** 2026-11-20. **Arbeitsart:** ergebnisorientiertes laufendes Research, nicht bloß Literaturanhang.  
+**Stand:** 2026-11-21. **Arbeitsart:** ergebnisorientiertes laufendes Research, nicht bloß Literaturanhang.  
 **Aktive Architektur:** [V14 Master](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md) §§21–23; [Arbeitsplan](V14_LIVE_WORKPLAN.md).  
 **Vorsicht:** Ein Paper-Abstract ist kein reproduzierter Experimentalbefund; eine nachgeprüfte URL ist keine vollständig gelesene Arbeit. Jeder Eintrag erhält eine *genaue* Evidenzstufe.
 
@@ -398,3 +398,54 @@ This is a negative experimental result from the current V14 implementation branc
 4. Keep the utility gate and all production/native learning permissions OFF until an accepted, reproducible update is demonstrated. A successful NumPy/SQLite experiment remains synthetic evidence only.
 
 **Research interpretation:** R-025 (STABLE-style per-organ drift governor) remains an experiment proposal, not an adopted algorithm. R-026 (source-bound C4 diversity, with MMR/xQuAD as future ablations) remains a separate heuristic/research track. No paper, source code, dependency, dataset or model weight was imported or promoted in this checkpoint.
+
+---
+
+## R-031 — FD-VAD semantic endpointing for future full-duplex voice (2026-11-21)
+
+- **Primary paper:** Puneet Mathur and Dinesh Manocha, *FD-VAD: Semantic Endpoint Detection for Streaming Full-Duplex Speech*, arXiv:2609.35791v1, 2026-09-16; full text reviewed at https://arxiv.org/abs/2609.35791. The repository paper citation still says “Submitted”; treat this as a preprint, not a peer-reviewed result.
+- **Method:** causal 2.56 s audio window, refreshed every 320 ms; frozen WavLM-base-plus (50 Hz features) → two-layer downsampling/projection adapter (12.5 Hz audio tokens) → Qwen2.5-0.5B-Instruct. Only the adapter and LoRA are trained (10.3M parameters, ~1.7% of total). A confidence threshold and consecutive-decision gate trade false interruption against delay. It predicts semantic Continue/Stop directly from audio without an ASR transcript.
+- **Reported evidence:** held-out Smart Turn v3.1 test: chunk F1 0.832 with 0.6% false-stop; complete/incomplete utterance accuracy 0.972/0.969. TurnBench dev: zero-shot EOT recall 0.853 at FP 0.097, with 1,019 ms median commit latency. The TurnBench setup first uses a Silero acoustic gate and requires at least 1 s of post-speech silence. The separate tau=0.9, K=1 operating point reports 190 ms median delay and 2.0% false-interruption; do not combine that number with the TurnBench result. The 45.8 ms per 2.56 s window (46.8 ms p90) was measured on one NVIDIA A100, not a phone.
+- **OSS and rights checked:** official repository https://github.com/fd-vad/fd-vad at HEAD `99112fc9cf6efbf80f556378d8e553d78a932300`; root LICENSE is MIT. README confirms code-only repository and a ~120 MB adapter/LoRA checkpoint; WavLM and Qwen base weights are downloaded separately. Model card https://huggingface.co/puneetUMD/fd-vad marks the checkpoint MIT and lists a ~119 MB adapter and ~1.5 GB self-contained offline bundle. WavLM-base-plus is MIT, Qwen2.5-0.5B is Apache-2.0, and Smart Turn v3.1 data is BSD-2-Clause. The README quickstart requires PyTorch/torchaudio; the pinned lock includes torch 2.6 CUDA 12.4, Transformers, PEFT and a large training stack. The small pyproject dependency list is not the complete model runtime.
+- **Limits:** English-only model/data; no Android arm64/Bionic build, CPU-only inference, RAM/PSS, battery or Redmi benchmark was found. A 1.5 GB offline bundle plus framework/runtime overhead is a substantial unmeasured cost, and a second 0.5B semantic model could duplicate C3 work.
+- **V14 consequence:** keep acoustic A0–A5/RAW EAR separate from semantic turn completion. A future optional `TURN_STATE` head may consume causal audio evidence and emit Continue/Stop/Uncertain with calibrated confidence; it must not replace pitch/prosody/non-speech signals or become a permission gate. First compare a small temporal head against the current acoustic path at the same 320 ms cadence, measuring false interruption, EOT recall, commit latency and RAM. No code, model, dataset or dependency imported.
+- **Status:** FULLTEXT_REVIEWED / OFFICIAL_CODE_AND_MODEL_CARD_LICENSE_READ / NOT_IMPORTED / NOT_MOBILE_VALIDATED / NO_ANDROID_PROOF.
+
+## R-032 — S4VAD: latency-aware streaming acoustic VAD (2026-11-21)
+
+- **Primary paper:** Elad Cohen, Arnon Netzer and Hai Victor Habi, *Low-Latency State Space Voice Activity Detection with Robust Onset Time Evaluation*, arXiv:2609.11110v1, 2026-09-10; full text reviewed at https://arxiv.org/abs/2609.11110. Preprint; no S4VAD-specific official implementation or license was found.
+- **Method:** four causal S4 blocks, hidden dimension 64, 64-dimensional log-Mel input at 16 kHz, 32 ms frames and 10 ms hop. The convolutional S4 kernel is replaced by a recurrent state update for streaming inference. The paper also models onset annotation uncertainty instead of treating human timestamps as exact.
+- **Reported evidence:** S4VAD reports 0.3 ms model hardware latency at the paper's target FPR; onset latency is 39.3 ms on LibriSpeech and 114.3 ms on AVA-Speech. Its LibriSpeech onset-latency distribution lists P50 10 ms, P90 90 ms and P95 130 ms. Evaluation uses synthetic LibriSpeech+DNS mixtures and AVA-Speech; hardware inference uses XNNPACK on an Apple M4 Max 64 GB. These are not Android or 6 GB phone measurements.
+- **V14 consequence:** extend the existing RAW EAR/libfvad/Silero comparison with event-level onset/offset delay and annotation-uncertainty intervals, not only AUROC/F1. If reproducing, match frame/hop, CPU thread count and false-positive operating point; test a small stateful temporal filter/head before importing a full S4 stack. The general `state-spaces/s4` repository is Apache-2.0, but it is not an S4VAD-specific implementation and is not imported.
+- **Status:** FULLTEXT_REVIEWED / NO_S4VAD_CODE_OR_WEIGHT_LICENSE_VERIFIED / NOT_IMPLEMENTED / NO_ANDROID_PROOF.
+
+### R-031 implementation audit and TurnBench caveat — 2026-11-21
+
+- Exact official FD-VAD repository HEAD and MIT LICENSE were checked via GitHub. README states that the repository ships code only; the ~120 MB adapter/LoRA checkpoint and the frozen WavLM/Qwen bases are separate artifacts. The model card lists ~1.5 GB for the fully offline bundle.
+- The official README quickstart uses PyTorch and torchaudio. The pinned lock includes CUDA 12.4 PyTorch packages, Transformers and PEFT; the minimal pyproject dependency list does not describe the full inference stack. No Android/Termux CPU/ARM runtime was demonstrated.
+- Full-text caveat: the TurnBench result uses a Silero acoustic gate that requires at least 1 s of post-speech silence. Therefore 0.853 EOT recall at FP 0.097 is conditional on that gate and has 1,019 ms median commit latency. The 190 ms / 2.0% false-interruption point is a separate operating point.
+- Decision unchanged: do not download/import FD-VAD or replace RAW EAR. Keep semantic `TURN_STATE` separate and optional; compare a lightweight temporal head before considering a second 0.5B LLM.
+
+
+## R-033 — Foreground VAD and Android voice-stack reuse candidates (2026-11-21)
+
+### Mamba-FVAD — abstract reviewed only
+- Primary record: Mamba-FVAD: A Lightweight Foreground Voice Activity Detection Model for Overlapped Speech, arXiv:2609.19856v1, submitted 2026-09-17: https://arxiv.org/abs/2609.19856
+- The abstract describes enrollment-free foreground-speech detection under competing speakers and reports 1–2 ms per frame on CPU. The arXiv full text was not accessible in this review, so architecture details, parameter count, hardware, exact frame definition, dataset protocol and confidence intervals are not claimed as reviewed. Secondary summaries disagree on CPU latency; the abstract number is not an Android estimate.
+- No official source repository, downloadable checkpoint or weight license was verified. No code, data or weights imported.
+- V14 implication: if foreground selection becomes necessary, treat it as a separate optional cue beside RAW EAR prosody/non-speech evidence. Evaluate foreground recall/FAR, missed quiet target speech, interruption precision and speaker-switch behavior on a licensed multi-speaker corpus. Do not infer identity, diarize, or replace the existing acoustic stream with a foreground label.
+- Status: ABSTRACT_REVIEWED_ONLY / NO_OFFICIAL_CODE_OR_WEIGHT_LICENSE / NOT_IMPLEMENTED / NO_ANDROID_PROOF.
+
+### Maintained Android voice projects — reuse review
+- soniqo/speech-android main HEAD 66059f2a… and its speech-core submodule pin 852d9d1…; soniqo/speech-core main HEAD 59b9d790…. Repository/core root licenses are Apache-2.0. The Android wrapper is Kotlin/JNI with C++17 core, so it is not a drop-in dependency for the current Termux Python runtime.
+- Its README describes a Silero VAD v5-only path at about 2 MB download and under 10 MB peak RAM, a 40 MB VAP model, and a much larger full voice stack (about 1.2 GB). These are upstream project claims, not independent V14 or Redmi measurements. VAP is relevant to future full-duplex turn-taking (user/agent two-channel context); its architecture is MIT while the cited weights are CC BY 4.0. Model and dependency licenses remain separate from the wrapper license.
+- VoxRT/voxrt-silero-android main HEAD 77b56e6… advertises roughly 1 ms per 32 ms frame on a Redmi 9C / Snapdragon 662. Its Kotlin wrapper is Apache-2.0 and Silero weights are MIT, but its native runtime binary is proprietary and restricts repackaging/modification. This is a vendor benchmark on a different phone, not evidence for Redmi Note 10 Pro; reject for core reuse under the current open/reproducible requirement.
+- No candidate was downloaded, installed, benchmarked on a device, or substituted for the existing optional caller-owned Silero ONNX adapter.
+
+### Concrete V14 decision
+- Keep RAW EAR V3 as the source-bound acoustic feature producer. Preserve prosody, pitch confidence, impulsive/non-speech and uncertainty fields; speaker identity/timbre and calibrated speech probability remain explicitly unmeasured.
+- Revisit Soniqo VAP only when the voice effector and permissioned microphone path exist, with a separately licensed model artifact and measured Android memory/latency. It cannot replace raw ear or prove full duplex by itself.
+- No model swap, new dependency, microphone permission, or learning gate change is authorized by this research.
+
+Status: RESEARCHED_WITH_ABSTRACT_LIMIT / OSS_LICENSES_REVIEWED / NO_IMPORT / NO_DOWNLOAD / REDMI_UNVERIFIED.
+
