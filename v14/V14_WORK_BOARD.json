@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T21:42:00Z",
+  "updated_at": "2026-11-21T21:44:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Boss integration exact head 06ebe5d29d1244dc1d7afa40d846d227d5f3930e. A5 UI lease PASS (44952269230); combined online JEPA PASS (44952269369); runtime-deploy integrity PASS (44952269336); GoalWake focused tests PASS 7/7 in Python 3.14 stage. Current common failure remains record_only_controller_guard_20261116.py:191, ValueError semantic dependency changed: v13/world_semantic_evidence_candidate.py. It expects semantic_pin 9fbcb808... and local_pin 44a8882c..., which are pre-arithmetic/World/Store transformation hashes. Staged-runtime FAIL (6 failed, 43 passed, 26 subtests; 136992584877); integrated-regression FAIL (18 failed, 232 passed, 10 skipped, 2 errors, 44 subtests; 136992584668); owner-read job PASS but Python 3.14 staged startup FAIL (136992585359); Lab-Age E2E FAIL (136992585361); old-phone migration PARTIAL (136992584344); Core audio 3.13 FAIL (136992584451), 3.14 still running (136992584655); safe-additive FAIL_BY_POLICY (44952269241). Earlier lifecycle, A5 adapter, idle/online-world and Context recall errors have advanced. No full local checkout, no Redmi receipt or installation.",
+      "proof_environment": "Boss integration exact head 06ebe5d29d1244dc1d7afa40d846d227d5f3930e. A5 UI lease PASS (44952269230); combined online JEPA PASS (44952269369); runtime-deploy integrity PASS (44952269336); GoalWake focused tests PASS 7/7 in Python 3.14 stage. Current common failure remains record_only_controller_guard_20261116.py:191, ValueError semantic dependency changed: v13/world_semantic_evidence_candidate.py. It expects semantic_pin 9fbcb808... and local_pin 44a8882c..., which are pre-arithmetic/World/Store transformation hashes. Staged-runtime FAIL (6 failed, 43 passed, 26 subtests; 136992584877); integrated-regression FAIL (18 failed, 232 passed, 10 skipped, 2 errors, 44 subtests; 136992584668); owner-read job PASS but Python 3.14 staged startup FAIL (136992585359); Lab-Age E2E FAIL (136992585361); old-phone migration PARTIAL (136992584344); Core audio 3.13 FAIL (136992584451) and 3.14 FAIL (136992584655), both at record_only_controller_guard_20261116.py:191; safe-additive FAIL_BY_POLICY (44952269241). Earlier lifecycle, A5 adapter, idle/online-world and Context recall errors have advanced. No full local checkout, no Redmi receipt or installation.",
       "next_step": "Core/JEPA: recompute and rebind both record_only_controller_guard semantic_pin and local_pin after the current arithmetic/World/Store transformation, preserve raw source pins and known transformation provenance, then recompute controller-guard parent → recovery wrapper → stage → deployer hashes. Include expected/actual SHA-256 in fail-closed diagnostics. Rerun the complete Python 3.13/3.14 staged, integrated, owner-read, Lab-Age, migration, audio and deploy matrix. Keep A5, Context recall, dynamic semantic and operator fixes intact. No Redmi proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T21:42:00Z",
+      "last_checkpoint": "2026-11-21T21:44:00Z",
       "latest_qa_candidate": {
         "pr": 2258,
         "head_sha": "06ebe5d29d1244dc1d7afa40d846d227d5f3930e",
@@ -40,7 +40,7 @@
           "staged_runtime": "FAIL: 6 failed / 43 passed / 26 subtests",
           "integrated_regression": "FAIL: 18 failed / 232 passed / 10 skipped / 2 errors / 44 subtests",
           "core_audio_313": "FAIL",
-          "core_audio_314": "IN_PROGRESS"
+          "core_audio_314": "FAIL: same controller guard semantic pin"
         },
         "redmi": "REDMI_UNVERIFIED"
       }
