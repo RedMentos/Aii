@@ -485,6 +485,8 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         "holdout_loss_delta": metrics.get("holdout_loss_delta"),
         "negative_controls_separated": metrics.get("negative_controls_separated"),
         "old_holdout_retained": metrics.get("old_holdout_retained"),
+        "old_holdout_cohort_retained": metrics.get("old_holdout_cohort_retained"),
+        "retention_gate_accepted": metrics.get("retention_gate_accepted"),
         "old_holdout_loss_before": metrics.get("old_holdout_loss_before"),
         "old_holdout_loss_after": metrics.get("old_holdout_loss_after"),
         "old_holdout_retention_delta": metrics.get("old_holdout_retention_delta"),
@@ -826,9 +828,9 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         # Promotion instead requires every prior session's own source-disjoint
         # holdout to remain within its recorded loss tolerance.
         assert type(projected_b["old_holdout_cohort_gate"]) is dict
-        assert projected_b["old_holdout_cohort_gate"]["accepted"] is projected_b["old_holdout_retained"]
+        assert projected_b["old_holdout_cohort_gate"]["accepted"] is projected_b["old_holdout_cohort_retained"]
+        assert stable_b["old_holdout_cohort_gate"]["accepted"] is stable_b["old_holdout_cohort_retained"]
         assert type(stable_b["old_holdout_cohort_gate"]) is dict
-        assert stable_b["old_holdout_cohort_gate"]["accepted"] is stable_b["old_holdout_retained"]
         for report in (projected, stable_predictor):
             for phase_name in ("B", "A2"):
                 phase = report[phase_name]

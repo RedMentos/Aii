@@ -964,11 +964,16 @@ class WorldJEPAStoreConsumer:
                     or (candidate_old_holdout_after is not None
                         and candidate_old_holdout_after <= old_holdout_before)
                 )
+                candidate_old_holdout_cohort_retained = bool(
+                    candidate_old_holdout_cohort_gate["accepted"]
+                )
+                candidate_retention_gate_accepted = bool(
+                    candidate_old_holdout_retained and candidate_old_holdout_cohort_retained
+                )
                 candidate_accepted = (
                     candidate_holdout_improved
                     and candidate_negative_controls_separated
-                    and candidate_old_holdout_retained
-                    and candidate_old_holdout_cohort_gate["accepted"]
+                    and candidate_retention_gate_accepted
                 )
                 attempts.append({
                     "update_scale": float(update_scale),
@@ -980,6 +985,8 @@ class WorldJEPAStoreConsumer:
                     "holdout_improved": candidate_holdout_improved,
                     "negative_controls_separated": candidate_negative_controls_separated,
                     "old_holdout_retained": candidate_old_holdout_retained,
+                    "old_holdout_cohort_retained": candidate_old_holdout_cohort_retained,
+                    "retention_gate_accepted": candidate_retention_gate_accepted,
                     "old_holdout_cohort_gate": candidate_old_holdout_cohort_gate,
                     "accepted": bool(candidate_accepted),
                 })
@@ -1004,6 +1011,8 @@ class WorldJEPAStoreConsumer:
             holdout_improved = candidate_holdout_improved
             negative_controls_separated = candidate_negative_controls_separated
             old_holdout_retained = candidate_old_holdout_retained
+            old_holdout_cohort_retained = candidate_old_holdout_cohort_retained
+            retention_gate_accepted = candidate_retention_gate_accepted
             old_holdout_cohort_gate = candidate_old_holdout_cohort_gate
             utility_gate_accepted = selected_scale is not None
             replay_metrics["optimizer_steps_added"] = fit_steps_after - fit_steps_before
@@ -1025,7 +1034,8 @@ class WorldJEPAStoreConsumer:
                     "holdout_improved": holdout_improved,
                     "negative_controls_separated": negative_controls_separated,
                     "old_holdout_retained": old_holdout_retained,
-                    "retention_gate_accepted": old_holdout_retained,
+                    "old_holdout_cohort_retained": old_holdout_cohort_retained,
+                    "retention_gate_accepted": retention_gate_accepted,
                     "holdout_loss_before": float(holdout_before),
                     "holdout_loss_after": float(holdout_after),
                     "shuffled_action_holdout_loss": float(shuffled_action_loss),
@@ -1057,8 +1067,8 @@ class WorldJEPAStoreConsumer:
                     "native_body_consumed": False,
                     "runtime_wired": False,
                 }
-            # The accepted candidate is the first scale that passed all three
-            # gates; no rejected trial is published or checkpointed.
+            # The accepted candidate is the first scale that passed all utility and
+            # aggregate/per-session retention gates; rejected trials are never published.
             if cancel_check is not None and cancel_check():
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
                         "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
@@ -1107,7 +1117,8 @@ class WorldJEPAStoreConsumer:
                 "negative_controls_separated": negative_controls_separated,
                 "utility_gate_accepted": True,
                 "old_holdout_retained": old_holdout_retained,
-                "retention_gate_accepted": old_holdout_retained,
+                "old_holdout_cohort_retained": old_holdout_cohort_retained,
+                "retention_gate_accepted": retention_gate_accepted,
                 "old_holdout_loss_before": None if old_holdout_before is None else float(old_holdout_before),
                 "old_holdout_loss_after": None if old_holdout_after is None else float(old_holdout_after),
                 "old_holdout_retention_delta": retention_delta,
@@ -1138,6 +1149,7 @@ class WorldJEPAStoreConsumer:
                                "last_prediction_error": float(holdout_after),
                                "last_parameter_delta_norm": float(parameter_delta),
                                "last_retention_delta": retention_delta,
+                               "last_retention_gate_accepted": retention_gate_accepted,
                                "last_cohort_retention": old_holdout_cohort_gate,
                                "last_scan_cursor": next_cursor},
                 "fit_steps": fit_steps_after, "scan_cursor": next_cursor,
