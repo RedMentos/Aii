@@ -359,11 +359,16 @@ class LabAgeTests(unittest.TestCase):
             node for node in ast.walk(base_tree)
             if isinstance(node, ast.FunctionDef) and node.name == "learning_limit"
         )
-        mapping = next(
+        mapping_expr = next(
             node.value for node in ast.walk(learning_limit)
             if isinstance(node, ast.Assign)
             and any(isinstance(target, ast.Name) and target.id == "source" for target in node.targets)
         )
+        mapping = mapping_expr.func.value if (
+            isinstance(mapping_expr, ast.Call)
+            and isinstance(mapping_expr.func, ast.Attribute)
+            and mapping_expr.func.attr == "get"
+        ) else mapping_expr
         self.assertIsInstance(mapping, ast.Dict)
         self.assertEqual(
             {
