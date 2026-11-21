@@ -86,6 +86,12 @@ def _pair_for_event(runtime, event_id, direction, require_outcome=True):
     if loaded is None:
         return None
     event, generation = loaded
+    answer = runtime.store.one(
+        "SELECT status FROM messages WHERE event_id=? AND role='assistant' ORDER BY id DESC LIMIT 1",
+        (event_id,),
+    )
+    if not answer or answer["status"] != "FINAL":
+        return None
     source_ref = event.get("source_ref")
     if not isinstance(source_ref, dict) or not isinstance(source_ref.get("sha256"), str):
         return None
