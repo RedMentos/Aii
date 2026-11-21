@@ -563,7 +563,7 @@ class WorldJEPAStoreConsumer:
 
 
     def update(self, *, limit=DEFAULT_PAGE_SIZE, steps=80, optimizer_permission=False,
-               replay_mode="uniform", cancel_check=None):
+               replay_mode="uniform", encoder_mode="full", cancel_check=None):
         if type(limit) is not int or not 16 <= limit <= MAX_ROWS:
             raise ValueError("limit")
         if type(steps) is not int or not 1 <= steps <= 2000:
@@ -572,6 +572,8 @@ class WorldJEPAStoreConsumer:
             raise ValueError("optimizer_permission must be bool")
         if replay_mode not in {"uniform", "none"}:
             raise ValueError("replay_mode must be uniform or none")
+        if encoder_mode not in {"full", "predictor_only"}:
+            raise ValueError("encoder_mode must be full or predictor_only")
         if cancel_check is not None and not callable(cancel_check):
             raise ValueError("cancel_check must be callable")
         if cancel_check is not None and cancel_check():
@@ -666,6 +668,10 @@ class WorldJEPAStoreConsumer:
                         "censored_skipped": censored_skipped, "scanned_rows": scanned,
                         "pending_rows": len(pending_by_id),
                         "native_body_weights_changed": False}
+            if encoder_mode == "predictor_only" and active is None:
+                return {"status": "ENCODER_BOOTSTRAP_REQUIRED", "new_receipts": len(new_ids),
+                        "pending_rows": len(pending_by_id), "scan_cursor": state["scan_cursor"],
+                        "native_body_weights_changed": False, "native_body_consumed": False}
             new_set = set(new_ids)
             candidates = list(prior_rows.values())
             if len(candidates) > MAX_ROWS:
@@ -742,7 +748,8 @@ class WorldJEPAStoreConsumer:
             fit_arrays = _arrays(fit_rows)
             try:
                 model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4),
-                                  cancel_check=cancel_check, allow_optimizer_bootstrap=True)
+                                  cancel_check=cancel_check, allow_optimizer_bootstrap=True,
+                                  train_encoder=(encoder_mode == "full"))
             except InterruptedError:
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
                         "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
@@ -758,7 +765,9 @@ class WorldJEPAStoreConsumer:
             if old_holdout_before is not None:
                 old_holdout_after = model.prediction_loss(*old_holdout)
             fit_steps_after = int(getattr(model, "_fit_steps", 0))
-            parameter_delta = _group_delta(before, after, ("enc", "preds"))
+            encoder_delta = _group_delta(before, after, ("enc",))
+            predictor_delta = _group_delta(before, after, ("preds",))
+            parameter_delta = math.sqrt(encoder_delta ** 2 + predictor_delta ** 2)
             ema_delta = _group_delta(before, after, ("tgt",))
             retention_delta = None if old_holdout_before is None else float(old_holdout_after - old_holdout_before)
             holdout_improved = bool(holdout_after < holdout_before)
@@ -796,6 +805,11 @@ class WorldJEPAStoreConsumer:
                     "old_holdout_loss_after": None if old_holdout_after is None else float(old_holdout_after),
                     "old_holdout_retention_delta": retention_delta,
                     "parameter_delta_norm": float(parameter_delta),
+                    "encoder_parameter_delta_norm": float(encoder_delta),
+                    "predictor_parameter_delta_norm": float(predictor_delta),
+                    "encoder_mode": encoder_mode,
+                    "encoder_updated": bool(encoder_delta > 0.0),
+                    "ema_updated": bool(ema_delta > 0.0),
                     "ema_target_delta_norm": float(ema_delta),
                     "fit_steps_before": fit_steps_before,
                     "fit_steps_after": fit_steps_after,
@@ -865,7 +879,13 @@ class WorldJEPAStoreConsumer:
                 "old_holdout_loss_before": None if old_holdout_before is None else float(old_holdout_before),
                 "old_holdout_loss_after": None if old_holdout_after is None else float(old_holdout_after),
                 "old_holdout_retention_delta": retention_delta,
-                "parameter_delta_norm": float(parameter_delta), "ema_target_delta_norm": float(ema_delta),
+                "parameter_delta_norm": float(parameter_delta),
+                "encoder_parameter_delta_norm": float(encoder_delta),
+                "predictor_parameter_delta_norm": float(predictor_delta),
+                "encoder_mode": encoder_mode,
+                "encoder_updated": bool(encoder_delta > 0.0),
+                "ema_updated": bool(ema_delta > 0.0),
+                "ema_target_delta_norm": float(ema_delta),
                 "fit_steps_before": fit_steps_before, "fit_steps_after": fit_steps_after,
                 "checkpoint_sha_before": checkpoint_before, "checkpoint_sha_after": checkpoint_after,
                 "optimizer_moments_persisted": saved.get("optimizer_state_persisted") is True,

@@ -15,6 +15,7 @@ DEFAULT_PERMISSIONS = {
     "optimizer_permission": False,
     "steps": 40,
     "replay_mode": "uniform",
+    "encoder_mode": "full",
 }
 MAX_RUNTIME_PAGE = 256
 MAX_RUNTIME_STEPS = 2000
@@ -34,11 +35,15 @@ def permission_state(store):
     replay_mode = value.get("replay_mode", "uniform")
     if replay_mode not in ("uniform", "none"):
         replay_mode = "uniform"
+    encoder_mode = value.get("encoder_mode", "full")
+    if encoder_mode not in ("full", "predictor_only"):
+        encoder_mode = "full"
     return {
         "learning_enabled": learning_enabled,
         "optimizer_permission": optimizer_permission,
         "steps": steps,
         "replay_mode": replay_mode,
+        "encoder_mode": encoder_mode,
     }
 
 
@@ -86,6 +91,7 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None):
             steps=gates["steps"],
             optimizer_permission=True,
             replay_mode=gates["replay_mode"],
+            encoder_mode=gates["encoder_mode"],
             cancel_check=cancel_check,
         )
         result.update(updated)

@@ -40,7 +40,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
     arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
-                      '72bf8a829a7de064e7703271228bcdf02632108418c41c571126fbd8c05d5567')
+                      'e0f724ee282bc61cfd5c20c142f8880b45d6cdc19e73c992f3f4098891a2cb73')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
                               'c65d6ac26c72dbd7c9563cca3dfc165d6336320624f5a6083bc7b707dbc7c1b3')
@@ -133,27 +133,6 @@ def build_sources(code_dir, *, include_postcommit=True):
         laboratory = load(code_dir, 'scripts/lab_age_stage_candidate_20261118.py',
                           'c09e31ae86901302b8414ddae794e5df5ccbe59292cc700f22ba709701d5acdf')
         result = laboratory.apply_sources(code_dir, result)
-    # Integrate the reviewed C4 source-span rule into the ordinary pinned stage.
-    # The overlay is exact-blob-pinned and changes only the FocalLoop redundancy calculation.
-    focal_overlay_path = code_dir / 'scripts/integrated_focal_scale_diversity_candidate_20261121.py'
-    if focal_overlay_path.is_symlink() or not focal_overlay_path.is_file():
-        raise ValueError('C4 source-span overlay missing or unsafe')
-    focal_overlay_raw = focal_overlay_path.read_bytes()
-    focal_overlay_blob = hashlib.sha1(
-        b'blob ' + str(len(focal_overlay_raw)).encode('ascii') + b'\0' + focal_overlay_raw
-    ).hexdigest()
-    if focal_overlay_blob != '9987525960ba0955dd2fd57d421e32f4b76b892c':
-        raise ValueError('C4 source-span overlay source changed')
-    focal_overlay_ns = {
-        '__name__': 'v14_checked_focal_scale_overlay',
-        '__file__': str(focal_overlay_path),
-    }
-    exec(compile(focal_overlay_raw, str(focal_overlay_path), 'exec'), focal_overlay_ns)
-    focal_source = result.get('v13/focal.py', (code_dir / 'v13/focal.py').read_bytes())
-    if type(focal_source) is not bytes:
-        raise ValueError('C4 FocalLoop source is not immutable bytes')
-    result['v13/focal.py'] = focal_overlay_ns['apply_staged_focal'](code_dir, focal_source)
-
     for name, raw in result.items():
         if name.endswith('.py'):
             compile(raw, name, 'exec')

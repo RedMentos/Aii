@@ -11,13 +11,13 @@ import tempfile
 
 
 CODE = Path(__file__).resolve().parents[1]
-STAGER = CODE / "scripts" / "stage_integrated_candidate.py"
+STAGER = CODE / "scripts" / "stage_v14_focal_scale_diversity_candidate_20261121.py"
 
 
 def _load_stager():
     spec = importlib.util.spec_from_file_location("v14_focal_scale_stager", STAGER)
     if spec is None or spec.loader is None:
-        raise RuntimeError("pinned integrated stage builder unavailable")
+        raise RuntimeError("V14 focal scale stager unavailable")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -29,12 +29,12 @@ def test_review_stage_applies_only_scale_aware_c4_overlay(tmp_path):
     before = hashlib.sha1(
         b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
     ).hexdigest()
-    assert before == "a0588a768cc91266ef02243bcfda2e631860d8ad"
+    assert before == "1a5766a20532161c6b5bdeb74c83be2e59492f86"
     destination = tmp_path / "candidate"
     manifest = _load_stager().stage(CODE, destination)
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
+    assert manifest["overlay"]["cross_scale_rule"] == "DISJOINT_SAME_SOURCE_SPANS_AND_LOW_LEXICAL_OVERLAP"
     assert "v13/focal.py" in manifest["replaced_files"]
-    assert manifest["files_sha256"]["v13/focal.py"]
 
     staged = (destination / "v13" / "focal.py").read_bytes()
     assert b"SCALE_AWARE_C4_RULE = 'DISJOINT_SAME_SOURCE_SPANS_ONLY'" in staged
