@@ -1,3 +1,20 @@
+# Current user-facing handoff — 2026-11-21 16:20 CET
+
+**No user action is required. Do not run a manual Termux command or change models, weights, permissions, Age, updater settings or device data based on this GitHub candidate.**
+
+- Research & Perception PR [#2226](https://github.com/RedMentos/Aii/pull/2226) is ready for review, not merged. Head `2480bd80a173caf6bcfb0ddb18c5ce184281f5a5`, based on current integration checkpoint `6c444e1dfdea19583002519a682fd64bca465098`. The code-bearing release-development head remains `23ea3efc7d1951e20664ce6d07883141e9b601c5`; **NOT_RELEASED**.
+- The producer now uses the provider lease as the sole in-lease authorization and does not reacquire `consent_check` while the lease is held. It holds that lease through PCM-derived features, transactional AudioPerceptPacket persistence, temporal evidence, A4 attention and C3 admission. Store commit failure rolls back before attention.
+- Exact PR-head CI is green: RAW EAR/temporal/Silero/A4→C3 suite **51/51** on Python 3.11 and 3.13; consent preflight/revocation/non-reentrant suite **27/27**; comparator **8/8** on Python 3.13 and 3.14; pinned native Linux libfvad `make check` **13 pass / 1 skip / 0 fail / 0 errors** on both matrix jobs; privacy scan PASS; staged Runtime **249 pass / 10 skipped / 47 subtests**; integrated regression **424 pass / 3 skipped / 58 subtests**. Local isolated lock/transaction harness **5/5 PASS**, synthetic only. Exact local Aii suite remains BLOCKED because this runner cannot resolve GitHub DNS.
+- This is caller-supplied PCM16, not microphone capture. It does not provide ASR, speech decoder/vocoder, full-duplex, native C3 inference, Android control or learned cross-organ audio weights. Optional Silero requires a caller-supplied hash-checked local ONNX session; no model was downloaded.
+- Latest private V13OBS found is [RedMentos/Aiiii#115](https://github.com/RedMentos/Aiiii/issues/115), last updated 2026-11-18 11:30:53Z; no newer V13OBS receipt was found. Its five metadata-only turns show B1 3/3 native failures, B2 2/2 native failures, zero valid offers/final C3 contributions, and C3 prefill-to-first-token 41.5–63.7 seconds. Installed SHA and updater state remain UNKNOWN. This is stale evidence, not a current live phone receipt: **REDMI_UNVERIFIED**.
+- Core #2200 and QA #2211 were notified that their generated audio-context store still calls the provider check from inside the lease in both `record()` and `view()`, which can deadlock with a non-reentrant lock. They need to use the yielded lease authorization and preserve derived-source tombstone, in-memory clear and final C3 revocation checks. Core must update its producer source pin to `fcf169a29855544e82a96412f5fe5356eaea641e`.
+- P0 #1904 remains open: the latest private receipt still shows no valid B1/B2 offers and very slow C3 prefill. This audio candidate does not solve native chat correctness or latency.
+- Research ledger R-031/R-032 records FD-VAD and S4VAD as preprints. FD-VAD is a future separate semantic turn-state hypothesis, not a replacement for RAW EAR; its A100 timing and ~1.5 GB bundle do not justify a Redmi model swap. No model, weight or permission change is proposed.
+
+**Next internal work:** QA review #2226; Core rebase #2200/#2211 and remove lease re-entry in derived audio context; then exact combined tests. No phone update request or user action is needed.
+
+---
+
 # Current user-facing handoff — 2026-11-21 15:23 CET
 
 **No user action is required. Do not run a manual Termux command or change models, weights, permissions, Age, updater settings or device data based on GitHub CI alone.**

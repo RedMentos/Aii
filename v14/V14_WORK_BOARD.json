@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T14:24:38.851Z",
+  "updated_at": "2026-11-21T15:20:30Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -159,16 +159,18 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Perception #2219 head 64fcfe1d323737c4c15e88be57217537bf55fd3c acquires a provider lease before PCM processing; the cited 50/50 focused result predates deterministic QA. QA #2214 head c17e4df4df7a53ed74e9057cf5ca5d112c472ad4 deterministically revokes after metadata preflight; focused run 44913001796 fails on the old producer as expected, while broad staged/integrated pass. No combined deterministic post-fix proof. Boss review found a possible deadlock if consent_check reacquires a non-reentrant provider lock under the lease.",
-      "next_step": "Perception: rebase #2219 onto the current deterministic QA #2214 base, prove the new regression passes on the combined exact head, and explicitly require a reentrant provider lock or use a lease-bound token. Core: rebase #2200/#2211 and delete/tombstone AUDIO_ACOUSTIC_CONTEXT, clear _audio_contexts, and check consent immediately before C3 generation. No mic/Redmi proof.",
+      "proof_environment": "PR #2226 current-base head 2480bd80a173caf6bcfb0ddb18c5ce184281f5a5, based on 6c444e1. CI: RAW EAR/temporal/Silero/A4-C3 51/51 on Python 3.11 and 3.13; consent preflight/revocation/non-reentrant suite 27/27; comparator 8/8 on Python 3.13/3.14; pinned native Linux libfvad make check 13 PASS/1 SKIP/0 FAIL/0 ERROR; privacy PASS; staged 249 PASS/10 SKIP/47 subtests; integrated 424 PASS/3 SKIP/58 subtests. Local isolated lease/transaction harness 5/5 PASS (synthetic). Exact local Aii suite BLOCKED by GitHub DNS. Private V13OBS #115 (2026-11-18) still records B1 3/3 fail, B2 2/2 fail, zero valid offers, C3 TTFT 41.5–63.7s. No Redmi proof.",
+      "next_step": "QA independently reviews the provider lease and exact producer tests. Core rebases #2200/#2211 onto the reviewed producer, removes consent_check re-entry inside generated audio_context_store.record()/view() leases, updates audio_voice_cues source pin to fcf169a29855544e82a96412f5fe5356eaea641e, and preserves derived-source tombstone, _audio_contexts clear and final C3 pre-inference revocation check. Then run exact combined staged/integrated tests. Microphone/Redmi/native C3 proof remains separate.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 15:05 CET",
+      "last_checkpoint": "2026-11-21 16:20 CET",
       "latest_candidate_pr": {
-        "pr": 2155,
-        "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
-        "merge_commit_sha": "c0cedbde718ede6107f4df1f1bf9c784df4e00cf",
-        "ci": "PASS_44862523075_8_TESTS_AND_44862523082_240_STAGED_415_INTEGRATED",
-        "scope": "additive RAW EAR acoustic-cue adapter only; no normal Runtime consumer"
+        "pr": 2226,
+        "head_sha": "2480bd80a173caf6bcfb0ddb18c5ce184281f5a5",
+        "base_branch": "qa/v14-jepa-checkpoint-publication-20261121",
+        "base_sha": "6c444e1dfdea19583002519a682fd64bca465098",
+        "status": "READY_FOR_REVIEW_CI_GREEN_NOT_MERGED",
+        "ci": "RAW_EAR_51_PY311_313; CONSENT_27; COMPARATOR_8_PY313_314; LIBFVAD_13_PASS_1_SKIP_0_FAIL; STAGED_249_10SKIP_47; INTEGRATED_424_3SKIP_58; PRIVACY_PASS",
+        "scope": "RAW EAR PCM16 acoustic/prosody + optional caller-supplied Silero VAD + temporal evidence + source-bound A4/C3 admission; consent lease held through producer"
       }
     },
     {
@@ -267,11 +269,11 @@
       "user_action_required": false
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED — UPDATE_REQUEST #407 expired/no reply; PIPELINE_STATUS #408 expired/no reply; DIAGNOSTICS #409 open/no reply; PIPELINE_STATUS #410 open/no reply. Installed SHA UNKNOWN; updater consent UNKNOWN; no authenticated phone receipt.",
+  "current_redmi_status": "REDMI_UNVERIFIED — latest found private V13OBS is RedMentos/Aiiii#115 (updated 2026-11-18T11:30:53Z; no newer V13OBS receipt). Five metadata-only turns: B1 3/3 native failures, B2 2/2 native failures, zero valid offers/final C3 contributions; C3 prefill-to-first-token 41.5–63.7 s. Installed SHA and updater state remain UNKNOWN. No live phone receipt or device action in this run.",
   "last_code_release_head": "23ea3efc7d1951e20664ce6d07883141e9b601c5",
   "latest_integrated_head": "23ea3efc7d1951e20664ce6d07883141e9b601c5",
   "latest_integrated_head_verified_at": "2026-11-21T14:24:38.851Z",
-  "release_gate_status": "MERGED_CODE_HEAD 23ea3efc7d1951e20664ce6d07883141e9b601c5; exact PR-head CI for #2215 PASS (broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58, migration UPDATED); exact post-merge push-CI not independently verified through current readback; NOT_RELEASED / REDMI_UNVERIFIED.",
+  "release_gate_status": "Code-bearing release-development head remains 23ea3efc7d1951e20664ce6d07883141e9b601c5. PR #2226 head 2480bd80a173caf6bcfb0ddb18c5ce184281f5a5 is ready for review on current integration base 6c444e1; exact PR-head CI PASS (RAW EAR 51/51 on Python 3.11/3.13; consent QA 27/27; comparator 8/8 on Python 3.13/3.14; libfvad make check 13 pass/1 skip/0 fail; staged 249/10/47; integrated 424/3/58; privacy PASS). NOT_RELEASED / REDMI_UNVERIFIED; no phone update requested or observed.",
   "phone_receipt": {
     "issue": "RedMentos/Aiiii#410",
     "state": "PIPELINE_STATUS #410 OPEN_NO_REPLY; DIAGNOSTICS #409 OPEN_NO_REPLY; PIPELINE_STATUS #408 EXPIRED_NO_REPLY; UPDATE_REQUEST #407 EXPIRED_NO_REPLY",
@@ -281,17 +283,42 @@
     "expires_at": 1795271337,
     "pipeline_status_issue": "RedMentos/Aiiii#410",
     "diagnostics_issue": "RedMentos/Aiiii#409",
-    "update_request_issue": "RedMentos/Aiiii#407"
+    "update_request_issue": "RedMentos/Aiiii#407",
+    "latest_v13obs": {
+      "issue": "RedMentos/Aiiii#115",
+      "updated_at": "2026-11-18T11:30:53Z",
+      "status": "LOCAL_METADATA_ONLY",
+      "turn_count": 5,
+      "B1": {
+        "native_attempts": 3,
+        "native_failed": 3,
+        "valid_offers": 0,
+        "final_C3_contribution_turns": 0
+      },
+      "B2": {
+        "native_attempts": 2,
+        "native_failed": 2,
+        "valid_offers": 0,
+        "final_C3_contribution_turns": 0
+      },
+      "C3": {
+        "prefill_to_first_token_seconds_min": 41.525,
+        "prefill_to_first_token_seconds_max": 63.672,
+        "generated_tokens_min": 7,
+        "generated_tokens_max": 11
+      },
+      "freshness": "No newer V13OBS receipt found; not a current live status"
+    }
   },
   "capability_snapshot": [
     {
       "capability": "A0-A5 perception and attention",
-      "code": "RAW_EAR_V3_WITH_PROVIDER_LEASE_BEFORE_PCM_CANDIDATE_NOT_RELEASED",
-      "wired": "STAGED_SYNTHETIC_A5_A4_TO_B1_B2_C3_AUDIO_CONTEXT_CANDIDATE",
-      "tested_synthetic": "PR2219_PRODUCER_TESTS_50_50_ON_OLDER_TEST_HEAD; DETERMINISTIC_QA2214_HEAD_C17E4_FAILS_ON_OLD_PRODUCER; COMBINED_POSTFIX_DETERMINISTIC_TEST_PENDING",
+      "code": "RAW_EAR_V3_PROVIDER_LEASE_CURRENT_HEAD_CANDIDATE_PR2226_NOT_RELEASED",
+      "wired": "CALLER_PCM16_A5_ACOUSTIC_PROSODY_OPTIONAL_SILERO_TEMPORAL_EVIDENCE_TO_A4_AND_C3_ADMISSION; CORE_AUDIO_CONTEXT_CONSUMER_SEPARATE",
+      "tested_synthetic": "PR2226_RAW_EAR_51_PY311_313; CONSENT_27; COMPARATOR_8_PY313_314; LIBFVAD_LINUX_13_PASS_1_SKIP; STAGED_249_10SKIP_47; INTEGRATED_424_3SKIP_58; LOCAL_ISOLATED_LEASE_5_OF_5",
       "tested_android": "NOT_TESTED",
-      "active": "NO_DEVICE_MICROPHONE_OR_NATIVE_BODY_PROOF",
-      "evidence": "PR #2219 producer branch acquires the provider lease before PCM observation/extraction/VAD. The 50/50 pass cited in its handoff predates deterministic QA #2214 head c17e4; exact QA run 44913001796 is red on the old producer as intended. Combined exact-head proof and lock reentrancy contract remain open. No mic/Redmi proof."
+      "active": "NO_MICROPHONE_OR_NATIVE_C3_MODEL_PROOF",
+      "evidence": "PR #2226 holds the provider consent lease before PCM and through packet transaction, temporal evidence, A4 attention and C3 admission; no callback re-entry under a non-reentrant provider lock. CI is green on the exact PR head. This remains caller-supplied PCM and a synthetic/staged consumer path; no microphone capture, native C3 inference or Redmi proof. Core downstream audio_context_store still needs the same non-reentrant lease correction and derived-context tombstone/clear-before-C3."
     },
     {
       "capability": "B1_DETAIL and B2_GIST bodies",
@@ -358,12 +385,12 @@
     },
     {
       "capability": "VOICE_AUDIO input and speech output",
-      "code": "RAW_EAR_V3_AND_A5_RUNTIME_CANDIDATE_NOT_RELEASED; TTS_VOCODER_NOT_IMPLEMENTED",
-      "wired": "SYNTHETIC_CALLER_PCM16_A5_A4_TO_B1_B2_C3_CANDIDATE",
-      "tested_synthetic": "PR2207_RAW_EAR_49_PY311_313; COMPARATOR_8_PY313_314; LIBFVAD_NATIVE_LINUX_13; AUDIO_CONTEXT_REVOCATION_2_FAILS_PY311_313",
+      "code": "RAW_EAR_V3_OPTIONAL_SILERO_AND_TEMPORAL_EVIDENCE_CANDIDATE; TTS_VOCODER_NOT_IMPLEMENTED",
+      "wired": "SYNTHETIC_CALLER_PCM16_A5_A4_C3_ADMISSION_CANDIDATE",
+      "tested_synthetic": "PR2226_RAW_EAR_51_PY311_313; CONSENT_27; COMPARATOR_8_PY313_314; LIBFVAD_LINUX_13_PASS_1_SKIP; STAGED_249_10SKIP_47; INTEGRATED_424_3SKIP_58",
       "tested_android": "NOT_TESTED",
       "active": "NO_MICROPHONE_OR_SPEECH_OUTPUT_PROOF",
-      "evidence": "#2207 provider-side lease candidate passes producer tests. #2200/#2211 downstream revocation is still failing: derived audio context remains in process memory and C3 prompt after consent is revoked. No mic capture, ASR, speech decoder/vocoder, full-duplex or Redmi proof. #2219 now leases before PCM transforms, but deterministic QA #2214 head c17e4 fails on old producer and the combined post-fix test is pending. No microphone, ASR, TTS/vocoder, full duplex or Redmi proof."
+      "evidence": "RAW EAR retains acoustic/prosody cues; optional Silero accepts only caller-supplied hash-checked local ONNX session; no model download or raw PCM persistence. No microphone, ASR, learned speech decoder/vocoder, full-duplex, native C3 inference or Redmi test."
     },
     {
       "capability": "ANDROID_BACKGROUND_CONTROL",
@@ -456,5 +483,11 @@
     "p0_chat": "OPEN_ISSUE_1904",
     "canon_coverage": "1255_HISTORICAL_HEADINGS; SEMANTIC_CLAUSE_CODE_CONSUMER_TEST_ROLLBACK_MAPPING_INCOMPLETE",
     "user_action_required": false
+  },
+  "current_working_base": {
+    "branch": "qa/v14-jepa-checkpoint-publication-20261121",
+    "sha": "6c444e1dfdea19583002519a682fd64bca465098",
+    "verified_at": "2026-11-21T15:20:30Z",
+    "note": "Current integration-review base for PR #2226; not a code-bearing release or proof of phone installation."
   }
 }

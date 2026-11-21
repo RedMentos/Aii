@@ -1595,3 +1595,20 @@ Historical inventory above remains **1,255 V13 headings**; no historical wording
 | Release / Android | Code-bearing release-development HEAD 23ea3ef includes #2215; PR-head tests green | Exact post-merge push CI unknown; private #407/#408 expired without reply, #409/#410 pending; installed SHA/updater consent UNKNOWN; REDMI_UNVERIFIED |
 
 Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. The V14 master was not edited. This overlay records exact environment boundaries and open blockers; no Canon family is promoted to accepted.
+
+### Research & Perception evidence overlay — 2026-11-21 16:20 CET
+
+| Canon family | Candidate implementation status | Exact evidence | Still not accepted |
+|---|---|---|---|
+| A0–A5 RAW EAR / A4 attention | WIRED_SYNTHETIC candidate in PR #2226; caller PCM16, acoustic/prosody, optional Silero VAD, temporal evidence, source-bound A4/C3 admission | Exact PR head 2480bd8: 51/51 Python 3.11 and 3.13; consent/revocation 27/27; staged 249/10/47; integrated 424/3/58; privacy PASS | No microphone capture, native C3 inference, audio learning, native B1/B2 utility or Redmi proof |
+| Consent/revocation at producer boundary | WIRED_SYNTHETIC with lease-bound authorization | Deterministic preflight/revocation + non-reentrant provider tests 27/27; local isolated lock/transaction harness 5/5 | Core derived audio-context `record()`/`view()` still reacquire the provider check inside the lease in #2200/#2211; downstream tombstone/clear-before-C3 must pass |
+| VAD comparison | NATIVE_LINUX_PROOF for test-only libfvad build; synthetic PCM comparison harness | Comparator 8/8 on Python 3.13/3.14; pinned libfvad `make check` 13 PASS / 1 SKIP / 0 FAIL / 0 ERROR | Linux native build is not Android/Bionic/Termux/Redmi; no Android ABI or RSS/PSS/battery measurement |
+| VOICE_AUDIO input | WIRED_SYNTHETIC caller-supplied PCM path only | RAW EAR producer tests and consent suite pass on exact PR head | No microphone/MediaProjection/Android feed, ASR, source-bound audio learning or real-world speech test |
+| Voice output / full duplex | NOT_IMPLEMENTED | No speech decoder/vocoder or barge-in path in this PR | STEP9/G10C/G10D output and full-duplex acceptance remain OPEN |
+| B1/B2 → C4 → native C3 | Existing synthetic audio-context candidate only; separate from producer PR | #2226 reaches C3 admission, not native inference; Core #2200/#2211 remain separate staged candidates | No native model output, C4 accepted coalition, valid Redmi offers or P0 #1904 closure |
+| Whole Canon / Android | Historical inventory remains 1,255 headings; no acceptance promotion | PR #2226 is unmerged, CI-only and based on a QA integration checkpoint | Clause-level consumer/test/rollback mapping remains incomplete; no current owner-authenticated Redmi receipt, Android UI/API executor, trained B3 latent receiver or native body-weight learning |
+
+The latest private V13OBS receipt found is #115 (2026-11-18; no newer receipt): five metadata-only turns, B1 3/3 native failures, B2 2/2 native failures, zero valid offers, C3 prefill-to-first-token 41.5–63.7s. Installed SHA/updater remain unknown. This is stale evidence and does not count as current Redmi proof.
+
+Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. This overlay records candidate evidence only; no Canon family is marked ACCEPTED.
+

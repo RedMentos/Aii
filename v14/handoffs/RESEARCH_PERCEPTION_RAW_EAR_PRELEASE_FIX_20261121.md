@@ -32,17 +32,20 @@ This is still a caller-supplied PCM adapter, not microphone capture. It does not
 - S4VAD (Cohen et al., arXiv:2609.11110v1, 2026-09-10) motivates event-level onset-latency measurement with annotation uncertainty. No official implementation/license was verified; no import.
 - The pinned libfvad comparator remains a test-only Linux comparison. Its results are not Bionic/ARM/Redmi measurements.
 
-## Verification boundary at commit creation
+## Verification boundary after exact PR CI
 
-- Exact local repository suite: BLOCKED; no full checkout is available and `git ls-remote` cannot resolve GitHub DNS in this runner.
-- The local Python environment is available for a small isolated lock/transaction semantics check; that is synthetic, not the exact repository test suite.
-- Exact PR CI must run the producer regressions, staged/integrated guards and privacy scan before this candidate is ready for independent review.
-- Redmi: REDMI_UNVERIFIED. No connected authorized phone, microphone capture or private receipt was obtained.
-- Release/deployment: NOT_RELEASED. No update request, model/weight change, permission change or device data mutation.
+- **PR:** #2226, ready for review; head `2480bd80a173caf6bcfb0ddb18c5ce184281f5a5`, base `6c444e1dfdea19583002519a682fd64bca465098`. NOT_RELEASED.
+- **RAW EAR producer/temporal/Silero/A4→C3:** 51 passed on Python 3.11 and 51 passed on Python 3.13.
+- **Consent preflight/revocation/non-reentrant provider:** 27 passed.
+- **VAD comparator:** 8/8 on Python 3.13 and 3.14; pinned native Linux libfvad `make check` 13 PASS / 1 SKIP / 0 FAIL / 0 ERROR on both matrix jobs.
+- **Privacy:** PASS. **Staged Runtime:** 249 passed / 10 skipped / 47 subtests. **Integrated regression:** 424 passed / 3 skipped / 58 subtests.
+- **Local synthetic lease/transaction harness:** 5/5 PASS. **Exact local Aii suite:** BLOCKED because no checkout is present and `git ls-remote` cannot resolve GitHub DNS.
+- **Private device evidence:** latest found V13OBS #115 updated 2026-11-18 11:30:53Z; no newer receipt. Five metadata-only turns show B1 3/3 native failures, B2 2/2 native failures, zero valid offers and C3 prefill 41.5–63.7s. Installed SHA/updater state unknown; no live receipt in this run.
+- **Redmi:** REDMI_UNVERIFIED. No authorized connected phone, microphone capture, native model test or private live receipt. No model, weight, permission or device-data change.
 
 ## Next integration
 
-1. Run exact current-head Python 3.13/3.14 RAW EAR tests and the preflight-revocation/non-reentrant-lock regressions.
-2. Have QA independently review the provider lease contract and the failure/rollback tests.
-3. Core must port the same lease through derived audio-context persistence and recheck/tombstone before C3 native generation; this producer PR alone does not close #2211/#2200.
-4. Keep the P0 20-turn Redmi chat gate, microphone permission, speech decoder/vocoder and full-duplex acceptance open.
+1. QA independently reviews the exact provider lease and Store rollback tests in #2226.
+2. Core rebases #2200/#2211, removes callback re-entry inside audio_context_store.record()/view(), updates the producer source pin, and preserves tombstone/clear-before-C3 negative tests.
+3. Run the combined producer→derived-context→C3 staged/integrated tests after that rebase.
+4. Keep the P0 Redmi chat gate, microphone permission, speech decoder/vocoder and full-duplex acceptance open.
