@@ -127,7 +127,7 @@ summary{cursor:pointer;font-weight:650}
    <div class="status-pills" id="live-native-roles" aria-live="polite">@@LIVE_ROLE_PILLS@@</div>
    <div class="actions" style="margin-top:15px">@@MODEL_BUTTONS@@</div>
    <div style="margin-top:16px">
-    <strong>Letzter tatsächlicher Gehirndurchlauf</strong>
+    <strong>Letzter abgeschlossener Durchlauf (alle Chats)</strong>
     <p class="muted" id="brain-evidence" aria-live="polite">@@BRAIN_EVIDENCE@@</p>
     <div class="actions" style="margin-top:8px">
      <button type="button" id="flow-audit-refresh">Organdurchlauf prüfen</button>
@@ -436,7 +436,10 @@ summary{cursor:pointer;font-weight:650}
             ' · '+String(o.evidence_level||'UNKNOWN');
         });
         const c3=data.c3||{}, c4=data.c4||{}, latent=data.latent||{}, c5=data.c5||{};
+        const selection=data.selection_scope==='LATEST_COMPLETED_TURN_ALL_SESSIONS'?
+          'letzter abgeschlossener Durchlauf über alle Chats':'UNKNOWN';
         const lines=[
+          'Auswahl: '+selection,
           'Antwort: '+String(data.assistant_status||'UNKNOWN'),
           'A5: '+list(data.perception&&data.perception.modalities)+
             ' · PerceptPackets '+num(data.perception&&data.perception.packet_count),
