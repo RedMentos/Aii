@@ -45,9 +45,9 @@ jobs:
             v13/code/scripts/integrated_audio_context_candidate_20261121.py \
             v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
             v13/code/scripts/stage_integrated_candidate.py
-          test "$(sha256sum v13/code/scripts/integrated_audio_context_candidate_20261121.py | cut -d' ' -f1)" = "8bd1b2f16aae4824a97b962c1fc93b697b2d856576a825b0881bda0a508542c2"
-          test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py | cut -d' ' -f1)" = "fb88879a2dce71cb8da2cf6503f15924c160eacec935fb22fd0ac36d308b3960"
-          test "$(sha256sum v13/code/scripts/stage_integrated_candidate.py | cut -d' ' -f1)" = "ef8f4cb942849f33ff69040e211486d15a5fb22fe4db38ea4ef823e910d991e4"
+          test "$(sha256sum v13/code/scripts/integrated_audio_context_candidate_20261121.py | cut -d' ' -f1)" = "734a6786fec61c4fe15d8861e56b9303496b44967cd76327931908321844a17f"
+          test "$(sha256sum v13/code/scripts/termux_runtime_recovery_candidate_20261121.py | cut -d' ' -f1)" = "fbaaed41a84bc548fcf5edb1aa0d1d04adbd21d1ad25ad0c40e20460e4375021"
+          test "$(sha256sum v13/code/scripts/stage_integrated_candidate.py | cut -d' ' -f1)" = "7a9f369c27c748f2a4caff4dad83a8fc57ca4fabefe87b3c1d03ac9a36d81cc5"
       - name: Compile candidate builders and deployment gate
         run: |
           python -m py_compile \
