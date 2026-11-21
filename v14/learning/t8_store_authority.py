@@ -65,8 +65,12 @@ class Provenance:
     generation_id: str
     source_id: str
     source_sha256: str
+    source_char_start: int
+    source_char_end: int
+    source_modality: str
     outcome_sha256: str
     created: float
+    outcome_created: float
     status: str
     actual: dict
 
@@ -89,6 +93,18 @@ class VerifiedT8Transition:
         return self._proof.action_id
 
     @property
+    def event_id(self):
+        return self._proof.event_id
+
+    @property
+    def generation_id(self):
+        return self._proof.generation_id
+
+    @property
+    def outcome_created(self):
+        return self._proof.outcome_created
+
+    @property
     def status(self):
         return self._proof.status
 
@@ -108,7 +124,16 @@ class VerifiedT8Transition:
 
     @property
     def source_ref(self):
-        return {"source_id": self._proof.source_id, "sha256": self._proof.source_sha256}
+        # Consumers comparing packet provenance need the complete SourceRef,
+        # not only its identity/digest pair. The verifier below has already
+        # validated the exact span and modality against Store.read_source().
+        return {
+            "source_id": self._proof.source_id,
+            "sha256": self._proof.source_sha256,
+            "char_start": self._proof.source_char_start,
+            "char_end": self._proof.source_char_end,
+            "modality": self._proof.source_modality,
+        }
 
     @property
     def evidence_ref(self):
@@ -166,9 +191,14 @@ def _verify_one(store, row):
     if type(source_ref) is not dict:
         raise ValueError("source ref")
     source_id, source_sha = source_ref.get("source_id"), source_ref.get("sha256")
+    source_start, source_end, source_modality = (
+        source_ref.get("char_start"), source_ref.get("char_end"), source_ref.get("modality"))
     if (type(source_id) is not str or source_id != meta.get("source_id")
-            or type(source_sha) is not str or not _HEX64.fullmatch(source_sha)):
-        raise ValueError("source identity")
+            or type(source_sha) is not str or not _HEX64.fullmatch(source_sha)
+            or type(source_start) is not int or type(source_end) is not int
+            or not 0 <= source_start <= source_end
+            or type(source_modality) is not str or not source_modality):
+        raise ValueError("source identity/span")
     # V13 Store._event_in_tx persists packet-level provenance, not source_refs.
     source_refs = event.get("provenance")
     if type(source_refs) is not list or len(source_refs) != 1 or source_refs[0] != source_ref:
@@ -180,7 +210,7 @@ def _verify_one(store, row):
     # hide an older duplicate and incorrectly certify the remaining packet as
     # the unique ActionOutcome. Over-bound histories fail closed.
     packets = store.rows(
-        """SELECT payload FROM packets WHERE kind='ActionOutcome' AND event_id=? AND generation_id=?
+        """SELECT id,payload,created FROM packets WHERE kind='ActionOutcome' AND event_id=? AND generation_id=?
            ORDER BY created DESC LIMIT ?""",
         (meta["event_id"], meta["generation_id"], MAX_ACTION_OUTCOMES_PER_EVENT + 1))
     if type(packets) is not list or len(packets) > MAX_ACTION_OUTCOMES_PER_EVENT:
@@ -190,10 +220,13 @@ def _verify_one(store, row):
         packet_row = _mapping(packet_row, "ActionOutcome row")
         payload = _object(packet_row.get("payload"), "ActionOutcome")
         if payload.get("action_id") == action_id:
-            matching.append(payload)
+            matching.append((packet_row, payload))
     if len(matching) != 1:
         raise ValueError("ActionOutcome cardinality")
-    outcome_packet = matching[0]
+    outcome_row, outcome_packet = matching[0]
+    outcome_created = outcome_row.get("created")
+    if type(outcome_created) not in (int, float) or not math.isfinite(outcome_created):
+        raise ValueError("ActionOutcome time")
     if (outcome_packet.get("event_id") != meta["event_id"]
             or outcome_packet.get("brain_generation_id") != meta["generation_id"]
             or outcome_packet.get("status") != status or outcome_packet.get("actual") != actual):
@@ -201,16 +234,15 @@ def _verify_one(store, row):
     if row["y"][1] != (1.0 if status == "FINAL" else 0.0):
         raise ValueError("transition status mismatch")
     proof = Provenance(action_id, meta["event_id"], meta["generation_id"], source_id, source_sha,
-                       _hash(outcome_packet), float(created), status, actual)
+                       source_start, source_end, source_modality,
+                       _hash(outcome_packet), float(created), float(outcome_created), status, actual)
     return VerifiedT8Transition(_SEAL, row, proof)
 
 
-def verify_committed_transitions(store, limit=world_model.MAX_ROWS):
-    if type(limit) is not int or not 1 <= limit <= world_model.MAX_ROWS:
-        raise ValueError("limit")
+def verify_rows(store, rows):
+    """Verify a caller-selected bounded transition batch without rescanning T8."""
     if not all(callable(getattr(store, name, None)) for name in ("one", "rows", "read_source")):
         raise TypeError("Store reader API required")
-    rows = world_model.transitions(store, limit=limit)
     if type(rows) is not list:
         raise ValueError("T8 feed")
     verified, rejected, seen = [], 0, set()
@@ -224,3 +256,9 @@ def verify_committed_transitions(store, limit=world_model.MAX_ROWS):
         except (ValueError, TypeError, KeyError, OSError, OverflowError, json.JSONDecodeError):
             rejected += 1
     return verified, rejected
+
+
+def verify_committed_transitions(store, limit=world_model.MAX_ROWS):
+    if type(limit) is not int or not 1 <= limit <= world_model.MAX_ROWS:
+        raise ValueError("limit")
+    return verify_rows(store, world_model.transitions(store, limit=limit))
