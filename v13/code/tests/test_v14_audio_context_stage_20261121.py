@@ -48,8 +48,14 @@ def test_audio_and_arithmetic_share_one_hash_bound_stage(tmp_path):
     assert "if not included:meta.pop('audio_source_refs',None);audio_source_ref=None" in runtime
     assert runtime.index("c3_prompt_included") < runtime.index("source_recall.verify_before_use") < runtime.index("try:save_context")
     assert "audio_context_refs" in cognition and "Consumer audio context source mismatch" in cognition
+    assert (destination / "v13/latent_runtime.py").is_file()
+    callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
+    assert "latent_runtime.train_candidate" in callosum
+    assert "COUNTERFACTUAL_READOUT_ONLY" in (destination / "v13/latent_runtime.py").read_text(encoding="utf-8")
 
     test_names = (
+        "test_b3_latent_runtime.py",
+        "test_callosum.py",
         "test_c3_audio_runtime_consumer.py",
         "test_arithmetic_reflex.py",
         "arithmetic_disposable_cases_20261116.py",
