@@ -62,12 +62,15 @@ def _consumer(store, home, *, learning_enabled):
     return current
 
 
-def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift_control=None):
+def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift_control=None,
+                         replay_projection=False):
     """Run persistent JEPA only after a committed turn and only behind both gates."""
     if type(limit) is not int or not 16 <= limit <= MAX_RUNTIME_PAGE:
         raise ValueError("runtime page must be 16..256")
     if cancel_check is not None and not callable(cancel_check):
         raise ValueError("cancel_check must be callable")
+    if type(replay_projection) is not bool:
+        raise ValueError("replay_projection must be bool")
     if cancel_check is not None and cancel_check():
         return {"status":"CANCELLED","decision_authority":"NONE",
                 "native_body_consumed":False,"native_body_weights_changed":False}
@@ -97,6 +100,7 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift
             encoder_mode=gates["encoder_mode"],
             cancel_check=cancel_check,
             drift_control=drift_config,
+            replay_projection=replay_projection,
         )
         result.update(updated)
         result.update({

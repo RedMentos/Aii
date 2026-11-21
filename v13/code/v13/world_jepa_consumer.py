@@ -579,7 +579,8 @@ class WorldJEPAStoreConsumer:
 
 
     def update(self, *, limit=DEFAULT_PAGE_SIZE, steps=80, optimizer_permission=False,
-               replay_mode="uniform", encoder_mode="full", cancel_check=None, drift_control=None):
+               replay_mode="uniform", encoder_mode="full", cancel_check=None, drift_control=None,
+               replay_projection=False):
         if type(limit) is not int or not 16 <= limit <= MAX_ROWS:
             raise ValueError("limit")
         if type(steps) is not int or not 1 <= steps <= 2000:
@@ -590,6 +591,10 @@ class WorldJEPAStoreConsumer:
             raise ValueError("unsupported WorldJEPA replay_mode")
         if encoder_mode not in {"full", "predictor_only"}:
             raise ValueError("encoder_mode must be full or predictor_only")
+        if type(replay_projection) is not bool:
+            raise ValueError("replay_projection must be bool")
+        if replay_projection and replay_mode not in {"uniform_budget", "session_contiguous"}:
+            raise ValueError("replay projection requires a budgeted replay mode")
         drift_config = world_jepa_drift.normalize_config(drift_control)
         if cancel_check is not None and not callable(cancel_check):
             raise ValueError("cancel_check must be callable")
@@ -761,6 +766,19 @@ class WorldJEPAStoreConsumer:
                 train_rows if replay_mode == "uniform"
                 else list(new_train_rows) + list(replay_rows)
             )
+            replay_start = None
+            if replay_projection:
+                if active is None or len(new_train_rows) < 2 or len(replay_rows) < 2:
+                    persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                    if persisted != "PERSISTED":
+                        return {"status": persisted, "pending_rows": len(pending_by_id),
+                                "scan_cursor": state["scan_cursor"],
+                                "native_body_weights_changed": False}
+                    return {"status": "INSUFFICIENT_REPLAY_FOR_PROJECTION",
+                            "new_train_rows": len(new_train_rows), "replay_rows": len(replay_rows),
+                            "pending_rows": len(pending_by_id), "scan_cursor": next_cursor,
+                            "native_body_weights_changed": False}
+                replay_start = len(new_train_rows)
             replay_metrics = {
                 "replay_mode": replay_mode,
                 "replay_rows": len(replay_rows),
@@ -770,6 +788,8 @@ class WorldJEPAStoreConsumer:
                 "replay_session_count": replay_selection["session_count"],
                 "replay_window_count": replay_selection["window_count"],
                 "replay_manifest_sha256": replay_selection["manifest_sha256"],
+                "replay_projection_requested": replay_projection,
+                "replay_projection_enabled": replay_start is not None,
             }
             if len(fit_rows) < 2:
                 persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
@@ -797,7 +817,7 @@ class WorldJEPAStoreConsumer:
                 model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4),
                                   cancel_check=cancel_check, allow_optimizer_bootstrap=True,
                                   train_encoder=(encoder_mode == "full"),
-                                  drift_control=drift_config)
+                                  drift_control=drift_config, replay_start=replay_start)
             except InterruptedError:
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
                         "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
@@ -809,6 +829,8 @@ class WorldJEPAStoreConsumer:
             drift_metrics = world_jepa_drift.summary(
                 model._training_state.get("drift"), enabled=drift_config["enabled"]
             )
+            gradient_projection = dict(getattr(model, "_last_gradient_projection", {}))
+            gradient_projection["requested"] = replay_projection
             after = _parameter_snapshot(model)
             holdout_after = model.prediction_loss(*holdout)
             shuffled_action_loss = model.prediction_loss(holdout[0], np.roll(holdout[1], 1, axis=0), holdout[2])
@@ -857,6 +879,7 @@ class WorldJEPAStoreConsumer:
                     "old_holdout_loss_after": None if old_holdout_after is None else float(old_holdout_after),
                     "old_holdout_retention_delta": retention_delta,
                     "drift_control": drift_metrics,
+                    "gradient_projection": gradient_projection,
                     "parameter_delta_norm": float(parameter_delta),
                     "encoder_parameter_delta_norm": float(encoder_delta),
                     "predictor_parameter_delta_norm": float(predictor_delta),
@@ -943,6 +966,7 @@ class WorldJEPAStoreConsumer:
                 "inverse_dynamics_optimizer_persisted": saved.get("optimizer_state_persisted") is True,
                 "optimizer_state_bootstrapped": saved.get("optimizer_state_bootstrapped") is True,
                 "drift_control": drift_metrics,
+                "gradient_projection": gradient_projection,
             }
             metrics.update(receiver_metrics)
             record = {

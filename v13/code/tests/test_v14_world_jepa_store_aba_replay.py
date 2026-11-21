@@ -15,6 +15,7 @@ import numpy as np
 
 from v13 import (
     contracts,
+    world_jepa,
     world_jepa_consumer,
     world_jepa_optimizer_audit,
     world_jepa_replay,
@@ -37,16 +38,17 @@ DRIFT_CONFIG = {
     "deadzone": 0.05,
 }
 ARMS = (
-    ("uniform", "full", False),
-    ("none", "full", False),
-    ("uniform_budget", "full", False),
-    ("session_contiguous", "full", False),
-    ("uniform", "predictor_only", False),
-    ("none", "predictor_only", False),
-    ("uniform_budget", "predictor_only", False),
-    ("session_contiguous", "predictor_only", False),
-    ("uniform_budget", "full", True),
-    ("uniform_budget", "predictor_only", True),
+    ("uniform", "full", False, False),
+    ("none", "full", False, False),
+    ("uniform_budget", "full", False, False),
+    ("session_contiguous", "full", False, False),
+    ("uniform", "predictor_only", False, False),
+    ("none", "predictor_only", False, False),
+    ("uniform_budget", "predictor_only", False, False),
+    ("session_contiguous", "predictor_only", False, False),
+    ("uniform_budget", "full", True, False),
+    ("uniform_budget", "predictor_only", True, False),
+    ("uniform_budget", "predictor_only", True, True),
 )
 DATA_SEEDS = (13, 19, 43)
 A1_COUNT = 256
@@ -118,6 +120,28 @@ def test_stable_drift_controller_calibrates_groups_and_updates_dual():
         else:
             raise AssertionError("invalid drift config accepted")
 
+
+def test_adam_aware_replay_projection_constrains_the_actual_preconditioned_step():
+    params = {"w": np.zeros(2, dtype=float)}
+    projected = world_jepa.Adam(params, lr=0.1).step(
+        {"w": np.array([-1.0, 2.0])}, constraint_gradients={"w": np.array([1.0, 0.0])}
+    )
+    assert projected["enabled"] is True and projected["projected"] is True
+    assert projected["constraint_dot_before"] < 0.0
+    assert abs(projected["constraint_dot_after"]) <= projected["constraint_tolerance"]
+    assert np.allclose(params["w"], np.array([0.0, -0.1]), atol=1e-9)
+    positive_params = {"w": np.zeros(2, dtype=float)}
+    positive = world_jepa.Adam(positive_params, lr=0.1).step(
+        {"w": np.array([1.0, 2.0])}, constraint_gradients={"w": np.array([1.0, 0.0])}
+    )
+    assert positive["projected"] is False and positive["constraint_dot_before"] > 0.0
+    assert np.allclose(positive_params["w"], np.array([-0.1, -0.1]), atol=1e-9)
+    zero_params = {"w": np.zeros(2, dtype=float)}
+    zero = world_jepa.Adam(zero_params, lr=0.1).step(
+        {"w": np.array([-1.0, 2.0])}, constraint_gradients={"w": np.zeros(2, dtype=float)}
+    )
+    assert zero["reference_zero"] is True and zero["projected"] is False
+    assert np.allclose(zero_params["w"], np.array([0.1, -0.1]), atol=1e-9)
 
 def test_session_contiguous_replay_is_deterministic_bounded_and_session_local():
     def row(index, session):
@@ -315,7 +339,8 @@ def _active_state(store):
     return value
 
 
-def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_control=None):
+def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_control=None,
+               replay_projection=False):
     _set_permissions(
         store, steps=steps, replay_mode=replay_mode, encoder_mode=encoder_mode
     )
@@ -329,7 +354,8 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
     before_sha = before["active"]["checkpoint_sha256"] if before else None
 
     result = world_jepa_runtime.consume_after_commit(
-        store, home=home, limit=256, drift_control=drift_control
+        store, home=home, limit=256, drift_control=drift_control,
+        replay_projection=replay_projection,
     )
     assert result.get("runtime_adapter_called") is True
     assert result.get("learning_enabled") is True
@@ -344,6 +370,14 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
 
     metrics = _metrics(result)
     drift_metrics = metrics.get("drift_control")
+    projection_metrics = metrics.get("gradient_projection")
+    assert type(projection_metrics) is dict
+    assert projection_metrics.get("requested") is replay_projection
+    assert projection_metrics.get("enabled") is replay_projection
+    if replay_projection:
+        assert projection_metrics.get("steps") == metrics.get("optimizer_steps_added")
+        assert projection_metrics.get("projected_steps", 0) > 0
+        assert projection_metrics.get("post_constraint_violation_steps") == 0
     assert type(drift_metrics) is dict
     assert drift_metrics.get("enabled") is (drift_control is not None)
     if drift_control is not None and before is not None:
@@ -460,6 +494,7 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         "parameter_delta_norm": metrics.get("parameter_delta_norm"),
         "ema_target_delta_norm": metrics.get("ema_target_delta_norm"),
         "drift_control": drift_metrics,
+        "gradient_projection": projection_metrics,
     }
 
 
@@ -626,8 +661,10 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         master.close()
 
         arms = {}
-        for replay_mode, encoder_mode, stable in ARMS:
+        for replay_mode, encoder_mode, stable, projection in ARMS:
             arm_key = f"{replay_mode}-{encoder_mode}" + ("-stable" if stable else "")
+            if projection:
+                arm_key += "-agem"
             arm_home = tmp_path / f"arm-{data_seed}-{arm_key}"
             shutil.copytree(master_home, arm_home)
             arms[arm_key] = {
@@ -636,6 +673,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 "replay_mode": replay_mode,
                 "encoder_mode": encoder_mode,
                 "stable": stable,
+                "replay_projection": projection,
                 "drift_control": DRIFT_CONFIG if stable else None,
                 "phases": {"A1": {
                     "status": a1_result["status"],
@@ -658,6 +696,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 steps=SHIFT_STEPS, replay_mode=arm["replay_mode"],
                 encoder_mode=arm["encoder_mode"],
                 drift_control=arm["drift_control"],
+                replay_projection=arm["replay_projection"],
             )
             arm["store"].close()
             arm["store"] = Store(arm["home"])
@@ -686,6 +725,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 steps=SHIFT_STEPS, replay_mode=arm["replay_mode"],
                 encoder_mode=arm["encoder_mode"],
                 drift_control=arm["drift_control"],
+                replay_projection=arm["replay_projection"],
             )
             arm["holdout"] = _cohort_holdout_metrics(
                 arm["store"], phase_by_sha
@@ -736,6 +776,7 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 "replay_mode": arm["replay_mode"],
                 "encoder_mode": arm["encoder_mode"],
                 "stable_drift_control": arm["stable"],
+                "replay_projection": arm["replay_projection"],
                 "A1_checkpoint_sha256": a1_sha,
                 "B": arm["phases"]["B"],
                 "A2": arm["phases"]["A2"],
@@ -747,14 +788,15 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
 
     assert len(reports) == len(DATA_SEEDS) * len(ARMS)
     report_by_arm = {
-        (item["data_seed"], item["encoder_mode"], item["replay_mode"], item["stable_drift_control"]): item
+        (item["data_seed"], item["encoder_mode"], item["replay_mode"],
+         item["stable_drift_control"], item["replay_projection"]): item
         for item in reports
     }
     for data_seed in DATA_SEEDS:
         for encoder_mode in ("full", "predictor_only"):
-            uniform_budget = report_by_arm[(data_seed, encoder_mode, "uniform_budget", False)]
-            contiguous = report_by_arm[(data_seed, encoder_mode, "session_contiguous", False)]
-            stable = report_by_arm[(data_seed, encoder_mode, "uniform_budget", True)]
+            uniform_budget = report_by_arm[(data_seed, encoder_mode, "uniform_budget", False, False)]
+            contiguous = report_by_arm[(data_seed, encoder_mode, "session_contiguous", False, False)]
+            stable = report_by_arm[(data_seed, encoder_mode, "uniform_budget", True, False)]
             # B starts from the identical A1 checkpoint in every arm, so the
             # two budgeted policies must consume identical replay/fit bytes and
             # optimizer steps. A2 is reported separately because B promotion
@@ -774,6 +816,28 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             assert budget_metrics["replay_array_bytes"] == stable_metrics["replay_array_bytes"]
             assert budget_metrics["optimizer_steps_added"] == stable_metrics["optimizer_steps_added"]
             assert stable_metrics["drift_control"]["enabled"] is True
+
+        projected = report_by_arm[(data_seed, "predictor_only", "uniform_budget", True, True)]
+        stable_predictor = report_by_arm[(data_seed, "predictor_only", "uniform_budget", True, False)]
+        projected_b, stable_b = projected["B"], stable_predictor["B"]
+        assert projected_b["gradient_projection"]["projected_steps"] > 0
+        assert projected_b["old_holdout_retention_delta"] <= stable_b["old_holdout_retention_delta"] + 1e-9
+        if projected_b["checkpoint_after"] == stable_b["checkpoint_after"]:
+            assert projected["A2"]["old_holdout_retention_delta"] <= (
+                stable_predictor["A2"]["old_holdout_retention_delta"] + 1e-9
+            )
+
+    projected_reports = [
+        item for item in reports
+        if item["encoder_mode"] == "predictor_only"
+        and item["replay_mode"] == "uniform_budget"
+        and item["stable_drift_control"] is True
+        and item["replay_projection"] is True
+    ]
+    assert any(
+        phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        for item in projected_reports for phase in (item["B"], item["A2"])
+    ), "A-GEM replay arm produced no retention-preserving accepted checkpoint"
 
     print("WORLDJEPA_STORE_A_B_A_REPLAY_RETENTION " + __import__("json").dumps(
         reports, sort_keys=True, allow_nan=False
