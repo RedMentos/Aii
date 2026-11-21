@@ -42,6 +42,38 @@ from . import reflex as reflexctl
 from . import actionlearn as c5ctl
 from . import transaction as txctl
 
+_AUDIO_WINDOW_FIELDS = {
+    "pcm16", "sample_rate", "start_ms", "source_id",
+    "consent_receipt", "consent_check",
+}
+
+
+def _validate_audio_window(value):
+    """Validate a caller-supplied <=1s PCM16 window without persisting raw audio."""
+    if type(value) is not dict or set(value) != _AUDIO_WINDOW_FIELDS:
+        raise ValueError("audio_window must use the exact PCM16/consent fields")
+    pcm = value["pcm16"]
+    rate = value["sample_rate"]
+    start = value["start_ms"]
+    source_id = value["source_id"]
+    receipt = value["consent_receipt"]
+    if type(pcm) is not bytes or not pcm or len(pcm) % 2:
+        raise ValueError("audio_window requires complete mono PCM16 bytes")
+    if type(rate) is not int or not 8000 <= rate <= 48000 or len(pcm) > rate * 2:
+        raise ValueError("audio_window exceeds the one-second 8kHz..48kHz limit")
+    if type(start) is not int or start < 0:
+        raise ValueError("audio_window start_ms must be a nonnegative integer")
+    if type(source_id) is not str or not source_id.strip() or len(source_id) > 128:
+        raise ValueError("audio_window source_id is invalid")
+    if type(receipt) is not str or not receipt.strip() or len(receipt) > 256:
+        raise ValueError("audio_window consent receipt is required")
+    if not callable(value["consent_check"]):
+        raise ValueError("audio_window requires a live consent provider")
+    # The returned object is process-local queue data; Store.accept_turn only
+    # receives text. PCM bytes and callbacks never enter SQLite or diagnostics.
+    return {key: value[key] for key in _AUDIO_WINDOW_FIELDS}
+
+
 class Runtime:
     @property
     def session(self):
@@ -127,7 +159,8 @@ class Runtime:
         with self.lock:return self.current is None and self.jobs.empty() and self.store.queue_stats()['count']==0
     def require_idle(self):
         if not self.idle():raise ValueError('Erst laufenden Vorgang beenden (:cancel); dann erneut ausführen.')
-    def submit(self,text):
+    def submit(self,text,*,audio_window=None):
+        if audio_window is not None:audio_window=_validate_audio_window(audio_window)
         b=len(text.encode())
         if not text.strip():raise ValueError('Leere Eingabe')
         if b>self.cfg['input_bytes']:raise Limits('Eingabe zu lang: '+str(self.cfg['input_bytes'])+' Bytes')
@@ -135,7 +168,9 @@ class Runtime:
             if self.stop.is_set():raise ValueError('Runtime beendet')
             if self.current=='probe':raise Limits('Probe läuft in einem Testkontext; danach wieder Chat-Eingaben senden')
             if self.jobs.full() or self.queued_bytes+b>self.cfg['queue_bytes']:raise Limits('Warteschlange voll; Eingabe wurde nicht angenommen')
-            e=self.store.accept_turn(self.session,text,self.cfg['queue_count'],self.cfg['queue_bytes'],self.cfg['input_bytes']);self.jobs.put_nowait(('turn',e,b,time.monotonic()));self.queued_bytes+=b
+            e=self.store.accept_turn(self.session,text,self.cfg['queue_count'],self.cfg['queue_bytes'],self.cfg['input_bytes'])
+            if audio_window is not None:e['_audio_window']=audio_window
+            self.jobs.put_nowait(('turn',e,b,time.monotonic()));self.queued_bytes+=b
             if self.current in {'observers','shadow','dream','replay','tap','sleep'}:self.cancel_event.set()
             live=duplex.on_input(self,e['event_id'],text)  # WP-N14 live path: decide on overlap, no I/O under the lock
         try:duplex.record(self,live)
@@ -363,7 +398,53 @@ class Runtime:
     def _action_gain(self,eid):
         try:return attctl.controller(self).gains()['action']  # WP-N5 thalamic action coupling for C5 (caution lowers it)
         except Exception as exc:self.store.log('attention_unavailable',eid,{'stage':'action_gain','error':type(exc).__name__});return None
+    def _audio_prompt_layer(self,eid,audio_result,audio_window):
+        """Build a source-resolvable C3 layer from consented acoustic features only."""
+        if not isinstance(audio_result,dict):return None,None
+        admission=audio_result.get('c3_admission')
+        packet_value=audio_result.get('packet')
+        selected=getattr(admission,'selected',()) if admission is not None else ()
+        if (getattr(admission,'status',None)!='ADMITTED' or not selected
+                or not isinstance(packet_value,dict)):
+            return None,None
+        source=packet_value.get('source_ref')
+        segments=packet_value.get('segments')
+        if type(source) is not dict or type(segments) is not list or len(segments)!=1:
+            return None,None
+        receipt=segments[0].get('consent_receipt_ref') if type(segments[0]) is dict else None
+        check_consent=audio_window.get('consent_check') if type(audio_window) is dict else None
+        try:current=check_consent(source.get('source_id'),receipt) if callable(check_consent) else False
+        except Exception:current=False
+        if current is not True:
+            self.store.log('audio_input_unavailable',eid,{'stage':'c3_prompt_consent','reason':'REVOKED_OR_UNAVAILABLE'})
+            return None,None
+        observations=[]
+        for item in selected:
+            summary=getattr(item,'summary',None)
+            start=getattr(item,'start_ms',None);end=getattr(item,'end_ms',None)
+            if (type(summary) is not str or not summary or len(summary)>256
+                    or type(start) is not int or type(end) is not int
+                    or start<0 or end<=start or end-start>1000):
+                continue
+            observations.append({'source_id':getattr(item,'source_id',None),
+                                 'modality':getattr(item,'modality',None),
+                                 'start_ms':start,'end_ms':end,
+                                 'summary':summary,'priority':getattr(item,'priority',0)})
+        if not observations:return None,None
+        body={'schema':'v14.raw-ear-acoustic-context/1',
+              'audio_packet_id':packet_value.get('packet_id'),
+              'audio_source_ref':source,'observations':observations,
+              'authority':'ACOUSTIC_FEATURES_ONLY','transcript':None,
+              'learning_authority':False,'action_authority':False}
+        # Store only a short derived summary, never the caller's PCM bytes.
+        summary_ref=self.store.source(dumps(body),'AUDIO_ACOUSTIC_CONTEXT')
+        layer_body=body|{'summary_source_ref':summary_ref}
+        layer=('RAW_EAR_ACOUSTIC',
+               '\nConsent-bound RAW EAR acoustic observations (not a transcript):',
+               layer_body)
+        return layer,summary_ref
     def _turn(self,e):
+        audio_window=e.pop('_audio_window',None);audio_result=None;audio_source_ref=None
         eid=e['event_id'];g=e['brain_generation_id'];text=self.store.read_source(e['source_ref']);start=time.monotonic();deadline=start+self.cfg['deadline_seconds'];mid=self.store.message(self.session,eid,'assistant');meta={'model_generated':False,'memory_ids':[],'output_owner':'C5_REPORT_BROKER','effective_config':dict(self.cfg),'first_output_monotonic_ns':None};status='FINAL';output='';aid=None;offers=[];version=0;direct=False;runner=None;wake_decision=None;effort_plan=None;ff_x=ff_key=ff_surprise=None
         self.turn_event=e;self.bodies.begin_turn(eid)
         governor=self.executive.snapshot(e,self.session)
@@ -394,6 +475,26 @@ class Runtime:
                     att=attctl.controller(self);a4=att.perceive_packet(percept_packet,goal=text)
                     if a4['requests']:att.admit(eid,a4['requests'],pressure=rpol['focal_pressure'],providers={'A_SOURCE':lambda r:{'source_ref':r['source_ref']}})
                 except Exception as exc:self.store.log('attention_unavailable',eid,{'error':type(exc).__name__})
+            if audio_window is not None and not fixed_policy:
+                try:
+                    from .audio_perception_bridge import consume_pcm16_window
+                    audio_result=consume_pcm16_window(
+                        self,audio_window['pcm16'],sample_rate=audio_window['sample_rate'],
+                        start_ms=audio_window['start_ms'],event_id=eid,generation_id=g,
+                        source_id=audio_window['source_id'],
+                        consent_receipt=audio_window['consent_receipt'],
+                        consent_check=audio_window['consent_check'],token_budget=512,
+                    )
+                    meta['audio_input']={'status':'A5_A4_C3_ADMISSION',
+                                         'packet_id':audio_result['packet']['packet_id'],
+                                         'source_id':audio_window['source_id'],
+                                         'capture_authority':'CALLER_SUPPLIED_PCM16',
+                                         'learning_authority':False,'action_authority':False}
+                except Exception as exc:
+                    self.store.log('audio_input_unavailable',eid,
+                                   {'stage':'a5_a4_admission','error':type(exc).__name__})
+            elif audio_window is not None:
+                meta['audio_input']={'status':'SKIPPED_EXACT_FASTPATH'}
             exec_state=self.executive.begin(e,self.session,self.cfg,resource,rmode);version=exec_state['state_version']
             mark('memory_recall');retrieval_deadline=min(deadline,time.monotonic()+self.cfg['retrieval_seconds'])
             semantic=(lambda m:self.learner.retrieve(e,m,retrieval_deadline)) if self.store.components().get('memory_retrieval') else None
@@ -544,6 +645,17 @@ class Runtime:
                 guidance=[rule for rule in self.store.rules() if isinstance(rule,str)]
                 if guidance:stable+='\n'+prompt(self.cfg,'operator_rules')+dumps(guidance)
                 volatile=[]
+                if audio_result is not None:
+                    audio_layer,audio_source_ref=self._audio_prompt_layer(eid,audio_result,audio_window)
+                    admission=audio_result.get('c3_admission')
+                    meta['audio_admission']={'status':getattr(admission,'status','UNAVAILABLE'),
+                                             'selected_count':len(getattr(admission,'selected',()) or ()),
+                                             'omitted_count':len(getattr(admission,'omitted',()) or ()),
+                                             'used_tokens_upper_bound':getattr(admission,'used_tokens_upper_bound',0),
+                                             'c3_prompt_included':bool(audio_layer)}
+                    if audio_layer:
+                        volatile.append(audio_layer)
+                        meta['audio_source_refs']=[audio_source_ref]
                 if memories:volatile.append(('ACTIVE_VIEW','\n'+prompt(self.cfg,'memories'),self.memory.report_context(text,memories)))
                 if selected:volatile.append(('HYPOTHESES','\n'+prompt(self.cfg,'hypotheses'),self.cognition.analyst_context(selected,e,version)))
                 executive_view=self.executive.view(self.session)
@@ -569,12 +681,12 @@ class Runtime:
                 history=[{'role':m['role'],'content':m['text']} for m in history_records]
                 messages=[{'role':'system','content':sys}]+history+[{'role':'user','content':text}]
                 try:  # WP-N7 Context OS: SHADOW logs the plan next to this legacy view; ACTIVE hands the planned view over
-                    cplan=ctxos.controller(self).plan(eid,runner.role,stable,volatile,history_records,text,verdicts=[x['verdict'] for x in focal_run['inquisition']] if focal_run else [],warm_ids=warm_ids,provenance=[e['source_ref']],budget_scale=body['modulation'].get('context_budget_scale',1.))
+                    cplan=ctxos.controller(self).plan(eid,runner.role,stable,volatile,history_records,text,verdicts=[x['verdict'] for x in focal_run['inquisition']] if focal_run else [],warm_ids=warm_ids,provenance=[e['source_ref']]+([audio_source_ref] if audio_source_ref else []),budget_scale=body['modulation'].get('context_budget_scale',1.))
                     messages=cplan['messages'];meta['context_plan']={'packet_id':cplan['packet_id'],'applied':cplan['applied']}
                 except Exception as exc:self.store.log('context_os_unavailable',eid,{'stage':'plan','error':type(exc).__name__})
                 try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context
                 except Exception as exc:self.store.log('context_save_failed',eid,{'error':type(exc).__name__})
-                context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]
+                context_refs=[e['source_ref'],*meta.get('audio_source_refs',[]),*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[])]
                 if executive_view.get('active_task'):context_refs.append(executive_view['active_task']['source_ref'])
                 context_refs.extend(x['source_ref'] for x in executive_view['open_questions'])
                 for item in selected:context_refs.extend(item['provenance']+item['evidence_refs'])
