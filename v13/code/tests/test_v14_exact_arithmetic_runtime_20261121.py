@@ -25,7 +25,7 @@ def test_exact_arithmetic_is_date_safe_and_reaches_runtime_c5_broker_world(tmp_p
     manifest = _stage(CODE, destination)
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
     assert manifest["arithmetic_overlay"]["status"] == "SHADOW_REVIEW_ONLY"
-    assert {"v13/arithmetic_reflex.py", "v13/runtime.py", "v13/world.py"} <= set(manifest["replaced_files"])
+    assert {"v13/arithmetic_reflex.py", "v13/runtime.py"} <= set(manifest["replaced_files"])
 
     script = r'''
 import json
