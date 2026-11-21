@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T21:20:00Z",
+  "updated_at": "2026-11-21T21:22:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -285,10 +285,29 @@
       "status": "INTEGRATION_REVIEW",
       "scope": "All AgeControl.budgets()/legacy budget consumers; LaboratoryAgeControl; effort, Sleep replay, ResourceGuard and the normal staged Runtime",
       "acceptance": "Official Age remains 0 while X10 test selection can exercise only explicitly implemented tool/learning rights; Age never caps physical compute, wall time, memory, focal cycles or replay volume; every consumer is audited; ResourceGuard/deadline/policy remain independent; staged, integrated, migration and rollback tests pass.",
-      "proof_environment": "QA #2235 remains blocked at 7/10 by nested-closure AST attribution in GoalStore.add; the candidate separation of official Age/test rights from ResourceGuard compute/replay budgets is still not released. No safe-additive policy bypass and no Android proof.",
-      "next_step": "QA continues #2235 AST enclosing-method attribution and adds an unrelated-closure negative control. The GoalWake rollback fix in #2258 is separate; Age remains developmental/tool/learning rights only, never a compute budget.",
+      "proof_environment": "QA #2235 code/test head b22129a03bbd3395605b951d55d3f187f442bda6; handoff-only head c224610959e598cb9c79f38d1b4bd454ffea0019. Exact CI: Lab-Age/WebView PASS (14 main tests), private owner-read and Python 3.14 staged startup/SQLite refs PASS, two-checkout migration PASS (2 tests), runtime-deploy integrity PASS, staged-runtime PASS (251 passed/10 skipped/47 subtests), integrated regression PASS (424 passed/3 skipped/58 subtests). Strict safe-additive remains FAIL_BY_POLICY; no bypass. AST nested GoalStore.add callback attribution is fixed with a negative control; no allowlist widening. This is Linux GitHub CI plus isolated AST probe, not full local checkout, native learning, Android permission or Redmi proof. Current shared release HEAD is bdcad466ffea75a2b41f7d23be168f53c7197d20; compare confirms QA branch diverged, 43 ahead / 121 behind.",
+      "next_step": "Do not blindly rebase or merge the 43-ahead/121-behind branch. Boss/Core must compose the tested learning_limit() rights API and QA callsite inventory with current #2258 GoalStore wake atomicity and current shared base bdcad, preserving all builder/deployer pins. Then rerun exhaustive AST callsite audit, Lab-Age, owner-read/Python 3.14 startup, migration, staged/integrated and deploy checks. Keep Age as developmental/tool/learning rights only; ResourceGuard/deadlines own compute. Safe-additive still requires manual protected-file review.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T18:05:08.230Z"
+      "last_checkpoint": "2026-11-21T21:22:00Z",
+      "latest_qa_candidate": {
+        "pr": 2235,
+        "code_test_sha": "b22129a03bbd3395605b951d55d3f187f442bda6",
+        "handoff_sha": "c224610959e598cb9c79f38d1b4bd454ffea0019",
+        "status": "EXACT_CI_PASS_PENDING_CURRENT_BASE_COMPOSITION",
+        "base_sha": "bdcad466ffea75a2b41f7d23be168f53c7197d20",
+        "ahead": 43,
+        "behind": 121,
+        "checks": {
+          "lab_age": "PASS",
+          "owner_read_python314": "PASS",
+          "two_checkout_migration": "PASS",
+          "runtime_deploy": "PASS",
+          "staged_runtime": "251 passed / 10 skipped / 47 subtests",
+          "integrated_regression": "424 passed / 3 skipped / 58 subtests",
+          "safe_additive": "FAIL_BY_POLICY"
+        },
+        "redmi": "REDMI_UNVERIFIED"
+      }
     },
     {
       "id": "V14-015",
