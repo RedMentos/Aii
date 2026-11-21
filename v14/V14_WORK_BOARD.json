@@ -160,7 +160,7 @@
         "pr": 2207,
         "head_sha": "fb63bb7bde93dda0a70bacdd3a4292df6656c442",
         "merge_commit_sha": null,
-        "ci": "RAW_EAR_48_48_PY311_AND_PY313_PASS; COMPARATOR_PY314_8_8_PASS; PY313_COMPARATOR_AND_STAGED_IN_PROGRESS; SAFE_ADDITIVE_EXPECTED_FAILURE; NOT_RELEASED",
+        "ci": "RAW_EAR_48_48_PY311_AND_PY313_PASS; LIBFVAD_NATIVE_LINUX_MAKE_CHECK_13_13_PY313_AND_PY314_PASS; COMPARATOR_8_8_PY313_AND_PY314_PASS; STAGED_INTEGRATED_IN_PROGRESS; SAFE_ADDITIVE_EXPECTED_FAILURE; NOT_RELEASED",
         "scope": "RAW EAR V3 producer with provider-level linearizable consent lease through PerceptPacket commit, temporal state, A4 and C3 admission; no microphone/Android proof"
       }
     },
