@@ -14,7 +14,7 @@ from .audio_percept_contract import audio_percept_packet
 from .contracts import validate
 from .percept_admission import admit
 
-_SHA256 = re.compile(r"[0-9a-f]{64}\\Z")
+_SHA256 = re.compile(r"[0-9a-f]{64}")
 
 
 def _require_current_consent(consent_check, source_id, receipt_ref):
