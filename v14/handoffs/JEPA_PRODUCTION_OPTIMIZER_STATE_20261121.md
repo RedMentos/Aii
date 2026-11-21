@@ -125,3 +125,25 @@ Exact-head CI is required after this commit. Full local Aii tests remain BLOCKED
 - Android/Redmi: REDMI_UNVERIFIED; no ARM64 Termux execution, private filesystem probe, installed SHA, model/weight change or updater action. This fixes the known hardlink-denial code path in a candidate, not proof that the Redmi filesystem accepts renameat2.
 - Product effect: the persistent numeric WorldJEPA optimizer checkpoint no longer depends solely on hardlinks where the kernel supports atomic no-replace rename. Learning/optimizer gates remain OFF by default; B1/B2/SELF remain numeric SHADOW readouts, not native body weights or trained B3 latent coupling. #1904 foreground chat/offer delivery remains open.
 - Next: exact-head focused/staged/integrated CI and independent Boss/QA review; then repeat the private filesystem path test only with a fresh owner-consented Redmi receipt. No user action required.
+
+
+## Exact-head integration readback — 2026-11-21 13:05 CET
+
+- Final candidate head at this readback: 2b184be394c57316b1dd827334fd00fe5a310467; PR #2205 is open, draft, and GitHub reports mergeable=true against the #2198 optimizer-resume branch.
+- The first post-patch Python 3.14 run failed on the expected strict source-pin mismatch (checkpoint source SHA changed but the staged builder pin had not). This was not suppressed. The chain was rebound bottom-up:
+  - checkpoint SHA256: 86731dcf62cee786b1fe97e753f3d63634e81afac13290e27bda686390d0338c
+  - integrated resume builder SHA256: 8fa0408f9d8195d70af35d59446ba3da58eef4f9e0d7fd3c3e8695ae7176ef65
+  - Termux recovery builder SHA256: 582bce87d3ef44185a56246e829f2384b33a66bbec5b51e848325f6d419b9055
+  - integrated stage builder SHA256: faccdfa5d632edb63cd1915e1d853002e6c940c44fed50b7b3393d19d7e6364b
+  - runtime deploy STAGER_SHA256 now matches the stage builder.
+- Exact head CI after correction:
+  - run 44906518932: staged-runtime 249 passed / 10 skipped / 47 subtests; integrated-regression 419 passed / 3 skipped / 58 subtests.
+  - run 44906518952: Python 3.14 optimizer-resume 15 disposable + 16 postcommit Runtime + 1 outer stage passed.
+  - run 44906518912: 21 JEPA checkpoint-retention tests passed.
+  - run 44906518903: runtime-deployment integrity success.
+  - run 44906518929: two-checkout updater migration 2 passed.
+  - run 44906518895: owner-read bootstrap CI jobs success; not a live phone receipt.
+- Local Linux isolated helper: PASS on Python 3.13.5/x86_64. Full checkout remains BLOCKED by github.com DNS. Redmi remains REDMI_UNVERIFIED.
+- Research cross-check: RoD arXiv:2609.40089 (paper CC BY 4.0; code repo Apache-2.0) uses source-specific reducible-loss references and joint top-k competition for adaptation/replay. Its implementation builds on NeMo-RL v0.6/Megatron and is not an Android dependency candidate; only the selection principle is relevant. STABLE arXiv:2611.10655 motivates a later drift-budget ablation; upstream code repo LICENSE is MIT. Neither was imported.
+- Next executable JEPA package after this fix: repeated-seed A→B→A return-to-prior dynamics with matched update/replay-byte budgets; compare reset moments vs persistent moments vs bounded drift, old/new disjoint holdouts, retention, restart and rollback. Keep all optimizer/learning gates OFF until separate approval.
+- This PR does not clear #1904, prove native B1/B2 weights, or establish trained B3 latent exchange. No release or device deployment.
