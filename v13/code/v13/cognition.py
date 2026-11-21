@@ -167,13 +167,35 @@ class Cognition:
         if (not isinstance(bound_tap_id,str) or native.get('tap_id')!=bound_tap_id or
                 native.get('metrics',{}).get('tap_id')!=bound_tap_id):
             raise ValueError('Native tap identity differs from the validated model binding')
-        path=self.r.home/'data/blobs'/(uid('tap')+'.json');atomic_write(path,dumps({'token_ids':native['token_ids'],'vectors':native['vectors']}))
+        from .models import model_key
+        key=model_key(role,self.r.models.b2_control)
+        installed=self.r.models.installed.get(key)
+        if not installed or installed.get('download_complete') is not True:
+            raise ValueError('Tap sender model is not installed: '+role)
+        model_revision=self.r.models.revision(role)
+        if model_revision!=installed.get('exact_revision'):
+            raise ValueError('Tap sender model revision differs from installed manifest')
+        main=installed.get('files',{}).get(installed.get('main_file'))
+        if not isinstance(main,dict) or not isinstance(main.get('sha256'),str):
+            raise ValueError('Tap sender model manifest hash is missing')
+        sender_model_sha256=main['sha256'].lower()
+        if file_hash(self.r.models.path_for(role))!=sender_model_sha256:
+            raise ValueError('Tap sender model bytes differ from installed manifest')
+        tokenizer_revision=installed.get('tokenizer_revision')
+        if tokenizer_revision is not None and (not isinstance(tokenizer_revision,str) or not tokenizer_revision):
+            raise ValueError('Tap tokenizer revision is malformed')
+        position_ids=list(range(len(native['token_ids'])))
+        position_mode='ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL'
+        path=self.r.home/'data/blobs'/(uid('tap')+'.json')
+        atomic_write(path,dumps({'token_ids':native['token_ids'],'position_ids':position_ids,'position_mode':position_mode,'vectors':native['vectors']}))
         prediction=None
         try:prediction=self.r.learner.predict_states(role,native['vectors'])
         except Exception as exc:self.s.log('local_predictor_unavailable',e['event_id'],{'role':role,'error':type(exc).__name__})
         p=packet('LatentTapPacket',role,e['event_id'],e['brain_generation_id'],[source_ref],role=role,source_ref=source_ref,
-                 tap_id=bound_tap_id,model_revision=self.r.models.revision(role),runner_revision='b10964',
-                 token_ids=native['token_ids'],feature_path=str(path.relative_to(self.r.home)),feature_sha256=file_hash(path),shape=[len(native['vectors']),len(native['vectors'][0]) if native['vectors'] else getattr(tap_runner,'tap_dim',2048)],
+                 tap_id=bound_tap_id,model_revision=model_revision,runner_revision='b10964',
+                 sender_model_sha256=sender_model_sha256,tokenizer_revision=tokenizer_revision,
+                 token_ids=native['token_ids'],position_ids=position_ids,position_mode=position_mode,
+                 feature_path=str(path.relative_to(self.r.home)),feature_sha256=file_hash(path),shape=[len(native['vectors']),len(native['vectors'][0]) if native['vectors'] else getattr(tap_runner,'tap_dim',2048)],
                  role_state='INDEPENDENT_READ_ONLY_PREFILL',receiver_read_authority=0,receiver_injection_authority=0,body_learning_authority=0,metrics=native['metrics'],local_prediction=prediction)
         self.s.add_packet('LatentTapPacket',p);self.s.log('native_tap',e['event_id'],native['metrics']|{'model_revision':p['model_revision'],'source_ref':source_ref});return p
     def read_tap(self,p):
@@ -183,7 +205,81 @@ class Cognition:
         if not path.is_relative_to((self.r.home/'data/blobs').resolve()) or file_hash(path)!=p['feature_sha256']:raise ValueError('Tap feature file/source binding invalid')
         data=json.loads(path.read_text())
         if data['token_ids']!=p['token_ids'] or len(data['vectors'])!=p['shape'][0] or any(len(v)!=p['shape'][1] for v in data['vectors']):raise ValueError('Tap feature shape/token mismatch')
+        positions=p.get('position_ids')
+        mode=p.get('position_mode')
+        if (not isinstance(positions,list) or len(positions)!=p['shape'][0]
+                or data.get('position_ids')!=positions or data.get('position_mode')!=mode
+                or mode!='ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL'
+                or positions!=list(range(len(p['token_ids'])))):
+            raise ValueError('Tap position mapping/token binding invalid')
+        if any(type(value) is not int or value<0 or value>=131072 for value in positions):
+            raise ValueError('Tap position ID outside verified bounds')
+        from .models import model_key
+        key=model_key(p['role'],self.r.models.b2_control)
+        installed=self.r.models.installed.get(key)
+        if not installed or installed.get('download_complete') is not True:
+            raise ValueError('Tap sender model manifest unavailable')
+        main=installed.get('files',{}).get(installed.get('main_file'))
+        if (not isinstance(main,dict) or not isinstance(main.get('sha256'),str)
+                or main.get('sha256').lower()!=p.get('sender_model_sha256')
+                or installed.get('exact_revision')!=p.get('model_revision')
+                or self.r.models.revision(p['role'])!=p.get('model_revision')
+                or installed.get('tokenizer_revision')!=p.get('tokenizer_revision')
+                or file_hash(self.r.models.path_for(p['role']))!=p.get('sender_model_sha256')):
+            raise ValueError('Tap sender weight/tokenizer provenance changed')
         return data
+    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline):
+        """Opt-in native llama_batch.embd receiver probe; never production B3 or learning."""
+        from .models import model_key
+        from .native_latent_receiver import probe as native_probe, register_packet_contract, validate_packet
+        register_packet_contract()
+        if sender_role not in {"B1_DETAIL","B2_GIST"} or receiver_role not in {"B1_DETAIL","B2_GIST","C3_LANGUAGE"} or sender_role==receiver_role:
+            raise ValueError("Native receiver roles must be distinct B1/B2 -> B1/B2/C3")
+        if source_ref.get("source_id")!=e["source_ref"]["source_id"]:
+            raise ValueError("Native receiver source must belong to this event")
+
+        tap=self.tap(sender_role,e,source_ref,deadline)
+        # The tap runner is exclusive. Reap it before loading the receiver model
+        # so the probe never intentionally holds two dense model copies at once.
+        self.r.pool.unload()
+        data=self.read_tap(tap)
+        key=model_key(receiver_role,self.r.models.b2_control)
+        installed=self.r.models.installed.get(key)
+        if not installed or installed.get("download_complete") is not True:
+            raise ValueError("Receiver model is not installed: "+receiver_role)
+        if self.r.models.revision(receiver_role)!=installed.get("exact_revision"):
+            raise ValueError("Receiver model revision is routed/swapped; probe requires the installed pinned revision")
+        model_path=self.r.models.path_for(receiver_role)
+        main=installed.get("files",{}).get(installed.get("main_file"))
+        if not isinstance(main,dict) or not isinstance(main.get("sha256"),str):
+            raise ValueError("Receiver model manifest hash is missing")
+        receipt=native_probe(
+            home=self.r.home,model_path=model_path,expected_model_sha256=main["sha256"],
+            sender_role=sender_role,receiver_role=receiver_role,
+            sender_tap_id=tap["tap_id"],sender_model_revision=tap["model_revision"],
+            sender_model_sha256=tap["sender_model_sha256"],tokenizer_revision=tap.get("tokenizer_revision"),
+            receiver_model_revision=installed["exact_revision"],
+            source_id=source_ref["source_id"],generation_id=e["brain_generation_id"],
+            vectors=data["vectors"],position_ids=data["position_ids"],position_mode=data["position_mode"],
+            deadline=deadline,threads=min(2,max(1,int(self.r.cfg.get("threads",1)))),
+            cancel_event=self.r.cancel_event,
+        )
+        p=packet("LatentReceiverPacket","B3_NATIVE_RECEIVER_PROBE",e["event_id"],e["brain_generation_id"],[source_ref],
+                 source_ref=source_ref,sender_tap_packet_id=tap["packet_id"],
+                 production_route=False,semantic_use_proven=False,training_authority=0,native_receiver_authority=0,
+                 **receipt)
+        validate_packet(p)
+        self.s.add_packet("LatentReceiverPacket",p)
+        self.s.log("native_latent_receiver_probe",e["event_id"],{
+            "sender_role":sender_role,"receiver_role":receiver_role,"status":p["status"],
+            "input_rows":p["input_rows"],"input_dim":p["input_dim"],
+            "receiver_input_dim":p["receiver_input_dim"],"output_dim":p["output_dim"],
+            "decode_status":p["decode_status"],"native_input_consumed":p["native_input_consumed"],
+            "input_effect_detected":p["input_effect_detected"],"production_route":False,
+            "semantic_use_proven":False,"training_authority":0,"native_receiver_authority":0,
+        })
+        return p
+
     def body_context(self,role,e):
         """B2's bounded long window; persisted IDs, exact sources, no fact promotion.
 

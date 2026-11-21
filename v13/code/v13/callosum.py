@@ -23,6 +23,7 @@ Degradation (B3-H10)     a receiver model revision change resets that direction 
 import json
 import math
 import re
+import time
 from . import b3degrade
 from .common import dumps
 from .neuromod import step
@@ -180,8 +181,21 @@ class Callosum:
         return out
     def report(self,cfg):
         st,_=self._load();p=st['proposals']
-        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),
-                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}
+        probe=None
+        row=self.s.one("SELECT payload FROM packets WHERE kind='LatentReceiverPacket' ORDER BY rowid DESC LIMIT 1")
+        if row:
+            try:
+                q=json.loads(row['payload'])
+                probe={k:q.get(k) for k in ('sender_role','receiver_role','sender_model_sha256','tokenizer_revision',
+                    'receiver_model_revision','receiver_model_sha256','status','input_rows','input_dim','position_ids',
+                    'position_mode','receiver_input_dim','output_dim','decode_status','row_shuffle_control_applicable',
+                    'row_shuffle_control_cosine','native_input_consumed','input_effect_detected')}
+                probe.update(production_route=False,semantic_use_proven=False,training_authority=0,native_receiver_authority=0)
+            except (ValueError,TypeError):probe={'status':'INVALID_STORED_RECEIPT'}
+        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,
+                'directions':self.doctor(cfg),'native_receiver_probe':probe,
+                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative',
+                'claim_limit':'Channel choice among exact/control/symbolic baselines; probe does not establish trained alignment or production latent exchange'}
 
 def controller(runtime):
     c=getattr(runtime,'callosum',None)
@@ -198,12 +212,35 @@ def controller(runtime):
 def on_rating(store,event_id,score):return Callosum(store).on_rating(event_id,(score-1)/9)
 
 def operator_command(r,args):
-    """:callosum [status|shadow|active|degrade|promote <direction>]"""
+    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <sender> <receiver> --last-source --confirm]"""
     c=controller(r)
+    if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
+        sender,receiver=args[1],args[2]
+        if sender not in {'B1_DETAIL','B2_GIST'} or receiver not in {'B1_DETAIL','B2_GIST','C3_LANGUAGE'} or sender==receiver:
+            raise ValueError('Native probe requires distinct B1/B2 sender and B1/B2/C3 receiver')
+        last=r.last_answer()
+        if not last:raise ValueError('Erst eine abgeschlossene Eingabe erzeugen')
+        row=r.store.one('SELECT packet FROM events WHERE id=?',(last['event_id'],))
+        if not row:raise ValueError('Letztes Ereignis fehlt')
+        event=json.loads(row['packet'])
+        ref=event.get('source_ref')
+        if not isinstance(ref,dict) or not ref.get('source_id'):raise ValueError('Letzte Eingabe hat keine gültige SourceRef')
+        r.require_idle()
+        r.models.path_for(receiver)  # read-only installed-model check; no model is swapped
+        deadline=time.monotonic()+max(120,r.cfg['observer_seconds'])
+        try:
+            packet=r.cognition.native_receive(sender,receiver,event,ref,deadline)
+        finally:
+            r.pool.unload()
+        return dumps({**packet,'queued':False,'completed':True,
+                      'sender_role':sender,'receiver_role':receiver,
+                      'requires_explicit_confirmation':True,'production_route':False,
+                      'semantic_use_proven':False,'training_authority':0,'native_receiver_authority':0,
+                      'notice':'Synchronous, user-initiated probe; existing model only, no weight or routing change'})
     if not args or args==['status']:return dumps(c.report(r.cfg))
     if args==['shadow']:return dumps({'mode':c.set_mode('SHADOW')})
     if args==['active']:return dumps({'mode':c.set_mode('ACTIVE','EXPLICIT_HUMAN')})
     if args==['degrade']:return dumps({d:{k:x[k] for k in ('degradation_level','status','calibration_valid','degradation')} for d,x in c.doctor(r.cfg).items()})
     if len(args)==2 and args[0]=='promote' and args[1] in b3degrade.RECEIVER:  # typed by the human at the operator console
         return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})
-    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1]')
+    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|native-probe B1_DETAIL|B2_GIST B1_DETAIL|B2_GIST|C3_LANGUAGE --last-source --confirm]')
