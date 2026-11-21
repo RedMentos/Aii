@@ -328,3 +328,36 @@ The merged #2155 adapter extracts heuristic pitch/voicing/energy/activity cues f
 - Verified source lines: 673-675 set /data to system:system 0771; 843 creates /data/data as system:system 0771; 915-923 create /data/user and bind-mount /data/data onto /data/user/0.
 - V14 consequence: a strict private-app DB path validator must reject broad group/world-writable ancestors while making only the exact AOSP root/legacy exceptions, with UID, GID and mode checks and negative controls for wrong owner/group/mode and writable descendants. PR #2190 implements this narrow audit-DB path exception and is merged at code head e18c664...; its broker tests remain synthetic. This source review is not proof of the Redmi's vendor-specific mount/SELinux state.
 - Limitations: AOSP init configuration does not attest the user's particular Redmi build, mount namespace, SELinux policy or actual runtime permissions. No device measurement was available; keep REDMI_UNVERIFIED.
+
+
+## Research & implementation update — 2026-11-21 11:29 CET (Research & Perception)
+
+### R-023 — Atomic first-use binding for runtime-local temporal perception state
+- Observed code defect: _runtime_temporal_voice_registry used an unsynchronized get/create/set sequence. Concurrent first audio calls on one Runtime could each construct a registry; each caller could update a different instance while only the last instance remained attached to Runtime. That breaks temporal continuity across simultaneous streams.
+- Change: a short module-level initialization lock plus a second read makes first-use registry binding atomic. The registry remains Runtime-local, source/generation-keyed, internally RLock-protected and LRU-bounded to 16 streams. It retains only scalar evidence/timestamps; PCM, transcripts and speaker identity remain absent.
+- Regression: an eight-worker barrier test delays construction and asserts exactly one registry instance is created and returned to all callers. Exact-head GitHub Actions run 44895064274 passed 29/29 on Python 3.11 and 29/29 on Python 3.13.
+- Evidence boundary: local Aii checkout is blocked by GitHub DNS; no local exact-source compile/test PASS. CI is Linux/synthetic only. Redmi/Termux remains REDMI_UNVERIFIED.
+- Integration boundary: the adapter still consumes caller-supplied PCM16. Core #2158 must pin the exact V3 producer and temporal module, preserve text/audio PerceptPacket modality separation, and prove B1/B2 OfferPacket delivery through C4/C3. This change does not supply microphone capture, trained VAD, speech decoding, full-duplex or native JEPA coupling.
+- Research note: no new paper is claimed in this checkpoint; this is a concurrency correction derived from the actual Runtime consumer path. The existing R-018 VAD/license/ABI notes remain the source review for WebRTC/libfvad.
+
+
+## Research update — 2026-11-21 11:40 CET (Research & Perception)
+
+### R-024 — Tiny causal VAD candidates: kiloVAD/PulseVAD, Silero and Android runtime claims
+
+**Primary paper read in full:** Stephen Bauer, Sheila Seidel, Shanza Iftikhar, Scott Veidenheimer and Gorkem Ulkar, “VAD to the Bone: Ultra-Tiny Speech Activity Detection for Edge Deployment”, arXiv:2607.25870v1, submitted 2026-07-28; the arXiv record states accepted for INTERSPEECH 2026. The paper's kiloVAD is a CNN-only, standard-Mel, strictly causal detector. The pruned 2.1k-parameter model reports 0.850 ± 0.007 AUC on AVA-Speech (8 surviving seeds; 2 of 10 collapsed under aggressive pruning), 44k MACs per inference and 200 ms context. The 81k model reports 0.862 ± 0.001 AUC. The paper reports AUC 0.798 at 60 ms context, 0.862 at 200 ms and 0.872 at 360 ms: tiny parameter count does not remove the input-context latency. INT8 post-training quantization is reported essentially lossless; angle-aware self-distilling INT4 QAT improves 1–4% over STE QAT. These are paper-reported AVA-Speech results, not Android measurements.
+
+**Maintained implementation candidate:** AydinAdnan/PulseVAD repository HEAD af25e79d66830a3fee74541812721f6158fc92b5 (2026-09-09). Its repository LICENSE is MIT; README lists 2,118 parameters, 2.1 KB INT8 weights, a 26.8 KB ONNX graph, 12 KB FP32 graph, 38 KB TorchScript and a 10 KB C header, all using a 64-bin log-Mel frontend and 200 ms causal windows. Its author-reported September 2026 matched benchmark uses about 82 minutes, non-overlapping 200 ms windows and threshold sweep: mean F1 90.1% vs Silero 93.6%; music-only false-alarm 33.3% vs 15.7%; noise-only false-alarm 6.3% vs 0.0%. The README says near-mic/clean-to-moderate conditions are its target and explicitly acknowledges weaker music and far-field noise performance. The paper's kiloVAD checkpoints are separately described by the repo as CC BY-NC and excluded; do not confuse those with PulseVAD's MIT repo/model claim. Reproducibility caveat: README benchmark datasets (DEMAND/GTZAN and 82-minute comparison), REPRODUCE.md pipeline datasets, and ATTRIBUTION.md dataset list are not identical; exact artifact/data-manifest reproduction is not yet independently verified. PulseVAD is therefore a research candidate, not an accepted product dependency.
+
+**Streaming baseline:** snakers4/silero-vad upstream README identifies MIT licensing, ONNX CPU support, 8/16 kHz input, and sub-1 ms processing for a 30+ ms chunk on one CPU thread; the JIT model is around 2 MB. The upstream page does not establish Termux/Bionic ABI, Redmi Note 10 Pro RSS or battery cost. This is the more relevant low-latency comparison candidate than a 200 ms-only gate, but remains unmeasured on target hardware.
+
+**Android implementation claim rejected for source reuse:** VoxRT/voxrt-silero-android v0.1.2 says API 26+, arm64-v8a, 1.2 MB Silero weights, a 424 KB native library and ~1 ms / 32 ms frame (3.05% RTF) on a Redmi 9C / Snapdragon 662. The Kotlin wrapper is Apache-2.0 and Silero weights MIT, but the bundled inference runtime is explicitly proprietary. Its measurement is vendor-reported on a different device. Do not import the binary runtime into V14; it can only be a reference point for a later open-runtime benchmark.
+
+**V14 decision / testable next step:** keep RAW EAR V3 prosody, non-speech cues and temporal A4 evidence first-class. A VAD output is a separate speech-presence probability/gate, never a replacement for raw acoustic perception. When a permitted local benchmark is available, compare the current heuristic, WebRTC/libfvad, Silero ONNX and PulseVAD on the same licensed/consented annotated corpus with 20/32/40/200 ms windows; record onset/offset p50/p95, FAR on noise/music, FPR/FNR, CPU time, RSS/PSS and battery. PulseVAD's 200 ms context makes it a possible low-power coarse gate, not a barge-in/fast-turn detector. No model, weight, runtime or dependency was downloaded or swapped in this run.
+
+Primary sources:
+- Paper (full text, v1, 2026-07-28): https://arxiv.org/abs/2607.25870
+- PulseVAD code/model repository and MIT license: https://github.com/AydinAdnan/PulseVAD/tree/af25e79d66830a3fee74541812721f6158fc92b5
+- PulseVAD reproduction protocol: https://github.com/AydinAdnan/PulseVAD/blob/af25e79d66830a3fee74541812721f6158fc92b5/REPRODUCE.md
+- Silero VAD upstream: https://github.com/snakers4/silero-vad
+- VoxRT Android wrapper/runtime license statement: https://github.com/VoxRT/voxrt-silero-android
