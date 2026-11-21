@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T12:35:15.510Z",
+  "updated_at": "2026-11-21T13:33:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -73,16 +73,17 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "The exact integrated regression on release head 0fc4d2f9a76d530c366d67ea8148cd1c69666acd passed 415/3 skipped/58 subtests and ran the synthetic Store-backed Runtime WorldJEPA holdout twice: loss 0.9600227693 -> 0.9030210266 (delta -0.0570017428; 49 train / 15 ID-disjoint holdout) and 0.9627244265 -> 0.9034923341 (delta -0.0592320924; 47 train / 17 holdout). The test also checks numeric parameter change, save/restore and restart retention. This is synthetic staged Runtime/SQLite evidence, not native GGUF body-weight learning or Redmi utility. #2198 current head cd0b54053f51d5227f7860a80f5f6adbd3973598 passes focused, combined, incremental, optimizer-resume, staged/integrated and Python 3.14 CI; prior Planner utility-gate failures are fixed. However world_jepa_shadow_checkpoint.save() still uses os.link only, without EPERM/EACCES renameat2(RENAME_NOREPLACE) fallback; PR remains unmerged and not Android-ready.",
-      "next_step": "JEPA: port the shared no-clobber renameat2 fallback or equivalent, with forced-hardlink-denied and existing-target negative tests, file+directory fsync and crash cleanup; retain Python 3.14 optimizer-resume. Then Boss reviews exact current head and production checkpoint wiring. Keep learning/optimizer gates OFF; no native GGUF body-weight or B3 latent learning claim.",
+      "proof_environment": "PR #2209 candidate `26397466ca84bc0c5c9116757460fb32e107ab36` adds production Store-backed Adam/inverse/RNG/EMA checkpoint resume, Android-safe no-clobber publication and per-role B1/B2/SELF SHADOW utility gates, but its first exact-head CI exposed a syntax error (`...')}def load`). JEPA fix PR #2212 is stacked on #2209 at head `24086c82575c9571a51796ae44054c5d20d3c7e9`; it adds the missing function boundary newline and rebinds the full checkpoint→builder→recovery→stager→runtime_deploy SHA-256 chain. Readback recomputation verified all four pins. Exact-head GitHub Actions: checkpoint retention PASS; optimizer-resume Python 3.14 PASS; runtime deployment integrity PASS; two-checkout migration PASS; private owner-read bootstrap PASS; Lab Age control PASS; staged-runtime/integrated-regression still IN_PROGRESS at last readback. Full local Aii checkout/tests BLOCKED because this runner cannot resolve github.com; no LOCAL_LINUX suite PASS. No Redmi receipt; REDMI_UNVERIFIED. Synthetic Python/SQLite only; no native GGUF body update or trained B3 latent coupling.",
+      "next_step": "Finish exact-head staged-runtime and integrated-regression CI on PR #2212. If green, Boss reviews and integrates #2212 into #2209, then reviews the combined #2209 candidate against the release ancestor. After integration, run multi-seed A→B→A return-to-old-dynamics ablations: persistent vs reset Adam moments × uniform vs no replay, equal optimizer-step budgets, source/content-disjoint A/B holdouts, gradient/parameter/EMA diffs, restart equivalence and rollback. Keep hard replay OFF because the prior cohort regressed retention; do not promote B1/B2/SELF beyond SHADOW without real receiver utility and separate approval.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 13:34 CET",
+      "last_checkpoint": "2026-11-21 14:33 CET",
       "latest_candidate_pr": {
-        "pr": 2151,
-        "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
-        "merge_commit_sha": "a7a31077213a6e2810270816c716292a64e40905",
-        "ci": "PASS_RUN_44861797478_64_TESTS_PY313_PY314",
-        "scope": "source-bound synthetic Store-backed numeric WorldJEPA/EMA with holdout utility + prior retention gate; not Runtime-wired"
+        "pr": 2212,
+        "head_sha": "24086c82575c9571a51796ae44054c5d20d3c7e9",
+        "base_pr": 2209,
+        "base_branch": "boss/v14-jepa-optimizer-publisher-20261121",
+        "ci": "PARTIAL_6_WORKFLOWS_PASS_1_STAGED_INTEGRATED_IN_PROGRESS",
+        "scope": "Checkpoint syntax fix plus exact downstream SHA-pin rebinding; no model/weight/runtime behavior change"
       },
       "latest_followup_pr": {
         "pr": 2148,
@@ -100,7 +101,7 @@
         "ci": "FAIL_ONE_RUNTIME_TEST_SCHEMA_MISMATCH",
         "scope": "Postcommit TemporalT8Bridge and WorldPredictionOutcome SHADOW only; newest-first latest-N scan; not JEPA/EMA consumer"
       },
-      "release_sha": "NOT_PHONE_RELEASED",
+      "release_sha": "NOT_RELEASED",
       "phone_installed_sha": "UNKNOWN",
       "redmi_status": "REDMI_UNVERIFIED",
       "latest_runtime_port_pr": {
