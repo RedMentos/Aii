@@ -229,12 +229,12 @@ def test_runtime_world_jepa_paginates_t8_and_exposes_b1_b2_self_shadow_receivers
 
         temporal_cursors = []
         jepa_cursors = []
-        for _ in range(4):
+        for page_index in range(4):
             result = consume_recent_committed(runtime.store, runtime.home, limit=16)
             assert result["status"] in ("RECORDED", "NO_VALID_PREDICTIONS")
             assert result["verified"] == 16
             assert result["temporal_cursor_advanced"] is True
-            assert result["has_more"] is (_ < 3)
+            assert result["has_more"] is (page_index < 3)
             assert result["world_jepa"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
             assert result["world_jepa_parameter_updates"] is True
             assert result["native_body_weights_changed"] is False
