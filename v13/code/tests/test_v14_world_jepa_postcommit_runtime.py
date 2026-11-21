@@ -358,3 +358,136 @@ def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in
         assert event["payload"] == {"event_id": later_event}
     finally:
         store.close()
+
+
+def _wait_until(predicate, timeout=25.0):
+    import time
+
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if predicate():
+            return True
+        time.sleep(0.02)
+    return bool(predicate())
+
+
+def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart(tmp_path):
+    """Exercise the real Runtime worker, not only a hand-called SleepRuntime facade."""
+    import json
+    import time
+
+    from v13.runtime import Runtime
+
+    home = tmp_path / "real-runtime-worker-jepa"
+    runtime = Runtime(home, notify=lambda _message: None)
+    checkpoint_sha = None
+    fit_steps = None
+    try:
+        original_policy = runtime.sleep.cycle.policy
+
+        def fast_idle_policy():
+            policy = dict(original_policy())
+            policy["tick_seconds"] = 0.01
+            policy["enabled"] = False
+            return policy
+
+        runtime.sleep.cycle.policy = fast_idle_policy
+        runtime.sleep.resource_state = lambda: "NORMAL"
+
+        # A real Runtime.submit -> Runtime._worker -> Runtime._turn path.
+        # Copy-exact keeps this acceptance test independent of installed GGUFs.
+        turn_event_id = runtime.submit("Copy exactly: worker-jepa-lifecycle")
+        assert _wait_until(lambda: runtime.store.one(
+            "SELECT status,outcome FROM actions WHERE event_id=?", (turn_event_id,)
+        ) is not None)
+        action = runtime.store.one(
+            "SELECT status,outcome FROM actions WHERE event_id=?", (turn_event_id,)
+        )
+        assert action["status"] == "FINAL"
+        assert action["outcome"] is not None
+        assert runtime.store.one(
+            "SELECT id FROM messages WHERE event_id=? AND role='assistant'",
+            (turn_event_id,),
+        ) is not None
+        assert _wait_until(runtime.idle)
+
+        # Add a source-disjoint T8 cohort through the same durable Store API.
+        # The temporary permission is test-only; production gates remain OFF.
+        _add_transitions(runtime.store, runtime.session, 1000, 256)
+        latest = runtime.store.one(
+            "SELECT event_id FROM actions WHERE outcome IS NOT NULL "
+            "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
+            "ORDER BY created DESC,id DESC LIMIT 1"
+        )["event_id"]
+        runtime.store.set_state(PERMISSION_KEY, {
+            "learning_enabled": True,
+            "optimizer_permission": True,
+            "steps": 4,
+            "replay_mode": "uniform",
+        })
+        runtime.sleep.last_tick = -1e18
+        runtime.wake.set()
+
+        def learned_and_planned():
+            state, _ = runtime.store.state("v14.world_jepa.store_consumer", None)
+            cursor, _ = runtime.store.state("v14.world_jepa.sleep_cursor", None)
+            active = state.get("active") if type(state) is dict else None
+            return (
+                type(active) is dict
+                and type(cursor) is dict
+                and cursor.get("last_learning_event_id") == latest
+                and cursor.get("last_planner_event_id") == latest
+            )
+
+        assert _wait_until(learned_and_planned)
+        state, _ = runtime.store.state("v14.world_jepa.store_consumer", None)
+        active = state["active"]
+        checkpoint_sha = active["checkpoint_sha256"]
+        fit_steps = active.get("fit_steps")
+        assert type(checkpoint_sha) is str and len(checkpoint_sha) == 64
+        telemetry = runtime.store.rows(
+            "SELECT metrics FROM telemetry WHERE kind='v14_world_jepa_postcommit' ORDER BY id"
+        )
+        assert telemetry
+        decoded = [json.loads(row["metrics"]) for row in telemetry]
+        assert any(
+            row.get("learning_status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+            and row.get("parameter_delta_norm", 0) > 0
+            and row.get("ema_target_delta_norm", 0) > 0
+            and row.get("decision_authority") == "NONE"
+            and row.get("native_body_weights_changed") is False
+            for row in decoded
+        )
+        assert "worker-jepa-lifecycle" not in repr(state)
+        assert "worker-jepa-lifecycle" not in repr(telemetry)
+    finally:
+        runtime.close()
+
+    # A new real Runtime instance must restore the same checkpoint and must
+    # not dispatch the already-consumed T8 event again.
+    reopened = Runtime(home, notify=lambda _message: None)
+    try:
+        original_policy = reopened.sleep.cycle.policy
+
+        def fast_restart_policy():
+            policy = dict(original_policy())
+            policy["tick_seconds"] = 0.01
+            policy["enabled"] = False
+            return policy
+
+        reopened.sleep.cycle.policy = fast_restart_policy
+        reopened.sleep.resource_state = lambda: "NORMAL"
+        assert _wait_until(lambda: (
+            (reopened.store.state("v14.world_jepa.store_consumer", None)[0] or {})
+            .get("active", {}).get("checkpoint_sha256") == checkpoint_sha
+        ))
+        time.sleep(0.5)
+        restored, _ = reopened.store.state("v14.world_jepa.store_consumer", None)
+        assert restored["active"]["checkpoint_sha256"] == checkpoint_sha
+        assert restored["active"].get("fit_steps") == fit_steps
+        assert not [
+            item for item in reopened.sleep.scheduler.pending()
+            if item.get("action") == "jepa_update"
+        ]
+    finally:
+        reopened.close()
