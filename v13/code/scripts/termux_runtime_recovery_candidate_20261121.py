@@ -10,7 +10,7 @@ from pathlib import Path
 BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
 BASE_BUILDER_BLOB_SHA1 = "b185808c3540868d8b53b24995a997431b991808"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
-AUDIO_BUILDER_BLOB_SHA1 = "c9f7859a2644876a3fd9cedc8569ad18359132a4"
+AUDIO_BUILDER_BLOB_SHA1 = "1f5e69342b24dfd0d8ffa403024c01dec5a1e4b3"
 
 
 def _git_blob_sha1(raw: bytes) -> str:

@@ -213,7 +213,6 @@ class Runtime:
     runtime = _replace(
         runtime,
         b"                try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context\n",
-        b"                try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context\n"
         b"                if audio_source_ref is not None and self._audio_context_view(eid,'C3_NATIVE_DISPATCH') is None:\n"
         b"                    volatile=[item for item in volatile if item[0]!='RAW_EAR_ACOUSTIC']\n"
         b"                    try:\n"
@@ -227,7 +226,8 @@ class Runtime:
         b"                    except Exception as exc:self.store.log('context_save_failed',eid,{'stage':'audio_revocation_rebuild','error':type(exc).__name__})\n"
         b"                    if 'audio_admission' in meta:meta['audio_admission'].update(status='REVOKED_BEFORE_C3_DISPATCH',c3_prompt_included=False)\n"
         b"                    meta.pop('audio_source_refs',None);audio_source_ref=None\n"
-        b"                    if 'audio_input' in meta:meta['audio_input']['context_revoked_before_c3']=True\n",
+        b"                    if 'audio_input' in meta:meta['audio_input']['context_revoked_before_c3']=True\n"
+        b"                try:save_context(self.store,self.session,eid,runner.role,messages)  # WP-V5 :context\n",
         "C3 revoke-before-dispatch rebuild",
     )
     runtime = _replace(
