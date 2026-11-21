@@ -1313,9 +1313,9 @@ Status vocabulary is deliberately strict:
 | B3 exact/control/symbolic | WIRED_SYNTHETIC | Existing symbolic communication is not trained latent coupling | P1 Core |
 | B3 latent L1 | NATIVE_LINUX_PROOF (partial receiver effect for private/action only) | No authority; escalate/apologize FAIL; L2–L4 unmeasured; B3 utility FAIL | P1 Core + Research |
 | C2/JEF/C3 output | WIRED_SYNTHETIC; historical REAL_REDMI_PROOF: FAIL on 2+2 returning 2 | Newer current-device result absent; exact arithmetic PR #2131 still has integrated contract failures | P0 Core |
-| World / Self / episodic / semantic / procedural memory | WIRED_SYNTHETIC | Whole-system source-bound cross-organ use and held-out outcome quality not accepted | P1 JEPA/Memory |
-| JEPA / EMA / local plasticity | WIRED_SYNTHETIC for external predictor/EMA scaffolds only | Actual B1/B2 Body-JEPA and cross-organ gradient/parameter consumers are not accepted; PR #2137 is an experimental Store-verified scalar temporal receiver candidate; it is not wired to normal Runtime | P1 JEPA/Memory |
-| Sleep / Dream / Replay | WIRED_SYNTHETIC for existing replay/dream paths | Cross-organ weight consolidation, anti-forgetting, idle lifecycle and Redmi retention remain open | P2 JEPA/Memory |
+| World / Self / episodic / semantic / procedural memory | WIRED_SYNTHETIC (PR #2143 Store-backed numeric episodic recall and SELF readout; source-linked synthetic T8 receipts; CI/Linux) | Not normal-Runtime-wired; no real-user T8 utility, no actual World/Planner decision consumer and no Redmi proof | P1 JEPA/Memory |
+| JEPA / EMA / local plasticity | WIRED_SYNTHETIC (real numeric WorldJEPA encoder/predictor/EMA parameter diffs and checkpoint persistence on synthetic T8 Store receipts; source/digest-disjoint holdout; strict action controls; uniform-replay vs no-replay ablation; PR #2148 CI/Linux 59 tests on Python 3.13/3.14) | Not normal-Runtime-wired; no real-user T8 evidence, no native B1/B2 GGUF weight update, no real-world retention gain or Redmi proof | P1 JEPA/Memory |
+| Sleep / Dream / Replay | WIRED_SYNTHETIC (uniform replay plus explicit no-replay ablation in PR #2148; old-holdout retention measured on synthetic T8 receipts) | No proven real-user retention advantage, adaptive/hard replay, sleep/dream consolidation or Redmi lifecycle proof | P2 JEPA/Memory |
 | Tools / JEF agency | WIRED_SYNTHETIC for permission broker and typed action contracts | Android execution remains OFF; no OS-authenticated per-action executor | P1 Core + QA |
 | Android background/API control | ISOLATED_MOCK | Companion receipt verifier/capability registry are draft; no Keystore-backed companion transport or permitted native API action | P1 Core + QA |
 | Android UI observation/control | NOT_IMPLEMENTED | No proven AccessibilityService/MediaProjection/action-observation loop on Redmi | P1 Core + QA |
@@ -1345,7 +1345,7 @@ Status vocabulary is deliberately strict:
 | A5 audio | #2136 adapter merged; #2139 runtime consumer candidate still fails staged/integrated tests due stale `runtime.py` pins | Synthetic adapter only; no Android microphone/speech |
 | B1/B2/C3 | #1904 last device evidence remains incorrect 2+2, slow C3 and no valid B1/B2 offers | P0 FAIL / no newer phone receipt |
 | B3 latent coupling | Symbolic exchange is not trained activation-to-activation receiver coupling | NOT_ACCEPTED |
-| World/JEPA/B1-B2 weight learning | #2133/#2135 candidates remain experimental or blocked; no native body-weight diff, heldout utility or Redmi retention proof | NOT_ACCEPTED |
+| World/JEPA/B1-B2 weight learning | #2143/#2147/#2148: numeric WorldJEPA/EMA parameter diffs, source/digest-disjoint holdout, B1/B2/SELF numeric SHADOW readouts, source-linked episodic recall, replay-on/off ablation; exact CI 59 tests on Python 3.13/3.14. #2145 is a separate temporal/World SHADOW runtime candidate and does not invoke this JEPA learner. | WIRED_SYNTHETIC / CI_LINUX; NOT_ACCEPTED (no normal Runtime wiring, native GGUF weights, real-user outcomes or Redmi proof) |
 | Android background/UI control and full voice | No verified OS API/UI action path, microphone, speech effector or full-duplex path on Redmi | NOT_IMPLEMENTED / REDMI_UNVERIFIED |
 | Sleep/replay, self-edit, Context OS/Memorilla, model swap | Existing pieces/candidates only; no full connected acceptance | PARTIAL / OPEN |
 
@@ -1366,3 +1366,8 @@ No row above is ACCEPTED. The 1255-heading mechanical inventory remains complete
 | Sleep/replay, self-edit, Context OS/Memorilla, model swap | Existing pieces/candidates only; no full connected acceptance | PARTIAL / OPEN |
 
 The 1255-heading mechanical inventory and family overlay do not replace clause-level traceability; every clause still needs a real consumer, positive/negative test, environment evidence and rollback. No family above is ACCEPTED.
+
+
+### JEPA evidence note — 2026-11-21
+
+PR #2148 head 10e058a7418a5356b96f22f5344a5a3384f96214 passed GitHub Actions run 44853980297: 59 tests on Python 3.13 and 59 on Python 3.14, including numeric WorldJEPA/EMA updates, source/digest-disjoint T8 holdout, action negative controls, replay-off versus uniform replay, checkpoint restore and rollback. This is CI/Linux execution on synthetic T8 Store receipts. It upgrades the numeric JEPA/EMA path from an isolated scaffold to a tested synthetic consumer, but not to a real-user, normal-Runtime, native B1/B2 GGUF or Redmi-accepted capability. PR #2145 still lacks the oldest-first cursor and does not call the JEPA consumer. Whole-system acceptance remains NOT_ACCEPTED.
