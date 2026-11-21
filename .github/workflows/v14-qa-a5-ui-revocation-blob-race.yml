@@ -1,11 +1,5 @@
 name: V14 QA A5 UI shared-blob revocation race
 on:
-  push:
-    branches:
-      - qa/v14-a5-ui-revocation-blob-race-20261121
-    paths:
-      - v13/code/tests/test_a5_ui_revocation_blob_race.py
-      - .github/workflows/v14-qa-a5-ui-revocation-blob-race.yml
   pull_request:
     branches:
       - research-perception/v14-a5-ui-observation-lease-20261121-run11
