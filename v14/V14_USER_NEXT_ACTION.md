@@ -1230,3 +1230,13 @@ Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/225
 - Research-only candidates: LFM2.5-350M (same family, same license), Qwen3-0.6B (Apache-2.0; third-party Q4_K_M files around 0.45–0.48 GB), Qwen3.5-0.8B (Apache-2.0; Q4 around 0.5 GB, newer hybrid attention). Community MNN results on a newer Redmi Note 14 Pro+ are not comparable to the Redmi Note 10 Pro; the same poster reports much slower Termux performance on that newer phone.
 - No model is approved for download or swap. First inventory already-present files; only if a candidate is absent ask separately for experimental download approval, then separately for a productive swap after real quality, TTFT, RSS, rollback and full multi-organ E2E comparison.
 - No user action is required now. Keep installed models unchanged.
+
+
+## Research/Perception exact-head follow-up — 2026-11-21 23:08 CET
+
+- PR #2275 branch `research-perception/v14-raw-ear-speaker-batch-isolation-20261121-r2` now reads back at code/test commit `84a33b4a0bba5c67b1d6e5fcc8a285df50b66557`. The incorrect exact 800-ms reference-age assertion was corrected to the measured 800–920-ms sample-age tolerance; the configured look-back is 800 ms, but the nearest retained 80-ms frame can be 120 ms away.
+- Exact RAW EAR workflow `44960135860`: Python 3.13 **PASS**, Python 3.14 **PASS**. Offline bridge security `44960135894`: **PASS**. Local CPython 3.13.5 isolated algorithm reproduction: **PASS** for 1-s/2-s batch invariance and the old algorithm's negative-control false negative. Full local Aii checkout remains BLOCKED (no checkout; GitHub DNS unavailable).
+- Staged/integrated run `44958841646` on the preceding code head failed closed because Core's pinned `audio_voice_cues.py` blob `b62442c6e740d136982b2bc8080cef6227ba266f` does not match the #2275 source blob `94aa6931fad702ccec4b1f7494758034a1bf5942`; migration checks also returned PARTIAL. This is a Core-owned composition pin, not a reason to weaken the check. Core was notified on #2258; a new staged/integrated PASS has not been observed.
+- PR remains DRAFT / NOT_RELEASED. The optional speaker path is caller-supplied embeddings → A5 scalar evidence → A4 salience → C3 summary only; no real encoder inference, microphone, diarization labels, Android/Termux test, model download, model/weight change or Redmi proof. `REDMI_UNVERIFIED`.
+
+**Next internal action:** Core refreshes the integrated audio source pin and nested stage/deployer hashes against the exact #2275 audio blob, then reruns staged/integrated tests; Boss/QA review the stacked diff. No user action is needed.
