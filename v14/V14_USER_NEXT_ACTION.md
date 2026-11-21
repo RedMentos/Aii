@@ -286,3 +286,11 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - PR #2145 runtime candidate is still not the JEPA loop. Its run 44853558359 passed 52 V14 learning tests but failed one Runtime assertion because persisted outcome records use error, not prediction_error. More importantly, it still scans newest-first latest-N rows without the persistent oldest-first cursor and only records SHADOW outcomes; it does not invoke WorldJEPAStoreConsumer.
 - local_test_result: BLOCKED — no full Aii checkout; container DNS cannot resolve github.com. phone_installed_sha: UNKNOWN. phone_auto_update_verified: NO. release_sha: NOT_RELEASED. Redmi: REDMI_UNVERIFIED.
 - Next developer action: independent review/merge of #2143→#2147→#2148; compose the verified digest-disjoint oldest-first T8 page/cursor into #2145 and invoke the Store-backed JEPA learner in the normal postcommit Runtime path in SHADOW; expose the prediction to a real World/Planner consumer. Keep optimizer permission and learning gates closed by default. No Termux command or user action is currently needed.
+
+
+## Final JEPA head readback — 2026-11-21
+
+- PR #2148 current head: 6fec2dec1534285b654db60349efcd81f81b846c. Code/test head: 10e058a7418a5356b96f22f5344a5a3384f96214. Exact GitHub Actions run 44854219157 tested head 3d8e55441d208eb8aec76cd121cc9f068376a88c and passed 59 tests on Python 3.13 (8.18s) and 59 on Python 3.14 (7.74s), including compilation. The only later commit is research-ledger documentation; no code/test files changed after the tested head.
+- PR #2148 remains open/mergeable and stacked on #2147, which is stacked on #2143. No merge, release or deployment has occurred. Release SHA: NOT_RELEASED. Phone SHA: UNKNOWN. REDMI_UNVERIFIED.
+- Next: independent review/merge chain #2143→#2147→#2148, then integrate the source/digest-disjoint oldest-first T8 cursor into #2145 and wire WorldJEPAStoreConsumer to the postcommit Runtime in SHADOW. #2145 still has the field-name test mismatch and newest-first scan; it does not invoke the JEPA learner.
+- User action: none. No manual Termux command, model download, model swap, permission change or phone action is needed for this repository checkpoint.
