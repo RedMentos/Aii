@@ -396,7 +396,10 @@ def save(model, path, source_sha256):
             'scope': ('PRIVATE_SHADOW_TRAINING_RESUME' if hasattr(model, '_training_state') else 'PRIVATE_INFERENCE_ONLY_SHADOW'),
             'age_authority': 0,
             'optimizer_state_persisted': hasattr(model, '_training_state'),
-            'optimizer_state_bootstrapped': (meta.get('training_resume', {}).get('origin') == 'BOOTSTRAPPED_FROM_INFERENCE_ONLY')}def load(path, source_sha256, expected_sha256):
+            'optimizer_state_bootstrapped': (meta.get('training_resume', {}).get('origin') == 'BOOTSTRAPPED_FROM_INFERENCE_ONLY')}
+
+
+def load(path, source_sha256, expected_sha256):
     """Verify exact external pins and safe NPZ arrays before constructing a model."""
     _pin(source_sha256)
     _pin(expected_sha256)
