@@ -10,7 +10,7 @@ from pathlib import Path
 BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
 BASE_BUILDER_SHA256 = "e06bb5778aeadbd685b8da6cbedff0525692313801931a6a9118ec436fc7480f"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
-AUDIO_BUILDER_SHA256 = "01de81a1c41300f0ce78e24aee528971a22047880c6659b742b85b2be2bc6039"
+AUDIO_BUILDER_SHA256 = "569e5c593e6cb4891573ece5f3f4e1c23600200dac7186cd9731e3243aad47d0"
 
 
 def _load(code_dir, relative, expected, label):
