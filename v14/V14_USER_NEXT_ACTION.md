@@ -222,3 +222,18 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - Later commits `8f1b260dce19047a04df45d510b6642d009826bc` and `2c07fc81aee5e7a87575a4203464957d7fa83190` only update the V14 board and user handoff. They do not alter runtime code, models, permissions or phone data.
 - Do not treat a documentation commit's push CI as a new code release. At the next run, fetch the live release-branch HEAD and its exact push workflows before any deployment decision.
 - The current handoff deliberately records the last code-bearing release SHA rather than trying to embed its own documentation commit SHA.
+
+
+## T8 exact staged/integrated completion — 2026-11-21 01:54 CET
+
+PR #2137 current head `2d8eb79bdefe3c6c3bef63fea7d25563b7f56952` now has:
+- Focused V14 T8 suite: **52 passed** (push 44846173142; PR 44846178337).
+- Staged-runtime: **240 passed / 10 skipped / 47 subtests** (job 136666315084).
+- Integrated regression: **415 passed / 3 skipped / 58 subtests** (job 136666315262, run 44846178374).
+- Private bridge: PASS (44846173169).
+
+This clears the staged/integrated CI blocker for this candidate. Remaining gates: dedicated T8 workflow is Python 3.11 only (QA requested Python 3.14); safe-additive policy check remains red and needs Boss review; the bridge is still not called by the normal Runtime learning loop. It does not enable the optimizer or change native B1/B2 body weights. No Android/Redmi proof.
+
+The current code-bearing release SHA remains `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` with exact updater-required CI green. Current branch HEAD `d61b695739023d0bf0a3cfa4022770f0de2615fa` is a docs-only checkpoint; its exact push staged-context run `44846409816` remains IN_PROGRESS at last readback. Do not call the latest branch head CI-green yet.
+
+Private owner-read #351–354 still have zero device comments; installed SHA UNKNOWN / `NO_LIVE_RECEIPT` / `REDMI_UNVERIFIED`. No UPDATE_REQUEST or device mutation. **User action: none.**
