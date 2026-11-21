@@ -11,7 +11,7 @@ from pathlib import Path
 
 BASE_SHA = '47cab72f604fc94b4cca23ad1dd0db55b4b44a154db8d51b5ca14f5cc55987a0'
 WORLD_SHA = '06afa58b5f75f6f6e4d72c5ea333b628752d2a6987a95e3c23becb1e4854121f'
-CHECKPOINT_SHA = 'db01c1eadeec04bffed74a8c711cb31d3ed35b21b607eef5e5072d6e5aa5afa4'
+CHECKPOINT_SHA = 'ed31c58c3f4125ba28d9e2191390a3eeb6233b1b5a02148f93fc1bbb73e9fe04'
 STATE_SHA = 'bbbaf76bd923529fb13e84d053b7dd6d6d849779fd2dc8ab3a23294c03f7d6d4'
 # These are the old pins embedded in the base Runtime guard, not current inputs.
 GUARD_WORLD_SHA = '14ee7982ab3866a13b2cca83086123281cf112a3c133b91c06df9df3669715fd'
