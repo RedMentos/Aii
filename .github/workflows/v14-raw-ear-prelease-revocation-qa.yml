@@ -4,12 +4,17 @@ on:
   pull_request:
     branches:
       - "research-perception/v14-raw-ear-consent-current-20261121-run11"
+      - "gpt6/v13-private-remote-bridge-20261111"
       - "qa/v14-jepa-checkpoint-publication-20261121"
     paths:
+      - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_temporal_evidence.py"
+      - "v13/code/v13/audio_silero_vad.py"
       - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
       - ".github/workflows/v14-raw-ear-prelease-revocation-qa.yml"
   push:
     branches:
+      - "research-perception/**"
       - "qa/v14-jepa-checkpoint-publication-20261121"
     paths:
       - "v13/code/tests/test_audio_ear_voice_cues_v14.py"
