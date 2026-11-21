@@ -21,6 +21,7 @@ import numpy as np
 REVISION = 'z12b-world-jepa-v1'
 H = 64; Z = 16; HP = 64
 LR = 2e-3; TAU = .99; VAR_W = 1.; COV_W = .04; INV_W = 1.; BATCH = 256
+MAX_REPLAY_CONSTRAINTS = 8
 COVER_N = 8.       # BOOT: samples per action for ~63 % of the coverage term (as world_model.py)
 SPREAD_REF = .25   # BOOT: ensemble spread (in target-latent std units) that halves confidence
 OOD_SUPPORT = 2.   # BOOT: nearest-neighbour distance (median-NN units) still inside the training support
@@ -56,13 +57,22 @@ class Adam:
         update_scale = float(update_scale)
         if type(grads) is not dict or not grads or any(k not in self.p for k in grads):
             raise ValueError("WorldJEPA Adam received an unknown parameter")
+        references = None
         if constraint_gradients is not None:
-            if type(constraint_gradients) is not dict or set(constraint_gradients) != set(grads):
-                raise ValueError("WorldJEPA Adam replay constraint does not match trainable parameters")
-            for key, value in constraint_gradients.items():
-                ref = np.asarray(value, dtype=float)
-                if ref.shape != self.p[key].shape or not np.isfinite(ref).all():
-                    raise ValueError("WorldJEPA Adam received an invalid replay constraint")
+            if type(constraint_gradients) is dict:
+                references = (constraint_gradients,)
+            elif (type(constraint_gradients) in (list, tuple)
+                    and 1 <= len(constraint_gradients) <= MAX_REPLAY_CONSTRAINTS):
+                references = tuple(constraint_gradients)
+            else:
+                raise ValueError("WorldJEPA replay constraints must be one to eight cohort gradients")
+            for reference in references:
+                if type(reference) is not dict or set(reference) != set(grads):
+                    raise ValueError("WorldJEPA replay constraint does not match trainable parameters")
+                for key, value in reference.items():
+                    ref = np.asarray(value, dtype=float)
+                    if ref.shape != self.p[key].shape or not np.isfinite(ref).all():
+                        raise ValueError("WorldJEPA Adam received an invalid replay constraint")
         self.t += 1
         directions = {}
         for key, gradient in grads.items():
@@ -76,34 +86,100 @@ class Adam:
             mh = self.m[key]/(1-.9**step)
             vh = self.v[key]/(1-.999**step)
             directions[key] = mh/(np.sqrt(vh)+1e-8)
-        report = {"enabled": constraint_gradients is not None, "projected": False,
-                  "reference_zero": False, "constraint_dot_before": None,
-                  "constraint_dot_after": None, "constraint_norm_sq": 0.0,
-                  "direction_norm_sq": float(sum(np.sum(v*v, dtype=np.float64) for v in directions.values())),
-                  "projection_norm": 0.0, "constraint_tolerance": 0.0}
-        if constraint_gradients is not None:
-            reference = {key: np.asarray(value, dtype=float) for key, value in constraint_gradients.items()}
-            dot_before = float(sum(np.sum(reference[key]*directions[key], dtype=np.float64) for key in directions))
-            ref_sq = float(sum(np.sum(value*value, dtype=np.float64) for value in reference.values()))
-            direction_sq = report["direction_norm_sq"]
-            tolerance = 1e-10*max(1.0, float(np.sqrt(ref_sq*direction_sq)))
-            if ref_sq <= 1e-20:
-                report["reference_zero"] = True
-            elif dot_before < 0.0:
-                coefficient = dot_before/ref_sq
-                raw = {key: value.copy() for key, value in directions.items()}
-                directions = {key: raw[key]-coefficient*reference[key] for key in raw}
-                report["projected"] = True
-                report["projection_norm"] = float(np.sqrt(sum(
-                    np.sum((raw[key]-directions[key])**2, dtype=np.float64) for key in raw
-                )))
-            dot_after = float(sum(np.sum(reference[key]*directions[key], dtype=np.float64) for key in directions))
-            if dot_after < -tolerance:
-                raise ValueError("WorldJEPA Adam replay projection violated old-gradient constraint")
-            report.update({"constraint_dot_before": dot_before, "constraint_dot_after": dot_after,
-                           "constraint_norm_sq": ref_sq,
-                           "direction_norm_sq": float(sum(np.sum(v*v, dtype=np.float64) for v in directions.values())),
-                           "constraint_tolerance": tolerance})
+        report = {
+            "enabled": references is not None, "projected": False,
+            "reference_zero": False, "constraint_dot_before": None,
+            "constraint_dot_after": None, "constraint_norm_sq": 0.0,
+            "direction_norm_sq": float(sum(
+                np.sum(value*value, dtype=np.float64) for value in directions.values()
+            )),
+            "projection_norm": 0.0, "constraint_tolerance": 0.0,
+            "constraint_count": 0 if references is None else len(references),
+            "active_constraint_count": 0, "projection_sweeps": 0,
+            "max_constraint_violation": 0.0,
+        }
+        if references is not None:
+            keys = tuple(sorted(directions))
+            raw = np.concatenate([directions[key].reshape(-1) for key in keys])
+            reference_vectors = [
+                np.concatenate([
+                    np.asarray(reference[key], dtype=float).reshape(-1)
+                    for key in keys
+                ])
+                for reference in references
+            ]
+            reference_norms = [
+                float(np.dot(reference, reference)) for reference in reference_vectors
+            ]
+            if not all(np.isfinite(value) for value in reference_norms):
+                raise ValueError("WorldJEPA replay constraint norm is nonfinite")
+            before_dots = [
+                float(np.dot(reference, raw)) for reference in reference_vectors
+            ]
+            active = [
+                (reference, norm_sq)
+                for reference, norm_sq in zip(reference_vectors, reference_norms)
+                if norm_sq > 1e-20
+            ]
+            if active:
+                projected = raw.copy()
+                corrections = [np.zeros_like(projected) for _ in active]
+                sweeps = 0
+                tolerance = 0.0
+                max_violation = 0.0
+                for sweep in range(1, 65):
+                    for index, (reference, norm_sq) in enumerate(active):
+                        shifted = projected + corrections[index]
+                        dot = float(np.dot(reference, shifted))
+                        next_projected = (
+                            shifted - (dot / norm_sq) * reference if dot < 0.0 else shifted
+                        )
+                        corrections[index] = shifted - next_projected
+                        projected = next_projected
+                    direction_norm = float(np.sqrt(np.dot(projected, projected)))
+                    after_active = [
+                        float(np.dot(reference, projected)) for reference, _ in active
+                    ]
+                    tolerance = max(
+                        1e-10 * max(1.0, float(np.sqrt(norm_sq)) * direction_norm)
+                        for _, norm_sq in active
+                    )
+                    max_violation = max(
+                        (max(0.0, -dot) for dot in after_active), default=0.0
+                    )
+                    sweeps = sweep
+                    if max_violation <= tolerance:
+                        break
+                else:
+                    raise ValueError("WorldJEPA per-session GEM projection did not converge")
+            else:
+                projected = raw.copy()
+                sweeps = 0
+                tolerance = 0.0
+                max_violation = 0.0
+            after_dots = [
+                float(np.dot(reference, projected)) for reference in reference_vectors
+            ]
+            projection_delta = projected - raw
+            projection_norm = float(np.sqrt(np.dot(projection_delta, projection_delta)))
+            offset = 0
+            for key in keys:
+                size = self.p[key].size
+                directions[key] = projected[offset:offset + size].reshape(self.p[key].shape)
+                offset += size
+            report.update({
+                "projected": projection_norm > 1e-12,
+                "reference_zero": not active,
+                "constraint_dot_before": min(before_dots),
+                "constraint_dot_after": min(after_dots),
+                "constraint_norm_sq": float(sum(reference_norms)),
+                "direction_norm_sq": float(np.dot(projected, projected)),
+                "projection_norm": projection_norm,
+                "constraint_tolerance": tolerance,
+                "active_constraint_count": len(active),
+                "projection_sweeps": sweeps,
+                "max_constraint_violation": max_violation,
+            })
         for key, direction in directions.items():
             self.p[key] -= self.lr*update_scale*direction
         return report
@@ -170,7 +246,7 @@ class WorldJEPA:
 
     def fit(self, X, A, X2, steps=3000, log_every=500, warm_start=False, cancel_check=None,
             allow_optimizer_bootstrap=False, train_encoder=True, drift_control=None,
-            replay_start=None, update_scale=1.0):
+            replay_start=None, update_scale=1.0, replay_cohort_ranges=None):
         # Invalid transitions cannot establish learned SHADOW inference evidence.
         # The covariance objective divides by n-1; never fit a single row.
         from . import world_jepa_training_state as training_state
@@ -183,6 +259,7 @@ class WorldJEPA:
                 or type(allow_optimizer_bootstrap) is not bool
                 or type(train_encoder) is not bool
                 or (replay_start is not None and type(replay_start) is not int)
+                or (replay_cohort_ranges is not None and replay_start is None)
                 or type(update_scale) not in (int, float) or not np.isfinite(update_scale)
                 or not 0.0 < float(update_scale) <= 1.0
                 or (cancel_check is not None and not callable(cancel_check))):
@@ -207,6 +284,28 @@ class WorldJEPA:
         if replay_start is not None and (
                 not warm_start or replay_start < 2 or len(X)-replay_start < 2):
             raise ValueError('Replay projection requires a warm-start split with at least two new and two replay rows')
+        replay_ranges = ()
+        if replay_start is not None:
+            if replay_cohort_ranges is None:
+                replay_ranges = ((replay_start, len(X)),)
+            else:
+                if (type(replay_cohort_ranges) not in (list, tuple)
+                        or not 1 <= len(replay_cohort_ranges) <= MAX_REPLAY_CONSTRAINTS):
+                    raise ValueError('Replay projection cohort count exceeds its bounded capacity')
+                expected_start = replay_start
+                validated_ranges = []
+                for pair in replay_cohort_ranges:
+                    if type(pair) not in (list, tuple) or len(pair) != 2:
+                        raise ValueError('Invalid replay cohort range')
+                    start, end = pair
+                    if (type(start) is not int or type(end) is not int
+                            or start != expected_start or end - start < 2 or end > len(X)):
+                        raise ValueError('Replay cohort ranges must be contiguous and contain at least two rows')
+                    validated_ranges.append((start, end))
+                    expected_start = end
+                if expected_start != len(X):
+                    raise ValueError('Replay cohort ranges must cover the complete replay fold')
+                replay_ranges = tuple(validated_ranges)
         # Training stays concurrent, but a late older fit must never replace
         # a newer fit's complete publication. Invalid inputs above do not
         # supersede an in-flight valid fit. A failed newer valid fit leaves the
@@ -274,7 +373,10 @@ class WorldJEPA:
                             "post_constraint_violation_steps": 0,
                             "constraint_dot_before_sum": 0.0, "constraint_dot_after_sum": 0.0,
                             "min_constraint_dot_before": None, "max_constraint_dot_after": None,
-                            "projection_norm_sum": 0.0}
+                            "projection_norm_sum": 0.0,
+                            "constraint_count": len(replay_ranges),
+                            "active_constraint_count": 0, "projection_sweeps_total": 0,
+                            "max_constraint_violation": 0.0}
         def pack_gradients(out):
             _, _, gp, ge = out[:4]
             gi = out[4] if len(out) > 4 else {}
@@ -299,31 +401,51 @@ class WorldJEPA:
                 loss, parts = out[0], out[1]
                 gradients = pack_gradients(out)
             else:
-                # A-GEM-style constraint: new updates cannot point uphill on a
-                # separate batch drawn only from the old train-fold replay rows.
+                # GEM-style constraints stay separate per prior session. These
+                # batches come only from the old source-disjoint training fold;
+                # the audit holdout is never used for gradient selection.
                 new_count = replay_start
-                replay_count = len(x)-replay_start
                 new_size = min(BATCH//2, new_count)
-                replay_size = min(BATCH-new_size, replay_count)
-                if new_size < 2 or replay_size < 2:
-                    raise ValueError('Replay projection batch is too small for covariance gradients')
+                replay_capacity = BATCH - new_size
+                if replay_capacity < 2 * len(replay_ranges):
+                    raise ValueError('Replay batch cannot cover every selected session with two rows')
+                replay_sizes = [
+                    min(end - start, max(2, replay_capacity // len(replay_ranges)))
+                    for start, end in replay_ranges
+                ]
+                used = sum(replay_sizes)
+                while used < replay_capacity:
+                    progressed = False
+                    for index, (start, end) in enumerate(replay_ranges):
+                        if replay_sizes[index] < end - start:
+                            replay_sizes[index] += 1
+                            used += 1
+                            progressed = True
+                            if used == replay_capacity:
+                                break
+                    if not progressed:
+                        break
                 new_batch = rng.integers(0, new_count, new_size)
-                replay_batch = rng.integers(replay_start, len(x), replay_size)
                 new_target = encode(tgt, x2[new_batch])[0]
-                replay_target = encode(tgt, x2[replay_batch])[0]
                 new_out = loss_grads(
                     enc, pred, x[new_batch], A[new_batch], new_target, VAR_W, COV_W,
                     train_enc=train_encoder, inv=inv if train_encoder else None,
                     x2=x2[new_batch] if train_encoder else None, inv_w=INV_W if train_encoder else 0.,
                 )
-                replay_out = loss_grads(
-                    enc, pred, x[replay_batch], A[replay_batch], replay_target, VAR_W, COV_W,
-                    train_enc=train_encoder, inv=inv if train_encoder else None,
-                    x2=x2[replay_batch] if train_encoder else None, inv_w=INV_W if train_encoder else 0.,
-                )
                 loss, parts = new_out[0], new_out[1]
                 gradients = pack_gradients(new_out)
-                constraint_gradients = pack_gradients(replay_out)
+                constraint_gradients = []
+                for (start, end), replay_size in zip(replay_ranges, replay_sizes):
+                    replay_batch = rng.integers(start, end, replay_size)
+                    replay_target = encode(tgt, x2[replay_batch])[0]
+                    replay_out = loss_grads(
+                        enc, pred, x[replay_batch], A[replay_batch], replay_target,
+                        VAR_W, COV_W, train_enc=train_encoder,
+                        inv=inv if train_encoder else None,
+                        x2=x2[replay_batch] if train_encoder else None,
+                        inv_w=INV_W if train_encoder else 0.,
+                    )
+                    constraint_gradients.append(pack_gradients(replay_out))
             if drift_prepared['active']:
                 gradients = drift.apply_pullback(params_by_group, gradients, drift_prepared)
             step_report = opt.step(gradients, constraint_gradients=constraint_gradients,
@@ -337,11 +459,20 @@ class WorldJEPA:
                 projection_stats["constraint_dot_before_sum"] += dot_before
                 projection_stats["constraint_dot_after_sum"] += dot_after
                 projection_stats["projection_norm_sum"] += float(step_report["projection_norm"])
+                projection_stats["projection_sweeps_total"] += int(step_report.get("projection_sweeps", 0))
+                projection_stats["active_constraint_count"] = max(
+                    projection_stats["active_constraint_count"],
+                    int(step_report.get("active_constraint_count", 0)),
+                )
+                projection_stats["max_constraint_violation"] = max(
+                    projection_stats["max_constraint_violation"],
+                    float(step_report.get("max_constraint_violation", 0.0)),
+                )
                 prior_min = projection_stats["min_constraint_dot_before"]
                 projection_stats["min_constraint_dot_before"] = dot_before if prior_min is None else min(prior_min, dot_before)
                 prior_max = projection_stats["max_constraint_dot_after"]
                 projection_stats["max_constraint_dot_after"] = dot_after if prior_max is None else max(prior_max, dot_after)
-                if dot_after < -float(step_report["constraint_tolerance"]):
+                if float(step_report.get("max_constraint_violation", 0.0)) > float(step_report["constraint_tolerance"]):
                     projection_stats["post_constraint_violation_steps"] += 1
             if drift_config['enabled']:
                 for name, params in params_by_group.items():
@@ -421,7 +552,8 @@ class WorldJEPA:
         return self
 
     def partial_fit(self,X,A,X2,steps=100,log_every=50,cancel_check=None,allow_optimizer_bootstrap=False,
-                    train_encoder=True, drift_control=None, replay_start=None, update_scale=1.0):
+                    train_encoder=True, drift_control=None, replay_start=None, update_scale=1.0,
+                    replay_cohort_ranges=None):
         """Continue JEPA weights and EMA target instead of reinitializing.
 
         Callers should mix replay transitions with new ones to reduce forgetting.
@@ -429,7 +561,8 @@ class WorldJEPA:
         """
         return self.fit(X,A,X2,steps=steps,log_every=log_every,warm_start=True,cancel_check=cancel_check,
                         allow_optimizer_bootstrap=allow_optimizer_bootstrap,train_encoder=train_encoder,
-                        drift_control=drift_control,replay_start=replay_start,update_scale=update_scale)
+                        drift_control=drift_control,replay_start=replay_start,update_scale=update_scale,
+                         replay_cohort_ranges=replay_cohort_ranges)
 
     # -- inference -------------------------------------------------------------------------------------------------
     @_read_locked
