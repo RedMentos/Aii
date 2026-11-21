@@ -63,6 +63,17 @@ def _replace(raw, old, new, name):
     return raw.replace(old, new, 1)
 
 
+def _replace_or_verify(raw, old, new, name):
+    """Patch the original anchor or verify an already-patched exact value."""
+    old_count = raw.count(old)
+    new_count = raw.count(new)
+    if old_count == 1 and new_count == 0:
+        return raw.replace(old, new, 1)
+    if old_count == 0 and new_count == 1:
+        return raw
+    raise ValueError("Lab Age staged source anchor missing/repeated: " + name)
+
+
 def _source(code_dir, relative):
     target=code_dir / relative
     if target.is_symlink() or not target.is_file():
@@ -86,8 +97,8 @@ def apply_sources(code_dir, sources):
     effort=out.get("v13/effort.py",original["v13/effort.py"])
     if effort!=original["v13/effort.py"]:
         raise ValueError("Lab Age requires reviewed original effort.py")
-    effort=_replace(effort,b"'stage':control.ceiling('system')",
-                    b"'stage':control.system_stage()", "official stage in effort")
+    effort=_replace_or_verify(effort,b"'stage':control.ceiling('system')",
+                              b"'stage':control.system_stage()", "official stage in effort")
     effort=_replace(effort,b"'LAB_COMPUTE_ONLY_NO_NEW_RIGHTS'",
                     b"'LAB_FEATURE_GATE_TEST_WITH_INDEPENDENT_LEARNING_GUARD'", "effort lab status")
     out["v13/effort.py"]=effort
