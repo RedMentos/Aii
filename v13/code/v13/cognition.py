@@ -530,7 +530,14 @@ class Cognition:
                     or query.get('enlightened_source_refs',[])!=offer.get('enlightened_source_refs',[])
                     or query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])):
                 raise ValueError('Consumer query scope changed')
-            for audio_ref in query.get('audio_context_refs',[]):self.s.read_source(audio_ref)
+            for audio_ref in query.get('audio_context_refs',[]):
+                audio_text=self.s.read_source(audio_ref)
+                audio_context=query.get('audio_context')
+                if not isinstance(audio_context,dict):
+                    raise ValueError('Consumer audio context missing')
+                supplied={k:v for k,v in audio_context.items() if k!='summary_source_ref'}
+                if json.loads(audio_text)!=supplied:
+                    raise ValueError('Consumer audio context source mismatch')
             allowed=[e['source_ref']]+query.get('context_source_refs',[])+query.get('enlightened_source_refs',[])
             verified=[]
             for ref in offer['evidence_refs']:
