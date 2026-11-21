@@ -538,36 +538,90 @@ def _lease(window, runtime, source_id, receipt):
 
 
 def _revoke(runtime, event_id, context):
+    """Delete persisted packet/context references bound to a revoked audio source."""
+    store = getattr(runtime, "store", None)
+    if store is None:
+        return False
     ref = context.get("summary_source_ref") if type(context) is dict else None
-    if type(ref) is dict:
-        sid, blob_hash = ref.get("source_id"), ref.get("sha256")
-        if type(sid) is str and type(blob_hash) is str:
-            with runtime.store.tx() as connection:
+    derived_id = ref.get("source_id") if type(ref) is dict else None
+    blob_hash = ref.get("sha256") if type(ref) is dict else None
+    source_id = context.get("source_id") if type(context) is dict else None
+    source_ids = {value for value in (source_id, derived_id) if type(value) is str and value}
+    if (type(blob_hash) is not str or len(blob_hash) != 64
+            or any(char not in "0123456789abcdef" for char in blob_hash)):
+        blob_hash = None
+
+    deleted_packet_ids = set()
+    active_blob_refs = None
+    blob_removed = False
+
+    def contains_source(value):
+        if isinstance(value, dict):
+            if value.get("source_id") in source_ids:
+                return True
+            return any(contains_source(child) for child in value.values())
+        if isinstance(value, list):
+            return any(contains_source(child) for child in value)
+        return False
+
+    # Store.mutex is an RLock: hold it across the transaction and final unlink
+    # so Store.source() cannot create a live reference between count and unlink.
+    with store.mutex:
+        with store.tx() as connection:
+            for packet_row in connection.execute("SELECT id,payload FROM packets").fetchall():
+                try:
+                    payload = json.loads(packet_row["payload"])
+                except (TypeError, ValueError):
+                    continue
+                if contains_source(payload):
+                    deleted_packet_ids.add(packet_row["id"])
+            for packet_id in deleted_packet_ids:
+                connection.execute("DELETE FROM packets WHERE id=?", (packet_id,))
+            if type(derived_id) is str and blob_hash:
                 connection.execute(
-                    "UPDATE sources SET deleted=1 WHERE id=? AND hash=? AND kind='AUDIO_ACOUSTIC_CONTEXT' AND deleted=0",
-                    (sid, blob_hash),
+                    "UPDATE sources SET deleted=1 "
+                    "WHERE id=? AND hash=? AND kind='AUDIO_ACOUSTIC_CONTEXT' AND deleted=0",
+                    (derived_id, blob_hash),
                 )
+                active_blob_refs = connection.execute(
+                    "SELECT COUNT(*) FROM sources WHERE hash=? AND deleted=0",
+                    (blob_hash,),
+                ).fetchone()[0]
+        if blob_hash and active_blob_refs == 0:
+            blob_root = Path(store.home) / "data/blobs"
+            for blob_path in (blob_root / blob_hash, blob_root / (blob_hash + ".z")):
+                try:
+                    existed = blob_path.exists()
+                    blob_path.unlink(missing_ok=True)
+                    blob_removed = blob_removed or (existed and not blob_path.exists())
+                except OSError as exc:
+                    store.log(
+                        "audio_context_cleanup_failed", event_id,
+                        {"stage": "blob_unlink", "error": type(exc).__name__},
+                    )
+
     try:
         from .inputs import CONTEXT_KEY
         key = CONTEXT_KEY + runtime.session
-        saved, version = runtime.store.state(key, None)
+        saved, version = store.state(key, None)
         if isinstance(saved, dict) and saved.get("event_id") == event_id:
             saved_messages = dumps(saved.get("messages"))
             preview = saved.get("preview")
             if "RAW_EAR_ACOUSTIC" in saved_messages or (
                 isinstance(preview, str) and "RAW_EAR_ACOUSTIC" in preview
             ):
-                runtime.store.set_state(
+                store.set_state(
                     key,
                     {"event_id": event_id, "role": saved.get("role"),
                      "messages": None, "truncated": False, "chars": 0, "preview": ""},
                     expected=version,
                 )
     except Exception as exc:
-        runtime.store.log(
+        store.log(
             "audio_context_cleanup_failed", event_id,
             {"stage": "last_native_context", "error": type(exc).__name__},
         )
+
     with _lock(runtime):
         active = getattr(runtime, "_audio_contexts", None)
         if isinstance(active, dict) and active.get(event_id) is context:
@@ -580,12 +634,17 @@ def _revoke(runtime, event_id, context):
         try:
             unsubscribe()
         except Exception as exc:
-            runtime.store.log(
+            store.log(
                 "audio_context_cleanup_failed", event_id,
                 {"stage": "revocation_unsubscribe", "error": type(exc).__name__},
             )
+    store.log(
+        "audio_context_revoked", event_id,
+        {"packets_deleted": len(deleted_packet_ids),
+         "blob_removed": blob_removed,
+         "active_blob_refs": active_blob_refs if active_blob_refs is not None else 0},
+    )
     return True
-
 
 def _remember(runtime, event_id, context):
     evicted = []

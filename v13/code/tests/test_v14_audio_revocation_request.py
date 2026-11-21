@@ -272,7 +272,60 @@ try:
 finally:
     runtime.close()
 
-print("PASS: two-phase revoke cancels C3, completion tombstones after guard release, legacy subscription falls back to text")
+# Persisted packet/source/blob cleanup after a completed turn.
+for shared in (False, True):
+    home = Path(sys.argv[1]) / ("shared-blob" if shared else "unshared-blob")
+    runtime = Runtime(home)
+    provider = Provider()
+    seen = {}
+    try:
+        configure(runtime)
+        runners = {role: Runner(role, seen) for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")}
+        runtime.pool.get = Mock(side_effect=lambda role: runners[role])
+        runtime.submit(question, audio_window=make_window(provider))
+        wait_idle(runtime)
+        assert runtime.last_answer()["status"] == "FINAL"
+        packets_before = runtime.store.rows("SELECT id,payload FROM packets")
+        assert any("mic-test-1" in row["payload"] for row in packets_before), "audio PerceptPacket missing before revoke"
+        source_rows = runtime.store.rows(
+            "SELECT id,hash,deleted FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT'"
+        )
+        assert len(source_rows) == 1 and source_rows[0]["deleted"] == 0, source_rows
+        derived = source_rows[0]
+        blob_path = Path(runtime.store.home) / "data/blobs" / derived["hash"]
+        assert blob_path.is_file(), "derived audio blob missing before revoke"
+        if shared:
+            body = runtime.store.read_source({
+                "source_id": derived["id"], "sha256": derived["hash"],
+                "char_start": 0, "char_end": 100000, "modality": "text",
+            })
+            duplicate = runtime.store.source(body, "AUDIO_SHARED_TEST")
+            assert duplicate["sha256"] == derived["hash"]
+        provider.revoke()
+        source_after = runtime.store.one(
+            "SELECT hash,deleted FROM sources WHERE id=?", (derived["id"],)
+        )
+        assert source_after and source_after["deleted"] == 1
+        packets_after = runtime.store.rows("SELECT id,payload FROM packets")
+        assert not any("mic-test-1" in row["payload"] for row in packets_after), (
+            "revocation left a source-bound acoustic PerceptPacket in SQLite"
+        )
+        active_refs = runtime.store.one(
+            "SELECT COUNT(*) AS n FROM sources WHERE hash=? AND deleted=0",
+            (derived["hash"],),
+        )["n"]
+        if shared:
+            assert active_refs >= 1 and blob_path.is_file(), "shared audio blob was incorrectly removed"
+        else:
+            assert active_refs == 0 and not blob_path.exists(), "unshared audio blob survived revocation"
+        saved = last_context(runtime.store, runtime.session)
+        assert saved and saved["messages"] is None and saved["preview"] == ""
+        assert provider.subscriptions == []
+        assert runtime.store.integrity(True) == []
+    finally:
+        runtime.close()
+
+print("PASS: two-phase revoke cancels C3, deletes packets/context, preserves shared blobs, and rejects legacy providers")
 '''
     result = subprocess.run(
         [sys.executable, "-c", script, str(tmp_path / "private-home")],
