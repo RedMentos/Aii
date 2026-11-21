@@ -65,7 +65,7 @@ def _canonical(capability, args):
     return json.dumps({"capability": capability, "args": args}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
 
 
-_ANDROID_PLATFORM_SYMLINKS = ((Path("/data/data"), Path("/data/user/0")),)
+_ANDROID_PLATFORM_SYMLINKS = ((Path("/data/user/0"), Path("/data/data")),)
 
 
 def _reject_unapproved_symlink_ancestors(parent):
@@ -97,7 +97,7 @@ def _private_audit_db_path(db_path):
 
     This protects the dry-run audit from final-file, caller-controlled ancestor
     symlink, and hardlink redirection. The sole ancestor alias exception is the
-    exact Android platform mapping /data/data -> /data/user/0; arbitrary aliases
+    exact Android platform mapping /data/user/0 -> /data/data; arbitrary aliases
     are rejected. O_NONBLOCK prevents special files such as FIFOs from stalling
     the validation open. This is not an OS sandbox or a defense against a
     malicious same-UID process racing the subsequent SQLite open; the native
