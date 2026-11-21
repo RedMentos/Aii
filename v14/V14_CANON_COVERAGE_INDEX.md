@@ -1366,3 +1366,25 @@ No row above is ACCEPTED. The 1255-heading mechanical inventory remains complete
 | Sleep/replay, self-edit, Context OS/Memorilla, model swap | Existing pieces/candidates only; no full connected acceptance | PARTIAL / OPEN |
 
 The 1255-heading mechanical inventory and family overlay do not replace clause-level traceability; every clause still needs a real consumer, positive/negative test, environment evidence and rollback. No family above is ACCEPTED.
+
+
+
+### Boss evidence update — 2026-11-21, 02:58 CET
+
+| Capability family | New exact evidence | Acceptance status after this run |
+|---|---|---|
+| V13 code release / updater | Code-bearing release `3db6d1f00fceab9e7755bc8f4c25882ef7f19258`; exact push CI fully green, including staged/integrated run [44847399407](https://github.com/RedMentos/Aii/actions/runs/44847399407) and V14 T8 Store [44847403231](https://github.com/RedMentos/Aii/actions/runs/44847403231) | CI_GREEN; Redmi installation remains REDMI_UNVERIFIED |
+| P0 chat / B1/B2 / C3 | Issue #1904 still has no newer device receipt; last reported wrong 2+2, slow C3 and no valid B1/B2 offers | P0_FAIL / NO_NEW_DEVICE_PROOF |
+| T8 Store temporal authority | #2137 merged and exact release push CI green; source-bound ActionOutcome verification, cancellation/censoring and bounded scan persist | IMPLEMENTED + WIRED_TO_STORE; not normal-Runtime consumer; not full JEPA |
+| T8 postcommit Runtime consumer | #2145 previous exact head failed two source-bound consumer tests; Boss full-SourceRef correction at `08d14737f1ee554f2b160986f95d9f28d6bc1fa2` | CODE_WRITTEN; exact-head CI NOT_RUN; NOT_MERGED; not release |
+| WorldJEPA / action-conditioned learning | #2147 source-digest split is present but exact Python 3.13/3.14 negative-control test fails: shuffled-action holdout loss 0.479097 vs model 0.480152 (3.14) | CODE + SYNTHETIC_DELTA; action-conditioned utility FAIL; NOT_ACCEPTED |
+| A5 audio / VOICE_AUDIO | #2144 exact V14 test fails on an existing staged/tests directory; broader stage chain not green; no Android microphone/speech evidence | ISOLATED_STAGE_CANDIDATE; NOT_RUNTIME_ACCEPTED; NOT_ANDROID_VERIFIED |
+| C3 model candidate comparison | #2142 exact model-lab and private-bridge workflows PASS; 16 synthetic tests; no GGUF inference, no verified candidate on Redmi, exact staged-context run absent | EXPERIMENT_CODE; SYNTHETIC_PASS; NATIVE_INFERENCE_NOT_RUN; NOT_MERGED |
+| B3 activation-to-activation latent coupling | No trained receiver path or latent-vs-exact-vs-none utility evidence added | SYMBOLIC_ONLY / NOT_ACCEPTED |
+| B1/B2 independent sparse-MoE bodies | No independent resident expert execution, useful offer delivery, ablation or Redmi measurement added | NOT_ACCEPTED |
+| Android background/API and UI control | No OS-backed action receipt, Accessibility/MediaProjection proof or Redmi audit/stop/revocation test | NOT_IMPLEMENTED / REDMI_UNVERIFIED |
+| Sleep/dream/replay, cross-organ gradients, self-optimization, controlled self-edit | No before/after native target-weight diff, held-out utility, retention/restart or rollback evidence added | NOT_IMPLEMENTED / NOT_ACCEPTED |
+| Context OS / Memorilla | No new runtime reader/writer consumer or source-pointer/forget/restart acceptance | OPEN |
+| Whole Canon | Mechanical 1255-heading inventory remains; clause-level code→consumer→test→environment→rollback mapping remains incomplete | NO_CAPABILITY_FAMILY_ACCEPTED |
+
+**Evidence boundary:** GitHub Actions runs are CI/Linux. The local full checkout/test suite was blocked by GitHub DNS resolution in this execution environment. Private owner-read PIPELINE_STATUS issue #357 has no reply, so installed SHA/updater state/current consent are unknown. No model download/swap, weight edit, permission change, database/chat mutation or device action occurred. No Redmi, native model, native JEPA, sparse-MoE, full voice, Android-control or cross-organ latent claim is promoted by this checkpoint.
