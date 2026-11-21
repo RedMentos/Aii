@@ -232,3 +232,30 @@ PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/te
 4. QA maintains read-only device state until a fresh owner-authenticated receipt; only then verify updater consent and installed SHA.
 
 No master architecture edit was made, no backup was required, and historical V13 appendix bytes were not changed.
+
+
+## Capability proof matrix — 2026-11-21 05:49 CET
+
+### Whole-system capability status — explicit proof levels (2026-11-21 05:49 CET)
+
+| Capability | CODE | WIRED | TESTED_SYNTHETIC | TESTED_ANDROID | ACTIVE |
+|---|---|---|---|---|---|
+| A0-A5 perception/attention | PARTIAL | PARTIAL | PASS_PARTIAL | NOT_VERIFIED | NO_DEVICE_PROOF |
+| B1_DETAIL / B2_GIST | PRESENT_DISTINCT_ROLES | PARTIAL | PASS_PARTIAL | HISTORICAL_FAIL (#1904) | UNKNOWN |
+| B3 true latent receiver coupling | SYMBOLIC_ONLY | NO_TRAINED_RECEIVER | NO_ACCEPTED_UTILITY_PROOF | NOT_TESTED | NO |
+| B4 distributed workspace / C4 | PARTIAL | WIRED_SYNTHETIC_PARTIAL | PASS_PARTIAL | NOT_VERIFIED | UNKNOWN |
+| C1/JEF/C2/C3 | PRESENT | PARTIAL | PASS_PARTIAL | HISTORICAL_FAIL (#1904) | UNKNOWN |
+| World/Self/Memory/JEPA | EXPERIMENTAL_CODE_PRESENT | ISOLATED_STORE_CONSUMER | PASS (64/64 on 3.13 and 3.14) | NOT_TESTED | SHADOW; optimizer OFF |
+| Sleep/Dream/Replay | PRESENT_PARTIAL | PARTIAL | PASS_PARTIAL | NOT_TESTED | EXISTING_SLEEP_ONLY |
+| Context OS / Memorilla | CONTEXT_OS_PRESENT; companion draft | PARTIAL / isolated companion | PASS_PARTIAL | NOT_VERIFIED | UNKNOWN |
+| VOICE_AUDIO | RAW EAR cues present; TTS/vocoder absent | Synthetic adapter only; #2158 draft not promoted | PASS (8/8 adapter tests); #2158 staged tests FAIL | NOT_TESTED | NO |
+| ANDROID_BACKGROUND_CONTROL | Receipt-verifier prototype | No OS executor | PARTIAL | NOT_TESTED | NO |
+| ANDROID_UI_CONTROL | NOT_IMPLEMENTED | NO | NO | NOT_TESTED | NO |
+| SELF_OPTIMIZATION / cross-organ weights | Numeric WorldJEPA experiment only | Isolated Store learner | PASS_PARTIAL | NOT_TESTED | NO production weight edits |
+| Multimodal learning | Audio feature extraction only | No learning consumer | PARTIAL | NOT_TESTED | NO |
+| Tools / action fabric | Contracts present | WIRED_SYNTHETIC | PASS_PARTIAL | NOT_TESTED | NO device-action proof |
+| Updater / install / rollback | PRESENT | WIRED_SYNTHETIC_PARTIAL | PASS_PARTIAL | UNKNOWN; no receipt | UNKNOWN |
+| Two genuinely different sparse MoE bodies | NOT_PROVEN | NO sparse-MoE path | NO accepted sparse-MoE test | NOT_TESTED | NO |
+
+These columns are independent. `CODE` is not `WIRED`; synthetic CI is not Android proof; an existing feature in the app is not evidence that it is currently active on the phone. `UNKNOWN` is not PASS. Whole-Canon completion remains false.
+
