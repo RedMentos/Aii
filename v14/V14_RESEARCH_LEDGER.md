@@ -926,3 +926,27 @@ This correction supersedes older branch-level status claims without deleting the
 - Status: NATIVE_LINUX_BUILD_PROOF / ANDROID_ARM64_CROSS_COMPILE_CI / PYTHON_FAKE-RUNNER_CONTRACT_PASS / NO_NATIVE_MODEL_INFERENCE / NO_REAL_REDMI_PROOF.
 - Keep the probe diagnostic and OFF the production route. A native decode/input effect is not semantic alignment. Cross-model transfer requires exact sender/receiver revisions, a trained and versioned projector/adapter for dimension or representation mismatch, source-bound paired training data, held-out semantic task evaluation, positive/zero/shuffle/repeat controls, retention/restart and rollback evidence.
 - Next step: Core rebase/stack #2266 on the current #2258 head; repair the separate staged arithmetic source pin and migration failures; then, only with an already-installed authorized model and explicit local consent, run a real native receiver probe. Do not download or swap models from this research result.
+
+
+
+## R-055 — C3 model-lab audit and small Android candidate shortlist (2026-11-21)
+
+### Current lab state
+
+- Model-lab PR #2142 is CLOSED / NOT MERGED. Its code-bearing commit 40deb8a56686455b361ba41e63cb57b981b5a71b has workflow 44861145442 PASS (23 focused tests), but the harness returns CANDIDATE_NOT_INSTALLED for the proposed LFM2.5-230M artifact. The tests validate read-only inventory, locking, staging, runner identity, rollback metadata and license gating; they do not execute a candidate model or compare output quality/TTFT/RSS. The lab code is not in the current Boss base and must not be treated as an integrated product feature.
+- The current LFM2.5-230M official model card explicitly says the model is intended for data extraction/lightweight on-device agentic pipelines and is not recommended for reasoning-heavy workloads such as advanced math/code. Its vendor-published table shows 350M ahead of 230M on IFEval (76.96 vs 71.71), IFBench (40.69 vs 38.40), Multi-IF (44.92 vs 37.70), CaseReportBench (32.45 vs 22.51), and τ²-Bench Telecom (18.86 vs 5.26), while results differ by task (for example BFCLv4 21.86 vs 21.03). These are vendor benchmark results, not local V13 comparisons.
+- LFM2.5-230M-GGUF is under LFM Open License v1.0, not an OSI-approved permissive license. Section 5 limits commercial-use rights to legal entities below USD 10M annual revenue; non-commercial/research purposes are separately defined. This is a licensing constraint to preserve in the candidate manifest, not a reason to alter an installed model now.
+
+### Candidate shortlist — research only, no download
+
+1. LFM2.5-350M: same LFM Open License v1.0 family; vendor results are stronger than 230M on several instruction/tool benchmarks. Lower architecture/runner uncertainty than switching families, but still not a reasoning guarantee and no Redmi latency/RSS/2+2 result.
+2. Qwen3-0.6B: official model card declares Apache-2.0, 0.6B parameters, 28 layers and 32,768 context. Third-party Q4_K_M GGUF conversions are roughly 0.45–0.48 GB. Standard Qwen3 architecture is a plausible llama.cpp lab candidate, but exact conversion revision, file SHA, Redmi memory/TTFT and output quality have not been measured.
+3. Qwen3.5-0.8B: official model card declares Apache-2.0. Third-party Q4_K_M GGUF files are about 0.5 GB. It uses newer hybrid attention; a community MNN CPU report on Redmi Note 14 Pro+ / Snapdragon 7s Gen 3 reports 21.2 tok/s and 792 MB peak RAM, while a comment from the same poster reports only 2–3 tok/s when running it through Termux on that device. This is anecdotal, a different/newer phone and a different MNN runtime; it warns that app/runtime path matters and is not a Redmi Note 10 Pro or V13 benchmark.
+4. Keep the installed 230M model as the baseline for any comparison. Do not infer that a larger model will solve the system's 2+2 failure; B1/B2 delivery, routing, prompt correctness and C3's documented reasoning limits must be separated.
+
+### Required experiment before any recommendation
+
+- First inventory only already-present model files and exact SHA/runner compatibility; no network fetch. If no candidate is already present, ask separately for explicit experimental download/try approval and, only after measured results, a separate productive-swap approval.
+- On identical prompts and context, compare 230M baseline vs one candidate: 2+2/2×2 and carry, arithmetic/logic, source-grounded recall, German/English, tool schema adherence, malformed/empty output, long prompt, TTFT, decode tok/s, RSS/peak memory, context/KV growth, cold load, restart, rollback. Include repeated runs and negative controls; preserve the full multi-organ route.
+- Do not use vendor benchmark tables or another device's MNN speed as a substitute for Termux/Redmi measurements. No model was downloaded, no installed weight changed, and no production swap is authorized by this note.
+- Status: MODEL_LAB_HARNESS_SYNTHETIC_ONLY / CANDIDATE_NOT_INSTALLED / NO_REAL_MODEL_COMPARISON / LICENSE_REVIEWED / REDMI_UNVERIFIED.
