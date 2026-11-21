@@ -321,3 +321,11 @@ Next integrated vertical slice: after Core's staged runtime is green, invoke the
 - Safe-additive job run 44874325018 failed at the intended scope guard: the PR modifies an existing producer and test file rather than adding only inert modules/tests. This is a policy rejection, not a test regression; no bypass was attempted. The separate release-event queue workflow run 44874325005 passed its queue checks but did not merge this draft.
 - Current documentation-only follow-up commits are on the same branch; the code/test blobs remain unchanged. The PR is mergeable against the current base but remains DRAFT / NOT_RELEASED pending Boss review and Core integration.
 - No native model, microphone or Redmi measurement was performed.
+
+
+## V14-003 native-tap research checkpoint — 2026-11-21 07:11 CET
+
+- Pinned llama.cpp b10964/b29c606e2 exposes per-token final-RMSNorm output through --embedding/--pooling none; this is a read-only separate prefill, not live KV sharing or receiver injection. LFM2 source confirms result_norm is after final RMSNorm and before output projection.
+- Current registry: B1 LFM2 1.2B 2048-d, B2 Qwen3.5 0.8B 1024-d, C3 LFM2 350M 1024-d; exact GGUF revisions and SHA-256 are in R-023. LFM2 and Qwen vocabularies differ, so source/event pairing is required; token IDs cannot be aligned.
+- A binding defect was found for Core: RunnerPool.get_tap sets qwen35.result_norm.final.v1 for B2/GIST, but LlamaRunner.tap returns hardcoded lfm2.result_norm.final.v1. This mislabels B2 taps and can corrupt B3 bridge keys. Core owns runners.py; exact fix and regression are handed off on #2158. No native tap or receiver-effect run was executed.
+- B3's current L1 bridge is a receiver readout adapter over sender H and receiver Xr, not direct backbone/KV/MoE injection. The V14-003 acceptance gate remains open: native taps, trained receiver effect over SOURCE_EXACT and NO_MESSAGE, negative controls, OOD, retention, restart and rollback.

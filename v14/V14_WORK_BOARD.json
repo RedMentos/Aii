@@ -59,7 +59,7 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "Source inventory verified on current release base: LlamaRunner.tap uses pinned llama.cpp b10964 with --embedding/--pooling none; at pinned source b29c606e2 the server returns llama_get_embeddings_ith per token and LFM2 graph exposes result_norm after final RMSNorm before output projection. TAP_SPECS pins body=LFM2 2048, language=LFM2 1024, gist=Qwen3.5 1024; RunnerPool.get_tap checks exact GGUF revision and file hash. No actual model tap or receiver-effect run was executed. Critical binding defect: LlamaRunner.tap hardcodes tap_id=lfm2.result_norm.final.v1 even when RunnerPool sets qwen35.result_norm.final.v1 for B2/GIST. Model configs show LFM2 vocab 65,536 vs Qwen3.5 vocab 248,320, so token IDs cannot be aligned across bodies. Existing b3bridge L1 is a readout adapter; Enlightened Space remains symbolic. Native B3 effect NOT_RUN; REDMI_UNVERIFIED.",
+      "proof_environment": "Source inventory verified on current release base: LlamaRunner.tap uses pinned llama.cpp b10964 with --embedding/--pooling none; at pinned source b29c606e2 the server returns llama_get_embeddings_ith per token and LFM2 graph exposes result_norm after final RMSNorm before output projection. TAP_SPECS pins body=LFM2 2048, language=LFM2 1024, gist=Qwen3.5 1024; RunnerPool.get_tap checks exact GGUF revision and file hash. No actual model tap or receiver-effect run was executed. Source and API evidence only; the installed GGUF files are not verified present. Critical binding defect: LlamaRunner.tap hardcodes tap_id=lfm2.result_norm.final.v1 even when RunnerPool sets qwen35.result_norm.final.v1 for B2/GIST. Model configs show LFM2 vocab 65,536 vs Qwen3.5 vocab 248,320, so token IDs cannot be aligned across bodies. Existing b3bridge L1 is a readout adapter; Enlightened Space remains symbolic. Native B3 effect NOT_RUN; REDMI_UNVERIFIED.",
       "next_step": "Core fixes LlamaRunner.tap to emit the bound TAP_SPECS tap_id and rejects missing tap bindings; add a B2/GIST negative/positive regression. Research then builds a native L1 harness using source/event-paired B1/B2 final-norm taps, model-specific tokenizers and the existing Bridge receiver adapter; compare LATENT vs SOURCE_EXACT vs NO_MESSAGE, shuffled/random controls, OOD, role retention, restart and rollback. No direct backbone/router injection; no model download.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 07:11 CET: native tap source contract and model geometry inventoried; B2 tap_id misbinding found and handed to Core; no native model execution."
@@ -165,12 +165,13 @@
       "last_checkpoint": "2026-11-21 07:11 CET: exact RAW EAR 12/12 on Python 3.11/3.13; staged/integrated PASS; privacy PASS; safe-additive policy rejection is expected; NOT_RELEASED / REDMI_UNVERIFIED.",
       "latest_candidate_pr": {
         "pr": 2161,
-        "head_sha": "e523f539febb659b6aa56710e9072738b75698cc",
+        "head_sha": "tested code SHA e523f539febb659b6aa56710e9072738b75698cc",
         "base_sha": "034a941694b9e8994d1bfe5cd781d27b943e1ed0",
         "module_blob": "0e328d14883840190937f0fef24a8e895ba7261c",
         "test_blob": "96b00b2e1b6340e2a61a8b6f230be8747889ab38",
         "ci": "PASS_RAW_EAR_12_ON_3.11_AND_3.13; PASS_STAGED_INTEGRATED; PASS_PRIVACY; FAIL_SAFE_ADDITIVE_BY_DESIGN",
-        "scope": "RAW EAR V3 one-frame correction; no microphone/Android proof"
+        "scope": "RAW EAR V3 one-frame correction; no microphone/Android proof",
+        "documentation_head_before_final_commit": "26d29d470dff5ee343cafc24a7589dcc9e136f55"
       },
       "previous_candidate_pr": {
         "pr": 2155,

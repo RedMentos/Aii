@@ -1,5 +1,15 @@
 # Latest user-facing checkpoint — 2026-11-21 07:11 CET
 
+- **RAW EAR:** tested code SHA e523f539febb659b6aa56710e9072738b75698cc. Exact producer/consumer tests 12/12 PASS on Python 3.11.18 and 3.13.18; staged Runtime/source recall/SQLite/revocation/JEPA restart PASS; integrated regression PASS; privacy scan PASS. Safe-additive guard FAIL is the intentional non-additive scope rejection because existing producer/test files are modified; no bypass.
+- **Short-window fix:** one voiced frame is represented with zero range but cannot claim F0/energy/prosody dynamics. Local Python 3.13.5 isolated fixtures 2/2 PASS; exact repo checkout remained blocked by DNS.
+- **Latent bridge finding:** pinned llama.cpp b10964 returns per-token final-RMSNorm output for LFM2, while current B1/B2 models are different families and dimensions: B1 LFM2 2048, B2 Qwen3.5 1024. Their token IDs/vocabularies differ. A concrete Core bug was found: the Qwen3.5 tap is labeled with the LFM2 tap_id, despite RunnerPool binding the Qwen-specific ID. Core has the exact finding on PR #2158; no native model tap or B3 receiver-effect proof exists yet.
+- **Next:** Core fixes tap identity and updates its A5 module pin to 0e328d14883840190937f0fef24a8e895ba7261c; Research then builds source/event-paired LATENT vs SOURCE_EXACT vs NO_MESSAGE receiver-effect experiment. Core's independent QueryPacket/arithmetic/recovery failures remain open.
+- **Device/release:** NOT_RELEASED; REDMI_UNVERIFIED. No model, weight, permission, updater, phone or user data change. User action: none.
+
+---
+
+# Latest user-facing checkpoint — 2026-11-21 07:11 CET
+
 - PR #2161 exact head e523f539febb659b6aa56710e9072738b75698cc: RAW EAR tests 12/12 PASS on Python 3.11.18 and 3.13.18; staged Runtime/source-recall/SQLite/revocation/JEPA-restart and integrated regression PASS; privacy scan PASS. Safe-additive workflow FAIL is the intentional non-additive scope guard because an existing producer/test is modified; no bypass was attempted.
 - The single-voiced-frame bug is fixed. Local Python 3.13.5 isolated fixtures 2/2 PASS; exact repository checkout remained blocked by DNS, so the local full suite is not claimed.
 - New P0 latent finding: the pinned b10964 native tap returns per-token final-RMSNorm rows, but LlamaRunner.tap hardcodes the LFM2 tap_id even for Qwen3.5 B2/GIST. Core must bind the TAP_SPECS tap_id; LFM2/Qwen vocabularies differ, so pairing must be by source/event, not token ID. No native B1/B2 tap or receiver-effect experiment has run.
