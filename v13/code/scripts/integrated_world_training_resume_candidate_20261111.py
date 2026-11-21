@@ -50,6 +50,22 @@ def build_sources(code_dir):
     guard = replace(guard, b"'history', 'enc', 'tgt', 'preds', 'zsd', '_ztrain', '_nn_med'})",
                     b"'history', 'enc', 'tgt', 'preds', 'zsd', '_ztrain', '_nn_med', '_training_state'})",
                     'exact model state fields')
+    guard = replace(guard,
+                    b"if type(model) is not wj.WorldJEPA or set(model.__dict__) != REQUIRED:\\n",
+                    b"if (type(model) is not wj.WorldJEPA or not REQUIRED.issubset(model.__dict__)\\n"
+                    b"            or set(model.__dict__) - REQUIRED - {'_last_gradient_projection'}):\\n",
+                    'optional projection telemetry field')
+    guard = replace(guard,
+                    b"    if (type(model.seed) is not int or type(model.ensemble) is not int\\n",
+                    b"    if '_last_gradient_projection' in model.__dict__:\\n"
+                    b"        report = model.__dict__['_last_gradient_projection']\\n"
+                    b"        if (type(report) is not dict or any(\\n"
+                    b"                type(k) is not str or type(v) not in (bool, int, float, type(None))\\n"
+                    b"                or (type(v) in (int, float) and not np.isfinite(v))\\n"
+                    b"                for k, v in report.items())):\\n"
+                    b"            raise ValueError('unsupported World-JEPA projection telemetry')\\n"
+                    b"    if (type(model.seed) is not int or type(model.ensemble) is not int\\n",
+                    'projection telemetry validation')
     guard = replace(guard, b'    clone_meta, clone_arrays = checkpoint._extract(staged, VALIDATION_TAG)\n',
                     b'    staged._training_state=training_state.from_model(model)\n'
                     b'    clone_meta, clone_arrays = checkpoint._extract(staged, VALIDATION_TAG)\n',
