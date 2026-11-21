@@ -2,7 +2,7 @@ name: V14 Core C4 + exact arithmetic staged Runtime
 
 on:
   push:
-    branches: [core/v14-c4-source-span-current-r2-20261121]
+    branches: [core/v14-c4-source-span-current-r2-20261121, core/v14-age-tool-gate-order-20261121]
     paths:
       - "v13/code/scripts/integrated_focal_scale_diversity_candidate_20261121.py"
       - "v13/code/scripts/stage_v14_focal_scale_diversity_candidate_20261121.py"
