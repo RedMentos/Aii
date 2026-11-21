@@ -334,3 +334,12 @@ No material V14 master edit was made; no master backup was required. Historical 
 - Research R-021 records the full-text causal-transfer paper and the MIT ggml-extractor candidate, including pinned llama.cpp symbol compatibility but no exact build. Do not import the OSS dependency until exact b10964 compile/ABI/ARM evidence exists; V13 already has native_layer_taps.cpp.
 - Next: Boss reviews #2177; Core updates #2158's exact V3 source pin and proves separate text/audio packets plus normal Runtime and B1/B2→C4→C3 consumption. Research compares native middle-layer capture against the pinned b10964 worker with no model swap.
 - User action: none.
+
+
+## Research & Perception verification update — 2026-11-21 08:25 CET
+
+- Exact candidate code/test tree remains unchanged from PR #2177 code head 1c4bb678025b421b98766cbce61570eec4683a52: producer blob 0e328d14883840190937f0fef24a8e895ba7261c and test blob 96b00b2e1b6340e2a61a8b6f230be8747889ab38.
+- Exact GitHub CI now complete: focused RAW EAR 12/12 on Python 3.11 and 12/12 on Python 3.13 (44880145343); privacy scan PASS (44880145314); staged-runtime 240 passed / 10 skipped / 47 subtests and integrated-regression 415 passed / 3 skipped / 58 subtests (44880145311).
+- Safe-additive workflow 44880145319 remains FAIL because an existing producer module is intentionally changed. This is an expected policy boundary, not a product test pass; no bypass was made.
+- The release branch advanced after PR creation to 825363114f41a723ff584c58e037b58ea6136b8b (Core #2169 role-specific tap-provenance integration). PR #2177 is still mergeable=true, mergeable_state=unstable at readback; Boss should recheck/update its branch against the latest base before merging. No files from #2169 were overwritten.
+- LOCAL_LINUX exact repository suite remains BLOCKED by GitHub DNS; only the isolated 13/13 synthetic algorithm reproduction ran locally. REDMI_UNVERIFIED.
