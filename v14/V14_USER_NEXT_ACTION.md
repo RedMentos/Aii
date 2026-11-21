@@ -1,5 +1,36 @@
 # V14 – letzte verifizierte Entwicklung / nächstes sinnvolles Nutzer-Update
 
+## Latest Boss readback — 2026-11-21 05:00 CET (supersedes older status rows below)
+
+### Current verified repository state
+- Release branch `gpt6/v13-private-remote-bridge-20261111` resolves to **`c0cedbde718ede6107f4df1f1bf9c784df4e00cf`**. This is a GitHub readback, not a phone installation.
+- **PR #2151 + QA retention fix #2152** are integrated in the branch. Exact PR-head V14 T8 workflow `44861797478`: **64 passed on Python 3.13 and 64 passed on Python 3.14; compile passed**. This is a source-bound, numeric WorldJEPA/EMA learner over synthetic SQLite Store receipts, with oldest-first paging, pending cohort persistence, source-ID and source-digest disjointness, censored-outcome exclusion, new-cohort holdout + shuffled/zero-action controls, prior-cohort retention gate, checkpoint/restart/rollback and replay ablation. It is still **not called by normal Runtime**, does not update native B1/B2 GGUF weights, and has no Redmi utility proof.
+- **PR #2155** is integrated in the branch. Exact safe-additive workflow `44862523075`: py_compile + **8/8 synthetic tests**. Generic staged/integrated workflow `44862523082`: **240 staged / 415 integrated tests passed**. It adds a caller-supplied, <=1-second PCM16 acoustic-cue adapter (F0/voicing/energy/activity hints) to a real Store/A4/C3-admission test path. It is **not yet consumed by normal Runtime or the Core #2144 staged overlay**, and it is not Android microphone capture, ASR, speaker identity, TTS, full duplex or voice learning.
+- Current exact post-merge required workflows associated with `c0ced...` returned **`action_required` across 13 runs**, not success. Therefore current branch is **NOT_RELEASED**; no release/phone activation claim.
+- Full local Aii checkout/tests: **BLOCKED**, because `git ls-remote https://github.com/RedMentos/Aii.git` failed with DNS resolution for `github.com`. No exact LOCAL_LINUX repository test was run or claimed.
+- The private owner-read `PIPELINE_STATUS` request has no device reply yet. Installed SHA, current auto-update consent and native device status remain **UNKNOWN / REDMI_UNVERIFIED**. No UPDATE_REQUEST, installer, shell action, model download/swap or data mutation was attempted.
+
+### Whole-system blockers that remain open
+- **P0 chat:** public issue [#1904](https://github.com/RedMentos/Aii/issues/1904) remains the last measured Redmi failure: wrong 2+2, B1/B2 native timeouts and zero valid offers. There is no newer phone receipt.
+- **Core composition:** #2140 arithmetic candidate still has six staged contract failures; #2139 direct Runtime audio chain has 30 failed / 208 passed / 10 skipped / 2 errors. #2144 staged audio/arithmetic overlay and #2153 finality follow-up still fail in the shared staged-builder / online-world composition chain. The new #2155 module is not yet wired into that consumer.
+- **JEPA runtime:** #2151 is the correct current synthetic learner authority; older #2145 runtime shims remain non-mergeable and fail staged/integrated/migration checks. Do not replace #2151's source/digest/pending-cohort/retention semantics with the older latest-N shim.
+- **Latent integration:** B3 symbolic/source-exact messages are still not trained activation-to-activation latent transfer. No receiver-injection utility/ablation is proven.
+- **Android agency and voice:** no Redmi evidence for API-first background actions, Accessibility/MediaProjection UI control, microphone, speech effector, full duplex, revocation/audit/stop/restart.
+- **Native continual learning/self-optimization:** synthetic WorldJEPA predictor parameters change numerically, but no native B1/B2/C3 GGUF edits, cross-organ gradients, real-user holdout gain or accepted persistent learning.
+
+### Next execution ownership
+1. **Core & Harness:** build one current staged Runtime composition for source-bound arithmetic + A5 RAW EAR + FINAL/PROVISIONAL boundaries; repair the shared builder/pin chain semantically and rerun staged, integrated, migration and 2+2/B1/B2 consumer tests.
+2. **JEPA & Memory:** port #2151's exact source/digest/oldest-first/pending-cohort/retention consumer into the real postcommit Runtime path, then expose a source-bound World prediction to an actual World/Planner consumer in SHADOW. Keep optimizer permission false.
+3. **QA & Android:** continue read-only until a fresh owner-authenticated receipt exists; do not infer deployment from GitHub. Keep Android background/UI, microphone, speech and rollback proofs separate.
+4. **Research & Perception:** keep RAW EAR heuristics explicitly uncalibrated; compare against a measured VAD/prosody baseline and record ARM cost before any promotion. No model swap/download.
+5. **Boss:** this fresh handoff/board/coverage/research sync is based on c0ced; the previous evidence PR #2149 is stale on c3c32 and non-mergeable. Review the new docs PR and current cross-agent branches before integration.
+
+### Current user action
+**Keine Aktion nötig.** No Termux command, device update, model download or permission change is justified by the current evidence. The user can continue using the existing app; this report does not claim that its installed code changed.
+
+---
+
+
 **Stand:** 21. November 2026. **Zuständig:** V14 Boss & Integration (QA verifiziert technische und lokale Angaben).  
 **Zweck:** Bei der nächsten V14-Frage in ChatGPT **zuerst diese Datei plus neuesten GitHub-HEAD und Work Board prüfen**, dann konkrete Ergebnisse und nur erforderliche Entscheidungen nennen. Datei ist kein automatischer Push an das Handy.
 
