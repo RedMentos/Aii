@@ -1,3 +1,35 @@
+## Latest Boss readback — 2026-11-21 05:49 CET (supersedes prior 05:00 status)
+
+### Verified repository / release state
+- Exact release branch HEAD remains `c0cedbde718ede6107f4df1f1bf9c784df4e00cf`. This is a GitHub branch-ref readback, not an Android installation.
+- #2151/#2152 WorldJEPA/EMA Store learner and #2155 RAW EAR acoustic cue adapter are merged in this branch. Their limits remain unchanged: #2151 is synthetic Store/CI evidence and not normal Runtime-wired/native B1/B2 weight learning; #2155 is caller-supplied PCM16 and not microphone capture or voice understanding.
+- Exact current SHA has 13 PR-triggered required workflow runs in `action_required`. Five private-bridge push runs and selected workflow-dispatch runs succeeded, but the complete release-required set is not green. `NOT_RELEASED`.
+- Full local Aii checkout/tests remain BLOCKED: `git ls-remote https://github.com/RedMentos/Aii.git` fails because this worker cannot resolve github.com. No exact LOCAL_LINUX repository test is claimed.
+- Fresh private PIPELINE_STATUS owner-read has no reply. Installed SHA, updater consent/state and device status are UNKNOWN; `REDMI_UNVERIFIED`. No UPDATE_REQUEST, installer, shell command, model/weight change, permission change or data mutation was attempted.
+
+### New Core integration attempt — PR #2158
+- Draft #2158 exact head: `2bbf9caf96f8fa90dc080afd00ba99db8329350d`. It composes the merged #2155 voice cues into the staged Runtime, carries bounded pitch/voicing/activity/energy metadata, and requires FINAL before B1/B2/C3 admission; PROVISIONAL remains A4-only, with consent/source checks.
+- Exact workflow run 44866310899: staged-a5-runtime failed on Python 3.11 and 3.13. Both failures are legacy positive arithmetic fixtures using ambiguous `7-12`: `test_broker_failure_keeps_computed_c6_type` expects FINAL, and `ExactArithmetic.test_correctness` expects `-5`. Current policy intentionally abstains on date-shaped unspaced input. Fix the positive fixtures to use unambiguous `7 - 12` or explicit arithmetic wording and retain a negative bare-`7-12` abstention test; do not weaken the ambiguity guard.
+- Exact staged-runtime run 44866311032 also fails on the same fixture defect (1 failed, 239 passed, 10 skipped, 47 subtests). Integrated regression, old-phone migration, Lab Age E2E, owner-read, offline and Python 3.14 staged startup pass on this PR head.
+- `validate-additive` fails with `path outside inert-module/test/handoff scope` because this candidate changes the stage builder and `runtime_deploy.py`. This is a high-authority release/deployment path: do not bypass the gate or weaken it. It needs explicit Boss review and complete exact release-push CI.
+- Boss findings were posted on #2158. It remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.
+
+### Whole-system blockers remain
+- P0 #1904 remains the last measured real-Redmi failure: wrong 2+2, B1/B2 native timeouts and zero valid offers; no newer device receipt.
+- #2151 is not yet called from normal postcommit Runtime; no native B1/B2/C3 GGUF updates or accepted real-user retention.
+- B3 still has symbolic/source-exact fallback, not trained activation-to-activation latent transfer with receiver utility.
+- No accepted Android background/API action, Accessibility/MediaProjection UI control, microphone capture, speech decoder/vocoder, full-duplex/barging-in, or Redmi permission/revocation evidence.
+- Sleep/Dream/Replay, Context OS/Memorilla, two genuinely different sparse MoE bodies, cross-organ gradients/self-edit and atomic clause-level mapping remain open under the full V13/V14 Canon. No family or whole system is ACCEPTED.
+
+### Next concrete work
+1. Core repairs the two ambiguous arithmetic fixtures and reruns exact focused, staged, integrated, migration and Python 3.14 checks; keep source pins and high-authority-path policy intact.
+2. Boss reviews the complete staged builder/deployer chain and does not merge until exact release push CI is green.
+3. JEPA/Memory ports the merged #2151 source/digest/pending-cohort/retention learner into the real postcommit Runtime in SHADOW, with optimizer permission still OFF, and exposes its prediction to a real World/Planner consumer.
+4. QA keeps device state read-only until a fresh owner-authenticated receipt; then verify installed SHA and updater consent before any update request.
+
+**User action:** none. No Termux command, model download/swap, permission change or device action is currently required.
+
+
 # V14 – letzte verifizierte Entwicklung / nächstes sinnvolles Nutzer-Update
 
 ## Latest Boss readback — 2026-11-21 05:00 CET (supersedes older status rows below)
