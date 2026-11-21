@@ -3,7 +3,7 @@
 ## Ownership and scope
 
 - Queue item: V14-005, Research & Perception, model-candidate evaluation.
-- Base: gpt6/v13-private-remote-bridge-20261111 at verified commit d61b695739023d0bf0a3cfa4022770f0de2615fa.
+- Base: gpt6/v13-private-remote-bridge-20261111 at verified commit c3c32c05a0374e970d274f8a777a7ab85c067d66.
 - Working branch: research-perception/model-compare-c3-20261121.
 - This is a C3-only first slice. It does not close the broader B1/B2 sparse-MoE or whole-Canon requirements.
 
