@@ -725,3 +725,12 @@ The current functional release has synthetic C4 source-span selection but no pro
 5. Boss: maintain 1,255-heading historical inventory and complete semantic clause→implementation→consumer→test→environment→rollback mapping; review only after exact-base evidence. No PR count or synthetic test certifies the whole Canon.
 
 **Device:** fresh private PIPELINE_STATUS and DIAGNOSTICS requests are open but have no authenticated response at this read. No LOG_PAGE, UPDATE_REQUEST, shell action, model/weight change, permission change or device mutation. **User action: none.**
+
+
+### Run-11 follow-up — Core head 3dc8a19 (2026-11-21 19:57 CET)
+
+- Core corrected the arithmetic overlay blob header; the exact Python 3.13 staged-audio-arithmetic job now passes. The next dependency is exposed: `runtime_deploy.py` still pins the old `STAGER_SHA256`, so Python 3.14 startup fails with `Integrated stage builder changed`; staged-runtime and two-checkout migration then fail/return `PARTIAL`. Current #2242 exact checks: **4 failure / 3 in progress / 6 success**. `validate-additive` remains a policy failure; do not bypass it.
+- No change has yet addressed the permission-revocation race: the subscription is still optional and there is no pre-lock revocation-request signal to cancel C3. #2242 remains DRAFT / NOT_RELEASED.
+- Core next: recompute exact deployer/stage pins; rerun 3.13/3.14 audio, staged Runtime, integrated, migration, owner-read, Lab-Age and deployer checks; implement the separate pre-lock cancel signal + mandatory subscriptions.
+- QA next: rebase #2244 onto the final Core head; add automatic provider-revoke cancellation while C3 is blocked, then verify iterator exit, tombstone/cache cleanup and later text-only FINAL.
+- Boss handoff PR #2248 contains the run-11 board/workplan/user handoff/coverage updates. Its only current check is offline-bridge-security 1/1 PASS; no code or release change.
