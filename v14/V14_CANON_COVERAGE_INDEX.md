@@ -1,6 +1,6 @@
 # V14 Canon-Coverage-Index — vollständiger historischer Heading-Inventarstand
 
-**Stand:** 2026-11-20 · **Basis:** `v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md` · **Master-BLOB-SHA:** `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`  
+**Stand:** 2026-11-21 · **Basis:** `v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md` · **Master-BLOB-SHA:** `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`  
 **Indiziert:** 1255 Markdown-Überschriften aus dem historischen Teil III, einschließlich V13-Canon und erhaltenen Anhängen. Dies ist ein mechanisch erzeugter **Vollständigkeits-Wegweiser**, **kein** Nachweis, dass die Einzelfunktionen implementiert sind oder dass ausschließlich Überschriften sämtliche Detailpflichten erschöpfen. Alle Unterabsätze/Tabellen bleiben wortgetreu im [vollständigen Master](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md).
 
 **Erhaltungsregel:** Keine Zeile/Kontrakt aus dem historischen Ursprung darf aus dem Endziel still gelöscht werden. Bei jeder bedeutenden Masterrevision Index anhand Teil III neu erstellen und alte gegenüber neuen Einträgen/Quell-SHAs vergleichen. Originalanhang darf nicht still verändert werden. Umsetzung muss alle Einzelanforderungen nach Verifikation auf passende aktive V14-Organe, Consumer, Tests und Evidenz mappen. Duplicate headings und historische Namenskonflikte bleiben unter ihrer **eigenen Quellzeile** erhalten; neuer Status darf alte FAILs nicht nachträglich überschreiben.
@@ -1563,3 +1563,35 @@ Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. The 
 | A5 voice / B1/B2/C3 | #2200 staged A5 3.11/3.13, staged-runtime 249/10/47 and integrated 415/3/58 PASS with fake runners | Consent race in #2192; derived audio context remains stored after revocation; no microphone or native body proof |
 
 No master edit; historical 1,255-heading inventory and V13 appendix bytes remain unchanged. These results do not mark any Canon family complete.
+
+
+## Additive live evidence overlay — 2026-11-21 15:05 CET
+
+Historical inventory above remains **1,255 V13 headings**; no historical wording or V13 appendix bytes were changed.
+
+| Requirement family | Current implementation status | Exact evidence | Acceptance / rollback still open |
+|---|---|---|---|
+| Runtime / World / Self / JEPA | Runtime/SleepRuntime Store-backed WorldJEPA optimizer resume merged; numeric predictor and EMA only; B1/B2/SELF readouts remain SHADOW | #2213 merged SHA `5a141153f7d33906408fd638ce56cfbee459cf08`; PR-head staged 249/10/47, integrated 424/3/58, optimizer resume 20+14+1, Python 3.13/3.14 64 each; merged push CI 30/30 | No native GGUF body-weight updates, cross-organ gradients, trained B3 receiver, multi-seed meta-learning or Redmi utility; dual gates OFF |
+| Checkpoint publication | No-clobber renameat2 fallback after hardlink denial; dependent builder/deployer SHA chain rebound and read back | Forced EPERM/EACCES and EEXIST negative tests; exact five-file SHA-256 readback; isolated LOCAL_LINUX renameat2 helper PASS | Redmi filesystem/SELinux and actual Android execution unverified; separate SQLite source-roundtrip failure not proven fixed |
+| A0-A5 / RAW EAR / audio | Producer-side consent lease candidate plus synthetic A5/A4 Runtime consumer | #2207 producer 49/49, comparator 8/8, libfvad native Linux 13/13, staged 249/10/47, integrated 415/3/58 | #2200 consumer stale/non-mergeable; #2211 revocation tests fail because derived context survives; no mic/ASR/TTS/full-duplex |
+| B1/B2 / C4 / C3 | Distinct bodies and source-bound offer contracts exist; synthetic voice consumer candidate | #2200 fake-runner tests emit B1/B2 OfferPackets and C3 context | No accepted C4 selection, no real native offer quality, no Redmi proof; P0 #1904 still open |
+| C5 arithmetic | Bounded exact arithmetic candidate is a separate local-text action, not a general parser | #2210 unit tests PASS | Runtime Python 3.14 C5 SHADOW regression and stale builder pins FAIL; not merged or Android-tested |
+| Android background/UI control | Narrow Android 13 audit-DB identity guard merged; broker remains DRY_RUN_ONLY | Exact release push CI 30/30 | No OS executor, AccessibilityService, MediaProjection, UI action, app navigation or Redmi proof |
+| Voice output / multimodal learning | Raw acoustic feature extraction only | Synthetic producer tests | No ASR, learned speech decoder/vocoder, full-duplex, source-bound modality learning or native weight updates |
+| Context OS / Memorilla | Context OS exists; additive companion remains draft/isolated | Existing partial synthetic checks | No integrated overflow consumer, learned B1/B2/C3 readers or native latent injection |
+| Release / updater / rollback | Exact branch push CI green; private update request pending | `5a141153f7d33906408fd638ce56cfbee459cf08` push CI 30/30 | PIPELINE_STATUS #406 expired without reply; UPDATE_REQUEST #407 no reply; installed SHA UNKNOWN; REDMI_UNVERIFIED |
+| Whole Canon | Historical inventory preserved | 1,255-heading mechanical index | Clause-level mapping to code + actual consumer + negative tests + environment + rollback + owner remains incomplete |
+
+
+
+### Boss integration evidence overlay — 2026-11-21 15:23 CET
+
+| Canon family | New verified change / evidence | Still not accepted |
+|---|---|---|
+| Android action proposal integrity | PR #2215 merged at `23ea3efc7d1951e20664ce6d07883141e9b601c5`; immutable flat args, canonical digest revalidation at approval and execution, detached output envelope. PR-head CI: broker 38, sandbox 62, staged 249/10/47, integrated 415/3/58, migration UPDATED | Exact post-merge push-CI not independently verified; broker remains DRY_RUN_ONLY; no authenticated companion, OS executor, AccessibilityService, MediaProjection, UI action or Redmi proof |
+| RAW EAR consent / A0-A5 | #2219 producer candidate acquires provider lease before PCM transforms; deterministic QA #2214 head c17e4 proves old producer still processes PCM after revocation; old-producer focused test fails as intended | No combined deterministic post-fix test; provider lock reentrancy contract unresolved; no microphone or Redmi proof |
+| WorldJEPA optimizer resume | #2213 production Store/Runtime/EMA/Adam checkpoint remains merged; #2218 current head 4ad72 adds read-only numeric audit and matched persistent-vs-reset production Store test; safe-additive and staged-runtime PASS, integrated run pending | Current-head dedicated Python 3.13/3.14 optimizer-resume run missing; synthetic numeric predictor only; no native GGUF body-weight learning, B3 receiver or Redmi utility |
+| C5 exact arithmetic / P0 chat | #2210 still proposes a narrow distinct local arithmetic action | Python 3.13/3.14 C5 SHADOW test FAIL; staged/integrated nested pins FAIL; #1904 remains open for correct 2+2, native latency and B1/B2→C4→C3 delivery |
+| Release / Android | Code-bearing release-development HEAD 23ea3ef includes #2215; PR-head tests green | Exact post-merge push CI unknown; private #407/#408 expired without reply, #409/#410 pending; installed SHA/updater consent UNKNOWN; REDMI_UNVERIFIED |
+
+Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. The V14 master was not edited. This overlay records exact environment boundaries and open blockers; no Canon family is promoted to accepted.
