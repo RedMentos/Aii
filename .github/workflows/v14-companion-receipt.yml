@@ -1,0 +1,24 @@
+name: V14 companion receipt verifier
+on:
+  push:
+    branches:
+      - 'gpt6/v14-core-companion-receipt-*'
+  pull_request:
+    paths:
+      - 'v13/code/v13/android_companion_protocol.py'
+      - 'v13/code/tests/test_android_companion_protocol.py'
+      - '.github/workflows/v14-companion-receipt.yml'
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and test
+        working-directory: v13/code
+        run: |
+          python -m compileall -q v13/android_companion_protocol.py tests/test_android_companion_protocol.py
+          python -m unittest discover -s tests -p test_android_companion_protocol.py -v
