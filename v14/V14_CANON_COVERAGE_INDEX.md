@@ -1843,3 +1843,7 @@ The current Boss integration head has passed A5 lease, combined JEPA and offline
 ## QA exact-head correction — 06ebe5d (2026-11-21 22:38 CET)
 
 The current shared staged failure has advanced to `record_only_controller_guard_20261116.py:191`: stale semantic/local-error pins after the arithmetic/World/Store transformation. A5 lease, combined JEPA, runtime deploy and GoalWake focused tests pass; Lab-Age and Python 3.14 staged startup fail; migration/staged/audio are pending at the latest poll. Keep V14-001 PARTIAL/OPEN, NOT_RELEASED and REDMI_UNVERIFIED. The guard must rebind both dependent modules without weakening source identity checks.
+
+## QA exact run completion — 06ebe5d (2026-11-21 22:42 CET)
+
+Staged-runtime (6 failures), integrated-regression (18 failures / 232 passes), Python 3.14 staged startup, Lab-Age and migration remain blocked by `record_only_controller_guard_20261116.py:191` semantic dependency pin mismatch. A5 lease, combined JEPA, runtime-deploy integrity and GoalWake focused tests pass. Core audio 3.13 fails; 3.14 was still running. Keep V14-001 PARTIAL/OPEN, NOT_RELEASED and REDMI_UNVERIFIED. The controller guard must rebind both semantic and local-error pins against the exact known transformed bytes without relaxing source identity checks.
