@@ -60,7 +60,7 @@ class Runtime:
         try:txctl.Transactions(self.store).recover()  # WP-K IH-H14: EXECUTING after a crash -> UNKNOWN, never re-run
         except Exception as exc:self.store.log('action_tx_recover_failed',None,{'error':type(exc).__name__})
         pending=self.store.pending_turns()
-        self.guard=ResourceGuard(self.cfg);self.guard.load_profile(self.store);self.notify=notify or (lambda text:None);self.stop=threading.Event();self.wake=threading.Event();self.lock=threading.RLock();self.jobs=queue.Queue(max(self.cfg['queue_count'],len(pending)));self.queued_bytes=0;self.current=None;self.paused=self.store.queue_paused();self.status='Pausiert' if self.paused else 'Bereit';self.closed=False;self._a5_ui_context_cache={};self._a5_ui_unsubscribe={}
+        self.guard=ResourceGuard(self.cfg);self.guard.load_profile(self.store);self.notify=notify or (lambda text:None);self.stop=threading.Event();self.wake=threading.Event();self.lock=threading.RLock();self.jobs=queue.Queue(max(self.cfg['queue_count'],len(pending)));self.queued_bytes=0;self.current=None;self.paused=self.store.queue_paused();self.status='Pausiert' if self.paused else 'Bereit';self.closed=False
         for row in pending:
             queued=time.monotonic()-max(0.,time.time()-row['accepted_at'])
             self.jobs.put_nowait(('turn',row['event'],row['bytes'],queued));self.queued_bytes+=row['bytes']
@@ -120,72 +120,6 @@ class Runtime:
         from .world_jepa_runtime_checkpoint import restore
         with self.lock:return restore(self)
 
-    @contextlib.contextmanager
-    def ui_observation_lease(self,observation,consent_check,consent_guard,revocation_subscribe):
-        """Hold the OS observe_ui grant across A5 and every downstream source read."""
-        event=self.turn_event
-        if not isinstance(event,dict) or not isinstance(event.get('brain_generation_id'),str):
-            raise ValueError('UI observation requires an active Runtime turn')
-        from .a5_ui_admission_bridge import ui_observation_lease
-        with ui_observation_lease(self,observation,event['brain_generation_id'],
-                                  consent_check,consent_guard,revocation_subscribe) as lease:
-            yield lease
-    def ingest_ui_observation(self,observation,consent_lease,goal='',token_budget=512,priority=0):
-        """Normal Runtime ingress for a trusted, metadata-only A5 UI observation."""
-        from .a5_ui_admission_bridge import consume_ui_observation
-        return consume_ui_observation(self,observation,consent_lease=consent_lease,
-                                      goal=goal,token_budget=token_budget,priority=priority)
-    def ui_observation_context(self,event_id):
-        """Read the bounded current-process A5 UI packets for one event; no raw UI data."""
-        if type(event_id) is not str or not event_id:raise ValueError('event id required')
-        cache=getattr(self,'_a5_ui_context_cache',{})
-        if type(cache) is not dict:raise ValueError('Runtime A5 UI cache is invalid')
-        return tuple(p for p in cache.values() if p.get('event_id')==event_id and p.get('modality')=='ui' and p.get('finality')=='FINAL')
-    def revoke_ui_observation(self,source_id):
-        """Tombstone one A5 UI source, delete dependent packets/cache, and unsubscribe."""
-        if type(source_id) is not str or not source_id:raise ValueError('UI source id required')
-        subscriptions=getattr(self,'_a5_ui_unsubscribe',None)
-        unsubscribe=subscriptions.pop(source_id,None) if type(subscriptions) is dict else None
-        if getattr(self,'closed',False):
-            if callable(unsubscribe):unsubscribe()
-            return {'source_tombstoned':False,'packets_deleted':0,'cache_cleared':False,'blob_removed':False}
-        blob_hash=None;source_tombstoned=False;active=1;deleted_ids=[]
-        try:
-            with self.store.tx() as c:
-                row=c.execute("SELECT hash,deleted FROM sources WHERE id=? AND kind='A5_UI_EVENT'",(source_id,)).fetchone()
-                if row:
-                    blob_hash=row['hash'];source_tombstoned=(row['deleted']==0)
-                    rows=c.execute('SELECT id,payload FROM packets').fetchall()
-                    def contains_source(value):
-                        if isinstance(value,dict):
-                            if value.get('source_id')==source_id:return True
-                            return any(contains_source(v) for v in value.values())
-                        if isinstance(value,list):return any(contains_source(v) for v in value)
-                        return False
-                    for packet_row in rows:
-                        try:payload=json.loads(packet_row['payload'])
-                        except (TypeError,ValueError):continue
-                        if contains_source(payload):deleted_ids.append(packet_row['id'])
-                    for packet_id in set(deleted_ids):
-                        c.execute('DELETE FROM packets WHERE id=?',(packet_id,))
-                    c.execute("UPDATE sources SET deleted=1 WHERE id=? AND kind='A5_UI_EVENT' AND deleted=0",(source_id,))
-                    active=c.execute('SELECT COUNT(*) FROM sources WHERE hash=? AND deleted=0',(blob_hash,)).fetchone()[0]
-        except BaseException:
-            if callable(unsubscribe) and type(subscriptions) is dict:
-                subscriptions[source_id]=unsubscribe
-            raise
-        cache=getattr(self,'_a5_ui_context_cache',None)
-        cache_cleared=cache.pop(source_id,None) is not None if type(cache) is dict else False
-        if callable(unsubscribe):unsubscribe()
-        blob_removed=False
-        if blob_hash and active==0:
-            from pathlib import Path
-            blob=Path(self.store.home)/'data/blobs'/blob_hash
-            try:
-                blob.unlink(missing_ok=True);blob_removed=not blob.exists()
-            except OSError:pass
-        return {'source_tombstoned':source_tombstoned,'packets_deleted':len(set(deleted_ids)),
-                'cache_cleared':cache_cleared,'blob_removed':blob_removed}
     def notice(self,text):self.notify(safe_text(text))
     def resources(self):return snapshot(self.home,self.pool.pids()+self.needle.pids()+self.memory.semantic_keys.encoder.pids())
     def revisions(self):return {role:self.models.revision(role) for role in ROLES}
@@ -889,6 +823,4 @@ class Runtime:
             # PENDING user turns remain durably accepted for the next process;
             # cache removal is not rejection or completion of their work.
             self.jobs.task_done()
-        for source_id in list(getattr(self,'_a5_ui_unsubscribe',{})):
-            self.revoke_ui_observation(source_id)
         self.pool.unload();self.needle.unload();self.memory.semantic_keys.encoder.unload();self.store.close();self.closed=True
