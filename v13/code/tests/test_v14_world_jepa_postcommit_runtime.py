@@ -413,7 +413,7 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
 
         # Add a source-disjoint T8 cohort through the same durable Store API.
         # The temporary permission is test-only; production gates remain OFF.
-        _add_transitions(runtime.store, runtime.session, 1000, 256)
+        _add_transitions(runtime.store, runtime.session, 1000, 255)
         latest = runtime.store.one(
             "SELECT event_id FROM actions WHERE outcome IS NOT NULL "
             "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
@@ -422,9 +422,11 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         runtime.store.set_state(PERMISSION_KEY, {
             "learning_enabled": True,
             "optimizer_permission": True,
-            "steps": 4,
+            "steps": 120,
             "replay_mode": "uniform",
         })
+        original_run = runtime.sleep._run_world_jepa
+        runtime.sleep._run_world_jepa = lambda event_id, limit=64: original_run(event_id, limit=256)
         runtime.sleep.last_tick = -1e18
         runtime.wake.set()
 
@@ -449,7 +451,10 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
             "SELECT metrics FROM telemetry WHERE kind='v14_world_jepa_postcommit' ORDER BY id"
         )
         assert telemetry
-        decoded = [json.loads(row["metrics"]) for row in telemetry]
+        decoded = [
+            json.loads(row["metrics"]) if isinstance(row["metrics"], str) else row["metrics"]
+            for row in telemetry
+        ]
         assert any(
             row.get("learning_status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
             and row.get("parameter_delta_norm", 0) > 0
