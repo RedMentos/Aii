@@ -32,3 +32,5 @@ target_link_libraries(native_latent_receiver PRIVATE llama)
 set_target_properties(native_latent_receiver PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "\${CMAKE_BINARY_DIR}/bin"
 )
+
+install(TARGETS native_latent_receiver RUNTIME DESTINATION bin)
