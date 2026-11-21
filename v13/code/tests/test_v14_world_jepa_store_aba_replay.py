@@ -63,6 +63,41 @@ A1_STEPS = 120
 SHIFT_STEPS = 120
 
 
+def test_parameter_interpolation_scales_all_worldjepa_groups_without_resetting_optimizer():
+    rng = np.random.default_rng(71)
+    x = rng.normal(size=(64, 4))
+    actions = rng.normal(size=(64, 2))
+    x2 = 0.65 * x + 0.2 * rng.normal(size=(64, 4))
+    model = world_jepa.WorldJEPA(seed=71, ensemble=1)
+    model.fit(x, actions, x2, steps=8, log_every=4)
+
+    before = world_jepa_consumer._parameter_snapshot(model)
+    after = copy.deepcopy(before)
+    for group in ("enc", "tgt"):
+        for value in after[group].values():
+            value[...] += 0.4
+    for predictor in after["preds"]:
+        for value in predictor.values():
+            value[...] += 0.4
+    optimizer_state = model._training_state
+
+    world_jepa_consumer._apply_parameter_interpolation(model, before, after, 0.25)
+    actual = world_jepa_consumer._parameter_snapshot(model)
+    for group in ("enc", "tgt"):
+        for key in before[group]:
+            assert np.allclose(
+                actual[group][key], before[group][key] + 0.1,
+                rtol=0.0, atol=1e-12,
+            )
+    for index, predictor in enumerate(before["preds"]):
+        for key in predictor:
+            assert np.allclose(
+                actual["preds"][index][key], predictor[key] + 0.1,
+                rtol=0.0, atol=1e-12,
+            )
+    assert model._training_state is optimizer_state
+
+
 def test_stable_drift_controller_calibrates_groups_and_updates_dual():
     params = {
         "encoder": {"eW": np.array([1.0, 2.0])},
@@ -1166,6 +1201,15 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             phase.get("replay_loss_demand_positive_session_count", 0) > 0
             for phase in phases
         ), f"loss-demand guard scored no positive forgetting cohort for seed {seed}"
+        projected_reports = [
+            item for item in seed_reports
+            if item["replay_projection"] == "per_session_gem"
+        ]
+        assert len(projected_reports) == 1
+        assert any(
+            phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+            for phase in (projected_reports[0]["B"], projected_reports[0]["A2"])
+        ), f"on-demand loss + per-session GEM accepted no update for seed {seed}"
         for phase in phases:
             if phase["status"] == "UTILITY_GATE_REJECTED":
                 assert phase["checkpoint_after"] == phase["checkpoint_before"]
