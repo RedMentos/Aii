@@ -1175,3 +1175,12 @@ Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/225
 - The current Boss integration PR #2258 has a moving head; its newest exact-head CI was not yet returned at this readback. Do not infer deployment from a branch push.
 - Next concrete internal step: Core implements a gated native receiver harness against the pinned llama.cpp b10964 API; Perception supplies adapter/data/negative-control requirements; then prove same-model input-embedding parity before any B1→B2 learned adapter. Keep production B3 symbolic/SHADOW until native receiver consumption is measured.
 - Status: NOT_RELEASED / REDMI_UNVERIFIED. User action: none.
+
+
+## PR readback — Research/Perception #2260 — 2026-11-21T21:08:03.732Z
+
+- Draft PR #2260: https://github.com/RedMentos/Aii/pull/2260; branch research-perception/v14-latent-plasticity-research-20261121-run11; exact head 9d46d29517a4ab5869f756b899fb2f0bd7b69100 at PR creation. It is explicitly stacked on Boss #2258 and relates to whole-Canon issue #1984.
+- It contains R-047–R-051, the native receiver-ingress handoff, the V14-006 board update and this user-level handoff. It is research/docs only; it is not a code release or deployment.
+- GitHub file readback passed: research ledger contains R-047/R-050/R-051; handoff contains the b10964 native API contract; board JSON parses. No local full-repository tests were possible.
+- Next: Core owns the gated b10964 native receiver harness; Perception supplies provenance/dimension/negative-control review; JEPA owns later adapter training and retention. Production B3 remains symbolic/SHADOW until actual receiver consumption is measured.
+- Current user action: none. Redmi remains REDMI_UNVERIFIED.
