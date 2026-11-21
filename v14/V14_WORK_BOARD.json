@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T02:55:46+01:00",
+  "updated_at": "2026-11-21T03:01:10+01:00",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -93,14 +93,14 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
-      "proof_environment": "LOCAL_LINUX isolated executable-identity regression 5/5 PASS (Python stdlib; helper-level, not repository suite). PR #2142 head fef505ac3f6ea30f034fdce5ee5a9abc6b5c30b7 adds three LlamaRunner executable-identity regressions (16 tests total); exact model-lab CI run 44853309109 IN_PROGRESS at last readback. Full local repository checkout/test remains BLOCKED by GitHub DNS. Native GGUF inference NOT_RUN; no download/swap. REDMI_UNVERIFIED.",
-      "next_step": "Wait for exact-head CI run 44853309109 and independent Core/QA review. If green, retain the candidate as diagnostic-only; run both orders only if the pinned GGUF is already present on the authorized Redmi, otherwise request separate explicit consent for an isolated download. Do not promote or swap production C3 without broad quality, latency/RSS/PSS, and rollback evidence.",
+      "proof_environment": "Exact PR code/test SHA f5c5265a89258a6fd1ab5d25c20c733d21bb2ab4: GitHub Linux/Python 3.13.18 model-lab run 44853451281 PASS (py_compile, JSON validation, 16/16 tests). LOCAL_LINUX isolated helper-level executable identity checks 5/5 PASS; full local repository checkout/test BLOCKED by GitHub DNS. Native GGUF inference NOT_RUN; no download/swap. REDMI_UNVERIFIED.",
+      "next_step": "Independent Core/QA review of PR #2142. If accepted, run both orders only if the exact pinned 230M GGUF is already present on the authorized Redmi and V13 is idle; otherwise request separate explicit consent before an isolated download. Require broad quality, TTFT/prefill/decode, RSS/PSS and rollback evidence before any separate production-swap approval. Extend B1/B2 comparison separately.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 Research & Perception: fixed QA's V13_LLAMA_SERVER benchmark identity finding by checking LlamaRunner.binary before generation and _loaded_binary after launch; report hashes the resolved executable actually used. Three regressions added. LOCAL_LINUX helper checks 5/5 PASS; exact PR CI run 44853309109 IN_PROGRESS. No native inference, download, swap, or current Redmi receipt.",
+      "last_checkpoint": "2026-11-21 Research & Perception: LlamaRunner executable-identity QA finding fixed; preflight runner.binary and post-load _loaded_binary must resolve to the verified installed executable. Exact CI run 44853451281 PASS on code/test SHA f5c5265 (16/16). Local helper 5/5 PASS. Native inference NOT_RUN; no model download/swap or current Redmi receipt.",
       "latest_candidate_pr": {
         "pr": 2142,
-        "tested_code_sha": "fef505ac3f6ea30f034fdce5ee5a9abc6b5c30b7",
-        "ci": "Exact PR head fef505ac: model-lab run 44853309109 IN_PROGRESS; 16 tests expected from current test file. LOCAL_LINUX helper-level executable identity checks 5/5 PASS. Full repository suite BLOCKED by GitHub DNS; native inference NOT_RUN; Redmi UNVERIFIED.",
+        "tested_code_sha": "f5c5265a89258a6fd1ab5d25c20c733d21bb2ab4",
+        "ci": "Exact code/test SHA f5c5265: GitHub Linux/Python 3.13.18 run 44853451281 PASS (py_compile, JSON validation, 16/16 tests). LOCAL_LINUX helper-level identity checks 5/5 PASS. Full repository checkout BLOCKED by DNS; native inference NOT_RUN; Redmi UNVERIFIED.",
         "scope": "Read-only C3 LFM2.5-350M baseline vs pinned LFM2.5-230M candidate; no B1/B2, no download, no production swap"
       }
     },
