@@ -2,7 +2,7 @@
 
 The caller supplies PCM bytes and a current-consent provider. This module does
 not open a microphone, retain PCM, run ASR, infer speaker identity, or grant
-learning/action authority. It persists only bounded acoustic summaries.
+learning/action authority. It persists only the bounded acoustic packet.
 """
 import math
 import re
@@ -10,7 +10,7 @@ import re
 from . import attention as attctl
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
-from .audio_percept_contract import audio_percept_packet, validate_voice_cues
+from .audio_percept_contract import audio_percept_packet
 from .contracts import validate
 from .percept_admission import admit
 
@@ -73,44 +73,38 @@ def _validate_packet_shape(audio_packet):
     rms, zcr = acoustic.get("rms"), acoustic.get("zcr")
     if any(type(v) not in (int, float) or not math.isfinite(v) or not 0 <= v <= 1 for v in (rms, zcr)):
         raise ValueError("invalid normalized acoustic features")
-    voice_cues = validate_voice_cues(acoustic.get("voice_cues")) if "voice_cues" in acoustic else None
-    return source_id, receipt, float(rms), float(zcr), segment, voice_cues
+    return source_id, receipt, float(rms), float(zcr), segment
 
 
 def _validate_runtime_binding(runtime, event_id, audio_packet):
-    source_id, receipt, rms, zcr, segment, voice_cues = _validate_packet_shape(audio_packet)
+    source_id, receipt, rms, zcr, segment = _validate_packet_shape(audio_packet)
     if type(event_id) is not str or not event_id or audio_packet["event_id"] != event_id:
         raise ValueError("audio packet event binding mismatch")
     if audio_packet["brain_generation_id"] != runtime.store.generation_id:
         raise ValueError("audio packet generation is stale")
     if runtime.store.one("SELECT id FROM events WHERE id=?", (event_id,)) is None:
         raise ValueError("audio packet event is not in the active Store")
-    return source_id, receipt, rms, zcr, segment, voice_cues
+    return source_id, receipt, rms, zcr, segment
 
 
 def consume_audio_packet(runtime, event_id, audio_packet, *, consent_check):
     """Persist a canonical A5 packet and feed real A4 Attention under live consent."""
-    source_id, receipt, rms, zcr, segment, voice_cues = _validate_runtime_binding(runtime, event_id, audio_packet)
+    source_id, receipt, rms, zcr, segment = _validate_runtime_binding(runtime, event_id, audio_packet)
     _require_current_consent(consent_check, source_id, receipt)
     runtime.store.add_packet("PerceptPacket", audio_packet)
     # Recheck after persistence and immediately before the A4 consumer.
     _require_current_consent(consent_check, source_id, receipt)
     attention = attctl.controller(runtime)
-    voice_novelty = 0.0
-    if voice_cues and voice_cues["activity_hint"] != "SILENCE":
-        voice_novelty = max(0.6 * voice_cues["voiced_fraction"], 0.35 * voice_cues["activity_score"])
-    # RMS is a bounded interrupt cue; ZCR and time-windowed voice dynamics are
-    # novelty cues only. They do not change truth, confidence or permissions.
+    # BOOT mapping only: RMS can recruit an interrupt; zero-crossing rate is a
+    # weak novelty proxy. Neither signal changes truth or permission authority.
     result = attention.modulate(event_id, sal={
-        "novelty": min(1.0, max(zcr, voice_novelty)),
+        "novelty": min(1.0, zcr),
         "external_interrupt": min(1.0, rms * 0.5),
     })
     return {
         "packet_id": audio_packet["packet_id"],
         "source_id": source_id,
         "finality": segment["finality"],
-        "voice_activity_hint": voice_cues["activity_hint"] if voice_cues else "UNMEASURED",
-        "voice_cues": voice_cues,
         "attention": result,
         "learning_authority": False,
         "action_authority": False,
@@ -119,7 +113,7 @@ def consume_audio_packet(runtime, event_id, audio_packet, *, consent_check):
 
 def admit_audio_packet(runtime, event_id, audio_packet, *, consent_check, token_budget):
     """Return a bounded C3 Percept admission; this does not inject it into C3 prompts."""
-    source_id, receipt, _, _, _, _ = _validate_runtime_binding(runtime, event_id, audio_packet)
+    source_id, receipt, _, _, _ = _validate_runtime_binding(runtime, event_id, audio_packet)
     _require_current_consent(consent_check, source_id, receipt)
     candidate = audio_to_admission(audio_packet, consent_active=True)
     return admit((candidate,), token_budget)
@@ -143,7 +137,6 @@ def consume_pcm16_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         end_ms=segment["end_ms"],
         rms=segment["acoustic"]["rms"],
         zcr=segment["acoustic"]["zero_crossing_rate"],
-        voice_cues=segment["acoustic"]["voice_cues"],
         finality=finality,
         consent_receipt=consent_receipt,
     )
