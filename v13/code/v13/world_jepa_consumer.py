@@ -332,6 +332,79 @@ def _session_gradient_conflict_scores(model, new_rows, old_rows, *, train_encode
     }
 
 
+def _session_loss_demand_scores(model, new_rows, old_rows, *, train_encoder, salt,
+                                 steps, cancel_check=None):
+    """Estimate replay demand from a short disposable no-replay update.
+
+    Only prior source-disjoint training-fold rows are scored. The reference is
+    the active checkpoint before the probe; holdout rows never enter selection.
+    No adaptation-specialist reference exists here, so no adaptation score is
+    invented. The probe model is discarded and never persisted.
+    """
+    grouped = {}
+    for row in old_rows:
+        session_id = row.get("session_id")
+        if type(session_id) is str and session_id:
+            grouped.setdefault(session_id, []).append(row)
+    eligible = {
+        session_id: values for session_id, values in grouped.items()
+        if len(values) >= 2
+    }
+    ranked = sorted(
+        eligible,
+        key=lambda session_id: hashlib.sha256(
+            (salt + "\0loss-probe\0" + session_id).encode("utf-8")
+        ).digest(),
+    )
+    scored = ranked[:MAX_CONFLICT_PROBES]
+    samples = {}
+    before_losses = {}
+    probe_rows = 0
+    for session_id in scored:
+        sampled = sorted(
+            eligible[session_id],
+            key=lambda row: hashlib.sha256(
+                (salt + "\0" + session_id + "\0" + row["action_id"]).encode("utf-8")
+            ).digest(),
+        )[:MAX_CONFLICT_SAMPLE_ROWS]
+        if len(sampled) < 2:
+            continue
+        loss_before = float(model.prediction_loss(*_arrays(sampled)))
+        if not math.isfinite(loss_before) or loss_before < 0.0:
+            raise ValueError("invalid pre-probe WorldJEPA cohort loss")
+        samples[session_id] = sampled
+        before_losses[session_id] = loss_before
+        probe_rows += len(sampled)
+
+    probe_steps = min(8, max(1, steps // 8)) if samples and len(new_rows) >= 2 else 0
+    if probe_steps:
+        model.partial_fit(
+            *_arrays(new_rows), steps=probe_steps,
+            log_every=max(1, probe_steps), cancel_check=cancel_check,
+            allow_optimizer_bootstrap=True, train_encoder=train_encoder,
+            update_scale=1.0,
+        )
+        probe_rows += len(new_rows)
+
+    scores = {}
+    for session_id, sampled in samples.items():
+        loss_after = float(model.prediction_loss(*_arrays(sampled)))
+        if not math.isfinite(loss_after) or loss_after < 0.0:
+            raise ValueError("invalid post-probe WorldJEPA cohort loss")
+        loss_before = before_losses[session_id]
+        relative_growth = max(0.0, loss_after - loss_before) / max(loss_before, 1e-8)
+        scores[session_id] = min(1e6, float(relative_growth))
+
+    return {
+        "scores": scores,
+        "scored_session_count": len(scores),
+        "unscored_session_count": len(grouped) - len(scores),
+        "legacy_rows_excluded": sum(1 for row in old_rows if not row.get("session_id")),
+        "probe_rows": probe_rows,
+        "probe_steps": probe_steps,
+    }
+
+
 def _ordered_replay_rows_and_ranges(rows, replay_start):
     """Group selected replay rows into bounded contiguous per-session GEM ranges."""
     grouped = {}
@@ -943,6 +1016,11 @@ class WorldJEPAStoreConsumer:
                 "scores": {}, "scored_session_count": 0,
                 "unscored_session_count": 0, "legacy_rows_excluded": 0, "probe_rows": 0,
             }
+            loss_probe = {
+                "scores": {}, "scored_session_count": 0,
+                "unscored_session_count": 0, "legacy_rows_excluded": 0,
+                "probe_rows": 0, "probe_steps": 0,
+            }
             cohort_scores = None
             if replay_mode == "on_demand_conflict":
                 if active is not None and len(new_train_rows) >= 2 and len(old_train_rows) >= 2:
@@ -951,6 +1029,21 @@ class WorldJEPAStoreConsumer:
                         train_encoder=(encoder_mode == "full"), salt=replay_salt,
                     )
                 cohort_scores = conflict_probe["scores"]
+            elif replay_mode == "on_demand_loss":
+                if active is not None and len(new_train_rows) >= 2 and len(old_train_rows) >= 2:
+                    try:
+                        probe_model = self._load_model(active)
+                        loss_probe = _session_loss_demand_scores(
+                            probe_model, new_train_rows, old_train_rows,
+                            train_encoder=(encoder_mode == "full"),
+                            salt=replay_salt, steps=steps, cancel_check=cancel_check,
+                        )
+                    except InterruptedError:
+                        return {"status": "CANCELLED", "pending_rows": len(pending_by_id),
+                                "scan_cursor": state["scan_cursor"],
+                                "checkpoint_committed": False,
+                                "native_body_weights_changed": False}
+                cohort_scores = loss_probe["scores"]
             replay_selection = world_jepa_replay.select_replay_rows(
                 replay_mode, new_train_rows, old_train_rows,
                 budget=len(new_train_rows), salt=replay_salt,
@@ -1016,6 +1109,13 @@ class WorldJEPAStoreConsumer:
                 }
                 for session_id, score in sorted(conflict_probe["scores"].items())
             ]
+            loss_demand_manifest = [
+                {
+                    "session_key": hashlib.sha256(session_id.encode("utf-8")).hexdigest()[:16],
+                    "score": float(score),
+                }
+                for session_id, score in sorted(loss_probe["scores"].items())
+            ]
             replay_metrics = {
                 "replay_mode": replay_mode,
                 "replay_rows": len(replay_rows),
@@ -1031,6 +1131,17 @@ class WorldJEPAStoreConsumer:
                 "replay_conflict_probe_rows": conflict_probe["probe_rows"],
                 "replay_conflict_scores_sha256": hashlib.sha256(json.dumps(
                     conflict_manifest, sort_keys=True, separators=(",", ":"), allow_nan=False
+                ).encode("utf-8")).hexdigest(),
+                "replay_loss_demand_probe_rows": loss_probe["probe_rows"],
+                "replay_loss_demand_probe_steps": loss_probe["probe_steps"],
+                "replay_loss_demand_scored_session_count": loss_probe["scored_session_count"],
+                "replay_loss_demand_unscored_session_count": loss_probe["unscored_session_count"],
+                "replay_loss_demand_positive_session_count": sum(
+                    1 for score in loss_probe["scores"].values() if score > 0.0
+                ),
+                "replay_loss_demand_max_score": max(loss_probe["scores"].values(), default=0.0),
+                "replay_loss_demand_scores_sha256": hashlib.sha256(json.dumps(
+                    loss_demand_manifest, sort_keys=True, separators=(",", ":"), allow_nan=False
                 ).encode("utf-8")).hexdigest(),
                 "replay_projection_requested": replay_projection,
                 "replay_projection_enabled": replay_start is not None,

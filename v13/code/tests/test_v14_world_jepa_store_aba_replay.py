@@ -53,6 +53,7 @@ ARMS = (
     ("session_contiguous", "full", True, True),
     ("on_demand_conflict", "full", True, True),
     ("on_demand_conflict", "predictor_only", True, True),
+    ("on_demand_loss", "predictor_only", False, False),
 )
 DATA_SEEDS = (13, 19, 43)
 A1_COUNT = 256
@@ -273,6 +274,65 @@ def test_on_demand_conflict_replay_is_bounded_deterministic_and_budget_matched()
     assert {item["action_id"] for item in selected["rows"]}.isdisjoint(
         {item["action_id"] for item in new_rows}
     )
+
+
+def test_on_demand_loss_replay_selects_only_positive_forgetting_demand():
+    def row(index, session):
+        return {
+            "action_id": f"loss-demand-{index:03d}",
+            "source_sha256": hashlib.sha256(f"loss-source-{index}".encode()).hexdigest(),
+            "created": float(index),
+            "session_id": session,
+        }
+
+    old_rows = (
+        [row(index, "retained") for index in range(8)]
+        + [row(index + 8, "forgotten-a") for index in range(8)]
+        + [row(index + 16, "forgotten-b") for index in range(8)]
+        + [row(index + 24, None) for index in range(2)]
+    )
+    new_rows = [row(index + 26, "new-session") for index in range(4)]
+    scores = {"retained": 0.0, "forgotten-a": 0.75, "forgotten-b": 0.25}
+    selected = world_jepa_replay.select_replay_rows(
+        "on_demand_loss", new_rows, old_rows, budget=6,
+        salt="loss-demand-control", cohort_scores=scores,
+    )
+    repeated = world_jepa_replay.select_replay_rows(
+        "on_demand_loss", new_rows, old_rows, budget=6,
+        salt="loss-demand-control", cohort_scores=scores,
+    )
+    selected_sessions = {item["session_id"] for item in selected["rows"]}
+    assert selected_sessions == {"forgotten-a", "forgotten-b"}
+    assert selected["budget_rows"] == selected["requested_budget_rows"] == 6
+    assert selected["budget_matched"] is True
+    assert selected["manifest_sha256"] == repeated["manifest_sha256"]
+    assert selected["legacy_rows_excluded"] == 2
+    assert selected["scored_session_count"] == 3
+    assert selected["unscored_session_count"] == 0
+    assert len(selected["rows"]) == 6
+    assert {item["action_id"] for item in selected["rows"]}.isdisjoint(
+        {item["action_id"] for item in new_rows}
+    )
+
+    no_demand = world_jepa_replay.select_replay_rows(
+        "on_demand_loss", new_rows, old_rows, budget=6,
+        salt="loss-demand-control", cohort_scores={
+            "retained": 0.0, "forgotten-a": 0.0, "forgotten-b": 0.0,
+        },
+    )
+    assert no_demand["rows"] == []
+    assert no_demand["budget_rows"] == 0
+    assert no_demand["budget_matched"] is False
+
+    try:
+        world_jepa_replay.select_replay_rows(
+            "on_demand_loss", new_rows, old_rows, budget=6,
+            salt="loss-demand-control", cohort_scores={"forgotten-a": -0.1},
+        )
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("negative loss-demand score accepted")
 
 
 def _set_permissions(store, *, steps, replay_mode, encoder_mode="full",
@@ -521,6 +581,14 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
             assert metrics.get("replay_window_count", 0) > 0
         if replay_mode == "uniform_budget":
             assert metrics.get("replay_window_count", 0) == 0
+    elif replay_mode == "on_demand_loss":
+        assert metrics.get("replay_rows", 0) <= metrics.get("replay_requested_budget_rows", 0)
+        assert type(metrics.get("replay_loss_demand_scores_sha256")) is str
+        assert metrics.get("replay_loss_demand_probe_steps", 0) <= 8
+        if before is not None:
+            assert metrics.get("replay_loss_demand_probe_rows", 0) > 0
+        if metrics.get("replay_loss_demand_positive_session_count", 0) == 0:
+            assert metrics.get("replay_rows", 0) == 0
 
     assert type(metrics.get("fit_array_bytes")) is int and metrics["fit_array_bytes"] > 0
     assert type(metrics.get("replay_array_bytes")) is int
@@ -548,6 +616,13 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
         "replay_session_count": metrics.get("replay_session_count"),
         "replay_window_count": metrics.get("replay_window_count"),
         "replay_manifest_sha256": metrics.get("replay_manifest_sha256"),
+        "replay_loss_demand_probe_rows": metrics.get("replay_loss_demand_probe_rows"),
+        "replay_loss_demand_probe_steps": metrics.get("replay_loss_demand_probe_steps"),
+        "replay_loss_demand_scored_session_count": metrics.get("replay_loss_demand_scored_session_count"),
+        "replay_loss_demand_unscored_session_count": metrics.get("replay_loss_demand_unscored_session_count"),
+        "replay_loss_demand_positive_session_count": metrics.get("replay_loss_demand_positive_session_count"),
+        "replay_loss_demand_max_score": metrics.get("replay_loss_demand_max_score"),
+        "replay_loss_demand_scores_sha256": metrics.get("replay_loss_demand_scores_sha256"),
         "fit_array_bytes": metrics.get("fit_array_bytes"),
         "replay_array_bytes": metrics.get("replay_array_bytes"),
         "optimizer_steps_added": metrics.get("optimizer_steps_added"),
@@ -954,6 +1029,37 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         for item in per_session_reports for phase in (item["B"], item["A2"])
     ), "Per-session GEM/on-demand replay produced no retention-preserving accepted checkpoint"
+
+    loss_demand_reports = [
+        item for item in reports
+        if item["replay_mode"] == "on_demand_loss"
+        and item["encoder_mode"] == "predictor_only"
+        and item["stable_drift_control"] is False
+        and item["replay_projection"] is False
+    ]
+    print("WORLDJEPA_LOSS_DEMAND=" + json.dumps([
+        {
+            "seed": item["data_seed"],
+            "B": {key: item["B"].get(key) for key in diagnostic_fields + (
+                "replay_rows", "replay_loss_demand_probe_steps",
+                "replay_loss_demand_positive_session_count",
+                "replay_loss_demand_max_score",
+            )},
+            "A2": {key: item["A2"].get(key) for key in diagnostic_fields + (
+                "replay_rows", "replay_loss_demand_probe_steps",
+                "replay_loss_demand_positive_session_count",
+                "replay_loss_demand_max_score",
+            )},
+        }
+        for item in loss_demand_reports
+    ], sort_keys=True))
+    for seed in DATA_SEEDS:
+        seed_reports = [item for item in loss_demand_reports if item["data_seed"] == seed]
+        assert len(seed_reports) == 1
+        assert any(
+            phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+            for phase in (seed_reports[0]["B"], seed_reports[0]["A2"])
+        ), f"loss-demand replay produced no accepted checkpoint for seed {seed}"
 
     print("WORLDJEPA_STORE_A_B_A_REPLAY_RETENTION " + __import__("json").dumps(
         reports, sort_keys=True, allow_nan=False
