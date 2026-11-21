@@ -118,7 +118,7 @@ No user action is needed now. Current installed Redmi SHA/updater status was not
 ## New A5 visual grounding research — 2026-11-21
 
 - Added R-044 to the research ledger: GoClick (arXiv:2604.23941) is a promising two-stage GUI grounding research lead, but only its abstract and maintained MIT repo/model card were reviewed. The 0.3B F32 GoClick-Base uses Florence-2-large, Transformers `trust_remote_code`, PyTorch and timm; no GGUF/ARM64/Android path or device benchmark was found. Dataset license/provenance remains unaudited. It is not a Redmi download candidate today.
-- MobileExplorer (arXiv:2605.26546) abstract proposes parallel read-only exploration and two-level rollback; full paper/code/license/device conditions were not verified. Treat the claimed 23% latency and up-to-5% success deltas as abstract-reported only. Possible experiment: bounded speculative UI exploration with source-bound traces, explicit state rollback and no tap authority.
+- MobileExplorer (arXiv:2605.26546) abstract proposes parallel read-only exploration and two-level rollback; full paper/code/license/device conditions were not verified. Full-text review now reports 50.86% (59/116) vs 46.55% success, 9.24 vs 10.93 steps (15.5% fewer in the table), and 185.82 s average task time (15.9% below M3A). The conclusion's ~23% fewer-step statement conflicts with the table; it is not a 23% latency result. Possible future experiment: bounded read-only UI information gathering with source-bound traces and state alignment; no speculative tap authority.
 - Official Android docs confirm MediaProjection's user-grant flow and API-34+ foreground-service requirements. No screen capture or permission was attempted. Links and limitations are in R-044.
 
 
@@ -147,3 +147,14 @@ A new CI regression exercises the real `Store.source()` producer against the rea
 **CI status:** pending exact-head CPython 3.13/3.14 run. The full repository checkout is not mounted and GitHub DNS resolution fails in this worker. No full local Aii suite was run.
 
 **Boundary:** this remains a synthetic A5 metadata contract. No Android UI provider, AccessibilityService, MediaProjection, screenshot capture, action executor, microphone, or Redmi test is present. `REDMI_UNVERIFIED` / `NOT_RELEASED`.
+
+
+## Exact-head CI readback and pin dependency — 2026-11-21
+
+- A5 UI lease + shared-blob workflow run **44945017268**: PASS on CPython 3.13 and 3.14. Each matrix job: **16 passed / 5 subtests passed**; compile step passed.
+- Public privacy scan run **44945017328**: PASS.
+- Safe-additive candidate run **44945017280**: FAIL_BY_POLICY because this PR intentionally changes existing A5 and Store modules. This is a protected-file review gate; no bypass requested.
+- Staged-runtime run **44945017337**: FAIL; integrated-regression same run: **19 failed, 230 passed, 10 skipped, 2 errors, 41 subtests passed**. All cascading stage failures identify the stale exact-source pin for v13/store.py in v13/code/scripts/integrated_online_world_candidate_20261110.py, not an A5 race assertion.
+- Old pinned SHA-256: fe66f92533b20738b5ec384e9d7c0b5ac8b4b4f658c6c1ad23792d813ff29980. New exact v13/code/v13/store.py SHA-256 on this branch: 40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb. The hash implementation was checked against the standard SHA-256("abc") vector and the old pinned Store file hash. Core owns the integrated stage candidate/pin chain; this dependency was reported on Core #2254 rather than editing Core-owned files here.
+- Local copied-code harness remains 20/20 original A5 race failures vs 20/20 patched passes, and 10/10 original generic Store.source failures vs 10/10 patched passes. Full local repository checkout remains BLOCKED.
+- This branch remains DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. Boss/Core must update and verify the staged source pin before merge; safe-additive review is also still required.
