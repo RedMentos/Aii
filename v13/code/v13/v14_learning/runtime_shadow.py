@@ -234,6 +234,7 @@ def _world_prediction_for_receipt(store, receipt):
     outcome = {
         "action_id": receipt.action_id,
         "prediction_packet_id": str(row.get("id")),
+        "status": "SHADOW_ONLY",
         "action_selection_packet_id": str(selection_row.get("id")),
         "role": role,
         "route_hint": str(prediction.get("route_hint") or ""),
@@ -303,15 +304,20 @@ def consume_recent_committed(store, home, limit=64):
     world_statuses = {}
     errors = 0
     for receipt in verified:
-        world_result = _world_prediction_for_receipt(store, receipt)
-        world_statuses[world_result.get("status", "UNKNOWN")] = world_statuses.get(world_result.get("status", "UNKNOWN"), 0) + 1
-        if world_result.get("status") == "CREATED":
-            world_created += 1
-        prediction, prediction_status = _self_corollary_prediction(store, receipt)
-        if prediction is None:
-            temporal_skipped += 1
-            continue
         try:
+            world_result = _world_prediction_for_receipt(store, receipt)
+            world_status = world_result.get("status", "UNKNOWN")
+            world_statuses[world_status] = world_statuses.get(world_status, 0) + 1
+            if world_status == "CREATED":
+                world_created += 1
+        except (ValueError, TypeError, KeyError, OSError, OverflowError) as exc:
+            errors += 1
+            world_statuses["ERROR_" + type(exc).__name__] = world_statuses.get("ERROR_" + type(exc).__name__, 0) + 1
+        try:
+            prediction, prediction_status = _self_corollary_prediction(store, receipt)
+            if prediction is None:
+                temporal_skipped += 1
+                continue
             result = bridge.consume(receipt, prediction["prediction"], optimizer_permission=False)
             store.log("v14_t8_temporal_shadow", receipt.event_id, {
                 "action_id": receipt.action_id,
