@@ -63,33 +63,33 @@ def apply_staged_arithmetic(code_dir: Path, staged_root: Path) -> dict[str, byte
         "English/German arithmetic intent prefixes",
     )
     expression_anchor = (
-        b'_EXPRESSION = re.compile(r"([+-]?\\d{1,8})\\s*([+\\-*/])\\s*([+-]?\\d{1,8})")\\n'
+        b'_EXPRESSION = re.compile(r"([+-]?\\d{1,8})\\s*([+\\-*/])\\s*([+-]?\\d{1,8})")\n'
     )
     date_shapes = (
-        b'_DATE_SHAPE = re.compile(\\n'
-        b'    r"\\s*(?:\\d{4}\\s*[-/]\\s*\\d{1,2}|\\d{1,2}\\s*[-/]\\s*\\d{1,2})\\s*[?=]?\\s*",\\n'
-        b'    re.IGNORECASE,\\n'
-        b')\\n'
-        b'_EXPLICIT_MATH_CUE = re.compile(r"\\s*(?:calculate|compute|berechne)\\s+", re.IGNORECASE)\\n'
+        b'_DATE_SHAPE = re.compile(\n'
+        b'    r"\\s*(?:\\d{4}\\s*[-/]\\s*\\d{1,2}|\\d{1,2}\\s*[-/]\\s*\\d{1,2})\\s*[?=]?\\s*",\n'
+        b'    re.IGNORECASE,\n'
+        b')\n'
+        b'_EXPLICIT_MATH_CUE = re.compile(r"\\s*(?:calculate|compute|berechne)\\s+", re.IGNORECASE)\n'
     )
     if b"_DATE_SHAPE = re.compile(" in arithmetic:
         raise ValueError("date-shape guard already present")
     arithmetic = _replace(arithmetic, expression_anchor, expression_anchor + date_shapes,
                           "date-shape guard insertion")
     function_anchor = (
-        b"    match = _PATTERN.fullmatch(text)\\n"
-        b"    if not match:\\n"
-        b"        return None\\n"
-        b"    expr = _EXPRESSION.fullmatch(match.group(1))\\n"
+        b"    match = _PATTERN.fullmatch(text)\n"
+        b"    if not match:\n"
+        b"        return None\n"
+        b"    expr = _EXPRESSION.fullmatch(match.group(1))\n"
     )
     guarded_function = (
-        b"    match = _PATTERN.fullmatch(text)\\n"
-        b"    if not match:\\n"
-        b"        return None\\n"
-        b"    expression = match.group(1)\\n"
-        b"    if _DATE_SHAPE.fullmatch(expression) and not _EXPLICIT_MATH_CUE.match(text):\\n"
-        b"        return None\\n"
-        b"    expr = _EXPRESSION.fullmatch(expression)\\n"
+        b"    match = _PATTERN.fullmatch(text)\n"
+        b"    if not match:\n"
+        b"        return None\n"
+        b"    expression = match.group(1)\n"
+        b"    if _DATE_SHAPE.fullmatch(expression) and not _EXPLICIT_MATH_CUE.match(text):\n"
+        b"        return None\n"
+        b"    expr = _EXPRESSION.fullmatch(expression)\n"
     )
     arithmetic = _replace(arithmetic, function_anchor, guarded_function, "date-shape guard consumer")
 
