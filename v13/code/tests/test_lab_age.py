@@ -191,20 +191,23 @@ class LabAgeTests(unittest.TestCase):
 
     
     def test_curiosity_uses_the_named_learning_right_not_an_age_probability_budget(self):
-        class ForbiddenRandom:
+        class AlwaysExplore:
             def random(self):
-                raise AssertionError("Age must not probabilistically throttle runtime compute")
+                return 0.0
 
-        curiosity = Curiosity(self.store, self.age, rng=ForbiddenRandom())
+        from v13.agi.base import learning_limit
+        curiosity = Curiosity(self.store, self.age, rng=AlwaysExplore())
         curiosity.observe("math", 0.4)
+        self.assertEqual(learning_limit(self.age, "exploration_rate", 0.0, capability="tool"), 0.0)
         self.assertIsNone(curiosity.choose(origin="SELF"))
         self.assertFalse(curiosity.report()["autonomous"])
         self.assertEqual(curiosity.choose(origin="USER"), "math")
 
         lab_age.save(self.home, mode="active", stage=10)
         lab = LaboratoryAgeControl(self.store, self.cfg)
-        lab_curiosity = Curiosity(self.store, lab, rng=ForbiddenRandom())
+        lab_curiosity = Curiosity(self.store, lab, rng=AlwaysExplore())
         lab_curiosity.observe("math", 0.4)
+        self.assertGreater(learning_limit(lab, "exploration_rate", 0.0, capability="tool"), 0.0)
         self.assertEqual(lab_curiosity.choose(origin="SELF"), "math")
         self.assertTrue(lab_curiosity.report()["autonomous"])
         self.assertEqual(self.age.system_stage(), 0)
@@ -212,8 +215,9 @@ class LabAgeTests(unittest.TestCase):
     def test_goal_tree_depth_uses_a_named_right_not_focal_depth_budget(self):
         goals = GoalStore(self.store, self.age)
         system_root = goals.add("system root", origin="SYSTEM")
+        system_child = goals.add("system child", origin="SYSTEM", parent=system_root)
         with self.assertRaises(ValueError):
-            goals.add("system child", origin="SYSTEM", parent=system_root)
+            goals.add("system grandchild", origin="SYSTEM", parent=system_child)
 
         user_parent = goals.add("user root", origin="USER")
         for index in range(1, MAX_DEPTH):
@@ -225,6 +229,7 @@ class LabAgeTests(unittest.TestCase):
 
         lab_age.save(self.home, mode="active", stage=10)
         lab = LaboratoryAgeControl(self.store, self.cfg)
+        self.assertGreaterEqual(learning_limit(lab, "goal_depth", 1), MAX_DEPTH - 1)
         lab_goals = GoalStore(self.store, lab)
         self_parent = lab_goals.add("self root", origin="SELF")
         for index in range(1, MAX_DEPTH):
@@ -247,6 +252,7 @@ class LabAgeTests(unittest.TestCase):
         budget_attributes = []
         helper_calls = []
         helper_imports = []
+        learning_limit_calls = []
         field_reads = []
 
         def dotted(node):
@@ -289,6 +295,10 @@ class LabAgeTests(unittest.TestCase):
                     if isinstance(node, ast.Call):
                         if "agi" in relative.parts and isinstance(node.func, ast.Name) and node.func.id == "budget":
                             helper_calls.append((relative.as_posix(), node.lineno))
+                        if isinstance(node.func, ast.Name) and node.func.id == "learning_limit":
+                            learning_limit_calls.append(
+                                (relative.as_posix(), enclosing_function(node))
+                            )
                         if field_source and (
                                 isinstance(node.func, ast.Name) and node.func.id in {"getattr", "hasattr"}
                                 and len(node.args) > 1 and isinstance(node.args[1], ast.Constant)
@@ -317,7 +327,37 @@ class LabAgeTests(unittest.TestCase):
         )
         self.assertEqual(helper_calls, [], "Legacy agi.base.budget() must have no runtime callers")
         self.assertEqual(helper_imports, [], "Runtime modules must not import the legacy budget helper")
-        self.assertEqual(field_reads, [], "No runtime module may read a legacy Age budget field")
+        self.assertEqual(field_reads, [], "No runtime module may read a physical Age budget field")
+        self.assertEqual(
+            set(learning_limit_calls),
+            {
+                ("v13/agi/curiosity.py", "choose"),
+                ("v13/agi/curiosity.py", "report"),
+                ("v13/agi/goals.py", "add"),
+            },
+            "Only Curiosity and GoalStore may consume graded developmental learning/planning rights",
+        )
+
+        base_tree = ast.parse((code_root / "v13/agi/base.py").read_text(encoding="utf-8"))
+        learning_limit = next(
+            node for node in ast.walk(base_tree)
+            if isinstance(node, ast.FunctionDef) and node.name == "learning_limit"
+        )
+        mapping = next(
+            node.value for node in ast.walk(learning_limit)
+            if isinstance(node, ast.Assign)
+            and any(isinstance(target, ast.Name) and target.id == "source" for target in node.targets)
+        )
+        self.assertIsInstance(mapping, ast.Dict)
+        self.assertEqual(
+            {
+                key.value: value.value
+                for key, value in zip(mapping.keys, mapping.values)
+                if isinstance(key, ast.Constant) and isinstance(value, ast.Constant)
+            },
+            {"exploration_rate": "exploration_rate", "goal_depth": "focal_depth"},
+            "Only graded exploration and goal-tree depth are developmental rights, not compute budgets",
+        )
 
 
 if __name__ == "__main__":
