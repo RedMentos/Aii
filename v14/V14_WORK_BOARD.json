@@ -264,8 +264,9 @@
   "latest_integrated_head_verified_at": "2026-11-21T04:00:49Z",
   "release_gate_status": "POST_MERGE_REQUIRED_WORKFLOWS_ACTION_REQUIRED; NOT_RELEASED",
   "phone_receipt": {
-    "issue": "RedMentos/Aiiii#367",
-    "state": "OPEN_NO_REPLY",
+    "issue": "RedMentos/Aiiii#369",
+    "state": "OPEN_NO_REPLY_AS_OF_2026-11-21_06:50_CET",
+    "previous_issue": "RedMentos/Aiiii#367 (expired without reply)",
     "installed_sha": "UNKNOWN",
     "auto_update": "UNVERIFIED",
     "redmi_status": "REDMI_UNVERIFIED"
