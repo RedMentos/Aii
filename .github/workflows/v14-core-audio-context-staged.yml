@@ -1,0 +1,72 @@
+name: V14 Core staged audio and arithmetic integration
+
+on:
+  pull_request:
+    branches: [gpt6/v13-private-remote-bridge-20261111]
+    paths:
+      - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/tests/test_c3_audio_runtime_consumer.py"
+      - "v13/code/tests/test_v14_audio_context_stage_20261121.py"
+      - "v13/code/tests/test_v14_arithmetic_policy_separation.py"
+      - "v13/code/tests/test_arithmetic_reflex.py"
+      - "v13/code/tests/arithmetic_disposable_cases_20261116.py"
+  push:
+    branches: [gpt6/v14-core-staged-audio-context-20261121]
+    paths:
+      - "v13/code/scripts/integrated_audio_context_candidate_20261121.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261121.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/tests/**"
+      - ".github/workflows/v14-core-audio-context-staged.yml"
+  workflow_dispatch:
+
+jobs:
+  staged-audio-arithmetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install isolated CPU test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.5.1+cpu
+          python -m pip install numpy transformers peft pytest
+      - name: Compile candidate builders and deployment gate
+        run: |
+          python -m py_compile \
+            v13/code/scripts/integrated_audio_context_candidate_20261121.py \
+            v13/code/scripts/termux_runtime_recovery_candidate_20261121.py \
+            v13/code/scripts/stage_integrated_candidate.py \
+            v13/code/v13/runtime_deploy.py \
+            v13/code/tests/test_v14_audio_context_stage_20261121.py
+      - name: Audio bridge and whole-context regressions
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_audio_perception_bridge_v14.py \
+            v13/code/tests/test_enlightened_space.py \
+            v13/code/tests/test_context_os.py \
+            v13/code/tests/test_offer_deadlines.py \
+            v13/code/tests/test_v14_arithmetic_policy_separation.py
+      - name: Same-stage audio plus arithmetic consumer integration
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_v14_audio_context_stage_20261121.py \
+            v13/code/tests/test_arithmetic_stage_20261116.py
+      - name: Deployment pin and staged smoke regressions
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q \
+            v13/code/tests/test_runtime_deploy_integrated_20261116.py \
+            v13/code/tests/test_integrated_stage_real_smoke.py
