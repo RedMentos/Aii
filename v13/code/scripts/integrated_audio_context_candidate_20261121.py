@@ -228,6 +228,8 @@ class Runtime:
         b"                    if 'audio_admission' in meta:meta['audio_admission'].update(status='REVOKED_BEFORE_C3_DISPATCH',c3_prompt_included=False)\n"
         b"                    meta.pop('audio_source_refs',None);audio_source_ref=None\n"
         b"                    if 'audio_input' in meta:meta['audio_input']['context_revoked_before_c3']=True\n",
+        "C3 revoke-before-dispatch rebuild",
+    )
     runtime = _replace(
         runtime,
         b"context_refs=[e['source_ref'],*self.consolidation.source_refs(memories),*history_refs,*meta.get('duplex_handoff_refs',[]),*meta.get('source_recall_refs',[])]",
