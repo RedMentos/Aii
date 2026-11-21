@@ -158,3 +158,15 @@ def test_audit_database_rejects_parent_owned_by_another_uid(tmp_path, monkeypatc
         AndroidControlBroker(tmp_path / "audit.sqlite")
 
     assert not (tmp_path / "audit.sqlite").exists()
+
+
+def test_audit_database_allows_nonwritable_shared_parent(tmp_path):
+    parent = tmp_path / "traversable"
+    parent.mkdir()
+    os.chmod(parent, 0o755)
+
+    broker = AndroidControlBroker(parent / "audit.sqlite")
+    try:
+        assert stat.S_IMODE((parent / "audit.sqlite").stat().st_mode) == 0o600
+    finally:
+        broker.close()
