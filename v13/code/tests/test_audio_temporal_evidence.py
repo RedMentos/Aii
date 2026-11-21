@@ -88,3 +88,68 @@ def test_invalid_filter_configuration_is_rejected():
         TemporalVoiceEvidence(onset_threshold=0.5, offset_threshold=0.6)
     with pytest.raises(ValueError, match="attack_tau_ms"):
         TemporalVoiceEvidence(attack_tau_ms=0)
+
+
+def test_unobserved_gap_decays_before_new_voice_window():
+    state = TemporalVoiceEvidence()
+    state.update(source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40, cues=cue("VOICED"))
+    active = state.update(source_id="mic-a", generation_id="g1", start_ms=40, end_ms=80, cues=cue("VOICED"))
+    assert active["voice_active"] is True
+
+    resumed = state.update(
+        source_id="mic-a", generation_id="g1", start_ms=580, end_ms=660,
+        cues=cue("VOICED"),
+    )
+    assert resumed["gap_ms"] == 500
+    assert resumed["gap_decay_ms"] == 500
+    assert resumed["observed_ms"] == 80
+    assert resumed["gap_offset"] is True
+    assert resumed["voice_offset"] is True
+    assert resumed["voice_onset"] is True
+    assert resumed["voice_active"] is True
+
+
+def test_unobserved_gap_is_not_filled_by_current_silence():
+    state = TemporalVoiceEvidence()
+    state.update(source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40, cues=cue("VOICED"))
+    state.update(source_id="mic-a", generation_id="g1", start_ms=40, end_ms=80, cues=cue("VOICED"))
+
+    resumed = state.update(
+        source_id="mic-a", generation_id="g1", start_ms=580, end_ms=620,
+        cues=cue("SILENCE"),
+    )
+    assert resumed["gap_ms"] == 500
+    assert resumed["voice_offset"] is True
+    assert resumed["voice_onset"] is False
+    assert resumed["voice_active"] is False
+    assert resumed["voice_evidence"] < 0.22
+
+
+def test_overlapping_windows_only_advance_newly_observed_suffix():
+    state = TemporalVoiceEvidence()
+    state.update(source_id="mic-a", generation_id="g1", start_ms=100, end_ms=140, cues=cue("VOICED"))
+    resumed = state.update(
+        source_id="mic-a", generation_id="g1", start_ms=120, end_ms=160,
+        cues=cue("VOICED"),
+    )
+    assert resumed["observed_ms"] == 20
+    assert resumed["elapsed_ms"] == 20
+    assert resumed["voice_evidence"] == pytest.approx(0.527633, abs=1e-6)
+    assert resumed["voice_onset"] is False
+
+
+def test_gap_beyond_reset_threshold_does_not_infer_an_offset():
+    state = TemporalVoiceEvidence()
+    state.update(source_id="mic-a", generation_id="g1", start_ms=0, end_ms=40, cues=cue("VOICED"))
+    state.update(source_id="mic-a", generation_id="g1", start_ms=40, end_ms=80, cues=cue("VOICED"))
+    resumed = state.update(
+        source_id="mic-a", generation_id="g1", start_ms=1181, end_ms=1221,
+        cues=cue("VOICED"),
+    )
+    assert resumed["state_reset"] is True
+    assert resumed["reset_reason"] == "STREAM_GAP"
+    assert resumed["gap_ms"] == 1101
+    assert resumed["gap_decay_ms"] == 0
+    assert resumed["voice_offset"] is False
+    assert resumed["voice_onset"] is False
+    assert resumed["voice_active"] is False
