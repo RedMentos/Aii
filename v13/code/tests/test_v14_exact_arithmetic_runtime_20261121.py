@@ -47,8 +47,8 @@ assert exact_arithmetic("compute 2026-11") == "2015"
 assert exact_arithmetic("calculate 11-21") == "-10"
 assert exact_arithmetic("What is 2026-11?") is None
 assert exact_arithmetic("Was ist 2026/11?") is None
-assert exact_arithmetic("11-21") is None
-assert exact_arithmetic("7-12") is None
+assert exact_arithmetic("11-21") == "-10"
+assert exact_arithmetic("7-12") == "-5"
 assert exact_arithmetic("2/0") is None
 assert exact_arithmetic("2+2+2") is None
 

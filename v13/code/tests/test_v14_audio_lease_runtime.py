@@ -34,7 +34,7 @@ def test_staged_audio_lease_covers_bodies_and_complete_c3_then_revokes(tmp_path)
     assert {"v13/arithmetic_reflex.py", "v13/runtime.py"} <= set(manifest["arithmetic_overlay"]["replaced_files"])
     staged_arithmetic = (destination / "v13/arithmetic_reflex.py").read_text()
     assert "_DATE_SHAPE = re.compile(" in staged_arithmetic
-    assert "wie\\\\s+viel\\\\s+ist" in staged_arithmetic
+    assert "wie\\s+viel\\s+ist" in staged_arithmetic
     assert "world_observe_unavailable" in staged_runtime
     assert "world_self_state_unavailable" in staged_runtime
     assert "def revoke_source" in staged_store
