@@ -609,7 +609,7 @@ These are current official API references reviewed on 2026-11-21, not research p
 
 ### Verification boundary
 
-- Exact failing CI evidence is reproducible from run `44940487917` on Python 3.13/3.14; the corrective head's new CI result is pending and must be read before promotion.
+- Exact failing CI evidence is reproducible from run `44940487917` on Python 3.13/3.14. Corrective code-bearing SHA `01ce1c5fc9c8d2c1dc3f41718e3b6508d7b9d723` passed the A5 lease workflow on both Python versions (15 tests + 5 subtests each); broader staged/integrated regression remained pending at final readback.
 - This worker has no mounted full Aii checkout and GitHub DNS resolution fails, so the full repository test cannot be run locally here. Any standalone logic check is synthetic and is not a substitute.
 - `REDMI_UNVERIFIED` / `NOT_RELEASED`; no model, weight, permission, updater, app or user data changed.
 

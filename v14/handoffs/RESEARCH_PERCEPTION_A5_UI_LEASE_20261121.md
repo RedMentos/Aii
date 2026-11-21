@@ -78,8 +78,8 @@ No user action is needed now. Current installed Redmi SHA/updater status was not
 - Reviewed failing CI logs from run `44940487917` on exact code head `ad0d6a3b1f4935b22677c6f9c521ec97e099deec`.
 - Fixed the actual context-readout defect: `PerceptPacket` has nested `source_ref.source_id`, not a top-level `source_id`; the adapter now checks nested source identity plus exact event and generation.
 - Fixed two test defects without weakening the API: the generation test now binds `grant`; tests pass the required live lease, keep provisional context empty, and assert lease-free reads fail closed. Added wrong-source and wrong-generation cache entries as negative controls.
-- The first corrective rerun (run `44941137655`) reached the fixed source-ref readout but still had 2 test failures / 13 passes on both Python 3.13 and 3.14: one assertion still used a top-level source_id, and one generation-revocation test had not persisted an observation before asserting tombstone state. Both test defects are now corrected; the next exact-head rerun is pending. The full local Aii checkout is not mounted and GitHub DNS fails in this worker, so no local repository-level PASS is claimed.
-- #2243 is merged at `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`; this PR is being synchronized to that current base and retargeted from the now-merged research stack to `gpt6/v13-private-remote-bridge-20261111`.
+- The first corrective rerun (run `44941137655`) reached the fixed source-ref readout but still had 2 test failures / 13 passes on both Python 3.13 and 3.14: one assertion still used a top-level source_id, and one generation-revocation test had not persisted an observation before asserting tombstone state. Both test defects are now corrected; the final exact A5 lease runs passed at code-bearing SHA `01ce1c5fc9c8d2c1dc3f41718e3b6508d7b9d723` on Python 3.13 and 3.14. The full local Aii checkout is not mounted and GitHub DNS fails in this worker, so no local repository-level PASS is claimed.
+- #2243 is merged at `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`; PR #2246 is now based directly on `gpt6/v13-private-remote-bridge-20261111`.
 - No OS capture provider, microphone, screenshot, model, permission, updater or Redmi operation was added or changed. REDMI_UNVERIFIED / NOT_RELEASED.
 
 
@@ -94,7 +94,7 @@ No user action is needed now. Current installed Redmi SHA/updater status was not
 
 - Code/test correction commit: `bd094187cb7391a5a7e29ecbd94600290496347e`.
 - Fixed the remaining two test-only failures from run `44941137655`: source assertion now reads `source_ref.source_id`; the different-generation revocation fixture ingests the event before asserting source tombstoning.
-- The GitHub ref update did not yet expose a new Actions run for this code commit. This handoff-only commit is intended to produce a normal push event so the exact corrected code can be re-tested; no pass is assumed.
+- The final A5 push and PR workflows subsequently ran on code-bearing SHA `01ce1c5fc9c8d2c1dc3f41718e3b6508d7b9d723` and passed on both Python versions; see the final evidence section below.
 
 
 ## Final exact code-bearing SHA and CI — 2026-11-21
@@ -107,3 +107,9 @@ No user action is needed now. Current installed Redmi SHA/updater status was not
 - Local standalone filter test: 4/4 PASS. Full repository local test BLOCKED (no mounted checkout; GitHub DNS unavailable).
 - The PR remains synthetic-provider only. No OS observation grant provider, screen capture, actual Android permission, B1/B2/C3 turn hookup or Redmi evidence. `REDMI_UNVERIFIED` / `NOT_RELEASED`.
 - No model/weight, updater, permission, app setting or user data changed. No user action is needed for this research/adapter checkpoint.
+
+
+## Cross-lane preservation warning — Core #2242
+
+- Current Core PR #2242 head `edefe004735513bfa531984fb2662da5adb6a997` is based on the same declared release SHA `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`, but its diff deletes the merged #2243 experiment folder, R-037 from the research ledger, the Perception handoff, and the dedicated latent-cache model-lab workflow job.
+- This is an accidental ownership/ancestry conflict with already-merged research, not a requested removal. A blocking comment was posted on Core #2242 and on whole-system issue #1984. Research/Perception did not edit Core-owned files; preserve these merged artifacts before any Core merge.
