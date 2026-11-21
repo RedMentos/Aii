@@ -12,7 +12,7 @@ BUILDERS = {
     'scripts/termux_probe_recovery_candidate_20261112.py': 'a39910115f231f6979546ab5fb28d41d5ba82e11e6adbe65e8a199ca6430c42d',
     'scripts/termux_chat_recovery_candidate_20261112.py': '704c8bb082301c428e16fcff4bf7e02169844bf694c6196fb5f4fb1f04cfa932',
     'scripts/termux_idle_recovery_candidate_20261112.py': '6d997fab79c183aedd6ccd39b2f82b03adc102333ae6f3b1f8aac1435bcbf23a',
-    'scripts/integrated_online_world_candidate_20261110.py': '2e9db846e90219f87723d64855076549d29a5a01e35beccc724aa9d57911c95e',
+    'scripts/integrated_online_world_candidate_20261110.py': '2707c9f3506547d5af2b2348641fd06ac04fea4a9ea0221b3e9db0e089f74198',
 }
 
 
