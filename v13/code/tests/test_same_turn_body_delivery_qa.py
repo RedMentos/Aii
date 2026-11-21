@@ -28,8 +28,6 @@ def _c3_failure():
                 "last_phase": "prefill",
                 "duration_s": 29.1,
             },
-            # The policy must never need or export this text.
-            "raw_user_prompt": "PRIVATE QA FIXTURE",
         }),
     }
 
