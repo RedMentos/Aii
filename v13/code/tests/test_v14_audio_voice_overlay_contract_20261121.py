@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import ast
-import importlib.util
 from pathlib import Path
+
+from v13.common import sha256_bytes
 
 
 CODE = Path(__file__).resolve().parents[1]
@@ -10,18 +11,33 @@ OVERLAY = CODE / "scripts/integrated_audio_context_candidate_20261121.py"
 
 
 def _load_overlay():
-    spec = importlib.util.spec_from_file_location("v14_voice_audio_overlay", OVERLAY)
-    if spec is None or spec.loader is None:
-        raise RuntimeError("audio overlay unavailable")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    namespace = {}
+    source = OVERLAY.read_text(encoding="utf-8")
+    exec(compile(source, str(OVERLAY), "exec"), namespace)
+    return namespace
 
 
-def _window_validator(runtime_bytes):
-    tree = ast.parse(runtime_bytes.decode("utf-8"))
+def _validator_from_overlay(source):
+    tree = ast.parse(source)
+    replacement = None
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Name) or node.func.id != "_replace":
+            continue
+        if len(node.args) < 4:
+            continue
+        label = node.args[3]
+        if isinstance(label, ast.Constant) and label.value == "Runtime audio validator":
+            value = node.args[2]
+            assert isinstance(value, ast.Constant) and isinstance(value.value, bytes)
+            replacement = value.value
+            break
+    assert replacement is not None
+    marker = b"class Runtime:\n"
+    assert replacement.endswith(marker)
+    snippet = replacement[:-len(marker)]
+    snippet_tree = ast.parse(snippet.decode("utf-8"))
     nodes = [
-        node for node in tree.body
+        node for node in snippet_tree.body
         if (isinstance(node, ast.FunctionDef) and node.name == "_validate_audio_window")
         or (isinstance(node, ast.Assign)
             and any(isinstance(target, ast.Name) and target.id == "_AUDIO_WINDOW_FIELDS"
@@ -33,36 +49,26 @@ def _window_validator(runtime_bytes):
     return namespace["_validate_audio_window"]
 
 
-def test_voice_overlay_composes_on_exact_shared_runtime_sources():
+def test_voice_overlay_pins_exact_sources_and_uses_raw_ear_voice_cues():
     overlay = _load_overlay()
-    sources = {
-        "v13/runtime.py": (CODE / "v13/runtime.py").read_bytes(),
-        "v13/cognition.py": (CODE / "v13/cognition.py").read_bytes(),
-        "v13/arithmetic_reflex.py": (CODE / "v13/arithmetic_reflex.py").read_bytes(),
-    }
-    result = overlay.apply_sources(CODE, sources)
-    runtime = result["v13/runtime.py"]
-    cognition = result["v13/cognition.py"]
-    compile(runtime, "v13/runtime.py", "exec")
-    compile(cognition, "v13/cognition.py", "exec")
+    for relative, expected in overlay["SOURCE_BLOBS"].items():
+        path = CODE / relative
+        assert path.is_file() and not path.is_symlink()
+        raw = path.read_bytes()
+        assert overlay["_git_blob_sha1"](raw) == expected, relative
 
-    assert "v13/audio_voice_cues.py" in overlay.SOURCE_BLOBS
-    assert (CODE / "v13/audio_voice_cues.py").is_file()
-    assert b"consume_pcm16_voice_window" in runtime
-    assert b"finality=audio_window['finality']" in runtime
-    assert b"voice_activity_hint" in runtime
-    assert b"consume_pcm16_window" not in runtime
+    source = OVERLAY.read_text(encoding="utf-8")
+    compile(source, str(OVERLAY), "exec")
+    assert overlay["SOURCE_BLOBS"]["v13/audio_voice_cues.py"] == "7ac80a0d0deec8f52361fe89756ebd743b0a3537"
+    assert "consume_pcm16_voice_window" in source
+    assert "finality=audio_window['finality']" in source
+    assert "voice_activity_hint" in source
+    assert "consume_pcm16_window" not in source
 
 
 def test_audio_window_requires_explicit_finality_and_preserves_provisional():
-    overlay = _load_overlay()
-    sources = {
-        "v13/runtime.py": (CODE / "v13/runtime.py").read_bytes(),
-        "v13/cognition.py": (CODE / "v13/cognition.py").read_bytes(),
-        "v13/arithmetic_reflex.py": (CODE / "v13/arithmetic_reflex.py").read_bytes(),
-    }
-    result = overlay.apply_sources(CODE, sources)
-    validate = _window_validator(result["v13/runtime.py"])
+    source = OVERLAY.read_text(encoding="utf-8")
+    validate = _validator_from_overlay(source)
     window = {
         "pcm16": b"\x00\x00",
         "sample_rate": 8000,
@@ -72,8 +78,7 @@ def test_audio_window_requires_explicit_finality_and_preserves_provisional():
         "consent_check": lambda source, receipt: True,
         "finality": "PROVISIONAL",
     }
-    accepted = validate(window)
-    assert accepted["finality"] == "PROVISIONAL"
+    assert validate(window)["finality"] == "PROVISIONAL"
     assert validate(window | {"finality": "FINAL"})["finality"] == "FINAL"
 
     missing = dict(window)
