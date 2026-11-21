@@ -159,3 +159,14 @@ The shared V14 board, ledger and next-action files are left to Boss/Integrator P
 - Prior exact code/test commit `40deb8a56686455b361ba41e63cb57b981b5a71b` passed GitHub Linux/Python 3.13.18 run `44861145442` with compile + 23/23 synthetic tests. That run is historical evidence from the previous ancestor; the rebased branch requires its own exact-head CI.
 - **Current new-base exact CI: PENDING.** Full local repository tests remain blocked by GitHub DNS. No native GGUF inference was run; the candidate is not known to be present on the phone. Redmi remains REDMI_UNVERIFIED and deployment NOT_RELEASED.
 - No candidate download, model swap, model-manifest edit, permission change, user-data read or production action was performed. Keep this C3 comparison lab diagnostic-only.
+
+
+## Research/Perception safety follow-up — report-path hardening (2026-11-21)
+
+- **Real defect:** the model-lab CLI's optional `--out` previously called `Path.write_text` directly. A symlink or existing path could redirect/truncate an unrelated user file; reports were not guaranteed private.
+- **Fix:** `write_report_safely()` now permits only a new direct-child report under the existing V13 `data/` directory, rejects symlink components, traversal, external paths and overwrite, requires `O_NOFOLLOW|O_EXCL`, verifies regular-file identity/owner/single link, sets mode 0600, writes/fsyncs and verifies final metadata. No model, model registry, settings, permission, or runtime path is changed.
+- **Regression tests added:** private mode/readback + overwrite refusal; symlink target leaves external file unchanged; traversal/external path rejection; symlinked data-directory rejection. The test runner uses synthetic files only.
+- **Exact base:** `4a471ae40dd9b768c8130fafdba51900b5417800`; branch `research-perception/v14-model-report-guard-20261121`. Code commit `4e43d307fe0094f3ba991a63272e032c6aaf3e64`; test commit `04f394ca00daf4d5050cf2d716c860ad32ab3688`.
+- **Verification:** current branch model-lab workflow is triggered by these experiment-path commits; exact-head result is pending. Local full checkout is DNS-blocked. No native GGUF comparison, candidate download, Redmi test or model swap was performed. Keep V14-005 diagnostic-only until an already-present hash-matching candidate is separately approved and measured.
+
+- **Exact-head CI readback:** the first run `44898329454` failed only because the new test expected a literal backslash-n while the implementation correctly wrote a newline; the file-writing code was not relaxed. Test assertion fixed in commit `f7630b9ff6073bc172c7763732000fbdeaaad883`. Exact model-lab run `44898448558` then passed on GitHub Linux / Python 3.13.18: `py_compile` PASS, candidate JSON parse PASS, **27/27 synthetic tests PASS**, including all four new report-path regressions. This is CI/SYNTHETIC, not local Linux or native model inference.
