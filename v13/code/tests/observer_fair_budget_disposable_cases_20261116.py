@@ -60,13 +60,15 @@ class SchedulingTests(unittest.TestCase):
         self.assertEqual(obs.run(p, ask, 10., lambda *_: None, clock=lambda: 10., budgeted=True), [])
         ask.assert_not_called()
 
-    def test_arithmetic_finals_never_count_as_native_recovery(self):
+    def test_arithmetic_finals_do_not_count_as_c3_success_streak(self):
         failed = {'status': 'DEADLINE', 'metadata': {'runner': {
             'role': 'C3_LANGUAGE', 'generated_tokens': 0, 'last_phase': 'prefill'}}}
         local = {'status': 'FINAL', 'metadata': {
             'output_authority': 'LOCAL_EXACT_ARITHMETIC', 'model_generated': False}}
         result = native_budget.plan(100, 130, 104, recent=[local, local, failed, failed])
-        self.assertTrue(result['recovery'])
+        self.assertTrue(result['recovery_detected'])
+        self.assertTrue(result['preanswer_eligible'])
+        self.assertFalse(result['recovery'])
         self.assertEqual(result['recent_success_streak'], 0)
         for count in (True, 2.5, '2', 0, None):
             final = {'status': 'FINAL', 'metadata': json.dumps({'runner': {
@@ -75,8 +77,10 @@ class SchedulingTests(unittest.TestCase):
                 recent=[final, final, failed, failed])['recent_success_streak'], 0)
         good = {'status': 'FINAL', 'metadata': {'runner': {
             'role': 'C3_LANGUAGE', 'generated_tokens': 3}}}
-        self.assertFalse(native_budget.plan(100, 130, 104,
-            recent=[good, good, failed, failed])['recovery'])
+        good_result = native_budget.plan(100, 130, 104,
+            recent=[good, good, failed, failed])
+        self.assertFalse(good_result['recovery_detected'])
+        self.assertFalse(good_result['recovery'])
 
 
 class RuntimeObserverTests(unittest.TestCase):
