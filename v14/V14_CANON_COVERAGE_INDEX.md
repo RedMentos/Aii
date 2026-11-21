@@ -1,6 +1,6 @@
 # V14 Canon-Coverage-Index — vollständiger historischer Heading-Inventarstand
 
-**Stand:** 2026-11-20 · **Basis:** `v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md` · **Master-BLOB-SHA:** `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`  
+**Stand:** 2026-11-21 · **Basis:** `v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md` · **Master-BLOB-SHA:** `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`  
 **Indiziert:** 1255 Markdown-Überschriften aus dem historischen Teil III, einschließlich V13-Canon und erhaltenen Anhängen. Dies ist ein mechanisch erzeugter **Vollständigkeits-Wegweiser**, **kein** Nachweis, dass die Einzelfunktionen implementiert sind oder dass ausschließlich Überschriften sämtliche Detailpflichten erschöpfen. Alle Unterabsätze/Tabellen bleiben wortgetreu im [vollständigen Master](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md).
 
 **Erhaltungsregel:** Keine Zeile/Kontrakt aus dem historischen Ursprung darf aus dem Endziel still gelöscht werden. Bei jeder bedeutenden Masterrevision Index anhand Teil III neu erstellen und alte gegenüber neuen Einträgen/Quell-SHAs vergleichen. Originalanhang darf nicht still verändert werden. Umsetzung muss alle Einzelanforderungen nach Verifikation auf passende aktive V14-Organe, Consumer, Tests und Evidenz mappen. Duplicate headings und historische Namenskonflikte bleiben unter ihrer **eigenen Quellzeile** erhalten; neuer Status darf alte FAILs nicht nachträglich überschreiben.
