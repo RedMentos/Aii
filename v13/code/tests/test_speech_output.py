@@ -129,6 +129,11 @@ def test_timeout_degrades_adapter_without_killing_api_service(tmp_path, monkeypa
     second = adapter.speak(runtime, intent, runtime.row)
     assert first["status"] == "TIMEOUT"
     assert second["status"] == "DEGRADED"
+    restarted_adapter = TermuxTtsAdapter(timeout_seconds=0.1)
+    assert restarted_adapter.speak(runtime, intent, runtime.row)["status"] == "DEGRADED"
+    assert json.loads(operator_command(runtime, ["status"]))["degraded"] is True
+    assert json.loads(operator_command(runtime, ["reset", "--confirm"]))["status"] == "RESET"
+    assert json.loads(operator_command(runtime, ["status"]))["degraded"] is False
 
 
 def test_operator_command_is_tty_only(tmp_path):
