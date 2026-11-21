@@ -75,7 +75,10 @@ def _decode_der_signature(data):
             raise ValueError("invalid DER length")
         if raw[pos] == 0:
             raise ValueError("non-minimal DER length")
-        return int.from_bytes(raw[pos:pos + count], "big"), pos + count
+        length = int.from_bytes(raw[pos:pos + count], "big")
+        if length < 0x80:
+            raise ValueError("non-minimal DER long length")
+        return length, pos + count
 
     total, pos = read_length(1)
     if pos + total != len(raw):
@@ -152,6 +155,8 @@ class ECDSAReceiptVerifier:
             body = receipt["body"]
             if type(body) is not dict or set(body) != _FIELDS:
                 raise CompanionDenied("invalid fields")
+            if len(json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=True)) > 4096:
+                raise CompanionDenied("receipt too large")
             for key in ("schema", "nonce", "action_id", "capability", "digest", "status",
                         "os_permission_status", "key_storage_status", "key_id"):
                 if type(body[key]) is not str:
