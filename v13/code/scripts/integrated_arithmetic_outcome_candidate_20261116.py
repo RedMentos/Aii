@@ -74,8 +74,8 @@ def apply_sources(code_dir, sources):
         raise ValueError('arithmetic outcome semantic source missing')
 
     def source_pin(raw, filename):
-        pattern = (rb"(?m)^\\s*['\\\"]" + re.escape(filename.encode('ascii'))
-                   + rb"['\\\"]\\s*:\\s*['\\\"]([0-9a-f]{64})['\\\"]")
+        pattern = (rb"(?m)^\\s*'" + re.escape(filename.encode('ascii'))
+                   + rb"'\\s*:\\s*'([0-9a-f]{64})'")
         matches = re.findall(pattern, raw)
         if len(matches) != 1:
             raise ValueError('arithmetic outcome semantic pin ambiguous: ' + filename)

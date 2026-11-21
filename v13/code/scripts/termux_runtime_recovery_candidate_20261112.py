@@ -43,7 +43,7 @@ def build_sources(code_dir, *, include_postcommit=True):
                       '72bf8a829a7de064e7703271228bcdf02632108418c41c571126fbd8c05d5567')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
-                              '0cb157a5f00a813731808c975b54aa1c9c2e374c4798706c5475cd407958075c')
+                              '1e972b49ff8dbf0b93929c436bf330eeababfb6bc780170c958c30e4e6468f2a')
     result = arithmetic_outcome.apply_sources(code_dir, result)
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
                      '44216ae22cc92e638ca36b71a9e62f95b130cf21ce0c2b550a6ecdc3ccca9a94')
