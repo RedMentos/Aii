@@ -126,7 +126,7 @@ def test_invalid_stream_metadata_is_rejected(kwargs, message):
 def test_partial_pcm16_bytes_and_overlong_window_are_rejected():
     vad = make_stream()
     with pytest.raises(ValueError, match="complete PCM16"):
-        vad.push_pcm16(b"\\x00", sample_rate=16000, stream_id="s", start_ms=0)
+        vad.push_pcm16(b"\x00", sample_rate=16000, stream_id="s", start_ms=0)
     with pytest.raises(ValueError, match="one second"):
         vad.push_pcm16(
             bytes(16001 * 2), sample_rate=16000, stream_id="s", start_ms=0
