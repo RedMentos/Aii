@@ -1,3 +1,12 @@
+# QA & Android device-receipt follow-up — 2026-11-21 10:24 CET
+
+- Private PIPELINE_STATUS request [Aiiii#382](https://github.com/RedMentos/Aiiii/issues/382) expired at **2026-11-21T09:23:23Z with zero comments**. Record this as **NO_LIVE_RECEIPT**, not as an install result. Older #381/#380 also have no receipt.
+- Installed Redmi SHA remains UNKNOWN; updater consent/state remains UNVERIFIED; REDMI_UNVERIFIED. No UPDATE_REQUEST, duplicate owner-read request, installer, shell action, model swap, permission change or data mutation was performed.
+- The current release-development SHA remains `569680bc10eabeb94ea5a1695d4bf77b8584e0a0` (15/15 CI success, not phone proof). The #2179 `d6094ea...` staged failure remains caused by the Store telemetry allowlist gap described above.
+- **User action: none.** Wait for a new explicitly authorized owner receipt; do not ask for a Termux command while the remote receipt path is unresolved.
+
+---
+
 # QA & Android follow-up — 2026-11-21 10:21 CET
 
 ## New exact-head JEPA finding — #2179 @ d6094ea
