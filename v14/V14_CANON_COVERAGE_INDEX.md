@@ -1847,3 +1847,7 @@ The current shared staged failure has advanced to `record_only_controller_guard_
 ## QA exact run completion — 06ebe5d (2026-11-21 22:42 CET)
 
 Staged-runtime (6 failures), integrated-regression (18 failures / 232 passes), Python 3.14 staged startup, Lab-Age and migration remain blocked by `record_only_controller_guard_20261116.py:191` semantic dependency pin mismatch. A5 lease, combined JEPA, runtime-deploy integrity and GoalWake focused tests pass. Core audio 3.13 fails; 3.14 was still running. Keep V14-001 PARTIAL/OPEN, NOT_RELEASED and REDMI_UNVERIFIED. The controller guard must rebind both semantic and local-error pins against the exact known transformed bytes without relaxing source identity checks.
+
+## QA audio matrix completion — 06ebe5d (2026-11-21 22:44 CET)
+
+Both staged-audio Python 3.13 and 3.14 jobs now FAIL at the shared `record_only_controller_guard_20261116.py:191` semantic dependency pin. Audio-specific lease/revocation behavior is not accepted until the common stage passes and both versions complete. Keep audio PARTIAL/OPEN, NOT_RELEASED, REDMI_UNVERIFIED.
