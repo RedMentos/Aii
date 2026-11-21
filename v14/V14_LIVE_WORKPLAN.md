@@ -322,3 +322,26 @@ Next integrated vertical slice: after Core's staged runtime is green, invoke the
 5. QA rebases #2163 and continues private owner-read; no update request before a positive receipt.
 
 No material V14 master edit was made; no master backup was required. Historical V13 Canon bytes were not changed.
+
+
+## QA & Android exact-head review — 2026-11-21 09:15 CET
+
+### Verified release-development base
+- `gpt6/v13-private-remote-bridge-20261111` exact readback: `569680bc10eabeb94ea5a1695d4bf77b8584e0a0`; compare against the branch ref is identical.
+- Exact associated GitHub Actions: **15/15 SUCCESS**. Staged-runtime: 240 passed / 10 skipped / 47 subtests; integrated-regression: 415 passed / 3 skipped / 58 subtests (run 44881038726). Python 3.14 staged startup and owner-read bootstrap both PASS (44881038782). This is CI/Linux/synthetic evidence, not an Android install or native model proof.
+- Redmi remains REDMI_UNVERIFIED: private owner-read #373/#368 has no current receipt; installed SHA and updater consent are unknown.
+
+### QA finding — JEPA PR #2178 exact candidate
+- Candidate: `c16da4b3c0de1e5d857240e4fee7576aa3bf9a15`, direct child of `569680bc...`.
+- Real integration intent: Sleep idle worker -> committed T8 -> persistent WorldJEPA/EMA learner -> numeric B1/B2/SELF SHADOW planner. This is not native GGUF weight learning or trained B3 latent exchange.
+- Exact CI: staged/integrated run 44882581486 FAIL; owner-read run 44882581469 has owner bridge PASS but Python 3.14 staged startup FAIL; incremental JEPA 44882581533 PASS; combined online JEPA 44882581581 PASS. Safe-additive 44882581536 rejects the intentional existing-module edits and must not be bypassed.
+- Confirmed defects:
+  1. `v13/code/v13/world_jepa_runtime.py:105` has a missing colon after a multiline `except`, causing `SyntaxError: expected ':'` during staged test collection.
+  2. `scripts/integrated_world_training_resume_candidate_20261111.py:28` rejects the modified `world_jepa.py` because `WORLD_SHA` remains pinned to the prior source. Recompute this raw SHA and the complete dependent builder/composition/stage/deployer pin chain; retain fail-closed validation.
+- QA review comment 6004094094 was posted on #2178 with the exact job evidence and blocking syntax line comment. Candidate is NOT_RELEASED and must not be merged/deployed until exact checks are green and Boss reviews the non-additive integration scope.
+
+### Next
+1. JEPA owner repairs the syntax and full immutable pin chain, then reruns staged-runtime, integrated-regression, Python 3.14 staged startup and source-integrity tests on the exact new SHA.
+2. QA independently verifies the new exact SHA/logs and cancellation/restart/rollback evidence.
+3. Boss reviews the existing-module Runtime/Sleep/stager integration; no safe-additive bypass.
+4. Only after exact CI and review may the candidate enter the development branch. A separate owner-authenticated Redmi receipt is still required before a device update request.
