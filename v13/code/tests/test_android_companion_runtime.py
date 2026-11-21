@@ -200,3 +200,27 @@ def test_operator_refuses_model_origin_for_android_control(tmp_path):
     with pytest.raises(PermissionError, match="OPERATOR_TTY"):
         operator_run(runtime, ":android status", origin="MODEL")
     runtime.store.close()
+
+
+
+def test_mismatched_submit_ack_cancels_local_and_remote_action(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+
+    class MismatchedAckTransport(FakeTransport):
+        def submit(self, request):
+            super().submit(request)
+            return {"status": "PENDING_USER_APPROVAL", "action_id": "f" * 32}
+
+    runtime = make_runtime(tmp_path)
+    transport = MismatchedAckTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+
+    with pytest.raises(android_control.ControlDenied, match="exact action id"):
+        controller.launch("com.example.app", True)
+
+    action_id = "2" * 32
+    assert transport.cancelled == [action_id]
+    assert controller.broker.action_state(action_id) == "CANCELLED"
+    runtime.store.close()
+    controller.broker.close()

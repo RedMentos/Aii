@@ -145,9 +145,9 @@ class AndroidCompanionController:
         envelope = self.broker.dispatch_approved(proposal.action_id)
         try:
             response = self.transport.submit(envelope)
-            if response.get("status") != "PENDING_USER_APPROVAL":
-                self.broker.cancel(proposal.action_id)
-                raise ControlDenied("companion did not accept the action request")
+            if (response.get("status") != "PENDING_USER_APPROVAL"
+                    or response.get("action_id") != proposal.action_id):
+                raise ControlDenied("companion did not acknowledge the exact action id")
         except Exception:
             try:
                 self.transport.cancel(proposal.action_id)

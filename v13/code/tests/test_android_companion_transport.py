@@ -30,7 +30,9 @@ def test_submit_uses_fixed_content_provider_and_no_shell():
 
     def runner(command, **kwargs):
         seen.append((command, kwargs))
-        return subprocess.CompletedProcess(command, 0, response({"status": "PENDING_USER_APPROVAL"}), "")
+        return subprocess.CompletedProcess(command, 0, response({
+            "status": "PENDING_USER_APPROVAL", "action_id": request["action_id"]
+        }), "")
 
     client = AndroidCompanionTransport(content_path="/system/bin/content", runner=runner)
     assert client.submit(request) == {"status": "PENDING_USER_APPROVAL"}
@@ -104,3 +106,33 @@ def test_cancel_uses_only_paired_companion_method():
     assert seen[0][5] == "cancel"
     with pytest.raises(CompanionTransportError, match="action id"):
         client.cancel("bad")
+
+
+
+@pytest.mark.parametrize("ack", [
+    {"status": "PENDING_USER_APPROVAL"},
+    {"status": "PENDING_USER_APPROVAL", "action_id": "f" * 32},
+])
+def test_submit_rejects_missing_or_mismatched_action_acknowledgement(ack):
+    request = {
+        "schema": "v14.android-action-request/1",
+        "action_id": "a" * 32,
+        "capability": "launch_app",
+        "args": {"package": "com.example.app"},
+        "digest": "b" * 64,
+        "expires_at": 1030.0,
+        "local_approval": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
+        "companion_local_consent_required": True,
+        "android_os_permission_required": True,
+        "permission_bypass": False,
+        "model_authority": False,
+    }
+
+    client = AndroidCompanionTransport(
+        content_path="/system/bin/content",
+        runner=lambda command, **kwargs: subprocess.CompletedProcess(
+            command, 0, response(ack), ""
+        ),
+    )
+    with pytest.raises(CompanionTransportError, match="action id mismatch"):
+        client.submit(request)

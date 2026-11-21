@@ -24,6 +24,7 @@ Two separate `ConsentActivity` instances can load the same `PENDING_USER_APPROVA
 ## Tests and proof boundary
 
 - Robolectric Android SQLite tests: concurrent approve-vs-deny across two helper instances, expiry, expected-state finalization, restart/no-retry, and cancel-vs-decision negative control. **Exact GitHub Android Gradle result pending.**
+- Python transport/runtime regression: submit acknowledgements must echo the exact action ID; missing/mismatched IDs fail closed and cancel both local and remote pending state. **Exact Python CI result pending.**
 - LOCAL_LINUX SQLite algorithm simulation from the prior QA checkpoint: **PASS** — two independent SQLite connections raced for approve/deny; exactly one winner; terminal no-retry after reopen; expiry negative control.
 - Local Android Gradle build: **NOT RUN** — JDK 17 exists, but this worker has no Gradle executable or Android SDK.
 - CI setup correction: an initial Android setup attempt failed before Gradle because the SDK package list was passed as one semicolon-delimited string. The workflow now supplies three package entries on separate lines (`platform-tools`, `platforms;android-35`, `build-tools;35.0.0`) at commit `c57426d085360d259c06bb7fcbc715e28b8e6321`; exact rerun is pending.
