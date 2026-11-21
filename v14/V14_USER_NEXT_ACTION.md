@@ -289,3 +289,11 @@ The earlier 01:05 checkpoint's "integrated-regression push still IN_PROGRESS" is
 - The staged Core path does recheck consent at A5 admission, context creation and each B1/B2/C3 read. It remains caller-supplied synthetic PCM, not Android microphone capture.
 - The existing RAW EAR extractor currently measures RMS/peak/zero-crossing rate only; pitch, voicing, speech/non-speech probability and prosody are explicitly unmeasured. A future lightweight feature layer should add timed energy/F0/voicing/prosody and a non-identifying speaker-change cue, then measure ARM CPU/RSS before use.
 - No Core-owned source was modified. No phone action or model operation occurred. Redmi remains REDMI_UNVERIFIED; user action: none.
+
+
+### RAW EAR research candidate — 21 November 2026
+
+- Full rVAD paper read: Tan, Sarkar & Dehak, *Computer Speech & Language* 59 (2020), DOI 10.1016/j.csl.2019.06.005; arXiv preprint 2019-06-09. It reports rVAD-fast roughly 14–17× faster than the pitch version on a desktop i7-4790/16 GB, but the spectral-flatness variant breaks down under white noise. That speed figure is not Android evidence.
+- Reuse candidate: `libfvad`, a standalone WebRTC VAD fork marked BSD-3-Clause; its separate PATENTS file also carries Google's additional patent grant/termination language. The upstream API accepts 8/16/32/48 kHz and 10/20/30 ms frames. No pinned revision or ARM64/Termux build has been tested.
+- rVAD's linked ZIP source license remains unverified; no code copied.
+- Next test: current RMS/peak/ZCR baseline versus framed F0/voicing + energy contour and optional libfvad; synthetic voiced/unvoiced/silence/burst-noise controls, false-accept/false-reject, CPU/RSS, then an authorized ARM64 build. Keep non-speech acoustic events; VAD must not erase them from RAW EAR.
