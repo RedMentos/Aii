@@ -2,8 +2,10 @@
 
 **Date:** 2026-11-22  
 **Base:** Core #2242 `1850b9ba025074be89476ee32c87ae57b0345f29`  
+**PR:** [#2277](https://github.com/RedMentos/Aii/pull/2277)  
 **Branch:** `qa/v14-same-turn-body-delivery-20261122`  
-**Status:** REPRODUCED BY SOURCE / REGRESSION ADDED / CI PENDING / NOT_RELEASED
+**Test branch head at readback:** `5b06e1f5ebe01a5c467eca70ba22a3786be9d630`  
+**Status:** SOURCE-REPRODUCED / REGRESSION ADDED / TEST NOT EXECUTED / NOT_RELEASED
 
 ## Defect
 
@@ -13,7 +15,11 @@ This preserves a C3 time reserve but violates the whole-system same-turn require
 
 ## QA regression
 
-`v13/code/tests/test_same_turn_body_delivery_qa.py` drives the actual `Cognition.offer()` entrypoint for both roles with content-free, genuine-shaped C3 failure metadata. It stops exactly at the source/generation boundary and asserts that both body roles are attempted pre-answer, with no deferral log. The test is intentionally expected to fail on the current Core candidate until Core supplies a bounded same-turn body window. It does not synthesize native tokens, claim an OfferPacket, or claim C4 consumption.
+`v13/code/tests/test_same_turn_body_delivery_qa.py` drives the actual `Cognition.offer()` entrypoint for both roles with bounded C3 runner-failure metadata and no prompt text. It stops exactly at the source/generation boundary and asserts that both body roles are attempted pre-answer, with no deferral log. The current source path predicts `Limits` for each role. The test has not been executed and no CI failure is claimed. It does not synthesize native tokens, claim an OfferPacket, or claim C4 consumption.
+
+## Why no CI run exists
+
+The Core audio workflow's `pull_request.branches` filter includes only the shared release-development branch and a separate Perception branch, not the Core branch used as this stacked PR's base. Its path filter also omits the new QA test. The QA branch intentionally leaves the Core-owned workflow unchanged. No local full Aii checkout is available.
 
 ## Ownership and next fix
 
@@ -21,4 +27,4 @@ Core owns the measured native time-budget algorithm and must keep the C3 reserve
 
 ## Evidence boundary
 
-Source-level control flow is verified on Core #2242. No local full-repository test ran in this environment. The new regression's CI result is pending. No native model generation, Android/Termux execution, Redmi receipt, PSS/TTFT measurement, or model/weight/permission change occurred. `REDMI_UNVERIFIED`.
+Source-level control flow verified on Core #2242 head `1850b9ba`. No local test execution, native model generation, Android/Termux execution, Redmi receipt, PSS/TTFT measurement, or model/weight/permission change occurred. `REDMI_UNVERIFIED`.
