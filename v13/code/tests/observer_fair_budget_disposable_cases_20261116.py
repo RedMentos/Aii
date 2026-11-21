@@ -89,6 +89,10 @@ class SchedulingTests(unittest.TestCase):
         self.assertAlmostEqual(fair['preanswer_seconds_available'], 9.5, places=2)
         self.assertAlmostEqual(fair['c3_reserved_seconds'], 16.5, places=2)
         self.assertEqual(fair['minimum_role_slice_s'], 1.0)
+        first_slot = native_budget.plan(100, 130, 104, recent=[failed, failed],
+                                        background_enabled=True, observer_deadline=106.75)
+        self.assertAlmostEqual(first_slot['preanswer_seconds_available'], 2.75, places=2)
+        self.assertAlmostEqual(first_slot['c3_reserved_seconds'], 16.5, places=2)
 
 
 class RuntimeObserverTests(unittest.TestCase):
@@ -262,7 +266,7 @@ class RuntimeObserverTests(unittest.TestCase):
                 budgets = [json.loads(row['metrics']) for row in budget_rows]
                 self.assertEqual({item['role'] for item in budgets}, {'B1_DETAIL', 'B2_GIST'})
                 self.assertTrue(all(item['status'] == 'PREANSWER_BUDGETED' for item in budgets))
-                self.assertTrue(all(item['c3_reserved_seconds'] >= 16.5 for item in budgets))
+                self.assertTrue(all(abs(item['c3_reserved_seconds'] - 16.5) < .01 for item in budgets))
                 self.assertTrue(all(item['recent_real_prefill_failures'] == 2 for item in budgets))
                 self.assertEqual(r.cfg['learning_mode'], 'RECORD_ONLY')
                 self.assertFalse(r.pool.pids())
