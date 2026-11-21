@@ -24,18 +24,3 @@ def test_world_jepa_training_state_in_real_staged_runtime(tmp_path):
                             env=dict(os.environ, PYTHONPATH=str(dest), PYTHONDONTWRITEBYTECODE='1'))
     assert result.returncode == 0, result.stdout + result.stderr
     print(result.stdout)
-
-
-def test_v14_world_planner_receiver_positive_and_negative_controls_in_staged_suite(tmp_path):
-    """Run the direct V14 receiver tests from the staged-runtime CI entry point."""
-    module_path = Path(__file__).with_name("test_v14_world_jepa_runtime_port.py")
-    spec = importlib.util.spec_from_file_location("v14_world_jepa_planner_tests", module_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    module.test_postcommit_world_planner_consumes_numeric_b1_b2_receivers_without_opening_learning_gates(
-        tmp_path
-    )
-    module.test_world_planner_receiver_rejects_uncommitted_or_source_mismatched_event(
-        tmp_path
-    )
-    print("V14_WORLD_PLANNER_RECEIVER_POSITIVE_NEGATIVE_PASS")
