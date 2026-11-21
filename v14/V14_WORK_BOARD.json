@@ -11,12 +11,13 @@
       "owner": "Core & Harness",
       "reviewer": "Boss & QA",
       "priority": "P0",
-      "status": "READY",
+      "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "NOT_RUN",
-      "next_step": "Inspect existing v13/code/v13/runtime.py consumer chain and current PRs; wire the first missing real consumer; run local integration tests",
-      "user_action_required": false
+      "proof_environment": "STALE_REDM I_V13OBS #115 (2026-11-18): C3 FINAL, TTFT 77.51s / total 84.37s; B1/B2 TIME_BUDGET 60.1s/50.5s and 0 valid offers; native residency UNKNOWN_NO_GROUP_CHILDREN; not current V14 proof",
+      "next_step": "Resolve the real multi-organ chat bottleneck without dropping Canon organs: measure 20 diverse correlated turns, B1/B2→C4→C3 offer delivery, source-bound correctness, p50/p95 TTFT/total latency and simultaneous native residency. Obtain a fresh authorized Redmi receipt; do not infer from the stale #115 report.",
+      "user_action_required": false,
+      "last_checkpoint": "2026-11-21 QA: latest known Redmi observation #115 (2026-11-18) shows C3 FINAL but 77.51s TTFT/84.37s total; B1/B2 both TIME_BUDGET and 0 valid offers; native process group unreadable. Fresh #348 HEALTH produced no receipt."
     },
     {
       "id": "V14-002",
@@ -27,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "SOURCE_REVIEW + OWNER_READ_PASS + PY314_STAGED_PASS + BRIDGE_PASS + SAME_REPO_PASS + STAGED_RUNTIME_PASS(240/10SKIP) + INTEGRATED_PASS(415/3SKIP); PRIVATE_RELAY_NO_RECEIPT; REDMI_UNVERIFIED",
+      "proof_environment": "PR #2138 exact CI GREEN / READY_FOR_BOSS_REVIEW; stale private Redmi #115 (2026-11-18) reported auto_enabled=true but runtime=ERROR/PARTIAL, dashboard=UP_TO_DATE; no current receipt; installed SHA UNKNOWN",
       "next_step": "PR #2138 head 8ca7a298 has all applicable exact QA checks green (owner-read 27+33 tests, Python 3.14 staged startup, offline bridge, same-repo integration, staged-runtime 240/10 skipped, integrated regression 415/3 skipped). PR is ready for independent Boss review, not merged. After review/merge, obtain a fresh private PIPELINE_STATUS receipt; no installer/device mutation until real receipt.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 QA: PR #2138 exact required CI green and ready for Boss review; additive-only validator not applicable; private HEALTH #348 no device receipt; no phone data changed.",
+      "last_checkpoint": "2026-11-21 QA: #2138 exact CI green and ready for Boss review; last known #115 pipeline runtime=ERROR/PARTIAL (2026-11-18), auto_enabled=true, updated_commit is not installed SHA; #348 no reply.",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -43,7 +44,7 @@
           "staged_runtime": "PASS (240 passed, 10 skipped)",
           "integrated_regression": "PASS (415 passed, 3 skipped, 58 subtests)",
           "local_linux": "NOT_RUN",
-          "redmi": "UNVERIFIED"
+          "redmi": "STALE #115 2026-11-18: runtime ERROR/PARTIAL, dashboard UP_TO_DATE, auto_enabled true; installed SHA unknown; new #348 HEALTH no receipt"
         }
       }
     },

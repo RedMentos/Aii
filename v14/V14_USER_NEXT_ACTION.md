@@ -110,3 +110,14 @@ The additive-only validator is the sole red check because the PR modifies existi
 - PR #2133 head `34cdc9efca094324848b3c49237b341c6d86a6d4` has GitHub CI PASS: `world-jepa-store-consumer` 32 passed in 2.67s (both PR and push runs), plus offline bridge security PASS. This is a synthetic event corpus over a real SQLite Store/checkpoint path; it changes the experimental WorldJEPA weights and B1/B2 shadow readouts, but explicitly does NOT change native B1/B2 body weights and is NOT wired into normal Runtime.
 - QA review comments on PR #2133 identify: (1) source identity is dropped before the adapter's claimed source-disjoint split, so it is action-disjoint and can leak multiple actions from one source across train/holdout; (2) until T8 cancellation handling is fixed, cancelled/unknown receipts can be copied into training labels and processed_ids; (3) the latest-N `world_model.transitions(limit=MAX_ROWS)` window can permanently starve older unprocessed backlog after a long offline period. Add exact regressions before merge.
 - PR #2137 remains draft with P1 cancellation/unknown semantics and ActionOutcome LIMIT 17 cardinality findings, plus P2 directory-fsync missing after `TemporalReadout.rollback()`. No native body update or runtime acceptance.
+
+
+## Last known real Redmi observation — stale, 2026-11-18
+
+Private V13OBS issue #115 is the newest device receipt currently available; it is stale and does NOT prove the 2026-11-21 branch is installed:
+- Runtime service/model process and dashboard were reported RUNNING; autostart=true and pipeline auto_enabled=true at that time.
+- Pipeline reported runtime=ERROR, last_result=PARTIAL, last_error=UPDATE, dashboard=UP_TO_DATE. Its `updated_commit=89333289b8cd50da92cbf7074c9ef689a2972dbf` is a pipeline field, not a verified installed runtime SHA.
+- Last normal turn was FINAL but slow: TTFT 77.51 s, total 84.37 s, C3 generated 11 tokens from a 657-token prompt.
+- B1_DETAIL and B2_GIST were TIME_BUDGET (60.1 s / 50.5 s), with 0 source-bound offers; no successful B1/B2 delivery.
+- Native residency was not readable: 0 mapped processes and `UNKNOWN_NO_GROUP_CHILDREN`; this is not proof that no native processes existed.
+- The report is dated 2026-11-18 11:30:53 UTC. The newer read-only HEALTH request #348 on 2026-11-21 expired without a device comment. Therefore current installed SHA, current updater state, process residency, and current chat performance remain UNKNOWN / REDMI_UNVERIFIED.
