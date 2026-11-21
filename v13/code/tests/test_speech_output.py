@@ -60,7 +60,7 @@ def test_intent_is_final_source_bound_and_explicit_only():
 def test_voice_is_off_by_default_and_only_explicit_speak_runs(tmp_path, monkeypatch):
     runtime = Runtime(tmp_path)
     bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
+    bin_dir.mkdir(exist_ok=True)
     capture = tmp_path / "captured.txt"
     script = bin_dir / "termux-tts-speak"
     fake_tts(script, "import os,sys\nopen(os.environ['CAPTURE_FILE'],'w').write(sys.stdin.read())\n")
@@ -96,7 +96,7 @@ def test_non_final_never_speaks_or_records_action(tmp_path, monkeypatch):
 def test_calls_are_serialized_and_second_is_busy(tmp_path, monkeypatch):
     runtime = Runtime(tmp_path)
     bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
+    bin_dir.mkdir(exist_ok=True)
     started = tmp_path / "started"
     script = bin_dir / "termux-tts-speak"
     fake_tts(script, "import pathlib,sys,time\npathlib.Path(%r).write_text('1')\ntime.sleep(0.6)\nsys.stdin.read()\n" % str(started))
@@ -119,7 +119,7 @@ def test_calls_are_serialized_and_second_is_busy(tmp_path, monkeypatch):
 def test_timeout_degrades_adapter_without_killing_api_service(tmp_path, monkeypatch):
     runtime = Runtime(tmp_path)
     bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
+    bin_dir.mkdir(exist_ok=True)
     script = bin_dir / "termux-tts-speak"
     fake_tts(script, "import time\ntime.sleep(3)\n")
     monkeypatch.setenv("PATH", str(bin_dir) + os.pathsep + os.environ.get("PATH", ""))
