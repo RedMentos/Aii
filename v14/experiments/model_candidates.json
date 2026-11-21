@@ -9,7 +9,7 @@
       "revision": "cdf97bd8205908758f44aec508d68ac1aef98f5c",
       "license_id": "LFM Open License 1.0",
       "license_url": "https://huggingface.co/LiquidAI/LFM2.5-230M-GGUF/blob/main/LICENSE",
-      "license_evidence": "Official model page and LICENSE checked 2026-11-21; Section 5 of LFM Open License v1.0 does not grant Commercial Use to a Legal Entity whose annual revenue is USD 10 million or more.",
+      "license_evidence": "Official model page and LICENSE checked 2026-11-21; Section 5 conditions Commercial Use on not exceeding its defined threshold (annual revenue USD 10 million or more) and does not license Commercial Use by a Legal Entity that exceeds that threshold; it states a qualified non-profit exception for non-commercial/research purposes.",
       "quant_format": "QAD_Q4_0",
       "file": {
         "local_name": "LFM2.5-230M-QAD_Q4_0.gguf",
