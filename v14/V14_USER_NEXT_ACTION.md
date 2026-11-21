@@ -1,3 +1,21 @@
+# Exact hash-chain and test refresh — 2026-11-21 20:33 CET
+
+**No user action. No device command or permission/model/weight change.**
+
+- Core #2242 current head edefe004 has a nested pin mismatch. Exact recovery-candidate bytes (2,878 bytes; Git blob SHA-1 0eb9955f167256d954c960b7836642877735670c) hash to SHA-256 a4f9f4714f09d35043a999cf2b5c1f7f3588c0e7441fad8538b39707da30b00d. The stage builder still expects 558633... . Current stage bytes hash to 8406b55ab6e6e4155db58598a83adf6fd686106baa63cacfecd6b25531c8e297, not its runtime-deployer pin 45fd... . After changing BUILDER_SHA to a4f9..., the stage file will hash to 27be6c08d711dbbbd8d33539918d29befc4189fd310a002f3859cb59bebb6e78; runtime_deploy.STAGER_SHA256 must equal that. The arithmetic overlay source pin itself is correct (Git blob SHA-1 d7063a42ee559eb3340a38ab42cf01960a48a7a3); three test fixtures omit the file. Exact calculations and readbacks are in [Core comments](https://github.com/RedMentos/Aii/pull/2242#issuecomment-7068094554) and [overlay readback](https://github.com/RedMentos/Aii/pull/2242#issuecomment-7068096475).
+- Core candidate has improved two-phase revoke and cleanup code, but current exact CI is 6 success / 7 failure / 3 in progress. No merge or release.
+- QA #2244 remains based on old Core head and fails the old-base close/revoke tests; rebase after Core fixes the hash chain.
+- Perception #2246 has 3 success / 4 failure; A5 tests fail on context(grants), undefined grant and ingress count. Verify import path/signature and fix callsites; rebase after parent #2243 merge.
+- JEPA #2247 and Age #2235 remain blocked by retention and AST-attribution tests respectively; no gates are weakened.
+- Research-only PR #2243 is merged at 6bbaa66; its merge-push CI is 29/31 green, 2 in progress. It is a tiny K/V experiment only, not production B3.
+- Five V14 automations are enabled; the five legacy V13 jobs are disabled.
+- Boss documentation PR #2249 has been updated and marked ready; the latest branch push needs its own exact check readback before merge.
+- Private PIPELINE_STATUS #428 still has no authenticated reply. Installed SHA/updater consent UNKNOWN. REDMI_UNVERIFIED.
+
+No local Aii checkout is present, so no local project tests ran. The V14 master blob and historical V13 appendix remain unchanged.
+
+---
+
 # Latest Boss integration update — 2026-11-21 20:31 CET
 
 **No user action is required. Do not run Termux commands, request a phone update, change models/weights/permissions, or alter device data.**
