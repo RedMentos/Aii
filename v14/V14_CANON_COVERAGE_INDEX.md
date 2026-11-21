@@ -1637,3 +1637,16 @@ AOSP Bionic status lists `renameat2` as a libc addition from Android R/API 30: h
 | Release / Android | Exact merged release branch head f279286a4453248004c670fcaabecd85da6ab299; PR-head tests for #2228 pass. | Merge push CI is 34/34 success, 0 failed, 0 pending; all associated workflows are SUCCESS. No authenticated owner-read receipt; installed SHA/updater consent UNKNOWN; REDMI_UNVERIFIED. |
 
 Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. Semantic clause→code→consumer→test→environment→rollback mapping remains incomplete; no Canon family is accepted by this one vertical slice.
+
+
+### JEPA/Memory implementation overlay — 2026-11-21 (PR #2231)
+
+| Canon family | New executable path in candidate | Evidence / status |
+|---|---|---|
+| WorldJEPA / EMA / selective plasticity | `world_jepa.py` now accepts a warm-start-only predictor update mode; full encoder/EMA training remains the default. | Candidate implementation; exact Python 3.13/3.14 and staged/integrated CI pending at last readback. |
+| Persistent optimizer / restart | `world_jepa_training_state.py` persists per-parameter Adam clocks and migrates old checkpoints that only contain the legacy global clock. | Candidate implementation; checkpoint/restart regression added. Not yet accepted until exact CI passes. |
+| T8 → World / B1/B2/SELF | Store consumer/runtime permission state carries `encoder_mode`; telemetry separates encoder, predictor and EMA deltas. | Source-bound synthetic Store consumer; runtime learning/optimizer gates remain OFF. No native body-weight edit or user-visible answer contribution claimed. |
+| Replay / continual retention | Four arms (uniform/full, none/full, uniform/predictor-only, none/predictor-only) × three seeds exercise A→B→A with disjoint holdouts and negative controls. | Earlier baseline: 12 prior candidates rejected by retention gate. New matrix pending exact CI; no continual-learning utility acceptance yet. |
+| Android / release | Staged source pins are rebound through the integrated training-resume builder, Termux recovery builder and ordinary stager. | CI/Linux candidate only. No local full checkout, no authenticated Redmi receipt, no deployment. `REDMI_UNVERIFIED`. |
+
+The predictor-only mode is a comparison arm motivated by R-016; it is not a frozen-teacher replacement and must not become the default without matched multi-cohort utility and retention. Historical 1,255-heading inventory and V13 appendix bytes remain unchanged; whole-Canon semantic coverage remains incomplete.
