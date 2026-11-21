@@ -531,3 +531,30 @@ These are current official API references reviewed on 2026-11-21, not research p
 - No model/weight, installed permission, microphone/screen-capture setting, updater, user data or device state was changed.
 
 **Status:** OFFICIAL_ANDROID_API_DOCS_REVIEWED / A5_UI_LEASE_AND_RUNTIME_INGRESS_IMPLEMENTED / LOCAL_LINUX_ISOLATED_13_OF_13 / FULL_REPOSITORY_CI_PENDING / OS_CAPTURE_PROVIDER_NOT_IMPLEMENTED / REDMI_UNVERIFIED.
+
+
+## R-039 — MobileVLM V2 as an on-demand A5 visual teacher candidate (2026-11-21)
+
+### Primary paper reviewed
+
+- Xiangxiang Chu et al., **MobileVLM V2: Faster and Stronger Baseline for Vision Language Model**, arXiv:2402.03766v1, submitted 2024-02-06 (preprint; no peer-reviewed venue established by the source reviewed): https://arxiv.org/abs/2402.03766 and full HTML https://arxiv.org/html/2402.03766v1.
+- Main method/experiment sections reviewed: CLIP ViT-L/14 at 336×336, MobileLLaMA-1.4B-Chat, LDPv2 projector, 576→144 visual-token reduction, 1.7B configuration, multi-task data and the mobile latency table. The model freezes the vision encoder but trains the projector and LLM; the paper's training used 8×A100 GPUs, not on-device learning.
+- Reported result: 64.2 average over six VLM benchmarks for MobileVLM V2 1.7B. The paper reports 51.63 generated tokens/s and 4.96 s total for 256 output tokens on NVIDIA Jetson Orin with a 4-bit LLM and llama.cpp. This is an Orin result, not Android/Redmi evidence.
+
+### Maintained OSS and Android implementation evidence
+
+- Official model/code repository: https://github.com/Meituan-AutoML/MobileVLM, README blob 8531f3b890850f904c90fe3a6857763933fc945f, LICENSE blob 261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64. Repository code is Apache-2.0. The README explicitly says datasets and checkpoints remain subject to their original licenses.
+- Current llama.cpp MobileVLM documentation: https://github.com/ggml-org/llama.cpp/blob/master/docs/multimodal/MobileVLM.md, blob 6c17dbf902eafc6d262d6faa846ff5999fd6d8ab. It explicitly supports MobileVLM_V2-1.7B, uses the mtmd CLI, requires projector type ldpv2 for V2, and includes an Android aarch64 build path under tools/mtmd/android/build_64.sh.
+- The llama.cpp document includes a Snapdragon 778G Android run for MobileVLM_V2-1.7B using the release-2005b build, 4 CPU threads and the F16 mmproj: CLIP image encoding 20.61 s, prompt evaluation 21.12 tok/s, output generation 12.83 tok/s, total 44.41 s for a 377-token response. This is the strongest directly relevant Android evidence found, but it is Snapdragon 778G, not the user's Snapdragon 732G / Redmi Note 10 Pro. It is not transferable as a Redmi benchmark.
+- A separate current-version V1 example in the same document reports a severe regression (0.30 tok/s and 865 s total) compared with an older release. That is a different V1 run, not a V2 result, but it demonstrates that the exact llama.cpp revision and model/projector pairing must be pinned and remeasured.
+- A community GGUF conversion, https://huggingface.co/cyzero-kim/MobileVLM_V2-1.7B-GGUF, is labeled Apache-2.0 and at verified revision bb2cbd1. Its listed files are 792 MB for the Q4_K LLM, 595 MB for F16 mmproj, and 169 MB for Q4_K mmproj. The Q4 pair is about 961 MB on disk; this is a storage figure, not RAM usage. The conversion is third-party, not the official Meituan release; verify hashes and model/projector compatibility before use.
+- Model cards label MobileVLM_V2-1.7B and MobileLLaMA-1.4B-Chat Apache-2.0. The CLIP ViT-L/14-336 model card labels its model MIT. However, the MobileVLM V2 paper uses ShareGPT4V-PT, whose dataset card is CC-BY-NC-4.0 (https://huggingface.co/datasets/Lin-Chen/ShareGPT4V); this conflicts with treating the complete trained artifact as unconditionally Apache-2.0 for commercial redistribution. The model card/license label does not resolve the upstream training-data terms. Keep this candidate out of redistributed/commercial builds until dataset/checkpoint provenance is legally reviewed.
+
+### V14 fit and limits
+
+- Best role: optional on-demand A5 visual teacher after an A5 event/A4 salience request, not an always-on perception loop and not a B1/B2 body. It can describe image content, but the reviewed model card/paper does not establish coordinate-grounded Android tap targets, UI-tree semantics, reliable action grounding, or safe control.
+- The 778G reference suggests image encoding alone can take about 20.6 s with the documented F16 projector; the 732G Redmi may be slower. It therefore belongs behind A4's slow/high-resolution request path if later approved, with small output budgets and explicit timeout/cancel.
+- No RAM/PSS, thermal, battery, TTFT-on-Redmi or Android 13 measurement was found. The 961 MB Q4 file-pair size does not predict runtime memory. The F16 and Q4 projector variants need a quality/latency comparison on the actual target.
+- No model download, conversion, build, swap, or device permission was attempted. No weights were loaded.
+
+**Status:** PAPER_MAIN_SECTIONS_REVIEWED / OFFICIAL_CODE_APACHE_2 / LLAMA_CPP_ANDROID_PATH_DOCUMENTED / SNAPDRAGON_778G_REFERENCE_ONLY / DATASET_LICENSE_REVIEW_REQUIRED / REDMI_UNVERIFIED / NO_MODEL_CHANGE.
