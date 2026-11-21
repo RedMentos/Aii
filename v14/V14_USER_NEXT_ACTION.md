@@ -44,7 +44,7 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 | ci_test_result | PR #2138 updater gate is green on `5b9171a4`. Latest merged code SHA `3db6d1f` now has exact merge-push staged-runtime and integrated regression PASS (240/10 skipped/47 subtests; 415/3 skipped/58 subtests) plus V14 T8 real-Store workflow 44847403231 PASS. V14 model-lab PR #2142 exact CI run 44848887759 PASS (13 tests, Python 3.13.18); isolated lab only, no native model inference. |
 | phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
-| device_model_comparison | LAB_CODE_READY / NATIVE_NOT_RUN / REDMI_UNVERIFIED |
+| device_model_comparison | LAB_CODE_READY / NEW_A_B_NATIVE_NOT_RUN / HISTORICAL_230M_2_PLUS_2_FAIL / REDMI_UNVERIFIED |
 | proposed_model_change | NONE — LFM2.5-230M is a lab candidate only; no download or swap |
 | requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
 | next_developer_action | Core/QA review #2142. If the exact 230M GGUF is already present on the authorized Redmi, run both comparison orders while V13 is idle. If absent, request separate consent before an isolated download. Keep production unchanged; continue Core/JEPA whole-Canon integration. |
