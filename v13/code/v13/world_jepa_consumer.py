@@ -933,9 +933,9 @@ class WorldJEPAStoreConsumer:
         vector = _vector(state, 4)
         if (type(actions) not in (list, tuple) or not actions
                 or len(actions) > len(world_model.ACTIONS)
-                or len(set(actions)) != len(actions)
                 or any(type(action) is not str or action not in world_model.ACTIONS
-                       for action in actions)):
+                       for action in actions)
+                or len(set(actions)) != len(actions)):
             raise ValueError("invalid receiver action list")
         with self._locked(False):
             stored, _ = self._read_state()
