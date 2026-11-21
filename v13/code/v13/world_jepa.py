@@ -66,7 +66,7 @@ def _project_halfspace_intersection(raw, reference_vectors):
     before = np.asarray([float(np.dot(item, raw)) for item in vectors], dtype=float)
     direction_norm = float(np.linalg.norm(raw))
     tolerance = max(
-        1e-10 * max(1.0, math.sqrt(float(np.dot(item, item))) * direction_norm)
+        1e-10 * max(1.0, float(np.sqrt(float(np.dot(item, item)))) * direction_norm)
         for item in vectors
     )
     if float(np.min(before)) >= -tolerance:
@@ -99,7 +99,7 @@ def _project_halfspace_intersection(raw, reference_vectors):
         after = before + gram @ multipliers
         projected_norm = float(np.linalg.norm(projected))
         tolerance = max(
-            1e-10 * max(1.0, math.sqrt(float(gram[index, index])) * projected_norm)
+            1e-10 * max(1.0, float(np.sqrt(float(gram[index, index]))) * projected_norm)
             for index in range(count)
         )
         violation = max(0.0, -float(np.min(after)))
