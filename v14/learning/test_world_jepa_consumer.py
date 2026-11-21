@@ -9,7 +9,7 @@ import math
 
 import pytest
 
-from v13 import contracts, world_model
+from v13 import contracts, world_jepa, world_model
 from v13.store import Store
 from t8_store_authority import verify_committed_transition_page, verify_committed_transitions
 from world_jepa_consumer import WorldJEPAStoreConsumer, _source_disjoint_split
@@ -208,6 +208,59 @@ def test_world_jepa_consumer_requires_both_local_learning_gates(tmp_path):
         assert store.state("v14.world_jepa.store_consumer", None)[0] is None
     finally:
         store.close()
+
+def test_utility_gate_rejects_non_improving_update_and_waits_for_new_data(tmp_path, monkeypatch):
+    store, session = _make_store(tmp_path / "brain-utility-gate")
+    checkpoint_dir = tmp_path / "private-utility-gate"
+    try:
+        _add_transitions(store, session, 0, 64)
+        consumer = WorldJEPAStoreConsumer(
+            store, checkpoint_dir, learning_enabled=True, seed=13, ensemble=2
+        )
+
+        with monkeypatch.context() as patch:
+            patch.setattr(world_jepa.WorldJEPA, "partial_fit", lambda self, *args, **kwargs: None)
+            patch.setattr(world_jepa.WorldJEPA, "prediction_loss", lambda self, *args, **kwargs: 1.0)
+            rejected = consumer.update(limit=64, steps=8, optimizer_permission=True)
+
+        assert rejected["status"] == "UTILITY_GATE_REJECTED"
+        assert rejected["utility_gate_accepted"] is False
+        assert rejected["holdout_improved"] is False
+        assert rejected["negative_controls_separated"] is False
+        payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert payload["active"] is None
+        assert payload["scan_cursor"] == 64
+        assert len(payload["pending_rows"]) == 64
+        assert list(checkpoint_dir.glob("jepa-*.npz")) == []
+
+        with monkeypatch.context() as patch:
+            def unexpected_fit(*args, **kwargs):
+                raise AssertionError("unchanged pending cohort must not be retrained")
+            patch.setattr(world_jepa.WorldJEPA, "partial_fit", unexpected_fit)
+            waiting = consumer.update(limit=64, steps=8, optimizer_permission=True)
+        assert waiting["status"] == "WAITING_FOR_MORE_T8_DATA"
+        payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert payload["scan_cursor"] == 64
+        assert len(payload["pending_rows"]) == 64
+
+        _add_transitions(store, session, 64, 64)
+        fit_calls = {"count": 0}
+        with monkeypatch.context() as patch:
+            def no_op_fit(self, *args, **kwargs):
+                fit_calls["count"] += 1
+            patch.setattr(world_jepa.WorldJEPA, "partial_fit", no_op_fit)
+            patch.setattr(world_jepa.WorldJEPA, "prediction_loss", lambda self, *args, **kwargs: 1.0)
+            retried = consumer.update(limit=64, steps=8, optimizer_permission=True)
+        assert fit_calls["count"] > 0
+        assert retried["status"] == "UTILITY_GATE_REJECTED"
+        payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert payload["scan_cursor"] == 128
+        assert len(payload["pending_rows"]) == 128
+        assert payload["active"] is None
+        assert list(checkpoint_dir.glob("jepa-*.npz")) == []
+    finally:
+        store.close()
+
 
 def test_source_disjoint_holdout_groups_all_actions_from_one_source():
     rows = []
