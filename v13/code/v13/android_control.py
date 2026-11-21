@@ -65,11 +65,27 @@ def _canonical(capability, args):
     return json.dumps({"capability": capability, "args": args}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
 
 
+# Legacy compatibility only: some Android releases expose this exact mapping as a symlink.
+# AOSP Android 13 sets /data to system:system 0771 and bind-mounts /data/data
+# onto /data/user/0; only that exact 0771 root (plus legacy /data/data) is exempted.
 _ANDROID_PLATFORM_SYMLINKS = ((Path("/data/user/0"), Path("/data/data")),)
+_ANDROID_DATA_ROOT = Path("/data")
+_ANDROID_SYSTEM_UID = 1000
+_ANDROID_SYSTEM_GID = 1000
 
 
-def _reject_unapproved_symlink_ancestors(parent):
-    """Reject caller-controlled symlink components, except the verified Android data alias."""
+def _trusted_android_data_group_write(path, info):
+    """Allow only AOSP's exact system:system 0771 /data (and legacy /data/data)."""
+    return (
+        path in {_ANDROID_DATA_ROOT, _ANDROID_DATA_ROOT / "data"}
+        and info.st_uid == _ANDROID_SYSTEM_UID
+        and info.st_gid == _ANDROID_SYSTEM_GID
+        and stat.S_IMODE(info.st_mode) == 0o771
+    )
+
+
+def _reject_unapproved_symlink_ancestors(parent, uid):
+    """Validate the original path before resolving the exact Android data alias."""
     absolute = Path(os.path.abspath(os.fspath(parent)))
     parts = absolute.parts
     current = Path(parts[0])
@@ -77,35 +93,107 @@ def _reject_unapproved_symlink_ancestors(parent):
         current = current / component
         try:
             info = current.lstat()
-        except FileNotFoundError:
-            continue
         except OSError as exc:
-            raise ControlDenied("unsafe audit database path") from exc
-        if not stat.S_ISLNK(info.st_mode):
-            continue
-        resolved = Path(os.path.realpath(os.fspath(current)))
-        allowed = any(
-            current == Path(alias) and resolved == Path(target)
-            for alias, target in _ANDROID_PLATFORM_SYMLINKS
+            raise ControlDenied("unsafe audit database ancestor") from exc
+        under_android_data = (
+            current == _ANDROID_DATA_ROOT or _ANDROID_DATA_ROOT in current.parents
         )
-        if not allowed:
-            raise ControlDenied("unapproved symlink in audit database path")
+        if stat.S_ISLNK(info.st_mode):
+            resolved = Path(os.path.realpath(os.fspath(current)))
+            allowed = any(
+                current == Path(alias) and resolved == Path(target)
+                for alias, target in _ANDROID_PLATFORM_SYMLINKS
+            )
+            allowed_owners = {0, uid}
+            if under_android_data:
+                allowed_owners.add(_ANDROID_SYSTEM_UID)
+            if not allowed or info.st_uid not in allowed_owners:
+                raise ControlDenied("unapproved symlink in audit database path")
+            continue
+        if not stat.S_ISDIR(info.st_mode):
+            raise ControlDenied("audit database ancestor must be a directory")
+        if current == absolute:
+            if info.st_uid != uid or info.st_mode & 0o022:
+                raise ControlDenied("audit database parent must be owner-controlled")
+            continue
+        allowed_owners = {0, uid}
+        if under_android_data:
+            allowed_owners.add(_ANDROID_SYSTEM_UID)
+        if info.st_uid not in allowed_owners:
+            raise ControlDenied("untrusted audit database ancestor owner")
+        if info.st_mode & 0o022 and not (info.st_mode & stat.S_ISVTX):
+            if not _trusted_android_data_group_write(current, info):
+                raise ControlDenied("group/world-writable audit database ancestor")
+    return Path(os.path.realpath(os.fspath(absolute)))
+
+
+def _validate_audit_parent_ancestry(parent, uid):
+    """Reject ancestors another UID could rename to redirect the audit database.
+
+    The immediate parent must belong to this process and not be group/world writable.
+    Higher ancestors must be root- or caller-owned and non-writable, except sticky
+    shared directories (for example /tmp). Under /data, only the exact AOSP
+    system:system 0771 /data root (and legacy /data/data target) may be group-writable.
+    """
+    resolved = Path(os.path.realpath(os.fspath(parent)))
+    if not resolved.is_absolute():
+        raise ControlDenied("audit database parent must be absolute")
+    under_android_data = (
+        resolved == _ANDROID_DATA_ROOT or _ANDROID_DATA_ROOT in resolved.parents
+    )
+    try:
+        parent_info = resolved.lstat()
+    except OSError as exc:
+        raise ControlDenied("unsafe audit database parent") from exc
+    if (
+        not stat.S_ISDIR(parent_info.st_mode)
+        or parent_info.st_uid != uid
+        or parent_info.st_mode & 0o022
+    ):
+        raise ControlDenied("audit database parent must be owner-controlled")
+    for directory in reversed(resolved.parents):
+        try:
+            info = directory.lstat()
+        except OSError as exc:
+            raise ControlDenied("unsafe audit database ancestor") from exc
+        if not stat.S_ISDIR(info.st_mode):
+            raise ControlDenied("audit database ancestor must be a directory")
+        allowed_owners = {0, uid}
+        if under_android_data and (
+            directory == _ANDROID_DATA_ROOT or _ANDROID_DATA_ROOT in directory.parents
+        ):
+            allowed_owners.add(_ANDROID_SYSTEM_UID)
+        if info.st_uid not in allowed_owners:
+            raise ControlDenied("untrusted audit database ancestor owner")
+        if info.st_mode & 0o022:
+            sticky = bool(info.st_mode & stat.S_ISVTX)
+            if not sticky and not _trusted_android_data_group_write(directory, info):
+                raise ControlDenied("group/world-writable audit database ancestor")
+    return resolved
 
 
 def _private_audit_db_path(db_path):
     """Create/open one private regular audit DB without following a final symlink.
 
-    This protects the dry-run audit from final-file, caller-controlled ancestor
-    symlink, and hardlink redirection. The sole ancestor alias exception is the
-    exact Android platform mapping /data/user/0 -> /data/data; arbitrary aliases
-    are rejected. O_NONBLOCK prevents special files such as FIFOs from stalling
-    the validation open. This is not an OS sandbox or a defense against a
-    malicious same-UID process racing the subsequent SQLite open; the native
-    companion must still own authenticated consent and storage.
+    This rejects final-file, caller-controlled symlink, hardlink, and cross-UID
+    writable-ancestor redirection. The sole ancestor alias exception is the exact
+    Android platform mapping /data/user/0 -> /data/data. The only group-writable
+    ancestor exception is exact mode 0771 with system:system ownership on /data
+    (or the legacy /data/data target); world-write and writable child ancestors
+    remain rejected. Sticky shared ancestors such as /tmp retain their normal
+    sticky-bit rule. This is not an OS sandbox or a defense against a malicious
+    same-UID process racing the subsequent SQLite open; the native companion
+    must still own authenticated consent and storage.
     """
     try:
-        path = Path(os.path.abspath(os.path.expanduser(os.fspath(db_path))))
-        _reject_unapproved_symlink_ancestors(path.parent)
+        raw_path = Path(os.path.abspath(os.path.expanduser(os.fspath(db_path))))
+        getuid = getattr(os, "getuid", None)
+        if getuid is None:
+            raise ControlDenied("safe audit storage unavailable")
+        uid = getuid()
+        canonical_parent = _reject_unapproved_symlink_ancestors(raw_path.parent, uid)
+        parent = _validate_audit_parent_ancestry(canonical_parent, uid)
+        path = parent / raw_path.name
     except ControlDenied:
         raise
     except (TypeError, ValueError, OSError) as exc:
@@ -119,12 +207,7 @@ def _private_audit_db_path(db_path):
         if stat.S_ISLNK(path.parent.lstat().st_mode):
             raise ControlDenied("symlinked audit parent")
         parent_info = path.parent.stat()
-        getuid = getattr(os, "getuid", None)
-        if (
-            getuid is None
-            or parent_info.st_uid != getuid()
-            or parent_info.st_mode & 0o022
-        ):
+        if parent_info.st_uid != getuid() or parent_info.st_mode & 0o022:
             raise ControlDenied("audit database parent must be owner-controlled")
         flags = (os.O_RDWR | nofollow | getattr(os, "O_CLOEXEC", 0)
                  | getattr(os, "O_NONBLOCK", 0))

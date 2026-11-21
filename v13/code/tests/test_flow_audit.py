@@ -199,6 +199,33 @@ def test_audit_latest_and_read_only_database(tmp_path):
     assert before == after
 
 
+def test_audit_reads_live_store_while_runtime_lock_is_held(tmp_path):
+    home = tmp_path / "runtime"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    try:
+        session = store.new_session("live Store fixture")
+        event = store.event(session, "LIVE_PRIVATE_USER_TEXT_SENTINEL")
+        store.message(
+            session, event["event_id"], "assistant", "LIVE_PRIVATE_ASSISTANT_SENTINEL",
+            status="FINAL", metadata={"runner": {"role": "C3_LANGUAGE", "status": "FINAL"}},
+        )
+
+        # Store still owns its coordinator lock and keeps the WAL connection open.
+        # The audit must read the persisted turn without constructing another Store.
+        report = audit_event(home, event["event_id"], session_id=session)
+        assert report["event_id"] == event["event_id"]
+        assert report["assistant_status"] == "FINAL"
+        assert report["read_only"] is True
+        assert report["private_text_returned"] is False
+        assert "LIVE_PRIVATE_USER_TEXT_SENTINEL" not in json.dumps(report)
+        assert "LIVE_PRIVATE_ASSISTANT_SENTINEL" not in json.dumps(report)
+        assert store.one("SELECT id FROM events WHERE id=?", (event["event_id"],)) is not None
+    finally:
+        store.close()
+
+
 def test_missing_event_fails_closed(tmp_path):
     home = tmp_path / "runtime"
     event_id = _fixture(home)

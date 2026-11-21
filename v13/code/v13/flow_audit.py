@@ -19,6 +19,8 @@ import zlib
 from pathlib import Path
 from typing import Any
 
+from .android_control import _reject_unapproved_symlink_ancestors, _validate_audit_parent_ancestry
+
 
 def _json(value: Any, fallback: Any) -> Any:
     try:
@@ -186,67 +188,67 @@ def _payload(row: sqlite3.Row) -> dict:
 
 
 def _readonly_store_connection(home: str | Path) -> tuple[Path, sqlite3.Connection]:
-    """Open the Store read-only after constraining every path component.
+    """Open the live Store read-only under the shared Android path boundary.
 
-    The app-private root/data/db directories must belong to this UID. Higher
-    ancestors may belong to root (or Android system UID 1000 under /data), but
-    must not be group/world writable. A root-owned sticky shared directory such
-    as /tmp is allowed. The DB itself must be a single-link regular file owned
-    by this UID, and its identity is checked again after SQLite opens it.
-    This blocks cross-UID path replacement; a malicious same-UID process remains
-    outside this helper's security boundary.
+    Reuse AndroidControl's exact parent/ancestor policy, including the narrowly
+    allowed AOSP /data aliases and system:system 0771 directories. The final
+    Store DB is opened once with O_NOFOLLOW for identity/owner/link checks, then
+    SQLite opens it with mode=ro and query_only. Parent protection blocks
+    cross-UID replacement; a malicious same-UID race remains out of scope.
     """
-    root = Path(home).expanduser().absolute()
-    uid = os.getuid()
-    android_data = Path("/data") == root or Path("/data") in root.parents
-    trusted_ancestor_owners = {0, uid}
-    if android_data:
-        trusted_ancestor_owners.add(1000)
+    getuid = getattr(os, "getuid", None)
+    nofollow = getattr(os, "O_NOFOLLOW", None)
+    if getuid is None or nofollow is None:
+        raise PermissionError("safe V13 Store read unavailable")
 
-    for ancestor in root.parents:
-        info = ancestor.lstat()
-        if not stat.S_ISDIR(info.st_mode) or info.st_uid not in trusted_ancestor_owners:
-            raise PermissionError("unsafe V13 Store ancestor")
-        if info.st_mode & 0o022 and not (
-            info.st_uid == 0 and bool(info.st_mode & stat.S_ISVTX)
-        ):
-            raise PermissionError("writable V13 Store ancestor")
+    requested = Path(home).expanduser() / "data" / "db" / "brain.sqlite3"
+    raw_path = Path(os.path.abspath(os.fspath(requested)))
+    canonical_parent = _reject_unapproved_symlink_ancestors(raw_path.parent, getuid())
+    parent = _validate_audit_parent_ancestry(canonical_parent, getuid())
+    db_path = parent / raw_path.name
 
-    for directory in (root, root / "data", root / "data" / "db"):
-        info = directory.lstat()
-        if (
-            not stat.S_ISDIR(info.st_mode)
-            or info.st_uid != uid
-            or info.st_mode & 0o022
-        ):
-            raise PermissionError("unsafe V13 Store directory")
-
-    db_path = root / "data" / "db" / "brain.sqlite3"
-    before = db_path.lstat()
-    if (
-        not stat.S_ISREG(before.st_mode)
-        or before.st_uid != uid
-        or before.st_nlink != 1
-        or before.st_mode & 0o022
-    ):
-        raise PermissionError("unsafe V13 Store database")
-
-    conn = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
+    flags = (
+        os.O_RDONLY
+        | nofollow
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
+    fd = os.open(db_path, flags)
     try:
-        after = db_path.lstat()
+        before = os.fstat(fd)
         if (
-            not stat.S_ISREG(after.st_mode)
-            or after.st_uid != uid
-            or after.st_nlink != 1
-            or (after.st_dev, after.st_ino) != (before.st_dev, before.st_ino)
+            not stat.S_ISREG(before.st_mode)
+            or before.st_uid != getuid()
+            or before.st_nlink != 1
+            or before.st_mode & 0o022
         ):
-            raise PermissionError("V13 Store database changed during open")
-        conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA query_only=ON")
-        return root, conn
-    except BaseException:
-        conn.close()
-        raise
+            raise PermissionError("unsafe V13 Store database")
+        current = db_path.lstat()
+        if (
+            not stat.S_ISREG(current.st_mode)
+            or (current.st_dev, current.st_ino) != (before.st_dev, before.st_ino)
+        ):
+            raise PermissionError("V13 Store database changed before SQLite open")
+
+        conn = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
+        try:
+            after = db_path.lstat()
+            if (
+                not stat.S_ISREG(after.st_mode)
+                or after.st_uid != getuid()
+                or after.st_nlink != 1
+                or (after.st_dev, after.st_ino) != (before.st_dev, before.st_ino)
+            ):
+                raise PermissionError("V13 Store database changed during SQLite open")
+            conn.row_factory = sqlite3.Row
+            conn.execute("PRAGMA query_only=ON")
+            root = db_path.parents[2]
+            return root, conn
+        except BaseException:
+            conn.close()
+            raise
+    finally:
+        os.close(fd)
 
 
 def audit_event(home: str | Path, event_id: str, *, session_id: str | None = None) -> dict:

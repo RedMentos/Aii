@@ -4,7 +4,7 @@
 Adds a read-only Store consumer for one persisted turn. It correlates A5 PerceptPacket modalities, B1/B2 QueryPacket and OfferPacket telemetry, C4 FocalCycle/FocalItem consumption, C3 source-bound context references and C3 runner token/latency metrics. It also reports symbolic/tap evidence without upgrading it to native latent injection.
 
 ## Safety and evidence boundary
-- Opens `brain.sqlite3` with SQLite `mode=ro` and `query_only=ON`; validates private directory ownership/modes, rejects symlink/hardlink DB files, and checks the DB inode again after open. Cross-UID path replacement is constrained; malicious same-UID races remain out of scope. It does not instantiate Runtime or acquire the live Store lock.
+- Opens `brain.sqlite3` with SQLite `mode=ro` and `query_only=ON`; reuses AndroidControl's exact parent/ancestor policy (including the narrow AOSP /data alias and 0771 exceptions), opens the final DB with O_NOFOLLOW, rejects symlink/hardlink DB files, and checks the DB inode before/after SQLite opens it. Cross-UID path replacement is constrained; malicious same-UID races remain out of scope. It does not instantiate Runtime or acquire the live Store lock.
 - Returns no user text, prompt text, body summaries, token IDs, raw audio or source bytes.
 - Verifies SourceRef rows, blob SHA-256 and character bounds without returning source content.
 - C4 only counts an OfferPacket when the matching FocalItem retains that offer's valid source evidence; an ID-only match is insufficient.
@@ -15,7 +15,7 @@ Adds a read-only Store consumer for one persisted turn. It correlates A5 Percept
 ## Verification
 - Exact tests are in `v13/code/tests/test_flow_audit.py`; the existing V13 additive and integrated-regression workflows execute them.
 - The additive workflow compiles the new module and test, then runs the exact test file in its configured Python environment.
-- LOCAL_LINUX_ISOLATED: helper-path checks PASS for read-only open, symlink/hardlink rejection and writable-ancestor rejection. Exact repository tests/CI must be re-run on the current-base commit before promoting this evidence.
+- LOCAL_LINUX_ISOLATED: helper-path checks PASS for read-only open, symlink/hardlink rejection and writable-ancestor rejection. Exact current-base CI also verifies the live-Store-lock read path; this is synthetic SQLite, not Redmi.
 - Full Aii checkout/exact repository test suite remains BLOCKED because GitHub DNS resolution failed in the local container. This is not a full-repository local PASS.
 - Redmi/native proof remains REDMI_UNVERIFIED.
 
