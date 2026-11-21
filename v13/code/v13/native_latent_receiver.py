@@ -126,6 +126,7 @@ def probe(*, home, model_path, expected_model_sha256, sender_role, receiver_role
         raise NativeReceiverError("receiver model hash missing")
     if any(ch not in "0123456789abcdef" for ch in expected_model_sha256.lower()):
         raise NativeReceiverError("receiver model hash malformed")
+    expected_model_sha256 = expected_model_sha256.lower()
     rows, input_dim, payload, input_sha256 = _vector_payload(vectors)
 
     root = Path(home).resolve()
