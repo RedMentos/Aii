@@ -110,7 +110,8 @@ def test_embedding_shift_is_only_a_change_candidate_during_voiced_activity():
     assert evidence["cosine_similarity"] == 0.0
     assert evidence["change_score"] == 0.5
     assert evidence["speaker_change_candidate"] is True
-    assert evidence["interpretation"] == "LOW_SIMILARITY_DURING_VOICED_ACTIVITY"
+    assert evidence["interpretation"] == "LOW_SIMILARITY_DURING_VOICED_ACTIVITY_CHANGE_OR_OVERLAP"
+    assert evidence["candidate_kind"] == "SPEAKER_CHANGE_OR_OVERLAP"
 
 
 def test_low_similarity_without_voiced_activity_is_not_speaker_change():
@@ -236,6 +237,7 @@ def test_a5_a4_c3_consumer_uses_change_evidence_without_persisting_vectors(tmp_p
         summary = result["c3_admission"].selected[0].summary
         assert "speaker_change_score=0.50" in summary
         assert "speaker_change_candidate=1" in summary
+        assert "speaker_change_kind=CHANGE_OR_OVERLAP" in summary
         persisted = json.dumps(result["packet"], sort_keys=True)
         assert '"vector"' not in persisted
         assert '"speaker_label": null' in persisted
