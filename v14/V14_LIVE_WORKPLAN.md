@@ -204,3 +204,8 @@ PR #2137 current head `2d8eb79bdefe3c6c3bef63fea7d25563b7f56952` completed exact
 The previous source-review findings are corrected in this head: cancellation/unknown censoring without prediction error or receiver update; full bounded ActionOutcome cardinality with 4096-row fail-closed limit; rollback directory fsync. The remaining gaps are (1) dedicated V14 workflow still Python 3.11 only; add Python 3.14 coverage for the Redmi target, (2) safe-additive policy failure needs Boss review of the new module/workflow scope, and (3) no normal Runtime learning consumer yet. No optimizer, native body-weight update, or Android/Redmi acceptance is claimed.
 
 The latest code-bearing release `5b9171a4` remains CI-green. Current branch HEAD `d61b6957` is documentation-only and its exact staged-context push run `44846409816` is still IN_PROGRESS. The updater must gate on the exact newest SHA, not reuse parent success. Private #351–354 still have no device comments; no update request or device mutation. User action: none.
+
+
+## Latest exact HEAD job boundary — 2026-11-21 01:56 CET
+
+On docs-only HEAD `d61b695739023d0bf0a3cfa4022770f0de2615fa`, owner-read push and private-bridge push PASS; the staged-runtime job within exact push staged-context run `44846409816` PASS. The integrated-regression job is still executing step 6 (shared staged organ/memory path) from 00:51:24Z; it had run >5 minutes at readback with no reported failure and no downloadable log. The workflow remains IN_PROGRESS, so the latest-SHA updater gate is not complete. The last fully CI-green code-bearing SHA remains `5b9171a4`. Do not deploy or claim exact latest-head CI-green until integrated regression completes.
