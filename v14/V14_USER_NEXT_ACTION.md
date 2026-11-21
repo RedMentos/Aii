@@ -1,3 +1,47 @@
+# Current next action — 2026-11-21T21:22:00Z
+
+**No user action is required. Do not run Termux commands or change models, weights, permissions, updater settings or device data.**
+
+- Age/X10 rights audit PR [#2235](https://github.com/RedMentos/Aii/pull/2235) has fixed the nested `GoalStore.add → f(st)` AST attribution and includes an unrelated-closure negative control. Exact code/test head `b22129a03bbd3395605b951d55d3f187f442bda6`; handoff-only head `c224610959e598cb9c79f38d1b4bd454ffea0019`. Lab-Age, owner-read/Python 3.14 startup, migration, deploy, staged runtime (251/10/47) and integrated regression (424/3/58) all PASS. Safe-additive remains `FAIL_BY_POLICY`.
+- #2235 is 43 commits ahead / 121 behind current release-development HEAD `bdcad466ffea75a2b41f7d23be168f53c7197d20` and diverged. Do not merge or blindly rebase. Boss #2241 is closed as superseded by #2235. Boss/Core must compose the `learning_limit()` API with current #2258 GoalStore wake rollback and rebind the builder chain, then rerun the full current-base audit.
+- Age remains developmental/tool/learning rights only; ResourceGuard/deadlines/Sleep own physical compute and replay budgets. No CPU/RAM/time limits are derived from Age.
+- The separate #2258 integration candidate remains blocked by lifecycle old-reader pin mismatch, stale idle and online-world operator pins, missing A5 lease exports, and speech fixture test failures. QA #2261 records the exact failures and fixture correction; its staged/integrated CI remains red on those pre-existing pins.
+- Private PIPELINE_STATUS #435 still has zero authenticated comments; installed SHA and updater consent remain unknown. `REDMI_UNVERIFIED`; no update or device action.
+
+**Next internal actions:** Boss/Core compose #2235 rights with #2258 GoalStore and current base; Core/JEPA rebind lifecycle, idle and online-world source pins; Perception carries the current A5 lease source; QA verifies the speech fixture in the existing audio job and runs the exact current-base regression matrix. No user action is required.
+
+---
+
+# Current next action — 2026-11-21T21:20:00Z
+
+**No user action is required. Do not run Termux commands, request a device update, or change models, weights, permissions, updater settings or phone data.**
+
+- #2258 exact head `0ecbb1aac1f70c63cb39428a18811cfe4fd66d56` is still NOT_RELEASED. The common lifecycle composer searches for the current Store SHA `40a387...` inside generated archive guard/stream candidates that still carry old reader SHA `fe66...`, finds zero matches and aborts staging.
+- A5 lease collection still fails because the composed 2,267-byte bridge lacks `A5UIRuntimeAdapter` and `_persist_source_and_packet`; reviewed Perception source at `acca00e11192dafc20fa55de5fbf0752f7e4f7ba` exports both.
+- QA #2261 exact run `44950978469`: staged-runtime FAIL and integrated-regression FAIL (226 passed, 10 skipped, 41 subtests, 24 failed, 2 errors). New blockers: idle recovery builder and record-only online-world guard both still pin old operator SHA `67f2118e...`, while current operator SHA is `b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186`. Repin idle and JEPA/online-world chains separately; do not weaken the guards.
+- Old-phone migration is still `PARTIAL` because staging fails. The three speech fixture `mkdir(exist_ok=True)` changes in #2261 are readback-verified, but `test_speech_output.py` was not executed by that workflow run; its direct audio job path is still unverified.
+- Private owner-read #435 has zero authenticated comments; installed SHA and updater consent remain UNKNOWN. No update or device action. `REDMI_UNVERIFIED`.
+- No full local Aii checkout is available; no LOCAL_LINUX project tests ran. The only CI PASS results on #2258 are combined JEPA and offline deploy-integrity; exact staged, A5, migration and audio acceptance remain red.
+
+**Next internal actions:** Core fixes the lifecycle and idle pins plus downstream hashes; JEPA fixes the record-only online-world operator pin and its chain; Perception composes the current A5 lease source; QA verifies the speech fixture in the existing audio test job; Boss reruns the exact full matrix and protected-file review. No user action is required.
+
+---
+
+# Current next action — 2026-11-21T21:17:19Z
+
+**No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
+
+- Boss integration PR [#2258](https://github.com/RedMentos/Aii/pull/2258) exact head: `0ecbb1aac1f70c63cb39428a18811cfe4fd66d56`. Exact CI is not green. The common staged/owner-read/Python-3.14/Lab-Age/migration failure is a source-builder mismatch: current Store source pin `40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb` is incorrectly used to replace the old reader pin `fe66f92533b20738b5ec384e9d7c0b5ac8b4b4f658c6c1ad23792d813ff29980` in the generated archive guard and stream candidates. It finds zero matches and aborts staging. Core must use an explicit old-reader pin and recompute the complete downstream hash chain; no guard or CI relaxation.
+- A5 lease collection also fails on Python 3.13/3.14: the composed 2,267-byte bridge lacks `A5UIRuntimeAdapter` and `_persist_source_and_packet`. The reviewed Perception source at commit `acca00e11192dafc20fa55de5fbf0752f7e4f7ba` exports both and must be carried into the integration.
+- Old-phone migration reports `PARTIAL` because staging fails; no update is accepted.
+- QA opened [PR #2261](https://github.com/RedMentos/Aii/pull/2261), head `fe97f4bb0eb3c3ff7745c9e626774a1b8aa9b7e3`, fixing three speech-output test fixtures that redundantly create the `bin/` directory already made by `config.initialize()`. GitHub readback is exact; CI run `44950978469` is in progress. No Runtime code changed.
+- Private owner-read [RedMentos/Aiiii #435](https://github.com/RedMentos/Aiiii/issues/435) has zero authenticated comments. Installed SHA and updater consent remain UNKNOWN. No device action or deployment. `REDMI_UNVERIFIED`.
+- Full local Aii checkout is unavailable; no LOCAL_LINUX project suite was run. Combined JEPA and offline deploy-integrity CI passed; the above staged/A5/migration/audio failures remain open. Safe-additive is `FAIL_BY_POLICY`, not waived.
+
+**Next internal actions:** Core repairs the old-reader pin and downstream hash chain; Perception composes the current A5 lease source; QA verifies #2261 and the exact Python 3.13/3.14 regression matrix; Boss reviews protected files and merges only after all required exact-head checks pass. The whole Canon remains open: native B1/B2 correctness, trained B3 latent receiver, accepted JEPA retention/weight changes, sparse MoE, full voice learning and Android OS control are not established.
+
+---
+
 # Current next action — 2026-11-21T20:58:26.786Z
 
 **No user action is required. Do not run Termux commands or change models, weights, permissions, updater settings or device data.**
