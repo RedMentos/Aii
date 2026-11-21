@@ -207,6 +207,11 @@ class WorldJEPA:
             drift_state, drift_config, params_by_group,
             has_prior_training=bool(warm_start and prior_steps > 0),
         )
+        previous_step_params = {
+            name: {key: np.array(value, copy=True) for key, value in params.items()}
+            for name, params in params_by_group.items() if params
+        } if drift_config['enabled'] else {}
+        update_norms = {name: [] for name in previous_step_params}
         history = []
         for s in range(steps):
             if cancel_check is not None and cancel_check():
@@ -227,6 +232,16 @@ class WorldJEPA:
             if drift_prepared['active']:
                 gradients = drift.apply_pullback(params_by_group, gradients, drift_prepared)
             opt.step(gradients)
+            if drift_config['enabled']:
+                for name, params in params_by_group.items():
+                    if not params:
+                        continue
+                    delta_sq = sum(float(np.sum((params[key] - previous_step_params[name][key]) ** 2))
+                                   for key in params)
+                    update_norms[name].append(delta_sq)
+                    previous_step_params[name] = {
+                        key: np.array(value, copy=True) for key, value in params.items()
+                    }
             if drift_prepared['active']:
                 drift.update_dual(drift_prepared, params_by_group)
             if train_encoder:
@@ -275,7 +290,9 @@ class WorldJEPA:
             raise InterruptedError('WorldJEPA fit cancelled')
         total_steps=(getattr(self,'_fit_steps',0)+steps) if warm_start else steps
         origin = saved_training['origin'] if saved_training is not None else 'FRESH'
-        next_drift = drift.finish_task(drift_prepared, params_by_group, steps=steps)
+        next_drift = drift.finish_task(
+            drift_prepared, params_by_group, steps=steps, update_norms=update_norms
+        )
         next_training=training_state.capture(opt,inv,rng,bootstrap_training,X.shape[1],A.shape[1],
                                             self.seed,self.ensemble,total_steps,origin=origin,
                                             drift_state=next_drift)

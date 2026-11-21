@@ -69,9 +69,14 @@ def test_stable_drift_controller_calibrates_groups_and_updates_dual():
     for group in params.values():
         for value in group.values():
             value[0] += 0.1
-    calibrated = world_jepa_drift.finish_task(prepared, params, steps=12)
+    calibrated = world_jepa_drift.finish_task(
+        prepared, params, steps=12,
+        update_norms={name: [0.001] * 12 for name in params},
+    )
     assert all(calibrated["groups"][name]["budget_sq"] > 0 for name in params)
     assert all(calibrated["groups"][name]["task_count"] == 1 for name in params)
+    assert all(calibrated["groups"][name]["budget_method"] == "STABLE_TASK1_P75_ROLLING5" for name in params)
+    assert all(calibrated["groups"][name]["dual_lambda"] == 0.0 for name in params)
 
     prepared = world_jepa_drift.prepare_task(
         calibrated, DRIFT_CONFIG, params, has_prior_training=True,
@@ -94,6 +99,7 @@ def test_stable_drift_controller_calibrates_groups_and_updates_dual():
         has_prior_training=True,
     )
     assert predictor_only["active"] == {"predictor"}
+    assert predictor_only["lambdas"]["predictor"] == persisted["groups"]["predictor"]["dual_lambda"]
     disabled = world_jepa_drift.prepare_task(
         persisted, None, params, has_prior_training=True,
     )
