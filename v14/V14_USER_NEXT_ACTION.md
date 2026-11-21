@@ -258,3 +258,18 @@ Code-bearing release `5b9171a4` remains the last fully CI-green code SHA. Do not
 ## T8 retargeted-head boundary — 2026-11-21 01:57 CET
 
 PR #2137 now points to `a3e19370d7fefe500e8edebf6942624207ff2865`, a documentation/handoff-only change on top of code-identical head `2d8eb79bdefe3c6c3bef63fea7d25563b7f56952`. The previous code-identical head passed focused T8 **52 tests**, staged-runtime **240/10 skipped/47 subtests**, integrated regression **415/3 skipped/58 subtests**, and private bridge. The retargeted head has new exact CI in progress; do not carry the predecessor's success forward as proof for a3e19370. Dedicated T8 workflow remains Python 3.11 only; QA requested Python 3.14 coverage. Still no normal Runtime consumer or native/Redmi learning proof.
+
+
+## Exact current-head release gate GREEN — 2026-11-21 01:58 CET
+
+Current docs-only branch HEAD `d61b695739023d0bf0a3cfa4022770f0de2615fa` now has all three updater-required exact push workflows GREEN:
+- Owner-read [44846409890](https://github.com/RedMentos/Aii/actions/runs/44846409890) PASS.
+- Private bridge [44846409984](https://github.com/RedMentos/Aii/actions/runs/44846409984) PASS.
+- Staged-context [44846409816](https://github.com/RedMentos/Aii/actions/runs/44846409816) PASS: staged-runtime **240 passed / 10 skipped / 47 subtests**; integrated regression **415 passed / 3 skipped / 58 subtests**.
+- Both two-checkout migration diagnostics report `runtime=UPDATED`, `dashboard=UPDATED`, `last_error=NONE` and both checkouts at exact `d61b695`.
+
+The code-bearing release `5b9171a4` remains green. This proves the CI-gated update candidate, not phone installation. Private #351–354 still have zero device comments; installed SHA UNKNOWN / `NO_LIVE_RECEIPT` / `REDMI_UNVERIFIED`. No UPDATE_REQUEST, installer, shell, model, permission or data mutation was sent.
+
+PR #2137 retargeted head `a3e19370` has its dedicated T8 workflow and private bridge PASS; its staged/integrated PR run is still IN_PROGRESS. The previous code-identical head `2d8eb79b` passed 52 focused, 240 staged and 415 integrated tests. Python 3.14 coverage and normal Runtime learning consumer remain OPEN.
+
+**User action:** none. CI-green does not imply the Redmi has updated.
