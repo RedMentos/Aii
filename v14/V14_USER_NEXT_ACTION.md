@@ -3,7 +3,7 @@
 ## Current release and device boundary
 
 - Release-development branch now includes Boss merge **5a141153f7d33906408fd638ce56cfbee459cf08** (PR #2213). The previous #2209/#2212 stacked pair is superseded; the pin mismatch reported on #2212 was fixed by the integrated five-file SHA-256 rebind.
-- Exact merged-head GitHub workflows at readback: staged-runtime PASS; checkpoint-retention PASS; Python 3.14 optimizer-resume PASS; the other 18 workflows PASS; integrated-regression run **44911496141** was still in progress. Do not label the exact release fully green until that last job completes.
+- Exact merged-head GitHub workflows: **19/19 SUCCESS**. Staged-runtime: 249 passed / 10 skipped / 47 subtests; integrated-regression run **44911496141**: 424 passed / 3 skipped / 58 subtests; checkpoint-retention: 21 passed; combined JEPA: 49 passed; Python 3.14 optimizer-resume: PASS; two-checkout migration: 2 passed. This is GitHub Linux/CI, not Redmi installation.
 - The merge adds production WorldJEPA optimizer-state persistence and Android-safe no-clobber checkpoint publication. The tested data is Store/SleepRuntime with synthetic outcomes; no native GGUF body-weight update is claimed.
 - Private owner-read PIPELINE_STATUS request #405 remains open with zero comments. Installed Redmi SHA and updater consent are unknown. **REDMI_UNVERIFIED**. No UPDATE_REQUEST, shell action, installer, model/weight change, permission change or phone-data mutation was performed. No user action is required; do not ask for another Termux command based on CI.
 
