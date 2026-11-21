@@ -90,6 +90,14 @@ class VerifiedT8Transition:
         return self._proof.action_id
 
     @property
+    def event_id(self):
+        return self._proof.event_id
+
+    @property
+    def generation_id(self):
+        return self._proof.generation_id
+
+    @property
     def outcome_created(self):
         return self._proof.outcome_created
 
