@@ -31,9 +31,9 @@ MAX_CAPTURE_BYTES = 16 * 1024 * 1024
 MAX_FRAMES = 64
 MAX_REQUESTS = 16
 MAX_WIDTH = 8192
-_HEX40 = re.compile(r"[0-9a-f]{40}\\Z")
-_HEX64 = re.compile(r"[0-9a-f]{64}\\Z")
-_HEX7_40 = re.compile(r"[0-9a-f]{7,40}\\Z")
+_HEX40 = re.compile(r"[0-9a-f]{40}\Z")
+_HEX64 = re.compile(r"[0-9a-f]{64}\Z")
+_HEX7_40 = re.compile(r"[0-9a-f]{7,40}\Z")
 _ROLES = {"A3", "B1_DETAIL", "B2_GIST", "B3", "C3", "OTHER"}
 _REQUIRED_METADATA = {
     "schema", "extractor", "extractor_version", "extractor_revision",
@@ -157,10 +157,10 @@ def _validate_metadata(metadata: Any) -> dict:
 
 
 def _read_npy_header(handle) -> tuple[tuple[int, int, int], int]:
-    if handle.read(6) != b"\\x93NUMPY":
+    if handle.read(6) != b"\x93NUMPY":
         raise ValueError("not a NumPy NPY file")
     version = handle.read(2)
-    if version != b"\\x01\\x00":
+    if version != b"\x01\x00":
         raise ValueError("only NPY v1.0 captures are supported")
     length_bytes = handle.read(2)
     if len(length_bytes) != 2:
