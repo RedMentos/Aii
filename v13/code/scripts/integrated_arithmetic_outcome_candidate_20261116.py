@@ -4,6 +4,7 @@ Apply after the arithmetic layer in the disposable review tree. Model World
 training roles/checkpoints and all permission gates retain their existing scope.
 """
 import hashlib
+import re
 from pathlib import Path
 
 
@@ -16,9 +17,9 @@ SOURCE_PINS = {
 UPSTREAM_PINS = {
     'v13/world.py': SOURCE_PINS['v13/world.py'],
     'v13/broker.py': 'd035f8bcdcc7acade340a2db893c32a93a892598f2be6e280ccdae3f6fe6899d',
-    'v13/world_semantic_evidence_candidate.py': '0711ed851c5126c3b1c414725b99b509ff53a6e821cf5a021cbc443e93ea3b5e',
     'v13/local_error_route_shadow_candidate.py': '3106cb3eb0808c16a7d91c1199eff5eb6b310cab9f1f67c06097026e7b621893',
 }
+FEEDBACK_SEMANTIC_SHA = '0711ed851c5126c3b1c414725b99b509ff53a6e821cf5a021cbc443e93ea3b5e'
 REVIEWED_WORLD_SHA = 'bcb96249eb1e7cb914ea82949d106118f4738c2605e02b2c360d4b4f2d276e27'
 
 
@@ -68,11 +69,34 @@ def apply_sources(code_dir, sources):
     if new_world_sha != REVIEWED_WORLD_SHA:
         raise ValueError('arithmetic outcome World output changed; review semantic binding')
     semantic_name = 'v13/world_semantic_evidence_candidate.py'
-    result[semantic_name] = _replace(result[semantic_name],
-        SOURCE_PINS['v13/world.py'], new_world_sha, 'semantic World source pin')
+    semantic = result.get(semantic_name)
+    if not isinstance(semantic, bytes):
+        raise ValueError('arithmetic outcome semantic source missing')
+
+    def source_pin(raw, filename):
+        pattern = (rb"(?m)^\\s*['\\\"]" + re.escape(filename.encode('ascii'))
+                   + rb"['\\\"]\\s*:\\s*['\\\"]([0-9a-f]{64})['\\\"]")
+        matches = re.findall(pattern, raw)
+        if len(matches) != 1:
+            raise ValueError('arithmetic outcome semantic pin ambiguous: ' + filename)
+        return matches[0].decode('ascii')
+
+    # ContextOS legitimately rebinds Store after feedback bootstrap. Validate
+    # the semantic file's live Store/Memory pins instead of freezing that
+    # generated intermediate hash; its original source and World anchor remain pinned.
+    for filename, expected in (
+        ('store.py', hashlib.sha256(result['v13/store.py']).hexdigest()),
+        ('memory.py', hashlib.sha256(result['v13/memory.py']).hexdigest()),
+        ('world.py', SOURCE_PINS['v13/world.py']),
+    ):
+        if source_pin(semantic, filename) != expected:
+            raise ValueError('arithmetic outcome semantic source binding changed: ' + filename)
+
+    result[semantic_name] = _replace(
+        semantic, SOURCE_PINS['v13/world.py'], new_world_sha, 'semantic World source pin')
     result['v13/local_error_route_shadow_candidate.py'] = _replace(
         result['v13/local_error_route_shadow_candidate.py'],
-        UPSTREAM_PINS[semantic_name], hashlib.sha256(result[semantic_name]).hexdigest(),
+        FEEDBACK_SEMANTIC_SHA, hashlib.sha256(result[semantic_name]).hexdigest(),
         'local error semantic source pin')
 
     # A diagnostic was produced instead of the requested answer. Stale fixed,
