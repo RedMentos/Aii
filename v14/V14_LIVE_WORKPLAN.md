@@ -312,3 +312,12 @@ Next integrated vertical slice: after Core's staged runtime is green, invoke the
 - Previous CI evidence (pre-fix only): #2161 V3 producer tests passed 11/11 on Python 3.11/3.13 (run 44872181368); staged/integrated run 44872181361 passed (staged Runtime and 415 integrated tests). These do not test the new one-frame regression. The exact retargeted head must run its own CI.
 - Integration boundary: Core #2158 must pin the new adapter blob 0e328d14883840190937f0fef24a8e895ba7261c and repair its separate QueryPacket audio_context, arithmetic-source and recovery-manifest failures. No Core-owned files were changed.
 - Deployment: NOT_RELEASED; REDMI_UNVERIFIED. No microphone, phone, permission, model, weight or user-data operation was performed.
+
+
+## Exact-head CI result — 2026-11-21 07:11 CET
+
+- PR #2161 head e523f539febb659b6aa56710e9072738b75698cc ran the exact RAW EAR producer/consumer suite: 12 passed on Python 3.11.18 and 12 passed on Python 3.13.18 (run 44874325052). The test job compiled both producer and test module before pytest.
+- Staged Runtime job in run 44874325026 passed staging, source recall, SQLite turn, revocation and JEPA restart. Integrated regression in the same run passed. Privacy scan run 44874325009 passed.
+- Safe-additive job run 44874325018 failed at the intended scope guard: the PR modifies an existing producer and test file rather than adding only inert modules/tests. This is a policy rejection, not a test regression; no bypass was attempted. The separate release-event queue workflow run 44874325005 passed its queue checks but did not merge this draft.
+- Current documentation-only follow-up commits are on the same branch; the code/test blobs remain unchanged. The PR is mergeable against the current base but remains DRAFT / NOT_RELEASED pending Boss review and Core integration.
+- No native model, microphone or Redmi measurement was performed.
