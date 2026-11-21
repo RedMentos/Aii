@@ -1,4 +1,41 @@
-## Latest JEPA & Memory checkpoint — 2026-11-21 06:22 CET
+## Latest JEPA & Memory checkpoint — 2026-11-21 06:29 CET
+
+This is a repository-side receiver increment. It does not change the release branch, the installed phone, model weights, permissions, or updater state.
+
+### Verified code and PRs
+- Release branch remains \`gpt6/v13-private-remote-bridge-20261111\` at \`c0cedbde718ede6107f4df1f1bf9c784df4e00cf\`; this is not a phone-installation SHA and the required post-merge release workflow set remains incomplete.
+- Parent PR [#2160](https://github.com/RedMentos/Aii/pull/2160), head \`a5678c2119dea2c29d038829bd5abaa23d454530\`, is READY_FOR_REVIEW. It provides the source-bound T8 authority, persistent numeric WorldJEPA/EMA Store consumer and dual-gated runtime facade.
+- Follow-up PR [#2164](https://github.com/RedMentos/Aii/pull/2164), head \`14a647c04b28e9cd5bbd5a19ae14d6cbb77d29a1\`, is READY_FOR_REVIEW and stacked on #2160. It adds:
+  - one-checkpoint-load B1_DETAIL / B2_GIST / SELF_MODEL numeric readouts across the four candidate routes;
+  - exact EventEnvelope / SourceRef / terminal action / ActionOutcome verification;
+  - a persisted idempotent World/Planner SHADOW record with source-revocation and stale-checkpoint readback;
+  - source-linked episodic recall for the top shadow candidate;
+  - an optional \`event_id\` parameter on \`consume_after_commit\`, which attaches the planner SHADOW result without opening either learning gate.
+- Exact #2164 head CI run [44872134464](https://github.com/RedMentos/Aii/actions/runs/44872134464): staged-runtime **241 passed, 10 skipped, 47 subtests**; integrated-regression **415 passed, 3 skipped, 58 subtests**. The staged suite calls both new direct receiver tests: positive persistence/idempotency and negative uncommitted-ActionOutcome / mismatched-SourceRef controls.
+- Parent #2160's safe-additive workflow #547 passed 16/16 tests. #2164 is stacked; its own safe-additive check remains pending until it is tested against the release ancestor after #2160 integration.
+- LOCAL_LINUX exact Aii checkout/tests remain BLOCKED because this worker cannot resolve GitHub DNS. GitHub Actions is not a local native run.
+
+### Functional boundary
+The new code consumes numeric B1/B2/SELF readout heads into a real callable World/Planner SHADOW comparison and persists the source-linked result. The comparison score is explicitly uncalibrated and has no decision authority. The normal postcommit Runtime still does not call the JEPA facade; Core must pass the exact committed event id after the durable T8/ActionOutcome transaction. This is not native B1/B2 activation injection, not the B3 learned latent bridge, not GGUF weight learning, and not a production route policy. Optimizer moments remain unpersisted. No native-body parameter change is claimed.
+
+### Core dependency and whole-system state
+- Core PR #2158 remains DRAFT; current head \`2bbf9caf96f8fa90dc080afd00ba99db8329350d\`. Its staged A5 tests still fail the two date-ambiguous positive arithmetic fixtures, and the stage-builder / deployer path is rejected by the additive-scope policy pending independent Boss review. Do not bypass the policy or weaken source pins.
+- Core PR #2145 remains open/non-mergeable and still does not invoke the JEPA/EMA learner; its temporal/World shadow path is not a substitute for #2160/#2164.
+- Whole-system P0 chat, B1/B2 delivery and native latent coupling remain unaccepted. The last measured Redmi failure remains issue #1904; no newer phone receipt was found in this run.
+
+### Device, updater and user action
+- Fresh private owner-read PIPELINE_STATUS request Aiiii#367 still has no device reply. Installed SHA remains UNKNOWN; updater state UNVERIFIED; NO_LIVE_RECEIPT / REDMI_UNVERIFIED.
+- No UPDATE_REQUEST, installer, shell command, model download/swap, permission change or data mutation was attempted.
+- User action required: **NO**. No Termux command, model approval or phone action is justified by this repository-side change.
+
+### Research follow-up
+- New paper checked: [INTACT-JEPA, arXiv:2607.26056](https://arxiv.org/abs/2607.26056), with [official code](https://github.com/zju3dv/INTACT-JEPA) at revision \`d6e40c039f4c20f1d6e115fa6158e7d098000378\`; repository LICENSE is MIT. The paper's shared intent-to-action operator and action-family kNN alignment are useful design references for evaluating role-specific receivers. The released implementation is a robotics/vision PyTorch/CUDA stack (ViT-Tiny/14, 18.03M encoder + 3.11M predictor); it is not a Termux/Android drop-in. Model-weight licensing was not established, and no code, dependency or weights were imported.
+- After Runtime wiring, compare action-family retrieval / conditional action-law quality against the current uncalibrated score, with action-shuffled and SOURCE_EXACT / NO_MESSAGE baselines. Keep the current score diagnostic-only.
+- Next JEPA implementation after the normal Runtime consumer is wired: persist optimizer moments, then compare no-replay / uniform / content-or-error-prioritized replay under equal update/byte budgets with source-disjoint new/old holdouts, retention, restart and rollback.
+
+---
+
+## Previous JEPA & Memory checkpoint — 2026-11-21 06:22 CET
 
 This section updates the JEPA/Memory lane; the release and whole-system status below remains governed by Boss/QA evidence.
 
