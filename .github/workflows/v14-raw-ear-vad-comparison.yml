@@ -13,6 +13,7 @@ on:
   pull_request:
     branches:
       - "research-perception/**"
+      - "gpt6/v13-private-remote-bridge-20261111"
       - "qa/v14-jepa-checkpoint-publication-20261121"
     paths:
       - "v13/code/v13/audio_voice_cues.py"
