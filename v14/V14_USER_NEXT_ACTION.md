@@ -1158,3 +1158,39 @@ The branch was read back at `d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff` immediate
 ## Post-merge readback — 2026-11-21
 
 Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/2253) merged at `838482cea5271732ddc9710d2c6ca737a94b4718`. Its exact PR privacy scan passed 1/1. The merge commit's 13/19 workflows have succeeded, 4 remain in progress and 2 remain queued (0 failures) at the latest poll; post-merge CI is not yet certified green. This merge only updates V14 board, workplan, next-action, coverage and research notes. It is not a production code release and has no device effect. The merged documentation checkpoint is `838482cea5271732ddc9710d2c6ca737a94b4718`; the assigned board and handoff files have since been refreshed on the same release branch. The current code release remains `f279286a4453248004c670fcaabecd85da6ab299`; Redmi remains REDMI_UNVERIFIED. No user action is required.
+
+
+## QA & Android update — 2026-11-21 23:02 CET
+
+**No user action is required. Do not run a Termux installer or change installed models, weights, Age, permissions, updater settings or phone data from this checkpoint.**
+
+### Verified QA work
+
+- Active QA regression PR: [#2265](https://github.com/RedMentos/Aii/pull/2265), branch `qa/v14-a5-ui-race-currentbase-run11b`, code/test head `3165d32d5a946c14976b424c5a21d615b8afebfc`.
+- The deterministic A5 UI shared-blob race test runs a real SQLite Store and the production A5 source producer. It holds revocation at the last-source blob unlink, observes a second producer attempting the same Store RLock, proves the producer cannot check/reuse the blob or finish while revocation owns the lock, then proves the new live source and PerceptPacket are readable after release.
+- Exact focused GitHub Actions run `44953332038`: **Python 3.13 PASS; Python 3.14 PASS; py_compile PASS; pytest PASS; public privacy scan PASS**. Offline bridge security `44953324331`: PASS. These are GitHub Linux results, not a local checkout or Redmi proof.
+- Duplicate QA GoalWake PR #2257 and diagnostic-only migration PRs #2267/#2268 are closed because Boss incorporated the complete fixes into #2258. Stale-base A5 attempt #2264 is closed. #2265 is the active A5 concurrency review.
+
+### Latest integrated candidate readback
+
+- Boss integration PR #2258 last read at exact head `6fca4ffe504567c45067bc22347e5f5e33f9f530`, still DRAFT / NOT_RELEASED.
+- PASS: old-phone-to-new-runtime migration; Python 3.14 staged startup/SQLite source refs; Lab-Age; verify; combined; offline; owner-read; offline bridge security; A5 UI lease on Python 3.13 and 3.14; staged audio/arithmetic Python 3.13.
+- Still IN_PROGRESS at last read: staged-runtime, integrated-regression and staged audio/arithmetic Python 3.14.
+- The safe-additive workflow fails because its strict 2..30-file ADD-only candidate rule is being applied to the broad Boss integration PR. Keep its file/path/size/compile/test requirements strict for genuine additive candidates; scope the job to an explicit additive-candidate branch or label instead of applying it to the integration PR. Do not bypass the gate for actual additive candidates.
+- No release approval until all required exact-head checks complete and the validator scope is corrected. Newer branch commits require a fresh exact-head readback.
+
+### Android and whole-Canon boundary
+
+- Private owner-read requests #431/#432 and newer #439 still have zero authenticated comments. Installed SHA and auto-update consent remain UNKNOWN. No new request was created.
+- No UPDATE_REQUEST, LOG_PAGE, CHAT_SEND, shell action, device mutation, model/weight download or permission change occurred. REDMI_UNVERIFIED.
+- P0 issue #1904 remains open: correct native 2+2, useful B1/B2 offers through C4→C3, 20 diverse mixed turns, native TTFT/RSS, trained B3 latent coupling and Android learning remain unverified.
+- No full Aii checkout is mounted in this worker. No LOCAL_LINUX project suite ran; all positive test evidence above is GitHub CI. Synthetic Store/UI/goal tests are not Android OS provider or native-model evidence.
+- Whole-Canon requirements remain open beyond this QA slice: microphone/voice learning, vision/UI OS providers, native B1/B2 quality, trained B3, accepted JEPA retention/weight updates, sparse MoE, cross-organ gradients, safe self-edit, memory/egress registry and full Android lifecycle.
+
+### Next internal actions
+
+1. Boss: finish exact-head staged-runtime, integrated-regression and Python 3.14 arithmetic; resolve the additive-only workflow scope without weakening candidate checks.
+2. QA: keep #2265's focused regression; once #2258 reaches a stable exact-head candidate, rebase the wider A5 lifecycle suite onto that exact Store/A5 path and retain stream/close/revoke/rollback coverage.
+3. Device acceptance remains blocked until a fresh authenticated private owner-read receipt and an authorized real Redmi test are available. No user command is needed now.
+
+**Status: NOT_RELEASED / REDMI_UNVERIFIED.**
