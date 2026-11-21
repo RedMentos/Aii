@@ -111,3 +111,11 @@ Core #2200 and QA #2238 identified that the producer's consent lease ended after
 4. Only after Core/QA acceptance should the team add the timestamped Android AudioRecord frame feed. This PR does not open a microphone, grant a permission, download a model or touch the device.
 
 User action: none required. No manual Termux command, model/weight swap, permission change, updater action or device mutation is justified.
+
+## A5/UI cross-canon audit finding (2026-11-21)
+
+- Read back the current-base files a5_ui_admission_bridge.py, a5_admission.py, a5_context_envelope.py, a5_timed_fusion.py, android_control.py, operator.py and runtime.py. The A5 UI bridge is not imported/referenced by any of those normal consumers; it remains explicitly SHADOW-only.
+- Its interface accepts consent_active as a boolean and a consent_receipt_ref string, but does not validate a live AndroidControl observe_ui grant or hold a linearizable revocation lease. The ten unit tests only exercise isolated packet admission. They do not prove screen capture, UI-tree observation, Runtime PerceptPacket delivery or device control.
+- Core was notified on PR #2239 (comment 7066765197) and the whole-Canon issue #1984 was updated. Keep A5 UI NOT_IMPLEMENTED/SHADOW until a real authenticated OS-issued observe_ui receipt is consumed by normal Runtime, Perception binds it to a revocable source lease, and QA proves revocation through capture → admission → derived context/cache.
+- Do not claim AccessibilityService, MediaProjection, screenshot, UI tree, app navigation or Redmi operation. This gap is separate from the caller-PCM audio lease in #2240.
+
