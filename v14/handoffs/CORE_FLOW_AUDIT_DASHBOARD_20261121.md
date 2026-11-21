@@ -1,33 +1,26 @@
 # Core flow-audit dashboard handoff — 2026-11-21
 
-## Ownership and dependency
+## Current-base consolidation
 
-- Core & Harness owns the dashboard consumer.
-- Stacked on the read-only per-turn auditor in PR #2183.
-- Base checkpoint: 12fd5edd3fa2ab2e9dc96c209079962af6d98707.
-- Current implementation checkpoint: 8a20b26d48af6fcd211dfa9b93e2b83d54568ff8.
-- This PR changes the existing local-only dashboard handler/template; it is intentionally DRAFT and requires independent Boss review. No additive gate is bypassed.
+- Release branch: `gpt6/v13-private-remote-bridge-20261111`
+- Rebased on verified release ancestor `e18c664d954fa5a44a1b2e5bec76850d5a40f89f`; no force-push.
+- Consolidates the read-only auditor from #2183 with the local dashboard consumer from #2188. #2183 can be closed as superseded only after this PR's exact-head checks are green.
+- The dashboard intentionally selects the **latest completed assistant turn across all chats**, not necessarily the currently open chat. The UI now says so explicitly. The audit is then constrained to that event's actual session before reading packets and source refs.
 
-## Executable user-facing behavior
+## User-visible behavior
 
-The existing localhost WebView gains an explicit Organdurchlauf prüfen action and a token-scoped read-only GET /flow-audit endpoint. It selects the latest persisted assistant event together with that event's session ID, then calls the hardened per-event reader. The browser receives only bounded role/status/count/token/timing metadata; event IDs, session IDs, source IDs, hashes, prompts, chat text, raw audio and source bytes are omitted. The browser writes output with textContent, not HTML.
+The local WebView adds an explicit **Organdurchlauf prüfen** action and token-scoped, read-only `GET /flow-audit` endpoint. It reports bounded A5/B1/B2/C4/C3/C5/B3 counts, model labels, native-token receipt source, prompt/output tokens, TTFT/duration, source-integrity counts and warning codes. It returns no event/session IDs, source IDs/hashes, prompt/chat text, body summaries, token IDs, raw audio or source bytes. Rendering uses `textContent`.
 
-The projection preserves claim boundaries:
-- B1/B2 query-role binding and per-offer token/model-source evidence
-- C4 consumed roles only after the hardened current-role/current-cycle audit
-- C3 source-bound context versus unverified semantic use
-- B3 TAP/SYMBOLIC/receiver counts, with native injection explicitly false
-- C5 action/outcome counts
-- source integrity counts and warning codes
-- REDMI_UNVERIFIED; runtime metadata is not a device attestation
+The selector uses the same hardened Store reader as the auditor (AndroidControl path policy, read-only SQLite, `O_NOFOLLOW`, owner/link/inode checks). A newer pending turn with no assistant answer does not displace the latest completed turn. The standalone CLI remains session-explicit.
 
-## Tests and evidence
+## Verification boundary
 
-- Exact local full checkout: BLOCKED by container GitHub DNS failure (git ls-remote failed with name-resolution error); no local repository suite is claimed.
-- Dedicated CI workflow PASS on Python 3.11 at run 44891401045: flow-audit tests, session-bound/redaction projection tests, dashboard target test, py_compile, and Node inline-JavaScript syntax check.
-- Synthetic Store fixtures are labeled SYNTHETIC_FIXTURE; they do not prove native model attention, trained latent receiver effect, microphone capture, or Redmi installation.
-- Deployment: NOT_RELEASED. Existing updater is not invoked by this PR.
+- Dedicated workflow: pending on the new exact head.
+- Existing full staged/integrated workflows: must be checked on the exact head; CI is Linux evidence, not a Redmi test.
+- Local exact Aii checkout: BLOCKED by the observed GitHub DNS failure in this environment; no local full-repository PASS is claimed.
+- Fixtures are synthetic. Runtime-reported model/token metrics are not device-attested. C3 source-bound context does not prove semantic attention. B3 tap/symbolic counts do not prove native latent injection.
+- Deployment: NOT_RELEASED. No updater or phone action was triggered. Redmi remains REDMI_UNVERIFIED.
 
-## Next action
+## Next owner action
 
-Boss independently reviews the existing dashboard handler/template change and the safe-additive boundary. After PR #2183 is accepted and this stacked PR is reviewed, the Integrator can include it in a normal pinned release/update. A fresh private device receipt is still required before any Redmi claim.
+Boss/Integrator reviews the existing dashboard handler/template path because the safe-additive gate correctly treats those existing UI files as higher-authority than inert additive modules. After review and green exact-head CI, integrate through the normal pinned runtime/dashboard update path. A fresh private owner-read receipt is still required before claiming installation or user-device effect.
