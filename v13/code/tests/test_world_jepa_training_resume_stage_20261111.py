@@ -30,7 +30,6 @@ def test_world_jepa_training_state_in_real_staged_runtime(tmp_path):
         [sys.executable, '-m', 'pytest', '-q', '-s',
          'tests/test_v14_world_jepa_postcommit_runtime.py'],
         cwd=dest, capture_output=True, text=True, timeout=120,
-        env=dict(os.environ, PYTHONPATH=str(dest), PYTHONDONTWRITEBYTECODE='1',
-                 V13_EXPECT_OPTIMIZER_STATE_PERSISTED='1'))
+        env=dict(os.environ, PYTHONPATH=str(dest), PYTHONDONTWRITEBYTECODE='1'))
     assert staged_consumer.returncode == 0, staged_consumer.stdout + staged_consumer.stderr
     print(staged_consumer.stdout)

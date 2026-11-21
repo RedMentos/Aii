@@ -234,6 +234,38 @@ def _mse(prediction, target):
     return value
 
 
+def receiver_utility_gate(metrics, role):
+    """Require each numeric role receiver to beat its mean and latent-negative controls."""
+    if role not in ROLE_TARGETS or type(metrics) is not dict:
+        return {"accepted": False, "reason": "RECEIVER_METRICS_UNAVAILABLE"}
+    prefix = role.lower()
+    keys = (
+        prefix + "_holdout_mse",
+        prefix + "_mean_baseline_mse",
+        prefix + "_zero_latent_mse",
+        prefix + "_shuffled_latent_mse",
+    )
+    values = [metrics.get(key) for key in keys]
+    if any(not _finite_number(value) or value < 0 for value in values):
+        return {"accepted": False, "reason": "RECEIVER_METRICS_INVALID"}
+    holdout, mean_baseline, zero_latent, shuffled_latent = map(float, values)
+    margin = max(1e-12, max(abs(value) for value in values) * 1e-9)
+    accepted = all(
+        holdout + margin < baseline
+        for baseline in (mean_baseline, zero_latent, shuffled_latent)
+    )
+    return {
+        "accepted": bool(accepted),
+        "reason": ("HELDOUT_BEATS_MEAN_AND_NEGATIVE_CONTROLS" if accepted
+                   else "HELDOUT_DID_NOT_BEAT_ALL_CONTROLS"),
+        "holdout_mse": holdout,
+        "mean_baseline_mse": mean_baseline,
+        "zero_latent_mse": zero_latent,
+        "shuffled_latent_mse": shuffled_latent,
+        "required_margin": float(margin),
+    }
+
+
 def _fit_role_receivers(model, train, holdout, train_rows, holdout_rows):
     z_train, _ = model.predict(train[0], train[1])
     z_holdout, _ = model.predict(holdout[0], holdout[1])
@@ -297,6 +329,9 @@ class WorldJEPAStoreConsumer:
         self.learning_enabled = learning_enabled
         self.seed = seed
         self.ensemble = ensemble
+        # Recover a prior process that stopped between publish and pending-name cleanup.
+        with self._locked(True):
+            world_jepa_shadow_checkpoint.cleanup_pending(self.home)
 
     @contextmanager
     def _locked(self, exclusive=True):
@@ -707,7 +742,7 @@ class WorldJEPAStoreConsumer:
             fit_arrays = _arrays(fit_rows)
             try:
                 model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4),
-                                  cancel_check=cancel_check)
+                                  cancel_check=cancel_check, allow_optimizer_bootstrap=True)
             except InterruptedError:
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
                         "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
@@ -833,7 +868,9 @@ class WorldJEPAStoreConsumer:
                 "parameter_delta_norm": float(parameter_delta), "ema_target_delta_norm": float(ema_delta),
                 "fit_steps_before": fit_steps_before, "fit_steps_after": fit_steps_after,
                 "checkpoint_sha_before": checkpoint_before, "checkpoint_sha_after": checkpoint_after,
-                "optimizer_moments_persisted": saved.get("optimizer_state_persisted") is True, "inverse_dynamics_optimizer_persisted": saved.get("optimizer_state_persisted") is True,
+                "optimizer_moments_persisted": saved.get("optimizer_state_persisted") is True,
+                "inverse_dynamics_optimizer_persisted": saved.get("optimizer_state_persisted") is True,
+                "optimizer_state_bootstrapped": saved.get("optimizer_state_bootstrapped") is True,
             }
             metrics.update(receiver_metrics)
             record = {
@@ -938,6 +975,17 @@ class WorldJEPAStoreConsumer:
             if active is None:
                 raise ValueError("WorldJEPA checkpoint unavailable")
             model = self._load_model(active)
+            utility = receiver_utility_gate(active.get("metrics"), role)
+            if not utility["accepted"]:
+                return {
+                    "role": role,
+                    "status": "RECEIVER_UTILITY_REJECTED",
+                    "receiver_utility": utility,
+                    "checkpoint_sha256": active["checkpoint_sha256"],
+                    "source_sha256": active["source_sha256"],
+                    "native_body_consumed": False,
+                    "native_body_weights_changed": False,
+                }
             x = np.asarray([vector + [0.0, 0.0, 0.0]], dtype=np.float64)
             a = np.asarray([world_model.onehot(action)], dtype=np.float64)
             latent, spread = model.predict(x, a)
@@ -966,6 +1014,7 @@ class WorldJEPAStoreConsumer:
             return {"role": role, "prediction": output, "uncertainty": uncertainty,
                     "checkpoint_sha256": active["checkpoint_sha256"],
                     "source_sha256": active["source_sha256"], "status": "SHADOW_READOUT_ONLY",
+                    "receiver_utility": utility,
                     "native_body_consumed": False, "native_body_weights_changed": False}
 
     def recall(self, state, action, limit=5):

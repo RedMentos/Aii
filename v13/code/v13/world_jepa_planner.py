@@ -16,7 +16,7 @@ from .world_jepa_receiver_matrix import receiver_matrix
 from .world_jepa_store_authority import MAX_ACTION_OUTCOMES_PER_EVENT
 
 STATE_PREFIX = "v14.world_jepa.planner_shadow:"
-SCHEMA = "v14.world_jepa.planner-shadow/1"
+SCHEMA = "v14.world_jepa.planner-shadow/2"
 TERMINAL = {
     "FINAL", "FAILED", "CANCELLED", "ERROR", "DEADLINE", "INTERRUPTED",
     "ABORTED", "OUTCOME_UNKNOWN", "REJECTED",
@@ -185,13 +185,21 @@ def _candidate_score(action, readouts):
 
 
 def _fingerprint(record):
+    # Bind the persisted identity to the complete receiver evidence, not only
+    # the final ranking. A role's utility gate can change while the numeric
+    # model checkpoint stays identical; an old planner record must not survive
+    # that change through the idempotency shortcut.
     body = {
+        "schema": record["schema"],
+        "status": record["status"],
         "event_id": record["event_id"],
         "generation": record["brain_generation_id"],
         "action_id": record["action_id"],
         "source_ref": record["source_ref"],
         "checkpoint_sha256": record["checkpoint_sha256"],
+        "candidate_readouts": record["candidate_readouts"],
         "ranked_actions": record["ranked_actions"],
+        "memory_recall": record["memory_recall"],
     }
     raw = json.dumps(body, sort_keys=True, separators=(",", ":"), allow_nan=False)
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()

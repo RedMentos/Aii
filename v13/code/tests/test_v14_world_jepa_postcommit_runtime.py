@@ -7,13 +7,13 @@ from types import SimpleNamespace
 import os
 import threading
 
-EXPECT_OPTIMIZER_STATE_PERSISTED = os.environ.get("V13_EXPECT_OPTIMIZER_STATE_PERSISTED") == "1"
+EXPECT_OPTIMIZER_STATE_PERSISTED = True
 
 from v13 import contracts, world_model
 from v13.scheduler import EventScheduler
 from v13.sleep import SleepRuntime
 from v13.store import Store
-from v13.world_jepa_consumer import WorldJEPAStoreConsumer
+from v13.world_jepa_consumer import WorldJEPAStoreConsumer, receiver_utility_gate
 from v13.world_jepa_planner import consume_world_planner_shadow, read_world_planner_shadow
 from v13.world_jepa_runtime import PERMISSION_KEY
 
@@ -72,6 +72,35 @@ def _sleep(store, home):
                               resources=lambda: {})
     sleep.scheduler = EventScheduler(store, {})
     return sleep
+
+
+def _planner_expected_status(metrics):
+    accepted = all(
+        receiver_utility_gate(metrics, role)["accepted"]
+        for role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL")
+    )
+    return "SHADOW_PLANNER_READY" if accepted else "SHADOW_PLANNER_UNAVAILABLE"
+
+
+def test_consumer_startup_reaps_crash_abandoned_checkpoint_names(tmp_path):
+    home = tmp_path / "brain-pending-cleanup"
+    store, _ = _make_store(home)
+    try:
+        checkpoint_dir = home / "world_jepa"
+        checkpoint_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+        orphan = checkpoint_dir / ".world-jepa-shadow-interrupted"
+        orphan.write_bytes(b"interrupted before publication")
+        orphan.chmod(0o600)
+        target = checkpoint_dir / ("jepa-" + "b" * 32 + ".npz")
+        target.write_bytes(b"published checkpoint")
+        target.chmod(0o600)
+        linked = checkpoint_dir / ".world-jepa-shadow-linked"
+        os.link(target, linked)
+        WorldJEPAStoreConsumer(store, checkpoint_dir, learning_enabled=True)
+        assert not orphan.exists() and not linked.exists()
+        assert target.read_bytes() == b"published checkpoint"
+    finally:
+        store.close()
 
 
 def test_sleep_runtime_postcommit_requires_observed_outcome_and_keeps_gates_default_off(tmp_path):
@@ -203,27 +232,40 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         first_metrics = first["learning"]["metrics"]
         assert first_metrics["optimizer_moments_persisted"] is EXPECT_OPTIMIZER_STATE_PERSISTED
         assert first_metrics["inverse_dynamics_optimizer_persisted"] is EXPECT_OPTIMIZER_STATE_PERSISTED
+        assert first_metrics["optimizer_state_bootstrapped"] is False
         assert first_metrics["parameter_delta_norm"] > 0
         assert first_metrics["ema_target_delta_norm"] > 0
         assert first_metrics["holdout_improved"] is True
         assert first_metrics["negative_controls_separated"] is True
         assert first_metrics["retention_gate_accepted"] is True
-        assert first["planner"]["status"] == "SHADOW_PLANNER_READY"
+        first_gate = {
+            role: receiver_utility_gate(first_metrics, role)
+            for role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL")
+        }
+        first_planner_status = _planner_expected_status(first_metrics)
+        assert first["planner"]["status"] == first_planner_status
         assert first["planner"]["persisted"] is True
         assert first["planner"]["decision_authority"] == "NONE"
         assert first["planner"]["dispatch"] is False
         assert first["planner"]["native_body_consumed"] is False
         assert first["planner"]["native_body_weights_changed"] is False
         assert first["planner"]["representation"] == "NUMERIC_ROLE_READOUTS_NOT_NATIVE_BODY_LATENT"
-        assert all(
-            first["planner"]["candidate_readouts"][action][role]["status"] == "SHADOW_READOUT_ONLY"
-            for action in world_model.ACTIONS
-            for role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL")
-        )
-        assert first["planner"]["memory_recall"]["status"] == "MEMORY_RECALL_SHADOW"
+        for action in world_model.ACTIONS:
+            for role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL"):
+                item = first["planner"]["candidate_readouts"][action][role]
+                expected = "SHADOW_READOUT_ONLY" if first_gate[role]["accepted"] else "RECEIVER_UTILITY_REJECTED"
+                assert item["status"] == expected
+                if not first_gate[role]["accepted"]:
+                    assert "prediction" not in item
+        if first_planner_status == "SHADOW_PLANNER_READY":
+            assert first["planner"]["memory_recall"]["status"] == "MEMORY_RECALL_SHADOW"
+            assert first["planner"]["ranked_actions"]
+        else:
+            assert first["planner"]["memory_recall"]["status"] == "NO_RANKED_ACTION"
+            assert first["planner"]["ranked_actions"] == []
         first_sha = first["learning"]["checkpoint_sha256"]
         assert first["planner"]["checkpoint_sha256"] == first_sha
-        assert read_world_planner_shadow(store, first_events[-1])["status"] == "SHADOW_PLANNER_READY"
+        assert read_world_planner_shadow(store, first_events[-1])["status"] == first_planner_status
 
         second_events = _add_transitions(store, session, 256, 32)
         store.set_state(PERMISSION_KEY, {
@@ -235,9 +277,12 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         second_metrics = second["learning"]["metrics"]
         assert second_metrics["replay_rows"] >= 8
         assert second_metrics["fit_steps_after"] > second_metrics["fit_steps_before"]
+        assert second_metrics["optimizer_moments_persisted"] is True
+        assert second_metrics["optimizer_state_bootstrapped"] is False
         second_sha = second["learning"]["checkpoint_sha256"]
         assert second_sha != first_sha
-        assert second["planner"]["status"] == "SHADOW_PLANNER_READY"
+        second_planner_status = _planner_expected_status(second_metrics)
+        assert second["planner"]["status"] == second_planner_status
 
         restarted = WorldJEPAStoreConsumer(store, home / "world_jepa", learning_enabled=True)
         restored = restarted.restore()
@@ -257,7 +302,7 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         else:
             assert not hasattr(rolled_back_model, "_training_state")
         assert read_world_planner_shadow(store, second_events[-1])["status"] == "STALE_CHECKPOINT"
-        assert read_world_planner_shadow(store, first_events[-1])["status"] == "SHADOW_PLANNER_READY"
+        assert read_world_planner_shadow(store, first_events[-1])["status"] == first_planner_status
 
         persisted, _ = store.state("v14.world_jepa.store_consumer", None)
         assert persisted["active"]["checkpoint_sha256"] == first_sha
@@ -349,7 +394,8 @@ def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in
         sleep = _sleep(store, home)
         first = sleep._run_world_jepa(first_events[-1], limit=256)
         assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
-        assert first["planner"]["status"] == "SHADOW_PLANNER_READY"
+        first_planner_status = _planner_expected_status(first["learning"]["metrics"])
+        assert first["planner"]["status"] == first_planner_status
 
         later_event = _add_transitions(store, session, 256, 1)[0]
         store.set_state(PERMISSION_KEY, {
@@ -361,7 +407,7 @@ def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in
         assert dispatched is not None and dispatched["id"] == posted
         planner_only = sleep.job(dispatched)
         assert planner_only["learning"]["status"] == "OFF"
-        assert planner_only["planner"]["status"] == "SHADOW_PLANNER_READY"
+        assert planner_only["planner"]["status"] == first_planner_status
 
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
@@ -559,3 +605,150 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         ]
     finally:
         reopened.close()
+
+
+def test_receiver_utility_gate_requires_mean_and_all_negative_controls():
+    metrics = {
+        "b1_detail_holdout_mse": 0.10,
+        "b1_detail_mean_baseline_mse": 0.20,
+        "b1_detail_zero_latent_mse": 0.18,
+        "b1_detail_shuffled_latent_mse": 0.17,
+    }
+    accepted = receiver_utility_gate(metrics, "B1_DETAIL")
+    assert accepted["accepted"] is True
+    assert accepted["reason"] == "HELDOUT_BEATS_MEAN_AND_NEGATIVE_CONTROLS"
+
+    for key in (
+        "b1_detail_mean_baseline_mse",
+        "b1_detail_zero_latent_mse",
+        "b1_detail_shuffled_latent_mse",
+    ):
+        failed = dict(metrics)
+        failed[key] = metrics["b1_detail_holdout_mse"]
+        result = receiver_utility_gate(failed, "B1_DETAIL")
+        assert result["accepted"] is False
+        assert result["reason"] == "HELDOUT_DID_NOT_BEAT_ALL_CONTROLS"
+
+    invalid = dict(metrics, b1_detail_shuffled_latent_mse=float("nan"))
+    assert receiver_utility_gate(invalid, "B1_DETAIL")["reason"] == "RECEIVER_METRICS_INVALID"
+
+
+def test_receiver_readout_fails_closed_when_its_shuffled_latent_control_fails(tmp_path):
+    home = tmp_path / "brain-receiver-utility-gate"
+    store, session = _make_store(home)
+    try:
+        event_ids = _add_transitions(store, session, 0, 256)
+        store.set_state(PERMISSION_KEY, {
+            "learning_enabled": True, "optimizer_permission": True,
+            "steps": 120, "replay_mode": "uniform",
+        })
+        sleep = _sleep(store, home)
+        result = sleep._run_world_jepa(event_ids[-1], limit=256)
+        assert result["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        state, version = store.state("v14.world_jepa.store_consumer", None)
+        active = state["active"]
+        metrics = active["metrics"]
+        metrics["b1_detail_shuffled_latent_mse"] = metrics["b1_detail_holdout_mse"]
+        store.set_state("v14.world_jepa.store_consumer", state, expected=version)
+
+        from v13.world_jepa_runtime import receiver_readout
+        rejected = receiver_readout(
+            store, "B1_DETAIL", [12.0, 0.0, 4.0, 0.5],
+            world_model.ACTIONS[0], home=home,
+        )
+        assert rejected["status"] == "RECEIVER_UTILITY_REJECTED"
+        assert rejected["receiver_utility"]["accepted"] is False
+        assert rejected["decision_authority"] == "NONE"
+        assert rejected["native_body_consumed"] is False
+        assert rejected["native_body_weights_changed"] is False
+        assert "prediction" not in rejected
+    finally:
+        store.close()
+
+def test_planner_withholds_each_role_when_its_own_negative_control_fails(tmp_path):
+    """The actual batched Planner consumer must honor every role's utility gate."""
+    home = tmp_path / "brain-planner-receiver-utility"
+    store, session = _make_store(home)
+    try:
+        event_ids = _add_transitions(store, session, 0, 256)
+        store.set_state(PERMISSION_KEY, {
+            "learning_enabled": True, "optimizer_permission": True,
+            "steps": 120, "replay_mode": "uniform",
+        })
+        sleep = _sleep(store, home)
+        trained = sleep._run_world_jepa(event_ids[-1], limit=256)
+        assert trained["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        original_state, version = store.state("v14.world_jepa.store_consumer", None)
+        baseline_metrics = dict(original_state["active"]["metrics"])
+        # Give each role an explicitly passing, finite fixture so the test
+        # isolates the real consumer gate rather than depending on whether a
+        # particular random training cohort happens to qualify every head.
+        for role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL"):
+            prefix = role.lower()
+            baseline_metrics[prefix + "_holdout_mse"] = 0.10
+            baseline_metrics[prefix + "_mean_baseline_mse"] = 0.20
+            baseline_metrics[prefix + "_zero_latent_mse"] = 0.18
+            baseline_metrics[prefix + "_shuffled_latent_mse"] = 0.17
+        active = dict(original_state["active"])
+        active["metrics"] = dict(baseline_metrics)
+        original_state = dict(original_state)
+        original_state["active"] = active
+        store.set_state("v14.world_jepa.store_consumer", original_state, expected=version)
+
+        baseline = consume_world_planner_shadow(store, event_ids[-1], home=home)
+        assert baseline["status"] == "SHADOW_PLANNER_READY"
+        assert baseline["ranked_actions"]
+        assert all(
+            baseline["candidate_readouts"][action][role]["status"] == "SHADOW_READOUT_ONLY"
+            for action in world_model.ACTIONS
+            for role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL")
+        )
+
+        for role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL"):
+            current, version = store.state("v14.world_jepa.store_consumer", None)
+            active = dict(current["active"])
+            metrics = dict(active["metrics"])
+            prefix = role.lower()
+            holdout_key = prefix + "_holdout_mse"
+            shuffled_key = prefix + "_shuffled_latent_mse"
+            metrics[shuffled_key] = metrics[holdout_key]
+            active["metrics"] = metrics
+            current = dict(current)
+            current["active"] = active
+            store.set_state("v14.world_jepa.store_consumer", current, expected=version)
+
+            planner = consume_world_planner_shadow(store, event_ids[-1], home=home)
+            assert planner["status"] == "SHADOW_PLANNER_UNAVAILABLE"
+            assert planner["ranked_actions"] == []
+            assert planner["decision_authority"] == "NONE"
+            assert planner["dispatch"] is False
+            assert planner["native_body_consumed"] is False
+            for action in world_model.ACTIONS:
+                readout = planner["candidate_readouts"][action][role]
+                assert readout["status"] == "RECEIVER_UTILITY_REJECTED"
+                assert readout["receiver_utility"]["accepted"] is False
+                assert "prediction" not in readout
+                assert readout["decision_authority"] == "NONE"
+                assert readout["native_body_consumed"] is False
+                assert readout["native_body_weights_changed"] is False
+                for other in ("B1_DETAIL", "B2_GIST", "SELF_MODEL"):
+                    if other != role:
+                        assert planner["candidate_readouts"][action][other]["status"] == "SHADOW_READOUT_ONLY"
+            persisted = read_world_planner_shadow(store, event_ids[-1])
+            assert persisted["status"] == "SHADOW_PLANNER_UNAVAILABLE"
+
+            # Restore all passing metrics; the same event/checkpoint must recover
+            # the ready view rather than returning the previous rejected snapshot.
+            current, version = store.state("v14.world_jepa.store_consumer", None)
+            active = dict(current["active"])
+            active["metrics"] = dict(baseline_metrics)
+            current = dict(current)
+            current["active"] = active
+            store.set_state("v14.world_jepa.store_consumer", current, expected=version)
+            restored = consume_world_planner_shadow(store, event_ids[-1], home=home)
+            assert restored["status"] == "SHADOW_PLANNER_READY"
+            assert read_world_planner_shadow(store, event_ids[-1])["status"] == "SHADOW_PLANNER_READY"
+    finally:
+        store.close()
