@@ -1,6 +1,6 @@
 # QA handoff — Age rights and runtime-resource separation
 
-**Date:** 2026-11-21 17:18 CET  
+**Date:** 2026-11-21 17:35 CET  
 **Owner:** QA & Android  
 **Branch:** `qa/v14-age-rights-resource-separation-20261121`  
 **Initial base:** `a6b2aeaaa6cb92a0948c272c0b099e6265bca487`  
@@ -12,14 +12,14 @@ V14 master §2.10 and root `AGENTS.md` separate `official_age`, `lab_age`, and `
 
 ## Reproduced defects
 
-1. `lab_age.right_enabled()` existed but `AgeControl.allowed()` never called it. Consequently `AgeControl.may()` remained official-Age-only and `lab_age.rights_status().newly_testable` could not reflect the requested X10 test overlay.
-2. `effort.age_limits()` read `autonomous_effort_max` and `focal_depth` from Age; `effort.decide()` then capped adaptive effort at Age 0.
+1. The staged `LaboratoryAgeControl` adapter already supplies X10 rights while leaving official `AgeControl` unchanged. The effort plan must read effective rights from that adapter but report the official stage via `system_stage()`.
+2. `effort.age_limits()` read `autonomous_effort_max` and `focal_depth` from Age; `effort.decide()` then capped adaptive effort at Age 0. It also used the adapter's virtual `ceiling()` as the reported official stage.
 3. `SleepCycle.run()` capped replay batch size using Age-derived `replay_items`, despite the separate Sleep policy and ResourceGuard replay scaling.
 
 ## Changes
 
-- `AgeControl.allowed()` now applies the lab-right overlay only after NEVER, hard-rule, explicit user-permission, structural-lock and resource-mode vetoes. It does not mutate official Age or bypass those gates.
-- Age's status profile now exposes developmental signals and explicitly identifies ResourceGuard as runtime budget authority. The legacy `budgets()` name remains a compatibility alias, but no longer supplies runtime resource limits.
+- The existing staged `LaboratoryAgeControl` remains the only X10 rights adapter; official `AgeControl` is unchanged. `effort.age_limits()` now reports `system_stage()` (official) while reading rights from the supplied controller.
+- Legacy Age budget hints remain available for compatibility/status, but the runtime effort and replay paths no longer consume them. ResourceGuard and feature policy own actual compute/replay limits.
 - `effort.age_limits()` reads effective rights (including X10) while keeping compute ceilings independent. User effort mode and ResourceGuard remain authoritative.
 - `SleepCycle.run()` uses its configured replay batch and ResourceGuard scaling; Age gates whether a learning phase is permitted, not how much compute/replay is allocated.
 - Regression tests cover X10 rights, OFF/SHADOW, hard/user/structural/resource vetoes, scoped SHADOW_UPDATE only, unchanged compute effort across Age, and replay batch independence.
