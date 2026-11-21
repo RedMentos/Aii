@@ -1000,7 +1000,7 @@ Boss branch pre-final-handoff head `ce7ca26a08e9bf0d8dea79835035a4281b53bba1`: 1
 
 ### Scope and connected consumer
 
-- Current-base PR #2275, branch research-perception/v14-raw-ear-speaker-batch-isolation-20261121-r2, is stacked on Boss #2258 head 34eb645357d65bdd5ac69b9fb2c834d043086dac. Exact Perception head at readback: 631eb42cff2f3de7f066070e96896d996b019294. Draft / not released.
+- Current-base PR #2275, branch research-perception/v14-raw-ear-speaker-batch-isolation-20261121-r2, is stacked on Boss #2258 head 34eb645357d65bdd5ac69b9fb2c834d043086dac. Current branch head at readback: 511d692c7e1ee0906617bae82c9843e5c8c3f386; code/test tree: 880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c. Draft / not released.
 - Caller-supplied frame embeddings are source/generation/model-revision/checkpoint-hash bound, normalized and held in a bounded process-local registry. The optional consumer supplies scalar change evidence to A5 PerceptPacket, A4 salience/novelty and C3 summary. No speaker label, identity authority, learning authority or action authority; vectors are not persisted. No model is loaded by default.
 - Optional NumPy pitch acceleration remains explicit; pure Python stays the default. No production backend or model change.
 
@@ -1014,7 +1014,7 @@ Boss branch pre-final-handoff head `ce7ca26a08e9bf0d8dea79835035a4281b53bba1`: 1
 
 - LOCAL_LINUX CPython 3.13.5 x86_64 algorithm-level reproduction: PASS for warmup, same-speaker stability, unvoiced negative control, threshold-absent score-only behavior and 1-s/2-s batch invariance. Old-algorithm negative control reproduced the false-negative.
 - LOCAL_LINUX full Aii project tests: BLOCKED; no complete checkout is mounted and GitHub DNS is unavailable.
-- GitHub exact-head workflows are now queued: RAW EAR run 44957913408 (Python 3.13/3.14) and staged/integrated run 44957913340. Both are QUEUED, not PASS. Focused compile/tests/benchmark and staged/integrated regression remain pending exact result readback.
+- The first PR-triggered runs 44957913408/44957913340 were superseded/cancelled during documentation-only pushes. Current code/test tree 880bfc has RAW EAR run 44958073016 (Python 3.13/3.14) and staged/integrated run 44958072992 QUEUED, not PASS. Focused compile/tests/benchmark and staged/integrated regression remain pending exact result readback.
 - REDMI/TERMUX: REDMI_UNVERIFIED. No connected phone, microphone, model weights, permission or updater action was used.
 
 ### Research and reuse decision
@@ -1026,3 +1026,11 @@ Boss branch pre-final-handoff head `ce7ca26a08e9bf0d8dea79835035a4281b53bba1`: 1
 ### Next executable step
 
 Core/QA: trigger and inspect exact-head #2275 Python 3.13/3.14 and staged/integrated workflows; review the current-base audio consumer and source pins. Boss: integrate only after independent review and green exact-head checks. Perception: after this fix, return to the model-candidate lab and continue the whole-Canon research queue. Keep Python default, speaker model OFF, release NOT_RELEASED and Redmi REDMI_UNVERIFIED.
+
+
+### Native latent receiver cross-review (Research/Perception)
+
+- Verified pinned llama.cpp header b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 exposes llama_batch.embd, llama_batch_init, llama_model_n_embd_inp/out, llama_decode, llama_get_embeddings_ith and llama_memory_clear. Core PR #2266 is a real native input-embedding ingress probe.
+- Exact workflow 44955501021 PASS for pinned Linux build, Python 3.13/3.14 tests and Android arm64-v8a cross-compile. No real GGUF model was loaded; Python tests use a fake runner/model fixture. This is not semantic alignment or Redmi proof.
+- Staged/integrated run 44955501004 FAILS due stale arithmetic source pin v13/contracts.py and migration assertions returning PARTIAL rather than UPDATED (19 failed, 230 passed, 10 skipped, 2 errors). This is a separate Core/QA integration blocker.
+- #2266 is based on old release base bdcad466..., not current Boss #2258. Core was asked to rebase/stack on #2258 and repair the staged failure. A trained/versioned projector plus held-out semantic/retention evidence remains required for real cross-model latent coupling.
