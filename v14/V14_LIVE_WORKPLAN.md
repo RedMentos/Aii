@@ -331,3 +331,28 @@ No material V14 master edit was made; no master backup was required. Historical 
 - The underlying learner remains synthetic-Store evidence only. It updates local numeric WorldJEPA/EMA and B1/B2/SELF SHADOW heads; native GGUF body weights remain unchanged and decision authority remains NONE.
 - Exact repository local tests are blocked in this worker by GitHub DNS resolution. CI must run on the new exact PR head; no local or Redmi PASS is claimed.
 - Next: review exact PR-head focused/staged/integrated CI; then persist Adam moments with the checkpoint and compare persistent-vs-reset optimizer under equal update/replay budgets.
+
+
+
+## JEPA/Memory runtime + optimizer ablation checkpoint — 2026-11-21 10:26 CET
+
+### Parent Runtime/learning candidate
+- Boss PR [#2179](https://github.com/RedMentos/Aii/pull/2179) exact head: 68ba0ee703b872f5dd2e0d9e0ae940343284a05f. It composes the real Runtime worker lifecycle with the idle SleepRuntime postcommit consumer and the staged WorldJEPA training-resume overlay. The staged overlay carries Adam first/second moments, inverse-dynamics optimizer state and RNG through the numeric checkpoint; the ordinary source-tree learner remains inference-only for this path.
+- The exact Runtime regression proves a real Runtime.submit → _worker → _turn action is committed before the idle learner processes a source-disjoint synthetic T8 cohort, updates numeric encoder/predictor/EMA parameters, writes a checkpoint, emits a bounded SHADOW planner result and restores/rolls back after restart. It does not prove native B1/B2 GGUF weight changes.
+- Run [44889906551](https://github.com/RedMentos/Aii/actions/runs/44889906551): staged-runtime PASS and integrated-regression PASS. Run [44889906527](https://github.com/RedMentos/Aii/actions/runs/44889906527): combined online JEPA PASS. Run [44889906653](https://github.com/RedMentos/Aii/actions/runs/44889906653): runtime-deploy integrity PASS. Run [44889906635](https://github.com/RedMentos/Aii/actions/runs/44889906635): safe-additive FAIL because the candidate modifies existing modules; preserve the gate and require Boss/manual integration review. PR remains draft / not merged / NOT_RELEASED.
+- The postcommit telemetry defect is resolved by using the existing finite Store telemetry schema (status, component, mode, sha256, optimizer_steps, target_changed, loss_before/after, count, decision, native_body_parameters_modified). The parallel Store-whitelist PR #2184 was closed as superseded; no Store schema expansion is needed.
+
+### New measured-baseline + optimizer-moment experiment
+- PR [#2186](https://github.com/RedMentos/Aii/pull/2186), code/test commit 56f2053a792a6f8a6c385963a45777ccea1f9d06, adds _action_mean_delta_baseline_loss to the real Store-backed WorldJEPA consumer. It computes per-action mean latent delta from training-fold rows only, using the online encoder for z_t and EMA target for z_(t+1), then scores that simple baseline on the same disjoint holdout as JEPA. It is diagnostic only; it does not gate updates.
+- A staged-only test clones the exact SQLite DB, source blobs and first checkpoint into two arms. Both arms receive the same 32 additional rows, then process the same 288-row source/digest-disjoint cohort with 24 steps and uniform replay. One keeps Adam moments; the control zeros m/v while preserving the global step/bias-correction clock. This is a moment-reset control, not a full optimizer-state reset. It records new/old holdout, replay/fit rows, negative controls, retention and mean-delta comparison; sanitized numeric summary is printed for CI review.
+- Deterministic isolated Linux checks for the baseline's exact-zero positive case and unsupported-action negative case: PASS. Full local repository checkout/pytest is BLOCKED by GitHub DNS resolution. Exact #2186 staged/integrated CI was queued at last readback. No native weights or device state changed.
+
+### Research implication
+- JEPA-TTT (arXiv:2610.00722; https://arxiv.org/abs/2610.00722 and https://jepa-ttt.github.io/) reports a large benefit from retaining predictor/optimizer/replay across episodes, but its evaluated setup does not establish A→B→A return-to-old retention or broad anti-forgetting. It supports testing persistent optimizer state, not permanent encoder freezing.
+- ER-JEPA (arXiv:2609.36952; https://arxiv.org/abs/2609.36952) compares episodic content/uniform/hard replay. V14 consequence remains a matched-byte/update comparison against uniform and no-replay, with source/content-disjoint old/new holdouts. No external code, weights or dependencies were imported; no reusable implementation/license was verified.
+
+### Next executable sequence
+1. Read exact #2186 CI and the sanitized optimizer-ablation metrics; fix failures without loosening source, utility, retention or additive gates.
+2. Have Boss independently review #2179's safe-additive failure; do not merge/release or mark phone deployment until the integration policy passes.
+3. Add a true A→B→A return-to-old dynamics/retention cohort, then compare uniform, content-similarity and prediction-error/hard replay under matched memory bytes and optimizer steps, including no-replay and shuffled/zero-action controls.
+4. Keep official Age, optimizer permission, native body weights and Redmi state unchanged. Phone SHA UNKNOWN; REDMI_UNVERIFIED; no user action required.

@@ -104,6 +104,114 @@ def _arrays(rows):
     return x, a, x2
 
 
+def _action_mean_delta_baseline_loss(model, train, holdout):
+    """Action-conditioned constant latent-delta baseline on the same train/holdout split."""
+    x, actions, x2 = train
+    hx, ha, hx2 = holdout
+    z_train = model.latent(x, target=False)
+    z_next_train = model.latent(x2, target=True)
+    z_holdout = model.latent(hx, target=False)
+    z_next_holdout = model.latent(hx2, target=True)
+    train_actions = np.argmax(actions, axis=1)
+    holdout_actions = np.argmax(ha, axis=1)
+    deltas = {}
+    for action in np.unique(train_actions):
+        mask = train_actions == action
+        deltas[int(action)] = np.mean(z_next_train[mask] - z_train[mask], axis=0)
+    if any(int(action) not in deltas for action in holdout_actions):
+        raise ValueError("mean-delta baseline lacks source-disjoint action support")
+    prediction = z_holdout + np.stack([deltas[int(action)] for action in holdout_actions])
+    return float(np.mean((prediction - z_next_holdout) ** 2)), len(deltas)
+
+
+def _select_replay_rows(model, old_rows, *, replay_mode, seed, new_row_count):
+    """Select a bounded prior-train subset; holdout rows are never passed here."""
+    if replay_mode not in {"uniform_sampled", "hard"}:
+        raise ValueError("unsupported bounded replay selection")
+    if (type(seed) is not int or type(new_row_count) is not int or new_row_count < 0):
+        raise ValueError("invalid replay selection seed or new-row count")
+    if type(old_rows) not in (list, tuple):
+        raise ValueError("old replay rows must be a sequence")
+    if any(type(row) is not dict for row in old_rows):
+        raise ValueError("invalid old-train replay row")
+    if any(type(row.get("action_id")) is not str or not row["action_id"] for row in old_rows):
+        raise ValueError("invalid old-train replay identity")
+    canonical = sorted(old_rows, key=lambda row: row["action_id"])
+    ids = [row["action_id"] for row in canonical]
+    if (len(set(ids)) != len(ids)
+            or any(row.get("a") not in world_model.ACTIONS for row in canonical)):
+        raise ValueError("invalid old-train replay rows")
+    if not canonical:
+        return [], {
+            "replay_selection_error_mean": None,
+            "replay_selection_error_min": None,
+            "replay_selection_error_max": None,
+        }
+    budget = min(len(canonical), max(8, min(32, 2 * max(1, new_row_count))))
+    if replay_mode == "uniform_sampled":
+        material = "\\0".join(ids).encode("utf-8")
+        cohort_seed = seed ^ int.from_bytes(hashlib.sha256(material).digest()[:8], "big")
+        rng = np.random.default_rng(cohort_seed)
+        indices = rng.choice(len(canonical), size=budget, replace=False)
+        selected = [canonical[int(index)] for index in indices]
+        selected.sort(key=lambda row: row["action_id"])
+        sx, sa, sx2 = _arrays(selected)
+        predicted, _ = model.predict(sx, sa)
+        target = model.latent(sx2, target=True)
+        predicted = np.asarray(predicted, dtype=np.float64)
+        target = np.asarray(target, dtype=np.float64)
+        if (predicted.ndim != 2 or target.shape != predicted.shape
+                or len(predicted) != len(selected)
+                or not np.isfinite(predicted).all() or not np.isfinite(target).all()):
+            raise ValueError("invalid uniform replay prediction errors")
+        selected_errors = np.mean((predicted - target) ** 2, axis=1)
+    else:
+        x, actions, x2 = _arrays(canonical)
+        predicted, _ = model.predict(x, actions)
+        target = model.latent(x2, target=True)
+        predicted = np.asarray(predicted, dtype=np.float64)
+        target = np.asarray(target, dtype=np.float64)
+        if (predicted.ndim != 2 or target.shape != predicted.shape
+                or len(predicted) != len(canonical)
+                or not np.isfinite(predicted).all() or not np.isfinite(target).all()):
+            raise ValueError("invalid hard replay prediction errors")
+        errors = np.mean((predicted - target) ** 2, axis=1)
+        grouped = {}
+        for row, error in zip(canonical, errors):
+            grouped.setdefault(row["a"], []).append((float(error), row))
+        rank = lambda pair: (-pair[0], pair[1]["action_id"])
+        selected_pairs = [
+            sorted(grouped[action], key=rank)[0]
+            for action in sorted(grouped)
+        ]
+        if len(selected_pairs) > budget:
+            selected_pairs = sorted(selected_pairs, key=rank)[:budget]
+        else:
+            selected_ids = {row["action_id"] for _, row in selected_pairs}
+            remaining = sorted(
+                ((float(error), row) for row, error in zip(canonical, errors)
+                 if row["action_id"] not in selected_ids),
+                key=rank,
+            )
+            selected_pairs.extend(remaining[:budget - len(selected_pairs)])
+        selected_pairs = sorted(
+            selected_pairs[:budget], key=lambda pair: pair[1]["action_id"]
+        )
+        selected = [row for _, row in selected_pairs]
+        selected_errors = np.asarray(
+            [error for error, _ in selected_pairs], dtype=np.float64
+        )
+    if (len(selected) != budget or selected_errors.shape != (budget,)
+            or not np.isfinite(selected_errors).all()):
+        raise ValueError("invalid selected replay cohort")
+    return selected, {
+        "replay_selection_error_mean": float(np.mean(selected_errors)),
+        "replay_selection_error_min": float(np.min(selected_errors)),
+        "replay_selection_error_max": float(np.max(selected_errors)),
+        "replay_selection_budget": budget,
+    }
+
+
 def _source_disjoint_split(rows):
     """Deterministic holdout split by source identity, never by action ID."""
     if type(rows) not in (list, tuple) or not 16 <= len(rows) <= MAX_ROWS:
@@ -535,8 +643,8 @@ class WorldJEPAStoreConsumer:
             raise ValueError("steps")
         if type(optimizer_permission) is not bool:
             raise ValueError("optimizer_permission must be bool")
-        if replay_mode not in {"uniform", "none"}:
-            raise ValueError("replay_mode must be uniform or none")
+        if replay_mode not in {"uniform", "none", "uniform_sampled", "hard"}:
+            raise ValueError("replay_mode must be uniform, none, uniform_sampled, or hard")
         with self._locked(True):
             state, version = self._read_state()
             receipts, rejected, next_cursor, scanned, censored_skipped, has_more = (
@@ -670,6 +778,7 @@ class WorldJEPAStoreConsumer:
             fit_steps_before = int(getattr(model, "_fit_steps", 0))
             before = _parameter_snapshot(model)
             holdout_before = model.prediction_loss(*holdout)
+            mean_delta_before, mean_delta_action_count = _action_mean_delta_baseline_loss(model, train, holdout)
             old_holdout_before = old_holdout_after = None
             if active is not None:
                 old_holdout_ids = set(active["holdout_ids"])
@@ -677,11 +786,33 @@ class WorldJEPAStoreConsumer:
                 if len(old_holdout_rows) >= 2:
                     old_holdout = _arrays(old_holdout_rows)
                     old_holdout_before = model.prediction_loss(*old_holdout)
-            # Uniform replay is the default. The no-replay mode is an explicit
-            # ablation: it trains only on newly admitted train-fold rows while
-            # retaining the complete source-disjoint cohort for future replay.
-            fit_rows = (train_rows if replay_mode == "uniform" or active is None
-                        else new_train_rows)
+            # The default keeps the complete old+new train fold. Bounded
+            # uniform/error-prioritized policies are opt-in experiments with
+            # equal old-row budgets; none is the explicit no-replay control.
+            selected_replay_rows = []
+            replay_selection_metrics = {
+                "replay_selection_error_mean": None,
+                "replay_selection_error_min": None,
+                "replay_selection_error_max": None,
+            }
+            if active is None:
+                fit_rows = train_rows
+            elif replay_mode == "uniform":
+                selected_replay_rows = list(old_train_rows)
+                fit_rows = train_rows
+            elif replay_mode == "none":
+                fit_rows = new_train_rows
+            else:
+                selected_replay_rows, replay_selection_metrics = _select_replay_rows(
+                    model, old_train_rows, replay_mode=replay_mode,
+                    seed=self.seed, new_row_count=len(new_train_rows),
+                )
+                fit_rows = new_train_rows + selected_replay_rows
+            replay_selection_metrics.update({
+                "replay_selection_policy": replay_mode,
+                "replay_selection_action_count": len({row["a"] for row in selected_replay_rows}),
+                "replay_selection_budget": len(selected_replay_rows),
+            })
             if len(fit_rows) < 2:
                 persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
                 if persisted != "PERSISTED":
@@ -698,6 +829,7 @@ class WorldJEPAStoreConsumer:
             model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4))
             after = _parameter_snapshot(model)
             holdout_after = model.prediction_loss(*holdout)
+            mean_delta_after, mean_delta_action_count_after = _action_mean_delta_baseline_loss(model, train, holdout)
             shuffled_action_loss = model.prediction_loss(holdout[0], np.roll(holdout[1], 1, axis=0), holdout[2])
             zero_action_loss = model.prediction_loss(holdout[0], np.zeros_like(holdout[1]), holdout[2])
             if old_holdout_before is not None:
@@ -735,6 +867,16 @@ class WorldJEPAStoreConsumer:
                     "retention_gate_accepted": old_holdout_retained,
                     "holdout_loss_before": float(holdout_before),
                     "holdout_loss_after": float(holdout_after),
+                    "train_rows": len(train_ids), "holdout_rows": len(holdout_ids),
+                    "train_holdout_id_disjoint": True,
+                    "train_holdout_source_disjoint": split["manifest"]["source_disjoint"],
+                    "train_holdout_source_sha256_disjoint": split["manifest"]["source_sha256_disjoint"],
+                    "train_holdout_content_disjoint": split["manifest"]["within_supplied_records_content_disjoint"],
+                    "mean_delta_baseline_loss_before": float(mean_delta_before),
+                    "mean_delta_baseline_loss_after": float(mean_delta_after),
+                    "mean_delta_baseline_action_count": int(mean_delta_action_count_after),
+                    "jepa_beats_mean_delta_before": bool(holdout_before < mean_delta_before),
+                    "jepa_beats_mean_delta_after": bool(holdout_after < mean_delta_after),
                     "shuffled_action_holdout_loss": float(shuffled_action_loss),
                     "zero_action_holdout_loss": float(zero_action_loss),
                     "old_holdout_loss_before": None if old_holdout_before is None else float(old_holdout_before),
@@ -747,7 +889,9 @@ class WorldJEPAStoreConsumer:
                     "replay_mode": replay_mode,
                     "new_train_rows": len(new_train_rows),
                     "replay_candidate_rows": len(old_train_rows),
-                    "replay_rows": len(old_train_rows) if replay_mode == "uniform" and active else 0,
+                    "replay_rows": len(selected_replay_rows),
+                    "replay_selected_action_ids": [row["action_id"] for row in selected_replay_rows],
+                    **replay_selection_metrics,
                     "fit_rows": len(fit_rows),
                     "fit_action_ids": [row["action_id"] for row in fit_rows],
                     "new_train_action_ids": [row["action_id"] for row in new_train_rows],
@@ -756,6 +900,8 @@ class WorldJEPAStoreConsumer:
                     "native_body_weights_changed": False,
                     "native_body_consumed": False,
                     "runtime_wired": False,
+                    "optimizer_moments_persisted": False,
+                    "inverse_dynamics_optimizer_persisted": False,
                 }
             receiver_heads, receiver_metrics = _fit_role_receivers(model, train, holdout, train_rows, holdout_rows)
             source_sha = _cohort_sha(experience_rows)
@@ -771,7 +917,9 @@ class WorldJEPAStoreConsumer:
                 "scan_cursor_before": state["scan_cursor"], "scan_cursor_after": next_cursor,
                 "replay_mode": replay_mode,
                 "replay_candidate_rows": len(old_train_rows),
-                "replay_rows": len(old_train_rows) if replay_mode == "uniform" and active else 0,
+                "replay_rows": len(selected_replay_rows),
+                "replay_selected_action_ids": [row["action_id"] for row in selected_replay_rows],
+                **replay_selection_metrics,
                 "new_train_rows": len(new_train_rows),
                 "new_holdout_rows": len(set(new_ids) & set(holdout_ids)),
                 "fit_rows": len(fit_rows),
@@ -785,6 +933,11 @@ class WorldJEPAStoreConsumer:
                 "train_holdout_source_sha256_disjoint": split["manifest"]["source_sha256_disjoint"],
                 "train_holdout_content_disjoint": split["manifest"]["within_supplied_records_content_disjoint"],
                 "holdout_loss_before": float(holdout_before), "holdout_loss_after": float(holdout_after),
+                "mean_delta_baseline_loss_before": float(mean_delta_before),
+                "mean_delta_baseline_loss_after": float(mean_delta_after),
+                "mean_delta_baseline_action_count": int(mean_delta_action_count_after),
+                "jepa_beats_mean_delta_before": bool(holdout_before < mean_delta_before),
+                "jepa_beats_mean_delta_after": bool(holdout_after < mean_delta_after),
                 "holdout_loss_delta": float(holdout_after - holdout_before),
                 "holdout_improved": holdout_improved,
                 "shuffled_action_holdout_loss": float(shuffled_action_loss),
@@ -799,7 +952,7 @@ class WorldJEPAStoreConsumer:
                 "parameter_delta_norm": float(parameter_delta), "ema_target_delta_norm": float(ema_delta),
                 "fit_steps_before": fit_steps_before, "fit_steps_after": fit_steps_after,
                 "checkpoint_sha_before": checkpoint_before, "checkpoint_sha_after": checkpoint_after,
-                "optimizer_moments_persisted": False, "inverse_dynamics_optimizer_persisted": False,
+                "optimizer_moments_persisted": saved.get("optimizer_state_persisted") is True, "inverse_dynamics_optimizer_persisted": saved.get("optimizer_state_persisted") is True,
             }
             metrics.update(receiver_metrics)
             record = {

@@ -559,3 +559,291 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         ]
     finally:
         reopened.close()
+
+
+
+def test_staged_optimizer_moment_persistence_vs_reset_and_mean_delta_baseline(tmp_path):
+    """Matched SQLite T8 cohort: persistent Adam moments vs moment-reset control.
+
+    The control deliberately retains Adam's global step/bias-correction clock while
+    zeroing first/second moments. It is not described as a full optimizer reset.
+    """
+    import json
+    import shutil
+
+    import numpy as np
+    import pytest
+
+    if not EXPECT_OPTIMIZER_STATE_PERSISTED:
+        pytest.skip("requires the staged WorldJEPA training-resume overlay")
+
+    from v13.world_jepa_consumer import WorldJEPAStoreConsumer
+    from v13.world_jepa_training_state_candidate import from_model
+
+    def moment_norm(state):
+        groups = [state["main"]] + [member["adam"] for member in state["bootstrap"]]
+        return float(sum(
+            np.linalg.norm(array)
+            for adam in groups
+            for family in ("m", "v")
+            for array in adam[family].values()
+        ))
+
+    def result_metrics(result):
+        value = result.get("metrics")
+        return value if type(value) is dict else result
+
+    seed_home = tmp_path / "seed"
+    seed_store, session = _make_store(seed_home)
+    try:
+        _add_transitions(seed_store, session, 0, 256)
+        seed_consumer = WorldJEPAStoreConsumer(
+            seed_store, seed_home / "private-jepa", learning_enabled=True,
+            seed=13, ensemble=2,
+        )
+        first = seed_consumer.update(
+            limit=256, steps=120, optimizer_permission=True, replay_mode="uniform"
+        )
+        assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        first_metrics = first["metrics"]
+        assert first_metrics["optimizer_moments_persisted"] is True
+        assert first_metrics["inverse_dynamics_optimizer_persisted"] is True
+        assert np.isfinite(first_metrics["mean_delta_baseline_loss_before"])
+        assert np.isfinite(first_metrics["mean_delta_baseline_loss_after"])
+        assert first_metrics["mean_delta_baseline_action_count"] >= 2
+        first_state, _ = seed_consumer._read_state()
+        first_model = seed_consumer._load_model(first_state["active"])
+        first_training = from_model(first_model)
+        assert first_training["main"]["t"] == first_metrics["fit_steps_after"] == 120
+        assert moment_norm(first_training) > 0
+    finally:
+        seed_store.close()
+
+    # Clone the exact DB, source blobs and first checkpoint. Both arms therefore
+    # begin with byte-identical T8 receipts, model parameters, EMA, RNG and Adam.
+    persistent_home = tmp_path / "persistent"
+    reset_home = tmp_path / "moment-reset"
+    for destination in (persistent_home, reset_home):
+        shutil.copytree(seed_home / "data", destination / "data")
+        shutil.copytree(seed_home / "private-jepa", destination / "private-jepa")
+
+    added = Store(persistent_home)
+    try:
+        _add_transitions(added, session, 256, 32)
+    finally:
+        added.close()
+    shutil.rmtree(reset_home / "data")
+    shutil.copytree(persistent_home / "data", reset_home / "data")
+
+    persistent_store = Store(persistent_home)
+    reset_store = Store(reset_home)
+    try:
+        persistent = WorldJEPAStoreConsumer(
+            persistent_store, persistent_home / "private-jepa", learning_enabled=True,
+            seed=13, ensemble=2,
+        )
+        reset = WorldJEPAStoreConsumer(
+            reset_store, reset_home / "private-jepa", learning_enabled=True,
+            seed=13, ensemble=2,
+        )
+        persistent_before, _ = persistent._read_state()
+        reset_before, _ = reset._read_state()
+        assert persistent_before == reset_before
+
+        persistent_measure = {}
+        persistent_load = persistent._load_model
+
+        def capture_persistent(active):
+            model = persistent_load(active)
+            training = from_model(model)
+            persistent_measure["main_step"] = training["main"]["t"]
+            persistent_measure["moment_norm"] = moment_norm(training)
+            return model
+
+        persistent._load_model = capture_persistent
+
+        reset_measure = {}
+        reset_load = reset._load_model
+
+        def load_with_reset_moments(active):
+            model = reset_load(active)
+            training = from_model(model)
+            reset_measure["main_step"] = training["main"]["t"]
+            reset_measure["moment_norm_before"] = moment_norm(training)
+            for adam in [training["main"]] + [member["adam"] for member in training["bootstrap"]]:
+                for family in ("m", "v"):
+                    adam[family] = {
+                        key: np.zeros_like(value) for key, value in adam[family].items()
+                    }
+            reset_measure["moment_norm_after"] = moment_norm(training)
+            model._training_state = training
+            return model
+
+        reset._load_model = load_with_reset_moments
+
+        persistent_result = persistent.update(
+            limit=288, steps=24, optimizer_permission=True, replay_mode="uniform"
+        )
+        reset_result = reset.update(
+            limit=288, steps=24, optimizer_permission=True, replay_mode="uniform"
+        )
+        assert persistent_result["status"] in {
+            "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED"
+        }
+        assert reset_result["status"] in {
+            "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED"
+        }
+        persistent_metrics = result_metrics(persistent_result)
+        reset_metrics = result_metrics(reset_result)
+
+        assert persistent_measure["main_step"] == reset_measure["main_step"] == 120
+        assert persistent_measure["moment_norm"] > 0
+        assert reset_measure["moment_norm_before"] > 0
+        assert reset_measure["moment_norm_after"] == 0.0
+        for key in ("fit_steps_before", "fit_steps_after", "fit_rows", "new_train_rows", "replay_rows"):
+            assert persistent_metrics[key] == reset_metrics[key], key
+        assert persistent_metrics["fit_steps_before"] == 120
+        assert persistent_metrics["fit_steps_after"] == 144
+        assert persistent_metrics["replay_rows"] >= 8
+        for metrics in (persistent_metrics, reset_metrics):
+            assert metrics["train_holdout_id_disjoint"] is True
+            assert metrics["train_holdout_source_disjoint"] is True
+            assert metrics["train_holdout_source_sha256_disjoint"] is True
+            assert metrics["train_holdout_content_disjoint"] is True
+            assert np.isfinite(metrics["holdout_loss_before"])
+            assert np.isfinite(metrics["holdout_loss_after"])
+            assert np.isfinite(metrics["mean_delta_baseline_loss_before"])
+            assert np.isfinite(metrics["mean_delta_baseline_loss_after"])
+            assert metrics["mean_delta_baseline_action_count"] >= 2
+            assert type(metrics["jepa_beats_mean_delta_after"]) is bool
+
+        summary = {
+            "control": "zero_adam_m_and_v_keep_global_step",
+            "persistent_status": persistent_result["status"],
+            "moment_reset_status": reset_result["status"],
+            "persistent_moment_norm_before": persistent_measure["moment_norm"],
+            "reset_moment_norm_before": reset_measure["moment_norm_before"],
+            "reset_moment_norm_after": reset_measure["moment_norm_after"],
+            "fit_steps": [persistent_metrics["fit_steps_before"], persistent_metrics["fit_steps_after"]],
+            "fit_rows": persistent_metrics["fit_rows"],
+            "replay_rows": persistent_metrics["replay_rows"],
+            "persistent": {key: persistent_metrics[key] for key in (
+                "holdout_loss_before", "holdout_loss_after", "old_holdout_retention_delta",
+                "mean_delta_baseline_loss_before", "mean_delta_baseline_loss_after",
+                "jepa_beats_mean_delta_after", "negative_controls_separated", "retention_gate_accepted",
+            )},
+            "moment_reset": {key: reset_metrics[key] for key in (
+                "holdout_loss_before", "holdout_loss_after", "old_holdout_retention_delta",
+                "mean_delta_baseline_loss_before", "mean_delta_baseline_loss_after",
+                "jepa_beats_mean_delta_after", "negative_controls_separated", "retention_gate_accepted",
+            )},
+        }
+        print("V14_JEPA_OPTIMIZER_ABLATION " + json.dumps(summary, sort_keys=True))
+    finally:
+        persistent_store.close()
+        reset_store.close()
+
+
+def test_sleep_runtime_hard_replay_vs_matched_uniform_sampled(tmp_path):
+    import json
+    import shutil
+    import numpy as np
+    import pytest
+    from v13.world_jepa_runtime import permission_state
+
+    if not EXPECT_OPTIMIZER_STATE_PERSISTED:
+        pytest.skip("requires staged optimizer-resume overlay")
+
+    seed_home = tmp_path / "seed"
+    seed_store, session = _make_store(seed_home)
+    try:
+        _add_transitions(seed_store, session, 0, 256)
+        seed_consumer = WorldJEPAStoreConsumer(
+            seed_store, seed_home / "world_jepa", learning_enabled=True,
+            seed=13, ensemble=2,
+        )
+        first = seed_consumer.update(
+            limit=256, steps=120, optimizer_permission=True, replay_mode="uniform"
+        )
+        assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert first["metrics"]["optimizer_moments_persisted"] is True
+        assert first["metrics"]["parameter_delta_norm"] > 0
+        assert first["metrics"]["ema_target_delta_norm"] > 0
+    finally:
+        seed_store.close()
+
+    cohort_home = tmp_path / "cohort"
+    shutil.copytree(seed_home / "data", cohort_home / "data")
+    shutil.copytree(seed_home / "world_jepa", cohort_home / "world_jepa")
+    cohort_store = Store(cohort_home)
+    try:
+        new_events = _add_transitions(cohort_store, session, 256, 32)
+    finally:
+        cohort_store.close()
+    assert len(new_events) == 32
+
+    arms = {}
+    for mode in ("uniform_sampled", "hard"):
+        arm_home = tmp_path / mode
+        shutil.copytree(cohort_home / "data", arm_home / "data")
+        shutil.copytree(cohort_home / "world_jepa", arm_home / "world_jepa")
+        arm_store = Store(arm_home)
+        try:
+            arm_store.set_state(PERMISSION_KEY, {
+                "learning_enabled": True,
+                "optimizer_permission": True,
+                "steps": 24,
+                "replay_mode": mode,
+            })
+            assert permission_state(arm_store)["replay_mode"] == mode
+            sleep = _sleep(arm_store, arm_home)
+            result = sleep._run_world_jepa(new_events[-1], limit=64)
+            learning_debug = result.get("learning", {})
+            assert result["status"] in {"POSTCOMMIT_PROCESSED", "PARTIAL"}, {
+                "status": result.get("status"),
+                "learning_status": learning_debug.get("status"),
+                "learning_error": learning_debug.get("error"),
+                "replay_mode": permission_state(arm_store)["replay_mode"],
+            }
+            learning = result["learning"]
+            assert learning["status"] in {
+                "UPDATED_EXPERIMENTAL_WORLD_JEPA", "UTILITY_GATE_REJECTED"
+            }
+            metrics = learning.get("metrics")
+            metrics = metrics if type(metrics) is dict else learning
+            assert metrics["replay_mode"] == mode
+            assert metrics["fit_steps_before"] == 120
+            assert metrics["fit_steps_after"] == 144
+            assert metrics["replay_rows"] == metrics["replay_selection_budget"]
+            assert metrics["replay_rows"] >= 8
+            assert len(metrics["replay_selected_action_ids"]) == metrics["replay_rows"]
+            assert set(metrics["replay_selected_action_ids"]).isdisjoint(
+                set(metrics["new_train_action_ids"])
+            )
+            assert metrics["train_holdout_id_disjoint"] is True
+            assert metrics["train_holdout_source_disjoint"] is True
+            assert metrics["train_holdout_source_sha256_disjoint"] is True
+            assert metrics["train_holdout_content_disjoint"] is True
+            assert metrics["parameter_delta_norm"] > 0
+            assert metrics["ema_target_delta_norm"] > 0
+            assert np.isfinite(metrics["holdout_loss_before"])
+            assert np.isfinite(metrics["holdout_loss_after"])
+            assert type(metrics["negative_controls_separated"]) is bool
+            assert type(metrics["retention_gate_accepted"]) is bool
+            arms[mode] = {
+                "status": learning["status"],
+                "fit_rows": metrics["fit_rows"],
+                "replay_rows": metrics["replay_rows"],
+                "replay_selection_error_mean": metrics["replay_selection_error_mean"],
+                "holdout_loss_before": metrics["holdout_loss_before"],
+                "holdout_loss_after": metrics["holdout_loss_after"],
+                "old_holdout_retention_delta": metrics["old_holdout_retention_delta"],
+                "negative_controls_separated": metrics["negative_controls_separated"],
+                "retention_gate_accepted": metrics["retention_gate_accepted"],
+            }
+        finally:
+            arm_store.close()
+
+    assert arms["hard"]["fit_rows"] == arms["uniform_sampled"]["fit_rows"]
+    assert arms["hard"]["replay_rows"] == arms["uniform_sampled"]["replay_rows"]
+    print("V14_JEPA_REPLAY_ABLATION " + json.dumps(arms, sort_keys=True))
