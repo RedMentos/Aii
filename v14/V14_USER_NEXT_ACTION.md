@@ -768,3 +768,16 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 - Private owner-read [#403](https://github.com/RedMentos/Aiiii/issues/403) remains open with no response; installed SHA and updater consent are unknown. No UPDATE_REQUEST, shell action, model download/swap, permission change or phone mutation occurred.
 
 **User action required: none.** Do not run a new Termux command or change installed models, weights, permissions or data. The code branch is CI-green but not phone-verified; REDMI_UNVERIFIED remains the release status.
+
+
+## JEPA/Memory — predictor-only A→B→A experiment (2026-11-21)
+
+**No user action is needed.** No Termux command, device update, model download/swap, permission change or data mutation was performed.
+
+- The JEPA lane has an open draft PR: [#2231](https://github.com/RedMentos/Aii/pull/2231), branch `jepa-memory/v14-store-aba-current-20261121-run11b`. Last verified code head: `ac92200699e2838d99ccd3dd7036debf2a755414`; base is current shared V14 head `9d8f91960c568be7fe7dcf894555ce7250f635f4`.
+- New code adds an experimental `predictor_only` update mode after a full encoder/EMA bootstrap. `full` remains the default. The mode is routed through the normal Store-backed postcommit consumer's permission state, but learning/optimizer permissions remain OFF by default.
+- Adam now tracks per-parameter update counts, so encoder/inverse clocks do not advance during predictor-only updates. Legacy checkpoints without those counters remain readable. The consumer reports separate encoder, predictor and EMA parameter deltas.
+- The earlier A→B→A baseline was negative: 12 candidate updates across the old replay/no-replay arms were rejected by the retention gate. The new comparison tests four arms × three seeds, with disjoint cohort holdouts, checkpoint restart, rollback and negative controls.
+- The exact staged consumer pin chain was updated after CI caught stale hashes. The latest Python 3.13/3.14, staged and integrated runs were pending at last readback; no PASS is claimed until those complete.
+- Local full-suite testing remains blocked because there is no local Aii checkout and GitHub DNS could not resolve. GitHub Actions results are CI/Linux only. Redmi remains `REDMI_UNVERIFIED`; no native GGUF B1/B2/C3 weight update or Android installation is proven.
+- Next internal action: finish CI, inspect each seed's A/B utility and retention, and only keep the predictor-only arm experimental unless it passes the full matched acceptance. Then continue the T8→World/Self/Memory→B1/B2 receiver integration. No manual action is required from the user.
