@@ -1738,3 +1738,8 @@ The explicit `latent-cache-tiny` workflow completed on prior exact PR #2243 head
 ### A5 optional visual-teacher candidate R-042 — 2026-11-21 20:12 CET
 
 SmolVLM-256M-Instruct is an upstream Apache-2.0 image+text VLM (256M parameters; English NLP). At the pinned ggml-org revision `b9e4379657e1450d04d02eec8e345667265b0a00`, Q8_0 model is 175 MB and Q8_0 mmproj is 104 MB (279 MB combined); F16 mmproj is 190 MB. Official llama.cpp multimodal docs list SmolVLM-256M via `libmtmd`; Android docs describe Termux CLI build but warn context can spike memory. Model-card OCRBench/TextVQA/DocVQA scores are upstream-only. This is a shadow candidate for optional visual perception, not a replacement body or proof of Android support. No model was downloaded; ARM64 build, image-size scaling, TTFT, peak RSS/PSS and quality remain NOT_TESTED.
+
+
+### A5 two-phase revocation / adapter evidence — 2026-11-21 20:18 CET
+
+#2246 now has a synthetic pre-lock revoke-request signal and post-guard cleanup callback; tests cover C3-like cancellation and generation isolation. The current adapter does not pass the required `generation_id` to `ui_observation_lease`, so its main consumer path is not yet wired correctly and exact CI is pending. No Android OS provider, capture or action. #2243's tiny K/V experiment CI passes 3/3 but remains a research-only toy mechanism proof.
