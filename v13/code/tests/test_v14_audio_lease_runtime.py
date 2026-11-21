@@ -30,6 +30,11 @@ def test_staged_audio_lease_covers_bodies_and_complete_c3_then_revokes(tmp_path)
     assert "consent_lease=audio_window.get('_consent_lease')" in staged_runtime
     assert "SCALE_AWARE_C4_RULE" in staged_focal
     assert "LOCAL_EXACT_ARITHMETIC" in staged_runtime
+    staged_arithmetic = (destination / "v13/arithmetic_reflex.py").read_text()
+    assert "_DATE_SHAPE = re.compile(" in staged_arithmetic
+    assert "wie\\\\s+viel\\\\s+ist" in staged_arithmetic
+    assert "world_observe_unavailable" in staged_runtime
+    assert "world_self_state_unavailable" in staged_runtime
     assert "def revoke_source" in staged_store
     assert "def sweep_revoked" in staged_store
     assert "def close_runtime" in staged_store

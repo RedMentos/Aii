@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T17:33:05.455Z",
+  "updated_at": "2026-11-21T18:05:59.714Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Code-bearing release f279 and documentation-only shared parent HEAD 1185 both have 19/19 associated workflows SUCCESS. Core #2234 exact head e84d28c has focused C4/arithmetic, staged-runtime, integrated regression and two-checkout migration PASS (251 passed/10 skipped/47 subtests; 424 passed/3 skipped/58 subtests), but Boss review found its new stage wrapper is not called by runtime_deploy (STAGER remains stage_integrated_candidate) while the PR removes the existing normal C4 source-span overlay. Therefore the new arithmetic/focal behavior is not a normal Runtime consumer and the patch would regress C4 if merged as-is. No new user-visible Runtime behavior or Redmi proof.",
-      "next_step": "Core: preserve the existing normal C4 source-span overlay and route the exact-arithmetic/focal candidate through the ordinary pinned stage/deployer chain, or keep it shadow-only without removing C4. Recompose only after QA #2235 and Boss #2241 are reviewed; rerun exact staged/integrated/migration and release push CI. Perception still owns a normal consent-bound audio consumer and revocation cleanup.",
+      "proof_environment": "Perception #2240 merged at 728cdc763f09bee20ac00e1f0faadffcd33dfbb2. Exact merge-push CI complete: 18/19 workflows PASS; 1 workflow FAIL because the staged-runtime job's normal SleepRuntime post-commit JEPA test receives UTILITY_GATE_REJECTED instead of a positive accepted update; integrated-regression job PASS. Prior code-bearing release f279286a4453248004c670fcaabecd85da6ab299 remains 19/19. Audio producer/lease API is present but normal Runtime C3 consumer is not wired. No Redmi proof.",
+      "next_step": "JEPA: fix validated optimizer-state clone and produce a retention-preserving accepted update without lowering the gate; maintain exact rollback. Core/QA: preserve C4 in normal deployer. Core: wire audio lease through C3 with cancellation and revoke cleanup.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T17:33:05.455Z"
+      "last_checkpoint": "2026-11-21T18:05:08.230Z"
     },
     {
       "id": "V14-002",
@@ -28,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Code release f279 has 19/19 workflows SUCCESS; no authenticated private owner-read response exists. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No UPDATE_REQUEST or phone mutation.",
-      "next_step": "QA: wait for the existing HEALTH/PIPELINE_STATUS/DIAGNOSTICS owner-read requests; do not create duplicates or change updater consent. Require a fresh authenticated installed-SHA receipt before any release claim.",
+      "proof_environment": "Private PIPELINE_STATUS request expired without authenticated reply; installed SHA and updater consent UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, shell action or phone mutation. REDMI_UNVERIFIED.",
+      "next_step": "QA: wait for authenticated owner-read receipt; do not alter updater consent or trigger update. Require exact installed SHA before any phone release claim.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 18:04 CET",
+      "last_checkpoint": "2026-11-21T18:05:08.230Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -73,10 +73,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "#2231 incremental learner path is blocked in staged Runtime by a verified integrated_world_training_resume_candidate SHA mismatch. #2237 uniform, uniform-budget and session-contiguous replay variants all report UTILITY_GATE_REJECTED; old-holdout loss regresses roughly +0.009 to +0.270 in emitted experiments. No accepted persistent update or native GGUF learning proof.",
-      "next_step": "JEPA: rebind the full recovery→stage→deployer pin chain on current base, then use matched source-disjoint cohorts and repeated seeds to demonstrate a retention-preserving persistent numeric update, restart equivalence, negative controls and rollback. Keep learning gates OFF.",
+      "proof_environment": "JEPA #2237 head d91f4683 fixed nested source pins; migration, owner-read bootstrap, Lab-Age, runtime-deploy, incremental and combined integration PASS. Two workflows still fail: old-holdout retention worse than stable predictor on Python 3.13/3.14, and second update fails because runtime guard clone omits validated _training_state. Normal SleepRuntime merge-push test also returns UTILITY_GATE_REJECTED. No accepted update; optimizer gates OFF.",
+      "next_step": "JEPA: validate/copy main/bootstrap/inverse optimizer state, EMA and RNG via canonical state/checkpoint schema; improve actual old-task retention with bounded projection/backtracking or measured alternative; preserve positive accepted-update and exact rollback tests. Never lower threshold or claim rejected updates.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 18:04 CET",
+      "last_checkpoint": "2026-11-21T18:05:08.230Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -159,10 +159,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Perception #2233 latest head 398b8072618ee03add643fa74d917606b41fe938, base 9d8f (behind current shared HEAD a6b2aeaa), mergeable false. Code/test evidence remains exact SHA 17f273395a869fd7469110773a5fe777a522909b: consent 29, RAW EAR 53 on Python 3.11/3.13, VAD comparator 8 on Python 3.13/3.14, libfvad Linux 13 PASS per matrix, staged 251/10/47, integrated 424/3/58. Current head checks 6 success/1 failure/5 pending. Branch includes stale Boss-owned docs; no Runtime microphone consumer or Redmi proof.",
-      "next_step": "Perception: rebase current head, preserve Boss-owned docs, keep research/handoff changes scoped. Core + QA: integrate producer into normal Runtime with revocation deletion/cache clearing and a lease through actual C3 generation. Keep mic/ASR/TTS off until separately proven.",
+      "proof_environment": "Perception #2240 merged at 728cdc763f09bee20ac00e1f0faadffcd33dfbb2. Caller-PCM RAW EAR producer and ephemeral source/runtime/generation/receipt/thread-bound AudioConsentLease are in shared branch. Exact merge-push 18/19 PASS, 1 FAIL on separate normal SleepRuntime JEPA retention acceptance; integrated-regression job PASS. No normal Runtime C3 consumer, microphone, ASR/TTS, full duplex or Redmi proof. Prompt cancellation/revocation remains a consumer requirement.",
+      "next_step": "Core: rebase #2200 onto merged #2240; hold lease through derived-context reads, B1/B2 and full C3 generation with prompt cancellation. QA: prove context tombstone/delete and cache clear. Perception: A5 UI observe grant/lease remains unimplemented; no screen capture claim.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 17:14 CET",
+      "last_checkpoint": "2026-11-21T18:05:08.230Z",
       "latest_candidate_pr": {
         "pr": 2155,
         "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
@@ -275,23 +275,23 @@
       "status": "INTEGRATION_REVIEW",
       "scope": "All AgeControl.budgets()/legacy budget consumers; LaboratoryAgeControl; effort, Sleep replay, ResourceGuard and the normal staged Runtime",
       "acceptance": "Official Age remains 0 while X10 test selection can exercise only explicitly implemented tool/learning rights; Age never caps physical compute, wall time, memory, focal cycles or replay volume; every consumer is audited; ResourceGuard/deadline/policy remain independent; staged, integrated, migration and rollback tests pass.",
-      "proof_environment": "QA #2235 head fe05369357f5d1ad6cefe4e8faa8ba79b2b5f126: staged Runtime 251 passed/10 skipped/47 subtests; integrated regression 424 passed/3 skipped/58 subtests; Lab-Age E2E, two-checkout migration, runtime-deploy integrity and owner-read bootstrap PASS; safe-additive FAIL BY POLICY; NOT_RELEASED. Boss #2241 corrected head 87d7241a6bf06cab65dfa1506c9112629d1b2fd8: Lab-Age control/WebView workflow PASS; staged+integrated regression still IN_PROGRESS at last poll; safe-additive FAIL BY POLICY; first draft's age.py hash-pin failure was corrected by restoring the exact base age.py blob. Targeted residual consumers were agi/curiosity.py (exploration_rate) and agi/goals.py (focal_depth) via agi/base.py:budget(); #2241 now uses a separate learning_limit derived from effective capability ceiling+maturity, without calling AgeControl.budgets(). QA's exhaustive all-module callsite audit is still outstanding. Local full suite BLOCKED; REDMI_UNVERIFIED.",
-      "next_step": "QA: finish and publish the exhaustive all-module direct/indirect AgeControl.budgets()/legacy-field inventory, including any remaining runtime consumers, and rebase #2235 to the current shared head. Boss: wait for #2241 exact integrated regression, manually review its corrected head, then compose #2241 with #2235 without touching competing pin chains; require exact staged/integrated/migration and release push CI. Keep #2235/#2241 DRAFT until this is complete; no release or Redmi claim.",
+      "proof_environment": "QA #2235 current head 150e92b. Earlier code heads dc87281/8d3df9 had staged 251/10/47, integrated 424/3/58, migration/deploy and owner-read PASS. Current exact head's Lab-Age/owner-read runs fail because AST inventory reports nested GoalStore.add closure f(st) rather than enclosing method add; latest commit parses learning_limit mapping expression but leaves closure attribution. Safe-additive FAIL BY POLICY. #2241 closed as redundant. NOT_RELEASED.",
+      "next_step": "QA: fix AST enclosing-method attribution for GoalStore.add's nested closure, add negative unrelated-closure case, rerun Lab-Age/owner-read/staged/integrated/migration. Boss/Core: compose #2235 with #2234 only after preserving normal C4 and recomputing recovery→stage→deployer pins.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T17:33:05.455Z"
+      "last_checkpoint": "2026-11-21T18:05:08.230Z"
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED — private owner-read requests for HEALTH, PIPELINE_STATUS and DIAGNOSTICS remain open without authenticated response. Installed SHA and updater consent UNKNOWN. No UPDATE_REQUEST, shell action, model change or device mutation.",
+  "current_redmi_status": "REDMI_UNVERIFIED — private PIPELINE_STATUS request expired without authenticated reply; installed SHA and updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action or device mutation.",
   "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
-  "latest_integrated_head": "f279286a4453248004c670fcaabecd85da6ab299",
-  "latest_integrated_head_verified_at": "2026-11-21T15:50:16.712Z",
-  "release_gate_status": "CODE_CI_GREEN_NOT_PHONE_RELEASED. Code-bearing release f279286a4453248004c670fcaabecd85da6ab299 has 19/19 associated workflows SUCCESS. Shared documentation-only head 7a07d01d3f6c9c3a4fb96511ae7decd73c27ccf9 has 18/19 workflows SUCCESS; the only failure is V14 T8 Python 3.14 where the retention gate returns UTILITY_GATE_REJECTED but the test expects UPDATED_EXPERIMENTAL_WORLD_JEPA. Code blobs checked in runtime.py, stage_integrated_candidate.py, runtime_deploy.py and effort.py are identical between f279 and 7a07. No new code merge or Redmi proof.",
+  "latest_integrated_head": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
+  "latest_integrated_head_verified_at": "2026-11-21T18:05:08.230Z",
+  "release_gate_status": "MERGED_NOT_RELEASED_EXACT_PUSH_CI_18_OF_19; staged-runtime JEPA acceptance test failed with UTILITY_GATE_REJECTED; integrated-regression job passed.",
   "phone_receipt": {
-    "state": "NO_LIVE_RECEIPT_PRIVATE_OWNER_READ_REQUESTS_PENDING_NO_AUTHENTICATED_REPLY",
+    "state": "NO_AUTHENTICATED_OWNER_READ_REPLY",
     "installed_sha": "UNKNOWN",
     "auto_update": "UNKNOWN",
     "redmi_status": "REDMI_UNVERIFIED",
-    "last_request": "existing HEALTH / PIPELINE_STATUS / DIAGNOSTICS requests remain open without authenticated reply; no duplicate request or UPDATE_REQUEST issued"
+    "last_request": "Fresh private PIPELINE_STATUS request expired without authenticated reply; no LOG_PAGE or UPDATE_REQUEST."
   },
   "capability_snapshot": [
     {
@@ -455,26 +455,27 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-21T17:33:05.455Z",
-    "branch_head": "1185dac228afefd8ace5294cd6f099ac6530b2ed",
-    "branch_head_type": "DOCUMENTATION_ONLY_CHECKPOINT_BASED_ON_1185DAC; this checkpoint commit itself changes only V14 board and user handoff; code-bearing release remains f279286a4453248004c670fcaabecd85da6ab299",
-    "branch_head_checks": "EXACT shared parent HEAD 1185dac: 19/19 associated workflows SUCCESS. Code-bearing release f279: 19/19 SUCCESS. Neither is a Redmi receipt.",
+    "timestamp": "2026-11-21T18:05:08.230Z",
+    "branch_head": "7c9841ae9d665aab19e60d524307342a219047f0",
+    "branch_head_type": "DOCUMENTATION_ONLY_HANDOFF_REFRESH; code merge head 728cdc; board refresh follows; no Redmi deployment",
+    "branch_head_checks": "Exact merge-push CI 18/19 PASS, 1 FAIL: staged-runtime SleepRuntime JEPA positive acceptance got UTILITY_GATE_REJECTED; integrated-regression job PASS.",
     "code_bearing_release_sha": "f279286a4453248004c670fcaabecd85da6ab299",
-    "code_release_checks": "19_OF_19_ASSOCIATED_WORKFLOWS_SUCCESS",
-    "pr2235": "HEAD_fe05369357f5d1ad6cefe4e8faa8ba79b2b5f126; STAGED_251_PASSED_10_SKIPPED_47_SUBTESTS; INTEGRATED_424_PASSED_3_SKIPPED_58_SUBTESTS; LAB_AGE_E2E_MIGRATION_DEPLOY_OWNER_READ_PASS; SAFE_ADDITIVE_FAIL_BY_POLICY; GLOBAL_AGE_CALLSITE_AUDIT_OUTSTANDING; DRAFT_NOT_RELEASED",
-    "pr2234": "HEAD_e84d28c5114de84072aaf90157c3e500f30b79b1; FOCUSED_C4_ARITHMETIC_STAGED_INTEGRATED_MIGRATION_PASS; BOSS_REVIEW_BLOCKER_NORMAL_DEPLOYER_STILL_CALLS_STAGE_INTEGRATED_WHILE_PR_REMOVES_NORMAL_C4_OVERLAY; NEW_WRAPPER_TEST_ONLY; DRAFT_NOT_RELEASED",
-    "pr2231": "HEAD_11b85db0_BASE_7a07; INCREMENTAL_LEARNER_PASS; RECOVERY_BUILDER_INTEGRATED_WORLD_TRAINING_RESUME_SHA_MISMATCH; STAGED_TRAINING_RESUME_BLOCKED",
-    "pr2237": "STACKED_ON_2231; UNIFORM_UNIFORM_BUDGET_AND_SESSION_CONTIGUOUS_REPLAY_ALL_UTILITY_GATE_REJECTED; OLD_HOLDOUT_LOSS_DELTA_APPROX_PLUS_0.009_TO_0.270; NO_ACCEPTED_UPDATE; GATES_OFF",
-    "pr2233": "HEAD_5b9882e1_BASE_9d8f_STALE_NONMERGEABLE; CALLER_PCM16_ONLY; NO_NORMAL_RUNTIME_CONSUMER_MICROPHONE_OR_C3_LEASE; CORE_PLANS_STACKED_CONSUMER",
-    "pr2228": "MERGED_NORMAL_STAGE_C4_SYNTHETIC_CONSUMER_AT_F279",
-    "pr2228_tests": "STAGED_251_PASSED_10_SKIPPED_47_SUBTESTS; INTEGRATED_424_PASSED_3_SKIPPED_58_SUBTESTS; MERGE_PUSH_CI_GREEN",
-    "redmi": "REDMI_UNVERIFIED; INSTALLED_SHA_AND_UPDATER_CONSENT_UNKNOWN; NO_AUTHENTICATED_OWNER_READ_RECEIPT",
-    "private_owner_read": "EXISTING_HEALTH_PIPELINE_STATUS_DIAGNOSTICS_REQUESTS_421_422_423_OPEN_NO_AUTHENTICATED_REPLY; NO_DUPLICATE_REQUESTS; NO_LOG_PAGE; NO_UPDATE_REQUEST",
+    "code_release_checks": "19_OF_19_ASSOCIATED_WORKFLOWS_SUCCESS_ON_PRIOR_CODE_RELEASE",
+    "pr2240": "MERGED_728cdc763f09bee20ac00e1f0faadffcd33dfbb2; MERGE_PUSH_18_PASS_1_FAIL; FAILURE_IS_NORMAL_SLEEP_RUNTIME_JEPA_RETENTION_ACCEPTANCE; NOT_RELEASED",
+    "pr2237": "HEAD_d91f4683; SOURCE_PINS_FIXED; RETENTION_FAIL_PY313_PY314; SECOND_UPDATE_CLONE_OMITS_TRAINING_STATE; MERGEABLE_BUT_NOT_READY",
+    "pr2235": "HEAD_150e92b; CURRENT_LAB_AGE_AND_OWNER_READ_FAIL_AST_NESTED_CLOSURE_GOALSTORE_ADD; PRIOR_CODE_HEAD_STAGED_INTEGRATED_MIGRATION_DEPLOY_PASS; SAFE_ADDITIVE_FAIL_BY_POLICY; NOW_NONMERGEABLE_AFTER_BASE_ADVANCED_TO_728cdc; DRAFT",
+    "pr2234": "HEAD_e84d28c; NORMAL_DEPLOYER_C4_OVERLAY_REMOVAL_BLOCKER; NOW_NONMERGEABLE_AFTER_BASE_ADVANCED_TO_728cdc; DRAFT",
+    "pr2200": "HEAD_9eaffb2; STALE_NONMERGEABLE; REBASE_TO_MERGED_2240_LEASE_AND_HOLD_THROUGH_C3",
+    "pr2231": "HEAD_8f742854; STACKED_JEPA_SOURCE_PINS_UPDATED_IN_2237; NOT_MERGEABLE",
+    "pr2239": "HEAD_f914b918_BASE_1deac63; READ_ONLY_FLOW_AUDIT; NOT_PRODUCT_COMPLETION",
+    "pr2241": "CLOSED_UNMERGED_AS_REDUNDANT; SOURCE_CHANGES_ALREADY_PRESENT_IN_QA_2235",
+    "redmi": "REDMI_UNVERIFIED; INSTALLED_SHA_AND_UPDATER_CONSENT_UNKNOWN; NO_AUTHENTICATED_OWNER_READ_REPLY",
+    "private_owner_read": "PIPELINE_STATUS_REQUEST_EXPIRED_WITHOUT_REPLY; NO_LOG_PAGE; NO_UPDATE_REQUEST",
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_AND_GITHUB_DNS_FAILURE; GITHUB_CI_ONLY",
-    "p0_chat": "OPEN_ISSUE_1904",
+    "p0_chat": "OPEN_ISSUE_1904; WRONG_2_PLUS_2_AND_UNCONFIRMED_B1_B2_DELIVERY_UNRESOLVED",
     "canon_coverage": "1255_HISTORICAL_HEADINGS_PRESERVED; SEMANTIC_CLAUSE_MAPPING_INCOMPLETE",
+    "research": "R034_COUNTERFACTUAL_WORLD_MODELS_SIMULATOR_SCOPED; R035_ERROR_PERSISTENCE_MODULATOR_NOT_AGE; R036_OMISSION_STATES_SOURCE_BOUND",
     "user_action_required": "NONE",
-    "boss_docs_commits": "PARENT_1185DAC_19_OF_19; BOSS_PR_2241_HEAD_87D7241; CORE_2234_NORMAL_CONSUMER_REVIEW_BLOCKER; QA_2235_GLOBAL_AGE_AUDIT_PENDING",
-    "pr2241": "HEAD_87d7241a6bf06cab65dfa1506c9112629d1b2fd8; LAB_AGE_CONTROL_WEBVIEW_PASS; STAGED_INTEGRATED_REGRESSION_IN_PROGRESS_AT_LAST_POLL; SAFE_ADDITIVE_FAIL_BY_POLICY; CORRECTED_AGE_SOURCE_PIN_RESTORED; DRAFT_NOT_RELEASED; LOCAL_BLOCKED; REDMI_UNVERIFIED"
+    "boss_docs_commits": "HANDOFF_78c10ff3389049734ab56e8462bc39c5f07a256d; WORKPLAN_39eb26c6d20f73def51785820ebe542289c89431; BOARD_REFRESH_COMMIT_FOLLOWS"
   }
 }

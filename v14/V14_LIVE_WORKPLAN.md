@@ -567,3 +567,124 @@ This is an additive checkpoint. The V14 master and historical V13 appendix were 
 5. **Boss & Integration:** keep master and historical V13 appendix unchanged; integrate only after exact-base CI and independent review; update the whole-Canon coverage ledger without promoting CI/synthetic evidence to Android or native-model acceptance.
 
 **User action: none.** No Termux command, model/weight change, permission change, updater change or device action is needed.
+
+
+---
+
+## Boss integration checkpoint — 2026-11-21 17:55:52Z
+
+### Exact shared/release evidence
+- Release-development branch head before this refresh: `3b8c8bb671e9b52b22e052fcfa9fdc6e721012ea` (documentation-only). Code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`; its exact associated workflow set is **19/19 SUCCESS**. No code merge or Redmi installation occurred in this run.
+- Full local Aii checkout: **BLOCKED** (no checkout mounted; GitHub DNS prevents clone). Do not label CI as LOCAL_LINUX or Redmi proof.
+- Private owner-read: a fresh PIPELINE_STATUS request is pending without authenticated response. Installed SHA and updater consent remain UNKNOWN; no LOG_PAGE or UPDATE_REQUEST.
+
+### Integration decisions and cross-lane ownership
+- **V14-014 / QA #2235:** staged 251/10/47 and integrated 424/3/58 pass; migration/deploy integrity pass. Lab-Age and owner-read bootstrap fail because the AST inventory reports nested `f(st)` inside `GoalStore.add` instead of the enclosing method. Boss has posted the exact trace and requested strict enclosing-class/method attribution plus a negative case. Safe-additive fails by policy. #2241 was closed unmerged as redundant because its learning_limit/Curiosity/GoalStore code is already present in #2235; do not reopen duplicate implementation unless QA's branch is abandoned.
+- **Core #2234:** do not merge yet. The PR removes the existing C4 source-span overlay from the recovery builder while the ordinary `runtime_deploy` path still calls `stage_integrated_candidate.py`; the new candidate stager is not the normal deployer consumer. Core must preserve C4, compose arithmetic into the ordinary pinned chain, and recompute recovery → stage → deployer pins. Keep draft.
+- **Perception #2240:** marked ready for review. The code-bearing head `3bd652f` passed consent-revocation, RAW EAR/prosody, Python 3.13/3.14 VAD comparator, privacy, model-lab, staged 251/10/47 and integrated 424/3/58 checks. A later docs-only head `f120d763` records the separate A5/UI consent gap; its exact staged/integrated rerun was still running at last poll. Safe-additive failure is by policy, not waived. The lease is a prerequisite only: Core must keep it open on the same thread through derived context, B1/B2 and the full C3 generator; QA must prove revocation and context/cache deletion. No mic permission or capture is enabled.
+- **Core #2200 / QA #2238:** #2200 is still non-mergeable and based on an older Perception branch. Rebase against #2240's current lease API; the old callback-only call is no longer sufficient. QA #2238 remains stacked on Core and must be rebased after the consumer changes.
+- **JEPA #2231/#2237:** #2231 remains blocked/non-mergeable by its nested recovery builder pin. #2237's current exact matrix is in progress; earlier matched replay variants failed the retention/utility gate. Do not lower the gate or turn rejected trials into updates; keep optimizer rights OFF.
+
+### Whole-Canon acceptance remains open
+The current functional release has synthetic C4 source-span selection but no proof of native B1/B2 correctness, trained B3 activation transfer, normal Runtime voice, Android microphone or UI control, accepted native body-weight updates, cross-organ gradients, or full Sleep/Dream consolidation. Keep every requirement mapped in the whole-Canon ledger; do not promote a single PR or dashboard to whole-system completion.
+
+### Next executable sequence
+1. QA fixes the AST nested-closure attribution and reruns Lab-Age + owner-read bootstrap plus the full staged/integrated/migration matrix.
+2. Core/QA compose #2235 and #2234 with C4 preserved and all exact pins recomputed; rerun ordinary deployer path, not only a new test stager.
+3. Core rebase audio consumer to #2240's lease; hold same-thread lease through complete C3 generation and add revoke/context tombstone/cache-clear tests.
+4. JEPA repair pin chain and produce a source-disjoint update that passes new-task utility and old-task retention with restart/rollback evidence.
+5. Boss integrate only after exact-head review and exact release-push CI; no phone deployment without authenticated owner-read and existing updater consent.
+
+**User action: none.**
+
+
+---
+
+## Boss integration checkpoint — 2026-11-21 17:58:19Z
+
+### Merge and exact-push CI
+- Perception #2240 merged at `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`. Its PR-head checks passed: consent revocation, RAW EAR/prosody, Python 3.13/3.14 VAD comparator, privacy, model-lab, staged Runtime 251/10/47 and integrated regression 424/3/58. The exact merge-push workflow set currently has 19 runs: **5 PASS, 3 IN_PROGRESS, 11 QUEUED, no observed failures**. This is a pending release candidate, not a completed release. Prior code-bearing release `f279286a4453248004c670fcaabecd85da6ab299` remains 19/19 green.
+- Merged producer behavior remains caller-supplied PCM only. No microphone, ASR/TTS, Android UI, normal Runtime C3 consumer or Redmi proof. Core must retain the same-thread AudioConsentLease through derived context, B1/B2 and full C3 generation; QA must test revocation plus deletion/cache clearing.
+
+### Current cross-agent blockers
+- QA #2235: staged 251/10/47, integrated 424/3/58, migration and deploy integrity pass; Lab-Age and owner-read fail due AST nested-closure attribution `f(st)` inside `GoalStore.add`. Boss requested strict enclosing-method attribution and a negative unrelated-closure case. Safe-additive fails by policy. Boss #2241 closed unmerged as duplicate; #2235 is the single canonical Age-rights lane.
+- Core #2234: normal recovery builder removes the existing C4 overlay, while `runtime_deploy` still calls `stage_integrated_candidate.py`; the new candidate stager is not the normal consumer. Keep draft until C4 is preserved and arithmetic is wired into the ordinary pinned deployer.
+- Core #2200: stale/non-mergeable; rebase to merged #2240 API and keep lease open through the full C3 generator. Legacy callback-only path now fails closed.
+- JEPA #2231/#2237: recovery-builder pin mismatch; current #2237 exact matrix still in progress and prior cohorts were retention/utility rejected. No accepted update; gates OFF.
+
+### Next executable sequence
+1. QA repairs the AST inventory test and reruns Lab-Age + owner-read + staged/integrated/migration.
+2. Core/QA compose Age/resource and C4 arithmetic changes without dropping C4; recompute the complete source pin chain and test the ordinary deployer.
+3. Core implements the normal Runtime audio consumer over #2240's merged lease and adds revocation-through-generation, context deletion and cache-clear tests.
+4. JEPA repairs pin ancestry and demonstrates a source-disjoint update with held-out utility, old-task retention, restart and rollback.
+5. Boss waits for all exact merge-push checks, then reviews the next integrated PR and keeps the full Canon coverage ledger current.
+
+**Device:** private PIPELINE_STATUS request expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action or UPDATE_REQUEST. **User action: none.**
+
+
+---
+
+## Boss integration checkpoint — 2026-11-21 18:03:06Z
+
+### Merge-push status and new blocker
+- Perception #2240 merged at `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`. Its PR-head producer/consent/VAD/privacy/model-lab/staged/integrated checks passed. Exact merge-push currently has 19 associated workflows: **17 PASS, 2 IN_PROGRESS, 0 QUEUED**. The staged/integrated workflow's staged-runtime job has already failed: the normal SleepRuntime post-commit JEPA test expected an accepted update but received `UTILITY_GATE_REJECTED`; the integrated-regression job is still running. This is not a green release. Prior code-bearing release `f279286a4453248004c670fcaabecd85da6ab299` remains 19/19 green.
+- The merged RAW EAR path is caller-supplied PCM only. No microphone, ASR/TTS, Android UI or normal Runtime C3 consumer. Core must hold the same-thread lease through derived-context reads, B1/B2 and full C3 generation; add a cancellation/stop path so revoke/barging-in can abort long generation rather than waiting indefinitely.
+
+### JEPA exact-head diagnosis
+- #2237 head `d91f4683fe96619efa94b5fcd64bc1f55e9c39ec` corrected the nested source pin chain. Migration, owner-read bootstrap, Lab-Age, runtime-deploy integrity, incremental World JEPA and combined online integration pass.
+- Two workflows remain failed. Retention: Python 3.13 projected old-holdout delta 0.0140033 vs stable predictor 0.0066121; Python 3.14 0.0145535 vs 0.0075072. This is genuine regression; preserve `UTILITY_GATE_REJECTED` and do not lower the gate.
+- Staged optimizer continuation: second `:growth jepa` call reaches `world_jepa_runtime_guard_candidate._clone(current)` and fails because its exact field allowlist/clone omits the new `_training_state` (main/bootstrap/inverse optimizer moments, EMA and RNG). Extend only through canonical schema validation and explicit safe copying; no generic deepcopy or weakened model guard. Preserve exact restart equivalence and rollback.
+- The exact merge-push staged-runtime failure on `728cdc` is the same live acceptance gap: SleepRuntime returned `UTILITY_GATE_REJECTED` where the positive test expects a real accepted update. Do not change the test to pass by accepting rejection; produce a genuinely retention-preserving update or keep the feature blocked.
+
+### Remaining integration lanes
+- QA #2235: staged 251/10/47, integrated 424/3/58, migration/deploy pass; Lab-Age and owner-read fail on AST nested-closure attribution `f(st)` inside `GoalStore.add`. Fix the enclosing method attribution and add a negative unrelated-closure case. #2241 is closed as redundant. Safe-additive remains FAIL BY POLICY.
+- Core #2234: normal recovery builder drops the existing C4 source-span overlay while ordinary `runtime_deploy` still invokes `stage_integrated_candidate.py`; keep draft until C4 and arithmetic share the real pinned deployer.
+- Core #2200: stale/non-mergeable; rebase on merged #2240 and retain the lease through full C3 generation with revoke cleanup and cancellation.
+
+### Next executable sequence
+1. JEPA: safely copy validated optimizer state and improve the actual old-task retention behavior; retain both positive accepted-update and negative rollback controls.
+2. Core/QA: preserve normal C4, compose arithmetic into the real deployer, and recompute the entire recovery→stage→deployer source pin chain.
+3. Core: implement the normal voice consumer over merged #2240 and add prompt cancellation/revocation through generation plus derived-context deletion/cache clear.
+4. QA: fix AST inventory false positive and rerun Lab-Age/owner-read/staged/integrated/migration.
+5. Boss: await all exact merge-push workflows, integrate only after exact-head tests, and keep the 1,255-heading Canon coverage map honest.
+
+**Device:** private owner-read expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action. **User action: none.**
+
+
+---
+
+## Boss integration checkpoint — 2026-11-21 18:05:08Z
+
+### Exact merge-push result
+- Perception #2240 remains merged at `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`. Its exact merge-push set completed **18/19 PASS, 1/19 FAIL**. The only failed workflow is `V13 staged context and integrated regression`: the staged-runtime job fails in the normal SleepRuntime post-commit JEPA test because the actual retention gate returns `UTILITY_GATE_REJECTED` where the positive acceptance test expects `UPDATED_EXPERIMENTAL_WORLD_JEPA`; the integrated-regression job itself passes. The other 18 workflows, including migration, Python 3.14 staged startup, runtime deploy integrity, owner-read bootstrap and Android control broker isolated tests, pass. This is not a green release. Prior code-bearing release `f279286a4453248004c670fcaabecd85da6ab299` remains 19/19 green.
+- Merged Perception scope is caller-supplied PCM16 RAW EAR plus source-bound consent lease. No microphone, ASR/TTS, Android UI or normal Runtime C3 consumer. Core must hold the lease through derived-context reads, B1/B2 and the full C3 iterator; add cancellation so revoke/barging-in is responsive, plus context deletion/cache clear.
+
+### Remaining critical integration failures
+- JEPA #2237 head `d91f4683fe96619efa94b5fcd64bc1f55e9c39ec`: source pin chain fixed; migration/owner-read/Lab-Age/runtime deploy/incremental/combined integration pass. Two workflows still fail: old-holdout retention worse than stable predictor on Python 3.13/3.14, and second update rejects the trained model because the clone guard omits the validated `_training_state` (main/bootstrap/inverse moments, EMA, RNG). Normal SleepRuntime also rejects the candidate in the merge-push positive test. Keep gates OFF; no accepted update claim.
+- QA #2235 current head `150e92b`: prior code heads had staged/integrated/migration/deploy PASS, but current Lab-Age and owner-read workflows fail on nested closure attribution `f(st)` vs enclosing `GoalStore.add`. Latest commit parses the `learning_limit` mapping expression but does not fix the closure owner. Safe-additive remains FAIL BY POLICY; no bypass.
+- Core #2234: normal recovery builder drops the existing C4 source-span overlay while ordinary deployer still uses `stage_integrated_candidate.py`; keep draft until C4 and arithmetic are both consumed by the normal pinned path.
+- Core #2200: stale/non-mergeable; rebase onto merged #2240 and keep lease through full C3 generation with cancellation/revocation cleanup.
+
+### Research notes merged with #2240
+- R-034 Counterfactual World Models: simulator-scoped; additive disturbance/action channels required; no direct mobile dependency.
+- R-035 Age of Learning: verified error-persistence may be a modulator, not official Age; noisy/OOD and rapidly changing sparse streams are risks.
+- R-036 omission/attention: preserve PRESENT / EXPECTED_OMISSION / UNEXPECTED_OMISSION / UNKNOWN; only source-bound, high-confidence time-windowed omission is a negative event.
+
+### Next sequence
+1. JEPA: validate/copy full optimizer state; produce a source-disjoint update that passes new-task utility and old-task retention; preserve exact rollback and restart tests.
+2. Core/QA: preserve C4, compose Age/resource and arithmetic, recompute all nested recovery→stage→deployer pins, and test the ordinary deployer.
+3. Core: implement normal voice consumer over #2240, lease through C3, prompt cancel/revoke and derived-context/cache deletion.
+4. QA: fix AST enclosing-method attribution and rerun exact current-head Lab-Age/owner-read/staged/integrated/migration.
+5. Boss: close the one exact merge-push workflow failure only after the learning path genuinely passes; maintain whole-Canon coverage.
+
+**Device:** private owner-read expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action. **User action: none.**
+
+
+---
+
+## Final mergeability refresh — 2026-11-21 18:05:59Z
+
+- Current code integration head: `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`; exact merge-push CI **18/19 PASS, 1 FAIL** (staged-runtime JEPA acceptance test gets `UTILITY_GATE_REJECTED`; integrated-regression job PASS).
+- After #2240 moved the base, #2235 and #2234 are both now non-mergeable against the current release branch. Do not merge/rebase them while their functional blockers remain. Once fixed, rebase on `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` and recompute all nested source pins from exact bytes.
+- #2235 still has current-head AST nested-closure attribution failure; #2234 still removes normal C4 overlay. #2237 is mergeable but test-blocked by retention and optimizer-state clone. #2200 is stale/non-mergeable and must rebase onto #2240's lease API.
+- Private owner-read expired without authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device action; user action none.
