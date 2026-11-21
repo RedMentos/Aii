@@ -7,6 +7,7 @@ import threading
 import pytest
 
 from v13.audio_perception_bridge import consume_pcm16_window
+from v13.cognition import Cognition
 from v13.runtime import Runtime, _validate_audio_window
 from v13.store import Store
 
@@ -89,7 +90,7 @@ def test_submit_keeps_pcm_process_local_and_counts_it_against_queue_bytes(monkey
     assert "_audio_window" not in runtime.store.persisted_event
 
 
-def test_real_store_audio_packet_becomes_resolvable_c3_summary_without_raw_pcm(tmp_path):
+def test_real_store_audio_packet_becomes_source_bound_body_and_c3_context(tmp_path):
     store, event, home = _store(tmp_path)
     runtime = Runtime.__new__(Runtime)
     runtime.store = store
@@ -107,22 +108,36 @@ def test_real_store_audio_packet_becomes_resolvable_c3_summary_without_raw_pcm(t
         consent_receipt=window["consent_receipt"],
         consent_check=window["consent_check"], token_budget=512,
     )
-    layer, summary_ref = runtime._audio_prompt_layer(event["event_id"], result, window)
+    context = runtime._audio_context_record(event["event_id"], result, window)
+    assert context is not None
 
+    body_view = runtime._audio_context_view(event["event_id"], consumer="B1_DETAIL")
+    assert body_view is not None
+    cognition = Cognition.__new__(Cognition)
+    cognition.r = runtime
+    body_query, body_refs = cognition._audio_context_query(
+        {"event_id": event["event_id"]}, "B1_DETAIL"
+    )
+    assert body_query == body_view
+    assert body_refs == [context["summary_source_ref"]]
+
+    layer, summary_ref = runtime._audio_prompt_layer(event["event_id"])
     assert layer[0] == "RAW_EAR_ACOUSTIC"
-    body = layer[2]
-    assert body["authority"] == "ACOUSTIC_FEATURES_ONLY"
-    assert body["transcript"] is None
-    assert body["learning_authority"] is False
-    assert body["action_authority"] is False
-    assert "pcm16" not in json.dumps(body).lower()
-    assert "consent_receipt_ref" not in json.dumps(body)
-    assert summary_ref["source_id"]
+    assert summary_ref == context["summary_source_ref"]
+    prompt_body = layer[2]
+    assert prompt_body["authority"] == "ACOUSTIC_FEATURES_ONLY"
+    assert prompt_body["transcript"] is None
+    assert prompt_body["learning_authority"] is False
+    assert prompt_body["action_authority"] is False
+    assert "pcm16" not in json.dumps(prompt_body).lower()
+    assert "consent_receipt_ref" not in json.dumps(prompt_body)
+
     saved = store.read_source(summary_ref)
     decoded = json.loads(saved)
+    assert decoded == context["body"]
     assert decoded["audio_packet_id"] == result["packet"]["packet_id"]
     assert decoded["audio_source_ref"]["sha256"] == result["packet"]["source_ref"]["sha256"]
-    assert len(calls) >= 5  # capture, persistence, A4, admission, and final C3 recheck
+    assert len(calls) >= 7  # bridge, record, B1, and C3 each recheck current consent
     packet_rows = store.rows("SELECT payload FROM packets WHERE kind='PerceptPacket'")
     assert len(packet_rows) == 1
     assert window["pcm16"].hex() not in packet_rows[0]["payload"]
@@ -137,11 +152,11 @@ def test_c3_layer_is_omitted_when_consent_is_revoked_before_prompt_assembly(tmp_
     runtime.store = store
     calls = []
 
-    def revoke_on_final_recheck(source_id, receipt):
+    def revoke_on_c3(source_id, receipt):
         calls.append((source_id, receipt))
-        return len(calls) <= 4
+        return len(calls) <= 5
 
-    window = _validate_audio_window(_window(revoke_on_final_recheck))
+    window = _validate_audio_window(_window(revoke_on_c3))
     result = consume_pcm16_window(
         runtime, window["pcm16"], sample_rate=window["sample_rate"],
         start_ms=window["start_ms"], event_id=event["event_id"],
@@ -149,26 +164,38 @@ def test_c3_layer_is_omitted_when_consent_is_revoked_before_prompt_assembly(tmp_
         consent_receipt=window["consent_receipt"],
         consent_check=window["consent_check"], token_budget=512,
     )
-    layer, summary_ref = runtime._audio_prompt_layer(event["event_id"], result, window)
+    context = runtime._audio_context_record(event["event_id"], result, window)
+    assert context is not None
+    layer, summary_ref = runtime._audio_prompt_layer(event["event_id"])
 
-    assert len(calls) == 5
+    assert len(calls) == 6
     assert layer is None
     assert summary_ref is None
-    assert store.rows("SELECT id FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT'") == []
+    assert store.rows("SELECT id FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT'") != []
     store.close()
 
 
-def test_turn_injects_audio_layer_into_c3_volatile_context_and_lineage():
+def test_body_offer_and_c3_use_the_same_audio_context_with_separate_provenance():
     from pathlib import Path
 
-    source_path = Path(__file__).resolve().parents[1] / "v13" / "runtime.py"
-    source = source_path.read_text(encoding="utf-8")
-    tree = ast.parse(source, filename=str(source_path))
-    turn = next(node for node in ast.walk(tree)
+    root = Path(__file__).resolve().parents[1]
+    runtime_source = (root / "v13" / "runtime.py").read_text(encoding="utf-8")
+    cognition_source = (root / "v13" / "cognition.py").read_text(encoding="utf-8")
+    runtime_tree = ast.parse(runtime_source)
+    cognition_tree = ast.parse(cognition_source)
+    turn = next(node for node in ast.walk(runtime_tree)
                 if isinstance(node, ast.FunctionDef) and node.name == "_turn")
+    offer = next(node for node in ast.walk(cognition_tree)
+                 if isinstance(node, ast.FunctionDef) and node.name == "offer")
     calls = {node.func.attr for node in ast.walk(turn)
              if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)}
+    offer_calls = {node.func.attr for node in ast.walk(offer)
+                   if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)}
+    assert "_audio_context_record" in calls
     assert "_audio_prompt_layer" in calls
-    assert "audio_source_refs" in source
-    assert "volatile.append(audio_layer)" in source
-    assert "provenance=[e['source_ref']]+([audio_source_ref] if audio_source_ref else [])" in source
+    assert "_audio_context_query" in offer_calls
+    assert "audio_context_refs=audio_context_refs" in cognition_source
+    assert "audio_context_refs=query_packet.get('audio_context_refs',[])" in cognition_source
+    assert "query.get('audio_context_refs',[])!=offer.get('audio_context_refs',[])" in cognition_source
+    assert "volatile.append(audio_layer)" in runtime_source
+    assert "provenance=[e['source_ref']]+([audio_source_ref] if audio_source_ref else [])" in runtime_source
