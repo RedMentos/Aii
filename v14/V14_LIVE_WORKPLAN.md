@@ -942,3 +942,16 @@ The controller guard currently expects `semantic_pin = 9fbcb808...` and `local_p
 Exact 06ebe5 outcomes so far: A5 UI lease PASS; combined online JEPA PASS; runtime-deploy integrity PASS; GoalWake focused tests 7/7 PASS in the Python 3.14 job. Lab-Age E2E FAIL at the controller semantic pin; owner-read job PASS but Python 3.14 staged startup FAIL; migration and staged/audio jobs are still in progress at the last poll; safe-additive FAIL_BY_POLICY. Earlier lifecycle/A5/operator/context-recall errors are superseded by this controller semantic pin.
 
 No full local Aii checkout and no authenticated Redmi receipt. Installed SHA/updater consent unknown. Keep NOT_RELEASED / REDMI_UNVERIFIED.
+
+## QA exact run completion — 06ebe5d (2026-11-21 22:42 CET)
+
+The completed 06ebe5 CI jobs confirm the same controller-guard semantic pin blocks the full stage:
+
+- `staged-runtime`: **FAIL**, 6 failed / 43 passed / 26 subtests (job 136992584877).
+- `integrated-regression`: **FAIL**, 18 failed / 232 passed / 10 skipped / 2 errors / 44 subtests (job 136992584668).
+- `owner-read`: PASS, but Python 3.14 staged startup **FAIL** (job 136992585359).
+- Lab-Age E2E **FAIL** (job 136992585361); old-phone migration **PARTIAL** (job 136992584344).
+- Core audio 3.13 **FAIL** (job 136992584451); 3.14 was still in progress at this checkpoint (job 136992584655).
+- A5 UI lease, combined JEPA and runtime-deploy integrity **PASS**; GoalWake focused tests **7/7 PASS** in Python 3.14.
+
+All stage failures converge on `record_only_controller_guard_20261116.py:191`, where the guard still expects semantic/local-error pins from before the upstream arithmetic/World/Store transformation. The correction must update both pins as one verified composition and rebind all downstream builder hashes. No tests should be skipped or source guards relaxed.
