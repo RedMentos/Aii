@@ -104,8 +104,14 @@ class Runtime:
     runtime = _replace(
         runtime,
         b"    def submit(self,text):\n        b=len(text.encode())\n",
-        b"    def submit(self,text,*,audio_window=None):\n        if audio_window is not None:audio_window=_validate_audio_window(audio_window)\n        b=len(text.encode())+(len(audio_window['pcm16']) if audio_window is not None else 0)\n",
+        b"    def submit(self,text,*,audio_window=None):\n        if audio_window is not None:audio_window=_validate_audio_window(audio_window)\n        text_bytes=len(text.encode())\n        b=text_bytes+(len(audio_window['pcm16']) if audio_window is not None else 0)\n",
         "submit audio queue bounds",
+    )
+    runtime = _replace(
+        runtime,
+        b"        if b>self.cfg['input_bytes']:raise Limits('Eingabe zu lang: '+str(self.cfg['input_bytes'])+' Bytes')\n",
+        b"        if text_bytes>self.cfg['input_bytes']:raise Limits('Eingabe zu lang: '+str(self.cfg['input_bytes'])+' Bytes')\n",
+        "text-only input byte limit",
     )
     runtime = _replace(
         runtime,
