@@ -819,7 +819,9 @@ def rollback(*, home=None, private=None, builds=None, activation_guard=None):
     backup_launcher_bytes = _owned_private_backup(
         current.get("backup_launcher"), private, max_bytes=65536)
     expected_launcher_sha = current.get("backup_launcher_sha256")
-    legacy = expected_launcher_sha is None
+    # No prior runtime marker means this restores the pre-runtime legacy launcher,
+    # even when the new deployment correctly recorded a SHA for that launcher.
+    legacy = backup_marker_value is None
     if expected_launcher_sha is not None:
         if (not isinstance(expected_launcher_sha, str)
                 or not re.fullmatch(r"[a-f0-9]{64}", expected_launcher_sha)
