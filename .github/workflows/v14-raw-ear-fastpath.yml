@@ -25,8 +25,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: v14-raw-ear-fastpath-${{ github.event.pull_request.number || github.ref_name }}
-  cancel-in-progress: true
+  group: v14-raw-ear-fastpath-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
   raw-ear-fastpath:
