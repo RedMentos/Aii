@@ -475,14 +475,29 @@ _AUDIO_ORIGINAL_CLOSE = Runtime.close
 
 
 def _audio_lease_close(self, *args, **kwargs):
-    try:
-        from .audio_context_store import close_runtime
-        close_runtime(self)
-    except Exception as exc:
-        try:
-            self.store.log("audio_context_cleanup_failed", None, {"error": type(exc).__name__})
-        except Exception:
-            pass
+    if getattr(self, "closed", False):
+        return None
+    # First stop/cancel and join the real worker. Never tombstone an acoustic
+    # source while C3 may still be reading it under the provider lease.
+    with self.lock:
+        self.stop.set()
+        self.cancel_event.set()
+        self.wake.set()
+    worker = getattr(self, "worker", None)
+    if worker is threading.current_thread():
+        raise RuntimeError("Runtime.close cannot clean audio from its worker thread; Store remains open")
+    if worker is not None:
+        worker.join(6)
+        if worker.is_alive():
+            self.pool.unload()
+            self.needle.unload()
+            kill_process(self.learner.proc)
+            worker.join(4)
+        if worker.is_alive():
+            raise RuntimeError("Worker beendet sich noch; Store bleibt zum Schutz offen")
+    # The iterator and consent guard are now released; Store is still open.
+    from .audio_context_store import close_runtime
+    close_runtime(self)
     return _AUDIO_ORIGINAL_CLOSE(self, *args, **kwargs)
 
 
@@ -634,18 +649,15 @@ def finish_turn(runtime, event_id):
 
 
 def close_runtime(runtime):
-    """Tombstone process-local audio contexts before Store shutdown."""
+    """Tombstone contexts only after the Runtime worker has released every reader lease."""
+    worker = getattr(runtime, "worker", None)
+    if worker is not None and worker.is_alive():
+        raise RuntimeError("cannot tombstone audio context while Runtime worker is active")
     with _lock(runtime):
         registry = getattr(runtime, "_audio_revocation_contexts", {})
         contexts = list(registry.items()) if isinstance(registry, dict) else []
     for event_id, context in contexts:
         _revoke(runtime, event_id, context)
-        unsubscribe = context.get("consent_revocation_unsubscribe")
-        if callable(unsubscribe):
-            try:
-                unsubscribe()
-            except Exception:
-                pass
     return len(contexts)
 
 
