@@ -25,6 +25,7 @@ import re
 import time
 from .common import dumps
 from .contracts import packet
+from .android_companion import encode_action_args
 
 PROPOSER='boot-arith-note-v3';KEY='TOOL_SHADOW_AGREEMENT'
 LIST_PROPOSER='boot-listarith-v1';LIST_READ_SECONDS=45  # R4 part 6: C3 value read for list_arith
@@ -64,6 +65,30 @@ def propose_note_edit(text,read):
     return None
 
 def _num(s):return s.replace(',','') if re.fullmatch(r'\d{1,3}(?:,\d{3})+(?:\.\d+)?',s) else s.replace(',','.')
+
+ANDROID_PROPOSER='boot-android-control-v1'
+ANDROID_LAUNCH=re.compile(r'^\s*(?:please\s+)?(?:open|launch)\s+app\s+([A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+)\s*[.!]?\s*$' ,re.I)
+ANDROID_OBSERVE=re.compile(r'^\s*(?:please\s+)?(?:observe|inspect)\s+(?:the\s+)?screen\s*[.!]?\s*$',re.I)
+ANDROID_BACK=re.compile(r'^\s*(?:please\s+)?(?:press\s+)?back\s*[.!]?\s*$',re.I)
+ANDROID_TAP=re.compile(r'^\s*(?:please\s+)?tap\s+(\d{1,5})\s*,\s*(\d{1,5})\s*[.!]?\s*$',re.I)
+ANDROID_SWIPE=re.compile(r'^\s*(?:please\s+)?swipe\s+(\d{1,5})\s*,\s*(\d{1,5})\s+to\s+(\d{1,5})\s*,\s*(\d{1,5})\s+in\s+(\d{2,4})\s*ms\s*[.!]?\s*$',re.I)
+ANDROID_TYPE=re.compile(r'^\s*(?:please\s+)?type\s+text\s*:\s*(\S[\s\S]{0,255})$',re.I)
+
+def propose_android(text):
+    """Exact explicit Android commands only; tool must be user-enabled and both approval gates still apply."""
+    t=str(text)
+    if len(t)>400:return None
+    m=ANDROID_LAUNCH.fullmatch(t)
+    if m:cap,args='launch_app',{'package':m.group(1)}
+    elif ANDROID_OBSERVE.fullmatch(t):cap,args='observe_ui',{}
+    elif ANDROID_BACK.fullmatch(t):cap,args='back',{}
+    elif (m:=ANDROID_TAP.fullmatch(t)):cap,args='tap',{'x':int(m.group(1)),'y':int(m.group(2))}
+    elif (m:=ANDROID_SWIPE.fullmatch(t)):
+        cap,args='swipe',{'x1':int(m.group(1)),'y1':int(m.group(2)),'x2':int(m.group(3)),'y2':int(m.group(4)),'duration_ms':int(m.group(5))}
+    elif (m:=ANDROID_TYPE.fullmatch(t)):cap,args='type_text',{'text':m.group(1)}
+    else:return None
+    return {'tool':'android_action','args':{'capability':cap,'args_b64':encode_action_args(args)},
+            'confidence':.99,'span':[0,len(t)],'proposer':ANDROID_PROPOSER}
 def propose(text):
     """Return {'tool','args','confidence','span'} for a concrete arithmetic request, else None (never guesses)."""
     t=str(text)
@@ -90,9 +115,11 @@ class ToolStep:
     def plan(self,e,text,offers=(),version=None):
         """Proposal + IH-H29 policy (no effect yet). Logged as ToolProposal packet."""
         from .toolforecast import note_text
-        p=propose_note_edit(text,lambda name:note_text(self.r.home,name)) or self._propose_eligibility(e,text,offers,version) or propose(text) or self._propose_list(e,text)
+        reg=self._registry()
+        enabled=set(reg.box.load()[0].get('enabled',[]))
+        p=(propose_android(text) if 'android_action' in enabled else None) or propose_note_edit(text,lambda name:note_text(self.r.home,name)) or self._propose_eligibility(e,text,offers,version) or propose(text) or self._propose_list(e,text)
         if not p:return None
-        reg=self._registry();spec=reg.tools.get(p['tool'])
+        spec=reg.tools.get(p['tool'])
         if spec is None:return None
         status,why,steps=reg._policy(spec,'SYSTEM',p['args'])
         p.update(status=status,reason=why,risk=spec.risk,proposer=p.get('proposer',PROPOSER),utility=round(.5+.5*p['confidence'],4))  # BOOT: exact local tool beats a free-text body (route utilities .4-.8)
@@ -218,6 +245,12 @@ class ToolStep:
     def layer(self,result):
         """Volatile context layer for the answering body: grounded tool output with its transaction id."""
         args=result['args']
+        if result['tool']=='android_action':
+            out=result.get('result') or {}
+            return {'tool':'android_action','capability':out.get('capability',args.get('capability')),
+                    'status':out.get('status','FAILED'),'observed':bool(out.get('observed',False)),
+                    'evidence_level':out.get('evidence_level','NONE'),'error_code':out.get('error_code'),
+                    'action_id':out.get('action_id'),'note':'Only a companion-confirmed, source-backed outcome counts as an observed Android action.'}
         if result['tool']=='list_arith':  # R4 part 6 dev seed 7: as raw JSON args C3 350M ignored the value in 7/15 sums
             from .agi import listarith
             return {'tool':'list_arith','exact_result':result['result'],'recipe':f"{listarith.label(args)} = {result['result']}",
