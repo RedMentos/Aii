@@ -173,6 +173,7 @@ def test_unpinned_binary_and_missing_binary_fail_closed(tmp_path):
     binary.chmod(0o755)
     with pytest.raises(NativeReceiverError, match="pinned"):
         run_probe(home, model, binary, digest)
+    binary.unlink()
     with pytest.raises(NativeReceiverUnavailable):
         probe(
             home=home, model_path=model, expected_model_sha256=digest,
