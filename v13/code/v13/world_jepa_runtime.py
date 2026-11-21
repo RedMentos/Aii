@@ -8,6 +8,8 @@ The booleans in Store state are not an OS/security boundary.
 from pathlib import Path
 
 from .world_jepa_consumer import WorldJEPAStoreConsumer
+from v13 import world_jepa_replay
+from v13 import world_jepa_drift
 
 PERMISSION_KEY = "v14.world_jepa.permissions"
 DEFAULT_PERMISSIONS = {
@@ -33,7 +35,7 @@ def permission_state(store):
     if type(steps) is not int or not 1 <= steps <= MAX_RUNTIME_STEPS:
         steps = DEFAULT_PERMISSIONS["steps"]
     replay_mode = value.get("replay_mode", "uniform")
-    if replay_mode not in ("uniform", "none"):
+    if replay_mode not in world_jepa_replay.REPLAY_MODES:
         replay_mode = "uniform"
     encoder_mode = value.get("encoder_mode", "full")
     if encoder_mode not in ("full", "predictor_only"):
@@ -60,12 +62,15 @@ def _consumer(store, home, *, learning_enabled):
     return current
 
 
-def consume_after_commit(store, home=None, *, limit=64, cancel_check=None):
+def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift_control=None,
+                         replay_projection=False):
     """Run persistent JEPA only after a committed turn and only behind both gates."""
     if type(limit) is not int or not 16 <= limit <= MAX_RUNTIME_PAGE:
         raise ValueError("runtime page must be 16..256")
     if cancel_check is not None and not callable(cancel_check):
         raise ValueError("cancel_check must be callable")
+    if type(replay_projection) is not bool:
+        raise ValueError("replay_projection must be bool")
     if cancel_check is not None and cancel_check():
         return {"status":"CANCELLED","decision_authority":"NONE",
                 "native_body_consumed":False,"native_body_weights_changed":False}
@@ -85,6 +90,7 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None):
         result["status"] = "PENDING_OPTIMIZER_PERMISSION"
         return result
     try:
+        drift_config = world_jepa_drift.normalize_config(drift_control)
         learner = _consumer(store, home, learning_enabled=True)
         updated = learner.update(
             limit=limit,
@@ -93,6 +99,8 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None):
             replay_mode=gates["replay_mode"],
             encoder_mode=gates["encoder_mode"],
             cancel_check=cancel_check,
+            drift_control=drift_config,
+            replay_projection=replay_projection,
         )
         result.update(updated)
         result.update({

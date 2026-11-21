@@ -7,6 +7,7 @@ not a Redmi or native GGUF/B1/B2 weight proof.
 from __future__ import annotations
 
 import copy
+import hashlib
 import math
 import shutil
 
@@ -14,8 +15,11 @@ import numpy as np
 
 from v13 import (
     contracts,
+    world_jepa,
     world_jepa_consumer,
     world_jepa_optimizer_audit,
+    world_jepa_replay,
+    world_jepa_drift,
     world_jepa_runtime,
     world_model,
 )
@@ -26,17 +30,179 @@ from v13.world_jepa_planner import consume_world_planner_shadow
 STATE_KEY = "v14.world_jepa.store_consumer"
 PERMISSION_KEY = world_jepa_runtime.PERMISSION_KEY
 DEFAULT_PERMISSIONS = dict(world_jepa_runtime.DEFAULT_PERMISSIONS)
+DRIFT_CONFIG = {
+    "enabled": True,
+    "dual_lr": 0.03,
+    "lambda_init": 1.0,
+    "lambda_max": 100.0,
+    "deadzone": 0.05,
+}
 ARMS = (
-    ("uniform", "full"),
-    ("none", "full"),
-    ("uniform", "predictor_only"),
-    ("none", "predictor_only"),
+    ("uniform", "full", False, False),
+    ("none", "full", False, False),
+    ("uniform_budget", "full", False, False),
+    ("session_contiguous", "full", False, False),
+    ("uniform", "predictor_only", False, False),
+    ("none", "predictor_only", False, False),
+    ("uniform_budget", "predictor_only", False, False),
+    ("session_contiguous", "predictor_only", False, False),
+    ("uniform_budget", "full", True, False),
+    ("uniform_budget", "predictor_only", True, False),
+    ("uniform_budget", "predictor_only", True, True),
 )
 DATA_SEEDS = (13, 19, 43)
 A1_COUNT = 256
 SHIFT_COUNT = 96
 A1_STEPS = 120
 SHIFT_STEPS = 40
+
+
+def test_stable_drift_controller_calibrates_groups_and_updates_dual():
+    params = {
+        "encoder": {"eW": np.array([1.0, 2.0])},
+        "predictor": {"pW": np.array([2.0, 1.0])},
+        "inverse": {"iW": np.array([0.5])},
+    }
+    prepared = world_jepa_drift.prepare_task(
+        world_jepa_drift.default_state(), DRIFT_CONFIG, params,
+        has_prior_training=False,
+    )
+    for group in params.values():
+        for value in group.values():
+            value[0] += 0.1
+    calibrated = world_jepa_drift.finish_task(
+        prepared, params, steps=12,
+        update_norms={name: [0.001] * 12 for name in params},
+    )
+    assert all(calibrated["groups"][name]["budget_sq"] > 0 for name in params)
+    assert all(calibrated["groups"][name]["task_count"] == 1 for name in params)
+    assert all(calibrated["groups"][name]["budget_method"] == "STABLE_TASK1_P75_ROLLING5" for name in params)
+    assert all(math.isclose(calibrated["groups"][name]["budget_sq"], 0.1, rel_tol=0, abs_tol=1e-12) for name in params)
+    assert all(calibrated["groups"][name]["dual_lambda"] == 0.0 for name in params)
+
+    prepared = world_jepa_drift.prepare_task(
+        calibrated, DRIFT_CONFIG, params, has_prior_training=True,
+    )
+    assert prepared["active"] == set(params)
+    params["encoder"]["eW"][0] += 0.5
+    gradients = {key: np.ones_like(value)
+                 for group in params.values() for key, value in group.items()}
+    controlled = world_jepa_drift.apply_pullback(params, gradients, prepared)
+    assert controlled["eW"][0] > gradients["eW"][0]
+    world_jepa_drift.update_dual(prepared, params)
+    expected_lambda = 1.0 + 0.03 * (0.25 - (0.1 * 1.05 ** 2))
+    assert math.isclose(prepared["lambdas"]["encoder"], expected_lambda, rel_tol=0, abs_tol=1e-12)
+    assert math.isclose(prepared["violation_mean"]["encoder"], 0.15, rel_tol=0, abs_tol=1e-12)
+    persisted = world_jepa_drift.finish_task(prepared, params, steps=7)
+    assert persisted["groups"]["encoder"]["controlled_steps"] == 7
+    assert world_jepa_drift.validate_state(persisted) == persisted
+
+    predictor_only = world_jepa_drift.prepare_task(
+        persisted, DRIFT_CONFIG,
+        {"encoder": {}, "predictor": params["predictor"], "inverse": {}},
+        has_prior_training=True,
+    )
+    assert predictor_only["active"] == {"predictor"}
+    assert predictor_only["lambdas"]["predictor"] == persisted["groups"]["predictor"]["dual_lambda"]
+    disabled = world_jepa_drift.prepare_task(
+        persisted, None, params, has_prior_training=True,
+    )
+    assert not disabled["active"]
+    for invalid in (
+        {"enabled": True, "budget_sq": 0},
+        {"enabled": True, "deadzone": 0.8},
+        {"enabled": True, "unknown": 1},
+    ):
+        try:
+            world_jepa_drift.normalize_config(invalid)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("invalid drift config accepted")
+
+
+def test_adam_aware_replay_projection_constrains_the_actual_preconditioned_step():
+    params = {"w": np.zeros(2, dtype=float)}
+    projected = world_jepa.Adam(params, lr=0.1).step(
+        {"w": np.array([-1.0, 2.0])}, constraint_gradients={"w": np.array([1.0, 0.0])}
+    )
+    assert projected["enabled"] is True and projected["projected"] is True
+    assert projected["constraint_dot_before"] < 0.0
+    assert abs(projected["constraint_dot_after"]) <= projected["constraint_tolerance"]
+    assert np.allclose(params["w"], np.array([0.0, -0.1]), atol=1e-9)
+    positive_params = {"w": np.zeros(2, dtype=float)}
+    positive = world_jepa.Adam(positive_params, lr=0.1).step(
+        {"w": np.array([1.0, 2.0])}, constraint_gradients={"w": np.array([1.0, 0.0])}
+    )
+    assert positive["projected"] is False and positive["constraint_dot_before"] > 0.0
+    assert np.allclose(positive_params["w"], np.array([-0.1, -0.1]), atol=1e-9)
+    zero_params = {"w": np.zeros(2, dtype=float)}
+    zero = world_jepa.Adam(zero_params, lr=0.1).step(
+        {"w": np.array([-1.0, 2.0])}, constraint_gradients={"w": np.zeros(2, dtype=float)}
+    )
+    assert zero["reference_zero"] is True and zero["projected"] is False
+    assert np.allclose(zero_params["w"], np.array([0.1, -0.1]), atol=1e-9)
+
+def test_session_contiguous_replay_is_deterministic_bounded_and_session_local():
+    def row(index, session):
+        return {
+            "action_id": f"replay-{index:03d}",
+            "source_sha256": hashlib.sha256(f"source-{index}".encode()).hexdigest(),
+            "created": float(index),
+            "session_id": session,
+        }
+
+    old_rows = (
+        [row(index, "session-a") for index in range(8)]
+        + [row(index + 8, "session-b") for index in range(8)]
+        + [row(index + 16, None) for index in range(2)]
+    )
+    new_rows = [row(index + 18, "new-session") for index in range(4)]
+    uniform = world_jepa_replay.select_replay_rows(
+        "uniform_budget", new_rows, old_rows, budget=6, salt="fixed-cohort"
+    )
+    contiguous = world_jepa_replay.select_replay_rows(
+        "session_contiguous", new_rows, old_rows, budget=6, salt="fixed-cohort"
+    )
+    repeated = world_jepa_replay.select_replay_rows(
+        "session_contiguous", new_rows, old_rows, budget=6, salt="fixed-cohort"
+    )
+    assert len(uniform["rows"]) == len(contiguous["rows"]) == 6
+    assert {item["action_id"] for item in uniform["rows"]} != {
+        item["action_id"] for item in contiguous["rows"]
+    }
+    assert contiguous["budget_matched"] is True
+    assert contiguous["session_count"] == 2
+    assert contiguous["window_count"] == 2
+    assert contiguous["manifest_sha256"] == repeated["manifest_sha256"]
+    selected_ids = {item["action_id"] for item in contiguous["rows"]}
+    assert selected_ids.isdisjoint({item["action_id"] for item in new_rows})
+    assert len(selected_ids) == 6
+    for window in contiguous["windows"]:
+        group = sorted(
+            [item for item in old_rows if item["session_id"] == window["session_id"]],
+            key=lambda item: (item["created"], item["action_id"]),
+        )
+        expected = group[window["start_index"]:window["start_index"] + window["count"]]
+        selected = [
+            item for item in contiguous["rows"]
+            if item["session_id"] == window["session_id"]
+        ]
+        assert [item["action_id"] for item in selected] == [
+            item["action_id"] for item in expected
+        ]
+
+    # Legacy rows with no trusted session identity are never guessed into a
+    # session window; the budget mismatch is explicit instead of silent.
+    partial = world_jepa_replay.select_replay_rows(
+        "session_contiguous", new_rows, old_rows, budget=18, salt="fixed-cohort"
+    )
+    assert len(partial["rows"]) == 16
+    assert partial["budget_matched"] is False
+    assert all(item["session_id"] is not None for item in partial["rows"])
+    assert world_jepa_replay.select_replay_rows(
+        "none", new_rows, old_rows, budget=6, salt="fixed-cohort"
+    )["rows"] == []
 
 
 def _set_permissions(store, *, steps, replay_mode, encoder_mode="full",
@@ -173,7 +339,8 @@ def _active_state(store):
     return value
 
 
-def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
+def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_control=None,
+               replay_projection=False):
     _set_permissions(
         store, steps=steps, replay_mode=replay_mode, encoder_mode=encoder_mode
     )
@@ -187,7 +354,8 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
     before_sha = before["active"]["checkpoint_sha256"] if before else None
 
     result = world_jepa_runtime.consume_after_commit(
-        store, home=home, limit=256
+        store, home=home, limit=256, drift_control=drift_control,
+        replay_projection=replay_projection,
     )
     assert result.get("runtime_adapter_called") is True
     assert result.get("learning_enabled") is True
@@ -201,6 +369,19 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
     }
 
     metrics = _metrics(result)
+    drift_metrics = metrics.get("drift_control")
+    projection_metrics = metrics.get("gradient_projection")
+    assert type(projection_metrics) is dict
+    assert projection_metrics.get("requested") is replay_projection
+    assert projection_metrics.get("enabled") is replay_projection
+    if replay_projection:
+        assert projection_metrics.get("steps") == metrics.get("optimizer_steps_added")
+        assert projection_metrics.get("projected_steps", 0) > 0
+        assert projection_metrics.get("post_constraint_violation_steps") == 0
+    assert type(drift_metrics) is dict
+    assert drift_metrics.get("enabled") is (drift_control is not None)
+    if drift_control is not None and before is not None:
+        assert sum(item["controlled_steps"] for item in drift_metrics["groups"].values()) > 0
     assert result.get("new_receipts", metrics.get("new_train_rows", 0)) > 0
     if "train_holdout_source_sha256_disjoint" in metrics:
         assert metrics["train_holdout_source_sha256_disjoint"] is True
@@ -241,11 +422,38 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
         assert after_sha == before_sha
         assert after["pending_rows"]
 
+    replay_ids = set(metrics.get("fit_action_ids", [])) - set(
+        metrics.get("new_train_action_ids", [])
+    )
+    assert len(replay_ids) == metrics.get("replay_rows", 0)
     if before is not None:
-        if replay_mode == "uniform":
-            assert metrics.get("replay_rows", 0) > 0
-        else:
-            assert metrics.get("replay_rows", 0) == 0
+        prior_train_ids = set(before["active"]["train_ids"])
+        prior_holdout_ids = set(before["active"]["holdout_ids"])
+        assert replay_ids <= prior_train_ids
+        assert replay_ids.isdisjoint(prior_holdout_ids)
+    else:
+        assert not replay_ids
+
+    if replay_mode == "uniform" and before is not None:
+        assert metrics.get("replay_rows", 0) > 0
+    elif replay_mode == "none":
+        assert metrics.get("replay_rows", 0) == 0
+    elif replay_mode in {"uniform_budget", "session_contiguous"}:
+        assert metrics.get("replay_budget_matched") is True
+        assert metrics.get("replay_rows") == min(
+            metrics.get("replay_requested_budget_rows", 0),
+            metrics.get("replay_candidate_rows", 0),
+        )
+        if replay_mode == "session_contiguous" and before is not None:
+            assert metrics.get("replay_session_count", 0) > 0
+            assert metrics.get("replay_window_count", 0) > 0
+        if replay_mode == "uniform_budget":
+            assert metrics.get("replay_window_count", 0) == 0
+
+    assert type(metrics.get("fit_array_bytes")) is int and metrics["fit_array_bytes"] > 0
+    assert type(metrics.get("replay_array_bytes")) is int
+    assert metrics["replay_array_bytes"] >= 0
+    assert metrics.get("optimizer_steps_added") == fit_after - fit_before
 
     return {
         "status": result["status"],
@@ -259,15 +467,34 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full"):
         "rejected_receipts": rejected,
         "has_more": has_more,
         "fit_rows": metrics.get("fit_rows"),
+        "new_train_rows": metrics.get("new_train_rows"),
+        "replay_candidate_rows": metrics.get("replay_candidate_rows"),
+        "replay_mode": replay_mode,
         "replay_rows": metrics.get("replay_rows"),
+        "replay_budget_rows": metrics.get("replay_budget_rows"),
+        "replay_budget_matched": metrics.get("replay_budget_matched"),
+        "replay_session_count": metrics.get("replay_session_count"),
+        "replay_window_count": metrics.get("replay_window_count"),
+        "replay_manifest_sha256": metrics.get("replay_manifest_sha256"),
+        "fit_array_bytes": metrics.get("fit_array_bytes"),
+        "replay_array_bytes": metrics.get("replay_array_bytes"),
+        "optimizer_steps_added": metrics.get("optimizer_steps_added"),
         "holdout_improved": metrics.get("holdout_improved"),
+        "holdout_loss_before": metrics.get("holdout_loss_before"),
+        "holdout_loss_after": metrics.get("holdout_loss_after"),
+        "holdout_loss_delta": metrics.get("holdout_loss_delta"),
         "negative_controls_separated": metrics.get("negative_controls_separated"),
         "old_holdout_retained": metrics.get("old_holdout_retained"),
+        "old_holdout_loss_before": metrics.get("old_holdout_loss_before"),
+        "old_holdout_loss_after": metrics.get("old_holdout_loss_after"),
+        "old_holdout_retention_delta": metrics.get("old_holdout_retention_delta"),
         "encoder_mode": encoder_mode,
         "encoder_parameter_delta_norm": metrics.get("encoder_parameter_delta_norm"),
         "predictor_parameter_delta_norm": metrics.get("predictor_parameter_delta_norm"),
         "parameter_delta_norm": metrics.get("parameter_delta_norm"),
         "ema_target_delta_norm": metrics.get("ema_target_delta_norm"),
+        "drift_control": drift_metrics,
+        "gradient_projection": projection_metrics,
     }
 
 
@@ -405,13 +632,26 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             learning_enabled=True, optimizer_permission=True,
         )
         a1_result = world_jepa_runtime.consume_after_commit(
-            master, home=master_home, limit=256
+            master, home=master_home, limit=256, drift_control=DRIFT_CONFIG
         )
         assert a1_result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         assert a1_result["runtime_adapter_called"] is True
         assert a1_result["native_body_weights_changed"] is False
         a1_state = _active_state(master)
+        assert all(
+            type(row.get("session_id")) is str and row["session_id"] == a1["session_id"]
+            for row in a1_state["active"]["experience_rows"]
+        )
         a1_sha = a1_state["active"]["checkpoint_sha256"]
+        a1_model = world_jepa_runtime._consumer(
+            master, master_home, learning_enabled=True
+        )._load_model(a1_state["active"])
+        a1_drift = a1_model._training_state["drift"]
+        assert all(
+            a1_drift["groups"][name]["budget_sq"] > 0
+            and a1_drift["groups"][name]["task_count"] == 1
+            for name in ("encoder", "predictor", "inverse")
+        )
         a1_audit = world_jepa_optimizer_audit.audit_checkpoint(
             master_home / "world_jepa" / a1_state["active"]["checkpoint"],
             a1_state["active"]["source_sha256"],
@@ -421,8 +661,10 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         master.close()
 
         arms = {}
-        for replay_mode, encoder_mode in ARMS:
-            arm_key = f"{replay_mode}-{encoder_mode}"
+        for replay_mode, encoder_mode, stable, projection in ARMS:
+            arm_key = f"{replay_mode}-{encoder_mode}" + ("-stable" if stable else "")
+            if projection:
+                arm_key += "-agem"
             arm_home = tmp_path / f"arm-{data_seed}-{arm_key}"
             shutil.copytree(master_home, arm_home)
             arms[arm_key] = {
@@ -430,6 +672,9 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 "store": Store(arm_home),
                 "replay_mode": replay_mode,
                 "encoder_mode": encoder_mode,
+                "stable": stable,
+                "replay_projection": projection,
+                "drift_control": DRIFT_CONFIG if stable else None,
                 "phases": {"A1": {
                     "status": a1_result["status"],
                     "checkpoint_sha256": a1_sha,
@@ -450,6 +695,8 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 arm["store"], arm["home"],
                 steps=SHIFT_STEPS, replay_mode=arm["replay_mode"],
                 encoder_mode=arm["encoder_mode"],
+                drift_control=arm["drift_control"],
+                replay_projection=arm["replay_projection"],
             )
             arm["store"].close()
             arm["store"] = Store(arm["home"])
@@ -477,6 +724,8 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 arm["store"], arm["home"],
                 steps=SHIFT_STEPS, replay_mode=arm["replay_mode"],
                 encoder_mode=arm["encoder_mode"],
+                drift_control=arm["drift_control"],
+                replay_projection=arm["replay_projection"],
             )
             arm["holdout"] = _cohort_holdout_metrics(
                 arm["store"], phase_by_sha
@@ -526,6 +775,8 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
                 "data_seed": data_seed,
                 "replay_mode": arm["replay_mode"],
                 "encoder_mode": arm["encoder_mode"],
+                "stable_drift_control": arm["stable"],
+                "replay_projection": arm["replay_projection"],
                 "A1_checkpoint_sha256": a1_sha,
                 "B": arm["phases"]["B"],
                 "A2": arm["phases"]["A2"],
@@ -536,6 +787,58 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             arm["store"].close()
 
     assert len(reports) == len(DATA_SEEDS) * len(ARMS)
+    report_by_arm = {
+        (item["data_seed"], item["encoder_mode"], item["replay_mode"],
+         item["stable_drift_control"], item["replay_projection"]): item
+        for item in reports
+    }
+    for data_seed in DATA_SEEDS:
+        for encoder_mode in ("full", "predictor_only"):
+            uniform_budget = report_by_arm[(data_seed, encoder_mode, "uniform_budget", False, False)]
+            contiguous = report_by_arm[(data_seed, encoder_mode, "session_contiguous", False, False)]
+            stable = report_by_arm[(data_seed, encoder_mode, "uniform_budget", True, False)]
+            # B starts from the identical A1 checkpoint in every arm, so the
+            # two budgeted policies must consume identical replay/fit bytes and
+            # optimizer steps. A2 is reported separately because B promotion
+            # can legitimately change the subsequent source partition.
+            budget_metrics = uniform_budget["B"]
+            contiguous_metrics = contiguous["B"]
+            assert budget_metrics["new_train_rows"] == contiguous_metrics["new_train_rows"]
+            assert budget_metrics["replay_candidate_rows"] == contiguous_metrics["replay_candidate_rows"]
+            assert budget_metrics["replay_rows"] == contiguous_metrics["replay_rows"]
+            assert budget_metrics["fit_array_bytes"] == contiguous_metrics["fit_array_bytes"]
+            assert budget_metrics["replay_array_bytes"] == contiguous_metrics["replay_array_bytes"]
+            assert budget_metrics["optimizer_steps_added"] == contiguous_metrics["optimizer_steps_added"]
+            stable_metrics = stable["B"]
+            assert budget_metrics["new_train_rows"] == stable_metrics["new_train_rows"]
+            assert budget_metrics["replay_rows"] == stable_metrics["replay_rows"]
+            assert budget_metrics["fit_array_bytes"] == stable_metrics["fit_array_bytes"]
+            assert budget_metrics["replay_array_bytes"] == stable_metrics["replay_array_bytes"]
+            assert budget_metrics["optimizer_steps_added"] == stable_metrics["optimizer_steps_added"]
+            assert stable_metrics["drift_control"]["enabled"] is True
+
+        projected = report_by_arm[(data_seed, "predictor_only", "uniform_budget", True, True)]
+        stable_predictor = report_by_arm[(data_seed, "predictor_only", "uniform_budget", True, False)]
+        projected_b, stable_b = projected["B"], stable_predictor["B"]
+        assert projected_b["gradient_projection"]["projected_steps"] > 0
+        assert projected_b["old_holdout_retention_delta"] <= stable_b["old_holdout_retention_delta"] + 1e-9
+        if projected_b["checkpoint_after"] == stable_b["checkpoint_after"]:
+            assert projected["A2"]["old_holdout_retention_delta"] <= (
+                stable_predictor["A2"]["old_holdout_retention_delta"] + 1e-9
+            )
+
+    projected_reports = [
+        item for item in reports
+        if item["encoder_mode"] == "predictor_only"
+        and item["replay_mode"] == "uniform_budget"
+        and item["stable_drift_control"] is True
+        and item["replay_projection"] is True
+    ]
+    assert any(
+        phase["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        for item in projected_reports for phase in (item["B"], item["A2"])
+    ), "A-GEM replay arm produced no retention-preserving accepted checkpoint"
+
     print("WORLDJEPA_STORE_A_B_A_REPLAY_RETENTION " + __import__("json").dumps(
         reports, sort_keys=True, allow_nan=False
     ))

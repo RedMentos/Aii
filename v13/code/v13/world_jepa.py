@@ -49,16 +49,64 @@ class Adam:
         self.steps = {k: 0 for k in params}
         self.m = {k: np.zeros_like(v) for k, v in params.items()}; self.v = {k: np.zeros_like(v) for k, v in params.items()}
 
-    def step(self, grads):
-        if type(grads) is not dict or any(k not in self.p for k in grads):
+    def step(self, grads, *, constraint_gradients=None, update_scale=1.0):
+        if (type(update_scale) not in (int, float) or not np.isfinite(update_scale)
+                or not 0.0 < float(update_scale) <= 1.0):
+            raise ValueError("WorldJEPA update scale must be finite and in (0,1]")
+        update_scale = float(update_scale)
+        if type(grads) is not dict or not grads or any(k not in self.p for k in grads):
             raise ValueError("WorldJEPA Adam received an unknown parameter")
+        if constraint_gradients is not None:
+            if type(constraint_gradients) is not dict or set(constraint_gradients) != set(grads):
+                raise ValueError("WorldJEPA Adam replay constraint does not match trainable parameters")
+            for key, value in constraint_gradients.items():
+                ref = np.asarray(value, dtype=float)
+                if ref.shape != self.p[key].shape or not np.isfinite(ref).all():
+                    raise ValueError("WorldJEPA Adam received an invalid replay constraint")
         self.t += 1
-        for k, g in grads.items():
-            self.steps[k] += 1
-            self.m[k] = .9*self.m[k]+.1*g; self.v[k] = .999*self.v[k]+.001*g*g
-            step = self.steps[k]
-            mh = self.m[k]/(1-.9**step); vh = self.v[k]/(1-.999**step)
-            self.p[k] -= self.lr*mh/(np.sqrt(vh)+1e-8)
+        directions = {}
+        for key, gradient in grads.items():
+            value = np.asarray(gradient, dtype=float)
+            if value.shape != self.p[key].shape or not np.isfinite(value).all():
+                raise ValueError("WorldJEPA Adam received an invalid gradient")
+            self.steps[key] += 1
+            self.m[key] = .9*self.m[key]+.1*value
+            self.v[key] = .999*self.v[key]+.001*value*value
+            step = self.steps[key]
+            mh = self.m[key]/(1-.9**step)
+            vh = self.v[key]/(1-.999**step)
+            directions[key] = mh/(np.sqrt(vh)+1e-8)
+        report = {"enabled": constraint_gradients is not None, "projected": False,
+                  "reference_zero": False, "constraint_dot_before": None,
+                  "constraint_dot_after": None, "constraint_norm_sq": 0.0,
+                  "direction_norm_sq": float(sum(np.sum(v*v, dtype=np.float64) for v in directions.values())),
+                  "projection_norm": 0.0, "constraint_tolerance": 0.0}
+        if constraint_gradients is not None:
+            reference = {key: np.asarray(value, dtype=float) for key, value in constraint_gradients.items()}
+            dot_before = float(sum(np.sum(reference[key]*directions[key], dtype=np.float64) for key in directions))
+            ref_sq = float(sum(np.sum(value*value, dtype=np.float64) for value in reference.values()))
+            direction_sq = report["direction_norm_sq"]
+            tolerance = 1e-10*max(1.0, float(np.sqrt(ref_sq*direction_sq)))
+            if ref_sq <= 1e-20:
+                report["reference_zero"] = True
+            elif dot_before < 0.0:
+                coefficient = dot_before/ref_sq
+                raw = {key: value.copy() for key, value in directions.items()}
+                directions = {key: raw[key]-coefficient*reference[key] for key in raw}
+                report["projected"] = True
+                report["projection_norm"] = float(np.sqrt(sum(
+                    np.sum((raw[key]-directions[key])**2, dtype=np.float64) for key in raw
+                )))
+            dot_after = float(sum(np.sum(reference[key]*directions[key], dtype=np.float64) for key in directions))
+            if dot_after < -tolerance:
+                raise ValueError("WorldJEPA Adam replay projection violated old-gradient constraint")
+            report.update({"constraint_dot_before": dot_before, "constraint_dot_after": dot_after,
+                           "constraint_norm_sq": ref_sq,
+                           "direction_norm_sq": float(sum(np.sum(v*v, dtype=np.float64) for v in directions.values())),
+                           "constraint_tolerance": tolerance})
+        for key, direction in directions.items():
+            self.p[key] -= self.lr*update_scale*direction
+        return report
 
 
 def _init(rng, d, a):
@@ -121,10 +169,12 @@ class WorldJEPA:
         self.seed = seed; self.ensemble = ensemble
 
     def fit(self, X, A, X2, steps=3000, log_every=500, warm_start=False, cancel_check=None,
-            allow_optimizer_bootstrap=False, train_encoder=True):
+            allow_optimizer_bootstrap=False, train_encoder=True, drift_control=None,
+            replay_start=None, update_scale=1.0):
         # Invalid transitions cannot establish learned SHADOW inference evidence.
         # The covariance objective divides by n-1; never fit a single row.
         from . import world_jepa_training_state as training_state
+        from . import world_jepa_drift as drift
         if (type(self.seed) is not int or not 0 <= self.seed <= 2**63-1
                 or type(self.ensemble) is not int or not 1 <= self.ensemble <= 16
                 or type(steps) is not int or steps < 0
@@ -132,8 +182,12 @@ class WorldJEPA:
                 or type(warm_start) is not bool
                 or type(allow_optimizer_bootstrap) is not bool
                 or type(train_encoder) is not bool
+                or (replay_start is not None and type(replay_start) is not int)
+                or type(update_scale) not in (int, float) or not np.isfinite(update_scale)
+                or not 0.0 < float(update_scale) <= 1.0
                 or (cancel_check is not None and not callable(cancel_check))):
             raise ValueError('Invalid WorldJEPA fit configuration')
+        drift_config = drift.normalize_config(drift_control)
         if cancel_check is not None and cancel_check():
             raise InterruptedError('WorldJEPA fit cancelled')
         if not train_encoder and not warm_start:
@@ -150,6 +204,9 @@ class WorldJEPA:
                 or any(v.dtype.kind not in 'fiub' for v in (X, A, X2))
                 or not all(np.isfinite(v).all() for v in (X, A, X2))):
             raise ValueError('Invalid WorldJEPA transition shape or nonfinite values')
+        if replay_start is not None and (
+                not warm_start or replay_start < 2 or len(X)-replay_start < 2):
+            raise ValueError('Replay projection requires a warm-start split with at least two new and two replay rows')
         # Training stays concurrent, but a late older fit must never replace
         # a newer fit's complete publication. Invalid inputs above do not
         # supersede an in-flight valid fit. A failed newer valid fit leaves the
@@ -194,26 +251,117 @@ class WorldJEPA:
         opt = Adam({**{'e'+k: v for k, v in enc.items()}, **{'p'+k: v for k, v in pred.items()}, **{'i'+k: v for k, v in inv.items()}}, LR)
         if saved_training is not None:
             training_state.restore_adam(opt,saved_training['main'])
+        drift_state = saved_training.get('drift') if saved_training is not None else drift.default_state()
+        # Drift control covers the primary optimizer's encoder/predictor/inverse groups.
+        # Bootstrap ensemble predictors remain a separately trained uncertainty lane.
+        params_by_group = {
+            'encoder': {'e'+k: v for k, v in enc.items()} if train_encoder else {},
+            'predictor': {'p'+k: v for k, v in pred.items()},
+            'inverse': {'i'+k: v for k, v in inv.items()} if train_encoder else {},
+        }
+        prior_steps = int(getattr(self, '_fit_steps', 0)) if warm_start else 0
+        drift_prepared = drift.prepare_task(
+            drift_state, drift_config, params_by_group,
+            has_prior_training=bool(warm_start and prior_steps > 0),
+        )
+        previous_step_params = {
+            name: {key: np.array(value, copy=True) for key, value in params.items()}
+            for name, params in params_by_group.items() if params
+        } if drift_config['enabled'] else {}
+        update_norms = {name: [] for name in previous_step_params}
+        projection_stats = {"enabled": replay_start is not None, "steps": 0,
+                            "projected_steps": 0, "reference_zero_steps": 0,
+                            "post_constraint_violation_steps": 0,
+                            "constraint_dot_before_sum": 0.0, "constraint_dot_after_sum": 0.0,
+                            "min_constraint_dot_before": None, "max_constraint_dot_after": None,
+                            "projection_norm_sum": 0.0}
+        def pack_gradients(out):
+            _, _, gp, ge = out[:4]
+            gi = out[4] if len(out) > 4 else {}
+            return {
+                **({'e'+key: value for key, value in ge.items()} if ge is not None else {}),
+                **{'p'+key: value for key, value in gp.items()},
+                **{'i'+key: value for key, value in gi.items()},
+            }
         history = []
         for s in range(steps):
             if cancel_check is not None and cancel_check():
                 raise InterruptedError('WorldJEPA fit cancelled')
-            b = rng.integers(0, len(x), min(BATCH, len(x)))
-            zt = encode(tgt, x2[b])[0]
-            out = loss_grads(
-                enc, pred, x[b], A[b], zt, VAR_W, COV_W,
-                train_enc=train_encoder, inv=inv if train_encoder else None,
-                x2=x2[b] if train_encoder else None, inv_w=INV_W if train_encoder else 0.,
-            )
-            loss, parts, gp, ge = out[:4]; gi = out[4] if len(out) > 4 else {}
-            opt.step({
-                **({'e'+k: v for k, v in ge.items()} if ge is not None else {}),
-                **{'p'+k: v for k, v in gp.items()},
-                **{'i'+k: v for k, v in gi.items()},
-            })
+            constraint_gradients = None
+            if replay_start is None:
+                batch = rng.integers(0, len(x), min(BATCH, len(x)))
+                target = encode(tgt, x2[batch])[0]
+                out = loss_grads(
+                    enc, pred, x[batch], A[batch], target, VAR_W, COV_W,
+                    train_enc=train_encoder, inv=inv if train_encoder else None,
+                    x2=x2[batch] if train_encoder else None, inv_w=INV_W if train_encoder else 0.,
+                )
+                loss, parts = out[0], out[1]
+                gradients = pack_gradients(out)
+            else:
+                # A-GEM-style constraint: new updates cannot point uphill on a
+                # separate batch drawn only from the old train-fold replay rows.
+                new_count = replay_start
+                replay_count = len(x)-replay_start
+                new_size = min(BATCH//2, new_count)
+                replay_size = min(BATCH-new_size, replay_count)
+                if new_size < 2 or replay_size < 2:
+                    raise ValueError('Replay projection batch is too small for covariance gradients')
+                new_batch = rng.integers(0, new_count, new_size)
+                replay_batch = rng.integers(replay_start, len(x), replay_size)
+                new_target = encode(tgt, x2[new_batch])[0]
+                replay_target = encode(tgt, x2[replay_batch])[0]
+                new_out = loss_grads(
+                    enc, pred, x[new_batch], A[new_batch], new_target, VAR_W, COV_W,
+                    train_enc=train_encoder, inv=inv if train_encoder else None,
+                    x2=x2[new_batch] if train_encoder else None, inv_w=INV_W if train_encoder else 0.,
+                )
+                replay_out = loss_grads(
+                    enc, pred, x[replay_batch], A[replay_batch], replay_target, VAR_W, COV_W,
+                    train_enc=train_encoder, inv=inv if train_encoder else None,
+                    x2=x2[replay_batch] if train_encoder else None, inv_w=INV_W if train_encoder else 0.,
+                )
+                loss, parts = new_out[0], new_out[1]
+                gradients = pack_gradients(new_out)
+                constraint_gradients = pack_gradients(replay_out)
+            if drift_prepared['active']:
+                gradients = drift.apply_pullback(params_by_group, gradients, drift_prepared)
+            step_report = opt.step(gradients, constraint_gradients=constraint_gradients,
+                                   update_scale=update_scale)
+            if replay_start is not None:
+                projection_stats["steps"] += 1
+                if step_report.get("projected") is True: projection_stats["projected_steps"] += 1
+                if step_report.get("reference_zero") is True: projection_stats["reference_zero_steps"] += 1
+                dot_before = float(step_report["constraint_dot_before"])
+                dot_after = float(step_report["constraint_dot_after"])
+                projection_stats["constraint_dot_before_sum"] += dot_before
+                projection_stats["constraint_dot_after_sum"] += dot_after
+                projection_stats["projection_norm_sum"] += float(step_report["projection_norm"])
+                prior_min = projection_stats["min_constraint_dot_before"]
+                projection_stats["min_constraint_dot_before"] = dot_before if prior_min is None else min(prior_min, dot_before)
+                prior_max = projection_stats["max_constraint_dot_after"]
+                projection_stats["max_constraint_dot_after"] = dot_after if prior_max is None else max(prior_max, dot_after)
+                if dot_after < -float(step_report["constraint_tolerance"]):
+                    projection_stats["post_constraint_violation_steps"] += 1
+            if drift_config['enabled']:
+                for name, params in params_by_group.items():
+                    if not params: continue
+                    delta_sq = sum(float(np.sum((params[key] - previous_step_params[name][key]) ** 2)) for key in params)
+                    update_norms[name].append(delta_sq)
+                    previous_step_params[name] = {key: np.array(value, copy=True) for key, value in params.items()}
+            if drift_prepared['active']:
+                drift.update_dual(drift_prepared, params_by_group)
             if train_encoder:
                 for k in enc: tgt[k] = TAU*tgt[k]+(1-TAU)*enc[k]
             if s % log_every == 0 or s == steps-1: history.append(dict(step=s, loss=round(loss, 5), **{k: round(v, 5) for k, v in parts.items()}))
+        if projection_stats["steps"]:
+            projection_stats["mean_constraint_dot_before"] = projection_stats["constraint_dot_before_sum"]/projection_stats["steps"]
+            projection_stats["mean_constraint_dot_after"] = projection_stats["constraint_dot_after_sum"]/projection_stats["steps"]
+            projection_stats["mean_projection_norm"] = projection_stats["projection_norm_sum"]/projection_stats["steps"]
+        else:
+            projection_stats["mean_constraint_dot_before"] = None
+            projection_stats["mean_constraint_dot_after"] = None
+            projection_stats["mean_projection_norm"] = 0.0
         preds = [pred]
         bootstrap_training=[]
         zt_all = encode(tgt, x2)[0]; zsd = zt_all.std(0)+1e-6
@@ -237,7 +385,7 @@ class WorldJEPA:
                     raise InterruptedError('WorldJEPA fit cancelled')
                 b = idx[r2.integers(0, len(idx), min(BATCH, len(idx)))]
                 _, _, gp, _ = loss_grads(enc, p, x[b], A[b], zt_all[b], train_enc=False)
-                o.step(gp)
+                o.step(gp, update_scale=update_scale)
             preds.append(p)
             bootstrap_training.append({'adam':training_state.snapshot(o),'rng':r2.bit_generator.state})
         ztrain = z_all
@@ -257,25 +405,31 @@ class WorldJEPA:
             raise InterruptedError('WorldJEPA fit cancelled')
         total_steps=(getattr(self,'_fit_steps',0)+steps) if warm_start else steps
         origin = saved_training['origin'] if saved_training is not None else 'FRESH'
+        next_drift = drift.finish_task(
+            drift_prepared, params_by_group, steps=steps, update_norms=update_norms
+        )
         next_training=training_state.capture(opt,inv,rng,bootstrap_training,X.shape[1],A.shape[1],
-                                            self.seed,self.ensemble,total_steps,origin=origin)
+                                            self.seed,self.ensemble,total_steps,origin=origin,
+                                            drift_state=next_drift)
         with _WORLD_JEPA_IO_LOCK:
             if _WORLD_JEPA_FIT_TICKETS.get(self) != fit_ticket:
                 raise RuntimeError('Superseded WorldJEPA fit cannot publish stale state')
             self.__dict__.update(_training_state=next_training, _fit_steps=total_steps, _action_counts=action_counts, mu=mu, sd=sd,
                                  history=history, enc=enc, tgt=tgt, preds=preds,
-                                 zsd=zsd, _ztrain=ztrain, _nn_med=nn_med)
+                                 zsd=zsd, _ztrain=ztrain, _nn_med=nn_med,
+                                 _last_gradient_projection=projection_stats)
         return self
 
     def partial_fit(self,X,A,X2,steps=100,log_every=50,cancel_check=None,allow_optimizer_bootstrap=False,
-                    train_encoder=True):
+                    train_encoder=True, drift_control=None, replay_start=None, update_scale=1.0):
         """Continue JEPA weights and EMA target instead of reinitializing.
 
         Callers should mix replay transitions with new ones to reduce forgetting.
         This experimental path does not itself establish durable retention.
         """
         return self.fit(X,A,X2,steps=steps,log_every=log_every,warm_start=True,cancel_check=cancel_check,
-                        allow_optimizer_bootstrap=allow_optimizer_bootstrap,train_encoder=train_encoder)
+                        allow_optimizer_bootstrap=allow_optimizer_bootstrap,train_encoder=train_encoder,
+                        drift_control=drift_control,replay_start=replay_start,update_scale=update_scale)
 
     # -- inference -------------------------------------------------------------------------------------------------
     @_read_locked
