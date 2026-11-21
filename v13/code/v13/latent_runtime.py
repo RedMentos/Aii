@@ -51,7 +51,7 @@ def _event(runtime, event_id):
     if not row or row["session_id"] != runtime.session:
         return None
     event = json.loads(row["packet"])
-    if row["generation_id"] != runtime.store.generation_id():
+    if row["generation_id"] != runtime.store.generation_id:
         return None
     return event, row["generation_id"]
 
