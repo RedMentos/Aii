@@ -71,3 +71,34 @@ The original handoff is preserved above. Its branch snapshots are historical; cu
 - HeteroFold's repository declares MIT in pyproject metadata but has no root LICENSE file at the inspected main SHA; reuse is license-unverified. XKV and AGN/AEN are preprints and remain research-only. No model/code/weight import occurred.
 - No local full Aii checkout or full local test was available; GitHub DNS resolution failed. GitHub CI is not Android proof.
 - User action: none. REDMI_UNVERIFIED / NOT_RELEASED.
+
+
+
+## RAW EAR speaker-change correction — 2026-11-21
+
+### Current-base code slice
+
+- Research/Perception owns the optional source-bound speaker evidence consumer and the batch-boundary correction. It is an additive path over caller-supplied PCM16; the default Runtime call still supplies no embeddings and loads no model.
+- v13/code/v13/audio_speaker_evidence.py validates source/generation, model revision/checkpoint SHA, dimensions, frame timestamps and bounded look-back history. Embeddings remain process-local and are not persisted; output contains scalar cosine/change evidence only. No speaker label, identity, learning authority or action authority is emitted.
+- v13/code/v13/audio_voice_cues.py optionally carries the evidence into A5 PerceptPacket, A4 salience/novelty and C3 summary. The optional NumPy pitch backend remains explicit; Python remains the default.
+- Correctness fix: each batch now compares all its frames only with a snapshot of the stream history that existed before that batch. New frames are appended only after scoring. This prevents later same-batch frames from becoming their own look-back references and masking a speaker transition. The first batch is WARMUP; subsequent batches can produce measured evidence.
+- Regression test_same_batch_tail_cannot_overwrite_cross_window_change_evidence compares 1-second and 2-second batches containing the same A→B transition. The old loop returned a false negative on the longer batch; the snapshot algorithm returns the same cross-window candidate for both.
+
+### Exact test and environment boundary
+
+- LOCAL_LINUX algorithm-level reproduction: PASS on CPython 3.13.5 x86_64. Old algorithm negative control reproduced the false-negative; corrected snapshot algorithm passed the 1-s/2-s invariance check.
+- LOCAL_LINUX full Aii repository suite: BLOCKED — no complete checkout is mounted and GitHub DNS is unavailable in this worker. The repository test file and full staged/integrated suite have not been executed locally.
+- GitHub CI must run on the new current-base PR before this can be treated as a tested integration candidate. No PR/CI PASS is claimed until exact-head readback.
+- REDMI/TERMUX: REDMI_UNVERIFIED. No phone, microphone, model weights, permissions, updater or device state was touched. No model download or swap.
+
+### ReDimNet2 ONNX alternative
+
+- Full arXiv HTML for ReDimNet2 (arXiv:2603.11841) and official PalabraAI repository/README were reviewed. The model family offers B0 1.1M/0.33 GMAC, B1 2.1M/0.56 GMAC, B2 3.6M/0.95 GMAC and B3 4.1M/2.70 GMAC; these are utterance-level speaker embeddings, not 80-ms causal streaming outputs.
+- The MIT-licensed B3 ONNX conversion model card reports an 18,045,013-byte artifact, 192-D output and parity against PyTorch on 3-s/6-s examples. ONNX Runtime documents Android Java/C/C++ packages with CPU, NNAPI and XNNPACK options; device performance and Termux ABI remain unverified.
+- This is a segment-level reference/enrollment candidate, not a drop-in replacement for FASTDIAR. No model was downloaded; experimental try and production swap remain separate explicit approvals.
+
+### Coordination and next action
+
+- The earlier #2272 branch was 16 commits behind the current Boss #2258 head and mergeable=false. A clean current-base Perception branch was created from Boss #2258 head 34eb645357d65bdd5ac69b9fb2c834d043086dac; it carries the optional backend, speaker consumer, regression and research update without copying stale board/user-next-action snapshots.
+- Core/QA should run exact Python 3.13/3.14 speaker tests plus staged/integrated workflows on the replacement PR. The staged runtime had an independent source-pin failure in the older #2272 stack; do not attribute that to the speaker algorithm or call it a pass.
+- Keep the speaker path and NumPy backend opt-in until real consented speech, ARM64/Termux cold-load/RSS/latency and Redmi false-positive measurements exist.
