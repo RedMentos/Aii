@@ -1,0 +1,130 @@
+import copy
+import json
+import base64
+
+import pytest
+
+from v13 import android_control
+from v13.android_companion_ecdsa import ECDSAReceiptVerifier
+from v13.android_companion_protocol import CompanionDenied
+from v13.android_outcomes import accept_and_persist_companion_receipt, trusted_transition_eligible
+from v13.store import Store
+
+
+PUBLIC_KEY = bytes.fromhex(
+    "046b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296"
+    "4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5"
+)
+KEY_ID = "698bea63dc44a344663ff1429aea10842df27b6b991ef25866b2c6c02cdcc5be"
+SIGNATURE = "MEYCIQCziGI8yVaOpqD44U0ixlQwAozWkzJLFcxmL6ctiZ0vXAIhAOak8bzITwEOurnhMGyRgeu8L/rwm5kgB3bVG2WhZqdd"
+BODY = {
+    "schema": "v14.android-companion-receipt/1",
+    "nonce": "1" * 32,
+    "action_id": "2" * 32,
+    "capability": "launch_app",
+    "digest": "0e1b8771ccce5e24b8dcfd99466b6e553413dc684f3ef3cd4c3da52ad52d6b15",
+    "issued_at": 999.0,
+    "expires_at": 1030.0,
+    "status": "DISPATCHED_UNVERIFIED",
+    "local_consent": True,
+    "observed": False,
+    "os_permission_status": "NOT_REQUIRED_FOR_LAUNCH_APP",
+    "key_storage_status": "ANDROID_KEYSTORE_SOFTWARE_BACKED",
+    "key_id": KEY_ID,
+}
+RECEIPT = {"body": BODY, "key_id": KEY_ID, "signature": SIGNATURE}
+ENVELOPE = {
+    "action_id": BODY["action_id"],
+    "capability": BODY["capability"],
+    "digest": BODY["digest"],
+}
+
+
+def verifier(path, clock=lambda: 1000.0):
+    value = ECDSAReceiptVerifier(path, PUBLIC_KEY, KEY_ID, clock=clock)
+    value.start()
+    return value
+
+
+def test_pinned_android_keystore_signature_verifies(tmp_path):
+    value = verifier(tmp_path / "ecdsa.sqlite")
+    attestation = value.verify(ENVELOPE, RECEIPT, consume_nonce=False)
+    assert attestation["auth_scheme"] == "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
+    assert attestation["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert attestation["local_approval_evidence"] == "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+    assert attestation["key_storage_status"] == "ANDROID_KEYSTORE_SOFTWARE_BACKED"
+    assert attestation["t8_authoritative"] is False
+    value.close()
+
+
+def test_signature_scope_status_and_key_pin_fail_closed(tmp_path):
+    value = verifier(tmp_path / "ecdsa.sqlite")
+    changed = copy.deepcopy(RECEIPT)
+    changed["body"]["status"] = "EXECUTED"
+    with pytest.raises(CompanionDenied):
+        value.verify(ENVELOPE, changed, consume_nonce=False)
+    changed = copy.deepcopy(RECEIPT)
+    changed["body"]["observed"] = True
+    with pytest.raises(CompanionDenied):
+        value.verify(ENVELOPE, changed, consume_nonce=False)
+    with pytest.raises(CompanionDenied, match="scope mismatch"):
+        value.verify({**ENVELOPE, "digest": "b" * 64}, RECEIPT, consume_nonce=False)
+    with pytest.raises(ValueError, match="fingerprint"):
+        ECDSAReceiptVerifier(tmp_path / "wrong.sqlite", PUBLIC_KEY, "0" * 64)
+    value.close()
+
+
+def test_ecdsa_nonce_is_single_use_when_verifier_owns_commit(tmp_path):
+    value = verifier(tmp_path / "ecdsa.sqlite")
+    value.verify(ENVELOPE, RECEIPT, consume_nonce=True)
+    with pytest.raises(CompanionDenied, match="replay"):
+        value.verify(ENVELOPE, RECEIPT, consume_nonce=True)
+    value.close()
+
+
+def test_keystore_receipt_persists_source_bound_non_authoritative_outcome(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+    home = tmp_path / "runtime"
+    (home / "data" / "db").mkdir(parents=True)
+    (home / "data" / "blobs").mkdir(parents=True)
+    store = Store(home)
+    session = store.new_session()
+    event = store.event(session, "open the approved app")
+
+    broker = android_control.AndroidControlBroker(tmp_path / "broker.sqlite", clock=lambda: 1000.0)
+    receipt_verifier = verifier(tmp_path / "ecdsa.sqlite")
+    broker.start()
+    proposal = broker.propose(
+        "launch_app", {"package": "com.example.app"}, ttl=30,
+        event_id=event["event_id"], source_ref=event["source_ref"],
+    )
+    assert proposal.action_id == BODY["action_id"]
+    assert proposal.digest == BODY["digest"]
+    broker.approve(proposal.action_id, confirmed_by_local_ui=True)
+    broker.dispatch_approved(proposal.action_id)
+
+    outcome, packet = accept_and_persist_companion_receipt(
+        store, broker, receipt_verifier, proposal.action_id, RECEIPT
+    )
+    assert outcome.status == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert outcome.observed is False
+    assert outcome.evidence_level == "COMPANION_RECEIPT_ONLY"
+    assert outcome.details["local_approval_evidence"] == "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+    assert outcome.details["android_os_permission_status"] == "NOT_REQUIRED_FOR_LAUNCH_APP"
+    assert outcome.details["key_storage_status"] == "ANDROID_KEYSTORE_SOFTWARE_BACKED"
+    assert outcome.details["t8_authoritative"] is False
+    assert outcome.details["world_learning_eligible"] is False
+    assert trusted_transition_eligible(outcome) is False
+
+    stored = store.one("SELECT kind,payload FROM packets WHERE id=?", (packet["packet_id"],))
+    assert stored["kind"] == "ActionOutcome"
+    actual = json.loads(stored["payload"])["actual"]
+    assert actual["auth_scheme"] == "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
+    assert actual["observed"] is False
+    assert actual["t8_authoritative"] is False
+    assert actual["world_learning_eligible"] is False
+    assert actual["local_approval_evidence"] == "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
+
+    store.close()
+    broker.close()
+    receipt_verifier.close()
