@@ -1,5 +1,55 @@
 # QA & Android — latest verified handoff
 
+**Checkpoint:** 2026-11-21 14:22 UTC  
+**Current code release-development HEAD:** `5a141153f7d33906408fd638ce56cfbee459cf08`  
+**QA handoff branch:** `qa/v14-qa-handoff-android-20261121`  
+**User action:** none required.
+
+## Release / local / Redmi
+
+- Exact release-development HEAD `5a141153f7d33906408fd638ce56cfbee459cf08` has **19/19 exact-head push workflows SUCCESS**. Staged-runtime 249 passed / 10 skipped / 47 subtests; integrated-regression 424 passed / 3 skipped / 58 subtests; checkpoint retention 21 passed; combined JEPA 49 passed; Python 3.14 optimizer-resume PASS; two-checkout migration 2 passed.
+- GitHub-hosted Linux/CI only. Full local Aii checkout/tests are **BLOCKED** because this runtime cannot resolve `github.com`; no LOCAL_LINUX full-suite PASS is claimed.
+- Private owner-read #405 expired at 14:21:33Z with zero comments. New read-only PIPELINE_STATUS request **RedMentos/Aiiii#411** was created at 14:22Z and is pending (10-minute expiry). Installed Redmi SHA remains **UNKNOWN**, updater consent **UNVERIFIED**, device **REDMI_UNVERIFIED**.
+- No UPDATE_REQUEST, shell, installer, model/weight/permission change or phone-data mutation. Do not infer phone installation from CI; do not ask for another Termux command while the owner-read is pending.
+
+## QA work
+
+### RAW EAR consent revocation — PR #2214 / Perception #2219
+
+- QA branch currently contains deterministic test commit `c17e4df4df7a53ed74e9057cf5ca5d112c472ad4` and focused workflow trigger update `946ce534eed28577936041f98a278584f31d4190`.
+- The regression forces revocation to complete synchronously after the metadata-only preflight and before the processing lease, then asserts **zero** `observe_pcm16`, `extract_voice_cues`, packet persistence or A4 side effect. No scheduler sleep is used.
+- Focused push run **44913504205** on the QA branch: compile PASS; **25 passed / 1 failed**. This is the expected pre-fix baseline because that branch still contains the old producer. It is not a post-fix failure.
+- Perception PR #2219 producer head `64fcfe1d323737c4c15e88be57217537bf55fd3c`; GitHub test merge commit `8a18b769ccbeda50438e372fc8cd3508d91ca85a` has parents `c17e4df...` (QA test) and `64fcfe1...` (producer branch). Exact staged/integrated run **44913130756** passed staged-runtime **249/10 skipped/47 subtests** and integrated-regression **415/3 skipped/58 subtests**.
+- Earlier RAW EAR focused run **44912705879** passed 50/50 but predates the deterministic QA test commit. The new focused workflow now also targets PRs into the QA branch; #2219's current merge candidate must refresh to latest QA base `946ce534...` before that exact test runs on the fixed producer.
+- Synthetic GitHub Linux only. No real microphone/Termux/ARM/Redmi proof. Core's derived `AUDIO_ACOUSTIC_CONTEXT` revocation cleanup and immediate C3 inference lease remain separate open work.
+
+### Android action approval — PR #2215
+
+- Head `1eb484dd2e7243f1eb6f4a4de2c875353e831172` makes proposal arguments immutable and rechecks the canonical digest at approval and execution.
+- Exact broker isolated 38 passed; sandbox replay 62 passed; staged 249/10/47 and integrated 415/3/58 passed. Safe-additive rejects the existing-module edit; no waiver.
+- `confirmed_by_local_ui=True` is still a caller-supplied boolean; there is no authenticated companion or live Android OS executor. Keep **DRY_RUN_ONLY** pending Boss review.
+
+### Core arithmetic candidate — PR #2210
+
+- Head `7b81362c6c3ad539de0285fc4420ecaec0dd6203` remains **NOT merge-ready**.
+- Exact arithmetic workflow fails the broader suite, including the C5 shadow/BOOT regression (expected B1_DETAIL, got C3_LANGUAGE).
+- Staged/integrated run 44909218321 reports 30 failed / 217 passed / 10 skipped / 2 errors, including `runtime.py` source-builder hash mismatches and a two-checkout migration PARTIAL result. Safe-additive rejects existing-module changes.
+- Its base `840a53ab...` is behind current release `5a141153...`. Core has been given the exact findings; no arithmetic Runtime or #1904 acceptance claim is made.
+
+## Next QA actions
+
+1. Poll owner-read #411 until expiry. If unanswered, keep REDMI_UNVERIFIED and take no device action.
+2. Recheck #2219 after its merge candidate refreshes to QA base 946ce534...; require the deterministic focused RAW EAR test to pass before the producer is merged into the QA branch.
+3. Rebase #2200/#2211 onto the fixed producer; test derived-context revocation cleanup and the provider lease at the immediate C3 `runner.generate()` boundary.
+4. Keep #2215 DRY_RUN_ONLY until authenticated UI/companion provenance and OS permission enforcement exist.
+5. Recheck #2210 only after Core rebases and fixes the full exact-head CI chain. Keep #1904 open until real Redmi correctness, latency and consumed B1/B2→C4→C3 evidence exists.
+
+**NOT_RELEASED for this QA stack.** The current code release SHA is CI-green, but no Redmi deployment is verified. No model, weight, Age, learning permission, updater setting or phone state was changed.
+
+---
+
+# QA & Android — latest verified handoff
+
 **Checkpoint:** 2026-11-21 14:17 UTC  
 **Current code release-development HEAD:** `5a141153f7d33906408fd638ce56cfbee459cf08`  
 **Current QA handoff branch:** `qa/v14-qa-handoff-android-20261121`  
