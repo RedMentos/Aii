@@ -342,7 +342,7 @@
       "last_checkpoint": "2026-11-21T22:40:02Z",
       "latest_candidate_pr": {
         "pr": 2275,
-        "head_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c",
+        "head_sha": "5753060b66eb4c2384e791bc19e9f4b13d4eadf8",
         "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
         "ci": "QUEUED_RAW_EAR_44958073016_STAGED_44958072992",
         "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c",
