@@ -28,16 +28,16 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 
 | Feld | Aktueller Wert |
 |---|---|
-| source_HEAD | `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (PR #2138 merge readback 2026-11-21; exact staged push CI still running) |
-| last_integrated_functional_change | PR #2136 merged in `16f75fca`: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter; not yet called by normal Runtime/chat input, synthetic only |
-| local_test_result | NOT_RUN — no full local repository checkout in this worker |
-| ci_test_result | PR #2138 exact head `8ca7a298` passed owner-read (27+33 tests), Python 3.14 staged startup, offline bridge, staged-runtime (240/10 skipped/47 subtests), integrated regression (415/3 skipped/58 subtests); additive-only policy check failed on intentional existing-file changes and was not bypassed. Boss merged it as `5b9171a4`. On the exact merge SHA: owner-read push PASS, private-bridge push PASS, staged-context push IN_PROGRESS; source-contracts and integrated-regression also IN_PROGRESS. Latest-run gate correctly blocks until the newer staged run finishes. |
-| phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
+| source_HEAD | `c3c32c05a0374e970d274f8a777a7ab85c067d66` (verified current `gpt6/v13-private-remote-bridge-20261111` branch HEAD at JEPA readback; V14 PRs #2143/#2147/#2148 are unmerged candidates above it) |
+| last_integrated_functional_change | PR #2138 merged as `5b9171a4` (release/updater checkpoint); PR #2137 T8 temporal Store path merged as `3db6d1f`, still experimental/not normal-Runtime-wired. PR #2136 PCM16 RAW-EAR adapter remains synthetic and not called by normal Runtime/chat input. |
+| local_test_result | BLOCKED — no full Aii checkout; container DNS cannot resolve github.com. No exact LOCAL_LINUX repository test claimed. |
+| ci_test_result | PR #2148 code/test head `10e058a7`, exact run `44854219157` on docs/coverage head `3d8e5544`: Python 3.13 `59 passed in 8.18s`, Python 3.14 `59 passed in 7.74s`, compile PASS. Current PR head `e46b87d7` adds only docs after the tested head. #2145 separate runtime candidate: 52 V14 learning tests PASS but one Runtime test FAILs on `prediction_error` vs persisted `error`; its T8 consumer still uses newest-first latest-N without persistent cursor. |
+| phone_installed_sha | UNKNOWN — no fresh owner-verified PIPELINE_STATUS receipt |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
-| device_model_comparison | NOT_RUN |
-| proposed_model_change | NONE – erst anhand echter Tests |
-| requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
-| next_developer_action | Finish exact merge-SHA CI for `5b9171a4`; if green, obtain a fresh owner-verified PIPELINE_STATUS receipt before any device update. Core/JEPA rebuild staged hash-pinned candidate chains for #2139/#2140/#2135, fix the actual consumer failures and rerun staged-runtime + integrated regression; continue whole-Canon integration. |
+| device_model_comparison | NOT_RUN — no current device measurements or approved model experiment |
+| proposed_model_change | NONE — no measured candidate comparison; no model download/swap |
+| requires_user_action | NO — no action needed to continue repository work |
+| next_developer_action | Independent review/merge #2143 → #2147 → #2148; then compose the source/digest-disjoint oldest-first T8 cursor into #2145 and invoke WorldJEPAStoreConsumer in the postcommit Runtime SHADOW path. Keep learning and optimizer gates closed by default; no Termux command or user action until a real device receipt/approval path is available. |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
