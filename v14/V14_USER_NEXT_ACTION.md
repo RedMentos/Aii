@@ -1,3 +1,20 @@
+# Current user-facing handoff — 2026-11-21 15:48 CET
+
+**No user action is needed. Do not run another Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
+
+- Current release-development branch HEAD: `99ec54534fc9e99ce5689d335c80162f018de288`. Exact commit readback shows **30/30 check-runs SUCCESS**, including Python 3.13/3.14 staged startup and SQLite refs, staged-runtime, integrated-regression, JEPA optimizer-resume, source contracts and owner-read bootstrap. The 19 associated PR workflows are 19/19 SUCCESS. Push checks for staged/integrated, owner-read, Lab Age and the private bridge also passed; the ancillary reviewed-agent queue run was cancelled. This is GitHub CI, not an Android installation.
+- PR #2218's read-only WorldJEPA optimizer audit/test is merged at `6c444e1dfdea19583002519a682fd64bca465098`. Follow-up PR #2222 runs the exact production Store/SQLite optimizer-resume test and staged regression on CPython 3.13.18 and 3.14.10; exact run `44914934454` passed. These remain synthetic T8/NumPy predictor experiments, not native GGUF B1/B2/C3 weight training or trained B3 latent coupling. Learning and optimizer permissions remain OFF.
+- QA PR #2223 adds real production checkpoint-publisher regressions: hardlink EPERM/EACCES fallback through dirfd `renameat2(RENAME_NOREPLACE)`, concurrent destination EEXIST for both publication routes, and rollback after directory-fsync failure. Exact focused CI `44915486181`: 26 passed; staged `44915486170`: 249 passed / 10 skipped / 47 subtests; integrated: 424 passed / 3 skipped / 58 subtests. The safe-additive check failed because the PR adds a path filter and test invocation to an existing workflow; the policy does not permit that workflow edit. It was not bypassed. The PR remains draft pending independent Boss review.
+- The checkpoint publisher uses Linux/Bionic-compatible APIs, but Linux CI does not prove Redmi's Bionic/SELinux/filesystem behavior. **REDMI_UNVERIFIED.** No actual phone receipt, installed SHA or updater-consent confirmation is available.
+- Private owner-read #407/#408/#409/#410 expired without replies. Installed SHA and auto-update consent remain UNKNOWN. No further private request or device action was issued.
+- P0 #1904 remains open: no current Redmi proof of correct 2+2, bounded native latency, or B1/B2 offers delivered and consumed by C4→C3. #2195 remains a staged C4 overlay with unresolved negative controls/base/pin integration; #2210 C5 SHADOW/source-pin failures remain open.
+- RAW EAR #2219 still needs the deterministic #2214 pre-PCM revocation and non-reentrant provider-lease tests to pass together. #2200/#2211 still need derived audio-context deletion and immediate pre-C3 revocation.
+- Full local Aii checkout/tests remain BLOCKED because this worker cannot resolve GitHub DNS. The whole V13 Canon remains the scope; the 1,255-heading historical inventory is preserved, but semantic clause-to-consumer/test/rollback mapping is incomplete.
+
+Next work is internal: Boss reviews #2223's workflow-only change without waiving its failed policy check; Perception/QA combine the RAW EAR lease producer and deterministic QA controls; Core continues C4/C5 and P0 chat integration; JEPA continues multi-seed temporal retention. **No user action is required.**
+
+---
+
 # Current user-facing handoff — 2026-11-21 15:33 CET
 
 **No Termux command or device action is needed. Do not change models, weights, permissions, Age or updater settings.**
