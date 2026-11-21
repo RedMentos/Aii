@@ -56,3 +56,25 @@
 - V14_WORK_BOARD.json: V14-005 moved from READY to IN_PROGRESS_PARTIAL with PR #2142, exact CI run 44849343250, and explicit NOT_RUN/REDMI_UNVERIFIED native evidence.
 - V14_USER_NEXT_ACTION.md: added a Research & Perception checkpoint and corrected source_HEAD (shared base c3c32c05; latest code-bearing merge 3db6d1f has exact merge-push CI green but no Redmi install receipt), local-test boundary, candidate-only status and next action.
 - The PR's current head is authoritative and should be read live; code/manifest commit 6aadf841434bcc43fbde1827a4ed2ef9d61bc4b0 passed exact CI run 44849343250. Subsequent candidate-manifest edits only clarified license wording and fixed a status label; LOCAL_LINUX JSON_PARSE_PASS, no CI rerun for those metadata-only edits. Subsequent other commits update board/next-action/handoff/ledger.
+
+
+## QA finding fixed — executable identity, 21 November 2026
+
+QA identified that V13 `LlamaRunner` uses `V13_LLAMA_SERVER` when set, while the first lab version reported the hash of `home/bin/llama-server` regardless of that override. The measurement could therefore describe a different executable from the one actually launched.
+
+The current PR branch adds `verified_runner_binary()`:
+- Before generation, resolve `runner.binary` and require it to match the previously verified installed executable.
+- After generation/load, resolve `runner._loaded_binary` (the actual selected `cmd[0]`) and require the same identity.
+- Require baseline and candidate runs to report the same executable SHA256.
+- Report the actual resolved executable's name, size and digest; no absolute path is emitted.
+
+Three regressions cover a different environment override (refused before generation), an override resolving to the installed executable (accepted), and a changed loaded executable (aborts, then runner cleanup runs). The exact test file now contains 16 tests.
+
+### Verification at this checkpoint
+
+- LOCAL_LINUX isolated helper: `py_compile` PASS; 5/5 executable-identity checks PASS. This is a focused helper-level test, not a full checkout or native inference.
+- Exact PR head `fef505ac3f6ea30f034fdce5ee5a9abc6b5c30b7`: model-lab CI run 44853309109 IN_PROGRESS at last readback.
+- Full repository checkout remains blocked by local DNS resolution for github.com.
+- Native GGUF inference NOT_RUN; no candidate download or model swap; no phone action. REDMI_UNVERIFIED / NOT_RELEASED.
+
+Next: read back exact-head CI, then obtain independent Core/QA review. Keep 230M diagnostic-only unless a new authorized Redmi A/B comparison proves quality and performance; no production swap without a separate approval and rollback evidence.
