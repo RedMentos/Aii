@@ -24,6 +24,14 @@ FILES = {
     'v13/world.py': 'bb221176167cb1f83285127cba2b2e059ebf9b0cec79b9405b3b5f23cef0343e',
     'v13/common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
     'specs/models.json': '81fe561e19b92614555453a1b99a39d8d77fe35dd7c7e06034e6dc7ff2e0bc58',
+    'v13/contracts.py': '631a25b9bdc98d5deca1d7b554ac5094f999bcb12b8112b3ffd2a7db719ac56b',
+    'v13/v14_learning/__init__.py': '4f8ed5911ad2566c36069a371e393c0dc8a63aa9f4198405c29de3400b3ffad6',
+    'v13/v14_learning/t8_store_authority.py': '5bb3ef817f160e13d7863e0235f9c05e1eca72292cc30671726314d93623b38e',
+    'v13/v14_learning/t8_temporal_bridge.py': 'c6e12e08e6a002382aaf6901996bcc09ce50f6c12dcee2fb897b6bf5a69a7d41',
+    'v13/v14_learning/temporal_outcomes.py': '60885ce98594dbbf577e9f0138a8889c153ae6df89bee90261906caf84904aa3',
+    'v13/v14_learning/temporal_receiver.py': '704eb7dc250b5f2f9d659aa2d24e7f7862d023f4a089841ecd2118e1766ec162',
+    'v13/v14_learning/runtime_shadow.py': '8b9165fbfd9a33812a48295b98218d210a071649f2b780888ed927c3c52140d5',
+    'tests/test_v14_t8_runtime_consumer.py': 'ab11291bd3a852c5c84fe46f389e1fb7bed0705a60b6e3808b06f9d07a956709',
 }
 ASSETS = {
     'changes.patch': '75d3d269b1f97bb8d63bdd1ce5caa1a8465dd52958a43f23e69656316fbc8f3c',
@@ -53,17 +61,27 @@ RUNTIME_OLD = b'''    def online_world_update(self,limit=2048):
         return self._online_world.update(limit=limit)
 '''
 RUNTIME_NEW = b'''    def online_world_update(self,limit=2048,authority='SYSTEM'):
-        """Bounded local SHADOW learning, gated by explicit user and Age settings."""
+        """Post-action-commit temporal evaluation plus explicitly gated local plasticity."""
         from . import online_world_policy as policy
+        temporal={'status':'UNAVAILABLE','verified':0,'temporal_recorded':0,'world_outcomes_created':0}
+        try:
+            from .v14_learning.runtime_shadow import consume_recent_committed
+            temporal=consume_recent_committed(self.store,self.home,limit=min(64,max(1,int(limit))))
+        except Exception as exc:
+            try:self.store.log('v14_t8_temporal_shadow_error',None,{'error':type(exc).__name__})
+            except Exception:pass
+            temporal={'status':'UNAVAILABLE','error':type(exc).__name__}
         reason=policy.blocked(self,authority)
-        if reason:return {'status':'SKIPPED_'+reason,'learned':0}
+        if reason:return {'status':'SKIPPED_'+reason,'learned':0,'temporal_shadow':temporal}
         if authority==policy.HUMAN:self.require_idle()
         from .online_world import OnlineWorld
         with self.lock:
             if not hasattr(self,'_online_world'):self._online_world=OnlineWorld(self)
             world=self._online_world
         check=lambda:policy.blocked(self,authority) is None
-        return world.update(limit=limit,should_continue=check,authority=authority)
+        result=world.update(limit=limit,should_continue=check,authority=authority)
+        result['temporal_shadow']=temporal
+        return result
 '''
 RUNTIME_LOG_OLD = b'''                        except Exception as exc:
                             self.store.log('online_world_learning_error',payload['event_id'],
@@ -188,9 +206,15 @@ def build_sources(code_dir):
     raw['tests/test_observe_atomic_1648.py'] = assets['test_observe_atomic_1648.py.txt']
     raw['tests/test_known_revocation_window.py'] = assets['test_known_revocation_window.py.txt']
     raw['v13/online_world_policy.py'] = assets['online_world_policy.py.txt']
+    world_old = b'''        p=packet('ActionPrediction','F4_FAST_FORWARD',event['event_id'],event['brain_generation_id'],[event['source_ref']],action_type='TEXT_REPORT',profile_id=profile['id'],prediction=result)\n'''
+    world_new = b'''        from .v14_learning.runtime_shadow import online_world_shadow_prediction\n        shadow=online_world_shadow_prediction(self.r,self.s,event,role,length,result.get('duration_median_s'))\n        result['role']=role\n        result['route_hint']=shadow.get('route_hint')\n        result['action_selection_packet_id']=shadow.get('action_selection_packet_id')\n        result['online_world_shadow']=shadow\n        p=packet('ActionPrediction','F4_FAST_FORWARD',event['event_id'],event['brain_generation_id'],[event['source_ref']],action_type='TEXT_REPORT',profile_id=profile['id'],prediction=result)\n'''
+    raw['v13/world.py'] = _replace(raw['v13/world.py'], world_old, world_new, 'World online predictor shadow consumer')
     keep = ('v13/runtime.py', 'v13/operator.py', 'v13/agi/__init__.py', 'v13/online_world.py',
-            'v13/continuous_predictor.py', 'v13/online_world_policy.py',
+            'v13/continuous_predictor.py', 'v13/online_world_policy.py', 'v13/world.py', 'v13/contracts.py',
+            'v13/v14_learning/__init__.py', 'v13/v14_learning/t8_store_authority.py',
+            'v13/v14_learning/t8_temporal_bridge.py', 'v13/v14_learning/temporal_outcomes.py',
+            'v13/v14_learning/temporal_receiver.py', 'v13/v14_learning/runtime_shadow.py',
             'tests/test_online_world_20261108.py', 'tests/test_online_world_safety_20261109.py',
             'tests/test_checkpoint_guards_1648.py', 'tests/test_observe_atomic_1648.py',
-            'tests/test_known_revocation_window.py')
+            'tests/test_known_revocation_window.py', 'tests/test_v14_t8_runtime_consumer.py')
     return {name: raw[name] for name in keep}
