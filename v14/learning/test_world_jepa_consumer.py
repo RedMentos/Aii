@@ -644,6 +644,8 @@ def test_replay_off_ablation_excludes_old_rows_and_uniform_mode_replays_them(tmp
 
 
 def test_action_mean_delta_baseline_is_train_only_and_action_conditioned():
+    import numpy as np
+
     class IdentityLatent:
         @staticmethod
         def latent(values, target=False):
