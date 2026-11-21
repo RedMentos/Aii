@@ -1838,3 +1838,8 @@ Age-rights #2235 exact CI passes its nested AST negative control, Lab-Age, owner
 ## QA exact-head correction — 4c1023d (2026-11-21 22:32 CET)
 
 The current Boss integration head has passed A5 lease, combined JEPA and offline deploy integrity, and the earlier lifecycle/idle/operator pin failures are no longer current. The shared stage now fails at the derived `local_error_route_shadow_candidate.py` upstream SHA in `integrated_arithmetic_outcome_candidate_20261116.py`; raw source pin remains distinct and correct, derived pin `3106cb3e...` is stale after World-semantic rebind. This blocks staged/integrated, Python 3.14 startup, Lab-Age, migration and audio. Keep runtime PARTIAL/OPEN, NOT_RELEASED and REDMI_UNVERIFIED.
+
+
+## QA exact-head correction — 06ebe5d (2026-11-21 22:38 CET)
+
+The current shared staged failure has advanced to `record_only_controller_guard_20261116.py:191`: stale semantic/local-error pins after the arithmetic/World/Store transformation. A5 lease, combined JEPA, runtime deploy and GoalWake focused tests pass; Lab-Age and Python 3.14 staged startup fail; migration/staged/audio are pending at the latest poll. Keep V14-001 PARTIAL/OPEN, NOT_RELEASED and REDMI_UNVERIFIED. The guard must rebind both dependent modules without weakening source identity checks.
