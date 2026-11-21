@@ -724,3 +724,8 @@ def test_hard_replay_selects_high_error_old_train_rows_and_uniform_sample_is_det
     assert min(selected_errors) >= max(unselected_errors)
     assert hard_metrics["replay_selection_error_mean"] > uniform_metrics["replay_selection_error_mean"]
     assert hard_metrics["replay_selection_budget"] == 8
+    old_only, old_only_metrics = _select_replay_rows(
+        model, old_rows, replay_mode="hard", seed=7, new_row_count=0
+    )
+    assert len(old_only) == 8
+    assert old_only_metrics["replay_selection_error_mean"] is not None

@@ -128,19 +128,26 @@ def _select_replay_rows(model, old_rows, *, replay_mode, seed, new_row_count):
     """Select a bounded prior-train subset; holdout rows are never passed here."""
     if replay_mode not in {"uniform_sampled", "hard"}:
         raise ValueError("unsupported bounded replay selection")
-    if type(seed) is not int or type(new_row_count) is not int or new_row_count < 1:
+    if (type(seed) is not int or type(new_row_count) is not int or new_row_count < 0):
         raise ValueError("invalid replay selection seed or new-row count")
     if type(old_rows) not in (list, tuple):
         raise ValueError("old replay rows must be a sequence")
     if any(type(row) is not dict for row in old_rows):
         raise ValueError("invalid old-train replay row")
-    canonical = sorted(old_rows, key=lambda row: row.get("action_id", ""))
-    ids = [row.get("action_id") for row in canonical]
-    if (not canonical or any(type(item) is not str or not item for item in ids)
-            or len(set(ids)) != len(ids)
+    if any(type(row.get("action_id")) is not str or not row["action_id"] for row in old_rows):
+        raise ValueError("invalid old-train replay identity")
+    canonical = sorted(old_rows, key=lambda row: row["action_id"])
+    ids = [row["action_id"] for row in canonical]
+    if (len(set(ids)) != len(ids)
             or any(row.get("a") not in world_model.ACTIONS for row in canonical)):
         raise ValueError("invalid old-train replay rows")
-    budget = min(len(canonical), max(8, min(32, 2 * new_row_count)))
+    if not canonical:
+        return [], {
+            "replay_selection_error_mean": None,
+            "replay_selection_error_min": None,
+            "replay_selection_error_max": None,
+        }
+    budget = min(len(canonical), max(8, min(32, 2 * max(1, new_row_count))))
     if replay_mode == "uniform_sampled":
         material = "\\0".join(ids).encode("utf-8")
         cohort_seed = seed ^ int.from_bytes(hashlib.sha256(material).digest()[:8], "big")
@@ -636,7 +643,7 @@ class WorldJEPAStoreConsumer:
         if type(optimizer_permission) is not bool:
             raise ValueError("optimizer_permission must be bool")
         if replay_mode not in {"uniform", "none", "uniform_sampled", "hard"}:
-            raise ValueError("replay_mode must be uniform or none")
+            raise ValueError("replay_mode must be uniform, none, uniform_sampled, or hard")
         with self._locked(True):
             state, version = self._read_state()
             receipts, rejected, next_cursor, scanned, censored_skipped, has_more = (
@@ -910,8 +917,8 @@ class WorldJEPAStoreConsumer:
                 "replay_mode": replay_mode,
                 "replay_candidate_rows": len(old_train_rows),
                 "replay_rows": len(selected_replay_rows),
-                    "replay_selected_action_ids": [row["action_id"] for row in selected_replay_rows],
-                    **replay_selection_metrics,
+                "replay_selected_action_ids": [row["action_id"] for row in selected_replay_rows],
+                **replay_selection_metrics,
                 "new_train_rows": len(new_train_rows),
                 "new_holdout_rows": len(set(new_ids) & set(holdout_ids)),
                 "fit_rows": len(fit_rows),
