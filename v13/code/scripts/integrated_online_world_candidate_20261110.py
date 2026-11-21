@@ -24,14 +24,14 @@ FILES = {
     'v13/world.py': 'bb221176167cb1f83285127cba2b2e059ebf9b0cec79b9405b3b5f23cef0343e',
     'v13/common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
     'specs/models.json': '81fe561e19b92614555453a1b99a39d8d77fe35dd7c7e06034e6dc7ff2e0bc58',
-    'v13/contracts.py': '631a25b9bdc98d5deca1d7b554ac5094f999bcb12b8112b3ffd2a7db719ac56b',
-    'v13/v14_learning/__init__.py': '4f8ed5911ad2566c36069a371e393c0dc8a63aa9f4198405c29de3400b3ffad6',
-    'v13/v14_learning/t8_store_authority.py': '5bb3ef817f160e13d7863e0235f9c05e1eca72292cc30671726314d93623b38e',
-    'v13/v14_learning/t8_temporal_bridge.py': 'c6e12e08e6a002382aaf6901996bcc09ce50f6c12dcee2fb897b6bf5a69a7d41',
-    'v13/v14_learning/temporal_outcomes.py': '60885ce98594dbbf577e9f0138a8889c153ae6df89bee90261906caf84904aa3',
-    'v13/v14_learning/temporal_receiver.py': '704eb7dc250b5f2f9d659aa2d24e7f7862d023f4a089841ecd2118e1766ec162',
-    'v13/v14_learning/runtime_shadow.py': '8b9165fbfd9a33812a48295b98218d210a071649f2b780888ed927c3c52140d5',
-    'tests/test_v14_t8_runtime_consumer.py': 'ab11291bd3a852c5c84fe46f389e1fb7bed0705a60b6e3808b06f9d07a956709',
+    'v13/contracts.py': '3726dd19aececcc85526aa7c818483f2748bb4ad4a8b34072f27651544954edb',
+    'v13/v14_learning/__init__.py': 'a976b585e78ea402bf682ac3c33a07a7a298dd4a1bdb2352f881f7b8e9ad4b4d',
+    'v13/v14_learning/t8_store_authority.py': '8db9601f2fb43dc0329b9632abe53eec9f4451b7880a0bd8da769a3511c7aba1',
+    'v13/v14_learning/t8_temporal_bridge.py': 'a10acd11e168c191c2c468dab5bcb6f421c5964ea2d4b7b2511b5ae2e27582ac',
+    'v13/v14_learning/temporal_outcomes.py': '73ec4f5244e98410b6a627af12cd5b8eeb09d3975acbaf8c8ec2817c25503737',
+    'v13/v14_learning/temporal_receiver.py': '3a666cf440d0d092a3c6822268b5a31c92afdc63399ab0c8d636a6b9dd7d3f03',
+    'v13/v14_learning/runtime_shadow.py': '153f634cdff127ce612d458056db98c17c08f311fbec58096e98c42f7e340ceb',
+    'tests/test_v14_t8_runtime_consumer.py': '0bb3fde853815518227a9d0a38d5f94e3d5a3a0fb091106f9fb0cd632899dd15',
 }
 ASSETS = {
     'changes.patch': '75d3d269b1f97bb8d63bdd1ce5caa1a8465dd52958a43f23e69656316fbc8f3c',
@@ -143,8 +143,11 @@ def _replace(raw, old, new, name):
     return raw.replace(old, new, 1)
 
 
-def build_sources(code_dir):
+def build_sources(code_dir, *, base_sources=None):
     code_dir = Path(code_dir)
+    # Always verify immutable original inputs first. Then compose the patch on
+    # the already reviewed integrated tree so Runtime/World/operator changes
+    # from earlier candidates are preserved rather than overwritten.
     raw = {name: _checked((code_dir / name).read_bytes(), expected, name)
            for name, expected in FILES.items()}
     assets = {name: _checked((ASSET_DIR / name).read_bytes(), expected, name)
@@ -181,6 +184,16 @@ def build_sources(code_dir):
             raise ValueError('reviewed online-world patch failed: ' + result.stdout + result.stderr)
         for name, expected in EXPECTED_1631.items():
             raw[name] = _checked((root / name).read_bytes(), expected, name + ' #1631 output')
+    if base_sources is not None:
+        if type(base_sources) is not dict:
+            raise ValueError('integrated online-world base source map')
+        for name in ('v13/runtime.py', 'v13/operator.py', 'v13/agi/__init__.py',
+                     'v13/world.py', 'v13/contracts.py'):
+            if name in base_sources:
+                payload = base_sources[name]
+                if type(payload) is not bytes:
+                    raise ValueError('integrated online-world base payload: ' + name)
+                raw[name] = payload
     predictor = raw['v13/continuous_predictor.py']
     start = predictor.index(b'    def _observe(self,x,action,y,rehearsals=2):\n')
     end = predictor.index(b'    def learn_stream(', start)
