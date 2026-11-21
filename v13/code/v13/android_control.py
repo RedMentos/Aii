@@ -6,6 +6,8 @@ issues grants. This broker defaults to dry-run and refuses replayed approvals.
 """
 from __future__ import annotations
 from dataclasses import dataclass
+from collections.abc import Mapping
+from types import MappingProxyType
 import hashlib
 import hmac
 import json
@@ -30,9 +32,22 @@ class ControlDenied(PermissionError):
 class Proposal:
     action_id: str
     capability: str
-    args: dict
+    args: Mapping
     expires_at: float
     digest: str
+
+    def __post_init__(self):
+        # frozen=True does not freeze a nested dict. Keep the action payload
+        # immutable because this exact object is retained through approval.
+        object.__setattr__(self, "args", MappingProxyType(dict(self.args)))
+
+
+def _verify_proposal_digest(proposal):
+    """Bind the immutable approved arguments to the digest shown at proposal."""
+    payload = _canonical(proposal.capability, dict(proposal.args))
+    actual = hashlib.sha256(payload.encode()).hexdigest()
+    if not hmac.compare_digest(actual, proposal.digest):
+        raise ControlDenied("proposal integrity changed")
 
 
 def _canonical(capability, args):
@@ -310,6 +325,11 @@ class AndroidControlBroker:
             if confirmed_by_local_ui is not True:
                 self._audit(action_id, "approval_denied", p.digest)
                 raise ControlDenied("local confirmation required")
+            try:
+                _verify_proposal_digest(p)
+            except ControlDenied:
+                self._audit(action_id, "approval_denied", p.digest)
+                raise
             self.approved[action_id] = p
             self._audit(action_id, "approved", p.digest)
 
@@ -319,6 +339,11 @@ class AndroidControlBroker:
             if p is None or self.stopped or self.clock() > p.expires_at:
                 self._audit(action_id, "execution_denied")
                 raise ControlDenied("not approved or expired")
+            try:
+                _verify_proposal_digest(p)
+            except ControlDenied:
+                self._audit(action_id, "execution_denied", p.digest)
+                raise
             if dry_run is not True:
                 self._audit(action_id, "live_transport_unavailable", p.digest)
                 raise ControlDenied("live Android companion not connected")
