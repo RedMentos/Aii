@@ -47,6 +47,7 @@ MARKER_NAME = "runtime-active.json"
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
 STAGER = "scripts/stage_integrated_candidate.py"
 # These pins are transitive: recompute from the final recovery wrapper and stage bytes together.
+# A pin mismatch must fail before launcher activation; the previous installed snapshot remains authoritative.
 STAGER_SHA256 = "7405c6fbbb1969fcf1211e7ccaf2a42748beb9674fdb3f2e539aa39ebf90a695"
 STAGE_MANIFEST = "INTEGRATION_STAGE.json"
 UI_SOURCE = "v13/ui.py"
