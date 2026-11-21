@@ -69,6 +69,20 @@ u._fetch = local_fetch
 u.ci_passed = lambda commit, scope='runtime': True
 u._runtime_active = lambda: False
 d._check_stopped = lambda home: None
+deploy_errors = []
+def _track_stage(name, function):
+    def tracked(*args, **kwargs):
+        try:
+            return function(*args, **kwargs)
+        except Exception as exc:
+            message = str(exc).replace(str(Path.home()), "<HOME>")
+            message = message.replace(str(remote.parent), "<TMP>")
+            deploy_errors.append({"stage": name, "type": type(exc).__name__,
+                                  "message": message[:240]})
+            raise
+    return tracked
+d.prepare_source = _track_stage("prepare_source", d.prepare_source)
+d.deploy = _track_stage("deploy", d.deploy)
 if sys.argv[2] == 'old':
     p.set_enabled(True)
     result = p.run_cycle(force=True, manual=False, target='all')
@@ -82,7 +96,8 @@ else:
     result = relay._run_pending_migration_after_reload(p)
 print(json.dumps({'result': result, 'profile': d.BUILD_PROFILE,
                   'module_path': str(Path(d.__file__).resolve()),
-                  'fetches': fetches, 'same_source_updater':p.updates is u,
+                  'fetches': fetches, 'deploy_errors': deploy_errors,
+                  'same_source_updater':p.updates is u,
                   'home': str(Path.home())}))
 """
 
