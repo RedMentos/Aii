@@ -40,7 +40,7 @@ jobs:
       - name: Install test-only WebRTC comparator
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pytest webrtcvad-wheels==2.0.14.post1
+          python -m pip install webrtcvad-wheels==2.0.14.post1
       - name: Compile exact V3 source and benchmark
         run: |
           python -m py_compile \
@@ -53,4 +53,4 @@ jobs:
           PYTHONPATH: v14/experiments
           V14_EXPECTED_RAW_EAR_V3_BLOB: 7b1d519cd36ede4b520d78e22c0f89132a1c73a5
           V14_EXPECTED_TEMPORAL_VOICE_BLOB: f693f8b8394558a63d87a35fc67ea3db9dcb1929
-        run: python -m pytest -q v14/experiments/test_raw_ear_vad_compare.py
+        run: python -m unittest discover -s v14/experiments -p "test_raw_ear_vad_compare.py" -v
