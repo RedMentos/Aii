@@ -53,3 +53,15 @@
 ## User action
 
 None for repository continuation. No Termux command, model download, permission change or phone update is requested.
+
+
+## 2026-11-21 follow-up — cross-event nonce replay closure
+
+- Verified branch HEAD: `96edceec0836ad791b92dd385bdbaa2a8897b9f2` on `gpt6/v14-core-companion-outcome-20261121`; draft PR #2134 remains stacked on the companion-receipt branch and is **NOT RELEASED**.
+- Fixed the test-file indentation defect that had prevented collection.
+- Tightened `persist_companion_outcome`: replay detection now scans every persisted `C5_ANDROID_COMPANION/ANDROID_COMPANION_RECEIPT` ActionOutcome, not only rows for the same event. The same nonce is idempotent only for the same action ID, event ID and digest; otherwise it fails with `receipt nonce replay`. The uniqueness check and packet insert remain inside the same Store transaction.
+- Added `test_nonce_replay_rejected_across_distinct_source_events`, covering reuse of one nonce on a different event/action.
+- Exact-head CI on `96edceec`: PASS — V14 Core Android companion outcome adapter (run 44842779504), V13 Android outcome contract (44842779484), V14 companion receipt verifier (44842779554), V13 staged-context/integrated regression (44842779560), Android control broker isolated tests (44842779435), Android local sandbox replay integration (44842779590), and private-bridge tests (44842773164).
+- Local Linux: PASS — isolated SQLite reproduction verified same-event idempotency and cross-event nonce rejection with one committed ActionOutcome. This was an isolated algorithm test, **not** the exact repository suite. Exact local checkout was unavailable in this session (no repository checkout; GitHub DNS resolution failed).
+- Redmi/Termux: **REDMI_UNVERIFIED**. No owner-verified device receipt was returned for this run. No Android Keystore-backed signature, native companion transport, real device action, or C5→T8 Runtime execution is demonstrated. The current HMAC verifier and caller-asserted local-approval field are not OS permission proof.
+- Next: independent review of the nonce transaction and migration behavior; integrate the prerequisite companion-receipt branch in order; then connect verified ActionOutcome to the actual Runtime/C5→T8 consumer without enabling any Android capability or action by default.
