@@ -23,20 +23,20 @@ def _fixture(home, *, include_c4=True, include_context=True):
                    segments=[], modality="audio"),
         )
         offers = []
+        query_ids = {}
         for role in ("B1_DETAIL", "B2_GIST"):
-            store.add_packet(
-                "QueryPacket",
-                packet("QueryPacket", "C2_CONTROL", eid, generation,
-                       [event["source_ref"]], target_role=role,
-                       goal="source-bound evidence", source_refs=[event["source_ref"]]),
-            )
+            query = packet("QueryPacket", "C2_CONTROL", eid, generation,
+                           [event["source_ref"]], target_role=role,
+                           goal="source-bound evidence", source_refs=[event["source_ref"]])
+            store.add_packet("QueryPacket", query)
+            query_ids[role] = query["packet_id"]
             offer = packet(
                 "OfferPacket", role, eid, generation, [event["source_ref"]],
                 role=role, based_on_state_version=0,
                 deadline_monotonic_ns=2**63 - 1,
                 evidence_refs=[evidence],
                 offer={"summary": "PRIVATE_OFFER_TEXT_SENTINEL"},
-                confidence=0.9,
+                confidence=0.9, query_packet_id=query_ids[role],
             )
             offer["native_metrics"] = {
                 "role": role, "status": "FINAL", "actual_model": "fixture-" + role,
@@ -105,6 +105,13 @@ def _fixture(home, *, include_c4=True, include_context=True):
                 "role": "C3_LANGUAGE", "status": "FINAL", "actual_model": "fixture-c3",
                 "prompt_tokens": 89, "generated_tokens": 11, "ttft_s": 0.3,
                 "duration_s": 0.8, "synthetic": True,
+                "native_offer_prompt_receipt": {
+                    "prompt_tokens": 89, "native_completion_http_200": True,
+                    "native_template_submitted": True,
+                    "native_attention_or_semantic_use_proven": False,
+                },
+                "CAN_LATENT_TAP": False, "CAN_LATENT_INJECT": False,
+                "CAN_TRAIN_BODY": False,
             },
             "model_revision": "fixture-c3-revision",
         }
@@ -125,6 +132,8 @@ def test_full_b1_b2_c4_c3_path_is_reported_without_private_text(tmp_path):
     assert report["read_only"] is True
     assert report["private_text_returned"] is False
     assert report["bodies"]["roles"] == ["B1_DETAIL", "B2_GIST"]
+    assert report["bodies"]["query_binding_status"] == "PASS"
+    assert all(x["query_role_match"] is True for x in report["bodies"]["offers"])
     assert all(x["prompt_token_source"] == "NATIVE_TOKENIZE_RECEIPT" for x in report["bodies"]["offers"])
     assert all(x["evidence_level"] == "SYNTHETIC_FIXTURE" for x in report["bodies"]["offers"])
     assert report["c4"]["status"] == "PASS"
@@ -132,6 +141,10 @@ def test_full_b1_b2_c4_c3_path_is_reported_without_private_text(tmp_path):
     assert report["c3"]["status"] == "PASS"
     assert report["c3"]["source_bound_roles"] == ["B1_DETAIL", "B2_GIST"]
     assert report["c3"]["prompt_tokens"] == 89
+    assert report["c3"]["native_completion_http_200"] is True
+    assert report["c3"]["native_template_submitted"] is True
+    assert report["c3"]["native_attention_or_semantic_use_proven"] is False
+    assert report["c3"]["can_latent_inject"] is False
     assert report["evidence_level"] == "SYNTHETIC_FIXTURE"
     assert report["latent"]["native_injection_proven"] is False
     assert report["latent"]["status"] == "TAP_ONLY"

@@ -104,6 +104,11 @@ def _safe_metrics(value: Any) -> dict:
             if type(item) is int:
                 out.setdefault(key, item)
                 has_receipt_token_count = True
+        for key in ("native_completion_http_200", "native_template_submitted",
+                    "native_attention_or_semantic_use_proven"):
+            item = receipt.get(key)
+            if type(item) is bool:
+                out[key] = item
     if has_receipt_token_count:
         out["prompt_token_source"] = "NATIVE_TOKENIZE_RECEIPT"
     elif type(value.get("prompt_tokens")) is int:
@@ -170,6 +175,11 @@ def audit_event(home: str | Path, event_id: str) -> dict:
         })
 
         queries = by_kind.get("QueryPacket", [])
+        query_roles = {
+            p.get("packet_id"): p.get("target_role")
+            for p in queries
+            if isinstance(p.get("packet_id"), str) and isinstance(p.get("target_role"), str)
+        }
         offers = by_kind.get("OfferPacket", [])
         offer_metrics = {}
         offer_roles = {}
@@ -239,6 +249,12 @@ def audit_event(home: str | Path, event_id: str) -> dict:
                 c3_context_ids.add(packet_id)
 
         c4_roles = {offer_roles[x] for x in c4_consumed_ids}
+        query_bound_roles = {
+            offer.get("role") for offer in offers
+            if isinstance(offer.get("role"), str)
+            and query_roles.get(offer.get("query_packet_id")) == offer.get("role")
+        }
+        query_binding_status = "PASS" if required_roles <= query_bound_roles else ("PARTIAL" if query_bound_roles else "FAIL")
         c3_roles = {
             offer_roles[x] for x in (c3_context_ids & c4_consumed_ids & selected_ids)
         }
@@ -313,9 +329,12 @@ def audit_event(home: str | Path, event_id: str) -> dict:
             "bodies": {
                 "offer_count": len(offers),
                 "roles": sorted(set(offer_roles.values())),
+                "query_binding_status": query_binding_status,
                 "offers": [
                     {
                         "role": offer_roles.get(p.get("packet_id")),
+                        "query_target_role": query_roles.get(p.get("query_packet_id")),
+                        "query_role_match": query_roles.get(p.get("query_packet_id")) == p.get("role"),
                         "prompt_tokens": offer_metrics.get(p.get("packet_id"), {}).get("prompt_tokens"),
                         "generated_tokens": offer_metrics.get(p.get("packet_id"), {}).get("generated_tokens"),
                         "status": offer_metrics.get(p.get("packet_id"), {}).get("status"),
@@ -346,6 +365,12 @@ def audit_event(home: str | Path, event_id: str) -> dict:
                 "actual_model": runner_metrics.get("actual_model"),
                 "model_revision": metadata.get("model_revision"),
                 "prompt_token_source": runner_metrics.get("prompt_token_source"),
+                "native_completion_http_200": runner_metrics.get("native_completion_http_200"),
+                "native_template_submitted": runner_metrics.get("native_template_submitted"),
+                "native_attention_or_semantic_use_proven": runner_metrics.get("native_attention_or_semantic_use_proven"),
+                "can_latent_tap": runner_metrics.get("CAN_LATENT_TAP"),
+                "can_latent_inject": runner_metrics.get("CAN_LATENT_INJECT"),
+                "can_train_body": runner_metrics.get("CAN_TRAIN_BODY"),
                 "evidence_level": runner_metrics.get("evidence_level", "METRICS_MISSING_OR_INCOMPLETE"),
                 "status": c3_status,
             },
