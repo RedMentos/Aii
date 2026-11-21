@@ -955,3 +955,7 @@ The completed 06ebe5 CI jobs confirm the same controller-guard semantic pin bloc
 - A5 UI lease, combined JEPA and runtime-deploy integrity **PASS**; GoalWake focused tests **7/7 PASS** in Python 3.14.
 
 All stage failures converge on `record_only_controller_guard_20261116.py:191`, where the guard still expects semantic/local-error pins from before the upstream arithmetic/World/Store transformation. The correction must update both pins as one verified composition and rebind all downstream builder hashes. No tests should be skipped or source guards relaxed.
+
+## QA audio matrix completion — 06ebe5d (2026-11-21 22:44 CET)
+
+The Python 3.14 staged-audio job 136992584655 has now completed **FAIL** with the same `record_only_controller_guard_20261116.py:191` semantic dependency mismatch as Python 3.13 job 136992584451. Both audio versions are blocked before audio/lease behavior can be accepted; this is not an audio-specific native failure. Keep audio integration PARTIAL/OPEN until the shared staged builder succeeds and both 3.13/3.14 audio suites pass.
