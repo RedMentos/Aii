@@ -6,7 +6,7 @@ import pytest
 from v13 import android_control
 from v13.android_companion_runtime import AndroidCompanionController
 from v13.store import Store
-from v13.operator import run as operator_run
+from v13.operator import Operator
 
 
 PUBLIC_KEY = bytes.fromhex(
@@ -197,8 +197,8 @@ def test_key_rotation_and_disabled_companion_fail_closed(tmp_path):
 
 def test_operator_refuses_model_origin_for_android_control(tmp_path):
     runtime = make_runtime(tmp_path)
-    with pytest.raises(PermissionError, match="OPERATOR_TTY"):
-        operator_run(runtime, ":android status", origin="MODEL")
+    with pytest.raises(ValueError, match="OPERATOR_TTY"):
+        Operator(runtime).run(":android status", origin="MODEL")
     runtime.store.close()
 
 

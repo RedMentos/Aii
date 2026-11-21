@@ -1,6 +1,7 @@
 package com.redmentos.v14.companion;
 
 import android.content.Context;
+import android.content.Intent;
 
 import org.junit.After;
 import org.junit.Before;
@@ -117,4 +118,22 @@ public final class CompanionDbApprovalTest {
         assertFalse(second.claimForDenial(ACTION_ID, NOW));
         assertEquals("CANCELLED", first.get(ACTION_ID).status);
     }
+    @Test public void sharedUidCallerIsRejected() {
+        assertTrue(CompanionProvider.isOnlyPairedPackage(
+                new String[]{"com.termux"}, "com.termux"));
+        assertFalse(CompanionProvider.isOnlyPairedPackage(
+                new String[]{"com.termux", "com.example.shared"}, "com.termux"));
+        assertFalse(CompanionProvider.isOnlyPairedPackage(null, "com.termux"));
+    }
+
+    @Test public void approvalIntentIdentityUsesFullActionIdDespiteHashCollision() {
+        String first = "8b50c53de5d8694493a2e5e7f318bc9c";
+        String second = "a2389bc938b7d225cd80af126908e600";
+        assertEquals(first.hashCode(), second.hashCode());
+        Intent firstIntent = CompanionProvider.approvalIntent(context, first);
+        Intent secondIntent = CompanionProvider.approvalIntent(context, second);
+        assertFalse(firstIntent.filterEquals(secondIntent));
+        assertNotEquals(firstIntent.getData(), secondIntent.getData());
+    }
+
 }

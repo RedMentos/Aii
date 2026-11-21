@@ -141,20 +141,33 @@ public final class CompanionProvider extends ContentProvider {
 
     private boolean isPairedCaller(Context context) {
         String[] packages = context.getPackageManager().getPackagesForUid(Binder.getCallingUid());
-        if (packages == null) return false;
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         String pairedPackage = prefs.getString("paired_package", "");
         String pairedDigest = prefs.getString("paired_cert_sha256", "");
-        if (pairedPackage.isEmpty() || pairedDigest.isEmpty()) return false;
-        for (String packageName : packages) {
-            if (!pairedPackage.equals(packageName)) continue;
-            try {
-                return pairedDigest.equals(packageCertificateDigest(context, packageName));
-            } catch (Exception ignored) {
-                return false;
-            }
+        // A shared UID makes Binder identity ambiguous: another package in the
+        // same UID could otherwise inherit Termux's paired status.
+        if (!isOnlyPairedPackage(packages, pairedPackage) || pairedDigest.isEmpty()) return false;
+        try {
+            return pairedDigest.equals(packageCertificateDigest(context, pairedPackage));
+        } catch (Exception ignored) {
+            return false;
         }
-        return false;
+    }
+
+    static boolean isOnlyPairedPackage(String[] packages, String pairedPackage) {
+        return packages != null && packages.length == 1
+                && pairedPackage != null && !pairedPackage.isEmpty()
+                && pairedPackage.equals(packages[0]);
+    }
+
+    static Intent approvalIntent(Context context, String actionId) {
+        Intent intent = new Intent(context, ConsentActivity.class);
+        // PendingIntent equality includes the data URI. Keep the complete
+        // action ID here so a 32-bit hash collision cannot retarget an older
+        // notification's approval intent to a different action.
+        intent.setData(Uri.parse("v14://approval/" + actionId));
+        intent.putExtra("action_id", actionId);
+        return intent;
     }
 
     static String packageCertificateDigest(Context context, String packageName) throws Exception {
@@ -176,8 +189,7 @@ public final class CompanionProvider extends ContentProvider {
                 && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        Intent intent = new Intent(context, ConsentActivity.class);
-        intent.putExtra("action_id", actionId);
+        Intent intent = approvalIntent(context, actionId);
         PendingIntent pending = PendingIntent.getActivity(context, actionId.hashCode(), intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         Notification notification = new Notification.Builder(context, CHANNEL)
