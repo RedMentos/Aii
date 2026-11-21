@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T23:06:00Z",
+  "updated_at": "2026-11-21T23:25:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,11 +14,11 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Core #2242 current branch head 46411a59e55d615f6db3d7f6026f6f30f184ef37. Independent exact-byte audit confirms the complete current nested pin chain: recovery wrapper SHA256 492b52e4099f032b98be5bbf018582aea0582c62327d3ae8e3868497c589ec30 matches stage BUILDER_SHA; stage SHA256 608f8c34d00e73274f6e30cb1c6d60df390094b2ce019ffc79a8ad60b4513d56 matches runtime_deploy.STAGER_SHA256; base/audio/arithmetic Git blob pins match. Exact workflow 44942663184: Python3.13 42 passed / 1 failed / 26 subtests; sole failure is fixture char_end=100000 exceeding actual stored source length. Python3.14 still in progress at last poll. Separate staged-runtime and integrated-regression jobs pass; migration, Lab-Age, runtime-deploy and owner-read workflows pass. safe-additive remains FAIL BY POLICY. Branch is 41 ahead / 21 behind shared base 48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4; no merge or Android proof.",
-      "next_step": "Core: fix native_turn_budget so two recent C3 zero-token failures and a short deadline do not silently defer both B1/B2 before C4 on nontrivial tasks. Add same-turn B1+B2→C4 regression; actual phone config remains unknown.",
+      "proof_environment": "Core #2242 branch head 1850b9ba025074be89476ee32c87ae57b0345f29. Source audit confirms native_turn_budget recovery currently makes Cognition.offer(B1_DETAIL) and Cognition.offer(B2_GIST) raise Limits after two C3 zero-token prefill failures, moving both to POSTCOMMIT_ELIGIBLE before the same-turn C4 focal loop. QA regression #2277 head 709ced72 is stacked on Core; current workflow pull_request filters exclude Core base/new test path, so TEST_NOT_EXECUTED. No local full checkout and no Redmi receipt.",
+      "next_step": "Core: preserve a measured C3 reserve without silently deferring both pre-answer bodies on a nontrivial wake='both' turn. QA #2277 provides a source-bound same-turn B1+B2 generation-boundary regression; after Core fix, run it and add the downstream C4 OfferPacket-consumption receipt. Keep native/Redmi claims UNVERIFIED.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T22:58:00Z",
-      "proof": "Boss PR #2258 code-bearing head 0dc337edfb7a71168e15f3db08bcedc424e32d4f, based on release-development HEAD bdcad466ffea75a2b41f7d23be168f53c7197d20. Exact code-head CI: integrated regression 424 passed / 3 skipped / 58 subtests; staged runtime 252 passed / 10 skipped / 47 subtests; arithmetic/broker 39 passed / 17 subtests; audio/arithmetic 52 passed / 26 subtests on Python 3.13 and 3.14; A5 UI lease 17 passed / 5 subtests on both versions; old-phone migration, Lab-Age, owner-read, deploy integrity, offline and privacy checks passed. Workflow-scope fix commit 273a60bda3105f3163bf2ad606e58f885681da8b is now on the Boss branch; its exact-head CI is queued. No full local Aii checkout and no Redmi receipt; CI only. Current pre-final-handoff head ce7ca26a08e9bf0d8dea79835035a4281b53bba1 has 16 exact check runs: 15 queued, 1 additive-validator skip; no new-head PASS. Research R-047–R-051 and its handoff are integrated; PR #2260 itself remains closed draft."
+      "last_checkpoint": "2026-11-21T23:25:00Z",
+      "proof": "QA PR #2277 (head 709ced72) adds test_same_turn_body_delivery_qa.py against actual Cognition.offer for both roles. The test is not executed; source path predicts Limits for each role. C4 receives no same-turn offers under the current recovery branch. No native inference or phone evidence."
     },
     {
       "id": "V14-002",
@@ -29,10 +29,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Fresh private owner-read requests #431 PIPELINE_STATUS and #432 DIAGNOSTICS have zero authenticated comments at last poll. Installed SHA and updater consent remain UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, shell action or phone mutation. REDMI_UNVERIFIED.",
-      "next_step": "#2274 head 314d39 fixes rollback ordering and missing owner-read helper; runtime-deploy, staged/integrated, migration, Lab-Age and owner-read SUCCESS. Safe-additive validator is not applicable. Rebase/stack onto #2258 c0e69; 114 commits behind Boss and overlaps runtime_deploy.py.",
+      "proof_environment": "Fresh private owner-read PIPELINE_STATUS #445 and HEALTH #446 expired with no authenticated device comments by 2026-11-21 23:25Z. Installed SHA, runtime health and updater consent remain UNKNOWN; NO_LIVE_RECEIPT / REDMI_UNVERIFIED. Current-base rollback QA PR #2276 is stacked on Boss #2258; tested code SHA 93bdae7a3d90415968d5531b59804d987e3d238a passed exact runtime deploy, staged/integrated, Python3.14 owner-read/startup, migration and Lab-Age workflows. Current branch head 6710f8e is documentation-only; DRAFT / NOT_RELEASED.",
+      "next_step": "Boss review/merge decision for #2276 after #2258 integration. Preserve explicit remaining limits: dashboard source rollback/WebView button not included; launcher+marker is not a journaled power-loss transaction; RESTORE marker consumption/chat restart still needs Redmi receipt. Do not issue another installer or device update until a fresh authenticated PIPELINE_STATUS proves installed SHA and consent.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T23:06:00Z",
+      "last_checkpoint": "2026-11-21T23:25:00Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -50,7 +50,7 @@
           "redmi": "NO_LIVE_RECEIPT; issues #351–354 unanswered; installed SHA unknown"
         }
       },
-      "proof": "Fresh private owner-read PIPELINE_STATUS request RedMentos/Aiiii #440 was created for this run; it has zero authenticated replies at last read. Earlier #431/#432/#439 also had no receipt. Installed SHA and updater consent remain UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, CHAT_SEND, remote shell or device mutation. REDMI_UNVERIFIED."
+      "proof": "QA PR #2276 tested code SHA 93bdae7a3d90415968d5531b59804d987e3d238a: runtime deploy integrity SUCCESS (37 pipeline tests plus rollback/fsync/CLI tests); staged Runtime 252 passed/10 skipped/47 subtests; integrated regression 424 passed/3 skipped/58 subtests; arithmetic/broker 39 passed/17 subtests; Python3.14 staged startup/owner-read 11 session/Store-lock tests; two-checkout migration and Lab-Age PASS. Private owner-read #445/#446 have no authenticated replies. No local full checkout, no phone action, no deployment. REDMI_UNVERIFIED."
     },
     {
       "id": "V14-003",

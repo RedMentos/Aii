@@ -296,6 +296,99 @@ class RuntimeDeploymentTests(unittest.TestCase):
             self.assertFalse(pipeline.enabled())
 
 
+    def test_second_deploy_rollback_restores_previous_launcher_and_marker(self):
+        self._run()
+        first_launcher = self.launcher.read_bytes()
+        first_marker = (self.private / d.MARKER_NAME).read_bytes()
+        second_commit = "e" * 40
+        with mock.patch.object(d, "_source",
+                               return_value=(self.checkout, self.code, second_commit)):
+            second = d.deploy(self.checkout, home=self.home, private=self.private,
+                              builds=self.builds, ci_verified=True)
+        self.assertEqual(second["status"], "DEPLOYED")
+        current_launcher = self.launcher.read_bytes()
+        current_marker = json.loads((self.private / d.MARKER_NAME).read_text())
+        self.assertNotEqual(current_launcher, first_launcher)
+        self.assertEqual(Path(current_marker["backup_launcher"]).read_bytes(), first_launcher)
+        self.assertEqual(Path(current_marker["backup_marker"]).read_bytes(), first_marker)
+
+        receipt = d.rollback(home=self.home, private=self.private, builds=self.builds)
+        self.assertEqual(receipt["status"], "ROLLED_BACK")
+        self.assertEqual(self.launcher.read_bytes(), first_launcher)
+        self.assertEqual((self.private / d.MARKER_NAME).read_bytes(), first_marker)
+        self.assertEqual((self.home / "models/model.gguf").read_bytes(), b"GGUF_NOT_A_REAL_MODEL")
+        self.assertEqual((self.home / "data/db/brain.sqlite3").read_bytes(), b"EXISTING_DB_DO_NOT_CHANGE")
+
+    def test_first_install_rollback_restores_original_launcher_and_removes_marker(self):
+        self.assertEqual(self._run()["status"], "DEPLOYED")
+        record = json.loads((self.private / d.MARKER_NAME).read_text())
+        backup = Path(record["backup_launcher"])
+        self.assertEqual(backup.stat().st_mode & 0o777, 0o600)
+        receipt = d.rollback(home=self.home, private=self.private, builds=self.builds)
+        self.assertEqual(receipt["status"], "ROLLED_BACK_LEGACY")
+        self.assertEqual(self.launcher.read_bytes(), self.old)
+        self.assertEqual(self.launcher.stat().st_mode & 0o777, 0o700)
+        self.assertFalse((self.private / d.MARKER_NAME).exists())
+        self.assertEqual((self.home / "models/model.gguf").read_bytes(), b"GGUF_NOT_A_REAL_MODEL")
+        self.assertEqual((self.home / "data/db/brain.sqlite3").read_bytes(), b"EXISTING_DB_DO_NOT_CHANGE")
+
+    def test_tampered_backup_launcher_fails_closed_without_switch(self):
+        self._run()
+        with mock.patch.object(d, "_source",
+                               return_value=(self.checkout, self.code, "e" * 40)):
+            d.deploy(self.checkout, home=self.home, private=self.private,
+                     builds=self.builds, ci_verified=True)
+        current_launcher = self.launcher.read_bytes()
+        current_marker = (self.private / d.MARKER_NAME).read_bytes()
+        record = json.loads(current_marker)
+        Path(record["backup_launcher"]).write_bytes(b"#!/bin/sh\necho tampered\n")
+        with self.assertRaisesRegex(d.RuntimeDeployError, "launcher backup integrity"):
+            d.rollback(home=self.home, private=self.private, builds=self.builds)
+        self.assertEqual(self.launcher.read_bytes(), current_launcher)
+        self.assertEqual((self.private / d.MARKER_NAME).read_bytes(), current_marker)
+
+    def test_active_runtime_refuses_rollback_before_mutation(self):
+        self._run()
+        with mock.patch.object(d, "_source",
+                               return_value=(self.checkout, self.code, "e" * 40)):
+            d.deploy(self.checkout, home=self.home, private=self.private,
+                     builds=self.builds, ci_verified=True)
+        current_launcher = self.launcher.read_bytes()
+        current_marker = (self.private / d.MARKER_NAME).read_bytes()
+        with mock.patch.object(d, "_check_stopped",
+                               side_effect=d.RuntimeDeployError("running")):
+            with self.assertRaisesRegex(d.RuntimeDeployError, "running"):
+                d.rollback(home=self.home, private=self.private, builds=self.builds)
+        self.assertEqual(self.launcher.read_bytes(), current_launcher)
+        self.assertEqual((self.private / d.MARKER_NAME).read_bytes(), current_marker)
+
+
+
+    def test_atomic_file_fsyncs_parent_directory(self):
+        target = self.root / "durable-marker"
+        with mock.patch.object(d, "_fsync_directory") as sync_dir:
+            d._atomic_file(target, b"durable")
+        self.assertEqual(target.read_bytes(), b"durable")
+        sync_dir.assert_called_once_with(self.root)
+
+    def test_runtime_deploy_rollback_cli_uses_pipeline_transaction(self):
+        from v13 import pipeline_agent
+        expected = {"status": "ROLLED_BACK_RUNTIME_ONLY", "auto_enabled": False}
+        with mock.patch.object(pipeline_agent, "rollback_runtime", return_value=expected) as rollback, \
+             redirect_stdout(io.StringIO()) as output:
+            d.main(["--rollback"])
+        rollback.assert_called_once_with()
+        self.assertIn("ROLLED_BACK_RUNTIME_ONLY", output.getvalue())
+
+    def test_runtime_deploy_rollback_cli_refuses_unmanaged_home(self):
+        from v13 import pipeline_agent
+        with mock.patch.object(pipeline_agent, "rollback_runtime") as rollback:
+            with self.assertRaises(SystemExit) as cm:
+                d.main(["--rollback", "--home", str(self.home)])
+        self.assertEqual(cm.exception.code, 2)
+        rollback.assert_not_called()
+
+
 class RuntimeSourcePreparationTests(unittest.TestCase):
     """Real Git fixtures exercise old/missing checkouts, without network."""
 
@@ -647,6 +740,7 @@ class RealRuntimeSelftestDiagnosticsTests(unittest.TestCase):
         with mock.patch.object(d.subprocess, "run", return_value=killed):
             with self.assertRaisesRegex(d.RuntimeDeployError, r'exit=-9'):
                 d._selftest(Path('/nonexistent-staged-code'))
+
 
 
 if __name__ == "__main__":
