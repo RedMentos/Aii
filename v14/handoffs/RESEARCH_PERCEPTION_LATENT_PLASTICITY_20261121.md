@@ -114,3 +114,12 @@ The original handoff is preserved above. Its branch snapshots are historical; cu
 - Core's staged/integrated workflow 44955501004 FAILS separately: stale source pin for v13/contracts.py plus migration assertions returning PARTIAL instead of UPDATED (19 failed, 230 passed, 10 skipped, 2 errors). This does not invalidate the native receiver compile, but it blocks integrated acceptance.
 - PR #2266 is based on the old release branch bdcad466ffea75a2b41f7d23be168f53c7197d20 rather than current Boss #2258. Perception posted exact API/CI findings on #2266; no Core code was changed.
 - Next: Core rebase/stack #2266 on current #2258, repair the separate staged arithmetic source pin/migration failures, then run a real receiver only with an already-installed authorized model and explicit local consent. A learned, versioned projector plus held-out semantic/retention tests remains necessary for genuine cross-model latent coupling.
+
+
+
+## C3 model-lab audit — 2026-11-21
+
+- Model-lab PR #2142 is CLOSED / NOT MERGED. Its 23 focused harness tests pass at code commit 40deb8a, but the candidate is not installed; the harness reports CANDIDATE_NOT_INSTALLED. No candidate inference, TTFT, RSS or output-quality comparison occurred. The lab is not in current Boss base.
+- The official LFM2.5-230M card says it is for data extraction/lightweight on-device agentic pipelines and is not recommended for reasoning-heavy math/code. Vendor-published comparisons show LFM2.5-350M ahead on several instruction/tool benchmarks, but this is not a local V13 comparison. LFM Open License v1.0 has a USD 10M annual-revenue threshold for commercial-use rights; preserve this exact license in any model manifest.
+- Research-only shortlist: LFM2.5-350M (same family, same LFM license, stronger vendor scores on several tasks); Qwen3-0.6B (Apache-2.0, Q4_K_M third-party conversions ~0.45–0.48 GB); Qwen3.5-0.8B (Apache-2.0, Q4 ~0.5 GB, newer hybrid attention). A community MNN report on Redmi Note 14 Pro+ / Snapdragon 7s Gen 3 reports 21.2 tok/s / 792 MB for Qwen3.5-0.8B, but the same poster reports 2–3 tok/s in Termux on that device. Neither is the target Redmi Note 10 Pro or V13 benchmark.
+- No candidate is recommended for swap. First inventory already-present files; if none, request explicit experimental download approval, then a separate productive-swap approval only after measured output quality, TTFT, RSS, rollback and multi-organ E2E results. No model was downloaded or changed.
