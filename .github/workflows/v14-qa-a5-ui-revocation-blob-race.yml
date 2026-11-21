@@ -1,0 +1,29 @@
+name: V14 QA A5 UI shared-blob revocation race
+on:
+  pull_request:
+    branches:
+      - research-perception/v14-a5-ui-observation-lease-20261121-run11
+    paths:
+      - v13/code/tests/test_a5_ui_revocation_blob_race.py
+      - .github/workflows/v14-qa-a5-ui-revocation-blob-race.yml
+jobs:
+  shared-blob-race:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install --disable-pip-version-check pytest==9.2.0
+      - name: Compile targeted regression
+        working-directory: v13/code
+        run: python -m py_compile tests/test_a5_ui_revocation_blob_race.py
+      - name: Run deterministic concurrent revocation regression
+        working-directory: v13/code
+        env:
+          PYTHONPATH: .
+        run: python -m pytest -q tests/test_a5_ui_revocation_blob_race.py
