@@ -278,6 +278,45 @@ class LabAgeTests(unittest.TestCase):
                 return dotted(node.value) + "." + node.attr
             return "<dynamic>"
 
+        def enclosing_owner(node, parent_map):
+            # Transaction/Store callbacks are nested implementation details.
+            # Attribute a rights read to the public method that owns the callback.
+            current = node
+            owner = None
+            while current in parent_map:
+                current = parent_map[current]
+                if isinstance(current, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    owner = current.name
+            return owner or "<module>"
+
+        # Negative control: nested callbacks belong to their enclosing method,
+        # while an unrelated closure stays attributed to its own outer owner.
+        probe = ast.parse(
+            "class GoalStore:\\n"
+            "    def add(self):\\n"
+            "        def f(st):\\n"
+            "            return learning_limit('goal_depth')\\n"
+            "        return f(None)\\n"
+            "def unrelated():\\n"
+            "    def f(st):\\n"
+            "        return learning_limit('unrelated')\\n"
+            "    return f(None)\\n"
+        )
+        probe_parents = {}
+        for parent in ast.walk(probe):
+            for child in ast.iter_child_nodes(parent):
+                probe_parents[child] = parent
+        probe_calls = [
+            node for node in ast.walk(probe)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "learning_limit"
+        ]
+        self.assertEqual(
+            [enclosing_owner(node, probe_parents) for node in probe_calls],
+            ["add", "unrelated"],
+        )
+
         scan_roots = (code_root / "v13", code_root / "scripts")
         for scan_root in scan_roots:
             for path in sorted(scan_root.rglob("*.py")):
@@ -313,7 +352,7 @@ class LabAgeTests(unittest.TestCase):
                             helper_calls.append((relative.as_posix(), node.lineno))
                         if isinstance(node.func, ast.Name) and node.func.id == "learning_limit":
                             learning_limit_calls.append(
-                                (relative.as_posix(), enclosing_function(node))
+                                (relative.as_posix(), enclosing_owner(node, parents))
                             )
                         if field_source and (
                                 isinstance(node.func, ast.Name) and node.func.id in {"getattr", "hasattr"}
