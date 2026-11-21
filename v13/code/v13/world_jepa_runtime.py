@@ -55,8 +55,27 @@ def _consumer(store, home, *, learning_enabled):
     return current
 
 
-def consume_after_commit(store, home=None, *, limit=64):
-    """Run persistent JEPA only after a committed turn and only behind both gates."""
+def _with_planner_shadow(result, store, home, event_id):
+    if event_id is None:
+        return result
+    try:
+        from .world_jepa_planner import consume_world_planner_shadow
+        result["planner_shadow"] = consume_world_planner_shadow(
+            store, event_id, home=home
+        )
+    except (ValueError, TypeError, KeyError, OSError, OverflowError,
+            ArithmeticError, AttributeError) as exc:
+        result["planner_shadow"] = {
+            "status": "UNAVAILABLE",
+            "error": type(exc).__name__,
+            "decision_authority": "NONE",
+            "dispatch": False,
+        }
+    return result
+
+
+def consume_after_commit(store, home=None, *, limit=64, event_id=None):
+    """Run JEPA after a durable T8 commit; optionally consume it in World/Planner SHADOW."""
     if type(limit) is not int or not 16 <= limit <= MAX_RUNTIME_PAGE:
         raise ValueError("runtime page must be 16..256")
     gates = permission_state(store)
@@ -70,10 +89,10 @@ def consume_after_commit(store, home=None, *, limit=64):
     }
     if not gates["learning_enabled"]:
         result["status"] = "OFF"
-        return result
+        return _with_planner_shadow(result, store, home, event_id)
     if not gates["optimizer_permission"]:
         result["status"] = "PENDING_OPTIMIZER_PERMISSION"
-        return result
+        return _with_planner_shadow(result, store, home, event_id)
     try:
         learner = _consumer(store, home, learning_enabled=True)
         updated = learner.update(
@@ -91,13 +110,42 @@ def consume_after_commit(store, home=None, *, limit=64):
             "native_body_consumed": False,
             "native_body_weights_changed": False,
         })
-        return result
     except (ValueError, TypeError, KeyError, OSError, OverflowError,
             ArithmeticError, AttributeError) as exc:
         result.update({"status": "ERROR", "error": type(exc).__name__})
-        return result
+    return _with_planner_shadow(result, store, home, event_id)
 
 
+def receiver_matrix(store, state, actions, home=None):
+    """Read B1/B2/SELF numeric receivers for candidate actions with one checkpoint load."""
+    try:
+        learner = _consumer(store, home, learning_enabled=False)
+        matrix = learner.readout_matrix(state, actions)
+        for roles in matrix.values():
+            for value in roles.values():
+                value.update({
+                    "decision_authority": "NONE",
+                    "native_body_consumed": False,
+                    "native_body_weights_changed": False,
+                })
+        return matrix
+    except (ValueError, TypeError, KeyError, OSError, OverflowError,
+            ArithmeticError, AttributeError) as exc:
+        status = "NO_CHECKPOINT" if "checkpoint unavailable" in str(exc) else "UNAVAILABLE"
+        return {
+            action: {
+                role: {
+                    "status": status,
+                    "role": role,
+                    "error": type(exc).__name__,
+                    "decision_authority": "NONE",
+                    "native_body_consumed": False,
+                    "native_body_weights_changed": False,
+                }
+                for role in RECEIVER_ROLES
+            }
+            for action in actions
+        }
 def receiver_readout(store, role, state, action, home=None):
     """Read one persisted B1/B2/SELF numeric head as non-authoritative SHADOW data."""
     if role not in RECEIVER_ROLES:
