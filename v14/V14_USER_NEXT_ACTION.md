@@ -59,16 +59,16 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 
 | Feld | Aktueller Wert |
 |---|---|
-| source_HEAD | `c3c32c05a0374e970d274f8a777a7ab85c067d66` (verified current `gpt6/v13-private-remote-bridge-20261111` branch HEAD at JEPA readback; V14 PRs #2143/#2147/#2148 are unmerged candidates above it) |
-| last_integrated_functional_change | PR #2138 merged as `5b9171a4` (release/updater checkpoint); PR #2137 T8 temporal Store path merged as `3db6d1f`, still experimental/not normal-Runtime-wired. PR #2136 PCM16 RAW-EAR adapter remains synthetic and not called by normal Runtime/chat input. |
+| source_HEAD | `c0cedbde718ede6107f4df1f1bf9c784df4e00cf` (verified current `gpt6/v13-private-remote-bridge-20261111` branch HEAD; #2151/#2152 and #2155 are merged code candidates) |
+| last_integrated_functional_change | PR #2151/#2152 merged: source/digest-disjoint, pending-cohort, retention-gated numeric WorldJEPA/EMA over synthetic T8 Store receipts; not normal-Runtime-wired. PR #2155 merged: additive RAW EAR acoustic-cue adapter; tested via synthetic Store/A4/C3 admission but not consumed by normal Runtime. |
 | local_test_result | BLOCKED — no full Aii checkout; container DNS cannot resolve github.com. No exact LOCAL_LINUX repository test claimed. |
-| ci_test_result | PR #2148 head at last GitHub readback `ac9a79e9`; code/test tree `e46b87d7`, run `44854338438`: Python 3.13 `59 passed in 6.52s`, Python 3.14 `59 passed in 8.81s`, compile PASS. This next-action/board refresh is documentation-only; no code/test changed after e46b. #2145 separate runtime candidate: 52 V14 learning tests PASS but one Runtime test FAILs on `prediction_error` vs persisted `error`; newest-first scan lacks persistent cursor. |
+| ci_test_result | #2151 exact PR-head run `44861797478`: 64 tests PASS on Python 3.13 and 64 on Python 3.14, compile PASS. #2155 safe-additive run `44862523075`: 8/8 PASS; generic stage/integrated `44862523082`: 240 staged / 415 integrated PASS. Current post-merge SHA `c0ced...` required workflows are `action_required` (13 runs), not green. #2156 docs PR has no returned workflow runs; no local full checkout tests. |
 | phone_installed_sha | UNKNOWN — no fresh owner-verified PIPELINE_STATUS receipt |
-| phone_auto_update_verified | NO — no native receipt; no update attempted |
-| device_model_comparison | NOT_RUN — no current device measurements or approved model experiment |
+| phone_auto_update_verified | UNVERIFIED — no fresh owner-authenticated receipt; no update requested |
+| device_model_comparison | NOT_RUN — #2142 has 23/23 synthetic tests only; no native GGUF inference or Redmi measurement |
 | proposed_model_change | NONE — no measured candidate comparison; no model download/swap |
 | requires_user_action | NO — no action needed to continue repository work |
-| next_developer_action | Independent review/merge #2143 → #2147 → #2148; then compose the source/digest-disjoint oldest-first T8 cursor into #2145 and invoke WorldJEPAStoreConsumer in the postcommit Runtime SHADOW path. Keep learning and optimizer gates closed by default; no Termux command or user action until a real device receipt/approval path is available. |
+| next_developer_action | Core: compose arithmetic + A5 RAW EAR + FINAL/PROVISIONAL in one current staged Runtime chain and repair online-world/contracts/operator/recovery pins. JEPA/Memory: port #2151/#2152 authority into normal postcommit Runtime and expose prediction to World/Planner in SHADOW. QA: remain read-only until device receipt. Keep optimizer gates OFF; no Termux command or user action until a real receipt/approval is available. |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
