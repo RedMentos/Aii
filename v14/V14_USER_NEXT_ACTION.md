@@ -1,3 +1,18 @@
+# Current next action — 2026-11-21T21:20:00Z
+
+**No user action is required. Do not run Termux commands, request a device update, or change models, weights, permissions, updater settings or phone data.**
+
+- #2258 exact head `0ecbb1aac1f70c63cb39428a18811cfe4fd66d56` is still NOT_RELEASED. The common lifecycle composer searches for the current Store SHA `40a387...` inside generated archive guard/stream candidates that still carry old reader SHA `fe66...`, finds zero matches and aborts staging.
+- A5 lease collection still fails because the composed 2,267-byte bridge lacks `A5UIRuntimeAdapter` and `_persist_source_and_packet`; reviewed Perception source at `acca00e11192dafc20fa55de5fbf0752f7e4f7ba` exports both.
+- QA #2261 exact run `44950978469`: staged-runtime FAIL and integrated-regression FAIL (226 passed, 10 skipped, 41 subtests, 24 failed, 2 errors). New blockers: idle recovery builder and record-only online-world guard both still pin old operator SHA `67f2118e...`, while current operator SHA is `b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186`. Repin idle and JEPA/online-world chains separately; do not weaken the guards.
+- Old-phone migration is still `PARTIAL` because staging fails. The three speech fixture `mkdir(exist_ok=True)` changes in #2261 are readback-verified, but `test_speech_output.py` was not executed by that workflow run; its direct audio job path is still unverified.
+- Private owner-read #435 has zero authenticated comments; installed SHA and updater consent remain UNKNOWN. No update or device action. `REDMI_UNVERIFIED`.
+- No full local Aii checkout is available; no LOCAL_LINUX project tests ran. The only CI PASS results on #2258 are combined JEPA and offline deploy-integrity; exact staged, A5, migration and audio acceptance remain red.
+
+**Next internal actions:** Core fixes the lifecycle and idle pins plus downstream hashes; JEPA fixes the record-only online-world operator pin and its chain; Perception composes the current A5 lease source; QA verifies the speech fixture in the existing audio test job; Boss reruns the exact full matrix and protected-file review. No user action is required.
+
+---
+
 # Current next action — 2026-11-21T21:17:19Z
 
 **No user action is required. Do not run Termux commands, request an update, or change models, weights, permissions, updater settings or device data.**
