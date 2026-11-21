@@ -146,3 +146,8 @@ Exact current producer/test code head: 03237482d4534e1a3d4a3c0e9093ec14084f32b9.
 Exact-head run 44909559421: RAW EAR 49/49 PASS on Python 3.11 and 3.13; py_compile PASS on both. Model-lab 44909559414 PASS and privacy scan 44909559570 PASS. Comparator run 44909559394: Python 3.13 8/8 PASS plus native Linux libfvad make check 13/13 PASS; Python 3.14 was still running at last readback. Staged/integrated run 44909559396 was still running. Safe-additive 44909559415 fails at the existing-module allowlist, as expected; no bypass.
 
 The previous exact staged-runtime 249/10/47 and integrated 415/3/58 PASS belonged to the earlier 39c2 source/test tree, before the latest state-reset and exact pre-COMMIT tests. Do not attribute those broad integration passes to 0323748 until the current 44909559396 run completes.
+
+
+### Revocation ordering semantics
+
+This provider-lock design is linearizable, not an immediate asynchronous cancellation token. Revocation becomes effective when the provider's revoke method acquires the shared lock and returns. If a producer already owns the lease, revoke waits until the packet/A4/C3-admission critical section exits; the caller must not display revocation as completed before that method returns. If revoke acquires the lock first, the producer observes inactive consent and fails before side effects. The Android OS permission itself is outside this app lock and remains separately unverified. If product UX requires revocation to interrupt an already-running lease immediately, that is a separate cancellation/compensation design requiring an epoch/cancel signal plus exact packet and attention-telemetry cleanup; this candidate does not claim that behavior.
