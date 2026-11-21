@@ -558,8 +558,8 @@ class ActionGate:
         age=age or {'tools':False};g_act=BOOT['gain_action'] if gain_action is None else BOOT['gain_action']*clip(gain_action)/ATT_BASE['action'];coalition=list(coalition);cands=self.candidates(route,direct,coalition,view,age,tool);suppressed=[]  # WP-N5: caution lowers action coupling
         for c in cands:
             why=None
-            if c['action_type']=='TOOL_CALL' and tool:why='EXACT_OR_FIXED_OUTPUT' if direct else (None if tool['status']=='APPROVED' else 'TOOL_POLICY:'+str(tool['reason']))  # IH-H29 decided
-            elif c['permission_class']=='external_tool' and not age.get('tools'):why='AGE_NO_TOOLS'
+            if c['permission_class']=='external_tool' and not age.get('tools'):why='AGE_NO_TOOLS'  # developmental permission always precedes per-call approval
+            elif c['action_type']=='TOOL_CALL' and tool:why='EXACT_OR_FIXED_OUTPUT' if direct else (None if tool['status']=='APPROVED' else 'TOOL_POLICY:'+str(tool['reason']))  # IH-H29 decided
             elif c['permission_class']=='external_tool':why='NO_EXTERNAL_TOOL_REQUESTED'
             elif c['action_type']=='CLARIFY' and clarify and clarify.get('apply') and not direct:c['expected_utility']=1.  # WP-N13 AG9 abstain -> ask instead of guessing (explicit human ACTIVE)
             elif c['action_type']=='CLARIFY':why='WAIT_VS_ACT_BIAS_BOOT'  # §85.5 ask is available, not executed at BOOT
