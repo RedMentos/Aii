@@ -75,13 +75,33 @@ _ANDROID_SYSTEM_GID = 1000
 
 
 def _trusted_android_data_group_write(path, info):
-    """Allow only AOSP's exact system:system 0771 /data (and legacy /data/data)."""
-    return (
-        path in {_ANDROID_DATA_ROOT, _ANDROID_DATA_ROOT / "data"}
+    """Allow only exact AOSP system:system 0771 directories, including verified bind mount."""
+    exact_system_mode = (
+        stat.S_ISDIR(info.st_mode)
         and info.st_uid == _ANDROID_SYSTEM_UID
         and info.st_gid == _ANDROID_SYSTEM_GID
         and stat.S_IMODE(info.st_mode) == 0o771
     )
+    if path in {_ANDROID_DATA_ROOT, _ANDROID_DATA_ROOT / "data"}:
+        return exact_system_mode
+
+    # Android 13 bind-mounts /data/data onto /data/user/0. Unlike a legacy
+    # symlink, lstat() sees a directory at /data/user/0, so its exception must
+    # be proven by the mounted directory's device/inode identity, not pathname
+    # or owner/mode alone.
+    if path == _ANDROID_DATA_ROOT / "user" / "0" and exact_system_mode:
+        try:
+            target = (_ANDROID_DATA_ROOT / "data").lstat()
+        except OSError:
+            return False
+        return (
+            stat.S_ISDIR(target.st_mode)
+            and target.st_uid == _ANDROID_SYSTEM_UID
+            and target.st_gid == _ANDROID_SYSTEM_GID
+            and stat.S_IMODE(target.st_mode) == 0o771
+            and (info.st_dev, info.st_ino) == (target.st_dev, target.st_ino)
+        )
+    return False
 
 
 def _reject_unapproved_symlink_ancestors(parent, uid):
