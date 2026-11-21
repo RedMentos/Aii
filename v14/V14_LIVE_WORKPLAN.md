@@ -214,3 +214,9 @@ On docs-only HEAD `d61b695739023d0bf0a3cfa4022770f0de2615fa`, owner-read push an
 ## T8 retargeted exact-head boundary — 2026-11-21 01:57 CET
 
 PR #2137 now points to `a3e19370d7fefe500e8edebf6942624207ff2865`. This last commit changes only `v14/V14_USER_NEXT_ACTION.md`; the code is identical to previous head `2d8eb79bdefe3c6c3bef63fea7d25563b7f56952`, which passed 52 focused T8 tests, staged-runtime 240 passed / 10 skipped / 47 subtests, integrated regression 415 passed / 3 skipped / 58 subtests, and private bridge. Exact CI for the retargeted head is now pending/in progress. Do not transfer the previous SHA's green result to the new head. The dedicated T8 workflow remains Python 3.11 only; Python 3.14 coverage is still requested. No normal Runtime consumer, optimizer or Redmi proof.
+
+
+## Documentation integrity / local execution readback — 2026-11-21 01:57 CET
+
+- Static handoff validation: V14_WORK_BOARD.json parsed; 12 unique ticket IDs; all tickets contain owner/reviewer/priority/status/scope/acceptance/proof/next-step fields; REDMI_UNVERIFIED preserved; handoff distinguishes code-bearing `5b9171a` from docs-only `d61b695`; T8 52/240/415 counts present. PASS.
+- Retried `git ls-remote https://github.com/RedMentos/Aii.git refs/heads/gpt6/v13-private-remote-bridge-20261111` in the local container; still BLOCKED because `github.com` DNS cannot resolve. No local full repository test is claimed.
