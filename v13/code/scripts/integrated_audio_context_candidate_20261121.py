@@ -407,12 +407,13 @@ def _audio_lease_turn(self, event):
     window["_consent_lease"] = lease
     try:
         try:
-            return _AUDIO_ORIGINAL_TURN(self, event)
+            result = _AUDIO_ORIGINAL_TURN(self, event)
         except BaseException as exc:
             manager.__exit__(type(exc), exc, exc.__traceback__)
             raise
         else:
             manager.__exit__(None, None, None)
+            return result
     finally:
         window.pop("_consent_lease", None)
         try:
