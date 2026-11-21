@@ -206,6 +206,24 @@ class EventScheduler:
                 else:e['status']='FAILED' if status in {'CANCELLED','RETRY'} else status
                 self._count(st,'completed_'+e['status'].lower());self._retire(st);self._save(st,v);return e['status']
         return None
+    def cancel_pending(self,event_id):
+        """Cancel one pending/held event while compensating a failed durable owner write."""
+        with self.s.mutex:
+            st,v=self._load()
+            for event in st['events']:
+                if event['id']==event_id and event['status'] in {'PENDING','HELD_AGE'}:
+                    event['status']='CANCELLED'
+                    event['result']={'reason':'PUBLICATION_ROLLBACK'}
+                    self._count(st,'cancelled_pending')
+                    self._retire(st)
+                    self._save(st,v)
+                    # The queue cancellation is authoritative; telemetry is best-effort
+                    # so a logging failure cannot turn a successful compensation into
+                    # an apparent failed cancellation.
+                    try:self.s.log('scheduler_cancel_pending',None,{'kind':event['kind']})
+                    except Exception:pass
+                    return True
+            return False
     def _retire(self,st):
         done=[e for e in st['events'] if e['status'] not in {'PENDING','HELD_AGE','DISPATCHED'}]
         if done:

@@ -46,13 +46,13 @@ HEX40 = re.compile(r"[a-f0-9]{40}\Z")
 MARKER_NAME = "runtime-active.json"
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
 STAGER = "scripts/stage_integrated_candidate.py"
-STAGER_SHA256 = "f430d8e8ea5fe182c98c6d04522cec7aee1f03158ce12be5c1ddbfbed3670ef6"
+STAGER_SHA256 = "8507794f47918ec9978c6d01ba467bb8ac9c0315323f1a1e0ba6803715d7a002"
 STAGE_MANIFEST = "INTEGRATION_STAGE.json"
 UI_SOURCE = "v13/ui.py"
 UI_SOURCE_SHA256 = "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8"
 UI_DERIVED_SHA256 = "0c2e5fb15a78b37017f2b2c296afd0275705e70276a47dc9b47429d38aeac5a1"
 UI_BUILDER = "scripts/termux_chat_recovery_candidate_20261112.py"
-UI_BUILDER_SHA256 = "e0885ebc04ae16826f2a8d5cc3210ddc2f76d1ef40d22824190deaafaa13ffa8"
+UI_BUILDER_SHA256 = "befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7"
 
 
 class RuntimeDeployError(RuntimeError):

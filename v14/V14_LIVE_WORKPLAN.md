@@ -873,3 +873,36 @@ Exactly five V14 automations are enabled: Boss & Integration, QA & Android, JEPA
 - **Boss:** integrate only after exact-head current-base CI and actual consumer-path review; maintain the whole-Canon ledger and historical V13 bytes.
 
 **User action: none.** No Termux command, model/weight download or swap, permission change or device action is requested.
+
+
+## Boss integration checkpoint — Core + Perception + QA composition (2026-11-21)
+
+**Current release base:** `bdcad466ffea75a2b41f7d23be168f53c7197d20` (verified branch compare; not a new code release). **Integrated candidate:** PR [#2258](https://github.com/RedMentos/Aii/pull/2258), exact head `f4ea7f20d6b5f757e813e8703f65acc9b041c7f5`, DRAFT / NOT_RELEASED.
+
+### What the candidate newly connects
+
+- Core #2254: staged caller-supplied PCM16 RAW EAR consent lease, exact arithmetic/date disambiguation, source-bound outcome, and explicit user-triggered OFF-by-default Termux system-TTS fallback.
+- Perception #2255: generic `Store.source()` blob publication now shares the Store RLock with A5 revocation; deterministic threaded producer-vs-revoker test proves the producer cannot check/recreate the blob while revocation owns the lock.
+- QA #2257: finite wake timestamp validation before goal mutation; GoalStore creation/scheduler publication under the same Store RLock; rollback on refusal or failed publication/backlink; exact pending GOAL_WAKE compensation via `EventScheduler.cancel_pending()`.
+- The dependent lifecycle → memory/world → feedback/context → WorldJEPA → recovery/idle/audio → stage → deployer SHA chain has been rebound. A final generated Store digest pin is still diagnostic-pending and must be obtained from the exact staged CI output.
+
+### Evidence and limits
+
+- Perception source PR #2255 focused CI: Python 3.13 and 3.14 each reported 16 passed / 5 subtests; public privacy scan clean. This is source-PR evidence, not the combined #2258 result.
+- Core #2254 earlier exact head had its own 3.13/3.14 audio/arithmetic checks, but the final combined #2258 head must pass again.
+- #2258 exact-head workflows were QUEUED at last poll: staged/integrated, combined JEPA, owner-read, runtime deploy, Lab-Age migration, Core audio/arithmetic, Lab-Age/WebView, safe-additive and A5 lease. No combined PASS is claimed.
+- Safe-additive is expected to FAIL_BY_POLICY because protected stage/deployer/runtime surfaces change. No bypass; Boss manual review is mandatory.
+- No local full Aii checkout; no local project tests. GitHub CI is not LOCAL_LINUX.
+- Private owner-read request #435 has zero authenticated replies; installed SHA/updater consent unknown. No LOG_PAGE, UPDATE_REQUEST, shell action or device mutation. REDMI_UNVERIFIED.
+- P0 #1904 remains open. Native B1/B2, correct Redmi 2+2, trained B3 latent coupling, accepted JEPA retention, sparse MoE, Android OS providers, full voice learning, cross-organ gradients and self-edit remain OPEN.
+
+### Next executable ownership
+
+- **Boss:** poll #2258; read actual generated Store digest if the Context recall guard fails; update the exact pin and rerun all downstream staged/integrated checks. Review Store, GoalStore, scheduler, stage and deployer semantics manually; do not merge while checks are queued or policy-blocked.
+- **Core:** fix any exact Runtime/audio/arithmetic regression on the final composed head without dropping B1/B2 or C4 paths; keep TTS explicit-only and OFF by default.
+- **Perception:** retain the Store RLock producer/revocation fix; keep the optional NumPy backend #2256 separate until ARM64/Termux measurements and review.
+- **QA:** verify GoalWake/Lab-Age/owner-read checks on #2258; then rebase the broader #2250 race suite onto the composed Store path without losing cancellation, stream, close, packet and blob lifecycle controls.
+- **JEPA/Memory:** #2247's strict per-session holdout still rejects multi-seed updates; do not loosen the gate. Continue a retention-preserving update experiment with parameter/checkpoint diff and rollback.
+- **Whole-Canon ledger:** keep B1/B2 native offer quality, B3 trained latent receiver, audio/vision learning, Android background/UI providers, full voice decoder/vocoder, sparse MoE, cross-organ gradients, self-edit, technical OS sandbox and declared memory/egress as separate OPEN requirements.
+
+**User action: none.**

@@ -3,15 +3,15 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-BASE_BUILDER_SHA = 'dd17f1e35393e5d43293070447434f9e277ae0aa0f52fb30f6c69ccc3caa0aea'
+BASE_BUILDER_SHA = '606e9c7d4a69fccdcfa138481e0781bead1864c3c7129c63a85a62113ead0e21'
 RECALL_SHA = '56282c1d95610ce3c3266d63f48b78362d0bf32e2a7291b90a3f55e386aa1f64'
 BUDGET_SHA = 'a9fdddeb9ff67b5bb733e86bc845508d8d883afed2a035b42fc39ebc0a11526a'
 CONTEXT_SHA = '2fe8bfc4c7857f24411fea71038485900ca6fcbad2ec3361fa4ede080657861f'
-STREAM_SHA = 'c927fb9ffe45ce0a42ef11a9d88a8d974ef606591452e0df702e2319275916df'
+STREAM_SHA = 'e3ab9982e2e99b369ed19b07ec937c8b92289b639ad2af0f328a7c1a44be4b4c'
 RECALL_INPUT_STREAM_SHA = 'e7c9d57b999ab93f628ec07f6dc9d467d886f9a26535a161386a52f102afd6a1'
 RECALL_INPUT_STORE_SHA = 'f405894f5d61ceacce2495f4d76d003d4b500945c6d081ee561a62efd7acf11f'
 REUSE_SHA = '52de26b95606b8038b109886d81a00c2f31ad9152c81384980c9615463f5a91b'
-STORE_SHA = '9cbc0c32f3bb39627bf1f131bde63fa618b931a0d0794c61b594f0accf484d76'
+STORE_SHA = 'f5dd5d2f7ad281f3afdc14d7cd9c449ffc528583b1d2c2a5091cf584735d428e'
 
 OPERATOR_ANCHOR = b'''def operator_command(r,args):
     c=controller(r)
@@ -70,7 +70,7 @@ def build_sources(code_dir):
     result = module.build_sources(code_dir)
     store = result['v13/store.py']
     if hashlib.sha256(store).hexdigest() != STORE_SHA:
-        raise ValueError('context recall Store source changed')
+        raise ValueError('context recall Store source changed: ' + hashlib.sha256(store).hexdigest())
     source_import = b'from .source_lifecycle_candidate import verify_or_create_blob'
     if store.count(source_import) != 2:
         raise ValueError('unexpected text source publication imports')

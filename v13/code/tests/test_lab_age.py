@@ -7,6 +7,9 @@ import unittest
 from v13 import lab_age, effort
 from v13.age import AgeControl
 from v13.config import initialize
+
+# Keep goal-wake lifecycle regressions in this existing QA workflow's trigger set.
+from test_goal_wake_atomicity_20261121 import GoalWakeAtomicityTests
 from v13.store import Store
 
 

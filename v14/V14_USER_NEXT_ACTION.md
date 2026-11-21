@@ -1,3 +1,19 @@
+# Current next action — 2026-11-21T20:58:26.786Z
+
+**No user action is required. Do not run Termux commands or change models, weights, permissions, updater settings or device data.**
+
+- Boss composed Core #2254, Perception #2255 and QA #2257 into draft integration PR [#2258](https://github.com/RedMentos/Aii/pull/2258), exact candidate head `f4ea7f20d6b5f757e813e8703f65acc9b041c7f5`, based on release branch `bdcad466ffea75a2b41f7d23be168f53c7197d20`.
+- The candidate includes staged caller-PCM16 consent, exact arithmetic/date disambiguation, explicit-only OFF-by-default Termux TTS fallback, generic Store source-publication RLock serialization, deterministic A5 producer/revocation regression, and GoalStore wake rollback/cancellation.
+- The complete nested lifecycle → memory/world → context → WorldJEPA → recovery/idle/audio → stage → deployer hash chain was rebound. The generated Store output pin is still pending: the exact staged CI must report its digest, then that value must be pinned and the full chain rerun.
+- At the last poll, the combined PR workflows were queued. No combined CI PASS is claimed. Safe-additive remains FAIL_BY_POLICY and requires manual protected-file review; no bypass.
+- No full local Aii checkout was available, so no LOCAL_LINUX project test ran. CI is not local or Android evidence.
+- Private PIPELINE_STATUS request #435 in RedMentos/Aiiii has zero authenticated comments. Installed SHA and updater consent are unknown. `REDMI_UNVERIFIED`; no LOG_PAGE or UPDATE_REQUEST.
+- P0 chat/correctness issue #1904 remains open. Native B1/B2 offer delivery, correct Redmi 2+2, trained latent coupling, accepted JEPA retention, sparse MoE, full voice learning, Android background/UI control and cross-organ weight updates remain unproven.
+
+Next automated step: read the exact #2258 workflow results, fix the generated Store pin from the actual failing output if needed, rerun the entire staged/integrated chain, then perform manual protected-file review. No user decision is currently needed.
+
+---
+
 # Exact hash-chain and test refresh — 2026-11-21 20:33 CET
 
 **No user action. No device command or permission/model/weight change.**
