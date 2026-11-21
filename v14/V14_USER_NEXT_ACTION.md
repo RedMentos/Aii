@@ -222,3 +222,18 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - Later commits `8f1b260dce19047a04df45d510b6642d009826bc` and `2c07fc81aee5e7a87575a4203464957d7fa83190` only update the V14 board and user handoff. They do not alter runtime code, models, permissions or phone data.
 - Do not treat a documentation commit's push CI as a new code release. At the next run, fetch the live release-branch HEAD and its exact push workflows before any deployment decision.
 - The current handoff deliberately records the last code-bearing release SHA rather than trying to embed its own documentation commit SHA.
+
+
+## Latest authoritative Boss checkpoint — 21 November 2026, 01:05 CET
+
+- Current code-bearing release candidate: `3db6d1f00fceab9e7755bc8f4c25882ef7f19258` (PR #2137 merge commit, read back on `gpt6/v13-private-remote-bridge-20261111`).
+- PR #2137 is merged. It adds the source-bound T8 Store authority, temporal expectation ledger, bounded scalar readout, cancellation/censoring semantics, bounded ActionOutcome cardinality, and rollback directory fsync. It does not alter existing V13 model files or permissions.
+- Exact PR-head tests passed: V14 temporal/real Store run [44846908247](https://github.com/RedMentos/Aii/actions/runs/44846908247); V13 staged-runtime and integrated-regression [44846908186](https://github.com/RedMentos/Aii/actions/runs/44846908186).
+- On merge SHA `3db6d1f00fceab9e7755bc8f4c25882ef7f19258`, private bridge, owner-read, Lab Age, release-event integration and staged-runtime push checks are PASS. Integrated-regression push [44847399407](https://github.com/RedMentos/Aii/actions/runs/44847399407) is still IN_PROGRESS at last readback. Do not call this merge SHA fully release-green until that exact push run finishes.
+- The safe-additive-only check on the PR branch remained red because existing V14 modules were intentionally corrected; it was not disabled. Direct Boss review and required V14/V13 tests were used; no phone release was approved.
+- The code is a scalar temporal receiver, not full JEPA, not trained cross-organ latent coupling, not native B1/B2 body-weight learning, and not yet called by the normal Runtime learning loop. The V13 Runtime automatically calls `online_world_update(limit=64)` after committed turns, but `OnlineWorld.predict()` has no consumer in cognition/world/executive.
+- Next slice: combine this T8 bridge with #2135's exact-once OnlineWorld checkpoint in the automatic postcommit path, then route a source-bound World prediction to a real decision consumer in SHADOW with held-out utility, no-predictor/replay-only ablations, restart and rollback.
+- P0 chat remains open: last device evidence in #1904 showed incorrect `2+2 → 2`, slow C3 and no valid B1/B2 offers. No newer phone receipt.
+- Private read-only issues #351–354 have no device comments; installed SHA and auto-update consent remain UNKNOWN / REDMI_UNVERIFIED. No UPDATE_REQUEST or phone mutation.
+- Exact local full-suite checkout remains BLOCKED by GitHub DNS resolution; no LOCAL_LINUX full-suite PASS is claimed. No Redmi/native-model/voice/Android-control proof.
+- No model, weights, Age, permissions, database, chat or user data changed. **User action: none.**

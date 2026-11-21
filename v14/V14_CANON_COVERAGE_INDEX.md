@@ -1350,3 +1350,19 @@ Status vocabulary is deliberately strict:
 | Sleep/replay, self-edit, Context OS/Memorilla, model swap | Existing pieces/candidates only; no full connected acceptance | PARTIAL / OPEN |
 
 No row above is ACCEPTED. The 1255-heading mechanical inventory remains complete, but clause-by-clause semantic mapping to consumers/tests/rollback is still pending.
+
+
+### Boss integration update — 2026-11-21, 01:05 CET
+
+| Canon family | Latest code/evidence | Acceptance |
+|---|---|---|
+| V13 updater | #2138 code commit 5b9171a; exact updater-required push CI green | CI verified; Redmi installation unknown |
+| V14 T8 temporal Store path | #2137 merged as 3db6d1f; PR-head V14/Store and staged/integrated tests PASS; exact merge push integrated regression pending | Merged experimental scalar receiver; not normal-Runtime-wired |
+| A5 audio | #2136 adapter merged; #2139 runtime candidate still fails staged/integrated tests due old runtime.py source pins | Synthetic adapter only; no Android microphone/speech |
+| B1/B2/C3 | #1904 last device evidence incorrect 2+2, slow C3 and no valid offers; #2140 arithmetic candidate has staged contract failures | P0 FAIL |
+| B3 latent coupling | Symbolic exchange only; no trained activation-to-activation receiver utility | NOT_ACCEPTED |
+| World/JEPA/weights | #2135 exactly-once candidate blocked by the nested builder hash chain; #2133 experimental and not Runtime-wired; OnlineWorld.predict has no decision consumer | NOT_ACCEPTED |
+| Android background/UI control and full voice | No verified OS API/UI action path, microphone, speech effector or full-duplex Redmi proof | OPEN / REDMI_UNVERIFIED |
+| Sleep/replay, self-edit, Context OS/Memorilla, model swap | Existing pieces/candidates only; no full connected acceptance | PARTIAL / OPEN |
+
+The 1255-heading mechanical inventory and family overlay do not replace clause-level traceability; every clause still needs a real consumer, positive/negative test, environment evidence and rollback. No family above is ACCEPTED.

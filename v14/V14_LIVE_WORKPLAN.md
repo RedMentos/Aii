@@ -83,3 +83,16 @@ Mehrere Agents dürfen die Architektur kreativ herausfordern; sie dürfen weder 
 
 Die bestehenden fünf stündlichen Jobs arbeiten als **ein Engineering-Team** mit [Arbeitsvertrag](V14_TEAM_OPERATING_SYSTEM.md), [gemeinsamem Ticket-Board](V14_WORK_BOARD.json) und [nutzbarer Übergabe für das nächste Gespräch](V14_USER_NEXT_ACTION.md). Vorrangig ist **tatsächliches Coding, lokales Testen, Fixen, direktes Pushen in die eigene GitHub-Lane, Review, Integration und sichere automatische Übernahme nur mit verifiziertem Geräte-Updater**; der Nutzer soll für normale Pushes nicht jedes Mal einen Befehl eingeben müssen. Alternative kleine/größere Modelle sind ausdrücklich als isolierte Messversuche erlaubt; produktiver Wechsel nur nach transparenter Messung und Zustimmung. Der Terminal-Name kann `v13` bleiben. Keine falsche Behauptung von Android-Installation aus einem GitHub-Commit.
 
+
+
+## Integration checkpoint — 2026-11-21
+
+- Merged PR #2137 (`3db6d1f`) after source review and exact PR-head V14/Store plus V13 staged/integrated CI PASS.
+- Merge-commit exact push: staged-runtime PASS; integrated-regression still IN_PROGRESS at last readback. Do not mark the current code release green until the exact SHA run finishes.
+- The new T8 Store adapter is intentionally not yet imported by normal Runtime. Existing `Runtime._worker` invokes `online_world_update(limit=64)` after each committed turn, but a source scan found no `OnlineWorld.predict()` consumer in cognition/world/executive.
+- Next combined slice: compose #2135's atomic weights+processed-ID checkpoint with #2137's verified T8 outcome path in the automatic postcommit loop; then make the resulting World prediction available to an actual decision consumer in SHADOW. Require held-out utility, no-predictor/replay-only ablations, source-disjoint validation, cancellation/omission controls, restart, retention and rollback.
+- Core & Harness: repair #2140 arithmetic authority/source/World contracts and rebuild the #2139 audio/runtime candidate chain from semantic anchors.
+- JEPA & Memory: rebuild the #2135 nested candidate chain bottom-up, integrate T8 postcommit consumer and expose prediction to World/Planner; no blind SHA refresh.
+- QA & Android: keep private device status read-only; no UPDATE_REQUEST until a fresh owner-authenticated receipt; separately verify Android background/UI and voice consent on Redmi.
+- Research & Perception: continue A5 RAW EAR consent/producer contract and primary-source/license review; do not call PCM16 synthetic tests microphone proof.
+- Boss: finish exact merge-SHA CI, update coverage/board, and integrate the next compatible vertical slice.
