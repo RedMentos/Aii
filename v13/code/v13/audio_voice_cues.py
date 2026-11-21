@@ -242,7 +242,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
     )
     c3 = admit((candidate,), token_budget)
     return {
-        "status": "SYNTHETIC_PCM16_A5_A4_C3_ADMISSION",
+        "status": "CALLER_PCM16_A5_A4_C3_ADMISSION",
         "packet": audio_packet,
         "a4": a4,
         "c3_admission": c3,
