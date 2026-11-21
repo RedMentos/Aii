@@ -220,7 +220,7 @@ def test_provisional_audio_is_observed_by_a4_but_never_promoted_to_body_or_c3(tm
 
 
 def test_c3_layer_is_omitted_when_consent_is_revoked_before_prompt_assembly(tmp_path):
-    store, event, _home = _store(tmp_path)
+    store, event, home = _store(tmp_path)
     runtime = Runtime.__new__(Runtime)
     runtime.store = store
     runtime.home = home
