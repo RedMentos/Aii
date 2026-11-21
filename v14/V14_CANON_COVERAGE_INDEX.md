@@ -1719,3 +1719,12 @@ The earlier arithmetic overlay Git blob-header mismatch is fixed; Python 3.13 st
 ### JEPA current-head follow-up — #2247 e8137fd (2026-11-21 20:00 CET)
 
 The per-session replay/retention candidate is now the active JEPA review path. It passes staged Runtime, integrated regression, migration, Lab-Age, owner-read and incremental-JEPA CI, but both Python 3.13/3.14 optimizer-resume jobs fail because every A-GEM replay arm regresses at least one source-disjoint old-session holdout across seeds 13/19/43. The candidate leaves the checkpoint SHA unchanged and returns `UTILITY_GATE_REJECTED`; this is a valid negative result. No numeric update is accepted. `validate-additive` remains FAIL BY POLICY. Keep all learning gates OFF until a different mechanism passes per-session retention, utility, restart and rollback.
+
+
+### Shared-branch final readback — 2026-11-21 20:03 CET
+
+- Docs checkpoint PR #2248 merged at `a1b1e9aad5e805b484ea6412dbd84abc454e66e0`; this is documentation-only, with offline-bridge-security 1/1 PASS. The active master blob is unchanged and the historical V13 appendix remains untouched.
+- #2243 now has an explicit `latent-cache-tiny` CI job; model-lab/privacy/offline-bridge are green, but the new experiment-specific job is still in progress. No CI test pass for the toy mechanism is claimed until that job completes.
+- #2247's per-session retention gate rejects every tested A-GEM arm across seeds 13/19/43; no optimizer checkpoint is committed. This is a valid negative result; learning remains OFF.
+- #2242's arithmetic stage passes, but stale `runtime_deploy.STAGER_SHA256` causes Python 3.14 startup and downstream staged/migration failures; audio revoke-cancel is still missing. No audio consumer release.
+- Redmi remains REDMI_UNVERIFIED; no authenticated owner-read, installed SHA or updater consent.
