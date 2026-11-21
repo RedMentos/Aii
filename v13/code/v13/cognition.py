@@ -184,6 +184,56 @@ class Cognition:
         data=json.loads(path.read_text())
         if data['token_ids']!=p['token_ids'] or len(data['vectors'])!=p['shape'][0] or any(len(v)!=p['shape'][1] for v in data['vectors']):raise ValueError('Tap feature shape/token mismatch')
         return data
+    def native_receive(self,sender_role,receiver_role,e,source_ref,deadline):
+        """Opt-in native llama_batch.embd receiver probe; never production B3 or learning."""
+        from .models import model_key
+        from .native_latent_receiver import probe as native_probe
+        from .common import file_hash
+        if sender_role not in {"B1_DETAIL","B2_GIST"} or receiver_role not in {"B1_DETAIL","B2_GIST","C3_LANGUAGE"} or sender_role==receiver_role:
+            raise ValueError("Native receiver roles must be distinct B1/B2 -> B1/B2/C3")
+        if source_ref.get("source_id")!=e["source_ref"]["source_id"]:
+            raise ValueError("Native receiver source must belong to this event")
+
+        tap=self.tap(sender_role,e,source_ref,deadline)
+        # The tap runner is exclusive. Reap it before loading the receiver model
+        # so the probe never intentionally holds two dense model copies at once.
+        self.r.pool.unload()
+        data=self.read_tap(tap)
+        key=model_key(receiver_role,self.r.models.b2_control)
+        installed=self.r.models.installed.get(key)
+        if not installed or installed.get("download_complete") is not True:
+            raise ValueError("Receiver model is not installed: "+receiver_role)
+        if self.r.models.revision(receiver_role)!=installed.get("exact_revision"):
+            raise ValueError("Receiver model revision is routed/swapped; probe requires the installed pinned revision")
+        model_path=self.r.models.path_for(receiver_role)
+        main=installed.get("files",{}).get(installed.get("main_file"))
+        if not isinstance(main,dict) or not isinstance(main.get("sha256"),str):
+            raise ValueError("Receiver model manifest hash is missing")
+        if file_hash(model_path)!=main["sha256"]:
+            raise ValueError("Receiver model hash differs from its installed manifest")
+        receipt=native_probe(
+            home=self.r.home,model_path=model_path,expected_model_sha256=main["sha256"],
+            sender_role=sender_role,receiver_role=receiver_role,
+            sender_tap_id=tap["tap_id"],sender_model_revision=tap["model_revision"],
+            receiver_model_revision=installed["exact_revision"],
+            source_id=source_ref["source_id"],generation_id=e["brain_generation_id"],
+            vectors=data["vectors"],deadline=deadline,threads=min(2,max(1,int(self.r.cfg.get("threads",1)))),
+        )
+        p=packet("LatentReceiverPacket","B3_NATIVE_RECEIVER_PROBE",e["event_id"],e["brain_generation_id"],[source_ref],
+                 source_ref=source_ref,sender_tap_packet_id=tap["packet_id"],
+                 production_route=False,semantic_use_proven=False,training_authority=0,native_receiver_authority=0,
+                 **receipt)
+        self.s.add_packet("LatentReceiverPacket",p)
+        self.s.log("native_latent_receiver_probe",e["event_id"],{
+            "sender_role":sender_role,"receiver_role":receiver_role,"status":p["status"],
+            "input_rows":p["input_rows"],"input_dim":p["input_dim"],
+            "receiver_input_dim":p["receiver_input_dim"],"output_dim":p["output_dim"],
+            "decode_status":p["decode_status"],"native_input_consumed":p["native_input_consumed"],
+            "input_effect_detected":p["input_effect_detected"],"production_route":False,
+            "semantic_use_proven":False,"training_authority":0,"native_receiver_authority":0,
+        })
+        return p
+
     def body_context(self,role,e):
         """B2's bounded long window; persisted IDs, exact sources, no fact promotion.
 
