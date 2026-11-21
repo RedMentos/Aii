@@ -144,3 +144,14 @@ PR #2142 (https://github.com/RedMentos/Aii/pull/2142) is open, ready for review 
 ### Shared V14 handoff updated — 2026-11-21
 
 V14_WORK_BOARD.json now marks V14-005 IN_PROGRESS_PARTIAL and links PR #2142 plus exact CI run 44849343250. V14_USER_NEXT_ACTION.md now records the lab candidate, license, no-download/no-swap boundary, exact CI, native NOT_RUN and Redmi UNVERIFIED. The current shared base is c3c32c05a0374e970d274f8a777a7ab85c067d66; latest fully CI-green code-bearing merge is 3db6d1f00fceab9e7755bc8f4c25882ef7f19258 (#2137); previous fully updater-gate-green code SHA was 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e. The newer merge has exact merge-push CI GREEN: staged-runtime 240 passed/10 skipped/47 subtests, integrated regression 415 passed/3 skipped/58 subtests, and V14 T8 real-Store workflow 44847403231 PASS. No Redmi installation receipt exists. The code/manifest CI-tested commit is 6aadf841434bcc43fbde1827a4ed2ef9d61bc4b0; later candidate-manifest edits are wording/status-label only and locally JSON-validated; other changes are documentation-only.
+
+
+### QA correction — 2026-11-21: bind model-lab evidence to the executable LlamaRunner actually uses
+
+- QA identified that V13 `LlamaRunner.__init__` honors `V13_LLAMA_SERVER`, while the first model-lab report hashed only `home/bin/llama-server`. A different override could therefore run one binary while the report attributed the result to another.
+- Fixed in PR #2142: `verified_runner_binary()` resolves and checks `runner.binary` against the installed, hash-verified executable before any task starts; after generation it checks `runner._loaded_binary` (the actual `cmd[0]` selected at load) and aborts if it differs. The report now records the resolved executable name, size and SHA256 from the runner itself, plus whether launch identity was verified. Baseline and candidate runs must use the same digest.
+- Three negative/positive regressions added: different `V13_LLAMA_SERVER` override is refused before generation; an override resolving to the installed binary is accepted; a changed loaded executable aborts and reaps the runner. Current test file has 16 tests total.
+- LOCAL_LINUX isolated helper regression: `py_compile` PASS; 5/5 identity checks PASS. This is a focused helper-level test, not the full repository suite. Full checkout remains BLOCKED by local GitHub DNS failure.
+- Exact PR-head model-lab CI run 44853309109 on `fef505ac3f6ea30f034fdce5ee5a9abc6b5c30b7` was IN_PROGRESS at last readback; do not call it green until completed.
+- Native GGUF inference NOT_RUN; no candidate file downloaded; no model, manifest, permission, memory or user data changed. Redmi REDMI_UNVERIFIED; NOT_RELEASED.
+- Next falsifiable step: exact-head CI and independent review; only then, if the pinned 230M file is already present, perform both orders on the authorized idle Redmi. If absent, ask separately before isolated download. No production swap from this diagnostic comparison.
