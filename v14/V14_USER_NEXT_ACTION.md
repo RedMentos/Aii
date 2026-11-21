@@ -1,3 +1,46 @@
+# QA & Android checkpoint — 2026-11-21
+
+## Current release and device boundary
+
+- Release-development branch now includes Boss merge **5a141153f7d33906408fd638ce56cfbee459cf08** (PR #2213). The previous #2209/#2212 stacked pair is superseded; the pin mismatch reported on #2212 was fixed by the integrated five-file SHA-256 rebind.
+- Exact merged-head GitHub workflows at readback: staged-runtime PASS; checkpoint-retention PASS; Python 3.14 optimizer-resume PASS; the other 18 workflows PASS; integrated-regression run **44911496141** was still in progress. Do not label the exact release fully green until that last job completes.
+- The merge adds production WorldJEPA optimizer-state persistence and Android-safe no-clobber checkpoint publication. The tested data is Store/SleepRuntime with synthetic outcomes; no native GGUF body-weight update is claimed.
+- Private owner-read PIPELINE_STATUS request #405 remains open with zero comments. Installed Redmi SHA and updater consent are unknown. **REDMI_UNVERIFIED**. No UPDATE_REQUEST, shell action, installer, model/weight change, permission change or phone-data mutation was performed. No user action is required; do not ask for another Termux command based on CI.
+
+## New QA work and findings
+
+### RAW EAR consent boundary — PR #2214
+
+- Based on Perception #2207 head `f223ba85c6e45968b1e3a16eb7bc8c2ad593640e`.
+- The producer's provider-level lease now covers packet commit, temporal state, A4 and C3 admission, but a new race remains before that lease: after the initial boolean check and before `consent_guard`, `observe_pcm16` and `extract_voice_cues` still process raw PCM after a concurrent revocation has completed.
+- Exact focused run **44911185085**: py_compile PASS; **25 passed / 1 failed** at the new regression. This is synthetic Linux concurrency evidence, not Android microphone proof.
+- Perception next: acquire the same provider lease before the first PCM transformation, or otherwise prove no PCM processing after a revocation wins. Keep the existing commit/A4/C3 lease tests.
+
+### Android action approval integrity — PR #2215
+
+- Current candidate head **1eb484dd2e7243f1eb6f4a4de2c875353e831172**.
+- Defect: frozen `Proposal` contained a mutable `args` dict; callers could mutate the action after approval while retaining the original digest.
+- Fix: immutable `MappingProxyType` copy plus canonical digest revalidation at approval and execution; returned execution args remain detached.
+- Exact Android broker isolated run **44911591784**: **38 passed**. Safe-additive run **44911592029** fails by existing-module policy; no bypass. Staged-runtime and Android sandbox replay were still in progress at readback. Requires Boss review.
+- This does not implement authenticated UI confirmation. `confirmed_by_local_ui=True` is still a caller-supplied boolean; no live OS executor exists. Broker remains **DRY_RUN_ONLY**.
+
+### Superseded QA stack
+
+- Old test-only PR #2208 was closed after #2207 incorporated the provider-lock commit/A4 regressions. Its original failures remain recorded in its PR and #1984.
+- #2211 remains a separate Core consumer stack; it must rebase onto #2207 and carry the same provider lease through derived-context deletion and the immediate pre-`runner.generate()` boundary.
+
+## Next executable QA steps
+
+1. Verify merged-head integrated-regression run **44911496141** to completion; read exact staged/Runtime restart and rollback logs.
+2. Verify the remaining exact-head workflows for #2214/#2215 and keep each candidate separate from release proof.
+3. Re-test #2214 after Perception moves the lease before raw PCM processing.
+4. Re-test #2215 after Boss review; do not promote the broker beyond DRY_RUN_ONLY until authenticated local-UI/companion provenance and OS-permission enforcement exist.
+5. Continue whole-Canon QA; P0 #1904 correct answer quality and B1/B2→C4→C3 delivery remain open.
+
+**No model, weight, Age, learning permission, updater setting or Redmi state was changed. Local full Aii checkout remains blocked by GitHub DNS; no local full-suite PASS is claimed.**
+
+---
+
 # Boss integration checkpoint — 2026-11-21 11:27 CET
 
 ## Verified code and release state
