@@ -262,52 +262,52 @@ class LabAgeTests(unittest.TestCase):
                 relative = path.relative_to(code_root)
                 if "__pycache__" in relative.parts:
                     continue
-            try:
-                source = path.read_text(encoding="utf-8")
-                tree = ast.parse(source, filename=str(relative))
-            except (OSError, SyntaxError) as exc:
-                self.fail(f"Could not audit {relative}: {type(exc).__name__}")
-            parents = {}
-            for parent in ast.walk(tree):
-                for child in ast.iter_child_nodes(parent):
-                    parents[child] = parent
+                try:
+                    source = path.read_text(encoding="utf-8")
+                    tree = ast.parse(source, filename=str(relative))
+                except (OSError, SyntaxError) as exc:
+                    self.fail(f"Could not audit {relative}: {type(exc).__name__}")
+                parents = {}
+                for parent in ast.walk(tree):
+                    for child in ast.iter_child_nodes(parent):
+                        parents[child] = parent
 
-            def enclosing_function(node):
-                current = node
-                while current in parents:
-                    current = parents[current]
-                    if isinstance(current, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        return current.name
-                return "<module>"
+                def enclosing_function(node):
+                    current = node
+                    while current in parents:
+                        current = parents[current]
+                        if isinstance(current, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                            return current.name
+                    return "<module>"
 
-            for node in ast.walk(tree):
-                if isinstance(node, ast.Attribute) and node.attr == "budgets":
-                    budget_attributes.append(
-                        (relative.as_posix(), enclosing_function(node), dotted(node))
-                    )
-                if isinstance(node, ast.Call):
-                    if isinstance(node.func, ast.Name) and node.func.id == "budget":
-                        helper_calls.append((relative.as_posix(), node.lineno))
-                    if (isinstance(node.func, ast.Name) and node.func.id in {"getattr", "hasattr"}
-                            and len(node.args) > 1 and isinstance(node.args[1], ast.Constant)
-                            and node.args[1].value in legacy_fields):
-                        field_reads.append((relative.as_posix(), node.lineno, node.args[1].value))
-                    if (isinstance(node.func, ast.Attribute) and node.func.attr in {"get", "pop"}
-                            and node.args and isinstance(node.args[0], ast.Constant)
-                            and node.args[0].value in legacy_fields):
-                        field_reads.append((relative.as_posix(), node.lineno, node.args[0].value))
-                if isinstance(node, ast.Subscript) and isinstance(node.slice, ast.Constant):
-                    if node.slice.value in legacy_fields:
-                        field_reads.append((relative.as_posix(), node.lineno, node.slice.value))
-                if isinstance(node, ast.ImportFrom) and node.module and node.module.endswith(".base"):
-                    if any(alias.name == "budget" for alias in node.names):
-                        helper_imports.append((relative.as_posix(), node.lineno))
-                if isinstance(node, ast.Attribute) and node.attr in legacy_fields:
-                    field_reads.append((relative.as_posix(), node.lineno, node.attr))
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Attribute) and node.attr == "budgets":
+                        budget_attributes.append(
+                            (relative.as_posix(), enclosing_function(node), dotted(node))
+                        )
+                    if isinstance(node, ast.Call):
+                        if isinstance(node.func, ast.Name) and node.func.id == "budget":
+                            helper_calls.append((relative.as_posix(), node.lineno))
+                        if (isinstance(node.func, ast.Name) and node.func.id in {"getattr", "hasattr"}
+                                and len(node.args) > 1 and isinstance(node.args[1], ast.Constant)
+                                and node.args[1].value in legacy_fields):
+                            field_reads.append((relative.as_posix(), node.lineno, node.args[1].value))
+                        if (isinstance(node.func, ast.Attribute) and node.func.attr in {"get", "pop"}
+                                and node.args and isinstance(node.args[0], ast.Constant)
+                                and node.args[0].value in legacy_fields):
+                            field_reads.append((relative.as_posix(), node.lineno, node.args[0].value))
+                    if isinstance(node, ast.Subscript) and isinstance(node.slice, ast.Constant):
+                        if node.slice.value in legacy_fields:
+                            field_reads.append((relative.as_posix(), node.lineno, node.slice.value))
+                    if isinstance(node, ast.ImportFrom) and node.module and node.module.endswith(".base"):
+                        if any(alias.name == "budget" for alias in node.names):
+                            helper_imports.append((relative.as_posix(), node.lineno))
+                    if isinstance(node, ast.Attribute) and node.attr in legacy_fields:
+                        field_reads.append((relative.as_posix(), node.lineno, node.attr))
 
         self.assertEqual(
             set(budget_attributes), expected_budget_attributes,
-            "Age budgets must be reporting/delegation only; inspect every new .budgets/.budget use",
+            "Age budgets must be reporting/delegation only; inspect every new .budgets use",
         )
         self.assertEqual(helper_calls, [], "Legacy agi.base.budget() must have no runtime callers")
         self.assertEqual(helper_imports, [], "Runtime modules must not import the legacy budget helper")
