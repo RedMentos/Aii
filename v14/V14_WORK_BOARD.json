@@ -72,10 +72,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2143 remains the base Store-backed WorldJEPA/EMA consumer; PR #2147 adds source-content-digest grouping; PR #2148 exact head 10e058a7418a5356b96f22f5344a5a3384f96214 passed GitHub Actions run 44853980297: Python 3.13 59 passed (12.19s), Python 3.14 59 passed (10.30s), compile PASS. Includes strict action-shuffled/zero-action controls and an actual SQLite Store uniform-replay vs no-replay fit-ID/retention/restart ablation. CI/Linux with synthetic T8 data only; local exact checkout BLOCKED; REDMI_UNVERIFIED.",
+      "proof_environment": "PR #2148 current head 6fec2dec1534285b654db60349efcd81f81b846c; code/test head 10e058a7418a5356b96f22f5344a5a3384f96214. Exact GitHub Actions run 44854219157 tested docs/coverage head 3d8e55441d208eb8aec76cd121cc9f068376a88c: Python 3.13 59 passed (8.18s), Python 3.14 59 passed (7.74s), compile PASS. Only later commit is research-ledger documentation; no code/test changed. CI/Linux synthetic T8 receipts only; local exact checkout BLOCKED; REDMI_UNVERIFIED.",
       "next_step": "Independent review/merge #2143 -> #2147 -> #2148. Then port the digest-disjoint oldest-first T8 page and persistent cursor into #2145's postcommit Runtime consumer and invoke WorldJEPAStoreConsumer in SHADOW. #2145 currently has a test-schema mismatch (TemporalOutcomes record field is error, not prediction_error) and still uses newest-first latest-N scans; it does not yet invoke the trainable JEPA consumer. Measure new-cohort holdout utility and old-cohort retention under equal replay/no-replay budgets. Keep learning/optimizer gates closed by default.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 PR #2148 exact CI PASS: 59 tests on Python 3.13/3.14; action-conditioned negative control remains strict; uniform replay vs no-replay ablation uses real SQLite Store and numeric WorldJEPA/EMA with synthetic T8 receipts. Runtime postcommit JEPA wiring still open; no local exact-repo test or Redmi proof.",
+      "last_checkpoint": "2026-11-21 PR #2148 final readback: exact CI 59 tests on Python 3.13/3.14 PASS; numeric WorldJEPA/EMA replay ablation remains synthetic/SHADOW; Runtime postcommit JEPA wiring open; no local exact-repo or Redmi proof.",
       "latest_candidate_pr": {
         "pr": 2143,
         "branch": "jepa-memory/v14-world-jepa-source-disjoint-paginated-20261121",
@@ -88,9 +88,10 @@
       "latest_followup_pr": {
         "pr": 2148,
         "branch": "jepa-memory/v14-action-conditioned-control-20261121",
-        "head_sha": "10e058a7418a5356b96f22f5344a5a3384f96214",
+        "head_sha": "6fec2dec1534285b654db60349efcd81f81b846c",
+        "tested_sha": "3d8e55441d208eb8aec76cd121cc9f068376a88c",
         "base_pr": 2147,
-        "ci": "PASS_PY313_PY314_59_TESTS",
+        "ci": "PASS_PY313_PY314_59_TESTS_RUN_44854219157",
         "scope": "Strict action-conditioned positive control; explicit uniform replay vs no-replay ablation; fit-ID/source-disjoint/retention/restart tests; not Runtime-wired"
       },
       "latest_runtime_candidate": {
