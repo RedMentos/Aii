@@ -55,7 +55,7 @@ class WebRtcVadBackend:
 
 class LibFvadBackend:
     """Small ctypes binding for the public dpirch/libfvad C API."""
-    def __init__(self, library_path: str, mode: int = 2, sample_rate: int = 16000) -> None:
+    def __init__(self, library_path: str, mode: int = 2, sample_rate: int = 16000, version: str = "library-path-pinned-by-caller") -> None:
         self._lib = ctypes.CDLL(library_path)
         self._lib.fvad_new.restype = ctypes.c_void_p
         self._lib.fvad_free.argtypes = [ctypes.c_void_p]
@@ -78,7 +78,7 @@ class LibFvadBackend:
             self.close()
             raise ValueError("libfvad rejected sample rate")
         self.name = "LIBFVAD_C_API"
-        self.version = "library-path-pinned-by-caller"
+        self.version = version
         self._sample_rate = sample_rate
 
     def is_speech(self, frame: bytes, sample_rate: int) -> bool:
@@ -329,7 +329,15 @@ def compare_pcm(
     except Exception:
         peak_rss, peak_rss_unit = None, None
 
-    return {
+    vad_baseline = {
+        "name": backend.name, "version": backend.version,
+        "raw": _metrics(web_raw, intervals, processed_duration_ms),
+        "temporal_smoothed": _metrics(web_smooth, intervals, processed_duration_ms),
+        "processing_wall_ms": round(web_elapsed_ms, 3),
+        "processing_cpu_ms": round(web_cpu_ms, 3),
+        "real_time_factor": round(web_elapsed_ms / max(processed_duration_ms, 1), 6),
+    }
+    result = {
         "schema": "v14.raw-ear-vad-comparison/1",
         "environment": "LOCAL_LINUX_SYNTHETIC_OR_USER_SUPPLIED_WAV",
         "platform": platform.platform(),
@@ -345,7 +353,7 @@ def compare_pcm(
         "processed_duration_ms": processed_duration_ms,
         "source": {"audio_sha256_not_emitted": True, "v3_source_sha256": source_sha256,
                    "v3_source_git_blob": source_git_blob},
-        "alignment": "WebRTC 20ms decisions OR-combined into the same 40ms windows; both detectors use identical TemporalVoiceEvidence V1 smoothing. Onset/offset time is the end of the state-changing 40ms window.",
+        "alignment": "20ms VAD decisions OR-combined into the same 40ms windows; both detectors use identical TemporalVoiceEvidence V1 smoothing. Onset/offset time is the end of the state-changing 40ms window.",
         "raw_ear_v3": {
             "raw": _metrics(v3_raw, intervals, processed_duration_ms),
             "temporal_smoothed": _metrics(v3_smooth, intervals, processed_duration_ms),
@@ -353,14 +361,7 @@ def compare_pcm(
             "processing_cpu_ms": round(v3_cpu_ms, 3),
             "real_time_factor": round(v3_elapsed_ms / max(processed_duration_ms, 1), 6),
         },
-        "webrtc_baseline": {
-            "name": backend.name, "version": backend.version,
-            "raw": _metrics(web_raw, intervals, processed_duration_ms),
-            "temporal_smoothed": _metrics(web_smooth, intervals, processed_duration_ms),
-            "processing_wall_ms": round(web_elapsed_ms, 3),
-            "processing_cpu_ms": round(web_cpu_ms, 3),
-            "real_time_factor": round(web_elapsed_ms / max(processed_duration_ms, 1), 6),
-        },
+        "vad_baseline": vad_baseline,
         "limitations": [
             "The 40ms overlap-window OR is an explicit alignment adapter, not native WebRTC/libfvad postprocessing.",
             "Synthetic fixtures are software smoke tests, not speech-corpus accuracy evidence.",
@@ -369,6 +370,9 @@ def compare_pcm(
             "Reference labels use any-overlap 40ms windows; boundary metrics use unique state transitions within +/-500ms.",
         ],
     }
+    if backend.name == "WEBRTCVAD_PYTHON_WHEELS":
+        result["webrtc_baseline"] = vad_baseline
+    return result
 
 
 def load_wav(path: Path) -> tuple[bytes, int]:
@@ -404,7 +408,10 @@ def main(argv=None) -> int:
         library = args.libfvad_path or ctypes.util.find_library("fvad")
         if not library:
             raise RuntimeError("libfvad shared library not found; pass --libfvad-path")
-        backend = LibFvadBackend(library, args.mode, 16000)
+        backend = LibFvadBackend(
+            library, args.mode, 16000,
+            version=os.getenv("V14_LIBFVAD_VERSION", "library-path-pinned-by-caller"),
+        )
     else:
         backend = WebRtcVadBackend(args.mode)
     pcm, sample_rate = load_wav(args.wav)

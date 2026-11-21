@@ -361,3 +361,14 @@ Primary sources:
 - PulseVAD reproduction protocol: https://github.com/AydinAdnan/PulseVAD/blob/af25e79d66830a3fee74541812721f6158fc92b5/REPRODUCE.md
 - Silero VAD upstream: https://github.com/snakers4/silero-vad
 - VoxRT Android wrapper/runtime license statement: https://github.com/VoxRT/voxrt-silero-android
+
+
+## Research & implementation update — 2026-11-21 11:52 CET (Research & Perception)
+
+### R-025 — Real pinned libfvad shared-library smoke on Linux CI
+
+- **Upstream source pin:** dpirch/libfvad commit 532ab666c20d3cfda38bca63abbb0f152706c369 (2024-02-07). README documents the standalone C API and the upstream-derived WebRTC VAD implementation; LICENSE is BSD-3-Clause and the repository also ships a separate WebRTC PATENTS grant. The patent notice is part of the review, not an optional omission.
+- **Comparator correctness:** the previous result field named webrtc_baseline was emitted for any backend and the alignment text said WebRTC even for libfvad or the test EnergyBaseline. The harness now always emits vad_baseline and emits the webrtc_baseline compatibility alias only for the actual WEBRTCVAD_PYTHON_WHEELS backend.
+- **Native Linux experiment added:** the comparison workflow checks out the pinned libfvad commit, runs autoreconf/configure/make/make check/make install, loads the resulting shared library through the actual ctypes LibFvadBackend, and runs the same synthetic 16 kHz PCM fixture. The test records the exact source revision in backend.version. The fake C-ABI stub remains a separate negative/contract test.
+- **Status:** new exact-head CI pending. If successful, classify only as NATIVE_LINUX_PROOF for the pinned libfvad C ABI and synthetic fixture. It is not an Android/Bionic build, Redmi measurement, speech-corpus accuracy result or production dependency.
+- **Safety/licensing:** no libfvad binary is committed or copied into the app; the CI build is ephemeral. No production dependency, model, weight or user audio is added. Keep the BSD-3-Clause plus PATENTS review attached to any future product reuse decision.

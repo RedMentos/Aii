@@ -64,10 +64,11 @@ class RawEarVadCompareTests(unittest.TestCase):
             source_sha256=sha256, source_git_blob=blob,
         )
         self.assertEqual(result["schema"], "v14.raw-ear-vad-comparison/1")
-        self.assertTrue(result["alignment"].startswith("WebRTC 20ms decisions OR-combined"))
+        self.assertTrue(result["alignment"].startswith("20ms VAD decisions OR-combined"))
         self.assertEqual(result["raw_ear_v3"]["raw"]["annotated_speech_intervals"], 1)
-        self.assertEqual(result["webrtc_baseline"]["raw"]["annotated_speech_intervals"], 1)
+        self.assertEqual(result["vad_baseline"]["raw"]["annotated_speech_intervals"], 1)
         self.assertEqual(result["processed_duration_ms"], 2000)
+        self.assertNotIn("webrtc_baseline", result)
         self.assertEqual(result["source"]["v3_source_git_blob"], blob)
         expected_v3 = os.getenv("V14_EXPECTED_RAW_EAR_V3_BLOB")
         expected_temporal = os.getenv("V14_EXPECTED_TEMPORAL_VOICE_BLOB")
@@ -80,7 +81,7 @@ class RawEarVadCompareTests(unittest.TestCase):
             ).hexdigest()
             self.assertEqual(temporal_blob, expected_temporal)
         self.assertGreaterEqual(result["raw_ear_v3"]["processing_wall_ms"], 0)
-        self.assertGreaterEqual(result["webrtc_baseline"]["processing_wall_ms"], 0)
+        self.assertGreaterEqual(result["vad_baseline"]["processing_wall_ms"], 0)
 
     def test_invalid_sample_rate_and_annotations_fail_closed(self):
         extractor, temporal, sha256, blob = self.load_sources()
@@ -113,7 +114,8 @@ class RawEarVadCompareTests(unittest.TestCase):
             temporal_class=temporal, backend=WebRtcVadBackend(mode=2),
             source_sha256=sha256, source_git_blob=blob,
         )
-        self.assertEqual(result["webrtc_baseline"]["name"], "WEBRTCVAD_PYTHON_WHEELS")
+        self.assertEqual(result["vad_baseline"]["name"], "WEBRTCVAD_PYTHON_WHEELS")
+        self.assertEqual(result["webrtc_baseline"], result["vad_baseline"])
         self.assertTrue({"fpr", "fnr", "f1", "onset_delay_ms_median", "offset_delay_ms_median"} <=
                         set(result["webrtc_baseline"]["raw"]))
         self.assertTrue(result["process_peak_rss"] is None or result["process_peak_rss"] > 0)
@@ -153,6 +155,29 @@ int fvad_process(Fvad *p, const int16_t *frame, size_t length) {
                 backend.close()
 
 
+
+
+    def test_real_libfvad_shared_library_comparison_smoke_when_available(self):
+        library = os.getenv("V14_LIBFVAD_LIBRARY")
+        if not library or not Path(library).is_file():
+            self.skipTest("pinned native libfvad shared library was not built")
+        extractor, temporal, sha256, blob = self.load_sources()
+        version = os.getenv("V14_LIBFVAD_VERSION", "libfvad-revision-unpinned")
+        backend = LibFvadBackend(
+            library, mode=2, sample_rate=16000, version=version
+        )
+        try:
+            result = compare_pcm(
+                voice_like(), 16000, [[500, 1500]], extractor=extractor,
+                temporal_class=temporal, backend=backend,
+                source_sha256=sha256, source_git_blob=blob,
+            )
+        finally:
+            backend.close()
+        self.assertEqual(result["vad_baseline"]["name"], "LIBFVAD_C_API")
+        self.assertEqual(result["vad_baseline"]["version"], version)
+        self.assertEqual(result["processed_duration_ms"], 2000)
+        self.assertGreaterEqual(result["vad_baseline"]["processing_cpu_ms"], 0)
 
     def test_transition_latency_uses_state_change_window_end(self):
         predictions = [
