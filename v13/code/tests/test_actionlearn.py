@@ -33,15 +33,36 @@ class LearningTests(Base):
         with self.assertRaises(ValueError):self.c.learn(ctx,'C3_LANGUAGE',reward=1.)
     def test_gate_shadow_logs_active_reorders_but_never_unsuppresses(self):
         ctx=A.context('detail',.5)
-        for _ in range(5):self.c.learn(ctx,'B1_DETAIL',cost_error=1.,rule_violation=1.,action_prediction_error=1.);self.c.learn(ctx,'C3_LANGUAGE',task_success=1.,human_approval=1.)
-        e=self.event();out=ActionGate(self.r.store).select(e,route='detail',direct=False,resource_state='NORMAL',effort=.5)
+        for _ in range(5):
+            self.c.learn(ctx,'B1_DETAIL',cost_error=1.,rule_violation=1.,action_prediction_error=1.)
+            self.c.learn(ctx,'C3_LANGUAGE',cost_error=1.,rule_violation=1.,action_prediction_error=1.)
+            self.c.learn(ctx,'EXTERNAL_TOOL',task_success=1.,human_approval=1.)
+        tool={'utility':.4,'risk':'EXTERNAL','status':'APPROVED'}
+        age_on={'tools':True}
+        e=self.event();out=ActionGate(self.r.store).select(
+            e,route='detail',direct=False,resource_state='NORMAL',effort=.5,tool=tool,age=age_on)
         p=json.loads(self.r.store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=?",(e['event_id'],))['payload'])
-        self.assertEqual(out['role'],'B1_DETAIL');self.assertEqual(p['learning']['learned'],'C3_LANGUAGE');self.assertEqual(p['learning']['boot'],'B1_DETAIL')
+        self.assertEqual(out['role'],'C3_LANGUAGE')  # SHADOW keeps the boot choice
+        self.assertEqual(p['learning']['learned'],'EXTERNAL_TOOL')
+        self.assertEqual(p['learning']['boot'],'C3_LANGUAGE')
+        suppressed={x['action_id']:x['reason'] for x in p['suppressed']}
+        self.assertEqual(suppressed['B1_DETAIL'],'BODY_INTERNAL_OFFER_ONLY')
+        self.assertEqual(suppressed['B2_GIST'],'BODY_INTERNAL_OFFER_ONLY')
+
         self.c.set_mode('ACTIVE','EXPLICIT_HUMAN');e=self.event()
-        self.assertEqual(ActionGate(self.r.store).select(e,route='detail',direct=False,resource_state='NORMAL',effort=.5)['role'],'C3_LANGUAGE')
-        for _ in range(5):self.c.learn(A.context('simple',.5),'EXTERNAL_TOOL',task_success=1.,human_approval=1.)
-        e=self.event();out=ActionGate(self.r.store).select(e,route='simple',direct=False,resource_state='NORMAL',effort=.5)
-        self.assertNotEqual(out['role'],'EXTERNAL_TOOL')  # permission suppression wins over learning
+        out=ActionGate(self.r.store).select(
+            e,route='detail',direct=False,resource_state='NORMAL',effort=.5,tool=tool,age=age_on)
+        self.assertEqual(out['role'],'EXTERNAL_TOOL')
+
+        simple=A.context('simple',.5)
+        for _ in range(5):
+            self.c.learn(simple,'EXTERNAL_TOOL',task_success=1.,human_approval=1.)
+        e=self.event();out=ActionGate(self.r.store).select(
+            e,route='simple',direct=False,resource_state='NORMAL',effort=.5,tool=tool,age={'tools':False})
+        self.assertEqual(out['role'],'C3_LANGUAGE')
+        p=json.loads(self.r.store.one("SELECT payload FROM packets WHERE kind='ActionSelection' AND event_id=?",(e['event_id'],))['payload'])
+        suppressed={x['action_id']:x['reason'] for x in p['suppressed']}
+        self.assertEqual(suppressed['EXTERNAL_TOOL'],'AGE_NO_TOOLS')  # permissions beat learned preference
         self.assertLess(self.c.report()['agreement_with_boot'],1.)
         with self.assertRaises(PermissionError):self.c.set_mode('ACTIVE')
 
