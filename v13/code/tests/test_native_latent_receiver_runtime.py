@@ -157,7 +157,7 @@ def test_callosum_probe_requires_explicit_confirmation_and_uses_last_source(tmp_
     queued = []
     runtime.enqueue = lambda kind, payload: queued.append((kind, payload))
     result = json.loads(operator_command(
-        runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--confirm"]
+        runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source", "--confirm"]
     ))
     assert result["queued"] is True
     assert result["production_route"] is False
@@ -167,7 +167,7 @@ def test_callosum_probe_requires_explicit_confirmation_and_uses_last_source(tmp_
     assert (sender, receiver) == ("B2_GIST", "C3_LANGUAGE")
     assert source_ref == event["source_ref"]
     with pytest.raises(ValueError):
-        operator_command(runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE"])
+        operator_command(runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source"])
     with pytest.raises(ValueError):
-        operator_command(runtime, ["native-probe", "C3_LANGUAGE", "B2_GIST", "--confirm"])
+        operator_command(runtime, ["native-probe", "C3_LANGUAGE", "B2_GIST", "--last-source", "--confirm"])
     runtime.close()
