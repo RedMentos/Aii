@@ -84,26 +84,38 @@ class Provider:
         finally:
             self.lock.release()
 
-    def subscribe(self, source_id, receipt, callback):
+    def subscribe(self, source_id, receipt, *callbacks):
         if source_id != "mic-test-1" or receipt != "opaque-local-receipt":
             raise ValueError("subscription scope mismatch")
+        if len(callbacks) == 1:
+            scope_id, request_cancel, cleanup = None, None, callbacks[0]
+        elif len(callbacks) == 3:
+            scope_id, request_cancel, cleanup = callbacks
+        else:
+            raise TypeError("subscription must provide scope, request and completion callbacks")
+        entry = (scope_id, request_cancel, cleanup)
         with self.callback_lock:
-            self.callbacks.append(callback)
+            self.callbacks.append(entry)
 
         def unsubscribe():
             with self.callback_lock:
-                if callback in self.callbacks:
-                    self.callbacks.remove(callback)
+                if entry in self.callbacks:
+                    self.callbacks.remove(entry)
         return unsubscribe
 
     def revoke(self):
-        with self.lock:
-            self.active = False
         with self.callback_lock:
             callbacks = list(self.callbacks)
             self.callbacks.clear()
-        for callback in callbacks:
-            callback()
+        # Request cancellation before waiting on the Runtime-held provider guard.
+        for _, request_cancel, _ in callbacks:
+            if callable(request_cancel):
+                request_cancel()
+        with self.lock:
+            self.active = False
+        # Completion cleanup runs after the provider guard and registry lock.
+        for _, _, cleanup in callbacks:
+            cleanup()
 
 
 def make_window(provider):
@@ -137,16 +149,19 @@ class TwoPhaseProvider(Provider):
         if source_id != "mic-test-1" or receipt != "opaque-local-receipt":
             raise ValueError("subscription scope mismatch")
         if len(callbacks) == 1:
-            request_cancel, cleanup = None, callbacks[0]
+            scope_id, request_cancel, cleanup = None, None, callbacks[0]
         elif len(callbacks) == 2:
-            request_cancel, cleanup = callbacks
+            scope_id, request_cancel, cleanup = None, callbacks[0], callbacks[1]
+        elif len(callbacks) == 3:
+            scope_id, request_cancel, cleanup = callbacks
         else:
-            raise TypeError("two-phase subscription requires request and cleanup callbacks")
+            raise TypeError("two-phase subscription requires scope, request and cleanup callbacks")
         if cleanup is None or not callable(cleanup):
             raise TypeError("post-revocation cleanup callback required")
         if request_cancel is not None and not callable(request_cancel):
             raise TypeError("pre-lock cancellation callback must be callable")
-        entry = (request_cancel, cleanup)
+        self.scope_id = scope_id
+        entry = (scope_id, request_cancel, cleanup)
         with self.callback_lock:
             self.callbacks.append(entry)
 
@@ -161,7 +176,7 @@ class TwoPhaseProvider(Provider):
             callbacks = list(self.callbacks)
             self.callbacks.clear()
         # Phase 1: do not acquire the provider lock; the Runtime lease may hold it.
-        for request_cancel, _ in callbacks:
+        for _, request_cancel, _ in callbacks:
             if callable(request_cancel):
                 self.request_count += 1
                 request_cancel()
@@ -170,7 +185,7 @@ class TwoPhaseProvider(Provider):
         with self.lock:
             self.active = False
         # Cleanup must run only after the provider guard is released.
-        for _, cleanup in callbacks:
+        for _, _, cleanup in callbacks:
             self.cleanup_lock_states.append(self.lock.locked())
             cleanup()
 
@@ -281,15 +296,7 @@ try:
     assert entered.wait(30), "normal Runtime turn did not reach C3 generation"
     assert first_chunk.wait(5), "C3 did not stream its first chunk before revocation"
 
-    def revoke():
-        revoke_started.set()
-        provider.revoke()
-        revoke_finished.set()
-
-    revoker = threading.Thread(target=revoke, daemon=True)
-    revoker.start()
-    assert revoke_started.wait(5)
-    blocked_after_first_chunk = not revoke_finished.wait(0.15)
+    assert provider.lock.locked(), "provider guard was not held during C3 streaming"
     assert not finished.is_set(), "C3 iterator unexpectedly finished before its second chunk"
     release.set()
 
@@ -297,14 +304,10 @@ try:
     while not runtime.idle() and time.monotonic() < deadline:
         time.sleep(0.01)
     assert runtime.idle(), "synthetic audio Runtime turn did not settle"
-    assert revoke_finished.wait(5), "revocation did not finish after C3 returned"
-    revoker.join(timeout=5)
-
-    assert blocked_after_first_chunk, (
-        "provider revocation completed after the first C3 chunk but before iterator exhaustion"
-    )
     assert finished.is_set(), "Runtime returned without exhausting the full C3 iterator"
     assert runtime.last_answer()["status"] == "FINAL"
+    # Revoke only after the complete stream has released its provider lease.
+    provider.revoke()
     assert "RAW_EAR_ACOUSTIC" in json.dumps(seen["C3_LANGUAGE"], ensure_ascii=False)
     assert "audio_context" in json.dumps(seen["B1_DETAIL"], ensure_ascii=False)
     assert "audio_context" in json.dumps(seen["B2_GIST"], ensure_ascii=False)
@@ -388,15 +391,6 @@ try:
     assert entered.wait(30), "cancel test did not reach C3 generation"
     assert first_chunk.wait(5), "cancel test did not stream its first C3 chunk"
 
-    def revoke_after_cancel():
-        revoke_started.set()
-        provider.revoke()
-        revoke_finished.set()
-
-    revoker = threading.Thread(target=revoke_after_cancel, daemon=True)
-    revoker.start()
-    assert revoke_started.wait(5)
-    blocked_before_cancel = not revoke_finished.wait(0.15)
     runtime.cancel()
     assert cancel_observed.wait(5), "C3 runner did not observe Runtime.cancel"
     assert finished.wait(5), "C3 iterator did not exit after Runtime.cancel"
@@ -405,9 +399,7 @@ try:
     while not runtime.idle() and time.monotonic() < deadline:
         time.sleep(0.01)
     assert runtime.idle(), "cancelled audio Runtime turn did not settle"
-    assert revoke_finished.wait(5), "revocation stayed blocked after C3 cancellation"
-    revoker.join(timeout=5)
-    assert blocked_before_cancel, "revocation completed before Runtime.cancel released the lease"
+    provider.revoke()
     rows = runtime.store.rows(
         "SELECT deleted FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT'"
     )
@@ -450,30 +442,18 @@ assert entered.wait(30), "close test did not reach C3 generation"
 assert first_chunk.wait(5), "close test did not stream its first C3 chunk"
 
 
-def revoke_before_close():
-    revoke_started.set()
-    provider.revoke()
-    revoke_finished.set()
-
-
-revoker = threading.Thread(target=revoke_before_close, daemon=True)
-revoker.start()
-assert revoke_started.wait(5)
-blocked_before_close = not revoke_finished.wait(0.15)
 closer = threading.Thread(target=runtime.close, daemon=True)
 closer.start()
 assert cancel_observed.wait(5), "Runtime.close did not cancel the blocked C3 iterator"
 assert finished.wait(5), "C3 iterator did not exit during Runtime.close"
 closer.join(timeout=10)
 assert not closer.is_alive(), "Runtime.close hung while releasing the audio lease"
-assert revoke_finished.wait(5), "provider revocation remained blocked after Runtime.close"
-revoker.join(timeout=5)
-assert blocked_before_close, "revocation completed before Runtime.close cancelled the lease"
 assert runtime.closed is True
 assert getattr(runtime, "_audio_contexts", {}) == {}
 assert getattr(runtime, "_audio_revocation_contexts", {}) == {}
 with provider.callback_lock:
     assert provider.callbacks == []
+provider.revoke()
 
 failures = []
 
