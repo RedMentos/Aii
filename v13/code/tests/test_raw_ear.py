@@ -28,6 +28,22 @@ class RawEarTests(unittest.TestCase):
         b=raw_ear_packet(self.frame(pcm16le=struct.pack('<160h',*([100]*160))))
         self.assertNotEqual(a['source_ref']['sha256'],b['source_ref']['sha256'])
         self.assertGreater(b['acoustic_features']['rms'],a['acoustic_features']['rms'])
+    def test_bounded_ingestion(self):
+        with self.assertRaisesRegex(ValueError,'bounded duration'):
+            raw_ear_packet(self.frame(pcm16le=b'\\x00\\x00'*(16000*31),end_ms=31100))
+        with self.assertRaises(ValueError):
+            raw_ear_packet(self.frame(pcm16le=bytearray(320)))
+        with self.assertRaises(ValueError):
+            raw_ear_packet(self.frame(start_ms=100.0))
+        with self.assertRaises(ValueError):
+            raw_ear_packet(self.frame(final=1))
+    def test_malformed_jef_packets(self):
+        p=raw_ear_packet(self.frame())
+        for changes in ({'status':'INVENTED'}, {'acoustic_features':None},
+                        {'source_ref':{'consent_id':'fixture-only'}},
+                        {'source_ref':None}):
+            with self.assertRaises(ValueError):
+                jef_audio_observation(p|changes)
     def test_untrusted(self):
         with self.assertRaises(ValueError):jef_audio_observation({'schema':'v13.a5.raw_ear/1'})
 if __name__=='__main__':unittest.main()
