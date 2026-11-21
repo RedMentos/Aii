@@ -10,7 +10,7 @@ BASE_BUILDER_SHA256 = "16ba5fc3a6535c737502151a0a6362f067acedcd7102425086df4721b
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
 AUDIO_BUILDER_SHA256 = "734a6786fec61c4fe15d8861e56b9303496b44967cd76327931908321844a17f"
 ONLINE_BUILDER = "scripts/integrated_online_world_candidate_20261110.py"
-ONLINE_BUILDER_SHA256 = "1d2a593a7127864bdaa5afb72ea6c947af3173e93fc58402a5acd762ead0eb2f"
+ONLINE_BUILDER_SHA256 = "9edd375d308f3e1026a93ef0cb4bbe6a4fdc9cb5f4fcab2f73461133b9f514b0"
 
 
 def _load(code_dir: Path, relative: str, expected_sha256: str):
