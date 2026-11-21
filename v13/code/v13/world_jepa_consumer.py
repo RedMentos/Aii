@@ -709,15 +709,45 @@ def receiver_utility_gate(metrics, role):
         holdout + margin < baseline
         for baseline in (mean_baseline, zero_latent, shuffled_latent)
     )
+    if not accepted:
+        return {
+            "accepted": False,
+            "reason": "HELDOUT_DID_NOT_BEAT_ALL_CONTROLS",
+            "holdout_mse": holdout,
+            "mean_baseline_mse": mean_baseline,
+            "zero_latent_mse": zero_latent,
+            "shuffled_latent_mse": shuffled_latent,
+            "required_margin": float(margin),
+        }
+    retention = metrics.get(prefix + "_old_session_retention_gate")
+    if type(retention) is not dict:
+        return {
+            "accepted": False,
+            "reason": "RECEIVER_RETENTION_NOT_MEASURED",
+            "holdout_mse": holdout,
+            "mean_baseline_mse": mean_baseline,
+            "zero_latent_mse": zero_latent,
+            "shuffled_latent_mse": shuffled_latent,
+        }
+    if retention.get("accepted") is not True:
+        return {
+            "accepted": False,
+            "reason": "OLD_SESSION_RECEIVER_RETENTION_REJECTED",
+            "holdout_mse": holdout,
+            "mean_baseline_mse": mean_baseline,
+            "zero_latent_mse": zero_latent,
+            "shuffled_latent_mse": shuffled_latent,
+            "old_session_retention_gate": retention,
+        }
     return {
-        "accepted": bool(accepted),
-        "reason": ("HELDOUT_BEATS_MEAN_AND_NEGATIVE_CONTROLS" if accepted
-                   else "HELDOUT_DID_NOT_BEAT_ALL_CONTROLS"),
+        "accepted": True,
+        "reason": "HELDOUT_BEATS_MEAN_AND_NEGATIVE_CONTROLS",
         "holdout_mse": holdout,
         "mean_baseline_mse": mean_baseline,
         "zero_latent_mse": zero_latent,
         "shuffled_latent_mse": shuffled_latent,
         "required_margin": float(margin),
+        "old_session_retention_gate": retention,
     }
 
 
@@ -749,6 +779,35 @@ def _fit_role_receivers(model, train, holdout, train_rows, holdout_rows):
             "bias": bias.tolist(),
         }
     return heads, metrics
+
+
+def _receiver_cohort_losses(model, heads, cohorts):
+    """Evaluate learned B1/B2/SELF heads on prior source-disjoint holdout cohorts."""
+    result = {role: {} for role in ROLE_TARGETS}
+    for key, rows in cohorts or ():
+        x, actions, _ = _arrays(list(rows))
+        latent, _ = model.predict(x, actions)
+        targets = np.asarray([row["y"] for row in rows], dtype=np.float64)
+        if (latent.ndim != 2 or len(latent) != len(rows)
+                or targets.shape != (len(rows), 3)
+                or not np.isfinite(latent).all() or not np.isfinite(targets).all()):
+            raise ValueError("invalid receiver retention cohort")
+        for role, indices in ROLE_TARGETS.items():
+            head = heads.get(role) if type(heads) is dict else None
+            if type(head) is not dict or head.get("target_indices") != list(indices):
+                raise ValueError("missing receiver retention head")
+            weights = np.asarray(head.get("weights"), dtype=np.float64)
+            bias = np.asarray(head.get("bias"), dtype=np.float64)
+            if (weights.shape != (world_jepa.Z, len(indices))
+                    or bias.shape != (len(indices),)
+                    or not np.isfinite(weights).all() or not np.isfinite(bias).all()):
+                raise ValueError("invalid receiver retention parameters")
+            prediction = latent @ weights + bias
+            result[role][key] = {
+                "rows": len(rows),
+                "loss": _mse(prediction, targets[:, indices]),
+            }
+    return result
 
 
 class WorldJEPAStoreConsumer:
@@ -1199,6 +1258,7 @@ class WorldJEPAStoreConsumer:
             old_holdout_cohorts = ()
             old_holdout_cohort_overflow = False
             old_holdout_cohort_before = {}
+            old_receiver_cohort_before = {role: {} for role in ROLE_TARGETS}
             if active is not None:
                 old_holdout_ids = set(active["holdout_ids"])
                 old_holdout_rows = [row for row in active["experience_rows"] if row["action_id"] in old_holdout_ids]
@@ -1212,6 +1272,9 @@ class WorldJEPAStoreConsumer:
                     if not old_holdout_cohort_overflow:
                         old_holdout_cohort_before = _retention_cohort_losses(
                             model, old_holdout_cohorts, target_snapshot=old_target_snapshot
+                        )
+                        old_receiver_cohort_before = _receiver_cohort_losses(
+                            model, active["receiver_heads"], old_holdout_cohorts
                         )
             # Split only the prior training fold into replay-fit and guard rows.
             # The guard is never used for gradients or replay. It selects replay
@@ -1688,6 +1751,20 @@ class WorldJEPAStoreConsumer:
                         "scan_cursor":state["scan_cursor"],"checkpoint_committed":False,
                         "native_body_weights_changed":False}
             receiver_heads, receiver_metrics = _fit_role_receivers(model, train, holdout, train_rows, holdout_rows)
+            receiver_cohort_after = _receiver_cohort_losses(
+                model, receiver_heads, old_holdout_cohorts
+            )
+            receiver_retention_gates = {}
+            for role in ROLE_TARGETS:
+                gate = _retention_cohort_gate(
+                    old_receiver_cohort_before[role], receiver_cohort_after[role],
+                    overflow=old_holdout_cohort_overflow,
+                )
+                receiver_retention_gates[role] = gate
+                receiver_metrics[role.lower() + "_old_session_retention_gate"] = gate
+            receiver_metrics["receiver_old_session_retention_gate_accepted"] = all(
+                gate["accepted"] is True for gate in receiver_retention_gates.values()
+            )
             source_sha = _cohort_sha(experience_rows)
             if cancel_check is not None and cancel_check():
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),

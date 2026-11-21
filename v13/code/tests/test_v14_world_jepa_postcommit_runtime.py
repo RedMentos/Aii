@@ -292,6 +292,15 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert second_metrics["old_holdout_cohort_gate"]["accepted"] is True
         assert second_metrics["old_holdout_cohort_gate"]["cohorts"]
         assert all(item["retained"] for item in second_metrics["old_holdout_cohort_gate"]["cohorts"].values())
+        for role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL"):
+            receiver_gate = second_metrics[role.lower() + "_old_session_retention_gate"]
+            assert receiver_gate["reason"] in {
+                "ALL_PRIOR_SESSIONS_RETAINED", "SESSION_RETENTION_REGRESSED"
+            }
+            assert set(receiver_gate["cohorts"]) == set(
+                second_metrics["old_holdout_cohort_gate"]["cohorts"]
+            )
+            assert all(item["rows"] > 0 for item in receiver_gate["cohorts"].values())
         second_sha = second["learning"]["checkpoint_sha256"]
         assert second_sha != first_sha
         second_planner_status = _planner_expected_status(second_metrics)
@@ -626,6 +635,9 @@ def test_receiver_utility_gate_requires_mean_and_all_negative_controls():
         "b1_detail_mean_baseline_mse": 0.20,
         "b1_detail_zero_latent_mse": 0.18,
         "b1_detail_shuffled_latent_mse": 0.17,
+        "b1_detail_old_session_retention_gate": {
+            "accepted": True, "reason": "NO_PRIOR_HOLDOUT", "cohorts": {},
+        },
     }
     accepted = receiver_utility_gate(metrics, "B1_DETAIL")
     assert accepted["accepted"] is True
@@ -644,6 +656,19 @@ def test_receiver_utility_gate_requires_mean_and_all_negative_controls():
 
     invalid = dict(metrics, b1_detail_shuffled_latent_mse=float("nan"))
     assert receiver_utility_gate(invalid, "B1_DETAIL")["reason"] == "RECEIVER_METRICS_INVALID"
+
+    missing_retention = dict(metrics)
+    missing_retention.pop("b1_detail_old_session_retention_gate")
+    assert receiver_utility_gate(missing_retention, "B1_DETAIL")["reason"] == "RECEIVER_RETENTION_NOT_MEASURED"
+
+    regressed_retention = dict(metrics)
+    regressed_retention["b1_detail_old_session_retention_gate"] = {
+        "accepted": False, "reason": "SESSION_RETENTION_REGRESSED",
+        "cohorts": {"session:old": {"retained": False, "delta": 0.05}},
+    }
+    rejected = receiver_utility_gate(regressed_retention, "B1_DETAIL")
+    assert rejected["accepted"] is False
+    assert rejected["reason"] == "OLD_SESSION_RECEIVER_RETENTION_REJECTED"
 
 
 def test_receiver_readout_fails_closed_when_its_shuffled_latent_control_fails(tmp_path):
