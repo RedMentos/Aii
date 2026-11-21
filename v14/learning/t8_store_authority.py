@@ -224,3 +224,117 @@ def verify_committed_transitions(store, limit=world_model.MAX_ROWS):
         except (ValueError, TypeError, KeyError, OSError, OverflowError, json.JSONDecodeError):
             rejected += 1
     return verified, rejected
+
+_OBSERVED_LEARNING_STATUSES = ("FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED")
+
+
+def _transition_from_action_row(store, raw_row):
+    row = _mapping(raw_row, "action page row")
+    action_id, status, created = row.get("id"), row.get("status"), row.get("created")
+    if (type(action_id) is not str or not action_id or len(action_id) > 128
+            or status not in _OBSERVED_LEARNING_STATUSES
+            or type(created) not in (int, float) or not math.isfinite(created)):
+        raise ValueError("observed action identity")
+    expected, actual = _object(row.get("expected"), "expected"), _object(row.get("outcome"), "actual")
+    forecast = expected.get("forecast")
+    if type(forecast) is not dict:
+        raise ValueError("forecast")
+    characters = actual.get("characters")
+    characters = 0 if characters is None else characters
+    if (not world_model._finite_nonnegative(forecast.get("input_chars"))
+            or not world_model._finite_nonnegative(actual.get("action_duration_s"))
+            or not world_model._finite_nonnegative(characters)):
+        raise ValueError("observed action numeric")
+    resource = forecast.get("resource_state", "NORMAL")
+    if type(resource) is not str:
+        raise ValueError("resource state")
+    selections = store.rows(
+        """SELECT payload FROM packets
+           WHERE kind='ActionSelection' AND event_id=? AND generation_id=? AND created<=?
+           ORDER BY created DESC LIMIT 17""",
+        (row.get("event_id"), row.get("generation_id"), created),
+    )
+    if type(selections) is not list or len(selections) >= 17:
+        raise ValueError("ActionSelection scan bound")
+    committed = []
+    for raw_selection in selections:
+        selection_row = _mapping(raw_selection, "ActionSelection row")
+        selected = _object(selection_row.get("payload"), "ActionSelection payload")
+        if (selected.get("event_id") != row.get("event_id")
+                or selected.get("brain_generation_id") != row.get("generation_id")):
+            raise ValueError("ActionSelection binding")
+        stage = selected.get("stage")
+        if stage not in (None, "PREDICTION", "COMMIT"):
+            raise ValueError("ActionSelection stage")
+        if stage != "PREDICTION":
+            committed.append(selected)
+    if len(committed) != 1:
+        raise ValueError("committed ActionSelection cardinality")
+    route = committed[0].get("route_hint")
+    if route not in world_model.ACTIONS:
+        raise ValueError("ActionSelection route")
+    hour = (float(created) % 86400.0) / 3600.0
+    latent_record = forecast.get("learned_latent_prediction") or {}
+    latent = latent_record.get("latent") if type(latent_record) is dict else None
+    if not isinstance(latent, list) or not latent or not world_model._finite_vector(latent, len(latent)):
+        latent = None
+    return {
+        "action_id": action_id,
+        "s": world_model.state_vec(forecast["input_chars"], resource, hour),
+        "a": route,
+        "y": [math.log1p(float(actual["action_duration_s"])),
+              1.0 if status == "FINAL" else 0.0,
+              math.log1p(float(characters)) / 8.0],
+        "latent": latent,
+    }
+
+
+def verify_committed_transition_page(store, *, after_seq=0, limit=world_model.MAX_ROWS):
+    """Oldest-first source-verified T8 page; censored outcomes never enter learning IDs."""
+    if type(after_seq) is not int or after_seq < 0:
+        raise ValueError("after_seq")
+    if type(limit) is not int or not 1 <= limit <= world_model.MAX_ROWS:
+        raise ValueError("limit")
+    if not all(callable(getattr(store, name, None)) for name in ("one", "rows", "read_source")):
+        raise TypeError("Store reader API required")
+    rows = store.rows(
+        """SELECT a.rowid AS scan_seq,a.id,a.event_id,a.status,a.expected,a.outcome,a.created,
+                  e.generation_id
+           FROM actions a JOIN events e ON e.id=a.event_id
+           WHERE a.rowid>? AND a.outcome IS NOT NULL AND a.expected LIKE ?
+             AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')
+           ORDER BY a.rowid ASC LIMIT ?""",
+        (after_seq, '%"forecast"%', limit + 1),
+    )
+    if type(rows) is not list:
+        raise ValueError("T8 page")
+    has_more = len(rows) > limit
+    page = rows[:limit]
+    if not page:
+        return [], 0, after_seq, 0, 0, False
+    next_cursor, verified, rejected, seen = after_seq, [], 0, set()
+    for raw_row in page:
+        try:
+            action_row = _mapping(raw_row, "action page row")
+            scan_seq = action_row.get("scan_seq")
+            if type(scan_seq) is not int or scan_seq <= next_cursor:
+                raise ValueError("T8 scan sequence")
+            next_cursor = scan_seq
+            receipt = _verify_one(store, _transition_from_action_row(store, action_row))
+            if receipt.action_id in seen:
+                raise ValueError("duplicate action in page")
+            seen.add(receipt.action_id)
+            verified.append(receipt)
+        except (ValueError, TypeError, KeyError, OSError, OverflowError, json.JSONDecodeError):
+            rejected += 1
+    skipped = store.one(
+        """SELECT COUNT(*) AS n FROM actions
+           WHERE rowid>? AND rowid<=? AND outcome IS NOT NULL AND expected LIKE ?
+             AND status IN ('CANCELLED','ABORTED','OUTCOME_UNKNOWN','INTERRUPTED')""",
+        (after_seq, next_cursor, '%"forecast"%'),
+    )
+    skipped_row = _mapping(skipped, "censored count") if skipped else {"n": 0}
+    censored_skipped = skipped_row.get("n", 0)
+    if type(censored_skipped) is not int or censored_skipped < 0:
+        raise ValueError("censored count")
+    return verified, rejected, next_cursor, len(page), censored_skipped, has_more

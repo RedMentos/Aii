@@ -72,17 +72,38 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2137 merged as 3db6d1f00fceab9e7755bc8f4c25882ef7f19258. Exact PR-head V14 temporal/real SQLite Store workflow PASS (44846908247), staged-runtime and integrated-regression PASS (44846908186); merge-commit push staged-runtime PASS, integrated-regression IN_PROGRESS (44847399407). Component verifies Store-bound ActionOutcome, temporal expectation and bounded persistent scalar readout; learning defaults OFF.",
-      "next_step": "Connect the T8 bridge to the existing automatic Runtime postcommit path, compose with #2135 exactly-once OnlineWorld persistence, then route a source-bound World prediction into a real decision consumer in SHADOW with held-out utility, no-predictor/replay-only ablations, restart and rollback. Do not call this full JEPA or native B1/B2 learning.",
+      "proof_environment": "PR #2148 current head fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5; exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed GitHub Actions run 44854338438: Python 3.13 59 passed (6.52s), Python 3.14 59 passed (8.81s), compile PASS. Only later commit is a next-action Markdown table refresh. CI/Linux synthetic T8 receipts only; local exact checkout BLOCKED; REDMI_UNVERIFIED. Final GitHub readback before this board-only commit: PR #2148 head ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6; code/test tree e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed run 44854338438 (59 tests each on Python 3.13/3.14). This board update is documentation-only.",
+      "next_step": "Independent review/merge #2143 -> #2147 -> #2148. Then port the digest-disjoint oldest-first T8 page and persistent cursor into #2145's postcommit Runtime consumer and invoke WorldJEPAStoreConsumer in SHADOW. #2145 currently has a test-schema mismatch (TemporalOutcomes record field is error, not prediction_error) and still uses newest-first latest-N scans; it does not yet invoke the trainable JEPA consumer. Measure new-cohort holdout utility and old-cohort retention under equal replay/no-replay budgets. Keep learning/optimizer gates closed by default.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 Boss: #2137 merged; PR-head V14 and V13 staged/integrated tests PASS; exact merge push integration still pending. OnlineWorld.predict has no cognition/world/executive consumer.",
+      "last_checkpoint": "2026-11-21 PR #2148 latest exact CI PASS: 59 tests on Python 3.13/3.14; numeric WorldJEPA/EMA replay ablation remains synthetic/SHADOW; Runtime postcommit JEPA wiring open; no local exact-repo or Redmi proof.",
       "latest_candidate_pr": {
-        "pr": 2137,
-        "merge_sha": "3db6d1f00fceab9e7755bc8f4c25882ef7f19258",
-        "pr_head": "a3e19370d7fefe500e8edebf6942624207ff2865",
-        "ci": "PR-head V14 temporal PASS 44846908247; PR-head staged/integrated PASS 44846908186; merge push staged-runtime PASS, integrated-regression IN_PROGRESS 44847399407",
-        "scope": "Store-verified scalar temporal receiver; no normal Runtime consumer, no native JEPA/B1/B2 body-weight change, optimizer gate closed"
-      }
+        "pr": 2143,
+        "branch": "jepa-memory/v14-world-jepa-source-disjoint-paginated-20261121",
+        "code_commit_sha": "2311b039eb49375829876e1bea8f2ac2d6975fe8",
+        "tested_sha": "a2788aacdae09bb675fff220cbda4ba74d400912",
+        "ci": "PASS_PY313_PY314_57_TESTS",
+        "review": "READY_FOR_REVIEW",
+        "scope": "Source-verified oldest-first T8 -> WorldJEPA/EMA -> B1/B2/SELF shadow readouts + source-linked numeric Memory recall; not Runtime-wired or Redmi-verified"
+      },
+      "latest_followup_pr": {
+        "pr": 2148,
+        "branch": "jepa-memory/v14-action-conditioned-control-20261121",
+        "head_sha_at_readback": "ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6",
+        "tested_sha": "e46b87d7d5cf1da31f58f6561d21193a4dfc9e87",
+        "base_pr": 2147,
+        "ci": "PASS_PY313_PY314_59_TESTS_RUN_44854338438",
+        "scope": "Strict action-conditioned positive control; explicit uniform replay vs no-replay ablation; fit-ID/source-disjoint/retention/restart tests; not Runtime-wired"
+      },
+      "latest_runtime_candidate": {
+        "pr": 2145,
+        "branch": "boss/v14-t8-runtime-shadow-consumer-20261121",
+        "head_sha": "08d14737f1ee554f2b160986f95d9f28d6bc1fa2",
+        "ci": "FAIL_ONE_RUNTIME_TEST_SCHEMA_MISMATCH",
+        "scope": "Postcommit TemporalT8Bridge and WorldPredictionOutcome SHADOW only; newest-first latest-N scan; not JEPA/EMA consumer"
+      },
+      "release_sha": "NOT_RELEASED",
+      "phone_installed_sha": "UNKNOWN",
+      "redmi_status": "REDMI_UNVERIFIED"
     },
     {
       "id": "V14-005",

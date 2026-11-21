@@ -96,3 +96,45 @@ Die bestehenden fünf stündlichen Jobs arbeiten als **ein Engineering-Team** mi
 - QA & Android: keep private device status read-only; no UPDATE_REQUEST until a fresh owner-authenticated receipt; separately verify Android background/UI and voice consent on Redmi.
 - Research & Perception: continue A5 RAW EAR consent/producer contract and primary-source/license review; do not call PCM16 synthetic tests microphone proof.
 - Boss: finish exact merge-SHA CI, update coverage/board, and integrate the next compatible vertical slice.
+
+
+### JEPA & Memory implementation checkpoint — 2026-11-21 / PR #2143
+
+- Base: verified `gpt6/v13-private-remote-bridge-20261111` HEAD `c3c32c05a0374e970d274f8a777a7ab85c067d66`; code commit `2311b039eb49375829876e1bea8f2ac2d6975fe8`.
+- The prior #2133 candidate's three QA findings are addressed in #2143: source-grouped rather than action-ID holdout, no learning/processed-ID insertion for CANCELLED/ABORTED/OUTCOME_UNKNOWN/INTERRUPTED, and oldest-first SQLite rowid keyset pagination instead of latest-N starvation.
+- State schema v2 persists scan cursor with checkpoint; rollback restores the previous cursor. World/Self readouts and source-linked numeric episodic Memory recall are exposed in the Store-backed consumer.
+- CI is configured for Python 3.13 and 3.14; exact results are pending. No local checkout test or Redmi receipt is claimed. Runtime wiring remains open; #2135's exact-once OnlineWorld candidate is still blocked by its nested SourceHandoff builder chain.
+- Next: independent review, then integrate with the existing postcommit OnlineWorld path and expose predictions to a real World/Planner consumer in SHADOW. Keep learning gates closed by default.
+
+
+### JEPA & Memory verification checkpoint — 2026-11-21 / PR #2143
+
+- PR #2143 is ready for review. Code commit: `2311b039eb49375829876e1bea8f2ac2d6975fe8`; current branch head at this checkpoint: `a2788aacdae09bb675fff220cbda4ba74d400912`.
+- Exact GitHub Actions result: run `44848998581`, Python 3.13 `57 passed in 4.35s`, Python 3.14 `57 passed in 7.83s`; `py_compile` passed on both. Additional push workflow `44848994421` (private remote bridge security) passed.
+- The tests exercise source-disjoint grouping/digest integrity, censored-status exclusion, oldest-first backlog paging, restart/cursor continuation, nonzero encoder/predictor and EMA parameter changes, negative controls, B1/B2/SELF readouts, numeric Memory recall, checkpoint readback, retention and rollback.
+- These are GitHub Actions/Linux results. No local Aii checkout or Redmi owner receipt is available: `REDMI_UNVERIFIED`. The consumer is still not wired into the normal Runtime postcommit path and does not update native B1/B2 GGUF weights.
+- Next: independent review/merge, then integrate into `Runtime.online_world_update -> OnlineWorld.update` and route the source-bound prediction to a real World/Planner consumer in SHADOW. #2135's nested SourceHandoff builder chain remains the immediate integration blocker. No user action.
+
+
+### JEPA & Memory final verification note — 2026-11-21
+
+PR #2143 is no longer a draft and is ready for independent review. The exact tested code/workflow commit is `a2788aacdae09bb675fff220cbda4ba74d400912`; docs-only handoff updates follow it. Run `44848998581` passed all 57 V14 learning tests on Python 3.13 (4.35s) and Python 3.14 (7.83s), including compilation. Run `44848994421` also passed the private remote-bridge security workflow. No local Aii checkout or Redmi owner receipt exists. Runtime wiring remains the next gap.
+
+
+## JEPA & Memory checkpoint — 2026-11-21 (PR #2148)
+
+- Current tested chain: #2143 source-verified/paginated Store-backed WorldJEPA/EMA + numeric B1/B2/SELF SHADOW readouts; #2147 source-content-digest disjointness; #2148 strict action-shuffled positive control plus explicit uniform-replay vs no-replay ablation.
+- Exact #2148 head 10e058a7418a5356b96f22f5344a5a3384f96214, GitHub Actions run 44853980297: Python 3.13 59 passed (12.19s), Python 3.14 59 passed (10.30s), compile PASS. PRs remain open/unmerged. No exact local checkout test and no Redmi proof.
+- The current learner's replay-on/off comparison is an experimental code-path ablation, not yet evidence of improved real-user retention. The next experiment must compare new-cohort holdout utility and old-cohort retention under equal update and memory budgets.
+- Integration blocker: #2145 currently records temporal/World SHADOW outcomes but does not call WorldJEPAStoreConsumer; its T8 authority uses newest-first latest-N scans without the persisted cursor/digest-disjoint page from #2143/#2147. Its runtime test also has the prediction_error vs persisted error field mismatch. Port the authoritative source/digest/cursor path and invoke the learner after committed outcomes, still with optimizer gates closed.
+- No native B1/B2 GGUF weights, no normal Runtime learning loop, no Android install and no Redmi test are claimed. Release SHA: NOT_RELEASED; Redmi: REDMI_UNVERIFIED.
+
+
+## Final JEPA PR readback — 2026-11-21
+
+PR #2148 current head 6fec2dec1534285b654db60349efcd81f81b846c; code/test head 10e058a7418a5356b96f22f5344a5a3384f96214. Exact run 44854219157 tested docs/coverage head 3d8e55441d208eb8aec76cd121cc9f068376a88c and passed 59 tests on Python 3.13 (8.18s) and 59 on Python 3.14 (7.74s), including compilation. The only subsequent commit is research-ledger documentation; no code/test changes followed the tested head. PR is open, stacked on #2147, and not released. No local checkout or Redmi proof.
+
+
+## Latest exact CI readback — 2026-11-21
+
+PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed GitHub Actions run 44854338438: Python 3.13 59 passed in 6.52s; Python 3.14 59 passed in 8.81s; compile and both jobs PASS. The only later commit is a next-action Markdown table refresh; no code or test file changed after the tested e46b head. The earlier run 44854219157 also passed 59/59 on both versions and is superseded by this readback.

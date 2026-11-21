@@ -28,16 +28,16 @@ In der tatsächlichen Meldung niemals Beispielzahlen, Modell-Sieger, fehlende Te
 
 | Feld | Aktueller Wert |
 |---|---|
-| source_HEAD | `5b9171a457f32cafa6cc05fb88e80ef8b4dad08e` (PR #2138 merge readback 2026-11-21; exact staged push CI still running) |
-| last_integrated_functional_change | PR #2136 merged in `16f75fca`: PCM16 RAW-EAR → PerceptPacket → A4/C3-admission adapter; not yet called by normal Runtime/chat input, synthetic only |
-| local_test_result | NOT_RUN — no full local repository checkout in this worker |
-| ci_test_result | PR #2138 exact head `8ca7a298` passed owner-read (27+33 tests), Python 3.14 staged startup, offline bridge, staged-runtime (240/10 skipped/47 subtests), integrated regression (415/3 skipped/58 subtests); additive-only policy check failed on intentional existing-file changes and was not bypassed. Boss merged it as `5b9171a4`. On the exact merge SHA: owner-read push PASS, private-bridge push PASS, staged-context push IN_PROGRESS; source-contracts and integrated-regression also IN_PROGRESS. Latest-run gate correctly blocks until the newer staged run finishes. |
-| phone_installed_sha | UNKNOWN — private HEALTH request #348 returned no device comment |
+| source_HEAD | `c3c32c05a0374e970d274f8a777a7ab85c067d66` (verified current `gpt6/v13-private-remote-bridge-20261111` branch HEAD at JEPA readback; V14 PRs #2143/#2147/#2148 are unmerged candidates above it) |
+| last_integrated_functional_change | PR #2138 merged as `5b9171a4` (release/updater checkpoint); PR #2137 T8 temporal Store path merged as `3db6d1f`, still experimental/not normal-Runtime-wired. PR #2136 PCM16 RAW-EAR adapter remains synthetic and not called by normal Runtime/chat input. |
+| local_test_result | BLOCKED — no full Aii checkout; container DNS cannot resolve github.com. No exact LOCAL_LINUX repository test claimed. |
+| ci_test_result | PR #2148 head at last GitHub readback `ac9a79e9`; code/test tree `e46b87d7`, run `44854338438`: Python 3.13 `59 passed in 6.52s`, Python 3.14 `59 passed in 8.81s`, compile PASS. This next-action/board refresh is documentation-only; no code/test changed after e46b. #2145 separate runtime candidate: 52 V14 learning tests PASS but one Runtime test FAILs on `prediction_error` vs persisted `error`; newest-first scan lacks persistent cursor. |
+| phone_installed_sha | UNKNOWN — no fresh owner-verified PIPELINE_STATUS receipt |
 | phone_auto_update_verified | NO — no native receipt; no update attempted |
-| device_model_comparison | NOT_RUN |
-| proposed_model_change | NONE – erst anhand echter Tests |
-| requires_user_action | NO – derzeit keine neue Aktion zur Fortsetzung der Repositoryarbeit |
-| next_developer_action | Finish exact merge-SHA CI for `5b9171a4`; if green, obtain a fresh owner-verified PIPELINE_STATUS receipt before any device update. Core/JEPA rebuild staged hash-pinned candidate chains for #2139/#2140/#2135, fix the actual consumer failures and rerun staged-runtime + integrated regression; continue whole-Canon integration. |
+| device_model_comparison | NOT_RUN — no current device measurements or approved model experiment |
+| proposed_model_change | NONE — no measured candidate comparison; no model download/swap |
+| requires_user_action | NO — no action needed to continue repository work |
+| next_developer_action | Independent review/merge #2143 → #2147 → #2148; then compose the source/digest-disjoint oldest-first T8 cursor into #2145 and invoke WorldJEPAStoreConsumer in the postcommit Runtime SHADOW path. Keep learning and optimizer gates closed by default; no Termux command or user action until a real device receipt/approval path is available. |
 
 **Bei jedem nachprüfbaren Ergebnis:** Stand, Branch/Commit, exakte Commands, Plattform, Messwerte und Rollback dokumentieren; Nutzerbedarf höchstens als konkrete Entscheidung. Bei Konflikten die neuesten tatsächlichen Messungen vor altem Text bevorzugen.
 
@@ -237,3 +237,69 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - Private read-only issues #351–354 have no device comments; installed SHA and auto-update consent remain UNKNOWN / REDMI_UNVERIFIED. No UPDATE_REQUEST or phone mutation.
 - Exact local full-suite checkout remains BLOCKED by GitHub DNS resolution; no LOCAL_LINUX full-suite PASS is claimed. No Redmi/native-model/voice/Android-control proof.
 - No model, weights, Age, permissions, database, chat or user data changed. **User action: none.**
+
+
+## JEPA & Memory checkpoint — 21 November 2026 / PR #2143
+
+- Candidate PR: [#2143](https://github.com/RedMentos/Aii/pull/2143), branch `jepa-memory/v14-world-jepa-source-disjoint-paginated-20261121`, code commit `2311b039eb49375829876e1bea8f2ac2d6975fe8`, based on current V14 branch HEAD `c3c32c05a0374e970d274f8a777a7ab85c067d66`.
+- The prior #2133 candidate's three concrete gaps are addressed in this candidate: source-disjoint holdout by `source_id`, explicit exclusion of censored/cancelled outcomes, and oldest-first T8 pagination with a persisted scan cursor. It includes WorldJEPA/EMA numeric checkpoint learning, B1_DETAIL/B2_GIST/SELF_MODEL shadow readouts, source-linked numeric Memory recall, restart and rollback.
+- It is not yet connected to the normal Runtime postcommit consumer and does not update native B1/B2 GGUF weights. CI is configured for Python 3.13/3.14; exact results are pending. No local full-suite checkout and no Redmi receipt are available: `REDMI_UNVERIFIED`.
+- #2135 remains the next runtime-integration dependency because its nested SourceHandoff builder chain is still blocked. No phone update request, model download/swap, permission change or manual Termux command is needed.
+- **User action: none.**
+
+
+## JEPA & Memory verification — 21 November 2026 / PR #2143
+
+- [PR #2143](https://github.com/RedMentos/Aii/pull/2143) is ready for review. Branch `jepa-memory/v14-world-jepa-source-disjoint-paginated-20261121`; code commit `2311b039eb49375829876e1bea8f2ac2d6975fe8`; current branch head `a2788aacdae09bb675fff220cbda4ba74d400912`.
+- GitHub Actions run `44848998581`: Python 3.13 — **57 passed in 4.35s**; Python 3.14 — **57 passed in 7.83s**. Compilation passed on both. Additional `v13-private-remote-bridge-tests` run `44848994421` passed.
+- The candidate adds source-disjoint T8 holdout, excludes censored outcomes, pages oldest-first with a persisted cursor, trains the numeric WorldJEPA/EMA checkpoint, exposes B1_DETAIL/B2_GIST/SELF_MODEL shadow readouts and source-linked numeric Memory recall, and verifies restart/rollback.
+- CI is not a local device test. No local Aii checkout test and no Redmi receipt: `REDMI_UNVERIFIED`. Normal Runtime postcommit wiring and native B1/B2 GGUF weight learning remain open. #2135's nested SourceHandoff builder chain is the next integration blocker.
+- No phone update request, model download/swap, permission change or manual Termux command is needed.
+- **User action: none.**
+
+
+## PR #2143 status update — 21 November 2026
+
+- PR #2143 is ready for review (not merged).
+- Verified CI: run `44848998581`, 57/57 tests passed on Python 3.13 and 57/57 on Python 3.14; compile passed on both. Additional run `44848994421` passed.
+- The code commit is `2311b039eb49375829876e1bea8f2ac2d6975fe8`; tested PR head was `a2788aacdae09bb675fff220cbda4ba74d400912`. The later commit only records the test evidence and handoff.
+- Still open: runtime postcommit wiring, native B1/B2 GGUF weight updates, full cross-organ JEPA/latent coupling, and real Redmi validation. `REDMI_UNVERIFIED`.
+- **User action: none.**
+
+
+## JEPA & Memory lane update — 2026-11-21, 03:00 CET
+
+- Current release integration branch was read back at `c3c32c05a0374e970d274f8a777a7ab85c067d66` (compare result: identical to the branch ref at inspection). #2143 head `f0309ab3` carries the source-disjoint/paginated T8 consumer; #2147 head `fb25bcbf` adds source-content-digest disjointness.
+- #2147 exact CI run `44852394807` failed on both Python 3.13 and 3.14 only at the action-shuffled negative-control assertion. The source/digest-disjointness checks ran before that point. Logs show shuffled-action loss marginally lower than trained-action loss; zero-action loss was higher. The assertion remains strict.
+- A follow-up test branch `jepa-memory/v14-action-conditioned-control-20261121` now has commit `52690943522df331b20ab3990c7dd8ee72c1ba84`: controlled action-dependent synthetic outcomes, independent nuisance variation, and 120 JEPA update steps. This is a synthetic positive-control adjustment; its exact CI has not yet run. No product code or installed model changed in this commit.
+- **Tests:** exact GitHub CI for #2147 = FAIL (1/57 test on each Python version); exact local Aii checkout = BLOCKED (container DNS cannot resolve github.com); Redmi = `REDMI_UNVERIFIED`. No Android or native GGUF proof.
+- **Integration:** #2145 is the Boss runtime-shadow consumer candidate and touches the same T8 authority/temporal files. It must carry #2143's source verification, digest-disjoint paging, censored-outcome and cursor/rollback semantics before its runtime-package shims replace any files. No merge/release/deploy is claimed.
+- **Research:** JEPA-TTT (arXiv:2610.00722) supports persistent action-conditioned predictor adaptation with dense replay as an ablation; Replay on Demand (arXiv:2609.40089, Apache-2.0 reference implementation) suggests retention-error-driven replay allocation; A-JEPA (arXiv:2609.31161) cautions that predictive accuracy alone does not establish causal state identification. See the dated entries in `V14_RESEARCH_LEDGER.md`.
+- **Next:** open the stacked action-control test PR against #2147, read back exact 3.13/3.14 CI, then coordinate the merged T8 authority into the normal post-commit Runtime consumer and a SHADOW World/Planner receiver. Native B1/B2 weights remain untouched; optimizer permission remains OFF by default.
+- **User action:** none. No Termux command, model download, model swap or phone action is required for this repository work.
+
+
+## JEPA & Memory verified checkpoint — 2026-11-21
+
+- Latest JEPA follow-up PR: #2148, branch jepa-memory/v14-action-conditioned-control-20261121, tested head 10e058a7418a5356b96f22f5344a5a3384f96214. Exact GitHub Actions run 44853980297 PASS: Python 3.13 59 passed in 12.19s, Python 3.14 59 passed in 10.30s; compile and both jobs passed. PR #2148 remains open, stacked on #2147; #2147 is stacked on #2143. None is merged/released.
+- New executable feature: WorldJEPAStoreConsumer.update(replay_mode="none") is an explicit no-replay ablation; default uniform still replays all prior train-fold rows. The SQLite integration test verifies actual fit IDs, source-disjoint holdout exclusion, old-holdout retention metrics and checkpoint restore. The synthetic fixture now has a strong, known action effect; shuffled-action/zero-action controls remain strict. This is synthetic Linux CI evidence only.
+- PR #2145 runtime candidate is still not the JEPA loop. Its run 44853558359 passed 52 V14 learning tests but failed one Runtime assertion because persisted outcome records use error, not prediction_error. More importantly, it still scans newest-first latest-N rows without the persistent oldest-first cursor and only records SHADOW outcomes; it does not invoke WorldJEPAStoreConsumer.
+- local_test_result: BLOCKED — no full Aii checkout; container DNS cannot resolve github.com. phone_installed_sha: UNKNOWN. phone_auto_update_verified: NO. release_sha: NOT_RELEASED. Redmi: REDMI_UNVERIFIED.
+- Next developer action: independent review/merge of #2143→#2147→#2148; compose the verified digest-disjoint oldest-first T8 page/cursor into #2145 and invoke the Store-backed JEPA learner in the normal postcommit Runtime path in SHADOW; expose the prediction to a real World/Planner consumer. Keep optimizer permission and learning gates closed by default. No Termux command or user action is currently needed.
+
+
+## Final JEPA head readback — 2026-11-21
+
+- PR #2148 current head: 6fec2dec1534285b654db60349efcd81f81b846c. Code/test head: 10e058a7418a5356b96f22f5344a5a3384f96214. Exact GitHub Actions run 44854219157 tested head 3d8e55441d208eb8aec76cd121cc9f068376a88c and passed 59 tests on Python 3.13 (8.18s) and 59 on Python 3.14 (7.74s), including compilation. The only later commit is research-ledger documentation; no code/test files changed after the tested head.
+- PR #2148 remains open/mergeable and stacked on #2147, which is stacked on #2143. No merge, release or deployment has occurred. Release SHA: NOT_RELEASED. Phone SHA: UNKNOWN. REDMI_UNVERIFIED.
+- Next: independent review/merge chain #2143→#2147→#2148, then integrate the source/digest-disjoint oldest-first T8 cursor into #2145 and wire WorldJEPAStoreConsumer to the postcommit Runtime in SHADOW. #2145 still has the field-name test mismatch and newest-first scan; it does not invoke the JEPA learner.
+- User action: none. No manual Termux command, model download, model swap, permission change or phone action is needed for this repository checkpoint.
+
+
+## Latest exact CI readback — 2026-11-21
+
+PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed GitHub Actions run 44854338438: Python 3.13 59 passed in 6.52s; Python 3.14 59 passed in 8.81s; compile and both jobs PASS. The only later commit is a next-action Markdown table refresh; no code or test file changed after the tested e46b head. The earlier run 44854219157 also passed 59/59 on both versions and is superseded by this readback.
+
+
+## Final readback before documentation-only board refresh — 2026-11-21
+PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/test tree e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed run 44854338438: Python 3.13 59 passed (6.52s), Python 3.14 59 passed (8.81s), compile PASS. The following board/next-action commits contain documentation only; no code or test changes.
