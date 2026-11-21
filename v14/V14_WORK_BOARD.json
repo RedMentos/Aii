@@ -28,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Last code-bearing release commit is 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e, with updater-required exact push CI GREEN. Subsequent commits are documentation-only handoff/board checkpoints; their own push CI must be read fresh. Private issues #351–354 have zero device comments; installed SHA UNKNOWN / REDMI_UNVERIFIED.",
-      "next_step": "Do not send UPDATE_REQUEST until a fresh owner-authenticated PIPELINE_STATUS receipt confirms phone state and consent. Current read-only requests #351–354 are unanswered; no duplicate installer or phone mutation.",
+      "proof_environment": "Last code-bearing release 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e has exact updater-required push CI GREEN. Current branch HEAD d61b695739023d0bf0a3cfa4022770f0de2615fa is documentation-only; owner-read push 44846409890 PASS and private-bridge push 44846409984 PASS, but exact staged-context push 44846409816 remains IN_PROGRESS. Private issues #351–354 have zero device comments; installed SHA UNKNOWN / REDMI_UNVERIFIED.",
+      "next_step": "Wait for exact staged-context push on d61b695; do not reuse parent SHA success. Then read existing owner-authenticated PIPELINE_STATUS #353. Only if it confirms compatible updater and explicit consent may Boss send one UPDATE_REQUEST followed by a separate installation receipt.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 Boss readback: exact merge SHA 5b9171a is green on updater-required push CI. GitHub CI is not Android installation.",
+      "last_checkpoint": "2026-11-21 QA: exact code-bearing SHA 5b9171a green; newer docs-only HEAD d61b695 has 2/3 updater-required push workflows green and staged-context still in progress. No phone receipt or UPDATE_REQUEST.",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -72,15 +72,15 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2137 Boss branch head 2d8eb79bdefe3c6c3bef63fea7d25563b7f56952 now includes exact bounded ActionOutcome scan (4096 maximum; over-bound fail-closed), CANCELLED/ABORTED vs OUTCOME_UNKNOWN/INTERRUPTED censoring without prediction error/receiver update, and rollback directory fsync. Focused V14 T8 workflow PASS run 44846178337; private bridge push PASS run 44846173169; staged/integrated runs 44846178374 still IN_PROGRESS at last readback. PR #2135 remains blocked by 20 failed staged tests; PR #2133 remains experimental/not Runtime wired with source-disjoint/cancellation/backlog findings.",
-      "next_step": "Wait for exact #2137 staged/integrated results. If green, review it as a Store-verified temporal adapter only; then wire a real Runtime consumer and combine with the JEPA/World receiver without opening Age/optimizer gates. Rebuild the #2135 source-pinned online-world candidate chain before considering its exactly-once persistence fix.",
+      "proof_environment": "PR #2137 head 2d8eb79: focused V14 T8 52 PASS; staged-runtime 240 passed/10 skipped/47 subtests PASS; integrated regression 415 passed/3 skipped/58 subtests PASS; private bridge PASS. Dedicated T8 workflow remains Python 3.11 only; QA requested Python 3.14 coverage. Safe-additive policy is red pending Boss review. No normal Runtime learning consumer, optimizer update, native B1/B2 weights or Redmi proof. PR #2133 source-disjoint/backlog and #2135 online_world.py pin failures remain.",
+      "next_step": "Boss reviews #2137 policy/scope; add Python 3.14 coverage; integrate the T8 adapter into normal Runtime only after source-disjoint holdout and keyset backlog fixes. Keep optimizer closed until measured holdout/retention/restart/rollback and actual target-weight delta.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 Boss updated #2137 on its own branch; new negative/restart/durability tests committed. Focused V14 workflow passed; full staged/integrated evidence still pending.",
+      "last_checkpoint": "2026-11-21 QA: exact #2137 staged/integrated CI completed PASS; previous cancellation/censoring, 4096-row ActionOutcome and rollback fsync findings fixed. Remaining gates: Python 3.14, safe-additive/Boss review, normal Runtime consumer, source-disjoint/backlog.",
       "latest_candidate_pr": {
         "pr": 2137,
         "head_sha": "2d8eb79bdefe3c6c3bef63fea7d25563b7f56952",
-        "ci": "V14 T8 temporal bridge workflow PASS run 44846178337; private bridge push PASS run 44846173169; staged/integrated IN_PROGRESS run 44846178374",
-        "scope": "Store-verified scalar temporal receiver; no normal Runtime consumer, no native JEPA/B1/B2 body-weight change, optimizer gate closed"
+        "ci": "PASS: 52 focused T8 tests; staged-runtime 240 passed/10 skipped/47 subtests; integrated regression 415 passed/3 skipped/58 subtests; private bridge PASS. Python3.14, policy and normal Runtime consumer remain OPEN.",
+        "scope": "Store-verified scalar temporal adapter; no normal Runtime learning loop, no native JEPA/B1/B2 body-weight change, optimizer gate closed"
       }
     },
     {
@@ -118,10 +118,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Code release PR #2138 merged as 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e; exact updater-required push CI GREEN. Later branch commits are documentation-only; verify their exact push CI separately. Whole-Canon implementation remains open and Redmi is unverified.",
-      "next_step": "Continue one compatible end-to-end candidate at a time, resolve semantic source-pin dependencies rather than refreshing hashes blindly, and keep the whole-Canon coverage/owner matrix current.",
+      "proof_environment": "Last code-bearing release 5b9171a exact updater-required CI GREEN; current docs-only branch HEAD d61b695 has owner-read and private bridge PASS but staged-context push IN_PROGRESS. PR #2137 exact staged/integrated CI PASS but remains draft pending Boss review, Python3.14 and Runtime-consumer work. Whole-Canon acceptance remains incomplete.",
+      "next_step": "Finish exact current-HEAD updater CI, then use only a fresh private PIPELINE_STATUS receipt for device decisions. Boss reviews T8 policy and Core/JEPA continue connected consumer integration.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21: #2138 merged/read back; exact release push CI green; Redmi receipt absent."
+      "last_checkpoint": "QA independently verified #2137 52/240/415 tests PASS; no production learning or Redmi claim."
     },
     {
       "id": "V14-008",
