@@ -993,3 +993,36 @@ Primary papers: https://arxiv.org/abs/2608.20617, https://arxiv.org/abs/2609.322
 ### Final exact-head poll before this handoff commit — 2026-11-21T22:29:39.614Z
 
 Boss branch pre-final-handoff head `ce7ca26a08e9bf0d8dea79835035a4281b53bba1`: 16 check runs, 15 queued and 1 expected additive-validator skip. No completed result on this exact head. Current branch has 62 changed files: the original 59 code-bearing paths plus the workflow-scope correction, research ledger and research handoff. Research R-047–R-051 is integrated; #2260 itself remains CLOSED_DRAFT_NOT_MERGED. No new-head PASS or Redmi proof is claimed.
+
+
+
+## Research/Perception executable checkpoint — 2026-11-21 23:27 CET
+
+### Scope and connected consumer
+
+- Current-base PR #2275, branch research-perception/v14-raw-ear-speaker-batch-isolation-20261121-r2, is stacked on Boss #2258 head 34eb645357d65bdd5ac69b9fb2c834d043086dac. Exact Perception head at readback: 631eb42cff2f3de7f066070e96896d996b019294. Draft / not released.
+- Caller-supplied frame embeddings are source/generation/model-revision/checkpoint-hash bound, normalized and held in a bounded process-local registry. The optional consumer supplies scalar change evidence to A5 PerceptPacket, A4 salience/novelty and C3 summary. No speaker label, identity authority, learning authority or action authority; vectors are not persisted. No model is loaded by default.
+- Optional NumPy pitch acceleration remains explicit; pure Python stays the default. No production backend or model change.
+
+### Reproduced defect and implementation
+
+- Defect: the previous update loop appended each frame immediately. Later frames in a long incoming batch could compare against same-batch frames from the new speaker and overwrite an earlier cross-window change with cosine 1.0 / score 0.0.
+- Fix: take one immutable pre-batch history snapshot, use only that snapshot for every frame in the current batch, then append the entire batch after scoring. First batch is WARMUP.
+- Regression: test_same_batch_tail_cannot_overwrite_cross_window_change_evidence compares 1-second and 2-second A→B batches; the longer batch must not change the cross-window evidence. Existing unvoiced and threshold-absent controls cover their respective negative behavior.
+
+### Test evidence
+
+- LOCAL_LINUX CPython 3.13.5 x86_64 algorithm-level reproduction: PASS for warmup, same-speaker stability, unvoiced negative control, threshold-absent score-only behavior and 1-s/2-s batch invariance. Old-algorithm negative control reproduced the false-negative.
+- LOCAL_LINUX full Aii project tests: BLOCKED; no complete checkout is mounted and GitHub DNS is unavailable.
+- GitHub exact-head workflow: no PR-triggered run returned at the latest readback. Python 3.13/3.14 compile, focused RAW EAR/A5-A4-C3 tests, deterministic benchmark, staged Runtime and integrated regression remain PENDING. No CI PASS is claimed.
+- REDMI/TERMUX: REDMI_UNVERIFIED. No connected phone, microphone, model weights, permission or updater action was used.
+
+### Research and reuse decision
+
+- FASTDIAR arXiv:2610.02941v1 full text and Microsoft repository/license were reviewed. The causal 192-D/80-ms encoder is a better streaming fit than utterance-level encoders, but checkpoint weight license and ARM64 dependency/performance remain unresolved.
+- ReDimNet2 arXiv:2603.11841 full text and official PalabraAI MIT repository were reviewed. B0/B1 are small segment-level candidates; the checked B3 ONNX conversion is about 18 MB and 192-D. It is not a drop-in 80-ms stream encoder. ONNX Runtime documents Android Java/C/C++ packages, but no Termux/Redmi result exists.
+- No model/code/weight was downloaded or imported. ReDimNet2 remains an optional future experiment requiring separate approval; no productive swap proposed.
+
+### Next executable step
+
+Core/QA: trigger and inspect exact-head #2275 Python 3.13/3.14 and staged/integrated workflows; review the current-base audio consumer and source pins. Boss: integrate only after independent review and green exact-head checks. Perception: after this fix, return to the model-candidate lab and continue the whole-Canon research queue. Keep Python default, speaker model OFF, release NOT_RELEASED and Redmi REDMI_UNVERIFIED.
