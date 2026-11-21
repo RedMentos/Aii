@@ -1753,7 +1753,7 @@ This section supplements the historical heading inventory; it does not remove or
 | --- | --- | --- | --- |
 | A0–A5 perception, attention, audio and UI | Caller-supplied PCM16 producer merged (#2240); metadata-only UI lease draft (#2246); no OS provider | #2242 9 pass/4 fail; #2246 rebased checks queued; #2244 streaming checks queued | NOT_TESTED; no microphone, OS UI capture or active C3 consent consumer |
 | B1_DETAIL / B2_GIST | Distinct roles and synthetic offers wired through C4/Focal→C3 | Prior staged/integrated synthetic suites pass | No native offer-quality, useful mutual re-entry or Redmi acceptance |
-| B3 Enlightened Space | Symbolic path; tiny cross-geometry K/V experiment draft (#2243) | Prior head 7b65 3/3; current rebased d738 has 2 checks pass / 2 queued | No production receiver, actual llama.cpp tap/injection or Android proof |
+| B3 Enlightened Space | Symbolic path; tiny cross-geometry K/V experiment merged in research-only PR #2243 at 6bbaa | Exact PR head f440 4/4 checks green; merge-push CI 31 checks pending (25 queued / 6 in progress) | No production receiver, actual llama.cpp tap/injection or Android proof |
 | B4 workspace / C4 coalition | Source-span redundancy heuristic in prior pinned stage | Prior staged 251/10/47; integrated 424/3/58 | Synthetic only; no native semantic complementarity proof |
 | C/JEF/C2/C3/C5 | Synthetic output/control; exact arithmetic/audio candidate blocked in #2242 | Stage builder pin stale; arithmetic overlay fixture absent; migration PARTIAL | No correct native 2+2 or Redmi C3 acceptance |
 | World/Self/Memory/JEPA/Sleep | Persistent WorldJEPA predictor shadow and bounded worker | #2247 11/14; both optimizer-resume jobs fail per-session retention; checkpoint unchanged | Gates OFF; no accepted update or native weight change |
@@ -1771,7 +1771,7 @@ This section supplements the historical heading inventory; it does not remove or
 
 - Last fully accepted code release: `f279286a4453248004c670fcaabecd85da6ab299`, 34/34 exact check-runs and 19/19 workflows SUCCESS.
 - Latest merged code candidate: `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`, 18/19 exact merge-push checks; SleepRuntime JEPA utility gate rejected the positive update. NOT_RELEASED.
-- Shared release-development branch: `0c9ede256e9a3bdafc728fe6be1b4bead8fe13bd`, 30 check-runs at last read: 24 success, 3 in progress, 3 queued, zero failures. Pending exact-head CI is not a release.
+- Shared release-development branch after research-only PR #2243: `6bbaa66e4e2454cc2178bd145da95d1e9cf6530f`, 31 exact merge-push check-runs at last read: 25 queued, 6 in progress, 0 completed. Pending exact-head CI is not a release.
 - Active master blob remains `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`; no material master edit or historical V13 appendix change was made in this checkpoint.
 - Private owner-read issue [#428](https://github.com/RedMentos/Aiiii/issues/428) has no authenticated response. No device action or update request. Local Aii checkout absent; no local full-suite test ran.
 
