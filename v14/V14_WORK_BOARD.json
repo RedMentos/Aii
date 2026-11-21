@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T19:56:08.314Z",
+  "updated_at": "2026-11-21T19:58:56.989Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -180,7 +180,7 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Boss docs-only PR #2249 is now represented by shared head 48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4; that exact branch has 19/19 workflows SUCCESS. No production code PR was promoted this checkpoint. #2242 is blocked by one 3.13 fixture failure and pending 3.14; #2244 is old-base; #2246/#2250 expose the A5 blob race; #2247 has retention and pin failures; #2235 remains 7/10 with nested-closure AST attribution.",
+      "proof_environment": "Boss docs/research PR #2253 merged at 838482cea5271732ddc9710d2c6ca737a94b4718 after exact PR privacy scan 1/1 PASS. Post-merge 19 workflows queued/in progress at last poll. No production code PR was promoted. #2242 has identical 3.13/3.14 invalid SourceRef fixture failures; #2244 is old-base; #2246/#2250 expose the A5 blob race; #2247 has retention and pin failures; #2235 remains 7/10 with nested-closure AST attribution.",
       "next_step": "Integrate only exact-head, current-base, reviewed candidates after their consumer and negative-control tests pass. Keep the protected-file review gate and safe-additive policy intact; do not merge any of #2242/#2244/#2246/#2247/#2250/#2235 yet.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 18:04 CET"
@@ -285,7 +285,7 @@
   "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
   "latest_integrated_head": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
   "latest_integrated_head_verified_at": "2026-11-21T18:05:08.230Z",
-  "release_gate_status": "NOT_RELEASED. Last fully accepted code release f279286a4453248004c670fcaabecd85da6ab299: 34/34 exact check-runs and 19/19 workflows SUCCESS. Latest merged code candidate 728cdc763f09bee20ac00e1f0faadffcd33dfbb2: 18/19 exact merge-push; JEPA utility gate rejected the positive update. Shared release-development branch 48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4 is a documentation/research-only integration head; 19/19 workflows SUCCESS, not a new code release. No Redmi receipt.",
+  "release_gate_status": "NOT_RELEASED. Last fully accepted code release f279286a4453248004c670fcaabecd85da6ab299: 34/34 exact checks and 19/19 workflows SUCCESS. Latest merged code candidate 728cdc763f09bee20ac00e1f0faadffcd33dfbb2: 18/19 exact merge-push; JEPA utility gate rejected the positive update. Current shared branch head 838482cea5271732ddc9710d2c6ca737a94b4718 is documentation/research-only PR #2253; PR privacy scan 1/1 SUCCESS, post-merge 19 workflows queued/in progress at last poll. No production code release or Redmi proof.",
   "phone_receipt": {
     "state": "NO_AUTHENTICATED_OWNER_READ_REPLY",
     "installed_sha": "UNKNOWN",
@@ -512,10 +512,10 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-21T19:56:08.314Z",
-    "branch_head": "48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4",
-    "branch_head_type": "CURRENT_SHARED RELEASE-DEVELOPMENT HEAD AFTER RESEARCH-ONLY #2243 AND BOSS DOCS-ONLY #2249; this checkpoint changes only board/workplan/next-action/coverage/research notes. No production runner, weights, permissions, model, device or user data changed.",
-    "branch_head_checks": "Exact current shared head 48ded1da27a52fcfba9d1f80fd5086d9ad36a8c4 has 19/19 GitHub workflows SUCCESS. This is a documentation/research branch head, not a code release.",
+    "timestamp": "2026-11-21T19:58:56.989Z",
+    "branch_head": "838482cea5271732ddc9710d2c6ca737a94b4718",
+    "branch_head_type": "SHARED RELEASE-DEVELOPMENT HEAD AFTER BOSS DOCS/RESEARCH PR #2253 MERGE; no production runner, model, weights, permissions, device settings or user data changed.",
+    "branch_head_checks": "PR #2253 exact-head V14 Perception public privacy scan PASS 1/1. After merge, 19 release-development workflows were queued/in progress at last poll; do not claim post-merge CI green yet. Documentation/research-only merge, not a code release.",
     "code_bearing_release_sha": "f279286a4453248004c670fcaabecd85da6ab299",
     "code_release_checks": "34_OF_34_EXACT_CHECK_RUNS_AND_19_OF_19_WORKFLOWS_SUCCESS",
     "integrated_code_candidate": "728cdc763f09bee20ac00e1f0faadffcd33dfbb2",
@@ -540,7 +540,8 @@
     "canon_coverage": "1,255 historical Canon headings preserved. V14 master has 1,283 headings. Semantic clause→implementation→consumer→test→environment→rollback mapping remains incomplete; no whole-system completion claim.",
     "research": "Boss synchronized the missing research entries R-038/R-039/R-040/R-041/R-042/R-043/R-044 from the Perception research branch into the shared ledger. R-040: Mahdaviyeh et al., 'Replay can provably increase forgetting,' PMLR 330:15–42 / arXiv:2506.04377v1; full HTML reviewed, arXiv version CC BY-NC-ND 4.0; result is conditional/non-monotonic, not a universal anti-replay rule. R-041: Thede et al., 'Replay on Demand,' arXiv:2609.40089; full 31-page text reviewed; bethgelab/replay-on-demand exact main 9ecc0517 is Apache-2.0 but depends on NeMo-RL/Megatron/Ray/SLURM; no code/dependency imported. Adapt only the small loss-based selector principle after strict per-session retention passes. No Android evidence.",
     "user_action_required": "NONE. No Termux command, model/weight download or swap, permission change, update request, device action or user-data mutation.",
-    "active_agents": "Five active V14 scheduled jobs only: Boss & Integration, QA & Android, JEPA & Memory, Forschung & Perception, Core & Harness. No additional agents claimed."
+    "active_agents": "Five active V14 scheduled jobs only: Boss & Integration, QA & Android, JEPA & Memory, Forschung & Perception, Core & Harness. No additional agents claimed.",
+    "pr2253": "MERGED_AT_838482CEA5271732DDC9710D2C6CA737A94B4718; 5 V14 documentation/research files only; exact PR privacy scan 1/1 SUCCESS; post-merge 19 workflows queued/in progress at last poll; no code release."
   },
   "active_agent_automations": [
     {
