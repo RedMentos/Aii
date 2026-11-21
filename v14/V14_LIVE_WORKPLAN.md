@@ -322,3 +322,15 @@ Next integrated vertical slice: after Core's staged runtime is green, invoke the
 5. QA rebases #2163 and continues private owner-read; no update request before a positive receipt.
 
 No material V14 master edit was made; no master backup was required. Historical V13 Canon bytes were not changed.
+
+
+## Research & Perception checkpoint — 2026-11-21 08:22 CET
+
+- Queue: V14-006, owner Research & Perception. Latest release HEAD read at start was 9d9c591ad219a17e273fe12d47ffdcfdb3ee471d; the branch advanced during this run to 04635a5522ab095f79544e23d9aa0330b0c9ff7a and the candidate was recreated on that exact newer base.
+- Candidate: PR #2177, branch research-perception/v14-prosody-attention-current-20261121, head 1c4bb678025b421b98766cbce61570eec4683a52. Producer blob 0e328d14883840190937f0fef24a8e895ba7261c; focused test blob 96b00b2e1b6340e2a61a8b6f230be8747889ab38.
+- Actual adapter path: caller-supplied PCM16 window → timestamped AudioPercept/voice-cue packet → A4 attention modulation → C3 admission summary. The adapter does not persist raw PCM and has no microphone, VAD, ASR, speaker-ID, speech-learning or action authority. Normal Runtime microphone ingestion and B1/B2 offer delivery remain separate Core work.
+- Exact PR-head CI: focused RAW EAR suite PASS on Python 3.11 and 3.13 (12/12 tests each); privacy scan PASS. Staged-runtime/integrated-regression were still in progress at readback. Generic safe-additive check fails because this intentionally replaces an existing producer; do not bypass that policy. Exact local Aii checkout tests remain BLOCKED by GitHub DNS. Local isolated Python 3.13 synthetic reproduction PASS 13/13; not the exact repository suite.
+- Device: private V13OBS #115 last updated 2026-11-18 and has no newer receipt/comment; current installed SHA and updater consent are UNKNOWN. REDMI_UNVERIFIED; no phone action or update request.
+- Research R-021 records the full-text causal-transfer paper and the MIT ggml-extractor candidate, including pinned llama.cpp symbol compatibility but no exact build. Do not import the OSS dependency until exact b10964 compile/ABI/ARM evidence exists; V13 already has native_layer_taps.cpp.
+- Next: Boss reviews #2177; Core updates #2158's exact V3 source pin and proves separate text/audio packets plus normal Runtime and B1/B2→C4→C3 consumption. Research compares native middle-layer capture against the pinned b10964 worker with no model swap.
+- User action: none.
