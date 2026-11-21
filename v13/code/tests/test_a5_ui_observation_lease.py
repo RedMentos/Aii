@@ -154,8 +154,12 @@ class A5UIObservationLeaseTests(unittest.TestCase):
             wrong_source = dict(result["packet"])
             wrong_source["source_ref"] = dict(result["packet"]["source_ref"], source_id="src_ui_forged")
             wrong_generation = dict(result["packet"], brain_generation_id="generation_other")
+            wrong_event = dict(result["packet"], event_id="event_other")
+            wrong_modality = dict(result["packet"], modality="audio")
             self.runtime._a5_ui_context_cache["forged_source"] = wrong_source
             self.runtime._a5_ui_context_cache["forged_generation"] = wrong_generation
+            self.runtime._a5_ui_context_cache["wrong_event"] = wrong_event
+            self.runtime._a5_ui_context_cache["wrong_modality"] = wrong_modality
             self.assertEqual(
                 self.adapter.context(self.event["event_id"], grant),
                 (result["packet"],),
