@@ -1219,3 +1219,12 @@ On exact Boss integration head `6fca4ffe504567c45067bc22347e5f5e33f9f530`, the p
 - QA PR #2269 code head `f75d1dff5f5ceddcffdd92734b8e4ba96e444f38`: audio lease lifecycle + arithmetic/date ambiguity focused tests **3 passed on Python 3.13 and 3 passed on Python 3.14** in both push run `44954318285` and PR run `44954327390`. Compile steps PASS. Its inherited staged-runtime/integrated-regression checks are still IN_PROGRESS.
 - PR #2269 is now the active broader QA PR and carries this handoff. Old-base QA #2244 and superseded A5 PR #2265 are closed because their tests are integrated into #2258; no coverage was dropped.
 - No local full Aii checkout, authenticated Redmi receipt, private LOG_PAGE opt-in or update consent. REDMI_UNVERIFIED / NOT_RELEASED. No user action or device mutation.
+
+
+### Final exact-head QA refresh — 2026-11-21 23:15 CET
+
+- Boss PR #2258 exact head `8eaf67f47902012dc8553b0ec6b82ec68aaf3d50`: **14/14 code/runtime checks PASS**. This includes staged-runtime, integrated-regression, old-phone migration, Python 3.14 staged startup/SQLite refs, Lab-Age, verify, combined, offline, owner-read, offline bridge security, A5 UI lease Python 3.13/3.14 and staged audio/arithmetic Python 3.13/3.14.
+- The only completed failure is `validate-additive` (run `44954248267`): the strict 2..30-file ADD-only candidate validator is applied to the broad Boss integration PR. Keep its checks unchanged for true additive candidates, but scope the job to explicit candidate branches/labels. Do not bypass it for real additive PRs. Boss PR #2258 remains DRAFT / NOT_RELEASED until this is reviewed and corrected.
+- QA PR #2269 exact tested code head `f75d1dff5f5ceddcffdd92734b8e4ba96e444f38`: focused audio-lease/arithmetic tests **3 passed on Python 3.13 and 3 passed on Python 3.14** in both push run `44954318285` and PR run `44954327390`; compile steps PASS; staged-runtime PASS; integrated-regression still IN_PROGRESS. No merge-gate claim until it completes.
+- QA A5 race test is integrated in #2258 head 8eaf67f, with A5 UI lease 3.13/3.14 PASS. Separate QA #2265 is closed as superseded; the same test bytes are in the existing A5 workflow.
+- No local full Aii checkout, authenticated Redmi receipt, private LOG_PAGE opt-in or update consent. Installed phone SHA and updater consent UNKNOWN. REDMI_UNVERIFIED / NOT_RELEASED. No device action or user command.
