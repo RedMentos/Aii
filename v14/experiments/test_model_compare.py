@@ -1,8 +1,10 @@
 import hashlib
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from model_compare import compare, TASKS
 
@@ -19,13 +21,18 @@ class FakeModels:
 class FakeRunner:
     active = 0
     max_active = 0
+    generate_calls = 0
     outputs = {"p0_arithmetic_2_plus_2": "4", "source_exact_extraction": "Q7-19",
                "missing_information_abstention": "UNKNOWN", "constraint_reasoning": "A"}
     def __init__(self, home, role, model, cfg, purpose="generate"):
         type(self).active += 1
         type(self).max_active = max(type(self).max_active, type(self).active)
+        self.binary = os.environ.get("V13_LLAMA_SERVER", str(Path(home) / "bin" / "llama-server"))
+        self._loaded_binary = None
         self.last_metrics = {}
     def generate(self, messages, cancel, deadline, max_tokens=None, seed=13):
+        type(self).generate_calls += 1
+        self._loaded_binary = self.binary
         task = next(t for t in TASKS if t["prompt"] == messages[-1]["content"])
         self.last_metrics = {"status": "FINAL", "duration_s": 1.0, "ttft_s": 0.2,
                              "generated_tokens": 1, "prompt_tokens": 12,
@@ -70,6 +77,7 @@ class ModelCompareTests(unittest.TestCase):
             "quant_format": "Q4", "main_file": "base.gguf", "files": [self.base_spec]}}}
         FakeRunner.active = 0
         FakeRunner.max_active = 0
+        FakeRunner.generate_calls = 0
 
     def tearDown(self):
         self.tmp.cleanup()
@@ -184,6 +192,41 @@ class ModelCompareTests(unittest.TestCase):
         self.assertEqual(result["status"], "COMPARISON_COMPLETE")
         self.assertEqual(result["order"], "candidate-first")
         self.assertEqual(FakeRunner.max_active, 1)
+
+
+    def test_environment_override_to_different_binary_fails_closed(self):
+        other = self.home / "bin" / "other-llama-server"
+        other.write_text("#!/bin/sh\\nexit 0\\n")
+        other.chmod(0o755)
+        with patch.dict(os.environ, {"V13_LLAMA_SERVER": str(other)}):
+            with self.assertRaisesRegex(RuntimeError, "differs from verified installed binary"):
+                self.run_compare()
+        self.assertEqual(FakeRunner.generate_calls, 0)
+        self.assertEqual(FakeRunner.active, 0)
+
+    def test_environment_override_to_same_installed_binary_is_verified(self):
+        with patch.dict(os.environ, {"V13_LLAMA_SERVER": str(self.binary)}):
+            result = self.run_compare()
+        self.assertEqual(result["status"], "COMPARISON_COMPLETE")
+        self.assertEqual(result["runner"]["identity"], "MATCHED_INSTALLED_BINARY")
+        self.assertTrue(result["runner"]["launch_verified"])
+        self.assertEqual(result["runner"]["sha256"], hashlib.sha256(self.binary.read_bytes()).hexdigest())
+
+    def test_loaded_executable_change_aborts_comparison(self):
+        other = self.home / "bin" / "other-llama-server"
+        other.write_text("#!/bin/sh\\nexit 0\\n")
+        other.chmod(0o755)
+
+        class ChangedLoadedRunner(FakeRunner):
+            def generate(self, *args, **kwargs):
+                for token in super().generate(*args, **kwargs):
+                    self._loaded_binary = str(other)
+                    yield token
+
+        with self.assertRaisesRegex(RuntimeError, "loaded LlamaRunner executable changed"):
+            self.run_compare(runner_cls=ChangedLoadedRunner)
+        self.assertEqual(ChangedLoadedRunner.generate_calls, 1)
+        self.assertEqual(ChangedLoadedRunner.active, 0)
 
     def test_invalid_limits_rejected(self):
         with self.assertRaisesRegex(ValueError, "timeout"):
