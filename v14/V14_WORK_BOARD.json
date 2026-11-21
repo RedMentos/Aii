@@ -72,7 +72,7 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2148 current head fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5; exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed GitHub Actions run 44854338438: Python 3.13 59 passed (6.52s), Python 3.14 59 passed (8.81s), compile PASS. Only later commit is a next-action Markdown table refresh. CI/Linux synthetic T8 receipts only; local exact checkout BLOCKED; REDMI_UNVERIFIED.",
+      "proof_environment": "PR #2148 current head fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5; exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed GitHub Actions run 44854338438: Python 3.13 59 passed (6.52s), Python 3.14 59 passed (8.81s), compile PASS. Only later commit is a next-action Markdown table refresh. CI/Linux synthetic T8 receipts only; local exact checkout BLOCKED; REDMI_UNVERIFIED. Final GitHub readback before this board-only commit: PR #2148 head ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6; code/test tree e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed run 44854338438 (59 tests each on Python 3.13/3.14). This board update is documentation-only.",
       "next_step": "Independent review/merge #2143 -> #2147 -> #2148. Then port the digest-disjoint oldest-first T8 page and persistent cursor into #2145's postcommit Runtime consumer and invoke WorldJEPAStoreConsumer in SHADOW. #2145 currently has a test-schema mismatch (TemporalOutcomes record field is error, not prediction_error) and still uses newest-first latest-N scans; it does not yet invoke the trainable JEPA consumer. Measure new-cohort holdout utility and old-cohort retention under equal replay/no-replay budgets. Keep learning/optimizer gates closed by default.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21 PR #2148 latest exact CI PASS: 59 tests on Python 3.13/3.14; numeric WorldJEPA/EMA replay ablation remains synthetic/SHADOW; Runtime postcommit JEPA wiring open; no local exact-repo or Redmi proof.",
@@ -88,7 +88,7 @@
       "latest_followup_pr": {
         "pr": 2148,
         "branch": "jepa-memory/v14-action-conditioned-control-20261121",
-        "head_sha": "fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5",
+        "head_sha_at_readback": "ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6",
         "tested_sha": "e46b87d7d5cf1da31f58f6561d21193a4dfc9e87",
         "base_pr": 2147,
         "ci": "PASS_PY313_PY314_59_TESTS_RUN_44854338438",
