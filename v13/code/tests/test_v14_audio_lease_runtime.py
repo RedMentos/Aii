@@ -38,6 +38,7 @@ def test_staged_audio_lease_covers_bodies_and_complete_c3_then_revokes(tmp_path)
 import json
 import math
 import struct
+from pathlib import Path
 import sys
 import threading
 import time
@@ -171,7 +172,7 @@ question = (
 
 # Scenario 1: the same lease protects PCM admission, context reads, both bodies
 # and the entire C3 iterator. Revocation cannot complete during generation.
-home = sys.argv[1] + "/blocked"
+home = Path(sys.argv[1]) / "blocked"
 runtime = Runtime(home)
 provider = Provider()
 entered = threading.Event()
@@ -224,7 +225,7 @@ finally:
 
 # Scenario 2: a revoked receipt is rejected before the normal turn; text-only
 # chat remains available and no acoustic source is written.
-home = sys.argv[1] + "/pre-revoked"
+home = Path(sys.argv[1]) / "pre-revoked"
 runtime = Runtime(home)
 provider = Provider(active=False)
 provider.revoke()
