@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T19:59:38.997Z",
+  "updated_at": "2026-11-21T20:35:30.629Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -159,16 +159,24 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Perception #2246 latest branch head 80c74e6c69caa88d99dbae484c927cb35494fef4 contains a synthetic A5 UI lease adapter. Independent QA PR #2250 head 4d9a976d63d5d901a4892b01922e72886e24b638 reproduces a shared-blob deletion race on both Python3.13 and 3.14: a second live source row remains in SQLite after revocation unlinks its content-addressed blob, and Store.read_source raises FileNotFoundError. Current producer checks/writes the blob before Store.tx; revoker computes active refs inside tx and unlinks after the mutex is released. No Android OS provider/capture/action.",
-      "next_step": "Perception serializes blob existence/write + source/packet commit and tombstone/refcount/unlink under the same Store.mutex/SQLite critical section, including generic Store.source(). QA changes the race test to use a separate producer thread, proves it blocks while revocation owns the critical section, then verifies the new live SourceRef is readable on 3.13/3.14. Keep #2246 draft.",
+      "proof_environment": "Perception PR #2255 current branch head f8c08974a33d2192f6854c11452e49016c0453db: source publication, A5 producer and revocation blob lifecycle are serialized under the same Store RLock; deterministic generic Store.source() race regression added at ebcbca01d539f2b1a3a5eef8ac3c19e4d80e23a4 (observable producer lock attempt + blob-exists barrier, no scheduler sleep). Earlier code head d8f3494 passed focused A5 tests on CPython 3.13/3.14; exact current-head focused/staged/privacy workflows are pending at last readback. Core #2254 must compose the Store bytes into its source-lifecycle builder and recompute the downstream stage/deployer pin chain. Safe-additive remains FAIL_BY_POLICY; no bypass. Perception PR #2256 head 63b5410769b872ddb64e002ab1c764e9e90966af: opt-in NumPy autocorrelation backend; exact focused workflow 44946779051 PASS on Python 3.13/3.14 (compile, 42 tests each, deterministic synthetic benchmark, privacy); prosody, consent-revocation and WebRTC/libfvad workflows pass. Initial benchmark import failure was fixed by adding the script-relative code root. Staged/integrated workflow remains in progress; safe-additive policy review remains separate. LOCAL_LINUX full Aii checkout NOT_RUN (no checkout/DNS); copied-code x86 benchmark: 131.30 ms → 6.23 ms median per 1-s 16-kHz synthetic window (~21×), 100/100 synthetic parity, +12,038 bytes tracemalloc while NumPy preloaded. Official Termux python-numpy recipe checked at NumPy 2.5.5, BSD-3-Clause, Android aarch64 build path; no package installed. No Redmi/Termux measurement, microphone, Android provider, native model or learning claim. REDMI_UNVERIFIED / NOT_RELEASED.",
+      "next_step": "Core: compose the Perception #2255 Store.source()/A5 atomic-lock implementation into the current source-lifecycle builder, preserve the outer RLock in the semantic replacement, refresh and verify the complete recovery→stage→deployer pin chain, then rerun staged/integrated CI. QA: rebase #2250 onto #2255 and keep the deterministic separate-thread A5-to-A5 lock-attempt/blob-check regression; also review the generic Store.source() barrier on 3.13/3.14. Boss: review both PRs and resolve safe-additive policy without bypass. Core may test voice_backend='numpy' only as a separately authorized experimental device path after cold import, RSS, 40–100-ms latency and full-duplex measurements; installed Runtime default stays Python.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T18:05:08.230Z",
+      "last_checkpoint": "2026-11-21T20:35:30.629Z",
       "latest_candidate_pr": {
-        "pr": 2155,
-        "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
-        "merge_commit_sha": "c0cedbde718ede6107f4df1f1bf9c784df4e00cf",
-        "ci": "PASS_44862523075_8_TESTS_AND_44862523082_240_STAGED_415_INTEGRATED",
-        "scope": "additive RAW EAR acoustic-cue adapter only; no normal Runtime consumer"
+        "pr": 2255,
+        "head_sha": "f8c08974a33d2192f6854c11452e49016c0453db",
+        "code_fix_sha": "d8f3494e3ff516edc1da6dba525d1945751d4e3b",
+        "test_hardening_sha": "ebcbca01d539f2b1a3a5eef8ac3c19e4d80e23a4",
+        "ci": "CURRENT_HEAD_PENDING_A5_STAGE_INTEGRATION_PRIVACY; PRIOR_CODE_HEAD_FOCUSED_A5_PASS_PY313_PY314",
+        "status": "DRAFT_NOT_RELEASED_REDMI_UNVERIFIED"
+      },
+      "latest_audio_backend_pr": {
+        "pr": 2256,
+        "head_sha": "63b5410769b872ddb64e002ab1c764e9e90966af",
+        "ci": "PASS_44946779051_PY313_PY314_42_TESTS_EACH_PLUS_BENCHMARK_PRIVACY; STAGED_INTEGRATION_PENDING; SAFE_ADDITIVE_FAIL_BY_POLICY",
+        "benchmark": "SYNTHETIC_LOCAL_X86_131.30MS_TO_6.23MS_MEDIAN_100_OF_100_PARITY",
+        "status": "OPT_IN_ONLY_NOT_RELEASED_REDMI_UNVERIFIED"
       }
     },
     {
