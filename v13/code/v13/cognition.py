@@ -188,7 +188,6 @@ class Cognition:
         """Opt-in native llama_batch.embd receiver probe; never production B3 or learning."""
         from .models import model_key
         from .native_latent_receiver import probe as native_probe
-        from .common import file_hash
         if sender_role not in {"B1_DETAIL","B2_GIST"} or receiver_role not in {"B1_DETAIL","B2_GIST","C3_LANGUAGE"} or sender_role==receiver_role:
             raise ValueError("Native receiver roles must be distinct B1/B2 -> B1/B2/C3")
         if source_ref.get("source_id")!=e["source_ref"]["source_id"]:
@@ -209,8 +208,6 @@ class Cognition:
         main=installed.get("files",{}).get(installed.get("main_file"))
         if not isinstance(main,dict) or not isinstance(main.get("sha256"),str):
             raise ValueError("Receiver model manifest hash is missing")
-        if file_hash(model_path)!=main["sha256"]:
-            raise ValueError("Receiver model hash differs from its installed manifest")
         receipt=native_probe(
             home=self.r.home,model_path=model_path,expected_model_sha256=main["sha256"],
             sender_role=sender_role,receiver_role=receiver_role,
