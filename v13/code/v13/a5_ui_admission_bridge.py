@@ -42,7 +42,7 @@ _SCOPE_BY_METHOD = {
 }
 _REQUIRED = {
     "schema", "modality", "source_id", "capture_session_id", "consent_receipt_ref",
-    "capture_method", "capture_scope", "api_level", "event_kind", "start_ms", "end_ms",
+    "capture_method", "capture_scope", "api_level", "clock", "event_kind", "start_ms", "end_ms",
     "finality", "action_authority", "learning_authority", "raw_capture_persisted",
 }
 _OPTIONAL = {"accessibility_purpose"}
@@ -78,6 +78,8 @@ def validate_ui_observation(observation: dict) -> dict:
     api = observation.get("api_level")
     if type(api) is not int or not 1 <= api <= 99:
         raise ValueError("invalid Android API level")
+    if observation.get("clock") != "ELAPSED_REALTIME":
+        raise ValueError("UI observation timestamps must use Android elapsed realtime")
     if method == "NOTIFICATION_LISTENER" and api < 18:
         raise ValueError("NotificationListenerService requires API 18+")
     if method == "MEDIA_PROJECTION":
@@ -110,6 +112,7 @@ def _summary(observation: dict) -> str:
         + " method=" + observation["capture_method"]
         + " scope=" + observation["capture_scope"]
         + " api=" + str(observation["api_level"])
+        + " clock=ELAPSED_REALTIME"
         + " interval_ms=" + str(observation["end_ms"] - observation["start_ms"])
     )
 
@@ -307,6 +310,7 @@ def consume_ui_observation(runtime, observation, *, consent_lease: UIObservation
         "source_ref": source_ref,
         "start_ms": observation["start_ms"],
         "end_ms": observation["end_ms"],
+        "clock": observation["clock"],
         "finality": observation["finality"],
         "event_kind": observation["event_kind"],
         "capture_method": observation["capture_method"],
@@ -322,7 +326,8 @@ def consume_ui_observation(runtime, observation, *, consent_lease: UIObservation
         capture_session_id=observation["capture_session_id"],
         consent_receipt_ref=observation["consent_receipt_ref"],
         capture_method=observation["capture_method"],
-        capture_scope=observation["capture_scope"],
+        capture_scope=observation["capture_scope"], clock=observation["clock"],
+        finality=observation["finality"],
         action_authority=False, learning_authority=False,
     )
     validate("PerceptPacket", percept_packet)
