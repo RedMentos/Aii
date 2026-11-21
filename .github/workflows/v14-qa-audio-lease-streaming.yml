@@ -28,7 +28,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install focused CPU test dependencies
-        run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.2.6
+        run: >-
+          python -m pip install --disable-pip-version-check pytest==9.2.0
+          "numpy==2.2.6; python_version < '3.14'"
+          "numpy==2.5.5; python_version >= '3.14'"
       - name: Compile staged Runtime lease regression
         run: python -m py_compile v13/code/tests/test_v14_audio_lease_runtime.py
       - name: Run staged Runtime lease and revocation E2E
