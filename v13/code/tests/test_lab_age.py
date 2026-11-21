@@ -8,6 +8,8 @@ from v13 import lab_age, effort
 from v13.age import AgeControl
 from v13.config import initialize
 from v13.store import Store
+from v13.lab_age_runtime import LaboratoryAgeControl
+from v13.agi.tools import ToolRegistry
 
 
 class LabAgeTests(unittest.TestCase):
@@ -79,6 +81,45 @@ class LabAgeTests(unittest.TestCase):
         self.assertTrue(observed["lab_feature_test_requested"])
         self.assertEqual(observed["focal_depth"], 1)
         self.assertEqual(observed["autonomous_effort_max"], "low")
+
+    def test_age0_system_tool_cannot_be_approved_and_lab_right_is_rechecked(self):
+        registry = ToolRegistry(self.store, age=self.age)
+        registry.enable("sandbox_note")
+        denied = registry.call(
+            "sandbox_note", {"name": "age0", "text": "must not write"}, origin="SYSTEM"
+        )
+        self.assertEqual((denied["status"], denied["reason"]),
+                         ("DENIED", "AGE_RIGHT:simple_tool_choice"))
+        with self.assertRaises(ValueError):
+            registry.approve(denied["id"])
+        self.assertFalse((self.home / "data/tool_sandbox/age0.txt").exists())
+
+        lab_age.save(self.home, mode="active", stage=10)
+        lab = LaboratoryAgeControl(self.store, self.cfg)
+        registry = ToolRegistry(self.store, age=lab)
+        registry.enable("sandbox_note")
+        proposal = registry.call(
+            "sandbox_note", {"name": "revoked", "text": "must not write"}, origin="SYSTEM"
+        )
+        self.assertEqual(proposal["status"], "PROPOSED")
+        lab_age.save(self.home, mode="off", stage=10)
+        denied_after_revoke = registry.approve(proposal["id"])
+        self.assertEqual(denied_after_revoke["status"], "DENIED")
+        self.assertTrue(denied_after_revoke["reason"].startswith("AGE_RIGHT:"))
+        self.assertFalse((self.home / "data/tool_sandbox/revoked.txt").exists())
+
+        lab_age.save(self.home, mode="active", stage=10)
+        allowed_lab = LaboratoryAgeControl(self.store, self.cfg)
+        registry = ToolRegistry(self.store, age=allowed_lab)
+        registry.enable("sandbox_note")
+        proposal = registry.call(
+            "sandbox_note", {"name": "allowed", "text": "approved at X10"}, origin="SYSTEM"
+        )
+        self.assertEqual(proposal["status"], "PROPOSED")
+        executed = registry.approve(proposal["id"])
+        self.assertEqual(executed["status"], "EXECUTED")
+        self.assertEqual((self.home / "data/tool_sandbox/allowed.txt").read_text(), "approved at X10")
+        self.assertEqual(self.age.system_stage(), 0)
 
     def test_invalid_or_symlink_configuration_fails_closed(self):
         path = self.home / "config/lab-age.json"
