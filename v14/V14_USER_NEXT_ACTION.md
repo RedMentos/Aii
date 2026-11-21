@@ -768,3 +768,18 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 - Private owner-read [#403](https://github.com/RedMentos/Aiiii/issues/403) remains open with no response; installed SHA and updater consent are unknown. No UPDATE_REQUEST, shell action, model download/swap, permission change or phone mutation occurred.
 
 **User action required: none.** Do not run a new Termux command or change installed models, weights, permissions or data. The code branch is CI-green but not phone-verified; REDMI_UNVERIFIED remains the release status.
+
+
+# Current user-facing handoff — 2026-11-21 17:06 CET
+
+**No user action is required. Do not run another Termux installer or change models, weights, Age, permissions, updater settings or phone data.**
+
+- Current branch HEAD is `9d8f91960c568be7fe7dcf894555ce7250f635f4`, a documentation-only checkpoint. The latest code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`; its exact merge CI is **34/34 check-runs and 19/19 workflows SUCCESS**. The current documentation HEAD has **36/36 check-runs SUCCESS**. Neither is proof of installation on the Redmi.
+- The C4 source-span heuristic is now in the normal pinned stage/deployer. Its synthetic staged test passed **251 / 10 skipped / 47 subtests** and integrated regression **424 / 3 skipped / 58 subtests**. Native B1/B2 quality and true B3 latent coupling remain unverified.
+- Perception #2233's caller-PCM RAW EAR producer passes consent, temporal, VAD, privacy, staged and integrated CI, but remains draft: no microphone capture, normal Runtime consumer, native inference or Redmi proof. Core must connect it and hold consent through C3 generation.
+- Core #2230 is stale and its Python 3.13 staged test fails on an old `focal.py` source pin. JEPA #2231 has 4/11 checks green and 6 failures from stale nested builder/recovery pins; the old-phone migration test reports PARTIAL. Neither is released.
+- P0 #1904 remains open. No fresh phone evidence proves correct 2+2, useful native B1/B2 offers through C4→C3, 20 mixed turns, native latency/RSS or trained B3 latent exchange.
+- Existing private owner-read requests have no authenticated response; installed SHA and updater consent are unknown. **REDMI_UNVERIFIED.** No update request, remote shell or device action was performed.
+- The local full Aii suite could not run: no repository checkout is present and GitHub DNS resolution fails. GitHub Actions results are CI evidence only.
+
+Next work is internal: Core repairs the pin chain and connects the consent-bound audio producer; JEPA repairs the staged training-resume pin chain; Boss reviews only after exact-head CI and independent review. **No manual Termux command is needed now.**
