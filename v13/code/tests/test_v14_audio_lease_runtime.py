@@ -45,6 +45,7 @@ import time
 from contextlib import contextmanager
 from unittest.mock import Mock
 
+from v13.common import Cancelled
 from v13.inputs import last_context
 from v13.operator import Operator
 from v13.runtime import Runtime
@@ -119,6 +120,61 @@ def make_window(provider):
     }
 
 
+class TwoPhaseProvider(Provider):
+    """Provider contract: request cancellation before waiting for the held lease.
+
+    The legacy one-callback form is accepted only to make the missing phase
+    observable in the regression. The reviewed contract supplies both
+    on_revoke_requested and on_revoked callbacks.
+    """
+    def __init__(self, active=True):
+        super().__init__(active=active)
+        self.request_started = threading.Event()
+        self.request_count = 0
+        self.cleanup_lock_states = []
+
+    def subscribe(self, source_id, receipt, *callbacks):
+        if source_id != "mic-test-1" or receipt != "opaque-local-receipt":
+            raise ValueError("subscription scope mismatch")
+        if len(callbacks) == 1:
+            request_cancel, cleanup = None, callbacks[0]
+        elif len(callbacks) == 2:
+            request_cancel, cleanup = callbacks
+        else:
+            raise TypeError("two-phase subscription requires request and cleanup callbacks")
+        if cleanup is None or not callable(cleanup):
+            raise TypeError("post-revocation cleanup callback required")
+        if request_cancel is not None and not callable(request_cancel):
+            raise TypeError("pre-lock cancellation callback must be callable")
+        entry = (request_cancel, cleanup)
+        with self.callback_lock:
+            self.callbacks.append(entry)
+
+        def unsubscribe():
+            with self.callback_lock:
+                if entry in self.callbacks:
+                    self.callbacks.remove(entry)
+        return unsubscribe
+
+    def revoke(self):
+        with self.callback_lock:
+            callbacks = list(self.callbacks)
+            self.callbacks.clear()
+        # Phase 1: do not acquire the provider lock; the Runtime lease may hold it.
+        for request_cancel, _ in callbacks:
+            if callable(request_cancel):
+                self.request_count += 1
+                request_cancel()
+        self.request_started.set()
+        # Phase 2: wait for the Runtime lease to exit, then revoke authority.
+        with self.lock:
+            self.active = False
+        # Cleanup must run only after the provider guard is released.
+        for _, cleanup in callbacks:
+            self.cleanup_lock_states.append(self.lock.locked())
+            cleanup()
+
+
 def configure(runtime):
     runtime.sleep.cycle.set_policy("enabled", "off")
     runtime.cfg.update(
@@ -177,12 +233,12 @@ class Runner:
                     while self.release is not None and not self.release.wait(0.01):
                         if cancel is not None and cancel.is_set():
                             self.cancel_observed.set()
-                            return
+                            raise Cancelled("provider consent revoked")
                         if time.monotonic() >= cancel_deadline:
                             raise TimeoutError("test did not observe Runtime.cancel")
                     if cancel is not None and cancel.is_set():
                         self.cancel_observed.set()
-                        return
+                        raise Cancelled("provider consent revoked")
                 elif self.release is not None and not self.release.wait(8):
                     raise TimeoutError("test did not release the second C3 chunk")
                 yield "Second response chunk."
@@ -418,6 +474,111 @@ assert getattr(runtime, "_audio_contexts", {}) == {}
 assert getattr(runtime, "_audio_revocation_contexts", {}) == {}
 with provider.callback_lock:
     assert provider.callbacks == []
+
+# Scenario 5: the provider's pre-lock request callback cancels the active C3
+# stream, allowing the lease to release before the provider obtains its guard.
+home = Path(sys.argv[1]) / "prelock-revocation"
+runtime = Runtime(home)
+provider = TwoPhaseProvider()
+entered = threading.Event()
+first_chunk = threading.Event()
+finished = threading.Event()
+cancel_observed = threading.Event()
+release = threading.Event()
+revoke_started = threading.Event()
+revoke_finished = threading.Event()
+seen = {}
+revoker = None
+try:
+    configure(runtime)
+    runners = {
+        role: Runner(
+            role, seen,
+            entered if role == "C3_LANGUAGE" else None,
+            release if role == "C3_LANGUAGE" else None,
+            first_chunk if role == "C3_LANGUAGE" else None,
+            finished if role == "C3_LANGUAGE" else None,
+            cancel_observed if role == "C3_LANGUAGE" else None,
+        )
+        for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")
+    }
+    runtime.pool.get = Mock(side_effect=lambda role: runners[role])
+    runtime.submit(question, audio_window=make_window(provider))
+    assert entered.wait(30), "two-phase revoke test did not reach C3"
+    assert first_chunk.wait(5), "two-phase revoke test did not stream first chunk"
+
+    def revoke():
+        revoke_started.set()
+        provider.revoke()
+        revoke_finished.set()
+
+    revoker = threading.Thread(target=revoke, daemon=True)
+    revoker.start()
+    assert revoke_started.wait(5)
+    assert provider.request_started.wait(5), "provider did not issue pre-lock revoke request"
+    assert cancel_observed.wait(5), (
+        "provider revoke request did not cancel the matching C3 turn before waiting for its guard"
+    )
+    assert finished.wait(5), "C3 iterator did not exit after pre-lock cancellation"
+    deadline = time.monotonic() + 30
+    while not runtime.idle() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert runtime.idle(), "pre-lock-cancelled audio turn did not settle"
+    assert revoke_finished.wait(5), "provider revoke did not complete after C3 released its lease"
+    revoker.join(timeout=5)
+    assert runtime.last_answer()["status"] == "CANCELLED"
+    assert provider.request_count == 1
+    assert provider.cleanup_lock_states == [False], provider.cleanup_lock_states
+    rows = runtime.store.rows(
+        "SELECT deleted FROM sources WHERE kind='AUDIO_ACOUSTIC_CONTEXT'"
+    )
+    assert rows and all(row["deleted"] == 1 for row in rows), rows
+    saved_context = last_context(runtime.store, runtime.session)
+    assert saved_context and saved_context["messages"] is None and saved_context["preview"] == ""
+    # Revocation must not poison subsequent ordinary text chat.
+    runtime.pool.get = Mock(side_effect=lambda role: Runner(role, seen))
+    runtime.submit(question)
+    deadline = time.monotonic() + 30
+    while not runtime.idle() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert runtime.idle() and runtime.last_answer()["status"] == "FINAL"
+    text_context = last_context(runtime.store, runtime.session)
+    assert text_context and text_context["messages"] is not None
+    assert "RAW_EAR_ACOUSTIC" not in json.dumps(text_context["messages"], ensure_ascii=False)
+finally:
+    release.set()
+    runtime.close()
+    if revoker is not None:
+        revoker.join(timeout=5)
+
+# Scenario 6: without a revocation subscription the audio side-channel is
+# dropped, while the ordinary text request still completes normally.
+home = Path(sys.argv[1]) / "missing-revocation-subscription"
+runtime = Runtime(home)
+provider = Provider()
+seen = {}
+try:
+    configure(runtime)
+    runners = {
+        role: Runner(role, seen)
+        for role in ("B1_DETAIL", "B2_GIST", "C3_LANGUAGE")
+    }
+    runtime.pool.get = Mock(side_effect=lambda role: runners[role])
+    window = make_window(provider)
+    window.pop("consent_revocation_subscribe")
+    runtime.submit(question, audio_window=window)
+    deadline = time.monotonic() + 30
+    while not runtime.idle() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert runtime.idle() and runtime.last_answer()["status"] == "FINAL"
+    assert "audio_context" not in json.dumps(seen["B1_DETAIL"], ensure_ascii=False)
+    assert "audio_context" not in json.dumps(seen["B2_GIST"], ensure_ascii=False)
+    assert "RAW_EAR_ACOUSTIC" not in json.dumps(seen["C3_LANGUAGE"], ensure_ascii=False)
+    assert runtime.store.rows(
+        "SELECT id FROM sources WHERE id='mic-test-1' OR kind='AUDIO_ACOUSTIC_CONTEXT'"
+    ) == []
+finally:
+    runtime.close()
 
 print("PASS: staged A5 -> B1/B2 -> multi-chunk C3 lease spans iterator; Runtime.cancel and Runtime.close release lease for revocation; tombstones, unsubscribe and text fallback stay safe")
 '''
