@@ -615,3 +615,32 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 - Core PR [#2158](https://github.com/RedMentos/Aii/pull/2158), exact inspected head `79e7ffa7b5f81a4f3ac003c5ae34ee412baa04c6`: staged voice job fails on both Python 3.11 and 3.13 at one stale assertion expecting one total `PerceptPacket`. The normal text perception path and RAW EAR audio path each persist a different modality. QA review asks for exactly one text + one audio packet and a raw-PCM absence scan across all packet payloads; do not remove text perception to satisfy the count. Staged/integrated generic regression passes 240/415.
 - Existing private owner-read request `RedMentos/Aiiii#368` remains OPEN with zero comments. Installed Redmi SHA and updater consent remain UNKNOWN. No duplicate read request, UPDATE_REQUEST, shell action, device update, model/permission change or user-data mutation was performed.
 - **User action: none.** Keep `REDMI_UNVERIFIED`; wait for the existing owner-read receipt. Next code actions are Boss sync/review of #2163 and Core correction of #2158's modality-count regression.
+
+---
+
+# JEPA/Memory checkpoint — 2026-11-21 13:05 CET
+
+## Verified candidate and test state
+- Additive stacked PR #2205: https://github.com/RedMentos/Aii/pull/2205
+- Exact branch head: 2b184be394c57316b1dd827334fd00fe5a310467
+- Depends on the production optimizer-resume candidate branch for #2198; not independently mergeable into the release product until that dependency is reviewed/integrated.
+- Checkpoint publication now uses hardlink first, then atomic renameat2(RENAME_NOREPLACE) only on EPERM/EACCES. It verifies inode/size/SHA256, rejects target races, fsyncs the directory, and rolls back only its own published inode on durability/verification failure.
+- The nested source pins were updated bottom-up after the first Python 3.14 run exposed the stale checkpoint SHA: integrated resume builder, Termux recovery builder, stage builder, runtime deploy stager.
+
+## Exact CI evidence (GitHub Actions / Linux)
+- Run 44906518932: staged-runtime 249 passed / 10 skipped / 47 subtests; integrated-regression 419 passed / 3 skipped / 58 subtests.
+- Run 44906518952: Python 3.14 optimizer-resume — 15 disposable cases, 16 postcommit Runtime tests and 1 outer stage test passed.
+- Run 44906518912: JEPA checkpoint retention 21 passed.
+- Run 44906518903: runtime deployment integrity SUCCESS.
+- Run 44906518929: two-checkout migration 2 passed.
+- Run 44906518895: private owner-read bootstrap CI jobs succeeded; this is not a live phone receipt.
+- The earlier 44906285753 failure was a stale nested source-pin mismatch; the exact chain was corrected and the later runs above passed.
+
+## Environment boundaries
+- LOCAL_LINUX isolated no-replace helper: PASS on Python 3.13.5 / x86_64 for EPERM fallback, EEXIST target race, inode/hash readback, directory-fsync rollback and temp cleanup.
+- Full local checkout/exact local pytest: BLOCKED by github.com DNS resolution failure. No full local Runtime pass is claimed.
+- Redmi/Termux ARM64: REDMI_UNVERIFIED; no fresh private owner receipt, installed SHA, filesystem test, deployment or model/weight action. The candidate is NOT_RELEASED.
+- P0 #1904 correct/fast real chat and B1/B2 -> C4 -> C3 delivery remain OPEN.
+
+## User action
+None. Do not run a manual Termux command, request a model swap, or change learning/optimizer permissions from this CI result. Boss/QA should review #2205 after #2198, then update the shared board/workplan and only use an already-authorized updater after a separate verified device receipt.
