@@ -51,3 +51,10 @@ After this PR is reviewed, compose this consumer with the #2135 exact-once Onlin
 - Cross-lane runtime PR #2145 exact T8 workflow run 44853558359 compiled and passed 52 V14 learning tests but failed one of four Runtime tests because it indexes record["prediction_error"]; the persisted TemporalOutcomes dataclass field is error and the derived learning-intent field is prediction_error. A review comment also records that #2145 still uses newest-first world_model.transitions(limit=64) without the persistent oldest-first cursor, and currently records SHADOW outcomes with weight_updates=0 rather than invoking the JEPA consumer.
 - Local full-repository test remains BLOCKED because this container cannot resolve github.com; CI/Linux is the only new execution proof. Phone receipt remains UNKNOWN / REDMI_UNVERIFIED. No Android test, update, model swap, permission change or optimizer activation occurred.
 - Next integration: independent review of #2143→#2147→#2148, then compose the digest-disjoint oldest-first receipt page/cursor into #2145's postcommit Runtime consumer and invoke the Store-backed WorldJEPA learner in SHADOW. Keep learning_enabled and optimizer permission closed by default until the user/device opt-in path is explicitly wired and tested.
+
+
+## Final PR-head and CI readback — 2026-11-21
+
+- Code/test head remains 10e058a7418a5356b96f22f5344a5a3384f96214. The full docs/board/coverage update head 3d8e55441d208eb8aec76cd121cc9f068376a88c was tested by exact GitHub Actions run 44854219157: Python 3.13 59 passed in 8.18s; Python 3.14 59 passed in 7.74s; compile and both jobs PASS.
+- Current PR #2148 head is 6fec2dec1534285b654db60349efcd81f81b846c. The only commit after the tested 3d8e head is a research-ledger-only addition documenting JEPA-TTT's replay/retention limitations; no code or tests changed after the tested head. PR remains open and mergeable, stacked on #2147.
+- No local exact-repository run, Android install, Redmi receipt, native GGUF change or release is claimed. REDMI_UNVERIFIED; RELEASE_SHA=NOT_RELEASED.
