@@ -685,7 +685,51 @@
       "enabled": false
     }
   ],
-  "latest_checkpoint": "2026-11-21T23:54:03.290Z",
+  "latest_checkpoint": {
+    "timestamp": "2026-11-21T23:54:34.497Z",
+    "boss_branch": "boss/v14-core-perception-store-audio-integration-20261121",
+    "boss_head": "9922cf86ecf8801d30a46a1e98817e5c6c1db092",
+    "code_candidate_sha": "9922cf86ecf8801d30a46a1e98817e5c6c1db092",
+    "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
+    "release_development_head": "bdcad466ffea75a2b41f7d23be168f53c7197d20",
+    "release_status": "NOT_RELEASED",
+    "last_accepted_code_release": "f279286a4453248004c670fcaabecd85da6ab299",
+    "redmi_status": "REDMI_UNVERIFIED",
+    "private_owner_read_issue": 447,
+    "private_owner_read_authenticated_reply": false,
+    "local_full_checkout": "BLOCKED_NO_LOCAL_AII_CHECKOUT",
+    "user_action_required": false,
+    "current_head_checks": {
+      "total": 14,
+      "completed_success": 12,
+      "completed_failure": 0,
+      "in_progress": 0,
+      "skipped": 2,
+      "cancelled": 0,
+      "read_at": "2026-11-21T23:54:34.497Z",
+      "head": "9922cf86ecf8801d30a46a1e98817e5c6c1db092"
+    },
+    "research_ledger_blob": "67284d44068adfd644b65199898337c6876e4d86",
+    "research_handoff": "v14/handoffs/RESEARCH_PERCEPTION_LATENT_PLASTICITY_20261121.md",
+    "research_integrated_from_closed_draft_pr": 2260,
+    "changed_files": 62,
+    "research_integrated_at": "2026-11-21T22:29:39.614Z",
+    "research_pr2260_state": "CLOSED_DRAFT_NOT_MERGED_CONTENT_INTEGRATED",
+    "integration_stack": {
+      "core_pr": 2278,
+      "boss_pin_repair_pr": 2279,
+      "current_stack_head": "bbe026504618000460e5e3885c621c70e1022725",
+      "current_head_checks": {
+        "total": 5,
+        "completed_success": 0,
+        "completed_failure": 0,
+        "in_progress": 0,
+        "queued": 5,
+        "read_at": "2026-11-21T23:54:34.497Z"
+      },
+      "release_status": "NOT_RELEASED"
+    }
+  },
   "capability_matrix": [
     {
       "capability": "BRAIN_ORGANS_A0_A5_B1_B2_B3_B4_C_JEF",
