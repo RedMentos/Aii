@@ -6,6 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from v13 import audio_voice_cues as audio_voice_cues_module
 from v13.audio_voice_cues import (
     consume_pcm16_voice_window,
     extract_voice_cues,
@@ -23,6 +24,23 @@ def tone(frequency=140, sample_rate=16000, seconds=1.0, amplitude=6000):
     samples = [int(amplitude * math.sin(2 * math.pi * frequency * i / sample_rate))
                for i in range(count)]
     return struct.pack("<" + "h" * count, *samples)
+
+
+def sweep_tone(start_hz=110, end_hz=240, sample_rate=16000, amplitude=6000):
+    phase = 0.0
+    samples = []
+    for index in range(sample_rate):
+        frequency = start_hz + (end_hz - start_hz) * (index / sample_rate)
+        phase += 2 * math.pi * frequency / sample_rate
+        samples.append(int(amplitude * math.sin(phase)))
+    return struct.pack("<" + "h" * len(samples), *samples)
+
+
+def amplitude_burst(sample_rate=16000):
+    samples = [int((2000 if i < sample_rate // 2 else 10000)
+                   * math.sin(2 * math.pi * 140 * i / sample_rate))
+               for i in range(sample_rate)]
+    return struct.pack("<" + "h" * len(samples), *samples)
 
 
 def white_noise(sample_rate=16000, seconds=1.0, amplitude=4000):
@@ -81,6 +99,25 @@ def test_pitch_estimate_is_stable_across_supported_sample_rates():
         assert cues["f0_median_hz"] is not None and 160 <= cues["f0_median_hz"] <= 200
 
 
+def test_prosody_change_tracks_pitch_and_energy_dynamics_not_noise():
+    flat = extract_voice_cues(tone(140), 16000)
+    sweep = extract_voice_cues(sweep_tone(), 16000)
+    burst = extract_voice_cues(amplitude_burst(), 16000)
+    noise = extract_voice_cues(white_noise(), 16000)
+    assert flat["prosody_change_score"] < 0.05
+    assert sweep["prosody_change_score"] > 0.6
+    assert burst["prosody_change_score"] > 0.6
+    assert noise["activity_hint"] == "UNVOICED_NOISE"
+    assert noise["prosody_change_score"] == 0.0
+
+
+def test_prosody_change_is_rejected_without_voiced_activity():
+    cues = extract_voice_cues(white_noise(), 16000)
+    cues["prosody_change_score"] = 0.2
+    with pytest.raises(ValueError, match="prosody change requires voiced activity"):
+        validate_voice_cues(cues)
+
+
 def test_extractor_rejects_audio_windows_over_one_second():
     with pytest.raises(ValueError, match="limited to one second"):
         extract_voice_cues(tone(seconds=1.1), 16000)
@@ -98,22 +135,52 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path)
         )
         segment = result["packet"]["segments"][0]
         cues = segment["acoustic"]["voice_cues"]
+        assert result["status"] == "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION"
         assert result["a4"]["voice_activity_hint"] == "VOICED"
+        assert result["a4"]["prosody_change_score"] == cues["prosody_change_score"]
         assert result["a4"]["learning_authority"] is False
         assert result["a4"]["action_authority"] is False
         assert result["c3_admission"].status == "ADMITTED"
         summary = result["c3_admission"].selected[0].summary
         assert "activity=VOICED" in summary and "f0_med_hz=" in summary
+        assert "prosody_change=" in summary
         assert segment["asr_transcript"] is None
         assert segment["learning_authority"] is False
         assert segment["action_authority"] is False
         assert "speaker_identity" in segment["unmeasured"]
         assert "speaker_id" not in cues and "speaker_identity" not in cues
-        assert cues["method"] == "RAW_EAR_AUTOCORR_V1"
+        assert cues["method"] == "RAW_EAR_AUTOCORR_V2"
         assert packet_count(runtime.store, event["event_id"]) == 1
         assert attention_count(runtime.store, event["event_id"]) == 1
         digest = result["packet"]["source_ref"]["sha256"]
         assert not (tmp_path / "data" / "blobs" / digest).exists()
+    finally:
+        runtime.store.close()
+
+
+def test_prosody_dynamics_reach_a4_attention_and_c3_summary(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    observed = {}
+
+    class CaptureAttention:
+        def modulate(self, event_id, sal=None):
+            observed.update(sal or {})
+            return {"captured": True}
+
+    monkeypatch.setattr(audio_voice_cues_module.attctl, "controller", lambda runtime: CaptureAttention())
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, sweep_tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, finality="FINAL", token_budget=512,
+        )
+        score = result["a4"]["prosody_change_score"]
+        assert score > 0.6
+        assert observed["novelty"] >= 0.9 * score
+        assert observed["external_interrupt"] >= 0.25 * score
+        assert result["a4"]["attention"] == {"captured": True}
+        assert "prosody_change=" in result["c3_admission"].selected[0].summary
     finally:
         runtime.store.close()
 
