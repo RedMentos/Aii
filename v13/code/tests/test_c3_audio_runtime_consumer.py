@@ -380,7 +380,12 @@ def test_normal_runtime_turn_delivers_voice_cues_to_b1_b2_and_c3(tmp_path):
         packet_rows = runtime.store.rows(
             "SELECT payload FROM packets WHERE kind='PerceptPacket'"
         )
-        assert len(packet_rows) == 1
-        assert window["pcm16"].hex() not in packet_rows[0]["payload"]
+        packets = [json.loads(row["payload"]) for row in packet_rows]
+        audio_packets = [packet for packet in packets if packet.get("modality") == "audio"]
+        text_packets = [packet for packet in packets if packet.get("modality") == "text"]
+        # The normal text percept must remain; the audio percept is additive.
+        assert len(text_packets) == 1
+        assert len(audio_packets) == 1
+        assert window["pcm16"].hex() not in json.dumps(audio_packets[0], ensure_ascii=False)
     finally:
         runtime.close()
