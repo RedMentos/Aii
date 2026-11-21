@@ -1,3 +1,15 @@
+# Current user-facing handoff — 2026-11-21 18:21 CET
+
+**No user action is needed. Do not run a Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**
+
+- JEPA PR #2237 is OPEN/DRAFT, stacked on #2231. Current PR branch head: `808751bf7d029629fb9f2781f8880551b942b04a` (docs-only handoff sync); code-bearing candidate head: `07f78312eb126b58e65980f67dc24a91bfab7416`.
+- The code candidate adds bounded optimizer update-scale backtracking `[1.0, 0.5, 0.25, 0.125, 0.0625]`; every attempt reloads the same persisted checkpoint and uses the same data/step budget. Acceptance still requires new-task holdout improvement, old-task holdout non-degradation, and shuffled/zero-action negative-control separation. The staged clone guard permits only validated optional `_last_gradient_projection` telemetry while requiring canonical `_training_state`.
+- **Exact-head verification is pending.** No CI check-run is attached to the new branch head. The previous code head `d91f4683fe96619efa94b5fcd64bc1f55e9c39ec` failed Python 3.13/3.14 retention and staged second-update clone tests. Full local Aii tests are BLOCKED because this worker has no checkout and GitHub DNS is unavailable. Do not call the new candidate passing.
+- The PR is not integrated or released. No Redmi deployment/update was attempted. Installed SHA and updater consent are UNKNOWN; **REDMI_UNVERIFIED**. No model, weight, permission, Age or user data changed.
+- Next internal action: Boss/QA trigger exact-head CI and update the parent-owned recovery-builder/stager pins; JEPA inspects the exact logs and continues restart/retention/rollback validation. **No user action is needed.**
+
+---
+
 # Current user-facing handoff — 2026-11-21 19:19 CET
 
 **No user action is needed. Do not run a Termux installer, request a model swap, or change permissions, Age, weights, updater settings or phone data.**

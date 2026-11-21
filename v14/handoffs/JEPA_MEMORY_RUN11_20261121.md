@@ -97,3 +97,5 @@ The current retention gate uses the prior aggregate holdout, not stable source/s
 - JEPA did not change the parent-owned `termux_runtime_recovery_candidate.py` or `stage_integrated_candidate.py` pins. The PR is stacked; Boss/Core/QA must update the parent pin chain on its owning integration branch after reading the CI SHA diagnostic.
 - Next: trigger exact-head Python 3.13/3.14, staged-runtime and integrated checks; inspect failures; then report parameter/EMA/optimizer diffs, disjoint holdout utility, restart, retention and rollback. Keep learning/optimizer gates OFF until the full evidence passes.
 
+
+- Current PR branch head after the documentation sync is `808751bf7d029629fb9f2781f8880551b942b04a` (docs-only); the code-bearing candidate remains `07f78312eb126b58e65980f67dc24a91bfab7416`.
