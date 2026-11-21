@@ -386,8 +386,7 @@ class Runtime:
             from .output_policy import match
             mark('policy_check');fixed_policy=match(self.store,text)
             from .arithmetic_reflex import exact_arithmetic
-            arithmetic_evidence=None if fixed_policy else exact_arithmetic(text)
-            arithmetic_answer=arithmetic_evidence['result'] if arithmetic_evidence is not None else None
+            arithmetic_answer=None if fixed_policy else exact_arithmetic(text)
             mark('perception_and_state')
             if fixed_policy or arithmetic_answer is not None:
                 self.store.add_packet('PerceptPacket',packet('PerceptPacket','A5_PERCEPT',eid,g,[e['source_ref']],source_ref=e['source_ref'],segments=segments(text,e['source_ref'],240,percept_mode(self.cfg)),modality='text'))
@@ -432,7 +431,7 @@ class Runtime:
                 meta['context_source_refs']=refs
             elif arithmetic_answer is not None:
                 direct=True;route='simple';meta['route']={'source':'EXACT_ARITHMETIC_REFLEX'}
-                meta['arithmetic_reflex']={'source_ref':e['source_ref'],'operands':arithmetic_evidence['operands'],'operator':arithmetic_evidence['operator'],'result':arithmetic_answer,'bounded':True,'model_generated':False}
+                meta['arithmetic_reflex']={'source_ref':e['source_ref'],'result':arithmetic_answer,'bounded':True,'model_generated':False}
                 meta.update(output_authority='LOCAL_EXACT_ARITHMETIC',skipped_native_stages=['A3_NATIVE_ALIGNMENT','SEMANTIC_RECALL','C2_CONTROL','B_OBSERVERS','C3_DECODE','NATIVE_WORLD_PREDICTION'])
             elif exact:direct=True;route='simple';meta['route']={'source':'EXPLICIT_EXACT_COPY'}
             else:  # WP-T6: a trusted route-only skill routes before C_fast (no Needle call); else the full path
