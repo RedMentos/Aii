@@ -1,0 +1,89 @@
+name: V14 native latent receiver
+
+on:
+  push:
+    branches:
+      - core/v14-native-latent-receiver-20261121
+  pull_request:
+    branches:
+      - gpt6/v13-private-remote-bridge-20261111
+    paths:
+      - "v13/code/native/latent_receiver/**"
+      - "v13/code/v13/native_latent_receiver.py"
+      - "v13/code/v13/contracts.py"
+      - "v13/code/v13/cognition.py"
+      - "v13/code/v13/callosum.py"
+      - "v13/code/v13/runtime.py"
+      - "v13/code/tests/test_native_latent_receiver*.py"
+      - ".github/workflows/v14-native-latent-receiver.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  linux-pinned-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout exact llama.cpp API revision
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/llama.cpp
+          ref: b29c606e28a01b1bc8c1351026a0fa6e616bf6c4
+          path: third_party/llama.cpp
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Runtime and contract regressions
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m py_compile v13/code/v13/native_latent_receiver.py v13/code/v13/contracts.py v13/code/v13/cognition.py v13/code/v13/callosum.py v13/code/v13/runtime.py
+          python -m pytest -q v13/code/tests/test_native_latent_receiver.py v13/code/tests/test_native_latent_receiver_runtime.py v13/code/tests/test_callosum.py
+      - name: Build against pinned llama.cpp C API
+        run: |
+          cmake -S v13/code/native/latent_receiver -B build-native \
+            -DLLAMA_CPP_DIR="$GITHUB_WORKSPACE/third_party/llama.cpp" \
+            -DV14_LLAMA_REVISION=b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DGGML_NATIVE=OFF \
+            -DGGML_OPENMP=OFF
+          cmake --build build-native --target native_latent_receiver -j2
+          build-native/bin/native_latent_receiver --selftest
+          build-native/bin/native_latent_receiver --version
+      - name: Verify install layout without installing into a user runtime
+        run: |
+          cmake --install build-native --prefix "$RUNNER_TEMP/v14-native-install"
+          test -x "$RUNNER_TEMP/v14-native-install/bin/native_latent_receiver"
+
+  android-arm64-cross-compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout exact llama.cpp API revision
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/llama.cpp
+          ref: b29c606e28a01b1bc8c1351026a0fa6e616bf6c4
+          path: third_party/llama.cpp
+          persist-credentials: false
+      - uses: android-actions/setup-android@v3
+      - name: Install Android NDK
+        run: sdkmanager "ndk;27.2.12479018"
+      - name: Cross-compile Android arm64-v8a
+        run: |
+          cmake -S v13/code/native/latent_receiver -B build-android \
+            -DLLAMA_CPP_DIR="$GITHUB_WORKSPACE/third_party/llama.cpp" \
+            -DV14_LLAMA_REVISION=b29c606e28a01b1bc8c1351026a0fa6e616bf6c4 \
+            -DCMAKE_TOOLCHAIN_FILE="$ANDROID_HOME/ndk/27.2.12479018/build/cmake/android.toolchain.cmake" \
+            -DANDROID_ABI=arm64-v8a \
+            -DANDROID_PLATFORM=android-26 \
+            -DANDROID_STL=c++_static \
+            -DGGML_NATIVE=OFF \
+            -DGGML_OPENMP=OFF \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-android --target native_latent_receiver -j2
+          test -f build-android/bin/native_latent_receiver
