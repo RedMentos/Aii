@@ -12,6 +12,7 @@ from v13.config import initialize
 from v13.store import Store
 from v13.agi.curiosity import Curiosity
 from v13.agi.goals import GoalStore, MAX_DEPTH
+from v13.agi.base import learning_limit
 
 
 class LabAgeTests(unittest.TestCase):
@@ -195,7 +196,6 @@ class LabAgeTests(unittest.TestCase):
             def random(self):
                 return 0.0
 
-        from v13.agi.base import learning_limit
         curiosity = Curiosity(self.store, self.age, rng=AlwaysExplore())
         curiosity.observe("math", 0.4)
         self.assertEqual(learning_limit(self.age, "exploration_rate", 0.0, capability="tool"), 0.0)
