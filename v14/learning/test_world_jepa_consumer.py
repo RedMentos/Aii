@@ -126,6 +126,8 @@ def test_real_store_t8_to_world_jepa_ema_b1_b2_restart_replay_and_rollback(tmp_p
         assert metrics["parameter_delta_norm"] > 0
         assert metrics["ema_target_delta_norm"] > 0
         assert metrics["holdout_improved"] is True
+        assert metrics["old_holdout_retained"] is True
+        assert metrics["retention_gate_accepted"] is True
         assert metrics["negative_controls_separated"] is True, {key: metrics[key] for key in ("holdout_loss_after", "shuffled_action_holdout_loss", "zero_action_holdout_loss", "holdout_loss_delta")}
         assert metrics["holdout_loss_delta"] < 0
         assert metrics["optimizer_moments_persisted"] is False
@@ -208,6 +210,48 @@ def test_world_jepa_consumer_requires_both_local_learning_gates(tmp_path):
         assert store.state("v14.world_jepa.store_consumer", None)[0] is None
     finally:
         store.close()
+
+def test_utility_gate_rejects_old_holdout_regression_even_when_new_holdout_improves(tmp_path, monkeypatch):
+    store, session = _make_store(tmp_path / "brain-retention-gate")
+    checkpoint_dir = tmp_path / "private-retention-gate"
+    try:
+        _add_transitions(store, session, 0, 256)
+        consumer = WorldJEPAStoreConsumer(
+            store, checkpoint_dir, learning_enabled=True, seed=13, ensemble=2
+        )
+        first = consumer.update(limit=256, steps=120, optimizer_permission=True)
+        assert first["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        previous_sha = first["checkpoint_sha256"]
+
+        _add_transitions(store, session, 256, 32)
+        # Calls are: new holdout before, old holdout before, new holdout after,
+        # shuffled-action control, zero-action control, old holdout after.
+        losses = iter((1.0, 0.5, 0.4, 0.8, 0.7, 0.6))
+        with monkeypatch.context() as patch:
+            patch.setattr(world_jepa.WorldJEPA, "partial_fit", lambda self, *args, **kwargs: None)
+            patch.setattr(
+                world_jepa.WorldJEPA, "prediction_loss",
+                lambda self, *args, **kwargs: next(losses),
+            )
+            rejected = consumer.update(limit=288, steps=8, optimizer_permission=True)
+
+        assert rejected["status"] == "UTILITY_GATE_REJECTED"
+        assert rejected["holdout_improved"] is True
+        assert rejected["negative_controls_separated"] is True
+        assert rejected["old_holdout_retained"] is False
+        assert rejected["retention_gate_accepted"] is False
+        assert rejected["utility_gate_accepted"] is False
+        assert rejected["old_holdout_loss_before"] == 0.5
+        assert rejected["old_holdout_loss_after"] == 0.6
+
+        payload, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert payload["active"]["checkpoint_sha256"] == previous_sha
+        assert payload["scan_cursor"] == 288
+        assert len(payload["pending_rows"]) == 32
+        assert len(list(checkpoint_dir.glob("jepa-*.npz"))) == 1
+    finally:
+        store.close()
+
 
 def test_utility_gate_rejects_non_improving_update_and_waits_for_new_data(tmp_path, monkeypatch):
     store, session = _make_store(tmp_path / "brain-utility-gate")
