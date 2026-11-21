@@ -76,7 +76,7 @@
       "proof_environment": "Current shared-doc branch head 9d8f91960c568be7fe7dcf894555ce7250f635f4; code-bearing release remains f279286a4453248004c670fcaabecd85da6ab299. PR #2231 is rebased on that head at ac92200699e2838d99ccd3dd7036debf2a755414. It adds an experimental runtime-selectable predictor-only adaptation mode after an initial full encoder/EMA bootstrap, per-parameter Adam bias-correction clocks with legacy checkpoint readback, and a 4-arm × 3-seed A→B→A replay comparison. First CI attempt exposed stale source pins in the exact staged consumer chain; pins were recomputed and readback-verified. Latest Python 3.13/3.14, staged and integrated CI is queued/in progress; no pass is claimed yet. Local full checkout remains BLOCKED because github.com DNS is unavailable. GitHub Linux CI only; no Redmi proof, native GGUF update or user data/model change.",
       "next_step": "JEPA: finish exact Python 3.13/3.14 predictor-only resume and four-arm A→B→A CI plus staged/integrated regression. Inspect each arm's disjoint A/B holdouts, parameter/EMA deltas, negative controls, checkpoint restart and rollback; do not enable runtime gates or promote predictor-only as default unless utility and all-cohort retention are demonstrated. Then connect the accepted source-bound learning intent to the actual World/Memory and B1/B2 consumers without claiming native body-weight edits.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 17:10 UTC — PR #2231 rebased; exact CI pending",
+      "last_checkpoint": "2026-11-21 16:10 UTC — PR #2231 rebased; exact CI pending",
       "latest_candidate_pr": {
         "pr": 2231,
         "branch": "jepa-memory/v14-store-aba-current-20261121-run11b",
