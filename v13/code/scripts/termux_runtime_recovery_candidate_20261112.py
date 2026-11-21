@@ -65,10 +65,25 @@ def build_sources(code_dir, *, include_postcommit=True):
     if hashlib.sha256(context).hexdigest() != 'e4962d932294490b8f4b63a79115212a7000285290444484ec3bf7e50b243cad':
         raise ValueError('Integrated ContextOS output changed')
     recall = result['v13/context_source_recall_candidate.py']
-    if hashlib.sha256(recall).hexdigest() != '7f73ec6c4a15e6790a40e7f94d4a0bc5f2fba63bfc23c9368286aa2d83457d7c':
-        raise ValueError('Integrated source recall changed')
+
+    def recall_pin(raw, name):
+        needle = b"    '" + name.encode('ascii') + b"': '"
+        if raw.count(needle) != 1:
+            raise ValueError('Integrated source recall pin ambiguous: ' + name)
+        start = raw.index(needle) + len(needle)
+        value = raw[start:start + 64]
+        if (len(value) != 64 or raw[start + 64:start + 65] != b"'"
+                or any(char not in b"0123456789abcdef" for char in value)):
+            raise ValueError('Integrated source recall pin malformed: ' + name)
+        return value.decode('ascii')
+
+    if recall_pin(recall, 'store.py') != hashlib.sha256(result['v13/store.py']).hexdigest():
+        raise ValueError('Integrated source recall Store binding changed')
+    if recall_pin(recall, 'archive_stream_range_candidate.py') != hashlib.sha256(
+            result['v13/archive_stream_range_candidate.py']).hexdigest():
+        raise ValueError('Integrated source recall stream binding changed')
     old_pin = b'a35966dbe77a603470d73285eac9c8087163d8cf675a1b8516e3b9f38b267232'
-    if recall.count(old_pin) != 1:
+    if recall_pin(recall, 'context_os.py').encode('ascii') != old_pin:
         raise ValueError('Integrated source recall ContextOS pin changed')
     result['v13/context_os.py'] = context
     result['v13/context_source_recall_candidate.py'] = recall.replace(
