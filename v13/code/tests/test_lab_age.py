@@ -212,6 +212,22 @@ class LabAgeTests(unittest.TestCase):
         self.assertTrue(lab_curiosity.report()["autonomous"])
         self.assertEqual(self.age.system_stage(), 0)
 
+    def test_growth_practice_resource_guard_is_independent_of_lab_age(self):
+        from v13.scheduler import EventScheduler
+
+        lab_age.save(self.home, mode="active", stage=10)
+        lab = LaboratoryAgeControl(self.store, self.cfg)
+        self.assertTrue(lab.may("active_info_search"))
+        self.assertFalse(lab.may("active_info_search", resource_mode="RED"))
+        scheduler = EventScheduler(self.store, self.cfg, age=lab)
+        scheduler.post("TIMER", origin="SYSTEM", action="growth_practice")
+
+        self.assertIsNone(scheduler.next(idle=True, resource_state="PRESSURE"))
+        self.assertIsNone(scheduler.next(idle=True, resource_state="CRITICAL"))
+        event = scheduler.next(idle=True, resource_state="NORMAL")
+        self.assertEqual(event["action"], "growth_practice")
+        self.assertEqual(lab.system_stage(), 0)
+
     def test_goal_tree_depth_uses_a_named_right_not_focal_depth_budget(self):
         goals = GoalStore(self.store, self.age)
         system_root = goals.add("system root", origin="SYSTEM")
