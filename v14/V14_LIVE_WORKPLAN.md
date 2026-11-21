@@ -567,3 +567,32 @@ This is an additive checkpoint. The V14 master and historical V13 appendix were 
 5. **Boss & Integration:** keep master and historical V13 appendix unchanged; integrate only after exact-base CI and independent review; update the whole-Canon coverage ledger without promoting CI/synthetic evidence to Android or native-model acceptance.
 
 **User action: none.** No Termux command, model/weight change, permission change, updater change or device action is needed.
+
+
+---
+
+## Boss integration checkpoint — 2026-11-21 17:55:52Z
+
+### Exact shared/release evidence
+- Release-development branch head before this refresh: `3b8c8bb671e9b52b22e052fcfa9fdc6e721012ea` (documentation-only). Code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`; its exact associated workflow set is **19/19 SUCCESS**. No code merge or Redmi installation occurred in this run.
+- Full local Aii checkout: **BLOCKED** (no checkout mounted; GitHub DNS prevents clone). Do not label CI as LOCAL_LINUX or Redmi proof.
+- Private owner-read: a fresh PIPELINE_STATUS request is pending without authenticated response. Installed SHA and updater consent remain UNKNOWN; no LOG_PAGE or UPDATE_REQUEST.
+
+### Integration decisions and cross-lane ownership
+- **V14-014 / QA #2235:** staged 251/10/47 and integrated 424/3/58 pass; migration/deploy integrity pass. Lab-Age and owner-read bootstrap fail because the AST inventory reports nested `f(st)` inside `GoalStore.add` instead of the enclosing method. Boss has posted the exact trace and requested strict enclosing-class/method attribution plus a negative case. Safe-additive fails by policy. #2241 was closed unmerged as redundant because its learning_limit/Curiosity/GoalStore code is already present in #2235; do not reopen duplicate implementation unless QA's branch is abandoned.
+- **Core #2234:** do not merge yet. The PR removes the existing C4 source-span overlay from the recovery builder while the ordinary `runtime_deploy` path still calls `stage_integrated_candidate.py`; the new candidate stager is not the normal deployer consumer. Core must preserve C4, compose arithmetic into the ordinary pinned chain, and recompute recovery → stage → deployer pins. Keep draft.
+- **Perception #2240:** marked ready for review. The code-bearing head `3bd652f` passed consent-revocation, RAW EAR/prosody, Python 3.13/3.14 VAD comparator, privacy, model-lab, staged 251/10/47 and integrated 424/3/58 checks. A later docs-only head `f120d763` records the separate A5/UI consent gap; its exact staged/integrated rerun was still running at last poll. Safe-additive failure is by policy, not waived. The lease is a prerequisite only: Core must keep it open on the same thread through derived context, B1/B2 and the full C3 generator; QA must prove revocation and context/cache deletion. No mic permission or capture is enabled.
+- **Core #2200 / QA #2238:** #2200 is still non-mergeable and based on an older Perception branch. Rebase against #2240's current lease API; the old callback-only call is no longer sufficient. QA #2238 remains stacked on Core and must be rebased after the consumer changes.
+- **JEPA #2231/#2237:** #2231 remains blocked/non-mergeable by its nested recovery builder pin. #2237's current exact matrix is in progress; earlier matched replay variants failed the retention/utility gate. Do not lower the gate or turn rejected trials into updates; keep optimizer rights OFF.
+
+### Whole-Canon acceptance remains open
+The current functional release has synthetic C4 source-span selection but no proof of native B1/B2 correctness, trained B3 activation transfer, normal Runtime voice, Android microphone or UI control, accepted native body-weight updates, cross-organ gradients, or full Sleep/Dream consolidation. Keep every requirement mapped in the whole-Canon ledger; do not promote a single PR or dashboard to whole-system completion.
+
+### Next executable sequence
+1. QA fixes the AST nested-closure attribution and reruns Lab-Age + owner-read bootstrap plus the full staged/integrated/migration matrix.
+2. Core/QA compose #2235 and #2234 with C4 preserved and all exact pins recomputed; rerun ordinary deployer path, not only a new test stager.
+3. Core rebase audio consumer to #2240's lease; hold same-thread lease through complete C3 generation and add revoke/context tombstone/cache-clear tests.
+4. JEPA repair pin chain and produce a source-disjoint update that passes new-task utility and old-task retention with restart/rollback evidence.
+5. Boss integrate only after exact-head review and exact release-push CI; no phone deployment without authenticated owner-read and existing updater consent.
+
+**User action: none.**
