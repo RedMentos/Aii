@@ -95,6 +95,8 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         self.provider = Provider()
 
     def tearDown(self):
+        for source_id in list(getattr(self.runtime, "_a5_ui_unsubscribe", {})):
+            self.runtime.revoke_ui_observation(source_id)
         self.store.close()
         self.temp.cleanup()
 
@@ -164,6 +166,7 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         self.assertEqual(result["admission"].status, "EMPTY_OR_UNAUTHORIZED")
         self.assertEqual(result["admission"].omitted, (obs["source_id"],))
         self.assertFalse(result["a4"]["requests"])
+        self.assertEqual(self.runtime.ui_observation_context(self.event["event_id"]), ())
         self.assertTrue(self.store.read_source(result["source_ref"]))
 
     def test_receipt_generation_and_runtime_binding_are_mandatory(self):
@@ -215,8 +218,8 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         with self.lease(obs) as grant:
             self.runtime.ingest_ui_observation(obs, grant)
         second = dict(obs, capture_session_id="ui_session_second", consent_receipt_ref="receipt_second")
-        with self.lease(second) as grant:
-            with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError):
+            with self.lease(second) as grant:
                 self.runtime.ingest_ui_observation(second, grant)
 
     def test_no_active_runtime_turn_rejects_ui_observation(self):
@@ -272,11 +275,13 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         with self.assertRaises(PermissionError):
             validate_ui_observation(observation(raw_capture_persisted=True))
 
-    def test_invalid_intervals_and_unbounded_priority_are_rejected(self):
+    def test_invalid_intervals_clock_and_unbounded_priority_are_rejected(self):
         with self.assertRaises(ValueError):
             validate_ui_observation(observation(end_ms=100))
         with self.assertRaises(ValueError):
             validate_ui_observation(observation(end_ms=6000))
+        with self.assertRaises(ValueError):
+            validate_ui_observation(observation(clock="WALL_TIME"))
         with self.lease(observation()) as grant:
             with self.assertRaises(ValueError):
                 self.runtime.ingest_ui_observation(observation(), grant, priority=101)
