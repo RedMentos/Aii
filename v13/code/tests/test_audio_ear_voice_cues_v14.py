@@ -803,3 +803,93 @@ def test_consent_revocation_between_pre_and_post_persist_leaves_no_packet(tmp_pa
         assert attention_count(runtime.store, event["event_id"]) == 0
     finally:
         runtime.store.close()
+
+
+def test_consent_revocation_racing_after_initial_check_cannot_process_pcm_unleased(tmp_path, monkeypatch):
+    """A revoke that wins before the processing lease must stop RAW EAR work."""
+    runtime, event = make_runtime(tmp_path)
+    provider = _LinearizableConsentProvider()
+    processed = []
+    race = []
+    revoker_threads = []
+    original_require = audio_voice_cues_module._require_current_consent_and_reset
+    original_observe = audio_voice_cues_module.observe_pcm16
+    original_extract = audio_voice_cues_module.extract_voice_cues
+
+    def start_revocation_after_successful_check(
+        runtime_arg, source_id, generation_id, consent_check, receipt,
+        temporal_state=None, vad_stream=None,
+    ):
+        result = original_require(
+            runtime_arg, source_id, generation_id, consent_check, receipt,
+            temporal_state, vad_stream,
+        )
+        if not race:
+            started = threading.Event()
+            finished = threading.Event()
+
+            def revoke():
+                started.set()
+                provider.revoke()
+                finished.set()
+
+            thread = threading.Thread(target=revoke, daemon=True)
+            thread.start()
+            assert started.wait(5)
+            # If the operation already owns the provider lease, revoke must
+            # wait until it exits. Otherwise revoke wins before raw PCM work.
+            race.append("LEASE_HELD" if not finished.wait(0.05) else "REVOCATION_WON")
+            revoker_threads.append(thread)
+        return result
+
+    def observe(*args, **kwargs):
+        processed.append("observe_pcm16")
+        return original_observe(*args, **kwargs)
+
+    def extract(*args, **kwargs):
+        processed.append("extract_voice_cues")
+        return original_extract(*args, **kwargs)
+
+    monkeypatch.setattr(
+        audio_voice_cues_module,
+        "_require_current_consent_and_reset",
+        start_revocation_after_successful_check,
+    )
+    monkeypatch.setattr(audio_voice_cues_module, "observe_pcm16", observe)
+    monkeypatch.setattr(audio_voice_cues_module, "extract_voice_cues", extract)
+
+    try:
+        outcome = "REJECTED"
+        try:
+            consume_pcm16_voice_window(
+                runtime, tone(140), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=provider.check, consent_guard=provider.lease,
+                finality="FINAL", token_budget=512,
+            )
+        except PermissionError:
+            pass
+        else:
+            outcome = "ADMITTED"
+
+        for thread in revoker_threads:
+            thread.join(timeout=5)
+            assert not thread.is_alive(), "consent revocation did not finish"
+
+        assert race == ["REVOCATION_WON", "LEASE_HELD"][:len(race)]
+        if race[0] == "REVOCATION_WON":
+            assert outcome == "REJECTED"
+            assert processed == [], "RAW EAR processed PCM after revocation had won"
+            assert packet_count(runtime.store, event["event_id"]) == 0
+            assert attention_count(runtime.store, event["event_id"]) == 0
+        else:
+            assert race == ["LEASE_HELD"]
+            assert outcome == "ADMITTED"
+            assert processed == ["observe_pcm16", "extract_voice_cues"]
+            assert packet_count(runtime.store, event["event_id"]) == 1
+            assert attention_count(runtime.store, event["event_id"]) == 1
+    finally:
+        for thread in revoker_threads:
+            thread.join(timeout=5)
+        runtime.store.close()
