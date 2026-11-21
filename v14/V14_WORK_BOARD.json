@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T22:21:06.563Z",
+  "updated_at": "2026-11-21T22:25:13.423Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -189,8 +189,8 @@
       "proof_environment": "Boss docs/research PR #2253 merged at 838482cea5271732ddc9710d2c6ca737a94b4718 after exact PR privacy scan 1/1 PASS. Post-merge workflows are 13/19 SUCCESS, 4 IN_PROGRESS, 2 QUEUED, 0 failures at last poll. No production code PR was promoted. #2242 has identical 3.13/3.14 invalid SourceRef fixture failures; #2244 is old-base; #2246/#2250 expose the A5 blob race; #2247 has retention and pin failures; #2235 remains 7/10 with nested-closure AST attribution.",
       "next_step": "Read exact-head 273a CI, then complete independent review of stage/deployer, audio consent, Store/GoalStore transactions, speech fallback and updater paths. No blind merge; do not weaken the additive validator.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T22:21:06.563Z",
-      "proof": "Boss integration PR #2258 remains DRAFT / NOT_RELEASED. Current branch head after workflow-scope commit is 273a60bda3105f3163bf2ad606e58f885681da8b; code-bearing tested head is 0dc337edfb7a71168e15f3db08bcedc424e32d4f. The prior strict additive job failed before running tests because the integration PR changed 59 files while the additive harness accepts 2..30 strictly-added files. Boss changed only the workflow scope: the validator now runs only on v13-additive/* branches or PRs labelled v13-additive-candidate; the 2..30/add-only checks themselves are unchanged. Exact CI for the new head is queued. Manual protected-file review is not complete."
+      "last_checkpoint": "2026-11-21T22:25:13.423Z",
+      "proof": "Boss integration PR #2258 remains DRAFT / NOT_RELEASED. Current branch head after workflow-scope commit is 273a60bda3105f3163bf2ad606e58f885681da8b; code-bearing tested head is 0dc337edfb7a71168e15f3db08bcedc424e32d4f. The prior strict additive job failed before running tests because the integration PR changed 60 changed files (the original 59-file code composition plus the workflow-scope file) while the additive harness accepts 2..30 strictly-added files. Boss changed only the workflow scope: the validator now runs only on v13-additive/* branches or PRs labelled v13-additive-candidate; the 2..30/add-only checks themselves are unchanged. Exact CI for the new head is queued. Manual protected-file review is not complete."
     },
     {
       "id": "V14-008",
@@ -656,7 +656,7 @@
   "latest_checkpoint": {
     "timestamp": "2026-11-21T22:21:06.563Z",
     "boss_branch": "boss/v14-core-perception-store-audio-integration-20261121",
-    "boss_head": "273a60bda3105f3163bf2ad606e58f885681da8b",
+    "boss_head": "0dd3837a7ec64d958388eff84e64991705171c37",
     "code_candidate_sha": "0dc337edfb7a71168e15f3db08bcedc424e32d4f",
     "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
     "release_development_head": "bdcad466ffea75a2b41f7d23be168f53c7197d20",
@@ -666,7 +666,15 @@
     "private_owner_read_issue": 440,
     "private_owner_read_authenticated_reply": false,
     "local_full_checkout": "BLOCKED_GITHUB_DNS",
-    "user_action_required": false
+    "user_action_required": false,
+    "current_head_checks": {
+      "total": 16,
+      "queued": 14,
+      "skipped": 2,
+      "completed_success": 0,
+      "completed_failure": 0,
+      "read_at": "2026-11-21T22:25:13.423Z"
+    }
   },
   "capability_matrix": [
     {
