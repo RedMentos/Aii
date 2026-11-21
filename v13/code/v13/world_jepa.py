@@ -1,4 +1,4 @@
-"""WP-Z12b §29 Nr. 13 / §7.2: small action-grounded World-JEPA in NumPy (phone-capable, SHADOW, not wired into the runtime).
+"""WP-Z12b §29 Nr. 13 / §7.2: small action-grounded World-JEPA in NumPy (phone-capable SHADOW, wired to the postcommit Store consumer; no native body-weight update).
 
   online encoder   z  = W2 tanh(W1 x + b1) + b2                       (x standardized with training mean/std)
   predictor        z' = z + P2 tanh(P1 [z, a] + c1) + c2              (a = action one-hot; residual)
