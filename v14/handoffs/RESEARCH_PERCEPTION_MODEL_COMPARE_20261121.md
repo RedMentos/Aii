@@ -17,7 +17,7 @@
 ## Research result
 
 - Current C3 baseline: LFM2.5-350M-GGUF QAD_Q4_0, 219312832 bytes, LFM Open License 1.0.
-- Candidate: LFM2.5-230M-GGUF QAD_Q4_0, 149081056 bytes; 70231776 bytes / about 32.0% smaller on disk. The official model card and LICENSE identify LFM Open License 1.0; this is not Apache-2.0 and has a Section 5 does not license Commercial Use by Legal Entities with annual revenue at or above USD 10M.
+- Candidate: LFM2.5-230M-GGUF QAD_Q4_0, 149081056 bytes; 70231776 bytes / about 32.0% smaller on disk. The official model card and LICENSE identify LFM Open License 1.0; this is not Apache-2.0. Section 5 does not grant Commercial Use to a Legal Entity whose annual revenue is USD 10 million or more; the license states a qualified non-profit exception for non-commercial/research purposes.
 - Smaller file size is not evidence of lower TTFT, lower peak RSS/PSS, or better user quality. No new candidate has been downloaded or run. No model swap is recommended.
 - The latency-prediction paper supports separating prefill and decode and recording runtime/device/prompt/thermal context; its Pixel/Jetson/Orange Pi results cannot be transferred as Redmi measurements. The DVFS paper's prototype is evaluated on NVIDIA Jetson AGX Orin/NX with GPU/EMC controls and is not directly portable to ordinary Termux CPU inference.
 
