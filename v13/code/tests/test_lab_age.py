@@ -292,15 +292,17 @@ class LabAgeTests(unittest.TestCase):
         # Negative control: nested callbacks belong to their enclosing method,
         # while an unrelated closure stays attributed to its own outer owner.
         probe = ast.parse(
-            "class GoalStore:\\n"
-            "    def add(self):\\n"
-            "        def f(st):\\n"
-            "            return learning_limit('goal_depth')\\n"
-            "        return f(None)\\n"
-            "def unrelated():\\n"
-            "    def f(st):\\n"
-            "        return learning_limit('unrelated')\\n"
-            "    return f(None)\\n"
+            """
+class GoalStore:
+    def add(self):
+        def f(st):
+            return learning_limit('goal_depth')
+        return f(None)
+def unrelated():
+    def f(st):
+        return learning_limit('unrelated')
+    return f(None)
+"""
         )
         probe_parents = {}
         for parent in ast.walk(probe):
