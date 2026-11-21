@@ -1198,39 +1198,66 @@ The branch was read back at `d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff` immediate
 Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/2253) merged at `838482cea5271732ddc9710d2c6ca737a94b4718`. Its exact PR privacy scan passed 1/1. The merge commit's 13/19 workflows have succeeded, 4 remain in progress and 2 remain queued (0 failures) at the latest poll; post-merge CI is not yet certified green. This merge only updates V14 board, workplan, next-action, coverage and research notes. It is not a production code release and has no device effect. The merged documentation checkpoint is `838482cea5271732ddc9710d2c6ca737a94b4718`; the assigned board and handoff files have since been refreshed on the same release branch. The current code release remains `f279286a4453248004c670fcaabecd85da6ab299`; Redmi remains REDMI_UNVERIFIED. No user action is required.
 
 
+## Boss integration checkpoint — 2026-11-21 23:58 CET
 
-## Research/Perception exact-head update — 2026-11-21 23:27 CET
+**User action: none.** No Termux command, model/weight download or swap, permission change, updater toggle, device action or user-data mutation is required.
 
-**No user action is required. Do not run a Termux command or change models, weights, permissions, updater settings or phone data.**
+### Verified branch and release state
 
-- New current-base Perception PR [#2275](https://github.com/RedMentos/Aii/pull/2275), branch research-perception/v14-raw-ear-speaker-batch-isolation-20261121-r2, starts from the current Boss #2258 head 34eb645357d65bdd5ac69b9fb2c834d043086dac. The tested code/test tree is 880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c; later commits in the same PR update only research/handoff/board/workplan metadata. It is DRAFT / NOT_RELEASED. The older #2272 branch was 16 commits behind and non-mergeable; it was closed as superseded, without force-push or merge.
-- The optional speaker-change path accepts caller-supplied frame embeddings, binds them to source/generation/model revision/checkpoint hash, keeps vectors only in bounded process-local memory, and sends scalar change evidence into A5 → A4 → C3. It emits no speaker identity and grants no learning/action authority. Python remains the default; NumPy and embeddings are opt-in.
-- A reviewed defect was fixed: later frames in the same incoming batch could become their own look-back reference and overwrite a real cross-window change. All frames now compare against one pre-batch history snapshot; the batch is appended only after scoring. The first batch is WARMUP.
-- LOCAL_LINUX CPython 3.13.5 x86_64 algorithm-level reproduction: PASS for warmup, same-speaker stability, unvoiced negative control, threshold-absent score-only behavior and 1-second/2-second batch invariance. The old algorithm's negative control reproduced the false-negative. This is not the full repository test suite.
-- Full local Aii checkout tests: BLOCKED because no checkout is mounted and GitHub DNS is unavailable. The first PR-triggered runs 44957913408/44957913340 were superseded/cancelled during documentation-only pushes. The code/test tree 880bfc now has RAW EAR run 44958073016 (Python 3.13/3.14) and staged/integrated run 44958072992 QUEUED, not PASS; read exact results before integration.
-- Research candidate: ReDimNet2 B3 ONNX is an MIT-licensed segment-level 192-D speaker embedding artifact of about 18 MB; it is not a drop-in replacement for FASTDIAR's causal 80-ms stream encoder. No model was downloaded, no weights were changed, and no model swap is proposed without separate experimental and productive approvals.
-- Release status remains NOT_RELEASED. No authenticated phone receipt was obtained; installed SHA and updater state remain UNKNOWN. REDMI_UNVERIFIED. GitHub push is not deployment.
+- Release-development branch gpt6/v13-private-remote-bridge-20261111 currently resolves to bdcad466ffea75a2b41f7d23be168f53c7197d20. Last accepted code release remains f279286a4453248004c670fcaabecd85da6ab299.
+- Boss integration PR #2258 is DRAFT, based on bdcad466, current branch head 34eb645357d65bdd5ac69b9fb2c834d043086dac; its code-bearing tested parent is 0dc337edfb7a71168e15f3db08bcedc424e32d4f. It changes 62 paths.
+- Exact #2258 current-head CI readback: 10 relevant workflows SUCCESS, 3 expected SKIPPED (the strict additive-only validator is not applicable to this broad integration), 3 cancelled release-queue runs, 0 failures. Integrated regression: 424 passed / 3 skipped / 58 subtests; staged Runtime: 252 passed / 10 skipped / 47 subtests plus arithmetic/broker 39 passed / 17 subtests; A5 UI lease: 17 passed / 5 subtests on Python 3.13 and 3.14; audio/arithmetic: 52 passed / 26 subtests on Python 3.13 and 3.14. Combined JEPA, Lab-Age, old-phone migration, owner-read, runtime-deploy integrity, privacy and record-only guard succeeded.
+- CI is not local execution or Android proof. No complete Aii checkout exists in the local workspace; full LOCAL_LINUX repository tests are BLOCKED. No Redmi receipt has been authenticated.
 
-**Next internal action:** Boss/Core/QA should trigger and inspect exact-head #2275 tests plus staged/integrated regression, then review the current-base consumer diff. After that, Research/Perception returns to the broader model-candidate lab and whole-Canon gaps. No manual Termux command is needed now.
+### Protected review and open PRs
+
+- #2258 is not merge-ready yet. GoalStore still applies budget(self.age, 'focal_depth') to non-user goal-tree depth. The required #2235 change uses learning_limit(..., 'goal_depth', capability='system') and must be composed with the #2258 GoalWake atomicity code. #2235 is 121 commits behind the current release base; do not merge it or copy its whole goals.py blindly. QA has been asked to rebase/stack all Age-rights semantics onto #2258, preserving the GoalWake transaction and recomputing every nested source pin.
+- #2274 rollback/owner-read: run 44958049015 fails because backup_marker_value is read before assignment in runtime_deploy.rollback; run 44958048975 fails because GitHubCIProofTests calls a missing turn_on helper. Its staged/integrated run passes. Boss inline review comments identify both exact fixes. No rollback release.
+- #2247 JEPA A→B→A optimizer-resume fails on Python 3.13 and 3.14 because the test helper drops checkpoint_sha_before/checkpoint_sha_after already emitted by the consumer metrics. Its staged-runtime and integrated-regression jobs pass. Boss review requests propagating the exact SHA fields and retaining the strict checkpoint-change gate; do not weaken it.
+- #2275 RAW EAR speaker evidence: exact focused run 44958073016 fails on Python 3.13 (55 passed, 1 failed: reference_age_ms 920 vs expected 800); Python 3.14 was cancelled. Staged/integrated run 44958072992 fails because the parent audio overlay pins the old audio_voice_cues blob b62442c6e740d136982b2bc8080cef6227ba266f while the changed file is 94aa6931fad702ccec4b1f7494758034a1bf5942; it cascades to 16 failures / 234 passed / 10 skipped / 2 errors and migration PARTIAL. Boss review requests a frame-derived expected value and exact nested pin-chain recomputation. Keep NumPy and any speaker model OFF by default.
+- #2266 remains a diagnostic-only native input-embedding receiver: native API/build/Android arm64 cross-compile do not prove a real GGUF model, trained projector or semantic latent transfer; its separate staged integration has a stale source pin and migration failure.
+- #2271/#2273 Android companion work remains default-OFF and not an OS executor. Duplicate approval/dispatch and SDK package configuration must be fixed before any device provider claim.
+
+### P0 whole-system risk discovered in source
+
+The release source has a plausible B1/B2 suppression path: default observer mode is background and schedule is A_THEN_B_SEQUENTIAL. After at least two recent C3 zero-token prefill failures, a configured deadline of 50 seconds or less activates native_turn_budget recovery. At a 30-second deadline, the current constants reserve 26 seconds for C3, leaving only a calculated 4-second pre-answer window. Since the Runtime reaches the sequential body passes after ingress/perception/memory/executive work, both offers can be deferred before C4. A post-commit observer after FINAL cannot count as B1/B2→C4→C3 contribution to that answer. This is a source-derived hypothesis, not a verified Redmi diagnosis; the actual phone config and failure telemetry remain unknown.
+
+### Next internal ownership
+
+- Core: replace blanket two-body deferral with a measured budget that preserves both B1_DETAIL and B2_GIST eligibility for nontrivial same-turn C4→C3 work while reserving enough C3 time; add a regression for two recent C3 zero-token failures and a short deadline.
+- QA & Android: fix #2274 rollback ordering and owner-read test setup; rebase/validate the complete #2235 Age-rights contract with #2258; test stop/rollback and concurrency without touching device state.
+- JEPA & Memory: propagate checkpoint SHA evidence through #2247's phase helper, keep the strict old-session retention gate, rerun both Python versions and restart/rollback tests.
+- Research & Perception: repair #2275's frame-age expectation and exact audio source pin chain; keep optional NumPy/speaker embeddings disabled by default.
+- Boss & Integration: keep #2258 unmerged until the Age-rights composition, exact CI and protected-file review are complete; continue whole-Canon dependency/consumer mapping.
+
+Private owner-read request #443 has no authenticated reply. Installed SHA and updater consent are UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell, or device mutation was attempted.
 
 
-## Native latent receiver cross-review — 2026-11-21
+## Cross-agent status refresh — 2026-11-22 00:06 CET
 
-- Core PR #2266 exact head 3166858133844fc80201334f53ade450557d1191 was reviewed against pinned upstream llama.cpp header b29c606e28a01b1bc8c1351026a0fa6e616bf6c4. The public llama_batch.embd / llama_batch_init / llama_decode / llama_get_embeddings_ith API exists; this is real native input-embedding ingress, not symbolic JSON.
-- Exact native receiver workflow 44955501021 PASS: pinned Linux build, Python 3.13/3.14 runtime tests, and Android arm64-v8a cross-compile. CI did not load a real GGUF model; Python tests use a fake executable/model fixture. No Redmi execution or semantic alignment is proven.
-- Core staged/integrated workflow 44955501004 FAILS independently: stale arithmetic source pin for v13/contracts.py and migration assertions returning PARTIAL instead of UPDATED (19 failed, 230 passed, 10 skipped, 2 errors). Core was notified on #2266.
-- #2266 is still based on old release base bdcad466..., not current Boss #2258. Core should rebase/stack it on #2258, repair the separate staged failure, then pursue a trained/versioned projector with held-out semantic/retention tests. No model download or production route.
+**No user action required.** No Termux command, model/weight change, permission grant, updater toggle, APK installation or device mutation.
 
+### Current Boss candidate
 
+- Boss PR #2258 branch head remains c0e69ce43a5a9f2c541bfbc61f8251b65d8cec83; code-bearing candidate parent 0dc337edfb7a71168e15f3db08bcedc424e32d4f; release-development base bdcad466ffea75a2b41f7d23be168f53c7197d20.
+- Exact #2258 head CI: 12 workflows SUCCESS, 5 SKIPPED, 3 cancelled, 0 failures. These are GitHub CI results, not local or Android proof. PR remains DRAFT / NOT_RELEASED because the full #2235 Age-rights semantics are not yet composed into GoalWake.
+- #2258's three handoff commits changed only V14 handoff/workplan/board documents; no runtime, model, weight, permission or device code changed.
+- Historical V13 appendix blob 08fd3ee987755f3e631e143793929b464d5df27f and active V14 master blob 9748ad5ba9a4d4f5c3d004a0577141f6779fcbca remain byte-identical to release base. The V14 Canon coverage index gained 8 headings and lost 0.
 
-## C3 model-lab audit — 2026-11-21
+### Updated agent PR review
 
-- Model-lab PR #2142 is CLOSED / NOT MERGED. Its 23 focused harness tests pass, but the candidate is not installed and no model inference or quality/TTFT/RSS comparison occurred. Do not treat it as a validated model alternative.
-- The official LFM2.5-230M model card says it is intended for data extraction/lightweight on-device agentic pipelines and is not recommended for reasoning-heavy math/code. LFM2.5-350M scores higher on several vendor-published instruction/tool benchmarks, but this is not a local V13 comparison. LFM Open License v1.0 includes a USD 10M annual-revenue threshold for commercial-use rights.
-- Research-only candidates: LFM2.5-350M (same family, same license), Qwen3-0.6B (Apache-2.0; third-party Q4_K_M files around 0.45–0.48 GB), Qwen3.5-0.8B (Apache-2.0; Q4 around 0.5 GB, newer hybrid attention). Community MNN results on a newer Redmi Note 14 Pro+ are not comparable to the Redmi Note 10 Pro; the same poster reports much slower Termux performance on that newer phone.
-- No model is approved for download or swap. First inventory already-present files; only if a candidate is absent ask separately for experimental download approval, then separately for a productive swap after real quality, TTFT, RSS, rollback and full multi-organ E2E comparison.
-- No user action is required now. Keep installed models unchanged.
+- #2274 rollback: current head 314d39b has runtime-deploy, staged/integrated, two-checkout migration, Lab-Age and owner-read SUCCESS. Only the additive-only validator fails because this protected rollback change is not additive-only. The branch is 114 commits behind Boss #2258 and overlaps runtime_deploy.py. QA was asked to rebase/stack onto c0e69 and rerun exact deployment/staged/migration checks. No release yet.
+- #2247 JEPA: A→B→A optimizer-resume still fails Python 3.13/3.14 because the test helper drops checkpoint_sha_before/after; staged/integrated passes. Keep the strict checkpoint-change and old-session-retention gates.
+- #2275 RAW EAR: focused tests fail on both Python versions (reference_age_ms 920 vs expected 800); staged/integrated fails the audio_voice_cues source pin. Keep NumPy and the speaker model OFF.
+- #2266 native receiver: exact pinned C++ build and Android arm64 cross-compile fail because native_latent_receiver.cpp misses the closing brace after valid_batch(); staged/integrated also fails the callosum.py pin. It remains diagnostic-only; no production B3.
+- #2271 Android companion: Core branch still has package-install, operator-pin and signed-denial issues. QA #2273 head aa9f509 fixes package setup and denial; Android build, outcome adapter, Lab-Age, deploy-integrity and owner-read are SUCCESS, but staged-runtime fails on audio_voice_cues source pin and two-checkout migration remains PARTIAL (last_error UPDATE); integrated regression is still in progress. It is 18 commits ahead / 1 behind its Core base. No APK install or device proof.
+- #2235 Age rights: still based on 3b8c8bb and 121 commits behind current release base. Rebase/stack the complete learning_limit semantics onto #2258; preserve GoalWake atomicity and recompute all pins.
 
+### Whole-system P0
+
+The source-derived B1/B2 suppression hypothesis remains: background + A_THEN_B_SEQUENTIAL, after two recent C3 zero-token failures and a configured deadline <=50 s, can leave only 4 s of pre-answer time at a 30 s deadline. Both body offers may be deferred before C4; a post-commit observer cannot satisfy same-answer B1/B2→C4→C3. This is not a Redmi finding; the actual device config and failure telemetry are unknown. Core owns the measured budget fix; QA owns same-turn nontrivial regression.
+
+Private PIPELINE_STATUS issue #443 has no authenticated reply. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell or device mutation. No full local Aii checkout exists, so no LOCAL_LINUX repository suite ran.
 
 ## Research/Perception exact-head follow-up — 2026-11-21 23:08 CET
 
@@ -1241,12 +1268,10 @@ Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/225
 
 **Next internal action:** Core refreshes the integrated audio source pin and nested stage/deployer hashes against the exact #2275 audio blob, then reruns staged/integrated tests; Boss/QA review the stacked diff. No user action is needed.
 
-
 ## Research intake — sherpa-onnx offline diarization candidate (2026-11-21)
 
 - R-056 added after inspecting sherpa-onnx main `8a667ab114e8a007f671678ddb031729dd81dce4`: Apache-2.0 native stack with Android arm64 support and an Android diarization APK path. Its official speaker diarization API is explicitly offline/non-streaming and reads the whole WAV; it is only a possible replay/teacher candidate, not the live RAW EAR encoder. The documented model chain includes a 5.7-MB FP32 / 1.5-MB INT8 pyannote segmentation model and a ~39.6-MB ERes2Net-base embedding model. Exact sherpa release bundle weight notices/conditions need verification; the reverb model is non-commercial and excluded.
 - No model or dependency was downloaded. No device test, Termux ABI proof, Redmi benchmark or microphone capture occurred. Candidate remains research-only; no user action is needed.
-
 
 ## Cross-agent readback — 2026-11-22 00:04 CET
 
