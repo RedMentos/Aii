@@ -204,6 +204,29 @@ def test_adam_per_session_gem_projection_satisfies_each_prior_cohort():
     assert np.allclose(direction, np.array([0.0, 1.0]), atol=1e-8)
 
 
+def test_adam_per_session_gem_active_set_handles_nearly_opposing_session_gradients():
+    # The former 64-sweep Dykstra loop needs thousands of passes for this
+    # narrow feasible cone. The exact <=8-cohort active-set solve is bounded.
+    theta = 0.1
+    constraints = [
+        {"w": np.array([1.0, 0.0])},
+        {"w": np.array([-np.cos(theta), np.sin(theta)])},
+    ]
+    params = {"w": np.zeros(2, dtype=float)}
+    report = world_jepa.Adam(params, lr=0.1).step(
+        {"w": np.array([1.0, -1.0])},
+        constraint_gradients=constraints,
+    )
+    direction = -params["w"] / 0.1
+    assert report["projection_method"] == "ACTIVE_SET_ENUMERATION"
+    assert report["projection_candidates_examined"] == 4
+    assert report["kkt_active_constraint_count"] == 2
+    assert report["max_constraint_violation"] <= report["constraint_tolerance"]
+    assert all(float(item["w"] @ direction) >= -report["constraint_tolerance"]
+               for item in constraints)
+    assert np.allclose(direction, np.zeros(2), atol=1e-8)
+
+
 def test_session_contiguous_replay_is_deterministic_bounded_and_session_local():
     def row(index, session):
         return {
