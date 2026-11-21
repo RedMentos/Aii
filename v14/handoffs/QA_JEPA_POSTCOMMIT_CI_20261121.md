@@ -64,3 +64,28 @@ QA posted review comment [6004094094](https://github.com/RedMentos/Aii/pull/2178
 - Device acceptance remains separate: require a fresh owner-authenticated receipt before any update request; then execute the 20 mixed-turn Redmi test with real output correctness, B1/B2 offers created/delivered/consumed, C4/C3 source lineage, TTFT/total p50/p95, native prefill, PSS/RSS and crash/restart measurements.
 
 **No user action is required.**
+
+
+## QA & Android follow-up — 2026-11-21 10:41 CET
+
+### Release baseline
+- gpt6/v13-private-remote-bridge-20261111 still reads back at exact SHA 569680bc10eabeb94ea5a1695d4bf77b8584e0a0. Its 15 associated GitHub Actions runs are all SUCCESS; staged-runtime 240 passed / 10 skipped / 47 subtests, integrated-regression 415 passed / 3 skipped / 58 subtests, and Python 3.14 staged startup + owner-read bootstrap passed. This is hosted Linux/CI and synthetic integration evidence only.
+- Full local Aii checkout remains BLOCKED by GitHub DNS in this worker. No LOCAL_LINUX full-suite result and no Redmi-native result are claimed.
+
+### QA Android audit DB hardening — PR #2185
+- Own QA branch qa/android-control-ancestor-ownership-20261121, exact head 766369162dafed7d4194e4f57e8229dc97688084, based directly on the release-development SHA above.
+- Change: walk every path ancestor, reject untrusted cross-UID writable non-sticky parents, allow sticky shared ancestors only with trusted owner checks, and allow Android system UID 1000 only on verified /data ancestry. Preserve the exact AOSP /data/user/0 -> /data/data alias allowlist, final O_NOFOLLOW, regular-file/single-link and 0600 checks. The code explicitly remains a dry-run Python audit guard, not an OS sandbox and not protection against a malicious same-UID race.
+- Exact-head CI: broker tests 25/25 PASS (run 44891197948); sandbox replay 49/49 PASS (44891197941); staged-runtime 240 passed / 10 skipped / 47 subtests PASS and integrated-regression 415 passed / 3 skipped / 58 subtests PASS (44891198014). The first exact-head run exposed only a diagnostic-regex mismatch in the UID negative test; I changed that assertion to match the broader fail-closed owner diagnostic and reran all focused suites successfully.
+- validate-additive (44891198065) rejects the intentional edit to existing android_control.py. This is an expected policy boundary requiring independent Boss/manual review, not permission to bypass the gate. PR remains OPEN / NOT_RELEASED; no merge or phone update performed.
+
+### Per-turn flow audit — Core PR #2183
+- Latest exact head 7017f68a263be5a13805d5c2188fcae2fb6ee85f. The requested C4 role attribution (source_kind == offer.role), active-state requirement, source-blob O_NOFOLLOW/fstat check, and session-scoped latest-event selector are now present with negative fixtures.
+- Exact safe-additive run 44890599928 still fails 7/16 focused tests: the positive C4 fixture and four C4 partial/negative cases all return FAIL instead of PASS/PARTIAL, and two tests call audit_latest(home) without the now-required session_id. Staged/integrated run 44890599805 passes 240/10 skipped/47 subtests and 415/3 skipped/58 subtests; this does not override the focused failures.
+- I posted QA blocker comment 7060847750: add sanitized source-validity/C4 rejection diagnostics, repair the fixture/consumer without weakening validation, update stale tests, require session_id for explicit --event-id as well as latest selection, and guard the Store DB itself against final-component symlink following. The code still allows audit_event(..., session_id=None) and uses db_path.is_file() before SQLite URI open; these are remaining session/privacy gaps.
+- PR #2183 stays DRAFT / NOT_RELEASED. No Core code was modified by QA.
+
+### Device / next step
+- Latest known owner-read request #382 expired with zero comments; installed SHA and updater consent remain UNKNOWN, so NO_LIVE_RECEIPT / REDMI_UNVERIFIED. No duplicate relay request, UPDATE_REQUEST, shell action, model swap, permission change or user-data mutation was made.
+- Next: independently review #2185 exact path ancestry behavior against Android 13 once Boss can review the intentional existing-module change; keep it unmerged until that review. Re-check #2183 only after Core publishes a new exact head with focused tests green. Keep #1904 and the full Canon acceptance open.
+
+User action: none required.
