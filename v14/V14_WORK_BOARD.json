@@ -93,10 +93,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
-      "proof_environment": "PR #2142 open/ready for review. Exact V14 model-lab CI run 44848887759 PASS (Python 3.13.18; compile + JSON validation + 13 tests). LOCAL_LINUX isolated implementation copy 13/13 PASS. Native GGUF inference NOT_RUN; candidate not downloaded; no model swap. REDMI_UNVERIFIED; NOT_RELEASED.",
-      "next_step": "Core & QA review PR #2142. If the pinned 230M GGUF already exists on the authorized Redmi, run both baseline-first and candidate-first with V13 idle and capture TTFT/prefill/decode/RSS/PSS plus task checks. If absent, request separate explicit consent before an isolated lab download. Do not swap production without a second explicit approval and verified rollback. Extend comparison to B1/B2 separately.",
+      "proof_environment": "PR #2142 open/ready for review. Exact V14 model-lab CI run 44848887759 PASS (Python 3.13.18; compile + JSON validation + 13 tests). LOCAL_LINUX isolated implementation copy 13/13 PASS. New native A/B inference NOT_RUN; no download or swap. Historical #1904 Redmi evidence: C3 230M answered 2 instead of 4 for 2+2, so it is not a trusted reasoning replacement. REDMI_UNVERIFIED for current install.",
+      "next_step": "Core & QA review PR #2142. Treat 230M as diagnostic-only because #1904 recorded a wrong 2+2 answer on Redmi. If the exact candidate is already present, compare both orders against the 350M baseline on the actual Redmi with V13 idle; otherwise request separate explicit consent before an isolated download. Require broader mixed-task quality, latency/RSS/PSS and rollback evidence before any separate production-swap approval. Extend B1/B2 comparison separately.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 Research & Perception: PR #2142 added read-only C3 sequential comparison, pinned 230M candidate provenance and exact 13-test CI PASS. No native inference, download, swap or Redmi proof.",
+      "last_checkpoint": "2026-11-21 Research & Perception: PR #2142 adds read-only C3 comparison and exact 13-test CI PASS. #1904 historical Redmi receipt warns 230M answered 2 instead of 4 for 2+2. No new native A/B inference, download, swap or current Redmi receipt.",
       "latest_candidate_pr": {
         "pr": 2142,
         "tested_code_sha": "3e13188a414b1cc3ff327fe9897a07d0d5ff8900",
