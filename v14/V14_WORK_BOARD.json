@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Release HEAD 569680bc10eabeb94ea5a1695d4bf77b8584e0a0 is exact and 15/15 associated workflows SUCCESS (CI only). Core #2158 head a3932c758e4e5b55027c77ff0bc839673e86ea79 is based on old c76a018b; compare with current release is DIVERGED 64 ahead / 22 behind. Its older-base staged A5 voice/arithmetic run 44877837587 and staged/integrated run 44877837559 PASS; safe-additive 44877837608 correctly rejects existing builder/deployer edits. The overlay still pins old audio cue producer 7ac80a0d..., while #2177 RAW EAR V3 producer blob is 0e328d14883840190937f0fef24a8e895ba7261c. Core #2183 read-only A5→B1/B2→C4→C3/C5 audit head ff120196... is based on current release; exact additive 44888573988 PASS, staged/integrated 44888574069 PASS (240/10/47; 415/3/58). QA review 6004342203 found C4 role/state mismatch and symlink-following blob validation; negative fixes pending. Audit does not prove native latent injection or real Redmi cooperation. Follow-up: Core #2183 remains unchanged at ff120196... after QA review; source-ref retention is already checked, but the remaining FocalItem source_kind/state mismatch and blob symlink-following path are still open. Core was explicitly asked to add those negative cases. Third QA finding on #2183: audit_latest(session_id=None) and the optional CLI --session-id select the latest event across all sessions. Existing test explicitly exercises this global default. Review 6004392741 requests fail-closed latest mode or explicit event ID plus two-session negative coverage. Audit remains PROVISIONAL until C4 role/state, no-follow blob, and session-scope fixes are in the exact tested head.",
-      "next_step": "Core: fix #2183 C4 role/state attribution and no-follow blob validation with negative tests, then wire the read-only report to the existing operator/dashboard. Rebase #2158 onto 569680bc..., update its exact A5 producer pin to the reviewed #2177 V3 blob, and prove source-bound B1/B2 contributions are actually consumed by C4/C3. Keep the real 20-turn Redmi acceptance separate; no CI-only completion claim. Also make latest-event CLI session-scoped by default; add a two-session negative test so an omitted session ID cannot inspect another chat.",
+      "proof_environment": "Release-development HEAD 944713cecf01751c1585ce46f6622214c31a820b includes merged cancellable WorldJEPA worker; its 17 exact-head workflows are 12 SUCCESS / 5 IN_PROGRESS / 0 FAIL at readback. Core #2183 current head 12fd5edd3fa2ab2e9dc96c209079962af6d98707 has C4 role/state attribution, source-blob O_NOFOLLOW/fstat and session-scoped latest-event selection; exact safe-additive 44891626305 PASS and staged/integrated 44890982859 PASS (240/10/47; 415/3/58), but branch is 19 commits behind current release and must be rebased/rerun. Dashboard PR #2188 head 4517c810... passes 19 flow-audit/projection tests + 1 dashboard target test, py_compile and Node syntax; however it is not stacked (base is release) and duplicates byte-identical flow_audit.py/test_flow_audit.py from #2183. Its snapshot currently chooses newest assistant message across all sessions rather than explicitly the active session. QA comment 7060969364 requests correct stacking and session semantics. No native latent injection, actual B1/B2 receiver effect or Redmi cooperation is proven.",
+      "next_step": "Core: rebase #2183 onto 944713..., rerun exact staged/integrated/safe-additive CI; clarify explicit-event selector semantics. Rebase #2188 onto #2183 (or remove duplicate auditor files), bind snapshot to active/last session or document latest-completed-turn semantics, and rerun dashboard/security tests. Then validate real 20-turn Redmi acceptance separately; no CI-only completion claim.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 10:26 CET"
+      "last_checkpoint": "2026-11-21 10:58 CET"
     },
     {
       "id": "V14-002",
@@ -28,25 +28,25 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Exact release-development HEAD 569680bc10eabeb94ea5a1695d4bf77b8584e0a0: 15/15 associated GitHub workflows SUCCESS (CI/Linux/synthetic only). Private owner-read PIPELINE_STATUS #382 expired 2026-11-21T09:23:23Z with zero comments; #381/#380 also have no receipt. Status is NO_LIVE_RECEIPT, not an install result. Installed Redmi SHA UNKNOWN; updater consent/state UNVERIFIED; REDMI_UNVERIFIED. No UPDATE_REQUEST, duplicate request, installer, shell action, model swap, permission change or device data mutation.",
-      "next_step": "Wait for a new authorized owner-authenticated receipt; do not create duplicate requests. If the user later supplies a current receipt or explicit device-test action, verify installed SHA and updater consent before any UPDATE_REQUEST. No user action or Termux command is justified now.",
+      "proof_environment": "Release-development HEAD 944713cecf01751c1585ce46f6622214c31a820b has 12/17 associated workflows SUCCESS and 5 IN_PROGRESS; current exact release gate remains pending. QA PR #2185 branch qa/android-control-ancestor-ownership-20261121 was updated with a non-force merge commit aaaaae7928ce5db07bb3c4af9fa4b0170e6ef4f10 whose first parent is current release 944713. Previous exact code head 61273bf29c16f19a0edc482afacd547433ef6197 passed broker 25/25, sandbox 49/49, staged 240/10/47 and integrated 415/3/58; the added Android 13 /data/user/0 bind-mount fixture was included. New merge-head CI is queued (44892240181 staged/integrated; 44892240446 sandbox; 44892240188 safe-additive). Safe-additive is expected to reject the intentional existing android_control.py edit and requires independent Boss review. AOSP Android 13 init.rc chowns /data, /data/user and /data/user/0 to system:system and bind-mounts /data/data onto /data/user/0 (init.rc lines 915–923); code/test now distinguish this from the legacy symlink fallback. Device state remains NO_LIVE_RECEIPT: Aiiii#382 expired with zero comments; installed SHA UNKNOWN; updater consent UNVERIFIED; REDMI_UNVERIFIED.",
+      "next_step": "Wait for all exact merge-head CI on #2185; obtain independent Boss/manual review for the existing-module Android path guard. Do not merge or update the phone until the current base CI and review are green. Wait for a fresh owner-authenticated device receipt before any update request. No user action or Termux command is justified now.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 10:24 CET",
+      "last_checkpoint": "2026-11-21 10:58 CET",
       "latest_qa_candidate": {
-        "pr": 2138,
-        "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
-        "merge_commit_sha": "5b9171a457f32cafa6cc05fb88e80ef8b4dad08e",
-        "status": "MERGED_CI_GREEN_DEVICE_UNVERIFIED",
+        "pr": 2185,
+        "head_sha": "aaaae7928ce5db07bb3c4af9fa4b0170e6ef4f10",
+        "base_sha": "944713cecf01751c1585ce46f6622214c31a820b",
+        "status": "OPEN_CI_PENDING_MANUAL_REVIEW",
+        "prior_tested_sha": "61273bf29c16f19a0edc482afacd547433ef6197",
         "proof": {
-          "owner_read_push": "PASS run 44845659008",
-          "private_bridge_push": "PASS run 44845658907",
-          "staged_context_push": "PASS run 44845658992",
-          "staged_runtime": "PASS (240 passed, 10 skipped, 47 subtests)",
-          "integrated_regression": "PASS (415 passed, 3 skipped, 58 subtests)",
-          "release_event_push": "PASS run 44845658989",
-          "lab_age_push": "PASS run 44845658946",
-          "local_linux": "NOT_RUN; no full checkout",
-          "redmi": "NO_LIVE_RECEIPT; issues #351–354 unanswered; installed SHA unknown"
+          "android_control_broker": "PASS 25/25 run 44891776595",
+          "android_sandbox_replay": "PASS 49/49 run 44891776522",
+          "staged_runtime": "PASS 240 passed/10 skipped/47 subtests run 44891776496",
+          "integrated_regression": "PASS 415 passed/3 skipped/58 subtests run 44891776496",
+          "new_base_head_ci": "QUEUED 44892240181/44892240446/44892240188",
+          "safe_additive": "EXPECTED_REJECTION_EXISTING_MODULE_EDIT",
+          "local_linux": "BLOCKED no full checkout; DNS failure",
+          "redmi": "NO_LIVE_RECEIPT"
         }
       }
     },
@@ -70,13 +70,13 @@
       "owner": "JEPA & Memory",
       "reviewer": "Core & QA",
       "priority": "P0",
-      "status": "IN_PROGRESS_BLOCKED",
+      "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "Merged #2160/#2164/#2167 provide source-bound T8, persistent numeric WorldJEPA/EMA and B1/B2/SELF numeric SHADOW receiver; native GGUF weights unchanged and optimizer gates OFF by default. Boss PR #2179 current head d6094ea6017727d12343e9643b3207d1aeb4a249: staged-runtime run 44889021452 FAIL (1 failed, 248 passed / 10 skipped / 47 subtests), integrated-regression PASS (415 / 3 skipped / 58). The real Runtime worker reaches the event cursor and active state, but its telemetry row has no learning_status or parameter/EMA deltas. QA traced this to Store.log→telemetry_metrics: sleep.py:697–707 emits keys/statuses not admitted by store.py TELEMETRY_FIELDS/TELEMETRY_ENUMS (store.py:112–127, 543–545), so the sanitizer strips/redacts the acceptance evidence. QA root-cause comment 7060551057 posted. Safe-additive 44889021447 rejects existing-module edits as expected. Optimizer-state PR #2182 head 92449b16... is based on 268bebaf... and diverges from #2179 d6094ea... (14 ahead / 6 behind); its earlier green run does not validate current parent. No numeric weight update is independently proven, no native GGUF update, no Redmi proof.",
-      "next_step": "JEPA/Boss: add a narrowly scoped telemetry schema for finite postcommit learning/planner statuses, checkpoint hash, parameter/EMA deltas, verified-receipt count, decision authority and native-body-change flag; keep arbitrary text redacted and add negative privacy tests. Recompute all dependent frozen source/builder/recovery/stage/deployer hashes in order. Rerun exact staged-runtime, integrated-regression, Python 3.14 staged startup, owner-read and deploy-integrity. Keep utility/retention gates strict. Then rebase #2182 on the repaired exact parent and rerun optimizer-state reload/rollback. Do not call the worker update proven until persisted numeric telemetry and restart evidence pass.",
+      "proof_environment": "PR #2179 merged to release-development HEAD 944713cecf01751c1585ce46f6622214c31a820b. It wires bounded cancellable idle WorldJEPA/EMA SHADOW learning through the real Runtime worker after a committed/observed T8 outcome, persists checkpoint/cursor, logs through existing finite telemetry allowlist, and tests restart/no-duplicate behavior. Exact pre-merge head 68ba0ee703b872f5dd2e0d9e0ae940343284a05f: staged 249 passed/10 skipped/47 subtests, integrated 415/3/58, combined JEPA 49; incremental JEPA, runtime deploy, old-phone migration, Python 3.14 staged startup, private owner-read and Lab Age all SUCCESS. The Runtime.submit→worker→_turn path is real in CI, but the 256-row T8 cohort and NumPy predictor/EMA update are synthetic; numeric parameter/EMA deltas, source-disjoint holdout improvement, negative controls, retention and restart are asserted. Production optimizer gates remain OFF. No native GGUF body weights, B1/B2 body learning, trained B3 latent coupling or Redmi proof. Stacked PR #2182 consumer file is byte-identical to #2179 and its branch is stale/diverged; coordinate/close as superseded or retain only unique tests.",
+      "next_step": "JEPA/Boss: continue the matched persisted-Adam vs zeroed-moment control (retain global step clock; do not call it a full optimizer reset) and action-conditioned latent mean-delta baseline on the same source/digest-disjoint cohort. Keep gates OFF; next integrate a verified consumer for native B1/B2/SELF and eventually measure actual Android body behavior. Rebase or close duplicate #2182 after coordination. Do not equate synthetic WorldJEPA numeric updates with native body-weight learning or trained B3 injection.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 10:21 CET",
+      "last_checkpoint": "2026-11-21 10:58 CET",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -94,12 +94,23 @@
         "scope": "Strict action-conditioned positive control; explicit uniform replay vs no-replay ablation; fit-ID/source-disjoint/retention/restart tests; not Runtime-wired"
       },
       "latest_runtime_candidate": {
-        "pr": 2178,
-        "head_sha": "c16da4b3c0de1e5d857240e4fee7576aa3bf9a15",
-        "base_sha": "569680bc10eabeb94ea5a1695d4bf77b8584e0a0",
-        "status": "OPEN_CI_FAILED_QA_REVIEW_POSTED",
-        "ci": "FAIL_44882581486_STAGED_AND_INTEGRATED; FAIL_44882581469_PY314_STARTUP; PASS_44882581533_INCREMENTAL_JEPA; PASS_44882581581_COMBINED_JEPA; EXPECTED_NONADDITIVE_REJECTION_44882581536",
-        "scope": "Sleep idle worker postcommit T8 -> persistent numeric WorldJEPA/EMA -> B1/B2/SELF numeric SHADOW planner; not native GGUF body learning or B3 trained latent coupling"
+        "pr": 2179,
+        "head_sha": "68ba0ee703b872f5dd2e0d9e0ae940343284a05f",
+        "merge_commit_sha": "944713cecf01751c1585ce46f6622214c31a820b",
+        "status": "MERGED_DEVELOPMENT_CI_PENDING",
+        "proof": {
+          "staged_runtime": "PASS 249/10 skipped/47 subtests",
+          "integrated_regression": "PASS 415/3 skipped/58 subtests",
+          "combined_online_jepa": "PASS 49",
+          "incremental_world_jepa": "PASS",
+          "runtime_deploy_integrity": "PASS",
+          "two_checkout_migration": "PASS",
+          "private_owner_read_python314": "PASS",
+          "lab_age": "PASS",
+          "safe_additive": "EXPECTED_REJECTION_EXISTING_HIGH_AUTHORITY_SOURCE_BUILD_CHANGES",
+          "native_gguf": "NOT_TESTED",
+          "redmi": "REDMI_UNVERIFIED"
+        }
       },
       "release_sha": "NOT_PHONE_RELEASED",
       "phone_installed_sha": "UNKNOWN",
@@ -260,19 +271,22 @@
       "last_checkpoint": "2026-11-21 06:42 CET: 1,255 headings preserved; clause-level completion remains OPEN."
     }
   ],
-  "current_redmi_status": "NO_LIVE_RECEIPT — private PIPELINE_STATUS #382 expired 2026-11-21T09:23:23Z with zero comments; #381/#380 also unanswered. Installed SHA UNKNOWN; updater consent UNVERIFIED; REDMI_UNVERIFIED. No UPDATE_REQUEST or device action.",
-  "last_code_release_head": "569680bc10eabeb94ea5a1695d4bf77b8584e0a0",
-  "latest_integrated_head": "569680bc10eabeb94ea5a1695d4bf77b8584e0a0",
-  "latest_integrated_head_verified_at": "2026-11-21T08:26:11Z",
-  "release_gate_status": "DEVELOPMENT_CI_GREEN_NOT_RELEASED: exact release-development HEAD 569680bc10eabeb94ea5a1695d4bf77b8584e0a0 has 15/15 associated GitHub workflows SUCCESS (staged 240/10/47; integrated 415/3/58; Python 3.14 startup and owner-read PASS). CI/Linux/synthetic only. #2179 exact candidate d6094ea6017727d12343e9643b3207d1aeb4a249 has staged-runtime FAIL 44889021452 because Store.log telemetry sanitization strips postcommit learning metrics; integrated regression PASS. #2183 staged/integrated CI passes but QA role/state and symlink audit findings remain open. NO_LIVE_RECEIPT / REDMI_UNVERIFIED. #2183 has a third open QA issue: latest-event audit is global when --session-id is omitted; session isolation must fail closed.",
+  "current_redmi_status": "NO_LIVE_RECEIPT — private PIPELINE_STATUS #382 expired 2026-11-21T09:23:23Z with zero comments; installed SHA UNKNOWN; updater consent/state UNVERIFIED; REDMI_UNVERIFIED. No UPDATE_REQUEST, duplicate request, installer, shell action, model swap, permission change or device data mutation.",
+  "last_code_release_head": "944713cecf01751c1585ce46f6622214c31a820b",
+  "latest_integrated_head": "944713cecf01751c1585ce46f6622214c31a820b",
+  "latest_integrated_head_verified_at": "2026-11-21T09:56:36Z",
+  "release_gate_status": "DEVELOPMENT_CI_PENDING: exact release-development HEAD 944713cecf01751c1585ce46f6622214c31a820b merges #2179. Of 17 associated workflows, 12 completed SUCCESS, 5 remain IN_PROGRESS, 0 failures at readback; do not mark release gate green until every required exact-head workflow completes. PR #2179 pre-merge head 68ba0ee703b872f5dd2e0d9e0ae940343284a05f had staged 249 passed/10 skipped/47 subtests, integrated 415/3/58, combined JEPA 49 and incremental/deploy/migration/Python3.14/owner-read/Lab Age success. CI/Linux/synthetic only. NO_LIVE_RECEIPT / REDMI_UNVERIFIED.",
   "phone_receipt": {
-    "issue": "RedMentos/Aiiii#379",
-    "state": "OPEN_NO_REPLY_PENDING",
-    "expires_at": "2026-11-21T08:30:59Z",
+    "issue": "RedMentos/Aiiii#382",
+    "state": "EXPIRED_NO_REPLY",
+    "expires_at": "2026-11-21T09:23:23Z",
     "installed_sha": "UNKNOWN",
     "auto_update": "UNVERIFIED",
     "redmi_status": "REDMI_UNVERIFIED",
-    "older_pending_issue": "RedMentos/Aiiii#373 and #368 (EXPIRED_NO_REPLY)"
+    "older_pending_issues": [
+      "#381",
+      "#380"
+    ]
   },
   "capability_snapshot": [
     {
