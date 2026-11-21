@@ -6,6 +6,7 @@ import time
 import pytest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -356,5 +357,91 @@ def test_runtime_world_jepa_retention_gate_rejects_old_holdout_regression(tmp_pa
         assert len(payload["pending_rows"]) == 32
         assert len(list(checkpoint_dir.glob("jepa-*.npz"))) == 1
         assert consumer.restore()["checkpoint_sha256"] == first_sha
+    finally:
+        runtime.close()
+
+
+
+def test_staged_runtime_postcommit_updates_world_jepa_and_exposes_receivers(tmp_path):
+    # The base source Runtime intentionally remains frozen. This test is
+    # exercised only by the exact integrated staging builder that composes
+    # the post-commit consumer into Runtime.online_world_update.
+    if "consume_recent_committed" not in Runtime.online_world_update.__code__.co_names:
+        pytest.skip("requires the integrated staged Runtime post-commit hook")
+
+    runtime = Runtime(Path(tmp_path))
+    try:
+        runtime.sleep.cycle.set_policy("enabled", "off")
+        routes = ("simple", "detail", "gist", "both")
+        output_lengths = {"simple": 12, "detail": 36, "gist": 64, "both": 92}
+        route_calls = [0]
+        current_route = ["simple"]
+
+        def choose_route(*args, **kwargs):
+            route = routes[route_calls[0] % len(routes)]
+            route_calls[0] += 1
+            current_route[0] = route
+            return route, {"source": "SYNTHETIC_TEST"}
+
+        def generate(*args, **kwargs):
+            return iter(["x" * output_lengths[current_route[0]]])
+
+        runtime._route = Mock(side_effect=choose_route)
+        runtime.pool.get = Mock(return_value=SimpleNamespace(
+            role="C3_LANGUAGE", last_metrics={}, generate=generate
+        ))
+        runtime.learner.output_delta = Mock(return_value=None)
+
+        _, version = runtime.store.state(
+            "v14.world_jepa.permissions",
+            {"learning_enabled": False, "optimizer_permission": False, "steps": 40},
+        )
+        runtime.store.set_state(
+            "v14.world_jepa.permissions",
+            {"learning_enabled": True, "optimizer_permission": True, "steps": 80},
+            expected=version,
+        )
+
+        for index in range(64):
+            runtime.submit(
+                f"staged synthetic runtime event {index:04d} "
+                + ("i" * (80 + index % 31))
+            )
+            deadline = time.monotonic() + 10
+            while not runtime.idle() and time.monotonic() < deadline:
+                time.sleep(0.003)
+            assert runtime.idle(), f"runtime turn {index} did not settle"
+            assert runtime.last_answer()["status"] == "FINAL"
+
+        payload, _ = runtime.store.state("v14.world_jepa.store_consumer", None)
+        assert payload is not None and payload["active"] is not None
+        active = payload["active"]
+        metrics = active["metrics"]
+        assert metrics["parameter_delta_norm"] > 0.0
+        assert metrics["ema_target_delta_norm"] > 0.0
+        assert metrics["train_holdout_source_sha256_disjoint"] is True
+        assert metrics["negative_controls_separated"] is True
+        assert set(active["receiver_heads"]) == {"B1_DETAIL", "B2_GIST", "SELF_MODEL"}
+        assert active["native_body_weights_changed"] is False
+        assert payload["scan_cursor"] >= 16
+
+        prediction_rows = runtime.store.rows(
+            "SELECT payload FROM packets WHERE kind='ActionPrediction' ORDER BY created DESC LIMIT 12"
+        )
+        delivered = []
+        for row in prediction_rows:
+            prediction = json.loads(row["payload"])["prediction"]
+            shadow = prediction.get("online_world_shadow")
+            if isinstance(shadow, dict) and isinstance(shadow.get("world_jepa_receivers"), dict):
+                delivered.append(shadow["world_jepa_receivers"])
+        assert delivered, "no ActionPrediction carried the persisted JEPA receiver readouts"
+        receivers = delivered[0]
+        assert set(receivers) == {"B1_DETAIL", "B2_GIST", "SELF_MODEL"}
+        for readout in receivers.values():
+            assert readout["status"] == "SHADOW_READOUT_ONLY"
+            assert readout["decision_authority"] == "NONE"
+            assert readout["native_body_consumed"] is False
+            assert readout["native_body_weights_changed"] is False
+        assert runtime.cfg["learning_mode"] == "RECORD_ONLY"
     finally:
         runtime.close()
