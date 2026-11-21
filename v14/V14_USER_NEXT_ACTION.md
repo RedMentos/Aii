@@ -1,3 +1,11 @@
+## Additional C4 review — Core PR #2195 (2026-11-21 14:24 UTC)
+
+- PR head `37b19c327d92ee26d7e90d7c858474d33777ed68` is a review-only staged source-span-aware redundancy overlay for B1_DETAIL/B2_GIST → C4 → C3.
+- Reported exact C4 CI `44900148162` PASS and staged/integrated `44900148097` PASS; safe-additive `44900148237` rejects the existing script/workflow path by policy. No waiver.
+- QA inspected the source path: `Cognition.offer` only adds quote pointers after `Store.read_source` validates the exact source span, and Workspace re-reads persisted refs. Existing negative tests cover overlapping spans, cross-source IDs, digest mismatch, same-role duplicates, body/memory, missing refs and capacity.
+- QA requested additional modality-mismatch and malformed/zero-length/reversed-span negatives. The candidate is still `SHADOW_REVIEW_ONLY`, outside the normal pinned builder. Synthetic runners prove only that both offers reach the C3 prompt, not native model comprehension.
+- PR base `4a471ae...` is stale relative to current release `5a141153...`; rebase and rerun exact staged/integrated checks before Boss decides on integration. Redmi remains unverified.
+
 # QA & Android — latest verified handoff
 
 **Checkpoint:** 2026-11-21 14:22 UTC  
