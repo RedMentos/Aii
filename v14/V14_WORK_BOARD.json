@@ -28,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Current branch head 6967e9d8e03384e9849d8ca5e3a24779402f9cf5 is a documentation-only merge of #2173; 28 exact-head checks are queued/in progress at readback. Last code head c76a018b37be18f9a4706a32fa7a817f7b4828b9 had 28 checks: 27 success and one Python 3.13 failure in v14/learning/test_world_jepa_consumer.py::test_oldest_first_pages_do_not_starve_older_t8_backlog; integrated-regression completed PASS. The failing test gets UTILITY_GATE_REJECTED on the first 64-row page; keep the utility gate strict. Private owner-read #373 and prior #368 expired with zero comments. Installed SHA UNKNOWN; updater consent UNVERIFIED; REDMI_UNVERIFIED.",
-      "next_step": "Wait for the JEPA owner to make the cursor/backlog test independent of utility acceptance while preserving strict holdout and negative-control gates; then require every exact branch check to finish green. Wait for the already-open #373 receipt. Do not send UPDATE_REQUEST, mutate the phone, or ask the user for a Termux command while the receipt is pending.",
+      "proof_environment": "QA readback 2026-11-21 08:13 CET: exact release branch HEAD is 9d9c591ad219a17e273fe12d47ffdcfdb3ee471d (documentation-only update after 6967e9d). The commit workflow query returned 12 runs: 11 success, 1 failure in V14 T8 run 44878256511 on Python 3.14; its only failure is the backlog test expecting UPDATED_EXPERIMENTAL_WORLD_JEPA when the strict utility gate correctly returns UTILITY_GATE_REJECTED (63 passed, 1 failed). QA PR #2174 head 9bedef3af9dc7021c8891c543f6149d0d7726125 changes only that test; exact T8 run 44878570470 passed 64/64 on Python 3.13 and 64/64 on Python 3.14. It asserts cursor/pending-row fairness independently and no native-body weight change/consumption on utility rejection; production utility/retention gates are unchanged. PR #2174 remains open/unmerged, so the release branch remains NOT_RELEASED pending integration and a fresh full exact-merge-SHA check. Private owner-read #373 is still open with zero comments after expiry; #368 also expired. Installed SHA UNKNOWN, auto-update consent UNVERIFIED, REDMI_UNVERIFIED.",
+      "next_step": "Boss: integrate QA PR #2174 after review, then rerun the full required workflow/check matrix on the exact merge SHA. Keep the utility/holdout/shuffle/zero-action/retention gates strict and keep release NOT_RELEASED until all required exact-SHA checks pass. Continue waiting for a fresh owner-authenticated phone receipt; do not send UPDATE_REQUEST, mutate the phone, or ask for a Termux command without a valid receipt and verified consent.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 07:59 CET",
+      "last_checkpoint": "2026-11-21 08:13 CET",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -201,10 +201,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
-      "proof_environment": "QA PR #2163 current head 47622acc9ec156e9462e1d8ce526549c761c9c5f hardens the dry-run Android-control audit DB: broker 18/18 PASS, sandbox replay 42/42 PASS, staged 240/10 skipped/47 subtests, integrated 415/3 skipped/58 subtests. validate-additive rejects the existing android_control.py edit; PR remains draft and is 41 commits behind current release. The code explicitly has no OS executor and does not defend against a malicious same-UID race. No Android API/UI action, AccessibilityService, MediaProjection or device receipt is implemented.",
-      "next_step": "QA: rebase the candidate onto current release and independently review the filesystem threat model, while keeping the explicit same-UID race limitation. Core/QA still need a separate authenticated Android companion, OS permission checks, action receipts, stop/revocation and actual Android instrumentation. Do not label this broker as Android control completion.",
+      "proof_environment": "QA review 2026-11-21 08:13 CET: PR #2172 head 4c4d4dc9f25373a08f409d243d777f3970e9fde1 adds ancestor-symlink rejection and AOSP alias handling to the dry-run audit DB. Exact CI: broker 21/21 PASS (44877853762); sandbox replay 45/45 PASS and privacy scan CLEAN (44877853676); staged-runtime 240 passed/10 skipped/47 subtests and integrated-regression 415 passed/3 skipped/58 subtests (44877853687). Safe-additive intentionally rejects the existing android_control.py edit (44877853672); no bypass. PR is DRAFT / NOT_RELEASED and 5 commits behind current release branch 9d9c591ad219a17e273fe12d47ffdcfdb3ee471d. Review comment #7059157507 identifies an untested path race if a different UID can rename/replace the immediate parent through a non-sticky writable ancestor; either constrain to protected app-private roots or validate ancestor renameability and add a negative test. AOSP Android 13 init.rc bind-mounts /data/data at /data/user/0, while older installd code uses a symlink; the symlink exception is legacy/OEM compatibility, not Android 13 device proof. This remains filesystem hygiene for a dry-run broker, not an OS sandbox or Android executor. No Android API/UI action, AccessibilityService, MediaProjection, consent, microphone, updater, model, weight, SQLite/chat data or phone state was changed; REDMI_UNVERIFIED.",
+      "next_step": "Rebase/sync #2172 onto current release ancestry. Address the writable-ancestor rename race by enforcing a protected app-private root or validating each ancestor, with a negative test; keep the explicit same-UID limitation. Retain the safe-additive gate and dry-run-only boundary. Core/QA still need a separately authenticated companion, Android OS permissions, API-first action path, separately permissioned UI observation/action, stop/revocation, audit receipts and real Redmi instrumentation.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 07:49 CET"
+      "last_checkpoint": "2026-11-21 08:13 CET"
     },
     {
       "id": "V14-010",
@@ -259,11 +259,11 @@
       "last_checkpoint": "2026-11-21 06:42 CET: 1,255 headings preserved; clause-level completion remains OPEN."
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED — private owner-read #373 and previous #368 expired with no reply.",
+  "current_redmi_status": "REDMI_UNVERIFIED — private owner-read #373 remains open with zero comments after its expiry; installed SHA UNKNOWN, auto-update consent UNVERIFIED.",
   "last_code_release_head": "c76a018b37be18f9a4706a32fa7a817f7b4828b9",
-  "latest_integrated_head": "6967e9d8e03384e9849d8ca5e3a24779402f9cf5",
-  "latest_integrated_head_verified_at": "2026-11-21T07:01:04.818Z",
-  "release_gate_status": "NOT_RELEASED: documentation-only PR #2173 merged at 6967e9d8e03384e9849d8ca5e3a24779402f9cf5; exact current-head checks 28 queued/in progress at readback. Last code head c76a018b37be18f9a4706a32fa7a817f7b4828b9 had 27/28 checks green and one Python 3.13 WorldJEPA backlog test failure; integrated-regression completed. Phone unverified.",
+  "latest_integrated_head": "9d9c591ad219a17e273fe12d47ffdcfdb3ee471d",
+  "latest_integrated_head_verified_at": "2026-11-21T07:13:52Z",
+  "release_gate_status": "NOT_RELEASED: exact current branch HEAD 9d9c591ad219a17e273fe12d47ffdcfdb3ee471d has one V14 T8 backlog-test failure on Python 3.14 (63 passed/1 failed) among 12 queried commit workflows. QA PR #2174 exact T8 workflow passes 64/64 on Python 3.13 and 3.14, but is not merged; rerun the full exact merge-SHA matrix before release. Phone installation and auto-update consent remain unverified.",
   "phone_receipt": {
     "issue": "RedMentos/Aiiii#373",
     "state": "OPEN_EXPIRED_NO_REPLY",
