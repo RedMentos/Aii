@@ -382,3 +382,13 @@ This is a harness and smoke experiment, not speech-corpus evidence and not a VAD
 ### Next experiment
 
 Run the exact-source CI matrix on Python 3.13/3.14, then build pinned libfvad C source for the actual Termux/aarch64 toolchain and repeat with a source-licensed, real annotated speech/noise corpus. Report native library build identity, ARM ABI, p50/p95 CPU and onset/offset, process and incremental RSS, FPR/FNR, SNR strata, annotation uncertainty and privacy-safe aggregate outputs. Redmi measurements remain REDMI_UNVERIFIED until a real authorized device receipt exists.
+
+
+
+### Exact-source CI readback — 2026-11-21
+
+- Dedicated workflow run **44891098086** passed on exact branch head \`6333a2c95b85342c341fcfe00a6e4693bd56f2c0\`: Python 3.13 **5/5 PASS** and Python 3.14 **5/5 PASS**. Both jobs compiled the exact producer/temporal source and verified Git blob identities \`7b1d519cd36ede4b520d78e22c0f89132a1c73a5\` and \`f693f8b8394558a63d87a35fc67ea3db9dcb1929\`, then ran the WebRTC wheel smoke and fake-C-ABI test.
+- Existing V14 model-lab workflow **44891067617** passed its repository-wide unittest discovery: 28 tests, 2 skipped because that workflow intentionally does not install the optional WebRTC wrapper. This verifies the new test module no longer breaks the existing runner.
+- Initial model-lab run **44890888702** failed because the first test draft imported pytest while the existing workflow uses unittest without installing pytest. Converted the suite to unittest in commit \`e362c372e082e8b9036987ffe45b7870b1cd88d4\`; the later model-lab run passed. The first failure is retained here rather than hidden.
+- No real libfvad build, ARM ABI, Android/Termux run, speech-corpus evaluation or Redmi measurement is implied by these CI results.
+
