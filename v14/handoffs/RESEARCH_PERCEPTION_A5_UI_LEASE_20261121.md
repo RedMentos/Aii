@@ -197,3 +197,12 @@ PR #2256 exposes this as an explicit opt-in backend on extract_voice_cues and co
 
 - `NOT_RELEASED`; `REDMI_UNVERIFIED`; no device action, updater request, model/weight change, permission or user-data change.
 - Core: compose #2255's Store lock into the staged lifecycle builder and recompute pins. QA: rebase #2250 after composition and retain the deterministic separate-thread A5-to-A5 race. Boss: review protected-file/safe-additive policy and PR ownership. NumPy: leave opt-in until authorized Termux cold-import/RSS/short-window/full-duplex measurements.
+
+
+## Final run-11 CI correction — 2026-11-21T20:39:08.726Z
+
+- #2255 deterministic generic Store-source race workflow `44946951711`: **PASS** on CPython 3.13 and 3.14, each 16 passed / 5 subtests; compile and privacy scan CLEAN. Code/test commit `ebcbca01d539f2b1a3a5eef8ac3c19e4d80e23a4`.
+- #2255 staged/integrated remains **FAIL** solely at the stale Core source-lifecycle Store pin (`fe66f925...` expected vs new Store SHA-256 `40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb`). Core owns semantic anchor and downstream pin recomputation; safe-additive is FAIL_BY_POLICY.
+- #2256 NumPy focused workflow `44946779051`: **PASS** Python 3.13/3.14, 42 tests each; staged/integrated `44946779195`: **PASS** staged 251/10/47 and integrated 424/3/58; prosody, consent-revocation, WebRTC/libfvad and privacy checks pass. Safe-additive remains FAIL_BY_POLICY. Default remains pure Python.
+- R-048 full-text Tandem preprint and MIT fork review added to the research ledger. Its 16-GB Snapdragon 8 Elite/Gen 5 Hexagon results are not Redmi evidence and the NPU fork is not a direct target fit; only divergence-point checkpointing is a future research hypothesis.
+- No local full Aii checkout test; no Redmi receipt. `NOT_RELEASED` / `REDMI_UNVERIFIED`. No device, model, weight, permission or updater change.
