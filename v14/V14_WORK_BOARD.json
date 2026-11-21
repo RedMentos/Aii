@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T14:48:05Z",
+  "updated_at": "2026-11-21T14:59:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -28,10 +28,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Release-development HEAD 99ec54534fc9e99ce5689d335c80162f018de288 has 30/30 exact check-runs SUCCESS; push staged/integrated, owner-read, Lab Age and private-bridge checks passed. The ancillary reviewed-agent queue run 44914600317 was cancelled. Private owner-read #407/#408/#409/#410 all expired without reply; installed SHA/updater consent UNKNOWN; REDMI_UNVERIFIED. GitHub CI is not a phone receipt.",
-      "next_step": "No duplicate private requests and no manual Termux command. Wait for a future authenticated owner-read receipt; compare installed SHA only after receipt. Keep the current device, models, permissions, Age and updater settings untouched.",
+      "proof_environment": "Current branch HEAD f48ca649c126d50076779e044c6627a5f75124e6 is research-ledger-only (R-025 STABLE) and its 29 check-runs are still IN_PROGRESS. Last fully verified HEAD 99ec54534fc9e99ce5689d335c80162f018de288 had 30/30 check-runs SUCCESS. Private owner-read #407/#408/#409/#410 expired without replies; installed SHA/updater consent UNKNOWN; REDMI_UNVERIFIED. CI is not a phone receipt.",
+      "next_step": "No duplicate private requests and no manual Termux command. Wait for a future authenticated owner-read receipt; compare installed SHA only after receipt. Keep current device, models, permissions, Age and updater settings untouched.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 14:48 UTC",
+      "last_checkpoint": "2026-11-21 14:59 UTC",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -159,10 +159,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "QA PR #2223 head ef930541a09e4c76438cbea640e1a685c2d655ef adds production checkpoint publication regressions: forced EPERM/EACCES fallback, hardlink/renameat2 racing-target EEXIST, and directory-fsync rollback. Exact GitHub Linux Python 3.11 focused run 44915486181: 26 passed; staged/integrated run 44915486170: staged 249 passed/10 skipped/47 subtests and integrated 424 passed/3 skipped/58 subtests; same-repo guard 44915486178 PASS. Safe-additive 44915486187 FAILS because workflow invocation/path filter is outside its additive-only scope; no bypass, Boss review required. Local full checkout BLOCKED by GitHub DNS; no Android/Redmi proof.",
-      "next_step": "Boss review the explicit workflow invocation/path-filter addition in #2223; do not waive the safe-additive failure. After independent review/merge, keep Android/Bionic filesystem verification separate. Perception+QA still need the combined deterministic #2214/#2219 pre-PCM revocation and non-reentrant lease-token contract.",
+      "proof_environment": "QA PR #2223 head f7b11ce22fecee622653a1e2f643e67e4dfd20aa adds production checkpoint-publication regressions: forced EPERM/EACCES fallback, hardlink/renameat2 racing-target EEXIST, and directory-fsync rollback. Exact pinned Python 3.11.18/3.13.18/3.14.10 matrix run 44916452824: 26 passed on each. Staged run 44916452817: 249 passed/10 skipped/47 subtests. Integrated 424/3/58 passed on preceding code-equivalent head 65699b46 (44916295261); current f7b11ce integrated run 44916452817 is still IN_PROGRESS. Safe-additive 44916452782 FAILS because the PR modifies an existing workflow and V14 board/handoff; no bypass, Boss review required. Local checkout BLOCKED by GitHub DNS; no Android/Redmi proof.",
+      "next_step": "Boss review the explicit workflow invocation/path-filter and V14 handoff changes in #2223; do not waive safe-additive. Once approved, merge only after the current exact-head integrated job completes. Perception+QA still need combined deterministic #2214/#2219 pre-PCM revocation and non-reentrant lease-token proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 14:48 UTC",
+      "last_checkpoint": "2026-11-21 14:59 UTC",
       "latest_candidate_pr": {
         "pr": 2155,
         "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
@@ -180,10 +180,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Exact release-development HEAD 99ec54534fc9e99ce5689d335c80162f018de288: 30/30 check-runs SUCCESS; 19 associated PR workflows 19/19 SUCCESS; push staged/integrated, owner-read, Lab Age and private bridge checks passed. Ancillary reviewed-agent queue run 44914600317 cancelled. PR #2222 exact Python 3.13/3.14 matrix PASS. QA #2223 focused/staged/integrated PASS but safe-additive fails on workflow modification; Boss review required. No phone installation or release acceptance inferred.",
-      "next_step": "Boss: review #2223's workflow-only scope and safe-additive failure without bypass; continue exact-base integration of #2195 and the combined RAW EAR producer/QA consumer. Maintain whole-Canon mapping and REDMI_UNVERIFIED.",
+      "proof_environment": "Current branch HEAD f48ca649c126d50076779e044c6627a5f75124e6 is research-only R-025 and has 29 checks IN_PROGRESS; last verified HEAD 99ec54534fc9e99ce5689d335c80162f018de288 had 30/30 checks SUCCESS. PR #2222 exact Python 3.13/3.14 matrix PASS. QA #2223 exact pinned CPython 3.11/3.13/3.14 publisher tests 26 each PASS; staged 249/10/47 PASS; integrated 424/3/58 PASS on prior code-equivalent head; current integrated rerun pending. Safe-additive fails on workflow/docs scope; Boss review required. No phone installation or release acceptance inferred.",
+      "next_step": "Boss: reconcile the R-025 note/current branch CI and review #2223's workflow/docs scope without bypassing safe-additive. Continue exact-base #2195 and combined RAW EAR producer/QA consumer. Maintain whole-Canon mapping and REDMI_UNVERIFIED.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 14:48 UTC"
+      "last_checkpoint": "2026-11-21 14:59 UTC"
     },
     {
       "id": "V14-008",
@@ -236,10 +236,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
-      "proof_environment": "PR #2223 tests the actual production world_jepa_shadow_checkpoint.save/load path under injected hardlink EPERM/EACCES, target races and directory fsync failure. GitHub Linux Python 3.11 focused suite 26 passed; staged/integrated suites also passed. This is synthetic model state on Linux, not Android filesystem/SELinux or Redmi lifecycle proof.",
-      "next_step": "Extend the lifecycle acceptance with quiet-hours/resource-pressure preemption, cooperative cancellation, idempotent retry, cleanup after crash/restart and checkpoint lineage/rollback. Then require actual Redmi measurements before any Android-native promotion.",
+      "proof_environment": "PR #2223 tests the actual production world_jepa_shadow_checkpoint.save/load path under injected hardlink EPERM/EACCES, target races and directory fsync failure. Pinned GitHub Linux Python 3.11/3.13/3.14 focused matrix 26 passed on each; staged 249/10/47 passed; integrated 424/3/58 passed on preceding code-equivalent head, with current integrated rerun still in progress. This is synthetic NumPy model state on Linux, not Android filesystem/SELinux or Redmi lifecycle proof.",
+      "next_step": "After review, extend lifecycle acceptance with quiet-hours/resource-pressure preemption, cooperative cancellation, idempotent retry, cleanup after crash/restart and checkpoint lineage/rollback. Require actual Redmi measurements before Android-native promotion.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 14:48 UTC"
+      "last_checkpoint": "2026-11-21 14:59 UTC"
     },
     {
       "id": "V14-012",
@@ -271,7 +271,7 @@
   "last_code_release_head": "6c444e1dfdea19583002519a682fd64bca465098",
   "latest_integrated_head": "99ec54534fc9e99ce5689d335c80162f018de288",
   "latest_integrated_head_verified_at": "2026-11-21T14:43:27Z",
-  "release_gate_status": "Release-development HEAD 99ec54534fc9e99ce5689d335c80162f018de288: exact commit readback verified; 30/30 check-runs completed SUCCESS, including Python 3.13/3.14 staged startup/SQLite, JEPA optimizer-resume, staged-runtime and integrated-regression. Associated PR-triggered workflows 19/19 SUCCESS. Push runs include staged/integrated 44914600285, owner-read 44914600299, Lab Age 44914600253 and private bridge 44914600312; ancillary reviewed-agent queue run 44914600317 was cancelled. This verifies GitHub CI only. PR #2222 exact Python 3.13/3.14 optimizer-resume matrix run 44914934454 PASS. QA PR #2223 exact focused 26 PASS, staged 249/10/47 PASS, integrated 424/3/58 PASS, same-repo guard PASS; safe-additive FAIL because it modifies an existing workflow and requires Boss manual review. NOT_RELEASED / REDMI_UNVERIFIED; installed SHA and updater consent UNKNOWN.",
+  "release_gate_status": "Current branch HEAD f48ca649c126d50076779e044c6627a5f75124e6 is a research-ledger-only R-025 STABLE note; 29 associated check-runs are IN_PROGRESS at this readback, so this new head is not yet verified. Last fully verified head 99ec54534fc9e99ce5689d335c80162f018de288 had 30/30 check-runs SUCCESS and 19/19 associated PR workflows SUCCESS. PR #2222 exact Python 3.13/3.14 optimizer-resume run 44914934454 PASS. QA #2223 head f7b11ce: focused publisher matrix 26 passed on each CPython 3.11/3.13/3.14 with pinned dependencies (44916452824), staged 249/10/47 PASS (44916452817); integrated 424/3/58 PASS on preceding code-equivalent head 65699b46 (44916295261), while current f7b11ce integrated run 44916452817 remains IN_PROGRESS. Safe-additive 44916452782 FAIL due existing workflow and V14 docs changes; no bypass, Boss review required. NOT_RELEASED / REDMI_UNVERIFIED; installed SHA and updater consent UNKNOWN.",
   "phone_receipt": {
     "issue": "RedMentos/Aiiii#410",
     "state": "ALL_PRIVATE_READS_407_408_409_410_EXPIRED_NO_REPLY",
