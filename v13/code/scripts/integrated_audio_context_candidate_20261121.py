@@ -68,6 +68,7 @@ def apply_sources(code_dir: Path, sources: dict[str, bytes]) -> dict[str, bytes]
     "pcm16", "sample_rate", "start_ms", "source_id",
     "consent_receipt", "consent_check", "consent_guard", "finality",
 }
+# Optional only for text-only fallback; when supplied, the callback must register both revoke phases.
 _AUDIO_WINDOW_OPTIONAL_FIELDS = {"consent_revocation_subscribe"}
 
 
@@ -372,31 +373,64 @@ def _audio_lease_turn(self, event):
     source_id = window.get("source_id")
     receipt = window.get("consent_receipt")
     event_id = event.get("event_id")
+    generation_id = self.store.generation_id
+    self.turn_event = event
     subscribe = window.get("consent_revocation_subscribe")
     unsubscribe = None
-    if callable(subscribe):
-        try:
-            unsubscribe = subscribe(
-                source_id, receipt,
-                lambda: revoke_source(self, source_id, receipt),
-            )
-            if unsubscribe is not None and not callable(unsubscribe):
-                raise TypeError("consent revocation unsubscribe must be callable")
-            window["_consent_revocation_unsubscribe"] = unsubscribe
-        except Exception as exc:
-            event.pop("_audio_window", None)
-            self.store.log("audio_input_unavailable", event_id,
-                           {"stage": "revocation_subscription", "error": type(exc).__name__})
-            return _AUDIO_ORIGINAL_TURN(self, event)
+    request_seen = threading.Event()
+    lease_active = threading.Event()
+
+    # One provider subscription must register both phases: request-cancel
+    # before waiting for the guard, then tombstone cleanup after guard release.
+    if not callable(subscribe):
+        event.pop("_audio_window", None)
+        self.store.log("audio_input_unavailable", event_id,
+                       {"stage": "two_phase_revocation_subscription_required"})
+        return _AUDIO_ORIGINAL_TURN(self, event)
+
+    def on_revoke_requested():
+        request_seen.set()
+        if lease_active.is_set():
+            active = getattr(self, "turn_event", None)
+            if (getattr(self, "current", None) == "turn"
+                    and isinstance(active, dict)
+                    and active.get("event_id") == event_id
+                    and self.store.generation_id == generation_id):
+                self.cancel_event.set()
+
+    def on_revoked():
+        return revoke_source(self, source_id, receipt)
+
+    try:
+        unsubscribe = subscribe(
+            source_id, receipt, generation_id, on_revoke_requested, on_revoked,
+        )
+        if not callable(unsubscribe):
+            raise TypeError("two-phase consent revocation subscription must return unsubscribe")
+        window["_consent_revocation_unsubscribe"] = unsubscribe
+    except Exception as exc:
+        if callable(unsubscribe):
+            try:
+                unsubscribe()
+            except Exception:
+                pass
+        event.pop("_audio_window", None)
+        self.store.log("audio_input_unavailable", event_id,
+                       {"stage": "revocation_subscription", "error": type(exc).__name__})
+        return _AUDIO_ORIGINAL_TURN(self, event)
 
     from .audio_voice_cues import audio_consent_lease
     try:
         manager = audio_consent_lease(
-            self, source_id, self.store.generation_id, receipt,
+            self, source_id, generation_id, receipt,
             window.get("consent_check"), window.get("consent_guard"),
         )
         lease = manager.__enter__()
+        lease_active.set()
+        if request_seen.is_set():
+            self.cancel_event.set()
     except Exception as exc:
+        lease_active.clear()
         if callable(unsubscribe):
             try:
                 unsubscribe()
@@ -413,11 +447,14 @@ def _audio_lease_turn(self, event):
             result = _AUDIO_ORIGINAL_TURN(self, event)
         except BaseException as exc:
             manager.__exit__(type(exc), exc, exc.__traceback__)
+            lease_active.clear()
             raise
         else:
             manager.__exit__(None, None, None)
+            lease_active.clear()
             return result
     finally:
+        lease_active.clear()
         window.pop("_consent_lease", None)
         try:
             sweep_revoked(self)
@@ -427,8 +464,9 @@ def _audio_lease_turn(self, event):
         if callable(unsubscribe) and not has_context(self, event_id):
             try:
                 unsubscribe()
-            except Exception:
-                pass
+            except Exception as exc:
+                self.store.log("audio_input_unavailable", event_id,
+                               {"stage": "revocation_unsubscribe", "error": type(exc).__name__})
 
 
 Runtime._turn = _audio_lease_turn
@@ -522,6 +560,15 @@ def _revoke(runtime, event_id, context):
         registry = getattr(runtime, "_audio_revocation_contexts", None)
         if isinstance(registry, dict) and registry.get(event_id) is context:
             registry.pop(event_id, None)
+    unsubscribe = context.get("consent_revocation_unsubscribe") if type(context) is dict else None
+    if callable(unsubscribe):
+        try:
+            unsubscribe()
+        except Exception as exc:
+            runtime.store.log(
+                "audio_context_cleanup_failed", event_id,
+                {"stage": "revocation_unsubscribe", "error": type(exc).__name__},
+            )
     return True
 
 

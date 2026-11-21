@@ -12,6 +12,7 @@ on:
       - v13/code/v13/runtime_deploy.py
       - v13/code/tests/test_termux_runtime_recovery_stage.py
       - v13/code/tests/test_v14_audio_lease_runtime.py
+      - v13/code/tests/test_v14_audio_revocation_request.py
       - v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py
       - v13/code/tests/test_arithmetic_reflex.py
       - v13/code/tests/test_arithmetic_stage_20261116.py
@@ -30,6 +31,7 @@ on:
       - v13/code/v13/runtime_deploy.py
       - v13/code/tests/test_termux_runtime_recovery_stage.py
       - v13/code/tests/test_v14_audio_lease_runtime.py
+      - v13/code/tests/test_v14_audio_revocation_request.py
       - v13/code/tests/test_v14_exact_arithmetic_runtime_20261121.py
       - v13/code/tests/test_arithmetic_reflex.py
       - v13/code/tests/test_arithmetic_stage_20261116.py
@@ -62,12 +64,14 @@ jobs:
           scripts/stage_integrated_candidate.py
           v13/runtime_deploy.py
           tests/test_v14_exact_arithmetic_runtime_20261121.py
+          tests/test_v14_audio_revocation_request.py
       - name: Stage and test Runtime audio, exact arithmetic, C5 and persistence
         working-directory: v13/code
         run: >-
           python -m pytest -q
           tests/test_termux_runtime_recovery_stage.py
           tests/test_v14_audio_lease_runtime.py
+          tests/test_v14_audio_revocation_request.py
           tests/test_v14_exact_arithmetic_runtime_20261121.py
           tests/test_arithmetic_reflex.py
           tests/test_arithmetic_stage_20261116.py

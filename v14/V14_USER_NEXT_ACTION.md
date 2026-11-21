@@ -1,3 +1,89 @@
+# Latest Android UI lease review — 2026-11-21 20:18 CET
+
+Perception #2246 now has a two-phase revoke protocol: request-cancel before waiting for the provider guard, then source/context cleanup after the guard is released. This is the correct direction. However, the adapter path currently omits the required `generation_id` argument when calling `ui_observation_lease`; the adapter-level test should fail until that is fixed. Its CI is still queued/in progress. No Android OS provider, screenshot/UI-tree capture or action is implemented.
+
+#2243's explicit tiny-KV experiment CI passed 3/3; privacy/offline-bridge pass; model-lab rerun queued. It is a toy mechanism proof only. #2242 audio still has the deployer pin failure and no two-phase revoke cancel. #2247 learning remains gated because all A-GEM updates fail per-session retention.
+
+**No user action is required.** No device action, model download/swap, permission change or data mutation occurred.
+
+---
+
+# Latest A5 research note — 2026-11-21 20:12 CET
+
+Perception #2246 now has a new head `e9a40aff...`; four checks are queued. It is still a synthetic metadata-only UI lease, with no Android OS provider/capture/action and no immediate revoke-cancel path. It must rebase after #2243 synchronizes.
+
+R-042 identifies SmolVLM-256M-Instruct as a possible optional visual teacher: Apache-2.0, image+text only, 256M parameters, Q8 GGUF model 175 MB plus Q8 mmproj 104 MB (279 MB total at the pinned revision). Official llama.cpp supports it through libmtmd; Android Termux CLI is documented, but no ARM64/Redmi benchmark exists. No model was downloaded or swapped. Before any trial, measure ARM64 build, image-size scaling, TTFT, RSS/PSS and quality; explicit consent is required for download/production use.
+
+**No user action is required.** Existing B1/B2/C3 models and permissions remain untouched. Full Canon and Redmi acceptance remain open.
+
+---
+
+# Latest research / integration handoff — 2026-11-21 20:07 CET
+
+**No user action is required.**
+
+- Research/Perception #2243's new explicit tiny-KV test job passed 3/3 on prior exact head `ae26c94700ca8077b38cbd87c40db89b4ae46360` with pinned CPU-only PyTorch/NumPy; model-lab/privacy/offline-bridge also passed. This validates only the tiny synthetic cross-geometry mechanism experiment. Current PR head `3e52c96d...` is diverged from the shared branch (15 ahead / 17 behind) because its old board/workplan/next-action edits conflict with Boss docs PR #2248; it must sync normally before merge. B3 remains PARTIAL_SYMBOLIC_ONLY.
+- #2246 remains a synthetic metadata-only A5 UI lease and is based on an older #2243 head; no Android screen capture/action provider.
+- #2247 per-session JEPA gate correctly rejects all tested A-GEM updates; 11/14 checks green, two optimizer checks fail retention, no checkpoint commit. Learning gates OFF.
+- Core #2242 still has 4 failures / 9 successes due stale deployer STAGER_SHA256 and downstream staged/migration failures; revoke cancellation not fixed. Not released.
+- Current code release remains f279; integrated candidate 728cdc remains 18/19 due SleepRuntime JEPA UTILITY_GATE_REJECTED. Redmi remains REDMI_UNVERIFIED; no private owner-read reply, installed SHA or updater consent.
+
+No device action, model download/swap, permission change or data mutation was performed. Full Canon remains open.
+
+---
+
+# Latest shared-branch handoff — 2026-11-21 20:03 CET
+
+**No user action is required. Do not run an installer or change models, weights, Age, permissions, updater settings or phone data.**
+
+- Run-11 docs PR [#2248](https://github.com/RedMentos/Aii/pull/2248) is merged at `a1b1e9aad5e805b484ea6412dbd84abc454e66e0`; it updates the V14 board, workplan, next-action handoff and Canon evidence overlay. Its offline-bridge-security check passed 1/1. The active master and historical V13 appendix were not modified.
+- Core #2242 head `3dc8a194df9230b191236b8011216362d00c88cd`: 9 checks pass, 4 fail. Stage arithmetic works in Python 3.13/3.14; deployer still rejects the changed stage builder because `runtime_deploy.STAGER_SHA256` is stale. Staged Runtime/migration fail downstream. Audio revoke still cannot cancel C3, and subscription is optional. Not released.
+- JEPA #2247 head `e8137fd3d873ee08d7159a32ddd2240ab8f43f31`: 10/13 checks pass. Every A-GEM arm is rejected by per-session retention on seeds 13/19/43; no checkpoint is committed. Learning gates remain OFF.
+- Perception #2243 head `ae26c94700ca8077b38cbd87c40db89b4ae46360` now has an explicit tiny-KV experiment test workflow; the new test job is still in progress at this read. B3 remains PARTIAL_SYMBOLIC_ONLY. #2246 remains one commit behind and has only synthetic UI-lease checks.
+- Prior code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`; integrated candidate `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` remains 18/19 due SleepRuntime JEPA `UTILITY_GATE_REJECTED`.
+- Private owner-read has no authenticated reply; installed SHA/updater consent unknown; REDMI_UNVERIFIED. No device update or action.
+
+The full Canon is still open. No active learning, native B1/B2/C3 weight edit, production latent receiver, microphone capture, Android UI action or Redmi verification is claimed.
+
+---
+
+# Current user-facing JEPA follow-up — 2026-11-21 20:00 CET
+
+**No user action is required.** The newest JEPA candidate #2247 is still draft. It correctly rejects updates that worsen any old session; all A-GEM replay arms are rejected on three seeds, so no numeric update or checkpoint is accepted. Exact CI is 10/13 checks green; the two Python optimizer-resume jobs fail on per-session retention and safe-additive is a policy failure. Keep learning gates OFF. This is preferable to silently damaging old memories, but it does not yet deliver active learning.
+
+Research suggests replay is not always beneficial and a bounded loss-based replay selector may be worth testing later (R-040/R-041 proposal, pending shared research-ledger entry). No model or dependency was downloaded/imported. The current code release remains f279; no new release or Redmi install is verified.
+
+---
+
+# Current user-facing follow-up — 2026-11-21 19:57 CET
+
+**No user action is required. Do not run another Termux installer or change models, weights, Age, permissions, updater settings or phone data.**
+
+- Core #2242 advanced to head `3dc8a194df9230b191236b8011216362d00c88cd`. The arithmetic blob-header bug is fixed and Python 3.13 staged audio now passes. The deployer still has the old `STAGER_SHA256`, so Python 3.14 startup fails with `Integrated stage builder changed`; staged-runtime/migration fail downstream. Current exact checks: 4 failures, 3 in progress, 6 successes. Revocation still cannot cancel C3 during a blocked stream, and the revocation subscription is optional. Not released.
+- The docs-only run-11 handoff/coverage PR is [#2248](https://github.com/RedMentos/Aii/pull/2248), head `7462a9b`, with offline-bridge-security 1/1 green; it is not a code release.
+- The prior code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`; integrated candidate `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` remains 18/19 because SleepRuntime JEPA acceptance returns `UTILITY_GATE_REJECTED`.
+- No authenticated private owner-read reply; installed SHA and updater consent remain UNKNOWN. REDMI_UNVERIFIED. No device update or action.
+
+Next internal work: Core fixes the deployer pin chain and permission-revoke cancellation; QA rebases and tests automatic revoke-through-C3 cleanup; JEPA keeps strict retention gates; Perception adds explicit CI for the tiny K/V experiment. Full Canon remains open.
+
+---
+
+# Current user-facing handoff — 2026-11-21 19:50 CET
+
+**No user action is required. Do not run another Termux installer or change models, weights, Age, permissions, updater settings or phone data.**
+
+- Current release-development HEAD: `b267ed641f4dbff1e2c28f492baf0182e9bb656b`. Prior code-bearing release: `f279286a4453248004c670fcaabecd85da6ab299` (previous exact CI 19/19). Latest integrated code candidate: `728cdc763f09bee20ac00e1f0faadffcd33dfbb2` (exact merge-push 18/19; SleepRuntime JEPA positive acceptance returns `UTILITY_GATE_REJECTED`). No new code release or Android install is confirmed.
+- Core audio candidate #2242 is still draft and fails its current staged source-hash chain; the same staging error cascades into staged/integrated/deployer checks. It also needs a pre-lock revoke-cancel signal and mandatory revocation subscriptions before it is safe to promote. QA #2244 is green only on its older Core base; it must rebase after the fix.
+- Research/Perception #2243 has a reported local tiny-model K/V experiment, but the green model-lab workflow did not execute its new test file. This is not production B3 or native B1/B2 latent communication. #2246 is a synthetic metadata-only A5 UI lease seam, not Android screen capture or control.
+- JEPA #2237 latest head f92c156 has no exact CI attached; the previous cohort failed old-task retention and optimizer-state continuation. Learning/optimizer gates stay OFF. No native body-weight changes or self-edit.
+- P0 #1904 remains open: no fresh 20-turn Redmi acceptance, correct native 2+2, verified B1/B2→C4→C3 offers, native latency/RSS or installed SHA.
+- Private PIPELINE_STATUS and DIAGNOSTICS owner-read requests have no authenticated reply at this checkpoint. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No device action or update request was performed.
+- The full Aii local test suite could not run here because the checkout is not mounted and GitHub DNS resolution failed. CI evidence is not LOCAL_LINUX or Android evidence.
+
+**Next internal work:** Core fixes the staging hash and revocation cancellation; QA rebases and tests automatic revoke-through-C3 cleanup; JEPA preserves the strict retention gate and proves accepted updates or rollback; Perception adds experiment-specific CI and continues actual model-native K/V research. The full 1,255-heading Canon remains open and its semantic coverage map is incomplete.
+
+---
+
 # Final mergeability refresh — 2026-11-21 18:05:59Z
 
 - Current verified documentation HEAD before this refresh: `7c9841ae9d665aab19e60d524307342a219047f0`; code integration head remains `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`.

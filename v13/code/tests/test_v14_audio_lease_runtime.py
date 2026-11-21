@@ -70,7 +70,7 @@ class Provider:
         self.lock = threading.Lock()
         self.callback_lock = threading.Lock()
         self.active = active
-        self.callbacks = []
+        self.subscriptions = []
 
     def check(self, source_id, receipt):
         if not self.lock.acquire(timeout=0.05):
@@ -90,26 +90,30 @@ class Provider:
         finally:
             self.lock.release()
 
-    def subscribe(self, source_id, receipt, callback):
-        if source_id != "mic-test-1" or receipt != "opaque-local-receipt":
-            raise ValueError("subscription scope mismatch")
+    def subscribe(self, source_id, receipt, scope_id, on_revoke_requested, on_revoked):
+        if (source_id != "mic-test-1" or receipt != "opaque-local-receipt"
+                or type(scope_id) is not str or not scope_id
+                or not callable(on_revoke_requested) or not callable(on_revoked)):
+            raise ValueError("two-phase subscription scope mismatch")
+        entry = (on_revoke_requested, on_revoked)
         with self.callback_lock:
-            self.callbacks.append(callback)
+            self.subscriptions.append(entry)
 
         def unsubscribe():
             with self.callback_lock:
-                if callback in self.callbacks:
-                    self.callbacks.remove(callback)
+                if entry in self.subscriptions:
+                    self.subscriptions.remove(entry)
         return unsubscribe
 
     def revoke(self):
+        with self.callback_lock:
+            subscriptions = list(self.subscriptions)
+        for request, _ in subscriptions:
+            request()
         with self.lock:
             self.active = False
-        with self.callback_lock:
-            callbacks = list(self.callbacks)
-            self.callbacks.clear()
-        for callback in callbacks:
-            callback()
+        for _, completion in subscriptions:
+            completion()
 
 
 def make_window(provider):
@@ -124,7 +128,6 @@ def make_window(provider):
         "consent_revocation_subscribe": provider.subscribe,
         "finality": "FINAL",
     }
-
 
 def configure(runtime):
     runtime.sleep.cycle.set_policy("enabled", "off")
