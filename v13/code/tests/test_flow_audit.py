@@ -201,7 +201,7 @@ def test_audit_latest_and_read_only_database(tmp_path):
 
 def test_missing_event_fails_closed(tmp_path):
     home = tmp_path / "runtime"
-    _fixture(home)
+    event_id = _fixture(home)
     try:
         audit_event(home, "evt_missing", session_id=_session_id(home, event_id))
     except KeyError:
