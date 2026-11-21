@@ -8,11 +8,15 @@ on:
       - "v13/code/v13/a5_ui_admission_bridge.py"
       - "v13/code/v13/store.py"
       - "v13/code/tests/test_v14_store_source_blob_serialization.py"
+      - "v13/code/v13/store.py"
+      - "v13/code/tests/test_v14_store_source_blob_serialization.py"
       - "v13/code/tests/test_a5_ui_observation_lease.py"
       - ".github/workflows/v14-a5-ui-lease.yml"
   pull_request:
     paths:
       - "v13/code/v13/a5_ui_admission_bridge.py"
+      - "v13/code/v13/store.py"
+      - "v13/code/tests/test_v14_store_source_blob_serialization.py"
       - "v13/code/tests/test_a5_ui_observation_lease.py"
       - ".github/workflows/v14-a5-ui-lease.yml"
   workflow_dispatch:
