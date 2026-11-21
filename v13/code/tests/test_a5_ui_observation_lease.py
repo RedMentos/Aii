@@ -23,6 +23,7 @@ class Provider:
         self.sequence = 0
         self.request_started = threading.Event()
         self.cleanup_lock_states = []
+        self.cleanup_results = []
 
     def check(self, *args):
         with self.lock:
@@ -61,7 +62,7 @@ class Provider:
         # Phase 2 must run after both the guard and provider lock are released.
         for _, cleanup in callbacks:
             self.cleanup_lock_states.append(self.lock.locked())
-            cleanup()
+            self.cleanup_results.append(cleanup())
 
 
 def observation(**overrides):
@@ -108,6 +109,10 @@ class A5UIObservationLeaseTests(unittest.TestCase):
         self.provider = Provider()
 
     def tearDown(self):
+        self.runtime.current = None
+        self.runtime.turn_event = None
+        if self.provider.active:
+            self.provider.revoke()
         self.adapter.close()
         self.store.close()
         self.temp.cleanup()
@@ -282,16 +287,17 @@ class A5UIObservationLeaseTests(unittest.TestCase):
             self.assertIn(obs["source_id"], self.runtime._a5_ui_unsubscribe)
             source = self.store.one("SELECT deleted FROM sources WHERE id=?", (obs["source_id"],))
             self.assertEqual(source["deleted"], 0)
-        # Provider revocation/cleanup is separate; only after the worker exits
-        # may Runtime close its local adapter state before Store shutdown.
+        # Provider revoke performs post-lock cleanup; adapter.close is then
+        # a final local cleanup before Store shutdown, not an OS permission API.
+        self.provider.revoke()
         self.runtime.current = None
         self.runtime.turn_event = None
         result = self.adapter.close()
-        self.assertEqual(len(result), 1)
+        self.assertEqual(result, ())
+        self.assertTrue(self.provider.cleanup_results[0]["source_tombstoned"])
         source = self.store.one("SELECT deleted FROM sources WHERE id=?", (obs["source_id"],))
         self.assertEqual(source["deleted"], 1)
         self.assertNotIn(obs["source_id"], self.runtime._a5_ui_unsubscribe)
-        self.assertTrue(result[0]["source_tombstoned"])
 
     def test_no_active_runtime_turn_rejects_ui_observation(self):
         self.runtime.turn_event = None
