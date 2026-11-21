@@ -4,7 +4,7 @@
 
 - Queue item: **V14-006 — Research-to-code and active perception learning**.
 - Cross-lane finding: V14-003 native latent receiver feasibility; Core owns the actual receiver runtime.
-- Base release ancestor: `c0cedbde718ede6107f4df1f1bf9c784df4e00cf`.
+- Latest release-branch base at retarget: `034a941694b9e8994d1bfe5cd781d27b943e1ed0` (includes merged #2165 model-lab candidate).
 - Branch: `research-perception/v14-prosody-attention-20261121`.
 - PR: [#2161 — RAW EAR prosodic dynamics → A4 attention](https://github.com/RedMentos/Aii/pull/2161), DRAFT / NOT_RELEASED.
 - Latest handoff branch head before this file: `e9637f3de99c99330be3d7e0e1caa3418bf5b006`.
@@ -86,3 +86,15 @@ arXiv:2608.16347v2 (2026-11-09) was read in full. The study's middle-layer causa
 - Research follow-up: PACE (ICLR 2026) argues audio PEFT needs session-wise representation-stability/retention tests; S4VAD (arXiv 2609.11110) is a possible separate low-latency VAD architecture but has no verified Android code/weights; Silero VAD is MIT/~2 MB ONNX candidate for a parallel speech-probability cue; VoiceCLAP-Small is CC-BY-4.0/~110M F32 with 30 s padding and is not a Redmi default.
 - **REDMI_UNVERIFIED / NOT_RELEASED.** No microphone capture, native model, ARM PSS/RSS, phone TTFT, weight change, or deployment was performed.
 - Next: Core updates the source pin and passes its exact staged/integrated consumer; QA only then arranges a separate explicit microphone-consent test on the actual Redmi. Perception proceeds to the V14-005 model-candidate lab without changing installed models.
+
+
+## Follow-up checkpoint — single-frame edge correction and current-base retarget (2026-11-21 06:58 CET)
+
+- Review defect: a 40 ms caller-supplied window can produce exactly one voiced frame; likewise a 100 ms window can contain one voiced frame among four. The 25% VOICED threshold was met, but V3 returned a null voiced-energy range and then failed its own validator.
+- Fix: one voiced observation has range 0.0 (no within-window dynamics can be inferred). The validator verifies voiced_fraction/frame-count consistency, requires null energy range when no voiced frames exist, and rejects non-null F0 range, nonzero energy range or nonzero prosody score when only one voiced frame exists.
+- Tests: new test covers both one-frame cases plus malformed energy and score negative controls. Module blob 0e328d14883840190937f0fef24a8e895ba7261c; test blob 96b00b2e1b6340e2a61a8b6f230be8747889ab38.
+- LOCAL_LINUX: Python 3.13.5 isolated reproduction 2/2 PASS; both fixtures also pass the positive validator path and reject both negative mutations. Exact Aii checkout/pytest remains BLOCKED because git ls-remote cannot resolve github.com. No exact repository local suite PASS is claimed.
+- Retarget: the PR branch is advanced by a no-force merge commit whose first parent is its prior head and second parent is current release base 034a941694b9e8994d1bfe5cd781d27b943e1ed0. Exact new-head CI is pending; previous pre-fix V3 CI does not verify this change.
+- Core handoff: update the staged adapter pin to the new module blob above. Core #2158 still has independent QueryPacket audio_context, arithmetic-source and recovery-manifest failures. Perception changed no Core-owned runtime/stager/deployer files.
+- Research: PACE full-text review confirms audio continual adaptation needs task/session-aware stability and selective subspace protection; it is not an Android RAW EAR implementation. libfvad is BSD-3-Clause plus a separate WebRTC patent grant and remains a no-weight VAD comparator only.
+- Device: REDMI_UNVERIFIED / NOT_RELEASED. No microphone, phone, model, weight, permission, data or updater operation occurred. User action: none.

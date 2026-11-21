@@ -140,11 +140,175 @@ PR #2148 current head 6fec2dec1534285b654db60349efcd81f81b846c; code/test head 1
 PR #2148 current head is fb5e75f28dc4ac5b3f547388c48ea387b0e4d4c5. Exact code/test tree head e46b87d7d5cf1da31f58f6561d21193a4dfc9e87 passed GitHub Actions run 44854338438: Python 3.13 59 passed in 6.52s; Python 3.14 59 passed in 8.81s; compile and both jobs PASS. The only later commit is a next-action Markdown table refresh; no code or test file changed after the tested e46b head. The earlier run 44854219157 also passed 59/59 on both versions and is superseded by this readback.
 
 
-### Research & Perception implementation checkpoint — 2026-11-21 / PR #2161
+## Boss integration checkpoint — 2026-11-21 05:00 CET
 
-- **V14-006:** the A5 RAW EAR adapter now derives a bounded `prosody_change_score` from F0 excursion or energy dynamics in the 40 ms / 20 ms window stream, only for voiced activity. It feeds A4 `Attention.modulate` and is preserved in the source-bound C3 admission summary. It is a deterministic salience heuristic, not a trained VAD, speech probability, ASR, or speaker identity.
-- **Exact code/test commit:** `3cba5118e8b9641220ec411f859d20147218c6f9`; adapter blob `ff88fd1e9a6898c6355592eb1d4349055b54939d`; test blob `e8a10620a500ca5d9ba2d92092c108730e8f8362`.
-- **CI:** [44870157024](https://github.com/RedMentos/Aii/actions/runs/44870157024) PASS; Python 3.11: 11/11, Python 3.13: 11/11, both compile and targeted A5→A4→C3 tests pass. LOCAL_LINUX isolated algorithm reproduction 5/5 PASS; exact local repository checkout/test remains BLOCKED by GitHub DNS.
-- **Integration:** Core PR #2158 owns the staged Runtime consumer. It must pin the reviewed adapter blob and repair its stale runtime/cognition pins plus arithmetic regressions before its B1/B2/C3 integration can pass. Its exact run 44866310899 failed; no Core-owned file was modified by Perception.
-- **Device:** REDMI_UNVERIFIED; no microphone capture, ARM resource measurement, native model inference, or deployment. NOT_RELEASED.
-- **Next:** Boss/QA review the non-additive adapter update; Core updates the staged source pin and reruns the exact Runtime integration; only then obtain explicit Redmi microphone consent and measure CPU/PSS/RSS/latency/revocation. V14-003 native latent injection remains NOT_RUN.
+**Verified integration base:** `gpt6/v13-private-remote-bridge-20261111` HEAD `c0cedbde718ede6107f4df1f1bf9c784df4e00cf`.
+
+### Newly present code (do not overstate its runtime scope)
+
+- **WorldJEPA/EMA learner — PR #2151 with QA retention fix #2152:** merged into the release branch. Exact PR-head workflow `44861797478` passed 64 tests on Python 3.13 and 64 on Python 3.14, including compile. The code verifies source-bound T8 outcomes, oldest-first cursor plus bounded pending cohort, source-ID and content-digest-disjoint folds, censored-status exclusion, numeric encoder/predictor/EMA changes, separate B1/B2/SELF readouts, new-cohort utility, shuffled/zero-action negative controls, prior-cohort retention, persistence, restart, rollback and replay ablation. **Evidence = synthetic SQLite Store receipts on GitHub Actions/Linux.** The learner is not yet invoked by normal Runtime and is not native B1/B2 GGUF learning.
+- **RAW EAR acoustic cues — PR #2155:** merged into the release branch. Exact safe-additive run `44862523075` passed py_compile + 8/8 synthetic tests; generic staged/integrated run `44862523082` passed 240 staged and 415 integrated tests. The separate module extracts bounded pitch/voicing/energy/activity hints from caller-supplied PCM16 and writes through the tested Store/A4/C3-admission adapter. **It is not the normal Runtime consumer**, not microphone capture, not ASR or speaker recognition, and not a trained/calibrated perception model.
+- **Current release gate:** exact post-merge SHA `c0ced...` has 13 associated required workflows in `action_required`, not green. The branch is not release-certified. The current private owner-read has no reply; installed phone SHA is unknown. Do not issue UPDATE_REQUEST or claim Android deployment.
+
+### Shared P0/P1 execution plan
+
+| Owner | Next concrete code outcome | Acceptance before promotion |
+| --- | --- | --- |
+| Core & Harness | One current staged Runtime composition for source-bound arithmetic, A5 audio cues and FINAL/PROVISIONAL boundaries; integrate `audio_voice_cues.py` into the actual consumer and repair the shared candidate-builder chain | Exact staged + integrated + migration tests; 2+2 correct; B1/B2 offers delivered and consumed by C4/C3; no raw PCM persistence; consent-revocation negative control |
+| JEPA & Memory | Port the exact #2151 source/digest/pending-cohort/retention authority into the normal postcommit Runtime consumer; route prediction to a real World/Planner receiver in SHADOW | Restart/idempotence, source-disjoint holdout, prior retention, shuffled/zero-action/no-predictor/replay-only controls; no optimizer permission |
+| QA & Android | Maintain read-only device state until a fresh owner-authenticated receipt; independently validate updater CI ordering and rollback; prepare separate background/API and UI capability acceptance | Exact installed SHA receipt, updater consent, stop/revoke/audit/restart; OS permission evidence on Redmi; no GitHub-to-device inference |
+| Research & Perception | Compare deterministic RAW EAR cues with a measured VAD/prosody baseline; maintain A0–A5 source/time/provenance; continue native hidden-state and latent receiver research | Calibrated task utility vs noise/silence/impulse and no-audio controls; ARM cost; provenance/consent; no learning/action authority from heuristic cues |
+| Boss & Integration | Keep whole-Canon ledger synchronized, retire stale #2149 snapshot only after replacement PR exists, review current PR bases/heads/CI and integrate one compatible vertical slice | Exact current-head tests, consumer proof, immutable V13 appendix unchanged, current branch CI green, and Redmi receipt before release |
+
+### Open PR reconciliation
+
+- #2151 and #2152 are merged into the current release ancestry; #2150/#2148/#2147 are superseded by the #2151 integrated candidate.
+- #2155 is merged. It does not change existing Core source pins, but Core must explicitly consume its new module.
+- #2142 remains an open, stale-base read-only model-lab candidate; 23/23 synthetic tests passed on its code/test SHA, but no native GGUF comparison or staged-context acceptance exists.
+- #2144 and #2153 remain staged Runtime candidates with shared builder/composition failures. #2139/#2140 are older failing alternatives. #2145 remains blocked and must not overwrite the newer #2151 source/digest/pending-cohort authority.
+- #2149 is a stale documentation PR based on c3c32 and is not mergeable against current c0ced. The replacement evidence sync is built from c0ced on a new branch.
+- #1983 remains optional SHADOW context-companion work; it does not replace Context OS.
+
+### Environment and negative evidence
+
+- GitHub CI is the only current exact test environment for the two merged code packages above. Full local Aii checkout is BLOCKED in this worker because GitHub DNS resolution failed; no local repository test is claimed.
+- No native Redmi receipt, microphone, model inference, normal Runtime JEPA update, native B1/B2 weights, real-user retention or trained B3 latent exchange is demonstrated.
+- Existing V13 functions and all historical V13 appendices remain in scope. No master architecture edit was made in this checkpoint; no backup operation was required. Do not mark any whole-system or Android acceptance as complete.
+
+
+
+### Documentation sync PR — 2026-11-21 05:08 CET
+
+- Fresh five-file evidence sync is open as [PR #2156](https://github.com/RedMentos/Aii/pull/2156), based directly on exact release HEAD `c0cedbde718ede6107f4df1f1bf9c784df4e00cf`; current PR head after board/handoff refresh is recorded by GitHub readback.
+- PR changes only the work board, user handoff, live workplan, research ledger and additive Canon coverage overlay. No source/runtime code, model, permission, weight, phone data or device state changed.
+- PR is currently mergeable, but its head has no returned workflow runs or combined status checks. Full local checkout is still DNS-blocked. Keep it open for independent review; do not treat it as a release.
+- Stale documentation PR #2149 (base c3c32, mergeable=false) was closed as superseded by #2156 after its useful QA findings were reconciled.
+- Boss posted concrete integration ownership notes on #2142, #2145 and #2153. Core owns the single staged audio/arithmetic builder chain; JEPA/Memory must port #2151/#2152 authority before Runtime wiring; Research/Perception keeps #2142 diagnostic-only until its current-base and staged-context gate are verified.
+
+
+
+### Exact staged-builder failure readback — 2026-11-21 05:10 CET
+
+- #2153 staged/integrated run `44860698029`: **17 failed, 221 passed, 10 skipped, 2 errors, 41 subtests**. The first shared failure is `integrated_jepa_guard_candidate_20261110.py:50`: `ValueError: online-world composition source changed` because `integrated_online_world_candidate_20261110.py` does not match its pinned `ONLINE_BUILDER_SHA`. A separate integrity check reports `integrated online-world hash mismatch: v13/contracts.py`. Two migration tests in `44860698035` report `PARTIAL` because staging did not activate.
+- #2144 staged/integrated run `44856133052`: **22 failed, 206 passed, 10 skipped, 12 errors, 36 subtests**; the shared chain reports `integrated online-world hash mismatch: v13/operator.py` and a recovery/chat candidate pin mismatch.
+- These fail before the intended audio/finality/JEPA Runtime consumers can be accepted. This is not a reason to relax immutable source checks or to update expected hashes blindly. Core must rebuild one composed candidate chain from current release bytes, then rerun Python 3.14 startup, staged-runtime, integrated regression, Lab Age and two-checkout migration.
+
+
+
+### New Core/Perception stack readback — PR #2157 (2026-11-21 05:12 CET)
+
+- PR #2157 is a DRAFT stacked on Core #2144 at base head `aad02aa66c3200a3253dde8e4b4ceb69cadc0b26`; current head `6b116ddbb34a97bec35a51eb04998b17b7cb4e68`. It adds #2155's acoustic cue module to the staged candidate and requires explicit `PROVISIONAL|FINAL`, passing finality unchanged into the adapter. The intended boundary is correct: provisional is A4-only; final requires current consent; no transcript, speaker identity, learning or action authority.
+- Dedicated workflow `44864887296`: compile PASS; the existing RAW EAR tests pass 8/8; the two new overlay-contract tests FAIL (2 failed, 8 passed). The immediate fixture defect is that the test calls `audio.apply_sources()` with raw Runtime/Cognition/arithmetic bytes even though that function requires an already-composed upstream Runtime containing `arithmetic_answer`, `LOCAL_EXACT_ARITHMETIC`, `source_recall_refs` and `latewatch.start`. Boss posted the exact failure and requested the fixture to compose the pinned base recovery builder first, or to test raw-base rejection separately. Do not weaken those markers.
+- Full staged/integrated workflow `44864887308` has now FAILED: staged-runtime 22 failed / 206 passed / 10 skipped / 12 errors / 36 subtests; integrated-regression fails at `integrated_online_world_candidate_20261110.py:118` with `integrated online-world hash mismatch: v13/operator.py`. This is the same shared pin defect already seen in #2144, not an audio-cue algorithm failure. Even after the focused fixture is corrected, the base builder must be rebuilt from current source bytes.
+- Keep #2157 DRAFT and unmerged until the focused overlay contract and full staged/integrated, Python 3.14 startup and migration chain pass on one current composed Core branch. It is not microphone capture or Redmi proof.
+
+
+
+## Boss integration checkpoint — 2026-11-21 05:49 CET
+
+**Release branch readback:** `gpt6/v13-private-remote-bridge-20261111` HEAD remains `c0cedbde718ede6107f4df1f1bf9c784df4e00cf`. No code merge or release occurred in this checkpoint.
+
+### Exact PR #2158 review
+
+- Current draft head: `2bbf9caf96f8fa90dc080afd00ba99db8329350d`; the branch composes the merged #2155 RAW EAR voice cues into the staged Runtime, preserves arithmetic/observer/ContextOS, enforces explicit FINAL/PROVISIONAL and rechecks consent/source lineage before body/C3 consumption.
+- **CI FAIL:** run `44866310899`, both Python 3.11 and 3.13 staged-a5 jobs fail two existing arithmetic fixture assertions. `test_broker_failure_keeps_computed_c6_type` uses `7-12` as a positive operation; `ExactArithmetic.test_correctness` expects `-5` from the same date-ambiguous token. The current parser intentionally abstains on bare date-shaped subtraction. Core should use unambiguous `7 - 12` / explicit wording for positive fixtures and keep a negative bare-`7-12` abstention control.
+- **CI FAIL:** run `44866311032` staged-runtime aggregate (1 failed, 239 passed, 10 skipped, 47 subtests), due to the same fixture mismatch.
+- **CI PASS on this PR head:** integrated-regression, old-phone-to-new-runtime migration, Lab Age E2E, owner-read, offline and Python 3.14 staged startup.
+- **Policy gate FAIL:** `validate-additive` reports `path outside inert-module/test/handoff scope` for the stage-builder and `runtime_deploy.py` changes. This is not permission to bypass the guard. These high-authority deployment files require explicit Boss review, exact tests and complete release-push CI.
+- Boss posted the detailed findings on #2158. Keep it DRAFT / NOT_RELEASED until the two fixture failures are fixed, all exact staged/integrated/migration gates pass and the composed builder chain is independently reviewed.
+
+### Current release/device proof
+
+- Release SHA `c0ced...` has 13 PR-triggered required workflow runs in `action_required`; five private-bridge push runs and selected dispatch runs are green, but the full release-required set is not. `NOT_RELEASED`.
+- Private PIPELINE_STATUS owner-read remains unanswered. Installed SHA/updater state unknown; `REDMI_UNVERIFIED`. No UPDATE_REQUEST or device mutation.
+- Full local Aii checkout/test is BLOCKED by DNS resolution failure for github.com; no exact LOCAL_LINUX repo test is claimed.
+- #1904 remains the last measured Redmi failure. No new 2+2, B1/B2 offer-delivery, native latency or 20-turn phone acceptance evidence.
+
+### Next integration chain
+
+1. Core fixes the two arithmetic test inputs without relaxing date ambiguity; rerun exact focused and full staged/integrated/migration gates.
+2. Boss independently reviews all candidate-builder and deployer source pins/rollback behavior; do not merge a draft or use the safe-additive queue for this critical path.
+3. JEPA/Memory ports #2151/#2152's source/digest/pending-cohort/retention learner into normal postcommit Runtime in SHADOW and connects prediction to an actual World/Planner receiver; optimizer permission remains OFF.
+4. QA maintains read-only device state until a fresh owner-authenticated receipt; only then verify updater consent and installed SHA.
+
+No master architecture edit was made, no backup was required, and historical V13 appendix bytes were not changed.
+
+
+## Capability proof matrix — 2026-11-21 05:49 CET
+
+### Whole-system capability status — explicit proof levels (2026-11-21 05:49 CET)
+
+| Capability | CODE | WIRED | TESTED_SYNTHETIC | TESTED_ANDROID | ACTIVE |
+|---|---|---|---|---|---|
+| A0-A5 perception/attention | PARTIAL | PARTIAL | PASS_PARTIAL | NOT_VERIFIED | NO_DEVICE_PROOF |
+| B1_DETAIL / B2_GIST | PRESENT_DISTINCT_ROLES | PARTIAL | PASS_PARTIAL | HISTORICAL_FAIL (#1904) | UNKNOWN |
+| B3 true latent receiver coupling | SYMBOLIC_ONLY | NO_TRAINED_RECEIVER | NO_ACCEPTED_UTILITY_PROOF | NOT_TESTED | NO |
+| B4 distributed workspace / C4 | PARTIAL | WIRED_SYNTHETIC_PARTIAL | PASS_PARTIAL | NOT_VERIFIED | UNKNOWN |
+| C1/JEF/C2/C3 | PRESENT | PARTIAL | PASS_PARTIAL | HISTORICAL_FAIL (#1904) | UNKNOWN |
+| World/Self/Memory/JEPA | EXPERIMENTAL_CODE_PRESENT | ISOLATED_STORE_CONSUMER | PASS (64/64 on 3.13 and 3.14) | NOT_TESTED | SHADOW; optimizer OFF |
+| Sleep/Dream/Replay | PRESENT_PARTIAL | PARTIAL | PASS_PARTIAL | NOT_TESTED | EXISTING_SLEEP_ONLY |
+| Context OS / Memorilla | CONTEXT_OS_PRESENT; companion draft | PARTIAL / isolated companion | PASS_PARTIAL | NOT_VERIFIED | UNKNOWN |
+| VOICE_AUDIO | RAW EAR cues present; TTS/vocoder absent | Synthetic adapter only; #2158 draft not promoted | PASS (8/8 adapter tests); #2158 staged tests FAIL | NOT_TESTED | NO |
+| ANDROID_BACKGROUND_CONTROL | Receipt-verifier prototype | No OS executor | PARTIAL | NOT_TESTED | NO |
+| ANDROID_UI_CONTROL | NOT_IMPLEMENTED | NO | NO | NOT_TESTED | NO |
+| SELF_OPTIMIZATION / cross-organ weights | Numeric WorldJEPA experiment only | Isolated Store learner | PASS_PARTIAL | NOT_TESTED | NO production weight edits |
+| Multimodal learning | Audio feature extraction only | No learning consumer | PARTIAL | NOT_TESTED | NO |
+| Tools / action fabric | Contracts present | WIRED_SYNTHETIC | PASS_PARTIAL | NOT_TESTED | NO device-action proof |
+| Updater / install / rollback | PRESENT | WIRED_SYNTHETIC_PARTIAL | PASS_PARTIAL | UNKNOWN; no receipt | UNKNOWN |
+| Two genuinely different sparse MoE bodies | NOT_PROVEN | NO sparse-MoE path | NO accepted sparse-MoE test | NOT_TESTED | NO |
+
+These columns are independent. `CODE` is not `WIRED`; synthetic CI is not Android proof; an existing feature in the app is not evidence that it is currently active on the phone. `UNKNOWN` is not PASS. Whole-Canon completion remains false.
+
+
+
+## Research checkpoint — R-018 — RAW EAR VAD comparator (2026-11-21)
+
+Research recorded in `V14_RESEARCH_LEDGER.md`: libfvad/WebRTC VAD is the first no-weight C baseline candidate (BSD-3-Clause; upstream Android.mk precedent; review PATENTS separately); Silero VAD is the MIT learned comparator (Torch/ONNX); a small MIT C port claims arm64 NEON but has no Android target proof. No dependency/weight was imported. Next experiment: same PCM fixtures, FPR/FNR, onset/offset, CPU/RSS, then exact ARM build and patent/license review. No production selection or Redmi claim.
+
+
+## JEPA & Memory receiver checkpoint — 2026-11-21 / PR #2164
+
+### New executable slice
+- Parent #2160 provides the direct V13 source-bound T8 authority, persistent numeric WorldJEPA/EMA Store consumer, strict dual permission gates and role-specific B1/B2/SELF numeric readouts.
+- Follow-up #2164 adds WorldJEPAStoreConsumer.readout_matrix() so a candidate-action matrix is evaluated under one checkpoint load, rather than reopening the checkpoint for every role/action pair.
+- world_jepa_planner.py verifies the authoritative EventEnvelope, exact SourceRef bytes/digest, terminal action row and exactly one matching durable ActionOutcome packet. It then consumes B1_DETAIL/B2_GIST/SELF_MODEL numeric predictions, produces an explicitly uncalibrated route comparison, recalls source-linked episodes for the top shadow candidate, and persists an idempotent Store-state record.
+- read_world_planner_shadow() rechecks the event/source binding and current checkpoint identity; source changes/revocation and stale checkpoints fail closed.
+- consume_after_commit(..., event_id=...) optionally attaches this planner SHADOW result after Core supplies the exact committed event ID. Learning and optimizer permissions remain false by default; the planner has no dispatch/decision authority and does not consume native body activations.
+
+### Exact evidence
+- PR #2164 head 14a647c04b28e9cd5bbd5a19ae14d6cbb77d29a1; GitHub Actions run 44872134464 PASS:
+  - staged-runtime: 241 passed, 10 skipped, 47 subtests (Python 3.11.18). The suite entry point explicitly calls both new receiver tests: positive numeric B1/B2/SELF matrix + memory recall + persistent idempotency with gates closed; negative missing ActionOutcome and mismatched SourceRef.
+  - integrated-regression: 415 passed, 3 skipped, 58 subtests. This is broad staged-platform regression, not a Redmi or native-body test.
+- Parent #2160 exact safe-additive run 44870089869 PASS (16/16); parent staged/integrated run 44870089892 PASS (240 staged, 415 integrated).
+- LOCAL_LINUX exact repository checkout/tests remain BLOCKED by GitHub DNS resolution. CI evidence is not local Linux-native execution.
+- No real user data was used. The learner and planner fixtures are synthetic SQLite Store receipts. No Android/Redmi, native B1/B2 weight, B3 latent-injection or production routing claim.
+
+### Integration boundary / next
+- #2164 is stacked on #2160; neither has merged. The API still has no normal Runtime caller. Core must integrate in dependency order and invoke the JEPA facade only after durable T8/ActionOutcome commit, passing the exact event ID. #2145's current temporal/World shadow path does not yet invoke this learner. Core #2158 remains blocked by arithmetic fixture and high-authority stage-builder policy failures; do not bypass the additive policy.
+- Keep both optimizer gates false until separately authorized. Do not use the uncalibrated planner score for routing. After the normal Runtime consumer exists, add persistent optimizer moments and matched replay ablations (none/uniform/content-or-error-prioritized) with source-disjoint new/old holdouts, retention, restart and rollback.
+- Release HEAD remains c0cedbde718ede6107f4df1f1bf9c784df4e00cf; NOT_RELEASED. Phone SHA UNKNOWN; private owner-read Aiiii#367 unanswered; REDMI_UNVERIFIED. No user/device action is required.
+
+
+
+## Boss integration checkpoint — 2026-11-21 06:42 CET
+
+- **Merged:** PR #2160 at `aa79b05037f6fedfffd84801105f00321c7f6055`. This is an additive source-bound T8/WorldJEPA numeric learner API with strict default-off gates and B1/B2/SELF numeric SHADOW readouts. Exact CI before merge: 16/16 safe-additive, 240 staged-runtime, 415 integrated-regression; synthetic SQLite Store only. Normal Runtime hook absent; native B1/B2 weights unchanged.
+- **Release gate:** exact post-merge workflows for `aa79b05037f6fedfffd84801105f00321c7f6055` were queued/in progress; NOT_RELEASED. The private owner-read RedMentos/Aiiii#368 is OPEN_NO_REPLY; installed SHA UNKNOWN and REDMI_UNVERIFIED. No device action or user action.
+- **#2164 review:** staged/integrated 241/415 PASS, but planner exact-one ActionOutcome check is bounded to 32 rows while authority permits 4096. Fix the uniqueness check and add duplicate-beyond-32 negative coverage; retarget/retest after #2160 merge. It is not normal Runtime-wired.
+- **#2158 Core blocker:** actual arithmetic source lacks the date-shaped abstention guard; QueryPacket drops derived audio_context, causing Runtime ERROR; recovery manifest assertion is stale; V3 adapter pin from #2161 needs update. Preserve date abstention and the high-authority source-pin policy. Add a full QueryPacket→OfferPacket→analyst_context→focal→C3 test asserting consumed offers.
+- **#2161 Perception:** V3 pause-robust voiced-only prosody feature; dedicated 11/11 Python 3.11/3.13 CI PASS; staged/integrated pending. Not a trained VAD or microphone proof.
+- **#2163 QA:** local audit-DB path hardening candidate; isolated tests pass, safe-additive policy fails; not an OS sandbox. Review separately.
+- **Local execution:** exact Aii checkout remains blocked by GitHub DNS. CI and synthetic SQLite tests are not local native model training or Redmi evidence.
+
+Next integrated vertical slice: after Core's staged runtime is green, invoke the merged JEPA facade after durable T8/ActionOutcome commit with exact event_id, route the persisted source-bound SHADOW packet to a real consumer, and only then evaluate utility/retention. Keep optimizer gates closed and all device permissions untouched.
+
+
+## Research & Perception checkpoint — 2026-11-21 06:58 CET
+
+- Queue: V14-006 remains owned by Research & Perception; V14-005 model-lab follow-up is also owned by this lane. Current release development base is 034a941694b9e8994d1bfe5cd781d27b943e1ed0 (PR #2165 model-lab merge); historical V13 Canon and active V14 master were not edited.
+- RAW EAR defect fixed in the candidate: Boss review found that a 40 ms window or one voiced frame among four could meet the VOICED threshold but fail validation because voiced_energy_range_db was null. A single observation now has a range of 0.0, while the validator checks frame/fraction consistency and rejects F0-range, energy-range or nonzero prosody claims that cannot be supported by one frame.
+- New regressions: one 40 ms voiced frame; one voiced frame among four; malformed one-frame energy and prosody-score negative controls. Local Python 3.13.5 isolated reproduction: 2/2 fixtures PASS, plus positive/negative validator checks for both. This is a focused algorithm reproduction, not the exact repository test suite.
+- Exact local checkout: BLOCKED. git ls-remote https://github.com/RedMentos/Aii.git failed with Could not resolve host: github.com; full-repository pytest/py_compile was not run locally. Container has Python 3.13.5 and pytest 9.0.2.
+- Previous CI evidence (pre-fix only): #2161 V3 producer tests passed 11/11 on Python 3.11/3.13 (run 44872181368); staged/integrated run 44872181361 passed (staged Runtime and 415 integrated tests). These do not test the new one-frame regression. The exact retargeted head must run its own CI.
+- Integration boundary: Core #2158 must pin the new adapter blob 0e328d14883840190937f0fef24a8e895ba7261c and repair its separate QueryPacket audio_context, arithmetic-source and recovery-manifest failures. No Core-owned files were changed.
+- Deployment: NOT_RELEASED; REDMI_UNVERIFIED. No microphone, phone, permission, model, weight or user-data operation was performed.
