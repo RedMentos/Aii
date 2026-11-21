@@ -1,3 +1,4 @@
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -15,6 +16,20 @@ class TestReceiver(unittest.TestCase):
             self.assertGreater(r.read("WORLD"), r.read("WORLD", True)); snapshot = p.read_bytes()
             self.assertEqual(TemporalReadout(p).read("B1"), r.read("B1")); r.update({**I, "prediction_error": -.8}, "two", True)
             r.rollback(snapshot); self.assertEqual(p.read_bytes(), snapshot); self.assertEqual(r.seen, ["one"])
+
+    def test_rollback_fsyncs_directory_entry_after_replace(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "weights.json"
+            receiver = TemporalReadout(path, learning_enabled=True)
+            receiver.update(I, "one", authorized=True)
+            snapshot = path.read_bytes()
+            receiver.update({**I, "prediction_error": -.8}, "two", authorized=True)
+            with patch("temporal_receiver.os.fsync", wraps=os.fsync) as fsync:
+                receiver.rollback(snapshot)
+            self.assertGreaterEqual(fsync.call_count, 2)
+            restored = TemporalReadout(path, learning_enabled=True)
+            self.assertEqual(restored.seen, ["one"])
+            self.assertEqual(path.read_bytes(), snapshot)
 
     def test_denials_and_atomic_failure(self):
         with tempfile.TemporaryDirectory() as d:
