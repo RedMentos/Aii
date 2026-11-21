@@ -728,9 +728,17 @@ class RealRuntimeSelftestDiagnosticsTests(unittest.TestCase):
         expected = {"status": "ROLLED_BACK_RUNTIME_ONLY", "auto_enabled": False}
         with mock.patch.object(pipeline_agent, "rollback_runtime", return_value=expected) as rollback, \
              redirect_stdout(io.StringIO()) as output:
-            d.main(["--rollback", "--home", str(self.home)])
+            d.main(["--rollback"])
         rollback.assert_called_once_with()
         self.assertIn("ROLLED_BACK_RUNTIME_ONLY", output.getvalue())
+
+    def test_runtime_deploy_rollback_cli_refuses_unmanaged_home(self):
+        from v13 import pipeline_agent
+        with mock.patch.object(pipeline_agent, "rollback_runtime") as rollback:
+            with self.assertRaises(SystemExit) as cm:
+                d.main(["--rollback", "--home", str(self.home)])
+        self.assertEqual(cm.exception.code, 2)
+        rollback.assert_not_called()
 
 
 if __name__ == "__main__":
