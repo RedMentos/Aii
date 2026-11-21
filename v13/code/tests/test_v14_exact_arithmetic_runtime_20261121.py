@@ -79,7 +79,9 @@ try:
     runtime.cognition.offer = Mock(side_effect=AssertionError("arithmetic invoked B1/B2"))
     runtime.memory.recall = Mock(side_effect=AssertionError("arithmetic invoked optional recall"))
     runtime.learner.retrieve = Mock(side_effect=AssertionError("arithmetic invoked semantic retrieval"))
-    runtime.models.revision = Mock(side_effect=AssertionError("non-model arithmetic requested a model revision"))
+    # ModelManager.revision is read-only manifest metadata used by the
+    # post-turn World/Self snapshot; it does not load a native model. The
+    # actual native-load boundary is RunnerPool.get, asserted below.
 
     event_id = runtime.submit("2+2")
     answer = wait(runtime)
@@ -130,7 +132,6 @@ try:
     runtime.cognition.offer.assert_not_called()
     runtime.memory.recall.assert_not_called()
     runtime.learner.retrieve.assert_not_called()
-    runtime.models.revision.assert_not_called()
 finally:
     runtime.close()
 
