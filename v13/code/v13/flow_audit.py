@@ -200,15 +200,21 @@ def audit_event(home: str | Path, event_id: str) -> dict:
         context_keys = {key for ref in context_refs if (key := _ref_key(ref)) is not None}
 
         all_refs = [event_packet.get("source_ref")]
-        for offer in offers:
-            all_refs.extend(offer.get("evidence_refs", []) if isinstance(offer.get("evidence_refs"), list) else [])
-            all_refs.extend(offer.get("provenance", []) if isinstance(offer.get("provenance"), list) else [])
+        for packet_value in packets:
+            all_refs.extend(packet_value.get("provenance", []) if isinstance(packet_value.get("provenance"), list) else [])
+            all_refs.extend(packet_value.get("source_refs", []) if isinstance(packet_value.get("source_refs"), list) else [])
+            all_refs.extend(packet_value.get("evidence_refs", []) if isinstance(packet_value.get("evidence_refs"), list) else [])
+            if isinstance(packet_value.get("source_ref"), dict):
+                all_refs.append(packet_value["source_ref"])
         all_refs.extend(context_refs)
         unique_refs = {}
+        malformed_refs = 0
         for ref in all_refs:
             key = _ref_key(ref)
             if key is not None:
                 unique_refs[key] = ref
+            elif ref is not None:
+                malformed_refs += 1
         valid_keys = {
             key for key, ref in unique_refs.items() if _source_valid(conn, root, ref)
         }
@@ -216,7 +222,7 @@ def audit_event(home: str | Path, event_id: str) -> dict:
         c3_context_ids = set()
         for offer in offers:
             packet_id = offer.get("packet_id")
-            evidence = offer.get("evidence_refs", [])
+            evidence = offer.get("evidence_refs") or (offer.get("provenance") or [])[:1]
             keys = [_ref_key(ref) for ref in evidence] if isinstance(evidence, list) else []
             if (
                 isinstance(packet_id, str)
@@ -280,7 +286,7 @@ def audit_event(home: str | Path, event_id: str) -> dict:
             warnings.append("B1_B2_NOT_BOTH_SOURCE_BOUND_IN_C3_CONTEXT")
         if not message_row:
             warnings.append("NO_ASSISTANT_MESSAGE")
-        if len(valid_keys) != len(unique_refs):
+        if len(valid_keys) != len(unique_refs) or malformed_refs:
             warnings.append("SOURCE_REF_INTEGRITY_INCOMPLETE")
 
         return {
@@ -307,6 +313,8 @@ def audit_event(home: str | Path, event_id: str) -> dict:
                         "generated_tokens": offer_metrics.get(p.get("packet_id"), {}).get("generated_tokens"),
                         "status": offer_metrics.get(p.get("packet_id"), {}).get("status"),
                         "actual_model": offer_metrics.get(p.get("packet_id"), {}).get("actual_model"),
+                        "model_revision": p.get("model_revision"),
+                        "prompt_token_source": offer_metrics.get(p.get("packet_id"), {}).get("prompt_token_source"),
                         "evidence_level": offer_metrics.get(p.get("packet_id"), {}).get("evidence_level", "METRICS_MISSING_OR_INCOMPLETE"),
                     }
                     for p in offers
@@ -329,6 +337,8 @@ def audit_event(home: str | Path, event_id: str) -> dict:
                 "ttft_s": runner_metrics.get("ttft_s"),
                 "duration_s": runner_metrics.get("duration_s"),
                 "actual_model": runner_metrics.get("actual_model"),
+                "model_revision": metadata.get("model_revision"),
+                "prompt_token_source": runner_metrics.get("prompt_token_source"),
                 "evidence_level": runner_metrics.get("evidence_level", "METRICS_MISSING_OR_INCOMPLETE"),
                 "status": c3_status,
             },
@@ -347,9 +357,9 @@ def audit_event(home: str | Path, event_id: str) -> dict:
                 "status": "TAP_ONLY" if tap_count else ("SYMBOLIC_ONLY" if symbolic_count else "NO_LATENT_EVIDENCE"),
             },
             "source_integrity": {
-                "unique_refs_checked": len(unique_refs),
+                "unique_refs_checked": len(unique_refs) + malformed_refs,
                 "valid_refs": len(valid_keys),
-                "invalid_refs": len(unique_refs) - len(valid_keys),
+                "invalid_refs": len(unique_refs) - len(valid_keys) + malformed_refs,
             },
             "evidence_level": overall_evidence,
             "warnings": warnings,
@@ -369,6 +379,7 @@ def audit_latest(home: str | Path) -> dict:
         raise FileNotFoundError("V13 Store database not found")
     conn = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
     try:
+        conn.execute("PRAGMA query_only=ON")
         row = conn.execute("SELECT id FROM events ORDER BY created DESC LIMIT 1").fetchone()
         if not row:
             raise KeyError("no events in Store")

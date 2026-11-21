@@ -165,3 +165,32 @@ def test_missing_event_fails_closed(tmp_path):
         pass
     else:
         raise AssertionError("unknown event must fail closed")
+
+
+def test_invalid_source_ref_is_reported_without_exposing_it(tmp_path):
+    home = tmp_path / "runtime"
+    event_id = _fixture(home)
+    db = home / "data" / "db" / "brain.sqlite3"
+    conn = sqlite3.connect(db)
+    try:
+        row = conn.execute(
+            "SELECT id,metadata FROM messages WHERE event_id=? AND role='assistant' ORDER BY id DESC LIMIT 1",
+            (event_id,),
+        ).fetchone()
+        metadata = json.loads(row[1])
+        metadata["context_source_refs"].append({
+            "source_id": "src_missing_private",
+            "sha256": "0" * 64,
+            "char_start": 0,
+            "char_end": 1,
+            "modality": "text",
+        })
+        conn.execute("UPDATE messages SET metadata=? WHERE id=?", (json.dumps(metadata), row[0]))
+        conn.commit()
+    finally:
+        conn.close()
+
+    report = audit_event(home, event_id)
+    assert report["source_integrity"]["invalid_refs"] >= 1
+    assert "SOURCE_REF_INTEGRITY_INCOMPLETE" in report["warnings"]
+    assert "src_missing_private" not in json.dumps(report)
