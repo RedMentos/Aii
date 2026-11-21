@@ -1,0 +1,62 @@
+name: V14 Core C4 cross-scale body diversity
+
+on:
+  push:
+    branches: [core/v14-c4-source-span-current-20261121]
+    paths:
+      - "v13/code/scripts/integrated_focal_scale_diversity_candidate_20261121.py"
+      - "v13/code/scripts/stage_v14_focal_scale_diversity_candidate_20261121.py"
+      - "v13/code/tests/test_v14_focal_scale_diversity_20261121.py"
+      - ".github/workflows/v14-core-focal-scale-diversity.yml"
+  pull_request:
+    branches: [gpt6/v13-private-remote-bridge-20261111]
+    paths:
+      - "v13/code/scripts/integrated_focal_scale_diversity_candidate_20261121.py"
+      - "v13/code/scripts/stage_v14_focal_scale_diversity_candidate_20261121.py"
+      - "v13/code/tests/test_v14_focal_scale_diversity_20261121.py"
+      - ".github/workflows/v14-core-focal-scale-diversity.yml"
+  workflow_dispatch:
+
+jobs:
+  staged-c4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install isolated CPU test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy==2.2.6 psutil PyYAML pytest==9.2.0
+      - name: Compile the overlay, stager and tests
+        run: |
+          python -m py_compile \
+            v13/code/scripts/integrated_focal_scale_diversity_candidate_20261121.py \
+            v13/code/scripts/stage_v14_focal_scale_diversity_candidate_20261121.py \
+            v13/code/tests/test_v14_focal_scale_diversity_20261121.py
+      - name: Staged C4 admission and Runtime-to-C3 integration
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q v13/code/tests/test_v14_focal_scale_diversity_20261121.py
+      - name: Existing arithmetic fastpath regressions
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q v13/code/tests/test_arithmetic_reflex.py v13/code/tests/test_arithmetic_stage_20261116.py
+      - name: Existing focal-loop regressions
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q v13/code/tests/test_focal.py
+      - name: Base integrated-stage pin regression
+        env:
+          PYTHONPATH: v13/code
+        run: |
+          python -m pytest -q v13/code/tests/test_integrated_stage_real_smoke.py
