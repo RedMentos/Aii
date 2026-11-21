@@ -1,8 +1,8 @@
 """Race regression: A5 source publication and consent-revocation unlink serialize.
 
 This exercises the real SQLite Store and the Perception-owned A5 producer.
-The test uses separate threads so the producer can be observed waiting on the
-shared Store mutex while revocation is paused at the actual blob unlink.
+A tracking RLock makes the producer's lock attempt observable, so the test
+proves ordering without relying on scheduler timing or a sleep-based race.
 """
 import threading
 from pathlib import Path
@@ -52,6 +52,8 @@ def test_revoke_unlink_serializes_with_concurrent_a5_shared_source_publication(t
     unlink_entered = threading.Event()
     allow_unlink = threading.Event()
     producer_started = threading.Event()
+    producer_lock_attempted = threading.Event()
+    producer_blob_check = threading.Event()
     producer_done = threading.Event()
     results = {}
     errors = []
@@ -59,7 +61,28 @@ def test_revoke_unlink_serializes_with_concurrent_a5_shared_source_publication(t
     _persist_source_and_packet(runtime, first, summary, _packet("packet-first", first))
     assert blob.is_file()
 
+    original_mutex = store.mutex
     original_unlink = Path.unlink
+    original_exists = Path.exists
+
+    class TrackingRLock:
+        """Expose the producer's lock attempt while preserving RLock behavior."""
+
+        def acquire(self, *args, **kwargs):
+            if threading.current_thread().name == "a5-ui-source-producer":
+                producer_lock_attempted.set()
+            return original_mutex.acquire(*args, **kwargs)
+
+        def release(self):
+            return original_mutex.release()
+
+        def __enter__(self):
+            self.acquire()
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            self.release()
+            return False
 
     def pause_before_blob_unlink(path, *args, **kwargs):
         if path == blob:
@@ -67,6 +90,11 @@ def test_revoke_unlink_serializes_with_concurrent_a5_shared_source_publication(t
             if not allow_unlink.wait(5):
                 raise TimeoutError("test did not release the revocation unlink")
         return original_unlink(path, *args, **kwargs)
+
+    def observe_producer_blob_check(path, *args, **kwargs):
+        if path == blob and threading.current_thread().name == "a5-ui-source-producer":
+            producer_blob_check.set()
+        return original_exists(path, *args, **kwargs)
 
     def revoke():
         try:
@@ -87,20 +115,28 @@ def test_revoke_unlink_serializes_with_concurrent_a5_shared_source_publication(t
 
     revoker = threading.Thread(target=revoke, name="a5-ui-source-revoker")
     producer = threading.Thread(target=publish_second_a5_source, name="a5-ui-source-producer")
+    store.mutex = TrackingRLock()
     try:
-        with patch.object(Path, "unlink", pause_before_blob_unlink):
+        with patch.object(Path, "exists", observe_producer_blob_check), \
+             patch.object(Path, "unlink", pause_before_blob_unlink):
             revoker.start()
             assert unlink_entered.wait(2), "revocation did not reach the blob unlink"
 
-            # The revoker must still own Store.mutex here. The A5 producer must
-            # block, then recreate the digest blob after the old source is gone.
+            # The revoker still owns the underlying RLock. Wait until the
+            # producer demonstrably attempts that same lock, then prove it has
+            # not reached blob.exists() or completed its publication.
             producer.start()
             assert producer_started.wait(2), "A5 producer thread did not start"
-            assert not producer_done.wait(0.1), (
-                "A5 source publication passed the revocation blob critical section"
+            assert producer_lock_attempted.wait(2), "A5 producer did not request the Store lock"
+            assert not producer_blob_check.is_set(), (
+                "A5 producer checked blob existence before acquiring the shared Store lock"
+            )
+            assert not producer_done.is_set(), (
+                "A5 producer completed while revocation still owned the Store lock"
             )
 
             allow_unlink.set()
+            assert producer_blob_check.wait(2), "A5 producer did not resume after revocation"
             revoker.join(2)
             producer.join(2)
             assert not revoker.is_alive(), "revocation worker did not finish"
@@ -123,4 +159,5 @@ def test_revoke_unlink_serializes_with_concurrent_a5_shared_source_publication(t
             revoker.join(2)
         if producer.is_alive():
             producer.join(2)
+        store.mutex = original_mutex
         store.close()
