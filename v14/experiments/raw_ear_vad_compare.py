@@ -59,6 +59,7 @@ class LibFvadBackend:
         self._lib = ctypes.CDLL(library_path)
         self._lib.fvad_new.restype = ctypes.c_void_p
         self._lib.fvad_free.argtypes = [ctypes.c_void_p]
+        self._lib.fvad_free.restype = None
         self._lib.fvad_set_mode.argtypes = [ctypes.c_void_p, ctypes.c_int]
         self._lib.fvad_set_mode.restype = ctypes.c_int
         self._lib.fvad_set_sample_rate.argtypes = [ctypes.c_void_p, ctypes.c_int]
