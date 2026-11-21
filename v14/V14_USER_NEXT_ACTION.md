@@ -297,3 +297,10 @@ The earlier 01:05 checkpoint's "integrated-regression push still IN_PROGRESS" is
 - Reuse candidate: `libfvad`, a standalone WebRTC VAD fork marked BSD-3-Clause; its separate PATENTS file also carries Google's additional patent grant/termination language. The upstream API accepts 8/16/32/48 kHz and 10/20/30 ms frames. No pinned revision or ARM64/Termux build has been tested.
 - rVAD's linked ZIP source license remains unverified; no code copied.
 - Next test: current RMS/peak/ZCR baseline versus framed F0/voicing + energy contour and optional libfvad; synthetic voiced/unvoiced/silence/burst-noise controls, false-accept/false-reject, CPU/RSS, then an authorized ARM64 build. Keep non-speech acoustic events; VAD must not erase them from RAW EAR.
+
+
+### Core audio CI follow-up — 21 November 2026
+
+- Latest PR #2144 exact-head run 44853452893 fails one assertion because the test expects a provenance expression that omits the already-present `source_recall_refs` component. The staged builder includes both source-recall refs and the audio source; I posted the exact replacement expression to Core.
+- Earlier run 44853319109 fails because `staged_tests.mkdir()` is called after the stager already created `tests/`; use `exist_ok=True` or a fresh destination.
+- PR #2144 remains draft. Neither CI failure is an Android/audio success. The separate Runtime finality-promotion risk (implicit FINAL) still needs an explicit contract field and negative test.
