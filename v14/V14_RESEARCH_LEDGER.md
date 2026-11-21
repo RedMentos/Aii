@@ -349,29 +349,29 @@ For B1 LFM2 and B2 Qwen3.5, capture model-specific middle layers near 0.5 depth 
 
 ### Sources and exact reuse boundary
 
-- **RAW EAR producer:** PR #2177, \`v13/code/v13/audio_voice_cues.py\` blob \`7b1d519cd36ede4b520d78e22c0f89132a1c73a5\`; temporal smoother blob \`f693f8b8394558a63d87a35fc67ea3db9dcb1929\`. The V3 extractor remains a deterministic 40 ms / 20 ms-hop autocorrelation + voiced-only prosody heuristic, not a calibrated VAD.
-- **libfvad:** upstream \`dpirch/libfvad\` master commit \`532ab666c20d3cfda38bca63abbb0f152706c369\` (2024-02-19), standalone C port of the WebRTC VAD engine. Repository license metadata is BSD-3-Clause; retain its separate \`PATENTS\` file and Google WebRTC patent grant. Its documented C API supports 8/16/32/48 kHz and 10/20/30 ms frames. No source or binary was imported in this experiment; no local \`libfvad.so\` was available.
-- **Local executable proxy:** \`daanzu/py-webrtcvad-wheels\` release commit \`726a8c72ce8b33b2df7ecd292372690fea2bad0c\` (2026-10-01), release \`2.0.14.post1\`. The Python wrapper is MIT; bundled WebRTC C code carries its upstream BSD license. The published wheel matrix is desktop Linux/macOS/Windows, not a verified Android/aarch64 Termux artifact. This is a WebRTC-algorithm proxy, not a direct libfvad build.
+- **RAW EAR producer:** PR #2177, `v13/code/v13/audio_voice_cues.py` blob `7b1d519cd36ede4b520d78e22c0f89132a1c73a5`; temporal smoother blob `f693f8b8394558a63d87a35fc67ea3db9dcb1929`. The V3 extractor remains a deterministic 40 ms / 20 ms-hop autocorrelation + voiced-only prosody heuristic, not a calibrated VAD.
+- **libfvad:** upstream `dpirch/libfvad` master commit `532ab666c20d3cfda38bca63abbb0f152706c369` (2024-02-19), standalone C port of the WebRTC VAD engine. Repository license metadata is BSD-3-Clause; retain its separate `PATENTS` file and Google WebRTC patent grant. Its documented C API supports 8/16/32/48 kHz and 10/20/30 ms frames. No source or binary was imported in this experiment; no local `libfvad.so` was available.
+- **Local executable proxy:** `daanzu/py-webrtcvad-wheels` release commit `726a8c72ce8b33b2df7ecd292372690fea2bad0c` (2026-10-01), release `2.0.14.post1`. The Python wrapper is MIT; bundled WebRTC C code carries its upstream BSD license. The published wheel matrix is desktop Linux/macOS/Windows, not a verified Android/aarch64 Termux artifact. This is a WebRTC-algorithm proxy, not a direct libfvad build.
 - **S4VAD:** arXiv:2609.11110 (2026-09-10) remains the paper-only onset-aware state-space candidate already reviewed in R-022. This run independently rechecked the arXiv abstract; PDF retrieval was unavailable, so no new full-text claim is made. No official code/weights/license was found or imported.
 
 ### Executable comparison contract
 
-\`v14/experiments/raw_ear_vad_compare.py\` loads the V3 extractor functions from the exact producer source with AST isolation (no Runtime imports or side effects), and loads \`TemporalVoiceEvidence\` directly. It accepts only local mono PCM16 WAV plus a separate JSON speech-interval annotation. It emits aggregate metrics and code-source hashes only; it does not persist or emit audio, transcript, raw samples or file paths.
+`v14/experiments/raw_ear_vad_compare.py` loads the V3 extractor functions from the exact producer source with AST isolation (no Runtime imports or side effects), and loads `TemporalVoiceEvidence` directly. It accepts only local mono PCM16 WAV plus a separate JSON speech-interval annotation. It emits aggregate metrics and code-source hashes only; it does not persist or emit audio, transcript, raw samples or file paths.
 
 - WebRTC 20 ms decisions are OR-aligned into the same overlapping 40 ms windows (20 ms hop) as RAW EAR V3.
-- Both paths are measured raw and after the same \`TemporalVoiceEvidence\` V1 smoother. The smoothed result is an explicit experimental post-filter, not WebRTC's native behavior.
+- Both paths are measured raw and after the same `TemporalVoiceEvidence` V1 smoother. The smoothed result is an explicit experimental post-filter, not WebRTC's native behavior.
 - Metrics include precision/recall/F1, FPR/FNR, false-positive windows per non-speech minute, median onset/offset delay, missing transitions, wall/CPU time and whole-process peak RSS. RSS is process-wide, not a per-backend incremental measurement.
-- \`--backend libfvad --libfvad-path ...\` calls the documented C ABI through ctypes when a real shared library is present; \`--backend webrtcvad\` uses the optional Python wrapper. No package is added to the product runtime.
+- `--backend libfvad --libfvad-path ...` calls the documented C ABI through ctypes when a real shared library is present; `--backend webrtcvad` uses the optional Python wrapper. No package is added to the product runtime.
 
 ### Local experiment — synthetic only
 
 - Environment: LOCAL_LINUX isolated scratch mirror, CPython 3.13.5, x86_64. Full Aii checkout remains BLOCKED by GitHub DNS. The scratch mirror contains the exact V3 algorithm excerpt and temporal class copied from the pinned blobs, not a complete repository checkout; its local excerpt Git blob is therefore not the product producer blob.
-- \`py_compile\` on benchmark, tests and isolated source excerpts: PASS.
-- \`pytest -q v14/experiments/test_raw_ear_vad_compare.py\`: **5 passed in 0.42 s**. Includes alignment/metrics contract, invalid sample-rate/annotation rejection, WebRTC silence-frame smoke, full WebRTC synthetic comparison and a compiled fake-C-ABI positive/negative test for ctypes signatures. The fake library is not libfvad.
+- `py_compile` on benchmark, tests and isolated source excerpts: PASS.
+- `pytest -q v14/experiments/test_raw_ear_vad_compare.py`: **5 passed in 0.42 s**. Includes alignment/metrics contract, invalid sample-rate/annotation rejection, WebRTC silence-frame smoke, full WebRTC synthetic comparison and a compiled fake-C-ABI positive/negative test for ctypes signatures. The fake library is not libfvad.
 - 2 s harmonic synthetic fixture (annotated speech 500–1500 ms; WebRTC mode 2):
-  - RAW EAR V3 raw: F1 \`0.827586\`, FPR \`0.000000\`, FNR \`0.294118\`, onset median \`20 ms\`, offset median \`40 ms\`, wall \`135.318 ms\`, CPU \`134.668 ms\`, RTF \`0.067659\`.
-  - WebRTC wheels 2.0.14 raw: F1 \`0.944444\`, FPR \`0.125000\`, FNR \`0.000000\`, onset median \`20 ms\`, offset median \`160 ms\`, wall \`0.442 ms\`, CPU \`0.443 ms\`, RTF \`0.000221\`.
-  - Whole-process peak RSS was \`98,316 KiB\`; this includes Python and both paths and is not a Redmi or per-backend memory figure.
+  - RAW EAR V3 raw: F1 `0.827586`, FPR `0.000000`, FNR `0.294118`, onset median `20 ms`, offset median `40 ms`, wall `135.318 ms`, CPU `134.668 ms`, RTF `0.067659`.
+  - WebRTC wheels 2.0.14 raw: F1 `0.944444`, FPR `0.125000`, FNR `0.000000`, onset median `20 ms`, offset median `160 ms`, wall `0.442 ms`, CPU `0.443 ms`, RTF `0.000221`.
+  - Whole-process peak RSS was `98,316 KiB`; this includes Python and both paths and is not a Redmi or per-backend memory figure.
 - Negative controls: on a 2 s deterministic white-noise-only fixture V3 raw produced 0 false-positive windows while WebRTC produced 99; on a single-impulse fixture V3 raw produced 0 and WebRTC 5. These synthetic distributions are deliberately simple and must not be generalized to real ambient noise or speech.
 - Applying the same temporal smoother raised V3's synthetic recall but also increased false positives and delayed offset; WebRTC's smoothed synthetic F1 fell. Do not treat the smoother as a universal VAD post-filter.
 
