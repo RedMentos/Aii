@@ -80,10 +80,20 @@ else:
         # Simulates the user's explicit decision to turn auto-update back on.
         p.set_enabled(True)
     result = relay._run_pending_migration_after_reload(p)
+private_dir = Path.home() / ".v13-private"
+marker_path = private_dir / "runtime-active.json"
+private_state = {
+    "home": str(Path.home()),
+    "private_dir": str(private_dir),
+    "private_exists": private_dir.is_dir(),
+    "private_entries": sorted(x.name for x in private_dir.iterdir()) if private_dir.is_dir() else [],
+    "marker_exists": marker_path.is_file(),
+    "marker_is_symlink": marker_path.is_symlink(),
+}
 print(json.dumps({'result': result, 'profile': d.BUILD_PROFILE,
                   'module_path': str(Path(d.__file__).resolve()),
                   'fetches': fetches, 'same_source_updater':p.updates is u,
-                  'home': str(Path.home())}))
+                  'home': str(Path.home()), 'private_state': private_state}))
 """
 
 
@@ -225,6 +235,13 @@ def exercise_worker_migration(base):
         # Simulate relay exec/reload with a new interpreter and consent enabled.
         # This executes the actual one-shot startup helper, without a timer wait.
         new = worker('new')
+        print('V13_NEW_MIGRATION_DIAG=' + json.dumps({
+            'result': new.get('result'),
+            'profile': new.get('profile'),
+            'module_path': new.get('module_path'),
+            'home': new.get('home'),
+            'private_state': new.get('private_state'),
+        }, sort_keys=True), flush=True)
         assert new['profile'] == 'integrated-runtime-source-pinned-v2'
         assert new['module_path'].startswith(str(agent) + os.sep)
         assert new['result']['last_result'] == 'UPDATED', new
