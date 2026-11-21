@@ -73,10 +73,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "Current release-development HEAD at branch readback: 569680bc10eabeb94ea5a1695d4bf77b8584e0a0. JEPA candidate is being rebuilt on this exact head, porting the #2168 SleepRuntime postcommit consumer and adding: observed-only backlog selection (censored newest events cannot starve earlier observed T8), independent learning/planner cursors (planner-only SHADOW does not suppress later learning opt-in), and cooperative cancel/resource-pressure checks through WorldJEPA.fit and before checkpoint/Store commit. The source remains local numeric WorldJEPA/EMA + B1/B2/SELF SHADOW; native GGUF weights unchanged; decision authority NONE. Exact local Aii checkout unavailable because github.com DNS fails. New exact-head CI pending; REDMI_UNVERIFIED.",
-      "next_step": "Review the new exact-base JEPA postcommit PR and its Python 3.11/3.13/3.14 focused/staged/integrated CI. Confirm cancellation leaves no checkpoint/cursor commit, censored-latest backlog remains schedulable, and a planner-only event does not consume learning opt-in. Then persist Adam optimizer moments atomically with model checkpoint/cursor and benchmark reset-vs-persistent optimizer under matched replay/update budgets.",
+      "proof_environment": "Boss postcommit/runtime candidate PR #2179 is now at exact head 68ba0ee703b872f5dd2e0d9e0ae940343284a05f, based on current release-development ancestry (compare: 34 ahead / 0 behind at earlier readback). It contains the staged WorldJEPA optimizer/inverse/RNG training-state overlay and a real Runtime worker -> durable ActionOutcome/T8 -> idle SleepRuntime -> numeric predictor/EMA -> checkpoint/restart test. Exact run 44889906551: staged-runtime PASS and integrated-regression PASS; run 44889906527 combined online JEPA PASS; run 44889906653 runtime-deploy integrity PASS; run 44889906635 safe-additive FAIL (manual review gate, not bypassed). New JEPA ablation PR #2186 code/test head 56f2053a792a6f8a6c385963a45777ccea1f9d06 (subsequent branch commits are documentation-only) adds action-conditioned latent mean-delta baseline and matched persistent-vs-zeroed-Adam-moment control; exact CI queued at last readback. Full local Aii checkout blocked by GitHub DNS; isolated baseline helper positive/negative tests PASS. Base source remains inference-only; optimizer persistence is staged-candidate evidence, not release. Native GGUF body weights unchanged; decision authority NONE; REDMI_UNVERIFIED.",
+      "next_step": "Review Boss #2179 safe-additive failure manually without bypass; keep its exact worker lifecycle, staged and integrated checks green. Run exact-head #2186 staged/integrated CI, inspect its sanitized persistent-vs-moment-reset summary, and verify both arms used the same cloned 288-row source/digest-disjoint T8 cohort, 24 steps and uniform replay. Treat zeroed-m/v with retained global step as a moment-reset control, not full optimizer reset. Then add a return-to-old A→B→A retention experiment and matched content/error-prioritized replay versus uniform/no-replay before any native-body or optimizer-gate promotion.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 08:4x CET",
+      "last_checkpoint": "2026-11-21 10:26 CET",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -94,11 +94,13 @@
         "scope": "Strict action-conditioned positive control; explicit uniform replay vs no-replay ablation; fit-ID/source-disjoint/retention/restart tests; not Runtime-wired"
       },
       "latest_runtime_candidate": {
-        "pr": 2145,
-        "branch": "boss/v14-t8-runtime-shadow-consumer-20261121",
-        "head_sha": "08d14737f1ee554f2b160986f95d9f28d6bc1fa2",
-        "ci": "FAIL_ONE_RUNTIME_TEST_SCHEMA_MISMATCH",
-        "scope": "Postcommit TemporalT8Bridge and WorldPredictionOutcome SHADOW only; newest-first latest-N scan; not JEPA/EMA consumer"
+        "pr": 2179,
+        "branch": "boss/v14-jepa-postcommit-pin-chain-20261121",
+        "head_sha": "68ba0ee703b872f5dd2e0d9e0ae940343284a05f",
+        "base_sha": "569680bc10eabeb94ea5a1695d4bf77b8584e0a0",
+        "status": "OPEN_DRAFT_MANUAL_REVIEW",
+        "ci": "PASS_STAGED_RUNTIME_AND_INTEGRATED_REGRESSION_RUN_44889906551; PASS_COMBINED_JEPA_44889906527; PASS_RUNTIME_DEPLOY_INTEGRITY_44889906653; FAIL_SAFE_ADDITIVE_44889906635_NO_BYPASS",
+        "scope": "Real Runtime worker -> trusted durable T8 -> idle SleepRuntime -> staged numeric WorldJEPA/EMA/Adam-state checkpoint -> SHADOW planner; synthetic SQLite only, no native GGUF body weights or Redmi proof"
       },
       "release_sha": "NOT_PHONE_RELEASED",
       "phone_installed_sha": "UNKNOWN",
@@ -120,6 +122,17 @@
         "status": "OPEN_READY_FOR_REVIEW",
         "ci": "PASS_44872134464_STAGED_241_PY311_10_SKIPPED_47_SUBTESTS; PASS_INTEGRATED_415_PY311_3_SKIPPED_58_SUBTESTS",
         "scope": "Source-bound numeric B1/B2/SELF World/Planner SHADOW receiver; batched readout; ActionOutcome/SourceRef verification; persisted idempotent readback; no normal Runtime hook/native body"
+      },
+      "latest_optimizer_ablation_pr": {
+        "pr": 2186,
+        "branch": "jepa-memory/v14-optimizer-moment-ablation-20261121",
+        "head_sha": "56f2053a792a6f8a6c385963a45777ccea1f9d06",
+        "base_pr": 2179,
+        "base_sha": "68ba0ee703b872f5dd2e0d9e0ae940343284a05f",
+        "status": "OPEN_DRAFT_CI_QUEUED_CODE_TEST_HEAD_56F",
+        "scope": "Action-conditioned latent mean-delta baseline plus same-DB/checkpoint 288-row persistent-Adam-vs-zeroed-m/v control; step clock retained; diagnostic only",
+        "code_test_sha": "56f2053a792a6f8a6c385963a45777ccea1f9d06",
+        "docs_only_checkpoint_sha": "a2b9cf4b6bff6ace9048a066ffe8b64767df5a7e"
       }
     },
     {
@@ -229,10 +242,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
-      "proof_environment": "Existing Sleep A/B/C and ReplayQueue are present. #2168 attempts to coalesce a durable jepa_update event into an idle Sleep window, but the PR is blocked: direct Runtime/Sleep modifications invalidate the pinned integrated_online_world_candidate_20261110.py runtime.py hash, causing staged/integrated and Python 3.14 startup failures. No JEPA idle scheduler is integrated in the release branch and no Redmi lifecycle proof exists.",
-      "next_step": "JEPA/Core: rework the idle update as a hash-bound staged overlay or one deliberately re-pinned integration chain; test cancellation, queue coalescing, resource-pressure/quiet-hours gates, restart recovery and idempotency. Preserve Sleep B no-fact-write and Sleep C homeostasis gates.",
+      "proof_environment": "Boss PR #2179 now contains the composed SleepRuntime idle jepa_update scheduler and a real Runtime worker-lifecycle regression. At exact head 68ba0ee703b872f5dd2e0d9e0ae940343284a05f, staged-runtime PASS and integrated-regression PASS (run 44889906551); combined JEPA PASS (44889906527); runtime-deploy integrity PASS (44889906653). Safe-additive fails on the existing Sleep/Runtime edits and remains a manual-review gate; no bypass. The scheduler uses observed ActionOutcome/T8 only, independent learning/planner cursors, cancellation/resource-pressure checks, and source-bound SHADOW outputs. Synthetic SQLite/CI evidence only; no native GGUF, no Android/Redmi lifecycle proof.",
+      "next_step": "Boss/Core must reconcile the safe-additive/source-integrity failure without bypassing policy. After integration, test idle queue coalescing under real resource-pressure/quiet-hours conditions, crash/restart and cancellation on a connected authorized Redmi. Keep Sleep B no-fact-write and Sleep C homeostasis gates; no Redmi claim until an owner receipt.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 07:49 CET"
+      "last_checkpoint": "2026-11-21 10:26 CET"
     },
     {
       "id": "V14-012",
