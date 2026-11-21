@@ -343,3 +343,70 @@ For B1 LFM2 and B2 Qwen3.5, capture model-specific middle layers near 0.5 depth 
 - **Local isolated test:** Python 3.13 mirror of the updated state filter plus six existing and four new state tests: 10/10 PASS; py_compile PASS. This is not a full local Aii checkout.
 - **Exact CI:** PR #2177 code/test head ce692a87e585c8cc7a6a871dd550ca585a6bac3d; focused RAW EAR run 44888560930 23/23 PASS on Python 3.11 and 23/23 PASS on Python 3.13; staged-runtime 44888560905 240 passed / 10 skipped / 47 subtests; integrated-regression 415 passed / 3 skipped / 58 subtests; privacy scan 44888560951 PASS. Safe-additive 44888560942 is an expected policy failure because an existing module/workflow was changed; no bypass.
 - **Limits:** full local repository checkout is blocked by GitHub DNS in this worker. CI uses Linux runners and synthetic Store fixtures. Redmi remains REDMI_UNVERIFIED; no native microphone or Android timing measurement. This only improves A4 temporal salience, not speech recognition, trained VAD, full-duplex, or the normal Runtime B1/B2->C4->C3 path.
+
+
+## R-023 — RAW EAR V3 vs WebRTC/libfvad matched-window experiment (2026-11-21)
+
+### Sources and exact reuse boundary
+
+- **RAW EAR producer:** PR #2177, `v13/code/v13/audio_voice_cues.py` blob `7b1d519cd36ede4b520d78e22c0f89132a1c73a5`; temporal smoother blob `f693f8b8394558a63d87a35fc67ea3db9dcb1929`. The V3 extractor remains a deterministic 40 ms / 20 ms-hop autocorrelation + voiced-only prosody heuristic, not a calibrated VAD.
+- **libfvad:** upstream [`dpirch/libfvad` commit `532ab666c20d3cfda38bca63abbb0f152706c369`](https://github.com/dpirch/libfvad/commit/532ab666c20d3cfda38bca63abbb0f152706c369) (2024-02-19), standalone C port of the WebRTC VAD engine. Its `LICENSE` is BSD-3-Clause and the separate [`PATENTS`](https://github.com/dpirch/libfvad/blob/532ab666c20d3cfda38bca63abbb0f152706c369/PATENTS) file contains Google's WebRTC patent grant/termination clause. The exact `include/fvad.h` C API accepts 8/16/32/48 kHz and 10/20/30 ms frames. The pinned tree has CMake/Autotools files but no `Android.mk` or Android-specific build recipe. No source or binary was imported in this experiment; no local `libfvad.so` was available.
+- **Local executable proxy:** [`daanzu/py-webrtcvad-wheels` release commit `726a8c72ce8b33b2df7ecd292372690fea2bad0c`](https://github.com/daanzu/py-webrtcvad-wheels/commit/726a8c72ce8b33b2df7ecd292372690fea2bad0c) (2026-10-01), release [`2.0.14.post1`](https://github.com/daanzu/py-webrtcvad-wheels/releases/tag/v2.0.14.post1). The Python wrapper is MIT; bundled WebRTC C code carries BSD terms. Its build workflow explicitly targets manylinux2014 Linux `aarch64` as well as x86_64/i686/ppc64le and macOS/Windows, but that is glibc Linux—not Android bionic/Termux. The repo tree has no separate `PATENTS` file; verify patent-notice provenance before product reuse. This is a WebRTC-algorithm proxy, not a direct libfvad build.
+- **S4VAD:** arXiv:2609.11110 (2026-09-10) remains the paper-only onset-aware state-space candidate already reviewed in R-022. This run independently rechecked the arXiv abstract; PDF retrieval was unavailable, so no new full-text claim is made. No official code/weights/license was found or imported.
+
+### Executable comparison contract
+
+`v14/experiments/raw_ear_vad_compare.py` loads the V3 extractor functions from the exact producer source with AST isolation (no Runtime imports or side effects), and loads `TemporalVoiceEvidence` directly. It accepts only local mono PCM16 WAV plus a separate JSON speech-interval annotation. It emits aggregate metrics and code-source hashes only; it does not persist or emit audio, transcript, raw samples or file paths.
+
+- WebRTC 20 ms decisions are OR-aligned into the same overlapping 40 ms windows (20 ms hop) as RAW EAR V3.
+- Both paths are measured raw and after the same `TemporalVoiceEvidence` V1 smoother. The smoothed result is an explicit experimental post-filter, not WebRTC's native behavior.
+- Metrics include precision/recall/F1, FPR/FNR, false-positive windows per non-speech minute, median onset/offset delay, missing transitions, wall/CPU time and whole-process peak RSS. RSS is process-wide, not a per-backend incremental measurement.
+- `--backend libfvad --libfvad-path ...` calls the documented C ABI through ctypes when a real shared library is present; `--backend webrtcvad` uses the optional Python wrapper. No package is added to the product runtime.
+
+### Local experiment — synthetic only
+
+- Environment: LOCAL_LINUX isolated scratch mirror, CPython 3.13.5, x86_64. Full Aii checkout remains BLOCKED by GitHub DNS. The scratch mirror contains the exact V3 algorithm excerpt and temporal class copied from the pinned blobs, not a complete repository checkout; its local excerpt Git blob is therefore not the product producer blob.
+- `py_compile` on benchmark, tests and isolated source excerpts: PASS.
+- `pytest -q v14/experiments/test_raw_ear_vad_compare.py`: **5 passed in 0.42 s**. Includes alignment/metrics contract, invalid sample-rate/annotation rejection, WebRTC silence-frame smoke, full WebRTC synthetic comparison and a compiled fake-C-ABI positive/negative test for ctypes signatures. The fake library is not libfvad.
+- 2 s harmonic synthetic fixture (annotated speech 500–1500 ms; WebRTC mode 2):
+  - RAW EAR V3 raw: F1 `0.827586`, FPR `0.000000`, FNR `0.294118`, onset median `20 ms`, offset median `40 ms`, wall `135.318 ms`, CPU `134.668 ms`, RTF `0.067659`.
+  - WebRTC wheels 2.0.14 raw: F1 `0.944444`, FPR `0.125000`, FNR `0.000000`, onset median `20 ms`, offset median `160 ms`, wall `0.442 ms`, CPU `0.443 ms`, RTF `0.000221`.
+  - Whole-process peak RSS was `98,316 KiB`; this includes Python and both paths and is not a Redmi or per-backend memory figure.
+- Negative controls: on a 2 s deterministic white-noise-only fixture V3 raw produced 0 false-positive windows while WebRTC produced 99; on a single-impulse fixture V3 raw produced 0 and WebRTC 5. These synthetic distributions are deliberately simple and must not be generalized to real ambient noise or speech.
+- Applying the same temporal smoother raised V3's synthetic recall but also increased false positives and delayed offset; WebRTC's smoothed synthetic F1 fell. Do not treat the smoother as a universal VAD post-filter.
+
+### Interpretation / decision
+
+This is a harness and smoke experiment, not speech-corpus evidence and not a VAD acceptance result. The faster C WebRTC path is a plausible separate activity gate; RAW EAR V3 should retain its distinct prosody/non-speech cue role rather than be replaced by a binary VAD. The synthetic result suggests the Python autocorrelation loop deserves CPU profiling, but no Android extrapolation is valid. Keep both as research candidates; do not add a runtime dependency, download weights, change model slots or alter device permissions.
+
+### Next experiment
+
+Run the exact-source CI matrix on Python 3.13/3.14, then build pinned libfvad C source for the actual Termux/aarch64 toolchain and repeat with a source-licensed, real annotated speech/noise corpus. Report native library build identity, ARM ABI, p50/p95 CPU and onset/offset, process and incremental RSS, FPR/FNR, SNR strata, annotation uncertainty and privacy-safe aggregate outputs. Redmi measurements remain REDMI_UNVERIFIED until a real authorized device receipt exists.
+
+
+
+### Exact-source CI readback — 2026-11-21
+
+- Dedicated workflow run **44891098086** passed on exact branch head \`6333a2c95b85342c341fcfe00a6e4693bd56f2c0\`: Python 3.13 **5/5 PASS** and Python 3.14 **5/5 PASS**. Both jobs compiled the exact producer/temporal source and verified Git blob identities \`7b1d519cd36ede4b520d78e22c0f89132a1c73a5\` and \`f693f8b8394558a63d87a35fc67ea3db9dcb1929\`, then ran the WebRTC wheel smoke and fake-C-ABI test.
+- Existing V14 model-lab workflow **44891067617** passed its repository-wide unittest discovery: 28 tests, 2 skipped because that workflow intentionally does not install the optional WebRTC wrapper. This verifies the new test module no longer breaks the existing runner.
+- Initial model-lab run **44890888702** failed because the first test draft imported pytest while the existing workflow uses unittest without installing pytest. Converted the suite to unittest in commit \`e362c372e082e8b9036987ffe45b7870b1cd88d4\`; the later model-lab run passed. The first failure is retained here rather than hidden.
+- No real libfvad build, ARM ABI, Android/Termux run, speech-corpus evaluation or Redmi measurement is implied by these CI results.
+
+
+
+
+### Latest exact-head rerun — 2026-11-21
+
+- Final stacked PR head \`a0256350b1c0395c8071308bcaccfd3d6a99368d\` was re-tested by dedicated run **44891206658**: Python 3.13 **5/5 PASS**, Python 3.14 **5/5 PASS**, with exact V3/temporal blob assertions, compilation, actual WebRTC wrapper smoke and fake-C-ABI test.
+- Same exact head: public privacy scan **44891205336 PASS** and private-bridge regression workflow **44891205261 PASS**. These are CI checks, not Android evidence.
+- The earlier exact-source run 44891098086 on code/test head 6333a2c is superseded by this latest-head run. No code or test changes occurred between those two tested code trees; later commits only updated the ledger/handoff.
+
+
+
+
+### Final PR readback — 2026-11-21
+
+- PR #2187 latest head is \`26985c31c122ef6922bd556a3811211be823fb99\`, still DRAFT and mergeable, stacked on #2177 head \`3c2ccac8cdda1ccbf3abe5f1ca78b2bac8ef9100\`.
+- The latest code/test tree remains \`6333a2c95b85342c341fcfe00a6e4693bd56f2c0\`; subsequent commits only corrected runner compatibility and appended research/handoff/license evidence. Exact-source CI run 44891206658 remains applicable to that unchanged code/test tree.
+- No release or device deployment occurred. The V14-006 board and V14_USER_NEXT_ACTION are intentionally left to Boss/Integrator ownership; the proposed checkpoint and next step are in the handoff and the #1984 epic comment.
+
