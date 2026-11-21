@@ -6,6 +6,7 @@ Both local GGUFs use the pinned V13 LlamaRunner / llama-server path.
 from __future__ import annotations
 
 import argparse
+import errno
 import fcntl
 import hashlib
 import json
@@ -507,43 +508,104 @@ def compare(home: Path, candidate_id: str, candidate_path: Path | None = None,
         lock.close()
 
 
-def write_report_safely(home: Path, output_path: str | Path, encoded: str) -> Path:
-    """Create a new private report only as a direct child of the existing V13 data dir.
+def open_directory_nofollow(path: Path) -> int:
+    """Open every component of an absolute directory path without following symlinks."""
+    path = Path(path)
+    if not path.is_absolute() or ".." in path.parts:
+        raise ValueError("directory path must be absolute and traversal-free")
+    if not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY"):
+        raise RuntimeError("platform lacks safe directory-open flags")
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    fd = os.open(path.anchor, flags)
+    try:
+        for component in path.parts[1:]:
+            if component in ("", "."):
+                continue
+            try:
+                next_fd = os.open(component, flags, dir_fd=fd)
+            except TypeError as exc:
+                raise RuntimeError("platform lacks directory-relative open support") from exc
+            old_fd, fd = fd, next_fd
+            os.close(old_fd)
+        return fd
+    except Exception:
+        os.close(fd)
+        raise
 
-    Refuses symlink components and overwrites. Reports contain digests/metrics, never
-    raw model text; this helper also prevents an accidental --out from truncating
-    an unrelated user file through a path or symlink.
+
+def _same_inode(left, right) -> bool:
+    return left.st_dev == right.st_dev and left.st_ino == right.st_ino
+
+
+def write_report_safely(home: Path, output_path: str | Path, encoded: str) -> Path:
+    """Create a new private report through pinned V13 directory descriptors.
+
+    Directory FDs prevent a path-component replacement from redirecting the
+    final open. The path is checked again before success, and cleanup unlinks
+    only the inode created by this call.
     """
     raw_home = Path(home).expanduser()
-    if has_symlink_component(raw_home):
-        raise ValueError("V13 home path contains a symlink")
-    resolved_home = raw_home.resolve(strict=True)
-    data_dir = resolved_home / "data"
-    if has_symlink_component(data_dir) or not data_dir.is_dir():
-        raise ValueError("V13 data directory missing or symlink")
-    data_root = data_dir.resolve(strict=True)
-
-    requested = Path(output_path).expanduser()
-    target = requested if requested.is_absolute() else data_root / requested
-    if has_symlink_component(target):
-        raise ValueError("report path contains a symlink")
+    if not raw_home.is_absolute():
+        raw_home = Path.cwd() / raw_home
+    if ".." in raw_home.parts or has_symlink_component(raw_home):
+        raise ValueError("V13 home path contains a symlink or traversal")
+    home_path = raw_home
+    home_fd = open_directory_nofollow(home_path)
+    data_fd = None
+    fd = None
+    created_identity = None
+    name = None
     try:
-        parent = target.parent.resolve(strict=True)
-    except (OSError, RuntimeError) as exc:
-        raise ValueError("report parent must already exist inside V13 data") from exc
-    if parent != data_root:
-        raise ValueError("report must be a direct child of V13 data directory")
-    if target.exists():
-        raise FileExistsError("report already exists; refusing overwrite")
-    if not hasattr(os, "O_NOFOLLOW"):
-        raise RuntimeError("platform lacks O_NOFOLLOW; safe report writing unavailable")
+        data_path = home_path / "data"
+        if has_symlink_component(data_path):
+            raise ValueError("V13 data directory missing or symlink")
+        if (not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY")
+                or os.stat not in os.supports_dir_fd or os.unlink not in os.supports_dir_fd):
+            raise RuntimeError("platform lacks safe directory-relative filesystem APIs")
+        try:
+            data_fd = os.open(
+                "data", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=home_fd
+            )
+        except TypeError as exc:
+            raise RuntimeError("platform lacks directory-relative open support") from exc
+        except OSError as exc:
+            if exc.errno in (errno.ELOOP, errno.ENOTDIR):
+                raise ValueError("V13 data directory is a symlink or not a directory") from exc
+            raise
+        home_info = os.fstat(home_fd)
+        data_info = os.fstat(data_fd)
+        if not stat.S_ISDIR(home_info.st_mode) or not stat.S_ISDIR(data_info.st_mode):
+            raise ValueError("V13 home/data directory is not a directory")
+        if data_info.st_uid != os.getuid():
+            raise ValueError("V13 data directory is not owned by the current user")
 
-    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
-    fd = os.open(target, flags, 0o600)
-    try:
-        info = os.fstat(fd)
-        if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1
-                or info.st_uid != os.getuid()):
+        requested = Path(output_path).expanduser()
+        if ".." in requested.parts:
+            raise ValueError("report must be a direct child of V13 data directory")
+        if requested.is_absolute():
+            if has_symlink_component(requested):
+                raise ValueError("report path contains a symlink")
+            if requested.parent != data_path:
+                raise ValueError("report must be a direct child of V13 data directory")
+            name = requested.name
+        else:
+            if len(requested.parts) != 1:
+                raise ValueError("report must be a direct child of V13 data directory")
+            name = requested.name
+        if not name or name in (".", "..") or os.sep in name or (os.altsep and os.altsep in name):
+            raise ValueError("invalid report filename")
+        if has_symlink_component(data_path / name):
+            raise ValueError("report path contains a symlink")
+
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+        try:
+            fd = os.open(name, flags, 0o600, dir_fd=data_fd)
+        except TypeError as exc:
+            raise RuntimeError("platform lacks directory-relative open support") from exc
+        created = os.fstat(fd)
+        created_identity = (created.st_dev, created.st_ino)
+        if (not stat.S_ISREG(created.st_mode) or created.st_nlink != 1
+                or created.st_uid != os.getuid()):
             raise RuntimeError("report file identity is unsafe")
         os.fchmod(fd, 0o600)
         payload = (encoded + "\n").encode("utf-8")
@@ -556,15 +618,45 @@ def write_report_safely(home: Path, output_path: str | Path, encoded: str) -> Pa
         os.fsync(fd)
         after = os.fstat(fd)
         if (not stat.S_ISREG(after.st_mode) or after.st_nlink != 1
-                or after.st_size != len(payload)):
+                or after.st_size != len(payload)
+                or (after.st_dev, after.st_ino) != created_identity):
             raise RuntimeError("report readback metadata mismatch")
+        try:
+            named = os.stat(name, dir_fd=data_fd, follow_symlinks=False)
+        except FileNotFoundError as exc:
+            raise RuntimeError("report path changed during write") from exc
+        if not _same_inode(named, after) or not stat.S_ISREG(named.st_mode):
+            raise RuntimeError("report path changed during write")
+
+        current_home = os.stat(home_path, follow_symlinks=False)
+        current_data = os.stat(data_path, follow_symlinks=False)
+        if not _same_inode(current_home, home_info) or not _same_inode(current_data, data_info):
+            raise RuntimeError("V13 home/data directory path changed during report write")
+        os.fsync(data_fd)
+        return data_path / name
     except Exception:
-        os.close(fd)
-        target.unlink(missing_ok=True)
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+            fd = None
+        if data_fd is not None and name is not None and created_identity is not None:
+            try:
+                current = os.stat(name, dir_fd=data_fd, follow_symlinks=False)
+                if (current.st_dev, current.st_ino) == created_identity:
+                    os.unlink(name, dir_fd=data_fd)
+                    os.fsync(data_fd)
+            except OSError:
+                pass
         raise
-    else:
-        os.close(fd)
-    return target
+    finally:
+        if fd is not None:
+            os.close(fd)
+        if data_fd is not None:
+            os.close(data_fd)
+        os.close(home_fd)
+
 
 
 def main(argv=None) -> int:
