@@ -1684,3 +1684,28 @@ This is an evidence overlay only. It does not alter the 1,255 historical heading
 **Environment discipline:** `CI_SYNTHETIC` is not `LOCAL_LINUX`, native-model inference, Android/Termux or `REAL_REDM I_PROOF`. No local full Aii suite ran because the runner has no checkout and cannot resolve GitHub DNS. No phone update, model swap, permission change, weight update or device action occurred.
 
 The historical inventory remains **1,255 headings**. Semantic clause → implementation → consumer → test → environment → rollback mapping remains incomplete. No row above certifies whole-Canon or V14 completion.
+
+
+---
+
+## Boss whole-Canon evidence overlay — 2026-11-21 19:50 CET
+
+This additive overlay preserves the original **1,255 historical headings** and does not change the V13 source appendix. It records the current evidence levels; no candidate is accepted merely because it has source code or green synthetic CI.
+
+| Canon family | Current evidence | Open acceptance gap | Status |
+|---|---|---|---|
+| A0–A5 perception / attention / audio | Merged caller-supplied PCM16 RAW EAR producer/consent API (#2240). Core #2242 staged Runtime candidate fails its exact source-hash chain. #2246 metadata-only A5 UI lease has 3/3 synthetic CI checks. | No microphone/AudioRecord, ASR, speech decoder/vocoder, full-duplex, trusted OS UI provider, screenshot/UI tree, downstream B1/B2/C3 UI consumer or Redmi proof. Audio revoke cannot currently cancel C3 while the provider guard is held. | WIRED_SYNTHETIC / NOT_ANDROID |
+| B1_DETAIL / B2_GIST → C4 → C3 | Source-span C4 and offer selection are exercised on the normal staged Runtime with synthetic runners in the prior code release. | Native B1/B2 offer quality, real offer delivery/consumption, correct 2+2, C3 native answer, latency/RSS and Redmi 20-turn acceptance remain unverified. | WIRED_SYNTHETIC / P0_OPEN |
+| B3 / Enlightened Space | Symbolic exchange/tap provenance remains partial. #2243 reports a LOCAL_LINUX tiny cross-geometry K/V adapter proof with receiver injection and negative controls. | Green model-lab CI did not execute the new experiment tests; no production LFM2.5↔Qwen3.5 tap/injection, OOD/symbolic controls, trained receiver utility, Android or native B3 proof. | PARTIAL_SYMBOLIC_ONLY |
+| C1/JEF/C2/C3 / C5 arithmetic | C4 is integrated in the prior code release; #2242 adds an exact arithmetic candidate and audio consumer. | #2242 fails because the staged arithmetic-overlay blob hash does not match; no release or Redmi 2+2 proof. | CANDIDATE_NOT_RELEASED |
+| World / Self / Memory / JEPA | Persistent numeric WorldJEPA/EMA/Store consumer remains SHADOW. | Integrated SleepRuntime positive acceptance returns UTILITY_GATE_REJECTED; prior #2237 cohort regresses old-task retention and fails second-update optimizer cloning. Latest f92c156 has no exact CI attached. No native B1/B2/C3 weight updates or cross-organ gradients. | SHADOW / UPDATE_NOT_ACCEPTED |
+| Sleep / Dream / Replay | Bounded postcommit SleepRuntime job and replay selection code exist. | Retention/utility acceptance fails; no general Dream consolidation or Android lifecycle proof. | PARTIAL / NOT_ACCEPTED |
+| Android background/UI control | Immutable proposal/broker contracts exist; #2246 adds a metadata-only UI observation lease seam with synthetic fake-provider tests. | Broker remains DRY_RUN_ONLY; no authenticated OS companion executor, app launch, tap/type, AccessibilityService, NotificationListenerService, MediaProjection, actual screen observation or Redmi action. | NOT_IMPLEMENTED_AS_EXECUTOR |
+| Voice/audio I/O | Caller-supplied PCM16 feature extraction and A4/C3 admission producer. | No microphone capture, ASR, speech decoder/vocoder, full duplex, audio learner or Android proof; Core Runtime lease path is not accepted. | PARTIAL_PRODUCER_ONLY |
+| Self-optimization / cross-organ weight editing | Small numeric WorldJEPA experiment and persistent optimizer structures exist in SHADOW. | No accepted retention-preserving update, native B1/B2/C3 weight edit, cross-organ gradients, two sparse MoEs or algorithm/code self-edit. Gates remain OFF. | NOT_ACCEPTED |
+| Context OS / Memorilla | Existing Context OS remains; #1983 is an additive SHADOW draft. | No live overflow companion consumer or learned role-specific memory reader/writer coupling. | PARTIAL / SHADOW |
+| Install / update / rollback | Prior code-bearing release f279 had exact CI 19/19. | Integrated candidate 728cdc is 18/19; no authenticated owner-read receipt, installed SHA or updater consent. | CI_ONLY / REDMI_UNVERIFIED |
+
+**Environment separation:** GitHub CI synthetic/staged checks are not LOCAL_LINUX full-repository tests, native model inference, Android/Termux or real Redmi proof. This worker's local full checkout/test is BLOCKED by unavailable GitHub DNS. The private owner-read requests have no authenticated response; no phone action occurred.
+
+Historical inventory remains **1,255 headings**. Semantic clause → implementation → runtime consumer → test → environment → rollback mapping remains incomplete across the full Canon. No row above certifies whole-Canon or V14 completion.
