@@ -399,3 +399,33 @@ Primary sources:
 - llama.cpp state-width selection: https://github.com/ggml-org/llama.cpp/blob/93cb37ea7b5f134cc500b1c5b91d971190600a1a/src/llama-batch.cpp
 - Candidate capture/control-vector patch: https://github.com/hrhdegenetrix/llama-sae-feature-interpretability/tree/b88060a678cc2d4f6c342ff83a28383074e7fa65
 
+
+
+## R-027 — Optional local Silero VAD for RAW EAR (2026-11-21)
+
+**Primary sources inspected**
+
+- Silero VAD upstream README and streaming ONNX wrapper: https://github.com/snakers4/silero-vad and https://github.com/snakers4/silero-vad/blob/master/src/silero_vad/utils_vad.py (accessed 2026-11-21). The source wrapper uses a 64-sample context, 512-sample frames at 16 kHz (32 ms), a recurrent state shaped (2, batch, 128), and one-thread ONNX Runtime settings. The project is MIT; the README documents ONNX Runtime as an optional CPU dependency and describes 8/16 kHz support. Its x86-oriented Python performance statement is not an Android benchmark.
+- sherpa-onnx official Silero VAD docs: https://k2-fsa.github.io/sherpa/onnx/vad/silero-vad.html and Android VAD APK docs: https://k2-fsa.github.io/sherpa/onnx/vad/apk.html (accessed 2026-11-21). The project is Apache-2.0 and documents Android arm64 builds/examples; it lists Silero ONNX artifacts around 629 KB (16 kHz export), 208 KB (int8 16 kHz), and 2.22 MB (v5 8/16 kHz). The Silero model remains MIT; sherpa-onnx explicitly says model licensing must be checked separately.
+- sherpa-onnx C API VAD docs: https://k2-fsa.github.io/sherpa/onnx/c-api/html/vad.html (accessed 2026-11-21): Silero uses a 512-sample window at 16 kHz and supports one-thread configuration. This is a viable future Android-native backend, but it is not yet connected to the Termux Python Runtime.
+- VoxRT's Android wrapper was reviewed as an alternative: its Kotlin wrapper is Apache-2.0, but the shipped native runtime binary is proprietary. It is not selected or imported; the binary licence would need separate review.
+- llama.cpp's server developer README explicitly says intermediate activation exposure is out of scope because there is no stable multi-sequence API. This reinforces that the VAD path is an independent acoustic model, not a shortcut to B3 latent transfer.
+
+**Implementation hypothesis and bounded change**
+
+- Add a caller-owned, optional Silero ONNX stream adapter. It accepts only 16 kHz mono PCM16, uses 512-sample/32 ms windows, carries the 64-sample context and (2,1,128) recurrent state, retains at most 511 incomplete samples in process memory, and resets on source/generation change, timeline discontinuity, explicit reset or consent revocation.
+- Model loading is strictly local and explicit: caller supplies a path, expected SHA-256 and revision. The loader refuses symlinks, oversized files and hash mismatch; it uses CPUExecutionProvider with one intra/inter-op thread. It never downloads a model, opens a microphone or changes installed models.
+- When supplied to the existing RAW EAR consumer, the model score is added as separate VAD evidence alongside pitch, prosody and non-speech cues; it contributes to A4 salience and a bounded C3 admission summary. It does not replace the heuristic cues, create ASR text, identify a speaker, grant learning/action authority or claim calibrated speech probability.
+
+**Evidence and limits**
+
+- LOCAL_LINUX isolated adapter tests: 12/12 PASS on Python 3.13.5, NumPy 2.3.5, pytest 9.0.2; py_compile PASS. Fake ONNX session only; no ONNX Runtime or model weights installed.
+- Full repository local checkout remains BLOCKED by DNS resolution for github.com. Exact integrated Store/Runtime tests are delegated to the PR workflow; no local full-repo PASS is claimed.
+- No Silero model was downloaded or run. No Android/Bionic build, Redmi microphone capture, CPU/RSS/PSS/battery measurement or deployment. REDMI_UNVERIFIED.
+- This is an optional experimental acoustic VAD path, not a calibrated speech recognizer, ASR, voice decoder/vocoder, full-duplex implementation, or trained cross-organ latent channel.
+
+**Next falsifiable experiment**
+
+- With a separately approved, locally present hash-matching Silero artifact, compare RAW EAR V3, pinned libfvad/WebRTC, and Silero on the same public/licensed speech + noise corpus at 16 kHz. Measure speech/non-speech precision/recall, onset/offset latency, false-positive rate on music/noise, model load/RSS, per-frame CPU and real-time factor, and retention of non-speech events. Use equal 32 ms frames and one CPU thread; do not infer Redmi performance from CI. If the Android app path is selected, prototype the sherpa-onnx Apache-2.0 arm64 backend separately and measure Bionic ABI compatibility before adding any dependency.
+
+**Status:** IMPLEMENTED_OPTIONAL_ADAPTER / WIRED_SYNTHETIC_CANDIDATE / NO_REAL_MODEL_RUN / NO_ANDROID_PROOF / NO_DOWNLOAD.

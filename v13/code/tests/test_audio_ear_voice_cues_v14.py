@@ -8,8 +8,10 @@ import time
 from types import SimpleNamespace
 
 import pytest
+import numpy as np
 
 from v13 import audio_voice_cues as audio_voice_cues_module
+from v13.audio_silero_vad import SileroVADStream
 from v13.audio_voice_cues import (
     consume_pcm16_voice_window,
     extract_voice_cues,
@@ -457,5 +459,98 @@ def test_consent_revocation_resets_caller_supplied_temporal_state(tmp_path):
         )
         assert resumed["a4"]["temporal_voice"]["voice_active"] is False
         assert resumed["a4"]["temporal_voice"]["voice_onset"] is False
+    finally:
+        runtime.store.close()
+
+
+class _FakeSileroSession:
+    def __init__(self):
+        self.calls = []
+
+    def run(self, output_names, inputs):
+        self.calls.append(inputs)
+        frame = inputs["input"][:, 64:]
+        rms = float(np.sqrt(np.mean(frame * frame)))
+        score = 0.9 if rms >= 0.08 else 0.1
+        return [np.asarray([[score]], dtype=np.float32), inputs["state"] + 1.0]
+
+
+def test_optional_silero_vad_is_source_bound_and_reaches_a4_c3(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    session = _FakeSileroSession()
+    vad = SileroVADStream(
+        session, model_sha256="b" * 64, model_revision="synthetic-fixture"
+    )
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(140), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, finality="FINAL", token_budget=512,
+            vad_stream=vad,
+        )
+        evidence = result["vad_evidence"]
+        segment = result["packet"]["segments"][0]
+        cues = segment["acoustic"]["voice_cues"]
+        assert evidence["method"] == "SILERO_VAD_ONNX"
+        assert evidence["model_sha256"] == "b" * 64
+        assert evidence["frame_count"] == 31
+        assert evidence["speech_fraction"] == 1.0
+        assert evidence["pending_samples"] == 128
+        assert cues["vad"] == evidence
+        assert result["a4"]["vad_evidence"] == evidence
+        assert "vad_speech_fraction=1.00" in result["c3_admission"].selected[0].summary
+        assert result["a4"]["learning_authority"] is False
+        assert result["a4"]["action_authority"] is False
+        assert segment["asr_transcript"] is None
+        assert "pcm16" not in segment
+        assert packet_count(runtime.store, event["event_id"]) == 1
+        assert attention_count(runtime.store, event["event_id"]) == 1
+    finally:
+        runtime.store.close()
+
+
+def test_consent_revocation_resets_optional_silero_stream_before_resume(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    vad = SileroVADStream(
+        _FakeSileroSession(), model_sha256="c" * 64, model_revision="synthetic-fixture"
+    )
+    try:
+        vad.push_pcm16(
+            tone(140, seconds=0.04), sample_rate=16000,
+            stream_id=SOURCE_ID + ":" + event["brain_generation_id"], start_ms=100,
+        )
+        assert vad.pending_samples > 0
+        with pytest.raises(PermissionError):
+            consume_pcm16_voice_window(
+                runtime, tone(140, seconds=0.04), sample_rate=16000, start_ms=140,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=lambda source, receipt: False,
+                finality="FINAL", token_budget=512, vad_stream=vad,
+            )
+        assert vad.pending_samples == 0
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
+
+
+def test_optional_silero_rejects_non_16khz_before_packet_or_attention(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    vad = SileroVADStream(
+        _FakeSileroSession(), model_sha256="d" * 64, model_revision="synthetic-fixture"
+    )
+    try:
+        with pytest.raises(ValueError, match="16000 Hz"):
+            consume_pcm16_voice_window(
+                runtime, tone(140, sample_rate=8000), sample_rate=8000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE_ID, consent_receipt=RECEIPT,
+                consent_check=consent_ok, finality="FINAL", token_budget=512,
+                vad_stream=vad,
+            )
+        assert packet_count(runtime.store, event["event_id"]) == 0
+        assert attention_count(runtime.store, event["event_id"]) == 0
     finally:
         runtime.store.close()
