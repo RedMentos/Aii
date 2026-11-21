@@ -9,8 +9,11 @@ from dataclasses import dataclass
 import hashlib
 import hmac
 import json
+import os
+from pathlib import Path
 import secrets
 import sqlite3
+import stat
 import threading
 import time
 
@@ -62,6 +65,51 @@ def _canonical(capability, args):
     return json.dumps({"capability": capability, "args": args}, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
 
 
+def _private_audit_db_path(db_path):
+    """Create/open one private regular audit DB without following a final symlink.
+
+    This protects the dry-run audit from accidental symlink/hardlink redirection
+    and makes stored typed text private by default. It is not an OS sandbox or
+    a defense against a malicious same-UID process racing the subsequent SQLite
+    open; the native companion must still own authenticated consent and storage.
+    """
+    try:
+        path = Path(os.path.abspath(os.path.expanduser(os.fspath(db_path))))
+    except (TypeError, ValueError, OSError) as exc:
+        raise ControlDenied("invalid audit database path") from exc
+    nofollow = getattr(os, "O_NOFOLLOW", None)
+    if nofollow is None:
+        raise ControlDenied("safe audit storage unavailable")
+    try:
+        if not path.parent.is_dir():
+            raise ControlDenied("audit database parent must already exist")
+        for component in reversed(path.parents):
+            if stat.S_ISLNK(component.lstat().st_mode):
+                raise ControlDenied("symlinked audit directory")
+        flags = os.O_RDWR | nofollow | getattr(os, "O_CLOEXEC", 0)
+        try:
+            fd = os.open(path, flags | os.O_CREAT | os.O_EXCL, 0o600)
+        except FileExistsError:
+            fd = os.open(path, flags)
+        try:
+            info = os.fstat(fd)
+            if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+                raise ControlDenied("audit database must be a private regular file")
+            os.fchmod(fd, 0o600)
+            current = path.lstat()
+            if (not stat.S_ISREG(current.st_mode)
+                    or current.st_dev != info.st_dev or current.st_ino != info.st_ino):
+                raise ControlDenied("audit database path changed")
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    except ControlDenied:
+        raise
+    except OSError as exc:
+        raise ControlDenied("unsafe audit database path") from exc
+    return path
+
+
 class AndroidControlBroker:
     """Per-action approval broker; transport and user-confirmation UI are separate.
 
@@ -71,7 +119,8 @@ class AndroidControlBroker:
     def __init__(self, db_path, *, clock=None):
         self.clock = clock or time.time
         self.lock = threading.RLock()
-        self.db = sqlite3.connect(str(db_path), check_same_thread=False)
+        self.db_path = _private_audit_db_path(db_path)
+        self.db = sqlite3.connect(str(self.db_path), check_same_thread=False)
         self.db.execute("CREATE TABLE IF NOT EXISTS control_audit (id INTEGER PRIMARY KEY, action_id TEXT, event TEXT NOT NULL, digest TEXT, at REAL NOT NULL)")
         self.db.commit()
         self.pending = {}
