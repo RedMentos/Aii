@@ -13,6 +13,7 @@ import struct
 from statistics import median
 
 from . import attention as attctl
+from .audio_temporal_evidence import TemporalVoiceEvidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
 from .audio_percept_contract import audio_percept_packet
@@ -235,7 +236,8 @@ def extract_voice_cues(pcm: bytes, sample_rate: int) -> dict:
 
 def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                generation_id, source_id, consent_receipt,
-                               consent_check, finality, token_budget=512):
+                               consent_check, finality, token_budget=512,
+                               temporal_state: TemporalVoiceEvidence | None = None):
     """Persist one source-bound acoustic packet and deliver cues to A4 and C3 admission."""
     _require_current_consent(consent_check, source_id, consent_receipt)
     raw = observe_pcm16(
@@ -268,13 +270,35 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
     runtime.store.add_packet("PerceptPacket", audio_packet)
     _require_current_consent(consent_check, source_id, receipt)
 
-    voice_novelty = max(0.35 * cues["voiced_fraction"], 0.9 * cues["prosody_change_score"])
+    temporal_voice = None
+    if temporal_state is not None:
+        if not isinstance(temporal_state, TemporalVoiceEvidence):
+            raise ValueError("temporal_state must be a TemporalVoiceEvidence instance")
+        temporal_voice = temporal_state.update(
+            source_id=source_id,
+            generation_id=generation_id,
+            start_ms=audio_segment["start_ms"],
+            end_ms=audio_segment["end_ms"],
+            cues=cues,
+        )
+        voice_novelty = max(
+            0.35 * temporal_voice["voice_evidence"],
+            0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
+        )
+        prosody_interrupt = (0.25 * cues["prosody_change_score"]
+                             if temporal_voice["voice_active"] else 0.0)
+        onset_interrupt = 0.5 if temporal_voice["voice_onset"] else 0.0
+    else:
+        voice_novelty = max(0.35 * cues["voiced_fraction"], 0.9 * cues["prosody_change_score"])
+        prosody_interrupt = 0.25 * cues["prosody_change_score"]
+        onset_interrupt = 0.0
     if cues["activity_hint"] in {"UNVOICED_NOISE", "IMPULSIVE"}:
+        # Preserve non-speech events as their own salience channel.
         voice_novelty = max(voice_novelty, 0.35 * cues["activity_score"])
     attention = attctl.controller(runtime)
     attention_result = attention.modulate(event_id, sal={
         "novelty": min(1.0, max(zcr, voice_novelty)),
-        "external_interrupt": min(1.0, max(rms * 0.5, 0.25 * cues["prosody_change_score"])),
+        "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt)),
     })
     a4 = {
         "packet_id": audio_packet["packet_id"],
@@ -283,6 +307,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         "voice_activity_hint": cues["activity_hint"],
         "voice_cues": cues,
         "prosody_change_score": cues["prosody_change_score"],
+        "temporal_voice": temporal_voice,
         "attention": attention_result,
         "learning_authority": False,
         "action_authority": False,
@@ -311,6 +336,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         "packet": audio_packet,
         "a4": a4,
         "c3_admission": c3,
+        "temporal_voice": temporal_voice,
         "capture_authority": "CALLER_SUPPLIED_PCM16",
         "learning_authority": False,
         "action_authority": False,

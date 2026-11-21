@@ -13,6 +13,7 @@ from v13.audio_voice_cues import (
     validate_voice_cues,
 )
 from v13.store import Store
+from v13.audio_temporal_evidence import TemporalVoiceEvidence
 
 
 SOURCE_ID = "fixture:raw-ear-voice"
@@ -273,5 +274,46 @@ def test_revoked_consent_has_no_store_or_attention_side_effect(tmp_path):
             )
         assert packet_count(runtime.store, event["event_id"]) == 0
         assert attention_count(runtime.store, event["event_id"]) == 0
+    finally:
+        runtime.store.close()
+
+
+def test_temporal_voice_evidence_gates_only_voice_salience_in_a4(tmp_path, monkeypatch):
+    runtime, event = make_runtime(tmp_path)
+    state = TemporalVoiceEvidence()
+    observed = []
+
+    class CaptureAttention:
+        def modulate(self, event_id, sal=None):
+            observed.append(dict(sal or {}))
+            return {"captured": True}
+
+    monkeypatch.setattr(audio_voice_cues_module.attctl, "controller", lambda runtime: CaptureAttention())
+    short_tone = tone(140, sample_rate=16000, seconds=0.04)
+    try:
+        first = consume_pcm16_voice_window(
+            runtime, short_tone, sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, finality="FINAL", token_budget=512,
+            temporal_state=state,
+        )
+        second = consume_pcm16_voice_window(
+            runtime, short_tone, sample_rate=16000, start_ms=140,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE_ID, consent_receipt=RECEIPT,
+            consent_check=consent_ok, finality="FINAL", token_budget=512,
+            temporal_state=state,
+        )
+        assert first["a4"]["temporal_voice"]["voice_active"] is False
+        assert first["a4"]["temporal_voice"]["voice_onset"] is False
+        assert second["a4"]["temporal_voice"]["voice_active"] is True
+        assert second["a4"]["temporal_voice"]["voice_onset"] is True
+        assert observed[1]["novelty"] > observed[0]["novelty"]
+        assert observed[1]["external_interrupt"] >= 0.5
+        assert first["a4"]["learning_authority"] is False
+        assert second["a4"]["action_authority"] is False
+        assert first["c3_admission"].status == "ADMITTED"
+        assert second["c3_admission"].status == "ADMITTED"
     finally:
         runtime.store.close()
