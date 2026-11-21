@@ -392,3 +392,12 @@ Run the exact-source CI matrix on Python 3.13/3.14, then build pinned libfvad C 
 - Initial model-lab run **44890888702** failed because the first test draft imported pytest while the existing workflow uses unittest without installing pytest. Converted the suite to unittest in commit \`e362c372e082e8b9036987ffe45b7870b1cd88d4\`; the later model-lab run passed. The first failure is retained here rather than hidden.
 - No real libfvad build, ARM ABI, Android/Termux run, speech-corpus evaluation or Redmi measurement is implied by these CI results.
 
+
+
+
+### Latest exact-head rerun — 2026-11-21
+
+- Final stacked PR head \`a0256350b1c0395c8071308bcaccfd3d6a99368d\` was re-tested by dedicated run **44891206658**: Python 3.13 **5/5 PASS**, Python 3.14 **5/5 PASS**, with exact V3/temporal blob assertions, compilation, actual WebRTC wrapper smoke and fake-C-ABI test.
+- Same exact head: public privacy scan **44891205336 PASS** and private-bridge regression workflow **44891205261 PASS**. These are CI checks, not Android evidence.
+- The earlier exact-source run 44891098086 on code/test head 6333a2c is superseded by this latest-head run. No code or test changes occurred between those two tested code trees; later commits only updated the ledger/handoff.
+
