@@ -155,3 +155,15 @@ The new latest-run logic is therefore CI-verified on the exact merge SHA. This i
 Private owner-read #352 HEALTH, #353 PIPELINE_STATUS and #354 DIAGNOSTICS still have no device comments at this readback. Installed SHA remains UNKNOWN; no UPDATE_REQUEST was sent. The updater is not assumed installed on the phone. If #353 produces a valid owner receipt showing the current pipeline and explicit auto-update consent, Boss can issue one UPDATE_REQUEST and then require a separate PIPELINE_STATUS installation receipt. If the relay remains silent, do not repeat the installer or claim deployment.
 
 The functional P0 remains open: #1904's last phone evidence is stale and showed wrong 2+2, B1/B2 time-budget failures and zero valid offers. #2139/#2140/#2135 still have staged integration failures. Green updater CI proves the gate logic, not the quality or completeness of V14.
+
+
+## T8 safety re-review — 2026-11-21 01:47 CET
+
+Current draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), head `7f67a69eb2c4add039ad853f7a34502eaf1a44c9`, appears to fix the prior QA source findings:
+- CANCELLED/ABORTED now produce a cancelled record; OUTCOME_UNKNOWN/INTERRUPTED produce a censored record. Both use `actual_outcome=None`, create no learning intent and do not update the receiver.
+- ActionOutcome verification scans the complete event/generation history up to a hard 4096-row bound and fails closed on overflow; it no longer relies on LIMIT 17 that could hide an older duplicate.
+- Receiver rollback fsyncs the containing directory after `os.replace`.
+
+Exact focused V14 T8 CI: **48 passed** on push run [44845970725](https://github.com/RedMentos/Aii/actions/runs/44845970725) and PR run [44845973418](https://github.com/RedMentos/Aii/actions/runs/44845973418); private bridge [44845970739](https://github.com/RedMentos/Aii/actions/runs/44845970739) PASS. Staged-runtime/integrated regression on PR run [44845973377](https://github.com/RedMentos/Aii/actions/runs/44845973377) is still IN_PROGRESS; safe-additive policy check is red because this candidate adds V14 learning modules/workflow, not because an Android release gate was bypassed.
+
+This is a source-level correction and focused CI proof, not a normal Runtime learning consumer. The optimizer remains closed; no native B1/B2 body-weight update or Redmi evidence. Next: finish exact staged/integrated checks, then integrate the T8 consumer into the normal Runtime only after source-disjoint holdout/backlog fixes and measured holdout/retention/restart/rollback.
