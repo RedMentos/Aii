@@ -250,7 +250,7 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path)
             runtime, pcm, sample_rate=16000, start_ms=100,
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
-            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
+            consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
         )
         segment = result["packet"]["segments"][0]
         cues = segment["acoustic"]["voice_cues"]
@@ -340,7 +340,7 @@ def test_revoked_consent_has_no_store_or_attention_side_effect(tmp_path):
                 runtime, tone(140), sample_rate=16000, start_ms=100,
                 event_id=event["event_id"], generation_id=event["brain_generation_id"],
                 source_id=SOURCE_ID, consent_receipt=RECEIPT,
-                consent_check=lambda source, receipt: False, consent_guard=_guard_for(lambda source, receipt: False), consent_guard=_guard_for(lambda source, receipt: False),
+                consent_check=lambda source, receipt: False, consent_guard=_guard_for(lambda source, receipt: False),
                 finality="FINAL", token_budget=512,
             )
         assert packet_count(runtime.store, event["event_id"]) == 0
