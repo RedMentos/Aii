@@ -697,3 +697,28 @@ Core must provide an authenticated Android observe_ui receipt provider and retai
 - Staged Runtime: `251 passed, 10 skipped, 47 subtests`.
 - Integrated regression: `424 passed, 3 skipped, 58 subtests` (6 warnings).
 - These are CI staged/synthetic tests. They do not establish Android OS capture, a real UI provider, active-turn consumer wiring or Redmi behavior.
+
+
+
+## R-045 — MobileExplorer: latency-overlapped mobile UI exploration, with strict rollback and consent limits (2026-11-21)
+
+### Primary paper reviewed
+
+- Runxi Huang, Liyu Zhang, Shengzhong Liu and Xiaomin Ouyang, **MobileExplorer: Accelerating On-Device Inference for Mobile GUI Agents via Online Exploration**, arXiv:2605.26546, submitted 2026-05-26. This is an arXiv preprint; peer-review status was not verified. Full arXiv HTML was reviewed across the motivation, exploration, rollback, alignment and evaluation sections: https://arxiv.org/abs/2605.26546.
+- Method: while a vision-language model reasons, a lightweight controller parses the Android accessibility tree, ranks clickable elements by text-embedding similarity to the task, probes selected elements, records screen/interaction traces, attempts a two-level rollback, aligns explored states to the later screen with perceptual hashes, and injects compact template-generated hints into the next reasoning step.
+- Reported AndroidWorld result: 50.86% success (59/116 tasks) versus 46.55% for the M3A VLM baseline; 9.24 versus 10.93 interaction steps on average (15.5% fewer); the paper reports approximately 23% lower end-to-end latency. Ablations are informative: random exploration falls to 42.2%, removing two-level rollback to 39.7%, and removing exploration alignment to 47.4%. The method therefore depends on task relevance, rollback and state alignment together; speculative probes are not automatically useful.
+- Evaluation caveat: the implementation section describes AndroidWorld UI interaction running in an Android emulator while model inference runs on separate target hardware through an HTTP interface. Phone inference uses llama.cpp inside Termux, but this is not proof that the complete UI provider, exploration controller and model all ran as one resident Android app. Listed platforms include a 12-GB Samsung Galaxy S24, a 64-GB Jetson AGX Orin and a 24-GB MacBook Air M4. The paper's 4B VLM/device conditions are not a Redmi Note 10 Pro or a 5.84-GB budget benchmark.
+- The paper says the added control logic costs only tens of milliseconds per step and that memory/power remain stable, but the inspected results do not establish a Redmi memory peak, a universal rollback success guarantee, or safety for irreversible app actions. No exact rollback success percentage was verified in the primary text reviewed here.
+
+### OSS, license and reuse
+
+- The primary arXiv record did not provide a linked implementation repository in the inspected text; an exact-title repository search did not identify a matching maintained source tree. No code, model weights or dataset were imported. No implementation/dependency license was verified. The arXiv metadata's copyright field is not a substitute for a code or paper reuse license.
+- No Android/ARM build, GGUF conversion, Termux installation or Redmi benchmark was attempted.
+
+### V14 implications and testable adaptation
+
+- The useful hypothesis is **latency-overlapped information gathering**, not blind UI exploration. A future V14 experiment may compare no exploration, task-relevance-ranked read-only candidates and shuffled candidates while keeping the same task/model/device. It must preserve source, capture receipt, generation, session and state fingerprint; cap work by the remaining inference window; and record whether later screen-state alignment accepted or rejected each hint.
+- The paper's probes include real clicks. Those can mutate data, trigger permission dialogs or enter irreversible flows. The current A5 UI adapter is metadata-only and explicitly grants neither action nor learning authority. Do not port speculative taps into it. Any later action-based exploration requires a separately authorized Android executor, bounded app/scope allowlist, explicit per-action approval, visible stop/cancel, state verification and a tested rollback path. A rollback algorithm is not permission to act.
+- Keep the current A5 provider-independent lease and source-bound A4 admission as the non-mutating baseline. No new model candidate is recommended from this paper.
+
+**Status:** PAPER_FULLTEXT_REVIEWED / PREPRINT / NO_MATCHING_OSS_REPOSITORY_VERIFIED / NO_CODE_OR_MODEL_IMPORTED / RESEARCH_HYPOTHESIS_ONLY / NO_ANDROID_PROOF.
