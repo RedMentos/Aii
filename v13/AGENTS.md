@@ -49,3 +49,17 @@ The user wants Claude and GPT/Codex to check each other's work. This is a standi
 - Also check the goal: no harm to people; new tools or modules default off and only run with the user's conscious, unmanipulated permission; unmeasured SHADOW parts get no decision authority.
 - Record each round at the top of `v13/PRUEFUNG_CLAUDE_FUER_GPT.md` (or `v13/PRUEFUNG_GPT_FUER_CLAUDE.md`): reviewed commits, commands with output, findings (bug / note / OK) and what you changed. Fix confirmed small bugs with a test; leave larger findings as open points for the other side or the user.
 - Never overwrite the other side: `git fetch` before every push, merge foreign commits instead of replacing them, no force-push, and name in the handoff what came from whom. The repo is public: nothing private (tokens, personal data, private chats, device identifiers) in git; private material goes to Drive only. Back up each round to git and Drive.
+
+
+## Android Release Train (2026-11-12)
+
+For any code intended to reach the user's Redmi, follow the fixed integration and
+CI-gated phone release contract in
+`v13/coordination/PHONE_RELEASE_TRAIN_2026-11-12.md`.
+The five hourly roles must continue coding on separate branches/PRs; Boss &
+Integration must review and integrate compatible, tested work into the phone
+release branch. A PR commit alone is **not** installed on Android. The verified
+phone update path stages the full runtime including Canon and switches the
+actual `~/v13/bin/v13` launcher, leaving GGUF and SQLite state unchanged.
+A connected GitHub assistant may request an allowlisted update or inspect
+explicitly user-shared diagnostics, not run arbitrary shell commands.

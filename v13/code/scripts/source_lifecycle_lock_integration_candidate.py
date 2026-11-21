@@ -11,7 +11,7 @@ PINS = {
     'vision.py': '758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5',
     'archive_reader_guard_candidate.py': '8771f937ed58dc010ebdf42ab8efcacf3e4c86875eb89609d2118d51d3cea6fb',
     'archive_stream_range_candidate.py': 'e869eaa278bf567463f7f4bbf41b2b5f5bae51c52f7034c2edcd9250d4f917e8',
-    'source_lifecycle_candidate.py': 'ce787982ce2fea28b66c618d29395c7c2cb72286d4ea9a25db2ab7f9617b94bb',
+    'source_lifecycle_candidate.py': '3ace74b802d3e3e7340eabcccb03275d348deae2297fe8a1b4d2e1eab17d62b0',
 }
 GUARD_SCRIPT_SHA = 'a825149f711dead291890458a30c014652cfed26a8dbe85c60ea350e86a83a72'
 OLD_ARCHIVE_INTEGRATED_SHA = '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'
@@ -24,6 +24,17 @@ STORE_NEW = b'''        with self.tx() as c:
             verify_or_create_blob(p,b,h)
             c.execute("INSERT INTO sources VALUES (?,?,?,?,?,?,0)",(sid,h,kind,len(b),len(text),now()))
 '''
+RECOVER_OLD = b'''    def _recover(self):
+        with self.tx() as c:
+'''
+RECOVER_NEW = b'''    def _recover(self):
+        # Both file publication and forget use the global Store write lock.
+        # Recover privately staged crash leftovers before any sources are read.
+        from .source_lifecycle_candidate import cleanup_pending
+        cleanup_pending(self.home / 'data/blobs')
+        with self.tx() as c:
+'''
+
 EVENT_OLD = b'''        path=self.home/'data/blobs'/h
         if not path.exists():atomic_write(path,b)
 '''
@@ -116,6 +127,7 @@ def build_sources(source_dir):
         raise ValueError('unexpected materialized archive revision')
     for filename, old, new in (
             ('store.py', STORE_OLD, STORE_NEW),
+            ('store.py', RECOVER_OLD, RECOVER_NEW),
             ('store.py', EVENT_OLD, EVENT_NEW),
             ('memory.py', MEMORY_OLD, MEMORY_NEW),
             ('vision.py', VISION_OLD, VISION_NEW),

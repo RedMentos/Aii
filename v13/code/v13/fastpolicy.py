@@ -51,14 +51,18 @@ def memory_key(text,limit=6):
 def _native(control):
     """Typed fields a native C2 call may carry (optional; the current select_processing schema only has route)."""
     out={}
-    def walk(o):
-        if isinstance(o,dict):
-            for k,v in o.items():
-                if k in ('answer_type','memory_key','tool') and isinstance(v,str) and v.strip() and k not in out:out[k]=v.strip()[:200]
-                walk(v)
-        elif isinstance(o,list):
-            for v in o:walk(v)
-    walk(control);return out
+    # Only the typed C2 result itself can propose executive fields. Recursive
+    # traversal used to promote unrelated nested user/source/tool metadata into
+    # native authority, e.g. a quoted tool name inside an observation.
+    if not isinstance(control,dict):return out
+    typed=control.get('executive')
+    if isinstance(typed,dict) and control.get('schema')=='C2ExecutiveFields/1':
+        control=typed
+    for k in ('answer_type','memory_key','tool'):
+        v=control.get(k)
+        if isinstance(v,str) and v.strip():
+            out[k]=v.strip()[:200]
+    return out
 
 def c2_packet(r,e,text,route,info=None):
     """One structured C2 packet per turn (BOOT fields first, validated native fields as fallback)."""

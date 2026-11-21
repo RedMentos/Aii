@@ -64,10 +64,14 @@ class Store(unittest.TestCase):
         self.e={'event_id':'evt_x','brain_generation_id':self.s.generation_id,'source_ref':self.s.source('Compute the total budget','USER')}
     def tearDown(self):self.r.close();self.tmp.cleanup()
 
-    def test_c5_reproduces_route_table_and_gates_permissions(self):
+    def test_c5_unified_report_egress_and_gates_permissions(self):
         gate=focal.ActionGate(self.s)
-        for route,want in {'simple':'C3_LANGUAGE','detail':'B1_DETAIL','gist':'B2_GIST','both':'B1_DETAIL'}.items():
-            self.assertEqual(gate.select(self.e,route=route,direct=False,resource_state='NORMAL')['role'],want)
+        for route in ('simple','detail','gist','both'):
+            result=gate.select(self.e,route=route,direct=False,resource_state='NORMAL')
+            self.assertEqual(result['role'],'C3_LANGUAGE')
+            suppressed={c['action_id']:c['reason'] for c in result['suppressed']}
+            self.assertEqual(suppressed['B1_DETAIL'],'BODY_INTERNAL_OFFER_ONLY')
+            self.assertEqual(suppressed['B2_GIST'],'BODY_INTERNAL_OFFER_ONLY')
             self.assertEqual(gate.select(self.e,route=route,direct=False,resource_state='PRESSURE')['role'],'C3_LANGUAGE')
         self.assertEqual(gate.select(self.e,route='detail',direct=True,resource_state='NORMAL')['role'],'SOURCE_COPY')
         strong_b1=[dict(cand('o'),priority=1.)]
@@ -157,7 +161,8 @@ class FocalRuntime(unittest.TestCase):
         self.assertEqual(meta['focal']['inquisition'],['PROPOSED','CONTESTED'])
         self.assertTrue(set(meta['selected_offer_ids'])<={x['packet_id'] for x in kinds('OfferPacket')})
         resp=kinds('AttentionResponse');self.assertTrue(any(x['status']=='GRANTED' and x['delivery']=='b2_gist_slots' for x in resp))
-        sel=kinds('ActionSelection')[-1];self.assertEqual(sel['selected']['action_id'],'B1_DETAIL')
+        sel=kinds('ActionSelection')[-1];self.assertEqual(sel['selected']['action_id'],'C3_LANGUAGE')
+        self.assertEqual(sel['route_prior'],'B1_DETAIL')  # detail/gist cognitive routing retained; only egress unified
 
     def test_callosum_reentry_preserved_and_halt_readout_can_stop_it(self):
         script=lambda:{'B1_DETAIL':[('Rent is 120','rent 120',False),('Rent is 120 checked','rent 120',False)],'B2_GIST':[('Monthly plan overview',None,True)]}

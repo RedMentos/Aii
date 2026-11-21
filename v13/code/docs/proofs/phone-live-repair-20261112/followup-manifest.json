@@ -1,0 +1,27 @@
+{
+  "derived_runtime_cli_and_store_roundtrips": "PASS",
+  "focused": {
+    "passed": 218,
+    "subtests": 39
+  },
+  "native_chat_result_before_followup": "MODEL_TIMEOUT; second test ambiguous due overlapping input",
+  "on_device_followup_installation": "AWAITING_CI_AND_PRIVATE_RECEIPT",
+  "public_privacy_scan": "CLEAN",
+  "real_mobile_chromium": "PASS; disposable echo process, no page errors",
+  "review_base": "a124c20e298f9d83866e7c2d64f704a524c2f04e",
+  "schema": "v13.phone-repair-followup-software-evidence/1",
+  "sha256": {
+    ".github/workflows/v13-private-owner-read-ci.yml": "624cf0e11af9dc91bb9d89f6362e71fd70bc64e262e38e67f0e196259204b149",
+    "v13/code/docs/HANDOFF_CURRENT.md": "2f3d50bae0eb70b8c7868ca5a40f7d2ce6f85e205f186fbc5762199673ecd025",
+    "v13/code/docs/PHONE_LIVE_REPAIR_20261112.md": "579de091153cd2d19e80bca31b5e42cb092b40765091adffc0d7a94eb07492c7",
+    "v13/code/docs/proofs/phone-live-repair-20261112/followup-focused-tests.log": "00b03efc9cd997d93527f783a1ba25b6d2c6b270ad4c5d7602fd07dc91f4096c",
+    "v13/code/tests/test_managed_console_dashboard.py": "07f14eac0fee5d3550ab48dea08e618f83f85654e1b0ae332ff3e813c7cf2575",
+    "v13/code/tests/test_phone_runtime_diagnostics.py": "edd39bced14eed201db84c67abbb83f118da7c32a05f184013d62aa62d49069f",
+    "v13/code/tests/test_runtime_deploy.py": "da0560c5e01044721df13f3aa882c8ab952149d09f33b5697814822b5971d8bb",
+    "v13/code/v13/mobile_dashboard.html": "15da10e05ab22b2baf5f8d437312c63ddb4a39d946d993a7134b01a1b61ca2a3",
+    "v13/code/v13/mobile_dashboard.py": "e58cca014772b76b932d369e07c779be100fc852a61188209f53a7c0f6df67ca",
+    "v13/code/v13/phone_runtime_diagnostics.py": "6dbfb2c5c3082d55257e469164ddfbc531639dc8a0e1580dfd004bfabcb10ec8",
+    "v13/code/v13/runtime_deploy.py": "2d742cd8ee0ddced265063e22bdade8821a870f82205c7bb6735ce7f686be333"
+  },
+  "tested_source_commit": "9dcea85c13e9426ecc3b14983e23299ba93e40d6"
+}

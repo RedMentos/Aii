@@ -11,6 +11,7 @@ KNOBS={
  "b2_state_slots":(4,"COUNT",0,8,"BOOT retained source-bound B2 offers; 0 disables cross-turn context"),
  "b2_context_chars":(768,"COUNT",0,4096,"BOOT total serialized earlier B2 context character cap"),
  "threads":(4,"COUNT",1,8,"Native CPU threads"),
+ "native_batch_tokens":(128,"COUNT",64,512,"Native llama-server prompt batching (-b and -ub); exact 64-token steps, measure cold/warm Redmi TTFT before promotion"),
  "deadline_seconds":(90,"DURATION_S",5,600,"Absolute user deadline"),
  "observer_seconds":(35,"DURATION_S",2,180,"Observer budget per role"),
  "control_seconds":(4.,"DURATION_S",.2,30,"Needle control budget"),

@@ -1,0 +1,54 @@
+name: V13 integrate reviewed agent PRs on release events
+
+# The hourly Boss and 30-minute cron are not the only triggers: each
+# same-repo PR publication/update can advance checked additive code.
+on:
+  pull_request:
+    branches:
+      - gpt6/v13-private-remote-bridge-20261111
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - edited
+    paths:
+      - 'v13/code/v13/**'
+      - 'v13/code/tests/**'
+      - 'v13/code/docs/handoffs/**'
+  push:
+    branches:
+      - gpt6/v13-private-remote-bridge-20261111
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+  actions: write
+
+concurrency:
+  group: v13-reviewed-release-queue
+  cancel-in-progress: false
+
+jobs:
+  integrate-same-repo-only:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == 'RedMentos/Aii'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Read only the trusted default-branch queue code
+        uses: actions/checkout@v4
+        with:
+          repository: RedMentos/Aii
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify fail-closed unattended queue contracts
+        run: python -m unittest discover -s automation/tests -p 'test_v13_release_queue.py' -v
+      - name: Review, integrate and dispatch exact release gates
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: RedMentos/Aii
+        run: python automation/v13_release_queue.py --execute

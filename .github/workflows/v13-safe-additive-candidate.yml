@@ -1,0 +1,95 @@
+name: V13 safe additive candidate tests
+
+# Read-only evaluation of newly added, not-yet-executed organ modules.
+# A green result does not prove model performance or grant tool/age rights.
+on:
+  pull_request:
+    branches:
+      - gpt6/v13-private-remote-bridge-20261111
+    # A specialist may publish a Draft before this workflow exists; when
+    # it becomes ready the new modules/tests must still receive exact-head CI.
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+    paths:
+      - 'v13/code/v13/**'
+      - 'v13/code/tests/**'
+      - 'v13/code/docs/handoffs/**'
+permissions:
+  contents: read
+
+jobs:
+  validate-additive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Testing the author head, not an implicit synthetic PR merge.
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install bounded offline fixture-test dependencies
+        run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.2.6
+      - name: Verify additive-only scope, compile new modules and run their tests
+        env:
+          V13_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          V13_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTHONPATH: v13/code
+        run: |
+          python - <<'PY'
+          import os
+          import pathlib
+          import re
+          import subprocess
+          import sys
+
+          base = os.environ["V13_BASE_SHA"]
+          head = os.environ["V13_HEAD_SHA"]
+          if not all(re.fullmatch("[a-f0-9]{40}", sha) for sha in (base, head)):
+              sys.exit("invalid immutable git revisions")
+          # PRs commonly originate from an earlier verified release. Diff
+          # only the commits *introduced on the PR branch*. Comparing the
+          # current release tip to that old head falsely reports unrelated
+          # newer release files as deletions/modifications and strands every
+          # specialist behind the moving phone release.
+          ancestor = subprocess.check_output(
+              ["git", "merge-base", base, head],
+              timeout=20).decode("ascii", "strict").strip()
+          if not re.fullmatch("[a-f0-9]{40}", ancestor):
+              sys.exit("cannot verify PR merge-base")
+          rows = subprocess.check_output(
+              ["git", "diff", "--name-status", "--no-renames", ancestor, head],
+              timeout=20).decode("utf-8", "strict").splitlines()
+          if not 2 <= len(rows) <= 30:
+              sys.exit("additive candidate needs 2..30 files")
+          module = re.compile(r"v13/code/v13/[a-z][a-z0-9_]*\.py\Z")
+          test = re.compile(r"v13/code/tests/test_[a-z0-9_]+\.py\Z")
+          docs = re.compile(r"v13/code/docs/handoffs/[A-Za-z0-9_.-]+\.md\Z")
+          modules, tests = [], []
+          for row in rows:
+              kind, sep, name = row.partition("\t")
+              if not sep or kind != "A":
+                  sys.exit("not a strictly additive PR")
+              if module.fullmatch(name):
+                  modules.append(name)
+              elif test.fullmatch(name):
+                  tests.append(name)
+              elif docs.fullmatch(name):
+                  continue
+              else:
+                  sys.exit("path outside inert-module/test/handoff scope")
+          if not modules or not tests or len(tests) > 12:
+              sys.exit("missing new native-free module or linked regression test")
+          for path in modules + tests:
+              p = pathlib.Path(path)
+              if p.is_symlink() or not p.is_file() or p.stat().st_size > 150000:
+                  sys.exit("unsafe or oversized candidate source")
+          for name in modules + tests:
+              subprocess.run([sys.executable, "-m", "py_compile", name], check=True, timeout=20)
+          subprocess.run([sys.executable, "-m", "pytest", "-q", *tests],
+                         check=True, timeout=420)
+          print("V13 additive candidate fixtures passed:", len(modules), "modules;", len(tests), "test files")
+          PY

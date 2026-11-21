@@ -77,7 +77,8 @@ class StageTest(unittest.TestCase):
             (self.code / 'v13' / name).write_bytes(b'synthetic-private-artifact')
         dest = self.root / 'candidate'
         result = module.stage(self.code, dest)
-        self.assertEqual(set(result['files_sha256']), {'v13/runtime.py', 'specs/test.json'})
+        self.assertEqual(set(result['files_sha256']), {
+            'v13/runtime.py', 'specs/test.json', module.BUILDER})
         self.assertFalse((dest / 'v13/brain.sqlite3').exists())
 
     def test_symlink_is_not_followed_or_published(self):

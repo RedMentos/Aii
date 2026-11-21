@@ -3,13 +3,15 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-BASE_BUILDER_SHA = '6a2c476980556fda69bd9a3da6d7d8743969997b8f4a196614cbc2fe747816e1'
+BASE_BUILDER_SHA = 'dd17f1e35393e5d43293070447434f9e277ae0aa0f52fb30f6c69ccc3caa0aea'
 RECALL_SHA = '56282c1d95610ce3c3266d63f48b78362d0bf32e2a7291b90a3f55e386aa1f64'
 BUDGET_SHA = 'a9fdddeb9ff67b5bb733e86bc845508d8d883afed2a035b42fc39ebc0a11526a'
 CONTEXT_SHA = '2fe8bfc4c7857f24411fea71038485900ca6fcbad2ec3361fa4ede080657861f'
-STREAM_SHA = 'e7c9d57b999ab93f628ec07f6dc9d467d886f9a26535a161386a52f102afd6a1'
+STREAM_SHA = 'c927fb9ffe45ce0a42ef11a9d88a8d974ef606591452e0df702e2319275916df'
+RECALL_INPUT_STREAM_SHA = 'e7c9d57b999ab93f628ec07f6dc9d467d886f9a26535a161386a52f102afd6a1'
+RECALL_INPUT_STORE_SHA = 'f405894f5d61ceacce2495f4d76d003d4b500945c6d081ee561a62efd7acf11f'
 REUSE_SHA = '52de26b95606b8038b109886d81a00c2f31ad9152c81384980c9615463f5a91b'
-STORE_SHA = 'f405894f5d61ceacce2495f4d76d003d4b500945c6d081ee561a62efd7acf11f'
+STORE_SHA = '9cbc0c32f3bb39627bf1f131bde63fa618b931a0d0794c61b594f0accf484d76'
 
 OPERATOR_ANCHOR = b'''def operator_command(r,args):
     c=controller(r)
@@ -109,9 +111,13 @@ def build_sources(code_dir):
     runtime = _replace(runtime, NATIVE_ANCHOR, VERIFY_NATIVE, 'model validation')
     result['v13/operator.py'] = _replace(result['v13/operator.py'],
         b':ctxos [status|last|shadow|active|layout ', b':ctxos [status|last|shadow|active|recall status|on|off|layout ', 'operator help')
-    for old, raw in ((CONTEXT_SHA, context), (STREAM_SHA, stream)):
+    # The checked pre-integration recall module pins the ORIGINAL reviewed
+    # streaming/Store sources; the current integrated hashes above validate
+    # the already-composed intermediate modules. Keep these separate so the
+    # signed composer never demands a generated hash in an unchanged input.
+    for old, raw in ((CONTEXT_SHA, context), (RECALL_INPUT_STREAM_SHA, stream)):
         recall = _replace(recall, old.encode(), hashlib.sha256(raw).hexdigest().encode(), 'source pin')
-    recall = _replace(recall, STORE_SHA.encode(), new_store_sha, 'recall Store pin')
+    recall = _replace(recall, RECALL_INPUT_STORE_SHA.encode(), new_store_sha, 'recall Store pin')
     result.update({'v13/runtime.py': runtime, 'v13/context_os.py': context, 'v13/store.py': store,
                    'v13/archive_stream_range_candidate.py': stream,
                    'v13/context_source_recall_candidate.py': recall,
