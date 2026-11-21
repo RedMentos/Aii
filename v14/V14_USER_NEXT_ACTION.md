@@ -1,3 +1,33 @@
+# Current next action — 2026-11-21T22:22Z (Boss exact-head refresh)
+
+**No user action is required. Do not run Termux commands or change models, weights, Age, permissions, updater settings or phone data.**
+
+## What has actually changed
+
+- Boss integration PR [#2258](https://github.com/RedMentos/Aii/pull/2258) is the composed Core #2254 + Perception #2255 + QA #2257 candidate. Release base: `bdcad466ffea75a2b41f7d23be168f53c7197d20`. Code-bearing tested head: `0dc337edfb7a71168e15f3db08bcedc424e32d4f`. The Boss branch now has workflow-scope commit/head `273a60bda3105f3163bf2ad606e58f885681da8b`. PR remains DRAFT / NOT_RELEASED.
+- On the code-bearing head, integrated regression passed **424 tests / 3 skipped / 58 subtests**; staged Runtime passed **252 / 10 skipped / 47 subtests**; arithmetic/broker passed **39 / 17 subtests**; A5 UI lease passed **17 / 5 subtests** on Python 3.13 and 3.14; audio lease/arithmetic passed **52 / 26 subtests** on both Python versions. Lab-Age, owner-read CI, Python 3.14 staged startup/SQLite source refs, old-phone migration simulation, deploy integrity, offline, bridge-security and privacy checks passed.
+- The former strict additive job failed before tests because #2258 modifies 59 files while the additive-only harness allows only 2..30 newly added inert modules/tests/handoffs. Boss changed only the workflow scope: the unchanged strict validator now runs only for `v13-additive/*` branches or a PR labelled `v13-additive-candidate`. It is skipped on this broad integration PR, not reported as a PASS. Exact CI on head `273a60b` is still queued.
+- #2258 is not merged. Manual review of its protected runtime, audio consent, Store/GoalStore and deployment paths is still required.
+
+## Other active integration blockers
+
+- [#2235 Age/X10 rights](https://github.com/RedMentos/Aii/pull/2235): 9/11 checks pass; nested callback attribution and negative control are fixed. Compose its Age-rights changes with #2258 without overwriting GoalWake atomicity. Official Age remains 0; Age controls developmental/tool/learning rights, never compute budget.
+- [#2247 JEPA](https://github.com/RedMentos/Aii/pull/2247): current head `4ec92e8` A→B→A/staged/deploy CI is queued. Previous-head synthetic A2 updates do not accept current-head learning or production weights. Keep gates OFF.
+- [#2266 native receiver](https://github.com/RedMentos/Aii/pull/2266): explicit operator-only llama.cpp input-embedding probe, not trained B3 or K/V injection. Isolated wrapper/C++ selftests were reported PASS; exact Python, pinned Linux build and Android ARM64 CI are queued. Production route remains OFF.
+- [#2271 Android companion](https://github.com/RedMentos/Aii/pull/2271): launch_app-only default-OFF prototype. Build failed before Gradle compile due malformed SDK package-list syntax. QA found a P1 duplicate-approval race before `startActivity`; require atomic PENDING→DISPATCHING claim and exactly-one-dispatch tests before review. No APK install.
+- [#2256 RAW EAR speaker evidence](https://github.com/RedMentos/Aii/pull/2256): two Python 3.13/3.14 failures show same-batch look-back contamination. The incoming batch must compare only against the frozen pre-batch history; do not promote the optional backend before exact regression passes.
+- [#1983 Memorilla](https://github.com/RedMentos/Aii/pull/1983) remains SHADOW without a production overflow consumer. Preserve Context OS.
+
+## Device, local environment and next step
+
+- Fresh private read-only PIPELINE_STATUS request [RedMentos/Aiiii #440](https://github.com/RedMentos/Aiiii/issues/440) has no authenticated reply. Installed SHA and updater consent remain UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, CHAT_SEND, shell or device mutation occurred.
+- No local full Aii checkout is available; `git ls-remote` failed because github.com DNS did not resolve. GitHub CI is not LOCAL_LINUX project proof.
+- **REDMI_UNVERIFIED / NOT_RELEASED.** Last device evidence is not superseded by these CI results; correct Redmi 2+2, useful B1/B2 delivery, trained B3, full voice, Android control and numeric production learning remain unproven.
+- Next internal action: finish exact-head CI for #2258, complete manual review, then compose Age rights and integrate only current-head-green JEPA/native receiver/Android companion work. Keep all device/model/weight permissions unchanged.
+- **User action: none. No manual Termux command is needed now.**
+
+---
+
 # Current next action — 2026-11-21T20:58:26.786Z
 
 **No user action is required. Do not run Termux commands or change models, weights, permissions, updater settings or device data.**
