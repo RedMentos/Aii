@@ -494,6 +494,27 @@ def _revoke(runtime, event_id, context):
                     "UPDATE sources SET deleted=1 WHERE id=? AND hash=? AND kind='AUDIO_ACOUSTIC_CONTEXT' AND deleted=0",
                     (sid, blob_hash),
                 )
+    try:
+        from .inputs import CONTEXT_KEY
+        key = CONTEXT_KEY + runtime.session
+        saved, version = runtime.store.state(key, None)
+        if isinstance(saved, dict) and saved.get("event_id") == event_id:
+            saved_messages = dumps(saved.get("messages"))
+            preview = saved.get("preview")
+            if "RAW_EAR_ACOUSTIC" in saved_messages or (
+                isinstance(preview, str) and "RAW_EAR_ACOUSTIC" in preview
+            ):
+                runtime.store.set_state(
+                    key,
+                    {"event_id": event_id, "role": saved.get("role"),
+                     "messages": None, "truncated": False, "chars": 0, "preview": ""},
+                    expected=version,
+                )
+    except Exception as exc:
+        runtime.store.log(
+            "audio_context_cleanup_failed", event_id,
+            {"stage": "last_native_context", "error": type(exc).__name__},
+        )
     with _lock(runtime):
         active = getattr(runtime, "_audio_contexts", None)
         if isinstance(active, dict) and active.get(event_id) is context:

@@ -45,6 +45,7 @@ import time
 from contextlib import contextmanager
 from unittest.mock import Mock
 
+from v13.inputs import last_context
 from v13.operator import Operator
 from v13.runtime import Runtime
 
@@ -219,6 +220,19 @@ try:
     )
     assert rows and all(row["deleted"] == 1 for row in rows), rows
     assert provider.check("mic-test-1", "opaque-local-receipt") is False
+    saved_context = last_context(runtime.store, runtime.session)
+    assert saved_context and saved_context["event_id"] == event_id
+    assert saved_context["messages"] is None and saved_context["preview"] == ""
+    # A later text-only turn remains usable and stores no revoked acoustic layer.
+    runtime.pool.get = Mock(side_effect=lambda role: Runner(role, seen))
+    runtime.submit(question)
+    deadline = time.monotonic() + 30
+    while not runtime.idle() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert runtime.idle() and runtime.last_answer()["status"] == "FINAL"
+    text_context = last_context(runtime.store, runtime.session)
+    assert text_context and text_context["messages"] is not None
+    assert "RAW_EAR_ACOUSTIC" not in json.dumps(text_context["messages"], ensure_ascii=False)
 finally:
     release.set()
     runtime.close()
