@@ -134,7 +134,7 @@ int selftest() {
     const auto shuffled = shuffle_control(input, 2, 2);
     if (shuffled == input) return 9;
     if (std::abs(cosine(input, input) - 1.0) > 1.0e-12) return 10;
-    if (std::abs(cosine(input, zeros)) < 2.0) return 11; // zero-vector cosine must be undefined
+    if (std::isfinite(cosine(input, zeros))) return 11; // zero-vector cosine must be undefined
     if (!all_finite(shuffled)) return 12;
     std::cout << "PASS\n";
     return 0;
