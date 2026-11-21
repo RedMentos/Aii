@@ -72,10 +72,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2143 is ready for review. GitHub Actions run 44848998581 PASS: Python 3.13 57 passed (4.35s), Python 3.14 57 passed (7.83s); py_compile PASS on both. Additional v13-private-remote-bridge-tests run 44848994421 PASS. CI/Linux only; no local Aii checkout test and REDMI_UNVERIFIED.",
-      "next_step": "Independent review/merge of #2143. Then integrate the paginated WorldJEPA consumer into Runtime.online_world_update -> OnlineWorld.update postcommit, composing with #2135's exactly-once persistence after its nested SourceHandoff builder chain is repaired. Route source-bound predictions to a real World/Planner consumer in SHADOW and measure no-predictor/replay-only ablations. Keep learning/optimizer gates closed by default.",
+      "proof_environment": "PR #2143 remains the base Store-backed WorldJEPA/EMA consumer; PR #2147 adds source-content-digest grouping; PR #2148 exact head 10e058a7418a5356b96f22f5344a5a3384f96214 passed GitHub Actions run 44853980297: Python 3.13 59 passed (12.19s), Python 3.14 59 passed (10.30s), compile PASS. Includes strict action-shuffled/zero-action controls and an actual SQLite Store uniform-replay vs no-replay fit-ID/retention/restart ablation. CI/Linux with synthetic T8 data only; local exact checkout BLOCKED; REDMI_UNVERIFIED.",
+      "next_step": "Independent review/merge #2143 -> #2147 -> #2148. Then port the digest-disjoint oldest-first T8 page and persistent cursor into #2145's postcommit Runtime consumer and invoke WorldJEPAStoreConsumer in SHADOW. #2145 currently has a test-schema mismatch (TemporalOutcomes record field is error, not prediction_error) and still uses newest-first latest-N scans; it does not yet invoke the trainable JEPA consumer. Measure new-cohort holdout utility and old-cohort retention under equal replay/no-replay budgets. Keep learning/optimizer gates closed by default.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 JEPA/Memory PR #2143 READY FOR REVIEW; CI PASS on Python 3.13/3.14 (57 tests each); source-disjoint holdout, censored-status exclusion and oldest-first T8 cursor implemented; runtime consumer still not wired; no Redmi proof.",
+      "last_checkpoint": "2026-11-21 PR #2148 exact CI PASS: 59 tests on Python 3.13/3.14; action-conditioned negative control remains strict; uniform replay vs no-replay ablation uses real SQLite Store and numeric WorldJEPA/EMA with synthetic T8 receipts. Runtime postcommit JEPA wiring still open; no local exact-repo test or Redmi proof.",
       "latest_candidate_pr": {
         "pr": 2143,
         "branch": "jepa-memory/v14-world-jepa-source-disjoint-paginated-20261121",
@@ -84,7 +84,25 @@
         "ci": "PASS_PY313_PY314_57_TESTS",
         "review": "READY_FOR_REVIEW",
         "scope": "Source-verified oldest-first T8 -> WorldJEPA/EMA -> B1/B2/SELF shadow readouts + source-linked numeric Memory recall; not Runtime-wired or Redmi-verified"
-      }
+      },
+      "latest_followup_pr": {
+        "pr": 2148,
+        "branch": "jepa-memory/v14-action-conditioned-control-20261121",
+        "head_sha": "10e058a7418a5356b96f22f5344a5a3384f96214",
+        "base_pr": 2147,
+        "ci": "PASS_PY313_PY314_59_TESTS",
+        "scope": "Strict action-conditioned positive control; explicit uniform replay vs no-replay ablation; fit-ID/source-disjoint/retention/restart tests; not Runtime-wired"
+      },
+      "latest_runtime_candidate": {
+        "pr": 2145,
+        "branch": "boss/v14-t8-runtime-shadow-consumer-20261121",
+        "head_sha": "08d14737f1ee554f2b160986f95d9f28d6bc1fa2",
+        "ci": "FAIL_ONE_RUNTIME_TEST_SCHEMA_MISMATCH",
+        "scope": "Postcommit TemporalT8Bridge and WorldPredictionOutcome SHADOW only; newest-first latest-N scan; not JEPA/EMA consumer"
+      },
+      "release_sha": "NOT_RELEASED",
+      "phone_installed_sha": "UNKNOWN",
+      "redmi_status": "REDMI_UNVERIFIED"
     },
     {
       "id": "V14-005",
