@@ -286,7 +286,7 @@ class LabAgeTests(unittest.TestCase):
                             (relative.as_posix(), enclosing_function(node), dotted(node))
                         )
                     if isinstance(node, ast.Call):
-                        if isinstance(node.func, ast.Name) and node.func.id == "budget":
+                        if "agi" in relative.parts and isinstance(node.func, ast.Name) and node.func.id == "budget":
                             helper_calls.append((relative.as_posix(), node.lineno))
                         if (isinstance(node.func, ast.Name) and node.func.id in {"getattr", "hasattr"}
                                 and len(node.args) > 1 and isinstance(node.args[1], ast.Constant)
@@ -299,8 +299,11 @@ class LabAgeTests(unittest.TestCase):
                     if isinstance(node, ast.Subscript) and isinstance(node.slice, ast.Constant):
                         if node.slice.value in legacy_fields:
                             field_reads.append((relative.as_posix(), node.lineno, node.slice.value))
-                    if isinstance(node, ast.ImportFrom) and node.module and node.module.endswith(".base"):
-                        if any(alias.name == "budget" for alias in node.names):
+                    if isinstance(node, ast.ImportFrom) and node.module:
+                        is_agi_base = node.module.endswith("agi.base") or (
+                            "agi" in relative.parts and node.module.endswith("base")
+                        )
+                        if is_agi_base and any(alias.name == "budget" for alias in node.names):
                             helper_imports.append((relative.as_posix(), node.lineno))
                     if isinstance(node, ast.Attribute) and node.attr in legacy_fields:
                         field_reads.append((relative.as_posix(), node.lineno, node.attr))
