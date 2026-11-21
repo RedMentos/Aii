@@ -1185,3 +1185,11 @@ Boss documentation/research PR [#2253](https://github.com/RedMentos/Aii/pull/225
 - Active broader QA code coverage is integrated into Boss #2258. No user command, model/weight swap or device action is requested.
 
 **Status: DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.**
+
+
+### Latest 0dc337 CI refresh — 2026-11-21 23:24 CET
+
+- Exact Boss head `0dc337edfb7a71168e15f3db08bcedc424e32d4f`: integrated-regression has now completed **PASS**. Staged-runtime, old-phone migration, Lab-Age, owner-read, Python 3.14 staged startup/SQLite refs, A5 UI lease 3.13/3.14, verify, combined, offline, arithmetic 3.13 and offline bridge security also PASS.
+- Still IN_PROGRESS: staged audio/arithmetic Python 3.14 (compile passed; staged Runtime audio/C5/persistence test running) and a fresh offline-bridge-security run. validate-additive remains FAIL under the strict 2..30-file additive-only rule applied to the broad integration PR. No release approval until the current-head jobs complete and the validator scope is reviewed.
+- This exact head includes the A5 and full audio/arithmetic QA test files byte-identically; they are now exercised by the composed Boss workflows. QA code PRs #2265/#2269 are closed as superseded; #2270 is the current-base handoff PR.
+- Redmi remains REDMI_UNVERIFIED; private owner-read #431/#432/#439 has no authenticated reply. No device action or user command.
