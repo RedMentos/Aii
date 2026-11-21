@@ -1,9 +1,9 @@
 """Persistent Store-backed JEPA consumer for verified V13 T8 action outcomes.
 
-This is a trainable numeric WorldJEPA + role-specific B1/B2 readout candidate.
-It is not a native LLM/GGUF weight editor and is not registered in frozen
-runtime.py. The Store state pointer atomically binds the immutable checkpoint
-to the processed receipt cursor, replay memory and receiver heads.
+This is a trainable numeric WorldJEPA + role-specific B1/B2 readout.
+It is wired through v13.v14_learning.runtime_shadow, but it is not a native
+LLM/GGUF weight editor. The Store state pointer atomically binds the immutable
+checkpoint to the processed receipt cursor, replay memory and receiver heads.
 """
 from __future__ import annotations
 
@@ -25,9 +25,11 @@ from v13 import world_model
 from .t8_store_authority import verify_committed_transition_page
 
 
-REVISION = "v14-world-jepa-store-consumer-v2"
+REVISION = "v14-world-jepa-store-consumer-v3"
+LEGACY_REVISION = "v14-world-jepa-store-consumer-v2"
 STATE_KEY = "v14.world_jepa.store_consumer"
-STATE_SCHEMA = 2
+STATE_SCHEMA = 3
+LEGACY_STATE_SCHEMA = 2
 MAX_ROWS = min(2048, world_model.MAX_ROWS)
 DEFAULT_PAGE_SIZE = MAX_ROWS
 MAX_TRACKED = 10000
@@ -417,19 +419,82 @@ class WorldJEPAStoreConsumer:
         if type(record["scan_cursor"]) is not int or record["scan_cursor"] < 0:
             raise ValueError("scan cursor")
 
+    @staticmethod
+    def _validate_pending_rows(rows, active):
+        if type(rows) is not list or len(rows) > MAX_ROWS:
+            raise ValueError("pending T8 buffer budget")
+        active_ids = set(active["fingerprints"]) if active is not None else set()
+        seen, source_hashes = set(), {}
+        required = {
+            "action_id", "source_id", "fingerprint", "source_sha256", "outcome_sha256",
+            "created", "s", "a", "y",
+        }
+        for row in rows:
+            if type(row) is not dict or set(row) != required:
+                raise ValueError("invalid pending T8 row")
+            action_id, source_id = row["action_id"], row["source_id"]
+            if (type(action_id) is not str or not action_id or len(action_id) > 128
+                    or action_id in active_ids or action_id in seen
+                    or type(source_id) is not str or not source_id or len(source_id) > 256
+                    or row["a"] not in world_model.ACTIONS
+                    or not _finite_number(row["created"])):
+                raise ValueError("pending T8 identity mismatch")
+            _sha(row["fingerprint"])
+            source_sha = _sha(row["source_sha256"])
+            _sha(row["outcome_sha256"])
+            _vector(row["s"], 4)
+            _vector(row["y"], 3)
+            prior = source_hashes.get(source_id)
+            if prior is not None and prior != source_sha:
+                raise ValueError("pending source digest changed")
+            source_hashes[source_id] = source_sha
+            seen.add(action_id)
+
     def _read_state(self):
         payload, version = self.store.state(STATE_KEY, None)
         if payload is None:
             return {"schema": STATE_SCHEMA, "revision": REVISION,
-                    "active": None, "previous": None, "scan_cursor": 0}, version
-        if (type(payload) is not dict
-                or set(payload) != {"schema", "revision", "active", "previous", "scan_cursor"}
-                or payload["schema"] != STATE_SCHEMA or payload["revision"] != REVISION
-                or type(payload["scan_cursor"]) is not int or payload["scan_cursor"] < 0):
+                    "active": None, "previous": None, "scan_cursor": 0,
+                    "pending_rows": []}, version
+        if type(payload) is not dict:
+            raise ValueError("incompatible WorldJEPA Store state")
+        old_keys = {"schema", "revision", "active", "previous", "scan_cursor"}
+        if (set(payload) == old_keys
+                and payload.get("schema") == LEGACY_STATE_SCHEMA
+                and payload.get("revision") == LEGACY_REVISION):
+            self._validate_record(payload["active"])
+            self._validate_record(payload["previous"])
+            if type(payload["scan_cursor"]) is not int or payload["scan_cursor"] < 0:
+                raise ValueError("invalid legacy scan cursor")
+            return {"schema": STATE_SCHEMA, "revision": REVISION,
+                    "active": payload["active"], "previous": payload["previous"],
+                    "scan_cursor": payload["scan_cursor"], "pending_rows": []}, version
+        expected_keys = old_keys | {"pending_rows"}
+        if (set(payload) != expected_keys
+                or payload.get("schema") != STATE_SCHEMA or payload.get("revision") != REVISION
+                or type(payload.get("scan_cursor")) is not int or payload["scan_cursor"] < 0):
             raise ValueError("incompatible WorldJEPA Store state")
         self._validate_record(payload["active"])
         self._validate_record(payload["previous"])
+        self._validate_pending_rows(payload["pending_rows"], payload["active"])
         return payload, version
+
+    def _persist_pending(self, state, version, pending_by_id, next_cursor):
+        pending_rows = sorted(
+            pending_by_id.values(), key=lambda row: (row["created"], row["action_id"])
+        )
+        if len(pending_rows) > MAX_ROWS:
+            return "PENDING_BUFFER_CAPACITY"
+        next_state = dict(state)
+        next_state["pending_rows"] = pending_rows
+        next_state["scan_cursor"] = next_cursor
+        try:
+            self.store.set_state(STATE_KEY, next_state, expected=version)
+        except ValueError as exc:
+            if "Stale state write" in str(exc):
+                return "CONCURRENT_STATE_CONFLICT_RETRY"
+            raise
+        return "PERSISTED"
 
     def _checkpoint_path(self, record):
         self._validate_record(record)
@@ -481,41 +546,85 @@ class WorldJEPAStoreConsumer:
             active = state["active"]
             prior_fingerprints = dict(active["fingerprints"]) if active else {}
             prior_rows = {row["action_id"]: row for row in (active["experience_rows"] if active else [])}
-            new_ids, buffer_added = [], []
+            pending_by_id = {row["action_id"]: row for row in state["pending_rows"]}
+            for action_id, row in pending_by_id.items():
+                if action_id in prior_fingerprints:
+                    raise ValueError("pending T8 row already committed in active checkpoint")
+                prior_fingerprints[action_id] = row["fingerprint"]
+                prior_rows[action_id] = row
+            # Pending rows are retained, but an unchanged cohort is not retrained
+            # on every post-turn callback. Re-enter it only when new verified
+            # evidence arrives; otherwise the same evidence cannot improve.
+            incoming_new_ids = []
             for row in incoming:
                 action_id = row["action_id"]
                 prior_fingerprint = prior_fingerprints.get(action_id)
                 if prior_fingerprint is not None and prior_fingerprint != row["fingerprint"]:
                     raise ValueError("committed T8 receipt changed after learning")
                 if prior_fingerprint is None:
-                    new_ids.append(action_id)
+                    incoming_new_ids.append(action_id)
                     prior_fingerprints[action_id] = row["fingerprint"]
-                if action_id not in prior_rows:
-                    buffer_added.append(action_id)
-                prior_rows[action_id] = row
+                    pending_by_id[action_id] = row
+                    prior_rows[action_id] = row
+            new_ids = list(pending_by_id) if incoming_new_ids else []
             if len(prior_fingerprints) > MAX_TRACKED:
                 raise OverflowError("processed T8 identity budget exhausted; fail closed")
-            if not new_ids and not buffer_added:
-                if next_cursor > state["scan_cursor"] and self.learning_enabled and optimizer_permission:
+            if not new_ids:
+                if pending_by_id:
+                    if not self.learning_enabled:
+                        return {"status": "LEARNING_DISABLED", "new_receipts": 0,
+                                "verified_receipts": len(receipts), "rejected_receipts": rejected,
+                                "censored_skipped": censored_skipped, "scanned_rows": scanned,
+                                "pending_rows": len(pending_by_id),
+                                "native_body_weights_changed": False}
+                    if optimizer_permission is not True:
+                        return {"status": "PENDING_OPTIMIZER_PERMISSION", "new_receipts": 0,
+                                "verified_receipts": len(receipts), "rejected_receipts": rejected,
+                                "censored_skipped": censored_skipped, "scanned_rows": scanned,
+                                "pending_rows": len(pending_by_id),
+                                "native_body_weights_changed": False}
+                    persisted_cursor = state["scan_cursor"]
+                    if next_cursor > state["scan_cursor"]:
+                        persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                        if persisted != "PERSISTED":
+                            return {"status": persisted, "pending_rows": len(pending_by_id),
+                                    "scan_cursor": state["scan_cursor"],
+                                    "native_body_weights_changed": False}
+                        persisted_cursor = next_cursor
+                    return {
+                        "status": "WAITING_FOR_MORE_T8_DATA", "verified_receipts": len(receipts),
+                        "rejected_receipts": rejected, "censored_skipped": censored_skipped,
+                        "scanned_rows": scanned, "scan_cursor": persisted_cursor,
+                        "has_more": has_more, "processed": len(prior_fingerprints),
+                        "pending_rows": len(pending_by_id),
+                        "native_body_weights_changed": False,
+                    }
+                persisted_cursor = state["scan_cursor"]
+                if (next_cursor > state["scan_cursor"] and self.learning_enabled is True
+                        and optimizer_permission is True):
                     next_state = dict(state)
                     next_state["scan_cursor"] = next_cursor
                     self.store.set_state(STATE_KEY, next_state, expected=version)
+                    persisted_cursor = next_cursor
                 return {
                     "status": "NO_NEW_TRANSITIONS", "verified_receipts": len(receipts),
                     "rejected_receipts": rejected, "censored_skipped": censored_skipped,
-                    "scanned_rows": scanned, "scan_cursor": max(next_cursor, state["scan_cursor"]),
+                    "scanned_rows": scanned, "scan_cursor": persisted_cursor,
                     "has_more": has_more, "processed": len(prior_fingerprints),
+                    "pending_rows": len(pending_by_id),
                     "native_body_weights_changed": False,
                 }
             if not self.learning_enabled:
                 return {"status": "LEARNING_DISABLED", "new_receipts": len(new_ids),
                         "verified_receipts": len(receipts), "rejected_receipts": rejected,
                         "censored_skipped": censored_skipped, "scanned_rows": scanned,
+                        "pending_rows": len(pending_by_id),
                         "native_body_weights_changed": False}
             if optimizer_permission is not True:
                 return {"status": "PENDING_OPTIMIZER_PERMISSION", "new_receipts": len(new_ids),
                         "verified_receipts": len(receipts), "rejected_receipts": rejected,
                         "censored_skipped": censored_skipped, "scanned_rows": scanned,
+                        "pending_rows": len(pending_by_id),
                         "native_body_weights_changed": False}
             new_set = set(new_ids)
             candidates = list(prior_rows.values())
@@ -531,10 +640,17 @@ class WorldJEPAStoreConsumer:
             try:
                 split = _source_disjoint_split(experience_rows)
             except ValueError as exc:
+                persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                if persisted != "PERSISTED":
+                    return {"status": persisted, "pending_rows": len(pending_by_id),
+                            "scan_cursor": state["scan_cursor"],
+                            "native_body_weights_changed": False}
                 return {"status": "INSUFFICIENT_SOURCE_DISJOINT_T8_COHORT", "reason": str(exc),
                         "verified_receipts": len(receipts), "rejected_receipts": rejected,
                         "censored_skipped": censored_skipped, "new_receipts": len(new_ids),
-                        "scanned_rows": scanned, "native_body_weights_changed": False}
+                        "pending_rows": len(pending_by_id), "scanned_rows": scanned,
+                        "scan_cursor": next_cursor, "has_more": has_more,
+                        "native_body_weights_changed": False}
             train_ids, holdout_ids = list(split["train_action_ids"]), list(split["holdout_action_ids"])
             if set(train_ids) & set(holdout_ids):
                 raise ValueError("train/holdout identity overlap")
@@ -567,10 +683,16 @@ class WorldJEPAStoreConsumer:
             fit_rows = (train_rows if replay_mode == "uniform" or active is None
                         else new_train_rows)
             if len(fit_rows) < 2:
+                persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                if persisted != "PERSISTED":
+                    return {"status": persisted, "pending_rows": len(pending_by_id),
+                            "scan_cursor": state["scan_cursor"],
+                            "native_body_weights_changed": False}
                 return {"status": "INSUFFICIENT_NEW_TRAIN_ROWS",
                         "new_train_rows": len(new_train_rows),
                         "replay_candidate_rows": len(old_train_rows),
-                        "scan_cursor": state["scan_cursor"],
+                        "pending_rows": len(pending_by_id),
+                        "scan_cursor": next_cursor,
                         "native_body_weights_changed": False}
             fit_arrays = _arrays(fit_rows)
             model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4))
@@ -580,17 +702,68 @@ class WorldJEPAStoreConsumer:
             zero_action_loss = model.prediction_loss(holdout[0], np.zeros_like(holdout[1]), holdout[2])
             if old_holdout_before is not None:
                 old_holdout_after = model.prediction_loss(*old_holdout)
+            fit_steps_after = int(getattr(model, "_fit_steps", 0))
+            parameter_delta = _group_delta(before, after, ("enc", "preds"))
+            ema_delta = _group_delta(before, after, ("tgt",))
+            retention_delta = None if old_holdout_before is None else float(old_holdout_after - old_holdout_before)
+            holdout_improved = bool(holdout_after < holdout_before)
+            negative_controls_separated = bool(
+                holdout_after < shuffled_action_loss and holdout_after < zero_action_loss
+            )
+            # A new cohort must not be accepted by sacrificing the previous
+            # held-out cohort. This is a separate retention gate, not merely
+            # telemetry; when no prior checkpoint exists there is no old cohort.
+            old_holdout_retained = bool(
+                old_holdout_before is None
+                or (old_holdout_after is not None and old_holdout_after <= old_holdout_before)
+            )
+            utility_gate_accepted = (
+                holdout_improved and negative_controls_separated and old_holdout_retained
+            )
+            if not utility_gate_accepted:
+                persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
+                if persisted != "PERSISTED":
+                    return {"status": persisted, "pending_rows": len(pending_by_id),
+                            "scan_cursor": state["scan_cursor"],
+                            "native_body_weights_changed": False}
+                return {
+                    "status": "UTILITY_GATE_REJECTED",
+                    "utility_gate_accepted": False,
+                    "holdout_improved": holdout_improved,
+                    "negative_controls_separated": negative_controls_separated,
+                    "old_holdout_retained": old_holdout_retained,
+                    "retention_gate_accepted": old_holdout_retained,
+                    "holdout_loss_before": float(holdout_before),
+                    "holdout_loss_after": float(holdout_after),
+                    "shuffled_action_holdout_loss": float(shuffled_action_loss),
+                    "zero_action_holdout_loss": float(zero_action_loss),
+                    "old_holdout_loss_before": None if old_holdout_before is None else float(old_holdout_before),
+                    "old_holdout_loss_after": None if old_holdout_after is None else float(old_holdout_after),
+                    "old_holdout_retention_delta": retention_delta,
+                    "parameter_delta_norm": float(parameter_delta),
+                    "ema_target_delta_norm": float(ema_delta),
+                    "fit_steps_before": fit_steps_before,
+                    "fit_steps_after": fit_steps_after,
+                    "replay_mode": replay_mode,
+                    "new_train_rows": len(new_train_rows),
+                    "replay_candidate_rows": len(old_train_rows),
+                    "replay_rows": len(old_train_rows) if replay_mode == "uniform" and active else 0,
+                    "fit_rows": len(fit_rows),
+                    "fit_action_ids": [row["action_id"] for row in fit_rows],
+                    "new_train_action_ids": [row["action_id"] for row in new_train_rows],
+                    "pending_rows": len(pending_by_id),
+                    "scan_cursor": next_cursor,
+                    "native_body_weights_changed": False,
+                    "native_body_consumed": False,
+                    "runtime_wired": False,
+                }
             receiver_heads, receiver_metrics = _fit_role_receivers(model, train, holdout, train_rows, holdout_rows)
             source_sha = _cohort_sha(experience_rows)
             checkpoint_name = "jepa-" + uuid.uuid4().hex + ".npz"
             checkpoint_path = self.home / checkpoint_name
             saved = world_jepa_shadow_checkpoint.save(model, checkpoint_path, source_sha)
             checkpoint_after = _sha(saved.get("sha256"))
-            fit_steps_after = int(getattr(model, "_fit_steps", 0))
-            parameter_delta = _group_delta(before, after, ("enc", "preds"))
-            ema_delta = _group_delta(before, after, ("tgt",))
             previous_updates = int(active["self_state"].get("update_count", 0)) if active else 0
-            retention_delta = None if old_holdout_before is None else float(old_holdout_after - old_holdout_before)
             metrics = {
                 "source_verified": True, "verified_receipts": len(receipts),
                 "rejected_receipts": rejected, "censored_skipped": censored_skipped,
@@ -613,10 +786,13 @@ class WorldJEPAStoreConsumer:
                 "train_holdout_content_disjoint": split["manifest"]["within_supplied_records_content_disjoint"],
                 "holdout_loss_before": float(holdout_before), "holdout_loss_after": float(holdout_after),
                 "holdout_loss_delta": float(holdout_after - holdout_before),
-                "holdout_improved": bool(holdout_after < holdout_before),
+                "holdout_improved": holdout_improved,
                 "shuffled_action_holdout_loss": float(shuffled_action_loss),
                 "zero_action_holdout_loss": float(zero_action_loss),
-                "negative_controls_separated": bool(holdout_after < shuffled_action_loss and holdout_after < zero_action_loss),
+                "negative_controls_separated": negative_controls_separated,
+                "utility_gate_accepted": True,
+                "old_holdout_retained": old_holdout_retained,
+                "retention_gate_accepted": old_holdout_retained,
                 "old_holdout_loss_before": None if old_holdout_before is None else float(old_holdout_before),
                 "old_holdout_loss_after": None if old_holdout_after is None else float(old_holdout_after),
                 "old_holdout_retention_delta": retention_delta,
@@ -640,7 +816,8 @@ class WorldJEPAStoreConsumer:
                 "fit_steps": fit_steps_after, "scan_cursor": next_cursor,
             }
             next_state = {"schema": STATE_SCHEMA, "revision": REVISION,
-                          "active": record, "previous": active, "scan_cursor": next_cursor}
+                          "active": record, "previous": active, "scan_cursor": next_cursor,
+                          "pending_rows": []}
             try:
                 self.store.set_state(STATE_KEY, next_state, expected=version)
             except ValueError as exc:
@@ -700,7 +877,8 @@ class WorldJEPAStoreConsumer:
             self.store.set_state(
                 STATE_KEY,
                 {"schema": STATE_SCHEMA, "revision": REVISION,
-                 "active": previous, "previous": active, "scan_cursor": rollback_cursor},
+                 "active": previous, "previous": active, "scan_cursor": rollback_cursor,
+                 "pending_rows": []},
                 expected=version,
             )
             return {"status": "ROLLED_BACK", "checkpoint_sha256": previous["checkpoint_sha256"],
