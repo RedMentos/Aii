@@ -1743,3 +1743,36 @@ SmolVLM-256M-Instruct is an upstream Apache-2.0 image+text VLM (256M parameters;
 ### A5 two-phase revocation / adapter evidence — 2026-11-21 20:18 CET
 
 #2246 now has a synthetic pre-lock revoke-request signal and post-guard cleanup callback; tests cover C3-like cancellation and generation isolation. The current adapter does not pass the required `generation_id` to `ui_observation_lease`, so its main consumer path is not yet wired correctly and exact CI is pending. No Android OS provider, capture or action. #2243's tiny K/V experiment CI passes 3/3 but remains a research-only toy mechanism proof.
+
+
+## Evidence overlay — Boss run-12 integration readback (2026-11-21 20:18 CET)
+
+This section supplements the historical heading inventory; it does not remove or redefine any V13/V14 requirement. Base shared release-branch HEAD: `0c9ede256e9a3bdafc728fe6be1b4bead8fe13bd`.
+
+| Canon family | CODE / WIRING status | Test evidence | Redmi / active status |
+| --- | --- | --- | --- |
+| A0–A5 perception, attention, audio and UI | Caller-supplied PCM16 producer merged (#2240); metadata-only UI lease draft (#2246); no OS provider | #2242 9 pass/4 fail; #2246 rebased checks queued; #2244 streaming checks queued | NOT_TESTED; no microphone, OS UI capture or active C3 consent consumer |
+| B1_DETAIL / B2_GIST | Distinct roles and synthetic offers wired through C4/Focal→C3 | Prior staged/integrated synthetic suites pass | No native offer-quality, useful mutual re-entry or Redmi acceptance |
+| B3 Enlightened Space | Symbolic path; tiny cross-geometry K/V experiment draft (#2243) | Prior head 7b65 3/3; current rebased d738 has 2 checks pass / 2 queued | No production receiver, actual llama.cpp tap/injection or Android proof |
+| B4 workspace / C4 coalition | Source-span redundancy heuristic in prior pinned stage | Prior staged 251/10/47; integrated 424/3/58 | Synthetic only; no native semantic complementarity proof |
+| C/JEF/C2/C3/C5 | Synthetic output/control; exact arithmetic/audio candidate blocked in #2242 | Stage builder pin stale; arithmetic overlay fixture absent; migration PARTIAL | No correct native 2+2 or Redmi C3 acceptance |
+| World/Self/Memory/JEPA/Sleep | Persistent WorldJEPA predictor shadow and bounded worker | #2247 11/14; both optimizer-resume jobs fail per-session retention; checkpoint unchanged | Gates OFF; no accepted update or native weight change |
+| Age rights / X10 | Candidate separates developmental rights from ResourceGuard compute/replay | #2235 7/10; AST nested callback attribution fails two jobs; safe-additive policy failure is expected | Not released; no Android test |
+| Voice/audio | Caller PCM16 feature producer only | #2240 producer CI; #2242/#2244 consumer tests blocked/pending | No microphone, ASR, decoder/vocoder, full duplex or audio learning |
+| Android background/UI control | DRY_RUN broker and immutable action-proposal args merged; A5 metadata lease synthetic draft | #2215 synthetic approval tests; #2246 checks pending | No OS executor, AccessibilityService/MediaProjection provider or Redmi action |
+| Self-optimization / cross-organ learning | JEPA SHADOW only; no cross-organ gradient path | A-GEM candidate rejected; no checkpoint diff | No persistent B1/B2/C3 weight update or self-edit |
+| Context OS / Memorilla | Context OS partial; #1983 additive companion draft | Synthetic partial only | No production companion consumer |
+| Remote maintenance | Signed patch-review prototype #1756 draft | No complete device receipt | READ_ONLY_STATUS pending; PATCH_STAGE/SANDBOX/APPLY/RESTORE unverified |
+| Technical OS sandbox / behavior judge | Immutable proposal approval merged; judge head #1757 draft | Synthetic prototype only | No independent OS enforcement or production judge |
+| Sparse MoE bodies | Not implemented/proven | No accepted sparse expert routing test | No two different native sparse bodies |
+| Updater/install/rollback | Last fully green code release f279; 728cdc candidate 18/19 | Current shared head 0c9ede: 24 success, 3 in progress, 3 queued at last read | Installed SHA and updater consent unknown; REDMI_UNVERIFIED |
+
+### Exact branch/release evidence
+
+- Last fully accepted code release: `f279286a4453248004c670fcaabecd85da6ab299`, 34/34 exact check-runs and 19/19 workflows SUCCESS.
+- Latest merged code candidate: `728cdc763f09bee20ac00e1f0faadffcd33dfbb2`, 18/19 exact merge-push checks; SleepRuntime JEPA utility gate rejected the positive update. NOT_RELEASED.
+- Shared release-development branch: `0c9ede256e9a3bdafc728fe6be1b4bead8fe13bd`, 30 check-runs at last read: 24 success, 3 in progress, 3 queued, zero failures. Pending exact-head CI is not a release.
+- Active master blob remains `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca`; no material master edit or historical V13 appendix change was made in this checkpoint.
+- Private owner-read issue [#428](https://github.com/RedMentos/Aiiii/issues/428) has no authenticated response. No device action or update request. Local Aii checkout absent; no local full-suite test ran.
+
+**Coverage verdict:** the 1,255-heading historical inventory remains intact, but semantic clause→implementation→consumer→test→environment→rollback mapping remains incomplete. No feature above is promoted to ANDROID_VERIFIED or ACCEPTED without its exact acceptance evidence.
