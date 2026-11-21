@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Release HEAD 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e includes #2138 updater gate, but exact push staged-runtime/integrated regression still IN_PROGRESS; PR #2139 focused audio tests pass but staged/integrated fail 30 tests due stale runtime.py builder pins; REDMI_UNVERIFIED.",
-      "next_step": "Core rebuilds all immutable staged candidates after the runtime.py change in #2139, then reruns staged-runtime + integrated regression. Do not claim normal chat audio input or correct fast multi-organ output.",
+      "proof_environment": "Release HEAD 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e exact required CI green, but P0 multi-organ chat remains unverified: #1904 last real-device report shows wrong 2+2, B1/B2 TIME_BUDGET and 0 valid offers. PR #2139 full staged fails 30 tests due stale runtime.py pins. No current 20-turn Redmi acceptance.",
+      "next_step": "Continue Core/JEPA whole-runtime integration; rebuild #2139 downstream pins, repair #2140 staged arithmetic source/authority failures, and measure actual 20-turn phone quality/latency only after an authenticated device receipt.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 01:44 CET QA readback: Boss merged PR #2138 into release as 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e. Exact push CI remains IN_PROGRESS: owner-read 44845659008 PASS, private bridge 44845658907 PASS, staged-context 44845658992 IN_PROGRESS; source-contracts 44845662784 and integrated-regression 44845662714 IN_PROGRESS. Private read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS #352–354 have no device comments; installed SHA UNKNOWN / REDMI_UNVERIFIED. No device update or user-data mutation. P0 #1904 remains open; no current 20-turn quality/latency/device acceptance."
+      "last_checkpoint": "2026-11-21 01:46 CET QA readback: exact release HEAD 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e now has all three updater-required exact push/dispatch workflows GREEN: owner-read 44845659008 PASS, private bridge 44845658907 PASS, staged-context 44845658992 PASS (staged-runtime 240 passed/10 skipped/47 subtests; integrated regression 415 passed/3 skipped/58 subtests). Coordinated source contracts 44845662784 PASS. This is CI evidence only; private device requests #352–354 still have no comments, installed SHA UNKNOWN / REDMI_UNVERIFIED. No UPDATE_REQUEST or device mutation sent. The green updater gate does not fix chat correctness, latency, B1/B2 delivery or latent coupling."
     },
     {
       "id": "V14-002",
@@ -28,26 +28,24 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "PR #2138 merged into release at 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e; exact current push CI incomplete (owner-read PASS, bridge PASS, staged-context IN_PROGRESS; source-contracts/integrated-regression IN_PROGRESS). No private device receipt; installed SHA UNKNOWN / REDMI_UNVERIFIED.",
-      "next_step": "Wait for the exact newer staged-context push run to finish; fail closed on any red/in-progress result. After exact release gate is green, obtain a fresh owner-verified PIPELINE_STATUS receipt before considering the normal updater. No repeated installer or device mutation without a real receipt.",
+      "proof_environment": "PR #2138 merged at 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e; exact required CI GREEN on merge SHA: owner-read push, private bridge push, staged-context push (staged-runtime 240/10 skipped/47 subtests; integrated regression 415/3 skipped/58 subtests); coordinated source contracts PASS. No private device receipt; installed SHA UNKNOWN / REDMI_UNVERIFIED.",
+      "next_step": "Read the existing private PIPELINE_STATUS request #353; if it confirms current installed runtime and explicit auto-update consent, Boss may issue one owner-authenticated UPDATE_REQUEST and then verify a separate PIPELINE_STATUS receipt. If no device receipt, do not send another installer or claim deployment.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 01:44 CET QA readback: Boss merged PR #2138 into release as 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e. Exact push CI remains IN_PROGRESS: owner-read 44845659008 PASS, private bridge 44845658907 PASS, staged-context 44845658992 IN_PROGRESS; source-contracts 44845662784 and integrated-regression 44845662714 IN_PROGRESS. Private read-only HEALTH/PIPELINE_STATUS/DIAGNOSTICS #352–354 have no device comments; installed SHA UNKNOWN / REDMI_UNVERIFIED. No device update or user-data mutation.",
+      "last_checkpoint": "2026-11-21 01:46 CET QA readback: exact release HEAD 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e now has all three updater-required exact push/dispatch workflows GREEN: owner-read 44845659008 PASS, private bridge 44845658907 PASS, staged-context 44845658992 PASS (staged-runtime 240 passed/10 skipped/47 subtests; integrated regression 415 passed/3 skipped/58 subtests). Coordinated source contracts 44845662784 PASS. This is CI evidence only; private device requests #352–354 still have no comments, installed SHA UNKNOWN / REDMI_UNVERIFIED. No UPDATE_REQUEST or device mutation sent.",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
         "merge_commit_sha": "5b9171a457f32cafa6cc05fb88e80ef8b4dad08e",
-        "status": "MERGED_EXACT_PUSH_CI_PENDING",
+        "status": "MERGED_CI_GREEN_DEVICE_UNVERIFIED",
         "proof": {
-          "premerge_owner_read": "PASS (27 source-updater + 33 pipeline-agent tests)",
-          "premerge_python314_staged_startup": "PASS",
-          "premerge_offline_bridge_security": "PASS",
-          "premerge_staged_runtime": "PASS (240 passed, 10 skipped, 47 subtests)",
-          "premerge_integrated_regression": "PASS (415 passed, 3 skipped, 58 subtests)",
-          "current_merge_push_owner_read": "PASS run 44845659008",
-          "current_merge_push_bridge": "PASS run 44845658907",
-          "current_merge_push_staged_context": "IN_PROGRESS run 44845658992",
-          "current_source_contracts": "IN_PROGRESS run 44845662784",
-          "current_integrated_regression": "IN_PROGRESS run 44845662714",
+          "owner_read_push": "PASS run 44845659008",
+          "private_bridge_push": "PASS run 44845658907",
+          "staged_context_push": "PASS run 44845658992",
+          "staged_runtime": "PASS (240 passed, 10 skipped, 47 subtests)",
+          "integrated_regression": "PASS (415 passed, 3 skipped, 58 subtests)",
+          "coordinated_source_contracts": "PASS run 44845662784",
+          "python314_staged_startup": "PASS on premerge exact head; merge push owner-read also passed",
+          "local_linux": "NOT_RUN; full checkout unavailable",
           "redmi": "NO_LIVE_RECEIPT; #352–354 unanswered; installed SHA unknown"
         }
       }
@@ -120,10 +118,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Release HEAD 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e integrates #2138 exact-run CI/activation race fix; exact merge push staged-context and source-contract/integrated jobs are still IN_PROGRESS. Full Canon feature/consumer acceptance remains incomplete.",
-      "next_step": "Boss monitors exact release jobs and coordinates Core/JEPA pin repairs; integrate only compatible green candidates and maintain per-Canon evidence.",
+      "proof_environment": "Release HEAD 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e integrates #2138 and exact updater-required CI is GREEN. Other V14 code candidates remain blocked or draft; no whole-Canon acceptance or device deployment.",
+      "next_step": "Boss may use the authorized updater only after a fresh private PIPELINE_STATUS receipt; Core/JEPA continue candidate pin repairs and functional integration without bypassing gates.",
       "user_action_required": false,
-      "last_checkpoint": "QA handoff branch updated with #2138 merge SHA and exact in-progress push checks; no V13 historical bytes or Master edited."
+      "last_checkpoint": "QA verified exact merge-SHA staged-runtime 240/10 skipped/47 subtests and integrated regression 415/3 skipped/58 subtests PASS; source contracts PASS. Phone state remains unknown."
     },
     {
       "id": "V14-008",
@@ -134,10 +132,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "v14/V14_USER_NEXT_ACTION.md; verified repo state, phone deployment evidence and model-choice suggestions",
       "acceptance": "At each meaningful integration checkpoint, dated user-level update, suggested actions only when needed, no invented Termux command",
-      "proof_environment": "QA handoff branch is updated through #2138 merge checkpoint; current release HEAD 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e; device receipt still absent.",
-      "next_step": "Keep next-chat handoff synchronized after exact push CI and any real phone receipt; explain the difference between CI merge and installed phone state.",
+      "proof_environment": "QA handoff branch updated through exact release SHA 5b9171a457f32cafa6cc05fb88e80ef8b4dad08e and green updater CI; phone installed SHA remains UNKNOWN.",
+      "next_step": "Keep the handoff current after a separate private device receipt or any release change; report no deployment until phone readback confirms it.",
       "user_action_required": false,
-      "last_checkpoint": "No user action needed; no new Termux command justified."
+      "last_checkpoint": "No user action needed; green GitHub CI is not phone installation."
     },
     {
       "id": "V14-009",
