@@ -15,6 +15,7 @@ from v13.runtime import Runtime
 from v13.contracts import packet
 from v13 import world_model as WM
 from t8_store_authority import verify_committed_transitions
+from t8_temporal_bridge import TemporalT8Bridge
 
 
 def test_real_store_source_and_action_outcome_binding(tmp_path):
@@ -48,6 +49,19 @@ def test_real_store_source_and_action_outcome_binding(tmp_path):
             assert len(receipt.source_ref["sha256"]) == 64
             assert receipt.actual["action_duration_s"] >= 1.0
             assert "Synthetic source-bound" not in repr(receipt.public_provenance())
+
+        # Exercise the real Store-issued receipt through the V14 temporal ledger.
+        # The optimizer gate remains closed: this records an outcome, not a weight update.
+        bridge = TemporalT8Bridge(Path(tmp_path) / "temporal-bridge", learning_enabled=False)
+        prediction = {"expected_outcome": "FINAL", "probability": .8,
+                      "duration_s": 1.0, "tolerance_s": .25}
+        pending = bridge.consume(verified[0], prediction, optimizer_permission=False)
+        assert pending["outcome"] == "OBSERVED"
+        assert pending["pending_optimizer"] is True
+        assert bridge.receiver.seen == []
+        replayed = bridge.consume(verified[0], prediction, optimizer_permission=False)
+        assert replayed["outcome"] == "OBSERVED"
+        assert bridge.receiver.seen == []
 
         # Negative control: a second ActionOutcome for the same action must not
         # be silently selected as truth; the authority rejects that action.
