@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-21T21:17:19Z",
+  "updated_at": "2026-11-21T21:20:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,18 +14,19 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Boss integration PR #2258 exact head 0ecbb1aac1f70c63cb39428a18811cfe4fd66d56. Exact GitHub CI is RED, not a release: A5 UI lease collection fails on Python 3.13/3.14 because the composed bridge blob 8fc82bcd8c42f86cd246934ca6030c157fb0f019 (2,267 bytes) lacks A5UIRuntimeAdapter and _persist_source_and_packet; reviewed Perception source at acca00e11192dafc20fa55de5fbf0752f7e4f7ba has blob a6c26206d535199b244d0de83fbeb38bb8ad3951 (27,872 bytes) with both. Staged/integrated, Lab-Age stage, Python 3.14 startup and old-phone migration fail at source_lifecycle_lock_integration_candidate: current Store source pin 40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb is incorrectly used to replace the old reader pin fe66f92533b20738b5ec384e9d7c0b5ac8b4b4f658c6c1ad23792d813ff29980 in generated archive guard/stream candidates (zero matches); migration therefore reports PARTIAL after staging fails. Staged audio tests additionally expose three test fixture FileExistsError failures, fixed in QA #2261. Combined JEPA and offline deploy integrity workflows PASS; safe-additive remains FAIL_BY_POLICY. No full local Aii checkout, no Android receipt, no Redmi release.",
-      "next_step": "Core: replace the explicit old reader pin (not the new Store source pin) in both generated guard and stream candidates, then recompute and verify the full nested lifecycle→memory/world→context→recovery→stage→deployer SHA chain. Perception: compose the reviewed current A5 bridge from commit acca00e and its tests into the integration candidate. QA: validate #2261 and rerun exact Python 3.13/3.14 A5, staged/integrated, Lab-Age, owner-read, migration and audio suites. Boss: do not merge or deploy until all functional exact-head checks and protected-file review pass.",
+      "proof_environment": "Boss integration PR #2258 exact head 0ecbb1aac1f70c63cb39428a18811cfe4fd66d56. Exact GitHub CI is RED, not a release: A5 UI lease collection fails on Python 3.13/3.14 because the composed bridge blob 8fc82bcd8c42f86cd246934ca6030c157fb0f019 (2,267 bytes) lacks A5UIRuntimeAdapter and _persist_source_and_packet; reviewed Perception source at acca00e11192dafc20fa55de5fbf0752f7e4f7ba has blob a6c26206d535199b244d0de83fbeb38bb8ad3951 (27,872 bytes) with both. Staged/integrated, Lab-Age stage, Python 3.14 startup and old-phone migration fail at source_lifecycle_lock_integration_candidate: current Store source pin 40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb is incorrectly used to replace the old reader pin fe66f92533b20738b5ec384e9d7c0b5ac8b4b4f658c6c1ad23792d813ff29980 in generated archive guard/stream candidates (zero matches); migration therefore reports PARTIAL after staging fails. Staged audio tests additionally expose three test fixture FileExistsError failures, fixed in QA #2261. Combined JEPA and offline deploy integrity workflows PASS; safe-additive remains FAIL_BY_POLICY. No full local Aii checkout, no Android receipt, no Redmi release. Further exact #2261 staged/integrated CI (run 44950978469) confirms two additional stale operator pins: termux_idle_recovery_candidate_20261112.py still expects operator SHA 67f2118e..., and record_only_online_guard_candidate_20261116.py has the same old SOURCE_SHA256, while the current operator SHA is b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186. Two idle composition tests and three online-world guard tests fail. The full staged suite on #2261 reports 226 passed, 10 skipped, 41 subtests, 24 failed and 2 errors; failures include lifecycle/idle/online-world pins and downstream stage/migration errors. This is exact CI, not local or Android proof.",
+      "next_step": "Core: replace the explicit old reader pin (not the new Store source pin) in both generated guard and stream candidates, then recompute and verify the full nested lifecycle→memory/world→context→recovery→stage→deployer SHA chain. Perception: compose the reviewed current A5 bridge from commit acca00e and its tests into the integration candidate. QA: validate #2261 and rerun exact Python 3.13/3.14 A5, staged/integrated, Lab-Age, owner-read, migration and audio suites. Boss: do not merge or deploy until all functional exact-head checks and protected-file review pass. Also repin the idle recovery and record-only online-world guard against the exact current operator bytes, then refresh each parent and downstream hash chain. The speech fixture correction in #2261 is source-readback verified but its direct test is not yet in a triggered job; the current PR run only covers staged/integrated suites and is red on pre-existing pin blockers.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T21:17:19Z",
+      "last_checkpoint": "2026-11-21T21:20:00Z",
       "latest_qa_candidate": {
         "pr": 2261,
         "head_sha": "fe97f4bb0eb3c3ff7745c9e626774a1b8aa9b7e3",
-        "status": "OPEN_CI_RUNNING",
+        "status": "OPEN_CI_FAILED_PREEXISTING_PIN_BLOCKERS",
         "scope": "Three speech-output test fixtures now tolerate bin/ already created by config.initialize(); runtime code unchanged.",
         "ci_run": 44950978469,
         "local_linux": "NOT_RUN_NO_FULL_CHECKOUT",
-        "redmi": "REDMI_UNVERIFIED"
+        "redmi": "REDMI_UNVERIFIED",
+        "ci_summary": "staged-runtime FAIL; integrated-regression FAIL; failures include lifecycle guard pin, idle operator pin, record-only online-world operator pin, and dependent migration/stage"
       }
     },
     {
@@ -40,7 +41,7 @@
       "proof_environment": "Private RedMentos/Aiiii PIPELINE_STATUS request #435 still has zero authenticated comments. Installed SHA and updater consent remain UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, shell action or phone mutation. REDMI_UNVERIFIED.",
       "next_step": "QA remains read-only. Fresh private PIPELINE_STATUS #435 has no authenticated response; installed SHA and updater consent remain unknown. Do not send UPDATE_REQUEST or deploy without a valid owner receipt and confirmed consent.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21T21:17:19Z",
+      "last_checkpoint": "2026-11-21T21:20:00Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -298,7 +299,7 @@
       "next_step": "GoalStore finite timestamp validation, Store-RLock publication and exact pending-event compensation are included in #2258. Require GoalWake/Lab-Age/owner-read and full staged/integrated exact-head CI on the final composed SHA; preserve rollback and scheduler rights, with no Android proof claim.",
       "user_action_required": false,
       "proof_environment": "GoalWake atomicity unit suite passed 15 tests on Python 3.11 and 7 tests on Python 3.14; the composed #2258 Lab-Age/staged checks still fail earlier at the lifecycle builder old-reader pin mismatch. The fix is not promoted or Android verified.",
-      "last_checkpoint": "2026-11-21T21:17:19Z"
+      "last_checkpoint": "2026-11-21T21:20:00Z"
     }
   ],
   "current_redmi_status": "REDMI_UNVERIFIED — private PIPELINE_STATUS #435 is open with zero authenticated comments; prior #431/#432 also had no authenticated receipt. Installed SHA and updater consent remain UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, shell action or device mutation.",
