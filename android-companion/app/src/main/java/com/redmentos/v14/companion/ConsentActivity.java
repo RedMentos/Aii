@@ -99,8 +99,9 @@ public final class ConsentActivity extends Activity {
             body.put("action_id", action.actionId);
             body.put("capability", "launch_app");
             body.put("digest", request.getString("digest"));
-            body.put("issued_at", System.currentTimeMillis() / 1000.0);
-            body.put("expires_at", Math.min(action.expiresAt / 1000.0, System.currentTimeMillis() / 1000.0 + 60.0));
+            long nowSeconds = System.currentTimeMillis() / 1000L;
+            body.put("issued_at", nowSeconds);
+            body.put("expires_at", Math.min(action.expiresAt / 1000L, nowSeconds + 60L));
             body.put("status", status);
             body.put("local_consent", localConsent);
             body.put("observed", false);
