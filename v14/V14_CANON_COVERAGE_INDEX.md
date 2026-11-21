@@ -1650,3 +1650,9 @@ Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. Sema
 | Android / release | Staged source pins are rebound through the integrated training-resume builder, Termux recovery builder and ordinary stager. | CI/Linux candidate only. No local full checkout, no authenticated Redmi receipt, no deployment. `REDMI_UNVERIFIED`. |
 
 The predictor-only mode is a comparison arm motivated by R-016; it is not a frozen-teacher replacement and must not become the default without matched multi-cohort utility and retention. Historical 1,255-heading inventory and V13 appendix bytes remain unchanged; whole-Canon semantic coverage remains incomplete.
+
+
+### JEPA staged-consumer correction — 2026-11-21
+
+- PR #2231 current head: `d7b5613dc3a3118a3c6a5856478c6e2a665db27c`. The exact pin chain now includes `runtime_deploy.py:STAGER_SHA256` in addition to the integrated training-resume builder, Termux recovery builder and ordinary stager. The earlier `Integrated stage builder changed` failure is recorded as FAIL on the earlier head; the corrected head's exact CI remains queued, not yet accepted.
+- Remaining retention gap: current consumer gate uses the previous aggregate holdout. Stable per-session/per-cohort holdouts are not yet persisted or gated. Whole-system continual retention remains unaccepted until historical A/B regimes each survive the A→B→A update, checkpoint restart and rollback.
