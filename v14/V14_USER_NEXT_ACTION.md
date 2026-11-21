@@ -770,22 +770,32 @@ PR #2148 head at readback: ac9a79e9ba40a3a24b9ddc08ebf7bb41fc821ff6. Exact code/
 **User action required: none.** Do not run a new Termux command or change installed models, weights, permissions or data. The code branch is CI-green but not phone-verified; REDMI_UNVERIFIED remains the release status.
 
 
-## JEPA/Memory — predictor-only A→B→A experiment (2026-11-21)
+# Current user-facing handoff — 2026-11-21 17:06 CET
 
-**No user action is needed.** No Termux command, device update, model download/swap, permission change or data mutation was performed.
+**No user action is required. Do not run another Termux installer or change models, weights, Age, permissions, updater settings or phone data.**
 
-- The JEPA lane has an open draft PR: [#2231](https://github.com/RedMentos/Aii/pull/2231), branch `jepa-memory/v14-store-aba-current-20261121-run11b`. Last verified code head: `ac92200699e2838d99ccd3dd7036debf2a755414`; base is current shared V14 head `9d8f91960c568be7fe7dcf894555ce7250f635f4`.
-- New code adds an experimental `predictor_only` update mode after a full encoder/EMA bootstrap. `full` remains the default. The mode is routed through the normal Store-backed postcommit consumer's permission state, but learning/optimizer permissions remain OFF by default.
-- Adam now tracks per-parameter update counts, so encoder/inverse clocks do not advance during predictor-only updates. Legacy checkpoints without those counters remain readable. The consumer reports separate encoder, predictor and EMA parameter deltas.
-- The earlier A→B→A baseline was negative: 12 candidate updates across the old replay/no-replay arms were rejected by the retention gate. The new comparison tests four arms × three seeds, with disjoint cohort holdouts, checkpoint restart, rollback and negative controls.
-- The exact staged consumer pin chain was updated after CI caught stale hashes. The latest Python 3.13/3.14, staged and integrated runs were pending at last readback; no PASS is claimed until those complete.
-- Local full-suite testing remains blocked because there is no local Aii checkout and GitHub DNS could not resolve. GitHub Actions results are CI/Linux only. Redmi remains `REDMI_UNVERIFIED`; no native GGUF B1/B2/C3 weight update or Android installation is proven.
-- Next internal action: finish CI, inspect each seed's A/B utility and retention, and only keep the predictor-only arm experimental unless it passes the full matched acceptance. Then continue the T8→World/Self/Memory→B1/B2 receiver integration. No manual action is required from the user.
+- Current branch HEAD is `9d8f91960c568be7fe7dcf894555ce7250f635f4`, a documentation-only checkpoint. The latest code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`; its exact merge CI is **34/34 check-runs and 19/19 workflows SUCCESS**. The current documentation HEAD has **36/36 check-runs SUCCESS**. Neither is proof of installation on the Redmi.
+- The C4 source-span heuristic is now in the normal pinned stage/deployer. Its synthetic staged test passed **251 / 10 skipped / 47 subtests** and integrated regression **424 / 3 skipped / 58 subtests**. Native B1/B2 quality and true B3 latent coupling remain unverified.
+- Perception #2233's caller-PCM RAW EAR producer passes consent, temporal, VAD, privacy, staged and integrated CI, but remains draft: no microphone capture, normal Runtime consumer, native inference or Redmi proof. Core must connect it and hold consent through C3 generation.
+- Core #2230 is stale and its Python 3.13 staged test fails on an old `focal.py` source pin. JEPA #2231 has 4/11 checks green and 6 failures from stale nested builder/recovery pins; the old-phone migration test reports PARTIAL. Neither is released.
+- P0 #1904 remains open. No fresh phone evidence proves correct 2+2, useful native B1/B2 offers through C4→C3, 20 mixed turns, native latency/RSS or trained B3 latent exchange.
+- Existing private owner-read requests have no authenticated response; installed SHA and updater consent are unknown. **REDMI_UNVERIFIED.** No update request, remote shell or device action was performed.
+- The local full Aii suite could not run: no repository checkout is present and GitHub DNS resolution fails. GitHub Actions results are CI evidence only.
+
+Next work is internal: Core repairs the pin chain and connects the consent-bound audio producer; JEPA repairs the staged training-resume pin chain; Boss reviews only after exact-head CI and independent review. **No manual Termux command is needed now.**
 
 
-### Latest JEPA handoff correction — 2026-11-21
+## Final documentation-sync readback — 2026-11-21T16:13:53.627Z
 
-- Current PR head: `d7b5613dc3a3118a3c6a5856478c6e2a665db27c`; predictor-only code SHA: `ac92200699e2838d99ccd3dd7036debf2a755414`; runtime-deploy pin correction: `08a521b2b445af44b13ddd8c0a8ea25ae7652713`.
-- The staged source chain now also updates `runtime_deploy.py:STAGER_SHA256`, which had caused the old-phone-to-new-runtime migration and staged deployment tests to return `PARTIAL`. The new pin chain is readback-verified; exact CI is queued, not yet PASS.
-- A further measured retention gap is now tracked: the gate checks the prior aggregate holdout, not stable holdouts per session/cohort. The next code task is to preserve and test each historical cohort independently across A→B→A, with restart and rollback.
-- **No user action.** Do not run a Termux command, request a phone update, download/swap a model, or change learning permissions. Redmi remains `REDMI_UNVERIFIED`.
+The branch was read back at `d5b3ebb913df0d4a64608e1b8a4ad70e5fda1aff` immediately before this final board/handoff refresh. It is a documentation-only commit after the code-bearing release `f279286a4453248004c670fcaabecd85da6ab299`. At that readback, **30 exact-head check-runs were queued**; the final board and user-handoff commits will cause another exact-head CI readback. Do not treat pending checks as green or as a phone deployment. The code-bearing release's previously verified 34/34 check-runs and 19/19 workflows remain the only code-release CI evidence. Redmi remains **REDMI_UNVERIFIED**; installed SHA and updater consent are unknown. Existing private owner-read requests remain pending without authenticated response. No user action or manual Termux command is required.
+
+
+## Latest cross-agent readback — 2026-11-21 17:14 CET
+
+- Shared branch parent at this readback: `a6b2aeaaa6cb92a0948c272c0b099e6265bca487`, documentation-only; **30 exact-head check-runs were queued**. The code-bearing release remains `f279286a4453248004c670fcaabecd85da6ab299`, with its previously verified **34/34 checks and 19/19 workflows**. New documentation commits require their own exact-head CI and are not a new code release.
+- Core #2230 moved to `512c4ca7...` but remains based on f279 and non-mergeable; its new checks were queued. The previous focal.py pin failure is not yet proven fixed.
+- JEPA #2231 moved to `3fc1f2a7...` but remains based on 9d8f and non-mergeable; only offline-security was queued for that new head. Its PR body and nested source pins still need exact-head refresh. Do not merge its stale copies of Boss-owned workboard/workplan/coverage/next-action files.
+- Perception #2233 moved to `398b8072...` but remains based on 9d8f and non-mergeable; current head checks were 6 success / 1 failure / 5 pending. The code/test evidence remains at `17f27339...` as stated by its body; its stale copies of Boss-owned docs must be preserved/rebased. It still has no normal Runtime microphone consumer or lease through C3 generation.
+- The code-bearing C4 integration at f279 remains synthetic-only. P0 #1904 remains open. Installed SHA and updater consent are unknown; **REDMI_UNVERIFIED**. Existing private owner-read requests have no authenticated response.
+
+**No user action.** Do not run Termux, change Age/permissions/models/weights/updater settings, or request a device update. Internal next steps: rebase each candidate to the latest shared HEAD, preserve Boss-owned docs, fix exact pin chains, then rerun full CI and independent review.
