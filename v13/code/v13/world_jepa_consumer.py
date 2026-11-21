@@ -20,6 +20,7 @@ import uuid
 import numpy as np
 
 from v13 import world_jepa
+from v13 import world_jepa_replay
 from v13 import world_jepa_shadow_checkpoint
 from v13 import world_model
 from .world_jepa_store_authority import verify_committed_transition_page
@@ -70,9 +71,13 @@ def _receipt_row(receipt):
     source_id = proof.get("source_id")
     if type(source_id) is not str or not source_id or len(source_id) > 256:
         raise ValueError("invalid verified source id")
+    session_id = receipt.session_id
+    if type(session_id) is not str or not session_id or len(session_id) > 128:
+        raise ValueError("invalid verified session id")
     return {
         "action_id": receipt.action_id,
         "source_id": source_id,
+        "session_id": session_id,
         "fingerprint": _sha(receipt.fingerprint),
         "source_sha256": _sha(proof.get("source_sha256")),
         "outcome_sha256": _sha(proof.get("outcome_sha256")),
@@ -86,7 +91,8 @@ def _receipt_row(receipt):
 def _cohort_sha(rows):
     body = [
         {"action_id": row["action_id"], "source_id": row["source_id"],
-         "source_sha256": row["source_sha256"], "fingerprint": row["fingerprint"]}
+         "source_sha256": row["source_sha256"], "fingerprint": row["fingerprint"],
+         "session_id": row.get("session_id")}
         for row in sorted(rows, key=lambda item: item["action_id"])
     ]
     raw = json.dumps(body, sort_keys=True, separators=(",", ":"), allow_nan=False)
@@ -378,12 +384,17 @@ class WorldJEPAStoreConsumer:
         if type(rows) is not list or len(rows) > MAX_ROWS:
             raise ValueError("replay memory budget")
         row_ids = []
+        row_fields = {
+            "action_id", "source_id", "fingerprint", "source_sha256", "outcome_sha256",
+            "created", "s", "a", "y",
+        }
         for row in rows:
-            if type(row) is not dict or set(row) != {
-                "action_id", "source_id", "fingerprint", "source_sha256", "outcome_sha256",
-                "created", "s", "a", "y",
-            }:
+            if type(row) is not dict or set(row) not in (row_fields, row_fields | {"session_id"}):
                 raise ValueError("invalid replay memory row")
+            if ("session_id" in row and
+                    (type(row["session_id"]) is not str or not row["session_id"]
+                     or len(row["session_id"]) > 128)):
+                raise ValueError("invalid replay session provenance")
             if (type(row["source_id"]) is not str or not row["source_id"]
                     or len(row["source_id"]) > 256
                     or row["action_id"] not in fingerprints
@@ -465,8 +476,12 @@ class WorldJEPAStoreConsumer:
             "created", "s", "a", "y",
         }
         for row in rows:
-            if type(row) is not dict or set(row) != required:
+            if type(row) is not dict or set(row) not in (required, required | {"session_id"}):
                 raise ValueError("invalid pending T8 row")
+            if ("session_id" in row and
+                    (type(row["session_id"]) is not str or not row["session_id"]
+                     or len(row["session_id"]) > 128)):
+                raise ValueError("invalid pending session provenance")
             action_id, source_id = row["action_id"], row["source_id"]
             if (type(action_id) is not str or not action_id or len(action_id) > 128
                     or action_id in active_ids or action_id in seen
@@ -570,8 +585,8 @@ class WorldJEPAStoreConsumer:
             raise ValueError("steps")
         if type(optimizer_permission) is not bool:
             raise ValueError("optimizer_permission must be bool")
-        if replay_mode not in {"uniform", "none"}:
-            raise ValueError("replay_mode must be uniform or none")
+        if replay_mode not in world_jepa_replay.REPLAY_MODES:
+            raise ValueError("unsupported WorldJEPA replay_mode")
         if encoder_mode not in {"full", "predictor_only"}:
             raise ValueError("encoder_mode must be full or predictor_only")
         if cancel_check is not None and not callable(cancel_check):
@@ -728,11 +743,26 @@ class WorldJEPAStoreConsumer:
                 if len(old_holdout_rows) >= 2:
                     old_holdout = _arrays(old_holdout_rows)
                     old_holdout_before = model.prediction_loss(*old_holdout)
-            # Uniform replay is the default. The no-replay mode is an explicit
-            # ablation: it trains only on newly admitted train-fold rows while
-            # retaining the complete source-disjoint cohort for future replay.
-            fit_rows = (train_rows if replay_mode == "uniform" or active is None
-                        else new_train_rows)
+            # All replay modes receive only the prior source-disjoint train fold.
+            # Budgeted arms match the new train-row count; session-contiguous
+            # excludes legacy rows whose trusted session provenance is absent.
+            replay_salt = (active["checkpoint_sha256"] if active else "fresh") + ":" + _cohort_sha(new_train_rows)
+            replay_selection = world_jepa_replay.select_replay_rows(
+                replay_mode, new_train_rows, old_train_rows,
+                budget=len(new_train_rows), salt=replay_salt,
+            )
+            replay_rows = replay_selection["rows"]
+            fit_rows = list(new_train_rows) + list(replay_rows)
+            replay_metrics = {
+                "replay_mode": replay_mode,
+                "replay_rows": len(replay_rows),
+                "replay_budget_rows": replay_selection["budget_rows"],
+                "replay_requested_budget_rows": replay_selection["requested_budget_rows"],
+                "replay_budget_matched": replay_selection["budget_matched"],
+                "replay_session_count": replay_selection["session_count"],
+                "replay_window_count": replay_selection["window_count"],
+                "replay_manifest_sha256": replay_selection["manifest_sha256"],
+            }
             if len(fit_rows) < 2:
                 persisted = self._persist_pending(state, version, pending_by_id, next_cursor)
                 if persisted != "PERSISTED":
@@ -742,10 +772,19 @@ class WorldJEPAStoreConsumer:
                 return {"status": "INSUFFICIENT_NEW_TRAIN_ROWS",
                         "new_train_rows": len(new_train_rows),
                         "replay_candidate_rows": len(old_train_rows),
+                        **replay_metrics,
                         "pending_rows": len(pending_by_id),
                         "scan_cursor": next_cursor,
                         "native_body_weights_changed": False}
             fit_arrays = _arrays(fit_rows)
+            replay_array_bytes = (
+                int(sum(int(array.nbytes) for array in _arrays(replay_rows)))
+                if replay_rows else 0
+            )
+            replay_metrics.update({
+                "fit_array_bytes": int(sum(int(array.nbytes) for array in fit_arrays)),
+                "replay_array_bytes": replay_array_bytes,
+            })
             try:
                 model.partial_fit(*fit_arrays, steps=steps, log_every=max(1, steps // 4),
                                   cancel_check=cancel_check, allow_optimizer_bootstrap=True,
@@ -765,6 +804,7 @@ class WorldJEPAStoreConsumer:
             if old_holdout_before is not None:
                 old_holdout_after = model.prediction_loss(*old_holdout)
             fit_steps_after = int(getattr(model, "_fit_steps", 0))
+            replay_metrics["optimizer_steps_added"] = fit_steps_after - fit_steps_before
             encoder_delta = _group_delta(before, after, ("enc",))
             predictor_delta = _group_delta(before, after, ("preds",))
             parameter_delta = math.sqrt(encoder_delta ** 2 + predictor_delta ** 2)
@@ -813,10 +853,9 @@ class WorldJEPAStoreConsumer:
                     "ema_target_delta_norm": float(ema_delta),
                     "fit_steps_before": fit_steps_before,
                     "fit_steps_after": fit_steps_after,
-                    "replay_mode": replay_mode,
                     "new_train_rows": len(new_train_rows),
                     "replay_candidate_rows": len(old_train_rows),
-                    "replay_rows": len(old_train_rows) if replay_mode == "uniform" and active else 0,
+                    **replay_metrics,
                     "fit_rows": len(fit_rows),
                     "fit_action_ids": [row["action_id"] for row in fit_rows],
                     "new_train_action_ids": [row["action_id"] for row in new_train_rows],
@@ -852,9 +891,8 @@ class WorldJEPAStoreConsumer:
                 "rejected_receipts": rejected, "censored_skipped": censored_skipped,
                 "scanned_rows": scanned, "has_more": has_more,
                 "scan_cursor_before": state["scan_cursor"], "scan_cursor_after": next_cursor,
-                "replay_mode": replay_mode,
                 "replay_candidate_rows": len(old_train_rows),
-                "replay_rows": len(old_train_rows) if replay_mode == "uniform" and active else 0,
+                **replay_metrics,
                 "new_train_rows": len(new_train_rows),
                 "new_holdout_rows": len(set(new_ids) & set(holdout_ids)),
                 "fit_rows": len(fit_rows),
