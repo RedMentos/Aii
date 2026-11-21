@@ -223,7 +223,7 @@ class ModelCompareTests(unittest.TestCase):
                     self._loaded_binary = str(other)
                     yield token
 
-        with self.assertRaisesRegex(RuntimeError, "loaded LlamaRunner executable changed"):
+        with self.assertRaisesRegex(RuntimeError, "differs from verified installed binary"):
             self.run_compare(runner_cls=ChangedLoadedRunner)
         self.assertEqual(ChangedLoadedRunner.generate_calls, 1)
         self.assertEqual(ChangedLoadedRunner.active, 0)
