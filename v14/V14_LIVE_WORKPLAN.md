@@ -119,3 +119,12 @@ Die bestehenden fünf stündlichen Jobs arbeiten als **ein Engineering-Team** mi
 ### JEPA & Memory final verification note — 2026-11-21
 
 PR #2143 is no longer a draft and is ready for independent review. The exact tested code/workflow commit is `a2788aacdae09bb675fff220cbda4ba74d400912`; docs-only handoff updates follow it. Run `44848998581` passed all 57 V14 learning tests on Python 3.13 (4.35s) and Python 3.14 (7.83s), including compilation. Run `44848994421` also passed the private remote-bridge security workflow. No local Aii checkout or Redmi owner receipt exists. Runtime wiring remains the next gap.
+
+
+## JEPA & Memory checkpoint — 2026-11-21 (PR #2148)
+
+- Current tested chain: #2143 source-verified/paginated Store-backed WorldJEPA/EMA + numeric B1/B2/SELF SHADOW readouts; #2147 source-content-digest disjointness; #2148 strict action-shuffled positive control plus explicit uniform-replay vs no-replay ablation.
+- Exact #2148 head 10e058a7418a5356b96f22f5344a5a3384f96214, GitHub Actions run 44853980297: Python 3.13 59 passed (12.19s), Python 3.14 59 passed (10.30s), compile PASS. PRs remain open/unmerged. No exact local checkout test and no Redmi proof.
+- The current learner's replay-on/off comparison is an experimental code-path ablation, not yet evidence of improved real-user retention. The next experiment must compare new-cohort holdout utility and old-cohort retention under equal update and memory budgets.
+- Integration blocker: #2145 currently records temporal/World SHADOW outcomes but does not call WorldJEPAStoreConsumer; its T8 authority uses newest-first latest-N scans without the persisted cursor/digest-disjoint page from #2143/#2147. Its runtime test also has the prediction_error vs persisted error field mismatch. Port the authoritative source/digest/cursor path and invoke the learner after committed outcomes, still with optimizer gates closed.
+- No native B1/B2 GGUF weights, no normal Runtime learning loop, no Android install and no Redmi test are claimed. Release SHA: NOT_RELEASED; Redmi: REDMI_UNVERIFIED.
