@@ -1,6 +1,6 @@
 # V14 / Inquisition-JEPA — LEBENDER ARBEITSPLAN
 
-**Fassung:** 2026-11-20 · **Rolle:** operativer Einstiegspunkt für ALLE V14-Agenten.  
+**Fassung:** 2026-11-21 · **Rolle:** operativer Einstiegspunkt für ALLE V14-Agenten.  
 **Kanon:** [V14 Master](V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md) (aktive Gesamtarchitektur mit ALLEN historischen Anhängen), [Architekturfassung](V14_ARCHITECTURE_AND_RESEARCH_ONLY_20261119.md), [Forschungsjournal](V14_RESEARCH_LEDGER.md), [Backups](backups/).  
 **Wichtig:** Nicht als Implementierungsbeweis lesen. Funktionale Ziele sind verbindlich; Status erfordert reale Laufzeit-, Lern- und Geräteevidenz.
 
