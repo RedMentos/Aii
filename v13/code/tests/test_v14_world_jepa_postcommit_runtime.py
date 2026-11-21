@@ -412,9 +412,13 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         # A real Runtime.submit -> Runtime._worker -> Runtime._turn path.
         # Copy-exact keeps this acceptance test independent of installed GGUFs.
         turn_event_id = runtime.submit("Copy exactly: worker-jepa-lifecycle")
-        assert _wait_until(lambda: runtime.store.one(
-            "SELECT status,outcome FROM actions WHERE event_id=?", (turn_event_id,)
-        ) is not None)
+        def action_is_final():
+            row = runtime.store.one(
+                "SELECT status,outcome FROM actions WHERE event_id=?", (turn_event_id,)
+            )
+            return row is not None and row["status"] == "FINAL" and row["outcome"] is not None
+
+        assert _wait_until(action_is_final)
         action = runtime.store.one(
             "SELECT status,outcome FROM actions WHERE event_id=?", (turn_event_id,)
         )
