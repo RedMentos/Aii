@@ -22,7 +22,7 @@ The staged arithmetic overlay adds a narrow negative guard for bare year-month f
 
 ## Evidence
 
-- LOCAL_LINUX isolated algorithm: PENDING — source-span complementarity rule replaces the uncalibrated numeric factor.
+- LOCAL_LINUX isolated algorithm: PASS — overlay source compiles; 8/8 isolated admission controls pass (disjoint spans, overlap, cross-source, digest mismatch, same-role, body/memory, missing refs, capacity). This is not a full repository checkout.
 - LOCAL_LINUX overlay/stager/test syntax: PASS.
 - LOCAL_LINUX arithmetic-overlay anchor/regex fixture: PASS — year-month forms are rejected; explicit calculate/berechne forms remain eligible.
 - LOCAL_LINUX full repository stage / Runtime test: BLOCKED — no local checkout; git ls-remote https://github.com/RedMentos/Aii.git HEAD failed because github.com could not be resolved.
@@ -37,3 +37,14 @@ If accepted into the normal stage builder, overlapping B1 and B2 hypotheses will
 ## Next executable step
 
 Verify exact-head Python 3.13/3.14 CI for the source-span C4→C3 consumer and arithmetic date-negative controls. If green, Boss reviews the conservative admission rule and the high-authority stage/deployer integration separately. Then measure native B1/B2 OfferPacket selection and C3 consumption on a consented Redmi receipt; until that receipt exists, keep REDMI_UNVERIFIED.
+
+
+## Exact-head verification — 2026-11-21
+
+- Branch readback: `core/v14-focal-scale-diversity-20261121` at `1587ec609e9352d3601544aa82cc1791c46ceb16`.
+- GitHub Actions: dedicated C4 suite on Python 3.13 and 3.14 PASS (run `44900148162`); staged-runtime and integrated-regression PASS (run `44900148097`).
+- Safe-additive policy FAIL (run `44900148237`) with the explicit reason `path outside inert-module/test/handoff scope`. No bypass: this PR is a staged Runtime overlay and requires Boss/Integrator review before any merge/release.
+- Local Linux: SHA/overlay source compile PASS and isolated admission matrix 8/8 PASS. Full repository checkout and exact local pytest remain BLOCKED because `git ls-remote https://github.com/RedMentos/Aii.git` failed with DNS resolution for github.com.
+- Synthetic Runtime-to-C3 consumer: the CI test constructs B1/B2 offers with exact non-overlapping spans from the same source and confirms both offers and their distinct quotes reach C3 context. This does not prove native model usefulness or Android execution.
+- Deployment: NOT_RELEASED. No normal updater run, no UPDATE_REQUEST, no phone installation receipt; REDMI_UNVERIFIED. No model/weight/permission/data changes.
+- Next: Boss reviews the non-additive staged overlay and coordinates it with the current A5/audio consumer work before normal-stage integration. Then collect a fresh owner-consented Redmi receipt for native B1/B2 OfferPacket and C3 consumption.
