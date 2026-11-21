@@ -25,11 +25,13 @@ from v13 import world_model
 from t8_store_authority import verify_committed_transition_page
 
 
-REVISION = "v14-world-jepa-store-consumer-v3"
-LEGACY_REVISION = "v14-world-jepa-store-consumer-v2"
+REVISION = "v14-world-jepa-store-consumer-v4"
+LEGACY_REVISION = "v14-world-jepa-store-consumer-v3"
+OLDER_REVISION = "v14-world-jepa-store-consumer-v2"
 STATE_KEY = "v14.world_jepa.store_consumer"
-STATE_SCHEMA = 3
-LEGACY_STATE_SCHEMA = 2
+STATE_SCHEMA = 4
+LEGACY_STATE_SCHEMA = 3
+OLDER_STATE_SCHEMA = 2
 MAX_ROWS = min(2048, world_model.MAX_ROWS)
 DEFAULT_PAGE_SIZE = MAX_ROWS
 MAX_TRACKED = 10000
@@ -59,6 +61,43 @@ def _sha(value):
     return value
 
 
+_SOURCE_REF_KEYS = {"source_id", "sha256", "char_start", "char_end", "modality"}
+
+
+def _unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate source event key")
+        result[key] = value
+    return result
+
+
+def _validate_source_ref(value, source_id=None, source_sha=None):
+    if type(value) is not dict or set(value) != _SOURCE_REF_KEYS:
+        raise ValueError("invalid persisted SourceRef")
+    sid, digest = value.get("source_id"), _sha(value.get("sha256"))
+    start, end, modality = value.get("char_start"), value.get("char_end"), value.get("modality")
+    if (type(sid) is not str or not sid or len(sid) > 256
+            or type(start) is not int or type(end) is not int
+            or not 0 <= start <= end
+            or type(modality) is not str or not modality or len(modality) > 64
+            or (source_id is not None and sid != source_id)
+            or (source_sha is not None and digest != source_sha)):
+        raise ValueError("SourceRef identity/span mismatch")
+    return {"source_id": sid, "sha256": digest, "char_start": start,
+            "char_end": end, "modality": modality}
+
+
+def _source_ref_sha(rows):
+    body = [
+        {"action_id": row["action_id"], "source_ref": row["source_ref"]}
+        for row in sorted(rows, key=lambda item: item["action_id"])
+    ]
+    raw = json.dumps(body, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
 def _receipt_row(receipt):
     if type(receipt.action_id) is not str or not receipt.action_id or len(receipt.action_id) > 128:
         raise ValueError("invalid verified action id")
@@ -70,11 +109,14 @@ def _receipt_row(receipt):
     source_id = proof.get("source_id")
     if type(source_id) is not str or not source_id or len(source_id) > 256:
         raise ValueError("invalid verified source id")
+    source_sha = _sha(proof.get("source_sha256"))
+    source_ref = _validate_source_ref(receipt.source_ref, source_id, source_sha)
     return {
         "action_id": receipt.action_id,
         "source_id": source_id,
+        "source_ref": source_ref,
         "fingerprint": _sha(receipt.fingerprint),
-        "source_sha256": _sha(proof.get("source_sha256")),
+        "source_sha256": source_sha,
         "outcome_sha256": _sha(proof.get("outcome_sha256")),
         "created": float(receipt.created),
         "s": _vector(raw.get("s"), 4),
@@ -86,7 +128,8 @@ def _receipt_row(receipt):
 def _cohort_sha(rows):
     body = [
         {"action_id": row["action_id"], "source_id": row["source_id"],
-         "source_sha256": row["source_sha256"], "fingerprint": row["fingerprint"]}
+         "source_sha256": row["source_sha256"], "source_ref": row.get("source_ref"),
+         "fingerprint": row["fingerprint"]}
         for row in sorted(rows, key=lambda item: item["action_id"])
     ]
     raw = json.dumps(body, sort_keys=True, separators=(",", ":"), allow_nan=False)
@@ -231,13 +274,18 @@ def _source_disjoint_split(rows):
             raise ValueError("source identity changed digest")
         source_hashes[source_id] = source_sha
         seen_actions.add(action_id)
-        canonical.append({
+        canonical_row = {
             "action_id": action_id, "source_id": source_id,
             "source_sha256": source_sha, "fingerprint": _sha(item.get("fingerprint")),
             "outcome_sha256": _sha(item.get("outcome_sha256")),
             "created": float(item["created"]), "s": _vector(item.get("s"), 4),
             "a": route, "y": _vector(item.get("y"), 3),
-        })
+        }
+        if item.get("source_ref") is not None:
+            canonical_row["source_ref"] = _validate_source_ref(
+                item["source_ref"], source_id, source_sha
+            )
+        canonical.append(canonical_row)
     canonical.sort(key=lambda item: item["action_id"])
     # Group by the content digest as well as source_id. Two different event/source
     # IDs can point to byte-identical source content; those must never straddle
@@ -418,17 +466,21 @@ class WorldJEPAStoreConsumer:
                 fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
 
     @staticmethod
-    def _validate_record(record):
+    def _validate_record(record, *, require_source_ref=False):
         if record is None:
             return
-        required = {
+        legacy_required = {
             "checkpoint", "checkpoint_sha256", "source_sha256", "processed_ids",
             "scan_cursor",
             "fingerprints", "experience_rows", "train_ids", "holdout_ids",
             "receiver_heads", "metrics", "self_state", "fit_steps",
         }
-        if type(record) is not dict or set(record) != required:
+        current_required = legacy_required | {"source_ref_sha256"}
+        if (type(record) is not dict
+                or set(record) not in (legacy_required, current_required)):
             raise ValueError("invalid WorldJEPA state record")
+        if require_source_ref and set(record) != current_required:
+            raise ValueError("WorldJEPA source lineage digest missing")
         if (type(record["checkpoint"]) is not str
                 or not CHECKPOINT_NAME.fullmatch(record["checkpoint"])):
             raise ValueError("invalid checkpoint filename")
@@ -522,13 +574,22 @@ class WorldJEPAStoreConsumer:
                 raise ValueError("invalid receiver head parameters")
         if type(record["metrics"]) is not dict or type(record["self_state"]) is not dict:
             raise ValueError("metrics/self state")
+        if require_source_ref:
+            if "source_ref_sha256" not in record or not all(
+                "source_ref" in row for row in rows
+            ):
+                raise ValueError("persisted SourceRef lineage incomplete")
+            if _source_ref_sha(rows) != _sha(record["source_ref_sha256"]):
+                raise ValueError("persisted SourceRef lineage digest mismatch")
+        elif "source_ref_sha256" in record:
+            _sha(record["source_ref_sha256"])
         if type(record["fit_steps"]) is not int or record["fit_steps"] < 1:
             raise ValueError("fit step evidence")
         if type(record["scan_cursor"]) is not int or record["scan_cursor"] < 0:
             raise ValueError("scan cursor")
 
     @staticmethod
-    def _validate_pending_rows(rows, active):
+    def _validate_pending_rows(rows, active, *, require_source_ref=False):
         if type(rows) is not list or len(rows) > MAX_ROWS:
             raise ValueError("pending T8 buffer budget")
         active_ids = set(active["fingerprints"]) if active is not None else set()
@@ -538,8 +599,11 @@ class WorldJEPAStoreConsumer:
             "created", "s", "a", "y",
         }
         for row in rows:
-            if type(row) is not dict or set(row) != required:
+            if (type(row) is not dict
+                    or set(row) not in (required, required | {"source_ref"})):
                 raise ValueError("invalid pending T8 row")
+            if require_source_ref and "source_ref" not in row:
+                raise ValueError("pending T8 SourceRef missing")
             action_id, source_id = row["action_id"], row["source_id"]
             if (type(action_id) is not str or not action_id or len(action_id) > 128
                     or action_id in active_ids or action_id in seen
@@ -550,6 +614,8 @@ class WorldJEPAStoreConsumer:
             _sha(row["fingerprint"])
             source_sha = _sha(row["source_sha256"])
             _sha(row["outcome_sha256"])
+            if "source_ref" in row:
+                _validate_source_ref(row["source_ref"], source_id, source_sha)
             _vector(row["s"], 4)
             _vector(row["y"], 3)
             prior = source_hashes.get(source_id)
@@ -557,6 +623,212 @@ class WorldJEPAStoreConsumer:
                 raise ValueError("pending source digest changed")
             source_hashes[source_id] = source_sha
             seen.add(action_id)
+
+    def _source_refs_for_actions(self, action_ids, *, verify_blob=False):
+        ids = list(dict.fromkeys(action_ids))
+        refs = {}
+        for offset in range(0, len(ids), 500):
+            chunk = ids[offset:offset + 500]
+            if not chunk:
+                continue
+            placeholders = ",".join("?" for _ in chunk)
+            rows = self.store.rows(
+                "SELECT a.id AS action_id,a.event_id,e.generation_id,e.source_id,e.packet,"
+                "s.hash,s.chars,s.deleted FROM actions a "
+                "JOIN events e ON e.id=a.event_id "
+                "JOIN sources s ON s.id=e.source_id "
+                "WHERE a.id IN (" + placeholders + ")",
+                tuple(chunk),
+            )
+            for row in rows:
+                action_id = row["action_id"]
+                event = json.loads(row["packet"], object_pairs_hook=_unique_object)
+                if (type(event) is not dict
+                        or event.get("event_id") != row["event_id"]
+                        or event.get("brain_generation_id") != row["generation_id"]):
+                    raise ValueError("persisted SourceRef event binding changed")
+                source_ref = event.get("source_ref")
+                if (type(event.get("provenance")) is not list
+                        or event["provenance"] != [source_ref]):
+                    raise ValueError("persisted SourceRef provenance changed")
+                source_ref = _validate_source_ref(
+                    source_ref, row["source_id"], row["hash"]
+                )
+                if row["deleted"] != 0:
+                    raise ValueError("persisted SourceRef was revoked")
+                if source_ref["modality"] == "text" and (
+                    type(row["chars"]) is not int or source_ref["char_end"] > row["chars"]
+                ):
+                    raise ValueError("persisted SourceRef span no longer exists")
+                if verify_blob and source_ref["modality"] == "text":
+                    self.store.read_source(source_ref)
+                refs[action_id] = source_ref
+        if set(refs) != set(ids):
+            raise ValueError("persisted SourceRef action missing")
+        return refs
+
+    def _verify_source_metadata(self, rows):
+        source_ids = list(dict.fromkeys(row["source_id"] for row in rows))
+        metadata = {}
+        for offset in range(0, len(source_ids), 500):
+            chunk = source_ids[offset:offset + 500]
+            if not chunk:
+                continue
+            placeholders = ",".join("?" for _ in chunk)
+            found = self.store.rows(
+                "SELECT id,hash,chars,deleted FROM sources WHERE id IN (" + placeholders + ")",
+                tuple(chunk),
+            )
+            metadata.update({item["id"]: item for item in found})
+        if set(metadata) != set(source_ids):
+            raise ValueError("persisted SourceRef source missing")
+        for row in rows:
+            ref = _validate_source_ref(
+                row["source_ref"], row["source_id"], row["source_sha256"]
+            )
+            source = metadata[ref["source_id"]]
+            if source["deleted"] != 0 or source["hash"] != ref["sha256"]:
+                raise ValueError("persisted SourceRef was revoked or changed")
+            if ref["modality"] == "text" and (
+                type(source["chars"]) is not int or ref["char_end"] > source["chars"]
+            ):
+                raise ValueError("persisted SourceRef span no longer exists")
+
+    def _rehydrate_record(self, record, *, verify_blob=False):
+        if record is None:
+            return None, False
+        original_rows = record["experience_rows"]
+        needs_rebuild = verify_blob or any("source_ref" not in row for row in original_rows)
+        if needs_rebuild:
+            refs = self._source_refs_for_actions(
+                [row["action_id"] for row in original_rows],
+                verify_blob=verify_blob,
+            )
+        else:
+            refs = {row["action_id"]: row["source_ref"] for row in original_rows}
+        changed = False
+        upgraded = dict(record)
+        rows = []
+        for row in original_rows:
+            source_ref = refs[row["action_id"]]
+            if "source_ref" in row and row["source_ref"] != source_ref:
+                raise ValueError("persisted SourceRef differs from authoritative event")
+            if "source_ref" not in row:
+                changed = True
+            rows.append(dict(row, source_ref=source_ref))
+        source_ref_digest = _source_ref_sha(rows)
+        prior_digest = record.get("source_ref_sha256")
+        if prior_digest is not None and prior_digest != source_ref_digest:
+            raise ValueError("persisted SourceRef lineage digest changed")
+        if prior_digest is None:
+            changed = True
+        upgraded["experience_rows"] = rows
+        upgraded["source_ref_sha256"] = source_ref_digest
+        if not needs_rebuild:
+            self._verify_source_metadata(rows)
+        self._validate_record(upgraded, require_source_ref=True)
+        return upgraded, changed
+
+    def _reconcile_state_sources(self, state, *, verify_blob=False):
+        changed = False
+        original_active, original_previous = state["active"], state["previous"]
+        active = previous = None
+        active_valid = original_active is None
+        previous_valid = original_previous is None
+        if original_active is not None:
+            try:
+                active, did_change = self._rehydrate_record(
+                    original_active, verify_blob=verify_blob
+                )
+                active_valid = True
+                changed = changed or did_change
+            except (ValueError, TypeError, KeyError, OSError, OverflowError):
+                active_valid = False
+                changed = True
+        if original_previous is not None:
+            try:
+                previous, did_change = self._rehydrate_record(
+                    original_previous, verify_blob=verify_blob
+                )
+                previous_valid = True
+                changed = changed or did_change
+            except (ValueError, TypeError, KeyError, OSError, OverflowError):
+                previous_valid = False
+                changed = True
+
+        scan_cursor = state["scan_cursor"]
+        pending_rows = []
+        rollback_applied = False
+        if not active_valid:
+            if previous_valid and previous is not None:
+                active, previous = previous, None
+                scan_cursor = active["scan_cursor"]
+            else:
+                active = previous = None
+                scan_cursor = 0
+            rollback_applied = True
+            changed = True
+        elif active is None and previous_valid and previous is not None:
+            active, previous = previous, None
+            scan_cursor = active["scan_cursor"]
+            rollback_applied = True
+            changed = True
+        elif not previous_valid:
+            previous = None
+            changed = True
+
+        if active_valid and not rollback_applied:
+            pending = state["pending_rows"]
+            if pending:
+                needs_rebuild = verify_blob or any("source_ref" not in row for row in pending)
+                if needs_rebuild:
+                    try:
+                        refs = self._source_refs_for_actions(
+                            [row["action_id"] for row in pending], verify_blob=verify_blob
+                        )
+                    except (ValueError, TypeError, KeyError, OSError, OverflowError):
+                        refs = {}
+                        for row in pending:
+                            try:
+                                refs.update(self._source_refs_for_actions(
+                                    [row["action_id"]], verify_blob=verify_blob
+                                ))
+                            except (ValueError, TypeError, KeyError, OSError, OverflowError):
+                                pass
+                else:
+                    try:
+                        self._verify_source_metadata(pending)
+                        refs = {row["action_id"]: row["source_ref"] for row in pending}
+                    except (ValueError, TypeError, KeyError, OSError, OverflowError):
+                        refs = {}
+                        for row in pending:
+                            try:
+                                self._verify_source_metadata([row])
+                                refs[row["action_id"]] = row["source_ref"]
+                            except (ValueError, TypeError, KeyError, OSError, OverflowError):
+                                pass
+                for row in pending:
+                    source_ref = refs.get(row["action_id"])
+                    if source_ref is None or (
+                        "source_ref" in row and row["source_ref"] != source_ref
+                    ):
+                        changed = True
+                        continue
+                    if "source_ref" not in row:
+                        changed = True
+                    pending_rows.append(dict(row, source_ref=source_ref))
+        elif state["pending_rows"]:
+            changed = True
+
+        next_state = {
+            "schema": STATE_SCHEMA, "revision": REVISION,
+            "active": active, "previous": previous,
+            "scan_cursor": scan_cursor, "pending_rows": pending_rows,
+        }
+        self._validate_record(active, require_source_ref=True)
+        self._validate_record(previous, require_source_ref=True)
+        self._validate_pending_rows(pending_rows, active, require_source_ref=True)
+        return next_state, changed
 
     def _read_state(self):
         payload, version = self.store.state(STATE_KEY, None)
@@ -567,25 +839,54 @@ class WorldJEPAStoreConsumer:
         if type(payload) is not dict:
             raise ValueError("incompatible WorldJEPA Store state")
         old_keys = {"schema", "revision", "active", "previous", "scan_cursor"}
-        if (set(payload) == old_keys
-                and payload.get("schema") == LEGACY_STATE_SCHEMA
-                and payload.get("revision") == LEGACY_REVISION):
-            self._validate_record(payload["active"])
-            self._validate_record(payload["previous"])
+        expected_keys = old_keys | {"pending_rows"}
+        schema, revision = payload.get("schema"), payload.get("revision")
+        if (schema == OLDER_STATE_SCHEMA and revision == OLDER_REVISION
+                and set(payload) == old_keys):
+            self._validate_record(payload["active"], require_source_ref=False)
+            self._validate_record(payload["previous"], require_source_ref=False)
             if type(payload["scan_cursor"]) is not int or payload["scan_cursor"] < 0:
                 raise ValueError("invalid legacy scan cursor")
-            return {"schema": STATE_SCHEMA, "revision": REVISION,
-                    "active": payload["active"], "previous": payload["previous"],
-                    "scan_cursor": payload["scan_cursor"], "pending_rows": []}, version
-        expected_keys = old_keys | {"pending_rows"}
-        if (set(payload) != expected_keys
-                or payload.get("schema") != STATE_SCHEMA or payload.get("revision") != REVISION
-                or type(payload.get("scan_cursor")) is not int or payload["scan_cursor"] < 0):
+            state = {
+                "schema": STATE_SCHEMA, "revision": REVISION,
+                "active": payload["active"], "previous": payload["previous"],
+                "scan_cursor": payload["scan_cursor"], "pending_rows": [],
+            }
+            migrate = True
+        elif (schema == LEGACY_STATE_SCHEMA and revision == LEGACY_REVISION
+                and set(payload) == expected_keys):
+            if type(payload["scan_cursor"]) is not int or payload["scan_cursor"] < 0:
+                raise ValueError("invalid legacy scan cursor")
+            self._validate_record(payload["active"], require_source_ref=False)
+            self._validate_record(payload["previous"], require_source_ref=False)
+            self._validate_pending_rows(
+                payload["pending_rows"], payload["active"], require_source_ref=False
+            )
+            state = dict(payload)
+            migrate = True
+        elif (schema == STATE_SCHEMA and revision == REVISION
+                and set(payload) == expected_keys):
+            if type(payload["scan_cursor"]) is not int or payload["scan_cursor"] < 0:
+                raise ValueError("invalid WorldJEPA scan cursor")
+            # Structural validation first; reconciliation below can then roll
+            # back a broken active checkpoint instead of failing before fallback.
+            self._validate_record(payload["active"], require_source_ref=False)
+            self._validate_record(payload["previous"], require_source_ref=False)
+            self._validate_pending_rows(
+                payload["pending_rows"], payload["active"], require_source_ref=False
+            )
+            state = dict(payload)
+            migrate = False
+        else:
             raise ValueError("incompatible WorldJEPA Store state")
-        self._validate_record(payload["active"])
-        self._validate_record(payload["previous"])
-        self._validate_pending_rows(payload["pending_rows"], payload["active"])
-        return payload, version
+
+        state, changed = self._reconcile_state_sources(
+            state, verify_blob=migrate
+        )
+        if migrate or changed:
+            version = self.store.set_state(STATE_KEY, state, expected=version)
+            self._prune_checkpoints(state)
+        return state, version
 
     def _persist_pending(self, state, version, pending_by_id, next_cursor):
         pending_rows = sorted(
@@ -957,7 +1258,8 @@ class WorldJEPAStoreConsumer:
             metrics.update(receiver_metrics)
             record = {
                 "checkpoint": checkpoint_name, "checkpoint_sha256": checkpoint_after,
-                "source_sha256": source_sha, "processed_ids": sorted(prior_fingerprints),
+                "source_sha256": source_sha, "source_ref_sha256": _source_ref_sha(experience_rows),
+                "processed_ids": sorted(prior_fingerprints),
                 "fingerprints": prior_fingerprints, "experience_rows": experience_rows,
                 "train_ids": train_ids, "holdout_ids": holdout_ids,
                 "receiver_heads": receiver_heads, "metrics": metrics,
@@ -1004,7 +1306,7 @@ class WorldJEPAStoreConsumer:
             }
 
     def restore(self):
-        with self._locked(False):
+        with self._locked(True):
             state, _ = self._read_state()
             active = state["active"]
             if active is None:
@@ -1045,7 +1347,7 @@ class WorldJEPAStoreConsumer:
         vector = _vector(state, 4)
         if action not in world_model.ACTIONS:
             raise ValueError("unknown action")
-        with self._locked(False):
+        with self._locked(True):
             stored, _ = self._read_state()
             active = stored["active"]
             if active is None:
@@ -1088,7 +1390,7 @@ class WorldJEPAStoreConsumer:
             raise ValueError("unknown action")
         if type(limit) is not int or not 1 <= limit <= 32:
             raise ValueError("memory recall limit")
-        with self._locked(False):
+        with self._locked(True):
             stored, _ = self._read_state()
             active = stored["active"]
             if active is None:
