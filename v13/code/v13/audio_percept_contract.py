@@ -3,7 +3,7 @@ import math
 import re
 from .contracts import packet, validate
 
-_SHA = re.compile(r"[0-9a-f]{64}\\Z")
+_SHA = re.compile(r"[0-9a-f]{64}\Z")
 _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
 
 
@@ -36,10 +36,13 @@ def validate_voice_cues(voice_cues):
         value = voice_cues[key]
         if value is not None and (type(value) not in (int, float) or not math.isfinite(value) or not lower <= value <= upper):
             raise ValueError("invalid voice cue range: " + key)
-    if voice_cues["activity_hint"] not in _ACTIVITY_HINTS:
+    if type(voice_cues["activity_hint"]) is not str or voice_cues["activity_hint"] not in _ACTIVITY_HINTS:
         raise ValueError("invalid voice activity hint")
-    if count == 0 and (voice_cues["f0_median_hz"] is not None or voice_cues["f0_range_hz"] is not None):
-        raise ValueError("pitch cannot be present without analysis frames")
+    if count == 0 and (voice_cues["f0_median_hz"] is not None or voice_cues["f0_range_hz"] is not None
+                        or voice_cues["voiced_fraction"] != 0 or voice_cues["voicing_confidence"] != 0):
+        raise ValueError("voice cues cannot claim pitch or voicing without analysis frames")
+    if voice_cues["f0_median_hz"] is None and voice_cues["f0_range_hz"] is not None:
+        raise ValueError("pitch range requires a median pitch")
     return dict(voice_cues)
 
 
