@@ -91,7 +91,7 @@ def plan_for(effort,sig,p=BOOT):
 def age_limits(control,resource_state='NORMAL'):
     """Read rights from Age; never derive runtime compute budgets from developmental Age."""
     mode=rmodes.as_mode(resource_state)
-    real={'stage':control.ceiling('system'),
+    real={'stage':control.system_stage(),
           'autonomous_effort_max':'max',
           'focal_depth':BOOT['max_cycles_age0'],
           'deliberation':control.may('deliberation_modes',resource_mode=mode),
