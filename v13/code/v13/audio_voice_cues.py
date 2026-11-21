@@ -16,6 +16,7 @@ from statistics import median
 
 from . import attention as attctl
 from .audio_temporal_evidence import TemporalVoiceEvidence, TemporalVoiceEvidenceRegistry
+from .audio_speaker_evidence import SpeakerChangeEvidenceRegistry, SpeakerEvidenceError
 from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
@@ -297,13 +298,19 @@ def extract_voice_cues(pcm: bytes, sample_rate: int, *, backend: str = "python")
 
 
 def reset_runtime_temporal_voice_states(runtime, *, source_id=None, generation_id=None):
-    """Clear process-local A4 voice state after source revocation or stream teardown."""
+    """Clear process-local A4 voice and speaker-change state after revocation or teardown."""
+    count = 0
     registry = getattr(runtime, "_raw_ear_temporal_registry", None)
-    if registry is None:
-        return 0
-    if not isinstance(registry, TemporalVoiceEvidenceRegistry):
-        raise ValueError("runtime RAW EAR temporal registry has an invalid type")
-    return registry.reset(source_id=source_id, generation_id=generation_id)
+    if registry is not None:
+        if not isinstance(registry, TemporalVoiceEvidenceRegistry):
+            raise ValueError("runtime RAW EAR temporal registry has an invalid type")
+        count = registry.reset(source_id=source_id, generation_id=generation_id)
+    speaker_registry = getattr(runtime, "_raw_ear_speaker_registry", None)
+    if speaker_registry is not None:
+        if not isinstance(speaker_registry, SpeakerChangeEvidenceRegistry):
+            raise ValueError("runtime RAW EAR speaker registry has an invalid type")
+        speaker_registry.reset(source_id=source_id, generation_id=generation_id)
+    return count
 
 
 def _runtime_temporal_voice_registry(runtime):
@@ -321,6 +328,22 @@ def _runtime_temporal_voice_registry(runtime):
                     raise ValueError("runtime cannot retain bounded RAW EAR temporal state") from exc
     if not isinstance(registry, TemporalVoiceEvidenceRegistry):
         raise ValueError("runtime RAW EAR temporal registry has an invalid type")
+    return registry
+
+
+def _runtime_speaker_evidence_registry(runtime):
+    registry = getattr(runtime, "_raw_ear_speaker_registry", None)
+    if registry is None:
+        with _RUNTIME_TEMPORAL_REGISTRY_INIT_LOCK:
+            registry = getattr(runtime, "_raw_ear_speaker_registry", None)
+            if registry is None:
+                registry = SpeakerChangeEvidenceRegistry()
+                try:
+                    setattr(runtime, "_raw_ear_speaker_registry", registry)
+                except Exception as exc:
+                    raise ValueError("runtime cannot retain bounded RAW EAR speaker state") from exc
+    if not isinstance(registry, SpeakerChangeEvidenceRegistry):
+        raise ValueError("runtime RAW EAR speaker registry has an invalid type")
     return registry
 
 
@@ -542,7 +565,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                temporal_state: TemporalVoiceEvidence | None = None,
                                vad_stream: SileroVADStream | None = None,
                                consent_lease: AudioConsentLease | None = None,
-                               voice_backend: str = "python"):
+                               voice_backend: str = "python",
+                                speaker_embeddings: dict | None = None):
     """Persist source-bound acoustic cues under an owned or caller-held consent lease."""
     if type(voice_backend) is not str or voice_backend not in {"python", "numpy"}:
         raise ValueError("voice_backend must be 'python' or 'numpy'")
@@ -581,9 +605,32 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         )
         audio_segment = audio_packet["segments"][0]
         audio_segment["acoustic"]["voice_cues"] = cues
+        speaker_evidence = None
+        if speaker_embeddings is not None:
+            try:
+                speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
+                    source_id=source_id, generation_id=generation_id,
+                    start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
+                    activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
+                )
+            except SpeakerEvidenceError as exc:
+                runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
+                speaker_evidence = {
+                    "method": "FASTDIAR_COSINE_LOOKBACK_V1",
+                    "status": "REJECTED",
+                    "error": type(exc).__name__,
+                    "speaker_label": None,
+                    "identity_authority": False,
+                    "learning_authority": False,
+                    "action_authority": False,
+                }
+        if speaker_evidence is not None:
+            audio_segment["acoustic"]["speaker_change_evidence"] = speaker_evidence
         audio_segment["unmeasured"] = [
             "speaker_identity", "speaker_timbre", "calibrated_speech_probability", "ASR"
         ]
+        if speaker_evidence is None or speaker_evidence.get("status") != "MEASURED":
+            audio_segment["unmeasured"].append("speaker_change")
         # Do not claim pitch/prosody were measured when the window had no usable
         # voiced frames. A single voiced frame estimates pitch, but not dynamics.
         if cues["f0_median_hz"] is None:
@@ -623,12 +670,17 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 end_ms=audio_segment["end_ms"],
                 cues=cues,
             )
+        speaker_change_score = 0.0
+        if speaker_evidence is not None and speaker_evidence.get("speaker_change_candidate") is True:
+            speaker_change_score = float(speaker_evidence.get("change_score") or 0.0)
         voice_novelty = max(
             0.35 * temporal_voice["voice_evidence"],
             0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
+            0.35 * speaker_change_score,
         )
         prosody_interrupt = (0.25 * cues["prosody_change_score"]
                              if temporal_voice["voice_active"] else 0.0)
+        speaker_interrupt = 0.25 * speaker_change_score
         onset_interrupt = 0.5 if temporal_voice["voice_onset"] else 0.0
         vad_speech_fraction = 0.0 if vad_evidence is None else vad_evidence["speech_fraction"]
         vad_interrupt = 0.25 * vad_speech_fraction
@@ -639,7 +691,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         attention = attctl.controller(runtime)
         attention_result = attention.modulate(event_id, sal={
             "novelty": min(1.0, max(zcr, voice_novelty)),
-            "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt)),
+            "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt, speaker_interrupt)),
         })
         a4 = {
             "packet_id": audio_packet["packet_id"],
@@ -649,6 +701,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "voice_cues": cues,
             "prosody_change_score": cues["prosody_change_score"],
             "temporal_voice": temporal_voice,
+            "speaker_change_evidence": speaker_evidence,
             "attention": attention_result,
             "learning_authority": False,
             "action_authority": False,
@@ -670,6 +723,10 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         if cues["voiced_energy_range_db"] is not None:
             summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
         summary += f" prosody_change={cues['prosody_change_score']:.2f}"
+        if speaker_evidence is not None and speaker_evidence.get("status") == "MEASURED":
+            summary += f" speaker_change_score={speaker_evidence['change_score']:.2f}"
+            if speaker_evidence.get("speaker_change_candidate") is not None:
+                summary += f" speaker_change_candidate={int(speaker_evidence['speaker_change_candidate'])}"
         if vad_evidence is not None:
             summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
         candidate = Percept(
@@ -683,6 +740,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "a4": a4,
             "c3_admission": c3,
             "temporal_voice": temporal_voice,
+            "speaker_change_evidence": speaker_evidence,
             "capture_authority": "CALLER_SUPPLIED_PCM16",
             "learning_authority": False,
             "action_authority": False,
