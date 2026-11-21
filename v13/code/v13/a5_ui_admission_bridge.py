@@ -182,7 +182,7 @@ class UIObservationLease:
 
 @contextmanager
 def ui_observation_lease(runtime, observation, generation_id, consent_check,
-                         consent_guard, revocation_subscribe):
+                         consent_guard, revocation_subscribe, revoke_callback=None):
     """Hold the provider's revocation lock for capture/admission/context use.
 
     consent_guard must share its synchronization primitive with revocation and
@@ -206,7 +206,7 @@ def ui_observation_lease(runtime, observation, generation_id, consent_check,
         unsubscribe = revocation_subscribe(
             observation["source_id"], observation["consent_receipt_ref"],
             observation["capture_session_id"],
-            lambda: runtime.revoke_ui_observation(observation["source_id"]),
+            lambda: (revoke_callback or (lambda sid: revoke_ui_observation(runtime, sid)))(observation["source_id"]),
         )
     except Exception:
         raise PermissionError("UI revocation subscription is unavailable") from None
@@ -374,3 +374,126 @@ def ui_to_admission(observation, *, runtime, consent_lease, goal="", token_budge
         runtime, observation, consent_lease=consent_lease,
         goal=goal, token_budget=token_budget, priority=priority,
     )
+
+
+def revoke_ui_observation(runtime, source_id):
+    """Tombstone one A5 UI source and remove every derived packet/cache reference."""
+    if type(source_id) is not str or not source_id:
+        raise ValueError("UI source id required")
+    subscriptions = getattr(runtime, "_a5_ui_unsubscribe", None)
+    unsubscribe = subscriptions.pop(source_id, None) if type(subscriptions) is dict else None
+    cache = getattr(runtime, "_a5_ui_context_cache", None)
+    store = getattr(runtime, "store", None)
+    if store is None:
+        if callable(unsubscribe):
+            unsubscribe()
+        return {"source_tombstoned": False, "packets_deleted": 0, "cache_cleared": False, "blob_removed": False}
+    blob_hash = None
+    source_tombstoned = False
+    active = 1
+    deleted_ids = []
+    try:
+        with store.tx() as connection:
+            row = connection.execute(
+                "SELECT hash,deleted FROM sources WHERE id=? AND kind='A5_UI_EVENT'",
+                (source_id,),
+            ).fetchone()
+            if row:
+                blob_hash = row["hash"]
+                source_tombstoned = row["deleted"] == 0
+
+                def contains_source(value):
+                    if isinstance(value, dict):
+                        if value.get("source_id") == source_id:
+                            return True
+                        return any(contains_source(child) for child in value.values())
+                    if isinstance(value, list):
+                        return any(contains_source(child) for child in value)
+                    return False
+
+                for packet_row in connection.execute("SELECT id,payload FROM packets").fetchall():
+                    try:
+                        payload = __import__("json").loads(packet_row["payload"])
+                    except (TypeError, ValueError):
+                        continue
+                    if contains_source(payload):
+                        deleted_ids.append(packet_row["id"])
+                for packet_id in set(deleted_ids):
+                    connection.execute("DELETE FROM packets WHERE id=?", (packet_id,))
+                connection.execute(
+                    "UPDATE sources SET deleted=1 WHERE id=? AND kind='A5_UI_EVENT' AND deleted=0",
+                    (source_id,),
+                )
+                active = connection.execute(
+                    "SELECT COUNT(*) FROM sources WHERE hash=? AND deleted=0",
+                    (blob_hash,),
+                ).fetchone()[0]
+    except BaseException:
+        if callable(unsubscribe) and type(subscriptions) is dict:
+            subscriptions[source_id] = unsubscribe
+        raise
+    cache_cleared = cache.pop(source_id, None) is not None if type(cache) is dict else False
+    if callable(unsubscribe):
+        unsubscribe()
+    blob_removed = False
+    if blob_hash and active == 0:
+        blob = Path(store.home) / "data/blobs" / blob_hash
+        try:
+            blob.unlink(missing_ok=True)
+            blob_removed = not blob.exists()
+        except OSError:
+            pass
+    return {
+        "source_tombstoned": source_tombstoned,
+        "packets_deleted": len(set(deleted_ids)),
+        "cache_cleared": cache_cleared,
+        "blob_removed": blob_removed,
+    }
+
+
+class A5UIRuntimeAdapter:
+    """Perception adapter that consumes an existing Runtime/Store/A4 instance."""
+
+    def __init__(self, runtime):
+        self.runtime = runtime
+        for name in ("_a5_ui_context_cache", "_a5_ui_unsubscribe"):
+            value = getattr(runtime, name, None)
+            if value is None:
+                setattr(runtime, name, {})
+            elif type(value) is not dict:
+                raise ValueError("Runtime A5 UI state is invalid")
+
+    @contextmanager
+    def lease(self, observation, consent_check, consent_guard, revocation_subscribe):
+        event = getattr(self.runtime, "turn_event", None)
+        if not isinstance(event, dict) or type(event.get("brain_generation_id")) is not str:
+            raise ValueError("UI observation requires an active Runtime turn")
+        with ui_observation_lease(
+            self.runtime, observation, event["brain_generation_id"],
+            consent_check, consent_guard, revocation_subscribe,
+            revoke_callback=self.revoke,
+        ) as grant:
+            yield grant
+
+    def ingest(self, observation, grant, goal="", token_budget=512, priority=0):
+        return consume_ui_observation(
+            self.runtime, observation, consent_lease=grant,
+            goal=goal, token_budget=token_budget, priority=priority,
+        )
+
+    def context(self, event_id):
+        if type(event_id) is not str or not event_id:
+            raise ValueError("event id required")
+        return tuple(
+            packet for packet in self.runtime._a5_ui_context_cache.values()
+            if packet.get("event_id") == event_id
+            and packet.get("modality") == "ui"
+            and packet.get("finality") == "FINAL"
+        )
+
+    def revoke(self, source_id):
+        return revoke_ui_observation(self.runtime, source_id)
+
+    def close(self):
+        """Call before Runtime Store close to revoke every outstanding UI session."""
+        return tuple(self.revoke(source_id) for source_id in list(self.runtime._a5_ui_unsubscribe))
