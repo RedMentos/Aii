@@ -590,7 +590,7 @@ class SleepRuntime:
     def __init__(self,runtime,clock=time.time,monotonic=time.monotonic):
         from .scheduler import EventScheduler, ACTIONS
         # Trusted, fixed G13 extension; not arbitrary user/model commands.
-        ACTIONS.add('lab_check')
+        ACTIONS.update({'lab_check','jepa_update'})
         from .plasticity import Plasticity
         self.r=runtime;self.clock=clock;self.monotonic=monotonic;self.age=None
         try:
@@ -603,6 +603,97 @@ class SleepRuntime:
         self.cycle.runtime=runtime  # WP-T11 homeostasis reads the learned heads through their runtime controllers
         self.scheduler.recover();self.last_tick=-1e18;self.last_resource=None
         runtime.store.set_meta('sleep_boot_wall',clock())  # idle clock restarts with the process
+    def schedule_world_jepa(self,event_id=None):
+        """Queue the latest observed T8 outcome for an idle JEPA batch."""
+        from .world_jepa_runtime import permission_state
+        observed={'FINAL','FAILED','ERROR','DEADLINE','REJECTED'}
+        if event_id is None:
+            row=self.r.store.one(
+                "SELECT event_id,status FROM actions WHERE outcome IS NOT NULL "
+                "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
+                "ORDER BY created DESC LIMIT 1")
+        else:
+            if type(event_id) is not str or not event_id:
+                raise ValueError('event_id')
+            row=self.r.store.one(
+                "SELECT event_id,status FROM actions WHERE event_id=? AND outcome IS NOT NULL "
+                "ORDER BY created DESC LIMIT 1",(event_id,))
+        if not row or row['status'] not in observed:
+            return None
+        event_id=row['event_id']
+        cursor,_=self.r.store.state('v14.world_jepa.sleep_cursor',{'last_event_id':None})
+        if type(cursor) is dict and cursor.get('last_event_id')==event_id:
+            return None
+        gates=permission_state(self.r.store)
+        state,_=self.r.store.state('v14.world_jepa.store_consumer',None)
+        active=(type(state) is dict and type(state.get('active')) is dict)
+        if not (gates['learning_enabled'] is True and gates['optimizer_permission'] is True) and not active:
+            return None
+        from .scheduler import ACTIONS
+        ACTIONS.add('jepa_update')
+        # One pending event coalesces a burst of user turns. The consumer scans
+        # the persistent T8 cursor in bounded pages and requeues only if needed.
+        return self.scheduler.post(
+            'IDLE',origin='SYSTEM',action='jepa_update',
+            payload={'event_id':event_id},
+            dedup='v14-world-jepa',ttl=86400)
+    def _run_world_jepa(self,event_id,limit=64):
+        """Run one bounded, source-verified JEPA page and exact-event SHADOW receiver."""
+        if type(event_id) is not str or not event_id:
+            raise ValueError('event_id')
+        result={'status':'NO_COMMITTED_OUTCOME','event_id':event_id,
+                'decision_authority':'NONE','dispatch':False,
+                'native_body_consumed':False,'native_body_weights_changed':False,
+                'runtime_hook_wired':True}
+        try:
+            action=self.r.store.one(
+                "SELECT id,status,outcome FROM actions WHERE event_id=? AND outcome IS NOT NULL ORDER BY created DESC LIMIT 1",
+                (event_id,))
+            if not action:
+                return result
+            action_status=action['status']
+            observed={'FINAL','FAILED','ERROR','DEADLINE','REJECTED'}
+            if action_status not in observed:
+                result.update(status='CENSORED_OUTCOME_SKIPPED',action_status=action_status)
+                self.r.store.log('v14_world_jepa_postcommit',event_id,
+                                 {'action_status':action_status,'learning_status':'SKIPPED',
+                                  'planner_status':'SKIPPED','decision_authority':'NONE'})
+                return result
+            from .world_jepa_runtime import consume_after_commit
+            from .world_jepa_planner import consume_world_planner_shadow
+            learning=consume_after_commit(self.r.store,self.r.home,limit=limit)
+            planner=consume_world_planner_shadow(self.r.store,event_id,home=self.r.home)
+            result.update(status='POSTCOMMIT_PROCESSED',action_status=action_status,
+                          learning=learning,planner=planner)
+            if learning.get('status')=='ERROR':
+                result['status']='ERROR'
+            elif planner.get('status') in {'SOURCE_OR_RECEIPT_REJECTED','NO_COMMITTED_OUTCOME'}:
+                result['status']='PARTIAL'
+            metrics=learning.get('metrics') if type(learning) is dict else None
+            metrics=metrics if type(metrics) is dict else {}
+            self.r.store.log('v14_world_jepa_postcommit',event_id,{
+                'action_status':action_status,
+                'learning_status':learning.get('status','UNKNOWN'),
+                'planner_status':planner.get('status','UNKNOWN'),
+                'checkpoint_sha256':planner.get('checkpoint_sha256') or learning.get('checkpoint_sha256'),
+                'parameter_delta_norm':metrics.get('parameter_delta_norm',0.0),
+                'ema_target_delta_norm':metrics.get('ema_target_delta_norm',0.0),
+                'verified_receipts':learning.get('verified_receipts',0),
+                'native_body_weights_changed':False,
+                'decision_authority':'NONE',
+            })
+            if result['status']!='ERROR' and learning.get('has_more') is not True:
+                cursor,version=self.r.store.state('v14.world_jepa.sleep_cursor',{'last_event_id':None})
+                if type(cursor) is not dict:
+                    cursor={}
+                cursor['last_event_id']=event_id
+                self.r.store.set_state('v14.world_jepa.sleep_cursor',cursor,expected=version)
+            return result
+        except Exception as exc:
+            try:self.r.store.log('v14_world_jepa_postcommit_error',event_id,
+                                 {'error':type(exc).__name__,'decision_authority':'NONE'})
+            except Exception:pass
+            return result|{'status':'ERROR','error':type(exc).__name__}
     def resource_state(self):
         try:return self.r.guard.update(self.r.resources())
         except Exception:return 'CRITICAL'  # unknown resources: do not start background work
@@ -616,6 +707,9 @@ class SleepRuntime:
         self.last_tick=self.monotonic()
         if not self.r.idle():return None
         state=self.resource_state()
+        try:self.schedule_world_jepa()
+        except Exception as exc:
+            self.r.store.log('v14_world_jepa_schedule_error',None,{'error':type(exc).__name__})
         if state!=self.last_resource:
             if self.last_resource is not None:self.scheduler.post('RESOURCE_CHANGE',payload={'from':self.last_resource,'to':state})
             self.last_resource=state
@@ -652,6 +746,25 @@ class SleepRuntime:
         if not queued:self.scheduler.complete(e['id'],'RETRY',{'reason':'BUSY'})
         self.r.wake.set();return e
     def job(self,e):
+        if e['action']=='jepa_update':
+            payload=e.get('payload') or {}
+            event_id=payload.get('event_id') if type(payload) is dict else None
+            try:
+                out=self._run_world_jepa(event_id,limit=64)
+            except BaseException as exc:
+                self.scheduler.complete(e['id'],'FAILED',{'error':type(exc).__name__})
+                raise
+            learning=out.get('learning') if type(out) is dict else None
+            planner=out.get('planner') if type(out) is dict else None
+            result={'status':out.get('status') if type(out) is dict else 'ERROR',
+                    'learning_status':learning.get('status') if type(learning) is dict else None,
+                    'planner_status':planner.get('status') if type(planner) is dict else None}
+            self.scheduler.complete(e['id'],'FAILED' if result['status']=='ERROR' else 'DONE',result)
+            if type(learning) is dict and learning.get('has_more') is True:
+                continuation=bool(self.schedule_world_jepa(event_id))
+                result['continuation_scheduled']=continuation
+                if type(out) is dict:out['continuation_scheduled']=continuation
+            return out
         if e['action']=='lab_check':
             from .lab_native_cycle import run
             try:out=run(self.r)
