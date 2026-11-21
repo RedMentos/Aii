@@ -152,16 +152,17 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "Perception PR #2161 head 02f58e2f3f7789dd4bfbeb96d75d6fc71465cffb contains RAW EAR V3 pause-robust voiced-only prosody. Dedicated tests: 12 passed on Python 3.11 and 12 passed on Python 3.13; staged-runtime 240 passed / 10 skipped / 47 subtests; integrated-regression 415 passed / 3 skipped / 58 subtests; privacy scan PASS. validate-additive rejects the existing producer/test edit, as expected. The PR is stale/dirty relative to current release c76a: 26 ahead / 25 behind, merge base 034a941694b9e8994d1bfe5cd781d27b943e1ed0. Exact V3 producer blob is 0e328d14883840190937f0fef24a8e895ba7261c. No microphone capture or Redmi proof.",
-      "next_step": "Perception: rebase/retarget #2161 onto current release and synchronize shared board/workplan edits with Boss. Core: update #2158's exact V3 source pin and consumer contract. Keep PCM caller-supplied and process-local; do not call the adapter VAD, ASR, speech learning or microphone capture.",
+      "proof_environment": "LOCAL_LINUX_SYNTHETIC_13/13_PASS; CI_PY3.11_AND_3.13_FOCUSED_PASS; PRIVACY_SCAN_PASS; STAGED_INTEGRATED_PENDING; SAFE_ADDITIVE_FAIL_EXPECTED; REDMI_UNVERIFIED",
+      "next_step": "Boss review PR #2177 on exact release base 04635a5522ab095f79544e23d9aa0330b0c9ff7a. Core updates #2158 audio_voice_cues.py pin to V3 blob 0e328d14883840190937f0fef24a8e895ba7261c after review, preserves separate text/audio modalities, and proves normal Runtime plus B1/B2→C4→C3 consumption. Research compares native mid-layer capture on exact pinned b10964; no model swap.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 07:49 CET",
+      "last_checkpoint": "2026-11-21 08:22 CET",
       "latest_candidate_pr": {
-        "pr": 2155,
-        "head_sha": "40e1f877157df57643267470bab3aff39c1eaaee",
-        "merge_commit_sha": "c0cedbde718ede6107f4df1f1bf9c784df4e00cf",
-        "ci": "PASS_44862523075_8_TESTS_AND_44862523082_240_STAGED_415_INTEGRATED",
-        "scope": "additive RAW EAR acoustic-cue adapter only; no normal Runtime consumer"
+        "pr": 2177,
+        "head_sha": "1c4bb678025b421b98766cbce61570eec4683a52",
+        "producer_blob": "0e328d14883840190937f0fef24a8e895ba7261c",
+        "test_blob": "96b00b2e1b6340e2a61a8b6f230be8747889ab38",
+        "ci": "FOCUSED_PY311_12_PASS_PY313_12_PASS_PRIVACY_PASS_STAGED_INTEGRATED_PENDING",
+        "scope": "caller-supplied PCM16 -> AudioPercept voice cues -> A4 attention -> C3 admission; no mic/ASR/VAD/runtime microphone or B1/B2 delivery"
       }
     },
     {
