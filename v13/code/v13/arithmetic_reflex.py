@@ -7,7 +7,7 @@ import re
 from fractions import Fraction
 
 _PATTERN = re.compile(
-    r"\s*(?:(?:what\s+is|what's|was\s+ist|berechne|calculate)\s+)?"
+    r"\s*(?:(?:what\s+is|what's|was\s+ist|berechne|calculate|compute|wie\s+viel\s+ist|wieviel\s+ist)\s+)?"
     r"([+-]?\d{1,8}\s*[+\-*/]\s*[+-]?\d{1,8})\s*[?=]?\s*",
     re.IGNORECASE,
 )
@@ -21,6 +21,17 @@ def exact_arithmetic(text):
     intentionally NOT a general math parser or a claim about model reasoning.
     """
     if type(text) is not str or len(text) > 96:
+        return None
+    explicit = re.match(
+        r"\s*(?:what\s+is|what's|was\s+ist|berechne|calculate|compute|wie\s+viel\s+ist|wieviel\s+ist)\s+",
+        text,
+        re.IGNORECASE,
+    )
+    date_shape = re.fullmatch(
+        r"\s*(?:\d{4}\s*-\s*\d{1,2}|\d{1,2}\s*-\s*\d{1,2})\s*\??\s*",
+        text,
+    )
+    if date_shape and explicit is None:
         return None
     match = _PATTERN.fullmatch(text)
     if not match:
