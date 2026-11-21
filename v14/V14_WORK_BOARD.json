@@ -295,7 +295,7 @@
       "wired": "SYNTHETIC_OFFER_PACKETS_TO_NORMAL_STAGE_C4_AND_C3_CONTEXT",
       "tested_synthetic": "PR2228_STAGED_251_10SKIP_47; INTEGRATED_424_3SKIP_58; SOURCE_QUOTE_TO_SPAN_TO_FOCAL_TO_C3",
       "tested_android": "HISTORICAL_FAIL_ISSUE_1904",
-      "active": "NOT_ACCEPTED_NO_NATIVE_MODEL_OR_REDM I_PROOF",
+      "active": "NOT_ACCEPTED_NO_NATIVE_MODEL_OR_REDMI_PROOF",
       "evidence": "Distinct B1/B2 roles remain. PR #2228's synthetic Runtime consumer now exercises exact quote→SourceRef→C4 coalition→selected offer→C3 context on the normal pinned stage/deployer path. This verifies wiring with synthetic runners only; native model offer quality, measured 2+2, latency/RSS and Redmi delivery remain unproven. P0 #1904 remains open."
     },
     {
