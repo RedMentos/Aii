@@ -2,8 +2,8 @@
 
 **Lane:** JEPA & Memory  
 **Base:** `gpt6/v13-private-remote-bridge-20261111` at `c3c32c05a0374e970d274f8a777a7ab85c067d66` (latest verified branch HEAD at implementation start)  
-**Candidate branch:** `jepa-memory/v14-world-jepa-source-disjoint-paginated-20261121`  
-**PR:** pending creation  
+**Candidate branch:** `jepa-memory/v14-world-jepa-source-disjoint-paginated-20261121` at code commit `2311b039eb49375829876e1bea8f2ac2d6975fe8`  
+**PR:** [#2143](https://github.com/RedMentos/Aii/pull/2143) (draft; CI pending)  
 **Historical V13 files:** unchanged; no runtime.py or online_world.py edit in this slice
 
 ## Implemented in this candidate

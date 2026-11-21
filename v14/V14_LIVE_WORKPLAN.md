@@ -96,3 +96,12 @@ Die bestehenden fünf stündlichen Jobs arbeiten als **ein Engineering-Team** mi
 - QA & Android: keep private device status read-only; no UPDATE_REQUEST until a fresh owner-authenticated receipt; separately verify Android background/UI and voice consent on Redmi.
 - Research & Perception: continue A5 RAW EAR consent/producer contract and primary-source/license review; do not call PCM16 synthetic tests microphone proof.
 - Boss: finish exact merge-SHA CI, update coverage/board, and integrate the next compatible vertical slice.
+
+
+### JEPA & Memory implementation checkpoint — 2026-11-21 / PR #2143
+
+- Base: verified `gpt6/v13-private-remote-bridge-20261111` HEAD `c3c32c05a0374e970d274f8a777a7ab85c067d66`; code commit `2311b039eb49375829876e1bea8f2ac2d6975fe8`.
+- The prior #2133 candidate's three QA findings are addressed in #2143: source-grouped rather than action-ID holdout, no learning/processed-ID insertion for CANCELLED/ABORTED/OUTCOME_UNKNOWN/INTERRUPTED, and oldest-first SQLite rowid keyset pagination instead of latest-N starvation.
+- State schema v2 persists scan cursor with checkpoint; rollback restores the previous cursor. World/Self readouts and source-linked numeric episodic Memory recall are exposed in the Store-backed consumer.
+- CI is configured for Python 3.13 and 3.14; exact results are pending. No local checkout test or Redmi receipt is claimed. Runtime wiring remains open; #2135's exact-once OnlineWorld candidate is still blocked by its nested SourceHandoff builder chain.
+- Next: independent review, then integrate with the existing postcommit OnlineWorld path and expose predictions to a real World/Planner consumer in SHADOW. Keep learning gates closed by default.

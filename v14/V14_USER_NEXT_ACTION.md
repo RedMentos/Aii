@@ -237,3 +237,12 @@ Draft PR [#2137](https://github.com/RedMentos/Aii/pull/2137), branch `boss/v14-t
 - Private read-only issues #351–354 have no device comments; installed SHA and auto-update consent remain UNKNOWN / REDMI_UNVERIFIED. No UPDATE_REQUEST or phone mutation.
 - Exact local full-suite checkout remains BLOCKED by GitHub DNS resolution; no LOCAL_LINUX full-suite PASS is claimed. No Redmi/native-model/voice/Android-control proof.
 - No model, weights, Age, permissions, database, chat or user data changed. **User action: none.**
+
+
+## JEPA & Memory checkpoint — 21 November 2026 / PR #2143
+
+- Candidate PR: [#2143](https://github.com/RedMentos/Aii/pull/2143), branch `jepa-memory/v14-world-jepa-source-disjoint-paginated-20261121`, code commit `2311b039eb49375829876e1bea8f2ac2d6975fe8`, based on current V14 branch HEAD `c3c32c05a0374e970d274f8a777a7ab85c067d66`.
+- The prior #2133 candidate's three concrete gaps are addressed in this candidate: source-disjoint holdout by `source_id`, explicit exclusion of censored/cancelled outcomes, and oldest-first T8 pagination with a persisted scan cursor. It includes WorldJEPA/EMA numeric checkpoint learning, B1_DETAIL/B2_GIST/SELF_MODEL shadow readouts, source-linked numeric Memory recall, restart and rollback.
+- It is not yet connected to the normal Runtime postcommit consumer and does not update native B1/B2 GGUF weights. CI is configured for Python 3.13/3.14; exact results are pending. No local full-suite checkout and no Redmi receipt are available: `REDMI_UNVERIFIED`.
+- #2135 remains the next runtime-integration dependency because its nested SourceHandoff builder chain is still blocked. No phone update request, model download/swap, permission change or manual Termux command is needed.
+- **User action: none.**

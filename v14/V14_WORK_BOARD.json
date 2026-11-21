@@ -72,16 +72,16 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "PR #2137 merged as 3db6d1f00fceab9e7755bc8f4c25882ef7f19258. Exact PR-head V14 temporal/real SQLite Store workflow PASS (44846908247), staged-runtime and integrated-regression PASS (44846908186); merge-commit push staged-runtime PASS, integrated-regression IN_PROGRESS (44847399407). Component verifies Store-bound ActionOutcome, temporal expectation and bounded persistent scalar readout; learning defaults OFF.",
-      "next_step": "Connect the T8 bridge to the existing automatic Runtime postcommit path, compose with #2135 exactly-once OnlineWorld persistence, then route a source-bound World prediction into a real decision consumer in SHADOW with held-out utility, no-predictor/replay-only ablations, restart and rollback. Do not call this full JEPA or native B1/B2 learning.",
+      "proof_environment": "PR #2137 is merged at 3db6d1f00fceab9e7755bc8f4c25882ef7f19258; all 13 merge-push workflows completed PASS (including V14 T8 temporal bridge and staged/integrated regression). New JEPA/Memory PR #2143 (code commit 2311b039eb49375829876e1bea8f2ac2d6975fe8) adds source-disjoint holdout, censored-status exclusion, oldest-first pagination, cursor/restart/rollback, SELF and Memory shadow consumers; targeted Python 3.13/3.14 CI pending. No local checkout test; REDMI_UNVERIFIED.",
+      "next_step": "Read exact #2143 Python 3.13/3.14 CI and review. Then integrate the paginated WorldJEPA consumer into the existing Runtime.online_world_update -> OnlineWorld.update postcommit path, composing with #2135's exactly-once persistence after its nested SourceHandoff builder chain is repaired. Route a source-bound prediction to a real World/Planner consumer in SHADOW and measure no-predictor/replay-only ablations. Keep learning/optimizer gates closed by default.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-21 Boss: #2137 merged; PR-head V14 and V13 staged/integrated tests PASS; exact merge push integration still pending. OnlineWorld.predict has no cognition/world/executive consumer.",
+      "last_checkpoint": "2026-11-21 JEPA/Memory PR #2143: source-disjoint T8 learning, censoring and oldest-first cursor implemented; CI pending; not Runtime-wired; no Redmi proof.",
       "latest_candidate_pr": {
-        "pr": 2137,
-        "merge_sha": "3db6d1f00fceab9e7755bc8f4c25882ef7f19258",
-        "pr_head": "a3e19370d7fefe500e8edebf6942624207ff2865",
-        "ci": "PR-head V14 temporal PASS 44846908247; PR-head staged/integrated PASS 44846908186; merge push staged-runtime PASS, integrated-regression IN_PROGRESS 44847399407",
-        "scope": "Store-verified scalar temporal receiver; no normal Runtime consumer, no native JEPA/B1/B2 body-weight change, optimizer gate closed"
+        "pr": 2143,
+        "branch": "jepa-memory/v14-world-jepa-source-disjoint-paginated-20261121",
+        "code_commit_sha": "2311b039eb49375829876e1bea8f2ac2d6975fe8",
+        "ci": "PENDING_PY313_PY314",
+        "scope": "Source-verified oldest-first T8 -> WorldJEPA/EMA -> B1/B2/SELF shadow readouts + source-linked numeric Memory recall; not Runtime-wired or Redmi-verified"
       }
     },
     {
