@@ -1637,3 +1637,26 @@ AOSP Bionic status lists `renameat2` as a libc addition from Android R/API 30: h
 | Release / Android | Exact merged release branch head f279286a4453248004c670fcaabecd85da6ab299; PR-head tests for #2228 pass. | Merge push CI is 34/34 success, 0 failed, 0 pending; all associated workflows are SUCCESS. No authenticated owner-read receipt; installed SHA/updater consent UNKNOWN; REDMI_UNVERIFIED. |
 
 Historical 1,255-heading inventory and V13 appendix bytes remain unchanged. Semantic clause→code→consumer→test→environment→rollback mapping remains incomplete; no Canon family is accepted by this one vertical slice.
+
+
+## 2026-11-21 17:10 CET — V14-006 current A0–A5 / RAW EAR evidence update
+
+The older rows above are historical checkpoints. This section is the current status for the Perception slice; it does not upgrade whole-system acceptance.
+
+| Canon family | Current status | Exact evidence | Still missing |
+|---|---|---|---|
+| A0/A1 text ingress, segmentation, SourceRef | WIRED_SYNTHETIC (existing path) | Prior text ingress/SourceRef tests and current staged/integrated CI on PR #2233 | Full multimodal A0–A5 acceptance and Android-native ingress |
+| A4 audio salience / attention | WIRED_SYNTHETIC | PR #2233 tested code tree `17f273395a869fd7469110773a5fe777a522909b`; 53 RAW EAR tests on Python 3.11 and 3.13 exercise bounded acoustic/prosody features into the A4 controller | Calibrated real microphone input, live Android consent lifecycle, utility/ablation on real speech |
+| A5 RAW EAR / audio PerceptPacket | WIRED_SYNTHETIC | Caller-supplied mono PCM16 (bounded to <=1 s) → source-bound PerceptPacket + temporal voice evidence + transactional Store; 29 consent/revocation tests; provenance, reset and rollback negatives | Microphone/MediaProjection-style Android permission path, streaming lifecycle, native device measurement |
+| Optional Silero VAD adapter | WIRED_SYNTHETIC (adapter only) | Explicit caller-owned ONNX session with local path + SHA/revision checks; 53 tests include fake-session streaming state/reset; no network download | Real Silero weights/runtime inference, ONNX Runtime ARM64/Bionic packaging, RSS/latency/battery on Redmi |
+| RAW EAR vs WebRTC/libfvad comparison | NATIVE_LINUX_PROOF (GitHub CI only) | Python 3.13/3.14 comparator 8/8; pinned libfvad native build/check 13 PASS / 0 FAIL / 0 ERROR per matrix job | Local Linux checkout/measurement, licensed speech-corpus evaluation, Android/Termux native ABI and latency |
+| A5 → B1/B2/C3 normal Runtime consumer | ISOLATED_MOCK / STAGED_CANDIDATE | Core #2200 uses synthetic PCM and fake B1/B2/C3 runners; it is not merged. QA #2211 still records derived-context tombstone/cache and post-save/pre-generation revocation failures | Rebase Core onto #2233; fix non-reentrant Store lease use; tombstone derived audio source + clear cache; hold provider lease through full C3 generation; exact negative tests |
+| A5 vision/video/sensors | ISOLATED_MOCK | Existing lab scaffolds only | Permissioned Android image/video/sensor feed, timed PerceptPacket and downstream consumers |
+| VOICE_AUDIO / speech effector / full duplex | NOT_IMPLEMENTED (full path) | RAW EAR supplies acoustic metadata only; no ASR transcript is treated as the ear | Microphone capture, separate trainable speech decoder/vocoder, TTS effector, timestamps, barge-in/full duplex and source-bound voice learning |
+| Native B1/B2/C3 model quality, learned cross-organ latent coupling | NOT_IMPLEMENTED / NOT_VERIFIED | No native model tokens/hidden-state exchange or numeric cross-organ weight proof in this slice | Native B1/B2/C3 output, trained latent projector/receiver, before/after/retention/restart and Redmi evidence |
+
+**Exact CI tree:** PR #2233 code/test SHA `17f273395a869fd7469110773a5fe777a522909b`: consent 29 passed; RAW EAR 53 passed on CPython 3.11 and 3.13; VAD comparator 8/8 on 3.13/3.14 and native Linux libfvad 13 PASS per job; staged 251 passed / 10 skipped / 47 subtests; integrated 424 passed / 3 skipped / 58 subtests; privacy/model-lab/offline-bridge-security PASS. Strict safe-additive failed by policy (existing Runtime/workflow paths), no bypass; queue status `review_only_paths`.
+
+**Environment:** GitHub-hosted Linux CI only. Exact local checkout/compile/pytest BLOCKED because this runner cannot resolve github.com. **REDMI_UNVERIFIED / NOT_RELEASED.** No microphone capture, model download/swap, permission change, Age change, weight update or device action. Whole-system status remains NOT_ACCEPTED.
+
+**Next owner:** Boss review of PR #2233; Core owns the downstream A5→B1/B2/C3 consumer and revocation fixes; QA owns independent negative controls. Keep all audio capture and learning gates OFF until separately authorized and measured.
