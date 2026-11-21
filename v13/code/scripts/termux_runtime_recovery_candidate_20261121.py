@@ -8,9 +8,9 @@ import importlib.util
 from pathlib import Path
 
 BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
-BASE_BUILDER_SHA256 = "16ba5fc3a6535c737502151a0a6362f067acedcd7102425086df4721b071b34a"
+BASE_BUILDER_SHA256 = "fba0b8626a6ae857dd737dbf6a64337f3fd0f3b6eed71cb0a35fc3155b6273cf"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
-AUDIO_BUILDER_SHA256 = "20c1c482b44ca36cf8ccc1ebb7ec41ff0683f31014cbb12ea659283e7b75b68f"
+AUDIO_BUILDER_SHA256 = "b393edecf0177e756ff1ad25a548e464573c80427d69bcffe56e239574ebdc62"
 
 
 def _load(code_dir, relative, expected, label):
