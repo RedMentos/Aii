@@ -15,6 +15,7 @@ on:
       - 'v13/code/v13/native_offer_prompt_receipt.py'
       - 'v13/code/v13/runners.py'
       - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
+      - 'v14/V14_USER_NEXT_ACTION.md'
       - '.github/workflows/v14-core-c4-c3-consumption.yml'
   pull_request:
     branches:
@@ -30,6 +31,7 @@ on:
       - 'v13/code/v13/native_offer_prompt_receipt.py'
       - 'v13/code/v13/runners.py'
       - 'v13/code/tests/test_v14_causal_stream_offer_receipt.py'
+      - 'v14/V14_USER_NEXT_ACTION.md'
       - '.github/workflows/v14-core-c4-c3-consumption.yml'
 
 jobs:
