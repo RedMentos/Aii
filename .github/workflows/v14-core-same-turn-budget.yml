@@ -4,13 +4,23 @@ on:
   push:
     branches:
       - core/v14-same-turn-budget-admission-20261122
+      - boss/v14-same-turn-budget-pin-chain-20261122
+      - core/v14-c4-c3-consumption-receipt-20261122
     paths:
       - v13/code/v13/native_turn_budget.py
       - v13/code/tests/test_native_turn_budget.py
+      - v13/code/scripts/integrated_observer_fair_budget_candidate_20261116.py
+      - v13/code/scripts/stage_integrated_candidate.py
+      - v13/code/v13/runtime_deploy.py
+      - v13/code/tests/test_observer_fair_budget_stage_20261116.py
+      - v13/code/tests/observer_fair_budget_disposable_cases_20261116.py
       - .github/workflows/v14-core-same-turn-budget.yml
   pull_request:
     branches:
       - boss/v14-core-perception-store-audio-integration-20261121
+      - core/v14-same-turn-budget-admission-20261122
+      - boss/v14-same-turn-budget-pin-chain-20261122
+      - core/v14-c4-c3-consumption-receipt-20261122
     paths:
       - v13/code/v13/native_turn_budget.py
       - v13/code/tests/test_native_turn_budget.py
@@ -33,7 +43,18 @@ jobs:
         run: python -m pip install --upgrade pytest==9.2.0 numpy==2.2.6 psutil PyYAML
       - name: Compile exact budget consumer and tests
         working-directory: v13/code
-        run: python -m py_compile v13/native_turn_budget.py tests/test_native_turn_budget.py
+        run: >-
+          python -m py_compile
+          v13/native_turn_budget.py
+          scripts/integrated_observer_fair_budget_candidate_20261116.py
+          scripts/stage_integrated_candidate.py
+          v13/runtime_deploy.py
+          tests/test_native_turn_budget.py
+          tests/test_observer_fair_budget_stage_20261116.py
+          tests/observer_fair_budget_disposable_cases_20261116.py
       - name: Test budget policy and real Cognition.offer admission boundary
         working-directory: v13/code
-        run: python -m pytest -q tests/test_native_turn_budget.py
+        run: >-
+          python -m pytest -q
+          tests/test_native_turn_budget.py
+          tests/test_observer_fair_budget_stage_20261116.py
