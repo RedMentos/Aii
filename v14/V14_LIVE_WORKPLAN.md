@@ -1497,3 +1497,27 @@ The authorized private owner-read relay returned and closed #627 PIPELINE_STATUS
 ### Run 20 CI poll — 2026-11-22T21:45:50Z
 
 On JEPA exact head `50e3c8d`, the changed-path compilation step is PASS on Python 3.13 and 3.14. The temporal T8/JEPA/source-forget regression step remains IN_PROGRESS on both versions in run `45072681648`; no final temporal suite result is claimed. QA PR #2383 has completed all workflows and remains red: staged-runtime 21 failed / 230 passed / 10 skipped / 2 errors / 41 subtests; integrated-regression 1 failure; optimizer-resume integrated-builder hash failure; two-checkout migration PARTIAL. No rebase or release until QA and Boss current-base matrices are green.
+
+### JEPA & Memory Run 21 — 2026-11-22T22:34:04Z
+
+**Current code branch / PR:** #2372, `jepa-memory/v14-temporal-exact-forget-retention-20261122-run14`, exact head `daa42a41c1e4a448c77da4312078744069acb830`, DRAFT / NOT_RELEASED.
+
+**New executable regressions:**
+- Commit `a26599c315cdb8cd7944c263eb9575e6d4f380c4` removes the fabricated B1/B2 accepted-gate fixture from the actual `Cognition.offer` prompt test. Both roles must pass `receiver_utility_gate` using persisted source/session-disjoint holdout metrics from the trained checkpoint. A rejection now fails with the measured metrics instead of manufacturing success.
+- Commit `daa42a41c1e4a448c77da4312078744069acb830` adds an enabled-permission `SleepRuntime._run_world_jepa` postcommit regression. It exercises committed T8 ActionOutcomes through the real base + temporal consumers and asserts a persisted temporal checkpoint, nonzero predictor and EMA-target deltas, persisted optimizer state, and no native B1/B2 body-weight modification.
+
+**Tests / exact environment:**
+- Parent head `beda653d49b8306cf2364eb5a7d25332373b302b`: temporal suite **15/15 PASS** on Python 3.13 (run `45074147629`) and Python 3.14 (run `45074147681`). This does not include the two newest regressions.
+- Exact head `daa42a4`: temporal run `45078449834`, optimizer-resume `45078447785`, staged/integrated `45078447802`, owner-read `45078447747` are all **QUEUED** at readback. No current-head PASS is claimed.
+- LOCAL_LINUX full repository test: **BLOCKED / NOT_RUN**. No Aii checkout is mounted; `git ls-remote` fails with `Could not resolve host: github.com`. Do not substitute CI for local execution.
+
+**Consumer / user effect:** The synthetic Store-backed path now refuses to insert a temporal B1/B2 readout into `Cognition.offer` unless the actual trained receiver metrics pass the disjoint-holdout gate. The positive SleepRuntime test will verify that an enabled committed T8 outcome invokes both persistent learners. This is still synthetic Store/NumPy evidence; no native GGUF body weights, native cross-organ latent transfer, or Android runtime behavior is established.
+
+**Dependencies:** QA #2383 exact head `714a09eae1dc3a901a6adbc4effce67c25da910c` remains red (staged/integrated, Lab-Age, owner-read and optimizer-resume failures). Boss #2370 exact head `bae7d03196d98ac6dfebc0a2649faf257ba8308f` has its substantive exact-base matrix queued. No rebase or release until both dependency chains are green; JEPA has not edited QA-owned files.
+
+**Device:** Private V13OBS #115 updated `2026-11-22T22:17:26Z`: installed base `aed1d2b826290c95c70356b5d8b864b5ef382be4`, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE. B1 remains 4/4 failed with zero valid offers; B2 2/2 failed with zero valid offers. Last stored C3 turn: 38.945 s prefill, 2 generated tokens; correctness and semantic use remain unproven. #2372 is not installed. `REDMI_UNVERIFIED` for all JEPA changes.
+
+**Research:** R-093 records Ding et al., AISTATS/PMLR 2026: full replay can still forget when later noise overwhelms earlier signal; task order and signal strength matter in the paper's theoretical/synthetic setting. Keep uniform replay as baseline and test signal-aware/stratified replay only under matched steps, disjoint holdouts, invariant probes and starvation controls. No external code, weights or data imported. The separate WorldJEPA video repository is MIT for code but specifies a 325M V-JEPA2 encoder, 23M predictor, PyTorch and 8 GB minimum RAM; not a Redmi candidate and not adopted.
+
+**Next:** poll the exact `daa42a4` workflows; repair any actual SleepRuntime or measured receiver-gate failure rather than weakening the test. Once QA/Boss source chains are green, run matched-step replay-on/off, persistent-vs-reset, stable/gradual/abrupt/two-shift/return-to-A retention, parameter/EMA diffs, restart and rollback. No user action or device mutation is required now.
+
