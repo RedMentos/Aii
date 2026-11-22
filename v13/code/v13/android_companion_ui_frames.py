@@ -232,7 +232,7 @@ class AndroidCompanionFrameProvider:
         frame = bytearray(raw)
         digest = hashlib.sha256(frame).hexdigest()
         if len(frame) != body["frame_bytes"] or digest != body["frame_sha256"]:
-            frame[:] = b"\\x00" * len(frame)
+            frame[:] = b"\x00" * len(frame)
             raise FrameReceiptDenied("one-shot frame bytes do not match the signed receipt")
 
         observation = {
