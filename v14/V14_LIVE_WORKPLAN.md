@@ -1315,3 +1315,8 @@ Boss PR #2343 head `3585145ebbc0530817d4aeb216c3e75251e3f695`: 0 success / 27 qu
 | Native probe integrity #2350 | head `266822c`; 18/18 success | Core: diagnostic-only, stacked on #2332, not release-base and not a semantic latent receiver. Do not prioritize over P0 user-visible path. |
 
 **Learning/device boundary:** private #591 confirms c4eb82 installed and pipeline metadata UP_TO_DATE; later #593 HEALTH and #594 LEARNING_STATUS are UNAVAILABLE. No permanent body-weight update or cross-organ gradient is verified. The latest recorded turn remains slow and B1/B2 produce zero valid offers. No candidate deployment or user action occurred.
+
+
+## Android companion stack: integration decision — 2026-11-22T17:34:00Z
+
+The Android companion work is product-relevant and branch-local CI is green: #2271 16/16, #2347 8/8, #2342 2/2, #2344 11/11, #2348 7/7. It is **not** a release-compatible stack. Its deleted base branch resolves to `b931e94`, 106 commits ahead / 787 behind the current c4eb82 release from common ancestor `d3ac638`; the companion head `24e059d` is 129 ahead / 787 behind. It also changes existing `android_control.py` and `android_outcomes.py` APIs and adds new runtime/transport and Kotlin app files. Do not change PR base to release or merge this history wholesale. Core/QA must port only the companion app, transport, signed single-use receipts, durable pairing, action journal and readiness consumer onto exact c4eb82 APIs, preserve owner-read/update bridge and OS permission prompts, then run release-based tests. Android install/action remains UNVERIFIED until explicit user consent and real device receipt.
