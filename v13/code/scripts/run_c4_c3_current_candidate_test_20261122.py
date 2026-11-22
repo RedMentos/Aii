@@ -1,9 +1,8 @@
-"""Exercise the current pinned Runtime composition before the known postcommit guard.
+"""Run the C4 -> C3 regression on the exact pinned observer and Core overlays.
 
-This is a connected synthetic model test: real Runtime/SQLite/Focal/Cognition,
-real source-pinned base + observer + audio overlays, deterministic model stubs.
-It deliberately skips only include_postcommit overlays whose upstream pin-order
-failure is tracked separately on Boss #2288.
+This is a connected synthetic-model test over the real Runtime/SQLite/Focal/
+Cognition path. It intentionally does not claim the full production composer
+passes; Boss #2288 has a separate local-error pin-order failure.
 """
 import hashlib
 import importlib.util
@@ -16,8 +15,11 @@ import tempfile
 
 
 CODE = Path(__file__).resolve().parents[1]
-WRAPPER = CODE / "scripts/termux_runtime_recovery_candidate_20261121.py"
+OBSERVER = CODE / "scripts/integrated_observer_fair_budget_candidate_20261116.py"
+RECEIPT = CODE / "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
 TEST = CODE / "tests/test_v14_same_turn_c4_c3_consumption.py"
+OBSERVER_SHA256 = "15850e2498a8145bb451a7178b84f3023edcf3651970a60bd39bcc702d57fd4a"
+RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 IGNORED = ("__pycache__", "*.pyc", "*.db", "*.sqlite", "*.sqlite3",
            "*.gguf", "*.safetensors", "*.pt", "*.pth", "*.log")
 SOURCE_PATHS = (
@@ -27,17 +29,19 @@ SOURCE_PATHS = (
     "v13/observer_schedule.py",
     "v13/store.py",
     "scripts/integrated_observer_fair_budget_candidate_20261116.py",
-    "scripts/integrated_audio_context_candidate_20261121.py",
     "scripts/integrated_c4_c3_receipt_candidate_20261122.py",
-    "scripts/termux_runtime_recovery_candidate_20261112.py",
-    "scripts/termux_runtime_recovery_candidate_20261121.py",
 )
 
 
-def load_wrapper():
-    spec = importlib.util.spec_from_file_location("v14_core_runtime_wrapper", WRAPPER)
+def load_pinned(path, name, expected_sha256):
+    if path.is_symlink() or not path.is_file():
+        raise RuntimeError(name + " overlay missing or unsafe")
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != expected_sha256:
+        raise RuntimeError(name + " overlay SHA-256 mismatch")
+    spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None:
-        raise RuntimeError("current Runtime wrapper is not loadable")
+        raise RuntimeError(name + " overlay is not loadable")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -50,13 +54,17 @@ def source_hashes():
 
 def main():
     before = source_hashes()
-    wrapper = load_wrapper()
-    replacements = wrapper.build_sources(CODE, include_postcommit=False)
+    observer = load_pinned(OBSERVER, "v14_observer_fair_budget",
+                           OBSERVER_SHA256)
+    receipt = load_pinned(RECEIPT, "v14_core_c4_c3_receipt",
+                          RECEIPT_SHA256)
+    replacements = observer.apply_sources(CODE, {})
+    replacements = receipt.apply_sources(CODE, replacements)
     cognition = replacements.get("v13/cognition.py")
     if not isinstance(cognition, bytes) or b"c4_offer_context_ready" not in cognition:
-        raise RuntimeError("C4 receipt missing from composed Runtime")
+        raise RuntimeError("C4 receipt missing from composed Core Runtime")
     if before != source_hashes():
-        raise RuntimeError("composition mutated pinned source files")
+        raise RuntimeError("overlay composition mutated pinned source files")
 
     with tempfile.TemporaryDirectory(prefix="v14-c4-c3-runtime-") as folder:
         staged = Path(folder) / "runtime"
@@ -87,8 +95,8 @@ def main():
         sys.stderr.write(run.stderr)
         if run.returncode:
             raise SystemExit(run.returncode)
-    print("C4_C3_COMPOSED_RUNTIME_TEST PASS (synthetic runners; pre-postcommit composition)")
-
+    print("C4_C3_OBSERVER_OVERLAY_RUNTIME_TEST PASS (synthetic model runners)")
+    
 
 if __name__ == "__main__":
     main()
