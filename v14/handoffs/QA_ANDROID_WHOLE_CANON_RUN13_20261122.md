@@ -21,7 +21,7 @@
 
 PR #2347 head 955cb4b3c37f2c054bd0fc4d6e26177e2d41a365 adds startup/pending-path reconciliation for stale approval notifications after a durable terminal receipt. It serializes against submit/dispatch, preserves valid pending approvals, ignores unrelated channels/malformed tags, fails closed on Store/notification query errors, and never redispatches. Regression simulates durable OUTCOME_UNKNOWN + still-active notification, preserves a second live approval, and proves idempotence.
 
-Exact-head CI at the last read: 4/5 SUCCESS (Android Gradle/Robolectric, companion outcome 3.13/3.14, Android outcome contract, offline bridge security); staged/integrated regression still running. This is a stacked draft-companion PR, not installed or released. Local Android SDK/Gradle unavailable.
+Exact-head CI: 5/5 SUCCESS. Android Gradle/Robolectric build: BUILD SUCCESSFUL, 39 actionable tasks. Companion outcome: 51 passed on Python 3.13 and 51 on 3.14. Staged-runtime: 240 passed / 10 skipped / 47 subtests; integrated regression: 415 passed / 3 skipped / 58 subtests; migration sub-suite: 42 passed / 37 subtests. This is a stacked draft-companion PR, not installed or released. Local Android SDK/Gradle unavailable.
 
 ## Other current QA evidence
 
