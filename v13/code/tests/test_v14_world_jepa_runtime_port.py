@@ -939,3 +939,204 @@ def test_source_forget_guard_waits_for_cross_process_training_lock(tmp_path):
                 process.terminate()
                 process.join(1.0)
         store.close()
+
+
+class _BodyReceiverCaptureRunner:
+    def __init__(self):
+        self.calls = []
+        self.last_metrics = {}
+
+    def generate(self, messages, cancel_event, deadline, tokens, schema):
+        import json
+        self.calls.append(messages)
+        self.last_metrics = {"status": "FINAL", "duration_s": 0.001, "generated_tokens": 1}
+        yield json.dumps({
+            "summary": "Compare the four candidate routes.",
+            "quotes": ["compare the four routes for a local test"],
+            "uncertainty": "low",
+            "needs_reentry": False,
+        })
+
+
+class _BodyReceiverCapturePool:
+    def __init__(self, runner):
+        self.runner = runner
+
+    def get(self, role):
+        return self.runner
+
+
+class _BodyReceiverModels:
+    def revision(self, role):
+        return "synthetic-" + role
+
+
+def _body_receiver_runtime(store, home, session, runner):
+    from threading import Event
+    from types import SimpleNamespace
+
+    return SimpleNamespace(
+        store=store,
+        home=home,
+        session=session,
+        cfg={
+            "b2_state_slots": 0,
+            "b2_control": "two_body",
+            "b2_context_chars": 128,
+            "memory_threshold": 0.25,
+            "b2_offer_body_state": True,
+            "b2_quote_select": "off",
+            "observer_tokens": 256,
+            "offer_style": "solve",
+            "offer_quote_min_chars": 0,
+            "offer_quote_context_chars": 0,
+            "b1_recent_source_chars": 0,
+            "segment_mode": "fixed",
+            "body_question_b1": "",
+            "body_question_b2": "",
+            "body_question_scope": "always",
+            "observer_mode": "foreground",
+            "deadline_seconds": 30,
+        },
+        guard=SimpleNamespace(state="NORMAL", mode="GREEN"),
+        models=_BodyReceiverModels(),
+        pool=_BodyReceiverCapturePool(runner),
+        cancel_event=Event(),
+    )
+
+
+def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
+    import json
+    import time
+    from v13.cognition import Cognition
+
+    home = tmp_path / "brain-body-receiver"
+    store, session = _make_store(home)
+    try:
+        _add_transitions(store, session, 0, 256)
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        trained = consume_after_commit(store, home, limit=256)
+        assert trained["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        assert trained["metrics"]["parameter_delta_norm"] > 0
+        assert trained["metrics"]["ema_target_delta_norm"] > 0
+        assert trained["metrics"]["train_holdout_source_sha256_disjoint"] is True
+        assert trained["metrics"]["retention_gate_accepted"] is True
+
+        event = store.event(session, "Current source: compare the four routes for a local test.")
+        runner = _BodyReceiverCaptureRunner()
+        runtime = _body_receiver_runtime(store, home, session, runner)
+        cognition = Cognition(runtime)
+        for role in ("B1_DETAIL", "B2_GIST"):
+            cognition.offer(role, event, 0, time.monotonic() + 5.0)
+
+        prompts = {}
+        for messages in runner.calls:
+            body_state = json.loads(messages[1]["content"])["body_state"]
+            prompts[body_state["role"]] = body_state["world_jepa"]
+        assert set(prompts) == {"B1_DETAIL", "B2_GIST"}
+        detail = prompts["B1_DETAIL"]
+        gist = prompts["B2_GIST"]
+        assert detail["status"] == gist["status"] == "SHADOW_READOUT_ONLY"
+        assert detail["body_prompt_consumed"] is gist["body_prompt_consumed"] is True
+        assert detail["native_body_consumed"] is gist["native_body_consumed"] is False
+        assert detail["decision_authority"] == gist["decision_authority"] == "NONE"
+        assert detail["action_horizon"] == gist["action_horizon"] == "NEXT_ACTION"
+        assert detail["checkpoint_id"] == gist["checkpoint_id"] == trained["checkpoint_sha256"][:16]
+        assert detail["predictions"]["columns"] == [
+            "action", "duration_s", "output_characters", "uncertainty"
+        ]
+        assert gist["predictions"]["columns"] == [
+            "action", "success_probability", "uncertainty"
+        ]
+        assert len(detail["predictions"]["rows"]) == len(world_model.ACTIONS)
+        assert len(gist["predictions"]["rows"]) == len(world_model.ACTIONS)
+        assert [row[0] for row in detail["predictions"]["rows"]] == list(world_model.ACTIONS)
+        assert [row[0] for row in gist["predictions"]["rows"]] == list(world_model.ACTIONS)
+
+        query_rows = store.rows(
+            "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? ORDER BY created",
+            (event["event_id"],),
+        )
+        assert len(query_rows) == 2
+        for row in query_rows:
+            packet_payload = json.loads(row["payload"])
+            ref = packet_payload["bodyview"]["body_state_ref"]
+            stored_source = json.loads(store.read_source(ref))
+            assert stored_source["schema"] == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/1"
+            audit = stored_source["world_jepa_audit"]
+            assert audit["checkpoint_sha256"] == trained["checkpoint_sha256"]
+            assert len(audit["training_source_sha256"]) == 64
+            assert audit["event_id"] == event["event_id"]
+            assert audit["brain_generation_id"] == event["brain_generation_id"]
+            assert audit["native_body_consumed"] is False
+            assert audit["native_body_weights_changed"] is False
+            assert audit["decision_authority"] == "NONE"
+    finally:
+        store.close()
+
+
+def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_busy(tmp_path):
+    import fcntl
+    import time
+    from threading import Event, Thread
+    from types import SimpleNamespace
+    from v13 import bodyview, world_model
+    from v13.world_jepa_consumer import WorldJEPAStoreConsumer
+    from v13.world_jepa_receiver_matrix import receiver_matrix
+
+    home = tmp_path / "brain-body-receiver-negative"
+    store, session = _make_store(home)
+    try:
+        event = store.event(session, "Current source: compare the four routes for a local test.")
+        text = "Current source: compare the four routes for a local test."
+        runtime = SimpleNamespace(
+            store=store,
+            home=home,
+            session=session,
+            cfg={},
+            guard=SimpleNamespace(state="NORMAL", mode="GREEN"),
+        )
+        no_checkpoint = bodyview.body_state(runtime, event, "B1_DETAIL", text)
+        assert no_checkpoint is not None
+        assert "world_jepa" not in no_checkpoint["view"]
+
+        _add_transitions(store, session, 0, 256)
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        trained = consume_after_commit(store, home, limit=256)
+        assert trained["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        consumer = WorldJEPAStoreConsumer(
+            store, home / "world_jepa", learning_enabled=False
+        )
+        ready, release = Event(), Event()
+
+        def hold_training_lock():
+            with open(consumer.lock_path, "a+b") as lock:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+                ready.set()
+                release.wait(3.0)
+                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+
+        worker = Thread(target=hold_training_lock, daemon=True)
+        worker.start()
+        assert ready.wait(1.0), "test lock holder did not acquire WorldJEPA lock"
+        started = time.monotonic()
+        try:
+            busy_matrix = receiver_matrix(
+                store, [0.2, 0.1, 0.3, 0.9], tuple(world_model.ACTIONS),
+                home=home, nonblocking=True,
+            )
+            busy = bodyview.body_state(runtime, event, "B1_DETAIL", text)
+            elapsed = time.monotonic() - started
+        finally:
+            release.set()
+            worker.join(2.0)
+        assert busy_matrix["simple"]["B1_DETAIL"]["status"] == "BUSY"
+        assert elapsed < 1.0, "foreground body view waited for the JEPA training lock"
+        assert busy is not None
+        assert "world_jepa" not in busy["view"]
+    finally:
+        store.close()
