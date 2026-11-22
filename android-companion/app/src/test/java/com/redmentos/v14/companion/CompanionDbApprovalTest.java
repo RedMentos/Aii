@@ -1,8 +1,12 @@
 package com.redmentos.v14.companion;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.content.Intent;
+import android.service.notification.StatusBarNotification;
 
 import org.junit.After;
 import org.junit.Before;
@@ -12,6 +16,8 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -97,12 +103,50 @@ public final class CompanionDbApprovalTest {
         String liveId = "b".repeat(32);
         insertPending(ACTION_ID, NOW);
         insertPending(liveId, NOW + 1L);
-        java.util.List<CompanionDb.Action> pending = first.pending(NOW);
+        List<String> expired = new ArrayList<>();
+        List<CompanionDb.Action> pending = first.pending(NOW, expired);
         assertEquals(1, pending.size());
         assertEquals(liveId, pending.get(0).actionId);
+        assertEquals(List.of(ACTION_ID), expired);
         assertEquals("EXPIRED", first.get(ACTION_ID).status);
         assertEquals("PENDING_USER_APPROVAL", first.get(liveId).status);
         assertEquals(0, first.expirePending(NOW));
+    }
+
+    @Test @Config(sdk = 32)
+    public void expiredAndCancelledApprovalsClearOnlyTheirOwnNotifications() {
+        String liveId = "b".repeat(32);
+        insertPending(ACTION_ID, NOW);
+        insertPending(liveId, NOW + 1L);
+        NotificationManager manager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.createNotificationChannel(new NotificationChannel(
+                "v14-action-approval", "V14 action approvals", NotificationManager.IMPORTANCE_DEFAULT));
+        Notification notification = new Notification.Builder(context, "v14-action-approval")
+                .setSmallIcon(android.R.drawable.ic_menu_view).build();
+        manager.notify(CompanionProvider.approvalNotificationTag(ACTION_ID), 0, notification);
+        manager.notify(CompanionProvider.approvalNotificationTag(liveId), 0, notification);
+        assertTrue(hasApprovalNotification(manager, ACTION_ID));
+        assertTrue(hasApprovalNotification(manager, liveId));
+
+        List<String> expired = new ArrayList<>();
+        first.pending(NOW, expired);
+        for (String actionId : expired) {
+            CompanionProvider.cancelApprovalNotification(context, actionId);
+        }
+        assertFalse(hasApprovalNotification(manager, ACTION_ID));
+        assertTrue(hasApprovalNotification(manager, liveId));
+
+        assertTrue(first.cancel(liveId));
+        CompanionProvider.cancelApprovalNotification(context, liveId);
+        assertFalse(hasApprovalNotification(manager, liveId));
+    }
+
+    private boolean hasApprovalNotification(NotificationManager manager, String actionId) {
+        for (StatusBarNotification notification : manager.getActiveNotifications()) {
+            if (actionId.equals(notification.getTag()) && notification.getId() == 0) return true;
+        }
+        return false;
     }
 
     @Test public void executionClaimSurvivesRestartAndCannotBeRetried() {
