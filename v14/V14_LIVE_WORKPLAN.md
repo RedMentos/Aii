@@ -1,3 +1,15 @@
+## Core & Harness run15 — 2026-11-22
+
+- Release branch `gpt6/v13-private-remote-bridge-20261111` is at `c2e7ae7ebe47af6ea96995c7df112872bb404d38`; Core PR #2323 is merged as diagnostic native input-embedding receiver only. Candidate-head CI was 21 SUCCESS / 0 FAILURE / 2 SKIPPED. Post-merge push CI had ten listed successful workflows and one additional offline-bridge-security check still in progress at the last poll; do not claim all checks green or phone deployment.
+- Core PR #2325 (branch `core/v14-fair-scheduler-sender-containment-20261122-run15`, code commit `af2a14381df9d9c0a6f67875894ec29df5ed6dba`, based on c2e7ae7) fixes the budgeted sequential scheduler boundary and adds sender model path containment. It is DRAFT; exact staged Runtime, Linux native build, and Android ARM64 cross-compile CI was QUEUED at the last poll.
+- Fair-scheduler policy: C3 reserve is unchanged (16.5 s for a 30 s turn, 49.5 s for a 90 s turn under the current 55% reserve); the 90 s observer window is 40.5 s and the two sequential roles should each receive 20.25 s when the first consumes its full slice. The exact threshold now allows both roles at 1.0 s each; unbudgeted legacy scheduling keeps its prior guard.
+- Sender path: symlink rejection, strict resolution, containment under `<home>/models`, regular-file check, then manifest SHA-256. Outside-path and symlink negative tests added.
+- LOCAL_LINUX isolated CPython 3.13.5 scheduler/path reproduction PASS. Full repository local test BLOCKED by GitHub DNS (`Could not resolve host: github.com`). No native model run.
+- Private owner receipt #505 (08:28 UTC) is pre-merge: installed c03ff0a, auto-update enabled, runtime/dashboard UP_TO_DATE; latest turn 63.22 s / TTFT 42.48 s / prefill 34.96 s; B1/B2 TIME_BUDGET 53.2/54.2 s, C3 3.1 s. No post-merge install receipt and no UPDATE_REQUEST.
+- Next: poll/fix #2325 exact CI; rebase and coordinate QA #2324; then implement the permissioned Android companion operator/CLI consumer on a compatible release base. No user action.
+
+---
+
 ## Research/Perception follow-up — 2026-11-22 06:17Z
 
 - Current release-development integration head: `39b175521f50048f13ca14372b316de47527f531`; Boss PR #2288 is merged as integration only. Candidate-head CI was 20 success / 0 failure / 1 expected skipped / 1 cancelled; post-merge push CI remains not independently verified. Private phone receipt #480 says `CI_WAIT` on installed SHA `89333289b8cd50da92cbf7074c9ef689a2972dbf`, auto-update enabled; no update request or device mutation.

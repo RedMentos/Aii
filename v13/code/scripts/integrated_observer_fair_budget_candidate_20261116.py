@@ -52,7 +52,7 @@ def apply_sources(code_dir, sources):
         b'        for role in roles:\n            if clock()+1>=end:break\n            try:offers.append(ask(role,True))\n',
         b'        for index,role in enumerate(roles):\n'
         b'            now=clock()\n'
-        b'            if now+1>=end:break\n'
+        b'            if now>=end or (not budgeted and now+1>=end):break\n'
         b'            try:\n'
         b'                role_end=min(end,now+max(0.,end-now)/(len(roles)-index))\n'
         b'                offers.append(ask(role,True,role_end) if budgeted else ask(role,True))\n', 'sequential slice')

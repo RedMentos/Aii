@@ -71,8 +71,13 @@ NATIVE_RECEIVE = r'''    def native_receive(self,sender_role,receiver_role,e,sou
                 or any(ch not in "0123456789abcdef" for ch in sender_model_sha256)):
             raise ValueError("Sender model manifest hash is invalid")
         sender_model_path=self.r.models.path_for(sender_role)
-        if (sender_model_path.is_symlink() or not sender_model_path.is_file()
-                or file_hash(sender_model_path)!=sender_model_sha256):
+        if sender_model_path.is_symlink():
+            raise ValueError("Sender model symlink refused")
+        sender_model_path=sender_model_path.resolve(strict=True)
+        sender_models_root=(self.r.home/"models").resolve()
+        if not sender_model_path.is_relative_to(sender_models_root) or not sender_model_path.is_file():
+            raise ValueError("Sender model must be an installed file under home/models")
+        if file_hash(sender_model_path)!=sender_model_sha256:
             raise ValueError("Sender model hash differs from the pinned tap model")
         key=model_key(receiver_role,self.r.models.b2_control)
         installed=self.r.models.installed.get(key)
