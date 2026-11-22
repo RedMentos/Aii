@@ -408,7 +408,7 @@ def result(ident):
                         "complete": False, **correlation}
             return {"status": "OPERATOR_RESULT_VISIBLE", "request_id": ident,
                     "operator": "NATIVE_RECEIVER_PROBE", "result": summary,
-                    "complete": True, **correlation}
+                    "command_complete": True, **correlation}
     if chat == "CHAT_RESPONDED" and not item.get("operator"):
         # This proves only text is visible in the input's atomic log window;
         # the frozen plain UI supplies no final status or runtime turn ID.
