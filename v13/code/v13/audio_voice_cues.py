@@ -153,7 +153,7 @@ def _estimate_pitch_numpy(frame, sample_rate: float, np) -> tuple[float | None, 
 @lru_cache(maxsize=32)
 def _voice_decimator_coefficients(sample_rate: int, factor: int) -> tuple[float, ...]:
     """Return a cached centered Hamming-windowed low-pass FIR for RAW EAR cues."""
-    taps = 21
+    taps = 25 if factor == 5 else 21
     target_rate = sample_rate / factor
     cutoff_hz = 0.45 * target_rate
     midpoint = (taps - 1) / 2
@@ -173,7 +173,10 @@ def _voice_decimator_coefficients(sample_rate: int, factor: int) -> tuple[float,
 
 
 def _anti_alias_decimate(samples, sample_rate: int, factor: int) -> tuple[list[float], float]:
-    """Low-pass before integer decimation; this is not a speaker-model resampler."""
+    """Low-pass before integer decimation with odd endpoint reflection.
+
+    This is a RAW EAR feature decimator, not a speaker-model resampler.
+    """
     if type(factor) is not int or factor < 1:
         raise ValueError("RAW EAR decimation factor must be a positive integer")
     if factor == 1:
@@ -185,13 +188,19 @@ def _anti_alias_decimate(samples, sample_rate: int, factor: int) -> tuple[list[f
     for output_index in range(output_count):
         center = output_index * factor
         filtered = 0.0
+        sample_count = len(samples)
         for tap_index, coefficient in enumerate(coefficients):
             source_index = center + tap_index - half
-            if source_index < 0:
-                source_index = 0
-            elif source_index >= len(samples):
-                source_index = len(samples) - 1
-            filtered += float(samples[source_index]) * coefficient
+            if 0 <= source_index < sample_count:
+                source_value = float(samples[source_index])
+            elif sample_count <= half:
+                source_value = float(samples[0] if source_index < 0 else samples[-1])
+            elif source_index < 0:
+                source_value = 2.0 * float(samples[0]) - float(samples[-source_index])
+            else:
+                mirror_index = 2 * sample_count - 2 - source_index
+                source_value = 2.0 * float(samples[-1]) - float(samples[mirror_index])
+            filtered += source_value * coefficient
         output.append(filtered)
     return output, sample_rate / factor
 
