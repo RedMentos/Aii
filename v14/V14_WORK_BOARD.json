@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T03:56:59.367Z",
+  "updated_at": "2026-11-22T04:13:21Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -330,25 +330,26 @@
     },
     {
       "id": "V14-018",
-      "title": "RAW EAR speaker-change evidence: batch-isolated A5→A4→C3 path",
+      "title": "RAW EAR audio-only ingress + calibrated speaker-similarity diagnostics",
       "owner": "Research & Perception",
       "reviewer": "Core & QA",
       "priority": "P1",
       "status": "IN_PROGRESS_PARTIAL",
-      "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
+      "scope": "Caller-supplied mono PCM16 audio-only ingress into staged Runtime; source/generation-bound bounded speaker-similarity diagnostics; process-local vectors; A5 PerceptPacket → A4 decision → C3 scalar summary; NumPy pitch explicit opt-in; no identity labels or microphone capture.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "Perception #2299 remains stale-base with only one offline-bridge-security check. Speaker-change evidence is not calibrated or integrated; caller PCM16 is not microphone capture or identity evidence.",
-      "next_step": "Perception: rebase onto current Boss, freeze pre-batch look-back, derive frame age from source timestamps, refresh all nested pins and keep speaker-change decision/attention gain DEFER without calibrated model evidence.",
+      "proof_environment": "Perception PR #2304 head 5127fa0c1f40eae139cab32dd2b3dd116a6d3227, code commit cfccb91ac9a3ff49f8aae259f92ad8118eaf19c5, based on Boss head 6e6f15322c9fa1931dcf733105d2a32d5372edeb. Exact GitHub blob/source-pin readback PASS: audio_voice_cues 596d1448..., speaker evidence 37aa9c39..., integrated audio builder f79f5c2e..., recovery SHA-256 0ad300e4..., stage SHA-256 c24fae1a..., deployer pin matches. Full LOCAL_LINUX suite BLOCKED (no checkout; github.com DNS unavailable); exact-head CI not yet observed. No microphone/model/Redmi proof; NOT_RELEASED.",
+      "next_step": "Perception/Core/QA: wait for exact-head Python 3.13/3.14 audio, VAD, staged/integrated, migration, owner-read, privacy and deployer CI; fix only reproduced failures. Then Boss review/integration. Keep uncalibrated speaker evidence DEFER and microphone/model/learning gates OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T03:55:43.537Z",
+      "last_checkpoint": "2026-11-22T04:13:21Z",
       "latest_candidate_pr": {
-        "pr": 2275,
-        "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
-        "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
-        "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
-        "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
+        "pr": 2304,
+        "head_sha": "5127fa0c1f40eae139cab32dd2b3dd116a6d3227",
+        "code_commit_sha": "cfccb91ac9a3ff49f8aae259f92ad8118eaf19c5",
+        "base_sha": "6e6f15322c9fa1931dcf733105d2a32d5372edeb",
+        "ci": "NOT_YET_OBSERVED",
+        "status": "DRAFT_NOT_RELEASED"
       },
-      "proof": "The pre-batch snapshot algorithm passed a local CPython 3.13.5 x86_64 algorithm-only reproduction, but current exact CI fails: reference_age_ms 920 vs expected 800; staged/integrated rejects the changed audio_voice_cues blob and migration becomes PARTIAL. No full Aii local test, microphone/model/Redmi test or identity inference."
+      "proof": "The staged audio overlay patches Runtime.submit to accept audio_window; audio_input.submit_audio_only submits a fixed no-transcript marker plus caller PCM16 with source/consent guard, two-phase revocation subscription and PROVISIONAL/FINAL provenance. Speaker embeddings remain caller-supplied and process-local; unverified thresholds yield raw cosine diagnostics only and A4/C3 DEFER. GitHub source-pin readback PASS. No current-head Python test or CI PASS is claimed; prior branch scratch results are historical. No microphone, native speaker encoder, native B1/B2/C3 inference, Android install or Redmi receipt."
     },
     {
       "id": "V14-019",
@@ -915,6 +916,13 @@
       "status": "PRIMARY_PAPERS_REVIEWED; QVAC MIT AND HEXATRAIN APACHE-2.0 REPOSITORIES LICENSE-CHECKED; TARGET_HARDWARE_UNVERIFIED",
       "primary": "arXiv:2604.22783v2 (2026-10-16); arXiv:2610.24816v2 (2026-10-26); QVAC Fabric tag v10549.5.1; HexaTrain repository",
       "next": "After JEPA retention is stable, run a small isolated CPU-adapter baseline and measure peak RSS/PSS, sequence scaling, power/latency, old-session retention and restart; do not import or swap production models."
+    },
+    {
+      "id": "R-070",
+      "topic": "Current-Boss RAW EAR audio-only ingress and exact source-pin rebase",
+      "status": "CODE_COMMITTED_PIN_READBACK_PASS_LOCAL_SUITE_BLOCKED_EXACT_CI_NOT_YET_OBSERVED",
+      "primary": "PR #2304; R-058–R-069 in V14_RESEARCH_LEDGER.md; FASTDIAR arXiv:2610.02941; PACT-Check arXiv:2611.06976",
+      "next": "Run exact 3.13/3.14 audio/VAD/staged/integrated/migration/privacy/deployer CI; keep calibration, microphone and model gates OFF until separate proof/consent."
     }
   ]
 }
