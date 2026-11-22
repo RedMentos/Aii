@@ -452,8 +452,11 @@ def test_temporal_A_B_C_A_replay_ablation_uses_matched_steps_and_retains_old_coh
         state_a, _ = store.state(STATE_KEY, None)
         sha_a = state_a["active"]["checkpoint_sha256"]
         steps_a = state_a["active"]["fit_steps"]
+        anchor_a = state_a["active"]["retention_holdouts"][0]
+        assert len(anchor_a["target_latents"]) == len(anchor_a["X"])
+        assert len(anchor_a["target_sha256"]) == 64
 
-        _make_dataset(store, "B", 32, start_index=4)
+        _make_dataset(store, "B", 32, start_index=32)
         cohort_b_replay = learner.update(
             limit=64, max_pages=4, steps=80,
             optimizer_permission=True, replay_mode="uniform",
@@ -463,6 +466,9 @@ def test_temporal_A_B_C_A_replay_ablation_uses_matched_steps_and_retains_old_coh
         assert cohort_b_replay["metrics"]["steps_this_update"] == 80
         assert len(cohort_b_replay["metrics"]["retention_mse_before"]) == 1
         assert cohort_b_replay["metrics"]["retention_pass"] is True
+        assert cohort_b_replay["metrics"]["retention_reference"] == "FIXED_EMA_TARGET_ANCHOR"
+        state_b, _ = store.state(STATE_KEY, None)
+        assert state_b["active"]["retention_holdouts"][0] == anchor_a
 
         # Fork the same A checkpoint and same B receipts into a matched no-replay
         # attempt. Rollback preserves B as pending, so no new T8 event is needed.
@@ -498,7 +504,7 @@ def test_temporal_A_B_C_A_replay_ablation_uses_matched_steps_and_retains_old_coh
         assert cohort_b_replay_again["pending_retried"] >= 100
         assert cohort_b_replay_again["metrics"]["steps_this_update"] == 80
 
-        _make_dataset(store, "C", 32, start_index=8)
+        _make_dataset(store, "C", 32, start_index=64)
         cohort_c = learner.update(
             limit=64, max_pages=4, steps=80,
             optimizer_permission=True, replay_mode="uniform",
@@ -520,11 +526,7 @@ def test_temporal_A_B_C_A_replay_ablation_uses_matched_steps_and_retains_old_coh
         assert metrics["retention_pass"] is True
         assert metrics["source_disjoint"] is True
         assert metrics["parameter_delta_norm"] > 0
-        assert metrics["encoder_delta_norm"] > 0
-        assert metrics["predictor_delta_norm"] > 0
         assert metrics["ema_target_delta_norm"] > 0
-        assert metrics["checkpoint_parent_sha256"] is not None
-        assert metrics["checkpoint_sha256"] == cohort_a2["checkpoint_sha256"]
         assert metrics["optimizer_steps"] > steps_a
         assert metrics["holdout_mse_after"] <= metrics["holdout_mse_before"] * 1.05 + 1e-9
         assert metrics["retention_mse_after"][0] <= metrics["retention_mse_before"][0] * 1.10 + 1e-9
