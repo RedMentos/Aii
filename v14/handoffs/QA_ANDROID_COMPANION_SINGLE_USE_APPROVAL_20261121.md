@@ -39,3 +39,37 @@ Two separate `ConsentActivity` instances can load the same `PENDING_USER_APPROVA
 4. The companion still implements only `launch_app`; UI observation, Accessibility, MediaProjection, tap/swipe/type/back and other Android control capabilities remain OFF/not implemented.
 
 This QA patch does not add UI observation, shell/network access, arbitrary actions or model authority. **No Redmi success is claimed.**
+
+
+## Follow-up — signed receipt must remain retryable until Store commit (2026-11-22)
+
+**QA follow-up PR:** #2286, branch `qa/v14-companion-os-permission-contract-20261122`.  
+**Current code checkpoint:** `7c684da6b5ac720ede0cc652d5cffacac93b3eca` (exact CI rerun in progress).
+
+### Reproduced failure window
+
+Before this correction, `accept_companion_receipt()` finalized the broker as `RECEIPT_VERIFIED` immediately after signature verification. `accept_and_persist_companion_receipt()` then attempted the SQLite Store transaction. If the Store write failed, the signed receipt remained available in the companion, but `poll()` saw a terminal broker state and returned `ALREADY_FINAL`; no source-bound ActionOutcome/nonce was persisted and no retry was possible.
+
+### QA correction
+
+- `accept_companion_receipt(..., finalize_broker=True)` preserves the standalone API's existing behavior.
+- The combined `accept_and_persist_companion_receipt()` path verifies with `finalize_broker=False`, persists the source-bound ActionOutcome and nonce transaction, then marks the broker `RECEIPT_VERIFIED`.
+- Transient Store failures leave the broker in `RECEIPT_CONSUMED`, which `consume_dispatched()` already restores/reuses on retry.
+- The Store persistence is idempotent by action ID, source event, receipt nonce and digest, so a retry after Store commit but before broker finalization returns the existing packet rather than duplicating it.
+- Permanent `InvalidOutcome` provenance/replay failures transition to `RECEIPT_REJECTED`; they are not left retryable.
+- Regression: `test_store_failure_keeps_signed_receipt_retryable_until_durable_commit`.
+
+### Current proof boundary
+
+- The new regression and companion outcome tests are being rerun on Python 3.13/3.14 at exact head 7c684.
+- Android Gradle/Robolectric and staged repository integration are also in progress; no local Android SDK/device is available.
+- No APK installation, Android permission, actual package launch, Termux mutation, model/weight change or Redmi test occurred. **REDMI_UNVERIFIED**.
+
+### Remaining open QA findings
+
+1. Ambiguous `content call` submit timeout can still leave a remote pending approval if cancellation fails while the local broker is marked cancelled. Preserve an explicit uncertain state until remote cancellation or signed outcome is reconciled (reported on #2273 comment 7073252422).
+2. Expired `PENDING_USER_APPROVAL` rows are still returned by `CompanionDb.pending()` and are not transitioned to EXPIRED when the activity exits; add atomic expiry cleanup (reported on #2273 comment 7073252422).
+3. `PendingIntent` identity still uses `actionId.hashCode()`; use a collision-resistant identity/URI so `FLAG_UPDATE_CURRENT` cannot retarget another action's notification.
+4. The provider still checks the paired package within `getPackagesForUid()`; where Android exposes it, bind the exact calling package as well as UID and certificate to avoid authorizing a different shared-UID package.
+
+The companion remains limited to one consent-gated `launch_app` capability. Screen observation, Accessibility, MediaProjection, tap/swipe/type/back, shell/network access and model authority remain OFF/not implemented.
