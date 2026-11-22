@@ -30,6 +30,15 @@ def build_sources(code_dir, *, include_postcommit=True):
     modules = [load(code_dir, name, pin) for name, pin in BUILDERS.items()]
     base, probe, chat, idle = modules
     result = base.build_sources(code_dir)
+    # The upstream recall module is initially pinned to the output of the
+    # base composer. Later, separately pinned overlays may legitimately add
+    # telemetry to Store or change the archive-stream consumer. Keep the
+    # provenance chain exact by recording the upstream pins before overlays.
+    recall_base_pins = {
+        'store.py': hashlib.sha256(result['v13/store.py']).hexdigest(),
+        'archive_stream_range_candidate.py': hashlib.sha256(
+            result['v13/archive_stream_range_candidate.py']).hexdigest(),
+    }
     for name, raw in probe.build_sources(code_dir).items():
         if name in result:
             raise ValueError('Upstream probe source changed; review composition')
@@ -168,6 +177,25 @@ def build_sources(code_dir, *, include_postcommit=True):
     if type(focal_source) is not bytes:
         raise ValueError('C4 FocalLoop source is not immutable bytes')
     result['v13/focal.py'] = focal_overlay_ns['apply_staged_focal'](code_dir, focal_source)
+
+    # Rebind only these two known downstream pins after all staged overlays.
+    # The current values must still match the exact base-composer outputs above;
+    # unknown edits fail closed rather than being silently blessed.
+    recall = result['v13/context_source_recall_candidate.py']
+    for name, base_pin in recall_base_pins.items():
+        current_pin = recall_pin(recall, name)
+        if current_pin != base_pin:
+            raise ValueError('Integrated source recall pre-overlay pin changed: ' + name)
+        final_pin = hashlib.sha256(result['v13/' + name]).hexdigest()
+        if final_pin != current_pin:
+            needle = b"    '" + name.encode('ascii') + b"': '" + current_pin.encode('ascii') + b"'"
+            if recall.count(needle) != 1:
+                raise ValueError('Integrated source recall downstream pin ambiguous: ' + name)
+            recall = recall.replace(current_pin.encode('ascii'), final_pin.encode('ascii'), 1)
+    result['v13/context_source_recall_candidate.py'] = recall
+    for name in recall_base_pins:
+        if recall_pin(recall, name) != hashlib.sha256(result['v13/' + name]).hexdigest():
+            raise ValueError('Integrated source recall final binding mismatch: ' + name)
 
     for name, raw in result.items():
         if name.endswith('.py'):
