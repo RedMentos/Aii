@@ -33,9 +33,10 @@ _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAI
 def _speaker_change_decision(evidence, cues):
     """Return a conservative A4 three-regime decision without assigning identity.
 
-    Low similarity is only a candidate when explicitly calibration-bound evidence
-    is measured during voiced activity. Silence, noise, short windows, missing calibration,
-    rejected embeddings and warm-up remain DEFER rather than false continuity.
+    Low similarity is only a candidate after a verified, model-bound calibration
+    artifact is supplied. Caller labels and numeric thresholds are not calibration.
+    Silence, noise, short windows, missing calibration, rejected embeddings and
+    warm-up remain DEFER rather than false continuity.
     """
     if type(cues) is not dict or cues.get("activity_hint") != "VOICED":
         return "DEFER"
@@ -664,7 +665,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             except SpeakerEvidenceError as exc:
                 runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
                 speaker_evidence = {
-                    "method": "FASTDIAR_COSINE_LOOKBACK_V1",
+                    "method": "COSINE_LOOKBACK_DIAGNOSTIC_V1",
                     "status": "REJECTED",
                     "error": type(exc).__name__,
                     "speaker_label": None,
