@@ -1235,3 +1235,27 @@ The 679f audio run showed that rebinding only Context-source recall was insuffic
 ### Next integration step
 
 Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer workflows. Fix only measured current-head failures. Keep the PR DRAFT and NOT_RELEASED. The #2280 C4 receipt, #2281 Age-rights, #2282 shared-blob race, #2283 rollback, #2285 audio QA and #2275 RAW EAR changes must be rebased and tested on this same base; old-base green results are not accepted. Private PIPELINE_STATUS #453 is still unanswered, so REDMI_UNVERIFIED. User action: none.
+
+
+## Boss & Integration run 11 — 2026-11-22T17:49:39.410Z
+
+### Verified release/device state
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` is exactly `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; exact SHA readback matches the branch ref.
+- Exact SHA GitHub Actions check-runs: **53/53 completed SUCCESS**. This is CI, not whole-system acceptance.
+- A fresh owner-authenticated read-only device receipt confirms the same `c4eb82` SHA installed, auto-update enabled, runtime/dashboard `UP_TO_DATE`, and `last_error=NONE`. No update request or manual Termux command is needed.
+- A separate read-only diagnostic repeats the last stored turn; it did **not** trigger a new turn. Last turn: `FINAL`, 57.739 s total, 41.627 s TTFT, 38.945 s prefill, 751 admitted prompt tokens, 2 generated tokens. Runtime config: 90 s deadline, 6 threads, 2,048 context tokens, 35 s observer budget.
+- B1_DETAIL and B2_GIST remain `TIME_BUDGET` at 53.2 s / 54.2 s; native probe `SMOKE_PARTIAL`; C3 short probe 3.1 s. Instant process sample: 4 entries, 0.3 MiB PSS / 2.6 MiB RSS; this does not establish GGUF residency or sustained memory use. Input was redacted, so answer correctness is UNKNOWN.
+- Official Age 0; requested lab stage 10 / effective implementation stage 5; physical feature execution false; learning commit authority requires separate SHADOW. No model, weights, permissions, settings, user data or running process changed.
+
+### Current integration decisions
+- P0 #1904 remains OPEN. Up-to-date code is not a correct/fast brain. No 20-turn mixed acceptance, correct-answer score, or useful native B1/B2 offer → C4 → C3 trace exists.
+- Boss PR #2343 current head `62fb2194313cc9d308d4b6a801a9a9cc71362dd2`: 28 exact-head checks were QUEUED at the latest poll. It remains DRAFT / NOT_RELEASED. Its fair per-role scheduling is not device-validated; no update is requested.
+- Research/Perception PR #2346 current head `d2c459288c99a5b4e4fa43fce32bd028c142e0c3`: exact `paired-capture` run 45051136518 failed 1/54 tests because an assertion expects the phrase `B1 native fine token slots` while the emitted claim says `B1 fine token slots`. Boss posted the exact failure and requested correction in the PR conversation. Other 53 tests in that job passed; shared staged/Lab-Age/migration jobs were still queued. Keep DRAFT.
+- Core PR #2364 current head `73b30a0a04eef676afc0f5b843aaeb98fe0470ea`: 12 native receiver checks were queued at the latest poll; no installed GGUF read, receiver utility or trained latent coupling is established.
+- No open PR was merged or promoted during this run. Full local Aii checkout/tests remain BLOCKED: no checkout is mounted and the execution container cannot resolve github.com. CI and isolated helper tests are not local full-suite or Redmi proof.
+
+### Next executable integration
+1. Re-poll exact-head CI for #2343/#2346/#2364; fix the concrete #2346 contract/test mismatch and rerun the complete staged/integrated/migration matrix before review.
+2. For #2343, require exact 2+2 correctness and both bodies' real offers/consumption in the same turn before any release; do not infer utility from fair scheduling or post-commit offers.
+3. Continue the whole-Canon queue in parallel: temporal JEPA source-forget/promotion races, B3 receiver utility, A5 vision consumer call-site, Android companion operator path, real AudioRecord/voice, Context OS/Memorilla consumer, and permanent cross-organ learning remain separately OPEN.
+4. Keep B3 OFF/SYMBOLIC and learning promotion OFF until their original native/holdout/retention gates pass. No model swap, permission change or user action.
