@@ -1,3 +1,19 @@
+# Research & Perception — latest verified handoff (2026-11-22 18:42 UTC)
+
+- **Release-development HEAD:** `gpt6/v13-private-remote-bridge-20261111` = `aed1d2b826290c95c70356b5d8b864b5ef382be4` (documentation/handoff-only refresh). The installed code remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335` per the latest reported owner receipt; updater is reported enabled/UP_TO_DATE, while a separate HEALTH receipt reports runtime UNAVAILABLE.
+- **P0 #1904 remains open:** latest stored diagnostic snapshot is 57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 admitted prompt tokens / 2 generated tokens; B1/B2 remain TIME_BUDGET at 53.2/54.2 s. It is a repeated stored snapshot, not a new turn; correctness is UNKNOWN. Do not infer brain functionality from UP_TO_DATE.
+- **RAW EYE PR #2366** head `f8d05bcf4d23a5ac303e44a4aa130d5383369ed9`: Perception 3.13/3.14 2/2 PASS; staged/integrated 2/2 PASS; same-turn B1/B2/C4/C3 consumer 3.13/3.14 2/2 PASS; privacy and deployment-integrity PASS. Still DRAFT / NOT_RELEASED; stored-image A5 adapter is not called by normal Runtime. No camera, Android or Redmi proof.
+- **FASTDIAR adapter PR #2361** head `bfac3a87a6f308d6b7583df9d72c81ab53f898aa`: focused 3.13/3.14 CI 2/2 PASS. It only wraps caller-supplied 192-D frame embeddings and hashes a local checkpoint; no inference or calibration. Its branch is one commit behind aed1d2 and GitHub reports mergeable=false. Weight license remains unresolved; no weights downloaded.
+- **A4 ablation PR #2368** head `41025f3d9bf92870f9675173d4af00638a49c203`: source-disjoint synthetic cosine-prototype experiment, no runtime consumer. LOCAL_LINUX CPython 3.13.5 py_compile PASS, pytest 4/4 PASS, plus three 12-session holdout seeds. Full-history triage reduced false novelty/overlap writes but had 0.486 coverage; global sliding retention improved change F1 but fragmented returning speakers (8.94 clusters for four synthetic speakers). This is not real audio, PLDA/VBx, FASTDIAR inference or speaker recognition.
+- PR #2368 exact CI initially failed because the new workflow did not install pytest; compile passed, test step failed with `No module named pytest`. A follow-up now pins pytest 9.2.0; retry run 45056272786 is in progress. No CI pass claimed yet.
+- **No device action:** no UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, Termux command, model/weight/permission change, or user-data change. No new turn was sent. Redmi-native tests remain UNVERIFIED.
+
+**Next internal work:** Core wires #2366 into normal Runtime after review; QA validates integrated source-forget/restart. Rebase/reconcile #2361 on aed1d2. For A4 decisions, obtain separately consented, source-disjoint labelled embeddings and a model-bound calibration receipt; keep DEFER until then.
+
+**User action: none.**
+
+---
+
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
 - JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
