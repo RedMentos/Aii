@@ -67,20 +67,6 @@ public final class CompanionDbApprovalTest {
         }
     }
 
-    private static final class FailOnceFinishDb extends CompanionDb {
-        boolean failNext = true;
-
-        FailOnceFinishDb(Context context) { super(context); }
-
-        @Override synchronized void finish(String actionId, String expectedStatus,
-                                            String status, String receiptJson) {
-            if (failNext) {
-                failNext = false;
-                throw new SQLiteException("injected receipt write failure");
-            }
-            super.finish(actionId, expectedStatus, status, receiptJson);
-        }
-    }
 
     @Before public void setUp() {
         context = RuntimeEnvironment.getApplication();
@@ -517,23 +503,24 @@ public final class CompanionDbApprovalTest {
     }
 
     @Test public void sqliteReceiptFailureLeavesDenialClaimRetryableAcrossRecovery() throws Exception {
-        first.close();
-        first = new FailOnceFinishDb(context);
-        first.getWritableDatabase();
         insertRecoverablePending();
         assertTrue(first.claimForDenial(ACTION_ID, NOW));
         FakeReceiptSigner signer = new FakeReceiptSigner();
+        first.getWritableDatabase().execSQL(
+                "CREATE TRIGGER fail_receipt_write BEFORE UPDATE OF receipt_json ON actions "
+                        + "BEGIN SELECT RAISE(ABORT, 'injected receipt write failure'); END");
 
         try {
             CompanionProvider.recoverClaimedAction(first, signer, ACTION_ID, NOW);
             fail("injected SQLite failure must not lose the claimed denial");
         } catch (SQLiteException expected) {
-            assertEquals("injected receipt write failure", expected.getMessage());
+            assertTrue(expected.getMessage().contains("injected receipt write failure"));
         }
         assertEquals("DENYING", first.get(ACTION_ID).status);
         assertNull(first.receipt(ACTION_ID));
         assertFalse(first.claimForExecution(ACTION_ID, NOW));
 
+        first.getWritableDatabase().execSQL("DROP TRIGGER fail_receipt_write");
         assertTrue(CompanionProvider.recoverClaimedAction(first, signer, ACTION_ID, NOW + 1));
         assertEquals("USER_DENIED", first.get(ACTION_ID).status);
     }
