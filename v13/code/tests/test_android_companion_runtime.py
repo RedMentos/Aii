@@ -136,6 +136,8 @@ def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative
     assert request["capability"] == "launch_app"
     assert request["permission_bypass"] is False
     assert request["model_authority"] is False
+    assert request["companion_local_consent_required"] is True
+    assert request["android_os_permission_required"] is False
     assert request["local_approval"] == "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
 
     recorded = json.loads(controller.poll(pending["action_id"]))
