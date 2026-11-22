@@ -5,6 +5,7 @@ on:
       - gpt6/v14-core-companion-outcome-20261121
       - qa/v14-companion-single-use-approval-20261121
       - qa/v14-companion-os-permission-contract-20261122
+      - core/v14-android-action-journal-qa-final-20261122
   pull_request:
     branches:
       - core/v14-android-companion-native-20261121
