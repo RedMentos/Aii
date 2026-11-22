@@ -1072,3 +1072,23 @@ The 1,255-heading historical Canon remains preserved, but clause→implementatio
 Private read-only PIPELINE_STATUS request [RedMentos/Aiiii #453](https://github.com/RedMentos/Aiiii/issues/453) had no authenticated reply at 00:49:49 UTC. Installed SHA and updater consent remain UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, remote shell or device mutation occurred.
 
 **Next internal step:** wait for exact #2288 current-head staged/integrated, audio, owner-read and migration results; fix only measured remaining failures, then rebase the unique C4 receipt and QA/Perception fixes onto this base. **User action: none.**
+
+
+## Boss exact-head follow-up — 2026-11-22 00:57 UTC
+
+The current integration head advanced to `c372b4e3210d04f95f092013893d4078817e855d` in PR #2288. This replaces the earlier 679f/32491 checkpoint in the previous section.
+
+### Additional Store-dependent consumers
+
+The 679f audio run showed that rebinding only Context-source recall was insufficient: `world_semantic_evidence_candidate.py` still held a pre-overlay Store pin. The 32491 follow-up added the wider generated-consumer set, but its controller-guard run exposed a stale `recall_base_pins` variable reference. The current c372b4e head fixes that reference and uses the captured `dependent_base_pins` snapshot. The recovery composer now captures base Store/stream/semantic and dependent module pins before later overlays; after all overlays it rebinds World-JEPA guard, semantic evidence, archive reader, archive stream, Context-source recall and local-error's semantic-module pin, then verifies the final hashes. Recovery wrapper blob SHA-1, stage SHA-256 and runtime deployer pin have been refreshed and read back.
+
+### Current c372b4e CI snapshot
+
+- Current head has 13 PR workflows. At the 00:56:40 UTC poll: bridge push was queued; Lab-Age was in progress; staged/integrated, A5 UI lease, controller guard, audio/arithmetic, combined JEPA, runtime deploy integrity, two-checkout migration, privacy scan and private owner-read were queued; strict additive-only validation was SKIPPED and the release-queue workflow was CANCELLED.
+- The earlier 32491b controller-guard failure was specifically `NameError: recall_base_pins is not defined`; the current source replaces that stale reference with `dependent_base_pins`. Do not mark the current controller workflow PASS until its new run completes.
+- The previous 679f audio failure was `world_semantic_evidence_candidate.py` still pinning the pre-overlay Store. The current head now rebinds that module and its dependent local-error pin. Its new audio workflow must prove this exact head.
+- No local Aii checkout is available; no LOCAL_LINUX repository tests ran. No native model or Redmi proof exists.
+
+### Next integration step
+
+Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer workflows. Fix only measured current-head failures. Keep the PR DRAFT and NOT_RELEASED. The #2280 C4 receipt, #2281 Age-rights, #2282 shared-blob race, #2283 rollback, #2285 audio QA and #2275 RAW EAR changes must be rebased and tested on this same base; old-base green results are not accepted. Private PIPELINE_STATUS #453 is still unanswered, so REDMI_UNVERIFIED. User action: none.
