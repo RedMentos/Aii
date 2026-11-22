@@ -906,8 +906,10 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_acc
         assert all(len(value) == 8 for value in detail["history_sources"])
         assert all(len(value) == 8 for value in gist["history_sources"])
         assert detail["checkpoint"] == gist["checkpoint"] == trained["checkpoint_sha256"][:12]
-        assert "prediction only" in detail["note"]
-        assert "not fact/source/permission" in gist["note"]
+        assert "prediction" in detail["note"]
+        assert "not fact/permission" in detail["note"]
+        assert "prediction" in gist["note"]
+        assert "not fact/permission" in gist["note"]
 
         query_rows = store.rows(
             "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? ORDER BY created",
