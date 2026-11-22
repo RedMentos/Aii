@@ -1,3 +1,11 @@
+## New P0 privacy investigation (2026-11-22T17:59:16.409Z)
+
+In the current V13 source, each role launches a long-lived `llama-server` with a 128-MiB RAM prompt cache, and requests use `cache_prompt=true` with slot 0. A recent upstream llama.cpp issue reports that unrelated conversations can inherit stale prompt/KV state under certain slot/cache paths. The issue is not yet reproduced on V13; the exact installed binary version and session-to-runner isolation are still unknown. I have **not** changed cache settings or restarted anything.
+
+The team is adding a synthetic two-session marker test before changing cache flags. It will compare isolation and same-session reuse, plus TTFT and memory, using no private chat data. No action from you is needed.
+
+---
+
 ## Boss & Integration — Release-HEAD correction (2026-11-22T17:55:17.015Z)
 
 **Keine Nutzeraktion nötig.** Der Release-Branch wurde durch einen dokumentations-only Merge weitergeschoben; das Handy ist davon noch nicht aktualisiert.
