@@ -87,8 +87,8 @@ class L1ShadowTrainingTests(unittest.TestCase):
             "body_pair_ids": batch["body_pair_ids"],
             "source_hashes": [x["sha256"] for x in batch["source_refs"]],
             "test_indices": test_indices,
-            "seed_ids": ["3", "7"],
-            "acc": {"EXACT": [0.5, 0.5], "CONTROL": [0.5, 0.5], "SYMBOLIC": [0.5, 0.5]},
+            "seed_ids": ["3", "7", "11"],
+            "acc": {"EXACT": [0.5, 0.5, 0.5], "CONTROL": [0.5, 0.5, 0.5], "SYMBOLIC": [0.5, 0.5, 0.5]},
             "bytes": {"EXACT": 0, "CONTROL": 16, "SYMBOLIC": 32},
             "role_drop": 0.0,
         }
@@ -99,7 +99,7 @@ class L1ShadowTrainingTests(unittest.TestCase):
                 self.r.cognition, pairs, [i % 2 for i in range(64)],
                 [f"feedback-{i}" for i in range(64)], "binary-outcome",
                 "verified-test-outcome", direction="B1_TO_B2",
-                seeds=(3, 7), epochs=2, head_steps=5, l0_evidence=l0,
+                seeds=(3, 7, 11), epochs=2, head_steps=5, l0_evidence=l0,
             )
         self.assertEqual(report["l1_gate"], gate)
         self.assertEqual(report["l1_utility_gate"], "PASS_L2_PREFIX_SHADOW_ALLOWED_NO_NATIVE_AUTHORITY")
@@ -107,7 +107,7 @@ class L1ShadowTrainingTests(unittest.TestCase):
         self.assertTrue(report["run_key"])
         self.assertEqual(report["latent_authority"], 0)
         task = gate_call.call_args.args[0]
-        self.assertEqual(task["seed_ids"]["LATENT"], ["3", "7"])
+        self.assertEqual(task["seed_ids"]["LATENT"], ["3", "7", "11"])
         self.assertEqual(task["acc"]["EXACT"], [0.5, 0.5])
         self.assertEqual(task["role_drop"], 0.0)
         for seed in report["seed_reports"]:
