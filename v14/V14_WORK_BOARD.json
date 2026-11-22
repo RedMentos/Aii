@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T18:47:45Z",
+  "updated_at": "2026-11-22T18:49:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4 (documentation/handoff-only refresh; installed code remains c4eb82deec915f65894c20d6ebbaf0ebf58fa335 per the latest reported owner receipt). The phone updater is reported enabled/UP_TO_DATE, but the separate HEALTH receipt reports runtime UNAVAILABLE. P0 issue #1904 remains open; its latest stored diagnostic snapshot is not a new turn or correctness proof. PR #2366 exact Perception, staged/integrated and same-turn synthetic CI all pass but remains DRAFT and not normal-Runtime-wired. PR #2361 exact focused CI passes but its branch is one commit behind and mergeability is false. PR #2368 adds a synthetic-only A4 ablation; local 4/4 tests pass, exact CI retry is running after fixing the missing pytest dependency. Whole-Canon acceptance remains open; no Redmi acceptance.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -387,7 +387,7 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "LOCAL_LINUX CPython 3.13.5 isolated + exact GitHub CI synthetic consumer; no Android/Termux/Redmi timing",
-      "next_step": "R-081 full-text review and FASTDIAR adapter review are complete. PR #2366 exact Perception fastpath 3.13/3.14 PASS, staged/integrated 2/2 PASS, same-turn B1/B2/C4/C3 consumer 2/2 PASS, privacy/deployment PASS; still DRAFT and not normal-Runtime-wired. FASTDIAR adapter is now rebased in PR #2369 onto current base aed1d2 (0 behind, mergeable=true): exact consumer workflow 45056897981 passes 2/2 on Python 3.13/3.14 (7 tests each), privacy 45056897992 PASS, integration-same-repo 45057029362 PASS; staged/integrated run 45056898007 remains IN_PROGRESS. Old #2361 remains stale c4eb82-based draft/mergeable=false until #2369 integrated result completes. PR #2368 A4 synthetic ablation local 4/4 and exact CI 2/2 PASS. No model inference, real audio, calibration, normal Runtime or Redmi proof. Next: wait for #2369 staged/integrated exact result; Core owns normal Runtime invocation for #2366; A4 remains DEFER pending separately consented labelled embeddings and model-bound calibration.",
+      "next_step": "R-081 full-text review and FASTDIAR adapter review are complete. PR #2366 exact Perception fastpath 3.13/3.14 PASS, staged/integrated 2/2 PASS, same-turn B1/B2/C4/C3 consumer 2/2 PASS, privacy/deployment PASS; still DRAFT and not normal-Runtime-wired. FASTDIAR adapter is now rebased in PR #2369 onto current base aed1d2 (0 behind, mergeable=true): exact consumer workflow 45056897981 passes 2/2 on Python 3.13/3.14 (7 tests each), privacy 45056897992 PASS, integration-same-repo 45057029362 PASS; staged-runtime job in 45056898007 PASS; integrated-regression job remains IN_PROGRESS. Old #2361 remains stale c4eb82-based draft/mergeable=false until #2369 integrated result completes. PR #2368 A4 synthetic ablation local 4/4 and exact CI 2/2 PASS. No model inference, real audio, calibration, normal Runtime or Redmi proof. Next: wait for #2369 staged/integrated exact result; Core owns normal Runtime invocation for #2366; A4 remains DEFER pending separately consented labelled embeddings and model-bound calibration.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T18:47:45Z",
       "latest_candidate_pr": {
@@ -398,7 +398,7 @@
         "status": "DRAFT_FOCUSED_CI_PASS_2_OF_2_STAGED_INTEGRATED_PENDING",
         "scope": "FASTDIAR diagnostic adapter with caller-supplied embeddings and actual RAW EAR A5→A4→C3 consumer regression; no inference",
         "local_linux": "FULL_LOCAL_AII_CHECKOUT_BLOCKED_GITHUB_DNS; PRIOR_ISOLATED_HELPER_7_OF_7_RECORDED",
-        "exact_ci": "45056897981_PYTHON_3_13_AND_3_14_2_OF_2_SUCCESS_7_TESTS_EACH; PRIVACY_45056897992_SUCCESS; INTEGRATION_45057029362_SUCCESS; STAGED_INTEGRATED_45056898007_IN_PROGRESS",
+        "exact_ci": "45056897981_PYTHON_3_13_AND_3_14_2_OF_2_SUCCESS_7_TESTS_EACH; PRIVACY_45056897992_SUCCESS; SAME_REPO_INTEGRATION_45057029362_SUCCESS; STAGED_RUNTIME_45056898007_SUCCESS; INTEGRATED_REGRESSION_45056898007_IN_PROGRESS",
         "code_blob_sha": "5a451689e68742917bd5bc720b6af407b3e193e5",
         "test_blob_sha": "07e857cde89be407a65da64fd5cba3360e6e2901",
         "runtime": "NOT_NORMAL_RUNTIME_DISPATCHED",
@@ -1017,7 +1017,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T18:47:45Z",
+    "timestamp": "2026-11-22T18:49:00Z",
     "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "code_candidate_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "candidate_ci": "EXACT_SHA_ALL_30_OBSERVED_ACTIONS_WORKFLOW_RUNS_SUCCESS",
@@ -1109,7 +1109,7 @@
       "exact_ci": "45056897981_PYTHON_3_13_AND_3_14_2_OF_2_SUCCESS_7_TESTS_EACH",
       "privacy_scan": "45056897992_SUCCESS",
       "integration_same_repo": "45057029362_SUCCESS",
-      "staged_integrated": "45056898007_IN_PROGRESS",
+      "staged_integrated": "STAGED_RUNTIME_SUCCESS; INTEGRATED_REGRESSION_IN_PROGRESS",
       "producer_attestation": "NOT_ESTABLISHED",
       "weights": "NOT_DOWNLOADED_WEIGHT_LICENSE_UNRESOLVED",
       "runtime": "NOT_NORMAL_RUNTIME_DISPATCHED",
