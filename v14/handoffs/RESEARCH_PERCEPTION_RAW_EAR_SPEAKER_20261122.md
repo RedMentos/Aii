@@ -64,3 +64,15 @@ Current candidate: PR #2293 (DRAFT, NOT_RELEASED)
 - Full local checkout unavailable: git ls-remote https://github.com/RedMentos/Aii.git HEAD returned Could not resolve host: github.com. No local full Runtime test was run.
 - R-063 added: FASTDIAR full paper read; MIT code, checkpoint license not verified; speech-core Apache-2.0 C++17/Android reviewed as a possible low-level VAD/AEC/cancel layer only. No model or dependency downloaded.
 - No microphone, Android AudioRecord, TTS effector, barge-in, Redmi or native model proof. No release or updater action. Next: Core fixes the pin blocker; Perception rebases and adds staged audio-only Runtime proof, then coordinates Android caller wiring.
+
+
+## Exact-head CI follow-up — 2026-11-22 02:37 CET
+
+- Current PR #2293 branch head after docs: 6444c2196b5350d25175d048859942a01760f8e0; tested code/workflow head: e85b7398b1fce84423583abf01e1389507612818; base f0d3c848dfb1d65e282f065233adbe3c9205e439.
+- RAW EAR fastpath #44972070097: PASS, 64 tests on Python 3.13 (8.10s) and 3.14 (12.25s); includes 7 new audio-only ingress tests, compile, A5→A4→C3 consumer and privacy scan.
+- VAD/libfvad #44972070081: PASS, 8 tests on both Python versions; native libfvad 13/13. Runtime deploy integrity #44972070113: PASS.
+- Staged/integrated #44972070090: FAIL at Core-owned local-error pre-rebind semantic pin mismatch (recovery candidate line 313); staged job 19 failed / 231 passed / 10 skipped / 2 errors / 41 subtests, integrated job 1 failed. Same failure on unchanged Boss base in #44969679441. Migration #44972070092 returns PARTIAL; Lab Age/WebView #44972070087 and owner-read #44972070168 fail at stage.
+- Perception posted the exact fail-closed repair proposal in Boss PR #2288 comment 7072323336: capture original local-error semantic pin before overlays, verify it is unchanged, then rebind to the post-overlay semantic module SHA. Core files untouched.
+- LOCAL_LINUX isolated audio_input.py py_compile PASS and pytest 7/7 PASS; exact blobs module 1e9daddcb5dfd8bfb7911090218b4eaf1f103d41 and test b6b1202904efbc417971db6c0d9e3ba0664eef84. Full repo checkout blocked by DNS; no full local Runtime test.
+- No audio-only Runtime E2E on current base, no microphone/AudioRecord, no Android TTS, no barge-in, no native speaker model, no Redmi. No release, updater request or device mutation.
+- Next: Core resolves the pin mismatch; Perception rebases #2293 and adds staged Runtime audio-only E2E, then coordinates Android caller wiring with Core/QA.
