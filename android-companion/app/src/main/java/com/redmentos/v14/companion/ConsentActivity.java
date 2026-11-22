@@ -29,13 +29,15 @@ public final class ConsentActivity extends Activity {
             finish();
             return;
         }
+        long nowMillis = System.currentTimeMillis();
+        if (nowMillis >= action.expiresAt) {
+            db.expire(action.actionId, nowMillis);
+            Toast.makeText(this, "Action expired", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
         try {
             request = new JSONObject(action.requestJson);
-            if (System.currentTimeMillis() >= action.expiresAt) {
-                Toast.makeText(this, "Action expired", Toast.LENGTH_LONG).show();
-                finish();
-                return;
-            }
             showConsent();
         } catch (Exception e) {
             Toast.makeText(this, "Invalid action request", Toast.LENGTH_LONG).show();
@@ -65,7 +67,9 @@ public final class ConsentActivity extends Activity {
     }
 
     private void deny() {
-        if (!db.claimForDenial(action.actionId, System.currentTimeMillis())) {
+        long nowMillis = System.currentTimeMillis();
+        if (!db.claimForDenial(action.actionId, nowMillis)) {
+            db.expire(action.actionId, nowMillis);
             Toast.makeText(this, "Action was cancelled, expired or already decided", Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -80,12 +84,15 @@ public final class ConsentActivity extends Activity {
             finish();
             return;
         }
-        if (System.currentTimeMillis() >= action.expiresAt) {
+        long nowMillis = System.currentTimeMillis();
+        if (nowMillis >= action.expiresAt) {
+            db.expire(action.actionId, nowMillis);
             Toast.makeText(this, "Action expired", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
-        if (!db.claimForExecution(action.actionId, System.currentTimeMillis())) {
+        if (!db.claimForExecution(action.actionId, nowMillis)) {
+            db.expire(action.actionId, nowMillis);
             Toast.makeText(this, "Action was cancelled or already claimed", Toast.LENGTH_LONG).show();
             finish();
             return;
