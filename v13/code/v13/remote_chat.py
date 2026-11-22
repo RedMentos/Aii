@@ -133,20 +133,24 @@ def _native_receiver_probe_summary(lines, sender, receiver):
         item = value.get(key)
         if item is not None and not finite_number(item, cosine=True):
             return None
-    if rows >= 2:
-        if (value["row_shuffle_control_applicable"] is not True
-                or value.get("row_shuffle_control_cosine") is None):
-            return None
-    elif (value["row_shuffle_control_applicable"] is not False
-            or value.get("row_shuffle_control_cosine") is not None):
-        return None
     status = value["status"]
+    if status == "DIMENSION_MISMATCH":
+        if (receiver_dim == dim or decode_status != -100
+                or value["row_shuffle_control_applicable"]
+                or value.get("row_shuffle_control_cosine") is not None):
+            return None
+    else:
+        if rows >= 2:
+            if (value["row_shuffle_control_applicable"] is not True
+                    or value.get("row_shuffle_control_cosine") is None):
+                return None
+        elif (value["row_shuffle_control_applicable"] is not False
+                or value.get("row_shuffle_control_cosine") is not None):
+            return None
     consumed, effect = value["native_input_consumed"], value["input_effect_detected"]
     effect_rms = float(value["input_effect_rms"])
     if status == "DIMENSION_MISMATCH":
-        if (receiver_dim == dim or decode_status != -100 or consumed or effect
-                or value["row_shuffle_control_applicable"]
-                or value.get("row_shuffle_control_cosine") is not None):
+        if consumed or effect:
             return None
     elif (receiver_dim != dim or decode_status != 0 or not consumed
           or effect != (status == "NATIVE_INPUT_EFFECT")
