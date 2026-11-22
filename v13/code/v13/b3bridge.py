@@ -367,7 +367,7 @@ def completion_gate(home,direction,row,messages=0,app=None):
        'ADAPTIVE_GIST_RECEIVER_PATH':(app/'v13/b3pairs.py').exists() and 'consume_gist' in (app/'v13/b3pairs.py').read_text() and 'gist_readout' in (app/'v13/contracts.py').read_text(),
        'BIDIRECTIONAL_NATIVE_RECEIVER_PATH':'fine_states' in (app/'v13/b3pairs.py').read_text() and 'B1_FINE_SLOTS = 64' in (app/'v13/b3pairs.py').read_text(),
        'PAIRED_L1_SHADOW_TRAINER_API':(app/'v13/b3train.py').exists() and 'def train_l1_shadow(' in (app/'v13/b3train.py').read_text() and (app/'scripts/b3_train_l1_shadow.py').exists() and (app/'tests/test_b3train.py').exists(),
-       'SOURCE_PINNED_L0_BASELINE_GATE':'v13.b3-l0-baselines/1' in (app/'v13/b3train.py').read_text() and 'l1_gate(gate_task)' in (app/'v13/b3train.py').read_text(),
+       'SOURCE_PINNED_L0_BASELINE_GATE':'v13.b3-l0-baselines/2' in (app/'v13/b3train.py').read_text() and 'l1_gate(gate_task)' in (app/'v13/b3train.py').read_text(),
        'PAIRED_L1_SHADOW_TRAINER_API':(app/'v13/b3train.py').exists() and 'def train_l1_shadow(' in (app/'v13/b3train.py').read_text() and (app/'tests/test_b3train.py').exists(),
        'PAIR_RESTART_VALIDATION_TESTS':(app/'tests/test_b3pairs.py').exists(),
        'REAL_SENDER_STATE_PATH':bool(row.get('native_taps')),

@@ -17,8 +17,9 @@ Run from v13/code:
 
 Supply at least 64 unique pair entries, one explicit label and provenance
 reference per pair. Optional --l0-evidence accepts schema
-v13.b3-l0-baselines/1, pinned to those exact pair IDs, source hashes, labels,
-provenance, holdout indices and seeds, with EXACT/CONTROL/SYMBOLIC metrics.
+v13.b3-l0-baselines/2, pinned to those exact pair IDs, source hashes, labels,
+provenance, source-disjoint train/test indices and group hashes, and seeds, with
+EXACT/CONTROL/SYMBOLIC metrics.
 This creates only shadow adapter artifacts. It never updates B1/B2 weights or
 enables receiver injection; an L1 PASS only permits an L2 prefix shadow trial.
 """

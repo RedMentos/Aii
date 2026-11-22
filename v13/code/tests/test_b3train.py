@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -6,7 +7,7 @@ from unittest.mock import patch
 import numpy as np
 
 from v13.runtime import Runtime
-from v13.b3train import train_l1_shadow
+from v13.b3train import train_l1_shadow, _source_disjoint_split
 
 
 class L1ShadowTrainingTests(unittest.TestCase):
@@ -71,22 +72,22 @@ class L1ShadowTrainingTests(unittest.TestCase):
 
     def test_source_pinned_l0_evidence_can_open_only_l2_shadow_gate(self):
         pairs, batch = self._pairs_and_batch()
-        split_rng = np.random.default_rng(20261122)
-        test_indices = []
-        for label in range(2):
-            members = np.flatnonzero(batch["y"] == label)
-            members = split_rng.permutation(members)
-            test_indices.extend(int(x) for x in members[:6])
-        test_indices = sorted(test_indices)
+        train_indices, test_indices, train_hashes, test_hashes = _source_disjoint_split(
+            batch["source_refs"], batch["y"], 20261122
+        )
         l0 = {
-            "schema": "v13.b3-l0-baselines/1",
+            "schema": "v13.b3-l0-baselines/2",
+            "split_policy": "SOURCE_SHA256_GROUPED_STRATIFIED_20PCT_MIN2_V1",
+            "train_indices": train_indices.tolist(),
+            "test_indices": test_indices.tolist(),
+            "train_source_hashes": train_hashes,
+            "test_source_hashes": test_hashes,
             "task_id": "binary-outcome", "direction": "B1_TO_B2",
             "label_source": "verified-test-outcome",
             "labels": [i % 2 for i in range(64)],
             "label_provenance": [f"feedback-{i}" for i in range(64)],
             "body_pair_ids": batch["body_pair_ids"],
             "source_hashes": [x["sha256"] for x in batch["source_refs"]],
-            "test_indices": test_indices,
             "seed_ids": ["3", "7", "11"],
             "acc": {"EXACT": [0.5, 0.5, 0.5], "CONTROL": [0.5, 0.5, 0.5], "SYMBOLIC": [0.5, 0.5, 0.5]},
             "bytes": {"EXACT": 0, "CONTROL": 16, "SYMBOLIC": 32},
@@ -108,7 +109,7 @@ class L1ShadowTrainingTests(unittest.TestCase):
         self.assertEqual(report["latent_authority"], 0)
         task = gate_call.call_args.args[0]
         self.assertEqual(task["seed_ids"]["LATENT"], ["3", "7", "11"])
-        self.assertEqual(task["acc"]["EXACT"], [0.5, 0.5])
+        self.assertEqual(task["acc"]["EXACT"], [0.5, 0.5, 0.5])
         self.assertEqual(task["role_drop"], 0.0)
         for seed in report["seed_reports"]:
             manifest = json.loads((self.r.home / seed["candidate_manifest"]).read_text())
@@ -116,6 +117,75 @@ class L1ShadowTrainingTests(unittest.TestCase):
             self.assertEqual(len(manifest["body_pair_ids"]), 64)
             self.assertEqual(len(manifest["label_provenance"]), 64)
             self.assertEqual(manifest["receiver_injection_authority"], 0)
+
+
+    def test_source_disjoint_holdout_keeps_all_spans_of_each_source_together(self):
+        source_refs = []
+        labels = []
+        for group in range(32):
+            label = group % 2
+            digest = f"{group:064x}"
+            for span in range(2):
+                source_refs.append({
+                    "source_id": f"source-{group}",
+                    "sha256": digest,
+                    "char_start": span * 8,
+                    "char_end": span * 8 + 8,
+                })
+                labels.append(label)
+        train, test, train_hashes, test_hashes = _source_disjoint_split(
+            source_refs, np.asarray(labels, dtype=np.int64), 20261122
+        )
+        train_set, test_set = set(train.tolist()), set(test.tolist())
+        self.assertFalse(set(train_hashes) & set(test_hashes))
+        self.assertEqual(set(train_hashes) | set(test_hashes),
+                         {ref["sha256"] for ref in source_refs})
+        for digest in {ref["sha256"] for ref in source_refs}:
+            indices = {i for i, ref in enumerate(source_refs) if ref["sha256"] == digest}
+            self.assertTrue(indices <= train_set or indices <= test_set)
+            self.assertFalse(indices & train_set and indices & test_set)
+
+    def test_source_disjoint_holdout_keeps_two_test_groups_per_class(self):
+        refs = []
+        labels = []
+        for group in range(8):
+            refs.append({
+                "source_id": f"source-{group}",
+                "sha256": f"{group:064x}",
+                "char_start": 0,
+                "char_end": 8,
+            })
+            labels.append(group % 2)
+        train, test, train_hashes, test_hashes = _source_disjoint_split(
+            refs, np.asarray(labels, dtype=np.int64), 13
+        )
+        label_by_hash = {ref["sha256"]: labels[i] for i, ref in enumerate(refs)}
+        self.assertEqual(len(train_hashes), 4)
+        self.assertEqual(len(test_hashes), 4)
+        for label in (0, 1):
+            self.assertEqual(sum(label_by_hash[x] == label for x in train_hashes), 2)
+            self.assertEqual(sum(label_by_hash[x] == label for x in test_hashes), 2)
+        self.assertEqual(len(train) + len(test), 8)
+
+    def test_source_disjoint_holdout_rejects_conflicting_labels_for_same_source(self):
+        refs = [
+            {"source_id": "source-a", "sha256": "a" * 64, "char_start": 0, "char_end": 4},
+            {"source_id": "source-b", "sha256": "a" * 64, "char_start": 4, "char_end": 8},
+        ]
+        with self.assertRaisesRegex(ValueError, "conflicting task labels"):
+            _source_disjoint_split(refs, np.asarray([0, 1], dtype=np.int64), 7)
+
+    def test_legacy_per_example_l0_evidence_is_rejected(self):
+        pairs, batch = self._pairs_and_batch()
+        with patch("v13.b3train.training_batch", return_value=batch):
+            with self.assertRaisesRegex(ValueError, "L0 baseline evidence"):
+                train_l1_shadow(
+                    self.r.cognition, pairs, [i % 2 for i in range(64)],
+                    [f"feedback-{i}" for i in range(64)], "binary-outcome",
+                    "verified-test-outcome", direction="B1_TO_B2",
+                    seeds=(3, 7, 11), epochs=1, head_steps=1,
+                    l0_evidence={"schema": "v13.b3-l0-baselines/1"},
+                )
 
     def test_refuses_less_than_sixty_four_pairs(self):
         with self.assertRaisesRegex(ValueError, "at least 64"):
