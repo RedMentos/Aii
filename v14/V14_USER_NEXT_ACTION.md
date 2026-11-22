@@ -1,26 +1,3 @@
-# V14 USER NEXT ACTION — refreshed 2026-11-22 21:42 CET
-
-**User action: NONE. Do not run Termux, send another update request, change models/weights/permissions or start a device probe.** The existing authorized updater has already installed the current release and reports UP_TO_DATE. No candidate is ready to deploy.
-
-## Current installed release and phone evidence
-
-- Release branch gpt6/v13-private-remote-bridge-20261111 = aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA has **30/30 observed check-runs SUCCESS**.
-- Private PIPELINE_STATUS [#619](https://github.com/RedMentos/Aiiii/issues/619): same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE, last_error NONE.
-- Private DIAGNOSTICS [#620](https://github.com/RedMentos/Aiiii/issues/620): last stored turn FINAL but 57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens. Correctness UNKNOWN; no new turn sent. B1/B2 TIME_BUDGET 53.2/54.2 s. Instant native-process sample 0 mapped / 0 MiB PSS/RSS, child readability UNKNOWN; not free RAM or sustained residency.
-- Official Age 0; lab request 10 / implemented stage ceiling 5; physical feature execution unverified; learning commit authority requires separate SHADOW.
-
-## Candidate state — nothing released
-
-- #2370 fair-budget integration: exact head 8581023, 27 checks queued / 3 skipped. Needs full exact-head CI and actual B1/B2 OfferPacket→C4→C3 evidence.
-- #2367 native receiver: 26 success / 4 skipped, but blocked by #2377 actual-model-byte tamper fix (7 checks queued) and a path_for(role) identity review. B3 remains OFF.
-- #2375 RAW EYE frame adapter: 8 queued / 1 skipped; not an Android MediaProjection provider.
-- #2372 temporal JEPA: 9 queued; SleepRuntime postcommit and source-lifecycle composition remain open; no GGUF weight update proof.
-- #2376 Android action journal: 7/7 CI, but stacked on #2356 whose emulator process-restart job failed. No APK or device action proof.
-
-**No manual command is needed.** The next useful device action will only be considered after a stable, reviewed, exact-CI-green candidate exists and a bounded device test is explicitly authorized. Do not change cache settings or perform a native probe without separate approval.
-
----
-
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
 - JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
@@ -1717,11 +1694,11 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 
 ## Core native-probe operator follow-up — 2026-11-22 21:18 UTC
 
-- Core PR [#2381](https://github.com/RedMentos/Aii/pull/2381), branch \`core/v14-native-probe-operator-dispatch-20261122\`, exact head \`1252e4e7ee5cd194b6cb9d46a208c3bd3e1bbb19\`, is DRAFT and stacked on QA #2377. It wires \`:callosum arm-probe\`, \`:callosum native-probe\`, and \`:callosum revoke-probe\` to the existing local source/model-bound approval. It adds a full-nonce sidecar route binding that checks exact canonical \`ModelManager.path_for(role)\` versus manifest paths at arm and consume, without re-hashing multi-GB GGUFs; the approval module still hashes bytes and checks revisions.
+- Core PR [#2381](https://github.com/RedMentos/Aii/pull/2381), branch \`core/v14-native-probe-operator-dispatch-20261122\`, exact head \`1252e4e7ee5cd194b6cb9d46a208c3bd3e1bbb19\`, is DRAFT and stacked on QA #2377. It wires \`:callosum arm-probe\`, \`:callosum native-probe\`, and \`:callosum revoke-probe\` to the existing local source/model-bound approval. A full-nonce sidecar route binding checks exact canonical \`ModelManager.path_for(role)\` versus manifest paths at arm and consume, without re-hashing multi-GB GGUFs; the approval module still hashes bytes and checks revisions.
 - The observed parent defect was exact-head #2377 at \`fcb7e8c2b70e675c46741d919626ad4fd34ceb38\`: workflow #45066958323 failed 11/25 approval tests on Python 3.13 and 3.14 because operator dispatch was missing and \`callosum.time\` was absent. The QA branch then advanced to \`42723cfd4c0629940b75c158283bdf5256568142\`; its current staged and integrated workflows #45071147374 / #45071147387 were queued when checked.
 - New Core workflow #45071358963 and staged/integrated run #45071359009 were QUEUED on the Core PR head at handoff. Do not treat queued as PASS.
 - LOCAL_LINUX Python 3.13.5 isolated route-binding harness: PASS for exact path, rejection of a byte-identical alternate path, and rejection of a symlink. Full Aii checkout/Runtime tests remain BLOCKED in this execution environment; CI is the exact-repository test path.
 - The command refuses to consume approval if the staged \`cognition.native_receive\` consumer is absent. A consumed attempt gets a 120-second monotonic deadline, diagnostic-only authority checks, route-state cleanup and synchronous native-pool unload.
 - This remains a diagnostic input-effect probe only. B3 is OFF; semantic use, learned latent transfer and training authority are not established. The native loader still opens a path rather than a verified file descriptor, so path-based TOCTOU is not eliminated.
-- No native probe, model/weight change, permission change, updater request or Redmi mutation was performed. Latest Boss evidence still has no authenticated private owner-read reply; installed SHA/updater consent are UNKNOWN and REDMI_UNVERIFIED.
+- No native probe, model/weight change, permission change, updater request or Redmi mutation was performed. Latest Boss evidence on \`boss/v14-run11-current-evidence-sync-20261122\` has no authenticated private owner-read reply; installed SHA/updater consent are UNKNOWN and REDMI_UNVERIFIED.
 - Next: wait for #2381 exact-head Python 3.13/3.14 and staged workflows; then independent QA review, stack into #2377, and let Boss compose the recovery→stage→deployer pins. Any actual native probe requires a separate explicit user decision after that integration. **User action: none.**
