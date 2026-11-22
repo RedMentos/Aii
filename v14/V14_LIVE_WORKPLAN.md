@@ -1300,3 +1300,18 @@ Private LEARNING_STATUS #594 reports `learning.state=UNAVAILABLE`; no active lea
 Latest HEALTH #593 also reports runtime UNAVAILABLE, while #591 pipeline/dashboard metadata is UP_TO_DATE and #592 had reported RUNNING earlier. Treat the current runtime as UNAVAILABLE/discrepant. Do not send a duplicate update request.
 
 Boss PR #2343 head `3585145ebbc0530817d4aeb216c3e75251e3f695`: 0 success / 27 queued / 1 skipped / 0 failure at last poll. The diagnostic run remains queued; candidate is DRAFT / NOT_RELEASED.
+
+
+## Cross-agent integration review — 2026-11-22T17:31:00Z
+
+| Lane / PR | Exact head and CI | Concrete blocker / next owner action |
+| --- | --- | --- |
+| Boss #2343 | branch readback `38c309b`; 0 success / 27 queued / 1 skipped | Boss: obtain the exact postcommit replacement-4 preimage from the queued diagnostic, repair the source-bound composer, then reconcile nested pins and rerun full 3.13/3.14 stage/integration. |
+| JEPA #2351 + Store/QA #2359 | #2359 head `7aa82b1`; 4 success / 9 failure. #2355 older head 1 success / 6 failure. | JEPA/QA: C3-resume rejects the Body/World builder SHA; A5 rejects the Memory source-cleanup anchor as ambiguous. Rebase the combined stack to exact Memory/Store bytes, preserve JEPA flock → Store RLock, test both forget/promotion orderings and rollback. Do not merge #2355 and #2359 separately. |
+| B3 #2346 | head `81d225a`; 11 success / 12 failure / 1 skipped | Core/Research: paired capture and tap provenance pass, ARM64 cross-compile passes, but staged receiver fails `integrated builder hash mismatch`. Rebind stage builder and prove receiver-side task utility vs no/zero/shuffled/OOD. Production B3 OFF. |
+| RAW EAR #2349 | head `d03500d`; 12 success / 2 failure / 2 skipped | Perception/QA: audio source blob pin differs at `v13/audio_voice_cues.py`; migration returns PARTIAL instead of UPDATED. Rebind exact source bytes and repair migration without weakening assertions. No AudioRecord/mic claim. |
+| Arithmetic #2362 | head `4629249`; 1 success / 4 failure / 2 skipped | Core/Boss: isolated 4/4 parser claim is not staged proof; `integrated_arithmetic_candidate` still pins previous `arithmetic_reflex.py`. Rebind into #2343 and run C5/World/stage consumer. |
+| Temporal bodyview #2360 | head `35e206b`; 4 success / 11 failure | JEPA/Core: stacked on #2343; do not merge until base composer and bodyview source pins are green and actual B1/B2 prompt consumer is tested. |
+| Native probe integrity #2350 | head `266822c`; 18/18 success | Core: diagnostic-only, stacked on #2332, not release-base and not a semantic latent receiver. Do not prioritize over P0 user-visible path. |
+
+**Learning/device boundary:** private #591 confirms c4eb82 installed and pipeline metadata UP_TO_DATE; later #593 HEALTH and #594 LEARNING_STATUS are UNAVAILABLE. No permanent body-weight update or cross-organ gradient is verified. The latest recorded turn remains slow and B1/B2 produce zero valid offers. No candidate deployment or user action occurred.
