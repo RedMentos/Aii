@@ -112,7 +112,7 @@ def validate(kind,obj):
             if not isinstance(obj[field],dict) or set(obj[field])!=set(roles):raise ValueError("B3 pair "+field)
         if any(not isinstance(obj[field][role],str) or not obj[field][role] for field in ("tap_packet_ids","tap_ids","model_revisions") for role in roles):raise ValueError("B3 pair identity")
         if any(type(obj[field][role]) is not int or obj[field][role]<1 for field in ("token_counts","dimensions") for role in roles):raise ValueError("B3 pair geometry")
-        if obj["token_alignment"]!="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS" or obj["receiver_pooling"]!="MEAN_OF_RECEIVER_NATIVE_TAP_TOKENS" or obj["injection_authority"]!=0 or obj["learning_authority"]!=0:raise ValueError("B3 pair authority/semantics")
+        if obj["token_alignment"]!="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS" or obj["receiver_pooling"]!="B2_ADAPTIVE_GIST_SLOTS" or obj["injection_authority"]!=0 or obj["learning_authority"]!=0:raise ValueError("B3 pair authority/semantics")
     if kind=="SourceRef" and not 0<=obj["char_start"]<=obj["char_end"]:raise ValueError("SourceRef-Bereich")
     if kind=="OfferPacket" and (obj["role"] not in {"B1_DETAIL","B2_GIST"} or not 0<=obj["confidence"]<=1):raise ValueError("Offer role/confidence")
     if kind=="BodySourceIdSelection":
