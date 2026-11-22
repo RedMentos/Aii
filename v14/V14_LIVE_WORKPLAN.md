@@ -1323,3 +1323,37 @@ Status: signed consumer CI PASS / staged migration FAIL / provider absent / REDM
 
 
 **Latest PR #2375 CI poll:** code/test head `f87ebac407a19c147da7eb52bc63f10e9eed25d2` now has privacy and offline-bridge-security SUCCESS, six exact-head checks still QUEUED, and the additive validator SKIPPED by policy. This remains partial CI, not full exact-head acceptance; current branch head `eb6752d3d5cd42f5f3f964b4480c7954564cb6d9` is handoff-only after the code/test commit.
+
+ 
+---
+ 
+## Boss & Integration checkpoint — 2026-11-22 (2026-11-22T22:24:48.002Z; run 12)
+
+### Release and device evidence
+
+- Release-development branch gpt6/v13-private-remote-bridge-20261111 remains at aed1d2b826290c95c70356b5d8b864b5ef382be4. The preceding exact-release checkpoint recorded 45/45 check-runs SUCCESS; fresh private PIPELINE_STATUS #634 confirms this same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and no last error. This proves code installation, not functional acceptance.
+- Fresh DIAGNOSTICS #635: service/runtime/dashboard RUNNING; last stored FINAL turn 57.7388 s total, 41.6269 s TTFT, 38.9453 s prefill, 751 prompt tokens, 2 generated tokens. B1/B2 native probes remain TIME_BUDGET at 53.2/54.2 s; C2 OK; C3 3.1 s. Instant native process view: 0 mapped processes / 0 MiB PSS/RSS, child readability UNKNOWN.
+- HEALTH #636 reports 1,216 MiB MemAvailable / 5,569 MiB total / 1,364 MiB free disk but runtime UNAVAILABLE, conflicting with DIAGNOSTICS RUNNING. LEARNING_STATUS #637 is UNAVAILABLE. Do not reconcile by guessing.
+- The redacted console excerpt says USER_OPTED_IN, but console_errors is USER_NOT_OPTED_IN; no LOG_PAGE was requested. No CHAT_SEND, UPDATE_REQUEST, shell, model/weight/permission change or device mutation.
+
+### Boss implementation and exact CI
+
+- Boss PR #2370 is still DRAFT on exact head 03909f05f31a5dcabd437a64885b5e4a7de7ea84, based on the installed release SHA. Current exact-head workflow snapshot: 3 SUCCESS / 13 QUEUED / 0 IN_PROGRESS / 2 CANCELLED / 2 SKIPPED / 0 failures observed. The successful workflows are Lab-Age control state, combined online JEPA integration and two-checkout migration; the staged B1/B2→C4→C3 consumer, audio/arithmetic, native receiver and other checks remain queued. No local full repository tests ran because git clone failed with GitHub DNS resolution.
+- The staged synthetic consumer requires both source-bound B1/B2 OfferPackets to be selected by C4 and their exact source quotes to appear in the actual C3 prompt, with c4_offer_context_ready receipt. This is WIRED_SYNTHETIC, not native B1/B2 offer delivery or semantic acceptance.
+- Arithmetic tests now encode the existing ambiguity policy: slash/date-like strings 2/2, 12/11, 8/4, 2026/11 and 2026-11 are not deterministic math without an explicit calculate/berechne cue; explicit calculate 8/4, calculate 1/3, calculate 2/2 and berechne 2/2 remain positive cases. This was a test-contract correction; production arithmetic code was not changed.
+- The 35 s observer cap divided across two sequential bodies yields about 17.5 s per body, while the device probes need 53.2/54.2 s before TIME_BUDGET. This remains a measured schedule risk; no speed improvement is claimed.
+
+### Cross-agent integration review
+
+- #2377 current head 45f08a3c0da564f12cdddef89f99fde245657d61 has native receiver and staged/integrated workflows SUCCESS. Boss review found the approval record stores only model key/revision/digest, not the original canonical path + (dev,inode,size,mtime,ctime) identity across arm→consume. A byte-identical replacement with the manifest and route changed together could pass the current equality check. Boss comment 7086741822 records the required negative test; do not merge, B3 OFF.
+- Core #2381 head c13157abdcd4745b2a9d238235eb0e264a09b1fe is based on an older #2377 base and diverges 20 ahead / 7 behind the current QA head. Rebase/reconcile after #2377's approval identity is fixed.
+- JEPA #2372 head beda653d49b8306cf2364eb5a7d25332373b302b has staged/integrated, optimizer-resume and owner-read failures; temporal T8 Windows passed. QA #2383 head 714a09eae1dc3a901a6adbc4effce67c25da910c still fails optimizer resume (stale lifecycle/feedback/context/training/Termux/stage pins), two-checkout migration (PARTIAL), Lab-Age and Python 3.14 staged startup. It is one commit behind current #2372; rebase and recompute the entire downstream chain bottom-up. No real weight diff or held-out proof.
+- Perception #2375 head eb6752d3d5cd42f5f3f964b4480c7954564cb6d9 fails nine RAW EYE tests on both Python versions because _feature_summary was undefined. QA #2384 head 876221d45306c2b6c1c6988ee5d2b55e3d2bd8b9 adds a bounded numeric/content-free helper; its new frame-ingress and staged workflows are queued. Keep both draft until exact current-head CI passes.
+- Companion QA #2356 head 3833e155dd7a93486444076230c980b674686b30: staged context, Android outcome contract and Core Store/caller gate pass; process-restart emulator fails because System UI reports "isn't responding", with no visible window although the app PID/activity remain. This is an emulator-lifecycle failure, not app process-death acceptance. Boss comment 7086770309 records the exact failure.
+- Core #2376 head e09850296c83e797f0f618f3d2e746c3b3a5e883 has two workflows SUCCESS but is 8 commits behind current #2356 QA head; #2379 head c915543f30d11639f250624cdf0236fc28d59752 has provider/staged workflows queued and is 7 commits behind #2356. Rebase both onto the current QA head before using their results.
+
+### Whole-Canon coverage and next actions
+
+The 1,255 historical Canon headings remain preserved; the exact historical V13 appendix remains unchanged in the V14 master. Semantic clause→implementation→consumer→test→environment→rollback mapping is still incomplete. P0 open paths remain: correct responsive C3 output; actual B1/B2 offer delivery and C4/C3 use; learned B3 latent utility; JEPA source-forget/real parameter diffs; Android process-death/rollback, MediaProjection and AudioRecord providers; self-optimization/cross-organ gradients; full Canon traceability. All five enabled V14 automations were verified (Boss, QA & Android, JEPA & Memory, Forschung & Perception, Core & Harness).
+
+**Next:** finish exact #2370 CI and review the fair-budget viability; repair the approval identity binding in #2377; rebase #2381/#2383/#2376/#2379 on their current parents; await #2384 exact tests; continue independent whole-Canon work rather than treating any one PR as completion. **User action: none.**
