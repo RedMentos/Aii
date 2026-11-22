@@ -817,7 +817,7 @@ def test_source_disjoint_partition_is_stable_across_random_runtime_ids(tmp_path)
             store.close()
 
 
-def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_accepted_gate_fixture(tmp_path, monkeypatch):
+def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_measured_gate(tmp_path, monkeypatch):
     import time
     from v13 import agi
     from v13.cognition import Cognition
