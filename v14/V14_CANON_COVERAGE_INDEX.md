@@ -2370,7 +2370,7 @@ Boss candidate #2370 head bae7d031: 1 SUCCESS / 14 QUEUED / 1 IN_PROGRESS / 7 CA
 | B4/B5 / C4 coalition | Source-span C4 receipt and staged coalition | Candidate consumer CI pending | No learned coalition or Redmi proof |
 | C1/JEF/C2/C3 | Runtime and bounded exact-arithmetic candidate | #2370 exact matrix queued | Last stored phone turn 57.74 s / 2 tokens; correctness unknown |
 | World/Self/Memory/Context OS/Memorilla | Source-bound Store and partial context companion; temporal JEPA receiver candidate | #2372/#2383 not green; #1983 not accepted | Not tested on Android |
-| JEPA/EMA / temporal T8 | Persistent encoder/predictor/EMA and replay candidate | #2372 2 success / 4 failure / 2 in progress / 3 queued; #2383 4 success / 7 failure | SHADOW only; no accepted native model-weight diff |
+| JEPA/EMA / temporal T8 | Persistent encoder/predictor/EMA and replay candidate | #2372 2 success / 9 failure; stacked on #2351 base 5 success / 9 failure / 1 skipped; #2383 4 success / 7 failure | SHADOW only; no accepted native model-weight diff |
 | Eligibility × error × modulator × plasticity | No accepted cross-organ plasticity consumer | No gradient/parameter-diff acceptance | OFF |
 | Sleep/Dream/Replay | Bounded postcommit JEPA shadow worker | Source-lifecycle and optimizer/postcommit failures remain | No accepted Android consolidation |
 | Audio / voice | RAW EAR plus optional Teacher Ear contract; candidate audio-window dispatch | #2369 14 queued / 2 skipped; #2370 pending | No visible AudioRecord provider, trainable decoder/vocoder or full-duplex |

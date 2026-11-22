@@ -28,7 +28,7 @@ Role: whole-Canon integration, release gate and cross-agent coordination
 
 ## Cross-agent integration / whole Canon
 
-- #2372 temporal T8/receiver: 2 success / 4 failure / 2 in progress / 3 queued; #2383 QA source-lifecycle chain 4 success / 7 failure. No accepted B1/B2/C3 master-weight diff or held-out utility.
+- #2372 temporal T8/receiver: 2 success / 9 failure; stacked on #2351 base 5 success / 9 failure / 1 skipped; #2383 QA source-lifecycle chain 4 success / 7 failure. No accepted B1/B2/C3 master-weight diff or held-out utility.
 - #2369 Teacher Ear: 14 queued / 2 skipped. R-094/R-095 copied from its exact research ledger; no model download. Teacher Ear is caller-supplied, optional and ephemeral, not ASR inference.
 - #2375 RAW EYE: 6 success / 4 failure / 1 skipped; #2384: 3 success / 2 failure. Frame-ingress failures remain.
 - #2356 companion QA: 7 success / 1 failure (process restart); #2379 MediaProjection: 5 success / 2 failure and stale companion base; #2376 action journal is stale. No end-to-end Android action or capture receipt.
