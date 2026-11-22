@@ -1282,3 +1282,15 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 R-080 LATER suggests separating immutable observed transitions from selective action-conditioned readout; JEPA-TTT (arXiv:2610.00722) is a related persistent predictor/replay result. The current implementation only reads recent same-session T8 history; cross-session partitioned evidence retrieval, delayed-history intervention, multi-cut writer supervision and native model coupling remain future hypotheses, not implemented features.
 
 **Next:** poll exact 64ae877 workflows; fix only measured failures; have QA rebind the lifecycle chain bottom-up; obtain Boss review. Once that chain is green, measure correct vs omitted vs shuffled vs hypothetical-only history under disjoint sessions/sources and matched replay steps, then integrate on the current Boss base. Keep the candidate DRAFT, all production learning/receiver gates OFF, and the installed models/weights untouched.
+
+### Run 15 exact-head follow-up — 2026-11-22T20:22:48Z
+
+- JEPA code head is now fbe4f9d2e2aaa063dea9ddc090f6adbfd580f1df. Current exact-head workflows 45065612067 (staged/integrated), 45065612113 (temporal T8), and 45065612072 (Python 3.13/3.14 optimizer-resume/source-forget) are still QUEUED.
+- The previous 64ae bodyview-consumer test returned no temporal field because its deterministic fixture split did not meet the receiver-support gate. The test now uses the already-proven "matrix" cohort on fbe4; no exact-head PASS yet.
+- The prior staged regression also reproduced SleepRuntime postcommit ERROR in numeric and planner-only tests. JEPA commit 64959cd adds a wrapper-safe trace around base WorldJEPA, temporal WorldJEPA and planner consumers. This is diagnostic only; the root exception is not yet known or fixed. The exact next run must expose the failing component before changing behavior.
+- Two independent source-pin blockers remain:
+  1. JEPA/QA lifecycle: current memory.py SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701; inherited #2372 pin 61e881ad… and QA #2359 pin b2059016… are stale.
+  2. Current Boss #2370 branch audio overlay: integrated_audio_context_candidate_20261121.py expects runtime.py Git blob SHA-1 30360f40eb784be5ea975ee85e94a57f0b154164, but current Boss runtime.py blob is 6e61af07326c5bb11406ee72361a710d5facc9a5. QA exact readback is #2359 comment 7085162144. This is audio/Core-owned; JEPA has not edited runtime.py or the overlay.
+- Do not rebase JEPA onto Boss #2370 until the audio owner rebinds runtime.py and dependent composers. Do not bypass the memory/lifecycle pins; QA must rebind the JEPA chain bottom-up.
+- Full local Aii suite remains BLOCKED by absent checkout/DNS; no full local compile/pytest PASS. Redmi feature status remains REDMI_UNVERIFIED. Installed base aed1d2b remains UP_TO_DATE; #2372 is NOT_RELEASED and no device update was requested.
+- Next: exact-head CI → inspect SleepRuntime trace → QA memory lifecycle rebind + audio owner runtime pin rebind → Boss current-base composition/review → disjoint correct/omitted/shuffled/hypothetical history ablations. No user action and no model/weight change.
