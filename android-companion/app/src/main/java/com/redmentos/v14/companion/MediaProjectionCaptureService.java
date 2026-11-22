@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.PixelFormat;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
@@ -25,6 +26,7 @@ import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
+import android.view.WindowMetrics;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
@@ -119,13 +121,22 @@ public final class MediaProjectionCaptureService extends Service {
         projection = manager.getMediaProjection(resultCode, resultData);
         if (projection == null) throw new SecurityException("MediaProjection consent token rejected");
 
-        DisplayMetrics metrics = new DisplayMetrics();
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager == null ? null : windowManager.getDefaultDisplay();
-        if (display == null) throw new IllegalStateException("default display unavailable");
-        display.getRealMetrics(metrics);
-        sourceWidth = Math.max(1, metrics.widthPixels);
-        sourceHeight = Math.max(1, metrics.heightPixels);
+        if (windowManager == null) throw new IllegalStateException("window manager unavailable");
+        int densityDpi = Math.max(1, getResources().getConfiguration().densityDpi);
+        if (Build.VERSION.SDK_INT >= 30) {
+            WindowMetrics metrics = windowManager.getMaximumWindowMetrics();
+            Rect bounds = metrics.getBounds();
+            sourceWidth = Math.max(1, bounds.width());
+            sourceHeight = Math.max(1, bounds.height());
+        } else {
+            DisplayMetrics metrics = new DisplayMetrics();
+            Display display = windowManager.getDefaultDisplay();
+            if (display == null) throw new IllegalStateException("default display unavailable");
+            display.getRealMetrics(metrics);
+            sourceWidth = Math.max(1, metrics.widthPixels);
+            sourceHeight = Math.max(1, metrics.heightPixels);
+        }
         double scale = Math.min(1.0,
                 Math.sqrt((double) MAX_PIXELS / ((double) sourceWidth * sourceHeight)));
         captureWidth = Math.max(1, (int) Math.floor(sourceWidth * scale));
@@ -150,7 +161,7 @@ public final class MediaProjectionCaptureService extends Service {
                 "V14-OneShot-Screen-Frame",
                 captureWidth,
                 captureHeight,
-                Math.max(1, metrics.densityDpi),
+                densityDpi,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 imageReader.getSurface(),
                 null,
