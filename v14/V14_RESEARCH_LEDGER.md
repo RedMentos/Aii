@@ -1110,3 +1110,31 @@ Primary source: https://arxiv.org/abs/2611.20819.
 - References: https://arxiv.org/abs/2505.01747 ; https://dcase.community/challenge2025/task-low-complexity-acoustic-scene-classification-with-device-information-results ; https://github.com/CPJKU/dcase2025_task1_baseline ; https://developer.android.com/about/versions/14/changes/fgs-types-required ; https://developer.android.com/develop/background-work/services/fgs/restrictions-bg-start ; https://developer.android.com/training/permissions/requesting .
 
 **Decision:** no model, weight, dependency, permission, Android app or device data changed. Speaker similarity remains diagnostic-only DEFER. Microphone remains OFF. Next: finish exact-head staged/integrated CI, Boss/QA review PR #2304, then Core/QA implement the consent-gated AudioRecord provider under the handoff.
+
+## R-073 — Signed one-shot Android AudioRecord consumer and platform constraints (2026-11-22)
+
+**Primary platform sources reviewed 2026-11-22 (not a research paper):**
+- Android AudioRecord API reference: https://developer.android.com/reference/android/media/AudioRecord
+- Android media recording overview: https://developer.android.com/media/platform/mediarecorder
+- Android audio-input sharing and recording callbacks: https://developer.android.com/media/platform/sharing-audio-input
+
+**Findings that constrain the Redmi implementation**
+- AudioRecord requires RECORD_AUDIO; the API reference says to check getState() immediately after construction. getMinBufferSize() is a minimum, not a guarantee of smooth capture. 44.1 kHz is the only rate guaranteed on every device; 16 kHz may work on some devices. Therefore a fixed 16-kHz RAW EAR contract must check the actual getSampleRate() and fail closed if it differs; do not silently relabel or resample.
+- Android's media guide recommends UNPROCESSED only when PROPERTY_SUPPORT_AUDIO_SOURCE_UNPROCESSED reports support. If unsupported, it describes VOICE_RECOGNITION as a possible less-processed source without AGC/noise suppression. This is a candidate for a separate acoustic-quality comparison, not an automatic fallback; the current consumer accepts only UNPROCESSED or MIC and requires the actual source in the signed receipt.
+- Android 9+ background applications cannot access microphone input unless operating through an eligible foreground service. A visible, user-approved one-shot Activity is the safer initial path; no background capture service is added here.
+- Android 11+ exposes privacy-sensitive capture controls. When multiple apps capture, an app may receive silence, the input device may change, and preprocessing/sample format may change. The provider should register AudioRecordingCallback before capture and abort or explicitly report silence/rerouting/preprocessing changes. Whether to set setPrivacySensitive(true) is a separate measured product decision.
+
+**Implementation on stacked PR #2310**
+- Added v13/code/v13/audio_capture_consumer.py, a Termux-side one-shot consumer for the existing audio_input.submit_audio_only path. It builds a 16-kHz mono PCM16 request capped at 1 second, verifies the request digest and canonical P-256 receipt using the existing explicitly pinned companion key, binds request ID / source / Runtime generation / sample count / monotonic duration / PCM SHA-256 / OS permission / local consent / FINAL provenance, and rejects replayed nonce or request ID.
+- The verifier reuses the existing companion receipt database and adds only a request-ID/nonce ledger. It does not persist PCM. The consumer passes the live consent check, linearizable guard and two-phase revocation callback into the existing audio-only Runtime consumer. It returns no PCM bytes/base64, transcript, speaker identity, T8 learning authority or action authority.
+- The companion's existing Java ReceiptSigner uses Canonical.json (sorted scalar keys, compact JSON) and the already-pinned P-256 Android Keystore key. Core's provider must use the same canonical form for the new audio receipt and must not reuse the launch-app-specific request-digest function.
+
+**Evidence and limits**
+- LOCAL_LINUX scratch mirror on CPython 3.13.5 x86_64: 20 targeted receipt/ingress tests PASS; py_compile PASS. The scratch used the #2304 audio-input contract and a matching copy of the existing P-256 verification primitive/API. It is not a full Aii checkout or a native Android test.
+- P-256 signature verification microbenchmark: 11.58 ms median across 9 samples on this x86_64 host only. This is not an ARM/Termux/Redmi estimate.
+- Exact-head GitHub workflows for PR #2310 were queued at last readback: signed-audio consumer run 44988386423; staged/integrated regression run 44988386435. No CI PASS is claimed until both are read back.
+- No Android AudioRecord provider, transport audio_outcome method, microphone permission, or device capture was added. Redmi remains REDMI_UNVERIFIED; no model, weight, updater or device state changed.
+
+**Decision:** keep the initial provider visible and one-shot; require exact 16-kHz mono PCM16 and exact sample count; fail closed on unsupported rate, short read, revoked consent, stale generation, invalid signature or replay. Test VOICE_RECOGNITION only as a separately labelled acoustic alternative. No model/OSS package or weight download selected.
+
+**Next integration:** Core implements the visible RECORD_AUDIO AudioRecord Activity and one-shot result transport; QA tests permission denial, cancellation, short reads, silent/rerouted capture, lifecycle/background denial, concurrent capture, revocation, replay and no raw-audio persistence; Perception then wires the signed result through this consumer to the existing A5/A4 Runtime path.
