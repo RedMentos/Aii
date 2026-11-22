@@ -83,10 +83,10 @@ def _extract(home, model, binary, token_ids=(2, 7)):
     try:
         return extract_token_rows(
             home=home,
-        model_path=model,
-        expected_model_sha256=hashlib.sha256(model.read_bytes()).hexdigest(),
-        model_revision="receiver-revision-1",
-        tokenizer_revision="receiver-tokenizer-1",
+            model_path=model,
+            expected_model_sha256=hashlib.sha256(model.read_bytes()).hexdigest(),
+            model_revision="receiver-revision-1",
+            tokenizer_revision="receiver-tokenizer-1",
             token_ids=list(token_ids),
             deadline=time.monotonic() + 10.0,
             local_confirmed=True,
@@ -149,6 +149,22 @@ def test_extract_token_rows_requires_explicit_local_confirmation(tmp_path):
             tokenizer_revision="receiver-tokenizer-1",
             token_ids=[2],
             deadline=time.monotonic() + 10.0,
+            binary_path=binary,
+        )
+
+
+def test_extract_token_rows_requires_interactive_local_tty(tmp_path):
+    home, model, binary = _fixture(tmp_path)
+    with pytest.raises(PermissionError, match="interactive local TTY"):
+        extract_token_rows(
+            home=home,
+            model_path=model,
+            expected_model_sha256=hashlib.sha256(model.read_bytes()).hexdigest(),
+            model_revision="receiver-revision-1",
+            tokenizer_revision="receiver-tokenizer-1",
+            token_ids=[2],
+            deadline=time.monotonic() + 10.0,
+            local_confirmed=True,
             binary_path=binary,
         )
 
