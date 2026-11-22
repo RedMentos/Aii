@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T17:31:00Z",
+  "updated_at": "2026-11-22T17:34:00Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; exact release CI 21/21 workflows SUCCESS and private owner-read confirms installed. Boss PR #2343 remains DRAFT/NOT_RELEASED; latest candidate head fc5fa22 has no exact-head CI receipt.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -250,10 +250,10 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "Voice/audio ingress is caller-supplied PCM16 only with synthetic source-bound consent lease; no AudioRecord, microphone permission, ASR, trainable decoder/vocoder or full-duplex. Android background/UI control has no OS executor and remains OFF.",
-      "next_step": "Core/QA/Perception: integrate #2271/#2342/#2347 companion stack in dependency order; add separate AudioRecord and trainable speech decoder/vocoder paths behind explicit OS consent. No APK install.",
+      "next_step": "Core/QA: port the Android companion app, transport, signed single-use receipts, durable pairing, action/outcome journal and read-only readiness from #2271/#2342/#2344/#2347/#2348 onto current release c4eb82. Preserve the existing owner-read/update bridge and Android OS consent boundaries. Re-run release-based tests before any APK install; require explicit device consent.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T16:02:01Z",
-      "proof": "#2347 exact head 4/4 workflows SUCCESS but stacked on unmerged #2271; no APK, UI, microphone or Redmi action proof."
+      "last_checkpoint": "2026-11-22T17:34:00Z",
+      "proof": "Branch-local CI is green (#2271 16/16, #2347 8/8, #2342 2/2, #2344 11/11, #2348 7/7), but the stack is based on b931e94/d3ac638: base 106 commits ahead and 787 behind release; companion head 129 ahead/787 behind. Current release has different android_control.py/android_outcomes.py and lacks the new companion runtime/transport and Kotlin app. Not release-integrated or Android-verified."
     },
     {
       "id": "V14-010",
@@ -705,9 +705,9 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-22T17:31:00Z",
+    "timestamp": "2026-11-22T17:34:00Z",
     "branch": "boss/v14-fair-budget-rebind-20261122-run13",
-    "head": "38c309b81bb105d94b4650740f44751e0c4d6daa",
+    "head": "7f6a7a64112e4411ba801a1642577082b7a190f9",
     "base_branch": "gpt6/v13-private-remote-bridge-20261111",
     "base_head": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "branch_head_type": "DRAFT_NOT_RELEASED_EXACT_CI_PENDING",
@@ -722,7 +722,7 @@
     "pr2347": "Android companion receipt recovery remains stacked on unmerged companion dependencies; no APK/device action proof.",
     "pr2349": "RAW EAR speaker calibration candidate remains synthetic-only; no real corpus/model/microphone.",
     "pr2350": "Native probe model-byte integrity candidate remains diagnostic; no contextual activation transfer or semantic latent utility.",
-    "redmi": "Private #591: c4eb82 installed, auto-update enabled, pipeline/dashboard UP_TO_DATE. #592 at 17:11Z reported service RUNNING; later #593 HEALTH says runtime UNAVAILABLE; #594 LEARNING_STATUS says learning UNAVAILABLE. Last recorded turn 57.74s / 41.63s TTFT / 38.95s prefill / 2 tokens; B1/B2 TIME_BUDGET, zero valid offers.",
+    "redmi": "Private #591: c4eb82 installed, auto-update enabled, pipeline/dashboard UP_TO_DATE. #592 at 17:11Z reported service RUNNING; later #593 HEALTH says runtime UNAVAILABLE; #594 LEARNING_STATUS says learning UNAVAILABLE. Last recorded turn 57.74s / 41.63s TTFT / 38.95s prefill / 2 tokens; B1/B2 TIME_BUDGET, zero valid offers. Lab stage10 active, official Age0, implemented stage5, physical feature execution unverified.",
     "private_owner_read": "Authenticated read-only PIPELINE_STATUS #591, DIAGNOSTICS #592, HEALTH #593, LEARNING_STATUS #594. No LOG_PAGE, CHAT_SEND, UPDATE_REQUEST or shell action.",
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK; container git ls-remote failed DNS. CI is not local Linux proof.",
     "p0_chat": "OPEN: no fresh correct 2+2, no same-turn B1/B2 valid offer→C4 consumption, no 20-turn acceptance; latest HEALTH and LEARNING_STATUS are UNAVAILABLE.",
@@ -731,11 +731,41 @@
     "user_action_required": "NONE; no manual Termux, update, model/weight, permission, APK or microphone action.",
     "active_agents": "Exactly five active roles: Boss, QA/Android, JEPA/Memory, Research/Perception, Core/Harness.",
     "agent_pr_snapshot": {
+      "2271": {
+        "head": "24e059d1f54e54d2285c9a542df207372fb27f4a",
+        "base_branch": "core/v14-core-companion-outcome-20261121 (branch deleted; base commit b931e94ea5b8647005e605816e7394ce6e4770b1)",
+        "checks": "16/16 success",
+        "blocker": "Base branch is 106 commits ahead / 787 behind current release from common ancestor d3ac638; PR head is 129 ahead / 787 behind. It changes current android_control.py/android_outcomes.py and adds companion runtime/transport + Kotlin app. Requires targeted port onto c4eb82, not direct merge."
+      },
+      "2342": {
+        "head": "24b8f9760939eccea6e877536027101204fe04f8",
+        "base": "PR #2271",
+        "checks": "2/2 success",
+        "blocker": "Durable pairing persistence QA is stacked on old divergent Android companion base; port/rebase required."
+      },
+      "2344": {
+        "head": "1eb512668074b1daa7da6e96e8e38aaec5931e1c",
+        "base": "PR #2342",
+        "checks": "11/11 success",
+        "blocker": "Source-scoped Android action/outcome journal is stacked on old divergent companion base; no release or device action proof."
+      },
       "2346": {
         "head": "81d225af972e8b3d6b645aba09cd01ccac5fa020",
         "base": "release c4eb82",
         "checks": "11 success / 12 failure / 1 skipped",
         "blocker": "Paired capture/tap provenance and ARM64 cross-compile pass, but staged native receiver fails integrated builder hash at stage_integrated_candidate.py:48; no receiver utility or Redmi latent proof."
+      },
+      "2347": {
+        "head": "955cb4b3c37f2c054bd0fc4d6e26177e2d41a365",
+        "base": "PR #2271",
+        "checks": "8/8 success",
+        "blocker": "Receipt-only recovery avoids redispatch but is stacked on old divergent base; no release/Redmi proof."
+      },
+      "2348": {
+        "head": "9f63015178e29e28d187d015e1205b1d5714c8b6",
+        "base": "PR #2344",
+        "checks": "7/7 success",
+        "blocker": "Read-only operator readiness is stacked on old divergent base; no release/Redmi proof."
       },
       "2349": {
         "head": "d03500df6c43e5654b13e379e3716760e1b2fadd",
@@ -1077,7 +1107,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T17:31:00Z",
+    "timestamp": "2026-11-22T17:34:00Z",
     "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "boss_candidate_sha": "38c309b81bb105d94b4650740f44751e0c4d6daa",
     "release_ci": "21_OF_21_WORKFLOW_RUNS_SUCCESS",
@@ -1103,9 +1133,10 @@
       "P0_B3_NATIVE_RECEIVER_STAGE_BUILDER_HASH_MISMATCH",
       "P1_RAW_EAR_AUDIO_SOURCE_BLOB_PIN_AND_MIGRATION_PARTIAL",
       "P0_ARITHMETIC_REFLEX_SOURCE_PIN_NOT_REBOUND",
-      "P0_TEMPORAL_BODYVIEW_RECEIVER_NOT_COMPOSED"
+      "P0_TEMPORAL_BODYVIEW_RECEIVER_NOT_COMPOSED",
+      "P0_ANDROID_COMPANION_STACK_BASE_DIVERGED_REQUIRES_RELEASE_PORT"
     ],
     "user_action_required": false,
-    "agent_stack_status": "2351/2355/2359 JEPA+Store source-forget stack not green; 2346 B3 stage hash mismatch; 2349 audio source blob mismatch; 2360 temporal bodyview stack failed; 2362 arithmetic source pin mismatch; 2350 byte-integrity-only stack 18/18 green but not release-base."
+    "agent_stack_status": "2351/2355/2359 JEPA+Store source-forget stack not green; 2346 B3 stage hash mismatch; 2349 audio source blob mismatch; 2360 temporal bodyview stack failed; 2362 arithmetic source pin mismatch; 2350 byte-integrity-only stack 18/18 green but not release-base. Android companion stack #2271/#2342/#2344/#2347/#2348 is branch-local green but diverged from release: base 106 ahead/787 behind, head 129 ahead/787 behind from d3ac638; port required."
   }
 }
