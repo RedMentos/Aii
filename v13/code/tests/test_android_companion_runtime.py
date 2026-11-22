@@ -57,11 +57,11 @@ def _sign_test_body(body):
     def der_integer(value):
         encoded = value.to_bytes((value.bit_length() + 7) // 8, "big")
         if encoded[0] & 0x80:
-            encoded = b"\\x00" + encoded
-        return b"\\x02" + bytes([len(encoded)]) + encoded
+            encoded = bytes([0]) + encoded
+        return bytes([2, len(encoded)]) + encoded
 
     payload = der_integer(r) + der_integer(s)
-    signature = b"\\x30" + bytes([len(payload)]) + payload
+    signature = bytes([0x30, len(payload)]) + payload
     return base64.b64encode(signature).decode("ascii")
 DENIAL_BODY = {**BODY, "nonce": "3" * 32, "status": "USER_DENIED", "local_consent": False}
 DENIAL_RECEIPT = {
