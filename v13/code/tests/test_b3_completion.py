@@ -16,7 +16,7 @@ class Gate(unittest.TestCase):
     def test_without_bridge_is_scaffold_and_lists_missing(self):
         g=BB.completion_gate(self.home,'B1_TO_B2',{'fallback_channel':'SOURCE_EXACT','experience_count':0})
         self.assertEqual(g['status'],'scaffold');self.assertFalse(g['B3_LATENT_IMPLEMENTED']);self.assertEqual(g['latent_authority'],0)
-        self.assertTrue(g['criteria']['CODE']);self.assertTrue(g['criteria']['INTEGRATION_TESTS'])
+        self.assertTrue(g['criteria']['CODE']);self.assertTrue(g['criteria']['INTEGRATION_TESTS']);self.assertTrue(g['criteria']['PAIRED_NATIVE_CAPTURE_API']);self.assertTrue(g['criteria']['PAIR_RESTART_VALIDATION_TESTS'])
         self.assertIn('REAL_SENDER_STATE_PATH',g['missing']);self.assertIn('NO_MESSAGE_ABLATION',g['missing'])
     def test_l1_pass_gives_l1_shadow_but_not_implemented(self):
         self.man()
