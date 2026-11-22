@@ -152,6 +152,10 @@ class ECDSAUIFrameReceiptVerifier:
                 try:
                     with self.db:
                         self.db.execute(
+                            "DELETE FROM used_ui_frame_receipts WHERE expires_at < ?",
+                            (int(self.clock()),),
+                        )
+                        self.db.execute(
                             "INSERT INTO used_ui_frame_receipts "
                             "(nonce,frame_token,frame_sha256,expires_at) VALUES (?,?,?,?)",
                             (nonce, token, body["frame_sha256"], body["expires_at"]),
