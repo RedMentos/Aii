@@ -848,15 +848,25 @@ class SleepRuntime:
                     'learning_status':learning.get('status') if type(learning) is dict else None,
                     'temporal_status':temporal.get('status') if type(temporal) is dict else None,
                     'planner_status':planner.get('status') if type(planner) is dict else None}
+            more_learning=(type(learning) is dict and learning.get('has_more') is True)
+            more_temporal=(type(temporal) is dict and temporal.get('has_more') is True)
+            result['learning_has_more']=more_learning
+            result['temporal_has_more']=more_temporal
+            result['continuation_reason']=(
+                'BASE_AND_TEMPORAL' if more_learning and more_temporal
+                else ('BASE_PAGE' if more_learning else ('TEMPORAL_PAGE' if more_temporal else None))
+            )
             completion=('CANCELLED' if result['status']=='CANCELLED'
                         else ('FAILED' if result['status']=='ERROR' else 'DONE'))
             self.scheduler.complete(e['id'],completion,result)
-            more_learning=(type(learning) is dict and learning.get('has_more') is True)
-            more_temporal=(type(temporal) is dict and temporal.get('has_more') is True)
             if result['status']!='CANCELLED' and (more_learning or more_temporal):
                 continuation=bool(self.schedule_world_jepa(event_id))
                 result['continuation_scheduled']=continuation
-                if type(out) is dict:out['continuation_scheduled']=continuation
+                if type(out) is dict:
+                    out['continuation_scheduled']=continuation
+                    out['learning_has_more']=more_learning
+                    out['temporal_has_more']=more_temporal
+                    out['continuation_reason']=result['continuation_reason']
             return out
         if e['action']=='lab_check':
             from .lab_native_cycle import run
