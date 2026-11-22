@@ -55,6 +55,8 @@ class PolicyTests(Base):
 
 class UtilityTests(Base):
     def test_message_fields_outcome_rating_and_doctor(self):
+        # This positive learning test opts in explicitly; Runtime defaults to RECORD_ONLY.
+        self.r.cfg['learning_mode']='SHADOW_UPDATE'
         e=self.r.store.event(self.r.session,'Rent 120 plus food 271');eid,gen=e['event_id'],e['brain_generation_id']
         sender=offer('B1_DETAIL','Total is 391',quotes=['120'],eid=eid,gen=gen,pid='pkt_s')
         out=self.r.cognition.communicate(sender,'B2_GIST')
@@ -105,5 +107,35 @@ class UtilityTests(Base):
         doc=b3_doctor(self.r)['B1_TO_B2'];self.assertEqual((doc['latent_level'],doc['status'],doc['injection_level']),('unavailable','PASS',0))
         self.assertEqual(doc['experience_count'],2);self.assertIn('utility_vs_no_message',doc)
         self.assertIn('LATENT blocked',Operator(self.r).run(':callosum'));self.assertEqual(N.kind_of('callosum_channel_policy'),'control')
+
+
+    def test_record_only_guard_blocks_callosum_policy_updates(self):
+        # record_only_gate.py is composed only in the staged candidate. The
+        # source-only suite skips this staged-overlay-specific negative control.
+        try:
+            from v13.record_only_gate import blocked_status
+        except ImportError:
+            self.skipTest('RECORD_ONLY controller guard is a staged overlay')
+        self.r.cfg['learning_mode']='RECORD_ONLY'
+        e=self.r.store.event(self.r.session,'Rent 120 plus food 271')
+        eid,gen=e['event_id'],e['brain_generation_id']
+        sender=offer('B1_DETAIL','Total is 391',quotes=['120'],eid=eid,gen=gen,pid='pkt_record_only')
+        out=self.r.cognition.communicate(sender,'B2_GIST')
+        recv=packet('OfferPacket','B2_GIST',eid,gen,[],role='B2_GIST',based_on_state_version=0,
+                    deadline_monotonic_ns=time.monotonic_ns()+10**9,evidence_refs=[],
+                    offer={'summary':'total 391','quotes':[],'uncertainty':'','needs_reentry':False},
+                    confidence=0.,native_metrics={'duration_s':3.})
+        self.r.store.add_packet('OfferPacket',recv)
+        before=self.c._load()[0]
+        pending_before=before.get('pending',{}).get(eid,[])
+        self.assertTrue(pending_before)
+        self.assertEqual(pending_before[0]['msg'],out['message_packet_id'])
+        result=self.c.outcome(eid,[recv['packet_id']],'FINAL')
+        self.assertEqual(result,{'scored':0,'status':blocked_status(self.r.store)})
+        rating=C.on_rating(self.r.store,eid,1.)
+        self.assertEqual(rating,{'updated':0,'status':blocked_status(self.r.store)})
+        after=self.c._load()[0]
+        self.assertEqual(after['dirs'],before['dirs'])
+        self.assertEqual(after.get('pending',{}).get(eid,[]),pending_before)
 
 if __name__=='__main__':unittest.main()
