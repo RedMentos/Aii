@@ -986,17 +986,16 @@ class _BodyReceiverModels:
 def _body_receiver_runtime(store, home, session, runner):
     from threading import Event
     from types import SimpleNamespace
+    from v13.config import DEFAULTS
 
-    return SimpleNamespace(
-        store=store,
-        home=home,
-        session=session,
-        cfg={
+    cfg = dict(DEFAULTS)
+    cfg.update({
             "b2_state_slots": 0,
             "b2_control": "two_body",
             "b2_context_chars": 128,
             "memory_threshold": 0.25,
-            "b2_offer_body_state": True,
+            "b2_offer_body_state": False,
+            "b2_world_jepa_receiver": True,
             "b2_quote_select": "off",
             "observer_tokens": 256,
             "offer_style": "solve",
@@ -1009,7 +1008,12 @@ def _body_receiver_runtime(store, home, session, runner):
             "body_question_scope": "always",
             "observer_mode": "foreground",
             "deadline_seconds": 30,
-        },
+        })
+    return SimpleNamespace(
+        store=store,
+        home=home,
+        session=session,
+        cfg=cfg,
         guard=SimpleNamespace(state="NORMAL", mode="GREEN"),
         models=_BodyReceiverModels(),
         pool=_BodyReceiverCapturePool(runner),
@@ -1050,7 +1054,7 @@ def _body_receiver_diagnostics(runtime, event, text, role):
 def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path, monkeypatch):
     import json
     import time
-    from v13 import agi
+    from v13 import agi, config
     from v13.cognition import Cognition
 
     class _LongSkills:
@@ -1064,6 +1068,8 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path, monkey
         skills = _LongSkills()
 
     monkeypatch.setattr(agi, "hub", lambda _runtime: _Hub())
+    assert config.DEFAULTS["b2_offer_body_state"] is False
+    assert config.DEFAULTS["b2_world_jepa_receiver"] is True
 
     home = tmp_path / "brain-body-receiver"
     store, session = _make_store(home)
@@ -1101,7 +1107,13 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path, monkey
                 **_body_receiver_diagnostics(runtime, event, "Current source: compare the four routes for a local test.", body_state["role"]),
             }
             assert len(json.dumps(body_state, separators=(",", ":"))) <= 700
-            assert body_state["skills"] == []
+            if body_state["role"] == "B1_DETAIL":
+                assert "world" in body_state and "self" in body_state
+                assert body_state["skills"] == []
+            else:
+                # The default B2 path receives only the compact JEPA prior;
+                # the old full-body-state ablation remains respected.
+                assert set(body_state) == {"world_jepa", "authority", "role"}
             prompts[body_state["role"]] = body_state["world_jepa"]
         assert set(prompts) == {"B1_DETAIL", "B2_GIST"}
         detail = prompts["B1_DETAIL"]
@@ -1151,6 +1163,21 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path, monkey
             }
             assert set(audit["supported_action_samples"]) == set(world_model.ACTIONS)
             assert all(count >= 8 for count in audit["supported_action_samples"].values())
+
+        # The compact prior has an independent explicit opt-out; the legacy
+        # B2 full-body-state setting remains false throughout this test.
+        disabled_runner = _BodyReceiverCaptureRunner()
+        disabled_runtime = _body_receiver_runtime(store, home, session, disabled_runner)
+        disabled_runtime.cfg["b2_world_jepa_receiver"] = False
+        disabled_cognition = Cognition(disabled_runtime)
+        disabled_event = store.event(session, "Current source: verify JEPA receiver opt-out.")
+        disabled_cognition.offer("B2_GIST", disabled_event, 0, time.monotonic() + 5.0)
+        disabled_packet = store.rows(
+            "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? ORDER BY created",
+            (disabled_event["event_id"],),
+        )[-1]
+        disabled_payload = json.loads(disabled_packet["payload"])
+        assert "body_state_ref" not in disabled_payload.get("bodyview", {})
     finally:
         store.close()
 

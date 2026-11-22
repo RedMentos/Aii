@@ -242,6 +242,23 @@ def body_state(r,e,role,text):
     ref=r.store.source(s,'BODY_STATE')
     return {'view':view|{'authority':'STATE_NOT_FACT','role':role},'source_ref':ref}
 
+def world_jepa_body_state(r,e,role,text):
+    """Compact B2-only JEPA prior; preserves the legacy full-body-state ablation."""
+    if role!='B2_GIST' or modes(r.store)['state_source']!='on':return None
+    context,audit=_world_jepa_body_readout(r,e,text,role)
+    if context is None or audit is None:return None
+    view={'world_jepa':context}
+    prompt_view=view|{'authority':'STATE_NOT_FACT','role':role}
+    if len(dumps(prompt_view))>STATE_CHARS:return None
+    source=dumps({
+        'schema':'V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/1',
+        'view':view,
+        'world_jepa_audit':audit,
+    })
+    ref=r.store.source(source,'BODY_STATE')
+    return {'view':prompt_view,'source_ref':ref}
+
+
 def cross_session(r,e,role,current_text,native,budget):
     """B4: one prior coalition offer from another session on the same topic (SHADOW logs only)."""
     mode=modes(r.store)['b4']

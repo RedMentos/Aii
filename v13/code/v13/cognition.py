@@ -347,11 +347,15 @@ class Cognition:
             if policy=='B1_DETAIL':
                 win=bodyview.detail_windows(self.s,e['event_id'],text,e['source_ref'])
                 if win:query['detail_windows']=[w['text'] for w in win];bv_refs+=[w['source_ref'] for w in win];bv['detail_windows']=len(win)
-            # Thread O STEP2 producer ablation: body_state hijacked 41/50 B2 offers; cfg b2_offer_body_state=False leaves it out for B2.
-            bs=None if policy=='B2_GIST' and not self.r.cfg.get('b2_offer_body_state',True) else bodyview.body_state(self.r,e,role,text)
+            # Keep the measured full-B5 B2 ablation; the compact JEPA prior has its own switch.
+            if policy=='B2_GIST' and not self.r.cfg.get('b2_offer_body_state',True):
+                bs=(bodyview.world_jepa_body_state(self.r,e,role,text)
+                    if self.r.cfg.get('b2_world_jepa_receiver',True) else None)
+            else:
+                bs=bodyview.body_state(self.r,e,role,text)
             if bs:query['body_state']=bs['view'];bv_refs.append(bs['source_ref']);bv['body_state_ref']=bs['source_ref']
         except Exception as exc:self.s.log('bodyview_unavailable',e['event_id'],{'stage':'offer','error':type(exc).__name__})
-        if bv_refs:instructions+=' detail_windows are exact source spans attention marked as important; body_state is own world/self/skill state, never source evidence. Its world.mode counts only completed own digital actions; it says nothing about available source knowledge. self.external_tools limits tool execution, not reading supplied text or reasoning about its constraints.'
+        if bv_refs:instructions+=' detail_windows are exact source spans attention marked as important; body_state is local self/world/skill state or a bounded WorldJEPA next-action prediction, never source evidence, fact or permission. The WorldJEPA value is a prediction, not an observed outcome.'
         local_gist=None
         if policy=='B1_DETAIL' and (focus or (previous.get('offer') or {}).get('needs_reentry')):  # WP-U7 §3.2A: A bundles fine context for a detail re-entry
             try:
