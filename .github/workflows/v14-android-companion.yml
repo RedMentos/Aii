@@ -39,3 +39,32 @@ jobs:
       - name: Build and test isolated companion
         run: |
           gradle --no-daemon -p android-companion :app:assembleDebug :app:testDebugUnitTest
+
+  android-companion-process-restart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: "platform-tools platforms;android-35 build-tools;35.0.0 emulator system-images;android-35;google_apis;x86_64"
+      - name: Assemble companion APK
+        run: gradle --no-daemon -p android-companion :app:assembleDebug
+      - name: Exercise stop and process-death restart on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          script: |
+            gradle --no-daemon -p android-companion :app:installDebug
+            python3 android-companion/scripts/test_process_restart.py
