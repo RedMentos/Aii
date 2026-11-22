@@ -436,6 +436,37 @@ public final class CompanionDbApprovalTest {
         assertFalse(hasApprovalNotification(manager, ACTION_ID));
     }
 
+
+    @Test public void notificationReconciliationRemovesCommittedReceiptAndPreservesLiveApproval() {
+        String liveId = "b".repeat(32);
+        insertPending(ACTION_ID, NOW + 10_000L);
+        insertPending(liveId, NOW + 20_000L);
+        NotificationManager manager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.createNotificationChannel(new NotificationChannel(
+                "v14-action-approval", "V14 action approvals", NotificationManager.IMPORTANCE_DEFAULT));
+        Notification notification = new Notification.Builder(context, "v14-action-approval")
+                .setSmallIcon(android.R.drawable.ic_menu_view).build();
+        manager.notify(CompanionProvider.approvalNotificationTag(ACTION_ID), 0, notification);
+        manager.notify(CompanionProvider.approvalNotificationTag(liveId), 0, notification);
+        assertTrue(hasApprovalNotification(manager, ACTION_ID));
+        assertTrue(hasApprovalNotification(manager, liveId));
+
+        // Model the crash window: SQLite has the terminal receipt, but the
+        // process died before cancelling the already-published notification.
+        assertTrue(first.claimForExecution(ACTION_ID, NOW));
+        first.finish(ACTION_ID, "EXECUTING", "OUTCOME_UNKNOWN", "{\"signed\":true}");
+        assertTrue(hasApprovalNotification(manager, ACTION_ID));
+
+        assertEquals(1, CompanionProvider.reconcileApprovalNotifications(context, first, NOW));
+        assertFalse(hasApprovalNotification(manager, ACTION_ID));
+        assertTrue("a still-pending action keeps its approval notification",
+                hasApprovalNotification(manager, liveId));
+        assertEquals("OUTCOME_UNKNOWN", first.get(ACTION_ID).status);
+        assertEquals(0, CompanionProvider.reconcileApprovalNotifications(context, first, NOW));
+        assertTrue(hasApprovalNotification(manager, liveId));
+    }
+
     @Test public void claimedReceiptRecoverySurvivesDatabaseReopen() {
         insertPending(NOW + 10_000L);
         assertTrue(first.claimForDenial(ACTION_ID, NOW));

@@ -52,3 +52,12 @@ Status at authoring: candidate / CI not yet observed / NOT_RELEASED / REDMI_UNVE
 - The companion PR is not installed on the phone. No APK installation, launch, UI action, permission request, model/weight change, user-data change or new CHAT_SEND occurred.
 
 **Integration status:** PR #2347 remains stacked on draft Core PR #2271 at base 24e059d1f54e54d2285c9a542df207372fb27f4a. Exact candidate CI is green and this QA slice is ready for Core/Boss review on the companion stack, but it is **NOT_RELEASED** and **REDMI_UNVERIFIED**. Do not merge it directly to the release branch or infer Android behavior from Robolectric/CI.
+
+
+## QA follow-up — stale approval notification after durable receipt (2026-11-22)
+
+**Defect:** process death can occur after SQLite commits a terminal receipt and before Android cancels the approval notification. Because the row is no longer EXECUTING/DENYING, the claimed-without-receipt recovery scan cannot discover this notification. This is a stale-UX issue; it does not permit redispatch or add authority.
+
+**Change:** CompanionProvider.reconcileApprovalNotifications() compares active notifications in the exact companion approval channel against currently unexpired PENDING_USER_APPROVAL rows. It runs at provider startup and on pending(). It holds the same action gate as submit/dispatch, preserves valid live approvals, ignores unrelated channels and malformed tags, and fails closed if the Store or notification query is unavailable. A terminal receipt is never changed or removed.
+
+**Regression:** Robolectric seeds a durable OUTCOME_UNKNOWN receipt while leaving its notification active, then proves reconciliation removes only that stale notification, preserves a separate live approval, and is idempotent. Exact-head CI is required; no local Android SDK/Gradle or Redmi companion execution is available.

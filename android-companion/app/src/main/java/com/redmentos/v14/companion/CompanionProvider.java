@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
+import android.service.notification.StatusBarNotification;
 import android.util.Base64;
 
 import org.json.JSONObject;
@@ -25,7 +26,9 @@ import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class CompanionProvider extends ContentProvider {
     static final String PREFS = "v14-companion";
@@ -42,6 +45,7 @@ public final class CompanionProvider extends ContentProvider {
         signer = new ReceiptSigner();
         ensureChannel(context);
         recoverClaimedActions(context, db, signer, System.currentTimeMillis());
+        reconcileApprovalNotifications(context, db, System.currentTimeMillis());
         return true;
     }
 
@@ -363,8 +367,65 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
+    // Process death can occur after the terminal receipt is durable but before
+    // NotificationManager.cancel(). Reconcile only this app's approval channel,
+    // and hold the same gate used by submit/dispatch so a newly published live
+    // request cannot be mistaken for a stale notification.
+    static int reconcileApprovalNotifications(Context context, CompanionDb db, long nowMillis) {
+        if (context == null || db == null) return 0;
+        NotificationManager manager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (manager == null) return 0;
+        synchronized (ACTION_GATE_LOCK) {
+            final List<CompanionDb.Action> pending;
+            try {
+                pending = pendingActions(context, db, nowMillis);
+            } catch (RuntimeException unavailable) {
+                // A failed Store read must never be interpreted as proof that
+                // every visible approval is stale.
+                return 0;
+            }
+            Set<String> liveActionIds = new HashSet<>();
+            for (CompanionDb.Action action : pending) {
+                if (action != null && action.actionId != null
+                        && action.actionId.matches("[0-9a-f]{32}")) {
+                    liveActionIds.add(action.actionId);
+                }
+            }
+            final StatusBarNotification[] active;
+            try {
+                active = manager.getActiveNotifications();
+            } catch (RuntimeException unavailable) {
+                return 0;
+            }
+            if (active == null) return 0;
+            int cancelled = 0;
+            for (StatusBarNotification notification : active) {
+                if (notification == null || notification.getNotification() == null
+                        || !CHANNEL.equals(notification.getNotification().getChannelId())) {
+                    continue;
+                }
+                String actionId = notification.getTag();
+                if (actionId == null || !actionId.matches("[0-9a-f]{32}")
+                        || liveActionIds.contains(actionId)) {
+                    continue;
+                }
+                try {
+                    manager.cancel(actionId, notification.getId());
+                    cancelled++;
+                } catch (RuntimeException ignored) {
+                    // Leave the row/receipt untouched; a later startup or
+                    // pending() call can retry notification-only cleanup.
+                }
+            }
+            return cancelled;
+        }
+    }
+
     private JSONObject pending(Context context) throws Exception {
-        recoverClaimedActions(context, db, signer, System.currentTimeMillis());
+        long nowMillis = System.currentTimeMillis();
+        recoverClaimedActions(context, db, signer, nowMillis);
+        reconcileApprovalNotifications(context, db, nowMillis);
         org.json.JSONArray values = new org.json.JSONArray();
         for (CompanionDb.Action action : pendingActions(context, db, System.currentTimeMillis())) {
             JSONObject item = new JSONObject();
