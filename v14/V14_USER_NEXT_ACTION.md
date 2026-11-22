@@ -1721,7 +1721,7 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 
 ### Current release and authenticated Redmi receipt
 
-- Release-development branch `gpt6/v13-private-remote-bridge-20261111` still resolves to `aed1d2b826290c95c70356b5d8b864b5ef382be4`.
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` resolves to `aed1d2b826290c95c70356b5d8b864b5ef382be4`.
 - Private owner-read PIPELINE_STATUS [#619](https://github.com/RedMentos/Aiiii/issues/619) confirms that exact SHA installed, auto-update enabled, runtime/dashboard `UP_TO_DATE`, and `last_error=NONE`.
 - Private DIAGNOSTICS [#620](https://github.com/RedMentos/Aiiii/issues/620) repeats the stored FINAL turn: 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 admitted prompt tokens and 2 generated tokens. Correctness is UNKNOWN; no new user turn was sent.
 - B1_DETAIL and B2_GIST remain `TIME_BUDGET` at 53.2 s / 54.2 s. Native probe is `SMOKE_PARTIAL`. The instant native-process sample is 0 mapped processes / 0 MiB PSS/RSS with child readability UNKNOWN; this is not free-RAM or sustained-residency evidence.
@@ -1729,11 +1729,12 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 
 ### Perception candidate #2375 — not released
 
-- PR [#2375](https://github.com/RedMentos/Aii/pull/2375), code/test head `6a4e919f176a7d1b96ab6669639c6fd1be4a7de4`, current branch head `81632fb64aa03fd0d0493ea7129ae4e612b9dcc2` (handoff-only commit after code).
-- Source review found two undefined helper references that would have raised `NameError` on first frame use. The helpers now enforce the fixed 8 MiB / 4 MP limits and best-effort mutable-buffer zeroization.
-- A mutable-buffer TOCTOU was closed by hashing and decoding the same bounded snapshot; both snapshot and caller buffer are zeroized. Regression tests cover post-verification buffer mutation, fixed limits and invalid hash dimensions.
-- LOCAL_LINUX CPython 3.13.5 isolated helper reproduction PASS for digest/snapshot/decode ordering and zeroization. Full Aii local pytest/compile remains BLOCKED because no complete checkout is mounted.
-- Exact code-head checks for `6a4e919`: Python 3.13/3.14, staged runtime, integrated regression, privacy and offline-bridge security QUEUED; additive validator SKIPPED by policy. No CI PASS is claimed.
+- PR [#2375](https://github.com/RedMentos/Aii/pull/2375), latest code/test head `f87ebac407a19c147da7eb52bc63f10e9eed25d2`; current branch head `bc9e420d316d3b0106cf8cf5567388f503d90755` (handoff-only commit after code).
+- Fixed two undefined helper references that would have raised `NameError` on first frame use. The config helper enforces fixed 8 MiB / 4 MP limits; the zeroization helper clears mutable buffers.
+- Closed a mutable-buffer TOCTOU: the adapter hashes and decodes the same bounded snapshot, then zeroizes both snapshot and caller buffer. Added a scoped frame-consumer context manager that revokes the per-frame source/cache after C3 returns, including when the downstream consumer raises; it does not revoke the Android OS capture session.
+- The focused test file now has 18 tests covering bounded config, invalid hash dimensions, post-verification buffer mutation, zeroization, and scoped cleanup.
+- LOCAL_LINUX CPython 3.13.5 isolated helper reproduction PASS for config bounds, snapshot/hash/decode consistency, Pillow decode, zeroization and scope cleanup on success/failure. Full Aii local pytest/compile remains BLOCKED because no complete checkout is mounted.
+- Exact code-head checks for `f87ebac`: 8 QUEUED / 1 policy SKIPPED (Python 3.13/3.14, staged, integrated, privacy and offline security). No CI PASS is claimed.
 - Status remains WIRED_SYNTHETIC only. No Android MediaProjection provider, OS consent, normal Runtime/C3 dispatch, Termux capture or Redmi visual test exists. PR remains DRAFT / NOT_RELEASED.
 
 ### Cross-model research #2380
@@ -1745,7 +1746,7 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 ### Next internal actions
 
 1. Finish exact-head CI on #2375 and repair any failure.
-2. Core/QA implement the signed MediaProjection provider and connect the lease-bound packet to the normal Runtime/C3 consumer.
+2. Core/QA implement the signed MediaProjection provider and connect the lease-bound packet to the normal Runtime/C3 consumer using the scoped cleanup contract.
 3. Core proves same-model input-embedding parity and a separate target-generation/task-utility gate; do not treat embedding RMS as semantic communication.
 4. JEPA/Memory only then evaluates a compact adapter with source-disjoint holdout, OOD, old-session retention, restart and rollback.
 
