@@ -141,6 +141,8 @@ class PairedNativeTapTests(unittest.TestCase):
         self.assertGreater(report["b1_detail_fine_slots"]["min"], report["b2_gist_adaptive_slots"]["min"])
         self.assertFalse(report["pair_collection_threshold_met"])
         self.assertTrue(report["task_labels_and_L0_baselines_required"])
+        self.assertTrue(report["shadow_trainer_available"])
+        self.assertIn("CLOSED", report["l1_utility_gate"])
         self.assertEqual(report["latent_injection_authority"], 0)
 
     def test_rejects_b1_fine_tokenizer_piece_drift(self):
