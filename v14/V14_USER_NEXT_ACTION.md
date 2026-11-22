@@ -11,8 +11,8 @@
 
 **Keine Nutzeraktion nötig.** Kein manueller Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Weight-Download oder produktiver Swap und keine Berechtigungsänderung.
 
-- PR #2372 exact head: `daa42a41c1e4a448c77da4312078744069acb830` (DRAFT / NOT_RELEASED). Neue Tests verlangen reale gemessene B1/B2-Holdout-Gates vor der tatsächlichen `Cognition.offer`-Promptübergabe und prüfen den aktivierten `SleepRuntime._run_world_jepa`-Pfad von committed T8-Outcomes bis zum persistierten temporalen Checkpoint.
-- Vorheriger Parent `beda653`: Temporal-Suite 15/15 PASS auf Python 3.13 und 3.14. Für den neuen Head sind Temporal 45078449834, Optimizer-Resume 45078447785, Staged/Integrated 45078447802 und Owner-Read 45078447747 noch QUEUED; kein neuer Suite-PASS behauptet.
+- PR #2372 exact head: `c39a446036cdfba26fd7e55cf59eb633e4754227` (DRAFT / NOT_RELEASED). Neue Tests verlangen reale gemessene B1/B2-Holdout-Gates vor der tatsächlichen `Cognition.offer`-Promptübergabe und prüfen den aktivierten `SleepRuntime._run_world_jepa`-Pfad von committed T8-Outcomes bis zum persistierten temporalen Checkpoint.
+- Vorheriger Parent `beda653`: Temporal-Suite 15/15 PASS auf Python 3.13 und 3.14. Für den aktuellen Head c39a446 sind noch keine Actions-Runs sichtbar. Die zuvor für Parent daa42a4 QUEUED gemeldeten Runs 45078449834 / 45078447785 / 45078447802 / 45078447747 validieren den neuesten Test-Commit nicht. Kein aktueller Suite-PASS behauptet.
 - Vollständiger LOCAL_LINUX-Repo-Test BLOCKED / NOT_RUN: kein Checkout vorhanden; GitHub-DNS scheitert. CI ist kein lokaler Test.
 - Private V13OBS #115, aktualisiert 22:17:26Z: installiert bleibt `aed1d2b`, Auto-Update aktiv und UP_TO_DATE. B1 4/4 und B2 2/2 Native-Versuche fehlgeschlagen, null gültige Offers; letzter gespeicherter C3-Prefill 38.945 s / 2 Tokens. #2372 ist nicht installiert; JEPA auf Redmi bleibt REDMI_UNVERIFIED.
 - QA #2383 ist auf Head `714a09e` weiterhin nicht grün; Boss #2370 auf `bae7d03` hat die wesentlichen exakten Workflows noch in der Queue. Keine Rebase-/Release-Freigabe.
