@@ -42,7 +42,7 @@ TAP_IDENTITY = r'''        from .models import model_key
         if (not isinstance(sender_model_revision,str) or not sender_model_revision
                 or sender_model_revision!=installed.get('exact_revision')):
             raise ValueError('Tap sender model revision differs from installed manifest')
-        sender_model_path=Path(self.r.models.path_for(role))
+        sender_model_path=self.r.models.path_for(role)
         if (sender_model_path.is_symlink() or not sender_model_path.is_file()
                 or file_hash(sender_model_path)!=sender_model_sha256):
             raise ValueError('Tap sender model file differs from installed manifest')
@@ -51,7 +51,7 @@ TAP_IDENTITY = r'''        from .models import model_key
             raise ValueError('Tap tokenizer revision malformed')
         text=self.s.read_source(source_ref);tap_runner=self.r.pool.get_tap(role);native=tap_runner.tap(text,self.r.cancel_event,deadline)
         if (self.r.models.revision(role)!=sender_model_revision
-                or file_hash(Path(self.r.models.path_for(role)))!=sender_model_sha256):
+                or file_hash(self.r.models.path_for(role))!=sender_model_sha256):
             raise ValueError('Tap sender model changed during native observation')
 '''
 
@@ -67,7 +67,7 @@ READ_IDENTITY = r'''        from .models import model_key
                 or expected!=p.get('sender_model_sha256')
                 or installed.get('tokenizer_revision')!=p.get('tokenizer_revision')):
             raise ValueError('Tap sender model provenance is stale')
-        current_path=Path(self.r.models.path_for(p['role']))
+        current_path=self.r.models.path_for(p['role'])
         if (current_path.is_symlink() or not current_path.is_file()
                 or file_hash(current_path)!=p.get('sender_model_sha256')):
             raise ValueError('Tap sender model file differs from stored provenance')
