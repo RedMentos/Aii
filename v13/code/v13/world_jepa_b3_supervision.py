@@ -346,6 +346,20 @@ def collect_t8_outcome_labels(store, *, limit=MAX_PAIRS):
     }
 
 
+def _safe_shadow_path(home, relative):
+    root = Path(home).resolve()
+    shadow_root = (root / "b3" / "shadow").resolve()
+    if not shadow_root.is_relative_to(root):
+        raise ValueError("B3 shadow directory escaped the local home")
+    rel = Path(relative)
+    if rel.is_absolute() or ".." in rel.parts:
+        raise ValueError("B3 candidate path is not a safe relative path")
+    path = root / rel
+    if path.is_symlink() or not path.resolve().is_relative_to(shadow_root):
+        raise ValueError("B3 candidate path escaped the shadow directory")
+    return path
+
+
 def _parameter_delta(report, home, direction, bridge_module):
     """Read back each candidate and compare numeric adapter weights to its seed init."""
     try:
@@ -358,7 +372,11 @@ def _parameter_delta(report, home, direction, bridge_module):
         weight_rel = seed_report.get("candidate_weights")
         if type(seed) is not int or type(weight_rel) is not str or not weight_rel.endswith(".npz"):
             raise ValueError("candidate weight receipt malformed")
-        prefix = (Path(home) / weight_rel).with_suffix("")
+        candidate_path = _safe_shadow_path(home, weight_rel)
+        manifest_path = candidate_path.with_suffix(".json")
+        if not candidate_path.is_file() or manifest_path.is_symlink() or not manifest_path.is_file():
+            raise ValueError("candidate checkpoint files missing")
+        prefix = candidate_path.with_suffix("")
         candidate = bridge_module.Bridge.load(
             prefix,
             sender_revision=report["sender_revision"],
@@ -459,7 +477,10 @@ def _train_direction(store, cognition, home, cohort, direction, *,
     report_path = report.get("report_path") if type(report) is dict else None
     if type(report_path) is not str or not report_path:
         raise ValueError("trainer report path missing")
-    persisted_report = json.loads((Path(home) / report_path).read_text(encoding="utf-8"))
+    report_file = _safe_shadow_path(home, report_path)
+    if report_file.is_symlink() or not report_file.is_file():
+        raise ValueError("trainer report file missing or linked")
+    persisted_report = json.loads(report_file.read_text(encoding="utf-8"))
     if persisted_report != report:
         raise ValueError("trainer report readback mismatch")
     if type(report) is not dict:
