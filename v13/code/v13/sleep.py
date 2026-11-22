@@ -805,6 +805,8 @@ class SleepRuntime:
         last=max(row['t'] or 0.,self.r.store.meta('sleep_boot_wall',0.) or 0.)
         return max(0.,self.clock()-last)
     def tick(self,force=False):
+        with self.r.lock:
+            if getattr(self.r,'_operator_command_active',0)>0:return None
         policy=self.cycle.policy()
         if not force and self.monotonic()-self.last_tick<policy['tick_seconds']:return None
         self.last_tick=self.monotonic()
@@ -844,7 +846,9 @@ class SleepRuntime:
             if e['action']=='notice' and e['payload'].get('text'):self.r.notice(str(e['payload']['text'])[:500])
             self.scheduler.complete(e['id'],'DONE',{'recorded':True});return e
         with self.r.lock:
-            if self.r.idle() and not self.r.jobs.full():self.r.jobs.put_nowait(('sleep',e,0,time.monotonic()));queued=True
+            if (getattr(self.r,'_operator_command_active',0)==0
+                    and self.r.idle() and not self.r.jobs.full()):
+                self.r.jobs.put_nowait(('sleep',e,0,time.monotonic()));queued=True
             else:queued=False
         if not queued:self.scheduler.complete(e['id'],'RETRY',{'reason':'BUSY'})
         self.r.wake.set();return e
