@@ -11,7 +11,7 @@
 
 ## Current integration
 
-- PR #2316 was merged as documentation/research only. Release branch is `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe`; its push CI was 34 success / 0 failure / 4 in progress at the latest read. This is not fully green yet.
+- PR #2316 was merged as documentation/research only. Release branch is `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe`; its push CI was 39/39 exact push check-runs SUCCESS. This is not fully green yet.
 - The installed code SHA f210999 is the code-bearing parent of that docs-only merge. No UPDATE_REQUEST was sent.
 - #2314 native receiver probe fails Python 3.13/3.14 staged tests because its overlay removes `c=controller(r)`; Linux native build and Android ARM64 cross-compile pass, but no real GGUF semantic receiver exists.
 - Android companion #2286 also has a stop-durability review finding: `ACTION_GATE_LOCK` is process-local and `SharedPreferences.apply()` is asynchronous. QA must require checked durable persistence plus a process-recreation regression; this is a code-review risk, not a reproduced Android crash.
