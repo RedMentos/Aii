@@ -1,0 +1,24 @@
+name: V14 Android capability pipeline
+on:
+  push:
+    branches:
+      - 'gpt6/v14-core-capability-e2e-*'
+  pull_request:
+    paths:
+      - 'v13/code/v13/android_capability_registry.py'
+      - 'v13/code/tests/test_v14_android_capability_registry.py'
+      - '.github/workflows/v14-android-capability-e2e.yml'
+jobs:
+  offline-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and run offline simulation
+        working-directory: v13/code
+        run: |
+          python -m compileall -q v13/android_capability_registry.py tests/test_v14_android_capability_registry.py
+          python -m unittest discover -s tests -p test_v14_android_capability_registry.py -v
