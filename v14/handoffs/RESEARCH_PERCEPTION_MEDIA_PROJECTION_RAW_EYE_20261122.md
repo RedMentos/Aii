@@ -110,3 +110,18 @@ The same review identified a time-of-check/time-of-use gap: a caller-owned `byte
 **Exact GitHub CI:** head `6a4e919f176a7d1b96ab6669639c6fd1be4a7de4` has three exact-head checks queued: MediaProjection frame-ingress Python 3.13, Python 3.14, and offline-bridge security. No PASS is claimed yet. Earlier run `45068534234` was for the older `e1eec838` head and does not certify this update.
 
 **E2E boundary:** no Android companion MediaProjection provider, OS consent, normal Runtime/C3 dispatch, Termux capture, or Redmi test exists. The new adapter code is still only a Perception-side consumer candidate; `REDMI_UNVERIFIED`. No model, weight, permission, installed data or device state was changed. Next step: wait for exact-head CI, fix any failure, then coordinate Core/QA provider and Runtime wiring.
+
+
+## Run 7 follow-up — scoped source/cache cleanup for the real downstream consumer (2026-11-22)
+
+**Latest code/test head:** `f87ebac407a19c147da7eb52bc63f10e9eed25d2`; PR #2375 remains DRAFT / NOT_RELEASED.
+
+Added `consume_projected_frame_scope(...)`, a context manager for the actual caller contract: nest it inside the same active `UIObservationLease`, keep the outer lease open while the downstream C3 consumer reads the packet, and let the scope revoke this frame's source/cache after C3 returns. Its `finally` cleanup also runs if the downstream consumer raises. It revokes only the per-frame source/cache; it does not revoke the Android MediaProjection OS session or close a shared Runtime adapter. This gives Core a safer integration seam than relying on a later manual cache-cleanup call.
+
+Added regression coverage for source revocation after successful consumption and after a simulated downstream exception. The focused test file now contains 18 tests. The prior exact-frame snapshot/TOCTOU and fixed capture-limit tests remain.
+
+**LOCAL_LINUX:** CPython 3.13.5 x86_64 isolated helper reproduction PASS for fixed config bounds, invalid hash-dimension rejection, snapshot/hash/decode consistency, Pillow decode, zeroization, and scoped cleanup on success/failure. This is not the full Aii repository test suite.
+
+**Exact GitHub checks:** head `f87ebac407a19c147da7eb52bc63f10e9eed25d2` currently has 8 queued checks (Python 3.13/3.14 focused, staged, integrated, privacy and offline-bridge security) and 1 policy skip (additive validator). No exact-head CI PASS is claimed.
+
+**E2E boundary unchanged:** no Android MediaProjection provider, signed receipt implementation, OS consent, normal Runtime/C3 dispatch, Termux capture, or Redmi visual test exists. Status remains WIRED_SYNTHETIC / REDMI_UNVERIFIED. No model, weight, permission, device data or release changed.
