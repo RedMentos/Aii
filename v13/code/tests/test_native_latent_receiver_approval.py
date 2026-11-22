@@ -122,6 +122,24 @@ def test_wrong_role_pair_cannot_use_pending_local_approval(tmp_path):
         runtime.close()
 
 
+def test_model_file_content_hash_drift_invalidates_local_approval(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    calls = []
+    runtime.cognition.native_receive = lambda *args: calls.append(args)
+    operator = Operator(runtime)
+    try:
+        operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        original = sender_path.read_bytes()
+        tampered = bytes([original[0] ^ 1]) + original[1:]
+        assert len(tampered) == len(original)
+        sender_path.write_bytes(tampered)
+        with pytest.raises(PermissionError, match="content hash"):
+            operator.run(":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        assert calls == []
+    finally:
+        runtime.close()
+
+
 def test_model_revision_drift_invalidates_local_approval(tmp_path):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
     calls = []
