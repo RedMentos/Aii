@@ -1735,7 +1735,7 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Closed a mutable-buffer TOCTOU: the adapter hashes and decodes the same bounded snapshot, then zeroizes both snapshot and caller buffer. Added a scoped frame-consumer context manager that revokes the per-frame source/cache after C3 returns, including when the downstream consumer raises; it does not revoke the Android OS capture session.
 - The focused test file now has 18 tests covering bounded config, invalid hash dimensions, post-verification buffer mutation, zeroization, and scoped cleanup.
 - LOCAL_LINUX CPython 3.13.5 isolated helper reproduction PASS for config bounds, snapshot/hash/decode consistency, Pillow decode, zeroization and scope cleanup on success/failure. Full Aii local pytest/compile remains BLOCKED because no complete checkout is mounted.
-- Exact code-head checks for `f87ebac`: 8 QUEUED / 1 policy SKIPPED (Python 3.13/3.14, staged, integrated, privacy and offline security). No CI PASS is claimed.
+- Exact code-head checks for `f87ebac`: 6 QUEUED / 2 SUCCESS / 1 policy SKIPPED (Python 3.13/3.14, staged, integrated, privacy and offline security). No CI PASS is claimed.
 - Status remains WIRED_SYNTHETIC only. No Android MediaProjection provider, OS consent, normal Runtime/C3 dispatch, Termux capture or Redmi visual test exists. PR remains DRAFT / NOT_RELEASED.
 
 ### Cross-model research #2380
