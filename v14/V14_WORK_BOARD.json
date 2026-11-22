@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T08:03:26.755Z",
+  "updated_at": "2026-11-22T08:05:05.380Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c03ff0aa9e18b5ffebd1109f3c078105f53c6afe; documentation-only PR #2316 merged. Current device code receipt is f210999cf556be4d4514427cc9b5cf6d3cf3e984.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Latest 2026-11-22 owner-authenticated phone receipt supersedes earlier #480/#477/#466 snapshots. Current phone pipeline is UP_TO_DATE at f210999; last-turn performance and B1/B2 probe failures remain unresolved. Never promote synthetic/CI evidence to native Android proof.",
@@ -217,10 +217,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
-      "proof_environment": "Android companion #2271 5/12 checks success, #2273 11/13, and #2286 exact head 106d181 13/13 checks success (Android Gradle, staged/integrated, migration included). #2286 now uses checked synchronous commit() with process-restart and failed-commit tests; its earlier stop-durability finding is fixed. The parent stack is still not release-based and no APK/device action has occurred. Audio #2312 remains caller-supplied PCM only with staged-runtime failure.",
-      "next_step": "Core/QA reconcile the complete #2271→#2273→#2286 parent stack onto current release, then prove only the implemented launch_app capability on authorized Android. UI/screen observation and microphone capture remain OFF; no desktop substitute.",
+      "proof_environment": "Android companion #2271 5/12 checks success, #2273 11/13, and #2286 code-bearing parent 106d181 7/7 workflows success. Current #2286 handoff-only head c74dc30 has 9/12 checks success and 3 in progress. Checked commit() with process-restart and failed-commit tests is in the code-bearing parent. The full parent stack is still not release-based and no APK/device action has occurred. Audio #2312 remains caller-supplied PCM only with staged-runtime failure.",
+      "next_step": "Finish exact #2286 handoff-head checks, merge the reviewed leaf into #2273 if green, then resolve #2271 and rebase the full stack onto current release. Only then test the implemented launch_app capability on authorized Android. UI/screen observation and microphone capture remain OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T08:02:52.138Z",
+      "last_checkpoint": "2026-11-22T08:05:05.380Z",
       "proof": "No Android UI/background action, AudioRecord capture, screen observation, or Redmi control proof."
     },
     {
@@ -324,10 +324,10 @@
       "owner": "Core & Harness + QA & Android",
       "priority": "P0",
       "status": "BLOCKED_REVIEW",
-      "last_checkpoint": "2026-11-22T08:02:52.138Z",
-      "proof_environment": "Android companion #2271 head b931e94 remains 5/12 checks success with 7 failures; #2273 head 89e2c2 remains 11/13 with staged-runtime and old-phone migration failures; leaf #2286 exact head 106d181fff812c188cfe186e689cc5e78c2f121c has 13/13 checks SUCCESS including Android companion Gradle, staged/integrated and old-phone migration. Latest source uses checked synchronous SharedPreferences.commit(); tests cover process restart default-stopped and failed-stop-commit fail-closed. This resolves the earlier apply() durability finding on #2286. Stack still not directly based on current release; current capability is launch_app only; no APK installation, UI/screen executor, microphone provider or Redmi OS action.",
+      "last_checkpoint": "2026-11-22T08:05:05.380Z",
+      "proof_environment": "Android companion #2271 head b931e94 remains 5/12 checks success with 7 failures; #2273 head 89e2c2 remains 11/13 with staged-runtime and old-phone migration failures. #2286 code-bearing parent 106d181fff812c188cfe186e689cc5e78c2f121c has 7/7 workflows SUCCESS, including Android Gradle, staged/integrated and old-phone migration. Current #2286 PR head c74dc3072e863118a74e37defc5683ff19f97200 adds only handoff text and has 9/12 checks SUCCESS, 3 IN_PROGRESS, 0 failure. Source uses checked synchronous SharedPreferences.commit(); tests cover process-restart default-stopped and failed-stop-commit fail-closed. Still stacked on #2273/#2271; launch_app only; no APK, UI/screen executor, microphone provider or Redmi OS action.",
       "proof": "Default-OFF. No desktop harness is a substitute for Android OS validation.",
-      "next_step": "QA/Core rebase and integrate the full parent stack #2271 → #2273 → #2286 on current release, not just the green leaf. Review the exact OS permission/UID/certificate binding, one-shot approval, durable stop, cancellation and audit. Only after parent and integrated tests pass, perform a separately consented Android launch_app test. UI observation/control and AudioRecord remain OFF/unimplemented."
+      "next_step": "Wait for exact #2286 handoff-head checks to finish. If green, merge the reviewed leaf into its parent #2273 branch (not release) to carry the verified stop, notification and migration fixes into the stack; then rerun #2273. Resolve #2271's red parent matrix and rebase the full #2271→#2273→#2286 stack onto current release. Only after parent and integrated tests pass, perform a separately consented Android launch_app test. UI observation/control and AudioRecord remain OFF/unimplemented."
     },
     {
       "id": "V14-018",
@@ -914,7 +914,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T08:03:26.755Z",
+    "timestamp": "2026-11-22T08:05:05.380Z",
     "release_sha": "c03ff0aa9e18b5ffebd1109f3c078105f53c6afe",
     "release_push_ci": "39_SUCCESS_0_FAILURE_0_PENDING_39_CHECK_RUNS",
     "last_code_sha_installed": "f210999cf556be4d4514427cc9b5cf6d3cf3e984",
@@ -928,7 +928,7 @@
       "2271": "b931e94: 5/12 checks, 7 fail; Android companion native path not accepted.",
       "2273": "89e2c2: 11/13 checks, staged-runtime and old-phone migration fail.",
       "2277": "c3dc3a8: 3 metadata/security checks success, but the added same-turn starvation test has NOT been executed because branch/path filters do not trigger the workflow. Source-level 30 s recovery path reserves 26 s for C3 and defers both B1/B2.",
-      "2286": "106d181: 13/13 PR checks SUCCESS, including Android companion Gradle, staged/integrated and old-phone migration. Stop durability is fixed on this head with checked SharedPreferences.commit(), process-restart default-stopped and failed-commit fail-closed tests. Still stacked on #2273/#2271; launch_app only, no APK install or Redmi OS action.",
+      "2286": "Current PR head c74dc3072e863118a74e37defc5683ff19f97200 is a handoff-only correction: 9/12 checks success, 3 in progress, 0 failures. Its code-bearing parent 106d181fff812c188cfe186e689cc5e78c2f121c has 7/7 workflows success (Android Gradle, staged/integrated, migration, outcome adapter, broker and sandbox). Checked commit(), restart and failed-commit tests are present. Still stacked on #2273/#2271; launch_app only; no APK or Redmi OS action.",
       "2309": "8a73ae5: 8/19 checks, 11 fail; do not merge as a duplicate. It contains a safer additive operator insertion hunk that preserves c=controller(r); port only that hunk into #2314, then close/supersede after readback.",
       "2311": "ba058f1: 8/17 checks, 9 fail; feedback/bootstrap source pin mismatch cascades through staged runtime and migration.",
       "2312": "5221314: 4/5 checks, staged-runtime fail; stacked QA base, caller PCM only.",
