@@ -343,10 +343,11 @@
       "last_checkpoint": "2026-11-22T02:40:15+01:00",
       "latest_candidate_pr": {
         "pr": 2293,
-        "head_sha": "3be517af1d83f756852338dbe9b909a748b27f95",
+        "head_sha": "e85b7398b1fce84423583abf01e1389507612818",
         "base_sha": "f0d3c848dfb1d65e282f065233adbe3c9205e439",
         "ci": "CODE_TEST_HEAD_e85b7398; RAW_EAR_FASTPATH_44972070097_PASS_3.13_3.14_64_TESTS; VAD_LIBFVAD_44972070081_PASS_3.13_3.14_8_TESTS_AND_13_NATIVE; DEPLOY_INTEGRITY_44972070113_PASS; STAGED_INTEGRATED_44972070090_FAIL_LOCAL_ERROR_PRE_REBIND; MIGRATION_44972070092_FAIL_PARTIAL; LAB_AGE_WEBVIEW_44972070087_FAIL; OWNER_READ_44972070168_FAIL",
-        "tested_code_sha": "e85b7398b1fce84423583abf01e1389507612818"
+        "tested_code_sha": "e85b7398b1fce84423583abf01e1389507612818",
+        "branch_tip_at_checkpoint": "48797932c07f799802e6fae80394695eae53a085"
       },
       "proof": "Audio-only API module v13/code/v13/audio_input.py exposes submit_audio_only(runtime, audio_window), submits a fixed no-transcript marker to the existing Runtime audio_window path, requires source_id/receipt, live consent preflight, linearizable guard, two-phase revocation subscription, <=1s mono PCM16, and preserves PROVISIONAL/FINAL. No microphone, ASR, PCM persistence, weight download or capture permission. Exact LOCAL_LINUX isolated py_compile PASS and pytest 7/7 on module blob 1e9daddcb5dfd8bfb7911090218b4eaf1f103d41 and test blob b6b1202904efbc417971db6c0d9e3ba0664eef84. Current GitHub RAW EAR run 44972070097: 64 tests PASS on Python 3.13 (8.10s) and 3.14 (12.25s), including the 7 audio_input tests, compile, backend parity, A5→A4→C3 consumer and privacy scan. VAD/libfvad run 44972070081: 8 tests PASS on 3.13/3.14 and native libfvad 13/13 PASS. Runtime deploy integrity 44972070113 PASS. Staged/integrated run 44972070090 FAILs at Core-owned local-error pre-rebind semantic binding mismatch in recovery candidate line 313; 19 failed, 231 passed, 10 skipped, 2 errors, 41 subtests passed. The same root is on unmodified Boss base f0d3c848 (#44969679441); Perception did not modify Core files and posted exact pin-rebind analysis to #2288. Two-checkout migration 44972070092 returns PARTIAL instead of UPDATED; Lab Age/WebView 44972070087 and private owner-read 44972070168 fail during the same stage path. Full local Aii checkout unavailable: git ls-remote fails DNS Could not resolve host github.com. No full local Runtime E2E. No Android microphone/AudioRecord, model inference, Termux or Redmi test; REDMI_UNVERIFIED. No release/deployment."
     }
