@@ -941,3 +941,14 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+### R-075 implementation follow-up — FASTDIAR frame adapter (2026-11-22)
+
+PR #2361 adds a dependency-free in-memory adapter from the official FASTDIAR v0.1.0 `(n_frames, 192)` float16 embedding output to the existing `v14.raw-ear-speaker-embeddings/1` input contract. It pins source revision `e7f9bbccf98865216f48a04868d74f1d53c8734e`, requires the caller's SHA256 of the actual local checkpoint, preserves explicit 80-ms frame timestamps, and uses the 10-frame / 800-ms lookback. It does not load weights, resample audio, cluster speakers, persist vectors, or attach a threshold/calibration. The existing A5→A4→C3 consumer therefore records only diagnostic similarity and remains `DEFER`; identity/learning/action authority stay false.
+
+**Verification:** LOCAL_LINUX CPython 3.13.5 x86_64 exact adapter `py_compile` PASS and isolated adapter unit suite 4/4 PASS, including actual NumPy float16 input and negative controls. The PR also contains a real `consume_pcm16_voice_window` integration test with synthetic embeddings; exact GitHub Python 3.13/3.14 PR CI is pending. The full local Aii checkout is unavailable in this worker, so no local full-consumer result is claimed.
+
+**License/runtime boundary:** official FASTDIAR repository code is MIT at the pinned revision. The inspected v0.1.0 README/LICENSE/NOTICE attaches checkpoints but does not state a separate checkpoint-weight license; weights remain uncleared and were not downloaded. The pinned PyTorch/torchaudio/torchcodec/SciPy/pyannote stack is not Termux-ready. The paper is an arXiv preprint (2026-10-02), not peer-reviewed evidence; CPU measurements are on AMD Threadripper PRO 5995WX, not ARM/Redmi. No model inference, Android ABI, microphone, Redmi benchmark, or deployment is claimed.
+
+**Decision:** ADAPTER_WIRED_TO_EXISTING_SYNTHETIC_CONSUMER / RESEARCH_ONLY / NO_MODEL_SELECTED / NO_WEIGHT_DOWNLOAD / REDMI_UNVERIFIED. Full calibrated speaker-change integration remains blocked on #2349's Core-owned composer source-pin repair and later real-data calibration.
