@@ -397,6 +397,10 @@ def test_sleep_jepa_cancelled_by_user_preemption_requeues_without_checkpoint_com
         assert result["status"] == "CANCELLED"
         assert cancel.calls >= 8
         assert store.state("v14.world_jepa.store_consumer", None)[0] is None
+        assert store.state("v14.world_jepa.neuromod_cursor", None)[0] is None
+        assert not store.rows(
+            "SELECT id FROM packets WHERE kind IN ('LearningTrace','ModulatorPacket')"
+        )
         assert not list((home / "world_jepa").glob("jepa-*.npz"))
         pending = [item for item in sleep.scheduler.pending() if item["id"] == posted]
         assert len(pending) == 1 and pending[0]["status"] == "PENDING"
