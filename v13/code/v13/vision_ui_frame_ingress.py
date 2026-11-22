@@ -28,6 +28,7 @@ from .a5_ui_admission_bridge import (
     UIObservationLease,
     revoke_ui_observation,
     validate_ui_observation,
+    _summary,
 )
 from .contracts import packet as make_packet, validate
 from .percept_admission import Percept, admit
