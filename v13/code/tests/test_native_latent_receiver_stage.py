@@ -18,8 +18,16 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
     assert "v13/native_latent_receiver.py" in manifest["files_sha256"]
     assert "v13/native/latent_receiver/native_latent_receiver.cpp" in manifest["files_sha256"]
+    overlay_path = CODE / "scripts/integrated_native_probe_approval_candidate_20261122.py"
+    overlay_spec = importlib.util.spec_from_file_location("v14_native_probe_approval_overlay", overlay_path)
+    overlay = importlib.util.module_from_spec(overlay_spec)
+    overlay_spec.loader.exec_module(overlay)
+    manifest = overlay.apply_staged(CODE, destination)
+    assert manifest["native_probe_approval_overlay"]["status"] == "SHADOW_REVIEW_ONLY"
+    assert manifest["native_probe_approval_overlay"]["ttl_seconds"] == 120
     cognition = (destination / "v13/cognition.py").read_text(encoding="utf-8")
     callosum = (destination / "v13/callosum.py").read_text(encoding="utf-8")
+    operator_help = (destination / "v13/operator.py").read_text(encoding="utf-8")
     assert "def native_receive(" in cognition
     assert "native-probe" in callosum
     assert "production_route=False" in cognition
@@ -37,6 +45,10 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert "'native_receiver_probe':self.native_receiver_probe()" in callosum
     assert "G-CALLOSUM-UTILITY-002: LATENT blocked for production" in callosum
     assert "native-probe <sender> <receiver>" in callosum
+    assert "arm-probe <sender> <receiver>" in callosum
+    assert "local_approval_consumed" in callosum
+    assert "arm-probe <sender> <receiver>" in operator_help
+    assert (destination / "v13/native_probe_approval.py").is_file()
     env = dict(os.environ)
     env["PYTHONPATH"] = str(destination)
     env["PYTHONDONTWRITEBYTECODE"] = "1"
@@ -45,6 +57,7 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
          str(CODE / "tests/test_native_latent_receiver.py"),
          str(CODE / "tests/test_native_latent_receiver_runtime.py"),
          str(CODE / "tests/test_callosum.py"),
+         str(CODE / "tests/test_native_latent_receiver_approval.py"),
          str(CODE / "tests/observer_fair_budget_disposable_cases_20261116.py")],
         cwd=tmp_path, env=env, capture_output=True, text=True, timeout=150,
     )

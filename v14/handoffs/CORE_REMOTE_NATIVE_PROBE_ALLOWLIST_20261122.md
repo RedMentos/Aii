@@ -57,3 +57,14 @@ No installed model, weight, permission, dataset, user message, or phone state wa
 ## User action
 
 No action is needed now. The probe remains NOT_RUN. Do not send a Termux command, model download/swap, weight update or device action.
+## Local one-shot approval follow-up — staged candidate (2026-11-22)
+
+- Added `v13/native_probe_approval.py`: a 120-second, single-use approval bound to the exact active session, latest FINAL user event, source hash/range, generation, sender/receiver model revisions and manifest hashes. It is scoped to the current Runtime object; a Runtime restart invalidates it. No model file is rehashed at arm time; the existing native receiver consumer performs the actual sender/receiver hash checks immediately before native input.
+- Added `scripts/integrated_native_probe_approval_candidate_20261122.py`. It composes after the currently staged native receiver and adds:
+  - local TTY-only `:callosum arm-probe <sender> <receiver> --last-source --confirm`
+  - local `:callosum revoke-probe`
+  - remote `:callosum native-probe ...` now consumes the matching one-shot local approval before invoking the native receiver
+- The remote allowlist still rejects `arm-probe`; remote `--confirm` alone is insufficient. The approval is consumed atomically before native work, so a crash/failure requires a fresh local arm.
+- Added staged Runtime/SQLite tests for no-arm rejection, exact role binding, one-shot consumption, model-revision drift, new-turn/source drift, Runtime restart, expiry and revoke. The stage test applies this overlay only in its isolated candidate directory.
+- IMPORTANT: this approval overlay is not yet in the shared production recovery/stage/deployer pin chain. That chain is being handled by Boss/Integrator; do not bypass or independently rewrite it. The active PR remains NOT_RELEASED until the overlay is composed and reviewed there.
+- No native receiver probe was executed; no device state, model, weight, permission, or data changed. `LOCAL_FULL_REPOSITORY` remains unavailable in this runner; exact CI on the updated PR is the next test gate.

@@ -239,6 +239,7 @@ class RemoteChatTests(unittest.TestCase):
             ":callosum native-probe B2_GIST B1_DETAIL --last-source --confirm"
         ))
         invalid = (
+            ":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm",
             ":callosum native-probe B1_DETAIL C3_LANGUAGE --last-source",
             ":callosum native-probe B1_DETAIL B1_DETAIL --last-source --confirm",
             ":callosum native-probe C3_LANGUAGE B1_DETAIL --last-source --confirm",
