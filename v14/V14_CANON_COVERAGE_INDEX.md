@@ -2350,4 +2350,9 @@ Lab-Age metadata: mode ACTIVE; requested stage 10; effective implemented stage 5
 
 ## Final queue refresh — 2026-11-22T22:34:58.624Z
 
-Boss candidate #2370 head bae7d031: 0 SUCCESS / 15 QUEUED / 1 IN_PROGRESS / 6 CANCELLED / 6 SKIPPED. Companion QA #2356 head 27aaa29: two successful workflows (Android outcome contract, Core Store/caller gate), two queued (emulator process restart, staged/integrated). Process-death remains unaccepted. No new release, no Redmi action, no user action.
+Boss candidate #2370 head bae7d031: 1 SUCCESS / 14 QUEUED / 1 IN_PROGRESS / 7 CANCELLED / 7 SKIPPED. Companion QA #2356 head 27aaa29: two successful workflows (Android outcome contract, Core Store/caller gate), two queued (emulator process restart, staged/integrated). Process-death remains unaccepted. No new release, no Redmi action, no user action.
+
+
+## Latest CI detail — 2026-11-22T22:36:01.944Z
+
+#2370 current head has one CI success (private owner-read bootstrap only), one JEPA Runtime transactional update in progress, and 14 queued; no functional acceptance. #2379 provider workflow passes but its staged/integrated regression is queued and base is stale. No Android capture/process-death proof.
