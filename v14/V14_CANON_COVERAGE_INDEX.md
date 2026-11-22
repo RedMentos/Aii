@@ -2451,3 +2451,10 @@ This overlay updates only the evidence state; it does not remove or narrow any C
 **Exact candidate:** PR #2372, head `e697883dd5e36cc4b667ca966a6ec657ea470bf7`, DRAFT / NOT_RELEASED. Exact CI: temporal 45083725525 PASS 20/20 each on Python 3.13/3.14; incremental 45083725543 PASS; combined 45083725560 PASS; optimizer-resume 45083725501 FAIL; staged/integrated 45083725503 FAIL 19/231/10 skipped/2 errors; owner-read 45083725516 owner-read PASS but staged startup FAIL.
 
 **Downstream blockers:** QA-owned Termux recovery builder expects SHA-256 `b05a5f4c…`, actual JEPA training-resume builder is `c03de6503c75972923e26374f6382fcaab8f1727a5d7018b224653b5c149a71b`. QA lifecycle composer expects memory.py `61e881ad…`, actual is `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701`. LOCAL_LINUX full suite BLOCKED / NOT_RUN; Redmi native proof REDMI_UNVERIFIED.
+
+
+## Run 22 cross-agent dependency refresh — 2026-11-22T23:40:58.170Z
+
+- QA PR #2390 is the current lifecycle/builder successor to #2383. Its branch `qa/v14-jepa-source-lifecycle-repin-20261123` currently compares DIVERGED to JEPA head e697883 (11 ahead / 1 behind; merge base 3256aa7), so it is not yet based on the final JEPA source. It still pins the earlier training-resume builder (`a03c3f37…`) rather than current exact JEPA builder `c03de6503c75972923e26374f6382fcaab8f1727a5d7018b224653b5c149a71b`. Its `memory.py=33377446…` lifecycle pin matches. No exact-head CI is visible for #2390.
+- Boss PR #2370 current branch head is `119ff42a2d1b7412fe21821137cd5d355aaadafb`; controller guard, deployment integrity, two-checkout migration and owner-read have PASS, but Core same-turn, audio/arithmetic, JEPA transactional update and staged/integrated remain IN_PROGRESS; more workflows QUEUED. NOT_GREEN / NOT_RELEASED.
+- These are separate QA/Boss integration dependencies. JEPA does not own their files and has not edited them. No rebase or release until both exact dependency chains are green.
