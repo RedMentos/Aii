@@ -6,7 +6,10 @@ import android.content.SharedPreferences;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import java.util.List;
 
@@ -15,6 +18,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 33)
 public final class CapabilityRegistryTest {
     @Test public void launchAppRequiresPairingAndTheCompanionEnableSwitch() {
         assertEquals("OFF_TERMUX_NOT_PAIRED", CapabilityRegistry.launchStatus(false, false));
