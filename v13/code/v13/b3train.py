@@ -171,6 +171,9 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
         if any(not isinstance(l0_acc[channel], list) or len(l0_acc[channel]) != len(seeds)
                for channel in required_l0):
             raise ValueError("L0 accuracy vectors must match the paired seed count")
+        if any(any(type(x) not in (int, float) or not np.isfinite(float(x)) or not 0 <= float(x) <= 1
+                       for x in l0_acc[channel]) for channel in required_l0):
+            raise ValueError("L0 accuracy values must be finite fractions in [0,1]")
         if any(type(l0_bytes[channel]) not in (int, float) or not np.isfinite(float(l0_bytes[channel]))
                or float(l0_bytes[channel]) < 0 for channel in required_l0):
             raise ValueError("L0 channel byte costs must be finite non-negative numbers")
