@@ -601,7 +601,7 @@ class SleepRuntime:
     def schedule_world_jepa(self,event_id=None):
         """Queue an observed T8 event for bounded idle JEPA learning/readout."""
         from .world_jepa_runtime import permission_state
-        observed="'FINAL','FAILED','ERROR','DEADLINE','REJECTED','CANCELLED','ABORTED','OUTCOME_UNKNOWN','INTERRUPTED'"
+        observed="'FINAL','FAILED','ERROR','DEADLINE','REJECTED'"
         if event_id is None:
             row=self.r.store.one(
                 "SELECT event_id,status FROM actions WHERE outcome IS NOT NULL "
@@ -666,7 +666,7 @@ class SleepRuntime:
                 return result|{'status':'CANCELLED'}
             action=self.r.store.one(
                 "SELECT id,status,outcome FROM actions WHERE event_id=? AND outcome IS NOT NULL "
-                "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED','CANCELLED','ABORTED','OUTCOME_UNKNOWN','INTERRUPTED') "
+                "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
                 "ORDER BY created DESC,id DESC LIMIT 1",(event_id,))
             if not action:
                 return result
