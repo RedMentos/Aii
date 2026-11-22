@@ -91,21 +91,14 @@ NATIVE_PROBE_METHOD = r'''    def native_receiver_probe(self):
             return {'status':'INVALID_STORED_RECEIPT'}
 
 '''
-REPORT_PROBE_OLD = """                'directions':self.doctor(cfg),
-"""
-REPORT_PROBE_NEW = """                'directions':self.doctor(cfg),'native_receiver_probe':self.native_receiver_probe(),
-"""
-REPORT_GATE_OLD = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}
-"""
-REPORT_GATE_NEW = """                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative','claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}
-"""
-OPERATOR_HELP_OLD = r'''    """:callosum [status|shadow|active|degrade|promote <direction>]"""
-'''
-OPERATOR_HELP_NEW = r'''    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <sender> <receiver> --last-source --confirm]"""
-'''
-OPERATOR_OLD = r'''    if not args or args==['status']:return dumps(c.report(r.cfg))
-'''
-OPERATOR_NEW = r'''    if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
+REPORT_PROBE_OLD = r"""        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),\n"""
+REPORT_PROBE_NEW = r"""        return {'revision':REVISION,'mode':st['mode'],'proposal_agreement':round(p['same']/p['n'],3) if p['n'] else None,'directions':self.doctor(cfg),'native_receiver_probe':self.native_receiver_probe(),\n"""
+REPORT_GATE_OLD = r"""                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked (no native L1 receiver path yet)','claim_limit':'Channel choice among exact/control/symbolic baselines; no latent exchange'}\n"""
+REPORT_GATE_NEW = r"""                'gate':'G-CALLOSUM-UTILITY-002: LATENT blocked for production; native probe is separate-context and non-authoritative','claim_limit':'Native input effect is not trained cross-model alignment, semantic utility or production latent exchange'}\n"""
+OPERATOR_HELP_OLD = r'''    """:callosum [status|shadow|active|degrade|promote <direction>]"""\n'''
+OPERATOR_HELP_NEW = r'''    """:callosum [status|shadow|active|degrade|promote <direction>|native-probe <sender> <receiver> --last-source --confirm]"""\n'''
+OPERATOR_OLD = r"""    if not args or args==['status']:return dumps(c.report(r.cfg))\n"""
+OPERATOR_NEW = r"""    if len(args)==5 and args[0]=='native-probe' and args[3]=='--last-source' and args[4]=='--confirm':
         sender,receiver=args[1],args[2]
         if sender not in {'B1_DETAIL','B2_GIST'} or receiver not in {'B1_DETAIL','B2_GIST','C3_LANGUAGE'} or sender==receiver:
             raise ValueError('Native probe requires distinct B1/B2 sender and B1/B2/C3 receiver')
@@ -128,8 +121,9 @@ OPERATOR_NEW = r'''    if len(args)==5 and args[0]=='native-probe' and args[3]==
                       'requires_explicit_confirmation':True,'production_route':False,
                       'semantic_use_proven':False,'training_authority':0,'native_receiver_authority':0,
                       'notice':'Synchronous, user-initiated probe; existing model only, no weight or routing change'})
-    if not args or args==['status']:return dumps(c.report(r.cfg))
-'''
+    if not args or args==['status']:return dumps(c.report(r.cfg))\n"""
+OPERATOR_ERROR_OLD = r"""    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1]')\n"""
+OPERATOR_ERROR_NEW = r"""    raise ValueError(':callosum [status|shadow|active|degrade|promote B1_TO_B2|B2_TO_B1|native-probe <sender> <receiver> --last-source --confirm]')\n"""
 
 def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()
@@ -158,6 +152,7 @@ def apply_sources(code_dir,sources):
     callosum=_replace(callosum,REPORT_GATE_OLD.encode("utf-8"),REPORT_GATE_NEW.encode("utf-8"),"Callosum report gate")
     callosum=_replace(callosum,OPERATOR_HELP_OLD.encode("utf-8"),OPERATOR_HELP_NEW.encode("utf-8"),"Callosum operator help")
     callosum=_replace(callosum,OPERATOR_OLD.encode("utf-8"),OPERATOR_NEW.encode("utf-8"),"Callosum operator")
+    callosum=_replace(callosum,OPERATOR_ERROR_OLD.encode("utf-8"),OPERATOR_ERROR_NEW.encode("utf-8"),"Callosum operator error help")
     compile(callosum,"v13/callosum.py","exec")
     result["v13/cognition.py"]=cognition
     result["v13/callosum.py"]=callosum

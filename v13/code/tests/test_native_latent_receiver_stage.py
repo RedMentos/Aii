@@ -29,6 +29,9 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert callosum.index("if len(args)==5 and args[0]=='native-probe'") < callosum.index("if not args or args==['status']")
     assert "return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})" in callosum
     assert "native_receiver_probe" in callosum
+    assert "'native_receiver_probe':self.native_receiver_probe()" in callosum
+    assert "G-CALLOSUM-UTILITY-002: LATENT blocked for production" in callosum
+    assert "native-probe <sender> <receiver>" in callosum
     env = dict(os.environ)
     env["PYTHONPATH"] = str(destination)
     env["PYTHONDONTWRITEBYTECODE"] = "1"
