@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 
 from v13 import contracts, world_model
+from v13.memory import Memory
 from v13.sleep import SleepRuntime
 from v13.store import Store
 from v13.world_jepa_runtime import PERMISSION_KEY
@@ -17,7 +18,6 @@ from v13.world_jepa_temporal import (
     STATE_KEY,
     TemporalWorldJEPAStoreConsumer,
     build_temporal_windows,
-    combined_source_forget_guard,
 )
 
 
@@ -187,10 +187,10 @@ def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(t
             assert readout["checkpoint_sha256"] == first["checkpoint_sha256"]
 
         # A learned source is protected while either active or rollback state retains it.
-        source_id = active["active"]["experience_rows"][0]["source_id"]
+        source_row = active["active"]["experience_rows"][0]
+        memory = Memory(store, {})
         with pytest.raises(ValueError, match="temporal WorldJEPA"):
-            with combined_source_forget_guard(store, source_id):
-                pass
+            memory._forget_source(source_row["source_id"], source_row["event_id"])
     finally:
         store.close()
 
