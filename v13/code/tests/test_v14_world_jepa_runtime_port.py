@@ -5,6 +5,7 @@ CorollaryCopy, ActionSelection and ActionOutcome producers. Its rows are
 synthetic test experiences, not live user or Redmi data.
 """
 import hashlib
+import json
 import math
 
 import pytest
@@ -14,6 +15,7 @@ from v13.store import Store
 from v13.world_jepa_store_authority import verify_committed_transition_page, verify_committed_transitions
 from v13.world_jepa_consumer import WorldJEPAStoreConsumer, _source_disjoint_split
 from v13.world_jepa_runtime import (DEFAULT_PERMISSIONS, PERMISSION_KEY, consume_after_commit, receiver_readout, memory_recall)
+from v13.neuromod import Neuromod
 
 
 def _make_store(home):
@@ -24,8 +26,12 @@ def _make_store(home):
     return store, session
 
 
-def _add_transitions(store, session, start, count, status_overrides=None, source_text_factory=None):
+def _add_transitions(
+    store, session, start, count, status_overrides=None,
+    source_text_factory=None, actual_overrides=None,
+):
     status_overrides = status_overrides or {}
+    actual_overrides = actual_overrides or {}
     action_ids = []
     actions = tuple(world_model.ACTIONS)
     for index in range(start, start + count):
@@ -75,11 +81,9 @@ def _add_transitions(store, session, start, count, status_overrides=None, source
         duration = 0.15 + action_index * 0.65 + (index % 13) * 0.02
         characters = 9 + action_index * 24 + (index % 23) * 0.75
         status = status_overrides.get(index, "FAILED" if index % 5 == 0 else "FINAL")
-        store.finish_action(
-            action_id,
-            status,
-            {"action_duration_s": duration, "characters": characters},
-        )
+        actual = {"action_duration_s": duration, "characters": characters}
+        actual.update(actual_overrides.get(index, {}))
+        store.finish_action(action_id, status, actual)
         action_ids.append(action_id)
     return action_ids
 
@@ -617,7 +621,7 @@ def _set_runtime_permissions(store, *, learning_enabled, optimizer_permission,
     }, expected=version)
 
 
-def test_runtime_facade_defaults_off_without_creating_learning_state(tmp_path):
+def test_runtime_facade_defaults_off_without_creating_predictor_checkpoint_state(tmp_path):
     home = tmp_path / "brain"
     store, session = _make_store(home)
     try:
@@ -657,6 +661,85 @@ def test_runtime_facade_requires_both_strict_boolean_gates(tmp_path):
         store.close()
 
 
+def test_runtime_records_source_bound_neuromod_traces_before_learning_gate(tmp_path):
+    home = tmp_path / "brain-neuromod"
+    store, session = _make_store(home)
+    try:
+        _add_transitions(store, session, 0, 64)
+        neuromod = Neuromod(store)
+        first = consume_after_commit(store, home, limit=64, neuromod=neuromod)
+        assert first["status"] == "OFF"
+        report = first["neuromod"]
+        assert report["mode"] == "SHADOW"
+        assert report["applied_scale"] == 1.0
+        assert report["record"]["status"] == "RECORDED"
+        assert report["record"]["verified_receipts"] == 64
+        assert report["record"]["recorded_packets"] == 128
+        assert report["gate"]["eligibility"] > 0.0
+        assert report["gate"]["modulator"]["combined"] > 0.0
+
+        rows = store.rows(
+            "SELECT kind,payload FROM packets WHERE kind IN ('LearningTrace','ModulatorPacket') "
+            "ORDER BY rowid"
+        )
+        assert len(rows) == 128
+        traces = [json.loads(row["payload"]) for row in rows if row["kind"] == "LearningTrace"]
+        modulators = [json.loads(row["payload"]) for row in rows if row["kind"] == "ModulatorPacket"]
+        assert len(traces) == len(modulators) == 64
+        receipt = verify_committed_transitions(store, limit=64)[0][0]
+        trace = next(item for item in traces if item["event_id"] == receipt.event_id)
+        modulator = next(item for item in modulators if item["event_id"] == receipt.event_id)
+        assert trace["path_id"] == "world_predictor"
+        assert trace["provenance"][0] == receipt.source_ref
+        assert trace["detail"]["action_id"] == receipt.action_id
+        assert trace["detail"]["outcome_sha256"] == receipt.evidence_ref.rsplit(":", 1)[-1]
+        assert modulator["path_id"] == "world_predictor"
+        assert modulator["source_class"] == "real_deterministic_outcome"
+        assert modulator["provenance"][0] == receipt.source_ref
+
+        count_before = len(rows)
+        second = consume_after_commit(store, home, limit=64, neuromod=Neuromod(store))
+        rows_after = store.rows(
+            "SELECT kind,payload FROM packets WHERE kind IN ('LearningTrace','ModulatorPacket')"
+        )
+        assert second["status"] == "OFF"
+        assert second["neuromod"]["record"]["status"] == "NO_NEW_OUTCOMES"
+        assert second["neuromod"]["record"]["recorded_packets"] == 0
+        assert len(rows_after) == count_before
+        cursor, _ = store.state("v14.world_jepa.neuromod_cursor", None)
+        assert cursor["scan_cursor"] == 64
+        assert cursor["processed"] == 64
+        assert store.state("v14.world_jepa.store_consumer", None)[0] is None
+        assert not (home / "world_jepa").exists()
+    finally:
+        store.close()
+
+
+def test_runtime_safety_veto_blocks_optimizer_even_in_shadow(tmp_path):
+    home = tmp_path / "brain-neuromod-veto"
+    store, session = _make_store(home)
+    try:
+        _add_transitions(
+            store, session, 0, 64,
+            status_overrides={63: "REJECTED"},
+            actual_overrides={63: {"safety_veto": True}},
+        )
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=8
+        )
+        neuromod = Neuromod(store)
+        result = consume_after_commit(store, home, limit=64, neuromod=neuromod)
+        assert result["status"] == "NEUROMOD_VETOED"
+        assert result["neuromod"]["mode"] == "SHADOW"
+        assert result["neuromod"]["applied_scale"] == 0.0
+        assert result["neuromod"]["gate"]["veto"] is True
+        assert result["neuromod"]["record"]["recorded_packets"] == 128
+        assert store.state("v14.world_jepa.store_consumer", None)[0] is None
+        assert not (home / "world_jepa").exists()
+    finally:
+        store.close()
+
+
 def test_runtime_facade_persists_numeric_jepa_and_exposes_b1_b2_memory_shadow(tmp_path):
     home = tmp_path / "brain-runtime"
     store, session = _make_store(home)
@@ -665,7 +748,9 @@ def test_runtime_facade_persists_numeric_jepa_and_exposes_b1_b2_memory_shadow(tm
         _set_runtime_permissions(
             store, learning_enabled=True, optimizer_permission=True, steps=120
         )
-        result = consume_after_commit(store, home, limit=256)
+        neuromod = Neuromod(store)
+        neuromod.set_local_mode("ACTIVE", authority="EXPLICIT_HUMAN")
+        result = consume_after_commit(store, home, limit=256, neuromod=neuromod)
         assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         assert result["runtime_adapter_called"] is True
         assert result["decision_authority"] == "NONE"
@@ -676,6 +761,9 @@ def test_runtime_facade_persists_numeric_jepa_and_exposes_b1_b2_memory_shadow(tm
         assert metrics["ema_target_delta_norm"] > 0
         assert metrics["train_holdout_source_sha256_disjoint"] is True
         assert metrics["retention_gate_accepted"] is True
+        assert 0.0 < result["neuromod"]["applied_scale"] < 1.0
+        assert math.isclose(metrics["neuromod_scale"], result["neuromod"]["applied_scale"])
+        assert result["neuromod"]["mode"] == "ACTIVE"
 
         payload, version = store.state("v14.world_jepa.store_consumer", None)
         assert version >= 1
