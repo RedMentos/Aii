@@ -1,3 +1,16 @@
+# Perception checkpoint update — 2026-11-22T17:13:57.861Z
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Gewichtsdownload, keine Mikrofonfreigabe und kein Rechtewechsel.
+
+- **Installierter Redmi-Stand:** privater V13OBS #115 wurde am 2026-11-22T16:54:57Z aktualisiert und bestätigt weiterhin Release-Commit `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`, Auto-Update EIN und Runtime/Dashboard UP_TO_DATE. Das ist kein Chat-Funktionsnachweis.
+- **Letzte echte native Diagnose:** letzter Turn 57.74 s; C3 TTFT 41.63 s, Prefill 38.95 s, Prompt 751 Tokens, nur 2 generierte Tokens. B1/B2 endeten weiter mit TIME_BUDGET (53.2/54.2 s); keine gültigen Offers. C3-Prompt-Inclusion/Semantic-Use und native Latent-Kopplung sind nicht bewiesen. Keine neue Mikrofonmessung in diesem Lauf.
+- **Perception PR #2361:** weiterhin DRAFT / NOT_RELEASED, Branch `research-perception/v14-fastdiar-frame-adapter-20261122`, Base c4eb82. Der Adapter nimmt caller-supplied 192-D/80-ms Frames an, hasht jetzt aber den tatsächlichen lokalen Checkpoint unter einem vertrauenswürdigen Model-Root mit no-follow Pfadöffnung; beliebige SHA-Strings und Symlink-/Outside-Root-Pfade werden nicht mehr akzeptiert. Code commit `9428380b4d47e7297e42774c0eefdedb34effe33`; Test commit `114c971ee37a9ff81f86db9cb87fad389c83c10b`.
+- **Testbeleg:** LOCAL_LINUX CPython 3.13.5 isolierte Helper-Reproduktion 7/7 PASS (Datei-Hash, Float16-Matrix, Outside-Root, leere Datei, finale Symlink, Symlink-Elternverzeichnis, Revision/Zeitgrenzen). Das ist kein kompletter Aii-Consumer-Test. Full local consumer suite BLOCKED (kein Checkout, GitHub-DNS im Worker nicht verfügbar). Exakte PR-CI auf aktuellem HEAD noch PENDING.
+- **Wirkungsgrenze:** weiterhin nur Adapter / diagnostische Similarity; der Embedding-Erzeuger ist nicht kryptografisch attestiert. Keine FASTDIAR-Inferenz, keine Kalibrierung, keine Identität, kein Lernen/Handeln, keine Vektorpersistenz. FASTDIAR-Code MIT; separate Checkpoint-Gewichtslizenz nicht geklärt, daher kein Download. Kein Termux-/Redmi-Audio-/ARM-Test und kein Deployment dieses PR.
+- **Nächster interner Schritt:** exakte Python-3.13/3.14-PR-CI abwarten, dann unabhängiges Core/QA-Review; danach nur nach Lizenzklärung und separater Nutzerfreigabe ein Modellexperiment erwägen. #2349s Composer-Pin-Reparatur bleibt Core-owned.
+
+---
+
 # Perception update — 2026-11-22T16:56:12.831Z
 
 **Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, keine Mikrofonfreigabe, kein Modell-/Gewichtsdownload und kein Rechtewechsel.
