@@ -109,7 +109,6 @@ def build_sources(code_dir, *, include_postcommit=True):
         'archive_stream_store': _constant_pin(result['v13/archive_stream_range_candidate.py'], 'STORE_SHA256', 'archive stream Store'),
         'context_recall_store': _dict_pin(result['v13/context_source_recall_candidate.py'], 'store.py', 'context recall Store'),
         'context_recall_stream': _dict_pin(result['v13/context_source_recall_candidate.py'], 'archive_stream_range_candidate.py', 'context recall stream'),
-        'local_error_semantic': _dict_pin(result['v13/local_error_route_shadow_candidate.py'], 'world_semantic_evidence_candidate.py', 'local-error semantic'),
     }
     if (base_store_sha not in dependent_base_pins['archive_reader_store_set']
             or dependent_base_pins['world_jepa_store'] != base_store_sha
@@ -117,7 +116,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             or dependent_base_pins['archive_stream_store'] != base_store_sha
             or dependent_base_pins['context_recall_store'] != base_store_sha
             or dependent_base_pins['context_recall_stream'] != base_stream_sha
-            or dependent_base_pins['local_error_semantic'] != base_semantic_sha):
+            ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
                      '15850e2498a8145bb451a7178b84f3023edcf3651970a60bd39bcc702d57fd4a')
@@ -303,10 +302,19 @@ def build_sources(code_dir, *, include_postcommit=True):
                           final_stream_sha, 'context recall stream')
     result['v13/context_source_recall_candidate.py'] = recall
 
+    # Earlier overlays may already have refreshed this dependent's semantic
+    # pin. Bind from the exact current semantic module before its final Store
+    # rebind, then refresh to the final semantic-module bytes.
+    pre_rebind_semantic_sha = hashlib.sha256(result['v13/world_semantic_evidence_candidate.py']).hexdigest()
+    pre_rebind_local_error_pin = _dict_pin(
+        result['v13/local_error_route_shadow_candidate.py'],
+        'world_semantic_evidence_candidate.py', 'local-error semantic')
+    if pre_rebind_local_error_pin != pre_rebind_semantic_sha:
+        raise ValueError('local-error pre-rebind semantic binding mismatch')
     final_semantic_sha = hashlib.sha256(result['v13/world_semantic_evidence_candidate.py']).hexdigest()
     result['v13/local_error_route_shadow_candidate.py'] = _rebind_dict(
         result['v13/local_error_route_shadow_candidate.py'], 'world_semantic_evidence_candidate.py',
-        dependent_base_pins['local_error_semantic'], final_semantic_sha, 'local-error semantic')
+        pre_rebind_semantic_sha, final_semantic_sha, 'local-error semantic')
 
     # Final exact-source checks for every rebinding above.
     if _dict_pin(result['v13/world_jepa_runtime_guard_candidate.py'], 'store.py', 'World-JEPA Store') != final_store_sha:
