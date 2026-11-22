@@ -71,40 +71,31 @@ def region_ref(ref,region):
     return {'source_id':ref['source_id'],'sha256':ref['sha256'],'char_start':0,'char_end':0,'modality':'image','region_id':region['region_id'],'box':list(region['box'])}
 
 def ingest(store,data,cfg=DEFAULTS,label=None):
-    """Store image bytes as an IMAGE source (dedup by hash) and register its regions.
-
-    Publication, deduplication and the Store row/state commit share the same
-    RLock as source revocation. This prevents a concurrent forget from unlinking
-    a blob after a new IMAGE source row has been published.
-    """
-    im=decode(data,cfg);w,h=im.size;sha=digest(data)
-    with store.mutex:
-        st=load(store)
-        for rec in st['images'].values():
-            if rec['ref']['sha256']==sha:return rec
-        if len(st['images'])>=cfg['max_images']:raise ValueError('Zu viele Bilder im Lab; erst :image forget')
-        path=store.home/'data/blobs'/sha
-        if not path.exists():atomic_write(path,data)
-        sid=uid('src')
-        with store.tx() as c:c.execute('INSERT INTO sources VALUES (?,?,?,?,?,?,0)',(sid,sha,'IMAGE',len(data),0,now()))
-        ref={'source_id':sid,'sha256':sha,'char_start':0,'char_end':0,'modality':'image'}
-        rec={'ref':ref,'size':[w,h],'label':(label or '')[:80],'regions':boxes(w,h,cfg['grid']),'captions':[],'created':now()}
-        st['images'][sid]=rec;save(store,st);return rec
+    """Store image bytes as an IMAGE source (dedup by hash) and register its regions. Returns the image record."""
+    im=decode(data,cfg);w,h=im.size;sha=digest(data);st=load(store)
+    for rec in st['images'].values():
+        if rec['ref']['sha256']==sha:return rec
+    if len(st['images'])>=cfg['max_images']:raise ValueError('Zu viele Bilder im Lab; erst :image forget')
+    path=store.home/'data/blobs'/sha
+    if not path.exists():atomic_write(path,data)
+    sid=uid('src')
+    with store.tx() as c:c.execute('INSERT INTO sources VALUES (?,?,?,?,?,?,0)',(sid,sha,'IMAGE',len(data),0,now()))
+    ref={'source_id':sid,'sha256':sha,'char_start':0,'char_end':0,'modality':'image'}
+    rec={'ref':ref,'size':[w,h],'label':(label or '')[:80],'regions':boxes(w,h,cfg['grid']),'captions':[],'created':now()}
+    st['images'][sid]=rec;save(store,st);return rec
 
 def read_image(store,ref,cfg=DEFAULTS):
-    """Read and verify an IMAGE while serialized against source revocation."""
-    with store.mutex:
-        r=store.one('SELECT * FROM sources WHERE id=?',(ref.get('source_id'),))
-        if not r or r['deleted'] or r['kind']!='IMAGE' or r['hash']!=ref.get('sha256'):
-            raise ValueError('Dangling/gelöschter Bild-SourceRef')
-        b=(store.home/'data/blobs'/r['hash']).read_bytes()
-        if digest(b)!=r['hash']:raise ValueError('Bild-Hash falsch')
-        im=decode(b,cfg)
-        if 'box' in ref:
-            x0,y0,x1,y1=ref['box'];w,h=im.size
-            if not (0<=x0<x1<=w and 0<=y0<y1<=h):raise ValueError('Region außerhalb des Bildes')
-            im=im.crop((x0,y0,x1,y1))
-        return im
+    """Verified pixels for a (region) SourceRef: the source row must be live, the blob hash must match."""
+    r=store.one('SELECT * FROM sources WHERE id=?',(ref.get('source_id'),))
+    if not r or r['deleted'] or r['kind']!='IMAGE' or r['hash']!=ref.get('sha256'):raise ValueError('Dangling/gelöschter Bild-SourceRef')
+    b=(store.home/'data/blobs'/r['hash']).read_bytes()
+    if digest(b)!=r['hash']:raise ValueError('Bild-Hash falsch')
+    im=decode(b,cfg)
+    if 'box' in ref:
+        x0,y0,x1,y1=ref['box'];w,h=im.size
+        if not (0<=x0<x1<=w and 0<=y0<y1<=h):raise ValueError('Region außerhalb des Bildes')
+        im=im.crop((x0,y0,x1,y1))
+    return im
 
 # ---------------------------------------------------------------- RAW EYE
 def tile_features(im,px=32):
@@ -366,16 +357,12 @@ def teacher_switch(store,on):
     st=load(store);st['teacher_removed']=not on;save(store,st);return {'teacher':'on' if on else 'removed'}
 
 def forget(store,rec):
-    """Revoke the image and unlink its blob under the Store publication lock."""
-    with store.mutex:
-        st=load(store);sid=rec['ref']['source_id'];st['images'].pop(sid,None)
-        if st.get('projector'):
-            st['projector']['captions']={k:v for k,v in st['projector']['captions'].items() if k.split(':')[0]!=sid}
-        save(store,st)
-        with store.tx() as c:c.execute('UPDATE sources SET deleted=1 WHERE id=?',(sid,))
-        if not store.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(rec['ref']['sha256'],)):
-            (store.home/'data/blobs'/rec['ref']['sha256']).unlink(missing_ok=True)
-        return {'forgotten':sid}
+    st=load(store);sid=rec['ref']['source_id'];st['images'].pop(sid,None)
+    if st.get('projector'):st['projector']['captions']={k:v for k,v in st['projector']['captions'].items() if k.split(':')[0]!=sid}
+    save(store,st)
+    with store.tx() as c:c.execute('UPDATE sources SET deleted=1 WHERE id=?',(sid,))
+    if not store.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(rec['ref']['sha256'],)):(store.home/'data/blobs'/rec['ref']['sha256']).unlink(missing_ok=True)
+    return {'forgotten':sid}
 
 def status(runtime):
     st=load(runtime.store);t=Teacher(runtime.home,runtime.models);ok,missing=t.available();pj=st.get('projector');tp=st.get('tile_projector')
