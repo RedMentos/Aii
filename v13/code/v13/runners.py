@@ -450,7 +450,7 @@ class LlamaRunner:
                     kill_process(self.proc)
                     with contextlib.suppress(Exception):conn.close()
                     return
-        watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None;native_stop=False
+        watcher=threading.Thread(target=watchdog,daemon=True);watcher.start();first=time.monotonic() if first_step and first_step.get('content') else None;tokens=first_tokens;timings={};peak=None;native_stop=False;last_rss_sample_tokens=first_tokens
         try:
             conn.request("POST","/completion",wire_json(payload).encode(),{"Content-Type":"application/json","Authorization":"Bearer "+self.key});response=conn.getresponse()
             if response.status!=200:raise RuntimeError(f"Inferenz HTTP {response.status}: {response.read(200).decode(errors='replace')}")
@@ -468,9 +468,16 @@ class LlamaRunner:
                         first=time.monotonic();self.stage_times['prefill_to_first_token_s']=first-self.phase_started;self.phase_started=first
                     self.phase='stream';yield content
                 if data.get("timings"):timings=data["timings"]
-                if tokens%16==0:
-                    rss=process_memory(self.proc.pid).get('rss_bytes')
-                    if rss is not None:peak=rss if peak is None else max(peak,rss)
+                # SSE frames may carry only timings/metadata. Sampling every
+                # such frame when tokens == 0 (or a multiple of 16) causes
+                # repeated /proc reads on the latency-critical decode path.
+                # Sample only after actual new token progress; the background
+                # monitor still captures RSS/PSS throughout prefill and decode.
+                if tokens-last_rss_sample_tokens>=16:
+                    last_rss_sample_tokens=tokens
+                    if self.proc is not None and self.proc.poll() is None:
+                        rss=process_memory(self.proc.pid).get('rss_bytes')
+                        if rss is not None:peak=rss if peak is None else max(peak,rss)
                 if data.get("stop") is True:
                     native_stop=True
                     if self._audit_enabled:self._audit_completed=True
