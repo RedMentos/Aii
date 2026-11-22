@@ -99,7 +99,7 @@ def test_real_arithmetic_source_action_egress_and_restart(runtime):
         restored.close()
 
 
-@pytest.mark.parametrize('question, answer', [('0*123', '0'), ('1/3', '1/3'), ('calculate -12 * 3', '-36')])
+@pytest.mark.parametrize('question, answer', [('0*123', '0'), ('calculate 1/3', '1/3'), ('calculate -12 * 3', '-36')])
 def test_zero_fraction_and_signed_output(runtime, question, answer):
     row, meta = turn(runtime, question)
     assert row['text'] == answer
