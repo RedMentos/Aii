@@ -84,6 +84,18 @@ def _add_transitions(store, session, start, count, status_overrides=None, source
     return action_ids
 
 
+def _add_receiver_transitions(store, session, start, count):
+    """Create a positive-control cohort with action-conditioned terminal outcomes."""
+    actions = tuple(world_model.ACTIONS)
+    status_overrides = {
+        index: ("FINAL" if index % len(actions) < 2 else "FAILED")
+        for index in range(start, start + count)
+    }
+    return _add_transitions(
+        store, session, start, count, status_overrides=status_overrides
+    )
+
+
 def _source_text_for_partition(target, prefix):
     for index in range(10000):
         text = f"{prefix}-{index}"
@@ -1013,7 +1025,7 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
     home = tmp_path / "brain-body-receiver"
     store, session = _make_store(home)
     try:
-        _add_transitions(store, session, 0, 256)
+        _add_receiver_transitions(store, session, 0, 256)
         _set_runtime_permissions(
             store, learning_enabled=True, optimizer_permission=True, steps=120
         )
@@ -1023,6 +1035,10 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
         assert trained["metrics"]["ema_target_delta_norm"] > 0
         assert trained["metrics"]["train_holdout_source_sha256_disjoint"] is True
         assert trained["metrics"]["retention_gate_accepted"] is True
+        from v13.world_jepa_consumer import receiver_utility_gate
+        for role in ("B1_DETAIL", "B2_GIST"):
+            gate = receiver_utility_gate(trained["metrics"], role)
+            assert gate["accepted"] is True, {"role": role, "gate": gate}
 
         event = store.event(session, "Current source: compare the four routes for a local test.")
         runner = _BodyReceiverCaptureRunner()
@@ -1035,6 +1051,11 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
         for messages in runner.calls:
             body_state = json.loads(messages[1]["content"])["body_state"]
             assert body_state["authority"] == "STATE_NOT_FACT"
+            assert "world_jepa" in body_state, {
+                "role": body_state["role"],
+                "view_keys": sorted(body_state),
+                "serialized_chars": len(json.dumps(body_state, sort_keys=True)),
+            }
             prompts[body_state["role"]] = body_state["world_jepa"]
         assert set(prompts) == {"B1_DETAIL", "B2_GIST"}
         detail = prompts["B1_DETAIL"]
@@ -1117,7 +1138,7 @@ def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_bu
         assert no_checkpoint is not None
         assert "world_jepa" not in no_checkpoint["view"]
 
-        _add_transitions(store, session, 0, 256)
+        _add_receiver_transitions(store, session, 0, 256)
         _set_runtime_permissions(
             store, learning_enabled=True, optimizer_permission=True, steps=120
         )
@@ -1140,6 +1161,10 @@ def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_bu
                 receiver_module, "_train_split_action_support", original_support
             )
         assert thin_support is not None
+        assert "world_jepa" in thin_support["view"], {
+            "view_keys": sorted(thin_support["view"]),
+            "serialized_chars": len(json.dumps(thin_support["view"], sort_keys=True)),
+        }
         assert thin_support["view"]["world_jepa"]["unsupported_actions"] == ["simple"]
         assert all(row[0] != "simple"
                    for row in thin_support["view"]["world_jepa"]["predictions"]["rows"])
