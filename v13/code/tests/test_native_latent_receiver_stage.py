@@ -49,7 +49,7 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
         for path in sorted(destination.rglob("*"))
         if path.is_file() and path != manifest_path
     }
-    manifest_path.write_text(json.dumps(manifest, indent=2) + "\\n", encoding="utf-8")
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
     assert "v13/native_latent_receiver.py" in manifest["files_sha256"]
     assert "v13/native/latent_receiver/native_latent_receiver.cpp" in manifest["files_sha256"]
