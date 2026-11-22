@@ -86,3 +86,18 @@ At current PR head `297e2c5d24d90cbbc3ac651e3b7c634b060184b2`, targeted workflow
 - Perception privacy scan: CLEAN.
 - Model-lab workflow: both jobs completed successfully.
 - V13 staged context/integrated regression: staged-runtime failed on the stale pin; integrated-regression was still running at last read.
+
+
+## Final exact-head checkpoint (2026-11-22 08:17Z)
+
+- Tested code/test commit: `297e2c5d24d90cbbc3ac651e3b7c634b060184b2`.
+- Current PR head: `afd4238c63723d0ebaa0fba3a40f664aafd10dcb`; the only later commit changes this handoff document, not executable source or tests.
+- Targeted CI on the tested code commit is green:
+  - RAW EAR fastpath: 84 passed on Python 3.13 and 84 passed on Python 3.14; compile and privacy scan clean.
+  - RAW EAR prosody/attention: 66 passed on Python 3.11 and 66 passed on Python 3.13.
+  - Pre-lease consent/revocation QA: 42 passed.
+  - VAD comparator: 9 passed on Python 3.13 and 9 passed on Python 3.14, including the AST-isolated anti-alias regression.
+  - Perception public privacy scan: CLEAN; model-lab workflow: SUCCESS.
+- The staged-runtime job `137144683517` failed with the stale Core source pin described above; the integrated-regression job `137144683632` also failed one staged-regression test for the same pin. No separate Perception numerical regression was reported.
+- PR #2322 remains DRAFT / NOT_MERGEABLE pending Core's pin/manifest refresh and an exact staged/integrated rerun. The blocker and R-077 research note are linked from Boss PR #2321, Core PR #2314 and whole-Canon issue #1984.
+- No release, updater request, model/weight change, microphone permission or device mutation occurred. The installed c03ff receipt is prior-release state only; this PR is not installed.
