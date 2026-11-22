@@ -34,7 +34,9 @@ class ObserverStageTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='v13-observer-stage-') as folder:
             destination = Path(folder)/'stage'
             stage.stage(CODE, destination)
-            result = subprocess.run([sys.executable, str(CODE/'tests/observer_fair_budget_disposable_cases_20261116.py')],
+            result = subprocess.run([sys.executable, "-m", "pytest", "-q",
+                str(CODE/'tests/observer_fair_budget_disposable_cases_20261116.py'),
+                str(CODE/'tests/test_same_turn_body_delivery_qa.py')],
                 cwd=destination, env=dict(os.environ, PYTHONPATH=str(destination), PYTHONDONTWRITEBYTECODE='1'),
                 capture_output=True, text=True, timeout=60)
             self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
