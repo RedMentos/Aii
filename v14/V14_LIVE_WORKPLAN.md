@@ -1294,3 +1294,33 @@ R-080 LATER suggests separating immutable observed transitions from selective ac
 - Do not rebase JEPA onto Boss #2370 until the audio owner rebinds runtime.py and dependent composers. Do not bypass the memory/lifecycle pins; QA must rebind the JEPA chain bottom-up.
 - Full local Aii suite remains BLOCKED by absent checkout/DNS; no full local compile/pytest PASS. Redmi feature status remains REDMI_UNVERIFIED. Installed base aed1d2b remains UP_TO_DATE; #2372 is NOT_RELEASED and no device update was requested.
 - Next: exact-head CI → inspect SleepRuntime trace → QA memory lifecycle rebind + audio owner runtime pin rebind → Boss current-base composition/review → disjoint correct/omitted/shuffled/hypothetical history ablations. No user action and no model/weight change.
+
+
+## JEPA & Memory — Run 16: exact-head diagnostics and research follow-through (2026-11-22T20:38:38.423Z)
+
+**Code candidate:** [PR #2372](https://github.com/RedMentos/Aii/pull/2372), branch `jepa-memory/v14-temporal-exact-forget-retention-20261122-run14`, current exact head `9829b199b5a7c6c4182eec07c295d5d97b807ef2` (DRAFT / NOT_RELEASED). The underlying temporal T8 → WorldJEPA/EMA → replay/retention/rollback → B1/B2 SHADOW prompt consumer is unchanged; this run added diagnostic test improvements only:
+
+- `9f242cc3fa31bd3255a6eba7c819fb26df4d6ec5`: corrected the planner-only postcommit test's undefined `monkeypatch` argument and captured the thrown exception message in the component trace.
+- `8db1952a018894626a40879ff04f468f15b83645`: when the temporal body prompt is absent, report matrix status, per-action role status, utility metrics, support counts and history IDs.
+- `9829b199b5a7c6c4182eec07c295d5d97b807ef2`: bind those diagnostics to the role encoded in the captured prompt rather than the last loop variable.
+
+**Exact test evidence:** the predecessor fbe4 head completed all three workflow families and failed:
+- Temporal T8 Python 3.13 and 3.14: 11 passed / 1 failed on each; the failing regression did not receive `world_jepa_temporal` in the actual B1/B2 prompt. The next run must expose whether the cause is a rejected receiver-utility gate, per-action support, history/provenance or a matrix status; do not weaken the gate without evidence.
+- Staged/integrated: the staged job failed at the QA-owned `source_lifecycle_lock_integration_candidate.py` pin with `ValueError: unsupported lifecycle source: memory.py`; the integrated job reported 21 failed / 229 passed / 10 skipped / 2 errors / 41 subtests, largely downstream of that same pin. It also reproduced a temporal postcommit `ValueError` and the planner-only test's `NameError: monkeypatch is not defined`. The latter is fixed in 9f242; the actual ValueError text is not yet available.
+- Optimizer-resume Python 3.13/3.14: both fail at the same stale QA memory.py source pin before the staged JEPA path can run.
+
+The 8db1952 exact-head workflows are `45066934953` (staged/integrated), `45066934983` (temporal T8) and `45066934931` (optimizer-resume 3.13/3.14); all were still QUEUED at last read. No exact-head workflow run is visible yet for the later 9829b19 test-diagnostic commit. Queued is not PASS.
+
+**Local environment:** CPython 3.13.5, NumPy 2.3.5 and pytest 9.0.2 are present, but no Aii checkout is mounted and `git ls-remote https://github.com/RedMentos/Aii.git HEAD` fails DNS. Full local compile/pytest is BLOCKED / NOT_RUN; no local suite pass is claimed.
+
+**Cross-agent dependencies:**
+- QA #2359 still needs to rebind the lifecycle chain to the unchanged JEPA `memory.py` file SHA-256 `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701` (blob SHA-1 `172417b49c0abb301db9367fd1c9947a91b3c458`). The inherited JEPA builder expects `61e881ad…`; QA's current pin is `b2059016…`. Exact request posted as #2359 comment 7085390248. JEPA has not edited QA-owned files.
+- Boss #2370's former audio Runtime pin mismatch is now corrected on `boss/v14-fair-budget-current-base-20261122-run14`: exact Runtime blob is `6e61af07326c5bb11406ee72361a710d5facc9a5`, and the audio overlay now pins that exact value. Boss commit `7fc6d7e4c94d3ea37a59ced28e52c4c2b2ee46db` advances the deployer; the 18-workflow exact matrix remains QUEUED. Do not rebase JEPA until Boss's current matrix and QA's lifecycle chain are green.
+
+**Private device boundary:** private V13OBS [#115](https://github.com/RedMentos/Aiiii/issues/115), updated 2026-11-22T20:24:26Z, reports installed base `aed1d2b`, Auto-Update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE. Its local-metadata-only window reports B1 4/4 native attempts failed, B2 2/2 failed, zero valid offers, C3 prefill about 38.945 s and 2 generated tokens; no new chat was sent. JEPA #2372 is not installed and remains REDMI_UNVERIFIED. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell, model/weight/permission change or device mutation occurred.
+
+**Research:** R-089 was appended to the shared ledger. JEPA-TTT supports persistent predictor/optimizer state and dense replay, but does not test multiple sequential shifts, return-to-old-dynamics retention or catastrophic forgetting. No code/weights were reused. Its useful next experiment is a matched-step dense-vs-sparse-window × replay-on/off × persistent-vs-reset ablation with two shifts and a return-to-first-cohort phase; keep V14's trainable encoder/predictor + EMA and retention anchors.
+
+**Next executable steps:** (1) poll exact 8db1952 and 9829b19 CI; (2) fix the actual receiver gate/consumer failure and temporal SleepRuntime ValueError using the newly exposed diagnostics; (3) wait for QA's exact lifecycle rebind; (4) wait for Boss #2370's full current-head matrix; (5) compose only after both chains are green; (6) run disjoint correct/omitted/shuffled/hypothetical-history and replay/retention ablations. Keep all learning and receiver paths SHADOW-only; no native B1/B2 weights or cross-organ latent transfer are proven.
+
+**User action:** none. Existing installed release is already up to date; no manual Termux command, model download/swap, permission change or device action is needed.
