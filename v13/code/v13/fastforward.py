@@ -71,8 +71,17 @@ class FastForward:
                 'chars':int(math.exp(max(0.,min(10.,self._dot(w['log_chars'],x))))),'trained_on':st['n']}
     def learn(self,event_id,x,duration_s,status,chars):
         """Normalized delta rule on the actual outcome; returns the prediction error (surprise in [0,1])."""
+        # Never persist a non-finite gradient into the long-lived predictor.
+        # In particular max(.01, nan) is not a numerical validity check.
+        if (len(x)!=len(FEATURES) or
+                any(type(v) not in (float,int) or not math.isfinite(v) for v in x) or
+                type(duration_s) not in (float,int) or not math.isfinite(duration_s) or duration_s<0 or
+                type(chars) is not int or chars<0):
+            raise ValueError('Invalid fast-forward outcome/features')
         y={'log_duration':math.log(max(.01,duration_s)),'success':1. if status=='FINAL' else 0.,'log_chars':math.log(max(1,chars))}
         norm=1e-6+sum(v*v for v in x);sc=step(self.n,PATH)  # WP-U6 §12.7
+        if type(sc) not in (float,int) or not math.isfinite(sc) or sc<0:
+            raise ValueError('Invalid fast-forward learning modulation')
         def fn(st):
             before=self.predict(x,st);err={}
             for t in TARGETS:
