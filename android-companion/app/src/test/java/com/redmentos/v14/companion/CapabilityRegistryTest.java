@@ -86,7 +86,11 @@ public final class CapabilityRegistryTest {
         Context context = RuntimeEnvironment.getApplication();
         SharedPreferences prefs = context.getSharedPreferences(
                 CompanionProvider.PREFS, Context.MODE_PRIVATE);
-        assertTrue(prefs.edit().putBoolean("enabled", true).commit());
+        assertTrue(prefs.edit()
+                .putBoolean("enabled", true)
+                .putString("paired_package", "com.termux")
+                .putString("paired_cert_sha256", "test-certificate-fingerprint")
+                .commit());
 
         assertTrue(CompanionProvider.resetProcessStateForProviderStartup(context));
         assertFalse(CompanionProvider.isEnabled(context));
