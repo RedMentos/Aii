@@ -8,6 +8,15 @@ on:
     paths:
       - v13/code/tests/test_v14_audio_lease_full_lifecycle_qa.py
       - v13/code/tests/test_v14_exact_arithmetic_date_ambiguity_qa.py
+      - v13/code/scripts/stage_integrated_candidate.py
+      - v13/code/scripts/termux_runtime_recovery_candidate_20261121.py
+      - v13/code/scripts/integrated_audio_context_candidate_20261121.py
+      - v13/code/scripts/integrated_arithmetic_guard_candidate_20261121.py
+      - v13/code/scripts/integrated_arithmetic_outcome_candidate_20261116.py
+      - v13/code/v13/runtime.py
+      - v13/code/v13/focal.py
+      - v13/code/v13/runtime_deploy.py
+      - v13/code/v13/arithmetic_reflex.py
       - .github/workflows/v14-qa-audio-lease-streaming.yml
   push:
     branches:
@@ -15,6 +24,15 @@ on:
     paths:
       - v13/code/tests/test_v14_audio_lease_full_lifecycle_qa.py
       - v13/code/tests/test_v14_exact_arithmetic_date_ambiguity_qa.py
+      - v13/code/scripts/stage_integrated_candidate.py
+      - v13/code/scripts/termux_runtime_recovery_candidate_20261121.py
+      - v13/code/scripts/integrated_audio_context_candidate_20261121.py
+      - v13/code/scripts/integrated_arithmetic_guard_candidate_20261121.py
+      - v13/code/scripts/integrated_arithmetic_outcome_candidate_20261116.py
+      - v13/code/v13/runtime.py
+      - v13/code/v13/focal.py
+      - v13/code/v13/runtime_deploy.py
+      - v13/code/v13/arithmetic_reflex.py
       - .github/workflows/v14-qa-audio-lease-streaming.yml
 
 jobs:
