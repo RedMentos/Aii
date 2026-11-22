@@ -104,6 +104,7 @@ class L1ShadowTrainingTests(unittest.TestCase):
         self.assertEqual(report["l1_gate"], gate)
         self.assertEqual(report["l1_utility_gate"], "PASS_L2_PREFIX_SHADOW_ALLOWED_NO_NATIVE_AUTHORITY")
         self.assertEqual(report["status"], "L1_SHADOW_PASSED_L2_SHADOW_ALLOWED_NOT_PROMOTED")
+        self.assertTrue(report["run_key"])
         self.assertEqual(report["latent_authority"], 0)
         task = gate_call.call_args.args[0]
         self.assertEqual(task["seed_ids"]["LATENT"], ["3", "7"])
