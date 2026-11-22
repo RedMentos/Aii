@@ -143,7 +143,11 @@ def snapshot():
               "runtime": data.get("runtime", "NOT_YET_CHECKED"),
               "dashboard": data.get("dashboard", "NOT_YET_CHECKED"),
               "last_error": data.get("last_error", "NONE"),
+              "last_error_detail": data.get("last_error_detail", ""),
               "updated_commit": data.get("updated_commit", "")}
+    if (not isinstance(result["last_error_detail"], str)
+            or not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,63}", result["last_error_detail"])):
+        result["last_error_detail"] = ""
     if not isinstance(result["last_check_utc"], int):
         result["last_check_utc"] = 0
     if not isinstance(result["last_success_utc"], int):
@@ -347,7 +351,7 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
         prior_status = snapshot()
         state = {"last_check_utc": clock, "last_success_utc": int(previous.get("last_success_utc", 0)),
                  "last_result": "CHECKING", "runtime": prior_status["runtime"],
-                 "dashboard": prior_status["dashboard"], "last_error": "NONE",
+                 "dashboard": prior_status["dashboard"], "last_error": "NONE", "last_error_detail": "",
                  "updated_commit": previous.get("updated_commit", "")}
         _atomic(STATE, state)
         roots = {"runtime": Path.home() / ".v13-runtime-source",
@@ -368,6 +372,7 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                         runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired):
                     state["runtime"] = "ERROR"
                     state["last_error"] = "UPDATE"
+                    state["last_error_detail"] = "RuntimeDeployError"
                     failed.add("runtime")
             busy = updates._runtime_active()
             # Fetch/check CI BEFORE asking to interrupt a running chat; if CI
@@ -418,11 +423,12 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                 except AutoUpdateDisabled:
                     state[name] = "AUTO_OFF"
                 except (OSError, ValueError, TimeoutError, updates.UpdateDenied,
-                        runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired):
+                        runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired) as exc:
                     # A broken runtime install must not strand CHECKING or
                     # prevent the independent control panel repairing itself.
                     state[name] = "ERROR"
                     state["last_error"] = "UPDATE"
+                    state["last_error_detail"] = type(exc).__name__
                 _atomic(STATE, state)
             values = {state[name] for name in selected}
             if values == {"ERROR"}:
@@ -455,11 +461,13 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
             state["last_result"] = "ERROR"
             state["last_error"] = ("RUNNING" if isinstance(exc,lifecycle.LifecycleError)
                                    else "UPDATE")
-        except Exception:
+            state["last_error_detail"] = type(exc).__name__
+        except Exception as exc:
             # Preserve a terminal, sanitized state even for an unexpected
             # Python/import error; the supervising worker can log its class.
             state["last_result"] = "ERROR"
             state["last_error"] = "UPDATE"
+            state["last_error_detail"] = type(exc).__name__
             raise
         finally:
             # Restart the UI-managed V13 chat whether an update succeeded or
@@ -468,8 +476,9 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                 try:
                     lifecycle.request_resume(reason="UPDATED" if any(state[n] == "UPDATED" for n in selected)
                                              else "RESTORE")
-                except (OSError, ValueError, lifecycle.LifecycleError):
+                except (OSError, ValueError, lifecycle.LifecycleError) as exc:
                     state["last_error"] = "STATE"
+                    state["last_error_detail"] = type(exc).__name__
                     state["last_result"] = "ERROR"
             _atomic(STATE, state)
         return snapshot()
