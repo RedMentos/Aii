@@ -679,7 +679,8 @@ class SleepRuntime:
             from .world_jepa_runtime import consume_after_commit
             from .world_jepa_planner import consume_world_planner_shadow
             learning=consume_after_commit(
-                self.r.store,self.r.home,limit=limit,cancel_check=cancel_check)
+                self.r.store,self.r.home,limit=limit,cancel_check=cancel_check,
+                neuromod=getattr(getattr(self,'cycle',None),'neuromod',None))
             if learning.get('status')=='CANCELLED' or cancel_check():
                 result.update(status='CANCELLED',action_status=action_status,learning=learning)
                 self.r.store.log('v14_world_jepa_postcommit_cancelled',event_id,
