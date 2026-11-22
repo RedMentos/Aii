@@ -393,13 +393,14 @@ def _decision_evidence(*, candidate=False, gate=True, calibration="fixture-cal-v
     return {
         "status": status,
         "calibration_id": calibration,
+        "confidence_threshold": 0.65,
         "peak_speaker_change_candidate": candidate,
         "speaker_change_candidate": candidate,
         "confidence_gate_passed": gate,
     }
 
 
-def test_three_regime_gate_supports_continuity_only_with_calibrated_voiced_evidence():
+def test_three_regime_gate_supports_continuity_only_with_calibration_bound_voiced_evidence():
     assert _speaker_change_decision(
         _decision_evidence(), _decision_cues()
     ) == "CONTINUITY_SUPPORTED"
@@ -427,6 +428,9 @@ def test_three_regime_gate_defers_missing_rejected_or_uncalibrated_evidence():
     ) == "DEFER"
     assert _speaker_change_decision(
         _decision_evidence(calibration=None), cues
+    ) == "DEFER"
+    assert _speaker_change_decision(
+        dict(_decision_evidence(), confidence_threshold=None), cues
     ) == "DEFER"
 
 
