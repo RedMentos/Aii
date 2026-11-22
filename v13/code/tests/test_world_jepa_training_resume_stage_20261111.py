@@ -1,4 +1,5 @@
 """Exercise optimizer-bound World-JEPA through the single current stager."""
+import hashlib
 import importlib.util
 import os
 from pathlib import Path
@@ -33,3 +34,13 @@ def test_world_jepa_training_state_in_real_staged_runtime(tmp_path):
         env=dict(os.environ, PYTHONPATH=str(dest), PYTHONDONTWRITEBYTECODE='1'))
     assert staged_consumer.returncode == 0, staged_consumer.stdout + staged_consumer.stderr
     print(staged_consumer.stdout)
+
+
+def test_source_lifecycle_memory_pin_matches_current_file():
+    spec = importlib.util.spec_from_file_location(
+        'source_lifecycle_pin', CODE / 'scripts/source_lifecycle_lock_integration_candidate.py'
+    )
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    actual = hashlib.sha256((CODE / 'v13/memory.py').read_bytes()).hexdigest()
+    assert builder.PINS['memory.py'] == actual
