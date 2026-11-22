@@ -67,10 +67,12 @@ jobs:
         run: |
           adb start-server
           adb devices -l
+      - name: Record available emulator acceleration
+        run: emulator -accel-check || true
       - name: Exercise stop and process-death restart on Android emulator
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2, Apache-2.0
         with:
-          emulator-options: -no-window -gpu swiftshader -no-snapshot -noaudio -no-boot-anim -accel off -cores 4 -memory 4096 -partition-size 512
+          emulator-options: -no-window -gpu swiftshader -no-snapshot -noaudio -no-boot-anim -accel auto -cores 4 -memory 4096 -partition-size 512
           api-level: 33
           target: default
           arch: x86_64
