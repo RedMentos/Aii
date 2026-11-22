@@ -60,7 +60,7 @@ LOCAL_LINUX isolated scratch logic: PASS for caller-asserted thresholds, no-thre
 
 ## Latest code readback — 2026-11-22 04:00
 
-- Branch: `research-perception/v14-raw-ear-rebase-d06c637-20261122`; latest branch commit: `0fb98e483219e867f950abec49a3611a25b94be1`.
+- Branch: `research-perception/v14-raw-ear-rebase-d06c637-20261122`; latest branch commit at readback: `9fe259c94e755ce58304a6610437766d9e416f6d`.
 - `audio_speaker_evidence.py` blob: `37aa9c392bbb68d60ccff9749c75b41b8783c539`; `audio_voice_cues.py` blob: `596d14487b9f2b28609eea79fb8b1b39f8da009c`; `test_audio_speaker_evidence.py` blob: `63221711d369651f9be157be2ee4da6cce7b502b`.
 - Method label is now `COSINE_LOOKBACK_DIAGNOSTIC_V1`; no FastDiar model/code/weights are imported. Test fixtures use neutral fake model identifiers.
 - LOCAL_LINUX scratch mirror: `py_compile` PASS and 4/4 unittest cases PASS (caller-asserted threshold, no threshold, missing receipt, and no speaker-derived attention interrupt).
@@ -73,3 +73,8 @@ LOCAL_LINUX isolated scratch logic: PASS for caller-asserted thresholds, no-thre
 Reviewed the exact pinned llama.cpp API used by Core #2300: commit `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` (2026-09-14, MIT). The header calls `llama_batch.embd` input token embeddings; `llama_get_embeddings_ith` returns output token embeddings, and its implementation indexes by `n_embd_out`. The decode input path uses `n_embd_inp` outside MTP/DFlash. Those dimensions can differ. Therefore #2300's sender-output → receiver-input probe is useful native ingress diagnostics, but a matching dimension does not establish a shared latent space or semantic alignment. The wrapper currently reports vector width/receiver input width without a distinct sender-output representation field.
 
 Review note sent to Core: record sender-output and receiver-input dimensions/representation types separately, keep `alignment_status=UNTRAINED_UNKNOWN`, and do not promote B3 from nonzero input-effect RMS. The next real experiment needs held-out receiver-task utility against source-exact, zero, shuffled, random same-norm and OOD controls; only a trained pair-specific projector can test learned alignment.
+
+
+### Additional regression added after scratch verification
+
+The repository test `test_batch_similarity_diagnostic_does_not_trigger_a4_interrupt_or_c3_candidate` now compares the same audio with caller-supplied speaker embeddings against a no-embedding negative control and requires identical A4 external-interrupt gain. This exact repository integration test has **not** been run locally (full checkout unavailable) and has no exact-head CI result yet; only the isolated 4/4 scratch mirror passed. Do not report this new regression as PASS until CI or a full checkout executes it.
