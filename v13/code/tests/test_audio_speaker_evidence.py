@@ -617,6 +617,44 @@ def test_antialias_filter_preserves_low_fundamental_pitch(sample_rate):
     assert cues["f0_median_hz"] == pytest.approx(140, abs=5)
 
 
+def _direct_antialias_reference(samples, sample_rate, factor):
+    coefficients = audio_voice_module._voice_decimator_coefficients(sample_rate, factor)
+    half = len(coefficients) // 2
+    sample_count = len(samples)
+    output = []
+    for output_index in range(sample_count // factor):
+        center = output_index * factor
+        filtered = 0.0
+        for tap_index, coefficient in enumerate(coefficients):
+            source_index = center + tap_index - half
+            if 0 <= source_index < sample_count:
+                source_value = float(samples[source_index])
+            elif sample_count <= half:
+                source_value = float(samples[0] if source_index < 0 else samples[-1])
+            elif source_index < 0:
+                source_value = 2.0 * float(samples[0]) - float(samples[-source_index])
+            else:
+                mirror_index = 2 * sample_count - 2 - source_index
+                source_value = 2.0 * float(samples[-1]) - float(samples[mirror_index])
+            filtered += source_value * coefficient
+        output.append(filtered)
+    return output
+
+
+@pytest.mark.parametrize("sample_rate", [16000, 22050, 44100, 48000])
+@pytest.mark.parametrize("sample_count", [1, 10, 11, 257, 1001])
+def test_symmetric_antialias_matches_direct_reference(sample_rate, sample_count):
+    rng = random.Random(sample_rate * 10000 + sample_count)
+    samples = [rng.randint(-32768, 32767) for _ in range(sample_count)]
+    factor = max(1, sample_rate // 8000)
+    actual, effective_rate = audio_voice_module._anti_alias_decimate(
+        samples, sample_rate, factor,
+    )
+    expected = _direct_antialias_reference(samples, sample_rate, factor)
+    assert effective_rate == sample_rate / factor
+    assert actual == pytest.approx(expected, abs=1e-7)
+
+
 def test_alias_rejection_reaches_the_real_a5_a4_c3_consumer(tmp_path):
     runtime, event = make_runtime(tmp_path)
     try:
