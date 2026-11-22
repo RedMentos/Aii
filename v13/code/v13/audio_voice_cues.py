@@ -763,9 +763,9 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         # field to preserve room for source-bound acoustic evidence below.
         base_summary = candidate.summary.replace(
             f" interval_ms={candidate.end_ms-candidate.start_ms}", "", 1
-        )
+        ).replace(f" zcr={cues['zcr']:.3f}", "", 1)
         summary = base_summary + (
-            f" activity={cues['activity_hint']} voiced={cues['voiced_fraction']:.2f}"
+            f" activity={cues['activity_hint']} v={cues['voiced_fraction']:.2f}"
         )
         if cues["f0_median_hz"] is not None:
             summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
