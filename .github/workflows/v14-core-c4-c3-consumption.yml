@@ -7,6 +7,7 @@ on:
       - core/v14-fair-budget-diagnostic-20261122
       - boss/v14-recall-store-pin-rebind-20261122
       - boss/v14-fair-budget-rebind-20261122-run13
+      - boss/v14-fair-budget-current-base-20261122-run14
     paths:
       - 'v13/code/scripts/source_lifecycle_lock_integration_candidate.py'
       - 'v13/code/scripts/termux_runtime_recovery_candidate_20261112.py'
@@ -40,6 +41,7 @@ on:
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
+      - boss/v14-fair-budget-current-base-20261122-run14
       - gpt6/v13-private-remote-bridge-20261111
     paths:
       - 'v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py'
