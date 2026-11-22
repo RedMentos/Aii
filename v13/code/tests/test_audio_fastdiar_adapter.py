@@ -57,11 +57,15 @@ def make_checkpoint(tmp_path, payload=b"synthetic FASTDIAR checkpoint fixture"):
 
 
 def make_batch(rows, *, start_ms, end_ms, first_end_ms, checkpoint_root,
-               checkpoint_path, generation_id="gen-a", model_revision=MODEL_REVISION):
+               checkpoint_path, generation_id="gen-a", model_revision=MODEL_REVISION,
+               current_chunk_sha256=None):
+    if current_chunk_sha256 is None:
+        current_chunk_sha256 = hashlib.sha256(tone()).hexdigest()
     return build_fastdiar_diagnostic_batch(
         matrix(rows),
         source_id=SOURCE,
         generation_id=generation_id,
+        current_chunk_sha256=current_chunk_sha256,
         model_revision=model_revision,
         checkpoint_path=checkpoint_path,
         checkpoint_root=checkpoint_root,
@@ -109,13 +113,14 @@ def test_adapter_emits_exact_raw_ear_schema_and_fastdiar_geometry(tmp_path):
     )
     assert set(batch) == {
         "schema", "source_id", "generation_id", "model_id", "model_revision",
-        "model_sha256", "embedding_dim", "frame_step_ms", "lookback_frames",
-        "confidence_threshold", "calibration_id", "frames",
+        "model_sha256", "current_chunk_sha256", "embedding_dim", "frame_step_ms",
+        "lookback_frames", "confidence_threshold", "calibration_id", "frames",
     }
     assert batch["schema"] == SCHEMA
     assert batch["model_id"] == MODEL_ID
     assert batch["model_revision"] == MODEL_REVISION
     assert batch["model_sha256"] == expected_sha
+    assert batch["current_chunk_sha256"] == hashlib.sha256(tone()).hexdigest()
     assert batch["embedding_dim"] == EMBEDDING_DIM == 192
     assert batch["frame_step_ms"] == FRAME_STEP_MS == 80
     assert batch["lookback_frames"] == LOOKBACK_FRAMES == 10
@@ -132,12 +137,24 @@ def test_actual_numpy_float16_matrix_is_accepted(tmp_path):
     rows = numpy.asarray([vector_a() for _ in range(12)], dtype=numpy.float16)
     batch = build_fastdiar_diagnostic_batch(
         rows, source_id=SOURCE, generation_id="gen-a",
+        current_chunk_sha256=hashlib.sha256(tone()).hexdigest(),
         model_revision=MODEL_REVISION,
         checkpoint_path=checkpoint, checkpoint_root=root,
         window_start_ms=100, window_end_ms=1100, first_frame_end_ms=180,
     )
     assert len(batch["frames"]) == 12
     assert len(batch["frames"][0]["vector"]) == 192
+
+
+def test_adapter_rejects_noncanonical_current_chunk_sha256(tmp_path):
+    root, checkpoint, _ = make_checkpoint(tmp_path)
+    with pytest.raises(ValueError, match="lowercase SHA-256"):
+        build_fastdiar_diagnostic_batch(
+            matrix([vector_a()]), source_id=SOURCE, generation_id="gen-a",
+            current_chunk_sha256="A" * 64, model_revision=MODEL_REVISION,
+            checkpoint_path=checkpoint, checkpoint_root=root,
+            window_start_ms=100, window_end_ms=300, first_frame_end_ms=180,
+        )
 
 
 def test_adapter_rejects_bad_dimensions_nonfinite_and_boolean_values(tmp_path):
@@ -208,6 +225,36 @@ def test_checkpoint_hash_rejects_symlinked_parent_directory(tmp_path):
                    checkpoint_root=root, checkpoint_path=link_dir / "checkpoint.bin")
 
 
+def test_fastdiar_current_chunk_hash_mismatch_is_rejected_by_real_consumer(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    root, checkpoint, _ = make_checkpoint(tmp_path)
+    generation = event["brain_generation_id"]
+    wrong_pcm = tone(frequency=220)
+    batch = make_batch(
+        [vector_a() for _ in range(12)],
+        start_ms=100, end_ms=1100, first_end_ms=180,
+        checkpoint_root=root, checkpoint_path=checkpoint,
+        generation_id=generation,
+        current_chunk_sha256=hashlib.sha256(wrong_pcm).hexdigest(),
+    )
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=generation,
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL", speaker_embeddings=batch,
+        )
+        evidence = result["speaker_change_evidence"]
+        assert evidence["status"] == "REJECTED"
+        assert evidence["error"] == "SpeakerEvidenceError"
+        assert result["a4"]["speaker_change_decision"] == "DEFER"
+        assert "speaker_similarity_delta=" not in result["c3_admission"].selected[0].summary
+        assert "vector" not in json.dumps(result["packet"])
+    finally:
+        runtime.store.close()
+
+
 def test_fastdiar_matrix_reaches_real_raw_ear_a5_a4_c3_consumer_without_identity(tmp_path):
     runtime, event = make_runtime(tmp_path)
     root, checkpoint, _ = make_checkpoint(tmp_path)
@@ -244,6 +291,8 @@ def test_fastdiar_matrix_reaches_real_raw_ear_a5_a4_c3_consumer_without_identity
         )
         evidence = result["speaker_change_evidence"]
         assert evidence["status"] == "MEASURED"
+        assert evidence["source_binding_status"] == "CURRENT_PCM_CHUNK_SHA256_MATCH"
+        assert evidence["current_chunk_sha256"] == hashlib.sha256(tone()).hexdigest()
         assert evidence["threshold_status"] == "NOT_CONFIGURED"
         assert evidence["speaker_label"] is None
         assert evidence["identity_authority"] is False
