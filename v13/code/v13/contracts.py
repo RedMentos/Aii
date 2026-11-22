@@ -13,6 +13,7 @@ FIELDS={
  "WorldTransition":{"action_id":str,"source_ref":dict,"outcome_source_ref":dict,"action_role":str,"corollary_packet_id":str,"teacher_truth_authority":bool},
  "StudentEvaluation":{"percept_packet_id":str,"source_ref":dict,"student_route":str,"teacher_route":str,"agreement":bool,"routing_authority":int},
  "LatentTapPacket":{"role":str,"source_ref":dict,"tap_id":str,"model_revision":str,"token_ids":list,"feature_path":str,"feature_sha256":str,"shape":list},
+ "B3PairedTapPacket":{"packet_schema":str,"body_pair_id":str,"source_ref":dict,"sender_roles":list,"tap_packet_ids":dict,"tap_ids":dict,"model_revisions":dict,"feature_bindings":dict,"gist_readout":dict,"fine_readout":dict,"token_counts":dict,"dimensions":dict,"token_alignment":str,"receiver_pooling":str,"injection_authority":int,"learning_authority":int},
  "ExecutiveDecision":{"component":str,"context_ref":dict,"baseline":str,"action":str,"learned":bool,"context_revision":str,"trajectory_offer_ids":list},
  "ActionPrediction":{"action_type":str,"profile_id":str,"prediction":dict},
  "PredictionOutcome":{"action_id":str,"observation":dict},
@@ -94,6 +95,71 @@ def validate(kind,obj):
         optional={'goal_source_ref':(dict,type(None)),'goal_sequence':list,'active_task':(dict,type(None)),'current_action_intent':(dict,type(None)),'salient_A_offer':(dict,type(None)),'salient_B_offer':list,'memory_refs':list,'uncertainty':dict,'resource_state':dict,'permission_flags':dict,'open_questions':list,'conversation_event_version':int}
         for name,types in optional.items():
             if name in obj and not isinstance(obj[name],types):raise ValueError('ExecState.'+name+': falscher Typ')
+    if kind=="B3PairedTapPacket":
+        roles=("B1_DETAIL","B2_GIST")
+        if obj["packet_schema"]!="v13.b3-paired-native-taps/3" or obj["sender_roles"]!=list(roles):raise ValueError("B3 pair schema/roles")
+        if obj["source_ref"] not in obj["provenance"]:raise ValueError("B3 pair source provenance")
+        gr=obj["gist_readout"]
+        if (not isinstance(gr,dict) or not isinstance(gr.get("plan"),dict)
+                or not gr["plan"].get("lossless") or gr["plan"].get("receiver_injection_authority")!=0
+                or gr.get("tap_packet_id")!=obj["tap_packet_ids"]["B2_GIST"]
+                or not isinstance(gr.get("feature_path"),str) or not gr.get("feature_path")
+                or not isinstance(gr.get("feature_sha256"),str) or len(gr["feature_sha256"])!=64
+                or not isinstance(gr.get("shape"),list) or len(gr["shape"])!=2
+                or any(type(v) is not int or v<1 for v in gr["shape"])):
+            raise ValueError("B3 pair adaptive Gist readout binding")
+        for field in ("tap_packet_ids","tap_ids","model_revisions","feature_bindings","token_counts","dimensions"):
+            if not isinstance(obj[field],dict) or set(obj[field])!=set(roles):raise ValueError("B3 pair "+field)
+        if any(not isinstance(obj[field][role],str) or not obj[field][role] for field in ("tap_packet_ids","tap_ids","model_revisions") for role in roles):raise ValueError("B3 pair identity")
+        if any(type(obj[field][role]) is not int or obj[field][role]<1 for field in ("token_counts","dimensions") for role in roles):raise ValueError("B3 pair geometry")
+        if any(obj["token_counts"][role]>64 for role in roles):raise ValueError("B3 pair native tap exceeds 64-token slot ceiling")
+        fr=obj["fine_readout"];fp=fr.get("plan") if isinstance(fr,dict) else None
+        if (not isinstance(fp,dict) or fr.get("tap_packet_id")!=obj["tap_packet_ids"]["B1_DETAIL"]
+                or fp.get("tap_id")!=obj["tap_ids"]["B1_DETAIL"]
+                or fp.get("source_ref")!=obj["source_ref"]
+                or fp.get("native_tokens")!=obj["token_counts"]["B1_DETAIL"]
+                or fp.get("dim")!=obj["dimensions"]["B1_DETAIL"]
+                or fp.get("max_slots")!=64 or fp.get("lossless") is not True
+                or fp.get("receiver_injection_authority")!=0 or fp.get("body_learning_authority")!=0
+                or not isinstance(fp.get("token_ids"),list)
+                or len(fp["token_ids"])!=obj["token_counts"]["B1_DETAIL"]
+                or not isinstance(fp.get("slots"),list)
+                or len(fp["slots"])!=obj["token_counts"]["B1_DETAIL"]):
+            raise ValueError("B3 pair B1 fine readout binding")
+        cursor=obj["source_ref"]["char_start"]
+        for index,slot in enumerate(fp["slots"]):
+            sr=slot.get("source_ref") if isinstance(slot,dict) else None
+            if (not isinstance(sr,dict) or slot.get("slot")!=index
+                    or slot.get("token_id")!=fp["token_ids"][index]
+                    or sr.get("source_id")!=obj["source_ref"].get("source_id")
+                    or sr.get("sha256")!=obj["source_ref"].get("sha256")
+                    or sr.get("char_start")!=cursor
+                    or type(sr.get("char_end")) is not int or sr["char_end"]<cursor
+                    or sr["char_end"]>obj["source_ref"]["char_end"]):
+                raise ValueError("B3 pair B1 fine slot source coverage")
+            cursor=sr["char_end"]
+        if cursor!=obj["source_ref"]["char_end"]:raise ValueError("B3 pair B1 fine slots are not lossless")
+        plan=gr["plan"];shape=gr["shape"]
+        if (type(plan.get("max_slots")) is not int or plan["max_slots"]<1
+                or shape[0]>plan["max_slots"] or shape[1]!=obj["dimensions"]["B2_GIST"]
+                or plan.get("tap_id")!=obj["tap_ids"]["B2_GIST"]
+                or plan.get("native_tokens")!=obj["token_counts"]["B2_GIST"]
+                or plan.get("dim")!=obj["dimensions"]["B2_GIST"]
+                or not isinstance(plan.get("slots"),list) or len(plan["slots"])!=shape[0]
+                or plan.get("body_learning_authority")!=0):
+            raise ValueError("B3 pair Gist plan/tap geometry")
+        cursor=obj["source_ref"]["char_start"]
+        for slot in plan["slots"]:
+            sr=slot.get("source_ref") if isinstance(slot,dict) else None
+            if (not isinstance(sr,dict) or sr.get("source_id")!=obj["source_ref"].get("source_id")
+                    or sr.get("sha256")!=obj["source_ref"].get("sha256")
+                    or sr.get("char_start")!=cursor
+                    or type(sr.get("char_end")) is not int or sr["char_end"]<cursor
+                    or sr["char_end"]>obj["source_ref"]["char_end"]):
+                raise ValueError("B3 pair B2 Gist slot source coverage")
+            cursor=sr["char_end"]
+        if cursor!=obj["source_ref"]["char_end"]:raise ValueError("B3 pair B2 Gist slots are not lossless")
+        if obj["token_alignment"]!="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS" or obj["receiver_pooling"]!="B2_ADAPTIVE_GIST_SLOTS;B1_SOURCE_ALIGNED_FINE_NATIVE_SLOTS" or obj["injection_authority"]!=0 or obj["learning_authority"]!=0:raise ValueError("B3 pair authority/semantics")
     if kind=="SourceRef" and not 0<=obj["char_start"]<=obj["char_end"]:raise ValueError("SourceRef-Bereich")
     if kind=="OfferPacket" and (obj["role"] not in {"B1_DETAIL","B2_GIST"} or not 0<=obj["confidence"]<=1):raise ValueError("Offer role/confidence")
     if kind=="BodySourceIdSelection":
