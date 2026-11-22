@@ -1,4 +1,5 @@
 import threading
+from types import SimpleNamespace
 
 import pytest
 
@@ -171,6 +172,6 @@ def test_operator_command_exposes_image_ask(monkeypatch):
         lambda runtime, rec, question: {"submitted": question, "source": rec["ref"]["source_id"]},
     )
 
-    result = vision.operator_command(object(), ["ask", "last", "What", "is", "visible?"])
+    result = vision.operator_command(SimpleNamespace(store=object()), ["ask", "last", "What", "is", "visible?"])
 
     assert result == {"submitted": "What is visible?", "source": "image-1"}
