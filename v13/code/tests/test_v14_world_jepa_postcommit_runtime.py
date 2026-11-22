@@ -96,6 +96,15 @@ def _add_transitions(store, session, start, count, status_overrides=None):
     return event_ids
 
 
+def _add_temporal_cohort(store, label, start, session_count):
+    """Build independent four-event sessions for strict temporal holdouts."""
+    event_ids = []
+    for offset in range(session_count):
+        session = store.new_session(f"{label}-{offset:03d}")
+        event_ids.extend(_add_transitions(store, session, start + offset * 4, 4))
+    return event_ids
+
+
 def _sleep(store, home):
     sleep = object.__new__(SleepRuntime)
     sleep.r = SimpleNamespace(store=store, home=home, cancel_event=threading.Event(),
@@ -251,7 +260,7 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
     home = tmp_path / "brain-runtime-jepa"
     store, session = _make_store(home)
     try:
-        first_events = _add_transitions(store, session, 0, 256)
+        first_events = _add_temporal_cohort(store, "first", 0, 64)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 120, "replay_mode": "uniform",
@@ -306,7 +315,7 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert first["planner"]["checkpoint_sha256"] == first_sha
         assert read_world_planner_shadow(store, first_events[-1])["status"] == first_planner_status
 
-        second_events = _add_transitions(store, session, 256, 32)
+        second_events = _add_temporal_cohort(store, "second", 256, 8)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 24, "replay_mode": "uniform",
@@ -392,7 +401,7 @@ def test_sleep_jepa_cancelled_by_user_preemption_requeues_without_checkpoint_com
     home = tmp_path / "brain-jepa-cancel"
     store, session = _make_store(home)
     try:
-        event_ids = _add_transitions(store, session, 0, 256)
+        event_ids = _add_temporal_cohort(store, "events", 0, 64)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 120, "replay_mode": "uniform",
@@ -427,7 +436,7 @@ def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in
     home = tmp_path / "brain-jepa-gate-resume"
     store, session = _make_store(home)
     try:
-        first_events = _add_transitions(store, session, 0, 256)
+        first_events = _add_temporal_cohort(store, "first", 0, 64)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 120, "replay_mode": "uniform",
@@ -688,7 +697,7 @@ def test_receiver_readout_fails_closed_when_its_shuffled_latent_control_fails(tm
     home = tmp_path / "brain-receiver-utility-gate"
     store, session = _make_store(home)
     try:
-        event_ids = _add_transitions(store, session, 0, 256)
+        event_ids = _add_temporal_cohort(store, "events", 0, 64)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 120, "replay_mode": "uniform",
@@ -722,7 +731,7 @@ def test_planner_withholds_each_role_when_its_own_negative_control_fails(tmp_pat
     home = tmp_path / "brain-planner-receiver-utility"
     store, session = _make_store(home)
     try:
-        event_ids = _add_transitions(store, session, 0, 256)
+        event_ids = _add_temporal_cohort(store, "events", 0, 64)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
             "steps": 120, "replay_mode": "uniform",
