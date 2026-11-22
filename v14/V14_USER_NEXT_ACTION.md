@@ -1,3 +1,19 @@
+# Research & Perception checkpoint — 2026-11-22 13:00 CET
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, keine Mikrofon-/Gerätefreigabe, kein Modell-/Gewichtswechsel und kein Update-Request.
+
+- Release-Entwicklungs-HEAD ist weiterhin `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; vor dem PR-Start war der Branch exakt identisch.
+- Research/Perception hat den aktuellen B3-Stack auf diesem HEAD neu aufgebaut: [PR #2346](https://github.com/RedMentos/Aii/pull/2346), Draft, Head `040371439d6b4fa5510d7dda65190b8fad3a7614`. Der Runtime-Verbraucher bietet `:tap pair` und `:b3 pairs`, bindet getrennte B1-Fine-/B2-adaptive-Gist-Taps an dieselbe Quelle und stellt einen quell-disjunkten, gelabelten L1-Shadow-Trainer bereit.
+- **LOCAL_LINUX:** CPython 3.13.5 / NumPy 2.3.5, exakter `_source_disjoint_split`-Helper: PASS (32 Source-SHA-Gruppen × 2 Spans, 52/12 Split, keine SHA-Überschneidung, deterministischer Seed sowie negative Konflikt-/Kleingruppen-/Bool-/Hash-Kontrollen). Vollständiger Aii-Checkout und Gesamt-`pytest`: BLOCKED, da `git ls-remote` mit `Could not resolve host: github.com` scheitert.
+- **CI:** auf PR #2346 noch QUEUED/IN_PROGRESS; kein PASS behauptet. **TERMUX/REDMI:** REDMI_UNVERIFIED; Fake-Tokenizer/Synthetic-Vector-Tests sind keine nativen Modell- oder Gerätebelege.
+- B3 bleibt produktiv OFF/SYMBOLIC. PR #2346 injiziert keine fremden Zustände, ändert keine B1/B2-Foundation-Weights und setzt weder Latent- noch Body-Learning-Autorität frei. Der neue Completion-Gate-Status macht Capture, Gist/Fine-Readouts, L1-Trainer und source-pinned L0/Restart-Tests als eigene Voraussetzungen sichtbar.
+- Neuer Forschungsbefund R-080: Hypnos (arXiv:2611.24637v1, 18.11.2026) belegt ein enges Wake/Sleep-Prinzip auf CORe50/FPGA, nicht allgemeines LLM-/JEPA-Lernen. Das offizielle Repo ist derzeit WIP ohne sichtbare Lizenzdatei; keine Wiederverwendung.
+- Der Audio-Consumer #2312 bleibt auf einem alten QA-Companion-Stack; es gibt weiterhin keinen verifizierten AudioRecord-Provider, keine Mikrofonaufnahme und keinen Redmi-Test. Die aktuelle QA-Companion-Kette braucht erst die separate Receipt-Recovery-Reparatur.
+
+**Nächster interner Schritt:** PR #2346 auf exaktem Head durch B3-/staged-/integrated-CI bringen und Core/QA-Review einholen. Danach nur nach Integration und explizit autorisiertem lokalen Betrieb echte B1/B2-Paare sammeln; L1 bleibt Shadow, bis unabhängige Labels, L0-Baselines, held-out Utility, Retention, Restart und Native-Receiver-Effekt nachgewiesen sind.
+
+---
+
 # JEPA-Statuskorrektur — 2026-11-22T10:00:40.871Z
 
 PR #2331 steht inzwischen auf `535eba6f668b3990416c361368f36e3e8f1e599e`, hat aber **9 fehlgeschlagene Checks** (4 laufen, 2 queued, 4 erfolgreich, 1 übersprungen). Die Fehler liegen weiter in der verschachtelten Source-Pin-Kette: sechs direkte Consumer-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Die vollständigen Hashes stehen im Boss-Review-Kommentar [7077507340](https://github.com/RedMentos/Aii/pull/2331#issuecomment-7077507340). Das ist noch kein JEPA-Lern-/Unlearning-Erfolg; PR bleibt DRAFT, Promotion OFF.
