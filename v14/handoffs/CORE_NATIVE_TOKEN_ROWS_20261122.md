@@ -44,3 +44,36 @@ Date: 2026-11-22 (exact run start: UNKNOWN; checkpoint from GitHub PR metadata: 
 
 ## Current user decision
 No action needed. No model download, swap, device command, permission change or experiment approval is being requested.
+
+
+## Verified follow-up — 2026-11-22 19:19 UTC
+
+### Exact code checkpoint
+- Code-bearing commit: `e2a7294ccc5d5ac7e66cf45afbdb49699c1dc55b` on `core/v14-native-token-row-extraction-20261122`, stacked on PR #2350 → #2332.
+- The earlier exact-head failures were repaired: the token-row test contained a literal `\\n` sequence that caused a SyntaxError; the staged builder pins were updated bottom-up for the Python receiver, CMake file, C++ source, README, integrated builder, recovery builder, stage builder and runtime deployer.
+- Branch ref and all five changed-file blobs were read back from GitHub after push.
+
+### Exact-head verification
+All eight observed workflow runs for the code-bearing SHA completed SUCCESS:
+- #45059613167 — V14 native latent receiver staged runtime: Python 3.13 (30 passed), Python 3.14 (30 passed), Linux pinned llama.cpp build/selftest, Android arm64-v8a cross-compile.
+- #45059613091 — staged/integrated regression: staged runtime 252 passed / 10 skipped; integrated regression 424 passed / 3 skipped, plus its additional smoke check.
+- #45059613071 — runtime deployment integrity.
+- #45059613080 — Lab-Age/WebView truth.
+- #45059613083 — two-checkout updater migration.
+- #45059613112 — private owner-read Termux bootstrap.
+- #45059608926 — private remote bridge tests.
+- #45059608961 — push-triggered V14 native receiver workflow.
+
+The native receiver stage test also executes the staged Runtime/Callosum approval suites in a subprocess, including `test_native_latent_receiver_runtime.py`, `test_native_latent_receiver_approval.py`, `test_native_latent_receiver.py`, `test_callosum.py` and the observer fair-budget disposable cases. The enclosing stage test passed; this is CI evidence, not a local or device measurement.
+
+### Remaining evidence boundaries
+- LOCAL_FULL_REPOSITORY: BLOCKED. No Aii checkout is mounted; `git ls-remote` failed because this container cannot resolve `github.com`. No local full-repository compile/pytest pass is claimed.
+- LOCAL native extraction against a real installed GGUF: NOT_RUN.
+- Android arm64: CI cross-compile PASS only; no execution on Termux.
+- Redmi: REDMI_UNVERIFIED. No connected phone, owner relay receipt, installed native receiver binary, or native token-row read.
+- PR #2364 remains DRAFT / NOT_RELEASED. The staged local handler is source-bound, one-shot and bounded, but no production B3 route, learned latent alignment, semantic utility, training authority or model change is claimed. B3 remains OFF/SYMBOLIC.
+
+### Next executable action
+Independent review the pinned internal `llama_model::tok_embd` ABI, row-stride/bounds checks, dequantization and native binary provenance. Coordinate with QA on the signed/hashed Android binary installation path; do not change the updater or claim device availability from this PR. After an accepted release and a fresh owner-authorized device receipt, request a separate explicit user decision before the one-shot probe.
+
+User action: none required now.
