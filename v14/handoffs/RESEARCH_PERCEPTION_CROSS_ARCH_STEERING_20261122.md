@@ -47,3 +47,6 @@ The audio path is not the same as the MediaProjection UI adapter in #2375. The c
 **Next owner actions:** Core/QA implement a visible, explicitly consented AudioRecord provider with RECORD_AUDIO, lifecycle/foreground handling, callback-before-start, exact sample count, route/silence/format-change rejection, release and buffer clearing. Perception rebases #2312 onto the current QA/Boss chain and deduplicates #2304. Then run the composed RAW EAR → A5 → A4 → C3 tests and only later an explicitly consented Redmi capture test.
 
 Status: dedicated consumer CI PASS / staged migration FAIL / Android provider absent / REDMI_UNVERIFIED. No model, weight, permission, user data or device state changed.
+
+
+**QA companion exact-source check:** current ref `qa/v14-companion-os-permission-contract-20261122` is at `7650ae0c19e93e4b6cbb778abb2f5123e49c364f`. `android-companion/app/src/main/AndroidManifest.xml` contains no `RECORD_AUDIO`; `CapabilityRegistry.java` marks `audio_capture` unavailable (“No one-shot visible AudioRecord provider; capture remains disabled”); `AudioCaptureDefaultOffTest.java` asserts the permission is absent. The provider is intentionally OFF. PR #2312 still names historical base `58666ddfc9945612a2117e1a844f812442d4ca64`; do not call it current-base until the QA/Boss parent stack is reconciled and the Perception branch is rebased.
