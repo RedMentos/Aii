@@ -732,6 +732,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
                     source_id=source_id, generation_id=generation_id,
                     start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
+                    current_chunk_sha256=raw["source_ref"]["sha256"],
                     activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
                 )
             except SpeakerEvidenceError as exc:
