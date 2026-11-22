@@ -983,3 +983,14 @@ Primary sources: https://support.google.com/googleplay/android-developer/answer/
 - **Status:** PAPER_REVIEWED_PREPRINT / OSS_CODE_MIT / CHECKPOINT_LICENSE_SCOPE_PENDING / PYTORCH_ONLY / NO_ONNX_EXPORT / NO_ARM64_PROOF / NO_DOWNLOAD / REDMI_UNVERIFIED.
 
 Primary sources: https://arxiv.org/abs/2610.02941; https://github.com/microsoft/fastdiar/tree/main; https://github.com/microsoft/fastdiar/releases/tag/v0.1.0.
+
+
+## R-059 — ReDimNet2 ONNX wrapper: offline enrollment candidate, not RAW EAR streaming (2026-11-22)
+
+- **Source revision:** `mediainbox/redimnet2-onnx` main `1da8337dd43e8545435bd1182c98ade0302fb6dd`; PyPI release `redimnet2-onnx 0.2.0`, published 2026-09-04. The wrapper is MIT-licensed (`pyproject.toml` and LICENSE); the upstream PalabraAI ReDimNet2 repository also declares MIT. Treat each released weight bundle separately until its exact redistribution/license notice is verified.
+- **Runtime shape:** mono 16-kHz waveform input must be 1–30 seconds; output is a normalized 192-D embedding. Mel-feature input is FP32 `[1,1,72,T]`, with T divisible by four. The package supports ONNX Runtime CPU and advertises QNN as an optional extra; waveform mode adds PyTorch. Models are fetched from versioned GitHub Releases on first load and cached with SHA-256 verification.
+- **Fit and limits:** this is utterance-level speaker verification, not an 80-ms causal frame encoder. It cannot directly supply the frame stream expected by V14-018 or replace FASTDIAR's frame-level design. A future offline enrollment/teacher use is conceivable, but adds a download/cache path and does not establish ARM64 Termux ABI, QNN provider availability, memory, latency or Redmi quality. The QNN extra is not evidence of Snapdragon/Termux compatibility.
+- **V14 action:** do not add this dependency, download weights or alter the default RAW EAR path. Keep caller-supplied frame embeddings opt-in; if offline enrollment becomes a requirement, benchmark it separately and verify exact checkpoint rights, ARM provider, RSS and latency first. No download, install, export or device test occurred.
+- **Status:** SOURCE_REVIEWED / WRAPPER_MIT / UPSTREAM_CODE_MIT / WEIGHT_SCOPE_NEEDS_PER-CHECKPOINT_REVIEW / UTTERANCE_LEVEL_ONLY / NO_ANDROID_ABI_PROOF / NO_DOWNLOAD / REDMI_UNVERIFIED.
+
+Primary sources: https://github.com/mediainbox/redimnet2-onnx/tree/main; https://pypi.org/project/redimnet2-onnx/0.2.0/; https://github.com/PalabraAI/redimnet2.
