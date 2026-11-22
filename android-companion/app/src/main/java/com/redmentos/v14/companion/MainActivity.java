@@ -98,23 +98,21 @@ public final class MainActivity extends Activity {
                                 getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
                         String previousPackage = prefs.getString("paired_package", null);
                         String previousDigest = prefs.getString("paired_cert_sha256", null);
-                        PairingPersistence.Result result = PairingPersistence.persistWithStatus(
-                                packageName, digest,
-                                (pairedPackage, certificateSha256) -> {
-                                    synchronized (CompanionProvider.ACTION_GATE_LOCK) {
-                                        // Pair rotation revokes any frame authorized under the old identity.
-                                        CompanionProvider.clearScreenFrame();
-                                        return prefs.edit()
-                                                .putString("paired_package", pairedPackage)
-                                                .putString("paired_cert_sha256", certificateSha256)
-                                                .commit();
-                                    }
-                                },
-                                () -> {
-                                    synchronized (CompanionProvider.ACTION_GATE_LOCK) {
-                                        // A failed commit may still mutate the in-memory map. Restore
-                                        // and verify the old pair while provider reads are excluded.
-                                        CompanionProvider.clearScreenFrame();
+                        PairingPersistence.Result result;
+                        synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+                            // Lock order is ACTION_GATE_LOCK -> PairingPersistence.TRUST_LOCK,
+                            // matching provider admission. A pair rotation also revokes any
+                            // outstanding screen frame before the trusted identity changes.
+                            CompanionProvider.clearScreenFrame();
+                            result = PairingPersistence.persistWithStatus(
+                                    packageName, digest,
+                                    (pairedPackage, certificateSha256) -> prefs.edit()
+                                            .putString("paired_package", pairedPackage)
+                                            .putString("paired_cert_sha256", certificateSha256)
+                                            .commit(),
+                                    () -> {
+                                        // A failed commit may still mutate the in-memory map.
+                                        // Restore and verify the old pair before releasing the gate.
                                         SharedPreferences.Editor rollback = prefs.edit();
                                         if (previousPackage == null) rollback.remove("paired_package");
                                         else rollback.putString("paired_package", previousPackage);
@@ -126,8 +124,8 @@ public final class MainActivity extends Activity {
                                                         prefs.getString("paired_package", null))
                                                 && java.util.Objects.equals(previousDigest,
                                                         prefs.getString("paired_cert_sha256", null));
-                                    }
-                                });
+                                    });
+                        }
                         if (result != PairingPersistence.Result.PERSISTED) {
                             String message = result == PairingPersistence.Result.RESTORED
                                     ? "Pairing was not changed; the previous identity was restored"

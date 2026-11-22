@@ -58,15 +58,19 @@ public final class CompanionProvider extends ContentProvider {
         Context context = getContext();
         if (context == null) return result(error("NO_CONTEXT"));
         try {
-            if (!isPairedCaller(context)) return result(error("TERMUX_NOT_PAIRED"));
-            if ("capabilities".equals(method)) return result(CapabilityRegistry.snapshot(context));
-            if ("public_key".equals(method)) return result(signer.publicKeyInfo());
-            if ("screen_frame_status".equals(method)) return result(screenFrameStatus(context));
-            if ("submit".equals(method)) return result(submit(context, decode(arg)));
-            if ("outcome".equals(method)) return result(outcome(decode(arg)));
-            if ("cancel".equals(method)) return result(cancel(context, decode(arg)));
-            if ("pending".equals(method)) return result(pending(context));
-            return result(error("UNKNOWN_METHOD"));
+            synchronized (ACTION_GATE_LOCK) {
+                // Pairing rotation uses this same outer lock before TRUST_LOCK, so
+                // no old caller can pass admission and then read/submit after rotation.
+                if (!isPairedCaller(context)) return result(error("TERMUX_NOT_PAIRED"));
+                if ("capabilities".equals(method)) return result(CapabilityRegistry.snapshot(context));
+                if ("public_key".equals(method)) return result(signer.publicKeyInfo());
+                if ("screen_frame_status".equals(method)) return result(screenFrameStatus(context));
+                if ("submit".equals(method)) return result(submit(context, decode(arg)));
+                if ("outcome".equals(method)) return result(outcome(decode(arg)));
+                if ("cancel".equals(method)) return result(cancel(context, decode(arg)));
+                if ("pending".equals(method)) return result(pending(context));
+                return result(error("UNKNOWN_METHOD"));
+            }
         } catch (Exception e) {
             return result(error("REJECTED:" + e.getClass().getSimpleName()));
         }
