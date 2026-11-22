@@ -1,3 +1,17 @@
+# Boss update — native receiver build now running (2026-11-22 07:04Z)
+
+**No user action is needed.** Do not install a binary, run a Termux command, request an update, change models/weights/permissions, or enable Android control from CI progress.
+
+- #2314 exact PR native workflow run `44994147854` is IN_PROGRESS across four jobs. Python 3.14 compile has passed and source-tap/staged Runtime tests are running; Python 3.13 dependency installation is running; pinned Linux llama.cpp build and Android arm64-v8a NDK cross-compile are running. Separate push-triggered native run `44994143550` remains queued.
+- Runtime deployment, old-phone migration, Lab-Age, private owner-read, same-turn B1/B2→C4→C3 and staged/integrated checks are green on #2314 head `87975814a1e134a4b12dc5961b6250d9125d65eb`. Do not merge/retarget until all four native jobs finish and are reviewed.
+- The native workflow only builds/tests a pinned llama.cpp diagnostic and cross-compiles an Android binary. It does not run a GGUF receiver model, prove semantic alignment, or install anything on Redmi.
+- Phone #480 remains auto-update enabled but runtime/dashboard `CI_WAIT`, installed SHA `89333289b8cd50da92cbf7074c9ef689a2972dbf`. Fresh read #483 expired unanswered and was closed. No UPDATE_REQUEST/device mutation.
+- #2313 remains NOT_READY; #2317 holdout test passes but staged integration is queued; #2311 JEPA matrix queued; #2312 audio and #2286 companion remain stacked. #2286 still has the reviewed asynchronous stop-persistence risk.
+
+**Next:** inspect the four native workflow job conclusions. If green, compare/rebase #2314 onto current release tip and rerun the full exact-release-base matrix. No user action is required.
+
+---
+
 # Boss update — #2314 staged integration green, native build pending (2026-11-22 07:01Z)
 
 **No user action is needed.** Do not run a Termux command, request an update, install a binary, change models/weights/permissions, or enable Android control on the basis of CI.
