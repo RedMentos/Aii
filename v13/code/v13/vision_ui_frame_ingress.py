@@ -84,7 +84,7 @@ def _feature_summary(region_id, box, features, salience):
         and region_id[1] in "0123"
         and region_id[2] in "0123"
     )
-    if region_id not in valid_named and not valid_grid:
+    if not isinstance(region_id, str) or (region_id not in valid_named and not valid_grid):
         raise ValueError("invalid RAW EYE region id")
     if (
         type(box) not in (list, tuple)
@@ -96,7 +96,10 @@ def _feature_summary(region_id, box, features, salience):
         raise ValueError("invalid RAW EYE region box")
 
     try:
-        values = tuple(float(value) for value in features)
+        raw_values = tuple(features)
+        if any(isinstance(value, (str, bytes, bytearray, bool)) for value in raw_values):
+            raise ValueError("non-numeric RAW EYE feature value")
+        values = tuple(float(value) for value in raw_values)
     except (TypeError, ValueError, OverflowError) as exc:
         raise ValueError("invalid RAW EYE feature vector") from exc
     expected = 6 + vision.HUE_BINS + 3 + vision.ORI_BINS + 16
@@ -108,6 +111,8 @@ def _feature_summary(region_id, box, features, salience):
     if salience is None:
         salience_text = "na"
     else:
+        if isinstance(salience, bool):
+            raise ValueError("invalid RAW EYE salience")
         try:
             salience_value = float(salience)
         except (TypeError, ValueError, OverflowError) as exc:
