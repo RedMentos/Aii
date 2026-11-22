@@ -1,4 +1,5 @@
 """Synthetic and consumer tests for source-bound speaker-change evidence."""
+from array import array
 from contextlib import contextmanager
 import json
 import math
@@ -500,3 +501,16 @@ def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(
         )
     finally:
         runtime.store.close()
+
+
+def test_registry_stores_compact_float32_vectors_in_memory():
+    registry = SpeakerChangeEvidenceRegistry()
+    batch = speaker_batch(SOURCE, "gen-compact", 100, 1100, lambda _: (1.0, 0.0, 0.0))
+    registry.update(
+        source_id=SOURCE, generation_id="gen-compact", start_ms=100, end_ms=1100,
+        activity_hint="VOICED", embeddings=batch,
+    )
+    stored = registry._states[(SOURCE, "gen-compact")].frames[0][1]
+    assert isinstance(stored, array)
+    assert stored.typecode == "f"
+    assert stored.itemsize == 4
