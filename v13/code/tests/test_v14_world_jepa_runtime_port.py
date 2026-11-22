@@ -1045,18 +1045,24 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
         assert detail["decision_authority"] == gist["decision_authority"] == "NONE"
         assert detail["action_horizon"] == gist["action_horizon"] == "NEXT_ACTION"
         assert "not fact" in detail["note"] and "not source evidence" in detail["note"]
+        assert "not answer correctness" in gist["note"]
         assert "not fact" in gist["note"] and "not source evidence" in gist["note"]
         assert detail["checkpoint_id"] == gist["checkpoint_id"] == trained["checkpoint_sha256"][:16]
+        assert detail["target_semantics"] == "ACTION_DURATION_AND_OUTPUT_SIZE"
+        assert gist["target_semantics"] == "ACTION_STATUS_FINAL_NOT_ANSWER_CORRECTNESS"
+        assert detail["unsupported_actions"] == gist["unsupported_actions"] == []
         assert detail["predictions"]["columns"] == [
-            "action", "duration_s", "output_characters", "uncertainty"
+            "action", "duration_s", "output_characters", "uncertainty", "train_support_samples"
         ]
         assert gist["predictions"]["columns"] == [
-            "action", "success_probability", "uncertainty"
+            "action", "terminal_completion_probability", "uncertainty", "train_support_samples"
         ]
         assert len(detail["predictions"]["rows"]) == len(world_model.ACTIONS)
         assert len(gist["predictions"]["rows"]) == len(world_model.ACTIONS)
         assert [row[0] for row in detail["predictions"]["rows"]] == list(world_model.ACTIONS)
         assert [row[0] for row in gist["predictions"]["rows"]] == list(world_model.ACTIONS)
+        assert all(row[-1] >= 8 for row in detail["predictions"]["rows"])
+        assert all(row[-1] >= 8 for row in gist["predictions"]["rows"])
 
         query_rows = store.rows(
             "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? ORDER BY created",
@@ -1076,11 +1082,17 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
             assert audit["native_body_consumed"] is False
             assert audit["native_body_weights_changed"] is False
             assert audit["decision_authority"] == "NONE"
+            assert audit["target_semantics"] in {
+                "ACTION_DURATION_AND_OUTPUT_SIZE",
+                "ACTION_STATUS_FINAL_NOT_ANSWER_CORRECTNESS",
+            }
+            assert set(audit["supported_action_samples"]) == set(world_model.ACTIONS)
+            assert all(count >= 8 for count in audit["supported_action_samples"].values())
     finally:
         store.close()
 
 
-def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_busy(tmp_path):
+def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_busy(tmp_path, monkeypatch):
     import fcntl
     import time
     from threading import Event, Thread
@@ -1111,6 +1123,39 @@ def test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_bu
         )
         trained = consume_after_commit(store, home, limit=256)
         assert trained["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        # Negative control: one action with only two train-split rows must not
+        # receive a predictor readout, even when the global role utility gate passes.
+        original_read_state = WorldJEPAStoreConsumer._read_state
+
+        def thin_simple_support(instance):
+            state, version = original_read_state(instance)
+            state = dict(state)
+            active = dict(state["active"])
+            train_ids = tuple(active["train_ids"])
+            train_id_set = set(train_ids)
+            simple_ids = [
+                row["action_id"] for row in active["experience_rows"]
+                if row["a"] == "simple" and row["action_id"] in train_id_set
+            ]
+            keep_simple = set(simple_ids[:2])
+            active["train_ids"] = tuple(
+                action_id for action_id in train_ids
+                if action_id not in simple_ids or action_id in keep_simple
+            )
+            state["active"] = active
+            return state, version
+
+        monkeypatch.setattr(WorldJEPAStoreConsumer, "_read_state", thin_simple_support)
+        try:
+            thin_support = bodyview.body_state(runtime, event, "B1_DETAIL", text)
+        finally:
+            monkeypatch.setattr(WorldJEPAStoreConsumer, "_read_state", original_read_state)
+        assert thin_support is not None
+        assert thin_support["view"]["world_jepa"]["unsupported_actions"] == ["simple"]
+        assert all(row[0] != "simple"
+                   for row in thin_support["view"]["world_jepa"]["predictions"]["rows"])
+
         consumer = WorldJEPAStoreConsumer(
             store, home / "world_jepa", learning_enabled=False
         )
