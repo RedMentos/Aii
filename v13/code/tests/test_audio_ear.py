@@ -30,3 +30,29 @@ class TestAudio(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+from v13.audio_pcm_memory import pcm16_sample_buffer, zeroize_pcm16_buffer
+
+
+class TestPCMBufferHygiene(unittest.TestCase):
+    def test_observer_accepts_mutable_and_view_buffers_without_consuming_input(self):
+        pcm = bytearray(struct.pack("<8h", -1000, 1000, -2000, 2000, -3000, 3000, -4000, 4000))
+        original = bytes(pcm)
+        expected = observe_pcm16(original, 8000, 25, consent=True, source_id="source")
+        self.assertEqual(
+            observe_pcm16(pcm, 8000, 25, consent=True, source_id="source"),
+            expected,
+        )
+        self.assertEqual(
+            observe_pcm16(memoryview(pcm), 8000, 25, consent=True, source_id="source"),
+            expected,
+        )
+        self.assertEqual(bytes(pcm), original)
+
+    def test_sample_copy_is_overwritten_and_owned_input_can_be_zeroized(self):
+        pcm = bytearray(struct.pack("<4h", 100, -200, 300, -400))
+        with pcm16_sample_buffer(pcm) as samples:
+            retained_reference = samples
+            self.assertEqual(list(samples), [100, -200, 300, -400])
+        self.assertEqual(list(retained_reference), [0, 0, 0, 0])
+        self.assertTrue(zeroize_pcm16_buffer(pcm))
+        self.assertEqual(bytes(pcm), bytes(len(pcm)))
