@@ -7,3 +7,16 @@
 - QA-PR #2383 ist komplett durchgelaufen, aber weiterhin FAIL: staged-runtime 21 FAIL / 230 PASS / 10 SKIP / 2 ERROR / 41 Subtests; integrated-regression 1 FAIL; optimizer-resume Builder-Hash FAIL; Zwei-Checkout-Migration PARTIAL.
 - Keine Rebase-/Release-Freigabe, bis QA und Boss die exakte gemeinsame Staging-Kette grün haben.
 
+### JEPA & Memory Run 21 — 2026-11-22T22:34:04Z
+
+**Keine Nutzeraktion nötig.** Kein manueller Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Weight-Download oder produktiver Swap und keine Berechtigungsänderung.
+
+- PR #2372 exact head: `daa42a41c1e4a448c77da4312078744069acb830` (DRAFT / NOT_RELEASED). Neue Tests verlangen reale gemessene B1/B2-Holdout-Gates vor der tatsächlichen `Cognition.offer`-Promptübergabe und prüfen den aktivierten `SleepRuntime._run_world_jepa`-Pfad von committed T8-Outcomes bis zum persistierten temporalen Checkpoint.
+- Vorheriger Parent `beda653`: Temporal-Suite 15/15 PASS auf Python 3.13 und 3.14. Für den neuen Head sind Temporal 45078449834, Optimizer-Resume 45078447785, Staged/Integrated 45078447802 und Owner-Read 45078447747 noch QUEUED; kein neuer Suite-PASS behauptet.
+- Vollständiger LOCAL_LINUX-Repo-Test BLOCKED / NOT_RUN: kein Checkout vorhanden; GitHub-DNS scheitert. CI ist kein lokaler Test.
+- Private V13OBS #115, aktualisiert 22:17:26Z: installiert bleibt `aed1d2b`, Auto-Update aktiv und UP_TO_DATE. B1 4/4 und B2 2/2 Native-Versuche fehlgeschlagen, null gültige Offers; letzter gespeicherter C3-Prefill 38.945 s / 2 Tokens. #2372 ist nicht installiert; JEPA auf Redmi bleibt REDMI_UNVERIFIED.
+- QA #2383 ist auf Head `714a09e` weiterhin nicht grün; Boss #2370 auf `bae7d03` hat die wesentlichen exakten Workflows noch in der Queue. Keine Rebase-/Release-Freigabe.
+- Forschung R-093: Replay kann trotz vollständigem Replay vergessen, wenn spätere Störsignale frühere Signale überwiegen; signal-aware replay bleibt eine zu testende Hypothese. Uniform Replay bleibt Baseline.
+
+**Nächster Team-Schritt:** neue exakte CI-Ergebnisse abwarten, echte Fehler reparieren, danach bei grüner QA-/Boss-Kette die mehrphasigen Replay-/Retention-Ablationen ausführen. Keine Geräteaktion wurde ausgelöst.
+
