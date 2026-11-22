@@ -298,8 +298,10 @@ def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
         runtime.close()
 
 
-def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path):
+def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    from v13 import native_probe_approval as approval
+    monkeypatch.setattr(approval, "_is_local_tty", lambda: True)
     runtime.last_answer = lambda: {"event_id": event["event_id"], "status": "FINAL"}
     calls = []
     runtime.require_idle = lambda: calls.append("idle")
@@ -326,9 +328,9 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
     assert result["queued"] is False
     assert result["local_approval_consumed"] is True
     assert result["production_route"] is False
-    assert calls[:3] == ["idle", "idle", "idle"]
-    assert calls[3][:4] == ("B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"])
-    assert calls[4] == "unload"
+    assert calls[:4] == ["idle", "idle", "idle", "idle"]
+    assert calls[4][:4] == ("B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"])
+    assert calls[5] == "unload"
     with pytest.raises(ValueError):
         operator_command(runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source"])
     with pytest.raises(ValueError):
