@@ -128,6 +128,42 @@ def test_same_size_model_tamper_after_arm_invalidates_approval(tmp_path, model_n
         runtime.close()
 
 
+def test_arm_ttl_starts_after_model_hash_verification(tmp_path, monkeypatch):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    clock = [1000.0]
+
+    def verify_model(runtime_arg, role):
+        clock[0] += 50.0
+        return {"model_key": role, "revision": role + "-r1", "sha256": "0" * 64}
+
+    monkeypatch.setattr(approval.time, "time", lambda: clock[0])
+    monkeypatch.setattr(approval, "_model_binding", verify_model)
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["issued_at"] == 1100.0
+        assert record["expires_at"] == 1220
+    finally:
+        runtime.close()
+
+
+def test_consume_rechecks_expiry_after_model_hash_verification(tmp_path, monkeypatch):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE", now=1000.0)
+        record, _ = runtime.store.state(approval.KEY, None)
+        model_bindings = record["models"]
+        monkeypatch.setattr(approval, "_model_binding", lambda runtime_arg, role: model_bindings[role])
+        times = iter([1000.0, 1121.0])
+        monkeypatch.setattr(approval.time, "time", lambda: next(times))
+        with pytest.raises(PermissionError, match="expired"):
+            approval.consume(
+                runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"]
+            )
+    finally:
+        runtime.close()
+
+
 def test_wrong_role_pair_cannot_use_pending_local_approval(tmp_path):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
     calls = []
