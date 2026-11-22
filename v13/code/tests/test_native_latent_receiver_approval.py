@@ -63,6 +63,8 @@ def test_native_probe_requires_local_arm_and_consumes_it_once(tmp_path):
     operator = Operator(runtime)
     command = ":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm"
     try:
+        with pytest.raises(ValueError, match="lokale Operator"):
+            operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm", origin="REMOTE_OWNER")
         with pytest.raises(PermissionError, match="local"):
             operator.run(command)
         assert calls == []
@@ -93,7 +95,17 @@ def test_native_probe_requires_local_arm_and_consumes_it_once(tmp_path):
 def test_wrong_role_pair_cannot_use_pending_local_approval(tmp_path):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
     calls = []
-    runtime.cognition.native_receive = lambda *args: calls.append(args)
+    runtime.cognition.native_receive = lambda *args: (
+        calls.append(args) or {
+            "status": "NATIVE_INPUT_EFFECT",
+            "native_input_consumed": True,
+            "input_effect_detected": True,
+            "production_route": False,
+            "semantic_use_proven": False,
+            "training_authority": 0,
+            "native_receiver_authority": 0,
+        }
+    )
     operator = Operator(runtime)
     try:
         operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")

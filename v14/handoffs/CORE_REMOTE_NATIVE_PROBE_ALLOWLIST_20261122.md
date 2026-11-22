@@ -68,3 +68,9 @@ No action is needed now. The probe remains NOT_RUN. Do not send a Termux command
 - Added staged Runtime/SQLite tests for no-arm rejection, exact role binding, one-shot consumption, model-revision drift, new-turn/source drift, Runtime restart, expiry and revoke. The stage test applies this overlay only in its isolated candidate directory.
 - IMPORTANT: this approval overlay is not yet in the shared production recovery/stage/deployer pin chain. That chain is being handled by Boss/Integrator; do not bypass or independently rewrite it. The active PR remains NOT_RELEASED until the overlay is composed and reviewed there.
 - No native receiver probe was executed; no device state, model, weight, permission, or data changed. `LOCAL_FULL_REPOSITORY` remains unavailable in this runner; exact CI on the updated PR is the next test gate.
+
+### Exact CI correction — 2026-11-22
+
+- First staged-runtime run on commit `9bdcf1474928670d7255e82f0be5a52cf7615d02` failed 2/40 focused tests on Python 3.13 and 3.14: the pre-existing Callosum test lacked a FINAL status/local arm, and one new mock returned `None` instead of a packet. Both are test-contract regressions, not native probe failures.
+- Corrected the old test fixture to bind model manifest paths/sizes, create a FINAL last-answer fixture, arm the exact B2→C3 pair, and assert the one-shot consumed result. Corrected the fake receiver packet and added a negative non-TTY arm assertion.
+- New exact-head CI is pending; the earlier failed run remains preserved as negative evidence.
