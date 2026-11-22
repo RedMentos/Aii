@@ -238,23 +238,37 @@ def exercise_worker_migration(base):
         }, sort_keys=True), flush=True)
         if new['result'].get('runtime') == 'ERROR':
             diagnostic_script = """
-import json, sys
+import hashlib, json, sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from v13 import runtime_deploy as deploy
 try:
     root, code, commit = deploy._source(Path(sys.argv[1]))
+    with TemporaryDirectory(prefix='v13-migration-pin-diagnostic-') as temp:
+        frozen = Path(temp) / 'code'
+        frozen.mkdir()
+        entries = deploy._export_commit_sources(root, commit, frozen)
+        builder = frozen / deploy.STAGER
+        actual = hashlib.sha256(builder.read_bytes()).hexdigest()
+        print('V13_STAGE_PIN_DIAGNOSTIC=' + json.dumps({
+            'commit': commit[:12],
+            'expected': deploy.STAGER_SHA256,
+            'actual': actual,
+            'path': deploy.STAGER,
+            'blob': entries.get(deploy.STAGER, ('', ''))[0][:12],
+            'module': Path(deploy.__file__).name,
+        }, sort_keys=True))
     with TemporaryDirectory(prefix='v13-migration-stage-diagnostic-') as temp:
         target = Path(temp) / 'code'
-        deploy._stage_integrated_runtime(code, target, expected_commit=commit)
         try:
+            deploy._stage_integrated_runtime(code, target, expected_commit=commit)
             deploy._selftest(target)
             result = {'phase': 'complete', 'status': 'PASS'}
         except BaseException as exc:
-            result = {'phase': 'selftest', 'type': type(exc).__name__,
+            result = {'phase': 'stage_or_selftest', 'type': type(exc).__name__,
                       'message': str(exc)[:240]}
 except BaseException as exc:
-    result = {'phase': 'stage', 'type': type(exc).__name__,
+    result = {'phase': 'setup', 'type': type(exc).__name__,
               'message': str(exc)[:240]}
 print('V13_MIGRATION_STAGE_DIAGNOSTIC=' + json.dumps(result, sort_keys=True))
 """
