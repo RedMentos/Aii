@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T11:28:06.923Z",
+  "updated_at": "2026-11-22T11:30:28.369Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; all 30 observed exact-SHA Actions runs completed SUCCESS; authenticated private PIPELINE_STATUS confirms the same SHA installed. Functional/whole-Canon acceptance remains open; V14 master and historical V13 appendix preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -15,10 +15,10 @@
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
       "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Core: repair #2338's exact source-builder pin chain (runtime.py in staged/integrated regression; store.py in A5 UI lease), rerun those exact gates, then integrate and measure native B1/B2 source-bound offers consumed by C4/C3 on Redmi across 20 mixed turns.",
+      "next_step": "Core/Boss: repair the exact runtime.py and store.py source-builder pins and the native_turn_budget test fixture's missing source_ref on the coordinated descendant; rerun Python 3.13/3.14, staged, integrated, A5 UI lease and migration gates. QA will not edit the shared pin chain in parallel. Then measure native B1/B2 source-bound offers consumed by C4/C3 on Redmi across 20 mixed turns.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T11:28:06.923Z",
-      "proof": "Private PIPELINE_STATUS #531 confirms c4eb82deec915f65894c20d6ebbaf0ebf58fa335 installed. DIAGNOSTICS #539: latest FINAL turn 56.43 s / TTFT 40.82 s / prefill 39.09 s / 701 prompt tokens / 2 generated tokens; correctness UNKNOWN. Native probe SMOKE_PARTIAL; B1/B2 TIME_BUDGET 53.2/54.2 s. Core #2338 exact head 6664c3e has staged/integrated and A5 UI lease CI failures from stale runtime.py/store.py builder pins.",
+      "proof": "Private PIPELINE_STATUS #531 confirms c4eb82deec915f65894c20d6ebbaf0ebf58fa335 installed. DIAGNOSTICS #539: latest FINAL turn 56.43 s / TTFT 40.82 s / prefill 39.09 s / 701 prompt tokens / 2 generated tokens; correctness UNKNOWN. Native probe SMOKE_PARTIAL; B1/B2 TIME_BUDGET 53.2/54.2 s. Core #2338 exact head 6664c3e has staged/integrated and A5 UI lease CI failures from stale runtime.py/store.py builder pins. The exact PR #2338 review also records a focused native_turn_budget test seam failure (`KeyError: source_ref`); Boss owns the combined rebind/test-seam repair on a separate descendant branch.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -998,7 +998,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T11:28:06.923Z",
+    "timestamp": "2026-11-22T11:30:28.369Z",
     "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "code_candidate_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "candidate_ci": "EXACT_SHA_ALL_30_OBSERVED_ACTIONS_WORKFLOW_RUNS_SUCCESS",
@@ -1006,7 +1006,7 @@
     "device_receipt": "PRIVATE_PIPELINE_STATUS_531_AUTHENTICATED_INSTALLED_C4EB82; RUNTIME_UPDATED; DASHBOARD_UP_TO_DATE; AUTO_UPDATE_ENABLED; LAST_ERROR_NONE",
     "device_acceptance": "C4EB82_INSTALLED; LAST_TURN_FINAL_BUT_56.43S_TOTAL_40.82S_TTFT_2_TOKENS; B1_B2_SMOKE_PARTIAL_TIME_BUDGET; 20_TURN_ACCEPTANCE_OPEN",
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK; git ls-remote failed DNS; no local full pytest/native suite",
-    "pr2338_ci": "HEAD_6664C3: staged/integrated fails integrated_online_world_candidate SHA for v13/runtime.py; A5 UI lease Python 3.13/3.14 fails source_lifecycle_lock_integration_candidate SHA for store.py; DRAFT_NOT_RELEASED",
+    "pr2338_ci": "HEAD_6664C3: staged/integrated fails integrated_online_world_candidate runtime.py pin; native_turn_budget focused seam fails KeyError source_ref; A5 UI lease Python 3.13/3.14 fails source_lifecycle_lock_integration_candidate store.py pin; DRAFT_NOT_RELEASED. Boss owns the shared source-pin rebind on a separate descendant; QA must not edit that chain in parallel.",
     "pr2332_ci": "HEAD_198A49: private bridge, owner-read and staged/integrated pass; additive-only workflow skipped by policy; release-event workflow cancelled on PR event; bounded native receiver probe NOT_RUN",
     "pr2286_ci": "HEAD_C74DC3: 9/9 observed workflow runs SUCCESS on stacked QA branch; app-launch prototype only; no APK/device test",
     "active_blockers": [
@@ -1017,7 +1017,8 @@
       "P0_ANDROID_COMPANION_APK_UI_ACCESSIBILITY_AND_BACKGROUND_PROVIDERS",
       "P0_ANDROID_AUDIORECORD_VOICE_CAPTURE_AND_DECODER",
       "P0_20_TURN_REDMI_CORRECTNESS_TTFT_PSS_AND_RESIDENCY_ACCEPTANCE",
-      "P0_CANON_CLAUSE_TO_CONSUMER_TEST_PLATFORM_ROLLBACK_TRACEABILITY"
+      "P0_CANON_CLAUSE_TO_CONSUMER_TEST_PLATFORM_ROLLBACK_TRACEABILITY",
+      "P0_CORE_PR2338_NATIVE_TURN_BUDGET_TEST_SEAM_KEYERROR_SOURCE_REF"
     ],
     "user_action_required": "NONE; no manual Termux command, update request, model/weight swap or permission change",
     "previous_overlay": {
@@ -1043,7 +1044,7 @@
     }
   },
   "qa_latest_checkpoint": {
-    "timestamp": "2026-11-22T11:28:06.923Z",
+    "timestamp": "2026-11-22T11:30:28.369Z",
     "owner": "QA & Android",
     "base_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "branch": "qa/v14-redmi-c4eb82-evidence-20261122-run11",
@@ -1053,7 +1054,7 @@
       "phone_install": "AUTHENTICATED_PIPELINE_STATUS_531",
       "phone_diagnostics": "AUTHENTICATED_DIAGNOSTICS_539",
       "local_full_suite": "BLOCKED_NO_CHECKOUT_DNS_FAILURE",
-      "pr2338": "BLOCKED_EXACT_SOURCE_PIN_FAILURES",
+      "pr2338": "BLOCKED: runtime.py pin + store.py lifecycle pin + test seam KeyError source_ref; Boss is integrating/rebinding on a separate descendant branch; no parallel pin edits",
       "pr2332": "ALLOWLIST_TESTS_PASS_PROBE_NOT_RUN",
       "pr2286": "STACKED_COMPANION_CI_PASS_NO_DEVICE_PROOF"
     },
