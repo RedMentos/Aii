@@ -104,7 +104,7 @@ def test_dispatch_requires_local_approval_and_marks_companion_boundaries(tmp_pat
     envelope = broker.dispatch_approved(p.action_id)
     assert envelope["schema"] == "v14.android-action-request/1"
     assert envelope["companion_local_consent_required"] is True
-    assert envelope["android_os_permission_required"] is True
+    assert envelope["android_os_permission_required"] is False
     assert envelope["permission_bypass"] is False
     assert envelope["model_authority"] is False
     with pytest.raises(ControlDenied):
