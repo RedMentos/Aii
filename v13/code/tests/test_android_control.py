@@ -158,6 +158,41 @@ def test_dispatched_action_survives_broker_restart_and_preserves_source_binding(
     resumed.close()
 
 
+def test_stop_preserves_uncertain_dispatch_and_consumed_receipt_across_restart(tmp_path):
+    db_path = tmp_path / "uncertain-broker.sqlite"
+    source_ref = {
+        "source_id": "event-source-1", "sha256": "a" * 64,
+        "char_start": 0, "char_end": 12, "modality": "text",
+    }
+    first = AndroidControlBroker(db_path, clock=lambda: 1000.0)
+    first.start()
+    proposal = first.propose(
+        "launch_app", {"package": "com.example.app"}, ttl=30,
+        event_id="event-1", source_ref=source_ref,
+    )
+    first.approve(proposal.action_id, confirmed_by_local_ui=True)
+    first.dispatch_approved(proposal.action_id)
+    assert first.mark_submit_uncertain(proposal.action_id) is True
+    first.stop()
+    assert first.action_state(proposal.action_id) == "SUBMIT_UNCERTAIN"
+    first.close()
+
+    resumed = AndroidControlBroker(db_path, clock=lambda: 1000.0)
+    resumed.start()
+    restored = resumed.consume_dispatched(proposal.action_id)
+    assert restored.digest == proposal.digest
+    assert restored.source_ref == source_ref
+    assert resumed.action_state(proposal.action_id) == "RECEIPT_CONSUMED"
+    resumed.stop()
+    assert resumed.action_state(proposal.action_id) == "RECEIPT_CONSUMED"
+    resumed.close()
+
+    retry = AndroidControlBroker(db_path, clock=lambda: 1000.0)
+    retry.start()
+    assert retry.consume_dispatched(proposal.action_id).digest == proposal.digest
+    retry.close()
+
+
 def test_cancel_revokes_local_dispatch_and_type_text_is_not_persisted(tmp_path):
     db_path = tmp_path / "cancel-broker.sqlite"
     broker = AndroidControlBroker(db_path, clock=lambda: 1000.0)
