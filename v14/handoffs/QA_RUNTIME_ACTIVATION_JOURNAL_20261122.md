@@ -2,7 +2,7 @@
 
 **Branch:** `qa/v14-activation-journal-currentboss-20261122`  
 **Base:** Boss integration candidate `70c04e2a6df21e719bfdf28ab0f3c9f1c6822a39` (`boss/v14-recall-store-pin-rebind-20261122`)  
-**Status:** DRAFT / EXACT_HEAD_CI_PENDING / NOT_RELEASED / REDMI_UNVERIFIED.
+**Status:** DRAFT / EXACT_HEAD_CI_PENDING / PIPELINE_ROLLBACK_CLI_WIRED / NOT_RELEASED / REDMI_UNVERIFIED.
 
 ## Reproduced defect
 
@@ -14,8 +14,8 @@ Runtime deployment and rollback replace the launcher and `runtime-active.json` a
 - Atomic file replacement now fsyncs the file and parent directory.
 - Deploy and rollback use the same pair-switch transaction. Recovery either recognizes a fully committed pair or restores the exact previous launcher/marker pair.
 - Recovery validates schema, owner, mode, link count, backup names and hashes, and rejects unknown current launcher/marker bytes without overwriting them.
-- Added a runtime-only rollback API/CLI and a pipeline-worker recovery hook. Recovery runs only while the runtime is stopped and only through the existing enabled/manual update path; it does not turn auto-update on.
-- Added process-death, tamper, directory-fsync, pending-journal, rollback and consent/busy-state regressions.
+- Added a runtime-only rollback API/CLI, a pipeline-worker recovery hook, and an explicit `pipeline_agent rollback` action. It disables future auto-updates, takes the exclusive pipeline lock, stops only a managed V13 chat, and requests UI resume only after the launcher/marker rollback is confirmed. A failed/uncertain rollback leaves the chat stopped and auto-update OFF. Pending crash recovery runs only while stopped and through the existing enabled/manual update path; it does not turn auto-update on.
+- Added process-death, tamper, directory-fsync, pending-journal, rollback and consent/busy-state regressions, plus pipeline rollback success, lock-busy, failure/no-resume and CLI dispatch tests.
 - Preserved the current Boss base's exact stager SHA pin (`3c96d70126750500ba2a89c1785fb309e283f453fb55e96fed28abc905a6b9ee`) and removed a duplicate journal-constant declaration while rebasing.
 
 ## Verification boundary
@@ -28,7 +28,7 @@ Runtime deployment and rollback replace the launcher and `runtime-active.json` a
 
 ## Remaining scope
 
-- The dashboard rollback affordance is not wired yet; this PR exposes the safe runtime rollback API/CLI and pipeline worker recovery, not a completed user-facing rollback button.
+- The dashboard rollback affordance is not wired yet; the explicit runtime-only pipeline CLI exists, but no WebView/dashboard rollback button or private-relay rollback command is exposed.
 - Device-native process-death/reboot and rollback tests remain required before Android acceptance.
 - The same-turn B1/B2 → C4 → C3 work remains synthetic until real model outputs and Redmi receipts prove delivery and semantic use.
 
