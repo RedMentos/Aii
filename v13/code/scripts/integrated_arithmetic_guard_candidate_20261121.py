@@ -64,7 +64,7 @@ def apply_staged_arithmetic(code_dir: Path, staged_root: Path) -> dict[str, byte
     )
     date_shapes = (
         b'_DATE_SHAPE = re.compile(\n'
-        b'    r"\\s*(?:\\d{4}\\s*[-/]\\s*\\d{1,2}|\\d{1,2}\\s*-\\s*\\d{1,2})\\s*[?=]?\\s*",\n'
+        b'    r"\\s*(?:\\d{4}\\s*[-/]\\s*\\d{1,2}|\\d{1,2}\\s*[-/]\\s*\\d{1,2})\\s*[?=]?\\s*",\n'
         b'    re.IGNORECASE,\n'
         b')\n'
         b'_EXPLICIT_MATH_CUE = re.compile(r"\\s*(?:calculate|compute|berechne)\\s+", re.IGNORECASE)\n'
