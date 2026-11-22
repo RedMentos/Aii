@@ -185,7 +185,11 @@ class Cognition:
         if data['token_ids']!=p['token_ids'] or len(data['vectors'])!=p['shape'][0] or any(len(v)!=p['shape'][1] for v in data['vectors']):raise ValueError('Tap feature shape/token mismatch')
         return data
     def tap_pair(self,e,deadline):
-        """Capture both native B1/B2 read-only states from the same exact event source."""
+        """Capture same-source native states: B1 fine token slots + B2 adaptive Gist slots.
+
+        This is numeric latent-data capture only; it creates no text message,
+        performs no receiver injection, and grants no body-learning authority.
+        """
         from .b3pairs import capture_pair
         return capture_pair(self,e,deadline)
     def body_context(self,role,e):
