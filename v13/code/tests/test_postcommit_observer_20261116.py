@@ -146,9 +146,16 @@ class RuntimePostcommit(unittest.TestCase):
             "SELECT payload FROM packets WHERE event_id=? AND kind='OfferPacket'", (event,))]
         self.assertEqual([p['role'] for p in offers], ['B2_GIST'])
         self.assertIn(offers[0]['packet_id'], meta['selected_offer_ids'])
+        # The postcommit retry deliberately fails in this fixture. A failed
+        # observer has no OfferPacket/postcommit_offer row; its bounded failure
+        # is recorded without exception text or any effect on the committed answer.
         row = self.runtime.store.one(
-            "SELECT metrics FROM telemetry WHERE event_id=? AND kind='postcommit_offer'", (event,))
-        self.assertFalse(json.loads(row['metrics'])['affects_committed_output'])
+            "SELECT metrics FROM telemetry WHERE event_id=? AND kind='background_observer_end'", (event,))
+        self.assertIsNotNone(row)
+        metrics = json.loads(row['metrics'])
+        self.assertEqual(metrics, {'role': 'B1_DETAIL', 'error': 'Limits'})
+        self.assertEqual(len(offers), 1)
+        self.assertEqual(offers[0]['role'], 'B2_GIST')
 
     def test_one_foreground_offer_only_retries_the_missing_body(self):
         count = 0
