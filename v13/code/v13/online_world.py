@@ -6,7 +6,6 @@ No speculative outcomes are used as training labels.
 """
 from pathlib import Path
 import json
-import os
 import numpy as np
 from . import world_model
 from .continuous_predictor import OnlinePredictor
@@ -21,12 +20,23 @@ class OnlineWorld:
         self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,lr=lr,replay=replay)
         self.cursor=self.home/'cursor.json'
         self.processed=[]
-        if self.cursor.exists():
+        if self.model.processed_ids is not None:
+            # Same NPZ snapshot as weights/RNG: no second cursor transaction.
+            self.processed=list(self.model.processed_ids)
+        elif self.cursor.exists():
+            # Legacy snapshots had an independent cursor. Refuse ambiguous
+            # checkpoint-ahead-of-cursor states rather than double-training.
             record=json.loads(self.cursor.read_text())
             ids=record.get('processed')
-            if record.get('revision')!=REVISION or not isinstance(ids,list) or len(ids)>world_model.MAX_ROWS or any(type(i) is not str for i in ids):
+            if (record.get('revision')!=REVISION or not isinstance(ids,list)
+                or len(ids)>world_model.MAX_ROWS or len(set(ids))!=len(ids)
+                or any(type(i) is not str or not i for i in ids)):
                 raise ValueError('Incompatible online world cursor')
-            self.processed=ids
+            if self.model.seen!=len(ids):
+                raise ValueError('Ambiguous legacy T8 checkpoint/cursor; manual recovery required')
+            self.processed=list(ids)
+        elif self.model.seen:
+            raise ValueError('Predictor has learned rows but no trusted T8 cursor')
 
     @staticmethod
     def encode(row):
@@ -56,18 +66,36 @@ class OnlineWorld:
         retention_before=self.model.error(replay) if replay else None
         for row in new:
             x,a,y=self.encode(row)
-            self.model.observe(x,a,y)
-            self.model.checkpoint()
-            self.processed.append(row['action_id'])
-            self.processed=self.processed[-world_model.MAX_ROWS:]
-            temp=self.cursor.with_suffix('.tmp')
-            temp.write_text(json.dumps({'revision':REVISION,'processed':self.processed}))
-            os.replace(temp,self.cursor)
+            candidate=(self.processed+[row['action_id']])[-world_model.MAX_ROWS:]
+            try:
+                self.model.observe(x,a,y)
+                # Commit weights, replay/RNG and T8 IDs together in one os.replace.
+                self.model.checkpoint(processed_ids=candidate)
+            except Exception:
+                # A failed commit must not leave speculative live gradients or
+                # reservoir/RNG mutations available for a same-process retry.
+                if self.model.path.exists():
+                    self.model.restore()
+                    self.processed=list(self.model.processed_ids or [])
+                else:
+                    self.model=OnlinePredictor(7,len(world_model.ACTIONS),self.home,
+                                               lr=self.model.lr,replay=self.model.cap)
+                    self.processed=[]
+                raise
+            self.processed=candidate
         retention_after=self.model.error(replay) if replay else None
         return {'learned':len(new),'seen':self.model.seen,'tracked_ids':len(self.processed),
                 'old_replay_loss_before':retention_before,'old_replay_loss_after':retention_after,
                 'old_replay_loss_delta':None if not replay else retention_after-retention_before,
                 'status':'LOCAL_ONLINE_PLASTICITY_NOT_FULL_JEPA'}
+
+    def rollback(self):
+        """Rewind the numeric learner and its T8 deduplication cursor together."""
+        result=self.model.rollback()
+        if self.model.processed_ids is None:
+            raise ValueError('Rolled-back checkpoint has no trusted T8 cursor')
+        self.processed=list(self.model.processed_ids)
+        return {**result,'tracked_ids':len(self.processed)}
 
     def predict(self,state,action):
         if action not in world_model.ACTIONS:raise ValueError('Unknown route')
