@@ -10,7 +10,6 @@ deterministic heuristics, not a trained VAD, speech classifier, or calibrated pr
 from __future__ import annotations
 
 import math
-import struct
 from contextlib import contextmanager
 from functools import lru_cache
 import threading
@@ -26,6 +25,10 @@ from .audio_percept_contract import audio_percept_packet
 from .audio_perception_bridge import _require_current_consent, _validate_runtime_binding
 from .percept_admission import Percept, admit
 from .common import dumps, now
+from .audio_pcm_memory import (
+    pcm16_byte_view, pcm16_sample_buffer,
+    pcm16_zeroization_status, zeroize_pcm16_buffer,
+)
 from .contracts import validate
 
 
@@ -84,20 +87,25 @@ _RUNTIME_TEMPORAL_REGISTRY_INIT_LOCK = threading.Lock()
 
 
 def _estimate_pitch(frame: list[float], sample_rate: float) -> tuple[float | None, float]:
-    """Cheap normalized-autocorrelation F0 estimate over a 65..400 Hz range."""
+    """Cheap normalized-autocorrelation F0 estimate without sample-slice copies."""
     minimum_lag = max(2, int(sample_rate / 400))
     maximum_lag = min(len(frame) // 2, int(sample_rate / 65))
     correlations = []
+    count = len(frame)
     for lag in range(minimum_lag, maximum_lag + 1):
-        left = frame[:-lag]
-        right = frame[lag:]
-        left_energy = sum(value * value for value in left)
-        right_energy = sum(value * value for value in right)
+        left_energy = 0.0
+        right_energy = 0.0
+        cross_energy = 0.0
+        for index in range(count - lag):
+            left = frame[index]
+            right = frame[index + lag]
+            left_energy += left * left
+            right_energy += right * right
+            cross_energy += left * right
         denominator = math.sqrt(left_energy * right_energy)
         if denominator <= 1e-9:
             continue
-        correlation = sum(a * b for a, b in zip(left, right)) / denominator
-        correlations.append((correlation, lag))
+        correlations.append((cross_energy / denominator, lag))
     if not correlations:
         return None, 0.0
     peak = max(item[0] for item in correlations)
@@ -120,33 +128,39 @@ def _load_numpy():
 
 
 def _estimate_pitch_numpy(frame, sample_rate: float, np) -> tuple[float | None, float]:
-    """NumPy autocorrelation equivalent of _estimate_pitch for short 40-ms frames."""
+    """NumPy autocorrelation equivalent with best-effort temporary-array clearing."""
     values = np.asarray(frame, dtype=np.float64)
-    count = int(values.size)
-    minimum_lag = max(2, int(sample_rate / 400))
-    maximum_lag = min(count // 2, int(sample_rate / 65))
-    if maximum_lag < minimum_lag:
-        return None, 0.0
-    correlation = np.correlate(values, values, mode="full")[
-        count - 1 + minimum_lag:count + maximum_lag
-    ]
-    prefix = np.concatenate(([0.0], np.cumsum(values * values)))
-    lags = np.arange(minimum_lag, maximum_lag + 1)
-    denominator = np.sqrt(prefix[count - lags] * (prefix[count] - prefix[lags]))
-    valid = denominator > 1e-9
-    if not np.any(valid):
-        return None, 0.0
-    normalized = np.full(lags.shape, -np.inf, dtype=np.float64)
-    normalized[valid] = correlation[valid] / denominator[valid]
-    peak = float(np.max(normalized))
-    threshold = max(0.55, peak * 0.99)
-    candidates = np.flatnonzero(normalized >= threshold)
-    if not candidates.size:
-        return None, max(0.0, min(1.0, peak))
-    index = int(candidates[0])
-    lag = int(lags[index])
-    confidence = float(normalized[index])
-    return sample_rate / lag, max(0.0, min(1.0, confidence))
+    correlation = prefix = lags = denominator = valid = normalized = None
+    try:
+        count = int(values.size)
+        minimum_lag = max(2, int(sample_rate / 400))
+        maximum_lag = min(count // 2, int(sample_rate / 65))
+        if maximum_lag < minimum_lag:
+            return None, 0.0
+        correlation = np.correlate(values, values, mode="full")[
+            count - 1 + minimum_lag:count + maximum_lag
+        ]
+        prefix = np.concatenate(([0.0], np.cumsum(values * values)))
+        lags = np.arange(minimum_lag, maximum_lag + 1)
+        denominator = np.sqrt(prefix[count - lags] * (prefix[count] - prefix[lags]))
+        valid = denominator > 1e-9
+        if not np.any(valid):
+            return None, 0.0
+        normalized = np.full(lags.shape, -np.inf, dtype=np.float64)
+        normalized[valid] = correlation[valid] / denominator[valid]
+        peak = float(np.max(normalized))
+        threshold = max(0.55, peak * 0.99)
+        candidates = np.flatnonzero(normalized >= threshold)
+        if not candidates.size:
+            return None, max(0.0, min(1.0, peak))
+        index = int(candidates[0])
+        lag = int(lags[index])
+        confidence = float(normalized[index])
+        return sample_rate / lag, max(0.0, min(1.0, confidence))
+    finally:
+        for temporary in (values, correlation, prefix, lags, denominator, valid, normalized):
+            if temporary is not None and hasattr(temporary, "fill"):
+                temporary.fill(0)
 
 
 
@@ -292,130 +306,149 @@ def validate_voice_cues(cues: dict) -> dict:
     return dict(cues)
 
 
-def extract_voice_cues(pcm: bytes, sample_rate: int, *, backend: str = "python") -> dict:
-    """Extract bounded pitch, voicing, energy and non-speech hints from mono PCM16."""
-    if type(pcm) is not bytes or not pcm or len(pcm) % 2:
-        raise ValueError("voice cue input must be complete PCM16 bytes")
+def _extract_voice_cues_from_samples(samples, sample_rate: int, numpy_module) -> dict:
+    """Extract features from a mutable sample copy; clear decimated audio on exit."""
+    low_rate = []
+    try:
+        overall_energy = sum(value * value for value in samples) / len(samples)
+        overall_rms = math.sqrt(overall_energy) / 32768.0
+        overall_peak = max(abs(value) for value in samples) / 32768.0
+
+        # A boxcar average can alias high-frequency tones into the 65..400 Hz
+        # pitch band. Keep RAW EAR self-contained and bounded with a small cached
+        # centered FIR before integer decimation. This is not a model resampler.
+        factor = max(1, int(sample_rate // 8000))
+        low_rate, effective_rate = _anti_alias_decimate(samples, sample_rate, factor)
+        frame_ms, hop_ms = 40, 20
+        frame_size = max(32, int(round(effective_rate * frame_ms / 1000.0)))
+        hop_size = max(1, int(round(effective_rate * hop_ms / 1000.0)))
+        frame_rms = []
+        pitches = []
+        voicing_scores = []
+        voiced_frame_rms = []
+        for start in range(0, max(0, len(low_rate) - frame_size + 1), hop_size):
+            raw_frame = low_rate[start:start + frame_size]
+            frame = []
+            try:
+                if len(raw_frame) != frame_size:
+                    continue
+                mean = sum(raw_frame) / frame_size
+                frame = [value - mean for value in raw_frame]
+                rms = math.sqrt(sum(value * value for value in frame) / frame_size) / 32768.0
+                frame_rms.append(rms)
+                if rms < 0.002:
+                    continue
+                if numpy_module is None:
+                    pitch, confidence = _estimate_pitch(frame, effective_rate)
+                else:
+                    pitch, confidence = _estimate_pitch_numpy(frame, effective_rate, numpy_module)
+                if pitch is not None and confidence >= 0.55:
+                    pitches.append(pitch)
+                    voicing_scores.append(confidence)
+                    voiced_frame_rms.append(rms)
+            finally:
+                for index in range(len(raw_frame)):
+                    raw_frame[index] = 0.0
+                for index in range(len(frame)):
+                    frame[index] = 0.0
+
+        voiced_fraction = len(pitches) / len(frame_rms) if frame_rms else 0.0
+        voicing_confidence = median(voicing_scores) if voicing_scores else 0.0
+        f0_median = median(pitches) if pitches else None
+        f0_range = (max(pitches) - min(pitches)) if len(pitches) >= 2 else None
+        if frame_rms:
+            maximum_frame_rms = max(frame_rms)
+            minimum_frame_rms = max(min(frame_rms), 1e-6)
+            energy_range_db = (0.0 if maximum_frame_rms <= 1e-6 else min(
+                120.0,
+                max(0.0, 20.0 * math.log10(maximum_frame_rms / minimum_frame_rms)),
+            ))
+        else:
+            energy_range_db = 0.0
+
+        # Window energy includes silence; prosodic energy change must not.
+        # Use the 10th–90th percentile of voiced frames to suppress pause/onset outliers.
+        if len(voiced_frame_rms) >= 2:
+            low_voiced_rms = _percentile(voiced_frame_rms, 0.10)
+            high_voiced_rms = _percentile(voiced_frame_rms, 0.90)
+            voiced_energy_range_db = min(
+                120.0,
+                max(0.0, 20.0 * math.log10(max(high_voiced_rms, 1e-6) / max(low_voiced_rms, 1e-6))),
+            )
+        elif len(voiced_frame_rms) == 1:
+            # One observation has a zero range, but cannot establish a change.
+            voiced_energy_range_db = 0.0
+        else:
+            voiced_energy_range_db = None
+
+        crest = overall_peak / max(overall_rms, 1e-6)
+
+        # Strong frame-level periodicity must not be overridden by the absolute window floor.
+        # VOICED remains an acoustic cue, not a calibrated speech probability.
+        if overall_rms < 0.003 and voiced_fraction < 0.25:
+            activity_hint = "SILENCE"
+            activity_score = max(0.0, min(1.0, 1.0 - overall_rms / 0.003))
+        elif voiced_fraction >= 0.25 and voicing_confidence >= 0.55:
+            activity_hint = "VOICED"
+            activity_score = min(1.0, 0.5 * voiced_fraction + 0.5 * voicing_confidence)
+        elif crest >= 8.0 and voiced_fraction < 0.15:
+            activity_hint = "IMPULSIVE"
+            activity_score = min(1.0, crest / 16.0)
+        elif overall_rms >= 0.01 and voiced_fraction < 0.15:
+            activity_hint = "UNVOICED_NOISE"
+            activity_score = min(1.0, overall_rms / 0.08)
+        else:
+            activity_hint = "UNCERTAIN"
+            activity_score = 0.25
+
+        # Relative salience only: pitch excursion or within-window energy dynamics.
+        # This is not a speech probability and is emitted only for voiced activity.
+        pitch_component = 0.0 if f0_range is None else min(1.0, f0_range / 100.0)
+        voiced_energy_component = (0.0 if voiced_energy_range_db is None
+                                    else min(1.0, voiced_energy_range_db / 20.0))
+        prosody_change_score = (max(pitch_component, voiced_energy_component)
+                                if activity_hint == "VOICED" else 0.0)
+
+        return validate_voice_cues({
+            "method": "RAW_EAR_AUTOCORR_V3",
+            "frame_ms": frame_ms,
+            "hop_ms": hop_ms,
+            "frame_count": len(frame_rms),
+            "voiced_fraction": round(voiced_fraction, 6),
+            "voicing_confidence": round(voicing_confidence, 6),
+            "f0_median_hz": round(f0_median, 2) if f0_median is not None else None,
+            "f0_range_hz": round(f0_range, 2) if f0_range is not None else None,
+            "energy_range_db": round(energy_range_db, 2),
+            "voiced_energy_range_db": (round(voiced_energy_range_db, 2)
+                                        if voiced_energy_range_db is not None else None),
+            "activity_hint": activity_hint,
+            "activity_score": round(activity_score, 6),
+            "prosody_change_score": round(prosody_change_score, 6),
+        })
+
+
+
+    finally:
+        for index in range(len(low_rate)):
+            low_rate[index] = 0.0
+
+
+def extract_voice_cues(pcm, sample_rate: int, *, backend: str = "python") -> dict:
+    """Extract bounded cues from PCM16 and clear its mutable working sample copy."""
+    view = pcm16_byte_view(pcm)
+    if not view.nbytes:
+        raise ValueError("voice cue input must be nonempty complete PCM16 bytes")
     if type(sample_rate) is not int or not 8000 <= sample_rate <= 48000:
         raise ValueError("voice cue sample rate must be 8000..48000")
-    if len(pcm) > sample_rate * 2:
+    if view.nbytes > sample_rate * 2:
         raise ValueError("voice cue window is limited to one second")
     if type(backend) is not str or backend not in {"python", "numpy"}:
         raise ValueError("voice cue backend must be 'python' or 'numpy'")
     numpy_module = _load_numpy() if backend == "numpy" else None
     if backend == "numpy" and numpy_module is None:
         raise RuntimeError("NumPy voice cue backend is unavailable")
-    samples = struct.unpack("<" + "h" * (len(pcm) // 2), pcm)
-    overall_energy = sum(value * value for value in samples) / len(samples)
-    overall_rms = math.sqrt(overall_energy) / 32768.0
-    overall_peak = max(abs(value) for value in samples) / 32768.0
-
-    # A boxcar average can alias high-frequency tones into the 65..400 Hz
-    # pitch band. Keep RAW EAR self-contained and bounded with a small cached
-    # centered FIR before integer decimation. This is not a model resampler.
-    factor = max(1, int(sample_rate // 8000))
-    low_rate, effective_rate = _anti_alias_decimate(samples, sample_rate, factor)
-    frame_ms, hop_ms = 40, 20
-    frame_size = max(32, int(round(effective_rate * frame_ms / 1000.0)))
-    hop_size = max(1, int(round(effective_rate * hop_ms / 1000.0)))
-    frame_rms = []
-    pitches = []
-    voicing_scores = []
-    voiced_frame_rms = []
-    for start in range(0, max(0, len(low_rate) - frame_size + 1), hop_size):
-        raw_frame = low_rate[start:start + frame_size]
-        if len(raw_frame) != frame_size:
-            continue
-        mean = sum(raw_frame) / frame_size
-        frame = [value - mean for value in raw_frame]
-        rms = math.sqrt(sum(value * value for value in frame) / frame_size) / 32768.0
-        frame_rms.append(rms)
-        if rms < 0.002:
-            continue
-        if numpy_module is None:
-            pitch, confidence = _estimate_pitch(frame, effective_rate)
-        else:
-            pitch, confidence = _estimate_pitch_numpy(frame, effective_rate, numpy_module)
-        if pitch is not None and confidence >= 0.55:
-            pitches.append(pitch)
-            voicing_scores.append(confidence)
-            voiced_frame_rms.append(rms)
-
-    voiced_fraction = len(pitches) / len(frame_rms) if frame_rms else 0.0
-    voicing_confidence = median(voicing_scores) if voicing_scores else 0.0
-    f0_median = median(pitches) if pitches else None
-    f0_range = (max(pitches) - min(pitches)) if len(pitches) >= 2 else None
-    if frame_rms:
-        maximum_frame_rms = max(frame_rms)
-        minimum_frame_rms = max(min(frame_rms), 1e-6)
-        energy_range_db = (0.0 if maximum_frame_rms <= 1e-6 else min(
-            120.0,
-            max(0.0, 20.0 * math.log10(maximum_frame_rms / minimum_frame_rms)),
-        ))
-    else:
-        energy_range_db = 0.0
-
-    # Window energy includes silence; prosodic energy change must not.
-    # Use the 10th–90th percentile of voiced frames to suppress pause/onset outliers.
-    if len(voiced_frame_rms) >= 2:
-        low_voiced_rms = _percentile(voiced_frame_rms, 0.10)
-        high_voiced_rms = _percentile(voiced_frame_rms, 0.90)
-        voiced_energy_range_db = min(
-            120.0,
-            max(0.0, 20.0 * math.log10(max(high_voiced_rms, 1e-6) / max(low_voiced_rms, 1e-6))),
-        )
-    elif len(voiced_frame_rms) == 1:
-        # One observation has a zero range, but cannot establish a change.
-        voiced_energy_range_db = 0.0
-    else:
-        voiced_energy_range_db = None
-
-    crest = overall_peak / max(overall_rms, 1e-6)
-
-    # Strong frame-level periodicity must not be overridden by the absolute window floor.
-    # VOICED remains an acoustic cue, not a calibrated speech probability.
-    if overall_rms < 0.003 and voiced_fraction < 0.25:
-        activity_hint = "SILENCE"
-        activity_score = max(0.0, min(1.0, 1.0 - overall_rms / 0.003))
-    elif voiced_fraction >= 0.25 and voicing_confidence >= 0.55:
-        activity_hint = "VOICED"
-        activity_score = min(1.0, 0.5 * voiced_fraction + 0.5 * voicing_confidence)
-    elif crest >= 8.0 and voiced_fraction < 0.15:
-        activity_hint = "IMPULSIVE"
-        activity_score = min(1.0, crest / 16.0)
-    elif overall_rms >= 0.01 and voiced_fraction < 0.15:
-        activity_hint = "UNVOICED_NOISE"
-        activity_score = min(1.0, overall_rms / 0.08)
-    else:
-        activity_hint = "UNCERTAIN"
-        activity_score = 0.25
-
-    # Relative salience only: pitch excursion or within-window energy dynamics.
-    # This is not a speech probability and is emitted only for voiced activity.
-    pitch_component = 0.0 if f0_range is None else min(1.0, f0_range / 100.0)
-    voiced_energy_component = (0.0 if voiced_energy_range_db is None
-                                else min(1.0, voiced_energy_range_db / 20.0))
-    prosody_change_score = (max(pitch_component, voiced_energy_component)
-                            if activity_hint == "VOICED" else 0.0)
-
-    return validate_voice_cues({
-        "method": "RAW_EAR_AUTOCORR_V3",
-        "frame_ms": frame_ms,
-        "hop_ms": hop_ms,
-        "frame_count": len(frame_rms),
-        "voiced_fraction": round(voiced_fraction, 6),
-        "voicing_confidence": round(voicing_confidence, 6),
-        "f0_median_hz": round(f0_median, 2) if f0_median is not None else None,
-        "f0_range_hz": round(f0_range, 2) if f0_range is not None else None,
-        "energy_range_db": round(energy_range_db, 2),
-        "voiced_energy_range_db": (round(voiced_energy_range_db, 2)
-                                    if voiced_energy_range_db is not None else None),
-        "activity_hint": activity_hint,
-        "activity_score": round(activity_score, 6),
-        "prosody_change_score": round(prosody_change_score, 6),
-    })
-
-
+    with pcm16_sample_buffer(view) as samples:
+        return _extract_voice_cues_from_samples(samples, sample_rate, numpy_module)
 
 
 def reset_runtime_temporal_voice_states(runtime, *, source_id=None, generation_id=None):
@@ -680,7 +713,7 @@ def _persist_audio_packet_under_consent_lease(runtime, audio_packet, *, lease_ac
         )
 
 
-def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
+def _consume_pcm16_voice_window_impl(runtime, pcm, *, sample_rate, start_ms, event_id,
                                generation_id, source_id, consent_receipt,
                                consent_check, finality, consent_guard=None, token_budget=512,
                                temporal_state: TemporalVoiceEvidence | None = None,
@@ -695,208 +728,240 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         raise ValueError("vad_stream must be a SileroVADStream instance")
     # A Runtime-wide caller may already hold the same provider lease through
     # C3 generation. Reuse its bound handle without callback re-entry.
-    with _audio_consent_scope(
-        runtime, source_id, generation_id, consent_receipt,
-        consent_check, consent_guard, consent_lease, temporal_state, vad_stream,
-    ) as lease_active:
-        raw = observe_pcm16(
-            pcm, sample_rate, start_ms, consent=True, source_id=source_id, max_seconds=1
-        )
-        segment = raw["segments"][0]
-        cues = extract_voice_cues(pcm, sample_rate, backend=voice_backend)
-        vad_evidence = None
-        if vad_stream is not None:
-            vad_evidence = vad_stream.push_pcm16(
-                pcm, sample_rate=sample_rate,
-                stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
-            )
-            cues["vad"] = validate_vad_evidence(vad_evidence)
-            cues = validate_voice_cues(cues)
-        audio_packet = audio_percept_packet(
-            event_id=event_id,
-            generation_id=generation_id,
-            source_id=source_id,
-            source_sha256=raw["source_ref"]["sha256"],
-            start_ms=segment["start_ms"],
-            end_ms=segment["end_ms"],
-            rms=segment["acoustic"]["rms"],
-            zcr=segment["acoustic"]["zero_crossing_rate"],
-            finality=finality,
-            consent_receipt=consent_receipt,
-        )
-        audio_segment = audio_packet["segments"][0]
-        audio_segment["acoustic"]["voice_cues"] = cues
-        speaker_evidence = None
-        if speaker_embeddings is not None:
+    try:
+            with _audio_consent_scope(
+                runtime, source_id, generation_id, consent_receipt,
+                consent_check, consent_guard, consent_lease, temporal_state, vad_stream,
+            ) as lease_active:
             try:
-                speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
-                    source_id=source_id, generation_id=generation_id,
-                    start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
-                    activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
-                )
-            except SpeakerEvidenceError as exc:
-                runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
-                speaker_evidence = {
-                    "method": "COSINE_LOOKBACK_DIAGNOSTIC_V1",
-                    "status": "REJECTED",
-                    "error": type(exc).__name__,
-                    "speaker_label": None,
-                    "identity_authority": False,
-                    "learning_authority": False,
-                    "action_authority": False,
-                }
-        speaker_change_decision = _speaker_change_decision(speaker_evidence, cues)
-        if speaker_evidence is not None:
-            speaker_evidence["decision"] = speaker_change_decision
-            audio_segment["acoustic"]["speaker_change_evidence"] = speaker_evidence
-        audio_segment["acoustic"]["speaker_change_decision"] = speaker_change_decision
-        audio_segment["unmeasured"] = [
-            "speaker_identity", "speaker_timbre", "calibrated_speech_probability", "ASR"
-        ]
-        if (speaker_evidence is None or speaker_evidence.get("status") != "MEASURED"
-                or speaker_change_decision == "DEFER"):
-            audio_segment["unmeasured"].append("speaker_change")
-        # Do not claim pitch/prosody were measured when the window had no usable
-        # voiced frames. A single voiced frame estimates pitch, but not dynamics.
-        if cues["f0_median_hz"] is None:
-            audio_segment["unmeasured"].append("pitch")
-        if round(cues["voiced_fraction"] * cues["frame_count"]) < 2:
-            audio_segment["unmeasured"].append("prosody")
+                        raw = observe_pcm16(
+                            pcm, sample_rate, start_ms, consent=True, source_id=source_id, max_seconds=1
+                        )
+                        segment = raw["segments"][0]
+                        cues = extract_voice_cues(pcm, sample_rate, backend=voice_backend)
+                        vad_evidence = None
+                        if vad_stream is not None:
+                            vad_evidence = vad_stream.push_pcm16(
+                                pcm, sample_rate=sample_rate,
+                                stream_id=f"{source_id}:{generation_id}", start_ms=start_ms,
+                            )
+                            cues["vad"] = validate_vad_evidence(vad_evidence)
+                            cues = validate_voice_cues(cues)
+                        audio_packet = audio_percept_packet(
+                            event_id=event_id,
+                            generation_id=generation_id,
+                            source_id=source_id,
+                            source_sha256=raw["source_ref"]["sha256"],
+                            start_ms=segment["start_ms"],
+                            end_ms=segment["end_ms"],
+                            rms=segment["acoustic"]["rms"],
+                            zcr=segment["acoustic"]["zero_crossing_rate"],
+                            finality=finality,
+                            consent_receipt=consent_receipt,
+                        )
+                        audio_segment = audio_packet["segments"][0]
+                        audio_segment["acoustic"]["voice_cues"] = cues
+                        speaker_evidence = None
+                        if speaker_embeddings is not None:
+                            try:
+                                speaker_evidence = _runtime_speaker_evidence_registry(runtime).update(
+                                    source_id=source_id, generation_id=generation_id,
+                                    start_ms=audio_segment["start_ms"], end_ms=audio_segment["end_ms"],
+                                    activity_hint=cues["activity_hint"], embeddings=speaker_embeddings,
+                                )
+                            except SpeakerEvidenceError as exc:
+                                runtime.store.log("speaker_embedding_rejected", event_id, {"error": type(exc).__name__})
+                                speaker_evidence = {
+                                    "method": "COSINE_LOOKBACK_DIAGNOSTIC_V1",
+                                    "status": "REJECTED",
+                                    "error": type(exc).__name__,
+                                    "speaker_label": None,
+                                    "identity_authority": False,
+                                    "learning_authority": False,
+                                    "action_authority": False,
+                                }
+                        speaker_change_decision = _speaker_change_decision(speaker_evidence, cues)
+                        if speaker_evidence is not None:
+                            speaker_evidence["decision"] = speaker_change_decision
+                            audio_segment["acoustic"]["speaker_change_evidence"] = speaker_evidence
+                        audio_segment["acoustic"]["speaker_change_decision"] = speaker_change_decision
+                        audio_segment["unmeasured"] = [
+                            "speaker_identity", "speaker_timbre", "calibrated_speech_probability", "ASR"
+                        ]
+                        if (speaker_evidence is None or speaker_evidence.get("status") != "MEASURED"
+                                or speaker_change_decision == "DEFER"):
+                            audio_segment["unmeasured"].append("speaker_change")
+                        # Do not claim pitch/prosody were measured when the window had no usable
+                        # voiced frames. A single voiced frame estimates pitch, but not dynamics.
+                        if cues["f0_median_hz"] is None:
+                            audio_segment["unmeasured"].append("pitch")
+                        if round(cues["voiced_fraction"] * cues["frame_count"]) < 2:
+                            audio_segment["unmeasured"].append("prosody")
 
-        expected_source_id, expected_receipt = source_id, consent_receipt
-        source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
-            runtime, event_id, audio_packet
-        )
-        if source_id != expected_source_id or receipt != expected_receipt:
-            _reset_audio_temporal_state(
-                runtime, expected_source_id, generation_id, temporal_state, vad_stream,
-            )
-            raise PermissionError("audio packet binding does not match active consent lease")
+                        expected_source_id, expected_receipt = source_id, consent_receipt
+                        source_id, receipt, rms, zcr, audio_segment = _validate_runtime_binding(
+                            runtime, event_id, audio_packet
+                        )
+                        if source_id != expected_source_id or receipt != expected_receipt:
+                            _reset_audio_temporal_state(
+                                runtime, expected_source_id, generation_id, temporal_state, vad_stream,
+                            )
+                            raise PermissionError("audio packet binding does not match active consent lease")
 
-        _persist_audio_packet_under_consent_lease(
-            runtime, audio_packet, lease_active=lease_active,
-        )
+                        _persist_audio_packet_under_consent_lease(
+                            runtime, audio_packet, lease_active=lease_active,
+                        )
 
-        if temporal_state is None:
-            temporal_voice = _runtime_temporal_voice_registry(runtime).update(
-                source_id=source_id,
-                generation_id=generation_id,
-                start_ms=audio_segment["start_ms"],
-                end_ms=audio_segment["end_ms"],
-                cues=cues,
-            )
-        else:
-            if not isinstance(temporal_state, TemporalVoiceEvidence):
-                raise ValueError("temporal_state must be a TemporalVoiceEvidence instance")
-            temporal_voice = temporal_state.update(
-                source_id=source_id,
-                generation_id=generation_id,
-                start_ms=audio_segment["start_ms"],
-                end_ms=audio_segment["end_ms"],
-                cues=cues,
-            )
-        speaker_change_score = 0.0
-        speaker_change_candidate = None
-        if speaker_evidence is not None:
-            speaker_change_candidate = speaker_evidence.get("peak_speaker_change_candidate")
-            if speaker_change_candidate is None:
-                speaker_change_candidate = speaker_evidence.get("speaker_change_candidate")
-            if speaker_change_candidate is True:
-                speaker_change_score = float(
-                    speaker_evidence.get("peak_candidate_change_score")
-                    or speaker_evidence.get("change_score")
-                    or 0.0
-                )
-        voice_novelty = max(
-            0.35 * temporal_voice["voice_evidence"],
-            0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
-            0.35 * speaker_change_score,
-        )
-        prosody_interrupt = (0.25 * cues["prosody_change_score"]
-                             if temporal_voice["voice_active"] else 0.0)
-        speaker_interrupt = 0.25 * speaker_change_score
-        onset_interrupt = 0.5 if temporal_voice["voice_onset"] else 0.0
-        vad_speech_fraction = 0.0 if vad_evidence is None else vad_evidence["speech_fraction"]
-        vad_interrupt = 0.25 * vad_speech_fraction
-        voice_novelty = max(voice_novelty, 0.35 * vad_speech_fraction)
-        if cues["activity_hint"] in {"UNVOICED_NOISE", "IMPULSIVE"}:
-            # Preserve non-speech events as their own salience channel.
-            voice_novelty = max(voice_novelty, 0.35 * cues["activity_score"])
-        attention = attctl.controller(runtime)
-        attention_result = attention.modulate(event_id, sal={
-            "novelty": min(1.0, max(zcr, voice_novelty)),
-            "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt, speaker_interrupt)),
-        })
-        a4 = {
-            "packet_id": audio_packet["packet_id"],
-            "source_id": source_id,
-            "finality": audio_segment["finality"],
-            "voice_activity_hint": cues["activity_hint"],
-            "voice_cues": cues,
-            "prosody_change_score": cues["prosody_change_score"],
-            "temporal_voice": temporal_voice,
-            "speaker_change_evidence": speaker_evidence,
-            "speaker_change_decision": speaker_change_decision,
-            "attention": attention_result,
-            "learning_authority": False,
-            "action_authority": False,
-        }
-        if vad_evidence is not None:
-            a4["vad_evidence"] = vad_evidence
+                        if temporal_state is None:
+                            temporal_voice = _runtime_temporal_voice_registry(runtime).update(
+                                source_id=source_id,
+                                generation_id=generation_id,
+                                start_ms=audio_segment["start_ms"],
+                                end_ms=audio_segment["end_ms"],
+                                cues=cues,
+                            )
+                        else:
+                            if not isinstance(temporal_state, TemporalVoiceEvidence):
+                                raise ValueError("temporal_state must be a TemporalVoiceEvidence instance")
+                            temporal_voice = temporal_state.update(
+                                source_id=source_id,
+                                generation_id=generation_id,
+                                start_ms=audio_segment["start_ms"],
+                                end_ms=audio_segment["end_ms"],
+                                cues=cues,
+                            )
+                        speaker_change_score = 0.0
+                        speaker_change_candidate = None
+                        if speaker_evidence is not None:
+                            speaker_change_candidate = speaker_evidence.get("peak_speaker_change_candidate")
+                            if speaker_change_candidate is None:
+                                speaker_change_candidate = speaker_evidence.get("speaker_change_candidate")
+                            if speaker_change_candidate is True:
+                                speaker_change_score = float(
+                                    speaker_evidence.get("peak_candidate_change_score")
+                                    or speaker_evidence.get("change_score")
+                                    or 0.0
+                                )
+                        voice_novelty = max(
+                            0.35 * temporal_voice["voice_evidence"],
+                            0.9 * cues["prosody_change_score"] if temporal_voice["voice_active"] else 0.0,
+                            0.35 * speaker_change_score,
+                        )
+                        prosody_interrupt = (0.25 * cues["prosody_change_score"]
+                                             if temporal_voice["voice_active"] else 0.0)
+                        speaker_interrupt = 0.25 * speaker_change_score
+                        onset_interrupt = 0.5 if temporal_voice["voice_onset"] else 0.0
+                        vad_speech_fraction = 0.0 if vad_evidence is None else vad_evidence["speech_fraction"]
+                        vad_interrupt = 0.25 * vad_speech_fraction
+                        voice_novelty = max(voice_novelty, 0.35 * vad_speech_fraction)
+                        if cues["activity_hint"] in {"UNVOICED_NOISE", "IMPULSIVE"}:
+                            # Preserve non-speech events as their own salience channel.
+                            voice_novelty = max(voice_novelty, 0.35 * cues["activity_score"])
+                        attention = attctl.controller(runtime)
+                        attention_result = attention.modulate(event_id, sal={
+                            "novelty": min(1.0, max(zcr, voice_novelty)),
+                            "external_interrupt": min(1.0, max(rms * 0.5, prosody_interrupt, onset_interrupt, vad_interrupt, speaker_interrupt)),
+                        })
+                        a4 = {
+                            "packet_id": audio_packet["packet_id"],
+                            "source_id": source_id,
+                            "finality": audio_segment["finality"],
+                            "voice_activity_hint": cues["activity_hint"],
+                            "voice_cues": cues,
+                            "prosody_change_score": cues["prosody_change_score"],
+                            "temporal_voice": temporal_voice,
+                            "speaker_change_evidence": speaker_evidence,
+                            "speaker_change_decision": speaker_change_decision,
+                            "attention": attention_result,
+                            "learning_authority": False,
+                            "action_authority": False,
+                        }
+                        if vad_evidence is not None:
+                            a4["vad_evidence"] = vad_evidence
 
-        # The provider lease remains authoritative through A4 and C3 admission.
-        # Do not reacquire its lock through consent_check here.
-        candidate = audio_to_admission(audio_packet, consent_active=True)
-        # Packet start/end already carry the interval; drop the duplicate text
-        # field to preserve room for source-bound acoustic evidence below.
-        base_summary = " ".join(
-            token for token in candidate.summary.split()
-            if not token.startswith(("zcr=", "interval_ms="))
+                        # The provider lease remains authoritative through A4 and C3 admission.
+                        # Do not reacquire its lock through consent_check here.
+                        candidate = audio_to_admission(audio_packet, consent_active=True)
+                        # Packet start/end already carry the interval; drop the duplicate text
+                        # field to preserve room for source-bound acoustic evidence below.
+                        base_summary = " ".join(
+                            token for token in candidate.summary.split()
+                            if not token.startswith(("zcr=", "interval_ms="))
+                        )
+                        summary = base_summary + (
+                            f" activity={cues['activity_hint']} v={cues['voiced_fraction']:.2f}"
+                        )
+                        if cues["f0_median_hz"] is not None:
+                            summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
+                        summary += f" energy_range_db={cues['energy_range_db']:.1f}"
+                        if cues["voiced_energy_range_db"] is not None:
+                            summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
+                        summary += f" prosody_change={cues['prosody_change_score']:.2f}"
+                        if vad_evidence is not None:
+                            summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
+                        if speaker_evidence is not None and speaker_evidence.get("status") == "MEASURED":
+                            if speaker_change_candidate is not None:
+                                summary += f" speaker_change_candidate={int(speaker_change_candidate)}"
+                                summary += f" speaker_change_score={speaker_change_score:.2f}"
+                                if speaker_change_candidate:
+                                    summary += " speaker_change_kind=CHANGE_OR_OVERLAP"
+                            else:
+                                summary += f" speaker_similarity_delta={speaker_evidence['change_score']:.2f}"
+                                summary += (
+                                    " spk_cal=UNVERIFIED"
+                                    if speaker_evidence.get("threshold_status") == "CALLER_ASSERTED_UNVERIFIED"
+                                    else " spk_cal=UNAVAILABLE"
+                                )
+                        # The structured packet retains every cue; reserve the bounded C3
+                        # summary tail for the speaker score/kind and explicit three-state decision.
+                        decision_suffix = f" spk_dec={speaker_change_decision}"
+                        summary = summary[:256-len(decision_suffix)] + decision_suffix
+                        candidate = Percept(
+                            candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
+                            summary, candidate.consent, candidate.final, candidate.priority,
+                        )
+                        c3 = admit((candidate,), token_budget)
+                        result = {
+                            "status": "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION",
+                            "packet": audio_packet,
+                            "a4": a4,
+                            "c3_admission": c3,
+                            "temporal_voice": temporal_voice,
+                            "speaker_change_evidence": speaker_evidence,
+                            "capture_authority": "CALLER_SUPPLIED_PCM16",
+                            "learning_authority": False,
+                            "action_authority": False,
+                        }
+                        if vad_evidence is not None:
+                            result["vad_evidence"] = vad_evidence
+                        return result
+            finally:
+                zeroize_pcm16_buffer(pcm)
+    finally:
+        zeroize_pcm16_buffer(pcm)
+
+
+def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
+                               generation_id, source_id, consent_receipt,
+                               consent_check, finality, consent_guard=None, token_budget=512,
+                               temporal_state: TemporalVoiceEvidence | None = None,
+                               vad_stream: SileroVADStream | None = None,
+                               consent_lease: AudioConsentLease | None = None,
+                               voice_backend: str = "python",
+                               speaker_embeddings: dict | None = None):
+    """Consume one source-bound audio window and overwrite mutable caller PCM."""
+    zeroization_status = pcm16_zeroization_status(pcm)
+    try:
+        result = _consume_pcm16_voice_window_impl(
+            runtime, pcm, sample_rate=sample_rate, start_ms=start_ms,
+            event_id=event_id, generation_id=generation_id, source_id=source_id,
+            consent_receipt=consent_receipt, consent_check=consent_check,
+            finality=finality, consent_guard=consent_guard, token_budget=token_budget,
+            temporal_state=temporal_state, vad_stream=vad_stream,
+            consent_lease=consent_lease, voice_backend=voice_backend,
+            speaker_embeddings=speaker_embeddings,
         )
-        summary = base_summary + (
-            f" activity={cues['activity_hint']} v={cues['voiced_fraction']:.2f}"
-        )
-        if cues["f0_median_hz"] is not None:
-            summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
-        summary += f" energy_range_db={cues['energy_range_db']:.1f}"
-        if cues["voiced_energy_range_db"] is not None:
-            summary += f" voiced_energy_range_db={cues['voiced_energy_range_db']:.1f}"
-        summary += f" prosody_change={cues['prosody_change_score']:.2f}"
-        if vad_evidence is not None:
-            summary += f" vad_speech_fraction={vad_speech_fraction:.2f}"
-        if speaker_evidence is not None and speaker_evidence.get("status") == "MEASURED":
-            if speaker_change_candidate is not None:
-                summary += f" speaker_change_candidate={int(speaker_change_candidate)}"
-                summary += f" speaker_change_score={speaker_change_score:.2f}"
-                if speaker_change_candidate:
-                    summary += " speaker_change_kind=CHANGE_OR_OVERLAP"
-            else:
-                summary += f" speaker_similarity_delta={speaker_evidence['change_score']:.2f}"
-                summary += (
-                    " spk_cal=UNVERIFIED"
-                    if speaker_evidence.get("threshold_status") == "CALLER_ASSERTED_UNVERIFIED"
-                    else " spk_cal=UNAVAILABLE"
-                )
-        # The structured packet retains every cue; reserve the bounded C3
-        # summary tail for the speaker score/kind and explicit three-state decision.
-        decision_suffix = f" spk_dec={speaker_change_decision}"
-        summary = summary[:256-len(decision_suffix)] + decision_suffix
-        candidate = Percept(
-            candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
-            summary, candidate.consent, candidate.final, candidate.priority,
-        )
-        c3 = admit((candidate,), token_budget)
-        result = {
-            "status": "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION",
-            "packet": audio_packet,
-            "a4": a4,
-            "c3_admission": c3,
-            "temporal_voice": temporal_voice,
-            "speaker_change_evidence": speaker_evidence,
-            "capture_authority": "CALLER_SUPPLIED_PCM16",
-            "learning_authority": False,
-            "action_authority": False,
-        }
-        if vad_evidence is not None:
-            result["vad_evidence"] = vad_evidence
+        result["pcm_zeroization_status"] = zeroization_status
         return result
+    finally:
+        zeroize_pcm16_buffer(pcm)
