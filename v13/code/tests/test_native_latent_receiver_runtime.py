@@ -9,7 +9,8 @@ import pytest
 from v13.runtime import Runtime
 from v13.models import model_key
 from v13.contracts import validate
-from v13.callosum import controller, operator_command
+from v13.callosum import controller
+from v13.operator import Operator
 from v13 import native_latent_receiver as native
 
 
@@ -60,7 +61,7 @@ def setup_runtime(tmp_path):
         "download_complete": True,
         "exact_revision": "lfm2-r1",
         "main_file": "receiver.gguf",
-        "files": {"receiver.gguf": {"sha256": digest}},
+        "files": {"receiver.gguf": {"sha256": digest, "path": "models/receiver.gguf", "size": model_path.stat().st_size}},
     }
     sender_dir = model_dir / "gist"
     sender_dir.mkdir(parents=True, exist_ok=True)
@@ -72,7 +73,7 @@ def setup_runtime(tmp_path):
         "download_complete": True,
         "exact_revision": "qwen35-r1",
         "main_file": "sender.gguf",
-        "files": {"sender.gguf": {"sha256": sender_digest}},
+        "files": {"sender.gguf": {"sha256": sender_digest, "path": "models/gist/sender.gguf", "size": sender_path.stat().st_size}},
     }
     runtime.models.path_for = lambda role: sender_path if role == "B2_GIST" else model_path
     runtime.models.revision = lambda role: "qwen35-r1" if role == "B2_GIST" else "lfm2-r1"
@@ -300,7 +301,7 @@ def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
 
 def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
-    runtime.last_answer = lambda: {"event_id": event["event_id"]}
+    runtime.last_answer = lambda: {"event_id": event["event_id"], "status": "FINAL"}
     calls = []
     runtime.require_idle = lambda: calls.append("idle")
     packet = {
@@ -317,17 +318,31 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
         calls.append((sender, receiver, e["event_id"], ref, deadline)) or packet
     )
     runtime.pool.unload = lambda: calls.append("unload")
-    result = json.loads(operator_command(
-        runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source", "--confirm"]
-    ))
-    assert result["completed"] is True
-    assert result["queued"] is False
-    assert result["production_route"] is False
-    assert calls[0] == "idle"
-    assert calls[1][:4] == ("B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"])
-    assert calls[2] == "unload"
-    with pytest.raises(ValueError):
-        operator_command(runtime, ["native-probe", "B2_GIST", "C3_LANGUAGE", "--last-source"])
-    with pytest.raises(ValueError):
-        operator_command(runtime, ["native-probe", "C3_LANGUAGE", "B2_GIST", "--last-source", "--confirm"])
-    runtime.close()
+    operator = Operator(runtime)
+    try:
+        armed = json.loads(operator.run(
+            ":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+        ))
+        assert armed["status"] == "ARMED"
+        assert armed["source_bound"] is True
+        assert armed["model_revisions_and_hashes_bound"] is True
+        result = json.loads(operator.run(
+            ":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm"
+        ))
+        assert result["completed"] is True
+        assert result["queued"] is False
+        assert result["production_route"] is False
+        assert result["local_approval_consumed"] is True
+        assert result["approval_id"] == armed["approval_id"]
+        probe_index = next(i for i, value in enumerate(calls) if isinstance(value, tuple))
+        assert calls[:probe_index].count("idle") >= 2
+        assert calls[probe_index][:4] == (
+            "B2_GIST", "C3_LANGUAGE", event["event_id"], event["source_ref"]
+        )
+        assert calls[probe_index + 1] == "unload"
+        with pytest.raises(ValueError):
+            operator.run(":callosum native-probe B2_GIST C3_LANGUAGE --last-source")
+        with pytest.raises(ValueError):
+            operator.run(":callosum native-probe C3_LANGUAGE B2_GIST --last-source --confirm")
+    finally:
+        runtime.close()

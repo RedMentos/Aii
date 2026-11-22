@@ -3,13 +3,16 @@ import hashlib
 import json
 from pathlib import Path
 import sqlite3
+import subprocess
 import tempfile
+import threading
 import time
 import unittest
 from unittest import mock
 
 from v13 import mobile_dashboard as ui
 from v13 import phone_runtime_diagnostics as diagnostic
+from v13 import runners
 
 
 class LastTurnTests(unittest.TestCase):
@@ -279,6 +282,122 @@ class LastTurnTests(unittest.TestCase):
         self.assertEqual(result["last_turn"]["status"], "DEADLINE")
         self.assertEqual(result["last_turn"]["failure_stage"], "routing")
         self.assertNotIn("PRIVATE", json.dumps(result))
+
+
+class RunnerCacheDiagnosticsTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        runners._SERVER_VERSION_CACHE.clear()
+
+    def executable(self, body):
+        path = self.root / "llama-server"
+        path.write_text("#!/bin/sh\n" + body, encoding="utf-8")
+        path.chmod(0o700)
+        return path
+
+    def test_server_version_probe_records_revision_but_not_raw_build_output(self):
+        binary = self.executable("echo 'version: 1 (b29c606e)'; echo '/private/build/path'\n")
+        result = runners.LlamaRunner._probe_server_version(binary)
+        self.assertEqual(result, {
+            "status": "PARSED_REVISION_PREFIX",
+            "version": "1+b29c606e",
+            "revision_prefix": "b29c606e",
+        })
+        self.assertNotIn("/private", json.dumps(result))
+
+    def test_server_version_probe_caches_by_binary_identity(self):
+        binary = self.executable("echo 'version: 2 (abcdef123456)'\n")
+        with mock.patch("v13.runners.subprocess.run", wraps=subprocess.run) as run:
+            first = runners.LlamaRunner._probe_server_version(binary)
+            second = runners.LlamaRunner._probe_server_version(binary)
+        self.assertEqual(first, second)
+        self.assertEqual(run.call_count, 1)
+
+    def test_server_version_probe_fails_closed_for_timeout_and_unparseable_output(self):
+        binary = self.executable("echo '/private/device/path only'\n")
+        with mock.patch("v13.runners.subprocess.run", side_effect=subprocess.TimeoutExpired([str(binary), "--version"], 1.5)):
+            timed_out = runners.LlamaRunner._probe_server_version(binary)
+        self.assertEqual(timed_out, {"status": "TIMEOUT"})
+        runners._SERVER_VERSION_CACHE.clear()
+        unparseable = runners.LlamaRunner._probe_server_version(binary)
+        self.assertEqual(unparseable, {"status": "UNPARSEABLE"})
+        self.assertNotIn("/private", json.dumps(unparseable))
+
+    def test_prompt_cache_policy_reports_exact_flags_and_shared_runner_scope(self):
+        policy = runners.LlamaRunner._prompt_cache_policy_from_command([
+            "/opt/llama-server", "-m", "model.gguf", "-np", "1",
+            "--cache-ram", "128", "--ctx-checkpoints", "6",
+        ])
+        self.assertEqual(runners.LlamaRunner._prompt_cache_payload_policy(), {"cache_prompt": True, "id_slot": 0})
+        self.assertEqual(policy, {
+            "revision": "v13.llama-prompt-cache-policy/1",
+            "parallel_slots": 1, "cache_ram_mb": 128, "ctx_checkpoints": 6,
+            "cache_prompt": True, "id_slot": 0,
+            "no_cache_idle_slots_flag_present": False,
+            "kv_unified_flag_present": False,
+            "runner_scope": "RUNTIME_SHARED_PER_ROLE", "session_keyed": False,
+        })
+
+    def test_runner_pool_reuses_role_runner_without_a_session_key(self):
+        class Models:
+            b2_control = "two_body"
+            def path_for(self, role):
+                return self.root / (role + ".gguf")
+        models = Models()
+        models.root = self.root
+        pool = runners.RunnerPool(self.root, models, {"body_residency_mb": 0})
+        first = pool.get("B1_DETAIL")
+        second = pool.get("B1_DETAIL")
+        self.assertIs(first, second)
+        self.assertEqual(list(pool.resident), [("B1_DETAIL", "generate")])
+
+    def test_generate_attaches_version_and_cache_scope_to_real_metrics_consumer(self):
+        runner = runners.LlamaRunner(self.root, "B1_DETAIL", self.root / "body.gguf", {})
+        runner._server_version_info = {
+            "status": "PARSED_REVISION_PREFIX", "version": "1+b29c606e",
+            "revision_prefix": "b29c606e",
+        }
+        runner._prompt_cache_policy = runners.LlamaRunner._prompt_cache_policy_from_command([
+            "llama-server", "-np", "1", "--cache-ram", "128", "--ctx-checkpoints", "6",
+        ])
+        def fake_generate(*args, **kwargs):
+            yield "ok"
+        runner._generate = fake_generate
+        self.assertEqual(list(runner.generate([], threading.Event(), time.monotonic() + 2, max_tokens=1)), ["ok"])
+        self.assertEqual(runner.last_metrics["server_version"], "1+b29c606e")
+        self.assertEqual(runner.last_metrics["server_revision_prefix"], "b29c606e")
+        self.assertEqual(runner.last_metrics["prompt_cache_policy"]["runner_scope"], "RUNTIME_SHARED_PER_ROLE")
+
+    def test_private_projection_allowlists_version_and_cache_policy_only(self):
+        policy = runners.LlamaRunner._prompt_cache_policy_from_command([
+            "llama-server", "-np", "1", "--cache-ram", "128", "--ctx-checkpoints", "6",
+        ]) | {"private_path": "/private/device/path"}
+        result = diagnostic._project("FINAL", {"runner": {
+            "server_version_status": "PARSED_REVISION_PREFIX",
+            "server_version": "1+b29c606e", "server_revision_prefix": "b29c606e",
+            "prompt_cache_policy": policy, "raw_output": "/private/raw-output",
+        }})
+        projected = result["runner"]
+        self.assertEqual(projected["server_version"], "1+b29c606e")
+        self.assertEqual(projected["server_revision_prefix"], "b29c606e")
+        self.assertEqual(projected["prompt_cache_policy"]["session_keyed"], False)
+        self.assertNotIn("private_path", projected["prompt_cache_policy"])
+        self.assertNotIn("PRIVATE", json.dumps(result).upper())
+        self.assertNotIn("/private", json.dumps(result))
+
+    def test_private_projection_rejects_untrusted_version_and_policy_revision(self):
+        result = diagnostic._project("FINAL", {"runner": {
+            "server_version_status": "PRIVATE", "server_version": "/private/path",
+            "server_revision_prefix": "not-a-revision",
+            "prompt_cache_policy": {"revision": "unknown", "private_path": "/private/path"},
+        }})
+        self.assertNotIn("server_version", result["runner"])
+        self.assertNotIn("server_version_status", result["runner"])
+        self.assertNotIn("server_revision_prefix", result["runner"])
+        self.assertNotIn("prompt_cache_policy", result["runner"])
+        self.assertNotIn("/private", json.dumps(result))
 
 
 if __name__ == "__main__":

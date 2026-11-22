@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import re
 from pathlib import Path
 import sqlite3
 import stat
@@ -40,6 +41,11 @@ RUNNER_BOUNDS = {
     "requested_tokens": (0, 10_000_000), "input_message_count": (0, 65536),
 }
 RUNNER_STAGES = ("load_s", "template_s", "prefill_to_first_token_s", "stream_s")
+SERVER_VERSION_STATUSES = frozenset({"PARSED_REVISION_PREFIX", "REVISION_ONLY", "VERSION_ONLY",
+                                     "UNAVAILABLE", "TIMEOUT", "NONZERO_EXIT", "UNPARSEABLE"})
+SERVER_VERSION_PATTERN = re.compile(r"[0-9][A-Za-z0-9._+-]{0,63}\Z")
+SERVER_REVISION_PATTERN = re.compile(r"[0-9a-f]{7,40}\Z")
+PROMPT_CACHE_POLICY_REVISION = "v13.llama-prompt-cache-policy/1"
 ADMISSION_STATES = frozenset({"ADMITTED", "PROTECTED_CONTEXT_EXCEEDS_TIME_TARGET"})
 ADMISSION_OMISSIONS = frozenset({
     "C3_LAYER_TASK_CONTEXT", "C3_LAYER_DIGEST", "C3_LAYER_USER_MODEL",
@@ -103,6 +109,35 @@ def _project(status, metadata):
             runner["last_phase"] = source["last_phase"]
         if isinstance(source.get("status"), str) and source["status"] in STATUSES:
             runner["status"] = source["status"]
+        version_status=source.get("server_version_status")
+        if isinstance(version_status,str) and version_status in SERVER_VERSION_STATUSES:
+            runner["server_version_status"] = version_status
+        version=source.get("server_version")
+        if isinstance(version,str) and SERVER_VERSION_PATTERN.fullmatch(version):
+            runner["server_version"] = version
+        revision=source.get("server_revision_prefix")
+        if isinstance(revision,str) and SERVER_REVISION_PATTERN.fullmatch(revision):
+            runner["server_revision_prefix"] = revision
+        policy=source.get("prompt_cache_policy")
+        if isinstance(policy,dict) and policy.get("revision")==PROMPT_CACHE_POLICY_REVISION:
+            parallel=policy.get("parallel_slots");cache_ram=policy.get("cache_ram_mb")
+            checkpoints=policy.get("ctx_checkpoints");slot=policy.get("id_slot")
+            booleans=(policy.get("cache_prompt"),policy.get("no_cache_idle_slots_flag_present"),
+                      policy.get("kv_unified_flag_present"),policy.get("session_keyed"))
+            valid=(type(parallel) is int and 1<=parallel<=64
+                   and type(cache_ram) is int and 0<=cache_ram<=65536
+                   and type(checkpoints) is int and 0<=checkpoints<=256
+                   and type(slot) is int and 0<=slot<=64
+                   and all(type(value) is bool for value in booleans)
+                   and policy.get("runner_scope")=="RUNTIME_SHARED_PER_ROLE")
+            if valid:
+                runner["prompt_cache_policy"]={
+                    "revision":PROMPT_CACHE_POLICY_REVISION,
+                    "parallel_slots":parallel,"cache_ram_mb":cache_ram,
+                    "ctx_checkpoints":checkpoints,"cache_prompt":booleans[0],
+                    "id_slot":slot,"no_cache_idle_slots_flag_present":booleans[1],
+                    "kv_unified_flag_present":booleans[2],
+                    "runner_scope":"RUNTIME_SHARED_PER_ROLE","session_keyed":booleans[3]}
         runner["stage_durations_s"] = _numbers(source.get("stage_durations_s"),
                                                {name: (0, 86400) for name in RUNNER_STAGES})
         admission=source.get("prompt_admission")

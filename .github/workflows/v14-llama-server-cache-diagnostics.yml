@@ -1,0 +1,40 @@
+name: V14 llama-server version and prompt-cache diagnostics
+on:
+  push:
+    branches:
+      - core/v14-llama-server-cache-diagnostics-20261122
+  pull_request:
+    paths:
+      - 'v13/code/v13/runners.py'
+      - 'v13/code/v13/phone_runtime_diagnostics.py'
+      - 'v13/code/tests/test_phone_runtime_diagnostics.py'
+      - '.github/workflows/v14-llama-server-cache-diagnostics.yml'
+permissions:
+  contents: read
+jobs:
+  runner-cache-diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compile and run read-only cache diagnostics
+        env:
+          PYTHONPATH: v13/code
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python -m py_compile v13/code/v13/runners.py v13/code/v13/phone_runtime_diagnostics.py v13/code/tests/test_phone_runtime_diagnostics.py
+          python -m unittest discover -s v13/code/tests -p 'test_phone_runtime_diagnostics.py' -v
+          python -m unittest discover -s v13/code/tests -p 'test_native_batch_knob.py' -v
+          python -m unittest discover -s v13/code/tests -p 'test_phone_native_residency.py' -v
+      - name: Scan public diff for private data and secrets
+        run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
