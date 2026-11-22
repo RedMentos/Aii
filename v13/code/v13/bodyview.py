@@ -143,15 +143,14 @@ def _world_jepa_body_readout(r, e, text, role):
         context = {
             "status": "SHADOW_READOUT_ONLY",
             "role": role,
-            "representation": "NUMERIC_ACTION_OUTCOME_PROMPT_PRIOR",
-            "action_horizon": "NEXT_ACTION_OUTCOME",
+            "representation": "NUMERIC_ACTION_OUTCOME_PRIOR",
+            "action_horizon": "NEXT_ACTION",
             "checkpoint_id": checkpoint_sha[:16],
             "predictions": predictions,
             "body_prompt_consumed": True,
             "native_body_consumed": False,
-            "native_body_weights_changed": False,
             "decision_authority": "NONE",
-            "note": "Fallible short-horizon estimate only; not source evidence, fact, or permission.",
+            "note": "Prediction only; not source evidence or permission.",
         }
         audit = {
             "schema": "V14_WORLDJEPA_BODY_RECEIVER_AUDIT/1",
