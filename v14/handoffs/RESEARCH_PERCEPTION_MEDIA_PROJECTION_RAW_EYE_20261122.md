@@ -4,7 +4,7 @@ Date: 2026-11-22
 Base: `gpt6/v13-private-remote-bridge-20261111` at `aed1d2b826290c95c70356b5d8b864b5ef382be4`  
 Branch: `research-perception/v14-media-projection-raw-eye-20261122-run7`  
 PR: [#2375](https://github.com/RedMentos/Aii/pull/2375)  
-Code/test checkpoint: `fb6779188f97d50e1cbe6d4fbeda9cc9c9403743`; subsequent commits update only research/handoff evidence. Current PR head is shown in #2375.
+Code commits: `9f8e8038bf5cd55ff8a35a8cb2f063a216df1adb` (A3 student receiver) and `b6aaa826a9f57ad777bb7cafb5713705ffcf6968` (duplicate archive-member rejection); test commit: `ed22ab8ec078687c3865c5d603ae73fcfca676f7`. Current PR head is shown in #2375.
 
 ## Product gap and implementation
 
@@ -56,3 +56,26 @@ The latest private V13OBS aggregate snapshot was updated 2026-11-22 20:08:59Z. I
 ## Model research candidate (R-084)
 
 Full-text review of MobileCLIP2 (TMLR August 2025 Featured) and SmolVLM (arXiv preprint 2025-04-07) is recorded in `v14/V14_RESEARCH_LEDGER.md` as R-084. MobileCLIP2-S0 is a compact image/text dual encoder, but official weights are under Apple ML Research Model TOU (code MIT; data CC-BY-NC-ND), and its 1.5 ms image / 3.3 ms text figures are iPhone 12 Pro Max results. SmolVLM2-256M Video Instruct declares Apache-2.0 weights; its card reports 1.38 GB GPU RAM for video inference, while the SmolVLM paper reports 0.8 GB VRAM for single-image inference. Neither result is an Android/Termux benchmark. SmolVLM2 is a candidate for a later serial/on-demand semantic vision experiment, not a replacement or approved download. No weights were downloaded and no model was swapped.
+
+## Run 7 addendum — A3 student receiver connected to the UI frame path
+
+Date: 2026-11-22  
+Current branch: research-perception/v14-media-projection-raw-eye-20261122-run7  
+Code commits: 9f8e8038bf5cd55ff8a35a8cb2f063a216df1adb, b6aaa826a9f57ad777bb7cafb5713705ffcf6968  
+Test commit: ed22ab8ec078687c3865c5d603ae73fcfca676f7  
+PR: [#2375](https://github.com/RedMentos/Aii/pull/2375)
+
+The frame adapter now optionally consumes the already-trained local V13 tile student when its Store record is explicitly LAB_SHADOW_ONLY. It verifies a constrained relative path using descriptor-relative O_NOFOLLOW traversal, exact SHA, bounded NPZ size/member set, finite 37→embedding projector tensors, and exact encoder revision. It does not download, train, promote or rewrite the projector. A matching hashed_bow encoder is deterministic; an already-installed EmbeddingEncoder is bounded by a two-second deadline. For the 16 grid tiles it computes a normalized goal-vs-background embedding margin and labels it STUDENT_ESTIMATE. The margin is added to the source-bound segment summaries so it reaches the existing A5 context envelope/C3 packet; it does not change priority, action authority, learning authority or truth authority. Missing or invalid student state leaves the handcrafted RAW EYE path available.
+
+**Local isolated evidence:** CPython harness PASS for secure openat/no-follow load, exact SHA round-trip (maximum projection difference 0), hash-tamper rejection and symlink rejection. A shifted synthetic UI image held out from the training image produced a higher red-panel margin than blue/background tiles. This is synthetic and does not establish real visual semantics, calibration, or device performance.
+
+**Exact repository CI:** the new code/test head ed22ab8ec078687c3865c5d603ae73fcfca676f7 triggered the focused Python 3.13/3.14 compile + pytest workflow, staged/integrated regression and privacy scan. They were QUEUED at the last poll; no exact-head CI PASS is claimed yet. The subsequent code hardening commit b6aaa826a9f57ad777bb7cafb5713705ffcf6968 triggers another exact-head run. Full local Aii suite remains NOT_RUN because the checkout is not mounted.
+
+**Device receipt:** fresh private owner-read PIPELINE_STATUS #617 and DIAGNOSTICS #618 confirm release-development SHA aed1d2b826290c95c70356b5d8b864b5ef382be4 installed, auto-update enabled, runtime/dashboard UP_TO_DATE, last_error NONE. The repeated last turn is 57.739 s / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens; B1/B2 remain TIME_BUDGET at 53.2/54.2 s; instantaneous mapped native process count is zero with child readability unknown. This is not a new user turn, correctness pass, sustained residency measurement or proof that this PR is installed. No update request or CHAT_SEND was issued.
+
+**Open boundary:** no companion MediaProjection provider, normal Runtime dispatch, Android permission/capture, Termux test or Redmi visual test exists. The student is a closed-form local ridge projector, not JEPA gradient learning or native body-weight adaptation. It is only useful after a prior local :image tiles training run with matching encoder metadata. Its uncalibrated margin must not be treated as confidence or used to trigger actions.
+
+**Research:** R-085 records the full-paper review of StepX-Edge (arXiv:2607.22708, 2026-07-20 preprint). Its UI-aware tiling and progressive connector are relevant design hypotheses, but the 0.9B system was measured on Snapdragon 8 Gen5, uses Qualcomm QAIRT/Genie and has no official code/weight license verified in this run. No model selection or download is proposed.
+
+**Next executable action:** wait for the exact b6aaa826 CI matrix; repair any focused or integrated failure. Then coordinate with Core/QA to wire the provider and normal Runtime consumer without changing their owned files. Run a source-disjoint real UI holdout and no-student baseline only after the provider is available and the user has explicitly granted the corresponding screen-capture session. Redmi remains REDMI_UNVERIFIED.
+
