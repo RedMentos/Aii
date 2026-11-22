@@ -34,7 +34,7 @@ def _trace_world_jepa_consumer_calls(trace):
             try:
                 result = _original(*args, **kwargs)
             except Exception as exc:
-                trace.append(_label + ":RAISED:" + type(exc).__name__)
+                trace.append(_label + ":RAISED:" + type(exc).__name__ + ":" + str(exc)[:240])
                 raise
             status = result.get("status") if isinstance(result, dict) else type(result).__name__
             trace.append(_label + ":" + str(status))
@@ -434,7 +434,7 @@ def test_planner_only_checkpoint_readout_does_not_consume_future_learning_opt_in
         })
         sleep = _sleep(store, home)
         trace = []
-        _trace_world_jepa_consumer_calls(monkeypatch, trace)
+        restore_trace = _trace_world_jepa_consumer_calls(trace)
         first = sleep._run_world_jepa(first_events[-1], limit=256)
         assert "learning" in first, {
             "error": first.get("error"), "trace": trace,
