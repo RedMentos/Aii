@@ -70,3 +70,8 @@ The default-off tests are Robolectric/CI contract guards, not actual microphone 
 - Current signed audio consumer is #2312, head `5221314d3c01ab6d874ecc0a8b8ff72c34e504a2`, caller-supplied 44.1-kHz mono PCM16 only. Its consumer workflow `44992975596` is QUEUED and staged/integrated `44992975599` was IN_PROGRESS at last read. It does not open a microphone; no Android AudioRecord provider exists.
 - The companion branch remains a draft stack. Compared with release tip `f210999cf556be4d4514427cc9b5cf6d3cf3e984`, it is 164 ahead / 715 behind with merge base `d3ac638b04d166c4fe7611f3d314b1633b7036f8`. The complete #2119 → #2134 → #2271 → #2273 → #2286 parent chain must be reconciled together.
 - No APK install, provider IPC, KeyStore operation, microphone permission, AudioRecord capture, phone update, model/weight change or user-data mutation occurred. **NOT_RELEASED / REDMI_UNVERIFIED**.
+
+
+## Superseding signed-consumer correction — 2026-11-22 08:xx CET
+
+The older cross-lane note below that names PR #2310 and 16-kHz PCM16 is historical and superseded. The active Perception consumer is **PR #2312**, which requires **44.1-kHz mono PCM16**, at most one second (88,200 bytes; 117,600 Base64 characters). PR #2310 is closed unmerged. No AudioRecord provider or microphone capture is implemented by this QA companion branch. Keep `audio_capture=OFF_NOT_IMPLEMENTED`, and do not enable/request RECORD_AUDIO or resample/relabel samples without a separately reviewed, signed rate contract. See the active #2312 dependency note above and https://developer.android.com/reference/android/media/AudioRecord.

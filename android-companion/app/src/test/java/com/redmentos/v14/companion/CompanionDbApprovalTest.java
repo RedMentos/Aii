@@ -213,6 +213,47 @@ public final class CompanionDbApprovalTest {
         assertEquals(60L, receiptExpirySeconds - issuedAtSeconds);
     }
 
+    @Test public void providerProcessRestartStartsStoppedEvenWhenPreferenceWasEnabled() {
+        insertPending(NOW + 10_000L);
+        assertTrue(CompanionProvider.setEnabled(context, true));
+        assertTrue(CompanionProvider.isEnabled(context));
+
+        // ContentProvider.onCreate invokes this on every new app process. The
+        // prior process's persisted ON value is not an active session grant.
+        CompanionProvider.resetProcessStateForProviderStartup();
+        assertFalse(CompanionProvider.isEnabled(context));
+        assertTrue(context.getSharedPreferences(CompanionProvider.PREFS, Context.MODE_PRIVATE)
+                .getBoolean("enabled", false));
+
+        AtomicBoolean dispatched = new AtomicBoolean(false);
+        String result = CompanionProvider.claimAndDispatch(
+                context, first, ACTION_ID, () -> NOW, () -> dispatched.set(true));
+        assertEquals("COMPANION_STOPPED", result);
+        assertFalse(dispatched.get());
+        assertEquals("PENDING_USER_APPROVAL", first.get(ACTION_ID).status);
+    }
+
+    @Test public void failedStopCommitFailsClosedAndBlocksDispatch() {
+        insertPending(NOW + 10_000L);
+        assertTrue(CompanionProvider.setEnabled(context, true));
+        assertTrue(CompanionProvider.isEnabled(context));
+
+        boolean committed = CompanionProvider.setEnabled(context, false, (target, enabled) -> false);
+        assertFalse(committed);
+        // The stale persisted ON value deliberately remains, but this process
+        // has already dropped its session grant and cannot dispatch.
+        assertTrue(context.getSharedPreferences(CompanionProvider.PREFS, Context.MODE_PRIVATE)
+                .getBoolean("enabled", false));
+        assertFalse(CompanionProvider.isEnabled(context));
+
+        AtomicBoolean dispatched = new AtomicBoolean(false);
+        String result = CompanionProvider.claimAndDispatch(
+                context, first, ACTION_ID, () -> NOW, () -> dispatched.set(true));
+        assertEquals("COMPANION_STOPPED", result);
+        assertFalse(dispatched.get());
+        assertEquals("PENDING_USER_APPROVAL", first.get(ACTION_ID).status);
+    }
+
     @Test public void stopBeforeApprovalClaimPreventsDispatch() {
         insertPending(NOW + 10_000L);
         CompanionProvider.setEnabled(context, false);

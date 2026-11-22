@@ -54,8 +54,7 @@ public final class MainActivity extends Activity {
 
     private void refresh() {
         try {
-            SharedPreferences prefs = getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
-            boolean enabled = prefs.getBoolean("enabled", false);
+            boolean enabled = CompanionProvider.isEnabled(this);
             String paired = prefs.getString("paired_package", "not paired");
             String fingerprint = prefs.getString("paired_cert_sha256", "—");
             JSONObject key = signer.publicKeyInfo();
@@ -99,8 +98,15 @@ public final class MainActivity extends Activity {
     }
 
     private void toggleEnabled() {
-        boolean enabled = CompanionProvider.toggleEnabled(this);
-        Toast.makeText(this, enabled ? "Companion enabled" : "Companion stopped", Toast.LENGTH_SHORT).show();
+        try {
+            boolean enabled = CompanionProvider.toggleEnabled(this);
+            Toast.makeText(this, enabled ? "Companion enabled for this process"
+                    : "Companion stopped", Toast.LENGTH_SHORT).show();
+        } catch (IllegalStateException e) {
+            Toast.makeText(this,
+                    "Could not save companion state; it remains stopped in this process",
+                    Toast.LENGTH_LONG).show();
+        }
         refresh();
     }
 

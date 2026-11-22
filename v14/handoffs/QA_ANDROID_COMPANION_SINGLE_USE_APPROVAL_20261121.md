@@ -242,3 +242,14 @@ A concurrent remote `pending`/stop flow could observe the row after `submit` ins
 - The Android companion still implements only consent-gated `launch_app`. `audio_capture` remains OFF_NOT_IMPLEMENTED; no AudioRecord provider or microphone permission exists. Screen/UI observation, Accessibility, MediaProjection and tap/swipe/type/back remain OFF/not implemented.
 
 **Next:** read the exact-head #2286 CI jobs and authenticated #487/#488 receipts. Coordinate the full parent-stack rebase with Core/Boss only after current-base staged/source-pin checks are green.
+
+
+## Durable stop and process-session grant — 2026-11-22 08:xx CET
+
+**Code candidate:** PR #2286, branch `qa/v14-companion-os-permission-contract-20261122` (exact new SHA and CI results are recorded in the next checkpoint below).
+
+- The previous `SharedPreferences.apply()` returned before the enabled flag was durably written and provided no failure result. Android documents that `commit()` writes synchronously and returns whether the values reached persistent storage: https://developer.android.com/reference/android/content/SharedPreferences.Editor
+- The companion now uses checked `commit()` for enable/stop. Before attempting a write it clears the in-process grant; a false result or exception leaves the process stopped. The UI reports persistence failure instead of claiming the requested state was saved.
+- The enabled flag is now a **per-process session grant**. `CompanionProvider.onCreate()` resets the in-memory grant to OFF on every app-process start, so a stale persisted ON value cannot reactivate the companion after process death. The user must explicitly enable it again in the new process.
+- Both provider submit and final launch dispatch consult the same process grant under `ACTION_GATE_LOCK`. The companion remains launch_app-only; no other capability, permission, model authority or device operation is enabled.
+- Added Robolectric regressions for process-start reset and failed stop persistence. These exercise the startup gate and failure seam; they are CI/synthetic tests, **not** a real Android process-kill or Redmi test.

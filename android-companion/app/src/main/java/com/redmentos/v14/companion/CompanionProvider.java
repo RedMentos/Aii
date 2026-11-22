@@ -37,6 +37,7 @@ public final class CompanionProvider extends ContentProvider {
     @Override public boolean onCreate() {
         Context context = getContext();
         if (context == null) return false;
+        resetProcessStateForProviderStartup();
         db = new CompanionDb(context);
         signer = new ReceiptSigner();
         ensureChannel(context);
@@ -63,33 +64,87 @@ public final class CompanionProvider extends ContentProvider {
     // The provider and both Activities use the app's default process. This
     // gate linearizes stop/enable with request insertion and the final dispatch.
     static final Object ACTION_GATE_LOCK = new Object();
+    // Enabling is a per-process session grant. A process restart always starts
+    // stopped; the user must explicitly enable the companion again.
+    private static volatile boolean processEnabled = false;
 
     interface MillisClock {
         long nowMillis();
     }
 
-    static boolean setEnabled(Context context, boolean enabled) {
+    interface EnabledWriter {
+        boolean commit(Context context, boolean enabled);
+    }
+
+    static void resetProcessStateForProviderStartup() {
         synchronized (ACTION_GATE_LOCK) {
-            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-                    .edit().putBoolean("enabled", enabled).apply();
-            return enabled;
+            processEnabled = false;
         }
+    }
+
+    static boolean setEnabled(Context context, boolean enabled) {
+        return setEnabled(context, enabled, CompanionProvider::commitEnabled);
+    }
+
+    static boolean setEnabled(Context context, boolean enabled, EnabledWriter writer) {
+        synchronized (ACTION_GATE_LOCK) {
+            return setEnabledLocked(context, enabled, writer);
+        }
+    }
+
+    private static boolean setEnabledLocked(Context context, boolean enabled, EnabledWriter writer) {
+        // Drop in-process authority before attempting persistence. If commit
+        // fails or throws, an old enabled state must not remain usable.
+        processEnabled = false;
+        if (context == null || writer == null) return false;
+        try {
+            if (!writer.commit(context, enabled)) return false;
+            processEnabled = enabled;
+            return true;
+        } catch (RuntimeException ignored) {
+            processEnabled = false;
+            return false;
+        }
+    }
+
+    private static boolean commitEnabled(Context context, boolean enabled) {
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .edit().putBoolean("enabled", enabled).commit();
     }
 
     static boolean toggleEnabled(Context context) {
         synchronized (ACTION_GATE_LOCK) {
-            SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-            boolean enabled = !prefs.getBoolean("enabled", false);
-            prefs.edit().putBoolean("enabled", enabled).apply();
+            boolean enabled = !isEnabledLocked(context);
+            if (!setEnabledLocked(context, enabled, CompanionProvider::commitEnabled)) {
+                throw new IllegalStateException("Could not persist companion state");
+            }
             return enabled;
+        }
+    }
+
+    static boolean isEnabled(Context context) {
+        synchronized (ACTION_GATE_LOCK) {
+            return isEnabledLocked(context);
+        }
+    }
+
+    private static boolean isEnabledLocked(Context context) {
+        if (!processEnabled || context == null) return false;
+        try {
+            boolean stored = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                    .getBoolean("enabled", false);
+            if (!stored) processEnabled = false;
+            return processEnabled && stored;
+        } catch (RuntimeException ignored) {
+            processEnabled = false;
+            return false;
         }
     }
 
     static String claimAndDispatch(Context context, CompanionDb db, String actionId,
                                    MillisClock clock, Runnable dispatch) {
         synchronized (ACTION_GATE_LOCK) {
-            SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-            if (!prefs.getBoolean("enabled", false)) return "COMPANION_STOPPED";
+            if (!isEnabledLocked(context)) return "COMPANION_STOPPED";
             long nowMillis = clock.nowMillis();
             if (!db.claimForExecution(actionId, nowMillis)) {
                 db.expire(actionId, nowMillis);
@@ -126,8 +181,7 @@ public final class CompanionProvider extends ContentProvider {
     }
 
     private JSONObject submitLocked(Context context, String json) throws Exception {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        if (!prefs.getBoolean("enabled", false)) return error("COMPANION_STOPPED");
+        if (!isEnabledLocked(context)) return error("COMPANION_STOPPED");
         JSONObject request = new JSONObject(json);
         if (!"v14.android-action-request/1".equals(request.optString("schema"))
                 || !isImplementedCapability(request.optString("capability"))
