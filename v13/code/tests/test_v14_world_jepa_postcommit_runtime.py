@@ -144,7 +144,7 @@ def test_sleep_runtime_postcommit_requires_observed_outcome_and_keeps_gates_defa
         assert len(store.rows("SELECT id FROM packets WHERE kind='ModulatorPacket' AND event_id=?", (observed,))) == 1
 
         missing = store.event(session, "no committed action outcome")
-        rejected = sleep._run_world_jepa(missing["event_id"])
+        rejected = restarted._run_world_jepa(missing["event_id"])
         assert rejected["status"] == "NO_COMMITTED_OUTCOME"
     finally:
         store.close()
@@ -529,6 +529,23 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
             (turn_event_id,),
         ) is not None
         assert _wait_until(runtime.idle)
+
+        # Default-off Runtime still persists source-bound experience; it must
+        # not create a predictor checkpoint or change any model parameters.
+        def runtime_trace_recorded():
+            return (
+                len(runtime.store.rows(
+                    "SELECT id FROM packets WHERE kind='LearningTrace' AND event_id=?",
+                    (turn_event_id,),
+                )) == 1
+                and len(runtime.store.rows(
+                    "SELECT id FROM packets WHERE kind='ModulatorPacket' AND event_id=?",
+                    (turn_event_id,),
+                )) == 1
+            )
+        assert _wait_until(runtime_trace_recorded)
+        assert runtime.store.state(PERMISSION_KEY, None)[0] is None
+        assert runtime.store.state("v14.world_jepa.store_consumer", None)[0] is None
 
         # Keep the actual Runtime turn as the worker-lifecycle proof. Start the
         # learner cursor after it so the numeric update below uses a full,
