@@ -57,7 +57,7 @@ Appended R-054–R-056 to `v14/V14_RESEARCH_LEDGER.md`:
 
 1. Poll the exact `f206be8` CI matrix; if it exposes another pin or integration failure, repair the exact current-head cause and rerun. Do not promote the earlier 27-test result to the new drift tests.
 2. Once staged resume is green, add source-disjoint A→B→A and per-session holdout/retention measurements, with checkpoint/optimizer diff, restart, rollback and negative controls.
-3. Continue the actual trusted T8 → World/Self/Memory → trainable predictor → B1/B2 receiver path. LATER suggests an action-conditioned, read-only memory reader; no trained cross-organ latent receiver is established here.
+3. Continue the actual trusted T8 → World/Self/Memory → trainable predictor → B1/B2 receiver path. The current code already exposes source-linked, action-filtered latent-nearest-neighbour recall and numeric B1/B2/SELF ridge readouts in SHADOW; these are not a learned memory bridge and do not update native B1/B2 LLM weights. LATER's remaining candidate is a trainable action-conditioned memory writer/bridge with read-only candidate rollouts; no trained cross-organ latent receiver is established here.
 4. Boss owns the shared Work Board and `V14_USER_NEXT_ACTION.md`; this handoff is the JEPA-owned evidence for Boss to fold into those shared files after concurrent PRs settle.
 
 **User action: none.** No Termux command, download, swap, permission change, Age change or device action is required.
