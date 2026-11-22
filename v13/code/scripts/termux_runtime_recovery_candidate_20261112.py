@@ -40,7 +40,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
     arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
-                      '815bbd91fca1f661de1be8c28794a9cde0d130a765e7b5dd73fdd11bd9690d73')
+                      'e9c6b078c0349bb4b99d93c3abca5927e243c59a550686838bd51834ebccfd74')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
                               'b568613863fef6a687a3237d089b91d8b612ce4163ccb5795df9e21af51c1489')
@@ -127,7 +127,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     '79a0fb259aed7ec3662477ef5f3aee13232f14b1afce5a7e9d7026c40cd27f97')
+                     '8ebcc246947ecc6b46c10efe90df2ded7579e5de3f7f2b5e06eb0755214339ee')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
