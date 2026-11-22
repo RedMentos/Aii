@@ -45,7 +45,7 @@ def _speaker_change_decision(evidence, cues):
             or type(voiced_fraction) not in (int, float)
             or not math.isfinite(float(voiced_fraction))
             or not 0.0 <= float(voiced_fraction) <= 1.0
-            or round(frame_count * float(voiced_fraction)) < 2):
+            or int(frame_count * float(voiced_fraction)) < 2):
         return "DEFER"
     if type(evidence) is not dict or evidence.get("status") != "MEASURED":
         return "DEFER"
