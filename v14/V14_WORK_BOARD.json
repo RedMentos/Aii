@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T22:51:21.823Z",
+  "updated_at": "2026-11-22T22:52:16.999Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; private V13OBS #115 (updated 2026-11-22T20:24:26Z) confirms this SHA installed, auto-update enabled and Runtime/Dashboard UP_TO_DATE. Latest metadata still shows 0 valid B1/B2 offers, 4/4 B1 and 2/2 B2 native attempts failed, and C3 ~38.945 s prefill / 2 tokens. Functional/whole-Canon acceptance remains open; historical V13 Canon and V14 master are preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -1357,8 +1357,9 @@
     "boss_dependency": {
       "pr": 2370,
       "head": "bae7d03196d98ac6dfebc0a2649faf257ba8308f",
-      "ci": "JEPA_RUNTIME_45077837295_PASS; ONLINE_JEPA_45077837165_PASS; TRAINING_RESUME_45077837279_PASS; RECEIPT_INTEGRITY_45077837615_PASS; SAME_TURN_FAIR_BUDGET_45077837118_FAIL_PYTHON_3.13_3.14; STAGED_INTEGRATED_45077837776_IN_PROGRESS; CORE_AUDIO_45077837234_IN_PROGRESS; CONTROLLER_GUARD_45077837366_QUEUED",
-      "ownership": "CORE_BOSS_OWNED; JEPA_HAS_NOT_EDITED_CORE_FILES"
+      "ci": "JEPA_RUNTIME_45077837295_PASS; ONLINE_JEPA_45077837165_PASS; TRAINING_RESUME_45077837279_PASS; RECEIPT_INTEGRITY_45077837615_PASS; SAME_TURN_FAIR_BUDGET_45077837118_FAIL_PYTHON_3.13_3.14; STAGED_INTEGRATED_45077837776_FAIL (INTEGRATED_REGRESSION_PASS, STAGED_RUNTIME_FAIL_SAME_TURN_AND_ARITHMETIC_SOURCE_RECALL); CORE_AUDIO_45077837234_FAIL_PYTHON_3.13_3.14 (SAME_SOURCE_RECALL_AND_BUDGET); CONTROLLER_GUARD_45077837366_PASS; RUNTIME_DEPLOY_45077837948_PASS; OWNER_READ_45077837232_PASS; LAB_AGE_45077837322_PASS.",
+      "ownership": "CORE_BOSS_OWNED; JEPA_HAS_NOT_EDITED_CORE_FILES",
+      "detail": "Arithmetic restart test expects source text 'What is 8/4?' but Store readback is 'calculate 8/4' from deterministic arithmetic-reflex source; likely source-provenance contract mismatch. Boss/Core owns this; JEPA did not edit Core files."
     },
     "research": "R-093 signal-aware replay; R-094 Replay on Demand loss-difference/top-k selection; R-095 per-example SM-2-like spaced review. All research-only; uniform replay remains baseline; no external code/weights imported; RoD dependencies are not Android-suitable and SRT artifacts are proprietary.",
     "user_action_required": false,
