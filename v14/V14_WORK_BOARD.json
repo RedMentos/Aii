@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T20:30:00Z",
+  "updated_at": "2026-11-22T20:32:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 remains at aed1d2b826290c95c70356b5d8b864b5ef382be4; private PIPELINE_STATUS #602 reports that SHA installed/up-to-date, while the effective last code-bearing runtime payload remains c4eb82deec915f65894c20d6ebbaf0ebf58fa335. Functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -413,6 +413,17 @@
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T19:39:35Z",
       "proof": "Crash-consistent code/CI integration remains separate from device acceptance. Private #602/#603 show the existing runtime running, but no managed-session stop/resume, process-death, reboot or runtime-only rollback test has been performed on Redmi."
+    },
+    {
+      "id": "V14-021",
+      "title": "Native probe approval binds actual sender and receiver model bytes",
+      "owner": "QA & Android + Core & Harness",
+      "priority": "P1",
+      "status": "IN_PROGRESS_PARTIAL",
+      "last_checkpoint": "2026-11-22T20:32:00Z",
+      "proof_environment": "Local isolated helper only; exact GitHub CI queued; no native probe or Redmi proof",
+      "proof": "QA draft PR #2377 is stacked on Core #2367 and replaces manifest-string-only binding with streamed SHA-256 over actual GGUF bytes during both arm and consume. It checks O_NOFOLLOW, regular-file identity and stable metadata, and adds four same-size sender/receiver tamper negatives. The helper reproduction passes original bytes and rejects same-size tamper/symlink; full Runtime tests are not yet run.",
+      "next_step": "Run exact #2377 native receiver and staged/integrated workflows; review hash cost/TOCTOU boundary on Android; integrate only after Core review. Keep local approval one-shot, B3 OFF, no model swap or production route."
     }
   ],
   "current_redmi_status": "Authenticated private PIPELINE_STATUS #602: installed SHA aed1d2b826290c95c70356b5d8b864b5ef382be4; auto-update=true; runtime/dashboard UP_TO_DATE; last_error=NONE. DIAGNOSTICS #603: service/model process/dashboard RUNNING; last stored turn FINAL but 57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens; B1/B2 TIME_BUDGET 53.2/54.2 s; C3 3.1 s. Instant native-residency sample shows 0 mapped processes / 0 MiB PSS/RSS with readability UNKNOWN_NO_GROUP_CHILDREN; this is not proof that model processes are stopped and not a free-RAM measurement. Official Age 0; test selector requested X10 / effective implemented stage 5; physical feature execution false; learning commit authority requires separate SHADOW. HEALTH #608 and LEARNING_STATUS #609 had no authenticated reply within TTL.",
@@ -1008,7 +1019,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T20:30:00Z",
+    "timestamp": "2026-11-22T20:32:00Z",
     "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "last_code_bearing_release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "device_receipt": "PRIVATE_PIPELINE_STATUS_602_AUTHENTICATED_INSTALLED_AED1D2; EFFECTIVE_RUNTIME_CODE_PAYLOAD_C4EB82; AUTO_UPDATE_ENABLED; UP_TO_DATE; LAST_ERROR_NONE",
@@ -1030,12 +1041,14 @@
       "P0_BOSS_PR2370_RECORD_ONLY_SEMANTIC_COMPOSITION_AND_STAGE_MATRIX",
       "P1_QA_PR2359_SOURCE_LIFECYCLE_AND_POSITIVE_ROLLBACK",
       "P1_SLEEP_RUNTIME_POSTCOMMIT_ROOT_CAUSE",
-      "P0_SHARED_AUDIO_COMPOSER_RUNTIME_GIT_BLOB_PIN_AND_DEPENDENT_CHAIN"
+      "P0_SHARED_AUDIO_COMPOSER_RUNTIME_GIT_BLOB_PIN_AND_DEPENDENT_CHAIN",
+      "P1_NATIVE_PROBE_APPROVAL_MUST_HASH_ACTUAL_MODEL_BYTES"
     ],
-    "user_action_required": "NONE; no manual Termux command, duplicate update request, model/weight swap or permission change"
+    "user_action_required": "NONE; no manual Termux command, duplicate update request, model/weight swap or permission change",
+    "native_probe_integrity_pr2377": "DRAFT_335D501; LOCAL_HELPER_ORIGINAL_PASS_SAME_SIZE_TAMPER_REJECT_SYMLINK_REJECT; FOUR_RUNTIME_NEGATIVE_TESTS_ADDED; EXACT_CI_45066641859_45066641897_QUEUED; NOT_RELEASED_REDMI_UNVERIFIED"
   },
   "qa_latest_checkpoint": {
-    "timestamp": "2026-11-22T20:30:00Z",
+    "timestamp": "2026-11-22T20:32:00Z",
     "owner": "QA & Android",
     "base_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "branch": "qa/v14-companion-final-qa-20261122",
@@ -1050,9 +1063,10 @@
       "source_lifecycle_pr2359": "HEAD_661696C; STATIC_SOURCE_PIN_READBACK_8_OF_8; EXACT_CI_LAB_AGE_FAILS_ON_RECORD_ONLY_SEMANTIC_PIN_609C_EXPECTED_VS_461650_ACTUAL; PY314_STAGED_AND_STAGED_INTEGRATED_FAIL_AT_SAME_GUARD; MIGRATION_PARTIAL; A5_AND_OWNER_READ_PASS; JEPA_AND_RUNTIME_DEPLOY_QUEUED; DRAFT_NOT_RELEASED",
       "boss_pr2370": "HEAD_4D771ED; RECORD_ONLY_GUARD_PASS_45064399584; AUDIO_COMPOSER_RUNTIME_GIT_BLOB_EXPECTED_30360F40_ACTUAL_6E61AF07; LAB_AGE_OWNER_READ_STAGE_JEPA_STAGED_INTEGRATED_AUDIO_ARITHMETIC_FAIL; MIGRATION_PARTIAL_DOWNSTREAM; QA_COMMENT_7085162144",
       "core_pr2367": "HEAD_06113C60; RUN16_HANDOFF_REPORTS_NATIVE_RECEIVER_PY313_PY314_LINUX_API_AND_ANDROID_ARM64_CROSS_COMPILE_PASS; SAME_TURN_B1_B2_C4_C3_AND_LOCAL_APPROVAL_STAGE_CI_GREEN; DRAFT_NOT_RELEASED; NO_REDM I_NATIVE_OR_PRODUCTION_B3_PROOF",
-      "local": "NO_FULL_AII_CHECKOUT_GRADLE_OR_ANDROID_SDK; FULL_LOCAL_SUITE_BLOCKED; LOCAL_COPIED_UI_HELPER_TESTS_6_OF_6_PASS; NO_LOCAL_ANDROID_EMULATOR"
+      "local": "NO_FULL_AII_CHECKOUT_GRADLE_OR_ANDROID_SDK; FULL_LOCAL_SUITE_BLOCKED; LOCAL_COPIED_UI_HELPER_TESTS_6_OF_6_PASS; NO_LOCAL_ANDROID_EMULATOR",
+      "native_probe_integrity_pr2377": "DRAFT_PR_2377_HEAD_335D501; FIX_STREAMS_ACTUAL_MODEL_SHA256_ON_ARM_AND_CONSUME; O_NOFOLLOW_REGULAR_FILE_SIZE_AND_STABLE_INODE_METADATA; FOUR_SAME_SIZE_SENDER_RECEIVER_TAMPER_NEGATIVES; TTL_STARTS_AFTER_ARM_HASH_AND_RECHECKS_AFTER_CONSUME_HASH; LOCAL_PYTHON_HELPER_ORIGINAL_PASS_TAMPER_REJECT_SYMLINK_REJECT; EXACT_NATIVE_RECEIVER_AND_STAGED_WORKFLOWS_45066641859_45066641897_QUEUED; NOT_RELEASED"
     },
-    "next_action": "Poll #2356 staged/integrated and Android emulator workflows; current exact head has Android outcome and Core adapter PASS, staged/integrated IN_PROGRESS, emulator QUEUED. Boss/Perception must rebind the #2370 integrated audio overlay to current runtime Git blob and rebuild downstream hashes. Keep #2359 blocked until #2370/#2372 composition is stable. No user action."
+    "next_action": "Poll #2377 exact-head native receiver and staged/integrated workflows; inspect any failure. The Core native receiver approval remains a diagnostic only. Keep B3 OFF and no native probe until exact CI, independent review and separate local user approval. Continue #2356 Android emulator exact-head checks and Boss #2370 shared audio pin repair."
   },
   "previous_boss_checkpoint": {
     "timestamp": "2026-11-22T10:00:40.871Z",
