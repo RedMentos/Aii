@@ -55,7 +55,21 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
     cognition_after_audio = composed.get("v13/cognition.py", b"")
     if b"minimum_role_slice_s" not in cognition_after_audio:
         observer = base.load(code_dir, OBSERVER_BUILDER, OBSERVER_SHA256)
-        composed = observer.apply_sources(code_dir, composed)
+        # The observer overlay also patches Runtime/scheduler, which the audio
+        # overlay already preserved from the base composer. Re-run it against
+        # frozen Runtime/scheduler/store inputs, but carry the audio-composed
+        # cognition bytes through so only its fair-slice Cognition patch is
+        # taken from the result. This avoids re-patching the already budgeted
+        # Runtime ask() anchor while restoring the Cognition block audio reset.
+        observer_inputs = {
+            "v13/runtime.py": (code_dir / "v13/runtime.py").read_bytes(),
+            "v13/cognition.py": cognition_after_audio,
+            "v13/native_turn_budget.py": (code_dir / "v13/native_turn_budget.py").read_bytes(),
+            "v13/observer_schedule.py": (code_dir / "v13/observer_schedule.py").read_bytes(),
+            "v13/store.py": (code_dir / "v13/store.py").read_bytes(),
+        }
+        observer_composed = observer.apply_sources(code_dir, observer_inputs)
+        composed["v13/cognition.py"] = observer_composed["v13/cognition.py"]
     if b"minimum_role_slice_s" not in composed.get("v13/cognition.py", b""):
         raise ValueError("A5 audio composition removed the Core observer fair-budget path")
     if composed.get("v13/focal.py") != focal_before:
