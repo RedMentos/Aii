@@ -285,7 +285,7 @@ class Cognition:
             self.s.log('enlightened_space_unavailable',e['event_id'],
                        {'stage':'perception','error':type(exc).__name__})
         return stored
-    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):
+    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None,user_forced_deep=False):
         if role not in {'B1_DETAIL','B2_GIST'}:raise ValueError('Unbekannte Body-Rolle')
         # Inference must finish within its own budget. A completed foreground
         # result may remain eligible until the already bounded consumer turn ends.
@@ -295,20 +295,35 @@ class Cognition:
         for value in (deadline,valid_until):
             if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or value<=0:raise ValueError('Offer deadline ungültig')
         deadline=min(deadline,valid_until);check(self.r.cancel_event,deadline)
-        # On repeated measured zero-token C3 prefill deadlines, pre-answer
-        # B passes must not consume the remaining foreground native time.
-        # The existing postcommit body observer is unaffected (its caller
-        # omits valid_until). Both B1 and B2 retain real source/provenance.
+        # Repeated zero-token C3 prefill failures defer pre-answer B work in
+        # the default/adaptive mode. An explicit user-selected high/max mode
+        # keeps a bounded 30% multi-organ window and reserves 70% for C3.
+        # The existing postcommit observer remains available to default mode.
+        if type(user_forced_deep) is not bool:
+            raise ValueError('user_forced_deep must be bool')
         if preanswer_observer and self.r.cfg.get('observer_mode') == 'background':
             try:
                 from .native_turn_budget import plan,recent_proof
                 budget=plan(valid_until-self.r.cfg['deadline_seconds'],
                             valid_until,time.monotonic(),
                             recent=recent_proof(self.s),
-                            background_enabled=True)
+                            background_enabled=True,
+                            user_forced_deep=user_forced_deep)
             except (OSError,ValueError,RuntimeError,KeyError,TypeError):
                 budget=None
-            if budget and budget['recovery']:
+            if budget and budget['reason']=='USER_FORCED_DEEP_BOUNDED_PREANSWER':
+                deadline=min(deadline,budget['preanswer_end_monotonic'])
+                if deadline<=time.monotonic():
+                    self.s.log('native_body_deferred_for_c3',e['event_id'],
+                               {'role':role,'status':'NO_BOUNDED_PREANSWER_TIME',
+                                'recent_failures':budget['recent_real_prefill_failures']})
+                    raise Limits('No bounded pre-answer observer time remains; C3 reserve protected')
+                self.s.log('native_body_preanswer_bounded',e['event_id'],
+                           {'role':role,'status':'USER_FORCED_DEEP',
+                            'preanswer_seconds_available':budget['preanswer_seconds_available'],
+                            'c3_reserved_seconds':budget['c3_reserved_seconds'],
+                            'recent_failures':budget['recent_real_prefill_failures']})
+            elif budget and budget['recovery']:
                 self.s.log('native_body_deferred_for_c3',e['event_id'],
                            {'role':role,'status':'POSTCOMMIT_ELIGIBLE',
                             'recent_failures':budget['recent_real_prefill_failures']})
