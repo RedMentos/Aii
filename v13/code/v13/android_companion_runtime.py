@@ -17,12 +17,13 @@ from .android_control import AndroidControlBroker, ControlDenied
 from .android_companion_transport import AndroidCompanionTransport, CompanionTransportError
 from .android_companion_ecdsa import ECDSAReceiptVerifier
 from .android_outcomes import accept_and_persist_companion_receipt
+from .contracts import packet
 from .common import atomic_write, dumps
 
 
 _HELP = (
     ":android status|capabilities|pair|trust <key-id> --confirm|"
-    "launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|stop"
+    "launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|history [1..50]|stop"
 )
 
 
@@ -141,6 +142,13 @@ class AndroidCompanionController:
             "launch_app", {"package": package}, ttl=30,
             event_id=event["event_id"], source_ref=event["source_ref"],
         )
+        intent = packet(
+            "ActionIntent", "C5_ANDROID_COMPANION", event["event_id"],
+            event["brain_generation_id"], [event["source_ref"]],
+            action_id=proposal.action_id, action_type="launch_app",
+            permission="OPERATOR_TTY_AND_ANDROID_COMPANION_UI",
+        )
+        self.runtime.store.add_packet("ActionIntent", intent)
         self.broker.approve(proposal.action_id, confirmed_by_local_ui=True)
         envelope = self.broker.dispatch_approved(proposal.action_id)
         try:
@@ -242,6 +250,85 @@ class AndroidCompanionController:
     def pending(self):
         return dumps(self.transport.pending())
 
+    def history(self, limit=20):
+        """Read-only current-session C5 intent/outcome journal; never exposes package text."""
+        if type(limit) is not int or isinstance(limit, bool) or not 1 <= limit <= 50:
+            raise ValueError("history limit must be an integer from 1 to 50")
+        session = self.runtime.session
+        if not session:
+            return dumps({"status": "OK", "session_scoped": True, "count": 0, "actions": []})
+        intent_rows = self.runtime.store.rows(
+            "SELECT p.payload,p.created FROM packets p JOIN events e ON e.id=p.event_id "
+            "WHERE p.kind='ActionIntent' AND e.session_id=? ORDER BY p.rowid DESC LIMIT ?",
+            (session, limit),
+        )
+        outcome_rows = self.runtime.store.rows(
+            "SELECT p.payload,p.created FROM packets p JOIN events e ON e.id=p.event_id "
+            "WHERE p.kind='ActionOutcome' AND e.session_id=? ORDER BY p.rowid DESC LIMIT ?",
+            (session, limit * 4),
+        )
+        actions = {}
+        for row in intent_rows:
+            value = json.loads(row["payload"])
+            if value.get("producer_component") != "C5_ANDROID_COMPANION":
+                continue
+            action_id = value.get("action_id")
+            if type(action_id) is not str:
+                continue
+            try:
+                action_state = self.broker.action_state(action_id)
+            except Exception:
+                action_state = None
+            actions[action_id] = {
+                "action_id": action_id,
+                "event_id": value.get("event_id"),
+                "action_type": value.get("action_type"),
+                "permission": value.get("permission"),
+                "action_state": action_state or "UNKNOWN",
+                "outcome_status": None,
+                "observed": False,
+                "evidence_level": "NO_COMPANION_RECEIPT",
+                "t8_authoritative": False,
+                "world_learning_eligible": False,
+                "created": row["created"],
+            }
+        for row in outcome_rows:
+            value = json.loads(row["payload"])
+            actual = value.get("actual")
+            if (value.get("producer_component") != "C5_ANDROID_COMPANION"
+                    or not isinstance(actual, dict)
+                    or actual.get("outcome_kind") != "ANDROID_COMPANION_RECEIPT"):
+                continue
+            action_id = value.get("action_id")
+            if type(action_id) is not str:
+                continue
+            entry = actions.get(action_id)
+            if entry is None:
+                entry = {
+                    "action_id": action_id,
+                    "event_id": value.get("event_id"),
+                    "action_type": actual.get("capability"),
+                    "permission": "UNKNOWN",
+                    "action_state": "RECEIPT_RECORDED",
+                    "created": row["created"],
+                }
+                actions[action_id] = entry
+            entry.update(
+                outcome_status=value.get("status"),
+                observed=actual.get("observed") is True,
+                evidence_level=actual.get("evidence_level", "UNKNOWN"),
+                t8_authoritative=actual.get("t8_authoritative") is True,
+                world_learning_eligible=actual.get("world_learning_eligible") is True,
+            )
+        ordered = sorted(actions.values(), key=lambda item: item.get("created", 0), reverse=True)[:limit]
+        return dumps({
+            "status": "OK",
+            "session_scoped": True,
+            "count": len(ordered),
+            "actions": ordered,
+            "claim_limit": "Companion receipts attest dispatch/consent only; they are not device observation or T8 learning evidence.",
+        })
+
     def stop(self):
         remote = {"status": "UNAVAILABLE"}
         try:
@@ -315,6 +402,12 @@ def operator_command(runtime, args):
         return controller.cancel(args[1])
     if command == "pending" and len(args) == 1:
         return controller.pending()
+    if command == "history" and len(args) in (1, 2):
+        try:
+            limit = int(args[1]) if len(args) == 2 else 20
+        except (TypeError, ValueError, OverflowError):
+            raise ValueError(_HELP) from None
+        return controller.history(limit)
     if command == "stop" and len(args) == 1:
         return controller.stop()
     raise ValueError(_HELP)
