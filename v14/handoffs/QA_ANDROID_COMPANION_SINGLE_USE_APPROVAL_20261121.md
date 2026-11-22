@@ -151,7 +151,7 @@ Coordinate with Boss/Core to recompose #2271 → #2273 → #2286 on current Boss
 - These are Android/Robolectric default-off guards, **not** microphone-capture tests. The full runtime matrix remains blocked until Core supplies a real one-shot AudioRecord adapter and the user separately authorizes an actual permission/device test.
 
 
-## Latest follow-up — 2026-11-22 06:xx CET
+## Latest follow-up — 2026-11-22 06:19 CET
 
 **Current QA code head:** 34176854f001927874c7e6c9d4c46ba3dc65483d.  
 **Acceptance matrix:** v14/handoffs/QA_ANDROID_AUDIORECORD_ACCEPTANCE_20261122.md.
