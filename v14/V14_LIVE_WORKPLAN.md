@@ -1255,3 +1255,12 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 - Initial run 45056173516 failed only because pytest was absent on the hosted runner; the compile step passed. Added pinned `pytest==9.2.0` in the workflow.
 - Exact retry run [45056272786](https://github.com/RedMentos/Aii/actions/runs/45056272786): Python 3.13 and 3.14 **2/2 PASS**. Both jobs completed compile, pinned test-runner install, deterministic source-disjoint regression tests, fixed-seed holdout ablation and report-boundary validation. Privacy scan 45056272821 PASS.
 - PR remains DRAFT / NOT_RELEASED and research-only. The workflow verifies the synthetic experiment only; it does not connect to normal Runtime, run FASTDIAR, validate real speech, or prove Android/Redmi behavior.
+
+
+### FASTDIAR adapter rebase — 2026-11-22T18:47:45Z
+
+- The stale #2361 adapter/test blobs (`5a451689e68742917bd5bc720b6af407b3e193e5`, `07e857cde89be407a65da64fd5cba3360e6e2901`) are now ported byte-identically into [PR #2369](https://github.com/RedMentos/Aii/pull/2369) based on current release-development HEAD `aed1d2b826290c95c70356b5d8b864b5ef382be4` (0 behind, mergeable=true). A dedicated workflow avoids changing the shared RAW EAR workflow.
+- Exact adapter/consumer workflow 45056897981 PASS 2/2 on Python 3.13/3.14; each ran py_compile and the actual A5→A4→C3 consumer regression (7 passed). Privacy scan 45056897992 PASS; same-repo integration 45057029362 PASS.
+- Exact staged/integrated run 45056898007 remains IN_PROGRESS (staged-runtime and integrated-regression). Do not promote it to PASS until both finish.
+- Original #2361 remains stale/mergeable=false on c4eb82 and is marked for supersession after #2369's integrated result. No force-push.
+- The adapter is diagnostic only: caller-supplied embeddings, no attested producer, no inference, no calibration, no weight download, no speaker identity or normal Runtime dispatch. A4 remains DEFER; Redmi unverified.
