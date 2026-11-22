@@ -230,6 +230,8 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert first["status"] == "POSTCOMMIT_PROCESSED"
         assert first["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         first_metrics = first["learning"]["metrics"]
+        assert first_metrics["old_retention_target_reference"] == "NONE"
+        assert first_metrics["old_retention_target_sha256"] is None
         assert first_metrics["optimizer_moments_persisted"] is EXPECT_OPTIMIZER_STATE_PERSISTED
         assert first_metrics["inverse_dynamics_optimizer_persisted"] is EXPECT_OPTIMIZER_STATE_PERSISTED
         assert first_metrics["optimizer_state_bootstrapped"] is False
@@ -238,6 +240,8 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert first_metrics["holdout_improved"] is True
         assert first_metrics["negative_controls_separated"] is True
         assert first_metrics["retention_gate_accepted"] is True
+        assert first_metrics["old_holdout_cohort_gate"]["accepted"] is True
+        assert first_metrics["old_holdout_cohort_gate"]["cohorts"] == {}
         first_gate = {
             role: receiver_utility_gate(first_metrics, role)
             for role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL")
@@ -267,18 +271,36 @@ def test_sleep_runtime_postcommit_updates_world_jepa_ema_replay_and_planner_with
         assert first["planner"]["checkpoint_sha256"] == first_sha
         assert read_world_planner_shadow(store, first_events[-1])["status"] == first_planner_status
 
-        second_events = _add_transitions(store, session, 256, 32)
+        second_events = _add_transitions(store, session, 256, 128)
         store.set_state(PERMISSION_KEY, {
             "learning_enabled": True, "optimizer_permission": True,
-            "steps": 24, "replay_mode": "uniform",
+            "steps": 4, "replay_mode": "uniform",
         })
         second = sleep._run_world_jepa(second_events[-1], limit=256)
         assert second["learning"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
         second_metrics = second["learning"]["metrics"]
+        assert second_metrics["line_search_mode"] == "POST_FIT_PARAMETER_INTERPOLATION"
+        assert second_metrics["line_search_optimizer_passes"] == 1
+        assert 1 <= second_metrics["backtracking_attempts"] <= 9
+        assert second_metrics["old_retention_target_reference"] == "PRE_UPDATE_EMA_SNAPSHOT"
+        assert len(second_metrics["old_retention_target_sha256"]) == 64
+        assert second_metrics["new_train_rows"] >= 48
         assert second_metrics["replay_rows"] >= 8
         assert second_metrics["fit_steps_after"] > second_metrics["fit_steps_before"]
         assert second_metrics["optimizer_moments_persisted"] is True
         assert second_metrics["optimizer_state_bootstrapped"] is False
+        assert second_metrics["old_holdout_cohort_gate"]["accepted"] is True
+        assert second_metrics["old_holdout_cohort_gate"]["cohorts"]
+        assert all(item["retained"] for item in second_metrics["old_holdout_cohort_gate"]["cohorts"].values())
+        for role in ("B1_DETAIL", "B2_GIST", "SELF_MODEL"):
+            receiver_gate = second_metrics[role.lower() + "_old_session_retention_gate"]
+            assert receiver_gate["reason"] in {
+                "ALL_PRIOR_SESSIONS_RETAINED", "SESSION_RETENTION_REGRESSED"
+            }
+            assert set(receiver_gate["cohorts"]) == set(
+                second_metrics["old_holdout_cohort_gate"]["cohorts"]
+            )
+            assert all(item["rows"] > 0 for item in receiver_gate["cohorts"].values())
         second_sha = second["learning"]["checkpoint_sha256"]
         assert second_sha != first_sha
         second_planner_status = _planner_expected_status(second_metrics)
@@ -375,6 +397,10 @@ def test_sleep_jepa_cancelled_by_user_preemption_requeues_without_checkpoint_com
         assert result["status"] == "CANCELLED"
         assert cancel.calls >= 8
         assert store.state("v14.world_jepa.store_consumer", None)[0] is None
+        assert store.state("v14.world_jepa.neuromod_cursor", None)[0] is None
+        assert not store.rows(
+            "SELECT id FROM packets WHERE kind IN ('LearningTrace','ModulatorPacket')"
+        )
         assert not list((home / "world_jepa").glob("jepa-*.npz"))
         pending = [item for item in sleep.scheduler.pending() if item["id"] == posted]
         assert len(pending) == 1 and pending[0]["status"] == "PENDING"
@@ -536,11 +562,19 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         worker_result = captured_runs[latest]
         learning = worker_result.get("learning", {})
         metrics = learning.get("metrics", {})
-        assert learning.get("status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA", {
+        assert learning.get("status") in {
+            "UPDATED_EXPERIMENTAL_WORLD_JEPA", "NO_NEW_TRANSITIONS"
+        }, {
             "worker_status": worker_result.get("status"),
             "learning_status": learning.get("status"),
             "planner_status": worker_result.get("planner", {}).get("status"),
         }
+        # The real Runtime worker may already have consumed this T8 page
+        # before the idle SleepRuntime job runs. In that case the second
+        # invocation must be idempotent and the durable active checkpoint
+        # remains the source of the numeric-update evidence.
+        if learning.get("status") == "NO_NEW_TRANSITIONS":
+            metrics = active.get("metrics", {})
         assert metrics.get("parameter_delta_norm", 0) > 0
         assert metrics.get("ema_target_delta_norm", 0) > 0
         assert metrics.get("holdout_loss_after", float("inf")) < metrics.get("holdout_loss_before", float("-inf"))
@@ -613,6 +647,9 @@ def test_receiver_utility_gate_requires_mean_and_all_negative_controls():
         "b1_detail_mean_baseline_mse": 0.20,
         "b1_detail_zero_latent_mse": 0.18,
         "b1_detail_shuffled_latent_mse": 0.17,
+        "b1_detail_old_session_retention_gate": {
+            "accepted": True, "reason": "NO_PRIOR_HOLDOUT", "cohorts": {},
+        },
     }
     accepted = receiver_utility_gate(metrics, "B1_DETAIL")
     assert accepted["accepted"] is True
@@ -631,6 +668,19 @@ def test_receiver_utility_gate_requires_mean_and_all_negative_controls():
 
     invalid = dict(metrics, b1_detail_shuffled_latent_mse=float("nan"))
     assert receiver_utility_gate(invalid, "B1_DETAIL")["reason"] == "RECEIVER_METRICS_INVALID"
+
+    missing_retention = dict(metrics)
+    missing_retention.pop("b1_detail_old_session_retention_gate")
+    assert receiver_utility_gate(missing_retention, "B1_DETAIL")["reason"] == "RECEIVER_RETENTION_NOT_MEASURED"
+
+    regressed_retention = dict(metrics)
+    regressed_retention["b1_detail_old_session_retention_gate"] = {
+        "accepted": False, "reason": "SESSION_RETENTION_REGRESSED",
+        "cohorts": {"session:old": {"retained": False, "delta": 0.05}},
+    }
+    rejected = receiver_utility_gate(regressed_retention, "B1_DETAIL")
+    assert rejected["accepted"] is False
+    assert rejected["reason"] == "OLD_SESSION_RECEIVER_RETENTION_REJECTED"
 
 
 def test_receiver_readout_fails_closed_when_its_shuffled_latent_control_fails(tmp_path):
