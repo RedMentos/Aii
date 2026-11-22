@@ -2189,3 +2189,16 @@ The c4eb82 code release remains installed and its pipeline/dashboard report UP_T
 ### Learning-state correction — 2026-11-22T17:27:00Z
 
 Private LEARNING_STATUS #594 reports `learning.state=UNAVAILABLE`. There is no evidence of an active learning run, persistent B1/B2/C3 parameter diff, cross-organ gradient, optimizer/master-weight promotion or retained update. Keep JEPA/EMA, World/Self learning and self-optimization classified SHADOW/OFF pending real before/after hashes, holdout utility, retention, restart and rollback.
+
+
+## Cross-agent evidence update — 2026-11-22T17:31:00Z
+
+| Canon family | Current candidate | Exact failure / status | Classification |
+| --- | --- | --- | --- |
+| B1/B2 → C4 → C3 | Boss #2343 + arithmetic #2362 + temporal bodyview #2360 | #2343 diagnostic CI queued; prior stage failure replacement 4. #2362 staged arithmetic pin mismatch. #2360 4 success / 11 failure. Phone last turn 57.74s, 2 tokens; B1/B2 zero valid offers. | DRAFT / NOT_ACCEPTED |
+| B3 / Enlightened Space | #2346 paired native taps/L1 shadow | Paired capture/provenance and ARM64 cross-compile pass; staged receiver fails `integrated builder hash mismatch`. No receiver-side utility or Redmi proof. | SHADOW / PRODUCTION_OFF |
+| World/Self/Memory/JEPA | #2351 + #2359 combined source-forget/temporal candidate | #2359 fails Body/World builder SHA and Memory cleanup anchor; #2355 older stack fails. Private learning status UNAVAILABLE. | DRAFT / SHADOW / PROMOTION_OFF |
+| RAW EAR / audio attention | #2349 speaker calibration and audio consumer | `v13/audio_voice_cues.py` blob mismatch blocks stage; migration PARTIAL vs UPDATED. No microphone provider or native audio model. | PARTIAL_CODE / ANDROID_UNVERIFIED |
+| Native probe integrity | #2350 | 18/18 checks pass, but branch is stacked on #2332 and only proves byte allowlist integrity. | DIAGNOSTIC_ONLY |
+
+No candidate above is merged or installed. Keep the whole-Canon inventory and all historic V13 obligations; these are current blockers, not scope reductions.
