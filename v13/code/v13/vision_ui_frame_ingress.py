@@ -65,7 +65,7 @@ def _overwrite_caller_buffer(buffer):
     if type(buffer) is not bytearray:
         return False
     try:
-        buffer[:] = b"\\x00" * len(buffer)
+        buffer[:] = b"\x00" * len(buffer)
     except Exception:
         return False
     return not any(buffer)
