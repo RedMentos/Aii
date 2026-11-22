@@ -364,6 +364,10 @@ def _parameter_delta(report, home, direction, bridge_module):
             sender_revision=report["sender_revision"],
             receiver_revision=report["receiver_revision"],
         )
+        manifest_sha = seed_report.get("manifest_sha256")
+        if (type(manifest_sha) is not str or not _HEX64.fullmatch(manifest_sha)
+                or getattr(candidate, "manifest", {}).get("sha256") != manifest_sha):
+            raise ValueError("candidate manifest readback mismatch")
         baseline = bridge_module.Bridge(
             d=candidate.d, K=candidate.K, r=candidate.r, h=candidate.h,
             classes=candidate.classes, seed=seed, direction=direction,
@@ -377,20 +381,30 @@ def _parameter_delta(report, home, direction, bridge_module):
             if delta.shape != np.asarray(baseline.p[key]).shape or not np.isfinite(delta).all():
                 raise ValueError("candidate parameter delta invalid")
             groups[key] = float(np.linalg.norm(delta))
+        for key in ("in_mu", "in_sd"):
+            delta = np.asarray(getattr(candidate, key)) - np.asarray(getattr(baseline, key))
+            if delta.shape != np.asarray(getattr(baseline, key)).shape or not np.isfinite(delta).all():
+                raise ValueError("candidate normalization-buffer delta invalid")
+            groups[key] = float(np.linalg.norm(delta))
         total = math.sqrt(sum(value * value for value in groups.values()))
         if not math.isfinite(total) or total <= 0:
             raise ValueError("candidate contains no measurable numeric parameter update")
         if seed_report.get("reload_identical") is not True:
             raise ValueError("candidate checkpoint reload was not bit-identical")
+        head = getattr(candidate, "head", None)
+        head_l2 = None
+        if head is not None:
+            head_l2 = math.sqrt(sum(float(np.linalg.norm(np.asarray(value))) ** 2 for value in head))
         results.append({
             "seed": seed,
             "parameter_delta_l2": total,
             "parameter_delta_by_group": groups,
-            "manifest_sha256": seed_report.get("manifest_sha256"),
+            "receiver_no_message_head_l2": head_l2,
+            "manifest_sha256": manifest_sha,
             "reload_identical": True,
         })
-    if not results:
-        raise ValueError("trainer returned no seed checkpoint receipts")
+    if len(results) < 2 or len({item["seed"] for item in results}) != len(results):
+        raise ValueError("trainer did not return two distinct seed checkpoint receipts")
     return results
 
 
@@ -436,6 +450,12 @@ def _train_direction(store, cognition, home, cohort, direction, *,
         split_seed=split_seed,
         l0_evidence=None,
     )
+    report_path = report.get("report_path") if type(report) is dict else None
+    if type(report_path) is not str or not report_path:
+        raise ValueError("trainer report path missing")
+    persisted_report = json.loads((Path(home) / report_path).read_text(encoding="utf-8"))
+    if persisted_report != report:
+        raise ValueError("trainer report readback mismatch")
     if type(report) is not dict:
         raise ValueError("B3 trainer returned a non-object report")
     if (report.get("status") != "L1_SHADOW_CANDIDATES_SAVED_NOT_PROMOTED"
