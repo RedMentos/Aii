@@ -11,6 +11,7 @@ from v13.models import model_key
 from v13.contracts import validate
 from v13.callosum import controller, operator_command
 from v13 import native_latent_receiver as native
+from v13 import native_probe_approval as approval
 
 
 def receipt(model_sha, sender_sha):
@@ -50,6 +51,7 @@ def setup_runtime(tmp_path):
     runtime = Runtime(Path(tmp_path))
     runtime.sleep.cycle.set_policy("enabled", "off")
     event = runtime.store.event(runtime.session, "private source text stays local")
+    runtime.store.message(runtime.session, event["event_id"], "assistant", "test answer", "FINAL", {})
     model_dir = runtime.home / "models"
     model_dir.mkdir(parents=True, exist_ok=True)
     model_path = model_dir / "receiver.gguf"
@@ -75,12 +77,50 @@ def setup_runtime(tmp_path):
         "files": {"sender.gguf": {"path": str(sender_path.relative_to(runtime.home)), "sha256": sender_digest, "size": sender_path.stat().st_size}},
     }
     runtime.models.path_for = lambda role: sender_path if role == "B2_GIST" else model_path
-    runtime.models.revision = lambda role: "qwen35-r1" if role == "B2_GIST" else "lfm2-r1"
+    runtime.models.revision = lambda role: runtime.models.installed[
+        model_key(role, runtime.models.b2_control)
+    ]["exact_revision"]
     return runtime, event, model_path, digest, sender_path, sender_digest
+
+
+def arm_consumed_approval(runtime, event, monkeypatch, sender="B2_GIST", receiver="C3_LANGUAGE"):
+    # The user-facing arm must be local TTY; the exact private consumer has no TTY.
+    monkeypatch.setattr(approval, "_is_local_tty", lambda: True)
+    approval.arm(runtime, sender, receiver)
+    monkeypatch.setattr(approval, "_is_local_tty", lambda: False)
+    return approval.consume(runtime, sender, receiver, event, event["source_ref"])
+
+
+def test_native_receive_requires_consumed_local_approval(tmp_path, monkeypatch):
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    runtime.cognition.tap = lambda *args: pytest.fail("tap must not run without consumed local approval")
+    try:
+        with pytest.raises(PermissionError, match="consumed local TTY approval"):
+            runtime.cognition.native_receive(
+                "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
+            )
+    finally:
+        runtime.close()
+
+
+def test_native_receive_rejects_model_manifest_drift_after_consumption(tmp_path, monkeypatch):
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    arm_consumed_approval(runtime, event, monkeypatch)
+    receiver_key = model_key("C3_LANGUAGE", runtime.models.b2_control)
+    runtime.models.installed[receiver_key]["files"]["receiver.gguf"]["sha256"] = "0" * 64
+    runtime.cognition.tap = lambda *args: pytest.fail("tap must not run after manifest drift")
+    try:
+        with pytest.raises(PermissionError, match="model binding changed"):
+            runtime.cognition.native_receive(
+                "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
+            )
+    finally:
+        runtime.close()
 
 
 def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    arm_consumed_approval(runtime, event, monkeypatch)
     order = []
     tap = {
         "packet_id": "tap-packet-1",
@@ -145,6 +185,7 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
 
 def test_native_receive_rejects_unverified_position_mapping(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    arm_consumed_approval(runtime, event, monkeypatch)
     tap = {
         "packet_id": "tap-packet-bad",
         "event_id": event["event_id"],
@@ -169,6 +210,7 @@ def test_native_receive_rejects_unverified_position_mapping(tmp_path, monkeypatc
 
 def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    arm_consumed_approval(runtime, event, monkeypatch)
     tap = {
         "packet_id": "tap-packet-2",
         "event_id": event["event_id"],
@@ -215,6 +257,7 @@ def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp
 
 def test_native_receive_rejects_sender_model_hash_drift(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    arm_consumed_approval(runtime, event, monkeypatch)
     tap = {
         "packet_id": "tap-packet-drift",
         "event_id": event["event_id"],
@@ -240,6 +283,7 @@ def test_native_receive_rejects_sender_model_hash_drift(tmp_path, monkeypatch):
 
 def test_native_receive_rejects_sender_model_outside_home_models(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    arm_consumed_approval(runtime, event, monkeypatch)
     outside = Path(tmp_path) / "sender-outside.gguf"
     outside.write_bytes(sender_path.read_bytes())
     runtime.models.path_for = lambda role: outside if role == "B2_GIST" else model_path
@@ -269,6 +313,7 @@ def test_native_receive_rejects_sender_model_outside_home_models(tmp_path, monke
 
 def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    arm_consumed_approval(runtime, event, monkeypatch)
     outside = Path(tmp_path) / "sender-symlink-target.gguf"
     outside.write_bytes(sender_path.read_bytes())
     sender_path.unlink()
@@ -307,6 +352,7 @@ def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last
     runtime.require_idle = lambda: calls.append("idle")
     from v13.native_probe_approval import arm
     arm(runtime, "B2_GIST", "C3_LANGUAGE")
+    monkeypatch.setattr(approval, "_is_local_tty", lambda: False)
     packet = {
         "status": "NATIVE_INPUT_EFFECT",
         "sender_tap_packet_id": "tap-packet-3",
