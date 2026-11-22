@@ -13,6 +13,9 @@ import pytest
 from v13.audio_speaker_evidence import (
     SCHEMA, SpeakerChangeEvidenceRegistry, SpeakerEvidenceError,
 )
+from v13.audio_teacher_ear import (
+    SCHEMA as TEACHER_EAR_SCHEMA, validate_teacher_ear_result,
+)
 from v13 import audio_voice_cues as audio_voice_module
 from v13.audio_voice_cues import (
     _runtime_speaker_evidence_registry,
@@ -735,5 +738,151 @@ def test_provisional_audio_is_persisted_but_not_admitted_until_final(tmp_path):
         assert final["c3_admission"].selected[0].source_id == SOURCE
         assert final["learning_authority"] is False
         assert final["action_authority"] is False
+    finally:
+        runtime.store.close()
+
+
+def _teacher_ear_result(generation_id, *, finality="FINAL", **overrides):
+    value = {
+        "schema": TEACHER_EAR_SCHEMA,
+        "source_id": SOURCE,
+        "generation_id": generation_id,
+        "source_sha256": CURRENT_CHUNK_SHA256,
+        "model_id": "fixture/local-asr",
+        "model_revision": "fixture-r1",
+        "model_sha256": "b" * 64,
+        "language": "en",
+        "start_ms": 100,
+        "end_ms": 1100,
+        "finality": finality,
+        "network_used": False,
+        "raw_audio_persisted": False,
+        "words": [
+            {"text": "hello", "start_ms": 120, "end_ms": 280, "confidence": 0.91},
+            {"text": "world", "start_ms": 320, "end_ms": 500, "confidence": 0.88},
+        ],
+    }
+    value.update(overrides)
+    return value
+
+
+def _validate_teacher_fixture(value, *, finality="FINAL", **flags):
+    options = {
+        "source_id": SOURCE,
+        "generation_id": value["generation_id"],
+        "source_sha256": CURRENT_CHUNK_SHA256,
+        "start_ms": 100,
+        "end_ms": 1100,
+        "finality": finality,
+        "consent_active": True,
+        "teacher_opt_in": True,
+        "transcript_consent": True,
+    }
+    options.update(flags)
+    return validate_teacher_ear_result(value, **options)
+
+
+def test_teacher_ear_result_is_source_bound_bounded_and_ephemeral():
+    evidence = _validate_teacher_fixture(_teacher_ear_result("gen-teacher"))
+    assert evidence["status"] == "CALLER_SUPPLIED_UNVERIFIED"
+    assert evidence["authority"] == "TEACHER_HYPOTHESIS"
+    assert evidence["truth_authority"] == 0
+    assert evidence["persistence"] == "EPHEMERAL_ONLY"
+    assert evidence["word_count"] == 2
+    assert "120-280" in evidence["summary"] and "hello" in evidence["summary"]
+    assert len(evidence["summary"]) <= 512
+    assert evidence["teacher_source_id"].startswith("audio_teacher_")
+
+
+def test_teacher_ear_requires_both_opt_ins_and_exact_pcm_source():
+    value = _teacher_ear_result("gen-teacher")
+    with pytest.raises(PermissionError, match="separate opt-ins"):
+        _validate_teacher_fixture(value, transcript_consent=False)
+    with pytest.raises(PermissionError, match="consent lease"):
+        _validate_teacher_fixture(value, consent_active=False)
+    stale = _teacher_ear_result("gen-teacher", source_sha256="c" * 64)
+    with pytest.raises(PermissionError, match="exact current PCM"):
+        _validate_teacher_fixture(stale)
+
+
+def test_teacher_ear_rejects_network_raw_persistence_and_bad_word_times():
+    with pytest.raises(PermissionError, match="local"):
+        _validate_teacher_fixture(_teacher_ear_result("gen-teacher", network_used=True))
+    with pytest.raises(PermissionError, match="local"):
+        _validate_teacher_fixture(_teacher_ear_result("gen-teacher", raw_audio_persisted=True))
+    bad_time = _teacher_ear_result(
+        "gen-teacher",
+        words=[{"text": "late", "start_ms": 1090, "end_ms": 1110, "confidence": 0.8}],
+    )
+    with pytest.raises(ValueError, match="timestamps"):
+        _validate_teacher_fixture(bad_time)
+
+
+def test_teacher_ear_hypothesis_reaches_c3_without_entering_persisted_raw_packet(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL",
+            teacher_result=_teacher_ear_result(event["brain_generation_id"]),
+            teacher_opt_in=True, teacher_transcript_consent=True,
+        )
+        assert result["teacher_ear"]["authority"] == "TEACHER_HYPOTHESIS"
+        assert result["a4"]["teacher_ear_status"] == "CALLER_SUPPLIED_UNVERIFIED"
+        assert any("teacher_hypothesis" in item.summary and "hello" in item.summary
+                   for item in result["c3_admission"].selected)
+        stored = runtime.store.one(
+            "SELECT payload FROM packets WHERE id=? AND kind='PerceptPacket'",
+            (result["packet"]["packet_id"],),
+        )
+        assert stored is not None
+        payload = json.loads(stored["payload"])
+        assert payload["segments"][0]["asr_transcript"] is None
+        assert "hello" not in json.dumps(payload, sort_keys=True)
+    finally:
+        runtime.store.close()
+
+
+def test_teacher_ear_provisional_hypothesis_is_not_admitted_to_c3(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(), sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="PROVISIONAL",
+            teacher_result=_teacher_ear_result(
+                event["brain_generation_id"], finality="PROVISIONAL",
+            ),
+            teacher_opt_in=True, teacher_transcript_consent=True,
+        )
+        assert result["teacher_ear"]["finality"] == "PROVISIONAL"
+        assert result["c3_admission"].selected == ()
+    finally:
+        runtime.store.close()
+
+
+def test_teacher_ear_denial_happens_before_packet_persistence(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        with pytest.raises(PermissionError, match="separate opt-ins"):
+            consume_pcm16_voice_window(
+                runtime, tone(), sample_rate=16000, start_ms=100,
+                event_id=event["event_id"], generation_id=event["brain_generation_id"],
+                source_id=SOURCE, consent_receipt=RECEIPT,
+                consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+                finality="FINAL",
+                teacher_result=_teacher_ear_result(event["brain_generation_id"]),
+                teacher_opt_in=True, teacher_transcript_consent=False,
+            )
+        stored = runtime.store.one(
+            "SELECT id FROM packets WHERE kind='PerceptPacket'",
+            (),
+        )
+        assert stored is None
     finally:
         runtime.store.close()
