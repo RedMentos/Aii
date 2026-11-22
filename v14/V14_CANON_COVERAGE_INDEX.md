@@ -2461,3 +2461,12 @@ This overlay updates only the evidence state; it does not remove or narrow any C
 
 
 Boss #2370 exact-head refresh (2026-11-22T23:42:14.024Z): branch `boss/v14-fair-budget-current-base-20261122-run14` at `119ff42a2d1b7412fe21821137cd5d355aaadafb` has 12 PASS / 3 IN_PROGRESS / 1 SKIPPED, not green. The three active workflows are Core same-turn B1/B2/C4/C3, Core audio/exact arithmetic and staged/integrated regression. The Boss branch is diverged from JEPA temporal (72 ahead / 83 behind, merge-base c4eb82de) and does not contain `world_jepa_temporal.py`; its JEPA training-resume PASS does not establish the new temporal T8 learner is integrated. No rebase until QA #2390 and Boss #2370 exact matrices are green.
+
+
+## JEPA Run 22 exact-head refresh — 2026-11-22T23:49:07.058Z
+
+Candidate PR #2372 is now at `d88bfe3fe0cce9f55fc5ff0775c80f3798c356d2` (DRAFT / NOT_RELEASED). A focused test now validates the JEPA-owned training-resume builder's exact source hashes and generated optimizer-state/lineage overlay without calling the stale QA composer. Exact CI: Temporal T8/WorldJEPA `45084926504` PASS 21/21 on Python 3.13 and 21/21 on Python 3.14; Incremental `45084926558` PASS; Combined online JEPA `45084926503` PASS.
+
+Optimizer-resume `45084926501` still FAILS on both Python versions at QA-owned Termux12 expected builder hash `b05a5f4c…` vs current exact JEPA builder `c03de6503c75972923e26374f6382fcaab8f1727a5d7018b224653b5c149a71b`. Staged/integrated `45084926502` FAILS 19/231/10 skipped/2 errors/41 subtests; two-checkout migration remains PARTIAL because staging stops at the same pin. Owner-read `45084926524` main job PASS, staged startup FAIL. QA #2390 remains DIVERGED 11 ahead / 1 behind, merge-base 3256aa7; it still pins the previous builder `a03c3f37…` and must rebase onto d88bfe.
+
+Boss #2370 head `119ff42a2d1b7412fe21821137cd5d355aaadafb` has 14 PASS / 1 FAIL / 1 SKIPPED. The failing Core same-turn test sees B2_GIST but no B1_DETAIL in the C4 coalition on Python 3.13 and 3.14. The Boss branch lacks `world_jepa_temporal.py`, so the temporal T8 learner is not integrated there. LOCAL_LINUX full suite BLOCKED / NOT_RUN; Redmi temporal JEPA remains REDMI_UNVERIFIED.
