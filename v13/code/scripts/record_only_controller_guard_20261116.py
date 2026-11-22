@@ -198,7 +198,8 @@ def apply_sources(code_dir, sources):
     # output. Their verification still rejects other input changes.
     semantic_name = 'v13/world_semantic_evidence_candidate.py'
     local_name = 'v13/local_error_route_shadow_candidate.py'
-    semantic_pin = '609c9d187e11551663aea238bf07af962f8458582139bd9707c89b6f347dd8f3'
+    semantic_pin = '200e7b6870c16ae4cedbf2070c2fad2c2a55b9e4c4427f41703be1f7d529ca5a'
+    semantic_reference_pin = '609c9d187e11551663aea238bf07af962f8458582139bd9707c89b6f347dd8f3'
     local_pin = '36de730d7eab40681740c1165ea0510c2412ea1180bc7f6dd7120a6cf894c471'
     action_pin = '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a'
     for name, expected in ((semantic_name, semantic_pin), (local_name, local_pin)):
@@ -211,7 +212,7 @@ def apply_sources(code_dir, sources):
     semantic = _replace(result[semantic_name], old_action_pin.encode('ascii'),
                         action_pin.encode('ascii'), 'semantic ActionLearn dependency')
     result[semantic_name] = semantic
-    result[local_name] = _replace(result[local_name], semantic_pin.encode('ascii'),
+    result[local_name] = _replace(result[local_name], semantic_reference_pin.encode('ascii'),
         hashlib.sha256(semantic).hexdigest().encode('ascii'), 'local error semantic dependency')
 
     # Keep the existing learning/procedural suite meaningful in the staged
