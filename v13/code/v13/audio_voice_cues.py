@@ -23,6 +23,7 @@ from .audio_silero_vad import SileroVADStream, validate_vad_evidence
 from .a5_audio_admission_bridge import audio_to_admission
 from .audio_ear import observe_pcm16
 from .audio_percept_contract import audio_percept_packet
+from .audio_teacher_ear import validate_teacher_ear_result
 from .audio_perception_bridge import _require_current_consent, _validate_runtime_binding
 from .percept_admission import Percept, admit
 from .common import dumps, now
@@ -687,10 +688,15 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                                vad_stream: SileroVADStream | None = None,
                                consent_lease: AudioConsentLease | None = None,
                                voice_backend: str = "python",
-                                speaker_embeddings: dict | None = None):
+                                speaker_embeddings: dict | None = None,
+                                teacher_result: dict | None = None,
+                                teacher_opt_in: bool = False,
+                                teacher_transcript_consent: bool = False):
     """Persist source-bound acoustic cues under an owned or caller-held consent lease."""
     if type(voice_backend) is not str or voice_backend not in {"python", "numpy"}:
         raise ValueError("voice_backend must be 'python' or 'numpy'")
+    if type(teacher_opt_in) is not bool or type(teacher_transcript_consent) is not bool:
+        raise ValueError("teacher opt-in flags must be literal booleans")
     if vad_stream is not None and not isinstance(vad_stream, SileroVADStream):
         raise ValueError("vad_stream must be a SileroVADStream instance")
     # A Runtime-wide caller may already hold the same provider lease through
@@ -725,6 +731,20 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             consent_receipt=consent_receipt,
         )
         audio_segment = audio_packet["segments"][0]
+        teacher_ear = None
+        if teacher_result is not None:
+            teacher_ear = validate_teacher_ear_result(
+                teacher_result,
+                source_id=source_id,
+                generation_id=generation_id,
+                source_sha256=raw["source_ref"]["sha256"],
+                start_ms=segment["start_ms"],
+                end_ms=segment["end_ms"],
+                finality=finality,
+                consent_active=lease_active,
+                teacher_opt_in=teacher_opt_in,
+                transcript_consent=teacher_transcript_consent,
+            )
         audio_segment["acoustic"]["voice_cues"] = cues
         speaker_evidence = None
         if speaker_embeddings is not None:
@@ -838,6 +858,9 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "temporal_voice": temporal_voice,
             "speaker_change_evidence": speaker_evidence,
             "speaker_change_decision": speaker_change_decision,
+            "teacher_ear_status": teacher_ear["status"] if teacher_ear else "NOT_SUPPLIED",
+            "teacher_ear_authority": teacher_ear["authority"] if teacher_ear else "NONE",
+            "teacher_ear_word_count": teacher_ear["word_count"] if teacher_ear else 0,
             "attention": attention_result,
             "learning_authority": False,
             "action_authority": False,
@@ -886,7 +909,15 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             candidate.source_id, candidate.modality, candidate.start_ms, candidate.end_ms,
             summary, candidate.consent, candidate.final, candidate.priority,
         )
-        c3 = admit((candidate,), token_budget)
+        percepts = [candidate]
+        if teacher_ear is not None:
+            percepts.append(Percept(
+                teacher_ear["teacher_source_id"], "audio",
+                teacher_ear["start_ms"], teacher_ear["end_ms"],
+                teacher_ear["summary"], True, teacher_ear["finality"] == "FINAL",
+                candidate.priority,
+            ))
+        c3 = admit(tuple(percepts), token_budget)
         result = {
             "status": "CALLER_SUPPLIED_PCM16_A5_A4_C3_ADMISSION",
             "packet": audio_packet,
@@ -894,6 +925,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "c3_admission": c3,
             "temporal_voice": temporal_voice,
             "speaker_change_evidence": speaker_evidence,
+            "teacher_ear": teacher_ear,
             "capture_authority": "CALLER_SUPPLIED_PCM16",
             "learning_authority": False,
             "action_authority": False,
