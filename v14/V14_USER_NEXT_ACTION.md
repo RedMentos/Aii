@@ -1,14 +1,15 @@
-# Research & Perception — latest verified candidate (2026-11-22 18:11 UTC)
+# Research & Perception — latest verified candidate (2026-11-22 18:12 UTC)
 
-- PR [#2366](https://github.com/RedMentos/Aii/pull/2366), current branch head `9a19b8c0af01912f40d92fecac4e6ab9a82bb128`; exact code/test commit `f8a9faf66b64352f8e1703e634b79f03ec3c0984`. It makes stored IMAGE ingest/read/forget atomic with the ephemeral RAW EYE A5→A4/admission path and adds two barrier regressions. PR #2363 is closed as superseded.
-- LOCAL_LINUX CPython 3.13.5 isolated fake-Store concurrency harness: **2/2 PASS**. Exact GitHub CI run [45053429482](https://github.com/RedMentos/Aii/actions/runs/45053429482) is still pending; GitHub has not created jobs yet. Full local Aii checkout is blocked by GitHub DNS.
-- No Redmi test. The image adapter remains unhooked from normal Runtime; no Android camera/screen provider, semantic VLM, trained projector, model/weight change or permission change is claimed.
-- Existing authenticated device handoff remains installed at `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`, updater enabled/UP_TO_DATE; latest diagnostics still show the same slow 2-token stored turn and B1/B2 TIME_BUDGET. This PR is not deployed.
-- Research R-081: full 12-page preprint review suggests a calibrated novelty gate + full-history replay ablation for A4/audio episodic memory, but only small single-seed end-of-meeting evidence; no code or weight license was found. No model download.
+- PR [#2366](https://github.com/RedMentos/Aii/pull/2366), branch `research-perception/v14-vision-source-revocation-atomic-20261122`, head at last read `dd0090b5e428c4dc537693388645fa88acf667dd`; code/test commit `f8a9faf66b64352f8e1703e634b79f03ec3c0984`. It serializes stored IMAGE ingest/read/forget and the ephemeral RAW EYE A5→A4/admission path; two barrier regressions cover in-flight A5 vs forget and re-ingest vs final unlink. PR #2363 is closed as superseded.
+- LOCAL_LINUX CPython 3.13.5 isolated fake-Store concurrency harness: **2/2 PASS**. Exact Perception CI run [45053728753](https://github.com/RedMentos/Aii/actions/runs/45053728753) is pending with no jobs at last read. Full local Aii checkout remains blocked by GitHub DNS.
+- No Redmi test. The adapter remains unhooked from normal Runtime; no Android camera/screen provider, semantic VLM, trained projector, model/weight or permission change is claimed.
+- Installed code remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`, updater enabled/UP_TO_DATE; no update request or Termux action. This PR is NOT_RELEASED.
+- Research R-081: *Surprise-Gated Memory for Live Speaker Diarization* (12-page arXiv preprint) suggests a future A4 novelty-gate/full-history replay ablation; small single-seed evidence, poor causal-strict track, no linked code/weight license. No download.
 
-**Next internal action:** finish exact-head CI and hand the source-lifecycle contract to Core for normal Runtime invocation; then test R-081's gate/replay ablation on existing synthetic audio. **User action: none.** Do not rerun Termux or send an update request for this candidate.
+**Next internal action:** wait for exact CI, then hand the source-lifecycle contract to Core for normal Runtime invocation; afterward run R-081's gate/replay ablation on existing synthetic audio. **User action: none.**
 
 ---
+
 
 
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
