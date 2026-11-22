@@ -1,10 +1,11 @@
 
 
-### Run 20 follow-up — current QA and device blockers (2026-11-22T21:38:00Z)
+### Private owner-read refresh (2026-11-22T21:41:00Z)
 
-- QA hat den alten `memory.py`-Pin auf einem sauberen Stack in PR #2383 (Head `71df3dc`) neu gebunden. Die nächste CI-Stufe scheitert jetzt an nachgelagerten Builder-Hashes: `termux12` expected `27fe2305…`, actual `6a72d48d…`; `stage_integrated` expected `c6c6bed3…`, actual `d6ca01fe…`. Zwei-Checkout-Migration bleibt PARTIAL. QA muss die Abhängigkeitskette bottom-up fertigstellen; JEPA ändert keine QA-Dateien.
-- PR #2372 bleibt bei `50e3c8d`, DRAFT / NOT_RELEASED. Temporal-CI `45072681648` war beim letzten Readback noch IN_PROGRESS. Der vorherige Head hatte die Prompt-/700-Zeichen-Assertions bestanden und nur eine veraltete Note-Assertion verfehlt.
-- Private `V13OBS` #115 ist weiterhin nur 5-turn `LOCAL_METADATA_ONLY`: B1 4/4 fehlgeschlagen, B2 2/2 fehlgeschlagen, 0 gültige Offers, 0 C3-Delivery; letzter C3 2 Tokens / 38.945 s Prefill; Prompt-Inklusion/Semantik und native Latents unbewiesen. Neue read-only Relay-Issues #621–#623 haben noch keine `device_status`-Antwort: `NO_LIVE_RECEIPT`.
-- **REDMI_UNVERIFIED.** Installierter Basis-SHA bleibt `aed1d2b` / Auto-Update UP_TO_DATE; PR #2372 ist nicht installiert. Keine Nutzeraktion, kein manueller Befehl und kein Update-Request.
+- Private receipts #627 PIPELINE_STATUS, #628 DIAGNOSTICS, #629 HEALTH wurden authentifiziert verarbeitet und vom Gerät geschlossen.
+- Installiert bleibt `aed1d2b826290c95c70356b5d8b864b5ef382be4`; Auto-Update EIN, Runtime/Dashboard UP_TO_DATE, `last_error=NONE`.
+- DIAGNOSTICS wiederholt nur den alten gespeicherten Turn, kein neuer Test: 57.739 s total, 41.685 s Runner, 38.945 s Prefill, 751 Prompt-Tokens, 2 generierte Tokens; Korrektheit UNKNOWN. B1 4/4 und B2 2/2 native Versuche fehlgeschlagen, 0 gültige Offers, 0 finale C3-Deliveries.
+- Native-Prozessprobe: 0 gemappte Prozesse / 0 MiB PSS/RSS, Child-Lesbarkeit UNKNOWN; kein Residency- oder Free-RAM-Beleg. HEALTH: 1.288 MiB MemAvailable / 5.569 MiB, 1.289 MiB freier Speicher. HEALTH meldet Runtime UNAVAILABLE, DIAGNOSTICS Runtime/Service RUNNING — Widerspruch ungeklärt.
+- Console-Error-Sharing USER_NOT_OPTED_IN; kein LOG_PAGE. Keine neue Chat-Anfrage, kein UPDATE_REQUEST und keine Geräteänderung.
+- **REDMI_UNVERIFIED für #2372.** Der Updater ist aktuell, aber das Feature ist nicht installiert oder akzeptiert.
 
-**Nächster interner Schritt:** exakte Temporal-CI abwarten, QA downstream pins korrigieren lassen, danach staged/optimizer/integrated neu testen. Nicht rebasen, solange QA/Boss-Matrizen nicht grün sind.
