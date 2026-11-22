@@ -36,7 +36,7 @@ def apply_sources(code_dir, sources):
     result = dict(sources)
     runtime = result['v13/runtime.py']
     if hashlib.sha256(runtime).hexdigest() != UPSTREAM_RUNTIME_SHA:
-        raise ValueError('upstream arithmetic Runtime changed; review composition')
+        raise ValueError('upstream arithmetic Runtime changed; expected=' + UPSTREAM_RUNTIME_SHA + '; actual=' + hashlib.sha256(runtime).hexdigest() + '; review composition')
     for name in ('v13/broker.py', 'v13/contracts.py', 'v13/focal.py'):
         if result.get(name, original[name]) != original[name]:
             raise ValueError('upstream arithmetic source changed: ' + name)

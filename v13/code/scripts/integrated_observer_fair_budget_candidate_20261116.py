@@ -64,10 +64,19 @@ def apply_sources(code_dir, sources):
         b'                else:\n'
         b'                    offers.append(ask(role,True))\n', 'sequential slice')
     budget = result.get('v13/native_turn_budget.py', originals['v13/native_turn_budget.py'])
-    budget = replace(budget,
-        b'NATIVE_FIRST_RESERVE_FRACTION = .87\nDEFAULT_PREANSWER_FRACTION = .45\n',
-        b'DEFAULT_PREANSWER_FRACTION = .45\nMIN_ROLE_SLICE_S = 1.0\n',
-        'fair recovery slice')
+    # Some current-base candidates already introduced MIN_ROLE_SLICE_S
+    # while retaining the old 87% reserve. Remove only that stale reserve
+    # constant; preserve the one canonical pre-answer fraction and minimum.
+    reserve_line = b'NATIVE_FIRST_RESERVE_FRACTION = .87\n'
+    if (budget.count(reserve_line) == 1
+            and budget.count(b'DEFAULT_PREANSWER_FRACTION = .45\n') == 1
+            and budget.count(b'MIN_ROLE_SLICE_S = 1.0\n') == 1):
+        budget = budget.replace(reserve_line, b'', 1)
+    else:
+        budget = replace(budget,
+            b'NATIVE_FIRST_RESERVE_FRACTION = .87\nDEFAULT_PREANSWER_FRACTION = .45\n',
+            b'DEFAULT_PREANSWER_FRACTION = .45\nMIN_ROLE_SLICE_S = 1.0\n',
+            'fair recovery slice')
     budget = replace(budget,
         b'def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False):\n',
         b'def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False, observer_deadline=None):\n',
