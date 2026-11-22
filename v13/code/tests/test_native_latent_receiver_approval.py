@@ -11,6 +11,13 @@ from v13 import native_probe_approval as approval
 import v13.callosum as callosum
 
 
+@pytest.fixture(autouse=True)
+def _interactive_local_tty(monkeypatch):
+    # The stage tests exercise the real TTY gate; pytest supplies this explicit
+    # local-console fixture rather than inheriting the runner's non-TTY stdin.
+    monkeypatch.setattr(approval, "_is_local_tty", lambda: True)
+
+
 def setup_runtime(tmp_path):
     runtime = Runtime(Path(tmp_path) / "brain")
     runtime.sleep.cycle.set_policy("enabled", "off")
@@ -45,6 +52,45 @@ def setup_runtime(tmp_path):
     install("C3_LANGUAGE", receiver_path, "receiver-r1")
     runtime.pool.unload = lambda: None
     return runtime, event, sender_path, receiver_path
+
+
+
+def test_native_probe_requires_tty_only_for_local_arm_and_revoke(tmp_path, monkeypatch):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        monkeypatch.setattr(approval, "_is_local_tty", lambda: False)
+        with pytest.raises(PermissionError, match="interactive local TTY"):
+            approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        state, _ = runtime.store.state(approval.KEY, None)
+        assert state is None
+
+        # A real local TTY creates the one-shot capability. The later exact,
+        # consented private CHAT_OPERATOR consumer has no TTY and may consume it.
+        monkeypatch.setattr(approval, "_is_local_tty", lambda: True)
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        monkeypatch.setattr(approval, "_is_local_tty", lambda: False)
+        consumed = approval.consume(runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"])
+        assert consumed["consumed"] is True
+        state, _ = runtime.store.state(approval.KEY, None)
+        assert state["status"] == "CONSUMED"
+
+        # A consumed approval cannot be silently replaced; local revoke can
+        # cancel it before the native receiver boundary spends it.
+        monkeypatch.setattr(approval, "_is_local_tty", lambda: True)
+        with pytest.raises(PermissionError, match="consumed but not yet used"):
+            approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        assert approval.revoke(runtime)["status"] == "REVOKED"
+
+        # Revoke remains a local-console operation and cannot be triggered
+        # through the remote consumer boundary.
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        monkeypatch.setattr(approval, "_is_local_tty", lambda: False)
+        with pytest.raises(PermissionError, match="interactive local TTY"):
+            approval.revoke(runtime)
+        state, _ = runtime.store.state(approval.KEY, None)
+        assert state["status"] == "PENDING"
+    finally:
+        runtime.close()
 
 
 def test_native_probe_requires_local_arm_and_consumes_it_once(tmp_path):
@@ -118,6 +164,24 @@ def test_wrong_role_pair_cannot_use_pending_local_approval(tmp_path):
         ))
         assert result["local_approval_consumed"] is True
         assert len(calls) == 1
+    finally:
+        runtime.close()
+
+
+def test_model_file_content_hash_drift_invalidates_local_approval(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    calls = []
+    runtime.cognition.native_receive = lambda *args: calls.append(args)
+    operator = Operator(runtime)
+    try:
+        operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        original = sender_path.read_bytes()
+        tampered = bytes([original[0] ^ 1]) + original[1:]
+        assert len(tampered) == len(original)
+        sender_path.write_bytes(tampered)
+        with pytest.raises(PermissionError, match="content hash"):
+            operator.run(":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        assert calls == []
     finally:
         runtime.close()
 
@@ -197,6 +261,45 @@ def test_revoke_clears_pending_local_approval_without_probe(tmp_path):
     finally:
         runtime.close()
 
+
+
+def test_native_receiver_boundary_marks_approval_used_and_blocks_direct_replay(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        approval.consume(runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"])
+        result = approval.require_consumed(runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"])
+        assert set(result) == {"B2_GIST", "C3_LANGUAGE"}
+        state, _ = runtime.store.state(approval.KEY, None)
+        assert state["status"] == "USED"
+        with pytest.raises(PermissionError, match="consumed local TTY approval"):
+            approval.require_consumed(runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"])
+    finally:
+        runtime.close()
+
+
+def test_native_receiver_boundary_rejects_expired_consumed_approval(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE", now=1000)
+        approval.consume(runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], now=1000)
+        with pytest.raises(PermissionError, match="expired"):
+            approval.require_consumed(
+                runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"],
+                now=1000 + approval.TTL_SECONDS + 1,
+            )
+    finally:
+        runtime.close()
+
+
+def test_operator_help_advertises_one_shot_native_probe_flow(tmp_path):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    try:
+        help_text = Operator(runtime).run(":help")
+        for command in ("arm-probe", "native-probe", "revoke-probe"):
+            assert command in help_text
+    finally:
+        runtime.close()
 
 def test_native_probe_deadline_is_hard_capped_at_120_seconds(tmp_path, monkeypatch):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)

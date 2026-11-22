@@ -5,8 +5,10 @@ authority. The approval is tied to one Runtime instance and one completed turn.
 """
 from __future__ import annotations
 
+import hashlib
 import math
 import secrets
+import sys
 import time
 from pathlib import Path
 
@@ -27,12 +29,37 @@ def _clock(value):
     return float(value)
 
 
+def _is_local_tty():
+    """Return true only for an interactive local terminal, not an origin label."""
+    try:
+        return bool(sys.stdin.isatty() and sys.stdout.isatty())
+    except (AttributeError, OSError, ValueError):
+        return False
+
+
+def _require_local_tty():
+    if not _is_local_tty():
+        raise PermissionError("native probe approval requires an interactive local TTY")
+
+
 def _runtime_nonce(runtime):
     nonce = getattr(runtime, "_native_probe_approval_runtime_nonce", None)
     if not isinstance(nonce, str) or len(nonce) != 32:
         nonce = secrets.token_hex(16)
         setattr(runtime, "_native_probe_approval_runtime_nonce", nonce)
     return nonce
+
+
+def _file_sha256(path):
+    """Hash a model with bounded memory; manifest metadata alone is not byte proof."""
+    digest = hashlib.sha256()
+    try:
+        with Path(path).open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+    except OSError as exc:
+        raise PermissionError("native probe model bytes could not be verified") from exc
+    return digest.hexdigest()
 
 
 def _roles(sender_role, receiver_role):
@@ -75,7 +102,15 @@ def _model_binding(runtime, role):
     size = entry.get("size")
     if size is not None and (type(size) is not int or size < 1 or resolved.stat().st_size != size):
         raise PermissionError("native probe model size differs from its manifest")
-    return {"model_key": key, "revision": revision, "sha256": digest}
+    actual_digest = _file_sha256(resolved)
+    if actual_digest != digest:
+        raise PermissionError("native probe model content hash differs from its manifest")
+    try:
+        if path.is_symlink() or path.resolve(strict=True) != resolved:
+            raise PermissionError("native probe model path changed during verification")
+    except OSError as exc:
+        raise PermissionError("native probe model path changed during verification") from exc
+    return {"model_key": key, "revision": revision, "sha256": actual_digest}
 
 
 def _current_event(runtime):
@@ -104,7 +139,8 @@ def _current_event(runtime):
 
 
 def arm(runtime, sender_role, receiver_role, *, now=None):
-    """Arm one exact probe locally; caller is the local Operator TTY path."""
+    """Arm one exact probe locally; caller must have an interactive local TTY."""
+    _require_local_tty()
     runtime.require_idle()
     _roles(sender_role, receiver_role)
     clock = _clock(now)
@@ -115,12 +151,18 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
     }
     runtime_nonce = _runtime_nonce(runtime)
     current, version = runtime.store.state(KEY, None)
-    if isinstance(current, dict) and current.get("status") == "PENDING":
-        expires = current.get("expires_at")
-        if (current.get("runtime_nonce") == runtime_nonce
-                and isinstance(expires, (int, float)) and not isinstance(expires, bool)
-                and clock < expires):
-            raise PermissionError("a native probe approval is already pending; revoke it first")
+    if isinstance(current, dict) and current.get("runtime_nonce") == runtime_nonce:
+        status = current.get("status")
+        if status == "PENDING":
+            expires = current.get("expires_at")
+            if (isinstance(expires, (int, float)) and not isinstance(expires, bool)
+                    and clock < expires):
+                raise PermissionError("a native probe approval is already pending; revoke it first")
+        elif status == "CONSUMED":
+            consumed_at = current.get("consumed_at")
+            if (isinstance(consumed_at, (int, float)) and not isinstance(consumed_at, bool)
+                    and clock < float(consumed_at) + TTL_SECONDS):
+                raise PermissionError("a native probe approval is consumed but not yet used; revoke it first")
     nonce = secrets.token_hex(16)
     record = {
         "schema": SCHEMA,
@@ -184,6 +226,16 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None)
         sender_role: _model_binding(runtime, sender_role),
         receiver_role: _model_binding(runtime, receiver_role),
     }
+    # Hashing large local GGUFs can take time. Recheck the one-shot window and
+    # current source after verification, before consuming the approval.
+    runtime.require_idle()
+    clock = _clock(now)
+    if clock >= expires:
+        raise PermissionError("native probe local approval expired during model verification")
+    verified_event, verified_ref = _current_event(runtime)
+    if (verified_event.get("event_id") != current_event.get("event_id")
+            or verified_ref != current_ref):
+        raise PermissionError("native probe source/session/event changed during model verification")
     if record.get("models") != models:
         raise PermissionError("native probe model revision/hash changed after local approval")
     consumed = dict(record)
@@ -199,13 +251,80 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None)
 
 
 def revoke(runtime, *, now=None):
-    """Revoke a pending local probe approval without invoking the native runner."""
+    """Revoke a pending or consumed local probe approval without native work."""
+    _require_local_tty()
     runtime.require_idle()
     clock = _clock(now)
     record, version = runtime.store.state(KEY, None)
-    if not isinstance(record, dict) or record.get("status") != "PENDING":
+    if (not isinstance(record, dict)
+            or record.get("status") not in {"PENDING", "CONSUMED"}):
         return {"status": "NO_PENDING_APPROVAL"}
     revoked = dict(record)
     revoked.update({"status": "REVOKED", "revoked_at": clock})
     runtime.store.set_state(KEY, revoked, expected=version)
     return {"status": "REVOKED", "approval_id": str(record.get("nonce", ""))[:12]}
+
+def require_consumed(runtime, sender_role, receiver_role, event, source_ref, *, now=None):
+    """Atomically spend a consumed local approval at the native receiver boundary.
+
+    The TTY arm is performed locally. A consented typed caller may consume the
+    pending record, but this boundary transitions CONSUMED -> USED before native
+    work so direct/replayed Python calls cannot reuse the one-shot capability.
+    """
+    _roles(sender_role, receiver_role)
+    record, version = runtime.store.state(KEY, None)
+    if (not isinstance(record, dict) or record.get("schema") != SCHEMA
+            or record.get("status") != "CONSUMED"):
+        raise PermissionError("native receiver requires a consumed local TTY approval")
+    if record.get("runtime_nonce") != _runtime_nonce(runtime):
+        raise PermissionError("native probe approval expired across Runtime restart")
+    consumed_at = record.get("consumed_at")
+    clock = _clock(now)
+    if (isinstance(consumed_at, bool) or not isinstance(consumed_at, (int, float))
+            or not math.isfinite(consumed_at) or clock >= float(consumed_at) + TTL_SECONDS):
+        raise PermissionError("native probe local approval expired before native receiver use")
+    current_event, current_ref = _current_event(runtime)
+    if (not isinstance(event, dict)
+            or event.get("event_id") != current_event.get("event_id")
+            or event.get("brain_generation_id") != current_event.get("brain_generation_id")
+            or source_ref != current_ref
+            or record.get("session_id") != runtime.session
+            or record.get("event_id") != current_event.get("event_id")
+            or record.get("brain_generation_id") != current_event.get("brain_generation_id")
+            or record.get("source_ref") != current_ref
+            or record.get("sender_role") != sender_role
+            or record.get("receiver_role") != receiver_role):
+        raise PermissionError("native probe source/session/event/role differs from consumed local approval")
+    bindings = record.get("models")
+    if not isinstance(bindings, dict):
+        raise PermissionError("native probe consumed model binding is missing")
+    result = {}
+    for role in (sender_role, receiver_role):
+        binding = bindings.get(role)
+        expected_key = model_key(role, runtime.models.b2_control)
+        digest = binding.get("sha256") if isinstance(binding, dict) else None
+        revision = binding.get("revision") if isinstance(binding, dict) else None
+        installed = runtime.models.installed.get(expected_key)
+        main_file = installed.get("main_file") if isinstance(installed, dict) else None
+        files = installed.get("files") if isinstance(installed, dict) else None
+        entry = files.get(main_file) if isinstance(files, dict) and isinstance(main_file, str) else None
+        manifest_digest = entry.get("sha256") if isinstance(entry, dict) else None
+        if (not isinstance(binding, dict) or binding.get("model_key") != expected_key
+                or not isinstance(revision, str) or not revision
+                or runtime.models.revision(role) != revision
+                or not isinstance(installed, dict) or installed.get("download_complete") is not True
+                or installed.get("exact_revision") != revision
+                or not isinstance(digest, str) or len(digest) != 64
+                or any(ch not in "0123456789abcdef" for ch in digest)
+                or manifest_digest != digest):
+            raise PermissionError("native probe model binding changed after local approval")
+        result[role] = dict(binding)
+    runtime.require_idle()
+    verified_event, verified_ref = _current_event(runtime)
+    if (verified_event.get("event_id") != current_event.get("event_id")
+            or verified_ref != current_ref):
+        raise PermissionError("native probe source/session/event changed during receiver approval")
+    used = dict(record)
+    used.update({"status": "USED", "used_at": clock})
+    runtime.store.set_state(KEY, used, expected=version)
+    return result

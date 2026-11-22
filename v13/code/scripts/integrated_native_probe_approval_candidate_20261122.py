@@ -160,29 +160,57 @@ def apply_staged(code_dir: Path, staging_dir: Path) -> dict:
     compile(approval, "v13/native_probe_approval.py", "exec")
 
     callosum = callosum_path.read_bytes()
-    if b"arm-probe" in callosum or b"local_approval_consumed" in callosum:
-        raise ValueError("native probe approval overlay is already applied")
-    callosum = _replace(callosum, OPERATOR_PREFIX_OLD.encode("utf-8"),
-                        OPERATOR_PREFIX_NEW.encode("utf-8"), "Callosum local approval consumer")
-    callosum = _replace(callosum, OPERATOR_HELP_OLD.encode("utf-8"),
-                        OPERATOR_HELP_NEW.encode("utf-8"), "Callosum help")
-    callosum = _replace(callosum, OPERATOR_ERROR_OLD.encode("utf-8"),
-                        OPERATOR_ERROR_NEW.encode("utf-8"), "Callosum error help")
-    compile(callosum, "v13/callosum.py", "exec")
-
     operator = operator_path.read_bytes()
-    if b"arm-probe" in operator:
-        raise ValueError("Operator help overlay is already applied")
-    operator = _replace(operator, HELP_OLD.encode("utf-8"), HELP_NEW.encode("utf-8"),
-                        "local operator help")
-    compile(operator, "v13/operator.py", "exec")
+    precomposed = (b"arm-probe" in callosum or b"local_approval_consumed" in callosum)
+    if precomposed:
+        required_callosum = (
+            b"arm-probe", b"native-probe", b"revoke-probe",
+            b"local_approval_consumed",
+            b"from .native_probe_approval import arm",
+            b"from .native_probe_approval import consume",
+            b"from .native_probe_approval import revoke",
+        )
+        required_operator = (b"arm-probe", b"native-probe", b"revoke-probe")
+        if (not all(marker in callosum for marker in required_callosum)
+                or not all(marker in operator for marker in required_operator)):
+            raise ValueError("native probe approval composition is partial or inconsistent")
+        composition_mode = "PRECOMPOSED_VERIFIED"
+        changed = []
+    else:
+        callosum = _replace(callosum, OPERATOR_PREFIX_OLD.encode("utf-8"),
+                            OPERATOR_PREFIX_NEW.encode("utf-8"), "Callosum local approval consumer")
+        callosum = _replace(callosum, OPERATOR_HELP_OLD.encode("utf-8"),
+                            OPERATOR_HELP_NEW.encode("utf-8"), "Callosum help")
+        callosum = _replace(callosum, OPERATOR_ERROR_OLD.encode("utf-8"),
+                            OPERATOR_ERROR_NEW.encode("utf-8"), "Callosum error help")
+        if b"arm-probe" in operator:
+            raise ValueError("Operator help overlay is already partially applied")
+        operator = _replace(operator, HELP_OLD.encode("utf-8"), HELP_NEW.encode("utf-8"),
+                            "local operator help")
+        composition_mode = "LEGACY_OVERLAY_APPLIED"
+        changed = ["v13/callosum.py", "v13/operator.py"]
+        _atomic_write(callosum_path, callosum)
+        _atomic_write(operator_path, operator)
 
-    changed = ["v13/callosum.py", "v13/operator.py", "v13/native_probe_approval.py"]
+    compile(callosum, "v13/callosum.py", "exec")
+    compile(operator, "v13/operator.py", "exec")
+    required_model_integrity = (
+        b"def _file_sha256(path):",
+        b"actual_digest = _file_sha256(resolved)",
+        b"if actual_digest != digest:",
+        b"not resolved.is_relative_to(models_root)",
+        b"path.resolve(strict=True) != resolved",
+    )
+    if not all(marker in approval for marker in required_model_integrity):
+        raise ValueError("native probe approval lacks verified model-byte/path integrity")
     manifest["native_probe_approval_overlay"] = {
         "status": "SHADOW_REVIEW_ONLY",
         "source": "scripts/integrated_native_probe_approval_candidate_20261122.py",
         "source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "composition_mode": composition_mode,
+        "verified_files": ["v13/callosum.py", "v13/operator.py", "v13/native_probe_approval.py"],
         "replaced_files": changed,
+        "model_byte_integrity_verified": True,
         "local_arm_command": ":callosum arm-probe <sender> <receiver> --last-source --confirm",
         "remote_consumer_command": ":callosum native-probe <sender> <receiver> --last-source --confirm",
         "ttl_seconds": 120,
@@ -193,8 +221,6 @@ def apply_staged(code_dir: Path, staging_dir: Path) -> dict:
         "native_receiver_authority": 0,
     }
     manifest["replaced_files"] = sorted(set(manifest.get("replaced_files", [])) | set(changed))
-    _atomic_write(callosum_path, callosum)
-    _atomic_write(operator_path, operator)
     updated_hashes = {}
     for path in sorted(staging_dir.rglob("*")):
         if path.is_symlink():

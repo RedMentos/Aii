@@ -105,3 +105,79 @@ No action is needed now. The probe remains NOT_RUN. Do not send a Termux command
 **Acceptance boundary:** this branch has a passing staged consumer path and native build/cross-compile evidence, but the local-approval overlay is still NOT in the shared production recovery/stage/deployer pin chain. It is NOT_RELEASED, not installed, and not a Redmi test. The native build does not prove real GGUF inference, learned alignment, semantic utility, trained latent coupling or production B3.
 
 **Next integration owner/action:** Boss/Integrator should compose this exact reviewed overlay after the native-receiver stage in the shared recovery → stage → runtime-deployer chain, refresh all source/blob pins, then run exact CI/readback. Keep production B3 OFF. Only after a release is actually installed may the owner separately decide whether to authorize one exact CHAT_OPERATOR probe. No user action is needed now.
+
+
+## Model-byte integrity follow-up — 2026-11-22
+
+The local one-shot native-probe approval now verifies the actual installed model bytes against the pinned manifest SHA-256 using a 1 MiB streaming hash (bounded memory), both when arming and when consuming. It also rechecks the resolved model path after hashing and rechecks the approval TTL/current source after potentially slow model verification, before the approval is consumed. A same-size post-arm mutation is a negative regression and must not reach `native_receive`.
+
+This is still only an explicitly armed diagnostic probe: no production routing, weight update, training authority, or Android device proof is added. Exact CI and local test evidence must be recorded on the new head.
+
+## Remote-consumer approval correction — 2026-11-22
+
+The local TTY is required to **arm** or **revoke** the one-shot approval, but not to consume it. The exact, separately consented private `CHAT_OPERATOR` request runs inside the background service and has no interactive TTY; requiring a TTY at consumption made the intended remote diagnostic path unusable. Remote `--confirm` still cannot create or revoke the capability.
+
+The staged `Cognition.native_receive` boundary now independently requires a `CONSUMED` record and rechecks Runtime-instance nonce, active session, latest FINAL event, exact source reference, role pair, installed revisions and current manifest hashes before running the sender tap. It compares both actual model bindings to the locally approved hashes; the existing sender tap checks its pinned model bytes, and the native receiver independently checks receiver bytes before and after decode. Direct calls without a consumed local approval and post-consumption manifest drift fail before native receiver execution.
+
+Regression coverage now includes:
+- local TTY required for arm/revoke, but not for consumption after a valid local arm;
+- direct receiver invocation without consumed approval rejected before sender tap;
+- model revision/hash-manifest drift after consumption rejected;
+- the operator consumer succeeds without a TTY after the local arm;
+- existing source/session/generation/role/expiry/restart/symlink/hash/negative-control checks remain.
+
+This is still a staged, non-authoritative diagnostic candidate. No production B3 routing, model/weight change, permission change, native receiver execution on Redmi, or deployment is claimed. Full repository tests and exact-head CI must pass before Boss integration; Redmi remains REDMI_UNVERIFIED.
+
+
+## Core staged integration checkpoint — 2026-11-22 17:05 UTC
+
+**Current Core branch:** PR #2350, `core/v14-native-probe-model-byte-integrity-20261122`, head `3c688a88c2210950b3991494be51b6c0e3890439`. This is a staged candidate based on the separate #2332 remote allowlist branch; it is **NOT_RELEASED** and is not installed on Redmi.
+
+### Executable changes on this head
+
+- Repaired the malformed `revoke()` definition in `native_probe_approval.py`; the prior split signature caused a real Python syntax error.
+- Rebound the nested exact-byte chain: native receiver candidate Git blob → recovery builder SHA-256 → stage builder SHA-256 → runtime deployer SHA-256. Readback currently confirms all three links.
+- The integrated candidate now dispatches `:callosum arm-probe`, `:callosum native-probe`, and `:callosum revoke-probe`; the global operator help and Callosum help advertise them.
+- The local TTY is required to arm or revoke. A separately consented typed consumer may consume a pending local arm without an interactive TTY. The capability is bound to Runtime nonce, active session, latest FINAL source/generation, exact role pair, installed model revisions and manifest SHA-256.
+- The approval lifecycle is now PENDING → CONSUMED → USED. The actual native receiver boundary atomically marks USED before native work, so a direct/replayed Python call cannot reuse the one-shot approval. A CONSUMED-but-not-yet-used approval cannot be overwritten by a new arm; it must be revoked or expire. Revoke can cancel PENDING or CONSUMED.
+- Native probe execution remains hard-capped at 120 seconds, production routing OFF, training authority 0, receiver authority 0, and semantic utility unproven.
+
+### Test evidence and environment
+
+- LOCAL_LINUX / isolated synthetic Python stubs: **7/7** approval-binding tests PASS (exact source/session/event/role, manifest hash, restart, expiry, revoke, no-arm).
+- LOCAL_LINUX / isolated synthetic state-machine tests: **5/5** PASS (PENDING/CONSUMED overwrite refusal, expiry, revoke, USED replay refusal).
+- These are isolated reproductions, **not** a full Aii pytest run and not a native GGUF execution.
+- Exact-head GitHub workflows for `3c688a88c2210950b3991494be51b6c0e3890439` are queued; no CI PASS is claimed yet. The workflow matrix includes Python 3.13/3.14, pinned Linux llama.cpp build, Android arm64 cross-compile, staged/integrated regression, runtime deployment integrity and private owner-read bootstrap.
+- LOCAL_FULL_REPOSITORY remains BLOCKED: no Aii checkout is mounted and local `git ls-remote` cannot resolve GitHub DNS.
+
+### Latest private Redmi evidence (metadata only)
+
+- PIPELINE_STATUS #579 and #582: installed SHA remains `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; auto-update enabled, Runtime/Dashboard report UP_TO_DATE, last_error NONE. This is updater state, not proof that the model runtime is healthy.
+- DIAGNOSTICS #580: last recorded turn FINAL, 57.74 s total, 41.63 s TTFT, 751 prompt tokens and 2 generated tokens; B1/B2 both TIME_BUDGET at 53.2/54.2 s, C3 3.1 s. This is a recorded prior turn, not a new post-update test.
+- HEALTH #581: status OK but Runtime state UNAVAILABLE; 1,414 MiB available RAM and 1,568 MiB free storage. Do not infer a working chat process from UP_TO_DATE alone.
+- No native receiver probe was sent or executed. No model, weight, permission, updater, database or device state was changed.
+
+### Remaining integration and actual latent-coupling gap
+
+- #2343 Boss integration head `9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2` and #2346 Perception paired-tap head `81d225af972e8b3d6b645aba09cd01ccac5fa020` still have shared staged/deployer pin failures; #2346's focused B3 tests are green, but that is synthetic shadow-optimizer evidence, not native Redmi coupling. Rebase/re-pin this Core candidate only after the shared composer base is stable; do not overwrite their files.
+- The current B3 `Bridge.receive()` returns a task/readout classifier, not receiver input vectors. The current native receiver measures llama.cpp input consumption/effect and negative controls, but not semantic task utility. Neither proves a trained latent communication channel.
+- Next Core implementation: a read-only, row-bounded receiver input-embedding extractor against the exact pinned llama.cpp revision `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4`, using the internal `model->tok_embd` tensor and checked `ggml_backend_tensor_get` / `ggml_type_traits::to_float` extraction. Do not call the existing full-matrix dequantizer on Android. Then coordinate source-span-aligned B1/B2 pairs, train separate directional low-rank projectors, and measure same-model parity, zero/shuffle/no-message/symbolic controls, source-disjoint held-out task output, retention and rollback. The extractor/projector is **not implemented** yet.
+- Do not authorize a device probe until exact-head CI is green, Boss has integrated/released the candidate, the installed SHA is privately confirmed, and the user separately approves that one exact probe.
+
+**User action: none now.** No manual Termux command, UPDATE_REQUEST, model download/swap, weight change or permission change is required.
+
+## Latent-channel research update — 2026-11-22
+
+- XKV, “Dual-Cache Latent Space Communication between Heterogeneous Language Models” ([arXiv:2608.20617](https://arxiv.org/abs/2608.20617), 2026-08-20) is a relevant method candidate: it pools both models' KV caches, learns a cross-layer map and lets each receiver position retrieve a receiver-native residual. The paper reports only the translator trained while both LMs remain frozen; it reports 5.8 ms translator time and 6.8× end-to-end speed over text communication, but experiments use A100 80GB. The arXiv page exposes no public code repository or software license; treat it as a method description, not reusable implementation or mobile evidence.
+- Piepereit, “Architecture-Dependent Causal Transfer of Activation States Across Large Language Models” ([arXiv:2608.16347v2](https://arxiv.org/abs/2608.16347), revised 2026-11-09) is a critical negative-control source. Hidden-state retrieval alignment was 45–50% for decoder-only pairs, but causal generation transfer met its criterion for only Qwen2-0.5B → Phi-3-mini (23.3% vs 0.0% control); both Mistral-target pairs failed despite similar alignment. The v2 manuscript says its code/data still live in the author's working repository and have not been publicly released, so no public implementation/license is currently available. It explicitly distinguishes transfer of a representational vehicle from transfer of meaning.
+- Exact upstream implementation check at llama.cpp commit b29c606e28a01b1bc8c1351026a0fa6e616bf6c4: root LICENSE is MIT; the pinned source contains ggml_backend_tensor_get (ggml/include/ggml-backend.h), ggml_row_size plus ggml_get_type_traits / ggml_to_float_t (ggml/include/ggml.h), and internal llama_model::tok_embd (src/llama-model.h), with llama_get_model defined in src/llama-context.cpp. This supports a bounded one-row token-embedding read: validate token index and tensor geometry, allocate one quantized row using ggml_row_size, fetch only that byte range with ggml_backend_tensor_get, then convert through the pinned type trait's to_float. Do not allocate or dequantize the full vocabulary matrix on Android. This uses internal llama.cpp structures, so it must stay pinned to the exact commit and be compile-tested; it is not a stable public ABI.
+- Limitation: tok_embd rows are static token embeddings, not contextual B1/B2 activations. A row extractor can validate native byte access and provide a low-cost calibration/diagnostic baseline, but cannot prove semantic cross-organ communication. The real acceptance path still needs contextual hidden/KV state, receiver-side causal injection, source-disjoint held-out task utility, same-model parity, zero/shuffle/OOD/no-message controls, retention and rollback. Keep production B3 OFF until those tests pass.
+- V14 adaptation proposal: build the row-bounded extractor as a read-only diagnostic first, then use it only as a low-memory calibration substrate for a separately trained directional projector. Keep B1/B2 bodies distinct and learnable; do not freeze them as a permanent teacher. Do not port XKV wholesale or claim its A100 latency on Redmi. The causal-transfer paper specifically argues that representation similarity is insufficient; the metric must be correct receiver task output under intervention.
+## Final exact-head checkpoint — 2026-11-22
+
+- Branch head: c990b44935ef60660c4baffb22779f422e34245a. GitHub readback confirmed the exact source and test blobs; PR #2350 body now records this checkpoint and remains DRAFT.
+- Exact-head CI: 18/18 checks PASS. Push workflows: https://github.com/RedMentos/Aii/actions/runs/45045631831 and https://github.com/RedMentos/Aii/actions/runs/45045631812 (both completed success on the exact SHA). Includes Python 3.11/3.13/3.14, staged Runtime, integrated regression, pinned llama API, Android ARM64 cross-compile, offline bridge security, owner-read, and old-phone-to-new-runtime workflow tests.
+- Local isolated tests executed in this run: CPython 3.13.5 py_compile and four stage-composition cases PASS (precomposed/no-write, legacy overlay, partial composition rejection, tampered stage rejection); separate same-size model-byte mutation negative PASS. These are isolated reproductions, not the full Aii test suite.
+- The first CI attempts exposed two fixture assumptions, both corrected: the precomposed native receiver stage already carries the approval command, so the overlay verifies rather than duplicates it; the runtime-report fixture now mirrors Models.revision's 'unavailable' behavior for missing roles. Exact-head CI is green after both corrections.
+- No physical Redmi test, model load, native receiver probe, APK install, action execution, updater call or permission/weight/Age change occurred. REDMI_UNVERIFIED; production route remains OFF. Independent review and Boss integration with #2332 / the selected Android companion recovery stack remain required.
+- Next: integrate the Core model-byte guard only after the #2332/#2356/#2344 pairing/receipt stack is reconciled; then perform an authorized native model probe on Redmi and verify the signed receipt, while keeping native semantic/latent coupling unclaimed.
