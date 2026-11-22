@@ -108,7 +108,7 @@ class L1ShadowTrainingTests(unittest.TestCase):
         self.assertEqual(report["latent_authority"], 0)
         task = gate_call.call_args.args[0]
         self.assertEqual(task["seed_ids"]["LATENT"], ["3", "7", "11"])
-        self.assertEqual(task["acc"]["EXACT"], [0.5, 0.5])
+        self.assertEqual(task["acc"]["EXACT"], [0.5, 0.5, 0.5])
         self.assertEqual(task["role_drop"], 0.0)
         for seed in report["seed_reports"]:
             manifest = json.loads((self.r.home / seed["candidate_manifest"]).read_text())
