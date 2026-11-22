@@ -20,3 +20,10 @@
 
 **Nächster Team-Schritt:** neue exakte CI-Ergebnisse abwarten, echte Fehler reparieren, danach bei grüner QA-/Boss-Kette die mehrphasigen Replay-/Retention-Ablationen ausführen. Keine Geräteaktion wurde ausgelöst.
 - Forschung R-095: Per-example spaced review (SM-2-like) improved retention in an English LLM CPT study and reports only +3.5% overhead vs uniform replay, but its code/benchmark artifacts are proprietary. For V14 regression-JEPA, any residual/uncertainty-to-recall mapping needs calibration; no scheduler or thresholds are enabled.
+
+### Cross-agent dependency poll — 2026-11-22T22:45Z
+
+- JEPA #2372 head `c39a446`: exact workflows 45078942475 / 45078942490 / 45078942505 / 45078942484 are all QUEUED. Parent `beda653` temporal tests were 15/15 on Python 3.13/3.14; no current-head pass.
+- QA #2383 head `714a09e`: staged/integrated 45075772142 fails (21 failed / 230 passed / 10 skipped / 2 errors / 41 subtests), optimizer-resume 45075772144 fails on 3.13/3.14, owner-read portion passes but staged startup fails, Lab-Age fails. Exact downstream builder-pin mismatches were sent to QA; JEPA has not changed QA files.
+- Boss #2370 head `bae7d03`: JEPA runtime/online/training-resume/receipt-integrity checks pass. Same-turn fair-budget 45077837118 fails on both Python versions (wrong `native_turn_budget.time` patch target; C3 reserve expected 26.0s, actual 16.5s). Staged/integrated and Core audio remain IN_PROGRESS; controller guard QUEUED.
+- **No rebase or release** until QA's pin chain and Boss's fair-budget/staged/audio chain are green. No user action, device update, model swap or permission change is required.
