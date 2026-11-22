@@ -432,10 +432,10 @@
     }
   ],
   "current_redmi_status": "AUTHENTICATED PRIVATE #567 PIPELINE_STATUS: installed c4eb82deec915f65894c20d6ebbaf0ebf58fa335; auto-update enabled; pipeline runtime/dashboard UP_TO_DATE; last_error NONE. Later HEALTH #569 reports runtime.state=UNAVAILABLE; 983 MiB available of 5,569 MiB and 1,629 MiB free disk. #568 diagnostic input redacted; no correctness conclusion. Installation verified, functional runtime health inconclusive.",
-  "last_code_release_head": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+  "last_code_release_head": "283ac1c9b38d38c68030391710df852a3c38fdfc",
   "latest_integrated_head": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
   "latest_integrated_head_verified_at": "2026-11-22T15:42:45.226Z",
-  "release_gate_status": "Release-development HEAD c4eb82de is installed and its exact commit workflow readback is 22/22 SUCCESS (QA/test-focused; CI only). Private #567 says pipeline/dashboard UP_TO_DATE, but #569 HEALTH says runtime.state=UNAVAILABLE. No functional E2E acceptance follows. PR #2343 and #2346 remain DRAFT / NOT_RELEASED.",
+  "release_gate_status": "Release-development HEAD c4eb82de is installed; exact commit workflow readback is 21/21 SUCCESS. The c4eb commit only adds QA rollback/source-forget tests; last code-bearing release remains 283ac1c9. Private #567 says pipeline/dashboard UP_TO_DATE, but #569 HEALTH says runtime.state=UNAVAILABLE. No functional E2E acceptance follows. PR #2343 and #2346 remain DRAFT / NOT_RELEASED.",
   "phone_receipt": {
     "state": "AUTHENTICATED_INSTALLED_C4EB_PIPELINE_UP_TO_DATE_HEALTH_RUNTIME_UNAVAILABLE",
     "pipeline_issue": 567,
@@ -594,9 +594,9 @@
       "code": "RUNTIME_DEPLOY_ACTIVATION_JOURNAL_AND_RUNTIME_ONLY_ROLLBACK",
       "wired": "STAGED_DEPLOYER_MERGED_TO_RELEASE_BRANCH_39B",
       "tested_synthetic": "b3b92 exact post-merge push CI 40/40 check-runs and 29/29 workflow runs SUCCESS; #2325 installed release remains 283ac1c9",
-      "tested_android": "283AC1_INSTALLED; B3B92_NOT_CONFIRMED",
-      "active": "MERGED_INTEGRATION / PUSH_CI_GREEN / PHONE_CI_WAIT",
-      "evidence": "Private #520 says runtime CI_WAIT/dashboard BLOCKED_RUNNING with last_error NONE; #519 UPDATE_REQUEST remains queued. No post-b3b92 install, process-death/reboot or rollback proof."
+      "tested_android": "C4EB_INSTALLED; PIPELINE_UP_TO_DATE; HEALTH_RUNTIME_UNAVAILABLE; ROLLBACK_UNVERIFIED",
+      "active": "INSTALLED_PIPELINE_UP_TO_DATE / HEALTH_INCONCLUSIVE",
+      "evidence": "Private #567 confirms c4eb and auto-update enabled; #569 reports runtime.state=UNAVAILABLE. No user-visible E2E correctness or process-death/rollback proof."
     },
     {
       "capability": "Two genuinely different sparse MoE bodies",
@@ -753,7 +753,7 @@
     "private_health_issue": 569,
     "pipeline_status": "UP_TO_DATE",
     "health_runtime": "UNAVAILABLE",
-    "last_accepted_code_release": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+    "last_accepted_code_release": "283ac1c9b38d38c68030391710df852a3c38fdfc",
     "boss_pr": 2343,
     "boss_pr_head": "1084bf902c9d6bebd83436d7d7908d382ddd1984",
     "boss_pr_ci": "8_SUCCESS_8_FAILURE_1_SKIPPED",
@@ -765,7 +765,9 @@
     "local_linux": "PASS_TARGETED_SOURCE_REPRODUCED_HELPERS; FULL_REPOSITORY_BLOCKED_NO_GITHUB_DNS",
     "redmi_status": "C4EB_INSTALLED; RUNTIME_HEALTH_INCONCLUSIVE; B3_UNVERIFIED",
     "user_action_required": false,
-    "next_action": "Boss repairs #2343 and validates C3 reserve trade-off; after green exact matrix rebase #2346, then collect authorized native B1/B2 paired taps and source-disjoint L1 shadow evidence."
+    "next_action": "Boss repairs #2343 and validates C3 reserve trade-off; after green exact matrix rebase #2346, then collect authorized native B1/B2 paired taps and source-disjoint L1 shadow evidence.",
+    "post_merge_push_ci": "c4eb: 21/21 workflow runs SUCCESS; test-only commit; CI only",
+    "private_receipt_pipeline": "PIPELINE_UP_TO_DATE_C4EB; HEALTH_RUNTIME_UNAVAILABLE"
   },
   "capability_matrix": [
     {
@@ -983,7 +985,7 @@
     "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "code_candidate_sha": "b72633927e2849f50de69614306e5f27650b6a9c",
     "candidate_ci": "PR2346_HEAD_B726: 6_SUCCESS_7_FAILURE_1_CANCELLED_1_SKIPPED; FOCUSED_B3_RUN_45032406629_52_TESTS_PASS",
-    "post_merge_push_ci": "C4EB_EXACT_COMMIT_WORKFLOW_READBACK_22_OF_22_SUCCESS; QA_TEST_FOCUSED; NOT_ANDROID_FUNCTIONAL_ACCEPTANCE",
+    "post_merge_push_ci": "C4EB_EXACT_COMMIT_WORKFLOW_READBACK_21_OF_21_SUCCESS; QA_TEST_ONLY_COMMIT; NOT_ANDROID_FUNCTIONAL_ACCEPTANCE",
     "device_receipt": "PRIVATE_567_PIPELINE_C4EB_UP_TO_DATE_AUTO_UPDATE_ON; PRIVATE_569_HEALTH_RUNTIME_UNAVAILABLE_983MIB_AVAILABLE_1629MIB_DISK; PRIVATE_568_INPUT_REDACTED",
     "device_acceptance": "C4EB_INSTALLED; FUNCTIONAL_RUNTIME_HEALTH_INCONCLUSIVE; NO_NATIVE_B3_OR_AUDIO_CAPTURE_PROOF",
     "active_blockers": [
@@ -1002,6 +1004,7 @@
     "pr2343_ci": "HEAD_1084BF: 8_SUCCESS_8_FAILURE_1_SKIPPED; STAGE_DEPLOYER_PIN_MISMATCH_AND_OBSERVER_OVERLAY_ANCHOR_MISMATCH; C3_RESERVE_55_PERCENT_NOT_NATIVE_VALIDATED; DRAFT_NOT_RELEASED",
     "pr2346_ci": "HEAD_B726: 6_SUCCESS_7_FAILURE_1_CANCELLED_1_SKIPPED; FOCUSED_B3_52_TESTS_PY_COMPILE_CLI_SMOKE_PASS; SHARED_INTEGRATION_FAILURES; DRAFT_NOT_RELEASED",
     "local_tests": "LOCAL_LINUX_SOURCE_REPRODUCED_HELPERS_PASS: 7_SECURE_DIR_ASSERTIONS; 12_SOURCE_HASHES_X_2_SPANS_DETERMINISTIC_NO_LEAK_SPLIT; CONFLICT/MALFORMED/BOOL/UNDERSIZED_NEGATIVES_REJECTED; FULL_REPO_BLOCKED_DNS",
-    "research_notes": "R-081 HYPNOS PREPRINT NO LICENSED CODE; R-082 XKV/XBRIDGE FULL PAPER REVIEW AND KVLOOM LICENSE/RESULT COVERAGE CHECK; NO REUSE"
+    "research_notes": "R-081 HYPNOS PREPRINT NO LICENSED CODE; R-082 XKV/XBRIDGE FULL PAPER REVIEW AND KVLOOM LICENSE/RESULT COVERAGE CHECK; NO REUSE",
+    "last_accepted_code_release_sha": "283ac1c9b38d38c68030391710df852a3c38fdfc"
   }
 }
