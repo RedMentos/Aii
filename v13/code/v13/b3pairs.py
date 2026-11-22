@@ -123,3 +123,99 @@ def capture_pair(cognition, event, deadline):
         "authority": {"native_read_only": True, "latent_injection": False,
                       "body_learning": False},
     }
+
+
+
+def load_pair(cognition, pair_packet):
+    """Reload a persisted pair after restart and revalidate every tap/source hash."""
+    stored = cognition.s.one(
+        "SELECT payload FROM packets WHERE kind='B3PairedTapPacket' AND id=?",
+        (pair_packet.get("packet_id"),))
+    if not stored or json.loads(stored["payload"]) != pair_packet:
+        raise ValueError("B3 pair packet is not the stored immutable record")
+    if pair_packet.get("schema") != SCHEMA:
+        raise ValueError("B3 pair schema mismatch")
+    source = pair_packet["source_ref"]
+    taps, features = {}, {}
+    for role in ROLES:
+        tap_id = pair_packet["tap_packet_ids"][role]
+        row = cognition.s.one(
+            "SELECT payload FROM packets WHERE kind='LatentTapPacket' AND id=?",
+            (tap_id,))
+        if not row:
+            raise ValueError("B3 pair tap packet missing: " + role)
+        tap = json.loads(row["payload"])
+        binding = pair_packet["feature_bindings"][role]
+        if (tap.get("role") != role or tap.get("event_id") != pair_packet["event_id"]
+                or tap.get("brain_generation_id") != pair_packet["brain_generation_id"]
+                or tap.get("source_ref") != source
+                or tap.get("tap_id") != pair_packet["tap_ids"][role]
+                or tap.get("model_revision") != pair_packet["model_revisions"][role]
+                or tap.get("feature_path") != binding.get("feature_path")
+                or tap.get("feature_sha256") != binding.get("feature_sha256")
+                or tap.get("shape") != binding.get("shape")):
+            raise ValueError("B3 pair tap lineage changed: " + role)
+        data = cognition.read_tap(tap)
+        if data.get("token_ids") != tap.get("token_ids"):
+            raise ValueError("B3 pair token lineage changed: " + role)
+        rows, width = _matrix(data.get("vectors"), role)
+        if tap["shape"] != [len(rows), width]:
+            raise ValueError("B3 pair native feature shape changed: " + role)
+        taps[role], features[role] = tap, rows
+    return {
+        "packet": pair_packet,
+        "body_pair_id": pair_packet["body_pair_id"],
+        "source_ref": source,
+        "sender": {"role": "B1_DETAIL", "states": features["B1_DETAIL"]},
+        "receiver": {"role": "B2_GIST", "states": features["B2_GIST"],
+                     "pooled": _mean_pool(features["B2_GIST"])},
+        "reverse_sender": {"role": "B2_GIST", "states": features["B2_GIST"]},
+        "reverse_receiver": {"role": "B1_DETAIL", "states": features["B1_DETAIL"],
+                             "pooled": _mean_pool(features["B1_DETAIL"])},
+        "authority": {"native_read_only": True, "latent_injection": False,
+                      "body_learning": False},
+    }
+
+
+def training_batch(cognition, pair_packets, labels):
+    """Build actual Bridge.fit inputs from persisted native pairs and explicit labels.
+
+    No label is inferred from generated body text. Labels must be externally
+    supplied, aligned to the pair order, and the same model revisions/dimensions
+    must hold across the batch. Sender sequences are right-padded with a mask;
+    receiver states are mean-pooled independently under their native tokenizer.
+    """
+    if not isinstance(pair_packets, (list, tuple)) or not pair_packets:
+        raise ValueError("at least one persisted B3 pair is required")
+    if not isinstance(labels, (list, tuple)) or len(labels) != len(pair_packets):
+        raise ValueError("explicit labels must align one-to-one with B3 pairs")
+    pairs = [load_pair(cognition, p) for p in pair_packets]
+    sender_rev = pairs[0]["packet"]["model_revisions"]["B1_DETAIL"]
+    receiver_rev = pairs[0]["packet"]["model_revisions"]["B2_GIST"]
+    sender_dim = pairs[0]["packet"]["dimensions"]["B1_DETAIL"]
+    receiver_dim = pairs[0]["packet"]["dimensions"]["B2_GIST"]
+    if any(p["packet"]["model_revisions"] != pairs[0]["packet"]["model_revisions"]
+           or p["packet"]["dimensions"] != pairs[0]["packet"]["dimensions"]
+           for p in pairs):
+        raise ValueError("B3 batch mixes body revisions or native dimensions")
+    if any(type(y) is not int or y < 0 for y in labels):
+        raise ValueError("labels must be nonnegative integers supplied by the task")
+    max_tokens = max(len(p["sender"]["states"]) for p in pairs)
+    try:
+        import numpy as np
+    except ImportError as exc:
+        raise RuntimeError("NumPy is required by the B3 training bridge") from exc
+    H = np.zeros((len(pairs), max_tokens, sender_dim), dtype=np.float32)
+    mask = np.zeros((len(pairs), max_tokens), dtype=np.float32)
+    Xr = np.zeros((len(pairs), receiver_dim), dtype=np.float32)
+    for i, p in enumerate(pairs):
+        rows = p["sender"]["states"]
+        H[i, :len(rows), :] = np.asarray(rows, dtype=np.float32)
+        mask[i, :len(rows)] = 1.
+        Xr[i, :] = np.asarray(p["receiver"]["pooled"], dtype=np.float32)
+    y = np.asarray(labels, dtype=np.int64)
+    return {"H": H, "mask": mask, "Xr": Xr, "y": y,
+            "body_pair_id": [p["body_pair_id"] for p in pairs],
+            "source_refs": [p["source_ref"] for p in pairs],
+            "sender_revision": sender_rev, "receiver_revision": receiver_rev,
+            "claim_limit": "paired native read-only taps + explicit task labels; no receiver injection"}
