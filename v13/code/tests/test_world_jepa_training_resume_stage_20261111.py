@@ -1,4 +1,5 @@
 """Exercise optimizer-bound World-JEPA through the single current stager."""
+import hashlib
 import importlib.util
 import os
 from pathlib import Path
@@ -7,6 +8,21 @@ import subprocess
 import sys
 
 CODE = Path(__file__).resolve().parents[1]
+
+
+def test_stream_guard_world_pin_matches_integrated_jepa_output():
+    # Expose the exact upstream composer output before the full stager fails.
+    spec = importlib.util.spec_from_file_location(
+        'jepa_guard_pin_probe', CODE / 'scripts/integrated_jepa_guard_candidate_20261110.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    result = module.build_sources(CODE)
+    actual = hashlib.sha256(result['v13/online_world.py']).hexdigest()
+    stream = (CODE / 'scripts/integrated_predictor_stream_guard_20261110.py').read_text()
+    marker = "PREVIOUS_WORLD_SHA = '"
+    start = stream.index(marker) + len(marker)
+    expected = stream[start:start + 64]
+    assert actual == expected, f'JEPA stream pin mismatch: expected={expected} actual={actual}'
 
 
 def test_world_jepa_training_state_in_real_staged_runtime(tmp_path):
