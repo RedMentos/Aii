@@ -27,7 +27,7 @@ def test_recovery_composes_with_existing_learning_and_preserves_frozen_sources(t
     local_error = (dest / 'v13/local_error_route_shadow_candidate.py').read_bytes()
     store = (dest / 'v13/store.py').read_bytes()
     assert b'safe source read primitives unavailable' in store
-    assert b'SourceRef is not a safe regular blob' in store
+    assert b'Source blob is not a regular file' in store
     def source_pin(raw, name):
         needle = b"'" + name.encode('ascii') + b"':"
         assert raw.count(needle) == 1
