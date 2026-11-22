@@ -24,6 +24,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
 
@@ -38,6 +40,7 @@ public final class CompanionDbApprovalTest {
 
     @Before public void setUp() {
         context = RuntimeEnvironment.getApplication();
+        context.getSharedPreferences(CompanionProvider.PREFS, Context.MODE_PRIVATE).edit().clear().commit();
         context.deleteDatabase("v14-companion.db");
         first = new CompanionDb(context);
         second = new CompanionDb(context);
@@ -156,6 +159,62 @@ public final class CompanionDbApprovalTest {
         assertTrue(issuedAtSeconds < requestExpirySeconds);
         assertEquals(1_089L, receiptExpirySeconds);
         assertEquals(60L, receiptExpirySeconds - issuedAtSeconds);
+    }
+
+    @Test public void stopBeforeApprovalClaimPreventsDispatch() {
+        insertPending(NOW + 10_000L);
+        CompanionProvider.setEnabled(context, false);
+        AtomicBoolean dispatched = new AtomicBoolean(false);
+        String result = CompanionProvider.claimAndDispatch(
+                context, first, ACTION_ID, () -> NOW, () -> dispatched.set(true));
+        assertEquals("COMPANION_STOPPED", result);
+        assertFalse(dispatched.get());
+        assertEquals("PENDING_USER_APPROVAL", first.get(ACTION_ID).status);
+    }
+
+    @Test public void stopWaitsUntilClaimedDispatchReturns() throws Exception {
+        insertPending(NOW + 10_000L);
+        CompanionProvider.setEnabled(context, true);
+        CountDownLatch dispatchEntered = new CountDownLatch(1);
+        CountDownLatch releaseDispatch = new CountDownLatch(1);
+        CountDownLatch stopStarted = new CountDownLatch(1);
+        CountDownLatch stopFinished = new CountDownLatch(1);
+        AtomicReference<String> result = new AtomicReference<>();
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        try {
+            Future<?> approval = pool.submit(() -> result.set(CompanionProvider.claimAndDispatch(
+                    context, first, ACTION_ID, () -> NOW, () -> {
+                        dispatchEntered.countDown();
+                        try {
+                            if (!releaseDispatch.await(5, TimeUnit.SECONDS)) {
+                                throw new AssertionError("dispatch release timed out");
+                            }
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            throw new IllegalStateException(e);
+                        }
+                    })));
+            assertTrue(dispatchEntered.await(5, TimeUnit.SECONDS));
+            Future<?> stop = pool.submit(() -> {
+                stopStarted.countDown();
+                CompanionProvider.setEnabled(context, false);
+                stopFinished.countDown();
+            });
+            assertTrue(stopStarted.await(5, TimeUnit.SECONDS));
+            assertFalse("stop must wait while a claimed dispatch is inside the gate",
+                    stopFinished.await(100, TimeUnit.MILLISECONDS));
+            releaseDispatch.countDown();
+            approval.get(5, TimeUnit.SECONDS);
+            stop.get(5, TimeUnit.SECONDS);
+            assertTrue(stopFinished.await(5, TimeUnit.SECONDS));
+            assertEquals("DISPATCHED", result.get());
+            assertEquals("EXECUTING", first.get(ACTION_ID).status);
+            assertFalse(context.getSharedPreferences(CompanionProvider.PREFS, Context.MODE_PRIVATE)
+                    .getBoolean("enabled", true));
+        } finally {
+            releaseDispatch.countDown();
+            pool.shutdownNow();
+        }
     }
 
     @Test public void executionClaimSurvivesRestartAndCannotBeRetried() {
