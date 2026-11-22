@@ -574,21 +574,6 @@ class Cognition:
             except (ValueError,TypeError,OSError,KeyError,RuntimeError) as exc:
                 self.s.log('enlightened_space_unavailable',e['event_id'],
                            {'stage':'c3_selected_context','error':type(exc).__name__})
-        # Privacy-safe evidence that the source-validated C4 selection has
-        # crossed the existing C3 context boundary. This is a context-ready
-        # receipt, not proof that the native model semantically used the text.
-        if rendered:
-            try:
-                self.s.log('c4_offer_context_ready',e['event_id'],{
-                    'role':'C3_LANGUAGE',
-                    'selected_offer_ids':[x['offer_packet_id'] for x in rendered],
-                    'count':len(rendered),
-                    'status':'PASS',
-                })
-            except Exception:
-                # Diagnostics must never turn a valid user-facing answer into
-                # a failure; the packet/source validation above remains intact.
-                pass
         return rendered
     def communicate(self,offer,receiver,fast=None):
         if {offer['role'],receiver}!={'B1_DETAIL','B2_GIST'}:raise ValueError('Ungültige B3-Richtung')
