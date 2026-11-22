@@ -24,6 +24,8 @@ DATASET = {
     "dataset_id": "fixture-speaker-corpus",
     "dataset_revision": "fixture-r1",
     "dataset_license": "TEST_ONLY",
+    "dataset_use_basis": "PUBLIC_DATASET_LICENSE",
+    "dataset_authorization_ref": "fixture-only-no-real-data",
 }
 BINDING = {**MODEL}
 
