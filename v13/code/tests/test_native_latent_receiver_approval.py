@@ -93,6 +93,41 @@ def test_native_probe_requires_local_arm_and_consumes_it_once(tmp_path):
         runtime.close()
 
 
+@pytest.mark.parametrize("model_name", ["sender", "receiver"])
+def test_actual_model_bytes_must_match_manifest_before_arm(tmp_path, model_name):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    calls = []
+    runtime.cognition.native_receive = lambda *args: calls.append(args)
+    operator = Operator(runtime)
+    model_path = sender_path if model_name == "sender" else receiver_path
+    try:
+        original = model_path.read_bytes()
+        model_path.write_bytes(b"X" * len(original))
+        with pytest.raises(PermissionError, match="hash"):
+            operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        assert calls == []
+    finally:
+        runtime.close()
+
+
+@pytest.mark.parametrize("model_name", ["sender", "receiver"])
+def test_same_size_model_tamper_after_arm_invalidates_approval(tmp_path, model_name):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    calls = []
+    runtime.cognition.native_receive = lambda *args: calls.append(args)
+    operator = Operator(runtime)
+    model_path = sender_path if model_name == "sender" else receiver_path
+    try:
+        operator.run(":callosum arm-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        original = model_path.read_bytes()
+        model_path.write_bytes(b"Y" * len(original))
+        with pytest.raises(PermissionError, match="hash"):
+            operator.run(":callosum native-probe B2_GIST C3_LANGUAGE --last-source --confirm")
+        assert calls == []
+    finally:
+        runtime.close()
+
+
 def test_wrong_role_pair_cannot_use_pending_local_approval(tmp_path):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
     calls = []
