@@ -241,7 +241,11 @@ def test_verified_frame_snapshot_prevents_post_receipt_buffer_swap(monkeypatch):
     runtime = make_runtime(monkeypatch)
     obs = observation()
     frame = image_buffer()
-    replacement = image_buffer()
+    replacement_image = Image.new("RGB", (64, 64), (220, 20, 18))
+    replacement_stream = BytesIO()
+    replacement_image.save(replacement_stream, format="PNG")
+    replacement_image.close()
+    replacement = bytearray(replacement_stream.getvalue())
     original_hash = hashlib.sha256(frame).hexdigest()
     decoded = []
     original_decode = vision.decode
