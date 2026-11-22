@@ -1287,3 +1287,14 @@ The 1,255 historical Canon headings remain preserved. Clause-level mapping to ex
 **R-091 / PR #2380:** full-text cross-architecture steering research is recorded in the ledger. It supports pair-specific testing but not a universal 1.7B cutoff or mobile reuse of 67M-per-direction bridges. V14's current native receiver is input-embedding effect only, not mid-layer residual injection or task-level semantic utility. Core must prove same-model input-embedding parity and target-generation/task utility before B3 promotion; B3 remains OFF and `semantic_use_proven=false`.
 
 **User action:** NONE. No model/weight download or swap, permission change, update request, device probe, or deployment is required.
+
+
+## RAW EAR signed one-shot ingress review — 2026-11-22
+
+Perception reviewed the current 44.1-kHz successor [PR #2312](https://github.com/RedMentos/Aii/pull/2312), exact code head `5221314d3c01ab6d874ecc0a8b8ff72c34e504a2`. This is a Termux-side signed result verifier/consumer, not an Android AudioRecord provider. It verifies the pinned P-256 receipt, request/nonce replay, active generation, source, exact mono PCM16 geometry/hash, monotonic interval, RECORD_AUDIO status, local consent and FINAL provenance; it persists replay metadata only and calls the existing `audio_input.submit_audio_only` consumer. Its 44.1-kHz / one-second geometry is grounded in the official Android AudioRecord API guarantee (16 kHz is not guaranteed on every device).
+
+Exact CI: signed-consumer run `44992975596` SUCCESS; staged/integrated run `44992975599` FAILURE, 238 passed / 10 skipped / 47 subtests, with two inherited migration tests observing `last_result=PARTIAL` instead of `UPDATED`. This is a shared QA/Core migration failure, not a consumer unit failure; preserve the assertions. PR #2310 is the stale 16-kHz predecessor and must not be merged; #2312 is the 44.1-kHz successor, still stacked on QA #2286 and requiring rebase/deduplication of #2304's `audio_input.py`.
+
+Official platform evidence: AudioRecord docs require checking `getState()` and actual `getSampleRate()`; API 29+ `AudioRecordingCallback` can report silencing, route, preprocessing and stream-property changes and must be registered before capture. The provider must reject silence/reroute/format change/short reads, bind the receipt to actual client PCM, stop/release the recorder and clear the one-shot buffer. Core/QA own the visible foreground provider and permission lifecycle; Perception owns the Termux verifier and RAW EAR consumer.
+
+Status: signed consumer CI PASS / staged migration FAIL / provider absent / REDMI_UNVERIFIED. No Android microphone, Termux capture, model/weight change, permission or deployment was performed.
