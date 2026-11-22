@@ -49,3 +49,8 @@ R-090 records *What Should World Models Forget? Stratified Retention for Continu
 - Poll the three exact-head workflows, inspect any failure logs, then run matched replay-on/off, persistent-vs-reset, two-shift and return-to-first-cohort retention experiments.
 
 **User action:** none. No manual Termux command, update request, model/weight swap, permission change or device action.
+
+
+## Latest private device receipt (2026-11-22T20:55:46Z)
+
+Private V13OBS #115 now aggregates five LOCAL_METADATA_ONLY turns. B1 had 4/4 failed native attempts, B2 2/2 failed; neither produced a valid offer or a final-C3 delivery. The latest stored turn was 57.739 s total, 41.627 s TTFT, 38.945 s prefill, 751 prompt tokens and 2 generated tokens. Correctness, prompt inclusion and semantic use are UNKNOWN/UNPROVEN. Runtime/model service/dashboard are RUNNING. Instant native-process mapping is 0 with child readability UNKNOWN, not a free-RAM measure. Pipeline metadata remains installed aed1d2b, auto-update enabled/UP_TO_DATE, last_error NONE. Official Age 0; lab stage 10 requested / 5 implemented; physical feature execution false. This is not a test of PR #2372, which remains NOT_RELEASED / REDMI_UNVERIFIED. No chat send or device mutation was performed by this run.
