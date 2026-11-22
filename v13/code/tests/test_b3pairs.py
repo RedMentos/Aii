@@ -92,7 +92,7 @@ class PairedNativeTapTests(unittest.TestCase):
         self.assertEqual(p["fine_readout"]["tap_packet_id"], p["tap_packet_ids"]["B1_DETAIL"])
         self.assertEqual(len(p["fine_readout"]["plan"]["slots"]), p["token_counts"]["B1_DETAIL"])
         self.assertEqual(p["native_token_readout"]["tap_id"], p["tap_ids"]["B2_GIST"])
-        self.assertEqual(p["native_token_readout"]["token_ids"], p["gist_readout"]["plan"]["token_ids"])
+        self.assertEqual(p["native_token_readout"]["native_tokens"], p["gist_readout"]["plan"]["native_tokens"])
         self.assertEqual(len(p["native_token_readout"]["slots"]), p["token_counts"]["B2_GIST"])
         self.assertTrue(p["native_token_readout"]["lossless"])
         self.assertEqual(pair["receiver"]["gist_plan"]["mode"], "text")
