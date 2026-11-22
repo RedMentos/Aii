@@ -6,6 +6,7 @@ on:
       - ".github/workflows/b3-paired-native-capture.yml"
       - "v13/code/v13/b3pairs.py"
       - "v13/code/v13/b3train.py"
+      - "v13/code/scripts/b3_train_l1_shadow.py"
       - "v13/code/v13/contracts.py"
       - "v13/code/v13/cognition.py"
       - "v13/code/v13/operator.py"
