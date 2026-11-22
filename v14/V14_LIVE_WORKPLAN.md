@@ -1120,3 +1120,10 @@ The 679f audio run showed that rebinding only Context-source recall was insuffic
 ### Next integration step
 
 Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer workflows. Fix only measured current-head failures. Keep the PR DRAFT and NOT_RELEASED. The #2280 C4 receipt, #2281 Age-rights, #2282 shared-blob race, #2283 rollback, #2285 audio QA and #2275 RAW EAR changes must be rebased and tested on this same base; old-base green results are not accepted. Private PIPELINE_STATUS #453 is still unanswered, so REDMI_UNVERIFIED. User action: none.
+
+
+### Research & Perception checkpoint — 2026-11-22 (PR #2304 low-gain correction)
+
+- New code-bearing head: e28982337ca714fb4d14a3a972f3beafacc248c4. The RAW EAR silence gate no longer discards strong frame-level periodicity solely because whole-window RMS is below 0.003; a 100-count, 140-Hz synthetic PCM16 signal now reaches the A4 voice-active path, while a seeded low-level noise negative control remains silent.
+- Exact pin chain and VAD source pin were rebound and read back. RAW EAR fastpath and VAD/libfvad comparison are green on Python 3.13/3.14; staged/integrated and Core 3.14 checks remained in progress at last readback. Local full repository suite is blocked by absent checkout and GitHub DNS.
+- The Android companion still has no microphone provider or RECORD_AUDIO permission. The next audio milestone is a one-second, visible, explicit-consent AudioRecord path and one-shot Termux consumer; design/acceptance are in v14/handoffs/RESEARCH_PERCEPTION_ANDROID_AUDIO_CAPTURE_CONTRACT_20261122.md. No Android or Redmi evidence is claimed.
