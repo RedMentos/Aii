@@ -16,6 +16,14 @@ def make_tree(nodes: list[dict[str, str]]) -> ET.Element:
 
 
 class ProcessRestartUiTests(unittest.TestCase):
+    def test_poll_delay_backs_off_and_caps(self) -> None:
+        from process_restart_ui import poll_delay
+        self.assertEqual(poll_delay(-1), 2.5)
+        self.assertEqual(poll_delay(0), 2.5)
+        self.assertEqual(poll_delay(1), 3.25)
+        self.assertEqual(poll_delay(4), 5.0)
+        self.assertEqual(poll_delay(100), 5.0)
+
     def test_system_ui_anr_prefers_wait_not_close_app(self) -> None:
         root = make_tree([
             {"text": "System UI isn't responding", "class": "android.widget.TextView"},
