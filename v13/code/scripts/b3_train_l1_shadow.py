@@ -15,8 +15,10 @@ Example labels file:
 Run from v13/code:
   python scripts/b3_train_l1_shadow.py --labels data/b3/l1_labels.json
 
-This creates only shadow adapter artifacts. It never updates B1/B2 weights or
-enables receiver injection. Missing L0 baselines keep the L1 utility gate closed.
+Supply at least 64 unique pair entries, one explicit label and provenance
+reference per pair. This creates only shadow adapter artifacts. It never
+updates B1/B2 weights or enables receiver injection. Missing L0 baselines keep
+the L1 utility gate closed.
 """
 import argparse
 import json
