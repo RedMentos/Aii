@@ -2279,3 +2279,11 @@ No local full repository, Android SDK/emulator, or real-device test was availabl
 | Android companion lifecycle harness | PR #2356 head 3829465: UIAutomator poll backoff 2.5–5 s, 4 cores / 4 GB, `-accel auto`, TCG fallback and acceleration diagnostic; copied helper tests 6/6 PASS | Exact-head Android/Gradle/emulator/staged checks queued; predecessor emulator reached MainActivity then System UI ANR before app assertions | CODE_PRESENT / LOCAL_HELPER_PASS / CI_PENDING / NOT_ANDROID_VERIFIED |
 
 Android command-line documentation identifies `-accel off` as slow software emulation and `-accel auto` as automatic acceleration when available. This justifies the CI harness configuration only; it does not prove KVM availability or physical Redmi behavior.
+
+## Shared audio-composer source-pin failure — 2026-11-22
+
+| Requirement path | Exact failure | Impact | Classification |
+|---|---|---|---|
+| A5 RAW EAR → staged Runtime / downstream composition | Boss #2370 head 4d771: `integrated_audio_context_candidate_20261121.py` expects Git blob `30360f40eb784be5ea975ee85e94a57f0b154164` for `v13/runtime.py`, but exact current file blob is `6e61af07326c5bb11406ee72361a710d5facc9a5` | Lab-Age, Python 3.14 owner-read stage, JEPA optimizer-resume 3.13/3.14, staged/integrated and audio/arithmetic fail; migration is PARTIAL downstream | SHARED_PIN_BLOCKER / NOT_RELEASED |
+
+The RECORD_ONLY controller guard itself passes on this head. The audio overlay uses Git blob SHA-1; recovery/stage/deployer use their own SHA-256 chain. Preserve both strict checks and coordinate with the audio-overlay owner before rebinding. QA comment: #2370 comment 7085162144.
