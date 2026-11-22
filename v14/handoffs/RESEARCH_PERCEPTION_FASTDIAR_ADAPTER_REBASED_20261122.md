@@ -110,3 +110,11 @@ LOCAL_LINUX CPython 3.13.5 isolated hash-binding helper: 5/5 PASS (matching dige
 - The last stored turn (no new CHAT_SEND or user turn was triggered) was 57.74 s total with about 41.63 s TTFT, 38.95 s C3 prefill and 2 generated tokens. B1_DETAIL and B2_GIST remain `TIME_BUDGET`; no valid offers were delivered. C3's short probe was 3.1 s; native probe `SMOKE_PARTIAL`.
 - The instantaneous native process sample reported 0 mapped processes and unknown child-group readability; it is not a sustained-residency measurement. HEALTH reported runtime unavailable while DIAGNOSTICS reported running, so the snapshots conflict. No correctness claim is possible because the last user input is redacted and no new turn was sent.
 - New read-only V13READ requests for HEALTH / PIPELINE_STATUS / DIAGNOSTICS were created as private issues #638–#640 and had no receipt at the time of this handoff. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell, model/weight change or device mutation was issued.
+
+
+## Fresh owner-read receipts #638–#640 — 2026-11-22 22:48 UTC
+
+- HEALTH: 1,222 MiB MemAvailable / 5,569 MiB total and 1,280 MiB free disk; runtime field `UNAVAILABLE`.
+- PIPELINE_STATUS: auto-update enabled; installed commit remains `aed1d2b826290c95c70356b5d8b864b5ef382be4`; runtime/dashboard `UP_TO_DATE`; last error `NONE`.
+- DIAGNOSTICS: service/runtime/dashboard `RUNNING`, but the instant native-process sample still shows 0 mapped processes and unknown child-group readability. The stored turn remains unchanged: 57.74 s total, 41.63 s TTFT, 38.95 s prefill, 751 admitted tokens, 2 generated tokens; B1/B2 `TIME_BUDGET` at 53.2/54.2 s, C2 OK, C3 3.1 s, native probe `SMOKE_PARTIAL`.
+- HEALTH vs DIAGNOSTICS still disagree on Runtime availability. Official Age 0; lab selector stage 10 / effective implemented stage 5; physical feature execution false; learning commit authority requires separate SHADOW. `console_errors` remains `USER_NOT_OPTED_IN`, so no LOG_PAGE. No new turn, CHAT_SEND, UPDATE_REQUEST, shell, model/weight change or device mutation occurred.
