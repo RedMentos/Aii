@@ -36,3 +36,40 @@ Runtime deployment and rollback replace the launcher and `runtime-active.json` a
 ## Next
 
 Run exact-head CI on this rebased candidate. If green, ask Boss to compose it with the current integration branch, then add a UI rollback action only after the runtime API and lifecycle behavior are independently reviewed. No user action is required on current evidence.
+
+
+## QA follow-up — failed activation recovery must not restart an unknown runtime (2026-11-22)
+
+**Current QA branch head:** `6a97eca2881046aa646e0b5481863922dcdef6de`  
+**PR:** #2298, still DRAFT / NOT_RELEASED. The branch is based on the Boss integration line at the d06c fork point; current Boss head is `91227b171f3e6c2251767f20cd494f34d6ec24fa`. Compare reports the QA branch and Boss head diverged by 9 QA commits / 1 Boss-only commit. Do not rebase until the Boss source-pin blocker is green.
+
+### New reproduced integration defect and fix
+
+The new pending-journal recovery hook could raise on a corrupt journal, unknown launcher/marker, missing backup or I/O failure after the managed chat had been stopped. The existing `run_cycle()` finally block would then request chat resume unconditionally. That could restart an unknown launcher/marker pair. This was introduced by the recovery hook in this candidate; ordinary staging/deploy failures with the previous verified pair still resume normally.
+
+QA fix:
+- `_do_update()` records recovery state before attempting recovery.
+- If recovery raises, it records only the exception class, disables future automatic updates, and re-raises.
+- `run_cycle()` suppresses resume only for failed/uncertain activation recovery and persists `resume_suppressed=ACTIVATION_RECOVERY_FAILED`.
+- If auto-update disable itself fails, the private state records `DISABLE_FAILED`; the chat still remains stopped.
+- The ordinary deploy-failure recovery path remains unchanged.
+
+Regression added: `test_failed_activation_recovery_keeps_stopped_chat_and_disables_auto_update`.
+
+### Exact-head CI readback for 6a97eca
+
+- Runtime deployment integrity: **PASS** on Python 3.11 and 3.14. Each interpreter ran 17 activation-journal tests + 3 deploy-integrity tests + 31 runtime-deploy tests + 40 pipeline-agent tests = **91 passed**.
+- Staged runtime: **PASS**, 252 passed / 10 skipped / 47 subtests.
+- Integrated regression: **PASS**, 424 passed / 3 skipped / 58 subtests.
+- Two-checkout migration: **PASS**.
+- Lab-Age control: **PASS**.
+- Private owner-read: **FAIL/BLOCKED by current composed source chain**, not the journal change. The exact staged Python 3.14 failure is `ValueError: context recall streaming source changed` at `integrated_context_recall_candidate_20261111.py:89`. The Boss head 91227 has the same shared source-pin blocker; the QA branch is not to rebind Core-owned generated-source pins.
+- Same-turn C4/C3 consumer: **FAIL/BLOCKED by a base workflow syntax/continuation defect**. The current Boss version of `.github/workflows/v14-core-c4-c3-consumption.yml` omits a trailing `\\` after `test_observer_fair_budget_stage_20261116.py`; Actions then tries to execute `test_v14_store_source_blob_serialization.py` as a shell command and exits 126 / Permission denied. The preceding pytest command passes 3/3. QA reported this to Boss on PR #2288 (comment 7073144585); the QA branch does not edit the Core-owned workflow.
+- Private bridge tests: **PASS**.
+
+### Proof boundary and remaining actions
+
+- Full local Aii checkout is unavailable in this worker because GitHub DNS resolution failed; full LOCAL_LINUX project execution remains **BLOCKED**, not passed.
+- GitHub CI is not a Redmi test. No device connection or authorized private owner-read receipt was available. **REDMI_UNVERIFIED**; no installer, model, weight, permission, chat, SQLite or phone state was changed.
+- Boss must first repair the shared source-stream pin chain and the missing workflow continuation, then rebase QA #2298 onto the resulting green exact base and rerun all checks.
+- After base integration, the next device acceptance remains actual process-death/reboot recovery, update/rollback and managed chat stop/resume receipts on the Redmi.
