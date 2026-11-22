@@ -2046,3 +2046,20 @@ The 1,255-heading historical Canon inventory above is unchanged. This overlay re
 - Latest authenticated phone snapshot #477 predates the merge and reports old installed SHA 89333289b8cd50da92cbf7074c9ef689a2972dbf; REDMI remains UNVERIFIED.
 - No local full-repository test, native model execution, numeric permanent weight update, Android UI/audio provider or device update was performed.
 - User action: NONE.
+## Newer authenticated phone receipt and PR-head correction — 2026-11-22 06:01Z
+
+Private owner-read PIPELINE_STATUS #480 is an authenticated POST-MERGE receipt. It reports auto_update=true, runtime=CI_WAIT, dashboard=CI_WAIT, last_result=CI_WAIT, last_error=NONE, updated_commit=89333289b8cd50da92cbf7074c9ef689a2972dbf. The phone has not installed release merge 39b175521f50048f13ca14372b316de47527f531; its existing updater is waiting for CI. No UPDATE_REQUEST or manual Termux command was sent. Exact post-merge push CI remains not independently verified.
+
+PR #2313 current head is now 8a9cecb54fa16fce5c65f0f0ac177e4fe3881a40 (92 ahead / 282 behind release). It adds a real NumPy/Adam L1 shadow-adapter trainer with explicit labels/provenance, 64-pair minimum, paired holdout, two seeds, no-message/latent/shuffle/random controls and bit-identical save/reload. Its test patches training_batch with synthetic random tensors; the current paired-tap workflow is pending. This is not actual native activation training, L1 utility acceptance or receiver injection.
+
+PR #2314 exact failure is a raw-string escaping bug: raw triple-quoted anchor constants preserve literal backslash-n bytes, while Callosum source has actual newline bytes. Core was given the exact fix; keep count==1 and fail-closed matching.
+
+PR #2311 failures converge on nested source pins, not yet the JEPA optimizer: integrated WorldJEPA training candidate → recovery wrapper → stage builder → runtime deployer hashes are stale. JEPA/QA were given exact failure chain; do not patch optimizer behavior until stage integrity passes.
+
+PR #2312 signed one-shot consumer passes; staged-runtime has 238 passed / 10 skipped / 47 subtests and integrated-regression passes, but two-checkout migration returns PARTIAL with runtime ERROR / last_error UPDATE on the old raw-runtime-plain-ui-history-recovery-v1 profile. Perception/QA were notified; no microphone provider.
+
+---
+| New B3 L1 shadow adapter | PR #2313 head 8a9ce adds NumPy/Adam selector/projector/receiver-residual candidate with two seeds, holdout, no-message/latent/shuffle/random and save/reload | Test patches training_batch with synthetic random tensors; exact paired-tap workflow pending | No actual native paired activation training, L0 baselines, role-retention gate or receiver utility | SHADOW / NOT_PROMOTED |
+| Native receiver composition | PR #2314 head af2c: Linux pinned API and Android ARM64 cross-compile pass | Python stage fails because raw-string anchor uses literal backslash-n, not newline; Core notified | No receiver semantic-use proof | OFF / FAIL |
+| JEPA staged update | PR #2311 head ae15: transactional/combined/receipt/WorldJEPA checks pass | Lab-Age/training-resume/controller/owner-read/migration fail from nested stale pins | No accepted runtime learning/weight promotion | SHADOW / PIN_CHAIN_FAIL |
+| Audio consumer | PR #2312 head 98f: focused one-shot and integrated regression pass; 238 staged tests pass, 10 skipped, 47 subtests | Two migration fixtures return PARTIAL / runtime ERROR / last_error UPDATE on old recovery profile | No microphone or Android capture | PARTIAL / MIGRATION_FAIL |
