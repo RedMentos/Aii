@@ -2278,3 +2278,14 @@ This overlay changes only current evidence status. It does not promote any Canon
 - Classify as **POTENTIAL P0 PRIVACY/CORRECTNESS RISK / NOT REPRODUCED ON V13**. Do not claim a leak or alter settings until synthetic sequential/concurrent unique-marker canaries and same-session reuse tests run on the exact `-np1` path.
 - Required flag matrix and acceptance are recorded in R-080 and board V14-020. No private chat data, model, weight, dependency, permission or device setting changed.
 
+
+
+## Whole-system review overlay — 2026-11-22T18:02:28.124Z
+
+- **JEPA/Memory:** #2331 closed; #2351 remains red on temporal history contiguity and retention; #2359 remains red on source-lifecycle memory cleanup anchor/source pins; #2355 remains red and stacked. No accepted permanent numeric weight update, source-forget race proof or restart/retention acceptance.
+- **Vision/A5:** #2363 has 11 success / 1 skipped but is still only a callable adapter with synthetic tests; no ordinary Runtime call site and stale base c4eb82. No Android camera/MediaProjection or live visual C3 answer.
+- **Arithmetic:** #2362 date guard has 4 failures; no promotion.
+- **B3:** #2346 has two paired-capture assertion failures; production remains OFF/SYMBOLIC.
+- **Runtime timing:** #2343 source-anchor correction is queued; no same-turn B1/B2→C4→C3 acceptance.
+- **Prompt-cache privacy:** V14-020/R-080 remains P0 investigation; no V13 reproduction or cache-setting change.
+
