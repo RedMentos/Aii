@@ -56,6 +56,25 @@ class RawEarVadCompareTests(unittest.TestCase):
         temporal = _load_temporal_class(TEMPORAL_SOURCE)
         return extractor, temporal, sha256, blob
 
+    def test_isolated_loader_rejects_alias_false_voice_and_preserves_low_f0(self):
+        extractor, _, _, _ = self.load_sources()
+        sample_rate = 44100
+        for frequency, expected_activity in ((140, "VOICED"), (8620, "UNVOICED_NOISE")):
+            with self.subTest(frequency=frequency):
+                count = sample_rate
+                samples = [
+                    int(6000 * math.sin(2 * math.pi * frequency * index / sample_rate))
+                    for index in range(count)
+                ]
+                pcm = struct.pack("<" + "h" * count, *samples)
+                cues = extractor(pcm, sample_rate)
+                self.assertEqual(cues["activity_hint"], expected_activity)
+                if frequency == 140:
+                    self.assertAlmostEqual(cues["f0_median_hz"], 140, delta=5)
+                else:
+                    self.assertEqual(cues["voiced_fraction"], 0.0)
+                    self.assertIsNone(cues["f0_median_hz"])
+
     def test_comparison_alignment_metrics_and_exact_source_hashes(self):
         extractor, temporal, sha256, blob = self.load_sources()
         result = compare_pcm(
