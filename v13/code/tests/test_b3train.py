@@ -3,11 +3,13 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+import os
+import stat
 
 import numpy as np
 
 from v13.runtime import Runtime
-from v13.b3train import train_l1_shadow, _source_disjoint_split
+from v13.b3train import train_l1_shadow, _source_disjoint_split, _secure_shadow_output_dir
 
 
 class L1ShadowTrainingTests(unittest.TestCase):
@@ -193,6 +195,39 @@ class L1ShadowTrainingTests(unittest.TestCase):
                             [f"label-{i}" for i in range(63)],
                             "task", "human_feedback")
 
+
+
+    def test_shadow_output_directory_is_private_and_descriptor_anchored(self):
+        home = Path(self.tmp.name) / "secure-home"
+        home.mkdir(mode=0o700)
+        output_dir, relative_dir, output_fd = _secure_shadow_output_dir(
+            home, Path("b3/shadow/B1_TO_B2/task/run-a")
+        )
+        try:
+            output_dir.mkdir(parents=True, exist_ok=True)
+            (output_dir / "probe.txt").write_text("inside", encoding="utf-8")
+            self.assertEqual((home / relative_dir / "probe.txt").read_text(encoding="utf-8"), "inside")
+            self.assertEqual(stat.S_IMODE((home / relative_dir).stat().st_mode), 0o700)
+        finally:
+            os.close(output_fd)
+
+    def test_shadow_output_rejects_top_level_and_nested_symlink_parents(self):
+        home = Path(self.tmp.name) / "symlink-home"
+        home.mkdir(mode=0o700)
+        outside = Path(self.tmp.name) / "outside-shadow"
+        outside.mkdir()
+
+        (home / "b3").symlink_to(outside, target_is_directory=True)
+        with self.assertRaises(OSError):
+            _secure_shadow_output_dir(home, Path("b3/shadow/B1_TO_B2/task/run-top"))
+        self.assertEqual(list(outside.iterdir()), [])
+
+        (home / "b3").unlink()
+        (home / "b3").mkdir()
+        (home / "b3" / "shadow").symlink_to(outside, target_is_directory=True)
+        with self.assertRaises(OSError):
+            _secure_shadow_output_dir(home, Path("b3/shadow/B1_TO_B2/task/run-nested"))
+        self.assertEqual(list(outside.iterdir()), [])
 
 if __name__ == "__main__":
     unittest.main()
