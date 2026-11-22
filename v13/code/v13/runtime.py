@@ -213,6 +213,12 @@ class Runtime:
                     e,role,ref=payload
                     try:self.notice(dumps(self.cognition.tap(role,e,ref,time.monotonic()+self.cfg['observer_seconds'])))
                     finally:self.pool.unload()
+                elif kind=='tap_pair':
+                    try:
+                        pair=self.cognition.tap_pair(payload,time.monotonic()+self.cfg['observer_seconds'])
+                        p=pair['packet']
+                        self.notice(dumps({'status':'PAIRED_NATIVE_TAPS_SAVED','body_pair_id':p['body_pair_id'],'source_ref':p['source_ref'],'tap_ids':p['tap_ids'],'model_revisions':p['model_revisions'],'dimensions':p['dimensions'],'token_counts':p['token_counts'],'authority':pair['authority']}))
+                    finally:self.pool.unload()
                 elif kind=='probe':
                     if payload=='sustained':
                         from .proofs import probe_sustained
