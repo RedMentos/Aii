@@ -3,58 +3,66 @@
 Date: 2026-11-22  
 Role: Core & Harness  
 Branch: `core/v14-native-probe-operator-dispatch-20261122`  
-PR: [#2381](https://github.com/RedMentos/Aii/pull/2381)  
-Current code checkpoint: `b8287caa2d9025b195d1aa0ee7a43106b5a7a5d3`  
-Base: QA branch `qa/v14-native-probe-model-hash-20261122`, base SHA `42723cfd4c0629940b75c158283bdf5256568142`
+PR: [#2381](https://github.com/RedMentos/Aii/pull/2381) — DRAFT / NOT_RELEASED  
+Latest branch SHA: `c13157abdcd4745b2a9d238235eb0e264a09b1fe`  
+Code checkpoint: `b8287caa2d9025b195d1aa0ee7a43106b5a7a5d3`  
+QA base: `qa/v14-native-probe-model-hash-20261122`, current QA head `45f08a3c0da564f12cdddef89f99fde245657d61`
 
 ## Product slice
 
-This Core follow-up composes the diagnostic native receiver and the one-shot local approval into the same isolated staged Runtime. It does not modify the source Callosum bytes protected by QA's record-only guard and receiver pins.
+The Core follow-up composes the diagnostic native receiver and one-shot local approval into one isolated staged Runtime. It does not modify QA's source Callosum bytes or enable production B3.
 
 1. `stage_integrated_candidate.stage()` loads the pinned recovery wrapper.
-2. That wrapper applies `integrated_native_latent_receiver_candidate_20261122.py` exactly once to the composed Cognition/Callosum/Operator sources and adds the diagnostic `Cognition.native_receive` consumer.
-3. The stage test now verifies the resulting staged files, `replaced_files`, and the exact manifest SHA-256 values. It does **not** reapply the native receiver overlay; the overlay intentionally rejects double application.
-4. The test then applies `integrated_native_probe_approval_candidate_20261122.py`, which adds the source/model-bound local `arm-probe`, one-shot `native-probe`, and `revoke-probe` commands.
-5. The staged subprocess runs native receiver, runtime, Callosum, approval, and observer-budget regressions against that composed tree.
+2. The wrapper applies `integrated_native_latent_receiver_candidate_20261122.py` exactly once to the composed Cognition/Callosum/Operator sources and adds the diagnostic `Cognition.native_receive` consumer.
+3. The Core stage test verifies the resulting staged Cognition/Callosum/Operator/native files, `replaced_files`, and exact manifest SHA-256 values. It no longer applies the receiver overlay twice.
+4. The test then applies `integrated_native_probe_approval_candidate_20261122.py` and runs the receiver/runtime/Callosum/approval/observer-budget regressions inside the staged subprocess.
+5. The native receiver measures sender tap token/activation input and receiver-side input-consumption effect. This remains a diagnostic embedding-consumption check, not semantic alignment or trained B3.
 
-QA comment 7086445214 identified that the previous test applied the receiver overlay a second time after the recovery wrapper had already composed it. Commit `b8287caa` removes that duplicate application and asserts the single-pass stage output and hashes instead.
+QA comment 7086445214 identified duplicate receiver-overlay application in the earlier test; Core commit `b8287caa` removes it and asserts the composed stage output instead.
 
-The Core source `v13/code/v13/callosum.py` remains byte-for-byte equal to the QA-base blob `0dbe893a983a2739bb9e008e8a0c3fab5715aec3`. The duplicate direct-source operator test and redundant Core workflow remain removed. The Boss-owned `v14/V14_USER_NEXT_ACTION.md` is not changed by this PR.
+## Current exact-head CI failure — dependency defect
+
+Core's exact-head staged workflow run [45075750380](https://github.com/RedMentos/Aii/actions/runs/45075750380) is **FAIL** on both Python 3.13 job `137372456751` and Python 3.14 job `137372456834`:
+
+`test_native_latent_receiver_stage.py:53` asserts that the staged `v13/native_probe_approval.py` contains `os.O_NONBLOCK`. The current QA source module at `45f08a3` does contain the nonblocking FIFO defense, but QA's staged overlay candidate `v13/code/scripts/integrated_native_probe_approval_candidate_20261122.py` blob `787ac5f8b80c183de0920848d2fb6d6c2c7e3ff6` does not include `os.O_NONBLOCK` or `_verify_model_file`. The overlay replaces the safe source with its older copy.
+
+Core posted this exact failure and requested that QA update the overlay/pins in PR #2377. The stage assertion is intentionally retained; weakening it would hide the safety regression. The same QA review also requires the canonical path and `(dev,inode,size,mtime_ns,ctime_ns)` identity to be persisted in the approval record at arm and compared at consume, including a negative where both manifest path and ModelManager route are redirected together to a byte-identical copy after arm. Core does not own the QA approval source/overlay files and will not overwrite them.
+
+The private-bridge workflow passed on the prior exact Core head; the staged native receiver workflow is not accepted until the QA overlay is corrected and both Python versions pass.
 
 ## Exact changes
 
-- `.github/workflows/v14-native-latent-receiver.yml`: retain the exact staged receiver workflow and branch filters.
-- `v13/code/tests/test_native_latent_receiver_stage.py`: assert the receiver is already present after the pinned stage builder; compare all seven receiver output files to the manifest hashes; then apply the approval overlay.
-- Preserve QA-owned approval/guard files and source Callosum pins unchanged.
-- Keep the approval consumer staged and diagnostic-only; no production B3 route or training authority is introduced.
+- `.github/workflows/v14-native-latent-receiver.yml`: trigger filters for the current QA base/Core branch.
+- `v13/code/tests/test_native_latent_receiver_stage.py`: single-pass composed-stage assertions and exact manifest hash checks.
+- No direct source edit to `v13/code/v13/callosum.py`; the QA record-only guard remains byte-identical.
+- No modification to QA-owned `native_probe_approval.py`, approval overlay, or model-file verifier.
+- `v14/handoffs/CORE_NATIVE_PROBE_OPERATOR_DISPATCH_20261122.md`: current dependency and evidence record.
 
-## Evidence and limitations
+## Evidence and limits
 
 | Environment | Check | Result |
 |---|---|---|
-| LOCAL_LINUX | `git ls-remote https://github.com/RedMentos/Aii.git HEAD` | BLOCKED — `Could not resolve host: github.com`; no full Aii checkout is available |
-| LOCAL_LINUX | Full Runtime/Operator/staged pytest | NOT_RUN / BLOCKED by missing checkout |
-| GitHub Actions | Exact-head native receiver staged workflow | QUEUED — run [45075518483](https://github.com/RedMentos/Aii/actions/runs/45075518483) |
-| GitHub Actions | Exact-head private-bridge security workflow | QUEUED — run [45075518496](https://github.com/RedMentos/Aii/actions/runs/45075518496) |
-| GitHub readback | Updated test blob | PASS — `69e876807dd40e6376102fbbb4576a5b0c47590d`; duplicate apply block absent |
-| GitHub readback | Core source Callosum blob | PASS — exact QA-base blob retained |
+| LOCAL_LINUX | `git ls-remote https://github.com/RedMentos/Aii.git HEAD` | BLOCKED — DNS `Could not resolve host: github.com`; no full Aii checkout |
+| LOCAL_LINUX | Full staged Runtime pytest | NOT_RUN / BLOCKED by missing checkout |
+| GitHub Actions | Exact-head staged native receiver workflow | FAIL — [45075750380](https://github.com/RedMentos/Aii/actions/runs/45075750380), stale QA overlay omits O_NONBLOCK |
+| GitHub Actions | Exact-head private-bridge security workflow | PASS on [45075518496](https://github.com/RedMentos/Aii/actions/runs/45075518496) |
+| GitHub readback | Updated stage test | PASS — exact blob readback; duplicate receiver overlay application absent |
+| GitHub readback | Core source Callosum | PASS — exact QA-base blob `0dbe893a983a2739bb9e008e8a0c3fab5715aec3` retained |
 | TERMUX/REDMI | Installed candidate, native probe, model process and actual B3 effect | REDMI_UNVERIFIED; no device action performed |
-
-The QA base now includes the PR trigger filter, so the exact-head workflow has been queued. Do not treat queued CI as a pass.
-
-QA's residual review also notes a path-to-loader TOCTOU window: the approval layer verifies the model file by descriptor, but the native loader still accepts a path. Keep the probe user-initiated and diagnostic-only; do not claim this is an OS sandbox or immutable model-file handoff. No local probe has been run.
 
 ## Safety and release boundary
 
-- B3 remains OFF; this is not trained cross-model latent alignment, semantic utility, production routing, or learning.
+- B3 remains OFF. This is not trained cross-model latent alignment, semantic utility, production routing or learning.
 - The probe remains staged, one-shot, source/model-bound, locally approved, and non-authoritative.
-- No model download/swap, weight edit, Android permission change, update request, remote shell, native probe, or device mutation occurred.
+- QA's documented path-to-loader TOCTOU remains a separate limitation; this is not an OS sandbox or immutable model-file handoff.
+- No model download/swap, weight edit, Android permission change, update request, remote shell, native probe or device mutation occurred.
 - No Redmi-native result is claimed. No APK or installed Termux runtime was changed.
-- The existing updater is not invoked by this PR; GitHub push is not deployment.
+- GitHub push is not deployment.
 
 ## Next executable action
 
-1. Poll exact-head run 45075518483 and run 45075518496; fix only observed failures.
-2. Obtain independent QA review of staged source/model binding, one-shot consumption, cancellation/timeout, no redispatch, and negative gates.
-3. Boss integrates only after the complete exact-head chain passes and the dependency PR #2377 is accepted.
-4. Any real native probe remains a separate explicit local TTY action after integration; no user chat approval or CI result silently authorizes it.
+1. QA updates the staged approval overlay to preserve `O_NONBLOCK` and persists exact canonical path/file identity in the approval record, with the byte-identical dual-route negative.
+2. Poll the new QA and exact Core CI; do not remove the stage assertion.
+3. Re-run exact staged/native receiver workflows and independently review the composed staged tree.
+4. Boss integrates only after the dependency is accepted and the complete exact-head chain is green.
+5. Any real native probe remains a separate explicit local TTY action after integration; no chat approval or CI result silently authorizes it.
