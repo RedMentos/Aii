@@ -139,6 +139,17 @@ def validate(kind,obj):
                 raise ValueError("B3 pair B1 fine slot source coverage")
             cursor=sr["char_end"]
         if cursor!=obj["source_ref"]["char_end"]:raise ValueError("B3 pair B1 fine slots are not lossless")
+        cursor=obj["source_ref"]["char_start"]
+        for slot in plan["slots"]:
+            sr=slot.get("source_ref") if isinstance(slot,dict) else None
+            if (not isinstance(sr,dict) or sr.get("source_id")!=obj["source_ref"].get("source_id")
+                    or sr.get("sha256")!=obj["source_ref"].get("sha256")
+                    or sr.get("char_start")!=cursor
+                    or type(sr.get("char_end")) is not int or sr["char_end"]<cursor
+                    or sr["char_end"]>obj["source_ref"]["char_end"]):
+                raise ValueError("B3 pair B2 Gist slot source coverage")
+            cursor=sr["char_end"]
+        if cursor!=obj["source_ref"]["char_end"]:raise ValueError("B3 pair B2 Gist slots are not lossless")
         plan=gr["plan"];shape=gr["shape"]
         if (type(plan.get("max_slots")) is not int or plan["max_slots"]<1
                 or shape[0]>plan["max_slots"] or shape[1]!=obj["dimensions"]["B2_GIST"]
