@@ -1,3 +1,12 @@
+## Boss follow-up — research comparator CLI — 2026-11-22
+
+- Perception PR [#2329](https://github.com/RedMentos/Aii/pull/2329) merged at `b3b92f41772573732b2cba71f7ad6bf34dc8e521`. It fixes the missing `os` import in the existing libfvad comparison CLI and adds an end-to-end CLI regression against the workflow-built pinned shared library. Exact PR head: 4/4 SUCCESS (Python 3.13/3.14, privacy, offline bridge security). R-079 records exact upstream `dpirch/libfvad` revision `532ab666c20d3cfda38bca63abbb0f152706c369`, BSD-3-Clause, and keeps it research-only; no production VAD dependency was added.
+- Exact post-merge push CI on `b3b92f41` had 38 queued/in-progress checks and 0 failures at the last poll. Do not claim this merge fully released or installed yet.
+- Phone remains on `283ac1c9` per private #517. UPDATE_REQUEST #519 is pending; no receipt for `b3b92f41` yet. DIAGNOSTICS #518 reports the last recorded turn (63.22 s / 42.48 s TTFT; B1/B2 TIME_BUDGET) but does not show a new turn after update, so the #2325 scheduler effect remains unmeasured.
+- The remote CHAT_OPERATOR allowlist currently does **not** include the native receiver probe; do not attempt it through a different command or bypass. Core must add an exact bounded, explicit-confirmation command and regression before that diagnostic can be run.
+
+---
+
 ## Boss & Integration run 11 — 2026-11-22
 
 - Release branch `gpt6/v13-private-remote-bridge-20261111` is merged at `9097d634398817743ba6d09f233be523322db53c`. The preceding code release `283ac1c9b38d38c68030391710df852a3c38fdfc` has exact post-merge push CI **46/46 SUCCESS** and is confirmed installed on Redmi by private owner PIPELINE_STATUS #517 (runtime UPDATED, dashboard UP_TO_DATE, auto-update enabled, last_error NONE).
