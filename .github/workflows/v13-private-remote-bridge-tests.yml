@@ -4,7 +4,12 @@ on:
   pull_request:
     paths:
       - 'v13/code/v13/remote_maintenance_bridge.py'
+      - 'v13/code/v13/remote_chat.py'
+      - 'v13/code/v13/owner_read_bridge.py'
       - 'v13/code/tests/test_remote_maintenance_bridge.py'
+      - 'v13/code/tests/test_remote_chat.py'
+      - 'v13/code/tests/test_owner_read_bridge.py'
+      - 'v13/code/tests/test_remote_observation.py'
       - '.github/workflows/v13-private-remote-bridge-tests.yml'
   push:
     branches-ignore: [main]
@@ -14,15 +19,23 @@ jobs:
   offline-bridge-security:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.14']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python-version }}
       - run: python -m pip install pytest cryptography
       - name: Test private bridge without real tokens or network
         run: |
           cd v13/code
-          python -m pytest -q tests/test_remote_maintenance_bridge.py tests/test_termux_patch_staging.py
+          python -m pytest -q tests/test_remote_maintenance_bridge.py tests/test_remote_chat.py tests/test_owner_read_bridge.py tests/test_remote_observation.py tests/test_termux_patch_staging.py
       - name: Syntax compile
-        run: python -m py_compile v13/code/v13/remote_maintenance_bridge.py
+        run: |
+          python -m py_compile \
+            v13/code/v13/remote_maintenance_bridge.py \
+            v13/code/v13/remote_chat.py \
+            v13/code/v13/owner_read_bridge.py
