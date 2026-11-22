@@ -558,11 +558,19 @@ def test_real_runtime_worker_commits_turn_then_idle_jepa_persists_across_restart
         worker_result = captured_runs[latest]
         learning = worker_result.get("learning", {})
         metrics = learning.get("metrics", {})
-        assert learning.get("status") == "UPDATED_EXPERIMENTAL_WORLD_JEPA", {
+        assert learning.get("status") in {
+            "UPDATED_EXPERIMENTAL_WORLD_JEPA", "NO_NEW_TRANSITIONS"
+        }, {
             "worker_status": worker_result.get("status"),
             "learning_status": learning.get("status"),
             "planner_status": worker_result.get("planner", {}).get("status"),
         }
+        # The real Runtime worker may already have consumed this T8 page
+        # before the idle SleepRuntime job runs. In that case the second
+        # invocation must be idempotent and the durable active checkpoint
+        # remains the source of the numeric-update evidence.
+        if learning.get("status") == "NO_NEW_TRANSITIONS":
+            metrics = active.get("metrics", {})
         assert metrics.get("parameter_delta_norm", 0) > 0
         assert metrics.get("ema_target_delta_norm", 0) > 0
         assert metrics.get("holdout_loss_after", float("inf")) < metrics.get("holdout_loss_before", float("-inf"))
