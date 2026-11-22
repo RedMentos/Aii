@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw
 
 from v13.a5_ui_admission_bridge import A5UIRuntimeAdapter, ui_observation_lease
 from v13.vision_ui_frame_ingress import (
-    ProviderFrameVerifier, _issue_provider_frame_verifier,
+    ProviderFrameVerifier, _feature_summary, _issue_provider_frame_verifier,
     _load_local_tile_projector, _summary, consume_projected_frame,
     consume_projected_frame_scope,
 )
@@ -221,6 +221,40 @@ def test_ui_summary_is_content_free_metadata_only():
     assert len(summary) <= 512
     assert "red panel" not in summary
     assert "blue icon" not in summary
+
+
+def test_raw_eye_feature_summary_is_bounded_numeric_and_content_free():
+    summary = _feature_summary("r00", [0, 0, 16, 16], [0.125] * 37, 0.25)
+    assert summary.startswith(
+        "raw_eye_v1 authority=RAW_FEATURE_MEASUREMENT region=r00 "
+    )
+    assert "box=0,0,16,16 salience=0.250" in summary
+    assert "rgb=0.125,0.125,0.125" in summary
+    assert "hue=" in summary and "orientation=" in summary and "lum4x4=" in summary
+    assert len(summary) <= 512
+    assert "red panel" not in summary and "blue icon" not in summary
+
+    global_summary = _feature_summary("g", [0, 0, 64, 64], [0.0] * 37, None)
+    assert "region=g" in global_summary and "salience=na" in global_summary
+    assert len(global_summary) <= 512
+
+
+def test_raw_eye_feature_summary_rejects_malformed_or_nonfinite_inputs():
+    good = [0.1] * 37
+    invalid = (
+        ([], [0, 0, 16, 16], good, 0.2),
+        ("r99", [0, 0, 16, 16], good, 0.2),
+        ("r00", [0, 0, 0, 16], good, 0.2),
+        ("r00", [0, 0, 16, 16], [0.1] * 36, 0.2),
+        ("r00", [0, 0, 16, 16], [float("nan")] + good[1:], 0.2),
+        ("r00", [0, 0, 16, 16], [2.1] + good[1:], 0.2),
+        ("r00", [0, 0, 16, 16], [True] + good[1:], 0.2),
+        ("r00", [0, 0, 16, 16], good, 1.1),
+        ("r00", [0, 0, 16, 16], good, True),
+    )
+    for args in invalid:
+        with pytest.raises(ValueError):
+            _feature_summary(*args)
 
 
 def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatch):
