@@ -941,3 +941,24 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+## R-080 — horizon-bounded WorldJEPA predictions as real B1/B2 prompt context (2026-11-22)
+
+**Primary papers reviewed:**
+
+- Mido Assran et al., *V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning*, arXiv:2506.09985 (2025-06-11); Meta FAIR research page: https://ai.meta.com/research/publications/v-jepa-2-self-supervised-video-models-enable-understanding-prediction-and-planning/ ; paper: https://arxiv.org/abs/2506.09985 . V-JEPA 2-AC is a distinct action-conditioned post-training stage over robot trajectories and is used for latent-space planning with image goals. This is evidence that JEPA prediction and action-conditioned planning can be coupled, not evidence that V14's small tabular T8 predictor is a visual/native latent model.
+
+- Ali Alrasheed, Basim Azam, Naveed Akhtar, *The Planning Limits of Latent World Models*, arXiv:2609.39235 (2026-09-30): https://arxiv.org/abs/2609.39235 . The paper evaluates action-conditioned predictors over V-JEPA 2, V-JEPA 2.1 and other visual encoders. In its five-step setting, action ranking is reliable mainly about 5–10 control steps ahead; an 81× larger predictor does not extend that horizon. Feedback/MPC and nearby subgoals improve distant-goal success. This is a direct warning against presenting a short-horizon predictor as a long-horizon planner.
+
+- Luzhe Huang et al., *LRC-JEPA: Disentangling Dynamics and Residual Context for Efficient World Models*, arXiv:2609.34375 (2026-09-28): https://arxiv.org/abs/2609.34375 . The proposed split propagates a compact predictive dynamics latent while retaining persistent residual context separately. The paper reports a 5.5M active encoder and Bridge-v2 results, but this run did not verify an author-maintained implementation or license; research-only.
+
+- An Lanji et al., *UniJEPA: A Unified Joint-Embedding Predictive Architecture for Task-Agnostic Visual World Modeling*, arXiv:2608.07409 (2026-08-07): https://arxiv.org/abs/2608.07409 . It proposes a unified image/temporal objective with a Gaussian anti-collapse regularizer and reports a formulation without EMA/stop-gradient. This is an early research alternative, not a reason to remove V14's existing EMA path; no implementation, weights or license were selected in this run.
+
+**Concrete V14 mapping:** keep the existing persisted T8 → trainable predictor/EMA → source-disjoint holdout/retention → rollback/replay loop. Its receiver predictions are next-action outcome estimates only. They should be re-evaluated against the next committed ActionOutcome, never extrapolated as a long-horizon plan, source fact, permission or command. B1_DETAIL receives duration/output-size estimates; B2_GIST receives success-probability estimates. Both are explicitly secondary prompt context with uncertainty, full checkpoint/training-source provenance in the stored BODY_STATE source, and no native activation or weight authority.
+
+**Implementation in this run:** the persisted role readout matrix is now connected through the existing B5 bodyview body_state path consumed by Cognition.offer for B1/B2. The read-only receiver uses a nonblocking shared file lock; a concurrent SleepRuntime training update yields BUSY and omits the optional context instead of delaying foreground inference. The 700-character body-state budget remains unchanged; if the predictor context does not fit, it is omitted. The prompt carries only a compact matrix and short checkpoint ID; the source blob retains full checkpoint SHA-256, training-source SHA-256, state vector, event and generation. native_body_consumed=false, native_body_weights_changed=false, decision_authority=NONE.
+
+**License/dependency decision:** no external code, model, weights, dataset or dependency was imported. V-JEPA 2 / LRC-JEPA / UniJEPA remain research references; any later reuse requires separate code, checkpoint, dataset, model-license and ARM ABI review.
+
+**Evidence boundary:** new integration tests are added to the existing Python 3.13/3.14 CI workflow. This run has not executed them locally; the full checkout is unavailable in the local execution environment. CI and native Redmi results must be reported separately. No Android/Redmi claim is made for this receiver path.
