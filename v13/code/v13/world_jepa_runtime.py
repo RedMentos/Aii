@@ -65,7 +65,7 @@ def _consumer(store, home, *, learning_enabled):
     return current
 
 
-def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift_control=None):
+def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift_control=None, neuromod=None):
     """Run persistent JEPA only after a committed turn and only behind both gates."""
     if type(limit) is not int or not 16 <= limit <= MAX_RUNTIME_PAGE:
         raise ValueError("runtime page must be 16..256")
@@ -83,13 +83,29 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift
         "native_body_consumed": False,
         "native_body_weights_changed": False,
     }
-    if not gates["learning_enabled"]:
-        result["status"] = "OFF"
-        return result
-    if not gates["optimizer_permission"]:
-        result["status"] = "PENDING_OPTIMIZER_PERMISSION"
-        return result
     try:
+        recorder = _consumer(store, home, learning_enabled=False)
+        neuromod_record = recorder.record_outcomes(limit=limit)
+        if neuromod is None:
+            from .neuromod import Neuromod
+            neuromod = Neuromod(store)
+        neuromod_report = neuromod.step_scale_report("world_predictor")
+        neuromod_info = {
+            "record": neuromod_record,
+            "mode": neuromod_report["mode"],
+            "applied_scale": neuromod_report["scale"],
+            "gate": neuromod_report["gate"],
+        }
+        result["neuromod"] = neuromod_info
+        if not gates["learning_enabled"]:
+            result["status"] = "OFF"
+            return result
+        if not gates["optimizer_permission"]:
+            result["status"] = "PENDING_OPTIMIZER_PERMISSION"
+            return result
+        if neuromod_report["scale"] <= 0.0:
+            result["status"] = "NEUROMOD_VETOED"
+            return result
         drift_config = world_jepa_drift.normalize_config(drift_control)
         learner = _consumer(store, home, learning_enabled=True)
         updated = learner.update(
@@ -101,8 +117,10 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift
             cancel_check=cancel_check,
             drift_control=drift_config,
             replay_projection=gates["replay_projection"],
+            neuromod_scale=neuromod_report["scale"],
         )
         result.update(updated)
+        result["neuromod"] = neuromod_info
         result.update({
             "runtime_adapter_called": True,
             "learning_enabled": True,
