@@ -2396,3 +2396,10 @@ This is an inherited QA-owned source-lifecycle composition failure; it blocks st
 - **LOCAL_LINUX:** isolated JSON prompt-budget fixture 8/8 PASS. Full Aii checkout/pytest BLOCKED (no checkout / DNS failure).
 - **ANDROID_TERMUX / REDMI:** REDMI_UNVERIFIED; installed base `aed1d2b` is up to date but #2372 is not installed. No device action.
 - **Not accepted:** no learned receiver utility claim from the test-only accepted fixture; no native B1/B2 GGUF update; no trained native cross-organ latent transfer; no native Dream consolidation.
+
+
+### Run 20 QA/device follow-up — 2026-11-22T21:38:00Z
+
+- QA PR #2383 rebinds the old `memory.py` lifecycle source but its exact optimizer-resume matrix now fails at downstream `termux12` and `stage_integrated` builder hashes; two-checkout migration remains PARTIAL. This is a QA-owned composition blocker, not JEPA evidence.
+- JEPA exact head remains `50e3c8d`; temporal run `45072681648` was still IN_PROGRESS at readback. No current-head PASS claimed.
+- Private V13OBS #115 remains metadata-only with zero valid B1/B2 offers and zero final-C3 deliveries. New private read requests #621–#623 have no owner receipt yet: NO_LIVE_RECEIPT.

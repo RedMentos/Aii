@@ -1480,3 +1480,10 @@ The 2026 paper *To Retain or to Adapt? Generalizing Continual Learning* (arXiv:2
 ### Next executable step
 
 Poll exact current-head temporal CI `45072681648`; fix any remaining temporal regression without weakening the utility gate. QA must rebind the lifecycle chain bottom-up to the exact current `memory.py` bytes, then rerun staged/optimizer/integrated checks. Do not rebase #2372 until QA and Boss current-base matrices are green. After that, run matched multi-shift replay/retention ablations. No user action or model/device decision is required.
+
+
+### Run 20 follow-up — QA lifecycle stack and private device read (2026-11-22T21:38:00Z)
+
+QA's clean source-lifecycle rebind is now PR #2383, head `71df3dc86017bd05b5f56f4ee06f00461801a594`, based on JEPA parent `aae0330e`. It has removed the old `memory.py` mismatch, but exact optimizer-resume CI now fails on downstream composition: `termux12` expected SHA-256 `27fe2305d198052fd2a4f324460e57ef0d970c736fce30737ee67e1a068cb4f5`, actual `6a72d48dab40cbd8b4e8e7012b95fccdbf1f6755cb055bacf2c02fb0d3805ba4`; `stage_integrated_candidate.py` expected `c6c6bed35412732d94e40620eb49b176c618e5306040df1cff1ae78225ff3171`, actual `d6ca01feedb80a5259782129871c4d16adbb5336c683d71122bd1caecb586701`. The two-checkout migration still returns PARTIAL rather than UPDATED. QA's staged/integrated jobs remain IN_PROGRESS. JEPA did not modify QA-owned files.
+
+The latest private `V13OBS` issue #115 remains `LOCAL_METADATA_ONLY`: B1 4/4 failed native attempts / 0 valid offers; B2 2/2 failed / 0 valid offers; no final-C3 delivery; C3 2 generated tokens with 38.945 s prefill; prompt inclusion, semantic use and native latent exchange remain unproven. New read-only relay requests #621 PIPELINE_STATUS, #622 DIAGNOSTICS and #623 HEALTH are open without a `device_status` response at this readback: `NO_LIVE_RECEIPT`. No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, shell, model/weight/permission change or device mutation occurred.
