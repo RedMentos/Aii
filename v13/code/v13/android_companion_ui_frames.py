@@ -29,10 +29,10 @@ from .android_companion_transport import (
 MAX_FRAME_PIXELS = 4_000_000
 _RECEIPT_SCHEMA = "v14.android-ui-frame-receipt/1"
 _FRAME_URI = re.compile(
-    r"content://com\\.redmentos\\.v14\\.companion/ui-frame/([0-9a-f]{32})\\Z"
+    r"content://com\.redmentos\.v14\.companion/ui-frame/([0-9a-f]{32})\Z"
 )
-_NONCE = re.compile(r"[0-9a-f]{32}\\Z")
-_SHA256 = re.compile(r"[0-9a-f]{64}\\Z")
+_NONCE = re.compile(r"[0-9a-f]{32}\Z")
+_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _FIELDS = {
     "schema", "nonce", "frame_token", "source_id", "capture_session_id",
     "consent_receipt_ref", "capture_method", "capture_scope", "api_level",
