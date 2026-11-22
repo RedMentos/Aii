@@ -112,6 +112,8 @@ class L1ShadowTrainingTests(unittest.TestCase):
         for seed in report["seed_reports"]:
             manifest = json.loads((self.r.home / seed["candidate_manifest"]).read_text())
             self.assertEqual(manifest["l1_gate"]["verdict"], "PASS")
+            self.assertEqual(len(manifest["body_pair_ids"]), 64)
+            self.assertEqual(len(manifest["label_provenance"]), 64)
             self.assertEqual(manifest["receiver_injection_authority"], 0)
 
     def test_refuses_less_than_sixty_four_pairs(self):
