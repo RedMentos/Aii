@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T21:07:26.770Z",
+  "updated_at": "2026-11-22T21:10:30.220Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA readback 30/30 observed check-runs SUCCESS. Authenticated private PIPELINE_STATUS #619 confirms the same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #620 still shows a slow 2-token stored turn and B1/B2 TIME_BUDGET. Current candidates remain DRAFT / CI pending; functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -197,7 +197,7 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "SYNTHETIC adapter candidate / CI_PENDING; no Android provider",
-      "next_step": "Perception: R-091 / PR #2380 adds full-text cross-architecture steering evidence and clarifies the current native receiver is input-embedding effect only, not semantic utility. Next: support Core's same-model parity and target-generation utility gate; keep B3 OFF and do not import 67M bridge assets or weights.",
+      "next_step": "Perception: #2375 RAW EYE adapter is WIRED_SYNTHETIC only; #2312 is a 44.1-kHz signed Termux-side RAW EAR consumer (dedicated CI PASS) but staged migration fails 2 inherited UPDATED-vs-PARTIAL assertions. Android AudioRecord provider remains absent. R-091 requires B3 target-generation utility, not input-effect RMS. Coordinate provider and current-base rebase with Core/QA.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T09:58:33.516Z",
       "latest_candidate_pr": {
@@ -250,7 +250,7 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "CI only; no APK install, pairing or Redmi OS action",
-      "next_step": "Core/QA: #2376 action-journal exact head 4abb0091 is 7/7 CI green but stacked on #2356. QA #2356 exact head 3829465 has one failed emulator process-restart job; fix/re-run emulator harness before companion integration. Companion remains default-OFF and no Android action is authorized.",
+      "next_step": "Core/QA: Android companion still has no AudioRecord/RECORD_AUDIO provider or MediaProjection provider. Perception #2312 only verifies a signed one-shot result in Termux; implement visible foreground provider, AudioRecordingCallback, exact sample/route/silence checks and explicit consent before any mic test. #2375 remains a synthetic frame consumer only.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T11:38:04.785Z",
       "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance."
@@ -387,7 +387,7 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "LOCAL_LINUX isolated + CI candidate; no Android audio",
-      "next_step": "Perception: speaker-change/RAW EAR remains caller-PCM only; #2375 is a separate synthetic MediaProjection frame adapter, not a microphone or speaker model. Keep FASTDIAR and optional backends diagnostic-only until a real consented audio provider, continuous stream and target-device measurements exist.",
+      "next_step": "Perception: #2312 44.1-kHz signed one-shot consumer has dedicated CI PASS but is not an Android microphone provider; staged migration still fails. #2310 16-kHz predecessor must not merge. FASTDIAR/speaker calibration remains diagnostic-only; require consented continuous PCM provider, source-disjoint real corpus and target-device measurement before speaker-change promotion.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T09:58:33.516Z",
       "latest_candidate_pr": {
@@ -718,7 +718,7 @@
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK; full repository tests were not run locally in this worker.",
     "p0_chat": "OPEN_ISSUE_1904. Stored turn remains 57.74 s / 41.63 s TTFT / 38.95 s prefill / 2 tokens; B1/B2 TIME_BUDGET. Correctness UNKNOWN; no new 20-turn acceptance.",
     "canon_coverage": "Historical 1,255-heading inventory preserved; clause-to-code-to-consumer-to-test-to-environment-to-rollback mapping remains incomplete.",
-    "research": "R-090 prompt-cache isolation/deadline-aware prefill plus R-091 cross-architecture steering. R-091 full-text preprint review: pair-specific transfer is possible in the paper's five-model English decoder setup, but 1.7B threshold is not a scaling law, bridges are too large for Redmi, and V14's current input-embedding effect is not semantic utility. See PR #2380.",
+    "research": "R-090 prompt-cache isolation/deadline-aware prefill; R-091 cross-architecture steering (input-effect is not semantic utility); R-092 Android AudioRecord geometry and signed RAW EAR ingress (#2312 44.1 kHz consumer CI green, staged migration still fails).",
     "user_action_required": "NONE. Existing updater already reports the installed release up to date. No Termux command, model/weight/permission change or device action.",
     "active_agents": "Exactly five V14 roles: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness."
   },
@@ -1003,6 +1003,13 @@
       "status": "FULL_TEXT_PREPRINT_REVIEWED; V14_NATIVE_RECEIVER_IS_INPUT_EFFECT_ONLY; NO_CODE_OR_WEIGHT_IMPORT",
       "primary": "arXiv:2608.05164 (2026-05-26); V14 native_latent_receiver.py and pinned llama.cpp input-embedding API",
       "next": "Core: prove same-model token/input-embedding parity, then target-generation/task utility with NO_MESSAGE, SOURCE_EXACT, zero, shuffled and sign-reversed controls. Keep B3 OFF until source-disjoint holdout and utility pass."
+    },
+    {
+      "id": "R-092",
+      "topic": "Android AudioRecord capture geometry and signed RAW EAR ingress",
+      "status": "OFFICIAL_API_REVIEWED; SIGNED_TERMUX_CONSUMER_CI_PASS; STAGED_MIGRATION_FAIL; ANDROID_PROVIDER_ABSENT",
+      "primary": "Android AudioRecord / AudioFormat / Sharing audio input API docs; Perception PR #2312 exact head 5221314d",
+      "next": "Core/QA: visible foreground AudioRecord provider; check getState/getSampleRate, register AudioRecordingCallback before capture, reject silence/route/preprocessing/format changes, bind exact client PCM and clear one-shot buffer. Perception: rebase #2312 and deduplicate #2304 after QA parent is integrated."
     }
   ],
   "current_evidence_overlay": {
