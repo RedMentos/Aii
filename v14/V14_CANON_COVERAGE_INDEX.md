@@ -2184,3 +2184,8 @@ PR #2331 current head 535eba6f668b3990416c361368f36e3e8f1e599e is DRAFT/NOT_RELE
 ### Device-health correction — 2026-11-22T17:26:00Z
 
 The c4eb82 code release remains installed and its pipeline/dashboard report UP_TO_DATE, but runtime health is discrepant: DIAGNOSTICS #592 reported RUNNING at 17:11Z, while the later HEALTH #593 at 17:15Z reported UNAVAILABLE. Do not classify continuous runtime as ANDROID_VERIFIED. Last recorded turn metrics and B1/B2 TIME_BUDGET results remain point-in-time diagnostics, not a fresh turn.
+
+
+### Learning-state correction — 2026-11-22T17:27:00Z
+
+Private LEARNING_STATUS #594 reports `learning.state=UNAVAILABLE`. There is no evidence of an active learning run, persistent B1/B2/C3 parameter diff, cross-organ gradient, optimizer/master-weight promotion or retained update. Keep JEPA/EMA, World/Self learning and self-optimization classified SHADOW/OFF pending real before/after hashes, holdout utility, retention, restart and rollback.
