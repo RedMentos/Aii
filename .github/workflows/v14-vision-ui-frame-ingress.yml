@@ -13,6 +13,8 @@ on:
       - "v13/code/v13/contracts.py"
       - "v13/code/v13/percept_admission.py"
       - "v13/code/v13/a5_context_envelope.py"
+      - "v14/V14_RESEARCH_LEDGER.md"
+      - "v14/handoffs/RESEARCH_PERCEPTION_MEDIA_PROJECTION_RAW_EYE_20261122.md"
   pull_request:
     paths:
       - "v13/code/v13/vision_ui_frame_ingress.py"
@@ -23,6 +25,8 @@ on:
       - "v13/code/v13/contracts.py"
       - "v13/code/v13/percept_admission.py"
       - "v13/code/v13/a5_context_envelope.py"
+      - "v14/V14_RESEARCH_LEDGER.md"
+      - "v14/handoffs/RESEARCH_PERCEPTION_MEDIA_PROJECTION_RAW_EYE_20261122.md"
 
 jobs:
   frame-ingress:
