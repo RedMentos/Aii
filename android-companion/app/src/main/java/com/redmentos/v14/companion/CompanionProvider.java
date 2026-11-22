@@ -186,14 +186,23 @@ public final class CompanionProvider extends ContentProvider {
 
     private JSONObject cancel(Context context, String actionId) throws Exception {
         if (!isHex(actionId, 32)) return error("INVALID_ACTION_ID");
-        boolean cancelled = db.cancel(actionId);
-        // A remote cancellation, expiry or concurrent decision must not leave
-        // a stale notification that appears to offer an action still pending.
-        cancelApprovalNotification(context, actionId);
+        boolean cancelled = cancelAction(context, db, actionId);
         JSONObject out = new JSONObject();
         out.put("status", cancelled ? "CANCELLED" : "NOT_CANCELLABLE");
         out.put("action_id", actionId);
         return out;
+    }
+
+    static boolean cancelAction(Context context, CompanionDb db, String actionId) {
+        // Serialize cancellation with submit's insert+notification publication.
+        // Otherwise a concurrent pending()/stop() can discover the new row,
+        // cancel it before submit posts its notification, and leave a stale
+        // approval notification visible after the action is already terminal.
+        synchronized (ACTION_GATE_LOCK) {
+            boolean cancelled = db.cancel(actionId);
+            cancelApprovalNotification(context, actionId);
+            return cancelled;
+        }
     }
 
     private JSONObject pending(Context context) throws Exception {
