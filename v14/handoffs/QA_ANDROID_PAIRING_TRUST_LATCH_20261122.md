@@ -30,3 +30,8 @@ This is a source-level companion trust fix. It does not establish Android Shared
 ## Integration packaging note — 2026-11-22 16:26 UTC
 
 The PR is now based directly on core/v14-android-companion-native-20261121 so the Android companion workflow's explicit base-branch filter executes. Its branch intentionally includes the previously exact-head-green QA receipt-recovery slice from #2347 plus this pairing-trust fix. Do not merge both PRs independently: once this consolidated branch passes the complete exact-head matrix, #2347 can be closed as superseded, or the two changes can be split by the integrator without losing either regression. The current head remains DRAFT / NOT_RELEASED pending CI and independent Core review.
+
+
+## Additional QA defect found while composing the exact companion path
+
+A claimed EXECUTING/DENYING row with no receipt is intentionally excluded from pendingActions(). If Keystore signing or SQLite receipt finalization fails, the provider startup path then calls notification reconciliation. The earlier reconciliation compared notifications only with PENDING_USER_APPROVAL rows and could therefore cancel the still-needed approval notification before a receipt existed. The exact regression now keeps claimed-without-receipt IDs live; if the claimed-row query itself fails, reconciliation cancels nothing. The existing failure-injection test now invokes reconciliation between failed signing and retry, proving the notification remains available. This is a receipt-recovery UX/lifecycle safety fix; no action is ever redispatched.
