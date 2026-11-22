@@ -238,7 +238,11 @@ class Runtime:
         "C3 context source lineage",
     )
 
-    cognition = (code_dir / "v13/cognition.py").read_bytes()
+    cognition_base = (code_dir / "v13/cognition.py").read_bytes()
+    # Preserve upstream Cognition overlays (notably fair B1/B2 recovery scheduling).
+    cognition = result.get("v13/cognition.py", cognition_base)
+    if not isinstance(cognition, bytes):
+        raise ValueError("upstream integrated Cognition candidate missing")
     cognition = _replace(
         cognition,
         b"    def offer(self,role,e,version,deadline,peer=None,*,valid_until=None,focus=None):\n",
