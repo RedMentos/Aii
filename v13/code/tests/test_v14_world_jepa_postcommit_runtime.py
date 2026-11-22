@@ -286,6 +286,9 @@ def test_sleep_jepa_job_requeues_when_only_temporal_page_has_more_rows(tmp_path)
         assert result["learning"]["has_more"] is False
         assert result["temporal"]["has_more"] is True
         assert result["temporal_status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA"
+        assert result["learning_has_more"] is False
+        assert result["temporal_has_more"] is True
+        assert result["continuation_reason"] == "TEMPORAL_PAGE"
         assert result["continuation_scheduled"] is True
         pending = [item for item in sleep.scheduler.pending() if item["action"] == "jepa_update"]
         assert len(pending) == 1
