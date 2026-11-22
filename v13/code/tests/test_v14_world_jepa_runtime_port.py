@@ -939,3 +939,249 @@ def test_source_forget_guard_waits_for_cross_process_training_lock(tmp_path):
                 process.terminate()
                 process.join(1.0)
         store.close()
+
+
+# Generation activation and source-forget share one serialization boundary.
+def _stage_generation_update(store, event, label):
+    import hashlib
+    from v13.common import dumps, now, uid
+
+    home = Path(store.home)
+    base = store.generation()
+    relative = f"checkpoints/head-{label}.bin"
+    artifact = home / relative
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    payload = ("synthetic-generation-artifact-" + label).encode("utf-8")
+    artifact.write_bytes(payload)
+    update_id = uid("upd")
+    manifest = {
+        "commit_eligible": True,
+        "component": "route",
+        "source_ids": [event["source_ref"]["source_id"]],
+        "dependency_revisions": {},
+    }
+    with store.tx() as conn:
+        conn.execute(
+            "INSERT INTO updates VALUES (?,?,?,?,?,?,?)",
+            (update_id, base["brain_generation_id"], "PENDING_APPROVAL",
+             relative, hashlib.sha256(payload).hexdigest(), dumps(manifest), now()),
+        )
+    return update_id, artifact, payload
+
+
+def _forget_store_event(store, event):
+    from types import SimpleNamespace
+    from v13.memory import Memory
+
+    Memory._forget_source(
+        SimpleNamespace(s=store),
+        event["source_ref"]["source_id"],
+        event["event_id"],
+    )
+
+
+def _run_thread(target):
+    import threading
+
+    result = {}
+    done = threading.Event()
+
+    def run():
+        try:
+            result["value"] = target()
+        except BaseException as exc:
+            result["error"] = exc
+        finally:
+            done.set()
+
+    thread = threading.Thread(target=run, daemon=True)
+    thread.start()
+    return thread, done, result
+
+
+def test_memory_forget_cannot_race_pending_update_promotion(tmp_path, monkeypatch):
+    import threading
+    from contextlib import contextmanager
+    from v13 import world_jepa_temporal
+    from v13.config import DEFAULTS
+
+    store, session = _make_store(tmp_path / "promotion-wins")
+    try:
+        event = store.event(session, "synthetic source used by pending route update")
+        update_id, _, _ = _stage_generation_update(store, event, "promotion-wins")
+        entered_validation = threading.Event()
+        release_validation = threading.Event()
+        forget_guard_entered = threading.Event()
+        original_validate = store.validate_artifacts
+        original_guard = world_jepa_temporal.combined_source_forget_guard
+
+        def pause_validation(artifacts):
+            entered_validation.set()
+            if not release_validation.wait(5):
+                raise TimeoutError("promotion validation barrier timed out")
+            return original_validate(artifacts)
+
+        @contextmanager
+        def tracked_guard(guard_store, source_id):
+            with original_guard(guard_store, source_id) as report:
+                forget_guard_entered.set()
+                yield report
+
+        monkeypatch.setattr(store, "validate_artifacts", pause_validation)
+        monkeypatch.setattr(world_jepa_temporal, "combined_source_forget_guard", tracked_guard)
+
+        promotion_thread, promotion_done, promotion = _run_thread(
+            lambda: store.switch_generation(update_id, dict(DEFAULTS), {})
+        )
+        assert entered_validation.wait(5), "promotion did not reach its validation barrier"
+
+        forget_thread, forget_done, forgotten = _run_thread(
+            lambda: _forget_store_event(store, event)
+        )
+        try:
+            assert forget_guard_entered.wait(5), "forget did not acquire the JEPA guard"
+            assert not forget_done.wait(0.1), (
+                "source forget passed the Store lock while promotion was still validating"
+            )
+        finally:
+            release_validation.set()
+
+        promotion_thread.join(5)
+        forget_thread.join(5)
+        assert not promotion_thread.is_alive()
+        assert not forget_thread.is_alive()
+        assert "error" not in promotion, promotion
+        assert isinstance(forgotten.get("error"), ValueError), forgotten
+        source = store.one("SELECT deleted FROM sources WHERE id=?",
+                           (event["source_ref"]["source_id"],))
+        update = store.one("SELECT status FROM updates WHERE id=?", (update_id,))
+        assert source["deleted"] == 0
+        assert update["status"] == "COMMITTED"
+        assert store.generation()["hashes"].get("checkpoints/head-promotion-wins.bin")
+    finally:
+        store.close()
+
+
+def test_memory_forget_wins_and_promotion_rejects_quarantined_update(tmp_path, monkeypatch):
+    import threading
+    from v13.config import DEFAULTS
+
+    store, session = _make_store(tmp_path / "forget-wins")
+    try:
+        event = store.event(session, "synthetic source for a pending update that will be forgotten")
+        update_id, _, _ = _stage_generation_update(store, event, "forget-wins")
+        forget_at_commit = threading.Event()
+        release_forget = threading.Event()
+        original_log = store.log
+
+        def pause_forget_log(kind, event_id, metrics):
+            if kind == "forget":
+                forget_at_commit.set()
+                if not release_forget.wait(5):
+                    raise TimeoutError("forget barrier timed out")
+            return original_log(kind, event_id, metrics)
+
+        monkeypatch.setattr(store, "log", pause_forget_log)
+        forget_thread, forget_done, forgotten = _run_thread(
+            lambda: _forget_store_event(store, event)
+        )
+        assert forget_at_commit.wait(5), "forget did not reach its committed cleanup boundary"
+
+        promotion_started = threading.Event()
+
+        def promote():
+            promotion_started.set()
+            return store.switch_generation(update_id, dict(DEFAULTS), {})
+
+        promotion_thread, promotion_done, promotion = _run_thread(promote)
+        try:
+            assert promotion_started.wait(5)
+            assert not promotion_done.wait(0.1), (
+                "promotion did not wait for the source-forget Store transaction"
+            )
+        finally:
+            release_forget.set()
+
+        forget_thread.join(5)
+        promotion_thread.join(5)
+        assert not forget_thread.is_alive()
+        assert not promotion_thread.is_alive()
+        assert "error" not in forgotten, forgotten
+        assert isinstance(promotion.get("error"), ValueError), promotion
+        source = store.one("SELECT deleted FROM sources WHERE id=?",
+                           (event["source_ref"]["source_id"],))
+        update = store.one("SELECT status,path,hash FROM updates WHERE id=?", (update_id,))
+        assert source["deleted"] == 1
+        assert update == {"status": "QUARANTINED", "path": None, "hash": None}
+        assert "checkpoints/head-forget-wins.bin" not in store.generation()["hashes"]
+    finally:
+        release_forget.set()
+        store.close()
+
+
+def test_memory_forget_tombstone_is_rechecked_after_artifact_preflight(tmp_path, monkeypatch):
+    import sqlite3
+    from v13.config import DEFAULTS
+
+    store, session = _make_store(tmp_path / "external-tombstone")
+    try:
+        event = store.event(session, "synthetic source tombstoned after artifact validation")
+        update_id, _, _ = _stage_generation_update(store, event, "external-tombstone")
+        base_generation = store.generation()["brain_generation_id"]
+        original_validate = store.validate_artifacts
+
+        def tombstone_after_preflight(artifacts):
+            result = original_validate(artifacts)
+            external = sqlite3.connect(
+                Path(store.home) / "data/db/brain.sqlite3",
+                timeout=5,
+                isolation_level=None,
+            )
+            try:
+                external.execute("BEGIN IMMEDIATE")
+                external.execute(
+                    "UPDATE sources SET deleted=1 WHERE id=?",
+                    (event["source_ref"]["source_id"],),
+                )
+                external.execute("COMMIT")
+            finally:
+                external.close()
+            return result
+
+        monkeypatch.setattr(store, "validate_artifacts", tombstone_after_preflight)
+        with pytest.raises(ValueError, match="Update source is deleted"):
+            store.switch_generation(update_id, dict(DEFAULTS), {})
+        assert store.generation()["brain_generation_id"] == base_generation
+        assert store.one("SELECT status FROM updates WHERE id=?", (update_id,))["status"] == "PENDING_APPROVAL"
+    finally:
+        store.close()
+
+
+def test_memory_forget_cannot_be_undone_by_rollback_to_parent_component(tmp_path):
+    from v13.config import DEFAULTS
+
+    store, session = _make_store(tmp_path / "rollback-parent")
+    try:
+        source_a = store.event(session, "synthetic source A used by the parent generation")
+        update_a, artifact_a, payload_a = _stage_generation_update(store, source_a, "parent-a")
+        store.switch_generation(update_a, dict(DEFAULTS), {})
+
+        source_b = store.event(session, "synthetic source B used by the newer generation")
+        update_b, _, _ = _stage_generation_update(store, source_b, "child-b")
+        store.switch_generation(update_b, dict(DEFAULTS), {})
+        active_before = store.generation()["brain_generation_id"]
+
+        _forget_store_event(store, source_a)
+        # Recreate the exact parent artifact so rollback cannot pass merely by
+        # noticing a missing file; the quarantined update/source lineage must fail.
+        artifact_a.parent.mkdir(parents=True, exist_ok=True)
+        artifact_a.write_bytes(payload_a)
+
+        with pytest.raises(ValueError, match="Update status changed"):
+            store.rollback(update_b)
+        assert store.generation()["brain_generation_id"] == active_before
+        assert store.one("SELECT status FROM updates WHERE id=?", (update_a,))["status"] == "QUARANTINED"
+        assert store.one("SELECT deleted FROM sources WHERE id=?",
+                         (source_a["source_ref"]["source_id"],))["deleted"] == 1
+    finally:
+        store.close()
