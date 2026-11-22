@@ -831,6 +831,14 @@ def _recover_activation(home, private):
     return "ROLLED_BACK_INCOMPLETE"
 
 
+def recover_pending_activation(*, home=None, private=None):
+    """Recover only an existing activation journal; never stage or install code."""
+    home = Path(home or Path.home() / "v13").expanduser().resolve()
+    private = _protected_dir(private or Path.home() / ".v13-private")
+    _check_stopped(home)
+    return _recover_activation(home, private)
+
+
 def _activation_transaction(home, private, *, old_launcher, old_marker,
                             new_launcher, new_marker, backup_launcher,
                             backup_marker=None):
@@ -912,8 +920,7 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False,
     home = Path(home or Path.home() / "v13").expanduser().resolve()
     private = _protected_dir(private or Path.home() / ".v13-private")
     builds = _protected_dir(builds or Path.home() / ".v13-runtime-builds")
-    _check_stopped(home)
-    _recover_activation(home, private)
+    recover_pending_activation(home=home, private=private)
     launcher = _launcher(home)
     if not ci_verified:
         from .source_updater import ci_passed
@@ -1003,8 +1010,7 @@ def rollback(*, home=None, private=None, builds=None, activation_guard=None):
     home = Path(home or Path.home() / "v13").expanduser().resolve()
     private = _protected_dir(private or Path.home() / ".v13-private")
     builds = _protected_dir(builds or Path.home() / ".v13-runtime-builds")
-    _check_stopped(home)
-    _recover_activation(home, private)
+    recover_pending_activation(home=home, private=private)
     launcher = _launcher(home)
     marker_path = private / MARKER_NAME
     current_marker_bytes = _read_current_marker(marker_path)
