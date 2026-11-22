@@ -1178,6 +1178,19 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path, monkey
         )[-1]
         disabled_payload = json.loads(disabled_packet["payload"])
         assert "body_state_ref" not in disabled_payload.get("bodyview", {})
+
+        # If full B5 state is explicitly enabled but the JEPA prior is off,
+        # retain world/self/skills without inserting the learned prediction.
+        legacy_runner = _BodyReceiverCaptureRunner()
+        legacy_runtime = _body_receiver_runtime(store, home, session, legacy_runner)
+        legacy_runtime.cfg["b2_offer_body_state"] = True
+        legacy_runtime.cfg["b2_world_jepa_receiver"] = False
+        legacy_cognition = Cognition(legacy_runtime)
+        legacy_event = store.event(session, "Current source: verify independent JEPA opt-out.")
+        legacy_cognition.offer("B2_GIST", legacy_event, 0, time.monotonic() + 5.0)
+        legacy_state = json.loads(legacy_runner.calls[0][1]["content"])["body_state"]
+        assert "world" in legacy_state and "self" in legacy_state
+        assert "world_jepa" not in legacy_state
     finally:
         store.close()
 

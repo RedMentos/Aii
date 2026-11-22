@@ -197,7 +197,7 @@ def _world_jepa_body_readout(r, e, text, role):
         return None, None
 
 
-def body_state(r,e,role,text):
+def body_state(r,e,role,text,*,include_world_jepa=True):
     """B5: compact world/self/skill state as a stored source (SourceRef), STATE_NOT_FACT."""
     if modes(r.store)['state_source']!='on':return None
     world=r.store.state('WORLD_STATE:'+r.session,{})[0] or {}
@@ -208,7 +208,9 @@ def body_state(r,e,role,text):
                    'recent':[{k:x.get(k) for k in ('channel','status','outcome') if k in x} for x in (world.get('recent') or [])[-3:] if isinstance(x,dict)]},
           'self':{'learning':(me.get('learning') or {}).get('mode'),'unfinished_actions':me.get('unfinished_actions'),
                   'external_tools':(me.get('permissions') or {}).get('external_tools'),'system_stage':(me.get('permissions') or {}).get('system_stage')}}
-    world_jepa_context, world_jepa_audit = _world_jepa_body_readout(r,e,text,role)
+    world_jepa_context, world_jepa_audit = (
+        _world_jepa_body_readout(r,e,text,role) if include_world_jepa else (None,None)
+    )
     if world_jepa_context is not None:
         view['world_jepa'] = world_jepa_context
     try:

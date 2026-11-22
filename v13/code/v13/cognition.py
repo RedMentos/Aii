@@ -348,9 +348,15 @@ class Cognition:
                 win=bodyview.detail_windows(self.s,e['event_id'],text,e['source_ref'])
                 if win:query['detail_windows']=[w['text'] for w in win];bv_refs+=[w['source_ref'] for w in win];bv['detail_windows']=len(win)
             # Keep the measured full-B5 B2 ablation; the compact JEPA prior has its own switch.
-            if policy=='B2_GIST' and not self.r.cfg.get('b2_offer_body_state',True):
-                bs=(bodyview.world_jepa_body_state(self.r,e,role,text)
-                    if self.r.cfg.get('b2_world_jepa_receiver',True) else None)
+            if policy=='B2_GIST':
+                full_state=self.r.cfg.get('b2_offer_body_state',True)
+                jepa_enabled=self.r.cfg.get('b2_world_jepa_receiver',True)
+                if full_state:
+                    bs=bodyview.body_state(self.r,e,role,text,include_world_jepa=jepa_enabled)
+                elif jepa_enabled:
+                    bs=bodyview.world_jepa_body_state(self.r,e,role,text)
+                else:
+                    bs=None
             else:
                 bs=bodyview.body_state(self.r,e,role,text)
             if bs:query['body_state']=bs['view'];bv_refs.append(bs['source_ref']);bv['body_state_ref']=bs['source_ref']
