@@ -963,6 +963,9 @@ This correction supersedes older branch-level status claims without deleting the
 
 **Interpretation:** in this toy setup, a three-way gate prevents overlap updates and reduces false novelty, but sacrifices coverage; a global sliding retention window increases change detection while fragmenting returning speakers. These are properties of the synthetic generator and simple cosine prototypes, not speech-quality results or proof for/against the paper's VBx consolidation. A real experiment requires separately consented labelled embeddings, source-disjoint calibration/holdout, and a model-bound receipt.
 
-**CI boundary:** first exact PR workflow run 45056173516 failed only because pytest was not installed (compile step passed; test step reported `No module named pytest`). The workflow now installs pinned pytest 9.2.0; retry run 45056272786 is in progress. No CI pass claimed yet. No full local Aii checkout, Android/Termux/Redmi, microphone or device timing test.
+**CI boundary:** first exact PR workflow run 45056173516 failed only because pytest was not installed (compile step passed; test step reported `No module named pytest`). The workflow now installs pinned pytest 9.2.0; exact retry run 45056272786 passed on Python 3.13 and 3.14 (2/2), including compile, 4-test regression, holdout ablation and report-boundary validation. Privacy scan 45056272821 also passed. No full local Aii checkout, Android/Termux/Redmi, microphone or device timing test.
 
 **Status:** FULLTEXT_REVIEWED / SYNTHETIC_ABLATION_LOCAL_PASS / PR_DRAFT / NOT_RUNTIME_WIRED / REDMI_UNVERIFIED.
+
+
+**CI closure addendum (2026-11-22):** PR #2368 latest docs head `ca6b385d1e9ac0461fe922dfcdca3fe796d984a6`; exact code/workflow head `41025f3d9bf92870f9675173d4af00638a49c203`. Initial CI failed only because pytest was absent; after pinning pytest 9.2.0, exact retry 45056272786 passed Python 3.13/3.14 2/2. This remains synthetic-only CI and does not promote the A4 runtime gate.
