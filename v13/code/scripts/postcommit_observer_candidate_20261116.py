@@ -91,7 +91,7 @@ def apply_source(raw):
     source_hash = sha256(raw).hexdigest()
     if source_hash not in SOURCE_SHA256:
         raise ValueError('postcommit observer runtime hash mismatch')
-    for before, after in REPLACEMENTS:
+    for index, (before, after) in enumerate(REPLACEMENTS):
         # The reviewed #1990 stage already adds per-role deadline support.
         # Preserve that signature while adding foreground-attempt tracking.
         if (source_hash == 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2'
@@ -99,9 +99,15 @@ def apply_source(raw):
             before = before.replace('use_peer=True)', 'use_peer=True,role_end=None)')
             after = after.replace('use_peer=True)', 'use_peer=True,role_end=None)')
         old, new = before.encode('utf-8'), after.encode('utf-8')
-        if raw.count(old) != 1:
-            raise ValueError('postcommit observer anchor mismatch')
-        raw = raw.replace(old, new, 1)
+        old_count, new_count = raw.count(old), raw.count(new)
+        if old_count == 1 and new_count == 0:
+            raw = raw.replace(old, new, 1)
+        elif old_count == 0 and new_count == 1:
+            # The exact source hash is allowlisted above; this replacement is
+            # already present in the staged Runtime and must not be duplicated.
+            pass
+        else:
+            raise ValueError('postcommit observer anchor mismatch: replacement ' + str(index))
     compile(raw, 'v13/runtime.py', 'exec')
     return raw
 
