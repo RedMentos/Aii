@@ -121,7 +121,7 @@ def validate(kind,obj):
                 or not isinstance(plan.get("slots"),list) or len(plan["slots"])!=shape[0]
                 or plan.get("body_learning_authority")!=0):
             raise ValueError("B3 pair Gist plan/tap geometry")
-        if obj["token_alignment"]!="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS" or obj["receiver_pooling"]!="B2_ADAPTIVE_GIST_SLOTS" or obj["injection_authority"]!=0 or obj["learning_authority"]!=0:raise ValueError("B3 pair authority/semantics")
+        if obj["token_alignment"]!="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS" or obj["receiver_pooling"]!="B2_ADAPTIVE_GIST_SLOTS;B1_NATIVE_FINE_TOKEN_SLOTS" or obj["injection_authority"]!=0 or obj["learning_authority"]!=0:raise ValueError("B3 pair authority/semantics")
     if kind=="SourceRef" and not 0<=obj["char_start"]<=obj["char_end"]:raise ValueError("SourceRef-Bereich")
     if kind=="OfferPacket" and (obj["role"] not in {"B1_DETAIL","B2_GIST"} or not 0<=obj["confidence"]<=1):raise ValueError("Offer role/confidence")
     if kind=="BodySourceIdSelection":
