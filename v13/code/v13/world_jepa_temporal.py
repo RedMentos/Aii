@@ -156,7 +156,7 @@ def _temporal_features(history, target, history_length):
     x = (
         list(latest["s"])
         + mean_outcome.tolist()
-        + [float(bool(previous[0]["censored"])), float(bool(latest["censored"])),
+        + [float(any(row["censored"] for row in previous)), float(bool(latest["censored"])),
            float(history_length) / float(max(HISTORY_LENGTHS))]
     )
     x2 = (
@@ -256,11 +256,12 @@ def _split_windows(windows):
     owner_by_source = {}
     for window in windows:
         session = window["session_id"]
-        for source_sha in window["source_sha256s"]:
-            _sha(source_sha)
-            previous = owner_by_source.get(source_sha)
+        for source_key in (window["source_ids"] + window["source_sha256s"]):
+            if source_key in window["source_sha256s"]:
+                _sha(source_key)
+            previous = owner_by_source.get(source_key)
             if previous is None:
-                owner_by_source[source_sha] = session
+                owner_by_source[source_key] = session
             else:
                 union(session, previous)
 
@@ -792,10 +793,10 @@ class TemporalWorldJEPAStoreConsumer:
                 "native_body_weights_changed": False,
             }
 
-    def receiver_readout(self, role, session_id, action, horizon=1):
+    def receiver_readout(self, role, session_id, action, history_length=2):
         if role not in ROLE_TARGETS or action not in world_model.ACTIONS:
             raise ValueError("unknown temporal receiver")
-        if type(session_id) is not str or not session_id or horizon not in (1, 2, 3):
+        if type(session_id) is not str or not session_id or history_length not in HISTORY_LENGTHS:
             raise ValueError("invalid temporal receiver context")
         with self._locked(False):
             state, _ = self._read_state()
@@ -827,10 +828,23 @@ class TemporalWorldJEPAStoreConsumer:
             if previous["generation_id"] != latest["generation_id"]:
                 return {"status": "GENERATION_GAP", "role": role,
                         "decision_authority": "NONE", "native_body_consumed": False}
+            event_order = self.store.rows(
+                "SELECT id FROM events WHERE session_id=? ORDER BY created,id LIMIT ?",
+                (session_id, MAX_SESSION_EVENTS + 1),
+            )
+            positions = { _mapping(item)["id"]: index for index, item in enumerate(event_order) }
+            if positions.get(latest["event_id"], -2) != positions.get(previous["event_id"], -1) + 1:
+                return {"status": "NONCONTIGUOUS_HISTORY", "role": role,
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            history_rows = history[-history_length:]
+            if len(history_rows) < history_length:
+                return {"status": "INSUFFICIENT_HISTORY", "role": role,
+                        "decision_authority": "NONE", "native_body_consumed": False}
             x = (
                 list(latest["s"])
-                + np.mean(np.asarray([previous["y"], latest["y"]], dtype=np.float64), axis=0).tolist()
-                + [float(previous["censored"]), float(latest["censored"]), float(horizon) / 3.0]
+                + np.mean(np.asarray([row["y"] for row in history_rows], dtype=np.float64), axis=0).tolist()
+                + [float(any(row["censored"] for row in history_rows[:-1])),
+                   float(latest["censored"]), float(history_length) / float(max(HISTORY_LENGTHS))]
             )
             model = self._load_model(active)
             latent, spread = model.predict(
@@ -858,7 +872,7 @@ class TemporalWorldJEPAStoreConsumer:
                 "status": "SHADOW_READOUT_ONLY",
                 "role": role, "prediction": output,
                 "uncertainty": float(np.asarray(spread).reshape(-1)[0]),
-                "horizon_steps": horizon,
+                "history_length": history_length,
                 "checkpoint_sha256": active["checkpoint_sha256"],
                 "source_sha256": active["source_sha256"],
                 "history_action_ids": [previous["action_id"], latest["action_id"]],
