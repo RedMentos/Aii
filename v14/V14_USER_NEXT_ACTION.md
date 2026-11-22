@@ -54,3 +54,18 @@ Wichtig: Das konfigurierte 35-s-Observerfenster würde bei zwei sequentiellen K�
 4. Weiterhin getrennt halten: #2372/#2383 JEPA-Quelllebenszyklus, #2375/#2379 Screen-Perception, #2356/#2376 Companion-Aktionen und #2377/#2381 B3-Probe. Keiner dieser Stacks ist bereits ein Redmi-Funktionsnachweis.
 
 **Modelle, Gewichte, Age, Berechtigungen, Chats, SQLite und installierte Daten wurden nicht verändert.**
+
+
+## Live update — 2026-11-22T22:30:37.104Z
+
+**Nutzeraktion: Keine erforderlich.**
+
+- Boss PR #2370 ist jetzt auf exaktem Head bae7d03196d98ac6dfebc0a2649faf257ba8308f. Aktuelle Matrix: 0 SUCCESS / 16 QUEUED / 0 IN_PROGRESS / 2 CANCELLED / 2 SKIPPED. Der vorherige Head 03909f0 hatte 8 erfolgreiche Workflows, aber Audio/Arithmetic scheiterte auf Python 3.13 und 3.14 jeweils an derselben Source-Transition-Assertion (44 passed / 17 subtests). Der neue Head korrigiert den gespeicherten Source-Text von What is 8/4? auf calculate 8/4; die 16 neuen Workflows müssen noch laufen.
+- #2377 ist auf f64e994 vorgerückt: kanonischer Pfad und fünfteilige File-Identity werden jetzt im Approval gespeichert; gemeinsamer Manifest+Router-Redirect wird negativ getestet. Zwei Workflows queued, aber eine Testfunktion ist doppelt definiert und muss entfernt werden. B3 bleibt OFF.
+- #2381 ist weiterhin auf 07b4ffbd und 21 Commits voraus / 12 hinter #2377 f64e994. Sein gestagter Overlay enthält noch nicht O_NONBLOCK und _verify_model_file; außerdem ruft sein Test den Receiver-Overlay doppelt auf. Nicht mergen.
+- #2384 ist auf 5cd8ffae: direkter bounded numeric _feature_summary-Test und negative Inputs sind vorhanden; zwei Workflows queued, aber zwei Testfunktionen sind doppelt definiert.
+- #2356 ist auf 27aaa29: ein einzelner sicherer System-UI-Wait und gefiltertes Logcat wurden ergänzt; vier Workflows queued. Das ist ein Harness-Fix, noch kein Prozess-Tod-Beleg.
+- #2379 head 4ce32890 bleibt 11 Commits hinter dem aktuellen #2356-Parent; #2376 head e0985029 bleibt 14 Commits dahinter, obwohl zwei alte Workflows grün sind.
+- #2383 hat auf head 714a09e fünf Workflow-Fehler; #2372 bleibt mit drei Fehlern / einem Erfolg offen. Keine Weight-Diff- oder Android-Lern-Akzeptanz.
+
+Die privaten Gerätebelege #634–#637 bleiben unverändert: aed1d2 installiert, Auto-Update an, 57,74-s letzter Turn, 2 generierte Tokens, B1/B2 TIME_BUDGET, HEALTH/DIAGNOSTICS Runtime-Widerspruch, LEARNING_STATUS unavailable. Keine Geräteaktion, kein LOG_PAGE und kein Kandidaten-Update.
