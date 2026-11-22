@@ -25,9 +25,9 @@ Upstream: `ggml-org/llama.cpp` at `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4`, de
 
 ## Exact source pins
 
-- Native receiver overlay SHA-256: `9e3562775eb07d4384cd0d6901fd6f2e957346b297ff82c2a8fec09ff0771007`
-- Outer recovery builder SHA-256: `668392f6f661fad4cc4dfaa2ac6972a99cc3eea5278aafbc49504711dfccd4a4`
-- Integrated stage builder SHA-256: `0d4fd8760ea49bd12ba4696e449ab33548f266984baa490a46786f847827dc3c`
+- Native receiver overlay SHA-256: `dcff99dff5f7d21c861744386762f7244115991d57cf6210947714d52550505b`
+- Outer recovery builder SHA-256: `9b764e2d282b1e1882befa1c6fa05670706f56ddcd24d2a4dc51a8653024ddfb`
+- Integrated stage builder SHA-256: `cc415da5fc658fb3c9f8070fe4808ffa0bc3f6c4c1861f4a2d4e9d3da9056b03`
 - runtime_deploy.STAGER_SHA256: exact match to `0d4fd8760ea49bd12ba4696e449ab33548f266984baa490a46786f847827dc3c`
 - Current Boss base builder Git blob: `a142f51814a521183416619b763b3a6202fe6d67`
 - Current C4 receipt SHA-256: `0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3`
