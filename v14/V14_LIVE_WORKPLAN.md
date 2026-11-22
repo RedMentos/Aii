@@ -1,3 +1,50 @@
+# Boss integration checkpoint — 2026-11-22 2026-11-22T07:54:34.985Z
+
+## Exact release and Redmi evidence
+
+- Release branch `gpt6/v13-private-remote-bridge-20261111` is `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe`. PR #2316 was reviewed and merged as a documentation/research handoff only; it did not change runtime code or models. Exact push CI for this new release HEAD currently reads **34 SUCCESS / 0 FAILURE / 4 IN_PROGRESS (38 check-runs)**. Do not call the new commit fully green until the four running checks finish.
+- The latest owner-authenticated Redmi receipt reports auto-update enabled, runtime/dashboard `UP_TO_DATE`, `last_error=NONE`, and installed code SHA `f210999cf556be4d4514427cc9b5cf6d3cf3e984`. That is the code-bearing parent of the documentation-only c03ff0 merge; no device update is needed for docs. No UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, shell or phone mutation was performed.
+- The latest diagnostic reports the last turn as FINAL but **63.22 s total / 42.48 s TTFT / 34.96 s prefill / 709 prompt tokens / 2 generated tokens**. The input is redacted; this is not a correctness acceptance. Native probe is `SMOKE_PARTIAL`: B1 53.2 s `TIME_BUDGET`, B2 54.2 s `TIME_BUDGET`; current mapped processes are B1=1, B2=0, C2=1, C3=1; mapped PSS=85.8 MiB (not free RAM). No 20-turn test, native B1/B2 useful-offer delivery or correct-answer benchmark is proven.
+- Lab selector snapshot: official Age 0; requested test stage 10; effective implemented stage 5; physical feature execution unverified; learning commit authority still requires separate SHADOW mode. Do not infer X10 feature execution from the selector value.
+- Source-level budget risk to test, not yet proven as the cause of this device sample: with a 90 s deadline, `observer_end=start+0.45*deadline` yields 40.5 s; default `A_THEN_B_SEQUENTIAL` plus a 35 s per-body cap can let the first body consume 35 s and leave at most ~5.5 s for the second. Preserve both bodies and a real C3 reserve; measure per-role windows and actual offers.
+
+## Exact cross-lane PR review
+
+| Path | Current exact head / CI | Finding | Next owner action |
+|---|---|---|---|
+| B3 native receiver #2314 | `846ad876278ae79f530a4a81c2c7a80a1eb940e1`; 15/19 checks pass, 4 fail | Python 3.13/3.14 staged test hits `NameError: c is not defined`: the overlay replaces `c=controller(r)` with `OPERATOR_PREFIX_NEW` which omits it. Linux pinned llama.cpp build and Android ARM64 cross-compile pass only. | Core preserves `c=controller(r)` before the explicit native-probe branch, keeps count==1 anchors, and reruns both Python versions plus all four receiver jobs. Boss comment #7076144348. |
+| Paired B1/B2 taps #2313 | `9068cf9d2bcd9af7a432cdba8d8e87e80e730f13`; 5/14 pass, 8 fail, 1 skipped | 282 commits behind its old base; stage pins stale. L1 test passes seeds (3,7,11) but expects only two EXACT values. | Core rebases to current release, fixes the three-seed assertion without dropping a seed, then reruns staged/audio/arithmetic/migration and source provenance. Boss comment #7076151325. |
+| JEPA/Memory #2311 | `ba058f122d419812e575683d74e392ca83a90373`; 8/17 pass, 9 fail | `integrated_context_recall_candidate_20261111.py:59` rejects changed feedback/bootstrap builder SHA; staged suite 40 failed / 213 passed / 10 skipped / 2 errors; migration PARTIAL. | JEPA/QA rebase and recompute feedback/bootstrap → Context recall → World training → recovery wrappers → stager → deployer pins bottom-up. Keep learning promotion OFF. Boss comment #7076151103. |
+| Signed RAW EAR consumer #2312 | `5221314d3c01ab6d874ecc0a8b8ff72c34e504a2`; 4/5 checks pass, staged-runtime fails | Stacked on QA companion branch; caller-supplied PCM only; no microphone provider or zeroization proof. | Perception/QA reconcile base and fix exact staged migration before any AudioRecord provider. |
+| L1 source-disjoint child #2317 | `4d6c180fdb11b32365152ec078d999b92b6a68d0`; 3/5 pass, staged/integrated fail | Not yet a source-disjoint accepted training gate. | Core/JEPA repair the underlying paired-tap base and re-run controls. |
+| Android companion #2271/#2273/#2286 | #2271 5/12 pass; #2273 11/13 pass; #2286 12 queued / 1 in progress | One-shot, staged migration and native OS provider/stop durability remain incomplete; default OFF. | QA/Core repair stacked bases and prove official Android permission, durable stop, cancellation and audit before device action. |
+| Diagnostic child #2320 | `2ad1530e3dd662cfc3ae0f8d93d793d7eee95f8e`; 13/15 pass, 2 fail | Reproduces #2314 operator initialization NameError. | Keep diagnostic-only; fold the production fix into #2314 after regression. |
+
+## What this means for the whole Canon
+
+- A0–A5: caller-supplied signed PCM ingress exists in a synthetic consumer; no Android microphone provider, screen capture or full multimodal learning.
+- B1/B2: a synthetic same-turn OfferPacket→C4→C3 path has passed prior CI, but this phone snapshot has no accepted native offer from either body. Two distinct sparse-MoE bodies remain the target.
+- B3/Enlightened Space: symbolic/source-exact exchange remains the production path. The native receiver is only an explicit diagnostic input-embedding probe; no trained cross-model latent alignment, receiver utility or production routing.
+- C3: last phone turn was FINAL but only 2 tokens after 42.48 s TTFT; correctness is unknown because the input was redacted.
+- JEPA/World/Self/Memory/Sleep: synthetic Store-backed numeric predictor candidates exist, but the current JEPA staged chain fails; no native body-weight edit, cross-organ gradient or accepted replay retention.
+- Voice: no AudioRecord, ASR, trainable speech decoder/vocoder or full duplex.
+- Android agency: no installed companion OS executor, background app action, screen/UI executor or Redmi control proof.
+- Age/X10: official Age remains 0; requested stage 10 is only effective stage 5 and physical feature execution is unverified. CPU/RAM/time remain independent resource budgets.
+- Technical OS sandbox, adaptive behavior judge, cross-organ self-edit and production Memorilla overflow consumer remain partial/open.
+- Historical Canon inventory remains 1,255 headings; this overlay does not edit the V13 appendix or mark a heading complete by name alone.
+
+## Next execution order
+
+1. Core fixes the receiver operator initialization regression and makes the observer budget fair to both bodies without starving C3; prove both source-bound offers and C4 consumption on one real turn.
+2. Core rebases paired taps and obtains real same-event B1/B2 native activation pairs; no synthetic random training batch may count as native evidence.
+3. JEPA/QA repairs the exact nested pin chain, then demonstrates a real persistent numeric update with holdout, retention, restart and rollback.
+4. QA/Core complete the Android companion stop/permission/OS provider chain; Perception/QA complete audio consent/zeroization before any microphone capture.
+5. Boss updates the whole-Canon clause→consumer→test→environment→rollback matrix and reviews the next compatible integration stack. Do not merge any red or stale-base PR.
+
+**Environment:** no local Aii checkout is mounted, so no LOCAL_LINUX full-repository suite was run. GitHub CI is separate. No native GGUF semantic receiver, permanent body-weight update, Android microphone/UI executor or Redmi rollback is claimed. **User action: NONE.**
+
+---
+
 ## Research/Perception follow-up — 2026-11-22 06:17Z
 
 - Current release-development integration head: `39b175521f50048f13ca14372b316de47527f531`; Boss PR #2288 is merged as integration only. Candidate-head CI was 20 success / 0 failure / 1 expected skipped / 1 cancelled; post-merge push CI remains not independently verified. Private phone receipt #480 says `CI_WAIT` on installed SHA `89333289b8cd50da92cbf7074c9ef689a2972dbf`, auto-update enabled; no update request or device mutation.
