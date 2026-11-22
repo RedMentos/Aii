@@ -3,42 +3,58 @@
 Date: 2026-11-22  
 Owner: Core & Harness  
 Package: V14-009 / Android screen-observation provider  
-PR: #2379 (draft; stacked on QA PR #2356)  
-Branch: core/v14-media-projection-frame-provider-20261122  
-Code checkpoint SHA: 19f53e9baa16446d5fc167ce3715765579a1298a\nHandoff commit: b1bdfef7e0d88e330f3f0cc829563d30bd429bba
+PR: [#2379](https://github.com/RedMentos/Aii/pull/2379) — DRAFT, stacked on QA PR #2356  
+Branch: `core/v14-media-projection-frame-provider-20261122`  
+Latest code SHA: `ff271b1def8ee1469c4e838abad66a1e43f9375e`
 
-## Verified scope in this branch
+## Product behavior and current code
 
-- The native companion exposes a user-visible Capture one screen frame action.
-- Every capture begins with Android's MediaProjection consent UI; the app requests the default display only.
-- A foreground service captures one frame, releases the projection, and does not run a continuous recorder.
-- The JPEG is bounded to 4 MP / 8 MiB and held only in process memory for at most 20 seconds.
-- A paired-caller-checked ContentProvider pipe returns the frame once. The companion stop switch, service/process teardown, system revocation, expiry and explicit Discard clear the pending frame.
-- The signed P-256 receipt binds the frame hash/length/dimensions, source/session IDs, capture method/scope, API level, monotonic interval and expiry. Action authority, learning authority and raw-frame persistence are explicitly false.
-- Termux transport permits only the fixed companion URI and a bounded binary read. Python verifies the pinned key, signature, schema, expiry, replay, byte count and exact SHA-256 before returning a mutable buffer.
-- A Runtime-turn lease bridge is authored, with polling for companion-side discard/stop and fail-closed behavior when the A5/RAW EYE consumer is absent. It is not yet usable on this branch because the newer A5 lease adapter and RAW EYE frame-ingress files are in Perception PR #2375.
+- The companion exposes a user-visible one-shot Capture screen frame action.
+- Each capture requires Android MediaProjection system consent; the service captures the default display once and stops projection.
+- JPEG is bounded to 4 MP / 8 MiB and held in process memory for at most 20 seconds. The signed P-256 receipt binds exact bytes/hash/dimensions, source/session IDs, capture scope/method, API level, monotonic interval and expiry; action, learning and raw-persistence authority remain false.
+- Termux can read only the fixed paired ContentProvider URI, once, with a bounded byte read and signature/hash verification.
+- The consumed frame now moves into a registered `FrameReadLease`, rather than an untracked raw byte array. Stop/discard/expiry/provider restart clear active leases, close both pipe ends, zeroize the same byte buffer and remove the lease.
+- Pipe consumption, registration and the companion stop switch share `ACTION_GATE_LOCK`; the stop-vs-openFile race now has a 16-iteration concurrent regression.
+- The writer thread is terminal on reader disconnect or revocation. It is daemonized, closes its output and zeroizes the buffer on completion; the lease remains registered until stop/expiry so already-buffered kernel-pipe bytes can still be discarded.
+- The Core Runtime adapter now calls Perception's three-argument provider-verifier factory with the exact `UIObservationLease`, observation and verifier callback. It marks the grant consumed at entry and zeroizes the mutable frame buffer on every exit, including stale/foreign lease and verifier-factory rejection.
+- The source branch still lacks the newer A5 lease/RAW EYE modules because this PR is based on QA companion branch #2356, while Perception PR #2375 is based on the newer release base. The current test proves the Core verifier-call contract with an exact lease object; the real A5 lease + Perception consumer integration remains blocked until Boss provides a combined accepted base.
 
-## Tests and evidence
+## QA findings addressed
 
-- Robolectric tests: one-use read, receipt retention only for lease metadata, expiry, wrong-token rejection, clear/zeroization, authority rejection, exact receipt binding.
-- Python tests: P-256 signature verification, replay/expiry/tamper/authority negative cases, exact frame hash/length, disabled-companion rejection, URI restriction and bounded binary transport.
-- CI: pending/queued at this checkpoint; do not call it PASS until the exact SHA reports success.
-- LOCAL_LINUX: repository checkout was not available in this session; no local test is claimed.
-- TERMUX/REDMI: no connected authorized device session was used. MediaProjection dialog, actual frame bytes, background lifecycle and device memory remain REDMI_UNVERIFIED.
-- Deployment: NOT_RELEASED. No UPDATE_REQUEST, permission change, model/weight change or device mutation was sent.
+1. The earlier receipt assertion mismatch was already corrected in the current branch.
+2. QA's P1 consumed-buffer gap is addressed with `FrameReadLease`, active lease tracking, stop/discard/expiry revocation, pipe-end closure and zeroization.
+3. QA's stop-vs-openFile race is addressed by rechecking the enabled state and registering the pipe under the same `ACTION_GATE_LOCK` used by stop/enable.
+4. QA's Perception factory signature mismatch is corrected to `_issue_provider_frame_verifier(self.lease, self.observation, self.bundle["verify_frame"])`.
+5. Python regressions verify exact lease forwarding, stale/foreign lease rejection, one-shot consumption and zeroization on all exits.
 
-## Integration dependencies and next executable action
+## Exact validation
 
-1. QA reviews and integrates companion base PR #2356 first.
-2. Perception reviews/integrates PR #2375 and confirms its exact A5UIRuntimeAdapter.lease / ProviderFrameVerifier contract.
-3. Rebase this branch onto the combined accepted base; resolve the currently fail-closed lazy imports.
-4. In Runtime._turn, for an explicit screen-observation request, call AndroidCompanionFrameProvider.open_current_turn(runtime), consume the frame through vision_ui_frame_ingress.consume_projected_frame, fetch the same-lease A5UIRuntimeAdapter context, pass source-bound context to C3, and hold the lease until C3 finishes.
-5. Add a true Runtime integration test that proves C3 consumed the source-bound A5 packet, and a negative test that companion Discard/stop cancels the turn and erases cached UI context.
-6. Only after exact CI, Boss integration and explicit on-device consent should QA test this on Redmi. Do not send an update request until that release path is approved.
+| Environment | Test | Result |
+|---|---|---|
+| LOCAL_LINUX / JDK 21 with `javac --release 17` | Isolated `FrameReadLease` compile + blocked-writer close/zeroization smoke | PASS |
+| LOCAL_LINUX | Full Aii Gradle/Robolectric suite | BLOCKED — no Gradle command or Android SDK in this worker |
+| LOCAL_LINUX | Full repository Python/staged tests | BLOCKED — no full checkout; `git ls-remote` previously failed DNS |
+| GitHub Actions | Exact head Android MediaProjection workflow | QUEUED — [45076824779](https://github.com/RedMentos/Aii/actions/runs/45076824779) |
+| GitHub Actions | Exact head staged/integrated regression | QUEUED — [45076824754](https://github.com/RedMentos/Aii/actions/runs/45076824754) |
+| GitHub Actions | Exact head private-bridge regression | QUEUED — [45076819948](https://github.com/RedMentos/Aii/actions/runs/45076819948) |
+| GitHub readback | Core code files | PASS — exact current branch blobs read back |
+| TERMUX/REDMI | APK install, MediaProjection dialog, real frame delivery, lifecycle and memory | REDMI_UNVERIFIED; no device session or capture was performed |
 
-## Risks / explicit non-claims
+Queued CI is not PASS. The local JDK smoke is only the pure-Java lease helper with a stub Store; it is not Android PFD or Robolectric proof.
 
-- This does not yet provide end-to-end visual reasoning or prove C3 consumed screen context.
-- The frame is a full-display snapshot, not an Accessibility tree; app-window capture is not enabled.
-- The local frame grant is bounded by the companion's 20-second receipt store and a Runtime lease poller; it is not a persistent OS permission.
-- Synthetic/Robolectric/CI evidence is not Android-device proof.
+## Dependencies, risks and next actions
+
+1. Poll exact-head Android and staged CI; fix only observed failures.
+2. QA should independently review the new pipe lease, close semantics, stop-race test and negative gates.
+3. Boss must combine the accepted QA companion base with the newer release/A5 lease base and Perception #2375 before claiming a real A5 frame-to-RAW-EYE integration. The current Core branch still fails closed when Perception is absent.
+4. After the combined base is available, add a real `A5UIRuntimeAdapter.lease` + `ProviderFrameVerifier` integration test and verify the same lease/generation reaches C3.
+5. Only after exact CI, Boss integration and explicit Android OS consent may QA run on Redmi. No update request or native capture was sent.
+
+## Safety and non-claims
+
+- This is a one-shot screen-frame provider, not continuous recording or arbitrary app control.
+- No Android permission prompt was bypassed; no MediaProjection capture was performed.
+- No raw screenshot, action, learning or truth authority is granted.
+- No end-to-end visual reasoning or C3 consumption is yet proven.
+- No model/weight change, remote shell, installed runtime update or device mutation occurred.
+- PR #2379 is DRAFT / NOT_RELEASED; GitHub push is not deployment.
