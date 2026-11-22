@@ -9,7 +9,7 @@ import hashlib
 import importlib.util
 from pathlib import Path
 
-BASE_SHA = 'db84bc22749a8f2a2ef01f87c73ddd27622c47ad3807e5d91db9aba526a4ea19'
+BASE_SHA = '958bb1cf7ba764cc17c72fd370b2d156b5009382f8f7fe60d292eddf9e0fcc09'
 WORLD_SHA = '06afa58b5f75f6f6e4d72c5ea333b628752d2a6987a95e3c23becb1e4854121f'
 CHECKPOINT_SHA = '560653e1a59b48991163a61b01135e2ab6e6d89c85fdeec4a8a40198f9bacf97'
 STATE_SHA = '94a785e72c279965a20fabd81eb6e78c9ca1c14b8bee66e83e693755da8a768d'
