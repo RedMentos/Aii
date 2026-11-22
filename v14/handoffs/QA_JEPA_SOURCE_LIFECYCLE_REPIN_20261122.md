@@ -24,7 +24,7 @@ The staged World-JEPA training-resume path stops in source_lifecycle_lock_integr
 
 ## Hash discrepancy to resolve in CI
 
-Python 3.13 CI on the preceding head confirmed the actual memory.py hash is 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701; the temporary def5d6c1... value was wrong and has been corrected. The expanded Python regression now prints and verifies every source pin and each downstream builder edge. Do not merge unless all assertions pass.
+Python 3.13 and 3.14 CI confirmed memory.py SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701 and all eight lifecycle source PINS match. The expanded regression then identified two downstream mismatches (feedback builder SHA and Termux wrapper base Git blob SHA1), now corrected from Python's actual outputs. It also checks the C3 base builder pin, which is the remaining unverified edge. Do not merge unless the full chain and staged runtime tests pass.
 
 ## Next action
 
