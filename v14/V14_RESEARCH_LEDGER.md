@@ -1006,3 +1006,16 @@ This correction supersedes older branch-level status claims without deleting the
 **OSS/license:** no author-linked code repository or code license was verified in the checked primary arXiv page. No external code, dataset, model or weight was imported.
 
 **Decision:** RESEARCH_ONLY / ADDITIVE_UPDATE_ACCEPTANCE_GATE / NO_RUNTIME_CHANGE.
+
+
+## R-087 — LATER: action-conditioned retrieval of earlier physical evidence (2026-11-22)
+
+**Primary paper:** Zihan Zhou, Wenxi Xu, Qilin Wang and Hao Tang, *LATER: Learning Action-Conditioned Temporal Evidence Retrieval for Predictive World Models*, arXiv:2611.25671 (2026-11-19): https://arxiv.org/abs/2611.25671 . LATER separates writing completed real transitions from reading them for a candidate action. It stores partitioned interaction memories, queries them with current state plus candidate action, and uses multi-cut auxiliary supervision for the memory writers. Hypothetical rollouts do not overwrite observed evidence. Controlled history interventions keep query observations/actions fixed while changing earlier physical evidence.
+
+**Reported results (authors' simulator/H100 conditions only):** distracted two-stage PushT terminal success 15.5%→25.0%; Directional TwoRoom first-hit success 15.0%→26.5%; the original physical readout cohort reports 27.9% lower along-push MAE and 85/100 scenes improved over reconstructed CF-JEPA. Swapping the relevant memory direction reduced calibrated action-choice accuracy from 65/102 to 39/102. The model uses ViT-Tiny/14, recurrent GRU writers and a rank-8 response bridge; the reported five-call CEM run is 9.98 s / 150 MiB on an H100. These figures are not V14 or Android expectations.
+
+**Limitations / reuse decision:** the paper's visual simulator tasks and physical latents do not transfer directly to Android digital-action T8 rows. No author-linked implementation or code license was verified on the primary arXiv page; no code, model, dataset, dependency or weights were imported. The reported setup is far above the Redmi target and must not become a new runtime dependency.
+
+**V14 mapping:** the retention/readout separation supports a source-bound history reader that consumes only completed T8 outcomes and never writes hypothetical candidate outcomes back into episodic memory. This run wires a compact role-specific temporal readout into the existing B5 bodyview: B1_DETAIL receives a two-outcome window; B2_GIST receives a three-outcome window. Both remain shadow-only, carry full history/checkpoint/source provenance in the stored BODY_STATE source, and have no action authority. Next experiments: matched factual-vs-swapped-history and no-history controls, per-role horizon ablation, query-sensitive heldout utility, and differential retention across invariant versus transient facts.
+
+**Decision:** RESEARCH_ONLY / ADDITIVE_SHADOW_READOUT / NO_EXTERNAL_CODE_OR_WEIGHT_REUSE / NO_DEVICE_CLAIM.

@@ -1,0 +1,1209 @@
+"""Persistent temporal WorldJEPA over verified T8 sequences.
+
+This additive learner uses contiguous, source-verified ActionOutcome windows,
+including known cancellations/interruptions as explicit omission outcomes.
+It is a numeric SHADOW predictor with EMA/optimizer/checkpoint/replay/rollback;
+it does not edit native B1/B2 GGUF weights or grant action authority.
+"""
+from contextlib import contextmanager
+import hashlib
+import json
+import math
+import os
+import re
+from pathlib import Path
+import uuid
+
+import numpy as np
+
+from v13 import world_jepa, world_jepa_shadow_checkpoint, world_model
+from .world_jepa_consumer import (
+    WorldJEPAStoreConsumer,
+    _fit_role_receivers,
+    receiver_utility_gate,
+    ROLE_TARGETS,
+)
+from .world_jepa_runtime import permission_state
+from .world_jepa_store_authority import verify_committed_temporal_page
+
+
+STATE_KEY = "v14.world_jepa.temporal_consumer"
+REVISION = "v14-world-jepa-temporal-v1"
+SCHEMA = 1
+MAX_ROWS = 2048
+MAX_PAGES = 4
+PAGE_SIZE = 64
+MAX_WINDOWS = 4096
+MAX_SESSION_EVENTS = 256
+MIN_WINDOWS = 16
+MIN_PARTITION = 8
+HISTORY_LENGTHS = (2, 3)
+CENSORED = {"CANCELLED", "ABORTED", "INTERRUPTED"}
+UNKNOWN = {"OUTCOME_UNKNOWN"}
+TERMINAL = {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"} | CENSORED | UNKNOWN
+SHA256 = set("0123456789abcdef")
+
+
+def _json_hash(value):
+    raw = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _json_safe(value):
+    if isinstance(value, np.ndarray):
+        return _json_safe(value.tolist())
+    if isinstance(value, np.generic):
+        return value.item()
+    if isinstance(value, dict):
+        return {str(key): _json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(item) for item in value]
+    if isinstance(value, float) and not math.isfinite(value):
+        raise ValueError("nonfinite temporal checkpoint value")
+    return value
+
+
+def _finite_vector(value, size):
+    return (type(value) in (list, tuple) and len(value) == size
+            and all(type(x) in (int, float) and math.isfinite(x) for x in value))
+
+
+def _sha(value):
+    if type(value) is not str or len(value) != 64 or any(ch not in SHA256 for ch in value):
+        raise ValueError("invalid SHA256")
+    return value
+
+
+def _mapping(row):
+    if type(row) is dict:
+        return row
+    try:
+        return {key: row[key] for key in row.keys()}
+    except Exception as exc:
+        raise ValueError("invalid Store row") from exc
+
+
+def empty_state():
+    return {
+        "schema": SCHEMA,
+        "revision": REVISION,
+        "scan_cursor": 0,
+        "pending_rows": [],
+        "active": None,
+        "previous": None,
+    }
+
+
+def _receipt_row(store, receipt):
+    raw = receipt.training_row()
+    proof = receipt.public_provenance()
+    event_id = receipt.event_id
+    event = store.one(
+        "SELECT id,session_id,generation_id FROM events WHERE id=?",
+        (event_id,),
+    )
+    if not event:
+        raise ValueError("temporal event missing")
+    event = _mapping(event)
+    if event.get("generation_id") != receipt.generation_id:
+        raise ValueError("temporal generation mismatch")
+    session_id = event.get("session_id")
+    if type(session_id) is not str or not session_id:
+        raise ValueError("temporal session identity")
+    status = receipt.status
+    if status not in TERMINAL:
+        raise ValueError("temporal terminal status")
+    route = raw.get("a")
+    if route not in world_model.ACTIONS:
+        raise ValueError("temporal action route")
+    source_id = proof.get("source_id")
+    if type(source_id) is not str or not source_id or len(source_id) > 256:
+        raise ValueError("temporal source identity")
+    return {
+        "action_id": receipt.action_id,
+        "event_id": event_id,
+        "generation_id": receipt.generation_id,
+        "session_id": session_id,
+        "source_id": source_id,
+        "source_sha256": _sha(proof.get("source_sha256")),
+        "fingerprint": _sha(receipt.fingerprint),
+        "outcome_sha256": _sha(proof.get("outcome_sha256")),
+        "created": float(receipt.created),
+        "status": status,
+        "censored": status in CENSORED,
+        "s": [float(x) for x in raw.get("s", ())],
+        "a": route,
+        "y": [float(x) for x in raw.get("y", ())],
+    }
+
+
+def _validate_row(row):
+    required = {
+        "action_id", "event_id", "generation_id", "session_id", "source_id",
+        "source_sha256", "fingerprint", "outcome_sha256", "created", "status",
+        "censored", "s", "a", "y",
+    }
+    if type(row) is not dict or set(row) != required:
+        raise ValueError("invalid temporal T8 row")
+    for key in ("action_id", "event_id", "generation_id", "session_id", "source_id"):
+        if type(row[key]) is not str or not row[key] or len(row[key]) > 256:
+            raise ValueError("invalid temporal identity")
+    for key in ("source_sha256", "fingerprint", "outcome_sha256"):
+        _sha(row[key])
+    if (type(row["created"]) not in (int, float) or not math.isfinite(row["created"])
+            or row["status"] not in TERMINAL
+            or type(row["censored"]) is not bool
+            or row["censored"] != (row["status"] in CENSORED)
+            or row["a"] not in world_model.ACTIONS
+            or not _finite_vector(row["s"], 4)
+            or not _finite_vector(row["y"], 3)):
+        raise ValueError("invalid temporal T8 values")
+
+
+def _window_id(action_ids, history_length):
+    return _json_hash({"actions": list(action_ids), "history": history_length})
+
+
+def _temporal_features(history, target, history_length):
+    previous = history[:-1]
+    latest = history[-1]
+    mean_outcome = np.mean(np.asarray([row["y"] for row in history], dtype=np.float64), axis=0)
+    x = (
+        list(latest["s"])
+        + mean_outcome.tolist()
+        + [float(any(row["censored"] for row in previous)), float(bool(latest["censored"])),
+           float(history_length) / float(max(HISTORY_LENGTHS))]
+    )
+    x2 = (
+        list(target["s"])
+        + list(target["y"])
+        + [float(bool(target["censored"])), 0.0,
+           float(history_length) / float(max(HISTORY_LENGTHS))]
+    )
+    if len(x) != 10 or len(x2) != 10 or not np.isfinite(x).all() or not np.isfinite(x2).all():
+        raise ValueError("invalid temporal window features")
+    return x, x2
+
+
+def build_temporal_windows(store, rows, cancel_check=None):
+    """Build every valid contiguous offset; missing/unknown/revoked rows break a window."""
+    by_session = {}
+    for row in rows:
+        _validate_row(row)
+        if row["status"] in UNKNOWN:
+            continue
+        by_session.setdefault(row["session_id"], []).append(row)
+    event_orders = {}
+    session_ids = sorted(by_session)
+    # Batch the event-order lookup. Per-session SQL round-trips are too expensive
+    # on the Android SQLite store once the bounded replay grows.
+    for offset in range(0, len(session_ids), 400):
+        if cancel_check is not None and cancel_check():
+            raise InterruptedError("temporal window build cancelled")
+        batch = session_ids[offset:offset + 400]
+        placeholders = ",".join("?" for _ in batch)
+        event_rows = store.rows(
+            "SELECT id,session_id,created FROM ("
+            "SELECT id,session_id,created,"
+            "ROW_NUMBER() OVER (PARTITION BY session_id ORDER BY created,id) AS rn "
+            "FROM events WHERE session_id IN (" + placeholders + ")) "
+            "WHERE rn<=? ORDER BY session_id,created,id",
+            tuple(batch) + (MAX_SESSION_EVENTS + 1,),
+        )
+        for item in event_rows:
+            row = _mapping(item)
+            event_orders.setdefault(row["session_id"], []).append(row["id"])
+    windows = []
+    for session_id, session_rows in by_session.items():
+        if cancel_check is not None and cancel_check():
+            raise InterruptedError("temporal window build cancelled")
+        event_ids = event_orders.get(session_id, [])
+        if len(event_ids) > MAX_SESSION_EVENTS:
+            continue
+        positions = {event_id: index for index, event_id in enumerate(event_ids)}
+        by_event = {}
+        for row in session_rows:
+            by_event.setdefault(row["event_id"], []).append(row)
+        # Multiple actions per event are not silently linearized into a fake sequence.
+        if any(len(items) != 1 for items in by_event.values()):
+            continue
+        ordered = [by_event.get(event_id, [None])[0] for event_id in event_ids]
+        for start in range(len(ordered)):
+            if cancel_check is not None and cancel_check():
+                raise InterruptedError("temporal window build cancelled")
+            for history_length in HISTORY_LENGTHS:
+                target_index = start + history_length
+                if target_index >= len(ordered):
+                    continue
+                history = ordered[start:target_index]
+                target = ordered[target_index]
+                if target is None or len(history) != history_length or any(item is None for item in history):
+                    continue
+                sequence = history + [target]
+                if len({item["generation_id"] for item in sequence}) != 1:
+                    continue
+                if any(item["status"] in UNKNOWN for item in sequence):
+                    continue
+                if any(positions.get(sequence[i + 1]["event_id"], -99)
+                       != positions.get(sequence[i]["event_id"], -100) + 1
+                       for i in range(len(sequence) - 1)):
+                    continue
+                x, x2 = _temporal_features(history, target, history_length)
+                action_ids = [item["action_id"] for item in sequence]
+                window_id = _window_id(action_ids, history_length)
+                windows.append({
+                    "window_id": window_id,
+                    "session_id": session_id,
+                    "generation_id": target["generation_id"],
+                    "action_ids": action_ids,
+                    "source_ids": [item["source_id"] for item in sequence],
+                    "source_sha256s": [item["source_sha256"] for item in sequence],
+                    "X": x,
+                    "A": world_model.onehot(target["a"]),
+                    "X2": x2,
+                    "a": target["a"],
+                    "y": list(target["y"]),
+                    "censored": bool(target["censored"]),
+                })
+                if len(windows) > MAX_WINDOWS:
+                    raise OverflowError("temporal window budget exceeded")
+    return windows
+
+
+def _split_windows(windows):
+    """Split whole session/source-connected components, not overlapping rows."""
+    if type(windows) is not list or len(windows) < MIN_WINDOWS:
+        raise ValueError("insufficient temporal windows")
+    sessions = sorted({window["session_id"] for window in windows})
+    parent = {session: session for session in sessions}
+
+    def find(value):
+        while parent[value] != value:
+            parent[value] = parent[parent[value]]
+            value = parent[value]
+        return value
+
+    def union(left, right):
+        a, b = find(left), find(right)
+        if a != b:
+            parent[max(a, b)] = min(a, b)
+
+    owner_by_source = {}
+    for window in windows:
+        session = window["session_id"]
+        for source_key in window["source_ids"]:
+            previous = owner_by_source.get(source_key)
+            if previous is None:
+                owner_by_source[source_key] = session
+            else:
+                union(session, previous)
+        for source_key in window["source_sha256s"]:
+            _sha(source_key)
+            previous = owner_by_source.get(source_key)
+            if previous is None:
+                owner_by_source[source_key] = session
+            else:
+                union(session, previous)
+
+    components = {}
+    for session in sessions:
+        components.setdefault(find(session), set()).add(session)
+    component_keys = []
+    for members in components.values():
+        sources = sorted({
+            source_sha
+            for window in windows if window["session_id"] in members
+            for source_sha in window["source_sha256s"]
+        })
+        component_keys.append((_json_hash({"sessions": sorted(members), "sources": sources}), members))
+    component_keys.sort(key=lambda item: item[0])
+    fold_by_session = {}
+    for index, (_, members) in enumerate(component_keys):
+        fold = "train" if index % 2 == 0 else "holdout"
+        for session in members:
+            fold_by_session[session] = fold
+    train = [window for window in windows if fold_by_session[window["session_id"]] == "train"]
+    holdout = [window for window in windows if fold_by_session[window["session_id"]] == "holdout"]
+    if len(train) < MIN_PARTITION or len(holdout) < MIN_PARTITION:
+        raise ValueError("insufficient source-disjoint temporal partitions")
+    train_sources = {source for window in train for source in window["source_sha256s"]}
+    holdout_sources = {source for window in holdout for source in window["source_sha256s"]}
+    if train_sources & holdout_sources:
+        raise ValueError("temporal source digest leakage")
+    train_sessions = {window["session_id"] for window in train}
+    holdout_sessions = {window["session_id"] for window in holdout}
+    if train_sessions & holdout_sessions:
+        raise ValueError("temporal session leakage")
+    return train, holdout, {
+        "source_disjoint": True,
+        "train_session_count": len(train_sessions),
+        "holdout_session_count": len(holdout_sessions),
+        "train_source_count": len(train_sources),
+        "holdout_source_count": len(holdout_sources),
+    }
+
+
+def _arrays(windows):
+    X = np.asarray([window["X"] for window in windows], dtype=np.float64)
+    A = np.asarray([window["A"] for window in windows], dtype=np.float64)
+    X2 = np.asarray([window["X2"] for window in windows], dtype=np.float64)
+    if (X.ndim != 2 or X.shape[1] != 10 or A.shape != (len(X), 4)
+            or X2.shape != X.shape or not all(np.isfinite(v).all() for v in (X, A, X2))):
+        raise ValueError("invalid temporal training arrays")
+    return X, A, X2
+
+
+def _source_sha(rows):
+    material = [
+        {
+            "action_id": row["action_id"],
+            "source_id": row["source_id"],
+            "source_sha256": row["source_sha256"],
+            "fingerprint": row["fingerprint"],
+            "outcome_sha256": row["outcome_sha256"],
+        }
+        for row in sorted(rows, key=lambda item: item["action_id"])
+    ]
+    return _json_hash(material)
+
+
+def _snapshot(model):
+    return {
+        "enc": {key: np.asarray(value).copy() for key, value in model.enc.items()},
+        "tgt": {key: np.asarray(value).copy() for key, value in model.tgt.items()},
+        "preds": [
+            {key: np.asarray(value).copy() for key, value in predictor.items()}
+            for predictor in model.preds
+        ],
+    }
+
+
+def _delta(before, after, group):
+    pairs = []
+    if group == "preds":
+        for left, right in zip(before[group], after[group]):
+            pairs.extend((left[key], right[key]) for key in left)
+    else:
+        pairs.extend((before[group][key], after[group][key]) for key in before[group])
+    return math.sqrt(sum(float(np.square(right - left).sum()) for left, right in pairs))
+
+
+def _pack_holdout(windows):
+    X, A, X2 = _arrays(windows)
+    return {
+        "window_ids": [window["window_id"] for window in windows],
+        "X": X.tolist(),
+        "A": A.tolist(),
+        "X2": X2.tolist(),
+        "source_ids": sorted({source for window in windows for source in window["source_ids"]}),
+        "source_sha256s": sorted({source for window in windows for source in window["source_sha256s"]}),
+    }
+
+
+def _unpack_holdout(record):
+    X = np.asarray(record["X"], dtype=np.float64)
+    A = np.asarray(record["A"], dtype=np.float64)
+    X2 = np.asarray(record["X2"], dtype=np.float64)
+    if (X.ndim != 2 or X.shape[1] != 10 or A.shape != (len(X), 4)
+            or X2.shape != X.shape or len(X) < 2
+            or not all(np.isfinite(v).all() for v in (X, A, X2))):
+        raise ValueError("invalid persisted temporal holdout")
+    return X, A, X2
+
+
+def _record_valid(record):
+    required = {
+        "checkpoint", "checkpoint_sha256", "source_sha256", "experience_rows",
+        "processed_ids", "fingerprints", "train_window_ids", "holdout_window_ids",
+        "receiver_heads", "receiver_metrics", "action_support", "retention_holdouts",
+        "metrics", "scan_cursor", "fit_steps",
+    }
+    if type(record) is not dict or set(record) != required:
+        raise ValueError("invalid temporal checkpoint record")
+    name = record["checkpoint"]
+    if type(name) is not str or re.fullmatch(r"jepa-[0-9a-f]{32}\.npz", name) is None:
+        raise ValueError("invalid temporal checkpoint name")
+    _sha(record["checkpoint_sha256"])
+    _sha(record["source_sha256"])
+    rows = record["experience_rows"]
+    if type(rows) is not list or len(rows) > MAX_ROWS:
+        raise ValueError("temporal replay row budget")
+    fingerprints = record["fingerprints"]
+    if type(fingerprints) is not dict or len(fingerprints) != len(rows):
+        raise ValueError("temporal fingerprint map")
+    for row in rows:
+        _validate_row(row)
+        if fingerprints.get(row["action_id"]) != row["fingerprint"]:
+            raise ValueError("temporal fingerprint mismatch")
+    if (type(record["processed_ids"]) is not list
+            or set(record["processed_ids"]) != set(fingerprints)
+            or len(record["processed_ids"]) != len(fingerprints)
+            or type(record["scan_cursor"]) is not int or record["scan_cursor"] < 0
+            or type(record["fit_steps"]) is not int or record["fit_steps"] < 1):
+        raise ValueError("temporal checkpoint cursor")
+    if (type(record["train_window_ids"]) is not list
+            or type(record["holdout_window_ids"]) is not list
+            or set(record["train_window_ids"]) & set(record["holdout_window_ids"])):
+        raise ValueError("temporal split ids")
+    if type(record["receiver_heads"]) is not dict or set(record["receiver_heads"]) != set(ROLE_TARGETS):
+        raise ValueError("temporal receiver heads")
+    for role, indices in ROLE_TARGETS.items():
+        head = record["receiver_heads"][role]
+        if type(head) is not dict or not {"weights", "bias"} <= set(head):
+            raise ValueError("temporal receiver head shape")
+        weights = np.asarray(head["weights"], dtype=np.float64)
+        bias = np.asarray(head["bias"], dtype=np.float64)
+        if (weights.ndim != 2 or weights.shape[1] != len(indices)
+                or bias.shape != (len(indices),)
+                or not np.isfinite(weights).all() or not np.isfinite(bias).all()):
+            raise ValueError("temporal receiver head values")
+    if type(record["receiver_metrics"]) is not dict or type(record["action_support"]) is not dict:
+        raise ValueError("temporal receiver metrics")
+    if any(action not in world_model.ACTIONS or type(count) is not int or count < 0
+           for action, count in record["action_support"].items()):
+        raise ValueError("temporal action support")
+    if _source_sha(rows) != record["source_sha256"]:
+        raise ValueError("temporal checkpoint source manifest mismatch")
+    if type(record["retention_holdouts"]) is not list or len(record["retention_holdouts"]) > 3:
+        raise ValueError("temporal retention cohort budget")
+    for holdout in record["retention_holdouts"]:
+        _unpack_holdout(holdout)
+        if (type(holdout["source_ids"]) is not list or type(holdout["source_sha256s"]) is not list
+                or any(type(source) is not str or not source for source in holdout["source_ids"])):
+            raise ValueError("temporal retention provenance")
+        for source_sha in holdout["source_sha256s"]:
+            _sha(source_sha)
+    if type(record["metrics"]) is not dict:
+        raise ValueError("temporal metrics")
+    return True
+
+
+def _validate_state(state):
+    if state is None:
+        return empty_state()
+    required = {"schema", "revision", "scan_cursor", "pending_rows", "active", "previous"}
+    if (type(state) is not dict or set(state) != required
+            or state.get("schema") != SCHEMA or state.get("revision") != REVISION
+            or type(state.get("scan_cursor")) is not int or state["scan_cursor"] < 0):
+        raise ValueError("incompatible temporal WorldJEPA state")
+    for key in ("active", "previous"):
+        if state[key] is not None:
+            _record_valid(state[key])
+    if type(state["pending_rows"]) is not list or len(state["pending_rows"]) > MAX_ROWS:
+        raise ValueError("temporal pending row budget")
+    active_ids = set(state["active"]["fingerprints"]) if state["active"] else set()
+    seen = set()
+    for row in state["pending_rows"]:
+        _validate_row(row)
+        if row["action_id"] in active_ids or row["action_id"] in seen:
+            raise ValueError("duplicate temporal pending row")
+        seen.add(row["action_id"])
+    return state
+
+
+class TemporalWorldJEPAStoreConsumer:
+    """Store-backed dense temporal-window learner with EMA, replay and rollback."""
+
+    def __init__(self, store, *, seed=29, ensemble=2):
+        if type(seed) is not int or not 0 <= seed <= 2**63 - 1:
+            raise ValueError("temporal seed")
+        if type(ensemble) is not int or not 2 <= ensemble <= 16:
+            raise ValueError("temporal ensemble must provide a measurable spread")
+        self.store = store
+        self.seed = seed
+        self.ensemble = ensemble
+        self.home = Path(store.home) / "world_jepa_temporal"
+        if self.home.exists() and self.home.is_symlink():
+            raise ValueError("temporal checkpoint directory symlink")
+        self.home.mkdir(parents=True, exist_ok=True, mode=0o700)
+        os.chmod(self.home, 0o700)
+        if not self.home.is_dir() or self.home.is_symlink():
+            raise ValueError("unsafe temporal checkpoint directory")
+        # Share the same flock as WorldJEPA updates and source-forget; deletion
+        # cannot race a temporal parameter update or its provenance check.
+        self.lock = WorldJEPAStoreConsumer(
+            store, Path(store.home) / "world_jepa", learning_enabled=False
+        )
+
+    @contextmanager
+    def _locked(self, exclusive=True, blocking=True):
+        # Use the exact shared WorldJEPA lock implementation for both blocking
+        # and foreground nonblocking reads; avoid a second lock protocol.
+        with self.lock._locked(exclusive, blocking=blocking):
+            yield
+
+    def _read_state(self):
+        value, version = self.store.state(STATE_KEY, None)
+        return _validate_state(value), version
+
+    def _load_model(self, record):
+        _record_valid(record)
+        path = self.home / record["checkpoint"]
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("missing temporal checkpoint")
+        return world_jepa_shadow_checkpoint.load(
+            path, record["source_sha256"], record["checkpoint_sha256"]
+        )
+
+    def _prune(self, state):
+        keep = {
+            record["checkpoint"]
+            for record in (state["active"], state["previous"])
+            if record is not None
+        }
+        for path in self.home.glob("jepa-*.npz"):
+            if path.name not in keep and not path.is_symlink() and path.is_file():
+                path.unlink(missing_ok=True)
+
+    def update(self, *, limit=PAGE_SIZE, max_pages=MAX_PAGES, steps=80,
+               optimizer_permission=False, replay_mode="uniform", cancel_check=None):
+        if (type(limit) is not int or not 1 <= limit <= PAGE_SIZE
+                or type(max_pages) is not int or not 1 <= max_pages <= MAX_PAGES
+                or type(steps) is not int or not 1 <= steps <= 2000
+                or type(optimizer_permission) is not bool
+                or replay_mode not in {"uniform", "none"}
+                or (cancel_check is not None and not callable(cancel_check))):
+            raise ValueError("invalid temporal update configuration")
+        if cancel_check is not None and cancel_check():
+            return {"status": "CANCELLED", "checkpoint_committed": False}
+        gates = permission_state(self.store)
+        if not gates["learning_enabled"]:
+            return {"status": "OFF", "checkpoint_committed": False,
+                    "native_body_weights_changed": False}
+        if not optimizer_permission or not gates["optimizer_permission"]:
+            return {"status": "PENDING_OPTIMIZER_PERMISSION", "checkpoint_committed": False,
+                    "native_body_weights_changed": False}
+        with self._locked(True):
+            state, version = self._read_state()
+            cursor = state["scan_cursor"]
+            pending = {row["action_id"]: row for row in state["pending_rows"]}
+            active = state["active"]
+            previous_checkpoint_sha = active["checkpoint_sha256"] if active is not None else None
+            active_fingerprints = dict(active["fingerprints"]) if active else {}
+            # A rejected update or explicit rollback keeps source-verified rows pending.
+            # They remain eligible for a deliberate retry even after the scan cursor advances.
+            retry_ids = set(pending) - set(active_fingerprints)
+            new_ids = set()
+            rejected = censored = unknown = scanned = 0
+            has_more = False
+            for _ in range(max_pages):
+                if cancel_check is not None and cancel_check():
+                    return {"status": "CANCELLED", "checkpoint_committed": False}
+                receipts, bad, next_cursor, page_scanned, page_censored, has_more = (
+                    verify_committed_temporal_page(
+                        self.store, after_seq=cursor, limit=limit
+                    )
+                )
+                rejected += bad
+                censored += page_censored
+                scanned += page_scanned
+                for receipt in receipts:
+                    if receipt.status in UNKNOWN:
+                        unknown += 1
+                        continue
+                    row = _receipt_row(self.store, receipt)
+                    prior = active_fingerprints.get(row["action_id"])
+                    if prior is not None:
+                        if prior != row["fingerprint"]:
+                            raise ValueError("committed temporal T8 fingerprint changed")
+                        continue
+                    previous_pending = pending.get(row["action_id"])
+                    if previous_pending is not None:
+                        if previous_pending["fingerprint"] != row["fingerprint"]:
+                            raise ValueError("pending temporal T8 fingerprint changed")
+                        continue
+                    pending[row["action_id"]] = row
+                    new_ids.add(row["action_id"])
+                cursor = next_cursor
+                if not has_more:
+                    break
+            eligible_ids = new_ids | retry_ids
+            if not eligible_ids:
+                next_state = dict(state)
+                next_state["scan_cursor"] = cursor
+                next_state["pending_rows"] = sorted(
+                    pending.values(), key=lambda item: (item["created"], item["action_id"])
+                )
+                if cursor != state["scan_cursor"] or next_state["pending_rows"] != state["pending_rows"]:
+                    self.store.set_state(STATE_KEY, next_state, expected=version)
+                return {
+                    "status": "NO_NEW_TRANSITIONS" if active else "WAITING_FOR_MORE_T8_DATA",
+                    "verified_receipts": len(new_ids), "rejected_receipts": rejected,
+                    "censored_observed": censored, "unknown_skipped": unknown,
+                    "scanned_rows": scanned, "scan_cursor": cursor, "has_more": has_more,
+                    "pending_rows": len(pending), "checkpoint_committed": False,
+                    "native_body_weights_changed": False,
+                }
+            old_rows = list(active["experience_rows"]) if active else []
+            by_id = {row["action_id"]: row for row in old_rows}
+            by_id.update(pending)
+            all_rows = sorted(by_id.values(), key=lambda item: (item["created"], item["action_id"]))
+            if len(all_rows) > MAX_ROWS:
+                raise OverflowError("temporal T8 retention budget exhausted; no rows pruned")
+            try:
+                windows = build_temporal_windows(self.store, all_rows, cancel_check=cancel_check)
+            except InterruptedError:
+                return {"status": "CANCELLED", "checkpoint_committed": False,
+                        "native_body_weights_changed": False}
+            if len(windows) < MIN_WINDOWS:
+                next_state = dict(state)
+                next_state["scan_cursor"] = cursor
+                next_state["pending_rows"] = sorted(
+                    pending.values(), key=lambda item: (item["created"], item["action_id"])
+                )
+                self.store.set_state(STATE_KEY, next_state, expected=version)
+                return {
+                    "status": "WAITING_FOR_MORE_T8_DATA", "windows": len(windows),
+                    "verified_receipts": len(new_ids), "rejected_receipts": rejected,
+                    "censored_observed": censored, "unknown_skipped": unknown,
+                    "scanned_rows": scanned, "scan_cursor": cursor, "has_more": has_more,
+                    "pending_rows": len(pending), "checkpoint_committed": False,
+                    "native_body_weights_changed": False,
+                }
+            train, holdout, split = _split_windows(windows)
+            if replay_mode == "none" and active is not None:
+                train = [
+                    window for window in train
+                    if any(action_id in eligible_ids for action_id in window["action_ids"])
+                ]
+            if len(train) < MIN_PARTITION:
+                next_state = dict(state)
+                next_state["scan_cursor"] = cursor
+                next_state["pending_rows"] = sorted(
+                    pending.values(), key=lambda item: (item["created"], item["action_id"])
+                )
+                self.store.set_state(STATE_KEY, next_state, expected=version)
+                return {
+                    "status": "WAITING_FOR_MORE_T8_DATA", "windows": len(windows),
+                    "train_windows": len(train), "holdout_windows": len(holdout),
+                    "scan_cursor": cursor, "has_more": has_more,
+                    "checkpoint_committed": False, "native_body_weights_changed": False,
+                }
+            train_arrays, holdout_arrays = _arrays(train), _arrays(holdout)
+            X_train, A_train, X2_train = train_arrays
+            X_holdout, A_holdout, X2_holdout = holdout_arrays
+            if active is None:
+                model = world_jepa.WorldJEPA(seed=self.seed, ensemble=self.ensemble)
+                # One bootstrap step creates a resumable optimizer state. The
+                # measured before/after delta below excludes that bootstrap.
+                model.fit(X_train, A_train, X2_train, steps=1, log_every=1,
+                          cancel_check=cancel_check)
+            else:
+                model = self._load_model(active)
+            before_snapshot = _snapshot(model)
+            holdout_before = model.prediction_loss(X_holdout, A_holdout, X2_holdout)
+            retention_before = []
+            for old_holdout in (active["retention_holdouts"] if active else []):
+                old_X, old_A, old_X2 = _unpack_holdout(old_holdout)
+                retention_before.append(model.prediction_loss(old_X, old_A, old_X2))
+            train_steps = steps if active is not None else max(1, steps - 1)
+            try:
+                model.partial_fit(
+                    X_train, A_train, X2_train, steps=train_steps,
+                    allow_optimizer_bootstrap=True,
+                    cancel_check=cancel_check,
+                )
+            except InterruptedError:
+                return {"status": "CANCELLED", "checkpoint_committed": False,
+                        "native_body_weights_changed": False}
+            if cancel_check is not None and cancel_check():
+                return {"status": "CANCELLED", "checkpoint_committed": False}
+            after_snapshot = _snapshot(model)
+            encoder_delta = _delta(before_snapshot, after_snapshot, "enc")
+            predictor_delta = _delta(before_snapshot, after_snapshot, "preds")
+            parameter_delta = encoder_delta + predictor_delta
+            ema_delta = _delta(before_snapshot, after_snapshot, "tgt")
+            holdout_after = model.prediction_loss(X_holdout, A_holdout, X2_holdout)
+            shuffled_target = model.prediction_loss(
+                X_holdout, A_holdout, np.roll(X2_holdout, 1, axis=0)
+            )
+            shuffled_action = model.prediction_loss(
+                X_holdout, np.roll(A_holdout, 1, axis=0), X2_holdout
+            )
+            no_history = X_holdout.copy()
+            no_history[:, :9] = 0.0
+            no_history_loss = model.prediction_loss(no_history, A_holdout, X2_holdout)
+            collapse = model.collapse_stats(X2_holdout)
+            retention_after = []
+            for old_holdout in (active["retention_holdouts"] if active else []):
+                old_X, old_A, old_X2 = _unpack_holdout(old_holdout)
+                retention_after.append(model.prediction_loss(old_X, old_A, old_X2))
+            retention_pass = all(
+                after <= before * 1.10 + 1e-9
+                for before, after in zip(retention_before, retention_after)
+            )
+            utility_pass = (
+                math.isfinite(holdout_after) and holdout_after <= holdout_before * 1.05 + 1e-9
+                and holdout_after + 1e-9 < shuffled_target
+                and holdout_after + 1e-9 < shuffled_action
+                and not collapse.get("collapsed", True)
+                and parameter_delta > 0.0 and ema_delta > 0.0
+            )
+            if not utility_pass or not retention_pass:
+                next_state = dict(state)
+                next_state["scan_cursor"] = cursor
+                next_state["pending_rows"] = sorted(
+                    pending.values(), key=lambda item: (item["created"], item["action_id"])
+                )
+                self.store.set_state(STATE_KEY, next_state, expected=version)
+                attempt_metrics = _json_safe({
+                    "train_windows": len(train), "holdout_windows": len(holdout),
+                    "optimizer_steps": model._fit_steps, "steps_this_update": train_steps,
+                    "replay_mode": replay_mode,
+                    "verified_receipts": len(new_ids), "pending_retried": len(retry_ids),
+                    "source_disjoint": split["source_disjoint"],
+                    "train_session_count": split["train_session_count"],
+                    "holdout_session_count": split["holdout_session_count"],
+                    "holdout_mse_before": holdout_before, "holdout_mse_after": holdout_after,
+                    "shuffled_target_mse": shuffled_target,
+                    "shuffled_action_mse": shuffled_action,
+                    "no_history_mse": no_history_loss,
+                    "parameter_delta_norm": parameter_delta,
+                    "encoder_delta_norm": encoder_delta,
+                    "predictor_delta_norm": predictor_delta,
+                    "ema_target_delta_norm": ema_delta,
+                    "checkpoint_parent_sha256": previous_checkpoint_sha,
+                    "checkpoint_sha256": None,
+                    "retention_mse_before": retention_before,
+                    "retention_mse_after": retention_after,
+                    "retention_pass": retention_pass,
+                    "utility_pass": utility_pass,
+                    "collapse": collapse,
+                })
+                return {
+                    "status": "RETENTION_GATE_REJECTED" if not retention_pass else "UTILITY_GATE_REJECTED",
+                    "verified_receipts": len(new_ids), "pending_retried": len(retry_ids),
+                    "train_windows": len(train), "holdout_windows": len(holdout),
+                    "steps_this_update": train_steps, "optimizer_steps": model._fit_steps,
+                    "replay_mode": replay_mode, "metrics": attempt_metrics,
+                    "holdout_mse_before": holdout_before, "holdout_mse_after": holdout_after,
+                    "shuffled_target_mse": shuffled_target,
+                    "shuffled_action_mse": shuffled_action,
+                    "no_history_mse": no_history_loss,
+                    "parameter_delta_norm": parameter_delta,
+                    "ema_target_delta_norm": ema_delta,
+                    "retention_mse_before": retention_before,
+                    "retention_mse_after": retention_after,
+                    "retention_pass": retention_pass,
+                    "collapse": collapse, "scan_cursor": cursor, "has_more": has_more,
+                    "checkpoint_committed": False, "native_body_weights_changed": False,
+                }
+            receiver_heads, receiver_metrics = _fit_role_receivers(
+                model, train_arrays, holdout_arrays, train, holdout
+            )
+            action_support = {}
+            for window in train:
+                action_support[window["a"]] = action_support.get(window["a"], 0) + 1
+            receiver_gates = {
+                role: receiver_utility_gate(receiver_metrics, role)
+                for role in ROLE_TARGETS
+            }
+            old_holdouts = list(active["retention_holdouts"]) if active else []
+            retention_holdouts = (old_holdouts + [_pack_holdout(holdout)])[-3:]
+            source_sha = _source_sha(all_rows)
+            checkpoint_name = "jepa-" + uuid.uuid4().hex + ".npz"
+            checkpoint_path = self.home / checkpoint_name
+            checkpoint = world_jepa_shadow_checkpoint.save(model, checkpoint_path, source_sha)
+            if cancel_check is not None and cancel_check():
+                checkpoint_path.unlink(missing_ok=True)
+                return {"status": "CANCELLED", "checkpoint_committed": False,
+                        "native_body_weights_changed": False}
+            metrics = _json_safe({
+                "train_windows": len(train), "holdout_windows": len(holdout),
+                "holdout_mse_before": holdout_before, "holdout_mse_after": holdout_after,
+                "shuffled_target_mse": shuffled_target,
+                "shuffled_action_mse": shuffled_action,
+                "no_history_mse": no_history_loss,
+                "parameter_delta_norm": parameter_delta,
+                "encoder_delta_norm": encoder_delta,
+                "predictor_delta_norm": predictor_delta,
+                "ema_target_delta_norm": ema_delta,
+                "checkpoint_parent_sha256": previous_checkpoint_sha,
+                "checkpoint_sha256": checkpoint["sha256"],
+                "optimizer_steps": model._fit_steps,
+                "steps_this_update": train_steps,
+                "censored_observed": censored, "unknown_skipped": unknown,
+                "pending_retried": len(retry_ids),
+                "source_disjoint": split["source_disjoint"],
+                "train_session_count": split["train_session_count"],
+                "holdout_session_count": split["holdout_session_count"],
+                "train_source_count": split["train_source_count"],
+                "holdout_source_count": split["holdout_source_count"],
+                "retention_mse_before": retention_before,
+                "retention_mse_after": retention_after,
+                "retention_pass": retention_pass,
+                "replay_mode": replay_mode,
+                "collapse": collapse,
+                "receiver_gates": receiver_gates,
+                "rejected_receipts": rejected,
+                "scanned_rows": scanned,
+                "has_more": has_more,
+            })
+            receiver_heads = _json_safe(receiver_heads)
+            receiver_metrics = _json_safe(receiver_metrics)
+            record = {
+                "checkpoint": checkpoint_name,
+                "checkpoint_sha256": checkpoint["sha256"],
+                "source_sha256": source_sha,
+                "experience_rows": all_rows,
+                "processed_ids": [row["action_id"] for row in all_rows],
+                "fingerprints": {row["action_id"]: row["fingerprint"] for row in all_rows},
+                "train_window_ids": [window["window_id"] for window in train],
+                "holdout_window_ids": [window["window_id"] for window in holdout],
+                "receiver_heads": receiver_heads,
+                "receiver_metrics": receiver_metrics,
+                "action_support": action_support,
+                "retention_holdouts": retention_holdouts,
+                "metrics": metrics,
+                "scan_cursor": cursor,
+                "fit_steps": model._fit_steps,
+            }
+            _record_valid(record)
+            next_state = {
+                "schema": SCHEMA, "revision": REVISION, "scan_cursor": cursor,
+                "pending_rows": [], "active": record, "previous": active,
+            }
+            try:
+                self.store.set_state(STATE_KEY, next_state, expected=version)
+            except ValueError as exc:
+                checkpoint_path.unlink(missing_ok=True)
+                if "Stale state write" in str(exc):
+                    return {"status": "CONCURRENT_STATE_CONFLICT_RETRY",
+                            "new_receipts": len(new_ids), "checkpoint_discarded": True,
+                            "native_body_weights_changed": False}
+                raise
+            except Exception:
+                checkpoint_path.unlink(missing_ok=True)
+                raise
+            self._prune(next_state)
+            return {
+                "status": "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA",
+                "verified_receipts": len(new_ids), "pending_retried": len(retry_ids),
+                "rejected_receipts": rejected,
+                "censored_observed": censored, "unknown_skipped": unknown,
+                "scanned_rows": scanned, "scan_cursor": cursor, "has_more": has_more,
+                "windows": len(windows), "train_windows": len(train),
+                "holdout_windows": len(holdout), "metrics": metrics,
+                "checkpoint_sha256": checkpoint["sha256"],
+                "source_sha256": source_sha,
+                "checkpoint_committed": True,
+                "optimizer_state_persisted": checkpoint["optimizer_state_persisted"],
+                "native_body_consumed": False,
+                "native_body_weights_changed": False,
+                "decision_authority": "NONE",
+            }
+
+    def rollback(self):
+        with self._locked(True):
+            state, version = self._read_state()
+            if state["previous"] is None:
+                return {"status": "NO_ROLLBACK_CHECKPOINT", "checkpoint_committed": False}
+            current = state["active"]
+            previous = state["previous"]
+            previous_ids = set(previous["fingerprints"])
+            pending = [
+                row for row in (current["experience_rows"] if current else [])
+                if row["action_id"] not in previous_ids
+            ]
+            next_state = {
+                "schema": SCHEMA, "revision": REVISION,
+                "scan_cursor": previous["scan_cursor"],
+                "pending_rows": pending,
+                "active": previous,
+                "previous": None,
+            }
+            self.store.set_state(STATE_KEY, next_state, expected=version)
+            self._prune(next_state)
+            return {
+                "status": "ROLLED_BACK",
+                "checkpoint_sha256": previous["checkpoint_sha256"],
+                "pending_rows": len(pending),
+                "native_body_weights_changed": False,
+            }
+
+    def receiver_readout(self, role, session_id, action, history_length=2):
+        if role not in ROLE_TARGETS or action not in world_model.ACTIONS:
+            raise ValueError("unknown temporal receiver")
+        if type(session_id) is not str or not session_id or history_length not in HISTORY_LENGTHS:
+            raise ValueError("invalid temporal receiver context")
+        with self._locked(False):
+            state, _ = self._read_state()
+            active = state["active"]
+            if active is None:
+                return {"status": "NO_CHECKPOINT", "role": role,
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            utility = receiver_utility_gate(active["receiver_metrics"], role)
+            support = int(active["action_support"].get(action, 0))
+            if not utility["accepted"] or support < 8:
+                return {
+                    "status": "RECEIVER_UTILITY_REJECTED",
+                    "role": role, "receiver_utility": utility,
+                    "support_samples": support, "support_min_samples": 8,
+                    "checkpoint_sha256": active["checkpoint_sha256"],
+                    "source_sha256": active["source_sha256"],
+                    "decision_authority": "NONE",
+                    "native_body_consumed": False,
+                    "native_body_weights_changed": False,
+                }
+            history = sorted(
+                (row for row in active["experience_rows"] if row["session_id"] == session_id),
+                key=lambda row: (row["created"], row["action_id"]),
+            )
+            if len(history) < history_length:
+                return {"status": "INSUFFICIENT_HISTORY", "role": role,
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            if previous["generation_id"] != latest["generation_id"]:
+                return {"status": "GENERATION_GAP", "role": role,
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            event_order = self.store.rows(
+                "SELECT id FROM events WHERE session_id=? ORDER BY created DESC,id DESC LIMIT ?",
+                (session_id, MAX_SESSION_EVENTS + 1),
+            )
+            event_order = list(reversed(event_order))
+            positions = {_mapping(item)["id"]: index for index, item in enumerate(event_order)}
+            history_rows = history[-history_length:]
+            latest = history_rows[-1]
+            if len(history_rows) < history_length:
+                return {"status": "INSUFFICIENT_HISTORY", "role": role,
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            if len({row["generation_id"] for row in history_rows}) != 1:
+                return {"status": "GENERATION_GAP", "role": role,
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            if any(
+                positions.get(right["event_id"], -99) != positions.get(left["event_id"], -100) + 1
+                for left, right in zip(history_rows, history_rows[1:])
+            ):
+                return {"status": "NONCONTIGUOUS_HISTORY", "role": role,
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            x = (
+                list(latest["s"])
+                + np.mean(np.asarray([row["y"] for row in history_rows], dtype=np.float64), axis=0).tolist()
+                + [float(any(row["censored"] for row in history_rows[:-1])),
+                   float(latest["censored"]), float(history_length) / float(max(HISTORY_LENGTHS))]
+            )
+            model = self._load_model(active)
+            latent, spread = model.predict(
+                np.asarray([x], dtype=np.float64),
+                np.asarray([world_model.onehot(action)], dtype=np.float64),
+            )
+            head = active["receiver_heads"][role]
+            prediction = latent[0] @ np.asarray(head["weights"], dtype=np.float64) + np.asarray(head["bias"], dtype=np.float64)
+            if not np.isfinite(prediction).all():
+                raise ValueError("nonfinite temporal receiver prediction")
+            if role == "B1_DETAIL":
+                output = {
+                    "predicted_action_duration_s": max(0.0, math.expm1(min(20.0, float(prediction[0])))),
+                    "predicted_output_characters": max(0.0, math.expm1(min(20.0, float(prediction[1]) * 8.0))),
+                }
+            elif role == "B2_GIST":
+                output = {"predicted_success_probability": float(np.clip(prediction[0], 0.0, 1.0))}
+            else:
+                output = {
+                    "predicted_action_duration_s": max(0.0, math.expm1(min(20.0, float(prediction[0])))),
+                    "predicted_success_probability": float(np.clip(prediction[1], 0.0, 1.0)),
+                    "predicted_output_characters": max(0.0, math.expm1(min(20.0, float(prediction[2]) * 8.0))),
+                }
+            return {
+                "status": "SHADOW_READOUT_ONLY",
+                "role": role, "prediction": output,
+                "uncertainty": float(np.asarray(spread).reshape(-1)[0]),
+                "history_length": history_length,
+                "checkpoint_sha256": active["checkpoint_sha256"],
+                "source_sha256": active["source_sha256"],
+                "history_action_ids": [row["action_id"] for row in history_rows],
+                "history_source_sha256s": [row["source_sha256"] for row in history_rows],
+                "support_samples": support,
+                "receiver_utility": utility,
+                "decision_authority": "NONE",
+                "native_body_consumed": False,
+                "native_body_weights_changed": False,
+            }
+
+
+    def receiver_matrix(self, session_id, actions, history_length=2, nonblocking=False):
+        """Batch temporal B1/B2/SELF readouts for the foreground bodyview contract."""
+        if (type(session_id) is not str or not session_id
+                or history_length not in HISTORY_LENGTHS
+                or type(actions) not in (list, tuple) or not actions
+                or len(actions) > len(world_model.ACTIONS)
+                or any(type(action) is not str or action not in world_model.ACTIONS
+                       for action in actions)
+                or len(set(actions)) != len(actions)):
+            raise ValueError("invalid temporal receiver matrix request")
+        with self._locked(False, blocking=not nonblocking):
+            state, _ = self._read_state()
+            active = state["active"]
+            if active is None:
+                return {"status": "NO_CHECKPOINT", "matrix": {},
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            history = sorted(
+                (row for row in active["experience_rows"] if row["session_id"] == session_id),
+                key=lambda row: (row["created"], row["action_id"]),
+            )
+            if len(history) < history_length:
+                return {"status": "INSUFFICIENT_HISTORY", "matrix": {},
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            event_order = self.store.rows(
+                "SELECT id FROM events WHERE session_id=? ORDER BY created DESC,id DESC LIMIT ?",
+                (session_id, MAX_SESSION_EVENTS + 1),
+            )
+            event_order = list(reversed(event_order))
+            positions = {_mapping(item)["id"]: index for index, item in enumerate(event_order)}
+            history_rows = history[-history_length:]
+            if len({row["generation_id"] for row in history_rows}) != 1:
+                return {"status": "GENERATION_GAP", "matrix": {},
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            if any(
+                positions.get(right["event_id"], -99) != positions.get(left["event_id"], -100) + 1
+                for left, right in zip(history_rows, history_rows[1:])
+            ):
+                return {"status": "NONCONTIGUOUS_HISTORY", "matrix": {},
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            latest = history_rows[-1]
+            x = (
+                list(latest["s"])
+                + np.mean(np.asarray([row["y"] for row in history_rows], dtype=np.float64), axis=0).tolist()
+                + [float(any(row["censored"] for row in history_rows[:-1])),
+                   float(latest["censored"]), float(history_length) / float(max(HISTORY_LENGTHS))]
+            )
+            model = self._load_model(active)
+            X = np.repeat(np.asarray([x], dtype=np.float64), len(actions), axis=0)
+            A = np.asarray([world_model.onehot(action) for action in actions], dtype=np.float64)
+            latent, spread = model.predict(X, A)
+            if (len(latent) != len(actions) or len(spread) != len(actions)
+                    or not np.isfinite(latent).all() or not np.isfinite(spread).all()):
+                raise ValueError("nonfinite temporal receiver matrix")
+            history_action_ids = [row["action_id"] for row in history_rows]
+            history_source_sha256s = [row["source_sha256"] for row in history_rows]
+            matrix = {}
+            for index, action in enumerate(actions):
+                support = int(active["action_support"].get(action, 0))
+                matrix[action] = {}
+                for role in ROLE_TARGETS:
+                    utility = receiver_utility_gate(active["receiver_metrics"], role)
+                    common = {
+                        "role": role,
+                        "support_samples": support,
+                        "support_min_samples": 8,
+                        "support_scope": "TRAIN_SPLIT_ONLY",
+                        "checkpoint_sha256": active["checkpoint_sha256"],
+                        "source_sha256": active["source_sha256"],
+                        "history_length": history_length,
+                        "history_action_ids": history_action_ids,
+                        "history_source_sha256s": history_source_sha256s,
+                        "receiver_utility": utility,
+                        "decision_authority": "NONE",
+                        "native_body_consumed": False,
+                        "native_body_weights_changed": False,
+                    }
+                    if not utility["accepted"]:
+                        matrix[action][role] = common | {
+                            "status": "RECEIVER_UTILITY_REJECTED"
+                        }
+                        continue
+                    if support < 8:
+                        matrix[action][role] = common | {
+                            "status": "ACTION_SUPPORT_INSUFFICIENT"
+                        }
+                        continue
+                    head = active["receiver_heads"][role]
+                    prediction = (
+                        latent[index] @ np.asarray(head["weights"], dtype=np.float64)
+                        + np.asarray(head["bias"], dtype=np.float64)
+                    )
+                    if not np.isfinite(prediction).all():
+                        raise ValueError("nonfinite temporal receiver prediction")
+                    if role == "B1_DETAIL":
+                        output = {
+                            "predicted_action_duration_s": max(
+                                0.0, math.expm1(min(20.0, float(prediction[0])))
+                            ),
+                            "predicted_output_characters": max(
+                                0.0, math.expm1(min(20.0, float(prediction[1]) * 8.0))
+                            ),
+                        }
+                    elif role == "B2_GIST":
+                        output = {
+                            "predicted_success_probability": float(
+                                np.clip(prediction[0], 0.0, 1.0)
+                            )
+                        }
+                    else:
+                        output = {
+                            "predicted_action_duration_s": max(
+                                0.0, math.expm1(min(20.0, float(prediction[0])))
+                            ),
+                            "predicted_success_probability": float(
+                                np.clip(prediction[1], 0.0, 1.0)
+                            ),
+                            "predicted_output_characters": max(
+                                0.0, math.expm1(min(20.0, float(prediction[2]) * 8.0))
+                            ),
+                        }
+                    uncertainty = float(np.asarray(spread[index]).reshape(-1)[0])
+                    if not math.isfinite(uncertainty) or uncertainty < 0:
+                        raise ValueError("invalid temporal receiver uncertainty")
+                    matrix[action][role] = common | {
+                        "status": "SHADOW_READOUT_ONLY",
+                        "prediction": output,
+                        "uncertainty": uncertainty,
+                    }
+            return {
+                "status": "SHADOW_READOUT_ONLY",
+                "matrix": matrix,
+                "session_id": session_id,
+                "history_length": history_length,
+                "history_action_ids": history_action_ids,
+                "history_source_sha256s": history_source_sha256s,
+                "checkpoint_sha256": active["checkpoint_sha256"],
+                "source_sha256": active["source_sha256"],
+                "decision_authority": "NONE",
+                "native_body_consumed": False,
+                "native_body_weights_changed": False,
+            }
+
+
+def consume_temporal_after_commit(store, home=None, *, limit=PAGE_SIZE, max_pages=MAX_PAGES,
+                                  steps=None, cancel_check=None):
+    """Runtime adapter: same local learning/optimizer gates as the base WorldJEPA."""
+    gates = permission_state(store)
+    if not gates["learning_enabled"]:
+        return {"status": "OFF", "checkpoint_committed": False,
+                "native_body_weights_changed": False}
+    if not gates["optimizer_permission"]:
+        return {"status": "PENDING_OPTIMIZER_PERMISSION", "checkpoint_committed": False,
+                "native_body_weights_changed": False}
+    learner = TemporalWorldJEPAStoreConsumer(store)
+    return learner.update(
+        limit=limit, max_pages=max_pages,
+        steps=min(gates["steps"], 40) if steps is None else steps,
+        optimizer_permission=True, replay_mode=gates["replay_mode"],
+        cancel_check=cancel_check,
+    )
+
+
+@contextmanager
+def combined_source_forget_guard(store, source_id):
+    """Extend the existing JEPA source-forget lock to temporal checkpoints."""
+    from .world_jepa_consumer import source_forget_guard
+
+    with source_forget_guard(store, source_id) as base_report:
+        state, version = store.state(STATE_KEY, empty_state())
+        state = _validate_state(state)
+        for label in ("active", "previous"):
+            record = state[label]
+            if record is not None and any(
+                row["source_id"] == source_id for row in record["experience_rows"]
+            ):
+                raise ValueError(
+                    "Source is retained by a temporal WorldJEPA "
+                    + label + " checkpoint; safe temporal unlearning is not implemented"
+                )
+        pending = state["pending_rows"]
+        kept = [row for row in pending if row["source_id"] != source_id]
+        removed = len(pending) - len(kept)
+        if removed:
+            next_state = dict(state)
+            next_state["pending_rows"] = kept
+            store.set_state(STATE_KEY, next_state, expected=version)
+        yield dict(base_report) | {"temporal_pending_rows_removed": removed}
