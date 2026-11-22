@@ -101,3 +101,8 @@ Run 45042292782 has now completed with **FAIL** in both staged jobs:
 - staged-runtime job 137269202708: 16 failed, 234 passed, 10 skipped, 2 errors, 47 subtests passed. All reported failures cascade from the same exact source-pin mismatch in Core's integrated_audio_context_candidate_20261121.py. Two migration tests report PARTIAL instead of UPDATED because staging cannot complete.
 - This is the previously reported cross-owner pin mismatch, not a failure in the Perception RAW EAR/calibration tests. The exact composer still expects blob b18e450162b062b09368a12b1ca18924ed8c5025, while the Perception branch audio_voice_cues.py blob is 80bd30a129e26131d55f8de0202aa0d62f7c100d.
 - Keep PR #2349 DRAFT and NOT_RELEASED. Do not rebase or edit Core-owned composer/recovery/stage/deployer files without the Core/Integrator owner. The targeted Perception CI is green; staged integration is not.
+
+
+## Boss integration dependency readback — 2026-11-22
+
+Boss PR #2343 current head 9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2 is still DRAFT and staged CI is red (run 45042303608): integrated-regression fails with an Integrated observer Runtime source hash mismatch; staged-runtime reports 29 failed, 227 passed, 10 skipped, 2 errors and 37 subtests, including postcommit observer anchor mismatches and migration PARTIAL. This is separate from the audio composer pin that blocks #2349. The exact current-head findings were posted on #2343 comment 7082045618. Perception has not edited Boss/Core-owned files. Integration order remains: Boss repairs its current stage/runtime chain; then Core/Integrator composes #2349's audio_voice_cues change and recomputes composer → recovery → stage → deployer pins from exact bytes; then rerun all consumers.
