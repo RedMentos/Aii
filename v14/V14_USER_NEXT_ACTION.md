@@ -1,3 +1,43 @@
+# Current next action — 2026-11-22 04:13 CET (Research & Perception checkpoint)
+
+**User action: none.** No Termux command, model/weight change, permission change, updater toggle, phone-data action or microphone authorization is requested.
+
+## Latest observed integration base
+
+- Boss branch: `boss/v14-recall-store-pin-rebind-20261122`; latest observed exact commit `679f3667c5c98b867f85ae960824489da0d8fd3a` (runtime deploy stager SHA refresh).
+- At the latest #2288 comment, runtime-deploy integrity, combined JEPA, Lab-Age, controller guard and A5 UI lease were PASS; staged/integrated, audio/arithmetic, migration, private owner-read and privacy were still in progress. **No all-green base and no release.** Do not rebase a dependent PR onto a partially validated candidate.
+- Boss still owns the integration branch, global board/release decision and Master/backup writes.
+
+## Research & Perception code
+
+- PR [#2299](https://github.com/RedMentos/Aii/pull/2299), branch `research-perception/v14-raw-ear-rebase-d06c637-20261122`, latest branch tip `c471765171f53c07178a4bb712830f51606fdcd5`; DRAFT / NOT_RELEASED, still based on the older candidate until #2288 is green.
+- The RAW EAR speaker registry now emits cosine similarity as diagnostic-only when a threshold is caller-asserted. Candidate/continuity booleans stay null; A4/C3 return `DEFER`; C3 labels the raw value `speaker_similarity_delta` / `spk_cal=UNVERIFIED`; no speaker-derived A4 interrupt is allowed. Method label is `COSINE_LOOKBACK_DIAGNOSTIC_V1`, not a claim to run FastDiar.
+- Added a repository negative-control test comparing A4 external-interrupt gain with and without uncalibrated speaker embeddings. This exact repository test has **not** run.
+- LOCAL_LINUX isolated scratch mirror: `py_compile` PASS and 4/4 unittest PASS. Full Aii checkout/pytest is BLOCKED (no checkout mounted; local GitHub DNS/network unavailable). Exact-head GitHub workflow/status readback for the latest code commit returned no runs/statuses: CI NOT_RUN/PENDING. No Redmi, microphone, native model or weight proof.
+
+## Research recorded
+
+- **R-067:** caller-asserted speaker thresholds were being promoted to decisions despite `CALLER_ASSERTED_UNVERIFIED`; now defer-only until a verified model-bound calibration artifact exists.
+- **R-068:** pinned llama.cpp API distinguishes output token embeddings (`n_embd_out`) from input token embeddings (`n_embd_inp`). Same width is not semantic alignment. Review sent to Core #2300.
+- **R-069:** full PLatour/PACT preprint review. PACT-Check requires Dummy Transfer, Irrelevant Transfer, Self-Communication and Trained Receiver controls; paper results are task-dependent. The official Apache-2.0 code stack is Linux x86_64/Python 3.11/CUDA and is not a Termux ARM runtime candidate. Protocol only, no model/weight download.
+
+## Device and deployment
+
+- Private owner-read requests #457 HEALTH, #458 PIPELINE_STATUS and #459 DIAGNOSTICS were created with 10-minute expiry; all remained open with zero authenticated comments at the last poll. **NO_LIVE_RECEIPT.**
+- Private V13OBS #115 is last updated 2026-11-18 and is stale. Current installed SHA, current updater consent and current runtime state are UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell action or device mutation was issued.
+- **REDMI_UNVERIFIED / NOT_RELEASED.** Do not infer deployment from GitHub pushes or dashboard status.
+
+## Next internal actions
+
+1. Wait for #2288's exact staged/integrated, audio/arithmetic, migration, owner-read and privacy gates to finish; only then rebase #2299 onto the verified head.
+2. Run the full RAW EAR focused tests on Python 3.13/3.14 plus exact staged/integrated and migration CI; specifically execute the new no-speaker-input attention negative control.
+3. Keep speaker decisions disabled until a model-revision-bound labeled calibration set and verified receipt exist.
+4. Core should add PACT-Check controls to #2300 before any semantic B3 promotion: dummy, unrelated same-length source, self-communication, receiver-only trained baseline, plus zero/shuffle/random controls.
+
+All historical V13 Canon functions remain in scope; this checkpoint neither removes them nor claims system completion.
+
+---
+
 # Current next action — 2026-11-22 01:39 CET (full staged CI readback)
 
 Current Boss HEAD remains `f586a92392b521c073e7a72340bf7adb72f87198`. The common pin-ordering defect now reaches every major staged consumer:
