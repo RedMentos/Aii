@@ -44,7 +44,7 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :focal (JEF-Fokusschleife: Workspace-Slots, letzte Runden, Inquisition P1/P2, C5-Auswahl)
 :import causal-output <dataset.json> <offline-trained-directory>
 :channel NO_MESSAGE|SOURCE_EXACT|CONTROL|SYMBOLIC
-:tap B1_DETAIL|B2_GIST [Start:Ende] (max. 64 native Tokens, read-only)
+:tap B1_DETAIL|B2_GIST [Start:Ende] | :tap pair (beide native Zustände derselben Quelle, read-only)
 :feedback output <gewünschter Referenztext> [--learn] (erster nativer Token)
 :budget [Name Wert] / :learning record|shadow|commit / :learn [route|wake|halt|b1_predictor|b2_predictor|a3_student|world_predictor|control_calibration|memory_retrieval|output_adapter]
 :requests / :approve <ID> / :reject <ID> / :rollback <Update-ID>
@@ -411,7 +411,13 @@ class Operator:
             if len(args)==2 and args[0]=='rollback':return r.consolidation.rollback(args[1])
             raise ValueError(':consolidate semantic|procedural|status / :consolidate rollback <ID>')
         if cmd=='tap':
-            if len(args) not in (1,2) or args[0] not in {'B1_DETAIL','B2_GIST'}:raise ValueError(':tap B1_DETAIL|B2_GIST [Start:Ende]')
+            if args==['pair']:
+                last=r.last_answer()
+                if not last:raise ValueError('Erst eine Eingabe/Antwort erzeugen')
+                e=json.loads(s.one('SELECT packet FROM events WHERE id=?',(last['event_id'],))['packet'])
+                r.enqueue('tap_pair',e)
+                return 'Gepaarte native B1/B2-Beobachtung gestartet; beide Zustände werden an dieselbe Quelle gebunden. Keine Injection, kein Lernen.'
+            if len(args) not in (1,2) or args[0] not in {'B1_DETAIL','B2_GIST'}:raise ValueError(':tap B1_DETAIL|B2_GIST [Start:Ende] | :tap pair')
             last=r.last_answer()
             if not last:raise ValueError('Erst eine Eingabe/Antwort erzeugen')
             e=json.loads(s.one('SELECT packet FROM events WHERE id=?',(last['event_id'],))['packet']);ref=e['source_ref']
