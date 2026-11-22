@@ -46,7 +46,7 @@ class PairedNativeTapTests(unittest.TestCase):
             return p
         with patch.object(self.r.cognition, "tap", side_effect=tap), \
              patch.object(self.r.cognition, "read_tap", side_effect=lambda p: rows[p["packet_id"]]):
-            pair = capture_pair(self.r.cognition, self.event, time.monotonic() + 10)
+            pair = self.r.cognition.tap_pair(self.event, time.monotonic() + 10)
         p = pair["packet"]
         self.assertEqual(p["schema"], SCHEMA)
         self.assertEqual(p["event_id"], self.event["event_id"])
