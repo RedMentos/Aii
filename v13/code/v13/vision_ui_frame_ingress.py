@@ -705,6 +705,7 @@ def consume_projected_frame_from_provider(
         _overwrite_caller_buffer(frame_buffer)
 
 
+@contextmanager
 def consume_projected_frame_scope(runtime, observation, frame_buffer, **kwargs):
     """Scope one UI frame through all downstream consumers, then revoke its cache/source.
 
