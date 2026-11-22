@@ -23,6 +23,19 @@ def test_recovery_composes_with_existing_learning_and_preserves_frozen_sources(t
     assert b'onlineworld' in (dest / 'v13/agi/__init__.py').read_bytes()
     assert (dest / 'scripts/ask_verified_budget.py').is_file()
     assert (dest / 'scripts/native_prefill_stream_client.py').is_file()
+    semantic = (dest / 'v13/world_semantic_evidence_candidate.py').read_bytes()
+    local_error = (dest / 'v13/local_error_route_shadow_candidate.py').read_bytes()
+    store = (dest / 'v13/store.py').read_bytes()
+    def source_pin(raw, name):
+        needle = b"'" + name.encode('ascii') + b"':"
+        assert raw.count(needle) == 1
+        start = raw.index(needle) + len(needle)
+        quote = raw.find(b"'", start)
+        value = raw[quote + 1:quote + 65]
+        assert len(value) == 64 and raw[quote + 65:quote + 66] == b"'"
+        return value.decode('ascii')
+    assert source_pin(semantic, 'store.py') == hashlib.sha256(store).hexdigest()
+    assert source_pin(local_error, 'world_semantic_evidence_candidate.py') == hashlib.sha256(semantic).hexdigest()
     helper_spec = importlib.util.spec_from_file_location('activation_validate', CODE / 'scripts/activate_termux_recovery.py')
     helper = importlib.util.module_from_spec(helper_spec)
     helper_spec.loader.exec_module(helper)
