@@ -161,6 +161,33 @@ def test_voiced_tone_yields_bounded_pitch_and_voicing_cues():
     assert cues["frame_count"] <= 50
 
 
+
+@pytest.mark.parametrize("sample_rate", (8000, 12000, 16000, 44100, 48000))
+def test_numpy_pitch_backend_matches_python_for_synthetic_controls(sample_rate):
+    fixtures = (
+        tone(140, sample_rate=sample_rate),
+        sweep_tone(sample_rate=sample_rate),
+        amplitude_burst(sample_rate=sample_rate),
+        white_noise(sample_rate=sample_rate),
+        silence_padded_tone(sample_rate=sample_rate),
+        tone(180, sample_rate=sample_rate, seconds=0.04),
+    )
+    for pcm in fixtures:
+        assert extract_voice_cues(pcm, sample_rate, backend="numpy") == extract_voice_cues(
+            pcm, sample_rate, backend="python"
+        )
+
+
+def test_numpy_backend_is_explicit_and_falls_back_without_changing_python(monkeypatch):
+    pcm = tone(140)
+    expected = extract_voice_cues(pcm, 16000, backend="python")
+    monkeypatch.setattr(audio_voice_cues_module, "_load_numpy", lambda: None)
+    with pytest.raises(RuntimeError, match="NumPy voice cue backend is unavailable"):
+        extract_voice_cues(pcm, 16000, backend="numpy")
+    assert extract_voice_cues(pcm, 16000, backend="python") == expected
+    with pytest.raises(ValueError, match="voice cue backend"):
+        extract_voice_cues(pcm, 16000, backend="fast")
+
 def test_noise_silence_and_impulse_are_not_misreported_as_voiced():
     silence_pcm = struct.pack("<" + "h" * 8000, *([0] * 8000))
     impulse_samples = [0] * 8000
@@ -242,7 +269,8 @@ def test_extractor_rejects_audio_windows_over_one_second():
         extract_voice_cues(tone(seconds=1.1), 16000)
 
 
-def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path):
+@pytest.mark.parametrize("voice_backend", ("python", "numpy"))
+def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path, voice_backend):
     runtime, event = make_runtime(tmp_path)
     pcm = tone(140)
     try:
@@ -251,6 +279,7 @@ def test_voice_cues_flow_to_real_a4_and_c3_without_raw_pcm_or_identity(tmp_path)
             event_id=event["event_id"], generation_id=event["brain_generation_id"],
             source_id=SOURCE_ID, consent_receipt=RECEIPT,
             consent_check=consent_ok, consent_guard=_guard_for(consent_ok), finality="FINAL", token_budget=512,
+            voice_backend=voice_backend,
         )
         segment = result["packet"]["segments"][0]
         cues = segment["acoustic"]["voice_cues"]
