@@ -6,6 +6,7 @@ on:
       - "research-perception/**"
     paths:
       - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v14/experiments/raw_ear_vad_compare.py"
       - "v14/experiments/test_raw_ear_vad_compare.py"
@@ -15,8 +16,10 @@ on:
       - "research-perception/**"
       - "gpt6/v13-private-remote-bridge-20261111"
       - "qa/v14-jepa-checkpoint-publication-20261121"
+      - "boss/v14-recall-store-pin-rebind-20261122"
     paths:
       - "v13/code/v13/audio_voice_cues.py"
+      - "v13/code/v13/audio_speaker_evidence.py"
       - "v13/code/v13/audio_temporal_evidence.py"
       - "v14/experiments/raw_ear_vad_compare.py"
       - "v14/experiments/test_raw_ear_vad_compare.py"
@@ -63,12 +66,13 @@ jobs:
         run: |
           python -m py_compile \
             v13/code/v13/audio_voice_cues.py \
+            v13/code/v13/audio_speaker_evidence.py \
             v13/code/v13/audio_temporal_evidence.py \
             v14/experiments/raw_ear_vad_compare.py \
             v14/experiments/test_raw_ear_vad_compare.py
       - name: Verify exact V3/temporal source blobs and run synthetic ABI/benchmark checks
         env:
           PYTHONPATH: v14/experiments
-          V14_EXPECTED_RAW_EAR_V3_BLOB: b62442c6e740d136982b2bc8080cef6227ba266f
+          V14_EXPECTED_RAW_EAR_V3_BLOB: 596d14487b9f2b28609eea79fb8b1b39f8da009c
           V14_EXPECTED_TEMPORAL_VOICE_BLOB: 098ce2ec6bb0b744166d711a3401b7acf0252de1
         run: python -m unittest discover -s v14/experiments -p "test_raw_ear_vad_compare.py" -v
