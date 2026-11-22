@@ -42,6 +42,11 @@ def test_recovery_composes_with_existing_learning_and_preserves_frozen_sources(t
     assert 'minimum_role_slice_s' in cognition_source
     assert 'def _audio_context_query' in cognition_source
     assert 'c4_offer_context_ready' in cognition_source
+    runner_source = (dest / 'v13/runners.py').read_text(encoding='utf-8')
+    brain_panel_source = (dest / 'v13/brain_panel.py').read_text(encoding='utf-8')
+    assert 'inspect_native_offer_prompt' in runner_source
+    assert 'native_offer_prompt_receipt' in runner_source
+    assert 'latest_turn' in brain_panel_source
     helper_spec = importlib.util.spec_from_file_location('activation_validate', CODE / 'scripts/activate_termux_recovery.py')
     helper = importlib.util.module_from_spec(helper_spec)
     helper_spec.loader.exec_module(helper)
