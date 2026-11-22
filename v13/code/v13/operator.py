@@ -45,6 +45,8 @@ HELP='''Text eingeben → echte lokale Modellantwort. ::Text sendet ein führend
 :import causal-output <dataset.json> <offline-trained-directory>
 :channel NO_MESSAGE|SOURCE_EXACT|CONTROL|SYMBOLIC
 :tap B1_DETAIL|B2_GIST [Start:Ende] (max. 64 native Tokens, read-only)
+:tap pair (same-source native B1/B2 read-only capture)
+:b3 pairs (native paired capture count, revisions and L1 threshold)
 :feedback output <gewünschter Referenztext> [--learn] (erster nativer Token)
 :budget [Name Wert] / :learning record|shadow|commit / :learn [route|wake|halt|b1_predictor|b2_predictor|a3_student|world_predictor|control_calibration|memory_retrieval|output_adapter]
 :requests / :approve <ID> / :reject <ID> / :rollback <Update-ID>
@@ -415,7 +417,39 @@ class Operator:
             if len(args)==1 and args[0] in {'semantic','procedural'}:return dumps(r.consolidation.stage(r.session,args[0]))
             if len(args)==2 and args[0]=='rollback':return r.consolidation.rollback(args[1])
             raise ValueError(':consolidate semantic|procedural|status / :consolidate rollback <ID>')
+        if cmd=='b3' and args==['pairs']:
+            from .b3order import MIN_PAIRED
+            from .b3pairs import SCHEMA
+            rows=s.rows("SELECT payload FROM packets WHERE kind='B3PairedTapPacket' ORDER BY rowid")
+            all_pairs=[json.loads(x['payload']) for x in rows]
+            pairs=[p for p in all_pairs if p.get('packet_schema')==SCHEMA]
+            ignored_legacy_packets=len(all_pairs)-len(pairs)
+            ids={p['body_pair_id'] for p in pairs}
+            source_keys={(p['source_ref'].get('sha256'),p['source_ref'].get('char_start'),p['source_ref'].get('char_end')) for p in pairs}
+            revisions={(p['model_revisions']['B1_DETAIL'],p['model_revisions']['B2_GIST']) for p in pairs}
+            current={'B1_DETAIL':r.models.revision('B1_DETAIL'),'B2_GIST':r.models.revision('B2_GIST')}
+            current_match=bool(pairs) and all(p['model_revisions']==current for p in pairs)
+            fine_counts=[p['fine_readout']['plan']['native_tokens'] for p in pairs]
+            gist_counts=[p['gist_readout']['shape'][0] for p in pairs]
+            return dumps({'paired_native_samples':len(source_keys),'captured_pair_packets':len(pairs),'ignored_legacy_packets':ignored_legacy_packets,'unique_body_pair_ids':len(ids),'required_for_l1_training':MIN_PAIRED,
+                          'remaining':max(0,MIN_PAIRED-len(source_keys)),
+                          'pinned_revision_pairs':[list(x) for x in sorted(revisions)],
+                          'b1_detail_fine_slots':{'min':min(fine_counts) if fine_counts else 0,'max':max(fine_counts) if fine_counts else 0,'budget':64},
+                          'b2_gist_adaptive_slots':{'min':min(gist_counts) if gist_counts else 0,'max':max(gist_counts) if gist_counts else 0},
+                          'current_model_revisions':current,'all_pairs_match_current_models':current_match,
+                          'single_revision_set':len(revisions)==1,
+                          'pair_collection_threshold_met':len(source_keys)>=MIN_PAIRED and len(revisions)==1 and current_match,
+                          'task_labels_and_L0_baselines_required':True,
+                          'shadow_trainer_available':True,
+                          'l1_utility_gate':'NOT_EVALUATED_BY_PAIR_COLLECTION_STATUS',
+                          'latent_injection_authority':0,'body_learning_authority':0})
         if cmd=='tap':
+            if args==['pair']:
+                last=r.last_answer()
+                if not last:raise ValueError('Erst eine Eingabe/Antwort erzeugen')
+                e=json.loads(s.one('SELECT packet FROM events WHERE id=?',(last['event_id'],))['packet'])
+                r.enqueue('tap_pair',e)
+                return 'Gepaarte native B1/B2-Beobachtung gestartet; beide Zustände werden an dieselbe Quelle gebunden. Keine Injection, kein Lernen.'
             if len(args) not in (1,2) or args[0] not in {'B1_DETAIL','B2_GIST'}:raise ValueError(':tap B1_DETAIL|B2_GIST [Start:Ende]')
             last=r.last_answer()
             if not last:raise ValueError('Erst eine Eingabe/Antwort erzeugen')

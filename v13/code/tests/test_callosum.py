@@ -31,7 +31,7 @@ class GainTests(unittest.TestCase):
 class Base(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.r=Runtime(Path(self.tmp.name));self.r.sleep.cycle.set_policy('enabled','off')
-        self.c=C.Callosum(self.r.store,N.Neuromod(self.r.store))
+        self.c=C.controller(self.r)
     def tearDown(self):self.r.close();self.tmp.cleanup()
     def teach(self,channel,util,n=C.MIN_N,d='B1_TO_B2'):
         def fn(st):

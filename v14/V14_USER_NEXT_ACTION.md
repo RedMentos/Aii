@@ -1,3 +1,65 @@
+# V14 — User next action (verified 2026-11-22 16:50 CET)
+
+**Keine Aktion nötig. Bitte nichts manuell ausführen.** Kein Termux-Befehl, kein zweiter UPDATE_REQUEST, kein Modell-/Gewichts-/Age-/Rechtewechsel und keine Mikrofonfreigabe.
+
+- Release-development branch gpt6/v13-private-remote-bridge-20261111 is at c4eb82deec915f65894c20d6ebbaf0ebf58fa335. Private PIPELINE_STATUS #567 confirms this exact installed SHA, auto-update enabled, pipeline runtime/dashboard UP_TO_DATE and no error. Later HEALTH #569 reports runtime.state=UNAVAILABLE; it also records 983 MiB available RAM and 1,629 MiB free disk. Treat installation as verified but runtime functionality as inconclusive. The opted-in diagnostic #568 has redacted input and is not a correctness benchmark.
+- Boss PR #2343 is DRAFT at 55b76c4c79b24b5ac674366d6bcb32aa15ab1f9d: 7 success, 4 failure, 2 queued, 2 in progress, 1 skipped, 1 cancelled. The staged integrated-builder hash mismatch remains on Python 3.13/3.14; old-to-new updater migration returns PARTIAL and Python 3.14 owner-read staged startup refuses the builder. Runtime-deployment-integrity passes, but the staged consumer chain does not. The fair-slice candidate also changes C3 reserve to 55% and gives 45% to observers; no same-prompt Redmi A/B proves correct C3 output under this reserve.
+- Research/Perception PR #2346 is DRAFT / NOT_RELEASED. Current docs/evidence head e68c2488cb474e1b70149f2e3d95f2bbb29220c6; last code-bearing head b72633927e2849f50de69614306e5f27650b6a9c; code commit 1db8fd5fc2e18c115c632cf60577200d68db2c0b. Focused B3 CI on b726 passes 52 tests, compile and CLI smoke; current docs-only head has 12 queued, 1 pending, 1 skipped and 1 cancelled workflows. No B3 code from this PR is installed.
+- Local Linux targeted checks pass for the exact shadow-directory security helper and source-disjoint split, but a full Aii checkout/pytest run is blocked by GitHub DNS. Redmi B3 remains unverified and production B3 remains OFF/SYMBOLIC.
+- Research ledger R-081 Hypnos and R-082 XKV/XBridge/kvloom are full-text reviewed. No external code, weights or dependencies were imported.
+
+**Nächster interner Schritt:** Boss resolves the integrated-builder pin, migration and staged owner-read failures, completes the observer/same-turn matrix, and validates the C3 reserve on identical consented prompts. Then #2346 can be rebased and integrated safely. After a verified release/update receipt, the team can collect authorized native paired taps and run L1 only in shadow mode. No decision from you is needed now.
+
+---
+
+# V14 — User next action (verified 2026-11-22 16:39 CET)
+
+**Keine Aktion nötig. Bitte nichts manuell ausführen.** Kein Termux-Befehl, kein zweiter UPDATE_REQUEST, kein Modell-/Gewichts-/Age-/Rechtewechsel und keine Mikrofonfreigabe.
+
+- Release-development branch gpt6/v13-private-remote-bridge-20261111 is at c4eb82deec915f65894c20d6ebbaf0ebf58fa335. Private PIPELINE_STATUS #567 confirms this exact installed SHA, auto-update enabled, pipeline runtime/dashboard UP_TO_DATE and no error. However, the later HEALTH receipt #569 reports runtime.state=UNAVAILABLE; it also records 983 MiB available RAM and 1,629 MiB free disk. Treat installation as verified but runtime functionality as inconclusive. The opted-in diagnostic #568 has redacted input and is not a correctness benchmark.
+- Boss PR #2343 remains DRAFT at 1084bf902c9d6bebd83436d7d7908d382ddd1984: 8 pass / 8 fail / 1 skipped. The stage/deployer pin and observer-overlay anchor remain blockers. The candidate also changes the C3 reserve to 55% and gives 45% to observers; no native A/B proves this preserves C3 correctness. Do not promote or deploy it yet.
+- Research/Perception PR #2346 remains DRAFT / NOT_RELEASED at b72633927e2849f50de69614306e5f27650b6a9c; code commit 1db8fd5fc2e18c115c632cf60577200d68db2c0b. Focused B3 CI passes 52 tests, compile and CLI smoke, but 7 of 15 total workflows fail in other integration chains. No B3 code from this PR is installed.
+- Local Linux targeted checks pass for the exact shadow-directory security helper and source-disjoint split, but a full Aii checkout/pytest run is blocked by GitHub DNS. Redmi B3 remains unverified and production B3 remains OFF/SYMBOLIC.
+- New research ledger entries: R-081 Hypnos (dual-phase wake/sleep continual learning; no reusable licensed code found) and R-082 XKV/XBridge (receiver-aware cache communication plus exact entity anchors; multi-turn and Android gaps remain). No model or weight was downloaded or swapped.
+
+**Nächster interner Schritt:** Boss resolves #2343 and its exact CI matrix; then #2346 can be rebased and integrated safely. After a verified release/update receipt, the team can collect authorized native paired taps and run L1 only in shadow mode. No decision from you is needed now.
+
+---
+
+# Research & Perception — verified handoff 2026-11-22 15:02 CET
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Gewichts-/Rechtewechsel und keine Mikrofonfreigabe.
+
+- Release-development HEAD bleibt `gpt6/v13-private-remote-bridge-20261111` = `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. Private PIPELINE_STATUS #567 bestätigt den installierten SHA und Auto-Update EIN; der spätere HEALTH-Receipt #569 meldet jedoch runtime.state=UNAVAILABLE. Installation ist bestätigt, Runtime-Funktionalität bleibt damit unklar.
+- Mein B3-Kandidat [PR #2346](https://github.com/RedMentos/Aii/pull/2346) hat den Code-Commit `1db8fd5fc2e18c115c632cf60577200d68db2c0b`; spätere Commits auf demselben PR-Branch aktualisieren ausschließlich Board-/Handoff-Dokumentation; seit dem Code-Commit gab es keine weitere Runtime-Codeänderung. Die QA-Symlink-Escape-Lücke im L1-Shadow-Artefaktpfad ist mit dir-fd/`O_NOFOLLOW`, Ownership-/Permission-Prüfungen, exklusivem 0700-Run-Verzeichnis und descriptor-anchored Writes behoben. Neue negative Tests decken sowohl `home/b3 -> outside` als auch `home/b3/shadow -> outside` ab.
+- **CI:** Exakter B3-Workflow [45031525111](https://github.com/RedMentos/Aii/actions/runs/45031525111) PASS: 52 Tests, geänderte Module `py_compile`, L1-CLI-Import/Help-Smoke PASS. Andere exakte PR-Workflows sind nicht vollständig grün: Lab-Age E2E scheitert am `integrated builder hash mismatch`; Two-checkout migration endet `PARTIAL` statt `UPDATED`; Runtime-Deployment (Python 3.11/3.14) scheitert an `Pinned plain UI recovery builder changed`; staged/integrated und native-latent-receiver (Python 3.13/3.14) scheitern am `integrated builder hash mismatch`. Core audio/arithmetic und same-turn B1/B2/C4/C3 waren noch IN_PROGRESS. Diese fremden Source-Pin-Ketten bleiben Boss/Integrator-Ownership.
+- **LOCAL_LINUX:** CPython 3.13.5 x86_64 isolierter Test PASS: descriptor-anchored NPZ/JSON/atomic-report writes, 0700-Rechte und Top-Level-/Nested-Symlink-Negativkontrollen ohne Outside-Write. Vollständiger Aii-Checkout/pytest BLOCKED (kein Checkout, GitHub-DNS nicht erreichbar).
+- **TERMUX/REDMI:** REDMI_UNVERIFIED für PR #2346. Kein Handytest, keine echten Modell-Taps, kein nativer B3-Trainingslauf. Neueste QA-Diagnose #568 bleibt 57,74 s Gesamtzeit / 41,63 s TTFT / 38,95 s Prefill / 751 Prompt-Tokens / 2 generierte Tokens; B1/B2 TIME_BUDGET 53,2/54,2 s. Keine neue CHAT_SEND-/Korrektheitsmessung.
+- B3 bleibt produktiv OFF/SYMBOLIC; PR #2346 ist DRAFT / NOT_RELEASED. Keine trainierte native Latent-Kopplung, Receiver-Injection oder Foundation-Weight-Änderung behauptet.
+- **Forschung:** XBridge (arXiv:2608.11676v2, 28.09.2026; NeurIPS 2026) wurde vollständig gelesen. Duale Lexical Anchors + Receiver-query Hidden-State Enrichment sind ein relevantes Designprinzip, aber 264M Bridge-Parameter und Llama/Qwen/Mistral-7B/H200-Evaluation sind nicht Redmi-tauglich. Offizielles Repo Apache-2.0, jedoch PyTorch/Transformers/HF-Datasets-Stack ohne ARM/Termux-Rezept: RESEARCH_ONLY / NO_REUSE. XKV (arXiv:2608.20617) bislang nur Abstract/Overview; 4,55M Translator-Claim, aber kein verifizierter Code/Lizenzstand. Der revidierte kausale Transferbericht v2 vom 09.11.2026 zeigt einen signifikanten Generationseffekt nur für 1 von 3 Decoder-only-Paaren; Alignment allein ist kein Nutzennachweis.
+- Nach Integration von JEPA PR #2345 wird die Ledger-Sequenz koordiniert: Hypnos auf R-081, Latent-Communication-Review auf R-082, danach R-083; aktuell keine konkurrierenden R-080-Nummern in der gemeinsamen Ledger-Datei überschreiben.
+
+**Nächster interner Schritt:** QA soll den behobenen Symlink-Thread auf PR #2346 erneut prüfen; Boss/Integrator repariert die separaten Runtime-/Builder-Pins. Nach #2345-Integration die Ledger-Einträge R-081/R-082 sauber einfügen. Erst nach unabhängiger Review und allen relevanten exakten Checks um Integration bitten. Kein Gerätupdate und keine Nutzeraktion nötig.
+
+---
+
+# Research & Perception checkpoint — 2026-11-22 13:00 CET
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, keine Mikrofon-/Gerätefreigabe, kein Modell-/Gewichtswechsel und kein Update-Request.
+
+- Release-Entwicklungs-HEAD bleibt `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`.
+- Current-base B3 candidate: [PR #2346](https://github.com/RedMentos/Aii/pull/2346), branch `research-perception/v14-b3-paired-native-current-20261122-run11`. Code checkpoint `20a510d829d34d5847f3adde5546cf5cef5d3fe7`; die späteren Ledger-/Handoff-Commits liegen ebenfalls auf demselben PR-Branch. Vor Review immer den Live-Head des PR abrufen.
+- **CI / GitHub Linux:** `V13 B3 paired native tap regression` run `45021891591` PASS: 50 Tests, Compile der geänderten Python-Module und Termux-L1-CLI-Import/Argumentparser-Smoketest PASS. Der erste Versuch war FAIL; korrigiert wurden der fehlende `:tap pair`-Help-Eintrag und ein echtes `RECORD_ONLY`-Gate im Callosum-Utility-Scoring.
+- **LOCAL_LINUX:** CPython 3.13.5 / NumPy 2.3.5, exakter `_source_disjoint_split`-Helper: PASS (32 Source-SHA-Gruppen × 2 Spans, 52/12 Split, keine SHA-Überschneidung, deterministischer Seed und negative Kontrollen). Vollständiger lokaler Aii-Checkout/pytest: BLOCKED, da `git ls-remote` `Could not resolve host: github.com` meldet.
+- **Weitere CI:** staged/integrated, Role-specific Tap Provenance, JEPA und Runtime-Deployment waren beim letzten Poll QUEUED/IN_PROGRESS. PR bleibt Draft und ist nicht merge-ready, bis diese exakten Checks abgeschlossen und von Core/QA geprüft sind.
+- **TERMUX/REDMI:** REDMI_UNVERIFIED. Die B3-CI nutzt Fake-Tokenizer/Synthetic-Vector-Fixtures; es gab keine echten Modell-Taps, kein Handy, keine Mikrofonaufnahme und keinen nativen Android-Test.
+- B3 bleibt produktiv OFF/SYMBOLIC. Keine Receiver-Injection, keine B1/B2-Foundation-Weight-Änderung, keine Latent-/Body-Learning-Autorität. `Callosum.outcome` respektiert nun `RECORD_ONLY` und lässt die ausstehenden Utility-Nachrichten unangetastet.
+- Forschungsbefund R-080: Hypnos (arXiv:2611.24637v1, 18.11.2026) zeigt ein enges Wake/Sleep-Prinzip auf CORe50/FPGA, nicht allgemeines LLM-/JEPA-Lernen. Offizielles Repo derzeit WIP ohne sichtbare Lizenzdatei; keine Wiederverwendung.
+- Audio-Consumer #2312 bleibt auf einem alten QA-Companion-Stack; kein verifizierter AudioRecord-Provider, keine Mikrofonaufnahme und kein Redmi-Test. Die QA-Companion-Kette braucht zuerst die separate Receipt-Recovery-Reparatur.
+
+**Nächster interner Schritt:** exakte aktuelle PR-Head-CI und Core/QA-Review abschließen; erst danach den Boss um Integration auf den aktuellen Release-Branch bitten. Native B1/B2-Paare erst nach Integration und ausschließlich über den vorhandenen explizit autorisierten lokalen Runtime-Pfad sammeln. L1 bleibt SHADOW, bis unabhängige Labels, L0-Baselines, held-out Utility, Retention, Restart und Native-Receiver-Effekt belegt sind.
+---
+
 # JEPA-Statuskorrektur — 2026-11-22T10:00:40.871Z
 
 PR #2331 steht inzwischen auf `535eba6f668b3990416c361368f36e3e8f1e599e`, hat aber **9 fehlgeschlagene Checks** (4 laufen, 2 queued, 4 erfolgreich, 1 übersprungen). Die Fehler liegen weiter in der verschachtelten Source-Pin-Kette: sechs direkte Consumer-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Die vollständigen Hashes stehen im Boss-Review-Kommentar [7077507340](https://github.com/RedMentos/Aii/pull/2331#issuecomment-7077507340). Das ist noch kein JEPA-Lern-/Unlearning-Erfolg; PR bleibt DRAFT, Promotion OFF.

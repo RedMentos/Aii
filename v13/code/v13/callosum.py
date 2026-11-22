@@ -117,6 +117,9 @@ class Callosum:
         for k,v in (comp or {}).items():q['parts'][k]=round(q['parts'].get(k,v)+sc*RATE*(v-q['parts'].get(k,v)),4)
     def outcome(self,event_id,coalition_ids,status):
         """Score every message of a finished turn by what the receiver's next offer did."""
+        runtime=getattr(self,"r",None)
+        if runtime is not None and runtime.cfg.get("learning_mode","RECORD_ONLY")=="RECORD_ONLY":
+            return {"scored":0,"status":"SKIPPED_RECORD_ONLY"}
         st,_=self._load();msgs=st['pending'].get(event_id) or []
         if not msgs:return {'scored':0}
         scored=[]
