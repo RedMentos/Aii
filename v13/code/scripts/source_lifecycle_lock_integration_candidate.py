@@ -14,7 +14,6 @@ PINS = {
     'source_lifecycle_candidate.py': '3ace74b802d3e3e7340eabcccb03275d348deae2297fe8a1b4d2e1eab17d62b0',
 }
 GUARD_SCRIPT_SHA = '313f2dc078366fa851c3ef76b425fb800e7369c73ed5cb69ea93f96cc95f0596'
-OLD_STORE_SHA = '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb'
 OLD_ARCHIVE_INTEGRATED_SHA = '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'
 
 STORE_OLD = b'''        with self.mutex:
@@ -98,13 +97,16 @@ READ_SOURCE_NEW = b'''    def read_source(self,ref):
         if not 0<=ref["char_start"]<=ref["char_end"]<=len(txt):raise ValueError("SourceRef out of bounds")
         return txt[ref["char_start"]:ref["char_end"]]
 '''
-MEMORY_OLD = b'''                source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
-                if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):
-                    (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
-                    (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
+MEMORY_OLD = b'''            src=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
+            if not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(src['hash'],)):(self.s.home/'data/blobs'/src['hash']).unlink(missing_ok=True);(self.s.home/'data/blobs'/(src['hash']+'.z')).unlink(missing_ok=True)
 '''
-MEMORY_NEW = b'''                from .source_lifecycle_candidate import cleanup_unreferenced
-                cleanup_unreferenced(self.s,sid)
+MEMORY_NEW = b'''            from .source_lifecycle_candidate import cleanup_unreferenced
+            cleanup_unreferenced(self.s,sid)
+'''
+MEMORY_CURRENT_OLD = b'''            source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
+            if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):
+                (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
+                (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
 '''
 VISION_OLD = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
     """Store image bytes as an IMAGE source (dedup by hash) and register its regions. Returns the image record."""
@@ -188,20 +190,25 @@ def build_sources(source_dir):
             ('store.py', RECOVER_OLD, RECOVER_NEW),
             ('store.py', EVENT_OLD, EVENT_NEW),
             ('store.py', READ_SOURCE_OLD, READ_SOURCE_NEW),
-            ('memory.py', MEMORY_OLD, MEMORY_NEW),
             ('vision.py', VISION_OLD, VISION_NEW),
             ('vision.py', VISION_FORGET_OLD, VISION_FORGET_NEW),
             ('vision.py', VISION_STATE_OLD, VISION_STATE_NEW),
             ('archive.py', RESTORE_OLD, RESTORE_NEW)):
         raw[filename] = _replace_once(raw[filename], old, new, filename)
+    memory = raw['memory.py']
+    if b'combined_source_forget_guard' in memory and b'with self.s.mutex:' in memory:
+        memory = _replace_once(memory, MEMORY_CURRENT_OLD, MEMORY_NEW, 'memory source cleanup')
+    else:
+        memory = _replace_once(memory, MEMORY_OLD, MEMORY_NEW, 'memory')
+    raw['memory.py'] = memory
     archive_sha = hashlib.sha256(raw['archive.py']).hexdigest().encode()
     store_sha = hashlib.sha256(raw['store.py']).hexdigest().encode()
     guard = raw['archive_reader_guard_candidate.py']
     guard = _replace_once(guard, OLD_ARCHIVE_INTEGRATED_SHA.encode(), archive_sha, 'archive pin')
-    guard = _replace_once(guard, OLD_STORE_SHA.encode(), store_sha, 'guard store pin')
+    guard = _replace_once(guard, PINS['store.py'].encode(), store_sha, 'guard store pin')
     raw['archive_reader_guard_candidate.py'] = guard
     raw['archive_stream_range_candidate.py'] = _replace_once(
-        raw['archive_stream_range_candidate.py'], OLD_STORE_SHA.encode(), store_sha, 'stream store pin')
+        raw['archive_stream_range_candidate.py'], PINS['store.py'].encode(), store_sha, 'stream store pin')
     return {name: raw[name] for name in ('archive.py', 'store.py', 'memory.py', 'vision.py',
                                          'archive_reader_guard_candidate.py', 'archive_stream_range_candidate.py',
                                          'source_lifecycle_candidate.py')}
