@@ -73,3 +73,16 @@ Regression added: `test_failed_activation_recovery_keeps_stopped_chat_and_disabl
 - GitHub CI is not a Redmi test. No device connection or authorized private owner-read receipt was available. **REDMI_UNVERIFIED**; no installer, model, weight, permission, chat, SQLite or phone state was changed.
 - Boss must first repair the shared source-stream pin chain and the missing workflow continuation, then rebase QA #2298 onto the resulting green exact base and rerun all checks.
 - After base integration, the next device acceptance remains actual process-death/reboot recovery, update/rollback and managed chat stop/resume receipts on the Redmi.
+
+
+## Follow-up — interrupted recovery is also fail-closed (2026-11-22)
+
+QA head `aab911955280f7e9b7eb15b84f2c6d9fa22d6e2b` additionally catches `BaseException` around the recovery attempt, re-raises it after attempting to disable auto-update, and preserves the no-resume marker. This covers a local Ctrl-C/SystemExit during recovery as well as ordinary I/O/validation exceptions; a hard process kill still relies on the durable activation journal on next start.
+
+Regression: `test_keyboard_interrupt_during_activation_recovery_keeps_chat_stopped`.
+
+Exact-head runtime-deploy integrity: **PASS** on Python 3.11 and 3.14; 17 activation-journal + 3 deploy-integrity + 31 runtime-deploy + 41 pipeline-agent tests = **92 passed per interpreter**. Staged runtime, Lab-Age, two-checkout migration, owner-read and offline bridge tests are PASS on this merge ref. Remaining merge-queue blockers at this head:
+- Python 3.14 staged startup: **FAIL** because `world_semantic_evidence_candidate.py` expected SHA `dba236187245eafad518d936e728c74f01746f7551345c418f7671c1dfd31e66`, actual `22594294c9b6bb8447b25ceaa0d9c7da129e29b9280880927141c0c8b549dd06`.
+- Same-turn consumer Python 3.13: **FAIL** at shell line 4 trying to execute `test_v14_store_source_blob_serialization.py` (missing YAML continuation in the current base workflow).
+- Same-turn consumer Python 3.14 and integrated regression were still running at this readback.
+These are shared-base source/workflow issues, not failures in the QA rollback test suite. No rebase or merge until the full current base is green.
