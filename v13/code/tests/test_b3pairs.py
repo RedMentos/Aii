@@ -134,6 +134,19 @@ class PairedNativeTapTests(unittest.TestCase):
         self.assertTrue(report["task_labels_and_L0_baselines_required"])
         self.assertEqual(report["latent_injection_authority"], 0)
 
+    def test_rejects_b1_fine_tokenizer_piece_drift(self):
+        def tap(role, event, source_ref, deadline):
+            return self._tap(role, source_ref)
+        class DriftRunner(FakeTokenizerRunner):
+            def _json(self, method, path, payload, deadline):
+                return {"tokens": [{"id": i + 1, "piece": ch} for i, ch in enumerate(payload["content"])]}
+        with patch.object(self.r.cognition, "tap", side_effect=tap), \
+             patch.object(self.r.pool, "get_tap", side_effect=[FakeTokenizerRunner(), DriftRunner()]), \
+             patch.object(self.r.pool, "unload"):
+            with self.assertRaisesRegex(ValueError, "B1 Fine tokenizer pieces"):
+                self.r.cognition.tap_pair(self.event, time.monotonic() + 10)
+        self.assertEqual(self.r.store.rows("SELECT * FROM packets WHERE kind='B3PairedTapPacket'"), [])
+
     def test_operator_pair_command_queues_same_event_for_both_bodies(self):
         event = self.r.store.event(self.r.session, "Operator paired tap source.")
         with patch.object(self.r, "last_answer", return_value={"event_id": event["event_id"]}), \
