@@ -1690,15 +1690,3 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 3. Continue whole-Canon QA; do not use the green release CI or updater receipt as evidence that the slow/incorrect native chat path is fixed.
 
 **Redmi status:** installed c4eb82 / updater up-to-date; native quality and Android companion acceptance remain UNVERIFIED. **User action: none.**
-
-
-## Core native-probe operator follow-up — 2026-11-22 21:18 UTC
-
-- Core PR [#2381](https://github.com/RedMentos/Aii/pull/2381), branch \`core/v14-native-probe-operator-dispatch-20261122\`, exact head \`1252e4e7ee5cd194b6cb9d46a208c3bd3e1bbb19\`, is DRAFT and stacked on QA #2377. It wires \`:callosum arm-probe\`, \`:callosum native-probe\`, and \`:callosum revoke-probe\` to the existing local source/model-bound approval. A full-nonce sidecar route binding checks exact canonical \`ModelManager.path_for(role)\` versus manifest paths at arm and consume, without re-hashing multi-GB GGUFs; the approval module still hashes bytes and checks revisions.
-- The observed parent defect was exact-head #2377 at \`fcb7e8c2b70e675c46741d919626ad4fd34ceb38\`: workflow #45066958323 failed 11/25 approval tests on Python 3.13 and 3.14 because operator dispatch was missing and \`callosum.time\` was absent. The QA branch then advanced to \`42723cfd4c0629940b75c158283bdf5256568142\`; its current staged and integrated workflows #45071147374 / #45071147387 were queued when checked.
-- New Core workflow #45071358963 and staged/integrated run #45071359009 were QUEUED on the Core PR head at handoff. Do not treat queued as PASS.
-- LOCAL_LINUX Python 3.13.5 isolated route-binding harness: PASS for exact path, rejection of a byte-identical alternate path, and rejection of a symlink. Full Aii checkout/Runtime tests remain BLOCKED in this execution environment; CI is the exact-repository test path.
-- The command refuses to consume approval if the staged \`cognition.native_receive\` consumer is absent. A consumed attempt gets a 120-second monotonic deadline, diagnostic-only authority checks, route-state cleanup and synchronous native-pool unload.
-- This remains a diagnostic input-effect probe only. B3 is OFF; semantic use, learned latent transfer and training authority are not established. The native loader still opens a path rather than a verified file descriptor, so path-based TOCTOU is not eliminated.
-- No native probe, model/weight change, permission change, updater request or Redmi mutation was performed. Latest Boss evidence on \`boss/v14-run11-current-evidence-sync-20261122\` has no authenticated private owner-read reply; installed SHA/updater consent are UNKNOWN and REDMI_UNVERIFIED.
-- Next: wait for #2381 exact-head Python 3.13/3.14 and staged workflows; then independent QA review, stack into #2377, and let Boss compose the recovery→stage→deployer pins. Any actual native probe requires a separate explicit user decision after that integration. **User action: none.**
