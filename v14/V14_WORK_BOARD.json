@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T00:57:11.246Z",
+  "updated_at": "2026-11-22T03:15:20.565Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -164,8 +164,8 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "A5 UI lease CI on #2288 is queued; shared-blob reader/revocation fix #2282 is not included. #2250 still demonstrates a live SQLite row whose shared blob can be unlinked. Old #2282 branch failed downstream stream pin; no race fix accepted.",
-      "next_step": "QA/Perception: rebase #2282 onto #2288, serialize producer publication and revocation unlink under the same Store lock/SQLite critical section, and run threaded blocking/recreation negative control plus exact stage/migration tests.",
+      "proof_environment": "A5 UI lease CI on #2288 is queued; shared-blob reader/revocation fix #2282 is not included. #2250 still demonstrates a live SQLite row whose shared blob can be unlinked. Old #2282 branch failed downstream stream pin; no race fix accepted. R-067 calibration gate correction, R-068 llama.cpp input/output representation review and R-069 PACT-Check full preprint/repo review are now recorded in the Perception ledger; no native/Redmi proof.",
+      "next_step": "Perception: after #2288 is fully green, rebase #2299 and run exact RAW EAR/staged tests; coordinate with Core to add PACT-Check controls to #2300 before any semantic B3 promotion. Keep trained cross-organ alignment unproven until held-out receiver-task utility beats dummy, irrelevant, self-communication and receiver-only controls.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T00:57:11.246Z",
       "latest_candidate_pr": {
@@ -330,28 +330,29 @@
     },
     {
       "id": "V14-018",
-      "title": "RAW EAR speaker-change evidence: batch-isolated A5→A4→C3 path",
+      "title": "RAW EAR audio-only ingress + calibrated speaker-similarity diagnostics",
       "owner": "Research & Perception",
       "reviewer": "Core & QA",
       "priority": "P1",
       "status": "IN_PROGRESS_PARTIAL",
-      "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
-      "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "#2275 RAW EAR speaker-change candidate remains old-base failing; caller PCM16 audio is not microphone capture or a speaker model. No Android microphone or identity inference.",
-      "next_step": "Perception: rebase #2275 and repair frame-age/source pins; keep pre-batch history frozen and do not persist speaker embeddings or infer identity.",
+      "scope": "Optional caller-supplied PCM16 ingress; source/generation-bound cosine-similarity diagnostics through A5→A4→C3; process-local embeddings only. Caller thresholds remain unverified and cannot produce speaker identity, continuity or change decisions until a model-bound calibration artifact is validated.",
+      "acceptance": "Exact Python 3.13/3.14 focused CI plus staged/integrated CI; no-threshold/unvoiced/missing-receipt cases DEFER; no speaker-derived A4 interrupt versus same-audio no-embedding negative control; source/generation/consent/reset/revocation; no vector persistence; default Python/no model unchanged. Microphone and Android proof are separate.",
+      "proof_environment": "LOCAL_LINUX scratch mirror py_compile PASS + 4/4 unittest PASS; full Aii checkout/pytest BLOCKED; exact-head GitHub Actions returned no runs/statuses. PR #2299 DRAFT on older Boss candidate base. No native model, microphone, Android or Redmi proof; REDMI_UNVERIFIED.",
+      "next_step": "After #2288 exact staged/integrated, audio/arithmetic, migration, owner-read and privacy gates go green, rebase #2299 and run exact Python 3.13/3.14 focused plus staged/migration tests. Keep speaker decisions DEFER until a model-revision-bound labeled calibration set and verified receipt exist; do not request microphone permission yet.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:50:52.733Z",
+      "last_checkpoint": "2026-11-22T03:15:20.565Z",
       "latest_candidate_pr": {
-        "pr": 2275,
-        "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
-        "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
-        "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
-        "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
+        "pr": 2299,
+        "head_branch": "research-perception/v14-raw-ear-rebase-d06c637-20261122",
+        "head_sha": "c471765171f53c07178a4bb712830f51606fdcd5",
+        "base_branch": "boss/v14-recall-store-pin-rebind-20261122",
+        "ci": "NOT_RUN_NO_WORKFLOW_STATUS",
+        "tested_code_sha": "9fe259c94e755ce58304a6610437766d9e416f6d"
       },
-      "proof": "The pre-batch snapshot algorithm passed a local CPython 3.13.5 x86_64 algorithm-only reproduction, but current exact CI fails: reference_age_ms 920 vs expected 800; staged/integrated rejects the changed audio_voice_cues blob and migration becomes PARTIAL. No full Aii local test, microphone/model/Redmi test or identity inference."
+      "proof": "The branch changed the speaker threshold path from caller-asserted boolean decisions to diagnostic-only similarity; A4/C3 DEFER and no speaker-derived attention gain. A repository negative-control test now compares A4 external-interrupt gain with and without uncalibrated speaker embeddings, but that test has not run. Isolated LOCAL_LINUX scratch mirror 4/4 PASS; full repository and exact-head CI not run. No Redmi microphone, model, weights, native inference or Android test."
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED. Private PIPELINE_STATUS request #453 created 2026-11-22T00:47:59Z has zero authenticated comments at last poll. Installed SHA/updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell action or device mutation.",
+  "current_redmi_status": "REDMI_UNVERIFIED. Private owner-read requests #457 HEALTH, #458 PIPELINE_STATUS and #459 DIAGNOSTICS created 2026-11-22T03:13Z; zero authenticated comments at last poll. Private V13OBS #115 is last updated 2026-11-18 and is stale. Installed SHA and current updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell action or device mutation.",
   "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
   "latest_integrated_head": "c372b4e3210d04f95f092013893d4078817e855d",
   "latest_integrated_head_verified_at": "2026-11-22T00:57:11.246Z",
@@ -361,7 +362,7 @@
     "installed_sha": "UNKNOWN",
     "auto_update": "UNKNOWN",
     "redmi_status": "REDMI_UNVERIFIED",
-    "last_request": "Private PIPELINE_STATUS #443 created in RedMentos/Aiiii; zero authenticated comments at last poll. No LOG_PAGE, UPDATE_REQUEST, remote shell or device mutation."
+    "last_request": "Private V13READ #457-#459 (HEALTH/PIPELINE_STATUS/DIAGNOSTICS) created 2026-11-22T03:13Z; no authenticated reply at last poll. V13OBS #115 last updated 2026-11-18; stale."
   },
   "capability_snapshot": [
     {
@@ -877,6 +878,27 @@
       "status": "FULL_TEXT_PREPRINT_RESEARCH_ONLY",
       "primary": "arXiv:2608.01475",
       "next": "After JEPA per-session retention is stable, compare fixed/AGN/AEN small heads with old-session holdout, gradient, parameter diff, restart and rollback"
+    },
+    {
+      "id": "R-067",
+      "topic": "Caller-asserted speaker thresholds must not produce decisions",
+      "status": "CODED_BRANCH_2299_LOCAL_SCRATCH_4_OF_4_FULL_CI_PENDING",
+      "primary": "V14-018 / PR #2299",
+      "next": "Run exact repository negative-control test on green Boss base; obtain verified calibration data before enabling decisions"
+    },
+    {
+      "id": "R-068",
+      "topic": "llama.cpp output-token vs input-token embedding spaces",
+      "status": "UPSTREAM_API_REVIEWED_CORE_COMMENTED",
+      "primary": "ggml-org/llama.cpp b29c606e; Core PR #2300",
+      "next": "Record sender n_embd_out and receiver n_embd_inp/representation types; keep alignment UNTRAINED_UNKNOWN"
+    },
+    {
+      "id": "R-069",
+      "topic": "PACT-Check controls for true sender-information transfer",
+      "status": "FULL_PREPRINT_READ_REPO_LICENSE_DEPS_REVIEWED",
+      "primary": "arXiv:2611.06976v1; zhenyi4/platour Apache-2.0",
+      "next": "Add DT/IT/SC/TR controls to #2300 acceptance; protocol reuse only, no Android runtime import"
     }
   ]
 }
