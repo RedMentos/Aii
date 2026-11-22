@@ -262,15 +262,13 @@ class AndroidCompanionController:
         if not session:
             return dumps({"status": "OK", "session_scoped": True, "count": 0, "actions": []})
         intent_rows = self.runtime.store.rows(
-            "SELECT p.payload,p.created,p.event_id AS packet_event_id,"
-            "e.brain_generation_id AS event_generation_id,e.packet AS event_packet "
+            "SELECT p.payload,p.created,p.event_id AS packet_event_id,e.packet AS event_packet "
             "FROM packets p JOIN events e ON e.id=p.event_id "
             "WHERE p.kind='ActionIntent' AND e.session_id=? ORDER BY p.rowid DESC LIMIT ?",
             (session, limit),
         )
         outcome_rows = self.runtime.store.rows(
-            "SELECT p.payload,p.created,p.event_id AS packet_event_id,"
-            "e.brain_generation_id AS event_generation_id,e.packet AS event_packet "
+            "SELECT p.payload,p.created,p.event_id AS packet_event_id,e.packet AS event_packet "
             "FROM packets p JOIN events e ON e.id=p.event_id "
             "WHERE p.kind='ActionOutcome' AND e.session_id=? ORDER BY p.rowid DESC LIMIT ?",
             (session, limit * 4),
@@ -290,7 +288,7 @@ class AndroidCompanionController:
                     or any(ch not in "0123456789abcdef" for ch in action_id)):
                 continue
             event_id = row["packet_event_id"]
-            generation_id = row["event_generation_id"]
+            generation_id = event.get("brain_generation_id")
             source_ref = event.get("source_ref")
             provenance = value.get("provenance")
             if (type(event_id) is not str or type(generation_id) is not str
@@ -359,7 +357,7 @@ class AndroidCompanionController:
             if entry is None or binding is None:
                 continue
             event_id = row["packet_event_id"]
-            generation_id = row["event_generation_id"]
+            generation_id = event.get("brain_generation_id")
             if (value.get("event_id") != event_id
                     or value.get("brain_generation_id") != generation_id
                     or event.get("event_id") != event_id
