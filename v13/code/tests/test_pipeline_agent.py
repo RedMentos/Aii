@@ -167,6 +167,84 @@ class PipelineTests(unittest.TestCase):
         self.assertTrue(p.acknowledge_refresh("ui"))
         self.assertFalse(p.refresh_requested("ui"))
 
+
+    def test_pending_activation_recovery_precedes_ci_only_when_stopped_and_consented(self):
+        self.turn_on()
+        commit = "f" * 40
+        root = p.Path.home() / ".v13-runtime-source"
+        events = []
+
+        def repo_state(_root):
+            return {"status": "UP_TO_DATE", "available": commit,
+                    "current": commit, "changed_files": 0}, None
+
+        def recover():
+            events.append("recover")
+            return "ROLLED_BACK_INCOMPLETE"
+
+        def ci(_commit, *, scope):
+            events.append("ci")
+            self.assertEqual(scope, "runtime")
+            return False
+
+        with mock.patch.object(p, "_try_repo", side_effect=repo_state), \
+             mock.patch.object(p.runtime_deploy, "needs_deploy", side_effect=[True, True]), \
+             mock.patch.object(p.runtime_deploy, "recover_pending_activation", side_effect=recover) as recovery, \
+             mock.patch.object(u, "ci_passed", side_effect=ci), \
+             mock.patch.object(u, "apply") as apply, \
+             mock.patch.object(p.runtime_deploy, "deploy") as deploy:
+            state = {}
+            p._do_update("runtime", root, state, runtime_busy=False,
+                         tested_commits={}, manual=False)
+        self.assertEqual(events, ["recover", "ci"])
+        self.assertEqual(state["runtime_activation_recovery"], "ROLLED_BACK_INCOMPLETE")
+        self.assertEqual(state["runtime"], "CI_WAIT")
+        recovery.assert_called_once()
+        apply.assert_not_called()
+        deploy.assert_not_called()
+
+        # A running chat is never interrupted just to recover an activation
+        # journal. The ordinary CI check still runs and keeps the current
+        # CI_WAIT behavior for a red candidate.
+        events.clear()
+        with mock.patch.object(p, "_try_repo", side_effect=repo_state), \
+             mock.patch.object(p.runtime_deploy, "needs_deploy", return_value=True), \
+             mock.patch.object(p.runtime_deploy, "recover_pending_activation") as recovery, \
+             mock.patch.object(u, "ci_passed", side_effect=ci):
+            state = {}
+            p._do_update("runtime", root, state, runtime_busy=True,
+                         tested_commits={}, manual=False)
+        self.assertEqual(events, ["ci"])
+        recovery.assert_not_called()
+        self.assertEqual(state["runtime"], "CI_WAIT")
+
+    def test_pending_activation_recovery_respects_auto_off_but_manual_override(self):
+        commit = "e" * 40
+        root = p.Path.home() / ".v13-runtime-source"
+        p.set_enabled(False)
+        repo_state = lambda _root: (
+            {"status": "UP_TO_DATE", "available": commit,
+             "current": commit, "changed_files": 0}, None)
+        with mock.patch.object(p, "_try_repo", side_effect=repo_state), \
+             mock.patch.object(p.runtime_deploy, "needs_deploy", return_value=True), \
+             mock.patch.object(p.runtime_deploy, "recover_pending_activation") as recovery, \
+             mock.patch.object(u, "ci_passed", return_value=True):
+            with self.assertRaises(p.AutoUpdateDisabled):
+                p._do_update("runtime", root, {}, runtime_busy=False,
+                             tested_commits={}, manual=False)
+        recovery.assert_not_called()
+
+        with mock.patch.object(p, "_try_repo", side_effect=repo_state), \
+             mock.patch.object(p.runtime_deploy, "needs_deploy", side_effect=[True, True]), \
+             mock.patch.object(p.runtime_deploy, "recover_pending_activation",
+                               return_value="ROLLED_BACK_INCOMPLETE") as recovery, \
+             mock.patch.object(u, "ci_passed", return_value=False):
+            state = {}
+            p._do_update("runtime", root, state, runtime_busy=False,
+                         tested_commits={}, manual=True)
+        recovery.assert_called_once()
+        self.assertEqual(state["runtime"], "CI_WAIT")
+
     def test_source_up_to_date_but_old_v13_launcher_triggers_real_activation(self):
         self.turn_on()
         revision="e"*40
