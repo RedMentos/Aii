@@ -347,6 +347,69 @@ def test_source_forget_holds_store_lock_through_blob_unlink_against_republicatio
         store.close()
 
 
+def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_parity(tmp_path):
+    home = tmp_path / "temporal-bodyview-matrix-store"
+    store = _make_store(home)
+    try:
+        sessions, _ = _make_dataset(store, "matrix", 32)
+        _permissions(store, steps=80)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        first = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert first["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", first
+
+        matrix = learner.receiver_matrix(
+            sessions[0], world_model.ACTIONS, history_length=2, nonblocking=True
+        )
+        assert matrix["status"] == "SHADOW_READOUT_ONLY"
+        assert matrix["checkpoint_sha256"] == first["checkpoint_sha256"]
+        assert matrix["native_body_consumed"] is False
+        assert matrix["native_body_weights_changed"] is False
+        assert matrix["decision_authority"] == "NONE"
+        assert set(matrix["matrix"]) == set(world_model.ACTIONS)
+
+        for action in world_model.ACTIONS:
+            for role in ("B1_DETAIL", "B2_GIST"):
+                batched = matrix["matrix"][action][role]
+                single = learner.receiver_readout(
+                    role, sessions[0], action, history_length=2
+                )
+                assert batched["status"] == "SHADOW_READOUT_ONLY"
+                assert single["status"] == "SHADOW_READOUT_ONLY"
+                assert batched["prediction"].keys() == single["prediction"].keys()
+                for key, value in single["prediction"].items():
+                    assert batched["prediction"][key] == pytest.approx(value, rel=1e-10, abs=1e-10)
+                assert batched["uncertainty"] == pytest.approx(single["uncertainty"], rel=1e-10, abs=1e-10)
+                assert batched["support_samples"] == single["support_samples"]
+                assert batched["support_scope"] == "TRAIN_SPLIT_ONLY"
+                assert batched["support_min_samples"] == 8
+                assert batched["checkpoint_sha256"] == single["checkpoint_sha256"]
+                assert batched["source_sha256"] == single["source_sha256"]
+                assert batched["history_action_ids"] == single["history_action_ids"]
+                assert batched["history_source_sha256s"] == single["history_source_sha256s"]
+                assert batched["receiver_utility"] == single["receiver_utility"]
+                assert batched["native_body_consumed"] is False
+                assert batched["native_body_weights_changed"] is False
+
+        # Distinct session histories must remain source-distinct in the batch result.
+        other = learner.receiver_matrix(
+            sessions[1], world_model.ACTIONS, history_length=2, nonblocking=True
+        )
+        assert other["status"] == "SHADOW_READOUT_ONLY"
+        assert other["history_source_sha256s"] != matrix["history_source_sha256s"]
+
+        # A missing history is a negative control, not a fabricated readout.
+        missing = learner.receiver_matrix(
+            "no-such-session", world_model.ACTIONS, history_length=2, nonblocking=True
+        )
+        assert missing["status"] == "INSUFFICIENT_HISTORY"
+        assert missing["matrix"] == {}
+    finally:
+        store.close()
+
+
 def test_temporal_rollback_reports_absence_without_fabricating_a_prior_checkpoint(tmp_path):
     home = tmp_path / "temporal-rollback-store"
     store = _make_store(home)

@@ -526,8 +526,8 @@ class TemporalWorldJEPAStoreConsumer:
         )
 
     @contextmanager
-    def _locked(self, exclusive=True):
-        with self.lock._locked(exclusive):
+    def _locked(self, exclusive=True, blocking=True):
+        with self.lock._locked(exclusive, blocking=blocking):
             yield
 
     def _read_state(self):
@@ -977,6 +977,149 @@ class TemporalWorldJEPAStoreConsumer:
                 "history_source_sha256s": [previous["source_sha256"], latest["source_sha256"]],
                 "support_samples": support,
                 "receiver_utility": utility,
+                "decision_authority": "NONE",
+                "native_body_consumed": False,
+                "native_body_weights_changed": False,
+            }
+
+
+    def receiver_matrix(self, session_id, actions, history_length=2, nonblocking=False):
+        """Batch temporal B1/B2/SELF readouts for the foreground bodyview contract."""
+        if (type(session_id) is not str or not session_id
+                or history_length not in HISTORY_LENGTHS
+                or type(actions) not in (list, tuple) or not actions
+                or len(actions) > len(world_model.ACTIONS)
+                or any(type(action) is not str or action not in world_model.ACTIONS
+                       for action in actions)
+                or len(set(actions)) != len(actions)):
+            raise ValueError("invalid temporal receiver matrix request")
+        with self._locked(False, blocking=not nonblocking):
+            state, _ = self._read_state()
+            active = state["active"]
+            if active is None:
+                return {"status": "NO_CHECKPOINT", "matrix": {},
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            history = sorted(
+                (row for row in active["experience_rows"] if row["session_id"] == session_id),
+                key=lambda row: (row["created"], row["action_id"]),
+            )
+            if len(history) < history_length:
+                return {"status": "INSUFFICIENT_HISTORY", "matrix": {},
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            event_order = self.store.rows(
+                "SELECT id FROM events WHERE session_id=? ORDER BY created DESC,id DESC LIMIT ?",
+                (session_id, MAX_SESSION_EVENTS + 1),
+            )
+            event_order = list(reversed(event_order))
+            positions = {_mapping(item)["id"]: index for index, item in enumerate(event_order)}
+            history_rows = history[-history_length:]
+            if len({row["generation_id"] for row in history_rows}) != 1:
+                return {"status": "GENERATION_GAP", "matrix": {},
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            if any(
+                positions.get(right["event_id"], -99) != positions.get(left["event_id"], -100) + 1
+                for left, right in zip(history_rows, history_rows[1:])
+            ):
+                return {"status": "NONCONTIGUOUS_HISTORY", "matrix": {},
+                        "decision_authority": "NONE", "native_body_consumed": False}
+            previous, latest = history[-2:]
+            x = (
+                list(latest["s"])
+                + np.mean(np.asarray([row["y"] for row in history_rows], dtype=np.float64), axis=0).tolist()
+                + [float(any(row["censored"] for row in history_rows[:-1])),
+                   float(latest["censored"]), float(history_length) / float(max(HISTORY_LENGTHS))]
+            )
+            model = self._load_model(active)
+            X = np.repeat(np.asarray([x], dtype=np.float64), len(actions), axis=0)
+            A = np.asarray([world_model.onehot(action) for action in actions], dtype=np.float64)
+            latent, spread = model.predict(X, A)
+            if (len(latent) != len(actions) or len(spread) != len(actions)
+                    or not np.isfinite(latent).all() or not np.isfinite(spread).all()):
+                raise ValueError("nonfinite temporal receiver matrix")
+            history_action_ids = [previous["action_id"], latest["action_id"]]
+            history_source_sha256s = [previous["source_sha256"], latest["source_sha256"]]
+            matrix = {}
+            for index, action in enumerate(actions):
+                support = int(active["action_support"].get(action, 0))
+                matrix[action] = {}
+                for role in ROLE_TARGETS:
+                    utility = receiver_utility_gate(active["receiver_metrics"], role)
+                    common = {
+                        "role": role,
+                        "support_samples": support,
+                        "support_min_samples": 8,
+                        "support_scope": "TRAIN_SPLIT_ONLY",
+                        "checkpoint_sha256": active["checkpoint_sha256"],
+                        "source_sha256": active["source_sha256"],
+                        "history_length": history_length,
+                        "history_action_ids": history_action_ids,
+                        "history_source_sha256s": history_source_sha256s,
+                        "receiver_utility": utility,
+                        "decision_authority": "NONE",
+                        "native_body_consumed": False,
+                        "native_body_weights_changed": False,
+                    }
+                    if not utility["accepted"]:
+                        matrix[action][role] = common | {
+                            "status": "RECEIVER_UTILITY_REJECTED"
+                        }
+                        continue
+                    if support < 8:
+                        matrix[action][role] = common | {
+                            "status": "ACTION_SUPPORT_INSUFFICIENT"
+                        }
+                        continue
+                    head = active["receiver_heads"][role]
+                    prediction = (
+                        latent[index] @ np.asarray(head["weights"], dtype=np.float64)
+                        + np.asarray(head["bias"], dtype=np.float64)
+                    )
+                    if not np.isfinite(prediction).all():
+                        raise ValueError("nonfinite temporal receiver prediction")
+                    if role == "B1_DETAIL":
+                        output = {
+                            "predicted_action_duration_s": max(
+                                0.0, math.expm1(min(20.0, float(prediction[0])))
+                            ),
+                            "predicted_output_characters": max(
+                                0.0, math.expm1(min(20.0, float(prediction[1]) * 8.0))
+                            ),
+                        }
+                    elif role == "B2_GIST":
+                        output = {
+                            "predicted_success_probability": float(
+                                np.clip(prediction[0], 0.0, 1.0)
+                            )
+                        }
+                    else:
+                        output = {
+                            "predicted_action_duration_s": max(
+                                0.0, math.expm1(min(20.0, float(prediction[0])))
+                            ),
+                            "predicted_success_probability": float(
+                                np.clip(prediction[1], 0.0, 1.0)
+                            ),
+                            "predicted_output_characters": max(
+                                0.0, math.expm1(min(20.0, float(prediction[2]) * 8.0))
+                            ),
+                        }
+                    uncertainty = float(np.asarray(spread[index]).reshape(-1)[0])
+                    if not math.isfinite(uncertainty) or uncertainty < 0:
+                        raise ValueError("invalid temporal receiver uncertainty")
+                    matrix[action][role] = common | {
+                        "status": "SHADOW_READOUT_ONLY",
+                        "prediction": output,
+                        "uncertainty": uncertainty,
+                    }
+            return {
+                "status": "SHADOW_READOUT_ONLY",
+                "matrix": matrix,
+                "session_id": session_id,
+                "history_length": history_length,
+                "history_action_ids": history_action_ids,
+                "history_source_sha256s": history_source_sha256s,
+                "checkpoint_sha256": active["checkpoint_sha256"],
+                "source_sha256": active["source_sha256"],
                 "decision_authority": "NONE",
                 "native_body_consumed": False,
                 "native_body_weights_changed": False,
