@@ -767,6 +767,10 @@ class TemporalWorldJEPAStoreConsumer:
             checkpoint_name = "jepa-" + uuid.uuid4().hex + ".npz"
             checkpoint_path = self.home / checkpoint_name
             checkpoint = world_jepa_shadow_checkpoint.save(model, checkpoint_path, source_sha)
+            if cancel_check is not None and cancel_check():
+                checkpoint_path.unlink(missing_ok=True)
+                return {"status": "CANCELLED", "checkpoint_committed": False,
+                        "native_body_weights_changed": False}
             metrics = _json_safe({
                 "train_windows": len(train), "holdout_windows": len(holdout),
                 "holdout_mse_before": holdout_before, "holdout_mse_after": holdout_after,
@@ -776,6 +780,7 @@ class TemporalWorldJEPAStoreConsumer:
                 "parameter_delta_norm": parameter_delta,
                 "ema_target_delta_norm": ema_delta,
                 "optimizer_steps": model._fit_steps,
+                "steps_this_update": train_steps,
                 "censored_observed": censored, "unknown_skipped": unknown,
                 "source_disjoint": split["source_disjoint"],
                 "train_session_count": split["train_session_count"],
@@ -816,7 +821,18 @@ class TemporalWorldJEPAStoreConsumer:
                 "schema": SCHEMA, "revision": REVISION, "scan_cursor": cursor,
                 "pending_rows": [], "active": record, "previous": active,
             }
-            self.store.set_state(STATE_KEY, next_state, expected=version)
+            try:
+                self.store.set_state(STATE_KEY, next_state, expected=version)
+            except ValueError as exc:
+                checkpoint_path.unlink(missing_ok=True)
+                if "Stale state write" in str(exc):
+                    return {"status": "CONCURRENT_STATE_CONFLICT_RETRY",
+                            "new_receipts": len(new_ids), "checkpoint_discarded": True,
+                            "native_body_weights_changed": False}
+                raise
+            except Exception:
+                checkpoint_path.unlink(missing_ok=True)
+                raise
             self._prune(next_state)
             return {
                 "status": "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA",
@@ -974,7 +990,7 @@ def consume_temporal_after_commit(store, home=None, *, limit=PAGE_SIZE, max_page
     learner = TemporalWorldJEPAStoreConsumer(store)
     return learner.update(
         limit=limit, max_pages=max_pages,
-        steps=gates["steps"] if steps is None else steps,
+        steps=min(gates["steps"], 40) if steps is None else steps,
         optimizer_permission=True, replay_mode=gates["replay_mode"],
         cancel_check=cancel_check,
     )
