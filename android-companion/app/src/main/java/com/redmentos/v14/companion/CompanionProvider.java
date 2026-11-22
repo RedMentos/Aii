@@ -220,13 +220,13 @@ public final class CompanionProvider extends ContentProvider {
         // fails or throws, an old enabled state must not remain usable.
         processEnabled = false;
         if (context == null || writer == null) return false;
+        if (!enabled) {
+            ProjectionFrameStore.clear();
+            context.stopService(new Intent(context, MediaProjectionCaptureService.class));
+        }
         try {
             if (!writer.commit(context, enabled)) return false;
             processEnabled = enabled;
-            if (!enabled) {
-                ProjectionFrameStore.clear();
-                context.stopService(new Intent(context, MediaProjectionCaptureService.class));
-            }
             return true;
         } catch (RuntimeException ignored) {
             processEnabled = false;
