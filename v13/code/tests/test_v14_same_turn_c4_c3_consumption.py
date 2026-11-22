@@ -141,10 +141,19 @@ def test_two_recent_c3_prefill_failures_still_reach_same_turn_c4_and_c3(tmp_path
         # Native-generation boundaries are not enough: both persisted body
         # offers must be members of the actual same-turn C4 coalition.
         offers = packet_rows(runtime, event_id, "OfferPacket")
+        receipts = runtime.store.rows(
+            "SELECT metrics FROM telemetry "
+            "WHERE event_id=? AND kind='c4_offer_context_ready' ORDER BY id",
+            (event_id,),
+        )
+        assert len(receipts) == 1
+        receipt = json.loads(receipts[0]["metrics"])
+        selected_ids = set(receipt["selected_offer_ids"])
         body_offers = {
             offer["role"]: offer
             for offer in offers
-            if offer["role"] in {"B1_DETAIL", "B2_GIST"}
+            if offer["packet_id"] in selected_ids
+            and offer["role"] in {"B1_DETAIL", "B2_GIST"}
         }
         assert set(body_offers) == {"B1_DETAIL", "B2_GIST"}
 
@@ -178,13 +187,6 @@ def test_two_recent_c3_prefill_failures_still_reach_same_turn_c4_and_c3(tmp_path
         assert B1_SUMMARY in c3_system
         assert B2_SUMMARY in c3_system
 
-        receipts = runtime.store.rows(
-            "SELECT metrics FROM telemetry "
-            "WHERE event_id=? AND kind='c4_offer_context_ready' ORDER BY id",
-            (event_id,),
-        )
-        assert len(receipts) == 1
-        receipt = json.loads(receipts[0]["metrics"])
         assert receipt["role"] == "C3_LANGUAGE"
         assert receipt["status"] == "PASS"
         assert receipt["count"] == 2
