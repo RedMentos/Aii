@@ -11,6 +11,7 @@ PINS = {
     'v13/runtime.py': {
         'c23a5a133deaff66f6be560509580b83394064bbff5a72d35d47c14461536978',
         'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
+        '0a50cd5d894e55deb1f972fd353b0d0e0a8b8043de1a8664432d7558666346c1',
     },
     'v13/fastforward.py': {'0cc1b4b3002e0e4c400d7889a746fb42055a708ff1a12be81a59ab10d39bad05'},
     'v13/jefbridge.py': {'875000521db3d7a8efe0186d202dbea99fa7ca47c6b4b2c27f83b7231cb2c5ff'},
@@ -183,13 +184,16 @@ def apply_sources(code_dir, sources):
     # output. Their verification still rejects other input changes.
     semantic_name = 'v13/world_semantic_evidence_candidate.py'
     local_name = 'v13/local_error_route_shadow_candidate.py'
-    semantic_pin = '22594294c9b6bb8447b25ceaa0d9c7da129e29b9280880927141c0c8b549dd06'
-    local_pin = '1a9d525cd8a3b5c7d595dd58c761334199c71fc5744c6c8aab5fd55d3832649d'
+    semantic_pin = '66ec90c5811057169d1dd6d860195317c3b9ceca1a4f7389831ca6607ca19554'
+    local_pins = {
+        'a2345da3a812668864851fbbf3c90cb4e15971ed5fd266a843f254b1ccb613bc',
+        '1a9d525cd8a3b5c7d595dd58c761334199c71fc5744c6c8aab5fd55d3832649d',
+    }
     action_pin = '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a'
-    for name, expected in ((semantic_name, semantic_pin), (local_name, local_pin)):
+    for name, allowed in ((semantic_name, {semantic_pin}), (local_name, local_pins)):
         actual = hashlib.sha256(result[name]).hexdigest()
-        if actual != expected:
-            raise ValueError('semantic dependency changed: ' + name + ' expected=' + expected + ' actual=' + actual)
+        if actual not in allowed:
+            raise ValueError('semantic dependency changed: ' + name + ' expected=' + ','.join(sorted(allowed)) + ' actual=' + actual)
     if hashlib.sha256(checked['v13/actionlearn.py']).hexdigest() != action_pin:
         raise ValueError('guarded ActionLearn output changed')
     old_action_pin, = PINS['v13/actionlearn.py']
