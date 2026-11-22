@@ -127,7 +127,7 @@ def build_sources(code_dir, *, include_postcommit=True):
             ):
         raise ValueError('base-composer downstream source pins are inconsistent')
     observers = load(code_dir, 'scripts/integrated_observer_fair_budget_candidate_20261116.py',
-                     '15850e2498a8145bb451a7178b84f3023edcf3651970a60bd39bcc702d57fd4a')
+                     'ed8b0e0bec5d1a929e2956af8e76f7bb039254fa04318010b2db12c6831465f4')
     result = observers.apply_sources(code_dir, result)
     # Apply only the reviewed ContextOS input and the exact checked builder.
     # The dependent recall module pins ContextOS, so rebind that one pin.
