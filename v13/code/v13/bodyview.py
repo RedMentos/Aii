@@ -98,7 +98,10 @@ def _world_jepa_body_readout(r, e, text, role):
         if not _valid_sha256(checkpoint_sha) or not _valid_sha256(source_sha):
             return None, None
 
-        predictions = []
+        prediction_rows = []
+        columns = (["action", "duration_s", "output_characters", "uncertainty"]
+                   if role == "B1_DETAIL"
+                   else ["action", "success_probability", "uncertainty"])
         for action, item in zip(actions, entries):
             utility = item.get("receiver_utility")
             if not isinstance(utility, dict) or utility.get("accepted") is not True:
@@ -122,31 +125,30 @@ def _world_jepa_body_readout(r, e, text, role):
                         or not isinstance(output_chars, (int, float))
                         or not math.isfinite(float(output_chars))):
                     return None, None
-                row = {
-                    "action": action,
-                    "duration_s": round(min(86400.0, max(0.0, float(duration))), 3),
-                    "output_characters": int(round(min(1000000.0, max(0.0, float(output_chars))))),
-                    "uncertainty": round(float(uncertainty), 4),
-                }
+                row = [
+                    action,
+                    round(min(86400.0, max(0.0, float(duration))), 3),
+                    int(round(min(1000000.0, max(0.0, float(output_chars))))),
+                    round(float(uncertainty), 4),
+                ]
             else:
                 success = prediction.get("predicted_success_probability")
                 if (isinstance(success, bool) or not isinstance(success, (int, float))
                         or not math.isfinite(float(success))):
                     return None, None
-                row = {
-                    "action": action,
-                    "success_probability": round(min(1.0, max(0.0, float(success))), 3),
-                    "uncertainty": round(float(uncertainty), 4),
-                }
-            predictions.append(row)
+                row = [
+                    action,
+                    round(min(1.0, max(0.0, float(success))), 3),
+                    round(float(uncertainty), 4),
+                ]
+            prediction_rows.append(row)
 
         context = {
             "status": "SHADOW_READOUT_ONLY",
-            "role": role,
-            "representation": "NUMERIC_ACTION_OUTCOME_PRIOR",
+            "representation": "NUMERIC_T8_OUTCOME_PRIOR",
             "action_horizon": "NEXT_ACTION",
             "checkpoint_id": checkpoint_sha[:16],
-            "predictions": predictions,
+            "predictions": {"columns": columns, "rows": prediction_rows},
             "body_prompt_consumed": True,
             "native_body_consumed": False,
             "decision_authority": "NONE",
