@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T23:40:39.363Z",
+  "updated_at": "2026-11-22T23:41:59.968Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; private V13OBS #115 (updated 2026-11-22T20:24:26Z) confirms this SHA installed, auto-update enabled and Runtime/Dashboard UP_TO_DATE. Latest metadata still shows 0 valid B1/B2 offers, 4/4 B1 and 2/2 B2 native attempts failed, and C3 ~38.945 s prefill / 2 tokens. Functional/whole-Canon acceptance remains open; historical V13 Canon and V14 master are preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -1471,7 +1471,31 @@
       "branch": "boss/v14-fair-budget-current-base-20261122-run14",
       "head": "119ff42a2d1b7412fe21821137cd5d355aaadafb",
       "status": "NOT_GREEN",
-      "workflow_counts": "4 PASS / 4 IN_PROGRESS / multiple QUEUED; no final matrix"
+      "workflow_counts": "12 PASS / 3 IN_PROGRESS / 1 SKIPPED",
+      "passing": [
+        "controller guard",
+        "runtime deployment integrity",
+        "two-checkout migration",
+        "owner-read bootstrap",
+        "role-specific native tap provenance",
+        "combined online JEPA",
+        "Lab-Age control state/WebView truth",
+        "native latent receiver staged runtime",
+        "JEPA receipt integrity",
+        "A5 UI lease regressions",
+        "JEPA training-resume/source-forget",
+        "JEPA Runtime transactional update"
+      ],
+      "in_progress": [
+        "Core same-turn B1/B2/C4/C3",
+        "Core audio + exact arithmetic Runtime",
+        "staged context and integrated regression"
+      ],
+      "skipped": [
+        "safe additive candidate tests"
+      ],
+      "integration_gap": "Boss branch does not contain v13/code/v13/world_jepa_temporal.py; it is 72 ahead / 83 behind JEPA branch with merge-base c4eb82de. No temporal T8 learner integration proof on this Boss head.",
+      "next_action": "Finish the three in-progress workflows and integrate the JEPA temporal branch only through a reviewed current-release stack after QA and Boss exact-head matrices are green."
     }
   }
 }
