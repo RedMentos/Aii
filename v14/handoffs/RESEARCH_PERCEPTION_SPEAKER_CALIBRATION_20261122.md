@@ -4,7 +4,7 @@ Date: 2026-11-22
 Owner: research-perception
 PR: https://github.com/RedMentos/Aii/pull/2349
 Branch: research-perception/v14-speaker-calibration-runtime-20261122
-Verified branch HEAD at handoff creation: 097b2713c063548330c303c3060074de3f838cdb
+Code/test checkpoint SHA: 097b2713c063548330c303c3060074de3f838cdb (the code-bearing commit whose selected CI gates passed). Handoff file first commit: 00edc5d96382296e775ed01cc1f4c376c5894ca6. Research-ledger CI follow-up: 7d49e679d9f829a88c6fe6a81b5f513b416cd9e0.
 Base: gpt6/v13-private-remote-bridge-20261111 @ c4eb82deec915f65894c20d6ebbaf0ebf58fa335
 
 ## Product gap addressed
@@ -27,7 +27,7 @@ RAW EAR speaker embeddings previously exposed cosine similarity and caller-provi
 - LOCAL_LINUX, CPython 3.13.5: py_compile of the new module and test file PASS.
 - LOCAL_LINUX, CPython 3.13.5: 12 calibration-only pytest tests PASS. Fixtures are synthetic; these validate deterministic splitting, threshold logic, model/temporal binding, artifact integrity, manifest allowlisting and negative controls only.
 - LOCAL_LINUX full Aii integration: BLOCKED. No repository checkout was mounted and github.com DNS resolution failed. Do not describe the repository integration tests as locally passed.
-- CI at head 097b2713c063548330c303c3060074de3f838cdb: v13-private-remote-bridge-tests PASS; public privacy scan PASS. RAW EAR fastpath, VAD comparison, consent revocation and prosody-to-attention workflows were still running when this handoff was written; read the PR checks before any merge decision.
+- CI at code head 097b2713c063548330c303c3060074de3f838cdb: RAW EAR fastpath PASS, 128 tests on CPython 3.13.18 and 128 on 3.14.10 (including the calibration suite); VAD/WebRTC/libfvad comparison PASS on 3.13.18 and 3.14.10; consent-revocation QA PASS, 42 tests on 3.13.18; prosody-to-attention PASS, 66 tests on 3.11.18 and 3.13.18; public privacy scan PASS; private bridge tests PASS, 39 tests on 3.12.16. The later handoff/ledger-only commits triggered another run; the staged-context integration workflow was still pending when recorded. Read the current PR checks before any merge decision.
 - TERMUX / Redmi: REDMI_UNVERIFIED. No authorized phone connection or microphone capture was available.
 
 ## Runtime behavior and safety
