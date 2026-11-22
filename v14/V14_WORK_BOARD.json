@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T10:00:40.871Z",
-  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at b3b92f41772573732b2cba71f7ad6bf34dc8e521; exact post-merge push CI green; phone install remains separately gated. V14 master and historical V13 appendix preserved.",
+  "updated_at": "2026-11-22T17:27:21.690Z",
+  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; private V13OBS #115 receipt 2026-11-22T16:54:57Z confirms c4eb82 installed, auto-update ON, Runtime/Dashboard UP_TO_DATE; latest native turn remains 57.74 s total / 41.63 s C3 TTFT with B1/B2 TIME_BUDGET. Perception PRs #2361 and #2363 are unmerged candidates, not deployment.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -196,10 +196,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Perception: preserve the #2327 RAW EAR FIR anti-alias feature path and its staged A5/A4/C3 regression; do not equate caller-supplied PCM with Android microphone capture. Next, reconcile the signed one-shot consumer with QA's companion provider and measure Android lifecycle/route/silence/revocation only after explicit device permission.",
+      "proof_environment": "LOCAL_LINUX isolated synthetic reproductions only: FASTDIAR hash helper 7/7 PASS; RAW EYE visual adapter 3/3 PASS, 20x 64x64 timing median 5.852 ms/p95 7.870 ms. Exact full Aii Store/A4 CI pending; TERMUX/REDMI/ARM unverified.",
+      "next_step": "Run exact combined Perception CI on #2363 and exact RAW EAR CI on #2361, then obtain independent Core/QA review. Core next owns wiring consume_visual_source into the active Runtime turn and testing source revocation before any derived visual packet persistence. Keep screen/camera capture behind separate Android OS grant; no model/weight download or user action.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-22T17:27:21.690Z",
       "latest_candidate_pr": {
         "pr": 2312,
         "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
@@ -208,7 +208,17 @@
         "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
         "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. PR #2363 adds a source-bound user-supplied image path using existing vision.py raw-eye features: global+16 tile PerceptPacket, exact region SourceRefs, STATIC_UNTIMED, A4 attention and bounded A5ContextEnvelope. LOCAL_LINUX isolated reproduction 3/3 PASS; 20 synthetic 64x64 runs median 5.852 ms / p95 7.870 ms. Full Aii Store/A4 consumer CI pending; Runtime._turn not wired, no Android screen/camera or Redmi proof.",
+      "latest_visual_adapter_pr": {
+        "pr": 2363,
+        "head_sha": "a77b841f250dab597c127d9ddecd86278c4d0ef4",
+        "code_sha": "f2ae689950357e51692f644f77f4eb0ca5ab0bc2",
+        "test_sha": "fd26b886710af75af5e3211c688cb5731b5531fe",
+        "base_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+        "state": "OPEN_DRAFT_CI_PENDING",
+        "scope": "user-supplied stored IMAGE SourceRef -> 17 RAW EYE summaries -> ephemeral A5 PerceptPacket -> A4 attention -> bounded C3 context envelope; no normal Runtime invocation or Android provider",
+        "ci": "V14 Perception fastpath (RAW EAR + RAW EYE) PENDING on exact head"
+      }
     },
     {
       "id": "V14-007",
