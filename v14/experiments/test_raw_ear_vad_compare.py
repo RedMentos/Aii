@@ -1,3 +1,6 @@
+import contextlib
+import io
+import json
 import math
 import os
 import shutil
@@ -5,6 +8,7 @@ import struct
 import subprocess
 import tempfile
 import unittest
+import wave
 from pathlib import Path
 
 from raw_ear_vad_compare import (
@@ -14,6 +18,7 @@ from raw_ear_vad_compare import (
     _load_v3_extractor,
     _metrics,
     compare_pcm,
+    main,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -178,6 +183,46 @@ int fvad_process(Fvad *p, const int16_t *frame, size_t length) {
         self.assertEqual(result["vad_baseline"]["version"], version)
         self.assertEqual(result["processed_duration_ms"], 2000)
         self.assertGreaterEqual(result["vad_baseline"]["processing_cpu_ms"], 0)
+
+    def test_cli_libfvad_backend_uses_pinned_version_environment(self):
+        library = os.getenv("V14_LIBFVAD_LIBRARY")
+        if not library or not Path(library).is_file():
+            self.skipTest("pinned native libfvad shared library was not built")
+        version = "dpirch/libfvad@test-cli-entrypoint"
+        previous_version = os.environ.get("V14_LIBFVAD_VERSION")
+        os.environ["V14_LIBFVAD_VERSION"] = version
+        try:
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                wav_path = root / "voice-like.wav"
+                annotation_path = root / "annotations.json"
+                pcm = voice_like()
+                with wave.open(str(wav_path), "wb") as wav:
+                    wav.setnchannels(1)
+                    wav.setsampwidth(2)
+                    wav.setframerate(16000)
+                    wav.writeframes(pcm)
+                annotation_path.write_text(
+                    json.dumps({"speech_intervals_ms": [[500, 1500]]}),
+                    encoding="utf-8",
+                )
+                output = io.StringIO()
+                with contextlib.redirect_stdout(output):
+                    result_code = main([
+                        str(wav_path), str(annotation_path),
+                        "--backend", "libfvad",
+                        "--libfvad-path", library,
+                    ])
+                self.assertEqual(result_code, 0)
+                result = json.loads(output.getvalue())
+                self.assertEqual(result["vad_baseline"]["name"], "LIBFVAD_C_API")
+                self.assertEqual(result["vad_baseline"]["version"], version)
+                self.assertEqual(result["processed_duration_ms"], 2000)
+        finally:
+            if previous_version is None:
+                os.environ.pop("V14_LIBFVAD_VERSION", None)
+            else:
+                os.environ["V14_LIBFVAD_VERSION"] = previous_version
 
     def test_transition_latency_uses_state_change_window_end(self):
         predictions = [
