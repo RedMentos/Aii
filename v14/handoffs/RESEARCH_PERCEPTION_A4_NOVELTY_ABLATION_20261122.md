@@ -2,7 +2,7 @@
 
 Date: 2026-11-22
 Base: `gpt6/v13-private-remote-bridge-20261111` at `aed1d2b826290c95c70356b5d8b864b5ef382be4`
-Branch: `research-perception/v14-a4-novelty-ablation-20261122`
+Branch: `research-perception/v14-a4-novelty-ablation-20261122`; latest docs head `bb85ddd893d59836bac905dfb7c78342d6c0e996`
 
 ## Research reviewed
 
