@@ -1,3 +1,50 @@
+# Current user-facing handoff — 2026-11-22T09:58:33.516Z
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein erneuter Installer, kein Modell-/Gewichtswechsel und keine Rechte- oder Mikrofonfreigabe. UPDATE_REQUEST #519 ist bereits in der Warteschlange; bitte nicht parallel erneut starten.
+
+- Release-Entwicklungs-HEAD: `b3b92f41772573732b2cba71f7ad6bf34dc8e521`. Exakte GitHub-Push-CI: **40/40 Check-Runs SUCCESS, 29/29 Workflow-Runs SUCCESS**. Das beweist nur die GitHub-CI, nicht die Installation auf dem Redmi.
+- Das Redmi ist laut authentifiziertem privatem PIPELINE_STATUS #520 weiterhin auf `283ac1c9`; Auto-Update EIN, Runtime `CI_WAIT`, Dashboard `BLOCKED_RUNNING`, letzter Fehler `NONE`. #519 UPDATE_REQUEST ist `QUEUED`. Für `b3b92` liegt noch keine Installationsbestätigung vor.
+- Letzte gespeicherte Diagnose #518 ist kein neuer Testlauf: 63,22 s Gesamtzeit, 42,48 s TTFT, 34,96 s Prefill, 709 Prompt-Tokens, 2 generierte Tokens; B1/B2 weiterhin `TIME_BUDGET` bei 53,2/54,2 s. Daraus folgt keine korrekte Antwort und keine Verbesserung durch den Scheduler-Fix.
+- #2327 integriert den RAW-EAR-FIR-Anti-Alias-Featurepfad in den gestuften A5/A4/C3-Verbraucher. #2329 repariert nur die bestehende libfvad-Vergleichs-CLI; BSD-3-Clause, Research-Comparator, kein Produktions-VAD und keine Mikrofonaufnahme.
+- JEPA #2331 ist ein aktueller Kandidat auf `b3b92`, aber noch nicht freigegeben: zwei Downstream-SHA-Pins stimmen nicht mit den exakten Dateien überein; der Hinweis mit den vollständigen Hashes steht im PR. Keine JEPA-Promotion.
+- B3 bleibt produktiv OFF/SYMBOLIC; der gemergte #2323 ist nur ein diagnostischer Input-Embedding-Probe. #2313/#2317, #2312 und der Android-Companion-Stack sind noch nicht als native Gerätefunktionen bestätigt.
+- Vollständige lokale Aii-Tests liefen nicht: kein Checkout/Netzwerk in der lokalen Ausführungsumgebung. Android-native B1/B2-Qualität, 20-Turn-Akzeptanz, korrekte 2+2, Mikrofon/UI-/Hintergrundsteuerung, trainierte Latentkopplung und permanente Gewichtsänderungen bleiben offen.
+- V14-Master und historischer V13-Canon sind unverändert; das 1.255-Überschrifteninventar bleibt erhalten. Die semantische Einzelpflicht-Abdeckung ist noch nicht vollständig.
+
+**Nächster interner Schritt:** #519/#520 abwarten, #2331-Pin-Kette reparieren und danach die gepaarten B1/B2-Taps sowie den signierten Audio-Consumer auf denselben Release-Stand integrieren. Kein manueller Eingriff von dir nötig.
+
+---
+
+# Boss & Integration follow-up — 2026-11-22
+
+**Keine Nutzeraktion nötig.**
+
+- Release-HEAD: `b3b92f41772573732b2cba71f7ad6bf34dc8e521`. #2329 behebt nur die bestehende libfvad-Vergleichs-CLI (fehlender `os`-Import + CLI-Regression); exakter PR-Stand 4/4 SUCCESS. R-079 hält libfvad als Research-Comparator fest, nicht als Produktions-VAD.
+- Exakte Push-CI für b3b92 hatte beim letzten Check 38 queued/in-progress Checks und 0 Fehler. Das ist noch kein vollständiges Push-CI-Green.
+- Das Handy ist laut #517 weiterhin exakt auf `283ac1c9` (Runtime UPDATED, Dashboard UP_TO_DATE, Auto-Update EIN). UPDATE_REQUEST #519 wartet; ein Receipt für b3b92 liegt noch nicht vor.
+- DIAGNOSTICS #518 zeigt weiterhin den zuletzt aufgezeichneten Turn (63,22 s / 42,48 s TTFT; B1/B2 TIME_BUDGET), aber keinen neu ausgeführten Turn nach dem Update. Deshalb ist der Effekt des Scheduler-Fixes noch nicht gemessen.
+- Der bestehende CHAT_OPERATOR-Allowlist enthält noch keinen nativen Receiver-Probe-Befehl. Kein Ausweichen auf andere Kommandos und kein Consent-Bypass. Core muss einen exakt begrenzten, explizit bestätigten Probe-Befehl samt Tests bereitstellen.
+
+**Nächster Schritt:** b3b92 Push-CI und #519 abwarten; erst danach ggf. autorisierten Diagnosepfad nutzen. Kein Termux-Befehl, kein Modell-/Gewichts-/Rechtewechsel und keine Mikrofonfreigabe nötig.
+
+---
+
+# Boss & Integration — 2026-11-22
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein Modell-/Gewichtswechsel und keine Rechte- oder Mikrofonfreigabe erforderlich.
+
+- Der aktuelle integrierte Release-Branch steht auf `9097d634398817743ba6d09f233be523322db53c`. Der vorherige Stand `283ac1c9b38d38c68030391710df852a3c38fdfc` ist mit 46/46 Push-Checks grün und laut privater PIPELINE_STATUS #517 exakt auf dem Redmi installiert (Runtime UPDATED, Dashboard UP_TO_DATE, Auto-Update EIN, last_error NONE).
+- #2325 behebt die Budget-Grenze für die sequenziellen B1/B2-Observer und härtet den nativen Sender-Modellpfad gegen Symlinks und Dateien außerhalb von `~/v13/models`. Die Codeänderung ist auf dem Handy installiert; das beweist noch keine brauchbaren nativen B1/B2-Angebote.
+- #2327 integriert den RAW-EAR-FIR-Anti-Alias-Pfad samt Regressionen und aktualisiert die gesamte Composer→Recovery→Stage→Deployer-Pin-Kette. Sein exakter PR-Stand hat 27 SUCCESS / 1 erwartetes SKIPPED. Der neue Merge-Commit `9097d634` hat beim letzten Check noch laufende/queued Push-CI; er ist **noch nicht als installiert bestätigt**.
+- Der letzte Vorher-Messwert #512 (vor #2325) war 63,22 s Gesamtdauer / 42,48 s TTFT; B1 53,2 s und B2 54,2 s TIME_BUDGET, C3 3,1 s. Die neue post-update DIAGNOSTICS-Anfrage #518 wartet noch. Eine Verbesserung wird erst nach der Antwort behauptet.
+- Historischer V13-Canon: GitHub-Blob `218464b1...` ist byte-identisch im V14-Master enthalten; 1.255 Überschriften bleiben inventarisiert. Die semantische Zuordnung jeder einzelnen Pflicht zu Code, Consumer, Test, Plattform und Rollback ist noch nicht abgeschlossen.
+
+**Noch offen:** echte korrekte B1/B2→C4→C3-Angebote, JEPA/World-Training mit nachweisbaren numerischen Gewichtsänderungen und Retention, trainierte B3-Latentkopplung, Android-AudioRecord und UI-/Hintergrundsteuerung, vollständiger Sprachdecoder/Vocoder, zwei echte sparse-MoE-Körper, Memorilla-Produktionsconsumer, OS-Sandbox und adaptive Verhaltensbewertung.
+
+**Nächster interner Schritt:** exakte Push-CI für `9097d634` vollständig grün bekommen, danach über den vorhandenen Updater installieren und den SHA erneut privat bestätigen. Anschließend #518 auswerten und JEPA-/B3-/Android-Stacks auf denselben Release-Stand bringen. Kein manuelles Termux-Kommando nötig.
+
+---
+
 # Core & Harness checkpoint — 2026-11-22
 
 **Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Gewichts-/Rechtewechsel und keine Geräteaktion.
