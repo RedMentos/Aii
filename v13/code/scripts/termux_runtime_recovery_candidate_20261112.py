@@ -179,7 +179,7 @@ def build_sources(code_dir, *, include_postcommit=True):
         exec(compile(raw_candidate, str(path), 'exec'), namespace)
         runtime = result['v13/runtime.py']
         if hashlib.sha256(runtime).hexdigest() != '08c1ef961b0c7316da8c1c8265feb71a7a4acf009018788e7accb81eecb2337d':
-            raise ValueError('Integrated observer Runtime source changed')
+            raise ValueError('Integrated observer Runtime source changed: ' + hashlib.sha256(runtime).hexdigest())
         runtime = namespace['apply_source'](runtime)
         # LateWatch runs during C3 streaming and must obey the same resolved
         # per-turn body selection as the foreground and post-answer schedules.
