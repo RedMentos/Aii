@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T17:59:40Z",
+  "updated_at": "2026-11-22T18:11:02Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; all 30 observed exact-SHA Actions workflow runs completed SUCCESS. Fresh owner-authenticated private PIPELINE_STATUS #550 confirms the same SHA installed and UP_TO_DATE. Functional/whole-Canon acceptance remains open; V14 master and historical V13 appendix preserved. Perception PR #2366 is a draft candidate only; local isolated source-lifecycle race harness 2/2 PASS, exact CI pending, no Runtime or Redmi acceptance.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -197,21 +197,22 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Research/Perception PR #2366 adds a stored-IMAGE RAW EYE A5/A4 candidate with Store-RLock serialization across ingest/read/forget and full ephemeral context construction. Local isolated concurrency harness 2/2 PASS; exact Python 3.13/3.14 and staged/integrated CI pending. After exact CI, Core must wire the adapter into normal Runtime; QA must retain the source-forget/re-ingest barrier tests. No Android camera/screen provider or Redmi proof.",
+      "next_step": "PR #2366 exact branch head 9a19b8c0af01912f40d92fecac4e6ab9a82bb128; tested code/test commit f8a9faf66b64352f8e1703e634b79f03ec3c0984. Local isolated concurrency harness 2/2 PASS; exact CI run 45053429482 is pending with no jobs created at last read. After exact CI, Core wires normal Runtime invocation; QA validates source-forget/restart on the integrated candidate. #2363 is closed as superseded by #2366. No Android camera/screen or Redmi proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T17:57:23Z",
+      "last_checkpoint": "2026-11-22T18:11:02Z",
       "latest_candidate_pr": {
         "pr": 2366,
-        "head_sha": "ce5b07da720c4d8751bc4fa09042337996a1081d",
+        "head_sha": "9a19b8c0af01912f40d92fecac4e6ab9a82bb128",
+        "tested_code_sha": "f8a9faf66b64352f8e1703e634b79f03ec3c0984",
         "branch": "research-perception/v14-vision-source-revocation-atomic-20261122",
-        "status": "DRAFT_CI_PENDING",
-        "scope": "stored IMAGE SourceRef → RAW EYE A5/A4/C3 candidate; atomic ingest/read/forget; two barrier regressions",
+        "status": "DRAFT_CI_PENDING_RUN_45053429482",
+        "scope": "stored IMAGE SourceRef → RAW EYE A5/A4/C3 candidate; atomic ingest/read/forget; two Store/A5 barrier regressions",
         "local_linux": "ISOLATED_CP3135_2_OF_2_PASS_FAKE_STORE",
-        "exact_ci": "QUEUED_AT_LAST_READ",
+        "exact_ci": "RUN_45053429482_PENDING_NO_JOBS_AT_LAST_READ",
         "runtime": "NOT_NORMAL_RUNTIME_WIRED",
         "redmi": "NOT_RUN"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. PR #2366: source-bound stored IMAGE→17 RAW EYE segments→A4/admission candidate; image ingest/read/forget and the full A5 consumer share Store RLock. Local isolated CPython 3.13.5 two-interleaving harness 2/2 PASS; exact PR CI pending; normal Runtime hook and Redmi remain unverified."
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. PR #2366: source-bound stored IMAGE→17 RAW EYE segments→A4/admission candidate; image ingest/read/forget and the full A5 consumer share Store RLock. Local isolated CPython 3.13.5 two-interleaving harness 2/2 PASS; exact PR CI pending; normal Runtime hook and Redmi remain unverified. PR #2363 was closed as superseded by #2366, which is rebased to the current release-development base and adds two barrier-controlled Store/A5 source-lifecycle tests. Exact CI run 45053429482 remains pending/no jobs at last read."
     },
     {
       "id": "V14-007",
@@ -1081,13 +1082,15 @@
     "learning_status": "LEARNING_STATUS_552_UNAVAILABLE",
     "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result.",
     "pr2366": {
-      "timestamp": "2026-11-22T17:57:23Z",
-      "head_sha": "ce5b07da720c4d8751bc4fa09042337996a1081d",
+      "timestamp": "2026-11-22T18:11:02Z",
+      "head_sha": "9a19b8c0af01912f40d92fecac4e6ab9a82bb128",
+      "tested_code_sha": "f8a9faf66b64352f8e1703e634b79f03ec3c0984",
       "local_linux": "ISOLATED_CP3135_2_OF_2_PASS_FAKE_STORE",
-      "exact_ci": "QUEUED_AT_LAST_READ",
+      "exact_ci": "RUN_45053429482_PENDING_NO_JOBS_AT_LAST_READ",
       "runtime_consumer": "NOT_NORMAL_RUNTIME_WIRED",
       "redmi": "NOT_RUN",
-      "release_sha": "NOT_RELEASED"
+      "release_sha": "NOT_RELEASED",
+      "supersedes_pr": 2363
     },
     "research_r081": {
       "timestamp": "2026-11-22T17:59:40Z",
