@@ -316,7 +316,10 @@ def _split_windows(windows):
             for window in windows if window["session_id"] in members
             for source_sha in window["source_sha256s"]
         })
-        component_keys.append((_json_hash({"sessions": sorted(members), "sources": sources}), members))
+        # Session IDs are random runtime identifiers. Partition order must depend
+        # only on stable source-content digests, otherwise identical fixtures can
+        # change train/holdout assignment across runs and Python environments.
+        component_keys.append((_json_hash({"sources": sources}), members))
     component_keys.sort(key=lambda item: item[0])
     fold_by_session = {}
     for index, (_, members) in enumerate(component_keys):
