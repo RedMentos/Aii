@@ -270,17 +270,18 @@ def test_bidirectional_shadow_trainer_uses_verified_labels_and_is_idempotent(
             ],
         }
 
-    monkeypatch.setitem(sys.modules, "v13.b3pairs", types.ModuleType("v13.b3pairs"))
-    monkeypatch.setitem(
-        sys.modules,
-        "v13.b3train",
-        types.SimpleNamespace(train_l1_shadow=train_l1_shadow),
-    )
-    monkeypatch.setitem(
-        sys.modules,
-        "v13.b3bridge",
-        types.SimpleNamespace(Bridge=StubBridge),
-    )
+    b3pairs_module = types.ModuleType("v13.b3pairs")
+    b3train_module = types.ModuleType("v13.b3train")
+    b3train_module.train_l1_shadow = train_l1_shadow
+    b3bridge_module = types.ModuleType("v13.b3bridge")
+    b3bridge_module.Bridge = StubBridge
+    monkeypatch.setitem(sys.modules, "v13.b3pairs", b3pairs_module)
+    monkeypatch.setitem(sys.modules, "v13.b3train", b3train_module)
+    monkeypatch.setitem(sys.modules, "v13.b3bridge", b3bridge_module)
+    package = sys.modules["v13"]
+    monkeypatch.setattr(package, "b3pairs", b3pairs_module, raising=False)
+    monkeypatch.setattr(package, "b3train", b3train_module, raising=False)
+    monkeypatch.setattr(package, "b3bridge", b3bridge_module, raising=False)
 
     first = supervision.train_l1_shadow_directions_from_t8(
         store, cognition, tmp_path, directions=("B1_TO_B2", "B2_TO_B1"),
@@ -304,3 +305,15 @@ def test_bidirectional_shadow_trainer_uses_verified_labels_and_is_idempotent(
     assert all(value["status"] == "ALREADY_TRAINED"
                for value in second["directions"].values())
     assert len(calls) == 2
+
+
+def test_empty_pair_store_does_not_scan_t8_history(monkeypatch):
+    called = []
+    monkeypatch.setattr(
+        supervision, "verify_committed_transitions",
+        lambda store, limit: called.append(limit) or ([], 0),
+    )
+    result = supervision.collect_t8_outcome_labels(FakeStore([]), limit=64)
+    assert result["status"] == "NO_PAIRED_TAPS"
+    assert result["pair_count"] == 0
+    assert called == []
