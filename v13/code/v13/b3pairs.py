@@ -109,13 +109,13 @@ def capture_pair(cognition, event, deadline):
     # exact source span, never by assuming token index equivalence.
     pair_key = hashlib.sha256(json.dumps(
         [event_id, generation, source, taps["B1_DETAIL"]["model_revision"],
-         taps["B2_GIST"]["model_revision"], taps["B1_DETAIL"]["tap_id"],
-         taps["B2_GIST"]["tap_id"], gist_plan["revision"], gist_plan["mode"],
+         taps["B2_GIST"]["model_revision"], gist_plan["revision"], gist_plan["mode"],
          gist_plan["tokens_per_group"], gist_plan["max_slots"]],
         sort_keys=True, separators=(",", ":"), ensure_ascii=True
     ).encode()).hexdigest()
     body_pair_id = "B1_DETAIL<->B2_GIST:" + pair_key[:24]
-    gist_path = runtime.home / "data/blobs" / ("b3pair-" + pair_key + "-gist.json")
+    artifact_key = hashlib.sha256((pair_key + taps["B2_GIST"]["packet_id"] + taps["B1_DETAIL"]["packet_id"]).encode()).hexdigest()
+    gist_path = runtime.home / "data/blobs" / ("b3pair-" + artifact_key + "-gist.json")
     gist_artifact = {"body_pair_id": body_pair_id,
                      "tap_packet_id": taps["B2_GIST"]["packet_id"],
                      "source_ref": source, "revision": gist_plan["revision"],
@@ -252,6 +252,14 @@ def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
         raise ValueError("at least one persisted B3 pair is required")
     if not isinstance(labels, (list, tuple)) or len(labels) != len(pair_packets):
         raise ValueError("explicit labels must align one-to-one with B3 pairs")
+    pair_ids = [p.get("body_pair_id") for p in pair_packets]
+    if len(set(pair_ids)) != len(pair_ids):
+        raise ValueError("B3 training batch contains duplicate body_pair_id experiences")
+    source_keys = [(p.get("source_ref", {}).get("source_id"),
+                    p.get("source_ref", {}).get("char_start"),
+                    p.get("source_ref", {}).get("char_end")) for p in pair_packets]
+    if len(set(source_keys)) != len(source_keys):
+        raise ValueError("B3 training batch repeats the same exact source span")
     pairs = [load_pair(cognition, p) for p in pair_packets]
     sender_role, receiver_role = (("B1_DETAIL", "B2_GIST") if direction == "B1_TO_B2"
                                    else ("B2_GIST", "B1_DETAIL"))
