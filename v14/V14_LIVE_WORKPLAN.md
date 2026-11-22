@@ -1274,5 +1274,5 @@ A new upstream llama.cpp issue #27148 reports stale prompt/KV content crossing u
 
 ## Handoff PR exact-head checkpoint — 2026-11-22T18:00:05.009Z
 
-- This documentation/research handoff PR #2365 now points to `74172c7fe710579e973efbabd19e0718d3df13d2`; 6 exact-head checks were QUEUED at the latest poll. It is still DRAFT and has not been merged.
+- This documentation/research handoff PR #2365 remains DRAFT with exact-head CI pending; use the PR's current head and checks as the live authority. It has not been merged.
 - The release branch remains `aed1d2b826290c95c70356b5d8b864b5ef382be4` with push workflows still pending; the device remains installed at `c4eb82`. No UPDATE_REQUEST was sent.
