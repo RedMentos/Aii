@@ -1,3 +1,19 @@
+# JEPA & Memory — Run 16: aktueller verifizierter Stand (2026-11-22T20:38:53.844Z)
+
+**Keine Nutzeraktion erforderlich.** Der installierte Stand ist bereits über den vorhandenen Updater aktuell. Kein neuer Termux-Befehl, kein UPDATE_REQUEST und kein Modell-/Gewichts-/Rechtewechsel.
+
+- **Installiert:** Release-Branch `gpt6/v13-private-remote-bridge-20261111`, SHA `aed1d2b826290c95c70356b5d8b864b5ef382be4`. Privater V13OBS-Snapshot [#115](https://github.com/RedMentos/Aiiii/issues/115), aktualisiert 20:24:26Z, bestätigt Auto-Update EIN, Runtime/Dashboard UP_TO_DATE und `last_error=NONE`. Der Snapshot ist Metadatenbeleg, kein neuer Chat-Test.
+- **Reale Redmi-Funktionslage:** #115 meldet im beobachteten Fünf-Turn-Fenster B1: 4/4 native Versuche fehlgeschlagen, B2: 2/2 fehlgeschlagen, null gültige Offers; C3 etwa 38,945 s Prefill und nur 2 generierte Tokens. Keine korrekte Antwort- oder 20-Turn-Akzeptanz. Diese Werte sind kein Beleg für das neue JEPA-Feature.
+- **JEPA-Kandidat:** [PR #2372](https://github.com/RedMentos/Aii/pull/2372), aktueller Branch-Head `9829b199b5a7c6c4182eec07c295d5d97b807ef2`, DRAFT / NOT_RELEASED. Der bestehende Kandidat verbindet source-verifizierte T8-Transitions, trainierbaren temporalen WorldJEPA-Encoder/Predictor + EMA, Replay/Retention/Rollback und einen nicht autoritativen B1/B2-Prompt-Readout (B1-Historie 2, B2-Historie 3). Die letzten drei Commits verbesserten nur Testdiagnostik; sie beheben noch keinen Runtime-Fehler.
+- **CI:** Der vorherige exakte Head fbe4 schlug fehl: der neue B1/B2-Prompttest erhielt keinen temporalen Readout; staged/integrated scheiterte an einem veralteten QA-Pin auf `memory.py` und zeigte zusätzlich einen SleepRuntime-Postcommit-`ValueError`; ein Planner-Test hatte einen undefinierten `monkeypatch`-Namen. Der Test-Namensfehler und die fehlende Exception-Nachricht wurden korrigiert. Die 8db1952-Workflows 45066934953 / 45066934983 / 45066934931 waren beim letzten Readback QUEUED; für den neueren Head 9829b19 ist noch kein exakter CI-Lauf sichtbar. QUEUED ist kein PASS.
+- **Lokale Tests:** CPython 3.13.5, NumPy 2.3.5 und pytest 9.0.2 sind vorhanden; der Aii-Checkout fehlt und `git ls-remote` scheitert an DNS. Vollständige lokale Compile-/Pytest-Suite BLOCKED / NOT_RUN.
+- **Teamabhängigkeiten:** QA muss die Source-Lifecycle-Pins auf die unveränderte JEPA-`memory.py`-SHA-256 `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701` neu binden (#2359 Kommentar 7085390248). Der frühere Audio-Runtime-Pin auf Boss #2370 ist inzwischen auf Branch-Head 7fc6d7e neu gebunden; dessen vollständige 18-Workflow-Matrix ist noch QUEUED. JEPA wird erst nach grüner Boss-Matrix und QA-Lifecycle-Kette rebased.
+- **Forschung:** R-089 im Research Ledger dokumentiert JEPA-TTT: persistenter Predictor/Optimizer und dichte Replay-Fenster sind nützliche Vergleichshypothesen; der Paper-Test misst aber keine Mehrfach-Shift-Retention oder katastrophales Vergessen. Kein Code und keine Weights übernommen.
+
+**Nächster interner Schritt:** Exakte CI-Logs lesen; den tatsächlichen Receiver-Gate-/B1-B2-Consumer-Fehler und den SleepRuntime-`ValueError` beheben; QA-Pin-Rebind und Boss-Matrix abwarten; danach disjunkte Correct-vs-Omitted-vs-Shuffled-vs-Hypothetical-History- sowie Replay-/Retention-Ablationen ausführen. Bis dahin bleibt alles SHADOW-only. Kein nativer B1/B2-Weight-Edit, kein trainierter Cross-Organ-Latent-Transfer und keine Redmi-Akzeptanz behaupten.
+
+---
+
 # QA & Android — aktueller Gesamt-Checkpoint (2026-11-22, Run 7)
 
 **Keine Nutzeraktion erforderlich.** Der vorhandene Updater hat den aktuellen Release-Branch-Stand bereits installiert. Kein Termux-Befehl, kein neuer UPDATE_REQUEST, kein CHAT_SEND, keine LOG_PAGE-Abfrage und kein Modell-/Gewichts-/Rechtewechsel.
