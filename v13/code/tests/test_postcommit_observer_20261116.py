@@ -92,7 +92,8 @@ class FakeRunner:
             yield json.dumps({'summary': 'The plan needs a reserve.',
                               'quotes': ['The plan preserves a long-term reserve.'],
                               'uncertainty': 'low', 'needs_reentry': False})
-        else:
+        elif self.role == 'C3_LANGUAGE':
+            self.case.c3_prompts.append(messages)
             yield 'One combined response.'
 
 
@@ -109,6 +110,7 @@ class RuntimePostcommit(unittest.TestCase):
         self.runtime._route = Mock(return_value=('both', {'source': 'TEST_BOTH'}))
         self.runtime.learner.output_delta = Mock(return_value=None)
         self.calls = []
+        self.c3_prompts = []
         self.behavior = lambda role, state: 'ok'
         self.runners = {}
 
@@ -176,6 +178,42 @@ class RuntimePostcommit(unittest.TestCase):
         self.assertNotIn(offers[1]['packet_id'], meta['selected_offer_ids'])
         self.assertEqual(self.runtime.store.read_source(offers[1]['evidence_refs'][0]),
                          'The plan preserves a long-term reserve.')
+
+    def test_both_source_bound_body_offers_are_selected_and_reach_c3(self):
+        event, meta = self.turn()
+        rows = self.runtime.store.rows(
+            "SELECT payload FROM packets WHERE event_id=? AND kind='OfferPacket' ORDER BY rowid", (event,))
+        offers = [json.loads(row['payload']) for row in rows]
+        self.assertEqual({offer['role'] for offer in offers}, {'B1_DETAIL', 'B2_GIST'})
+        packet_ids = {offer['packet_id'] for offer in offers}
+        self.assertEqual(set(meta['selected_offer_ids']), packet_ids)
+
+        event_row = self.runtime.store.one("SELECT packet FROM events WHERE id=?", (event,))
+        source_ref = json.loads(event_row['packet'])['source_ref']
+        source_text = self.runtime.store.read_source(source_ref)
+        for offer in offers:
+            self.assertEqual(offer['event_id'], event)
+            self.assertEqual(offer['brain_generation_id'], json.loads(event_row['packet'])['brain_generation_id'])
+            self.assertTrue(offer['evidence_refs'])
+            for ref in offer['evidence_refs']:
+                self.assertEqual(ref['source_id'], source_ref['source_id'])
+                quote = self.runtime.store.read_source(ref)
+                self.assertIn(quote, offer['offer']['quotes'])
+                self.assertIn(quote, source_text)
+
+        self.assertEqual(len(self.c3_prompts), 1)
+        c3_prompt = json.dumps(self.c3_prompts[0], ensure_ascii=False)
+        self.assertIn('The rent is 120 euros.', c3_prompt)
+        self.assertIn('The plan preserves a long-term reserve.', c3_prompt)
+
+        # The additive staged receipt is a transport boundary, not semantic truth.
+        receipt = self.runtime.store.one(
+            "SELECT metrics FROM telemetry WHERE event_id=? AND kind='c4_offer_context_ready'", (event,))
+        if os.environ.get('V13_TEST_POSTCOMMIT_STAGE') == '1':
+            self.assertIsNotNone(receipt)
+            metrics = json.loads(receipt['metrics'])
+            self.assertEqual(set(metrics['selected_offer_ids']), packet_ids)
+            self.assertEqual(metrics['count'], 2)
 
     def test_failed_postcommit_body_does_not_starve_other(self):
         self.runtime.cfg['observer_schedule'] = 'JEF_FIRST_THEN_BOTH'
