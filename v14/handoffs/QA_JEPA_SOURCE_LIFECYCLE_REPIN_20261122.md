@@ -10,7 +10,7 @@ The staged World-JEPA training-resume path stops in source_lifecycle_lock_integr
 
 ## Patch contents
 
-- Updated the lifecycle composer memory.py SHA-256 declaration (currently set to def5d6c1fa7118a16c88b893e1a4b8b1a1a01285d2afa2924ca72ebb65e07e30).
+- Updated the lifecycle composer memory.py SHA-256 declaration (now set to the Python 3.13 CI-observed value 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701).
 - Rebound the downstream generated-builder chain bottom-up: lifecycle -> memory/world -> feedback -> context recall -> World-JEPA training resume -> Termux recovery -> Termux wrapper -> integrated stager.
 - Added a Python hashlib regression in test_world_jepa_training_resume_stage_20261111.py. It compares the declared lifecycle pin against the actual checked-out memory.py bytes.
 
@@ -24,7 +24,7 @@ The staged World-JEPA training-resume path stops in source_lifecycle_lock_integr
 
 ## Hash discrepancy to resolve in CI
 
-An earlier team note stated memory.py SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701. This branch currently declares def5d6c1fa7118a16c88b893e1a4b8b1a1a01285d2afa2924ca72ebb65e07e30. The added Python hashlib test is the authority: do not merge if it fails; use the exact hash printed by that test and recompute every downstream builder pin bottom-up.
+Python 3.13 CI on the preceding head confirmed the actual memory.py hash is 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701; the temporary def5d6c1... value was wrong and has been corrected. The expanded Python regression now prints and verifies every source pin and each downstream builder edge. Do not merge unless all assertions pass.
 
 ## Next action
 
