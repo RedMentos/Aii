@@ -212,3 +212,33 @@ The signed consumer expects 16 kHz mono PCM16, at most one second. Android Audio
 - **Device:** private read-only requests #478 PIPELINE_STATUS and #479 DIAGNOSTICS have no authenticated response. Older #466 receipt from 18 Nov is stale; installed SHA and updater consent are UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, shell, APK install, IPC, Keystore, permission or device mutation.
 - **Environment:** no full Aii checkout, Gradle or adb in this worker; only Java 21. Full local project and Android SDK tests are BLOCKED.
 - **Audio/control scope:** only user-approved launch_app is implemented as a candidate; no Android microphone provider, RECORD_AUDIO permission, screen/Accessibility provider, tap/swipe/type/back or full-duplex path. audio_capture remains OFF_NOT_IMPLEMENTED. DRAFT / NOT_RELEASED / REDMI_UNVERIFIED; user action none.
+
+
+## QA run 11 — cancellation/publication serialization and release readback (2026-11-22)
+
+**Exact QA branch / PR #2286 head:** `0639c4e4a5b1613445ba62ed4d39188fb6f60b56`.  
+**State:** DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.
+
+### New race found and fixed
+
+A concurrent remote `pending`/stop flow could observe the row after `submit` inserted it but before `submit` published its notification. Provider `cancel` did not take `ACTION_GATE_LOCK`; it could mark the row CANCELLED and remove no notification, after which `submit` published a stale approval notification.
+
+- Commit `5c1a34592c46dac3c7d15774a0d9d59e1efad33f`: added `cancelAction(context, db, actionId)`, serializing DB cancellation and exact notification cleanup with submit/stop/dispatch under the same process gate; provider cancellation uses this helper.
+- Commit `0639c4e4a5b1613445ba62ed4d39188fb6f60b56`: added latch-controlled Robolectric regression. It pauses after row insertion, starts cancellation concurrently, proves cancellation waits for notification publication, then proves terminal CANCELLED state and no stale notification.
+
+**Exact-head CI:** Android companion run `44995736371` is IN_PROGRESS (Gradle/Android SDK setup; test step not yet run). Broker `44995736402`, sandbox `44995736427`, staged/integrated `44995736390`, outcome `44995736412`, two-checkout migration `44995736406`, and Core adapter `44995736379` are QUEUED. No new-head PASS is claimed. No full local Aii checkout, Gradle or Android SDK is available.
+
+### Current release/device checkpoint
+
+- Current release branch head verified as `f210999cf556be4d4514427cc9b5cf6d3cf3e984`. Exact required runtime push workflows are green: owner-read `44992164979`, staged/integrated `44992164994`, private bridge/security `44994154206`.
+- Last authenticated device receipt #485 still says `auto_enabled=true`, `runtime=CI_WAIT`, `dashboard=CI_WAIT`, installed commit `89333289b8cd50da92cbf7074c9ef689a2972dbf`; its `last_check_utc` is stale (2026-11-22 06:43:19Z). This is not a current install receipt.
+- After exact push-CI verification and the existing auto-update consent, read-only/update relay requests were submitted: UPDATE_REQUEST #487 and a separate PIPELINE_STATUS #488. Both are awaiting authenticated device replies. No installation is claimed.
+- No LOG_PAGE, shell, APK install, microphone permission, AudioRecord capture, model/weight change or user-data mutation occurred.
+
+### Cross-lane / merge dependencies
+
+- #2286 still depends on the full #2119 → #2134 → #2271 → #2273 parent chain. Do not retarget or rebase this leaf alone.
+- Perception #2312 is based on old QA commit `58666ddfc9945612a2117e1a844f812442d4ca64`; Perception was asked to rebase onto the new QA head so it inherits the cancellation/publication fix. Its prior staged-runtime migration fixture was red (`PARTIAL`, runtime `ERROR`, `last_error=UPDATE`); focused signed-consumer test passed.
+- The Android companion still implements only consent-gated `launch_app`. `audio_capture` remains OFF_NOT_IMPLEMENTED; no AudioRecord provider or microphone permission exists. Screen/UI observation, Accessibility, MediaProjection and tap/swipe/type/back remain OFF/not implemented.
+
+**Next:** read the exact-head #2286 CI jobs and authenticated #487/#488 receipts. Coordinate the full parent-stack rebase with Core/Boss only after current-base staged/source-pin checks are green.
