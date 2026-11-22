@@ -138,7 +138,7 @@ def test_recent_companion_receipt_is_session_scoped_ttl_bounded_and_non_authorit
             runtime.store, runtime.session, now=created + 301, ttl_seconds=300
         ) is None
 
-        other_session = runtime.store.session()
+        other_session = runtime.store.new_session()
         seed_receipt(runtime, session=other_session)
         # The current session's latest receipt was made stale above; a receipt
         # belonging to another session must never be surfaced here.
