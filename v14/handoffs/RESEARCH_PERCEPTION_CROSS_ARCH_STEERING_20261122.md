@@ -32,3 +32,18 @@ The current `native_latent_receiver.py` path receives per-token final output emb
 - No device request, model download, permission change, weight edit or deployment occurred.
 
 Next step: Core should implement same-model input parity and a separate target-generation utility gate before anyone claims native latent communication.
+
+
+## Adjacent RAW EAR signed ingress review — PR #2312 (2026-11-22)
+
+The audio path is not the same as the MediaProjection UI adapter in #2375. The current Perception signed one-shot audio consumer is [PR #2312](https://github.com/RedMentos/Aii/pull/2312), exact code head `5221314d3c01ab6d874ecc0a8b8ff72c34e504a2`, stacked on QA PR #2286. It builds a one-second-or-less mono 44.1-kHz PCM16 request (88,200-byte cap / 117,600 Base64 chars), verifies the pinned P-256 companion receipt, request/nonce replay, source, Runtime generation, PCM digest, sample geometry, monotonic interval, Android RECORD_AUDIO status, local consent and FINAL provenance, then submits to the existing RAW EAR `audio_input.submit_audio_only` consumer. It persists replay metadata only. It does not open AudioRecord, request permission, run in the background, transcribe, identify speakers, update weights, grant T8 learning or authorize actions.
+
+**Exact CI:** dedicated signed-consumer workflow `44992975596` SUCCESS. Staged/integrated workflow `44992975599` FAILURE: 238 passed / 10 skipped / 47 subtests, with two inherited two-checkout migration tests expecting `last_result=UPDATED` but observing `PARTIAL`. The worker path/profile checks passed. Treat this as a shared QA/Core updater migration blocker; do not weaken the assertions or project the dedicated consumer PASS onto staged acceptance.
+
+**Superseded branch:** PR #2310 still carries a 16-kHz consumer and is not the correct branch to merge. PR #2312 is the 44.1-kHz successor; do not keep divergent copies of `audio_capture_consumer.py`. Deduplicate the identical `audio_input.py` dependency from #2304 when the parent chain is integrated.
+
+**Platform research:** official Android AudioRecord documentation says 44.1 kHz is the only rate guaranteed across all devices; `getState()` and `getSampleRate()` must be checked. Android may resample hardware input to the requested client format, so the receipt must bind the actual client PCM. On API 29+, register `AudioRecordingCallback` before capture and reject capture silencing, device-route changes, preprocessing or stream-property changes. The Android sharing-audio-input guide explains that a competing higher-priority capture can cause an ordinary app to receive silence. Sources: [AudioRecord](https://developer.android.com/reference/android/media/AudioRecord), [AudioFormat](https://developer.android.com/reference/android/media/AudioFormat), [Sharing audio input](https://developer.android.com/media/platform/sharing-audio-input).
+
+**Next owner actions:** Core/QA implement a visible, explicitly consented AudioRecord provider with RECORD_AUDIO, lifecycle/foreground handling, callback-before-start, exact sample count, route/silence/format-change rejection, release and buffer clearing. Perception rebases #2312 onto the current QA/Boss chain and deduplicates #2304. Then run the composed RAW EAR → A5 → A4 → C3 tests and only later an explicitly consented Redmi capture test.
+
+Status: dedicated consumer CI PASS / staged migration FAIL / Android provider absent / REDMI_UNVERIFIED. No model, weight, permission, user data or device state changed.
