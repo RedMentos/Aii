@@ -1986,7 +1986,7 @@ The new adapter is an API candidate, not a production release or Android accepta
 | Whole staged Runtime | #44972070090 FAIL: 19 failed / 231 passed / 10 skipped / 2 errors / 41 subtests; root is local-error pre-rebind semantic pin mismatch at recovery line 313 | Core-owned blocker reproduced on unchanged Boss base; no Runtime acceptance |
 | Redmi / Android | No live microphone, AudioRecord, TTS, barge-in or device receipt | REDMI_UNVERIFIED / NOT_RELEASED |
 
-Perception supplied a fail-closed repair proposal in #2288 comment 7072323336; no Core source was modified. Audio-only adapter remains a candidate API, not production acceptance.
+Boss #2288 comment 7072186155 clarified the guard-output generation; Perception corrected its follow-up in #7072323336. No Core source was modified. Audio-only adapter remains a candidate API, not production acceptance.
 
 
 ## Core pin-generation correction — 2026-11-22
