@@ -5,6 +5,26 @@ import re
 import xml.etree.ElementTree as ET
 
 
+def parse_hierarchy(xml: str) -> ET.Element:
+    """Parse UIAutomator XML, tolerating only a standalone masked attribute token.
+
+    Hosted Actions may redact an attribute value as three asterisks in captured
+    hierarchy output. That token is not valid XML; remove only a standalone
+    token between attributes, then require the entire document to parse.
+    All other malformed XML remains a hard parse failure.
+    """
+    try:
+        return ET.fromstring(xml)
+    except ET.ParseError as original:
+        sanitized = re.sub(r"(?<=\s)\*{3}(?=\s)", "", xml)
+        if sanitized == xml:
+            raise
+        try:
+            return ET.fromstring(sanitized)
+        except ET.ParseError:
+            raise original
+
+
 def visible_labels(root: ET.Element) -> list[str]:
     return [
         value
