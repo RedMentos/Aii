@@ -81,39 +81,42 @@ public final class ConsentActivity extends Activity {
     }
 
     private void launch() {
-        SharedPreferences prefs = getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
-        if (!prefs.getBoolean("enabled", false)) {
+        Intent launch = null;
+        try {
+            launch = getPackageManager().getLaunchIntentForPackage(action.packageName);
+        } catch (RuntimeException ignored) {
+            // The action is still claimed once; a failed lookup becomes a signed failure receipt.
+        }
+        final Intent launchIntent = launch;
+        if (launchIntent != null) launchIntent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+
+        final String dispatchResult;
+        try {
+            dispatchResult = CompanionProvider.claimAndDispatch(
+                    this, db, action.actionId, System::currentTimeMillis, () -> {
+                        if (launchIntent == null) throw new IllegalStateException("No launch intent");
+                        startActivity(launchIntent);
+                    });
+        } catch (RuntimeException e) {
+            Toast.makeText(this, "Action claim unavailable: " + e.getClass().getSimpleName(),
+                    Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        if ("COMPANION_STOPPED".equals(dispatchResult)) {
             Toast.makeText(this, "Companion is stopped", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
-        long nowMillis = System.currentTimeMillis();
-        if (nowMillis >= action.expiresAt) {
-            db.expire(action.actionId, nowMillis);
-            CompanionProvider.cancelApprovalNotification(this, action.actionId);
-            Toast.makeText(this, "Action expired", Toast.LENGTH_LONG).show();
+        if ("NOT_CLAIMED".equals(dispatchResult)) {
+            Toast.makeText(this, "Action was cancelled, expired or already claimed",
+                    Toast.LENGTH_LONG).show();
             finish();
             return;
         }
-        if (!db.claimForExecution(action.actionId, nowMillis)) {
-            db.expire(action.actionId, nowMillis);
-            CompanionProvider.cancelApprovalNotification(this, action.actionId);
-            Toast.makeText(this, "Action was cancelled or already claimed", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-        try {
-            Intent launch = getPackageManager().getLaunchIntentForPackage(action.packageName);
-            if (launch == null) {
-                finishWithReceipt("FAILED_TO_DISPATCH", true, "EXECUTING");
-                return;
-            }
-            launch.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            startActivity(launch);
-            finishWithReceipt("DISPATCHED_UNVERIFIED", true, "EXECUTING");
-        } catch (Exception e) {
-            finishWithReceipt("FAILED_TO_DISPATCH", true, "EXECUTING");
-        }
+        finishWithReceipt("DISPATCHED".equals(dispatchResult)
+                ? "DISPATCHED_UNVERIFIED" : "FAILED_TO_DISPATCH", true, "EXECUTING");
     }
 
     private void finishWithReceipt(String status, boolean localConsent) {
