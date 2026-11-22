@@ -147,6 +147,7 @@ def test_visual_ingress_requires_active_turn_and_preserves_prompt_when_budget_ze
 
 
 def test_visual_a5_consumption_is_serialized_with_source_forget(tmp_path, monkeypatch):
+    """A source forget must linearize after an in-flight A5 consumer."""
     runtime, _ = make_runtime(tmp_path)
     record = add_image(runtime)
     prompt = "Describe this exact image without losing the current prompt."
@@ -207,6 +208,7 @@ def test_visual_a5_consumption_is_serialized_with_source_forget(tmp_path, monkey
 
 
 def test_image_reingest_cannot_publish_between_forget_refcount_and_unlink(tmp_path, monkeypatch):
+    """Re-ingest must wait until the old blob's final unlink is complete."""
     runtime, _ = make_runtime(tmp_path)
     original = add_image(runtime)
     refcount_checked = threading.Event()
