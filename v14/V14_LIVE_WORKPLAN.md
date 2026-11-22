@@ -1235,3 +1235,15 @@ The 679f audio run showed that rebinding only Context-source recall was insuffic
 ### Next integration step
 
 Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer workflows. Fix only measured current-head failures. Keep the PR DRAFT and NOT_RELEASED. The #2280 C4 receipt, #2281 Age-rights, #2282 shared-blob race, #2283 rollback, #2285 audio QA and #2275 RAW EAR changes must be rebased and tested on this same base; old-base green results are not accepted. Private PIPELINE_STATUS #453 is still unanswered, so REDMI_UNVERIFIED. User action: none.
+
+
+---
+
+## Perception handoff — RAW EYE visual ingress — 2026-11-22T17:27:21.690Z
+
+- PR #2363 adds a source-bound local-image adapter from the existing WP-N15 vision Store source into an ephemeral A5 PerceptPacket, real A4 attention scoring and bounded A5/C3 candidate context. All 16 grid tiles plus global features remain in the packet; admission omissions are explicit.
+- Exact current prompt is preserved. Static image time is marked UNKNOWN/STATIC_UNTIMED. No teacher, student projector, model, weight, learning authority, action authority or high-resolution provider is used.
+- LOCAL_LINUX isolated synthetic reproduction: 3/3 PASS; 20x 64x64 image timing median 5.852 ms, p95 7.870 ms. This is not a full Store/A4 test or Android timing. Exact combined Perception CI is pending.
+- **Core owner next:** call `consume_visual_source` from an active Runtime turn when a consented local IMAGE SourceRef is available, pass the returned A5 packet/context to the correct organ consumer, and add source-revocation regression before persisting derived visual data. Do not alter the default text path.
+- No screen/camera/MediaProjection/Accessibility provider, B1/B2 native consumption, native visual latent exchange or Redmi proof is claimed. PR #2363 is DRAFT / NOT_RELEASED.
+
