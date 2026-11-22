@@ -11,7 +11,13 @@ consumer, including C3 generation.
 from __future__ import annotations
 
 import hashlib
+import io
 import math
+import os
+import stat
+import time
+import zipfile
+from pathlib import Path
 
 from . import attention as attention_module
 from . import vision
@@ -31,6 +37,9 @@ GRID = 4
 TILE_PX = 32
 MAX_REGIONS = 1 + GRID * GRID
 MAX_SUMMARY_CHARS = 512
+MAX_PROJECTOR_BYTES = 16 * 1024 * 1024
+MAX_PROJECTOR_UNPACKED_BYTES = 8 * 1024 * 1024
+MAX_PROJECTOR_OUTPUT_DIM = 4096
 
 
 def _summary(observation: dict) -> str:
@@ -89,6 +98,185 @@ def _bounded_vision_config(cfg):
             raise ValueError("invalid RAW EYE frame size bound")
         merged[key] = min(value, cap)
     return merged
+
+
+
+def _load_local_tile_projector(runtime, cfg, query_text: str) -> dict:
+    """Load only the existing local LAB_SHADOW_ONLY tile projector, without following paths.
+
+    The trained A3 student is optional: a missing, stale, malformed or slow
+    projector leaves the handcrafted RAW EYE path intact. This function never
+    downloads, trains, promotes or writes model state.
+    """
+    if not isinstance(query_text, str) or not query_text.strip():
+        return {"status": "NO_QUERY"}
+    store = getattr(runtime, "store", None)
+    home_value = getattr(runtime, "home", None)
+    if store is None or home_value is None:
+        return {"status": "NO_LOCAL_STORE"}
+
+    try:
+        record = vision.load(store).get("tile_projector")
+    except Exception:
+        return {"status": "STORE_UNAVAILABLE"}
+    if type(record) is not dict:
+        return {"status": "NO_TILE_PROJECTOR"}
+    if record.get("authority") != "LAB_SHADOW_ONLY":
+        return {"status": "AUTHORITY_MISMATCH"}
+
+    relative = record.get("path")
+    if type(relative) is not str:
+        return {"status": "INVALID_PROJECTOR_PATH"}
+    rel = Path(relative)
+    if (
+        rel.is_absolute()
+        or len(rel.parts) != 3
+        or rel.parts[:2] != ("data", "vision")
+        or any(part in ("", ".", "..") for part in rel.parts)
+        or not rel.name.startswith("tiles-")
+        or not rel.name.endswith(".npz")
+    ):
+        return {"status": "UNSAFE_PROJECTOR_PATH"}
+
+    expected_sha = record.get("sha256")
+    if (
+        type(expected_sha) is not str
+        or len(expected_sha) != 64
+        or any(ch not in "0123456789abcdef" for ch in expected_sha)
+    ):
+        return {"status": "INVALID_PROJECTOR_HASH"}
+    declared_n = record.get("n")
+    if type(declared_n) is not int or declared_n < 4:
+        return {"status": "INVALID_PROJECTOR_TRAIN_COUNT"}
+    encoder_name = record.get("encoder")
+    if type(encoder_name) is not str:
+        return {"status": "INVALID_PROJECTOR_ENCODER"}
+
+    required_flags = ("O_NOFOLLOW", "O_DIRECTORY")
+    if not all(hasattr(os, flag) for flag in required_flags) or os.open not in getattr(os, "supports_dir_fd", set()):
+        return {"status": "NO_SECURE_DIRFD_SUPPORT"}
+
+    root_fd = parent_fd = file_fd = None
+    raw = bytearray()
+    try:
+        root = Path(home_value).resolve(strict=True)
+        root_fd = os.open(
+            str(root),
+            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_CLOEXEC", 0),
+        )
+        parent_fd = root_fd
+        for part in rel.parts[:-1]:
+            next_fd = os.open(
+                part,
+                os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0),
+                dir_fd=parent_fd,
+            )
+            if parent_fd != root_fd:
+                os.close(parent_fd)
+            parent_fd = next_fd
+
+        file_fd = os.open(
+            rel.parts[-1],
+            os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0),
+            dir_fd=parent_fd,
+        )
+        info = os.fstat(file_fd)
+        if not stat.S_ISREG(info.st_mode) or info.st_size <= 0 or info.st_size > MAX_PROJECTOR_BYTES:
+            return {"status": "INVALID_PROJECTOR_FILE"}
+        while True:
+            chunk = os.read(file_fd, min(65536, MAX_PROJECTOR_BYTES + 1 - len(raw)))
+            if not chunk:
+                break
+            raw.extend(chunk)
+            if len(raw) > MAX_PROJECTOR_BYTES:
+                return {"status": "PROJECTOR_FILE_TOO_LARGE"}
+    except (OSError, ValueError, TypeError):
+        return {"status": "PROJECTOR_FILE_UNAVAILABLE"}
+    finally:
+        if file_fd is not None:
+            os.close(file_fd)
+        if parent_fd is not None and parent_fd != root_fd:
+            os.close(parent_fd)
+        if root_fd is not None:
+            os.close(root_fd)
+
+    try:
+        if vision.digest(bytes(raw)) != expected_sha:
+            return {"status": "PROJECTOR_HASH_MISMATCH"}
+        with zipfile.ZipFile(io.BytesIO(raw), "r") as archive:
+            names = set(archive.namelist())
+            if names != {"mu.npy", "sd.npy", "W.npy", "meta.npy"}:
+                return {"status": "PROJECTOR_ARCHIVE_SHAPE_INVALID"}
+            if sum(item.file_size for item in archive.infolist()) > MAX_PROJECTOR_UNPACKED_BYTES:
+                return {"status": "PROJECTOR_ARCHIVE_TOO_LARGE"}
+            if any(item.file_size > MAX_PROJECTOR_UNPACKED_BYTES for item in archive.infolist()):
+                return {"status": "PROJECTOR_ARCHIVE_TOO_LARGE"}
+
+        np = vision._np()
+        with np.load(io.BytesIO(raw), allow_pickle=False) as archive:
+            mu = np.array(archive["mu"], dtype=np.float64, copy=True)
+            sd = np.array(archive["sd"], dtype=np.float64, copy=True)
+            weights = np.array(archive["W"], dtype=np.float64, copy=True)
+            meta = np.array(archive["meta"], dtype=np.float64, copy=True)
+        if (
+            mu.shape != (37,)
+            or sd.shape != (37,)
+            or weights.ndim != 2
+            or weights.shape[0] != 38
+            or not 1 <= weights.shape[1] <= MAX_PROJECTOR_OUTPUT_DIM
+            or meta.shape != (2,)
+            or not np.isfinite(mu).all()
+            or not np.isfinite(sd).all()
+            or not np.isfinite(weights).all()
+            or not np.isfinite(meta).all()
+            or (sd <= 0).any()
+            or not 0.0 < float(meta[0]) <= 1000.0
+            or int(meta[1]) != declared_n
+            or float(meta[1]) != float(int(meta[1]))
+        ):
+            return {"status": "PROJECTOR_TENSOR_INVALID"}
+
+        projector = vision.Projector(float(meta[0]))
+        projector.mu, projector.sd, projector.W = mu, sd, weights
+        projector.n = int(meta[1])
+
+        query_text = query_text.strip()[:512]
+        if encoder_name == "hashed_bow":
+            vectors = np.stack((
+                vision.hashed_embed(query_text, cfg["hash_dim"]),
+                vision.hashed_embed(vision.BACKGROUND, cfg["hash_dim"]),
+            )).astype(np.float64, copy=False)
+        elif encoder_name.startswith("embedding:"):
+            try:
+                from .semantic_memory import EmbeddingEncoder
+                encoder = EmbeddingEncoder(runtime.home, runtime.models, runtime.cfg)
+                if not encoder.installed() or "embedding:" + str(encoder.revision()) != encoder_name:
+                    return {"status": "TEXT_ENCODER_REVISION_MISMATCH"}
+                vectors = np.asarray(
+                    encoder([query_text, vision.BACKGROUND], None, time.monotonic() + 2.0),
+                    dtype=np.float64,
+                )
+            except Exception:
+                return {"status": "TEXT_ENCODER_UNAVAILABLE"}
+        else:
+            return {"status": "UNSUPPORTED_TEXT_ENCODER"}
+
+        if vectors.shape != (2, weights.shape[1]) or not np.isfinite(vectors).all():
+            return {"status": "TEXT_VECTOR_SHAPE_INVALID"}
+        norms = np.linalg.norm(vectors, axis=1, keepdims=True)
+        if (norms <= 1e-8).any():
+            return {"status": "TEXT_VECTOR_ZERO"}
+        vectors = vectors / norms
+        return {
+            "status": "READY",
+            "projector": projector,
+            "query": vectors[0],
+            "background": vectors[1],
+            "encoder": encoder_name,
+            "sha256": expected_sha,
+        }
+    except Exception:
+        return {"status": "PROJECTOR_LOAD_FAILED"}
 
 
 def consume_projected_frame(
@@ -214,6 +402,12 @@ def consume_projected_frame(
             observation["source_id"], "ui", observation["start_ms"], observation["end_ms"],
             ui_summary, True, observation["finality"] == "FINAL", priority,
         )]
+        student_query = goal.strip() or current_source[:512].strip()
+        student = _load_local_tile_projector(runtime, cfg, student_query)
+        student_status = student["status"]
+        tile_feature_rows = []
+        tile_region_ids = []
+        region_records = []
         try:
             for region in regions:
                 box = region["box"]
@@ -227,12 +421,40 @@ def consume_projected_frame(
                         raise ValueError("RAW EYE salience is outside [0,1]")
                 try:
                     features = vision.tile_features(tile, TILE_PX)
-                    summary = _feature_summary(region["region_id"], box, features, salience)
+                    region_records.append((region, box, features, salience))
+                    if region["region_id"].startswith("r"):
+                        tile_feature_rows.append(features)
+                        tile_region_ids.append(region["region_id"])
                 finally:
                     if tile is not image:
                         tile.close()
+
+            student_scores = {}
+            if student_status == "READY" and tile_feature_rows:
+                try:
+                    np = vision._np()
+                    projected = student["projector"](np.stack(tile_feature_rows))
+                    margins = projected @ student["query"] - projected @ student["background"]
+                    if not np.isfinite(margins).all():
+                        raise ValueError("student projector returned a non-finite margin")
+                    student_scores = {
+                        region_id: float(margin)
+                        for region_id, margin in zip(tile_region_ids, margins)
+                    }
+                    student_status = "USED"
+                except Exception:
+                    student_status = "INFERENCE_FAILED"
+
+            for region, box, features, salience in region_records:
+                region_id = region["region_id"]
+                margin = student_scores.get(region_id)
+                summary = _feature_summary(region_id, box, features, salience)
+                if margin is not None:
+                    summary = (
+                        summary + f" student_goal_margin={margin:.4f} authority=STUDENT_ESTIMATE"
+                    )[:MAX_SUMMARY_CHARS]
                 region_ref = vision.region_ref(frame_ref, region)
-                source_id = f"{frame_source_id}:{region['region_id']}"
+                source_id = f"{frame_source_id}:{region_id}"
                 segment = {
                     "text": summary,
                     "source_ref": region_ref,
@@ -246,6 +468,9 @@ def consume_projected_frame(
                     "learning_authority": False,
                     "action_authority": False,
                 }
+                if margin is not None:
+                    segment["student_goal_margin"] = round(margin, 4)
+                    segment["student_estimate_authority"] = "STUDENT_ESTIMATE"
                 segments.append(segment)
                 tile_priority = priority * 1000 + (101 if salience is None else int(round(salience * 100)))
                 percepts.append(Percept(
@@ -290,7 +515,14 @@ def consume_projected_frame(
             feature_method="HANDCRAFTED_RAW_EYE_V1", feature_revision=REVISION,
             frame_binding_status="PROVIDER_CALLBACK_ACCEPTED",
             raw_capture_persisted=False, derived_packet_persisted=False,
-            teacher_used=False, student_projector_used=False,
+            teacher_used=False, student_projector_used=bool(student_scores),
+            student_estimate={
+                "status": student_status,
+                "authority": "STUDENT_ESTIMATE" if student_scores else "NONE",
+                "encoder": student.get("encoder") if student_scores else None,
+                "projector_sha256": student.get("sha256") if student_scores else None,
+                "goal_margin_by_region": {key: round(value, 4) for key, value in student_scores.items()},
+            },
             learning_authority=False, action_authority=False, truth_authority=0,
         )
         validate("PerceptPacket", percept_packet)
@@ -324,7 +556,9 @@ def consume_projected_frame(
             "caller_buffer_overwritten": not any(frame_buffer),
             "frame_binding_status": "PROVIDER_CALLBACK_ACCEPTED",
             "teacher_used": False,
-            "student_projector_used": False,
+            "student_projector_used": bool(student_scores),
+            "student_projector_status": student_status,
+            "student_goal_margins": {key: round(value, 4) for key, value in student_scores.items()},
             "learning_authority": False,
             "action_authority": False,
             "truth_authority": 0,
