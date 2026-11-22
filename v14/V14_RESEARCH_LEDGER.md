@@ -941,3 +941,15 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+### R-080 — consent-scoped target-speaker detection alternative (2026-11-22)
+
+**Official repository reviewed:** https://github.com/tuya/nomo-pvad, release tag release-1.1, README and Apache-2.0 LICENSE. The repository describes a streaming target-speaker detector that accepts a separately enrolled voice sample plus a 16-kHz stream and emits a target-speaker probability every 160 ms. It includes inference code and sample audio, but no training code. The bundled fine-tuned weights are about 35 MB; the enrollment-side ERes2NetV2 model is downloaded separately on first use. The repository states that its code and fine-tuned weights are Apache-2.0, with the ERes2NetV2 backbone attributed to 3D-Speaker/ModelScope. The upstream 3D-Speaker repository (https://github.com/modelscope/3D-Speaker) is Apache-2.0 and reports a 4.03M-parameter Res2Net verification baseline, but individual ModelScope checkpoint terms still need to be checked independently before reuse.
+
+**Consent and limitations:** the upstream README explicitly requires informed consent for voiceprint enrollment, says the model is not intended for identity authentication or covert monitoring, and notes degraded performance for enrollment audio shorter than one second, lossy codecs, far-field audio and similar vocal timbres. The 35-MB model file plus the separately downloaded enrollment encoder and PyTorch-oriented dependency stack are not yet an Android/Termux resource result. The repository does not establish Redmi latency, PSS, energy or accuracy.
+
+**Comparison with existing R-075:** FASTDIAR is anonymous frame-level diarization rather than enrolled target-speaker detection; its 2.7M Small model and 80-ms embeddings are interesting for A4 turn-change research, but its two-second causal history and 960-ms fixed lag, overlap limitation, Threadripper-only timing and PyTorch stack remain the relevant caveats already recorded in R-075.
+
+**V14 decision:** NOT_SELECTED for the default RAW EAR path. The current V14 contract wants nonverbal/prosodic and anonymous speaker-change evidence, not persistent voiceprint identity. Nomo-PVAD could only be reconsidered as a separately enabled, explicitly enrolled target-speaker capability with revocation and local deletion. No model, dependency, enrollment sample or weight was downloaded; no speaker identity or decision authority was added. Existing audio_speaker_evidence.py remains diagnostic/un-calibrated and does not infer an identity.
+
