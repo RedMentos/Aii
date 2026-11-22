@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T18:44:30Z",
+  "updated_at": "2026-11-22T18:46:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4 (documentation/handoff-only refresh; installed code remains c4eb82deec915f65894c20d6ebbaf0ebf58fa335 per the latest reported owner receipt). The phone updater is reported enabled/UP_TO_DATE, but the separate HEALTH receipt reports runtime UNAVAILABLE. P0 issue #1904 remains open; its latest stored diagnostic snapshot is not a new turn or correctness proof. PR #2366 exact Perception, staged/integrated and same-turn synthetic CI all pass but remains DRAFT and not normal-Runtime-wired. PR #2361 exact focused CI passes but its branch is one commit behind and mergeability is false. PR #2368 adds a synthetic-only A4 ablation; local 4/4 tests pass, exact CI retry is running after fixing the missing pytest dependency. Whole-Canon acceptance remains open; no Redmi acceptance.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -387,7 +387,7 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "LOCAL_LINUX CPython 3.13.5 isolated + exact GitHub CI synthetic consumer; no Android/Termux/Redmi timing",
-      "next_step": "R-081 full-text review and FASTDIAR adapter code review are complete. PR #2366 exact Perception fastpath 3.13/3.14 PASS, staged/integrated 2/2 PASS, same-turn B1/B2/C4/C3 consumer 3.13/3.14 PASS, privacy and deployment-integrity PASS; it remains DRAFT and the stored-image A5 adapter is not called by normal Runtime. PR #2361 focused 3.13/3.14 CI passes, but its branch is one commit behind current release-development HEAD aed1d2 and GitHub reports mergeable=false; rebase/reconcile before merge. PR #2368 adds only a synthetic cosine-prototype ablation; LOCAL_LINUX CPython 3.13.5 4/4 PASS and three source-disjoint seeds show a coverage/deferral/fragmentation trade-off. Exact CI initially failed because pytest was not installed; the workflow now pins pytest and the retry is running. Next: Core owns normal Runtime invocation for #2366; for audio, obtain separately consented labelled embeddings and build a model-bound calibration receipt before A4 may leave DEFER. No real audio or Redmi proof.",
+      "next_step": "R-081 full-text review and FASTDIAR adapter code review are complete. PR #2366 exact Perception fastpath 3.13/3.14 PASS, staged/integrated 2/2 PASS, same-turn B1/B2/C4/C3 consumer 3.13/3.14 PASS, privacy and deployment-integrity PASS; it remains DRAFT and the stored-image A5 adapter is not called by normal Runtime. PR #2361 focused 3.13/3.14 CI passes, but its branch is one commit behind current release-development HEAD aed1d2 and GitHub reports mergeable=false; rebase/reconcile before merge. PR #2368 synthetic cosine-prototype ablation has LOCAL_LINUX CPython 3.13.5 4/4 PASS, three source-disjoint seeds, and exact retry CI 45056272786 2/2 PASS on Python 3.13/3.14; privacy scan 45056272821 PASS. It remains research-only, with no Runtime consumer or real audio. Next: Core owns normal Runtime invocation for #2366; for audio, obtain separately consented labelled embeddings and build a model-bound calibration receipt before A4 may leave DEFER. No real audio or Redmi proof.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T18:43:30Z",
       "latest_candidate_pr": {
@@ -1088,7 +1088,7 @@
       "redmi": "NOT_RUN"
     },
     "pr2368": {
-      "head_sha": "bb85ddd893d59836bac905dfb7c78342d6c0e996",
+      "head_sha": "ccc2483b8e1eb1c3dca440d15697649256d673b9",
       "tested_code_sha": "41025f3d9bf92870f9675173d4af00638a49c203",
       "status": "DRAFT_RESEARCH_ONLY",
       "local": "CP3135_PYCOMPILE_PASS_4_OF_4_PASS_3_SEED_HOLDOUT",
