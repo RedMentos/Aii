@@ -97,8 +97,11 @@ class FakeSession:
             "prompt_sha256": digest(self.context["prompt"]),
             "native_context_binding": {
                 "scope": "EXACT_SAME_CAUSAL_PREFILL",
+                "live_generation_kv_tap": True,
                 "context_source_sha256": self.context_sha,
-                "handle_id": "synthetic-handle",
+                "pid": 123,
+                "features_sha256": "b" * 64,
+                "handle_id": "a" * 64,
             },
         }
 
