@@ -28,8 +28,8 @@ The adapter feeds the existing `consume_pcm16_voice_window` A5→A4→C3 consume
 
 ## Evidence boundary
 
-- LOCAL_LINUX isolated adapter checks: pending exact local run.
-- GitHub CI: pending exact-head workflow.
+- LOCAL_LINUX CPython 3.13.5 x86_64: exact adapter source `py_compile` PASS; isolated adapter unit suite **4/4 PASS**, including real NumPy float16 `(12,192)` input, dimension/non-finite/bool negatives, frame bounds, pinned revision and checkpoint SHA validation. Minimal import stubs were used because the full Aii checkout is unavailable; this does not count as a local A5/A4/C3 integration run.
+- GitHub CI: pending exact-head pull-request workflow, including the real `consume_pcm16_voice_window` consumer regression.
 - Full local Aii checkout: unavailable in this worker because GitHub DNS resolution fails.
 - FASTDIAR model inference, weight-license clearance, ARM ABI, Termux, Android microphone and Redmi timing/quality: NOT_RUN / REDMI_UNVERIFIED.
 - No model/weight/dependency download, installed-model change, permission change, or deployment.
