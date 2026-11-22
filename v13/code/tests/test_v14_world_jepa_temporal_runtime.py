@@ -1167,8 +1167,8 @@ def test_bodyview_records_rejected_temporal_gate_without_prompt_leak(tmp_path, m
 
 
 
-def test_training_resume_builder_accepts_exact_persisted_world_jepa_sources():
-    """Exercise the JEPA-owned builder without the downstream Termux pin chain."""
+def test_training_resume_builder_verifies_exact_sources_without_qa_composer(monkeypatch):
+    """Exercise JEPA's exact source pins while isolating the QA-owned composer."""
     code_dir = Path(__file__).resolve().parents[1]
     builder_path = code_dir / "scripts" / "integrated_world_training_resume_candidate_20261111.py"
     spec = importlib.util.spec_from_file_location(
@@ -1178,15 +1178,46 @@ def test_training_resume_builder_accepts_exact_persisted_world_jepa_sources():
     builder = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(builder)
 
+    guard = (
+        b"from . import world_model\n"
+        b"'history', 'enc', 'tgt', 'preds', 'zsd', '_ztrain', '_nn_med'})\n"
+        b"    clone_meta, clone_arrays = checkpoint._extract(staged, VALIDATION_TAG)\n"
+        + builder.GUARD_WORLD_SHA.encode() + b"\n"
+        + builder.GUARD_CHECKPOINT_SHA.encode() + b"\n"
+        + b"PINS = {\n"
+        + b"        return dict(result, source_verified=True, trained=True, active_model_promoted=False,\n"
+    )
+    lineage = (
+        b"'optimizer_state_persisted': False}\n            finally:"
+        b"'optimizer_state_persisted': False,\n                'selection'"
+    )
+
+    class FakeBaseLoader:
+        def exec_module(self, module):
+            module.build_sources = lambda _code_dir: {
+                "v13/world_jepa_runtime_guard_candidate.py": guard,
+                "v13/world_jepa_lineage_checkpoint_candidate.py": lineage,
+            }
+
+    class FakeSpec:
+        loader = FakeBaseLoader()
+
+    monkeypatch.setattr(
+        builder.importlib.util, "spec_from_file_location",
+        lambda _name, _path: FakeSpec(),
+    )
     result = builder.build_sources(code_dir)
+
     world = (code_dir / "v13" / "world_jepa.py").read_bytes()
     checkpoint = (code_dir / "v13" / "world_jepa_shadow_checkpoint.py").read_bytes()
     state = (code_dir / "v13" / "world_jepa_training_state.py").read_bytes()
-    assert result["v13/world_jepa.py"] == world
-    assert result["v13/world_jepa_shadow_checkpoint.py"] == checkpoint
+    assert builder.WORLD_SHA == __import__("hashlib").sha256(world).hexdigest()
+    assert builder.CHECKPOINT_SHA == __import__("hashlib").sha256(checkpoint).hexdigest()
+    assert builder.STATE_SHA == __import__("hashlib").sha256(state).hexdigest()
     assert result["v13/world_jepa_training_state.py"] == state
-    guard = result["v13/world_jepa_runtime_guard_candidate.py"]
-    assert b"world_jepa_training_state as training_state" in guard
-    assert b"optimizer_steps=candidate._training_state['main']['t']" in guard
-    lineage = result["v13/world_jepa_lineage_checkpoint_candidate.py"]
-    assert b"optimizer_state_persisted" in lineage
+    guard_result = result["v13/world_jepa_runtime_guard_candidate.py"]
+    assert b"world_jepa_training_state as training_state" in guard_result
+    assert b"optimizer_steps=candidate._training_state['main']['t']" in guard_result
+    lineage_result = result["v13/world_jepa_lineage_checkpoint_candidate.py"]
+    assert b"'optimizer_state_persisted': saved['optimizer_state_persisted']" in lineage_result
+    assert b"'optimizer_state_persisted': hasattr(model,'_training_state')" in lineage_result
