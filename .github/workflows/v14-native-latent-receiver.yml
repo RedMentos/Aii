@@ -5,11 +5,13 @@ on:
       - boss/v14-native-latent-probe-rebase-20261122
       - core/v14-native-receiver-release-rebase-20261122-run14
       - core/v14-native-probe-*
+      - core/v14-native-token-row-extraction-20261122
   pull_request:
     branches:
       - boss/v14-recall-store-pin-rebind-20261122
       - gpt6/v13-private-remote-bridge-20261111
       - core/v14-remote-native-probe-allowlist-*
+      - core/v14-native-probe-model-byte-integrity-20261122
     paths:
       - "v13/code/v13/native_latent_receiver.py"
       - "v13/code/v13/native_probe_approval.py"
