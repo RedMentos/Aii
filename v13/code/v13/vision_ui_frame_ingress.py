@@ -41,6 +41,64 @@ MAX_PROJECTOR_BYTES = 16 * 1024 * 1024
 MAX_PROJECTOR_UNPACKED_BYTES = 8 * 1024 * 1024
 MAX_PROJECTOR_OUTPUT_DIM = 4096
 
+_FRAME_VERIFIER_ISSUER = object()
+
+
+class ProviderFrameVerifier:
+    """One-shot provider capability bound to one signed UI frame receipt.
+
+    The Android companion must construct this only after verifying the
+    companion-signed receipt and binding its exact frame digest/length. This
+    Python object is an injection contract, not an OS security boundary.
+    """
+    __slots__ = (
+        "_source_id", "_capture_session_id", "_receipt",
+        "_capture_method", "_event_kind", "_verify", "_used",
+    )
+
+    def __init__(self, observation, verify_fn, *, _issuer=None):
+        if _issuer is not _FRAME_VERIFIER_ISSUER:
+            raise PermissionError("ProviderFrameVerifier is issued only by the companion-provider factory")
+        if not callable(verify_fn):
+            raise TypeError("provider receipt verifier must be callable")
+        self._source_id = observation["source_id"]
+        self._capture_session_id = observation["capture_session_id"]
+        self._receipt = observation["consent_receipt_ref"]
+        self._capture_method = observation["capture_method"]
+        self._event_kind = observation["event_kind"]
+        self._verify = verify_fn
+        self._used = False
+
+    def verify(self, observation, frame_sha256, frame_size):
+        if self._used:
+            return False
+        self._used = True
+        if (
+            type(observation) is not dict
+            or observation.get("source_id") != self._source_id
+            or observation.get("capture_session_id") != self._capture_session_id
+            or observation.get("consent_receipt_ref") != self._receipt
+            or observation.get("capture_method") != self._capture_method
+            or observation.get("event_kind") != self._event_kind
+            or self._capture_method != "MEDIA_PROJECTION"
+            or self._event_kind != "SCREEN_FRAME_AVAILABLE"
+        ):
+            return False
+        try:
+            return self._verify(observation, frame_sha256, frame_size) is True
+        except Exception:
+            return False
+
+
+def _issue_provider_frame_verifier(observation, verify_fn):
+    """Internal companion-provider API; call only after signed-receipt verification."""
+    validated = validate_ui_observation(observation)
+    return ProviderFrameVerifier(
+        validated, verify_fn, _issuer=_FRAME_VERIFIER_ISSUER,
+    )
+
+
+
 
 def _summary(observation: dict) -> str:
     return (
@@ -177,7 +235,7 @@ def _load_local_tile_projector(runtime, cfg, query_text: str) -> dict:
 
         file_fd = os.open(
             rel.parts[-1],
-            os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0),
+            os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_CLOEXEC", 0),
             dir_fd=parent_fd,
         )
         info = os.fstat(file_fd)
@@ -285,7 +343,7 @@ def consume_projected_frame(
     frame_buffer,
     *,
     consent_lease: UIObservationLease,
-    frame_binding_check,
+    frame_verifier: ProviderFrameVerifier,
     current_source: str,
     goal: str = "",
     token_budget: int = 512,
@@ -296,9 +354,10 @@ def consume_projected_frame(
     """Consume one MediaProjection frame under the exact active UI grant.
 
     frame_buffer must be a mutable bytearray so this function can overwrite
-    the caller-owned compressed bytes after decoding. frame_binding_check must
-    be a provider-owned verifier for the current signed frame receipt, exact
-    digest, and capture session. The decoded RGB image is closed before return.
+    the caller-owned compressed bytes after decoding. frame_verifier must be
+    a one-shot ProviderFrameVerifier issued by the trusted companion only after
+    verifying the signed receipt and exact frame digest/length. Raw callbacks
+    are not accepted. The decoded RGB image is closed before return.
     No raw frame or derived packet is written to Store. Python/PIL internal
     copies are not guaranteed to be securely erased.
     """
@@ -336,13 +395,9 @@ def consume_projected_frame(
 
         cfg = _bounded_vision_config(cfg)
         frame_sha256 = hashlib.sha256(frame_buffer).hexdigest()
-        if not callable(frame_binding_check):
-            raise PermissionError("provider frame-receipt verifier is required")
-        try:
-            frame_bound = frame_binding_check(observation, frame_sha256, len(frame_buffer))
-        except Exception:
-            frame_bound = False
-        if frame_bound is not True:
+        if type(frame_verifier) is not ProviderFrameVerifier:
+            raise PermissionError("provider-owned frame verifier capability is required")
+        if not frame_verifier.verify(observation, frame_sha256, len(frame_buffer)):
             raise PermissionError("MediaProjection frame digest is not bound to the active provider receipt")
         image = vision.decode(frame_buffer, cfg)
         _overwrite_caller_buffer(frame_buffer)
