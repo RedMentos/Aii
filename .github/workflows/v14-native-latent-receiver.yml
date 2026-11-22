@@ -47,7 +47,9 @@ jobs:
         env:
           PYTHONPATH: v13/code
           PYTHONDONTWRITEBYTECODE: "1"
-        run: python -m pytest -q v13/code/tests/test_native_taps.py v13/code/tests/test_native_latent_receiver_stage.py v13/code/tests/test_native_latent_receiver_approval.py
+        run: |
+          # Approval tests require the staged Operator overlay; the stage regression runs them there.
+          python -m pytest -q v13/code/tests/test_native_taps.py v13/code/tests/test_native_latent_receiver_stage.py
       - name: Scan public diff for private data and secrets
         run: python v13/code/scripts/public_repo_privacy_scan.py --base origin/gpt6/v13-private-remote-bridge-20261111 --head HEAD --no-worktree
   linux-pinned-api:
