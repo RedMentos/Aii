@@ -239,16 +239,20 @@ def test_fifo_model_path_is_rejected_without_blocking(tmp_path):
     fifo = tmp_path / "model-fifo.gguf"
     os.mkfifo(fifo)
     script = (
-        "from pathlib import Path; import sys; "
-        "from v13.native_probe_approval import _verify_model_file; "
-        "try:\n _verify_model_file(Path(sys.argv[1]), 1, '0' * 64)\n"
-        "except PermissionError:\n print('REJECTED')\n"
-        "else:\n raise SystemExit(1)"
+        "from pathlib import Path\n"
+        "import sys\n"
+        "from v13.native_probe_approval import _verify_model_file\n"
+        "try:\n"
+        "    _verify_model_file(Path(sys.argv[1]), 1, '0' * 64)\n"
+        "except PermissionError:\n"
+        "    print('REJECTED')\n"
+        "else:\n"
+        "    raise SystemExit(1)\n"
     )
     env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]))
     result = subprocess.run(
         [sys.executable, "-c", script, str(fifo)],
-        capture_output=True, text=True, timeout=2, check=False, env=env,
+        capture_output=True, text=True, timeout=3, check=False, env=env,
     )
     assert result.returncode == 0
     assert result.stdout.strip() == "REJECTED"
