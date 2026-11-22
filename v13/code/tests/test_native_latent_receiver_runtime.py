@@ -144,7 +144,7 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
 
 
 def test_native_receive_rejects_unverified_position_mapping(tmp_path, monkeypatch):
-    runtime, event, model_path, digest = setup_runtime(tmp_path)
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     tap = {
         "packet_id": "tap-packet-bad",
         "event_id": event["event_id"],
@@ -153,7 +153,6 @@ def test_native_receive_rejects_unverified_position_mapping(tmp_path, monkeypatc
         "role": "B2_GIST",
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
-        "sender_model_sha256": "b" * 64,
         "tokenizer_revision": None,
         "metrics": {"whole_sequence_prefill": False, "pooling": "mean", "prompt_tokens": 1},
     }
@@ -169,7 +168,7 @@ def test_native_receive_rejects_unverified_position_mapping(tmp_path, monkeypatc
 
 
 def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp_path, monkeypatch):
-    runtime, event, model_path, digest = setup_runtime(tmp_path)
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     tap = {
         "packet_id": "tap-packet-2",
         "event_id": event["event_id"],
@@ -178,7 +177,6 @@ def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp
         "role": "B2_GIST",
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
-        "sender_model_sha256": "b" * 64,
         "tokenizer_revision": None,
         "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 1},
     }
@@ -241,7 +239,7 @@ def test_native_receive_rejects_sender_model_hash_drift(tmp_path, monkeypatch):
 
 
 def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path):
-    runtime, event, model_path, digest = setup_runtime(tmp_path)
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     runtime.last_answer = lambda: {"event_id": event["event_id"]}
     calls = []
     runtime.require_idle = lambda: calls.append("idle")
