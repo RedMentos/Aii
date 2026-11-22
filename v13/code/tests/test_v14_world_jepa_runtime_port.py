@@ -1047,10 +1047,23 @@ def _body_receiver_diagnostics(runtime, event, text, role):
         ),
     }
 
-def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
+def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path, monkeypatch):
     import json
     import time
+    from v13 import agi
     from v13.cognition import Cognition
+
+    class _LongSkills:
+        def select(self, _text):
+            return [
+                {"name": f"skill-{index}", "description": "x" * 250}
+                for index in range(3)
+            ]
+
+    class _Hub:
+        skills = _LongSkills()
+
+    monkeypatch.setattr(agi, "hub", lambda _runtime: _Hub())
 
     home = tmp_path / "brain-body-receiver"
     store, session = _make_store(home)
@@ -1088,6 +1101,7 @@ def test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts(tmp_path):
                 **_body_receiver_diagnostics(runtime, event, "Current source: compare the four routes for a local test.", body_state["role"]),
             }
             assert len(json.dumps(body_state, separators=(",", ":"))) <= 700
+            assert body_state["skills"] == []
             prompts[body_state["role"]] = body_state["world_jepa"]
         assert set(prompts) == {"B1_DETAIL", "B2_GIST"}
         detail = prompts["B1_DETAIL"]
