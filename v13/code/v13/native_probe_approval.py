@@ -151,12 +151,18 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
     }
     runtime_nonce = _runtime_nonce(runtime)
     current, version = runtime.store.state(KEY, None)
-    if isinstance(current, dict) and current.get("status") == "PENDING":
-        expires = current.get("expires_at")
-        if (current.get("runtime_nonce") == runtime_nonce
-                and isinstance(expires, (int, float)) and not isinstance(expires, bool)
-                and clock < expires):
-            raise PermissionError("a native probe approval is already pending; revoke it first")
+    if isinstance(current, dict) and current.get("runtime_nonce") == runtime_nonce:
+        status = current.get("status")
+        if status == "PENDING":
+            expires = current.get("expires_at")
+            if (isinstance(expires, (int, float)) and not isinstance(expires, bool)
+                    and clock < expires):
+                raise PermissionError("a native probe approval is already pending; revoke it first")
+        elif status == "CONSUMED":
+            consumed_at = current.get("consumed_at")
+            if (isinstance(consumed_at, (int, float)) and not isinstance(consumed_at, bool)
+                    and clock < float(consumed_at) + TTL_SECONDS):
+                raise PermissionError("a native probe approval is consumed but not yet used; revoke it first")
     nonce = secrets.token_hex(16)
     record = {
         "schema": SCHEMA,
@@ -245,7 +251,7 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None)
 
 
 def revoke(runtime, *, now=None):
-    """Revoke a pending local probe approval without invoking the native runner."""
+    """Revoke a pending or consumed local probe approval without native work."""
     _require_local_tty()
     runtime.require_idle()
     clock = _clock(now)

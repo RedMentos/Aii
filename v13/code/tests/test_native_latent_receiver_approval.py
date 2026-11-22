@@ -74,9 +74,15 @@ def test_native_probe_requires_tty_only_for_local_arm_and_revoke(tmp_path, monke
         state, _ = runtime.store.state(approval.KEY, None)
         assert state["status"] == "CONSUMED"
 
+        # A consumed approval cannot be silently replaced; local revoke can
+        # cancel it before the native receiver boundary spends it.
+        monkeypatch.setattr(approval, "_is_local_tty", lambda: True)
+        with pytest.raises(PermissionError, match="consumed but not yet used"):
+            approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
+        assert approval.revoke(runtime)["status"] == "REVOKED"
+
         # Revoke remains a local-console operation and cannot be triggered
         # through the remote consumer boundary.
-        monkeypatch.setattr(approval, "_is_local_tty", lambda: True)
         approval.arm(runtime, "B2_GIST", "C3_LANGUAGE")
         monkeypatch.setattr(approval, "_is_local_tty", lambda: False)
         with pytest.raises(PermissionError, match="interactive local TTY"):
