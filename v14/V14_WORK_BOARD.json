@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T07:56:29.627Z",
+  "updated_at": "2026-11-22T07:58:52.317Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c03ff0aa9e18b5ffebd1109f3c078105f53c6afe; documentation-only PR #2316 merged. Current device code receipt is f210999cf556be4d4514427cc9b5cf6d3cf3e984.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Latest 2026-11-22 owner-authenticated phone receipt supersedes earlier #480/#477/#466 snapshots. Current phone pipeline is UP_TO_DATE at f210999; last-turn performance and B1/B2 probe failures remain unresolved. Never promote synthetic/CI evidence to native Android proof.",
@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Authenticated Redmi PIPELINE_STATUS/DIAGNOSTICS receipt: installed code SHA f210999cf556be4d4514427cc9b5cf6d3cf3e984, auto-update=true, runtime/dashboard UP_TO_DATE, last_error NONE. Latest turn FINAL but 63.22 s total / 42.48 s TTFT / 34.96 s prefill / 709 prompt tokens / 2 generated tokens. Native probe SMOKE_PARTIAL: B1 53.2 s TIME_BUDGET, B2 54.2 s TIME_BUDGET; process snapshot has B1=1, B2=0, C2=1, C3=1; mapped PSS 85.8 MiB (not free RAM). User input is redacted; correctness is not accepted. Code branch c03ff0 is docs-only after f210999.",
-      "next_step": "Core: preserve both independent bodies and C4→C3 on the same turn. Measure a fair bounded budget for the default sequential A_THEN_B schedule: with deadline=90 s, observer_end=start+40.5 s and observer_seconds=35 s, the first body can consume 35 s and leave at most ~5.5 s for the second. Treat this as a source-derived starvation risk, not yet proven causal for the sampled turn. Add per-role budget/offer/TTFT telemetry, test both orders and negative controls, then run 20 mixed native Redmi turns with correctness, p50/p95 TTFT and PSS.",
+      "proof_environment": "Authenticated Redmi PIPELINE_STATUS/DIAGNOSTICS receipt: installed code SHA f210999cf556be4d4514427cc9b5cf6d3cf3e984, auto-update=true, runtime/dashboard UP_TO_DATE, last_error NONE. Latest turn FINAL but 63.22 s total / 42.48 s TTFT / 34.96 s prefill / 709 prompt tokens / 2 generated tokens. Native probe SMOKE_PARTIAL: B1 53.2 s TIME_BUDGET, B2 54.2 s TIME_BUDGET; process snapshot has B1=1, B2=0, C2=1, C3=1; mapped PSS 85.8 MiB (not free RAM). User input is redacted; correctness is not accepted. Code branch c03ff0 is docs-only after f210999. Separate QA #2277 source-reproduces a 30 s C3-recovery branch that reserves 26 s for C3 and defers both B1/B2, but its test has not executed; three metadata/security checks do not count as that regression passing.",
+      "next_step": "Core: preserve both independent bodies and C4→C3 on the same turn. Measure a fair bounded budget for the default sequential A_THEN_B schedule: with deadline=90 s, observer_end=start+40.5 s and observer_seconds=35 s, the first body can consume 35 s and leave at most ~5.5 s for the second. Treat this as a source-derived starvation risk, not yet proven causal for the sampled turn. Add per-role budget/offer/TTFT telemetry, test both orders and negative controls, then run 20 mixed native Redmi turns with correctness, p50/p95 TTFT and PSS. QA must rebase #2277 and trigger its actual staged regression on Python 3.13/3.14; assert both B1/B2 reach same-turn C4 and include a legitimate single-body-defer negative control. Core preserves C3 reserve without blanket-deferring both bodies.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T07:54:34.985Z",
+      "last_checkpoint": "2026-11-22T07:58:52.317Z",
       "proof": "Private owner-authenticated receipt confirms exact installed code SHA f210999 and current up-to-date pipeline. Latest diagnostic reports the timings and per-role TIME_BUDGET above. No 20-turn acceptance, correct-answer benchmark, native latent transfer or B1/B2 offer delivery is proven."
     },
     {
@@ -914,7 +914,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T07:56:29.627Z",
+    "timestamp": "2026-11-22T07:58:52.317Z",
     "release_sha": "c03ff0aa9e18b5ffebd1109f3c078105f53c6afe",
     "release_push_ci": "39_SUCCESS_0_FAILURE_0_PENDING_39_CHECK_RUNS",
     "last_code_sha_installed": "f210999cf556be4d4514427cc9b5cf6d3cf3e984",
@@ -927,7 +927,9 @@
     "open_prs": {
       "2271": "b931e94: 5/12 checks, 7 fail; Android companion native path not accepted.",
       "2273": "89e2c2: 11/13 checks, staged-runtime and old-phone migration fail.",
+      "2277": "c3dc3a8: 3 metadata/security checks success, but the added same-turn starvation test has NOT been executed because branch/path filters do not trigger the workflow. Source-level 30 s recovery path reserves 26 s for C3 and defers both B1/B2.",
       "2286": "cc29b06: 12 queued, 1 in progress; companion durability/permission review incomplete.",
+      "2309": "8a73ae5: native receiver rebase on old Boss base, 8/19 checks success and 11 fail; not ready and overlaps the newer #2314 receiver candidate.",
       "2311": "ba058f1: 8/17 checks, 9 fail; feedback/bootstrap source pin mismatch cascades through staged runtime and migration.",
       "2312": "5221314: 4/5 checks, staged-runtime fail; stacked QA base, caller PCM only.",
       "2313": "9068cf9: 5/14 checks, 8 fail, 1 skipped; stale base, three-seed EXACT result but test expects two, staged pins fail.",
@@ -944,7 +946,8 @@
       "P0_JEPA_NESTED_SOURCE_PIN_FAILURE_PR2311",
       "P0_ANDROID_COMPANION_OS_PROVIDER_AND_PERMISSION_LIFECYCLE",
       "P0_AUDIORECORD_PROVIDER_ZEROIZATION_AND_REVOCATION",
-      "WHOLE_CANON_SEMANTIC_COVERAGE"
+      "WHOLE_CANON_SEMANTIC_COVERAGE",
+      "P0_C3_RECOVERY_DEFER_ALL_B1_B2_SOURCE_REPRODUCED_TEST_NOT_EXECUTED_PR2277"
     ]
   }
 }
