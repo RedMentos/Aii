@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 import re
 import unicodedata
 
@@ -111,18 +110,14 @@ def validate_teacher_ear_result(
     clean_words = []
     previous_start = start_ms
     for item in words:
-        if type(item) is not dict or set(item) != {"text", "start_ms", "end_ms", "confidence"}:
+        if type(item) is not dict or set(item) != {"text", "start_ms", "end_ms"}:
             raise ValueError("teacher word fields are invalid")
         text = _clean_word(item["text"])
         word_start, word_end = item["start_ms"], item["end_ms"]
-        confidence = item["confidence"]
         if (type(word_start) is not int or type(word_end) is not int
                 or not start_ms <= word_start < word_end <= end_ms
                 or word_start < previous_start):
             raise ValueError("teacher word timestamps are invalid or non-monotonic")
-        if (type(confidence) not in (int, float) or not math.isfinite(float(confidence))
-                or not 0.0 <= float(confidence) <= 1.0):
-            raise ValueError("teacher confidence must be finite and in [0,1]")
         clean_words.append({"text": text, "start_ms": word_start, "end_ms": word_end})
         previous_start = word_start
 
