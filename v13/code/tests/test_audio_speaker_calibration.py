@@ -2,6 +2,8 @@ import hashlib
 import json
 import random
 
+from v13 import audio_speaker_calibration as calibration_module
+
 import pytest
 
 from v13.audio_speaker_calibration import (
@@ -206,3 +208,52 @@ def test_duplicate_manifest_ids_are_rejected(tmp_path):
     }), encoding="utf-8")
     with pytest.raises(SpeakerCalibrationError, match="duplicated"):
         load_approved_calibration(tmp_path, artifact["calibration_id"], **BINDING)
+
+
+def test_directory_replacement_after_open_cannot_redirect_calibration_reads(tmp_path, monkeypatch):
+    artifact = build(dataset_kind="REAL_LOCAL")
+    root = tmp_path / "models" / "speaker_calibration"
+    root.mkdir(parents=True)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    backup = root.with_name("speaker_calibration_original")
+
+    raw = json.dumps(artifact, sort_keys=True, separators=(",", ":")).encode()
+    (root / (artifact["calibration_id"] + ".json")).write_bytes(raw)
+    manifest = {
+        "schema": MANIFEST_SCHEMA,
+        "entries": [{
+            "calibration_id": artifact["calibration_id"],
+            "artifact_sha256": hashlib.sha256(raw).hexdigest(),
+            "enabled": True,
+        }],
+    }
+    (root / "approved.json").write_text(json.dumps(manifest), encoding="utf-8")
+    (outside / "approved.json").write_text(
+        json.dumps({"schema": MANIFEST_SCHEMA, "entries": []}), encoding="utf-8"
+    )
+
+    real_open = calibration_module.os.open
+    swapped = False
+
+    def replace_path_after_directory_open(path, flags, *args, **kwargs):
+        nonlocal swapped
+        if path == "approved.json" and kwargs.get("dir_fd") is not None and not swapped:
+            root.rename(backup)
+            root.symlink_to(outside, target_is_directory=True)
+            swapped = True
+        return real_open(path, flags, *args, **kwargs)
+
+    monkeypatch.setattr(calibration_module.os, "open", replace_path_after_directory_open)
+    try:
+        loaded = load_approved_calibration(
+            tmp_path, artifact["calibration_id"], **BINDING
+        )
+        assert swapped is True
+        assert loaded["artifact_sha256"] == artifact["artifact_sha256"]
+    finally:
+        monkeypatch.setattr(calibration_module.os, "open", real_open)
+        if root.is_symlink():
+            root.unlink()
+        if backup.exists():
+            backup.rename(root)
