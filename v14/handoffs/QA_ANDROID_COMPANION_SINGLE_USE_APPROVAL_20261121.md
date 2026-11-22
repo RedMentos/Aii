@@ -189,3 +189,14 @@ Perception signed-audio-consumer PR #2310 head 923c4b32 is separately blocked: e
 The signed consumer expects 16 kHz mono PCM16, at most one second. Android AudioRecord guarantees 44.1 kHz only across all devices; 16 kHz may work on some. The provider must inspect getState()/getSampleRate() and fail closed or use a tested receipt-bound resampler; no silent rate substitution. See the acceptance matrix for the exact official API reference and contract.
 
 **Current status:** DEFAULT_OFF_GUARDS_COMMITTED / ANDROID_CI_PENDING / SIGNED_CONSUMER_BLOCKED / OLD_PHONE_MIGRATION_BLOCKED / REDMI_UNVERIFIED. No microphone permission or device action was requested.
+
+
+## QA follow-up — full action notification identity (2026-11-22)
+
+- **Code/test head:** `5f235f7d3b90e2e0e1546dc1c10289266547befe` on `qa/v14-companion-os-permission-contract-20261122`.
+- **Defect:** `NotificationManager.notify(actionId.hashCode(), ...)` used a 32-bit notification ID. Two distinct valid 32-hex action IDs in the existing collision regression have the same Java `String.hashCode()`, so a later approval could replace the earlier notification even though their PendingIntents had distinct data URIs.
+- **Fix:** use the complete action ID as the NotificationManager tag with constant integer ID 0. Added a regression for the known collision and malformed IDs. PendingIntent identity remains bound to the full action ID.
+- **Exact readback:** provider blob `20a50d7681e21ed65da848cb2e2907fb12ab9a9c`; test blob `8babd9752498b4125ef342b378a3922093526c3a`. Branch and PR head read back at the code/test SHA above.
+- **Verification:** Java hash-collision reproduction PASS (both IDs hash to 1666970619); GitHub Actions on the new exact head are QUEUED at handoff. Android Gradle/Robolectric has not yet rerun this patch. Full local Aii/Android SDK execution BLOCKED (no checkout/SDK in this worker).
+- **Release/device:** DRAFT / NOT_RELEASED / REDMI_UNVERIFIED. This does not install the companion, grant permissions, or exercise Android notification behavior on Redmi. Existing staged-runtime/migration failures on the older parent stack remain separate and unresolved.
+- **Next:** read exact-head Android companion and staged/integrated runs; rebase the companion stack onto the current Boss candidate only after that candidate's own source-pin and staged CI is green. Do not treat this PR as installed or as Android-control acceptance.
