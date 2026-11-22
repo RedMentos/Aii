@@ -2373,3 +2373,8 @@ The latest JEPA code head is 3f015a7442c6950d5ce0dce3a9bbbcc4517e863d. A new reg
 ### Run 19 continuation telemetry addendum (2026-11-22T21:17:00Z)
 
 Exact code head aae0330e24279ed2782451e7effe78ee005ac490 now records learning_has_more, temporal_has_more and continuation_reason in SleepRuntime scheduler completion metadata. The temporal-only regression checks TEMPORAL_PAGE. No exact-head workflow or commit status is visible yet; parent 3f015a runs remain queued. Status: CODE_PRESENT / CI_NOT_VISIBLE / NOT_ACCEPTED.
+
+
+### Run 19 exact-head CI status (2026-11-22T21:20:00Z)
+
+Exact code head aae0330e24279ed2782451e7effe78ee005ac490 has three associated workflows: 45070863812 staged/integrated; 45070863749 temporal WorldJEPA 3.13/3.14; 45070863814 optimizer-resume 3.13/3.14 — all QUEUED; no commit statuses. All remain pending; no commit status or PASS is recorded.
