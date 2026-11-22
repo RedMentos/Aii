@@ -62,6 +62,10 @@ if mode == "bad_shape":
     payload["rows"][0]["values"] = [1.0, 2.0]
 if mode == "bad_full_table":
     payload["full_table_copied"] = True
+if mode == "bad_requested_ids":
+    payload["requested_token_ids"][0] = True
+if mode == "bad_row_id":
+    payload["rows"][0]["token_id"] = True
 if mode == "mutate_model":
     with open(model, "ab") as stream:
         stream.write(b"changed")
@@ -114,7 +118,7 @@ def test_extract_token_rows_verifies_model_bytes_and_preserves_revision_metadata
     assert result["training_authority"] == 0
     assert result["production_route"] is False
     assert result["semantic_use_proven"] is False
-    assert result["local_tty_confirmation"] is True
+    assert result["local_tty_gate_passed"] is True\n    assert result["caller_confirmation_flag"] is True
 
 
 @pytest.mark.parametrize("token_ids", [
@@ -131,7 +135,7 @@ def test_extract_token_rows_rejects_invalid_or_unbounded_token_id_requests(tmp_p
         _extract(home, model, binary, token_ids=token_ids)
 
 
-@pytest.mark.parametrize("mode", ["bad_source", "bad_shape", "bad_full_table"])
+@pytest.mark.parametrize("mode", ["bad_source", "bad_shape", "bad_full_table", "bad_requested_ids", "bad_row_id"])
 def test_extract_token_rows_rejects_untrusted_native_receipts(tmp_path, mode):
     home, model, binary = _fixture(tmp_path, mode)
     with pytest.raises(NativeReceiverError):
