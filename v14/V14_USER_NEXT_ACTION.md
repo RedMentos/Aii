@@ -1,3 +1,39 @@
+# Current next action — 2026-11-22 03:34 CET (QA + whole-system integration checkpoint)
+
+**User action: none.** Do not run Termux or change installed models, weights, permissions, Age, updater settings, SQLite or chat data.
+
+## Current Boss integration candidate
+
+- Boss PR #2288 head: `d06c63794adc0ef802af9c7d91dc683d8a1057bf`.
+- Exact-head GitHub CI: **17 required workflows PASS**, 2 additive-only runs SKIPPED, 1 duplicate release-event run CANCELLED.
+- Staged runtime: **252 passed, 10 skipped, 47 subtests**. Integrated regression: **424 passed, 3 skipped, 58 subtests**.
+- Staged audio/arithmetic: **52 passed / 26 subtests** on Python 3.13 and 3.14.
+- Same-causal B1/B2→C4→C3 consumer: **3 + 3 + 2 tests PASS** on Python 3.13 and 3.14.
+- The earlier #2297 observer-anchor failure is fixed in d06c: audio transforms the incoming composed Cognition rather than resetting it from frozen bytes; the wrapper fails closed if the fair-budget marker disappears. C4 receipt and prompt/token binding are tested without claiming semantic use.
+- This remains CODE/WIRED/SYNTHETIC. The receipt tests use FakeSession, report `evidence_environment=SYNTHETIC`, `native_completion_http_200=false`, and `semantic_use_proven=false`. No real GGUF answer or Redmi native turn is proved.
+
+## QA runtime activation / rollback
+
+- QA PR #2298 is now based on Boss head d06c; current branch head `54e1a7e43445baa23923d459f7a03cb6b1ea1627`.
+- It adds a durable launcher/marker transaction journal, directory fsync, crash recovery, runtime-only rollback and a pipeline rollback CLI. Rollback disables future auto-update, holds the pipeline lock, stops only a managed V13 chat and requests UI resume only after a confirmed rollback; failure leaves the chat stopped and auto-update OFF.
+- The prior code head `e1864bfd986a6ff521f10d4e6e2e819322cce6d2` passed 87 runtime-deploy/pipeline tests per Python 3.11 and 3.14. The current branch adds three adversarial journal/backup symlink and unknown-marker tests; final exact-head CI is pending.
+- Dashboard rollback UI and a private-relay rollback command are still not wired.
+
+## Device and local verification
+
+- Private V13READ issues #453 and #454 remain open with zero authenticated comments. Installed SHA and updater consent are UNKNOWN.
+- No LOG_PAGE, UPDATE_REQUEST, remote shell, device mutation, model/weight change, SQLite/chat mutation or permission change was attempted.
+- Full local Aii checkout is unavailable because GitHub DNS resolution failed; local full-suite tests are BLOCKED.
+- **REDMI_UNVERIFIED.**
+
+## Next internal steps
+
+1. Complete exact-head CI for QA PR #2298 (17 journal tests plus pipeline rollback tests, staged/integrated, owner-read and migration); Boss review before merge.
+2. Recompose #2281 Age/X10 rights onto d06c without overwriting newer observer/audio/C4 composition; recompute exact Lab-Age/recovery/stage/deployer pins and preserve GoalWake atomicity.
+3. Continue native C3 same-causal GGUF verification and real Redmi correctness/latency/PSS evidence. Keep dashboard rollback UI, Android audio capture, trainable voice decoder/vocoder, and the remaining whole-Canon paths explicitly open.
+
+---
+
 # Current next action — 2026-11-22 01:39 CET (full staged CI readback)
 
 Current Boss HEAD remains `f586a92392b521c073e7a72340bf7adb72f87198`. The common pin-ordering defect now reaches every major staged consumer:

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T00:57:11.246Z",
+  "updated_at": "2026-11-22T02:34:08.000Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "Boss PR #2288 current head c372b4e3210d04f95f092013893d4078817e855d. Staged fair B1/B2 budget and source-bound offers are present. Current recovery composer captures and rebinds all Store-dependent generated consumers after overlays, then verifies final Store/stream/semantic pins. Nested wrapper/stage/deployer readback PASS. Current exact-head CI restarted: bridge and combined JEPA PASS; Lab-Age in progress; staged/integrated queued. #2280 C4 receipt still needs rebase. No native GGUF or Redmi proof.",
-      "next_step": "Core: rebase the unique #2280 c4_offer_context_ready receipt and tampered-OfferPacket negative control onto #2288; preserve fair sequential B1/B2 slices and C3 reserve, then run exact Python 3.13/3.14 staged/integrated and real receiver-consumption assertions.",
+      "proof_environment": "Boss PR #2288 head d06c63794adc0ef802af9c7d91dc683d8a1057bf exact-head CI: 17 required workflows PASS, 2 additive-only SKIPPED, 1 duplicate release-event CANCELLED. Staged-runtime 252 passed / 10 skipped / 47 subtests; integrated-regression 424 passed / 3 skipped / 58 subtests; staged audio/arithmetic 52 passed / 26 subtests on Python 3.13 and 3.14; same-causal B1/B2→C4→C3 consumer 3+3+2 tests passed on each interpreter. The audio overlay now preserves the incoming fair-budget Cognition; C4 receipt checks selected source-bound offer IDs and exact same-causal prompt/token binding. Tests use FakeSession and report SYNTHETIC, native completion HTTP 200 false, semantic use false. No native GGUF turn or Redmi proof.",
+      "next_step": "Core: validate the same-causal path with an actual local GGUF/StreamingOutputSession and a real Redmi turn; measure TTFT, correctness, native prefill and resident PSS. Preserve B1_DETAIL and B2_GIST eligibility, C3 reserve, source/age/consent and negative controls. Do not convert synthetic receipts into native or semantic-use claims.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:57:11.246Z",
+      "last_checkpoint": "2026-11-22T02:34:08.000Z",
       "proof": "#2288 current candidate only; synthetic CI in progress. No native model output, accepted B1/B2 offers or Redmi proof."
     },
     {
@@ -29,10 +29,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Private PIPELINE_STATUS #453 remains unanswered at latest poll; installed SHA/updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST or device mutation. #2281/#2283 are green only on old #2258 base; rebase onto #2288.",
-      "next_step": "QA: rebase #2281 Age/X10 rights and #2283 runtime-only rollback onto #2288; rerun owner-read, migration, first-install/second-deploy, tamper, busy and active-runtime refusal tests. Keep dashboard rollback explicitly unimplemented.",
+      "proof_environment": "QA PR #2298 current head 54e1a7e43445baa23923d459f7a03cb6b1ea1627 is based on Boss head d06c63794adc0ef802af9c7d91dc683d8a1057bf. Adds crash-consistent launcher/marker activation journal (PREPARED/LAUNCHER_SWITCHED/COMMITTED), file+directory fsync, recovery, runtime-only rollback API and explicit pipeline rollback CLI. The CLI disables auto-update, locks the pipeline, stops only a managed V13 chat, resumes only after confirmed rollback, and leaves the chat stopped/auto-update OFF on failure. Current QA head has 17 journal tests (including symlink and unknown-marker negatives), 3 deploy-integrity, 31 runtime-deploy and 43 pipeline-agent tests? The 39 pipeline-agent tests are the last pre-rebase passing count; final exact-head CI is pending. Pre-rebase head e1864bfd986a6ff521f10d4e6e2e819322cce6d2 passed 87 tests per Python 3.11/3.14 (14+3+31+39). Local full Aii tests BLOCKED: GitHub DNS prevented checkout. Private relay issues #453 and #454 remain open with zero authenticated comments; installed SHA/updater consent UNKNOWN. No phone write/deploy/rollback or model/SQLite/chat/permission change. REDMI_UNVERIFIED.",
+      "next_step": "Run exact-head CI on #2298 commit 54e1a7e (including 17 journal tests and pipeline rollback tests) across Python 3.11/3.14, staged/integrated, owner-read and migration. If green, request Boss review/integration. Then recompose #2281 Age/X10 rights onto d06c with exact pin-chain recalculation; dashboard rollback button and private-relay rollback command remain unimplemented. Obtain real Redmi process-death/reboot/rollback receipts only through the existing consented path.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:57:11.246Z",
+      "last_checkpoint": "2026-11-22T02:34:08.000Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -186,10 +186,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Boss PR #2288 DRAFT at c372b4e3210d04f95f092013893d4078817e855d, base bdcad466, 184 commits ahead / 0 behind, 64 files. All known Store-dependent generated consumer pins are rebound and final-checked; wrapper→stage→deployer pin readback PASS. Current exact CI: bridge and combined JEPA PASS; privacy and Lab-Age in progress; staged/integrated, A5, controller, audio, deployer, migration and owner-read queued. The previous 32491b controller run failed on stale variable; current c372b4e fixes it, awaiting retest. No local full suite or Redmi proof.",
-      "next_step": "Boss: wait for exact c372b4e CI, fix only measured remaining failures, then compose #2280/#2281/#2282/#2283/#2285/#2275 on the same base. No merge until current-head tests and protected review pass.",
+      "proof_environment": "Boss PR #2288 current head d06c63794adc0ef802af9c7d91dc683d8a1057bf. Exact-head CI: 17 required workflows PASS, 2 additive-only SKIPPED, 1 duplicate release-event CANCELLED. Staged/integrated, same-turn C4/C3, audio/arithmetic, owner-read, Lab-Age, migration, controller, JEPA, privacy and deployer checks pass. QA #2298 is now based on d06c and has its own exact-head CI pending. No local full-suite or Redmi proof.",
+      "next_step": "Boss: review the current exact-head QA #2298 and the remaining stacked agent branches; integrate only after their own exact-head CI and protected-file review. Continue whole-Canon coverage; keep native/Android proof separate from synthetic CI.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:57:11.246Z",
+      "last_checkpoint": "2026-11-22T02:34:08.000Z",
       "proof": "Boss integration PR #2258 remains DRAFT / NOT_RELEASED. Current branch head after workflow-scope commit is 273a60bda3105f3163bf2ad606e58f885681da8b; code-bearing tested head is 0dc337edfb7a71168e15f3db08bcedc424e32d4f. The prior strict additive job failed before running tests because the integration PR changed 60 changed files (the original 59-file code composition plus the workflow-scope file) while the additive harness accepts 2..30 strictly-added files. Boss changed only the workflow scope: the validator now runs only on v13-additive/* branches or PRs labelled v13-additive-candidate; the 2..30/add-only checks themselves are unchanged. Exact CI for the new head is queued. Manual protected-file review is not complete. Current pre-final-handoff exact-head check readback: 16 total, 15 queued, 1 expected additive-validator skip; no completed checks on this head."
     },
     {
@@ -216,10 +216,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
-      "proof_environment": "#2288 contains caller-supplied PCM16/consent lease and staged TTS fallback only. Core audio/arithmetic workflow remains IN_PROGRESS on 679f366. No Android AudioRecord/microphone, ASR, trainable decoder/vocoder, nonverbal learning or full duplex proof.",
-      "next_step": "Core/Perception: keep raw acoustic features and nonverbal cues distinct from optional ASR; continue toward Android consented audio producer and trainable decoder/vocoder, with source-bound replay/retention tests. Do not call caller PCM16 full voice.",
+      "proof_environment": "Boss d06c exact audio/arithmetic staged workflow passes on Python 3.13 and 3.14 (52 tests / 26 subtests each). This remains caller-supplied PCM16/consent-lease plus staged TTS fallback; no Android AudioRecord/microphone, ASR, trainable decoder/vocoder, nonverbal learning or full-duplex/barge-in proof. No Redmi-native audio receipt.",
+      "next_step": "Core/Perception: continue from caller PCM16 to a consented Android audio producer and trainable decoder/vocoder; preserve raw acoustic features/nonverbal cues distinct from ASR, with source-bound replay/retention and real-device latency tests. Do not call caller PCM16 full voice.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:50:52.733Z",
+      "last_checkpoint": "2026-11-22T02:34:08.000Z",
       "proof": "#2258 adds a caller-supplied PCM16 audio-window lease with process-local consent callbacks, one-second bounds, revocation lifecycle and A5/A4/C3 admission, plus an explicit local Termux TTS fallback disabled by default. Synthetic audio lifecycle/arithmetic suite: 52 passed / 26 subtests on Python 3.13 and 3.14. This is not microphone capture, ASR, trainable speech decoder/vocoder, full duplex/barge-in or Android AudioRecord."
     },
     {
@@ -288,10 +288,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "All AgeControl.budgets()/legacy budget consumers; LaboratoryAgeControl; effort, Sleep replay, ResourceGuard and the normal staged Runtime",
       "acceptance": "Official Age remains 0 while X10 test selection can exercise only explicitly implemented tool/learning rights; Age never caps physical compute, wall time, memory, focal cycles or replay volume; every consumer is audited; ResourceGuard/deadline/policy remain independent; staged, integrated, migration and rollback tests pass.",
-      "proof_environment": "#2281 Age/X10 rights passed 5/5 workflows on old #2258 base, but has not been rebased onto #2288. The current composed goals.py still needs explicit verification that Age controls developmental/tool/learning rights only, never compute/resource budget.",
-      "next_step": "QA: rebase #2281 and preserve GoalWake atomicity; assert Age/X10 rights separately from ResourceGuard CPU/RAM/time budgets; rerun full current-base 3.13/3.14 CI.",
+      "proof_environment": "#2281 Age/X10 rights remains based on old base 9922cf86ecf8801d30a46a1e98817e5c6c1db092. It diverges from current Boss d06c63794adc0ef802af9c7d91dc683d8a1057bf (Boss is 92 commits ahead / 3 behind) and overlaps 4 files changed by current composition: Lab-Age builder, stage builder, recovery builders and runtime deployer. No rebase yet; blind copying would risk newer observer/audio/C4 composition and pins. #2283 runtime rollback behavior is being superseded by QA #2298. Age-rights contract remains open.",
+      "next_step": "QA: recompose only the Age/X10 rights code and tests from #2281 onto d06c after #2298 exact-head CI; preserve GoalWake atomicity, update Lab-Age/recovery/stage/deployer pins and test that Age controls developmental/tool/learning rights only, never CPU/RAM/time budgets.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:50:52.733Z",
+      "last_checkpoint": "2026-11-22T02:34:08.000Z",
       "proof": "QA PR #2235 head c224610959e598cb9c79f38d1b4bd454ffea0019 now reports 9/11 exact checks success: nested GoalStore callback attribution has been fixed with an unrelated-closure negative control; Lab-Age, owner-read, staged startup, migration, staged Runtime and integrated regression pass. Strict additive check failed because this is not a 2..30-file ADD-only candidate. Its Age/X10 rights separation is still not merged; it overlaps #2258's GoalStore work in agi/goals.py and runtime_deploy.py. Official Age remains 0; Age controls developmental/tool/learning rights, not compute budget."
     },
     {
