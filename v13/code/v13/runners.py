@@ -654,7 +654,15 @@ class CausalStreamRunner:
                     and offer_receipt.get('status')=='RENDERED_WITH_QUOTES'
                     and type(native_binding) is dict
                     and native_binding.get('scope')=='EXACT_SAME_CAUSAL_PREFILL'
+                    and native_binding.get('live_generation_kv_tap') is True
                     and native_binding.get('context_source_sha256')==getattr(active,'context_sha',None)
+                    and type(native_binding.get('pid')) is int and native_binding.get('pid')>0
+                    and type(native_binding.get('handle_id')) is str
+                    and len(native_binding.get('handle_id'))==64
+                    and all(ch in '0123456789abcdef' for ch in native_binding.get('handle_id'))
+                    and type(native_binding.get('features_sha256')) is str
+                    and len(native_binding.get('features_sha256'))==64
+                    and all(ch in '0123456789abcdef' for ch in native_binding.get('features_sha256'))
                     and observed.get('native_prompt_token_ids')==ids
                     and observed.get('prompt_sha256')==digest(prompt))
                 if type(offer_receipt) is dict:
