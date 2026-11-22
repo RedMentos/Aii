@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T16:02:01Z",
+  "updated_at": "2026-11-22T17:58:00Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at b3b92f41772573732b2cba71f7ad6bf34dc8e521; exact post-merge push CI green; phone install remains separately gated. V14 master and historical V13 appendix preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -108,10 +108,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "CI failure evidence; no accepted native/weight proof",
-      "next_step": "JEPA: fix #2351 source-forget race against generic Store.switch_generation/rollback with a common full-path lock and deterministic two-thread tests for both orderings; then finish temporal-window, optimizer/EMA, restart and retention evidence. Promotion OFF.",
+      "proof_environment": "PR #2360 code commit a1bc8ee; GitHub file readback confirms encoder_delta_norm and predictor_delta_norm in accepted/rejected metric paths. Exact temporal workflow run 45052734551 QUEUED; prior exact head f5def920 failed 12/48 tests. Isolated local NumPy delta-norm smoke PASS; full local Aii suite BLOCKED (no checkout / GitHub DNS). Synthetic SQLite/T8 only; REDMI_UNVERIFIED; no native body weight changes.",
+      "next_step": "JEPA: get exact #2360 CI result; fix remaining temporal utility/retention and receiver-support failures without weakening negative controls; diagnose SleepRuntime postcommit ERROR. Rebase after Boss #2343 is reviewed (current #2343 head 8e5cabb; #2360 recorded base 9a1424). Keep promotion OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T16:02:01Z",
+      "last_checkpoint": "2026-11-22T17:58:00Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -163,7 +163,31 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "#2351 temporal WorldJEPA candidate is wired to SleepRuntime post-commit; 4 workflows queued. Boss review identified stale-row promotion race; no accepted native weight update."
+      "proof": "#2360 adds persistent temporal T8→WorldJEPA/EMA→B1/B2 BODY_STATE readout and source-forget integration; readout is prompt-source SHADOW only (native_body_consumed=false, native_body_weights_changed=false). Metrics fix commit a1bc8ee persists separate encoder/predictor deltas. Exact CI pending; no accepted device or native-weight proof.",
+      "latest_temporal_candidate": {
+        "pr": 2360,
+        "branch": "jepa-memory/v14-temporal-bodyview-integration-20261122-run13",
+        "code_commit": "a1bc8ee967c8430ccbc691b726d6444e73b8f1f2",
+        "current_head": "1556ba53a503cf7f8563c1bb3ab053788e70270e",
+        "base_pr": 2343,
+        "recorded_base_sha": "9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2",
+        "current_base_pr_head": "8e5cabb661ba3bada4fa63af24935f2a7a0bf0b2",
+        "status": "OPEN_DRAFT_EXACT_CI_QUEUED_NOT_RELEASED",
+        "latest_exact_temporal_ci": {
+          "run_id": 45052734551,
+          "head_sha": "a1bc8ee967c8430ccbc691b726d6444e73b8f1f2",
+          "status": "QUEUED"
+        },
+        "previous_exact_temporal_ci": {
+          "run_id": 45051064751,
+          "head_sha": "f5def920c368e97c58fc71ef5a3600a4119a6a8d",
+          "status": "FAILURE_12_FAILED_48_PASSED"
+        },
+        "scope": "Source-verified contiguous T8 multi-offset windows; persisted temporal WorldJEPA predictor/encoder/EMA/checkpoint/replay/rollback; B1_DETAIL 2-step and B2_GIST 3-step B5 BODY_STATE prompt-source SHADOW; separate encoder/predictor delta metrics.",
+        "device": "REDMI_UNVERIFIED",
+        "local_full_suite": "BLOCKED_NO_LOCAL_CHECKOUT_OR_GITHUB_DNS",
+        "no_device_update": "TRUE"
+      }
     },
     {
       "id": "V14-005",
@@ -279,11 +303,35 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
-      "proof_environment": "Sleep postcommit worker code exists, but no accepted replay/dream consolidation or stable JEPA per-session retention. #2247 fails its current staged/optimizer/retention matrix; promotion remains OFF.",
-      "next_step": "JEPA: build bounded contiguous temporal T8 windows; preserve source/session/generation continuity, replay, EMA, optimizer, checkpoint, restart, source deletion and multi-shift retention. Add update-vs-hold utility before promotion.",
+      "proof_environment": "Synthetic Store/T8 fixtures plus exact GitHub CI; latest #2360 exact-head temporal workflow queued, previous exact head failed. Local full Aii suite blocked (no checkout / DNS); no Android or Redmi test. B1/B2 readouts remain source-bound prompt SHADOW; no native weights changed.",
+      "next_step": "JEPA: resolve exact CI failures and add a matched predictor-only/stable-target versus full encoder+EMA adaptation ablation with the same replay budget, source-disjoint holdouts, A→B→A and A→B→C→A retention, negative controls, restart and rollback. Keep encoder/EMA trainable in a measured slow lane; promotion OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T16:02:01Z",
-      "proof": "#2351 SleepRuntime temporal consumer candidate is CI queued and blocked by source-forget/generic promotion race."
+      "last_checkpoint": "2026-11-22T17:58:00Z",
+      "proof": "#2360 creates contiguous multi-offset T8 windows, persistent JEPA/EMA/optimizer checkpoint, rollback/replay and role-specific B1/B2 bodyview history (2 vs 3 events). Prior CI failures expose utility/retention instability and insufficient action support; do not loosen gates. R-088 JEPA-TTT suggests a matched predictor-only/stable-target vs full encoder+EMA ablation, not a permanent frozen encoder.",
+      "latest_temporal_candidate": {
+        "pr": 2360,
+        "branch": "jepa-memory/v14-temporal-bodyview-integration-20261122-run13",
+        "code_commit": "a1bc8ee967c8430ccbc691b726d6444e73b8f1f2",
+        "current_head": "1556ba53a503cf7f8563c1bb3ab053788e70270e",
+        "base_pr": 2343,
+        "recorded_base_sha": "9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2",
+        "current_base_pr_head": "8e5cabb661ba3bada4fa63af24935f2a7a0bf0b2",
+        "status": "OPEN_DRAFT_EXACT_CI_QUEUED_NOT_RELEASED",
+        "latest_exact_temporal_ci": {
+          "run_id": 45052734551,
+          "head_sha": "a1bc8ee967c8430ccbc691b726d6444e73b8f1f2",
+          "status": "QUEUED"
+        },
+        "previous_exact_temporal_ci": {
+          "run_id": 45051064751,
+          "head_sha": "f5def920c368e97c58fc71ef5a3600a4119a6a8d",
+          "status": "FAILURE_12_FAILED_48_PASSED"
+        },
+        "scope": "Source-verified contiguous T8 multi-offset windows; persisted temporal WorldJEPA predictor/encoder/EMA/checkpoint/replay/rollback; B1_DETAIL 2-step and B2_GIST 3-step B5 BODY_STATE prompt-source SHADOW; separate encoder/predictor delta metrics.",
+        "device": "REDMI_UNVERIFIED",
+        "local_full_suite": "BLOCKED_NO_LOCAL_CHECKOUT_OR_GITHUB_DNS",
+        "no_device_update": "TRUE"
+      }
     },
     {
       "id": "V14-012",
