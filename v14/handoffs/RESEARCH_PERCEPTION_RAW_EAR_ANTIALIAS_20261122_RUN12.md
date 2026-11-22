@@ -116,3 +116,26 @@ Revised LOCAL_LINUX CPython 3.13.5 isolated scratch run: `py_compile` PASS, 4/4 
 Current producer blob is now `c47e21e0847b188495b7cfcfead61578c65117c6`; comparator workflow source pin was refreshed in commit `5976d8aa866af7e55a5edb1b7e5095890c885ae5`. The Core-owned integrated candidate still pins the older `4c5641adf6758762ce0fdf616a9b2a798e6de408` blob and must be updated to `c47e21e0847b188495b7cfcfead61578c65117c6`.
 
 **Current exact-head CI:** PR head `5976d8aa866af7e55a5edb1b7e5095890c885ae5` has fresh RAW EAR fastpath, comparator, prosody, pre-lease QA, privacy, model-lab and staged/integrated workflows queued/pending. Earlier green results belong to the prior 21-tap code commit `297e2c5d24d90cbbc3ac651e3b7c634b060184b2`; do not transfer those PASS claims to this hardened code until the new runs complete.
+
+
+## Follow-up — symmetric FIR mobile CPU reduction (2026-11-22)
+
+The centered Hamming FIR is symmetric. The production decimator now computes symmetric input pairs around each output center, using one coefficient multiplication per pair plus the center tap. This preserves the same centered filter and endpoint-reflection policy; it does not change the cutoff, feature sample rate, timestamp alignment or speaker-model resampling semantics.
+
+Changed exact artifacts:
+- `v13/code/v13/audio_voice_cues.py`: Git blob `b18e450162b062b09368a12b1ca18924ed8c5025` (commit `0a9f5b1fd175d3504d8ec2a19dabdda8c65bee39`).
+- `v13/code/tests/test_audio_speaker_evidence.py`: Git blob `6f71a01d4ffe7c3a6fa395112d75b8f6eb309502` (commit `f9961f9769daa825979a3d06e980759adc4ff064`).
+- Added direct-convolution parity checks for 4 sample rates × 5 input lengths, including edge/reflection cases and seeded random full-range PCM.
+
+LOCAL_LINUX isolated CPython 3.13.5 x86_64:
+- Symmetric implementation vs the original direct 21/25-tap reference: 36 seeded/random rate-length cases PASS; maximum observed absolute output difference < 2e-11 (floating-point roundoff only).
+- Warm-cache, 11-run median decimator-only benchmark on one second of 140-Hz full-scale PCM:
+  - 16 kHz: 18.51 ms → 14.90 ms (19.5% lower).
+  - 22.05 kHz: 24.46 ms → 21.51 ms (12.1% lower).
+  - 44.1 kHz: 24.77 ms → 20.28 ms (18.1% lower).
+  - 48 kHz: 18.45 ms → 15.54 ms (15.8% lower).
+- These are isolated decimator timings, not the complete RAW EAR pipeline, native model, ARM or Redmi measurements. Full repository tests remain BLOCKED locally because no Aii checkout is mounted and GitHub DNS is unavailable from the container.
+
+The latest exact PR head must rerun RAW EAR fastpath, prosody, comparator, staged/integrated and migration CI. The known staged/integrated blocker remains Core's pinned composer source hash: it must be updated bottom-up to the new producer blob above; Perception does not edit Core-owned composer/recovery files. The 44.1-kHz alias, phase and low-F0 controls remain in place.
+
+No microphone provider, permission, model, dependency, weight, Age, learning authority, updater, user data or device state changed. NOT_RELEASED / REDMI_UNVERIFIED.
