@@ -13,13 +13,13 @@ from v13.callosum import controller, operator_command
 from v13 import native_latent_receiver as native
 
 
-def receipt(model_sha):
+def receipt(model_sha, sender_sha):
     return {
         "sender_role": "B2_GIST",
         "receiver_role": "C3_LANGUAGE",
         "sender_tap_id": "qwen35.result_norm.final.v1",
         "sender_model_revision": "qwen35-r1",
-        "sender_model_sha256": "b" * 64,
+        "sender_model_sha256": sender_sha,
         "tokenizer_revision": None,
         "receiver_model_revision": "lfm2-r1",
         "receiver_model_sha256": model_sha,
@@ -62,13 +62,25 @@ def setup_runtime(tmp_path):
         "main_file": "receiver.gguf",
         "files": {"receiver.gguf": {"sha256": digest}},
     }
-    runtime.models.path_for = lambda role: model_path
-    runtime.models.revision = lambda role: "lfm2-r1" if role == "C3_LANGUAGE" else "qwen35-r1"
-    return runtime, event, model_path, digest
+    sender_dir = model_dir / "gist"
+    sender_dir.mkdir(parents=True, exist_ok=True)
+    sender_path = sender_dir / "sender.gguf"
+    sender_path.write_bytes(b"installed-sender-model")
+    sender_digest = hashlib.sha256(sender_path.read_bytes()).hexdigest()
+    sender_key = model_key("B2_GIST", runtime.models.b2_control)
+    runtime.models.installed[sender_key] = {
+        "download_complete": True,
+        "exact_revision": "qwen35-r1",
+        "main_file": "sender.gguf",
+        "files": {"sender.gguf": {"sha256": sender_digest}},
+    }
+    runtime.models.path_for = lambda role: sender_path if role == "B2_GIST" else model_path
+    runtime.models.revision = lambda role: "qwen35-r1" if role == "B2_GIST" else "lfm2-r1"
+    return runtime, event, model_path, digest, sender_path, sender_digest
 
 
 def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path, monkeypatch):
-    runtime, event, model_path, digest = setup_runtime(tmp_path)
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     order = []
     tap = {
         "packet_id": "tap-packet-1",
@@ -78,7 +90,6 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
         "role": "B2_GIST",
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
-        "sender_model_sha256": "b" * 64,
         "tokenizer_revision": None,
         "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 2},
     }
@@ -93,13 +104,13 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
         assert order == ["tap", "unload"]
         assert kwargs["model_path"] == model_path
         assert kwargs["expected_model_sha256"] == digest
-        assert kwargs["sender_model_sha256"] == "b" * 64
+        assert kwargs["sender_model_sha256"] == sender_digest
         assert kwargs["tokenizer_revision"] is None
         assert kwargs["position_ids"] == [0, 1]
         assert kwargs["position_mode"] == native.POSITION_MODE
         assert kwargs["source_id"] == event["source_ref"]["source_id"]
         assert kwargs["generation_id"] == event["brain_generation_id"]
-        return receipt(digest)
+        return receipt(digest, sender_digest)
 
     monkeypatch.setattr(native, "probe", fake_probe)
     before = model_path.read_bytes()
@@ -177,7 +188,7 @@ def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp
         "vectors": [[1.0, 2.0]],
     }
     runtime.pool.unload = lambda: None
-    mismatch = receipt(digest)
+    mismatch = receipt(digest, sender_digest)
     mismatch.update({
         "input_rows": 1,
         "position_ids": [0],
@@ -201,6 +212,31 @@ def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp
     assert packet["status"] == "DIMENSION_MISMATCH"
     assert packet["native_input_consumed"] is False
     assert packet["production_route"] is False
+    runtime.close()
+
+
+def test_native_receive_rejects_sender_model_hash_drift(tmp_path, monkeypatch):
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    tap = {
+        "packet_id": "tap-packet-drift",
+        "event_id": event["event_id"],
+        "brain_generation_id": event["brain_generation_id"],
+        "source_ref": event["source_ref"],
+        "role": "B2_GIST",
+        "tap_id": "qwen35.result_norm.final.v1",
+        "model_revision": "qwen35-r1",
+        "tokenizer_revision": None,
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 1},
+    }
+    runtime.cognition.tap = lambda *args: tap
+    runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
+    runtime.pool.unload = lambda: None
+    sender_path.write_bytes(b"changed-after-tap")
+    monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
+    with pytest.raises(ValueError, match="Sender model hash differs"):
+        runtime.cognition.native_receive(
+            "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
+        )
     runtime.close()
 
 
