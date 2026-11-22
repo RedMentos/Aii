@@ -95,10 +95,10 @@ class LlamaRunner:
                     # Never retain raw stdout: it can contain build paths or environment data.
                     raw=probe.stdout[:1024].decode("utf-8","replace")
                     line=" ".join(part.strip() for part in raw.splitlines()[:3] if part.strip())[:256]
-                    version=re.search(r"\\bversion\\s*[:=]\\s*([0-9][A-Za-z0-9._+-]{0,31})",line,re.I)
-                    revision=re.search(r"\\(([0-9a-f]{7,40})\\)",line,re.I)
+                    version=re.search(r"\bversion\s*[:=]\s*([0-9][A-Za-z0-9._+-]{0,31})",line,re.I)
+                    revision=re.search(r"\(([0-9a-f]{7,40})\)",line,re.I)
                     if revision is None:
-                        revision=re.search(r"\\bcommit[:= ]+([0-9a-f]{7,40})\\b",line,re.I)
+                        revision=re.search(r"\bcommit[:= ]+([0-9a-f]{7,40})\b",line,re.I)
                     if version and revision:
                         prefix=revision.group(1).lower()
                         result={"status":"VERIFIED_REVISION_PREFIX",
