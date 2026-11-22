@@ -83,7 +83,7 @@ def _verify_model_file(path, expected_size, expected_digest):
         actual = digest.hexdigest()
         if not secrets.compare_digest(actual, expected_digest):
             raise PermissionError("native probe model file hash differs from its manifest")
-        return actual
+        return identity(after)
     finally:
         os.close(fd)
 
@@ -120,7 +120,28 @@ def _model_binding(runtime, role):
     size = entry.get("size")
     if type(size) is not int or size < 1:
         raise PermissionError("native probe model size is missing or invalid")
-    _verify_model_file(resolved, size, digest)
+    verified_identity = _verify_model_file(resolved, size, digest)
+    # The native receiver later opens ModelManager.path_for(role), which may be
+    # redirected by an online model router. Bind approval to that exact route,
+    # not merely to another manifest file with matching bytes.
+    try:
+        selected_path = Path(runtime.models.path_for(role))
+        if selected_path.is_symlink():
+            raise PermissionError("native probe selected model path is linked")
+        selected_resolved = selected_path.resolve(strict=True)
+        selected_stat = os.stat(selected_path, follow_symlinks=False)
+    except PermissionError:
+        raise
+    except (OSError, RuntimeError, TypeError, ValueError) as exc:
+        raise PermissionError("native probe selected model path is unavailable") from exc
+    selected_identity = (
+        selected_stat.st_dev, selected_stat.st_ino, selected_stat.st_size,
+        selected_stat.st_mtime_ns, selected_stat.st_ctime_ns,
+    )
+    if (not stat.S_ISREG(selected_stat.st_mode)
+            or selected_resolved != resolved
+            or selected_identity != verified_identity):
+        raise PermissionError("native probe selected model path differs from verified manifest file")
     return {"model_key": key, "revision": revision, "sha256": digest}
 
 
