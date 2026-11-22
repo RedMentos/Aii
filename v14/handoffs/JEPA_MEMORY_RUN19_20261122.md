@@ -24,7 +24,7 @@ Commits:
 
 ## Run 19 continuation addendum
 
-SleepRuntime.job now schedules a bounded continuation when either the base learner or the temporal learner reports has_more, and scheduler completion metadata includes temporal_status. The regression uses base has_more=false and temporal has_more=true. Exact 3f015a7442c6950d5ce0dce3a9bbbcc4517e863d workflows: 45070697371 optimizer-resume 3.13/3.14; 45070697433 temporal WorldJEPA 3.13/3.14; 45070697455 owner-read/staged startup — all QUEUED. No exact staged/integrated run visible for this latest test-only commit. No exact staged/integrated workflow is visible for this last test-only commit.
+SleepRuntime.job now schedules a bounded continuation when either the base learner or the temporal learner reports has_more. Scheduler completion metadata records learning_has_more, temporal_has_more and continuation_reason (BASE_PAGE / TEMPORAL_PAGE / BASE_AND_TEMPORAL). The regression uses base has_more=false and temporal has_more=true and asserts TEMPORAL_PAGE. Exact aae0330e workflows: 45070863812 staged/integrated; 45070863749 temporal WorldJEPA 3.13/3.14; 45070863814 optimizer-resume 3.13/3.14 — all QUEUED; no commit statuses.
 
 ## Restart-persistence regression
 
@@ -32,9 +32,9 @@ The new test first writes 32 outcomes in one session and expects WAITING with al
 
 ## Tests and environment
 
-- No exact staged/integrated workflow is visible for aae0330e; parent 3f015a run 45070697455 is not current-head proof.
-- Parent 3f015a temporal WorldJEPA Python 3.13/3.14: 45070697433 — QUEUED.
-- Parent 3f015a optimizer-resume Python 3.13/3.14: 45070697371 — QUEUED. Owner-read / staged startup 45070697455 — QUEUED.
+- Exact-head aae0330e staged/integrated: 45070863812 — QUEUED.
+- Exact-head aae0330e temporal WorldJEPA Python 3.13/3.14: 45070863749 — QUEUED.
+- Exact-head aae0330e optimizer-resume Python 3.13/3.14: 45070863814 — QUEUED.
 - LOCAL_LINUX full suite: BLOCKED / NOT_RUN. Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2 exist, but no Aii checkout is mounted; git ls-remote failed because github.com DNS could not resolve.
 - TERMUX/REDMI: NOT TESTED. Private V13OBS #115 reports installed base aed1d2b, updater UP_TO_DATE; B1 4/4 and B2 2/2 native attempts failed, zero valid offers, C3 prefill ~38.945 s / 2 generated tokens. #2372 is not installed.
 
