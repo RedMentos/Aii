@@ -86,7 +86,7 @@ def build_sources(code_dir):
         hashlib.sha256(result['v13/world_semantic_evidence_candidate.py']).hexdigest().encode(), 'semantic source pin')
     stream = result['v13/archive_stream_range_candidate.py']
     if hashlib.sha256(stream).hexdigest() != STREAM_SHA:
-        raise ValueError('context recall streaming source changed')
+        raise ValueError('context recall streaming source changed: ' + hashlib.sha256(stream).hexdigest())
     stream = _replace(stream, STORE_SHA.encode(), new_store_sha, 'stream Store pin')
     stream = _replace(stream, b'import zlib\n', b'import zlib\nimport time\nfrom .source_read_budget_candidate import Budget\n', 'stream import')
     stream = _replace(stream, b'max_archive_bytes=DEFAULT_SOURCE_LIMIT, max_chars=MAX_RETURN_CHARS):',
