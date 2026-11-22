@@ -31,8 +31,9 @@ class PairedNativeTapTests(unittest.TestCase):
         self.r.close()
         self.tmp.cleanup()
 
-    def _tap(self, role, source_ref=None):
-        source_ref = source_ref or self.event["source_ref"]
+    def _tap(self, role, source_ref=None, event=None):
+        event = event or self.event
+        source_ref = source_ref or event["source_ref"]
         text = self.r.store.read_source(source_ref)
         dim = 3 if role == "B1_DETAIL" else 2
         token_ids = list(range(len(text)))
@@ -40,8 +41,8 @@ class PairedNativeTapTests(unittest.TestCase):
         path = self.r.home / "data/blobs" / (role + ".json")
         atomic_write(path, dumps({"token_ids": token_ids, "vectors": vectors}))
         p = packet(
-            "LatentTapPacket", role, self.event["event_id"],
-            self.event["brain_generation_id"], [source_ref],
+            "LatentTapPacket", role, event["event_id"],
+            event["brain_generation_id"], [source_ref],
             role=role, source_ref=source_ref, tap_id=role + ".native.final",
             model_revision=role + ".rev1", runner_revision="fixture-runner",
             token_ids=token_ids, feature_path=str(path.relative_to(self.r.home)),
@@ -55,7 +56,7 @@ class PairedNativeTapTests(unittest.TestCase):
 
     def _capture(self, event=None):
         def tap(role, e, source_ref, deadline):
-            return self._tap(role, source_ref)
+            return self._tap(role, source_ref, e)
         with patch.object(self.r.cognition, "tap", side_effect=tap), \
              patch.object(self.r.pool, "get_tap", return_value=FakeTokenizerRunner()), \
              patch.object(self.r.pool, "unload"):
@@ -124,8 +125,15 @@ class PairedNativeTapTests(unittest.TestCase):
         self.assertEqual(load_pair(self.r.cognition, pair["packet"])["body_pair_id"], pair["body_pair_id"])
         with self.assertRaisesRegex(ValueError, "duplicate body_pair_id"):
             training_batch(self.r.cognition, [pair["packet"], duplicate_capture["packet"]], [1, 1])
+        repeated_text_event = self.r.store.event(self.r.session, "Shared source span for both native bodies.")
+        repeated_text_capture = self._capture(repeated_text_event)
+        self.assertNotEqual(pair["body_pair_id"], repeated_text_capture["body_pair_id"])
+        with self.assertRaisesRegex(ValueError, "same exact source span"):
+            training_batch(self.r.cognition, [pair["packet"], repeated_text_capture["packet"]], [1, 1])
         report = json.loads(Operator(self.r).run(":b3 pairs"))
         self.assertEqual(report["paired_native_samples"], 1)
+        self.assertEqual(report["captured_pair_packets"], 3)
+        self.assertEqual(report["unique_body_pair_ids"], 2)
         self.assertEqual(report["required_for_l1_training"], 64)
         self.assertEqual(report["remaining"], 63)
         self.assertEqual(report["b1_detail_fine_slots"]["budget"], 64)
