@@ -1,13 +1,15 @@
-# Research & Perception — latest verified candidate (2026-11-22 17:57 UTC)
+# Research & Perception — latest verified candidate (2026-11-22 18:11 UTC)
 
-- PR [#2366](https://github.com/RedMentos/Aii/pull/2366), branch `research-perception/v14-vision-source-revocation-atomic-20261122`, head at PR creation `ce5b07da720c4d8751bc4fa09042337996a1081d`, adds atomic stored-IMAGE source publication/read/forget and serializes the ephemeral RAW EYE A5→A4→bounded C3 candidate against concurrent forget.
-- Local isolated CPython 3.13.5 concurrency harness: **2/2 PASS** (fake Store, not full repository integration). Exact Python 3.13/3.14 CI was queued at last read. Full local Aii checkout is blocked by GitHub DNS.
+- PR [#2366](https://github.com/RedMentos/Aii/pull/2366), current branch head `9a19b8c0af01912f40d92fecac4e6ab9a82bb128`; exact code/test commit `f8a9faf66b64352f8e1703e634b79f03ec3c0984`. It makes stored IMAGE ingest/read/forget atomic with the ephemeral RAW EYE A5→A4/admission path and adds two barrier regressions. PR #2363 is closed as superseded.
+- LOCAL_LINUX CPython 3.13.5 isolated fake-Store concurrency harness: **2/2 PASS**. Exact GitHub CI run [45053429482](https://github.com/RedMentos/Aii/actions/runs/45053429482) is still pending; GitHub has not created jobs yet. Full local Aii checkout is blocked by GitHub DNS.
 - No Redmi test. The image adapter remains unhooked from normal Runtime; no Android camera/screen provider, semantic VLM, trained projector, model/weight change or permission change is claimed.
-- Existing authenticated device handoff remains installed at `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`, updater enabled/UP_TO_DATE; latest diagnostics still show slow 2-token output and B1/B2 TIME_BUDGET. This PR is not deployed.
+- Existing authenticated device handoff remains installed at `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`, updater enabled/UP_TO_DATE; latest diagnostics still show the same slow 2-token stored turn and B1/B2 TIME_BUDGET. This PR is not deployed.
+- Research R-081: full 12-page preprint review suggests a calibrated novelty gate + full-history replay ablation for A4/audio episodic memory, but only small single-seed end-of-meeting evidence; no code or weight license was found. No model download.
 
-**Next internal action:** finish exact-head CI and hand the tested source-lifecycle contract to Core for normal Runtime invocation. **User action: none.** Do not rerun Termux or send an update request for this candidate.
+**Next internal action:** finish exact-head CI and hand the source-lifecycle contract to Core for normal Runtime invocation; then test R-081's gate/replay ablation on existing synthetic audio. **User action: none.** Do not rerun Termux or send an update request for this candidate.
 
 ---
+
 
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
