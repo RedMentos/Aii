@@ -134,7 +134,7 @@ def _state_raw():
 
 
 def snapshot():
-    """Only safe enums/short commit identifiers; no log, paths, user inputs."""
+    """Only safe enums, commit identifiers and whitelisted exception-class tokens; no paths or user inputs."""
     data = _state_raw()
     result = {"schema": "v13.pipeline-status/1", "auto_enabled": enabled(),
               "last_check_utc": data.get("last_check_utc", 0),
@@ -369,10 +369,10 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                     # activation below still requires CI and a stopped model.
                     runtime_deploy.prepare_source(roots["runtime"])
                 except (OSError, ValueError, TimeoutError,
-                        runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired):
+                        runtime_deploy.RuntimeDeployError, subprocess.TimeoutExpired) as exc:
                     state["runtime"] = "ERROR"
                     state["last_error"] = "UPDATE"
-                    state["last_error_detail"] = "RuntimeDeployError"
+                    state["last_error_detail"] = type(exc).__name__
                     failed.add("runtime")
             busy = updates._runtime_active()
             # Fetch/check CI BEFORE asking to interrupt a running chat; if CI
@@ -389,9 +389,10 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                         if report["status"] != "UPDATE_AVAILABLE":
                             if name != "runtime" or not runtime_deploy.needs_deploy(roots[name]):
                                 continue
-                    except runtime_deploy.RuntimeDeployError:
+                    except runtime_deploy.RuntimeDeployError as exc:
                         state[name] = "ERROR"
                         state["last_error"] = "UPDATE"
+                        state["last_error_detail"] = type(exc).__name__
                         failed.add(name)
                         continue
                     sha = report["available"]
@@ -411,8 +412,9 @@ def run_cycle(*, force=False, now=None, manual=False, target="all"):
                     try:
                         was_running = lifecycle.request_stop(timeout=35,
                                                               runtime_active=updates._runtime_active)
-                    except lifecycle.LifecycleError:
+                    except lifecycle.LifecycleError as exc:
                         state["last_error"] = "RUNNING"
+                        state["last_error_detail"] = type(exc).__name__
                     busy = updates._runtime_active()
             for name in selected:
                 if name in failed:
