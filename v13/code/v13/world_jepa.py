@@ -22,6 +22,7 @@ REVISION = 'z12b-world-jepa-v1'
 H = 64; Z = 16; HP = 64
 LR = 2e-3; TAU = .99; VAR_W = 1.; COV_W = .04; INV_W = 1.; BATCH = 256
 MAX_REPLAY_CONSTRAINTS = 8
+MAX_REPLAY_REFERENCE_ROWS = 64
 COVER_N = 8.       # BOOT: samples per action for ~63 % of the coverage term (as world_model.py)
 SPREAD_REF = .25   # BOOT: ensemble spread (in target-latent std units) that halves confidence
 OOD_SUPPORT = 2.   # BOOT: nearest-neighbour distance (median-NN units) still inside the training support
@@ -297,7 +298,7 @@ class WorldJEPA:
 
     def fit(self, X, A, X2, steps=3000, log_every=500, warm_start=False, cancel_check=None,
             allow_optimizer_bootstrap=False, train_encoder=True, drift_control=None,
-            replay_start=None, update_scale=1.0, replay_cohort_ranges=None):
+            replay_start=None, update_scale=1.0, replay_cohort_ranges=None, replay_reference_batches=None):
         # Invalid transitions cannot establish learned SHADOW inference evidence.
         # The covariance objective divides by n-1; never fit a single row.
         from . import world_jepa_training_state as training_state
@@ -311,6 +312,7 @@ class WorldJEPA:
                 or type(train_encoder) is not bool
                 or (replay_start is not None and type(replay_start) is not int)
                 or (replay_cohort_ranges is not None and replay_start is None)
+                or (replay_reference_batches is not None and replay_start is None)
                 or (cancel_check is not None and not callable(cancel_check))):
             raise ValueError('Invalid WorldJEPA fit configuration')
         if (type(update_scale) not in (int, float) or not np.isfinite(update_scale)
@@ -358,6 +360,29 @@ class WorldJEPA:
                 if expected_start != len(X):
                     raise ValueError('Replay cohort ranges must cover the complete replay fold')
                 replay_ranges = tuple(validated_ranges)
+        validated_replay_reference_batches = None
+        if replay_reference_batches is not None:
+            if (type(replay_reference_batches) not in (list, tuple)
+                    or len(replay_reference_batches) != len(replay_ranges)):
+                raise ValueError('Replay reference batches must match the selected session constraints')
+            validated = []
+            for reference in replay_reference_batches:
+                if type(reference) not in (list, tuple) or len(reference) != 3:
+                    raise ValueError('Invalid replay reference batch')
+                try:
+                    ref_x = np.asarray(reference[0], dtype=float)
+                    ref_a = np.asarray(reference[1], dtype=float)
+                    ref_x2 = np.asarray(reference[2], dtype=float)
+                except (TypeError, ValueError, OverflowError) as exc:
+                    raise ValueError('Invalid replay reference arrays') from exc
+                if (ref_x.ndim != 2 or not 2 <= len(ref_x) <= MAX_REPLAY_REFERENCE_ROWS
+                        or ref_x.shape[1] != X.shape[1]
+                        or ref_a.shape != (len(ref_x), A.shape[1])
+                        or ref_x2.shape != ref_x.shape
+                        or not all(np.isfinite(value).all() for value in (ref_x, ref_a, ref_x2))):
+                    raise ValueError('Replay reference batch shape, size or values are invalid')
+                validated.append((ref_x, ref_a, ref_x2))
+            validated_replay_reference_batches = tuple(validated)
         # Training stays concurrent, but a late older fit must never replace
         # a newer fit's complete publication. Invalid inputs above do not
         # supersede an in-flight valid fit. A failed newer valid fit leaves the
@@ -433,6 +458,18 @@ class WorldJEPA:
                             "min_constraint_dot_before": None, "max_constraint_dot_after": None,
                             "projection_norm_sum": 0.0,
                             "constraint_count": len(replay_ranges),
+                            "constraint_source": (
+                                "prior_guard" if validated_replay_reference_batches is not None
+                                else "fit_replay" if replay_start is not None else None
+                            ),
+                            "reference_batch_count": (
+                                0 if validated_replay_reference_batches is None
+                                else len(validated_replay_reference_batches)
+                            ),
+                            "reference_rows_total": (
+                                0 if validated_replay_reference_batches is None
+                                else sum(len(item[0]) for item in validated_replay_reference_batches)
+                            ),
                             "active_constraint_count": 0, "projection_sweeps_total": 0,
                             "max_constraint_violation": 0.0}
         def pack_gradients(out):
@@ -459,9 +496,9 @@ class WorldJEPA:
                 loss, parts = out[0], out[1]
                 gradients = pack_gradients(out)
             else:
-                # GEM-style constraints stay separate per prior session. These
-                # batches come only from the old source-disjoint training fold;
-                # the audit holdout is never used for gradient selection.
+                # The selected fit-fold rows identify bounded prior sessions.
+                # Prefer source-disjoint prior-guard microbatches for the GEM
+                # constraints; legacy callers without them retain fit-fold GEM.
                 new_count = replay_start
                 new_size = min(BATCH//2, new_count)
                 replay_capacity = BATCH - new_size
@@ -493,17 +530,33 @@ class WorldJEPA:
                 loss, parts = new_out[0], new_out[1]
                 gradients = pack_gradients(new_out)
                 constraint_gradients = []
-                for (start, end), replay_size in zip(replay_ranges, replay_sizes):
-                    replay_batch = rng.integers(start, end, replay_size)
-                    replay_target = encode(replay_target_anchor, x2[replay_batch])[0]
-                    replay_out = loss_grads(
-                        enc, pred, x[replay_batch], A[replay_batch], replay_target,
-                        VAR_W, COV_W, train_enc=train_encoder,
-                        inv=inv if train_encoder else None,
-                        x2=x2[replay_batch] if train_encoder else None,
-                        inv_w=INV_W if train_encoder else 0.,
-                    )
-                    constraint_gradients.append(pack_gradients(replay_out))
+                if validated_replay_reference_batches is not None:
+                    for ref_x, ref_a, ref_x2 in validated_replay_reference_batches:
+                        ref_size = min(16, len(ref_x))
+                        ref_batch = rng.choice(len(ref_x), ref_size, replace=False)
+                        guard_x = (ref_x[ref_batch] - mu) / sd
+                        guard_x2 = (ref_x2[ref_batch] - mu) / sd
+                        guard_target = encode(replay_target_anchor, guard_x2)[0]
+                        guard_out = loss_grads(
+                            enc, pred, guard_x, ref_a[ref_batch], guard_target,
+                            VAR_W, COV_W, train_enc=train_encoder,
+                            inv=inv if train_encoder else None,
+                            x2=guard_x2 if train_encoder else None,
+                            inv_w=INV_W if train_encoder else 0.,
+                        )
+                        constraint_gradients.append(pack_gradients(guard_out))
+                else:
+                    for (start, end), replay_size in zip(replay_ranges, replay_sizes):
+                        replay_batch = rng.integers(start, end, replay_size)
+                        replay_target = encode(replay_target_anchor, x2[replay_batch])[0]
+                        replay_out = loss_grads(
+                            enc, pred, x[replay_batch], A[replay_batch], replay_target,
+                            VAR_W, COV_W, train_enc=train_encoder,
+                            inv=inv if train_encoder else None,
+                            x2=x2[replay_batch] if train_encoder else None,
+                            inv_w=INV_W if train_encoder else 0.,
+                        )
+                        constraint_gradients.append(pack_gradients(replay_out))
             if drift_prepared['active']:
                 gradients = drift.apply_pullback(params_by_group, gradients, drift_prepared)
             step_report = opt.step(gradients, constraint_gradients=constraint_gradients,
@@ -611,7 +664,7 @@ class WorldJEPA:
 
     def partial_fit(self,X,A,X2,steps=100,log_every=50,cancel_check=None,allow_optimizer_bootstrap=False,
                     train_encoder=True, drift_control=None, replay_start=None, update_scale=1.0,
-                    replay_cohort_ranges=None):
+                    replay_cohort_ranges=None, replay_reference_batches=None):
         """Continue JEPA weights and EMA target instead of reinitializing.
 
         Callers should mix replay transitions with new ones to reduce forgetting.
@@ -620,7 +673,8 @@ class WorldJEPA:
         return self.fit(X,A,X2,steps=steps,log_every=log_every,warm_start=True,cancel_check=cancel_check,
                         allow_optimizer_bootstrap=allow_optimizer_bootstrap,train_encoder=train_encoder,
                         drift_control=drift_control,replay_start=replay_start,update_scale=update_scale,
-                         replay_cohort_ranges=replay_cohort_ranges)
+                         replay_cohort_ranges=replay_cohort_ranges,
+                        replay_reference_batches=replay_reference_batches)
 
     # -- inference -------------------------------------------------------------------------------------------------
     @_read_locked
