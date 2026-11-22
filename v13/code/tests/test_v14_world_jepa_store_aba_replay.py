@@ -636,7 +636,7 @@ def _run_phase(store, home, *, steps, replay_mode, encoder_mode="full", drift_co
     projection_metrics = metrics.get("gradient_projection")
     assert type(projection_metrics) is dict
     assert projection_metrics.get("requested") is replay_projection
-    assert projection_metrics.get("enabled") is replay_projection
+    assert projection_metrics.get("enabled") is (replay_projection and metrics.get("replay_projection_enabled") is True)
     if replay_projection:
         assert projection_metrics.get("steps") == metrics.get("optimizer_steps_added")
         assert projection_metrics.get("constraint_count") == metrics.get("replay_constraint_session_count")
