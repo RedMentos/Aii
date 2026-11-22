@@ -30,6 +30,39 @@ from .contracts import validate
 
 _ACTIVITY_HINTS = {"SILENCE", "VOICED", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"}
 
+def _speaker_change_decision(evidence, cues):
+    """Return a conservative A4 three-regime decision without assigning identity.
+
+    Low similarity is only a candidate when calibrated evidence is measured
+    during voiced activity. Silence, noise, short windows, missing calibration,
+    rejected embeddings and warm-up remain DEFER rather than false continuity.
+    """
+    if type(cues) is not dict or cues.get("activity_hint") != "VOICED":
+        return "DEFER"
+    frame_count = cues.get("frame_count")
+    voiced_fraction = cues.get("voiced_fraction")
+    if (type(frame_count) is not int or not 2 <= frame_count <= 50
+            or type(voiced_fraction) not in (int, float)
+            or not math.isfinite(float(voiced_fraction))
+            or not 0.0 <= float(voiced_fraction) <= 1.0
+            or round(frame_count * float(voiced_fraction)) < 2):
+        return "DEFER"
+    if type(evidence) is not dict or evidence.get("status") != "MEASURED":
+        return "DEFER"
+    calibration_id = evidence.get("calibration_id")
+    if type(calibration_id) is not str or not calibration_id.strip():
+        return "DEFER"
+    candidate = evidence.get("peak_speaker_change_candidate")
+    if candidate is None:
+        candidate = evidence.get("speaker_change_candidate")
+    if candidate is True:
+        return "CHANGE_OR_OVERLAP_CANDIDATE"
+    if evidence.get("confidence_gate_passed") is True:
+        return "CONTINUITY_SUPPORTED"
+    return "DEFER"
+
+
+
 # Protect first-use get/create/set on a shared Runtime during concurrent audio calls.
 _RUNTIME_TEMPORAL_REGISTRY_INIT_LOCK = threading.Lock()
 
@@ -625,8 +658,11 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     "learning_authority": False,
                     "action_authority": False,
                 }
+        speaker_change_decision = _speaker_change_decision(speaker_evidence, cues)
         if speaker_evidence is not None:
+            speaker_evidence["decision"] = speaker_change_decision
             audio_segment["acoustic"]["speaker_change_evidence"] = speaker_evidence
+        audio_segment["acoustic"]["speaker_change_decision"] = speaker_change_decision
         audio_segment["unmeasured"] = [
             "speaker_identity", "speaker_timbre", "calibrated_speech_probability", "ASR"
         ]
@@ -712,6 +748,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
             "prosody_change_score": cues["prosody_change_score"],
             "temporal_voice": temporal_voice,
             "speaker_change_evidence": speaker_evidence,
+            "speaker_change_decision": speaker_change_decision,
             "attention": attention_result,
             "learning_authority": False,
             "action_authority": False,
@@ -724,6 +761,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         candidate = audio_to_admission(audio_packet, consent_active=True)
         summary = candidate.summary + (
             f" activity={cues['activity_hint']} voiced={cues['voiced_fraction']:.2f}"
+            f" speaker_change_decision={speaker_change_decision}"
         )
         if cues["f0_median_hz"] is not None:
             summary += f" f0_med_hz={cues['f0_median_hz']:.0f}"
