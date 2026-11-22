@@ -45,6 +45,7 @@ CANON_COPY_IGNORES = ("__pycache__", "*.pyc", "*.pyo")
 HEX40 = re.compile(r"[a-f0-9]{40}\Z")
 MARKER_NAME = "runtime-active.json"
 ACTIVATION_JOURNAL_NAME = ".runtime-activation.json"
+# This journal coordinates only the launcher/marker pair; models and user data stay outside the transaction.
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
 STAGER = "scripts/stage_integrated_candidate.py"
 STAGER_SHA256 = "3c96d70126750500ba2a89c1785fb309e283f453fb55e96fed28abc905a6b9ee"
