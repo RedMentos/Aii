@@ -23,7 +23,7 @@ def test_submit_uses_fixed_content_provider_and_no_shell():
         "expires_at": 1030.0,
         "local_approval": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
         "companion_local_consent_required": True,
-        "android_os_permission_required": True,
+        "android_os_permission_required": False,
         "permission_bypass": False,
         "model_authority": False,
     }
@@ -42,6 +42,10 @@ def test_submit_uses_fixed_content_provider_and_no_shell():
         "content://com.redmentos.v14.companion", "--method", "submit"
     ]
     assert "--arg" in command
+    encoded = command[command.index("--arg") + 1]
+    sent = json.loads(base64.b64decode(encoded).decode("utf-8"))
+    assert sent["companion_local_consent_required"] is True
+    assert sent["android_os_permission_required"] is False
     assert kwargs["timeout"] == 4.0
     assert kwargs["check"] is False
     assert "shell" not in kwargs
@@ -123,7 +127,7 @@ def test_submit_rejects_missing_or_mismatched_action_acknowledgement(ack):
         "expires_at": 1030.0,
         "local_approval": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
         "companion_local_consent_required": True,
-        "android_os_permission_required": True,
+        "android_os_permission_required": False,
         "permission_bypass": False,
         "model_authority": False,
     }
