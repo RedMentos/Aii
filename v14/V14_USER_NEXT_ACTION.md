@@ -7,7 +7,7 @@
 - Release/Redmi: PIPELINE_STATUS #634 bestätigt aed1d2b826290c95c70356b5d8b864b5ef382be4 installiert, Auto-Update an, Runtime/Dashboard UP_TO_DATE, last_error NONE. DIAGNOSTICS #635 meldet RUNNING; HEALTH #636 meldet Runtime UNAVAILABLE (Widerspruch); LEARNING_STATUS #637 unavailable.
 - Letzter gespeicherter FINAL-Turn: 57,74 s / TTFT 41,63 s / Prefill 38,95 s / 751 Prompt-Tokens / 2 generierte Tokens. B1/B2 bleiben TIME_BUDGET 53,2/54,2 s; 0 gemappte Native-Prozesse in einer Momentaufnahme, Child-Lesbarkeit unbekannt.
 - Lab-Age: mode ACTIVE, requested stage 10, effective implemented stage 5, official stage 0, physical feature execution false, learning commit authority REQUIRES_SEPARATE_SHADOW_MODE. Das ist der Testselector, kein Beweis für physische Stage-10-Ausführung oder freigegebene Gewichtsänderungen.
-- Boss-PR #2370, exakter Head bae7d03196d98ac6dfebc0a2649faf257ba8308f: **0 SUCCESS / 15 QUEUED / 1 IN_PROGRESS / 6 CANCELLED / 6 SKIPPED / 0 beobachtete Fehler**. Der vorherige Head 03909f0 hatte 8 erfolgreiche Workflows, aber Audio/Arithmetic scheiterte auf Python 3.13 und 3.14 jeweils an derselben gespeicherten Source-Assertion; der neue Head korrigiert sie, ist aber noch nicht verifiziert.
+- Boss-PR #2370, exakter Head bae7d03196d98ac6dfebc0a2649faf257ba8308f: **1 SUCCESS / 14 QUEUED / 1 IN_PROGRESS / 7 CANCELLED / 7 SKIPPED / 0 beobachtete Fehler**. Der einzige Erfolg auf dem aktuellen Head ist der private owner-read bootstrap (CI, kein Telefonbeleg); JEPA Runtime transactional update läuft. Der vorherige Head 03909f0 hatte 8 erfolgreiche Workflows, aber Audio/Arithmetic scheiterte auf Python 3.13 und 3.14 jeweils an derselben gespeicherten Source-Assertion; der neue Head korrigiert sie, ist aber noch nicht verifiziert.
 - #2377 f64e994 enthält jetzt persistierte kanonische Pfad-/File-Identity-Bindung, aber zwei Workflows sind queued und eine Testdefinition doppelt. #2384 5cd8ffae hat direkte RAW-EYE-Feature-Summary-Tests, aber doppelte Testdefinitionen und queued Workflows. #2356 27aaa29 hat den sicheren einmaligen System-UI-Wait/Logcat-Harness, aber zwei Workflows SUCCESS (Android outcome contract, Core Store/caller gate) und zwei QUEUED (Emulator-Prozessneustart, staged integration); keine Prozess-Tod-Akzeptanz.
 - #2381 bleibt gegenüber #2377 veraltet; #2379/#2376 gegenüber #2356; #2383 hat fünf Workflow-Fehler, #2372 drei Fehler/einen Erfolg. Keine Gewichtsdiff-, native Latent-, Android-Prozess-Tod- oder Redmi-Funktionsakzeptanz.
 - Keine LOG_PAGE-Abfrage: console_errors ist USER_NOT_OPTED_IN. Kein CHAT_SEND, UPDATE_REQUEST, Remote-Shell, Modell-/Weight-Swap oder Geräte-Mutation.
@@ -99,3 +99,8 @@ Die privaten Gerätebelege #634–#637 bleiben unverändert: aed1d2 installiert,
 ## Final queue refresh — 2026-11-22T22:34:58.624Z
 
 Boss #2370 exact head bae7d031: 0 SUCCESS / 15 QUEUED / 1 IN_PROGRESS / 6 CANCELLED / 6 SKIPPED. Companion #2356 head 27aaa29: Android outcome contract + Core Store/caller gate SUCCESS; emulator process-restart + staged/integrated regression QUEUED. No process-death acceptance, no Redmi action, no user action.
+
+
+## Latest CI detail — 2026-11-22T22:36:01.944Z
+
+#2370: private owner-read bootstrap run 45077837232 SUCCESS (CI only), JEPA Runtime transactional update in progress, 14 other workflows queued. #2379: one-shot MediaProjection provider run 45077108220 SUCCESS, staged/integrated regression queued; branch still stale vs current #2356. No phone capture or user action.
