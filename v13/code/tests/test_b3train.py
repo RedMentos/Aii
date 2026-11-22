@@ -174,6 +174,18 @@ class L1ShadowTrainingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "conflicting task labels"):
             _source_disjoint_split(refs, np.asarray([0, 1], dtype=np.int64), 7)
 
+    def test_legacy_per_example_l0_evidence_is_rejected(self):
+        pairs, batch = self._pairs_and_batch()
+        with patch("v13.b3train.training_batch", return_value=batch):
+            with self.assertRaisesRegex(ValueError, "L0 baseline evidence"):
+                train_l1_shadow(
+                    self.r.cognition, pairs, [i % 2 for i in range(64)],
+                    [f"feedback-{i}" for i in range(64)], "binary-outcome",
+                    "verified-test-outcome", direction="B1_TO_B2",
+                    seeds=(3, 7, 11), epochs=1, head_steps=1,
+                    l0_evidence={"schema": "v13.b3-l0-baselines/1"},
+                )
+
     def test_refuses_less_than_sixty_four_pairs(self):
         with self.assertRaisesRegex(ValueError, "at least 64"):
             train_l1_shadow(self.r.cognition, [{}] * 63, [0] * 63,
