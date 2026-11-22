@@ -22,7 +22,7 @@ The companion's existing Robolectric tests exercise the process-start reset meth
 - LOCAL_LINUX / Python 3.13.5: test-script syntax compilation PASS.
 - LOCAL_FULL_REPOSITORY: BLOCKED — this environment has no Aii checkout, Gradle, Android SDK or adb.
 - Prior exact PR head `6643acba196e2b7191c7e637edfcf62f61139b18`: Android Gradle/Robolectric, Python 3.13/3.14 outcome tests and staged/integrated checks were green.
-- Current exact head `bb7b2921d5c9174f28dacf5a569f577fafd4e7bf`: Android companion and emulator jobs are queued; no result is claimed yet.
+- Code-bearing head `bb7b2921d5c9174f28dacf5a569f577fafd4e7bf`; the current branch head `d9faf0318e98e597ab8e429d8e95db65ef6feb2f` adds only this handoff. The Android companion and emulator jobs are queued on the code-bearing head; no result is claimed yet.
 - Even a green emulator test is not a Redmi Note 10 Pro installation/reboot result.
 
 ## Device boundary
