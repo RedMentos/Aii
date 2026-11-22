@@ -1385,3 +1385,20 @@ The 8db1952 exact-head workflows are `45066934953` (staged/integrated), `4506693
 **Next:** poll 6da129ef CI and obtain exact 01549f1 CI. If receiver tests pass, record the actual accepted/rejected gate values; if they fail, use the omission audit and measured gate data. Fix SleepRuntime ValueError. Wait for QA/Boss dependency chains. Then test multi-shift retention and replay with matched budgets, parameter/EMA diffs and return-to-first-cohort holdout.
 
 **User action:** none. Existing installed release is up to date.
+
+
+## JEPA & Memory — Run 19 (2026-11-22T20:55:00Z)
+
+**Hypothesis / reproduced failure:** a single long Store session can produce many contiguous temporal windows, but _split_windows deliberately groups overlapping windows by whole session/source-connected component. One session therefore cannot yield both train and holdout partitions. The prior path propagated the resulting ValueError through consume_temporal_after_commit, causing SleepRuntime._run_world_jepa to report ERROR even though the data simply did not yet contain a disjoint cohort.
+
+**Code change:** PR #2372 commit c5aa0701db557229f70bf2b088b3ba6ecd5b1b4d catches only the exact insufficient source-disjoint temporal partitions condition. It persists the scan cursor and verified pending rows and returns WAITING_FOR_MORE_T8_DATA with reason NEED_MORE_SOURCE_DISJOINT_SESSIONS; all other ValueErrors still propagate. No checkpoint is published for the insufficient cohort.
+
+**Regression coverage:** commit b80de800049779a5bae8a6191378b56d397e55fb changes the postcommit learning fixtures to 64 independent four-event sessions (256 outcomes) and an 8-session second cohort, preserving the whole-session/source-disjoint split. Commit 8ba258ff40fd4794658f8b1bac5400d8e5bcd125 adds a 32-outcome single-session cold-start regression and expands only the Cognition.offer prompt fixture to 64 sessions so the existing per-action 8-sample receiver support floor can be reached. The test-only accepted gate remains explicitly separate from measured utility tests.
+
+**Exact head / tests:** 8ba258ff40fd4794658f8b1bac5400d8e5bcd125; staged/integrated run 45069630757, temporal T8 Python 3.13/3.14 run 45069630624, optimizer-resume Python 3.13/3.14 run 45069630784. All QUEUED at the last readback; no PASS yet. LOCAL_LINUX full suite BLOCKED / NOT_RUN because no checkout is mounted and git ls-remote cannot resolve github.com. CI is not local proof.
+
+**User/device impact:** no device action, model swap, weight edit, permission change or deployment. The installed base remains aed1d2b; the #2372 draft is NOT_RELEASED and REDMI_UNVERIFIED. The latest stored private diagnostics still show zero valid B1/B2 offers and slow C3 prefill; no improvement is claimed.
+
+**Dependencies:** QA #2359 source-lifecycle memory.py pin still needs the verified SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701. Boss #2370 exact head 8581023c4d46785057efc605575fcabd77e9e8a9 has 27 queued / 3 expected skipped checks, not green. Keep #2372 stacked on #2351 until both chains are accepted.
+
+**Next executable step:** poll exact-head CI; inspect failed job logs if any. Once green, run matched replay-on/off and persistent-vs-reset experiments over at least two dynamics shifts plus return-to-first-cohort. Report invariant retention and revision latency separately. Keep Dream samples distinct from observed ActionOutcomes and production promotion OFF.
