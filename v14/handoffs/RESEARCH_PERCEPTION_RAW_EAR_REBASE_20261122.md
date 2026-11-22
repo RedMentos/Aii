@@ -66,3 +66,10 @@ LOCAL_LINUX isolated scratch logic: PASS for caller-asserted thresholds, no-thre
 - LOCAL_LINUX scratch mirror: `py_compile` PASS and 4/4 unittest cases PASS (caller-asserted threshold, no threshold, missing receipt, and no speaker-derived attention interrupt).
 - Full repository pytest: BLOCKED (no checkout mounted; GitHub DNS unavailable). Exact-head GitHub Actions readback returned no runs/statuses for the latest code commit; therefore CI is NOT_RUN/PENDING, not PASS.
 - Boss base #2288 latest observed head `679f3667c5c98b867f85ae960824489da0d8fd3a`: runtime-deploy integrity, combined JEPA, Lab-Age, controller guard and A5 UI lease PASS; migration, owner-read/Python 3.14 startup, audio/arithmetic, staged/integrated regression and privacy were still in progress. No all-green base or release claim.
+
+
+## Native latent-interface review — R-068 (2026-11-22)
+
+Reviewed the exact pinned llama.cpp API used by Core #2300: commit `b29c606e28a01b1bc8c1351026a0fa6e616bf6c4` (2026-09-14, MIT). The header calls `llama_batch.embd` input token embeddings; `llama_get_embeddings_ith` returns output token embeddings, and its implementation indexes by `n_embd_out`. The decode input path uses `n_embd_inp` outside MTP/DFlash. Those dimensions can differ. Therefore #2300's sender-output → receiver-input probe is useful native ingress diagnostics, but a matching dimension does not establish a shared latent space or semantic alignment. The wrapper currently reports vector width/receiver input width without a distinct sender-output representation field.
+
+Review note sent to Core: record sender-output and receiver-input dimensions/representation types separately, keep `alignment_status=UNTRAINED_UNKNOWN`, and do not promote B3 from nonzero input-effect RMS. The next real experiment needs held-out receiver-task utility against source-exact, zero, shuffled, random same-norm and OOD controls; only a trained pair-specific projector can test learned alignment.
