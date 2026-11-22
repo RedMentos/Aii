@@ -78,3 +78,12 @@ Review note sent to Core: record sender-output and receiver-input dimensions/rep
 ### Additional regression added after scratch verification
 
 The repository test `test_batch_similarity_diagnostic_does_not_trigger_a4_interrupt_or_c3_candidate` now compares the same audio with caller-supplied speaker embeddings against a no-embedding negative control and requires identical A4 external-interrupt gain. This exact repository integration test has **not** been run locally (full checkout unavailable) and has no exact-head CI result yet; only the isolated 4/4 scratch mirror passed. Do not report this new regression as PASS until CI or a full checkout executes it.
+
+
+## PACT-Check paper review — R-069 (2026-11-22)
+
+Read the full arXiv preprint `2611.06976v1` (2026-11-04) and official `zhenyi4/platour` repo (latest inspected commit `e6cdcb3e8a2ce3c7b6c646df745273ad9f2d31e8`, 2026-11-10). PLatour uses zero-initialized layer-wise projectors into the receiver residual stream and trains only those bridges while backpropagating through the frozen receiver. It is not directly the same as llama.cpp output-embedding-to-input-embedding injection.
+
+The paper's PACT-Check controls are directly relevant to V14: Dummy Transfer, Irrelevant Transfer, Self-Communication and Trained Receiver. The results are task-dependent: PLatour's Qwen3-1.7B PACT-Score is +3.34 pp Chemistry, +0.23 GSM8K, -4.05 MATH500; neither Qwen3.5 PLatour system beats the receiver-trained control on math/coding domain averages. This is a strong reason not to call nonzero native input effect or a benchmark gain proof of useful sender information.
+
+Official code is Apache-2.0, but its published stack is Linux x86_64/Python 3.11/CUDA with Torch 2.10.0, Transformers 5.17.0, vLLM 0.17.1, `fla-core`, `tilelang` and CUDA/CXX11-ABI dependencies. No direct Android/Termux reuse; model/data licenses are separate. Recommendation to Core: add PACT-Check-style controls to #2300 acceptance before any B3 semantic promotion.
