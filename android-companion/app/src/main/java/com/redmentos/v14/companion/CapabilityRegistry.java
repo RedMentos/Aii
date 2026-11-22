@@ -66,6 +66,8 @@ final class CapabilityRegistry {
                         false,
                         false,
                         false),
+                unavailable("audio_capture",
+                        "No one-shot visible AudioRecord provider; capture remains disabled", true),
                 unavailable("observe_ui", "No AccessibilityService or UI-tree provider"),
                 unavailable("screen_capture", "No MediaProjection consent flow"),
                 unavailable("tap", "Accessibility fallback is not implemented"),
@@ -76,8 +78,12 @@ final class CapabilityRegistry {
     }
 
     private static Capability unavailable(String id, String reason) {
+        return unavailable(id, reason, false);
+    }
+
+    private static Capability unavailable(String id, String reason, boolean osPermissionRequired) {
         return new Capability(id, "OFF_NOT_IMPLEMENTED", reason, "NONE",
-                false, false, false, false);
+                false, osPermissionRequired, false, false);
     }
 
     static JSONObject snapshot(Context context) throws Exception {

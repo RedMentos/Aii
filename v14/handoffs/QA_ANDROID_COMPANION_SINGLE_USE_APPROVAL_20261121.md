@@ -112,3 +112,40 @@ Owner-read DIAGNOSTICS receipt #466 reports the phone's AI runtime and dashboard
 ### Next QA action
 
 Coordinate with Boss/Core to recompose #2271 → #2273 → #2286 on current Boss head `1105ab56dae6604d927fc4ea868121000010fb93`, preserve the exact caller/consent and receipt-lifecycle tests, and repair the inherited old-worker migration path before merge. Only after exact current-head CI and a fresh authorized owner-read may Boss consider the normal update request. **User action: none.**
+
+
+## AudioRecord acceptance matrix — 2026-11-22
+
+**QA scope only:** no microphone provider is present in this companion stack. No RECORD_AUDIO permission is declared or requested, no permission was granted, and no AudioRecord object or capture service was started. The registry now advertises audio_capture explicitly as OFF_NOT_IMPLEMENTED, provider NONE, OS permission required, no result/learning authority. The provider allowlist still accepts only launch_app.
+
+| Required acceptance | Current evidence | Status |
+|---|---|---|
+| OS permission denied/revoked | Robolectric manifest guard proves RECORD_AUDIO and FOREGROUND_SERVICE_MICROPHONE are not requested; no capture provider exists | **DEFAULT_OFF_PASS / runtime denial path BLOCKED** |
+| Visible Activity stop/background | No capture Activity or AudioRecord lifecycle exists; future provider must stop/release on onStop and never continue in background | **BLOCKED_NO_PROVIDER** |
+| Cancel/timeout | Boss Runtime two-phase audio-lease tests cancel C3 and revoke before completion with fake provider/runners | **SYNTHETIC_RUNTIME_PASS; Android capture BLOCKED** |
+| Short/failed AudioRecord read | No AudioRecord read loop exists; future provider must reject empty/odd/truncated frames and release the recorder | **BLOCKED_NO_PROVIDER** |
+| Duplicate/expired request | Companion launch approval DB has atomic one-shot decision and expiry tests; this is not an audio lease | **PARTIAL / AUDIO BLOCKED** |
+| One-shot consume | No audio capture nonce/lease is issued or consumed by Android companion | **BLOCKED_NO_PROVIDER** |
+| Stop switch/process death | Companion stop switch protects the existing launch capability; no capture process/service exists to restart | **PARTIAL / AUDIO BLOCKED** |
+| PCM zeroization/no persistent raw bytes | Companion DB schema test forbids PCM/audio blob columns; Python audio Runtime stores derived acoustic context, not raw PCM. Python ingress currently accepts immutable bytes, so explicit in-process zeroization is **not proven** | **NO-PERSISTENCE GUARD PASS / ZEROIZATION OPEN** |
+| Signature/digest/source/finality | Launch receipts use ECDSA; Python audio ingress validates PCM16 bounds, source/consent and PROVISIONAL/FINAL. No Android audio-capture receipt or signed capture digest exists | **PARTIAL / AUDIO RECEIPT BLOCKED** |
+| Store revocation before C3 | Exact Boss head 1105ab56dae6604d927fc4ea868121000010fb93, audio+arithmetic workflow 44988042151: Python 3.13 and 3.14 each PASS, 52 tests + 26 subtests; fake PCM/provider/runners only | **SYNTHETIC_PASS** |
+| Real Redmi AudioRecord | No provider/APK install/permission receipt/physical capture evidence | **REDMI_UNVERIFIED** |
+
+### Required provider contract before any microphone implementation
+
+1. Capture is OFF by default. A visible, foreground Activity must show an explicit one-shot action; no background service or implicit model-triggered capture.
+2. Check the OS RECORD_AUDIO grant and a separate live, source-bound user-consent lease before constructing AudioRecord. Denial, revocation, disabled stop switch, expired lease or non-visible Activity must not construct/start the recorder.
+3. Consume a unique lease/nonce atomically before capture. Duplicate, replayed, expired or already-consumed requests must fail closed.
+4. Bound each mono PCM16 window to the existing Runtime contract (8–48 kHz, at most one second per window); reject empty, odd-byte, short or failed reads rather than fabricating finality.
+5. On cancel, timeout, onStop, permission revocation, exception or process death: stop/release the recorder, wipe the mutable capture buffer in finally, and never auto-resume after restart.
+6. Pass only source ID, consent receipt, sample rate, start time, PCM16 and PROVISIONAL/FINAL through the in-memory bridge. No raw PCM file, SQLite blob, log, backup or crash-report payload. The Runtime must not claim Python immutable-byte zeroization until a mutable-buffer lifecycle is implemented and measured.
+7. Bind a signed receipt to lease nonce, source ID, PCM digest, sample rate, frame count, timestamps and finality. Revalidate the live source/consent lease before Store admission and again before C3 dispatch; revocation must cancel C3 and tombstone derived context.
+8. Keep action authority and learning authority false. Microphone permission is not permission for ASR, transcription, persistent recording, model training or external action.
+
+### Current test additions
+
+- CapabilityRegistryTest: explicit audio_capture OFF state and provider allowlist rejection.
+- AudioCaptureDefaultOffTest: manifest does not request microphone or microphone foreground-service permission.
+- CompanionDbApprovalTest: no raw PCM/audio blob table or column in companion SQLite schema.
+- These are Android/Robolectric default-off guards, **not** microphone-capture tests. The full runtime matrix remains blocked until Core supplies a real one-shot AudioRecord adapter and the user separately authorizes an actual permission/device test.

@@ -1,9 +1,0 @@
-{
-  "tests_run": 18,
-  "failures": 0,
-  "errors": 0,
-  "skips": 0,
-  "runtime_source_hash_unchanged": true,
-  "native_or_phone_claim": false,
-  "positive_k_arithmetic_fixtures_equal": 180
-}

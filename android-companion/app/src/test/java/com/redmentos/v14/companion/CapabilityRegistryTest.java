@@ -18,7 +18,7 @@ public final class CapabilityRegistryTest {
 
     @Test public void onlyTheImplementedLaunchCapabilityCanBecomeReady() {
         List<CapabilityRegistry.Capability> items = CapabilityRegistry.entries(true, true);
-        assertEquals(7, items.size());
+        assertEquals(8, items.size());
         int ready = 0;
         for (CapabilityRegistry.Capability item : items) {
             if ("READY_WITH_PER_ACTION_CONSENT".equals(item.status)) ready++;
@@ -26,7 +26,11 @@ public final class CapabilityRegistryTest {
                 assertEquals(item.id, "OFF_NOT_IMPLEMENTED", item.status);
                 assertEquals(item.id, "NONE", item.provider);
                 assertFalse(item.perActionConsent);
-                assertFalse(item.androidOsPermissionRequired);
+                if ("audio_capture".equals(item.id)) {
+                    assertTrue(item.androidOsPermissionRequired);
+                } else {
+                    assertFalse(item.androidOsPermissionRequired);
+                }
                 assertFalse(item.resultObserved);
                 assertFalse(item.learningAuthority);
             }
@@ -48,6 +52,22 @@ public final class CapabilityRegistryTest {
         for (CapabilityRegistry.Capability item : CapabilityRegistry.entries(true, false)) {
             assertTrue(item.id, item.status.startsWith("OFF_"));
         }
+    }
+
+    @Test public void audioCaptureIsExplicitlyOffAndNotAcceptedByTheProvider() {
+        CapabilityRegistry.Capability audio = null;
+        for (CapabilityRegistry.Capability item : CapabilityRegistry.entries(true, true)) {
+            if ("audio_capture".equals(item.id)) audio = item;
+        }
+        assertNotNull(audio);
+        assertEquals("OFF_NOT_IMPLEMENTED", audio.status);
+        assertEquals("NONE", audio.provider);
+        assertFalse(audio.perActionConsent);
+        assertTrue(audio.androidOsPermissionRequired);
+        assertFalse(audio.resultObserved);
+        assertFalse(audio.learningAuthority);
+        assertFalse(CompanionProvider.isImplementedCapability("audio_capture"));
+        assertTrue(CompanionProvider.isImplementedCapability("launch_app"));
     }
 
     @Test public void providerBindsExactCallingPackageToThePairedUidAndCertificate() {

@@ -58,6 +58,10 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
+    static boolean isImplementedCapability(String capability) {
+        return "launch_app".equals(capability);
+    }
+
     static boolean isValidLaunchScope(boolean companionConsentRequired,
                                       boolean osPermissionRequired,
                                       boolean permissionBypass,
@@ -73,7 +77,7 @@ public final class CompanionProvider extends ContentProvider {
         if (!prefs.getBoolean("enabled", false)) return error("COMPANION_STOPPED");
         JSONObject request = new JSONObject(json);
         if (!"v14.android-action-request/1".equals(request.optString("schema"))
-                || !"launch_app".equals(request.optString("capability"))
+                || !isImplementedCapability(request.optString("capability"))
                 || !isValidLaunchScope(
                         request.optBoolean("companion_local_consent_required", false),
                         request.optBoolean("android_os_permission_required", true),

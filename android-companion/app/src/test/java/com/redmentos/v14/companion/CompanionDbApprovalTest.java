@@ -11,6 +11,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -136,6 +137,19 @@ public final class CompanionDbApprovalTest {
         assertFalse(second.claimForDenial(ACTION_ID, NOW));
         assertEquals("CANCELLED", first.get(ACTION_ID).status);
     }
+    @Test public void companionDatabaseHasNoRawPcmOrAudioBlobStorage() {
+        try (Cursor c = first.getReadableDatabase().rawQuery(
+                "SELECT name,sql FROM sqlite_master WHERE type='table'", null)) {
+            while (c.moveToNext()) {
+                String name = c.getString(0).toLowerCase(Locale.ROOT);
+                String sql = c.isNull(1) ? "" : c.getString(1).toLowerCase(Locale.ROOT);
+                assertFalse(name.contains("pcm") || name.contains("audio"));
+                assertFalse(sql.contains("pcm16") || sql.contains("raw_audio")
+                        || sql.contains("audio_blob") || sql.contains("audio_bytes"));
+            }
+        }
+    }
+
     @Test public void sharedUidCallerIsRejected() {
         assertTrue(CompanionProvider.isOnlyPairedPackage(
                 new String[]{"com.termux"}, "com.termux"));
