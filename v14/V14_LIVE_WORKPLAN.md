@@ -1247,3 +1247,11 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 - PR #2368 adds a reproducible synthetic cosine-prototype ablation. LOCAL_LINUX CPython 3.13.5: py_compile PASS; `python -m pytest -q` 4/4 PASS; three source-disjoint seeds (12 sessions each) show a clear trade-off: full-history triage F1 0.5455, overlap defer 1.0, coverage 0.4858; sliding-window single-threshold F1 0.9616 but one-shot recall 0.4397 and 8.94 clusters for four synthetic speakers. This is not real audio, PLDA/VBx, FASTDIAR inference, a Runtime consumer or speaker recognition.
 - Exact PR CI initially failed because the new workflow did not install pytest; compile succeeded and the pytest command failed with `No module named pytest`. The workflow now pins `pytest==9.2.0`; retry run 45056272786 is in progress. Do not report CI pass until it completes.
 - **Next:** Core owns the normal Runtime hook and QA owns integrated source-forget/restart acceptance for #2366. Rebase/reconcile #2361 against aed1d2. For A4 speaker decisions, require separately consented, source-disjoint labelled embeddings and a model-bound calibration receipt; until then keep DEFER. No user/device action.
+
+
+### A4 novelty-gate CI closure — 2026-11-22T18:43:30Z
+
+- PR [#2368](https://github.com/RedMentos/Aii/pull/2368) latest documentation head `ca6b385d1e9ac0461fe922dfcdca3fe796d984a6`; exact experiment/workflow code head `41025f3d9bf92870f9675173d4af00638a49c203`.
+- Initial run 45056173516 failed only because pytest was absent on the hosted runner; the compile step passed. Added pinned `pytest==9.2.0` in the workflow.
+- Exact retry run [45056272786](https://github.com/RedMentos/Aii/actions/runs/45056272786): Python 3.13 and 3.14 **2/2 PASS**. Both jobs completed compile, pinned test-runner install, deterministic source-disjoint regression tests, fixed-seed holdout ablation and report-boundary validation. Privacy scan 45056272821 PASS.
+- PR remains DRAFT / NOT_RELEASED and research-only. The workflow verifies the synthetic experiment only; it does not connect to normal Runtime, run FASTDIAR, validate real speech, or prove Android/Redmi behavior.
