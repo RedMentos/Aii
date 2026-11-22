@@ -104,8 +104,9 @@ jobs:
         run: |
           python -m pytest -q \
             v13/code/tests/test_termux_runtime_recovery_stage.py \
-            v13/code/tests/test_observer_fair_budget_stage_20261116.py
-            v13/code/tests/test_v14_store_source_blob_serialization.py
+            v13/code/tests/test_observer_fair_budget_stage_20261116.py \
+            v13/code/tests/test_v14_store_source_blob_serialization.py \
+            v13/code/tests/test_v14_same_turn_c4_c3_consumption.py
       - name: Exercise source-pinned composed Runtime and negative control
         env:
           PYTHONPATH: v13/code
