@@ -11,6 +11,8 @@ BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
 BASE_BUILDER_BLOB_SHA1 = "7439b862b1d7ca0166467367a0b7d305dc35e09a"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
 AUDIO_BUILDER_BLOB_SHA1 = "b63df557e2729bc67c8f6ecc99497c0e9394b27f"
+C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
+C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -53,4 +55,12 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
         raise ValueError("Runtime-wide A5 consent lease was not composed")
     if "v13/audio_context_store.py" not in composed:
         raise ValueError("consent-bound audio context store was not produced")
+
+    receipt = base.load(code_dir, C4_RECEIPT_BUILDER, C4_RECEIPT_SHA256)
+    composed = receipt.apply_sources(code_dir, composed)
+    cognition = composed.get("v13/cognition.py", b"")
+    if b"c4_offer_context_ready" not in cognition:
+        raise ValueError("source-bound C4 context-ready receipt was not composed")
+    if b"minimum_role_slice_s" not in cognition or b"def _audio_context_query" not in cognition:
+        raise ValueError("C4 receipt composition dropped upstream fair-budget or audio Cognition")
     return composed
