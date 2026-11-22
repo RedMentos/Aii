@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T16:56:12.831Z",
-  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; 21/21 listed GitHub Actions workflow runs SUCCESS. Private V13OBS #115 updated 2026-11-22T16:39:55Z confirms installed c4eb82, auto-update ON, runtime/dashboard UP_TO_DATE; no new audio or learning acceptance.",
+  "updated_at": "2026-11-22T17:13:57.861Z",
+  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; private V13OBS #115 updated 2026-11-22T16:54:57Z confirms installed c4eb82, auto-update ON, runtime/dashboard UP_TO_DATE; latest native turn still shows C3 TTFT 41.63 s and B1/B2 TIME_BUDGET. Perception PR #2361 remains unmerged and CI pending.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -197,9 +197,9 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "CI synthetic consumer; Android provider NOT_IMPLEMENTED/NOT_VERIFIED",
-      "next_step": "Keep #2312 signed AudioRecord/companion-provider path separate and default OFF. Review #2361 exact CI; do not download FASTDIAR weights until checkpoint licensing is explicit and user separately approves. Redmi microphone and ARM timing remain UNVERIFIED.",
+      "next_step": "Review exact-head CI for #2361 after checkpoint-hash hardening; keep the signed AudioRecord/companion provider #2312 separate and default OFF. No FASTDIAR weight download until checkpoint-weight licensing is explicit and user separately approves. Redmi microphone and ARM timing remain UNVERIFIED.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T16:52:10.339Z",
+      "last_checkpoint": "2026-11-22T17:13:57.861Z",
       "latest_candidate_pr": {
         "pr": 2312,
         "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
@@ -208,7 +208,7 @@
         "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
         "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
       },
-      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. PR #2361 adds an in-memory FASTDIAR frame-output adapter to the existing A5→A4→C3 consumer; synthetic embeddings only, no weights or device capture. LOCAL_LINUX isolated adapter tests 4/4 PASS; full consumer CI pending.",
+      "proof": "RAW EAR high-frequency alias rejection now reaches the synthetic A5→A4→C3 consumer; provisional audio is persisted but excluded from C3 until FINAL. No live microphone, ASR, trainable decoder/vocoder or nonverbal learning. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. PR #2361 adds an in-memory FASTDIAR frame-output adapter to the existing A5→A4→C3 consumer; synthetic embeddings only, no weights or device capture. LOCAL_LINUX isolated adapter tests 4/4 PASS; full consumer CI pending. PR #2361 now computes the local checkpoint SHA256 under a trusted root with no-follow path traversal; LOCAL_LINUX isolated helper reproduction 7/7 PASS, full A5/A4/C3 consumer CI pending. Private V13OBS #115 at 16:54:57Z confirms c4eb82 installed and auto-update/runtime/dashboard up-to-date, but last native turn still took 57.74 s (C3 TTFT 41.63 s, prefill 38.95 s, 751 prompt tokens, 2 generated tokens); B1/B2 TIME_BUDGET and semantic-use/prompt-inclusion remain unproven.",
       "latest_adapter_pr": {
         "pr": 2361,
         "code_sha": "21962aba86dbf9a502ed4a6b567d761293ca2c17",
@@ -396,22 +396,22 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX isolated adapter unit tests + exact PR CI pending; no Android timing",
-      "next_step": "Review exact-head CI for #2361; resolve the separate FASTDIAR checkpoint-weight license before any download; compare only after separate user approval and source-disjoint consented data. Keep calibration unset and A4 DEFER. Repair #2349's Core-owned audio composer pin chain before calibrated integration.",
+      "proof_environment": "LOCAL_LINUX isolated CPython 3.13.5 helper reproduction 7/7 PASS; exact PR Python 3.13/3.14 CI pending; no Android/ARM timing",
+      "next_step": "Review exact-head CI for #2361; verify the adapter's computed checkpoint SHA and committed A5→A4→C3 consumer regression. Resolve separate FASTDIAR checkpoint-weight licensing before any download; compare only after separate user approval and source-disjoint consented data. Keep calibration unset and A4 DEFER. Repair #2349's Core-owned composer source-pin chain before calibrated integration.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T16:52:10.339Z",
+      "last_checkpoint": "2026-11-22T17:13:57.861Z",
       "latest_candidate_pr": {
         "pr": 2361,
         "base_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
-        "code_sha": "21962aba86dbf9a502ed4a6b567d761293ca2c17",
-        "test_sha": "3d698fed4259df7795b64041787baa30c2bfbfa4",
+        "code_sha": "9428380b4d47e7297e42774c0eefdedb34effe33",
+        "test_sha": "114c971ee37a9ff81f86db9cb87fad389c83c10b",
         "ci": "PENDING_EXACT_PR_HEAD",
-        "scope": "FASTDIAR v0.1.0 float16 (n,192) frame adapter into existing RAW EAR A5/A4/C3 consumer; synthetic vectors only; no model weights or calibration",
+        "scope": "FASTDIAR frame-output adapter into existing RAW EAR A5/A4/C3 consumer; computes SHA256 from actual local checkpoint bytes under trusted root; caller-supplied embeddings; diagnostic-only, no weights/calibration",
         "head_sha_at_pr_creation": "169f69e8c85d2de04c367d36dff8eb5faeaf9bd7",
         "last_docs_only_commit_sha": "7f4247d3b16dec5d6502f31cf6b04fa29e52930e",
-        "note": "Live PR head may advance for documentation-only handoff commits; tested code/test SHAs are stable."
+        "note": "Local isolated checkpoint-hash helper reproduction 7/7 PASS. Full Aii consumer suite and exact PR CI pending. Embedding producer is not cryptographically attested; no checkpoint weight license or Redmi proof."
       },
-      "proof": "RAW EAR FIR anti-alias decimator is integrated in 9097d634 and candidate CI passed. Speaker-change decision remains DEFER without verified calibration; no identity model, Android mic or learned acoustic weights. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. PR #2361 adds a pinned FASTDIAR frame-output adapter to the existing A5→A4→C3 consumer; LOCAL_LINUX CPython 3.13.5 isolated adapter suite 4/4 PASS, real NumPy float16 input included. Full consumer regression is pending exact PR CI. No checkpoint weight license, model inference, calibration, Android microphone or Redmi proof.",
+      "proof": "RAW EAR FIR anti-alias decimator is integrated in 9097d634 and candidate CI passed. Speaker-change decision remains DEFER without verified calibration; no identity model, Android mic or learned acoustic weights. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture. PR #2361 adds a pinned FASTDIAR frame-output adapter to the existing A5→A4→C3 consumer; LOCAL_LINUX CPython 3.13.5 isolated adapter suite 4/4 PASS, real NumPy float16 input included. Full consumer regression is pending exact PR CI. No checkpoint weight license, model inference, calibration, Android microphone or Redmi proof. Provenance hardening: model_sha256 is now computed from the actual checkpoint file using dir_fd/O_NOFOLLOW and rejects outside-root, symlinked, empty, non-regular and oversized files. LOCAL_LINUX isolated helper reproduction 7/7 PASS; this verifies file bytes only, not that caller-supplied embeddings came from the checkpoint. No model inference or weights.",
       "previous_candidate_pr": {
         "pr": 2275,
         "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
