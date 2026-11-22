@@ -75,4 +75,9 @@ Current candidate: PR #2293 (DRAFT, NOT_RELEASED)
 - Perception posted the exact fail-closed repair proposal in Boss PR #2288 comment 7072323336: capture original local-error semantic pin before overlays, verify it is unchanged, then rebind to the post-overlay semantic module SHA. Core files untouched.
 - LOCAL_LINUX isolated audio_input.py py_compile PASS and pytest 7/7 PASS; exact blobs module 1e9daddcb5dfd8bfb7911090218b4eaf1f103d41 and test b6b1202904efbc417971db6c0d9e3ba0664eef84. Full repo checkout blocked by DNS; no full local Runtime test.
 - No audio-only Runtime E2E on current base, no microphone/AudioRecord, no Android TTS, no barge-in, no native speaker model, no Redmi. No release, updater request or device mutation.
-- Next: Core resolves the pin mismatch; Perception rebases #2293 and adds staged Runtime audio-only E2E, then coordinates Android caller wiring with Core/QA.
+- Next: Core resolves the guard-generation pin mismatch; Perception rebases #2293 and adds staged Runtime audio-only E2E, then coordinates Android caller wiring with Core/QA.
+
+
+## Core pin-generation correction — 2026-11-22
+
+Boss comment #7072186155 clarified that Record-Only control_guard.apply_sources() rewrites both world_semantic_evidence_candidate.py and the local-error consumer pin. The correct expected value for the later Store rebind is therefore the GUARD-OUTPUT local-error pin, not the original base pin. Sequence: capture guard_semantic_sha and guard_local_error_pin immediately after the guard; assert equality; after Store rebind, rebind from guard_local_error_pin to final_semantic_sha; keep the final exact-pin check. Perception corrected its follow-up comment #7072323336 accordingly. No Core-owned file was changed.
