@@ -1,6 +1,6 @@
 # QA handoff — Android companion single-use approval
 
-**Updated:** 2026-11-21  
+**Updated:** 2026-11-22 (current checkpoint below)  
 **Owner:** QA & Android  
 **Core candidate:** [PR #2271](https://github.com/RedMentos/Aii/pull/2271)  
 **QA follow-up:** [PR #2273](https://github.com/RedMentos/Aii/pull/2273)  
@@ -73,3 +73,42 @@ Before this correction, `accept_companion_receipt()` finalized the broker as `RE
 4. The provider still checks the paired package within `getPackagesForUid()`; where Android exposes it, bind the exact calling package as well as UID and certificate to avoid authorizing a different shared-UID package.
 
 The companion remains limited to one consent-gated `launch_app` capability. Screen observation, Accessibility, MediaProjection, tap/swipe/type/back, shell/network access and model authority remain OFF/not implemented.
+
+
+## Current QA checkpoint — 2026-11-22 06:20 CET
+
+**Exact branch head:** `c9d78d6537c635f0875539c81abf7535a2e06d94`  
+**PR:** #2286 — DRAFT / NOT_RELEASED / REDMI_UNVERIFIED.  
+**Base:** #2273 at `aa9f5091469ea751ce351cd0e1714c79e483c05f`; the companion stack is not yet rebased onto current Boss head `1105ab56dae6604d927fc4ea868121000010fb93`.
+
+### Resolved in current QA head
+
+1. **Ambiguous submit/cancel:** timeout after possible remote commit no longer finalizes the local action. A failed or unconfirmed remote cancellation leaves `SUBMIT_UNCERTAIN`, which remains pollable; local stop preserves it. Tests cover late signed receipt, cancel timeout and stop.
+2. **Expired pending rows:** `CompanionDb.pending(nowMillis)` expires stale rows before returning only live approvals. Robolectric test covers stale/live rows.
+3. **PendingIntent identity:** `approvalIntent()` already places the full 32-hex action ID in its data URI. The Robolectric hash-collision test confirms distinct Intent identities even when Java `hashCode()` collides. The notification integer ID still uses the 32-bit hash, so a collision could replace a notification, but cannot retarget the PendingIntent; pending rows remain visible through the companion list.
+4. **Exact caller package:** current code now uses Android `ContentProvider.getCallingPackage()`, compares it with the paired package and UID package set, then verifies the paired signing-certificate digest. The helper regression rejects null, mismatched, shared-UID and unrelated-package cases. Android documents that `getCallingPackage()` returns a package verified to belong to the calling UID (API 19+): https://developer.android.com/reference/android/content/ContentProvider#getCallingPackage().
+
+### Exact-head CI evidence
+
+- **V14 Android companion** — run `44989226973`: PASS; Gradle build and Robolectric tests completed (`BUILD SUCCESSFUL`).
+- **V13 Android control broker isolated tests** — run `44989226981`: PASS.
+- **V13 Android outcome contract** — run `44989227020`: PASS.
+- **V13 Android local sandbox replay integration** — run `44989227003`: PASS.
+- **V14 Core companion outcome adapter** — run `44989226974`: PASS.
+- **V13 staged context/integrated regression** — run `44989227088`: staged-runtime job FAIL, integrated-regression still running at this checkpoint. The staged-runtime log reports **2 failed, 238 passed, 10 skipped, 47 subtests passed**; both failures are old-phone two-checkout migration assertions (`last_result=PARTIAL`, runtime `ERROR`, dashboard `UPDATED`, `last_error=UPDATE`). The same migration failure already existed on parent #2273 head `aa9f509` (run `44959905505`), so it is inherited, not introduced by the exact-caller change. Do not mark this stack release-ready. The likely old-worker/new-builder compatibility mismatch needs a current-base investigation; the current log does not expose the tracked `deploy_errors` payload, so the precise exception remains unconfirmed.
+- LOCAL_LINUX repository tests: BLOCKED — no Aii checkout is mounted in this run. Android Gradle ran on GitHub Actions, not on a local device.
+
+### Latest private Redmi evidence (sanitized technical aggregates only)
+
+Owner-read DIAGNOSTICS receipt #466 reports the phone's AI runtime and dashboard running, auto-update enabled, and both source checkouts reporting UP_TO_DATE at installed commit `89333289b8cd50da92cbf7074c9ef689a2972dbf` (last successful update timestamp is 2026-11-18, not this QA head). The latest measured turn was 84.37 s total / 77.51 s TTFT, with 657 prompt tokens and 11 generated tokens; B1 and B2 probes ended in TIME_BUDGET, and only B2 had a mapped native process (699.6 MiB PSS). Native probe is SMOKE_PARTIAL. Official Age remains 0; lab selector is X10/active, but physical feature execution is not verified. These figures are private diagnostic aggregates; no transcript, prompt, device path, key, model bytes or database contents are copied here.
+
+### Remaining acceptance boundary
+
+- The companion code is **not installed** on Redmi; no APK install, provider IPC, Keystore operation or real app launch was tested on the phone.
+- `launch_app` is the only implemented native capability. UI observation, Accessibility, MediaProjection, tap/swipe/type/back and background app operation remain OFF/not implemented.
+- The current Boss branch has separate green synthetic Age-rights, migration and staged/integrated checks, but that does not certify this older companion stack or the Redmi.
+- No UPDATE_REQUEST, remote shell, log-page request, permission change, model change, weight change or device mutation was made.
+
+### Next QA action
+
+Coordinate with Boss/Core to recompose #2271 → #2273 → #2286 on current Boss head `1105ab56dae6604d927fc4ea868121000010fb93`, preserve the exact caller/consent and receipt-lifecycle tests, and repair the inherited old-worker migration path before merge. Only after exact current-head CI and a fresh authorized owner-read may Boss consider the normal update request. **User action: none.**
