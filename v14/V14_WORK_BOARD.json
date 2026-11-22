@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T20:18:30Z",
+  "updated_at": "2026-11-22T20:23:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 remains at aed1d2b826290c95c70356b5d8b864b5ef382be4; private PIPELINE_STATUS #602 reports that SHA installed/up-to-date, while the effective last code-bearing runtime payload remains c4eb82deec915f65894c20d6ebbaf0ebf58fa335. Functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -15,9 +15,9 @@
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
       "proof_environment": "CI + authenticated ANDROID_DEVICE metadata; no correct-answer/native-organ acceptance",
-      "next_step": "Boss: correct the post-ContextRecall local-error semantic reference anchor in #2370 without weakening the full-file pin; recompute recovery12→recovery21→stage→deployer and rerun the exact matrix. Core: integrate #2367 only after same-turn, source-read, receiver and native approval gates remain green. QA will independently verify exact-head CI and Redmi proof boundaries.",
+      "next_step": "Boss/Perception: exact #2370 head 4d771 now passes RECORD_ONLY guard, but the integrated audio overlay still expects runtime Git blob 30360f40 and sees 6e61af07. Rebind the exact runtime input and rebuild audio→recovery→stage→deployer; migration PARTIAL and staged/Lab-Age/JEPA/audio failures are downstream of this shared pin. QA will verify exact-head reruns.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T19:39:35Z",
+      "last_checkpoint": "2026-11-22T20:23:00Z",
       "proof": "Boss fair-budget PR #2370 exact head 809814ffc8468447be80fdffbeb5a5384a2efe0b: controller guard run 45063441263 fails at local-error semantic dependency anchor; Lab-Age run 45063441546 fails integrated builder hash; migration run 45063441327 returns PARTIAL. QA posted exact diagnosis in #2370 comment 7084824119 and #1984 comment 7084825931. Core PR #2367 head 06113c60 has 18 relevant workflows SUCCESS, but remains DRAFT and has no Redmi/native latent proof.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
@@ -220,9 +220,9 @@
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
       "proof_environment": "GitHub merge + CI; no full local checkout",
-      "next_step": "Boss owns the shared fair-budget and controller source chain. Fix the semantic reference anchor after ContextRecall rebinding, then bottom-up rebind recovery12/recovery21/stage/deployer and rerun staged/integrated, Lab-Age, migration and owner-read. QA will not edit Boss-owned files in parallel.",
+      "next_step": "Boss owns the shared composer chain. The updated RECORD_ONLY guard passes, but #2370 exact head 4d771 exposes an integrated-audio runtime Git-blob pin mismatch (expected 30360f40…, actual 6e61af07…). Coordinate with the audio-overlay owner, rebind the full dependent chain, and rerun staged/integrated, Lab-Age, migration, owner-read, JEPA and deploy.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T19:39:35Z",
+      "last_checkpoint": "2026-11-22T20:23:00Z",
       "proof": "Boss PR #2370 exact head 809814ffc8468447be80fdffbeb5a5384a2efe0b has three confirmed failures: RECORD_ONLY local-error semantic anchor (run 45063441263), Lab-Age integrated builder hash (45063441546), and two-checkout migration PARTIAL (45063441327). Exact diagnosis posted in #2370 and #1984; no merge/release."
     },
     {
@@ -1008,7 +1008,7 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T20:18:30Z",
+    "timestamp": "2026-11-22T20:23:00Z",
     "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "last_code_bearing_release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "device_receipt": "PRIVATE_PIPELINE_STATUS_602_AUTHENTICATED_INSTALLED_AED1D2; EFFECTIVE_RUNTIME_CODE_PAYLOAD_C4EB82; AUTO_UPDATE_ENABLED; UP_TO_DATE; LAST_ERROR_NONE",
@@ -1016,7 +1016,7 @@
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_GRADLE_OR_ANDROID_SDK; LOCAL_COPIED_UI_HELPER_TESTS_6_OF_6_PASS; NO_LOCAL_ANDROID_EMULATOR",
     "pr2356_ci": "HEAD_3829465; PREVIOUS_985C55_EMULATOR_REACHED_MAINACTIVITY_THEN_SYSTEM_UI_ANR_BEFORE_ASSERTIONS; NEW_POLL_BACKOFF_2.5_TO_5S_4CORE_4GB_ACCEL_AUTO_TCG_FALLBACK; EXACT_HEAD_RUNS_45065638333_45065638347_45065638341_45065638335_QUEUED; NOT_RELEASED",
     "pr2359_ci": "HEAD_661696C; 8_OF_8_STATIC_PINS; STAGED_AND_LAB_AGE_FAIL_RECORD_ONLY_SEMANTIC_PIN_609C_EXPECTED_461650_ACTUAL; MIGRATION_PARTIAL; A5_OWNER_READ_PASS; JEPA_DEPLOY_QUEUED; NOT_RELEASED",
-    "pr2370_ci": "HEAD_4D771ED; UPDATED_GUARD_PINS_READ_BACK; EXACT_MATRIX_QUEUED; NO PASS CLAIM",
+    "pr2370_ci": "HEAD_4D771ED; RECORD_ONLY_GUARD_PASS_45064399584; AUDIO_OVERLAY_RUNTIME_GIT_BLOB_PIN_EXPECTED_30360F40_ACTUAL_6E61AF07; FAILS_LAB_AGE_OWNER_READ_PY314_JEPA_STAGED_INTEGRATED_AUDIO_ARITHMETIC; MIGRATION_PARTIAL_DOWNSTREAM; QA_COMMENT_7085162144",
     "pr2367_ci": "HEAD_06113C60; RUN16_REPORTS_RELEVANT_CI_GREEN_INCLUDING_ARM64_CROSS_COMPILE_AND_LOCAL_APPROVAL_STAGE; DRAFT_NOT_RELEASED; NO_REDM I_NATIVE_PROOF",
     "active_blockers": [
       "P0_NATIVE_B1_B2_SOURCE_BOUND_OFFERS_AND_C4_C3_CORRECTNESS",
@@ -1029,12 +1029,13 @@
       "P0_CANON_CLAUSE_TO_CONSUMER_TEST_PLATFORM_ROLLBACK_TRACEABILITY",
       "P0_BOSS_PR2370_RECORD_ONLY_SEMANTIC_COMPOSITION_AND_STAGE_MATRIX",
       "P1_QA_PR2359_SOURCE_LIFECYCLE_AND_POSITIVE_ROLLBACK",
-      "P1_SLEEP_RUNTIME_POSTCOMMIT_ROOT_CAUSE"
+      "P1_SLEEP_RUNTIME_POSTCOMMIT_ROOT_CAUSE",
+      "P0_SHARED_AUDIO_COMPOSER_RUNTIME_GIT_BLOB_PIN_AND_DEPENDENT_CHAIN"
     ],
     "user_action_required": "NONE; no manual Termux command, duplicate update request, model/weight swap or permission change"
   },
   "qa_latest_checkpoint": {
-    "timestamp": "2026-11-22T20:18:30Z",
+    "timestamp": "2026-11-22T20:23:00Z",
     "owner": "QA & Android",
     "base_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "branch": "qa/v14-companion-final-qa-20261122",
@@ -1047,11 +1048,11 @@
       "diagnostics": "PRIVATE_DIAGNOSTICS_603_STORED_TURN_57.739S_TOTAL_41.627S_TTFT_38.945S_PREFILL_751_PROMPT_2_GENERATED; B1_B2_TIME_BUDGET_53.2S_54.2S; CORRECTNESS_UNKNOWN",
       "companion_pr2356": "HEAD_3829465; PREDECESSOR_985C55_EMULATOR_REACHED_TOP_RESUMED_MAINACTIVITY_THEN_SYSTEM_UI_ANR_BEFORE_APP_ASSERTIONS; HARNESS_NOW_BACKS_OFF_UIAUTOMATOR_2.5_TO_5S; 4_CORES_4GB; ACCEL_AUTO_WITH_TCG_FALLBACK_AND_ACCEL_CHECK_DIAGNOSTIC; COPIED_HELPER_TESTS_6_OF_6_PASS; EXACT_HEAD_RUNS_45065638333_45065638347_45065638341_45065638335_QUEUED; NO_EMULATOR_PASS",
       "source_lifecycle_pr2359": "HEAD_661696C; STATIC_SOURCE_PIN_READBACK_8_OF_8; EXACT_CI_LAB_AGE_FAILS_ON_RECORD_ONLY_SEMANTIC_PIN_609C_EXPECTED_VS_461650_ACTUAL; PY314_STAGED_AND_STAGED_INTEGRATED_FAIL_AT_SAME_GUARD; MIGRATION_PARTIAL; A5_AND_OWNER_READ_PASS; JEPA_AND_RUNTIME_DEPLOY_QUEUED; DRAFT_NOT_RELEASED",
-      "boss_pr2370": "HEAD_4D771ED; UPDATED_RECORD_ONLY_SEMANTIC_PINS_READ_BACK; EXACT_HEAD_MATRIX_QUEUED_AT_LAST_READ; NO_PASS_CLAIM",
+      "boss_pr2370": "HEAD_4D771ED; RECORD_ONLY_CONTROLLER_GUARD_WORKFLOW_PASS_45064399584; NEW_SHARED_AUDIO_COMPOSER_PIN_BLOCKER: EXPECTED_RUNTIME_GIT_BLOB_30360F40EB784BE5EA975EE85E94A57F0B154164_ACTUAL_6E61AF07326C5BB11406EE72361A710D5FACC9A5; FAILS_LAB_AGE_OWNER_READ_PY314_JEPA_RESUME_STAGED_INTEGRATED_AUDIO_ARITHMETIC; MIGRATION_PARTIAL_DOWNSTREAM; QA_COMMENT_7085162144; NO_GUARD_EDIT_BY_QA",
       "core_pr2367": "HEAD_06113C60; RUN16_HANDOFF_REPORTS_NATIVE_RECEIVER_PY313_PY314_LINUX_API_AND_ANDROID_ARM64_CROSS_COMPILE_PASS; SAME_TURN_B1_B2_C4_C3_AND_LOCAL_APPROVAL_STAGE_CI_GREEN; DRAFT_NOT_RELEASED; NO_REDM I_NATIVE_OR_PRODUCTION_B3_PROOF",
       "local": "NO_FULL_AII_CHECKOUT_GRADLE_OR_ANDROID_SDK; FULL_LOCAL_SUITE_BLOCKED; LOCAL_COPIED_UI_HELPER_TESTS_6_OF_6_PASS; NO_LOCAL_ANDROID_EMULATOR"
     },
-    "next_action": "Poll exact-head #2356 runs 45065638333/38347/38341/38335. Current emulator configuration prefers KVM/host acceleration when available, with TCG fallback; if System UI still ANRs, retain fail-closed behavior and diagnose the trace. Keep #2359 blocked until Boss #2370 and JEPA #2372 source compositions are integrated/rebased. No user action."
+    "next_action": "Boss/Perception: rebind the integrated audio overlay to the exact current runtime Git blob, then rebuild its dependent recovery/stage/deployer chain. QA: poll #2356 exact head 3829465; continue #2359 only after #2370 and #2372 are integrated. No user action."
   },
   "previous_boss_checkpoint": {
     "timestamp": "2026-11-22T10:00:40.871Z",
