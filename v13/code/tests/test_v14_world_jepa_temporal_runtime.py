@@ -364,6 +364,88 @@ def test_temporal_adam_scale_changes_numeric_delta_without_corrupting_moments():
         quarter.step(grads, scale=1.01)
 
 
+def test_temporal_active_neuromodulation_scales_real_optimizer_updates(tmp_path, monkeypatch):
+    home = tmp_path / "temporal-neuromod-active"
+    store = _make_store(home)
+    try:
+        _make_dataset(store, "neuromod-active", 32)
+        _permissions(store, steps=40)
+        from v13.neuromod import Neuromod
+
+        neuromod = Neuromod(store)
+        neuromod.set_local_mode("ACTIVE", authority="EXPLICIT_HUMAN")
+        scales = []
+        original_step = world_jepa.Adam.step
+
+        def capture_step(self, grads, scale=1.0):
+            scales.append(scale)
+            return original_step(self, grads, scale=scale)
+
+        monkeypatch.setattr(world_jepa.Adam, "step", capture_step)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=41, ensemble=2)
+        result = learner.update(
+            limit=64, max_pages=4, steps=40,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert result["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", result
+        credit = result["metrics"]["neuromodulation"]
+        assert credit["mode"] == "ACTIVE"
+        assert credit["applied"] is True
+        assert credit["mean_prediction_rmse"] > 0
+        assert credit["eligibility"] > 0
+        assert credit["modulator"] > 0
+        assert credit["trace_packets_written"] > 0
+        assert credit["modulator_packets_written"] > 0
+        assert 0 < credit["learning_rate_scale"] <= 1
+        assert scales
+        assert all(value == pytest.approx(credit["learning_rate_scale"]) for value in scales)
+        assert result["metrics"]["parameter_delta_norm"] > 0
+        assert result["metrics"]["ema_target_delta_norm"] > 0
+        assert neuromod.local_mode() == "ACTIVE"
+    finally:
+        store.close()
+
+
+def test_temporal_active_neuromodulation_veto_prevents_weight_update(tmp_path, monkeypatch):
+    home = tmp_path / "temporal-neuromod-veto"
+    store = _make_store(home)
+    try:
+        _make_dataset(store, "neuromod-veto", 32)
+        _permissions(store, steps=40)
+        from v13.neuromod import Neuromod
+
+        event_id = store.one(
+            "SELECT id FROM events ORDER BY created DESC,id DESC LIMIT 1"
+        )["id"]
+        neuromod = Neuromod(store)
+        neuromod.signal(
+            event_id, path="world_predictor",
+            source_class="real_deterministic_outcome",
+            safety_veto=True, world_prediction_error=1.0,
+        )
+        neuromod.set_local_mode("ACTIVE", authority="EXPLICIT_HUMAN")
+        steps = []
+        original_step = world_jepa.Adam.step
+
+        def capture_step(self, grads, scale=1.0):
+            steps.append(scale)
+            return original_step(self, grads, scale=scale)
+
+        monkeypatch.setattr(world_jepa.Adam, "step", capture_step)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=43, ensemble=2)
+        result = learner.update(
+            limit=64, max_pages=4, steps=40,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert result["status"] == "MODULATOR_VETO", result
+        assert result["checkpoint_committed"] is False
+        assert result["neuromodulation"]["mode"] == "ACTIVE"
+        assert steps == []
+        assert store.state(STATE_KEY, None)[0] is None
+    finally:
+        store.close()
+
+
 def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows_after_restart(tmp_path):
     home = tmp_path / "temporal-rollback-retry-store"
     store = _make_store(home)
