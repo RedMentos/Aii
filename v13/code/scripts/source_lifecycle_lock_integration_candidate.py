@@ -103,8 +103,8 @@ MEMORY_OLD = b'''                source=self.s.one('SELECT hash FROM sources WHE
                     (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
                     (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
 '''
-MEMORY_NEW = b'''            from .source_lifecycle_candidate import cleanup_unreferenced
-            cleanup_unreferenced(self.s,sid)
+MEMORY_NEW = b'''                from .source_lifecycle_candidate import cleanup_unreferenced
+                cleanup_unreferenced(self.s,sid)
 '''
 VISION_OLD = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
     """Store image bytes as an IMAGE source (dedup by hash) and register its regions. Returns the image record."""
