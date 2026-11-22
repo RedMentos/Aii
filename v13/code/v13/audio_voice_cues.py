@@ -761,9 +761,10 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         candidate = audio_to_admission(audio_packet, consent_active=True)
         # Packet start/end already carry the interval; drop the duplicate text
         # field to preserve room for source-bound acoustic evidence below.
-        base_summary = candidate.summary.replace(
-            f" interval_ms={candidate.end_ms-candidate.start_ms}", "", 1
-        ).replace(f" zcr={cues['zcr']:.3f}", "", 1)
+        base_summary = " ".join(
+            token for token in candidate.summary.split()
+            if not token.startswith(("zcr=", "interval_ms="))
+        )
         summary = base_summary + (
             f" activity={cues['activity_hint']} v={cues['voiced_fraction']:.2f}"
         )
