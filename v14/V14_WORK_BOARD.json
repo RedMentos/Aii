@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T22:30:37.104Z",
+  "updated_at": "2026-11-22T22:31:43.084Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA readback 30/30 observed check-runs SUCCESS. Authenticated private PIPELINE_STATUS #619 confirms the same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #620 still shows a slow 2-token stored turn and B1/B2 TIME_BUDGET. Current candidates remain DRAFT / CI pending; functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -15,7 +15,7 @@
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
       "proof_environment": "CI_PENDING + authenticated ANDROID_DEVICE metadata; no correct-answer/native-offer acceptance",
-      "next_step": "Boss #2370 current head bae7d031: 16 workflows queued, 0 success, 2 cancelled, 2 skipped. Previous head 03909f0 had 8 successes but both Python 3.13/3.14 audio-arithmetic jobs failed one stale persisted-source assertion; new head corrects it. Native B1/B2 offers still TIME_BUDGET 53.2/54.2 s; no speed fix.",
+      "next_step": "Boss #2370 current head bae7d031: 0 SUCCESS / 16 QUEUED / 4 CANCELLED / 4 SKIPPED. Previous head 03909f0 had 8 successes but both Python 3.13/3.14 audio-arithmetic jobs failed one stale persisted-source assertion each; new head corrects it. Native B1/B2 offers still TIME_BUDGET 53.2/54.2 s; no speed fix.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T22:09:19.069Z",
       "proof": "PIPELINE_STATUS #550 confirms c4eb82deec915f65894c20d6ebbaf0ebf58fa335 installed. DIAGNOSTICS #551 repeats FINAL 56.432 s / TTFT 40.818 s / prefill 39.088 s / 701 prompt tokens / 2 generated tokens; correctness UNKNOWN. B1/B2 probes TIME_BUDGET 53.2/54.2 s. Health #549 reports 1,293 MiB MemAvailable and 1,537 MiB disk free; learning status #552 UNAVAILABLE. No 20-turn acceptance. Boss candidate PR #2343 exact head `71fd9e1058abd1ea15668dd76a0de9f1f8b7709e` is 11 ahead / 0 behind c4eb82 but not releasable: owner-read Python3.14 staged startup `Integrated stage builder changed`; Lab-Age `integrated builder hash mismatch`; A5 3.13/3.14 `integrated builder hash mismatch` plus `unsupported archive source: store.py`, observer anchor `ask`, and runtime/postcommit hash mismatches; native receiver 3.13/3.14 integrated builder mismatch; staged runtime 33 failed / 220 passed / 10 skipped / 2 errors / 37 subtests; migration remains PARTIAL. Exact logs reviewed and QA finding posted on #2343. Runtime deploy integrity, role-specific tap provenance and JEPA/online-world workflows pass, but this does not compensate for the red staged matrix. Byte-level diagnosis on exact #2343 head: runtime_deploy expects stage SHA256 614cfc... but actual stage_integrated_candidate is 4c7f2c...; stage builder expects recovery builder SHA256 47fa3d... but actual is 1333db...; archive_stream_range still pins store.py 40a387... while actual store.py is c413e..., and source-lifecycle rebinder searches for c413e instead of the old 40a387 preimage; record-only guard expects runtime.py a533... while actual is 08c1ef...; fair-budget overlay pin matches runtime but its old ask() anchor is already replaced by role_end. Exact values posted on #2343 comment 7078775784. C4 receipt, base recovery, audio and native receiver pins do match; avoid churning them. New Boss branch head `70c6a5bf15ab16dcd0caf7088c56584c4c8470cf` is 27 ahead / 0 behind c4eb82; exact-head CI is queued at last poll. Fresh byte readback still finds mismatches: runtime_deploy expects stage `3b4d8899…`, actual stage builder `53d8f5cb…`; stage expects recovery21 `4e20a52a…`, actual recovery builder `7efdcb5a…`; lifecycle store pin `3f5a5dd3…` vs actual store `c413e135…`, archive stream still `40a387e2…`; record-only Runtime pin `a5336607…` vs actual `08c1ef96…`; observer Runtime pin `9bb9ddc0…` vs actual `08c1ef96…` and old `ask()` anchor remains absent. The recovery12 blob pin `74901948…` now matches; C4/audio/native receiver pins also match. Prior head 71fd9e had staged/owner-read/A5/Lab-Age/migration failures; do not project those conclusions onto new head until its CI completes. Update for current Boss head 70c6a5: two-checkout migration run 45019915717 completed FAIL in both previous/current phone-release cases. Both source/runtime checkouts fast-forwarded to 70c6a5, but the one-shot helper returned last_result=PARTIAL, runtime=ERROR, last_error=UPDATE; exact assertion at test_two_checkout_migration_20261116.py:236 expected UPDATED after recoverable PARTIAL. Other exact-head workflows remained queued at last poll. Latest Boss branch head `023e56d166ab128f1038033067db681903757bcb` is 29 ahead / 0 behind c4eb82. Corrected recovery12 blob pin now matches (`bca4152c…`); source-lifecycle Store and fair-observer Runtime pins now match actual store/runtime bytes. Remaining exact readback mismatches: runtime_deploy STAGER `3b4d…` vs actual stage `53d8…`; stage BUILDER `4e20…` vs actual recovery21 `7efd…`; archive stream STORE pin `40a3…` vs actual store `c413…` while lifecycle rebinder searches `c413…` instead of the archive source's old preimage; record-only guard runtime `a533…` vs actual `08c1…`; fair-observer old ask anchor still absent because runtime already has role_end. All 13 substantive exact-head workflows queued at last poll. Previous 70c6a5 migration run failed PARTIAL/runtime ERROR; that is historical, not current-head CI.",
@@ -709,7 +709,7 @@
     "boss_work_branch": "boss/v14-fair-budget-current-base-20261122-run14",
     "boss_work_head": "bae7d03196d98ac6dfebc0a2649faf257ba8308f",
     "integrated_code_candidate": "PR #2370 — fair B1/B2 scheduler + source-bound OfferPacket to C4 to C3 integration test",
-    "integrated_code_candidate_checks": "Exact head bae7d03196d98ac6dfebc0a2649faf257ba8308f: 0 SUCCESS / 16 QUEUED / 0 IN_PROGRESS / 2 CANCELLED / 2 SKIPPED / 0 failures observed; NOT_GREEN / NOT_RELEASED. Previous head 03909f0 reached 8 success but audio/arithmetic Python 3.13 and 3.14 each failed one stale persisted-source assertion.",
+    "integrated_code_candidate_checks": "Exact head bae7d03196d98ac6dfebc0a2649faf257ba8308f: 0 SUCCESS / 16 QUEUED / 0 IN_PROGRESS / 4 CANCELLED / 4 SKIPPED / 0 failures observed; NOT_GREEN / NOT_RELEASED. Previous head 03909f0 reached 8 successes but audio/arithmetic Python 3.13 and 3.14 each failed one stale persisted-source assertion.",
     "changes": [
       "Current recovery/stage/deployer source pins read back; native receiver cognition base pin matches exact source tree.",
       "Staged synthetic source-bound B1/B2 OfferPacket→C4→C3 consumer is present but current-head workflow is queued; no native offer proof.",
@@ -718,7 +718,7 @@
       "No production arithmetic code, model, weight, permission or device state changed."
     ],
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT; git clone failed GitHub DNS; no local full pytest/compile/native run.",
-    "pr2370": "DRAFT; exact head bae7d031; 0 success / 16 queued / 2 cancelled / 2 skipped; previous head 03909f0 audio/arithmetic Python 3.13/3.14 each failed one source-transition assertion; new head corrects assertion; no current-head pass yet.",
+    "pr2370": "DRAFT; exact head bae7d031; 0 success / 16 queued / 4 cancelled / 4 skipped; previous head 03909f0 audio/arithmetic Python 3.13/3.14 each failed one source-transition assertion; new head corrects assertion; no current-head pass yet.",
     "pr2377": "f64e994: approval record now persists canonical path + five-field file identity; joint manifest/router redirect negative present; two workflows queued; duplicate test definition remains; no merge",
     "pr2381": "07b4ffbd: 21 ahead / 12 behind #2377 f64e994; overlay lacks O_NONBLOCK and _verify_model_file; test double-applies receiver; no workflows; no merge",
     "pr2383": "714a09e: five workflows failed (optimizer resume, migration, Lab-Age, owner-read, staged/integrated); deploy integrity success; no real weight diff",
@@ -818,8 +818,8 @@
       "success": 0,
       "queued": 16,
       "in_progress": 0,
-      "cancelled": 2,
-      "skipped": 2,
+      "cancelled": 4,
+      "skipped": 4,
       "failures": 0,
       "previous_head": "03909f0",
       "previous_head_audio_python313_failure": true,
@@ -1043,7 +1043,7 @@
     "timestamp": "2026-11-22T22:30:37.104Z",
     "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "code_candidate_sha": "bae7d03196d98ac6dfebc0a2649faf257ba8308f",
-    "candidate_ci": "PR2370_EXACT_HEAD_0_SUCCESS_16_QUEUED_0_IN_PROGRESS_2_CANCELLED_2_SKIPPED_0_FAILURES_OBSERVED_NOT_GREEN",
+    "candidate_ci": "PR2370_EXACT_HEAD_0_SUCCESS_16_QUEUED_0_IN_PROGRESS_4_CANCELLED_4_SKIPPED_0_FAILURES_OBSERVED_NOT_GREEN",
     "post_merge_push_ci": "NOT_RUN_CANDIDATE_NOT_MERGED",
     "device_receipt": "PIPELINE_STATUS_634_AUTHENTICATED; DIAGNOSTICS_635; HEALTH_636; LEARNING_STATUS_637",
     "device_acceptance": "P0_OPEN; 57.74S_TURN_41.63S_TTFT_38.95S_PREFILL_2_TOKENS; B1_B2_TIME_BUDGET_53.2_54.2S; HEALTH_RUNTIME_UNAVAILABLE_CONFLICTS_DIAGNOSTICS_RUNNING; NO_NATIVE_LATENT_OR_C3_SEMANTIC_PROOF",
@@ -1061,17 +1061,17 @@
       "P0_CANON_CLAUSE_TO_CONSUMER_TEST_PLATFORM_ROLLBACK_TRACEABILITY"
     ],
     "pr_status": {
-      "2356": "Head 27aaa29: four workflows QUEUED; bounded one-time System UI Wait + filtered logcat diagnostics added; process-death acceptance still pending",
-      "2370": "DRAFT exact head bae7d031: 0 SUCCESS / 16 QUEUED / 0 IN_PROGRESS / 2 CANCELLED / 2 SKIPPED; previous head 03909f0 audio/arithmetic Python 3.13 and 3.14 each failed one source assertion; new head fixes expected source text",
+      "2356": "Head 27aaa29: four workflows QUEUED; bounded one-time System UI Wait + filtered logcat diagnostics; process-death acceptance still pending",
+      "2370": "DRAFT exact head bae7d031: 0 SUCCESS / 16 QUEUED / 0 IN_PROGRESS / 4 CANCELLED / 4 SKIPPED; previous head 03909f0 had 8 successes but audio/arithmetic Python 3.13 and 3.14 each failed one source assertion; new head fixes expected source text",
       "2372": "Head beda653: staged/integrated, optimizer-resume and owner-read FAIL; temporal T8 Windows SUCCESS; no weight proof",
       "2375": "Head eb6752d: staged/integrated + privacy SUCCESS; frame ingress FAIL (9 failed / 10 passed) due undefined _feature_summary",
-      "2376": "Head e0985029: 2 workflows SUCCESS but base is stale vs current #2356 (6 ahead / 8 behind); synthetic only",
+      "2376": "Head e0985029: two workflows SUCCESS but base 14 commits behind current #2356 head 27aaa29; synthetic only",
       "2377": "Head f64e994: path + five-field file identity persisted and joint manifest/router redirect negative added; two workflows QUEUED; duplicate test function definitions; do not merge yet",
       "2378": "Docs-only Boss branch; DRAFT; run 12 evidence/handoff refreshed",
       "2379": "Head 4ce32890: provider/staged workflows QUEUED; base 11 commits behind current #2356 head 27aaa29",
       "2381": "Head 07b4ffbd: 21 ahead / 12 behind current #2377 head f64e994; staged overlay lacks O_NONBLOCK/verifier; no workflow runs",
       "2383": "Head 714a09e: optimizer resume, migration, Lab-Age, owner-read and staged/integrated FAIL; deploy integrity SUCCESS; no weight proof",
-      "2384": "Head 5cd8ffae: bounded feature summary + direct malformed-input tests added; two workflows QUEUED; duplicate test function definitions"
+      "2384": "Head 5cd8ffae: bounded numeric _feature_summary + direct malformed-input tests added; two workflows QUEUED; duplicate test function definitions"
     },
     "research_id_collision": "R-092 is AudioRecord in #2380; JEPA #2374 used the same ID for a different paper; renumber to R-093 remains unverified.",
     "user_action_required": "NONE",
@@ -1204,7 +1204,7 @@
       }
     },
     "previous_head_ci": "PR2370_PREVIOUS_HEAD_03909F0_8_SUCCESS_6_QUEUED_2_IN_PROGRESS_3_CANCELLED_3_SKIPPED_BUT_AUDIO_ARITHMETIC_PY313_AND_PY314_FAILED_ONE_SOURCE_TRANSITION_ASSERTION_EACH",
-    "live_update": "Previous #2370 head 03909f0 had 8 success, but audio/arithmetic Python 3.13 and 3.14 each failed one source-transition assertion; new head bae7d031 corrects stored source expectation and is awaiting 16 queued workflows."
+    "live_update": "The new head bae7d031 is awaiting 16 workflows; duplicate/safe-additive entries now show 4 cancelled and 4 skipped. Previous head 03909f0 has 8 successes but both Python audio/arithmetic jobs failed the same persisted-source assertion."
   },
   "qa_latest_checkpoint": {
     "timestamp": "2026-11-22T12:02:49.539Z",
