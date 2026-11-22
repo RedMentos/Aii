@@ -10,7 +10,8 @@ class ExactArithmetic(unittest.TestCase):
             "What is 2 + 2?": "4", "Wie viel ist 2+2?": "4",
             "calculate -12 * 3": "-36", "calculate 7-12": "-5",
             "compute 2026-11": "2015", "calculate 11-21": "-10",
-            "berechne 11-21": "-10", "8/4": "2", "1/3": "1/3",
+            "berechne 11-21": "-10", "What is 100-2?": "98",
+            "What is 13-14?": "-1", "8/4": "2", "1/3": "1/3",
             "2--3": "5", "0*123": "0",
         }
         for question, answer in cases.items():
