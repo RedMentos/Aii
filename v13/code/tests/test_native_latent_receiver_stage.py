@@ -21,6 +21,22 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert manifest["status"] == "SHADOW_REVIEW_ONLY"
     assert "v13/native_latent_receiver.py" in manifest["files_sha256"]
     assert "v13/native/latent_receiver/native_latent_receiver.cpp" in manifest["files_sha256"]
+    # Verify every receiver/dispatch source actually consumed by the staged Runtime
+    # is represented by the exact bytes recorded in the final stage manifest.
+    receiver_files = (
+        "v13/cognition.py",
+        "v13/callosum.py",
+        "v13/operator.py",
+        "v13/native_latent_receiver.py",
+        "v13/native/latent_receiver/CMakeLists.txt",
+        "v13/native/latent_receiver/native_latent_receiver.cpp",
+        "v13/native/latent_receiver/README.md",
+    )
+    for relative in receiver_files:
+        assert relative in manifest["replaced_files"]
+        staged_file = destination / relative
+        assert staged_file.is_file()
+        assert manifest["files_sha256"][relative] == hashlib.sha256(staged_file.read_bytes()).hexdigest()
     overlay_path = CODE / "scripts/integrated_native_probe_approval_candidate_20261122.py"
     overlay_spec = importlib.util.spec_from_file_location("v14_native_probe_approval_overlay", overlay_path)
     overlay = importlib.util.module_from_spec(overlay_spec)
