@@ -74,3 +74,32 @@ A previous private diagnostics snapshot still shows slow C3 prefill and B1/B2 TI
 4. Only after a CI-green release commit may the existing authorized private owner-read path request an update; then obtain a separate PIPELINE_STATUS receipt. Do not claim Redmi PASS without a real device receipt and live 20-turn acceptance.
 
 No user action is required at this stage.
+
+
+## Run 14 — nested archive Store-pin correction — 2026-11-22 19:15 CET
+
+**Code-bearing parent:** `1d17dc0bb04cae3cd749bd4801254733a232bfb4` (QA branch). This is a candidate source-composition repair, not a release.
+
+### Exact current-head failure and correction
+
+- The first A5 run after the Memory/C3/observer rebind (run `45055010763`, Python 3.13 and 3.14) reached `source_lifecycle_lock_integration_candidate.py` and failed at the nested archive-guard Store pin. The source Store SHA was `bc7ab8edfd26bf0222ebcccbf57c95612f3fe305646eb46571b35b6f72942bd1`, but the frozen archive-reader and archive-stream candidates still carried their own old Store pin `40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb`. The composer incorrectly tried to replace the *source Store* pin inside those downstream candidates.
+- Added the distinct `OLD_ARCHIVE_STORE_SHA` for that legacy downstream pin and used it for both archive-reader and archive-stream rebinding. The source Store SHA remains independently checked in `PINS['store.py']`; the generated Store SHA is what the disposable composed candidates now bind to.
+- The prior failure was exact and reproducible on both Python versions: `test_staged_store_read_open_is_linearized_with_revocation` failed with `ambiguous lifecycle candidate anchor: guard store pin`, while the other A5 tests passed (17 passed, 5 subtests, 1 failed per version).
+- Added a focused regression to `test_v14_store_source_blob_serialization.py` that builds the disposable candidate and asserts both archive guard and archive stream contain exactly the generated Store SHA and no longer contain the stale legacy pin.
+
+### Rebound consumer chain
+
+- Memory cleanup anchor: current `Memory._forget_source` uses 16-space nesting under the Store RLock; the source-lifecycle overlay now replaces that exact block and keeps `cleanup_unreferenced()` inside the same lock ordering.
+- C3 resume → Body/World: `integrated_body_world_candidate_20261110.py` SHA-256 `70adca144879efdb9f6c8803ea43b0041ce81b33431c5e8dc3eb209237c3c525`.
+- Current Store source: `bc7ab8edfd26bf0222ebcccbf57c95612f3fe305646eb46571b35b6f72942bd1`.
+- Observer fairness Store pin rebound to that exact Store source; archive guard/stream downstream pins rebound to the generated Store output.
+- Consumer chain was recomputed bottom-up through Memory/World, feedback, ContextOS, WorldJEPA resume, Termux recovery-12, recovery-21 Git blob, stage and runtime deployer. Current code-bearing deployer SHA-256 at parent `1d17dc0` is `fe8bae1b05196e2bb785bde7ad5b1b4bd9adc8ae1bd398b7c6d2fb0e139c4573`.
+
+### Proof boundary
+
+- The new exact-head CI has **not yet run** on this test/hand-off follow-up. The previous A5 failure is not counted as a pass.
+- LOCAL_LINUX full Aii checkout remains unavailable; no local full-suite run is claimed.
+- Private owner receipts: #581 HEALTH reported `runtime=UNAVAILABLE`; #582 PIPELINE_STATUS reported runtime/dashboard `UP_TO_DATE` on installed `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; existing read-only `:status` request #583 remains open. No duplicate request, CHAT_SEND, UPDATE_REQUEST, LOG_PAGE or remote shell was issued.
+- No Redmi installation, Android native test, model/weight change, permission change or user-data mutation. REDMI_UNVERIFIED; PR #2359 remains DRAFT and stacked on #2351/#2355.
+
+**Next:** exact A5 3.13/3.14, staged/integrated, JEPA optimizer-resume/source-forget, Lab-Age, migration and deploy workflows must complete on the new exact head. Fix the first real failure without relaxing gates. No user action is needed.

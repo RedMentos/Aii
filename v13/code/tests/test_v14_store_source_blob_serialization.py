@@ -1,5 +1,6 @@
 """Store source publication must serialize with A5 consent revocation."""
 from pathlib import Path
+import hashlib
 import threading
 from unittest.mock import patch
 
@@ -306,3 +307,23 @@ def test_staged_store_read_open_is_linearized_with_revocation(tmp_path):
     assert result.returncode == 0, (
         f"staged Store read/revoke race failed: {result.stdout}\n{result.stderr}"
     )
+
+
+def test_staged_archive_guard_and_stream_bind_generated_store_sha():
+    """The archive reader and stream consumer must bind the generated Store bytes."""
+    import importlib.util
+
+    code_dir = Path(__file__).resolve().parents[1]
+    builder_path = code_dir / "scripts" / "source_lifecycle_lock_integration_candidate.py"
+    spec = importlib.util.spec_from_file_location("source_lifecycle_pin_candidate", builder_path)
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    replacements = builder.build_sources(code_dir / "v13")
+
+    generated_store_sha = hashlib.sha256(replacements["store.py"]).hexdigest()
+    guard = replacements["archive_reader_guard_candidate.py"].decode("utf-8")
+    stream = replacements["archive_stream_range_candidate.py"].decode("utf-8")
+    assert guard.count(generated_store_sha) == 1
+    assert stream.count(f"STORE_SHA256 = '{generated_store_sha}'") == 1
+    assert "40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb" not in guard
+    assert "40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb" not in stream

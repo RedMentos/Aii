@@ -1,3 +1,17 @@
+# QA & Android — current verified handoff (2026-11-22 19:15 CET)
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein CHAT_SEND, kein Modell-/Gewichtswechsel und keine neue Berechtigung.
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` currently resolves to `aed1d2b826290c95c70356b5d8b864b5ef382be4`. This is a code-development pointer, not proof of installation.
+- Private owner-read #582 reports installed SHA `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`, auto-update enabled and pipeline/dashboard `UP_TO_DATE`. The newer #581 HEALTH receipt reports `runtime=UNAVAILABLE` with 1414 MiB available RAM and 1568 MiB free storage. Existing read-only `:status` request #583 remains OPEN; do not create a duplicate request or send a chat turn while runtime is unavailable.
+- QA Store/source-forget candidate PR [#2359](https://github.com/RedMentos/Aii/pull/2359) is DRAFT, stacked on #2351 and #2355. Code-bearing parent `1d17dc0bb04cae3cd749bd4801254733a232bfb4` includes the C3/Body/World, Memory cleanup, observer Store-pin and full nested recovery/stage/deployer rebinds. The latest A5 attempt on its preceding code head failed at the distinct legacy archive-guard Store pin; that pin has now been corrected and a focused regression added, but the new exact-head CI has not yet completed.
+- Android companion PR [#2356](https://github.com/RedMentos/Aii/pull/2356): the exact workflow on head `cc3c34d11745079d874c1092708014fbdde223e7` passed Gradle/Robolectric and Core outcome adapter checks; API-35 process-restart emulator job was still running when last checked after enabling documented TCG fallback. No emulator pass, APK install or Redmi/Android-OS behavior is claimed.
+- Full local Aii checkout is unavailable, so LOCAL_LINUX full-suite is BLOCKED/NOT_RUN. No native Android, correct 2+2, B1/B2 same-turn offer delivery, trained B3 latent exchange, or persistent body-weight update is accepted.
+
+**Next internal step:** run the exact A5/staged/JEPA/migration/deployer matrix on the current #2359 head, inspect any remaining concrete failure, then ask Boss to choose the #2355/#2359 consolidation route. Keep #583 read-only pending. **Keine Aktion nötig.**
+
+---
+
 # QA & Android current user handoff — 2026-11-22
 
 **Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein neuer UPDATE_REQUEST, kein CHAT_SEND, kein Modell-/Gewichtswechsel und keine Rechte-/Mikrofonfreigabe.
