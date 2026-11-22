@@ -5,13 +5,13 @@ progress, evidence refs and an optional wake time; wakes go through the G13 Even
 GOAL_WAKE events, so quiet hours, resources and Age rights apply. USER goals are the user's
 own initiative; SELF goals (V13 sets its own) need Age right choose_learning_goals and their
 wakes need resume_open_goals (Age 4) — at Age 0 they stay HELD_AGE. Plans can be scored by a
-pluggable evaluator (later World-JEPA rollouts, AG2) before execution. Depth is bounded by the
-Age budget focal_depth plus a hard ceiling.
+pluggable evaluator (later World-JEPA rollouts, AG2) before execution. Goal-tree depth is a developmental planning right plus a hard ceiling,
+not per-turn focal compute depth.
 """
 import math
 import time
 from numbers import Real
-from .base import StateBox,age_allows,budget
+from .base import StateBox,age_allows,learning_limit
 
 KEY='G3_GOALS';REVISION='g3-goals-v1'
 STATUS=('OPEN','ACTIVE','BLOCKED','DONE','ABANDONED')
@@ -56,7 +56,7 @@ class GoalStore:
                 if sum(g['status'] in OPEN for g in st['goals'].values())>=MAX_GOALS:raise ValueError('Ziel-Speicher voll')
                 if parent is not None:
                     if parent not in st['goals']:raise ValueError('Unbekanntes Elternziel')
-                    limit=min(MAX_DEPTH,max(2,int(budget(self.age,'focal_depth',1))+1)) if origin!='USER' else MAX_DEPTH
+                    limit=min(MAX_DEPTH,max(2,int(learning_limit(self.age,'goal_depth',1,capability='system'))+1)) if origin!='USER' else MAX_DEPTH
                     if self._depth(st,parent)+1>limit:raise ValueError(f'Zieltiefe > {limit}')
                 st['seq']+=1;gid=f'goal_{st["seq"]}'
                 st['goals'][gid]={'id':gid,'title':str(title)[:300],'origin':origin,'parent':parent,'status':'OPEN','progress':0.,
