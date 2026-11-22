@@ -1,3 +1,12 @@
+## Boss integration update — 2026-11-22 07:01Z
+
+- #2314 exact-head progress: runtime-deployment, old-phone two-checkout migration, Lab-Age, private owner-read, same-turn B1/B2→C4→C3 and staged/integrated regression are now **PASS** on head `87975814a1e134a4b12dc5961b6250d9125d65eb`. The dedicated `V14 native latent receiver staged runtime` workflow remains **QUEUED** for both PR and push triggers. The workflow is configured to build/test the exact pinned llama.cpp Linux receiver and Android arm64-v8a cross-compile; no actual GGUF receiver inference or Redmi run is included.
+- #2314 therefore advances to **integration checks green / native build pending**, not merge-ready or device-validated. It remains based on Boss candidate ancestor `1105ab56`, while release tip is `f210999` (10 commits beyond the merge base); retarget/rebase only after the native workflow resolves, then rerun the exact release-base matrix.
+- Private owner-read request #483 expired without a response and was closed. The last authenticated phone state remains #480: auto-update enabled, runtime/dashboard `CI_WAIT`, installed SHA `89333289b8cd50da92cbf7074c9ef689a2972dbf`. No UPDATE_REQUEST or device mutation.
+- #2313/#2317, #2311, #2312 and #2286 remain as recorded above. In particular #2286 current head `0639c4e4` has exact CI queued and the asynchronous SharedPreferences stop-persistence finding is now tracked in board ticket V14-017 and review comment #7075643215.
+
+---
+
 ## QA companion safety follow-up — 2026-11-22 06:58Z
 
 - QA PR #2286 has current head `0639c4e4a5b1613445ba62ed4d39188fb6f60b56`; the exact companion, broker, outcome, sandbox, migration and staged/integrated workflows are queued. Previous-head PASS results are not transferred. The stack remains far behind the release branch and must be reconciled parent-first (#2271 → #2273 → #2286), not by retargeting only the leaf.
