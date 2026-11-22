@@ -721,3 +721,125 @@ def test_verified_t8_receipt_preserves_complete_source_ref(tmp_path):
         assert {"source_id", "sha256", "char_start", "char_end", "modality"} <= set(source_ref)
     finally:
         store.close()
+
+
+def _memory_forget_source(store, source_id):
+    from v13.memory import Memory
+    memory = object.__new__(Memory)
+    memory.s = store
+    return memory._forget_source(source_id, None)
+
+
+def test_memory_forget_refuses_source_used_by_active_world_jepa(tmp_path):
+    home = tmp_path / "brain-forget-active"
+    store, session = _make_store(home)
+    try:
+        _add_transitions(store, session, 0, 256)
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        result = consume_after_commit(store, home, limit=256)
+        assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+        state, _ = store.state("v14.world_jepa.store_consumer", None)
+        active = state["active"]
+        source_id = active["experience_rows"][0]["source_id"]
+        before = store.one("SELECT deleted FROM sources WHERE id=?", (source_id,))
+        assert before is not None and before["deleted"] == 0
+
+        with pytest.raises(ValueError, match="WorldJEPA"):
+            _memory_forget_source(store, source_id)
+
+        after = store.one("SELECT deleted FROM sources WHERE id=?", (source_id,))
+        assert after is not None and after["deleted"] == 0
+        current, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert current["active"]["checkpoint_sha256"] == active["checkpoint_sha256"]
+    finally:
+        store.close()
+
+
+def test_memory_forget_detects_source_after_replay_row_eviction(tmp_path):
+    home = tmp_path / "brain-forget-evicted"
+    store, session = _make_store(home)
+    try:
+        _add_transitions(store, session, 0, 256)
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=120
+        )
+        result = consume_after_commit(store, home, limit=256)
+        assert result["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
+
+        state, version = store.state("v14.world_jepa.store_consumer", None)
+        active = dict(state["active"])
+        target = active["experience_rows"][0]
+        source_id = target["source_id"]
+        action_id = target["action_id"]
+        active["experience_rows"] = [
+            row for row in active["experience_rows"] if row["action_id"] != action_id
+        ]
+        active["train_ids"] = [item for item in active["train_ids"] if item != action_id]
+        active["holdout_ids"] = [item for item in active["holdout_ids"] if item != action_id]
+        state = dict(state)
+        state["active"] = active
+        store.set_state("v14.world_jepa.store_consumer", state, expected=version)
+
+        with pytest.raises(ValueError, match="evicted replay rows"):
+            _memory_forget_source(store, source_id)
+
+        after = store.one("SELECT deleted FROM sources WHERE id=?", (source_id,))
+        assert after is not None and after["deleted"] == 0
+    finally:
+        store.close()
+
+
+def test_memory_forget_discards_untrained_pending_world_jepa_source(tmp_path):
+    home = tmp_path / "brain-forget-pending"
+    store, session = _make_store(home)
+    try:
+        _add_transitions(store, session, 0, 1)
+        _set_runtime_permissions(
+            store, learning_enabled=True, optimizer_permission=True, steps=8
+        )
+        result = consume_after_commit(store, home, limit=16)
+        assert result["status"] == "INSUFFICIENT_SOURCE_DISJOINT_T8_COHORT"
+        state, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert len(state["pending_rows"]) == 1
+        source_id = state["pending_rows"][0]["source_id"]
+
+        _memory_forget_source(store, source_id)
+
+        state, _ = store.state("v14.world_jepa.store_consumer", None)
+        assert state["pending_rows"] == []
+        source = store.one("SELECT deleted FROM sources WHERE id=?", (source_id,))
+        assert source is not None and source["deleted"] == 1
+    finally:
+        store.close()
+
+
+def test_source_forget_guard_shares_training_file_lock(tmp_path):
+    from threading import Event, Thread
+    from v13.world_jepa_consumer import source_forget_guard
+
+    home = tmp_path / "brain-forget-lock"
+    store, _session = _make_store(home)
+    try:
+        consumer = WorldJEPAStoreConsumer(
+            store, home / "world_jepa", learning_enabled=False
+        )
+        started = Event()
+        acquired = Event()
+
+        def contender():
+            started.set()
+            with consumer._locked(True):
+                acquired.set()
+
+        worker = Thread(target=contender, daemon=True)
+        with source_forget_guard(store, "source-not-present"):
+            worker.start()
+            assert started.wait(1.0)
+            assert not acquired.wait(0.1)
+        worker.join(2.0)
+        assert acquired.is_set()
+    finally:
+        store.close()
+
