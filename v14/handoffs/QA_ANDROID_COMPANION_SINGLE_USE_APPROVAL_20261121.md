@@ -149,3 +149,20 @@ Coordinate with Boss/Core to recompose #2271 → #2273 → #2286 on current Boss
 - AudioCaptureDefaultOffTest: manifest does not request microphone or microphone foreground-service permission.
 - CompanionDbApprovalTest: no raw PCM/audio blob table or column in companion SQLite schema.
 - These are Android/Robolectric default-off guards, **not** microphone-capture tests. The full runtime matrix remains blocked until Core supplies a real one-shot AudioRecord adapter and the user separately authorizes an actual permission/device test.
+
+
+## Latest follow-up — 2026-11-22 06:xx CET
+
+**Current QA code head:** 34176854f001927874c7e6c9d4c46ba3dc65483d.  
+**Acceptance matrix:** v14/handoffs/QA_ANDROID_AUDIORECORD_ACCEPTANCE_20261122.md.
+
+- Added an explicit audio_capture capability row: OFF_NOT_IMPLEMENTED, provider NONE, OS permission required, no result/learning authority. The provider allowlist still accepts only launch_app.
+- Added Robolectric guards for absent RECORD_AUDIO / microphone foreground-service permission and for the companion SQLite schema having no PCM/audio blob storage.
+- Added tests for the audio_capture OFF state and provider allowlist rejection. These tests are awaiting GitHub Actions execution.
+- The Android and companion Python workflows for head 34176854 are queued (8 runs at last poll). GitHub currently has a large Actions backlog; no test result is claimed for these new tests yet.
+- Earlier code head c9d78d6 had Android Gradle/Robolectric PASS and the broker/outcome/sandbox/Core adapter workflows PASS. That does not validate the new AudioRecord default-off tests.
+- LOCAL_LINUX Android build is BLOCKED: this run has no Aii checkout, Gradle or Android SDK (Java alone is present). No local Gradle test was run.
+- Exact compare from base aa9f509 to head 34176854 shows 20 changed files, 0 deletions; the full tree is present (7,205 paths versus 7,203 in the base). A temporary sparse-tree construction commit was corrected by a forward-only restore commit; no force-push was used and the final repository tree is intact. Prefer squash merge if this stack is ever accepted so the transient tree-repair history is not carried into the release branch.
+- The inherited two-checkout old-phone migration failure remains; this stack is not merge-ready. No Redmi install or AudioRecord permission/capture test occurred.
+
+**Status:** DEFAULT_OFF_GUARDS_ADDED / CI_PENDING_QUEUE / MIGRATION_BLOCKED / REDMI_UNVERIFIED. User action: none.
