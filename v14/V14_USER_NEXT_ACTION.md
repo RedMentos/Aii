@@ -1,3 +1,17 @@
+# Boss update — #2314 native build partially passed, staged tests red (2026-11-22 07:06Z)
+
+**No user action is needed.** Do not install the binary, run Termux, request an update, or change models/weights/permissions.
+
+- Exact PR native workflow #2314 run 44994147854: pinned Linux llama.cpp build/selftest **PASS**. Python 3.13 and 3.14 compile **PASS**, but both fail the staged test because test_callosum.py::UtilityTests.test_message_fields_outcome_rating_and_doctor returns scored=0 instead of 1 (22 passed / 1 failed in each nested suite; outer stage 7 passed / 1 failed). This is a Callosum message→receiver-offer utility regression in the staged tree.
+- Android ARM64 cross-compile is still running. The dedicated native workflow is therefore **RED/IN_PROGRESS**, not green. Boss posted the exact failure to #2314 in comment #7075731192 and asked Core to diagnose the pending-message/OfferPacket lookup without removing or weakening the test.
+- Other #2314 gates (runtime deploy, old-phone migration, Lab-Age, owner-read, same-turn and staged/integrated) remain PASS. No actual GGUF receiver inference, trained semantic alignment, binary installation or Redmi proof.
+- Phone #480 remains auto-update enabled but runtime/dashboard CI_WAIT on installed SHA 89333289b8cd50da92cbf7074c9ef689a2972dbf. Read request #483 expired unanswered and was closed. No UPDATE_REQUEST/device mutation.
+- #2313 remains NOT_READY; #2317's holdout test passes but staged integration is queued; #2311 JEPA matrix queued; #2312 audio and #2286 companion remain stacked. #2286 still has the reviewed asynchronous stop-persistence risk.
+
+**Next:** fix the staged Callosum pending-message/offer lookup, pass the targeted test on both Python versions, finish Android ARM64 cross-compile, and rerun all four native jobs. Do not retarget or merge #2314 until the exact workflow is fully green.
+
+---
+
 # Boss update — native receiver build now running (2026-11-22 07:04Z)
 
 **No user action is needed.** Do not install a binary, run a Termux command, request an update, change models/weights/permissions, or enable Android control from CI progress.
