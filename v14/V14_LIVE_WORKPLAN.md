@@ -1235,3 +1235,42 @@ The 679f audio run showed that rebinding only Context-source recall was insuffic
 ### Next integration step
 
 Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, migration, owner-read and deployer workflows. Fix only measured current-head failures. Keep the PR DRAFT and NOT_RELEASED. The #2280 C4 receipt, #2281 Age-rights, #2282 shared-blob race, #2283 rollback, #2285 audio QA and #2275 RAW EAR changes must be rebased and tested on this same base; old-base green results are not accepted. Private PIPELINE_STATUS #453 is still unanswered, so REDMI_UNVERIFIED. User action: none.
+
+ 
+---
+ 
+## Boss & Integration checkpoint — 2026-11-22 21:42 CET (run 11)
+
+### Verified release and phone receipt
+
+- Current release-development branch gpt6/v13-private-remote-bridge-20261111 is aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA has **30/30 observed GitHub check-runs SUCCESS**.
+- Private owner-read PIPELINE_STATUS [#619](https://github.com/RedMentos/Aiiii/issues/619) confirms this exact SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE, and last_error NONE.
+- Private DIAGNOSTICS [#620](https://github.com/RedMentos/Aiiii/issues/620) reports the last stored FINAL turn at **57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens**. Correctness is UNKNOWN; no new turn was sent. B1_DETAIL and B2_GIST remain TIME_BUDGET at 53.2/54.2 s. Instant process sample: 0 mapped native processes / 0 MiB PSS/RSS, child readability UNKNOWN; not sustained residency or free RAM. Official Age 0; lab request 10 / effective implemented stage 5; physical feature execution unverified; learning authority still requires separate SHADOW.
+- No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, remote shell, model/weight/permission change or device mutation. No user action.
+
+### Integration review and current exact heads
+
+- **Boss #2370** — 8581023c4d46785057efc605575fcabd77e9e8a9, based on the installed release base: 27 checks QUEUED / 3 expected SKIPPED. DRAFT. The candidate retains B1/B2 and a 45% pre-answer window, capped by the current 35 s observer setting. Equal sequential slices are about 17.5 s each; previous device B1/B2 probes were TIME_BUDGET at 53.2/54.2 s. This is a source-derived risk comparison, not a measured new failure. Require actual valid OfferPacket delivery and C4→C3 consumption.
+- **Core #2367** — 06113c60a1d411fd3121fd5bae66c5f42e8b28ba: 26 SUCCESS / 4 expected SKIPPED. QA found same-size on-disk GGUF replacement could pass manifest-only approval. Blocked by QA #2377; B3 remains OFF.
+- **QA #2377** — fcb7e8c2b70e675c46741d919626ad4fd34ceb38: 7 checks QUEUED. Adds streamed SHA-256 and same-size tamper negatives. Boss additionally requested that ModelManager.path_for(role) resolve to the exact same canonical file that was hashed; no pass is claimed yet.
+- **Perception #2375** — f9e16af73dddb38d0a45c5cf89375fabdbfdf23b: 8 QUEUED / 1 expected SKIPPED. It is a lease-bound RAW EYE adapter for a frame supplied by an already-authorized provider, not the Android MediaProjection provider itself. No capture proof.
+- **JEPA #2372** — 6da129ef1cd09edd119491e5ff7740005792063c: 9 QUEUED. Temporal B1/B2 readouts are synthetic prompt consumers; SleepRuntime postcommit error and source-lifecycle composition remain unresolved. No GGUF body-weight update proof.
+- **Core #2376** — 4abb00919db33a50921e9f63ae06d8aba2f17051: 7/7 SUCCESS, but stacked on QA companion #2356. #2356 current head 3829465e5180ce237ef98b36181bda6caea601a5 has 7 SUCCESS / 1 failed emulator process-restart / 1 queued. No APK or Redmi action proof.
+
+### Research-to-implementation note
+
+llama.cpp issue [#32048](https://github.com/ggml-org/llama.cpp/issues/32048) (opened 10 Nov 2026) reports that slot erase can leave the shared --cache-ram prompt cache intact, so P→Q→erase→P can restore cached P; the reporter's --cache-ram 0 sequence avoided it. Upstream [#27148](https://github.com/ggml-org/llama.cpp/issues/27148) reports stale cross-conversation restoration under concurrent load. V13 source uses -np 1, --cache-ram 128, cache_prompt=true, id_slot=0, and a Runtime-shared per-role RunnerPool. This is a configuration risk, not proof of V13 contamination. Do not change cache settings without explicit approval; first design a synthetic unique-marker canary and measure correctness/TTFT/RSS.
+
+SLOWeave, *Deadline-Aware Adaptive Prefill Chunking for Efficient LLM Serving* (arXiv:2609.07883, 7 Sep 2026), selects the largest prefill chunk predicted to finish before the earliest decode deadline using a monotone cost model and measured cost tables. This suggests a local ARM scheduling experiment based on observed per-role prefill cost rather than a fixed percentage. The paper reports GPU serving results; no drop-in Android implementation or reusable code/license was established. See [arXiv](https://arxiv.org/abs/2609.07883). Sarathi-Serve's OSDI 2024 chunked-prefill work is another conceptual reference, but its GPU serving results are not Redmi evidence: [USENIX](https://www.usenix.org/conference/osdi24/presentation/agrawal).
+
+### Whole-Canon state and next ownership
+
+The 1,255 historical Canon headings remain preserved. Clause-level mapping to executable implementation, actual consumer, test, environment and rollback remains incomplete. Native B1/B2 cooperation, C3 correctness, trained B3 latent transfer, permanent JEPA/model-weight learning, voice capture/decoder/full-duplex, Android background/UI agency, distinct sparse MoE, OS sandbox, adaptive behavior judge, Memorilla production overflow consumer and controlled self-edit remain OPEN or SHADOW.
+
+- Core: finish the exact #2370 recovery→stage→deployer/source-pin chain and prove both body offers reach C4/C3 with C3 reserve intact; keep all organs and official Age 0.
+- QA: complete #2377 byte/path binding and exact CI; repair #2356 emulator process-restart harness; preserve no-redispatch and fail-closed trust.
+- JEPA: fix #2372 SleepRuntime postcommit root cause, rebind memory lifecycle and demonstrate positive rollback/restart/source-forget interleavings.
+- Perception: finish #2375 exact CI, then coordinate the separate Android MediaProjection provider, signed receipt and revocation lifecycle; no screen/microphone capture until authorized.
+- Boss: integrate only after exact-head matrix green, keep #1904 as P0, and expand clause-level coverage rather than treating one green organ as system completion.
+
+**Local test boundary:** no full Aii checkout is present in this execution environment and GitHub DNS access from the local test container is unavailable. No full LOCAL_LINUX repository suite ran. CI results above are GitHub CI, not local or Android tests. Current installed SHA remains aed1d2b826290c95c70356b5d8b864b5ef382be4; no candidate PR is released.
