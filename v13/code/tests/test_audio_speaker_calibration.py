@@ -25,7 +25,7 @@ DATASET = {
     "dataset_revision": "fixture-r1",
     "dataset_license": "TEST_ONLY",
     "dataset_use_basis": "PUBLIC_DATASET_LICENSE",
-    "dataset_authorization_ref": "fixture-only-no-real-data",
+    "dataset_authorization_ref": "d" * 64,
 }
 BINDING = {**MODEL}
 
@@ -54,27 +54,27 @@ def samples(*, noise=0.025, seed=7, leak=False):
     return rows
 
 
-def build(dataset_kind="REAL_LOCAL", noise=0.025, seed=7, leak=False):
+def build(dataset_kind="SYNTHETIC_TEST", noise=0.025, seed=7, leak=False):
     return build_calibration_artifact(
         samples(noise=noise, seed=seed, leak=leak),
         **MODEL, **DATASET, dataset_kind=dataset_kind,
     )
 
 
-def test_real_local_report_is_model_and_temporal_bound_and_hash_stable():
+def test_synthetic_report_fixture_is_model_and_temporal_bound_and_hash_stable():
     artifact = build()
     assert artifact["status"] == "HELDOUT_PASS"
-    assert artifact["dataset_kind"] == "REAL_LOCAL"
+    assert artifact["dataset_kind"] == "SYNTHETIC_TEST"
     assert artifact["source_disjoint"] is True
     assert artifact["session_disjoint"] is True
     assert artifact["speaker_disjoint"] is True
     assert artifact["heldout_metrics"]["false_accept_rate"] <= artifact["max_false_accept_rate"]
     assert artifact["heldout_metrics"]["false_reject_rate"] <= artifact["max_false_reject_rate"]
-    assert validate_calibration_artifact(artifact, **BINDING) == artifact
+    assert validate_calibration_artifact(artifact, **BINDING, allow_synthetic_test=True) == artifact
 
 
 def test_synthetic_report_never_becomes_runtime_eligible():
-    artifact = build(dataset_kind="SYNTHETIC_TEST")
+    artifact = build()
     assert artifact["status"] == "HELDOUT_PASS"
     with pytest.raises(SpeakerCalibrationError, match="real-local"):
         validate_calibration_artifact(artifact, **BINDING)
@@ -89,26 +89,26 @@ def test_overlapping_embeddings_fail_the_heldout_gate():
     artifact = build(noise=0.85, seed=41)
     assert artifact["status"] == "HELDOUT_FAIL"
     with pytest.raises(SpeakerCalibrationError, match="held-out-passing"):
-        validate_calibration_artifact(artifact, **BINDING)
+        validate_calibration_artifact(artifact, **BINDING, allow_synthetic_test=True)
 
 
 def test_model_revision_or_temporal_mismatch_is_rejected():
     artifact = build()
     with pytest.raises(SpeakerCalibrationError, match="binding mismatch"):
-        validate_calibration_artifact(artifact, **{**BINDING, "model_revision": "fixture-r2"})
+        validate_calibration_artifact(artifact, **{**BINDING, "model_revision": "fixture-r2"}, allow_synthetic_test=True)
     with pytest.raises(SpeakerCalibrationError, match="binding mismatch"):
-        validate_calibration_artifact(artifact, **{**BINDING, "lookback_frames": 9})
+        validate_calibration_artifact(artifact, **{**BINDING, "lookback_frames": 9}, allow_synthetic_test=True)
 
 
 def test_artifact_hash_tampering_is_rejected():
     artifact = build()
     tampered = dict(artifact, threshold=artifact["threshold"] - 0.1)
     with pytest.raises(SpeakerCalibrationError, match="hash mismatch"):
-        validate_calibration_artifact(tampered, **BINDING)
+        validate_calibration_artifact(tampered, **BINDING, allow_synthetic_test=True)
 
 
 def test_local_manifest_requires_exact_allowlisted_hash_and_model_binding(tmp_path):
-    artifact = build()
+    artifact = build(dataset_kind="REAL_LOCAL")
     root = tmp_path / "models" / "speaker_calibration"
     root.mkdir(parents=True)
     raw = json.dumps(artifact, sort_keys=True, separators=(",", ":")).encode()
@@ -132,7 +132,7 @@ def test_local_manifest_requires_exact_allowlisted_hash_and_model_binding(tmp_pa
 
 
 def test_disabled_or_missing_manifest_entry_stays_off(tmp_path):
-    artifact = build()
+    artifact = build(dataset_kind="REAL_LOCAL")
     root = tmp_path / "models" / "speaker_calibration"
     root.mkdir(parents=True)
     raw = json.dumps(artifact, sort_keys=True, separators=(",", ":")).encode()
@@ -167,7 +167,7 @@ def test_artifact_contains_no_embeddings_or_speaker_labels():
 
 
 def test_symlinked_model_root_and_artifact_are_rejected(tmp_path):
-    artifact = build()
+    artifact = build(dataset_kind="REAL_LOCAL")
     outside = tmp_path / "outside"
     outside.mkdir()
     models = tmp_path / "models"
@@ -192,7 +192,7 @@ def test_symlinked_model_root_and_artifact_are_rejected(tmp_path):
 
 
 def test_duplicate_manifest_ids_are_rejected(tmp_path):
-    artifact = build()
+    artifact = build(dataset_kind="REAL_LOCAL")
     root = tmp_path / "models" / "speaker_calibration"
     root.mkdir(parents=True)
     entry = {
