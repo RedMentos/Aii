@@ -1264,3 +1264,10 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 - Exact staged/integrated run 45056898007 remains IN_PROGRESS (staged-runtime and integrated-regression). Do not promote it to PASS until both finish.
 - Original #2361 remains stale/mergeable=false on c4eb82 and is marked for supersession after #2369's integrated result. No force-push.
 - The adapter is diagnostic only: caller-supplied embeddings, no attested producer, no inference, no calibration, no weight download, no speaker identity or normal Runtime dispatch. A4 remains DEFER; Redmi unverified.
+
+
+### FASTDIAR exact-base staged status — 2026-11-22T18:49:00Z
+
+- Run 45056898007: `staged-runtime` job PASS, including staged source recall, SQLite turn, revocation and JEPA restart plus recovery shell syntax.
+- The same run's `integrated-regression` job has completed dependency installation and is still exercising the shared staged organ/memory paths. Status remains IN_PROGRESS; no overall run PASS claim.
+- Exact FASTDIAR adapter/consumer matrix 45056897981 remains 2/2 PASS (7 tests each, Python 3.13/3.14); privacy 45056897992 and same-repo integration 45057029362 PASS.
