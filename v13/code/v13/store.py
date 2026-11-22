@@ -362,7 +362,7 @@ class Store:
         for component,entry in m.get('components',{}).items():
             if component not in COMPONENT_ENCODERS or m['hashes'].get(entry['path'])!=entry['sha256'] or entry['path'] in owners:raise ValueError('Komponenten-Manifest inkonsistent')
             owners.add(entry['path'])
-    def _require_live_update_sources(self,conn,row,*,status=None,path=None,sha256=None):
+    def _require_live_update_sources(self,conn,row,*,status=None,path=None,sha256=None,check_sources=True):
         """Revalidate update identity and every declared source inside the commit transaction."""
         if row is None:
             raise ValueError("Update row missing during generation change")
@@ -378,6 +378,8 @@ class Store:
             raise ValueError("Update source manifest is invalid")
         if not isinstance(manifest,dict):
             raise ValueError("Update source manifest is invalid")
+        if not check_sources:
+            return manifest
         source_ids=manifest.get("source_ids",[])
         if type(source_ids) is not list:
             raise ValueError("Update source manifest is invalid")
@@ -469,7 +471,7 @@ class Store:
                     or latest["manifest"]!=r["manifest"]):
                 raise ValueError("Update changed during rollback")
             self._require_live_update_sources(c,latest,status="COMMITTED",
-                                              path=r["path"],sha256=r["hash"])
+                                              path=r["path"],sha256=r["hash"],check_sources=False)
             current=json.loads(c.execute("SELECT value FROM meta WHERE key='active_generation'").fetchone()[0])
             if current!=active['brain_generation_id']:raise ValueError('Generation konkurrierend geändert')
             for entry in parent_components.values():
