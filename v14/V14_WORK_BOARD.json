@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T12:02:49.539Z",
-  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; all 30 observed exact-SHA Actions workflow runs completed SUCCESS. Fresh owner-authenticated private PIPELINE_STATUS #550 confirms the same SHA installed and UP_TO_DATE. Functional/whole-Canon acceptance remains open; V14 master and historical V13 appendix preserved.",
+  "updated_at": "2026-11-22T18:42:00Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4 (documentation/handoff-only refresh; installed code remains c4eb82deec915f65894c20d6ebbaf0ebf58fa335 per the latest reported owner receipt). The phone updater is reported enabled/UP_TO_DATE, but the separate HEALTH receipt reports runtime UNAVAILABLE. P0 issue #1904 remains open; its latest stored diagnostic snapshot is not a new turn or correctness proof. PR #2366 exact Perception, staged/integrated and same-turn synthetic CI all pass but remains DRAFT and not normal-Runtime-wired. PR #2361 exact focused CI passes but its branch is one commit behind and mergeability is false. PR #2368 adds a synthetic-only A4 ablation; local 4/4 tests pass, exact CI retry is running after fixing the missing pytest dependency. Whole-Canon acceptance remains open; no Redmi acceptance.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -386,18 +386,23 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
-      "proof_environment": "LOCAL_LINUX isolated + CI; no Android timing",
-      "next_step": "Perception: retain source timestamps and pre-batch temporal history for speaker-change evidence. No AudioRecord provider, calibrated speaker model, Android CPU benchmark or speaker identity authority is present; keep optional backend disabled.",
+      "proof_environment": "LOCAL_LINUX CPython 3.13.5 isolated + exact GitHub CI synthetic consumer; no Android/Termux/Redmi timing",
+      "next_step": "R-081 full-text review and FASTDIAR adapter code review are complete. PR #2366 exact Perception fastpath 3.13/3.14 PASS, staged/integrated 2/2 PASS, same-turn B1/B2/C4/C3 consumer 3.13/3.14 PASS, privacy and deployment-integrity PASS; it remains DRAFT and the stored-image A5 adapter is not called by normal Runtime. PR #2361 focused 3.13/3.14 CI passes, but its branch is one commit behind current release-development HEAD aed1d2 and GitHub reports mergeable=false; rebase/reconcile before merge. PR #2368 adds only a synthetic cosine-prototype ablation; LOCAL_LINUX CPython 3.13.5 4/4 PASS and three source-disjoint seeds show a coverage/deferral/fragmentation trade-off. Exact CI initially failed because pytest was not installed; the workflow now pins pytest and the retry is running. Next: Core owns normal Runtime invocation for #2366; for audio, obtain separately consented labelled embeddings and build a model-bound calibration receipt before A4 may leave DEFER. No real audio or Redmi proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-22T18:42:00Z",
       "latest_candidate_pr": {
-        "pr": 2275,
-        "head_sha": "b19ff77cc769e670a46b6467798fba94a6d19046",
-        "base_sha": "34eb645357d65bdd5ac69b9fb2c834d043086dac",
-        "ci": "FAIL_RAW_EAR_44958073016_STAGED_44958072992",
-        "tested_code_sha": "880bfc62db91c6b8ecc3c03d7b672f3e7e8c848c"
+        "pr": 2368,
+        "head_sha": "41025f3d9bf92870f9675173d4af00638a49c203",
+        "base_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
+        "branch": "research-perception/v14-a4-novelty-ablation-20261122",
+        "status": "DRAFT_CI_RETRY_RUNNING_AFTER_PYTEST_DEPENDENCY_FIX",
+        "scope": "A4 source-disjoint synthetic cosine novelty-gate and prototype-retention ablation; no Runtime consumer",
+        "local_linux": "CP3135_PYCOMPILE_PASS_4_OF_4_PASS_3_SEED_HOLDOUT",
+        "exact_ci": "FIRST_RUN_FAILED_ONLY_NO_PYTEST_INSTALLED; RETRY_RUN_45056272786_IN_PROGRESS",
+        "runtime": "NOT_CONNECTED_TO_RUNTIME",
+        "redmi": "NOT_RUN"
       },
-      "proof": "RAW EAR FIR anti-alias decimator is integrated in 9097d634 and candidate CI passed. Speaker-change decision remains DEFER without verified calibration; no identity model, Android mic or learned acoustic weights. #2329 fixes the libfvad comparator CLI missing-os import and adds a pinned-library end-to-end CLI regression; exact head 4/4 SUCCESS, research-only synthetic fixture. No production VAD or Android capture."
+      "proof": "RAW EAR FIR anti-alias feature decimator is integrated in 9097d634 and the research-only libfvad comparator CLI regression #2329 exact 4/4 CI passes. PR #2366 adds stored IMAGE SourceRef→17 RAW EYE segments→A4/admission candidate with Store RLock serialization and two barrier races; exact Perception 2/2, staged/integrated 2/2, same-turn consumer 2/2, privacy and deployment-integrity checks PASS, but no normal Runtime hook. PR #2361 wraps caller-supplied FASTDIAR embeddings with checkpoint byte hashing and source/time bounds; focused Python 3.13/3.14 CI 2/2 PASS, no weight download, no calibrated decision, branch rebase still needed. PR #2368 tests gate/retention trade-offs on synthetic 192-D vectors only; local 4/4 PASS and three source-disjoint seeds; no real audio, PLDA/VBx, model inference, runtime integration or Android proof."
     },
     {
       "id": "V14-019",
@@ -485,12 +490,12 @@
   "capability_snapshot": [
     {
       "capability": "A0-A5 perception and attention",
-      "code": "CALLER_PCM16_RAW_EAR_FIR_ANTIALIAS; A5_UI_METADATA_LEASE_SHADOW; STORE_SOURCE_READ_REVOCATION_LOCK",
-      "wired": "CALLER_PCM16→STAGED A5/A4/C3 CONSENT LEASE; A5 UI METADATA→A4 SHADOW; shared Store source-read/revocation lock",
-      "tested_synthetic": "#2327 exact candidate 27 SUCCESS / 1 expected SKIPPED and #2329 exact CLI comparator 4/4 SUCCESS; #2327 composes FIR producer through staged A5/A4/C3 and rebinds exact composer→recovery→stage→deployer pins",
+      "code": "CALLER_PCM16_RAW_EAR_FIR_ANTIALIAS; A5_UI_METADATA_LEASE_SHADOW; STORE_SOURCE_READ_REVOCATION_LOCK; STORED_RAW_EYE_IMAGE_A5_SOURCE_LOCK_PR2366; FASTDIAR_DIAGNOSTIC_ADAPTER_PR2361; A4_NOVELTY_GATE_ABLATION_SYNTHETIC_PR2368",
+      "wired": "CALLER_PCM16→STAGED A5/A4/C3 CONSENT LEASE; A5 UI METADATA→A4 SHADOW; stored IMAGE SourceRef→ephemeral RAW EYE A5/A4/admission candidate with source lifecycle serialization; FASTDIAR matrix adapter→existing RAW EAR evidence contract only when caller supplies embeddings; no production calibration or speaker identity",
+      "tested_synthetic": "#2327 exact candidate 27 SUCCESS / 1 expected SKIPPED; #2329 exact CLI comparator 4/4 SUCCESS; #2366 exact Perception 2/2, staged/integrated 2/2 and same-turn consumer 2/2 SUCCESS; #2361 focused Python 3.13/3.14 2/2 SUCCESS; #2368 LOCAL_LINUX CPython 3.13.5 py_compile + 4/4 tests + three source-disjoint seeds; exact CI retry after pinned pytest install in progress",
       "tested_android": "NOT_VERIFIED",
       "active": "MERGED_INTEGRATION / SHADOW_ONLY",
-      "evidence": "No Android AudioRecord/microphone, screen capture, AccessibilityService, tap/type provider or calibrated speaker model; libfvad remains research-only."
+      "evidence": "No Android AudioRecord/microphone, camera/screen capture, AccessibilityService, tap/type provider or calibrated speaker model. #2366 image adapter is not called by normal Runtime. #2361 does not run FASTDIAR or download weights; checkpoint-weight license unresolved. #2368 is synthetic-only. No Redmi proof."
     },
     {
       "capability": "B1_DETAIL and B2_GIST bodies",
@@ -1010,13 +1015,13 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T12:02:49.539Z",
-    "release_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
+    "timestamp": "2026-11-22T18:42:00Z",
+    "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "code_candidate_sha": "c4eb82deec915f65894c20d6ebbaf0ebf58fa335",
     "candidate_ci": "EXACT_SHA_ALL_30_OBSERVED_ACTIONS_WORKFLOW_RUNS_SUCCESS",
-    "post_merge_push_ci": "CI_GREEN; DEVICE_CODE_INSTALL_CONFIRMED_BY_PRIVATE_PIPELINE_STATUS_550",
-    "device_receipt": "PRIVATE_PIPELINE_STATUS_550_AUTHENTICATED_INSTALLED_C4EB82; RUNTIME_UP_TO_DATE; DASHBOARD_UP_TO_DATE; AUTO_UPDATE_ENABLED; LAST_ERROR_NONE",
-    "device_acceptance": "DIAGNOSTICS_551_SAME_56.432S_TURN_40.818S_TTFT_39.088S_PREFILL_2_TOKENS; B1_B2_SMOKE_PARTIAL_TIME_BUDGET; 20_TURN_ACCEPTANCE_OPEN",
+    "post_merge_push_ci": "AED1D2_DOCUMENTATION_ONLY_HEAD; PHONE_INSTALLED_C4EB82_REPORTED_UP_TO_DATE; DO_NOT_TREAT_AS_NEW_CODE_RELEASE",
+    "device_receipt": "LATEST_HANDOFF_REPORTS_PRIVATE_PIPELINE_STATUS_INSTALLED_C4EB82_AUTO_UPDATE_ENABLED_UP_TO_DATE; SEPARATE_HEALTH_RUNTIME_UNAVAILABLE; NO_NEW_TURN",
+    "device_acceptance": "LAST_STORED_TURN_57.739S_TOTAL_41.627S_TTFT_38.945S_PREFILL_751_TOKENS_2_OUTPUT; B1_B2_TIME_BUDGET_53.2S_54.2S; CORRECTNESS_UNKNOWN; P0_1904_OPEN",
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK; no local full pytest/native suite",
     "pr2338_ci": "HEAD_6664C3: staged/integrated runtime.py pin mismatch; native_turn_budget KeyError source_ref; A5 UI lease store.py pin mismatch; Boss owns coordinated repair; DRAFT_NOT_RELEASED",
     "pr2332_ci": "REMOTE_ALLOWLIST_TESTS_PASS_BUT_NOT_EXECUTABLE: operator.py dispatches to callosum.operator_command which rejects native-probe; no local source-bound tap/model consumer or local one-shot approval; DRAFT_NOT_RELEASED; PROBE_NOT_RUN",
@@ -1062,7 +1067,34 @@
     "pr2288": "MERGED at 39b175521f50048f13ca14372b316de47527f531; 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 cancelled; current release c4eb82 supersedes it.",
     "device_health": "HEALTH_549: 1,293 MiB MemAvailable / 5,569 MiB total / 1,537 MiB free disk; health runtime UNAVAILABLE while diagnostics reports RUNNING",
     "learning_status": "LEARNING_STATUS_552_UNAVAILABLE",
-    "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result."
+    "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result.",
+    "pr2366": {
+      "head_sha": "f8d05bcf4d23a5ac303e44a4aa130d5383369ed9",
+      "status": "DRAFT_NOT_RELEASED",
+      "perception": "45054556653_2_OF_2_SUCCESS",
+      "staged_integrated": "45054556692_2_OF_2_SUCCESS",
+      "same_turn_consumer": "45054556663_2_OF_2_SUCCESS",
+      "privacy": "45054556593_SUCCESS",
+      "deployment_integrity": "45054556651_SUCCESS",
+      "runtime_consumer": "NOT_NORMAL_RUNTIME_WIRED",
+      "redmi": "NOT_RUN"
+    },
+    "pr2361": {
+      "head_sha": "bfac3a87a6f308d6b7583df9d72c81ab53f898aa",
+      "status": "DRAFT_NOT_RELEASED_MERGEABLE_FALSE_BEHIND_1_COMMIT",
+      "focused_ci": "45048321233_PYTHON_3_13_3_14_2_OF_2_SUCCESS",
+      "weights": "NOT_DOWNLOADED_WEIGHT_LICENSE_UNRESOLVED",
+      "redmi": "NOT_RUN"
+    },
+    "pr2368": {
+      "head_sha": "41025f3d9bf92870f9675173d4af00638a49c203",
+      "status": "DRAFT_RESEARCH_ONLY",
+      "local": "CP3135_PYCOMPILE_PASS_4_OF_4_PASS_3_SEED_HOLDOUT",
+      "first_ci": "45056173516_FAILED_ONLY_MISSING_PYTEST_DEPENDENCY",
+      "retry_ci": "45056272786_IN_PROGRESS",
+      "runtime": "NOT_CONNECTED",
+      "redmi": "NOT_RUN"
+    }
   },
   "qa_latest_checkpoint": {
     "timestamp": "2026-11-22T12:02:49.539Z",
