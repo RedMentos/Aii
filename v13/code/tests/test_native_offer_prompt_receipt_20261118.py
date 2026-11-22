@@ -178,6 +178,10 @@ class NativeHTTPBound(unittest.TestCase):
         r.port = self.server.server_address[1]
         r.key = "synthetic-key"
         r._audit_enabled = False
+        # __new__ intentionally bypasses LlamaRunner.__init__; initialize the
+        # optional diagnostics state that generate() normally receives there.
+        r._server_version_info = None
+        r._prompt_cache_policy = None
         r.load = lambda cancel, deadline: None
         # A fabricated __new__ fixture has no real process/log to release.
         r.unload = lambda: {"process_reaped": True, "was_loaded": False}
