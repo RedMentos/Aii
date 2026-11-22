@@ -133,6 +133,7 @@ class PairedNativeTapTests(unittest.TestCase):
         report = json.loads(Operator(self.r).run(":b3 pairs"))
         self.assertEqual(report["paired_native_samples"], 1)
         self.assertEqual(report["captured_pair_packets"], 3)
+        self.assertEqual(report["ignored_legacy_packets"], 0)
         self.assertEqual(report["unique_body_pair_ids"], 2)
         self.assertEqual(report["required_for_l1_training"], 64)
         self.assertEqual(report["remaining"], 63)
