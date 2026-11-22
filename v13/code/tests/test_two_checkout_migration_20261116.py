@@ -235,14 +235,35 @@ def exercise_worker_migration(base):
             assert git('rev-parse', 'HEAD:' + path, cwd=agent) == git(
                 'rev-parse', target + ':' + path, cwd=repo), path
         marker = home / '.v13-private/runtime-active.json'
-        old_receipt = json.loads(marker.read_text(encoding='utf-8'))
-        assert old_receipt['build_profile'] == old['profile']
+        old_receipt = None
+        if old['result']['runtime'] in ('UPDATED', 'UP_TO_DATE'):
+            assert marker.is_file(), old
+            old_receipt = json.loads(marker.read_text(encoding='utf-8'))
+            assert old_receipt['build_profile'] == old['profile']
+        else:
+            # The old worker is expected to fail closed when the new commit
+            # changes a pinned builder it does not understand. In that case
+            # it must not publish an active-runtime receipt for a deployment
+            # that never completed. The freshly reloaded worker below must
+            # still recover and install the exact target.
+            assert old['result']['runtime'] == 'ERROR', old
+            assert not marker.exists(), 'failed legacy deploy must not publish an active receipt'
+            errors = old.get('deploy_errors') or []
+            assert any(
+                item.get('stage') == 'deploy'
+                and item.get('type') == 'RuntimeDeployError'
+                and item.get('message') == 'Pinned plain UI recovery builder changed'
+                for item in errors
+            ), old
         assert (home / '.v13-private/pipeline-bridge-refresh').is_file()
 
         # The new relay must not migrate when the owner's consent is off.
         disabled = worker('new_disabled')
         assert disabled['result'] is None
-        assert json.loads(marker.read_text(encoding='utf-8')) == old_receipt
+        if old_receipt is None:
+            assert not marker.exists()
+        else:
+            assert json.loads(marker.read_text(encoding='utf-8')) == old_receipt
 
         # Simulate relay exec/reload with a new interpreter and consent enabled.
         # This executes the actual one-shot startup helper, without a timer wait.
