@@ -685,7 +685,7 @@ class SleepRuntime:
             if learning.get('status')=='UPDATED_EXPERIMENTAL_WORLD_JEPA':
                 from .world_jepa_b3_supervision import train_l1_shadow_directions_from_t8
                 receiver_training=train_l1_shadow_directions_from_t8(
-                    self.r.store,self.r.cognition,self.r.home,
+                    self.r.store,getattr(self.r,'cognition',None),self.r.home,
                     directions=("B1_TO_B2","B2_TO_B1"),limit=256,
                     seeds=(11,17),epochs=1,head_steps=25,
                     cancel_check=cancel_check)
