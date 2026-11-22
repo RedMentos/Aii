@@ -13,6 +13,8 @@ AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
 AUDIO_BUILDER_BLOB_SHA1 = "fb59de5040081b1407ba5cbee8f9102e9921d149"
 C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
 C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
+NATIVE_RECEIVER_BUILDER = "scripts/integrated_native_latent_receiver_candidate_20261122.py"
+NATIVE_RECEIVER_SHA256 = "ae103039b7cbea6450b4ba51e67af57fea8ddf4d4355ddfe9bea06e85441ef22"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -76,4 +78,25 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
         raise ValueError("Runtime-wide A5 consent lease was not composed")
     if "v13/audio_context_store.py" not in composed:
         raise ValueError("consent-bound audio context store was not produced")
+
+    native_path = code_dir / NATIVE_RECEIVER_BUILDER
+    if native_path.is_symlink() or not native_path.is_file():
+        raise ValueError("native receiver overlay missing or unsafe")
+    native_raw = native_path.read_bytes()
+    if hashlib.sha256(native_raw).hexdigest() != NATIVE_RECEIVER_SHA256:
+        raise ValueError("native receiver overlay source changed")
+    native_spec = importlib.util.spec_from_file_location("v14_native_receiver_overlay", native_path)
+    if native_spec is None or native_spec.loader is None:
+        raise RuntimeError("native receiver overlay is not loadable")
+    native_module = importlib.util.module_from_spec(native_spec)
+    native_spec.loader.exec_module(native_module)
+    composed = native_module.apply_sources(code_dir, composed)
+    if b"def native_receive(" not in composed.get("v13/cognition.py", b""):
+        raise ValueError("native receiver Cognition path was not composed")
+    if b"native-probe" not in composed.get("v13/callosum.py", b""):
+        raise ValueError("native receiver operator path was not composed")
+    if "v13/native_latent_receiver.py" not in composed:
+        raise ValueError("native receiver Python module was not staged")
+    if "v13/native/latent_receiver/native_latent_receiver.cpp" not in composed:
+        raise ValueError("native receiver C++ source was not staged")
     return composed
