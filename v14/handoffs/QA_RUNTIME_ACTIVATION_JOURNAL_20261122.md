@@ -2,7 +2,7 @@
 
 **Branch:** `qa/v14-activation-journal-20261122`  
 **Base:** Boss integration candidate `f0d3c848dfb1d65e282f065233adbe3c9205e439` (`boss/v14-recall-store-pin-rebind-20261122`)  
-**Status:** DRAFT / CI PENDING / NOT_RELEASED / REDMI_UNVERIFIED.
+**Status:** DRAFT / RUNTIME_DEPLOY_CI_GREEN / FULL_STACK_BLOCKED / NOT_RELEASED / REDMI_UNVERIFIED.
 
 ## Reproduced defect
 
@@ -20,12 +20,13 @@ The current deployment and rollback paths atomically replace the launcher and `r
 ## Verification boundary
 
 - GitHub source readback: implementation, tests and workflow paths are present on this branch.
+- Exact-head runtime-deploy integrity `44970704843`: PASS on Python 3.11 and 3.14; each interpreter ran 42 tests (8 activation-journal, 3 deploy-integrity, 31 runtime-deploy). Private bridge `44970693938`: PASS.
+- Full candidate staged/integrated `44970704836`, Lab-Age `44970704845`, migration `44970704797` and Python 3.14 staged startup subjob `137049628666`: FAIL at the independent Boss #2288 pin-order defect `local-error pre-rebind semantic binding mismatch` in `termux_runtime_recovery_candidate_20261112.py:313`. The owner-read subjob itself `137049628929` PASSed.
 - LOCAL_LINUX full Aii checkout: BLOCKED; no repository checkout is mounted in this worker.
-- Exact-head CI: pending. No test is marked PASS before its run completes.
 - Android/Redmi: REDMI_UNVERIFIED. No live device receipt, deploy, rollback or native measurement was available.
 - This does not fix the separate Boss source-pin composition failure at `termux_runtime_recovery_candidate_20261112.py:313`; #2288 remains blocked until its exact-head CI is green.
 - Pipeline UI rollback action is not yet wired to the new `rollback()` API; the current candidate exposes the safe runtime rollback function/CLI. Rebase/compose the UI path only after Boss integrates the transaction helper.
 
 ## Next
 
-Run exact-head Python 3.11/3.14 runtime-deploy integrity tests, inspect every process-death result, then rebase the rollback UI/worker consumer and rerun the full staged/integrated release gates. No Redmi release or user action is requested.
+Boss must first repair the exact #2288 guard-output→final-semantic pin order and rerun the full release gate. Then rebase/compose #2281 Age/X10 and #2295 onto that candidate, wire the runtime rollback API to the pipeline UI/worker, and rerun crash/restart/rollback/migration gates. No Redmi release or user action is requested.
