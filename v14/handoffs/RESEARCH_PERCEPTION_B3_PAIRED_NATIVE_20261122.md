@@ -80,3 +80,47 @@ Date: 2026-11-22 13:00 CET
 
 ## User impact
 No immediate phone or user-visible behavior changes. No user action is required for the repository candidate. No manual Termux command, microphone grant, model download, weight swap or update request.
+
+---
+
+## Checkpoint — B2 native token-span alignment / CacheBack review (2026-11-22 18:00 CET)
+
+### New executable path
+- B3 paired packet schema advanced to /4.
+- B3PairedTapPacket.native_token_readout now persists the exact B2_GIST native token IDs and a lossless, source-bound character interval for every B2 token, separately from the adaptive Gist pooling slots.
+- training_batch() now exports sender/receiver token IDs and spans in both B1→B2 and B2→B1 directions plus an explicit character-interval intersection map. It never equates token indices across the different tokenizers.
+- load_pair() rechecks the B2 token plan against the persisted native tap ID, token IDs, source reference and feature geometry after restart.
+- The contract rejects token-span gaps, identity drift, token-count/dimension mismatch and any nonzero injection/body-learning authority. Legacy /3 packets are intentionally counted as legacy by the existing :b3 pairs schema filter; they are not silently interpreted as /4.
+
+### Exact code/test evidence
+- Code-bearing commit: 7229c93b143d5f9d81ed1a3d6a376764d4b307e0.
+- Exact focused GitHub workflow: V13 B3 paired native tap regression, run 45051365567, PASS. The job ran 54 tests; the touched-module compile and Termux L1 shadow CLI import/argument-parser smoke also PASS.
+- Earlier iterations exposed and fixed two test-contract mistakes: Gist plans do not store a duplicate token-ID list, and the reverse claim-limit string changed with the new source-span output. The final focused run is green.
+- LOCAL_LINUX isolated reproduction: CPython 3.13.5 / NumPy 2.3.5; py_compile PASS for the isolated source-span exercise; different-tokenizer character-overlap forward/reverse coverage PASS; source-gap negative control REJECTED; UTF-8 byte-piece boundary smoke PASS. This is not a full repository import or full pytest run.
+- LOCAL_FULL_REPOSITORY remains BLOCKED: no Aii checkout is mounted and GitHub DNS is unavailable in the container. Full local pytest is not claimed.
+- Other staged/integrated, native receiver, role-specific tap, JEPA, Lab-Age and deployment workflows for this PR head were still queued at last read. Do not mark the PR merge-ready from the focused B3 result alone.
+- Latest branch documentation checkpoint: a4a9ce971364020f9558e2a8106fe4b8291ba3e6; it appends research/handoff text after the code-bearing commit without changing code. Branch remains one commit behind the release branch and must not be rebased until Boss PR #2343's exact matrix is green.
+
+### Research update
+- R-087 now records a full-text review of Rossi et al., Receiver-Conditioned Latent Communication gives 94% CacheBack, arXiv:2609.32046v1 (2026-09-25, preprint), plus the Apache-2.0 CacheBack repository/dependency readback.
+- Useful idea: condition evidence selection on the receiver's actual query. Not directly reusable for B1/B2: the paper's public API explicitly requires the same model or matching copies, does not support cross-model alignment, and its reported evaluation uses an 8×80-GB H100 node. No CacheBack dependency or model was imported.
+- Current B3 packet change provides source-span/token-ID alignment metadata only. It does not supply receiver embedding rows, KV transfer, semantic utility, native injection or accepted B3.
+
+### Integration handoff
+- Core's row-only receiver-token embedding extractor is still the required next seam. It should accept the exact receiver model revision plus requested token IDs and return only those embedding rows with verified dimension/dtype/quantization metadata; never materialize the full vocabulary matrix on Android.
+- Perception can then train/evaluate a source-disjoint low-rank sender-tap → receiver-input projector using the new overlap map, with exact receiver rows as targets, held-out sources, OOD, shuffled/zero/no-message controls, parameter-diff, retention, restart and rollback evidence.
+- Core PR #2350's approval/hash checks do not themselves implement that row extractor. B3 stays OFF/SYMBOLIC and no receiver injection authority is granted.
+
+### Device/deployment boundary
+- A fresh private V13OBS read was available, but it is not a test of this PR. The existing updater reports UP_TO_DATE at installed release c4eb82deec915f65894c20d6ebbaf0ebf58fa335; this candidate is not released or deployed.
+- The latest private turn still shows B1/B2 TIME_BUDGET with zero valid offers and no native latent exchange / C3 semantic-use proof. C3 prefill remains slow. No new update request, remote command, model/weight change or permission change was sent.
+- TERMUX/REDMI proof for this code remains REDMI_UNVERIFIED.
+
+### Next actions
+1. Core: implement the pinned, read-only, row-bounded receiver-token embedding extractor against llama.cpp's exact internal tensor ABI, with quantized-row and overflow tests plus Android ARM64 cross-compile.
+2. Perception: consume only those rows through the new training_batch() span map and build a low-rank receiver-input projector; do not train from synthetic vectors as if they were model evidence.
+3. Boss/Integrator: update the shared V14 next-action/board only after reviewing this exact checkpoint; do not rebase #2346 until #2343's staged/deployer source pins and resource trade-off are resolved.
+4. Keep B3 OFF/SYMBOLIC until real native receiver utility, source-disjoint holdout, OOD, retention, restart and target-device evidence pass.
+
+No user action required. No model, weight, dependency, device setting or production route changed.
+
