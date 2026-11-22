@@ -69,7 +69,7 @@ def main():
         if b"audio_consent_lease" not in runtime:
             raise RuntimeError("full staged Runtime lacks the A5 audio lease")
 
-        (staged / "tests").mkdir()
+        (staged / "tests").mkdir(exist_ok=True)
         shutil.copy2(TEST, staged / "tests/test_v14_same_turn_c4_c3_consumption.py")
         env = dict(os.environ)
         env["PYTHONPATH"] = str(staged)
