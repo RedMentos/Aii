@@ -896,3 +896,9 @@ def test_teacher_ear_summary_truncates_without_unbounded_prompt_growth():
     evidence = _validate_teacher_fixture(_teacher_ear_result("gen-teacher", words=words))
     assert evidence["summary_truncated"] is True
     assert len(evidence["summary"]) <= 512
+
+
+def test_teacher_ear_rejects_finality_mismatch_before_c3():
+    provisional = _teacher_ear_result("gen-teacher", finality="PROVISIONAL")
+    with pytest.raises(ValueError, match="finality differs"):
+        _validate_teacher_fixture(provisional, finality="FINAL")
