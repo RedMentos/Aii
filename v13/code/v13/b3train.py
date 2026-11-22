@@ -228,6 +228,8 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
                 "latent_authority": 0, "receiver_injection_authority": 0,
                 "body_learning_authority": 0,
             })
+        Bridge.load(prefix, sender_revision=batch["sender_revision"],
+                    receiver_revision=batch["receiver_revision"])
 
     report = {
         "schema": "v13.b3-l1-shadow-training/1",
