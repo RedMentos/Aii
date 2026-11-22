@@ -1,3 +1,16 @@
+## Newer authenticated phone receipt and PR-head correction — 2026-11-22 06:01Z
+
+Private owner-read PIPELINE_STATUS #480 is an authenticated POST-MERGE receipt. It reports auto_update=true, runtime=CI_WAIT, dashboard=CI_WAIT, last_result=CI_WAIT, last_error=NONE, updated_commit=89333289b8cd50da92cbf7074c9ef689a2972dbf. The phone has not installed release merge 39b175521f50048f13ca14372b316de47527f531; its existing updater is waiting for CI. No UPDATE_REQUEST or manual Termux command was sent. Exact post-merge push CI remains not independently verified.
+
+PR #2313 current head is now 8a9cecb54fa16fce5c65f0f0ac177e4fe3881a40 (92 ahead / 282 behind release). It adds a real NumPy/Adam L1 shadow-adapter trainer with explicit labels/provenance, 64-pair minimum, paired holdout, two seeds, no-message/latent/shuffle/random controls and bit-identical save/reload. Its test patches training_batch with synthetic random tensors; the current paired-tap workflow is pending. This is not actual native activation training, L1 utility acceptance or receiver injection.
+
+PR #2314 exact failure is a raw-string escaping bug: raw triple-quoted anchor constants preserve literal backslash-n bytes, while Callosum source has actual newline bytes. Core was given the exact fix; keep count==1 and fail-closed matching.
+
+PR #2311 failures converge on nested source pins, not yet the JEPA optimizer: integrated WorldJEPA training candidate → recovery wrapper → stage builder → runtime deployer hashes are stale. JEPA/QA were given exact failure chain; do not patch optimizer behavior until stage integrity passes.
+
+PR #2312 signed one-shot consumer passes; staged-runtime has 238 passed / 10 skipped / 47 subtests and integrated-regression passes, but two-checkout migration returns PARTIAL with runtime ERROR / last_error UPDATE on the old raw-runtime-plain-ui-history-recovery-v1 profile. Perception/QA were notified; no microphone provider.
+
+---
 # CURRENT BOSS INTEGRATION CHECKPOINT — 2026-11-22 (supersedes older status snapshots)
 
 Release-development branch gpt6/v13-private-remote-bridge-20261111 is now exactly 39b175521f50048f13ca14372b316de47527f531 (verified by branch-vs-commit comparison). Boss PR #2288 merged from candidate 1105ab56dae6604d927fc4ea868121000010fb93 against base bdcad466ffea75a2b41f7d23be168f53c7197d20. Candidate-head CI: 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 CANCELLED / 0 pending. Passing checks included same-turn B1/B2→C4→C3 and source-revocation on Python 3.13/3.14, staged/integrated regression, audio/arithmetic, Lab-Age, two-checkout migration, owner-read bootstrap, runtime deployment integrity, source contracts, native tap provenance and privacy scan.
