@@ -1,6 +1,31 @@
 name: V14 JEPA Store A-B-A and Runtime Python 3.13 and 3.14
 
 on:
+  push:
+    branches:
+      - "jepa-memory/v14-per-session-retention-current-20261121-run12"
+    paths:
+      - "v13/code/v13/world_jepa.py"
+      - "v13/code/v13/world_jepa_training_state.py"
+      - "v13/code/v13/world_jepa_shadow_checkpoint.py"
+      - "v13/code/v13/world_jepa_consumer.py"
+      - "v13/code/v13/world_jepa_replay.py"
+      - "v13/code/v13/world_jepa_drift.py"
+      - "v13/code/v13/world_jepa_store_authority.py"
+      - "v13/code/v13/world_jepa_receiver_matrix.py"
+      - "v13/code/v13/world_jepa_planner.py"
+      - "v13/code/v13/world_jepa_optimizer_audit.py"
+      - "v13/code/v13/runtime_deploy.py"
+      - "v13/code/scripts/integrated_world_training_resume_candidate_20261111.py"
+      - "v13/code/scripts/termux_runtime_recovery_candidate_20261112.py"
+      - "v13/code/scripts/stage_integrated_candidate.py"
+      - "v13/code/tests/test_world_jepa_optimizer_resume_store.py"
+      - "v13/code/tests/test_world_jepa_predictor_only_resume.py"
+      - "v13/code/tests/test_v14_world_jepa_store_aba_replay.py"
+      - "v13/code/tests/test_world_jepa_training_resume_stage_20261111.py"
+      - "v13/code/tests/world_jepa_training_resume_disposable_cases_20261111.py"
+      - "v13/code/tests/test_v14_world_jepa_postcommit_runtime.py"
+      - ".github/workflows/v14-jepa-training-resume-py314.yml"
   pull_request:
     paths:
       - "v13/code/v13/world_jepa.py"
