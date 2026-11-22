@@ -160,6 +160,53 @@ def test_single_session_waits_for_disjoint_temporal_holdout_without_error(tmp_pa
         store.close()
 
 
+def test_pending_single_session_rows_resume_after_restart_with_second_session(tmp_path):
+    home = tmp_path / "temporal-pending-restart"
+    store = _make_store(home)
+    try:
+        _add_session(store, "first-cohort", 0, event_count=32)
+        _permissions(store, steps=40)
+        first_learner = TemporalWorldJEPAStoreConsumer(store, seed=41, ensemble=2)
+        first = first_learner.update(
+            limit=64, max_pages=4, steps=40,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert first["status"] == "WAITING_FOR_MORE_T8_DATA", first
+        assert first["reason"] == "NEED_MORE_SOURCE_DISJOINT_SESSIONS"
+        before, _ = store.state(STATE_KEY, None)
+        assert len(before["pending_rows"]) == 32
+        first_cursor = before["scan_cursor"]
+        store.close()
+
+        # Reopen the same durable Store; the second independent session makes
+        # a genuine session-disjoint train/holdout split possible.
+        store = Store(home)
+        _add_session(store, "second-cohort", 1, event_count=32)
+        _permissions(store, steps=40)
+        resumed = TemporalWorldJEPAStoreConsumer(store, seed=41, ensemble=2)
+        second = resumed.update(
+            limit=64, max_pages=4, steps=40,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert second["status"] in {
+            "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA",
+            "RETENTION_GATE_REJECTED",
+            "UTILITY_GATE_REJECTED",
+        }, second
+        assert second["verified_receipts"] == 32
+        after, _ = store.state(STATE_KEY, None)
+        assert after["scan_cursor"] > first_cursor
+        active_ids = {
+            row["action_id"] for row in (after.get("active") or {}).get("experience_rows", [])
+        }
+        pending_ids = {row["action_id"] for row in after["pending_rows"]}
+        all_ids = active_ids | pending_ids
+        assert len(all_ids) == 64
+        assert len(active_ids) + len(pending_ids) == len(all_ids)
+    finally:
+        store.close()
+
+
 def test_temporal_world_jepa_updates_ema_checkpoint_and_b1_b2_shadow_receivers(tmp_path):
     home = tmp_path / "temporal-learning-store"
     store = _make_store(home)
