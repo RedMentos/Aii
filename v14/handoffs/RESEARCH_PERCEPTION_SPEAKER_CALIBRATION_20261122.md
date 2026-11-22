@@ -55,7 +55,7 @@ No user action is required now.
 
 ## Exact-head follow-up — 2026-11-22
 
-- Current PR head after latest code, test, research and handoff updates: bef6c8be146e5c44a48c70d115cf166235c63a7a.
+- Current PR head after latest code, test, research and handoff updates: 8c51f86dfdf7dbe5392a8d594e7605527dc37a7a.
 - Directory-race hardening: module commit 80bb94cc6a6438edfa121709beaf529f21e1681c; regression test commit f6ccc3a61b80b4d0f8545fa8ebb128da634b94a9. The loader now opens home, models and speaker_calibration as no-follow directory descriptors and reads approved.json plus the calibration artifact relative to the pinned directory descriptor. This prevents a directory rename/symlink replacement after validation from redirecting the reads.
 - LOCAL_LINUX, CPython 3.13.5: isolated reproduction of the exact directory-descriptor helper behavior PASS — after opening the directory, replacing its path with a symlink did not redirect manifest/artifact reads; final-component symlink rejection PASS. This is an isolated helper reproduction, not the repository pytest suite.
 - LOCAL_LINUX full repository tests: BLOCKED — no Aii checkout is mounted and GitHub DNS resolution is unavailable. No full local compile/pytest claim.
