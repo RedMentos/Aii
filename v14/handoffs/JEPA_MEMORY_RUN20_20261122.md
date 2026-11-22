@@ -52,3 +52,8 @@ Private `V13OBS` #115 remains `LOCAL_METADATA_ONLY`: B1 4/4 native failures, B2 
 ## Authenticated private device receipts — 2026-11-22T21:41:00Z
 
 Owner-read requests #627 PIPELINE_STATUS, #628 DIAGNOSTICS and #629 HEALTH were processed and closed by the private device relay. Installed SHA remains `aed1d2b826290c95c70356b5d8b864b5ef382be4`, auto-update enabled, Runtime/Dashboard UP_TO_DATE, last_error NONE. DIAGNOSTICS repeats the previous stored turn only: 57.739s total / 41.685s runner / 38.945s prefill / 751 admitted prompt tokens / 2 generated tokens; correctness UNKNOWN. The latest V13OBS #115 aggregate still has B1 4/4 and B2 2/2 failed native attempts, zero valid offers and zero final-C3 deliveries; prompt inclusion/semantic use and native latent exchange remain unproven. Native process map is 0 / 0 MiB PSS/RSS with UNKNOWN child readability. HEALTH reports 1,288 MiB MemAvailable and 1,289 MiB free disk; its Runtime UNAVAILABLE conflicts with DIAGNOSTICS Runtime/Service RUNNING. Console-error sharing is USER_NOT_OPTED_IN; no LOG_PAGE was requested. No new turn or device mutation.
+
+
+## CI poll — 2026-11-22T21:45:50Z
+
+The exact JEPA head `50e3c8d` has changed-path compilation PASS on Python 3.13 and 3.14. Its temporal T8/JEPA/source-forget regression step `45072681648` remains IN_PROGRESS on both versions; no final PASS is claimed. QA #2383 is not green: staged-runtime 21 failed / 230 passed / 10 skipped / 2 errors / 41 subtests, integrated-regression one failure, optimizer-resume integrated-builder hash failure, and two-checkout migration PARTIAL. Do not rebase or release until QA/Boss current-base matrices pass.
