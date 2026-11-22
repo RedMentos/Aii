@@ -978,3 +978,8 @@ This correction supersedes older branch-level status claims without deleting the
 - Current branch head: `9a19b8c0af01912f40d92fecac4e6ab9a82bb128`; tested code/test commit: `f8a9faf66b64352f8e1703e634b79f03ec3c0984`.
 - GitHub run 45053429482 is pending with no jobs created at last read; do not claim CI pass. The old visual-only PR #2363 was closed as superseded.
 - Local evidence remains the isolated CPython 3.13.5 fake-Store concurrency harness, 2/2 PASS; full local Aii Store/A5 suite and Redmi remain unverified.
+
+
+### R-080 exact CI queue update — 2026-11-22
+
+PR #2366 branch head at last check `dd0090b5e428c4dc537693388645fa88acf667dd`; code/test commit `f8a9faf66b64352f8e1703e634b79f03ec3c0984`. Exact Perception run `45053728753` is pending/no jobs at last read. No CI pass, normal Runtime integration or Redmi evidence is claimed. #2363 is closed as superseded.
