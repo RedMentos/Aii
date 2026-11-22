@@ -30,11 +30,11 @@ def _make_store(home):
     return store
 
 
-def _add_session(store, label, session_index, *, status_overrides=None):
+def _add_session(store, label, session_index, *, status_overrides=None, event_count=4):
     status_overrides = status_overrides or {}
     session = store.new_session(label)
     event_ids = []
-    for offset in range(4):
+    for offset in range(event_count):
         text = f"{label}-session-{session_index:03d}-event-{offset:02d}-" + ("x" * ((session_index + offset) % 31))
         event = store.event(session, text)
         event_id = event["event_id"]
@@ -135,6 +135,27 @@ def test_temporal_page_and_dense_windows_keep_known_omissions_and_reject_unknown
             assert len(window["action_ids"]) in (3, 4)
             assert len(set(window["source_sha256s"])) == len(window["source_sha256s"])
             assert window["generation_id"]
+    finally:
+        store.close()
+
+
+def test_single_session_waits_for_disjoint_temporal_holdout_without_error(tmp_path):
+    home = tmp_path / "single-session-temporal-wait"
+    store = _make_store(home)
+    try:
+        _add_session(store, "single-session", 0, event_count=32)
+        _permissions(store, steps=40)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        result = learner.update(
+            limit=64, max_pages=4, steps=40,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert result["status"] == "WAITING_FOR_MORE_T8_DATA", result
+        assert result["reason"] == "NEED_MORE_SOURCE_DISJOINT_SESSIONS"
+        state, _ = store.state(STATE_KEY, None)
+        assert state["active"] is None
+        assert len(state["pending_rows"]) == 32
+        assert not list((home / "world_jepa_temporal").glob("jepa-*.npz"))
     finally:
         store.close()
 
@@ -754,7 +775,7 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_acc
     home = tmp_path / "temporal-cognition-consumer"
     store = _make_store(home)
     try:
-        sessions, _ = _make_dataset(store, "matrix", 32)
+        sessions, _ = _make_dataset(store, "matrix", 64)
         _permissions(store, steps=80)
         learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
         trained = learner.update(
