@@ -4,6 +4,7 @@ on:
     branches:
       - core/v14-c4-c3-consumption-rebase-20261122
       - core/v14-c4-c3-consumption-rebase-20261122-run2
+      - core/v14-native-latent-receiver-rebase-20261122
     paths:
       - 'v13/code/scripts/integrated_c4_c3_receipt_candidate_20261122.py'
       - 'v13/code/scripts/run_c4_c3_current_candidate_test_20261122.py'
