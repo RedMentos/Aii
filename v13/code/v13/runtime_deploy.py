@@ -835,6 +835,9 @@ def recover_pending_activation(*, home=None, private=None):
     """Recover only an existing activation journal; never stage or install code."""
     home = Path(home or Path.home() / "v13").expanduser().resolve()
     private = _protected_dir(private or Path.home() / ".v13-private")
+    journal = private / ACTIVATION_JOURNAL_NAME
+    if not journal.exists() and not journal.is_symlink():
+        return "NONE"
     _check_stopped(home)
     return _recover_activation(home, private)
 
@@ -920,6 +923,7 @@ def deploy(source, *, home=None, private=None, builds=None, ci_verified=False,
     home = Path(home or Path.home() / "v13").expanduser().resolve()
     private = _protected_dir(private or Path.home() / ".v13-private")
     builds = _protected_dir(builds or Path.home() / ".v13-runtime-builds")
+    _check_stopped(home)
     recover_pending_activation(home=home, private=private)
     launcher = _launcher(home)
     if not ci_verified:
@@ -1010,6 +1014,7 @@ def rollback(*, home=None, private=None, builds=None, activation_guard=None):
     home = Path(home or Path.home() / "v13").expanduser().resolve()
     private = _protected_dir(private or Path.home() / ".v13-private")
     builds = _protected_dir(builds or Path.home() / ".v13-runtime-builds")
+    _check_stopped(home)
     recover_pending_activation(home=home, private=private)
     launcher = _launcher(home)
     marker_path = private / MARKER_NAME
