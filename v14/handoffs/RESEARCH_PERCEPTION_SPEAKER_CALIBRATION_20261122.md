@@ -70,3 +70,17 @@ No user action is required now.
 2. Read the completed exact-head CI runs for f6ccc3a61b80b4d0f8545fa8ebb128da634b94a9; repair any Perception-owned failure, but do not absorb Core-owned files without coordination.
 3. Keep #2349 and #2346 DRAFT until staged, migration and deployment gates pass; then obtain independent Boss review.
 4. Only after separately authorized real data and a pinned, licensed embedding checkpoint exist, run source/session/speaker-disjoint calibration and temporal-identity retention evaluation. No user action is required now.
+
+
+## CI status correction — exact code commit f6ccc3a61b80b4d0f8545fa8ebb128da634b94a9
+
+The queued Perception checks completed successfully:
+
+- RAW EAR fastpath / A5-A4-C3 consumer tests: **129 passed** on CPython 3.13 and **129 passed** on CPython 3.14. Exact command: python -m pytest -q -s tests/test_audio_ear_voice_cues_v14.py tests/test_audio_speaker_evidence.py tests/test_audio_speaker_calibration.py tests/test_audio_input.py. This includes the new directory-replacement race regression and the existing calibration negative controls.
+- Pre-processing consent-revocation QA: **42 passed** on CPython 3.13.
+- Prosody-to-attention A4/C3 regression: **66 passed** on CPython 3.11 and **66 passed** on CPython 3.13.
+- WebRTC/libfvad VAD comparison: **9 passed** on CPython 3.13 and **9 passed** on CPython 3.14; native libfvad unit checks also passed in both jobs.
+- Public privacy scan: **PASS**.
+- Staged-context/integrated regression run 45042292782 remained QUEUED at the last read. It is still the merge blocker; the earlier exact integration head failed on the stale Core-owned audio composer pin. No full staged or deployment acceptance is claimed.
+
+These are GitHub Linux CI results, not local repository execution or Android evidence. The isolated LOCAL_LINUX directory-FD reproduction remains a separate PASS; full local Aii checkout remains BLOCKED and Redmi remains REDMI_UNVERIFIED.
