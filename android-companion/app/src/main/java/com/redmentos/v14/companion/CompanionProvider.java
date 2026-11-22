@@ -242,6 +242,14 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
+    static String receiptStatusForDispatchResult(String dispatchResult) {
+        if ("DISPATCHED".equals(dispatchResult)) return "DISPATCHED_UNVERIFIED";
+        if ("FAILED_TO_DISPATCH".equals(dispatchResult)) return "FAILED_TO_DISPATCH";
+        // Any unexpected post-claim result is conservative: the external
+        // framework boundary may already have been crossed.
+        return "OUTCOME_UNKNOWN";
+    }
+
     static boolean isImplementedCapability(String capability) {
         return "launch_app".equals(capability);
     }
