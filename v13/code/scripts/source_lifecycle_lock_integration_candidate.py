@@ -15,6 +15,7 @@ PINS = {
 }
 GUARD_SCRIPT_SHA = '313f2dc078366fa851c3ef76b425fb800e7369c73ed5cb69ea93f96cc95f0596'
 OLD_ARCHIVE_INTEGRATED_SHA = '3f421423ce890b90033470e15150b1ba9830642e6b5e92e61b654801602e90b4'
+OLD_ARCHIVE_STORE_SHA = '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb'
 
 STORE_OLD = b'''        with self.mutex:
             if not p.exists():atomic_write(p,b)
@@ -205,10 +206,10 @@ def build_sources(source_dir):
     store_sha = hashlib.sha256(raw['store.py']).hexdigest().encode()
     guard = raw['archive_reader_guard_candidate.py']
     guard = _replace_once(guard, OLD_ARCHIVE_INTEGRATED_SHA.encode(), archive_sha, 'archive pin')
-    guard = _replace_once(guard, PINS['store.py'].encode(), store_sha, 'guard store pin')
+    guard = _replace_once(guard, OLD_ARCHIVE_STORE_SHA.encode(), store_sha, 'guard store pin')
     raw['archive_reader_guard_candidate.py'] = guard
     raw['archive_stream_range_candidate.py'] = _replace_once(
-        raw['archive_stream_range_candidate.py'], PINS['store.py'].encode(), store_sha, 'stream store pin')
+        raw['archive_stream_range_candidate.py'], OLD_ARCHIVE_STORE_SHA.encode(), store_sha, 'stream store pin')
     return {name: raw[name] for name in ('archive.py', 'store.py', 'memory.py', 'vision.py',
                                          'archive_reader_guard_candidate.py', 'archive_stream_range_candidate.py',
                                          'source_lifecycle_candidate.py')}
