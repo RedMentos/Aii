@@ -1,19 +1,20 @@
 # Core handoff — explicit remote native-receiver probe allowlist (2026-11-22)
 
-## Ownership and base
+## Ownership and current base
 
 - Owner: Core & Harness
 - Branch: `core/v14-remote-native-probe-allowlist-20261122`
-- Base: `gpt6/v13-private-remote-bridge-20261111` at `b3b92f41772573732b2cba71f7ad6bf34dc8e521`
-- Scope: unblock the already-staged, one-shot native receiver diagnostic through the existing private owner-read / CHAT_OPERATOR path. This does not execute the probe.
+- Rebased by a non-force merge commit onto current release-development HEAD `4af423e8f802918ae17cee4352d89dcb0df92e00`
+- Previous code commit: `33d3ef881ed07b3e0e719aa2e4043a25403f4a90`
+- Scope: expose the already-staged, one-shot native receiver diagnostic through the existing private owner-read / CHAT_OPERATOR path. This change does not execute the probe.
 
 ## Runtime change
 
-The remote operator boundary now accepts one additional parameterized command, and only in this exact shape:
+The remote operator boundary accepts one additional parameterized command, and only in this exact shape:
 
-` :callosum native-probe <B1_DETAIL|B2_GIST> <B1_DETAIL|B2_GIST|C3_LANGUAGE> --last-source --confirm `
+`:callosum native-probe <B1_DETAIL|B2_GIST> <B1_DETAIL|B2_GIST|C3_LANGUAGE> --last-source --confirm`
 
-The actual accepted command contains one concrete sender and receiver role, has no angle-bracket placeholders, uses exactly one space between tokens, and requires distinct roles. The implementation is an exact full-match allowlist; no extra flags, shell operators, paths, source IDs, newlines, or alternate senders are accepted.
+The actual accepted command contains one concrete sender and receiver role, uses exactly one space between tokens, requires distinct roles, and has no extra flags or suffix. The implementation is an exact full-match allowlist; shell operators, paths, source IDs, newlines, alternate senders and extra payload fields are rejected.
 
 The same validator is used by:
 - `remote_chat.send(..., operator=True)`
@@ -21,32 +22,37 @@ The same validator is used by:
 - owner-read request creation
 - owner-read request validation
 
-The existing owner identity, private-repository, `CHAT_OPERATOR` permission, remote-test consent, one-shot request ID, bounded message size, and local operator's `--last-source --confirm` checks remain in force. Normal `CHAT_SEND` still rejects operator-prefixed text. No shell, arbitrary file access, model download, model swap, weight update, B3 production routing, or safety-permission change is added.
+Existing owner identity, private-repository, `CHAT_OPERATOR` permission, remote-test consent, one-shot request ID, bounded message size, and local operator `--last-source --confirm` checks remain in force. Normal `CHAT_SEND` still rejects operator-prefixed text. No shell, arbitrary file access, model download/swap, weight update, B3 production routing, or safety-permission change is added.
 
-## Tests and environment
+## Test history and exact evidence
 
-Added regression coverage in:
-- `v13/code/tests/test_remote_chat.py`
-- `v13/code/tests/test_remote_maintenance_bridge.py`
-- `v13/code/tests/test_owner_read_bridge.py`
+- The first PR run exposed a malformed test fixture: the native receiver payload was accidentally nested in the preceding ordinary-chat test and the indentation caused collection failure at `test_remote_chat.py:118`.
+- Commit `33d3ef881ed07b3e0e719aa2e4043a25403f4a90` moved that payload into the native receiver test that consumes it and corrected the indentation. The remote bridge workflow then passed **80 tests + 28 subtests on Python 3.12** and **80 tests + 28 subtests on Python 3.14**.
+- The owner-read workflow passed its Python 3.11 compile and all focused unittest suites, plus staged runtime startup/SQLite source-ref checks.
+- Staged Runtime and integrated regression both passed on the prior PR merge base. The current release base `4af423e8f802918ae17cee4352d89dcb0df92e00` independently has **21/21 GitHub workflows SUCCESS**. Exact CI for the new two-parent merge commit is pending and must be checked before integration.
+- LOCAL_FULL_REPOSITORY: BLOCKED — no Aii checkout is present; container GitHub DNS resolution fails. No local full-repository pytest result is claimed.
+- TERMUX/REDMI: the latest authenticated private DIAGNOSTICS receipt reports the phone on `9c7a0ec2d58538be8b7fde9476db299f2a5dd7b8`, not this PR and not current release HEAD. It reports `native_probe=SMOKE_PARTIAL`, B1/B2 `TIME_BUDGET` at 53.2/54.2 s, and the last recorded turn at 63.22 s total / 42.48 s TTFT / 34.96 s prefill / 2 generated tokens. This is an old recorded turn, not a fresh post-update benchmark or proof that either body contributed to a correct answer. No native receiver probe was sent or executed.
 
-Expanded `.github/workflows/v13-private-remote-bridge-tests.yml` to run those suites plus remote-observation and patch-staging tests on Python 3.12 and 3.14, and compile the three changed modules.
+## User impact and Canon mapping
 
-- LOCAL_PYTHON_ISOLATED: PASS — exact role/flag regex, valid B1→C3 and B2→B1 forms, missing confirmation, same-role, C3 sender, extra flags, shell suffix and whitespace rejection.
-- LOCAL_FULL_REPOSITORY: BLOCKED — no local checkout; container GitHub DNS lookup failed. No full local pytest run is claimed.
-- CI: pending exact branch/PR run.
-- TERMUX/REDMI: REDMI_UNVERIFIED — this change has not been installed on the phone and the native probe has not been sent or executed.
+This unblocks a user-initiated, bounded measurement of the native receiver input path for B3/Enlightened Space. A successful probe can establish native input consumption/effect for the tested model pair only. It cannot establish learned cross-model alignment, semantic task utility, trained latent coupling, production B3 routing, or AGI.
 
-## User impact and canon
-
-This unblocks a user-initiated, bounded measurement of the native receiver input path. A successful probe can establish native input consumption/effect for the tested model pair only; it cannot establish learned cross-model alignment, semantic utility, trained latent coupling, production B3 routing, or AGI.
+Canon paths: B1/B2 sender activations, B3/Enlightened receiver path, C3 receiver compatibility, source/consent/audit boundaries. Production B3 remains OFF/SYMBOLIC.
 
 No installed model, weight, permission, dataset, user message, or phone state was changed by this work.
 
+## Research note for the next experiment
+
+- XKV, *Dual-Cache Latent Space Communication between Heterogeneous Language Models* (arXiv:2608.20617, 2026), proposes a trained translator over both source and receiver KV caches, with receiver-position-specific retrieval. This is a research method, not a verified Android-ready implementation.
+- *Architecture-Dependent Causal Transfer of Activation States Across Large Language Models* (arXiv:2608.16347, 2026) reports that representation alignment does not reliably imply causal task transfer across model pairs. The next V14 test must therefore measure held-out task utility and negative controls, not only tensor consumption or cosine changes.
+
 ## Next integration action
 
-Boss/Integrator: review this PR and fold the verified allowlist + regression into the current release branch. After the release is actually installed and the owner has confirmed remote-test consent, the user may separately choose to issue the exact owner-read `CHAT_OPERATOR` request for one sender/receiver pair. Obtain a separate fresh `PIPELINE_STATUS`/diagnostic receipt afterward; do not infer phone execution from a GitHub merge or an `UP_TO_DATE` updater state.
+1. Verify the exact current-head CI on this rebased PR.
+2. Boss/Integrator reviews and integrates the allowlist + regressions into the release branch.
+3. Only after the new release is installed and remote-test consent is confirmed, ask the user separately before issuing one exact `CHAT_OPERATOR` native-probe request.
+4. Obtain a fresh device receipt and keep production B3 OFF until paired native activations, source-disjoint labels, same-model parity, shuffled/zero/OOD controls, held-out utility, retention and rollback pass.
 
-## Proposed V14_USER_NEXT_ACTION update
+## User action
 
-`REMOTE_NATIVE_PROBE_ALLOWLIST`: implemented on this branch; awaiting independent review and release integration. Probe remains NOT_RUN. No user action is needed until release installation is verified; then ask for explicit approval before sending the exact one-shot command.
+No action is needed now. The probe remains NOT_RUN. Do not send a Termux command, model download/swap, weight update or device action.

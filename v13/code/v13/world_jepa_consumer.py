@@ -1060,3 +1060,91 @@ class WorldJEPAStoreConsumer:
                     "checkpoint_sha256": active["checkpoint_sha256"],
                     "source_sha256": active["source_sha256"],
                     "native_memory_consumed": False, "native_body_consumed": False}
+
+
+@contextmanager
+def source_forget_guard(store, source_id):
+    """Serialize source deletion with JEPA updates and refuse false unlearning.
+
+    Replay rows are bounded, but their parameter influence can outlive row
+    eviction. Check each retained checkpoint's full scanned T8 history, not
+    only its current replay rows. Pending-only rows are discarded before the
+    source is deleted; any source that may have trained active/rollback weights
+    blocks deletion until a real JEPA rebuild/forget path exists.
+    """
+    if type(source_id) is not str or not source_id or len(source_id) > 256:
+        raise ValueError("invalid WorldJEPA source identity")
+
+    root = Path(store.home) / "world_jepa"
+    consumer = WorldJEPAStoreConsumer(
+        store, root, learning_enabled=False
+    )
+    with consumer._locked(True):
+        state, version = consumer._read_state()
+        pending_rows = state["pending_rows"]
+        pending_for_source = [
+            row["action_id"] for row in pending_rows
+            if row["source_id"] == source_id
+        ]
+
+        for label, record in (
+            ("active", state["active"]),
+            ("rollback", state["previous"]),
+        ):
+            if record is None:
+                continue
+            if any(
+                row["source_id"] == source_id
+                for row in record["experience_rows"]
+            ):
+                raise ValueError(
+                    "Source is retained by a WorldJEPA "
+                    + label + " checkpoint; safe unlearning is not implemented"
+                )
+
+            cursor = record["scan_cursor"]
+            if cursor <= 0:
+                continue
+            query = (
+                "SELECT a.id FROM actions a "
+                "JOIN events e ON e.id=a.event_id "
+                "WHERE a.rowid<=? AND e.source_id=? "
+                "AND a.outcome IS NOT NULL AND a.expected LIKE ? "
+                "AND a.status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED')"
+            )
+            params = [cursor, source_id, '%"forecast"%']
+            if pending_for_source:
+                placeholders = ",".join("?" for _ in pending_for_source)
+                query += " AND a.id NOT IN (" + placeholders + ")"
+                params.extend(pending_for_source)
+            query += " LIMIT 1"
+            if store.rows(query, tuple(params)):
+                raise ValueError(
+                    "Source may have trained a WorldJEPA "
+                    + label + " checkpoint (including evicted replay rows); "
+                    "safe unlearning is not implemented"
+                )
+
+        if pending_for_source:
+            next_state = dict(state)
+            next_state["pending_rows"] = [
+                row for row in pending_rows if row["source_id"] != source_id
+            ]
+            try:
+                store.set_state(STATE_KEY, next_state, expected=version)
+            except ValueError as exc:
+                if "Stale state write" in str(exc):
+                    raise ValueError(
+                        "WorldJEPA state changed during source forget; retry"
+                    ) from exc
+                raise
+
+        removed, errors = consumer._prune_checkpoints(state)
+        if errors:
+            raise OSError(
+                "WorldJEPA orphan checkpoint cleanup failed; source deletion refused"
+            )
+        yield {
+            "pending_rows_removed": len(pending_for_source),
+            "orphan_checkpoints_removed": removed,
+        }
