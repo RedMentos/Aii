@@ -105,6 +105,39 @@ def capture_pair(cognition, event, deadline):
     if not gist_plan.get("lossless") or gist_plan.get("receiver_injection_authority") != 0:
         raise ValueError("B2 Gist readout failed its lossless/read-only gate")
 
+    # B1 keeps one fine slot per native token. Persist exact source spans so
+    # the receiver side does not collapse Detail into a pooled summary either.
+    from .gist_readout import token_spans
+    runner = runtime.pool.get_tap("B1_DETAIL")
+    try:
+        runner.load(runtime.cancel_event, deadline)
+        fine_rows = runner._json("POST", "/tokenize", {
+            "content": source_text, "add_special": True, "with_pieces": True
+        }, deadline)["tokens"]
+    finally:
+        runtime.pool.unload()
+    fine_ids = [row["id"] for row in fine_rows]
+    if fine_ids != taps["B1_DETAIL"]["token_ids"]:
+        raise ValueError("B1 Fine tokenizer pieces do not belong to this native tap")
+    spans = token_spans(source_text, [row["piece"] for row in fine_rows])
+    fine_slots = []
+    for index, (token_id, span) in enumerate(zip(fine_ids, spans)):
+        start, end = span
+        fine_slots.append({
+            "slot": index, "token_id": token_id,
+            "source_ref": source | {
+                "char_start": source["char_start"] + start,
+                "char_end": source["char_start"] + end,
+            },
+        })
+    fine_plan = {
+        "revision": "b1-native-fine-slots-v1", "tap_id": taps["B1_DETAIL"]["tap_id"],
+        "source_ref": source, "token_ids": fine_ids, "native_tokens": len(fine_ids),
+        "dim": taps["B1_DETAIL"]["shape"][1], "max_slots": B1_FINE_SLOTS,
+        "slots": fine_slots, "lossless": True,
+        "receiver_injection_authority": 0, "body_learning_authority": 0,
+    }
+
     # Each body keeps its own tokenizer and token sequence. Pairing is by the
     # exact source span, never by assuming token index equivalence.
     pair_key = hashlib.sha256(json.dumps(
@@ -142,6 +175,7 @@ def capture_pair(cognition, event, deadline):
             "shape": taps[role]["shape"],
         } for role in ROLES},
         gist_readout=gist_binding,
+        fine_readout={"tap_packet_id": taps["B1_DETAIL"]["packet_id"], "plan": fine_plan},
         token_counts={role: len(features[role]) for role in ROLES},
         dimensions={role: len(features[role][0]) for role in ROLES},
         token_alignment="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS",
@@ -158,7 +192,7 @@ def capture_pair(cognition, event, deadline):
                      "gist_states": gist_vectors.tolist(), "gist_plan": gist_plan},
         "reverse_sender": {"role": "B2_GIST", "states": features["B2_GIST"]},
         "reverse_receiver": {"role": "B1_DETAIL", "states": features["B1_DETAIL"],
-                             "fine_states": features["B1_DETAIL"]},
+                             "fine_states": features["B1_DETAIL"], "fine_plan": fine_plan},
         "authority": {"native_read_only": True, "latent_injection": False,
                       "body_learning": False},
     }
@@ -180,6 +214,10 @@ def load_pair(cognition, pair_packet):
     if (not isinstance(gist_binding, dict) or not isinstance(gist_binding.get("plan"), dict)
             or gist_binding.get("tap_packet_id") != pair_packet["tap_packet_ids"]["B2_GIST"]):
         raise ValueError("B3 pair has no correctly bound adaptive Gist readout")
+    fine_binding = pair_packet.get("fine_readout")
+    if (not isinstance(fine_binding, dict) or not isinstance(fine_binding.get("plan"), dict)
+            or fine_binding.get("tap_packet_id") != pair_packet["tap_packet_ids"]["B1_DETAIL"]):
+        raise ValueError("B3 pair has no correctly bound B1 fine-slot readout")
     taps, features = {}, {}
     for role in ROLES:
         tap_id = pair_packet["tap_packet_ids"][role]
@@ -206,6 +244,19 @@ def load_pair(cognition, pair_packet):
         if tap["shape"] != [len(rows), width]:
             raise ValueError("B3 pair native feature shape changed: " + role)
         taps[role], features[role] = tap, rows
+    fine_plan = fine_binding["plan"]
+    b1_tap = taps["B1_DETAIL"]
+    if (fine_plan.get("tap_id") != b1_tap.get("tap_id")
+            or fine_plan.get("token_ids") != b1_tap.get("token_ids")
+            or fine_plan.get("source_ref") != source
+            or fine_plan.get("native_tokens") != len(features["B1_DETAIL"])
+            or fine_plan.get("dim") != pair_packet["dimensions"]["B1_DETAIL"]
+            or fine_plan.get("max_slots") != B1_FINE_SLOTS
+            or len(fine_plan.get("slots", [])) != len(features["B1_DETAIL"])
+            or not fine_plan.get("lossless")
+            or fine_plan.get("receiver_injection_authority") != 0
+            or fine_plan.get("body_learning_authority") != 0):
+        raise ValueError("B1 fine readout lineage/geometry mismatch")
     gist_path = cognition.r.home / gist_binding["feature_path"]
     root = (cognition.r.home / "data/blobs").resolve()
     if gist_path.is_symlink() or not gist_path.resolve().is_relative_to(root):
@@ -232,7 +283,7 @@ def load_pair(cognition, pair_packet):
                      "gist_states": gist_rows, "gist_plan": gist_binding["plan"]},
         "reverse_sender": {"role": "B2_GIST", "states": features["B2_GIST"]},
         "reverse_receiver": {"role": "B1_DETAIL", "states": features["B1_DETAIL"],
-                             "fine_states": features["B1_DETAIL"]},
+                             "fine_states": features["B1_DETAIL"], "fine_plan": fine_plan},
         "authority": {"native_read_only": True, "latent_injection": False,
                       "body_learning": False},
     }
