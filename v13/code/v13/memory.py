@@ -8,6 +8,30 @@ STOP=set('der die das ein eine einer eines und oder ist sind hat haben wie was w
 ENTITY_LABELS={'projekt','project','kunde','client','person'}
 QUESTION_BOILERPLATE=set('falls bekannt unbekannt known unknown if er sie es du ihr wir man he she it they who their its dieser diese dieses'.split())
 TERM_ALIASES={'budgets':'budget'}
+
+def _contains_source_reference(value,source_id):
+    """Match structured source IDs only; never search arbitrary serialized text."""
+    if type(value) is dict:
+        for key,item in value.items():
+            if key=='source_id' and item==source_id:return True
+            if key=='source_ids' and type(item) is list and source_id in item:return True
+            if _contains_source_reference(item,source_id):return True
+    elif type(value) is list:
+        return any(_contains_source_reference(item,source_id) for item in value)
+    return False
+
+def _packet_references_source(payload,source_id):
+    try:decoded=json.loads(payload)
+    except (TypeError,ValueError) as exc:
+        raise ValueError('Cannot safely forget source: malformed packet JSON') from exc
+    if type(decoded) not in (dict,list):
+        raise ValueError('Cannot safely forget source: packet payload is not structured JSON')
+    return _contains_source_reference(decoded,source_id)
+
+def _state_key_references_source(key,source_id):
+    # State namespaces use exact colon/slash/dot/pipe segments. Hyphen/underscore
+    # remain part of identifiers, so src-1 cannot match src-10 or incidental text.
+    return type(key) is str and source_id in re.split(r'[:/|.]',key)
 def terms(text):return {TERM_ALIASES.get(t,t) for t in re.findall(r'\w+',text.lower()) if t not in STOP}
 def entities(text):return set(re.findall(r'\b(?:projekt|project|kunde|client|person)\s+["\']?([\w-]+)',text.lower()))
 def relevance(a,b):
@@ -383,16 +407,23 @@ class Memory:
                     if any(u['path'] in active for u in affected):
                         raise ValueError('Quelle steckt in aktiven Gewichten. Zuerst :rollback '+next(
                             u['id'] for u in affected if u['path'] in active))
+                    # Parse every packet before mutating anything. Opaque/corrupt JSON
+                    # aborts the transaction rather than making an unverifiable forget claim.
+                    packet_rows=c.execute('SELECT id,payload FROM packets').fetchall()
+                    packet_ids=[row['id'] for row in packet_rows
+                                if _packet_references_source(row['payload'],sid)]
+                    state_keys=[row['key'] for row in c.execute('SELECT key FROM states').fetchall()
+                                if _state_key_references_source(row['key'],sid)]
                     c.execute('UPDATE memories SET active=0,value=? WHERE source_id=?',('[GELÖSCHT]',sid))
                     c.execute('DELETE FROM feedback WHERE source_id=?',(sid,))
                     c.execute('UPDATE sources SET deleted=1 WHERE id=?',(sid,))
                     for u in affected:
                         c.execute("UPDATE updates SET status='QUARANTINED',path=NULL,hash=NULL WHERE id=?",(u['id'],))
-                    c.execute('DELETE FROM states WHERE key LIKE ?',('%'+sid+'%',))
-                    for packet_row in c.execute('SELECT id,payload FROM packets').fetchall():
-                        if sid in packet_row['payload']:
-                            c.execute('DELETE FROM packets WHERE id=? AND id NOT IN (SELECT corollary_id FROM actions)',
-                                      (packet_row['id'],))
+                    for key in state_keys:
+                        c.execute('DELETE FROM states WHERE key=?',(key,))
+                    for packet_id in packet_ids:
+                        c.execute('DELETE FROM packets WHERE id=? AND id NOT IN (SELECT corollary_id FROM actions)',
+                                  (packet_id,))
                 for update in affected:
                     if update['path']:
                         (self.s.home/update['path']).unlink(missing_ok=True)
