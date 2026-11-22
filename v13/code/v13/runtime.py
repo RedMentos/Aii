@@ -69,6 +69,20 @@ class Runtime:
         from .sleep import SleepRuntime
         self.sleep=SleepRuntime(self)  # WP-E: G13 wake scheduler + §94 sleep phases
         self.worker=threading.Thread(target=self._worker,name='V13-coordinator',daemon=True);self.worker.start()
+    def temporal_outcomes(self):
+        """Opt-in V14 source-bound outcome ledger; no automatic omission inference.
+
+        The caller must provide independently verified observation evidence.
+        No tool authority or pretrained model weights are changed.
+        """
+        from pathlib import Path
+        from .temporal_outcomes import TemporalOutcomes
+        with self.lock:
+            if not hasattr(self, "_temporal_outcomes"):
+                self._temporal_outcomes = TemporalOutcomes(
+                    Path(self.home) / "v14_temporal_outcomes.sqlite")
+            return self._temporal_outcomes
+
     def online_world_update(self,limit=2048):
         """Explicit bounded online learning from committed T8 transitions.
 
