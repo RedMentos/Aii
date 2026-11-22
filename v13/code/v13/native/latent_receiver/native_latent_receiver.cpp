@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <iomanip>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <limits>
 #include <numeric>
@@ -17,6 +19,10 @@
 
 #ifdef V14_WITH_LLAMA
 #include <llama.h>
+#include "llama-model.h"
+#include "ggml-backend.h"
+#include "ggml-cpu.h"
+#include "ggml.h"
 #endif
 
 namespace v14 {
@@ -25,6 +31,9 @@ constexpr int kMaxDim = 8192;
 constexpr int kMaxPosition = 131072;
 constexpr const char * kPositionMode = "ZERO_BASED_CONTIGUOUS_FROM_TOKENIZER_PREFILL";
 constexpr std::size_t kMaxElements = 262144;
+constexpr int kMaxExtractGroups = 64;
+constexpr int kMaxExtractRows = 1024;
+constexpr std::size_t kMaxExtractElements = 2097152;
 constexpr double kEffectEpsilon = 1.0e-7;
 
 bool valid_batch(int rows, int dim, const std::vector<float> & values) {
@@ -152,6 +161,18 @@ std::string positions_json(const std::vector<int> & positions) {
     return out.str();
 }
 
+
+std::string ints_json(const std::vector<int> & values) {
+    std::ostringstream out;
+    out << "[";
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        if (i) out << ",";
+        out << values[i];
+    }
+    out << "]";
+    return out.str();
+}
+
 bool parse_positions(const std::string & raw, int rows, std::vector<int> & positions) {
     std::stringstream stream(raw);
     std::string token;
@@ -163,6 +184,34 @@ bool parse_positions(const std::string & raw, int rows, std::vector<int> & posit
         positions.push_back(static_cast<int>(value));
     }
     return valid_positions(rows, positions, kMaxPosition);
+}
+
+
+bool parse_token_groups(const std::string & raw, std::vector<std::vector<int>> & groups, int & total_rows) {
+    groups.clear();
+    total_rows = 0;
+    if (raw.empty() || raw.back() == ';') return false;
+    std::stringstream group_stream(raw);
+    std::string group_token;
+    while (std::getline(group_stream, group_token, ';')) {
+        if (group_token.empty() || groups.size() >= static_cast<std::size_t>(kMaxExtractGroups) ||
+            group_token.back() == ',') return false;
+        std::vector<int> ids;
+        std::stringstream token_stream(group_token);
+        std::string token;
+        while (std::getline(token_stream, token, ',')) {
+            if (token.empty() || ids.size() >= static_cast<std::size_t>(kMaxRows)) return false;
+            char * end = nullptr;
+            const long value = std::strtol(token.c_str(), &end, 10);
+            if (end == token.c_str() || *end != '\\0' || value < 0 || value > INT32_MAX) return false;
+            ids.push_back(static_cast<int>(value));
+        }
+        if (ids.empty()) return false;
+        total_rows += static_cast<int>(ids.size());
+        if (total_rows > kMaxExtractRows) return false;
+        groups.push_back(std::move(ids));
+    }
+    return !groups.empty();
 }
 
 int selftest() {
@@ -190,6 +239,11 @@ int selftest() {
     if (valid_positions(2, std::vector<int>{0, 0}, 64)) return 15;
     if (valid_positions(2, std::vector<int>{0, 64}, 64)) return 16;
     if (reverse_rows(input, 2, 2) == input) return 17;
+    std::vector<std::vector<int>> token_groups;
+    int total_token_rows = 0;
+    if (!parse_token_groups("1,2;3,4", token_groups, total_token_rows) || token_groups.size() != 2 || total_token_rows != 4) return 18;
+    if (parse_token_groups("1,,2", token_groups, total_token_rows)) return 19;
+    if (parse_token_groups("1;2;", token_groups, total_token_rows)) return 20;
     std::cout << "PASS\n";
     return 0;
 }
@@ -349,6 +403,147 @@ int run_native(const std::string & model_path, int rows, int input_dim, int thre
               << ",\"finite_output\":" << (v14::all_finite(positive_out) ? "true" : "false") << "}\n";
     return 0;
 }
+
+bool extract_token_embedding(const llama_model * model, int token_id, std::vector<float> & row,
+                             int & input_dim, int & vocab_size) {
+    const ggml_tensor * tensor = model ? model->tok_embd : nullptr;
+    if (!tensor || tensor->ne[0] <= 0 || tensor->ne[1] <= 0) return false;
+    if (tensor->ne[0] > INT32_MAX || tensor->ne[1] > INT32_MAX) return false;
+    input_dim = static_cast<int>(tensor->ne[0]);
+    vocab_size = llama_vocab_n_tokens(llama_model_get_vocab(model));
+    if (vocab_size <= 0 || token_id < 0 || token_id >= vocab_size ||
+        token_id >= static_cast<int>(tensor->ne[1])) return false;
+    const std::size_t row_bytes = ggml_row_size(tensor->type, tensor->ne[0]);
+    const std::size_t row_stride = tensor->nb[1];
+    if (row_bytes == 0 || row_stride < row_bytes) return false;
+    std::vector<uint8_t> buffer(row_bytes);
+    ggml_backend_tensor_get(tensor, buffer.data(), static_cast<std::size_t>(token_id) * row_stride, row_bytes);
+    row.resize(static_cast<std::size_t>(input_dim));
+    if (tensor->type == GGML_TYPE_F32) {
+        std::memcpy(row.data(), buffer.data(), row_bytes);
+    } else if (tensor->type == GGML_TYPE_F16) {
+        ggml_fp16_to_fp32_row(reinterpret_cast<const ggml_fp16_t *>(buffer.data()), row.data(), input_dim);
+    } else if (tensor->type == GGML_TYPE_BF16) {
+        ggml_bf16_to_fp32_row(reinterpret_cast<const ggml_bf16_t *>(buffer.data()), row.data(), input_dim);
+    } else {
+        const ggml_type_traits * traits = ggml_get_type_traits(tensor->type);
+        if (!traits || !traits->to_float) return false;
+        traits->to_float(buffer.data(), row.data(), input_dim);
+    }
+    return v14::all_finite(row);
+}
+
+int run_extract(const std::string & model_path, int threads,
+                const std::vector<std::vector<int>> & groups,
+                const std::string & output_path) {
+    if (model_path.empty() || output_path.empty() || threads < 1 || threads > 2 || groups.empty()) return 64;
+    const std::filesystem::path path(output_path);
+    std::error_code ec;
+    const auto parent = path.parent_path().empty() ? std::filesystem::path(".") : path.parent_path();
+    if (path.empty() || path.filename().empty() || std::filesystem::exists(path, ec) ||
+        std::filesystem::is_symlink(std::filesystem::symlink_status(path, ec)) ||
+        !std::filesystem::is_directory(parent, ec)) {
+        std::cerr << "unsafe or existing native input embedding output path\n";
+        return 65;
+    }
+    BackendGuard backend;
+    ModelGuard model;
+    llama_model_params model_params = llama_model_default_params();
+    model_params.n_gpu_layers = 0;
+    model_params.load_mode = LLAMA_LOAD_MODE_MMAP;
+    model.value = llama_model_load_from_file(model_path.c_str(), model_params);
+    if (!model.value) {
+        std::cerr << "receiver model load failed for input embedding extraction\n";
+        return 3;
+    }
+    const ggml_tensor * tensor = model.value->tok_embd;
+    if (!tensor || tensor->ne[0] <= 0 || tensor->ne[1] <= 0) {
+        std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
+                  << V14_LLAMA_REVISION << "\",\"llama_version\":\""
+                  << v14::json_escape(llama_version() ? llama_version() : "unknown")
+                  << "\",\"status\":\"INPUT_EMBEDDING_TABLE_MISSING\"}\n";
+        return 0;
+    }
+    const int input_dim = static_cast<int>(tensor->ne[0]);
+    int receiver_input_dim = llama_model_n_embd_inp(model.value);
+    if (receiver_input_dim <= 0) receiver_input_dim = llama_model_n_embd(model.value);
+    int output_dim = llama_model_n_embd_out(model.value);
+    if (output_dim <= 0) output_dim = llama_model_n_embd(model.value);
+    const int vocab_size = llama_vocab_n_tokens(llama_model_get_vocab(model.value));
+    if (input_dim <= 0 || receiver_input_dim <= 0 || output_dim <= 0 || vocab_size <= 0) {
+        std::cerr << "invalid receiver input embedding metadata\n";
+        return 4;
+    }
+    if (input_dim != receiver_input_dim) {
+        std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
+                  << V14_LLAMA_REVISION << "\",\"llama_version\":\""
+                  << v14::json_escape(llama_version() ? llama_version() : "unknown")
+                  << "\",\"status\":\"INPUT_EMBEDDING_DIMENSION_MISMATCH\",\"input_dim\":"
+                  << input_dim << ",\"receiver_input_dim\":" << receiver_input_dim
+                  << ",\"output_dim\":" << output_dim << ",\"vocab_size\":" << vocab_size << "}\n";
+        return 0;
+    }
+    int total_rows = 0;
+    std::vector<int> group_offsets;
+    std::vector<int> group_rows;
+    for (const auto & group : groups) {
+        if (group.empty() || group.size() > static_cast<std::size_t>(v14::kMaxRows)) return 64;
+        group_offsets.push_back(total_rows);
+        group_rows.push_back(static_cast<int>(group.size()));
+        total_rows += static_cast<int>(group.size());
+    }
+    if (total_rows < 1 || total_rows > v14::kMaxExtractRows ||
+        static_cast<std::size_t>(total_rows) * input_dim > v14::kMaxExtractElements) {
+        std::cerr << "native input embedding extraction element budget exceeded\n";
+        return 64;
+    }
+    std::ofstream output(path, std::ios::binary | std::ios::out | std::ios::trunc);
+    if (!output.is_open()) {
+        std::cerr << "cannot create native input embedding output file\n";
+        return 5;
+    }
+    for (const auto & group : groups) {
+        for (int token_id : group) {
+            std::vector<float> row;
+            int row_dim = 0, row_vocab = 0;
+            if (!extract_token_embedding(model.value, token_id, row, row_dim, row_vocab) ||
+                row_dim != input_dim || row_vocab != vocab_size) {
+                output.close();
+                std::filesystem::remove(path, ec);
+                std::cerr << "receiver token embedding row extraction failed\n";
+                return 6;
+            }
+            output.write(reinterpret_cast<const char *>(row.data()),
+                         static_cast<std::streamsize>(row.size() * sizeof(float)));
+            if (!output.good()) {
+                output.close();
+                std::filesystem::remove(path, ec);
+                std::cerr << "native input embedding output write failed\n";
+                return 7;
+            }
+        }
+    }
+    output.flush();
+    if (!output.good()) {
+        output.close();
+        std::filesystem::remove(path, ec);
+        std::cerr << "native input embedding output flush failed\n";
+        return 7;
+    }
+    output.close();
+    const std::size_t output_bytes = static_cast<std::size_t>(total_rows) * input_dim * sizeof(float);
+    std::cout << "{\"schema\":\"v14.native-latent-receiver/2\",\"runner_revision\":\""
+              << V14_LLAMA_REVISION << "\",\"llama_version\":\""
+              << v14::json_escape(llama_version() ? llama_version() : "unknown")
+              << "\",\"status\":\"INPUT_EMBEDDINGS_EXTRACTED\",\"input_dim\":" << input_dim
+              << ",\"receiver_input_dim\":" << receiver_input_dim
+              << ",\"output_dim\":" << output_dim << ",\"vocab_size\":" << vocab_size
+              << ",\"group_offsets\":" << v14::ints_json(group_offsets)
+              << ",\"group_rows\":" << v14::ints_json(group_rows)
+              << ",\"output_bytes\":" << output_bytes << "}\n";
+    return 0;
+}
+
 }  // namespace
 #endif
 
@@ -361,11 +556,15 @@ int main(int argc, char ** argv) {
         print_version();
         return 0;
     }
-    std::string model_path, positions_text;
+    std::string model_path, positions_text, token_groups_text, output_file;
+    bool extract_input_embeddings = false;
     int rows = 0, input_dim = 0, threads = 1;
     for (int i = 1; i < argc; ++i) {
         const std::string arg(argv[i]);
-        if (arg == "--model" && i + 1 < argc) model_path = argv[++i];
+        if (arg == "--extract-input-embeddings") extract_input_embeddings = true;
+        else if (arg == "--token-groups" && i + 1 < argc) token_groups_text = argv[++i];
+        else if (arg == "--output-file" && i + 1 < argc) output_file = argv[++i];
+        else if (arg == "--model" && i + 1 < argc) model_path = argv[++i];
         else if (arg == "--rows" && i + 1 < argc) rows = std::atoi(argv[++i]);
         else if (arg == "--input-dim" && i + 1 < argc) input_dim = std::atoi(argv[++i]);
         else if (arg == "--positions" && i + 1 < argc) positions_text = argv[++i];
@@ -374,6 +573,16 @@ int main(int argc, char ** argv) {
             std::cerr << "unknown or incomplete argument\n";
             return 64;
         }
+    }
+    if (extract_input_embeddings) {
+        std::vector<std::vector<int>> groups;
+        int total_rows = 0;
+        if (model_path.empty() || output_file.empty() || threads < 1 || threads > 2 ||
+            !v14::parse_token_groups(token_groups_text, groups, total_rows)) {
+            std::cerr << "usage: native_latent_receiver --extract-input-embeddings --model PATH --token-groups CSV_GROUPS --output-file PATH --threads 1|2\n";
+            return 64;
+        }
+        return run_extract(model_path, threads, groups, output_file);
     }
     std::vector<int> positions;
     if (model_path.empty() || rows < 1 || input_dim < 1 || threads < 1 ||
