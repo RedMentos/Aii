@@ -724,7 +724,39 @@ class TemporalWorldJEPAStoreConsumer:
                     "pending_rows": len(pending), "checkpoint_committed": False,
                     "native_body_weights_changed": False,
                 }
-            train, holdout, split = _split_windows(windows)
+            try:
+                train, holdout, split = _split_windows(windows)
+            except ValueError as exc:
+                # One long session is not a valid disjoint holdout: every
+                # overlapping temporal window shares that session. Keep the
+                # verified rows pending and wait for another independent
+                # session instead of turning a normal cold-start condition
+                # into a SleepRuntime ERROR.
+                if str(exc) != "insufficient source-disjoint temporal partitions":
+                    raise
+                next_state = dict(state)
+                next_state["scan_cursor"] = cursor
+                next_state["pending_rows"] = sorted(
+                    pending.values(), key=lambda item: (item["created"], item["action_id"])
+                )
+                self.store.set_state(STATE_KEY, next_state, expected=version)
+                return {
+                    "status": "WAITING_FOR_MORE_T8_DATA",
+                    "reason": "NEED_MORE_SOURCE_DISJOINT_SESSIONS",
+                    "windows": len(windows),
+                    "train_windows": 0,
+                    "holdout_windows": 0,
+                    "verified_receipts": len(new_ids),
+                    "rejected_receipts": rejected,
+                    "censored_observed": censored,
+                    "unknown_skipped": unknown,
+                    "scanned_rows": scanned,
+                    "scan_cursor": cursor,
+                    "has_more": has_more,
+                    "pending_rows": len(pending),
+                    "checkpoint_committed": False,
+                    "native_body_weights_changed": False,
+                }
             if replay_mode == "none" and active is not None:
                 train = [
                     window for window in train
