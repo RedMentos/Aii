@@ -41,7 +41,7 @@ RUNNER_BOUNDS = {
     "requested_tokens": (0, 10_000_000), "input_message_count": (0, 65536),
 }
 RUNNER_STAGES = ("load_s", "template_s", "prefill_to_first_token_s", "stream_s")
-SERVER_VERSION_STATUSES = frozenset({"VERIFIED_REVISION_PREFIX", "REVISION_ONLY", "VERSION_ONLY",
+SERVER_VERSION_STATUSES = frozenset({"PARSED_REVISION_PREFIX", "REVISION_ONLY", "VERSION_ONLY",
                                      "UNAVAILABLE", "TIMEOUT", "NONZERO_EXIT", "UNPARSEABLE"})
 SERVER_VERSION_PATTERN = re.compile(r"[0-9][A-Za-z0-9._+-]{0,63}\Z")
 SERVER_REVISION_PATTERN = re.compile(r"[0-9a-f]{7,40}\Z")

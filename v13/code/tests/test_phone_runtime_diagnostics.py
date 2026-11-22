@@ -301,7 +301,7 @@ class RunnerCacheDiagnosticsTests(unittest.TestCase):
         binary = self.executable("echo 'version: 1 (b29c606e)'; echo '/private/build/path'\n")
         result = runners.LlamaRunner._probe_server_version(binary)
         self.assertEqual(result, {
-            "status": "VERIFIED_REVISION_PREFIX",
+            "status": "PARSED_REVISION_PREFIX",
             "version": "1+b29c606e",
             "revision_prefix": "b29c606e",
         })
@@ -330,6 +330,7 @@ class RunnerCacheDiagnosticsTests(unittest.TestCase):
             "/opt/llama-server", "-m", "model.gguf", "-np", "1",
             "--cache-ram", "128", "--ctx-checkpoints", "6",
         ])
+        self.assertEqual(runners.LlamaRunner._prompt_cache_payload_policy(), {"cache_prompt": True, "id_slot": 0})
         self.assertEqual(policy, {
             "revision": "v13.llama-prompt-cache-policy/1",
             "parallel_slots": 1, "cache_ram_mb": 128, "ctx_checkpoints": 6,
@@ -355,7 +356,7 @@ class RunnerCacheDiagnosticsTests(unittest.TestCase):
     def test_generate_attaches_version_and_cache_scope_to_real_metrics_consumer(self):
         runner = runners.LlamaRunner(self.root, "B1_DETAIL", self.root / "body.gguf", {})
         runner._server_version_info = {
-            "status": "VERIFIED_REVISION_PREFIX", "version": "1+b29c606e",
+            "status": "PARSED_REVISION_PREFIX", "version": "1+b29c606e",
             "revision_prefix": "b29c606e",
         }
         runner._prompt_cache_policy = runners.LlamaRunner._prompt_cache_policy_from_command([
@@ -374,7 +375,7 @@ class RunnerCacheDiagnosticsTests(unittest.TestCase):
             "llama-server", "-np", "1", "--cache-ram", "128", "--ctx-checkpoints", "6",
         ]) | {"private_path": "/private/device/path"}
         result = diagnostic._project("FINAL", {"runner": {
-            "server_version_status": "VERIFIED_REVISION_PREFIX",
+            "server_version_status": "PARSED_REVISION_PREFIX",
             "server_version": "1+b29c606e", "server_revision_prefix": "b29c606e",
             "prompt_cache_policy": policy, "raw_output": "/private/raw-output",
         }})

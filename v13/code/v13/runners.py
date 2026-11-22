@@ -101,7 +101,7 @@ class LlamaRunner:
                         revision=re.search(r"\bcommit[:= ]+([0-9a-f]{7,40})\b",line,re.I)
                     if version and revision:
                         prefix=revision.group(1).lower()
-                        result={"status":"VERIFIED_REVISION_PREFIX",
+                        result={"status":"PARSED_REVISION_PREFIX",
                                 "version":version.group(1)+"+"+prefix,
                                 "revision_prefix":prefix}
                     elif revision:
@@ -115,6 +115,10 @@ class LlamaRunner:
             _SERVER_VERSION_CACHE[key]=dict(result)
             return dict(result)
     @staticmethod
+    def _prompt_cache_payload_policy():
+        """Single source for the request-level prompt-cache controls used by generation and diagnostics."""
+        return {"cache_prompt": True, "id_slot": 0}
+    @staticmethod
     def _prompt_cache_policy_from_command(cmd):
         """Expose exact V13 cache inputs; flag absence is not an inferred default."""
         def integer(flag):
@@ -125,8 +129,7 @@ class LlamaRunner:
             "parallel_slots":integer("-np"),
             "cache_ram_mb":integer("--cache-ram"),
             "ctx_checkpoints":integer("--ctx-checkpoints"),
-            "cache_prompt":True,
-            "id_slot":0,
+            **LlamaRunner._prompt_cache_payload_policy(),
             "no_cache_idle_slots_flag_present":"--no-cache-idle-slots" in cmd,
             "kv_unified_flag_present":"--kv-unified" in cmd,
             # RunnerPool uses (role, purpose), not (session, role): sessions in
@@ -502,7 +505,7 @@ class LlamaRunner:
         self.stage_times['template_s']=time.monotonic()-self.phase_started;self.phase='prefill';self.phase_started=time.monotonic()
         payload={"prompt":prompt,"n_predict":cap,"stream":True,
                  **native_sampling_policy(self.role,self.cfg,schema),
-                 "seed":seed,"cache_prompt":True,"id_slot":0,"return_tokens":True}
+                 "seed":seed,**self._prompt_cache_payload_policy(),"return_tokens":True}
         if schema:payload["json_schema"]=schema
         lp_pairs=[] if schema and self.cfg.get('offer_logprobs',True) else None
         if lp_pairs is not None:payload['n_probs']=1  # WP-KAL2: token confidence for focal.offer_uncertainty
