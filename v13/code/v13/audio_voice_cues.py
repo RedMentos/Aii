@@ -302,7 +302,9 @@ def extract_voice_cues(pcm: bytes, sample_rate: int, *, backend: str = "python")
 
     crest = overall_peak / max(overall_rms, 1e-6)
 
-    if overall_rms < 0.003:
+    # Strong frame-level periodicity must not be overridden by the absolute window floor.
+    # VOICED remains an acoustic cue, not a calibrated speech probability.
+    if overall_rms < 0.003 and voiced_fraction < 0.25:
         activity_hint = "SILENCE"
         activity_score = max(0.0, min(1.0, 1.0 - overall_rms / 0.003))
     elif voiced_fraction >= 0.25 and voicing_confidence >= 0.55:
