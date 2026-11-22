@@ -90,9 +90,10 @@ def test_same_speaker_embedding_stays_confident_and_has_no_identity_label():
     assert evidence["status"] == "MEASURED"
     reference_end = warmup["frames"][-1]["end_ms"]
     tolerance = max(40, int(batch["frame_step_ms"] * 1.5))
+    lookback_ms = batch["lookback_frames"] * batch["frame_step_ms"]
     comparable_frame_ends = [
         frame["end_ms"] for frame in batch["frames"]
-        if abs(frame["end_ms"] - batch["lookback_ms"] - reference_end) <= tolerance
+        if abs(frame["end_ms"] - lookback_ms - reference_end) <= tolerance
     ]
     assert comparable_frame_ends
     expected_reference_age_ms = max(comparable_frame_ends) - reference_end
