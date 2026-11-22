@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T00:06:03Z",
+  "updated_at": "2026-11-22T00:06:42Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -339,10 +339,10 @@
       "proof_environment": "LOCAL_LINUX_ALGORITHM_ONLY_PASS / GITHUB_CI_RAW_EAR_3.13_3.14_PASS / STAGED_RUNTIME_FAIL_44964762227_CORE_PIN / INTEGRATED_REGRESSION_FAIL_44964762227_CORE_PIN / REDMI_UNVERIFIED",
       "next_step": "Core refreshes integrated_audio_context_candidate_20261121.py SOURCE_BLOBS['v13/audio_voice_cues.py'] to current blob 9b6bafe1e02b3f49503d57399b43248b9e6d8bb1 and confirms v13/audio_speaker_evidence.py blob b869108a7828c4601fc179a645d134f55c1eacc2 is staged. Then recompute termux_runtime_recovery_candidate_20261121.py AUDIO_BUILDER_BLOB_SHA1, stage_integrated_candidate.py BUILDER_SHA, runtime_deploy.py STAGER_SHA256 and dependent test pins; rerun exact staged/integrated suites. Keep optional NumPy and all speaker models OFF; no Redmi proof.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:06:03Z",
+      "last_checkpoint": "2026-11-22T00:06:42Z",
       "latest_candidate_pr": {
         "pr": 2275,
-        "head_sha": "2996153a1244afa318e084df419b01a53095aeda",
+        "head_sha": "a7c2bbf6040e404e01246d9d142b2ae99b4a6493",
         "base_sha": "9922cf86ecf8801d30a46a1e98817e5c6c1db092",
         "tested_code_sha": "2996153a1244afa318e084df419b01a53095aeda",
         "ci": "RAW_EAR_3.13_PASS; RAW_EAR_3.14_PASS; STAGED_RUNTIME_FAIL_44964762227_AUDIO_VOICE_CUES_PIN; INTEGRATED_REGRESSION_FAIL_44964762227_AUDIO_VOICE_CUES_PIN"
