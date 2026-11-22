@@ -144,6 +144,28 @@ class L1ShadowTrainingTests(unittest.TestCase):
             self.assertTrue(indices <= train_set or indices <= test_set)
             self.assertFalse(indices & train_set and indices & test_set)
 
+    def test_source_disjoint_holdout_keeps_two_test_groups_per_class(self):
+        refs = []
+        labels = []
+        for group in range(8):
+            refs.append({
+                "source_id": f"source-{group}",
+                "sha256": f"{group:064x}",
+                "char_start": 0,
+                "char_end": 8,
+            })
+            labels.append(group % 2)
+        train, test, train_hashes, test_hashes = _source_disjoint_split(
+            refs, np.asarray(labels, dtype=np.int64), 13
+        )
+        label_by_hash = {ref["sha256"]: labels[i] for i, ref in enumerate(refs)}
+        self.assertEqual(len(train_hashes), 4)
+        self.assertEqual(len(test_hashes), 4)
+        for label in (0, 1):
+            self.assertEqual(sum(label_by_hash[x] == label for x in train_hashes), 2)
+            self.assertEqual(sum(label_by_hash[x] == label for x in test_hashes), 2)
+        self.assertEqual(len(train) + len(test), 8)
+
     def test_source_disjoint_holdout_rejects_conflicting_labels_for_same_source(self):
         refs = [
             {"source_id": "source-a", "sha256": "a" * 64, "char_start": 0, "char_end": 4},
