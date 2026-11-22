@@ -831,20 +831,15 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts_with_acc
         )
         assert trained["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", trained
 
-        # Test-only gate fixture isolates the real B1/B2 prompt consumer from
-        # learned-utility acceptance. The predictor/receiver weights remain the
-        # trained checkpoint; these values are NOT evidence that its holdout
-        # utility passed. Actual utility stays covered by the training metrics.
-        state, version = store.state(STATE_KEY, None)
+        # The prompt consumer must use the measured, persisted disjoint-holdout
+        # utility gates from this exact trained checkpoint. Never manufacture an
+        # accepted gate in the fixture: that would prove wiring but not learning.
+        state, _ = store.state(STATE_KEY, None)
+        from v13.world_jepa_consumer import receiver_utility_gate
         for gate_role in ("B1_DETAIL", "B2_GIST"):
-            prefix = gate_role.lower()
-            state["active"]["receiver_metrics"].update({
-                prefix + "_holdout_mse": 0.1,
-                prefix + "_mean_baseline_mse": 1.0,
-                prefix + "_zero_latent_mse": 1.0,
-                prefix + "_shuffled_latent_mse": 1.0,
-            })
-        store.set_state(STATE_KEY, state, expected=version)
+            gate = receiver_utility_gate(state["active"]["receiver_metrics"], gate_role)
+            assert gate["accepted"], {"role": gate_role, "gate": gate,
+                                      "metrics": state["active"]["receiver_metrics"]}
         assert state["active"]["checkpoint_sha256"] == trained["checkpoint_sha256"]
 
         text = "Current request: use the verified recent action history."
