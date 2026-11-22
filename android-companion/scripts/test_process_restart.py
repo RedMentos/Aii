@@ -104,6 +104,16 @@ def tap_button(label: str) -> None:
     raise AssertionError("could not locate visible companion button: " + label)
 
 
+def persisted_enabled() -> str:
+    raw = adb("shell", "run-as", PACKAGE, "cat",
+              "shared_prefs/v14-companion.xml")
+    root = ET.fromstring(raw)
+    for node in root:
+        if node.tag == "boolean" and node.attrib.get("name") == "enabled":
+            return node.attrib.get("value", "")
+    raise AssertionError("persisted companion enabled flag is missing")
+
+
 def process_id() -> str:
     return adb("shell", "pidof", PACKAGE, check=False).strip()
 
@@ -127,17 +137,22 @@ def main() -> None:
     adb("shell", "am", "start", "-n", COMPONENT)
     wait_for_text(STOPPED_TEXT)
 
+    assert persisted_enabled() == "false"
+
     tap_button(TOGGLE_LABEL)
     enabled = wait_for_text(ENABLED_TEXT)
     assert ENABLED_TEXT in enabled
+    assert persisted_enabled() == "true"
 
     tap_button(TOGGLE_LABEL)
     stopped = wait_for_text(STOPPED_TEXT)
     assert ENABLED_TEXT not in stopped
+    assert persisted_enabled() == "false"
 
     tap_button(TOGGLE_LABEL)
     enabled = wait_for_text(ENABLED_TEXT)
     assert ENABLED_TEXT in enabled
+    assert persisted_enabled() == "true"
     old_pid = wait_for_process(absent=False)
 
     adb("shell", "am", "force-stop", PACKAGE)
@@ -146,8 +161,9 @@ def main() -> None:
     wait_for_process(absent=False)
     restarted = wait_for_text(STOPPED_TEXT)
     assert ENABLED_TEXT not in restarted
+    assert persisted_enabled() == "false"
 
-    print("PASS: visible stop blocks the enabled state; force-stop killed PID "
+    print("PASS: visible stop persisted OFF; force-stop killed PID "
           + old_pid + "; provider/activity restart returned STOPPED without "
           "re-pairing, action submission, or capability grant.")
 
