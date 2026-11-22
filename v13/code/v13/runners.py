@@ -18,7 +18,7 @@ from .resources import process_memory
 
 _SERVER_VERSION_CACHE = {}
 _SERVER_VERSION_LOCK = threading.Lock()
-_SERVER_VERSION_TIMEOUT_SECONDS = 1.5
+_SERVER_VERSION_TIMEOUT_SECONDS = 0.75
 def wire_json(v):
     """Request body for llama-server. Unlike common.dumps it keeps key order: the server builds the JSON-schema
     grammar in property order, so sorting would make the model decide e.g. `action` before `options` or
