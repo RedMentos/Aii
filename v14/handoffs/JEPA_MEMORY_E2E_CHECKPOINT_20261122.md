@@ -150,3 +150,37 @@ These are synthetic SQLite T8/numeric-world-model results. They are not B1/B2 GG
 
 The shared `V14_USER_NEXT_ACTION.md` and work board remain Boss-owned; PR #2288 comment 7072389199 carries the exact integration handoff for the next run.
 
+
+
+## 2026-11-22 follow-up — held-out interference anchors
+
+**Code head at this checkpoint:** `c599cb9926973b70235c38c3747e5d7ad5020cb8` (PR #2247, still based on `bdcad466`; NOT_RELEASED).
+
+### New executable change
+
+- `on_demand_conflict` now estimates per-session signed gradient conflict from `old_guard_rows`, not the old-session fit fold.
+- `WorldJEPA.fit/partial_fit` accepts bounded per-session `replay_reference_batches`; the conflict/loss-demand paths use the source/content-disjoint prior guard fold for GEM constraint gradients. Fit-fold replay rows still identify selected sessions; the final promotion holdout remains separate and is never used to select retries.
+- Guard-reference provenance is surfaced as fold + action-ID hashes + batch/row counts.
+- Invalid or undersized reference batches are rejected before fitting; the negative test checks parameter snapshots, optimizer-state identity and fit-step count remain unchanged.
+- The A-B-A harness now requires guard-fold provenance for projected `on_demand_conflict` and `on_demand_loss` arms. The earlier predictor-only test correction also allows a projected arm to be rejected only when the matched unprojected loss-demand arm is accepted and the projected checkpoint hash remains unchanged; the utility gate itself is unchanged.
+
+### Exact-head CI at the time of this handoff
+
+- `44981689714` — JEPA Store A-B-A, Python 3.13/3.14: in progress at last poll; compile and SQLite/T8/checkpoint-resume steps passed on both versions, A-B-A test still running.
+- `44981689696` — staged context/integrated regression: in progress at last poll.
+- `44981689729` — two-checkout updater migration: failed at the nested WorldJEPA source-pin boundary.
+- `44981689678` — owner-read bootstrap: owner-read unit step passed; staged startup failed because the production WorldJEPA training-resume input hash was stale.
+- `44981689916` — Lab-Age E2E: same `production WorldJEPA training-resume input changed` error.
+- `44981689646` — safe-additive validator says this broad PR is not strictly additive; this is a scope-policy failure, not a JEPA numerical test.
+- `44981689681` combined online JEPA, `44981689711` incremental WorldJEPA, `44981689635` runtime deployment integrity, `44981689705` privacy scan and `44981689712` reviewed-integration workflow passed.
+- No full local Aii checkout is mounted, so LOCAL_LINUX repository tests are BLOCKED. REDMI_UNVERIFIED. No deployment, model swap or device action occurred.
+
+### Integration blocker / owner handoff
+
+The branch changes `world_jepa.py` and the source-forget guard in `memory.py`, but the staged generated-consumer pin chain has not been recomputed for these exact bytes. Current CI reports `ValueError: production WorldJEPA training-resume input changed` in `integrated_world_training_resume_candidate_20261111.py`; the memory/lifecycle pin also needs to be carried through the source-lifecycle → integrated-memory/world → recovery → stage → deployer chain. Core/Boss must rebind the full chain on its current integration head before #2247 can be composed. Do not merge this branch against the old base or treat the green isolated JEPA workflows as integrated release proof.
+
+### Next
+
+1. Read the completed exact-head A-B-A artifacts and verify both Python versions, per-seed parameter/checkpoint diffs, retention, negative controls and rollback.
+2. Coordinate the WorldJEPA + memory source-pin rebind with Boss/Core on #2288; then compose/review #2247 against that exact head.
+3. After that, connect the learner to a real source-bound B1/B2 receiver/correction stream. The current C4/C3 receiver diagnostics are not learned semantic alignment or trained latent transfer.
