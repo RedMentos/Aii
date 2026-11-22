@@ -428,6 +428,8 @@ public final class CompanionDbApprovalTest {
         assertFalse(CompanionProvider.recoverClaimedAction(context, first, ACTION_ID, NOW, broken));
         assertEquals("EXECUTING", first.get(ACTION_ID).status);
         assertNull(first.get(ACTION_ID).receiptJson);
+        assertEquals("notification reconciliation must retain a claimed action with no receipt",
+                0, CompanionProvider.reconcileApprovalNotifications(context, first, NOW));
         assertTrue(hasApprovalNotification(manager, ACTION_ID));
         CompanionProvider.ReceiptIssuer repaired = (action, status, consent, now) ->
                 "{\"status\":\"OUTCOME_UNKNOWN\",\"local_consent\":true}";
