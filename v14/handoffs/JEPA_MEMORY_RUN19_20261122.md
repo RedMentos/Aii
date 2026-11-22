@@ -3,7 +3,7 @@
 **Timestamp:** 2026-11-22T20:55:00Z
 **Code PR:** [#2372](https://github.com/RedMentos/Aii/pull/2372)
 **Code branch:** jepa-memory/v14-temporal-exact-forget-retention-20261122-run14
-**Exact code HEAD:** dbb7b143a336ef946985cf3cad9185af3782d734
+**Exact code HEAD:** 3f015a7442c6950d5ce0dce3a9bbbcc4517e863d
 **Status:** DRAFT / NOT_RELEASED / REDMI_UNVERIFIED
 
 ## Implemented in this run
@@ -18,16 +18,21 @@ Commits:
 - 8ba258ff40fd4794658f8b1bac5400d8e5bcd125 — cold-start and B1/B2 support regressions.
 - ebd58266d6d864a372759f66311bc045d67ed28b — temporal paging continuation in SleepRuntime.job.
 - dbb7b143a336ef946985cf3cad9185af3782d734 — temporal-only continuation regression.
+- 3f015a7442c6950d5ce0dce3a9bbbcc4517e863d — pending-row Store close/reopen and second-session continuation regression.
 
 ## Run 19 continuation addendum
 
-SleepRuntime.job now schedules a bounded continuation when either the base learner or the temporal learner reports has_more, and scheduler completion metadata includes temporal_status. The regression uses base has_more=false and temporal has_more=true. Exact dbb7b143 workflows are now visible: 45070190046 (staged/integrated), 45070190084 (temporal 3.13/3.14), 45070190269 (optimizer-resume 3.13/3.14), 45070190180 (owner-read / staged startup). All jobs are QUEUED, not PASS.
+SleepRuntime.job now schedules a bounded continuation when either the base learner or the temporal learner reports has_more, and scheduler completion metadata includes temporal_status. The regression uses base has_more=false and temporal has_more=true. Exact 3f015a7442c6950d5ce0dce3a9bbbcc4517e863d workflows: 45070697371 optimizer-resume 3.13/3.14; 45070697433 temporal WorldJEPA 3.13/3.14; 45070697455 owner-read/staged startup — all QUEUED. No exact staged/integrated run visible for this latest test-only commit. No exact staged/integrated workflow is visible for this last test-only commit.
+
+## Restart-persistence regression
+
+The new test first writes 32 outcomes in one session and expects WAITING with all rows pending. It closes/reopens the same Store, adds a second independent 32-outcome session, and expects a disjoint train/holdout evaluation (either accepted update or measured utility/retention rejection), not ERROR or another insufficient-session WAITING. It checks cursor advancement and 64 unique IDs across active experience plus pending state.
 
 ## Tests and environment
 
-- Exact-head dbb7b143 staged/integrated workflow 45070190046 — QUEUED.
-- Exact-head dbb7b143 temporal WorldJEPA Python 3.13/3.14: 45070190084 — QUEUED.
-- Exact-head dbb7b143 optimizer-resume Python 3.13/3.14: 45070190269 — QUEUED. Owner-read / staged startup 45070190180 — QUEUED.
+- No exact staged/integrated workflow is visible for 3f015a; earlier dbb7 run 45070190046 is not current-head proof.
+- Exact-head 3f015a temporal WorldJEPA Python 3.13/3.14: 45070697433 — QUEUED.
+- Exact-head 3f015a optimizer-resume Python 3.13/3.14: 45070697371 — QUEUED. Owner-read / staged startup 45070697455 — QUEUED.
 - LOCAL_LINUX full suite: BLOCKED / NOT_RUN. Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2 exist, but no Aii checkout is mounted; git ls-remote failed because github.com DNS could not resolve.
 - TERMUX/REDMI: NOT TESTED. Private V13OBS #115 reports installed base aed1d2b, updater UP_TO_DATE; B1 4/4 and B2 2/2 native attempts failed, zero valid offers, C3 prefill ~38.945 s / 2 generated tokens. #2372 is not installed.
 
