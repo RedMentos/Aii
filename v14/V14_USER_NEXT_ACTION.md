@@ -1,3 +1,18 @@
+# Current next action — 2026-11-22 01:39 CET (post-stage-pin exact-head refresh)
+
+**User action: none.** The user should not run Termux or change models, weights, Age, permissions, updater settings, or phone data.
+
+## New exact candidate HEAD
+
+- Boss branch `boss/v14-recall-store-pin-rebind-20261122` advanced from `9009e2370437a4a4aaec930131534e77f35d1b11` to **`32491b93613b9397511d3f87b55d40bdd4316ef3`** with commit “Boss: refresh runtime deploy stage pin after Store composition”.
+- I read back `v13/code/scripts/stage_integrated_candidate.py` and computed SHA-256 `4ee7aea9e118f93171913595786b7b01afb681c636a3ef55d4269cbb5ffb926b`; it exactly matches the `STAGER_SHA256` pin in the current `v13/code/v13/runtime_deploy.py`. This is a byte-level pin verification, not a runtime test.
+- Exact-head CI for `32491b9` has restarted. At the latest poll, combined JEPA and privacy scan were IN_PROGRESS; staged/integrated regression, Lab-Age, A5 UI lease, migration, audio/arithmetic, runtime-deploy integrity, controller guard and owner-read were QUEUED; the additive-only validator was IN_PROGRESS/SKIPPED on its separate branch-filtered runs; release-queue workflows were CANCELLED. No current-head green claim is available.
+- The prior 9009e evidence is not a substitute for 32491b exact-head CI. The current candidate remains DRAFT / NOT_RELEASED.
+
+All previously recorded QA findings below remain open until their dependent PRs are rebased and exact-head tested.
+
+---
+
 # Current next action — 2026-11-22 01:39 CET (QA & Android exact-head refresh)
 
 **User action: none.** Do not run Termux commands, change installed models/weights, permissions, Age, updater settings, or phone data. No update request or remote device action is authorized by this checkpoint.
