@@ -103,14 +103,14 @@ def handle_transient_overlay(root: ET.Element) -> bool:
 
 def failure_logcat() -> str:
     try:
-        result = adb("logcat", "-d", "-t", "500", "-v", "brief", timeout=15, check=False)
+        output = adb("logcat", "-d", "-t", "500", "-v", "brief", timeout=15, check=False)
     except Exception as exc:
         return "logcat unavailable: " + type(exc).__name__
     needles = ("AndroidRuntime", "FATAL EXCEPTION", "ANR in ",
                "Application Not Responding", "ActivityTaskManager",
                "WindowManager", "InputDispatcher", "uiautomator",
                "UIAutomator", "chromium", "WebView", "V14")
-    selected = [line for line in result.stdout.splitlines()
+    selected = [line for line in output.splitlines()
                 if any(token in line for token in needles)]
     return "\\n".join(selected[-80:]) or "(no matching logcat lines)"
 
