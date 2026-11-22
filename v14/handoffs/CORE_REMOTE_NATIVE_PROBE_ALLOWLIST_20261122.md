@@ -74,3 +74,9 @@ No action is needed now. The probe remains NOT_RUN. Do not send a Termux command
 - First staged-runtime run on commit `9bdcf1474928670d7255e82f0be5a52cf7615d02` failed 2/40 focused tests on Python 3.13 and 3.14: the pre-existing Callosum test lacked a FINAL status/local arm, and one new mock returned `None` instead of a packet. Both are test-contract regressions, not native probe failures.
 - Corrected the old test fixture to bind model manifest paths/sizes, create a FINAL last-answer fixture, arm the exact B2→C3 pair, and assert the one-shot consumed result. Corrected the fake receiver packet and added a negative non-TTY arm assertion.
 - New exact-head CI is pending; the earlier failed run remains preserved as negative evidence.
+
+### Staging boundary hardening — 2026-11-22
+
+- The review overlay now refuses to patch the source tree or any ancestor/descendant of it; it only accepts a separate `SHADOW_REVIEW_ONLY` stage whose recorded source path matches the supplied code tree.
+- The stage test includes a negative control that attempts source-tree application and expects a fail-closed rejection.
+- Remote bridge comments now state explicitly that remote `--confirm` does not grant local authority; the local TTY arm is separately required.

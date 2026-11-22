@@ -1,6 +1,7 @@
 """Verify the native receiver overlay is present in the exact final staged runtime."""
 import importlib.util
 import os
+import pytest
 from pathlib import Path
 import subprocess
 import sys
@@ -22,6 +23,8 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     overlay_spec = importlib.util.spec_from_file_location("v14_native_probe_approval_overlay", overlay_path)
     overlay = importlib.util.module_from_spec(overlay_spec)
     overlay_spec.loader.exec_module(overlay)
+    with pytest.raises(ValueError, match="separate from source tree"):
+        overlay.apply_staged(CODE, CODE)
     manifest = overlay.apply_staged(CODE, destination)
     assert manifest["native_probe_approval_overlay"]["status"] == "SHADOW_REVIEW_ONLY"
     assert manifest["native_probe_approval_overlay"]["ttl_seconds"] == 120

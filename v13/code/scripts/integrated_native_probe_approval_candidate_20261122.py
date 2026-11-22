@@ -88,6 +88,9 @@ def apply_staged(code_dir: Path, staging_dir: Path) -> dict:
     if Path(staging_dir).is_symlink():
         raise ValueError("native probe approval stage cannot be a symlink")
     staging_dir = Path(staging_dir).resolve(strict=True)
+    if (staging_dir == code_dir or staging_dir in code_dir.parents
+            or code_dir in staging_dir.parents):
+        raise ValueError("native probe approval staging directory must be separate from source tree")
     callosum_path = staging_dir / "v13/callosum.py"
     operator_path = staging_dir / "v13/operator.py"
     approval_path = code_dir / "v13/native_probe_approval.py"
@@ -124,6 +127,10 @@ def apply_staged(code_dir: Path, staging_dir: Path) -> dict:
     if not manifest_path.is_file() or manifest_path.is_symlink():
         raise ValueError("staged Runtime manifest is missing or unsafe")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("status") != "SHADOW_REVIEW_ONLY":
+        raise ValueError("native probe approval overlay only accepts a review-only staged Runtime")
+    if Path(manifest.get("source", "")).resolve() != code_dir:
+        raise ValueError("native probe approval source tree differs from staged manifest")
     changed = ["v13/callosum.py", "v13/operator.py", "v13/native_probe_approval.py"]
     manifest["native_probe_approval_overlay"] = {
         "status": "SHADOW_REVIEW_ONLY",

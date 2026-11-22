@@ -32,7 +32,8 @@ SAFE_OPERATOR_COMMANDS = frozenset({
     ":scheduler lab summary", ":scheduler lab now"
 })
 # The only parameterized remote operator is a one-shot native receiver probe.
-# Exact role allowlists plus --last-source and --confirm prevent shell/flag injection.
+# Remote --confirm is necessary but never grants local authority: staged Callosum
+# must consume a fresh local TTY arm before any native receiver work.
 NATIVE_RECEIVER_PROBE_COMMAND = re.compile(
     r":callosum native-probe (B1_DETAIL|B2_GIST) "
     r"(B1_DETAIL|B2_GIST|C3_LANGUAGE) --last-source --confirm",
