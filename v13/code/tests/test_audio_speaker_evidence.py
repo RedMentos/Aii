@@ -758,8 +758,8 @@ def _teacher_ear_result(generation_id, *, finality="FINAL", **overrides):
         "network_used": False,
         "raw_audio_persisted": False,
         "words": [
-            {"text": "hello", "start_ms": 120, "end_ms": 280, "confidence": 0.91},
-            {"text": "world", "start_ms": 320, "end_ms": 500, "confidence": 0.88},
+            {"text": "hello", "start_ms": 120, "end_ms": 280},
+            {"text": "world", "start_ms": 320, "end_ms": 500},
         ],
     }
     value.update(overrides)
@@ -812,7 +812,7 @@ def test_teacher_ear_rejects_network_raw_persistence_and_bad_word_times():
         _validate_teacher_fixture(_teacher_ear_result("gen-teacher", raw_audio_persisted=True))
     bad_time = _teacher_ear_result(
         "gen-teacher",
-        words=[{"text": "late", "start_ms": 1090, "end_ms": 1110, "confidence": 0.8}],
+        words=[{"text": "late", "start_ms": 1090, "end_ms": 1110}],
     )
     with pytest.raises(ValueError, match="timestamps"):
         _validate_teacher_fixture(bad_time)
@@ -886,3 +886,13 @@ def test_teacher_ear_denial_happens_before_packet_persistence(tmp_path):
         assert stored is None
     finally:
         runtime.store.close()
+
+
+def test_teacher_ear_summary_truncates_without_unbounded_prompt_growth():
+    words = [
+        {"text": "longphrase" * 10, "start_ms": 100 + i, "end_ms": 101 + i}
+        for i in range(64)
+    ]
+    evidence = _validate_teacher_fixture(_teacher_ear_result("gen-teacher", words=words))
+    assert evidence["summary_truncated"] is True
+    assert len(evidence["summary"]) <= 512
