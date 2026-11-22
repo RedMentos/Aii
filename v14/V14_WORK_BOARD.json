@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T20:49:21.304Z",
+  "updated_at": "2026-11-22T21:13:38.501Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA readback 30/30 observed check-runs SUCCESS. Authenticated private PIPELINE_STATUS #619 confirms the same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #620 still shows a slow 2-token stored turn and B1/B2 TIME_BUDGET. Current candidates remain DRAFT / CI pending; functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -175,7 +175,7 @@
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
       "proof_environment": "LOCAL_LINUX isolated helper + CI_PENDING; no Android capture",
-      "next_step": "Perception/QA: #2375 exact head f9e16af7 has 8 checks QUEUED / 1 expected SKIPPED. It is an ephemeral RAW EYE frame adapter only. The companion MediaProjection provider, signed receipt verifier, Android 14 foreground service, resize/stop lifecycle and explicit device permission are still absent/OFF.",
+      "next_step": "Perception: #2375 code/test head f87ebac4 has privacy and offline-bridge-security PASS, 6 exact-head checks QUEUED, additive validator policy SKIPPED. The adapter uses one digest-bound decode snapshot and scoped per-frame source/cache revocation after C3; isolated LOCAL_LINUX helper passes, full repo suite blocked. Still no Android MediaProjection provider, signed OS receipt, normal Runtime/C3 consumer or Redmi visual test.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T09:58:33.516Z",
       "latest_candidate_pr": {
@@ -197,7 +197,7 @@
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
       "proof_environment": "SYNTHETIC adapter candidate / CI_PENDING; no Android provider",
-      "next_step": "Perception: continue source-disjoint A4/RAW EAR work, but keep Android screen/microphone capture OFF until a real provider and consent/revocation lifecycle exist. #2375 is adapter-only; do not call it a MediaProjection provider.",
+      "next_step": "Perception: #2375 RAW EYE adapter is WIRED_SYNTHETIC only; #2312 is a 44.1-kHz signed Termux-side RAW EAR consumer (dedicated CI PASS) but staged migration fails 2 inherited UPDATED-vs-PARTIAL assertions. Android AudioRecord provider remains absent. R-091 requires B3 target-generation utility, not input-effect RMS. Coordinate provider and current-base rebase with Core/QA.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T09:58:33.516Z",
       "latest_candidate_pr": {
@@ -250,7 +250,7 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "CI only; no APK install, pairing or Redmi OS action",
-      "next_step": "Core/QA: #2376 action-journal exact head 4abb0091 is 7/7 CI green but stacked on #2356. QA #2356 exact head 3829465 has one failed emulator process-restart job; fix/re-run emulator harness before companion integration. Companion remains default-OFF and no Android action is authorized.",
+      "next_step": "Core/QA: current companion ref 7650ae0 has no RECORD_AUDIO manifest permission; CapabilityRegistry marks audio_capture unavailable and AudioCaptureDefaultOffTest confirms default-OFF. PR #2312 is only a signed Termux consumer and still has historical base 58666dd. Implement visible foreground AudioRecord provider after QA/Boss parent reconciliation; no mic capture authorized.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T11:38:04.785Z",
       "proof": "QA #2342 exact head ab99ad94: Android Gradle/Robolectric PASS run 45018041741; private bridge PASS run 45018031307; independent local JDK21 javac --release 17 smoke PASS (10 positive/negative assertions). GitHub self-approval was rejected because the linked account authored the PR; separate Boss/Core review remains required. No APK install, physical Android persistence or Redmi pairing test. Additional QA lifecycle finding: if `ConsentActivity.finishWithReceipt()` signing or `db.finish()` fails after a row is claimed, it still cancels the notification and finishes; the row can remain EXECUTING/DENYING with no receipt, `outcome()` stays NOT_READY and pending excludes it. Recorded on #2342; requires receipt-only reconciliation (never redispatch) and failure-injection tests before device acceptance."
@@ -348,7 +348,7 @@
       "last_checkpoint": "2026-11-22T11:28:06.923Z",
       "proof_environment": "CI synthetic + Android ARM64 cross-compile; no Redmi probe/gradient proof",
       "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent.",
-      "next_step": "Core/Boss: #2367 diagnostic probe is blocked by #2377 actual-byte verification and remaining path_for identity check. Keep B3 OFF; no native probe, learned receiver utility or cross-family latent transfer claim.",
+      "next_step": "Core/Perception: #2367/#2377 remain diagnostic-only. R-091 shows input-effect RMS is not functional transfer; first prove same-model parity, then target-generation/task utility and bidirectional/negative controls. Perception reviewed the manifest-vs-path_for binding gap on #2377; B3 remains OFF.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -387,7 +387,7 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "LOCAL_LINUX isolated + CI candidate; no Android audio",
-      "next_step": "Perception: #2375 adapter does not provide microphone or screen capture. Keep FASTDIAR/speaker calibration and optional backends diagnostic-only until real consented audio corpus, Android provider and target-device measurements exist.",
+      "next_step": "Perception: #2312 44.1-kHz signed one-shot consumer has dedicated CI PASS but is not an Android microphone provider; staged migration still fails and historical base 58666dd needs rebase. QA ref 7650ae0 explicitly leaves audio_capture unavailable / RECORD_AUDIO absent. #2310 16-kHz predecessor must not merge. FASTDIAR/speaker calibration remains diagnostic-only.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T09:58:33.516Z",
       "latest_candidate_pr": {
@@ -415,13 +415,13 @@
       "proof": "The exact runtime code SHA c4eb82deec915f65894c20d6ebbaf0ebf58fa335 is installed, but the receipt proves installation only. No Android process-death, service restart, reboot, marker recovery or runtime-only rollback receipt exists. User models, SQLite and chats were not modified."
     }
   ],
-  "current_redmi_status": "PIPELINE_STATUS #619: installed aed1d2b826290c95c70356b5d8b864b5ef382be4; auto-update=true; runtime/dashboard=UP_TO_DATE; last_error=NONE. Authenticated private owner-read #620: service/runtime/dashboard RUNNING; last stored turn FINAL, 57.7388 s total, 41.6269 s TTFT, 38.9453 s prefill, 751 prompt tokens, 2 generated tokens; B1_DETAIL TIME_BUDGET 53.2 s, B2_GIST TIME_BUDGET 54.2 s, C3 3.1 s. Instant sample: 0 mapped native processes, 0 MiB PSS/RSS, child readability UNKNOWN. This is not sustained residency or free-RAM evidence. Config: 90 s deadline, 35 s observer window, 6 threads, 2048 context, 2400 MiB body-residency setting. No new chat was sent; correctness UNKNOWN. Official Age 0; lab stage requested 10 / implemented ceiling 5; physical feature execution unverified; learning commit authority requires separate SHADOW. Console error/log access is USER_NOT_OPTED_IN; no LOG_PAGE.",
+  "current_redmi_status": "Latest private V13OBS #115 (updated 2026-11-22T21:11:21Z) repeats installed SHA aed1d2b826290c95c70356b5d8b864b5ef382be4; auto-update=true; runtime/dashboard=UP_TO_DATE; last_error=NONE. Latest stored FINAL turn remains 57.7388 s total, 41.6269 s TTFT, 38.9453 s prefill, 751 prompt tokens, 2 generated tokens. Across the observed turns: B1_DETAIL 4 native attempts / 4 failures / 0 valid offers; B2_GIST 2 attempts / 2 failures / 0 valid offers; no B1/B2 delivery to final C3 report. C3 prompt inclusion and semantic use are unproven; native latent exchange is false. Instant native sample: 0 mapped processes / 0 MiB PSS/RSS with child readability UNKNOWN; not free-RAM or sustained residency. Official Age 0; lab stage 10 / implemented ceiling 5; physical feature execution unverified; learning commit authority requires separate SHADOW. No new chat, LOG_PAGE, UPDATE_REQUEST or device action.",
   "last_code_release_head": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
   "latest_integrated_head": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
   "latest_integrated_head_verified_at": "2026-11-22T20:49:21.304Z",
   "release_gate_status": "Exact SHA aed1d2b826290c95c70356b5d8b864b5ef382be4: 30/30 observed check-runs SUCCESS. Private PIPELINE_STATUS #619 confirms exact installed SHA and UP_TO_DATE. This proves code installation only. Last stored turn remains 57.74 s / 41.63 s TTFT / 38.95 s prefill / 2 tokens; B1/B2 TIME_BUDGET. No 20-turn correctness acceptance.",
   "phone_receipt": {
-    "state": "AUTHENTICATED_INSTALLED_AED1D2_FUNCTIONAL_ACCEPTANCE_OPEN",
+    "state": "AUTHENTICATED_OWNER_READ_619_620_PLUS_LATEST_V13OBS_115; FUNCTIONAL_ACCEPTANCE_OPEN",
     "pipeline_status_issue": 619,
     "diagnostics_issue": 620,
     "installed_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
@@ -467,8 +467,33 @@
       "physical_feature_execution_verified": false,
       "learning_commit_authority": "REQUIRES_SEPARATE_SHADOW_MODE"
     },
-    "redmi_status": "AED1D2_INSTALLED; CHAT_QUALITY_AND_MULTI_ORGAN_ACCEPTANCE_OPEN",
-    "note": "Fresh authenticated read-only receipts #619/#620. No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, remote shell, model/weight/permission change or device mutation was performed. No user action required."
+    "redmi_status": "AED1D2_INSTALLED; UPDATER_UP_TO_DATE; P0_CHAT_AND_B1_B2_ACCEPTANCE_OPEN; NO_C3_SEMANTIC_OR_NATIVE_LATENT_PROOF",
+    "note": "Owner-read receipts #619/#620 remain the authenticated pipeline/diagnostics commands; newer private V13OBS #115 (21:11:21Z) repeats the same installed SHA and adds five-turn body-delivery evidence. No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, remote shell, model/weight/permission change or device mutation was performed. No user action required.",
+    "latest_observation": {
+      "issue": 115,
+      "updated_at": "2026-11-22T21:11:21Z",
+      "type": "PRIVATE_LOCAL_METADATA_ONLY_OBSERVATION_NOT_OWNER_READ_COMMAND_RECEIPT",
+      "installed_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
+      "auto_update": true,
+      "runtime": "UP_TO_DATE",
+      "dashboard": "UP_TO_DATE",
+      "last_error": "NONE",
+      "turns_observed": 5,
+      "b1_native_attempts": 4,
+      "b1_native_failures": 4,
+      "b1_valid_offers": 0,
+      "b2_native_attempts": 2,
+      "b2_native_failures": 2,
+      "b2_valid_offers": 0,
+      "c3_prompt_inclusion_proven": false,
+      "c3_semantic_use_proven": false,
+      "native_latent_exchange_proven": false,
+      "latest_turn_total_s": 57.73882742600108,
+      "latest_turn_ttft_s": 41.626904203003505,
+      "latest_turn_prefill_s": 38.945270141004585,
+      "latest_turn_prompt_tokens": 751,
+      "latest_turn_generated_tokens": 2
+    }
   },
   "capability_snapshot": [
     {
@@ -710,7 +735,7 @@
     "pr2370": "DRAFT; 27 queued / 3 skipped. 45% pre-answer window capped by 35 s observer setting; equal sequential slices roughly 17.5 s each. Prior body probes timed out at 53.2/54.2 s. Need actual OfferPacket delivery and C4 to C3 consumption proof.",
     "pr2367": "DRAFT; exact head 06113c60: 26 SUCCESS / 4 expected SKIPPED. QA found manifest-only model binding allowed same-size GGUF tamper; blocked pending #2377 and path_for identity review.",
     "pr2377": "DRAFT; exact head fcb7e8c2: 7 QUEUED. Adds streamed SHA-256 of sender/receiver model bytes and same-size tamper negatives; path_for(role) identity check still requested.",
-    "pr2375": "DRAFT; exact head f9e16af7: 8 QUEUED / 1 expected SKIPPED. RAW EYE frame adapter only; no Android MediaProjection provider, screen-capture proof or device consumer.",
+    "pr2375": "DRAFT; code/test head f87ebac407a19c147da7eb52bc63f10e9eed25d2; current branch head eb6752d3d5cd42f5f3f964b4480c7954564cb6d9 (handoff-only after code). Exact code-head CI: privacy SUCCESS, offline-bridge-security SUCCESS, 6 QUEUED, additive validator policy SKIPPED. Fixed missing bounded-config/zeroization helpers; hashes and decodes one verified frame snapshot; adds scoped per-frame source/cache revocation after downstream C3 use. LOCAL_LINUX isolated helper PASS, full local suite BLOCKED. WIRED_SYNTHETIC only; no Android provider, normal Runtime/C3 consumer or Redmi proof.",
     "pr2372": "DRAFT; exact head 6da129ef: 9 QUEUED. Temporal JEPA/B1-B2 readout remains blocked by SleepRuntime postcommit error and source-lifecycle composition; no GGUF weight update proof.",
     "pr2376": "Exact head 4abb0091: 7/7 SUCCESS, but stacked on QA companion #2356; #2356 exact head 3829465 has 7 success / 1 emulator process-restart failure / 1 queued. No Android device action proof.",
     "redmi": "PIPELINE_STATUS #619 confirms aed1d2b826290c95c70356b5d8b864b5ef382be4 installed, auto-update enabled, UP_TO_DATE, no error. DIAGNOSTICS #620: Authenticated private owner-read #620: service/runtime/dashboard RUNNING; last stored turn FINAL, 57.7388 s total, 41.6269 s TTFT, 38.9453 s prefill, 751 prompt tokens, 2 generated tokens; B1_DETAIL TIME_BUDGET 53.2 s, B2_GIST TIME_BUDGET 54.2 s, C3 3.1 s. Instant sample: 0 mapped native processes, 0 MiB PSS/RSS, child readability UNKNOWN. This is not sustained residency or free-RAM evidence. Config: 90 s deadline, 35 s observer window, 6 threads, 2048 context, 2400 MiB body-residency setting. No new chat was sent; correctness UNKNOWN.",
@@ -718,7 +743,7 @@
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK; full repository tests were not run locally in this worker.",
     "p0_chat": "OPEN_ISSUE_1904. Stored turn remains 57.74 s / 41.63 s TTFT / 38.95 s prefill / 2 tokens; B1/B2 TIME_BUDGET. Correctness UNKNOWN; no new 20-turn acceptance.",
     "canon_coverage": "Historical 1,255-heading inventory preserved; clause-to-code-to-consumer-to-test-to-environment-to-rollback mapping remains incomplete.",
-    "research": "R-090 records llama.cpp prompt-cache correctness risks (#32048/#27148) and SLOWeave deadline-aware prefill as a research lead; no cache setting or runtime dependency changed.",
+    "research": "R-090 prompt-cache isolation/deadline-aware prefill; R-091 cross-architecture steering (input-effect is not semantic utility); R-092 Android AudioRecord geometry and signed RAW EAR ingress (#2312 44.1 kHz consumer CI green, staged migration still fails).",
     "user_action_required": "NONE. Existing updater already reports the installed release up to date. No Termux command, model/weight/permission change or device action.",
     "active_agents": "Exactly five V14 roles: Boss & Integration, QA & Android, JEPA & Memory, Research & Perception, Core & Harness."
   },
@@ -996,6 +1021,20 @@
       "status": "PRIMARY_PAPERS_REVIEWED; QVAC MIT AND HEXATRAIN APACHE-2.0 REPOSITORIES LICENSE-CHECKED; TARGET_HARDWARE_UNVERIFIED",
       "primary": "arXiv:2604.22783v2 (2026-10-16); arXiv:2610.24816v2 (2026-10-26); QVAC Fabric tag v10549.5.1; HexaTrain repository",
       "next": "After JEPA retention is stable, run a small isolated CPU-adapter baseline and measure peak RSS/PSS, sequence scaling, power/latency, old-session retention and restart; do not import or swap production models."
+    },
+    {
+      "id": "R-091",
+      "topic": "Cross-architecture activation transfer and functional B3 utility gate",
+      "status": "FULL_TEXT_PREPRINT_REVIEWED; V14_NATIVE_RECEIVER_IS_INPUT_EFFECT_ONLY; NO_CODE_OR_WEIGHT_IMPORT",
+      "primary": "arXiv:2608.05164 (2026-05-26); V14 native_latent_receiver.py and pinned llama.cpp input-embedding API",
+      "next": "Core: prove same-model token/input-embedding parity, then target-generation/task utility with NO_MESSAGE, SOURCE_EXACT, zero, shuffled and sign-reversed controls. Keep B3 OFF until source-disjoint holdout and utility pass."
+    },
+    {
+      "id": "R-092",
+      "topic": "Android AudioRecord capture geometry and signed RAW EAR ingress",
+      "status": "OFFICIAL_API_REVIEWED; SIGNED_TERMUX_CONSUMER_CI_PASS; STAGED_MIGRATION_FAIL; ANDROID_PROVIDER_ABSENT",
+      "primary": "Android AudioRecord / AudioFormat / Sharing audio input API docs; Perception PR #2312 exact head 5221314d",
+      "next": "QA companion ref 7650ae0: manifest has no RECORD_AUDIO; CapabilityRegistry says audio_capture unavailable; default-off test confirms. PR #2312 dedicated CI green but staged migration fails and still has historical base 58666dd. Core/QA must add visible provider and reconcile parent chain before Perception rebases."
     }
   ],
   "current_evidence_overlay": {

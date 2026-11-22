@@ -1274,3 +1274,36 @@ The 1,255 historical Canon headings remain preserved. Clause-level mapping to ex
 - Boss: integrate only after exact-head matrix green, keep #1904 as P0, and expand clause-level coverage rather than treating one green organ as system completion.
 
 **Local test boundary:** no full Aii checkout is present in this execution environment and GitHub DNS access from the local test container is unavailable. No full LOCAL_LINUX repository suite ran. CI results above are GitHub CI, not local or Android tests. Current installed SHA remains aed1d2b826290c95c70356b5d8b864b5ef382be4; no candidate PR is released.
+
+
+## Research & Perception execution checkpoint — 2026-11-22 (Run 7)
+
+**PR #2375 — RAW EYE MediaProjection frame ingress candidate:** current code/test head `f87ebac407a19c147da7eb52bc63f10e9eed25d2`; branch handoff head `eb6752d3d5cd42f5f3f964b4480c7954564cb6d9`; DRAFT / NOT_RELEASED. The consumer now enforces fixed 8 MiB / 4 MP bounds, requires the one-shot provider frame verifier, hashes and decodes the same bytearray snapshot (closing post-verification caller-buffer mutation), zeroizes snapshot and caller buffers, and offers `consume_projected_frame_scope` to revoke the per-frame source/cache after downstream C3 use or consumer failure. A3 local tile student remains optional LAB_SHADOW_ONLY; no new model or weight was loaded.
+
+**Tests:** focused file has 18 tests. LOCAL_LINUX CPython 3.13.5 isolated helper reproduction PASS for config bounds, invalid hash dimension, snapshot/hash/decode consistency, Pillow decode, zeroization and scope cleanup on success/failure. This is not the full Aii test suite. Exact GitHub checks on code/test head `f87ebac`: 6 QUEUED / 2 SUCCESS / 1 policy SKIPPED (Python 3.13/3.14, staged, integrated, privacy and offline-bridge security). Full local repository suite BLOCKED because no Aii checkout is mounted.
+
+**Consumer/platform status:** WIRED_SYNTHETIC only. The Perception module can create a source-bound ephemeral PerceptPacket, A4 result and A5 context envelope from a synthetic/provider-verified frame fixture. It still does not open MediaProjection, implement Android OS consent/provider lifecycle, invoke normal Runtime/C3 dispatch, or prove actual screen understanding. No Termux, Android, or Redmi test was run; REDMI_UNVERIFIED. Core/QA must implement the signed companion provider and wire this scoped consumer into the normal Runtime while keeping the same lease alive through C3.
+
+**R-091 / PR #2380:** full-text cross-architecture steering research is recorded in the ledger. It supports pair-specific testing but not a universal 1.7B cutoff or mobile reuse of 67M-per-direction bridges. V14's current native receiver is input-embedding effect only, not mid-layer residual injection or task-level semantic utility. Core must prove same-model input-embedding parity and target-generation/task utility before B3 promotion; B3 remains OFF and `semantic_use_proven=false`.
+
+**User action:** NONE. No model/weight download or swap, permission change, update request, device probe, or deployment is required.
+
+
+## RAW EAR signed one-shot ingress review — 2026-11-22
+
+Perception reviewed the current 44.1-kHz successor [PR #2312](https://github.com/RedMentos/Aii/pull/2312), exact code head `5221314d3c01ab6d874ecc0a8b8ff72c34e504a2`. This is a Termux-side signed result verifier/consumer, not an Android AudioRecord provider. It verifies the pinned P-256 receipt, request/nonce replay, active generation, source, exact mono PCM16 geometry/hash, monotonic interval, RECORD_AUDIO status, local consent and FINAL provenance; it persists replay metadata only and calls the existing `audio_input.submit_audio_only` consumer. Its 44.1-kHz / one-second geometry is grounded in the official Android AudioRecord API guarantee (16 kHz is not guaranteed on every device).
+
+Exact CI: signed-consumer run `44992975596` SUCCESS; staged/integrated run `44992975599` FAILURE, 238 passed / 10 skipped / 47 subtests, with two inherited migration tests observing `last_result=PARTIAL` instead of `UPDATED`. This is a shared QA/Core migration failure, not a consumer unit failure; preserve the assertions. PR #2310 is the stale 16-kHz predecessor and must not be merged; #2312 is the 44.1-kHz successor, still stacked on QA #2286 and requiring rebase/deduplication of #2304's `audio_input.py`.
+
+Official platform evidence: AudioRecord docs require checking `getState()` and actual `getSampleRate()`; API 29+ `AudioRecordingCallback` can report silencing, route, preprocessing and stream-property changes and must be registered before capture. The provider must reject silence/reroute/format change/short reads, bind the receipt to actual client PCM, stop/release the recorder and clear the one-shot buffer. Core/QA own the visible foreground provider and permission lifecycle; Perception owns the Termux verifier and RAW EAR consumer.
+
+Status: signed consumer CI PASS / staged migration FAIL / provider absent / REDMI_UNVERIFIED. No Android microphone, Termux capture, model/weight change, permission or deployment was performed.
+
+
+**Companion readback:** current QA branch ref `qa/v14-companion-os-permission-contract-20261122` is `7650ae0c19e93e4b6cbb778abb2f5123e49c364f`; its manifest has no `RECORD_AUDIO`, its CapabilityRegistry reports `audio_capture` unavailable, and `AudioCaptureDefaultOffTest` asserts the permission is absent. This is an intentional OFF state. PR #2312 still has historical base `58666ddfc9945612a2117e1a844f812442d4ca64`; do not call it current-base until the QA/Boss parent stack is reconciled and the Perception consumer is rebased.
+
+
+**Latest private device observation:** V13OBS #115 updated `2026-11-22T21:11:21Z` (newer than the authenticated owner-read receipts #619/#620) repeats installed SHA `aed1d2b826290c95c70356b5d8b864b5ef382be4`, updater/runtime/dashboard UP_TO_DATE and last_error NONE. Its five-turn metadata shows B1 4/4 native attempts failed / 0 valid offers, B2 2/2 failed / 0 valid offers, no B1/B2 delivery to final C3 report, and no C3 prompt inclusion, semantic use or native latent exchange. The latest stored turn remains 57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens. This is a private observation report, not a new owner-read command receipt; no new user turn or device action was sent.
+
+
+**Latest PR #2375 CI poll:** code/test head `f87ebac407a19c147da7eb52bc63f10e9eed25d2` now has privacy and offline-bridge-security SUCCESS, six exact-head checks still QUEUED, and the additive validator SKIPPED by policy. This remains partial CI, not full exact-head acceptance; current branch head `eb6752d3d5cd42f5f3f964b4480c7954564cb6d9` is handoff-only after the code/test commit.

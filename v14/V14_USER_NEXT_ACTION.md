@@ -1713,3 +1713,53 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 3. Continue whole-Canon QA; do not use the green release CI or updater receipt as evidence that the slow/incorrect native chat path is fixed.
 
 **Redmi status:** installed c4eb82 / updater up-to-date; native quality and Android companion acceptance remain UNVERIFIED. **User action: none.**
+
+
+## Research & Perception — verified run update (2026-11-22)
+
+**User action: NONE. Do not run Termux, send an UPDATE_REQUEST, change models/weights/permissions, or start a device probe.** No release candidate from this lane is ready to deploy.
+
+### Current release and authenticated Redmi receipt
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` resolves to `aed1d2b826290c95c70356b5d8b864b5ef382be4`.
+- Private owner-read PIPELINE_STATUS [#619](https://github.com/RedMentos/Aiiii/issues/619) confirms that exact SHA installed, auto-update enabled, runtime/dashboard `UP_TO_DATE`, and `last_error=NONE`.
+- Private DIAGNOSTICS [#620](https://github.com/RedMentos/Aiiii/issues/620) repeats the stored FINAL turn: 57.739 s total, 41.627 s TTFT, 38.945 s C3 prefill, 751 admitted prompt tokens and 2 generated tokens. Correctness is UNKNOWN; no new user turn was sent.
+- B1_DETAIL and B2_GIST remain `TIME_BUDGET` at 53.2 s / 54.2 s. Native probe is `SMOKE_PARTIAL`. The instant native-process sample is 0 mapped processes / 0 MiB PSS/RSS with child readability UNKNOWN; this is not free-RAM or sustained-residency evidence.
+- Newer private V13OBS [#115](https://github.com/RedMentos/Aiiii/issues/115), updated 2026-11-22T21:11:21Z, repeats installed SHA aed1d2 / updater UP_TO_DATE and summarizes 5 observed turns: B1 4/4 native attempts failed with 0 valid offers; B2 2/2 failed with 0 valid offers; no B1/B2 delivery to final C3 report; C3 prompt inclusion/semantic use and native latent exchange remain unproven. This is an observation report, not a new owner-read command receipt; no new user turn was sent.
+- Official Age 0; test selector 10 / implemented stage ceiling 5; physical feature execution unverified; learning commit authority still requires separate SHADOW. No device state changed.
+
+### Perception candidate #2375 — not released
+
+- PR [#2375](https://github.com/RedMentos/Aii/pull/2375), latest code/test head `f87ebac407a19c147da7eb52bc63f10e9eed25d2`; current branch head `eb6752d3d5cd42f5f3f964b4480c7954564cb6d9` (handoff-only commit after code).
+- Fixed two undefined helper references that would have raised `NameError` on first frame use. The config helper enforces fixed 8 MiB / 4 MP limits; the zeroization helper clears mutable buffers.
+- Closed a mutable-buffer TOCTOU: the adapter hashes and decodes the same bounded snapshot, then zeroizes both snapshot and caller buffer. Added a scoped frame-consumer context manager that revokes the per-frame source/cache after C3 returns, including when the downstream consumer raises; it does not revoke the Android OS capture session.
+- The focused test file now has 18 tests covering bounded config, invalid hash dimensions, post-verification buffer mutation, zeroization, and scoped cleanup.
+- LOCAL_LINUX CPython 3.13.5 isolated helper reproduction PASS for config bounds, snapshot/hash/decode consistency, Pillow decode, zeroization and scope cleanup on success/failure. Full Aii local pytest/compile remains BLOCKED because no complete checkout is mounted.
+- Exact code-head checks for `f87ebac`: 6 QUEUED / 2 SUCCESS / 1 policy SKIPPED (Python 3.13/3.14, staged, integrated, privacy and offline security). No CI PASS is claimed.
+- Status remains WIRED_SYNTHETIC only. No Android MediaProjection provider, OS consent, normal Runtime/C3 dispatch, Termux capture or Redmi visual test exists. PR remains DRAFT / NOT_RELEASED.
+
+### Cross-model research #2380
+
+- PR [#2380](https://github.com/RedMentos/Aii/pull/2380) records R-091 and a Core/Perception/JEPA handoff. The reviewed cross-architecture steering preprint supports pair-specific testing, but its 1.7B threshold is not a scaling law and its 67M-per-direction bridges are not mobile candidates.
+- The current native receiver still measures input-embedding effect only; no mid-layer residual injection or task-level target generation is proven. Keep B3 OFF and `semantic_use_proven=false`.
+- No paper code, corpus, model weights or datasets were imported or downloaded.
+
+### Next internal actions
+
+1. Finish exact-head CI on #2375 and repair any failure.
+2. Core/QA implement the signed MediaProjection provider and connect the lease-bound packet to the normal Runtime/C3 consumer using the scoped cleanup contract.
+3. Core proves same-model input-embedding parity and a separate target-generation/task-utility gate; do not treat embedding RMS as semantic communication.
+4. JEPA/Memory only then evaluates a compact adapter with source-disjoint holdout, OOD, old-session retention, restart and rollback.
+
+**Release:** NOT_RELEASED. **Redmi:** installed SHA aed1d2 / updater UP_TO_DATE, but the last recorded chat is slow and B1/B2 still time out; visual and latent acceptance REDMI_UNVERIFIED. **User action: NONE.**
+
+
+### RAW EAR signed one-shot audio ingress — current Perception branch
+
+- [PR #2312](https://github.com/RedMentos/Aii/pull/2312), exact code head `5221314d3c01ab6d874ecc0a8b8ff72c34e504a2`, is the 44.1-kHz mono PCM16 Termux-side signed receipt consumer. It verifies the pinned P-256 receipt, source/generation, exact PCM geometry/hash, monotonic interval, RECORD_AUDIO status, local consent, FINAL provenance and one-shot nonce/request replay, then calls the existing `audio_input.submit_audio_only` path. It persists replay metadata only; no PCM, transcript, speaker identity, weight, T8 or action authority.
+- Dedicated signed-consumer CI run `44992975596`: SUCCESS. Staged/integrated run `44992975599`: FAILURE in two inherited migration assertions (expected `last_result=UPDATED`, observed `PARTIAL`; 238 passed / 10 skipped / 47 subtests). This is a QA/Core updater migration blocker, not a signed-consumer unit failure. Do not weaken the migration assertions.
+- PR #2310 is the stale 16-kHz predecessor; do not merge it or keep divergent copies. #2312 is the 44.1-kHz successor and remains stacked on QA #2286; rebase/deduplicate `audio_input.py` from #2304 after the parent chain is integrated.
+- Android provider remains absent: no AudioRecord, visible RECORD_AUDIO permission flow, foreground capture lifecycle, AudioRecordingCallback, or real microphone feed. The 44.1-kHz choice follows Android's official AudioRecord guarantee; it does not prove hardware capture. No Termux/Redmi microphone test was run.
+- Next: Core/QA implement the explicit one-shot AudioRecord provider and fix the shared migration failure; Perception then rebases #2312 and runs the composed RAW EAR → A5 → A4 → C3 chain.
+- QA companion source readback at ref `qa/v14-companion-os-permission-contract-20261122` SHA `7650ae0c19e93e4b6cbb778abb2f5123e49c364f`: AndroidManifest has no `RECORD_AUDIO`; CapabilityRegistry marks `audio_capture` unavailable; AudioCaptureDefaultOffTest asserts the permission is absent. PR #2312 still records historical base `58666ddfc9945612a2117e1a844f812442d4ca64`; it must be reconciled/rebased after the QA/Boss parent stack settles.
+- Status: signed consumer CI PASS / staged migration FAIL / provider absent / REDMI_UNVERIFIED. No user action, device action or model change.
