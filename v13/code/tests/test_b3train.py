@@ -6,7 +6,7 @@ from unittest.mock import patch
 import numpy as np
 
 from v13.runtime import Runtime
-from v13.b3train import train_l1_shadow
+from v13.b3train import train_l1_shadow, _source_disjoint_split
 
 
 class L1ShadowTrainingTests(unittest.TestCase):
@@ -71,15 +71,16 @@ class L1ShadowTrainingTests(unittest.TestCase):
 
     def test_source_pinned_l0_evidence_can_open_only_l2_shadow_gate(self):
         pairs, batch = self._pairs_and_batch()
-        split_rng = np.random.default_rng(20261122)
-        test_indices = []
-        for label in range(2):
-            members = np.flatnonzero(batch["y"] == label)
-            members = split_rng.permutation(members)
-            test_indices.extend(int(x) for x in members[:6])
-        test_indices = sorted(test_indices)
+        train_indices, test_indices, train_hashes, test_hashes = _source_disjoint_split(
+            batch["source_refs"], batch["y"], 20261122
+        )
         l0 = {
-            "schema": "v13.b3-l0-baselines/1",
+            "schema": "v13.b3-l0-baselines/2",
+            "split_policy": "SOURCE_SHA256_GROUPED_STRATIFIED_20PCT_V1",
+            "train_indices": train_indices.tolist(),
+            "test_indices": test_indices.tolist(),
+            "train_source_hashes": train_hashes,
+            "test_source_hashes": test_hashes,
             "task_id": "binary-outcome", "direction": "B1_TO_B2",
             "label_source": "verified-test-outcome",
             "labels": [i % 2 for i in range(64)],
@@ -116,6 +117,41 @@ class L1ShadowTrainingTests(unittest.TestCase):
             self.assertEqual(len(manifest["body_pair_ids"]), 64)
             self.assertEqual(len(manifest["label_provenance"]), 64)
             self.assertEqual(manifest["receiver_injection_authority"], 0)
+
+
+    def test_source_disjoint_holdout_keeps_all_spans_of_each_source_together(self):
+        source_refs = []
+        labels = []
+        for group in range(32):
+            label = group % 2
+            digest = f"{group:064x}"
+            for span in range(2):
+                source_refs.append({
+                    "source_id": f"source-{group}",
+                    "sha256": digest,
+                    "char_start": span * 8,
+                    "char_end": span * 8 + 8,
+                })
+                labels.append(label)
+        train, test, train_hashes, test_hashes = _source_disjoint_split(
+            source_refs, np.asarray(labels, dtype=np.int64), 20261122
+        )
+        train_set, test_set = set(train.tolist()), set(test.tolist())
+        self.assertFalse(set(train_hashes) & set(test_hashes))
+        self.assertEqual(set(train_hashes) | set(test_hashes),
+                         {ref["sha256"] for ref in source_refs})
+        for digest in {ref["sha256"] for ref in source_refs}:
+            indices = {i for i, ref in enumerate(source_refs) if ref["sha256"] == digest}
+            self.assertTrue(indices <= train_set or indices <= test_set)
+            self.assertFalse(indices & train_set and indices & test_set)
+
+    def test_source_disjoint_holdout_rejects_conflicting_labels_for_same_source(self):
+        refs = [
+            {"source_id": "source-a", "sha256": "a" * 64, "char_start": 0, "char_end": 4},
+            {"source_id": "source-b", "sha256": "a" * 64, "char_start": 4, "char_end": 8},
+        ]
+        with self.assertRaisesRegex(ValueError, "conflicting task labels"):
+            _source_disjoint_split(refs, np.asarray([0, 1], dtype=np.int64), 7)
 
     def test_refuses_less_than_sixty_four_pairs(self):
         with self.assertRaisesRegex(ValueError, "at least 64"):
