@@ -80,6 +80,49 @@ class ProcessRestartUiTests(unittest.TestCase):
         self.assertIsNone(button_center(root, "Wait"))
 
 
+class ProcessRestartWaitRecoveryTests(unittest.TestCase):
+    def test_wait_for_text_uses_one_safe_wait_and_never_close_app(self) -> None:
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        overlay = make_tree([
+            {"text": "System UI isn't responding", "class": "android.widget.TextView"},
+            {"text": "Close app", "class": "android.widget.Button", "bounds": "[0,0][100,50]"},
+            {"text": "Wait", "class": "android.widget.Button", "bounds": "[100,0][200,50]"},
+        ])
+        stopped = make_tree([
+            {"text": harness.STOPPED_TEXT, "class": "android.widget.TextView"},
+        ])
+        with (
+            patch.object(harness, "hierarchy", side_effect=[overlay, stopped]),
+            patch.object(harness, "adb", return_value="") as adb_call,
+            patch.object(harness.time, "sleep"),
+        ):
+            labels = harness.wait_for_text(harness.STOPPED_TEXT, timeout=2.0)
+        self.assertIn(harness.STOPPED_TEXT, labels)
+        adb_call.assert_called_once_with("shell", "input", "tap", "150", "25")
+        self.assertNotIn("Close app", repr(adb_call.call_args_list))
+
+    def test_wait_for_text_fails_after_one_wait_without_selecting_close_app(self) -> None:
+        from unittest.mock import patch
+        import test_process_restart as harness
+
+        overlay = make_tree([
+            {"text": "System UI isn't responding", "class": "android.widget.TextView"},
+            {"text": "Close app", "class": "android.widget.Button", "bounds": "[0,0][100,50]"},
+            {"text": "Wait", "class": "android.widget.Button", "bounds": "[100,0][200,50]"},
+        ])
+        with (
+            patch.object(harness, "hierarchy", side_effect=[overlay, overlay]),
+            patch.object(harness, "adb", return_value="") as adb_call,
+            patch.object(harness.time, "sleep"),
+        ):
+            with self.assertRaisesRegex(AssertionError, "after one safe Wait"):
+                harness.wait_for_text(harness.STOPPED_TEXT, timeout=2.0)
+        adb_call.assert_called_once_with("shell", "input", "tap", "150", "25")
+        self.assertNotIn("Close app", repr(adb_call.call_args_list))
+
+
 class ProcessRestartLogcatTests(unittest.TestCase):
     def test_failure_logcat_filters_string_output_from_adb(self) -> None:
         from unittest.mock import patch
