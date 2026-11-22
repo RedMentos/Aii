@@ -1590,3 +1590,12 @@ The shared work board already assigns R-084 to Do-JEPA, R-085 to differential re
 - The temporal B1/B2 matrix is still API-only; no bodyview prompt consumption is claimed. Boss #2343 owns the bodyview integration and the generic `Store.switch_generation` promotion race remains open.
 - Research candidate LATER is provisional R-087 after the shared board's R-084 Do-JEPA, R-085 differential retention and R-086 fork-ledger utility. The paper's reported PushT/TwoRoom gains and H100 cost are research-only, not Android performance claims.
 - **User action: none.** No manual command, update request, model swap, permission change or device mutation is needed.
+
+
+### Latest nonblocking lock correction — 2026-11-22 16:22 UTC
+
+- PR #2351 code head `f570528268ce003bec6ed8b4a1856dc7887284c3` fixes a release-base API mismatch: the current `WorldJEPAStoreConsumer._locked` has no `blocking` keyword. Temporal blocking reads now delegate to the current method; nonblocking reads use a symlink-checked `fcntl.flock(...|LOCK_NB)` on the same lock file. A new test holds an exclusive JEPA lock and verifies a foreground temporal read fails immediately with `BlockingIOError`.
+- LOCAL_LINUX isolated flock contention: PASS. This is not a full Aii test. Full local checkout remains BLOCKED by DNS.
+- Exact CI for this code head: runs 45043382782 (Python 3.13/3.14 training-resume/source-forget), 45043382791 (temporal windows), 45043382753 (Core same-turn), 45043382774 (runtime deployment integrity), 45043382798 (staged/integrated), 45043382734 (private owner-read bootstrap) are queued. No PASS yet.
+- Temporal batch receiver remains API_ONLY/SHADOW, not wired into bodyview. Generic promotion-vs-forget remains open on Boss #2343 head `9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2`.
+- **User action: none.** No device mutation or deployment.

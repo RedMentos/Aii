@@ -116,3 +116,16 @@ The current shared `V14_WORK_BOARD.json` already reserves R-084 for Do-JEPA pair
 - LATER paper result details for provisional R-087: the paper reports +9.5 percentage points terminal success on distracted two-stage PushT and +11.5 points first-hit success on Directional TwoRoom; an action-dependent history swap reduced calibrated choice accuracy from 65/102 to 39/102. The persistent banks total 384 FP32 scalars (1.5 KiB); its five-call H100 CEM median was 9.98 s / 150 MiB. These are the authors' visual simulator/H100 measurements, not V14/Android expectations. No official code/license was found on the arXiv page. Source: https://arxiv.org/abs/2611.25671.
 
 **Next:** poll exact CI, fix failures, then integrate the temporal matrix into the real bodyview consumer after the Boss base is stable. The A→B→C→A′ test is now present but not yet executed; do not call the retention claim accepted until CI passes.
+
+
+## Run 13 nonblocking lock compatibility correction — 2026-11-22 16:22 UTC
+
+**Code commit:** `f570528268ce003bec6ed8b4a1856dc7887284c3`.
+
+- Readback exposed that the release-base `WorldJEPAStoreConsumer._locked` only accepts `exclusive`, not `blocking` (the Boss integration branch has a newer signature). The temporal consumer now delegates blocking reads to the release-compatible method and implements nonblocking shared/exclusive `flock|LOCK_NB` directly against the same symlink-checked lock path. No Boss-owned consumer file was modified.
+- Added a contention regression: while the temporal JEPA lock is held exclusively, a foreground `receiver_matrix(..., nonblocking=True)` must raise `BlockingIOError` rather than wait or return stale context.
+- LOCAL_LINUX isolated lock-semantics test: **PASS** — a second file descriptor cannot acquire a shared nonblocking flock while an exclusive flock is held. This tests Linux flock semantics only, not the full Aii implementation.
+- Exact CI on this head: training-resume/source-forget Python 3.13/3.14 run 45043382782; temporal windows run 45043382791; Core same-turn 45043382753; runtime deployment integrity 45043382774; staged/integrated regression 45043382798; private owner-read bootstrap 45043382734 — all queued at last read. Full local Aii checkout remains BLOCKED by DNS. No full-suite or Redmi test.
+- The batch temporal receiver remains API_ONLY/SHADOW until Boss wires it into `bodyview.py`. Boss #2343 current head `9a1424bbf11f3306ce1a50f1e88cbb5c3765bca2` still lacks the generic promotion-vs-forget Store RLock/final-row recheck.
+
+**Next:** exact CI, then Boss bodyview integration and promotion lock; keep all native/Redmi claims UNVERIFIED until a real receipt.
