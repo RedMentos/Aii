@@ -175,6 +175,9 @@ def _voice_decimator_coefficients(sample_rate: int, factor: int) -> tuple[float,
 def _anti_alias_decimate(samples, sample_rate: int, factor: int) -> tuple[list[float], float]:
     """Low-pass before integer decimation with odd endpoint reflection.
 
+    The Hamming-windowed sinc coefficients are symmetric. Pairing samples
+    around each output center preserves the centered zero-phase FIR result
+    while nearly halving multiply operations on the pure-Python Android path.
     This is a RAW EAR feature decimator, not a speaker-model resampler.
     """
     if type(factor) is not int or factor < 1:
@@ -183,27 +186,40 @@ def _anti_alias_decimate(samples, sample_rate: int, factor: int) -> tuple[list[f
         return [float(value) for value in samples], float(sample_rate)
     coefficients = _voice_decimator_coefficients(sample_rate, factor)
     half = len(coefficients) // 2
-    output_count = len(samples) // factor
+    sample_count = len(samples)
+    output_count = sample_count // factor
     output = []
     for output_index in range(output_count):
         center = output_index * factor
         filtered = 0.0
-        sample_count = len(samples)
-        for tap_index, coefficient in enumerate(coefficients):
-            source_index = center + tap_index - half
-            if 0 <= source_index < sample_count:
-                source_value = float(samples[source_index])
+        for offset in range(1, half + 1):
+            left_index = center - offset
+            right_index = center + offset
+            if 0 <= left_index < sample_count:
+                left_value = float(samples[left_index])
             elif sample_count <= half:
-                source_value = float(samples[0] if source_index < 0 else samples[-1])
-            elif source_index < 0:
-                source_value = 2.0 * float(samples[0]) - float(samples[-source_index])
+                left_value = float(samples[0] if left_index < 0 else samples[-1])
+            elif left_index < 0:
+                left_value = 2.0 * float(samples[0]) - float(samples[-left_index])
             else:
-                mirror_index = 2 * sample_count - 2 - source_index
-                source_value = 2.0 * float(samples[-1]) - float(samples[mirror_index])
-            filtered += source_value * coefficient
+                mirror_index = 2 * sample_count - 2 - left_index
+                left_value = 2.0 * float(samples[-1]) - float(samples[mirror_index])
+
+            if 0 <= right_index < sample_count:
+                right_value = float(samples[right_index])
+            elif sample_count <= half:
+                right_value = float(samples[0] if right_index < 0 else samples[-1])
+            elif right_index < 0:
+                right_value = 2.0 * float(samples[0]) - float(samples[-right_index])
+            else:
+                mirror_index = 2 * sample_count - 2 - right_index
+                right_value = 2.0 * float(samples[-1]) - float(samples[mirror_index])
+
+            filtered += coefficients[half - offset] * (left_value + right_value)
+
+        filtered += coefficients[half] * float(samples[center])
         output.append(filtered)
     return output, sample_rate / factor
-
 
 def _percentile(values: list[float], fraction: float) -> float | None:
     """Return a linearly interpolated percentile for a small bounded frame list."""
