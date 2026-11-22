@@ -53,6 +53,7 @@ def is_safe_operator_command(command):
 
 def _native_receiver_probe_summary(lines, sender, receiver):
     """Return only bounded, source-free fields from one completed native probe."""
+    from .phone_monitor import ANSWER_PREFIXES
     cleaned = []
     for line in lines:
         value = line.strip()
