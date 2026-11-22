@@ -1,3 +1,21 @@
+# QA & Android — fresh authenticated read-only Redmi checkpoint (2026-11-22T11:48:50.657Z)
+
+**Keine Nutzeraktion nötig.** Der bestehende Updater hat den exakten Stand bereits installiert. Kein Termux-Befehl, kein zweiter UPDATE_REQUEST und kein Modell-/Gewichts-/Rechtewechsel.
+
+- **Installation:** Private owner-authenticated PIPELINE_STATUS [#550](https://github.com/RedMentos/Aiiii/issues/550) bestätigt `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`, Auto-Update EIN, Runtime/Dashboard `UP_TO_DATE`, `last_error=NONE`. Die 30 beobachteten Actions-Runs für diesen SHA waren SUCCESS. Das ist Installationsbeleg, keine Funktionsabnahme.
+- **Aktueller Runtime-Snapshot:** DIAGNOSTICS [#551](https://github.com/RedMentos/Aiiii/issues/551) meldet Runtime, Service und Dashboard RUNNING. Der letzte gespeicherte Turn bleibt FINAL, aber langsam: 56,43 s gesamt, 40,82 s TTFT, 39,09 s Prefill, 701 Prompt-Tokens und nur 2 generierte Tokens. Korrektheit wurde nicht bewertet und bleibt UNKNOWN.
+- **B1/B2:** Native Probe bleibt `SMOKE_PARTIAL`; B1_DETAIL und B2_GIST endeten weiterhin bei 53,2/54,2 s mit `TIME_BUDGET`; C3-Probe 3,1 s. Es gibt keinen neuen Probe-Lauf und keinen Nachweis, dass echte native Offers in diesem Turn über C4→C3 konsumiert wurden.
+- **Speicher:** DIAGNOSTICS #551 zeigt einen einzelnen Moment-Snapshot mit 3 gemappten nativen Prozessen und 90,7 MiB PSS (B1 1,7; B2 88,7; C2 0,3; C3 0). PSS ist weder freier RAM noch ein Residency-/Peak-Benchmark. HEALTH [#549](https://github.com/RedMentos/Aiiii/issues/549) meldet 1.293 MiB MemAvailable von 5.569 MiB und 1.537 MiB freien Speicherplatz. HEALTHs Runtime-Feld ist `UNAVAILABLE`, während DIAGNOSTICS Runtime `RUNNING` meldet; diese getrennten Snapshot-Antworten werden nicht zu einer stärkeren Aussage zusammengezogen.
+- **Lernen/Age:** LEARNING_STATUS [#552](https://github.com/RedMentos/Aiiii/issues/552) meldet `UNAVAILABLE`. Offizielles Age 0; Teststufe 10, effektiv implementierte Stufe 5; physische Feature-Ausführung nicht bestätigt; Lern-Commit-Autorität benötigt separat SHADOW. Kein X10-/Weight-Learning-Erfolg belegt.
+- **Pairing-Leaf #2342:** Exact Android Gradle/Robolectric [run 45018041741](https://github.com/RedMentos/Aii/actions/runs/45018041741) PASS; private bridge [run 45018031307](https://github.com/RedMentos/Aii/actions/runs/45018031307) PASS. Der exakte Java-Helper wurde lokal mit JDK 21 / `javac --release 17` getestet: 10 positive/negative Assertions PASS. Keine Blockade im engen Pairing-Persistenz-Scope gefunden. GitHub verweigert eine Selbstfreigabe, weil derselbe Account Autor des PR ist; ein unabhängiges Boss/Core-Review steht noch aus. Kein APK-/Redmi-Test.
+- **Lokale Vollsuite:** BLOCKED, da kein vollständiger Aii-Checkout verfügbar ist und GitHub-DNS im lokalen Runner scheitert. Kein lokaler Full-Pytest- oder nativer Linux-Erfolg behauptet.
+- **Unverändert offen:** P0 bleibt echte korrekte, schnelle B1/B2→C4→C3-Kooperation plus 20 gemischte Redmi-Turns. #2338s gemeinsamer `runtime.py`/`store.py`-Pin-Rebind und fehlendes `source_ref` im Test-Seam gehören Boss; QA editiert die gemeinsame Pin-Kette nicht parallel. Trainiertes B3, JEPA-Gewichtslernen, AudioRecord/Voice, UI-/Accessibility-/Hintergrundsteuerung, Prozess-Tod/Restart/Rollback und semantische Canon-Abdeckung sind nicht abgeschlossen.
+- **Nicht ausgeführt:** kein CHAT_SEND, LOG_PAGE, Shell, nativer Receiver-Probe, UPDATE_REQUEST, APK-Install, Modell-/Gewichtsänderung, Berechtigungsänderung oder Geräte-Mutation.
+
+**Nächster interner Schritt:** Boss/Core soll #2342 unabhängig reviewen und in den vollständigen Companion-Stack integrieren. Danach nur mit separater ausdrücklicher Gerätefreigabe APK-/Pairing-/Lifecycle-Tests durchführen. Parallel bleibt die echte native Chat-Akzeptanz offen; kein manueller Eingriff von dir nötig.
+
+---
+
 # QA & Android — aktueller Nutzer-Handoff (2026-11-22T11:37:29.200Z)
 
 **Keine Nutzeraktion nötig.** Der vorhandene Updater hat den aktuellen Branch-Stand bereits installiert. Bitte keinen neuen Termux-Befehl ausführen und keinen zweiten Update-Request starten.
