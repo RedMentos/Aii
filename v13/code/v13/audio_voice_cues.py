@@ -698,6 +698,7 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
     if speaker_calibration_id is not None and speaker_embeddings is None:
         raise ValueError("speaker_calibration_id requires speaker_embeddings")
     calibration_artifact = None
+    calibration_load_error = None
     if speaker_calibration_id is not None:
         if type(speaker_embeddings) is dict:
             try:
@@ -711,21 +712,20 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                     lookback_frames=speaker_embeddings.get("lookback_frames"),
                 )
             except (SpeakerCalibrationError, OSError) as exc:
-                runtime.store.log(
-                    "speaker_calibration_rejected", event_id,
-                    {"error": type(exc).__name__},
-                )
+                calibration_load_error = type(exc).__name__
         else:
-            runtime.store.log(
-                "speaker_calibration_rejected", event_id,
-                {"error": "SpeakerEvidenceError"},
-            )
+            calibration_load_error = "SpeakerEvidenceError"
     # A Runtime-wide caller may already hold the same provider lease through
     # C3 generation. Reuse its bound handle without callback re-entry.
     with _audio_consent_scope(
         runtime, source_id, generation_id, consent_receipt,
         consent_check, consent_guard, consent_lease, temporal_state, vad_stream,
     ) as lease_active:
+        if calibration_load_error is not None:
+            runtime.store.log(
+                "speaker_calibration_rejected", event_id,
+                {"error": calibration_load_error},
+            )
         raw = observe_pcm16(
             pcm, sample_rate, start_ms, consent=True, source_id=source_id, max_seconds=1
         )
