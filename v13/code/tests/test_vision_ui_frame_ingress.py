@@ -15,7 +15,7 @@ from PIL import Image, ImageDraw
 from v13.a5_ui_admission_bridge import A5UIRuntimeAdapter, ui_observation_lease
 from v13.vision_ui_frame_ingress import (
     ProviderFrameVerifier, _issue_provider_frame_verifier,
-    _load_local_tile_projector, consume_projected_frame,
+    _load_local_tile_projector, _summary, consume_projected_frame,
     consume_projected_frame_scope,
 )
 
@@ -122,7 +122,15 @@ def provider_verifier(lease, obs, frame, *, result=True, failure=None):
 
 def consume_with_provider_verifier(runtime, obs, frame, *, consent_lease, frame_verifier=None, **kwargs):
     if frame_verifier is None:
-        frame_verifier = provider_verifier(consent_lease, obs, frame)
+        try:
+            frame_verifier = provider_verifier(consent_lease, obs, frame)
+        except BaseException:
+            # The caller owns the mutable frame until verifier issuance succeeds.
+            # Mirror Core UIFrameGrant cleanup when the lease/receipt is rejected
+            # before consume_projected_frame can enter its own finally block.
+            if type(frame) is bytearray:
+                frame[:] = b"\x00" * len(frame)
+            raise
     return consume_projected_frame(
         runtime, obs, frame, consent_lease=consent_lease,
         frame_verifier=frame_verifier, **kwargs,
@@ -202,6 +210,17 @@ def lease_for(runtime, obs, callbacks=None, lock=None):
         runtime, obs, runtime.turn_event["brain_generation_id"],
         check, guard, subscribe,
     )
+
+
+def test_ui_summary_is_content_free_metadata_only():
+    summary = _summary(observation())
+    assert summary == (
+        "ui event=SCREEN_FRAME_AVAILABLE method=MEDIA_PROJECTION "
+        "scope=FULL_DISPLAY api=34 clock=ELAPSED_REALTIME interval_ms=33"
+    )
+    assert len(summary) <= 512
+    assert "red panel" not in summary
+    assert "blue icon" not in summary
 
 
 def test_media_projection_frame_reaches_a5_a4_and_existing_ui_context(monkeypatch):
