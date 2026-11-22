@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T17:57:23Z",
+  "updated_at": "2026-11-22T17:59:40Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; all 30 observed exact-SHA Actions workflow runs completed SUCCESS. Fresh owner-authenticated private PIPELINE_STATUS #550 confirms the same SHA installed and UP_TO_DATE. Functional/whole-Canon acceptance remains open; V14 master and historical V13 appendix preserved. Perception PR #2366 is a draft candidate only; local isolated source-lifecycle race harness 2/2 PASS, exact CI pending, no Runtime or Redmi acceptance.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -390,7 +390,7 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "LOCAL_LINUX isolated + CI; no Android timing",
-      "next_step": "Perception: retain source timestamps and pre-batch temporal history for speaker-change evidence. No AudioRecord provider, calibrated speaker model, Android CPU benchmark or speaker identity authority is present; keep optional backend disabled.",
+      "next_step": "Keep current speaker-change evidence and pre-batch history invariants. After #2366 source-lock CI and #2361 FASTDIAR review, evaluate R-081 as an A4 novelty-gate ablation on existing source-bound synthetic audio: fixed threshold vs assign/defer/create vs no-gate, full-buffer vs sliding vs no replay. Do not download FASTDIAR weights (weight license unresolved), promote identity labels, or claim Redmi audio.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T09:58:33.516Z",
       "latest_candidate_pr": {
@@ -1017,6 +1017,13 @@
       "status": "CODE_CANDIDATE_LOCAL_ISOLATED_2_OF_2_CI_PENDING",
       "primary": "Source-derived concurrency review of vision.ingest/read_image/forget and consume_visual_source; PR #2366",
       "next": "Finish exact PR CI; Core wires the adapter to normal Runtime; QA retains both barrier interleavings and checks restart/source-forget on integrated runtime."
+    },
+    {
+      "id": "R-081",
+      "topic": "Surprise-gated episodic memory for streaming speaker evidence",
+      "status": "FULL_TEXT_PREPRINT_REVIEWED_RESEARCH_ONLY_NO_CODE_OR_WEIGHT_LICENSE",
+      "primary": "Mouchon & Lainault, arXiv:2611.20819v1; arXiv record 2026-11-16, PDF title page 2026-09-26",
+      "next": "After #2366 exact CI and FASTDIAR review, run fixed-threshold vs assign/defer/create vs no-gate plus full-buffer/sliding/no-replay ablation on existing source-bound synthetic audio; preserve provisional/final and session erase; no model download."
     }
   ],
   "current_evidence_overlay": {
@@ -1081,6 +1088,15 @@
       "runtime_consumer": "NOT_NORMAL_RUNTIME_WIRED",
       "redmi": "NOT_RUN",
       "release_sha": "NOT_RELEASED"
+    },
+    "research_r081": {
+      "timestamp": "2026-11-22T17:59:40Z",
+      "paper": "arXiv:2611.20819v1",
+      "full_text": "12_PAGE_PDF_REVIEWED",
+      "status": "RESEARCH_ONLY",
+      "limitations": "3_AMI_MEETINGS_5_VOXCONVERSE_SESSIONS_SINGLE_SEED_NO_CI_POOR_CAUSAL_TRACK_NO_CODE_OR_WEIGHT_LICENSE",
+      "next_experiment": "A4_NOVELTY_GATE_ABLATION_ON_EXISTING_SYNTHETIC_AUDIO",
+      "download": "NONE"
     }
   },
   "qa_latest_checkpoint": {
