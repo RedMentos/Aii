@@ -51,5 +51,5 @@ Current candidate: PR #2293 (DRAFT, NOT_RELEASED)
 - PASS: #44970593770 RAW EAR 3.13/3.14 (57 tests on 3.13, exact frame-age derivation); #44970593769 VAD/libfvad 3.13/3.14; #44970593754 deployer integrity.
 - FAIL / baseline: #44970593815 staged/integrated, same `local-error pre-rebind semantic binding mismatch` on unmodified base #44969679441. #44970593848 updater migration PARTIAL; #44970593805 owner-read bootstrap stage failure; #44970593878 Lab Age/WebView stage failure.
 - Benchmark #44970593770: synthetic x86_64 only; NumPy 9.0642 ms median vs Python 191.6681 ms, speaker evidence 0.8955 ms; no model inference. Not Redmi proof.
-- Last private device snapshot #115 is dated 2026-11-18 and reports auto_enabled=true; new PIPELINE_STATUS request #454 got no receipt. No release/deployment; `NOT_RELEASED`, `REDMI_UNVERIFIED`.
+- Last private device snapshot #115 (updated 2026-11-18T11:30:53Z) reports auto_enabled=true, last_result=PARTIAL, last_success_utc=2026-11-18T07:54:05Z and updated_commit=89333289b8cd50da92cbf7074c9ef689a2972dbf; it is stale. New PIPELINE_STATUS request #454 remains open with no receipt. No release/deployment; `NOT_RELEASED`, `REDMI_UNVERIFIED`.
 - Next owner: Core resolves the baseline semantic pre-rebind pin mismatch; Perception rebases and reruns; QA reviews privacy/consent and revocation. No user action required.
