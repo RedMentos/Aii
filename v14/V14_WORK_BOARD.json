@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T19:49:50Z",
-  "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c4eb82deec915f65894c20d6ebbaf0ebf58fa335; all 30 observed exact-SHA Actions workflow runs completed SUCCESS. Fresh owner-authenticated private PIPELINE_STATUS #550 confirms the same SHA installed and UP_TO_DATE. Functional/whole-Canon acceptance remains open; V14 master and historical V13 appendix preserved.",
+  "updated_at": "2026-11-22T20:01:11Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; 41/41 exact SHA check-runs SUCCESS. Authenticated private PIPELINE_STATUS #602 confirms this SHA installed, Auto-Update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE. Functional/whole-Canon acceptance remains open; historical V13 Canon and V14 master are preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -108,10 +108,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "Code head cd8849: temporal workflow PASS on Python 3.13/3.14 (10 tests each); exact later head 38f553 had Python 3.13 utility-gate failures from random source/session split; deterministic fixture follow-up 9bca pending. Source-forget optimizer/staged workflows blocked by QA-owned stale memory.py pin. LOCAL_LINUX isolated 9 assertions PASS; full local suite BLOCKED; REDMI_UNVERIFIED.",
-      "next_step": "JEPA #2372: finish exact 3.13/3.14 CI on 9bca226; QA rebinds #2359 lifecycle pins to new memory.py blob; Boss reviews #2370; then rebase #2360 temporal B1/B2 receiver onto current Boss base and prove actual prompt consumption in SHADOW. Keep DRAFT and promotion OFF.",
+      "proof_environment": "Current JEPA candidate PR #2372 exact head 64ae877d7189c3109aff60583ef73aeed1fe4c32. Temporal, staged/integrated and Python 3.13/3.14 optimizer-resume/source-forget workflows 45064802561/45064802546/45064802545 were QUEUED at last readback. Previous temporal head 6bd3d932 had 11/11 Python 3.14 tests PASS; Python 3.13 pending. New actual Cognition.offer B1/B2 prompt-consumer test is on 64ae877 and has no exact-head result yet. Full local Aii suite BLOCKED (no checkout; git ls-remote DNS failure). REDMI_UNVERIFIED for JEPA feature.",
+      "next_step": "JEPA #2372: poll exact-head 64ae877 CI and fix only measured failures; QA rebinds #2359 and inherited lifecycle memory.py pins to verified SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701; Boss reviews the composed chain. Then integrate on the current Boss base and run correct/omitted/shuffled/hypothetical-history ablations with disjoint sessions/sources and matched replay. Keep DRAFT, SHADOW-only and production promotion OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-22T20:01:11Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -122,10 +122,10 @@
       "latest_followup_pr": {
         "pr": 2372,
         "branch": "jepa-memory/v14-temporal-exact-forget-retention-20261122-run14",
-        "head_sha": "9bca226bd9f43ccb5d2f520c8fbe7a3d68654bdd",
+        "head_sha": "64ae877d7189c3109aff60583ef73aeed1fe4c32",
         "base_pr": 2351,
-        "ci": "CODE_HEAD_CD8849_PY313_PY314_10_PASS_EACH; EXACT_38F553_PY314_10_PASS_PY313_UTILITY_FAIL; 9BCA_EXACT_CI_PENDING",
-        "scope": "exact source-forget references; fail-closed malformed JSON; encoder/predictor/EMA delta and parent checkpoint; temporal gap/retention veto; deterministic source/session fixture"
+        "ci": "EXACT_HEAD_QUEUED_RUNS_45064802546_45064802561_45064802545; PRIOR_6BD3_PY314_11_OF_11_PASS_PY313_PENDING",
+        "scope": "persistent source-verified temporal T8/WorldJEPA/EMA with disjoint splits, omission/gap handling, replay/retention, positive rollback/restart, source-forget lock regression, plus actual Cognition.offer B1/B2 prompt readout (B1 history 2, B2 history 3) in bounded nonblocking SHADOW"
       },
       "latest_runtime_candidate": {
         "pr": 2145,
@@ -135,8 +135,8 @@
         "scope": "Postcommit TemporalT8Bridge and WorldPredictionOutcome SHADOW only; newest-first latest-N scan; not JEPA/EMA consumer"
       },
       "release_sha": "NOT_PHONE_RELEASED",
-      "phone_installed_sha": "UNKNOWN",
-      "redmi_status": "REDMI_UNVERIFIED",
+      "phone_installed_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
+      "redmi_status": "BASE_RELEASE_AED1D2_INSTALLED_AND_UP_TO_DATE; JEPA_PR_2372_NOT_RELEASED; REDMI_UNVERIFIED_FOR_JEPA_FEATURE",
       "latest_runtime_port_pr": {
         "pr": 2160,
         "branch": "jepa-memory/v14-world-jepa-runtime-port-20261121-r2",
@@ -162,7 +162,7 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "The current code candidate is synthetic Store-backed NumPy WorldJEPA. No native GGUF B1/B2 body-weight update, cross-organ trained latent transfer, normal Runtime prompt consumption or Redmi proof. Current exact code head pending; earlier code head CI evidence is not promoted to current exact-head acceptance."
+      "proof": "PR #2372 exact head 64ae877 adds the temporal bodyview adapter to the real Cognition.offer consumer. The new test captures the actual B1/B2 prompt payload, checks QueryPacket body_state_ref provenance and distinct 2/3 histories, and verifies nonblocking fallback when the JEPA lock is held; exact-head CI is queued, not PASS. Existing temporal code persists trainable encoder/predictor/EMA state, optimizer/checkpoint lineage, source-disjoint holdouts, replay/retention, rollback and pending retry; current tests are synthetic Store/NumPy experiences. Exact memory.py blob SHA-1 172417b49c0abb301db9367fd1c9947a91b3c458; SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701. Inherited #2372 lifecycle pin 61e881ad… and QA #2359 pin b2059016… are stale; QA was notified with exact readback. Full local repository suite BLOCKED by absent checkout/DNS. No native GGUF body-weight change, no trained cross-organ latent coupling, no Redmi proof, and no production learning promotion."
     },
     {
       "id": "V14-005",
@@ -1128,6 +1128,21 @@
       "device_health": "HEALTH_549: 1,293 MiB MemAvailable / 5,569 MiB total / 1,537 MiB free disk; health runtime UNAVAILABLE while diagnostics reports RUNNING",
       "learning_status": "LEARNING_STATUS_552_UNAVAILABLE",
       "boss_pr2343": "CURRENT_HEAD_023E56D_29_AHEAD_0_BEHIND; substantive exact CI queued. Recovery12 and some Store/Runtime pins corrected; stage/deployer, recovery21, archive stream preimage, record-only Runtime pin and fair-observer ask anchor still mismatch. Previous 70c6a5 migration failed; not current-head result."
+    },
+    "jepa_run15": {
+      "timestamp": "2026-11-22T20:01:11Z",
+      "pr": 2372,
+      "code_head": "64ae877d7189c3109aff60583ef73aeed1fe4c32",
+      "code_commits": [
+        "0840cf637664f53261518dd730537eca7e179fa8",
+        "64ae877d7189c3109aff60583ef73aeed1fe4c32"
+      ],
+      "exact_ci": "QUEUED_RUNS_45064802546_45064802561_45064802545",
+      "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT_OR_NETWORK",
+      "device": "REDMI_UNVERIFIED_FOR_JEPA_FEATURE; INSTALLED_BASE_AED1D2_FROM_PRIVATE_RECEIPT_602",
+      "qa_pin_blocker": "memory.py SHA256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701; inherited #2372 pin 61e881ad; QA #2359 pin b2059016; QA notified",
+      "consumer": "Cognition.offer receives temporal body_state SHADOW; B1 history 2, B2 history 3; new capture-runner test pending exact CI",
+      "user_action_required": "NONE"
     }
   },
   "qa_latest_checkpoint": {
