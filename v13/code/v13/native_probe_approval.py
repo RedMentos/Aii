@@ -49,9 +49,12 @@ def _roles(sender_role, receiver_role):
 def _verify_model_file(path, expected_size, expected_digest):
     """Stream the actual model bytes and bind them to the installed manifest."""
     nofollow = getattr(os, "O_NOFOLLOW", None)
-    if nofollow is None:
-        raise PermissionError("native probe platform cannot safely open model without following symlinks")
-    flags = os.O_RDONLY | nofollow | getattr(os, "O_CLOEXEC", 0)
+    nonblock = getattr(os, "O_NONBLOCK", None)
+    if nofollow is None or nonblock is None:
+        raise PermissionError("native probe platform lacks safe no-follow/nonblocking model open")
+    # O_NOFOLLOW prevents a final symlink; O_NONBLOCK prevents a FIFO/device
+    # from hanging the approval path before fstat can reject non-regular files.
+    flags = os.O_RDONLY | nofollow | nonblock | getattr(os, "O_CLOEXEC", 0)
     try:
         fd = os.open(str(path), flags)
     except OSError as exc:
