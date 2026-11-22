@@ -7,7 +7,7 @@ import hashlib
 from pathlib import Path
 
 BASE_PINS = {
-    "v13/cognition.py": "6d7940b118f099c930ee94c5b00a117af60b759dc03d8113aa6e1350a9a5a04b",
+    "v13/cognition.py": "8cc8df2e517b16b98ba7d13d94ee0c6a9b52b901b23806c5a748abad2ecab2b0",
     "v13/callosum.py": "de55ba637b9e0c0fe6ea12f74385b0f9f782735cc2f52098f5b227a52902d5fc",
     "v13/runners.py": "f6adaa47ac8cb5d8aa27e0556ea35cfa16da13155834bbe20e58375b9cc669ab",
     "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
