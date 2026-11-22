@@ -35,3 +35,11 @@ A claimed companion action can outlive the Activity that attempted to sign its r
 ## Acceptance boundary and next step
 
 This adds a real source-scoped C5 action journal on top of the existing permission-gated companion candidate. It does not implement an Android UI observer, a verified foreground transition, T8 learning eligibility, B3 latent coupling or a release. Keep this PR stacked until QA #2342 and Core #2271 are reviewed and Boss rebases the companion stack onto the current release-development head. Any Redmi exercise requires the already separate explicit device-side approval and a fresh authenticated receipt; do not send a manual Termux command or update request from this PR.
+
+
+## Operator status and source privacy follow-up — 2026-11-22
+
+- `:android status` now performs only a read-only ContentProvider `capabilities` probe and presents a bounded allowlist of native readiness/permission/evidence fields. Pairing-required, unavailable, and malformed responses remain distinct; the command never submits or approves an action and always reports device verification as false.
+- The generic source event for an app launch no longer embeds the package name. The package remains bound by the broker request digest and signed companion receipt, while chat/event text and the history projection avoid exposing the app identifier to downstream context or exports.
+- Exact regression asserts the broker request still carries the requested package while the stored user-source message contains only `Operator requested launch_app`.
+- Top-level `:help` now lists `:android history [1..50]`.
