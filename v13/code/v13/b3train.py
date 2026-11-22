@@ -144,7 +144,7 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
             "shuffled_latent_accuracy": accuracy(shuffled_logits),
             "random_norm_matched_accuracy": accuracy(random_logits),
             "ood_rate": ood_rate, "reload_identical": reload_identical,
-            "last_training_metrics": history[-1] if history else {},
+            "last_training_metrics": ({k: float(v) for k, v in history[-1].items()} if history else {}),
         })
 
     report = {
