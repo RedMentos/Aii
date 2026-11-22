@@ -142,13 +142,17 @@ class AndroidCompanionController:
             "launch_app", {"package": package}, ttl=30,
             event_id=event["event_id"], source_ref=event["source_ref"],
         )
-        intent = packet(
-            "ActionIntent", "C5_ANDROID_COMPANION", event["event_id"],
-            event["brain_generation_id"], [event["source_ref"]],
-            action_id=proposal.action_id, action_type="launch_app",
-            permission="OPERATOR_TTY_AND_ANDROID_COMPANION_UI",
-        )
-        self.runtime.store.add_packet("ActionIntent", intent)
+        try:
+            intent = packet(
+                "ActionIntent", "C5_ANDROID_COMPANION", event["event_id"],
+                event["brain_generation_id"], [event["source_ref"]],
+                action_id=proposal.action_id, action_type="launch_app",
+                permission="OPERATOR_TTY_AND_ANDROID_COMPANION_UI",
+            )
+            self.runtime.store.add_packet("ActionIntent", intent)
+        except Exception:
+            self.broker.cancel(proposal.action_id)
+            raise
         self.broker.approve(proposal.action_id, confirmed_by_local_ui=True)
         envelope = self.broker.dispatch_approved(proposal.action_id)
         try:
