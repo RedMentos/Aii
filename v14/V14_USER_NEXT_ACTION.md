@@ -1,3 +1,18 @@
+## Boss & Integration — aktueller Geräte-/P0-Checkpoint (2026-11-22T17:51:17.837Z)
+
+**Keine Nutzeraktion nötig.** Das Redmi ist bereits auf dem aktuellen Release-HEAD. Kein manueller Termux-Befehl, kein erneuter Update-Request, kein Modell-/Gewichtswechsel und keine neue Rechtefreigabe.
+
+- Installiert: `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; Auto-Update EIN; Runtime/Dashboard `UP_TO_DATE`; `last_error=NONE`. Exakte SHA-CI: 53/53 SUCCESS.
+- Letzte gespeicherte Antwort (keine neue Chat-Anfrage): 57,739 s Gesamtzeit, 41,627 s TTFT, 38,945 s Prefill, 751 Prompt-Tokens, 2 generierte Tokens. Korrektheit UNKNOWN, da die Eingabe im Diagnostikpfad redigiert ist.
+- B1_DETAIL/B2_GIST weiter `TIME_BUDGET` (53,2/54,2 s); Native Probe `SMOKE_PARTIAL`; kein belegter Offer→C4→C3-Nutzpfad. Instant-Messung 0,3 MiB PSS / 2,6 MiB RSS ist kein Nachweis geladener GGUF-Gewichte.
+- #2343 bleibt DRAFT; 28 Checks waren am letzten Poll queued. #2346 bleibt DRAFT; ein exakter Paired-Capture-Test scheiterte an einer Claim-Text-Assertion. #2364 Receiver-Probe läuft noch durch CI. Nichts davon ist freigegeben oder installiert.
+- P0 #1904 bleibt offen. Keine 20-Turn-Abnahme und keine verifizierte korrekte 2+2-Antwort. Offizielle Age 0; Lab-Anfrage 10 / effektive Stufe 5; physische Feature-Ausführung nicht verifiziert; Learning-Commit nur mit separatem SHADOW.
+- Vollständige lokale Aii-Suite BLOCKED (kein Checkout, GitHub-DNS nicht verfügbar). Grüne GitHub-Checks ersetzen weder lokale Volltests noch Redmi-Funktionsnachweis.
+
+**Nächster interner Schritt:** aktuelle CI-Ergebnisse abwarten, #2346-Testvertrag korrigieren und erst nach vollständiger Matrix weiter integrieren. Keine Aktion von dir nötig.
+
+---
+
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
 - JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
