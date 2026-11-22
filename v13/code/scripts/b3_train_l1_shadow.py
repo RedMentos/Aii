@@ -41,6 +41,7 @@ def main(argv=None):
     parser.add_argument("--labels", required=True)
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--head-steps", type=int, default=25)
+    parser.add_argument("--l0-evidence", default=None)
     args = parser.parse_args(argv)
 
     home = Path(args.home).expanduser().resolve()
@@ -63,6 +64,16 @@ def main(argv=None):
     labels = [x.get("label") for x in entries]
     provenance = [x.get("provenance") for x in entries]
 
+    l0_evidence = None
+    if args.l0_evidence:
+        evidence_path = Path(args.l0_evidence).expanduser()
+        if not evidence_path.is_absolute():
+            evidence_path = home / evidence_path
+        evidence_path = evidence_path.resolve()
+        if not evidence_path.is_file():
+            raise FileNotFoundError(f"L0 evidence file not found: {evidence_path}")
+        l0_evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+
     runtime = Runtime(home)
     try:
         rows = runtime.store.rows(
@@ -83,6 +94,7 @@ def main(argv=None):
             direction=doc.get("direction", "B1_TO_B2"),
             seeds=tuple(doc.get("seeds", [11, 17])),
             epochs=args.epochs, head_steps=args.head_steps,
+            l0_evidence=l0_evidence,
         )
         print(dumps(report))
         return 0
