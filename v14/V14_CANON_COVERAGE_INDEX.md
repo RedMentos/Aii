@@ -2432,3 +2432,22 @@ This is an inherited QA-owned source-lifecycle composition failure; it blocks st
 **Environment boundary:** LOCAL_LINUX full repository test is BLOCKED / NOT_RUN because no Aii checkout is mounted and GitHub DNS resolution fails. GitHub Actions are CI only; current-head workflows are QUEUED. No native GGUF body-weight update, trained cross-organ latent transfer, Dream consolidation, or Redmi JEPA proof is claimed. Historical V13 Canon inventory remains unchanged.
 
 **Replay research follow-up R-095:** per-example spaced review is a candidate scheduling layer, but V14 regression JEPA lacks a validated recall-quality mapping. No SRT code is released; no scheduler is implemented or enabled. Uniform replay remains baseline pending matched-step, repeated-seed ablations.
+
+
+## JEPA & Memory Run 22 evidence overlay — 2026-11-22T23:37:18.142Z
+
+This overlay updates only the evidence state; it does not remove or narrow any Canon requirement.
+
+| Canon path / capability | Current evidence | Status boundary |
+|---|---|---|
+| T8 ActionOutcome → temporal World/Self/Memory windows | Store-backed committed synthetic ActionOutcomes; source/session-disjoint windows, explicit known-omission censoring, unknown-gap breaks, bounded pagination and restart-pending rows. PR #2372 head e697883; workflow 45083725525: 20/20 PASS on Python 3.13 and 3.14. | WIRED_SYNTHETIC / NATIVE_LINUX_PROOF: NO / REAL_REDM I_PROOF: NO |
+| WorldJEPA encoder/predictor + EMA | Actual NumPy parameter updates, EMA target movement, optimizer/checkpoint persistence, holdout and shuffled/no-history controls; incremental/combined workflows 45083725543 and 45083725560 PASS. | WIRED_SYNTHETIC; not native GGUF body learning |
+| Sleep/Dream postcommit consumer | Enabled-permission SleepRuntime test exercises committed T8 through base and temporal consumers; bounded continuation records independent base/temporal cursors; rollback/retry tests are in temporal suite. | WIRED_SYNTHETIC; native scheduled Android sleep remains unverified |
+| Replay / retention | Uniform replay baseline, matched-step replay/no-replay and A→B→C→A retention gates; exact temporal CI 20/20 on both Python versions. CAMR R-096 is research-only. | WIRED_SYNTHETIC; no calibrated learned replay policy or Redmi retention proof |
+| B1_DETAIL / B2_GIST temporal receiver | Two-/three-transition source-bound readouts; measured disjoint-holdout receiver_utility_gate; actual Cognition.offer prompt capture and 700-character budget test. | WIRED_SYNTHETIC / SHADOW; no native latent injection or body-weight edit |
+| Source-forget / rollback / optimizer resume | JEPA-owned input SHA pins corrected; current optimizer-resume and staged CI still fail at downstream QA Termux recovery builder SHA pin. Lifecycle memory.py pin also stale. | BLOCKED_INTEGRATION; not accepted |
+| Android deployment / installed runtime | Private owner-read #649 confirms installed aed1d2b, updater ON / UP_TO_DATE; #650–#652 show B1/B2 zero valid offers, C3 2 tokens, health/runtime contradiction and learning unavailable. PR #2372 is not installed. | BASE_RELEASE_ONLY; REDMI_UNVERIFIED for JEPA |
+
+**Exact candidate:** PR #2372, head `e697883dd5e36cc4b667ca966a6ec657ea470bf7`, DRAFT / NOT_RELEASED. Exact CI: temporal 45083725525 PASS 20/20 each on Python 3.13/3.14; incremental 45083725543 PASS; combined 45083725560 PASS; optimizer-resume 45083725501 FAIL; staged/integrated 45083725503 FAIL 19/231/10 skipped/2 errors; owner-read 45083725516 owner-read PASS but staged startup FAIL.
+
+**Downstream blockers:** QA-owned Termux recovery builder expects SHA-256 `b05a5f4c…`, actual JEPA training-resume builder is `c03de6503c75972923e26374f6382fcaab8f1727a5d7018b224653b5c149a71b`. QA lifecycle composer expects memory.py `61e881ad…`, actual is `33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701`. LOCAL_LINUX full suite BLOCKED / NOT_RUN; Redmi native proof REDMI_UNVERIFIED.
