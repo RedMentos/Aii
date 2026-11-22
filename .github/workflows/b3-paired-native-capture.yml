@@ -80,6 +80,6 @@ jobs:
             v13/code/tests/test_b3train.py \
             v13/code/tests/test_b3_completion.py
 
-      - name: Smoke-test Termux L1 shadow CLI import
+      - name: Smoke-test Termux L1 shadow CLI import and argument parser
         working-directory: v13/code
         run: python scripts/b3_train_l1_shadow.py --help >/dev/null
