@@ -97,6 +97,7 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift
             "gate": neuromod_report["gate"],
         }
         result["neuromod"] = neuromod_info
+        result["has_more"] = bool(neuromod_record.get("has_more"))
         if not gates["learning_enabled"]:
             result["status"] = "OFF"
             return result
@@ -121,6 +122,9 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift
         )
         result.update(updated)
         result["neuromod"] = neuromod_info
+        result["has_more"] = bool(
+            neuromod_record.get("has_more") or updated.get("has_more")
+        )
         result.update({
             "runtime_adapter_called": True,
             "learning_enabled": True,
