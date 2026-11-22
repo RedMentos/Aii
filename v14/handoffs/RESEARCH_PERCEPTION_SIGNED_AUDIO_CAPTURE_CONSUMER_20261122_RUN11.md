@@ -85,3 +85,8 @@ Primary API sources (accessed 2026-11-22):
 - https://developer.android.com/media/platform/sharing-audio-input — AudioRecordingCallback, silence and route/preprocessing changes.
 
 Evidence status: code and test changes are committed only after exact-head CI; no Android provider, microphone capture, Termux device test, native model, deployment or Redmi proof is claimed.
+## Research R-075 — FASTDIAR (full preprint review, 2026-11-22)
+
+FASTDIAR is a plausible future A4 speaker-change/overlap signal: causal 192-D embeddings every 80 ms from a bounded two-second past, confidence-gated online clustering and fixed 960-ms delay. Its paper reports 2.7M / 4.6M / 10.4M parameter sizes and RTF 0.05 / 0.09 / 0.19 on an AMD Threadripper PRO 5995WX, not on Android. It is not uniformly best: with overlap included it leads only VoxConverse and RAMC; it is last on DIHARD3. VoxConverse and NOTSOFAR development data were used for tuning, and the confidence gate is not separately ablated. The official repo is MIT, but its pinned PyTorch/torchaudio/torchcodec/SciPy/Silero stack is not Termux-lightweight, and dataset/checkpoint terms still need separate review.
+
+V14 implication: do not download it now. It needs a continuous two-second stream, whereas the signed consumer is one-shot and capped at one second. Keep speaker identity and action authority false. If later approved for an isolated model slot, compare the existing RAW EAR heuristic vs FASTDIAR Small vs NO_MODEL with overlap/noise/silence controls and ARM RSS/RTF; use an anti-aliased 44.1→16-kHz feature view while preserving original PCM for the A-plane.
