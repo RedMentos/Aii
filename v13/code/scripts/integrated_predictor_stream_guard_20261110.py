@@ -41,8 +41,9 @@ def build_sources(code_dir):
     spec.loader.exec_module(module)
     result = module.build_sources(code_dir)
     world = result['v13/online_world.py']
-    if hashlib.sha256(world).hexdigest() != PREVIOUS_WORLD_SHA:
-        raise ValueError('integrated OnlineWorld source changed')
+    world_sha = hashlib.sha256(world).hexdigest()
+    if world_sha != PREVIOUS_WORLD_SHA:
+        raise ValueError('integrated OnlineWorld source changed: expected=' + PREVIOUS_WORLD_SHA + ' actual=' + world_sha)
     world = _replace_once(world, WORLD_MODEL_OLD, WORLD_MODEL_NEW, 'OnlineWorld binding')
     predictor = result['v13/continuous_predictor.py']
     result['v13/continuous_predictor.py'] = _replace_once(predictor, STREAM_OLD, STREAM_NEW, 'predictor stream')
