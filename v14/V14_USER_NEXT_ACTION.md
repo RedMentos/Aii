@@ -1,3 +1,17 @@
+# Boss update — #2314 staged integration green, native build pending (2026-11-22 07:01Z)
+
+**No user action is needed.** Do not run a Termux command, request an update, install a binary, change models/weights/permissions, or enable Android control on the basis of CI.
+
+- Boss #2314 head `87975814a1e134a4b12dc5961b6250d9125d65eb` now passes runtime deployment, old-phone migration, Lab-Age, owner-read, same-turn B1/B2→C4→C3 and staged/integrated regression. Its dedicated pinned llama.cpp Linux receiver build/selftest and Android arm64-v8a cross-compile workflow is still QUEUED. This is not an actual model receiver run or Redmi proof.
+- #2314 is still based on candidate ancestor `1105ab56`; current release tip is `f210999` and comparison is diverged (19 ahead / 10 behind). Do not merge/retarget until the native workflow resolves; then rebase/retarget to the exact current release and rerun the full matrix.
+- Private phone #480 remains the only authenticated receipt: auto-update enabled, runtime/dashboard `CI_WAIT`, installed SHA `89333289b8cd50da92cbf7074c9ef689a2972dbf`. Fresh owner-read #483 expired unanswered and was closed. No UPDATE_REQUEST or device mutation was sent.
+- #2313 remains NOT_READY with parent failures; #2317's source-disjoint B3 test passes but staged integration is queued. #2311's new JEPA matrix remains queued. #2312 remains stacked on QA companion work. #2286 current head has queued exact CI and a stop-switch durability finding because it still uses asynchronous SharedPreferences.apply().
+- Full local Aii suite remains BLOCKED: no checkout mounted and GitHub DNS unavailable. No LOCAL_LINUX full-suite, native GGUF, Android, or Redmi proof is claimed.
+
+**Next:** wait for #2314's dedicated native build; then rebase #2314 onto current release and rerun exact CI. Continue with #2313+#2317 as one stack, then #2311 and the companion/audio stack. No user action is required.
+
+---
+
 # Boss safety review — Android companion stop durability (2026-11-22 06:58Z)
 
 **No user action is needed.** Do not install an APK or enable Android control from this review.
