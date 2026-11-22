@@ -1406,7 +1406,7 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 ## Research/Perception status — 2026-11-22 02:35 CET
 
 - PR #2293 remains DRAFT / NOT_RELEASED on Boss base f0d3c848; current head e85b7398b1fce84423583abf01e1389507612818.
-- New v13/code/v13/audio_input.py API accepts caller-supplied PCM16 without requiring a transcript. It requires live consent, a linearizable guard and two-phase revocation; it never opens a microphone or downloads weights.
+- New v13/code/v13/audio_input.py API accepts caller-supplied PCM16 without requiring a transcript. It requires live consent, a linearizable guard and two-phase revocation; the candidate builder passes acoustic context to B1/B2/C3 with source provenance/rechecks, but staged integration is still blocked and no trained audio projector/latent path is proven. It never opens a microphone or downloads weights.
 - Exact local isolated test: py_compile PASS; pytest tests/test_audio_input.py PASS 7/7. This is module/API proof only, not a normal Runtime E2E. Full local repo tests are blocked because this environment cannot resolve github.com.
 - Current focused GitHub workflow #44972070097 was pending at checkpoint. The previous speaker-evidence code head passed 57 tests on Python 3.13/3.14, but staged/integrated remains blocked by Core's pre-rebind semantic pin mismatch on the unmodified Boss base.
 - No Android microphone, AudioRecord, speech effector, full-duplex/barge-in or Redmi test. No model/weight change, release, update request or device mutation. RELEASE_SHA=NOT_RELEASED, REDMI_UNVERIFIED.
