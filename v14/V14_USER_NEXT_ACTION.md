@@ -1410,7 +1410,7 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 - Exact local isolated test: py_compile PASS; pytest tests/test_audio_input.py PASS 7/7. This is module/API proof only, not a normal Runtime E2E. Full local repo tests are blocked because this environment cannot resolve github.com.
 - Current focused GitHub workflow #44972070097 was pending at checkpoint. The previous speaker-evidence code head passed 57 tests on Python 3.13/3.14, but staged/integrated remains blocked by Core's pre-rebind semantic pin mismatch on the unmodified Boss base.
 - No Android microphone, AudioRecord, speech effector, full-duplex/barge-in or Redmi test. No model/weight change, release, update request or device mutation. RELEASE_SHA=NOT_RELEASED, REDMI_UNVERIFIED.
-- Research R-063: FASTDIAR paper fully reviewed; code MIT but checkpoint license unclear. speech-core Apache-2.0 C++17/Android is a possible low-level VAD/AEC/cancel reuse, not a replacement for V14 organs. No download.
+- Research R-063 adds FASTDIAR full-paper evidence; its code is MIT but checkpoint license is unclear. speech-core is a detailed follow-up to R-033 (Apache-2.0 C++17/Android), a possible low-level VAD/AEC/cancel reuse, not a replacement for V14 organs. No download.
 
 **Next internal action:** Core fixes the exact Boss source-pin blocker; Perception rebases #2293, obtains green staged/integrated proof, then wires the audio-only API into the Android caller. **User action: none.**
 
