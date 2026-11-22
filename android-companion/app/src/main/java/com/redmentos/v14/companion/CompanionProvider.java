@@ -185,6 +185,13 @@ public final class CompanionProvider extends ContentProvider {
                 && pairedPackage.equals(packages[0]);
     }
 
+    static String approvalNotificationTag(String actionId) {
+        if (actionId == null || !actionId.matches("[0-9a-f]{32}")) {
+            throw new IllegalArgumentException("invalid action id");
+        }
+        return actionId;
+    }
+
     static Intent approvalIntent(Context context, String actionId) {
         Intent intent = new Intent(context, ConsentActivity.class);
         // PendingIntent equality includes the data URI. Keep the complete
@@ -225,7 +232,7 @@ public final class CompanionProvider extends ContentProvider {
                 .setAutoCancel(true)
                 .build();
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(actionId.hashCode(), notification);
+        manager.notify(approvalNotificationTag(actionId), 0, notification);
     }
 
     private void ensureChannel(Context context) {
