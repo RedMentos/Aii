@@ -33,6 +33,13 @@ def _load(code_dir: Path, relative: str, expected: str):
     return module
 
 
+
+
+def _replace_once(raw: bytes, old: bytes, new: bytes, label: str) -> bytes:
+    if raw.count(old) != 1:
+        raise ValueError("Android companion composition anchor mismatch: " + label)
+    return raw.replace(old, new, 1)
+
 def build_sources(code_dir: Path, *, include_postcommit=True):
     code_dir = Path(code_dir).resolve(strict=True)
     base = _load(code_dir, BASE_BUILDER, BASE_BUILDER_BLOB_SHA1)
@@ -64,6 +71,28 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
     receipt_module = importlib.util.module_from_spec(receipt_spec)
     receipt_spec.loader.exec_module(receipt_module)
     composed = receipt_module.apply_sources(code_dir, composed)
+
+    # Add the Android companion command only after every older source overlay
+    # has validated its original operator.py hash. The staged runtime still
+    # exposes one explicit, consent-gated capability and keeps model authority 0.
+    operator = composed.get("v13/operator.py")
+    if not isinstance(operator, bytes):
+        raise ValueError("Android companion operator source missing")
+    operator = _replace_once(
+        operator,
+        b":callosum [status|shadow|active|degrade|promote <Richtung>]",
+        b":android [status|capabilities|pair|trust <key-id> --confirm|launch <package> --confirm|poll <action-id>|cancel <action-id>|pending|stop] (separate Android companion; default OFF; per-action consent)\\n"
+        b":callosum [status|shadow|active|degrade|promote <Richtung>]",
+        "help",
+    )
+    operator = _replace_once(
+        operator,
+        b"        if cmd=='callosum':\\n            from .callosum import operator_command\\n            return operator_command(r,args)\\n",
+        b"        if cmd=='android':\\n            from .android_companion_runtime import operator_command\\n            return operator_command(r,args)\\n"
+        b"        if cmd=='callosum':\\n            from .callosum import operator_command\\n            return operator_command(r,args)\\n",
+        "dispatch",
+    )
+    composed["v13/operator.py"] = operator
     if b"c4_offer_context_ready" not in composed.get("v13/cognition.py", b""):
         raise ValueError("Core C4 context-ready receipt was not composed")
     if b"minimum_role_slice_s" not in composed.get("v13/cognition.py", b""):
