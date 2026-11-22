@@ -29,7 +29,7 @@ MIN_PAIRS = 8
 MAX_PAIRS = 256
 MAX_STEPS = 2000
 MAX_CHECKPOINT_BYTES = 64 * 1024 * 1024
-FILE_RE = re.compile(r"adapter-[0-9a-f]{16}\\.npz\\Z")
+FILE_RE = re.compile(r"adapter-[0-9a-f]{16}\.npz\Z")
 
 
 def _roles(sender_role, receiver_role):
@@ -110,7 +110,7 @@ def _atomic_bytes(path, raw):
 
 
 def _atomic_json(path, value):
-    _atomic_bytes(path, (json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\\n").encode("utf-8"))
+    _atomic_bytes(path, (json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n").encode("utf-8"))
 
 
 def adapter_directory(home, sender_role, receiver_role, sender_revision, receiver_revision):
