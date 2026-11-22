@@ -191,7 +191,6 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
 
 def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None):
     """Consume the local approval atomically before any native receiver work."""
-    _require_local_tty()
     runtime.require_idle()
     _roles(sender_role, receiver_role)
     clock = _clock(now)
@@ -245,7 +244,53 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None)
     }
 
 
-def revoke(runtime, *, now=None):
+def revoke(runtime, *, n
+
+def require_consumed(runtime, sender_role, receiver_role, event, source_ref):
+    """Require the one-shot local TTY approval at the actual native receiver boundary.
+
+    Consumption may run in the consented private CHAT_OPERATOR service, which has
+    no interactive TTY. Authority comes from the previously persisted local arm,
+    not from the caller's origin string or remote --confirm flag.
+    """
+    _roles(sender_role, receiver_role)
+    record, _ = runtime.store.state(KEY, None)
+    if (not isinstance(record, dict) or record.get("schema") != SCHEMA
+            or record.get("status") != "CONSUMED"):
+        raise PermissionError("native receiver requires a consumed local TTY approval")
+    if record.get("runtime_nonce") != _runtime_nonce(runtime):
+        raise PermissionError("native probe approval expired across Runtime restart")
+    current_event, current_ref = _current_event(runtime)
+    if (not isinstance(event, dict)
+            or event.get("event_id") != current_event.get("event_id")
+            or event.get("brain_generation_id") != current_event.get("brain_generation_id")
+            or source_ref != current_ref
+            or record.get("session_id") != runtime.session
+            or record.get("event_id") != current_event.get("event_id")
+            or record.get("brain_generation_id") != current_event.get("brain_generation_id")
+            or record.get("source_ref") != current_ref
+            or record.get("sender_role") != sender_role
+            or record.get("receiver_role") != receiver_role):
+        raise PermissionError("native probe source/session/event/role differs from consumed local approval")
+    bindings = record.get("models")
+    if not isinstance(bindings, dict):
+        raise PermissionError("native probe consumed model binding is missing")
+    result = {}
+    for role in (sender_role, receiver_role):
+        binding = bindings.get(role)
+        expected_key = model_key(role, runtime.models.b2_control)
+        digest = binding.get("sha256") if isinstance(binding, dict) else None
+        revision = binding.get("revision") if isinstance(binding, dict) else None
+        if (not isinstance(binding, dict) or binding.get("model_key") != expected_key
+                or not isinstance(revision, str) or not revision
+                or runtime.models.revision(role) != revision
+                or not isinstance(digest, str) or len(digest) != 64
+                or any(ch not in "0123456789abcdef" for ch in digest)):
+            raise PermissionError("native probe model binding changed after local approval")
+        result[role] = dict(binding)
+    return result
+
+ow=None):
     """Revoke a pending local probe approval without invoking the native runner."""
     _require_local_tty()
     runtime.require_idle()
