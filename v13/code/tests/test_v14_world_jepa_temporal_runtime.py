@@ -746,7 +746,7 @@ def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts(tmp_path
     home = tmp_path / "temporal-cognition-consumer"
     store = _make_store(home)
     try:
-        sessions, _ = _make_dataset(store, "bodyview-temporal", 32)
+        sessions, _ = _make_dataset(store, "matrix", 32)
         _permissions(store, steps=80)
         learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
         trained = learner.update(
