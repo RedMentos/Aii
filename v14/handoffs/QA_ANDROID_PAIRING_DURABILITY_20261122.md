@@ -24,3 +24,12 @@ This does not add any permission or new capability. The companion still implemen
 - Run the Android companion Gradle/Robolectric suite on the exact PR head.
 - Rebase the signed audio consumer after the companion/provider contract is stable.
 - Install and validate only after the parent Core stack is integrated and the user explicitly approves a bounded device test.
+
+
+## QA follow-up — failed SharedPreferences commit and in-memory pairing
+
+The pairing writer now requires a rollback callback. Android `SharedPreferences.Editor.commit()` can update its in-memory map before a disk write reports failure; merely returning false from the writer would therefore leave the newly supplied package/fingerprint visible to `CompanionProvider.isPairedCaller()` in the current process.
+
+`MainActivity` snapshots the previous pair before the write. If the durable commit returns false or throws, the rollback callback restores/removes both previous keys with `apply()`, which updates the in-memory preference view synchronously before the failure toast. Tests cover a writer that mutates memory then returns false, a writer that mutates then throws, successful commit, invalid inputs, and rollback failure. No pairing is reported as successful on a failed commit.
+
+This is a source/CI regression fix only. No Android device, companion APK or Redmi pairing was exercised; the PR remains stacked on the draft companion base.

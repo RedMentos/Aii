@@ -85,12 +85,26 @@ public final class MainActivity extends Activity {
                             + "\n\nRequests from this package still require a separate approval for every action.")
                     .setNegativeButton("Cancel", null)
                     .setPositiveButton("Pair", (dialog, which) -> {
+                        SharedPreferences prefs =
+                                getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
+                        String previousPackage = prefs.getString("paired_package", null);
+                        String previousDigest = prefs.getString("paired_cert_sha256", null);
                         boolean saved = PairingPersistence.persist(packageName, digest,
-                                (pairedPackage, certificateSha256) ->
-                                        getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE).edit()
-                                                .putString("paired_package", pairedPackage)
-                                                .putString("paired_cert_sha256", certificateSha256)
-                                                .commit());
+                                (pairedPackage, certificateSha256) -> prefs.edit()
+                                        .putString("paired_package", pairedPackage)
+                                        .putString("paired_cert_sha256", certificateSha256)
+                                        .commit(),
+                                () -> {
+                                    // SharedPreferences.commit() can update its in-memory map
+                                    // even when the disk write reports failure. Restore the
+                                    // previous identity synchronously in memory before returning.
+                                    SharedPreferences.Editor rollback = prefs.edit();
+                                    if (previousPackage == null) rollback.remove("paired_package");
+                                    else rollback.putString("paired_package", previousPackage);
+                                    if (previousDigest == null) rollback.remove("paired_cert_sha256");
+                                    else rollback.putString("paired_cert_sha256", previousDigest);
+                                    rollback.apply();
+                                });
                         if (!saved) {
                             Toast.makeText(this,
                                     "Could not durably save Termux pairing; no success recorded",
