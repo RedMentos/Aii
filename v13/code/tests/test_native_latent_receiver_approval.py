@@ -79,6 +79,7 @@ def test_native_probe_requires_local_arm_and_consumes_it_once(tmp_path):
         assert armed["status"] == "ARMED"
         assert armed["source_bound"] is True
         assert armed["model_revisions_and_hashes_bound"] is True
+        assert armed["model_paths_and_file_identity_bound"] is True
         assert armed["runtime_instance_scoped"] is True
 
         result = json.loads(operator.run(command))
