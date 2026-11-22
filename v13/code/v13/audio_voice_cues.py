@@ -50,6 +50,15 @@ def _speaker_change_decision(evidence, cues):
         return "DEFER"
     if type(evidence) is not dict or evidence.get("status") != "MEASURED":
         return "DEFER"
+    # The current RAW EAR registry only accepts caller-asserted thresholds.
+    # Until a separately reviewed calibration artifact is verified and pinned,
+    # similarity remains diagnostic and cannot support continuity/change.
+    if evidence.get("threshold_status") != "CALIBRATED_VERIFIED":
+        return "DEFER"
+    receipt_sha = evidence.get("calibration_receipt_sha256")
+    if (type(receipt_sha) is not str or len(receipt_sha) != 64
+            or any(char not in "0123456789abcdef" for char in receipt_sha)):
+        return "DEFER"
     calibration_id = evidence.get("calibration_id")
     confidence_threshold = evidence.get("confidence_threshold")
     if (type(calibration_id) is not str or not calibration_id.strip()
@@ -671,7 +680,8 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         audio_segment["unmeasured"] = [
             "speaker_identity", "speaker_timbre", "calibrated_speech_probability", "ASR"
         ]
-        if speaker_evidence is None or speaker_evidence.get("status") != "MEASURED":
+        if (speaker_evidence is None or speaker_evidence.get("status") != "MEASURED"
+                or speaker_change_decision == "DEFER"):
             audio_segment["unmeasured"].append("speaker_change")
         # Do not claim pitch/prosody were measured when the window had no usable
         # voiced frames. A single voiced frame estimates pitch, but not dynamics.
@@ -788,7 +798,12 @@ def consume_pcm16_voice_window(runtime, pcm, *, sample_rate, start_ms, event_id,
                 if speaker_change_candidate:
                     summary += " speaker_change_kind=CHANGE_OR_OVERLAP"
             else:
-                summary += f" speaker_change_score={speaker_evidence['change_score']:.2f}"
+                summary += f" speaker_similarity_delta={speaker_evidence['change_score']:.2f}"
+                summary += (
+                    " spk_cal=UNVERIFIED"
+                    if speaker_evidence.get("threshold_status") == "CALLER_ASSERTED_UNVERIFIED"
+                    else " spk_cal=UNAVAILABLE"
+                )
         # The structured packet retains every cue; reserve the bounded C3
         # summary tail for the speaker score/kind and explicit three-state decision.
         decision_suffix = f" spk_dec={speaker_change_decision}"
