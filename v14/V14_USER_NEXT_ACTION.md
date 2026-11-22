@@ -1,6 +1,6 @@
-# Current user-facing handoff — 2026-11-22 2026-11-22T07:54:34.985Z
+# Current user-facing handoff — 2026-11-22 (latest authenticated receipt)
 
-**No user action is required. Do not run a new Termux command.** The latest authenticated phone receipt says the existing updater is enabled and the runtime/dashboard are already UP_TO_DATE at code SHA `f210999cf556be4d4514427cc9b5cf6d3cf3e984`. The newer release HEAD `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe` is a documentation-only merge; no runtime update is needed. No model/weight, permission, Age, updater or user-data setting was changed.
+**No user action is required. Do not run a new Termux command.** The authenticated PIPELINE_STATUS and DIAGNOSTICS receipts say the existing updater is enabled and runtime/dashboard are UP_TO_DATE at code SHA `f210999cf556be4d4514427cc9b5cf6d3cf3e984`. AI runtime/service are RUNNING, autostart=true, with 8 managed sessions; last session exit code is UNVERIFIED. Console-error access is USER_NOT_OPTED_IN, so no LOG_PAGE was requested. The newer release HEAD `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe` is a documentation-only merge; no runtime update is needed. No model/weight, permission, Age, updater or user-data setting was changed.
 
 ## Current phone result
 
@@ -11,13 +11,13 @@
 
 ## Current integration
 
-- PR #2316 was merged as documentation/research only. Release branch is `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe`; its push CI was 39/39 exact push check-runs SUCCESS. This is not fully green yet.
+- PR #2316 was merged as documentation/research only. Release branch is `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe`; its exact push CI is 39/39 check-runs SUCCESS.
 - The installed code SHA f210999 is the code-bearing parent of that docs-only merge. No UPDATE_REQUEST was sent.
 - #2314 native receiver probe fails Python 3.13/3.14 staged tests because its overlay removes `c=controller(r)`; Linux native build and Android ARM64 cross-compile pass, but no real GGUF semantic receiver exists. Core #2309 contains a safer additive insertion pattern that preserves the initialization; Boss asked Core to port only that hunk, not merge its 11-failure branch.
 - QA #2277 source-reproduces a separate 30-second C3-recovery path that defers both B1 and B2 after two C3 zero-token failures. Its new regression has not run: the PR's current workflow branch/path filters do not include it. Boss asked QA to rebase and trigger the actual staged test; Core owns the budget fix. A separate 90-second sequential fair-share risk is recorded in the live workplan.
 - B3 holdout #2317's focused 50-test workflow passes, but staged/integrated run 44995302517 completed FAIL on an inherited `integrated_online_world_candidate` runtime.py hash mismatch; two-checkout migration is PARTIAL. Do not call the focused test a full B3 path pass.
 - Android companion #2286's earlier stop-durability finding is now fixed on exact head `106d181fff812c188cfe186e689cc5e78c2f121c`: checked `SharedPreferences.commit()`, process-restart default-stopped and failed-commit fail-closed tests pass. The leaf has 13/13 checks success, but remains stacked on #2273/#2271; only `launch_app` is implemented and no APK/Redmi OS action is proven.
-- #2313 paired taps is stale and its three-seed test assertion is inconsistent; #2311 JEPA staged composition fails at the feedback/bootstrap source pin; #2312 signed caller-PCM consumer has a staged-runtime failure. Android companion #2286 now passes 13/13 on its leaf head, but the #2271/#2273 parent stack remains red and default-OFF.
+- #2313 paired taps is stale and its three-seed test assertion is inconsistent; #2311 JEPA staged composition fails at the feedback/bootstrap source pin; #2312 signed caller-PCM consumer has a staged-runtime failure; #2317's focused 50-test B3 workflow passes but staged/integrated fails on inherited `v13/runtime.py` pin drift and migration PARTIAL; #2277's same-turn starvation regression is source-reproduced but NOT_EXECUTED. Android companion #2286 now passes 13/13 on its leaf head, but the #2271/#2273 parent stack remains red and default-OFF.
 - Production B3 remains OFF/SYMBOLIC. No permanent model-weight change, model download/swap, permission change or device action occurred.
 
 ## Next internal work
