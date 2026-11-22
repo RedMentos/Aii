@@ -941,3 +941,18 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+## R-080 — Source-bound RAW EYE image ingress into A5/A4/C3 candidate context (2026-11-22)
+
+**Existing implementation reused:** V13 WP-N15 `v13/code/v13/vision.py` (revision `wp-n15-vision-v1`) already provides content-addressed IMAGE sources, exact region SourceRefs, 37-dimensional handcrafted tile features, border-relative salience and an optional student/teacher lab. The uncovered gap was that those features did not produce an A5 PerceptPacket or a bounded current-turn context candidate.
+
+**New candidate:** PR #2363 adds `vision_a5_bridge.py`. It accepts only an exact, already-stored IMAGE SourceRef from the explicit local `:image add` path and requires per-call consent. It emits a source-bound ephemeral A5 packet with the global image plus all 16 tile summaries, exact pixel boxes, explicit STATIC_UNTIMED capture status, and no semantic/teacher/projector authority. It runs the real A4 attention controller with file requests disabled (there is no high-resolution image provider), then applies existing PerceptAdmission and A5ContextEnvelope while preserving the exact current prompt. The derived packet/context are not persisted; the original image remains in the existing Store blob. This avoids introducing a new derived-data revocation surface.
+
+**Test evidence:** LOCAL_LINUX CPython 3.13.5, NumPy 2.3.5, Pillow 12.3.0: isolated reproduction 3/3 PASS using a stub Store/A4 boundary and copied vision feature math. Synthetic 64x64 image, 16 tiles, 20 runs: median 5.852 ms, p95 7.870 ms. This is host-only and not a full Aii test. The committed PR regression uses the actual Store, vision ingest/read, A4 Attention, PerceptAdmission and A5ContextEnvelope, plus existing `test_vision.py`; the exact combined Perception workflow is pending on PR #2363 head `a77b841f250dab597c127d9ddecd86278c4d0ef4`.
+
+**Dependencies/licensing:** no model, weight or new runtime dependency. Existing test/runtime feature stack: NumPy (BSD-3-Clause), Pillow (HPND), pytest (MIT); CI pins NumPy 2.3.5, Pillow 12.3.0 and pytest 9.2.0 for reproducibility. No external model or teacher was invoked.
+
+**Hard limits:** PR #2363 does not modify `runtime.py`; the normal Runtime turn does not yet call the adapter. It is a local user-supplied image path only—not Android camera, MediaProjection, AccessibilityService, arbitrary file paths or live video. It uses handcrafted color/edge/luminance features, not object recognition. A4 receives text summaries, not native visual embeddings. C3 receives only a bounded candidate envelope if Core explicitly consumes it. No B1/B2, learned visual projector, native latent coupling, Android/ARM/Redmi measurement or deployment is proven.
+
+**Next integration:** Core should call the adapter from the active Runtime turn when a consented local IMAGE SourceRef is attached, route the returned packet/context to the existing A/B/C consumers, and add source-revocation coverage before any derived packet persistence. Keep the default text path unchanged. Do not download SmolVLM/other weights until license, ARM ABI, RSS/TTFT, output quality and rollback are measured and separately approved.
