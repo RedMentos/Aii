@@ -1263,3 +1263,10 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 - #2346 remains at `d2c459`: 2 paired-capture failures (the same wording assertion on two runs), 21 checks queued, 1 skipped. Boss comment records the exact mismatch. #2364 remains at `73b30a` with 12 checks queued.
 - This handoff PR #2365 is based on `aed1d2`; its 5 exact-head checks were queued at the latest poll. It is documentation-only.
 - Phone receipt and last stored turn remain unchanged from the preceding checkpoint: installed `c4eb82`, 57.739 s / 41.627 s TTFT / 38.945 s prefill / 751 prompt / 2 generated, correctness UNKNOWN; B1/B2 TIME_BUDGET. No update request or new chat turn was sent.
+
+
+## P0 research-to-test item — native prompt-cache session isolation (2026-11-22T17:59:16.409Z)
+
+A new upstream llama.cpp issue #27148 reports stale prompt/KV content crossing unrelated requests; #27624 remains open for LRU-victim stale-state, while #30295 is merged for a separate busy-pinned-slot path. V13 at c4eb82 launches per-role `llama-server -np 1 --cache-ram 128 --ctx-checkpoints 6`, does not set `--no-cache-idle-slots`, and sends `cache_prompt=true,id_slot=0`. Eight managed sessions were reported by the latest private diagnostic. This is a potential privacy/correctness risk, **not yet reproduced on V13**; exact installed binary revision and session-to-runner multiplexing remain unknown.
+
+**Action:** QA/Core must add a privacy-safe server version field, inspect RunnerPool session ownership, then run 30+ sequential and 30+ concurrent synthetic unique-marker rounds on the actual `-np 1` path. Compare current flags, `--cache-ram 0`, `--no-cache-idle-slots`, both, and `--no-cache-prompt`; retain same-session cache reuse and measure TTFT/PSS/RSS. Do not change the user's cache settings or restart live runners before the test proves isolation and acceptable performance. See R-080 and board item V14-020.
