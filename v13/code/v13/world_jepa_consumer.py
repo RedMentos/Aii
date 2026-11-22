@@ -334,11 +334,14 @@ class WorldJEPAStoreConsumer:
             world_jepa_shadow_checkpoint.cleanup_pending(self.home)
 
     @contextmanager
-    def _locked(self, exclusive=True):
+    def _locked(self, exclusive=True, blocking=True):
         if self.lock_path.is_symlink():
             raise ValueError("unsafe consumer lock")
         with open(self.lock_path, "a+b") as lock:
-            fcntl.flock(lock.fileno(), fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH)
+            operation = fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH
+            if not blocking:
+                operation |= fcntl.LOCK_NB
+            fcntl.flock(lock.fileno(), operation)
             try:
                 yield
             finally:
