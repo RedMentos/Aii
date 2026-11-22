@@ -87,7 +87,7 @@ def tap_button(label: str) -> None:
     while time.monotonic() < deadline:
         root = hierarchy()
         for node in root.iter("node"):
-            if node.attrib.get("text") != label:
+            if node.attrib.get("text", "").casefold() != label.casefold():
                 continue
             bounds = node.attrib.get("bounds", "")
             match = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", bounds)
