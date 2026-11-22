@@ -233,8 +233,14 @@ class RuntimeObserverTests(unittest.TestCase):
                 self.assertEqual(answer['status'], 'FINAL', answer)
                 self.assertEqual([role for role, _ in calls],
                                  ['B1_DETAIL', 'B2_GIST', 'C3_LANGUAGE'])
-                self.assertAlmostEqual(calls[0][1] - start, 13.5, places=2)
-                self.assertAlmostEqual(calls[1][1] - start, 13.5, places=2)
+                # Observer slices are effort/resource-scaled, so 13.5 s is
+                # the pre-answer ceiling, not a per-body promise. Assert that
+                # each body receives a live deadline inside that shared window.
+                preanswer_end = start + 0.45 * r.cfg['deadline_seconds']
+                for role, role_end in calls[:2]:
+                    with self.subTest(role=role):
+                        self.assertGreater(role_end, start)
+                        self.assertLessEqual(role_end, preanswer_end)
 
                 stored = r.store.rows(
                     "SELECT id,payload FROM packets WHERE event_id=? AND kind='OfferPacket' ORDER BY id",
