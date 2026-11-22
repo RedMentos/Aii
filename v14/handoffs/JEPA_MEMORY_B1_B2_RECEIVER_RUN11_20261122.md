@@ -16,10 +16,10 @@ The persisted WorldJEPA consumer already trains numeric B1_DETAIL, B2_GIST and S
 - `v13/code/v13/world_jepa_receiver_matrix.py`: the matrix can request a nonblocking shared lock and returns explicit `BUSY` rows when SleepRuntime is updating the checkpoint. Existing callers keep the prior blocking default.
 - `v13/code/v13/bodyview.py`: the existing B5 body-state producer now reads the accepted, persisted role head and adds a compact next-action prior:
   - B1_DETAIL: action, predicted duration, output characters, uncertainty.
-  - B2_GIST: action, predicted success probability, uncertainty.
+  - B2_GIST: action terminal-completion probability (T8 status FINAL), uncertainty; this is not answer correctness.
   - It is passed through the existing `Cognition.offer → query.body_state → B1/B2 runner prompt` path.
-  - It is admitted only when every candidate readout is `SHADOW_READOUT_ONLY`, every role utility gate is accepted, and checkpoint/source hashes agree.
-  - It is fail-closed for no checkpoint, invalid values, utility rejection, lock contention, or a body-state view exceeding the existing 700-character budget.
+  - It is admitted only when each shown action readout is `SHADOW_READOUT_ONLY`, the role utility gate is accepted, and checkpoint/source hashes agree. Only actions with at least eight training-split examples are shown; holdout rows do not count. Unsupported actions are listed separately.
+  - It is fail-closed for no checkpoint, invalid values, utility rejection, lock contention, or a body-state view exceeding the existing 700-character budget. The eight-row gate is a minimum-sample support check, not a complete nearest-neighbour OOD-distance gate; that remains open.
   - Full checkpoint SHA-256, training-source SHA-256, state vector, event/generation, role and action order are persisted in the BODY_STATE source audit.
   - Prompt context explicitly says it is a prediction, not source evidence or permission. `native_body_consumed=false`, `native_body_weights_changed=false`, `decision_authority=NONE`; this is prompt-level numeric consumption, not native latent/activation injection.
 - `.github/workflows/v14-jepa-training-resume-py314.yml`: the new regressions run in the existing Python 3.13/3.14 matrix.
@@ -27,7 +27,8 @@ The persisted WorldJEPA consumer already trains numeric B1_DETAIL, B2_GIST and S
 ## Added regressions
 
 - `test_bodyview_jepa_receiver_reaches_b1_and_b2_offer_prompts`: trains from the existing synthetic T8 fixture, verifies nonzero parameter and EMA-target deltas, source-disjoint holdout and retention acceptance, then captures the actual `Cognition.offer` runner prompts for both roles and checks role-specific columns plus full source/checkpoint audit.
-- `test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_busy`: verifies no readout without a checkpoint, explicit `BUSY` from the nonblocking matrix, and omission from the body view while the training lock is held.
+- `test_bodyview_jepa_receiver_fails_closed_without_checkpoint_and_when_lock_busy`: verifies no readout without a checkpoint, omits an action with only two train-split rows, checks explicit `BUSY`, and verifies omission while the training lock is held.
+- `test_bodyview_jepa_receiver_action_support_uses_train_ids_only`: proves holdout rows do not inflate the action-support count and duplicate train IDs fail closed.
 
 The fixture is synthetic SQLite/T8 data and a capture runner. It is a test of the real Store, learner, B5 body-view and B1/B2 prompt-construction path; it is not a live native model-quality result.
 
@@ -46,6 +47,12 @@ The fixture is synthetic SQLite/T8 data and a capture runner. It is a test of th
 - `89d0f7b478779cd8de6c9c525e28a32a4eeeea0f` — handoff records recovery-free read path.
 - `a77c76fb05a164a2ab095add79bc3958ebb09286` — research ledger clarifies foreground recovery semantics.
 - `bc1cbc76ce496229b4882424e1c5102e669571bb` — prompt note explicitly says the prediction is not a fact.
+- `5ef04957772bf7c7ba3b030917671cef4558d5e0` — per-action minimum train-split support gate in the receiver matrix.
+- `834db2403970bbf837863acbb0b42b49de82bb27` — prompt matrix shows only supported actions and labels B2 as terminal status, not correctness.
+- `d39d60c11a4e86d8a958f73143e2166b8e574de9` — support-gate negative control in the prompt integration test.
+- `d2177aec91866f6a259305c1fe3433f62dc40aa1` — deterministic support test seam.
+- `13c1a65629fca1ef72c5d2e9f9ddd3b52a102259` — train-only support/holdout accounting regression.
+- `5b83ad226f97127213baadda69cb465644c31d36` — research ledger clarifies target semantics and OOD gap.
 
 ## Test and deployment evidence
 
