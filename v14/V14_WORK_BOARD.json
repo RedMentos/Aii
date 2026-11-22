@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T07:54:34.985Z",
+  "updated_at": "2026-11-22T07:56:29.627Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at c03ff0aa9e18b5ffebd1109f3c078105f53c6afe; documentation-only PR #2316 merged. Current device code receipt is f210999cf556be4d4514427cc9b5cf6d3cf3e984.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Latest 2026-11-22 owner-authenticated phone receipt supersedes earlier #480/#477/#466 snapshots. Current phone pipeline is UP_TO_DATE at f210999; last-turn performance and B1/B2 probe failures remain unresolved. Never promote synthetic/CI evidence to native Android proof.",
@@ -29,10 +29,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Device updater is enabled and reports runtime/dashboard UP_TO_DATE at installed code SHA f210999cf556be4d4514427cc9b5cf6d3cf3e984. Release branch advanced to c03ff0aa9e18b5ffebd1109f3c078105f53c6afe through docs-only PR #2316; exact push CI at readback is 34 SUCCESS / 0 FAILURE / 4 IN_PROGRESS (38 check-runs). Since c03ff0 is documentation-only, no phone update is required. Native runtime/rollback receipt for a new code candidate remains unverified.",
+      "proof_environment": "Device updater is enabled and reports runtime/dashboard UP_TO_DATE at installed code SHA f210999cf556be4d4514427cc9b5cf6d3cf3e984. Release branch advanced to c03ff0aa9e18b5ffebd1109f3c078105f53c6afe through docs-only PR #2316; exact push CI at readback is 39/39 exact push check-runs SUCCESS. Since c03ff0 is documentation-only, no phone update is required. Native runtime/rollback receipt for a new code candidate remains unverified.",
       "next_step": "QA waits for all exact c03ff0 push checks to finish and confirms no failure; keep device on f210999 because the merge is docs-only. For the next code-bearing merge, use the already enabled consented updater only after exact push CI is fully green, then request a separate authenticated PIPELINE_STATUS for exact installed SHA and rollback state.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T07:54:34.985Z",
+      "last_checkpoint": "2026-11-22T07:56:29.627Z",
       "latest_qa_candidate": {
         "pr": 2138,
         "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
@@ -50,7 +50,7 @@
           "redmi": "NO_LIVE_RECEIPT; issues #351–354 unanswered; installed SHA unknown"
         }
       },
-      "proof": "Authenticated PIPELINE_STATUS confirms auto_update=true, runtime/dashboard UP_TO_DATE, last_error NONE, updated_commit=f210999. No UPDATE_REQUEST or device mutation was sent."
+      "proof": "Authenticated PIPELINE_STATUS confirms auto_update=true, runtime/dashboard UP_TO_DATE, last_error NONE, updated_commit=f210999. No UPDATE_REQUEST or device mutation was sent. Exact post-merge push CI for c03ff0 is now 39/39 check-runs SUCCESS; c03ff0 remains documentation-only."
     },
     {
       "id": "V14-003",
@@ -190,8 +190,8 @@
       "proof_environment": "Boss reviewed and merged docs-only Perception handoff PR #2316 at c03ff0aa9e18b5ffebd1109f3c078105f53c6afe. Exact release push CI at readback: 34 SUCCESS / 0 FAILURE / 4 IN_PROGRESS. PR #2314/#2311/#2313/#2312 remain non-ready with exact failures recorded above; no code-bearing V14 candidate has been released.",
       "next_step": "Continue cross-lane review and integration on the exact current release base. Do not merge failing/stale PRs. Wait for c03ff0 push CI to finish, then maintain one synchronized Boss-owned board/handoff. Keep the 1,255-heading inventory and historical V13 appendix unchanged.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T07:54:34.985Z",
-      "proof": "PR #2316 merged successfully after 10/10 exact-head checks. c03ff0 remains a documentation-only integration checkpoint, not a new code release."
+      "last_checkpoint": "2026-11-22T07:56:29.627Z",
+      "proof": "PR #2316 merged successfully; c03ff0 exact push CI now 39/39 check-runs SUCCESS. c03ff0 is documentation-only and not a new code release."
     },
     {
       "id": "V14-008",
@@ -914,9 +914,9 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T07:54:34.985Z",
+    "timestamp": "2026-11-22T07:56:29.627Z",
     "release_sha": "c03ff0aa9e18b5ffebd1109f3c078105f53c6afe",
-    "release_push_ci": "34_SUCCESS_0_FAILURE_4_IN_PROGRESS_38_CHECK_RUNS_AT_READBACK",
+    "release_push_ci": "39_SUCCESS_0_FAILURE_0_PENDING_39_CHECK_RUNS",
     "last_code_sha_installed": "f210999cf556be4d4514427cc9b5cf6d3cf3e984",
     "device_receipt": "AUTHENTICATED_PIPELINE_UP_TO_DATE_AUTO_UPDATE_ENABLED; LAST_TURN_FINAL_63.22S_TTFT_42.48S_PREFILL_34.96S_PROMPT_709_GENERATED_2; B1_TIME_BUDGET_53.2S; B2_TIME_BUDGET_54.2S; NATIVE_SMOKE_PARTIAL",
     "device_native_process_snapshot": "B1=1_PROCESS_PSS_57.9_MIB; B2=0; C2=1_PSS_0.2_MIB; C3=1_PSS_27.7_MIB; TOTAL_MAPPED_PSS_85.8_MIB_NOT_FREE_RAM",
