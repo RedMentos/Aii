@@ -177,7 +177,7 @@ def load_pair(cognition, pair_packet):
     }
 
 
-def training_batch(cognition, pair_packets, labels):
+def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
     """Build actual Bridge.fit inputs from persisted native pairs and explicit labels.
 
     No label is inferred from generated body text. Labels must be externally
@@ -185,22 +185,28 @@ def training_batch(cognition, pair_packets, labels):
     must hold across the batch. Sender sequences are right-padded with a mask;
     receiver states are mean-pooled independently under their native tokenizer.
     """
+    if direction not in ("B1_TO_B2", "B2_TO_B1"):
+        raise ValueError("direction must be B1_TO_B2 or B2_TO_B1")
     if not isinstance(pair_packets, (list, tuple)) or not pair_packets:
         raise ValueError("at least one persisted B3 pair is required")
     if not isinstance(labels, (list, tuple)) or len(labels) != len(pair_packets):
         raise ValueError("explicit labels must align one-to-one with B3 pairs")
     pairs = [load_pair(cognition, p) for p in pair_packets]
-    sender_rev = pairs[0]["packet"]["model_revisions"]["B1_DETAIL"]
-    receiver_rev = pairs[0]["packet"]["model_revisions"]["B2_GIST"]
-    sender_dim = pairs[0]["packet"]["dimensions"]["B1_DETAIL"]
-    receiver_dim = pairs[0]["packet"]["dimensions"]["B2_GIST"]
+    sender_role, receiver_role = (("B1_DETAIL", "B2_GIST") if direction == "B1_TO_B2"
+                                   else ("B2_GIST", "B1_DETAIL"))
+    sender_rev = pairs[0]["packet"]["model_revisions"][sender_role]
+    receiver_rev = pairs[0]["packet"]["model_revisions"][receiver_role]
+    sender_dim = pairs[0]["packet"]["dimensions"][sender_role]
+    receiver_dim = pairs[0]["packet"]["dimensions"][receiver_role]
     if any(p["packet"]["model_revisions"] != pairs[0]["packet"]["model_revisions"]
            or p["packet"]["dimensions"] != pairs[0]["packet"]["dimensions"]
            for p in pairs):
         raise ValueError("B3 batch mixes body revisions or native dimensions")
     if any(type(y) is not int or y < 0 for y in labels):
         raise ValueError("labels must be nonnegative integers supplied by the task")
-    max_tokens = max(len(p["sender"]["states"]) for p in pairs)
+    sender_key = "sender" if direction == "B1_TO_B2" else "reverse_sender"
+    receiver_key = "receiver" if direction == "B1_TO_B2" else "reverse_receiver"
+    max_tokens = max(len(p[sender_key]["states"]) for p in pairs)
     try:
         import numpy as np
     except ImportError as exc:
@@ -209,12 +215,13 @@ def training_batch(cognition, pair_packets, labels):
     mask = np.zeros((len(pairs), max_tokens), dtype=np.float32)
     Xr = np.zeros((len(pairs), receiver_dim), dtype=np.float32)
     for i, p in enumerate(pairs):
-        rows = p["sender"]["states"]
+        rows = p[sender_key]["states"]
         H[i, :len(rows), :] = np.asarray(rows, dtype=np.float32)
         mask[i, :len(rows)] = 1.
-        Xr[i, :] = np.asarray(p["receiver"]["pooled"], dtype=np.float32)
+        Xr[i, :] = np.asarray(p[receiver_key]["pooled"], dtype=np.float32)
     y = np.asarray(labels, dtype=np.int64)
     return {"H": H, "mask": mask, "Xr": Xr, "y": y,
+            "direction": direction, "sender_role": sender_role, "receiver_role": receiver_role,
             "body_pair_id": [p["body_pair_id"] for p in pairs],
             "source_refs": [p["source_ref"] for p in pairs],
             "sender_revision": sender_rev, "receiver_revision": receiver_rev,
