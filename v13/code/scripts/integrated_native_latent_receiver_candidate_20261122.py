@@ -12,7 +12,7 @@ BASE_PINS = {
     "v13/runners.py": "f6adaa47ac8cb5d8aa27e0556ea35cfa16da13155834bbe20e58375b9cc669ab",
     "v13/models.py": "290ad845add126c7ada4da864bc3d0c112d9fe814279dfbb2a32a5a2dff740b8",
     "v13/contracts.py": "25466e9f938251db981256e8cbf7313c414aeddb4d7c9b880598fe61d92765b1",
-    "v13/operator.py": "b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186"
+    "v13/operator.py": "c3bb780c8cbade7e77dcd5f861e5201e5895f43de7612b512d019ae3dd3e868f"
 }
 NATIVE_FILES = {
     "v13/native_latent_receiver.py": "2bb2cfc5baa4b02ec2989bd403dc45390a0c402325082230c5340d02038a1d15",
