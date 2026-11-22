@@ -94,7 +94,8 @@ def apply_source(raw):
     for index, (before, after) in enumerate(REPLACEMENTS):
         # The reviewed #1990 stage already adds per-role deadline support.
         # Preserve that signature while adding foreground-attempt tracking.
-        if (source_hash == 'd3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2'
+        if (source_hash in ('d3fac6289d2898806d0126a462b8224b1f945fdf0bd87b7cc5715206974334c2',
+                             '08c1ef961b0c7316da8c1c8265feb71a7a4acf009018788e7accb81eecb2337d')
                 and before == "                def ask(role,focus=None,use_peer=True):\n"):
             before = before.replace('use_peer=True)', 'use_peer=True,role_end=None)')
             after = after.replace('use_peer=True)', 'use_peer=True,role_end=None)')
