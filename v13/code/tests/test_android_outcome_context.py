@@ -28,6 +28,7 @@ def seed_receipt(runtime, *, session=None, status="COMPANION_ATTESTED_NOT_DEVICE
         session, source_event["event_id"], "assistant",
         "Waiting for the paired companion receipt.", status="FINAL",
     )
+    token = source_event["event_id"].split("_", 1)[-1]
     denied = status == "COMPANION_USER_DENIED"
     failed = status == "COMPANION_DISPATCH_FAILED"
     receipt_status = "USER_DENIED" if denied else (
@@ -35,17 +36,17 @@ def seed_receipt(runtime, *, session=None, status="COMPANION_ATTESTED_NOT_DEVICE
     )
     approval = "ANDROID_COMPANION_USER_DENIAL" if denied else "ANDROID_COMPANION_SIGNED_UI_CONFIRMATION"
     outcome = ActionOutcome(
-        action_id="act_0123456789abcdef0123456789abcdef",
+        action_id="act_" + token,
         capability="launch_app",
         status=status,
         observed=False,
         evidence_level="COMPANION_RECEIPT_ONLY",
         timestamp=time.time(),
         details={
-            "digest": "a" * 64,
+            "digest": token * 2,
             "receipt_schema": "v14.android-companion-receipt/1",
             "auth_scheme": "ECDSA_P256_SHA256_ANDROID_KEYSTORE",
-            "receipt_nonce": "b" * 32,
+            "receipt_nonce": token,
             "companion_local_consent_claim": not denied,
             "receipt_status": receipt_status,
             "local_approval_evidence": approval,
@@ -206,12 +207,12 @@ def test_runtime_passes_companion_receipt_to_c3_without_creating_t8_transition(t
             for message in seen["C3_LANGUAGE"]
             if message.get("role") == "system"
         )
-        assert "ANDROID_RECEIPT" in c3_system
+        assert "Android companion receipt" in c3_system
         assert "DISPATCHED_UNVERIFIED" in c3_system
         assert "COMPANION_RECEIPT_ONLY" in c3_system
         assert "not independently observed" in c3_system.lower()
-        assert "b" * 32 not in c3_system
-        assert "a" * 64 not in c3_system
+        assert packet_value["actual"]["receipt_nonce"] not in c3_system
+        assert packet_value["actual"]["digest"] not in c3_system
 
         answer_row = runtime.store.one(
             "SELECT metadata FROM messages "
