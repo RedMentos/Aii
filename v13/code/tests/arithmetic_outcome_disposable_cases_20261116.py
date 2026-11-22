@@ -52,7 +52,7 @@ def test_arithmetic_world_source_transition_survives_restart(runtime):
         transition = r.world.transition(action['id'])
     assert transition['source_ref'] == meta['arithmetic_reflex']['source_ref']
     assert transition['action_role'] == 'LOCAL_EXACT_ARITHMETIC'
-    assert r.store.read_source(transition['source_ref']) == 'What is 8/4?'
+    assert r.store.read_source(transition['source_ref']) == 'calculate 8/4'
     assert r.store.read_source(transition['outcome_source_ref']) == '2'
     assert transition['teacher_truth_authority'] is False
     assert transition['external_world_observation'] is False
