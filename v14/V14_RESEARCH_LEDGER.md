@@ -941,18 +941,3 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
-
-
----
-
-## R-088 — Deadline-aware local inference scheduling (2026-11-22)
-
-**Observed project evidence:** private Redmi DIAGNOSTICS #607 reports 38.945 s prefill and 41.627 s TTFT for a 751-token stored prompt, while B1/B2 each report TIME_BUDGET. The Boss candidate #2370's fixed 45/55 split leaves C3 16.5 s under a 30 s deadline or 49.5 s under a 90 s deadline. A fixed percentage therefore does not fit the measured variation and must not be treated as a demonstrated fix.
-
-**Primary research:**
-- Siyu Song et al., *Deadline-Aware Adaptive Prefill Chunking for Efficient Large Language Model Serving* (arXiv:2609.07883, 2026-09-07): proposes SLOWeave, selecting the largest prefill chunk whose predicted iteration cost fits the earliest active decode deadline; it uses a monotone cost model, measured P50/P99 lookup tables, prediction margins and explicit overload/aging controls. See [arXiv paper](https://arxiv.org/abs/2609.07883). The arXiv page does not expose a source repository or code license; treat the algorithm as research, not reusable code.
-- Agrawal et al., *Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve* (OSDI 2024): chunked prefill and stall-free scheduling can reduce interference between prompt prefill and active decode. The [Microsoft research page](https://www.microsoft.com/en-us/research/publication/taming-throughput-latency-tradeoff-in-llm-inference-with-sarathi-serve/) links the paper and [source repository](https://github.com/microsoft/sarathi-serve), whose repository advertises Apache-2.0. Its published setup targets CUDA 12.3 and A100/H100, so it is not a direct Redmi/ARM dependency.
-
-**V14 adaptation hypothesis (not implemented):** replace static body/C3 percentage splits with a measured, deadline-aware scheduler. Maintain per-organ prompt-token/prefill latency distributions and confidence margins; preserve a minimum fair service quantum for both B1_DETAIL and B2_GIST; allocate residual slack to the next body or C3 based on predicted completion cost and remaining deadline; record deadline misses and aging exceptions rather than hiding them in a larger timeout. Only use token-level chunking if the selected inference backend can pause/resume prefill without losing KV/cache correctness; otherwise schedule at safe model-call boundaries. Measure TTFT, total latency, C3 output length/quality, each body's useful offer rate, PSS/RSS and cancellation overhead under matched prompts.
-
-**Acceptance plan:** synthetic deterministic cost-model tests first; then Linux/native backend tests; only after exact CI and explicit device authorization, a matched Redmi A/B with 20+ turns and no model/weight swap. Keep both bodies and all other Canon paths intact. No implementation or device claim is made by this research entry.
