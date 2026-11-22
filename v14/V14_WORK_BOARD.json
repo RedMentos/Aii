@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T00:57:11.246Z",
+  "updated_at": "2026-11-22T01:19:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -29,28 +29,30 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "Private PIPELINE_STATUS #453 remains unanswered at latest poll; installed SHA/updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST or device mutation. #2281/#2283 are green only on old #2258 base; rebase onto #2288.",
-      "next_step": "QA: rebase #2281 Age/X10 rights and #2283 runtime-only rollback onto #2288; rerun owner-read, migration, first-install/second-deploy, tamper, busy and active-runtime refusal tests. Keep dashboard rollback explicitly unimplemented.",
+      "proof_environment": "QA PR #2295 is stacked on Boss #2288 candidate f0d3c848dfb1d65e282f065233adbe3c9205e439; head 9d576667259af92dd0672060347d9e5d4c6840cf. Exact-head runtime-deploy integrity 44970704843 PASS on Python 3.11 and 3.14 (42 tests per interpreter, including 8 process-death journal tests); private bridge tests 44970693938 PASS. Owner-read subjob 137049628929 PASS, but staged Python 3.14 startup job 137049628666 FAILs at termux_runtime_recovery_candidate_20261112.py:313. Staged/integrated 44970704836, Lab-Age 44970704845 and migration 44970704797 also fail on the same local-error pre-rebind semantic binding mismatch; these are the independent Boss #2288 pin-order blocker, not the activation-journal tests. LOCAL_LINUX full checkout BLOCKED; Redmi REDMI_UNVERIFIED; no device mutation.",
+      "next_step": "Boss: fix the pinned Record-Only guard-output -> final semantic pin order on #2288 and rerun exact-head CI. QA: after that gate is green, rebase/compose #2281 Age/X10 rights and the new #2295 crash-journal rollback helper onto the same candidate, wire the runtime rollback API to the pipeline UI/worker under the existing consent/stop guard, then rerun first-install/second-deploy, crash-at-each-switch, tamper, busy, restart and two-checkout tests. Dashboard rollback remains explicitly unimplemented.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T00:57:11.246Z",
+      "last_checkpoint": "2026-11-22T01:19:00Z",
       "latest_qa_candidate": {
-        "pr": 2138,
-        "head_sha": "8ca7a298dddebb29921f8e04d24d1f78d4cbd2e5",
-        "merge_commit_sha": "5b9171a457f32cafa6cc05fb88e80ef8b4dad08e",
-        "status": "MERGED_CI_GREEN_DEVICE_UNVERIFIED",
+        "pr": 2295,
+        "branch": "qa/v14-activation-journal-20261122",
+        "head_sha": "9d576667259af92dd0672060347d9e5d4c6840cf",
+        "base_branch": "boss/v14-recall-store-pin-rebind-20261122",
+        "base_sha": "f0d3c848dfb1d65e282f065233adbe3c9205e439",
+        "status": "DRAFT_RUNTIME_DEPLOY_CI_GREEN_FULL_STACK_BLOCKED",
         "proof": {
-          "owner_read_push": "PASS run 44845659008",
-          "private_bridge_push": "PASS run 44845658907",
-          "staged_context_push": "PASS run 44845658992",
-          "staged_runtime": "PASS (240 passed, 10 skipped, 47 subtests)",
-          "integrated_regression": "PASS (415 passed, 3 skipped, 58 subtests)",
-          "release_event_push": "PASS run 44845658989",
-          "lab_age_push": "PASS run 44845658946",
-          "local_linux": "NOT_RUN; no full checkout",
-          "redmi": "NO_LIVE_RECEIPT; issues #351–354 unanswered; installed SHA unknown"
-        }
+          "runtime_deploy_integrity": "PASS run 44970704843; Python 3.11 and 3.14; 42 tests each (8 activation journal, 3 deploy integrity, 31 runtime deploy)",
+          "private_bridge": "PASS run 44970693938",
+          "owner_read": "owner-read subjob PASS 137049628929; staged Python 3.14 startup FAIL 137049628666 on Boss pin mismatch",
+          "staged_integrated": "FAIL run 44970704836 at termux_runtime_recovery_candidate_20261112.py:313 local-error pre-rebind semantic binding mismatch",
+          "lab_age": "FAIL run 44970704845 same Boss pin mismatch",
+          "two_checkout_migration": "FAIL run 44970704797 downstream PARTIAL after staged runtime failure",
+          "local_linux": "BLOCKED; no full Aii checkout",
+          "redmi": "REDMI_UNVERIFIED; pending private owner-read #454 has no authenticated reply at latest check; no install or device mutation"
+        },
+        "scope": "Durable launcher+runtime-marker transaction journal, directory fsync, idempotent rollback/recovery, runtime rollback API/CLI; pipeline UI/worker wiring still open"
       },
-      "proof": "Fresh private owner-read PIPELINE_STATUS request RedMentos/Aiiii #440 was created for this run; it has zero authenticated replies at last read. Earlier #431/#432/#439 also had no receipt. Installed SHA and updater consent remain UNKNOWN. No UPDATE_REQUEST, LOG_PAGE, CHAT_SEND, remote shell or device mutation. REDMI_UNVERIFIED."
+      "proof": "PR #2295 provides exact process-death tests and a shared crash-recovery transaction for deploy/rollback. Runtime-deploy integrity is green on Python 3.11/3.14 and bridge CI is green. Full candidate remains blocked by the separate #2288 semantic pin-order failure at line 313. No full local checkout, no native Termux/Redmi receipt, no release; REDMI_UNVERIFIED."
     },
     {
       "id": "V14-003",
