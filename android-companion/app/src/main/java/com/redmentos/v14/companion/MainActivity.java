@@ -64,6 +64,8 @@ public final class MainActivity extends Activity {
                     + "State: " + (enabled ? "ENABLED FOR THIS PROCESS — per-action consent still required"
                             : "STOPPED (restart requires explicit re-enable)") + "\n"
                     + "Paired caller: " + paired + "\n"
+                    + "Pairing trust: " + (PairingPersistence.isTrustAvailable()
+                            ? "AVAILABLE" : "BLOCKED — pairing rollback was not verified") + "\n"
                     + "Termux signing certificate SHA-256: " + fingerprint + "\n"
                     + "Companion key ID: " + key.getString("key_id") + "\n"
                     + "Key storage: " + key.getString("key_storage_status") + "\n\n"
@@ -85,10 +87,42 @@ public final class MainActivity extends Activity {
                             + "\n\nRequests from this package still require a separate approval for every action.")
                     .setNegativeButton("Cancel", null)
                     .setPositiveButton("Pair", (dialog, which) -> {
-                        getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE).edit()
-                                .putString("paired_package", packageName)
-                                .putString("paired_cert_sha256", digest)
-                                .apply();
+                        SharedPreferences prefs =
+                                getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
+                        String previousPackage = prefs.getString("paired_package", null);
+                        String previousDigest = prefs.getString("paired_cert_sha256", null);
+                        PairingPersistence.Result result = PairingPersistence.persistWithStatus(
+                                packageName, digest,
+                                (pairedPackage, certificateSha256) -> prefs.edit()
+                                        .putString("paired_package", pairedPackage)
+                                        .putString("paired_cert_sha256", certificateSha256)
+                                        .commit(),
+                                () -> {
+                                    // A failed SharedPreferences commit may still mutate its
+                                    // in-memory map. Restore the old pair durably and verify
+                                    // both values before allowing the provider to trust it.
+                                    SharedPreferences.Editor rollback = prefs.edit();
+                                    if (previousPackage == null) rollback.remove("paired_package");
+                                    else rollback.putString("paired_package", previousPackage);
+                                    if (previousDigest == null) rollback.remove("paired_cert_sha256");
+                                    else rollback.putString("paired_cert_sha256", previousDigest);
+                                    boolean durable = rollback.commit();
+                                    return durable
+                                            && java.util.Objects.equals(previousPackage,
+                                                    prefs.getString("paired_package", null))
+                                            && java.util.Objects.equals(previousDigest,
+                                                    prefs.getString("paired_cert_sha256", null));
+                                });
+                        if (result != PairingPersistence.Result.PERSISTED) {
+                            String message = result == PairingPersistence.Result.RESTORED
+                                    ? "Pairing was not changed; the previous identity was restored"
+                                    : result == PairingPersistence.Result.UNTRUSTED
+                                            ? "Pairing failed and rollback could not be verified; caller access is blocked until a successful pairing"
+                                            : "Pairing details were invalid";
+                            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                            refresh();
+                            return;
+                        }
                         Toast.makeText(this, "Termux paired", Toast.LENGTH_SHORT).show();
                         refresh();
                     }).show();
