@@ -9,7 +9,7 @@ import threading
 import numpy as np
 import pytest
 
-from v13 import bodyview, contracts, world_model
+from v13 import bodyview, contracts, world_jepa, world_model
 from v13.memory import Memory
 from v13.sleep import SleepRuntime
 from v13.store import Store
@@ -304,7 +304,7 @@ def test_sleep_runtime_commits_source_verified_base_and_temporal_learning_after_
         # committed ActionOutcome in Store and invokes both persistent learners.
         result = sleep._run_world_jepa(event_ids[-1], limit=64)
         assert result["status"] in {"POSTCOMMIT_PROCESSED", "PARTIAL"}, result
-        assert result["action_status"] in {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED"}
+        assert result["action_status"] in {"FINAL", "FAILED", "ERROR", "DEADLINE", "REJECTED", "CANCELLED", "ABORTED", "INTERRUPTED"}
         assert result["learning"]["status"] not in {"ERROR", "CANCELLED"}, result["learning"]
         temporal = result["temporal"]
         assert temporal["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", temporal
@@ -327,6 +327,41 @@ def test_sleep_runtime_commits_source_verified_base_and_temporal_learning_after_
         ) is not None
     finally:
         store.close()
+
+
+def test_sleep_runtime_keeps_unknown_outcomes_out_of_the_learning_loop(tmp_path):
+    home = tmp_path / "sleep-unknown-outcome"
+    store = _make_store(home)
+    try:
+        _sessions, event_ids = _make_dataset(store, "sleep-unknown", 32)
+        _permissions(store, steps=80)
+        sleep = _sleep(store, home)
+
+        # Session 1 / event 2 is deliberately OUTCOME_UNKNOWN. It must remain
+        # a gap, unlike known CANCELLED/ABORTED/INTERRUPTED omissions.
+        result = sleep._run_world_jepa(event_ids[6], limit=64)
+        assert result["status"] == "NO_COMMITTED_OUTCOME", result
+        assert result["dispatch"] is False
+        assert store.state(STATE_KEY, None)[0] is None
+    finally:
+        store.close()
+
+
+def test_temporal_adam_scale_changes_numeric_delta_without_corrupting_moments():
+    full = world_jepa.Adam({"w": np.asarray([1.0])}, 0.1)
+    quarter = world_jepa.Adam({"w": np.asarray([1.0])}, 0.1)
+    grads = {"w": np.asarray([0.5])}
+
+    full.step(grads)
+    quarter.step(grads, scale=0.25)
+
+    full_delta = 1.0 - full.p["w"][0]
+    quarter_delta = 1.0 - quarter.p["w"][0]
+    assert quarter_delta == pytest.approx(full_delta * 0.25)
+    assert np.array_equal(full.m["w"], quarter.m["w"])
+    assert np.array_equal(full.v["w"], quarter.v["w"])
+    with pytest.raises(ValueError):
+        quarter.step(grads, scale=1.01)
 
 
 def test_temporal_rollback_restores_previous_checkpoint_and_retries_pending_rows_after_restart(tmp_path):
