@@ -2341,3 +2341,8 @@ JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-sp
 - JEPA: #2372 has three failed workflows / one temporal pass; #2383 has five failures on source lifecycle, migration, lab-age and staged integration. No persistent weight diff or held-out improvement.
 - Device evidence unchanged: #634–#637 confirm aed1d2 installed, 57.74 s last turn / 2 tokens, B1/B2 TIME_BUDGET, health/diagnostics runtime conflict, learning status unavailable. No LOG_PAGE because console_errors opt-in is false.
 - Historical 1,255-heading inventory and V13 appendix remain preserved; semantic mapping incomplete. No user action.
+
+
+## Final run 12 device and queue note — 2026-11-22T22:33:13.116Z
+
+Lab-Age metadata: mode ACTIVE; requested stage 10; effective implemented stage 5; official stage 0; physical feature execution false; learning commit authority REQUIRES_SEPARATE_SHADOW_MODE. The 35 s observer window and 53.2/54.2 s B1/B2 timeouts remain incompatible without measured optimization. Exact #2370 head bae7d031 has 0 success / 16 queued / 5 cancelled / 5 skipped; no new-head pass. Installed release aed1d2, HEALTH/DIAGNOSTICS runtime conflict, LEARNING_STATUS unavailable. No device action; user action NONE.
