@@ -66,14 +66,15 @@ def _source_key(source):
     if (type(source_id) is not str or not source_id or len(source_id) > 256
             or type(digest) is not str or not _HEX64.fullmatch(digest)
             or type(start) is not int or type(end) is not int
-            or not 0 <= start <= end
+            or not 0 <= start < end
             or type(modality) is not str or not modality):
         raise ValueError("invalid SourceRef identity/span")
     return source_id, digest, start, end, modality
 
 
 def _validate_pair(pair, stored_id):
-    if type(pair) is not dict or pair.get("packet_id") != stored_id:
+    if (type(pair) is not dict or type(stored_id) is not str or not stored_id
+            or pair.get("packet_id") != stored_id):
         raise ValueError("B3 pair is not its stored immutable packet")
     if pair.get("packet_schema") != PAIR_SCHEMA or pair.get("sender_roles") != list(ROLES):
         raise ValueError("B3 pair schema/roles mismatch")
@@ -115,7 +116,10 @@ def _validate_pair(pair, stored_id):
                 or not _HEX64.fullmatch(binding["feature_sha256"])
                 or type(binding.get("shape")) is not list
                 or len(binding["shape"]) != 2
-                or any(type(value) is not int or value < 1 for value in binding["shape"])):
+                or any(type(value) is not int or value < 1 for value in binding["shape"])
+                or binding["shape"] != [
+                    pair["token_counts"][role], pair["dimensions"][role]
+                ]):
             raise ValueError("B3 pair feature binding")
     if any(pair["token_counts"][role] > 64 for role in ROLES):
         raise ValueError("B3 pair native tap exceeds 64-token bound")
