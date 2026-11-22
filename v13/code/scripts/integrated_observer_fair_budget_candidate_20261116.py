@@ -102,7 +102,29 @@ def apply_sources(code_dir, sources):
         b'            and native.get("generated_tokens") == 0\n',
         b'            and type(native.get("generated_tokens")) is int\n            and native.get("generated_tokens") == 0\n',
         'strict zero-token evidence')
-    budget = replace(budget, b'        if status == "FINAL":\n', b'''        data = row.get("metadata")
+    native_success_existing = b'''        data=row.get("metadata")
+        if isinstance(data, str):
+            try:
+                data=json.loads(data)
+            except (ValueError, TypeError):
+                data=None
+        native=data.get("runner") if isinstance(data, dict) else None
+        if (status == "FINAL" and isinstance(native, dict)
+                and native.get("role") == "C3_LANGUAGE"
+                and type(native.get("generated_tokens")) is int
+                and native["generated_tokens"] > 0):
+            recent_good += 1
+        else:
+            break
+        if recent_good == 2:
+            break
+'''
+    old_native_success = b'        if status == "FINAL":\n'
+    if budget.count(native_success_existing) == 1 and budget.count(old_native_success) == 0:
+        pass
+    else:
+        budget = replace(budget,
+            old_native_success, b'''        data = row.get("metadata")
         if isinstance(data, str):
             try:
                 data = json.loads(data)
@@ -113,6 +135,11 @@ def apply_sources(code_dir, sources):
                 and native.get("role") == "C3_LANGUAGE"
                 and type(native.get("generated_tokens")) is int
                 and native["generated_tokens"] > 0):
+            recent_good += 1
+        else:
+            break
+        if recent_good == 2:
+            break
 ''', 'native success evidence')
     budget = replace(budget,
         b'    if recover:\n        reserve = min(total*NATIVE_FIRST_RESERVE_FRACTION,\n                      max(26.0,total*.80))\n        allotted = min(ordinary_end,deadline-reserve)\n        reason="RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS"\n    else:\n        reserve=deadline-ordinary_end\n        allotted=ordinary_end\n        reason="NORMAL_COGNITIVE_PREANSWER"\n',
