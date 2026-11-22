@@ -68,7 +68,7 @@ Current candidate: PR #2293 (DRAFT, NOT_RELEASED)
 
 ## Exact-head CI follow-up — 2026-11-22 02:37 CET
 
-- Current PR #2293 branch head after docs: da656f95a42a652e2ae10be4c70d2dc315626406; tested code/workflow head: e85b7398b1fce84423583abf01e1389507612818; base f0d3c848dfb1d65e282f065233adbe3c9205e439.
+- Current PR #2293 branch head after docs: 3be517af1d83f756852338dbe9b909a748b27f95; tested code/workflow head: e85b7398b1fce84423583abf01e1389507612818; base f0d3c848dfb1d65e282f065233adbe3c9205e439.
 - RAW EAR fastpath #44972070097: PASS, 64 tests on Python 3.13 (8.10s) and 3.14 (12.25s); includes 7 new audio-only ingress tests, compile, A5→A4→C3 consumer and privacy scan.
 - VAD/libfvad #44972070081: PASS, 8 tests on both Python versions; native libfvad 13/13. Runtime deploy integrity #44972070113: PASS.
 - Staged/integrated #44972070090: FAIL at Core-owned local-error pre-rebind semantic pin mismatch (recovery candidate line 313); staged job 19 failed / 231 passed / 10 skipped / 2 errors / 41 subtests, integrated job 1 failed. Same failure on unchanged Boss base in #44969679441. Migration #44972070092 returns PARTIAL; Lab Age/WebView #44972070087 and owner-read #44972070168 fail at stage.
