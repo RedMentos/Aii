@@ -159,7 +159,7 @@ public final class CompanionDbApprovalTest {
         assertFalse(CompanionProvider.isOnlyPairedPackage(null, "com.termux"));
     }
 
-    @Test public void approvalIntentIdentityUsesFullActionIdDespiteHashCollision() {
+    @Test public void approvalIntentAndNotificationIdentityUseFullActionIdDespiteHashCollision() {
         String first = "8b50c53de5d8694493a2e5e7f318bc9c";
         String second = "a2389bc938b7d225cd80af126908e600";
         assertEquals(first.hashCode(), second.hashCode());
@@ -167,6 +167,17 @@ public final class CompanionDbApprovalTest {
         Intent secondIntent = CompanionProvider.approvalIntent(context, second);
         assertFalse(firstIntent.filterEquals(secondIntent));
         assertNotEquals(firstIntent.getData(), secondIntent.getData());
+        assertNotEquals(CompanionProvider.approvalNotificationTag(first),
+                CompanionProvider.approvalNotificationTag(second));
+    }
+
+    @Test public void approvalNotificationTagRejectsMalformedActionIds() {
+        try {
+            CompanionProvider.approvalNotificationTag("not-an-action-id");
+            fail("malformed notification identity must be rejected");
+        } catch (IllegalArgumentException expected) {
+            assertEquals("invalid action id", expected.getMessage());
+        }
     }
 
 }
