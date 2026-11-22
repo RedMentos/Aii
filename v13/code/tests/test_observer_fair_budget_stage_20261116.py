@@ -20,12 +20,16 @@ def load(path, name):
 
 
 class ObserverStageTests(unittest.TestCase):
-    def test_exact_anchors_reject_double_application_and_preserve_upstream(self):
+    def test_exact_anchors_are_idempotent_and_reject_tampering(self):
         module = load(HELPER, 'observer_layer')
         result = module.apply_sources(CODE, {'v13/upstream_example.py': b'unchanged'})
         self.assertEqual(result['v13/upstream_example.py'], b'unchanged')
+        second = module.apply_sources(CODE, result)
+        self.assertEqual(second, result)
+        tampered = dict(result)
+        tampered['v13/runtime.py'] = b'tampered runtime bytes'
         with self.assertRaisesRegex(ValueError, 'anchor changed'):
-            module.apply_sources(CODE, result)
+            module.apply_sources(CODE, tampered)
 
     def test_existing_native_success_variant_is_recognized(self):
         module = load(HELPER, 'observer_existing_success')
