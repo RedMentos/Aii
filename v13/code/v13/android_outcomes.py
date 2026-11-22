@@ -38,7 +38,6 @@ def execute_approved_dry_run(
     *,
     on_outcome: Callable[[ActionOutcome], None] | None = None,
     clock: Callable[[], float] = time.time,
-    finalize_broker: bool = True,
 ) -> ActionOutcome:
     """Consume an approved action once, with no Android API execution.
 
@@ -75,6 +74,7 @@ def accept_companion_receipt(
     *,
     on_outcome: Callable[[ActionOutcome], None] | None = None,
     clock: Callable[[], float] = time.time,
+    finalize_broker: bool = True,
 ) -> ActionOutcome:
     """Consume a dispatched request using an authenticated companion receipt.
 
