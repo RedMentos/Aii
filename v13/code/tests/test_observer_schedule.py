@@ -47,19 +47,20 @@ class RecoverySliceFloor(unittest.TestCase):
             "Compare plan A and plan B in detail", route="both"
         )
 
-        def decide(window):
+        def decide(window, floor=2.0):
             return effort.decide(
                 "max", sig, direct=False, observers=True,
                 resource_state="GREEN", resource_mode="GREEN",
-                observer_window_s=window, cfg={}, age=effort.AGE0,
+                observer_window_s=window, min_body_seconds=floor, cfg={}, age=effort.AGE0,
             )
 
-        # 3.9 s is enough for two fair >=1 s attempts. The old 2 s
-        # threshold incorrectly collapsed this to B1 only after small preamble cost.
-        self.assertEqual(decide(3.9)["wake"], "both")
-        self.assertEqual(decide(3.9)["wake_ceiling"], "both")
-        self.assertEqual(decide(1.9)["wake"], "detail")
-        self.assertEqual(decide(0.9)["wake"], "none")
+        # Ordinary policy remains at 2 s/body. Recovery uses the scheduler's
+        # 1 s native floor, but only when its separate C3 reserve is active.
+        self.assertEqual(decide(3.9, 2.0)["wake"], "detail")
+        self.assertEqual(decide(3.9, 1.0)["wake"], "both")
+        self.assertEqual(decide(3.9, 1.0)["wake_ceiling"], "both")
+        self.assertEqual(decide(1.9, 1.0)["wake"], "detail")
+        self.assertEqual(decide(0.9, 1.0)["wake"], "none")
 
 
 class Run(unittest.TestCase):
