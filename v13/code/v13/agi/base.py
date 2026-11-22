@@ -36,10 +36,21 @@ def age_allows(age,right,origin='SELF',resource_mode='GREEN'):
     try:return age.may(right,resource_mode=resource_mode) if hasattr(age,'may') else age.allowed(right,resource_mode=resource_mode)  # WP-T2 per capability
     except Exception:return False
 
-def budget(age,name,default=0):
-    if age is None:return default
-    try:return age.budgets('system').get(name,default)
-    except Exception:return default
+def learning_limit(age, name, default=0, capability='system'):
+    """Read a developmental learning/planning right without consulting Age budgets."""
+    source = {'exploration_rate': 'exploration_rate',
+              'goal_depth': 'focal_depth'}.get(name)
+    if age is None or source is None:
+        return default
+    try:
+        from ..age import BUDGETS
+        stage = age.ceiling(capability)
+        maturity = age.maturity(capability)
+        lo, hi = BUDGETS[source][stage]
+        value = lo + (hi - lo) * maturity
+        return int(round(value)) if name == 'goal_depth' else round(value, 6)
+    except Exception:
+        return default
 
 def clamp01(x):return max(0.,min(1.,float(x)))
 
