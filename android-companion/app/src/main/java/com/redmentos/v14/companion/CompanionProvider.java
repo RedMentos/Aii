@@ -79,7 +79,7 @@ public final class CompanionProvider extends ContentProvider {
 
     @Override public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         Context context = getContext();
-        if (context == null || !"r".equals(mode) || !isPairedCaller(context)) {
+        if (context == null || !"r".equals(mode)) {
             throw new FileNotFoundException("screen frame access denied");
         }
         List<String> segments = uri == null ? null : uri.getPathSegments();
@@ -87,7 +87,8 @@ public final class CompanionProvider extends ContentProvider {
                 || !isHex(segments.get(1), 32)) {
             throw new FileNotFoundException("invalid one-shot frame URI");
         }
-        return openFramePipe(context, segments.get(1), SystemClock.elapsedRealtime());
+        return openFramePipe(context, segments.get(1), SystemClock.elapsedRealtime(),
+                () -> isPairedCaller(context));
     }
 
     // The provider and both Activities use the app's default process. This
@@ -101,11 +102,17 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
-    static ParcelFileDescriptor openFramePipe(Context context, String token, long nowElapsed)
+    interface PairedCallerCheck {
+        boolean isAllowed();
+    }
+
+    static ParcelFileDescriptor openFramePipe(Context context, String token, long nowElapsed,
+                                              PairedCallerCheck pairedCallerCheck)
             throws FileNotFoundException {
         synchronized (ACTION_GATE_LOCK) {
-            if (!isEnabledLocked(context)) {
-                throw new FileNotFoundException("companion stopped before frame pipe open");
+            if (context == null || pairedCallerCheck == null
+                    || !isEnabledLocked(context) || !pairedCallerCheck.isAllowed()) {
+                throw new FileNotFoundException("paired caller or active companion required for frame pipe");
             }
             FrameReadLease lease = ProjectionFrameStore.consumeLease(token, nowElapsed);
             if (lease == null) {

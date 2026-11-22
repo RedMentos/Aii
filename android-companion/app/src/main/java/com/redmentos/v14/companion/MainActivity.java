@@ -100,25 +100,33 @@ public final class MainActivity extends Activity {
                         String previousDigest = prefs.getString("paired_cert_sha256", null);
                         PairingPersistence.Result result = PairingPersistence.persistWithStatus(
                                 packageName, digest,
-                                (pairedPackage, certificateSha256) -> prefs.edit()
-                                        .putString("paired_package", pairedPackage)
-                                        .putString("paired_cert_sha256", certificateSha256)
-                                        .commit(),
+                                (pairedPackage, certificateSha256) -> {
+                                    synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+                                        // Pair rotation revokes any frame authorized under the old identity.
+                                        CompanionProvider.clearScreenFrame();
+                                        return prefs.edit()
+                                                .putString("paired_package", pairedPackage)
+                                                .putString("paired_cert_sha256", certificateSha256)
+                                                .commit();
+                                    }
+                                },
                                 () -> {
-                                    // A failed SharedPreferences commit may still mutate its
-                                    // in-memory map. Restore the old pair durably and verify
-                                    // both values before allowing the provider to trust it.
-                                    SharedPreferences.Editor rollback = prefs.edit();
-                                    if (previousPackage == null) rollback.remove("paired_package");
-                                    else rollback.putString("paired_package", previousPackage);
-                                    if (previousDigest == null) rollback.remove("paired_cert_sha256");
-                                    else rollback.putString("paired_cert_sha256", previousDigest);
-                                    boolean durable = rollback.commit();
-                                    return durable
-                                            && java.util.Objects.equals(previousPackage,
-                                                    prefs.getString("paired_package", null))
-                                            && java.util.Objects.equals(previousDigest,
-                                                    prefs.getString("paired_cert_sha256", null));
+                                    synchronized (CompanionProvider.ACTION_GATE_LOCK) {
+                                        // A failed commit may still mutate the in-memory map. Restore
+                                        // and verify the old pair while provider reads are excluded.
+                                        CompanionProvider.clearScreenFrame();
+                                        SharedPreferences.Editor rollback = prefs.edit();
+                                        if (previousPackage == null) rollback.remove("paired_package");
+                                        else rollback.putString("paired_package", previousPackage);
+                                        if (previousDigest == null) rollback.remove("paired_cert_sha256");
+                                        else rollback.putString("paired_cert_sha256", previousDigest);
+                                        boolean durable = rollback.commit();
+                                        return durable
+                                                && java.util.Objects.equals(previousPackage,
+                                                        prefs.getString("paired_package", null))
+                                                && java.util.Objects.equals(previousDigest,
+                                                        prefs.getString("paired_cert_sha256", null));
+                                    }
                                 });
                         if (result != PairingPersistence.Result.PERSISTED) {
                             String message = result == PairingPersistence.Result.RESTORED

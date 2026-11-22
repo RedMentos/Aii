@@ -49,7 +49,7 @@ public final class CompanionProviderFramePipeTest {
         String token = "a".repeat(32);
         ProjectionFrameStore.publish(frame, receipt(frame, token), 100L);
 
-        ParcelFileDescriptor readEnd = CompanionProvider.openFramePipe(context, token, 101L);
+        ParcelFileDescriptor readEnd = CompanionProvider.openFramePipe(context, token, 101L, () -> true);
         assertTrue(readEnd.getFileDescriptor().valid());
         assertEquals(1, ProjectionFrameStore.activeReadCountForTest());
         FrameReadLease lease = ProjectionFrameStore.firstActiveReadForTest();
@@ -61,6 +61,26 @@ public final class CompanionProviderFramePipeTest {
                 lease.awaitWriterExitForTest(2_000L));
         assertFalse(readEnd.getFileDescriptor().valid());
         assertTrue(Arrays.equals(new byte[frame.length], frame));
+        assertEquals(0, ProjectionFrameStore.activeReadCountForTest());
+    }
+
+    @Test public void pairedCallerIsRecheckedInsideTheStopGateBeforeConsuming() throws Exception {
+        Context context = RuntimeEnvironment.getApplication();
+        assertTrue(CompanionProvider.setEnabled(context, true));
+        byte[] frame = new byte[]{3, 4, 5};
+        String token = "c".repeat(32);
+        ProjectionFrameStore.publish(frame, receipt(frame, token), 300L);
+
+        try {
+            CompanionProvider.openFramePipe(context, token, 301L, () -> {
+                assertTrue(Thread.holdsLock(CompanionProvider.ACTION_GATE_LOCK));
+                return false;
+            });
+            fail("unpaired caller must not consume the frame");
+        } catch (java.io.FileNotFoundException expected) {
+            assertTrue(expected.getMessage().contains("paired caller"));
+        }
+        assertEquals("FRAME_READY", ProjectionFrameStore.status(302L).getString("status"));
         assertEquals(0, ProjectionFrameStore.activeReadCountForTest());
     }
 
@@ -84,7 +104,7 @@ public final class CompanionProviderFramePipeTest {
                 ready.countDown();
                 try {
                     if (!start.await(2, TimeUnit.SECONDS)) throw new IllegalStateException("race start timeout");
-                    opened.set(CompanionProvider.openFramePipe(context, token, 201L + iteration));
+                    opened.set(CompanionProvider.openFramePipe(context, token, 201L + iteration, () -> true));
                 } catch (Throwable failure) {
                     openFailure.set(failure);
                 }
