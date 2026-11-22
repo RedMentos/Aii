@@ -18,7 +18,6 @@ from __future__ import annotations
 import hashlib
 import math
 import os
-import re
 import stat
 from pathlib import Path
 
@@ -58,7 +57,7 @@ def _checkpoint_sha256(checkpoint_path, checkpoint_root):
             raise ValueError("checkpoint path must remain beneath the model root")
 
         root_fd = os.open(str(root), os.O_RDONLY | directory | nofollow)
-    except (OSError, ValueError) as exc:
+    except (OSError, RuntimeError, ValueError) as exc:
         raise ValueError("checkpoint root/path is missing or unsafe") from exc
 
     current_fd = root_fd
