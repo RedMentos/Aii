@@ -1592,3 +1592,38 @@ The release source has a plausible B1/B2 suppression path: default observer mode
 - Boss & Integration: keep #2258 unmerged until the Age-rights composition, exact CI and protected-file review are complete; continue whole-Canon dependency/consumer mapping.
 
 Private owner-read request #443 has no authenticated reply. Installed SHA and updater consent are UNKNOWN; REDMI_UNVERIFIED. No LOG_PAGE, UPDATE_REQUEST, remote shell, or device mutation was attempted.
+
+
+## QA & Android checkpoint — 2026-11-22 (current run)
+
+**User action: none.** No new phone command, chat send, model/weight change, permission change, updater request or device mutation was performed.
+
+### Release and authenticated Redmi evidence
+
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` is still exactly `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; its exact commit has **47/47 GitHub check-runs SUCCESS**. This is CI evidence, not whole-Canon acceptance.
+- Private owner-read PIPELINE_STATUS #567 confirms that the Redmi reports runtime and dashboard `UP_TO_DATE`, auto-update enabled, `last_error=NONE`, and installed commit exactly `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`.
+- Private DIAGNOSTICS #568 reports the last *recorded* turn at 57.74 s total, 41.63 s TTFT, 38.95 s prefill, 751 prompt tokens and only 2 generated tokens. B1_DETAIL and B2_GIST both report TIME_BUDGET (53.2 s / 54.2 s); C3 reports 3.1 s. QA did not send a new turn, and this is not a 20-turn acceptance run or a verified correctness result.
+- The same instant process sample reports four mapped native processes, 0.3 MiB PSS and 2.9 MiB RSS. It is process accounting, not proof that model weights are resident or a measurement of free RAM. Separate HEALTH #569 reports 983 MiB MemAvailable of 5,569 MiB and 1,629 MiB free disk. Its runtime field is UNAVAILABLE while DIAGNOSTICS reports the service RUNNING; these are different endpoint snapshots, not enough to infer a crash.
+- Age/Lab receipt: official Age 0; active test selector requested at X10; implemented test ceiling 5; physical feature execution unverified; learning commit authority still requires separate SHADOW mode. The code explicitly treats 6–10 as having no additional implemented rules and does not use Lab Age as a compute budget. No learning run or permission change was initiated.
+
+### Android companion receipt-recovery candidate
+
+- QA PR [#2347](https://github.com/RedMentos/Aii/pull/2347), branch `qa/v14-companion-receipt-only-recovery-20261122-run12`, current head `dda9947accd81e8310e3d8f7d581bb88aa3655d5`. It adds durable receipt-only recovery for EXECUTING/DENYING claims; recovery never repeats the external launch. Python persists `COMPANION_OUTCOME_UNKNOWN` as source-bound, observed=false, and non-authoritative for T8/World learning.
+- This is stacked on draft companion PR #2271's core branch at `24e059d1f54e54d2285c9a542df207372fb27f4a`, itself stacked on #2134/#2119. It is not based on the release branch and is NOT_RELEASED.
+- Exact current-head checks at the last poll: 6 SUCCESS, 1 IN_PROGRESS. Android Gradle/Robolectric, Python companion-outcome 3.13/3.14, contract and offline-bridge-security passed; staged-runtime passed (240 passed, 10 skipped, 47 subtests; additional migration suite 42 passed, 37 subtests). The migration diagnostic deliberately recorded a fail-closed refusal because the stacked branch's pinned plain-UI recovery builder differs; this is not a successful phone migration. Integrated-regression remains in progress.
+- The first Android unit run exposed a test-harness issue, not a production JSON defect: `ReceiptFactoryTest` lacked the Robolectric runner, so Android `org.json` SDK stubs returned defaults under `returnDefaultValues`. Adding `@RunWith(RobolectricTestRunner.class)` and SDK 33 made the exact Android Gradle job pass.
+- The execution container has JDK 21 but no Aii checkout, Gradle or Android SDK. No LOCAL_LINUX repository suite, APK install, Android Keystore device test or Redmi companion action was run.
+
+### Other blocking QA findings
+
+- B3 paired-tap/L1-shadow PR #2346 remains draft and has multiple failed exact-head checks. QA identified an output-path escape: `b3train.py` creates `home/b3/shadow/... ` and writes via `atomic_write` without rejecting symlinked ancestors or proving containment. A blocking comment requests a fail-closed no-follow/dirfd output helper and a symlink regression test. No L1 artifact or native B3 training is accepted.
+- Boss fair-budget integration PR #2343 remains draft with multiple failed exact-head checks, including staged/consumer/migration paths. It is not a release candidate until its current source pins and composed consumers pass.
+- Production Android UI observation, screen capture, Accessibility, tap/type, microphone capture, full voice learning, trained B3 latent transfer, correct B1/B2 offers and persistent numeric JEPA learning remain OPEN; none is established by this QA run.
+
+### Next internal actions
+
+1. Complete #2347's exact-head integrated-regression workflow; then hand the tested stacked PR to Core/Boss for integration on the current companion base, not directly to the release branch.
+2. Keep #2346 blocked until the symlink-safe output boundary and its negative control are implemented and all exact-head checks pass.
+3. Continue whole-Canon QA; do not use the green release CI or updater receipt as evidence that the slow/incorrect native chat path is fixed.
+
+**Redmi status:** installed c4eb82 / updater up-to-date; native quality and Android companion acceptance remain UNVERIFIED. **User action: none.**
