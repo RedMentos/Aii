@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T07:06:00Z",
+  "updated_at": "2026-11-22T07:09:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at f210999cf556be4d4514427cc9b5cf6d3cf3e984; V14 master and historical V13 appendix preserved. This board is a Boss handoff branch stacked on Perception handoff PR #2316.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -17,7 +17,7 @@
       "proof_environment": "MERGED_INTEGRATION + CI/SYNTHETIC only. #2288 candidate-head matrix: 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 CANCELLED; same-turn B1/B2→C4→C3 and source-read/revocation passed on staged Runtime with synthetic runners. Boss #2314 now passes runtime-deploy, old-phone migration, Lab-Age, owner-read, same-turn B1/B2/C4/C3 and staged/integrated checks. Only its dedicated native-receiver workflow remains queued. #2313 parent still has failed paired-tap, Lab-Age and Core tap-provenance checks; #2317 grouped-holdout B3 check passed but staged integration remains queued. No native GGUF answer or Redmi proof.",
       "next_step": "Wait for #2314 dedicated pinned Linux/Android ARM64 native receiver workflow; then rebase #2313 and its source-disjoint child #2317 together onto current release. Require actual native B1/B2 offers, mutual re-entry, C4 consumption, correct C3 output and measured TTFT/PSS; preserve both bodies and fastpath.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T07:01:00Z",
+      "last_checkpoint": "2026-11-22T07:09:00Z",
       "proof": "Release-development merge 39b175521f50048f13ca14372b316de47527f531; exact candidate CI 20/0/1/1. No native model or phone proof."
     },
     {
@@ -64,7 +64,7 @@
       "proof_environment": "Production B3 remains OFF/SYMBOLIC. Boss #2314 head 87975814a1e134a4b12dc5961b6250d9125d65eb: runtime-deploy, old-phone migration, Lab-Age, owner-read, same-turn B1/B2/C4/C3 and staged/integrated checks PASS; dedicated pinned native receiver build/run remains QUEUED. This is an explicit one-shot llama.cpp input-embedding probe, not trained alignment or production routing. #2313 remains NOT_READY with failed paired-tap/Lab-Age/tap-provenance checks; child #2317 source-SHA-disjoint holdout B3 check PASS, staged integration queued.",
       "next_step": "Finish #2314 dedicated Linux pinned API build and Android ARM64 cross-compile, then same-model parity and zero/shuffle/dimension/revision controls with an already-installed model. Rebase #2313+#2317 as one stack and require genuinely captured source-disjoint taps plus independently measured EXACT/CONTROL/SYMBOLIC baselines before any L1 gate. Keep production route and authority zero.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T07:01:00Z",
+      "last_checkpoint": "2026-11-22T07:09:00Z",
       "proof": "Current PR heads 8a9ce and af2c; comments 7075095567 and 7075087798."
     },
     {
@@ -190,7 +190,7 @@
       "proof_environment": "Boss PR #2288 merged at 39b175521f50048f13ca14372b316de47527f531. Release-development branch readback f210999cf556be4d4514427cc9b5cf6d3cf3e984. Exact-head push evidence remains partial: 8 observed push runs SUCCESS, release-event integration CANCELLED, commit status pending/no aggregate contexts. #2314 now passes runtime deployment, migration, Lab-Age, owner-read, same-turn and staged/integrated; its dedicated native build remains queued. #2313/#2317 and #2311 remain open/pending or failed; #2286 exact CI queued with a stop-persistence review finding. No local full-repo run or Redmi validation.",
       "next_step": "Own serial integration: finish #2314 dedicated native workflow; diagnose #2313 parent CI failures and rebase #2313+#2317 together; review #2311 after its new exact matrix; reconcile #2312 and the complete #2271→#2273→#2286 companion stack. Do not merge pending/red PRs. Preserve historical V13 appendix bytes.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T07:01:00Z",
+      "last_checkpoint": "2026-11-22T07:09:00Z",
       "proof": "Merged PR #2288; no release/phone acceptance claim."
     },
     {
@@ -313,10 +313,10 @@
       "owner": "Core & Harness + Boss",
       "priority": "P0",
       "status": "IN_PROGRESS_PARTIAL",
-      "last_checkpoint": "2026-11-22T07:06:00Z",
-      "proof_environment": "Boss #2314 head 87975814a1e134a4b12dc5961b6250d9125d65eb: Linux pinned llama.cpp receiver build/selftest PASS. Python 3.13 and 3.14 compile PASS but both fail the staged Runtime test because nested test_callosum.py::UtilityTests.test_message_fields_outcome_rating_and_doctor returns scored=0 instead of 1 (22 passed/1 failed in each nested suite; 7 passed/1 failed outer stage). Android ARM64 cross-compile remains IN_PROGRESS. Other gates (runtime deploy, old-phone migration, Lab-Age, owner-read, same-turn, staged/integrated) PASS. This is not a complete native workflow PASS, not a receiver inference or Redmi proof.",
+      "last_checkpoint": "2026-11-22T07:09:00Z",
+      "proof_environment": "Boss #2314 head 87975814a1e134a4b12dc5961b6250d9125d65eb: pinned Linux llama.cpp receiver build/selftest PASS; Android arm64-v8a cross-compile PASS and review-only artifact v14-native-latent-receiver-android-arm64 uploaded (11,640,425 bytes, expires 2026-12-06). Python 3.13 and 3.14 compile PASS but both fail the staged Runtime test because nested test_callosum.py::UtilityTests.test_message_fields_outcome_rating_and_doctor returns scored=0 instead of 1 (22 passed/1 failed each; 7 passed/1 failed outer stage). Other gates (runtime deploy, old-phone migration, Lab-Age, owner-read, same-turn, staged/integrated) PASS. No artifact install, actual GGUF receiver inference or Redmi proof.",
       "proof": "PR #2266 head 3166858133844fc80201334f53ade450557d1191; explicit operator-only probe through pinned llama.cpp input-embedding API. Six isolated wrapper tests and C++ core compile/selftest reported PASS; real pinned library/model run and Android arm64 build remain pending. production_route=false; no semantic use, trained alignment, cross-organ learning or Redmi proof.",
-      "next_step": "Fix the staged Callosum message→offer utility regression without deleting/weaking the test. Diagnose why Cognition.communicate's Callosum.note pending record is not consumed by Callosum.outcome or why the subsequent B2 OfferPacket lookup fails; add a targeted state/rowid regression, pass Python 3.13+3.14, finish Android ARM64 cross-compile, and rerun all four jobs. Only after green compare/retarget onto release f210999 and rerun the exact release-base matrix."
+      "next_step": "Fix the staged Callosum message→offer utility regression without deleting/weaking the test. Diagnose why Cognition.communicate's Callosum.note pending record is not consumed by Callosum.outcome or why the subsequent B2 OfferPacket lookup fails; add targeted state/rowid regression, pass Python 3.13+3.14, and rerun all four jobs. Keep the ARM64 artifact review-only. Only after green compare/retarget onto release f210999 and rerun the exact release-base matrix."
     },
     {
       "id": "V14-017",
