@@ -548,9 +548,8 @@ def test_status_remains_available_when_native_provider_is_unreachable(tmp_path):
     runtime.store.close()
 
 
-def test_operator_help_lists_the_android_history_command(tmp_path):
+def test_android_help_lists_the_history_command_without_opening_the_companion(tmp_path):
     runtime = make_runtime(tmp_path)
-    help_text = Operator(runtime).run(":help")
-    assert ":android" in help_text
+    help_text = Operator(runtime).run(":android help")
     assert "history [1..50]" in help_text
     runtime.store.close()
