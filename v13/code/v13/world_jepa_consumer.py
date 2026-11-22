@@ -1571,6 +1571,9 @@ class WorldJEPAStoreConsumer:
             replay_start = None
             replay_cohort_ranges = None
             replay_constraint_session_keys = ()
+            replay_reference_batches = None
+            replay_reference_fold = None
+            replay_reference_action_ids_sha256 = None
             projection_fallback_reason = None
             if replay_projection:
                 if len(new_fit_rows) < 2:
@@ -1612,6 +1615,43 @@ class WorldJEPAStoreConsumer:
                                 "native_body_weights_changed": False,
                             }
                         replay_rows, replay_cohort_ranges, replay_constraint_session_keys = grouped
+                        if replay_mode in {"on_demand_conflict", "on_demand_loss"}:
+                            guard_by_key = {}
+                            for row in old_guard_rows:
+                                session_id = row.get("session_id")
+                                if type(session_id) is str and session_id:
+                                    key = hashlib.sha256(session_id.encode("utf-8")).hexdigest()[:16]
+                                    guard_by_key.setdefault(key, []).append(row)
+                            guard_batches = []
+                            guard_action_ids = []
+                            for session_key in replay_constraint_session_keys:
+                                guard_group = sorted(
+                                    guard_by_key.get(session_key, []),
+                                    key=lambda row: (float(row["created"]), row["action_id"]),
+                                )
+                                if len(guard_group) < 2:
+                                    persisted = self._persist_pending(
+                                        state, version, pending_by_id, next_cursor
+                                    )
+                                    if persisted != "PERSISTED":
+                                        return {"status": persisted, "pending_rows": len(pending_by_id),
+                                                "scan_cursor": state["scan_cursor"],
+                                                "native_body_weights_changed": False}
+                                    return {
+                                        "status": "INSUFFICIENT_PRIOR_GUARD_REFERENCE_ROWS",
+                                        "session_key": session_key,
+                                        "pending_rows": len(pending_by_id),
+                                        "scan_cursor": next_cursor,
+                                        "native_body_weights_changed": False,
+                                    }
+                                selected_guard_rows = guard_group[:MAX_CONFLICT_SAMPLE_ROWS]
+                                guard_action_ids.extend(row["action_id"] for row in selected_guard_rows)
+                                guard_batches.append(_arrays(selected_guard_rows))
+                            replay_reference_batches = tuple(guard_batches)
+                            replay_reference_fold = "prior_guard"
+                            replay_reference_action_ids_sha256 = hashlib.sha256(
+                                "\n".join(sorted(guard_action_ids)).encode("utf-8")
+                            ).hexdigest()
             fit_rows = (
                 train_rows if active is None
                 else list(new_fit_rows) + list(replay_rows)
@@ -1665,9 +1705,15 @@ class WorldJEPAStoreConsumer:
                 ),
                 "current_guard_cohort_before": new_guard_cohort_before,
                 "loss_demand_probe_fold": (
-                    "prior_training_guard" if replay_mode == "on_demand_loss" and active is not None
+                    "prior_guard" if replay_mode == "on_demand_loss" and active is not None
                     else None
                 ),
+                "prior_fit_action_ids_sha256": (
+                    None if old_guard_manifest is None
+                    else old_guard_manifest["fit_action_ids_sha256"]
+                ),
+                "replay_projection_reference_fold": replay_reference_fold,
+                "replay_projection_reference_action_ids_sha256": replay_reference_action_ids_sha256,
                 "replay_conflict_probe_fold": (
                     "prior_guard" if replay_mode == "on_demand_conflict" and active is not None
                     else None
@@ -1789,6 +1835,7 @@ class WorldJEPAStoreConsumer:
                     drift_control=drift_config, replay_start=replay_start,
                     update_scale=neuromod_scale,
                     replay_cohort_ranges=replay_cohort_ranges,
+                    replay_reference_batches=replay_reference_batches,
                 )
             except InterruptedError:
                 return {"status":"CANCELLED","pending_rows":len(pending_by_id),
@@ -1809,6 +1856,9 @@ class WorldJEPAStoreConsumer:
             candidate_gradient_projection["fallback_reason"] = projection_fallback_reason
             candidate_gradient_projection["mode"] = replay_metrics["replay_projection_mode"]
             candidate_gradient_projection["constraint_session_count"] = replay_metrics["replay_constraint_session_count"]
+            replay_metrics["replay_projection_constraint_source"] = candidate_gradient_projection.get("constraint_source")
+            replay_metrics["replay_projection_reference_batch_count"] = candidate_gradient_projection.get("reference_batch_count", 0)
+            replay_metrics["replay_projection_reference_rows_total"] = candidate_gradient_projection.get("reference_rows_total", 0)
             candidate_gradient_projection["optimizer_direction_scale"] = 1.0
             full_candidate_after = _parameter_snapshot(candidate)
             candidate_fit_steps_after = int(getattr(candidate, "_fit_steps", 0))
