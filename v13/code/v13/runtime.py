@@ -565,7 +565,7 @@ class Runtime:
                                 'claim_boundary'
                             )}
                             volatile.append(('ANDROID_RECEIPT',
-                                '\\nAndroid companion receipt (signed companion attestation only; not independent device observation):',
+                                '\nAndroid companion receipt (signed companion attestation only; not independent device observation):',
                                 receipt_view))
                             companion_receipt_refs=companion_receipt['source_refs']
                             meta['android_companion_receipt']={
