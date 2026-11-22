@@ -12,6 +12,8 @@ from unittest.mock import Mock
 import pytest
 
 from v13.native_turn_budget import recent_proof, zero_token_prefill_failure
+from v13.brain_panel import status as brain_status
+from v13.native_offer_prompt_receipt import inspect as inspect_native_offer_prompt
 from v13.operator import Operator
 from v13.runtime import Runtime
 
@@ -57,6 +59,20 @@ class SyntheticRunner:
     def generate(self, messages, cancel, deadline, *args, **kwargs):
         if self.role == "C3_LANGUAGE":
             self.seen[self.role] = [dict(message) for message in messages]
+            rendered_prompt = "\n".join(
+                message.get("content", "") for message in messages
+            )
+            witness = inspect_native_offer_prompt(
+                messages, rendered_prompt, "Internal hypotheses: "
+            )
+            self.last_metrics["native_offer_prompt_receipt"] = {
+                **witness,
+                "native_completion_http_200": False,
+                "native_template_submitted": False,
+                "synthetic_template_submitted": witness.get("status") == "RENDERED_WITH_QUOTES",
+                "native_attention_or_semantic_use_proven": False,
+                "synthetic": True,
+            }
             yield (
                 "The rent is fixed at 120 euros, and the long-term reserve "
                 "remains protected."
@@ -187,6 +203,25 @@ def test_two_recent_c3_prefill_failures_still_reach_same_turn_c4_and_c3(tmp_path
         assert B1_SUMMARY in c3_system
         assert B2_SUMMARY in c3_system
 
+        # :brain status reports the exact synthetic offer IDs that crossed
+        # the C4 receipt and were rendered into the C3 template, without
+        # exposing prompt text or claiming native execution/semantic use.
+        latest = brain_status(runtime)["latest_turn"]
+        assert latest["turn_status"] == "FINAL"
+        assert latest["runner_role"] == "C3_LANGUAGE"
+        assert latest["evidence_environment"] == "SYNTHETIC"
+        assert latest["prompt_tokens"] == 32
+        assert latest["generated_tokens"] == 8
+        assert latest["offer_flow"]["status"] == "SYNTHETIC_TEMPLATE_SUBMITTED_MATCHED_C4"
+        assert latest["offer_flow"]["native_template_submitted"] is False
+        assert latest["offer_flow"]["template_submitted"] is True
+        assert latest["offer_flow"]["native_completion_http_200"] is False
+        assert latest["offer_flow"]["c4_native_offer_ids_match"] is True
+        assert {item["role"] for item in latest["offer_flow"]["offers"]} == {
+            "B1_DETAIL", "B2_GIST"
+        }
+        assert latest["offer_flow"]["semantic_use_proven"] is False
+
         assert receipt["role"] == "C3_LANGUAGE"
         assert receipt["status"] == "PASS"
         assert receipt["count"] == 2
@@ -231,3 +266,62 @@ def test_two_recent_c3_prefill_failures_still_reach_same_turn_c4_and_c3(tmp_path
         assert runtime.store.integrity(True) == []
     finally:
         runtime.close()
+
+
+class _EvidenceStore:
+    def __init__(self, message, telemetry=None):
+        self.message = message
+        self.telemetry = telemetry
+
+    def one(self, sql, args=()):
+        if "FROM messages" in sql:
+            return self.message
+        if "FROM telemetry" in sql:
+            return self.telemetry
+        raise AssertionError("unexpected evidence query")
+
+
+def test_brain_status_refuses_mismatched_c4_and_native_offer_ids():
+    from types import SimpleNamespace
+
+    metadata = {
+        "runner": {
+            "role": "C3_LANGUAGE",
+            "synthetic": True,
+            "native_offer_prompt_receipt": {
+                "status": "RENDERED_WITH_QUOTES",
+                "synthetic": True,
+                "synthetic_template_submitted": True,
+                "offers": [
+                    {"role": "B1_DETAIL", "packet_id": "offer-1", "rendered_quote_count": 1},
+                    {"role": "B2_GIST", "packet_id": "offer-2", "rendered_quote_count": 1},
+                ],
+            },
+        }
+    }
+    message = {"event_id": "event-1", "status": "FINAL", "metadata": json.dumps(metadata)}
+    telemetry = {"metrics": json.dumps({
+        "status": "PASS", "count": 2, "selected_offer_ids": ["offer-1", "tampered"]
+    })}
+    runtime = SimpleNamespace(
+        cfg={}, current=None, store=_EvidenceStore(message, telemetry)
+    )
+    flow = brain_status(runtime)["latest_turn"]["offer_flow"]
+    assert flow["status"] == "SYNTHETIC_TEMPLATE_SUBMITTED_C4_ID_MISMATCH"
+    assert flow["c4_native_offer_ids_match"] is False
+    assert flow["semantic_use_proven"] is False
+
+
+def test_brain_status_marks_missing_native_offer_receipt():
+    from types import SimpleNamespace
+
+    message = {
+        "event_id": "event-2", "status": "DEADLINE",
+        "metadata": json.dumps({"runner": {
+            "role": "C3_LANGUAGE", "prompt_tokens": 0, "generated_tokens": 0
+        }}),
+    }
+    runtime = SimpleNamespace(cfg={}, current=None, store=_EvidenceStore(message))
+    latest = brain_status(runtime)["latest_turn"]
+    assert latest["offer_flow"]["status"] == "OFFER_RECEIPT_UNAVAILABLE"
+    assert latest["offer_flow"]["semantic_use_proven"] is False
