@@ -102,9 +102,10 @@ def test_same_speaker_embedding_stays_confident_and_has_no_identity_label():
     assert evidence["frame_end_ms"] == max(comparable_frame_ends)
     assert evidence["reference_age_ms"] == expected_reference_age_ms
     assert evidence["cosine_similarity"] == 1.0
-    assert evidence["confidence_gate_passed"] is True
-    assert evidence["speaker_change_candidate"] is False
-    assert evidence["peak_speaker_change_candidate"] is False
+    assert evidence["threshold_status"] == "CALLER_ASSERTED_UNVERIFIED"
+    assert evidence["confidence_gate_passed"] is None
+    assert evidence["speaker_change_candidate"] is None
+    assert evidence["peak_speaker_change_candidate"] is None
     assert evidence["candidate_count"] == 0
     assert evidence["speaker_label"] is None
     assert evidence["identity_authority"] is False
@@ -133,9 +134,12 @@ def test_embedding_shift_is_only_a_change_candidate_during_voiced_activity():
     assert abs(evidence["reference_age_ms"] - 800) <= 120
     assert evidence["cosine_similarity"] == 0.0
     assert evidence["change_score"] == 0.5
-    assert evidence["speaker_change_candidate"] is True
-    assert evidence["interpretation"] == "LOW_SIMILARITY_DURING_VOICED_ACTIVITY_CHANGE_OR_OVERLAP"
-    assert evidence["candidate_kind"] == "SPEAKER_CHANGE_OR_OVERLAP"
+    assert evidence["threshold_status"] == "CALLER_ASSERTED_UNVERIFIED"
+    assert evidence["speaker_change_candidate"] is None
+    assert evidence["peak_speaker_change_candidate"] is None
+    assert evidence["candidate_count"] == 0
+    assert evidence["interpretation"] == "SIMILARITY_ONLY_UNCALIBRATED"
+    assert evidence["candidate_kind"] is None
 
 
 def test_same_batch_tail_cannot_overwrite_cross_window_change_evidence():
@@ -159,12 +163,15 @@ def test_same_batch_tail_cannot_overwrite_cross_window_change_evidence():
     # frames must not become their own look-back references in this same call.
     short = run(2100)
     long = run(3100)
-    assert short["speaker_change_candidate"] is True
-    assert long["speaker_change_candidate"] is True
+    assert short["speaker_change_candidate"] is None
+    assert long["speaker_change_candidate"] is None
+    assert long["peak_speaker_change_candidate"] is None
+    assert long["candidate_count"] == 0
+    assert all(frame["speaker_change_candidate"] is None for frame in long["frame_evidence"])
     assert long["frame_end_ms"] == short["frame_end_ms"]
     assert long["cosine_similarity"] == short["cosine_similarity"] == 0.0
     assert long["change_score"] == short["change_score"] == 0.5
-    assert long["candidate_kind"] == short["candidate_kind"] == "SPEAKER_CHANGE_OR_OVERLAP"
+    assert long["candidate_kind"] is None
 
 
 def test_low_similarity_without_voiced_activity_is_not_speaker_change():
@@ -179,11 +186,11 @@ def test_low_similarity_without_voiced_activity_is_not_speaker_change():
         source_id=SOURCE, generation_id="gen-a", start_ms=1100, end_ms=2100,
         activity_hint="UNVOICED_NOISE", embeddings=second,
     )
-    assert evidence["confidence_gate_passed"] is False
-    assert evidence["speaker_change_candidate"] is False
-    assert evidence["peak_speaker_change_candidate"] is False
+    assert evidence["confidence_gate_passed"] is None
+    assert evidence["speaker_change_candidate"] is None
+    assert evidence["peak_speaker_change_candidate"] is None
     assert evidence["candidate_count"] == 0
-    assert evidence["interpretation"] == "LOW_SIMILARITY_WITHOUT_VOICED_ACTIVITY"
+    assert evidence["interpretation"] == "SIMILARITY_ONLY_UNCALIBRATED"
 
 
 def test_missing_threshold_emits_score_without_a_decision():
@@ -288,14 +295,19 @@ def test_a5_a4_c3_consumer_uses_change_evidence_without_persisting_vectors(tmp_p
             finality="FINAL", speaker_embeddings=second,
         )
         evidence = result["speaker_change_evidence"]
-        assert evidence["speaker_change_candidate"] is True
-        assert result["a4"]["speaker_change_evidence"]["change_score"] == 0.5
+        assert evidence["speaker_change_candidate"] is None
+        assert evidence["peak_speaker_change_candidate"] is None
+        assert evidence["candidate_count"] == 0
+        assert evidence["threshold_status"] == "CALLER_ASSERTED_UNVERIFIED"
+        assert result["a4"]["speaker_change_decision"] == "DEFER"
         assert result["a4"]["learning_authority"] is False
         assert result["a4"]["action_authority"] is False
         summary = result["c3_admission"].selected[0].summary
-        assert "speaker_change_score=0.50" in summary
-        assert "speaker_change_candidate=1" in summary
-        assert "speaker_change_kind=CHANGE_OR_OVERLAP" in summary
+        assert "speaker_similarity_delta=0.50" in summary
+        assert "spk_cal=UNVERIFIED" in summary
+        assert "speaker_change_candidate=" not in summary
+        assert "speaker_change_kind=" not in summary
+        assert "spk_dec=DEFER" in summary
         persisted = json.dumps(result["packet"], sort_keys=True)
         assert '"vector"' not in persisted
         assert '"speaker_label": null' in persisted
@@ -343,17 +355,19 @@ def test_batch_peak_change_survives_return_to_prior_speaker_for_a4_and_c3(tmp_pa
             finality="FINAL", speaker_embeddings=second,
         )
         evidence = result["speaker_change_evidence"]
-        assert evidence["speaker_change_candidate"] is False
-        assert evidence["peak_speaker_change_candidate"] is True
-        assert evidence["candidate_count"] >= 1
-        assert evidence["peak_candidate_change_score"] == 0.5
-        assert any(frame["speaker_change_candidate"] is True for frame in evidence["frame_evidence"])
-        assert result["a4"]["speaker_change_evidence"]["peak_speaker_change_candidate"] is True
-        assert captured["sal"]["external_interrupt"] >= 0.125
+        assert evidence["speaker_change_candidate"] is None
+        assert evidence["peak_speaker_change_candidate"] is None
+        assert evidence["candidate_count"] == 0
+        assert evidence["peak_candidate_change_score"] == 0.0
+        assert all(frame["speaker_change_candidate"] is None for frame in evidence["frame_evidence"])
+        assert any(frame["change_score"] == 0.5 for frame in evidence["frame_evidence"])
+        assert result["a4"]["speaker_change_evidence"]["peak_speaker_change_candidate"] is None
+        assert result["a4"]["speaker_change_decision"] == "DEFER"
         summary = result["c3_admission"].selected[0].summary
-        assert "speaker_change_candidate=1" in summary
-        assert "speaker_change_score=0.50" in summary
-        assert "speaker_change_kind=CHANGE_OR_OVERLAP" in summary
+        assert "speaker_change_candidate=" not in summary
+        assert "speaker_change_kind=" not in summary
+        assert "spk_cal=UNVERIFIED" in summary
+        assert "spk_dec=DEFER" in summary
         persisted = json.dumps(result["packet"], sort_keys=True)
         assert '"vector"' not in persisted
         assert '"speaker_label": null' in persisted
@@ -393,6 +407,8 @@ def _decision_cues(activity="VOICED", frame_count=50, voiced_fraction=0.8):
 def _decision_evidence(*, candidate=False, gate=True, calibration="fixture-cal-v1", status="MEASURED"):
     return {
         "status": status,
+        "threshold_status": "CALLER_ASSERTED_UNVERIFIED",
+        "calibration_receipt_sha256": None,
         "calibration_id": calibration,
         "confidence_threshold": 0.65,
         "peak_speaker_change_candidate": candidate,
@@ -401,16 +417,13 @@ def _decision_evidence(*, candidate=False, gate=True, calibration="fixture-cal-v
     }
 
 
-def test_three_regime_gate_supports_continuity_only_with_calibration_bound_voiced_evidence():
+def test_three_regime_gate_defers_caller_asserted_threshold_even_with_calibration_label():
     assert _speaker_change_decision(
         _decision_evidence(), _decision_cues()
-    ) == "CONTINUITY_SUPPORTED"
-
-
-def test_three_regime_gate_keeps_change_or_overlap_as_candidate_only():
+    ) == "DEFER"
     assert _speaker_change_decision(
         _decision_evidence(candidate=True, gate=False), _decision_cues()
-    ) == "CHANGE_OR_OVERLAP_CANDIDATE"
+    ) == "DEFER"
 
 
 @pytest.mark.parametrize("activity", ["SILENCE", "UNVOICED_NOISE", "IMPULSIVE", "UNCERTAIN"])
@@ -445,7 +458,7 @@ def test_three_regime_gate_defers_short_or_insufficient_voiced_windows():
     ) == "DEFER"
     assert _speaker_change_decision(
         evidence, _decision_cues(frame_count=100, voiced_fraction=0.8)
-    ) == "CONTINUITY_SUPPORTED"
+    ) == "DEFER"
 
 
 def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(tmp_path):
@@ -475,9 +488,9 @@ def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(
             consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
             finality="FINAL", speaker_embeddings=stable,
         )
-        assert supported["a4"]["speaker_change_decision"] == "CONTINUITY_SUPPORTED"
-        assert supported["packet"]["segments"][0]["acoustic"]["speaker_change_decision"] == "CONTINUITY_SUPPORTED"
-        assert supported["speaker_change_evidence"]["decision"] == "CONTINUITY_SUPPORTED"
+        assert supported["a4"]["speaker_change_decision"] == "DEFER"
+        assert supported["packet"]["segments"][0]["acoustic"]["speaker_change_decision"] == "DEFER"
+        assert supported["speaker_change_evidence"]["decision"] == "DEFER"
 
         changed = speaker_batch(
             SOURCE, event["brain_generation_id"], 2100, 3100,
@@ -491,8 +504,8 @@ def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(
             finality="FINAL", speaker_embeddings=changed,
         )
         assert silent["a4"]["voice_activity_hint"] == "SILENCE"
-        assert silent["speaker_change_evidence"]["confidence_gate_passed"] is False
-        assert silent["speaker_change_evidence"]["speaker_change_candidate"] is False
+        assert silent["speaker_change_evidence"]["confidence_gate_passed"] is None
+        assert silent["speaker_change_evidence"]["speaker_change_candidate"] is None
         assert silent["a4"]["speaker_change_decision"] == "DEFER"
         assert silent["packet"]["segments"][0]["acoustic"]["speaker_change_decision"] == "DEFER"
         assert any(
