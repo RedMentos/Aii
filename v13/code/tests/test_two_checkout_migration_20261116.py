@@ -69,6 +69,20 @@ u._fetch = local_fetch
 u.ci_passed = lambda commit, scope='runtime': True
 u._runtime_active = lambda: False
 d._check_stopped = lambda home: None
+deploy_errors = []
+def _track_stage(name, function):
+    def tracked(*args, **kwargs):
+        try:
+            return function(*args, **kwargs)
+        except Exception as exc:
+            message = str(exc).replace(str(Path.home()), "<HOME>")
+            message = message.replace(str(remote.parent), "<TMP>")
+            deploy_errors.append({"stage": name, "type": type(exc).__name__,
+                                  "message": message[:240]})
+            raise
+    return tracked
+d.prepare_source = _track_stage("prepare_source", d.prepare_source)
+d.deploy = _track_stage("deploy", d.deploy)
 if sys.argv[2] == 'old':
     p.set_enabled(True)
     result = p.run_cycle(force=True, manual=False, target='all')
@@ -82,7 +96,8 @@ else:
     result = relay._run_pending_migration_after_reload(p)
 print(json.dumps({'result': result, 'profile': d.BUILD_PROFILE,
                   'module_path': str(Path(d.__file__).resolve()),
-                  'fetches': fetches, 'same_source_updater':p.updates is u,
+                  'fetches': fetches, 'deploy_errors': deploy_errors,
+                  'same_source_updater':p.updates is u,
                   'home': str(Path.home())}))
 """
 
@@ -132,14 +147,28 @@ def exercise_worker_migration(base):
                                   cwd=home, env=env))
 
         old = worker('old')
+        print("V13_TWO_CHECKOUT_MIGRATION_DIAG", json.dumps({
+            "last_result": old["result"].get("last_result"),
+            "runtime": old["result"].get("runtime"),
+            "dashboard": old["result"].get("dashboard"),
+            "last_error": old["result"].get("last_error"),
+            "fetches": old.get("fetches"),
+            "deploy_errors": old.get("deploy_errors"),
+            "same_source_updater": old.get("same_source_updater"),
+            "profile": old.get("profile"),
+        }, sort_keys=True))
         assert old['module_path'].startswith(str(agent) + os.sep)
         assert old['profile'] == 'raw-runtime-plain-ui-history-recovery-v1'
-        assert old['result']['last_result'] == 'UPDATED', old
-        # A one-click update may find the dashboard already checked out at
-        # the exact target while the model launcher still needs staging.
-        # UP_TO_DATE is correct for that individual checkout; require the
-        # actual immutable Git commit, not a cosmetic UPDATED status.
-        assert old['result']['runtime'] == 'UPDATED', old
+        # The old phone worker may advance both Git checkouts but cannot
+        # necessarily activate a newer runtime whose pinned recovery builders
+        # changed. PARTIAL/UPDATE is an expected handoff state: the relay must
+        # reload the new worker, recheck consent/CI/stop, then finish activation.
+        assert old['result']['last_result'] in ('UPDATED', 'PARTIAL'), old
+        if old['result']['last_result'] == 'PARTIAL':
+            assert old['result']['runtime'] == 'ERROR', old
+            assert old['result']['last_error'] == 'UPDATE', old
+        else:
+            assert old['result']['runtime'] in ('UPDATED', 'UP_TO_DATE'), old
         assert old['result']['dashboard'] in ('UPDATED', 'UP_TO_DATE'), old
         # Diagnose a mismatched source/receipt without confusing launcher activation
         # with an actual Git checkout advance. The text is only local synthetic
@@ -206,14 +235,35 @@ def exercise_worker_migration(base):
             assert git('rev-parse', 'HEAD:' + path, cwd=agent) == git(
                 'rev-parse', target + ':' + path, cwd=repo), path
         marker = home / '.v13-private/runtime-active.json'
-        old_receipt = json.loads(marker.read_text(encoding='utf-8'))
-        assert old_receipt['build_profile'] == old['profile']
+        old_receipt = None
+        if old['result']['runtime'] in ('UPDATED', 'UP_TO_DATE'):
+            assert marker.is_file(), old
+            old_receipt = json.loads(marker.read_text(encoding='utf-8'))
+            assert old_receipt['build_profile'] == old['profile']
+        else:
+            # The old worker is expected to fail closed when the new commit
+            # changes a pinned builder it does not understand. In that case
+            # it must not publish an active-runtime receipt for a deployment
+            # that never completed. The freshly reloaded worker below must
+            # still recover and install the exact target.
+            assert old['result']['runtime'] == 'ERROR', old
+            assert not marker.exists(), 'failed legacy deploy must not publish an active receipt'
+            errors = old.get('deploy_errors') or []
+            assert any(
+                item.get('stage') == 'deploy'
+                and item.get('type') == 'RuntimeDeployError'
+                and item.get('message') == 'Pinned plain UI recovery builder changed'
+                for item in errors
+            ), old
         assert (home / '.v13-private/pipeline-bridge-refresh').is_file()
 
         # The new relay must not migrate when the owner's consent is off.
         disabled = worker('new_disabled')
         assert disabled['result'] is None
-        assert json.loads(marker.read_text(encoding='utf-8')) == old_receipt
+        if old_receipt is None:
+            assert not marker.exists()
+        else:
+            assert json.loads(marker.read_text(encoding='utf-8')) == old_receipt
 
         # Simulate relay exec/reload with a new interpreter and consent enabled.
         # This executes the actual one-shot startup helper, without a timer wait.

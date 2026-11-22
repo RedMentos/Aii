@@ -6,7 +6,7 @@ import pytest
 from v13 import android_control
 from v13.android_companion_runtime import AndroidCompanionController
 from v13.store import Store
-from v13.operator import run as operator_run
+from v13.operator import Operator
 
 
 PUBLIC_KEY = bytes.fromhex(
@@ -136,6 +136,8 @@ def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative
     assert request["capability"] == "launch_app"
     assert request["permission_bypass"] is False
     assert request["model_authority"] is False
+    assert request["companion_local_consent_required"] is True
+    assert request["android_os_permission_required"] is False
     assert request["local_approval"] == "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION"
 
     recorded = json.loads(controller.poll(pending["action_id"]))
@@ -151,7 +153,7 @@ def test_pair_pin_launch_and_signed_receipt_are_tty_driven_and_non_authoritative
     assert actual["auth_scheme"] == "ECDSA_P256_SHA256_ANDROID_KEYSTORE"
     assert actual["observed"] is False
     assert actual["world_learning_eligible"] is False
-    assert runtime.idle_checks == 3
+    assert runtime.idle_checks == 4
     runtime.store.close()
     controller.broker.close()
 
@@ -183,7 +185,7 @@ def test_key_rotation_and_disabled_companion_fail_closed(tmp_path):
     transport = FakeTransport(enabled=False)
     controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
     controller.trust(KEY_ID, True)
-    with pytest.raises(android_control.ControlDenied, match="not ready"):
+    with pytest.raises(android_control.ControlDenied, match="paired and enabled"):
         controller.launch("com.example.app", True)
     transport.public_key = lambda: {
         **PUBLIC_KEY_INFO,
@@ -197,6 +199,86 @@ def test_key_rotation_and_disabled_companion_fail_closed(tmp_path):
 
 def test_operator_refuses_model_origin_for_android_control(tmp_path):
     runtime = make_runtime(tmp_path)
-    with pytest.raises(PermissionError, match="OPERATOR_TTY"):
-        operator_run(runtime, ":android status", origin="MODEL")
+    with pytest.raises(ValueError, match="lokale Operator-Eingaben"):
+        Operator(runtime).run(":android status", origin="MODEL")
     runtime.store.close()
+
+
+
+def test_submit_timeout_with_unconfirmed_remote_cancel_keeps_receipt_pollable(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+
+    class AmbiguousTransport(FakeTransport):
+        def submit(self, request):
+            super().submit(request)
+            raise TimeoutError("ack lost after remote commit")
+
+        def cancel(self, action_id):
+            self.cancelled.append(action_id)
+            raise TimeoutError("remote cancellation not confirmed")
+
+    runtime = make_runtime(tmp_path)
+    transport = AmbiguousTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+
+    submitted = json.loads(controller.launch("com.example.app", True))
+    action_id = "2" * 32
+    assert submitted["status"] == "SUBMIT_UNCERTAIN"
+    assert submitted["action_id"] == action_id
+    assert controller.broker.action_state(action_id) == "SUBMIT_UNCERTAIN"
+
+    transport.receipt = SUCCESS_RECEIPT
+    polled = json.loads(controller.poll(action_id))
+    assert polled["status"] == "COMPANION_ATTESTED_NOT_DEVICE_VERIFIED"
+    assert controller.broker.action_state(action_id) == "RECEIPT_VERIFIED"
+    runtime.store.close()
+    controller.broker.close()
+
+
+def test_cancel_timeout_and_stop_do_not_finalize_an_ambiguous_remote_action(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+    runtime = make_runtime(tmp_path)
+    transport = FakeTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+    pending = json.loads(controller.launch("com.example.app", True))
+    action_id = pending["action_id"]
+
+    def timeout_cancel(_action_id):
+        raise TimeoutError("remote cancel acknowledgement lost")
+
+    transport.cancel = timeout_cancel
+    cancelled = json.loads(controller.cancel(action_id))
+    assert cancelled["status"] == "SUBMIT_UNCERTAIN"
+    assert controller.broker.action_state(action_id) == "SUBMIT_UNCERTAIN"
+
+    stopped = json.loads(controller.stop())
+    assert stopped["status"] == "LOCAL_BROKER_STOPPED"
+    assert action_id in stopped["uncertain_action_ids"]
+    assert controller.broker.action_state(action_id) == "SUBMIT_UNCERTAIN"
+    runtime.store.close()
+    controller.broker.close()
+
+
+def test_mismatched_submit_ack_cancels_local_and_remote_action(tmp_path, monkeypatch):
+    monkeypatch.setattr(android_control.secrets, "token_hex", lambda size: "2" * (size * 2))
+
+    class MismatchedAckTransport(FakeTransport):
+        def submit(self, request):
+            super().submit(request)
+            return {"status": "PENDING_USER_APPROVAL", "action_id": "f" * 32}
+
+    runtime = make_runtime(tmp_path)
+    transport = MismatchedAckTransport()
+    controller = AndroidCompanionController(runtime, transport=transport, clock=lambda: 1000.0)
+    controller.trust(KEY_ID, True)
+
+    with pytest.raises(android_control.ControlDenied, match="exact action id"):
+        controller.launch("com.example.app", True)
+
+    action_id = "2" * 32
+    assert transport.cancelled == [action_id]
+    assert controller.broker.action_state(action_id) == "CANCELLED"
+    runtime.store.close()
+    controller.broker.close()

@@ -69,22 +69,76 @@ final class CompanionDb extends SQLiteOpenHelper {
         }
     }
 
-    synchronized List<Action> pending() {
+    synchronized List<String> expirePendingAndReturnIds(long nowMillis) {
+        SQLiteDatabase writable = getWritableDatabase();
+        List<String> expired = new ArrayList<>();
+        writable.beginTransaction();
+        try {
+            // Read and transition the same rows in one transaction so a
+            // concurrent approve/deny cannot lose its notification cleanup.
+            try (Cursor c = writable.rawQuery(
+                    "SELECT action_id FROM actions "
+                            + "WHERE status='PENDING_USER_APPROVAL' AND expires_at<=?",
+                    new String[]{Long.toString(nowMillis)})) {
+                while (c.moveToNext()) expired.add(c.getString(0));
+            }
+            ContentValues values = new ContentValues();
+            values.put("status", "EXPIRED");
+            writable.update("actions", values,
+                    "status='PENDING_USER_APPROVAL' AND expires_at<=?",
+                    new String[]{Long.toString(nowMillis)});
+            writable.setTransactionSuccessful();
+        } finally {
+            writable.endTransaction();
+        }
+        return expired;
+    }
+
+    synchronized int expirePending(long nowMillis) {
+        return expirePendingAndReturnIds(nowMillis).size();
+    }
+
+    synchronized boolean expire(String actionId, long nowMillis) {
+        ContentValues values = new ContentValues();
+        values.put("status", "EXPIRED");
+        int changed = getWritableDatabase().update("actions", values,
+                "action_id=? AND status='PENDING_USER_APPROVAL' AND expires_at<=?",
+                new String[]{actionId, Long.toString(nowMillis)});
+        return changed == 1;
+    }
+
+    synchronized List<Action> pending(long nowMillis) {
+        return pending(nowMillis, null);
+    }
+
+    synchronized List<Action> pending(long nowMillis, List<String> expiredIds) {
+        List<String> expired = expirePendingAndReturnIds(nowMillis);
+        if (expiredIds != null) expiredIds.addAll(expired);
         List<Action> out = new ArrayList<>();
         try (Cursor c = getReadableDatabase().rawQuery(
                 "SELECT action_id,request_json,package_name,status,receipt_json,expires_at "
-                        + "FROM actions WHERE status='PENDING_USER_APPROVAL' ORDER BY expires_at", null)) {
+                        + "FROM actions WHERE status='PENDING_USER_APPROVAL' AND expires_at>? ORDER BY expires_at",
+                new String[]{Long.toString(nowMillis)})) {
             while (c.moveToNext()) out.add(new Action(c.getString(0), c.getString(1), c.getString(2),
                     c.getString(3), c.isNull(4) ? null : c.getString(4), c.getLong(5)));
         }
         return out;
     }
 
-    synchronized boolean claimForExecution(String actionId) {
+    synchronized boolean claimForExecution(String actionId, long nowMillis) {
+        return claim(actionId, nowMillis, "EXECUTING");
+    }
+
+    synchronized boolean claimForDenial(String actionId, long nowMillis) {
+        return claim(actionId, nowMillis, "DENYING");
+    }
+
+    private boolean claim(String actionId, long nowMillis, String decisionState) {
         ContentValues values = new ContentValues();
-        values.put("status", "EXECUTING");
+        values.put("status", decisionState);
         int changed = getWritableDatabase().update("actions", values,
-                "action_id=? AND status='PENDING_USER_APPROVAL'", new String[]{actionId});
+                "action_id=? AND status='PENDING_USER_APPROVAL' AND expires_at>?",
+                new String[]{actionId, Long.toString(nowMillis)});
         return changed == 1;
     }
 

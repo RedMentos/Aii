@@ -4,9 +4,16 @@ on:
   push:
     branches:
       - core/v14-android-companion-native-20261121
+      - qa/v14-companion-single-use-approval-20261121
+      - qa/v14-companion-os-permission-contract-20261122
+    paths:
+      - "android-companion/**"
+      - ".github/workflows/v14-android-companion.yml"
   pull_request:
     branches:
       - gpt6/v14-core-companion-outcome-20261121
+      - core/v14-android-companion-native-20261121
+      - qa/v14-companion-single-use-approval-20261121
     paths:
       - "android-companion/**"
       - ".github/workflows/v14-android-companion.yml"
@@ -28,7 +35,7 @@ jobs:
           gradle-version: "8.9"
       - uses: android-actions/setup-android@v4
         with:
-          packages: "platform-tools;platforms;android-35;build-tools;35.0.0"
+          packages: "platform-tools platforms;android-35 build-tools;35.0.0"
       - name: Build and test isolated companion
         run: |
           gradle --no-daemon -p android-companion :app:assembleDebug :app:testDebugUnitTest

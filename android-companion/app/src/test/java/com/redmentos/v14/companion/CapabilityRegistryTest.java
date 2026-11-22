@@ -1,13 +1,25 @@
 package com.redmentos.v14.companion;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 33)
 public final class CapabilityRegistryTest {
     @Test public void launchAppRequiresPairingAndTheCompanionEnableSwitch() {
         assertEquals("OFF_TERMUX_NOT_PAIRED", CapabilityRegistry.launchStatus(false, false));
@@ -18,7 +30,7 @@ public final class CapabilityRegistryTest {
 
     @Test public void onlyTheImplementedLaunchCapabilityCanBecomeReady() {
         List<CapabilityRegistry.Capability> items = CapabilityRegistry.entries(true, true);
-        assertEquals(7, items.size());
+        assertEquals(8, items.size());
         int ready = 0;
         for (CapabilityRegistry.Capability item : items) {
             if ("READY_WITH_PER_ACTION_CONSENT".equals(item.status)) ready++;
@@ -26,7 +38,11 @@ public final class CapabilityRegistryTest {
                 assertEquals(item.id, "OFF_NOT_IMPLEMENTED", item.status);
                 assertEquals(item.id, "NONE", item.provider);
                 assertFalse(item.perActionConsent);
-                assertFalse(item.androidOsPermissionRequired);
+                if ("audio_capture".equals(item.id)) {
+                    assertTrue(item.androidOsPermissionRequired);
+                } else {
+                    assertFalse(item.androidOsPermissionRequired);
+                }
                 assertFalse(item.resultObserved);
                 assertFalse(item.learningAuthority);
             }
@@ -48,5 +64,66 @@ public final class CapabilityRegistryTest {
         for (CapabilityRegistry.Capability item : CapabilityRegistry.entries(true, false)) {
             assertTrue(item.id, item.status.startsWith("OFF_"));
         }
+    }
+
+    @Test public void audioCaptureIsExplicitlyOffAndNotAcceptedByTheProvider() {
+        CapabilityRegistry.Capability audio = null;
+        for (CapabilityRegistry.Capability item : CapabilityRegistry.entries(true, true)) {
+            if ("audio_capture".equals(item.id)) audio = item;
+        }
+        assertNotNull(audio);
+        assertEquals("OFF_NOT_IMPLEMENTED", audio.status);
+        assertEquals("NONE", audio.provider);
+        assertFalse(audio.perActionConsent);
+        assertTrue(audio.androidOsPermissionRequired);
+        assertFalse(audio.resultObserved);
+        assertFalse(audio.learningAuthority);
+        assertFalse(CompanionProvider.isImplementedCapability("audio_capture"));
+        assertTrue(CompanionProvider.isImplementedCapability("launch_app"));
+    }
+
+    @Test public void capabilitySnapshotIgnoresStalePersistedOnAfterProcessStart() throws Exception {
+        Context context = RuntimeEnvironment.getApplication();
+        SharedPreferences prefs = context.getSharedPreferences(
+                CompanionProvider.PREFS, Context.MODE_PRIVATE);
+        assertTrue(prefs.edit()
+                .putBoolean("enabled", true)
+                .putString("paired_package", "com.termux")
+                .putString("paired_cert_sha256", "test-certificate-fingerprint")
+                .commit());
+
+        assertTrue(CompanionProvider.resetProcessStateForProviderStartup(context));
+        assertFalse(CompanionProvider.isEnabled(context));
+
+        JSONObject snapshot = CapabilityRegistry.snapshot(context);
+        assertFalse(snapshot.getBoolean("enabled"));
+        JSONArray capabilities = snapshot.getJSONArray("capabilities");
+        assertEquals("OFF_STOP_SWITCH", capabilities.getJSONObject(0).getString("status"));
+    }
+
+    @Test public void providerBindsExactCallingPackageToThePairedUidAndCertificate() {
+        String paired = "com.termux";
+        assertTrue(CompanionProvider.isExactPairedCaller(
+                paired, new String[]{paired}, paired));
+        assertFalse(CompanionProvider.isExactPairedCaller(
+                null, new String[]{paired}, paired));
+        assertFalse(CompanionProvider.isExactPairedCaller(
+                "com.attacker", new String[]{paired}, paired));
+        assertFalse(CompanionProvider.isExactPairedCaller(
+                paired, new String[]{paired, "com.attacker"}, paired));
+        assertFalse(CompanionProvider.isExactPairedCaller(
+                paired, new String[]{"com.attacker"}, paired));
+        assertFalse(CompanionProvider.isExactPairedCaller(
+                paired, new String[]{paired}, "com.attacker"));
+    }
+
+    @Test public void providerRejectsOsPermissionMisstatementAndRequiresCompanionConsent() {
+        String approval = "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION";
+        assertTrue(CompanionProvider.isValidLaunchScope(true, false, false, false, approval));
+        assertFalse(CompanionProvider.isValidLaunchScope(true, true, false, false, approval));
+        assertFalse(CompanionProvider.isValidLaunchScope(false, false, false, false, approval));
+        assertFalse(CompanionProvider.isValidLaunchScope(true, false, true, false, approval));
+        assertFalse(CompanionProvider.isValidLaunchScope(true, false, false, true, approval));
+        assertFalse(CompanionProvider.isValidLaunchScope(true, false, false, false, "MODEL_ASSERTED"));
     }
 }

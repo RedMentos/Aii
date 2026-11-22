@@ -83,8 +83,15 @@ class AndroidCompanionTransport:
             raise CompanionTransportError("invalid action request")
         if request.get("permission_bypass") is not False or request.get("model_authority") is not False:
             raise CompanionTransportError("request authority must remain zero")
+        action_id = request.get("action_id")
+        if type(action_id) is not str or not re.fullmatch(r"[0-9a-f]{32}", action_id):
+            raise CompanionTransportError("invalid action id")
         payload = json.dumps(request, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
-        return self._call("submit", payload)
+        response = self._call("submit", payload)
+        if (response.get("status") != "PENDING_USER_APPROVAL"
+                or response.get("action_id") != action_id):
+            raise CompanionTransportError("companion acknowledgement action id mismatch")
+        return response
 
     def outcome(self, action_id: str) -> dict:
         if type(action_id) is not str or not re.fullmatch(r"[0-9a-f]{32}", action_id):

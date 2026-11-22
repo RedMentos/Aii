@@ -17,7 +17,7 @@ import time
 CAPABILITIES = frozenset({"launch_app", "observe_ui", "tap", "swipe", "type_text", "back"})
 MAX_TEXT = 256
 MAX_PACKAGE = 180
-_ACTIVE_STATES = ("PROPOSED", "APPROVED", "DISPATCHED", "RECEIPT_CONSUMED")
+_ACTIVE_STATES = ("PROPOSED", "APPROVED", "DISPATCHED", "SUBMIT_UNCERTAIN", "RECEIPT_CONSUMED")
 
 
 class ControlDenied(PermissionError):
@@ -103,7 +103,7 @@ class AndroidControlBroker:
         self.consumed.clear()
         rows = list(self.db.execute(
             "SELECT action_id,capability,args_json,expires_at,digest,event_id,source_ref_json,state "
-            "FROM control_actions WHERE state IN ('PROPOSED','APPROVED','DISPATCHED','RECEIPT_CONSUMED')"
+            "FROM control_actions WHERE state IN ('PROPOSED','APPROVED','DISPATCHED','SUBMIT_UNCERTAIN','RECEIPT_CONSUMED')"
         ))
         for action_id, capability, args_json, expires_at, digest, event_id, source_json, state in rows:
             if expires_at < self.clock():
@@ -126,7 +126,7 @@ class AndroidControlBroker:
                 self.pending[action_id] = proposal
             elif state == "APPROVED":
                 self.approved[action_id] = proposal
-            elif state == "DISPATCHED":
+            elif state in ("DISPATCHED", "SUBMIT_UNCERTAIN"):
                 self.dispatched[action_id] = proposal
             elif state == "RECEIPT_CONSUMED":
                 self.consumed[action_id] = proposal
@@ -151,17 +151,27 @@ class AndroidControlBroker:
     def stop(self):
         with self.lock:
             self.stopped = True
-            for action_id in set(self.pending) | set(self.approved) | set(self.dispatched) | set(self.consumed):
+            # Local-only proposals can be cancelled. A request already sent to
+            # Android, or a receipt awaiting durable Store commit, must remain
+            # recoverable until remote cancellation or signed receipt is proven.
+            for action_id in set(self.pending) | set(self.approved):
                 self._audit(action_id, "operator_stop_cancelled")
+            for action_id, proposal in list(self.dispatched.items()):
+                row = self.db.execute(
+                    "SELECT state FROM control_actions WHERE action_id=?", (action_id,)
+                ).fetchone()
+                if row is not None and row[0] == "DISPATCHED":
+                    self._set_state(action_id, "SUBMIT_UNCERTAIN", expected="DISPATCHED")
+                self._audit(action_id, "operator_stop_preserved_uncertain", proposal.digest)
+            for action_id, proposal in self.consumed.items():
+                self._audit(action_id, "operator_stop_preserved_receipt", proposal.digest)
             self.db.execute(
-                "UPDATE control_actions SET state='CANCELLED' WHERE state IN "
-                "('PROPOSED','APPROVED','DISPATCHED','RECEIPT_CONSUMED')"
+                "UPDATE control_actions SET state='CANCELLED' WHERE state IN ('PROPOSED','APPROVED')"
             )
             self.db.commit()
             self.pending.clear()
             self.approved.clear()
-            self.dispatched.clear()
-            self.consumed.clear()
+            # Keep dispatched/uncertain and consumed maps for in-process retry.
             self._audit(None, "operator_stop")
 
     def propose(self, capability, args, *, ttl=30, event_id=None, source_ref=None):
@@ -247,21 +257,41 @@ class AndroidControlBroker:
                 "expires_at": p.expires_at,
                 "local_approval": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
                 "companion_local_consent_required": True,
-                "android_os_permission_required": True,
+                "android_os_permission_required": False,
                 "permission_bypass": False,
                 "model_authority": False,
             }
 
+    def mark_submit_uncertain(self, action_id):
+        """Retain a dispatched action when the remote submit/cancel result is ambiguous."""
+        with self.lock:
+            proposal = self.dispatched.get(action_id)
+            row = self.db.execute(
+                "SELECT state FROM control_actions WHERE action_id=?", (action_id,)
+            ).fetchone()
+            if proposal is None or row is None or row[0] not in ("DISPATCHED", "SUBMIT_UNCERTAIN"):
+                raise ControlDenied("action is not an unresolved dispatch")
+            if row[0] == "DISPATCHED":
+                self._set_state(action_id, "SUBMIT_UNCERTAIN", expected="DISPATCHED")
+            self._audit(action_id, "submit_uncertain", proposal.digest)
+            return True
+
     def consume_dispatched(self, action_id):
-        """Consume a dispatched request once before verifying its companion receipt."""
+        """Consume a dispatched or uncertain request once before verifying its receipt."""
         with self.lock:
             p = self.consumed.get(action_id) or self.dispatched.get(action_id)
             if p is None or self.stopped or self.clock() > p.expires_at:
                 self._audit(action_id, "companion_receipt_denied")
                 raise ControlDenied("dispatched action unavailable")
             if action_id in self.dispatched:
+                row = self.db.execute(
+                    "SELECT state FROM control_actions WHERE action_id=?", (action_id,)
+                ).fetchone()
+                expected = row[0] if row and row[0] in ("DISPATCHED", "SUBMIT_UNCERTAIN") else None
+                if expected is None:
+                    raise ControlDenied("dispatch state cannot be consumed")
                 self.dispatched.pop(action_id, None)
-                self._set_state(action_id, "RECEIPT_CONSUMED", expected="DISPATCHED")
+                self._set_state(action_id, "RECEIPT_CONSUMED", expected=expected)
                 self.consumed[action_id] = p
             self._audit(action_id, "companion_receipt_pending", p.digest)
             return p
