@@ -34,3 +34,27 @@ def observe_pcm16(pcm, sample_rate, start_ms, *, consent, source_id, max_seconds
             'transcript':None,'provenance':'RAW_EAR_PCMC16',
             'finality':'FINAL_WINDOW','speaker_identity':None}],
             'authority':'ACOUSTIC_FEATURES_ONLY','learning_authority':False}
+
+
+def observe_pcm16_for_a5(pcm, sample_rate, start_ms, *, consent,
+                         source_id, consent_receipt_ref, max_seconds=1):
+    """Convert a consented PCM window to the existing strict A5 audio admission contract.
+
+    The receipt is a reference only; external Android permission MUST be rechecked
+    by audio_to_admission(consent_active=...). No audio bytes are persisted.
+    """
+    if not isinstance(consent_receipt_ref, str) or not consent_receipt_ref.strip() or len(consent_receipt_ref) > 256:
+        raise PermissionError("nonempty bounded external consent receipt reference required")
+    if type(max_seconds) is not int or max_seconds != 1:
+        raise ValueError("A5 admission permits at most one second")
+    packet = observe_pcm16(pcm, sample_rate, start_ms, consent=consent,
+                           source_id=source_id, max_seconds=max_seconds)
+    segment = packet["segments"][0]
+    if segment["end_ms"] <= segment["start_ms"]:
+        raise ValueError("audio window must have positive millisecond duration")
+    segment["acoustic"]["zcr"] = segment["acoustic"]["zero_crossing_rate"]
+    segment["consent_receipt_ref"] = consent_receipt_ref
+    segment["finality"] = "FINAL"
+    segment["learning_authority"] = False
+    segment["action_authority"] = False
+    return packet
