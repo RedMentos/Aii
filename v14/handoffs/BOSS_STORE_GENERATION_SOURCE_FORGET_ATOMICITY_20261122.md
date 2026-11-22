@@ -9,7 +9,7 @@ Memory._forget_source now serializes source tombstoning and dependent-update qua
 - Store.switch_generation now holds the shared Store RLock from its first update read through validation and commit.
 - Its final transaction re-reads exact update status/base/path/hash/manifest and verifies every declared source_ids row remains present and undeleted.
 - Existing active component update rows are rechecked as committed and source-live before replacing a component.
-- Store.rollback now uses the same Store lock and validates the rollback target plus every parent component's committed update/source lineage inside the final transaction.
+- Store.rollback now uses the same Store lock and revalidates the rollback target identity and every parent component's committed update/source lineage inside the final transaction. A rollback may remove a tombstoned active candidate, but it cannot reactivate a forgotten parent.
 - Lock order remains JEPA file lock -> Store RLock for source forget. Generation promotion/rollback take only Store RLock and do not acquire the JEPA lock, avoiding lock inversion.
 
 ## Acceptance tests added
@@ -19,7 +19,7 @@ Memory._forget_source now serializes source tombstoning and dependent-update qua
 - test_memory_forget_tombstone_is_rechecked_after_artifact_preflight: a second SQLite connection tombstones a declared source after artifact preflight; final transaction must reject promotion.
 - test_memory_forget_cannot_be_undone_by_rollback_to_parent_component: a parent update is quarantined/forgotten; even after restoring the artifact bytes, rollback must not reactivate that parent lineage.
 
-These are synthetic SQLite/Store tests. They do not establish native Android, model-weight learning, or Redmi behavior. Full local execution is unavailable in this run because no repository checkout is present and GitHub DNS resolution fails in the container; exact GitHub Actions results are pending.
+A fifth negative-control test confirms rollback can still remove an active candidate after an external source tombstone, so the guard does not trap the system in an untrusted generation. These are synthetic SQLite/Store tests. They do not establish native Android, model-weight learning, or Redmi behavior. Full local execution is unavailable in this run because no repository checkout is present and GitHub DNS resolution fails in the container; exact GitHub Actions results are pending.
 
 ## Dependency and integration
 
