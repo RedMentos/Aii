@@ -36,14 +36,14 @@ The caller must hold the same UI lease through every downstream read and C3 gene
 
 - `frame_binding_check` is a required provider-owned callback. `PROVIDER_CALLBACK_ACCEPTED` means only that this callback returned literal `True`; the adapter does not itself verify an OS signature. The companion provider must verify a signed receipt bound to the exact frame digest, session, source and elapsed-realtime interval.
 - Overwriting the caller's mutable buffer is best effort. Python/Pillow internal copies are not guaranteed to be securely erased.
-- The packet is cached in memory under the UI lease and is cleared by the existing UI revocation path. The lease must remain held until downstream consumption finishes.
+- The packet is cached in memory under the UI lease. Provider revocation clears it; simply exiting the lease marks it inactive but does not itself remove the cache entry. Core must call `A5UIRuntimeAdapter.revoke(source_id)` after provider revocation and `A5UIRuntimeAdapter.close()` after provider revocation plus Runtime worker exit, before Store shutdown. The lease must remain held through downstream consumption.
 - This is RAW EYE feature extraction, not OCR, object detection, a trained visual projector, or semantic vision. The current A5 UI bridge does not yet call this module from the normal Runtime; Core must wire that call.
 - No Android permission, provider, model, weight, learning switch, installed data or device state was changed.
 
 ## Next executable integration
 
 1. Core/QA implement the MediaProjection provider on the companion side: per-session consent, one-use token, foreground service, signed frame receipt, resize/stop callback, and an explicit stop path.
-2. Core calls `consume_projected_frame` inside the active `UIObservationLease`, then passes its final `A5UIRuntimeAdapter.context` packet / bounded envelope to the actual Runtime consumer while retaining the lease through C3.
+2. Core calls `consume_projected_frame` inside the active `UIObservationLease`, then passes its final `A5UIRuntimeAdapter.context` packet / bounded envelope to the actual Runtime consumer while retaining the lease through C3. After provider revocation and worker exit, call `revoke(source_id)` / `close()` to clear ephemeral cache before Store shutdown.
 3. QA runs exact staged/integrated and revocation/restart negatives, then an explicitly authorized Android API/lifecycle test. Redmi remains unverified until a real device receipt and measured user-visible result exist.
 
 User action: none. No Termux command or model download is required for this candidate.
