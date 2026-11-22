@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T22:45:55.945Z",
+  "updated_at": "2026-11-22T22:47:34.843Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; private V13OBS #115 (updated 2026-11-22T20:24:26Z) confirms this SHA installed, auto-update enabled and Runtime/Dashboard UP_TO_DATE. Latest metadata still shows 0 valid B1/B2 offers, 4/4 B1 and 2/2 B2 native attempts failed, and C3 ~38.945 s prefill / 2 tokens. Functional/whole-Canon acceptance remains open; historical V13 Canon and V14 master are preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -1362,6 +1362,9 @@
     "research": "R-093 signal-aware replay; R-094 Replay on Demand loss-difference/top-k selection; R-095 per-example SM-2-like spaced review. All research-only; uniform replay remains baseline; no external code/weights imported; RoD dependencies are not Android-suitable and SRT artifacts are proprietary.",
     "user_action_required": false,
     "research_followup_at": "2026-11-22T22:41:52.834Z",
-    "test_contract_correction": "SleepRuntime temporal adapter clamps to 40 steps; regression corrected to assert steps_this_update==40."
+    "test_contract_correction": "SleepRuntime temporal adapter clamps to 40 steps; regression corrected to assert steps_this_update==40.",
+    "docs_branch_head": "f2e5c6a6b87ad5920b641d08235eb3a9a640df93",
+    "docs_pr": 2374,
+    "docs_pr_state": "DRAFT_STACKED_ON_QA_2371_NOT_INTEGRATED_MERGEABLE_FALSE"
   }
 }
