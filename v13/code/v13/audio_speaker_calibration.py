@@ -124,6 +124,7 @@ def _validate_binding(model_id, model_revision, model_sha256, embedding_dim,
 def build_calibration_artifact(samples, *, model_id, model_revision, model_sha256,
                                embedding_dim, frame_step_ms, lookback_frames,
                                dataset_id, dataset_revision, dataset_license,
+                               dataset_use_basis, dataset_authorization_ref,
                                max_false_accept_rate=0.05, max_false_reject_rate=0.20,
                                dataset_kind="REAL_LOCAL"):
     """Build a model-bound report from caller-supplied embeddings and opaque labels.
@@ -142,9 +143,11 @@ def build_calibration_artifact(samples, *, model_id, model_revision, model_sha25
     if dataset_kind not in {"REAL_LOCAL", "SYNTHETIC_TEST"}:
         raise SpeakerCalibrationError("dataset_kind is invalid")
     for name, value in (("dataset_id", dataset_id), ("dataset_revision", dataset_revision),
-                        ("dataset_license", dataset_license)):
+                        ("dataset_license", dataset_license), ("dataset_authorization_ref", dataset_authorization_ref)):
         if type(value) is not str or not value.strip() or len(value) > 256 or value.strip().upper() == "UNKNOWN":
             raise SpeakerCalibrationError(name + " must be explicit and non-empty")
+    if dataset_use_basis not in {"PUBLIC_DATASET_LICENSE", "LOCAL_OWNER_CONSENT"}:
+        raise SpeakerCalibrationError("dataset_use_basis must identify a public license or local owner consent")
     if type(samples) is not list or not 1 <= len(samples) <= _MAX_SAMPLES:
         raise SpeakerCalibrationError("samples must contain 1..4096 utterances")
 
@@ -216,6 +219,8 @@ def build_calibration_artifact(samples, *, model_id, model_revision, model_sha25
         "dataset_id": dataset_id,
         "dataset_revision": dataset_revision,
         "dataset_license": dataset_license,
+        "dataset_use_basis": dataset_use_basis,
+        "dataset_authorization_ref": dataset_authorization_ref,
         "model_id": model_id,
         "model_revision": model_revision,
         "model_sha256": model_sha256,
@@ -249,6 +254,7 @@ def validate_calibration_artifact(artifact, *, model_id, model_revision, model_s
     """Validate a report and exact model/temporal binding; never accepts synthetic reports."""
     required = {
         "schema", "method", "dataset_kind", "dataset_id", "dataset_revision", "dataset_license",
+        "dataset_use_basis", "dataset_authorization_ref",
         "model_id", "model_revision", "model_sha256",
         "embedding_dim", "frame_step_ms", "lookback_frames", "source_disjoint", "session_disjoint",
         "speaker_disjoint", "manifest_sha256", "calibration_speaker_count", "heldout_speaker_count",
@@ -263,9 +269,11 @@ def validate_calibration_artifact(artifact, *, model_id, model_revision, model_s
         raise SpeakerCalibrationError("calibration artifact schema/method mismatch")
     if artifact["dataset_kind"] != "REAL_LOCAL" or artifact["status"] != "HELDOUT_PASS":
         raise SpeakerCalibrationError("only real-local held-out-passing artifacts are eligible")
-    for key in ("dataset_id", "dataset_revision", "dataset_license"):
+    for key in ("dataset_id", "dataset_revision", "dataset_license", "dataset_authorization_ref"):
         if type(artifact[key]) is not str or not artifact[key].strip() or len(artifact[key]) > 256 or artifact[key].strip().upper() == "UNKNOWN":
             raise SpeakerCalibrationError("calibration dataset provenance is incomplete")
+    if artifact["dataset_use_basis"] not in {"PUBLIC_DATASET_LICENSE", "LOCAL_OWNER_CONSENT"}:
+        raise SpeakerCalibrationError("calibration dataset authorization basis is invalid")
     if not all(artifact[key] is True for key in ("source_disjoint", "session_disjoint", "speaker_disjoint")):
         raise SpeakerCalibrationError("calibration splits are not disjoint")
     for key, expected in (("model_id", model_id), ("model_revision", model_revision),
