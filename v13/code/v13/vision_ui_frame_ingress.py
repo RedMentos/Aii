@@ -17,6 +17,7 @@ import os
 import stat
 import time
 import zipfile
+from contextlib import contextmanager
 from pathlib import Path
 
 from . import attention as attention_module
@@ -25,6 +26,7 @@ from .a5_context_envelope import A5Item, admit_a5
 from .a5_ui_admission_bridge import (
     A5UIRuntimeAdapter,
     UIObservationLease,
+    revoke_ui_observation,
     validate_ui_observation,
 )
 from .contracts import packet as make_packet, validate
@@ -614,4 +616,21 @@ def consume_projected_frame(
         _overwrite_caller_buffer(frame_buffer)
 
 
-__all__ = ["REVISION", "consume_projected_frame"]
+@contextmanager
+def consume_projected_frame_scope(runtime, observation, frame_buffer, **kwargs):
+    """Scope one UI frame through all downstream consumers, then revoke its cache/source.
+
+    Nest this inside the same active UIObservationLease and keep that outer lease
+    open while C3 reads the returned packet. Exiting this scope revokes only this
+    frame's source/cache; it does not revoke the Android MediaProjection session.
+    Cleanup also runs if the downstream consumer raises.
+    """
+    validated = validate_ui_observation(observation)
+    try:
+        result = consume_projected_frame(runtime, validated, frame_buffer, **kwargs)
+        yield result
+    finally:
+        revoke_ui_observation(runtime, validated["source_id"])
+
+
+__all__ = ["REVISION", "consume_projected_frame", "consume_projected_frame_scope"]
