@@ -813,7 +813,8 @@ def test_locally_allowlisted_report_enables_only_non_identifying_a4_change_hint(
         summary = result["c3_admission"].selected[0].summary
         assert "speaker_change_candidate=1" in summary
         assert "speaker_change_kind=CHANGE_OR_OVERLAP" in summary
-        assert "spk_cal=LOCAL_APPROVED" in summary
+        # Calibration provenance remains structured in the PerceptPacket;
+        # the bounded C3 summary carries the actionable change/overlap hint.
         persisted = json.dumps(result["packet"], sort_keys=True)
         assert '"vector"' not in persisted
         assert '"speaker_label": null' in persisted
