@@ -48,6 +48,20 @@ def _json_hash(value):
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
+def _json_safe(value):
+    if isinstance(value, np.ndarray):
+        return _json_safe(value.tolist())
+    if isinstance(value, np.generic):
+        return value.item()
+    if isinstance(value, dict):
+        return {str(key): _json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(item) for item in value]
+    if isinstance(value, float) and not math.isfinite(value):
+        raise ValueError("nonfinite temporal checkpoint value")
+    return value
+
+
 def _finite_vector(value, size):
     return (type(value) in (list, tuple) and len(value) == size
             and all(type(x) in (int, float) and math.isfinite(x) for x in value))
@@ -429,8 +443,23 @@ def _record_valid(record):
         raise ValueError("temporal split ids")
     if type(record["receiver_heads"]) is not dict or set(record["receiver_heads"]) != set(ROLE_TARGETS):
         raise ValueError("temporal receiver heads")
+    for role, indices in ROLE_TARGETS.items():
+        head = record["receiver_heads"][role]
+        if type(head) is not dict or not {"weights", "bias"} <= set(head):
+            raise ValueError("temporal receiver head shape")
+        weights = np.asarray(head["weights"], dtype=np.float64)
+        bias = np.asarray(head["bias"], dtype=np.float64)
+        if (weights.ndim != 2 or weights.shape[1] != len(indices)
+                or bias.shape != (len(indices),)
+                or not np.isfinite(weights).all() or not np.isfinite(bias).all()):
+            raise ValueError("temporal receiver head values")
     if type(record["receiver_metrics"]) is not dict or type(record["action_support"]) is not dict:
         raise ValueError("temporal receiver metrics")
+    if any(action not in world_model.ACTIONS or type(count) is not int or count < 0
+           for action, count in record["action_support"].items()):
+        raise ValueError("temporal action support")
+    if _source_sha(rows) != record["source_sha256"]:
+        raise ValueError("temporal checkpoint source manifest mismatch")
     if type(record["retention_holdouts"]) is not list or len(record["retention_holdouts"]) > 3:
         raise ValueError("temporal retention cohort budget")
     for holdout in record["retention_holdouts"]:
@@ -453,6 +482,8 @@ def _validate_state(state):
     for key in ("active", "previous"):
         if state[key] is not None:
             _record_valid(state[key])
+    if (state["active"] is not None and state["scan_cursor"] != state["active"]["scan_cursor"]):
+        raise ValueError("temporal active cursor mismatch")
     if type(state["pending_rows"]) is not list or len(state["pending_rows"]) > MAX_ROWS:
         raise ValueError("temporal pending row budget")
     active_ids = set(state["active"]["fingerprints"]) if state["active"] else set()
@@ -722,7 +753,7 @@ class TemporalWorldJEPAStoreConsumer:
             checkpoint_name = "jepa-" + uuid.uuid4().hex + ".npz"
             checkpoint_path = self.home / checkpoint_name
             checkpoint = world_jepa_shadow_checkpoint.save(model, checkpoint_path, source_sha)
-            metrics = {
+            metrics = _json_safe({
                 "train_windows": len(train), "holdout_windows": len(holdout),
                 "holdout_mse_before": holdout_before, "holdout_mse_after": holdout_after,
                 "shuffled_target_mse": shuffled_target,
@@ -746,7 +777,9 @@ class TemporalWorldJEPAStoreConsumer:
                 "rejected_receipts": rejected,
                 "scanned_rows": scanned,
                 "has_more": has_more,
-            }
+            })
+            receiver_heads = _json_safe(receiver_heads)
+            receiver_metrics = _json_safe(receiver_metrics)
             record = {
                 "checkpoint": checkpoint_name,
                 "checkpoint_sha256": checkpoint["sha256"],
