@@ -11,8 +11,8 @@ import tempfile
 
 HEAD = '95aea15a046e73acf82c67ccf934cebda651ef87'
 FILES = {
-    'v13/runtime.py': 'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
-    'v13/operator.py': 'b81aa415acd3c2e6fe4c63de538719872976e4cff6dc532d434918a0fac57186',
+    'v13/runtime.py': '0a50cd5d894e55deb1f972fd353b0d0e0a8b8043de1a8664432d7558666346c1',
+    'v13/operator.py': '339e23b978b9c4076ca6b2edefc5855c76df5da4a6c966008b4fdf104969a008',
     'v13/agi/__init__.py': '75333b385dbc2d581e8fc028b433b0a93847dc80b64f83d9aedf104cc45c8661',
     'v13/online_world.py': 'ebd6044651ccd031c947a2e8d0d188232c2bab2da79b19ea6c513c433d59e8c8',
     'v13/continuous_predictor.py': '65ac1d863610ba82547dc715f74a0812ed31dd39f216398defb1bdb085392d8a',
@@ -35,9 +35,9 @@ ASSETS = {
     'test_known_revocation_window.py.txt': 'e3c3fa0bcfa90afd8f6e8d23addd7439ccba614b89a521754f959ed40fd6de7f',
 }
 EXPECTED_1631 = {
-    'v13/continuous_predictor.py': '6f1407c4bbc16d8f298fba2fb384f6022e88a1d8093cc5822a40069b34ee062a',
-    'v13/online_world.py': 'f4d415a0f600b1ea5313964801e06525e51bb882d09a99f04a67f678ed4126ff',
-    'tests/test_online_world_20261108.py': 'fc2c47bcf183f29a7f18cd8f5dcb1946b109ff273865242a4a5683af9c3289c7',
+    'v13/continuous_predictor.py': '65ac1d863610ba82547dc715f74a0812ed31dd39f216398defb1bdb085392d8a',
+    'v13/online_world.py': 'ebd6044651ccd031c947a2e8d0d188232c2bab2da79b19ea6c513c433d59e8c8',
+    'tests/test_online_world_20261108.py': '7a76845424f5ade953286a6684803a79778f543379a84393eecd90163de3ced6',
 }
 ASSET_DIR = Path(__file__).resolve().parents[1] / 'candidates/online_world_20261109'
 
