@@ -2090,3 +2090,21 @@ This overlay updates only the A-plane audio/voice evidence; it does not mark the
 | Learning / weights | No change | No gradient, parameter diff, trained adapter, persistent promotion, retention or rollback experiment in this package. | NOT_TESTED | OPEN / NO_WEIGHT_PROOF |
 
 **Negative boundary:** no real Redmi model activation, native B1/B2 useful offers, trained latent coupling, weight update, Android UI control or full user-facing turn was demonstrated by this run. Production B3 remains OFF. Historical Canon inventory and master bytes are unchanged.
+
+
+## Boss evidence overlay — 2026-11-22 (run 11)
+
+| Requirement family | Integrated change / exact evidence | Platform boundary | Acceptance status |
+|---|---|---|---|
+| B1/B2 same-turn budget | Core #2325 merge `283ac1c9`; budgeted subminimum deferral lets the peer retain its remaining slice; exact-threshold and unbudgeted legacy negatives. Exact push CI 46/46; private PIPELINE_STATUS #517 confirms install. | Phone code installed; no post-fix native offer/correctness measurement yet. | MERGED_INTEGRATION / PHONE_INSTALLED; NATIVE_QUALITY_OPEN |
+| Sender-model integrity | #2325 resolves sender path strictly, rejects symlinks, enforces containment under `home/models`, then verifies pinned digest; outside/symlink negatives. | CI + phone code install; no permission/model change. | MERGED_INTEGRATION / PHONE_INSTALLED |
+| RAW EAR anti-alias | Boss #2327 merge `9097d634`; cached centered Hamming FIR before decimation, alias/phase negatives, low-F0 positives, direct-reference parity, A5→A4→C3 and provisional/final admission tests. Exact candidate CI 27 SUCCESS / 1 expected SKIPPED. | Exact post-merge push CI pending at last poll; not yet installed. Isolated x86 Linux parity/decimator timing only. | MERGED_INTEGRATION / PUSH_CI_PENDING |
+| Core source-pin chain | Composer producer SHA-1, recovery wrapper SHA-256, stage builder SHA-256 and runtime deployer pin were recomputed and readback-verified on #2327. | Candidate CI staged-runtime/integrated passed; merge push CI pending. | CANDIDATE_CI_PASS / RELEASE_GATE_PENDING |
+| B3 / Enlightened Space | Core #2323 remains a diagnostic native input-embedding probe; #2325 adds sender containment. Production route remains OFF. #2313/#2317 paired-tap/L1 stack is draft and stale. | Android ARM64 cross-compile is not a Redmi native run; no trained adapter, independent labels or utility/retention proof. | DIAGNOSTIC_ONLY / NOT_PRODUCTION |
+| JEPA / World / Self / Sleep | #2311 exact head has 11 failures dominated by stale integrated OnlineWorld and observer source pins; diff deletes the #2323 diagnostic receiver files. | No accepted staged training path, parameter diff, restart, retention or rollback. | OPEN / NOT_MERGE_READY |
+| Voice / Audio / Android | Caller-supplied PCM16 RAW EAR feature path and synthetic consumer are improved. #2312 signed capture consumer remains stacked on QA companion and does not open AudioRecord. | No microphone provider, RECORD_AUDIO grant, ASR, trainable vocoder, full-duplex or Redmi capture. | PARTIAL_FEATURE_ONLY / ANDROID_OPEN |
+| Android UI/background agency | Existing companion PR stack remains separate and default-OFF; no new OS executor integrated. | No APK installation, screen capture, tap/type or background action on Redmi. | OFF / NOT_IMPLEMENTED |
+| Update / recovery | #283ac1 exact push CI 46/46 and private #517 installation receipt. #9097 merge push CI still pending. | Code install only; no Android process-death/reboot or dashboard rollback acceptance. | PHONE_VERIFIED_FOR_283AC1_ONLY |
+| Whole Canon | V14 master blob `9748ad5b...`; historical V13 Canon blob `218464b1...` is an exact byte-identical substring. Inventory remains 1,255 headings. | Semantic clause→consumer→test→platform→rollback mapping remains partial. | PRESERVED / MAPPING_INCOMPLETE |
+
+**Negative boundary:** no correct native B1/B2 offer, trained B3 latent transfer, permanent weight update, Android microphone/UI/background control, full voice learning, sparse MoE, or AGI claim is established by this overlay. Production B3 and learning promotion remain OFF.
