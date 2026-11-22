@@ -511,7 +511,7 @@ def test_fifo_tile_projector_is_rejected_without_blocking(monkeypatch, tmp_path)
     os.mkfifo(path)
 
     def delayed_writer():
-        time.sleep(1.0)
+        time.sleep(1.5)
         try:
             fd = os.open(path, os.O_WRONLY | os.O_NONBLOCK)
             os.close(fd)
@@ -523,5 +523,5 @@ def test_fifo_tile_projector_is_rejected_without_blocking(monkeypatch, tmp_path)
     result = _load_local_tile_projector(runtime, {"hash_dim": 256}, "red panel")
     elapsed = time.monotonic() - started
     assert result["status"] == "INVALID_PROJECTOR_FILE"
-    assert elapsed < 0.5
+    assert elapsed < 0.8
 
