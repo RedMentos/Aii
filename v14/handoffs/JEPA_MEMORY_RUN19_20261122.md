@@ -3,7 +3,7 @@
 **Timestamp:** 2026-11-22T20:55:00Z
 **Code PR:** [#2372](https://github.com/RedMentos/Aii/pull/2372)
 **Code branch:** jepa-memory/v14-temporal-exact-forget-retention-20261122-run14
-**Exact code HEAD:** 8ba258ff40fd4794658f8b1bac5400d8e5bcd125
+**Exact code HEAD:** dbb7b143a336ef946985cf3cad9185af3782d734
 **Status:** DRAFT / NOT_RELEASED / REDMI_UNVERIFIED
 
 ## Implemented in this run
@@ -16,12 +16,18 @@ Commits:
 - c5aa0701db557229f70bf2b088b3ba6ecd5b1b4d — cold-start WAITING state.
 - b80de800049779a5bae8a6191378b56d397e55fb — multi-session postcommit fixtures.
 - 8ba258ff40fd4794658f8b1bac5400d8e5bcd125 — cold-start and B1/B2 support regressions.
+- ebd58266d6d864a372759f66311bc045d67ed28b — temporal paging continuation in SleepRuntime.job.
+- dbb7b143a336ef946985cf3cad9185af3782d734 — temporal-only continuation regression.
+
+## Run 19 continuation addendum
+
+SleepRuntime.job now schedules a bounded continuation when either the base learner or the temporal learner reports has_more, and scheduler completion metadata includes temporal_status. The regression uses base has_more=false and temporal has_more=true. No exact-head workflow or commit status is visible yet for dbb7b143; the queued 8ba258ff parent workflows do not validate this change.
 
 ## Tests and environment
 
-- Exact-head staged/integrated workflow: 45069630757 — QUEUED.
-- Exact-head temporal WorldJEPA Python 3.13/3.14: 45069630624 — QUEUED.
-- Exact-head optimizer-resume Python 3.13/3.14: 45069630784 — QUEUED.
+- Exact-head dbb7b143: no workflow or commit status visible. Parent 8ba258ff staged/integrated workflow 45069630757 — QUEUED.
+- Parent 8ba258ff temporal WorldJEPA Python 3.13/3.14: 45069630624 — QUEUED.
+- Parent 8ba258ff optimizer-resume Python 3.13/3.14: 45069630784 — QUEUED.
 - LOCAL_LINUX full suite: BLOCKED / NOT_RUN. Python 3.13.5, NumPy 2.3.5 and pytest 9.0.2 exist, but no Aii checkout is mounted; git ls-remote failed because github.com DNS could not resolve.
 - TERMUX/REDMI: NOT TESTED. Private V13OBS #115 reports installed base aed1d2b, updater UP_TO_DATE; B1 4/4 and B2 2/2 native attempts failed, zero valid offers, C3 prefill ~38.945 s / 2 generated tokens. #2372 is not installed.
 
