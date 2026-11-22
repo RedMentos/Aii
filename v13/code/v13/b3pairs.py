@@ -299,4 +299,7 @@ def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
             "body_pair_id": [p["body_pair_id"] for p in pairs],
             "source_refs": [p["source_ref"] for p in pairs],
             "sender_revision": sender_rev, "receiver_revision": receiver_rev,
-            "claim_limit": "paired native read-only taps + explicit task labels; no receiver injection"}
+            "receiver_max_slots": (pairs[0]["packet"]["gist_readout"]["plan"]["max_slots"] if direction == "B1_TO_B2" else 0),
+            "receiver_slot_counts": ([len(p["receiver"]["gist_states"]) for p in pairs] if direction == "B1_TO_B2" else []),
+            "receiver_feature_mode": ("B2_GIST_ADAPTIVE_SLOTS_FLATTENED" if direction == "B1_TO_B2" else "B1_DETAIL_MEAN_POOL_BOOT"),
+            "claim_limit": "paired native read-only taps + adaptive B2 Gist readout + explicit task labels; no receiver injection"}
