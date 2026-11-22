@@ -87,7 +87,6 @@ class L1ShadowTrainingTests(unittest.TestCase):
             "label_provenance": [f"feedback-{i}" for i in range(64)],
             "body_pair_ids": batch["body_pair_ids"],
             "source_hashes": [x["sha256"] for x in batch["source_refs"]],
-            "test_indices": test_indices,
             "seed_ids": ["3", "7", "11"],
             "acc": {"EXACT": [0.5, 0.5, 0.5], "CONTROL": [0.5, 0.5, 0.5], "SYMBOLIC": [0.5, 0.5, 0.5]},
             "bytes": {"EXACT": 0, "CONTROL": 16, "SYMBOLIC": 32},
