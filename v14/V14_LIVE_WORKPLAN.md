@@ -1,3 +1,11 @@
+## Boss native receiver workflow progress — 2026-11-22 07:04Z
+
+- The exact PR-triggered #2314 native workflow run `44994147854` is **IN_PROGRESS**, not queued. Four jobs are active: Python 3.14 compile passed and source-tap/staged Runtime tests are running; Python 3.13 dependency install is running; pinned Linux llama.cpp build and Android arm64-v8a NDK cross-compile are both running. The separate push-triggered native workflow `44994143550` remains queued.
+- All other exact #2314 PR gates are green: runtime deployment, old-phone two-checkout migration, Lab-Age, private owner-read, same-turn B1/B2→C4→C3 and staged/integrated regression. No native job conclusion exists yet; do not merge/retarget until the four-job PR run completes and all conclusions are reviewed.
+- This workflow is a build/selftest/cross-compile, not a GGUF receiver inference or Redmi run. The native binary remains a review-only artifact; no install or model change.
+
+---
+
 ## Boss integration update — 2026-11-22 07:01Z
 
 - #2314 exact-head progress: runtime-deployment, old-phone two-checkout migration, Lab-Age, private owner-read, same-turn B1/B2→C4→C3 and staged/integrated regression are now **PASS** on head `87975814a1e134a4b12dc5961b6250d9125d65eb`. The dedicated `V14 native latent receiver staged runtime` workflow remains **QUEUED** for both PR and push triggers. The workflow is configured to build/test the exact pinned llama.cpp Linux receiver and Android arm64-v8a cross-compile; no actual GGUF receiver inference or Redmi run is included.
