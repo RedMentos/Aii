@@ -702,3 +702,158 @@ def test_source_disjoint_partition_is_stable_across_random_runtime_ids(tmp_path)
     finally:
         for store in stores:
             store.close()
+
+
+def test_temporal_world_jepa_history_reaches_actual_b1_b2_offer_prompts(tmp_path, monkeypatch):
+    import time
+    from v13 import agi
+    from v13.cognition import Cognition
+
+    class CaptureRunner:
+        def __init__(self):
+            self.calls = []
+            self.last_metrics = {}
+
+        def generate(self, messages, cancel_event, deadline, tokens, schema):
+            self.calls.append(messages)
+            self.last_metrics = {
+                "status": "FINAL", "duration_s": 0.001, "generated_tokens": 1,
+            }
+            yield json.dumps({
+                "summary": "Use the verified recent action history.",
+                "quotes": ["use the verified recent action history"],
+                "uncertainty": "low",
+                "needs_reentry": False,
+            })
+
+    class CapturePool:
+        def __init__(self, runner):
+            self.runner = runner
+
+        def get(self, role):
+            return self.runner
+
+    class Models:
+        def revision(self, role):
+            return "synthetic-" + role
+
+    monkeypatch.setattr(
+        agi, "hub",
+        lambda _runtime: SimpleNamespace(
+            skills=SimpleNamespace(select=lambda _text: [])
+        ),
+    )
+    home = tmp_path / "temporal-cognition-consumer"
+    store = _make_store(home)
+    try:
+        sessions, _ = _make_dataset(store, "bodyview-temporal", 32)
+        _permissions(store, steps=80)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        trained = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert trained["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", trained
+
+        text = "Current request: use the verified recent action history."
+        event = store.event(sessions[0], text)
+        runner = CaptureRunner()
+        runtime = SimpleNamespace(
+            store=store,
+            home=home,
+            session=sessions[0],
+            cfg={
+                "b2_state_slots": 0,
+                "b2_control": "two_body",
+                "b2_context_chars": 128,
+                "memory_threshold": 0.25,
+                "b2_offer_body_state": True,
+                "b2_quote_select": "off",
+                "observer_tokens": 256,
+                "offer_style": "solve",
+                "offer_quote_min_chars": 0,
+                "offer_quote_context_chars": 0,
+                "b1_recent_source_chars": 0,
+                "segment_mode": "fixed",
+                "body_question_b1": "",
+                "body_question_b2": "",
+                "body_question_scope": "always",
+                "observer_mode": "foreground",
+                "deadline_seconds": 30,
+            },
+            guard=SimpleNamespace(state="NORMAL", mode="GREEN"),
+            models=Models(),
+            pool=CapturePool(runner),
+            cancel_event=threading.Event(),
+        )
+        cognition = Cognition(runtime)
+        for role in ("B1_DETAIL", "B2_GIST"):
+            result = cognition.offer(role, event, 0, time.monotonic() + 5.0)
+            assert result["role"] == role
+
+        prompts = {}
+        for messages in runner.calls:
+            payload = json.loads(messages[1]["content"])
+            assert "body_state" in payload
+            state = payload["body_state"]
+            assert state["authority"] == "STATE_NOT_FACT"
+            assert "world_jepa_temporal" in state
+            prior = state["world_jepa_temporal"]
+            assert prior["status"] == "SHADOW_READOUT_ONLY"
+            assert prior["native_body_consumed"] is False
+            assert prior["decision_authority"] == "NONE"
+            assert len(json.dumps(state, separators=(",", ":"))) <= 700
+            prompts[state["role"]] = prior
+
+        assert set(prompts) == {"B1_DETAIL", "B2_GIST"}
+        detail, gist = prompts["B1_DETAIL"], prompts["B2_GIST"]
+        assert detail["history_length"] == 2
+        assert gist["history_length"] == 3
+        assert detail["target"] == "B1_DURATION_OUTPUT_SIZE"
+        assert gist["target"] == "B2_P_FINAL_NOT_ANSWER_CORRECTNESS"
+        assert detail["checkpoint"] == gist["checkpoint"] == trained["checkpoint_sha256"][:12]
+        assert "prediction only" in detail["note"]
+        assert "not fact/source/permission" in gist["note"]
+
+        query_rows = store.rows(
+            "SELECT payload FROM packets WHERE kind='QueryPacket' AND event_id=? ORDER BY created",
+            (event["event_id"],),
+        )
+        assert len(query_rows) == 2
+        for row in query_rows:
+            query_packet = json.loads(row["payload"])
+            role = query_packet["target_role"]
+            ref = query_packet["bodyview"]["body_state_ref"]
+            assert ref in query_packet["provenance"]
+            stored = json.loads(store.read_source(ref))
+            assert stored["schema"] == "V14_BODY_STATE_WITH_WORLDJEPA_AUDIT/2"
+            audit = stored["temporal_world_jepa_audit"]
+            assert audit["body_state_created"] is True
+            # The source record is created before Cognition.offer consumes it.
+            # The QueryPacket plus captured native prompt above is the consumption proof.
+            assert audit["body_prompt_consumed"] is False
+            assert audit["checkpoint_sha256"] == trained["checkpoint_sha256"]
+            assert audit["role"] == role
+            assert audit["history_length"] == (2 if role == "B1_DETAIL" else 3)
+            assert len(audit["history_action_ids"]) == audit["history_length"]
+            assert len(audit["history_source_sha256s"]) == audit["history_length"]
+            assert audit["native_body_consumed"] is False
+            assert audit["native_body_weights_changed"] is False
+            assert audit["decision_authority"] == "NONE"
+
+        # A writer holding the temporal JEPA lock must not stall the foreground
+        # B1 offer; the optional readout is omitted and the normal body state remains.
+        runner.calls.clear()
+        started = time.monotonic()
+        with learner._locked(True):
+            result = cognition.offer(
+                "B1_DETAIL", event, 0, time.monotonic() + 5.0
+            )
+            elapsed = time.monotonic() - started
+        assert result["role"] == "B1_DETAIL"
+        assert elapsed < 1.0
+        fallback = json.loads(runner.calls[-1][1]["content"])["body_state"]
+        assert "world_jepa_temporal" not in fallback
+        assert fallback["authority"] == "STATE_NOT_FACT"
+    finally:
+        store.close()
