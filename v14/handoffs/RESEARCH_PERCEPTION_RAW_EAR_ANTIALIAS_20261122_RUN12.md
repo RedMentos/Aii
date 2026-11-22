@@ -8,7 +8,7 @@ Base: `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe` (current release-development HE
 
 The existing RAW EAR feature path used block-average reduction before pitch/voicing estimation. That boxcar is not a sufficient anti-alias filter: high-frequency periodic input can fold into the 65–400 Hz F0 search band and be reported as `VOICED`. A synthetic 44.1-kHz, 8.62-kHz tone was previously interpreted as approximately 200.45 Hz. Similar alias cases exist at 16, 22.05 and 48 kHz.
 
-The branch replaces that reduction with a cached, centered 21-tap Hamming-windowed low-pass FIR followed by integer decimation. Cutoff is 0.45 × the resulting feature sample rate. Symmetric centered filtering avoids a timestamp shift; edge samples are replicated to preserve bounded window geometry. It uses only the Python standard library.
+The branch replaces that reduction with a cached centered Hamming-windowed low-pass FIR (25 taps for factor-5 / 44.1-kHz input; 21 taps otherwise) followed by integer decimation. Cutoff is 0.45 × the resulting feature sample rate. Symmetric centered filtering avoids a timestamp shift; edge samples are replicated to preserve bounded window geometry. It uses only the Python standard library.
 
 **Scope limit:** this is a low-cost RAW EAR pitch/voicing feature decimator only. It is not a calibrated VAD, not a speaker-embedding resampler, not a playback-quality resampler and not a learned model. The separate FASTDIAR 44.1→16-kHz feature-view question remains open.
 
@@ -31,8 +31,8 @@ Environment: CPython 3.13.5, x86_64 Linux, isolated algorithm reproduction (the 
   - old block-average negative control reproduces false `VOICED` at 44.1 kHz / 8.62 kHz;
   - one-second 44.1-kHz algorithm budget stays below 0.75 s on this host.
 - Nine-run median prototype benchmark at 44.1 kHz:
-  - 140-Hz voiced tone: 0.1683 s FIR vs 0.1522 s boxcar (+10.6%);
-  - 8.62-kHz alias case: 0.0209 s FIR vs 0.1489 s boxcar (-86.0%), because the false pitch path is no longer run.
+  - 140-Hz voiced tone: 0.1700 s FIR vs 0.1487 s boxcar (+14.4%);
+  - 8.62-kHz alias case: 0.0265 s FIR vs 0.1501 s boxcar (-82.4%), because the false pitch path is no longer run.
 - These are isolated prototype timings, not a full repository test, native model timing or Redmi measurement.
 
 ### CI
@@ -101,3 +101,18 @@ At current PR head `297e2c5d24d90cbbc3ac651e3b7c634b060184b2`, targeted workflow
 - The staged-runtime job `137144683517` failed with the stale Core source pin described above; the integrated-regression job `137144683632` also failed one staged-regression test for the same pin. No separate Perception numerical regression was reported.
 - PR #2322 remains DRAFT / NOT_MERGEABLE pending Core's pin/manifest refresh and an exact staged/integrated rerun. The blocker and R-077 research note are linked from Boss PR #2321, Core PR #2314 and whole-Canon issue #1984.
 - No release, updater request, model/weight change, microphone permission or device mutation occurred. The installed c03ff receipt is prior-release state only; this PR is not installed.
+
+
+## Full-scale / phase hardening follow-up (2026-11-22)
+
+The 21-tap first pass passed 6,000-amplitude fixtures, but an adversarial full-scale 44.1-kHz / 8.62-kHz tone with a different phase could still leak enough edge transient to enter the pitch gate. I did not accept that weaker boundary. The current branch therefore uses:
+- 25 Hamming taps for factor-5 (44.1-kHz) decimation; 21 taps for factors 2 and 6.
+- Odd reflection around the endpoint sample values for the short centered FIR window, rather than flat edge replication.
+- Full-scale PCM16 alias negatives (amplitude 32767, phase 1.0) across 16/22.05/44.1/48 kHz; the acceptance is `activity_hint != VOICED` and `voiced_fraction < 0.25`, so a single edge frame cannot open the voice gate.
+- The low-F0 140-Hz positives remain required at all four rates.
+
+Revised LOCAL_LINUX CPython 3.13.5 isolated scratch run: `py_compile` PASS, 4/4 tests PASS. Nine-run medians at 44.1 kHz: 140-Hz voiced 0.1700 s FIR vs 0.1487 s boxcar (+14.4%); full-scale 8.62-kHz alias 0.0265 s vs 0.1501 s (-82.4%); 48-kHz full-scale 7.8-kHz alias 0.0209 s vs 0.1267 s (-83.5%). These are scratch-host timings only.
+
+Current producer blob is now `c47e21e0847b188495b7cfcfead61578c65117c6`; comparator workflow source pin was refreshed in commit `5976d8aa866af7e55a5edb1b7e5095890c885ae5`. The Core-owned integrated candidate still pins the older `4c5641adf6758762ce0fdf616a9b2a798e6de408` blob and must be updated to `c47e21e0847b188495b7cfcfead61578c65117c6`.
+
+**Current exact-head CI:** PR head `5976d8aa866af7e55a5edb1b7e5095890c885ae5` has fresh RAW EAR fastpath, comparator, prosody, pre-lease QA, privacy, model-lab and staged/integrated workflows queued/pending. Earlier green results belong to the prior 21-tap code commit `297e2c5d24d90cbbc3ac651e3b7c634b060184b2`; do not transfer those PASS claims to this hardened code until the new runs complete.
