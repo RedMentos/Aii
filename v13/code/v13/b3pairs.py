@@ -307,7 +307,7 @@ def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
     pair_ids = [p.get("body_pair_id") for p in pair_packets]
     if len(set(pair_ids)) != len(pair_ids):
         raise ValueError("B3 training batch contains duplicate body_pair_id experiences")
-    source_keys = [(p.get("source_ref", {}).get("source_id"),
+    source_keys = [(p.get("source_ref", {}).get("sha256"),
                     p.get("source_ref", {}).get("char_start"),
                     p.get("source_ref", {}).get("char_end")) for p in pair_packets]
     if len(set(source_keys)) != len(source_keys):
