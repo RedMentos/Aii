@@ -276,8 +276,11 @@ class AndroidCompanionFrameProvider:
             ),
         }
 
+    def open_current_turn(self, runtime):
+        return _open_current_turn(self, runtime)
+
     def close(self):
-        self.verifier.stop()
+        self.verifier.close()
 
 
 
@@ -385,7 +388,7 @@ class _UIFrameGrantState:
             while not self.stop_event.wait(0.5):
                 try:
                     status = self.transport.screen_frame_status()
-                    if status.get("status") not in {"FRAME_READY", "FRAME_CONSUMED"}:
+                    if status.get("status") != "FRAME_CONSUMED":
                         self.revoke()
                         return
                     receipt = status.get("receipt")
@@ -428,9 +431,9 @@ class UIFrameGrant:
                 context_budget_chars=320, priority=0, cfg=None):
         if self._consumed:
             raise FrameReceiptDenied("one-shot UI frame was already consumed")
-        if not self.lease.active_for(
-            runtime, runtime.turn_event.get("brain_generation_id")
-        ):
+        event = getattr(runtime, "turn_event", None)
+        generation_id = event.get("brain_generation_id") if type(event) is dict else None
+        if not self.lease.active_for(runtime, generation_id):
             raise FrameReceiptDenied("UI frame lease is no longer active")
         try:
             from .vision_ui_frame_ingress import (
@@ -492,5 +495,3 @@ def _open_current_turn(provider, runtime):
         if type(frame) is bytearray and frame:
             frame[:] = b"\\x00" * len(frame)
 
-
-AndroidCompanionFrameProvider.open_current_turn = _open_current_turn
