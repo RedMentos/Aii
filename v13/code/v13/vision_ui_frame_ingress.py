@@ -343,7 +343,7 @@ def consume_projected_frame(
     frame_buffer,
     *,
     consent_lease: UIObservationLease,
-    frame_verifier: ProviderFrameVerifier,
+    frame_verifier: ProviderFrameVerifier = None,
     current_source: str,
     goal: str = "",
     token_budget: int = 512,
