@@ -621,7 +621,7 @@ def _set_runtime_permissions(store, *, learning_enabled, optimizer_permission,
     }, expected=version)
 
 
-def test_runtime_facade_defaults_off_without_creating_learning_state(tmp_path):
+def test_runtime_facade_defaults_off_without_creating_predictor_checkpoint_state(tmp_path):
     home = tmp_path / "brain"
     store, session = _make_store(home)
     try:
@@ -698,7 +698,7 @@ def test_runtime_records_source_bound_neuromod_traces_before_learning_gate(tmp_p
         assert modulator["provenance"][0] == receipt.source_ref
 
         count_before = len(rows)
-        second = consume_after_commit(store, home, limit=64, neuromod=neuromod)
+        second = consume_after_commit(store, home, limit=64, neuromod=Neuromod(store))
         rows_after = store.rows(
             "SELECT kind,payload FROM packets WHERE kind IN ('LearningTrace','ModulatorPacket')"
         )
