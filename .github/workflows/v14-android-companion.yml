@@ -46,6 +46,7 @@ jobs:
     env:
       # GitHub-hosted runners may lack KVM; current emulator exits unless TCG is explicitly allowed.
       ANDROID_I_WANT_MY_TCG: "yes"
+      ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: "60"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -57,17 +58,18 @@ jobs:
           gradle-version: "8.9"
       - uses: android-actions/setup-android@v4
         with:
-          packages: "platform-tools platforms;android-35 build-tools;35.0.0 emulator system-images;android-35;google_apis;x86_64"
+          packages: "platform-tools platforms;android-35 build-tools;35.0.0 emulator system-images;android-33;google_apis;x86_64"
       - name: Assemble companion APK
         run: gradle --no-daemon -p android-companion :app:assembleDebug
       - name: Exercise stop and process-death restart on Android emulator
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2, Apache-2.0
         with:
-          api-level: 35
+          api-level: 33
           target: google_apis
           arch: x86_64
           profile: pixel_2
-          disable-animations: true
+          disable-animations: false
+          emulator-boot-timeout: 900
           script: |
             gradle --no-daemon -p android-companion :app:installDebug
             python3 android-companion/scripts/test_process_restart.py
