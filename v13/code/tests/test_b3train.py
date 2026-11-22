@@ -80,6 +80,10 @@ class L1ShadowTrainingTests(unittest.TestCase):
         test_indices = sorted(test_indices)
         l0 = {
             "schema": "v13.b3-l0-baselines/1",
+            "task_id": "binary-outcome", "direction": "B1_TO_B2",
+            "label_source": "verified-test-outcome",
+            "labels": [i % 2 for i in range(64)],
+            "label_provenance": [f"feedback-{i}" for i in range(64)],
             "body_pair_ids": batch["body_pair_ids"],
             "source_hashes": [x["sha256"] for x in batch["source_refs"]],
             "test_indices": test_indices,
