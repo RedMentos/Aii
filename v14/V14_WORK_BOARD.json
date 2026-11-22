@@ -1103,7 +1103,7 @@
     "code_commit": "99cc3c351ceb228c154c82340f3cf552bd2a4fec",
     "pr": 2356,
     "pr_base": "core/v14-android-companion-native-20261121",
-    "pr_status": "OPEN_DRAFT_OR_REVIEW_PENDING_NOT_RELEASED",
+    "pr_status": "OPEN_NOT_RELEASED_INDEPENDENT_CORE_REVIEW_PENDING",
     "evidence": {
       "release_ci": "EXACT_RELEASE_HEAD_41_OF_41_CHECK_RUNS_SUCCESS",
       "phone_install": "PRIVATE_PIPELINE_STATUS_602_AUTHENTICATED_INSTALLED_AED1D2_UP_TO_DATE_AUTO_UPDATE_ENABLED_LAST_ERROR_NONE",
