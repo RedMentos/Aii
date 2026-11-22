@@ -250,9 +250,10 @@ class RuntimeRollbackIntegrationTests(unittest.TestCase):
         self.private = self.root / "private"
         self.builds = self.root / "builds"
         self.commit = "d" * 40
-        self.source_mock = mock.patch.object(
-            d, "_source", return_value=(self.checkout, self.code, self.commit)).start()
-        self.addCleanup(mock.patch.stopall)
+        self.source_patch = mock.patch.object(
+            d, "_source", return_value=(self.checkout, self.code, self.commit))
+        self.source_mock = self.source_patch.start()
+        self.addCleanup(self.source_patch.stop)
         self.stop_patch = mock.patch.object(d, "_check_stopped")
         self.selftest_patch = mock.patch.object(d, "_selftest")
         self.stop_patch.start()
