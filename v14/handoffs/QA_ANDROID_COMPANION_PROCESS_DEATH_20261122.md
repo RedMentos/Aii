@@ -37,3 +37,13 @@ The companion's existing Robolectric tests exercise the process-start reset meth
 ## Next action
 
 Wait for the exact-head emulator/Gradle CI. If green, request independent Core review and integrate only through the shared companion stack. Do not claim physical Redmi verification or start the 20-turn chat benchmark while HEALTH reports runtime unavailable and available RAM is below 1 GiB.
+
+
+## Latest QA follow-up — 2026-11-22
+
+- Current code-bearing QA head: `1a67f26145658c7a92a686c27ab499f1cb87fce7`.
+- The earlier UI hierarchy false-negative was caused by a standalone redacted `***` token in captured UIAutomator XML. The parser now removes only that standalone token after an XML parse failure; all other malformed XML still fails closed. Unit tests cover both cases.
+- On the next exact emulator run (head `b9dc78465e1f799761288c479c3236f25222e327`, run `45071309247`), the parser issue no longer masked the state. The test instead timed out while executing UIAutomator dump itself. The app PID and top-resumed activity existed, but dumpsys exposed no usable window; emulator console startup also emitted a warning. This is not proof that STOPPED was incorrect, but it is not a pass.
+- Added bounded, filtered logcat diagnostics for AndroidRuntime, ANR, ActivityTaskManager, WindowManager, InputDispatcher, UIAutomator and WebView in commit `1a67f26145658c7a92a686c27ab499f1cb87fce7`.
+- Exact-head run `45072872948` is still IN_PROGRESS: the Android Gradle/Robolectric job has passed; the process-death emulator job has not completed. Staged/integrated jobs are also still running.
+- Local Linux/full-repository execution remains unavailable. Emulator evidence is not Redmi proof; physical device lifecycle remains REDMI_UNVERIFIED.
