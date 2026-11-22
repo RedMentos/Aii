@@ -13,14 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Typed inventory of native Android capabilities.
- *
- * A capability is advertised as ready only when its provider exists and the
- * companion's own stop/pairing state permits it. The only implemented
- * capability is an explicitly approved PackageManager launch intent. It does
- * not observe foreground state and never grants model or learning authority.
- */
+/** Typed inventory of native Android capabilities. */
 final class CapabilityRegistry {
     interface CertificateDigestReader {
         String read(Context context, String packageName) throws Exception;
@@ -63,6 +56,11 @@ final class CapabilityRegistry {
         return enabled ? "READY_WITH_PER_ACTION_CONSENT" : "OFF_STOP_SWITCH";
     }
 
+    static String screenCaptureStatus(boolean paired, boolean enabled) {
+        if (!paired) return "OFF_TERMUX_NOT_PAIRED";
+        return enabled ? "READY_WITH_PER_SESSION_OS_CONSENT" : "OFF_STOP_SWITCH";
+    }
+
     static List<Capability> entries(boolean paired, boolean enabled) {
         return Collections.unmodifiableList(Arrays.asList(
                 new Capability(
@@ -77,7 +75,15 @@ final class CapabilityRegistry {
                 unavailable("audio_capture",
                         "No one-shot visible AudioRecord provider; capture remains disabled", true),
                 unavailable("observe_ui", "No AccessibilityService or UI-tree provider"),
-                unavailable("screen_capture", "No MediaProjection consent flow"),
+                new Capability(
+                        "screen_capture",
+                        screenCaptureStatus(paired, enabled),
+                        "One frame only; Android OS consent is required for every session",
+                        "MEDIA_PROJECTION_ONE_SHOT",
+                        true,
+                        true,
+                        true,
+                        false),
                 unavailable("tap", "Accessibility fallback is not implemented"),
                 unavailable("swipe", "Accessibility fallback is not implemented"),
                 unavailable("type_text", "Accessibility fallback is not implemented"),
