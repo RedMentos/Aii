@@ -1291,3 +1291,12 @@ Wait for the exact c372b4e staged/integrated, audio, controller, Lab-Age, A5, mi
 Private #592 at 17:11Z reported service RUNNING; later HEALTH #593 at 17:15Z reports runtime UNAVAILABLE. #591 continues to report the c4eb82 install and pipeline/dashboard UP_TO_DATE, so these signals are discrepant. Treat the latest health as UNAVAILABLE until reconciled; do not infer runtime health from updater status. No second UPDATE_REQUEST is warranted.
 
 Boss PR #2343 current head `ba9ee5df8bf5b1bf4b4a06fa21c3586637db41b5`: 28 exact checks, 1 success / 26 queued / 1 skipped / 0 failures at last poll. The prior executed head failed the staged postcommit observer at replacement 4. The new pre-postcommit diagnostic remains queued. Keep DRAFT / NOT_RELEASED.
+
+
+## Learning-state correction — 2026-11-22T17:27:00Z
+
+Private LEARNING_STATUS #594 reports `learning.state=UNAVAILABLE`; no active learning process or persistent numeric parameter update is verified. Keep the WorldJEPA/EMA and cross-organ weight-update paths marked SHADOW/OFF until real gradients, before/after parameter hashes, holdout utility, retention, restart and rollback are proven. This is separate from official Age 0 and lab stage 10.
+
+Latest HEALTH #593 also reports runtime UNAVAILABLE, while #591 pipeline/dashboard metadata is UP_TO_DATE and #592 had reported RUNNING earlier. Treat the current runtime as UNAVAILABLE/discrepant. Do not send a duplicate update request.
+
+Boss PR #2343 head `3585145ebbc0530817d4aeb216c3e75251e3f695`: 0 success / 27 queued / 1 skipped / 0 failure at last poll. The diagnostic run remains queued; candidate is DRAFT / NOT_RELEASED.
