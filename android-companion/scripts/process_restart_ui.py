@@ -30,6 +30,10 @@ def button_center(root: ET.Element, label: str) -> tuple[int, int] | None:
     return None
 
 
+def poll_delay(attempts: int) -> float:
+    """Back off UIAutomator polling on slow, software-rendered emulators."""
+    return min(5.0, 2.5 + max(0, attempts) * 0.75)
+
 def transient_overlay_action(root: ET.Element) -> str | None:
     labels = [value.casefold() for value in visible_labels(root)]
     if any("system ui isn't responding" in value for value in labels):
