@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T21:04:49.838Z",
+  "updated_at": "2026-11-22T21:07:26.770Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA readback 30/30 observed check-runs SUCCESS. Authenticated private PIPELINE_STATUS #619 confirms the same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #620 still shows a slow 2-token stored turn and B1/B2 TIME_BUDGET. Current candidates remain DRAFT / CI pending; functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -175,7 +175,7 @@
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
       "proof_environment": "LOCAL_LINUX isolated helper + CI_PENDING; no Android capture",
-      "next_step": "Perception: #2375 code/test head 6a4e919f has 8 exact-head checks QUEUED / 1 policy SKIPPED. The latest code fixes missing RAW EYE helpers and binds provider receipt hash to the exact decoded snapshot; isolated LOCAL_LINUX helper passes, full repo suite blocked. Still no Android MediaProjection provider, signed OS receipt, normal Runtime/C3 consumer or Redmi visual test.",
+      "next_step": "Perception: #2375 code/test head f87ebac4 has 8 exact-head checks QUEUED / 1 policy SKIPPED. The adapter now uses one digest-bound decode snapshot and a scoped source/cache revocation after C3; isolated LOCAL_LINUX helper passes, full repo suite blocked. Still no Android MediaProjection provider, signed OS receipt, normal Runtime/C3 consumer or Redmi visual test.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T09:58:33.516Z",
       "latest_candidate_pr": {
@@ -348,7 +348,7 @@
       "last_checkpoint": "2026-11-22T11:28:06.923Z",
       "proof_environment": "CI synthetic + Android ARM64 cross-compile; no Redmi probe/gradient proof",
       "proof": "Core #2323 remains diagnostic-only and production B3 OFF/SYMBOLIC. PR #2332's remote owner-read allowlist checks are not a runnable native probe: independent exact-source readback at candidate 198a490e confirms operator.py dispatches to callosum.operator_command, which still rejects native-probe; no local source-bound tap/model consumer or distinct local one-shot approval exists. Boss and QA recorded the blocker on #2332. No CHAT_OPERATOR or probe was sent.",
-      "next_step": "Core/Perception: #2367/#2377 remain diagnostic-only. R-091 shows that input-effect RMS is not functional transfer; first prove same-model parity, then target-generation/task utility and bidirectional/negative controls. Perception reviewed the manifest-vs-path_for binding gap on #2377; B3 remains OFF.",
+      "next_step": "Core/Perception: #2367/#2377 remain diagnostic-only. R-091 shows input-effect RMS is not functional transfer; first prove same-model parity, then target-generation/task utility and bidirectional/negative controls. Perception reviewed the manifest-vs-path_for binding gap on #2377; B3 remains OFF.",
       "core_run15_checkpoint": {
         "date": "2026-11-22",
         "owner": "Core & Harness",
@@ -387,7 +387,7 @@
       "scope": "Optional source-bound speaker-change evidence over caller-supplied PCM16; bounded process-local embeddings; A5 PerceptPacket → A4 salience/novelty → C3 summary; optional NumPy pitch backend; no identity labels.",
       "acceptance": "Pre-batch history snapshot for every frame in an incoming batch; 1-s/2-s invariance and threshold-absent/unvoiced negative controls; exact Python 3.13/3.14 focused CI plus staged/integrated CI; source/generation/consent/reset/revocation checks; no vector persistence; default Python and no model remain unchanged; Android proof separate.",
       "proof_environment": "LOCAL_LINUX isolated + CI candidate; no Android audio",
-      "next_step": "Perception: #2375 adapter does not provide microphone or screen capture. Keep FASTDIAR/speaker calibration and optional backends diagnostic-only until real consented audio corpus, Android provider and target-device measurements exist.",
+      "next_step": "Perception: speaker-change/RAW EAR remains caller-PCM only; #2375 is a separate synthetic MediaProjection frame adapter, not a microphone or speaker model. Keep FASTDIAR and optional backends diagnostic-only until a real consented audio provider, continuous stream and target-device measurements exist.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-22T09:58:33.516Z",
       "latest_candidate_pr": {
@@ -710,7 +710,7 @@
     "pr2370": "DRAFT; 27 queued / 3 skipped. 45% pre-answer window capped by 35 s observer setting; equal sequential slices roughly 17.5 s each. Prior body probes timed out at 53.2/54.2 s. Need actual OfferPacket delivery and C4 to C3 consumption proof.",
     "pr2367": "DRAFT; exact head 06113c60: 26 SUCCESS / 4 expected SKIPPED. QA found manifest-only model binding allowed same-size GGUF tamper; blocked pending #2377 and path_for identity review.",
     "pr2377": "DRAFT; exact head fcb7e8c2: 7 QUEUED. Adds streamed SHA-256 of sender/receiver model bytes and same-size tamper negatives; path_for(role) identity check still requested.",
-    "pr2375": "DRAFT; code/test head 6a4e919f176a7d1b96ab6669639c6fd1be4a7de4; current branch head 81632fb64aa03fd0d0493ea7129ae4e612b9dcc2 (handoff-only after code). Exact code-head checks: 8 QUEUED / 1 policy SKIPPED. Added missing bounded-config/zeroization helpers and snapshot-based hash+decode TOCTOU fix; LOCAL_LINUX isolated helper PASS, full local suite BLOCKED. WIRED_SYNTHETIC only; no Android provider, normal Runtime/C3 consumer or Redmi proof.",
+    "pr2375": "DRAFT; code/test head f87ebac407a19c147da7eb52bc63f10e9eed25d2; current branch head bc9e420d316d3b0106cf8cf5567388f503d90755 (handoff-only after code). Exact code-head checks: 8 QUEUED / 1 policy SKIPPED. Fixed missing bounded-config/zeroization helpers; hashes and decodes one verified frame snapshot; adds scoped per-frame source/cache revocation after downstream C3 use. LOCAL_LINUX isolated helper PASS, full local suite BLOCKED. WIRED_SYNTHETIC only; no Android provider, normal Runtime/C3 consumer or Redmi proof.",
     "pr2372": "DRAFT; exact head 6da129ef: 9 QUEUED. Temporal JEPA/B1-B2 readout remains blocked by SleepRuntime postcommit error and source-lifecycle composition; no GGUF weight update proof.",
     "pr2376": "Exact head 4abb0091: 7/7 SUCCESS, but stacked on QA companion #2356; #2356 exact head 3829465 has 7 success / 1 emulator process-restart failure / 1 queued. No Android device action proof.",
     "redmi": "PIPELINE_STATUS #619 confirms aed1d2b826290c95c70356b5d8b864b5ef382be4 installed, auto-update enabled, UP_TO_DATE, no error. DIAGNOSTICS #620: Authenticated private owner-read #620: service/runtime/dashboard RUNNING; last stored turn FINAL, 57.7388 s total, 41.6269 s TTFT, 38.9453 s prefill, 751 prompt tokens, 2 generated tokens; B1_DETAIL TIME_BUDGET 53.2 s, B2_GIST TIME_BUDGET 54.2 s, C3 3.1 s. Instant sample: 0 mapped native processes, 0 MiB PSS/RSS, child readability UNKNOWN. This is not sustained residency or free-RAM evidence. Config: 90 s deadline, 35 s observer window, 6 threads, 2048 context, 2400 MiB body-residency setting. No new chat was sent; correctness UNKNOWN.",
