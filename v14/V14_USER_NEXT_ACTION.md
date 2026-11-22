@@ -1,3 +1,13 @@
+# Latest verified QA & Android checkpoint — 2026-11-23
+
+**No user action is required.** The existing updater already reports the release-development head `aed1d2b826290c95c70356b5d8b864b5ef382be4` installed on Redmi. Do not rerun Termux, send another UPDATE_REQUEST, download models, or change permissions/weights.
+
+The last private read-only device receipt (#115, 2026-11-22 23:19 UTC) reports Runtime/Dashboard RUNNING and UP_TO_DATE, but the last stored turn was 57.739 s / 41.627 s TTFT with 2 generated tokens; correctness is UNKNOWN. B1/B2 produced zero valid offers (4/4 and 2/2 native attempts failed with TIME_BUDGET); native latent exchange and model residency are not proven.
+
+Current QA code, CI boundaries, pending checks, privacy limits and next steps are recorded in [QA_ANDROID_RUN10_20261123.md](QA_ANDROID_RUN10_20261123.md). Candidate PRs are not deployed. The installed app and user data were not changed.
+
+---
+
 # V14 – letzte verifizierte Entwicklung / nächstes sinnvolles Nutzer-Update
 
 **Stand:** 20. November 2026. **Zuständig:** V14 Boss & Integration (QA verifiziert technische und lokale Angaben).  
