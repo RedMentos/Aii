@@ -183,13 +183,16 @@ def apply_sources(code_dir, sources):
     # output. Their verification still rejects other input changes.
     semantic_name = 'v13/world_semantic_evidence_candidate.py'
     local_name = 'v13/local_error_route_shadow_candidate.py'
-    semantic_pin = '609c9d187e11551663aea238bf07af962f8458582139bd9707c89b6f347dd8f3'
+    semantic_pin = '0f0558eafdfdd5083f72646c6e44e0707c706a0f965bbea72eefe99a00ceef34'
     local_pin = '36de730d7eab40681740c1165ea0510c2412ea1180bc7f6dd7120a6cf894c471'
     action_pin = '86f79e8f3c26928f0a16399070f1b8d729760697a3b9e02ea9f6315ab6fcf87a'
+    mismatches = []
     for name, expected in ((semantic_name, semantic_pin), (local_name, local_pin)):
         actual = hashlib.sha256(result[name]).hexdigest()
         if actual != expected:
-            raise ValueError('semantic dependency changed: ' + name + ' expected=' + expected + ' actual=' + actual)
+            mismatches.append(name + ' expected=' + expected + ' actual=' + actual)
+    if mismatches:
+        raise ValueError('semantic dependency changed: ' + '; '.join(mismatches))
     if hashlib.sha256(checked['v13/actionlearn.py']).hexdigest() != action_pin:
         raise ValueError('guarded ActionLearn output changed')
     old_action_pin, = PINS['v13/actionlearn.py']
