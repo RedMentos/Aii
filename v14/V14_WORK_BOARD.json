@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T06:58:00Z",
+  "updated_at": "2026-11-22T07:01:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at f210999cf556be4d4514427cc9b5cf6d3cf3e984; V14 master and historical V13 appendix preserved. This board is a Boss handoff branch stacked on Perception handoff PR #2316.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -14,10 +14,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5 B1/B2 B3/B4 C1–C7; existing native runtime",
       "acceptance": "Native correct final output with source-bound B1/B2 consumed contributions; fastpath remains fast; real TTFT/RSS",
-      "proof_environment": "MERGED_INTEGRATION + CI/SYNTHETIC only. #2288 candidate-head matrix: 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 CANCELLED; same-turn B1/B2→C4→C3 and source-read/revocation passed on staged Runtime with synthetic runners. Boss #2314 now has runtime-deploy, old-phone migration and Lab-Age PASS; native-receiver/staged workflows remain queued and same-turn/owner-read checks are in progress. #2313 parent still has failed paired-tap, Lab-Age and Core tap-provenance checks; #2317's grouped-holdout B3 check passed but staged integration is queued. No native GGUF answer or Redmi proof.",
-      "next_step": "Finish #2314 exact native-receiver + staged/integrated + owner-read checks; then rebase #2313 and its source-disjoint child #2317 together onto current release f210999. Require actual native B1/B2 offers, mutual re-entry, C4 consumption, correct C3 output and measured TTFT/PSS; preserve both bodies and fastpath.",
+      "proof_environment": "MERGED_INTEGRATION + CI/SYNTHETIC only. #2288 candidate-head matrix: 20 SUCCESS / 0 FAILURE / 1 expected SKIPPED / 1 CANCELLED; same-turn B1/B2→C4→C3 and source-read/revocation passed on staged Runtime with synthetic runners. Boss #2314 now passes runtime-deploy, old-phone migration, Lab-Age, owner-read, same-turn B1/B2/C4/C3 and staged/integrated checks. Only its dedicated native-receiver workflow remains queued. #2313 parent still has failed paired-tap, Lab-Age and Core tap-provenance checks; #2317 grouped-holdout B3 check passed but staged integration remains queued. No native GGUF answer or Redmi proof.",
+      "next_step": "Wait for #2314 dedicated pinned Linux/Android ARM64 native receiver workflow; then rebase #2313 and its source-disjoint child #2317 together onto current release. Require actual native B1/B2 offers, mutual re-entry, C4 consumption, correct C3 output and measured TTFT/PSS; preserve both bodies and fastpath.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T06:54:00Z",
+      "last_checkpoint": "2026-11-22T07:01:00Z",
       "proof": "Release-development merge 39b175521f50048f13ca14372b316de47527f531; exact candidate CI 20/0/1/1. No native model or phone proof."
     },
     {
@@ -61,10 +61,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "B3 / Enlightened Space + B1/B2/World/C receivers",
       "acceptance": "Sender activations -> trained projection -> actual receiver consumption; compare latent vs exact vs none and prove benefit; fallback",
-      "proof_environment": "Production B3 remains OFF/SYMBOLIC. Boss #2314 head 87975814a1e134a4b12dc5961b6250d9125d65eb: runtime-deploy PASS, old-phone migration PASS, Lab-Age PASS; native receiver and staged/integrated workflows queued, same-turn and owner-read in progress. This is an explicit one-shot llama.cpp input-embedding probe, not trained alignment or production routing. #2313 remains NOT_READY with failed paired-tap/Lab-Age/tap-provenance checks; child #2317 source-SHA-disjoint holdout B3 check PASS, staged integration queued.",
-      "next_step": "Complete #2314 exact matrix and review its source-bound tap/model hashes, then run same-model parity and zero/shuffle/dimension/revision controls with a real installed model. Rebase #2313+#2317 as one stack and require genuinely captured source-disjoint taps plus independently measured EXACT/CONTROL/SYMBOLIC baselines before any L1 gate. Keep production route and authority zero.",
+      "proof_environment": "Production B3 remains OFF/SYMBOLIC. Boss #2314 head 87975814a1e134a4b12dc5961b6250d9125d65eb: runtime-deploy, old-phone migration, Lab-Age, owner-read, same-turn B1/B2/C4/C3 and staged/integrated checks PASS; dedicated pinned native receiver build/run remains QUEUED. This is an explicit one-shot llama.cpp input-embedding probe, not trained alignment or production routing. #2313 remains NOT_READY with failed paired-tap/Lab-Age/tap-provenance checks; child #2317 source-SHA-disjoint holdout B3 check PASS, staged integration queued.",
+      "next_step": "Finish #2314 dedicated Linux pinned API build and Android ARM64 cross-compile, then same-model parity and zero/shuffle/dimension/revision controls with an already-installed model. Rebase #2313+#2317 as one stack and require genuinely captured source-disjoint taps plus independently measured EXACT/CONTROL/SYMBOLIC baselines before any L1 gate. Keep production route and authority zero.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T06:54:00Z",
+      "last_checkpoint": "2026-11-22T07:01:00Z",
       "proof": "Current PR heads 8a9ce and af2c; comments 7075095567 and 7075087798."
     },
     {
@@ -187,10 +187,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Live SoT, all V13 historic contracts, ongoing PR dependency graph, backups",
       "acceptance": "Feature-to-Canon mapping, no silent omission, integrated validated PR, meaningful native progress, immutable backup/readback",
-      "proof_environment": "Boss PR #2288 merged at 39b175521f50048f13ca14372b316de47527f531. Release-development branch readback is f210999cf556be4d4514427cc9b5cf6d3cf3e984. Exact-head push evidence is partial: 8 observed push runs SUCCESS, release-event integration CANCELLED, commit status pending/no aggregate contexts. #2314 has 3 relevant checks PASS and the native/staged/owner-read chain still running; #2313/#2317 and #2311 remain pending or failed as described in the current handoff. No local full-repo run or Redmi validation.",
-      "next_step": "Own serial integration: finish #2314 matrix, rebase #2313+#2317 after parent failures are fixed, review #2311 after its new exact matrix, and reconcile #2312 with QA. Do not merge pending/red PRs. Preserve historical V13 appendix bytes and never call synthetic/CI results Android acceptance.",
+      "proof_environment": "Boss PR #2288 merged at 39b175521f50048f13ca14372b316de47527f531. Release-development branch readback f210999cf556be4d4514427cc9b5cf6d3cf3e984. Exact-head push evidence remains partial: 8 observed push runs SUCCESS, release-event integration CANCELLED, commit status pending/no aggregate contexts. #2314 now passes runtime deployment, migration, Lab-Age, owner-read, same-turn and staged/integrated; its dedicated native build remains queued. #2313/#2317 and #2311 remain open/pending or failed; #2286 exact CI queued with a stop-persistence review finding. No local full-repo run or Redmi validation.",
+      "next_step": "Own serial integration: finish #2314 dedicated native workflow; diagnose #2313 parent CI failures and rebase #2313+#2317 together; review #2311 after its new exact matrix; reconcile #2312 and the complete #2271→#2273→#2286 companion stack. Do not merge pending/red PRs. Preserve historical V13 appendix bytes.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T06:54:00Z",
+      "last_checkpoint": "2026-11-22T07:01:00Z",
       "proof": "Merged PR #2288; no release/phone acceptance claim."
     },
     {
@@ -313,10 +313,10 @@
       "owner": "Core & Harness + Boss",
       "priority": "P0",
       "status": "IN_PROGRESS_PARTIAL",
-      "last_checkpoint": "2026-11-22T06:54:00Z",
-      "proof_environment": "Boss #2314 head 87975814a1e134a4b12dc5961b6250d9125d65eb composes the native llama.cpp input-embedding probe into the staged Runtime. Runtime-deployment PASS, old-phone migration PASS and Lab-Age PASS; native receiver build/run and staged/integrated workflows remain queued, same-turn/owner-read checks in progress. The binary is not auto-installed. The command is explicit and synchronous; production_route=false, semantic_use_proven=false, training_authority=0 and native_receiver_authority=0. No actual GGUF receiver run or Redmi proof.",
+      "last_checkpoint": "2026-11-22T07:01:00Z",
+      "proof_environment": "Boss #2314 head 87975814a1e134a4b12dc5961b6250d9125d65eb composes the native llama.cpp input-embedding probe into staged Runtime. Runtime deployment, old-phone migration, Lab-Age, owner-read, same-turn B1/B2/C4/C3 and staged/integrated checks PASS. Dedicated pinned Linux build/Android ARM64 cross-compile workflow remains QUEUED. Binary is not auto-installed; command is explicit/synchronous; production_route=false, semantic_use_proven=false, training_authority=0 and native_receiver_authority=0. No actual GGUF receiver run or Redmi proof.",
       "proof": "PR #2266 head 3166858133844fc80201334f53ade450557d1191; explicit operator-only probe through pinned llama.cpp input-embedding API. Six isolated wrapper tests and C++ core compile/selftest reported PASS; real pinned library/model run and Android arm64 build remain pending. production_route=false; no semantic use, trained alignment, cross-organ learning or Redmi proof.",
-      "next_step": "Finish exact Python 3.13/3.14 staged, Linux pinned API, Android ARM64 cross-compile, owner-read and old-phone matrix; then perform same-model parity plus zero/shuffle/dimension/revision controls on an already-installed model only if separately approved. No model download, auto-install, production route or weight edit."
+      "next_step": "Complete the dedicated pinned Linux build/selftest and Android ARM64 cross-compile; then perform same-model parity plus zero/shuffle/dimension/revision controls on an already-installed model only if separately approved. No model download, auto-install, production route or weight edit."
     },
     {
       "id": "V14-017",
@@ -324,10 +324,10 @@
       "owner": "Core & Harness + QA & Android",
       "priority": "P0",
       "status": "BLOCKED_REVIEW",
-      "last_checkpoint": "2026-11-22T06:58:00Z",
-      "proof_environment": "QA companion PR #2286 current head 0639c4e4a5b1613445ba62ed4d39188fb6f60b56 has the companion, broker, outcome, sandbox, migration and staged/integrated exact-head matrix QUEUED; no new-head PASS. Code still implements launch_app only; observe_ui, screen_capture, tap/swipe/type/back and audio_capture remain OFF_NOT_IMPLEMENTED. Boss review found the shared ACTION_GATE_LOCK correctly orders stop against dispatch, but setEnabled/toggleEnabled still use SharedPreferences.apply(), which is not a durable stop write before process death. No APK, Android OS action or Redmi test.",
+      "last_checkpoint": "2026-11-22T07:01:00Z",
+      "proof_environment": "QA companion PR #2286 current head 0639c4e4a5b1613445ba62ed4d39188fb6f60b56 has exact companion, broker, outcome, sandbox, migration and staged/integrated matrix QUEUED; no new-head PASS. Code still implements launch_app only. Boss review comment 7075643215: ACTION_GATE_LOCK orders in-process stop/dispatch, but setEnabled/toggleEnabled use SharedPreferences.apply(), so durable OFF across process death is not proven. No APK, Android OS action or Redmi test.",
       "proof": "Boss review comment 7075643215 on #2286: ACTION_GATE_LOCK linearizes in-process order, but asynchronous SharedPreferences.apply() does not prove durable OFF across process death. Current exact-head CI queued; no device proof.",
-      "next_step": "QA/Core: replace the stop flag's asynchronous apply() with checked durable persistence (or transactionally persisted state used by the gate), fail closed on persistence failure, and add process-recreation/stop-during-dispatch regressions. Then rebase the entire #2271→#2273→#2286 stack onto current release and rerun Gradle, broker/outcome, sandbox, migration and staged integration. Keep all capabilities default-OFF until an installed APK and real authorized device receipt."
+      "next_step": "QA/Core: make Stop state durably persistent with checked commit or transactionally persisted fail-closed gate; add process-recreation and stop-during-dispatch tests. Then reconcile/rebase full #2271→#2273→#2286 stack on current release and rerun Gradle, broker/outcome, sandbox, migration and staged integration. Keep all capabilities default-OFF."
     },
     {
       "id": "V14-018",
