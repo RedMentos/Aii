@@ -375,8 +375,9 @@ class Memory:
         # Refuse a false unlearning claim: active learned lineage needs explicit rollbacks first.
         active=self.s.generation()['hashes']
         if any(u['path'] in active for u in affected):raise ValueError('Quelle steckt in aktiven Gewichten. Zuerst :rollback '+next(u['id'] for u in affected if u['path'] in active))
-        from .world_jepa_consumer import source_forget_guard
-        # Hold the same file lock as JEPA training through source/blob deletion.
+        from .world_jepa_temporal import combined_source_forget_guard as source_forget_guard
+        # Hold the shared JEPA lock while checking both one-step and temporal
+        # checkpoint lineage through source/blob deletion.
         # A checkpoint may retain a source's parameter influence after replay-row eviction.
         with source_forget_guard(self.s,sid):
             with self.s.tx() as c:
