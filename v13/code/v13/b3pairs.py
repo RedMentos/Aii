@@ -93,7 +93,7 @@ def capture_pair(cognition, event, deadline):
     body_pair_id = "B1_DETAIL<->B2_GIST:" + pair_key[:24]
     record = packet(
         "B3PairedTapPacket", "B3_CALLOSUM", event_id, generation, [source],
-        schema=SCHEMA, body_pair_id=body_pair_id, source_ref=source,
+        packet_schema=SCHEMA, body_pair_id=body_pair_id, source_ref=source,
         sender_roles=list(ROLES),
         tap_packet_ids={role: taps[role]["packet_id"] for role in ROLES},
         tap_ids={role: taps[role]["tap_id"] for role in ROLES},
