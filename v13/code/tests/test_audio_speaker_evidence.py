@@ -27,9 +27,9 @@ RECEIPT = "fixture:consented-speaker"
 MODEL_SHA = "a" * 64
 
 
-def tone(sample_rate=16000, frequency=140, seconds=1.0, amplitude=6000):
+def tone(sample_rate=16000, frequency=140, seconds=1.0, amplitude=6000, phase=0.0):
     count = int(sample_rate * seconds)
-    samples = [int(amplitude * math.sin(2 * math.pi * frequency * i / sample_rate))
+    samples = [int(amplitude * math.sin(2 * math.pi * frequency * i / sample_rate + phase))
                for i in range(count)]
     return struct.pack("<" + "h" * len(samples), *samples)
 
@@ -589,3 +589,130 @@ def test_low_level_noise_does_not_become_voiced_when_window_floor_is_relaxed():
     cues = audio_voice_module.extract_voice_cues(pcm, 16000)
     assert cues["voiced_fraction"] == 0.0
     assert cues["activity_hint"] == "SILENCE"
+
+
+@pytest.mark.parametrize(
+    ("sample_rate", "frequency", "phase"),
+    [
+        (rate, frequency, phase)
+        for rate, frequency in ((16000, 7800), (22050, 10825), (44100, 8620), (48000, 7800))
+        for phase in (0.0, 1.0, 2.4)
+    ],
+)
+def test_high_frequency_alias_is_not_misclassified_as_voiced(sample_rate, frequency, phase):
+    cues = audio_voice_module.extract_voice_cues(
+        tone(sample_rate=sample_rate, frequency=frequency, amplitude=32767, phase=phase),
+        sample_rate,
+    )
+    assert cues["activity_hint"] == "UNVOICED_NOISE"
+    assert cues["voiced_fraction"] < 0.25
+
+
+@pytest.mark.parametrize("sample_rate", [16000, 22050, 44100, 48000])
+def test_antialias_filter_preserves_low_fundamental_pitch(sample_rate):
+    cues = audio_voice_module.extract_voice_cues(
+        tone(sample_rate=sample_rate, frequency=140), sample_rate,
+    )
+    assert cues["activity_hint"] == "VOICED"
+    assert cues["f0_median_hz"] == pytest.approx(140, abs=5)
+
+
+def _direct_antialias_reference(samples, sample_rate, factor):
+    coefficients = audio_voice_module._voice_decimator_coefficients(sample_rate, factor)
+    half = len(coefficients) // 2
+    sample_count = len(samples)
+    output = []
+    for output_index in range(sample_count // factor):
+        center = output_index * factor
+        filtered = 0.0
+        for tap_index, coefficient in enumerate(coefficients):
+            source_index = center + tap_index - half
+            if 0 <= source_index < sample_count:
+                source_value = float(samples[source_index])
+            elif sample_count <= half:
+                source_value = float(samples[0] if source_index < 0 else samples[-1])
+            elif source_index < 0:
+                source_value = 2.0 * float(samples[0]) - float(samples[-source_index])
+            else:
+                mirror_index = 2 * sample_count - 2 - source_index
+                source_value = 2.0 * float(samples[-1]) - float(samples[mirror_index])
+            filtered += source_value * coefficient
+        output.append(filtered)
+    return output
+
+
+@pytest.mark.parametrize("sample_rate", [16000, 22050, 44100, 48000])
+@pytest.mark.parametrize("sample_count", [1, 10, 11, 257, 1001])
+def test_symmetric_antialias_matches_direct_reference(sample_rate, sample_count):
+    rng = random.Random(sample_rate * 10000 + sample_count)
+    samples = [rng.randint(-32768, 32767) for _ in range(sample_count)]
+    factor = max(1, sample_rate // 8000)
+    actual, effective_rate = audio_voice_module._anti_alias_decimate(
+        samples, sample_rate, factor,
+    )
+    expected = _direct_antialias_reference(samples, sample_rate, factor)
+    assert effective_rate == sample_rate / factor
+    assert actual == pytest.approx(expected, abs=1e-7)
+
+
+def test_alias_rejection_reaches_the_real_a5_a4_c3_consumer(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(sample_rate=44100, frequency=8620, amplitude=32767, phase=1.0), sample_rate=44100,
+            start_ms=100, event_id=event["event_id"],
+            generation_id=event["brain_generation_id"], source_id=SOURCE,
+            consent_receipt=RECEIPT, consent_check=consent_ok,
+            consent_guard=consent_guard(consent_ok), finality="FINAL",
+        )
+        assert result["a4"]["voice_activity_hint"] == "UNVOICED_NOISE"
+        assert result["temporal_voice"]["voice_evidence"] == 0.0
+        assert result["a4"]["speaker_change_decision"] == "DEFER"
+        assert "activity=UNVOICED_NOISE" in result["c3_admission"].selected[0].summary
+    finally:
+        runtime.store.close()
+
+
+def test_provisional_audio_is_persisted_but_not_admitted_until_final(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        provisional = consume_pcm16_voice_window(
+            runtime, tone(sample_rate=16000, frequency=140, phase=0.0),
+            sample_rate=16000, start_ms=100,
+            event_id=event["event_id"],
+            generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok,
+            consent_guard=consent_guard(consent_ok),
+            finality="PROVISIONAL",
+        )
+        provisional_segment = provisional["packet"]["segments"][0]
+        assert provisional_segment["finality"] == "PROVISIONAL"
+        assert provisional_segment["learning_authority"] is False
+        assert provisional_segment["action_authority"] is False
+        assert provisional["c3_admission"].selected == ()
+        assert SOURCE in provisional["c3_admission"].omitted
+        stored = runtime.store.one(
+            "SELECT payload FROM packets WHERE id=? AND kind='PerceptPacket'",
+            (provisional["packet"]["packet_id"],),
+        )
+        assert stored is not None
+        assert json.loads(stored["payload"])["segments"][0]["finality"] == "PROVISIONAL"
+
+        final = consume_pcm16_voice_window(
+            runtime, tone(sample_rate=16000, frequency=140, phase=0.4),
+            sample_rate=16000, start_ms=1100,
+            event_id=event["event_id"],
+            generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok,
+            consent_guard=consent_guard(consent_ok),
+            finality="FINAL",
+        )
+        assert final["packet"]["segments"][0]["finality"] == "FINAL"
+        assert len(final["c3_admission"].selected) == 1
+        assert final["c3_admission"].selected[0].source_id == SOURCE
+        assert final["learning_authority"] is False
+        assert final["action_authority"] is False
+    finally:
+        runtime.store.close()

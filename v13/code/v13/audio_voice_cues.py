@@ -12,6 +12,7 @@ from __future__ import annotations
 import math
 import struct
 from contextlib import contextmanager
+from functools import lru_cache
 import threading
 from statistics import median
 
@@ -148,6 +149,78 @@ def _estimate_pitch_numpy(frame, sample_rate: float, np) -> tuple[float | None, 
     return sample_rate / lag, max(0.0, min(1.0, confidence))
 
 
+
+@lru_cache(maxsize=32)
+def _voice_decimator_coefficients(sample_rate: int, factor: int) -> tuple[float, ...]:
+    """Return a cached centered Hamming-windowed low-pass FIR for RAW EAR cues."""
+    taps = 25 if factor == 5 else 21
+    target_rate = sample_rate / factor
+    cutoff_hz = 0.45 * target_rate
+    midpoint = (taps - 1) / 2
+    coefficients = []
+    for index in range(taps):
+        offset = index - midpoint
+        if offset == 0:
+            ideal = 2.0 * cutoff_hz / sample_rate
+        else:
+            ideal = math.sin(2.0 * math.pi * cutoff_hz * offset / sample_rate) / (math.pi * offset)
+        window = 0.54 - 0.46 * math.cos(2.0 * math.pi * index / (taps - 1))
+        coefficients.append(ideal * window)
+    total = sum(coefficients)
+    if not math.isfinite(total) or abs(total) <= 1e-12:
+        raise ValueError("invalid RAW EAR decimator filter")
+    return tuple(value / total for value in coefficients)
+
+
+def _anti_alias_decimate(samples, sample_rate: int, factor: int) -> tuple[list[float], float]:
+    """Low-pass before integer decimation with odd endpoint reflection.
+
+    The Hamming-windowed sinc coefficients are symmetric. Pairing samples
+    around each output center preserves the centered zero-phase FIR result
+    while nearly halving multiply operations on the pure-Python Android path.
+    This is a RAW EAR feature decimator, not a speaker-model resampler.
+    """
+    if type(factor) is not int or factor < 1:
+        raise ValueError("RAW EAR decimation factor must be a positive integer")
+    if factor == 1:
+        return [float(value) for value in samples], float(sample_rate)
+    coefficients = _voice_decimator_coefficients(sample_rate, factor)
+    half = len(coefficients) // 2
+    sample_count = len(samples)
+    output_count = sample_count // factor
+    output = []
+    for output_index in range(output_count):
+        center = output_index * factor
+        filtered = 0.0
+        for offset in range(1, half + 1):
+            left_index = center - offset
+            right_index = center + offset
+            if 0 <= left_index < sample_count:
+                left_value = float(samples[left_index])
+            elif sample_count <= half:
+                left_value = float(samples[0] if left_index < 0 else samples[-1])
+            elif left_index < 0:
+                left_value = 2.0 * float(samples[0]) - float(samples[-left_index])
+            else:
+                mirror_index = 2 * sample_count - 2 - left_index
+                left_value = 2.0 * float(samples[-1]) - float(samples[mirror_index])
+
+            if 0 <= right_index < sample_count:
+                right_value = float(samples[right_index])
+            elif sample_count <= half:
+                right_value = float(samples[0] if right_index < 0 else samples[-1])
+            elif right_index < 0:
+                right_value = 2.0 * float(samples[0]) - float(samples[-right_index])
+            else:
+                mirror_index = 2 * sample_count - 2 - right_index
+                right_value = 2.0 * float(samples[-1]) - float(samples[mirror_index])
+
+            filtered += coefficients[half - offset] * (left_value + right_value)
+
+        filtered += coefficients[half] * float(samples[center])
+        output.append(filtered)
+    return output, sample_rate / factor
+
 def _percentile(values: list[float], fraction: float) -> float | None:
     """Return a linearly interpolated percentile for a small bounded frame list."""
     if not values:
@@ -237,14 +310,11 @@ def extract_voice_cues(pcm: bytes, sample_rate: int, *, backend: str = "python")
     overall_rms = math.sqrt(overall_energy) / 32768.0
     overall_peak = max(abs(value) for value in samples) / 32768.0
 
-    # Block-average downsampling keeps the Python work bounded on ARM.
+    # A boxcar average can alias high-frequency tones into the 65..400 Hz
+    # pitch band. Keep RAW EAR self-contained and bounded with a small cached
+    # centered FIR before integer decimation. This is not a model resampler.
     factor = max(1, int(sample_rate // 8000))
-    usable = (len(samples) // factor) * factor
-    low_rate = [
-        sum(samples[index:index + factor]) / factor
-        for index in range(0, usable, factor)
-    ]
-    effective_rate = sample_rate / factor
+    low_rate, effective_rate = _anti_alias_decimate(samples, sample_rate, factor)
     frame_ms, hop_ms = 40, 20
     frame_size = max(32, int(round(effective_rate * frame_ms / 1000.0)))
     hop_size = max(1, int(round(effective_rate * hop_ms / 1000.0)))
