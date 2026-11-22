@@ -30,6 +30,25 @@ SAFE_OPERATOR_COMMANDS = frozenset({
     ":probe jef-modes", ":probe step12",
     ":scheduler lab summary", ":scheduler lab now"
 })
+# The only parameterized remote operator is a one-shot native receiver probe.
+# Exact role allowlists plus --last-source and --confirm prevent shell/flag injection.
+NATIVE_RECEIVER_PROBE_COMMAND = re.compile(
+    r":callosum native-probe (B1_DETAIL|B2_GIST) "
+    r"(B1_DETAIL|B2_GIST|C3_LANGUAGE) --last-source --confirm",
+    re.ASCII,
+)
+
+
+def is_safe_operator_command(command):
+    """Accept fixed diagnostics or the exact owner-confirmed native probe form."""
+    if not isinstance(command, str) or command != command.strip():
+        return False
+    if command in SAFE_OPERATOR_COMMANDS:
+        return True
+    match = NATIVE_RECEIVER_PROBE_COMMAND.fullmatch(command)
+    return bool(match and match.group(1) != match.group(2))
+
+
 JOB_TTL_SECONDS = 21600
 TOKEN_PATTERN = re.compile(r"(?:gh[pousr]_[a-zA-Z0-9_]{10,}|github_pat_[a-zA-Z0-9_]{10,})")
 
@@ -120,7 +139,7 @@ def send(ident, text, *, operator=False):
     # Operator commands can modify state or invoke future tools. Remote
     # operator access is therefore a separate exact diagnostic allowlist.
     if operator:
-        if text.strip() not in SAFE_OPERATOR_COMMANDS:
+        if not is_safe_operator_command(text):
             raise ChatDenied("operator command not in diagnostic allowlist")
     elif text.strip().startswith(":"):
         raise ChatDenied("operator commands require a separate approved scope")
