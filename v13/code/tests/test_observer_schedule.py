@@ -41,6 +41,27 @@ class Plan(unittest.TestCase):
         self.assertEqual(obs.background('JEF_FIRST_THEN_BOTH','e',.5,BOTH,['B2_GIST']),['B2_GIST'])
         self.assertEqual(obs.background('SAMPLED_OBSERVER','e',0.,BOTH),[]);self.assertEqual(obs.background('A_THEN_B_SEQUENTIAL','e',0.,BOTH),BOTH)
 
+class RecoverySliceFloor(unittest.TestCase):
+    def test_short_recovery_window_keeps_both_roles_when_each_has_one_second(self):
+        sig = effort.signals(
+            "Compare plan A and plan B in detail", route="both"
+        )
+
+        def decide(window):
+            return effort.decide(
+                "max", sig, direct=False, observers=True,
+                resource_state="GREEN", resource_mode="GREEN",
+                observer_window_s=window, cfg={}, age=effort.AGE0,
+            )
+
+        # 3.9 s is enough for two fair >=1 s attempts. The old 2 s
+        # threshold incorrectly collapsed this to B1 only after small preamble cost.
+        self.assertEqual(decide(3.9)["wake"], "both")
+        self.assertEqual(decide(3.9)["wake_ceiling"], "both")
+        self.assertEqual(decide(1.9)["wake"], "detail")
+        self.assertEqual(decide(0.9)["wake"], "none")
+
+
 class Run(unittest.TestCase):
     def test_sequential_keeps_peer_and_order(self):
         seen=[];out=obs.run(obs.plan('B_THEN_A_SEQUENTIAL',BOTH,'e'),lambda r,peer:seen.append((r,peer)) or r,time.monotonic()+60,Mock())
