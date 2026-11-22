@@ -3,7 +3,7 @@
 **Date:** 2026-11-22  
 **Base:** Boss integration branch `boss/v14-recall-store-pin-rebind-20261122` at `6e6f15322c9fa1931dcf733105d2a32d5372edeb`  
 **Branch:** `core/v14-flow-audit-boss-20261122`  
-**Status:** implementation checkpoint; exact-head CI pending; NOT_RELEASED; REDMI_UNVERIFIED.
+**Status:** DRAFT / flow-audit CI PASS on Python 3.13 and 3.14 / newest privacy scan pending / broader staged integration pending / NOT_RELEASED / REDMI_UNVERIFIED.
 
 ## User-visible function
 
@@ -20,10 +20,10 @@ The local dashboard gains an explicit **Organdurchlauf prüfen** action. It read
 ## Tests and environment
 
 - LOCAL_LINUX: BLOCKED — no repository checkout; direct Git transport/DNS unavailable in this session.
-- CI: exact-head flow-audit workflow PASS on Python 3.13 and 3.14 (projection, terminal-turn filtering, read-only route, token/host/POST denial, Python compile and inline JavaScript syntax). V13 private-bridge offline security workflow PASS. The broader staged-runtime/integrated-regression workflow is still running.
+- CI: code-bearing head `b9ccc53592f52c5682df4ae865e344a89f39e5b7` passed the flow-audit workflow on Python 3.13 and 3.14 (projection, terminal-turn filtering, read-only route, token/host/POST denial, Python compile and inline JavaScript syntax). V13 private-bridge offline security workflow PASS. The public-repository privacy scan was added on the next workflow commit and is pending; broader staged-runtime/integrated-regression workflow is still running.
 - TERMUX/REDMI: NOT RUN; no connected authorized handset receipt.
 - No model, weights, Age, permissions, installed runtime or device data changed.
 
 ## Next executable action
 
-Run exact-head Python 3.13 tests for flow audit, projection, route security and dashboard JS; fix failures. Then finish the broader staged-runtime/integrated-regression check, have Boss review the existing dashboard route and privacy boundary, integrate into the shared Boss candidate, and use the installed dashboard to measure actual B1/B2→C4→C3 delivery before changing native time budgets or model choices.
+Verify the newest privacy-scan and broader staged-runtime/integrated-regression checks, have Boss review the existing dashboard route and privacy boundary, integrate into the shared Boss candidate, and use the installed dashboard to measure actual B1/B2→C4→C3 delivery before changing native time budgets or model choices.
