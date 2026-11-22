@@ -7,6 +7,7 @@ exact held-out-passing artifact bound to the active embedding model.
 """
 from __future__ import annotations
 
+from bisect import bisect_left
 from itertools import combinations
 from pathlib import Path
 import hashlib
@@ -23,8 +24,8 @@ _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _CALIBRATION_ID = re.compile(r"[0-9a-f]{16}\Z")
 _MIN_SPEAKERS = 6
 _MIN_PAIRS = 20
-_MAX_SAMPLES = 4096
-_MAX_PAIRS = 50000
+_MAX_SAMPLES = 512
+_MAX_PAIRS = 20000
 _MAX_ARTIFACT_BYTES = 65536
 
 
@@ -79,10 +80,12 @@ def _pair_scores(samples):
 
 
 def _metrics(positives, negatives, threshold):
-    false_accepts = sum(score >= threshold for score in negatives)
-    false_rejects = sum(score < threshold for score in positives)
-    far = _rate(false_accepts, len(negatives))
-    frr = _rate(false_rejects, len(positives))
+    sorted_positive = sorted(positives)
+    sorted_negative = sorted(negatives)
+    false_accepts = len(sorted_negative) - bisect_left(sorted_negative, threshold)
+    false_rejects = bisect_left(sorted_positive, threshold)
+    far = _rate(false_accepts, len(sorted_negative))
+    frr = _rate(false_rejects, len(sorted_positive))
     return {
         "false_accept_rate": round(far, 6),
         "false_reject_rate": round(frr, 6),
@@ -95,12 +98,17 @@ def _metrics(positives, negatives, threshold):
 def _choose_threshold(positives, negatives, max_far):
     if len(positives) < _MIN_PAIRS or len(negatives) < _MIN_PAIRS:
         raise SpeakerCalibrationError("calibration split needs at least 20 positive and 20 negative pairs")
-    candidates = sorted(set(positives + negatives))
+    sorted_positive = sorted(positives)
+    sorted_negative = sorted(negatives)
+    candidates = sorted(set(sorted_positive + sorted_negative))
     eligible = []
     for threshold in candidates:
-        metrics = _metrics(positives, negatives, threshold)
-        if metrics["false_accept_rate"] <= max_far:
-            eligible.append((metrics["false_reject_rate"], -threshold, threshold))
+        false_accepts = len(sorted_negative) - bisect_left(sorted_negative, threshold)
+        false_rejects = bisect_left(sorted_positive, threshold)
+        far = _rate(false_accepts, len(sorted_negative))
+        frr = _rate(false_rejects, len(sorted_positive))
+        if far <= max_far:
+            eligible.append((frr, -threshold, threshold))
     if not eligible:
         raise SpeakerCalibrationError("no threshold meets the calibration false-accept limit")
     return min(eligible)[2]
@@ -126,13 +134,14 @@ def build_calibration_artifact(samples, *, model_id, model_revision, model_sha25
                                dataset_id, dataset_revision, dataset_license,
                                dataset_use_basis, dataset_authorization_ref,
                                max_false_accept_rate=0.05, max_false_reject_rate=0.20,
-                               dataset_kind="REAL_LOCAL"):
+                               dataset_kind="SYNTHETIC_TEST"):
     """Build a model-bound report from caller-supplied embeddings and opaque labels.
 
     Speaker identities are deterministically split before pair scoring. Both the
     speaker IDs and all source/session IDs must be disjoint across calibration and
-    held-out partitions. The returned artifact is runtime-eligible only for a
-    REAL_LOCAL dataset and only after it is added to the local approved manifest.
+    held-out partitions. SYNTHETIC_TEST is the safe default. REAL_LOCAL is only a
+    caller declaration; the local owner must independently check data rights and
+    consent before adding a passing artifact to the approved manifest.
     """
     _validate_binding(model_id, model_revision, model_sha256, embedding_dim,
                       frame_step_ms, lookback_frames)
@@ -140,14 +149,17 @@ def build_calibration_artifact(samples, *, model_id, model_revision, model_sha25
         raise SpeakerCalibrationError("max_false_accept_rate must be in (0, 0.5)")
     if not _finite(max_false_reject_rate) or not 0 < float(max_false_reject_rate) < 0.5:
         raise SpeakerCalibrationError("max_false_reject_rate must be in (0, 0.5)")
-    if dataset_kind not in {"REAL_LOCAL", "SYNTHETIC_TEST"}:
+    if type(dataset_kind) is not str or dataset_kind not in {"REAL_LOCAL", "SYNTHETIC_TEST"}:
         raise SpeakerCalibrationError("dataset_kind is invalid")
     for name, value in (("dataset_id", dataset_id), ("dataset_revision", dataset_revision),
                         ("dataset_license", dataset_license), ("dataset_authorization_ref", dataset_authorization_ref)):
         if type(value) is not str or not value.strip() or len(value) > 256 or value.strip().upper() == "UNKNOWN":
             raise SpeakerCalibrationError(name + " must be explicit and non-empty")
-    if dataset_use_basis not in {"PUBLIC_DATASET_LICENSE", "LOCAL_OWNER_CONSENT"}:
+    if (type(dataset_use_basis) is not str
+            or dataset_use_basis not in {"PUBLIC_DATASET_LICENSE", "LOCAL_OWNER_CONSENT"}):
         raise SpeakerCalibrationError("dataset_use_basis must identify a public license or local owner consent")
+    if type(dataset_authorization_ref) is not str or not _SHA256.fullmatch(dataset_authorization_ref):
+        raise SpeakerCalibrationError("dataset_authorization_ref must be a SHA-256 digest, not a raw receipt")
     if type(samples) is not list or not 1 <= len(samples) <= _MAX_SAMPLES:
         raise SpeakerCalibrationError("samples must contain 1..4096 utterances")
 
@@ -250,7 +262,8 @@ def build_calibration_artifact(samples, *, model_id, model_revision, model_sha25
 
 
 def validate_calibration_artifact(artifact, *, model_id, model_revision, model_sha256,
-                                  embedding_dim, frame_step_ms, lookback_frames):
+                                  embedding_dim, frame_step_ms, lookback_frames,
+                                  allow_synthetic_test=False):
     """Validate a report and exact model/temporal binding; never accepts synthetic reports."""
     required = {
         "schema", "method", "dataset_kind", "dataset_id", "dataset_revision", "dataset_license",
@@ -267,13 +280,19 @@ def validate_calibration_artifact(artifact, *, model_id, model_revision, model_s
     _validate_binding(model_id, model_revision, model_sha256, embedding_dim, frame_step_ms, lookback_frames)
     if artifact["schema"] != SCHEMA or artifact["method"] != METHOD:
         raise SpeakerCalibrationError("calibration artifact schema/method mismatch")
-    if artifact["dataset_kind"] != "REAL_LOCAL" or artifact["status"] != "HELDOUT_PASS":
-        raise SpeakerCalibrationError("only real-local held-out-passing artifacts are eligible")
+    if (artifact["dataset_kind"] != "REAL_LOCAL"
+            and not (allow_synthetic_test is True and artifact["dataset_kind"] == "SYNTHETIC_TEST")):
+        raise SpeakerCalibrationError("only real-local artifacts are runtime eligible")
+    if artifact["status"] != "HELDOUT_PASS":
+        raise SpeakerCalibrationError("only held-out-passing artifacts are eligible")
     for key in ("dataset_id", "dataset_revision", "dataset_license", "dataset_authorization_ref"):
         if type(artifact[key]) is not str or not artifact[key].strip() or len(artifact[key]) > 256 or artifact[key].strip().upper() == "UNKNOWN":
             raise SpeakerCalibrationError("calibration dataset provenance is incomplete")
-    if artifact["dataset_use_basis"] not in {"PUBLIC_DATASET_LICENSE", "LOCAL_OWNER_CONSENT"}:
+    if (type(artifact["dataset_use_basis"]) is not str
+            or artifact["dataset_use_basis"] not in {"PUBLIC_DATASET_LICENSE", "LOCAL_OWNER_CONSENT"}):
         raise SpeakerCalibrationError("calibration dataset authorization basis is invalid")
+    if type(artifact["dataset_authorization_ref"]) is not str or not _SHA256.fullmatch(artifact["dataset_authorization_ref"]):
+        raise SpeakerCalibrationError("calibration authorization reference must be a SHA-256 digest")
     if not all(artifact[key] is True for key in ("source_disjoint", "session_disjoint", "speaker_disjoint")):
         raise SpeakerCalibrationError("calibration splits are not disjoint")
     for key, expected in (("model_id", model_id), ("model_revision", model_revision),
