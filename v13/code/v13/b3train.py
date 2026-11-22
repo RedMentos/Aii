@@ -6,17 +6,18 @@ same-source NO_MESSAGE/EXACT/CONTROL/SYMBOLIC baselines and role-retention
 evidence through b3bridge.l1_gate.
 """
 from pathlib import Path
+import hashlib
 import numpy as np
 
 from .b3pairs import training_batch
 from .b3order import MIN_PAIRED
-from .b3bridge import Bridge, to_bf16
+from .b3bridge import Bridge, to_bf16, l1_gate
 from .common import atomic_write, dumps
 
 
 def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
                     label_source, direction="B1_TO_B2", seeds=(11, 17),
-                    epochs=10, head_steps=25, split_seed=20261122):
+                    epochs=10, head_steps=25, split_seed=20261122, l0_evidence=None):
     """Fit persistent, non-promoted L1 candidates from real paired native taps.
 
     Labels and their provenance are caller-supplied; this function never
@@ -87,6 +88,7 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
     output_dir = cognition.r.home / "b3" / "shadow" / direction / task_id
     output_dir.mkdir(parents=True, exist_ok=True)
     seed_reports = []
+    trained_bridges = []
 
     for seed in seeds:
         bridge = Bridge(d=H.shape[-1], K=4, r=8, h=16,
@@ -124,7 +126,9 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
                 "train_indices": train_indices.tolist(),
                 "test_indices": test_indices.tolist(),
                 "label_values": label_values,
-                "l1_utility_gate": "NOT_RUN_MISSING_L0_CHANNEL_BASELINES_AND_ROLE_RETENTION",
+                "l1_utility_gate": gate_status,
+        "l1_gate": gate,
+        "l0_evidence_sha256": l0_evidence_sha256,
                 "latent_authority": 0, "receiver_injection_authority": 0,
                 "body_learning_authority": 0,
             })
@@ -135,6 +139,7 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
         if not reload_identical:
             raise RuntimeError("B3 L1 shadow candidate changed across save/reload")
 
+        trained_bridges.append((bridge, prefix))
         seed_reports.append({
             "seed": seed, "candidate_manifest": str(prefix.with_suffix(".json").relative_to(cognition.r.home)),
             "candidate_weights": str(prefix.with_suffix(".npz").relative_to(cognition.r.home)),
@@ -147,9 +152,85 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
             "last_training_metrics": ({k: float(v) for k, v in history[-1].items()} if history else {}),
         })
 
+    gate = None
+    l0_evidence_sha256 = None
+    if l0_evidence is not None:
+        required_l0 = ("EXACT", "CONTROL", "SYMBOLIC")
+        expected_sources = [x.get("sha256") for x in batch["source_refs"]]
+        if (not isinstance(l0_evidence, dict)
+                or l0_evidence.get("schema") != "v13.b3-l0-baselines/1"
+                or l0_evidence.get("body_pair_ids") != list(batch["body_pair_ids"])
+                or l0_evidence.get("source_hashes") != expected_sources
+                or l0_evidence.get("test_indices") != test_indices.tolist()
+                or l0_evidence.get("seed_ids") != [str(x) for x in seeds]):
+            raise ValueError("L0 baseline evidence is not pinned to these exact pairs, source hashes, holdout rows and seeds")
+        l0_acc = l0_evidence.get("acc")
+        l0_bytes = l0_evidence.get("bytes")
+        if not isinstance(l0_acc, dict) or not isinstance(l0_bytes, dict):
+            raise ValueError("L0 baseline evidence needs acc and bytes mappings")
+        if any(channel not in l0_acc or channel not in l0_bytes for channel in required_l0):
+            raise ValueError("L0 baseline evidence must include EXACT, CONTROL and SYMBOLIC")
+        if any(not isinstance(l0_acc[channel], list) or len(l0_acc[channel]) != len(seeds)
+               for channel in required_l0):
+            raise ValueError("L0 accuracy vectors must match the paired seed count")
+        if any(type(l0_bytes[channel]) not in (int, float) or not np.isfinite(float(l0_bytes[channel]))
+               or float(l0_bytes[channel]) < 0 for channel in required_l0):
+            raise ValueError("L0 channel byte costs must be finite non-negative numbers")
+        role_drop = l0_evidence.get("role_drop")
+        if (type(role_drop) not in (int, float) or not np.isfinite(float(role_drop))
+                or not 0 <= float(role_drop) <= 1):
+            raise ValueError("L0 evidence requires a finite role_drop fraction")
+        required = ("NO_MESSAGE", "LATENT", "LATENT_SHUFFLED", "LATENT_RANDOM",
+                    "EXACT", "CONTROL", "SYMBOLIC")
+        acc = {
+            "NO_MESSAGE": [x["no_message_accuracy"] for x in seed_reports],
+            "LATENT": [x["latent_accuracy"] for x in seed_reports],
+            "LATENT_SHUFFLED": [x["shuffled_latent_accuracy"] for x in seed_reports],
+            "LATENT_RANDOM": [x["random_norm_matched_accuracy"] for x in seed_reports],
+            **{channel: l0_acc[channel] for channel in required_l0},
+        }
+        message_bytes = 4 * 8 * 4
+        byte_cost = {
+            "NO_MESSAGE": 0, "LATENT": message_bytes,
+            "LATENT_SHUFFLED": message_bytes, "LATENT_RANDOM": message_bytes,
+            **{channel: l0_bytes[channel] for channel in required_l0},
+        }
+        seed_map = {channel: [str(x) for x in seeds] for channel in required}
+        gate_task = {
+            "acc": acc, "bytes": byte_cost, "seed_ids": seed_map,
+            "role_drop": float(role_drop),
+            "ood_rate": float(np.mean([x["ood_rate"] for x in seed_reports])),
+            "reload_identical": all(x["reload_identical"] for x in seed_reports),
+        }
+        gate = l1_gate(gate_task)
+        l0_evidence_sha256 = hashlib.sha256(dumps(l0_evidence).encode("utf-8")).hexdigest()
+
+    if gate is None:
+        gate_status = "NOT_RUN_MISSING_L0_CHANNEL_BASELINES_AND_ROLE_RETENTION"
+        overall_status = "L1_SHADOW_CANDIDATES_SAVED_NOT_PROMOTED"
+    elif gate["verdict"] == "PASS":
+        gate_status = "PASS_L2_PREFIX_SHADOW_ALLOWED_NO_NATIVE_AUTHORITY"
+        overall_status = "L1_SHADOW_PASSED_L2_SHADOW_ALLOWED_NOT_PROMOTED"
+    else:
+        gate_status = "FAIL_B3_LATENT_UNAVAILABLE"
+        overall_status = "L1_SHADOW_UTILITY_REJECTED_NOT_PROMOTED"
+
+    # Rewrite only shadow manifests with the final gate receipt.
+    for bridge, prefix in trained_bridges:
+        bridge.save(
+            prefix, sender_revision=batch["sender_revision"],
+            receiver_revision=batch["receiver_revision"],
+            extra={
+                "status": overall_status, "task_id": task_id,
+                "l1_gate": gate, "l1_utility_gate": gate_status,
+                "l0_evidence_sha256": l0_evidence_sha256,
+                "latent_authority": 0, "receiver_injection_authority": 0,
+                "body_learning_authority": 0,
+            })
+
     report = {
         "schema": "v13.b3-l1-shadow-training/1",
-        "status": "L1_SHADOW_CANDIDATES_SAVED_NOT_PROMOTED",
+        "status": overall_status,
         "task_id": task_id, "direction": direction, "label_source": label_source,
         "samples": len(pair_packets), "train_samples": len(train_indices),
         "test_samples": len(test_indices), "label_values": label_values,
