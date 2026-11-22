@@ -2105,3 +2105,10 @@ This is an additive evidence overlay only. The historical 1,255-heading inventor
 **Source-level scheduling risk to test, not yet a proven device cause:** the current 90-second deadline yields a 40.5-second pre-answer observer window; with default sequential A_THEN_B and a 35-second per-body cap, the first body can consume 35 seconds and leave at most ~5.5 seconds for the second. Add role-specific elapsed-time telemetry and fair scheduling tests; do not drop either body or call postcommit work a same-turn contribution.
 
 **Release evidence:** docs-only PR #2316 merged at `c03ff0aa9e18b5ffebd1109f3c078105f53c6afe`; exact push CI 39/39 exact push checks SUCCESS at the time of this overlay. Phone code SHA remains `f210999cf556be4d4514427cc9b5cf6d3cf3e984`, the code-bearing parent. No UPDATE_REQUEST, model/weight mutation, permission change, microphone capture or device action occurred.
+
+
+## Additional B1/B2 observer-budget evidence — 2026-11-22 2026-11-22T07:58:52.317Z
+
+| Canon family | Current source path | Exact evidence | Limit / next acceptance | Classification |
+| --- | --- | --- | --- | --- |
+| B1/B2 same-turn observer scheduling and C3 recovery | `native_turn_budget.plan()`, `Cognition.offer()`, `observer_schedule.run()`; QA #2277 | Source-level review of #2277 identifies a 30 s background turn after two real C3 zero-token prefill deadlines: 26 s is reserved for C3, leaving ~4 s for pre-answer B1/B2; the current offer guard then defers both to postcommit. The PR's 3 metadata/security checks pass, but its new regression test is explicitly NOT_EXECUTED because workflow branch/path filters do not include it. | Rebase QA test onto current release and run Python 3.13/3.14 staged Runtime. Require both B1/B2 to reach the same-turn offer boundary and C4 consumption, plus a negative control where one body may be deferred. Preserve C3 reserve. Separately test the 90 s/40.5 s sequential fair-share risk from the latest device configuration. | SOURCE_REPRODUCED / TEST_NOT_EXECUTED / NOT_ANDROID_VERIFIED |
