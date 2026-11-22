@@ -51,3 +51,22 @@ CAM++ (Interspeech 2023; full 5-page paper reviewed) is a possible English speak
 4. Only then measure feature extraction, TTFT/RTF, RSS/PSS and memory on authorized Redmi hardware. Do not enable the local manifest before those gates.
 
 No user action is required now.
+
+
+## Exact-head follow-up — 2026-11-22
+
+- Current PR head after code, test and research commits: ba7dc524445ec0453ed574a4adc24568767f4eec.
+- Directory-race hardening: module commit 80bb94cc6a6438edfa121709beaf529f21e1681c; regression test commit f6ccc3a61b80b4d0f8545fa8ebb128da634b94a9. The loader now opens home, models and speaker_calibration as no-follow directory descriptors and reads approved.json plus the calibration artifact relative to the pinned directory descriptor. This prevents a directory rename/symlink replacement after validation from redirecting the reads.
+- LOCAL_LINUX, CPython 3.13.5: isolated reproduction of the exact directory-descriptor helper behavior PASS — after opening the directory, replacing its path with a symlink did not redirect manifest/artifact reads; final-component symlink rejection PASS. This is an isolated helper reproduction, not the repository pytest suite.
+- LOCAL_LINUX full repository tests: BLOCKED — no Aii checkout is mounted and GitHub DNS resolution is unavailable. No full local compile/pytest claim.
+- CI on exact code commit f6ccc3a61b80b4d0f8545fa8ebb128da634b94a9: public privacy scan PASS; RAW EAR vs WebRTC/libfvad comparison PASS. RAW EAR fastpath, consent-revocation, prosody-to-attention were IN_PROGRESS at last read; staged-context/integrated regression was QUEUED. Earlier exact integration head 77a459e9ad3cd77255c38c2ebe8d901e8872a92a failed because the Core-owned integrated_audio_context_candidate_20261121.py still pinned audio_voice_cues.py to the pre-PR blob. The Core/Integrator pin update is still required; see PR #2349 comment 7081848688. Do not mark the PR merge-ready based on the focused audio checks.
+- The same branch added research entries R-081 (S2SND-v2, full paper reviewed) and R-082 (streaming diarizer adaptation/identity retention, full paper reviewed). No checkpoint or dataset was downloaded; no model swap.
+- Cross-agent B3 evidence: PR #2346 focused B3 paired-tap workflow passed, but staged/deploy/migration workflows failed on stale Core-owned pins for the changed recovery builder and Cognition source. See PR #2346 comment 7081892589. No native latent coupling or Redmi proof is established.
+- TERMUX / Redmi: REDMI_UNVERIFIED for all new calibration changes. No calibration artifact is installed; speaker-change remains DEFER/OFF. No authorized microphone capture or Android test was run.
+
+## Next executable actions
+
+1. Core/Integrator must rebind the exact audio composer/recovery/stage/deployer pins for PR #2349, and the B3 recovery/observer pins for PR #2346, from exact file bytes.
+2. Read the completed exact-head CI runs for f6ccc3a61b80b4d0f8545fa8ebb128da634b94a9; repair any Perception-owned failure, but do not absorb Core-owned files without coordination.
+3. Keep #2349 and #2346 DRAFT until staged, migration and deployment gates pass; then obtain independent Boss review.
+4. Only after separately authorized real data and a pinned, licensed embedding checkpoint exist, run source/session/speaker-disjoint calibration and temporal-identity retention evaluation. No user action is required now.
