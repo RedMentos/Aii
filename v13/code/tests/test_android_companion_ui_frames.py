@@ -240,6 +240,6 @@ def test_runtime_turn_frame_lease_fails_closed_without_raw_eye_consumer(tmp_path
         with pytest.raises(FrameReceiptDenied, match="A5 UI lease consumer"):
             with provider.open_current_turn(runtime):
                 pass
-        assert frame == bytearray(b"\\x00" * 5)
+        assert frame == bytearray(b"\x00" * 5)
     finally:
         provider.close()
