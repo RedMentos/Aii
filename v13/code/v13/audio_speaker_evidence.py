@@ -177,6 +177,10 @@ class SpeakerChangeEvidenceRegistry:
             history = tuple(state.frames)
             last_seen_end_ms = state.last_end_ms
             tolerance = max(40, int(batch["frame_step_ms"] * 1.5))
+            threshold_status = (
+                "CALLER_ASSERTED_UNVERIFIED"
+                if batch["confidence_threshold"] is not None else "NOT_CONFIGURED"
+            )
             for frame_end, vector in batch["frames"]:
                 if last_seen_end_ms is not None and frame_end <= last_seen_end_ms:
                     raise SpeakerEvidenceError("speaker frames must advance across windows")
@@ -190,10 +194,11 @@ class SpeakerChangeEvidenceRegistry:
                     _, reference_end, reference_vector = min(candidates, key=lambda item: item[0])
                     similarity = max(-1.0, min(1.0, sum(a * b for a, b in zip(vector, reference_vector))))
                     threshold = batch["confidence_threshold"]
-                    gate_passed = None if threshold is None else similarity >= threshold
-                    candidate = None if threshold is None else bool(
-                        activity_hint == "VOICED" and not gate_passed
-                    )
+                    # A caller-supplied threshold/calibration label is not a
+                    # validated calibration artifact. Preserve the measured
+                    # similarity, but never promote it to a speaker decision.
+                    gate_passed = None
+                    candidate = None
                     change_score = round(max(0.0, min(1.0, (1.0 - similarity) * 0.5)), 6)
                     frame_record = {
                         "status": "MEASURED",
@@ -202,13 +207,13 @@ class SpeakerChangeEvidenceRegistry:
                         "cosine_similarity": round(similarity, 6),
                         "change_score": change_score,
                         "confidence_threshold": threshold,
+                        "threshold_status": threshold_status,
                         "confidence_gate_passed": gate_passed,
                         "speaker_change_candidate": candidate,
-                        "candidate_kind": "SPEAKER_CHANGE_OR_OVERLAP" if candidate is True else None,
+                        "candidate_kind": None,
                         "interpretation": (
-                            "LOW_SIMILARITY_DURING_VOICED_ACTIVITY_CHANGE_OR_OVERLAP" if candidate is True else
-                            "LOW_SIMILARITY_WITHOUT_VOICED_ACTIVITY" if gate_passed is False else
-                            "STABLE_OR_UNTHRESHOLDED"
+                            "SIMILARITY_ONLY_UNCALIBRATED"
+                            if threshold is not None else "SIMILARITY_ONLY_NO_THRESHOLD"
                         ),
                     }
                     frame_evidence.append(frame_record)
@@ -243,10 +248,9 @@ class SpeakerChangeEvidenceRegistry:
                     "candidate_kind": None,
                     "interpretation": "LOOKBACK_NOT_YET_AVAILABLE",
                 }
-            peak_candidate = (
-                None if batch["confidence_threshold"] is None or not frame_evidence
-                else candidate_count > 0
-            )
+            # No verified calibration artifact is accepted by this producer yet.
+            # A boolean peak here would falsely imply a calibrated decision.
+            peak_candidate = None
             return {
                 "method": METHOD,
                 "source_id": source_id,
@@ -259,10 +263,7 @@ class SpeakerChangeEvidenceRegistry:
                 "lookback_frames": batch["lookback_frames"],
                 "lookback_ms": batch["lookback_ms"],
                 "frame_count": len(batch["frames"]),
-                "threshold_status": (
-                    "CALLER_ASSERTED_UNVERIFIED"
-                    if batch["confidence_threshold"] is not None else "NOT_CONFIGURED"
-                ),
+                "threshold_status": threshold_status,
                 "calibration_id": batch["calibration_id"],
                 "reset_reason": reset_reason,
                 **latest,
