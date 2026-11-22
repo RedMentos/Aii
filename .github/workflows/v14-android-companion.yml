@@ -43,6 +43,9 @@ jobs:
   android-companion-process-restart:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      # GitHub-hosted runners may lack KVM; current emulator exits unless TCG is explicitly allowed.
+      ANDROID_I_WANT_MY_TCG: "yes"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
