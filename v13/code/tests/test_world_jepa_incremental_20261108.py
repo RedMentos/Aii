@@ -67,3 +67,66 @@ def test_pinned_jepa_checkpoint_can_resume_real_weight_learning(tmp_path):
     assert not np.array_equal(before,resumed.enc['W1'])
     assert resumed._fit_steps==4
     assert not np.array_equal(ensemble_before,resumed.preds[1]['P1'])
+
+
+# The STABLE-style drift controller is part of resumable JEPA state, not
+# ephemeral per-process telemetry.
+def _drift_controller():
+    return {
+        "enabled": True,
+        "budget_sq": {"encoder": 0.05, "predictor": 0.05, "inverse": 0.05},
+    }
+
+
+def test_drift_state_roundtrips_and_controls_resumed_numeric_update(tmp_path):
+    from v13 import world_jepa_drift as drift
+    from v13.world_jepa_shadow_checkpoint import save, load
+
+    m = WorldJEPA(seed=22, ensemble=2)
+    m.fit(*batch(3), steps=3, log_every=1, drift_control=_drift_controller())
+    before_state = m._training_state["drift"]
+    assert all(item["task_count"] == 1 for item in before_state["groups"].values())
+    assert all(item["budget_method"] == "EXPLICIT" for item in before_state["groups"].values())
+
+    source_sha = "a" * 64
+    path = tmp_path / "world-jepa.npz"
+    receipt = save(m, path, source_sha)
+    restored = load(path, source_sha, receipt["sha256"])
+    assert restored._training_state["drift"] == before_state
+
+    encoder_before = {key: value.copy() for key, value in restored.enc.items()}
+    target_before = {key: value.copy() for key, value in restored.tgt.items()}
+    restored.partial_fit(*batch(9), steps=2, log_every=1, drift_control=_drift_controller())
+    assert any(not np.array_equal(encoder_before[k], restored.enc[k]) for k in encoder_before)
+    assert any(not np.array_equal(target_before[k], restored.tgt[k]) for k in target_before)
+    after = restored._training_state["drift"]
+    assert all(item["task_count"] == 2 for item in after["groups"].values())
+    assert all(item["controlled_steps"] == 2 for item in after["groups"].values())
+
+
+def test_legacy_training_state_without_drift_defaults_safely():
+    from v13 import world_jepa_drift as drift
+    from v13 import world_jepa_training_state as training_state
+
+    m = WorldJEPA(seed=23, ensemble=2)
+    m.fit(*batch(4), steps=2, log_every=1)
+    legacy = dict(m._training_state)
+    legacy.pop("drift")
+    restored = training_state.validate(
+        legacy, len(m.mu), len(m._action_counts), m.seed, m.ensemble, m._fit_steps,
+    )
+    assert restored["drift"] == drift.default_state()
+
+
+def test_malformed_persisted_drift_state_is_rejected():
+    from v13 import world_jepa_drift as drift
+    from v13 import world_jepa_training_state as training_state
+
+    m = WorldJEPA(seed=24, ensemble=2)
+    m.fit(*batch(5), steps=2, log_every=1)
+    invalid = dict(m._training_state)
+    invalid["drift"] = {"schema": drift.SCHEMA, "groups": {}}
+    with pytest.raises(ValueError):
+        training_state.validate(
+            invalid, len(m.mu), len(m._action_counts), m.seed, m.ensemble, m._fit_steps,
+        )
