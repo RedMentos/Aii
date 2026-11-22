@@ -589,3 +589,43 @@ def test_low_level_noise_does_not_become_voiced_when_window_floor_is_relaxed():
     cues = audio_voice_module.extract_voice_cues(pcm, 16000)
     assert cues["voiced_fraction"] == 0.0
     assert cues["activity_hint"] == "SILENCE"
+
+
+@pytest.mark.parametrize(
+    ("sample_rate", "frequency"),
+    [(16000, 7800), (22050, 10825), (44100, 8620), (48000, 7800)],
+)
+def test_high_frequency_alias_is_not_misclassified_as_voiced(sample_rate, frequency):
+    cues = audio_voice_module.extract_voice_cues(
+        tone(sample_rate=sample_rate, frequency=frequency), sample_rate,
+    )
+    assert cues["activity_hint"] == "UNVOICED_NOISE"
+    assert cues["voiced_fraction"] == 0.0
+    assert cues["f0_median_hz"] is None
+
+
+@pytest.mark.parametrize("sample_rate", [16000, 22050, 44100, 48000])
+def test_antialias_filter_preserves_low_fundamental_pitch(sample_rate):
+    cues = audio_voice_module.extract_voice_cues(
+        tone(sample_rate=sample_rate, frequency=140), sample_rate,
+    )
+    assert cues["activity_hint"] == "VOICED"
+    assert cues["f0_median_hz"] == pytest.approx(140, abs=5)
+
+
+def test_alias_rejection_reaches_the_real_a5_a4_c3_consumer(tmp_path):
+    runtime, event = make_runtime(tmp_path)
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, tone(sample_rate=44100, frequency=8620), sample_rate=44100,
+            start_ms=100, event_id=event["event_id"],
+            generation_id=event["brain_generation_id"], source_id=SOURCE,
+            consent_receipt=RECEIPT, consent_check=consent_ok,
+            consent_guard=consent_guard(consent_ok), finality="FINAL",
+        )
+        assert result["a4"]["voice_activity_hint"] == "UNVOICED_NOISE"
+        assert result["temporal_voice"]["voice_evidence"] == 0.0
+        assert result["a4"]["speaker_change_decision"] == "DEFER"
+        assert "activity=UNVOICED_NOISE" in result["c3_admission"].selected[0].summary
+    finally:
+        runtime.store.close()
