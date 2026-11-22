@@ -10,7 +10,9 @@ from pathlib import Path
 BASE_BUILDER = "scripts/termux_runtime_recovery_candidate_20261112.py"
 BASE_BUILDER_BLOB_SHA1 = "1771d512766ba66710e3c4275ec41fcac66beda8"
 AUDIO_BUILDER = "scripts/integrated_audio_context_candidate_20261121.py"
-AUDIO_BUILDER_BLOB_SHA1 = "50f2deac4d92a9dfba56758f535dc0b64afb0aec"
+AUDIO_BUILDER_BLOB_SHA1 = "39f7f7bb81529bd8875132ee4ac4e5a3a7e8d9ac"
+C4_RECEIPT_BUILDER = "scripts/integrated_c4_c3_receipt_candidate_20261122.py"
+C4_RECEIPT_SHA256 = "0f3aab12b64454eaa3b49ce4adf22e8a29aeae081c5f82e8376e54a22028dff3"
 
 
 def _git_blob_sha1(raw: bytes) -> str:
@@ -53,4 +55,20 @@ def build_sources(code_dir: Path, *, include_postcommit=True):
         raise ValueError("Runtime-wide A5 consent lease was not composed")
     if "v13/audio_context_store.py" not in composed:
         raise ValueError("consent-bound audio context store was not produced")
+
+    receipt_path = code_dir / C4_RECEIPT_BUILDER
+    if receipt_path.is_symlink() or not receipt_path.is_file():
+        raise ValueError("Core C4 receipt overlay missing or unsafe")
+    receipt_raw = receipt_path.read_bytes()
+    if hashlib.sha256(receipt_raw).hexdigest() != C4_RECEIPT_SHA256:
+        raise ValueError("Core C4 receipt overlay source changed")
+    receipt_spec = importlib.util.spec_from_file_location(
+        "v14_core_c4_c3_receipt", receipt_path)
+    if receipt_spec is None or receipt_spec.loader is None:
+        raise RuntimeError("Core C4 receipt overlay is not loadable")
+    receipt_module = importlib.util.module_from_spec(receipt_spec)
+    receipt_spec.loader.exec_module(receipt_module)
+    composed = receipt_module.apply_sources(code_dir, composed)
+    if b"c4_offer_context_ready" not in composed.get("v13/cognition.py", b""):
+        raise ValueError("Core C4 context-ready receipt was not composed")
     return composed
