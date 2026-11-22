@@ -2329,3 +2329,15 @@ JEPA transactional update, combined online JEPA, JEPA receipt integrity, role-sp
 | Whole-Canon traceability | 1,255 historical headings preserved; V13 appendix remains byte-identical in the V14 master. | Semantic clause→code→consumer→test→environment→rollback mapping. | INVENTORY_PRESERVED / MAPPING_INCOMPLETE |
 
 **Private device boundary:** #634–#637 are authenticated owner-read metadata. No CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, native model probe, microphone/screen capture, permission change or model/weight edit occurred. console_errors=USER_NOT_OPTED_IN, so no LOG_PAGE was authorized. The 0-process residency view is instantaneous and has unknown child readability. User action: NONE.
+
+
+ 
+## Live status delta — Boss run 12 (2026-11-22T22:30:37.104Z)
+
+- B1/B2→C4→C3 candidate: exact head bae7d03196d98ac6dfebc0a2649faf257ba8308f, 16 workflows queued; previous head audio/arithmetic Python 3.13/3.14 failed one stale source assertion each; new head corrects the test expectation only. No native offer or speed acceptance.
+- B3: #2377 f64e994 persists canonical path + file identity and adds joint redirect negative; exact workflows queued and duplicate test definition remains. #2381 07b4ffbd still has stale overlay without O_NONBLOCK/verifier and a double-apply test; B3 OFF.
+- RAW EYE: #2384 5cd8ffae includes bounded feature summary and direct negative tests; two workflows queued, duplicate test definitions remain. #2375 original head still fails 9 tests; no Android frame provider acceptance.
+- Android companion: #2356 27aaa29 has one safe System-UI Wait + filtered logcat; four workflows queued. #2379 4ce32890 is 11 commits behind current QA parent; #2376 e0985029 is 14 commits behind. No process-death or Redmi proof.
+- JEPA: #2372 has three failed workflows / one temporal pass; #2383 has five failures on source lifecycle, migration, lab-age and staged integration. No persistent weight diff or held-out improvement.
+- Device evidence unchanged: #634–#637 confirm aed1d2 installed, 57.74 s last turn / 2 tokens, B1/B2 TIME_BUDGET, health/diagnostics runtime conflict, learning status unavailable. No LOG_PAGE because console_errors opt-in is false.
+- Historical 1,255-heading inventory and V13 appendix remain preserved; semantic mapping incomplete. No user action.
