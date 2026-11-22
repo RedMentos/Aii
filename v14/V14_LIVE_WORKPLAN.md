@@ -1,3 +1,11 @@
+## QA & Android — exact #2356 CI poll (2026-11-22T20:30:00Z)
+
+On exact head `3829465e5180ce237ef98b36181bda6caea601a5`: Android outcome contract `45065638347` PASS; Core companion outcome adapter `45065638341` PASS; staged/integrated `45065638335` IN_PROGRESS; Android Gradle/emulator `45065638333` QUEUED. The emulator job has not yet run on this head. The predecessor's System UI ANR remains a harness issue; no current emulator PASS or Redmi proof.
+
+Boss #2370 exact head `4d771ed` passes the RECORD_ONLY guard but has the shared audio-composer runtime Git-blob mismatch (`30360f40…` expected, `6e61af07…` actual), which blocks Lab-Age, staged owner-read, JEPA resume, staged/integrated, audio/arithmetic and causes migration PARTIAL. QA comment 7085162144 records the exact paths. No user action.
+
+---
+
 ## QA & Android — shared composer blocker discovered (2026-11-22T20:23:00Z)
 
 - Boss #2370 exact head `4d771ed8e2d2d839e4acbf4f517a775cfe1c1e05` now passes the RECORD_ONLY controller guard (`45064399584`), but the integrated audio composer fails its source check: `integrated_audio_context_candidate_20261121.py` expects Git blob `30360f40eb784be5ea975ee85e94a57f0b154164` for `v13/runtime.py`; exact current file blob is `6e61af07326c5bb11406ee72361a710d5facc9a5`.
