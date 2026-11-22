@@ -3,6 +3,7 @@ from array import array
 from contextlib import contextmanager
 import json
 import math
+import random
 import struct
 from types import SimpleNamespace
 
@@ -551,3 +552,40 @@ def test_registry_stores_compact_float32_vectors_in_memory():
     assert isinstance(stored, array)
     assert stored.typecode == "f"
     assert stored.itemsize == 4
+
+
+
+def test_low_gain_periodic_window_reaches_runtime_a4_despite_absolute_silence_floor(tmp_path):
+    pcm = tone(amplitude=100)
+    samples = struct.unpack("<" + "h" * (len(pcm) // 2), pcm)
+    overall_rms = math.sqrt(sum(value * value for value in samples) / len(samples)) / 32768.0
+    assert overall_rms < 0.003
+
+    cues = audio_voice_module.extract_voice_cues(pcm, 16000)
+    assert cues["voiced_fraction"] >= 0.25
+    assert cues["voicing_confidence"] >= 0.55
+    assert cues["activity_hint"] == "VOICED"
+
+    runtime, event = make_runtime(tmp_path)
+    try:
+        result = consume_pcm16_voice_window(
+            runtime, pcm, sample_rate=16000, start_ms=100,
+            event_id=event["event_id"], generation_id=event["brain_generation_id"],
+            source_id=SOURCE, consent_receipt=RECEIPT,
+            consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+            finality="FINAL",
+        )
+        assert result["a4"]["voice_activity_hint"] == "VOICED"
+        assert result["a4"]["temporal_voice"]["voice_active"] is True
+        assert "attention" in result["a4"]
+    finally:
+        runtime.store.close()
+
+
+def test_low_level_noise_does_not_become_voiced_when_window_floor_is_relaxed():
+    rng = random.Random(17)
+    samples = [rng.randint(-50, 50) for _ in range(16000)]
+    pcm = struct.pack("<" + "h" * len(samples), *samples)
+    cues = audio_voice_module.extract_voice_cues(pcm, 16000)
+    assert cues["voiced_fraction"] == 0.0
+    assert cues["activity_hint"] == "SILENCE"
