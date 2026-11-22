@@ -4,6 +4,7 @@ No native GGUF, Android or Redmi behavior is claimed by these fixtures.
 """
 from types import SimpleNamespace
 import importlib.util
+import hashlib
 from pathlib import Path
 import json
 import threading
@@ -1206,12 +1207,16 @@ def test_training_resume_builder_verifies_exact_sources_without_qa_composer(monk
         builder.importlib.util, "spec_from_file_location",
         lambda _name, _path: FakeSpec(),
     )
+    monkeypatch.setattr(
+        builder.importlib.util, "module_from_spec",
+        lambda _spec: SimpleNamespace(),
+    )
     result = builder.build_sources(code_dir)
 
     world = (code_dir / "v13" / "world_jepa.py").read_bytes()
     checkpoint = (code_dir / "v13" / "world_jepa_shadow_checkpoint.py").read_bytes()
     state = (code_dir / "v13" / "world_jepa_training_state.py").read_bytes()
-    assert builder.WORLD_SHA == __import__("hashlib").sha256(world).hexdigest()
+    assert builder.WORLD_SHA == hashlib.sha256(world).hexdigest()
     assert builder.CHECKPOINT_SHA == __import__("hashlib").sha256(checkpoint).hexdigest()
     assert builder.STATE_SHA == __import__("hashlib").sha256(state).hexdigest()
     assert result["v13/world_jepa_training_state.py"] == state
