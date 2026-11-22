@@ -1,5 +1,22 @@
 # V14 — nächste Nutzeraktion
 
+## Aktueller Stand — Boss-Integration, Run 14 (2026-11-22T23:05:31.059Z)
+
+**Nutzeraktion: Keine erforderlich.** Kein manueller Termux-Befehl, keine Update-Anfrage, kein Modell-/Weight-Swap und keine Berechtigungsänderung.
+
+- **Release/Redmi:** Private PIPELINE_STATUS #641 bestätigt weiterhin `aed1d2b826290c95c70356b5d8b864b5ef382be4` installiert, Auto-Update aktiviert, Runtime/Dashboard UP_TO_DATE, last_error NONE. Der exakte Release-SHA hat 45/45 SUCCESS.
+- **Frische Diagnose #642:** Service/Runtime/Dashboard RUNNING. Der letzte gespeicherte FINAL-Turn ist unverändert: 57,74 s gesamt, 41,63 s TTFT, 38,95 s Prefill, 751 Prompt-Tokens, 2 generierte Tokens. B1/B2 bleiben TIME_BUDGET bei 53,2/54,2 s; C3 3,1 s. Die Momentaufnahme zeigt 0 gemappte native Prozesse; Child-Lesbarkeit unbekannt. Das ist weder Residency-Dauerbeweis noch Free-RAM. HEALTH #636 meldet weiterhin Runtime UNAVAILABLE im Widerspruch zu DIAGNOSTICS RUNNING; LEARNING_STATUS #637 ist UNAVAILABLE.
+- **Age/Lab:** Lab-Selector ACTIVE, requested stage 10, effective stage 5, official stage 0; physical feature execution false; learning commit authority REQUIRES_SEPARATE_SHADOW_MODE. Keine Gewichtsänderung freigegeben.
+- **Boss-Kandidat #2370:** neuer exakter Head `9a5635281aa57542ce61e6cff010061715ce8d0a`, DRAFT. Die beiden vorherigen Python-3.13/3.14-Fehler wurden ursächlich korrigiert: der staged Observer-Composer erhält wieder den 26-s-C3-Recovery-Reserve statt 16,5 s; der Test patcht nur die tatsächlich verwendete monotone Uhr; die Restart-Assertion erwartet den exakt gesendeten Text `calculate 8/4` vor und nach Restart. Die neue Matrix steht bei 28 QUEUED / 1 SKIPPED / 0 abgeschlossenen Erfolgen / 0 beobachteten Fehlern. **Noch kein grüner Kandidat und keine funktionale Annahme.** Die 26-s-Reserve ist keine gemessene Beschleunigung; native B1/B2 benötigen weiterhin 53,2/54,2 s.
+- **Weitere Systempfade:** #2372/#2383 JEPA bleiben rot; #2375/#2384 RAW-EYE-Frame-Ingress bleibt rot; #2356 Companion-Prozessneustart hat einen fehlgeschlagenen Emulator-Test; #2379 MediaProjection bleibt gestapelt/fehlgeschlagen; #2377 ist 7/7 CI-grün, hat aber ein verbleibendes Loader-Pfad-Race, deshalb B3/Probe OFF. #2369 Teacher Ear ist nur ein optionaler Adaptervertrag; AudioRecord-Provider und ephemerer C3-Consumer fehlen.
+- **Forschung:** R-094 (sherpa-onnx/Zipformer, englisch, Apache-2.0) und R-095 (Whisper tiny, multilingual, ungeklärter Modell-Lizenzwiderspruch) wurden aus der exakten Perception-Branch-Lesefassung in den Ledger übernommen. Keine Downloads oder Modellwechsel.
+- **Lokale Tests:** Full Aii checkout fehlt in dieser Umgebung; GitHub-DNS verhindert den Clone. Daher kein lokales Full-Pytest-, Native- oder Redmi-Ergebnis behauptet. GitHub-CI bleibt separat.
+
+**Nächste interne Schritte:** #2370-Matrix vollständig abwarten und den 55-Dateien-Stack adversarial reviewen; Teacher Ear nur als zustimmungsgebundene, flüchtige C3-Hypothese integrieren; JEPA-Source-Lifecycle/Optimizer/Sleep reparieren; RAW-EYE/MediaProjection und Companion-Prozessneustart end-to-end verbinden. Kein Kandidat wird ohne exakte CI und sichere Integration an das Telefon gegeben.
+
+---
+
+
 ## Aktueller Stand — Boss-Integration, Run 12 (2026-11-22T22:33:13.116Z)
 
 **Nutzeraktion: Keine erforderlich.**

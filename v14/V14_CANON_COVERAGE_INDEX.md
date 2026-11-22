@@ -2356,3 +2356,31 @@ Boss candidate #2370 head bae7d031: 1 SUCCESS / 14 QUEUED / 1 IN_PROGRESS / 7 CA
 ## Latest CI detail — 2026-11-22T22:36:01.944Z
 
 #2370 current head has one CI success (private owner-read bootstrap only), one JEPA Runtime transactional update in progress, and 14 queued; no functional acceptance. #2379 provider workflow passes but its staged/integrated regression is queued and base is stale. No Android capture/process-death proof.
+
+
+## Live whole-Canon evidence overlay — Boss run 14 (2026-11-22T23:05:31.059Z)
+
+**Preservation:** historical inventory remains 1,255 headings. The V14 master blob is `9748ad5ba9a4d4f5c3d004a0577141f6779fcbca` on both release and Boss docs branches (963,129 bytes, exact byte equality); no master edit was made and the V13 appendix remains unchanged.
+
+| Canon family | Current code / wiring | Test environment evidence | Android / active status |
+|---|---|---|---|
+| A0–A5 perception, attention and salience | RAW EAR features exist; RAW EYE frame ingress and audio-window candidate are partial | #2375 6 success / 4 failure / 1 skipped; #2384 3 success / 2 failure | No AudioRecord or MediaProjection receipt; SHADOW |
+| B1_DETAIL / B2_GIST | Distinct role models; candidate source-bound OfferPacket → C4 → C3 and fair observer slices | #2370 exact head 9a563: 28 queued / 1 skipped; no completed functional pass | B1/B2 TIME_BUDGET 53.2/54.2 s; no accepted offers |
+| B3 / Enlightened Space | Symbolic space plus diagnostic input-embedding receiver | #2377 7/7 CI; residual loader path race; #2381 stale | OFF; no semantic transfer or trained adapter proof |
+| B4/B5 / C4 coalition | Source-span C4 receipt and staged coalition | Candidate consumer CI pending | No learned coalition or Redmi proof |
+| C1/JEF/C2/C3 | Runtime and bounded exact-arithmetic candidate | #2370 exact matrix queued | Last stored phone turn 57.74 s / 2 tokens; correctness unknown |
+| World/Self/Memory/Context OS/Memorilla | Source-bound Store and partial context companion; temporal JEPA receiver candidate | #2372/#2383 not green; #1983 not accepted | Not tested on Android |
+| JEPA/EMA / temporal T8 | Persistent encoder/predictor/EMA and replay candidate | #2372 2 success / 4 failure / 2 in progress / 3 queued; #2383 4 success / 7 failure | SHADOW only; no accepted native model-weight diff |
+| Eligibility × error × modulator × plasticity | No accepted cross-organ plasticity consumer | No gradient/parameter-diff acceptance | OFF |
+| Sleep/Dream/Replay | Bounded postcommit JEPA shadow worker | Source-lifecycle and optimizer/postcommit failures remain | No accepted Android consolidation |
+| Audio / voice | RAW EAR plus optional Teacher Ear contract; candidate audio-window dispatch | #2369 14 queued / 2 skipped; #2370 pending | No visible AudioRecord provider, trainable decoder/vocoder or full-duplex |
+| Vision / RAW EYE | MediaProjection provider and Perception adapter exist on separate branches | #2379 5 success / 2 failure; #2375/#2384 frame-ingress failures | No signed capture receipt or C3 delivery |
+| Android background/UI control | Companion action journal and UI provider candidates | #2356 7 success / 1 failure; #2376 stale | No accepted OS executor or process-death proof |
+| Tools, goals and permissions | Typed action/outcome contracts | Synthetic contract tests only | No authenticated Android action loop |
+| Age rights / X10 / resources | Official Age 0 separated from Lab-Age selector | Control-state CI only | Requested 10 / effective 5 / official 0; physical feature execution false |
+| Self-optimization / weight editing | WorldJEPA SHADOW candidate; no B1/B2/C3 master update | No accepted parameter diff, held-out retention or rollback | GATES_OFF |
+| Distinct sparse MoE B1/B2 | Two role models only | No accepted sparse expert routing test | NOT_IMPLEMENTED |
+| OS sandbox / adaptive Judge / memory egress | Partial contracts and draft trainable risk head | Partial synthetic only | No independent OS enforcement or complete egress registry |
+| Remote maintenance / updater / rollback | Authenticated read-only owner relay and CI-gated updater | Release SHA 45/45; #641/#642 read receipts | aed1d2 installed; patch apply, process-death and rollback not verified |
+
+**Release boundary:** release `aed1d2b826290c95c70356b5d8b864b5ef382be4` remains installed and CI-green. Candidate #2370 `9a5635281aa57542ce61e6cff010061715ce8d0a` remains DRAFT / NOT_GREEN. No UPDATE_REQUEST was sent. No user action is required.

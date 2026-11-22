@@ -1,3 +1,43 @@
+## Boss & Integration run 14 — 2026-11-22T23:05:31.059Z
+
+### Release gate and actual device evidence
+- Release-development branch `gpt6/v13-private-remote-bridge-20261111` remains `aed1d2b826290c95c70356b5d8b864b5ef382be4`; exact commit checks are 45/45 SUCCESS.
+- Private owner-read #641 confirms that exact SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE, and last_error NONE.
+- Private DIAGNOSTICS #642 reports service/runtime/dashboard RUNNING, but the stored FINAL turn is still 57.7388 s total / 41.6269 s TTFT / 38.9453 s prefill / 751 prompt tokens / 2 generated tokens. B1/B2 remain TIME_BUDGET at 53.2/54.2 s; C3 is 3.1 s. The instant native process map is 0 mapped processes with unknown child readability. This is not sustained residency evidence. HEALTH #636 still conflicts (Runtime UNAVAILABLE) and LEARNING_STATUS #637 is UNAVAILABLE.
+- No new chat turn, CHAT_SEND, LOG_PAGE, UPDATE_REQUEST, remote shell, model/weight change, permission change or device mutation occurred. console_errors remains USER_NOT_OPTED_IN.
+- Official Age remains 0; Lab-Age selector is ACTIVE/requested 10/effective 5, physical execution false, and learning commit authority requires separate SHADOW.
+
+### Boss-owned functional integration
+- PR #2370 exact head `9a5635281aa57542ce61e6cff010061715ce8d0a` is DRAFT, with 28 queued / 1 skipped / 0 completed success / 0 observed failures. It is NOT_GREEN and NOT_RELEASED.
+- This run fixed the two exact-head test regressions: (1) the fair-budget overlay now validates and preserves the 26 s short-turn C3 recovery reserve; per-role observer deadlines only cap each body's own slice; (2) the test clock is patched at `v13.cognition.time.monotonic`, because `native_turn_budget.plan` receives `now` explicitly and the module does not own a `time` attribute; (3) the arithmetic restart test now checks the exact submitted source `calculate 8/4` before and after restart. The runtime source itself is not normalized.
+- Refreshed and read back the exact pin chain: integrated observer → recovery12 → recovery21 → stage → runtime_deploy. Commit `9a5635281aa57542ce61e6cff010061715ce8d0a` is present on the Boss branch.
+- This does not prove native B1/B2 offers, actual speed, C3 correctness, or learned latent communication. The previous phone measurements still show 53.2/54.2 s body timeouts; a 26 s reserve is a scheduling constraint, not a latency improvement.
+
+### Whole-system ledger / cross-agent integration
+- Brain organs A0–A5, B1/B2/B3/B4/B5, C/JEF, attention, World/Self/Memory, Context OS/Memorilla, JEPA/EMA, sleep/replay, audio/vision, tools, permissions, Age rights, sparse MoE, self-optimization, Android control, updater/recovery and monitoring remain in scope. The new coverage overlay is additive; the historical 1,255-heading index and full V13 appendix are preserved.
+- PR #2369 (FASTDIAR/Teacher Ear) is a caller-supplied optional adapter, not inference; 14 checks queued / 2 skipped. Its new R-094/R-095 research notes are copied into the ledger. No model/license approval or Android provider.
+- PR #2372 temporal T8/receiver: 2 success / 4 failure / 2 in progress / 3 queued. PR #2383 QA source-lifecycle chain: 4 success / 7 failure. No accepted persistent B1/B2/C3 model-weight diff or held-out utility.
+- PR #2375 RAW EYE frame ingress: 6 success / 4 failure / 1 skipped. PR #2384 follow-up: 3 success / 2 failure. PR #2379 MediaProjection provider: 5 success / 2 failure and still stacked on an older companion base. No Android screen-capture receipt or C3 delivery.
+- PR #2356 companion QA: 7 success / 1 failure (process restart). PR #2376 action journal is stale relative to that QA base. No accepted API-first background action loop or process-death recovery.
+- PR #2377 native-probe model-byte verification: 7/7 CI success, but its own body records a residual path-replacement interval between consume-time verification and native loader open. Keep diagnostic probe and B3 OFF until the loader consumes the verified descriptor or immutable snapshot. #2381 remains stale.
+- Exactly five V14 automations are enabled: Boss, QA & Android, JEPA & Memory, Forschung & Perception, Core & Harness. No additional worker is being represented.
+
+### Research / license notes
+- R-094: sherpa-onnx v2.0.3 code Apache-2.0; 20M English Zipformer model card declares Apache-2.0; Android NDK/JNI is not Termux ABI proof.
+- R-095: whisper.cpp code MIT; Whisper tiny model card says Apache-2.0 while the original OpenAI README says model weights MIT. Rights conflict unresolved; no download.
+- R-092 AudioRecord / JEPA paper ID collision remains unresolved; do not overwrite either entry or claim the JEPA R-093 rename before branch readback.
+
+### Test environment and next ownership
+- LOCAL_LINUX full Aii tests: BLOCKED — no checkout in the execution container; GitHub DNS clone unavailable. No local full pytest/native tests are claimed.
+- CI: exact release branch 45/45 SUCCESS; #2370 exact candidate matrix still queued, not passed. CI is not Redmi-native evidence.
+- Core: finish the exact C4→C3 consumer and add the optional Teacher Ear hypothesis only as a source-bound, consent-bound ephemeral C3 layer; never persist transcript text.
+- JEPA: repair #2372/#2383 source-lifecycle, optimizer-resume, SleepRuntime and rollback failures; prove actual numeric deltas and retention before any weight claim.
+- QA: repair #2356 process-restart and #2377 loader race; remove #2384 duplicate tests and fix frame-ingress failures.
+- Perception: connect RAW EYE to the actual A3/A4/C3 consumer and reconcile #2369 audio source pins/ephemeral Teacher Ear delivery.
+- Boss: wait for exact #2370 CI, review the complete diff and all downstream pins, then integrate only if exact CI and adversarial checks pass. No user action required.
+
+---
+
 ## Boss & Integration run 11 — 2026-11-22T22:03:32.071Z
 
 - **Release vs candidate:** fixed release branch `gpt6/v13-private-remote-bridge-20261111` remains `aed1d2b826290c95c70356b5d8b864b5ef382be4`; its exact SHA has **45/45 observed check-runs SUCCESS** and private PIPELINE_STATUS #630 confirms installation. Boss candidate PR #2370 is `c3d4d1445a953ef2baaf015d9fd876b96b7c1eff`, **7 SUCCESS / 20 QUEUED / 1 IN_PROGRESS / 3 SKIPPED**, DRAFT / NOT_RELEASED. No candidate push-CI or Redmi deployment has occurred.
