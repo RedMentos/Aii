@@ -316,7 +316,7 @@ def test_a5_a4_c3_consumer_uses_change_evidence_without_persisting_vectors(tmp_p
         runtime.store.close()
 
 
-def test_batch_peak_change_survives_return_to_prior_speaker_for_a4_and_c3(tmp_path, monkeypatch):
+def test_batch_similarity_diagnostic_does_not_trigger_a4_interrupt_or_c3_candidate(tmp_path, monkeypatch):
     runtime, event = make_runtime(tmp_path)
     generation = event["brain_generation_id"]
     captured = {}
@@ -368,9 +368,33 @@ def test_batch_peak_change_survives_return_to_prior_speaker_for_a4_and_c3(tmp_pa
         assert "speaker_change_kind=" not in summary
         assert "spk_cal=UNVERIFIED" in summary
         assert "spk_dec=DEFER" in summary
+        with_speaker_interrupt = captured["sal"]["external_interrupt"]
         persisted = json.dumps(result["packet"], sort_keys=True)
         assert '"vector"' not in persisted
         assert '"speaker_label": null' in persisted
+
+        # Negative control: the same audio without any speaker embedding input
+        # must produce the same A4 interrupt; uncalibrated similarity is inert.
+        baseline_runtime, baseline_event = make_runtime(tmp_path / "baseline")
+        try:
+            baseline_generation = baseline_event["brain_generation_id"]
+            consume_pcm16_voice_window(
+                baseline_runtime, tone(), sample_rate=16000, start_ms=100,
+                event_id=baseline_event["event_id"], generation_id=baseline_generation,
+                source_id=SOURCE, consent_receipt=RECEIPT,
+                consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+                finality="FINAL",
+            )
+            consume_pcm16_voice_window(
+                baseline_runtime, tone(), sample_rate=16000, start_ms=1100,
+                event_id=baseline_event["event_id"], generation_id=baseline_generation,
+                source_id=SOURCE, consent_receipt=RECEIPT,
+                consent_check=consent_ok, consent_guard=consent_guard(consent_ok),
+                finality="FINAL",
+            )
+            assert captured["sal"]["external_interrupt"] == with_speaker_interrupt
+        finally:
+            baseline_runtime.store.close()
     finally:
         runtime.store.close()
 
