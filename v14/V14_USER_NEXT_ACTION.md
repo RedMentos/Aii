@@ -1,3 +1,17 @@
+# V14 — User next action (verified 2026-11-22 16:50 CET)
+
+**Keine Aktion nötig. Bitte nichts manuell ausführen.** Kein Termux-Befehl, kein zweiter UPDATE_REQUEST, kein Modell-/Gewichts-/Age-/Rechtewechsel und keine Mikrofonfreigabe.
+
+- Release-development branch gpt6/v13-private-remote-bridge-20261111 is at c4eb82deec915f65894c20d6ebbaf0ebf58fa335. Private PIPELINE_STATUS #567 confirms this exact installed SHA, auto-update enabled, pipeline runtime/dashboard UP_TO_DATE and no error. Later HEALTH #569 reports runtime.state=UNAVAILABLE; it also records 983 MiB available RAM and 1,629 MiB free disk. Treat installation as verified but runtime functionality as inconclusive. The opted-in diagnostic #568 has redacted input and is not a correctness benchmark.
+- Boss PR #2343 is DRAFT at 55b76c4c79b24b5ac674366d6bcb32aa15ab1f9d: 7 success, 4 failure, 2 queued, 2 in progress, 1 skipped, 1 cancelled. The staged integrated-builder hash mismatch remains on Python 3.13/3.14; old-to-new updater migration returns PARTIAL and Python 3.14 owner-read staged startup refuses the builder. Runtime-deployment-integrity passes, but the staged consumer chain does not. The fair-slice candidate also changes C3 reserve to 55% and gives 45% to observers; no same-prompt Redmi A/B proves correct C3 output under this reserve.
+- Research/Perception PR #2346 is DRAFT / NOT_RELEASED. Current docs/evidence head e68c2488cb474e1b70149f2e3d95f2bbb29220c6; last code-bearing head b72633927e2849f50de69614306e5f27650b6a9c; code commit 1db8fd5fc2e18c115c632cf60577200d68db2c0b. Focused B3 CI on b726 passes 52 tests, compile and CLI smoke; current docs-only head has 12 queued, 1 pending, 1 skipped and 1 cancelled workflows. No B3 code from this PR is installed.
+- Local Linux targeted checks pass for the exact shadow-directory security helper and source-disjoint split, but a full Aii checkout/pytest run is blocked by GitHub DNS. Redmi B3 remains unverified and production B3 remains OFF/SYMBOLIC.
+- Research ledger R-081 Hypnos and R-082 XKV/XBridge/kvloom are full-text reviewed. No external code, weights or dependencies were imported.
+
+**Nächster interner Schritt:** Boss resolves the integrated-builder pin, migration and staged owner-read failures, completes the observer/same-turn matrix, and validates the C3 reserve on identical consented prompts. Then #2346 can be rebased and integrated safely. After a verified release/update receipt, the team can collect authorized native paired taps and run L1 only in shadow mode. No decision from you is needed now.
+
+---
+
 # V14 — User next action (verified 2026-11-22 16:39 CET)
 
 **Keine Aktion nötig. Bitte nichts manuell ausführen.** Kein Termux-Befehl, kein zweiter UPDATE_REQUEST, kein Modell-/Gewichts-/Age-/Rechtewechsel und keine Mikrofonfreigabe.
