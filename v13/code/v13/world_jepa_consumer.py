@@ -19,6 +19,8 @@ import re
 import uuid
 
 import numpy as np
+from v13.common import dumps, now
+from v13.contracts import packet
 
 from v13 import world_jepa
 from v13 import world_jepa_replay
@@ -32,6 +34,8 @@ REVISION = "v14-world-jepa-store-consumer-v3"
 LEGACY_REVISION = "v14-world-jepa-store-consumer-v2"
 STATE_KEY = "v14.world_jepa.store_consumer"
 STATE_SCHEMA = 3
+NEUROMOD_CURSOR_KEY = "v14.world_jepa.neuromod_cursor"
+NEUROMOD_CURSOR_REVISION = 1
 LEGACY_STATE_SCHEMA = 2
 MAX_ROWS = min(2048, world_model.MAX_ROWS)
 DEFAULT_PAGE_SIZE = MAX_ROWS
@@ -1085,9 +1089,134 @@ class WorldJEPAStoreConsumer:
         return removed, errors
 
 
+    def record_outcomes(self, *, limit=64):
+        """Persist source-bound T8 eligibility/modulator packets before optimizer gates.
+
+        Packet inserts and the independent scan cursor commit in one SQLite
+        transaction. A crash therefore cannot advance the cursor without its
+        LearningTrace + ModulatorPacket pair, or duplicate a committed pair.
+        This records experience only; it never changes predictor parameters.
+        """
+        if type(limit) is not int or not 1 <= limit <= MAX_ROWS:
+            raise ValueError("neuromod outcome page must be 1..MAX_ROWS")
+        default = {
+            "revision": NEUROMOD_CURSOR_REVISION,
+            "scan_cursor": 0,
+            "processed": 0,
+            "last_event_id": None,
+        }
+        state, version = self.store.state(NEUROMOD_CURSOR_KEY, default)
+        if (type(state) is not dict
+                or state.get("revision") != NEUROMOD_CURSOR_REVISION
+                or type(state.get("scan_cursor")) is not int
+                or state["scan_cursor"] < 0
+                or type(state.get("processed", 0)) is not int):
+            raise ValueError("invalid persistent neuromod T8 cursor")
+        receipts, rejected, next_cursor, scanned, censored_skipped, has_more = (
+            verify_committed_transition_page(
+                self.store, after_seq=state["scan_cursor"], limit=limit
+            )
+        )
+        if next_cursor < state["scan_cursor"]:
+            raise ValueError("neuromod T8 cursor moved backwards")
+
+        from .neuromod import SLOW_DECAY
+        pending_packets = []
+        for receipt in receipts:
+            source_ref = receipt.source_ref
+            if type(source_ref) is not dict or not isinstance(receipt.evidence_ref, str):
+                raise ValueError("verified T8 receipt lacks source/evidence provenance")
+            status = str(receipt.status)
+            success = status == "FINAL"
+            actual = receipt.actual if type(receipt.actual) is dict else {}
+            safety_veto = (
+                actual.get("safety_veto") is True
+                or actual.get("permission_violation") is True
+            )
+            provenance = [
+                source_ref,
+                {"evidence_ref": receipt.evidence_ref},
+            ]
+            outcome_sha256 = receipt.evidence_ref.rsplit(":", 1)[-1]
+            trace = packet(
+                "LearningTrace", "N10_NEUROMOD", receipt.event_id,
+                receipt.generation_id, provenance,
+                path_id="world_predictor",
+                activity=1.0,
+                eligibility=SLOW_DECAY,
+                authority="SYSTEM",
+                error=not success,
+                detail={
+                    "action_id": receipt.action_id,
+                    "outcome_sha256": outcome_sha256,
+                    "status": status,
+                },
+            )
+            modulator = packet(
+                "ModulatorPacket", "N10_NEUROMOD", receipt.event_id,
+                receipt.generation_id, provenance,
+                path_id="world_predictor",
+                source_class="real_deterministic_outcome",
+                finality="FINAL",
+                epistemic_evidence=1.0,
+                human_correction=0.0,
+                task_success=1.0 if success else 0.0,
+                resource_cost=0.0,
+                safety_veto=safety_veto,
+                irreversible=actual.get("irreversible") is True,
+                rollback_available=actual.get("rollback_available") is True,
+                channels={
+                    "evidence_gain": 1.0,
+                    "task_success": 1.0 if success else 0.0,
+                    "action_error": 0.0 if success else 1.0,
+                },
+            )
+            pending_packets.append(("LearningTrace", trace))
+            pending_packets.append(("ModulatorPacket", modulator))
+
+        next_state = {
+            "revision": NEUROMOD_CURSOR_REVISION,
+            "scan_cursor": next_cursor,
+            "processed": state.get("processed", 0) + len(receipts),
+            "last_event_id": (
+                receipts[-1].event_id if receipts else state.get("last_event_id")
+            ),
+        }
+        cursor_advanced = next_cursor > state["scan_cursor"]
+        if cursor_advanced or pending_packets:
+            with self.store.tx() as connection:
+                current = connection.execute(
+                    "SELECT version FROM states WHERE key=?", (NEUROMOD_CURSOR_KEY,)
+                ).fetchone()
+                current_version = current["version"] if current else 0
+                if current_version != version:
+                    raise ValueError("stale neuromod T8 cursor write")
+                for kind, value in pending_packets:
+                    connection.execute(
+                        "INSERT INTO packets VALUES (?,?,?,?,?,?)",
+                        (
+                            value["packet_id"], kind, value["event_id"],
+                            value["brain_generation_id"], dumps(value), now(),
+                        ),
+                    )
+                connection.execute(
+                    "INSERT OR REPLACE INTO states VALUES (?,?,?)",
+                    (NEUROMOD_CURSOR_KEY, version + 1, dumps(next_state)),
+                )
+        return {
+            "status": "RECORDED" if receipts else "NO_NEW_OUTCOMES",
+            "verified_receipts": len(receipts),
+            "recorded_packets": len(pending_packets),
+            "rejected_receipts": rejected,
+            "censored_skipped": censored_skipped,
+            "scanned_rows": scanned,
+            "scan_cursor": next_cursor,
+            "has_more": has_more,
+        }
+
     def update(self, *, limit=DEFAULT_PAGE_SIZE, steps=80, optimizer_permission=False,
                replay_mode="uniform", encoder_mode="full", cancel_check=None, drift_control=None,
-               replay_projection=False):
+               replay_projection=False, neuromod_scale=1.0):
         if type(limit) is not int or not 16 <= limit <= MAX_ROWS:
             raise ValueError("limit")
         if type(steps) is not int or not 1 <= steps <= 2000:
@@ -1100,6 +1229,8 @@ class WorldJEPAStoreConsumer:
             raise ValueError("encoder_mode must be full or predictor_only")
         if type(replay_projection) is not bool:
             raise ValueError("replay_projection must be bool")
+        if not _finite_number(neuromod_scale) or not 0.0 < neuromod_scale <= 1.0:
+            raise ValueError("neuromod_scale must be finite in (0, 1]")
         if replay_projection and replay_mode not in {"uniform_budget", "session_contiguous", "on_demand_conflict", "on_demand_loss"}:
             raise ValueError("replay projection requires a budgeted replay mode")
         drift_config = world_jepa_drift.normalize_config(drift_control)
@@ -1468,6 +1599,7 @@ class WorldJEPAStoreConsumer:
                 for session_id, score in sorted(loss_probe["scores"].items())
             ]
             replay_metrics = {
+                "neuromod_scale": float(neuromod_scale),
                 "replay_mode": replay_mode,
                 "new_fit_rows": len(new_fit_rows),
                 "prior_fit_rows": len(old_fit_rows),
@@ -1609,7 +1741,7 @@ class WorldJEPAStoreConsumer:
                     cancel_check=cancel_check, allow_optimizer_bootstrap=True,
                     train_encoder=(encoder_mode == "full"),
                     drift_control=drift_config, replay_start=replay_start,
-                    update_scale=1.0,
+                    update_scale=neuromod_scale,
                     replay_cohort_ranges=replay_cohort_ranges,
                 )
             except InterruptedError:
