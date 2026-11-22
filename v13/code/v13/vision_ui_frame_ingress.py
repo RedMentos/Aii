@@ -44,6 +44,33 @@ MAX_PROJECTOR_OUTPUT_DIM = 4096
 _FRAME_VERIFIER_ISSUER = object()
 
 
+def _bounded_vision_config(cfg):
+    """Copy only the hash dimension while enforcing fixed frame byte/pixel caps."""
+    if cfg is not None and type(cfg) is not dict:
+        raise ValueError("RAW EYE vision config must be a dictionary")
+    result = dict(vision.DEFAULTS)
+    hash_dim = cfg.get("hash_dim", result["hash_dim"]) if cfg is not None else result["hash_dim"]
+    if type(hash_dim) is not int or not 1 <= hash_dim <= 4096:
+        raise ValueError("RAW EYE hash_dim must be an integer in 1..4096")
+    result["hash_dim"] = hash_dim
+    result["max_bytes"] = MAX_FRAME_BYTES
+    result["max_pixels"] = MAX_FRAME_PIXELS
+    result["grid"] = GRID
+    result["tile_px"] = TILE_PX
+    return result
+
+
+def _overwrite_caller_buffer(buffer):
+    """Best-effort zeroization for mutable compressed frame buffers."""
+    if type(buffer) is not bytearray:
+        return False
+    try:
+        buffer[:] = b"\\x00" * len(buffer)
+    except Exception:
+        return False
+    return not any(buffer)
+
+
 class ProviderFrameVerifier:
     """One-shot provider capability bound to one active UIObservationLease.
 
@@ -317,6 +344,7 @@ def consume_projected_frame(
     if type(frame_buffer) is not bytearray:
         raise TypeError("frame_buffer must be a mutable bytearray")
     image = None
+    frame_snapshot = None
     try:
         if not frame_buffer:
             raise ValueError("empty MediaProjection frame")
@@ -347,12 +375,18 @@ def consume_projected_frame(
             raise ValueError("priority must be an integer in -100..100")
 
         cfg = _bounded_vision_config(cfg)
-        frame_sha256 = hashlib.sha256(frame_buffer).hexdigest()
+        # Freeze the exact bytes that are hashed and decoded. The provider-owned
+        # bytearray remains mutable, so another thread must not be able to swap
+        # pixels after receipt verification but before image decoding.
+        frame_snapshot = bytearray(frame_buffer)
+        frame_sha256 = hashlib.sha256(frame_snapshot).hexdigest()
         if type(frame_verifier) is not ProviderFrameVerifier:
             raise PermissionError("provider-owned frame verifier capability is required")
-        if not frame_verifier.verify(runtime, consent_lease, observation, frame_sha256, len(frame_buffer)):
+        if not frame_verifier.verify(runtime, consent_lease, observation, frame_sha256, len(frame_snapshot)):
             raise PermissionError("MediaProjection frame digest is not bound to the active provider receipt")
-        image = vision.decode(frame_buffer, cfg)
+        image = vision.decode(frame_snapshot, cfg)
+        _overwrite_caller_buffer(frame_snapshot)
+        frame_snapshot = None
         _overwrite_caller_buffer(frame_buffer)
         if not consent_lease.active_for(runtime, generation_id):
             raise PermissionError("UI observation was cancelled or revoked during frame decode")
@@ -575,6 +609,8 @@ def consume_projected_frame(
     finally:
         if image is not None:
             image.close()
+        if frame_snapshot is not None:
+            _overwrite_caller_buffer(frame_snapshot)
         _overwrite_caller_buffer(frame_buffer)
 
 
