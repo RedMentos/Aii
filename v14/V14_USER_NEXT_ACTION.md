@@ -1,3 +1,19 @@
+# QA & Android current user handoff — 2026-11-22
+
+**Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein neuer UPDATE_REQUEST, kein CHAT_SEND, kein Modell-/Gewichtswechsel und keine Rechte-/Mikrofonfreigabe.
+
+- Release-Entwicklungs-HEAD `gpt6/v13-private-remote-bridge-20261111` = `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. Exakte Commit-CI: **21/21 Workflows SUCCESS**. Das beweist nur den Code-/CI-Stand.
+- Privater, owner-authentifizierter PIPELINE_STATUS #582 meldet genau `c4eb82` installiert, Runtime/Dashboard `UP_TO_DATE`, Auto-Update EIN, last_error NONE.
+- Der neuere HEALTH-Receipt #581 meldet dagegen `runtime=UNAVAILABLE` (memavailable 1414 MiB, freier Speicher 1568 MiB). Der bereits vorhandene read-only `:status`-Request #583 ist noch offen. Kein zweiter Request und kein Chat-Test wurde ausgelöst.
+- Der jüngste technische Snapshot (V13OBS #115) zeigt weiterhin **57,74 s Gesamtzeit / 41,63 s TTFT / 38,95 s C3-Prefill / 751 Prompt-Tokens / 2 generierte Tokens**; B1_DETAIL und B2_GIST bleiben TIME_BUDGET. Das ist keine neue Messung nach einem Kandidaten-Update und kein 20-Turn-Akzeptanztest.
+- QA PR [#2359](https://github.com/RedMentos/Aii/pull/2359): Code-Head `ad1832f9938154f5a9ad2767b33f0b43b4bb2474`, danach nur Handoff-Commit `01b086a98024b5707824c53441f4b2814686009a`. Die vollständige Store/Memory/source-lifecycle → online-world/C3 → JEPA → Termux recovery → stage → deployer Pin-Kette hat **14/14 statische Readback-Kanten PASS**. Exakte CI auf Code-Head ist QUEUED/PENDING; der kombinierte Stack trägt #2355-Code und hängt von #2351 ab. Nicht mergen, bevor Boss die #2355/#2359-Integrationsroute festgelegt hat.
+- Android companion PR [#2356](https://github.com/RedMentos/Aii/pull/2356), Head `6643acba196e2b7191c7e637edfcf62f61139b18`: **8/8 CI-Workflows SUCCESS**; isolierter JDK-21-Helper-Compile, 7 Assertions und Zwei-Thread-Lock-Harness PASS. Noch offen/unmerged, kein APK installiert, keine Redmi- oder Android-OS-Aktion. Companion bleibt default STOPPED und launch_app-only mit sichtbarer Einzelbestätigung.
+- Vollständiger lokaler Aii-Checkout fehlt in dieser Umgebung; lokale Gesamt-Tests sind BLOCKED/NOT_RUN. Keine native Android-/Redmi-Verifikation, kein korrektes 2+2, keine erfolgreiche B1/B2-Angebotszustellung, keine trainierte native Latent-Kopplung und keine akzeptierte Master-Weight-Änderung behauptet.
+
+**Nächster interner Schritt:** vorhandenes #583 abwarten; parallel die exakten #2359-CI-Ergebnisse und Boss-Integrationsentscheidung abwarten. Erst bei Runtime-Verfügbarkeit eine frische Diagnose und den autorisierten 20-Turn-Test ausführen. **Keine Aktion nötig.**
+
+---
+
 # JEPA-Statuskorrektur — 2026-11-22T10:00:40.871Z
 
 PR #2331 steht inzwischen auf `535eba6f668b3990416c361368f36e3e8f1e599e`, hat aber **9 fehlgeschlagene Checks** (4 laufen, 2 queued, 4 erfolgreich, 1 übersprungen). Die Fehler liegen weiter in der verschachtelten Source-Pin-Kette: sechs direkte Consumer-Pins stimmen nicht mit den aktuellen Datei-Bytes überein. Die vollständigen Hashes stehen im Boss-Review-Kommentar [7077507340](https://github.com/RedMentos/Aii/pull/2331#issuecomment-7077507340). Das ist noch kein JEPA-Lern-/Unlearning-Erfolg; PR bleibt DRAFT, Promotion OFF.
