@@ -299,6 +299,7 @@ def test_staged_store_read_open_is_linearized_with_revocation(tmp_path):
         env={**os.environ, "PYTHONPATH": str(runtime_root), "PYTHONDONTWRITEBYTECODE": "1"},
         capture_output=True,
         text=True,
+        cwd=tmp_path,
         timeout=20,
         check=False,
     )
