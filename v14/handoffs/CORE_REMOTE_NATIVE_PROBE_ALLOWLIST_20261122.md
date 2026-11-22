@@ -105,3 +105,10 @@ No action is needed now. The probe remains NOT_RUN. Do not send a Termux command
 **Acceptance boundary:** this branch has a passing staged consumer path and native build/cross-compile evidence, but the local-approval overlay is still NOT in the shared production recovery/stage/deployer pin chain. It is NOT_RELEASED, not installed, and not a Redmi test. The native build does not prove real GGUF inference, learned alignment, semantic utility, trained latent coupling or production B3.
 
 **Next integration owner/action:** Boss/Integrator should compose this exact reviewed overlay after the native-receiver stage in the shared recovery → stage → runtime-deployer chain, refresh all source/blob pins, then run exact CI/readback. Keep production B3 OFF. Only after a release is actually installed may the owner separately decide whether to authorize one exact CHAT_OPERATOR probe. No user action is needed now.
+
+
+## Model-byte integrity follow-up — 2026-11-22
+
+The local one-shot native-probe approval now verifies the actual installed model bytes against the pinned manifest SHA-256 using a 1 MiB streaming hash (bounded memory), both when arming and when consuming. It also rechecks the resolved model path after hashing and rechecks the approval TTL/current source after potentially slow model verification, before the approval is consumed. A same-size post-arm mutation is a negative regression and must not reach `native_receive`.
+
+This is still only an explicitly armed diagnostic probe: no production routing, weight update, training authority, or Android device proof is added. Exact CI and local test evidence must be recorded on the new head.
