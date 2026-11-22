@@ -128,6 +128,45 @@ def test_same_size_model_tamper_after_arm_invalidates_approval(tmp_path, model_n
         runtime.close()
 
 
+@pytest.mark.parametrize(
+    ("model_name", "role"),
+    [("sender", "B2_GIST"), ("receiver", "C3_LANGUAGE")],
+)
+def test_selected_model_path_must_match_manifest_path_before_arm(tmp_path, model_name, role):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    manifest_path = sender_path if model_name == "sender" else receiver_path
+    alternate = tmp_path / (model_name + "-same-bytes-different-path.gguf")
+    alternate.write_bytes(manifest_path.read_bytes())
+    runtime.models.router = lambda selected_role: alternate if selected_role == role else None
+    try:
+        with pytest.raises(PermissionError, match="selected model path"):
+            approval.arm(runtime, "B2_GIST", "C3_LANGUAGE", now=1000.0)
+    finally:
+        runtime.close()
+
+
+@pytest.mark.parametrize(
+    ("model_name", "role"),
+    [("sender", "B2_GIST"), ("receiver", "C3_LANGUAGE")],
+)
+def test_selected_model_route_change_after_arm_invalidates_approval(tmp_path, model_name, role):
+    runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
+    manifest_path = sender_path if model_name == "sender" else receiver_path
+    alternate = tmp_path / (model_name + "-same-bytes-rerouted.gguf")
+    alternate.write_bytes(manifest_path.read_bytes())
+    try:
+        approval.arm(runtime, "B2_GIST", "C3_LANGUAGE", now=1000.0)
+        runtime.models.router = lambda selected_role: alternate if selected_role == role else None
+        with pytest.raises(PermissionError, match="selected model path"):
+            approval.consume(
+                runtime, "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], now=1001.0
+            )
+        record, _ = runtime.store.state(approval.KEY, None)
+        assert record["status"] == "PENDING"
+    finally:
+        runtime.close()
+
+
 def test_arm_ttl_starts_after_model_hash_verification(tmp_path, monkeypatch):
     runtime, event, sender_path, receiver_path = setup_runtime(tmp_path)
     clock = [1000.0]
