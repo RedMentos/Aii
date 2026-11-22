@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T06:08:35Z",
+  "updated_at": "2026-11-22T06:15:00Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at 39b175521f50048f13ca14372b316de47527f531; V14 master and historical V13 appendix preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -164,17 +164,17 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "A0–A5, attention/salience, image/audio, paper ledger",
       "acceptance": "Source-bound real perception consumed downstream and at least one research hypothesis measured; native permissions separate",
-      "proof_environment": "LOCAL_LINUX algorithm-level P-256/signature/sample-geometry smoke PASS on CPython 3.13.5 x86_64; full Aii checkout/repository suite BLOCKED. PR #2312 exact head 96e48534af9e55d7c898d086dfb3a863213966c7: signed-consumer workflow PENDING and staged/integrated workflow QUEUED at last read. No Android AudioRecord provider or Redmi capture.",
+      "proof_environment": "LOCAL_LINUX algorithm-level P-256/signature/sample-geometry smoke PASS on CPython 3.13.5 x86_64; full Aii checkout/repository suite BLOCKED. PR #2312 exact head 5221314d3c01ab6d874ecc0a8b8ff72c34e504a2: signed-consumer workflow PENDING and staged/integrated workflow QUEUED at last read. No Android AudioRecord provider or Redmi capture.",
       "next_step": "Recheck exact-head CI; rebase #2312 onto release-development 39b1755 only after QA companion verifier/provider base is reconciled; repair the inherited raw-runtime-plain-ui-history-recovery-v1 migration failure (PARTIAL / runtime ERROR / last_error UPDATE). Keep signed capture at 44.1 kHz; do not add AudioRecord until visible provider, permission/lifecycle, zeroization, route/silence callbacks and revocation are tested.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T06:08:35Z",
+      "last_checkpoint": "2026-11-22T06:15:00Z",
       "latest_candidate_pr": {
         "pr": 2312,
-        "head_sha": "96e48534af9e55d7c898d086dfb3a863213966c7",
+        "head_sha": "5221314d3c01ab6d874ecc0a8b8ff72c34e504a2",
         "base": "qa/v14-companion-os-permission-contract-20261122",
         "state": "OPEN_DRAFT_PARTIAL_CI_PENDING",
         "scope": "signed one-shot RAW EAR consumer; Android-guaranteed 44.1 kHz mono PCM16; 88,200-byte / 117,600-character one-second cap; exact source/generation/signature/consent/replay checks; no microphone provider or learning/action authority",
-        "ci": "RUN_44992404688_PENDING; RUN_44992404656_QUEUED"
+        "ci": "RUN_44992975596_PENDING; RUN_44992975599_QUEUED"
       },
       "proof": "Code/readback PASS on branch research-perception/v14-audio-capture-consumer-20261122-run11b; local minimal P-256 and 44.1-kHz payload-geometry smoke PASS (not full repo test); exact-head CI pending/queued; no Termux/Redmi/native model proof. Earlier 98f434d head consumer workflow PASS, but staged migration failed two old-profile assertions (238 passed, 10 skipped, 47 subtests; integrated regression passed)."
     },
@@ -626,7 +626,7 @@
     "pr2314": "OPEN_DRAFT_FAIL. Head af2c46076d202de37a25cbfd2ff29dfd5898de00; Linux pinned API and Android ARM64 cross-compile PASS, Python staged tests fail because raw triple-quoted anchor constants preserve literal backslash-n instead of real newline; count=0. Core notified with exact fix in comment 7075087798; keep OFF.",
     "pr2313": "OPEN_DRAFT_STALE_BASE. Current head 8a9cecb54fa16fce5c65f0f0ac177e4fe3881a40; 92 ahead/282 behind release 39b; paired-tap workflow pending. New b3train.py is a bounded two-seed NumPy/Adam L1 shadow adapter with explicit labels/provenance, holdout, no-message/latent/shuffle/random controls and save/reload, but its test patches training_batch with synthetic random tensors. No actual native paired-tap training or L1 utility gate. Core notified in comment 7075095567; rebase required.",
     "pr2311": "OPEN_DRAFT_FAIL/PENDING. Head ae15c073d6d61be0ad9fe6b05c8003e6117d0647; positive JEPA transactional/combined/receipt/WorldJEPA workflows PASS. Lab-Age, training-resume, controller, owner-read and migration failures converge on stale nested source pins: integrated WorldJEPA training candidate → recovery wrapper → stage builder → runtime deployer. JEPA algorithmic quality not yet tested in staged Runtime. Core/JEPA notified in comment 7075095335; no production update.",
-    "pr2312": "OPEN_DRAFT_PARTIAL_CI_PENDING. Current head 96e48534af9e55d7c898d086dfb3a863213966c7, base QA companion branch. Consumer defaults to 44.1 kHz and derives the 117600-character cap from one-second PCM16. Minimal LOCAL_LINUX P-256/geometry smoke PASS; exact consumer CI pending and staged/integrated queue pending. Earlier 98f434d consumer CI passed, but inherited two-checkout migration failed (2 failures, 238 passed, 10 skipped, 47 subtests; last_result PARTIAL / runtime ERROR / last_error UPDATE). No Android provider; no deployment.",
+    "pr2312": "OPEN_DRAFT_PARTIAL_CI_PENDING. Current head 5221314d3c01ab6d874ecc0a8b8ff72c34e504a2, base QA companion branch. Consumer defaults to 44.1 kHz and derives the 117600-character cap from one-second PCM16. Minimal LOCAL_LINUX P-256/geometry smoke PASS; exact consumer CI pending and staged/integrated queue pending. Earlier 98f434d consumer CI passed, but inherited two-checkout migration failed (2 failures, 238 passed, 10 skipped, 47 subtests; last_result PARTIAL / runtime ERROR / last_error UPDATE). No Android provider; no deployment.",
     "redmi": "Post-merge PIPELINE_STATUS #480: auto-update enabled, runtime/dashboard CI_WAIT, last_error NONE, installed SHA 89333289; no update. REDMI_UNVERIFIED.",
     "private_owner_read": "PIPELINE_STATUS #480 authenticated after merge; CI_WAIT on old SHA; no UPDATE_REQUEST or device mutation.",
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT. No .git checkout under /mnt/data, /workspace or /root; no LOCAL_LINUX full-repository tests ran.",
