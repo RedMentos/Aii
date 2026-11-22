@@ -130,8 +130,6 @@ public final class MediaProjectionCaptureService extends Service {
                 Math.sqrt((double) MAX_PIXELS / ((double) sourceWidth * sourceHeight)));
         captureWidth = Math.max(1, (int) Math.floor(sourceWidth * scale));
         captureHeight = Math.max(1, (int) Math.floor(sourceHeight * scale));
-        captureStartElapsed = SystemClock.elapsedRealtime();
-
         imageReader = ImageReader.newInstance(captureWidth, captureHeight, PixelFormat.RGBA_8888, 2);
         imageReader.setOnImageAvailableListener(this::onImageAvailable, worker);
         projectionCallback = new MediaProjection.Callback() {
@@ -158,6 +156,7 @@ public final class MediaProjectionCaptureService extends Service {
                 null,
                 worker);
         if (virtualDisplay == null) throw new IllegalStateException("virtual display unavailable");
+        captureStartElapsed = SystemClock.elapsedRealtime();
     }
 
     private void onImageAvailable(ImageReader reader) {
