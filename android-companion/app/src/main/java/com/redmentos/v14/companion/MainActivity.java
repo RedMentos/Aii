@@ -99,10 +99,8 @@ public final class MainActivity extends Activity {
     }
 
     private void toggleEnabled() {
-        SharedPreferences prefs = getSharedPreferences(CompanionProvider.PREFS, MODE_PRIVATE);
-        boolean enabled = prefs.getBoolean("enabled", false);
-        prefs.edit().putBoolean("enabled", !enabled).apply();
-        Toast.makeText(this, enabled ? "Companion stopped" : "Companion enabled", Toast.LENGTH_SHORT).show();
+        boolean enabled = CompanionProvider.toggleEnabled(this);
+        Toast.makeText(this, enabled ? "Companion enabled" : "Companion stopped", Toast.LENGTH_SHORT).show();
         refresh();
     }
 
