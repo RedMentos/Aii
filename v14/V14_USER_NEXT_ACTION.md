@@ -1701,3 +1701,10 @@ Private owner-read request #443 has no authenticated reply. Installed SHA and up
 3. Continue whole-Canon QA; do not use the green release CI or updater receipt as evidence that the slow/incorrect native chat path is fixed.
 
 **Redmi status:** installed c4eb82 / updater up-to-date; native quality and Android companion acceptance remain UNVERIFIED. **User action: none.**
+
+
+## Research note R-081 — next audio-learning experiment
+
+- Full 12-page review: *Surprise-Gated Memory for Live Speaker Diarization*, arXiv:2611.20819v1. The arXiv record says 2026-11-16, while the PDF title page says 2026-09-26. It reports 52%/82% recovery of the online-to-offline DER gap only in a revisable end-of-meeting track; the causal-strict track is poor because full-buffer reclustering renumbers identities. The study uses three AMI meetings and five VoxConverse sessions, single seed, no confidence intervals, and no linked code/weight license. 
+- Practical V14 hypothesis: a calibrated surprise gate could feed A4 and a short-lived source-bound audio episode store, but must not replace JEPA or real weight learning. Compare fixed threshold vs assign/defer/create vs no gate, and full-history replay vs sliding-window vs no replay on existing synthetic fixtures. Preserve provisional/final provenance and erase session traces on end.
+- No download or device test. This is a research proposal, not an implemented capability.
