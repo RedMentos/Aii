@@ -1,8 +1,22 @@
+# V14 — User next action (verified 2026-11-22 16:39 CET)
+
+**Keine Aktion nötig. Bitte nichts manuell ausführen.** Kein Termux-Befehl, kein zweiter UPDATE_REQUEST, kein Modell-/Gewichts-/Age-/Rechtewechsel und keine Mikrofonfreigabe.
+
+- Release-development branch gpt6/v13-private-remote-bridge-20261111 is at c4eb82deec915f65894c20d6ebbaf0ebf58fa335. Private PIPELINE_STATUS #567 confirms this exact installed SHA, auto-update enabled, pipeline runtime/dashboard UP_TO_DATE and no error. However, the later HEALTH receipt #569 reports runtime.state=UNAVAILABLE; it also records 983 MiB available RAM and 1,629 MiB free disk. Treat installation as verified but runtime functionality as inconclusive. The opted-in diagnostic #568 has redacted input and is not a correctness benchmark.
+- Boss PR #2343 remains DRAFT at 1084bf902c9d6bebd83436d7d7908d382ddd1984: 8 pass / 8 fail / 1 skipped. The stage/deployer pin and observer-overlay anchor remain blockers. The candidate also changes the C3 reserve to 55% and gives 45% to observers; no native A/B proves this preserves C3 correctness. Do not promote or deploy it yet.
+- Research/Perception PR #2346 remains DRAFT / NOT_RELEASED at b72633927e2849f50de69614306e5f27650b6a9c; code commit 1db8fd5fc2e18c115c632cf60577200d68db2c0b. Focused B3 CI passes 52 tests, compile and CLI smoke, but 7 of 15 total workflows fail in other integration chains. No B3 code from this PR is installed.
+- Local Linux targeted checks pass for the exact shadow-directory security helper and source-disjoint split, but a full Aii checkout/pytest run is blocked by GitHub DNS. Redmi B3 remains unverified and production B3 remains OFF/SYMBOLIC.
+- New research ledger entries: R-081 Hypnos (dual-phase wake/sleep continual learning; no reusable licensed code found) and R-082 XKV/XBridge (receiver-aware cache communication plus exact entity anchors; multi-turn and Android gaps remain). No model or weight was downloaded or swapped.
+
+**Nächster interner Schritt:** Boss resolves #2343 and its exact CI matrix; then #2346 can be rebased and integrated safely. After a verified release/update receipt, the team can collect authorized native paired taps and run L1 only in shadow mode. No decision from you is needed now.
+
+---
+
 # Research & Perception — verified handoff 2026-11-22 15:02 CET
 
 **Keine Nutzeraktion nötig.** Kein Termux-Befehl, kein UPDATE_REQUEST, kein Modell-/Gewichts-/Rechtewechsel und keine Mikrofonfreigabe.
 
-- Release-development HEAD bleibt `gpt6/v13-private-remote-bridge-20261111` = `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. Private QA receipts #567–#569 bestätigen weiterhin genau diesen installierten SHA, Auto-Update EIN und Runtime/Dashboard UP_TO_DATE. Das ist Installationsstatus, kein Funktionsnachweis.
+- Release-development HEAD bleibt `gpt6/v13-private-remote-bridge-20261111` = `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`. Private PIPELINE_STATUS #567 bestätigt den installierten SHA und Auto-Update EIN; der spätere HEALTH-Receipt #569 meldet jedoch runtime.state=UNAVAILABLE. Installation ist bestätigt, Runtime-Funktionalität bleibt damit unklar.
 - Mein B3-Kandidat [PR #2346](https://github.com/RedMentos/Aii/pull/2346) hat den Code-Commit `1db8fd5fc2e18c115c632cf60577200d68db2c0b`; spätere Commits auf demselben PR-Branch aktualisieren ausschließlich Board-/Handoff-Dokumentation; seit dem Code-Commit gab es keine weitere Runtime-Codeänderung. Die QA-Symlink-Escape-Lücke im L1-Shadow-Artefaktpfad ist mit dir-fd/`O_NOFOLLOW`, Ownership-/Permission-Prüfungen, exklusivem 0700-Run-Verzeichnis und descriptor-anchored Writes behoben. Neue negative Tests decken sowohl `home/b3 -> outside` als auch `home/b3/shadow -> outside` ab.
 - **CI:** Exakter B3-Workflow [45031525111](https://github.com/RedMentos/Aii/actions/runs/45031525111) PASS: 52 Tests, geänderte Module `py_compile`, L1-CLI-Import/Help-Smoke PASS. Andere exakte PR-Workflows sind nicht vollständig grün: Lab-Age E2E scheitert am `integrated builder hash mismatch`; Two-checkout migration endet `PARTIAL` statt `UPDATED`; Runtime-Deployment (Python 3.11/3.14) scheitert an `Pinned plain UI recovery builder changed`; staged/integrated und native-latent-receiver (Python 3.13/3.14) scheitern am `integrated builder hash mismatch`. Core audio/arithmetic und same-turn B1/B2/C4/C3 waren noch IN_PROGRESS. Diese fremden Source-Pin-Ketten bleiben Boss/Integrator-Ownership.
 - **LOCAL_LINUX:** CPython 3.13.5 x86_64 isolierter Test PASS: descriptor-anchored NPZ/JSON/atomic-report writes, 0700-Rechte und Top-Level-/Nested-Symlink-Negativkontrollen ohne Outside-Write. Vollständiger Aii-Checkout/pytest BLOCKED (kein Checkout, GitHub-DNS nicht erreichbar).
