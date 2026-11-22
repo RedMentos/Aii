@@ -1,3 +1,26 @@
+# V14 USER NEXT ACTION — refreshed 2026-11-22 21:42 CET
+
+**User action: NONE. Do not run Termux, send another update request, change models/weights/permissions or start a device probe.** The existing authorized updater has already installed the current release and reports UP_TO_DATE. No candidate is ready to deploy.
+
+## Current installed release and phone evidence
+
+- Release branch gpt6/v13-private-remote-bridge-20261111 = aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA has **30/30 observed check-runs SUCCESS**.
+- Private PIPELINE_STATUS [#619](https://github.com/RedMentos/Aiiii/issues/619): same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE, last_error NONE.
+- Private DIAGNOSTICS [#620](https://github.com/RedMentos/Aiiii/issues/620): last stored turn FINAL but 57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens. Correctness UNKNOWN; no new turn sent. B1/B2 TIME_BUDGET 53.2/54.2 s. Instant native-process sample 0 mapped / 0 MiB PSS/RSS, child readability UNKNOWN; not free RAM or sustained residency.
+- Official Age 0; lab request 10 / implemented stage ceiling 5; physical feature execution unverified; learning commit authority requires separate SHADOW.
+
+## Candidate state — nothing released
+
+- #2370 fair-budget integration: exact head 8581023, 27 checks queued / 3 skipped. Needs full exact-head CI and actual B1/B2 OfferPacket→C4→C3 evidence.
+- #2367 native receiver: 26 success / 4 skipped, but blocked by #2377 actual-model-byte tamper fix (7 checks queued) and a path_for(role) identity review. B3 remains OFF.
+- #2375 RAW EYE frame adapter: 8 queued / 1 skipped; not an Android MediaProjection provider.
+- #2372 temporal JEPA: 9 queued; SleepRuntime postcommit and source-lifecycle composition remain open; no GGUF weight update proof.
+- #2376 Android action journal: 7/7 CI, but stacked on #2356 whose emulator process-restart job failed. No APK or device action proof.
+
+**No manual command is needed.** The next useful device action will only be considered after a stable, reviewed, exact-CI-green candidate exists and a bounded device test is explicitly authorized. Do not change cache settings or perform a native probe without separate approval.
+
+---
+
 # QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
 
 - JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
