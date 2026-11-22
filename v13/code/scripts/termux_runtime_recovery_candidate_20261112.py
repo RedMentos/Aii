@@ -40,7 +40,7 @@ def build_sources(code_dir, *, include_postcommit=True):
     result.update(chat.apply_sources(composed))
     result = idle.apply_sources(code_dir, result)
     arithmetic = load(code_dir, 'scripts/integrated_arithmetic_candidate_20261116.py',
-                      '954eb4693eb64212a5b1dd821123bd32ea22cbbb')
+                      '815bbd91fca1f661de1be8c28794a9cde0d130a765e7b5dd73fdd11bd9690d73')
     result = arithmetic.apply_sources(code_dir, result)
     arithmetic_outcome = load(code_dir, 'scripts/integrated_arithmetic_outcome_candidate_20261116.py',
                               'b568613863fef6a687a3237d089b91d8b612ce4163ccb5795df9e21af51c1489')
