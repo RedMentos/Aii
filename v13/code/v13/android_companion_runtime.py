@@ -76,6 +76,89 @@ class AndroidCompanionController:
             trust = json.loads(self.trust_path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             pass
+
+        # Read the native capability registry only. This never submits, approves,
+        # launches, pairs, enables, or grants authority to an Android action.
+        try:
+            snapshot = self.transport.capabilities()
+        except Exception as exc:
+            companion = {
+                "provider_status": "UNAVAILABLE",
+                "error_type": type(exc).__name__,
+            }
+        else:
+            if type(snapshot) is not dict:
+                companion = {"provider_status": "INVALID_RESPONSE"}
+            elif snapshot.get("status") == "DENIED":
+                if snapshot.get("reason") == "TERMUX_NOT_PAIRED":
+                    companion = {
+                        "provider_status": "PAIRING_REQUIRED",
+                        "termux_paired": False,
+                    }
+                else:
+                    companion = {"provider_status": "DENIED"}
+            elif snapshot.get("schema") != "v14.android-capability-registry/1":
+                companion = {"provider_status": "INVALID_RESPONSE"}
+            else:
+                raw_capabilities = snapshot.get("capabilities")
+                enabled = snapshot.get("enabled")
+                paired = snapshot.get("termux_paired")
+                valid = (
+                    type(enabled) is bool
+                    and type(paired) is bool
+                    and type(raw_capabilities) is list
+                    and len(raw_capabilities) <= 16
+                )
+                capabilities = []
+                if valid:
+                    for item in raw_capabilities:
+                        if (
+                            type(item) is not dict
+                            or type(item.get("capability")) is not str
+                            or type(item.get("status")) is not str
+                            or len(item["capability"]) > 64
+                            or len(item["status"]) > 64
+                        ):
+                            valid = False
+                            break
+                        capabilities.append({
+                            "capability": item["capability"],
+                            "status": item["status"],
+                            "per_action_consent": (
+                                item.get("per_action_consent")
+                                if type(item.get("per_action_consent")) is bool else None
+                            ),
+                            "android_os_permission_required": (
+                                item.get("android_os_permission_required")
+                                if type(item.get("android_os_permission_required")) is bool else None
+                            ),
+                            "result_observed": (
+                                item.get("result_observed")
+                                if type(item.get("result_observed")) is bool else None
+                            ),
+                            "learning_authority": (
+                                item.get("learning_authority")
+                                if type(item.get("learning_authority")) is bool else None
+                            ),
+                        })
+                if not valid:
+                    companion = {"provider_status": "INVALID_RESPONSE"}
+                else:
+                    companion = {
+                        "provider_status": "AVAILABLE",
+                        "enabled": enabled,
+                        "termux_paired": paired,
+                        "android_api": (
+                            snapshot.get("android_api")
+                            if type(snapshot.get("android_api")) is int
+                            and type(snapshot.get("android_api")) is not bool else None
+                        ),
+                        "capabilities": capabilities,
+                    }
+                    for key in ("network_enabled", "shell_enabled", "model_authority"):
+                        value = snapshot.get(key)
+                        companion[key] = value if type(value) is bool else None
+
         return dumps({
             "status": "LOCAL_COMPANION_CONTROLLER",
             "broker_stopped": self.broker.stopped,
@@ -83,6 +166,8 @@ class AndroidCompanionController:
             "pending_local": len(self.broker.pending),
             "approved_local": len(self.broker.approved),
             "dispatched_local": len(self.broker.dispatched) + len(self.broker.consumed),
+            "companion": companion,
+            "read_only_probe": True,
             "android_device_verified": False,
             "redmi_status": "REDMI_UNVERIFIED",
         })
