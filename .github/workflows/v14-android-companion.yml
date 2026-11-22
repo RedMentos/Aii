@@ -26,6 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Test emulator UI recovery helpers
+        run: python3 android-companion/scripts/test_process_restart_ui.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
