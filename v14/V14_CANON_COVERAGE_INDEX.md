@@ -2378,3 +2378,10 @@ Exact code head aae0330e24279ed2782451e7effe78ee005ac490 now records learning_ha
 ### Run 19 exact-head CI status (2026-11-22T21:20:00Z)
 
 Exact code head aae0330e24279ed2782451e7effe78ee005ac490 has three associated workflows: 45070863812 staged/integrated; 45070863749 temporal WorldJEPA 3.13/3.14; 45070863814 optimizer-resume 3.13/3.14 — all QUEUED; no commit statuses. All remain pending; no commit status or PASS is recorded.
+
+
+### Run 19 exact CI blocker (2026-11-22T21:23:00Z)
+
+Exact-head CI for aae0330e: optimizer-resume run 45070863814 failed on Python 3.13 and 3.14 at source_lifecycle_lock_integration_candidate.py:172 with ValueError unsupported lifecycle source: memory.py. Its expected SHA-256 is 61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc; actual current memory.py is 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701 (Git blob 172417b49c0abb301db9367fd1c9947a91b3c458). Staged-runtime job in 45070863812 failed 19 / passed 231 / skipped 10 / errored 2, with the same pin mismatch; integrated-regression remains IN_PROGRESS. Temporal T8 run 45070863749 remains QUEUED. This is a QA-owned lifecycle dependency, not evidence of a JEPA numeric-model failure.
+
+This is an inherited QA-owned source-lifecycle composition failure; it blocks staged/runtime acceptance but does not by itself establish a temporal learner failure. The temporal-specific exact-head run remains QUEUED. Status: CODE_PRESENT / INTEGRATION_BLOCKED_BY_QA_PIN / NOT_ACCEPTED.
