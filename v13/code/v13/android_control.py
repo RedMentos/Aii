@@ -247,7 +247,7 @@ class AndroidControlBroker:
                 "expires_at": p.expires_at,
                 "local_approval": "CALLER_ASSERTED_LOCAL_UI_CONFIRMATION",
                 "companion_local_consent_required": True,
-                "android_os_permission_required": True,
+                "android_os_permission_required": False,
                 "permission_bypass": False,
                 "model_authority": False,
             }
