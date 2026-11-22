@@ -2365,7 +2365,7 @@ Boss candidate #2370 head bae7d031: 1 SUCCESS / 14 QUEUED / 1 IN_PROGRESS / 7 CA
 | Canon family | Current code / wiring | Test environment evidence | Android / active status |
 |---|---|---|---|
 | A0–A5 perception, attention and salience | RAW EAR features exist; RAW EYE frame ingress and audio-window candidate are partial | #2375 6 success / 4 failure / 1 skipped; #2384 3 success / 2 failure | No AudioRecord or MediaProjection receipt; SHADOW |
-| B1_DETAIL / B2_GIST | Distinct role models; candidate source-bound OfferPacket → C4 → C3 and fair observer slices | #2370 exact head 9a563: 28 queued / 1 skipped; no completed functional pass | B1/B2 TIME_BUDGET 53.2/54.2 s; no accepted offers |
+| B1_DETAIL / B2_GIST | Distinct role models; candidate source-bound OfferPacket → C4 → C3 and fair observer slices | #2370 exact head 9a563: 27 queued / 1 skipped; no completed functional pass | B1/B2 TIME_BUDGET 53.2/54.2 s; no accepted offers |
 | B3 / Enlightened Space | Symbolic space plus diagnostic input-embedding receiver | #2377 7/7 CI; residual loader path race; #2381 stale | OFF; no semantic transfer or trained adapter proof |
 | B4/B5 / C4 coalition | Source-span C4 receipt and staged coalition | Candidate consumer CI pending | No learned coalition or Redmi proof |
 | C1/JEF/C2/C3 | Runtime and bounded exact-arithmetic candidate | #2370 exact matrix queued | Last stored phone turn 57.74 s / 2 tokens; correctness unknown |
@@ -2383,4 +2383,4 @@ Boss candidate #2370 head bae7d031: 1 SUCCESS / 14 QUEUED / 1 IN_PROGRESS / 7 CA
 | OS sandbox / adaptive Judge / memory egress | Partial contracts and draft trainable risk head | Partial synthetic only | No independent OS enforcement or complete egress registry |
 | Remote maintenance / updater / rollback | Authenticated read-only owner relay and CI-gated updater | Release SHA 45/45; #641/#642 read receipts | aed1d2 installed; patch apply, process-death and rollback not verified |
 
-**Release boundary:** release `aed1d2b826290c95c70356b5d8b864b5ef382be4` remains installed and CI-green. Candidate #2370 `9a5635281aa57542ce61e6cff010061715ce8d0a` remains DRAFT / NOT_GREEN. No UPDATE_REQUEST was sent. No user action is required.
+**Release boundary:** release `aed1d2b826290c95c70356b5d8b864b5ef382be4` remains installed and CI-green. Candidate #2370 `de50fd4708490fb6db19cf24c22fef22baf23eca` remains DRAFT / NOT_GREEN. No UPDATE_REQUEST was sent. No user action is required.

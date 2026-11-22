@@ -8,9 +8,9 @@
 - Official Age remains 0; Lab-Age selector is ACTIVE/requested 10/effective 5, physical execution false, and learning commit authority requires separate SHADOW.
 
 ### Boss-owned functional integration
-- PR #2370 exact head `9a5635281aa57542ce61e6cff010061715ce8d0a` is DRAFT, with 28 queued / 1 skipped / 0 completed success / 0 observed failures. It is NOT_GREEN and NOT_RELEASED.
+- PR #2370 exact head `de50fd4708490fb6db19cf24c22fef22baf23eca` is DRAFT, with 27 queued / 1 skipped / 0 completed success / 0 observed failures. It is NOT_GREEN and NOT_RELEASED.
 - This run fixed the two exact-head test regressions: (1) the fair-budget overlay now validates and preserves the 26 s short-turn C3 recovery reserve; per-role observer deadlines only cap each body's own slice; (2) the test clock is patched at `v13.cognition.time.monotonic`, because `native_turn_budget.plan` receives `now` explicitly and the module does not own a `time` attribute; (3) the arithmetic restart test now checks the exact submitted source `calculate 8/4` before and after restart. The runtime source itself is not normalized.
-- Refreshed and read back the exact pin chain: integrated observer → recovery12 → recovery21 → stage → runtime_deploy. Commit `9a5635281aa57542ce61e6cff010061715ce8d0a` is present on the Boss branch.
+- Refreshed and read back the exact pin chain: integrated observer → recovery12 → recovery21 → stage → runtime_deploy. Commit `de50fd4708490fb6db19cf24c22fef22baf23eca` is present on the Boss branch.
 - This does not prove native B1/B2 offers, actual speed, C3 correctness, or learned latent communication. The previous phone measurements still show 53.2/54.2 s body timeouts; a 26 s reserve is a scheduling constraint, not a latency improvement.
 
 ### Whole-system ledger / cross-agent integration

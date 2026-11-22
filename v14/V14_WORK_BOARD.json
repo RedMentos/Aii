@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T23:05:31.059Z",
+  "updated_at": "2026-11-22T23:07:51.477Z",
   "source_of_truth": "Release branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; exact SHA readback 30/30 observed check-runs SUCCESS. Authenticated private PIPELINE_STATUS #619 confirms the same SHA installed, auto-update enabled, runtime/dashboard UP_TO_DATE and last_error NONE. DIAGNOSTICS #620 still shows a slow 2-token stored turn and B1/B2 TIME_BUDGET. Current candidates remain DRAFT / CI pending; functional and whole-Canon acceptance remain open.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -700,25 +700,26 @@
     }
   ],
   "latest_boss_checkpoint": {
-    "timestamp": "2026-11-22T23:05:31.059Z",
+    "timestamp": "2026-11-22T23:07:51.477Z",
     "release_branch": "gpt6/v13-private-remote-bridge-20261111",
     "branch_head": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "branch_head_type": "CURRENT_RELEASE_BASE_INSTALLED; CANDIDATE_NOT_RELEASED",
     "code_bearing_release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "release_check_runs": "45/45 exact-SHA check-runs SUCCESS; private PIPELINE_STATUS #641 confirms the same SHA installed; no candidate push-CI.",
     "boss_work_branch": "boss/v14-fair-budget-current-base-20261122-run14",
-    "boss_work_head": "9a5635281aa57542ce61e6cff010061715ce8d0a",
+    "boss_work_head": "de50fd4708490fb6db19cf24c22fef22baf23eca",
     "integrated_code_candidate": "PR #2370 — fair B1/B2 recovery scheduling + source-bound OfferPacket→C4→C3 staged consumer + exact arithmetic guard + JEPA/receiver composition",
-    "integrated_code_candidate_checks": "Exact head 9a5635281aa57542ce61e6cff010061715ce8d0a: 0 completed successes / 28 queued / 1 skipped / 0 observed failures. NOT_GREEN / NOT_RELEASED; no functional acceptance.",
+    "integrated_code_candidate_checks": "Exact head de50fd4708490fb6db19cf24c22fef22baf23eca: 0 completed successes / 27 queued / 1 skipped / 0 observed failures. NOT_GREEN / NOT_RELEASED; no functional acceptance.",
     "changes": [
       "Corrected the staged observer composer so it validates and preserves the pinned 26 s short-turn C3 recovery reserve instead of replacing it with the 45% ordinary-window remainder (16.5 s). observer_deadline now only caps each body's own fair slice.",
       "Removed a test-only patch to v13.native_turn_budget.time.monotonic; native_turn_budget.plan receives now explicitly and the deterministic clock is correctly patched at v13.cognition.time.monotonic.",
       "Corrected the arithmetic restart assertion: the test sends 'calculate 8/4', so source readback before and after restart must both equal that exact source. No production source normalization was introduced.",
       "Refreshed the exact SHA-256 / Git-blob pin chain recovery12 → recovery21 → stage → runtime_deploy; GitHub branch readback confirms commit 9a563.",
-      "The candidate still has no native Redmi offer proof; a fair scheduler test is not a measured speed improvement."
+      "The candidate still has no native Redmi offer proof; a fair scheduler test is not a measured speed improvement.",
+      "Separated central V14 board/workplan/coverage/research/next-action docs into docs PR #2378; PR #2370 now has 49 code/agent-handoff files and no overlapping V14 master-index files."
     ],
     "local_full_suite": "BLOCKED_NO_LOCAL_AII_CHECKOUT; this execution container has no Aii checkout and GitHub DNS clone is unavailable; no local full pytest/native run claimed.",
-    "pr2370": "DRAFT; exact head 9a5635281aa57542ce61e6cff010061715ce8d0a; 28 queued / 1 skipped / 0 completed success / 0 failure observed; all functional acceptance pending.",
+    "pr2370": "DRAFT; exact head de50fd4708490fb6db19cf24c22fef22baf23eca; 27 queued / 1 skipped / 0 completed success / 0 observed failure; 49 code files after separating central V14 docs to PR #2378.",
     "pr2369": "DRAFT exact head aafd1ee02afdf08e365704c78d27117985f65d29; 14 queued / 2 skipped. FASTDIAR wrapper is not inference; Teacher Ear is caller-supplied, optional and ephemeral. No Android AudioRecord provider or Redmi voice proof.",
     "pr2372": "DRAFT exact head 908af64b44f2f670229f0b75a18eed563c85223b; 2 success / 4 failure / 2 in progress / 3 queued. Temporal T8/receiver tests remain blocked by staged runtime, optimizer-resume and source lifecycle issues; no native B1/B2/C3 weight diff.",
     "pr2383": "DRAFT exact head 714a09eae1dc3a901a6adbc4effce67c25da910c; 4 success / 7 failure. QA source-lifecycle/builder chain remains red; no merge.",
@@ -791,7 +792,7 @@
     }
   ],
   "latest_checkpoint": {
-    "timestamp": "2026-11-22T23:05:31.059Z",
+    "timestamp": "2026-11-22T23:07:51.477Z",
     "boss_branch": "boss/v14-run11-current-evidence-sync-20261122",
     "boss_base_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
     "release_development_branch": "gpt6/v13-private-remote-bridge-20261111",
@@ -808,18 +809,18 @@
     "local_full_checkout": "BLOCKED_NO_LOCAL_AII_CHECKOUT; no local full pytest/native run",
     "canonical_inventory_headings": 1255,
     "candidate_ci": {
-      "head": "9a5635281aa57542ce61e6cff010061715ce8d0a",
+      "head": "de50fd4708490fb6db19cf24c22fef22baf23eca",
       "success": 0,
-      "queued": 28,
+      "queued": 27,
       "in_progress": 0,
       "cancelled": 0,
       "skipped": 1,
       "failures": 0,
       "scope": "EXACT_HEAD_FUNCTIONAL_MATRIX_PENDING_NOT_GREEN"
     },
-    "boss_work_head": "9a5635281aa57542ce61e6cff010061715ce8d0a",
+    "boss_work_head": "de50fd4708490fb6db19cf24c22fef22baf23eca",
     "user_action_required": false,
-    "next_action": "Wait for all exact-head #2370 workflows; repair any failures and review the 55-file integration adversarially. Do not merge or request phone update before exact CI and safety review. In parallel, Core/Perception must integrate the consent-bound Teacher Ear hypothesis as an ephemeral C3-only layer; QA/Perception must repair the RAW EYE/MediaProjection frame-ingress stack; JEPA/QA must repair temporal source-lifecycle and optimizer-resume. No user action."
+    "next_action": "Wait for exact #2370 head de50fd matrix; inspect full 49-file code diff and adversarially review C4/C3, arithmetic, JEPA and native receiver boundaries. Do not merge or request phone update before exact CI and safety review. Core/Perception must integrate Teacher Ear as ephemeral C3-only hypothesis; QA/Perception repair RAW EYE/MediaProjection; JEPA/QA repair temporal source-lifecycle and optimizer-resume. No user action."
   },
   "capability_matrix": [
     {
@@ -1047,10 +1048,10 @@
     }
   ],
   "current_evidence_overlay": {
-    "timestamp": "2026-11-22T23:05:31.059Z",
+    "timestamp": "2026-11-22T23:07:51.477Z",
     "release_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
-    "code_candidate_sha": "9a5635281aa57542ce61e6cff010061715ce8d0a",
-    "candidate_ci": "PR2370_EXACT_HEAD_9a563:0_SUCCESS_28_QUEUED_1_SKIPPED_0_FAILURES_OBSERVED_NOT_GREEN",
+    "code_candidate_sha": "de50fd4708490fb6db19cf24c22fef22baf23eca",
+    "candidate_ci": "PR2370_EXACT_HEAD_de50fd4708490fb6db19cf24c22fef22baf23eca:0_SUCCESS_27_QUEUED_1_SKIPPED_0_FAILURES_OBSERVED_NOT_GREEN",
     "post_merge_push_ci": "NOT_RUN_CANDIDATE_NOT_MERGED",
     "device_receipt": "PIPELINE_STATUS_641_AUTHENTICATED; DIAGNOSTICS_642; HEALTH_636; LEARNING_STATUS_637",
     "device_acceptance": "P0_OPEN; 57.74S_TURN_41.63S_TTFT_38.95S_PREFILL_2_TOKENS; B1_B2_TIME_BUDGET_53.2_54.2S; C3_3.1S; INSTANT_NATIVE_RESIDENCY_0_MAPPED_WITH_UNKNOWN_CHILD_READABILITY; HEALTH_RUNTIME_UNAVAILABLE_CONFLICTS_DIAGNOSTICS_RUNNING; NO_NEW_TURN_OR_SEMANTIC_PROOF; LAB_AGE_ACTIVE_REQUESTED10_EFFECTIVE5_OFFICIAL0_PHYSICAL_EXECUTION_FALSE_SHADOW_REQUIRED",
@@ -1073,7 +1074,7 @@
     "pr_status": {
       "2356": "NON_DRAFT 27aaa29: 7 success / 1 failure; companion process-restart failure.",
       "2369": "DRAFT aafd1ee: 14 queued / 2 skipped; optional Teacher Ear/FASTDIAR adapter, no Android provider.",
-      "2370": "DRAFT 9a563: 28 queued / 1 skipped; fixes previous fair-budget/source-test failures but no exact functional CI pass.",
+      "2370": "DRAFT de50fd4708490fb6db19cf24c22fef22baf23eca: 27 queued / 1 skipped; central V14 docs separated to #2378; no completed functional pass.",
       "2372": "DRAFT 908af64: 2 success / 4 failure / 2 in progress / 3 queued; JEPA staged/optimizer/source-lifecycle blockers.",
       "2375": "DRAFT eb6752d: 6 success / 4 failure / 1 skipped; frame-ingress failures.",
       "2376": "DRAFT action journal is behind current QA companion parent; no end-to-end authorized action.",

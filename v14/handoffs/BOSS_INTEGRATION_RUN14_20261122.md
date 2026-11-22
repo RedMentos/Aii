@@ -3,7 +3,7 @@
 Date: 2026-11-22T23:05:31.059Z
 Release base: aed1d2b826290c95c70356b5d8b864b5ef382be4
 Boss code branch: boss/v14-fair-budget-current-base-20261122-run14
-Boss code head: 9a5635281aa57542ce61e6cff010061715ce8d0a
+Boss code head: de50fd4708490fb6db19cf24c22fef22baf23eca
 Docs branch: boss/v14-run11-current-evidence-sync-20261122
 Role: whole-Canon integration, release gate and cross-agent coordination
 
@@ -17,12 +17,12 @@ Role: whole-Canon integration, release gate and cross-agent coordination
 
 ## Boss code work and tests
 
-- PR #2370 exact head 9a5635281aa57542ce61e6cff010061715ce8d0a, DRAFT: 28 queued / 1 skipped / 0 completed success / 0 failures observed. NOT_GREEN / NOT_RELEASED.
+- PR #2370 exact head de50fd4708490fb6db19cf24c22fef22baf23eca, DRAFT: 27 queued / 1 skipped / 0 completed success / 0 failures observed. NOT_GREEN / NOT_RELEASED.
 - Fixed the two previous exact-head failures and one stale source assertion:
   1. Integrated observer composer now validates and preserves the 26 s short-turn C3 recovery reserve; per-role observer deadline only caps each body's fair slice. It no longer replaces the reserve with 16.5 s.
   2. The synthetic clock patch now targets `v13.cognition.time.monotonic`; `native_turn_budget.plan` receives `now` explicitly and the module does not own a `time` attribute.
   3. The arithmetic restart test sends `calculate 8/4` and now expects that exact source both before and after restart. Production source text is not normalized.
-- Refreshed and read back recovery12 → recovery21 → stage → runtime_deploy SHA pins. Commit 9a5635281aa57542ce61e6cff010061715ce8d0a is on the Boss branch.
+- Refreshed and read back recovery12 → recovery21 → stage → runtime_deploy SHA pins. Commit de50fd4708490fb6db19cf24c22fef22baf23eca is on the Boss branch.
 - Local full repository tests: BLOCKED (no Aii checkout; GitHub DNS clone unavailable). No local pytest/native/Redmi pass claimed.
 - The scheduler fix is not a speed fix: the device's measured B1/B2 timeouts remain 53.2/54.2 s.
 
