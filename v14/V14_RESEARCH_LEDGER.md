@@ -941,3 +941,26 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+## R-080 — Persistent JEPA test-time training, dense replay and the plannable-range limit (2026-11-22)
+
+**Primary papers reviewed:**
+
+- Zheyuan Zhang et al., *JEPA-TTT: Persistent Test-Time Training of Latent World Models for Planning under Dynamics Shifts*, arXiv:2610.00722, submitted 2026-09-30; accepted to the NeurIPS 2026 Workshop on World Models in Physical AI. Primary paper: https://arxiv.org/abs/2610.00722 . Author project page: https://jepa-ttt.github.io/
+- Ali Alrasheed, Basim Azam and Naveed Akhtar, *The Planning Limits of Latent World Models*, arXiv:2609.39235, 2026-09-30. Primary paper: https://arxiv.org/abs/2609.39235
+
+**JEPA-TTT method and results:** the action-conditioned latent predictor is updated from executed action/observation transitions while the visual encoder and offline reward head stay fixed. It retains predictor parameters, optimizer state and replay buffer across episode boundaries. Dense replay constructs prediction windows at every valid temporal offset and samples uniformly from the accumulated buffer; the paper compares sparse, compute-matched sparse, dense-stream and dense-replay controls. Across eight fixed dynamics shifts in four continuous-control environments, it reports an 83% mean reduction in five-block autoregressive latent MSE and a 153% best held-out planning-score improvement (113% AUC improvement) over Frozen JEPA after 500 test-time episodes. Persistence ablation is large: the paper reports best score 0.729 vs 0.289 and AUC 0.637 vs 0.273 for persistent vs episode-reset adaptation.
+
+**Limits:** this is a single persistent dynamics shift per deployment, not a sequence of shifts. The authors explicitly leave forgetting of earlier dynamics and simultaneous visual/reward shifts outside scope. The visual encoder and reward head remain fixed; this is a controlled predictor-adaptation result, not evidence that all organs should be permanently frozen. The checked project page links the paper, results and citation but no official code or weight artifact; no code/weight license or reusable implementation was verified. No code or model was downloaded.
+
+**Planning-range result:** with five-step latent rollouts, the planning-limit study finds reliable action ranking mainly for targets about 5–10 control steps ahead, while task goals span 16–53 steps. Even a perfect simulator predictor drops from 92% to 41% success when the target moves from five to twenty steps beyond a five-step rollout. For distant goals, the paper reports 23% success for pure imagination, 30% with feedback/MPC, 47% when imagining to the goal, and 76% with nearby expert subgoals. Prediction error alone therefore does not establish useful long-horizon control.
+
+**V14 testable adaptation:**
+
+1. Preserve the existing persistent WorldJEPA predictor/EMA/checkpoint path, but compare sparse T8 windows against dense overlapping windows at every valid temporal offset. Keep the replay buffer bounded and source-provenance preserving; do not let windows from one source cross the train/holdout boundary.
+2. Add a compute-matched ablation: sparse stream, repeated sparse stream, dense stream and dense replay. Report predictor loss, source-disjoint holdout, retention of prior source groups, optimizer/checkpoint restart and rollback, plus RSS/CPU/latency. A frozen predictor remains a negative control, not the target architecture.
+3. Measure closed-loop utility and a plannable-range curve in addition to latent MSE. For action/tool control, keep predicted horizons short enough to be supported by held-out evidence, observe the real outcome, update World/Self/Memory, and replan. Use nearby subgoals and feedback for longer tasks rather than trusting one long open-loop imagination.
+4. Keep encoder/adapter plasticity as a later independently gated experiment. JEPA-TTT isolates predictor adaptation; V14 still requires selective trainable organs and retention evidence rather than a permanent encoder freeze.
+
+**Decision:** RESEARCH_ONLY / NO_CODE_REUSE / NO_WEIGHT_DOWNLOAD. The paper directly supports persistent optimizer+replay and dense temporal coverage as high-value experiments, while the planning-limit result requires short-horizon feedback and closed-loop evaluation. It does not justify a frozen-teacher architecture or any Redmi performance claim.
