@@ -196,10 +196,6 @@ class SleepCycle:
         if self.age is None:return False
         try:return self.age.may(right,resource_mode=self._mode(resource_state))
         except Exception:return False
-    def _budget(self,resource_state):
-        if self.age is None:return None
-        try:return self.age.budgets('system',self._mode(resource_state))
-        except Exception:return None
     def _mode(self,resource_state):
         """§97.2 mode: the live guard's finer mode while its state matches (YELLOW is invisible in legacy states)."""
         from .resource_modes import LEGACY_MODE,RANK,mode_of
@@ -538,9 +534,8 @@ class SleepCycle:
         st,v=self.queue.load()
         try:
             self.queue.sync(st,policy)
-            budget=self._budget(state) if origin!='USER' else None
+            # Age gates learning phases; replay volume is policy + ResourceGuard, never Age.
             n=batch if batch is not None else (policy['wake_batch'] if mode=='wake' else policy['batch'])
-            if budget is not None:n=min(n,max(1,budget['replay_items']))  # Age envelope caps autonomous replay
             from .resource_modes import scaled
             report['resource_mode']=self._mode(state);n=scaled(n,report['resource_mode'],'replay_scale') or n  # §97.2 YELLOW halves replay (ORANGE/RED skip Sleep A below)
             report['replay_budget']=n
