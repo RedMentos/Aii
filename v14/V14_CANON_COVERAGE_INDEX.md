@@ -2108,3 +2108,13 @@ This overlay updates only the A-plane audio/voice evidence; it does not mark the
 | Whole Canon | V14 master blob `9748ad5b...`; historical V13 Canon blob `218464b1...` is an exact byte-identical substring. Inventory remains 1,255 headings. | Semantic clause→consumer→test→platform→rollback mapping remains partial. | PRESERVED / MAPPING_INCOMPLETE |
 
 **Negative boundary:** no correct native B1/B2 offer, trained B3 latent transfer, permanent weight update, Android microphone/UI/background control, full voice learning, sparse MoE, or AGI claim is established by this overlay. Production B3 and learning promotion remain OFF.
+
+
+## Boss follow-up overlay — 2026-11-22 (R-079)
+
+| Requirement family | Evidence | Boundary | Status |
+|---|---|---|---|
+| RAW EAR vs WebRTC/libfvad research comparator | PR #2329 merged at `b3b92f41`; exact head 4/4 SUCCESS; missing `os` import fixed and CLI regression exercises pinned CI-built libfvad shared library. R-079 records upstream revision `532ab666...`, BSD-3-Clause. | Synthetic harmonic WAV only; no real corpus, Android/ARM64/Redmi, production VAD or dependency import. | RESEARCH_COMPARATOR_ONLY |
+| Release/update | #9097 push CI 41/41 SUCCESS; #b3b92 post-merge push CI 38 queued/in-progress / 0 failures at last poll. Phone #517 remains on 283ac1; #519 update request pending. | No b3b92 install receipt. | MERGED_INTEGRATION / PUSH_CI_PENDING |
+| Native receiver diagnostic | Current local/remote operator allowlist does not expose the native receiver probe. | No attempt made; do not bypass. Requires an exact explicit-confirmation command plus regression. | NOT_YET_REMOTE_ACCESSIBLE |
+
