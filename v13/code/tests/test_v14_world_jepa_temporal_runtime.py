@@ -919,7 +919,8 @@ def test_bodyview_records_rejected_temporal_gate_without_prompt_leak(tmp_path, m
         assert audit["status"] == "OMITTED"
         assert audit["reason"] == "RECEIVER_UTILITY_REJECTED"
         assert audit["role"] == "B1_DETAIL"
-        assert audit["checkpoint_sha256"] if "checkpoint_sha256" in audit else True
+        assert audit["event_id"] == event["event_id"]
+        assert audit["history_length"] == 2
         assert audit["body_prompt_consumed"] is False
         assert audit["native_body_consumed"] is False
         assert audit["native_body_weights_changed"] is False
