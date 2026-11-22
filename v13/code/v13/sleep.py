@@ -666,7 +666,7 @@ class SleepRuntime:
                 return result|{'status':'CANCELLED'}
             action=self.r.store.one(
                 "SELECT id,status,outcome FROM actions WHERE event_id=? AND outcome IS NOT NULL "
-                "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED') "
+                "AND status IN ('FINAL','FAILED','ERROR','DEADLINE','REJECTED','CANCELLED','ABORTED','INTERRUPTED') "
                 "ORDER BY created DESC,id DESC LIMIT 1",(event_id,))
             if not action:
                 return result
@@ -712,8 +712,8 @@ class SleepRuntime:
             temporal_status=temporal.get('status')
             temporal_telemetry_status=(
                 'PASS' if temporal_status=='UPDATED_EXPERIMENTAL_TEMPORAL_JEPA' else
-                'REJECTED' if temporal_status in {'UTILITY_GATE_REJECTED','RETENTION_GATE_REJECTED'} else
-                'UNAVAILABLE' if temporal_status in {'OFF','PENDING_OPTIMIZER_PERMISSION','WAITING_FOR_MORE_T8_DATA','NO_NEW_TRANSITIONS'} else
+                'REJECTED' if temporal_status in {'UTILITY_GATE_REJECTED','RETENTION_GATE_REJECTED','MODULATOR_VETO','MODULATOR_VERIFY_FIRST'} else
+                'UNAVAILABLE' if temporal_status in {'OFF','PENDING_OPTIMIZER_PERMISSION','WAITING_FOR_MORE_T8_DATA','NO_NEW_TRANSITIONS','MODULATOR_NO_CREDIT','NEUROMOD_UNAVAILABLE'} else
                 'CANCELLED' if temporal_status=='CANCELLED' else
                 'ERROR' if temporal_status=='ERROR' else 'PENDING')
             self.r.store.log('v14_world_jepa_temporal_postcommit',event_id,{
