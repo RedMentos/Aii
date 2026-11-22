@@ -153,3 +153,13 @@ At branch head `a5494d48ce26fa570245fd0e5b24733a20ce304d`:
 - **FAIL:** staged-runtime and integrated-regression. Both fail at Core-owned `scripts/integrated_audio_context_candidate_20261121.py:50` with `ValueError: audio source blob changed: v13/audio_voice_cues.py`. That builder still pins an older producer blob; the comparator's own pin is now correct. The migration fixture then reports `last_result=PARTIAL`, `runtime=ERROR` because staged runtime construction fails. Do not treat the resulting migration assertion as a separate device or updater failure.
 - **NOT_RUN:** Android AudioRecord, microphone permission/lifecycle, native ARM ABI, Termux/Redmi, whole-turn native voice generation.
 - Exact PR remains DRAFT / NOT_RELEASED. Core must update the composer pin to `b18e450162b062b09368a12b1ca18924ed8c5025` and rerun staged/integrated. Perception-owned comparator and focused audio matrices are green.
+
+
+## Provisional/final A-plane provenance regression — 2026-11-22
+
+Added `test_provisional_audio_is_persisted_but_not_admitted_until_final` to `v13/code/tests/test_audio_speaker_evidence.py` (new blob `09bdf58480f050c76f405f1f87b217c984422861`, commit `6f9f5a32e8e073f68d617b9bdf574f576a806462`). It exercises the real RAW EAR → A5 PerceptPacket → A4/temporal path → C3 admission consumer:
+- a consented PROVISIONAL packet is persisted with its provenance, but the source is omitted from C3 admission;
+- a later FINAL window on the same source stream/time sequence is admitted;
+- neither packet gains learning or action authority.
+
+This closes a test-coverage gap for provisional/final provenance; it does not implement an Android microphone provider or a voice-learning path. Exact-head CI on `6f9f5a32e8e073f68d617b9bdf574f576a806462` is running; do not claim this new regression PASS until the exact workflow completes.
