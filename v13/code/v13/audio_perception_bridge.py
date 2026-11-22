@@ -13,6 +13,7 @@ from .audio_ear import observe_pcm16
 from .audio_percept_contract import audio_percept_packet
 from .contracts import validate
 from .percept_admission import admit
+from .audio_pcm_memory import pcm16_zeroization_status, zeroize_pcm16_buffer
 
 _SHA256 = re.compile(r"[0-9a-f]{64}")
 
@@ -119,7 +120,7 @@ def admit_audio_packet(runtime, event_id, audio_packet, *, consent_check, token_
     return admit((candidate,), token_budget)
 
 
-def consume_pcm16_window(runtime, pcm, *, sample_rate, start_ms, event_id,
+def _consume_pcm16_window_impl(runtime, pcm, *, sample_rate, start_ms, event_id,
                          generation_id, source_id, consent_receipt,
                          consent_check, token_budget=512, finality="FINAL"):
     """Build one <=1s A5 packet, deliver it to A4, then recheck consent for C3."""
@@ -156,3 +157,20 @@ def consume_pcm16_window(runtime, pcm, *, sample_rate, start_ms, event_id,
         "learning_authority": False,
         "action_authority": False,
     }
+
+def consume_pcm16_window(runtime, pcm, *, sample_rate, start_ms, event_id,
+                         generation_id, source_id, consent_receipt,
+                         consent_check, token_budget=512, finality="FINAL"):
+    """Consume an audio window and overwrite a mutable caller-owned PCM buffer."""
+    zeroization_status = pcm16_zeroization_status(pcm)
+    try:
+        result = _consume_pcm16_window_impl(
+            runtime, pcm, sample_rate=sample_rate, start_ms=start_ms,
+            event_id=event_id, generation_id=generation_id, source_id=source_id,
+            consent_receipt=consent_receipt, consent_check=consent_check,
+            token_budget=token_budget, finality=finality,
+        )
+        result["pcm_zeroization_status"] = zeroization_status
+        return result
+    finally:
+        zeroize_pcm16_buffer(pcm)
