@@ -1134,6 +1134,8 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
         for item in reports
     }
     for data_seed in DATA_SEEDS:
+        seed_reports = [item for item in reports if item["data_seed"] == data_seed]
+        assert len(seed_reports) == len(ARMS)
         for encoder_mode in ("full", "predictor_only"):
             mode_reports = [
                 item for item in seed_reports if item["encoder_mode"] == encoder_mode
