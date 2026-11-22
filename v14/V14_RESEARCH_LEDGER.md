@@ -941,3 +941,32 @@ This correction supersedes older branch-level status claims without deleting the
 
 
 **Implementation status:** PR #2329 is open against the Boss audio-integration branch. Exact head `adcf619ea36b00daa7f68c81d4da6aa327f348cc` passed the `V14 RAW EAR vs WebRTC/libfvad comparison harness` workflow, run `45007987039` (Python 3.13/3.14 matrix). This verifies the CLI regression against the workflow-built pinned native library in Linux CI. The full local Aii checkout remains BLOCKED by GitHub DNS resolution in the execution container; no local full-suite or Android result is claimed.
+
+
+---
+
+## R-090 — llama.cpp prompt-cache isolation risk and deadline-aware prefill research (2026-11-22)
+
+### Primary-source findings
+
+- Upstream llama.cpp [issue #32048](https://github.com/ggml-org/llama.cpp/issues/32048), opened 2026-11-10 and still open at this review, reports that POST /slots/{id}?action=erase clears the selected slot but not the shared --cache-ram prompt pool. In the reported -np 1, cache_prompt=true sequence P→Q→erase→P, the final request restored P's cached prefix; the reporter observed zero restored tokens with --cache-ram 0. A second report in the issue reproduces a related shared-pool behavior with two slots. This is an upstream bug report, not a V13 reproduction.
+- Upstream llama.cpp [issue #27148](https://github.com/ggml-org/llama.cpp/issues/27148) reports stale cross-conversation restoration under concurrent load with --cache-ram / --cache-idle-slots; its report notes that API cached-token accounting can remain zero for corrupted responses. The issue is open in the reviewed source snapshot.
+- V13 source inspection in PR #2367 records -np 1, --cache-ram 128, cache_prompt=true, id_slot=0, and a Runtime-shared per-role RunnerPool rather than a session-keyed pool. This overlap makes a unique-marker isolation canary worth planning, but does not establish that V13 has suffered cache contamination.
+
+### V14 implementation consequence
+
+1. Keep current installed cache flags unchanged; no user authorization to change them was given.
+2. Before any mitigation, design a synthetic P/Q/P unique-marker test with fresh server baseline, same-session reuse, cross-session separation, slot erase, cache accounting and exact output checks.
+3. Only after a separate explicit user approval should the same canary be run on the installed Redmi. Compare current configuration with a reversible --cache-ram 0 test profile; measure correctness, TTFT/prefill, RSS/PSS, cold/warm behavior and restart. Do not persist the experimental flag or promote it to product default without measured trade-off and approval.
+4. Do not treat cached_tokens=0 as sufficient proof of isolation; compare actual output marker and source/session provenance.
+
+### Deadline-aware scheduling research
+
+- Siyu Song et al., [*Deadline-Aware Adaptive Prefill Chunking for Efficient Large Language Model Serving*](https://arxiv.org/abs/2609.07883), arXiv:2609.07883, 2026-09-07. SLOWeave chooses the largest prefill chunk predicted to finish before the earliest active decode deadline using a monotone iteration-cost model, measured cost tables and explicit deadline margins. The reported evaluations are simulator/GPU serving experiments; no Android ARM implementation or reusable code license/repository was identified in this review.
+- Agrawal et al., [*Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve*](https://www.usenix.org/conference/osdi24/presentation/agrawal), OSDI 2024, uses chunked prefills and stall-free schedules to balance throughput and latency. The published results target GPU serving, not a 6-GB-class Android CPU, so the mechanism is a design reference rather than a measured performance prediction.
+
+### Concrete experiment hypothesis
+
+The current fair-budget candidate uses a fixed 45% pre-answer allocation and a 35 s observer cap. The latest device metadata reports a 38.945 s C3 prefill and B1/B2 timeout probes at 53.2/54.2 s. A measured per-role cost predictor could choose bounded observer slices and C3 reserve based on prompt tokens, warm/cold state and observed prefill rate rather than a fixed percentage. It must preserve both B1/B2 eligibility and a guaranteed C3 deadline; if neither body can produce a valid offer in its predicted slice, report a truthful partial result rather than claiming successful cooperation. First validate the predictor in synthetic staged tests, then with explicit device consent; no current runtime change is made by this research note.
+
+**Status:** UPSTREAM_RISK_IDENTIFIED / V13_REPRODUCTION_NOT_PERFORMED / NO_CACHE_CHANGE / RESEARCH_ONLY.
