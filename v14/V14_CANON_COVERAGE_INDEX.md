@@ -2314,3 +2314,12 @@ Keep production B3 OFF and do not treat manifest metadata alone as proof of inst
 | Boss #2370 head 7fc6d7e4 | Integrated audio overlay `SOURCE_BLOBS['v13/runtime.py']` now equals current runtime Git blob `6e61af07326c5bb11406ee72361a710d5facc9a5`; prior mismatch on head 4d771ed is resolved on this new head | 15 exact-head workflows queued; no PASS claim; NOT_RELEASED |
 
 QA must poll the new exact head; the previous red audio source-pin failure is historical, not current.
+
+## Android MediaProjection RAW EYE security review — 2026-11-22
+
+| Path | Finding | Required acceptance | Status |
+|---|---|---|---|
+| MediaProjection frame → RAW EYE/A4/A5 | PR #2375 accepts arbitrary `frame_binding_check` callable and trusts True; provider ownership/signed receipt is not enforced by the adapter | Companion-owned verifier capability or signed receipt verification; negative always-true caller test; no production Runtime wiring before this exists | DRAFT / PROVIDER_MISSING / REDMI_UNVERIFIED |
+| Optional local tile projector load | `_load_local_tile_projector()` opens final path without O_NONBLOCK before checking regular file; FIFO can block before `fstat` | O_NONBLOCK final open plus `mkfifo` negative test; retain directory-FD and O_NOFOLLOW checks | REVIEW_FINDING / NOT_RELEASED |
+
+No MediaProjection provider, OS grant, screen capture or physical device test was performed.
