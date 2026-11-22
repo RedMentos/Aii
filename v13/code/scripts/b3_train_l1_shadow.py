@@ -1,0 +1,85 @@
+"""CLI for explicitly labeled, non-promoted B3 L1 shadow training.
+
+Example labels file:
+{
+  "task_id": "verified-outcome",
+  "label_source": "human_feedback",
+  "direction": "B1_TO_B2",
+  "seeds": [11, 17],
+  "labels": [
+    {"body_pair_id": "…", "label": 1, "provenance": "feedback-packet-id"}
+  ]
+}
+
+Run from v13/code:
+  python scripts/b3_train_l1_shadow.py --labels data/b3/l1_labels.json
+
+This creates only shadow adapter artifacts. It never updates B1/B2 weights or
+enables receiver injection. Missing L0 baselines keep the L1 utility gate closed.
+"""
+import argparse
+import json
+from pathlib import Path
+
+from v13.runtime import Runtime
+from v13.b3pairs import SCHEMA
+from v13.b3train import train_l1_shadow
+from v13.common import dumps
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--home", default=str(Path.home() / "v13"))
+    parser.add_argument("--labels", required=True)
+    parser.add_argument("--epochs", type=int, default=30)
+    parser.add_argument("--head-steps", type=int, default=100)
+    args = parser.parse_args(argv)
+
+    home = Path(args.home).expanduser().resolve()
+    label_path = Path(args.labels).expanduser()
+    if not label_path.is_absolute():
+        label_path = home / label_path
+    label_path = label_path.resolve()
+    if not label_path.is_file():
+        raise FileNotFoundError(f"L1 labels file not found: {label_path}")
+    doc = json.loads(label_path.read_text(encoding="utf-8"))
+    if not isinstance(doc, dict) or not isinstance(doc.get("labels"), list):
+        raise ValueError("labels file must contain a labels array")
+    entries = doc["labels"]
+    if not entries or any(not isinstance(x, dict) for x in entries):
+        raise ValueError("labels array must contain label objects")
+    pair_ids = [x.get("body_pair_id") for x in entries]
+    if any(not isinstance(x, str) or not x for x in pair_ids) or len(set(pair_ids)) != len(pair_ids):
+        raise ValueError("each label entry needs a unique body_pair_id")
+    labels = [x.get("label") for x in entries]
+    provenance = [x.get("provenance") for x in entries]
+
+    runtime = Runtime(home)
+    try:
+        rows = runtime.store.rows(
+            "SELECT payload FROM packets WHERE kind='B3PairedTapPacket' ORDER BY rowid"
+        )
+        by_id = {}
+        for row in rows:
+            packet = json.loads(row["payload"])
+            if packet.get("packet_schema") == SCHEMA:
+                by_id.setdefault(packet.get("body_pair_id"), packet)
+        missing = [pair_id for pair_id in pair_ids if pair_id not in by_id]
+        if missing:
+            raise ValueError(f"labels reference unknown paired experiences: {missing[:5]}")
+        pairs = [by_id[pair_id] for pair_id in pair_ids]
+        report = train_l1_shadow(
+            runtime.cognition, pairs, labels, provenance,
+            task_id=doc.get("task_id"), label_source=doc.get("label_source"),
+            direction=doc.get("direction", "B1_TO_B2"),
+            seeds=tuple(doc.get("seeds", [11, 17])),
+            epochs=args.epochs, head_steps=args.head_steps,
+        )
+        print(dumps(report))
+        return 0
+    finally:
+        runtime.close()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
