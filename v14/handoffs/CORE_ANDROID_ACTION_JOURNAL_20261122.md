@@ -35,3 +35,27 @@ A claimed companion action can outlive the Activity that attempted to sign its r
 ## Acceptance boundary and next step
 
 This adds a real source-scoped C5 action journal on top of the existing permission-gated companion candidate. It does not implement an Android UI observer, a verified foreground transition, T8 learning eligibility, B3 latent coupling or a release. Keep this PR stacked until QA #2342 and Core #2271 are reviewed and Boss rebases the companion stack onto the current release-development head. Any Redmi exercise requires the already separate explicit device-side approval and a fresh authenticated receipt; do not send a manual Termux command or update request from this PR.
+
+
+## Exact-head verification — 2026-11-22 19:25 UTC
+
+- Code-bearing SHA: `1eb512668074b1daa7da6e96e8e38aaec5931e1c`; parent chain remains #2271 → QA #2342 → Core #2344.
+- The recovery implementation is receipt-only. `outcome(action_id)` calls `recoverClaimedAction` only for claimed `EXECUTING`/`DENYING` rows without a receipt. The recovery revalidates action ID, capability, package, request digest and signer key; it never calls the Android launch/dispatch function. `EXECUTING` becomes signed `OUTCOME_UNKNOWN`; `DENYING` becomes signed `USER_DENIED`. The shared action gate serializes recovery with the consent/dispatch transition. A failed signing or SQLite finalization leaves the claim retryable.
+- Python maps `OUTCOME_UNKNOWN` to `COMPANION_DISPATCH_UNKNOWN` and preserves `observed=false`, `t8_authoritative=false`, `world_learning_eligible=false`.
+
+### Exact CI evidence
+All four observed workflow runs for this exact code-bearing SHA completed SUCCESS:
+- #45027904692 — Android companion: Gradle `:app:assembleDebug` and `:app:testDebugUnitTest` BUILD SUCCESSFUL.
+- #45027904705 — Core companion outcome adapter: CPython 3.13 and 3.14, 52 passed each.
+- #45027904734 — Android outcome contract: 3 passed.
+- #45027904702 — staged runtime 240 passed / 10 skipped; integrated regression 415 passed / 3 skipped plus its extra smoke check.
+
+The Java unit-test source includes restart/idempotency for EXECUTING→OUTCOME_UNKNOWN, DENYING→USER_DENIED, signing failure with no redispatch, and injected SQLite receipt-write failure followed by retry. Gradle's exact-head `testDebugUnitTest` task completed successfully. Python outcome and staged/integrated workflows also completed successfully.
+
+### Boundaries
+- LOCAL_FULL_REPOSITORY remains BLOCKED by absent checkout/GitHub DNS; the isolated SQLite reproduction in the original handoff is not an exact-source full-suite test.
+- Android Gradle build/unit tests are CI only. No APK installed, pairing enabled, app launched or Redmi receipt observed. REDMI_UNVERIFIED; NOT_RELEASED.
+- Companion remains default-OFF. No device permission, app launch or remote action occurred.
+
+### Next
+Boss/QA may mark the code/CI portion of the EXECUTING/DENYING receipt-recovery prerequisite as implemented after independent review, but APK/device acceptance remains open. Keep the companion default-OFF and require a separate explicit device authorization for any real action.
