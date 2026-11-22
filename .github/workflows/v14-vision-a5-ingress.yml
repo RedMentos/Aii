@@ -37,7 +37,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: v14-vision-a5-ingress-\${{ github.event_name }}-\${{ github.event.pull_request.number || github.ref_name }}
+  group: v14-vision-a5-ingress-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -55,7 +55,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: \${{ matrix.python-version }}
+          python-version: ${{ matrix.python-version }}
       - name: Install pinned vision test dependencies
         run: python -m pip install --disable-pip-version-check pytest==9.2.0 numpy==2.3.5 Pillow==12.3.0
       - name: Compile RAW EYE vision and A5 bridge
