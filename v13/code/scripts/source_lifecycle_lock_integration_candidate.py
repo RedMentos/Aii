@@ -5,9 +5,9 @@ from pathlib import Path
 
 PINS = {
     'archive.py': 'adbdd844c2275d527a689eda789a3f247759967677e573b92bf7af7ad68404bf',
-    'store.py': '40a387e24f8c4d9533bde484c1c82c1dd700517fa652469b4eea7b8b21a471bb',
+    'store.py': 'bc7ab8edfd26bf0222ebcccbf57c95612f3fe305646eb46571b35b6f72942bd1',
     'common.py': '0bc5a2a8eb5cc246d72410cdc1e1090dc838114999ca132a4ddac0104d03262a',
-    'memory.py': '61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc',
+    'memory.py': 'b205901627af857fc4465204ebc12518d9955d2d62b8ce20f1a83731ef560799',
     'vision.py': '758cfc26387bd92da6c1c73d1d53224e76827ba70289c3c9e440f62557c209e5',
     'archive_reader_guard_candidate.py': '84c06a9f5c0b6054f836615023822ff577984d3efe9ddfb07cae569ec124f438',
     'archive_stream_range_candidate.py': 'd2d021adcc844c1f321312cbfa60a4affb0a6b7fddc09e41a234cdf83f1eec98',
@@ -103,6 +103,11 @@ MEMORY_OLD = b'''            src=self.s.one('SELECT hash FROM sources WHERE id=?
 MEMORY_NEW = b'''            from .source_lifecycle_candidate import cleanup_unreferenced
             cleanup_unreferenced(self.s,sid)
 '''
+MEMORY_CURRENT_OLD = b'''            source=self.s.one('SELECT hash FROM sources WHERE id=?',(sid,))
+            if source and not self.s.one('SELECT id FROM sources WHERE hash=? AND deleted=0',(source['hash'],)):
+                (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
+                (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
+'''
 VISION_OLD = b'''def ingest(store,data,cfg=DEFAULTS,label=None):
     """Store image bytes as an IMAGE source (dedup by hash) and register its regions. Returns the image record."""
     im=decode(data,cfg);w,h=im.size;sha=digest(data);st=load(store)
@@ -185,12 +190,17 @@ def build_sources(source_dir):
             ('store.py', RECOVER_OLD, RECOVER_NEW),
             ('store.py', EVENT_OLD, EVENT_NEW),
             ('store.py', READ_SOURCE_OLD, READ_SOURCE_NEW),
-            ('memory.py', MEMORY_OLD, MEMORY_NEW),
             ('vision.py', VISION_OLD, VISION_NEW),
             ('vision.py', VISION_FORGET_OLD, VISION_FORGET_NEW),
             ('vision.py', VISION_STATE_OLD, VISION_STATE_NEW),
             ('archive.py', RESTORE_OLD, RESTORE_NEW)):
         raw[filename] = _replace_once(raw[filename], old, new, filename)
+    memory = raw['memory.py']
+    if b'combined_source_forget_guard' in memory and b'with self.s.mutex:' in memory:
+        memory = _replace_once(memory, MEMORY_CURRENT_OLD, MEMORY_NEW, 'memory source cleanup')
+    else:
+        memory = _replace_once(memory, MEMORY_OLD, MEMORY_NEW, 'memory')
+    raw['memory.py'] = memory
     archive_sha = hashlib.sha256(raw['archive.py']).hexdigest().encode()
     store_sha = hashlib.sha256(raw['store.py']).hexdigest().encode()
     guard = raw['archive_reader_guard_candidate.py']
