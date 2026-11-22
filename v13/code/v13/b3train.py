@@ -137,7 +137,7 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
         if not reload_identical:
             raise RuntimeError("B3 L1 shadow candidate changed across save/reload")
 
-        trained_bridges.append((bridge, prefix))
+        trained_bridges.append((bridge, prefix, seed))
         seed_reports.append({
             "seed": seed, "candidate_manifest": str(prefix.with_suffix(".json").relative_to(cognition.r.home)),
             "candidate_weights": str(prefix.with_suffix(".npz").relative_to(cognition.r.home)),
@@ -222,8 +222,8 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
         overall_status = "L1_SHADOW_UTILITY_REJECTED_NOT_PROMOTED"
 
     # Rewrite only shadow manifests with the final gate receipt.
-    for bridge, prefix in trained_bridges:
-        bridge.save(
+    for bridge, prefix, seed in trained_bridges:
+        final_manifest = bridge.save(
             prefix, sender_revision=batch["sender_revision"],
             receiver_revision=batch["receiver_revision"],
             extra={
@@ -235,6 +235,9 @@ def train_l1_shadow(cognition, pair_packets, labels, label_provenance, task_id,
             })
         Bridge.load(prefix, sender_revision=batch["sender_revision"],
                     receiver_revision=batch["receiver_revision"])
+        for seed_report in seed_reports:
+            if seed_report["seed"] == seed:
+                seed_report["manifest_sha256"] = final_manifest["sha256"]
 
     report = {
         "schema": "v13.b3-l1-shadow-training/1",
