@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T20:44:49.369Z",
+  "updated_at": "2026-11-22T20:47:31.877Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; private V13OBS #115 (updated 2026-11-22T20:24:26Z) confirms this SHA installed, auto-update enabled and Runtime/Dashboard UP_TO_DATE. Latest metadata still shows 0 valid B1/B2 offers, 4/4 B1 and 2/2 B2 native attempts failed, and C3 ~38.945 s prefill / 2 tokens. Functional/whole-Canon acceptance remains open; historical V13 Canon and V14 master are preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -108,10 +108,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "JEPA PR #2372 exact branch head 6da129ef1cd09edd119491e5ff7740005792063c (DRAFT / NOT_RELEASED). New commits e638b221 adds fail-closed body-state audit telemetry for omitted temporal readouts without inserting diagnostics into the prompt; 0c5ef854 separates the actual Cognition.offer consumer test from learned-utility acceptance via an explicit test-only gate fixture and adds a rejected-gate/no-prompt-leak test; 6da129ef tightens audit assertions. Exact-head workflows 45068109547 optimizer-resume 3.13/3.14, 45068109554 staged/integrated, 45068109526 temporal T8 are QUEUED. Prior exact fbe4/9829 failures and pending runs remain historical; no current-head PASS. LOCAL_LINUX full suite BLOCKED (no checkout; git ls-remote DNS failure). REDMI_UNVERIFIED for JEPA feature.",
-      "next_step": "Poll exact 6da129ef workflows 45068109547/09554/09526. If temporal test fails, inspect the persisted omission audit and matrix status; do not relax the real utility gate. If it passes, retain the distinction: test-only accepted gate proves prompt wiring, not learned receiver utility. Fix the actual SleepRuntime temporal ValueError from exception text in staged/integrated CI. QA must rebind lifecycle chain to memory.py SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701. Boss audio pin is now rebound at 7fc6d7e, but its full matrix remains queued. Do not rebase until Boss matrix and QA chain are green; then run multi-shift retention/replay ablations.",
+      "proof_environment": "JEPA PR #2372 exact branch head 01549f1ff36937758be60b0876066264ebc7eb36 (DRAFT / NOT_RELEASED). Runtime bodyview omission audit was added in e638b221; consumer wiring is tested with an explicit test-only accepted gate fixture and a rejected-gate/no-prompt-leak negative control in 0c5ef854/6da129ef. Commit 01549f1 now separately asserts the actual trained B1 and B2 receiver utility-gate outcomes on the disjoint holdout and verifies readout status agrees with the measured gate. This is a real gate measurement; the prompt consumer fixture remains explicitly synthetic. Exact 6da129ef workflows 45068109547/09554/09526 are QUEUED; no exact 01549f1 run is visible yet. LOCAL_LINUX full suite BLOCKED (no checkout; git ls-remote DNS failure). REDMI_UNVERIFIED.",
+      "next_step": "Poll 6da129ef exact workflows 45068109547/09554/09526 and obtain a new exact 01549f1 run. If temporal tests fail, inspect the stored omission audit and measured B1/B2 gate results. Do not force utility acceptance in production. Fix the actual SleepRuntime temporal ValueError from staged/integrated CI. QA must rebind lifecycle chain to memory.py SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701. Boss audio pin is corrected at 7fc6d7e, but its full matrix remains queued. Do not rebase until Boss matrix and QA chain are green; then run multi-shift retention/replay ablations.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T20:44:49.369Z",
+      "last_checkpoint": "2026-11-22T20:47:31.877Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -122,9 +122,9 @@
       "latest_followup_pr": {
         "pr": 2372,
         "branch": "jepa-memory/v14-temporal-exact-forget-retention-20261122-run14",
-        "head_sha": "6da129ef1cd09edd119491e5ff7740005792063c",
+        "head_sha": "01549f1ff36937758be60b0876066264ebc7eb36",
         "base_pr": 2351,
-        "ci": "6DA129_EXACT_RUNS_45068109547_45068109554_45068109526_QUEUED; NO_CURRENT_HEAD_PASS; 9829/8DB_PREDECESSOR_RUNS_QUEUED",
+        "ci": "6DA129_EXACT_RUNS_45068109547_45068109554_45068109526_QUEUED; 01549F1_NO_EXACT_RUN_VISIBLE; NO_CURRENT_HEAD_PASS",
         "scope": "persistent source-verified temporal T8/WorldJEPA/EMA, disjoint splits, omission/gap handling, replay/retention, positive rollback/restart and source-forget lock regression; actual Cognition.offer B1/B2 prompt readout (B1 history 2, B2 history 3) in bounded nonblocking SHADOW; SleepRuntime component trace for postcommit error"
       },
       "latest_runtime_candidate": {
@@ -162,7 +162,7 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "PR #2372 exact head 6da129ef1cd09edd119491e5ff7740005792063c retains the persistent temporal T8/WorldJEPA/EMA/replay/retention/rollback candidate and the actual Cognition.offer B1/B2 SHADOW consumer. New bodyview code records omission reason in the source-bound body-state audit while keeping it out of the prompt; it distinguishes matrix unavailable, receiver utility rejected, support/provenance errors and lock busy. The consumer regression now uses a clearly labeled test-only accepted gate fixture while keeping the trained checkpoint weights, and a negative-control test asserts that a rejected gate is audited but not injected into the prompt. This proves wiring/negative-control behavior only, not learned B1/B2 utility. Exact-head workflows 45068109547/09554/09526 are queued. SleepRuntime temporal ValueError root cause remains open. QA memory.py pin remains stale; Boss audio pin is corrected on branch head 7fc6d7e but its full matrix is queued. Full local repository tests BLOCKED by absent checkout/DNS. Private V13OBS #115 (20:24Z) reports installed aed1d2b, updater UP_TO_DATE, B1 4/4 and B2 2/2 native attempts failed, zero valid offers, C3 prefill 38.945 s / 2 generated tokens. No native GGUF body-weight change, trained cross-organ latent transfer, Redmi feature proof or release acceptance."
+      "proof": "PR #2372 exact head 01549f1ff36937758be60b0876066264ebc7eb36 retains the persistent temporal T8/WorldJEPA/EMA/replay/retention/rollback candidate and the actual Cognition.offer B1/B2 SHADOW consumer. Bodyview now records fail-closed omission reasons in a source-bound audit without inserting diagnostics into the prompt. The prompt-consumer regression uses an explicit test-only accepted gate fixture and a separate negative control verifies rejected B1 utility is audited but not injected; this proves wiring, not learned utility. The new training regression measures the actual B1 and B2 receiver_utility_gate outcomes from persisted disjoint-holdout metrics and asserts that readout status matches each measured gate. Exact 6da129ef workflows 45068109547/09554/09526 are queued; no exact 01549f1 run is visible. SleepRuntime temporal ValueError root cause remains open. QA memory.py pin remains stale; Boss audio pin is corrected on branch head 7fc6d7e but its full matrix is queued. Full local repository tests BLOCKED by absent checkout/DNS. Private V13OBS #115 (20:24Z) reports installed aed1d2b, updater UP_TO_DATE, B1 4/4 and B2 2/2 native attempts failed, zero valid offers, C3 prefill 38.945 s / 2 generated tokens. No native GGUF body-weight change, trained cross-organ latent transfer, Redmi feature proof or release acceptance."
     },
     {
       "id": "V14-005",
@@ -278,10 +278,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
-      "proof_environment": "Temporal JEPA replay/retention/rollback remains synthetic Store-backed NumPy evidence. The exact fbe4 predecessor staged tests reproduced a SleepRuntime postcommit ERROR and temporal ValueError. The current JEPA branch adds exception-message tracing and bodyview omission telemetry; exact head 6da129ef workflows 45068109547/09554/09526 are QUEUED. No root fix or Android restart/rollback proof.",
-      "next_step": "Read the exact temporal exception message from staged/integrated CI and fix the throwing postcommit consumer. Then run matched replay-on/off and persistent-vs-reset optimizer tests across at least two shifts plus return-to-first-cohort retention, with parameter/EMA diffs, holdout utility, rollback and restart. Keep Dream-generated data separate from observed ActionOutcomes and production promotion OFF.",
+      "proof_environment": "Temporal JEPA replay/retention/rollback remains synthetic Store-backed NumPy evidence. Bodyview omission telemetry and measured B1/B2 receiver-gate assertions are now in PR #2372 head 01549f1. Exact 6da129ef workflows 45068109547/09554/09526 are QUEUED; no exact 01549f1 run yet. SleepRuntime temporal ValueError root cause remains open; no Android restart/rollback proof.",
+      "next_step": "Read exact temporal exception text from staged/integrated CI and fix the throwing postcommit consumer. Validate actual B1/B2 gate metrics on source-disjoint holdouts separately from the test-only prompt fixture. Then run matched replay-on/off and persistent-vs-reset optimizer tests across at least two shifts plus return-to-first-cohort retention, with parameter/EMA diffs, holdout utility, rollback and restart. Keep Dream-generated data separate from observed ActionOutcomes and production promotion OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T20:44:49.369Z",
+      "last_checkpoint": "2026-11-22T20:47:31.877Z",
       "proof": "Temporal T8/WorldJEPA remains synthetic Store-backed NumPy evidence. No accepted native Dream consolidation or Redmi learning proof; learning promotion remains OFF."
     },
     {
