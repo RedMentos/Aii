@@ -1010,3 +1010,8 @@ The current fair-budget candidate uses a fixed 45% pre-answer allocation and a 3
 ## Research ID reconciliation note — 2026-11-22T22:03:32.071Z
 
 PR #2380 is merged into the Boss documentation branch only (not the release branch) and assigns **R-092** to Android AudioRecord capture geometry / signed RAW EAR ingress. JEPA PR #2374 used the same ID for a distinct continual-learning paper. Boss requested on #2374 that the JEPA entry be renumbered to **R-093** while preserving both findings. Until that branch readback confirms the rename, do not merge a second R-092 or treat the collision as resolved. No research result is deleted or silently replaced.
+
+ 
+## Boss integration status note — 2026-11-22 (2026-11-22T22:24:48.002Z)
+
+No new primary-source research was performed in this Boss integration run. Existing R-091 cross-architecture and R-092 Android AudioRecord findings remain unchanged. The R-092 identifier collision with the separate JEPA paper in PR #2374 remains unresolved; the requested R-093 renumbering has not been verified by branch readback. Do not reuse or delete either research record. No external code, model weights, corpus or dependency was imported or downloaded in this run.
