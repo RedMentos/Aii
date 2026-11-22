@@ -538,4 +538,33 @@ public final class CompanionDbApprovalTest {
         }
     }
 
+    @Test public void exceptionAfterDispatchAttemptIsRecordedAsUnknown() {
+        insertPending(NOW + 10_000L);
+        assertTrue(CompanionProvider.setEnabled(context, true));
+        AtomicBoolean attempted = new AtomicBoolean(false);
+        String result = CompanionProvider.claimAndDispatch(
+                context, first, ACTION_ID, () -> NOW, () -> {
+                    attempted.set(true);
+                    throw new IllegalStateException("simulated framework dispatch uncertainty");
+                });
+        assertTrue(attempted.get());
+        assertEquals("OUTCOME_UNKNOWN", result);
+        assertEquals("EXECUTING", first.get(ACTION_ID).status);
+        assertFalse(first.claimForExecution(ACTION_ID, NOW));
+    }
+
+    @Test public void absentLaunchIntentIsDefiniteFailureWithoutExternalDispatch() {
+        insertPending(NOW + 10_000L);
+        assertTrue(CompanionProvider.setEnabled(context, true));
+        AtomicBoolean externalDispatch = new AtomicBoolean(false);
+        String result = CompanionProvider.claimAndDispatch(
+                context, first, ACTION_ID, () -> NOW, () -> {
+                    throw new CompanionProvider.DispatchNotAttemptedException();
+                });
+        assertFalse(externalDispatch.get());
+        assertEquals("FAILED_TO_DISPATCH", result);
+        assertEquals("EXECUTING", first.get(ACTION_ID).status);
+        assertFalse(first.claimForExecution(ACTION_ID, NOW));
+    }
+
 }
