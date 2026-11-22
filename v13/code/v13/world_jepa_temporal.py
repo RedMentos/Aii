@@ -741,8 +741,32 @@ class TemporalWorldJEPAStoreConsumer:
                     pending.values(), key=lambda item: (item["created"], item["action_id"])
                 )
                 self.store.set_state(STATE_KEY, next_state, expected=version)
+                attempt_metrics = _json_safe({
+                    "train_windows": len(train), "holdout_windows": len(holdout),
+                    "optimizer_steps": model._fit_steps, "steps_this_update": train_steps,
+                    "replay_mode": replay_mode,
+                    "verified_receipts": len(new_ids), "pending_retried": len(retry_ids),
+                    "source_disjoint": split["source_disjoint"],
+                    "train_session_count": split["train_session_count"],
+                    "holdout_session_count": split["holdout_session_count"],
+                    "holdout_mse_before": holdout_before, "holdout_mse_after": holdout_after,
+                    "shuffled_target_mse": shuffled_target,
+                    "shuffled_action_mse": shuffled_action,
+                    "no_history_mse": no_history_loss,
+                    "parameter_delta_norm": parameter_delta,
+                    "ema_target_delta_norm": ema_delta,
+                    "retention_mse_before": retention_before,
+                    "retention_mse_after": retention_after,
+                    "retention_pass": retention_pass,
+                    "utility_pass": utility_pass,
+                    "collapse": collapse,
+                })
                 return {
                     "status": "RETENTION_GATE_REJECTED" if not retention_pass else "UTILITY_GATE_REJECTED",
+                    "verified_receipts": len(new_ids), "pending_retried": len(retry_ids),
+                    "train_windows": len(train), "holdout_windows": len(holdout),
+                    "steps_this_update": train_steps, "optimizer_steps": model._fit_steps,
+                    "replay_mode": replay_mode, "metrics": attempt_metrics,
                     "holdout_mse_before": holdout_before, "holdout_mse_after": holdout_after,
                     "shuffled_target_mse": shuffled_target,
                     "shuffled_action_mse": shuffled_action,

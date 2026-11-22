@@ -76,10 +76,11 @@ def _permissions(store, *, replay_mode="uniform", steps=80):
     })
 
 
-def _make_dataset(store, label, count=32):
+def _make_dataset(store, label, count=32, *, start_index=0):
     sessions = []
     events = []
-    for index in range(count):
+    for offset in range(count):
+        index = start_index + offset
         overrides = {}
         if index % 8 == 0:
             overrides[1] = "CANCELLED"
@@ -406,6 +407,100 @@ def test_temporal_receiver_matrix_batches_bodyview_contract_with_single_readout_
         )
         assert missing["status"] == "INSUFFICIENT_HISTORY"
         assert missing["matrix"] == {}
+    finally:
+        store.close()
+
+
+def test_temporal_A_B_C_A_replay_ablation_uses_matched_steps_and_retains_old_cohorts(tmp_path):
+    home = tmp_path / "temporal-multishift-retention-store"
+    store = _make_store(home)
+    try:
+        _make_dataset(store, "A", 32, start_index=0)
+        _permissions(store, steps=80)
+        learner = TemporalWorldJEPAStoreConsumer(store, seed=29, ensemble=2)
+        cohort_a = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert cohort_a["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", cohort_a
+        state_a, _ = store.state(STATE_KEY, None)
+        sha_a = state_a["active"]["checkpoint_sha256"]
+        steps_a = state_a["active"]["fit_steps"]
+
+        _make_dataset(store, "B", 32, start_index=32)
+        cohort_b_replay = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert cohort_b_replay["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", cohort_b_replay
+        assert cohort_b_replay["metrics"]["replay_mode"] == "uniform"
+        assert cohort_b_replay["metrics"]["steps_this_update"] == 80
+        assert len(cohort_b_replay["metrics"]["retention_mse_before"]) == 1
+        assert cohort_b_replay["metrics"]["retention_pass"] is True
+
+        # Fork the same A checkpoint and same B receipts into a matched no-replay
+        # attempt. Rollback preserves B as pending, so no new T8 event is needed.
+        assert learner.rollback()["status"] == "ROLLED_BACK"
+        restored_a, _ = store.state(STATE_KEY, None)
+        assert restored_a["active"]["checkpoint_sha256"] == sha_a
+        cohort_b_no_replay = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="none",
+        )
+        assert cohort_b_no_replay["status"] in {
+            "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA",
+            "RETENTION_GATE_REJECTED",
+            "UTILITY_GATE_REJECTED",
+        }, cohort_b_no_replay
+        no_replay_metrics = cohort_b_no_replay["metrics"]
+        assert cohort_b_no_replay["pending_retried"] >= 100
+        assert no_replay_metrics["replay_mode"] == "none"
+        assert no_replay_metrics["steps_this_update"] == cohort_b_replay["metrics"]["steps_this_update"]
+        assert no_replay_metrics["optimizer_steps"] == cohort_b_replay["metrics"]["optimizer_steps"]
+        assert no_replay_metrics["train_windows"] < cohort_b_replay["metrics"]["train_windows"]
+        if cohort_b_no_replay["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA":
+            assert learner.rollback()["status"] == "ROLLED_BACK"
+        restored_a, _ = store.state(STATE_KEY, None)
+        assert restored_a["active"]["checkpoint_sha256"] == sha_a
+
+        # Reapply B with replay, then carry A→B→C→A through two further cohorts.
+        cohort_b_replay_again = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert cohort_b_replay_again["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", cohort_b_replay_again
+        assert cohort_b_replay_again["pending_retried"] >= 100
+        assert cohort_b_replay_again["metrics"]["steps_this_update"] == 80
+
+        _make_dataset(store, "C", 32, start_index=64)
+        cohort_c = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert cohort_c["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", cohort_c
+        assert len(cohort_c["metrics"]["retention_mse_before"]) == 2
+        assert cohort_c["metrics"]["retention_pass"] is True
+
+        # A2 is a disjoint-source reacquisition of A's distribution.
+        _make_dataset(store, "A2", 32, start_index=0)
+        cohort_a2 = learner.update(
+            limit=64, max_pages=4, steps=80,
+            optimizer_permission=True, replay_mode="uniform",
+        )
+        assert cohort_a2["status"] == "UPDATED_EXPERIMENTAL_TEMPORAL_JEPA", cohort_a2
+        metrics = cohort_a2["metrics"]
+        assert len(metrics["retention_mse_before"]) == 3
+        assert len(metrics["retention_mse_after"]) == 3
+        assert metrics["retention_pass"] is True
+        assert metrics["source_disjoint"] is True
+        assert metrics["parameter_delta_norm"] > 0
+        assert metrics["ema_target_delta_norm"] > 0
+        assert metrics["optimizer_steps"] > steps_a
+        assert metrics["holdout_mse_after"] <= metrics["holdout_mse_before"] * 1.05 + 1e-9
+        assert metrics["retention_mse_after"][0] <= metrics["retention_mse_before"][0] * 1.10 + 1e-9
+        final_state, _ = store.state(STATE_KEY, None)
+        assert final_state["active"]["checkpoint_sha256"] == cohort_a2["checkpoint_sha256"]
+        assert len(final_state["active"]["retention_holdouts"]) == 3
     finally:
         store.close()
 
