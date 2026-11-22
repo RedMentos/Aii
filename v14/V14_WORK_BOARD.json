@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T01:19:00Z",
+  "updated_at": "2026-11-22T01:25:00Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -29,30 +29,30 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Termux startup, updater, UI, installer, model/weights/data rollback",
       "acceptance": "Verified staged update with exact SHA, checksum, backup, restart, non destructive rollback, consent and native phone receipt",
-      "proof_environment": "QA PR #2295 is stacked on Boss #2288 candidate f0d3c848dfb1d65e282f065233adbe3c9205e439; head 9d576667259af92dd0672060347d9e5d4c6840cf. Exact-head runtime-deploy integrity 44970704843 PASS on Python 3.11 and 3.14 (42 tests per interpreter, including 8 process-death journal tests); private bridge tests 44970693938 PASS. Owner-read subjob 137049628929 PASS, but staged Python 3.14 startup job 137049628666 FAILs at termux_runtime_recovery_candidate_20261112.py:313. Staged/integrated 44970704836, Lab-Age 44970704845 and migration 44970704797 also fail on the same local-error pre-rebind semantic binding mismatch; these are the independent Boss #2288 pin-order blocker, not the activation-journal tests. LOCAL_LINUX full checkout BLOCKED; Redmi REDMI_UNVERIFIED; no device mutation.",
-      "next_step": "Boss: fix the pinned Record-Only guard-output -> final semantic pin order on #2288 and rerun exact-head CI. QA: after that gate is green, rebase/compose #2281 Age/X10 rights and the new #2295 crash-journal rollback helper onto the same candidate, wire the runtime rollback API to the pipeline UI/worker under the existing consent/stop guard, then rerun first-install/second-deploy, crash-at-each-switch, tamper, busy, restart and two-checkout tests. Dashboard rollback remains explicitly unimplemented.",
+      "proof_environment": "QA PR #2295 code/test commit 38b2c55627ea62959a55095a9bfb8d10defda0b9 is stacked on Boss #2288 candidate f0d3c848dfb1d65e282f065233adbe3c9205e439. Exact-head runtime-deploy integrity 44971098511 PASS on Python 3.11 and 3.14 (43 tests per interpreter: 9 activation-journal, 3 deploy-integrity, 31 runtime-deploy); private bridge 44971096994 PASS. Owner-read subjob 137050834641 PASS, but staged Python 3.14 startup 137050834459 FAILs at termux_runtime_recovery_candidate_20261112.py:313. Staged/integrated 44971098478, Lab-Age 44971098466 and migration 44971098456 also fail on the same local-error pre-rebind semantic binding mismatch; these are the independent Boss #2288 pin-order blocker, not activation-journal failures. LOCAL_LINUX full checkout BLOCKED; Redmi REDMI_UNVERIFIED; no device mutation.",
+      "next_step": "Boss: fix the base→guard-output→final semantic/local-error pin sequence on #2288 and rerun exact-head CI. QA: after that gate is green, rebase/compose #2281 Age/X10 rights and #2295 crash-journal rollback helper onto the same candidate, wire runtime rollback/recovery into the pipeline worker under the existing consent + graceful-stop path, then rerun first-install/second-deploy, process-death, tamper, busy, restart and two-checkout tests. Dashboard rollback remains explicitly unimplemented.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T01:19:00Z",
+      "last_checkpoint": "2026-11-22T01:25:00Z",
       "latest_qa_candidate": {
         "pr": 2295,
         "branch": "qa/v14-activation-journal-20261122",
-        "head_sha": "9d576667259af92dd0672060347d9e5d4c6840cf",
+        "code_test_sha": "38b2c55627ea62959a55095a9bfb8d10defda0b9",
         "base_branch": "boss/v14-recall-store-pin-rebind-20261122",
         "base_sha": "f0d3c848dfb1d65e282f065233adbe3c9205e439",
         "status": "DRAFT_RUNTIME_DEPLOY_CI_GREEN_FULL_STACK_BLOCKED",
         "proof": {
-          "runtime_deploy_integrity": "PASS run 44970704843; Python 3.11 and 3.14; 42 tests each (8 activation journal, 3 deploy integrity, 31 runtime deploy)",
-          "private_bridge": "PASS run 44970693938",
-          "owner_read": "owner-read subjob PASS 137049628929; staged Python 3.14 startup FAIL 137049628666 on Boss pin mismatch",
-          "staged_integrated": "FAIL run 44970704836 at termux_runtime_recovery_candidate_20261112.py:313 local-error pre-rebind semantic binding mismatch",
-          "lab_age": "FAIL run 44970704845 same Boss pin mismatch",
-          "two_checkout_migration": "FAIL run 44970704797 downstream PARTIAL after staged runtime failure",
+          "runtime_deploy_integrity": "PASS run 44971098511; Python 3.11 and 3.14; 43 tests each (9 activation journal, 3 deploy integrity, 31 runtime deploy)",
+          "private_bridge": "PASS run 44971096994",
+          "owner_read": "owner-read subjob PASS 137050834641; Python 3.14 staged startup FAIL 137050834459 on Boss pin mismatch",
+          "staged_integrated": "FAIL run 44971098478 at termux_runtime_recovery_candidate_20261112.py:313 local-error pre-rebind semantic binding mismatch",
+          "lab_age": "FAIL run 44971098466 same Boss pin mismatch",
+          "two_checkout_migration": "FAIL run 44971098456 downstream PARTIAL after staged runtime failure",
           "local_linux": "BLOCKED; no full Aii checkout",
-          "redmi": "REDMI_UNVERIFIED; pending private owner-read #454 has no authenticated reply at latest check; no install or device mutation"
+          "redmi": "REDMI_UNVERIFIED; private PIPELINE_STATUS #454 expired with zero authenticated replies; installed SHA unknown"
         },
-        "scope": "Durable launcher+runtime-marker transaction journal, directory fsync, idempotent rollback/recovery, runtime rollback API/CLI; pipeline UI/worker wiring still open"
+        "scope": "Durable launcher+runtime-marker transaction journal, parent-directory fsync, idempotent crash recovery/rollback, runtime rollback API/CLI, and pending-journal detection in needs_deploy. Pipeline worker pre-CI recovery/UI integration still open."
       },
-      "proof": "PR #2295 provides exact process-death tests and a shared crash-recovery transaction for deploy/rollback. Runtime-deploy integrity is green on Python 3.11/3.14 and bridge CI is green. Full candidate remains blocked by the separate #2288 semantic pin-order failure at line 313. No full local checkout, no native Termux/Redmi receipt, no release; REDMI_UNVERIFIED."
+      "proof": "PR #2295 provides nine exact process-death, tamper, commit, fsync and pending-journal tests; runtime-deploy integrity is green on Python 3.11/3.14 and bridge CI is green. Full candidate remains blocked by the separate #2288 semantic pin-order failure at line 313. No full local checkout, no native Termux/Redmi receipt, no release; REDMI_UNVERIFIED."
     },
     {
       "id": "V14-003",
@@ -353,7 +353,7 @@
       "proof": "The pre-batch snapshot algorithm passed a local CPython 3.13.5 x86_64 algorithm-only reproduction, but current exact CI fails: reference_age_ms 920 vs expected 800; staged/integrated rejects the changed audio_voice_cues blob and migration becomes PARTIAL. No full Aii local test, microphone/model/Redmi test or identity inference."
     }
   ],
-  "current_redmi_status": "REDMI_UNVERIFIED. Private PIPELINE_STATUS request #453 created 2026-11-22T00:47:59Z has zero authenticated comments at last poll. Installed SHA/updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, shell action or device mutation.",
+  "current_redmi_status": "REDMI_UNVERIFIED. Private PIPELINE_STATUS #454 (created 2026-11-22T01:14:55Z; expires 2026-11-22T01:24:53Z) has zero authenticated comments at the latest read. Installed SHA/updater consent UNKNOWN. No LOG_PAGE, UPDATE_REQUEST, CHAT_SEND, remote shell or device mutation.",
   "last_code_release_head": "f279286a4453248004c670fcaabecd85da6ab299",
   "latest_integrated_head": "c372b4e3210d04f95f092013893d4078817e855d",
   "latest_integrated_head_verified_at": "2026-11-22T00:57:11.246Z",
@@ -363,7 +363,7 @@
     "installed_sha": "UNKNOWN",
     "auto_update": "UNKNOWN",
     "redmi_status": "REDMI_UNVERIFIED",
-    "last_request": "Private PIPELINE_STATUS #443 created in RedMentos/Aiiii; zero authenticated comments at last poll. No LOG_PAGE, UPDATE_REQUEST, remote shell or device mutation."
+    "last_request": "Private PIPELINE_STATUS #454 in RedMentos/Aiiii expired without an authenticated reply; no duplicate request issued and no device mutation."
   },
   "capability_snapshot": [
     {
