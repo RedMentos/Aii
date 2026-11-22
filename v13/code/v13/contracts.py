@@ -97,7 +97,7 @@ def validate(kind,obj):
             if name in obj and not isinstance(obj[name],types):raise ValueError('ExecState.'+name+': falscher Typ')
     if kind=="B3PairedTapPacket":
         roles=("B1_DETAIL","B2_GIST")
-        if obj["packet_schema"]!="v13.b3-paired-native-taps/1" or obj["sender_roles"]!=list(roles):raise ValueError("B3 pair schema/roles")
+        if obj["packet_schema"]!="v13.b3-paired-native-taps/2" or obj["sender_roles"]!=list(roles):raise ValueError("B3 pair schema/roles")
         if obj["source_ref"] not in obj["provenance"]:raise ValueError("B3 pair source provenance")
         gr=obj["gist_readout"]
         if (not isinstance(gr,dict) or not isinstance(gr.get("plan"),dict)
