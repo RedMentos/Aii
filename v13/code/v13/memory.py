@@ -373,7 +373,7 @@ class Memory:
         # The JEPA file lock serializes both one-step and temporal checkpoints.
         # BEGIN IMMEDIATE then serializes non-JEPA update/promotion rows with the
         # active-generation check and the source tombstone in the same transaction.
-        with source_forget_guard(self.s,sid):
+        with source_forget_guard(self.s,sid) as forget_guard_report:
             with self.s.tx() as c:
                 affected=[dict(row) for row in c.execute('SELECT * FROM updates').fetchall()
                           if sid in json.loads(row['manifest']).get('source_ids',[])]
@@ -399,4 +399,6 @@ class Memory:
                 (self.s.home/'data/blobs'/source['hash']).unlink(missing_ok=True)
                 (self.s.home/'data/blobs'/(source['hash']+'.z')).unlink(missing_ok=True)
             self.s.log('forget',event_id,{'memory_id':mid,'source_id':sid,
-                'scope':'source and dependent candidates; independent backups unchanged'})
+                'scope':'source and dependent candidates; independent backups unchanged',
+                'temporal_pending_rows_removed':forget_guard_report.get('temporal_pending_rows_removed',0),
+                'jepa_pending_rows_removed':forget_guard_report.get('pending_rows_removed',0)})
