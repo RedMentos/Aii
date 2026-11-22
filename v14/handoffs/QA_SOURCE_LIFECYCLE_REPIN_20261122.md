@@ -32,3 +32,8 @@ All other existing source pins in the outer source-lifecycle builder were checke
 ## Proof boundary
 
 The original failing CI result is a confirmed regression. This candidate rebind has not yet been run on the full A5/source-lifecycle workflow; the next exact-head CI run must prove that the builder composes successfully and that the staged Store read/revoke test passes on Python 3.13 and 3.14. No local Aii checkout, full Python test, native Linux integration, Redmi or Android proof is claimed. The change is test-builder-only; it does not activate source lifecycle in the installed runtime or alter weights, memories, models or phone data.
+
+
+## CI trigger correction
+
+The A5 workflow's path filter also omitted both source-lifecycle composition scripts, so a future builder-only change could bypass the very regression that consumes it. The workflow now watches the outer source-lifecycle builder, nested archive-guard builder, lifecycle candidate modules and the relevant archive/Memory/Vision sources on pull requests and QA branch pushes. This PR changes the workflow file itself, so the existing base-branch path filter will select the exact A5 run for this stacked candidate.
