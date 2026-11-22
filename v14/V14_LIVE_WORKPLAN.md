@@ -1438,3 +1438,10 @@ At the initial readback no workflow run was visible; this is superseded by the e
 ### Run 19 exact-head workflow readback (2026-11-22T21:20:00Z)
 
 For exact code head aae0330e24279ed2782451e7effe78ee005ac490, three workflows are now visible: 45070863812 staged/integrated; 45070863749 temporal WorldJEPA 3.13/3.14; 45070863814 optimizer-resume 3.13/3.14 — all QUEUED; no commit statuses. No commit statuses are reported yet. Poll these exact runs; do not treat parent-head queues as current-head proof.
+
+
+### Run 19 exact CI failure readback (2026-11-22T21:23:00Z)
+
+Exact-head CI for aae0330e: optimizer-resume run 45070863814 failed on Python 3.13 and 3.14 at source_lifecycle_lock_integration_candidate.py:172 with ValueError unsupported lifecycle source: memory.py. Its expected SHA-256 is 61e881ad8b3f8cb60a96339599a1627cd5af7b5a5bfd29fe5f371c17f5a29ebc; actual current memory.py is 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701 (Git blob 172417b49c0abb301db9367fd1c9947a91b3c458). Staged-runtime job in 45070863812 failed 19 / passed 231 / skipped 10 / errored 2, with the same pin mismatch; integrated-regression remains IN_PROGRESS. Temporal T8 run 45070863749 remains QUEUED. This is a QA-owned lifecycle dependency, not evidence of a JEPA numeric-model failure.
+
+Action: QA owner must rebind the lifecycle source pin bottom-up to the exact memory.py bytes; JEPA does not modify QA-owned pin files. The independent temporal WorldJEPA run 45070863749 remains QUEUED. The integrated-regression job in 45070863812 remains IN_PROGRESS. After the QA chain is corrected, rerun the exact staged/optimizer tests and require current-head PASS before any rebase or integration. LOCAL_LINUX remains BLOCKED / NOT_RUN; Redmi remains REDMI_UNVERIFIED.
