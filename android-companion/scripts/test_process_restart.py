@@ -115,17 +115,35 @@ def failure_logcat() -> str:
     return "\\n".join(selected[-80:]) or "(no matching logcat lines)"
 
 
-def wait_for_text(needle: str, timeout: float = 45.0) -> str:
+def wait_for_text(
+    needle: str, timeout: float = 45.0, *, wait_budget: int = 1,
+) -> str:
+    """Wait for a label, allowing at most one explicit safe System-UI Wait."""
+    if type(wait_budget) is not int or wait_budget < 0 or wait_budget > 1:
+        raise ValueError("wait_budget must be 0 or 1")
     deadline = time.monotonic() + timeout
     last = ""
     attempts = 0
+    waits_used = 0
     while time.monotonic() < deadline:
         try:
             root = hierarchy()
         except (RuntimeError, ET.ParseError, subprocess.TimeoutExpired):
             time.sleep(poll_delay(attempts))
             continue
-        if handle_transient_overlay(root):
+        action = transient_overlay_action(root)
+        if action == "Wait":
+            if waits_used >= wait_budget:
+                raise AssertionError(
+                    "System UI remained unresponsive after one safe Wait; "
+                    "refusing to select Close app"
+                )
+            handle_transient_overlay(root)
+            waits_used += 1
+            attempts = 0
+            continue
+        if action is not None:
+            handle_transient_overlay(root)
             attempts = 0
             continue
         last = "\n".join(visible_labels(root))
@@ -140,10 +158,27 @@ def wait_for_text(needle: str, timeout: float = 45.0) -> str:
             except RuntimeError:
                 pass
         time.sleep(poll_delay(attempts))
+
     try:
-        xml = hierarchy_xml()[:3000]
+        final_xml = hierarchy_xml()
+        xml = final_xml[:10000]
     except Exception as exc:
+        final_xml = ""
         xml = "hierarchy unavailable: " + type(exc).__name__
+
+    # The System UI ANR dialog can appear only after UIAutomator has already
+    # timed out repeatedly. Inspect this final bounded snapshot and, if its
+    # explicit Wait button is present, use that safe action once and retry.
+    # Never infer coordinates or select Close app.
+    if waits_used < wait_budget and final_xml:
+        try:
+            final_root = parse_hierarchy(final_xml)
+        except ET.ParseError:
+            final_root = None
+        if final_root is not None and transient_overlay_action(final_root) == "Wait":
+            handle_transient_overlay(final_root)
+            return wait_for_text(needle, timeout=15.0, wait_budget=0)
+
     raise AssertionError("UI did not show expected state: " + needle
                          + "; visible labels=" + last[:1200]
                          + "; " + foreground_diagnostic()
