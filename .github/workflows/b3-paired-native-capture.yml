@@ -64,6 +64,8 @@ jobs:
             v13/code/v13/b3pairs.py \
             v13/code/v13/contracts.py \
             v13/code/v13/cognition.py \
+            v13/code/v13/operator.py \
+            v13/code/v13/runtime.py \
             v13/code/v13/b3bridge.py \
             v13/code/tests/test_b3pairs.py \
             v13/code/tests/test_b3_completion.py
