@@ -1,3 +1,33 @@
+## Current verified handoff — 2026-11-22T19:01:39.750Z (UTC)
+
+**Keine Nutzeraktion erforderlich.** Das Redmi hat den aktuellen Release-Branch-HEAD bereits selbst installiert. Kein Termux-Befehl, keine erneute Update-Anfrage und kein Modell-/Gewichts-/Rechtewechsel nötig.
+
+- Release-Entwicklungsbranch: `gpt6/v13-private-remote-bridge-20261111` = `aed1d2b826290c95c70356b5d8b864b5ef382be4`; exakte GitHub-Check-Runs **41/41 SUCCESS**.
+- Private PIPELINE_STATUS #602 bestätigt exakt `aed1d2b826290c95c70356b8d864b5ef382be4` als installiert, Auto-Update EIN, Runtime/Dashboard `UP_TO_DATE`, `last_error=NONE`. Der letzte code-tragende Release bleibt `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`; `aed1d2` ist ein Dokumentations-/Handoff-Merge, kein neuer Runtime-Code.
+- DIAGNOSTICS #603: Dienst/Runtime RUNNING; letzter gespeicherter Turn weiterhin FINAL, **57.739 s gesamt / 41.627 s TTFT / 38.945 s Prefill / 751 Prompt-Tokens / 2 generierte Tokens**. Keine neue Chat-Anfrage; Korrektheit UNKNOWN.
+- B1_DETAIL/B2_GIST bleiben `TIME_BUDGET` bei 53.2/54.2 s; C3-Kurzprobe 3.1 s. Der letzte Turn hatte 1.129 s `preanswer_observers`. Die Momentaufnahme meldete 0 gemappte native Prozesse; Prozesssichtbarkeit ist `UNKNOWN_NO_GROUP_CHILDREN`, daher keine Aussage über dauerhafte Modellresidenz.
+- LEARNING_STATUS #605 = `UNAVAILABLE`. Offizielles Age 0; Laboranforderung 10 / implementierte Stufe 5; physische Feature-Ausführung nicht verifiziert; Lern-Commit-Recht erfordert separaten SHADOW-Modus.
+- Kein LOG_PAGE: `console_errors=USER_NOT_OPTED_IN`. Keine Chat-Inhalte, Logs, Shell, Modell-/Gewichts-/Berechtigungsänderung oder Geräteaktion angefordert.
+
+**P0 bleibt offen:** Issue #1904; kein 20-Turn-Abnahmelauf, keine verifizierte korrekte 2+2-Antwort und kein belegter nativer B1/B2→C4→C3-Nutzpfad.
+
+### Aktuelle Integrationslage
+- #2343 fair B1/B2 budget: Head `8e5cabb661ba3bada4fa63af24935f2a7a0bf0b2`, DRAFT / NOT_RELEASED, mergeable=false; auf diesem exakten Head ist derzeit nur `offline-bridge-security` grün. Die 45/55-Regel ist nicht durch den komponierten Runtime-Pfad abgenommen. Bei 90 s ergibt sie 40.5 s vor Antwort; das übersteigt die gemessenen Body-Timeouts nicht nachweislich und die gemessene C3-Prefillzeit bleibt ~39 s.
+- #2351 JEPA/T8: 9 FAIL / 4 PASS / 1 SKIP; #2359 Store/source-forget: 7 FAIL / 6 PASS; #2360 Bodyview: 2 FAIL / 1 PASS. Keine Merge-/Learning-Promotion.
+- #2356 Android companion: 6 PASS / 2 IN_PROGRESS, aber auf Companion-Feature-Branch gestapelt, kein APK-/Redmi-Beleg.
+- #2366 RAW EYE source-lock: 12 PASS / 3 SKIP; Kandidatenpfad mit synthetischem A5→A4→C3-Consumer, aber kein normaler Runtime-Dispatch und kein Android-Kamerapfad.
+- #2368 A4 novelty ablation: 10/10 PASS, zusätzlich LOCAL_LINUX CPython 3.13.5 mit 4/4 Tests; nur synthetische Cosine-Prototypen, keine Audio-/Speaker-Accuracy, A4 bleibt DEFER.
+- #2369 FASTDIAR adapter: 8 PASS / 3 SKIP einschließlich Adapter-/Consumer-Matrix 2/2 und Staged-/Integrated-PASS; weiterhin nur caller-supplied Embeddings, keine FASTDIAR-Inferenz, keine Producer-Attestierung und keine geklärte Checkpoint-Weight-Lizenz.
+- #2367 llama-server diagnostics: 7 FAIL / 9 PASS / 1 SKIP; keine Cache-Änderung. R-080 bleibt POTENTIAL RISK / NOT REPRODUCED.
+- Vollständiger lokaler Aii-Testlauf: BLOCKED (kein Checkout, GitHub-DNS im lokalen Container nicht verfügbar). GitHub CI ist kein LOCAL_LINUX- oder Redmi-Beleg.
+
+### Nächste interne Arbeit
+1. Core: #2343 auf aktuellen HEAD rebasen und einen echten **komponierten** Staged-Policy-Test bei 30 s und 90 s hinzufügen; beide B1/B2 müssen im selben Turn bis C4/C3 gelangen, mit C3-Reserve und korrektem FINAL. Zusätzlich #2366 in den normalen Runtime-Dispatch integrieren, ohne den bestehenden Textpfad zu verdrängen.
+2. QA: #2359 komplette Store/Memory/JEPA-Pin-Kette bottom-up reparieren und A5/JEPA/Stage/Migration auf einem exakten SHA ausführen; #2356 Prozess-Restart-Matrix beenden.
+3. JEPA: #2351/#2360 Kontiguität, echte positive Rollback-/Restart- und Held-out-Retention-Proofs reparieren; keine Promotion bei `UNAVAILABLE`.
+4. Research/Perception: #2366 Runtime-Anschluss mit Core koordinieren; #2368/#2369 research-only halten, bis echte consented Daten/Calibration/Producer-Provenance existieren.
+5. Boss: nur kompatible aktuelle-base Kandidaten integrieren; ganze Canon-Coverage weiterführen. 1,255 historische Überschriften bleiben erhalten, semantische Clause→Code→Consumer→Test→Platform→Rollback-Abdeckung ist weiterhin unvollständig.
+
 ## New P0 privacy investigation (2026-11-22T17:59:16.409Z)
 
 In the current V13 source, each role launches a long-lived `llama-server` with a 128-MiB RAM prompt cache, and requests use `cache_prompt=true` with slot 0. A recent upstream llama.cpp issue reports that unrelated conversations can inherit stale prompt/KV state under certain slot/cache paths. The issue is not yet reproduced on V13; the exact installed binary version and session-to-runner isolation are still unknown. I have **not** changed cache settings or restarted anything.

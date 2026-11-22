@@ -2289,3 +2289,25 @@ This overlay changes only current evidence status. It does not promote any Canon
 - **Runtime timing:** #2343 source-anchor correction is queued; no same-turn B1/B2→C4→C3 acceptance.
 - **Prompt-cache privacy:** V14-020/R-080 remains P0 investigation; no V13 reproduction or cache-setting change.
 
+
+
+## Boss run 11 — current evidence overlay (2026-11-22T19:01:39.750Z; status-only)
+
+This overlay preserves the historical **1,255-heading** inventory and does not modify the V14 master or historical V13 Canon bytes.
+
+| Canon family | Current exact evidence | Missing acceptance | Classification |
+|---|---|---|---|
+| A0–A5 perception | RAW EAR and stored-image RAW EYE candidate code; #2366 has 12 exact checks PASS / 3 SKIP, including staged/integrated and same-turn synthetic A5→A4→C3 consumer. | Normal Runtime dispatch for RAW EYE; Android camera/MediaProjection/AudioRecord, real sensor provenance, live consent/revocation and Redmi proof. | CODE_PRESENT / WIRED_SYNTHETIC_CANDIDATE / NOT_ANDROID_VERIFIED |
+| B1_DETAIL + B2_GIST | Distinct role routes; phone diagnostics still show both TIME_BUDGET 53.2/54.2 s. | Useful native offers delivered and consumed by C4/C3 in same turn; correct final; 20-turn TTFT/total/RSS acceptance. | CODE_PRESENT / NATIVE_FAILURE_OBSERVED / NOT_ACCEPTED |
+| B3 / Enlightened Space | Paired token/tap and diagnostic receiver candidates exist in branches. | Trained sender→receiver latent alignment, source-disjoint held-out utility, OOD/shuffled/zero/no-message controls, persistence and Redmi proof. Production remains OFF/SYMBOLIC. | SHADOW / NOT_TRAINED / NOT_ANDROID_VERIFIED |
+| C/JEF/C3 | Runtime reports RUNNING and a stored FINAL turn. | Current correctness unknown; 57.739 s total, 41.627 s TTFT, 38.945 s prefill, 2 tokens; no verified C4 consumption trace. | WIRED / SLOW_NATIVE_METADATA / NOT_ACCEPTED |
+| World/Self/Memory/JEPA/Sleep | T8/WorldJEPA/source-forget candidates exist; #2351 has 9 failures and #2359 has 7 failures at current exact heads. | Accepted gradient/parameter update, source-forget atomicity, A→B→A retention, positive rollback/restart and held-out task utility. LEARNING_STATUS #605 = UNAVAILABLE. | SHADOW / CI_BLOCKED / WEIGHTS_UNVERIFIED |
+| Context OS / Memorilla | Existing context/memory paths and optional companion research remain in source. | Production overflow consumer, source-pointer fidelity and role-specific learned reader/writer. | CODE_PRESENT / CONSUMER_UNVERIFIED |
+| Voice / Audio | Caller PCM16 and acoustic feature paths exist; no Android microphone provider. | AudioRecord permission lifecycle, ASR, separate trainable decoder/vocoder, full duplex/barging, replay learning and Redmi audio proof. | CALLER_INPUT_ONLY / MICROPHONE_NOT_IMPLEMENTED |
+| Android agency | Companion app-launch/receipt candidate; #2356 has 6 checks PASS / 2 IN_PROGRESS on a stacked feature branch. | Installed APK, API-first background execution, authorized observation/control, Accessibility/MediaProjection, tap/type/navigation, stop/audit/rollback and brain-loop integration. | CODE_PRESENT / CI_IN_PROGRESS / NOT_ANDROID_VERIFIED |
+| Age / rights / ResourceGuard | Official Age 0, requested lab stage 10, effective implemented stage 5; physical feature execution false. | Stages 6–10 semantics and actual learning/tool feature receipts; keep compute budget separate from Age. | CONFIG_PRESENT / EXECUTION_UNVERIFIED |
+| Runtime install/update | aed1d2 is installed; auto-update enabled; runtime/dashboard UP_TO_DATE; exact branch SHA 41/41 checks PASS. | This is docs-only after code release c4eb82; no process-death/reboot/rollback test or new code release. | DEVICE_INSTALL_VERIFIED / LIFECYCLE_ACCEPTANCE_OPEN |
+| Prompt-cache isolation | R-080 identifies an upstream-related potential cross-session KV risk in the -np1/cache_prompt/id_slot path. | Exact binary/session mapping and synthetic sequential/concurrent unique-marker canary. No V13 reproduction; no cache settings changed. | POTENTIAL_RISK / NOT_REPRODUCED |
+| Canon traceability | 1,255 historical headings preserved. | Semantic clause→implementation→consumer→test→platform→rollback mapping remains incomplete. | INVENTORY_PRESERVED / SEMANTIC_COVERAGE_INCOMPLETE |
+
+**Evidence boundary:** PIPELINE_STATUS #602 proves the installed SHA, not chat quality. DIAGNOSTICS #603 repeats a stored turn and did not create a new turn. LEARNING_STATUS #605 is UNAVAILABLE. No LOG_PAGE was permitted because console-errors consent is not enabled. Full local Aii tests are BLOCKED by the absent checkout and GitHub DNS; GitHub Actions remain CI evidence only.
