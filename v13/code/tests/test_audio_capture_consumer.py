@@ -115,6 +115,8 @@ def test_signed_one_shot_result_reaches_existing_raw_ear_runtime(tmp_path):
         consent_revocation_subscribe=callbacks[2],
     )
 
+    assert request["sample_rate"] == SAMPLE_RATE == 44100
+    assert len(result["pcm16_base64"]) == 117600
     assert submitted["status"] == "SUBMIT_RETURNED"
     assert submitted["runtime_result"] == "turn-audio-1"
     assert submitted["source_id"] == SOURCE_ID
@@ -164,7 +166,7 @@ def test_pcm_digest_and_short_read_controls_are_rejected(tmp_path):
         verifier.verify(request, bad_pcm, expected_generation=GENERATION, consent_check=check)
 
     short = copy.deepcopy(result)
-    short["receipt"]["body"]["sample_count"] = 15999
+    short["receipt"]["body"]["sample_count"] = SAMPLE_RATE - 1
     with pytest.raises(AudioCaptureDenied, match="geometry"):
         verifier.verify(request, short, expected_generation=GENERATION, consent_check=check)
     verifier.close()
