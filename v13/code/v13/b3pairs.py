@@ -115,7 +115,8 @@ def capture_pair(cognition, event, deadline):
     pair_key = hashlib.sha256(json.dumps(
         [event_id, generation, source, taps["B1_DETAIL"]["model_revision"],
          taps["B2_GIST"]["model_revision"], taps["B1_DETAIL"]["tap_id"],
-         taps["B2_GIST"]["tap_id"]],
+         taps["B2_GIST"]["tap_id"], gist_plan["revision"], gist_plan["mode"],
+         gist_plan["tokens_per_group"], gist_plan["max_slots"]],
         sort_keys=True, separators=(",", ":"), ensure_ascii=True
     ).encode()).hexdigest()
     body_pair_id = "B1_DETAIL<->B2_GIST:" + pair_key[:24]
@@ -148,7 +149,7 @@ def capture_pair(cognition, event, deadline):
         token_counts={role: len(features[role]) for role in ROLES},
         dimensions={role: len(features[role][0]) for role in ROLES},
         token_alignment="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS",
-        receiver_pooling="MEAN_OF_RECEIVER_NATIVE_TAP_TOKENS",
+        receiver_pooling="B2_ADAPTIVE_GIST_SLOTS",
         injection_authority=0, learning_authority=0,
     )
     cognition.s.add_packet("B3PairedTapPacket", record)
@@ -179,8 +180,9 @@ def load_pair(cognition, pair_packet):
         raise ValueError("B3 pair schema mismatch")
     source = pair_packet["source_ref"]
     gist_binding = pair_packet.get("gist_readout")
-    if not isinstance(gist_binding, dict) or not isinstance(gist_binding.get("plan"), dict):
-        raise ValueError("B3 pair has no persisted adaptive Gist readout")
+    if (not isinstance(gist_binding, dict) or not isinstance(gist_binding.get("plan"), dict)
+            or gist_binding.get("tap_packet_id") != pair_packet["tap_packet_ids"]["B2_GIST"]):
+        raise ValueError("B3 pair has no correctly bound adaptive Gist readout")
     taps, features = {}, {}
     for role in ROLES:
         tap_id = pair_packet["tap_packet_ids"][role]
@@ -243,7 +245,8 @@ def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
     No label is inferred from generated body text. Labels must be externally
     supplied, aligned to the pair order, and the same model revisions/dimensions
     must hold across the batch. Sender sequences are right-padded with a mask;
-    receiver states are mean-pooled independently under their native tokenizer.
+    B1->B2 uses fixed-budget adaptive Gist slots; B2->B1 remains an explicitly
+    limited mean-pool bootstrap until a native fine-slot receiver readout exists.
     """
     if direction not in ("B1_TO_B2", "B2_TO_B1"):
         raise ValueError("direction must be B1_TO_B2 or B2_TO_B1")
