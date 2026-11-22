@@ -98,7 +98,7 @@ def apply_source(raw):
         # as well; the final replacement still applies only to a pinned source.
         if index == 4 and raw.count(before.encode('utf-8')) == 0 and raw.count(after.encode('utf-8')) == 0:
             before = (
-                "        if status=='FINAL' and not direct and self.cfg['observer_mode']=='background' and not (wake_decision and wake_decision['learned'] and wake_decision['action']=='none') and self.jobs.empty() and not self.stop.is_set() and rmodes.policy(self.guard.mode)['background_observers']:\\n"
+                "        if status=='FINAL' and not direct and self.cfg['observer_mode']=='background' and not (wake_decision and wake_decision['learned'] and wake_decision['action']=='none') and self.jobs.empty() and not self.stop.is_set() and rmodes.policy(self.guard.mode)['background_observers']:\n"
             )
         # The reviewed #1990 stage already adds per-role deadline support.
         # Preserve that signature while adding foreground-attempt tracking.
