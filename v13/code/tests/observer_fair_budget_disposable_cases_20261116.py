@@ -31,6 +31,60 @@ class SchedulingTests(unittest.TestCase):
         self.assertEqual(out, ['B2_GIST'])
         self.assertEqual(seen, [('B1_DETAIL', True, 5.), ('B2_GIST', True, 10.)])
 
+    def test_budgeted_scheduler_defers_subminimum_first_role_and_continues_peer(self):
+        minimum = native_budget.MIN_ROLE_SLICE_S
+        now = [0.]
+        seen, errors = [], []
+
+        def ask(role, peer, role_end=None):
+            self.assertTrue(peer)
+            self.assertIsNotNone(role_end)
+            seconds = role_end - now[0]
+            seen.append((role, seconds))
+            if seconds < minimum:
+                raise Limits('below minimum fair role slice')
+            now[0] = role_end
+            return role
+
+        plan = obs.plan(obs.DEFAULT, ['B1_DETAIL', 'B2_GIST'], 'e')
+        offers = obs.run(plan, ask, 1.5, lambda role, exc: errors.append((role, type(exc).__name__)),
+                         clock=lambda: now[0], budgeted=True)
+        self.assertEqual(offers, ['B2_GIST'])
+        self.assertEqual([role for role, _ in seen], ['B1_DETAIL', 'B2_GIST'])
+        self.assertAlmostEqual(seen[0][1], .75, places=2)
+        self.assertAlmostEqual(seen[1][1], 1.5, places=2)
+        self.assertEqual(errors, [('B1_DETAIL', 'Limits')])
+
+    def test_budgeted_scheduler_runs_both_roles_at_exact_minimum_slice(self):
+        minimum = native_budget.MIN_ROLE_SLICE_S
+        now = [0.]
+        seen = []
+
+        def ask(role, peer, role_end=None):
+            self.assertTrue(peer)
+            seconds = role_end - now[0]
+            seen.append((role, seconds))
+            if seconds < minimum:
+                raise Limits('below minimum fair role slice')
+            now[0] = role_end
+            return role
+
+        plan = obs.plan(obs.DEFAULT, ['B1_DETAIL', 'B2_GIST'], 'e')
+        offers = obs.run(plan, ask, 2.0, lambda role, exc: self.fail(f'{role} unexpectedly deferred: {exc}'),
+                         clock=lambda: now[0], budgeted=True)
+        self.assertEqual(offers, ['B1_DETAIL', 'B2_GIST'])
+        self.assertEqual([role for role, _ in seen], ['B1_DETAIL', 'B2_GIST'])
+        self.assertAlmostEqual(seen[0][1], minimum, places=2)
+        self.assertAlmostEqual(seen[1][1], minimum, places=2)
+
+    def test_unbudgeted_scheduler_retains_one_second_admission_guard(self):
+        plan = obs.plan(obs.DEFAULT, ['B1_DETAIL', 'B2_GIST'], 'e')
+        calls = []
+        offers = obs.run(plan, lambda role, peer: calls.append(role) or role,
+                         .5, lambda *_: None, clock=lambda: 0.)
+        self.assertEqual(offers, [])
+        self.assertEqual(calls, [])
+
     def test_single_role_has_full_window_and_legacy_signature_is_preserved(self):
         p = obs.plan(obs.DEFAULT, ['B2_GIST'], 'e')
         calls = []

@@ -238,6 +238,66 @@ def test_native_receive_rejects_sender_model_hash_drift(tmp_path, monkeypatch):
     runtime.close()
 
 
+def test_native_receive_rejects_sender_model_outside_home_models(tmp_path, monkeypatch):
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    outside = Path(tmp_path) / "sender-outside.gguf"
+    outside.write_bytes(sender_path.read_bytes())
+    runtime.models.path_for = lambda role: outside if role == "B2_GIST" else model_path
+    tap = {
+        "packet_id": "tap-packet-outside",
+        "event_id": event["event_id"],
+        "brain_generation_id": event["brain_generation_id"],
+        "source_ref": event["source_ref"],
+        "role": "B2_GIST",
+        "tap_id": "qwen35.result_norm.final.v1",
+        "model_revision": "qwen35-r1",
+        "tokenizer_revision": None,
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 1},
+    }
+    runtime.cognition.tap = lambda *args: tap
+    runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
+    runtime.pool.unload = lambda: None
+    monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
+    try:
+        with pytest.raises(ValueError, match="Sender model must be an installed file under home/models"):
+            runtime.cognition.native_receive(
+                "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
+            )
+    finally:
+        runtime.close()
+
+
+def test_native_receive_rejects_sender_model_symlink(tmp_path, monkeypatch):
+    runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
+    outside = Path(tmp_path) / "sender-symlink-target.gguf"
+    outside.write_bytes(sender_path.read_bytes())
+    sender_path.unlink()
+    sender_path.symlink_to(outside)
+    runtime.models.path_for = lambda role: sender_path if role == "B2_GIST" else model_path
+    tap = {
+        "packet_id": "tap-packet-symlink",
+        "event_id": event["event_id"],
+        "brain_generation_id": event["brain_generation_id"],
+        "source_ref": event["source_ref"],
+        "role": "B2_GIST",
+        "tap_id": "qwen35.result_norm.final.v1",
+        "model_revision": "qwen35-r1",
+        "tokenizer_revision": None,
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 1},
+    }
+    runtime.cognition.tap = lambda *args: tap
+    runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
+    runtime.pool.unload = lambda: None
+    monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
+    try:
+        with pytest.raises(ValueError, match="Sender model symlink refused"):
+            runtime.cognition.native_receive(
+                "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
+            )
+    finally:
+        runtime.close()
+
+
 def test_callosum_probe_runs_synchronously_only_from_idle_operator_and_uses_last_source(tmp_path):
     runtime, event, model_path, digest, sender_path, sender_digest = setup_runtime(tmp_path)
     runtime.last_answer = lambda: {"event_id": event["event_id"]}
