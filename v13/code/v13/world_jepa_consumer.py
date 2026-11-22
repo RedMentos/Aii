@@ -814,7 +814,7 @@ def _receiver_cohort_losses(model, heads, cohorts):
     return result
 
 
-def record_world_outcome_packets(store, *, limit=64):
+def record_world_outcome_packets(store, *, limit=64, cancel_check=None):
     """Persist source-bound T8 eligibility/modulator packets before optimizer gates.
 
     Packet inserts and the independent scan cursor commit in one SQLite
@@ -824,6 +824,8 @@ def record_world_outcome_packets(store, *, limit=64):
     """
     if type(limit) is not int or not 1 <= limit <= MAX_ROWS:
         raise ValueError("neuromod outcome page must be 1..MAX_ROWS")
+    if cancel_check is not None and cancel_check():
+        raise InterruptedError("T8 neuromod recording cancelled")
     default = {
         "revision": NEUROMOD_CURSOR_REVISION,
         "scan_cursor": 0,
@@ -844,10 +846,14 @@ def record_world_outcome_packets(store, *, limit=64):
     )
     if next_cursor < state["scan_cursor"]:
         raise ValueError("neuromod T8 cursor moved backwards")
+    if cancel_check is not None and cancel_check():
+        raise InterruptedError("T8 neuromod recording cancelled")
 
     from .neuromod import SLOW_DECAY
     pending_packets = []
     for receipt in receipts:
+        if cancel_check is not None and cancel_check():
+            raise InterruptedError("T8 neuromod recording cancelled")
         source_ref = receipt.source_ref
         if type(source_ref) is not dict or not isinstance(receipt.evidence_ref, str):
             raise ValueError("verified T8 receipt lacks source/evidence provenance")
@@ -908,6 +914,8 @@ def record_world_outcome_packets(store, *, limit=64):
         ),
     }
     cursor_advanced = next_cursor > state["scan_cursor"]
+    if cancel_check is not None and cancel_check():
+        raise InterruptedError("T8 neuromod recording cancelled")
     if cursor_advanced or pending_packets:
         with store.tx() as connection:
             current = connection.execute(
@@ -1216,9 +1224,11 @@ class WorldJEPAStoreConsumer:
         return removed, errors
 
 
-    def record_outcomes(self, *, limit=64):
+    def record_outcomes(self, *, limit=64, cancel_check=None):
         """Record T8 neuromodulation packets without touching the model checkpoint."""
-        return record_world_outcome_packets(self.store, limit=limit)
+        return record_world_outcome_packets(
+            self.store, limit=limit, cancel_check=cancel_check
+        )
 
     def update(self, *, limit=DEFAULT_PAGE_SIZE, steps=80, optimizer_permission=False,
                replay_mode="uniform", encoder_mode="full", cancel_check=None, drift_control=None,
