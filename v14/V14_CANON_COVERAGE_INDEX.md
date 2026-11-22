@@ -2269,3 +2269,12 @@ This overlay changes only current evidence status. It does not promote any Canon
 - Boss #2343 head `8e5cabb` contains the postcommit anchor correction; local isolated anchor simulation PASS, exact push workflow QUEUED. #2346 remains blocked by two paired-capture assertion failures; #2364 receiver probe checks are queued.
 - Whole-Canon classifications remain unchanged: no trained latent coupling, no accepted permanent weight update, no Android AudioRecord/UI-control provider, no production Memorilla consumer, and no Android companion device acceptance.
 
+
+
+## P0 privacy-risk overlay — llama.cpp prompt-cache isolation (2026-11-22T17:59:16.409Z)
+
+- Upstream llama.cpp #27148 reports cross-request stale prompt/KV contamination; #27624 remains OPEN for LRU stale-state, while #30295 is MERGED for a separate busy-pinned-slot path. The issue thread reports that mitigation depends on `kv_unified` and flag combination.
+- V13 source at c4eb82 uses per-role `llama-server -np 1`, `--cache-ram 128`, `--ctx-checkpoints 6`, and request payload `cache_prompt=true,id_slot=0`; no explicit `--no-cache-idle-slots` is passed. Eight managed sessions were reported, but exact session-to-runner sharing and installed binary revision remain UNKNOWN.
+- Classify as **POTENTIAL P0 PRIVACY/CORRECTNESS RISK / NOT REPRODUCED ON V13**. Do not claim a leak or alter settings until synthetic sequential/concurrent unique-marker canaries and same-session reuse tests run on the exact `-np1` path.
+- Required flag matrix and acceptance are recorded in R-080 and board V14-020. No private chat data, model, weight, dependency, permission or device setting changed.
+
