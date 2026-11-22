@@ -1356,3 +1356,8 @@ Do not alter the separate base builder or arithmetic overlay pins unless their b
 - **Research:** R-059 audits `redimnet2-onnx 0.2.0` (MIT wrapper, 192-D, mono 16-kHz 1–30s input, automatic checkpoint fetch/cache). It is utterance-level, not a streaming 80-ms frame encoder; no download or Termux/QNN claim. Keep models/dependencies OFF.
 - **Device/deploy:** no connected Redmi receipt, microphone capture, model inference, Android/Termux test, updater request or deployment. `REDMI_UNVERIFIED`; no user action required.
 - **Next internal action:** Core updates the nested audio source pin to the new blob, includes `audio_speaker_evidence.py` in the staged source composition, recomputes the downstream hashes and reruns staged/integrated CI. Then Perception reruns exact-head checks and requests independent Core/QA review.
+
+
+## PR #2275 latest readback — 2026-11-22 01:06 CET
+
+The documentation-only synchronization moved PR #2275 to head `a7c2bbf6040e404e01246d9d142b2ae99b4a6493`; the tested code/test head remains `2996153a1244afa318e084df419b01a53095aeda`. The board, workplan, research ledger (R-059) and this handoff are synchronized. Exact focused CI PASS and staged/integrated Core-pin FAIL are recorded above. No deployment or Redmi proof.
