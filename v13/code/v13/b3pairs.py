@@ -17,6 +17,7 @@ from .common import atomic_write, dumps, file_hash
 
 ROLES = ("B1_DETAIL", "B2_GIST")
 SCHEMA = "v13.b3-paired-native-taps/1"
+B1_FINE_SLOTS = 64
 
 
 def _matrix(value, name):
@@ -149,7 +150,7 @@ def capture_pair(cognition, event, deadline):
         token_counts={role: len(features[role]) for role in ROLES},
         dimensions={role: len(features[role][0]) for role in ROLES},
         token_alignment="NOT_ASSUMED_DIFFERENT_NATIVE_TOKENIZERS",
-        receiver_pooling="B2_ADAPTIVE_GIST_SLOTS",
+        receiver_pooling="B2_ADAPTIVE_GIST_SLOTS;B1_NATIVE_FINE_TOKEN_SLOTS",
         injection_authority=0, learning_authority=0,
     )
     cognition.s.add_packet("B3PairedTapPacket", record)
@@ -162,7 +163,7 @@ def capture_pair(cognition, event, deadline):
                      "gist_states": gist_vectors.tolist(), "gist_plan": gist_plan},
         "reverse_sender": {"role": "B2_GIST", "states": features["B2_GIST"]},
         "reverse_receiver": {"role": "B1_DETAIL", "states": features["B1_DETAIL"],
-                             "pooled": _mean_pool(features["B1_DETAIL"])},
+                             "fine_states": features["B1_DETAIL"]},
         "authority": {"native_read_only": True, "latent_injection": False,
                       "body_learning": False},
     }
@@ -236,7 +237,7 @@ def load_pair(cognition, pair_packet):
                      "gist_states": gist_rows, "gist_plan": gist_binding["plan"]},
         "reverse_sender": {"role": "B2_GIST", "states": features["B2_GIST"]},
         "reverse_receiver": {"role": "B1_DETAIL", "states": features["B1_DETAIL"],
-                             "pooled": _mean_pool(features["B1_DETAIL"])},
+                             "fine_states": features["B1_DETAIL"]},
         "authority": {"native_read_only": True, "latent_injection": False,
                       "body_learning": False},
     }
@@ -248,8 +249,8 @@ def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
     No label is inferred from generated body text. Labels must be externally
     supplied, aligned to the pair order, and the same model revisions/dimensions
     must hold across the batch. Sender sequences are right-padded with a mask;
-    B1->B2 uses fixed-budget adaptive Gist slots; B2->B1 remains an explicitly
-    limited mean-pool bootstrap until a native fine-slot receiver readout exists.
+    B1->B2 uses fixed-budget adaptive Gist slots; B2->B1 preserves the
+    receiver's native fine token slots (up to the tap's 64-token bound).
     """
     if direction not in ("B1_TO_B2", "B2_TO_B1"):
         raise ValueError("direction must be B1_TO_B2 or B2_TO_B1")
@@ -266,7 +267,7 @@ def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
     receiver_dim = (pairs[0]["packet"]["gist_readout"]["shape"][1] *
                     pairs[0]["packet"]["gist_readout"]["plan"]["max_slots"]
                     if direction == "B1_TO_B2"
-                    else pairs[0]["packet"]["dimensions"][receiver_role])
+                    else pairs[0]["packet"]["dimensions"][receiver_role] * B1_FINE_SLOTS)
     if any(p["packet"]["model_revisions"] != pairs[0]["packet"]["model_revisions"]
            or p["packet"]["dimensions"] != pairs[0]["packet"]["dimensions"]
            or p["packet"]["gist_readout"]["plan"]["max_slots"] != pairs[0]["packet"]["gist_readout"]["plan"]["max_slots"]
@@ -298,16 +299,21 @@ def training_batch(cognition, pair_packets, labels, direction="B1_TO_B2"):
             flat[:slots.shape[0], :] = slots
             Xr[i, :] = flat.reshape(-1)
         else:
-            Xr[i, :] = np.asarray(p[receiver_key]["pooled"], dtype=np.float32)
+            fine = np.asarray(p[receiver_key]["fine_states"], dtype=np.float32)
+            if fine.shape[0] > B1_FINE_SLOTS or fine.shape[1] != receiver_dim // B1_FINE_SLOTS:
+                raise ValueError("B1 Detail fine-slot geometry mismatch")
+            flat = np.zeros((B1_FINE_SLOTS, fine.shape[1]), dtype=np.float32)
+            flat[:fine.shape[0], :] = fine
+            Xr[i, :] = flat.reshape(-1)
     y = np.asarray(labels, dtype=np.int64)
     return {"H": H, "mask": mask, "Xr": Xr, "y": y,
             "direction": direction, "sender_role": sender_role, "receiver_role": receiver_role,
             "body_pair_id": [p["body_pair_id"] for p in pairs],
             "source_refs": [p["source_ref"] for p in pairs],
             "sender_revision": sender_rev, "receiver_revision": receiver_rev,
-            "receiver_max_slots": (pairs[0]["packet"]["gist_readout"]["plan"]["max_slots"] if direction == "B1_TO_B2" else 0),
-            "receiver_slot_counts": ([len(p["receiver"]["gist_states"]) for p in pairs] if direction == "B1_TO_B2" else []),
-            "receiver_feature_mode": ("B2_GIST_ADAPTIVE_SLOTS_FLATTENED" if direction == "B1_TO_B2" else "B1_DETAIL_MEAN_POOL_BOOT"),
+            "receiver_max_slots": (pairs[0]["packet"]["gist_readout"]["plan"]["max_slots"] if direction == "B1_TO_B2" else B1_FINE_SLOTS),
+            "receiver_slot_counts": ([len(p["receiver"]["gist_states"]) for p in pairs] if direction == "B1_TO_B2" else [len(p["reverse_receiver"]["fine_states"]) for p in pairs]),
+            "receiver_feature_mode": ("B2_GIST_ADAPTIVE_SLOTS_FLATTENED" if direction == "B1_TO_B2" else "B1_DETAIL_FINE_NATIVE_SLOTS_FLATTENED"),
             "claim_limit": ("paired native read-only taps + adaptive B2 Gist readout + explicit task labels; no receiver injection"
                             if direction == "B1_TO_B2" else
-                            "paired native read-only taps + B1 mean-pool bootstrap only; no detail-specific receiver readout or injection")}
+                            "paired native read-only taps + B1 native fine token slots + explicit task labels; no receiver injection")}
