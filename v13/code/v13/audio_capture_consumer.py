@@ -26,8 +26,10 @@ RESULT_SCHEMA = "v14.android-audio-capture-result/1"
 RECEIPT_SCHEMA = "v14.android-audio-capture-receipt/1"
 PURPOSE = "RAW_EAR_ACOUSTIC_CONTEXT"
 SOURCE_ID = "android.mic"
-SAMPLE_RATE = 16000
+SAMPLE_RATE = 44100
 MAX_DURATION_MS = 1000
+_MAX_PCM_BYTES = SAMPLE_RATE * MAX_DURATION_MS // 1000 * 2
+_MAX_PCM_BASE64_CHARS = 4 * ((_MAX_PCM_BYTES + 2) // 3)
 
 _REQUEST_FIELDS = frozenset({
     "schema", "request_id", "issued_at", "expires_at", "duration_ms",
@@ -217,7 +219,7 @@ class AudioCaptureReceiptVerifier:
                 raise AudioCaptureDenied("audio result is not the requested capture")
             if (
                 type(result["pcm16_base64"]) is not str
-                or len(result["pcm16_base64"]) > 44000
+                or len(result["pcm16_base64"]) > _MAX_PCM_BASE64_CHARS
             ):
                 raise AudioCaptureDenied("audio PCM encoding is invalid or too large")
             try:
