@@ -1,3 +1,46 @@
+# Current next action — 2026-11-22 01:39 CET (QA & Android exact-head refresh)
+
+**User action: none.** Do not run Termux commands, change installed models/weights, permissions, Age, updater settings, or phone data. No update request or remote device action is authorized by this checkpoint.
+
+## Current release candidate
+
+- Release-development branch remains `gpt6/v13-private-remote-bridge-20261111` at `bdcad466ffea75a2b41f7d23be168f53c7197d20`; last accepted code release remains `f279286a4453248004c670fcaabecd85da6ab299`.
+- Boss candidate: [PR #2288](https://github.com/RedMentos/Aii/pull/2288), branch `boss/v14-recall-store-pin-rebind-20261122`, exact current HEAD `9009e2370437a4a4aaec930131534e77f35d1b11`, DRAFT / NOT_RELEASED. The HEAD commit changes only `v14/V14_CANON_COVERAGE_INDEX.md`; the code-bearing parent `679f3667c5c98b867f85ae960824489da0d8fd3a` contains the corrected pre-overlay Store/stream pin comparison and refreshed runtime stager SHA.
+- At the latest exact-HEAD poll for `9009e2370437a4a4aaec930131534e77f35d1b11`: runtime-deploy integrity and controller record-only guard PASS; Lab-Age, two-checkout migration and combined JEPA are IN_PROGRESS; A5 UI lease, private owner-read/Python 3.14 staged startup, audio/arithmetic, staged/integrated regression and privacy scan are QUEUED; strict additive-only validation is SKIPPED as inapplicable to this broad integration; release-queue workflow is CANCELLED. Exact run IDs: 44968675452, 44968675478, 44968675492, 44968675476, 44968675450, 44968675487, 44968675556, 44968675559, 44968675548, 44968675521, 44968675470, 44968675506. This is not an all-green exact-head gate.
+
+## QA findings and cross-agent handoff
+
+### Source recall and Store lifecycle
+
+- The first #2288 attempt `021b1d3c` still compared pre-overlay recall pins with post-overlay Store bytes. Boss corrected this at the code-bearing parent `679f3667`: compare against the captured `recall_base_pins`, then rebind the two known pins after all overlays. The corrected source was read back; the new exact HEAD `9009e2370437a4a4aaec930131534e77f35d1b11` still needs all workflows to finish.
+- Separate reader/revocation PR #2282 remains uncomposed. Its current branch head `857d13b4d2aa616cb7e6b154af20ac59e10803be` had four exact-head failures through the stale context-recall stream pin. I independently derived `69267e2772143219b16fbc33118707f413b992e3e71b5715f7744508fd1f406c` for that old branch's composed stream, but this value must NOT be reused after rebasing onto #2288; recompute from the new exact source chain.
+- Security review on #2282: validate the stored source digest as exactly 64 lowercase hex before passing it to `os.open(..., dir_fd=blobs_fd)`. `O_NOFOLLOW` does not reject `../`; a tampered row can make the reader open and read a regular file outside the blob directory before the later digest check rejects it. Keep the FD-open-under-Store-lock ordering and add a no-path-traversal regression.
+
+### Launcher rollback and Android companion
+
+- Rollback PR #2283's old-base CI was 5/5 green, including first-install/second-deploy restoration and tamper/busy controls, but it is not current-base acceptance. QA review found a crash-consistency gap: deploy and rollback replace the launcher and `runtime-active.json` as two separate atomic files. Process death between them can leave a mismatched pair; deploy's exception path also restores the launcher but not the marker if marker replacement succeeded before a later fsync error. I posted review comments on #2283 requiring a durable owner-only transaction journal (or one atomic activation pointer), two-file exception restoration, and subprocess crash-injection/restart tests.
+- Android companion one-shot approval/denial PR #2273 has focused Android/Robolectric and caller-gate CI success, but no real device proof. QA noted a non-blocking notification collision: `NotificationManager.notify(actionId.hashCode(), ...)` can replace another active notification when Java String hash codes collide even though PendingIntent data URIs are distinct.
+- OS-permission correction PR #2286 is a separate stacked branch; its Android/control tests passed, but its two-checkout migration workflow returned PARTIAL. Rebase it onto the current candidate before treating the permission contract as integrated.
+
+### Same-turn cognition and broader Canon
+
+- #2279 was closed unmerged because it inherited the closed #2278 direct edit to frozen `native_turn_budget.py`. #2280's unique C4→C3 receipt and tampered-OfferPacket negative control are useful synthetic evidence (424 integrated tests / 3 skipped / 58 subtests on its old stack), but that branch is stale and must be reimplemented/rebased onto #2288. No native model offer or Redmi turn is proven.
+- The historical 1,255-heading Canon remains preserved. Current acceptance is still incomplete for native B1_DETAIL/B2_GIST delivery and mutual re-entry, trained B3 latent coupling, accepted JEPA parameter changes and per-session retention, Sleep/Dream/Replay, full microphone/ASR/decoder/vocoder/full-duplex learning, distinct sparse MoE bodies, Android background/UI control, OS sandbox, adaptive behavior judge, production Memorilla overflow consumer, and cross-organ self-edit.
+
+## Evidence boundary
+
+- No full local Aii checkout was available; no LOCAL_LINUX repository suite was run in this checkpoint. The cited results are GitHub CI only.
+- Private owner-read PIPELINE_STATUS request #453 had no authenticated reply at the last recorded poll. Installed SHA and updater consent remain UNKNOWN.
+- No Redmi/Termux deployment, native model generation, microphone capture, Android UI action, PSS/TTFT benchmark, or 20-turn acceptance test was performed. **REDMI_UNVERIFIED / NOT_RELEASED.**
+
+## Next internal actions
+
+1. Finish all exact-head CI on #2288 `9009e2370437a4a4aaec930131534e77f35d1b11`; fix only reproduced failures and rerun the full exact SHA gate.
+2. Rebase the #2280 C4→C3 receipt, #2282 reader/revocation fix (including digest-key validation), #2283 crash-safe rollback, #2281 Age/X10 rights, #2286 companion permission contract, and #2275 RAW EAR tests onto the same current candidate; preserve each lane's tests and source pins.
+3. Only after exact CI and Boss review may a separate consented private owner-read/update request be considered. Until then, user action remains none.
+
+---
+
 # Current next action — 2026-11-22 00:51 UTC
 
 **No user action is required. Do not run Termux commands or change models, weights, Age, permissions, updater settings or phone data.**
