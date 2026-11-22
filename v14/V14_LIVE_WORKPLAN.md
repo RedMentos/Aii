@@ -1,3 +1,13 @@
+## QA & Android — Run 8 emulator acceleration follow-up (2026-11-22T20:18:30Z)
+
+- PR #2356 exact head is now `3829465e5180ce237ef98b36181bda6caea601a5`. The previous API-33 TCG run reached the app's top-resumed MainActivity but Android System UI entered an ANR before the app stop/restart assertions; no product lifecycle result was obtained.
+- The test harness now backs off UIAutomator polling from 2.5 to 5 seconds, uses 4 emulator cores / 4 GB, switches to `-accel auto`, retains `ANDROID_I_WANT_MY_TCG=yes` as fallback and logs `emulator -accel-check`. Local copied helper tests remain 6/6 PASS.
+- Exact-head workflows 45065638333 (Android companion), 45065638347 (Android outcome), 45065638341 (Core adapter) and 45065638335 (staged/integrated) are QUEUED. No current-head CI or emulator pass is claimed.
+- Official Android documentation states that `-accel off` is software emulation and very slow; `auto` uses acceleration when available. Source: https://developer.android.com/studio/run/emulator-commandline. This supports the test-harness change, not a claim that the hosted runner has KVM.
+- No APK or device was installed/changed; no user action. Keep System UI handling fail-closed and never select Close app.
+
+---
+
 ## QA & Android — Run 8 exact-head checkpoint (2026-11-22T20:09:08Z)
 
 **No user action.** No Termux command, UPDATE_REQUEST, CHAT_SEND, LOG_PAGE, APK install, permission change, model/weight swap or device mutation was performed.
