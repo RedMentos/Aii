@@ -191,6 +191,7 @@ class Cognition:
         Gist slots. This is numeric latent-data capture only: no text message,
         no receiver injection, and no body-learning authority.
         """
+        check(self.r.cancel_event,deadline)
         from .b3pairs import capture_pair
         return capture_pair(self,e,deadline)
     def body_context(self,role,e):
