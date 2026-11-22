@@ -29,6 +29,7 @@ The companion's existing Robolectric tests exercise the process-start reset meth
 
 - Private PIPELINE_STATUS #591: installed runtime/dashboard revision `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`, auto-update enabled, no last error.
 - Later HEALTH #593: runtime `UNAVAILABLE`, 836 MiB available RAM, 1535 MiB free disk.
+- Later LEARNING_STATUS #594: learning `UNAVAILABLE` (receipt status OK); no active learning-loop proof.
 - Earlier DIAGNOSTICS #592 showed a native process census and a previous turn (57.74 s total, 41.63 s TTFT, 38.95 s prefill, 2 generated tokens). This is not a new chat acceptance and does not supersede the later HEALTH availability result.
 - No CHAT_SEND, UPDATE_REQUEST, stop/restart, APK installation, permission change or model/data mutation was performed.
 - Redmi companion lifecycle, Android app control and current chat RPC usability remain `REDMI_UNVERIFIED` / unresolved.
