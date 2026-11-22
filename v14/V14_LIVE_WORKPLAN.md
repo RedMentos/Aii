@@ -1301,3 +1301,6 @@ Status: signed consumer CI PASS / staged migration FAIL / provider absent / REDM
 
 
 **Companion readback:** current QA branch ref `qa/v14-companion-os-permission-contract-20261122` is `7650ae0c19e93e4b6cbb778abb2f5123e49c364f`; its manifest has no `RECORD_AUDIO`, its CapabilityRegistry reports `audio_capture` unavailable, and `AudioCaptureDefaultOffTest` asserts the permission is absent. This is an intentional OFF state. PR #2312 still has historical base `58666ddfc9945612a2117e1a844f812442d4ca64`; do not call it current-base until the QA/Boss parent stack is reconciled and the Perception consumer is rebased.
+
+
+**Latest private device observation:** V13OBS #115 updated `2026-11-22T21:11:21Z` (newer than the authenticated owner-read receipts #619/#620) repeats installed SHA `aed1d2b826290c95c70356b5d8b864b5ef382be4`, updater/runtime/dashboard UP_TO_DATE and last_error NONE. Its five-turn metadata shows B1 4/4 native attempts failed / 0 valid offers, B2 2/2 failed / 0 valid offers, no B1/B2 delivery to final C3 report, and no C3 prompt inclusion, semantic use or native latent exchange. The latest stored turn remains 57.739 s total / 41.627 s TTFT / 38.945 s prefill / 751 prompt tokens / 2 generated tokens. This is a private observation report, not a new owner-read command receipt; no new user turn or device action was sent.
