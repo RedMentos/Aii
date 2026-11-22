@@ -6,6 +6,7 @@ Both local learning gates and the replay-projection permission default closed.
 The booleans in Store state are not an OS/security boundary.
 """
 from pathlib import Path
+import math
 
 from .world_jepa_consumer import WorldJEPAStoreConsumer, record_world_outcome_packets
 from v13 import world_jepa_replay
@@ -23,6 +24,27 @@ DEFAULT_PERMISSIONS = {
 MAX_RUNTIME_PAGE = 256
 MAX_RUNTIME_STEPS = 2000
 RECEIVER_ROLES = ("B1_DETAIL", "B2_GIST", "SELF_MODEL")
+
+
+def _neuromod_scale_report(neuromod):
+    """Use the shared Neuromod controller without changing its pinned source.
+
+    SHADOW observes modulation but preserves the normal update scale. An
+    explicit source-bound safety veto is never shadowed and always blocks.
+    """
+    gate = neuromod.gate("world_predictor")
+    mode = neuromod.local_mode()
+    if mode not in {"SHADOW", "ACTIVE"}:
+        raise ValueError("unknown neuromod local mode")
+    factor = gate.get("factor")
+    if not isinstance(factor, (int, float)) or not math.isfinite(float(factor)):
+        raise ValueError("invalid neuromod gate factor")
+    if not 0.0 <= float(factor) <= 1.0:
+        raise ValueError("neuromod gate factor out of range")
+    scale = 0.0 if gate.get("veto") is True else (
+        float(factor) if mode == "ACTIVE" else 1.0
+    )
+    return {"mode": mode, "scale": scale, "gate": gate}
 
 
 def permission_state(store):
@@ -88,7 +110,7 @@ def consume_after_commit(store, home=None, *, limit=64, cancel_check=None, drift
         if neuromod is None:
             from .neuromod import Neuromod
             neuromod = Neuromod(store)
-        neuromod_report = neuromod.step_scale_report("world_predictor")
+        neuromod_report = _neuromod_scale_report(neuromod)
         neuromod_info = {
             "record": neuromod_record,
             "mode": neuromod_report["mode"],
