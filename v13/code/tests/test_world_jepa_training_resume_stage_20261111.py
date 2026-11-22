@@ -97,4 +97,8 @@ def test_source_lifecycle_pins_and_downstream_builder_chain_match_exact_files():
     stage = _load_qa_builder(stage_path, 'qa_integrated_stage')
     check('stage', stage.BUILDER_SHA, digest(termux21_path))
 
+    deploy_path = CODE / 'v13' / 'runtime_deploy.py'
+    deploy = _load_qa_builder(deploy_path, 'qa_runtime_deploy')
+    check('runtime_deploy_stager', deploy.STAGER_SHA256, digest(stage_path))
+
     assert not failures, '\\n'.join(failures)
