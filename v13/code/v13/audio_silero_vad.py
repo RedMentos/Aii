@@ -184,8 +184,8 @@ class SileroVADStream:
     def push_pcm16(self, pcm: bytes, *, sample_rate: int, stream_id: str,
                    start_ms: int) -> dict:
         """Push <=1s of contiguous mono PCM16; retain only an incomplete frame in RAM."""
-        if type(pcm) is not bytes or not pcm or len(pcm) % 2:
-            raise ValueError("Silero VAD input must be nonempty complete PCM16 bytes")
+        if not isinstance(pcm, (bytes, bytearray)) or not pcm or len(pcm) % 2:
+            raise ValueError("Silero VAD input must be nonempty complete PCM16 bytes or mutable buffer")
         if len(pcm) > _MAX_WINDOW_BYTES:
             raise ValueError("Silero VAD input is limited to one second")
         if type(sample_rate) is not int or sample_rate != 16000:
