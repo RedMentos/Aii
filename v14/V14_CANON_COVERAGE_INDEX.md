@@ -2221,3 +2221,14 @@ This overlay updates proof status only. It does not edit the V14 master, histori
 ## B3 shared integration failure overlay — 2026-11-22
 
 Focused B3 paired-capture workflow 45040617156 remains PASS (52 tests, compile and CLI smoke). The exact #2346 shared matrix is nevertheless NOT_GREEN: Lab-Age E2E run 45040616984 fails at integrated builder hash mismatch; old-phone migration run 45040617024 returns PARTIAL instead of UPDATED in both cases while preserving model/SQLite sentinels. This is the same shared composition/migration blocker as #2343, not a failure of the B3 focused test. Keep #2346 DRAFT / NOT_RELEASED until the Boss-owned source chain is repaired and exact full matrix passes.
+
+
+## World/Self/Memory/JEPA temporal T8 overlay — 2026-11-22
+
+| Path | Current code / evidence | Missing proof | Classification |
+|---|---|---|---|
+| Temporal T8 sequence learner | PR #2351 adds contiguous history windows (length 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, EMA/Adam checkpoint state and B1/B2/SELF shadow readouts; SleepRuntime post-commit consumer is wired. | Exact PR CI queued; fixtures use synthetic T8 outcomes; no native model output, no prompt consumption, no body-weight change, no Android measurement. | CODE_PRESENT / WIRED_SYNTHETIC / CI_PENDING / SHADOW_ONLY |
+| Temporal rollback | rollback() restores the previous checkpoint and returns ROLLED_BACK in code. | Current tests only assert NO_ROLLBACK_CHECKPOINT; no two-successive-checkpoint rollback/restart/optimizer/readout identity regression. | CODE_PRESENT / POSITIVE_ROLLBACK_NOT_TESTED |
+| Source revocation vs weight promotion | #2351 moves _forget_source lineage checks inside combined JEPA/temporal guard and transaction. | Store.switch_generation still preflights outside its final transaction; reverse stale-row promotion race remains. Forget also releases Store.mutex before source/blob unlink, allowing concurrent Store.source publication between live-refcount check and unlink. Both are code-inspected, not locally reproduced; barrier tests required. | PARTIAL_GUARD / P1_DATA_INTEGRITY_OPEN |
+
+**Lock order:** JEPA/temporal file lock → Store RLock/SQLite. The Store RLock must cover the full forget transaction, artifact cleanup, final blob refcount and unlink; promotion preflight/commit must share the same Store RLock and revalidate update status and source liveness in its final transaction. Preserve the two barrier interleavings and positive rollback as acceptance tests.

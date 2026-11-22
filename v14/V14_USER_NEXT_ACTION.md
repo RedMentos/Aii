@@ -1,3 +1,14 @@
+# QA & Android — temporal JEPA and source-lifecycle follow-up (2026-11-22)
+
+- JEPA/Memory PR [#2351](https://github.com/RedMentos/Aii/pull/2351), exact head 3df0c8a6a65dd2545bde62db92efc761d143032a, adds dense contiguous T8 temporal windows (history lengths 2/3), explicit censored omissions, unknown-gap breaks, connected session/source split, NumPy WorldJEPA + EMA/Adam/checkpoint persistence, and B1/B2/SELF shadow readouts. It is wired into SleepRuntime post-commit but has no prompt consumer or native body-weight effect. Synthetic Store/T8 fixtures only. Exact CI currently queued; PR is DRAFT / NOT_RELEASED.
+- #2351's positive temporal rollback method exists, but its current tests only exercise NO_ROLLBACK_CHECKPOINT; a two-checkpoint positive rollback/restart proof is still needed.
+- #2351 moves Memory._forget_source lineage checks into the combined JEPA+temporal guard and SQLite transaction. This closes the promotion-first stale-check direction, but the reverse prevalidated-promotion race remains because Store.switch_generation still preflights outside its final transaction and does not re-read update status/source liveness. A separate source-blob resurrection race remains because forget releases Store.mutex before refcount check/unlink while Store.source publishes under that same mutex. These are code-inspected, not locally reproduced; see [promotion race](https://github.com/RedMentos/Aii/pull/2343#issuecomment-7081736426) and [blob race](https://github.com/RedMentos/Aii/pull/2343#issuecomment-7081747233).
+- Boss PR [#2343](https://github.com/RedMentos/Aii/pull/2343) advanced to head 863e751ff5410dc555006c8aeb9ef6c7b28d2a88; its 19 exact-head checks are queued at last read. The new source-forget change is partial; no release or learning/unlearning safety acceptance yet.
+- B3 PR #2346 head 81d225af has focused workflow PASS (52 tests, py_compile, CLI smoke) and descriptor-anchored symlink-safe output, but shared Lab-Age and old-phone migration checks fail (integrated builder hash mismatch; migration PARTIAL). Keep DRAFT.
+- Companion #2347 is 5/5 exact CI SUCCESS but remains stacked on draft #2271 and NOT_RELEASED; pairing #2342 is 2/2 CI SUCCESS and also not installed.
+
+---
+
 # QA & Android — B3 shadow-security follow-up (2026-11-22)
 
 - PR [#2346](https://github.com/RedMentos/Aii/pull/2346) is now at exact head 81d225af972e8b3d6b645aba09cd01ccac5fa020. The earlier symlinked output-path issue has been addressed with descriptor-anchored O_NOFOLLOW traversal, private 0700 run directories and top-level/nested symlink negative tests.
