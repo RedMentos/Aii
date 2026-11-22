@@ -60,6 +60,51 @@ public final class CompanionProvider extends ContentProvider {
         }
     }
 
+    // The provider and both Activities use the app's default process. This
+    // gate linearizes stop/enable with request insertion and the final dispatch.
+    static final Object ACTION_GATE_LOCK = new Object();
+
+    interface MillisClock {
+        long nowMillis();
+    }
+
+    static boolean setEnabled(Context context, boolean enabled) {
+        synchronized (ACTION_GATE_LOCK) {
+            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                    .edit().putBoolean("enabled", enabled).apply();
+            return enabled;
+        }
+    }
+
+    static boolean toggleEnabled(Context context) {
+        synchronized (ACTION_GATE_LOCK) {
+            SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+            boolean enabled = !prefs.getBoolean("enabled", false);
+            prefs.edit().putBoolean("enabled", enabled).apply();
+            return enabled;
+        }
+    }
+
+    static String claimAndDispatch(Context context, CompanionDb db, String actionId,
+                                   MillisClock clock, Runnable dispatch) {
+        synchronized (ACTION_GATE_LOCK) {
+            SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+            if (!prefs.getBoolean("enabled", false)) return "COMPANION_STOPPED";
+            long nowMillis = clock.nowMillis();
+            if (!db.claimForExecution(actionId, nowMillis)) {
+                db.expire(actionId, nowMillis);
+                cancelApprovalNotification(context, actionId);
+                return "NOT_CLAIMED";
+            }
+            try {
+                dispatch.run();
+                return "DISPATCHED";
+            } catch (RuntimeException ignored) {
+                return "FAILED_TO_DISPATCH";
+            }
+        }
+    }
+
     static boolean isImplementedCapability(String capability) {
         return "launch_app".equals(capability);
     }
@@ -75,6 +120,12 @@ public final class CompanionProvider extends ContentProvider {
     }
 
     private JSONObject submit(Context context, String json) throws Exception {
+        synchronized (ACTION_GATE_LOCK) {
+            return submitLocked(context, json);
+        }
+    }
+
+    private JSONObject submitLocked(Context context, String json) throws Exception {
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         if (!prefs.getBoolean("enabled", false)) return error("COMPANION_STOPPED");
         JSONObject request = new JSONObject(json);
