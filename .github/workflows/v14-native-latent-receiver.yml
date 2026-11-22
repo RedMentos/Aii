@@ -90,6 +90,14 @@ jobs:
           cmake --build build-native --target native_latent_receiver -j2
           build-native/bin/native_latent_receiver --selftest
           build-native/bin/native_latent_receiver --version
+          set +e
+          build-native/bin/native_latent_receiver --token-rows --model /tmp/no-model.gguf --token-ids 1,1
+          duplicate_status=$?
+          build-native/bin/native_latent_receiver --token-rows --model /tmp/no-model.gguf --token-ids 1,
+          trailing_status=$?
+          set -e
+          test "$duplicate_status" -eq 64
+          test "$trailing_status" -eq 64
   android-arm64-cross-compile:
     runs-on: ubuntu-latest
     timeout-minutes: 25
