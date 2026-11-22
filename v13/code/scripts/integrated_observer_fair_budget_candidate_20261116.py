@@ -69,20 +69,86 @@ def apply_sources(code_dir, sources):
         b'                else:\n'
         b'                    offers.append(ask(role,True))\n', 'sequential slice')
     budget = result.get('v13/native_turn_budget.py', originals['v13/native_turn_budget.py'])
-    # Preserve the pinned measured C3 recovery reserve. The 45% ordinary
-    # observer window is not a substitute for the 26 s short-turn recovery
-    # reserve; observer_deadline only caps each body's own fair slice.
-    required_budget_blocks = (
-        b'NATIVE_FIRST_RESERVE_FRACTION = .87\n',
-        b'DEFAULT_PREANSWER_FRACTION = .45\n',
-        b'MIN_ROLE_SLICE_S = 1.0\n',
+    # Some current-base candidates already introduced MIN_ROLE_SLICE_S
+    # while retaining the old 87% reserve. Remove only that stale reserve
+    # constant; preserve the one canonical pre-answer fraction and minimum.
+    reserve_line = b'NATIVE_FIRST_RESERVE_FRACTION = .87\n'
+    if (budget.count(reserve_line) == 1
+            and budget.count(b'DEFAULT_PREANSWER_FRACTION = .45\n') == 1
+            and budget.count(b'MIN_ROLE_SLICE_S = 1.0\n') == 1):
+        budget = budget.replace(reserve_line, b'', 1)
+    else:
+        budget = replace(budget,
+            b'NATIVE_FIRST_RESERVE_FRACTION = .87\nDEFAULT_PREANSWER_FRACTION = .45\n',
+            b'DEFAULT_PREANSWER_FRACTION = .45\nMIN_ROLE_SLICE_S = 1.0\n',
+            'fair recovery slice')
+    budget = replace(budget,
+        b'def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False):\n',
         b'def plan(start, deadline, now, *, recent=(), background_enabled=True, direct=False, observer_deadline=None):\n',
-        b'    if observer_deadline is not None and (\n            type(observer_deadline) not in (int, float) or not math.isfinite(observer_deadline)):\n        raise ValueError("invalid observer deadline")\n',
-        b'    if recover:\n        reserve = min(total*NATIVE_FIRST_RESERVE_FRACTION,\n                      max(26.0,total*.80))\n        allotted = min(ordinary_end,deadline-reserve)\n        reason="RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS"\n    else:\n        reserve=deadline-ordinary_end\n        allotted=ordinary_end\n        reason="NORMAL_COGNITIVE_PREANSWER"\n    if observer_deadline is not None:\n        allotted=min(allotted,observer_deadline)\n',
-        b'        "minimum_role_slice_s": MIN_ROLE_SLICE_S,\n',
+        'observer deadline argument')
+    current_observer_validation = (
+        b'    if observer_deadline is not None and (\n'
+        b'            type(observer_deadline) not in (int, float) or not math.isfinite(observer_deadline)):\n'
+        b'        raise ValueError("invalid observer deadline")\n'
     )
-    if any(budget.count(block) != 1 for block in required_budget_blocks):
-        raise ValueError('pinned native C3 recovery reserve or observer cap changed')
+    if budget.count(current_observer_validation) == 1:
+        pass
+    else:
+        budget = replace(budget,
+            b'    for number in (start,deadline,now):\n        if type(number) not in (int, float) or not math.isfinite(number):\n            raise ValueError("invalid monotonic budget")\n    if deadline < start or now < start-1:\n',
+            b'    for number in (start,deadline,now):\n        if type(number) not in (int, float) or not math.isfinite(number):\n            raise ValueError("invalid monotonic budget")\n    if observer_deadline is not None and (type(observer_deadline) not in (int,float) or not math.isfinite(observer_deadline)):\n        raise ValueError("invalid observer deadline")\n    if deadline < start or now < start-1:\n',
+            'observer deadline validation')
+    budget = replace(budget,
+        b'            and native.get("generated_tokens") == 0\n',
+        b'            and type(native.get("generated_tokens")) is int\n            and native.get("generated_tokens") == 0\n',
+        'strict zero-token evidence')
+    native_success_existing = b'''        data=row.get("metadata")
+        if isinstance(data, str):
+            try:
+                data=json.loads(data)
+            except (ValueError, TypeError):
+                data=None
+        native=data.get("runner") if isinstance(data, dict) else None
+        if (status == "FINAL" and isinstance(native, dict)
+                and native.get("role") == "C3_LANGUAGE"
+                and type(native.get("generated_tokens")) is int
+                and native["generated_tokens"] > 0):
+            recent_good += 1
+        else:
+            break
+        if recent_good == 2:
+            break
+'''
+    old_native_success = b'        if status == "FINAL":\n'
+    if budget.count(native_success_existing) == 1 and budget.count(old_native_success) == 0:
+        pass
+    else:
+        budget = replace(budget,
+            old_native_success, b'''        data = row.get("metadata")
+        if isinstance(data, str):
+            try:
+                data = json.loads(data)
+            except (ValueError, TypeError):
+                data = None
+        native = data.get("runner") if isinstance(data, dict) else None
+        if (status == "FINAL" and isinstance(native, dict)
+                and native.get("role") == "C3_LANGUAGE"
+                and type(native.get("generated_tokens")) is int
+                and native["generated_tokens"] > 0):
+            recent_good += 1
+        else:
+            break
+        if recent_good == 2:
+            break
+''', 'native success evidence')
+    budget = replace(budget,
+        b'    if recover:\n        reserve = min(total*NATIVE_FIRST_RESERVE_FRACTION,\n                      max(26.0,total*.80))\n        allotted = min(ordinary_end,deadline-reserve)\n        reason="RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS"\n    else:\n        reserve=deadline-ordinary_end\n        allotted=ordinary_end\n        reason="NORMAL_COGNITIVE_PREANSWER"\n',
+        b'    observer_end = ordinary_end if observer_deadline is None else min(ordinary_end, observer_deadline)\n    reserve = deadline-ordinary_end\n    if recover:\n        allotted=observer_end\n        reason="RECENT_C3_ZERO_TOKEN_PREFILL_TIMEOUTS"\n    else:\n        allotted=observer_end\n        reason="NORMAL_COGNITIVE_PREANSWER"\n',
+        'retain fair preanswer window')
+    budget = replace(budget,
+        b'        "c3_reserved_seconds": round(reserve,3),\n',
+        b'        "c3_reserved_seconds": round(reserve,3),\n        "minimum_role_slice_s": MIN_ROLE_SLICE_S,\n',
+        'minimum fair role slice')
     cognition = result.get('v13/cognition.py', originals['v13/cognition.py'])
     # This exact source already carries the reviewed fair-slice consumer from Core.
     # Recognize its complete behavior rather than requiring a historical text layout.
