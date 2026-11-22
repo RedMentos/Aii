@@ -1268,11 +1268,12 @@ def test_runtime_store_a_b_a_replay_retention_and_receiver_loop(tmp_path):
             if encoder_mode == "predictor_only":
                 assert projected_loss["A2"]["status"] == "UPDATED_EXPERIMENTAL_WORLD_JEPA"
 
-        for phase in phases:
-            if phase["status"] == "UTILITY_GATE_REJECTED":
-                assert phase["checkpoint_after"] == phase["checkpoint_before"]
-                assert phase["utility_gate_accepted"] is False
-                assert phase["holdout_used_for_backtracking"] is False
+        for report in mode_reports:
+            for phase in (report["B"], report["A2"]):
+                if phase["status"] == "UTILITY_GATE_REJECTED":
+                    assert phase["checkpoint_after"] == phase["checkpoint_before"]
+                    assert phase["utility_gate_accepted"] is False
+                    assert phase["holdout_used_for_backtracking"] is False
 
     print("WORLDJEPA_STORE_A_B_A_REPLAY_RETENTION " + __import__("json").dumps(
         reports, sort_keys=True, allow_nan=False
