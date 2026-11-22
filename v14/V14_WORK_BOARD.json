@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T00:06:42Z",
+  "updated_at": "2026-11-22T00:07:30Z",
   "source_of_truth": "v14/V14_MASTER_BLUEPRINT_AND_RESEARCH_20261119.md",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Evidence is per ticket and per environment. CI, synthetic tests, Linux-native execution and Redmi receipts remain separate; no whole-system completion is inferred.",
@@ -143,7 +143,7 @@
       "scope": "Registry, licensing, alternatives for C3/B1/B2 and controller",
       "acceptance": "Dated candidate matrix, reproducible local/Redmi timing-quality comparisons, isolated try/rollback, UI proposal without replacing active models",
       "proof_environment": "PR #2142 remains OPEN and non-mergeable on stale base c3c32; head 67c1300093dd99ffcf818f370fff29b58fd7fc3b. Its exact code/test commit 40deb8a56686455b361ba41e63cb57b981b5a71b passed model-lab workflow 44861145442: compile, manifest JSON and 23/23 synthetic tests. License snapshot bytes, lock-before-read, read-only staged copies and executable identity are checked. No real GGUF inference was run; no current verified candidate was demonstrated present, no staged-context workflow is green, no download/swap or Redmi test. #2154's license snapshot fix is included in #2142's current branch.",
-      "next_step": "#2275 exact focused 3.13/3.14 both fail reference_age_ms 920 vs 800; staged/integrated fails audio_voice_cues source pin. Recompute full overlay/stager/deployer pin chain; keep NumPy/model OFF.",
+      "next_step": "R-059 finds redimnet2-onnx 0.2.0 is an MIT wrapper producing 192-D utterance embeddings from 1-30s mono 16-kHz audio; it is not a streaming 80-ms encoder and its QNN extra is not Termux/Redmi proof. Keep FASTDIAR only as a research candidate until checkpoint rights, ARM64 export, RSS/latency and overlap quality are measured. No download, install, model swap or device test.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21T23:06:00Z",
       "latest_candidate_pr": {
@@ -217,7 +217,7 @@
       "scope": "Android 13 Termux/companion; API-first app control; separately consented Accessibility/MediaProjection UI path; microphone RAW EAR/acoustic features; speech output/vocoder separate from C3 planning; lifecycle, audit, cancel, revocation and rollback",
       "acceptance": "On real Redmi, prove one approved API action and one separately permissioned UI observation/action path; source-bound microphone/audio event reaches a real consumer; speech output is independently measured; audit/stop/revocation/restart are verified. Synthetic and native evidence remain separate.",
       "proof_environment": "Voice/audio remains caller-supplied PCM16 producer only. Core #2242 has a synthetic normal-Runtime audio/arithmetic candidate; its source pins match, but 3.13 has one invalid SourceRef fixture and 3.14 is pending. A5 UI #2246 is synthetic metadata ingress; QA #2250 exposes a shared-blob race. No Android AudioRecord/microphone, AccessibilityService, NotificationListenerService, MediaProjection, screenshot decoder or OS action provider; REDMI_UNVERIFIED.",
-      "next_step": "Keep mic capture, ASR, trainable decoder/vocoder, nonverbal audio learning and full-duplex as OPEN scope. Do not describe the caller-PCM16 bridge or optional TTS as full voice/audio completion.",
+      "next_step": "R-060 (2026-11-22) confirms Android TextToSpeech can provide utterance lifecycle and cancellation (onStop API23, onAudioAvailable/onBeginSynthesis API24), while AudioTrack.MODE_STREAM is for V14-owned PCM renderers and AEC/NS are optional per-AudioRecord-session effects. Core owns a separate default-OFF VoiceEffector and Android input/output lifecycle; Perception owns timed RAW EAR/provisional-final packets and output-reference cues; QA verifies cancel/revoke/background/echo false positives. Current companion remains app-launch-only; no TTS, microphone or MediaProjection code. Do not describe optional TTS as trainable voice or full-duplex completion. Redmi remains unverified.",
       "user_action_required": false,
       "last_checkpoint": "2026-11-21T22:21:06.563Z",
       "proof": "#2258 adds a caller-supplied PCM16 audio-window lease with process-local consent callbacks, one-second bounds, revocation lifecycle and A5/A4/C3 admission, plus an explicit local Termux TTS fallback disabled by default. Synthetic audio lifecycle/arithmetic suite: 52 passed / 26 subtests on Python 3.13 and 3.14. This is not microphone capture, ASR, trainable speech decoder/vocoder, full duplex/barge-in or Android AudioRecord."
