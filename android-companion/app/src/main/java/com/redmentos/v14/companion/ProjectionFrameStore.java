@@ -33,7 +33,7 @@ final class ProjectionFrameStore {
                 || body.getBoolean("raw_capture_persisted")
                 || body.getBoolean("action_authority")
                 || body.getBoolean("learning_authority")) {
-            throw new SecurityException("frame receipt does not bind the exact non-authoritative bytes");
+            throw new SecurityException("frame receipt authority/persistence flags or exact byte binding are invalid");
         }
         synchronized (LOCK) {
             clearLocked();
