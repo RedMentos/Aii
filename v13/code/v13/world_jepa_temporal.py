@@ -482,8 +482,6 @@ def _validate_state(state):
     for key in ("active", "previous"):
         if state[key] is not None:
             _record_valid(state[key])
-    if (state["active"] is not None and state["scan_cursor"] != state["active"]["scan_cursor"]):
-        raise ValueError("temporal active cursor mismatch")
     if type(state["pending_rows"]) is not list or len(state["pending_rows"]) > MAX_ROWS:
         raise ValueError("temporal pending row budget")
     active_ids = set(state["active"]["fingerprints"]) if state["active"] else set()
