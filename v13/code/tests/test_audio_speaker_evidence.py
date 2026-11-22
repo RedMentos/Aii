@@ -487,5 +487,9 @@ def test_a4_and_c3_receive_explicit_defer_instead_of_false_stability_on_silence(
         assert silent["speaker_change_evidence"]["speaker_change_candidate"] is False
         assert silent["a4"]["speaker_change_decision"] == "DEFER"
         assert silent["packet"]["segments"][0]["acoustic"]["speaker_change_decision"] == "DEFER"
+        assert any(
+            "speaker_change_decision=DEFER" in percept.summary
+            for percept in silent["c3_admission"].selected
+        )
     finally:
         runtime.store.close()
