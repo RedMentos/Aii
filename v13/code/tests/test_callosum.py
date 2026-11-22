@@ -64,19 +64,7 @@ class UtilityTests(Base):
         recv=packet('OfferPacket','B2_GIST',eid,gen,[],role='B2_GIST',based_on_state_version=0,deadline_monotonic_ns=time.monotonic_ns()+10**9,evidence_refs=[],
                     offer={'summary':'total 391','quotes':[],'uncertainty':'','needs_reentry':False},confidence=0.,native_metrics={'duration_s':3.})
         self.r.store.add_packet('OfferPacket',recv)
-        # The staged Age-0 Runtime is RECORD_ONLY: verify that utility
-        # learning is blocked without consuming the pending handoff. Then
-        # explicitly opt this synthetic test into SHADOW_UPDATE and exercise
-        # the receiver-offer scoring path.
-        state_before,_=self.r.store.state(C.KEY,None)
-        blocked=self.c.outcome(eid,[recv['packet_id']],'FINAL')
-        self.assertEqual(blocked,{'scored':0,'status':'SKIPPED_RECORD_ONLY'})
-        state_after,_=self.r.store.state(C.KEY,None)
-        self.assertEqual(state_after,state_before)
-        self.r.cfg['learning_mode']='SHADOW_UPDATE'
-        res=self.c.outcome(eid,[recv['packet_id']],'FINAL')
-        self.assertEqual(res['scored'],1)
-        
+        res=self.c.outcome(eid,[recv['packet_id']],'FINAL');self.assertEqual(res['scored'],1);self.assertGreater(res['utilities'][0],1.)
         q=self.c._load()[0]['dirs']['B1_TO_B2']['u']['SOURCE_EXACT'];self.assertEqual(q['n'],1);self.assertIn('task_gain',q['parts'])
         self.assertEqual(C.on_rating(self.r.store,eid,10)['updated'],1)
         doc=b3_doctor(self.r)['B1_TO_B2'];self.assertEqual((doc['latent_level'],doc['status'],doc['injection_level']),('unavailable','PASS',0))

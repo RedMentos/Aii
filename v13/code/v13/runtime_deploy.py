@@ -48,13 +48,13 @@ ACTIVATION_JOURNAL_NAME = ".runtime-activation.json"
 # This journal coordinates only the launcher/marker pair; models and user data stay outside the transaction.
 BUILD_PROFILE = "integrated-runtime-source-pinned-v2"
 STAGER = "scripts/stage_integrated_candidate.py"
-STAGER_SHA256 = "cb0a45a903aa190434fa9e84f6032fff6ff5672ebb242905e6d1066ded1a44a1"
+STAGER_SHA256 = "57945284bd9bd4d31fa2188ad2579394680fcec031e7b4f65f33646021254423"
 STAGE_MANIFEST = "INTEGRATION_STAGE.json"
 UI_SOURCE = "v13/ui.py"
 UI_SOURCE_SHA256 = "ad1c495b1a09989ca307ae7b34f045abe60b390996787ee604e20273c975d4e8"
 UI_DERIVED_SHA256 = "0c2e5fb15a78b37017f2b2c296afd0275705e70276a47dc9b47429d38aeac5a1"
 UI_BUILDER = "scripts/termux_chat_recovery_candidate_20261112.py"
-UI_BUILDER_SHA256 = "befbaca164fd5453d4c93017eca1b556f2d771b1b7cf54879c6764e4716587c7"
+UI_BUILDER_SHA256 = "4850accb34d4f85739d6e1ce4d8b58bc225b96b1db0d5afad18b0e024588b1e4"
 
 
 class RuntimeDeployError(RuntimeError):
