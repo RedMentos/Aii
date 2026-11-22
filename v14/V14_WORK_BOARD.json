@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T20:22:48Z",
-  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; 41/41 exact SHA check-runs SUCCESS. Authenticated private PIPELINE_STATUS #602 confirms this SHA installed, Auto-Update enabled, Runtime/Dashboard UP_TO_DATE and last_error NONE. Functional/whole-Canon acceptance remains open; historical V13 Canon and V14 master are preserved.",
+  "updated_at": "2026-11-22T20:37:48.762Z",
+  "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at aed1d2b826290c95c70356b5d8b864b5ef382be4; private V13OBS #115 (updated 2026-11-22T20:24:26Z) confirms this SHA installed, auto-update enabled and Runtime/Dashboard UP_TO_DATE. Latest metadata still shows 0 valid B1/B2 offers, 4/4 B1 and 2/2 B2 native attempts failed, and C3 ~38.945 s prefill / 2 tokens. Functional/whole-Canon acceptance remains open; historical V13 Canon and V14 master are preserved.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
   "tickets": [
@@ -108,10 +108,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "SourceRef T8/Outcome -> World/Self/Jepa/EMA/eligibility -> target optimizer -> replay/retention",
       "acceptance": "Before/after real parameter diff, holdout utility, retention, checkpoint/reboot/rollback, actual consumer",
-      "proof_environment": "Current JEPA candidate PR #2372 exact head fbe4f9d2e2aaa063dea9ddc090f6adbfd580f1df. Exact-head workflows 45065612067 staged/integrated, 45065612113 temporal T8, and 45065612072 Python 3.13/3.14 optimizer-resume/source-forget remain QUEUED. Predecessor 64ae exposed a missing temporal readout in the new bodyview test; fbe4 switches to the deterministic proven receiver cohort. Predecessor staged CI also exposed SleepRuntime postcommit ERROR; commit 64959 adds component tracing, no root fix yet. Previous temporal head 6bd3d932 had 11/11 Python 3.14 tests PASS; Python 3.13 pending. Full local Aii suite BLOCKED (no checkout; git ls-remote DNS failure). REDMI_UNVERIFIED for JEPA feature.",
-      "next_step": "Keep JEPA #2372 isolated while exact-head runs 45065612067/45065612113/45065612072 execute. Diagnose the SleepRuntime postcommit error from the new base/temporal/planner trace. QA must rebind the #2372 lifecycle memory.py pins to SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701. Do not rebase onto Boss #2370 until the independent audio overlay runtime.py SHA-1 mismatch is repaired (expected 30360f40eb784be5ea975ee85e94a57f0b154164; actual 6e61af07326c5bb11406ee72361a710d5facc9a5). After both source chains are green, Boss reviews/recomposes, then JEPA runs disjoint correct/omitted/shuffled/hypothetical-history ablations with matched replay. Keep DRAFT, SHADOW-only and production promotion OFF.",
+      "proof_environment": "JEPA PR #2372 exact branch head 9829b199b5a7c6c4182eec07c295d5d97b807ef2 (DRAFT / NOT_RELEASED). Commits 9f242cc fixes the postcommit trace test's undefined helper argument and captures exception messages; 8db1952 adds receiver gate diagnostics; 9829b19 binds those diagnostics to the captured prompt role. Exact 8db1952 workflows 45066934953 staged/integrated, 45066934983 temporal T8, and 45066934931 optimizer-resume 3.13/3.14 are QUEUED; no exact 9829b19 run is visible. Predecessor fbe4 exact-head tests failed: temporal prompt consumer did not obtain a readout; staged tests exposed SleepRuntime postcommit ERROR; optimizer-resume/staged also hit stale QA memory.py pins. LOCAL_LINUX full suite BLOCKED (no checkout; git ls-remote DNS failure). REDMI_UNVERIFIED for JEPA feature; private V13OBS #115 shows installed base aed1d2b and zero valid B1/B2 offers.",
+      "next_step": "Poll exact 8db1952 / 9829b19 CI and inspect the new receiver-matrix diagnostics plus full SleepRuntime exception message. Fix the actual receiver/consumer or postcommit root cause, not only the trace. QA must rebind its lifecycle chain to memory.py SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701. Boss's old audio pin mismatch is now rebound on branch boss/v14-fair-budget-current-base-20261122-run14 at commit 7fc6d7e; runtime.py blob 6e61af07326c5bb11406ee72361a710d5facc9a5 matches the updated overlay, but the full 18-workflow Boss matrix is still QUEUED. Do not rebase until that matrix and QA lifecycle chain are green. Then run disjoint correct/omitted/shuffled/hypothetical-history and replay/retention ablations. Keep DRAFT, SHADOW-only and production promotion OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T20:22:48Z",
+      "last_checkpoint": "2026-11-22T20:37:48.762Z",
       "latest_candidate_pr": {
         "pr": 2151,
         "head_sha": "d757f1c06261a1ef2a4aa1dbde5b1f05581cd051",
@@ -122,9 +122,9 @@
       "latest_followup_pr": {
         "pr": 2372,
         "branch": "jepa-memory/v14-temporal-exact-forget-retention-20261122-run14",
-        "head_sha": "fbe4f9d2e2aaa063dea9ddc090f6adbfd580f1df",
+        "head_sha": "9829b199b5a7c6c4182eec07c295d5d97b807ef2",
         "base_pr": 2351,
-        "ci": "EXACT_HEAD_QUEUED_RUNS_45065612067_45065612113_45065612072; PRIOR_6BD3_PY314_11_OF_11_PASS_PY313_PENDING; 64AE_BODYVIEW_FIXTURE_FAIL_FIXED_IN_FBE4; SLEEP_RUNTIME_ERROR_TRACE_ADDED_NO_ROOT_FIX",
+        "ci": "8DB1952_EXACT_RUNS_45066934953_45066934983_45066934931_QUEUED; 9829B19_NO_EXACT_RUN_VISIBLE; FBE4_PREDECESSOR_FAILED_RECEIVER_PROMPT_SLEEP_POSTCOMMIT_AND_QA_SOURCE_PIN; NO_CURRENT_HEAD_PASS",
         "scope": "persistent source-verified temporal T8/WorldJEPA/EMA, disjoint splits, omission/gap handling, replay/retention, positive rollback/restart and source-forget lock regression; actual Cognition.offer B1/B2 prompt readout (B1 history 2, B2 history 3) in bounded nonblocking SHADOW; SleepRuntime component trace for postcommit error"
       },
       "latest_runtime_candidate": {
@@ -136,7 +136,7 @@
       },
       "release_sha": "NOT_PHONE_RELEASED",
       "phone_installed_sha": "aed1d2b826290c95c70356b5d8b864b5ef382be4",
-      "redmi_status": "BASE_RELEASE_AED1D2_INSTALLED_AND_UP_TO_DATE; JEPA_PR_2372_NOT_RELEASED; REDMI_UNVERIFIED_FOR_JEPA_FEATURE; BOSS_COMPOSITION_BLOCKED_BY_AUDIO_SOURCE_PIN",
+      "redmi_status": "BASE_RELEASE_AED1D2_INSTALLED_AND_UP_TO_DATE_PER_PRIVATE_V13OBS_115; AUTO_UPDATE_ENABLED; B1_ZERO_VALID_OFFERS_4_OF_4_FAILED_NATIVE_ATTEMPTS; B2_ZERO_VALID_OFFERS_2_OF_2_FAILED_NATIVE_ATTEMPTS; C3_PREFILL_38.945S_2_TOKENS; JEPA_PR_2372_NOT_RELEASED; REDMI_UNVERIFIED_FOR_JEPA_FEATURE",
       "latest_runtime_port_pr": {
         "pr": 2160,
         "branch": "jepa-memory/v14-world-jepa-runtime-port-20261121-r2",
@@ -162,7 +162,7 @@
         "ci": "PR_HEAD_STAGED_249_10SKIP_47_INTEGRATED_424_3SKIP_58_PY313_314_64_EACH; MERGED_PUSH_30_OF_30_SUCCESS",
         "scope": "production Runtime/SleepRuntime Store-backed WorldJEPA numeric consumer with persistent Adam/inverse/RNG optimizer state, gated legacy optimizer bootstrap, per-role held-out-vs-mean/zero/shuffled Planner receiver gate, Android no-clobber renameat2 checkpoint publication"
       },
-      "proof": "PR #2372 exact head fbe4f9d2e2aaa063dea9ddc090f6adbfd580f1df contains temporal bodyview readout into the real Cognition.offer prompt consumer. B1/B2 capture-runner regression checks prompt payload, QueryPacket SourceRef provenance, distinct 2/3 histories and nonblocking fallback; exact-head CI remains queued. Predecessor 64ae bodyview test failed due its fixture cohort; fbe4 uses the deterministic proven matrix cohort. Staged predecessor also returned SleepRuntime postcommit ERROR in numeric and planner-only tests; commit 64959 adds wrapper-safe base/temporal/planner tracing but no root-cause fix yet. Current memory.py blob SHA-1 172417b49c0abb301db9367fd1c9947a91b3c458; SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701. Inherited #2372 lifecycle pin 61e881ad… and QA #2359 pin b2059016… are stale; QA was notified. Current Boss branch 4d771 also has an independent audio overlay pin mismatch: expected runtime.py blob SHA-1 30360f40eb784be5ea975ee85e94a57f0b154164 vs actual 6e61af07326c5bb11406ee72361a710d5facc9a5; do not rebase JEPA onto it until audio owner rebinds. Full local repository suite BLOCKED by absent checkout/DNS. No native GGUF body-weight change, trained cross-organ latent coupling, Redmi proof or production learning promotion."
+      "proof": "PR #2372 exact head 9829b199b5a7c6c4182eec07c295d5d97b807ef2 retains the persistent temporal T8/WorldJEPA/EMA/replay/retention/rollback candidate and actual Cognition.offer B1/B2 SHADOW consumer. Diagnostic-only commits expose receiver matrix status, gate metrics and the underlying SleepRuntime exception text; they do not change runtime behavior or weights. The 8db1952 exact-head workflow set is queued, and 9829b19 has no exact-head CI readback. The predecessor fbe4 matrix failed: temporal prompt test lacked a supported readout; staged numeric/planner-only paths returned SleepRuntime ERROR; optimizer-resume/staged hit QA's stale memory.py pin. JEPA memory.py remains blob SHA-1 172417b49c0abb301db9367fd1c9947a91b3c458 / file SHA-256 33377446f8dca709c0d829764dac6e1d4f1ca92729b955d8a8ad983a16bb1701; inherited #2372 pin 61e881ad… and QA #2359 pin b2059016… remain stale. Boss's old audio pin mismatch is corrected on current branch head 7fc6d7e (overlay now expects runtime.py blob 6e61af07326c5bb11406ee72361a710d5facc9a5); full Boss matrix remains queued. Full local repository tests BLOCKED by absent checkout/DNS. Private V13OBS #115 (20:24Z) reports installed aed1d2b, updater UP_TO_DATE, B1 4/4 and B2 2/2 native attempts failed, zero valid offers, C3 prefill 38.945 s / 2 generated tokens. No native GGUF body-weight change, trained cross-organ latent transfer, Redmi proof, production learning promotion or update request."
     },
     {
       "id": "V14-005",
@@ -278,10 +278,10 @@
       "status": "IN_PROGRESS_PARTIAL",
       "scope": "Fast episodic memory, replay selection, semantic consolidation, dream/counterfactual samples, slow EMA, cleanup and provenance",
       "acceptance": "Source-linked replay survives restart; observed events remain distinct from generated dream samples; consolidation has measured retention/ablation and rollback; synthetic dream data never gains truth or tool authority.",
-      "proof_environment": "Replay/retention regression now distinguishes an accepted update from a RETENTION_GATE_REJECTED candidate; rejected C rows remain pending and prior checkpoint remains active. Deterministic fixture follow-up pending exact CI. Sleep/Dream consolidation remains SHADOW/OFF; no Android lifecycle proof.",
-      "next_step": "JEPA: finish deterministic 3.13/3.14 temporal CI; QA rebinds source-lifecycle pins; then verify replay/restart/rollback and the B1/B2 receiver consumer. Do not call a retention-vetoed candidate a learned update.",
+      "proof_environment": "Temporal JEPA replay/retention/rollback remains synthetic Store-backed NumPy evidence. The exact fbe4 predecessor staged tests reproduced a SleepRuntime postcommit ERROR in numeric and planner-only flows. PR #2372 head 9829b19 adds exception-message tracing and receiver-gate diagnostics; exact 8db1952 workflows are queued, 9829b19 has no exact-head CI yet. No root fix or Android restart/rollback proof.",
+      "next_step": "Read exact current CI exception text and fix the throwing postcommit consumer. Then run matched replay-on/off and persistent-vs-reset optimizer tests across at least two shifts plus return-to-first-cohort retention, with parameter/EMA diffs, holdout utility, rollback and restart. Keep Dream-generated data separate from observed ActionOutcomes and production promotion OFF.",
       "user_action_required": false,
-      "last_checkpoint": "2026-11-22T09:58:33.516Z",
+      "last_checkpoint": "2026-11-22T20:37:48.762Z",
       "proof": "Temporal T8/WorldJEPA remains synthetic Store-backed NumPy evidence. No accepted native Dream consolidation or Redmi learning proof; learning promotion remains OFF."
     },
     {
