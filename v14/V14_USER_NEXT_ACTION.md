@@ -1,3 +1,27 @@
+# Current next action — 2026-11-22 02:19 CET (QA crash-safe activation)
+
+**User action: none. Do not run Termux or change installed models, weights, permissions, Age, updater settings, SQLite or chat data.**
+
+## Current candidate and verified tests
+
+- Boss candidate remains `boss/v14-recall-store-pin-rebind-20261122` at `f0d3c848dfb1d65e282f065233adbe3c9205e439`, DRAFT / NOT_RELEASED.
+- QA PR [#2295](https://github.com/RedMentos/Aii/pull/2295), branch `qa/v14-activation-journal-20261122`, head `9d576667259af92dd0672060347d9e5d4c6840cf`, adds a durable launcher + runtime-marker transaction journal, parent-directory fsync, idempotent recovery/rollback and eight subprocess process-death/tamper/fsync tests.
+- Exact-head [runtime-deploy integrity](https://github.com/RedMentos/Aii/actions/runs/44970704843) PASS on Python 3.11 and 3.14: 42 tests per interpreter (8 activation journal + 3 deploy integrity + 31 runtime deploy). [Private bridge tests](https://github.com/RedMentos/Aii/actions/runs/44970693938) PASS.
+- [Staged/integrated regression](https://github.com/RedMentos/Aii/actions/runs/44970704836), [Lab-Age](https://github.com/RedMentos/Aii/actions/runs/44970704845), and [two-checkout migration](https://github.com/RedMentos/Aii/actions/runs/44970704797) FAIL on the independent Boss #2288 pin-chain defect at `termux_runtime_recovery_candidate_20261112.py:313`: `local-error pre-rebind semantic binding mismatch`. The Python 3.14 staged startup subjob in [owner-read](https://github.com/RedMentos/Aii/actions/runs/44970704853) fails on the same issue; its separate owner-read subjob succeeds. Migration returns PARTIAL because the staged runtime cannot be built. Do not misattribute these failures to the journal tests.
+- QA posted the exact fix order on #2288 and recorded it on [whole-Canon issue #1984](https://github.com/RedMentos/Aii/issues/1984): capture the semantic SHA and matching local-error pin immediately after the pinned Record-Only guard output; after the final Store rebind, rebind that saved guard-output pin to the final semantic SHA. Keep strict provenance checks.
+- Full local Aii checkout: BLOCKED. No authenticated Redmi receipt or runtime deployment; **REDMI_UNVERIFIED / NOT_RELEASED**. Private owner-read #454 is pending with zero comments at the last read; do not create duplicate relay requests or infer installed SHA.
+
+## Next internal sequence
+
+1. Boss repairs the exact #2288 guard-output → final-semantic pin chain and reruns the full exact-head release workflows.
+2. QA rebases/combines #2281 Age/X10 rights and #2295 crash journal on that same candidate.
+3. Wire the runtime `rollback()` API into the pipeline UI/worker under the existing owner consent, pipeline lock, graceful stop, audit and resume path. Dashboard rollback remains explicitly unimplemented.
+4. Rerun Python 3.11/3.14 first-install/second-deploy, process death after launcher replacement, marker replacement and marker unlink, committed recovery, backup/journal tamper, busy/active-runtime refusal, two-checkout migration and restart tests.
+5. Only after exact CI green, use the authorized normal update path and obtain a separate owner-authenticated phone receipt. GitHub push or Linux CI is not Redmi deployment proof.
+
+No model/weight swap, permission change, Age change, updater setting change, shell action or device mutation was performed.
+---
+---
 # Current next action — 2026-11-22 01:39 CET (full staged CI readback)
 
 Current Boss HEAD remains `f586a92392b521c073e7a72340bf7adb72f87198`. The common pin-ordering defect now reaches every major staged consumer:
