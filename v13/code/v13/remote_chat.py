@@ -81,7 +81,7 @@ def _native_receiver_probe_summary(lines, sender, receiver):
             or value["native_receiver_authority"] != 0):
         return None
     try:
-        from .native_latent_receiver import PINNED_LLAMA_REVISION, POSITION_MODE
+        from .native_latent_receiver import EFFECT_EPSILON, PINNED_LLAMA_REVISION, POSITION_MODE
     except (ImportError, AttributeError):
         return None
     if value.get("runner_revision") != PINNED_LLAMA_REVISION:
@@ -141,8 +141,7 @@ def _native_receiver_probe_summary(lines, sender, receiver):
             return None
     else:
         if rows >= 2:
-            if (value["row_shuffle_control_applicable"] is not True
-                    or value.get("row_shuffle_control_cosine") is None):
+            if value["row_shuffle_control_applicable"] is not True:
                 return None
         elif (value["row_shuffle_control_applicable"] is not False
                 or value.get("row_shuffle_control_cosine") is not None):
@@ -154,8 +153,8 @@ def _native_receiver_probe_summary(lines, sender, receiver):
             return None
     elif (receiver_dim != dim or decode_status != 0 or not consumed
           or effect != (status == "NATIVE_INPUT_EFFECT")
-          or (effect and effect_rms <= 1e-7)
-          or (not effect and effect_rms > 1e-7)):
+          or (effect and effect_rms <= EFFECT_EPSILON)
+          or (not effect and effect_rms > EFFECT_EPSILON)):
         return None
     # Never forward source_ref, event/session IDs, tap packet IDs, input hashes,
     # raw position arrays, vectors, prompts, or arbitrary command output.
