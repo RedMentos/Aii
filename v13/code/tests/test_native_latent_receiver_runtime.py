@@ -75,18 +75,17 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
         "event_id": event["event_id"],
         "brain_generation_id": event["brain_generation_id"],
         "source_ref": event["source_ref"],
+        "role": "B2_GIST",
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
         "sender_model_sha256": "b" * 64,
         "tokenizer_revision": None,
-        "position_ids": [0, 1],
-        "position_mode": native.POSITION_MODE,
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 2},
     }
     runtime.cognition.tap = lambda role, e, ref, deadline: (order.append("tap") or tap)
     runtime.cognition.read_tap = lambda packet: {
+        "token_ids": [101, 202],
         "vectors": [[0.25, -0.5], [1.0, 0.75]],
-        "position_ids": [0, 1],
-        "position_mode": native.POSITION_MODE,
     }
     runtime.pool.unload = lambda: order.append("unload")
 
@@ -133,6 +132,31 @@ def test_cognition_native_receive_is_source_bound_and_non_authoritative(tmp_path
     runtime.close()
 
 
+def test_native_receive_rejects_unverified_position_mapping(tmp_path, monkeypatch):
+    runtime, event, model_path, digest = setup_runtime(tmp_path)
+    tap = {
+        "packet_id": "tap-packet-bad",
+        "event_id": event["event_id"],
+        "brain_generation_id": event["brain_generation_id"],
+        "source_ref": event["source_ref"],
+        "role": "B2_GIST",
+        "tap_id": "qwen35.result_norm.final.v1",
+        "model_revision": "qwen35-r1",
+        "sender_model_sha256": "b" * 64,
+        "tokenizer_revision": None,
+        "metrics": {"whole_sequence_prefill": False, "pooling": "mean", "prompt_tokens": 1},
+    }
+    runtime.cognition.tap = lambda *args: tap
+    runtime.cognition.read_tap = lambda packet: {"token_ids": [101], "vectors": [[1.0, 2.0]]}
+    runtime.pool.unload = lambda: None
+    monkeypatch.setattr(native, "probe", lambda **kwargs: pytest.fail("native receiver must not run"))
+    with pytest.raises(ValueError, match="whole-sequence position map"):
+        runtime.cognition.native_receive(
+            "B2_GIST", "C3_LANGUAGE", event, event["source_ref"], time.monotonic() + 30
+        )
+    runtime.close()
+
+
 def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp_path, monkeypatch):
     runtime, event, model_path, digest = setup_runtime(tmp_path)
     tap = {
@@ -140,18 +164,17 @@ def test_native_receiver_dimension_mismatch_packet_is_valid_but_not_consumed(tmp
         "event_id": event["event_id"],
         "brain_generation_id": event["brain_generation_id"],
         "source_ref": event["source_ref"],
+        "role": "B2_GIST",
         "tap_id": "qwen35.result_norm.final.v1",
         "model_revision": "qwen35-r1",
         "sender_model_sha256": "b" * 64,
         "tokenizer_revision": None,
-        "position_ids": [0],
-        "position_mode": native.POSITION_MODE,
+        "metrics": {"whole_sequence_prefill": True, "pooling": "none", "prompt_tokens": 1},
     }
     runtime.cognition.tap = lambda *args: tap
     runtime.cognition.read_tap = lambda packet: {
+        "token_ids": [101],
         "vectors": [[1.0, 2.0]],
-        "position_ids": [0],
-        "position_mode": native.POSITION_MODE,
     }
     runtime.pool.unload = lambda: None
     mismatch = receipt(digest)
