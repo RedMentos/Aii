@@ -2160,3 +2160,22 @@ PR #2331 current head 535eba6f668b3990416c361368f36e3e8f1e599e is DRAFT/NOT_RELE
 | Whole Canon | V14 master + historical V13 appendix | 1,255-heading inventory preserved; no master/Canon source bytes changed; semantic clause→consumer→test→platform→rollback map incomplete | GitHub readback | PRESERVED / MAPPING_INCOMPLETE |
 
 **Negative boundary:** no new correct native answer, native B1/B2 offers, trained B3 latent transfer, permanent body-weight update, Android microphone/UI/background action, full voice learning, sparse MoE, production Memorilla consumer or AGI claim is established. No model, weight, Age, permission, updater setting or user data changed.
+
+
+## Boss evidence overlay — 2026-11-22T17:20:29Z (append-only)
+
+| Canon family | Current code / consumer | Exact evidence | Environment | Current classification |
+| --- | --- | --- | --- | --- |
+| A0–A5 / RAW EAR | Existing PCM feature code and speaker-calibration candidates; no Android AudioRecord provider | #592 shows service running but no microphone/provider execution evidence; no ASR or trainable decoder/vocoder | Private read-only phone metadata; no audio capture test | PARTIAL_CODE / ANDROID_UNVERIFIED |
+| B1_DETAIL + B2_GIST | #2343 fair pre-answer scheduler candidate, still DRAFT | #592: both body probes TIME_BUDGET at 53.2s/54.2s, zero valid offers; no C4 consumption proof | Authenticated private last-turn diagnostic; candidate not installed | DRAFT / NATIVE_OFFERS_UNVERIFIED |
+| C3 correctness and latency | Installed native C3 on c4eb82 | Last recorded turn 57.74s / 41.63s TTFT / 38.95s prefill / 751 prompt tokens / 2 generated tokens; no fresh turn or correct 2+2 acceptance | Authenticated private diagnostic, last-turn only | P0_OPEN / NOT_ACCEPTED |
+| B3 / Enlightened Space | Paired-tap and native-receiver candidates remain diagnostic/shadow | No receiver-side utility proof; production B3 remains OFF | CI/synthetic only; no Redmi latent test | DIAGNOSTIC_ONLY / PRODUCTION_OFF |
+| World/Self/Memory/JEPA | #2351 temporal T8/EMA candidate; #2343 composer stack | Source-forget vs generic Store promotion race remains open; no accepted persistent weight diff/retention/restart proof | PR/CI only | DRAFT / SHADOW_ONLY / PROMOTION_OFF |
+| Age rights / X10 | Existing Age/Lab controls | #592: persisted lab stage 10 active, official Age 0, implemented stage 5, physical feature execution false; commit authority requires separate SHADOW | Authenticated private diagnostic; not a feature execution test | SETTINGS_OBSERVED / FEATURE_EXECUTION_UNVERIFIED |
+| Android control and voice | Companion stack and RAW EAR source features | No APK, app/API action, Accessibility/MediaProjection, AudioRecord, ASR, decoder/vocoder or full-duplex proof | No Android capability test | OFF / NOT_ACCEPTED |
+| Update / recovery | Release c4eb82 | #591 confirms c4eb82 installed, auto-update enabled, runtime/dashboard UP_TO_DATE; no physical restart/rollback proof | GitHub release CI + private owner-read | CODE_INSTALLED / ROLLBACK_UNVERIFIED |
+| Whole-Canon coverage | V14 master + historical V13 appendix | 1,255-heading inventory preserved; semantic clause→consumer→test→platform→rollback map incomplete | GitHub readback | INVENTORY_PRESERVED / SEMANTIC_COVERAGE_INCOMPLETE |
+
+**Candidate gate:** PR #2343 head `fc5fa22d` is DRAFT/NOT_RELEASED and has no exact-head CI receipt. Prior executed head `853433f3` had 10 success / 5 failures / 12 pending / 1 skipped; stage consumers report postcommit replacement-4 anchor mismatch. QA reported 13 nested source-pin mismatches. The new diagnostic commits are not yet tested. No update request or device mutation occurred.
+
+**Negative boundary:** no fresh correct native answer, useful same-turn B1/B2 offers, C4 consumption, trained B3 latent transfer, permanent B1/B2/C3 weight update, cross-organ gradients, Android UI/background control, microphone/voice learning, sparse MoE, production Memorilla overflow consumer or AGI claim is established. No model, weight, Age, permission, updater setting or user data was changed.
