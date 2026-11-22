@@ -64,7 +64,7 @@ def _native_receiver_probe_summary(lines, sender, receiver):
                 break
         cleaned.append(value)
     try:
-        value = json.loads("\\n".join(cleaned))
+        value = json.loads("\n".join(cleaned))
     except (TypeError, ValueError):
         return None
     if (not isinstance(value, dict) or value.get("completed") is not True
