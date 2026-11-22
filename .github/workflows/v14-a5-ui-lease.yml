@@ -31,6 +31,15 @@ on:
       - "v13/code/tests/test_a5_ui_observation_lease.py"
       - "v13/code/tests/test_v14_store_source_blob_serialization.py"
       - "v13/code/tests/test_a5_ui_revocation_blob_race.py"
+      - "v13/code/scripts/source_lifecycle_lock_integration_candidate.py"
+      - "v13/code/scripts/archive_reader_guard_integration_candidate.py"
+      - "v13/code/v13/source_lifecycle_candidate.py"
+      - "v13/code/v13/archive_reader_guard_candidate.py"
+      - "v13/code/v13/archive_stream_range_candidate.py"
+      - "v13/code/v13/archive.py"
+      - "v13/code/v13/memory.py"
+      - "v13/code/v13/vision.py"
+      - "v13/code/v13/common.py"
       - ".github/workflows/v14-a5-ui-lease.yml"
   workflow_dispatch:
 
