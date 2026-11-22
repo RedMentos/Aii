@@ -128,6 +128,8 @@ class PairedNativeTapTests(unittest.TestCase):
         self.assertEqual(report["paired_native_samples"], 1)
         self.assertEqual(report["required_for_l1_training"], 64)
         self.assertEqual(report["remaining"], 63)
+        self.assertEqual(report["b1_detail_fine_slots"]["budget"], 64)
+        self.assertGreater(report["b1_detail_fine_slots"]["min"], report["b2_gist_adaptive_slots"]["min"])
         self.assertFalse(report["pair_collection_threshold_met"])
         self.assertTrue(report["task_labels_and_L0_baselines_required"])
         self.assertEqual(report["latent_injection_authority"], 0)
