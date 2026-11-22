@@ -403,14 +403,14 @@ class PipelineTests(unittest.TestCase):
         commit = "d" * 40
         report = {"status": "UP_TO_DATE", "available": commit,
                   "current": commit, "changed_files": 0}
-        with mock.patch.object(p, "_try_repo", return_value=(report, None)), \\
-             mock.patch.object(u, "_runtime_active", side_effect=[True, False]), \\
-             mock.patch.object(p.runtime_deploy, "needs_deploy", return_value=True), \\
-             mock.patch.object(u, "ci_passed", return_value=True) as ci, \\
-             mock.patch.object(p.lifecycle, "request_stop", return_value=True) as stop, \\
-             mock.patch.object(p.lifecycle, "request_resume") as resume, \\
-             mock.patch.object(p.runtime_deploy, "recover_pending_activation", \\
-                               side_effect=p.runtime_deploy.RuntimeDeployError("corrupt journal")) as recovery, \\
+        with mock.patch.object(p, "_try_repo", return_value=(report, None)), \
+             mock.patch.object(u, "_runtime_active", side_effect=[True, False]), \
+             mock.patch.object(p.runtime_deploy, "needs_deploy", return_value=True), \
+             mock.patch.object(u, "ci_passed", return_value=True) as ci, \
+             mock.patch.object(p.lifecycle, "request_stop", return_value=True) as stop, \
+             mock.patch.object(p.lifecycle, "request_resume") as resume, \
+             mock.patch.object(p.runtime_deploy, "recover_pending_activation", \
+                               side_effect=p.runtime_deploy.RuntimeDeployError("corrupt journal")) as recovery, \
              mock.patch.object(p.runtime_deploy, "deploy") as deploy:
             result = p.run_cycle(force=True, now=2000000000, target="runtime")
 
