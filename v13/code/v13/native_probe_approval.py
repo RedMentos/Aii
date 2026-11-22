@@ -8,6 +8,7 @@ from __future__ import annotations
 import hashlib
 import math
 import secrets
+import sys
 import time
 from pathlib import Path
 
@@ -26,6 +27,19 @@ def _clock(value):
     if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
         raise ValueError("native probe approval clock is invalid")
     return float(value)
+
+
+def _is_local_tty():
+    """Return true only for an interactive local terminal, not an origin label."""
+    try:
+        return bool(sys.stdin.isatty() and sys.stdout.isatty())
+    except (AttributeError, OSError, ValueError):
+        return False
+
+
+def _require_local_tty():
+    if not _is_local_tty():
+        raise PermissionError("native probe approval requires an interactive local TTY")
 
 
 def _runtime_nonce(runtime):
@@ -125,7 +139,8 @@ def _current_event(runtime):
 
 
 def arm(runtime, sender_role, receiver_role, *, now=None):
-    """Arm one exact probe locally; caller is the local Operator TTY path."""
+    """Arm one exact probe locally; caller must have an interactive local TTY."""
+    _require_local_tty()
     runtime.require_idle()
     _roles(sender_role, receiver_role)
     clock = _clock(now)
@@ -176,6 +191,7 @@ def arm(runtime, sender_role, receiver_role, *, now=None):
 
 def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None):
     """Consume the local approval atomically before any native receiver work."""
+    _require_local_tty()
     runtime.require_idle()
     _roles(sender_role, receiver_role)
     clock = _clock(now)
@@ -231,6 +247,7 @@ def consume(runtime, sender_role, receiver_role, event, source_ref, *, now=None)
 
 def revoke(runtime, *, now=None):
     """Revoke a pending local probe approval without invoking the native runner."""
+    _require_local_tty()
     runtime.require_idle()
     clock = _clock(now)
     record, version = runtime.store.state(KEY, None)
