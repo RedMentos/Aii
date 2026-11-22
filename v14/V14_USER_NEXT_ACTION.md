@@ -1,3 +1,46 @@
+# QA & Android — Run 7 current checkpoint (2026-11-22)
+
+**Keine Nutzeraktion erforderlich.** Kein neuer Termux-Befehl, kein doppelter UPDATE_REQUEST, kein CHAT_SEND, keine LOG_PAGE-Abfrage und kein Modell-/Gewichts-/Rechtewechsel.
+
+## Release und authentifizierter Redmi-Status
+
+- Release-Branch `gpt6/v13-private-remote-bridge-20261111`: `aed1d2b826290c95c70356b5d8b864b5ef382be4`, 41/41 exakte Commit-Checks SUCCESS. Dieser Branch-Tip ist dokumentationsbasiert; der letzte code-tragende Release bleibt `c4eb82deec915f65894c20d6ebbaf0ebf58fa335`.
+- Privater PIPELINE_STATUS [#602](https://github.com/RedMentos/Aiiii/issues/602) bestätigt aed1d2 als installiert/UP_TO_DATE, Auto-Update EIN, `last_error=NONE`.
+- DIAGNOSTICS [#603](https://github.com/RedMentos/Aiiii/issues/603): Service/Modellprozess/Dashboard RUNNING; letzter gespeicherter Turn FINAL, 57,739 s gesamt, 41,627 s TTFT, 38,945 s Prefill, 751 Prompt-Tokens, 2 generierte Tokens. B1_DETAIL und B2_GIST TIME_BUDGET nach 53,2/54,2 s; C3 3,1 s. Das ist kein neuer Turn und keine Korrektheitsmessung.
+- Momentane Residency-Abfrage: 0 gemappte Prozesse/0 MiB, aber `UNKNOWN_NO_GROUP_CHILDREN`; kein freier-RAM-Wert und kein Nachweis, dass Modelle gestoppt sind.
+- Official Age 0; Lab-Auswahl X10 angefordert, effektiv implementierte Stufe 5; physische Feature-Ausführung nicht bestätigt; Lern-Commit-Autorität separat SHADOW. Keine Einstellung geändert.
+
+## QA-Code und aktuelle Fehler
+
+### Android Companion — PR #2356
+
+- Head `985c55efbcfaac33a41fc7b094ac76044b5c1377`.
+- Receipt-only recovery: EXECUTING wird signiert zu OUTCOME_UNKNOWN, DENYING zu USER_DENIED; kein erneuter Dispatch. Failure-Injection, Notification-Retention, Datenbank-Reopen und Idempotenz sind abgedeckt.
+- Fünf lokale synthetische UI-Overlay-Tests PASS; vorheriger Android-Gradle/Robolectric-Job PASS. Der Emulator-Prozessrestart scheiterte auf dem Vorgänger-Head, weil `am start -W` unter TCG länger als 25 s wartete. Der aktuelle Head entfernt `-W` und verwendet begrenztes Process-/UI-Warten.
+- Exakter Android-Emulator-Run [45063592256](https://github.com/RedMentos/Aii/actions/runs/45063592256) und Staged/Integrated [45063592215](https://github.com/RedMentos/Aii/actions/runs/45063592215) liefen beim letzten Readback. Noch kein Emulator-PASS, kein APK auf Redmi, kein Companion-Launch oder UI-Action-Beleg.
+
+### Store/JEPA Source-Lifecycle — PR #2359
+
+- Head `1a6d9894dba6fe700154c26de979b0d47f8997ea`; 8/8 statische SHA-/Git-Blob-Kanten wurden nach Readback verifiziert (ContextRecall Store, RECORD_ONLY semantic source, WorldJEPA→ContextRecall, Recovery12, Recovery21, Stage, Deployer).
+- Die exakten Python-3.13/3.14, Staged/Integrated, RECORD_ONLY, Lab-Age, Migration und Deploy-Workflows waren noch queued/in progress. **Kein grüner Exact-Head-Nachweis** und nicht released.
+- Nach erfolgreichem Stage-Build gezielt SleepRuntime postcommit: numerische JEPA/Temporal-Lernung, optimizer resume, positive rollback, restart und negative controls prüfen; keine Promotion.
+
+### Boss-/Core-Integration
+
+- Boss PR #2370 head `809814ffc8468447be80fdffbeb5a5384a2efe0b`: RECORD_ONLY local-error semantic anchor, Lab-Age integrated-builder hash und Migration-PARTIAL sind rot. QA hat die konkrete Ursache in [PR-Kommentar](https://github.com/RedMentos/Aii/pull/2370#issuecomment-7084824119) und im Whole-Canon-Issue #1984 dokumentiert. Boss owns the shared chain; QA schreibt nicht parallel hinein.
+- Core PR #2367 head `06113c60a1d411fd3121fd5bae66c5f42e8b28ba`: 18 relevante Workflows SUCCESS; safe-additive job expected SKIPPED und release-event integration CANCELLED. Draft, kein Redmi-/nativer Latent-Proof.
+
+## Nächste konkrete Arbeit
+
+1. Exakte #2356 Emulator- und Staged/Integrated-Ergebnisse abwarten; bei Rot nur den tatsächlichen neuen Fehler beheben.
+2. Exakte #2359 CI-Ergebnisse abwarten; nach erfolgreichem Stage-Build SleepRuntime/positive Rollback prüfen.
+3. #2370 separat nach Boss-Fix erneut adversarial prüfen.
+4. 20-Turn-Redmi-Korrektheit, TTFT, native PSS/Residency, B1/B2-Quellenverbrauch, Android Companion und Rollback bleiben offene Akzeptanztests.
+
+**Statusgrenze:** GitHub-CI, lokale synthetische Python-Tests, Android-Emulator und echtes Redmi sind vier verschiedene Evidenzklassen. Redmi-Companion und neue Modell-/Gewichtslernwirkung bleiben UNVERIFIED.
+
+---
+
 # QA & Android — aktueller Gesamt-Checkpoint (2026-11-22, Run 7)
 
 **Keine Nutzeraktion erforderlich.** Der vorhandene Updater hat den aktuellen Release-Branch-Stand bereits installiert. Kein Termux-Befehl, kein neuer UPDATE_REQUEST, kein CHAT_SEND, keine LOG_PAGE-Abfrage und kein Modell-/Gewichts-/Rechtewechsel.
