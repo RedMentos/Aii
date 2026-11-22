@@ -125,6 +125,19 @@ final class CompanionDb extends SQLiteOpenHelper {
         return out;
     }
 
+    synchronized List<Action> recoveryCandidates() {
+        List<Action> out = new ArrayList<>();
+        try (Cursor c = getReadableDatabase().rawQuery(
+                "SELECT action_id,request_json,package_name,status,receipt_json,expires_at "
+                        + "FROM actions WHERE receipt_json IS NULL "
+                        + "AND status IN ('EXECUTING','DENYING') ORDER BY expires_at LIMIT 32",
+                null)) {
+            while (c.moveToNext()) out.add(new Action(c.getString(0), c.getString(1), c.getString(2),
+                    c.getString(3), c.isNull(4) ? null : c.getString(4), c.getLong(5)));
+        }
+        return out;
+    }
+
     synchronized boolean claimForExecution(String actionId, long nowMillis) {
         return claim(actionId, nowMillis, "EXECUTING");
     }
@@ -147,7 +160,8 @@ final class CompanionDb extends SQLiteOpenHelper {
         values.put("status", status);
         values.put("receipt_json", receiptJson);
         int changed = getWritableDatabase().update("actions", values,
-                "action_id=? AND status=?", new String[]{actionId, expectedStatus});
+                "action_id=? AND status=? AND receipt_json IS NULL",
+                new String[]{actionId, expectedStatus});
         if (changed != 1) throw new IllegalStateException("action is no longer in expected state");
     }
 
