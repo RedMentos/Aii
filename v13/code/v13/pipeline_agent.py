@@ -274,8 +274,9 @@ def _do_update(name, root, state, *, runtime_busy, tested_commits, manual):
         state["runtime_activation_recovery"] = "STARTED"
         try:
             state["runtime_activation_recovery"] = runtime_deploy.recover_pending_activation()
-        except Exception as exc:
-            # A damaged/unknown activation pair is not a safe state to restart.
+        except BaseException as exc:
+            # Also fail closed on KeyboardInterrupt/SystemExit during recovery:
+            # finally must not restart a possibly half-recovered launcher pair.
             # Disable future automatic mutations and let the operator inspect it.
             state["runtime_activation_recovery"] = "ERROR"
             state["runtime_activation_recovery_error"] = type(exc).__name__
