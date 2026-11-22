@@ -9,7 +9,7 @@ import hashlib
 from pathlib import Path
 
 PINS = {
-    'v13/runtime.py': 'a533660776f7e2b1697e9793a3abb811eb6d1e7191ec6fe0af523d58efa0ce38',
+    'v13/runtime.py': '6139b01b25e46a7b2d44e35e0ab6db0c53136b8cfbf6f8635fffabd2559dcddf',
     'v13/observer_schedule.py': '343a4544b873e13f3549556ee52849a46dc2b55242536535b56f959022272943',
     'v13/native_turn_budget.py': '172bf70b05e21fd3c117273473446d0f77a11f625cc2665df1f4991708a1505c',
     'v13/cognition.py': '6d7940b118f099c930ee94c5b00a117af60b759dc03d8113aa6e1350a9a5a04b',
