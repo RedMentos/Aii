@@ -29,6 +29,11 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
     assert callosum.index("if len(args)==5 and args[0]=='native-probe'") < callosum.index("if not args or args==['status']")
     assert "return dumps({'direction':args[1],'level':b3degrade.promote(r,args[1],'EXPLICIT_HUMAN')})" in callosum
     assert "native_receiver_probe" in callosum
+    staged_budget = (destination / "v13/native_turn_budget.py").read_text(encoding="utf-8")
+    staged_schedule = (destination / "v13/observer_schedule.py").read_text(encoding="utf-8")
+    assert "minimum_role_slice_s" in staged_budget
+    assert "budgeted=False" in staged_schedule
+    assert "native_body_budgeted_for_c3" in cognition
     assert "'native_receiver_probe':self.native_receiver_probe()" in callosum
     assert "G-CALLOSUM-UTILITY-002: LATENT blocked for production" in callosum
     assert "native-probe <sender> <receiver>" in callosum
@@ -39,7 +44,8 @@ def test_native_receiver_is_composed_and_runtime_contracts_pass(tmp_path):
         [sys.executable, "-m", "pytest", "-q",
          str(CODE / "tests/test_native_latent_receiver.py"),
          str(CODE / "tests/test_native_latent_receiver_runtime.py"),
-         str(CODE / "tests/test_callosum.py")],
+         str(CODE / "tests/test_callosum.py"),
+         str(CODE / "tests/observer_fair_budget_disposable_cases_20261116.py")],
         cwd=tmp_path, env=env, capture_output=True, text=True, timeout=150,
     )
     assert run.returncode == 0, run.stdout + run.stderr
