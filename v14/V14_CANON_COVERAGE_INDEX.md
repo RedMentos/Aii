@@ -2202,3 +2202,12 @@ Private LEARNING_STATUS #594 reports `learning.state=UNAVAILABLE`. There is no e
 | Native probe integrity | #2350 | 18/18 checks pass, but branch is stacked on #2332 and only proves byte allowlist integrity. | DIAGNOSTIC_ONLY |
 
 No candidate above is merged or installed. Keep the whole-Canon inventory and all historic V13 obligations; these are current blockers, not scope reductions.
+
+
+### Android companion port status — 2026-11-22T17:34:00Z
+
+| Feature | Candidate evidence | Release compatibility / device evidence | Classification |
+| --- | --- | --- | --- |
+| Android companion app + consent-gated launch | #2271 16/16 branch-local CI; #2342 pairing 2/2; #2344 action journal 11/11; #2347 receipt recovery 8/8; #2348 readiness 7/7 | Stack base b931e94 is 106 ahead / 787 behind release; head 24e059d is 129 ahead / 787 behind from d3ac638. Existing release AndroidControl/Outcome APIs differ; new companion runtime/transport/Kotlin app absent from c4eb82. No APK install or Redmi action. | BRANCH_LOCAL_TESTED / NOT_RELEASE_INTEGRATED / ANDROID_UNVERIFIED |
+
+Port only the companion-specific app and adapters onto current release; do not merge the divergent 129-commit stack. Preserve explicit Android OS consent, one-shot approval, durable receipt verification, no redispatch, audit and stop boundaries.
