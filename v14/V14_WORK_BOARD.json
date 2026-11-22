@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-11-22T06:54:00Z",
+  "updated_at": "2026-11-22T06:58:00Z",
   "source_of_truth": "Release-development branch gpt6/v13-private-remote-bridge-20261111 at f210999cf556be4d4514427cc9b5cf6d3cf3e984; V14 master and historical V13 appendix preserved. This board is a Boss handoff branch stacked on Perception handoff PR #2316.",
   "governed_by": "v14/V14_TEAM_OPERATING_SYSTEM.md",
   "state_notice": "Current evidence overlay supersedes earlier pre-merge status snapshots. Historical Canon inventory and negative results remain preserved; never promote synthetic/CI evidence to native Android proof.",
@@ -324,10 +324,10 @@
       "owner": "Core & Harness + QA & Android",
       "priority": "P0",
       "status": "BLOCKED_REVIEW",
-      "last_checkpoint": "2026-11-22T03:55:43.537Z",
-      "proof_environment": "Android companion #2286 head 0366e73b6f9b7350116073cf747c614fe16cd39e has 8/12 checks SUCCESS and 4 IN_PROGRESS on a stacked old base. It remains default-OFF; no installed APK, Android OS executor, app launch or Redmi proof.",
-      "proof": "PR #2271 head 7013fe166b8a45437e45ccfa9b44b9fdb58ee1b4 is a default-OFF companion prototype limited to launch_app, paired Termux signer check and ECDSA receipt. Android build failed before Gradle compile because setup-android received one malformed semicolon-joined package string. QA separately identified a P1 duplicate-approval race: two ConsentActivity instances can both dispatch startActivity before the database CAS, and a shared-UID caller/notification-ID collision needs review. No APK/device install or Redmi proof.",
-      "next_step": "Core/QA: resolve exact staged/integrated/Android companion checks, rebase onto current Boss, preserve one-shot consent and OS-enforced scope; no device action before a real authorized provider and explicit user consent."
+      "last_checkpoint": "2026-11-22T06:58:00Z",
+      "proof_environment": "QA companion PR #2286 current head 0639c4e4a5b1613445ba62ed4d39188fb6f60b56 has the companion, broker, outcome, sandbox, migration and staged/integrated exact-head matrix QUEUED; no new-head PASS. Code still implements launch_app only; observe_ui, screen_capture, tap/swipe/type/back and audio_capture remain OFF_NOT_IMPLEMENTED. Boss review found the shared ACTION_GATE_LOCK correctly orders stop against dispatch, but setEnabled/toggleEnabled still use SharedPreferences.apply(), which is not a durable stop write before process death. No APK, Android OS action or Redmi test.",
+      "proof": "Boss review comment 7075643215 on #2286: ACTION_GATE_LOCK linearizes in-process order, but asynchronous SharedPreferences.apply() does not prove durable OFF across process death. Current exact-head CI queued; no device proof.",
+      "next_step": "QA/Core: replace the stop flag's asynchronous apply() with checked durable persistence (or transactionally persisted state used by the gate), fail closed on persistence failure, and add process-recreation/stop-during-dispatch regressions. Then rebase the entire #2271→#2273→#2286 stack onto current release and rerun Gradle, broker/outcome, sandbox, migration and staged integration. Keep all capabilities default-OFF until an installed APK and real authorized device receipt."
     },
     {
       "id": "V14-018",
